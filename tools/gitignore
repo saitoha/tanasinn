@@ -1,0 +1,26 @@
+
+# git
+.gitignore
+
+# vim swap file
+*~
+*.un~
+
+# autoconf
+config.log
+config.status
+autom4te.cache
+config.h
+
+# object file
+*.o
+
+# ctags
+tags
+TAGS
+
+# xpi package
+*.xpi
+
+# sed backup
+*-e

@@ -1,0 +1,174 @@
+/* -*- Mode: JAVASCRIPT; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 4 -*-
+ *
+ * ***** BEGIN LICENSE BLOCK *****
+ * Version: MPL 1.1
+ *
+ * The contents of this file are subject to the Mozilla Public License Version
+ * 1.1 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * http://www.mozilla.org/MPL/
+ *
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ * for the specific language governing rights and limitations under the
+ * License.
+ *
+ * The Original Code is coTerminal
+ *
+ * The Initial Developer of the Original Code is
+ * Hayaki Saito.
+ * Portions created by the Initial Developer are Copyright (C) 2010 - 2011
+ * the Initial Developer. All Rights Reserved.
+ *
+ * ***** END LICENSE BLOCK ***** */
+
+/** @package session
+ *
+ * [ Session overview ]
+ *
+ * coTerminal's "Session" is a concept that abstracts Terminal session and 
+ * all resources associated with it.
+ * It behaves as a mediator object, and be associated with following session-local 
+ * objects: 
+ * 
+ * 1. Event Manager
+ * 2. TTY driver object
+ * 3. Environment service
+ * 4. VT Emurator. 
+ * 5. Output Parser
+ * 6. Input Manager
+ * 7. User interface
+ * 8. Renderer
+ *
+ */
+
+/**
+ *
+ * @class Session
+ *
+ */
+let Session = new Class().extends(Component).mix(EventBroker);
+Session.definition = {
+
+  get id()
+    "session",
+
+  get request_id()
+    this._request_id,
+
+  get window()
+    this._window,
+
+  get document()
+    this.window.document,
+
+  get root_element()
+    this._root_element,
+
+  get command()
+    this._command,
+
+  get term()
+    this._term,
+
+  get process()
+    this._broker,
+
+  observerService: Components
+    .classes["@mozilla.org/observer-service;1"]
+    .getService(Components.interfaces.nsIObserverService),
+
+  _request_id: null,
+  _observers: null,
+
+  subscribeGlobalEvent: 
+  function subscribeGlobalEvent(topic, handler, context)
+  {
+    let delegate;
+    if (context) {
+      delegate = function() handler.apply(context, arguments);
+    } else {
+      delegate = handler;
+    }
+    let observer = { 
+      observe: function observe() 
+      {
+        delegate.apply(this, arguments);
+      },
+    };
+    this._observers[topic] = this._observers[topic] || [];
+    this._observers[topic].push(observer);
+    this.observerService.addObserver(observer, topic, false);
+  },
+  
+  removeGlobalEvent: function removeGlobalEvent(topic)
+  {
+    if (this.observerService) {
+      let observers = this._observers[topic];
+      if (observers) {
+        observers.forEach(function(observer) 
+        {
+          try {
+            this.observerService.removeObserver(observer, topic);
+          } catch(e) {
+            coUtils.Debug.reportWarning(e);
+          }
+        }, this);
+      }
+    }
+  },
+
+  /** Create terminal UI and start tty session. */ 
+  "[subscribe('event/session-requested'), enabled]":
+  function onRequested(request) 
+  {
+    this._request_id = coUtils.Uuid.generate().toString();
+
+    let process = this._broker;
+    this._observers = {};
+    this.subscribeGlobalEvent("quit-application", 
+      function onQuitApplication() 
+      {
+        this.notify("event/quit-application", this);
+      }, this);
+    let document = request.parent.ownerDocument;
+    this._window = document.defaultView;
+    this._root_element = request.parent;
+    this._command = request.command;
+    this._term = request.term;
+
+    process.notify("initialized/session", this);
+    process.notify("command/load-settings", this);
+    this.notify("event/session-started", this);
+    return this;
+  },
+
+  /** Send event/session-stopping message. */
+  stop: function stop() 
+  {
+    this.removeGlobalEvent("quit-application");
+    this.notify("event/session-stopping", this);
+    if ("Firefox" != coUtils.Runtime.app_name) {
+      this.window.close(); // close window
+      // exit application
+      let application = Components
+        .classes["@mozilla.org/fuel/application;1"]
+        .getService(Components.interfaces.fuelIApplication);
+      application.quit();
+    }
+  },
+
+}; // class Session
+
+
+/**
+ * @fn main
+ * @brief Module entry point.
+ * @param {Process} process The Process object.
+ */
+function main(process) 
+{
+  new Session(process);
+}
+
+

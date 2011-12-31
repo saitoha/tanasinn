@@ -1,0 +1,158 @@
+=. {
+ .
+ ChangeLog
+ README
+ configure.ac
+ acgecko.m4
+ acplatform.m4
+ Makefile.in
+ Doxyfile
+ install.rdf.in
+ install.rdf
+ chrome.manifest.in
+ chrome.manifest
+ bootstrap.js
+ content=chrome/content {
+   .
+   Makefile
+   terminal.xul
+   terminal-app.xul
+ }
+ modules=modules {
+  .
+  Makefile
+  initialize.js
+  common=common {
+   process.js
+   config.js.in
+   config.js
+   common.js
+   gettext.js
+   eastasian.js
+   event.js
+   constant.js
+   base.js
+  }
+  autoload=autoload {
+   vimp.js
+   appmenu.js
+  }
+  core=core {
+   persist.js
+   desktop.js
+   session.js
+
+   ui.js
+   builder.js
+   grammer.js
+   parser.js
+   renderer.js
+   domevent.js
+
+   line.js
+   cursorstate.js
+   screen.js
+
+   emurator.js
+   control.js
+   escape.js
+   ansi.js
+   dec.js
+
+   tty.js
+   input.js
+   decoder.js
+   encoder.js
+   focus.js
+   window.js
+  }
+
+  ttydriver.py
+  ctypes=ctypes {
+  }
+
+  plugin=plugin {
+   message_filter.js
+   cursor.js
+   tabbox.js
+   splitter.js
+   wallpaper.js
+   titlebar.js
+
+   copy.js
+   paste.js
+   step.js
+   move.js
+   fontsize.js
+   resizable.js
+
+   color.js
+   localize.js
+   moduleview.js
+   console.js
+   settings.js
+   shortcut.js
+
+   scrollbar.js
+   statusbar.js
+   selection.js
+
+   dragresize.js
+   dragcopy.js
+   dragpaste.js
+   draggable.js
+   mouse.js
+   bell.js
+
+   contextmenu.js
+   encodings.js
+   kill.js
+
+   error_indicator.js
+
+   ime.js
+   w3m.js
+
+   incomplete {
+    minimize.js
+    search.js
+    stylemanager.js
+    font.js
+   }
+
+   notimpl {
+    test.js
+    eventviewer.js
+    messagemonitor.js
+    fullscreen.js
+    key.js
+    panelmanager.js
+    sequence.js
+    commandline.js
+    overlay.js
+   }
+  }
+  locale=locale {
+   ja_JP.js
+  }
+  config {
+   key.conf
+   color.conf
+  }
+  tool {
+   .coterminal.js
+   licence.pl
+   EastAsianWidthDetectorGenerator.pl
+   corun.js
+   ~/coterminal-native.log
+   ~/coterminal-js.log
+  }
+  mappings=mappings {
+   cp932.txt.js
+  }
+ }
+ =defaults/preferences {
+  terminal-settings.js
+ }
+}
+

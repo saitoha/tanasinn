@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<box id="main-window" 
+    title="coterminal" 
+    xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+    >
+    <!--
+    style="background-color: transparent; -moz-appearlance: none;" 
+    drawinitlebar="true"
+    lightweightthemes="true"
+    disablefastfind="true"
+    windowtype="chrome,titlebar"
+    -->
+    <!--titlebar flex="1" 
+    accelerated="true"
+        style="background: rgba(30, 30, 30, 0.9);
+               -moz-border-radius: 10px;
+               -moz-box-shadow: 0 1px 8px rgba(0, 0, 0, 0.8);
+               margin: 8px 12px 16px;" /--> 
+    <script type="application/x-javascript" src="resource://coterminal/initialize.js"/>
+    <script type="application/x-javascript">
+    <![CDATA[
+    /*
+      Components.classes['@zuse.jp/coterminal/process;1']
+        .getService(Components.interfaces.nsISupports)
+        .wrappedJSObject
+        .start(
+          document.getElementById("coterminal-container"),  // parent
+          null,  // command
+          null,  // TERM environment
+          null,  // size 
+          ["modules/core", 
+           "modules/standard", 
+           "modules/plugin"]);
+        */
+      Components.classes['@zuse.jp/coterminal/process;1']
+        .getService(Components.interfaces.nsISupports)
+        .wrappedJSObject
+        .start(
+          document.getElementById("main-window"),
+          null, 
+          null, 
+          null, 
+          ["modules/core", 
+           "modules/standard", 
+           "modules/plugin"]);
+    ]]>
+    </script>
+</box>
+
+

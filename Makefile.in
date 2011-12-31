@@ -1,0 +1,101 @@
+
+MODULENAME=@PACKAGE_NAME@
+ID=@PACKAGE_BUGREPORT@
+XPI=$(ID).xpi
+JS=@COTERMINAL_JS_PATH@ 
+ZIP=zip
+
+MSTART="$$(tput setaf 2)====================\>$$(tput setaf 6)"
+MEND="$$(tput sgr0)"
+ESTART="$$(tput bold; tput setaf 1)"
+EEND="$$(tput sgr0; tput setaf 6)"
+
+all: $(XPI)
+
+Makefile: Makefile.in configure
+	@echo "$(MSTART) Regenerating Makefile....$(MEND)" 
+	./configure
+	@echo "$(MSTART) Done.$(MEND)" 
+
+configure: configure.ac acgecko.m4 acplatform.m4
+	@echo "$(MSTART) Regenerating configure file....$(MEND)" 
+	autoconf
+	@echo "$(MSTART) Done.$(MEND)" 
+
+modules/config.js: modules/config.js.in configure
+	./configure
+
+chrome.manifest: chrome.manifest.in configure
+	./configure
+
+install.rdf: install.rdf.in configure
+	./configure
+
+content-build:
+	$(MAKE) -C chrome/content
+
+modules-build:
+	$(MAKE) -C modules
+
+.PHONY: modules-build content-build lint
+
+$(XPI): lint chrome.manifest install.rdf
+	@echo "$(MSTART) Make xpi package....$(MEND)" 
+	$(RM) $@
+	$(ZIP) $@ install.rdf \
+		bootstrap.js \
+		modules/*.{js,jsm,py,conf} \
+		modules/images/*.{jpg,png} \
+		modules/common/*.js \
+		modules/locale/*.js \
+		modules/core/*.js \
+		modules/standard/*.js \
+		modules/autoload/*.js \
+		modules/plugin/*.js \
+		| sed -e "s/\(adding:\) \([^(]*\)(deflated \([0-9]*%\)/`tput setaf 5`\\1 `tput setaf 3`\\2`tput sgr0` (deflated `tput setaf 6`\\3`tput sgr0`/g"
+	@echo "$(MSTART) Done.$(MEND)\n" 
+
+
+lint: 
+	@echo "$(MSTART) Ckecking JavaScript syntax error....$(MEND)" 
+	# Check syntax errors.
+	@for file in $$(find $$(PWD) | egrep "\.js$$|\.jsm$$"); do \
+		for version in 185; do \
+			if [ @host_os@ = cygwin ]; then file=$$(cygpath -wa $$file); fi; \
+			cd $$(dirname $(JS)) && $(JS) -C -v $$version -o strict -o werror -f $$file || exit; \
+		done; \
+	done;
+	@echo "$(MSTART) Done.$(MEND)\n" 
+
+clean:
+	@echo "$(MSTART) Cleaning $(ESTART)$(CD)$(EEND)....$(MEND)" 
+	$(RM) $(XPI)
+	@echo "$(MSTART) Done.$(MEND)\n" 
+	$(MAKE) -C modules $@
+
+maintainer-clean: clean
+	@echo "$(MSTART) Cleaning configuration info....$(MEND)"
+	$(RM) $(RM) Makefile chrome.manifest install.rdf config.status
+	@echo "$(MSTART) Done.$(MEND)\n"
+	$(MAKE) -C modules $@
+
+dev:
+	ln -f tools/gitignore .gitignore	
+	ln -f tools/vimprojects .vimprojects
+
+install-vimperator:
+	ln -f $(PWD)/modules/corun.js ~/.vimperator/plugin/
+
+uninstall-vimperator:
+	rm ~/.vimperator/plugin/corun.js
+
+install-extension:
+	ln -s $(PWD) ~/Library/Application\ Support/Firefox/Profiles/*/extensions/$(ID)
+
+uninstall-extension:
+	rm ~/Library/Application\ Support/Firefox/Profiles/*/extensions/$(ID)
+
+run-xulapp:
+	#open /Applications/Firefox.app -n --args --app $(PWD)/application.ini
+	open /Applications/Aurora.app -n --args --app $(PWD)/application.ini
+	#cygstart firefox --app application.ini
