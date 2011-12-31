@@ -8,14 +8,13 @@
     <em:version>0.1</em:version>
     <em:creator>kefir_</em:creator>
     <em:description>Terminal Emurator Addon for Firefox</em:description>
-    <em:optionsURL>chrome://coterminal/content/preference.xul</em:optionsURL>
     <em:unpack>true</em:unpack>
     <em:bootstrap>true</em:bootstrap>
     <em:targetApplication>
       <Description>
         <!-- Firefox -->
         <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id> 
-        <em:minVersion>4.0</em:minVersion>
+        <em:minVersion>8.0</em:minVersion>
         <em:maxVersion>12.0.*</em:maxVersion>
       </Description>
       <Description>
@@ -25,9 +24,9 @@
         <em:maxVersion>1.0</em:maxVersion>
       </Description>
     </em:targetApplication>
-    <em:targetPlatform>WINNT_x86-msvc</em:targetPlatform>
+    <!--em:targetPlatform>WINNT_x86-msvc</em:targetPlatform-->
     <em:targetPlatform>Darwin_x86_64-gcc3</em:targetPlatform>
-    <em:targetPlatform>Linux_x86_64-gcc3</em:targetPlatform>
+    <!--em:targetPlatform>Linux_x86_64-gcc3</em:targetPlatform-->
   </Description>
 </RDF>
 

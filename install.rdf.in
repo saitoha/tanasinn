@@ -5,7 +5,7 @@
     <em:id>@COTERMINAL_XPI_ID@</em:id>
     <em:type>2</em:type>
     <em:name>@COTERMINAL_DISPLAY_NAME@</em:name>
-    <em:version>0.1</em:version>
+    <em:version>@PACKAGE_VERSION@</em:version>
     <em:creator>kefir_</em:creator>
     <em:description>Terminal Emurator Addon for Firefox</em:description>
     <em:optionsURL>chrome://@COTERMINAL_PACKAGE_NAME@/content/preference.xul</em:optionsURL>

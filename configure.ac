@@ -2,24 +2,23 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.61)
-AC_INIT([coterminal],[0.1],[coterminal@zuse.jp])
+AC_INIT([coterminal],[0.1],[user@zuse.jp])
 
 AC_CANONICAL_TARGET
-# zip to pakcage win32 installer
 
 #
 ## Checks for programs.
 #AC_PROG_CXX
 #AC_PROG_CC
 #AC_PROG_CPP
-#
-#AC_CHECK_PROG(PERL, perl, perl) 
-#[[ -z "${PERL}" ]] && AC_MSG_ERROR(perl was not found.)
-#
-#AC_CHECK_PROG(ZIP, zip, zip) 
-#[[ -z "${ZIP}" ]] && AC_MSG_ERROR(zip was not found.)
-#
-#
+
+AC_CHECK_PROG(PERL, perl, perl) 
+[[ -z "${PERL}" ]] && AC_MSG_ERROR(perl was not found.)
+
+AC_CHECK_PROG(ZIP, zip, zip) 
+[[ -z "${ZIP}" ]] && AC_MSG_ERROR(zip was not found.)
+
+
 ## Checks for libraries.
 #
 ## Checks for header files.

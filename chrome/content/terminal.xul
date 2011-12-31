@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<overlay id="terminal-overlay"
-    xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"> 
-    <script type="application/x-javascript" src="resource://coterminal/initialize.js"/>
-</overlay>
-
-
