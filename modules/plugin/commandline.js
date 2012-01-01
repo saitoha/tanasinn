@@ -678,6 +678,7 @@ Commandline.definition = {
           {
             tagName: "label",
             id: "coterminal_statusbar",
+            flex: 1,
             style: { margin: "0px", },
             hidden: true,
           },
