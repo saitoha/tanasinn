@@ -80,17 +80,20 @@ maintainer-clean: clean
 	$(MAKE) -C modules $@
 
 dev:
-	ln -f tools/gitignore .gitignore	
-	ln -f tools/vimprojects .vimprojects
+	ln -f $(PWD)/tools/gitignore .gitignore	
+	ln -f $(PWD)/tools/vimprojects .vimprojects
 
 install-vimperator:
-	ln -f $(PWD)/modules/corun.js ~/.vimperator/plugin/
+	ln -sf $(PWD)/modules/corun.js ~/.vimperator/plugin/
 
 uninstall-vimperator:
 	rm ~/.vimperator/plugin/corun.js
 
 install-extension:
-	ln -s $(PWD) ~/Library/Application\ Support/Firefox/Profiles/*/extensions/$(ID)
+	for PROFILE in $$(ls ~/Library/Application\ Support/Firefox/Profiles);  \
+	do \
+		ln -sf $(PWD) ~/Library/Application\ Support/Firefox/Profiles/$$PROFILE/extensions/$(ID); \
+	done;
 
 uninstall-extension:
 	rm ~/Library/Application\ Support/Firefox/Profiles/*/extensions/$(ID)

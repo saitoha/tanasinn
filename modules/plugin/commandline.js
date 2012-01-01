@@ -676,10 +676,10 @@ Commandline.definition = {
             newlines: "replacewithspaces",
           },
           {
-            tagName: "label",
+            tagName: "textbox",
+            className: "plain",
+            readonly: "true",
             id: "coterminal_statusbar",
-            flex: 1,
-            style: { margin: "0px", },
             hidden: true,
           },
           {
