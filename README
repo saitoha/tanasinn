@@ -1,0 +1,46 @@
+
+"coterminal" is a Firefox browser extension that shows a terminal emurator 
+interface and enables you to access flexible, powerful functionality 
+provided by your operating system, such as commandline shells, curses-based 
+applications.
+
+- Requirements
+
+    This software runs on 
+     - Firefox.
+     - Python for Unix (Mac, Linux, or cygwin version)
+       Python for Win32, ActivePython, etc... are not well.
+       because this software depends on many posix functions 
+       'os.fork', 'os.openpty' ..etc.
+     - Posix enviroinment. 
+       If you are running Windows, you need to install cygwin at C:\cygwin.
+
+    Probably, it requires Firefox version 4.0+ and Python 2.5+.
+    About environment condition
+
+- Installing as Vimperator plugin:
+
+    [Mac, Linux]
+    
+        Makes symbolic link of modules/corun.js into Vimperator's 
+        plugin directory as following:
+    
+          > ln -s $PWD/modules/corun.js $RUNTIME/plugin/ 
+        
+        $RUNTIME is Vimperator's runtime directory such as 
+        '$HOME/.vimperator'.
+    
+    [Windows]
+    
+        Comming soon.
+
+- Building Firefox extension:
+
+    [Mac, Linux, Cygwin]
+
+        > ./configure
+        > make
+
+        If build process was succeeded, target XPI file 
+        "coterminal@zuse.jp.xpi" is to be generated. enjoy it!
+

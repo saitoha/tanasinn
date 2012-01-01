@@ -26,7 +26,7 @@ void function coterminal_initialize(window, parent, install_path)
 {
   with (window) {
     //    <box id="coterminal-window" 
-    //        style="position: fixed; top: 50px; left: 50px;">
+    //        style="position: fixed; top: 20px; left: 0px;">
     //    </box>
     try {
       let box = document.createElement("box");

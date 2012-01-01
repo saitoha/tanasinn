@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.61)
-AC_INIT([coterminal],[0.1],[user@zuse.jp])
+AC_INIT([coterminal],[0.1],[coterminal@zuse.jp])
 
 AC_CANONICAL_TARGET
 

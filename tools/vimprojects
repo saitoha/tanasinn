@@ -15,7 +15,6 @@
  content=chrome/content {
    .
    Makefile
-   terminal.xul
    terminal-app.xul
  }
  modules=modules {
