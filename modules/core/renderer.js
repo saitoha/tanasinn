@@ -268,11 +268,10 @@ Renderer.definition = {
     let line_height = this.line_height;
     let char_width = this.char_width;
     let text_offset = this._text_offset;
-    for (let { text, row, column, attr } in screen.getDirtyWords()) {
+    for (let { text, row, column, end, attr } in screen.getDirtyWords()) {
       let left = char_width * column;
       let top = line_height * row;
-      let length = text.length;
-      let width = char_width * length;
+      let width = char_width * (end - column);
       let height = line_height | 0;
       this._drawBackground(context, left, top, width, height, attr.bg);
       this._drawWord(context, text, left, top + text_offset, width, height, attr);

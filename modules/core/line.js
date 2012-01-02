@@ -552,9 +552,14 @@ Line.definition = {
           if (attr.equals(cell)) {
             continue;
           } else {
-            let codes = cells.slice(start, current).map(function(cell) cell.c);
+            let codes = cells
+              .slice(start, current)
+              .filter(function(cell) cell.c)
+              .map(function(cell) cell.c)
+              ;
+
             let word = String.fromCharCode.apply(String, codes);
-            yield { text: word, column: start, attr: attr };
+            yield { text: word, column: start, end: current, attr: attr };
           } 
         }
         start = current;
@@ -563,9 +568,10 @@ Line.definition = {
       if (start < current) {
         let codes = cells
           .slice(start, current)
+          .filter(function(cell) cell.c)
           .map(function(cell) cell.c);
         let word = String.fromCharCode.apply(String, codes);
-        yield { text: word, column: start, attr: attr };
+        yield { text: word, column: start, end: current, attr: attr };
       }
       this.clearRange();
     }
