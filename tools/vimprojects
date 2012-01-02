@@ -14,13 +14,11 @@
  bootstrap.js
  content=chrome/content {
    .
-   Makefile
-   terminal-app.xul
+   app.xul
  }
  modules=modules {
   .
   Makefile
-  initialize.js
   common=common {
    process.js
    config.js.in
@@ -29,11 +27,9 @@
    gettext.js
    eastasian.js
    event.js
-   constant.js
    base.js
   }
   autoload=autoload {
-   vimp.js
    appmenu.js
   }
   core=core {
@@ -67,8 +63,6 @@
   }
 
   ttydriver.py
-  ctypes=ctypes {
-  }
 
   plugin=plugin {
    message_filter.js
@@ -106,8 +100,6 @@
    contextmenu.js
    encodings.js
    kill.js
-
-   error_indicator.js
 
    ime.js
    w3m.js
@@ -152,7 +144,7 @@
   }
  }
  =defaults/preferences {
-  terminal-settings.js
+  prefs.js
  }
 }
 

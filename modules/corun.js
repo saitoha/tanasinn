@@ -84,7 +84,7 @@ mappings.addUserMap([modes.NORMAL], [">"],
      let process = getCoterminalProcess();
      window.setTimeout(function() {
        process.start(
-         document.getElementById("coterminal-container"), 
+         document.documentElement,
          null, // command 
          null, // TERM evnironment
          null, // size
@@ -110,9 +110,8 @@ mappings.add(modes.getCharModes("i"),
     with (scope) {
       let path = "$TmpD/" + Date.now();
       coUtils.IO.writeToFile(path, textbox.value, function callback() {
-        let container = document.getElementById("coterminal-container");
         process.start(
-            container,
+            document.documentElement,
             "vim " + coUtils.File.getFileLeafFromAbstractPath(path).path, 
             null, // TERM environment
             null, // size

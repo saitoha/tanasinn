@@ -65,6 +65,10 @@ let loader = {
     //                .getService(Components.interfaces.nsIPromptService);
     //prompts.alert(null, "null", "null");
     Services.scriptloader.loadSubScript(this.file, {window: window});
+    Components.classes['@zuse.jp/coterminal/process;1']
+      .getService(Components.interfaces.nsISupports)
+      .wrappedJSObject
+      .notify("event/new-window-detected", window);
   },
 
   // Handles opening new navigator window.
@@ -91,8 +95,15 @@ function startup(data, reason)
 {
   AddonManager.getAddonByID(data.id, function(addon) 
   {
-    let file = addon.getResourceURI("modules/initialize.js").spec;
-    loader.initializeWithFileURI(file);
+    try {
+      let process_file = addon.getResourceURI("modules/common/process.js").spec;
+      let initialize_file = addon.getResourceURI("modules/initialize.js").spec;
+      Services.scriptloader.loadSubScript(process_file);
+      loader.initializeWithFileURI(initialize_file);
+    } catch(e) {
+      let message = <>{e.fileName}({e.lineNumber}):{e.toString()}</>.toString();
+      Components.reportError(message);
+    }
   });
   return true;
 }

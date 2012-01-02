@@ -17,33 +17,33 @@
                -moz-border-radius: 10px;
                -moz-box-shadow: 0 1px 8px rgba(0, 0, 0, 0.8);
                margin: 8px 12px 16px;" /--> 
-    <script type="application/x-javascript" src="resource://coterminal/initialize.js"/>
     <script type="application/x-javascript">
     <![CDATA[
-    /*
-      Components.classes['@zuse.jp/coterminal/process;1']
-        .getService(Components.interfaces.nsISupports)
-        .wrappedJSObject
-        .start(
-          document.getElementById("coterminal-container"),  // parent
-          null,  // command
-          null,  // TERM environment
-          null,  // size 
-          ["modules/core", 
-           "modules/standard", 
-           "modules/plugin"]);
-        */
-      Components.classes['@zuse.jp/coterminal/process;1']
-        .getService(Components.interfaces.nsISupports)
-        .wrappedJSObject
-        .start(
-          document.getElementById("main-window"),
-          null, 
-          null, 
-          null, 
-          ["modules/core", 
-           "modules/standard", 
-           "modules/plugin"]);
+      try {
+        let file = [
+          Components.stack.filename.split(" -> ").pop().split("?").shift(),
+          "/../common/process.js?" + new Date().getTime()
+        ].join("");
+        Components
+          .classes["@mozilla.org/moz/jssubscript-loader;1"]
+          .getService(Components.interfaces.mozIJSSubScriptLoader)
+          .loadSubScript(file);
+        Components.classes['@zuse.jp/coterminal/process;1']
+          .getService(Components.interfaces.nsISupports)
+          .wrappedJSObject
+          .start(
+            document.documentElement,
+            null, 
+            null, 
+            null, 
+            ["modules/core", 
+             "modules/standard", 
+             "modules/plugin"]);
+      } catch(e) {
+        let message = <>{e.fileName}({e.lineNumber}):{e.toString()}</>.toString();
+        Components.reportError(message);
+        //window.setTimeout(function() alert(message), 1000);
+      }
     ]]>
     </script>
 </box>

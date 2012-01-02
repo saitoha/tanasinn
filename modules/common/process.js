@@ -29,16 +29,16 @@ let subscript_loader = Components
 
 function loadScript(relational_path) 
 {
-  let uri = Components
-    .stack.filename.split(" -> ").pop()
-    .split("?").shift() + "/../" + relational_path + "?" + new Date().getTime();
-  subscript_loader.loadSubScript(uri, scope);
+  subscript_loader.loadSubScript(<>{
+    Components
+      .stack.filename.split(" -> ").pop()
+      .split("?").shift()
+  }/../{relational_path}?{new Date().getTime()}</>.toString(), scope);
 }
 loadScript("config.js", scope);
 loadScript("common.js", scope);
 loadScript("base.js", scope);
 loadScript("event.js", scope);
-loadScript("constant.js", scope);
 loadScript("eastasian.js", scope);
 
 with (scope) {
@@ -149,6 +149,7 @@ with (scope) {
           coUtils.Debug.reportError(e);
         }
       }
+      this.load(this.autoload_path);
     },
   
     /** Creates a session object and starts it. 
