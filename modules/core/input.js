@@ -297,11 +297,13 @@ InputManager.definition = {
         || String.fromCharCode(packed_code & 0xfffff);
       session.notify("event/before-input", message);
 
+      /*
       session.notify(
         "command/report-status-message", 
         String.fromCharCode(packed_code & 0xffff) + " " +
         <>shift: {event.shiftKey}, ctrl: {event.ctrlKey}, alt: {event.altKey}, meta: {event.metaKey}</>
         + " -> " + message);
+      */
       this._processInputSequence(message);
       event.preventDefault();
     }
