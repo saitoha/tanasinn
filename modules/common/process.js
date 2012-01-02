@@ -120,7 +120,7 @@ with (scope) {
     command: null,
     term: null,
     //default_command: "login -pf $USER",
-    default_command: "/bin/zsh",
+    default_command: "/bin/bash --login",
     default_term: "xterm",
     runtime_path: "$Home/.coterminal",
     search_path: null,
@@ -155,7 +155,6 @@ with (scope) {
      */
     start: function start(parent, command, term, size, search_path, callback) 
     {
-      command = "/bin/zsh --login";
       let document = parent.ownerDocument;
       let box = document.createElement("box");
       box.style.position = "fixed";
