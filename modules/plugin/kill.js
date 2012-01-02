@@ -37,11 +37,7 @@ Kill.definition = {
         <description>{
           _("Kill main process of current TTY session.")
         }</description>
-        <author mail="saitoha@zuse.jp" homepage="http://zuse.jp/">Hayaki Saito</author>
         <version>0.1</version>
-        <minVersion>1.0</minVersion>
-        <maxVersion>1.0</maxVersion>
-        <updateURL>http://zuse.jp/coterminal/update/plugins/vimp.js</updateURL>
     </plugin>,
 
   /** post-constructor */

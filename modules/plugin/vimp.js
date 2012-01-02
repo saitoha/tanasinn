@@ -38,15 +38,7 @@ Vimperator.definition = {
         <description>{
           _("Apply some fixes for vimperator-installed environment.")
         }</description>
-        <author 
-          mail="saitoha@zuse.jp" 
-          homepage="http://zuse.jp/">Hayaki Saito</author>
         <version>0.1</version>
-        <minVersion>1.0</minVersion>
-        <maxVersion>1.0</maxVersion>
-        <updateURL>{
-          "http://zuse.jp/coterminal/update/plugins/vimp.js"
-        }</updateURL>
     </module>,
 
   /** post-constructor */
@@ -96,6 +88,16 @@ Vimperator.definition = {
     if (!modules)
       return;
     modules.modes.isMenuShown = false;
+  },
+
+  /** Handles stop event. */
+  "[subscribe('@event/session-stopping'), enabled]":
+  function onSessionStopping() 
+  {
+    let modules = this._modules;
+    if (!modules)
+      return;
+    modules.events.onEscape();
   },
 
   /** get "liberator.modules" */

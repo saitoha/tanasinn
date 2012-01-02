@@ -38,11 +38,7 @@ FontSelector.definition = {
         <description>{
           _("Makes you to be able to select terminal font.")
         }</description>
-        <author mail="saitoha@zuse.jp" homepage="http://zuse.jp/">Hayaki Saito</author>
         <version>0.1</version>
-        <minVersion>1.0</minVersion>
-        <maxVersion>1.0</maxVersion>
-        <updateURL>http://zuse.jp/coterminal/update/plugins/vimp.js</updateURL>
     </plugin>,
 
   get template()

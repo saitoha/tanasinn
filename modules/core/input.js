@@ -185,6 +185,7 @@ InputManager.definition = {
     this.focus.enabled = true;
     this.blur.enabled = true;
     this.onkeypress.enabled = true;
+    this.onkeydown.enabled = true;
     this.oninput.enabled = true;
     this.enableInputManager.enabled = true;
     this.disableInputManager.enabled = true;
@@ -204,6 +205,7 @@ InputManager.definition = {
     this.focus.enabled = false;
     this.blur.enabled = false;
     this.onkeypress.enabled = false;
+    this.onkeydown.enabled = false;
     this.oninput.enabled = false;
     this.enableInputManager.enabled = false;
     this.disableInputManager.enabled = false;
@@ -275,6 +277,12 @@ InputManager.definition = {
     return this._textbox;
   },
 
+  "[listen('keydown', '#coterminal_default_input', true)]":
+  function onkeydown(event) 
+  { // nothrow
+    this._textbox.focus();
+  },
+  
   /** Keypress event handler. 
    *  @param {Event} event A event object.
    */

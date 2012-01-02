@@ -38,11 +38,7 @@ Copy.definition = {
         <description>{
           _("Makes it enable to copy selected text by context menu or pressing short cut key.")
         }</description>
-        <author mail="saitoha@zuse.jp" homepage="http://zuse.jp/">Hayaki Saito</author>
         <version>0.1</version>
-        <minVersion>1.0</minVersion>
-        <maxVersion>1.0</maxVersion>
-        <updateURL>http://zuse.jp/coterminal/update/plugins/vimp.js</updateURL>
     </CoterminalPlugin>,
 
   _screen: null,

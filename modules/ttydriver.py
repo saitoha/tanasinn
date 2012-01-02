@@ -134,13 +134,6 @@ import base64
 import select
 import uuid
 
-#if os.fork() <> 0:
-#    os.exit()
-#os.setsid()
-#
-#if os.fork() <> 0:
-#    os.exit()
-
 BUFFER_SIZE = 1024
 
 if not hasattr(os, "uname"):
@@ -199,7 +192,7 @@ class TeletypeDriver:
             os.close(self.master)
             self.io_socket.close()
             self.control_socket.close()
-            trace("Bye, from writing process.")
+            trace("exit from writing process.")
             os._exit(0)
         return pid
     
@@ -220,11 +213,11 @@ class TeletypeDriver:
                     break
                 self.io_socket.send(data)
                 #if len(data) < 1200:
-                time.sleep(0.001)
+                #time.sleep(0.001)
             os.close(self.master)
             self.io_socket.close()
             self.control_socket.close()
-            trace("Bye, from reading process.")
+            trace("exit from reading process.")
             os._exit(0)
         return pid
    
@@ -252,7 +245,7 @@ class TeletypeDriver:
             os.close(self.master)
             self.io_socket.close()
             self.control_socket.close()
-            trace("Bye, From control process.")
+            trace("exit from control process.")
             os._exit(0)
         return pid
 
@@ -272,8 +265,8 @@ class TeletypeDriver:
 
     def isalive(self):
         """Check whether pid exists in the current process table."""
-        if not os.isatty(self.master):
-            return False
+        #if not os.isatty(self.master):
+        #    return False
         try:
             os.kill(self.__app_process_pid, 0)
         except:# OSError, e:
@@ -472,6 +465,9 @@ if __name__ == "__main__":
             if not os.isatty(slave):
                 trace("closed.")
                 break
+            if not driver.isalive():
+                trace("closed.")
+                break
             else:
                 #os.write(master, "\x1a")
                 os.system("echo '%s,%s,%s,%s,%s' >> ~/.coterminal/sessions.txt" 
@@ -486,7 +482,7 @@ if __name__ == "__main__":
                 os.system("test -e ~/.coterminal/sessions.txt && sed -i -e '/^%s,/d' ~/.coterminal/sessions.txt" % request_id)
 
     except socket.error, e:
-        trace("oioioioio;")
+        trace("oioioioiooioioioioeee A! A!! A! --ioiiooio;")
     finally:
         os.close(master)
         os.close(slave)
