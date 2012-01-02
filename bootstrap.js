@@ -41,13 +41,13 @@ let loader = {
       // only run the "start" immediately if the browser is completely loaded
       let window = browser_windows.getNext();
       if ("complete" == window.document.readyState) {
-        this.loadStartupScript(window);
+        this.dispatchWindowEvent(window);
       } else {
         // Wait for the window to finish loading before running the callback
         // Listen for one load event before checking the window type
         window.addEventListener(
           "load", 
-          let (self = this) function() self.loadStartupScript(window), 
+          let (self = this) function() self.dispatchWindowEvent(window), 
           false);
       }
     } // while
@@ -59,12 +59,8 @@ let loader = {
     Services.ww.unregisterNotification(this);
   },
 
-  loadStartupScript: function loadStartupScript(window) 
+  dispatchWindowEvent: function dispatchWindowEvent(window) 
   {
-    //var prompts = Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
-    //                .getService(Components.interfaces.nsIPromptService);
-    //prompts.alert(null, "null", "null");
-    Services.scriptloader.loadSubScript(this.file, {window: window});
     Components.classes['@zuse.jp/coterminal/process;1']
       .getService(Components.interfaces.nsISupports)
       .wrappedJSObject
@@ -84,7 +80,7 @@ let loader = {
           let window_type = document.documentElement.getAttribute("windowtype");
           // ensure that "window" is a navigator window.
           if ("navigator:browser" == window_type)  
-            self.loadStartupScript(window);
+            self.dispatchWindowEvent(window);
         }, false);
     }
   },
