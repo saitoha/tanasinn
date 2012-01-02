@@ -453,10 +453,13 @@ ExternalDriver.definition = {
   function onLoad(session) 
   {
     let runtime_path;
-    if ("WINNT" == coUtils.Runtime.os) {
+    let os = coUtils.Runtime.os;
+    if ("WINNT" == os) {
       runtime_path = coUtils.Text.format("%s\\bin\\run.exe", this.cygwin_root);
-    } else {
+    } else if ("Darwin" == os) {
       runtime_path = "/usr/bin/pythonw";
+    } else /* Linux */ {
+      runtime_path = "/usr/bin/python";
     }
 
     // create new localfile object.

@@ -25,9 +25,10 @@
         <em:maxVersion>1.0</em:maxVersion>
       </Description>
     </em:targetApplication>
-    <em:targetPlatform>WINNT_x86-msvc</em:targetPlatform>
+    <!--em:targetPlatform>WINNT_x86-msvc</em:targetPlatform>
     <em:targetPlatform>Darwin_x86_64-gcc3</em:targetPlatform>
-    <em:targetPlatform>Linux_x86_64-gcc3</em:targetPlatform>
+    <em:targetPlatform>Linux_i386-gcc3</em:targetPlatform>
+    <em:targetPlatform>Linux_x86_64-gcc3</em:targetPlatform-->
   </Description>
 </RDF>
 

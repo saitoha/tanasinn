@@ -151,9 +151,11 @@ system = os.uname()
 def trace(message):
     #if system[0] == 'Darwin':
     #    os.system("say -v vict '%s'" % message)
+    if system[0] == 'Linux':
+        os.system("espeak '%s'" % message)
     os.system("echo '%s' >> ~/.coterminal/log/tty.log &" % message);
 
-#trace("")
+trace("start.")
 #trace("--- start ----")
 
 class TeletypeDriver:
@@ -337,7 +339,18 @@ class TeletypeDriver:
         self.io_socket.close()
         self.control_socket.close()
 
-        os.waitpid(control_process_pid, 0)
+        while True:
+            pid, status = os.wait()
+            if pid == control_process_pid:
+                break;
+            if pid == self.__app_process_pid:
+                try:
+                    os.kill(control_process_pid, signal.SIGKILL)
+                except:
+                    pass
+                break;
+
+        #os.waitpid(control_process_pid, 0)
         try:
             os.kill(writing_process_pid, signal.SIGKILL)
         except:
@@ -387,6 +400,7 @@ def fork_app_process(master, slave, command, term):
     if not pid:
         # slave side operations.
         # make this process session leader.
+        os.umask(0)
         os.setsid()
         # master handle is to be closed in slave's process branch.
         os.close(master)
@@ -394,18 +408,20 @@ def fork_app_process(master, slave, command, term):
         os.dup2(slave, sys.stdin.fileno())
         os.dup2(slave, sys.stdout.fileno())
         os.dup2(slave, sys.stderr.fileno())
+        os.close(slave)
         # set TERM environment.
-        os.environ["TERM"] = term
+        os.environ["TERM"] = "xterm"
         #os.environ["CYGWIN"] = "tty"
         shell = "/bin/sh"
         # execute specified command.
+        #command = "showkey -a"
         os.execlp(shell, "sh", "-c", "exec %s" % command)
 
     # slave handle is to be closed in master's process.
     #os.close(slave)
     return pid, ttyname
 
-if __name__ == '__main__':    
+if __name__ == "__main__":    
     if len(sys.argv) < 1:
         sys.exit("usage %s [connection_channel_port]" % sys.argv[0])
 
@@ -444,7 +460,12 @@ if __name__ == '__main__':
             io_socket.setsockopt(socket.SOL_TCP, socket.TCP_NODELAY, 1)
             io_socket.connect(('', io_port))
 
-            driver = TeletypeDriver(pid, ttyname, master, io_socket, control_connection)
+            driver = TeletypeDriver(
+                pid, 
+                ttyname, 
+                master, 
+                io_socket, 
+                control_connection)
             driver.drive_tty()
             #os.kill(pid, signal.SIGWINCH)
             

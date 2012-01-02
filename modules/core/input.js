@@ -24,11 +24,12 @@
 
 function getPackedKeycodeFromEvent(event) 
 {
-  if ("WINNT" == coUtils.Runtime.os) {
+  let os = coUtils.Runtime.os;
+  if ("WINNT" == os) {
     getPackedKeycodeFromEvent = function(event) 
     {
       let code = event.keyCode || event.which;
-      code = String.fromCharCode(code).toLowerCase().charCodeAt(0);
+      //code = String.fromCharCode(code).toLowerCase().charCodeAt(0);
       let packed_code = code 
         | !!event.ctrlKey   << coUtils.Keyboard.KEY_CTRL 
         | !!event.altKey    << coUtils.Keyboard.KEY_ALT 
@@ -38,7 +39,7 @@ function getPackedKeycodeFromEvent(event)
         ;
       return packed_code;
     }
-  } else {
+  } else if ("Darwin" == os) {
     getPackedKeycodeFromEvent = function(event) 
     {
       let code = event.keyCode || event.which;
@@ -50,7 +51,24 @@ function getPackedKeycodeFromEvent(event)
         | !event.isChar                   << coUtils.Keyboard.KEY_NOCHAR 
         | !!event.metaKey                 << coUtils.Keyboard.KEY_META
         ;
-      /*
+      return packed_code;
+    }
+  } else /* Linux */ {
+    getPackedKeycodeFromEvent = function(event) 
+    {
+      let code = event.keyCode || event.which;
+      //code = String.fromCharCode(code).toLowerCase().charCodeAt(0);
+      let packed_code = code 
+        | !!event.ctrlKey                 << coUtils.Keyboard.KEY_CTRL 
+        | !!event.altKey                  << coUtils.Keyboard.KEY_ALT 
+        | !!event.shiftKey                << coUtils.Keyboard.KEY_SHIFT 
+//        | !event.isChar                   << coUtils.Keyboard.KEY_NOCHAR 
+        | !!event.metaKey                 << coUtils.Keyboard.KEY_META
+        ;
+      return packed_code;
+    }
+  }
+     /* 
       coUtils.Debug.reportMessage(
         "code: %s, ctrl: %s, alt: %s, shift: %s, meta: %s",
         code,
@@ -60,9 +78,7 @@ function getPackedKeycodeFromEvent(event)
         event.meta
         );
         */
-      return packed_code;
-    }
-  }
+        
   return getPackedKeycodeFromEvent(event);
 };
 
@@ -100,7 +116,10 @@ function coCreateKeyMap()
         String.fromCharCode(code)
     ).charCodeAt(0);
     code = tokens.reduce(function(code, token) code | 0x1 << { 
-      ctrl: 21, alt: 22, shift: 23 
+      ctrl: coUtils.Keyboard.KEY_CTRL,// | coUtils.Keyboard.KEY_NOCHAR, 
+      alt: coUtils.Keyboard.KEY_ALT, 
+      shift: coUtils.Keyboard.KEY_SHIFT, 
+      meta: coUtils.Keyboard.KEY_META,// | coUtils.Keyboard.KEY_NOCHAR, 
     } [token.toLowerCase()], code);
     map[code] = value
      .replace(/\\x([0-9a-fA-F]{1,2})/g, function() 
@@ -270,12 +289,19 @@ InputManager.definition = {
     };
     let session = this._broker;
     session.notify("key-pressed/" + packed_code, info);
+
     if (info.handled) {
       event.preventDefault();
     } else {
       let message = this._key_map[packed_code] 
         || String.fromCharCode(packed_code & 0xfffff);
       session.notify("event/before-input", message);
+
+      session.notify(
+        "command/report-status-message", 
+        String.fromCharCode(packed_code & 0xffff) + " " +
+        <>shift: {event.shiftKey}, ctrl: {event.ctrlKey}, alt: {event.altKey}, meta: {event.metaKey}</>
+        + " -> " + message);
       this._processInputSequence(message);
       event.preventDefault();
     }

@@ -399,8 +399,7 @@ coUtils.File = new function() {
       target_leaf.initWithPath(path);
     } else { // relative path
       let file_name = [
-        Components.stack.filename.split(" -> ").pop().split("?").shift(),
-        "/../../.."
+        Components.stack.filename.split(" -> ").pop().split("?").shift()
       ].join("");
       if (file_name.match(/^resource:/)) {
         target_leaf = this.getSpecialDirectoryName("CurProcD");
@@ -410,7 +409,8 @@ coUtils.File = new function() {
           .getService(Components.interfaces.nsIIOService)
           .getProtocolHandler("file")
           .QueryInterface(Components.interfaces.nsIFileProtocolHandler)
-          .getFileFromURLSpec(file_name);
+          .getFileFromURLSpec(file_name)
+          .parent.parent.parent;
       }
       target_leaf.normalize();
       target_leaf.append(root_entry);

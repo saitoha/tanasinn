@@ -59,11 +59,16 @@ $(XPI): lint chrome.manifest install.rdf
 lint: 
 	@echo "$(MSTART) Ckecking JavaScript syntax error....$(MEND)" 
 	# Check syntax errors.
-	@for file in $$(find $$(PWD) | egrep "\.js$$|\.jsm$$"); do \
-		for version in 185; do \
-			if [ @host_os@ = cygwin ]; then file=$$(cygpath -wa $$file); fi; \
-			cd $$(dirname $(JS)) && $(JS) -C -v $$version -o strict -o werror -f $$file || exit; \
-		done; \
+	#@for file in $$(find $$(PWD) | egrep "\.js$$|\.jsm$$"); do \
+	#	for version in 185; do \
+	#		if [ @host_os@ = cygwin ]; then file=$$(cygpath -wa $$file); fi; \
+	#		cd $$(dirname $(JS)) && $(JS) -C -v $$version -o strict -o werror -f $$file || exit; \
+	#	done; \
+	#done;
+	#new js shell
+	@for file in $$(find $$PWD | egrep "\.js$$|\.jsm$$"); do \
+		if [ @host_os@ = cygwin ]; then file=$$(cygpath -wa $$file); fi; \
+		echo "var a = function(){" | cat - $$file | sed -e '$$a\}' | $(JS) -f - || exit; \
 	done;
 	@echo "$(MSTART) Done.$(MEND)\n" 
 

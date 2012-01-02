@@ -119,6 +119,12 @@ AC_DEFUN([AC_COTERMINAL_PLATFORM],
      COTERMINAL_LINK="link"
      COTERMINAL_PLATFORM=win-$COTERMINAL_ARCH
      ;;
+ linux*)
+     COTERMINAL_CC="gcc -march=$target_cpu"
+     COTERMINAL_CXX="g++ -march=$target_cpu"
+     COTERMINAL_LINK=$COTERMINAL_CC
+     COTERMINAL_PLATFORM=linux-$COTERMINAL_ARCH
+     ;;
  *)
      if [[ "$target_cpu" = "i386" ]];
      then
@@ -131,6 +137,7 @@ AC_DEFUN([AC_COTERMINAL_PLATFORM],
 #     COTERMINAL_CC="gcc -march=$target_cpu"
 #     COTERMINAL_CXX="g++ -march=$target_cpu"
      COTERMINAL_LINK=$COTERMINAL_CC
+     COTERMINAL_PLATFORM=$target_os-$COTERMINAL_ARCH
      ;;
  esac
 ])
