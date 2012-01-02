@@ -99,7 +99,7 @@ function Prototype(definition, base_class, interface_list)
   /** Parses decorated key and sets attributes. */
   function intercept(key) 
   {
-    let match = key.match(/^([\w-]+)$|^\[(.+)\]\s*(.*)\s*$/);
+    let match = key.match(/^([\w-@]+)$|^\[(.+)\]\s*(.*)\s*$/);
     if (!match) {
       throw coUtils.Debug.Exception(_("Ill-formed property name: '%s'."), key)
     }

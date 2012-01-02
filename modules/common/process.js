@@ -120,7 +120,10 @@ with (scope) {
     command: null,
     term: null,
     //default_command: "login -pf $USER",
-    default_command: "/bin/bash --login",
+    default_command: "login -pf $USER",
+    "default_command@Linux" : "/bin/bash --login",
+    "default_command@Darwin": "login -pf $USER",
+    "default_command@WINNT" : "login -pf $USER",
     default_term: "xterm",
     runtime_path: "$Home/.coterminal",
     search_path: null,
@@ -164,7 +167,9 @@ with (scope) {
       this._root_element = parent.appendChild(box);
       this._document = document; 
       this._window = document.defaultView; 
-      this.command = command || this.default_command;
+      this.command = command 
+        || this["default_command@" + coUtils.Runtime.os] 
+        || this.default_command;
       this.term = term || this.default_term;
       [this.width, this.height] 
         = size || [this.width, this.height];
