@@ -157,6 +157,19 @@ JsCommandParser.definition = {
     return "coterminal-javascript";
   },
 
+  evaluate: function evaluate(arguments_string)
+  {
+    let session = this._broker;
+    try {
+      let result = new Function(
+        "with (arguments[0]) { return (" + arguments_string + ");}"
+      ) (session.window);
+    } catch (e) {
+      session.notify("command/report-status-message", e);
+    }
+  },
+
+
 };
 
 let SetCommandParser = new Class().extends(CommandParserBase);
@@ -260,12 +273,12 @@ CommandsParser.definition = {
     let pattern = /^\s*(\w+)(\s*)/y;
     let match = pattern.exec(source);
     if (null === match) {
-      alert(null)
+      return (null)
     }
     let [, command_name, /* blank */] = match;
     let command = this._completion[command_name];
     if (!command) {
-      alert(null); // unknown command;
+      return (null); // unknown command;
     }
     let text = source.substr(pattern.lastIndex);
     return command.evaluate(text);
@@ -360,31 +373,56 @@ JsCompleter.definition = {
   function startSearch(search_string, search_param, previous_result, listener)
   {
     try{
+    let settled_position = search_param;
     let autocomplete_result = null; 
-    let pattern = /(\w*?)(?:(\.|\['*|\["*)(\w*))?$/;
+    let pattern = /(.*?)(?:(\.|\[['"]?)(\w*))?$/;
     let match = pattern.exec(search_string);
     if (match) {
       let [, settled, notation, current] = match;
       let context = this._window;
       if (notation) {
         try {
-          context = new Function("__", "with (__) { return (" + settled + ");}") (context);
+          context = new Function(
+            "with (arguments[0]) { return (" + settled + ");}"
+          ) (context);
         } catch (e) { 
           context = {};
         }
       } else {
         current = settled;
       }
-      let properties = [
-        {key: key} for (key in context)
-      ].filter(function(property) property.key.match(current));
+      current = current.toLowerCase();
+      let properties;
+      properties = [
+        {
+          key: key, 
+          is_number: /^[0-9]+$/.test(key),
+          is_identifier: /^[$_\w][_\w]*$/.test(key),
+        } for (key in context)
+      ].filter(function(property) {
+        if ("." == notation 
+            && property.is_number 
+            && !property.is_identifier) {
+          // Number of no-identifier property after dot notation. 
+          // etc. abc.13, (a.b).ab[a 
+          return false; 
+        }
+        return -1 != property.key.toLowerCase().indexOf(current);
+      });
       autocomplete_result = new AutoCompleteResult(
-        search_string, 
+        current, 
         Components.interfaces.nsIAutoCompleteResult.RESULT_SUCCESS, // search result
         0, // default index
         "", // erro description
         context && notation ? 
-          properties.map(function(property) settled + notation + property.key):
+          properties.map(function(property) {
+            if (/^\["?$/.test(notation) && !notation.is_number) {
+              return settled + <>["{property.key.replace('"', '\\"')}"]</>;
+            } else if ("[\'" == notation && !notation.is_number) {
+              return settled + <>['{property.key.replace("'", "\\'")}']</>;
+            }
+            return settled + notation + property.key;
+          }):
           properties.map(function(property) property.key),
         context ?
           properties.map(function(property) {
@@ -396,7 +434,7 @@ JsCompleter.definition = {
               } else if ("object" == type) {
                 return "[Object]";
               }
-              return <>[{type}]</> + String(value);
+              return String(value);
             } catch (e) {
               return "Error: " + e;
             }
@@ -404,7 +442,7 @@ JsCompleter.definition = {
           null);
     }
     listener.onSearchResult(this, autocomplete_result);
-    } catch(E) {alert(E)}
+    } catch(e) {alert("###" + e + " " + e.lineNumber)}
   },
 
   /*
@@ -565,11 +603,11 @@ CompletionView.definition = {
     this._completion_provider.complete(text);
   },
 
-  filter: function filter(text, listener) 
+  filter: function filter(text, settled_position, listener) 
   {
     let context = this._completion_provider.context;
     if (context) {
-      context.startSearch(text, "", this._result, {
+      context.startSearch(text, settled_position, this._result, {
         onSearchResult: let (self = this) function onSearchResult(search, result) 
         { 
           try {
@@ -863,12 +901,22 @@ Commandline.definition = {
           row.style.background = "";
           row.style.color = "";
         }
-        let label = row.appendChild(document.createElement("label"));
-        label.setAttribute("value", result.getValueAt(i));
-        label.setAttribute("crop", "end");
-        let comment = row.appendChild(document.createElement("label"));
-        comment.setAttribute("value", result.getCommentAt(i));
-        comment.setAttribute("crop", "end");
+
+        let completion_text = result.getValueAt(i);
+        let search_string = result.searchString.toLowerCase();
+        let match_position = completion_text.toLowerCase().indexOf(search_string);
+        if (-1 != match_position) {
+          let box = row.appendChild(document.createElement("hbox"));
+          box.style.margin = "0px";
+          box.appendChild(document.createTextNode(completion_text.substr(0, match_position)));
+          label = box.appendChild(document.createElement("label"));
+          label.setAttribute("value", completion_text.substr(match_position, search_string.length));
+          label.style.cssText = "margin: 0px; font-weight: bold; text-decoration: underline;";
+          box.appendChild(document.createTextNode(completion_text.substr(match_position + search_string.length)));
+          let comment = row.appendChild(document.createElement("label"));
+          comment.setAttribute("value", result.getCommentAt(i));
+          comment.setAttribute("crop", "end");
+        }
       }
       this.invalidate(result);
     }
@@ -914,12 +962,14 @@ Commandline.definition = {
     this._timer = coUtils.Timer.setTimeout(function() {
       delete this._timer;
       let current_text = this._textbox.value;
-      let point = current_text.lastIndexOf(" ") + 1;
+      let point = current_text.indexOf(" ") + 1;
       this._search_text = current_text.substr(point);
       this._settled_text = current_text.substr(0, point);
+      if (!this._search_text)
+        this._completed_text = "";
       this.view.complete(this._settled_text);
       this.view.select(-1);
-      this.view.filter(this._search_text, this);
+      this.view.filter(this._search_text, this._completed_text.length, this);
     }, 120, this);
   },
 
