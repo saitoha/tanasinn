@@ -52,7 +52,8 @@ Contextmenu.definition = {
         handler: function onpopuphidden(event) 
         {
           if (this.isEqualNode(event.target)) {
-            ui_manager.refocus();
+            let session = this._broker;
+            session.notify("command/focus");
             this.parentNode.removeChild(this);
           }
         },

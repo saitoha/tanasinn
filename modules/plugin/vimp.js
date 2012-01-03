@@ -94,10 +94,10 @@ Vimperator.definition = {
   "[subscribe('@event/session-stopping'), enabled]":
   function onSessionStopping() 
   {
-    let modules = this._modules;
-    if (!modules)
-      return;
-    modules.events.onEscape();
+    //let modules = this._modules;
+    //if (!modules)
+    //  return;
+    //modules.events.onEscape();
   },
 
   /** get "liberator.modules" */

@@ -4,7 +4,7 @@
   <Description about="urn:mozilla:install-manifest">
     <em:id>coterminal@zuse.jp</em:id>
     <em:type>2</em:type>
-    <em:name>coTerminal</em:name>
+    <em:name>@COTERMINAL_DISPLAY_NAME@</em:name>
     <em:version>0.1</em:version>
     <em:creator>kefir_</em:creator>
     <em:description>Terminal Emurator Addon for Firefox</em:description>
@@ -27,6 +27,7 @@
     </em:targetApplication>
     <em:targetPlatform>WINNT_x86-msvc</em:targetPlatform>
     <em:targetPlatform>Darwin_x86_64-gcc3</em:targetPlatform>
+    <em:targetPlatform>Linux_x86-gcc3</em:targetPlatform>
     <em:targetPlatform>Linux_x86_64-gcc3</em:targetPlatform>
   </Description>
 </RDF>

@@ -1,33 +1,13 @@
 <?xml version="1.0"?>
-<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
-<box id="main-window" 
-    title="coterminal" 
-    xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
-    >
-    <!--
-    style="background-color: transparent; -moz-appearlance: none;" 
-    drawinitlebar="true"
-    lightweightthemes="true"
-    disablefastfind="true"
-    windowtype="chrome,titlebar"
-    -->
-    <!--titlebar flex="1" 
-    accelerated="true"
-        style="background: rgba(30, 30, 30, 0.9);
-               -moz-border-radius: 10px;
-               -moz-box-shadow: 0 1px 8px rgba(0, 0, 0, 0.8);
-               margin: 8px 12px 16px;" /--> 
+<box title="coterminal" 
+    xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
     <script type="application/x-javascript">
     <![CDATA[
       try {
-        let file = [
-          Components.stack.filename.split(" -> ").pop().split("?").shift(),
-          "/../common/process.js?" + new Date().getTime()
-        ].join("");
         Components
           .classes["@mozilla.org/moz/jssubscript-loader;1"]
           .getService(Components.interfaces.mozIJSSubScriptLoader)
-          .loadSubScript(file);
+          .loadSubScript("resource://coterminal/common/process.js");
         Components.classes['@zuse.jp/coterminal/process;1']
           .getService(Components.interfaces.nsISupports)
           .wrappedJSObject

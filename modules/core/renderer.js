@@ -71,46 +71,6 @@ const CO_XTERM_256_COLOR_PROFILE = [
   /* 248-255 */ "#a8a8a8", "#b2b2b2", "#bcbcbc", "#c6c6c6", "#d0d0d0", "#dadada", "#e4e4e4", "#eeeeee"
 ]; // CO_XTERM_256_COLOR_PROFILE
 
-
-/**
- * @fn coGetColorMap
- * @brief Create [keycode -> sequence] map from the definition file
- */
-function coGetColorMap() 
-{
-  return let (colorConfiguration = coUtils.IO.readFromFile(CO_COLOR_DEFINITION))
-    colorConfiguration.split(/[\r\n]+/)                 // Recognizes [CR/LF] as line terminators.
-      .map(function(line) line.replace(/[\s\t]/g, ""))  // Remove blank characters.
-      .filter(function(line) line)                      // Skip empty lines.
-      .map(function(line) line.split(/\/\//).shift())   // "//" is comment.
-      .map(function(line) line.split(":"))              // Recognizes ":" as Key/Value separator.
-      .reduce(function(accumulator, line) 
-        let (key = line.shift()) 
-        let (value = line.shift())
-          [accumulator[key] = value, accumulator].pop(), {})
-}
-
-/**
- *  @class Palette
- *  @brief Provides [color No. -> hexadecimal formatted color (#xxxxxx)] map.
- */
-let Palette = new Class();
-Palette.definition = {
-
-  _color_map: coGetColorMap(), // get color mapping from file.
-
-  /** Constructor */
-  initialize: function initialize() 
-  {
-    let self = [];
-    let color_map = this._color_map;
-    [n for (n in color_map) if (n.match(/[0-9]+/))]
-      .forEach(function(n) self[n] = "#" + color_map[n]);
-    return self;
-  }
-
-}
-
 /** 
  * @class Renderer
  * @brief Scan screen state and render it to canvas element.

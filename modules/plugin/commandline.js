@@ -179,6 +179,12 @@ SetCommandParser.definition = {
       return null;
     }
   },
+
+  evaluate: function evaluate(arguments_string)
+  {
+    alert("set: " + arguments_string);
+  },
+
 };
 
 let GoCommandParser = new Class().extends(CommandParserBase);
@@ -190,9 +196,21 @@ GoCommandParser.definition = {
   get name()
     "g[o]",
 
-  complete: function parser(source)
+  complete: function command(source)
   {
     return "history";
+  },
+
+  evaluate: function evaluate(arguments_string)
+  {
+    let session = this._broker;
+    let content = session.window._content;
+    if (content) {
+      content.location.href = arguments_string;
+      session.notify("command/focus");
+      session.notify("command/blur");
+      session.notify("event/lost-focus");
+    }
   },
 };
 
@@ -222,7 +240,7 @@ CommandsParser.definition = {
   
   complete: function complete(source) 
   {
-    let pattern = /(\w+)(\s+)/y;
+    let pattern = /^\s*(\w+)(\s+)/y;
     let match = pattern.exec(source);
     if (null === match) {
       return "coterminal-commands";
@@ -234,6 +252,24 @@ CommandsParser.definition = {
     }
     let text = source.substr(pattern.lastIndex);
     return next_parser.complete(text);
+  },
+  
+  evaluate: function evaluate(source) 
+  {
+    try {
+    let pattern = /^\s*(\w+)(\s*)/y;
+    let match = pattern.exec(source);
+    if (null === match) {
+      alert(null)
+    }
+    let [, command_name, /* blank */] = match;
+    let command = this._completion[command_name];
+    if (!command) {
+      alert(null); // unknown command;
+    }
+    let text = source.substr(pattern.lastIndex);
+    return command.evaluate(text);
+    } catch (e) {alert(e)}
   },
 };
 
@@ -264,6 +300,7 @@ CommandCompletionProvider.definition = {
       this._search_components[name] = component;
     }, this);
     this._context_name = this.initial_search_context;
+    this.evaluate.enabled = true;
     let session = this._broker;
     session.notify(<>initialized/{this.id}</>, this);
   },
@@ -281,7 +318,13 @@ CommandCompletionProvider.definition = {
   complete: function complete(source) 
   {
     this._context_name = this._commands_parser.complete(source);
-  }
+  },
+
+  "[subscribe('command/eval-commandline')]":
+  function evaluate(source)
+  {
+    this._commands_parser.evaluate(source);
+  },
 
 };
 
@@ -684,7 +727,8 @@ Commandline.definition = {
           },
           {
             tagName: "panel",
-            style: { MozAppearance: "none", },
+            //style: { MozAppearance: "none", },
+            style: { MozUserFocus: "ignore", },
             noautofocus: true,
             height: 200,
             id: "coterminal_completion_popup",
@@ -724,6 +768,7 @@ Commandline.definition = {
     this.onclick.enabled = true;
     this.onchange.enabled = true;
     this.onselect.enabled = true;
+    this.onCommandIntroducer.enabled = true;
   },
   
   /** Uninstalls itself.
@@ -743,6 +788,7 @@ Commandline.definition = {
     this.onclick.enabled = false;
     this.onchange.enabled = false;
     this.onselect.enabled = false;
+    this.onCommandIntroducer.enabled = false;
     this._element.parentNode.removeChild(this._element);
   },
 
@@ -753,6 +799,16 @@ Commandline.definition = {
     this._textbox.hidden = true;
     this._completion.hidden = true;
     this._statusbar.value = message;
+  },
+
+  "[subscribe('introducer-pressed/double-ctrl')]":
+  function onCommandIntroducer() 
+  {
+    this._statusbar.hidden = true;
+    this._textbox.hidden = false;
+    this._completion.hidden = false;
+    this._textbox.focus();
+    this._textbox.focus();
   },
 
   /** Shows commandline interface. 
@@ -825,6 +881,8 @@ Commandline.definition = {
     } else if (this.view.rowCount > 0) {
       if ("closed" == this._popup.state || "hiding" == this._popup.state) {
         this._popup.openPopup(this._textbox, "after_start", 0, 0, true, true);
+        this._textbox.focus();
+        this._textbox.focus();
       }
       let index = Math.max(0, this.view.currentIndex);
       let completion_text = this.view.currentResult.getValueAt(index);
@@ -903,15 +961,21 @@ Commandline.definition = {
   function onkeypress(event) 
   {
     let code = event.keyCode || event.which;
-    if ("p".charCodeAt(0) == code && event.ctrlKey) { // ^p
+    if (event.ctrlKey) { // ^
       event.stopPropagation();
       event.preventDefault();
+    }
+    if ("p".charCodeAt(0) == code && event.ctrlKey) { // ^p
       code = 0x26;
     }
-    if ("n".charCodeAt(0) == code && event.ctrlKey) // ^n
+    if ("n".charCodeAt(0) == code && event.ctrlKey) { // ^n
       code = 0x28;
-    if ("j".charCodeAt(0) == code && event.ctrlKey) // ^j
+    }
+    if ("j".charCodeAt(0) == code && event.ctrlKey) { // ^j
       code = 0x0d;
+    }
+    if ("h".charCodeAt(0) == code && event.ctrlKey) { // ^h
+    }
     if (0x09 == code) { // tab
       event.stopPropagation();
       event.preventDefault();
@@ -933,16 +997,15 @@ Commandline.definition = {
   "[listen('select', '#coterminal_commandline', true)]":
   function onselect(event) 
   {
-    let index = this._tree.currentIndex; 
-    if (index > -1) {
-      let completed_text = this.view.currentResult.getValueAt(index);
-      this._textbox.value = this._settled_text + completed_text;
-    }
+    let session = this._broker;
+    session.notify("command/eval-commandline", this._textbox.value);
   },
 
-  "[listen('popupshown', '#coterminal_commandline', true)]":
+  "[listen('popupshown', '#coterminal_commandline', false)]":
   function onpopupshown(event) 
   {
+    this._textbox.focus();
+    this._textbox.focus();
   },
 
   "[listen('popupshowing', '#coterminal_commandline', true)]":

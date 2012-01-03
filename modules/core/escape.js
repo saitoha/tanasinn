@@ -61,7 +61,9 @@ KeypadMode.definition = {
   "[sequence('ESC >')]": function DECPNM() 
   {
     let session = this._broker;
-    session.notify("event/keypad-mode-changed", CO_KEYPAD_MODE_NORMAL);
+    session.notify(
+      "event/keypad-mode-changed", 
+      coUtils.Constant.KEYPAD_MODE_NORMAL);
   },
  
   /** application keypad (NumLock). 
@@ -86,7 +88,9 @@ KeypadMode.definition = {
   "[sequence('ESC =')]": function DECPAM() 
   {
     let session = this._broker;
-    session.notify("event/keypad-mode-changed", CO_KEYPAD_MODE_APPLICATION);
+    session.notify(
+      "event/keypad-mode-changed", 
+      coUtils.Constant.KEYPAD_MODE_APPLICATION);
   },
 
 };

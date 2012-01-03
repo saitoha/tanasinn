@@ -32,6 +32,8 @@ coUtils.Constant = {
   CHARSET_US : "B",
   CHARSET_PC : "?",
   CHARSET_DEC: "0",
+  KEYPAD_MODE_NORMAL: 0,
+  KEYPAD_MODE_APPLICATION: 1,
 };
 
 /**

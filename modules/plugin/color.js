@@ -77,7 +77,7 @@ ColorManager.definition = {
                 let session = this._broker;
                 coUtils.Timer.setTimeout(function() 
                 {
-                  session.notify("command/refocus");
+                  session.notify("command/focus");
                 }, 10, this)
               },
             },

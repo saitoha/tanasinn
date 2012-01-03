@@ -224,9 +224,7 @@ Chrome.definition = {
     this._element = coterminal_content;
     this.onGotFocus.enabled = true;
     this.onLostFocus.enabled = true;
-    this.refocus.enabled = true;
-    session.notify("command/focus");
-    coUtils.Timer.setTimeout(function() this.refocus(), 30, this);
+
     session.notify(<>initialized/{this.id}</>, this);
   },
 
@@ -284,20 +282,6 @@ Chrome.definition = {
     this.onmousedown.enabled = true;
     let session = this._broker;
     session.notify("command/set-opacity", this.inactive_opacity);
-  },
-
-  /** Reset focus. */
-  "[subscribe('command/refocus')]":
-  function refocus()
-  {
-    let session = this._broker;
-    session.notify("command/blur");
-    let window = this._element.ownerDocument.defaultView;
-    if (window.gBrowser && window._content) {
-      window.gBrowser.focus();
-      window._content.focus();
-    }
-    session.notify("command/focus");
   },
 
   "[listen('mousedown', '#coterminal_content')]":

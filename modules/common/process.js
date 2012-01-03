@@ -35,7 +35,6 @@ function loadScript(relational_path)
       .split("?").shift()
   }/../{relational_path}?{new Date().getTime()}</>.toString(), scope);
 }
-loadScript("config.js", scope);
 loadScript("common.js", scope);
 loadScript("base.js", scope);
 loadScript("event.js", scope);
@@ -161,10 +160,14 @@ with (scope) {
     {
       let document = parent.ownerDocument;
       let box = document.createElement("box");
-      box.style.position = "fixed";
-      box.style.top = "60px";
-      box.style.left = "0px";
-      this._root_element = parent.appendChild(box);
+      if ("Firefox" == coUtils.Runtime.app_name) {
+        box.style.position = "fixed";
+        box.style.top = "0px";
+        box.style.left = "0px";
+        this._root_element = parent.appendChild(box);
+      } else { // xul app
+        this._root_element = parent.appendChild(box);
+      }
       this._document = document; 
       this._window = document.defaultView; 
       this.command = command 
