@@ -427,7 +427,7 @@ if __name__ == "__main__":
     addr, control_port = control_socket.getsockname()
 
     connection_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    connection_socket.connect(('', connection_port))
+    connection_socket.connect(("127.0.0.1", connection_port))
 
     startup_info = connection_socket.recv(BUFFER_SIZE).split(" ");
     command, term = [ base64.b64decode(value) for value in startup_info]
@@ -450,8 +450,8 @@ if __name__ == "__main__":
         while True:
             # establish <I/O channel> socket connection. 
             io_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            io_socket.setsockopt(socket.SOL_TCP, socket.TCP_NODELAY, 1)
-            io_socket.connect(('', io_port))
+            #io_socket.setsockopt(socket.SOL_TCP, socket.TCP_NODELAY, 1)
+            io_socket.connect(("127.0.0.1", io_port))
 
             driver = TeletypeDriver(
                 pid, 

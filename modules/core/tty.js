@@ -455,13 +455,12 @@ ExternalDriver.definition = {
     let runtime_path;
     let os = coUtils.Runtime.os;
     if ("WINNT" == os) {
-      runtime_path = coUtils.Text.format("%s\\bin\\run.exe", this.cygwin_root);
+      runtime_path = String(<>{this.cygwin_root}\bin\run.exe</>);
     } else if ("Darwin" == os) {
       runtime_path = "/usr/bin/pythonw";
     } else /* Linux */ {
       runtime_path = "/usr/bin/python";
     }
-
     // create new localfile object.
     let runtime = Components
       .classes["@mozilla.org/file/local;1"]
@@ -537,22 +536,24 @@ ExternalDriver.definition = {
           script_absolute_path,
           connection_port)
       ];
+      this._external_process.runAsync(args, args.length, null, false);
     } else { // Darwin, Linux
       args = [ script_absolute_path, connection_port ];
+      this._external_process.runAsync(args, args.length, this, false);
     }
-    this._external_process.runAsync(args, args.length, this, false);
     coUtils.Debug.reportMessage(
       _("TTY Server started. arguments: [%s]."), args.join(", "));
   },
 
   observe: function observe()
   {
-    if (this.success)
+    if (this.success) {
       return;
+    }
     this.success = true;
     let session = this._broker;
-    session.stop();
     coUtils.Debug.reportError(_("Failed to start TTY. try it again."));
+    session.stop();
   },
 
   /** Kills handling process if it was alive. */
@@ -726,7 +727,7 @@ SocketTeletypeService.definition = {
     if (control_port) {
       this.connect(Number(control_port));
     } else {
-      alert("unknown" + which);
+      coUtils.Debug.reportError(_("Fail to connect to ttydriver."));
     }
   },
 
