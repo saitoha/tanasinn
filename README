@@ -16,7 +16,6 @@ applications.
        If you are running Windows, you need to install cygwin at C:\cygwin.
 
     Probably, it requires Firefox version 4.0+ and Python 2.5+.
-    About environment condition
 
 - Installing as Vimperator plugin:
 
@@ -43,4 +42,15 @@ applications.
 
         If build process was succeeded, target XPI file 
         "coterminal@zuse.jp.xpi" is to be generated. enjoy it!
+
+- Run as XUL Application (test version, it does not works well...):
+
+    [Mac]
+		open /Applications/Aurora.app --args --app $(PWD)/application.ini
+
+    [Linux]
+		firefox --app application.ini
+
+    [Cygwin]
+		cygstart firefox --app application.ini
 

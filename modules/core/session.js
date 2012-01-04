@@ -140,6 +140,7 @@ Session.definition = {
     process.notify("initialized/session", this);
     process.notify("command/load-settings", this);
     this.notify("event/session-started", this);
+    this.notify("command/focus");
     return this;
   },
 

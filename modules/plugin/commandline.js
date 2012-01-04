@@ -157,6 +157,19 @@ JsCommandParser.definition = {
     return "coterminal-javascript";
   },
 
+  evaluate: function evaluate(arguments_string)
+  {
+    let session = this._broker;
+    try {
+      let result = new Function(
+        "with (arguments[0]) { return (" + arguments_string + ");}"
+      ) (session.window);
+    } catch (e) {
+      session.notify("command/report-status-message", e);
+    }
+  },
+
+
 };
 
 let SetCommandParser = new Class().extends(CommandParserBase);
@@ -179,6 +192,12 @@ SetCommandParser.definition = {
       return null;
     }
   },
+
+  evaluate: function evaluate(arguments_string)
+  {
+    alert("set: " + arguments_string);
+  },
+
 };
 
 let GoCommandParser = new Class().extends(CommandParserBase);
@@ -190,9 +209,21 @@ GoCommandParser.definition = {
   get name()
     "g[o]",
 
-  complete: function parser(source)
+  complete: function command(source)
   {
     return "history";
+  },
+
+  evaluate: function evaluate(arguments_string)
+  {
+    let session = this._broker;
+    let content = session.window._content;
+    if (content) {
+      content.location.href = arguments_string;
+      session.notify("command/focus");
+      session.notify("command/blur");
+      session.notify("event/lost-focus");
+    }
   },
 };
 
@@ -222,7 +253,7 @@ CommandsParser.definition = {
   
   complete: function complete(source) 
   {
-    let pattern = /(\w+)(\s+)/y;
+    let pattern = /^\s*(\w+)(\s+)/y;
     let match = pattern.exec(source);
     if (null === match) {
       return "coterminal-commands";
@@ -234,6 +265,24 @@ CommandsParser.definition = {
     }
     let text = source.substr(pattern.lastIndex);
     return next_parser.complete(text);
+  },
+  
+  evaluate: function evaluate(source) 
+  {
+    try {
+    let pattern = /^\s*(\w+)(\s*)/y;
+    let match = pattern.exec(source);
+    if (null === match) {
+      return (null)
+    }
+    let [, command_name, /* blank */] = match;
+    let command = this._completion[command_name];
+    if (!command) {
+      return (null); // unknown command;
+    }
+    let text = source.substr(pattern.lastIndex);
+    return command.evaluate(text);
+    } catch (e) {alert(e)}
   },
 };
 
@@ -264,6 +313,7 @@ CommandCompletionProvider.definition = {
       this._search_components[name] = component;
     }, this);
     this._context_name = this.initial_search_context;
+    this.evaluate.enabled = true;
     let session = this._broker;
     session.notify(<>initialized/{this.id}</>, this);
   },
@@ -281,7 +331,13 @@ CommandCompletionProvider.definition = {
   complete: function complete(source) 
   {
     this._context_name = this._commands_parser.complete(source);
-  }
+  },
+
+  "[subscribe('command/eval-commandline')]":
+  function evaluate(source)
+  {
+    this._commands_parser.evaluate(source);
+  },
 
 };
 
@@ -317,31 +373,56 @@ JsCompleter.definition = {
   function startSearch(search_string, search_param, previous_result, listener)
   {
     try{
+    let settled_position = search_param;
     let autocomplete_result = null; 
-    let pattern = /(\w*?)(?:(\.|\['*|\["*)(\w*))?$/;
+    let pattern = /(.*?)(?:(\.|\[['"]?)(\w*))?$/;
     let match = pattern.exec(search_string);
     if (match) {
       let [, settled, notation, current] = match;
       let context = this._window;
       if (notation) {
         try {
-          context = new Function("__", "with (__) { return (" + settled + ");}") (context);
+          context = new Function(
+            "with (arguments[0]) { return (" + settled + ");}"
+          ) (context);
         } catch (e) { 
           context = {};
         }
       } else {
         current = settled;
       }
-      let properties = [
-        {key: key} for (key in context)
-      ].filter(function(property) property.key.match(current));
+      current = current.toLowerCase();
+      let properties;
+      properties = [
+        {
+          key: key, 
+          is_number: /^[0-9]+$/.test(key),
+          is_identifier: /^[$_\w][_\w]*$/.test(key),
+        } for (key in context)
+      ].filter(function(property) {
+        if ("." == notation 
+            && property.is_number 
+            && !property.is_identifier) {
+          // Number of no-identifier property after dot notation. 
+          // etc. abc.13, (a.b).ab[a 
+          return false; 
+        }
+        return -1 != property.key.toLowerCase().indexOf(current);
+      });
       autocomplete_result = new AutoCompleteResult(
-        search_string, 
+        current, 
         Components.interfaces.nsIAutoCompleteResult.RESULT_SUCCESS, // search result
         0, // default index
         "", // erro description
         context && notation ? 
-          properties.map(function(property) settled + notation + property.key):
+          properties.map(function(property) {
+            if (/^\["?$/.test(notation) && !notation.is_number) {
+              return settled + <>["{property.key.replace('"', '\\"')}"]</>;
+            } else if ("[\'" == notation && !notation.is_number) {
+              return settled + <>['{property.key.replace("'", "\\'")}']</>;
+            }
+            return settled + notation + property.key;
+          }):
           properties.map(function(property) property.key),
         context ?
           properties.map(function(property) {
@@ -353,7 +434,7 @@ JsCompleter.definition = {
               } else if ("object" == type) {
                 return "[Object]";
               }
-              return <>[{type}]</> + String(value);
+              return String(value);
             } catch (e) {
               return "Error: " + e;
             }
@@ -361,7 +442,7 @@ JsCompleter.definition = {
           null);
     }
     listener.onSearchResult(this, autocomplete_result);
-    } catch(E) {alert(E)}
+    } catch(e) {alert("###" + e + " " + e.lineNumber)}
   },
 
   /*
@@ -522,11 +603,11 @@ CompletionView.definition = {
     this._completion_provider.complete(text);
   },
 
-  filter: function filter(text, listener) 
+  filter: function filter(text, settled_position, listener) 
   {
     let context = this._completion_provider.context;
     if (context) {
-      context.startSearch(text, "", this._result, {
+      context.startSearch(text, settled_position, this._result, {
         onSearchResult: let (self = this) function onSearchResult(search, result) 
         { 
           try {
@@ -684,7 +765,8 @@ Commandline.definition = {
           },
           {
             tagName: "panel",
-            style: { MozAppearance: "none", },
+            //style: { MozAppearance: "none", },
+            style: { MozUserFocus: "ignore", },
             noautofocus: true,
             height: 200,
             id: "coterminal_completion_popup",
@@ -724,6 +806,7 @@ Commandline.definition = {
     this.onclick.enabled = true;
     this.onchange.enabled = true;
     this.onselect.enabled = true;
+    this.onCommandIntroducer.enabled = true;
   },
   
   /** Uninstalls itself.
@@ -743,6 +826,7 @@ Commandline.definition = {
     this.onclick.enabled = false;
     this.onchange.enabled = false;
     this.onselect.enabled = false;
+    this.onCommandIntroducer.enabled = false;
     this._element.parentNode.removeChild(this._element);
   },
 
@@ -753,6 +837,16 @@ Commandline.definition = {
     this._textbox.hidden = true;
     this._completion.hidden = true;
     this._statusbar.value = message;
+  },
+
+  "[subscribe('introducer-pressed/double-ctrl')]":
+  function onCommandIntroducer() 
+  {
+    this._statusbar.hidden = true;
+    this._textbox.hidden = false;
+    this._completion.hidden = false;
+    this._textbox.focus();
+    this._textbox.focus();
   },
 
   /** Shows commandline interface. 
@@ -807,12 +901,22 @@ Commandline.definition = {
           row.style.background = "";
           row.style.color = "";
         }
-        let label = row.appendChild(document.createElement("label"));
-        label.setAttribute("value", result.getValueAt(i));
-        label.setAttribute("crop", "end");
-        let comment = row.appendChild(document.createElement("label"));
-        comment.setAttribute("value", result.getCommentAt(i));
-        comment.setAttribute("crop", "end");
+
+        let completion_text = result.getValueAt(i);
+        let search_string = result.searchString.toLowerCase();
+        let match_position = completion_text.toLowerCase().indexOf(search_string);
+        if (-1 != match_position) {
+          let box = row.appendChild(document.createElement("hbox"));
+          box.style.margin = "0px";
+          box.appendChild(document.createTextNode(completion_text.substr(0, match_position)));
+          label = box.appendChild(document.createElement("label"));
+          label.setAttribute("value", completion_text.substr(match_position, search_string.length));
+          label.style.cssText = "margin: 0px; font-weight: bold; text-decoration: underline;";
+          box.appendChild(document.createTextNode(completion_text.substr(match_position + search_string.length)));
+          let comment = row.appendChild(document.createElement("label"));
+          comment.setAttribute("value", result.getCommentAt(i));
+          comment.setAttribute("crop", "end");
+        }
       }
       this.invalidate(result);
     }
@@ -825,6 +929,8 @@ Commandline.definition = {
     } else if (this.view.rowCount > 0) {
       if ("closed" == this._popup.state || "hiding" == this._popup.state) {
         this._popup.openPopup(this._textbox, "after_start", 0, 0, true, true);
+        this._textbox.focus();
+        this._textbox.focus();
       }
       let index = Math.max(0, this.view.currentIndex);
       let completion_text = this.view.currentResult.getValueAt(index);
@@ -856,12 +962,14 @@ Commandline.definition = {
     this._timer = coUtils.Timer.setTimeout(function() {
       delete this._timer;
       let current_text = this._textbox.value;
-      let point = current_text.lastIndexOf(" ") + 1;
+      let point = current_text.indexOf(" ") + 1;
       this._search_text = current_text.substr(point);
       this._settled_text = current_text.substr(0, point);
+      if (!this._search_text)
+        this._completed_text = "";
       this.view.complete(this._settled_text);
       this.view.select(-1);
-      this.view.filter(this._search_text, this);
+      this.view.filter(this._search_text, this._completed_text.length, this);
     }, 120, this);
   },
 
@@ -903,15 +1011,21 @@ Commandline.definition = {
   function onkeypress(event) 
   {
     let code = event.keyCode || event.which;
-    if ("p".charCodeAt(0) == code && event.ctrlKey) { // ^p
+    if (event.ctrlKey) { // ^
       event.stopPropagation();
       event.preventDefault();
+    }
+    if ("p".charCodeAt(0) == code && event.ctrlKey) { // ^p
       code = 0x26;
     }
-    if ("n".charCodeAt(0) == code && event.ctrlKey) // ^n
+    if ("n".charCodeAt(0) == code && event.ctrlKey) { // ^n
       code = 0x28;
-    if ("j".charCodeAt(0) == code && event.ctrlKey) // ^j
+    }
+    if ("j".charCodeAt(0) == code && event.ctrlKey) { // ^j
       code = 0x0d;
+    }
+    if ("h".charCodeAt(0) == code && event.ctrlKey) { // ^h
+    }
     if (0x09 == code) { // tab
       event.stopPropagation();
       event.preventDefault();
@@ -933,16 +1047,15 @@ Commandline.definition = {
   "[listen('select', '#coterminal_commandline', true)]":
   function onselect(event) 
   {
-    let index = this._tree.currentIndex; 
-    if (index > -1) {
-      let completed_text = this.view.currentResult.getValueAt(index);
-      this._textbox.value = this._settled_text + completed_text;
-    }
+    let session = this._broker;
+    session.notify("command/eval-commandline", this._textbox.value);
   },
 
-  "[listen('popupshown', '#coterminal_commandline', true)]":
+  "[listen('popupshown', '#coterminal_commandline', false)]":
   function onpopupshown(event) 
   {
+    this._textbox.focus();
+    this._textbox.focus();
   },
 
   "[listen('popupshowing', '#coterminal_commandline', true)]":

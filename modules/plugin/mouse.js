@@ -55,7 +55,7 @@ Mouse.definition = {
   _tracking_mode: null,
   _installed: false,
 
-  _keypad_mode: CO_KEYPAD_MODE_NORMAL,
+  _keypad_mode: coUtils.Constant.KEYPAD_MODE_NORMAL,
   _in_scroll_session: false,
 
   _renderer: null,
@@ -198,7 +198,7 @@ Mouse.definition = {
       let session = this._broker;
       if (this._in_scroll_session 
           || null === tracking_mode 
-          && CO_KEYPAD_MODE_NORMAL == keypad_mode) {
+          && coUtils.Constant.KEYPAD_MODE_NORMAL == keypad_mode) {
         if (count > 0) {
           session.notify("command/scroll-down-view", count);
           session.notify("command/draw");
@@ -208,7 +208,7 @@ Mouse.definition = {
         } else { // count == 1
           return;
         }
-      } else { //if (CO_KEYPAD_MODE_APPLICATION == keypad_mode) {
+      } else { //if (coUtils.Constant.KEYPAD_MODE_APPLICATION == keypad_mode) {
         let sequences = [];
         if (count > 0) {
           while (count--)

@@ -29,7 +29,6 @@ function getPackedKeycodeFromEvent(event)
     getPackedKeycodeFromEvent = function(event) 
     {
       let code = event.keyCode || event.which;
-      //code = String.fromCharCode(code).toLowerCase().charCodeAt(0);
       let packed_code = code 
         | !!event.ctrlKey   << coUtils.Keyboard.KEY_CTRL 
         | !!event.altKey    << coUtils.Keyboard.KEY_ALT 
@@ -43,7 +42,6 @@ function getPackedKeycodeFromEvent(event)
     getPackedKeycodeFromEvent = function(event) 
     {
       let code = event.keyCode || event.which;
-      //code = String.fromCharCode(code).toLowerCase().charCodeAt(0);
       let packed_code = code 
         | !!event.ctrlKey                 << coUtils.Keyboard.KEY_CTRL 
         | (!!event.altKey || code > 0xff) << coUtils.Keyboard.KEY_ALT 
@@ -57,7 +55,6 @@ function getPackedKeycodeFromEvent(event)
     getPackedKeycodeFromEvent = function(event) 
     {
       let code = event.keyCode || event.which;
-      //code = String.fromCharCode(code).toLowerCase().charCodeAt(0);
       let packed_code = code 
         | !!event.ctrlKey                 << coUtils.Keyboard.KEY_CTRL 
         | !!event.altKey                  << coUtils.Keyboard.KEY_ALT 
@@ -90,6 +87,7 @@ function getPackedKeycodeFromEvent(event)
  */ 
 function coLoadKeyMap() 
 {
+  let CO_KEY_DEFINITION = "modules/key.conf";
   let keys = coUtils.IO.readFromFile(CO_KEY_DEFINITION) // load key settings from file.
     .split(/[\n\r]+/) // LF or CR is line separator.
     .filter(function(line) line) // Filter out empty lines.
@@ -246,7 +244,9 @@ InputManager.definition = {
   "[subscribe('command/focus')]":
   function focus() 
   {
-    this._textbox.focus(); // raise focus event.
+    // call focus() 2 times.
+    this._textbox.focus(); // <-- blur out for current element.
+    this._textbox.focus(); // <-- set focus to textbox element.
   },
 
   /** blur focus from the textbox elment. */
@@ -280,7 +280,23 @@ InputManager.definition = {
   "[listen('keydown', '#coterminal_default_input', true)]":
   function onkeydown(event) 
   { // nothrow
-    this._textbox.focus();
+    //this._textbox.focus();
+    if (17 == event.keyCode &&
+        17 == event.which &&
+        event.ctrlKey &&
+        !event.altKey &&
+        !event.shiftKey &&
+        !event.isChar
+        ) {
+      let now = parseInt(new Date().getTime());
+      if (now - this._last_ctrlkey_time < 500) {
+        let session = this._broker;
+        session.notify("introducer-pressed/double-ctrl")
+        this._last_ctrlkey_time = 0;
+      } else {
+        this._last_ctrlkey_time = now;
+      }
+    }
   },
   
   /** Keypress event handler. 

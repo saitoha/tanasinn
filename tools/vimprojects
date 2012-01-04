@@ -1,5 +1,4 @@
 =. {
- .
  ChangeLog
  README
  configure.ac
@@ -13,18 +12,13 @@
  chrome.manifest
  bootstrap.js
  content=chrome/content {
-   .
    app.xul
  }
  modules=modules {
-  .
   Makefile
   common=common {
    process.js
-   config.js.in
-   config.js
    common.js
-   gettext.js
    eastasian.js
    event.js
    base.js
@@ -129,7 +123,7 @@
   }
   config {
    key.conf
-   color.conf
+   key-linux.conf
   }
   tool {
    .coterminal.js

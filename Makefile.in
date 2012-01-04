@@ -58,18 +58,18 @@ $(XPI): lint chrome.manifest install.rdf
 
 lint: 
 	@echo "$(MSTART) Ckecking JavaScript syntax error....$(MEND)" 
-	# Check syntax errors.
-	@for file in $$(find $$(PWD) | egrep "\.js$$|\.jsm$$"); do \
-		for version in 185; do \
-			if [ @host_os@ = cygwin ]; then file=$$(cygpath -wa $$file); fi; \
-			cd $$(dirname $(JS)) && $(JS) -C -v $$version -o strict -o werror -f $$file || exit; \
-		done; \
-	done;
-	#new js shell
-	#@for file in $$(find $$PWD | egrep "\.js$$|\.jsm$$"); do \
-	#	if [ @host_os@ = cygwin ]; then file=$$(cygpath -wa $$file); fi; \
-	#	echo "var a = function(){" | cat - $$file | sed -e '$$a\}' | $(JS) -f - || exit; \
+	## Check syntax errors.
+	#@for file in $$(find $$(PWD) | egrep "\.js$$|\.jsm$$"); do \
+	#	for version in 185; do \
+	#		if [ @host_os@ = cygwin ]; then file=$$(cygpath -wa $$file); fi; \
+	#		cd $$(dirname $(JS)) && $(JS) -C -v $$version -o strict -o werror -f $$file || exit; \
+	#	done; \
 	#done;
+	#new js shell
+	@for file in $$(find $$PWD | egrep "\.js$$|\.jsm$$"); do \
+		if [ @host_os@ = cygwin ]; then file=$$(cygpath -wa $$file); fi; \
+		echo "var a = function(){" | cat - $$file | sed -e '$$a\}' | $(JS) -f - || exit; \
+	done;
 	@echo "$(MSTART) Done.$(MEND)\n" 
 
 clean:
@@ -95,15 +95,37 @@ uninstall-vimperator:
 	rm ~/.vimperator/plugin/corun.js
 
 install-extension:
-	for PROFILE in $$(ls ~/Library/Application\ Support/Firefox/Profiles);  \
+	case @host_os@ in \
+		Darwin*) \
+			PROFILE_ROOT=~/Library/Application\ Support/Firefox/Profiles \
+			;; \
+		linux*) \
+			PROFILE_ROOT=~/.mozilla/firefox \
+			;; \
+		cygwin*) \
+			echo export \
+			;; \
+	esac \
+	&& PROFILES=$$(ls $$PROFILE_ROOT) \
+	&& for PROFILE in $$PROFILES;  \
 	do \
-		ln -sf $(PWD) ~/Library/Application\ Support/Firefox/Profiles/$$PROFILE/extensions/$(ID); \
+		echo ln -sf $(PWD) $$PROFILE_ROOT/$$PROFILE/extensions/$(ID); \
+		[ -e $$PROFILE_ROOT/$$PROFILE ] && ln -sf $(PWD) $$PROFILE_ROOT/$$PROFILE/extensions/$(ID); \
 	done;
 
 uninstall-extension:
 	rm ~/Library/Application\ Support/Firefox/Profiles/*/extensions/$(ID)
 
 run-xulapp:
-	#open /Applications/Firefox.app -n --args --app $(PWD)/application.ini
-	open /Applications/Aurora.app -n --args --app $(PWD)/application.ini
-	#cygstart firefox --app application.ini
+	case @host_os@ in \
+		Darwin*) \
+			open /Applications/Aurora.app \
+				-n --args --app $(PWD)/application.ini \
+			;; \
+		Linux*) \
+			firefox --app application.ini \
+			;; \
+		cygwin*) \
+			cygstart firefox --app application.ini \
+			;; \
+	esac	
