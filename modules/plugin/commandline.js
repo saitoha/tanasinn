@@ -28,42 +28,27 @@ AutoCompleteResult.definition = {
   get wrappedJSObject()
     this,
 
-  initialize: function initialize(
-    search_string, search_result, default_index, 
-    error_description, results, comments) 
+  initialize: function initialize(search_string, results, comments) 
   {
     this._search_string = search_string;
-    this._search_result = search_result;
-    this._default_index = default_index;
-    this._error_description = error_description;
     this._results = results;
     this._comments = comments;
   },
 
   get searchString()
-  {
-    return this._search_string;
-  },
+    this._search_string,
 
   get searchResult()
-  {
-    return this._search_result;
-  },
+    this._search_result,
 
   get defaultIndex()
-  {
-    return this._default_index;
-  },
+    this._default_index,
 
   get errorDescription()
-  {
-    return this._error_description;
-  },
+    this._error_description,
 
   get matchCount()
-  {
-    return this._results.length;
-  },
+    this._results.length,
 
   getValueAt: function getValueAt(index) 
   {
@@ -208,9 +193,6 @@ JsCompleter.definition = {
       }).sort(function(lhs, rhs) String(lhs).toLowerCase().indexOf(current) ? 1: -1);
       autocomplete_result = new AutoCompleteResult(
         current, 
-        Components.interfaces.nsIAutoCompleteResult.RESULT_SUCCESS, // search result
-        0, // default index
-        "", // erro description
         context && notation ? 
           properties.map(function(key) {
             if ("string" == typeof key) {
@@ -267,6 +249,9 @@ JsCommandParser.definition = {
 
   get name()
     "js",
+
+  get description()
+    "Run a javascript code in chrome window context.",
 
   "[subscribe('@initialized/jscompleter'), enabled]":
   function onCompleterInitialized(completer) 
@@ -358,6 +343,9 @@ SetCommandParser.definition = {
   get name()
     "set",
 
+  get description()
+    "set an option.",
+
   "[subscribe('@initialized/{variable,js}completer'), enabled]":
   function onCompleterInitialized(variable, js) 
   {
@@ -390,6 +378,9 @@ GoCommandParser.definition = {
 
   get name()
     "go",
+
+  get description()
+    "open specified URL in current content window.",
 
   "[subscribe('@initialized/historycompleter'), enabled]":
   function onCompleterInitialized(completer) 
@@ -574,11 +565,8 @@ VariableCompleter.definition = {
         .filter(function(module) module.id && module.id.match(source.split(/\s+/).pop()))
       autocomplete_result = new AutoCompleteResult(
         source, 
-        Components.interfaces.nsIAutoCompleteResult.RESULT_SUCCESS, // search result
-        0, // default index
-        "", // erro description
         filtered_modules.map(function(module) module.id),
-        filtered_modules.map(function(module) module.toString()))
+        filtered_modules.map(function(module) module.description))
     } else {
       let [, id, current] = match;
       let [module] = this._modules.filter(function(module) module.id == id);
@@ -586,9 +574,6 @@ VariableCompleter.definition = {
       let filtered_properties = properties.filter(function(property) property.match(current));
       autocomplete_result = new AutoCompleteResult(
         source, 
-        Components.interfaces.nsIAutoCompleteResult.RESULT_SUCCESS, // search result
-        0, // default index
-        "", // erro description
         filtered_properties.map(function(property) id + "." + property),
         filtered_properties.map(function(property) String(module[property])))
     }
@@ -627,20 +612,17 @@ CommandCompleter.definition = {
   startSearch: function startSearch(source, listener)
   {
     let session = this._broker;
-    let commands = session.notify("get/commands").map(function(command) command.name);
     let command_name = source.split(/\s+/).pop();
-    let search_result = commands.filter(function(name) {
-      return 0 == name.replace(/[\[\]]/g, "").indexOf(command_name);
-    });
+    let commands = session.notify("get/commands")
+      .filter(function(command) {
+        return 0 == command.name.replace(/[\[\]]/g, "").indexOf(command_name);
+      });
     //  this._broker.notify("command/report-overlay-message", ["not match"].join("/"));
 
     let autocomplete_result = new AutoCompleteResult(
       source, 
-      Components.interfaces.nsIAutoCompleteResult.RESULT_SUCCESS, // search result
-      0, // default index
-      "", // erro description
-      search_result,
-      null);
+      commands.map(function(command) command.name),
+      commands.map(function(command) command.toString()));
     listener.doCompletion(autocomplete_result);
   },
 
