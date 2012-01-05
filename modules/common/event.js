@@ -299,9 +299,13 @@ EventBrokerBase.definition = {
 let EventBroker = new Abstruct();
 EventBroker.definition = {
 
+  get parentBroker()
+    this._parent,
+
   /** constructor */
-  initialize: function initialize()
+  initialize: function initialize(parent)
   {
+    this._parent = parent;
     this._base = new EventBrokerBase;
     this._processer = new EventExpressionProcesser(this._base);
   },
@@ -318,7 +322,10 @@ EventBroker.definition = {
   subscribe: function subscribe(expression, listener, context, id) 
   {
     let delegate = function() listener.apply(context, arguments);
-    return this._processer.subscribe(expression, delegate, id);
+    this._processer.subscribe(expression, delegate, id);
+    if (this._parent) {
+      this._parent.subscribe(expression, delegate, id);
+    }
   },
 
   /** Unsubscribe local event 
@@ -382,7 +389,7 @@ EventBroker.definition = {
   {
     let base = this._base;
     return base.clearEvents();
-  },
+  }
 
 };
 
@@ -581,7 +588,7 @@ EventExpressionProcesser.definition = {
 
   /** Parses event expresson and makes tree of actors. 
    */
-  subscribe: function(expression, delegate, id) 
+  subscribe: function subscribe(expression, delegate, id) 
   {
     let token_generator = this._generateTokens(expression);
     let tokens = [token for (token in token_generator)];

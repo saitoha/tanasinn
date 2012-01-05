@@ -129,7 +129,7 @@ OverlayIndicator.definition = {
       = session.uniget("command/construct-chrome", this.template);
     this._element = coterminal_overlay_indicator;
     this._content = coterminal_overlay_indicator_content;
-    this.show.enabled = true;
+    this.report.enabled = true;
     this.onScreenSizeChanged.enabled = true;
     this.onFontSizeChanged.enabled = true;
     this.onCommandReceived.enabled = true;
@@ -144,14 +144,20 @@ OverlayIndicator.definition = {
     if (this._element) {
       this._element.parentNode.removeChild(this._element);
     }
-    this.show.enabled = false;
+    this.report.enabled = false;
     this.onScreenSizeChanged.enabled = false;
     this.onFontSizeChanged.enabled = false;
     this.onCommandReceived.enabled = false;
   },
 
-  "[subscribe('command/show-overlay-indicator')]":
-  function show(timeout) 
+  "[subscribe('command/report-overlay-message')]":
+  function report(message) 
+  {
+    this.print(message);
+    this.show(2000);
+  },
+
+  show: function show(timeout) 
   {
     this._enabled = true;
     let style = this._element.style;
@@ -166,8 +172,7 @@ OverlayIndicator.definition = {
     }
   },
 
-  "[subscribe('command/hide-overlay-indicator')]":
-  function hide() 
+  hide: function hide() 
   {
     this._enabled = false;
     let style = this._element.style;
@@ -175,8 +180,7 @@ OverlayIndicator.definition = {
     style.opacity = 0.0; 
   },
 
-  "[subscribe('command/print-overlay-indicator')]":
-  function print(message) 
+  print: function print(message) 
   {
     this._content.setAttribute("value", message);
   },

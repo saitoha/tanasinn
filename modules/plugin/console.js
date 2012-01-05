@@ -22,6 +22,160 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+
+/**
+ * @class MessageFilter
+ */
+let MessageFilter = new Class().extends(Plugin);
+MessageFilter.definition = {
+
+  get id()
+    "messagefilter",
+
+  get info()
+    <module>
+        <name>{_("Message Filter")}</name>
+        <description>{
+          _("Receives raw console messages and formats them.")
+        }</description>
+        <version>0.1</version>
+    </module>,
+
+  get style() <![CDATA[
+    @import "chrome://global/skin/viewbuttons.css";
+    .coterminal-console-error   { background-color: lightpink; }
+    .coterminal-console-warning { background-color: lightyellow; }
+    .coterminal-console-message { background-color: lightblue; }
+    .coterminal-console-native  { background-color: silver; }
+    .coterminal-console-unknown { background-color: orange; }
+    .coterminal-console-line { border-bottom: 1px solid green; padding: 0px 5px; }
+    .coterminal-console > *:not([class~="error"  ]) > .coterminal-console-error { display: none !important; }
+    .coterminal-console > *:not([class~="warning"]) > .coterminal-console-warning { display: none !important; }
+    .coterminal-console > *:not([class~="message"]) > .coterminal-console-message { display: none !important; }
+    .coterminal-console > *:not([class~="native" ]) > .coterminal-console-native { display: none !important; }
+  ]]>,
+
+  get filter_expression()
+    /^\[(.+?): "(coTerminal: )?([^"]*?)" {file: "([^"]*?)" line: ([0-9]+?)( name: "([^"]*?)")?}\]$/m,
+  
+  _css: null,
+
+  /** constructor 
+   *  @param {Session} session A Session object.
+   */
+  initialize: function initialize(session) 
+  {
+    this.enabled = this.enabled_when_startup;
+  },
+
+  /** Installs itself.
+   *  @param {Session} session A Session object.
+   */
+  install: function uninstall(session) 
+  {
+    this._css = coUtils.Style.addRule(session.root_element, this.style);
+    this.onMessageFiltersRequired.enabled = true;
+  },
+
+  /** Uninstalls itself. 
+   *  @param {Session} session A Session object.
+   */
+  uninstall: function uninstall(session) 
+  {
+    this.onMessageFiltersRequired.enabled = false;
+    coUtils.Style.removeRule(this._css);
+  },
+
+  "[subscribe('get/message-filters')]": 
+  function onMessageFiltersRequired(filters) 
+  {
+    return this;
+  },
+
+  test: function test(logtext) 
+  {
+    this.logtext = logtext;
+    this.match = logtext.match(this.filter_expression);
+    return null != this.match;
+  },
+
+  action: function action() 
+  {
+    let session = this._broker;
+    let logtext = this.logtext;
+    let match = this.match;
+    let [, category, , message, file, line] = match;
+    let class_string = this._getClassString(category);
+    if ("coterminal-console-error" == class_string) {
+      //let session = this._broker;
+      //session.notify("an-error-occured", class_string);
+      try {
+        Components.classes["@mozilla.org/alerts-service;1"]
+          .getService(Components.interfaces.nsIAlertsService)
+          .showAlertNotification(
+            //"chrome://mozapps/skin/downloads/downloadIcon.png",   // imageUrl
+            "chrome://mozapps/skin/extensions/alerticon-error.png",
+            category,
+            message,    // text
+            true,  // textClickable
+            file,     // cookie
+            {
+              observe: function observe(subject, topic, data) 
+              {
+                if ("alertclickcallback" == topic) {
+                  session.notify("command/select-panel", "!console.panel");
+                }
+              }
+            },   // listener
+            "" // name
+            ); 
+      } catch (e) {
+        ; // pass
+        // Ignore this error.
+        // This is typically NS_ERROR_NOT_AVAILABLE,
+        // which may happen, for example, on Mac OS X if Growl is not installed.
+      }
+    }
+    return {
+      tagName: "row",
+      className: "coterminal-console-line " + class_string,
+      childNodes: [
+        { 
+          tagName: "label", 
+          crop: "start",
+          width: 100,
+          value: file.split("/").pop() + " ", 
+          style: { color: "red", width: "4em", }   
+        },
+        { 
+          tagName: "box", 
+          innerText: "line: " + line
+        },
+        { 
+          tagName: "box", 
+          innerText: message + " ", 
+        },
+      ]
+    };
+  },
+
+  /** Returns className string which corresponds to specified message category 
+   *  string. 
+   *  @param {String} category A message category string.
+   */
+  _getClassString: function(category) 
+  {
+    let result = {
+      "JavaScript Error"  : "coterminal-console-error",
+      "JavaScript Warning": "coterminal-console-warning",
+      "JavaScript Message": "coterminal-console-message",
+      "Native Message"    : "coterminal-console-native",
+    } [category]         || "coterminal-console-unknown";
+    return result;
+  },
+
+}
+
 /*
  * @class DisplayManager
  * @brief Manages sisplay state for messages.
@@ -44,8 +198,8 @@ DisplayManager.definition = {
   function onLoad(console) 
   {
     let session = this._broker;
-    let id = "#console-output-box";
-    [this._output_element] = session.notify("command/query-selector", id);
+    let id = "#console_output_box";
+    this._output_element = session.uniget("command/query-selector", id);
     session.subscribe("command/clear-messages", function() this.clear(), this);
     this._filters = session.notify("get/message-filters", this._filters);
     session.notify("initialized/displaymanager", this);
@@ -59,11 +213,9 @@ DisplayManager.definition = {
     let output_element = this._output_element;
     if (output_element) {
       let session = this._broker;
-
       let template = this.applyFilters(message);
       template.parentNode = output_element;
       session.uniget("command/construct-chrome", template);
-
       // makes scrollbar follow page's height.
       if (this.auto_scroll) {
         this.scrollToBottom();
@@ -93,9 +245,13 @@ DisplayManager.definition = {
     };
     // returns fallback template.
     return {
-      tagName: "vbox",
+      tagName: "row",
       style: { borderBottom: "1px solid green" },
-      childNodes: { tagName: "vbox", innerText: message }
+      childNodes: [
+        { tagName: "box", innerText: "" },
+        { tagName: "box", innerText: "" },
+        { tagName: "box", innerText: message }
+      ]
     };
   },
   
@@ -269,9 +425,7 @@ Console.definition = {
        },
        childNodes: [
          {  // output box
-           tagName: "vbox",
-           id: "console-output-box",
-           className: "error",
+           tagName: "grid",
            flex: 1,
            style: {
              MozAppearance: "tabpanels",
@@ -279,6 +433,11 @@ Console.definition = {
              fontSize: "12px",
              fontWeight: "bold",
            },
+           childNodes: {
+             tagName: "rows",
+             id: "console_output_box",
+             className: "error",
+           }
          },
          {
            tagName: "vbox",
@@ -294,8 +453,10 @@ Console.definition = {
              childNodes: [
                {
                  tagName: "hbox",
-                 id: "viewGroup",
-                 style: { MozBoxPack: "center", },
+                 style: { 
+                   MozBoxPack: "center",
+                   margin: "4px 0 9px",
+                 },
                  childNodes: [
                    {
                      tagName: "toolbarbutton",
@@ -303,10 +464,21 @@ Console.definition = {
                      label: mode.label,
                      value: mode.value,
                      group: "mode",
+                     style: {
+                       cssText: <>
+                         -moz-appearance: toolbarbutton;
+                         font: menu;
+                         //text-hadow: 0 1px rgba(255, 255, 255, .4);
+                         margin: 0;
+                         padding: 0 1px;
+                         //heihgt: 22px;
+                       </>,
+                     },
                      listener: {
                        type: "command",
-                       handler: function(event) { 
-                         let id = "#console-output-box";
+                       handler: function(event) 
+                       { 
+                         let id = "#console_output_box";
                          let output_box = tab_panel.querySelector(id);
                          output_box.className = this.value;
                        },
@@ -331,7 +503,18 @@ Console.definition = {
                {
                  tagName: "toolbarbutton",
                  label: _("Clear"),
-                 id: "Console:clear",
+                 //id: "Console:clear",
+                 style: { 
+                   cssText: <>
+                     //-moz-box-orient: vertical;
+                     //-moz-box-align: center;
+                     -moz-appearance: toolbarbutton;
+                     font: menu;
+                     //text-hadow: 0 1px rgba(255, 255, 255, .4);
+                     margin: 4px 0 9px;
+                     padding: 0 1px;
+                   </>
+                 },
                  listener: {
                    type: "command",
                    context: this,
@@ -355,9 +538,12 @@ Console.definition = {
   /** Installs itself */
   install: function install(session) 
   {
-    let {coterminal_console_panel}
-      = session.uniget("command/construct-chrome", this.template);
+    let {
+      coterminal_console_panel, 
+      console_output_box,
+    } = session.uniget("command/construct-chrome", this.template);
     this._console_box = coterminal_console_panel;
+    this._output_box = console_output_box;
     this.select.enabled = true;
     session.notify("initialized/console", this);
   }, 
@@ -390,6 +576,7 @@ function main(process)
     function(session)
     {
       new Console(session);
+      new MessageFilter(session);
       new DisplayManager(session);
       new ConsoleListener(session);
     });

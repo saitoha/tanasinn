@@ -200,8 +200,7 @@ Chrome.definition = {
       style: { 
         opacity: 0.7,
         background: "#000", 
-        //borderRadius: "8px",
-        backgroundImage: "url(file:///Users/user/.vimperator/.coterminal/coterminal@zuse.jp/modules/images/background.jpg)",
+        backgroundImage: "url(file:///Users/user/coterminal/coterminal@zuse.jp/modules/images/background.jpg)",
       },
       childNodes: {
         id: "coterminal_center_area",
@@ -222,9 +221,12 @@ Chrome.definition = {
     let {coterminal_content} 
       = session.uniget("command/construct-chrome", this.template);
     this._element = coterminal_content;
+    if ("Firefox" == coUtils.Runtime.app_name) {
+      this._element.style.borderTopLeftRadius = "8px";
+      this._element.style.borderTopRightRadius = "8px";
+    }
     this.onGotFocus.enabled = true;
     this.onLostFocus.enabled = true;
-
     session.notify(<>initialized/{this.id}</>, this);
   },
 

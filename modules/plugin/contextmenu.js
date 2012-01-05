@@ -49,10 +49,9 @@ Contextmenu.definition = {
       childNodes: entries,
       listener: {
         type: "popuphidden", 
-        handler: function onpopuphidden(event) 
+        handler: let (session = this._broker) function onpopuphidden(event) 
         {
           if (this.isEqualNode(event.target)) {
-            let session = this._broker;
             session.notify("command/focus");
             this.parentNode.removeChild(this);
           }

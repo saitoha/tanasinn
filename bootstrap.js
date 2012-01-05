@@ -72,15 +72,15 @@ let loader = {
   {
     let window = subject.QueryInterface(Components.interfaces.nsIDOMWindow);
     if ("domwindowopened" == topic) {
-      let self = this;
-      window.addEventListener("load", function onLoad() 
+      window.addEventListener("load", let (self = this) function onLoad() 
         {
-          window.removeEventListener("load", arguments.callee, false);
           let document = window.document;
           let window_type = document.documentElement.getAttribute("windowtype");
           // ensure that "window" is a navigator window.
-          if ("navigator:browser" == window_type)  
+          if ("navigator:browser" == window_type) {
+            window.removeEventListener("load", arguments.callee, false);
             self.dispatchWindowEvent(window);
+          }
         }, false);
     }
   },

@@ -54,6 +54,31 @@ WindowWatcher.definition = {
       handler: this.onclose,
       id: this.id,
     });
+
+    session.notify("command/add-domlistener", {
+      target: session.window,
+      type: "keydown",
+      context: this,
+      handler: this.onkeydown,
+      capture: true,
+      id: this.id,
+    });
+  },
+
+  onkeydown: function onkeydown(event) 
+  { // nothrow
+    if (17 == event.keyCode && 17 == event.which &&
+        event.ctrlKey && !event.altKey && !event.shiftKey && !event.isChar) {
+      let now = parseInt(new Date().getTime());
+      if (now - this._last_ctrlkey_time < 500) {
+        let session = this._broker;
+        session.notify("command/focus");
+        //session.notify("command/report-overlay-message");
+        this._last_ctrlkey_time = 0;
+      } else {
+        this._last_ctrlkey_time = now;
+      }
+    }
   },
 
   "[subscribe('@event/session-stopping'), enabled]": 

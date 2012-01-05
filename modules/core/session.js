@@ -140,7 +140,9 @@ Session.definition = {
     process.notify("initialized/session", this);
     process.notify("command/load-settings", this);
     this.notify("event/session-started", this);
-    this.notify("command/focus");
+    coUtils.Timer.setTimeout(function() {
+      this.notify("command/focus");
+    }, 30, this);
     return this;
   },
 

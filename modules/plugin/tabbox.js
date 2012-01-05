@@ -180,7 +180,7 @@ BottomPanel.definition = {
     // restricts bottom panel's height.
     let line_height = renderer.line_height;
     let row = screen.height;
-    let max_screen_height = Math.round(line_height * row / 3);
+    let max_screen_height = Math.floor(line_height * row / 2);
     for ([, panel] in Iterator(this._tabbox.tabpanels.childNodes)) {
       if (panel.height > max_screen_height); 
         panel.height = max_screen_height;
@@ -211,7 +211,7 @@ BottomPanel.definition = {
     let bottom_panel = this._bottom_panel;
     let renderer = this._renderer;
     let line_height = renderer.line_height;
-    let diff = Math.round(bottom_panel.boxObject.height / line_height);
+    let diff = Math.floor(bottom_panel.boxObject.height / line_height);
     bottom_panel.setAttribute("collapsed", true);
     if (0 != diff) {
       let session = this._broker;

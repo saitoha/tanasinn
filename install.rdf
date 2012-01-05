@@ -4,7 +4,7 @@
   <Description about="urn:mozilla:install-manifest">
     <em:id>coterminal@zuse.jp</em:id>
     <em:type>2</em:type>
-    <em:name>@COTERMINAL_DISPLAY_NAME@</em:name>
+    <em:name>coTerminal</em:name>
     <em:version>0.1</em:version>
     <em:creator>kefir_</em:creator>
     <em:description>Terminal Emurator Addon for Firefox</em:description>
