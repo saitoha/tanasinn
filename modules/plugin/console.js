@@ -106,6 +106,7 @@ MessageFilter.definition = {
     let match = this.match;
     let [, category, , message, file, line] = match;
     let class_string = this._getClassString(category);
+    file = file.split("/").pop().split("?").shift();
     if ("coterminal-console-error" == class_string) {
       //let session = this._broker;
       //session.notify("an-error-occured", class_string);
@@ -116,7 +117,7 @@ MessageFilter.definition = {
             //"chrome://mozapps/skin/downloads/downloadIcon.png",   // imageUrl
             "chrome://mozapps/skin/extensions/alerticon-error.png",
             category,
-            message,    // text
+            file + ":" + line + " " + message,    // text
             true,  // textClickable
             file,     // cookie
             {
@@ -144,7 +145,7 @@ MessageFilter.definition = {
           tagName: "label", 
           crop: "start",
           width: 100,
-          value: file.split("/").pop() + " ", 
+          value: file + " ", 
           style: { color: "red", width: "4em", }   
         },
         { 

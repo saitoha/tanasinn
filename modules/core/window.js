@@ -57,18 +57,19 @@ WindowWatcher.definition = {
 
     session.notify("command/add-domlistener", {
       target: session.window,
-      type: "keydown",
+      type: "keyup",
       context: this,
-      handler: this.onkeydown,
+      handler: this.onkeyup,
       capture: true,
       id: this.id,
     });
   },
 
-  onkeydown: function onkeydown(event) 
+  onkeyup: function onkeyup(event) 
   { // nothrow
-    if (17 == event.keyCode && 17 == event.which &&
-        event.ctrlKey && !event.altKey && !event.shiftKey && !event.isChar) {
+    if (17 == event.keyCode && 17 == event.which 
+        && !event.ctrlKey && !event.altKey 
+        && !event.shiftKey && !event.isChar) {
       let now = parseInt(new Date().getTime());
       if (now - this._last_ctrlkey_time < 500) {
         let session = this._broker;

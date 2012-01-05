@@ -401,7 +401,7 @@ Abstruct.prototype = {
 Abstruct.prototype.__proto__ = Class.prototype;
 
 /**
- * @aspect Persistable
+ * @aspect PersistableAttribute
  */
 Attribute.prototype.__defineGetter__("persistable", function() {
   let target = this._target;
@@ -411,8 +411,8 @@ Attribute.prototype.__defineGetter__("persistable", function() {
 });
 
 // implements MS IPersist like interface.
-let Persistable = new Aspect("Persistable");
-Persistable.definition = {
+let PersistableAttribute = new Aspect();
+PersistableAttribute.definition = {
 
   /** constructor 
    *  @param {EventBroker} broker The "parent" broker object in 
@@ -515,10 +515,10 @@ Persistable.definition = {
     }
   },
 
-}; // Persistable
+}; // PersistableAttribute
 
 /**
- * @aspect Watchable
+ * @aspect WatchableAttribute
  *
  */
 
@@ -532,8 +532,8 @@ Attribute.prototype.__defineGetter__("watchable", function()
   }
 });
 
-let Watchable = new Aspect();
-Watchable.definition = {
+let WatchableAttribute = new Aspect();
+WatchableAttribute.definition = {
 
   /** constructor */
   initialize: function initialize(broker)
@@ -562,7 +562,7 @@ Watchable.definition = {
 };
 
 /**
- * @aspect Listen
+ * @aspect ListenAttribute
  */
 Attribute.prototype.listen = function listen(type, target, capture) 
 {
@@ -574,8 +574,8 @@ Attribute.prototype.listen = function listen(type, target, capture)
   };
 };
 
-let Listen = new Aspect();
-Listen.definition = {
+let ListenAttribute = new Aspect();
+ListenAttribute.definition = {
 
   initialize: function initialize(broker) 
   {
@@ -620,7 +620,7 @@ Listen.definition = {
 
 
 /**
- * @aspect Subscribable
+ * @aspect SubscribeAttribute
  */
 Attribute.prototype.subscribe = function subscribe(expression) 
 {
@@ -628,8 +628,8 @@ Attribute.prototype.subscribe = function subscribe(expression)
   target["subscribe"] = expression;
 };
 
-let Subscribable = new Aspect();
-Subscribable.definition = {
+let SubscribeAttribute = new Aspect();
+SubscribeAttribute.definition = {
 
   initialize: function(broker) 
   {
@@ -678,7 +678,7 @@ Subscribable.definition = {
 };
 
 /**
- * @aspect Sequence
+ * @aspect SequenceAttribute
  *
  */
 Attribute.prototype.sequence = function sequence()
@@ -687,8 +687,8 @@ Attribute.prototype.sequence = function sequence()
   target["sequence"] = [arg for each (arg in arguments)];
 };
 
-let Sequence = new Aspect();
-Sequence.definition = {
+let SequenceAttribute = new Aspect();
+SequenceAttribute.definition = {
 
   /** constructor 
    *  @param {EventBroker} broker Parent broker object.
@@ -721,7 +721,7 @@ Sequence.definition = {
 }
 
 /**
- * @aspect Mappable
+ * @aspect KeyAttribute
  *
  */
 Attribute.prototype.key = function key(expression) 
@@ -730,8 +730,8 @@ Attribute.prototype.key = function key(expression)
   target["key"] = [expression for each (expression in arguments)];
 };
 
-let Mappable = new Aspect();
-Mappable.definition = {
+let KeyAttribute = new Aspect();
+KeyAttribute.definition = {
 
   /** constructor 
    *  @param {EventBroker} broker Parent broker object.
@@ -803,23 +803,106 @@ Mappable.definition = {
   },
 };
 
+
+/**
+ * @aspect CommandAttribute
+ *
+ */
+Attribute.prototype.command 
+  = function command(name, args) 
+{
+  let target = this._target;
+  target["command"] = { name: name, args: args };
+};
+
+let CommandAttribute = new Aspect();
+CommandAttribute.definition = {
+
+  /** constructor 
+   *  @param {EventBroker} broker Parent broker object.
+   */
+  initialize: function initialize(broker) 
+  {
+    let attributes = this.__attributes;
+    for (key in attributes) {
+      let attribute = attributes[key];
+      let command_info = attribute["command"];
+      if (!command_info)
+        continue;
+      let handler = this[key];
+      let delegate = this[key] = handler.id ? 
+        this[key]
+      : let (self = this) function() handler.apply(self, arguments);
+      delegate.id = delegate.id || [this.id, key].join(".");
+      delegate.description = attribute.description;
+
+      let command = {
+        name: command_info.name,
+        description: attribute.description,
+        args: command_info.args,
+
+        complete: function complete(source, listener) 
+        {
+          this.args.map(function(arg)
+          {
+            return broker.uniget(<>get/completer/{arg}</>);
+          }).some(function(completer)
+          {
+            let position = completer.startSearch(source, listener);
+            const NOT_MATCH = -1;
+            const MATCH = 0;
+            if (NOT_MATCH == position || MATCH == position) {
+              return true;
+            }
+            source = source.substr(position); // advance current position
+            return false;
+          });
+        },
+
+        evaluate: let (self = this) function evaluate() 
+        {
+          handler.apply(self, arguments);
+        },
+      }
+
+      let enabled = false;
+      delegate.__defineGetter__("enabled", function() enabled);
+      delegate.__defineSetter__("enabled", function(value) {
+        if (enabled == value)
+          return;
+        enabled = value;
+        if (enabled) {
+          broker.subscribe(
+            "get/commands", function() command, this, delegate.id);
+        } else {
+          broker.unsubscribe(delegate.id);
+        }
+      });
+      if (attribute["enabled"]) {
+        delegate.enabled = true;
+      };
+    }
+  },
+};
+
 /** 
  * @abstruct Component
  * The base class of module.
  */
-let Component = new Abstruct().mix(Persistable)
-                              .mix(Watchable)
-                              .mix(Sequence)
-                              .mix(Mappable)
-                              .mix(Subscribable)
-                              .mix(Listen)
+let Component = new Abstruct().mix(PersistableAttribute)
+                              .mix(WatchableAttribute)
+                              .mix(SequenceAttribute)
+                              .mix(KeyAttribute)
+                              .mix(SubscribeAttribute)
+                              .mix(ListenAttribute)
+                              .mix(CommandAttribute)
 Component.definition = {
 
   /** constructor */
   initialize: function initialize(broker) 
   {
     this._broker = broker;
-    broker.subscribe("change/enabled-state/" + this.id, 
+    broker.subscribe(<>change/enabled-state/{this.id}</>, 
       function(enabled) this.enabled = enabled, this);
 
     broker.subscribe("get/module-instances", 

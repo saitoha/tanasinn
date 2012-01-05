@@ -489,7 +489,7 @@ ExternalDriver.definition = {
     let runtime_path;
     let args;
     if ("WINNT" == coUtils.Runtime.os) {
-      runtime_path = coUtils.Text.format("%s\\bin\\run.exe", this.cygwin_root);
+      runtime_path = String(<>{this.cygwin_root}\bin\run.exe</>);
       args = [ "/bin/kill", "-0", String(pid) ];
     } else { // Darwin, Linux or FreeBSD
       runtime_path = "/bin/kill";
@@ -508,7 +508,14 @@ ExternalDriver.definition = {
       .createInstance(Components.interfaces.nsIProcess);
     process.init(runtime);
 
-    process.run(/* blocking */ true, args, args.length);
+    try {
+      process.run(/* blocking */ true, args, args.length);
+    } catch (e) {
+      coUtils.Debug.reportMessage(
+        _("command '%s' failed."), 
+        args.join(" "));
+      return false;
+    }
     return 0 == process.exitValue;
   },
 

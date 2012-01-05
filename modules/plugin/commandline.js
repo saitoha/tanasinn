@@ -22,618 +22,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-let AutoCompleteResult = new Class();
-AutoCompleteResult.definition = {
-
-  get wrappedJSObject()
-    this,
-
-  initialize: function initialize(search_string, results, comments) 
-  {
-    this._search_string = search_string;
-    this._results = results;
-    this._comments = comments;
-  },
-
-  get searchString()
-    this._search_string,
-
-  get searchResult()
-    this._search_result,
-
-  get defaultIndex()
-    this._default_index,
-
-  get errorDescription()
-    this._error_description,
-
-  get matchCount()
-    this._results.length,
-
-  getValueAt: function getValueAt(index) 
-  {
-    if (index >= 0 && index < this._results.length)
-      return this._results[index];
-    return "";
-  },
-
-  getCommentAt: function getCommentAt(index)
-  {
-    if (this._comments && index < this._results.length)
-      return this._comments[index]
-    return "";
-  },
-
-  getStyleAt: function getStyleAt(index)
-  {
-    if (!this._comments || !this._comments[index])
-      return null;
-    if (index == 0)
-      return "suggestfirst";
-    return "suggesthint";
-  },
-
-  getImageAt: function getImageAt(index)
-  {
-    return "";
-  },
-
-  removeValueAt: function removeValueAt(index, removeFromDb)
-  {
-    this._results.splice(index, 1);
-    if (this._comments) {
-      this._comments.splice(index, 1);
-    }
-  },
-
-  getLabelAt: function getLabelAt(index)
-  {
-    return this._results[index];
-  },
-
-  QueryInterface: function QueryInterface(a_IID)
-  {
-    if (!a_IID.equals(Components.interfaces.nsISupports)
-     && !a_IID.equals(Components.interfaces.nsIAutoCompleteResult))
-      throw Components.results.NS_ERROR_NOT_IMPLEMENTED;
-    return this;
-  },
-};
-
-/**
- * @abstruct CommandBase
- */
-let CommandBase = new Abstruct().extends(Component);
-CommandBase.definition = {
-
-  "[subscribe('@event/session-started'), enabled]":
-  function onLoad(session)
-  {
-    session.notify(<>initialized/{this.id}</>, this);
-  },
-
-  "[subscribe('get/commands'), enabled]":
-  function onLoad(session)
-  {
-    return this;
-  },
-};
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// Command js
-//
-/**
- * @class JsCompleter
- */
-let JsCompleter = new Class().extends(Component);
-JsCompleter.definition = {
-
-  get id()
-    "jscompleter",
-
-  _modules: null,
-
-  "[subscribe('@event/session-started'), enabled]":
-  function onLoad(session)
-  {
-    session.notify(<>initialized/{this.id}</>, this);
-  },
-
-  /*
-   * Search for a given string and notify a listener (either synchronously
-   * or asynchronously) of the result
-   *
-   * @param source - The string to search for
-   * @param listener - A listener to notify when the search is complete
-   */
-  startSearch: function startSearch(source, listener)
-  {
-    let session = this._broker;
-    try{
-    let autocomplete_result = null; 
-    let pattern = /(.*?)(?:(\.|\[|\['|\[")(\w*))?$/;
-    let match = pattern.exec(source);
-    if (match) {
-      let [, settled, notation, current] = match;
-      let context = new function() void (this.__proto__ = session.window);
-      if (notation) {
-        try {
-          let code = "with (arguments[0]) { return (" + settled + ");}";
-          context = new Function(code) (context);
-        } catch (e) { 
-          listener.doCompletion(null);
-          return;
-        }
-      } else {
-        current = settled;
-      }
-      current = current.toLowerCase();
-      let properties = [ key for ([key, ] in Iterator(context)) ];
-      if (null !== context && typeof context != "undefined") {
-        Array.prototype.push.apply(
-          properties, 
-          Object.getOwnPropertyNames(context.__proto__)
-            .map(function(key) key));
-      }
-      properties = properties.filter(function(key) {
-        if ("." == notation ) {
-          if ("number" == typeof key) {
-            // Number property after dot notation. 
-            // etc. abc.13, abc.3
-            return false; 
-          }
-          if (!/^[$_\w][_\w]*$/.test(key)) {
-            // A property consists of identifier-chars after dot notation. 
-            // etc. abc.ab[a cde.er=e
-            return false; 
-          }
-        }
-        return -1 != String(key).toLowerCase().indexOf(current);
-      }).sort(function(lhs, rhs) String(lhs).toLowerCase().indexOf(current) ? 1: -1);
-      autocomplete_result = new AutoCompleteResult(
-        current, 
-        context && notation ? 
-          properties.map(function(key) {
-            if ("string" == typeof key) {
-              if (/^\["?$/.test(notation)) {
-                return settled + <>["{key.replace('"', '\\"')}"]</>;
-              } else if ("[\'" == notation) {
-                return settled + <>['{key.replace("'", "\\'")}']</>;
-              }
-            }
-            return settled + notation + key;
-          }):
-          properties.map(function(key) key),
-        context && 
-          properties.map(function(key) {
-            try {
-              let value = context[key];
-              let type = typeof value;
-              if ("function" == type) {
-                return "[Function " + value.name + "] ";
-              } else if ("object" == type) { // may be null
-                return String(value);
-              } else if ("undefined" == type) {
-                return "undefined";
-              } else if ("string" == type) {
-                return <>"{value.replace('"', '\\"')}"</>.toString();
-              }
-              return String(value);
-            } catch (e) {
-              return "Error: " + e;
-            }
-          }));
-    }
-    listener.doCompletion(autocomplete_result);
-    } catch(e) {alert("###" + e + " " + e.lineNumber)}
-  },
-
-  /*
-   * Stop all searches that are in progress
-   */
-  stopSearch: function stopSearch() 
-  {
-  },
-
-};
-
-/**
- *
- */
-let JsCommandParser = new Class().extends(CommandBase);
-JsCommandParser.definition = {
-
-  get id()
-    "jscommandparser",
-
-  get name()
-    "js",
-
-  get description()
-    "Run a javascript code in chrome window context.",
-
-  "[subscribe('@initialized/jscompleter'), enabled]":
-  function onCompleterInitialized(completer) 
-  {
-    this._completer = completer
-  },
-
-  complete: function parser(source, listener) 
-  {
-    this._completer.startSearch(source, listener);
-  },
-
-  evaluate: function evaluate(arguments_string)
-  {
-    let session = this._broker;
-    try {
-      let result = new Function(
-        "with (arguments[0]) { return (" + arguments_string + ");}"
-      ) (session.window);
-    } catch (e) {
-      session.notify("command/report-status-message", e);
-    }
-  },
-};
-
-/**
- * @class HistoryCompleter
- */
-let HistoryCompleter = new Class().extends(Component);
-HistoryCompleter.definition = {
-
-  get id()
-    "historycompleter",
-
-  "[subscribe('@event/session-started'), enabled]":
-  function onLoad(session)
-  {
-    let component = Components
-      .classes["@mozilla.org/autocomplete/search;1?name=history"]
-      .createInstance(Components.interfaces.nsIAutoCompleteSearch);
-    this._completion_component = component;
-    session.notify(<>initialized/{this.id}</>, this);
-  },
-
-  /*
-   * Search for a given string and notify a listener (either synchronously
-   * or asynchronously) of the result
-   *
-   * @param source - The string to search for
-   * @param listener - A listener to notify when the search is complete
-   */
-  startSearch: function startSearch(source, listener)
-  {
-    this._completion_component.startSearch(source, "", null, {
-        onSearchResult: function onSearchResult(search, result) 
-        { 
-          try {
-            const RESULT_SUCCESS = Components
-              .interfaces.nsIAutoCompleteResult.RESULT_SUCCESS;
-            if (result.searchResult == RESULT_SUCCESS) {
-              listener.doCompletion(result);
-            } else {
-              coUtils.Debug.reportWarning(
-                _("Search component returns following result: %d"), 
-                result.searchResult);
-            }
-          } catch(e) {
-            coUtils.Debug.reportError(e);
-          }
-        }
-      });
-  },
-
-  /*
-   * Stop all searches that are in progress
-   */
-  stopSearch: function stopSearch() 
-  {
-  },
-
-};
-
-let SetCommandParser = new Class().extends(CommandBase);
-SetCommandParser.definition = {
-
-  get id()
-    "setcommandparser",
-
-  get name()
-    "set",
-
-  get description()
-    "set an option.",
-
-  "[subscribe('@initialized/{variable,js}completer'), enabled]":
-  function onCompleterInitialized(variable, js) 
-  {
-    this._variable_completer = variable;
-    this._js_completer = js;
-  },
-
-  complete: function parser(source, listener)
-  {
-    let tokens = source.split(/\s+/);
-    if (tokens.length < 2) {
-      this._variable_completer.startSearch(source, listener);
-    } else if (tokens.length == 2) {
-      this._js_completer.startSearch(source, listener);
-    }
-  },
-
-  evaluate: function evaluate(arguments_string)
-  {
-    alert("set: " + arguments_string);
-  },
-
-};
-
-let GoCommandParser = new Class().extends(CommandBase);
-GoCommandParser.definition = {
-
-  get id()
-    "gocommandparser",
-
-  get name()
-    "go",
-
-  get description()
-    "open specified URL in current content window.",
-
-  "[subscribe('@initialized/historycompleter'), enabled]":
-  function onCompleterInitialized(completer) 
-  {
-    this._completer = completer
-  },
-
-  complete: function complete(source, listener)
-  {
-    this._completer.startSearch(source, listener);
-  },
-
-  evaluate: function evaluate(arguments_string)
-  {
-    let session = this._broker;
-    let content = session.window._content;
-    if (content) {
-      content.location.href = arguments_string;
-      session.notify("command/focus");
-      session.notify("command/blur");
-      session.notify("event/lost-focus");
-    }
-  },
-};
-
-/**
- * @class CommandProvider
- *
- */
-let CommandProvider = new Class().extends(Component);
-CommandProvider.definition = {
-
-  get id()
-    "commandprovider",
-
-  "[subscribe('@initialized/commandcompleter'), enabled]":
-  function onLoad(completer)
-  {
-    this._completer = completer;
-    let session = this._broker;
-    session.notify(<>initialized/{this.id}</>, this);
-  },
-
-  register: function register(name, parser)
-  {
-  },
-
-  getCommand: function(command_name)
-  {
-    let session = this._broker;
-    let commands = session.notify("get/commands");
-    let filtered_command = commands.filter(function(command) {
-      if (0 == command.name.replace(/[\[\]]/g, "").indexOf(command_name)) {
-        return true;
-      }
-      return false;
-    });
-    if (filtered_command.length == 0) {
-      return null;
-    }
-    if (filtered_command.length > 1) {
-      throw coUtils.Debug.Exception(
-        _("Ambiguous command name detected: %s"), command_name);
-    }
-    let [command] = filtered_command;
-    return command;
-  },
-  
-  complete: function complete(source, listener) 
-  {
-    let pattern = /^\s*(\w+)(\s+)/y;
-    let match = pattern.exec(source);
-    if (null === match) {
-      this._completer.startSearch(source, listener);
-    } else {
-      let [, command_name, /* blank */] = match;
-      let command = this.getCommand(command_name);
-      let text = source.substr(pattern.lastIndex);
-      command.complete(text, listener);
-    }
-  },
-  
-  evaluate: function evaluate(source) 
-  {
-    try {
-    let pattern = /^\s*(\w+)(\s*)/y;
-    let match = pattern.exec(source);
-    if (null === match) {
-      return (null)
-    }
-    let [, command_name, /* blank */] = match;
-    let command = this.getCommand(command_name);
-    if (!command) {
-      return null; // unknown command;
-    }
-    let text = source.substr(pattern.lastIndex);
-    return command.evaluate(text);
-    } catch (e) {
-      alert(e)
-      return null;
-    }
-  },
-};
-
-/**
- * @class CommandCompletionProvider
- */
-let CommandCompletionProvider = new Class().extends(Component);
-CommandCompletionProvider.definition = {
-
-  get id()
-    "command_completion_provider",
-
-  "[persistable] initial_search_context": "coterminal-commands",
-
-  "[subscribe('@initialized/commandprovider'), enabled]":
-  function onLoad(command_provider)
-  {
-    this._command_provider = command_provider;
-    this._search_components = {};
-    [
-      "history", 
-      "places-tag-autocomplete",
-      "form-history",
-    ].forEach(function(name) {
-      let component = Components
-        .classes["@mozilla.org/autocomplete/search;1?name=" + name]
-        .createInstance(Components.interfaces.nsIAutoCompleteSearch);
-      this._search_components[name] = component;
-    }, this);
-    this.evaluate.enabled = true;
-    let session = this._broker;
-    session.notify(<>initialized/{this.id}</>, this);
-  },
-
-  complete: function complete(source, listener) 
-  {
-    this._command_provider.complete(source, listener);
-  },
-
-  "[subscribe('command/eval-commandline')]":
-  function evaluate(source)
-  {
-    this._command_provider.evaluate(source);
-  },
-
-};
-
-/**
- * @class VariableCompleter
- */
-let VariableCompleter = new Class().extends(Component);
-VariableCompleter.definition = {
-
-  get id()
-    "variablecompleter",
-
-  _modules: null,
-
-  "[subscribe('@event/session-started'), enabled]":
-  function onLoad(session)
-  {
-    let modules = session.notify("get/module-instances");
-    this._modules = modules;
-    session.notify(<>initialized/{this.id}</>, this);
-  },
-
-  /*
-   * Search for a given string and notify a listener (either synchronously
-   * or asynchronously) of the result
-   *
-   * @param source - The string to search for
-   * @param listener - A listener to notify when the search is complete
-   */
-  startSearch: function startSearch(source, listener)
-  {
-    let autocomplete_result = null; 
-    let pattern = /^(\w+)\.(.*)$/;
-    let match = pattern.exec(source);
-    if (null === match) {
-      let filtered_modules = this._modules
-        .filter(function(module) module.id && module.id.match(source.split(/\s+/).pop()))
-      autocomplete_result = new AutoCompleteResult(
-        source, 
-        filtered_modules.map(function(module) module.id),
-        filtered_modules.map(function(module) module.description))
-    } else {
-      let [, id, current] = match;
-      let [module] = this._modules.filter(function(module) module.id == id);
-      let properties = [key for (key in module) if (!key.match(/^_/))];
-      let filtered_properties = properties.filter(function(property) property.match(current));
-      autocomplete_result = new AutoCompleteResult(
-        source, 
-        filtered_properties.map(function(property) id + "." + property),
-        filtered_properties.map(function(property) String(module[property])))
-    }
-    listener.doCompletion(autocomplete_result);
-  },
-
-  /*
-   * Stop all searches that are in progress
-   */
-  stopSearch: function stopSearch() 
-  {
-  },
-
-};
-
-
-let CommandCompleter = new Class().extends(Component);
-CommandCompleter.definition = {
-
-  get id()
-    "commandcompleter",
-
-  "[subscribe('@event/session-started'), enabled]":
-  function onLoad(session) 
-  {
-    session.notify(<>initialized/{this.id}</>, this);
-  },
-
-  /*
-   * Search for a given string and notify a listener (either synchronously
-   * or asynchronously) of the result
-   *
-   * @param source - The string to search for
-   * @param listener - A listener to notify when the search is complete
-   */
-  startSearch: function startSearch(source, listener)
-  {
-    let session = this._broker;
-    let command_name = source.split(/\s+/).pop();
-    let commands = session.notify("get/commands")
-      .filter(function(command) {
-        return 0 == command.name.replace(/[\[\]]/g, "").indexOf(command_name);
-      });
-    //  this._broker.notify("command/report-overlay-message", ["not match"].join("/"));
-
-    let autocomplete_result = new AutoCompleteResult(
-      source, 
-      commands.map(function(command) command.name),
-      commands.map(function(command) command.toString()));
-    listener.doCompletion(autocomplete_result);
-  },
-
-  /*
-   * Stop all searches that are in progress
-   */
-  stopSearch: function stopSearch() 
-  {
-  },
-
-};
 
 /**
  * @class Commandline
@@ -714,12 +102,10 @@ Commandline.definition = {
   },
 
   /** post constructor. */
-  "[subscribe('@initialized/command_completion_provider'), enabled]":
-  function onLoad(provider) 
+  "[subscribe('@event/session-started'), enabled]":
+  function onLoad(session) 
   {
-    this._completion_provider = provider
     this.enabled = this.enabled_when_startup;
-    let session = this._broker;
     session.notify(<>initialized/{this.id}</>, this);
   },
 
@@ -744,7 +130,7 @@ Commandline.definition = {
         tagName: "stack",
         style: {
           padding: "2px 8px 3px 8px", 
-          background: "lightgray",
+          background: "#4c4c4c",
           borderBottomLeftRadius: "8px",
           borderBottomRightRadius: "8px",
         },
@@ -755,9 +141,7 @@ Commandline.definition = {
             value: "",
             tagName: "textbox",
             className: "plain",
-            style: {
-              color: "red",
-            },
+            style: { color: "#888", },
           },
           {
             tagName: "textbox",
@@ -765,6 +149,7 @@ Commandline.definition = {
             className: "plain",
             //placeholder: "input commands here.",
             newlines: "replacewithspaces",
+            style: { color: "#fff", },
           },
           {
             tagName: "textbox",
@@ -772,6 +157,7 @@ Commandline.definition = {
             readonly: "true",
             id: "coterminal_statusbar",
             hidden: true,
+            style: { color: "#fff", },
           },
           {
             tagName: "panel",
@@ -809,7 +195,7 @@ Commandline.definition = {
     this.onfocus.enabled = true;
     this.onblur.enabled = true;
     this.oninput.enabled = true;
-    this.onkeydown.enabled = true;
+    this.onkeyup.enabled = true;
     this.onkeypress.enabled = true;
     this.onpopupshowing.enabled = true;
     this.onpopupshown.enabled = true;
@@ -830,7 +216,7 @@ Commandline.definition = {
     this.onfocus.enabled = false;
     this.onblur.enabled = false;
     this.oninput.enabled = false;
-    this.onkeydown.enabled = false;
+    this.onkeyup.enabled = false;
     this.onkeypress.enabled = false;
     this.onpopupshowing.enabled = false;
     this.onpopupshown.enabled = false;
@@ -904,6 +290,7 @@ Commandline.definition = {
       let document = rows.ownerDocument;
       for (let i = 0; i < result.matchCount; ++i) {
         let row = rows.appendChild(document.createElement("row"))
+        row.flex = 1;
         if (i == this.currentIndex) {
           row.style.background = "#226";
           row.style.color = "white";
@@ -914,19 +301,33 @@ Commandline.definition = {
 
         let search_string = result.searchString.toLowerCase();
         let completion_text = result.getValueAt(i);
-        this._broker.notify("command/report-overlay-message", [search_string, completion_text].join("/"));
         if (completion_text) {
-          //completion_text = completion_text.substr(this._search_text.length - search_string.length);
-          let match_position = completion_text.toLowerCase().indexOf(search_string);
+          let match_position = completion_text
+            .toLowerCase().indexOf(search_string);
           if (-1 != match_position) {
+            let before_match = completion_text
+              .substr(0, match_position);
+            let match = completion_text
+              .substr(match_position, search_string.length);
+            let after_match = completion_text
+              .substr(match_position + search_string.length);
             let box = row.appendChild(document.createElement("hbox"));
+            box.style.width = "50%"; 
             box.style.margin = "0px";
-            box.appendChild(document.createTextNode(completion_text.substr(0, match_position)));
+            box.style.overflow = "hidden";
+            box.appendChild(document.createTextNode(before_match));
             label = box.appendChild(document.createElement("label"));
-            label.setAttribute("value", completion_text.substr(match_position, search_string.length));
-            label.style.cssText = "margin: 0px; font-weight: bold; color: #f00; text-decoration: underline;";
-            box.appendChild(document.createTextNode(completion_text.substr(match_position + search_string.length)));
+            label.flex = 1
+            label.setAttribute("value", match);
+            label.style.cssText = <>
+              margin: 0px; 
+              font-weight: bold; 
+              color: #f00; 
+              text-decoration: underline;</>;
+            box.appendChild(document.createTextNode(after_match));
             let comment = row.appendChild(document.createElement("label"));
+            comment.flex = 1; 
+            comment.style.opacity = "0.5";
             comment.setAttribute("value", result.getCommentAt(i));
             comment.setAttribute("crop", "end");
           }
@@ -939,20 +340,25 @@ Commandline.definition = {
   invalidate: function invalidate(result) 
   {
 
-  if (this._textbox.boxObject.scrollLeft > 0) {
+  let textbox = this._textbox;
+  if (textbox.boxObject.scrollLeft > 0) {
       this._completion.inputField.value = "";
     } else if (result.matchCount > 0) {
       if ("closed" == this._popup.state || "hiding" == this._popup.state) {
         let session = this._broker;
         let focused_element = session.document.commandDispatcher.focusedElement;
-        if (focused_element.isEqualNode(this._textbox.inputField)) {
-          this._popup.openPopup(this._textbox, "after_start", 0, 0, true, true);
+        if (focused_element && focused_element.isEqualNode(textbox.inputField)) {
+          this._popup.openPopup(textbox, "after_start", 0, 0, true, true);
         }
       }
       let index = Math.max(0, this.currentIndex);
-      let completion_text = this._result.getValueAt(index);
-      if (0 == completion_text.indexOf(this._search_text)) {
-        this._completion.inputField.value = this._settled_text + completion_text;
+      let completion_text = result.getValueAt(index);
+      if (0 == completion_text.indexOf(result.searchString)) {
+        let settled_length = 
+          this._stem_text.length - result.searchString.length;
+        let settled_text = textbox.value.substr(0, settled_length);
+        this._completion.inputField.value 
+          = settled_text + completion_text;
       } else {
         this._completion.inputField.value = "";
       }
@@ -965,9 +371,14 @@ Commandline.definition = {
   fill: function fill()
   {
     let index = Math.max(0, this.currentIndex);
+    let result = this._result;
     if (this._result) {
-      let completion_text = this._result.getValueAt(index);
-      this._textbox.inputField.value = this._settled_text + completion_text;
+      let textbox = this._textbox;
+      let completion_text = result.getValueAt(index);
+      let settled_length = 
+        this._stem_text.length - result.searchString.length;
+      let settled_text = textbox.value.substr(0, settled_length);
+      textbox.inputField.value = settled_text + completion_text;
       this._completion.inputField.value = "";
     }
   },
@@ -985,11 +396,15 @@ Commandline.definition = {
       if (0 != this._completion.value.indexOf(current_text)) {
         this._completion.inputField.value = "";
       }
-      let point = current_text.indexOf(" ") + 1;
-      this._settled_text = current_text.substr(0, point);
-      this._search_text = current_text.substr(point);
+      this._stem_text = current_text;
       this.select(-1);
-      this._completion_provider.complete(current_text, this);
+      let session = this._broker;
+      session.notify(
+        "command/complete", 
+        {
+          source: current_text, 
+          listener: this,
+        });
     }, this.completion_delay, this);
   },
 
@@ -1031,12 +446,12 @@ Commandline.definition = {
     session.notify("command/focus");
   },
 
-  "[listen('keydown', '#coterminal_commandline', true)]":
-  function onkeydown(event) 
+  "[listen('keyup', '#coterminal_commandline', true)]":
+  function onkeyup(event) 
   { // nothrow
     if (17 == event.keyCode &&
         17 == event.which &&
-        event.ctrlKey &&
+        !event.ctrlKey &&
         !event.altKey &&
         !event.shiftKey &&
         !event.isChar
@@ -1056,6 +471,10 @@ Commandline.definition = {
   function onkeypress(event) 
   {
     let code = event.keyCode || event.which;
+    this._broker.notify(
+      "command/report-overlay-message", 
+      [event.keyCode,event.which,event.isChar].join("/"));
+    let is_char = 0 == event.keyCode;
 
     if (event.ctrlKey) { // ^
       event.stopPropagation();
@@ -1099,11 +518,11 @@ Commandline.definition = {
       code = 0x26;
     if (0x09 == code && !event.shiftKey) // tab
       code = 0x28;
-    if (0x26 == code && !event.isChar) { // up 
+    if (0x26 == code && !is_char) { // up 
       this.up();
-    } else if (0x28 == code && !event.isChar) { // down
+    } else if (0x28 == code && !is_char) { // down
       this.down();
-    } else if (0x0d == code && !event.isChar) {
+    } else if (0x0d == code && !is_char) {
       this.enter();
     } 
     //this._completion.inputField.value = "";
@@ -1141,27 +560,6 @@ Commandline.definition = {
 
 };
 
-/**
- * @class CommandlineScanner
- */
-let CommandlineScanner = new Class();
-CommandlineScanner.definition = {
-
-  first: 0,
-  last: 0,
-  _text: null,
-
-  initialize: function initialize(source) 
-  {
-    this._text = source;
-    this._regexp = /\S+/y;
-  },
-  
-  scan: function scan()
-  {
-  },
-
-};
 
 /**
  * @fn main
@@ -1174,20 +572,7 @@ function main(process)
     "initialized/session", 
     function(session) 
     {
-      try {
-      new CommandProvider(session);
-      new GoCommandParser(session);
-      new SetCommandParser(session);
-      new CommandCompleter(session);
-      new VariableCompleter(session);
-      new HistoryCompleter(session);
-      new CommandCompletionProvider(session);
       new Commandline(session);
-      new JsCommandParser(session);
-      new JsCompleter(session);
-      } catch (e) {
-        alert(e)
-      }
     });
 }
 
