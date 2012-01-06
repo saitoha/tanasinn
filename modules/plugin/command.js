@@ -102,6 +102,17 @@ CommandProvider.definition = {
 /**
  *
  */
+let OnCommand = new Class().extends(Component);
+OnCommand.definition = {
+
+  get id()
+    "on",
+};
+
+
+/**
+ *
+ */
 let JsCommand = new Class().extends(Component);
 JsCommand.definition = {
 
@@ -208,6 +219,7 @@ function main(process)
     function(session) 
     {
       new CommandProvider(session);
+      new OnCommand(session);
       new JsCommand(session);
       new GoCommand(session);
       new SetCommand(session);

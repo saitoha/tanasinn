@@ -532,7 +532,10 @@ Commandline.definition = {
   function onselect(event) 
   {
     let session = this._broker;
-    session.notify("command/eval-commandline", this._textbox.value);
+    let command = this._textbox.value;
+    this._textbox.inputField.value = "";
+    this._completion.inputField.value = "";
+    session.notify("command/eval-commandline", command);
   },
 
   "[listen('popupshown', '#coterminal_commandline', false)]":

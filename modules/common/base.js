@@ -595,21 +595,25 @@ ListenAttribute.definition = {
       }
       let id = [this.id, key].join(".");
       let listener_info = attribute["listen"];
-      let enabled = false;
-      wrapped_handler.__defineGetter__("enabled", function() enabled);
-      wrapped_handler.__defineSetter__("enabled", function(value) {
-        if (enabled == value)
-          return;
-        enabled = value;
-        if (enabled) {
-          listener_info.context = this;
-          listener_info.handler = wrapped_handler;
-          listener_info.id = listener_info.id || id;
-          broker.notify("command/add-domlistener", listener_info);
-        } else {
-          broker.notify("command/remove-domlistener", listener_info.id);
-        }
-      });
+
+      wrapped_handler.watch("enabled", 
+        wrapped_handler.onChange = let (self = this, old_onchange = wrapped_handler.onChange) 
+          function(id, oldval, newval) 
+          {
+            if (old_onchange) {
+              old_onchange.apply(wrapped_handler, arguments);
+            }
+            if (oldval != newval) {
+              if (newval) {
+                listener_info.context = this;
+                listener_info.handler = wrapped_handler;
+                listener_info.id = listener_info.id || id;
+                broker.notify("command/add-domlistener", listener_info);
+              } else {
+                broker.unsubscribe(wrapped_handler.id);
+              }
+            }
+          });
       if (attribute["enabled"]) {
         wrapped_handler.enabled = true;
       };
@@ -652,22 +656,27 @@ SubscribeAttribute.definition = {
         let topic = attribute.subscribe;
         broker.subscribe(topic, wrapped_handler, undefined, id);
       };
-      let enabled = false;
-      wrapped_handler.__defineGetter__("enabled", function() enabled);
-      wrapped_handler.__defineSetter__("enabled", function(value) {
-        if (enabled == value)
-          return;
-        enabled = value;
-        if (enabled) {
-          let topic = attribute.subscribe;
-          broker.subscribe(topic, wrapped_handler, undefined, id);
-        } else {
-          broker.unsubscribe(id);
-        }
-      });
+
+      wrapped_handler.watch("enabled", 
+        wrapped_handler.onChange = let (self = this, old_onchange = wrapped_handler.onChange) 
+          function(id, oldval, newval) 
+          {
+            if (old_onchange) {
+              old_onchange.apply(wrapped_handler, arguments);
+            }
+            if (oldval != newval) {
+              if (newval) {
+                let topic = attribute.subscribe;
+                broker.subscribe(topic, wrapped_handler, undefined, id);
+              } else {
+                broker.unsubscribe(wrapped_handler.id);
+              }
+            }
+          });
       if (attribute["enabled"]) {
         wrapped_handler.enabled = true;
       };
+
       broker.subscribe("get/subscribers", 
         function(subscribers) {
           subscribers[id] = handler;
@@ -752,26 +761,28 @@ KeyAttribute.definition = {
         delegate.description = attribute.description;
         delegate.expressions = expressions;
 
-        let enabled = false;
-        delegate.__defineGetter__("enabled", function() enabled);
-        delegate.__defineSetter__("enabled", function(value) {
-          if (enabled == value)
-            return;
-          enabled = value;
-          expressions.forEach(function(expression) {
-            if (enabled) {
-              let expressions = delegate.expressions;
-              let packed_code = coUtils.Keyboard.parseExpression(expression);
-              let topic = coUtils.Text.format("key-pressed/%d", packed_code);
-              broker.subscribe(topic, function(info) {
-                delegate.call(this, info.event);
-                info.handled = true;
-              }, this, delegate.id);
-            } else {
-              broker.unsubscribe(delegate.id);
-            }
-          }, this); // expressions.forEach
-        });
+        delegate.watch("enabled", 
+          delegate.onChange = let (self = this, old_onchange = delegate.onChange) 
+            function(id, oldval, newval) 
+            {
+              if (old_onchange) {
+                old_onchange.apply(delegate, arguments);
+              }
+              if (oldval != newval) {
+                if (newval) {
+                  expressions.forEach(function(expression) {
+                    let expressions = delegate.expressions;
+                    let packed_code = coUtils.Keyboard.parseExpression(expression);
+                    broker.subscribe(<>key-pressed/{packed_code}</>, function(info) {
+                      delegate.call(this, info.event);
+                      info.handled = true;
+                    }, this, delegate.id);
+                  }, self); // expressions.forEach
+                } else {
+                  broker.unsubscribe(delegate.id);
+                }
+              }
+            });
         if (attribute["enabled"]) {
           delegate.enabled = true;
         };
@@ -843,7 +854,8 @@ CommandAttribute.definition = {
 
         complete: function complete(source, listener) 
         {
-          this.args.map(function(arg)
+          let args = this.args;
+          args && args.map(function(arg)
           {
             return broker.uniget(<>get/completer/{arg}</>);
           }).some(function(completer)
@@ -865,19 +877,22 @@ CommandAttribute.definition = {
         },
       }
 
-      let enabled = false;
-      delegate.__defineGetter__("enabled", function() enabled);
-      delegate.__defineSetter__("enabled", function(value) {
-        if (enabled == value)
-          return;
-        enabled = value;
-        if (enabled) {
-          broker.subscribe(
-            "get/commands", function() command, this, delegate.id);
-        } else {
-          broker.unsubscribe(delegate.id);
-        }
-      });
+      delegate.watch("enabled", 
+        delegate.onChange = let (self = this, old_onchange = delegate.onChange) 
+          function(id, oldval, newval) 
+          {
+            if (old_onchange) {
+              old_onchange.apply(delegate, arguments);
+            }
+            if (oldval != newval) {
+              if (newval) {
+                broker.subscribe(
+                  "get/commands", function() command, undefined, delegate.id);
+              } else {
+                broker.unsubscribe(delegate.id);
+              }
+            }
+          });
       if (attribute["enabled"]) {
         delegate.enabled = true;
       };

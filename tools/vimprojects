@@ -105,6 +105,9 @@
     stylemanager.js
     font.js
    }
+   commandline.js
+   completer.js
+   command.js
 
    notimpl {
     test.js
@@ -114,7 +117,6 @@
     key.js
     panelmanager.js
     sequence.js
-    commandline.js
     overlay.js
    }
   }
