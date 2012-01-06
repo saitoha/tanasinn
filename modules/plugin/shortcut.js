@@ -66,7 +66,7 @@ Shortcut.definition = {
     bottom_panel.remove(this.id);
   },
 
-  "[key('meta + t'), _('Open shortcut manager.')]":
+  "[command('shortcutmanager'), key('meta + t'), _('Open shortcut manager.')]":
   function select()
   {
     this._bottom_panel.select(this.id);

@@ -391,13 +391,13 @@ CommandCompleter.definition = {
     let command_name = source.split(/\s+/).pop();
     let commands = session.notify("get/commands")
       .filter(function(command) {
-        return 0 == command.name.replace(/[\[\]]/g, "")
+        return 0 == command.name.replace(/[\[\]]+/g, "")
           .indexOf(command_name);
       });
 
     let autocomplete_result = new AutoCompleteResult(
       source, 
-      commands.map(function(command) command.name),
+      commands.map(function(command) command.name.replace(/[\[\]]+/g, "")),
       commands.map(function(command) command.description));
     listener.doCompletion(autocomplete_result);
   },

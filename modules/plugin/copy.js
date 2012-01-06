@@ -83,7 +83,7 @@ Copy.definition = {
   },
 
   /** Get selected text and put it to clipboard.  */
-  "[key('meta + c', 'ctrl + shift + c'), _('Copy selected text.')] copy": 
+  "[command('copy'), key('meta + c', 'ctrl + shift + c'), _('Copy selected text.')] copy": 
   function copy(info) 
   {
     // get selection range from "selection plugin"

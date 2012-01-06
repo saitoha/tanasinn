@@ -227,7 +227,7 @@ Localize.definition = {
     this.select.enabled = false;
   },
 
-  "[key('meta r'), _('Open localize manager.')]":
+  "[command('localizemanager/lm'), key('meta r'), _('Open localize manager.')]":
   function select()
   {
     this._bottom_panel.select(this);

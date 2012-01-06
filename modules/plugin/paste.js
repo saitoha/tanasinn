@@ -77,7 +77,7 @@ Paste.definition = {
   },
 
   /** */
-  "[key('meta + v', 'ctrl + v'), _('Paste from clipboard.')]": 
+  "[command('paste'), key('meta + v', 'ctrl + v'), _('Paste from clipboard.')]": 
   function paste() 
   {
     let clipboard = Components

@@ -119,7 +119,7 @@ ComponentViewer.definition = {
     this.update();
   },
 
-  "[key('meta m'), _('Open module viewer.')]":
+  "[command('moduleviewer/mv'), key('meta m'), _('Open module viewer.')]":
   function select()
   {
     this._bottom_panel.select(this.id);

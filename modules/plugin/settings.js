@@ -185,7 +185,7 @@ SettingsBrowser.definition = {
     this._bottom_panel.remove(this.id);
   },
 
-  "[key('meta + s'), _('Open settings manager.')]":
+  "[command('settingsmanager'), key('meta + s'), _('Open settings manager.')]":
   function select()
   {
     this._bottom_panel.select(this.id);

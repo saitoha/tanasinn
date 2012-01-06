@@ -51,7 +51,7 @@ Tracer.definition = {
     this.onBeforeInput.enabled = true;
     let emurator = this._emurator;
     let session = this._broker;
-    let sequences = session.notify("get/sequences");
+    let sequences = this._backup_sequences = session.notify("get/sequences");
 
     sequences.forEach(function(information)
     {
@@ -112,6 +112,7 @@ Tracer.definition = {
       value: [message],
     };
     let session = this._broker;
+    session.notify("command/report-status-message", message); 
     session.notify("command/trace-sequence", [info, undefined]); 
   },
 
@@ -466,7 +467,7 @@ StepExecution.definition = {
     }
   },
 
-  "[key('meta + d'), _('Open debugger.')]":
+  "[command('debugger'), key('meta + d'), _('Open debugger.')]":
   function select() 
   {
     this._bottom_panel.select(this.id);

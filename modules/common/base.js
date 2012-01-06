@@ -220,7 +220,7 @@ Class.prototype = {
       }
     }
     constructor.watch("prototype", 
-      function(id, oldval, newval) this.applyDefinition(newval));
+      function(name, oldval, newval) this.applyDefinition(newval));
     constructor.__proto__ = this;
     return constructor;
   },
@@ -586,19 +586,20 @@ ListenAttribute.definition = {
         continue;
       let handler = this[key];
       let wrapped_handler;
+      let id = [this.id, key].join(".");
       if (handler.id) {
         wrapped_handler = handler;
       } else {
         let self = this;
         wrapped_handler = function() handler.apply(self, arguments);
+        wrapped_handler.id = id;
         this[key] = wrapped_handler;
       }
-      let id = [this.id, key].join(".");
       let listener_info = attribute["listen"];
 
       wrapped_handler.watch("enabled", 
         wrapped_handler.onChange = let (self = this, old_onchange = wrapped_handler.onChange) 
-          function(id, oldval, newval) 
+          function(name, oldval, newval) 
           {
             if (old_onchange) {
               old_onchange.apply(wrapped_handler, arguments);
@@ -610,7 +611,7 @@ ListenAttribute.definition = {
                 listener_info.id = listener_info.id || id;
                 broker.notify("command/add-domlistener", listener_info);
               } else {
-                broker.unsubscribe(wrapped_handler.id);
+                broker.notify("command/remove-domlistener", listener_info.id);
               }
             }
           });
@@ -644,14 +645,15 @@ SubscribeAttribute.definition = {
         continue;
       let handler = this[key];
       let wrapped_handler;
+      let id = [this.id, key].join(".");
       if (handler.id) {
         wrapped_handler = handler;
       } else {
         let self = this;
         wrapped_handler = function() handler.apply(self, arguments);
+        wrapped_handler.id = id;
         this[key] = wrapped_handler;
       }
-      let id = [this.id, key].join(".");
       let listen = function() {
         let topic = attribute.subscribe;
         broker.subscribe(topic, wrapped_handler, undefined, id);
@@ -659,7 +661,7 @@ SubscribeAttribute.definition = {
 
       wrapped_handler.watch("enabled", 
         wrapped_handler.onChange = let (self = this, old_onchange = wrapped_handler.onChange) 
-          function(id, oldval, newval) 
+          function(name, oldval, newval) 
           {
             if (old_onchange) {
               old_onchange.apply(wrapped_handler, arguments);
@@ -763,7 +765,7 @@ KeyAttribute.definition = {
 
         delegate.watch("enabled", 
           delegate.onChange = let (self = this, old_onchange = delegate.onChange) 
-            function(id, oldval, newval) 
+            function(name, oldval, newval) 
             {
               if (old_onchange) {
                 old_onchange.apply(delegate, arguments);
@@ -847,47 +849,51 @@ CommandAttribute.definition = {
       delegate.id = delegate.id || [this.id, key].join(".");
       delegate.description = attribute.description;
 
-      let command = {
-        name: command_info.name,
-        description: attribute.description,
-        args: command_info.args,
+      let commands = command_info.name
+        .split("/")
+        .map(function(name)
+        let (self = this) {
+          name: name,
+          description: attribute.description,
+          args: command_info.args,
 
-        complete: function complete(source, listener) 
-        {
-          let args = this.args;
-          args && args.map(function(arg)
+          complete: function complete(source, listener) 
           {
-            return broker.uniget(<>get/completer/{arg}</>);
-          }).some(function(completer)
-          {
-            let position = completer.startSearch(source, listener);
-            const NOT_MATCH = -1;
-            const MATCH = 0;
-            if (NOT_MATCH == position || MATCH == position) {
-              return true;
-            }
-            source = source.substr(position); // advance current position
-            return false;
-          });
-        },
+            let args = this.args;
+            args && args.map(function(arg)
+            {
+              return broker.uniget(<>get/completer/{arg}</>);
+            }).some(function(completer)
+            {
+              let position = completer.startSearch(source, listener);
+              const NOT_MATCH = -1;
+              const MATCH = 0;
+              if (NOT_MATCH == position || MATCH == position) {
+                return true;
+              }
+              source = source.substr(position); // advance current position
+              return false;
+            });
+          },
 
-        evaluate: let (self = this) function evaluate() 
-        {
-          handler.apply(self, arguments);
-        },
-      }
+          evaluate: function evaluate() 
+          {
+            handler.apply(self, arguments);
+          },
+        }, this);
 
       delegate.watch("enabled", 
         delegate.onChange = let (self = this, old_onchange = delegate.onChange) 
-          function(id, oldval, newval) 
+          function(name, oldval, newval) 
           {
             if (old_onchange) {
               old_onchange.apply(delegate, arguments);
             }
             if (oldval != newval) {
               if (newval) {
-                broker.subscribe(
-                  "get/commands", function() command, undefined, delegate.id);
+                commands.forEach(function(command) {
+                  broker.subscribe("get/commands", function() command, undefined, delegate.id);
+                });
               } else {
                 broker.unsubscribe(delegate.id);
               }

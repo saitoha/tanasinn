@@ -67,14 +67,14 @@ FontSize.definition = {
   },
 
   /** Makes font size smaller. */
-  "[key('meta -', 'ctl -'), _('Make font size smaller.')]":
+  "[command('dec[rement]/df'), key('meta -', 'ctl -'), _('Make font size smaller.')]":
   function decrease()
   {
     this._changeFontSizeByOffset(-1);
   },
 
   /** Makes font size bigger. */
-  "[key('meta shift \\\\+'), _('Make font size bigger.')]":
+  "[command('inc[lement]/if'), key('meta shift \\\\+'), _('Make font size bigger.')]":
   function increase()
   {
     this._changeFontSizeByOffset(+1);

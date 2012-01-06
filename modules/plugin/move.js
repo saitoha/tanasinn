@@ -75,7 +75,7 @@ MoveShortcut.definition = {
   /** Moves window to right. 
    *  @param {Object} A shortcut information object.
    */
-  "[key('meta + h', 'ctrl + shift + h'), _('Move window to left')]":
+  "[command('left'), key('meta + h', 'ctrl + shift + h'), _('Move window to left')]":
   function left(info)
   {
     let session = this._broker;
@@ -85,7 +85,7 @@ MoveShortcut.definition = {
   /** Moves window down. 
    *  @param {Object} A shortcut information object.
    */
-  "[key('meta + j', 'ctrl + shift + j'), _('Move window down')]":
+  "[command('down'), key('meta + j', 'ctrl + shift + j'), _('Move window down')]":
   function down(info)
   {
     let session = this._broker;
@@ -95,17 +95,17 @@ MoveShortcut.definition = {
   /** Moves window up. 
    *  @param {Object} A shortcut information object.
    */
-  "[key('meta + k', 'ctrl + shift + k'), _('Move window up')]":
+  "[command('up'), key('meta + k', 'ctrl + shift + k'), _('Move window up')]":
   function up(info)
   {
     let session = this._broker;
     session.notify("command/move-by", [0, -this.step]);
   },
 
-  /** Moves window to left. 
+  /** Moves window to right. 
    *  @param {Object} A shortcut information object.
    */
-  "[key('meta + l', 'ctrl + shift + l'), _('Move window to right')]":
+  "[command('right'), key('meta + l', 'ctrl + shift + l'), _('Move window to right')]":
   function right(info)
   {
     let session = this._broker;
