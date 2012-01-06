@@ -79,36 +79,39 @@ CommandProvider.definition = {
   "[subscribe('command/eval-commandline')]":
   function evaluate(source) 
   {
-    try {
     let pattern = /^\s*(\w+)(\s*)/y;
     let match = pattern.exec(source);
     if (null === match) {
-      return (null)
+      let session = this._broker;
+      session.notify(
+        "command/report-status-message", 
+        _("Fail to parse given commandline code."));
+      return null
     }
     let [, command_name, /* blank */] = match;
     let command = this._getCommand(command_name);
     if (!command) {
+      let session = this._broker;
+      session.notify(
+        "command/report-status-message", 
+        coUtils.Text.format(
+          _("Command '%s' is not found."), command_name));
       return null; // unknown command;
     }
-    let text = source.substr(pattern.lastIndex);
-    return command.evaluate(text);
+
+    try {
+      let text = source.substr(pattern.lastIndex);
+      return command.evaluate(text);
     } catch (e) {
-      alert(e)
+      let session = this._broker;
+      session.notify(
+        "command/report-status-message", 
+        coUtils.Text.format(
+          _("Fail to evaluate given commandline code: %s"), e));
       return null;
     }
   },
 };
-
-/**
- *
- */
-let OnCommand = new Class().extends(Component);
-OnCommand.definition = {
-
-  get id()
-    "on",
-};
-
 
 /**
  *
@@ -207,6 +210,40 @@ GoCommand.definition = {
   },
 };
 
+let FontselCommand = new Class().extends(Component);
+FontselCommand.definition = {
+
+  get id()
+    "fontselcommand",
+
+  "[command('fontsel', ['font']), _('Select terminal font.'), enabled]":
+  function evaluate(arguments_string)
+  {
+    let session = this._broker;
+    session.notify("set/font-family", font_family);
+    session.notify("command/draw", true);
+  },
+};
+
+let ColorselCommand = new Class().extends(Component);
+ColorselCommand.definition = {
+
+  get id()
+    "colorselcommand",
+
+  "[command('fgcolor', ['color-number', 'foreground-color']), _('Select terminal color.'), enabled]":
+  function fgcolor(arguments_string)
+  {
+    let session = this._broker;
+  },
+
+  "[command('bgcolor', ['color-number', 'background-color']), _('Select terminal color.'), enabled]":
+  function bgcolor(arguments_string)
+  {
+    let session = this._broker;
+  },
+};
+
 /**
  * @fn main
  * @brief Module entry point.
@@ -219,10 +256,11 @@ function main(process)
     function(session) 
     {
       new CommandProvider(session);
-      new OnCommand(session);
       new JsCommand(session);
       new GoCommand(session);
       new SetCommand(session);
+      new FontselCommand(session);
+      new ColorselCommand(session);
     });
 }
 

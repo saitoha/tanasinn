@@ -49,7 +49,7 @@ Commandline.definition = {
     if (!this._result) {
       return 0;
     }
-    return this._result.matchCount;
+    return this._result.labels.length;
   },
 
   get currentIndex()
@@ -68,18 +68,18 @@ Commandline.definition = {
 
     let row;
     if (this._index > -1) {
-      row = this._tree.childNodes[this._index];
+      row = this._tree.querySelector("rows").childNodes[this._index];
       if (!row)
         return;
       row.style.background = "";
       row.style.color = "";
     }
     if (index > -1) {
-      row = this._tree.childNodes[index];
-      row.style.background = "#226";
+      row = this._tree.querySelector("rows").childNodes[index];
+      row.style.background = "#999";
       row.style.color = "white";
       try {
-        let scroll_box = this._tree.parentNode.parentNode;
+        let scroll_box = this._tree.parentNode;
         let box_object = scroll_box.boxObject
           .QueryInterface(Components.interfaces.nsIScrollBoxObject)
         if (box_object) {
@@ -174,10 +174,7 @@ Commandline.definition = {
               style: { overflowY: "auto", },
               childNodes: {
                 tagName: "grid",
-                childNodes: {
-                  tagName: "rows",
-                  id: "coterminal_completion_tree",
-                }
+                id: "coterminal_completion_tree",
               }
             }, // tree
           },  // panel
@@ -278,62 +275,27 @@ Commandline.definition = {
     session.notify("command/focus");
   },
 
+
   doCompletion: function doCompletion(result) 
   {
     this._result = result;
     delete this._timer;
-    let rows = this._tree;
-    while (rows.firstChild) {
-      rows.removeChild(rows.firstChild);
+    let grid = this._tree;
+    if (grid.firstChild) {
+      grid.removeChild(grid.firstChild);
     }
     if (result) {
-      let document = rows.ownerDocument;
-      for (let i = 0; i < result.matchCount; ++i) {
-        let row = rows.appendChild(document.createElement("row"))
-        row.flex = 1;
-        if (i == this.currentIndex) {
-          row.style.background = "#226";
-          row.style.color = "white";
-        } else {
-          row.style.background = "";
-          row.style.color = "";
-        }
-
-        let search_string = result.searchString.toLowerCase();
-        let completion_text = result.getValueAt(i);
-        if (completion_text) {
-          let match_position = completion_text
-            .toLowerCase().indexOf(search_string);
-          if (-1 != match_position) {
-            let before_match = completion_text
-              .substr(0, match_position);
-            let match = completion_text
-              .substr(match_position, search_string.length);
-            let after_match = completion_text
-              .substr(match_position + search_string.length);
-            let box = row.appendChild(document.createElement("hbox"));
-            box.style.width = "50%"; 
-            box.style.margin = "0px";
-            box.style.overflow = "hidden";
-            box.appendChild(document.createTextNode(before_match));
-            label = box.appendChild(document.createElement("label"));
-            label.flex = 1
-            label.setAttribute("value", match);
-            label.style.cssText = <>
-              margin: 0px; 
-              font-weight: bold; 
-              color: #f00; 
-              text-decoration: underline;</>;
-            box.appendChild(document.createTextNode(after_match));
-            let comment = row.appendChild(document.createElement("label"));
-            comment.flex = 1; 
-            comment.style.opacity = "0.5";
-            comment.setAttribute("value", result.getCommentAt(i));
-            comment.setAttribute("crop", "end");
-          }
-        }
+      let type = result.type || "text";
+      let session = this._broker;
+      let driver = session.uniget(<>get/completion-display-driver/{type}</>); 
+      if (driver) {
+        driver.drive(grid, result, this.currentIndex);
+        this.invalidate(result);
+      } else {
+        coUtils.Debug.reportError(
+          _("Unknown completion display driver type: '%s'."), 
+          type);
       }
-      this.invalidate(result);
     }
   },
 
@@ -343,7 +305,7 @@ Commandline.definition = {
   let textbox = this._textbox;
   if (textbox.boxObject.scrollLeft > 0) {
       this._completion.inputField.value = "";
-    } else if (result.matchCount > 0) {
+    } else if (result.labels.length > 0) {
       if ("closed" == this._popup.state || "hiding" == this._popup.state) {
         let session = this._broker;
         let focused_element = session.document.commandDispatcher.focusedElement;
@@ -352,10 +314,10 @@ Commandline.definition = {
         }
       }
       let index = Math.max(0, this.currentIndex);
-      let completion_text = result.getValueAt(index);
-      if (0 == completion_text.indexOf(result.searchString)) {
+      let completion_text = result.labels[index];
+      if (0 == completion_text.indexOf(result.query)) {
         let settled_length = 
-          this._stem_text.length - result.searchString.length;
+          this._stem_text.length - result.query.length;
         let settled_text = textbox.value.substr(0, settled_length);
         this._completion.inputField.value 
           = settled_text + completion_text;
@@ -374,9 +336,9 @@ Commandline.definition = {
     let result = this._result;
     if (this._result) {
       let textbox = this._textbox;
-      let completion_text = result.getValueAt(index);
+      let completion_text = result.labels[index];
       let settled_length = 
-        this._stem_text.length - result.searchString.length;
+        this._stem_text.length - result.query.length;
       let settled_text = textbox.value.substr(0, settled_length);
       textbox.inputField.value = settled_text + completion_text;
       this._completion.inputField.value = "";

@@ -562,19 +562,6 @@ Console.definition = {
     this._bottom_panel.select("console.panel");
   },
 
-  "[command('onnn'), _('Run a javascript code.'), enabled]":
-  function evaluate(arguments_string)
-  {
-    let session = this._broker;
-    try {
-      let result = new Function(
-        "with (arguments[0]) { return (" + arguments_string + ");}"
-      ) (session.window);
-    } catch (e) {
-      session.notify("command/report-status-message", e);
-    }
-  },
-
 };
 
 

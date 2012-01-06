@@ -177,8 +177,13 @@ TemplateBuilder.definition = {
   buildChrome: 
   function buildChrome(template, results) 
   {
-    if (!template.tagName)
-      throw coUtils.Debug.Exception(_("tagName property not found."));
+    if (!template.tagName) {
+      if (!template.text) {
+        throw coUtils.Debug.Exception(_("tagName property not found."));
+      }
+      let document = this._root_element.ownerDocument;
+      return document.createTextElement(template.text);
+    }
     let element = this._createElement(template.tagName);
     if (!element) {
       throw coUtils.Debug.Exception(
@@ -203,42 +208,6 @@ TemplateBuilder.definition = {
         this._processInnerText(element, value);
       } else if ("childNodes" == key) {
         this._processChildChromeNodes(element, value, results);
-      } else { // other properties
-        this._processAttribute(element, key, value);
-      }
-    }
-    return element;
-  },
-
-  /** Builds a set of nodes of XUL/HTML/SVG elements. */
-  build: 
-  function build(template, results) 
-  {
-    if (!template.tagName)
-      throw coUtils.Debug.Exception(_("tagName property not found."));
-    let element = this._createElement(template.tagName);
-    if (!element) {
-      throw coUtils.Debug.Exception(
-        _("Invalid tagName was detected: '%s'."), template.tagName);
-    }
-    if (template.parentNode) { // processes "parentNode" property.
-      this._processParentNode(element, template.parentNode);
-    }
-    results.push(element);
-
-    for (let [key, value] in Iterator(template)) {
-      if ("tagName" == key) {
-        // pass
-      } else if ("parentNode" == key) {
-        // pass
-      } else if ("listener" == key) {
-        this._processListener(element, value);
-      } else if ("onconstruct" == key) {
-        value.call(element);
-      } else if ("innerText" == key) {
-        this._processInnerText(element, value);
-      } else if ("childNodes" == key) {
-        this._processChildNodes(element, value, results);
       } else { // other properties
         this._processAttribute(element, key, value);
       }
@@ -394,19 +363,12 @@ ChromeBuilder.definition = {
   },
 
 // public
-  "[subscribe('command/construct-ui'), enabled]":
-  function construct(template) 
-  {
-    let results = [];
-    this.build(template, results);
-    return results;
-  },
-
   "[subscribe('command/construct-chrome'), enabled]":
   function constructChrome(template) 
   {
     let results = {}
-    this.buildChrome(template, results);
+    let element = this.buildChrome(template, results);
+    results["#root"] = element;
     return results;
   },
 

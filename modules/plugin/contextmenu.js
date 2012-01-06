@@ -46,6 +46,7 @@ Contextmenu.definition = {
     {
       tagName: "menupopup",
       parentNode: "#coterminal_center_area",
+      id: "coterminal_contextmenu",
       childNodes: entries,
       listener: {
         type: "popuphidden", 
@@ -107,11 +108,13 @@ Contextmenu.definition = {
     let entries = session
       .notify("get/contextmenu-entries")
       .filter(function(entry) entry);
-    if (0 == entries.length)
+    if (0 == entries.length) {
       return;
+    }
     this._entries = entries;
-    let [ [contextmenu] ] = session.notify("command/construct-ui", this.template);
-    contextmenu.openPopupAtScreen(x, y, true);
+    let {coterminal_contextmenu} 
+      = session.uniget("command/construct-chrome", this.template);
+    coterminal_contextmenu.openPopupAtScreen(x, y, true);
   },
 };
 

@@ -99,15 +99,17 @@
    w3m.js
    vimp.js
 
+   overlay.js
+   commandline.js
+   completer.js
+   command.js
+
    incomplete {
     minimize.js
     search.js
     stylemanager.js
     font.js
    }
-   commandline.js
-   completer.js
-   command.js
 
    notimpl {
     test.js
@@ -117,7 +119,6 @@
     key.js
     panelmanager.js
     sequence.js
-    overlay.js
    }
   }
   locale=locale {

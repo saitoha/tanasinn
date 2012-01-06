@@ -1,4 +1,4 @@
-/* -*- Mode: JAVASCRIPT; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 4 -*-
+/* -*- Mode: JAVASCRIPT; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*-
  *
  * ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1
@@ -22,72 +22,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-let AutoCompleteResult = new Class();
-AutoCompleteResult.definition = {
-
-  get wrappedJSObject()
-    this,
-
-  initialize: function initialize(search_string, results, comments) 
-  {
-    this.searchString = search_string;
-    this._results = results;
-    this._comments = comments;
-  },
-
-  get matchCount()
-    this._results.length,
-
-  getValueAt: function getValueAt(index) 
-  {
-    if (index >= 0 && index < this._results.length)
-      return this._results[index];
-    return "";
-  },
-
-  getCommentAt: function getCommentAt(index)
-  {
-    if (this._comments && index < this._results.length)
-      return this._comments[index]
-    return "";
-  },
-
-  getStyleAt: function getStyleAt(index)
-  {
-    if (!this._comments || !this._comments[index])
-      return null;
-    if (index == 0)
-      return "suggestfirst";
-    return "suggesthint";
-  },
-
-  getImageAt: function getImageAt(index)
-  {
-    return "";
-  },
-
-  removeValueAt: function removeValueAt(index, removeFromDb)
-  {
-    this._results.splice(index, 1);
-    if (this._comments) {
-      this._comments.splice(index, 1);
-    }
-  },
-
-  getLabelAt: function getLabelAt(index)
-  {
-    return this._results[index];
-  },
-
-  QueryInterface: function QueryInterface(a_IID)
-  {
-    if (!a_IID.equals(Components.interfaces.nsISupports)
-     && !a_IID.equals(Components.interfaces.nsIAutoCompleteResult))
-      throw Components.results.NS_ERROR_NOT_IMPLEMENTED;
-    return this;
-  },
-};
-
 /**
  * @abstruct CompleterBase
  */
@@ -100,11 +34,58 @@ CompleterBase.definition = {
     session.subscribe(
       <>get/completer/{this.type}</>, 
       let (self = this) function() self);
-    session.notify(<>initialized/{this.id}</>, this);
   },
 
 };
 
+
+/**
+ * @class CommandCompleter
+ *
+ */
+let CommandCompleter = new Class().extends(CompleterBase);
+CommandCompleter.definition = {
+
+  get id()
+    "commandcompleter",
+
+  get type()
+    "command",
+
+  /*
+   * Search for a given string and notify a listener (either synchronously
+   * or asynchronously) of the result
+   *
+   * @param source - The string to search for
+   * @param listener - A listener to notify when the search is complete
+   */
+  startSearch: function startSearch(source, listener)
+  {
+    let session = this._broker;
+    let command_name = source.split(/\s+/).pop();
+    let commands = session.notify("get/commands")
+      .filter(function(command) {
+        return 0 == command.name.replace(/[\[\]]+/g, "")
+          .indexOf(command_name);
+      });
+    let autocomplete_result = {
+      type: "text",
+      query: source, 
+      labels: commands.map(function(command) command.name.replace(/[\[\]]+/g, "")),
+      comments: commands.map(function(command) command.description),
+    };
+    listener.doCompletion(autocomplete_result);
+    return 0;
+  },
+
+  /*
+   * Stop all searches that are in progress
+   */
+  stopSearch: function stopSearch() 
+  {
+  },
+
+};
 
 /**
  * @class JsCompleter
@@ -188,9 +169,10 @@ JsCompleter.definition = {
       if (0 == properties.lenth) {
         return -1;
       }
-      autocomplete_result = new AutoCompleteResult(
-        current, 
-        context && notation ? 
+      autocomplete_result = {
+        type: "text",
+        query: current, 
+        labels: context && notation ? 
           properties.map(function(key) {
             if ("string" == typeof key) {
               if (/^\["?$/.test(notation)) {
@@ -202,7 +184,7 @@ JsCompleter.definition = {
             return key;
           }):
           properties.map(function(key) key),
-        context && 
+        comments: context && 
           properties.map(function(key) {
             try {
               let value = context[key];
@@ -220,7 +202,8 @@ JsCompleter.definition = {
             } catch (e) {
               return "Error: " + e;
             }
-          }));
+          })
+      };
     }
     listener.doCompletion(autocomplete_result);
     } catch(e) {alert("###" + e + " " + e.lineNumber)}
@@ -338,10 +321,12 @@ OptionCompleter.definition = {
         listener.doCompletion(null);
         return -1;
       }
-      let autocomplete_result = new AutoCompleteResult(
-        source, 
-        options.map(function(option) option.key),
-        options.map(function(option) String(option.value)));
+      let autocomplete_result = {
+        type: "text",
+        query: source, 
+        labels: options.map(function(option) option.key),
+        comments: options.map(function(option) String(option.value)),
+      };
       listener.doCompletion(autocomplete_result);
       return 0;
     }
@@ -366,17 +351,17 @@ OptionCompleter.definition = {
 };
 
 /**
- * @class CommandCompleter
+ * @class FontCompleter
  *
  */
-let CommandCompleter = new Class().extends(CompleterBase);
-CommandCompleter.definition = {
+let FontCompleter = new Class().extends(CompleterBase);
+FontCompleter.definition = {
 
   get id()
-    "commandcompleter",
+    "fontcompleter",
 
   get type()
-    "command",
+    "font",
 
   /*
    * Search for a given string and notify a listener (either synchronously
@@ -388,18 +373,27 @@ CommandCompleter.definition = {
   startSearch: function startSearch(source, listener)
   {
     let session = this._broker;
-    let command_name = source.split(/\s+/).pop();
-    let commands = session.notify("get/commands")
-      .filter(function(command) {
-        return 0 == command.name.replace(/[\[\]]+/g, "")
-          .indexOf(command_name);
-      });
-
-    let autocomplete_result = new AutoCompleteResult(
-      source, 
-      commands.map(function(command) command.name.replace(/[\[\]]+/g, "")),
-      commands.map(function(command) command.description));
+    let pattern = /^\s*(.*)(\s?)/;
+    let match = source.match(pattern);
+    let [, name, space] = match;
+    if (space) {
+      listener.doCompletion(null);
+      return name.length + space.length;
+    }
+    let font_list = Components
+      .classes["@mozilla.org/gfx/fontenumerator;1"]
+      .getService(Components.interfaces.nsIFontEnumerator)
+      .EnumerateFonts("", "", {})
+      .filter(function(font_family) 
+        -1 != font_family.toLowerCase().indexOf(name.toLowerCase()));
+    let autocomplete_result = {
+      type: "text",
+      query: source, 
+      labels: font_list, 
+      comments: null,
+    };
     listener.doCompletion(autocomplete_result);
+    return 0;
   },
 
   /*
@@ -409,6 +403,563 @@ CommandCompleter.definition = {
   {
   },
 
+};
+
+let web140_color_map = {
+  Black: "#000000",
+  Navy: "#000080",
+  DarkBlue: "#00008B",
+  MediumBlue: "#0000CD",
+  Blue: "#0000FF",
+  DarkGreen: "#006400",
+  Green: "#008000",
+  Teal: "#008080",
+  DarkCyan: "#008B8B",
+  DeepSkyBlue: "#00BFFF",
+  DarkTurquoise: "#00CED1",
+  MediumSpringGreen: "#00FA9A",
+  Lime: "#00FF00",
+  SpringGreen: "#00FF7F",
+  Aqua: "#00FFFF",
+  Cyan: "#00FFFF",
+  MidnightBlue: "#191970",
+  DodgerBlue: "#1E90FF",
+  LightSeaGreen: "#20B2AA",
+  ForestGreen: "#228B22",
+  SeaGreen: "#2E8B57",
+  DarkSlateGray: "#2F4F4F",
+  DarkSlateGrey: "#2F4F4F",
+  LimeGreen: "#32CD32",
+  MediumSeaGreen: "#3CB371",
+  Turquoise: "#40E0D0",
+  RoyalBlue: "#4169E1",
+  SteelBlue: "#4682B4",
+  DarkSlateBlue: "#483D8B",
+  MediumTurquoise: "#48D1CC",
+  Indigo: "#4B0082",
+  DarkOliveGreen: "#556B2F",
+  CadetBlue: "#5F9EA0",
+  CornflowerBlue: "#6495ED",
+  MediumAquaMarine: "#66CDAA",
+  DimGray: "#696969",
+  DimGrey: "#696969",
+  SlateBlue: "#6A5ACD",
+  OliveDrab: "#6B8E23",
+  SlateGray: "#708090",
+  SlateGrey: "#708090",
+  LightSlateGray: "#778899",
+  LightSlateGrey: "#778899",
+  MediumSlateBlue: "#7B68EE",
+  LawnGreen: "#7CFC00",
+  Chartreuse: "#7FFF00",
+  Aquamarine: "#7FFFD4",
+  Maroon: "#800000",
+  Purple: "#800080",
+  Olive: "#808000",
+  Gray: "#808080",
+  Grey: "#808080",
+  SkyBlue: "#87CEEB",
+  LightSkyBlue: "#87CEFA",
+  BlueViolet: "#8A2BE2",
+  DarkRed: "#8B0000",
+  DarkMagenta: "#8B008B",
+  SaddleBrown: "#8B4513",
+  DarkSeaGreen: "#8FBC8F",
+  LightGreen: "#90EE90",
+  MediumPurple: "#9370D8",
+  DarkViolet: "#9400D3",
+  PaleGreen: "#98FB98",
+  DarkOrchid: "#9932CC",
+  YellowGreen: "#9ACD32",
+  Sienna: "#A0522D",
+  Brown: "#A52A2A",
+  DarkGray: "#A9A9A9",
+  DarkGrey: "#A9A9A9",
+  LightBlue: "#ADD8E6",
+  GreenYellow: "#ADFF2F",
+  PaleTurquoise: "#AFEEEE",
+  LightSteelBlue: "#B0C4DE",
+  PowderBlue: "#B0E0E6",
+  FireBrick: "#B22222",
+  DarkGoldenRod: "#B8860B",
+  MediumOrchid: "#BA55D3",
+  RosyBrown: "#BC8F8F",
+  DarkKhaki: "#BDB76B",
+  Silver: "#C0C0C0",
+  MediumVioletRed: "#C71585",
+  IndianRed: "#CD5C5C",
+  Peru: "#CD853F",
+  Chocolate: "#D2691E",
+  Tan: "#D2B48C",
+  LightGray: "#D3D3D3",
+  LightGrey: "#D3D3D3",
+  PaleVioletRed: "#D87093",
+  Thistle: "#D8BFD8",
+  Orchid: "#DA70D6",
+  GoldenRod: "#DAA520",
+  Crimson: "#DC143C",
+  Gainsboro: "#DCDCDC",
+  Plum: "#DDA0DD",
+  BurlyWood: "#DEB887",
+  LightCyan: "#E0FFFF",
+  Lavender: "#E6E6FA",
+  DarkSalmon: "#E9967A",
+  Violet: "#EE82EE",
+  PaleGoldenRod: "#EEE8AA",
+  LightCoral: "#F08080",
+  Khaki: "#F0E68C",
+  AliceBlue: "#F0F8FF",
+  HoneyDew: "#F0FFF0",
+  Azure: "#F0FFFF",
+  SandyBrown: "#F4A460",
+  Wheat: "#F5DEB3",
+  Beige: "#F5F5DC",
+  WhiteSmoke: "#F5F5F5",
+  MintCream: "#F5FFFA",
+  GhostWhite: "#F8F8FF",
+  Salmon: "#FA8072",
+  AntiqueWhite: "#FAEBD7",
+  Linen: "#FAF0E6",
+  LightGoldenRodYellow: "#FAFAD2",
+  OldLace: "#FDF5E6",
+  Red: "#FF0000",
+  Fuchsia: "#FF00FF",
+  Magenta: "#FF00FF",
+  DeepPink: "#FF1493",
+  OrangeRed: "#FF4500",
+  Tomato: "#FF6347",
+  HotPink: "#FF69B4",
+  Coral: "#FF7F50",
+  Darkorange: "#FF8C00",
+  LightSalmon: "#FFA07A",
+  Orange: "#FFA500",
+  LightPink: "#FFB6C1",
+  Pink: "#FFC0CB",
+  Gold: "#FFD700",
+  PeachPuff: "#FFDAB9",
+  NavajoWhite: "#FFDEAD",
+  Moccasin: "#FFE4B5",
+  Bisque: "#FFE4C4",
+  MistyRose: "#FFE4E1",
+  BlanchedAlmond: "#FFEBCD",
+  PapayaWhip: "#FFEFD5",
+  LavenderBlush: "#FFF0F5",
+  SeaShell: "#FFF5EE",
+  Cornsilk: "#FFF8DC",
+  LemonChiffon: "#FFFACD",
+  FloralWhite: "#FFFAF0",
+  Snow: "#FFFAFA",
+  Yellow: "#FFFF00",
+  LightYellow: "#FFFFE0",
+  Ivory: "#FFFFF0",
+  White: "#FFFFFF",
+};
+
+/**
+ * @class ForegroundColorCompleter
+ *
+ */
+let ForegroundColorCompleter = new Class().extends(CompleterBase);
+ForegroundColorCompleter.definition = {
+
+  get id()
+    "foregroud-color-completer",
+
+  get type()
+    "foreground-color",
+
+  /*
+   * Search for a given string and notify a listener (either synchronously
+   * or asynchronously) of the result
+   *
+   * @param source - The string to search for
+   * @param listener - A listener to notify when the search is complete
+   */
+  startSearch: function startSearch(source, listener)
+  {
+    let session = this._broker;
+    let pattern = /^\s*(.*)(\s?)/;
+    let match = source.match(pattern);
+    let [, name, space] = match;
+    if (space) {
+      listener.doCompletion(null);
+      return name.length + space.length;
+    }
+    let colors = [name for ([name, ] in Iterator(web140_color_map))]
+      .filter(function(color_name) 
+         -1 != color_name.toLowerCase().indexOf(name.toLowerCase()));
+    if (0 == colors.length) {
+      listener.doCompletion(autocomplete_result);
+      return -1;
+    }
+    let autocomplete_result = {
+      type: "foreground-color",
+      query: source, 
+      labels: colors, 
+      comments: null, 
+      data: colors.map(function(color_name) ({
+        name: color_name, 
+        value: web140_color_map[color_name],
+      })),
+    };
+    listener.doCompletion(autocomplete_result);
+    return 0;
+  },
+
+  /*
+   * Stop all searches that are in progress
+   */
+  stopSearch: function stopSearch() 
+  {
+  },
+
+};
+
+
+/**
+ * @class BackgroundColorCompleter
+ *
+ */
+let BackgroundColorCompleter = new Class().extends(CompleterBase);
+BackgroundColorCompleter.definition = {
+
+  get id()
+    "backgroud-color-completer",
+
+  get type()
+    "background-color",
+
+  /*
+   * Search for a given string and notify a listener (either synchronously
+   * or asynchronously) of the result
+   *
+   * @param source - The string to search for
+   * @param listener - A listener to notify when the search is complete
+   */
+  startSearch: function startSearch(source, listener)
+  {
+    let session = this._broker;
+    let pattern = /^\s*(.*)(\s?)/;
+    let match = source.match(pattern);
+    let [, name, space] = match;
+    if (space) {
+      listener.doCompletion(null);
+      return name.length + space.length;
+    }
+    let colors = [name for ([name, ] in Iterator(web140_color_map))]
+      .filter(function(color_name) 
+         -1 != color_name.toLowerCase().indexOf(name.toLowerCase()));
+    if (0 == colors.length) {
+      listener.doCompletion(autocomplete_result);
+      return -1;
+    }
+    let autocomplete_result = {
+      type: "background-color",
+      query: source, 
+      labels: colors, 
+      comments: null, 
+      data: colors.map(function(color_name) ({
+        name: color_name, 
+        value: web140_color_map[color_name],
+      })),
+    };
+    listener.doCompletion(autocomplete_result);
+    return 0;
+  },
+
+  /*
+   * Stop all searches that are in progress
+   */
+  stopSearch: function stopSearch() 
+  {
+  },
+
+};
+
+
+/**
+ * @class ColorNumberCompleter
+ *
+ */
+let ColorNumberCompleter = new Class().extends(CompleterBase);
+ColorNumberCompleter.definition = {
+
+  get id()
+    "colorcompleter",
+
+  get type()
+    "color-number",
+
+  /*
+   * Search for a given string and notify a listener (either synchronously
+   * or asynchronously) of the result
+   *
+   * @param source - The string to search for
+   * @param listener - A listener to notify when the search is complete
+   */
+  startSearch: function startSearch(source, listener)
+  {
+    let session = this._broker;
+    let pattern = /^\s*([0-9]*)(\s*)/;
+    let match = source.match(pattern);
+    let [all, name, space] = match;
+    if (space) {
+      listener.doCompletion(null);
+      return all.length;
+    }
+    let numbers = [i for (i in function() { for (let i = 0; i < 256; ++i) yield i; }())]
+      .map(function(number) number.toString())
+      .filter(function(number_as_string) -1 != number_as_string.indexOf(name));
+    if (0 == numbers.length) {
+      listener.doCompletion(autocomplete_result);
+      return -1;
+    }
+    let autocomplete_result = {
+      type: "text",
+      query: source, 
+      labels: numbers, 
+      comments: null,
+    };
+    listener.doCompletion(autocomplete_result);
+    return 0;
+  },
+
+  /*
+   * Stop all searches that are in progress
+   */
+  stopSearch: function stopSearch() 
+  {
+  },
+
+};
+
+
+/**
+ * @abstruct ComletionDisplayDriverBase
+ */
+let CompletionDisplayDriverBase = new Abstruct().extends(Component);
+CompletionDisplayDriverBase.definition = {
+
+  "[subscribe('@event/session-started'), enabled]":
+  function onLoad(session)
+  {
+    session.subscribe(
+      <>get/completion-display-driver/{this.type}</>, 
+      let (self = this) function() self);
+    session.notify(<>initialized/{this.id}</>, this);
+  },
+
+};
+
+
+/**
+ * @class ForegroundColorCompletionDisplayDriver
+ *
+ */
+let ForegroundColorCompletionDisplayDriver = new Class().extends(CompletionDisplayDriverBase);
+ForegroundColorCompletionDisplayDriver.definition = {
+
+  get id()
+    "foreground-color-completion-display-driver",
+
+  get type()
+    "foreground-color",
+
+  "[subscribe('@initialized/renderer'), enabled]":
+  function onRendererInitialized(renderer)
+  {
+    this._renderer = renderer;
+  },
+
+  drive: function drive(grid, result, current_index) 
+  {
+    let document = grid.ownerDocument;
+    let rows = grid.appendChild(document.createElement("rows"))
+    for (let i = 0; i < result.labels.length; ++i) {
+      let row = rows.appendChild(document.createElement("row"))
+      row.style.cssText = i == current_index ? <>
+        background: #226;
+        color: white;
+      </>: "";
+      let search_string = result.query.toLowerCase();
+      let completion_text = result.labels[i];
+      if (completion_text) {
+        let match_position = completion_text
+          .toLowerCase()
+          .indexOf(search_string);
+        if (-1 != match_position) {
+          let before_match = completion_text.substr(0, match_position);
+          let match = completion_text.substr(match_position, search_string.length);
+          let after_match = completion_text.substr(match_position + search_string.length);
+          let box = row.appendChild(document.createElement("hbox"));
+          box.style.width = "50%"; 
+          box.style.margin = "0px";
+          box.style.overflow = "hidden";
+          box.appendChild(document.createTextNode(before_match));
+          label = box.appendChild(document.createElement("label"));
+          label.setAttribute("value", match);
+          label.style.cssText = <>
+            margin: 0px; 
+            font-weight: bold; 
+            color: #f00; 
+            text-decoration: underline;
+          </>;
+          box.appendChild(document.createTextNode(after_match));
+          let comment = row.appendChild(document.createElement("box"));
+          
+          let renderer = this._renderer;
+          let label = comment.appendChild(document.createTextNode("label"));
+          comment.style.margin = "0px";
+          comment.style.color = completion_text;
+          comment.style.fontSize = renderer.font_size;
+          comment.style.fontFamily = renderer.font_family;
+          comment.style.backgroundColor = "#4c4c4c";
+          comment.style.width = "10em";
+          comment.setAttribute("value", "");
+          comment.setAttribute("crop", "end");
+        }
+      }
+    } // for i
+  },
+
+};
+
+
+/**
+ * @class BackgroundColorCompletionDisplayDriver
+ *
+ */
+let BackgroundColorCompletionDisplayDriver = new Class().extends(CompletionDisplayDriverBase);
+BackgroundColorCompletionDisplayDriver.definition = {
+
+  get id()
+    "background-color-completion-display-driver",
+
+  get type()
+    "background-color",
+
+  "[subscribe('@initialized/renderer'), enabled]":
+  function onRendererInitialized(renderer)
+  {
+    this._renderer = renderer;
+  },
+
+  drive: function drive(grid, result, current_index) 
+  {
+    let document = grid.ownerDocument;
+    let rows = grid.appendChild(document.createElement("rows"))
+    for (let i = 0; i < result.labels.length; ++i) {
+      let row = rows.appendChild(document.createElement("row"))
+      row.style.cssText = i == current_index ? <>
+        background: #226;
+        color: white;
+      </>: "";
+      let search_string = result.query.toLowerCase();
+      let completion_text = result.labels[i];
+      if (completion_text) {
+        let match_position = completion_text
+          .toLowerCase()
+          .indexOf(search_string);
+        if (-1 != match_position) {
+          let before_match = completion_text.substr(0, match_position);
+          let match = completion_text.substr(match_position, search_string.length);
+          let after_match = completion_text.substr(match_position + search_string.length);
+          let box = row.appendChild(document.createElement("hbox"));
+          box.style.width = "50%"; 
+          box.style.margin = "0px";
+          box.style.overflow = "hidden";
+          box.appendChild(document.createTextNode(before_match));
+          label = box.appendChild(document.createElement("label"));
+          label.setAttribute("value", match);
+          label.style.cssText = <>
+            margin: 0px; 
+            font-weight: bold; 
+            color: #f00; 
+            text-decoration: underline;
+          </>;
+          box.appendChild(document.createTextNode(after_match));
+          let comment = row.appendChild(document.createElement("box"));
+          
+          let renderer = this._renderer;
+          for (let i = 0; i < 16; ++i) {
+            let label = comment.appendChild(document.createElement("label"));
+            label.value = "#" + (100 + i).toString().substr(1);
+            label.style.color = renderer.normal_color[i];
+            label.style.fontFamily = renderer.font_family;
+            label.style.fontSize = renderer.font_size;
+          }
+          comment.style.margin = "1px";
+          comment.style.border = "1px solid black";
+          comment.style.backgroundColor = completion_text;
+          comment.style.width = "10em";
+          comment.setAttribute("value", "");
+          comment.setAttribute("crop", "end");
+        }
+      }
+    } // for i
+  },
+
+};
+
+/**
+ * @class TextCompletionDisplayDriver
+ *
+ */
+let TextCompletionDisplayDriver = new Class().extends(CompletionDisplayDriverBase);
+TextCompletionDisplayDriver.definition = {
+
+  get id()
+    "text-completion-display-driver",
+
+  get type()
+    "text",
+
+  drive: function drive(grid, result, current_index) 
+  {
+    let document = grid.ownerDocument;
+    let rows = grid.appendChild(document.createElement("rows"))
+    for (let i = 0; i < result.labels.length; ++i) {
+      let row = rows.appendChild(document.createElement("row"))
+      row.style.cssText = i == current_index ? <>
+        background: #226;
+        color: white;
+      </>: "";
+      let search_string = result.query.toLowerCase();
+      let completion_text = result.labels[i];
+      if (completion_text) {
+        let match_position = completion_text
+          .toLowerCase()
+          .indexOf(search_string);
+        if (-1 != match_position) {
+          let before_match = completion_text
+            .substr(0, match_position);
+          let match = completion_text
+            .substr(match_position, search_string.length);
+          let after_match = completion_text
+            .substr(match_position + search_string.length);
+          let box = row.appendChild(document.createElement("hbox"));
+          box.style.cssText = <>
+            width: 50%;
+            margin: 0px;
+            overflow: hidden;
+          </>;
+          box.appendChild(document.createTextNode(before_match));
+          label = box.appendChild(document.createElement("label"));
+          label.setAttribute("value", match);
+          label.style.cssText = <>
+            margin: 0px; 
+            font-weight: bold; 
+            color: #f00; 
+            text-decoration: underline;</>;
+          box.appendChild(document.createTextNode(after_match));
+          let comment = row.appendChild(document.createElement("label"));
+          comment.style.opacity = 0.5;
+          comment.setAttribute("value", result.comments && result.comments[i]);
+          comment.setAttribute("crop", "end");
+        }
+      }
+    } // for i
+  },
 };
 
 /**
@@ -426,6 +977,14 @@ function main(process)
       new HistoryCompleter(session);
       new OptionCompleter(session);
       new CommandCompleter(session);
+      new FontCompleter(session);
+      new ForegroundColorCompleter(session);
+      new BackgroundColorCompleter(session);
+      new ColorNumberCompleter(session);
+
+      new ForegroundColorCompletionDisplayDriver(session);
+      new BackgroundColorCompletionDisplayDriver(session);
+      new TextCompletionDisplayDriver(session);
     });
 }
 

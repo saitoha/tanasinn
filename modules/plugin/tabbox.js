@@ -249,11 +249,12 @@ BottomPanel.definition = {
     }
 
     let session = this._broker;
-    let [tab] = session.uniget(
-      "command/construct-ui", 
+    let {coterminal_tab} = session.uniget(
+      "command/construct-chrome", 
       {
         parentNode: "#coterminal_tabbox_tabs",
         tagName: "tab",
+        id: "coterminal_tab",
         name: id,
         label: name,
         style: { 
@@ -261,8 +262,8 @@ BottomPanel.definition = {
           padding: "0px",
         },
       });
-    let [tab_panel] = session.uniget(
-      "command/construct-ui", 
+    let tab_panel = session.uniget(
+      "command/construct-chrome", 
       {
         parentNode: "#coterminal_tabbox_tabpanels",
         tagName: "tabpanel",
@@ -274,8 +275,8 @@ BottomPanel.definition = {
           marginTop: "-18px",
           marginBottom: "-18px",
         },
-      });
-    this._panel_map[id] = [tab, tab_panel];
+      })[id];
+    this._panel_map[id] = [coterminal_tab, tab_panel];
     return tab_panel;
   },
 
@@ -286,7 +287,7 @@ BottomPanel.definition = {
     let name = panel_object.info..name;
     let new_panel = this.alloc(id, name);
     let session = this._broker;
-    let [content] = session.uniget("command/construct-ui", panel_object.template);
+    let content = session.uniget("command/construct-chrome", panel_object.template)["#root"];
     new_panel.appendChild(content);
     session.subscribe("panel-selected/" + panel_object.id, function(selected_panel) 
     {
