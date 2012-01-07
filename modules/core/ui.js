@@ -151,6 +151,34 @@ OuterChrome.definition = {
     session.notify(<>initialized/{this.id}</>, this);
   },
 
+  "[subscribe('event/shift-key-down'), enabled]": 
+  function onShiftKeyDown() 
+  {
+    let target = this._element.querySelector("#coterminal_chrome");
+    target.style.cursor = "move";
+  },
+
+  "[subscribe('event/shift-key-up'), enabled]": 
+  function onShiftKeyUp() 
+  {
+    let target = this._element.querySelector("#coterminal_chrome");
+    target.style.cursor = "";
+  },
+
+  "[subscribe('event/alt-key-down'), enabled]": 
+  function onAltKeyDown() 
+  {
+    let target = this._element.querySelector("#coterminal_chrome");
+    target.style.cursor = "crosshair";
+  },
+
+  "[subscribe('event/alt-key-up'), enabled]": 
+  function onAltKeyUp() 
+  {
+    let target = this._element.querySelector("#coterminal_chrome");
+    target.style.cursor = "";
+  },
+
   /** Fired when The session is stopping. */
   "[subscribe('@event/session-stopping'), enabled]": 
   function onSessionStoping() 
@@ -200,7 +228,6 @@ Chrome.definition = {
       style: { 
         opacity: 0.7,
         background: "#000", 
-        backgroundImage: "url(file:///Users/user/coterminal/coterminal@zuse.jp/modules/images/background.jpg)",
       },
       childNodes: {
         id: "coterminal_center_area",

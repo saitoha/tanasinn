@@ -128,56 +128,73 @@ Commandline.definition = {
       {
         parentNode: "#coterminal_chrome",
         tagName: "stack",
-        style: {
-          padding: "2px 8px 3px 8px", 
-          background: "#4c4c4c",
-          borderBottomLeftRadius: "8px",
-          borderBottomRightRadius: "8px",
-        },
         id: "coterminal_commandline_box",
+        style: {
+          //background: "#4c4c4c",
+          //background: "transparent",
+        },
         childNodes: [
           {
-            id: "coterminal_commandline_completion",
-            value: "",
-            tagName: "textbox",
-            className: "plain",
-            style: { color: "#888", },
+            id: "coterminal_commandline_background",
+            tagName: "box",
+            margin: 0,
+            style: { 
+              backgroundColor: "black", 
+              opacity: 0.7, 
+              borderBottomLeftRadius: "8px",
+              borderBottomRightRadius: "8px",
+            },
           },
           {
-            tagName: "textbox",
-            id: "coterminal_commandline",
-            className: "plain",
-            //placeholder: "input commands here.",
-            newlines: "replacewithspaces",
-            style: { color: "#fff", },
-          },
-          {
-            tagName: "textbox",
-            className: "plain",
-            readonly: "true",
-            id: "coterminal_statusbar",
-            hidden: true,
-            style: { color: "#fff", },
-          },
-          {
-            tagName: "panel",
-            //style: { MozAppearance: "none", },
-            style: { MozUserFocus: "ignore", /*font: "menu",*/ },
-            noautofocus: true,
-            height: 200,
-            id: "coterminal_completion_popup",
-            childNodes: {
-              tagName: "scrollbox",
-              id: "coterminal_completion_scroll",
-              orient: "vertical", // box-packing
-              flex: 1,
-              style: { overflowY: "auto", },
-              childNodes: {
-                tagName: "grid",
-                id: "coterminal_completion_tree",
-              }
-            }, // tree
-          },  // panel
+            tagName: "stack",
+            style: {
+              padding: "2px 8px 3px 8px", 
+            },
+            childNodes: [
+              {
+                id: "coterminal_commandline_completion",
+                value: "",
+                tagName: "textbox",
+                className: "plain",
+                style: { color: "#888", backgroundColor: "transparent", },
+              },
+              {
+                tagName: "textbox",
+                id: "coterminal_commandline",
+                className: "plain",
+                //placeholder: "input commands here.",
+                newlines: "replacewithspaces",
+                style: { color: "#fff", },
+              },
+              {
+                tagName: "textbox",
+                className: "plain",
+                readonly: "true",
+                id: "coterminal_statusbar",
+                hidden: true,
+                style: { color: "#fff", },
+              },
+              {
+                tagName: "panel",
+                //style: { MozAppearance: "none", },
+                style: { MozUserFocus: "ignore", /*font: "menu",*/ },
+                noautofocus: true,
+                height: 200,
+                id: "coterminal_completion_popup",
+                childNodes: {
+                  tagName: "scrollbox",
+                  id: "coterminal_completion_scroll",
+                  orient: "vertical", // box-packing
+                  flex: 1,
+                  style: { overflowY: "auto", },
+                  childNodes: {
+                    tagName: "grid",
+                    id: "coterminal_completion_tree",
+                  }
+                }, // tree
+              },  // panel
+            ]
+          } // stack
         ] 
       });
     this._element = coterminal_commandline_box;
@@ -199,7 +216,7 @@ Commandline.definition = {
     this.onclick.enabled = true;
     this.onchange.enabled = true;
     this.onselect.enabled = true;
-    this.onCommandIntroducer.enabled = true;
+    this.enableCommandline.enabled = true;
   },
   
   /** Uninstalls itself.
@@ -220,7 +237,7 @@ Commandline.definition = {
     this.onclick.enabled = false;
     this.onchange.enabled = false;
     this.onselect.enabled = false;
-    this.onCommandIntroducer.enabled = false;
+    this.enableCommandline.enabled = false;
     this._element.parentNode.removeChild(this._element);
   },
 
@@ -233,8 +250,8 @@ Commandline.definition = {
     this._statusbar.value = message;
   },
 
-  "[subscribe('introducer-pressed/double-ctrl')]":
-  function onCommandIntroducer() 
+  "[subscribe('command/enable-commandline')]":
+  function enableCommandline() 
   {
     this._statusbar.hidden = true;
     this._textbox.hidden = false;
@@ -271,8 +288,8 @@ Commandline.definition = {
   function onblur(event) 
   {
     this._popup.hidePopup();
-    let session = this._broker;
-    session.notify("command/focus");
+    //let session = this._broker;
+    //session.notify("command/focus");
   },
 
 
@@ -411,8 +428,8 @@ Commandline.definition = {
   "[listen('keyup', '#coterminal_commandline', true)]":
   function onkeyup(event) 
   { // nothrow
-    if (17 == event.keyCode &&
-        17 == event.which &&
+    if (16 == event.keyCode &&
+        16 == event.which &&
         !event.ctrlKey &&
         !event.altKey &&
         !event.shiftKey &&

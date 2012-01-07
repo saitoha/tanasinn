@@ -1,61 +1,90 @@
+= coTerminal User Manual
 
-"coterminal" is a Firefox browser extension that shows a terminal emurator 
-interface and enables you to access flexible, powerful functionality 
-provided by your operating system, such as commandline shells, curses-based 
-applications.
+== Introduction: What is it?
+    "coTerminal" is a Firefox browser extension that shows a terminal emurator 
+    interface and enables you to access flexible, powerful functionality 
+    provided by your operating system, such as commandline shells, curses-based 
+    applications.
 
-- Features
+== Overview hilighting features
+    - Full Gecko based user interface, it is flexible and easy to customize.
+    - Multi-platform, now supports Mac / Linux / Windows + Cygwin (requires posix python).
+    - Supports plugin architecture. it supports Plug-and-Play installing & uninstalling.
+      (documents for developing is comming soon... - -;)
+    - Including debugger, you can run it in step-execution-mode or trace-mode 
+      and observe terminal I/O sequence in real-time. (it's interesting!)
+    - IME is supported.
+    - Supports east asian double width characters.
+    - Localization supported. localize resource can be edited on bottom-panel UI.
+    - Selects variable character encoding supported by Gecko.
+    - Supports transparent window. it is useful when www-browseing while working at terminal.
+    - Retaining TTY session duaring restarting browser.
+      (Now, this feature is not works well in Cygwin version. 
+      Frontend UI that makes you to select/edit session, ...such as screen/tmux, 
+      is not implemented yet. - -;)
+    - xterm-like mouse emuration, and supports smoothing pixel scroll.
+    - Text selection / Rectangle text selection
+    - Supports copy / paste in Drag & Drop or keyboard shortcut.
+    - Supports move / resize through Drag & Drop operation.
+    - Supports 256 terminal color, you can assign 32bit colors for them.
+    - Vimperator / Keysnail like commandline interface.
+    - Running as independent XUL application if you want. (but now buggy!)
+    - Patching w3m, it supports inline image (now buggy! on MacOSX only... - -;).
 
-  comming soon...
+== Requirements
+    - Firefox 4.0+.
+    - Python for Unix (Probably 2.5+, Mac, Linux, or cygwin version)
+      Python for Win32, ActivePython, etc... are not well.
+      because this software depends on many posix functions 
+      'os.fork', 'os.openpty' ..etc.
+    - Posix enviroinment. 
+      If you are running Windows, you need to install cygwin at C:\cygwin.
 
+== Installing and Running
 
-- Requirements
-
-    This software runs on 
-     - Firefox.
-     - Python for Unix (Mac, Linux, or cygwin version)
-       Python for Win32, ActivePython, etc... are not well.
-       because this software depends on many posix functions 
-       'os.fork', 'os.openpty' ..etc.
-     - Posix enviroinment. 
-       If you are running Windows, you need to install cygwin at C:\cygwin.
-
-    Probably, it requires Firefox version 4.0+ and Python 2.5+.
-
-- Installing as Vimperator plugin:
-
-    [Mac, Linux]
+=== Building Firefox extension:
+.Mac, Linux, Cygwin
+----
+./configure
+make
+----
+    If build process was succeeded, target XPI file 
+    "coterminal@zuse.jp.xpi" is to be generated. enjoy it!
     
-        Makes symbolic link of modules/corun.js into Vimperator's 
-        plugin directory as following:
-    
-          > ln -s $PWD/modules/corun.js $RUNTIME/plugin/ 
+=== Installing as Vimperator plugin:
+
+.Mac, Linux
+    Makes symbolic link of modules/corun.js into Vimperator's 
+    plugin directory as following:
+----
+  > ln -s $PWD/modules/corun.js $RUNTIME/plugin/ 
+----
+    $RUNTIME is Vimperator's runtime directory such as 
+    '$HOME/.vimperator'.
         
-        $RUNTIME is Vimperator's runtime directory such as 
-        '$HOME/.vimperator'.
+=== Run as XUL Application (test version, it does not works well...):
     
-    [Windows]
-    
-        Comming soon.
+.MacOSX
+----
+open /Applications/Firefox.app --args --app $(PWD)/application.ini
+----
+.Linux
+----
+firefox --app application.ini
+----
+.Cygwin on Windows
+----
+cygstart firefox.exe --app application.ini
+----
 
-- Building Firefox extension:
+== Usage
+=== Launch terminal
+    If you succeeded to install, you can create new terminal window 
+    by selecting application menu: [Tool] -> [create new terminal].
+    The keyboad shortcut "control-," has the same effect.
 
-    [Mac, Linux, Cygwin]
+== Didn't work?
+    Notfy me!
+    saitoha <user@zuse.jp>, initial develpper of coTerminal.
 
-        > ./configure
-        > make
-
-        If build process was succeeded, target XPI file 
-        "coterminal@zuse.jp.xpi" is to be generated. enjoy it!
-
-- Run as XUL Application (test version, it does not works well...):
-
-    [Mac]
-		open /Applications/Aurora.app --args --app $(PWD)/application.ini
-
-    [Linux]
-		firefox --app application.ini
-
-    [Cygwin]
-		cygstart firefox --app application.ini
 

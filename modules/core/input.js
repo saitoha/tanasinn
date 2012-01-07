@@ -281,17 +281,17 @@ InputManager.definition = {
   function onkeyup(event) 
   { // nothrow
     //this._textbox.focus();
-    if (17 == event.keyCode &&
-        17 == event.which &&
+    if (16 == event.keyCode &&
+        16 == event.which &&
         !event.ctrlKey &&
         !event.altKey &&
         !event.shiftKey &&
         !event.isChar
         ) {
       let now = parseInt(new Date().getTime());
-      if (now - this._last_ctrlkey_time < 500) {
+      if (now - this._last_ctrlkey_time < 300) {
         let session = this._broker;
-        session.notify("introducer-pressed/double-ctrl")
+        session.notify("command/enable-commandline")
         this._last_ctrlkey_time = 0;
       } else {
         this._last_ctrlkey_time = now;
@@ -312,7 +312,7 @@ InputManager.definition = {
       handled: false,
     };
     let session = this._broker;
-    session.notify("key-pressed/" + packed_code, info);
+    session.notify(<>key-pressed/{packed_code}</>, info);
 
     if (info.handled) {
       event.preventDefault();

@@ -74,6 +74,8 @@ FocusTracker.definition = {
     session.notify("command/remove-domlistener", this.id)
   },
 
+  disabled: false,
+
   /** Fires when a focus event occured. 
    *  @param {Event} event A event object.
    */
@@ -90,6 +92,14 @@ FocusTracker.definition = {
 //        coUtils.Debug.reportMessage("focus-relation: " + relation);
         if ((relation & root_element.DOCUMENT_POSITION_CONTAINED_BY)) {
 //         || (relation & root_element.DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC)) {
+          if (!this.disabled) {
+            this.disabled = true;
+            session.root_element.parentNode.appendChild(session.root_element);
+            coUtils.Timer.setTimeout(function() {
+              this.disabled = false;
+            }, 0, this);
+            return;
+          }
           let focused_element = command_dispatcher.focusedElement;
           session.notify("event/got-focus");
           session.notify("event/focus-changed", focused_element);

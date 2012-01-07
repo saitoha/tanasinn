@@ -23,27 +23,25 @@
  * ***** END LICENSE BLOCK ***** */
 
 let scope = {};
-let subscript_loader = Components
-  .classes["@mozilla.org/moz/jssubscript-loader;1"]
-  .getService(Components.interfaces.mozIJSSubScriptLoader);
-
-function loadScript(relational_path) 
-{
-  subscript_loader.loadSubScript(<>{
-    Components
-      .stack.filename.split(" -> ").pop()
-      .split("?").shift()
-  }/../{relational_path}?{new Date().getTime()}</>.toString(), scope);
-}
-loadScript("common.js", scope);
-loadScript("base.js", scope);
-loadScript("event.js", scope);
-loadScript("eastasian.js", scope);
 
 with (scope) {
+  Components
+    .classes["@mozilla.org/moz/jssubscript-loader;1"]
+    .getService(Components.interfaces.mozIJSSubScriptLoader)
+    .loadSubScript(<>{
+      Components
+        .stack.filename.split(" -> ").pop()
+        .split("?").shift()
+    }/../common.js?{
+      new Date().getTime()
+    }</>.toString(), scope);
+  coUtils.Debug.reportMessage("Booting base services...");
+  coUtils.Runtime.loadScript("modules/common/base.js", scope);
+  coUtils.Runtime.loadScript("modules/common/event.js", scope);
+  coUtils.Runtime.loadScript("modules/common/eastasian.js", scope);
+}
 
-  coUtils.Debug.reportMessage("coterminal_initialize called.");
-  
+with (scope) {
   /**
    * @class ComponentLoader
    */
@@ -104,15 +102,6 @@ with (scope) {
     get wrappedJSObject()
       this,
 
-    get window()
-      this._window,
-
-    get document()
-      this._document,
-
-    get root_element()
-      this._root_element,
-  
     initial_settings_path: "$Home/.coterminal.js",
     width: 120,
     height: 36,
@@ -164,12 +153,9 @@ with (scope) {
         box.style.position = "fixed";
         box.style.top = "0px";
         box.style.left = "0px";
-        this._root_element = parent.appendChild(box);
-      } else { // xul app
-        this._root_element = parent.appendChild(box);
       }
-      this._document = document; 
-      this._window = document.defaultView; 
+      // xul app
+      parent.appendChild(box);
       this.command = command 
         || this["default_command@" + coUtils.Runtime.os] 
         || this.default_command;
@@ -184,7 +170,7 @@ with (scope) {
   
       // create session object;
       let request = { 
-        parent: this._root_element, 
+        parent: box, 
         command: this.command, 
         term: this.term, 
         width: this.width,
@@ -204,6 +190,7 @@ with (scope) {
             }
           });
       }
+      return box;
     },
 
     createNewScope: function createNewScope()

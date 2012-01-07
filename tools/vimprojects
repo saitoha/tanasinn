@@ -25,6 +25,7 @@
   }
   autoload=autoload {
    appmenu.js
+   launcher.js
   }
   core=core {
    persist.js

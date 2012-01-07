@@ -63,22 +63,66 @@ WindowWatcher.definition = {
       capture: true,
       id: this.id,
     });
+
+    session.notify("command/add-domlistener", {
+      target: session.window,
+      type: "keydown",
+      context: this,
+      handler: this.onkeydown,
+      capture: true,
+      id: this.id,
+    });
   },
 
   onkeyup: function onkeyup(event) 
   { // nothrow
-    if (17 == event.keyCode && 17 == event.which 
+    if (16 == event.keyCode && 16 == event.which 
+        && !event.ctrlKey && !event.altKey 
+        && !event.shiftKey && !event.isChar) {
+      let session = this._broker;
+      let now = parseInt(new Date().getTime());
+      if (now - this._last_ctrlkey_time < 500) {
+        //session.notify("command/focus");
+        //session.notify("introducer-pressed/double-shift");
+        //session.notify("command/report-overlay-message", "shift + shift pressed");
+        this._last_ctrlkey_time = 0;
+      } else {
+        this._last_ctrlkey_time = now;
+      }
+      session.notify("event/shift-key-up");
+    } else if (17 == event.keyCode && 17 == event.which 
         && !event.ctrlKey && !event.altKey 
         && !event.shiftKey && !event.isChar) {
       let now = parseInt(new Date().getTime());
       if (now - this._last_ctrlkey_time < 500) {
         let session = this._broker;
-        session.notify("command/focus");
-        //session.notify("command/report-overlay-message");
+        //session.notify("command/focus");
+        //session.notify("command/report-overlay-message", "ctrl + ctrl pressed");
+        //session.notify("introducer-pressed/double-ctrl");
         this._last_ctrlkey_time = 0;
       } else {
         this._last_ctrlkey_time = now;
       }
+    } else if (18 == event.keyCode && 18 == event.which 
+        && !event.ctrlKey && !event.altKey 
+        && !event.shiftKey && !event.isChar) {
+      let session = this._broker;
+      session.notify("event/alt-key-up");
+    }
+  },
+
+  onkeydown: function onkeydown(event) 
+  { // nothrow
+    if (16 == event.keyCode && 16 == event.which 
+        && !event.ctrlKey && !event.altKey 
+        && event.shiftKey && !event.isChar) {
+      let session = this._broker;
+      session.notify("event/shift-key-down");
+    } else if (18 == event.keyCode && 18 == event.which 
+        && !event.ctrlKey && event.altKey 
+        && !event.shiftKey && !event.isChar) {
+      let session = this._broker;
+      session.notify("event/alt-key-down");
     }
   },
 

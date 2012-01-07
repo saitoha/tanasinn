@@ -408,7 +408,7 @@ def fork_app_process(master, slave, command, term):
         shell = "/bin/sh"
         # execute specified command.
         #command = "showkey -a"
-        os.execlp(shell, "sh", "-c", "exec %s" % command)
+        os.execlp(shell, "sh", "--login", "-c", "cd $HOME && exec %s" % command)
 
     # slave handle is to be closed in master's process.
     #os.close(slave)

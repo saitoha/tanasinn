@@ -788,23 +788,23 @@ ForegroundColorCompletionDisplayDriver.definition = {
           .toLowerCase()
           .indexOf(search_string);
         if (-1 != match_position) {
-          let before_match = completion_text.substr(0, match_position);
-          let match = completion_text.substr(match_position, search_string.length);
-          let after_match = completion_text.substr(match_position + search_string.length);
-          let box = row.appendChild(document.createElement("hbox"));
-          box.style.width = "50%"; 
-          box.style.margin = "0px";
-          box.style.overflow = "hidden";
-          box.appendChild(document.createTextNode(before_match));
-          label = box.appendChild(document.createElement("label"));
-          label.setAttribute("value", match);
-          label.style.cssText = <>
-            margin: 0px; 
-            font-weight: bold; 
-            color: #f00; 
-            text-decoration: underline;
-          </>;
-          box.appendChild(document.createTextNode(after_match));
+          session.uniget(
+            "command/construct-chrome", 
+            {
+              parentNode: row,
+              tagName: "box",
+              style: <> width: 50%; margin: 0px; overflow: hidden; </>,
+              childNodes: [
+                { text: completion_text.substr(0, match_position) },
+                {
+                  tagName: "label",
+                  innerText: completion_text.substr(match_position, search_string.length),
+                  style: <> margin: 0px; font-weight: bold; color: #f00; text-decoration: underline; </>,
+                },
+                { text: completion_text.substr(match_position + search_string.length) },
+              ],
+            });
+
           let comment = row.appendChild(document.createElement("box"));
           
           let renderer = this._renderer;
@@ -857,27 +857,28 @@ BackgroundColorCompletionDisplayDriver.definition = {
       let search_string = result.query.toLowerCase();
       let completion_text = result.labels[i];
       if (completion_text) {
+        let session = this._broker;
         let match_position = completion_text
           .toLowerCase()
           .indexOf(search_string);
         if (-1 != match_position) {
-          let before_match = completion_text.substr(0, match_position);
-          let match = completion_text.substr(match_position, search_string.length);
-          let after_match = completion_text.substr(match_position + search_string.length);
-          let box = row.appendChild(document.createElement("hbox"));
-          box.style.width = "50%"; 
-          box.style.margin = "0px";
-          box.style.overflow = "hidden";
-          box.appendChild(document.createTextNode(before_match));
-          label = box.appendChild(document.createElement("label"));
-          label.setAttribute("value", match);
-          label.style.cssText = <>
-            margin: 0px; 
-            font-weight: bold; 
-            color: #f00; 
-            text-decoration: underline;
-          </>;
-          box.appendChild(document.createTextNode(after_match));
+          session.uniget(
+            "command/construct-chrome", 
+            {
+              parentNode: row,
+              tagName: "box",
+              style: <> width: 50%; margin: 0px; overflow: hidden; </>,
+              childNodes: [
+                { text: completion_text.substr(0, match_position) },
+                {
+                  tagName: "label",
+                  innerText: completion_text.substr(match_position, search_string.length),
+                  style: <> margin: 0px; font-weight: bold; color: #f00; text-decoration: underline; </>,
+                },
+                { text: completion_text.substr(match_position + search_string.length) },
+              ],
+            });
+
           let comment = row.appendChild(document.createElement("box"));
           
           let renderer = this._renderer;
@@ -917,6 +918,7 @@ TextCompletionDisplayDriver.definition = {
   drive: function drive(grid, result, current_index) 
   {
     let document = grid.ownerDocument;
+    let session = this._broker;
     let rows = grid.appendChild(document.createElement("rows"))
     for (let i = 0; i < result.labels.length; ++i) {
       let row = rows.appendChild(document.createElement("row"))
@@ -931,31 +933,39 @@ TextCompletionDisplayDriver.definition = {
           .toLowerCase()
           .indexOf(search_string);
         if (-1 != match_position) {
-          let before_match = completion_text
-            .substr(0, match_position);
-          let match = completion_text
-            .substr(match_position, search_string.length);
-          let after_match = completion_text
-            .substr(match_position + search_string.length);
-          let box = row.appendChild(document.createElement("hbox"));
-          box.style.cssText = <>
-            width: 50%;
-            margin: 0px;
-            overflow: hidden;
-          </>;
-          box.appendChild(document.createTextNode(before_match));
-          label = box.appendChild(document.createElement("label"));
-          label.setAttribute("value", match);
-          label.style.cssText = <>
-            margin: 0px; 
-            font-weight: bold; 
-            color: #f00; 
-            text-decoration: underline;</>;
-          box.appendChild(document.createTextNode(after_match));
-          let comment = row.appendChild(document.createElement("label"));
-          comment.style.opacity = 0.5;
-          comment.setAttribute("value", result.comments && result.comments[i]);
-          comment.setAttribute("crop", "end");
+          session.uniget(
+            "command/construct-chrome", 
+            {
+              parentNode: row,
+              tagName: "box",
+              style: <>
+                width: 50%;
+                margin: 0px;
+                overflow: hidden;
+              </>,
+              childNodes: [
+                { text: completion_text.substr(0, match_position) },
+                {
+                  tagName: "label",
+                  innerText: completion_text.substr(match_position, search_string.length),
+                  style: <>
+                    margin: 0px; 
+                    font-weight: bold; 
+                    color: #f00; 
+                    text-decoration: underline;
+                  </>,
+                },
+                { text: completion_text.substr(match_position + search_string.length) },
+              ],
+            });
+          session.uniget(
+            "command/construct-chrome", 
+            {
+              parentNode: row,
+              tagName: "label",
+              value: result.comments && result.comments[i],
+              crop: "end",
+            });
         }
       }
     } // for i

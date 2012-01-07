@@ -154,6 +154,7 @@ Selection.definition = {
       return;
     let [column, row] = this.convertPixelToScreen(event);
     this.selectSurroundChars(column, row);
+
     this._setClearAction();
   },
 
@@ -234,17 +235,17 @@ Selection.definition = {
         this.clear();
       },
     });
-    session.notify("command/add-domlistener", {
-      target: "#coterminal_content",
-      type: "dragstart",
-      id: id,
-      context: this,
-      handler: function(event) 
-      {
-        session.notify("remove-domlistener", id); 
-        this.clear();
-      },
-    });
+    //session.notify("command/add-domlistener", {
+    //  target: "#coterminal_content",
+    //  type: "dragstart",
+    //  id: id,
+    //  context: this,
+    //  handler: function(event) 
+    //  {
+    //    session.notify("remove-domlistener", id); 
+    //    this.clear();
+    //  },
+    //});
     session.notify("command/add-domlistener", {
       target: "#coterminal_content",
       type: "DOMMouseScroll", 

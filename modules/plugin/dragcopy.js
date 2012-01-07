@@ -61,6 +61,7 @@ DragCopy.definition = {
         parentNode: "#coterminal_center_area",
         id: "feedback_canvas",
         tagName: "html:canvas",
+        hidden: true,
       });
     this._feedback_canvas  = feedback_canvas;
     this.ondragstart.enabled = true;
@@ -89,6 +90,7 @@ DragCopy.definition = {
     let canvas = this._canvas;
     let screen = this._screen;
     let feedback_canvas = this._feedback_canvas;
+    feedback_canvas.hidden = false;
     let foreground_canvas = session.uniget("command/query-selector", "#foreground_canvas");
     let width = feedback_canvas.width = foreground_canvas.width;
     let height = feedback_canvas.height = foreground_canvas.height;
@@ -104,15 +106,16 @@ DragCopy.definition = {
     event.dataTransfer.setDragImage(feedback_canvas, left * 1, top * 1);
 
     session.notify("command/add-domlistener", {
-      target: "#coterminal_center_area",
+      target: "#coterminal_content",
       type: "dragend", 
       id: "_DRAGGING",
       context: this,
       handler: function onmouseup(event) 
       {
+        session.notify("command/remove-domlistener", "_DRAGGING"); 
         feedback_context.clearRect(0, 0, width, height);
         selection_canvas.getContext("2d").clearRect(0, 0, width, height);
-        session.notify("command/remove-domlistener", "_DRAGGING"); 
+        feedback_canvas.hidden = true;
       }
     });
   },
@@ -121,10 +124,11 @@ DragCopy.definition = {
    *  indicates [x, y] position in center board element.
    *  @param {Event} A DOM mouse event object.
    */
-  _getPixelMetricsFromEvent: function(event) 
+  _getPixelMetricsFromEvent: 
+  function _getPixelMetricsFromEvent(event) 
   {
-    let [target_element] 
-      = session.notify("command/query-selector", "#coterminal_center_area");
+    let target_element 
+      = session.uniget("command/query-selector", "#coterminal_content");
     let root_element = target_element.parentNode;
     let box = target_element.boxObject;
     let offsetX = box.screenX - root_element.boxObject.screenX;
@@ -134,7 +138,7 @@ DragCopy.definition = {
     return [left, top];
   },
 
-  "[listen('dragstart', '#coterminal_center_area')]":
+  "[listen('dragstart', '#coterminal_content')]":
   function ondragstart(event)
   {
     if (null !== this._mouse_mode)
@@ -163,11 +167,11 @@ DragCopy.definition = {
     
   },
 
-  convertPixelToScreen: function(event) 
+  convertPixelToScreen: function convertPixelToScreen(event) 
   {
     let session = this._broker;
-    let [target_element] 
-      = session.notify("command/query-selector", "#coterminal_center_area");
+    let target_element
+      = session.uniget("command/query-selector", "#coterminal_content");
     let root_element = session.root_element;
     let box = target_element.boxObject;
     let offsetX = box.screenX - root_element.boxObject.screenX;
@@ -178,8 +182,8 @@ DragCopy.definition = {
     let screen = this._screen;
     let char_width = renderer.char_width;
     let line_height = renderer.line_height;
-    let column = Math.round(left / char_width + 1.0);
-    let row = Math.round(top / line_height + 0.5);
+    let column = Math.round(left / char_width);
+    let row = Math.round(top / line_height);
     let maxColumn = screen.width;
     let maxRow = screen.height;
     column = column > maxColumn ? maxColumn: column;

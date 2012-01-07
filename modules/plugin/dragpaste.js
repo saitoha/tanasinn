@@ -71,7 +71,7 @@ DragPaste.definition = {
   /** A dragover event handler for center area element. 
    *  @param {Event} event A event object.
    */
-  "[listen('dragover', '#coterminal_center_area', true)]":
+  "[listen('dragover', '#coterminal_content', true)]":
   function ondragover(event) 
   {
     let data_transfer = event.dataTransfer;
@@ -86,7 +86,7 @@ DragPaste.definition = {
   /** A dragenter event handler for center area element. 
    *  @param {Event} event A event object.
    */
-  "[listen('dragenter', '#coterminal_center_area', true)]":
+  "[listen('dragenter', '#coterminal_content', true)]":
   function ondragenter(event) 
   {
     if (event.dataTransfer.types.contains("text/plain")) {
@@ -100,7 +100,7 @@ DragPaste.definition = {
   /** A drop event handler for center area element. 
    *  @param {Event} event A event object.
    */
-  "[listen('drop', '#coterminal_center_area', true)]":
+  "[listen('drop', '#coterminal_content', true)]":
   function ondrop(event) 
   {
     let data_transfer = event.dataTransfer;

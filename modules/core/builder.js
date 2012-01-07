@@ -178,11 +178,11 @@ TemplateBuilder.definition = {
   function buildChrome(template, results) 
   {
     if (!template.tagName) {
-      if (!template.text) {
-        throw coUtils.Debug.Exception(_("tagName property not found."));
+      if (!template.hasOwnProperty("text")) {
+        throw coUtils.Debug.Exception(_("tagName property not found: %s."), template.toSource());
       }
       let document = this._root_element.ownerDocument;
-      return document.createTextElement(template.text);
+      return document.createTextNode(template.text);
     }
     let element = this._createElement(template.tagName);
     if (!element) {
@@ -381,7 +381,7 @@ ChromeBuilder.definition = {
  */
 function main(process) 
 {
-  new ChromeBuilder(process);
+//  new ChromeBuilder(process);
   process.subscribe(
     "initialized/session", 
     function(session) new ChromeBuilder(session));
