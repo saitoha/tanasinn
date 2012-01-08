@@ -56,8 +56,7 @@ AppMenu.definition = {
             null,  // TERM environment
             null,  // size 
             ["modules/core", 
-             "modules/standard", 
-             "modules/plugin"]);
+             "modules/standard", "modules/plugin"]);
         </>.toString());
     } // with window
   },

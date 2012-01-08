@@ -29,7 +29,7 @@
 #
 # [ Module Overview ]
 #
-# This module is assumed to be called by coTerminal's "socket_tty_service.js".
+# This module is assumed to be called by coTerminal's "tty.js".
 # First, coTerminal opens TCP channel and listen on 2 ports, [I/O channel] and 
 # [Control channel].
 # Next, coTerminal should call this script, with 2 arguments that is represent 
@@ -61,7 +61,7 @@
 #
 # <pre>
 #    TTY Device pair            Python script                   coTerminal
-#    Master / Slave          class TeletypeDriver          socket_tty_service.js
+#    Master / Slave          class TeletypeDriver                 tty.js
 #  +-----------------+       +------------------+           +-----------------+
 #  |                 |       |                  |           |                 |
 #  | +-------------+ |       | +--------------+ |           | +-------------+ |
@@ -120,8 +120,8 @@
 #     Comming soon...
 #
 
-import socket
 import os
+import socket
 import errno
 import sys
 import signal
@@ -482,7 +482,7 @@ if __name__ == "__main__":
                 os.system("test -e ~/.coterminal/sessions.txt && sed -i -e '/^%s,/d' ~/.coterminal/sessions.txt" % request_id)
 
     except socket.error, e:
-        trace("oioioioiooioioioioeee A! A!! A! --ioiiooio;")
+        trace("A socket error occured.")
     finally:
         os.close(master)
         os.close(slave)

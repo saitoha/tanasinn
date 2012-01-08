@@ -860,12 +860,11 @@ CommandAttribute.definition = {
           complete: function complete(source, listener) 
           {
             let args = this.args;
-            args && args.map(function(arg)
+            args && args.some(function(arg)
             {
-              return broker.uniget(<>get/completer/{arg}</>);
-            }).some(function(completer)
-            {
-              let position = completer.startSearch(source, listener);
+              let [name, option] = arg.split("/");
+              let completer = broker.uniget(<>get/completer/{name}</>);
+              let position = completer.startSearch(source, listener, option);
               const NOT_MATCH = -1;
               const MATCH = 0;
               if (NOT_MATCH == position || MATCH == position) {

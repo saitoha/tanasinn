@@ -1,18 +1,22 @@
 = coTerminal User Manual
 
 == Introduction: What is it?
-    "coTerminal" is a Firefox browser extension that shows a terminal emurator 
+    "coTerminal" is a Firefox browser extension, shows a terminal emurator 
     interface and enables you to access flexible, powerful functionality 
-    provided by your operating system, such as commandline shells, curses-based 
+    provided by operating systems, such as commandline shells, curses-based 
     applications.
+
+== Design
+
+
 
 == Overview hilighting features
     - Full Gecko based user interface, it is flexible and easy to customize.
     - Multi-platform, now supports Mac / Linux / Windows + Cygwin (requires posix python).
     - Supports plugin architecture. it supports Plug-and-Play installing & uninstalling.
-      (documents for developing is comming soon... - -;)
+        (documents for developing is comming soon... - -;)
     - Including debugger, you can run it in step-execution-mode or trace-mode 
-      and observe terminal I/O sequence in real-time. (it's interesting!)
+        and observe terminal I/O sequence in real-time. (it's interesting!)
     - IME is supported.
     - Supports east asian double width characters.
     - Localization supported. localize resource can be edited on bottom-panel UI.
@@ -30,6 +34,10 @@
     - Vimperator / Keysnail like commandline interface.
     - Running as independent XUL application if you want. (but now buggy!)
     - Patching w3m, it supports inline image (now buggy! on MacOSX only... - -;).
+
+== Screenshots
+.ssh Debian from MacOSX and run "bb", an ascii art demo program.
+image::zebra.png["bb",width=640]
 
 == Requirements
     - Firefox 4.0+.
@@ -79,12 +87,28 @@ cygstart firefox.exe --app application.ini
 
 == Usage
 === Launch terminal
-    If you succeeded to install, you can create new terminal window 
-    by selecting application menu: [Tool] -> [create new terminal].
-    The keyboad shortcut "control-," has the same effect.
 
-== Didn't work?
-    Notfy me!
+    Pressing control key twice (ctrl + ctrl), it shows 
+    Launcher commandline interface.
+    For example, inputing "man man" for this launcher's textbox, 
+    window-like UI emerges into browser chrome window and display manpage.  
+    ... Didn't work?
+    Please notfy me! > saitoha <user@zuse.jp>.
+
+=== basic operating procedure 
+    It is similer to well-known terminal emurators, like xterm. 
+    but including specific fetures as follows.
+
+    - shift + shift (shift key twice)
+      switch input focus between terminal and commandline textbox.
+
+    - shift + mouse drag
+      move window.
+
+    - alt + mouse select
+      select rectangle region. (from Terminal.app)
+              
+== Bug reports
     saitoha <user@zuse.jp>, initial develpper of coTerminal.
 
 

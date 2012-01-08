@@ -34,12 +34,20 @@ install.rdf: install.rdf.in configure
 content-build:
 	$(MAKE) -C chrome/content
 
+document-build: doc/usermanual.html
+
+doc/usermanual.html: doc/usermanual.txt
+	@echo "$(MSTART) Regenerating configure file....$(MEND)" 
+	echo Generating user manual.
+	$(MAKE) -C doc
+	@echo "$(MSTART) Done.$(MEND)" 
+
 modules-build:
 	$(MAKE) -C modules
 
-.PHONY: modules-build content-build lint
+.PHONY: modules-build content-build document-build lint
 
-$(XPI): lint chrome.manifest install.rdf
+$(XPI): lint chrome.manifest install.rdf doc/usermanual.html 
 	@echo "$(MSTART) Make xpi package....$(MEND)" 
 	$(RM) $@
 	$(ZIP) $@ install.rdf \

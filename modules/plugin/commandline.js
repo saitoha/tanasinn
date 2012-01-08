@@ -22,7 +22,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-
 /**
  * @class Commandline
  */
@@ -215,7 +214,6 @@ Commandline.definition = {
     this.onpopupshown.enabled = true;
     this.onclick.enabled = true;
     this.onchange.enabled = true;
-    this.onselect.enabled = true;
     this.enableCommandline.enabled = true;
   },
   
@@ -236,7 +234,6 @@ Commandline.definition = {
     this.onpopupshown.enabled = false;
     this.onclick.enabled = false;
     this.onchange.enabled = false;
-    this.onselect.enabled = false;
     this.enableCommandline.enabled = false;
     this._element.parentNode.removeChild(this._element);
   },
@@ -257,7 +254,11 @@ Commandline.definition = {
     this._textbox.hidden = false;
     this._completion.hidden = false;
     this._textbox.focus();
-    this._textbox.focus();
+    //coUtils.Timer.setTimeout(function() {
+      this._textbox.focus();
+      this._textbox.focus();
+      this._textbox.focus();
+    //}, 109, this);
   },
 
   /** Shows commandline interface. 
@@ -280,7 +281,7 @@ Commandline.definition = {
     this._statusbar.hidden = true;
     this._textbox.hidden = false;
     this._completion.hidden = false;
-    this._popup.width = this._textbox.boxObject.width;
+    this._tree.width = this._textbox.boxObject.width;
     this.setCompletionTrigger();
   },
 
@@ -298,7 +299,7 @@ Commandline.definition = {
     this._result = result;
     delete this._timer;
     let grid = this._tree;
-    if (grid.firstChild) {
+    while (grid.firstChild) {
       grid.removeChild(grid.firstChild);
     }
     if (result) {
@@ -436,7 +437,7 @@ Commandline.definition = {
         !event.isChar
         ) {
       let now = parseInt(new Date().getTime());
-      if (now - this._last_ctrlkey_time < 500) {
+      if (now - this._last_ctrlkey_time < 400) {
         let session = this._broker;
         session.notify("command/focus")
         this._last_ctrlkey_time = 0;
@@ -507,8 +508,7 @@ Commandline.definition = {
     //this._completion.inputField.value = "";
   },
 
-  "[listen('select', '#coterminal_commandline', true)]":
-  function onselect(event) 
+  onselect: function onselect(event) 
   {
     let session = this._broker;
     let command = this._textbox.value;
@@ -524,12 +524,12 @@ Commandline.definition = {
     this._textbox.focus();
   },
 
-  "[listen('popupshowing', '#coterminal_commandline', true)]":
+  "[listen('popupshowing', '#coterminal_commandline', false)]":
   function onpopupshowing(event) 
   {
   },
 
-  "[listen('click', '#coterminal_commandline', true)]":
+  "[listen('click', '#coterminal_commandline_box', false)]":
   function onclick(event) 
   {
     this.onfocus();

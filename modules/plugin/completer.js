@@ -68,11 +68,19 @@ CommandCompleter.definition = {
         return 0 == command.name.replace(/[\[\]]+/g, "")
           .indexOf(command_name);
       });
+    if (0 == commands.length) {
+      listener.doCompletion(null);
+      return -1;
+    }
     let autocomplete_result = {
       type: "text",
       query: source, 
       labels: commands.map(function(command) command.name.replace(/[\[\]]+/g, "")),
       comments: commands.map(function(command) command.description),
+      data: commands.map(function(command) ({
+        name: command.name.replace(/[\[\]]+/g, ""),
+        value: command.description,
+      })),
     };
     listener.doCompletion(autocomplete_result);
     return 0;
@@ -326,6 +334,10 @@ OptionCompleter.definition = {
         query: source, 
         labels: options.map(function(option) option.key),
         comments: options.map(function(option) String(option.value)),
+        data: options.map(function(option) ({
+          name: optionk.key,
+          value: String(option.value),
+        })),
       };
       listener.doCompletion(autocomplete_result);
       return 0;
@@ -387,10 +399,14 @@ FontCompleter.definition = {
       .filter(function(font_family) 
         -1 != font_family.toLowerCase().indexOf(name.toLowerCase()));
     let autocomplete_result = {
-      type: "text",
+      type: "font",
       query: source, 
       labels: font_list, 
-      comments: null,
+      comments: font_list,
+      data: font_list.map(function(font) ({
+        name: font, 
+        value: font,
+      })),
     };
     listener.doCompletion(autocomplete_result);
     return 0;
@@ -555,127 +571,13 @@ let web140_color_map = {
   White: "#FFFFFF",
 };
 
-/**
- * @class ForegroundColorCompleter
- *
- */
-let ForegroundColorCompleter = new Class().extends(CompleterBase);
-ForegroundColorCompleter.definition = {
-
-  get id()
-    "foregroud-color-completer",
-
-  get type()
-    "foreground-color",
-
-  /*
-   * Search for a given string and notify a listener (either synchronously
-   * or asynchronously) of the result
-   *
-   * @param source - The string to search for
-   * @param listener - A listener to notify when the search is complete
-   */
-  startSearch: function startSearch(source, listener)
-  {
-    let session = this._broker;
-    let pattern = /^\s*(.*)(\s?)/;
-    let match = source.match(pattern);
-    let [, name, space] = match;
-    if (space) {
-      listener.doCompletion(null);
-      return name.length + space.length;
-    }
-    let colors = [name for ([name, ] in Iterator(web140_color_map))]
-      .filter(function(color_name) 
-         -1 != color_name.toLowerCase().indexOf(name.toLowerCase()));
-    if (0 == colors.length) {
-      listener.doCompletion(autocomplete_result);
-      return -1;
-    }
-    let autocomplete_result = {
-      type: "foreground-color",
-      query: source, 
-      labels: colors, 
-      comments: null, 
-      data: colors.map(function(color_name) ({
-        name: color_name, 
-        value: web140_color_map[color_name],
-      })),
-    };
-    listener.doCompletion(autocomplete_result);
-    return 0;
-  },
-
-  /*
-   * Stop all searches that are in progress
-   */
-  stopSearch: function stopSearch() 
-  {
-  },
-
-};
-
-
-/**
- * @class BackgroundColorCompleter
- *
- */
-let BackgroundColorCompleter = new Class().extends(CompleterBase);
-BackgroundColorCompleter.definition = {
-
-  get id()
-    "backgroud-color-completer",
-
-  get type()
-    "background-color",
-
-  /*
-   * Search for a given string and notify a listener (either synchronously
-   * or asynchronously) of the result
-   *
-   * @param source - The string to search for
-   * @param listener - A listener to notify when the search is complete
-   */
-  startSearch: function startSearch(source, listener)
-  {
-    let session = this._broker;
-    let pattern = /^\s*(.*)(\s?)/;
-    let match = source.match(pattern);
-    let [, name, space] = match;
-    if (space) {
-      listener.doCompletion(null);
-      return name.length + space.length;
-    }
-    let colors = [name for ([name, ] in Iterator(web140_color_map))]
-      .filter(function(color_name) 
-         -1 != color_name.toLowerCase().indexOf(name.toLowerCase()));
-    if (0 == colors.length) {
-      listener.doCompletion(autocomplete_result);
-      return -1;
-    }
-    let autocomplete_result = {
-      type: "background-color",
-      query: source, 
-      labels: colors, 
-      comments: null, 
-      data: colors.map(function(color_name) ({
-        name: color_name, 
-        value: web140_color_map[color_name],
-      })),
-    };
-    listener.doCompletion(autocomplete_result);
-    return 0;
-  },
-
-  /*
-   * Stop all searches that are in progress
-   */
-  stopSearch: function stopSearch() 
-  {
-  },
-
-};
-
+let web140_color_map_reverse = function() {
+  let result = {};
+  for ([key, value] in Iterator(web140_color_map)) {
+    result[value] = key;
+  } 
+  return result;
+} ();
 
 /**
  * @class ColorNumberCompleter
@@ -690,6 +592,12 @@ ColorNumberCompleter.definition = {
   get type()
     "color-number",
 
+  "[subscribe('@initialized/renderer'), enabled]":
+  function onRendererInitialized(renderer)
+  {
+    this._renderer = renderer;
+  },
+
   /*
    * Search for a given string and notify a listener (either synchronously
    * or asynchronously) of the result
@@ -697,28 +605,74 @@ ColorNumberCompleter.definition = {
    * @param source - The string to search for
    * @param listener - A listener to notify when the search is complete
    */
-  startSearch: function startSearch(source, listener)
+  startSearch: function startSearch(source, listener, option)
   {
     let session = this._broker;
-    let pattern = /^\s*([0-9]*)(\s*)/;
+    let renderer = this._renderer;
+    let color_map = "fg" == option ? renderer.normal_color: 
+                    "bg" == option ? renderer.background_color:
+                    null;
+    if (null == color_map) {
+      coUtils.Debug.reportError(
+        _("Unknown option is detected: '%s'."),
+        option);
+      listener.doCompletion(null);
+      return -1;
+    }
+    let pattern = /^\s*([0-9]*)(\s*)(.*)(\s?)/;
     let match = source.match(pattern);
-    let [all, name, space] = match;
-    if (space) {
+    let [all, number, space, name, next] = match;
+    if (next) {
       listener.doCompletion(null);
       return all.length;
-    }
-    let numbers = [i for (i in function() { for (let i = 0; i < 256; ++i) yield i; }())]
-      .map(function(number) number.toString())
-      .filter(function(number_as_string) -1 != number_as_string.indexOf(name));
-    if (0 == numbers.length) {
+    } else if (!space) {
+      let numbers = [i for (i in function() { for (let i = 0; i < 256; ++i) yield i; }())]
+        .map(function(number) number.toString())
+        .filter(function(number_as_string) -1 != number_as_string.indexOf(number));
+      if (0 == numbers.length) {
+        listener.doCompletion(autocomplete_result);
+        return -1;
+      }
+      let autocomplete_result = {
+        type: "color-number",
+        query: source, 
+        labels: numbers, 
+        comments: numbers.map(function(number) color_map[number]),
+        data: numbers.map(function(number) ({
+          name: number, 
+          value: color_map[number],
+        })),
+      };
       listener.doCompletion(autocomplete_result);
+      return 0;
+    }
+    let lower_name = name.toLowerCase();
+    let data = [
+      {
+        name: key,
+        value: value,
+      } for ([key, value] in Iterator(web140_color_map))
+    ].filter(function(pair) 
+    {
+      if (-1 != pair.name.toLowerCase().indexOf(lower_name)) {
+        return true;
+      }
+      if (0 == pair.value.toLowerCase().indexOf(lower_name)) {
+        return true;
+      }
+      return false;
+    });
+    if (0 == data.length) {
+      listener.doCompletion(null);
       return -1;
     }
     let autocomplete_result = {
-      type: "text",
-      query: source, 
-      labels: numbers, 
-      comments: null,
+      type: "color",
+      query: name, 
+      option: color_map[number],
+      labels: data.map(function(pair) pair.name),
+      comments: data.map(function(pair) pair.value),
+      data: data,
     };
     listener.doCompletion(autocomplete_result);
     return 0;
@@ -753,17 +707,19 @@ CompletionDisplayDriverBase.definition = {
 
 
 /**
- * @class ForegroundColorCompletionDisplayDriver
+ * @class ColorNumberCompletionDisplayDriver
  *
  */
-let ForegroundColorCompletionDisplayDriver = new Class().extends(CompletionDisplayDriverBase);
-ForegroundColorCompletionDisplayDriver.definition = {
+let ColorNumberCompletionDisplayDriver = new Class().extends(CompletionDisplayDriverBase);
+ColorNumberCompletionDisplayDriver.definition = {
 
   get id()
-    "foreground-color-completion-display-driver",
+    "color-number-completion-display-driver",
 
   get type()
-    "foreground-color",
+    "color-number",
+
+  _renderer: null,
 
   "[subscribe('@initialized/renderer'), enabled]":
   function onRendererInitialized(renderer)
@@ -773,70 +729,94 @@ ForegroundColorCompletionDisplayDriver.definition = {
 
   drive: function drive(grid, result, current_index) 
   {
+    try {
     let document = grid.ownerDocument;
+    let columns = grid.appendChild(document.createElement("colmns"))
+    columns.appendChild(document.createElement("column"));
+    columns.appendChild(document.createElement("column")).flex = 1;
     let rows = grid.appendChild(document.createElement("rows"))
-    for (let i = 0; i < result.labels.length; ++i) {
-      let row = rows.appendChild(document.createElement("row"))
-      row.style.cssText = i == current_index ? <>
-        background: #226;
-        color: white;
-      </>: "";
+    //rows.style.border = "1px solid blue";
+    result.data.forEach(function(pair, index) {
       let search_string = result.query.toLowerCase();
-      let completion_text = result.labels[i];
-      if (completion_text) {
-        let match_position = completion_text
-          .toLowerCase()
-          .indexOf(search_string);
-        if (-1 != match_position) {
-          session.uniget(
-            "command/construct-chrome", 
+      let renderer = this._renderer;
+      let session = this._broker;
+      session.uniget(
+        "command/construct-chrome", 
+        {
+          parentNode: rows,
+          tagName: "row",
+          style: current_index == index && <> 
+            border: solid 2px blue;
+            outer: solid 3px red;
+            background: #226;
+            color: white;
+          </>,
+          childNodes: [
             {
-              parentNode: row,
               tagName: "box",
-              style: <> width: 50%; margin: 0px; overflow: hidden; </>,
-              childNodes: [
-                { text: completion_text.substr(0, match_position) },
-                {
-                  tagName: "label",
-                  innerText: completion_text.substr(match_position, search_string.length),
-                  style: <> margin: 0px; font-weight: bold; color: #f00; text-decoration: underline; </>,
-                },
-                { text: completion_text.substr(match_position + search_string.length) },
-              ],
-            });
-
-          let comment = row.appendChild(document.createElement("box"));
-          
-          let renderer = this._renderer;
-          let label = comment.appendChild(document.createTextNode("label"));
-          comment.style.margin = "0px";
-          comment.style.color = completion_text;
-          comment.style.fontSize = renderer.font_size;
-          comment.style.fontFamily = renderer.font_family;
-          comment.style.backgroundColor = "#4c4c4c";
-          comment.style.width = "10em";
-          comment.setAttribute("value", "");
-          comment.setAttribute("crop", "end");
-        }
-      }
-    } // for i
+              style: <> 
+                background-color: {pair.value};
+                padding: 0px 10px; 
+              </>,
+            },
+          ].concat([
+            { 
+              text: pair.name,
+              start: pair.name.toLowerCase().indexOf(search_string), 
+              length: search_string.length,
+            },
+            { 
+              text: pair.value,
+              start: -1, 
+            },
+            { 
+              text: web140_color_map_reverse[pair.value] || "",
+              start: -1, 
+            }
+          ].map(function(range) {
+            return {
+              tagName: "box",
+              style: <> margin: 0px 10px; </>,
+              childNodes: -1 == range.start ?
+                { text: range.text }:
+                [
+                  { text: range.text.substr(0, range.start) },
+                  {
+                    tagName: "label",
+                    innerText: range.text.substr(range.start, range.length),
+                    style: <> 
+                      margin: 0px; 
+                      font-weight: bold; 
+                      color: #f00; 
+                      text-decoration: underline; 
+                    </>,
+                  },
+                  { text: range.text.substr(range.start + range.length) },
+                ],
+            };
+          }))
+        });
+    }, this); 
+    } catch(e) {alert(e)}
   },
 
 };
 
 
 /**
- * @class BackgroundColorCompletionDisplayDriver
+ * @class ColorCompletionDisplayDriver
  *
  */
-let BackgroundColorCompletionDisplayDriver = new Class().extends(CompletionDisplayDriverBase);
-BackgroundColorCompletionDisplayDriver.definition = {
+let ColorCompletionDisplayDriver = new Class().extends(CompletionDisplayDriverBase);
+ColorCompletionDisplayDriver.definition = {
 
   get id()
-    "background-color-completion-display-driver",
+    "color-completion-display-driver",
 
   get type()
-    "background-color",
+    "color",
+
+  _renderer: null,
 
   "[subscribe('@initialized/renderer'), enabled]":
   function onRendererInitialized(renderer)
@@ -846,60 +826,145 @@ BackgroundColorCompletionDisplayDriver.definition = {
 
   drive: function drive(grid, result, current_index) 
   {
+    try {
     let document = grid.ownerDocument;
+    let columns = grid.appendChild(document.createElement("colmns"))
+    columns.appendChild(document.createElement("column"));
+    columns.appendChild(document.createElement("column")).flex = 1;
     let rows = grid.appendChild(document.createElement("rows"))
-    for (let i = 0; i < result.labels.length; ++i) {
-      let row = rows.appendChild(document.createElement("row"))
-      row.style.cssText = i == current_index ? <>
-        background: #226;
-        color: white;
-      </>: "";
+    //rows.style.border = "1px solid blue";
+    result.data.forEach(function(pair, index) {
       let search_string = result.query.toLowerCase();
-      let completion_text = result.labels[i];
-      if (completion_text) {
-        let session = this._broker;
-        let match_position = completion_text
-          .toLowerCase()
-          .indexOf(search_string);
-        if (-1 != match_position) {
-          session.uniget(
-            "command/construct-chrome", 
+      let renderer = this._renderer;
+      let session = this._broker;
+      session.uniget(
+        "command/construct-chrome", 
+        {
+          parentNode: rows,
+          tagName: "row",
+          style: current_index == index && <> 
+            border: solid 2px blue;
+            outer: solid 3px red;
+            background: #226;
+            color: white;
+          </>,
+          childNodes: [
             {
-              parentNode: row,
               tagName: "box",
-              style: <> width: 50%; margin: 0px; overflow: hidden; </>,
-              childNodes: [
-                { text: completion_text.substr(0, match_position) },
-                {
-                  tagName: "label",
-                  innerText: completion_text.substr(match_position, search_string.length),
-                  style: <> margin: 0px; font-weight: bold; color: #f00; text-decoration: underline; </>,
-                },
-                { text: completion_text.substr(match_position + search_string.length) },
-              ],
-            });
-
-          let comment = row.appendChild(document.createElement("box"));
-          
-          let renderer = this._renderer;
-          for (let i = 0; i < 16; ++i) {
-            let label = comment.appendChild(document.createElement("label"));
-            label.value = "#" + (100 + i).toString().substr(1);
-            label.style.color = renderer.normal_color[i];
-            label.style.fontFamily = renderer.font_family;
-            label.style.fontSize = renderer.font_size;
-          }
-          comment.style.margin = "1px";
-          comment.style.border = "1px solid black";
-          comment.style.backgroundColor = completion_text;
-          comment.style.width = "10em";
-          comment.setAttribute("value", "");
-          comment.setAttribute("crop", "end");
-        }
-      }
-    } // for i
+              style: <> 
+                background-color: {result.option};
+                padding: 0px 10px; 
+              </>,
+            },
+            {
+              tagName: "box",
+              style: <> 
+                background-color: {pair.name};
+                padding: 0px 10px; 
+              </>,
+            },
+          ].concat([
+            { 
+              text: pair.name,
+              start: pair.name.toLowerCase().indexOf(search_string), 
+              length: search_string.length,
+            },
+            { 
+              text: pair.value,
+              start: pair.value.toLowerCase().indexOf(search_string), 
+              length: search_string.length,
+            }
+          ].map(function(range) {
+            return {
+              tagName: "box",
+              style: <> margin: 0px 10px; </>,
+              childNodes: -1 == range.start ?
+                { text: range.text }:
+                [
+                  { text: range.text.substr(0, range.start) },
+                  {
+                    tagName: "label",
+                    innerText: range.text.substr(range.start, range.length),
+                    style: <> 
+                      margin: 0px; 
+                      font-weight: bold; 
+                      color: #f00; 
+                      text-decoration: underline; 
+                    </>,
+                  },
+                  { text: range.text.substr(range.start + range.length) },
+                ],
+            };
+          }))
+        });
+    }, this); 
+    } catch(e) {alert(e)}
   },
 
+};
+
+/**
+ * @class FontCompletionDisplayDriver
+ *
+ */
+let FontCompletionDisplayDriver = new Class().extends(CompletionDisplayDriverBase);
+FontCompletionDisplayDriver.definition = {
+
+  get id()
+    "font-completion-display-driver",
+
+  get type()
+    "font",
+
+  drive: function drive(grid, result, current_index) 
+  {
+    let document = grid.ownerDocument;
+    let session = this._broker;
+    let rows = grid.appendChild(document.createElement("rows"))
+    for (let i = 0; i < result.labels.length; ++i) {
+      let search_string = result.query.toLowerCase();
+      let completion_text = result.labels[i];
+      let match_position = completion_text
+        .toLowerCase()
+        .indexOf(search_string);
+      session.uniget(
+        "command/construct-chrome", 
+        {
+          parentNode: rows,
+          tagName: "row",
+          style: i == current_index ? <>
+            background: #226;
+            color: white;
+          </>: "",
+          childNodes: [
+            {
+              tagName: "box",
+              style: <>
+                font-size: 40px;
+                font-family: '{completion_text}';
+                margin: 0px;
+              </>,
+              childNodes: -1 == match_position ? 
+                { text: completion_text }:
+                [
+                  { text: completion_text.substr(0, match_position) },
+                  {
+                    tagName: "label",
+                    innerText: completion_text.substr(match_position, search_string.length),
+                    style: <>
+                      margin: 0px; 
+                      font-weight: bold; 
+                      color: #f00; 
+                      text-decoration: underline;
+                    </>,
+                  },
+                  { text: completion_text.substr(match_position + search_string.length) },
+                ],
+            },
+          ],
+        });
+    } // for i
+  },
 };
 
 /**
@@ -921,53 +986,52 @@ TextCompletionDisplayDriver.definition = {
     let session = this._broker;
     let rows = grid.appendChild(document.createElement("rows"))
     for (let i = 0; i < result.labels.length; ++i) {
-      let row = rows.appendChild(document.createElement("row"))
-      row.style.cssText = i == current_index ? <>
-        background: #226;
-        color: white;
-      </>: "";
       let search_string = result.query.toLowerCase();
       let completion_text = result.labels[i];
-      if (completion_text) {
-        let match_position = completion_text
-          .toLowerCase()
-          .indexOf(search_string);
-        if (-1 != match_position) {
-          session.uniget(
-            "command/construct-chrome", 
+      let match_position = completion_text
+        .toLowerCase()
+        .indexOf(search_string);
+      session.uniget(
+        "command/construct-chrome", 
+        {
+          parentNode: rows,
+          tagName: "row",
+          style: i == current_index ? <>
+            background: #226;
+            color: white;
+          </>: "",
+          childNodes: [
             {
-              parentNode: row,
               tagName: "box",
               style: <>
                 width: 50%;
                 margin: 0px;
                 overflow: hidden;
               </>,
-              childNodes: [
-                { text: completion_text.substr(0, match_position) },
-                {
-                  tagName: "label",
-                  innerText: completion_text.substr(match_position, search_string.length),
-                  style: <>
-                    margin: 0px; 
-                    font-weight: bold; 
-                    color: #f00; 
-                    text-decoration: underline;
-                  </>,
-                },
-                { text: completion_text.substr(match_position + search_string.length) },
-              ],
-            });
-          session.uniget(
-            "command/construct-chrome", 
+              childNodes: -1 == match_position ? 
+                { text: completion_text }:
+                [
+                  { text: completion_text.substr(0, match_position) },
+                  {
+                    tagName: "label",
+                    innerText: completion_text.substr(match_position, search_string.length),
+                    style: <>
+                      margin: 0px; 
+                      font-weight: bold; 
+                      color: #f00; 
+                      text-decoration: underline;
+                    </>,
+                  },
+                  { text: completion_text.substr(match_position + search_string.length) },
+                ],
+            },
             {
-              parentNode: row,
               tagName: "label",
               value: result.comments && result.comments[i],
               crop: "end",
-            });
-        }
-      }
+            },
+          ],
+        });
     } // for i
   },
 };
@@ -983,18 +1047,19 @@ function main(process)
     "initialized/session", 
     function(session) 
     {
+      try {
       new JsCompleter(session);
       new HistoryCompleter(session);
       new OptionCompleter(session);
       new CommandCompleter(session);
       new FontCompleter(session);
-      new ForegroundColorCompleter(session);
-      new BackgroundColorCompleter(session);
       new ColorNumberCompleter(session);
 
-      new ForegroundColorCompletionDisplayDriver(session);
-      new BackgroundColorCompletionDisplayDriver(session);
+      new ColorCompletionDisplayDriver(session);
+      new ColorNumberCompletionDisplayDriver(session);
+      new FontCompletionDisplayDriver(session);
       new TextCompletionDisplayDriver(session);
+      } catch (e) {alert(e)}
     });
 }
 

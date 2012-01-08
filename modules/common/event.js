@@ -323,9 +323,11 @@ EventBroker.definition = {
   {
     let delegate = function() listener.apply(context, arguments);
     this._processer.subscribe(expression, delegate, id);
+    /*
     if (this._parent) {
       this._parent.subscribe(expression, delegate, id);
     }
+    */
   },
 
   /** Unsubscribe local event 

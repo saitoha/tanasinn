@@ -532,7 +532,9 @@ ExternalDriver.definition = {
 
     // get script absolute path from abstract path.
     let script_absolute_path
-      = coUtils.File.getFileLeafFromAbstractPath(this.script_path).path;
+      = coUtils.File
+        .getFileLeafFromAbstractPath(this.script_path)
+        .path;
 
     let args;
     if ("WINNT" == coUtils.Runtime.os) { // Windows
@@ -634,9 +636,10 @@ SocketTeletypeService.definition = {
     // initialize server socket.
     socket.init(/* port */ -1, /* loop back */ true, /* connection count */ 1);
     socket.asyncListen(this);
+
     coUtils.Timer.setTimeout(function() { // ensure that "runAsync" is called after "asyncListen".
       external_driver.start(socket.port); // nsIProcess::runAsync.
-    }, 0);
+    }, 100);
   },
 
   "[subscribe('@event/quit-application'), enabled]": 

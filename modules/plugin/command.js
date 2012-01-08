@@ -220,6 +220,17 @@ FontselCommand.definition = {
   function evaluate(arguments_string)
   {
     let session = this._broker;
+    let pattern = /^\s*(.+)\s*$/;
+    let match = arguments_string.match(pattern);
+    if (null === match) {
+      let session = this._broker;
+      session.notify(
+        "command/report-status-message", 
+        _("Ill-formed arguments: %s."), 
+        arguments_string);
+      return false;
+    }
+    let [, font_family] = match;
     session.notify("set/font-family", font_family);
     session.notify("command/draw", true);
   },
@@ -231,16 +242,53 @@ ColorselCommand.definition = {
   get id()
     "colorselcommand",
 
-  "[command('fgcolor', ['color-number', 'foreground-color']), _('Select terminal color.'), enabled]":
+  _renderer: null,
+
+  "[subscribe('@initialized/renderer'), enabled]":
+  function onRendererInitialized(renderer)
+  {
+    this._renderer = renderer;
+  },
+
+  "[command('fgcolor', ['color-number/fg']), _('Select terminal color.'), enabled]":
   function fgcolor(arguments_string)
   {
     let session = this._broker;
+    let pattern = /\s*([0-9]+)\s+([a-zA-Z]+|#[0-9a-fA-F]+)/;
+    let match = arguments_string.match(pattern);
+    if (null === match) {
+      let session = this._broker;
+      session.notify(
+        "command/report-status-message", 
+        _("Ill-formed arguments: %s."), 
+        arguments_string);
+      return false;
+    }
+    let [, number, color] = match;
+    let renderer = this._renderer;
+    renderer.normal_color[number] = color;
+    session.notify("command/draw", /* redraw */true);
+    return true;
   },
 
-  "[command('bgcolor', ['color-number', 'background-color']), _('Select terminal color.'), enabled]":
+  "[command('bgcolor', ['color-number/bg']), _('Select terminal color.'), enabled]":
   function bgcolor(arguments_string)
   {
     let session = this._broker;
+    let pattern = /\s*([0-9]+)\s+([a-zA-Z]+|#[0-9a-fA-F]+)/;
+    let match = arguments_string.match(pattern);
+    if (null === match) {
+      session.notify(
+        "command/report-status-message", 
+        _("Ill-formed arguments: %s."), 
+        arguments_string);
+      return false;
+    }
+    let [, number, color] = match;
+    let renderer = this._renderer;
+    renderer.background_color[number] = color;
+    session.notify("command/draw", /* redraw */true);
+    return true;
   },
 };
 

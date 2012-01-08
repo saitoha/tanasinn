@@ -14,6 +14,10 @@
  content=chrome/content {
    app.xul
  }
+ doc=doc {
+  Makefile
+  usermanual.txt
+ }
  modules=modules {
   Makefile
   common=common {
@@ -60,11 +64,9 @@
   ttydriver.py
 
   plugin=plugin {
-   message_filter.js
    cursor.js
    tabbox.js
    splitter.js
-   wallpaper.js
    titlebar.js
 
    copy.js

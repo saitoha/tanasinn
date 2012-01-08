@@ -23,8 +23,23 @@
  * ***** END LICENSE BLOCK ***** */
 
 /** 
+ * @class LauncherChrome
+ */
+let LauncherChrome = new Class().extends(Component);
+LauncherChrome.definition = {
+
+  get id()
+    "launcher-chrome",
+
+  "[subscribe('initialized/launcher'), enabled]": 
+  function onLoad(launcher)
+  {
+  },
+
+};
+
+/** 
  * @class Launcher
- * @brief Manage a terminal UI and a session.
  */
 let Launcher = new Class().extends(Component);
 Launcher.definition = {
@@ -48,9 +63,13 @@ Launcher.definition = {
     let broker = this._broker;
     let document = window.document;
 
+    let desktop = window
+      .document.documentElement
+      .appendChild(document.createElement("box"));
+
     let outer = window
       .document.documentElement
-      .appendChild(document.createElement("hbox"));
+      .appendChild(document.createElement("box"));
     outer.hidden = true;
     outer.style.cssText = <>
       position: fixed;
@@ -62,51 +81,98 @@ Launcher.definition = {
     let textbox = outer
       .appendChild(document.createElement("textbox"));
     textbox.style.cssText = <>
-              border: solid 1px green;
-      display: -moz-box;
       font-size: 80px;
       padding: 0px;
       width: 80%;
       margin-left: 10%;
     </>;
 
+    this._desktop = desktop;
     this._element = outer;
     this._textbox = textbox;
 
     textbox.addEventListener(
-      "blur", 
+      "blur", let (self = this)
       function onblur(event) 
       {
-        outer.hidden = true;
+        self.hide();
       }, false);
 
     textbox.addEventListener(
-      "change", 
-      let (process = this._broker, self = this) 
-        function onblur(event) 
-        {
-          let terminal = process.start(
-            document.documentElement,
-            this.value,  // command
-            null,  // TERM environment
-            null,  // size 
-            ["modules/core", 
-             "modules/standard", 
-             "modules/plugin"]);
-          this.inputField.value = "";
-          terminal.style.left = <>{self.left = (self.left + Math.random() * 40 - 20) % 40 + 10}%</>;
-          terminal.style.top = <>{self.top = (self.top + Math.random() * 40 - 20) % 40 + 10}%</>;
-        }, false);
+      "keypress", let (self = this) function () 
+      {
+        self.onkeypress.apply(self, arguments);
+      }, false);
 
     window.addEventListener(
-      "keyup", let (self = this) function() {
+      "keyup", let (self = this) function() 
+      {
         self.onkeyup.apply(self, arguments);
       }, /* capture */ true);
 
     window.addEventListener(
-      "keydown", let (self = this) function() {
+      "keydown", let (self = this) function() 
+      {
         self.onkeydown.apply(self, arguments);
       }, /* capture */ true);
+
+    broker.notify(<>initialized/{this.id}</>, this);
+  },
+
+  onDoubleCtrl: function onDoubleCtrl() 
+  {
+    let box = this._element;
+    if (box.hidden) {
+      this.show();
+    } else {
+      this.hide();
+    }
+  },
+
+  show: function show()
+  {
+    let box = this._element;
+    let textbox = this._textbox;
+    box.hidden = false;
+    textbox.focus();
+    box.parentNode.appendChild(box);
+    textbox.focus();
+  },
+
+  hide: function hide()
+  {
+    let box = this._element;
+    let textbox = this._textbox;
+    textbox.blur();
+    box.hidden = true;
+  },
+
+  launch: function launch() 
+  {
+    let process = this._broker; 
+    let document = this._element.ownerDocument;
+    this.hide();
+    coUtils.Timer.setTimeout(function() {
+      let terminal =  process.start(
+        this._desktop,
+        this._textbox.value.replace(/^\s+|\s+$/, ""),  // command
+        null,  // TERM environment
+        null,  // size 
+        ["modules/core", 
+         "modules/standard", 
+         "modules/plugin"]);
+      terminal.style.left = <>{this.left = (this.left + Math.random() * 40 - 20) % 40 + 10}%</>;
+      terminal.style.top = <>{this.top = (this.top + Math.random() * 40 - 20) % 40 + 10}%</>;
+    }, 0, this);
+  },
+
+  onkeypress: function onkeypress(event) 
+  { // nothrow
+    if (13 == event.keyCode && 13 == event.which 
+        && !event.ctrlKey && !event.altKey 
+        && !event.shiftKey && !event.isChar) {
+      this.launch();
+    }// else alert(event.keyCode + " " +event.which);
   },
 
   onkeyup: function onkeyup(event) 
@@ -130,20 +196,7 @@ Launcher.definition = {
         && !event.shiftKey && !event.isChar) {
       let now = parseInt(new Date().getTime());
       if (now - this._last_ctrlkey_time < 500) {
-            try {
-        let box = this._element;
-        let textbox = this._textbox;
-        if (box.hidden) {
-          box.hidden = false;
-          textbox.focus();
-          box.parentNode.appendChild(box);
-          textbox.focus();
-        } else {
-          textbox.blur();
-          box.hidden = true;
-        }
-            } catch (e) {alert(e)}
-        //session.notify("introducer-pressed/double-ctrl");
+        this.onDoubleCtrl();
         this._last_ctrlkey_time = 0;
       } else {
         this._last_ctrlkey_time = now;

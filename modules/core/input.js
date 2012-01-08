@@ -246,6 +246,8 @@ InputManager.definition = {
   {
     // call focus() 2 times.
     this._textbox.focus(); // <-- blur out for current element.
+    this._textbox.focus(); // <-- blur out for current element.
+    this._textbox.focus(); // <-- blur out for current element.
     this._textbox.focus(); // <-- set focus to textbox element.
   },
 
@@ -289,7 +291,7 @@ InputManager.definition = {
         !event.isChar
         ) {
       let now = parseInt(new Date().getTime());
-      if (now - this._last_ctrlkey_time < 300) {
+      if (now - this._last_ctrlkey_time < 350) {
         let session = this._broker;
         session.notify("command/enable-commandline")
         this._last_ctrlkey_time = 0;

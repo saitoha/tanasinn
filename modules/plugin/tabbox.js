@@ -366,7 +366,10 @@ function main(process)
 {
   process.subscribe(
     "initialized/session", 
-    function(session) new BottomPanel(session));
+    function(session) 
+    {
+      new BottomPanel(session);
+    });
 }
 
 

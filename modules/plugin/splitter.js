@@ -164,6 +164,9 @@ function main(process)
 {
   process.subscribe(
     "initialized/session", 
-    function(session) new Splitter(session));
+    function(session) 
+    {
+      new Splitter(session);
+    });
 }
 
