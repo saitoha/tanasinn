@@ -1,0 +1,128 @@
+= coTerminal User Manual
+
+== Introduction: What is it?
+    "coTerminal" is a Firefox browser extension, shows a terminal emurator 
+    interface and enables you to access flexible, powerful functionality 
+    provided by operating systems, such as commandline shells, curses-based 
+    applications.
+
+== Overview hilighting features
+    === 
+    Full Gecko based user interface, it is flexible and easy to customize.
+    - Multi-platform, now supports Mac / Linux / Windows + Cygwin (requires posix python).
+    - Supports plugin architecture. it supports Plug-and-Play installing & uninstalling.
+      (documents for developing is comming soon... - -;)
+    - Including debugger, you can run it in step-execution-mode or trace-mode 
+      and observe terminal I/O sequence in real-time. (it's interesting!)
+    - IME is supported.
+    - Supports east asian double width characters. 
+      (but I don't know whether it render bidi languages correctly.)
+    - Localization supported. localize resource can be edited on bottom-panel UI.
+    - Selects variable character encoding supported by Gecko.
+    - Supports transparent window. it is useful when www-browseing while working at terminal.
+    - Retaining TTY session duaring restarting browser.
+      (Now, this feature is not works well in Cygwin version. 
+    - Frontend UI that makes you to select/edit session, ...such as screen/tmux, 
+      is not implemented yet. - -;)
+    - xterm-like mouse emuration, and supports smoothing pixel scroll.
+    - Text selection / Rectangle text selection
+    - Supports copy / paste in Drag & Drop or keyboard shortcut.
+    - Supports move / resize through Drag & Drop operation.
+    - Supports 256 terminal color, you can assign 32bit colors for them.
+    - Vimperator / Keysnail like commandline interface.
+    - Running as independent XUL application if you want. (but now buggy!)
+    - Patching w3m, it supports inline image (now buggy! on MacOSX only... - -;).
+
+== Screenshots
+.ssh Debian from MacOSX and run "bb", an ascii art demo program.
+image::images/zebra.png[width=640]
+
+.Typing Japanese with IME (here is AquaSKK).
+image::images/ime.png[width=640]
+
+.commandline interface that is inspired by Vimperator / Keysnail (here is fgcolor command).
+image::images/completion.png[width=640]
+
+.traceing terminal I/O sequence in real-time.
+image::images/debug.png[width=640]
+
+.w3m (applied private patch) with inline frame.
+image::images/w3m.png[width=640]
+
+== Requirements
+    - Firefox 4.0+.
+    - Python for Unix (Probably 2.5+, Mac, Linux, or cygwin version)
+      Python for Win32, ActivePython, etc... are not well.
+      because this software depends on many posix functions 
+      'os.fork', 'os.openpty' ..etc.
+    - Posix enviroinment. 
+      If you are running Windows, you need to install cygwin at C:\cygwin.
+
+== Installing and Running
+
+=== Building Firefox extension:
+.Mac, Linux, Cygwin
+----
+./configure
+make
+----
+    If build process was succeeded, target XPI file 
+    "coterminal@zuse.jp.xpi" is to be generated. enjoy it!
+    
+=== Installing as Vimperator plugin:
+
+.Mac, Linux
+    Makes symbolic link of modules/corun.js into Vimperator's 
+    plugin directory as following:
+----
+  > ln -s $PWD/modules/corun.js $RUNTIME/plugin/ 
+----
+    $RUNTIME is Vimperator's runtime directory such as 
+    '$HOME/.vimperator'.
+        
+=== Run as XUL Application (test version, it does not works well...):
+    
+.MacOSX
+----
+open /Applications/Firefox.app --args --app $(PWD)/application.ini
+----
+.Linux
+----
+firefox --app application.ini
+----
+.Cygwin on Windows
+----
+cygstart firefox.exe --app application.ini
+----
+
+== Usage
+=== Launch terminal
+
+    Pressing control key twice (ctrl + ctrl), it shows 
+    Launcher commandline interface.
+    For example, inputing "man man" for this launcher's textbox, 
+    window-like UI emerges into browser chrome window and display manpage.  
+    ... Didn't work?
+    Please notfy me! > saitoha <user@zuse.jp>.
+
+.basic operating procedure 
+
+    It is similer to well-known terminal emurators, like xterm. 
+    but including specific fetures as follows.
+
+.shift + shift (shift key twice)
+
+    switch input focus between terminal and commandline textbox.
+
+.shift + mouse drag
+
+    move window.
+
+==== alt + mouse select
+
+    select rectangle region. (from Terminal.app)
+              
+== Bug reports
+    saitoha <user@zuse.jp>, initial develpper of coTerminal.
+
+
