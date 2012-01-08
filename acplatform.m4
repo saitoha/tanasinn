@@ -26,6 +26,34 @@ AC_DEFUN([AC_COTERMINAL_OS],
  AC_MSG_RESULT($COTERMINAL_OS)
  ])
 
+
+# ----------------------------------------------------------------------------
+# AC_COTERMINAL_OPEN
+# ----------------------------------------------------------------------------
+#
+AC_DEFUN([AC_COTERMINAL_OPEN],
+[AC_SUBST(COTERMINAL_OPEN)
+ AC_MSG_CHECKING(open command)
+ case $target_os in
+ linux*)
+     COTERMINAL_OPEN=run
+     ;;
+ darwin*)
+     COTERMINAL_OPEN=open
+     ;;
+ cygwin*)
+     COTERMINAL_OPEN=cygstart
+     ;;
+ mingw*)
+     COTERMINAL_OPEN=explorer
+     ;;
+ *)
+     COTERMINAL_OPEN=run
+     ;;
+ esac 
+ AC_MSG_RESULT($COTERMINAL_OS)
+ ])
+
 # ----------------------------------------------------------------------------
 # AC_COTERMINAL_ARCH 
 # ----------------------------------------------------------------------------

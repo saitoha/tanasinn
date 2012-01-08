@@ -34,9 +34,16 @@ function getCoterminalProcess()
   let process_class = Components
     .classes["@zuse.jp/coterminal/process;1"]
   if (!process_class) {
+    /*
+    let file = Components.stack
+        .filename
+        .split(" -> ").pop()
+        .split("?").shift()
+        .replace(/\/[^\/]+?\/[^\/]+$/, "/coterminal/modules/initialize.js");
+        */
     let file = [
       Components.stack.filename.split(" -> ").pop().split("?").shift(),
-      "/../../coterminal/modules/initialize.js"
+      "/../../coterminal/modules/common/process.js"
     ].join("");
     Components
       .classes["@mozilla.org/moz/jssubscript-loader;1"]
@@ -58,7 +65,7 @@ commands.add(['cot[erminal]'],
     window.setTimeout(function() {
       let container = document.getElementById("coterminal-container");
       process.start(
-        container,
+        document.documentElement,
         args.string,  // command
         null, // TERM
         null, // size

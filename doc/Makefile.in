@@ -1,0 +1,6 @@
+
+OPEN=@COTERMINAL_OPEN@
+
+usermanual.html: usermanual.txt
+	cat $< > ../README
+	asciidoc $< && $(OPEN) $@

@@ -572,7 +572,7 @@ Console.definition = {
  */
 function main(process) 
 {
-//  if (false) // now it is disabled dealing with performance issue.
+  if (false) // now it is disabled dealing with performance issue.
   process.subscribe(
     "initialized/session", 
     function(session)

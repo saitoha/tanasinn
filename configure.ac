@@ -31,41 +31,25 @@ COTERMINAL_FIREFOX_APPID="{ec8030f7-c20a-464f-9b0e-13a3a9e97384}"
 
 m4_include([acplatform.m4])
 AC_COTERMINAL_OS
-AC_COTERMINAL_MODULE_EXT
+AC_COTERMINAL_OPEN
+#AC_COTERMINAL_MODULE_EXT
 AC_COTERMINAL_ARCH
-AC_COTERMINAL_ABI
+#AC_COTERMINAL_ABI
 AC_COTERMINAL_PLATFORM
 
 m4_include([acgecko.m4])
-AC_COTERMINAL_GECKO_VERSION
-AC_COTERMINAL_GECKO_ROOT_PATH
-AC_COTERMINAL_XPI_PLATFORM_DIRECTORY
-AC_COTERMINAL_XPIDL_PATH
+#AC_COTERMINAL_GECKO_VERSION
+#AC_COTERMINAL_GECKO_ROOT_PATH
+#AC_COTERMINAL_XPI_PLATFORM_DIRECTORY
+#AC_COTERMINAL_XPIDL_PATH
 AC_COTERMINAL_JS_PATH
 
 # ----------------------------------------------------------------------------
 # AC_COTERMINAL_OS 
 # ----------------------------------------------------------------------------
 #
-AC_DEFUN([AC_TPUT_STRING],
-[AC_SUBST([COTERMINAL_TPUT_MSTART])
- AC_SUBST([COTERMINAL_TPUT_MEND])
- AC_SUBST([COTERMINAL_TPUT_ESTART])
- AC_SUBST([COTERMINAL_TPUT_EEND])
- AC_MSG_CHECKING(host supports SGR sequence)
-
- case $host_os in
- cygwin*|mingw*)
-     AC_MSG_RESULT(no)
-     ;;
- *)
-     AC_MSG_RESULT(yes)
-     ;;
- esac 
- ])
-AC_TPUT_STRING
-
 AC_CONFIG_FILES([Makefile 
+                 doc/Makefile
                  chrome.manifest 
                  install.rdf 
                  ])

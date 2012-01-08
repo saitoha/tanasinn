@@ -7,8 +7,7 @@
     applications.
 
 == Overview hilighting features
-    === 
-    Full Gecko based user interface, it is flexible and easy to customize.
+    - Full Gecko based user interface, it is flexible and easy to customize.
     - Multi-platform, now supports Mac / Linux / Windows + Cygwin (requires posix python).
     - Supports plugin architecture. it supports Plug-and-Play installing & uninstalling.
       (documents for developing is comming soon... - -;)
@@ -34,19 +33,22 @@
     - Patching w3m, it supports inline image (now buggy! on MacOSX only... - -;).
 
 == Screenshots
-.ssh Debian from MacOSX and run "bb", an ascii art demo program.
+.ssh Debian from MacOSX and run "http://w3m.sourceforge.net/index.en.html[BB]", an ascii art demo program.
 image::images/zebra.png[width=640]
 
-.Typing Japanese with IME (here is AquaSKK).
+.Typing Japanese with IME (here is http://aquaskk.sourceforge.jp/[AquaSKK]).
 image::images/ime.png[width=640]
 
-.commandline interface that is inspired by Vimperator / Keysnail (here is fgcolor command).
+.commandline interface that is inspired by http://vimperator.org/vimperator[Vimperator] / https://github.com/mooz/keysnail/wiki/[Keysnail] (here is fgcolor command).
 image::images/completion.png[width=640]
+
+.running "http://www.tkl.iis.u-tokyo.ac.jp/~toyoda/index_e.html[sl]" (a joke software) on cygwin/Windows7.
+image::images/sl.png[width=640]
 
 .traceing terminal I/O sequence in real-time.
 image::images/debug.png[width=640]
 
-.w3m (applied private patch) with inline frame.
+.http://w3m.sourceforge.net/index.en.html[w3m] (applied private patch) with inline frame.
 image::images/w3m.png[width=640]
 
 == Requirements
@@ -72,7 +74,7 @@ make
 === Installing as Vimperator plugin:
 
 .Mac, Linux
-    Makes symbolic link of modules/corun.js into Vimperator's 
+    Make symbolic link of modules/corun.js into Vimperator's 
     plugin directory as following:
 ----
   > ln -s $PWD/modules/corun.js $RUNTIME/plugin/ 
@@ -80,6 +82,16 @@ make
     $RUNTIME is Vimperator's runtime directory such as 
     '$HOME/.vimperator'.
         
+.Cygwin
+    Make symbolic link of $PWD and hard link of modules/corun.js 
+    into Vimperator's plugin directory as following:
+----
+	cmd /c mklink /D $(cygpath -w $RUNTIME/coterminal) $(cygpath -w $PWD); \
+	ln $PWD/modules/corun.js $RUNTIME/plugin/ \
+----
+    $RUNTIME is Vimperator's runtime directory such as 
+    '$HOME/.vimperator'.
+
 === Run as XUL Application (test version, it does not works well...):
     
 .MacOSX

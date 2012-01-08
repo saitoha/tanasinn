@@ -566,34 +566,19 @@ PACKAGE_URL=''
 
 ac_subst_vars='LTLIBOBJS
 LIBOBJS
-COTERMINAL_TPUT_EEND
-COTERMINAL_TPUT_ESTART
-COTERMINAL_TPUT_MEND
-COTERMINAL_TPUT_MSTART
 COTERMINAL_JS_PATH
-COTERMINAL_XPIDL_PATH
-COTERMINAL_XPI_PLATFORM_DIRECTORY
-COTERMINAL_GECKO_MAJOR_VERSION
-COTERMINAL_GECKO_LIBS
-COTERMINAL_GECKO_LIBPATH
-COTERMINAL_GECKO_INCLUDE
-COTERMINAL_GECKO_ROOT_PATH
-GECKOVER
-COTERMINAL_GECKO_VERSION
+abi
+COTERMINAL_INCLUDE
+CXXFLAGS
+COTERMINAL_ABI
 COTERMINAL_PLATFORM
 COTERMINAL_LINK
 COTERMINAL_CXX
 COTERMINAL_CC
 COTERMINAL_LDFLAGS
 COTERMINAL_SUFFIX
-abi
-COTERMINAL_INCLUDE
-CXXFLAGS
-COTERMINAL_ABI
 COTERMINAL_ARCH
-COTERMINAL_AR_OUT
-COTERMINAL_OBJ_EXT
-COTERMINAL_MODULE_EXT
+COTERMINAL_OPEN
 COTERMINAL_OS
 COTERMINAL_FIREFOX_APPID
 COTERMINAL_XPI_ID
@@ -655,15 +640,12 @@ SHELL'
 ac_subst_files=''
 ac_user_opts='
 enable_option_checking
-with_gecko
-with_xpidl
 with_js
 '
       ac_precious_vars='build_alias
 host_alias
 target_alias
-abi
-GECKOVER'
+abi'
 
 
 # Initialize some variables set by options.
@@ -1279,13 +1261,10 @@ if test -n "$ac_init_help"; then
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
-  --with-gecko=GECKO gecko root path
-  --with-xpidl=XPIDL xpidl path
   --with-js=JS js path
 
 Some influential environment variables:
   abi         target architecture
-  GECKOVER    GECKO runtime version
 
 Use these variables to override the choices made by `configure' or to help
 it to find libraries and programs with nonstandard names/locations.
@@ -1961,6 +1940,13 @@ COTERMINAL_FIREFOX_APPID="{ec8030f7-c20a-464f-9b0e-13a3a9e97384}"
 #
 
 
+
+# ----------------------------------------------------------------------------
+# AC_COTERMINAL_OPEN
+# ----------------------------------------------------------------------------
+#
+
+
 # ----------------------------------------------------------------------------
 # AC_COTERMINAL_ARCH
 # ----------------------------------------------------------------------------
@@ -2010,40 +1996,29 @@ $as_echo_n "checking target os... " >&6; }
 $as_echo "$COTERMINAL_OS" >&6; }
 
 
-
-
- { $as_echo "$as_me:${as_lineno-$LINENO}: checking target os" >&5
-$as_echo_n "checking target os... " >&6; }
+ { $as_echo "$as_me:${as_lineno-$LINENO}: checking open command" >&5
+$as_echo_n "checking open command... " >&6; }
  case $target_os in
  linux*)
-     COTERMINAL_MODULE_EXT=so
-     COTERMINAL_OBJ_EXT=o
-     COTERMINAL_AR_OUT=" -o "
+     COTERMINAL_OPEN=run
      ;;
  darwin*)
-     COTERMINAL_MODULE_EXT=dylib
-     COTERMINAL_OBJ_EXT=o
-     COTERMINAL_AR_OUT=" -o "
+     COTERMINAL_OPEN=open
      ;;
  cygwin*)
-     COTERMINAL_MODULE_EXT=dll
-     COTERMINAL_OBJ_EXT=obj
-     COTERMINAL_AR_OUT=" /out:"
+     COTERMINAL_OPEN=cygstart
      ;;
  mingw*)
-     COTERMINAL_MODULE_EXT=dll
-     COTERMINAL_OBJ_EXT=obj
-     COTERMINAL_AR_OUT=" /out:"
+     COTERMINAL_OPEN=explorer
      ;;
  *)
-     COTERMINAL_MODULE_EXT=so
-     COTERMINAL_OBJ_EXT=o
-     COTERMINAL_AR_OUT=" /out:"
+     COTERMINAL_OPEN=run
      ;;
  esac
- { $as_echo "$as_me:${as_lineno-$LINENO}: result: $COTERMINAL_MODULE_EXT" >&5
-$as_echo "$COTERMINAL_MODULE_EXT" >&6; }
+ { $as_echo "$as_me:${as_lineno-$LINENO}: result: $COTERMINAL_OS" >&5
+$as_echo "$COTERMINAL_OS" >&6; }
 
+#AC_COTERMINAL_MODULE_EXT
 
  { $as_echo "$as_me:${as_lineno-$LINENO}: checking target cpu architecture" >&5
 $as_echo_n "checking target cpu architecture... " >&6; }
@@ -2063,32 +2038,7 @@ $as_echo_n "checking target cpu architecture... " >&6; }
  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $COTERMINAL_ARCH" >&5
 $as_echo "$COTERMINAL_ARCH" >&6; }
 
-
-
-
- { $as_echo "$as_me:${as_lineno-$LINENO}: checking target compiler ABI" >&5
-$as_echo_n "checking target compiler ABI... " >&6; }
-
-
- if [ $abi ];
- then
-    COTERMINAL_ABI=$abi
- else
-    case $target_os in
-    cygwin)
-        COTERMINAL_ABI='msvc'
-        CXXFLAGS='-DXP_WIN'
-        ;;
-    *)
-        COTERMINAL_ABI='gcc3'
-        CXXFLAGS='-Wall -fvisibility=hidden -fno-rtti -fno-exceptions -fshort-wchar -fPIC -fno-common -O2'
-        ;;
-    esac
-
- fi
- { $as_echo "$as_me:${as_lineno-$LINENO}: result: $COTERMINAL_ABI" >&5
-$as_echo "$COTERMINAL_ABI" >&6; }
-
+#AC_COTERMINAL_ABI
 
 
 
@@ -2245,178 +2195,10 @@ $as_echo "$COTERMINAL_ABI" >&6; }
 
 
 
-
- { $as_echo "$as_me:${as_lineno-$LINENO}: checking gecko version" >&5
-$as_echo_n "checking gecko version... " >&6; }
-
-
- if [ $geckover ];
- then
-    COTERMINAL_GECKO_VERSION=$geckover
- else
-    COTERMINAL_GECKO_VERSION=7.0
- fi
-
- { $as_echo "$as_me:${as_lineno-$LINENO}: result: $COTERMINAL_GECKO_VERSION" >&5
-$as_echo "$COTERMINAL_GECKO_VERSION" >&6; }
-
-
-
-
-
-
-
- { $as_echo "$as_me:${as_lineno-$LINENO}: checking gecko root path" >&5
-$as_echo_n "checking gecko root path... " >&6; }
-
-# Check whether --with-gecko was given.
-if test "${with_gecko+set}" = set; then :
-  withval=$with_gecko;
-fi
-
-
- if [ $with_gecko ];
- then
-    COTERMINAL_GECKO_ROOT_PATH=$with_gecko
- else
-     CURRENT=$PWD
-     while [ $PWD != "/" ];
-     do
-        if [ -d third_party/xulrunner ];
-        then
-            if [ $host_os = cygwin ];
-            then
-                COTERMINAL_GECKO_ROOT_PATH=$(cygpath -ma $PWD)/third_party/xulrunner
-            else
-                COTERMINAL_GECKO_ROOT_PATH=$PWD/third_party/xulrunner
-            fi
-            break;
-        fi
-        cd ..
-     done
-     cd $CURRENT
- fi
- { $as_echo "$as_me:${as_lineno-$LINENO}: result: $COTERMINAL_GECKO_ROOT_PATH" >&5
-$as_echo "$COTERMINAL_GECKO_ROOT_PATH" >&6; }
-
- { $as_echo "$as_me:${as_lineno-$LINENO}: checking gecko include path" >&5
-$as_echo_n "checking gecko include path... " >&6; }
- COTERMINAL_GECKO_INCLUDE=" -I$COTERMINAL_GECKO_ROOT_PATH/$COTERMINAL_GECKO_VERSION/include/$COTERMINAL_PLATFORM "
- COTERMINAL_GECKO_INCLUDE+=" -I$COTERMINAL_GECKO_ROOT_PATH/$COTERMINAL_GECKO_VERSION/include "
- { $as_echo "$as_me:${as_lineno-$LINENO}: result: $COTERMINAL_GECKO_INCLUDE_PATH" >&5
-$as_echo "$COTERMINAL_GECKO_INCLUDE_PATH" >&6; }
-
- { $as_echo "$as_me:${as_lineno-$LINENO}: checking gecko LDFLAG" >&5
-$as_echo_n "checking gecko LDFLAG... " >&6; }
- case $target_os in
- cygwin*)
-     COTERMINAL_LDFLAGS="/DLL "
-     COTERMINAL_LIBPATH_FLAG=" /LIBPATH:"
-     ;;
- darwin*)
-     COTERMINAL_LDFLAGS=-dynamiclib
-     COTERMINAL_LIBPATH_FLAG="-L"
-     ;;
- *)
-     COTERMINAL_LDFLAGS=-shared
-     COTERMINAL_LIBPATH_FLAG="-L"
-     ;;
- esac
- { $as_echo "$as_me:${as_lineno-$LINENO}: result: $COTERMINAL_LDFLAG" >&5
-$as_echo "$COTERMINAL_LDFLAG" >&6; }
-
- { $as_echo "$as_me:${as_lineno-$LINENO}: checking gecko LIBPATH flag" >&5
-$as_echo_n "checking gecko LIBPATH flag... " >&6; }
- COTERMINAL_GECKO_LIBPATH=" $COTERMINAL_LIBPATH_FLAG\"$COTERMINAL_GECKO_ROOT_PATH/$COTERMINAL_GECKO_VERSION/lib/$COTERMINAL_PLATFORM\" "
- { $as_echo "$as_me:${as_lineno-$LINENO}: result: $COTERMINAL_GECKO_LIBPATH" >&5
-$as_echo "$COTERMINAL_GECKO_LIBPATH" >&6; }
-
-
- { $as_echo "$as_me:${as_lineno-$LINENO}: checking gecko major version" >&5
-$as_echo_n "checking gecko major version... " >&6; }
- COTERMINAL_GECKO_MAJOR_VERSION=`echo $COTERMINAL_GECKO_VERSION | sed -e "s/\\..*\$//"`
-
-cat >>confdefs.h <<_ACEOF
-#define GECKO_MAJOR_VERSION $COTERMINAL_GECKO_MAJOR_VERSION
-_ACEOF
-
- { $as_echo "$as_me:${as_lineno-$LINENO}: result: $COTERMINAL_GECKO_MAJOR_VERSION" >&5
-$as_echo "$COTERMINAL_GECKO_MAJOR_VERSION" >&6; }
-
-
- { $as_echo "$as_me:${as_lineno-$LINENO}: checking gecko LIBS flag" >&5
-$as_echo_n "checking gecko LIBS flag... " >&6; }
- case $COTERMINAL_GECKO_VERSION in
- 1*)
-     case $target_os in
-     cygwin*)
-         COTERMINAL_GECKO_LIBS=" xpcom.lib nspr4.lib xpcomglue_s.lib"
-         ;;
-     *)
-         COTERMINAL_GECKO_LIBS=" -lxpcom -lnspr4 -lxpcomglue_s"
-         ;;
-     esac
-     ;;
-
- 2*)
-     case $target_os in
-     cygwin*)
-         COTERMINAL_GECKO_LIBS=" xpcomglue_s_nomozalloc.lib xpcom.lib nspr4.lib mozalloc.lib"
-         ;;
-     *)
-        COTERMINAL_GECKO_LIBS=" -lxpcomglue_s_nomozalloc -lxpcom -lnspr4 -lmozalloc"
-         ;;
-     esac
-     ;;
- *)
-     case $target_os in
-     cygwin*)
-         COTERMINAL_GECKO_LIBS=" xpcomglue_s_nomozalloc.lib xpcom.lib nspr4.lib mozalloc.lib"
-         ;;
-     *)
-         COTERMINAL_GECKO_LIBS=" -lstdc++ -lxpcomglue_s_nomozalloc -lxpcom -lnspr4 -lmozalloc"
-         ;;
-     esac
-     ;;
- esac
- { $as_echo "$as_me:${as_lineno-$LINENO}: result: $COTERMINAL_GECKO_LIBS" >&5
-$as_echo "$COTERMINAL_GECKO_LIBS" >&6; }
-
-
-
-
-
-
-
-
- { $as_echo "$as_me:${as_lineno-$LINENO}: checking Platform directory" >&5
-$as_echo_n "checking Platform directory... " >&6; }
-
- COTERMINAL_XPI_PLATFORM_DIRECTORY="platform/$COTERMINAL_GECKO_VERSION/$COTERMINAL_OS""_$COTERMINAL_ARCH-$COTERMINAL_ABI"
-
- { $as_echo "$as_me:${as_lineno-$LINENO}: result: $COTERMINAL_XPI_PLATFORM_DIRECTORY" >&5
-$as_echo "$COTERMINAL_XPI_PLATFORM_DIRECTORY" >&6; }
-
-
- { $as_echo "$as_me:${as_lineno-$LINENO}: checking xpidl path" >&5
-$as_echo_n "checking xpidl path... " >&6; }
-
-# Check whether --with-xpidl was given.
-if test "${with_xpidl+set}" = set; then :
-  withval=$with_xpidl;
-fi
-
-
- if [ $with_xpidl ];
- then
-    COTERMINAL_XPIDL_PATH=$with_xpidl
- else
-    COTERMINAL_XPIDL_PATH=$PWD/tools/bin/$COTERMINAL_PLATFORM/xpidl
- fi
-
- { $as_echo "$as_me:${as_lineno-$LINENO}: result: $COTERMINAL_XPIDL_PATH" >&5
-$as_echo "$COTERMINAL_XPIDL_PATH" >&6; }
-
+#AC_COTERMINAL_GECKO_VERSION
+#AC_COTERMINAL_GECKO_ROOT_PATH
+#AC_COTERMINAL_XPI_PLATFORM_DIRECTORY
+#AC_COTERMINAL_XPIDL_PATH
 
  { $as_echo "$as_me:${as_lineno-$LINENO}: checking js path" >&5
 $as_echo_n "checking js path... " >&6; }
@@ -2442,27 +2224,7 @@ $as_echo "$COTERMINAL_JS_PATH" >&6; }
 # AC_COTERMINAL_OS
 # ----------------------------------------------------------------------------
 #
-
-
-
-
-
- { $as_echo "$as_me:${as_lineno-$LINENO}: checking host supports SGR sequence" >&5
-$as_echo_n "checking host supports SGR sequence... " >&6; }
-
- case $host_os in
- cygwin*|mingw*)
-     { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-     ;;
- *)
-     { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }
-     ;;
- esac
-
-
-ac_config_files="$ac_config_files Makefile chrome.manifest install.rdf"
+ac_config_files="$ac_config_files Makefile doc/Makefile chrome.manifest install.rdf"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -3182,6 +2944,7 @@ for ac_config_target in $ac_config_targets
 do
   case $ac_config_target in
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
+    "doc/Makefile") CONFIG_FILES="$CONFIG_FILES doc/Makefile" ;;
     "chrome.manifest") CONFIG_FILES="$CONFIG_FILES chrome.manifest" ;;
     "install.rdf") CONFIG_FILES="$CONFIG_FILES install.rdf" ;;
 

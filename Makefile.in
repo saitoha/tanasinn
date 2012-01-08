@@ -38,7 +38,7 @@ document-build: doc/usermanual.html
 
 doc/usermanual.html: doc/usermanual.txt
 	@echo "$(MSTART) Regenerating configure file....$(MEND)" 
-	echo Generating user manual.
+	@echo Generating user manual.
 	$(MAKE) -C doc
 	@echo "$(MSTART) Done.$(MEND)" 
 
@@ -96,11 +96,27 @@ dev:
 	ln -f $(PWD)/tools/gitignore .gitignore	
 	ln -f $(PWD)/tools/vimprojects .vimprojects
 
+
 install-vimperator:
-	ln -sf $(PWD)/modules/corun.js ~/.vimperator/plugin/
+	case @host_os@ in \
+		cygwin*) \
+			cmd /c mklink /D $$(cygpath -w $$(cygpath $$USERPROFILE)/vimperator/coterminal) $$(cygpath -w $(PWD)); \
+			ln -f $(PWD)/modules/corun.js ~/vimperator/plugin/ \
+			;; \
+		*) \
+			ln -sf $(PWD)/modules/corun.js ~/.vimperator/plugin/ \
+			;; \
+	esac
 
 uninstall-vimperator:
-	rm ~/.vimperator/plugin/corun.js
+	case @host_os@ in \
+		cygwin*) \
+			rm $$(cygpath $$USERPROFILE)/vimperator/plugin/corun.js \
+			;; \
+		*) \
+			rm ~/.vimperator/plugin/corun.js \
+			;; \
+	esac \
 
 install-extension:
 	case @host_os@ in \
@@ -111,18 +127,40 @@ install-extension:
 			PROFILE_ROOT=~/.mozilla/firefox \
 			;; \
 		cygwin*) \
-			echo export \
+			PROFILE_ROOT=$$(cygpath $$APPDATA\\Mozilla\\Firefox\\Profiles) \
 			;; \
 	esac \
 	&& PROFILES=$$(ls $$PROFILE_ROOT) \
 	&& for PROFILE in $$PROFILES;  \
 	do \
-		echo ln -sf $(PWD) $$PROFILE_ROOT/$$PROFILE/extensions/$(ID); \
-		[ -e $$PROFILE_ROOT/$$PROFILE ] && ln -sf $(PWD) $$PROFILE_ROOT/$$PROFILE/extensions/$(ID); \
+		case @host_os@ in \
+			cygwin*) \
+				cmd /c mklink /d $$(cygpath -w $$PROFILE_ROOT/$$PROFILE/extensions/$(ID)) $$(cygpath -w $(PWD)) \
+				;; \
+			*) \
+				echo ln -sf $(PWD) $$PROFILE_ROOT/$$PROFILE/extensions/$(ID); \
+				[ -e $$PROFILE_ROOT/$$PROFILE ] && ln -sf $(PWD) $$PROFILE_ROOT/$$PROFILE/extensions/$(ID); \
+				;; \
+		esac \
 	done;
 
 uninstall-extension:
-	rm ~/Library/Application\ Support/Firefox/Profiles/*/extensions/$(ID)
+	case @host_os@ in \
+		Darwin*) \
+			PROFILE_ROOT=~/Library/Application\ Support/Firefox/Profiles \
+			;; \
+		linux*) \
+			PROFILE_ROOT=~/.mozilla/firefox \
+			;; \
+		cygwin*) \
+			PROFILE_ROOT=$$(cygpath $$APPDATA\\Mozilla\\Firefox\\Profiles) \
+			;; \
+	esac \
+	&& PROFILES=$$(ls $$PROFILE_ROOT) \
+	&& for PROFILE in $$PROFILES;  \
+	do \
+		rm -f $$PROFILE_ROOT/$$PROFILE/extensions/$(ID); \
+	done;
 
 run-xulapp:
 	case @host_os@ in \

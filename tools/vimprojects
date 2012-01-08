@@ -15,7 +15,7 @@
    app.xul
  }
  doc=doc {
-  Makefile
+  Makefile.in
   usermanual.txt
  }
  modules=modules {
