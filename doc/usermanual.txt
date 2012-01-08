@@ -8,7 +8,7 @@
 
 == Overview hilighting features
     - Full Gecko based user interface, it is flexible and easy to customize.
-    - Multi-platform, now supports Mac / Linux / Windows + Cygwin (requires posix python).
+    - Multi-platform, now supports Mac / Linux / Windows + http://www.cygwin.com[Cygwin] (requires posix python).
     - Supports plugin architecture. it supports Plug-and-Play installing & uninstalling.
       (documents for developing is comming soon... - -;)
     - Including debugger, you can run it in step-execution-mode or trace-mode 
@@ -54,7 +54,7 @@ image::images/sl.png[width=640]
 .traceing terminal I/O sequence in real-time.
 image::images/debug.png[width=640]
 
-.http://w3m.sourceforge.net/index.en.html[w3m] (applied private patch) with inline frame.
+.Browser-in-browser. running http://w3m.sourceforge.net/index.en.html[w3m] (applied private patch) with inline frame. How crazy!
 image::images/w3m.png[width=640]
 
 == Requirements
@@ -92,8 +92,8 @@ make
     Make symbolic link of $PWD and hard link of modules/corun.js 
     into Vimperator's plugin directory as following:
 ----
-	cmd /c mklink /D $(cygpath -w $RUNTIME/coterminal) $(cygpath -w $PWD); \
-	ln $PWD/modules/corun.js $RUNTIME/plugin/ \
+	cmd /c mklink /D $(cygpath -w $RUNTIME/coterminal) $(cygpath -w $PWD);
+	ln $PWD/modules/corun.js $RUNTIME/plugin/
 ----
     $RUNTIME is Vimperator's runtime directory such as 
     '$HOME/.vimperator'.
@@ -135,6 +135,8 @@ cygstart firefox.exe --app application.ini
 .shift + mouse drag
 
     move window.
+
+=== Launch terminal
 
 ==== alt + mouse select
 

@@ -3,7 +3,8 @@ MODULENAME=@PACKAGE_NAME@
 ID=@PACKAGE_BUGREPORT@
 XPI=$(ID).xpi
 JS=@COTERMINAL_JS_PATH@ 
-ZIP=zip
+ZIP=@ZIP@
+ASCIIDOC=@ASCIIDOC@
 
 MSTART="$$(tput setaf 2)====================\>$$(tput setaf 6)"
 MEND="$$(tput sgr0)"
@@ -120,7 +121,7 @@ uninstall-vimperator:
 
 install-extension:
 	case @host_os@ in \
-		Darwin*) \
+		Darwin*|darwin*) \
 			PROFILE_ROOT=~/Library/Application\ Support/Firefox/Profiles \
 			;; \
 		linux*) \
@@ -130,23 +131,23 @@ install-extension:
 			PROFILE_ROOT=$$(cygpath $$APPDATA\\Mozilla\\Firefox\\Profiles) \
 			;; \
 	esac \
-	&& PROFILES=$$(ls $$PROFILE_ROOT) \
+	&& PROFILES=$$(ls "$$PROFILE_ROOT") \
+	&& echo $$PROFILE_ROOT \
 	&& for PROFILE in $$PROFILES;  \
 	do \
 		case @host_os@ in \
 			cygwin*) \
-				cmd /c mklink /d $$(cygpath -w $$PROFILE_ROOT/$$PROFILE/extensions/$(ID)) $$(cygpath -w $(PWD)) \
+				cmd /c mklink /d $$(cygpath -w "$$PROFILE_ROOT/$$PROFILE/extensions/$(ID)") $$(cygpath -w $(PWD)) \
 				;; \
 			*) \
-				echo ln -sf $(PWD) $$PROFILE_ROOT/$$PROFILE/extensions/$(ID); \
-				[ -e $$PROFILE_ROOT/$$PROFILE ] && ln -sf $(PWD) $$PROFILE_ROOT/$$PROFILE/extensions/$(ID); \
+				[ -e "$$PROFILE_ROOT/$$PROFILE" ] && ln -sf $(PWD) "$$PROFILE_ROOT/$$PROFILE/extensions/$(ID)"; \
 				;; \
 		esac \
 	done;
 
 uninstall-extension:
 	case @host_os@ in \
-		Darwin*) \
+		Darwin|darwin*) \
 			PROFILE_ROOT=~/Library/Application\ Support/Firefox/Profiles \
 			;; \
 		linux*) \
@@ -164,7 +165,7 @@ uninstall-extension:
 
 run-xulapp:
 	case @host_os@ in \
-		Darwin*) \
+		Darwin|darwin*) \
 			open /Applications/Aurora.app \
 				-n --args --app $(PWD)/application.ini \
 			;; \

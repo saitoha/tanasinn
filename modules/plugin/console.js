@@ -309,8 +309,8 @@ ConsoleListener.definition = {
     session.notify("initialized/consolelistener", this);
   },
 
-  "[subscribe('@event/quit-application')]": 
-  function onQuitApplication() 
+  "[subscribe('@command/detach')]": 
+  function detach() 
   {
     coUtils.Timer.setTimeout(this.unregister, 10, this);
   },

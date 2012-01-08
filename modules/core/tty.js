@@ -483,6 +483,44 @@ ExternalDriver.definition = {
     this.success = true;
   },
 
+  /** Kill target process. */
+  kill: function kill(pid) 
+  {
+    let runtime_path;
+    let args;
+    if ("WINNT" != coUtils.Runtime.os) {
+      let external_process = this._external_process;
+      //if (external_process.isRunning)
+      //  external_process.kill();
+      runtime_path = "/bin/kill";
+      args = [ "-9", String(pid) ];
+    } else { // Darwin, Linux or FreeBSD
+      runtime_path = String(<>{this.cygwin_root}\bin\run.exe</>);
+      args = [ "/bin/kill", "-9", String(pid) ];
+    }
+    // create new localfile object.
+    let runtime = Components
+      .classes["@mozilla.org/file/local;1"]
+      .createInstance(Components.interfaces.nsILocalFile);
+    runtime.initWithPath(runtime_path);
+
+    // create new process object.
+    let process = Components
+      .classes["@mozilla.org/process/util;1"]
+      .createInstance(Components.interfaces.nsIProcess);
+    process.init(runtime);
+
+    try {
+      process.run(/* blocking */ true, args, args.length);
+    } catch (e) {
+      coUtils.Debug.reportMessage(
+        _("command '%s' failed."), 
+        args.join(" "));
+      return false;
+    }
+    return 0 == process.exitValue;
+  },
+
   /** Checks if the process is running. */
   processIsAvailable: function processIsAvailable(pid) 
   {
@@ -597,6 +635,7 @@ SocketTeletypeService.definition = {
   {
     this._io_manager = io_manager;
     this._controller = controller;
+    this._external_driver = external_driver;
 
     let session_data_path = "$Home/.coterminal/sessions.txt";
     if (coUtils.File.exists(session_data_path)) {
@@ -612,6 +651,7 @@ SocketTeletypeService.definition = {
               let session = this._broker;
               let backup_data_path = String(<>$Home/.coterminal/persist/{request_id}.txt</>);
               let file = coUtils.File.getFileLeafFromAbstractPath(backup_data_path);
+              this._pid = Number(pid);
               if (file.exists()) {
                 let context = eval(coUtils.IO.readFromFile(backup_data_path));
                 session.notify("command/restore", context);
@@ -642,8 +682,15 @@ SocketTeletypeService.definition = {
     }, 100);
   },
 
-  "[subscribe('@event/quit-application'), enabled]": 
-  function onQuitApplication()
+  "[subscribe('@command/kill'), enabled]": 
+  function kill()
+  {
+    let external_driver = this._external_driver;
+    external_driver.kill(this._pid);
+  },
+
+  "[subscribe('@command/detach'), enabled]": 
+  function detach()
   {
     let context = [];
     let session = this._broker;

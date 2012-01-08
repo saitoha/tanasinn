@@ -129,7 +129,7 @@ Session.definition = {
     this.subscribeGlobalEvent("quit-application", 
       function onQuitApplication() 
       {
-        this.notify("event/quit-application", this);
+        this.notify("command/detach", this);
       }, this);
     let document = request.parent.ownerDocument;
     this._window = document.defaultView;

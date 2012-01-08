@@ -63,22 +63,43 @@ Kill.definition = {
   "[subscribe('get/contextmenu-entries')]":
   function onContextMenu() 
   {
-    return {
-      tagName: "menuitem",
-      label: _("Shutdown Process"), 
-      listener: {
-        type: "command", 
-        context: this,
-        handler: this.kill,
+    return [
+      {
+        tagName: "menuitem",
+        label: _("Detach from process"), 
+        listener: {
+          type: "command", 
+          context: this,
+          handler: this.detach,
+        }
+      },
+      {
+        tagName: "menuitem",
+        label: _("Shutdown process"), 
+        listener: {
+          type: "command", 
+          context: this,
+          handler: this.kill,
+        }
       }
-    };
+    ];
   },
 
-  /** kill process and stop tty */
+  /** detach from process and stop tty */
+  detach: function detach() 
+  {
+    // stops TTY device.
+    let session = this._broker;
+    session.notify("command/detach"); 
+    session.stop();
+  },
+
+  /** detach from process and stop tty */
   kill: function kill() 
   {
     // stops TTY device.
     let session = this._broker;
+    session.notify("command/kill"); 
     session.stop();
   },
 }

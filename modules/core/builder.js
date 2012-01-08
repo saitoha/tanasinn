@@ -177,6 +177,12 @@ TemplateBuilder.definition = {
   buildChrome: 
   function buildChrome(template, results) 
   {
+    if (Array.prototype.isPrototypeOf(value)) {
+      return value.map(function(node)
+      {
+        return this.buildChrome(node, results);
+      }, this);
+    }
     if (!template.tagName) {
       if (!template.hasOwnProperty("text")) {
         throw coUtils.Debug.Exception(_("tagName property not found: %s."), template.toSource());
@@ -275,42 +281,21 @@ TemplateBuilder.definition = {
   },
 
   /** Processes an "childNodes" property. */
-  _processChildNodes: 
-  function _processChildNodes(element, value, results) 
-  {
-
-    if (Array.prototype.isPrototypeOf(value)) {  // value is Array object.
-      for (let [, node] in Iterator(value)) {
-        if (node.QueryInterface)
-          element.appendChild(node);
-        else
-          element.appendChild(this.build(node, results));
-      }
-    } else {
-      if (value.QueryInterface)
-        element.appendChild(value);
-      else
-        element.appendChild(this.build(value, results));
-    }
-  },
-
-  /** Processes an "childNodes" property. */
   _processChildChromeNodes: 
   function _processChildChromeNodes(element, value, results) 
   {
 
     if (Array.prototype.isPrototypeOf(value)) {  // value is Array object.
-      for (let [, node] in Iterator(value)) {
-        if (node.QueryInterface)
-          element.appendChild(node);
-        else
-          element.appendChild(this.buildChrome(node, results));
-      }
+      value.forEach(function(node) {
+        this._processChildChromeNodes(element, node, results);
+      }, this);
     } else {
-      if (value.QueryInterface)
+      if (value.QueryInterface) {
         element.appendChild(value);
-      else
-        element.appendChild(this.buildChrome(value, results));
+      } else {
+        let node = this.buildChrome(value, results)
+        this._processChildChromeNodes(element, node, results);
+      }
     }
   },
 

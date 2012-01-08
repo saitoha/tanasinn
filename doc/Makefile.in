@@ -1,10 +1,11 @@
 
+ASCIIDOC=@ASCIIDOC@
 OPEN=@COTERMINAL_OPEN@
 
 usermanual.html: usermanual.txt
 	cat $< > ../README
-	asciidoc $< && $(OPEN) $@
+	test -n "$(ASCIIDOC)" && $(ASCIIDOC) $< && $(OPEN) $@
 
 usermanual-ja.html: usermanual-ja.txt
 	cat $< > ../README
-	asciidoc $< && $(OPEN) $@
+	test -n "$(ASCIIDOC)" && $(ASCIIDOC) $< && $(OPEN) $@
