@@ -39,7 +39,13 @@ image::images/zebra.png[width=640]
 .Typing Japanese with IME (here is http://aquaskk.sourceforge.jp/[AquaSKK]).
 image::images/ime.png[width=640]
 
-.commandline interface that is inspired by http://vimperator.org/vimperator[Vimperator] / https://github.com/mooz/keysnail/wiki/[Keysnail] (here is fgcolor command).
+.Scrollbar interface emerges only when it is needed (like OSX Lion).
+image::images/scroll.png[width=640]
+
+.Overlay indicator dislays various messages, it emerges when font size / window size / titlebar message is chenged.
+image::images/overlay.png[width=640]
+
+.commandline interface inspired by http://vimperator.org/vimperator[Vimperator] / https://github.com/mooz/keysnail/wiki/[Keysnail] (here is fgcolor command).
 image::images/completion.png[width=640]
 
 .running "http://www.tkl.iis.u-tokyo.ac.jp/~toyoda/index_e.html[sl]" (a joke software) on cygwin/Windows7.
