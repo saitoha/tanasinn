@@ -323,11 +323,9 @@ EventBroker.definition = {
   {
     let delegate = function() listener.apply(context, arguments);
     this._processer.subscribe(expression, delegate, id);
-    /*
     if (this._parent) {
       this._parent.subscribe(expression, delegate, id);
     }
-    */
   },
 
   /** Unsubscribe local event 
@@ -336,6 +334,9 @@ EventBroker.definition = {
    */
   unsubscribe: function(id)
   {
+    if (this._parent) {
+      this._parent.unsubscribe(id);
+    }
     return this._base.removeEventListener(id);
   },
 
@@ -360,6 +361,9 @@ EventBroker.definition = {
   {
     let base = this._base;
     base.post(String(topic), data);
+    if (this._parent) {
+      this._parent.post(topic, data);
+    }
   },
 
   /** Notify listeners that event is occurring. 
@@ -371,7 +375,11 @@ EventBroker.definition = {
   multiget: function multiget(topic, data)
   {
     let base = this._base;
-    return base.multiget(String(topic), data);
+    let result = base.multiget(String(topic), data);
+    if (this._parent) {
+      result.concat(this._parent.multiget(topic, data));
+    }
+    return result;
   },
 
   /** Notify a listener that event is occurring. 
@@ -383,7 +391,11 @@ EventBroker.definition = {
   uniget: function uniget(topic, data)
   {
     let base = this._base;
-    return base.uniget(String(topic), data);
+    let result = base.uniget(String(topic), data);
+    if (!result && this._parent) {
+      return this._parent.uniget(topic, data);
+    }
+    return result;
   },
 
   /** Reset event map. */

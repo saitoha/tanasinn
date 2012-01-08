@@ -101,6 +101,6 @@ AppMenu.definition = {
 
 function main(process)
 {
-  new AppMenu(process);
+//  new AppMenu(process);
 }
 

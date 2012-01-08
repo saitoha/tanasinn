@@ -28,6 +28,7 @@
    base.js
   }
   autoload=autoload {
+   desktop.js
    appmenu.js
    launcher.js
   }

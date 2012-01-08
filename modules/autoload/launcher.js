@@ -23,22 +23,6 @@
  * ***** END LICENSE BLOCK ***** */
 
 /** 
- * @class LauncherChrome
- */
-let LauncherChrome = new Class().extends(Component);
-LauncherChrome.definition = {
-
-  get id()
-    "launcher-chrome",
-
-  "[subscribe('initialized/launcher'), enabled]": 
-  function onLoad(launcher)
-  {
-  },
-
-};
-
-/** 
  * @class Launcher
  */
 let Launcher = new Class().extends(Component);

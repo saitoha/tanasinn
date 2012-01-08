@@ -52,6 +52,10 @@ CommandProvider.definition = {
       return null;
     }
     if (filtered_command.length > 1) {
+      let tophit = filtered_command.shift();
+      if (tophit.name.length == command_name.length) {
+        return tophit;
+      }
       throw coUtils.Debug.Exception(
         _("Ambiguous command name detected: %s"), command_name);
     }
@@ -233,6 +237,7 @@ FontselCommand.definition = {
     let [, font_family] = match;
     session.notify("set/font-family", font_family);
     session.notify("command/draw", true);
+    return true;
   },
 };
 

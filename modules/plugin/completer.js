@@ -278,7 +278,7 @@ HistoryCompleter.definition = {
    */
   stopSearch: function stopSearch() 
   {
-  },
+  }
 
 };
 
@@ -335,7 +335,7 @@ OptionCompleter.definition = {
         labels: options.map(function(option) option.key),
         comments: options.map(function(option) String(option.value)),
         data: options.map(function(option) ({
-          name: optionk.key,
+          name: option.key,
           value: String(option.value),
         })),
       };
