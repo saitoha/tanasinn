@@ -2043,7 +2043,7 @@ $as_echo "$COTERMINAL_OS" >&6; }
 $as_echo_n "checking open command... " >&6; }
  case $target_os in
  linux*)
-     COTERMINAL_OPEN=run
+     COTERMINAL_OPEN=xdg-open
      ;;
  darwin*)
      COTERMINAL_OPEN=open
@@ -2055,7 +2055,7 @@ $as_echo_n "checking open command... " >&6; }
      COTERMINAL_OPEN=explorer
      ;;
  *)
-     COTERMINAL_OPEN=run
+     COTERMINAL_OPEN=xdg-open
      ;;
  esac
  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $COTERMINAL_OS" >&5

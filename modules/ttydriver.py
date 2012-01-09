@@ -393,10 +393,12 @@ def fork_app_process(master, slave, command, term):
     if not pid:
         # slave side operations.
         # make this process session leader.
-        os.umask(0)
-        os.setsid()
+        sid = os.setsid()
+
         # master handle is to be closed in slave's process branch.
         os.close(master)
+        os.chdir("/")
+        os.umask(0)
         # replace standard I/O with slave file descripter.
         os.dup2(slave, sys.stdin.fileno())
         os.dup2(slave, sys.stdout.fileno())
@@ -405,9 +407,11 @@ def fork_app_process(master, slave, command, term):
         # set TERM environment.
         os.environ["TERM"] = "xterm"
         #os.environ["CYGWIN"] = "tty"
-        shell = os.environ["SHELL"] #"/bin/sh"
+        shell = os.environ["SHELL"] 
         # execute specified command.
         #command = "showkey -a"
+        if sid == None:
+            os.system("echo 'coterminal: os.setsid failed.'")
         os.execlp(shell, "$SHELL", "-c", "cd $HOME && exec %s" % command)
 
     # slave handle is to be closed in master's process.

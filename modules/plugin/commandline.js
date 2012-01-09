@@ -433,11 +433,11 @@ Commandline.definition = {
         16 == event.which &&
         !event.ctrlKey &&
         !event.altKey &&
-        !event.shiftKey &&
         !event.isChar
         ) {
       let now = parseInt(new Date().getTime());
-      if (now - this._last_ctrlkey_time < 400) {
+      let diff = now - this._last_ctrlkey_time;
+      if (30 < diff && diff < 400) {
         let session = this._broker;
         session.notify("command/focus")
         this._last_ctrlkey_time = 0;
@@ -451,9 +451,11 @@ Commandline.definition = {
   function onkeypress(event) 
   {
     let code = event.keyCode || event.which;
+    /*
     this._broker.notify(
       "command/report-overlay-message", 
       [event.keyCode,event.which,event.isChar].join("/"));
+      */
     let is_char = 0 == event.keyCode;
 
     if (event.ctrlKey) { // ^

@@ -167,7 +167,8 @@ Launcher.definition = {
         && !event.shiftKey && !event.isChar) {
       let broker = this._broker;
       let now = parseInt(new Date().getTime());
-      if (now - this._last_ctrlkey_time < 500) {
+      let diff = now - this._last_ctrlkey_time;
+      if (30 < diff && diff < 400) {
         //session.notify("command/focus");
         //session.notify("introducer-pressed/double-shift");
         //session.notify("command/report-overlay-message", "shift + shift pressed");
@@ -180,7 +181,8 @@ Launcher.definition = {
         /*&& !event.ctrlKey*/ && !event.altKey 
         && !event.shiftKey && !event.isChar) {
       let now = parseInt(new Date().getTime());
-      if (now - this._last_ctrlkey_time < 500) {
+      let diff = now - this._last_ctrlkey_time;
+      if (30 < diff && diff < 400) {
         this.onDoubleCtrl();
         this._last_ctrlkey_time = 0;
       } else {
@@ -211,7 +213,7 @@ Launcher.definition = {
 
 /**
  * @fn main
- * @brief Module entry point.
+ * @brief Module entry point
  * @param {Process} process The Process object.
  */
 function main(process) 

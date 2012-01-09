@@ -109,7 +109,7 @@ with (scope) {
     term: null,
     //default_command: "login -pf $USER",
     default_command: "login -pf $USER",
-    "default_command@Linux" : "/bin/bash --login",
+    "default_command@Linux" : "$SHELL",
     "default_command@Darwin": "login -pf $USER",
     "default_command@WINNT" : "login -pf $USER",
     default_term: "xterm",

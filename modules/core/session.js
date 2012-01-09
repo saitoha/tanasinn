@@ -126,7 +126,8 @@ Session.definition = {
 
     let process = this._broker;
     this._observers = {};
-    this.subscribeGlobalEvent("quit-application", 
+    this.subscribeGlobalEvent(
+      "quit-application", 
       function onQuitApplication() 
       {
         this.notify("command/detach", this);

@@ -32,9 +32,14 @@
     - Running as independent XUL application if you want. (but now buggy!)
     - Patching w3m, it supports inline image (now buggy! on MacOSX only... - -;).
 
+
+
 == Screenshots
 .ssh Debian from MacOSX and run "http://w3m.sourceforge.net/index.en.html[BB]", an ascii art demo program.
 image::images/zebra.png[width=640]
+
+.Displaying color chart with http://code.google.com/p/myminios/source/browse/trunk/colortable16.sh?r=10[colortable.sh] and http://code.google.com/p/joeldotfiles/source/browse/trunk/256colors2.pl[256color2.pl].
+image::images/color.png[width=640]
 
 .Typing Japanese with IME (here is http://aquaskk.sourceforge.jp/[AquaSKK]).
 image::images/ime.png[width=640]
@@ -45,7 +50,7 @@ image::images/scroll.png[width=640]
 .Overlay indicator dislays various messages, it emerges when font size / window size / titlebar message is chenged.
 image::images/overlay.png[width=640]
 
-.commandline interface inspired by http://vimperator.org/vimperator[Vimperator] / https://github.com/mooz/keysnail/wiki/[Keysnail] (here is fgcolor command).
+.Commandline interface inspired by http://vimperator.org/vimperator[Vimperator] / https://github.com/mooz/keysnail/wiki/[Keysnail] (here is fgcolor command).
 image::images/completion.png[width=640]
 
 .running "http://www.tkl.iis.u-tokyo.ac.jp/~toyoda/index_e.html[sl]" (a joke software) on cygwin/Windows7.
@@ -54,7 +59,7 @@ image::images/sl.png[width=640]
 .traceing terminal I/O sequence in real-time.
 image::images/debug.png[width=640]
 
-.Browser-in-browser. running http://w3m.sourceforge.net/index.en.html[w3m] (applied private patch) with inline frame. How crazy!
+.Browser-in-browser. running http://w3m.sourceforge.net/index.en.html[w3m] (applied private patch) with inline frame. How crazy!!!
 image::images/w3m.png[width=640]
 
 == Requirements
@@ -79,22 +84,20 @@ make
     
 === Installing as Vimperator plugin:
 
+    Make some links into Vimperator's plugin directory as following:
+
 .Mac, Linux
-    Make symbolic link of modules/corun.js into Vimperator's 
-    plugin directory as following:
 ----
-  > ln -s $PWD/modules/corun.js $RUNTIME/plugin/ 
+  > ln -s $PWD $RUNTIME/coterminal
+  > ln $PWD/modules/corun.js $RUNTIME/plugin/ 
 ----
-    $RUNTIME is Vimperator's runtime directory such as 
-    '$HOME/.vimperator'.
         
 .Cygwin
-    Make symbolic link of $PWD and hard link of modules/corun.js 
-    into Vimperator's plugin directory as following:
 ----
-	cmd /c mklink /D $(cygpath -w $RUNTIME/coterminal) $(cygpath -w $PWD);
-	ln $PWD/modules/corun.js $RUNTIME/plugin/
+  > cmd /c mklink /D $(cygpath -w $RUNTIME/coterminal) $(cygpath -w $PWD);
+  >	ln $PWD/modules/corun.js $RUNTIME/plugin/
 ----
+
     $RUNTIME is Vimperator's runtime directory such as 
     '$HOME/.vimperator'.
 

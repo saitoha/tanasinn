@@ -36,7 +36,7 @@ AC_DEFUN([AC_COTERMINAL_OPEN],
  AC_MSG_CHECKING(open command)
  case $target_os in
  linux*)
-     COTERMINAL_OPEN=run
+     COTERMINAL_OPEN=xdg-open
      ;;
  darwin*)
      COTERMINAL_OPEN=open
@@ -48,7 +48,7 @@ AC_DEFUN([AC_COTERMINAL_OPEN],
      COTERMINAL_OPEN=explorer
      ;;
  *)
-     COTERMINAL_OPEN=run
+     COTERMINAL_OPEN=xdg-open
      ;;
  esac 
  AC_MSG_RESULT($COTERMINAL_OS)

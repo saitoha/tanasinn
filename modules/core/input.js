@@ -287,7 +287,6 @@ InputManager.definition = {
         16 == event.which &&
         !event.ctrlKey &&
         !event.altKey &&
-        !event.shiftKey &&
         !event.isChar
         ) {
       let now = parseInt(new Date().getTime());
