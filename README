@@ -29,7 +29,7 @@ link:./usermanual.html[English]
     - Supports plugin architecture. it supports Plug-and-Play installing & uninstalling.
       (documents for developing is comming soon... - -;)
     - Including debugger. You can run it in step-execution-mode or trace-mode 
-      and observe terminal I/O sequence in real-time. (it's interesting!)
+      and observe terminal I/O sequence in real-time.
     - IME is supported.
     - Supports east asian double width characters. 
       but it is not render bidi languages correctly.
@@ -225,7 +225,7 @@ make
 #if __EN__
 === Installing as Vimperator plugin:
 
-    Make some links into Vimperator's runtime directory as following:
+    Make some links into Vimperator runtime directory as following:
 
 .Mac, Linux
 ----
@@ -239,7 +239,7 @@ make
   >	ln $PWD/modules/corun.js $RUNTIME/plugin/
 ----
 
-    $RUNTIME is Vimperator's runtime directory such as 
+    $RUNTIME is Vimperator runtime directory such as 
     '$HOME/.vimperator'.
 #else
 === Vimperatorプラグインとしてインストール:
@@ -264,14 +264,19 @@ make
 === Run as XUL Application (advanced, test version, it does not works well...):
     
 .MacOSX
+
 ----
 open /Applications/Firefox.app --args --app $(PWD)/application.ini
 ----
+
 .Linux
+
 ----
 firefox --app application.ini
 ----
+
 .Cygwin on Windows
+
 ----
 cygstart firefox.exe --app application.ini
 ----
@@ -287,10 +292,11 @@ cygstart firefox.exe --app application.ini
 
 ==== If it Installed as Add-on: 
     Pressing control key twice (ctrl + ctrl), it shows Commandline Launcher interface.
-    For example, if you type "man man[Enter key]" to this launcher's textbox, 
+    For example, if you type "man man[Enter key]" to this launcher textbox, 
     window-like UI emerges into browser chrome window and display manpage.  
 
 ==== If it Installed as Vimperator plugin: 
+
 ----
     :coterminal
 ----
@@ -309,6 +315,7 @@ cygstart firefox.exe --app application.ini
     ウィンドウのようなUIがブラウザウィンドウ内に現れ、manページが表示されると思います。
 
 ==== Vimperatorのプラグインとしてインストールした場合: 
+
 ----
     :coterminal
 ----
@@ -376,7 +383,7 @@ cygstart firefox.exe --app application.ini
 
 #if __EN__
 == Bug reports
-    ... Didn't work?
+    ... Did not work?
     Please notfy me! > saitoha <user@zuse.jp>, initial develpper of coTerminal.
 #else
 == バグレポート
@@ -387,7 +394,6 @@ cygstart firefox.exe --app application.ini
 #else
 == パッチ
     パッチ超歓迎。プラグインの書き方は近日中にドキュメントにまとめます。
-    今は端末からcursesベースでyoutube見たりtwitterやったりできるものが欲しいです。
-    年末にそういうの作ろうと思ってOAuthとか調べてちょっとハゲそうになりました。
-    ちょっと自分には無理かもしれません。
+    端末からcursesベースでyoutube見たりtwitterやったりできるものなどいかがでしょうか。
+    私は年末にそういうの作ろうと思ってOAuthとか調べてちょっとハゲそうになりました。
 #endif

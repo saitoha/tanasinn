@@ -17,7 +17,6 @@
  doc=doc {
   Makefile.in
   usermanual.txt
-  usermanual-ja.txt
  }
  modules=modules {
   Makefile
