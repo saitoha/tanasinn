@@ -33,7 +33,6 @@
     - Patching w3m, it supports inline image (now buggy! on MacOSX only... - -;).
 
 
-
 == Screenshots
 .ssh Debian from MacOSX and run "http://w3m.sourceforge.net/index.en.html[BB]", an ascii art demo program.
 image::images/zebra.png[width=640]

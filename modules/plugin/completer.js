@@ -363,6 +363,70 @@ OptionCompleter.definition = {
 };
 
 /**
+ * @class FontsizeCompleter
+ *
+ */
+let FontsizeCompleter = new Class().extends(CompleterBase);
+FontsizeCompleter.definition = {
+
+  get id()
+    "fontsize-completer",
+
+  get type()
+    "fontsize",
+
+  /*
+   * Search for a given string and notify a listener (either synchronously
+   * or asynchronously) of the result
+   *
+   * @param source - The string to search for
+   * @param listener - A listener to notify when the search is complete
+   */
+  startSearch: function startSearch(source, listener)
+  {
+    let session = this._broker;
+    let pattern = /^\s*(.*)(\s?)/;
+    let match = source.match(pattern);
+    let [all, size, space] = match;
+    if (space) {
+      listener.doCompletion(null);
+      return all.length;
+    }
+    let generator = function() 
+    { 
+      for (let i = 1; i < 100; ++i) {
+        let str = i.toString(); 
+        if (-1 != str.indexOf(source)) {
+          yield str;
+        }
+      }
+    } ();
+    let size_list = [ i for (i in generator) ];
+    let autocomplete_result = {
+      type: "fontsize",
+      query: source, 
+      labels: size_list, 
+      comments: size_list,
+      data: size_list.map(function(size) ({
+        name: size, 
+        value: size,
+      })),
+    };
+    listener.doCompletion(autocomplete_result);
+    return 0;
+  },
+
+  /*
+   * Stop all searches that are in progress
+   */
+  stopSearch: function stopSearch() 
+  {
+  },
+
+};
+
+
+/**
  * @class FontCompleter
  *
  */
@@ -904,6 +968,77 @@ ColorCompletionDisplayDriver.definition = {
 };
 
 /**
+ * @class FontsizeCompletionDisplayDriver
+ *
+ */
+let FontsizeCompletionDisplayDriver = new Class().extends(CompletionDisplayDriverBase);
+FontsizeCompletionDisplayDriver.definition = {
+
+  get id()
+    "fontsize-completion-display-driver",
+
+  get type()
+    "fontsize",
+
+  drive: function drive(grid, result, current_index) 
+  {
+    let document = grid.ownerDocument;
+    let session = this._broker;
+    let rows = grid.appendChild(document.createElement("rows"))
+    for (let i = 0; i < result.labels.length; ++i) {
+      let search_string = result.query.toLowerCase();
+      let completion_text = result.labels[i];
+      let match_position = completion_text
+        .toLowerCase()
+        .indexOf(search_string);
+      session.uniget(
+        "command/construct-chrome", 
+        {
+          parentNode: rows,
+          tagName: "row",
+          style: i == current_index ? <>
+            background: #226;
+            color: white;
+          </>: "",
+          childNodes: [
+            {
+              tagName: "box",
+              style: <>
+                font-size: 20px;
+                margin: 0px 8px;
+              </>,
+              childNodes: -1 == match_position ? 
+                { text: completion_text }:
+                [
+                  { text: completion_text.substr(0, match_position) },
+                  {
+                    tagName: "label",
+                    innerText: completion_text.substr(match_position, search_string.length),
+                    style: <>
+                      margin: 0px; 
+                      font-weight: bold; 
+                      color: #f00; 
+                      text-decoration: underline;
+                    </>,
+                  },
+                  { text: completion_text.substr(match_position + search_string.length) + "px" },
+                ],
+            },
+            {
+              tagName: "label",
+              style: <>
+                font-size: {completion_text}px;
+                margin: 0px;
+              </>,
+              value: "abc123%& #\u8853\u2874\u4953\u2231\u4459\u1123\u2123\u0123\u8642",
+            },
+          ],
+        });
+    } // for i
+  },
+};
+
+/**
  * @class FontCompletionDisplayDriver
  *
  */
@@ -1007,6 +1142,7 @@ TextCompletionDisplayDriver.definition = {
                 width: 50%;
                 margin: 0px;
                 overflow: hidden;
+                padding-left: 8px;
               </>,
               childNodes: -1 == match_position ? 
                 { text: completion_text }:
@@ -1052,11 +1188,13 @@ function main(process)
       new HistoryCompleter(session);
       new OptionCompleter(session);
       new CommandCompleter(session);
+      new FontsizeCompleter(session);
       new FontCompleter(session);
       new ColorNumberCompleter(session);
 
       new ColorCompletionDisplayDriver(session);
       new ColorNumberCompletionDisplayDriver(session);
+      new FontsizeCompletionDisplayDriver(session);
       new FontCompletionDisplayDriver(session);
       new TextCompletionDisplayDriver(session);
       } catch (e) {alert(e)}

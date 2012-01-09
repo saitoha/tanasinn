@@ -147,6 +147,7 @@ Renderer.definition = {
     this.onWidthChanged.enabled = true;
     this.onHeightChanged.enabled = true;
     this.onFontChanged.enabled = true;
+    this.setFontSize.enabled = true;
     this.setFontFamily.enabled = true;
     this.changeFontSizeByOffset.enabled = true;
     this.draw.enabled = true;
@@ -161,10 +162,20 @@ Renderer.definition = {
     this.onWidthChanged.enabled = false;
     this.onHeightChanged.enabled = false;
     this.onFontChanged.enabled = false;
+    this.setFontSize.enabled = false;
     this.setFontFamily.enabled = false;
     this.changeFontSizeByOffset.enabled = false;
     this.draw.enabled = false;
     this._canvas.parentNode.removeChild(this._canvas);
+  },
+
+  "[subscribe('set/font-size')]": 
+  function setFontSize(font_size) 
+  {
+    this.line_height += font_size - this.font_size;
+    this.font_size = font_size;
+    let session = this._broker;
+    session.notify("event/font-size-changed", this.font_size);
   },
 
   "[subscribe('set/font-family')]": 

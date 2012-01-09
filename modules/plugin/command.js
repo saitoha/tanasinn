@@ -214,14 +214,37 @@ GoCommand.definition = {
   },
 };
 
-let FontselCommand = new Class().extends(Component);
-FontselCommand.definition = {
+/**
+ * @class FontCommands
+ */
+let FontCommands = new Class().extends(Component);
+FontCommands.definition = {
 
   get id()
-    "fontselcommand",
+    "fontcommands",
+
+  "[command('fontsize/fsize', ['fontsize']), _('Change terminal font size.'), enabled]":
+  function fontsize(arguments_string)
+  {
+    let session = this._broker;
+    let pattern = /^\s*([0-9]+)\s*$/;
+    let match = arguments_string.match(pattern);
+    if (null === match) {
+      let session = this._broker;
+      session.notify(
+        "command/report-status-message", 
+        _("Ill-formed arguments: %s."), 
+        arguments_string);
+      return false;
+    }
+    let [, font_size] = match;
+    session.notify("set/font-size", font_size);
+    session.notify("command/draw", true);
+    return true;
+  },
 
   "[command('fontsel', ['font']), _('Select terminal font.'), enabled]":
-  function evaluate(arguments_string)
+  function fontsel(arguments_string)
   {
     let session = this._broker;
     let pattern = /^\s*(.+)\s*$/;
@@ -239,13 +262,35 @@ FontselCommand.definition = {
     session.notify("command/draw", true);
     return true;
   },
+
+  /** Makes font size smaller. */
+  "[command('decrement/df'), key('meta -', 'ctrl shift ='), _('Make font size smaller.'), enabled]":
+  function decrease()
+  {
+    let session = this._broker;
+    session.notify("command/change-fontsize-by-offset", -1);
+    session.notify("command/draw");
+  },
+
+  /** Makes font size bigger. */
+  "[command('inc[lement]/if'), key('meta shift \\\\+'), _('Make font size bigger.'), enabled]":
+  function increase()
+  {
+    let session = this._broker;
+    session.notify("command/change-fontsize-by-offset", +1);
+    session.notify("command/draw");
+  },
+
 };
 
-let ColorselCommand = new Class().extends(Component);
-ColorselCommand.definition = {
+/**
+ * @class ColorCommands
+ */
+let ColorCommands = new Class().extends(Component);
+ColorCommands.definition = {
 
   get id()
-    "colorselcommand",
+    "colorcommands",
 
   _renderer: null,
 
@@ -312,8 +357,8 @@ function main(process)
       new JsCommand(session);
       new GoCommand(session);
       new SetCommand(session);
-      new FontselCommand(session);
-      new ColorselCommand(session);
+      new FontCommands(session);
+      new ColorCommands(session);
     });
 }
 

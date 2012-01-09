@@ -410,8 +410,8 @@ def fork_app_process(master, slave, command, term):
         shell = os.environ["SHELL"] 
         # execute specified command.
         #command = "showkey -a"
-        if sid == None:
-            os.system("echo 'coterminal: os.setsid failed.'")
+        #if sid == None:
+        #    os.system("echo 'coterminal: os.setsid failed.'")
         os.execlp(shell, "$SHELL", "-c", "cd $HOME && exec %s" % command)
 
     # slave handle is to be closed in master's process.
