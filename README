@@ -58,8 +58,14 @@ image::images/sl.png[width=640]
 .traceing terminal I/O sequence in real-time.
 image::images/debug.png[width=640]
 
-.Browser-in-browser. running http://w3m.sourceforge.net/index.en.html[w3m] (applied private patch) with inline frame. How crazy!!!
+.Browser-in-browser. running http://w3m.sourceforge.net/index.en.html[w3m] (applied private patch) with inline images. How crazy!!!
 image::images/w3m.png[width=640]
+
+.[Wonderlust].
+image::images/wl.png[width=640]
+
+.[navi2ch]. wwwwwwwwwwwwwwwwwwwwwwww.
+image::images/2ch.png[width=640]
 
 == Requirements
     - Firefox 4.0+.
