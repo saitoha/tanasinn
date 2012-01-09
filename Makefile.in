@@ -68,7 +68,7 @@ $(XPI): lint chrome.manifest install.rdf doc/usermanual.html
 lint: 
 	@echo "$(MSTART) Ckecking JavaScript syntax error....$(MEND)" 
 	# Check syntax errors.
-	@for file in $$(find $$(PWD) | egrep "\.js$$|\.jsm$$"); do \
+	@for file in $$(find $$PWD | egrep "\.js$$|\.jsm$$"); do \
 		for version in 185; do \
 			if [ @host_os@ = cygwin ]; then file=$$(cygpath -wa $$file); fi; \
 			cd $$(dirname $(JS)) && $(JS) -C -v $$version -o strict -o werror -f $$file || exit; \
@@ -105,7 +105,8 @@ install-vimperator:
 			ln -f $(PWD)/modules/corun.js ~/vimperator/plugin/ \
 			;; \
 		*) \
-			ln -sf $(PWD)/modules/corun.js ~/.vimperator/plugin/ \
+			ln -sf $(PWD) ~/.vimperator/coterminal; \
+			ln -f $(PWD)/modules/corun.js ~/.vimperator/plugin/ \
 			;; \
 	esac
 

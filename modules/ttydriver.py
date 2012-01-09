@@ -405,10 +405,10 @@ def fork_app_process(master, slave, command, term):
         # set TERM environment.
         os.environ["TERM"] = "xterm"
         #os.environ["CYGWIN"] = "tty"
-        shell = "/bin/sh"
+        shell = os.environ["SHELL"] #"/bin/sh"
         # execute specified command.
         #command = "showkey -a"
-        os.execlp(shell, "sh", "--login", "-c", "cd $HOME && exec %s" % command)
+        os.execlp(shell, "$SHELL", "-c", "cd $HOME && exec %s" % command)
 
     # slave handle is to be closed in master's process.
     #os.close(slave)

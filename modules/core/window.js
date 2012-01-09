@@ -77,8 +77,7 @@ WindowWatcher.definition = {
   onkeyup: function onkeyup(event) 
   { // nothrow
     if (16 == event.keyCode && 16 == event.which 
-        && !event.ctrlKey && !event.altKey 
-        && !event.shiftKey && !event.isChar) {
+        && !event.ctrlKey && !event.altKey && !event.isChar) {
       let session = this._broker;
       let now = parseInt(new Date().getTime());
       if (now - this._last_ctrlkey_time < 500) {
@@ -91,8 +90,7 @@ WindowWatcher.definition = {
       }
       session.notify("event/shift-key-up");
     } else if (17 == event.keyCode && 17 == event.which 
-        && !event.ctrlKey && !event.altKey 
-        && !event.shiftKey && !event.isChar) {
+        && !event.altKey && !event.shiftKey && !event.isChar) {
       let now = parseInt(new Date().getTime());
       if (now - this._last_ctrlkey_time < 500) {
         let session = this._broker;
@@ -104,8 +102,7 @@ WindowWatcher.definition = {
         this._last_ctrlkey_time = now;
       }
     } else if (18 == event.keyCode && 18 == event.which 
-        && !event.ctrlKey && !event.altKey 
-        && !event.shiftKey && !event.isChar) {
+        && !event.ctrlKey && !event.shiftKey && !event.isChar) {
       let session = this._broker;
       session.notify("event/alt-key-up");
     }

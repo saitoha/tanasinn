@@ -161,6 +161,7 @@ Launcher.definition = {
 
   onkeyup: function onkeyup(event) 
   { // nothrow
+    //alert([event.keyCode, event.keyCode, event.ctrlKey, event.shiftKey, event.altKey, event.isChar].join("/"))
     if (16 == event.keyCode && 16 == event.which 
         && !event.ctrlKey && !event.altKey 
         && !event.shiftKey && !event.isChar) {
@@ -176,7 +177,7 @@ Launcher.definition = {
       }
       //session.notify("event/shift-key-up");
     } else if (17 == event.keyCode && 17 == event.which 
-        && !event.ctrlKey && !event.altKey 
+        /*&& !event.ctrlKey*/ && !event.altKey 
         && !event.shiftKey && !event.isChar) {
       let now = parseInt(new Date().getTime());
       if (now - this._last_ctrlkey_time < 500) {
