@@ -133,6 +133,7 @@ import time
 import base64
 import select
 import uuid
+import pty
 
 BUFFER_SIZE = 1024
 
@@ -395,8 +396,9 @@ def fork_app_process(master, slave, command, term):
         # make this process session leader.
         sid = os.setsid()
 
+        fcntl.ioctl(master, termios.TIOCSCTTY, 1)
         # master handle is to be closed in slave's process branch.
-        os.close(master)
+        #os.close(master)
         os.chdir("/")
         os.umask(0)
         # replace standard I/O with slave file descripter.
@@ -412,6 +414,7 @@ def fork_app_process(master, slave, command, term):
         #command = "showkey -a"
         #if sid == None:
         #    os.system("echo 'coterminal: os.setsid failed.'")
+        fcntl.ioctl(master, termios.TIOCSCTTY, 1)
         os.execlp(shell, "$SHELL", "-c", "cd $HOME && exec %s" % command)
 
     # slave handle is to be closed in master's process.
@@ -436,11 +439,16 @@ if __name__ == "__main__":
     startup_info = connection_socket.recv(BUFFER_SIZE).split(" ");
     command, term = [ base64.b64decode(value) for value in startup_info]
     
-    # modify termios properties, and enables master's output flow control ON. 
-    master, slave = create_a_pair_of_tty_device();
+    ## modify termios properties, and enables master's output flow control ON. 
+    #master, slave = create_a_pair_of_tty_device();
 
-    # fork slave's process, and get tty name.
-    pid, ttyname = fork_app_process(master, slave, command, term)    
+    ## fork slave's process, and get tty name.
+    #pid, ttyname = fork_app_process(master, slave, command, term)    
+    pid, master = pty.fork()
+    if not pid:
+        os.environ["TERM"] = "xterm"
+        os.execlp("/bin/zsh", "$SHELL", "-c", "cd $HOME && exec %s" % command)
+    ttyname = ""
 
     # send control channel's port, pid, ttyname
     connection_socket.send("%s:%s:%s" % (control_port, pid, ttyname))
@@ -466,9 +474,9 @@ if __name__ == "__main__":
             driver.drive_tty()
             #os.kill(pid, signal.SIGWINCH)
             
-            if not os.isatty(slave):
-                trace("closed.")
-                break
+            #if not os.isatty(slave):
+            #    trace("closed.")
+            #    break
             if not driver.isalive():
                 trace("closed.")
                 break
@@ -489,5 +497,5 @@ if __name__ == "__main__":
         trace("A socket error occured.")
     finally:
         os.close(master)
-        os.close(slave)
+        #os.close(slave)
 
