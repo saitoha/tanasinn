@@ -15,11 +15,15 @@ link:./usermanual.html[English]
     provided by operating systems, such as commandline shells, curses-based 
     applications.
 
+    link: http://zuse.jp/coterminal/coterminal@zuse.jp.xpi[Download from here]
+
 #else
 == イントロダクション: これは何ですか?
     "coTerminal"は Firefox上で動作する端末エミュレータです。
     コマンドラインシェルやcursesベースのアプリケーション等、オペレーティングシステムが提供する
     柔軟でパワフルな機能群にブラウザ上のUIからアクセスすることができます。
+
+    link: http://zuse.jp/coterminal/coterminal@zuse.jp.xpi[ここからダウンロード]
 #endif
 
 #if __EN__
