@@ -8,7 +8,7 @@
 
 == Overview hilighting features
     - Full Gecko based user interface, it is flexible and easy to customize.
-    - Multi-platform, now supports Mac / Linux / Windows + http://www.cygwin.com[Cygwin] (requires posix python).
+    - Multi-platform, now supports Mac / Linux (Tested in Debian) / Windows + http://www.cygwin.com[Cygwin] (requires posix python).
     - Supports plugin architecture. it supports Plug-and-Play installing & uninstalling.
       (documents for developing is comming soon... - -;)
     - Including debugger, you can run it in step-execution-mode or trace-mode 
@@ -126,7 +126,7 @@ cygstart firefox.exe --app application.ini
 
     Pressing control key twice (ctrl + ctrl), it shows 
     Launcher commandline interface.
-    For example, inputing "man man" for this launcher's textbox, 
+    For example, if you type "man man[Enter key]" to this launcher's textbox, 
     window-like UI emerges into browser chrome window and display manpage.  
     ... Didn't work?
     Please notfy me! > saitoha <user@zuse.jp>.

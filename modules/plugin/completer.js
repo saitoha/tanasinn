@@ -1030,7 +1030,7 @@ FontsizeCompletionDisplayDriver.definition = {
                 font-size: {completion_text}px;
                 margin: 0px;
               </>,
-              value: "abc123%& #\u8853\u2874\u4953\u2231\u4459\u1123\u2123\u0123\u8642",
+              value: "abc123%& \u0353\u2874\u2953\u2231\u7453\u1123\u2123\u0123\uC642",
             },
           ],
         });

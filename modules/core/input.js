@@ -59,6 +59,7 @@ function getPackedKeycodeFromEvent(event)
         | !!event.ctrlKey                 << coUtils.Keyboard.KEY_CTRL 
         | !!event.altKey                  << coUtils.Keyboard.KEY_ALT 
         | !!event.shiftKey                << coUtils.Keyboard.KEY_SHIFT 
+        | !!event.keyCode                   << coUtils.Keyboard.KEY_NOCHAR
 //        | !event.isChar                   << coUtils.Keyboard.KEY_NOCHAR 
         | !!event.metaKey                 << coUtils.Keyboard.KEY_META
         ;
