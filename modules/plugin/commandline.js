@@ -185,9 +185,9 @@ Commandline.definition = {
                   id: "coterminal_completion_scroll",
                   orient: "vertical", // box-packing
                   flex: 1,
-                  style: { overflowY: "auto", },
                   childNodes: {
                     tagName: "grid",
+                    style: { overflowX: "hidden", overflowY: "auto", },
                     id: "coterminal_completion_tree",
                   }
                 }, // tree
