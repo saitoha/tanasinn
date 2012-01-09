@@ -31,13 +31,6 @@ Launcher.definition = {
   get id()
     "launcher",
 
-  "[persistable] command_id": "command_CreateTerminal",
-  "[persistable] menu_id": "menu_CreateTerminal",
-  "[persistable] menu_label": "create new terminal",
-  "[persistable] shortcut_id": "key_CreateTerminal",
-  "[persistable] shortcut_key": ",",
-  "[persistable] shortcut_modifiers": "control",
-
   top: 20,
   left: 20,
 

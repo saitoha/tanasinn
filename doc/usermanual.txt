@@ -9,21 +9,22 @@ link:./usermanual.html[English]
 #endif
 
 #if __EN__
-== Introduction: What is it?
-    "coTerminal" is a Firefox browser extension, shows a terminal emurator 
-    interface and enables you to access flexible, powerful functionality 
-    provided by operating systems, such as commandline shells, curses-based 
+== Introduction:
+    "coTerminal" is a terminal emurator that runs on Firefox.
+    It enables you to access flexible, powerful functionality 
+    provided by operating systems, such as commandline shells, or curses-based 
     applications.
 
-link:http://zuse.jp/coterminal/coterminal@zuse.jp.xpi[Download from here]
+http://zuse.jp/coterminal/coterminal@zuse.jp.xpi[Download from here]
 
 #else
-== イントロダクション: これは何ですか?
+== イントロダクション:
     "coTerminal"は Firefox上で動作する端末エミュレータです。
     コマンドラインシェルやcursesベースのアプリケーション等、オペレーティングシステムが提供する
     柔軟でパワフルな機能群にブラウザ上のUIからアクセスすることができます。
 
-link:http://zuse.jp/coterminal/coterminal@zuse.jp.xpi[ここからダウンロード]
+http://zuse.jp/coterminal/coterminal@zuse.jp.xpi[ここからダウンロード]
+
 #endif
 
 #if __EN__
@@ -107,14 +108,14 @@ image::images/ime.png[width=640]
 #if __EN__
 .Scrollbar interface emerges only when it is needed (like OSX Lion).
 #else
-スクロールバーインターフェースは必要なときにあらわれます(OSX Lionのように)。
+.スクロールバーインターフェースは必要なときにあらわれます(OSX Lionのように)。
 #endif
 image::images/scroll.png[width=640]
 
 #if __EN__
 .Overlay indicator dislays various messages. it emerges when font size / window size / titlebar message is chenged.
 #else
-オーバーレイインジケータがフォントサイズ、ウィンドウサイズ、タイトルバーメッセージが変更されたときなどに表示されます。
+.オーバーレイインジケータがフォントサイズ、ウィンドウサイズ、タイトルバーメッセージが変更されたときなどに表示されます。
 #endif
 image::images/overlay.png[width=640]
 
@@ -142,7 +143,7 @@ image::images/fontsize.png[width=640]
 #if __EN__
 .running "http://www.tkl.iis.u-tokyo.ac.jp/~toyoda/index_e.html[sl]" (a joke software) on cygwin/Windows7.
 #else
-.running cygwin/Windows7環境で"http://www.tkl.iis.u-tokyo.ac.jp/~toyoda/index_e.html[sl]" (ジョークウェア)を走らせたところ。
+.Cygwin1.7/Windows7環境で"http://www.tkl.iis.u-tokyo.ac.jp/~toyoda/index_e.html[sl]" (ジョークウェア)を走らせたところ。
 #endif
 image::images/sl.png[width=640]
 
@@ -194,8 +195,7 @@ image::images/xulapp.png[width=640]
 == 動作要件
     - Firefox 4.0+。
     - POSIX用にビルドされたPython (バージョンはたぶん 2.5+, Mac、 Linux、 または cygwin用のもの)。
-      Python for Win32 や ActivePython 等はダメです。
-      なぜならos.fork() や os.openpty() を使うので。
+      Python for Win32 や ActivePython 等はforkや仮想端末をサポートしないと思うのでダメしょう。
     - POSIX環境。 
       もしWindowsをお使いでしたら、C:\cygwinにCygwinをインストールしてください。
 #endif
