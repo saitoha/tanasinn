@@ -15,7 +15,7 @@ link:./usermanual.html[English]
     provided by operating systems, such as commandline shells, or curses-based 
     applications.
 
-http://zuse.jp/coterminal/coterminal%40zuse.jp.xpi[Download from here]
+http://zuse.jp/coterminal/coterminal-current.xpi[Download from here]
 
 #else
 == イントロダクション:
@@ -23,7 +23,7 @@ http://zuse.jp/coterminal/coterminal%40zuse.jp.xpi[Download from here]
     コマンドラインシェルやcursesベースのアプリケーション等、オペレーティングシステムが提供する
     柔軟でパワフルな機能群にブラウザ上のUIからアクセスすることができます。
 
-http://zuse.jp/coterminal/coterminal%40zuse.jp.xpi[ここからダウンロード]
+http://zuse.jp/coterminal/coterminal-current.xpi[ここからダウンロード]
 
 #endif
 
