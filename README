@@ -1,83 +1,208 @@
-= coTerminal User Manual
+#if __EN__
+= coTerminal Project
 
+link:./usermanual-ja.html[日本語]
+#else
+= coTerminal Project
+
+link:./usermanual.html[English]
+#endif
+
+#if __EN__
 == Introduction: What is it?
     "coTerminal" is a Firefox browser extension, shows a terminal emurator 
     interface and enables you to access flexible, powerful functionality 
     provided by operating systems, such as commandline shells, curses-based 
     applications.
 
+#else
+== イントロダクション: これは何ですか?
+    "coTerminal"は Firefox上で動作する端末エミュレータです。
+    コマンドラインシェルやcursesベースのアプリケーション等、オペレーティングシステムが提供する
+    柔軟でパワフルな機能群にブラウザ上のUIからアクセスすることができます。
+#endif
+
+#if __EN__
 == Overview hilighting features
     - Full Gecko based user interface, it is flexible and easy to customize.
-    - Multi-platform, now supports Mac / Linux / Windows + http://www.cygwin.com[Cygwin] (requires posix python).
+    - Multi-platform, now supports Mac / Linux (Tested in Ubuntu) / Windows + http://www.cygwin.com[Cygwin] (requires posix python).
     - Supports plugin architecture. it supports Plug-and-Play installing & uninstalling.
       (documents for developing is comming soon... - -;)
-    - Including debugger, you can run it in step-execution-mode or trace-mode 
+    - Including debugger. You can run it in step-execution-mode or trace-mode 
       and observe terminal I/O sequence in real-time. (it's interesting!)
     - IME is supported.
     - Supports east asian double width characters. 
-      (but I don't know whether it render bidi languages correctly.)
+      but it is not render bidi languages correctly.
     - Localization supported. localize resource can be edited on bottom-panel UI.
-    - Selects variable character encoding supported by Gecko.
+    - You can selects variable character encoding supported by Gecko.
     - Supports transparent window. it is useful when www-browseing while working at terminal.
     - Retaining TTY session duaring restarting browser.
       (Now, this feature is not works well in Cygwin version. 
-    - Frontend UI that makes you to select/edit session, ...such as screen/tmux, 
+      Frontend UI that makes you to select/edit session, ...such as screen/tmux, 
       is not implemented yet. - -;)
-    - xterm-like mouse emuration, and supports smoothing pixel scroll.
-    - Text selection / Rectangle text selection
+    - xterm-like mouse emuration. supports smoothing pixel scroll.
+    - Text selection / Rectangle text selection.
     - Supports copy / paste in Drag & Drop or keyboard shortcut.
     - Supports move / resize through Drag & Drop operation.
     - Supports 256 terminal color, you can assign 32bit colors for them.
     - Vimperator / Keysnail like commandline interface.
-    - Running as independent XUL application if you want. (but now buggy!)
-    - Patching w3m, it supports inline image (now buggy! on MacOSX only... - -;).
+    - Running as standalone XUL application if you want. (but now buggy!)
+#else
+== 特色
+    - Geckoベースのユーザーインターフェース。柔軟でカスタマイズが容易です。
+    - マルチプラットフォーム。現在サポートされるのは、Mac / Linux(というかUbuntu) / Windows + Cygwin環境 (POSIX版Pythonが必要)
+    - プラグインアーキテクチャ。プラグアンドプレイでのインストール・アンインストールを可能にします。
+      (開発ドキュメントは鋭意作成中です。)
+    - デバッガ内臓。ステップ実行やトレースができます。
+      ターミナルとアプリケーションがやり取りするI/Oシーケンスをリアルタイムで観察できます(これは面白いです)。
+    - IMEが使えます。
+    - East Asian Width(ひらがななどの文字幅を考慮したレンダリング)に一応対応しています。 
+      bidiには対応できていないと思います。
+    - 地域化のサポート。ローカライズリソースをパネルUIから編集することができます。
+    - Geckoがサポートする様々なエンコーディングを指定できます。
+    - ウィンドウの透明化をサポート。これはブラウジングしながらターミナルで作業したい時に便利です。
+    - ブラウザの再起動中、ターミナルセッションを保持します。
+      (これは現在Windowsでは動作しません。screenやtmuxのように、セッションの編集・管理を行う
+      フロントエンドUIはまだ実装されていません。)
+    - xtermのようなマウスエミュレーションができます。ピクセルスクロールにも対応。
+    - テキストの選択や矩形選択ができます。
+    - ドラッグアンドドロップやキーボードショートカットによる選択テキストのコピー・ペーストが可能です。
+    - ドラッグアンドドロップによる移動・リサイズができます。
+    - 256色表示対応。32bitカラーをパレットに割り当てることができます。
+    - VimperatorやKeysnailのようなコマンドラインインターフェース。
+    - スタンドアロンのXULアプリケーションとして動作させることができます。(現在はかなりバギーです!)
+#endif
 
-
+#if __EN__
 == Screenshots
+#else
+== スクリーンショット
+#endif
+
+#if __EN__
 .ssh Debian from MacOSX and run "http://w3m.sourceforge.net/index.en.html[BB]", an ascii art demo program.
+#else
+.MacOSXからDebianにsshして"http://w3m.sourceforge.net/index.en.html[BB]"(アスキーアートのデモプログラム)を走らせたところ。
+#endif
 image::images/zebra.png[width=640]
 
+#if __EN__
 .Displaying color chart with http://code.google.com/p/myminios/source/browse/trunk/colortable16.sh?r=10[colortable.sh] and http://code.google.com/p/joeldotfiles/source/browse/trunk/256colors2.pl[256color2.pl].
+#else
+.http://code.google.com/p/myminios/source/browse/trunk/colortable16.sh?r=10[colortable.sh] and http://code.google.com/p/joeldotfiles/source/browse/trunk/256colors2.pl[256color2.pl]でカラーチャートを表示させたところ。
+#endif
 image::images/color.png[width=640]
 
+#if __EN__
 .Typing Japanese with IME (here is http://aquaskk.sourceforge.jp/[AquaSKK]).
+#else
+.IMEで日本語を打ってみたところ (http://aquaskk.sourceforge.jp/[AquaSKK]使用)。
+#endif
 image::images/ime.png[width=640]
 
+#if __EN__
 .Scrollbar interface emerges only when it is needed (like OSX Lion).
+#else
+スクロールバーインターフェースは必要なときにあらわれます(OSX Lionのように)。
+#endif
 image::images/scroll.png[width=640]
 
-.Overlay indicator dislays various messages, it emerges when font size / window size / titlebar message is chenged.
+#if __EN__
+.Overlay indicator dislays various messages. it emerges when font size / window size / titlebar message is chenged.
+#else
+オーバーレイインジケータがフォントサイズ、ウィンドウサイズ、タイトルバーメッセージが変更されたときなどに表示されます。
+#endif
 image::images/overlay.png[width=640]
 
+#if __EN__
 .Commandline interface inspired by http://vimperator.org/vimperator[Vimperator] / https://github.com/mooz/keysnail/wiki/[Keysnail] (here is fgcolor command).
+#else
+.http://vimperator.org/vimperator[Vimperator] や https://github.com/mooz/keysnail/wiki/[Keysnail]にインスパイアされたコマンドラインインターフェース (これはfgcolorコマンド).
+#endif
 image::images/completion.png[width=640]
 
+#if __EN__
+.Choosing font-family.
+#else
+フォントファミリを選択しています。
+#endif
+image::images/fontfamily.png[width=640]
+
+#if __EN__
+.Selecting font-size.
+#else
+フォントサイズを選択しています。
+#endif
+image::images/fontsize.png[width=640]
+
+#if __EN__
 .running "http://www.tkl.iis.u-tokyo.ac.jp/~toyoda/index_e.html[sl]" (a joke software) on cygwin/Windows7.
+#else
+.running cygwin/Windows7環境で"http://www.tkl.iis.u-tokyo.ac.jp/~toyoda/index_e.html[sl]" (ジョークウェア)を走らせたところ。
+#endif
 image::images/sl.png[width=640]
 
-.traceing terminal I/O sequence in real-time.
+#if __EN__
+.Tracing terminal I/O sequence in real-time.
+#else
+.ターミナルI/Oシーケンスをリアルタイムにトレースしています。
+#endif
 image::images/debug.png[width=640]
 
+#if __EN__
 .Browser-in-browser. running http://w3m.sourceforge.net/index.en.html[w3m] (applied private patch) with inline images. How crazy!!!
+#else
+.ブラウザの中でブラウザ。プライベートパッチを当てたhttp://w3m.sourceforge.net/index.en.html[w3m]でインラインイメージを表示させました。意味不明ですね。
+#endif
 image::images/w3m.png[width=640]
 
-.[Wonderlust].
+#if __EN__
+.Mailer-in-browser. running http://www.gohome.org/wl/index.html[Wonderlust] on emacs.
+#else
+.ブラウザの中でメーラー。http://www.gohome.org/wl/index.html[Wonderlust]をemacs上で動かしています。
+#endif
 image::images/wl.png[width=640]
 
-.[navi2ch]. wwwwwwwwwwwwwwwwwwwwwwww.
+#if __EN__
+.2ch Browser-in-browser. http://navi2ch.sourceforge.net/index.en.html[navi2ch]. wwwwwwwwwwwwwwwwwwwwwwww.
+#else
+.ブラウザの中で2chブラウザ。http://navi2ch.sourceforge.net/index.en.html[navi2ch]. 
+#endif
 image::images/2ch.png[width=640]
 
+#if __EN__
+.Developping coTerminal with coTerminal at out of jail. here is running as a standalone XUL application.
+#else
+.coTerminalをcoTerminalで開発中。これはスタンドアロンXULアプリケーションとして動作させているところです。
+#endif
+image::images/xulapp.png[width=640]
+
+#if __EN__
 == Requirements
     - Firefox 4.0+.
-    - Python for Unix (Probably 2.5+, Mac, Linux, or cygwin version)
+    - Python for POSIX (Probably 2.5+, Mac, Linux, or cygwin version)
       Python for Win32, ActivePython, etc... are not well.
       because this software depends on many posix functions 
       'os.fork', 'os.openpty' ..etc.
     - Posix enviroinment. 
       If you are running Windows, you need to install cygwin at C:\cygwin.
+#else
+== 動作要件
+    - Firefox 4.0+。
+    - POSIX用にビルドされたPython (バージョンはたぶん 2.5+, Mac、 Linux、 または cygwin用のもの)。
+      Python for Win32 や ActivePython 等はダメです。
+      なぜならos.fork() や os.openpty() を使うので。
+    - POSIX環境。 
+      もしWindowsをお使いでしたら、C:\cygwinにCygwinをインストールしてください。
+#endif
 
-== Installing and Running
+#if __EN__
+== Installing
+#else
+== インストール
+#endif
 
+#if __EN__
 === Building Firefox extension:
 .Mac, Linux, Cygwin
 ----
@@ -86,10 +211,21 @@ make
 ----
     If build process was succeeded, target XPI file 
     "coterminal@zuse.jp.xpi" is to be generated. enjoy it!
+#else
+=== Firefox拡張としてビルドする:
+.Mac, Linux, Cygwin
+----
+./configure
+make
+----
+    ビルドが成功すると、"coterminal@zuse.jp.xpi"というXPIファイルが生成されます。
+    これをインストールしてください。
+#endif
     
+#if __EN__
 === Installing as Vimperator plugin:
 
-    Make some links into Vimperator's plugin directory as following:
+    Make some links into Vimperator's runtime directory as following:
 
 .Mac, Linux
 ----
@@ -105,8 +241,27 @@ make
 
     $RUNTIME is Vimperator's runtime directory such as 
     '$HOME/.vimperator'.
+#else
+=== Vimperatorプラグインとしてインストール:
 
-=== Run as XUL Application (test version, it does not works well...):
+    Vimperatorのランタイムディレクトリ以下にリンクを作成します。
+
+.Mac, Linux
+----
+  > ln -s $PWD $RUNTIME/coterminal
+  > ln $PWD/modules/corun.js $RUNTIME/plugin/ 
+----
+        
+.Cygwin
+----
+  > cmd /c mklink /D $(cygpath -w $RUNTIME/coterminal) $(cygpath -w $PWD);
+  >	ln $PWD/modules/corun.js $RUNTIME/plugin/
+----
+
+    $RUNTIMEは'$HOME/.vimperator'のようなVimperatorのランタイムディレクトリです。
+#endif
+
+=== Run as XUL Application (advanced, test version, it does not works well...):
     
 .MacOSX
 ----
@@ -120,37 +275,119 @@ firefox --app application.ini
 ----
 cygstart firefox.exe --app application.ini
 ----
-
+    
+#if __EN__
 == Usage
-=== Launch terminal
+#else
+== 使いかた
+#endif
 
-    Pressing control key twice (ctrl + ctrl), it shows 
-    Launcher commandline interface.
-    For example, inputing "man man" for this launcher's textbox, 
+#if __EN__
+=== Launching terminal
+
+==== If it Installed as Add-on: 
+    Pressing control key twice (ctrl + ctrl), it shows Commandline Launcher interface.
+    For example, if you type "man man[Enter key]" to this launcher's textbox, 
     window-like UI emerges into browser chrome window and display manpage.  
-    ... Didn't work?
-    Please notfy me! > saitoha <user@zuse.jp>.
 
-.basic operating procedure 
+==== If it Installed as Vimperator plugin: 
+----
+    :coterminal
+----
+
+    or
+
+----
+    :coterminal <command>
+----
+
+#else
+=== 端末の起動
+==== 拡張としてインストールした場合
+    Controlキーの2度押し (ctrl + ctrl) でコマンドラインランチャーインターフェースが出現します。
+    そこで例えば、"man man[Enterキー]" とタイプしてみてください。
+    ウィンドウのようなUIがブラウザウィンドウ内に現れ、manページが表示されると思います。
+
+==== Vimperatorのプラグインとしてインストールした場合: 
+----
+    :coterminal
+----
+
+    or
+
+----
+    :coterminal <command>
+----
+
+#endif
+
+#if __EN__
+=== basic operating procedure 
 
     It is similer to well-known terminal emurators, like xterm. 
     but including specific fetures as follows.
+#else
+=== 基本的な操作方法
 
+    xtermのような端末エミュレータを使ったことがあれば大体いけると思いますが、
+    以下のような特筆すべき仕様もいくつかあります。
+#endif
+
+#if __EN__
 .shift + shift (shift key twice)
 
     switch input focus between terminal and commandline textbox.
+#else
+.shift + shift (shiftキーの2度押し)
 
+    ターミナルとコマンドラインテキストボックスの間でフォーカスを切り替えます。
+#endif
+
+#if __EN__
 .shift + mouse drag
 
     move window.
+#else
+.shift + マウスドラッグ
 
-=== Launch terminal
+    ウィンドウの移動。
+#endif
 
-==== alt + mouse select
+#if __EN__
+.alt + mouse select
 
-    select rectangle region. (from Terminal.app)
-              
+    select rectangle region. (like Terminal.app)
+#else
+.alt + マウスで範囲選択
+
+    矩形選択。 (Terminal.appの真似)
+#endif
+
+#if __EN__
+=== Using commandline interface
+    
+    The specification of commands is not frozen. Comming soon...
+#else
+=== コマンドラインインターフェースを使う
+    
+    …仕様が全然固まってませんのでまだ書けません。
+    この部分は作りはじめてまだ1週間ちょっとなので、これから色々考えます。
+#endif
+
+#if __EN__
 == Bug reports
-    saitoha <user@zuse.jp>, initial develpper of coTerminal.
+    ... Didn't work?
+    Please notfy me! > saitoha <user@zuse.jp>, initial develpper of coTerminal.
+#else
+== バグレポート
+    saitoha <user@zuse.jp>までどうぞ。
+#endif
 
-
+#if __EN__
+#else
+== パッチ
+    パッチ超歓迎。プラグインの書き方は近日中にドキュメントにまとめます。
+    今は端末からcursesベースでyoutube見たりtwitterやったりできるものが欲しいです。
+    年末にそういうの作ろうと思ってOAuthとか調べてちょっとハゲそうになりました。
+    ちょっと自分には無理かもしれません。
+#endif

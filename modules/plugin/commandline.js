@@ -128,10 +128,12 @@ Commandline.definition = {
         parentNode: "#coterminal_chrome",
         tagName: "stack",
         id: "coterminal_commandline_box",
-        style: {
+        style: <>
+          font-size: 12px;
+          font-family: monospace;
           //background: "#4c4c4c",
           //background: "transparent",
-        },
+        </>,
         childNodes: [
           {
             id: "coterminal_commandline_background",

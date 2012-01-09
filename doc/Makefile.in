@@ -2,10 +2,12 @@
 ASCIIDOC=@ASCIIDOC@
 OPEN=@COTERMINAL_OPEN@
 
+all: usermanual-ja.html usermanual.html
+
 usermanual.html: usermanual.txt
 	cat $< > ../README
-	test -n "$(ASCIIDOC)" && $(ASCIIDOC) $< && $(OPEN) $@
+	cpp -D__EN__ $< | sed -e 's/^#.*//' | $(ASCIIDOC) - > $@ && $(OPEN) $@
 
-usermanual-ja.html: usermanual-ja.txt
+usermanual-ja.html: usermanual.txt
 	cat $< > ../README
-	test -n "$(ASCIIDOC)" && $(ASCIIDOC) $< && $(OPEN) $@
+	cpp $< | sed -e 's/^#.*//' | $(ASCIIDOC) - > $@ && $(OPEN) $@
