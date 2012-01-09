@@ -185,6 +185,7 @@ run-xulapp:
 	esac	
 
 update: all
+	rm -r -f /var/www/coterminal/*/ && rm -f /var/www/coterminal/*
 	cp coterminal@zuse.jp.xpi /var/www/coterminal/
-	rm -r -f /var/www/coterminal/*/ && rm -f /var/www/coterminal/* && unzip coterminal-docs.zip -d /var/www/coterminal/
+	unzip coterminal-docs.zip -d /var/www/coterminal/
 
