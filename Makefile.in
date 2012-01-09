@@ -11,7 +11,13 @@ MEND="$$(tput sgr0)"
 ESTART="$$(tput bold; tput setaf 1)"
 EEND="$$(tput sgr0; tput setaf 6)"
 
-all: $(XPI)
+all: $(XPI) coterminal-docs.zip
+
+coterminal-docs.zip: doc/usermanual.html
+	@echo "$(MSTART) Create documentation package....$(MEND)" 
+	$(RM) $@
+	cd doc && $(ZIP) ../$@ *.html images/*.png
+	@echo "$(MSTART) Done.$(MEND)" 
 
 Makefile: Makefile.in configure
 	@echo "$(MSTART) Regenerating Makefile....$(MEND)" 
@@ -48,7 +54,7 @@ modules-build:
 
 .PHONY: modules-build content-build document-build lint
 
-$(XPI): lint chrome.manifest install.rdf doc/usermanual.html 
+$(XPI): lint chrome.manifest install.rdf coterminal-docs.zip
 	@echo "$(MSTART) Make xpi package....$(MEND)" 
 	$(RM) $@
 	$(ZIP) $@ install.rdf \

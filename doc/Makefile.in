@@ -7,11 +7,11 @@ all: usermanual-ja.html usermanual.html
 usermanual.html: usermanual.txt
 	if [[ -n "$(ASCIIDOC)" ]]; \
 	then \
-		cpp -D__EN__ $< | sed -e 's/^#.*//' | $(ASCIIDOC) - > $@ \
+		cpp -D__EN__ $< | sed -e 's/^#.*//' | $(ASCIIDOC) - > $@; \
 	fi
 
 usermanual-ja.html: usermanual.txt
 	if [[ -n "$(ASCIIDOC)" ]]; \
 	then \
-		cpp $< | sed -e 's/^#.*//' | $(ASCIIDOC) - > $@ \
+		cpp $< | sed -e 's/^#.*//' | $(ASCIIDOC) - > $@; \
 	fi
