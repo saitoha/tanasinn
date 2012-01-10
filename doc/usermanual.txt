@@ -128,9 +128,9 @@ image::images/scroll.png[width=640]
 image::images/overlay.png[width=640]
 
 #if __EN__
-.Commandline interface inspired by http:#//vimperator.org/vimperator[Vimperator] / https://github.com/mooz/keysnail/wiki/[Keysnail] (here is fgcolor command).
+.Commandline interface inspired by http:#//vimperator.org/vimperator[Vimperator] / https:#//github.com/mooz/keysnail/wiki/[Keysnail] (here is fgcolor command).
 #else
-.http:#//vimperator.org/vimperator[Vimperator] や https://github.com/mooz/keysnail/wiki/[Keysnail]にインスパイアされたコマンドラインインターフェース。
+.http:#//vimperator.org/vimperator[Vimperator] や https:#//github.com/mooz/keysnail/wiki/[Keysnail]にインスパイアされたコマンドラインインターフェース。
 #endif
 image::images/completion.png[width=640]
 
