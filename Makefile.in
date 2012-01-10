@@ -11,9 +11,9 @@ MEND="$$(tput sgr0)"
 ESTART="$$(tput bold; tput setaf 1)"
 EEND="$$(tput sgr0; tput setaf 6)"
 
-all: $(XPI) coterminal-docs.zip
+all: $(XPI) tanasinn-docs.zip
 
-coterminal-docs.zip: doc/usermanual.html
+tanasinn-docs.zip: doc/usermanual.html
 	@echo "$(MSTART) Create documentation package....$(MEND)" 
 	$(RM) $@
 	cd doc && $(ZIP) ../$@ *.html images/*.png
@@ -54,7 +54,7 @@ modules-build:
 
 .PHONY: modules-build content-build document-build lint
 
-$(XPI): lint chrome.manifest install.rdf coterminal-docs.zip
+$(XPI): lint chrome.manifest install.rdf tanasinn-docs.zip
 	@echo "$(MSTART) Make xpi package....$(MEND)" 
 	$(RM) $@
 	$(ZIP) $@ install.rdf \
@@ -107,11 +107,11 @@ dev:
 install-vimperator:
 	case @host_os@ in \
 		cygwin*) \
-			cmd /c mklink /D $$(cygpath -w $$(cygpath $$USERPROFILE)/vimperator/coterminal) $$(cygpath -w $(PWD)); \
+			cmd /c mklink /D $$(cygpath -w $$(cygpath $$USERPROFILE)/vimperator/tanasinn) $$(cygpath -w $(PWD)); \
 			ln -f $(PWD)/modules/corun.js ~/vimperator/plugin/ \
 			;; \
 		*) \
-			ln -sf $(PWD) ~/.vimperator/coterminal; \
+			ln -sf $(PWD) ~/.vimperator/tanasinn; \
 			ln -f $(PWD)/modules/corun.js ~/.vimperator/plugin/ \
 			;; \
 	esac
@@ -185,7 +185,7 @@ run-xulapp:
 	esac	
 
 update: all
-	rm -r -f /var/www/coterminal/*/ && rm -f /var/www/coterminal/*
-	cp coterminal@zuse.jp.xpi /var/www/coterminal/coterminal-current.xpi
-	unzip coterminal-docs.zip -d /var/www/coterminal/
+	rm -r -f /var/www/tanasinn/*/ && rm -f /var/www/tanasinn/*
+	cp tanasinn@zuse.jp.xpi /var/www/tanasinn/tanasinn-current.xpi
+	unzip tanasinn-docs.zip -d /var/www/tanasinn/
 

@@ -13,7 +13,7 @@
  * for the specific language governing rights and limitations under the
  * License.
  *
- * The Original Code is coTerminal
+ * The Original Code is tanasinn
  *
  * The Initial Developer of the Original Code is
  * Hayaki Saito.
@@ -31,7 +31,7 @@ PersistManager.definition = {
   get id()
     "persistmanager",
 
-  "[persistable] path": "$Home/.coterminal/persist.js",
+  "[persistable] path": "$Home/.tanasinn/persist.js",
 
   "[subscribe('event/process-started'), enabled]":
   function onProcessStarted(process)

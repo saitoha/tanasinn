@@ -13,7 +13,7 @@
  * for the specific language governing rights and limitations under the
  * License.
  *
- * The Original Code is coTerminal
+ * The Original Code is tanasinn
  *
  * The Initial Developer of the Original Code is
  * Hayaki Saito.
@@ -77,7 +77,7 @@ OverlayIndicator.definition = {
 
   get template()
     ({
-      parentNode: "#coterminal_center_area",
+      parentNode: "#tanasinn_center_area",
       tagName: "box",
       orient: "vertical",
       align: "center",
@@ -86,12 +86,12 @@ OverlayIndicator.definition = {
         opacity: 0.00,
         maxWidth: "0px",
       },
-      id: "coterminal_overlay_indicator",
+      id: "tanasinn_overlay_indicator",
       MozTransitionProperty: "opacity",
       childNodes: {
         tagName: "label",
         crop: "end",
-        id: "coterminal_overlay_indicator_content",
+        id: "tanasinn_overlay_indicator_content",
         style: {
           background: "black",
           color: "white",
@@ -125,10 +125,10 @@ OverlayIndicator.definition = {
   "[subscribe('install/' + this.id)]":
   function install(session) 
   {
-    let {coterminal_overlay_indicator, coterminal_overlay_indicator_content}
+    let {tanasinn_overlay_indicator, tanasinn_overlay_indicator_content}
       = session.uniget("command/construct-chrome", this.template);
-    this._element = coterminal_overlay_indicator;
-    this._content = coterminal_overlay_indicator_content;
+    this._element = tanasinn_overlay_indicator;
+    this._content = tanasinn_overlay_indicator_content;
     this.report.enabled = true;
     this.onScreenSizeChanged.enabled = true;
     this.onFontSizeChanged.enabled = true;

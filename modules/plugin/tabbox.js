@@ -13,7 +13,7 @@
  * for the specific language governing rights and limitations under the
  * License.
  *
- * The Original Code is coTerminal
+ * The Original Code is tanasinn
  *
  * The Initial Developer of the Original Code is
  * Hayaki Saito.
@@ -48,9 +48,9 @@ BottomPanel.definition = {
     let (session = this._broker)
     {
       tagName: "vbox",
-      parentNode: "#coterminal_chrome",
+      parentNode: "#tanasinn_chrome",
       collapsed: true,
-      id: "coterminal_bottompanel",
+      id: "tanasinn_bottompanel",
       listener: {
         type: "select",
         context: this,
@@ -64,7 +64,7 @@ BottomPanel.definition = {
       },
       childNodes: {
         tagName: "tabbox",
-        id: "coterminal_tabbox",
+        id: "tanasinn_tabbox",
         width: 0,
         style: { 
           MozAppearance: "statusbar",
@@ -76,12 +76,12 @@ BottomPanel.definition = {
         childNodes: [
           { 
             tagName: "arrowscrollbox",
-            id: "coterminal_arrowscrollbox",
+            id: "tanasinn_arrowscrollbox",
             clicktoscroll: "true",
             orient: "horizontal",
             childNodes: {
               tagName: "tabs", 
-              id: "coterminal_tabbox_tabs",
+              id: "tanasinn_tabbox_tabs",
               label: "pause", 
               flex: 1,
               //setfocus: false, 
@@ -89,7 +89,7 @@ BottomPanel.definition = {
           },
           { 
             tagName: "tabpanels", 
-            id: "coterminal_tabbox_tabpanels",
+            id: "tanasinn_tabbox_tabpanels",
           },
         ]
       }
@@ -116,13 +116,13 @@ BottomPanel.definition = {
   install: function install(session) 
   {
     let {
-      coterminal_bottompanel, 
-      coterminal_tabbox, 
-      coterminal_arrowscrollbox,
+      tanasinn_bottompanel, 
+      tanasinn_tabbox, 
+      tanasinn_arrowscrollbox,
     } = session.uniget("command/construct-chrome", this.template);
-    this._bottom_panel = coterminal_bottompanel;
-    this._tabbox = coterminal_tabbox;
-    this._scrollbox = coterminal_arrowscrollbox;
+    this._bottom_panel = tanasinn_bottompanel;
+    this._tabbox = tanasinn_tabbox;
+    this._scrollbox = tanasinn_arrowscrollbox;
     this.add.enabled = true;
     this.select.enabled = true;
     this.remove.enabled = true;
@@ -249,12 +249,12 @@ BottomPanel.definition = {
     }
 
     let session = this._broker;
-    let {coterminal_tab} = session.uniget(
+    let {tanasinn_tab} = session.uniget(
       "command/construct-chrome", 
       {
-        parentNode: "#coterminal_tabbox_tabs",
+        parentNode: "#tanasinn_tabbox_tabs",
         tagName: "tab",
-        id: "coterminal_tab",
+        id: "tanasinn_tab",
         name: id,
         label: name,
         style: { 
@@ -265,7 +265,7 @@ BottomPanel.definition = {
     let tab_panel = session.uniget(
       "command/construct-chrome", 
       {
-        parentNode: "#coterminal_tabbox_tabpanels",
+        parentNode: "#tanasinn_tabbox_tabpanels",
         tagName: "tabpanel",
         id: id,
         orient: "vertical",
@@ -276,7 +276,7 @@ BottomPanel.definition = {
           marginBottom: "-18px",
         },
       })[id];
-    this._panel_map[id] = [coterminal_tab, tab_panel];
+    this._panel_map[id] = [tanasinn_tab, tab_panel];
     return tab_panel;
   },
 

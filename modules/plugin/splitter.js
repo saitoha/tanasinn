@@ -13,7 +13,7 @@
  * for the specific language governing rights and limitations under the
  * License.
  *
- * The Original Code is coTerminal
+ * The Original Code is tanasinn
  *
  * The Initial Developer of the Original Code is
  * Hayaki Saito.
@@ -44,7 +44,7 @@ Splitter.definition = {
   get template()
     ({
       tagName: "splitter",
-      id: "coterminal_splitter",
+      id: "tanasinn_splitter",
       height: 16,
       style: { MozAppearance: "statusbar" },
       listener: {
@@ -73,12 +73,12 @@ Splitter.definition = {
     let tabbox = this._tabbox;
 
     // create splitter element.
-    let {coterminal_splitter}
+    let {tanasinn_splitter}
       = session.uniget("command/construct-chrome", this.template);
     let tabbox_element = tabbox.getElement();
-    tabbox_element.parentNode.insertBefore(coterminal_splitter, tabbox_element);
+    tabbox_element.parentNode.insertBefore(tanasinn_splitter, tabbox_element);
 
-    this._splitter = coterminal_splitter;
+    this._splitter = tanasinn_splitter;
   },
 
   /** Unnstalls itself.

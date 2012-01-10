@@ -13,7 +13,7 @@
  * for the specific language governing rights and limitations under the
  * License.
  *
- * The Original Code is coTerminal
+ * The Original Code is tanasinn
  *
  * The Initial Developer of the Original Code is
  * Hayaki Saito.
@@ -26,7 +26,7 @@
  *
  * [ Session overview ]
  *
- * coTerminal's "Session" is a concept that abstracts Terminal session and 
+ * tanasinn's "Session" is a concept that abstracts Terminal session and 
  * all resources associated with it.
  * It behaves as a mediator object, and be associated with following session-local 
  * objects: 

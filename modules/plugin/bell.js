@@ -13,7 +13,7 @@
  * for the specific language governing rights and limitations under the
  * License.
  *
- * The Original Code is coTerminal
+ * The Original Code is tanasinn
  *
  * The Initial Developer of the Original Code is
  * Hayaki Saito.
@@ -42,9 +42,9 @@ Bell.definition = {
 
   get template()
     ({
-      parentNode: "#coterminal_center_area",
+      parentNode: "#tanasinn_center_area",
       tagName: "html:canvas",
-      id: "coterminal_visual_bell",
+      id: "tanasinn_visual_bell",
       opacity: 0.0,
       margin: "-20px",
       MozTransitionProperty: "opacity",
@@ -71,9 +71,9 @@ Bell.definition = {
   "[subscribe('install/' + this.id)]":
   function install(session) 
   {
-    let {coterminal_visual_bell}
+    let {tanasinn_visual_bell}
       = session.uniget("command/construct-chrome", this.template);
-    this._cover = coterminal_visual_bell;
+    this._cover = tanasinn_visual_bell;
     this.onBell.enabled = true;
   },
 

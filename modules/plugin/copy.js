@@ -13,7 +13,7 @@
  * for the specific language governing rights and limitations under the
  * License.
  *
- * The Original Code is coTerminal
+ * The Original Code is tanasinn
  *
  * The Initial Developer of the Original Code is
  * Hayaki Saito.
@@ -33,13 +33,13 @@ Copy.definition = {
     "copy",
 
   get info()
-    <CoterminalPlugin>
+    <TanasinnPlugin>
         <name>Copy</name>
         <description>{
           _("Makes it enable to copy selected text by context menu or pressing short cut key.")
         }</description>
         <version>0.1</version>
-    </CoterminalPlugin>,
+    </TanasinnPlugin>,
 
   _screen: null,
   _selection: null,

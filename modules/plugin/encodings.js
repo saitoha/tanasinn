@@ -13,7 +13,7 @@
  * for the specific language governing rights and limitations under the
  * License.
  *
- * The Original Code is coTerminal
+ * The Original Code is tanasinn
  *
  * The Initial Developer of the Original Code is
  * Hayaki Saito.
@@ -33,13 +33,13 @@ EncoderMenu.definition = {
     "encodings",
 
   get info()
-    <CoterminalPlugin>
+    <TanasinnPlugin>
         <name>Encodings</name>
         <description>{
           _("Makes it enable to switch terminal encoding by context menu.")
         }</description>
         <version>0.1</version>
-    </CoterminalPlugin>,
+    </TanasinnPlugin>,
 
   /** Constructor */
   "[subscribe('@initialized/encoder'), enabled]":

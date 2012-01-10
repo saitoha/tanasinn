@@ -13,7 +13,7 @@
  * for the specific language governing rights and limitations under the
  * License.
  *
- * The Original Code is coTerminal
+ * The Original Code is tanasinn
  *
  * The Initial Developer of the Original Code is
  * Hayaki Saito.
@@ -335,7 +335,7 @@ StepExecution.definition = {
         {
           tagName: "vbox",
           flex: 1,
-          id: "coterminal_trace",
+          id: "tanasinn_trace",
           style: {
             MozAppearance: "tabpanels",
             //background: "white",
@@ -359,9 +359,9 @@ StepExecution.definition = {
    */
   install: function install(session) 
   {
-    let {coterminal_trace} 
+    let {tanasinn_trace} 
       = session.uniget("command/construct-chrome", this.template);
-    this._trace_box = coterminal_trace;
+    this._trace_box = tanasinn_trace;
     this.select.enabled = true;
     this.trace.enabled = true;
   },

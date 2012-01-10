@@ -13,7 +13,7 @@
  * for the specific language governing rights and limitations under the
  * License.
  *
- * The Original Code is coTerminal
+ * The Original Code is tanasinn
  *
  * The Initial Developer of the Original Code is
  * Hayaki Saito.
@@ -58,7 +58,7 @@ DragCopy.definition = {
     let {feedback_canvas} = session.uniget(
       "command/construct-chrome", 
       {
-        parentNode: "#coterminal_center_area",
+        parentNode: "#tanasinn_center_area",
         id: "feedback_canvas",
         tagName: "html:canvas",
         hidden: true,
@@ -106,7 +106,7 @@ DragCopy.definition = {
     event.dataTransfer.setDragImage(feedback_canvas, left * 1, top * 1);
 
     session.notify("command/add-domlistener", {
-      target: "#coterminal_content",
+      target: "#tanasinn_content",
       type: "dragend", 
       id: "_DRAGGING",
       context: this,
@@ -128,7 +128,7 @@ DragCopy.definition = {
   function _getPixelMetricsFromEvent(event) 
   {
     let target_element 
-      = session.uniget("command/query-selector", "#coterminal_content");
+      = session.uniget("command/query-selector", "#tanasinn_content");
     let root_element = target_element.parentNode;
     let box = target_element.boxObject;
     let offsetX = box.screenX - root_element.boxObject.screenX;
@@ -138,7 +138,7 @@ DragCopy.definition = {
     return [left, top];
   },
 
-  "[listen('dragstart', '#coterminal_content')]":
+  "[listen('dragstart', '#tanasinn_content')]":
   function ondragstart(event)
   {
     if (null !== this._mouse_mode)
@@ -171,7 +171,7 @@ DragCopy.definition = {
   {
     let session = this._broker;
     let target_element
-      = session.uniget("command/query-selector", "#coterminal_content");
+      = session.uniget("command/query-selector", "#tanasinn_content");
     let root_element = session.root_element;
     let box = target_element.boxObject;
     let offsetX = box.screenX - root_element.boxObject.screenX;

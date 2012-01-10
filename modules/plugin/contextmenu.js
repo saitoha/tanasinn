@@ -13,7 +13,7 @@
  * for the specific language governing rights and limitations under the
  * License.
  *
- * The Original Code is coTerminal
+ * The Original Code is tanasinn
  *
  * The Initial Developer of the Original Code is
  * Hayaki Saito.
@@ -45,8 +45,8 @@ Contextmenu.definition = {
     let (entries = this._entries)
     {
       tagName: "menupopup",
-      parentNode: "#coterminal_center_area",
-      id: "coterminal_contextmenu",
+      parentNode: "#tanasinn_center_area",
+      id: "tanasinn_contextmenu",
       childNodes: entries,
       listener: {
         type: "popuphidden", 
@@ -112,9 +112,9 @@ Contextmenu.definition = {
       return;
     }
     this._entries = entries;
-    let {coterminal_contextmenu} 
+    let {tanasinn_contextmenu} 
       = session.uniget("command/construct-chrome", this.template);
-    coterminal_contextmenu.openPopupAtScreen(x, y, true);
+    tanasinn_contextmenu.openPopupAtScreen(x, y, true);
   },
 };
 

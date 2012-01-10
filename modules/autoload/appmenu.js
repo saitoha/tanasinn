@@ -13,7 +13,7 @@
  * for the specific language governing rights and limitations under the
  * License.
  *
- * The Original Code is coTerminal
+ * The Original Code is tanasinn
  *
  * The Initial Developer of the Original Code is
  * Hayaki Saito.
@@ -55,7 +55,7 @@ AppMenu.definition = {
       command.id = this.command_id;
       main_command_set.appendChild(command);
       command.setAttribute("oncommand", <>
-        Components.classes['@zuse.jp/coterminal/process;1']
+        Components.classes['@zuse.jp/tanasinn/process;1']
           .getService(Components.interfaces.nsISupports)
           .wrappedJSObject
           .start(

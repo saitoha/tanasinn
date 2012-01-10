@@ -132,12 +132,12 @@
    key-linux.conf
   }
   tool {
-   .coterminal.js
+   .tanasinn.js
    licence.pl
    EastAsianWidthDetectorGenerator.pl
    corun.js
-   ~/coterminal-native.log
-   ~/coterminal-js.log
+   ~/tanasinn-native.log
+   ~/tanasinn-js.log
   }
   mappings=mappings {
    cp932.txt.js

@@ -13,7 +13,7 @@
  * for the specific language governing rights and limitations under the
  * License.
  *
- * The Original Code is coTerminal
+ * The Original Code is tanasinn
  *
  * The Initial Developer of the Original Code is
  * Hayaki Saito.
@@ -103,7 +103,7 @@ OuterChrome.definition = {
     {
       parentNode: broker.root_element, 
       id: "box_element",
-      className: "coterminal",
+      className: "tanasinn",
       tagName: "grid",
       childNodes: {
         tagName: "rows",
@@ -111,25 +111,25 @@ OuterChrome.definition = {
           {
             tagName: "row",
             childNodes: [
-              { tagName: "box", id: "coterminal_resizer_topleft", },
-              { tagName: "vbox", id: "coterminal_resizer_top", },
-              { tagName: "box", id: "coterminal_resizer_topright", },
+              { tagName: "box", id: "tanasinn_resizer_topleft", },
+              { tagName: "vbox", id: "tanasinn_resizer_top", },
+              { tagName: "box", id: "tanasinn_resizer_topright", },
             ],
           },
           {
             tagName: "row",
             childNodes: [
-              { tagName: "hbox", id: "coterminal_resizer_left", },
-              { tagName: "vbox", id: "coterminal_chrome", },
-              { tagName: "hbox", id: "coterminal_resizer_right", },
+              { tagName: "hbox", id: "tanasinn_resizer_left", },
+              { tagName: "vbox", id: "tanasinn_chrome", },
+              { tagName: "hbox", id: "tanasinn_resizer_right", },
             ]
           },
           { 
             tagName: "row",
             childNodes: [
-              { tagName: "box", id: "coterminal_resizer_bottomleft", },
-              { tagName: "vbox", id: "coterminal_resizer_bottom", },
-              { tagName: "box", id: "coterminal_resizer_bottomright", },
+              { tagName: "box", id: "tanasinn_resizer_bottomleft", },
+              { tagName: "vbox", id: "tanasinn_resizer_bottom", },
+              { tagName: "box", id: "tanasinn_resizer_bottomright", },
             ],
           }
         ]
@@ -154,28 +154,28 @@ OuterChrome.definition = {
   "[subscribe('event/shift-key-down'), enabled]": 
   function onShiftKeyDown() 
   {
-    let target = this._element.querySelector("#coterminal_chrome");
+    let target = this._element.querySelector("#tanasinn_chrome");
     target.style.cursor = "move";
   },
 
   "[subscribe('event/shift-key-up'), enabled]": 
   function onShiftKeyUp() 
   {
-    let target = this._element.querySelector("#coterminal_chrome");
+    let target = this._element.querySelector("#tanasinn_chrome");
     target.style.cursor = "";
   },
 
   "[subscribe('event/alt-key-down'), enabled]": 
   function onAltKeyDown() 
   {
-    let target = this._element.querySelector("#coterminal_chrome");
+    let target = this._element.querySelector("#tanasinn_chrome");
     target.style.cursor = "crosshair";
   },
 
   "[subscribe('event/alt-key-up'), enabled]": 
   function onAltKeyUp() 
   {
-    let target = this._element.querySelector("#coterminal_chrome");
+    let target = this._element.querySelector("#tanasinn_chrome");
     target.style.cursor = "";
   },
 
@@ -192,7 +192,7 @@ OuterChrome.definition = {
   "[subscribe('command/set-opacity'), enabled]": 
   function setOpacity(opacity, duration) 
   {
-    let target = this._element.querySelector("#coterminal_chrome");
+    let target = this._element.querySelector("#tanasinn_chrome");
     if (target.style.opacity <= opacity) {
       duration = 0; 
     }
@@ -222,15 +222,15 @@ Chrome.definition = {
 
   get template()
     ({
-      parentNode: "#coterminal_chrome",
+      parentNode: "#tanasinn_chrome",
       tagName: "stack",
-      id: "coterminal_content",
+      id: "tanasinn_content",
       style: { 
         opacity: 0.7,
         background: "#000", 
       },
       childNodes: {
-        id: "coterminal_center_area",
+        id: "tanasinn_center_area",
         tagName: "stack",
         style: { margin: <>{this.margin}px</>, },
       },
@@ -245,9 +245,9 @@ Chrome.definition = {
   function onLoad(outer_chrome) 
   {
     let session = this._broker;
-    let {coterminal_content} 
+    let {tanasinn_content} 
       = session.uniget("command/construct-chrome", this.template);
-    this._element = coterminal_content;
+    this._element = tanasinn_content;
     if ("Firefox" == coUtils.Runtime.app_name) {
       this._element.style.borderTopLeftRadius = "8px";
       this._element.style.borderTopRightRadius = "8px";
@@ -313,7 +313,7 @@ Chrome.definition = {
     session.notify("command/set-opacity", this.inactive_opacity);
   },
 
-  "[listen('mousedown', '#coterminal_content')]":
+  "[listen('mousedown', '#tanasinn_content')]":
   function onmousedown()
   {
     let session = this._broker;

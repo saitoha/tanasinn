@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<box title="coterminal" 
+<box title="tanasinn" 
     xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
     <script type="application/x-javascript">
     <![CDATA[
@@ -7,8 +7,8 @@
         Components
           .classes["@mozilla.org/moz/jssubscript-loader;1"]
           .getService(Components.interfaces.mozIJSSubScriptLoader)
-          .loadSubScript("resource://coterminal/common/process.js");
-        Components.classes['@zuse.jp/coterminal/process;1']
+          .loadSubScript("resource://tanasinn/common/process.js");
+        Components.classes['@zuse.jp/tanasinn/process;1']
           .getService(Components.interfaces.nsISupports)
           .wrappedJSObject
           .start(

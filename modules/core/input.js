@@ -13,7 +13,7 @@
  * for the specific language governing rights and limitations under the
  * License.
  *
- * The Original Code is coTerminal
+ * The Original Code is tanasinn
  *
  * The Initial Developer of the Original Code is
  * Hayaki Saito.
@@ -140,13 +140,13 @@ InputManager.definition = {
 
   get template()
     ({ 
-      parentNode: "#coterminal_center_area",
+      parentNode: "#tanasinn_center_area",
       tagName: "bulletinboard",
 //      style: "border: solid 1px red",
       childNodes: {
         //tagName: "textbox",
         tagName: "html:input",
-        id: "coterminal_default_input",
+        id: "tanasinn_default_input",
         style: { imeMode: "disabled", border: "0px", opacity: 0 },
         top: 0,
         left: 0,
@@ -154,7 +154,7 @@ InputManager.definition = {
     }),
 
   get style()
-    "#coterminal_default_input { ime-mode: disabled; border: 0px; opacity: 0.2; }",
+    "#tanasinn_default_input { ime-mode: disabled; border: 0px; opacity: 0.2; }",
 
   _key_map: null,
 
@@ -176,9 +176,9 @@ InputManager.definition = {
     this._rule = coUtils.Style.addRule(session.root_element, this.style);
     // Get [bit-packed keycode -> terminal input sequence] map
     this._key_map = coCreateKeyMap();
-    let {coterminal_default_input} 
+    let {tanasinn_default_input} 
       = session.uniget("command/construct-chrome", this.template);
-    this._textbox = coterminal_default_input;
+    this._textbox = tanasinn_default_input;
     this._processInputSequence.enabled = true;
     this.onFocusChanged.enabled = true; 
     this.focus.enabled = true;
@@ -253,7 +253,7 @@ InputManager.definition = {
   },
 
   /** blur focus from the textbox elment. */
-  "[subscribe('command/blur'), key('meta + z'), _('Hide coterminal')]":
+  "[subscribe('command/blur'), key('meta + z'), _('Hide tanasinn')]":
   function blur() 
   {
     this._textbox.blur(); // raise blur event.
@@ -266,7 +266,7 @@ InputManager.definition = {
     let session = this._broker;
     let center = session.uniget(
       "command/query-selector", 
-      "#coterminal_center_area");
+      "#tanasinn_center_area");
     if (target.isEqualNode(focused_element)) {
       center.style.opacity = 1.00;
     } else {
@@ -280,7 +280,7 @@ InputManager.definition = {
     return this._textbox;
   },
 
-  "[listen('keyup', '#coterminal_default_input', true)]":
+  "[listen('keyup', '#tanasinn_default_input', true)]":
   function onkeyup(event) 
   { // nothrow
     //this._textbox.focus();
@@ -304,7 +304,7 @@ InputManager.definition = {
   /** Keypress event handler. 
    *  @param {Event} event A event object.
    */
-  "[listen('keypress', '#coterminal_default_input', true)]":
+  "[listen('keypress', '#tanasinn_default_input', true)]":
   function onkeypress(event) 
   { // nothrow
     let packed_code = getPackedKeycodeFromEvent(event);
@@ -339,7 +339,7 @@ InputManager.definition = {
    *  @{Event} event A event object.
    *  @notify event/input Notifies that a input event is occured.
    */
-  "[listen('input', '#coterminal_default_input')]":
+  "[listen('input', '#tanasinn_default_input')]":
   function oninput(event) 
   {
     let session = this._broker;

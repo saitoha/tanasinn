@@ -13,7 +13,7 @@
  * for the specific language governing rights and limitations under the
  * License.
  *
- * The Original Code is coTerminal
+ * The Original Code is tanasinn
  *
  * The Initial Developer of the Original Code is
  * Hayaki Saito.
@@ -43,7 +43,7 @@ Cursor.definition = {
   /** UI template */
   get template() 
     ({
-      parentNode: "#coterminal_center_area",
+      parentNode: "#tanasinn_center_area",
       tagName: "html:canvas",
       id: "cursor_canvas",
       width: this._renderer.char_width * this._screen.width,

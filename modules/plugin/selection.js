@@ -13,7 +13,7 @@
  * for the specific language governing rights and limitations under the
  * License.
  *
- * The Original Code is coTerminal
+ * The Original Code is tanasinn
  *
  * The Initial Developer of the Original Code is
  * Hayaki Saito.
@@ -96,7 +96,7 @@ Selection.definition = {
     let {selection_canvas} = session.uniget(
       "command/construct-chrome", 
       {
-        parentNode: "#coterminal_center_area",
+        parentNode: "#tanasinn_center_area",
         tagName: "html:canvas",
         id: "selection_canvas",
         style: { opacity: 0.5, },
@@ -147,7 +147,7 @@ Selection.definition = {
   },
 
   /** Doubleclick handler. It selects word under the mouse pointer. */
-  "[listen('dblclick', '#coterminal_content')]":
+  "[listen('dblclick', '#tanasinn_content')]":
   function ondblclick(event) 
   {
     if (null !== this._mouse_mode)
@@ -159,7 +159,7 @@ Selection.definition = {
   },
 
   /** Dragstart handler. It starts a session of dragging selection. */
-  "[listen('dragstart', '#coterminal_content')]":
+  "[listen('dragstart', '#tanasinn_content')]":
   function ondragstart(event) 
   {
     if (null !== this._mouse_mode)
@@ -223,7 +223,7 @@ Selection.definition = {
     let id = "selection.clear";
     let session = this._broker;
     session.notify("command/add-domlistener", {
-      target: "#coterminal_content",
+      target: "#tanasinn_content",
       type: "mouseup",
       id: id,
       context: this,
@@ -236,7 +236,7 @@ Selection.definition = {
       },
     });
     //session.notify("command/add-domlistener", {
-    //  target: "#coterminal_content",
+    //  target: "#tanasinn_content",
     //  type: "dragstart",
     //  id: id,
     //  context: this,
@@ -247,7 +247,7 @@ Selection.definition = {
     //  },
     //});
     session.notify("command/add-domlistener", {
-      target: "#coterminal_content",
+      target: "#tanasinn_content",
       type: "DOMMouseScroll", 
       id: id,
       context: this,
@@ -384,7 +384,7 @@ Selection.definition = {
   {
     let session = this._broker;
     let [target_element] 
-      = session.notify("command/query-selector", "#coterminal_center_area");
+      = session.notify("command/query-selector", "#tanasinn_center_area");
     let root_element = session.root_element;
     let box = target_element.boxObject;
     let offsetX = box.screenX - root_element.boxObject.screenX;

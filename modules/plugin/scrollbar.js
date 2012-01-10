@@ -13,7 +13,7 @@
  * for the specific language governing rights and limitations under the
  * License.
  *
- * The Original Code is coTerminal
+ * The Original Code is tanasinn
  *
  * The Initial Developer of the Original Code is
  * Hayaki Saito.
@@ -50,14 +50,14 @@ Scrollbar.definition = {
 
   get template()
     ({
-      parentNode: "#coterminal_content",
+      parentNode: "#tanasinn_content",
       tagName: "vbox",
-      id: "coterminal_scrollbar_overlay",
+      id: "tanasinn_scrollbar_overlay",
       align: "right",
       childNodes: {
         tagName: "vbox",
         flex: 1,
-        id: "coterminal_scrollbar",
+        id: "tanasinn_scrollbar",
         style: { 
           opacity: 0.00,
           MozTransitionProperty: "opacity",
@@ -72,7 +72,7 @@ Scrollbar.definition = {
         childNodes: [
           {
             tagName: "box",
-            id: "coterminal_scrollbar_before",
+            id: "tanasinn_scrollbar_before",
             listener: [
               {
                 type: "click",
@@ -87,7 +87,7 @@ Scrollbar.definition = {
           },
           {
             tagName: "box",
-            id: "coterminal_scrollbar_current",
+            id: "tanasinn_scrollbar_current",
             height: this.inner_width * 2,
             style: { 
               borderRadius: <>{this.inner_width / 2}px</>,
@@ -96,7 +96,7 @@ Scrollbar.definition = {
           },
           {
             tagName: "box",
-            id: "coterminal_scrollbar_after",
+            id: "tanasinn_scrollbar_after",
             listener: {
               type: "click",
               context: this,
@@ -124,18 +124,18 @@ Scrollbar.definition = {
   install: function install(session) 
   {
     let {
-      coterminal_scrollbar_overlay,
-      coterminal_scrollbar,
-      coterminal_scrollbar_before,
-      coterminal_scrollbar_current,
-      coterminal_scrollbar_after,
+      tanasinn_scrollbar_overlay,
+      tanasinn_scrollbar,
+      tanasinn_scrollbar_before,
+      tanasinn_scrollbar_current,
+      tanasinn_scrollbar_after,
     } = session.uniget("command/construct-chrome", this.template);
 
-    this._scrollbar_overlay = coterminal_scrollbar_overlay;
-    this._scrollbar = coterminal_scrollbar;
-    this._before = coterminal_scrollbar_before;
-    this._current = coterminal_scrollbar_current;
-    this._after = coterminal_scrollbar_after;
+    this._scrollbar_overlay = tanasinn_scrollbar_overlay;
+    this._scrollbar = tanasinn_scrollbar;
+    this._before = tanasinn_scrollbar_before;
+    this._current = tanasinn_scrollbar_current;
+    this._after = tanasinn_scrollbar_after;
 
     this.onScrollPositionChanged.enabled = true;
     this.ondblclick.enabled = true;
@@ -192,19 +192,19 @@ Scrollbar.definition = {
     }
   },
 
-  "[listen('dragstart', '#coterminal_scrollbar')]":
+  "[listen('dragstart', '#tanasinn_scrollbar')]":
   function ondragstart(event) 
   {
     event.stopPropagation();
   },
 
-  "[listen('dblclick', '#coterminal_scrollbar')]":
+  "[listen('dblclick', '#tanasinn_scrollbar')]":
   function ondblclick(event) 
   {
     event.stopPropagation();
   },
   
-  "[listen('mouseover', '#coterminal_scrollbar')]":
+  "[listen('mouseover', '#tanasinn_scrollbar')]":
   function onmouseover(event) 
   {
     let scrollbar = this._scrollbar;
@@ -215,7 +215,7 @@ Scrollbar.definition = {
     }
   },
 
-  "[listen('mouseout', '#coterminal_scrollbar')]":
+  "[listen('mouseout', '#tanasinn_scrollbar')]":
   function onmouseout(event) 
   {
     let scrollbar = this._scrollbar;
@@ -224,7 +224,7 @@ Scrollbar.definition = {
     }
   },
 
-  "[listen('dragstart', '#coterminal_scrollbar_current')]":
+  "[listen('dragstart', '#tanasinn_scrollbar_current')]":
   function ondragstart(event) 
   {
     let session = this._broker;

@@ -1,54 +1,54 @@
 #
 ### binary-component for Firefox 3.6
-##binary-component platform/WINNT_x86-msvc/components/libcoterminal.dll           ABI=WINNT_x86-msvc     application={ec8030f7-c20a-464f-9b0e-13a3a9e97384} aappversion=3.6.*
-##binary-component platform/Darwin_x86-gcc3/components/libcoterminal.dylib        ABI=Darwin_x86-gcc3    application={ec8030f7-c20a-464f-9b0e-13a3a9e97384} appversion=3.6.*
-##binary-component platform/Darwin_x86_64-gcc3/components/libcoterminal.dylib     ABI=Darwin_x86_64-gcc3 application={ec8030f7-c20a-464f-9b0e-13a3a9e97384} aappversion=3.6.*
-##binary-component platform/Linux_x86_64-gcc3/components/libcoterminal.so         ABI=Linux_x86_64-gcc3  application={ec8030f7-c20a-464f-9b0e-13a3a9e97384} aappversion=3.6.*
+##binary-component platform/WINNT_x86-msvc/components/libtanasinn.dll           ABI=WINNT_x86-msvc     application={ec8030f7-c20a-464f-9b0e-13a3a9e97384} aappversion=3.6.*
+##binary-component platform/Darwin_x86-gcc3/components/libtanasinn.dylib        ABI=Darwin_x86-gcc3    application={ec8030f7-c20a-464f-9b0e-13a3a9e97384} appversion=3.6.*
+##binary-component platform/Darwin_x86_64-gcc3/components/libtanasinn.dylib     ABI=Darwin_x86_64-gcc3 application={ec8030f7-c20a-464f-9b0e-13a3a9e97384} aappversion=3.6.*
+##binary-component platform/Linux_x86_64-gcc3/components/libtanasinn.so         ABI=Linux_x86_64-gcc3  application={ec8030f7-c20a-464f-9b0e-13a3a9e97384} aappversion=3.6.*
 ##
 #
 ## binary-component for Firefox 4
-##binary-component platform/2.0/WINNT_x86-msvc/components/libcoterminal.dll       ABI=WINNT_x86-msvc     application={ec8030f7-c20a-464f-9b0e-13a3a9e97384} appversion=4.0.*
-#binary-component platform/2.0/Darwin_x86-gcc3/components/libcoterminal.dylib    ABI=Darwin_x86-gcc3    application={ec8030f7-c20a-464f-9b0e-13a3a9e97384} appversion=4.0.*
-#binary-component platform/2.0/Darwin_x86_64-gcc3/components/libcoterminal.dylib ABI=Darwin_x86_64-gcc3 application={ec8030f7-c20a-464f-9b0e-13a3a9e97384} appversion=4.0.*
-#binary-component platform/2.0/Linux_x86_64-gcc3/components/libcoterminal.so     ABI=Linux_x86_64-gcc3  application={ec8030f7-c20a-464f-9b0e-13a3a9e97384} appversion=4.0.*
+##binary-component platform/2.0/WINNT_x86-msvc/components/libtanasinn.dll       ABI=WINNT_x86-msvc     application={ec8030f7-c20a-464f-9b0e-13a3a9e97384} appversion=4.0.*
+#binary-component platform/2.0/Darwin_x86-gcc3/components/libtanasinn.dylib    ABI=Darwin_x86-gcc3    application={ec8030f7-c20a-464f-9b0e-13a3a9e97384} appversion=4.0.*
+#binary-component platform/2.0/Darwin_x86_64-gcc3/components/libtanasinn.dylib ABI=Darwin_x86_64-gcc3 application={ec8030f7-c20a-464f-9b0e-13a3a9e97384} appversion=4.0.*
+#binary-component platform/2.0/Linux_x86_64-gcc3/components/libtanasinn.so     ABI=Linux_x86_64-gcc3  application={ec8030f7-c20a-464f-9b0e-13a3a9e97384} appversion=4.0.*
 #
 ## binary-component for Firefox 5
-##binary-component platform/5.0/WINNT_x86-msvc/components/libcoterminal.dll       ABI=WINNT_x86-msvc     application={ec8030f7-c20a-464f-9b0e-13a3a9e97384} appversion=5
-#binary-component platform/5.0/Darwin_x86-gcc3/components/libcoterminal.dylib    ABI=Darwin_x86-gcc3    application={ec8030f7-c20a-464f-9b0e-13a3a9e97384} appversion=5
-#binary-component platform/5.0/Darwin_x86_64-gcc3/components/libcoterminal.dylib ABI=Darwin_x86_64-gcc3 application={ec8030f7-c20a-464f-9b0e-13a3a9e97384} appversion=5
-#binary-component platform/5.0/Linux_x86_64-gcc3/components/libcoterminal.so     ABI=Linux_x86_64-gcc3  application={ec8030f7-c20a-464f-9b0e-13a3a9e97384} appversion=5
+##binary-component platform/5.0/WINNT_x86-msvc/components/libtanasinn.dll       ABI=WINNT_x86-msvc     application={ec8030f7-c20a-464f-9b0e-13a3a9e97384} appversion=5
+#binary-component platform/5.0/Darwin_x86-gcc3/components/libtanasinn.dylib    ABI=Darwin_x86-gcc3    application={ec8030f7-c20a-464f-9b0e-13a3a9e97384} appversion=5
+#binary-component platform/5.0/Darwin_x86_64-gcc3/components/libtanasinn.dylib ABI=Darwin_x86_64-gcc3 application={ec8030f7-c20a-464f-9b0e-13a3a9e97384} appversion=5
+#binary-component platform/5.0/Linux_x86_64-gcc3/components/libtanasinn.so     ABI=Linux_x86_64-gcc3  application={ec8030f7-c20a-464f-9b0e-13a3a9e97384} appversion=5
 #
 #
 ## binary-component for Firefox 6
-##binary-component platform/6.0/WINNT_x86-msvc/components/libcoterminal.dll       ABI=WINNT_x86-msvc     application={ec8030f7-c20a-464f-9b0e-13a3a9e97384} appversion=6
-#binary-component platform/6.0/Darwin_x86-gcc3/components/libcoterminal.dylib    ABI=Darwin_x86-gcc3    application={ec8030f7-c20a-464f-9b0e-13a3a9e97384} appversion=6
-#binary-component platform/6.0/Darwin_x86_64-gcc3/components/libcoterminal.dylib ABI=Darwin_x86_64-gcc3 application={ec8030f7-c20a-464f-9b0e-13a3a9e97384} appversion=6
-#binary-component platform/6.0/Linux_x86_64-gcc3/components/libcoterminal.so     ABI=Linux_x86_64-gcc3  application={ec8030f7-c20a-464f-9b0e-13a3a9e97384} appversion=6
+##binary-component platform/6.0/WINNT_x86-msvc/components/libtanasinn.dll       ABI=WINNT_x86-msvc     application={ec8030f7-c20a-464f-9b0e-13a3a9e97384} appversion=6
+#binary-component platform/6.0/Darwin_x86-gcc3/components/libtanasinn.dylib    ABI=Darwin_x86-gcc3    application={ec8030f7-c20a-464f-9b0e-13a3a9e97384} appversion=6
+#binary-component platform/6.0/Darwin_x86_64-gcc3/components/libtanasinn.dylib ABI=Darwin_x86_64-gcc3 application={ec8030f7-c20a-464f-9b0e-13a3a9e97384} appversion=6
+#binary-component platform/6.0/Linux_x86_64-gcc3/components/libtanasinn.so     ABI=Linux_x86_64-gcc3  application={ec8030f7-c20a-464f-9b0e-13a3a9e97384} appversion=6
 #
 ## binary-component for Firefox 7
-##binary-component platform/7.0/WINNT_x86-msvc/components/libcoterminal.dll       ABI=WINNT_x86-msvc     application={ec8030f7-c20a-464f-9b0e-13a3a9e97384} appversion=7
-#binary-component platform/7.0/Darwin_x86-gcc3/components/libcoterminal.dylib    ABI=Darwin_x86-gcc3    application={ec8030f7-c20a-464f-9b0e-13a3a9e97384} appversion=7
-#binary-component platform/7.0/Darwin_x86_64-gcc3/components/libcoterminal.dylib ABI=Darwin_x86_64-gcc3 application={ec8030f7-c20a-464f-9b0e-13a3a9e97384} appversion=7
-#binary-component platform/7.0/Linux_x86_64-gcc3/components/libcoterminal.so     ABI=Linux_x86_64-gcc3  application={ec8030f7-c20a-464f-9b0e-13a3a9e97384} appversion=7
+##binary-component platform/7.0/WINNT_x86-msvc/components/libtanasinn.dll       ABI=WINNT_x86-msvc     application={ec8030f7-c20a-464f-9b0e-13a3a9e97384} appversion=7
+#binary-component platform/7.0/Darwin_x86-gcc3/components/libtanasinn.dylib    ABI=Darwin_x86-gcc3    application={ec8030f7-c20a-464f-9b0e-13a3a9e97384} appversion=7
+#binary-component platform/7.0/Darwin_x86_64-gcc3/components/libtanasinn.dylib ABI=Darwin_x86_64-gcc3 application={ec8030f7-c20a-464f-9b0e-13a3a9e97384} appversion=7
+#binary-component platform/7.0/Linux_x86_64-gcc3/components/libtanasinn.so     ABI=Linux_x86_64-gcc3  application={ec8030f7-c20a-464f-9b0e-13a3a9e97384} appversion=7
 #
 ## binary-component for Firefox 8
-##binary-component platform/8.0/WINNT_x86-msvc/components/libcoterminal.dll       ABI=WINNT_x86-msvc    appversion>=8a
-#binary-component platform/8.0/Darwin_x86-gcc3/components/libcoterminal.dylib    ABI=Darwin_x86-gcc3    appversion>=8a
-#binary-component platform/8.0/Darwin_x86_64-gcc3/components/libcoterminal.dylib ABI=Darwin_x86_64-gcc3 appversion>=8a
-#binary-component platform/8.0/Linux_x86_64-gcc3/components/libcoterminal.so     ABI=Linux_x86_64-gcc3  appversion>=8a
+##binary-component platform/8.0/WINNT_x86-msvc/components/libtanasinn.dll       ABI=WINNT_x86-msvc    appversion>=8a
+#binary-component platform/8.0/Darwin_x86-gcc3/components/libtanasinn.dylib    ABI=Darwin_x86-gcc3    appversion>=8a
+#binary-component platform/8.0/Darwin_x86_64-gcc3/components/libtanasinn.dylib ABI=Darwin_x86_64-gcc3 appversion>=8a
+#binary-component platform/8.0/Linux_x86_64-gcc3/components/libtanasinn.so     ABI=Linux_x86_64-gcc3  appversion>=8a
 #
 ## binary-component for Firefox 9
-##binary-component platform/9.0/WINNT_x86-msvc/components/libcoterminal.dll       ABI=WINNT_x86-msvc     application={ec8030f7-c20a-464f-9b0e-13a3a9e97384} appversion>=9a
-#binary-component platform/9.0/Darwin_x86-gcc3/components/libcoterminal.dylib    ABI=Darwin_x86-gcc3    application={ec8030f7-c20a-464f-9b0e-13a3a9e97384} appversion>=9a
-#binary-component platform/9.0/Darwin_x86_64-gcc3/components/libcoterminal.dylib ABI=Darwin_x86_64-gcc3 application={ec8030f7-c20a-464f-9b0e-13a3a9e97384} appversion>=9a
-#binary-component platform/9.0/Linux_x86_64-gcc3/components/libcoterminal.so     ABI=Linux_x86_64-gcc3  application={ec8030f7-c20a-464f-9b0e-13a3a9e97384} appversion>=9a
+##binary-component platform/9.0/WINNT_x86-msvc/components/libtanasinn.dll       ABI=WINNT_x86-msvc     application={ec8030f7-c20a-464f-9b0e-13a3a9e97384} appversion>=9a
+#binary-component platform/9.0/Darwin_x86-gcc3/components/libtanasinn.dylib    ABI=Darwin_x86-gcc3    application={ec8030f7-c20a-464f-9b0e-13a3a9e97384} appversion>=9a
+#binary-component platform/9.0/Darwin_x86_64-gcc3/components/libtanasinn.dylib ABI=Darwin_x86_64-gcc3 application={ec8030f7-c20a-464f-9b0e-13a3a9e97384} appversion>=9a
+#binary-component platform/9.0/Linux_x86_64-gcc3/components/libtanasinn.so     ABI=Linux_x86_64-gcc3  application={ec8030f7-c20a-464f-9b0e-13a3a9e97384} appversion>=9a
 #
 ## interface
-#interfaces components/coterminal.xpt
+#interfaces components/tanasinn.xpt
 
 # for Firefox
-content coterminal chrome/content/
-resource coterminal modules/
-#overlay chrome://browser/content/browser.xul chrome://coterminal/content/terminal.xul
+content tanasinn chrome/content/
+resource tanasinn modules/
+#overlay chrome://browser/content/browser.xul chrome://tanasinn/content/terminal.xul
 
 

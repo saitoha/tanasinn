@@ -13,7 +13,7 @@
  * for the specific language governing rights and limitations under the
  * License.
  *
- * The Original Code is coTerminal
+ * The Original Code is tanasinn
  *
  * The Initial Developer of the Original Code is
  * Hayaki Saito.
@@ -47,7 +47,7 @@ let alert = coUtils.alert = function alert(message)
   let promptService = Components
       .classes["@mozilla.org/embedcomp/prompt-service;1"]
       .getService(Components.interfaces.nsIPromptService)
-    promptService.alert(this.window || null, "coTerminal", message);
+    promptService.alert(this.window || null, "tanasinn", message);
 }
 
 /** Returns the window object.
@@ -636,7 +636,7 @@ coUtils.Logger.prototype = {
   _ostream: null,
   _converter: null,
 
-  log_file_path: "$Home/.coterminal/log/coterminal-js.log",
+  log_file_path: "$Home/.tanasinn/log/tanasinn-js.log",
 
   /** constructor */
   initialize: function initialize()
@@ -887,7 +887,7 @@ coUtils.Debug = {
     let name = stack.name && stack.name.replace(/"/g, "\u201d");
     let message = [
       "[",
-        "JavaScript Message: \"coTerminal: ", escapedSource, "\" ", 
+        "JavaScript Message: \"tanasinn: ", escapedSource, "\" ", 
         "{",
           "file: \"", file, "\" ",
           "line: ", stack.lineNumber, " ",
@@ -946,13 +946,13 @@ coUtils.Debug = {
       .createInstance(Components.interfaces.nsIScriptError);
     let is_error_object = !!source.fileName;
   
-    let message = "coTerminal: " 
+    let message = "tanasinn: " 
       + (is_error_object ? source.message: source.toString()).replace(/"/g, "\u201d");
     let file = (is_error_object ? source.fileName: stack.filename)
       .split(" -> ").pop().split("?").shift().replace(/"/g, "\u201d");
     let sourceLine = is_error_object ? null: stack.sourceLine;
     let line = is_error_object ? source.lineNumber: stack.lineNumber;
-    exception.init(message, file, null, line, /* column */ 0, flag, "coTerminal");
+    exception.init(message, file, null, line, /* column */ 0, flag, "tanasinn");
     return exception;
   },
 

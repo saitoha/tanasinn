@@ -1,10 +1,10 @@
 
 #if __EN__
-= coTerminal Project 
+= tanasinn terminal emurator 
 
 link:./usermanual-ja.html[日本語]
 #else
-= coTerminal Project 
+= tanasinn terminal emurator 
 
 link:./usermanual.html[English]
 #endif
@@ -13,22 +13,22 @@ link:./usermanual.html[English]
 
 == Introduction
 
-    "coTerminal" is a terminal emurator that runs on Firefox.
+    "tanasinn terminal emurator" is a terminal emurator that runs on Firefox.
     It enables you to access flexible, powerful functionality 
     provided by operating systems, such as commandline shells, or curses-based 
     applications.
 
-http://zuse.jp/coterminal/coterminal-current.xpi[Download from here]
+http://zuse.jp/tanasinn/tanasinn-current.xpi[Download from here]
 
 #else
 
 == イントロダクション
 
-    "coTerminal"は Firefox上で動作する端末エミュレータです。
+    "tanasinn terminal emurator" は Firefox上で動作する端末エミュレータです。
     コマンドラインシェルやcursesベースのアプリケーション等、オペレーティングシステムが提供する
     柔軟でパワフルな機能群にブラウザ上のUIからアクセスすることができます。
 
-http://zuse.jp/coterminal/coterminal@zuse.jp.xpi[ここからダウンロード]
+http://zuse.jp/tanasinn/tanasinn@zuse.jp.xpi[ここからダウンロード]
 
 #endif
 
@@ -183,9 +183,9 @@ image::images/wl.png[width=640]
 image::images/2ch.png[width=640]
 
 #if __EN__
-.Developping coTerminal with coTerminal at out of jail. here is running as a standalone XUL application.
+.Developping tanasinn with tanasinn at out of jail. here is running as a standalone XUL application.
 #else
-.coTerminalをcoTerminalで開発中。これはスタンドアロンXULアプリケーションとして動作させているところです。
+.tanasinnをtanasinnで開発中。これはスタンドアロンXULアプリケーションとして動作させているところです。
 #endif
 image::images/xulapp.png[width=640]
 
@@ -249,7 +249,7 @@ image::images/xulapp.png[width=640]
 make
 ----
     If build process was succeeded, target XPI file 
-    "coterminal@zuse.jp.xpi" is to be generated. enjoy it!
+    "tanasinn@zuse.jp.xpi" is to be generated. enjoy it!
 #else
 === Firefox拡張としてビルドする:
 .Mac, Linux, Cygwin
@@ -257,7 +257,7 @@ make
 ./configure
 make
 ----
-    ビルドが成功すると、"coterminal@zuse.jp.xpi"というXPIファイルが生成されます。
+    ビルドが成功すると、"tanasinn@zuse.jp.xpi"というXPIファイルが生成されます。
     これをインストールしてください。
 #endif
     
@@ -268,13 +268,13 @@ make
 
 .Mac, Linux
 ----
-ln -s $PWD $RUNTIME/coterminal
+ln -s $PWD $RUNTIME/tanasinn
 ln $PWD/modules/corun.js $RUNTIME/plugin/ 
 ----
         
 .Cygwin
 ----
-cmd /c mklink /D $(cygpath -w $RUNTIME/coterminal) $(cygpath -w $PWD);
+cmd /c mklink /D $(cygpath -w $RUNTIME/tanasinn) $(cygpath -w $PWD);
 ln $PWD/modules/corun.js $RUNTIME/plugin/
 ----
 
@@ -287,13 +287,13 @@ ln $PWD/modules/corun.js $RUNTIME/plugin/
 
 .Mac, Linux
 ----
-ln -s $PWD $RUNTIME/coterminal
+ln -s $PWD $RUNTIME/tanasinn
 ln $PWD/modules/corun.js $RUNTIME/plugin/ 
 ----
         
 .Cygwin
 ----
-cmd /c mklink /D $(cygpath -w $RUNTIME/coterminal) $(cygpath -w $PWD)
+cmd /c mklink /D $(cygpath -w $RUNTIME/tanasinn) $(cygpath -w $PWD)
 ln $PWD/modules/corun.js $RUNTIME/plugin/
 ----
 
@@ -337,13 +337,13 @@ cygstart firefox.exe --app application.ini
 ==== If it Installed as Vimperator plugin: 
 
 ----
-:coterminal
+:tanasinn
 ----
 
     or
 
 ----
-:coterminal <command>
+:tanasinn <command>
 ----
 
 #else
@@ -356,13 +356,13 @@ cygstart firefox.exe --app application.ini
 ==== Vimperatorのプラグインとしてインストールした場合: 
 
 ----
-:coterminal
+:tanasinn
 ----
 
     or
 
 ----
-:coterminal <command>
+:tanasinn <command>
 ----
 
 #endif

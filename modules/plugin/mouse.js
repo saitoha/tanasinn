@@ -13,7 +13,7 @@
  * for the specific language governing rights and limitations under the
  * License.
  *
- * The Original Code is coTerminal
+ * The Original Code is tanasinn
  *
  * The Initial Developer of the Original Code is
  * Hayaki Saito.
@@ -172,14 +172,14 @@ Mouse.definition = {
   },
 
   /** Dragstart event listener. */
-  "[listen('dragstart', '#coterminal_content')]": 
+  "[listen('dragstart', '#tanasinn_content')]": 
   function ondragstart(event) 
   {
     this._dragged = true;
   },
 
   /** Mouse down evnet listener */
-  "[listen('DOMMouseScroll', '#coterminal_content')]": 
+  "[listen('DOMMouseScroll', '#tanasinn_content')]": 
   function onmousescroll(event) 
   {
     let renderer = this._renderer;
@@ -231,7 +231,7 @@ Mouse.definition = {
   },
 
   /** Mouse down evnet listener */
-  "[listen('mousedown', '#coterminal_content')]": 
+  "[listen('mousedown', '#tanasinn_content')]": 
   function onmousedown(event) 
   {
     if (null !== this._tracking_mode) {
@@ -247,7 +247,7 @@ Mouse.definition = {
   },
 
   /** Mouse move evnet listener */
-  "[listen('mousemove', '#coterminal_content')]": 
+  "[listen('mousemove', '#tanasinn_content')]": 
   function onmousemove(event) 
   {
     if (!this._dragged)
@@ -267,7 +267,7 @@ Mouse.definition = {
   },
 
   /** Mouse up evnet listener */
-  "[listen('mouseup', '#coterminal_content')]": 
+  "[listen('mouseup', '#tanasinn_content')]": 
   function onmouseup(event) 
   {
     this._dragged = false;
@@ -280,7 +280,7 @@ Mouse.definition = {
   _getCurrentPosition: function _getCurrentPosition(event) 
   {
     let session = this._broker;
-    let target_element = session.uniget("command/query-selector", "#coterminal_center_area");
+    let target_element = session.uniget("command/query-selector", "#tanasinn_center_area");
     let box = target_element.boxObject;
     let offsetX = box.screenX - session.root_element.boxObject.screenX;
     let offsetY = box.screenY - session.root_element.boxObject.screenY;

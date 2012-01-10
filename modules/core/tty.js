@@ -13,7 +13,7 @@
  * for the specific language governing rights and limitations under the
  * License.
  *
- * The Original Code is coTerminal
+ * The Original Code is tanasinn
  *
  * The Initial Developer of the Original Code is
  * Hayaki Saito.
@@ -26,7 +26,7 @@
  * @package tty
  *
  * <pre>
- *    TTY Device pair            Python script                   coTerminal
+ *    TTY Device pair            Python script                   tanasinn
  *    Master / Slave          class TeletypeDriver          socket_tty_service.js
  *  +-----------------+       +------------------+           +-----------------+
  *  |                 |       |                  |           |                 |
@@ -48,7 +48,7 @@
  *  |                 |       |                  |
  *  +-----------------+       +------------------+
  *
- *    figure-1. Communication among TTY device pair, TeletypeDrive, coTerminal.
+ *    figure-1. Communication among TTY device pair, TeletypeDrive, tanasinn.
  * </pre>
  *
  * -*- About [Control channel]'s protocol -*-
@@ -637,7 +637,7 @@ SocketTeletypeService.definition = {
     this._controller = controller;
     this._external_driver = external_driver;
 
-    let session_data_path = "$Home/.coterminal/sessions.txt";
+    let session_data_path = "$Home/.tanasinn/sessions.txt";
     if (coUtils.File.exists(session_data_path)) {
       let sessions = coUtils.IO.readFromFile(session_data_path);
       let lines = sessions.split(/[\r\n]/);
@@ -649,7 +649,7 @@ SocketTeletypeService.definition = {
             if (external_driver.processIsAvailable(pid)) {
               this.connect(Number(control_port));
               let session = this._broker;
-              let backup_data_path = String(<>$Home/.coterminal/persist/{request_id}.txt</>);
+              let backup_data_path = String(<>$Home/.tanasinn/persist/{request_id}.txt</>);
               let file = coUtils.File.getFileLeafFromAbstractPath(backup_data_path);
               this._pid = Number(pid);
               if (file.exists()) {
@@ -695,7 +695,7 @@ SocketTeletypeService.definition = {
     let context = [];
     let session = this._broker;
     session.notify("command/backup", context);
-    let path = String(<>$Home/.coterminal/persist/{session.request_id}.txt</>);
+    let path = String(<>$Home/.tanasinn/persist/{session.request_id}.txt</>);
     coUtils.IO.writeToFile(path, context.toSource());
   },
 

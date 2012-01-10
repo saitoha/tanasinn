@@ -13,7 +13,7 @@
  * for the specific language governing rights and limitations under the
  * License.
  *
- * The Original Code is coTerminal
+ * The Original Code is tanasinn
  *
  * The Initial Developer of the Original Code is
  * Hayaki Saito.
@@ -30,28 +30,28 @@ let completion = liberator.modules.completion;
 let mappings = liberator.modules.mappings;
 let modes = liberator.modules.modes;
 
-function getCoterminalProcess() 
+function getTanasinnProcess() 
 {
   let process_class = Components
-    .classes["@zuse.jp/coterminal/process;1"]
+    .classes["@zuse.jp/tanasinn/process;1"]
   if (!process_class) {
     /*
     let file = Components.stack
         .filename
         .split(" -> ").pop()
         .split("?").shift()
-        .replace(/\/[^\/]+?\/[^\/]+$/, "/coterminal/modules/initialize.js");
+        .replace(/\/[^\/]+?\/[^\/]+$/, "/tanasinn/modules/initialize.js");
         */
     let file = [
       Components.stack.filename.split(" -> ").pop().split("?").shift(),
-      "/../../coterminal/modules/common/process.js"
+      "/../../tanasinn/modules/common/process.js"
     ].join("");
     Components
       .classes["@mozilla.org/moz/jssubscript-loader;1"]
       .getService(Components.interfaces.mozIJSSubScriptLoader)
       .loadSubScript(file, {window: window});
     process_class = Components
-      .classes["@zuse.jp/coterminal/process;1"]
+      .classes["@zuse.jp/tanasinn/process;1"]
   }
   let process = process_class
     .getService(Components.interfaces.nsISupports)
@@ -59,13 +59,13 @@ function getCoterminalProcess()
   return process;
 }
 
-commands.add(['cot[erminal]'], 
+commands.add(['tan[asinn]'], 
   "Run a terminal emurator into this browser.", 
   function (args) 
   { 
-    let process = getCoterminalProcess();
+    let process = getTanasinnProcess();
     window.setTimeout(function() {
-      let container = document.getElementById("coterminal-container");
+      let container = document.getElementById("tanasinn-container");
       let desktop = process.getDesktopFromWindow(window);
       desktop.start(
         document.documentElement,
@@ -84,17 +84,17 @@ commands.add(['cot[erminal]'],
 );
 
 mappings.addUserMap([modes.NORMAL], ["!"],
-  'Run commands in coTerminal',
-   function () { commandline.open('', 'coterminal ', modes.EX); }
+  'Run commands in tanasinn',
+   function () { commandline.open('', 'tanasinn ', modes.EX); }
 );
 
 } ();
 
 /*
 mappings.addUserMap([modes.NORMAL], [">"],
-  'Run commands in coTerminal',
+  'Run commands in tanasinn',
    function () {
-     let process = getCoterminalProcess();
+     let process = getTanasinnProcess();
      window.setTimeout(function() {
        process.start(
          document.documentElement,
@@ -110,7 +110,7 @@ mappings.add(modes.getCharModes("i"),
   ["<C-S-i>"], "Edit text field with on external editor",
   function() 
   {
-    let process = getCoterminalProcess();
+    let process = getTanasinnProcess();
     let scope = process.createNewScope();
     let file = Components
       .classes["@mozilla.org/file/directory_service;1"]

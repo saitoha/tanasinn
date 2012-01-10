@@ -13,7 +13,7 @@
  * for the specific language governing rights and limitations under the
  * License.
  *
- * The Original Code is coTerminal
+ * The Original Code is tanasinn
  *
  * The Initial Developer of the Original Code is
  * Hayaki Saito.
@@ -43,20 +43,20 @@ MessageFilter.definition = {
 
   get style() <![CDATA[
     @import "chrome://global/skin/viewbuttons.css";
-    .coterminal-console-error   { background-color: lightpink; }
-    .coterminal-console-warning { background-color: lightyellow; }
-    .coterminal-console-message { background-color: lightblue; }
-    .coterminal-console-native  { background-color: silver; }
-    .coterminal-console-unknown { background-color: orange; }
-    .coterminal-console-line { border-bottom: 1px solid green; padding: 0px 5px; }
-    .coterminal-console > *:not([class~="error"  ]) > .coterminal-console-error { display: none !important; }
-    .coterminal-console > *:not([class~="warning"]) > .coterminal-console-warning { display: none !important; }
-    .coterminal-console > *:not([class~="message"]) > .coterminal-console-message { display: none !important; }
-    .coterminal-console > *:not([class~="native" ]) > .coterminal-console-native { display: none !important; }
+    .tanasinn-console-error   { background-color: lightpink; }
+    .tanasinn-console-warning { background-color: lightyellow; }
+    .tanasinn-console-message { background-color: lightblue; }
+    .tanasinn-console-native  { background-color: silver; }
+    .tanasinn-console-unknown { background-color: orange; }
+    .tanasinn-console-line { border-bottom: 1px solid green; padding: 0px 5px; }
+    .tanasinn-console > *:not([class~="error"  ]) > .tanasinn-console-error { display: none !important; }
+    .tanasinn-console > *:not([class~="warning"]) > .tanasinn-console-warning { display: none !important; }
+    .tanasinn-console > *:not([class~="message"]) > .tanasinn-console-message { display: none !important; }
+    .tanasinn-console > *:not([class~="native" ]) > .tanasinn-console-native { display: none !important; }
   ]]>,
 
   get filter_expression()
-    /^\[(.+?): "(coTerminal: )?([^"]*?)" {file: "([^"]*?)" line: ([0-9]+?)( name: "([^"]*?)")?}\]$/m,
+    /^\[(.+?): "(tanasinn: )?([^"]*?)" {file: "([^"]*?)" line: ([0-9]+?)( name: "([^"]*?)")?}\]$/m,
   
   _css: null,
 
@@ -107,7 +107,7 @@ MessageFilter.definition = {
     let [, category, , message, file, line] = match;
     let class_string = this._getClassString(category);
     file = file.split("/").pop().split("?").shift();
-    if ("coterminal-console-error" == class_string) {
+    if ("tanasinn-console-error" == class_string) {
       //let session = this._broker;
       //session.notify("an-error-occured", class_string);
       try {
@@ -139,7 +139,7 @@ MessageFilter.definition = {
     }
     return {
       tagName: "row",
-      className: "coterminal-console-line " + class_string,
+      className: "tanasinn-console-line " + class_string,
       childNodes: [
         { 
           tagName: "label", 
@@ -167,11 +167,11 @@ MessageFilter.definition = {
   _getClassString: function(category) 
   {
     let result = {
-      "JavaScript Error"  : "coterminal-console-error",
-      "JavaScript Warning": "coterminal-console-warning",
-      "JavaScript Message": "coterminal-console-message",
-      "Native Message"    : "coterminal-console-native",
-    } [category]         || "coterminal-console-unknown";
+      "JavaScript Error"  : "tanasinn-console-error",
+      "JavaScript Warning": "tanasinn-console-warning",
+      "JavaScript Message": "tanasinn-console-message",
+      "Native Message"    : "tanasinn-console-native",
+    } [category]         || "tanasinn-console-unknown";
     return result;
   },
 
@@ -329,7 +329,7 @@ ConsoleListener.definition = {
   {
     try {
       let message = console_message.message;
-      if (/coterminal/i.test(message)) {
+      if (/tanasinn/i.test(message)) {
         this._display_manager.append(message);
       }
     } catch (e) {
@@ -380,7 +380,7 @@ ConsoleListener.definition = {
     let message_array = this._getMessageArray();
     if (null !== message_array) {
       //for (let [index, message] in Iterator(message_array.value.reverse())) {
-      //  if (/coterminal_initialize/.test(message.message)) {
+      //  if (/tanasinn_initialize/.test(message.message)) {
           message_array.value
       //      .slice(0, index + 1)
       //      .reverse()
@@ -418,8 +418,8 @@ Console.definition = {
     { 
        parentNode: tab_panel,
        tagName: "vbox",
-       id: "coterminal_console_panel",
-       className: "coterminal-console",
+       id: "tanasinn_console_panel",
+       className: "tanasinn-console",
        flex: 1,
        style: { 
          margin: "0px",
@@ -540,10 +540,10 @@ Console.definition = {
   install: function install(session) 
   {
     let {
-      coterminal_console_panel, 
+      tanasinn_console_panel, 
       console_output_box,
     } = session.uniget("command/construct-chrome", this.template);
-    this._console_box = coterminal_console_panel;
+    this._console_box = tanasinn_console_panel;
     this._output_box = console_output_box;
     this.select.enabled = true;
     session.notify("initialized/console", this);

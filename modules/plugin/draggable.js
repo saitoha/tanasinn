@@ -13,7 +13,7 @@
  * for the specific language governing rights and limitations under the
  * License.
  *
- * The Original Code is coTerminal
+ * The Original Code is tanasinn
  *
  * The Initial Developer of the Original Code is
  * Hayaki Saito.
@@ -67,7 +67,7 @@ DragMove.definition = {
     this.ondragstart.enabled = false;
   },
 
-  "[listen('dragstart', '#coterminal_content', true)]":
+  "[listen('dragstart', '#tanasinn_content', true)]":
   function ondragstart(event) 
   {
     if (!event.shiftKey)

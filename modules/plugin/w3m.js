@@ -13,7 +13,7 @@
  * for the specific language governing rights and limitations under the
  * License.
  *
- * The Original Code is coTerminal
+ * The Original Code is tanasinn
  *
  * The Initial Developer of the Original Code is
  * Hayaki Saito.
@@ -43,9 +43,9 @@ W3m.definition = {
 
   get template()
     ({
-      parentNode: "#coterminal_center_area",
+      parentNode: "#tanasinn_center_area",
       tagName: "html:canvas",
-      id: "coterminal_w3m_canvas",
+      id: "tanasinn_w3m_canvas",
 //      style: "border: solid 1px red",
     }),
 
@@ -69,10 +69,10 @@ W3m.definition = {
   install: function install(session) 
   {
     let renderer = this._renderer;
-    let {coterminal_w3m_canvas} = session.uniget(
+    let {tanasinn_w3m_canvas} = session.uniget(
       "command/construct-chrome", this.template);
     // set initial size.
-    this._canvas = coterminal_w3m_canvas;
+    this._canvas = tanasinn_w3m_canvas;
     this._canvas.width = this._canvas.parentNode.boxObject.width;
     this._canvas.height = this._canvas.parentNode.boxObject.height;
     this._context = this._canvas.getContext("2d");

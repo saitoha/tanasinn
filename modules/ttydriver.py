@@ -14,7 +14,7 @@
 # for the specific language governing rights and limitations under the
 # License.
 #
-# The Original Code is coTerminal
+# The Original Code is tanasinn
 #
 # The Initial Developer of the Original Code is
 # Hayaki Saito.
@@ -29,10 +29,10 @@
 #
 # [ Module Overview ]
 #
-# This module is assumed to be called by coTerminal's "tty.js".
-# First, coTerminal opens TCP channel and listen on 2 ports, [I/O channel] and 
+# This module is assumed to be called by tanasinn's "tty.js".
+# First, tanasinn opens TCP channel and listen on 2 ports, [I/O channel] and 
 # [Control channel].
-# Next, coTerminal should call this script, with 2 arguments that is represent 
+# Next, tanasinn should call this script, with 2 arguments that is represent 
 # above-mentioned 2 channel's port numbers.
 # Then, A TeletypeDriver object is instanciate. it connect these channels and 
 # establish TCP connection, and finally forks new 4 processes as follows:
@@ -43,24 +43,24 @@
 # <pre>
 #       /bin/sh -c 'exec <startcommand>'
 # </pre>
-#    <startcommand> is asked for coTerminal through the <Control channel>.
+#    <startcommand> is asked for tanasinn through the <Control channel>.
 #    
 # 2. Writing Process
-#    This process wait to receive data from coTerminal through <I/O channel>,
+#    This process wait to receive data from tanasinn through <I/O channel>,
 #    which is user's input key sequence in many cases. 
 #    As receiving data, the Process passes it to TTY master device as it is.
 #
 # 3. Reading Process
 #    This process wait to receive data from TTY master device, which is output 
 #    sequence from application program in many cases.
-#    As receiving data, the Process passes it to coTerminal through [I/O channel].
+#    As receiving data, the Process passes it to tanasinn through [I/O channel].
 #
 # 4. Controlling Process
-#    This process comminucate with coTerminal through [Control channel] in 
+#    This process comminucate with tanasinn through [Control channel] in 
 #    simple, lightweight, 7bit ascii-based protocol.
 #
 # <pre>
-#    TTY Device pair            Python script                   coTerminal
+#    TTY Device pair            Python script                   tanasinn
 #    Master / Slave          class TeletypeDriver                 tty.js
 #  +-----------------+       +------------------+           +-----------------+
 #  |                 |       |                  |           |                 |
@@ -82,7 +82,7 @@
 #  |                 |       |                  |
 #  +-----------------+       +------------------+
 #
-#    figure-1. Communication among TTY device pair, TeletypeDrive, coTerminal.
+#    figure-1. Communication among TTY device pair, TeletypeDrive, tanasinn.
 # </pre>
 #
 # -*- About [Control channel]'s protocol -*-
@@ -147,7 +147,7 @@ def trace(message):
     #    os.system("say -v vict '%s'" % message)
     #if system[0] == 'Linux':
     #    os.system("espeak '%s'" % message)
-    os.system("echo '%s' >> ~/.coterminal/log/tty.log &" % message);
+    os.system("echo '%s' >> ~/.tanasinn/log/tty.log &" % message);
 
 trace("start.")
 #trace("--- start ----")
@@ -413,7 +413,7 @@ def fork_app_process(master, slave, command, term):
         # execute specified command.
         #command = "showkey -a"
         #if sid == None:
-        #    os.system("echo 'coterminal: os.setsid failed.'")
+        #    os.system("echo 'tanasinn: os.setsid failed.'")
         fcntl.ioctl(master, termios.TIOCSCTTY, 1)
         os.execlp(shell, "$SHELL", "-c", "cd $HOME && exec %s" % command)
 
@@ -482,7 +482,7 @@ if __name__ == "__main__":
                 break
             else:
                 #os.write(master, "\x1a")
-                os.system("echo '%s,%s,%s,%s,%s' >> ~/.coterminal/sessions.txt" 
+                os.system("echo '%s,%s,%s,%s,%s' >> ~/.tanasinn/sessions.txt" 
                     % (request_id, connection_port, control_port, pid, ttyname));
                 trace("suspended.")
 
@@ -491,7 +491,7 @@ if __name__ == "__main__":
                 io_port_str, request_id = control_connection.recv(BUFFER_SIZE).split(" ")
                 io_port = int(io_port_str)
 
-                os.system("test -e ~/.coterminal/sessions.txt && sed -i -e '/^%s,/d' ~/.coterminal/sessions.txt" % request_id)
+                os.system("test -e ~/.tanasinn/sessions.txt && sed -i -e '/^%s,/d' ~/.tanasinn/sessions.txt" % request_id)
 
     except socket.error, e:
         trace("A socket error occured.")

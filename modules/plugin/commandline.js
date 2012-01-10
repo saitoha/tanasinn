@@ -13,7 +13,7 @@
  * for the specific language governing rights and limitations under the
  * License.
  *
- * The Original Code is coTerminal
+ * The Original Code is tanasinn
  *
  * The Initial Developer of the Original Code is
  * Hayaki Saito.
@@ -115,19 +115,19 @@ Commandline.definition = {
   function install(session) 
   {
     let {
-      coterminal_commandline_box, 
-      coterminal_commandline_completion, 
-      coterminal_commandline, 
-      coterminal_statusbar,
-      coterminal_completion_popup, 
-      coterminal_completion_scroll, 
-      coterminal_completion_tree
+      tanasinn_commandline_box, 
+      tanasinn_commandline_completion, 
+      tanasinn_commandline, 
+      tanasinn_statusbar,
+      tanasinn_completion_popup, 
+      tanasinn_completion_scroll, 
+      tanasinn_completion_tree
     } = session.uniget(
       "command/construct-chrome", 
       {
-        parentNode: "#coterminal_chrome",
+        parentNode: "#tanasinn_chrome",
         tagName: "stack",
-        id: "coterminal_commandline_box",
+        id: "tanasinn_commandline_box",
         style: <>
           font-size: 12px;
           font-family: monospace;
@@ -136,7 +136,7 @@ Commandline.definition = {
         </>,
         childNodes: [
           {
-            id: "coterminal_commandline_background",
+            id: "tanasinn_commandline_background",
             tagName: "box",
             margin: 0,
             style: { 
@@ -153,7 +153,7 @@ Commandline.definition = {
             },
             childNodes: [
               {
-                id: "coterminal_commandline_completion",
+                id: "tanasinn_commandline_completion",
                 value: "",
                 tagName: "textbox",
                 className: "plain",
@@ -161,7 +161,7 @@ Commandline.definition = {
               },
               {
                 tagName: "textbox",
-                id: "coterminal_commandline",
+                id: "tanasinn_commandline",
                 className: "plain",
                 //placeholder: "input commands here.",
                 newlines: "replacewithspaces",
@@ -171,7 +171,7 @@ Commandline.definition = {
                 tagName: "textbox",
                 className: "plain",
                 readonly: "true",
-                id: "coterminal_statusbar",
+                id: "tanasinn_statusbar",
                 hidden: true,
                 style: { color: "#fff", },
               },
@@ -181,16 +181,16 @@ Commandline.definition = {
                 style: { MozUserFocus: "ignore", /*font: "menu",*/ },
                 noautofocus: true,
                 height: 200,
-                id: "coterminal_completion_popup",
+                id: "tanasinn_completion_popup",
                 childNodes: {
                   tagName: "scrollbox",
-                  id: "coterminal_completion_scroll",
+                  id: "tanasinn_completion_scroll",
                   orient: "vertical", // box-packing
                   flex: 1,
                   childNodes: {
                     tagName: "grid",
                     style: { overflowX: "hidden", overflowY: "auto", },
-                    id: "coterminal_completion_tree",
+                    id: "tanasinn_completion_tree",
                   }
                 }, // tree
               },  // panel
@@ -198,13 +198,13 @@ Commandline.definition = {
           } // stack
         ] 
       });
-    this._element = coterminal_commandline_box;
-    this._completion = coterminal_commandline_completion;
-    this._textbox = coterminal_commandline;
-    this._popup = coterminal_completion_popup;
-    this._scroll = coterminal_completion_scroll;
-    this._tree = coterminal_completion_tree;
-    this._statusbar = coterminal_statusbar;
+    this._element = tanasinn_commandline_box;
+    this._completion = tanasinn_commandline_completion;
+    this._textbox = tanasinn_commandline;
+    this._popup = tanasinn_completion_popup;
+    this._scroll = tanasinn_completion_scroll;
+    this._tree = tanasinn_completion_tree;
+    this._statusbar = tanasinn_statusbar;
     this.show.enabled = true;
     this.onStatusMessage.enabled = true;
     this.onfocus.enabled = true;
@@ -276,7 +276,7 @@ Commandline.definition = {
     this._textbox.focus();
   },
 
-  "[listen('focus', '#coterminal_commandline', true)]":
+  "[listen('focus', '#tanasinn_commandline', true)]":
   function onfocus(event) 
   {
     let session = this._broker;
@@ -287,7 +287,7 @@ Commandline.definition = {
     this.setCompletionTrigger();
   },
 
-  "[listen('blur', '#coterminal_commandline', true)]":
+  "[listen('blur', '#tanasinn_commandline', true)]":
   function onblur(event) 
   {
     this._popup.hidePopup();
@@ -390,7 +390,7 @@ Commandline.definition = {
     }, this.completion_delay, this);
   },
 
-  "[listen('input', '#coterminal_commandline', true)]":
+  "[listen('input', '#tanasinn_commandline', true)]":
   function oninput(event) 
   {
     this.setCompletionTrigger();
@@ -428,7 +428,7 @@ Commandline.definition = {
     session.notify("command/focus");
   },
 
-  "[listen('keyup', '#coterminal_commandline', true)]":
+  "[listen('keyup', '#tanasinn_commandline', true)]":
   function onkeyup(event) 
   { // nothrow
     if (16 == event.keyCode &&
@@ -449,7 +449,7 @@ Commandline.definition = {
     }
   },
 
-  "[listen('keypress', '#coterminal_commandline', true)]":
+  "[listen('keypress', '#tanasinn_commandline', true)]":
   function onkeypress(event) 
   {
     let code = event.keyCode || event.which;
@@ -521,25 +521,25 @@ Commandline.definition = {
     session.notify("command/eval-commandline", command);
   },
 
-  "[listen('popupshown', '#coterminal_commandline', false)]":
+  "[listen('popupshown', '#tanasinn_commandline', false)]":
   function onpopupshown(event) 
   {
     this._textbox.focus();
     this._textbox.focus();
   },
 
-  "[listen('popupshowing', '#coterminal_commandline', false)]":
+  "[listen('popupshowing', '#tanasinn_commandline', false)]":
   function onpopupshowing(event) 
   {
   },
 
-  "[listen('click', '#coterminal_commandline_box', false)]":
+  "[listen('click', '#tanasinn_commandline_box', false)]":
   function onclick(event) 
   {
     this.onfocus();
   },
 
-  "[listen('change', '#coterminal_commandline', true)]":
+  "[listen('change', '#tanasinn_commandline', true)]":
   function onchange(event) 
   {
   },

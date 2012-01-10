@@ -13,7 +13,7 @@
  * for the specific language governing rights and limitations under the
  * License.
  *
- * The Original Code is coTerminal
+ * The Original Code is tanasinn
  *
  * The Initial Developer of the Original Code is
  * Hayaki Saito.
@@ -48,7 +48,7 @@ SnapResize.definition = {
        let char_width = renderer.char_width;
        let line_height = renderer.line_height;
        let box_element = session.uniget("command/query-selector", "#box_element");
-       let center_area = session.uniget("command/query-selector", "#coterminal_content");
+       let center_area = session.uniget("command/query-selector", "#tanasinn_content");
        let horizontal_margin = box_element.boxObject.width - center_area.boxObject.width;
        let vertical_margin = (box_element.boxObject.height - center_area.boxObject.height) / 2;
        let column = Math.floor((window.innerWidth - horizontal_margin) / char_width - 1);
@@ -80,9 +80,9 @@ CaptureBox.definition = {
   get template()
     let (capture_box_size = 200)
     {
-      parentNode: "#coterminal_chrome",
+      parentNode: "#tanasinn_chrome",
       tagName: "box",
-      id: "coterminal_capture_box",
+      id: "tanasinn_capture_box",
       hidden: true,
       style: {
       position: "fixed",
@@ -100,9 +100,9 @@ CaptureBox.definition = {
   function onLoad(chrome) 
   {
     let session = this._broker;
-    let {coterminal_capture_box} 
+    let {tanasinn_capture_box} 
       = session.uniget("command/construct-chrome", this.template);
-    this._box = coterminal_capture_box;
+    this._box = tanasinn_capture_box;
   },
 
   "[subscribe('command/show-capture-box'), enabled]":
@@ -124,7 +124,7 @@ Resizer.definition = {
     ({
       parentNode: this.parent,
       tagName: "box",
-      id: <>coterminal_{this.type}_resize</>,
+      id: <>tanasinn_{this.type}_resize</>,
       width: 10,
       height: 10,
       style: { cursor: <>{this.type}-resize</> },
@@ -226,7 +226,7 @@ TopLeftResizer.definition = {
     "topleftresizer",
 
   get parent()
-    "#coterminal_resizer_topleft",
+    "#tanasinn_resizer_topleft",
 
   get type()
     "nw",
@@ -239,7 +239,7 @@ TopRightResizer.definition = {
     "toprightresizer",
 
   get parent()
-    "#coterminal_resizer_topright",
+    "#tanasinn_resizer_topright",
 
   get type()
     "ne",
@@ -252,7 +252,7 @@ BottomLeftResizer.definition = {
     "bottomleftresizer",
 
   get parent()
-    "#coterminal_resizer_bottomleft",
+    "#tanasinn_resizer_bottomleft",
 
   get type()
     "sw",
@@ -265,7 +265,7 @@ BottomRightResizer.definition = {
     "bottomrightresizer",
 
   get parent()
-    "#coterminal_resizer_bottomright",
+    "#tanasinn_resizer_bottomright",
 
   get type()
     "se",
@@ -278,7 +278,7 @@ LeftResizer.definition = {
     "leftresizer",
 
   get parent()
-    "#coterminal_resizer_left",
+    "#tanasinn_resizer_left",
 
   get type()
     "w",
@@ -291,7 +291,7 @@ RightResizer.definition = {
     "rightresizer",
 
   get parent()
-    "#coterminal_resizer_right",
+    "#tanasinn_resizer_right",
 
   get type()
     "e",
@@ -304,7 +304,7 @@ TopResizer.definition = {
     "topresizer",
 
   get parent()
-    "#coterminal_resizer_top",
+    "#tanasinn_resizer_top",
 
   get type()
     "n",
@@ -317,7 +317,7 @@ BottomResizer.definition = {
     "bottomresizer",
 
   get parent()
-    "#coterminal_resizer_bottom",
+    "#tanasinn_resizer_bottom",
 
   get type()
     "s",

@@ -13,7 +13,7 @@
  * for the specific language governing rights and limitations under the
  * License.
  *
- * The Original Code is coTerminal
+ * The Original Code is tanasinn
  *
  * The Initial Developer of the Original Code is
  * Hayaki Saito.
@@ -88,10 +88,10 @@ with (scope) {
       Components.ID("{BA5BFE08-CEFB-4C20-BEE6-FCEE9EABBDC1}"),
   
     get description()
-      "coTerminal Process class.",
+      "tanasinn Process class.",
   
     get contractID()
-      "@zuse.jp/coterminal/process;1",
+      "@zuse.jp/tanasinn/process;1",
    
     get default_scope()
       function() { this.__proto__ = scope; },
@@ -102,7 +102,7 @@ with (scope) {
     get wrappedJSObject()
       this,
 
-    initial_settings_path: "$Home/.coterminal.js",
+    initial_settings_path: "$Home/.tanasinn.js",
     width: 120,
     height: 36,
     command: null,
@@ -113,7 +113,7 @@ with (scope) {
     "default_command@Darwin": "login -pf $USER",
     "default_command@WINNT" : "login -pf $USER",
     default_term: "xterm",
-    runtime_path: "$Home/.coterminal",
+    runtime_path: "$Home/.tanasinn",
     search_path: null,
     autoload_path: null,
   

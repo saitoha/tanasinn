@@ -13,7 +13,7 @@
  * for the specific language governing rights and limitations under the
  * License.
  *
- * The Original Code is coTerminal
+ * The Original Code is tanasinn
  *
  * The Initial Developer of the Original Code is
  * Hayaki Saito.
@@ -71,7 +71,7 @@ DragPaste.definition = {
   /** A dragover event handler for center area element. 
    *  @param {Event} event A event object.
    */
-  "[listen('dragover', '#coterminal_content', true)]":
+  "[listen('dragover', '#tanasinn_content', true)]":
   function ondragover(event) 
   {
     let data_transfer = event.dataTransfer;
@@ -86,7 +86,7 @@ DragPaste.definition = {
   /** A dragenter event handler for center area element. 
    *  @param {Event} event A event object.
    */
-  "[listen('dragenter', '#coterminal_content', true)]":
+  "[listen('dragenter', '#tanasinn_content', true)]":
   function ondragenter(event) 
   {
     if (event.dataTransfer.types.contains("text/plain")) {
@@ -100,7 +100,7 @@ DragPaste.definition = {
   /** A drop event handler for center area element. 
    *  @param {Event} event A event object.
    */
-  "[listen('drop', '#coterminal_content', true)]":
+  "[listen('drop', '#tanasinn_content', true)]":
   function ondrop(event) 
   {
     let data_transfer = event.dataTransfer;
