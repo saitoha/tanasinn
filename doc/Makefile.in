@@ -4,13 +4,16 @@ OPEN=@COTERMINAL_OPEN@
 
 all: usermanual-ja.html usermanual.html
 
-usermanual.html: usermanual.txt
+Makefile: Makefile.in
+	cd .. && ./configure
+
+usermanual.html: usermanual.txt Makefile
 	if [ -n "$(ASCIIDOC)" ]; \
 	then \
-		cpp -D__EN__ $< | sed -e 's/^#.*//' | $(ASCIIDOC) - > $@; \
+		cpp -D__EN__ $< | sed -e 's/^#.*//;s/#\/\//\/\//g;s/#\/\*/\/*/g' | $(ASCIIDOC) - > $@; \
 	fi
 
-usermanual-ja.html: usermanual.txt
+usermanual-ja.html: usermanual.txt Makefile
 	if [ -n "$(ASCIIDOC)" ]; \
 	then \
 		cpp $< | sed -e 's/^#.*//' | $(ASCIIDOC) - > $@; \
