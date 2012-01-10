@@ -199,8 +199,8 @@ SettingsBrowser.definition = {
  */
 function main(desktop) 
 {
-  desktop.subscribe(
-    "initialized/session", 
-    function(session) new SettingsBrowser(session));
+//  desktop.subscribe(
+//    "initialized/session", 
+//    function(session) new SettingsBrowser(session));
 }
 

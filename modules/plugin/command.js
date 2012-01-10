@@ -343,6 +343,48 @@ ColorCommands.definition = {
 };
 
 /**
+ * @class PersistCommand
+ */
+let PersistCommand = new Class().extends(Component);
+PersistCommand.definition = {
+
+  get id()
+    "persist",
+
+  "[command('persist'), _('Persist current settings.'), enabled]":
+  function persist(arguments_string)
+  {
+    let session = this._broker;
+    let desktop = session.parent;
+
+    let settings = desktop.uniget("command/get-settings", session);
+    if (settings) {
+      desktop.notify("command/save-settings", settings);
+    }
+
+  },
+};
+
+
+/**
+ * @class LocalizeCommand
+ */
+let LocalizeCommand = new Class().extends(Component);
+LocalizeCommand.definition = {
+
+  get id()
+    "localize",
+
+  "[command('localize', ['localize']), _('Edit localization resource.'), enabled]":
+  function evaluate(arguments_string)
+  {
+    let session = this._broker;
+    let desktop = session.parent;
+    alert(arguments_string)
+  },
+};
+
+/**
  * @fn main
  * @brief Module entry point.
  * @param {Desktop} desktop The Desktop object.
@@ -355,10 +397,12 @@ function main(desktop)
     {
       new CommandProvider(session);
       new JsCommand(session);
-      new GoCommand(session);
+//      new GoCommand(session);
       new SetCommand(session);
       new FontCommands(session);
       new ColorCommands(session);
+      new PersistCommand(session);
+      new LocalizeCommand(session);
     });
 }
 

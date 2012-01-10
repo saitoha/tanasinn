@@ -53,11 +53,11 @@ BottomPanel.definition = {
       id: "tanasinn_bottompanel",
       listener: {
         type: "select",
-        context: this,
         handler: function(event) 
         {
           let panel = event.target.selectedPanel;
           if (panel) {
+            session.notify("command/report-overlay-message", panel.id);
             session.notify("panel-selected/" + panel.id, panel);
           }
         },
@@ -293,8 +293,8 @@ BottomPanel.definition = {
     {
       let template = panel_object.template;
       template.parentNode = new_panel;
-      session.uniget("command/construct-chrome", template);
       new_panel.removeChild(new_panel.firstChild);
+      session.uniget("command/construct-chrome", template);
     }, this);
   },
 

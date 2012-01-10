@@ -74,6 +74,9 @@ Session.definition = {
   get process()
     this._broker,
 
+  get parent()
+    this._broker,
+
   observerService: Components
     .classes["@mozilla.org/observer-service;1"]
     .getService(Components.interfaces.nsIObserverService),

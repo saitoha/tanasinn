@@ -18,7 +18,7 @@ link:./usermanual.html[English]
     provided by operating systems, such as commandline shells, or curses-based 
     applications.
 
-http://zuse.jp/tanasinn/tanasinn-current.xpi[Download from here]
+http:#//zuse.jp/tanasinn/tanasinn-current.xpi[Download from here]
 
 #else
 
@@ -28,7 +28,7 @@ http://zuse.jp/tanasinn/tanasinn-current.xpi[Download from here]
     コマンドラインシェルやcursesベースのアプリケーション等、オペレーティングシステムが提供する
     柔軟でパワフルな機能群にブラウザ上のUIからアクセスすることができます。
 
-http://zuse.jp/tanasinn/tanasinn@zuse.jp.xpi[ここからダウンロード]
+http:#//zuse.jp/tanasinn/tanasinn@zuse.jp.xpi[ここからダウンロード]
 
 #endif
 
@@ -36,7 +36,7 @@ http://zuse.jp/tanasinn/tanasinn@zuse.jp.xpi[ここからダウンロード]
 == Overview hilighting features
     - Full Gecko based user interface, it is flexible and easy to customize.
     - Multi-platform, now supports Mac / Linux (Tested in Ubuntu) / 
-      Windows + http://www.cygwin.com[Cygwin] (requires posix python).
+      Windows + http:#//www.cygwin.com[Cygwin] (requires posix python).
     - Supports plugin architecture. it supports Plug-and-Play installing & uninstalling.
       (documents for developing is comming soon... - -;)
     - Including debugger. You can run it in step-execution-mode or trace-mode 
@@ -62,7 +62,7 @@ http://zuse.jp/tanasinn/tanasinn@zuse.jp.xpi[ここからダウンロード]
 == 特色
     - Geckoベースのユーザーインターフェース。柔軟でカスタマイズが容易です。
     - マルチプラットフォーム。現在サポートされるのは、Mac / Linux(というかUbuntu) / 
-      http://www.cygwin.com[Cygwin] + Cygwin環境 (POSIX版Pythonが必要)
+      http:#//www.cygwin.com[Cygwin] + Cygwin環境 (POSIX版Pythonが必要)
     - プラグインアーキテクチャ。プラグアンドプレイでのインストール・アンインストールが可能。
       (開発ドキュメントはこれから作成します。)
     - デバッガ内臓。ステップ実行やトレースができます。
@@ -92,23 +92,23 @@ http://zuse.jp/tanasinn/tanasinn@zuse.jp.xpi[ここからダウンロード]
 #endif
 
 #if __EN__
-.ssh Debian from MacOSX and run "http://w3m.sourceforge.net/index.en.html[BB]", an ascii art demo program.
+.ssh Debian from MacOSX and run "http:#//w3m.sourceforge.net/index.en.html[BB]", an ascii art demo program.
 #else
-.MacOSXからDebianにsshして"http://w3m.sourceforge.net/index.en.html[BB]"(アスキーアートのデモプログラム)を走らせたところ。
+.MacOSXからDebianにsshして"http:#//w3m.sourceforge.net/index.en.html[BB]"(アスキーアートのデモプログラム)を走らせたところ。
 #endif
 image::images/zebra.png[width=640]
 
 #if __EN__
-.Displaying color chart with http://code.google.com/p/myminios/source/browse/trunk/colortable16.sh?r=10[colortable.sh] and http://code.google.com/p/joeldotfiles/source/browse/trunk/256colors2.pl[256color2.pl].
+.Displaying color chart with http:#//code.google.com/p/myminios/source/browse/trunk/colortable16.sh?r=10[colortable.sh] and http:#//code.google.com/p/joeldotfiles/source/browse/trunk/256colors2.pl[256color2.pl].
 #else
-.http://code.google.com/p/myminios/source/browse/trunk/colortable16.sh?r=10[colortable.sh] and http://code.google.com/p/joeldotfiles/source/browse/trunk/256colors2.pl[256color2.pl]でカラーチャートを表示させたところ。
+.http:#//code.google.com/p/myminios/source/browse/trunk/colortable16.sh?r=10[colortable.sh] and http:#//code.google.com/p/joeldotfiles/source/browse/trunk/256colors2.pl[256color2.pl]でカラーチャートを表示させたところ。
 #endif
 image::images/color.png[width=640]
 
 #if __EN__
-.Typing Japanese with IME (here is http://aquaskk.sourceforge.jp/[AquaSKK]).
+.Typing Japanese with IME (here is http:#//aquaskk.sourceforge.jp/[AquaSKK]).
 #else
-.IMEで日本語を打ってみたところ (http://aquaskk.sourceforge.jp/[AquaSKK]使用)。
+.IMEで日本語を打ってみたところ (http:#//aquaskk.sourceforge.jp/[AquaSKK]使用)。
 #endif
 image::images/ime.png[width=640]
 
@@ -127,9 +127,9 @@ image::images/scroll.png[width=640]
 image::images/overlay.png[width=640]
 
 #if __EN__
-.Commandline interface inspired by http://vimperator.org/vimperator[Vimperator] / https://github.com/mooz/keysnail/wiki/[Keysnail] (here is fgcolor command).
+.Commandline interface inspired by http:#//vimperator.org/vimperator[Vimperator] / https://github.com/mooz/keysnail/wiki/[Keysnail] (here is fgcolor command).
 #else
-.http://vimperator.org/vimperator[Vimperator] や https://github.com/mooz/keysnail/wiki/[Keysnail]にインスパイアされたコマンドラインインターフェース。
+.http:#//vimperator.org/vimperator[Vimperator] や https://github.com/mooz/keysnail/wiki/[Keysnail]にインスパイアされたコマンドラインインターフェース。
 #endif
 image::images/completion.png[width=640]
 
@@ -148,9 +148,9 @@ image::images/fontfamily.png[width=640]
 image::images/fontsize.png[width=640]
 
 #if __EN__
-.running "http://www.tkl.iis.u-tokyo.ac.jp/~toyoda/index_e.html[sl]" (a joke software) on cygwin/Windows7.
+.running "http:#//www.tkl.iis.u-tokyo.ac.jp/~toyoda/index_e.html[sl]" (a joke software) on cygwin/Windows7.
 #else
-.Cygwin1.7/Windows7環境で"http://www.tkl.iis.u-tokyo.ac.jp/~toyoda/index_e.html[sl]" (ジョークウェア)を走らせたところ。
+.Cygwin1.7/Windows7環境で"http:#//www.tkl.iis.u-tokyo.ac.jp/~toyoda/index_e.html[sl]" (ジョークウェア)を走らせたところ。
 #endif
 image::images/sl.png[width=640]
 
@@ -162,25 +162,18 @@ image::images/sl.png[width=640]
 image::images/debug.png[width=640]
 
 #if __EN__
-.Browser-in-browser. running http://w3m.sourceforge.net/index.en.html[w3m] (applied private patch) with inline images. How crazy!!!
+.Browser-in-browser. running http:#//w3m.sourceforge.net/index.en.html[w3m] (applied private patch) with inline images. How crazy!!!
 #else
-.ブラウザの中でブラウザ。プライベートパッチを当てたhttp://w3m.sourceforge.net/index.en.html[w3m]でインラインイメージを表示させました。意味不明ですね。
+.ブラウザの中でブラウザ。プライベートパッチを当てたhttp:#//w3m.sourceforge.net/index.en.html[w3m]でインラインイメージを表示させました。意味不明ですね。
 #endif
 image::images/w3m.png[width=640]
 
 #if __EN__
-.Mailer-in-browser. running http://www.gohome.org/wl/index.html[Wonderlust] on emacs.
+.Mailer-in-browser. running http:#//www.gohome.org/wl/index.html[Wonderlust] on emacs.
 #else
-.ブラウザの中でメーラー。http://www.gohome.org/wl/index.html[Wonderlust]をemacs上で動かしています。
+.ブラウザの中でメーラー。http:#//www.gohome.org/wl/index.html[Wonderlust]をemacs上で動かしています。
 #endif
 image::images/wl.png[width=640]
-
-#if __EN__
-.2ch Browser-in-browser. http://navi2ch.sourceforge.net/index.en.html[navi2ch]. wwwwwwwwwwwwwwwwwwwwwwww.
-#else
-.ブラウザの中で2chブラウザ。http://navi2ch.sourceforge.net/index.en.html[navi2ch]. 
-#endif
-image::images/2ch.png[width=640]
 
 #if __EN__
 .Developping tanasinn with tanasinn at out of jail. here is running as a standalone XUL application.
@@ -194,7 +187,7 @@ image::images/xulapp.png[width=640]
 
 == Features in future...
 
-    * Improving emuration. now emuration engine runs with xterm compatible mode. 
+    * Improving emuration. now emuration engine is running with xterm compatible mode. 
       but it ought to read terminfo entries.
     * Supporting color scheme. import/export color palette contains 16 or 256 colors.
     * Supporting skins. you can make it otakunized.
@@ -413,6 +406,9 @@ cygstart firefox.exe --app application.ini
 === Using commandline interface
     
     The specification of commands is not frozen. Comming soon...
+    Now the implementation of this part is witten by rush job, commandline parser 
+    is not proper one.
+
 #else
 === コマンドラインインターフェースを使う
     

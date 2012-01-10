@@ -753,6 +753,119 @@ ColorNumberCompleter.definition = {
 
 
 /**
+ * @class LocalizeCompleter
+ *
+ */
+let LocalizeCompleter = new Class().extends(CompleterBase);
+LocalizeCompleter.definition = {
+
+  get id()
+    "localize-completer",
+
+  get type()
+    "localize",
+
+  /*
+   * Search for a given string and notify a listener (either synchronously
+   * or asynchronously) of the result
+   *
+   * @param source - The string to search for
+   * @param listener - A listener to notify when the search is complete
+   */
+  startSearch: function startSearch(source, listener, option)
+  {
+    try {
+    let session = this._broker;
+    let pattern = /^\s*([a-zA-Z]{0,2})(\s*)("?)((?:[^"])*)("?)(\s*)(.*)/;
+    let match = source.match(pattern);
+    let [all, language, space, quote_start, message_id, quote_end, space2, next] = match;
+    if (!space) {
+      let languages = ["EN", "JP", "CN", "FR"]
+        .filter(function(iso639_language) -1 != iso639_language.indexOf(language.toUpperCase()));
+      if (0 == languages.length) {
+        listener.doCompletion(autocomplete_result);
+        return -1;
+      }
+      let autocomplete_result = {
+        type: "text",
+        query: source, 
+        labels: languages, 
+        comments: languages.map(function(language) language),
+        data: languages.map(function(language) ({
+          name: language, 
+          value: language,
+        })),
+      };
+      listener.doCompletion(autocomplete_result);
+      return 0;
+    }
+    let lower_message_id = message_id.toLowerCase();
+
+    if (!this._keys) {
+      this._keys = [id for (id in coUtils.Localize.generateLocalizableMessages())];
+    }
+
+    let location = String(<>modules/locale/{language}.js</>);
+    let file = coUtils.File.getFileLeafFromAbstractPath(location);
+    let dict = null;
+    if (file.exists()) {
+      let content = coUtils.IO.readFromFile(location);
+      let db = eval(content);
+      dict = db.dict;
+    } else {
+      dict = {};
+    }
+    let data = [
+      {
+        name: key,
+        value: dict[key] || " - ",
+      } for ([, key] in Iterator(this._keys))
+    ].filter(function(pair) 
+    {
+      if (-1 != pair.name.toLowerCase().indexOf(lower_message_id)) {
+        return true;
+      }
+      return false;
+    });
+    if (0 == data.length) {
+      listener.doCompletion(null);
+      return -1;
+    }
+    if (!next) {
+      let autocomplete_result = {
+        type: "text",
+        option: "quoted",
+        query: message_id, 
+        labels: data.map(function(pair) "\"" + pair.name.replace(/[\\"]/, function(ch) "\\" + ch) + "\""),
+        comments: data.map(function(pair) pair.value),
+        data: data,
+      };
+      listener.doCompletion(autocomplete_result);
+      return 0;
+    }
+    let autocomplete_result = {
+      type: "text",
+      option: "quoted",
+      query: next, 
+      labels: data.map(function(pair) "\"" + pair.value.replace(/[\\"]/, function(ch) "\\" + ch) + "\""),
+      comments: data.map(function(pair) pair.value == message_id ? "<current>": ""),
+      data: data,
+    };
+    listener.doCompletion(autocomplete_result);
+    return 0;
+    } catch(e) {alert(e)}
+    return 0;
+  },
+
+  /*
+   * Stop all searches that are in progress
+   */
+  stopSearch: function stopSearch() 
+  {
+  },
+};
+
+/**
  * @abstruct ComletionDisplayDriverBase
  */
 let CompletionDisplayDriverBase = new Abstruct().extends(Component);
@@ -865,7 +978,6 @@ ColorNumberCompletionDisplayDriver.definition = {
   },
 
 };
-
 
 /**
  * @class ColorCompletionDisplayDriver
@@ -1123,6 +1235,9 @@ TextCompletionDisplayDriver.definition = {
     for (let i = 0; i < result.labels.length; ++i) {
       let search_string = result.query.toLowerCase();
       let completion_text = result.labels[i];
+      if ("quoted" == result.option) {
+        completion_text = completion_text.slice(1, -1);
+      }
       if (completion_text.length > 32 && i != current_index) {
         completion_text = completion_text.substr(0, 32) + "...";
       }
@@ -1196,6 +1311,7 @@ function main(desktop)
       new FontsizeCompleter(session);
       new FontCompleter(session);
       new ColorNumberCompleter(session);
+      new LocalizeCompleter(session);
 
       new ColorCompletionDisplayDriver(session);
       new ColorNumberCompletionDisplayDriver(session);

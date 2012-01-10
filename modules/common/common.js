@@ -1068,7 +1068,7 @@ coUtils.Localize = new function()
         .classes["@mozilla.org/intl/nslocaleservice;1"]
         .getService(Components.interfaces.nsILocaleService); 
       this._dictionaries_store = {};
-      this.locale = locale_service.getLocaleComponentForUserAgent();
+      this.locale = locale_service.getLocaleComponentForUserAgent().split("-").pop();
     },
 
     /** @property locale */
@@ -1087,7 +1087,7 @@ coUtils.Localize = new function()
     getMessageFileName: function getMessageFileName() 
     {
       let locale = this._locale;
-      let file_name = String(<>modules/locale/{locale.replace("-", "_")}.js</>);
+      let file_name = String(<>modules/locale/{locale}.js</>);
       return file_name;
     },
 
@@ -1095,8 +1095,9 @@ coUtils.Localize = new function()
     load: function load() 
     {
       let file_name = this.getMessageFileName();
-      let contents = eval(coUtils.IO.readFromFile(file_name, "utf-8"));
-      this._dictionaries_store[contents.lang] = contents.dict;
+      let content = coUtils.IO.readFromFile(file_name, "utf-8");
+      let db = eval(content);
+      this._dictionaries_store[db.lang] = db.dict;
     },
     
     /** Translate message text. */
@@ -1112,6 +1113,48 @@ coUtils.Localize = new function()
     setLocale: function setLocale(locale)  
     {
       this._locale = locale;
+    },
+
+    /** The generator method that iterates source code text.
+     *  @return {Generator} Generator that yields source code text.
+     */
+    generateSources: function generateSources(search_path) 
+    {
+      let entries = coUtils.File
+        .getFileEntriesFromSerchPath(search_path);
+      for (let entry in entries) {
+        // make URI string such as "file://....".
+        let url = coUtils.File.getURLSpec(entry); 
+        try {
+          let content = coUtils.IO.readFromFile(url);
+          yield content;
+        } catch (e) {
+          coUtils.Debug.reportError(e);
+          coUtils.Debug.reportError(
+            _("An Error occured loading common module '%s'."), url);
+        }
+      }
+    },
+
+    /** The generator method that extracts message-id string from source code 
+     *  files.
+     *  @return {Generator} Generator that yields message-id string.
+     */
+    generateLocalizableMessages: function generateLocalizableMessages() 
+    {
+      let pattern = /_\(("(.+?)("[\n\r\s]*,[\n\r\s]*".+?)*"|'(.+?)')\)/g;
+      let sources = this.generateSources([ "modules/" ]);
+      for (let source in sources) {
+        let match = source.match(pattern)
+        if (match) {
+          match = match.map(function(text) {
+            return eval("[" + text.slice(2, -1)/*.replace("\\", "\\\\")*/ + "]").join("");
+          })
+          for (let [, message] in Iterator(match)) {
+            yield message;
+          }
+        }
+      }
     },
   };
   prototype.initialize();
