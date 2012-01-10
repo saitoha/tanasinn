@@ -23,7 +23,7 @@ http://zuse.jp/coterminal/coterminal-current.xpi[Download from here]
     コマンドラインシェルやcursesベースのアプリケーション等、オペレーティングシステムが提供する
     柔軟でパワフルな機能群にブラウザ上のUIからアクセスすることができます。
 
-http://zuse.jp/coterminal/coterminal-current.xpi[ここからダウンロード]
+http://zuse.jp/coterminal/coterminal@zuse.jp.xpi[ここからダウンロード]
 
 #endif
 
