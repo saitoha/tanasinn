@@ -10,11 +10,19 @@ Makefile: Makefile.in
 usermanual.html: usermanual.txt Makefile
 	if [ -n "$(ASCIIDOC)" ]; \
 	then \
-		cpp -D__EN__ $< | sed -e 's/^#.*//;s/#\/\//\/\//g;s/#\/\*/\/*/g' | $(ASCIIDOC) - > $@; \
+		cat $<
+		| sed -e 's/#\/\//\/\//g;s/#\/\*/\/*/g' \
+		| cpp -D__EN__ - \
+		| sed -e 's/^#.*//' \
+		| $(ASCIIDOC) - > $@; \
 	fi
 
 usermanual-ja.html: usermanual.txt Makefile
 	if [ -n "$(ASCIIDOC)" ]; \
 	then \
-		cpp $< | sed -e 's/^#.*//' | $(ASCIIDOC) - > $@; \
+		cat $<
+		| sed -e 's/#\/\//\/\//g;s/#\/\*/\/*/g' \
+		| cpp -D__JP__ - \
+		| sed -e 's/^#.*//' \
+		| $(ASCIIDOC) - > $@; \
 	fi
