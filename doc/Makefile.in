@@ -13,7 +13,7 @@ usermanual.html: usermanual.txt Makefile
 		cat $< \
 		| sed -e 's/#\/\//#\/#\//g;s/#\/\*/#\/#*/g' \
 		| cpp -D__EN__ - \
-		| sed -e 's/#\/#\//#\/\//g;s/#\/#\*/#\/*/g' \
+		| sed -e 's/#\/#\//\/\//g;s/#\/\*/#\/*/g' \
 		| sed -e 's/^#.*//' \
 		| $(ASCIIDOC) - > $@; \
 	fi
@@ -24,7 +24,7 @@ usermanual-ja.html: usermanual.txt Makefile
 		cat $< \
 		| sed -e 's/#\/\//#\/#\//g;s/#\/\*/#\/#*/g' \
 		| cpp -D__JP__ - \
-		| sed -e 's/#\/#\//#\/\//g;s/#\/#\*/#\/*/g' \
+		| sed -e 's/#\/#\//\/\//g;s/#\/#\*/\/*/g' \
 		| sed -e 's/^#.*//' \
 		| $(ASCIIDOC) - > $@; \
 	fi
