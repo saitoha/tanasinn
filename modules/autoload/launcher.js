@@ -34,13 +34,12 @@ Launcher.definition = {
   top: 20,
   left: 20,
 
-  initializeWithWindow: 
-  function initializeWithWindow(window)
+  initialize: function initialize(desktop)
   {
+    let window = desktop.window;
     let broker = this._broker;
     let document = window.document;
-
-    let desktop = window
+    let parent = window
       .document.documentElement
       .appendChild(document.createElement("box"));
 
@@ -64,7 +63,7 @@ Launcher.definition = {
       margin-left: 10%;
     </>;
 
-    this._desktop = desktop;
+    this._desktop = parent;
     this._element = outer;
     this._textbox = textbox;
 
@@ -126,11 +125,11 @@ Launcher.definition = {
 
   launch: function launch() 
   {
-    let process = this._broker; 
+    let desktop = this._broker; 
     let document = this._element.ownerDocument;
     this.hide();
     coUtils.Timer.setTimeout(function() {
-      let terminal =  process.start(
+      let terminal =  desktop.start(
         this._desktop,
         this._textbox.value.replace(/^\s+|\s+$/, ""),  // command
         null,  // TERM environment
@@ -212,11 +211,10 @@ Launcher.definition = {
 function main(process) 
 {
   process.subscribe(
-    "event/new-window-detected",
-    function onNewWindow(window) 
+    "initialized/desktop",
+    function(desktop) 
     {
-      new Launcher(process)
-        .initializeWithWindow(window);
+      new Launcher(desktop);
     });
 }
 

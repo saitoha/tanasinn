@@ -38,6 +38,14 @@ AppMenu.definition = {
   "[persistable] shortcut_key": ",",
   "[persistable] shortcut_modifiers": "control",
 
+  initialize: function initialize(desktop)
+  {
+    let window = desktop.window;
+    this._createCommand(window);
+    this._createMenu(window);
+    this._createShortcut(window);
+  },
+
   _createCommand: function _createCommand(window)
   {
     with (window) {
@@ -90,17 +98,12 @@ AppMenu.definition = {
     } // with(window)
   },
 
-  "[subscribe('event/new-window-detected'), enabled]":
-  function onNewWindow(window)
-  {
-    this._createCommand(window);
-    this._createMenu(window);
-    this._createShortcut(window);
-  },
 }; 
 
 function main(process)
 {
-//  new AppMenu(process);
+  process.subscribe(
+    "initialized/desktop", 
+    function(desktop) new AppMenu(desktop));
 }
 

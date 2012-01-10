@@ -263,7 +263,7 @@ EventBrokerBase.definition = {
       throw coUtils.Debug.Exception(
         _("Subscriber not Found: '%s'."), topic);
     } else if (1 != events.length) {
-      throw oUtils.Debug.Exception(
+      throw coUtils.Debug.Exception(
         _("Too many subscribers are found (length: %d): '%s'."), 
         events.length, topic);
     }
@@ -323,9 +323,9 @@ EventBroker.definition = {
   {
     let delegate = function() listener.apply(context, arguments);
     this._processer.subscribe(expression, delegate, id);
-    if (this._parent) {
-      this._parent.subscribe(expression, delegate, id);
-    }
+    //if (this._parent) {
+    //  this._parent.subscribe(expression, delegate, id);
+    //}
   },
 
   /** Unsubscribe local event 
@@ -334,9 +334,9 @@ EventBroker.definition = {
    */
   unsubscribe: function(id)
   {
-    if (this._parent) {
-      this._parent.unsubscribe(id);
-    }
+    //if (this._parent) {
+    //  this._parent.unsubscribe(id);
+    //}
     return this._base.removeEventListener(id);
   },
 

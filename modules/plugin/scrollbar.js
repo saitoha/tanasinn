@@ -61,7 +61,7 @@ Scrollbar.definition = {
         style: { 
           opacity: 0.00,
           MozTransitionProperty: "opacity",
-          MozTransitionDuration: <>this.transition_duration}ms</>,
+          MozTransitionDuration: <>{this.transition_duration}ms</>,
           borderRadius: <>{this.inner_width + this.border_width * 2}px</>,
           backgroundColor: this.background_color,
           border: <>{this.border_width}px solid {this.color}</>,
@@ -283,11 +283,11 @@ Scrollbar.definition = {
 /**
  * @fn main
  * @brief Module entry point.
- * @param {Process} process The Process object.
+ * @param {Desktop} desktop The Desktop object.
  */
-function main(process) 
+function main(desktop) 
 {
-  process.subscribe(
+  desktop.subscribe(
     "initialized/session", 
     function(session) new Scrollbar(session));
 }

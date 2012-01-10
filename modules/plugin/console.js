@@ -568,12 +568,12 @@ Console.definition = {
 /**
  * @fn main
  * @brief Module entry point.
- * @param {Process} process The Process object.
+ * @param {Desktop} desktop The Desktop object.
  */
-function main(process) 
+function main(desktop) 
 {
   if (false) // now it is disabled dealing with performance issue.
-  process.subscribe(
+  desktop.subscribe(
     "initialized/session", 
     function(session)
     {

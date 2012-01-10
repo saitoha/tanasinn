@@ -127,10 +127,10 @@ DragMove.definition = {
 /**
  * @fn main
  * @brief Module entry point.
- * @param {Process} process The Process object.
+ * @param {Desktop} desktop The Desktop object.
  */
-function main(process) {
-  process.subscribe(
+function main(desktop) {
+  desktop.subscribe(
     "initialized/session", 
     function(session) new DragMove(session));
 }

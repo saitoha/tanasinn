@@ -1,15 +1,18 @@
+
 #if __EN__
-= coTerminal Project
+= coTerminal Project 
 
 link:./usermanual-ja.html[日本語]
 #else
-= coTerminal Project
+= coTerminal Project 
 
 link:./usermanual.html[English]
 #endif
 
 #if __EN__
-== Introduction:
+
+== Introduction
+
     "coTerminal" is a terminal emurator that runs on Firefox.
     It enables you to access flexible, powerful functionality 
     provided by operating systems, such as commandline shells, or curses-based 
@@ -18,7 +21,9 @@ link:./usermanual.html[English]
 http://zuse.jp/coterminal/coterminal-current.xpi[Download from here]
 
 #else
-== イントロダクション:
+
+== イントロダクション
+
     "coTerminal"は Firefox上で動作する端末エミュレータです。
     コマンドラインシェルやcursesベースのアプリケーション等、オペレーティングシステムが提供する
     柔軟でパワフルな機能群にブラウザ上のUIからアクセスすることができます。
@@ -30,7 +35,8 @@ http://zuse.jp/coterminal/coterminal@zuse.jp.xpi[ここからダウンロード]
 #if __EN__
 == Overview hilighting features
     - Full Gecko based user interface, it is flexible and easy to customize.
-    - Multi-platform, now supports Mac / Linux (Tested in Ubuntu) / Windows + http://www.cygwin.com[Cygwin] (requires posix python).
+    - Multi-platform, now supports Mac / Linux (Tested in Ubuntu) / 
+      Windows + http://www.cygwin.com[Cygwin] (requires posix python).
     - Supports plugin architecture. it supports Plug-and-Play installing & uninstalling.
       (documents for developing is comming soon... - -;)
     - Including debugger. You can run it in step-execution-mode or trace-mode 
@@ -55,11 +61,12 @@ http://zuse.jp/coterminal/coterminal@zuse.jp.xpi[ここからダウンロード]
 #else
 == 特色
     - Geckoベースのユーザーインターフェース。柔軟でカスタマイズが容易です。
-    - マルチプラットフォーム。現在サポートされるのは、Mac / Linux(というかUbuntu) / Windows + Cygwin環境 (POSIX版Pythonが必要)
-    - プラグインアーキテクチャ。プラグアンドプレイでのインストール・アンインストールを可能にします。
+    - マルチプラットフォーム。現在サポートされるのは、Mac / Linux(というかUbuntu) / 
+      http://www.cygwin.com[Cygwin] + Cygwin環境 (POSIX版Pythonが必要)
+    - プラグインアーキテクチャ。プラグアンドプレイでのインストール・アンインストールが可能。
       (開発ドキュメントはこれから作成します。)
     - デバッガ内臓。ステップ実行やトレースができます。
-      ターミナルとアプリケーションがやり取りするI/Oシーケンスをリアルタイムで観察できます(これは面白いです)。
+      ターミナルとアプリケーションがやり取りするI/Oシーケンスをリアルタイムで観察できます。
     - IMEが使えます。
     - East Asian Width(ひらがななどの文字幅を考慮したレンダリング)に一応対応しています。 
       bidiには対応できていないと思います。
@@ -182,6 +189,34 @@ image::images/2ch.png[width=640]
 #endif
 image::images/xulapp.png[width=640]
 
+
+#if __EN__
+
+== Features in future...
+
+    * Improving emuration. now emuration engine runs with xterm compatible mode. 
+      but it ought to read terminfo entries.
+    * Supporting color scheme. import/export color palette contains 16 or 256 colors.
+    * Supporting skins. you can make it otakunized.
+    * Making it to be more collaborative with curses-based applications.
+      Accessing to Gecko and do something like opening popup windows, playing movies, 
+      OAuth authorication, ...etc., from terminal applications. 
+      We're dreaming of enjoying youtube or twitter with no plugins, from terminal, don't you?
+
+#else
+== 将来的にサポートされる仕様
+    
+    * エミュレーションの強化。今はとりあえずxterm系コンパチブルなエミュレーションで作ってますが、
+      本来はterminfoエントリを見るべきでしょう。
+    * カラースキーマのサポート。16色or256色のパレットをインポート/エクスポートできるように。
+    * スキンのサポート。痛端末化が可能に。
+    * cursesベースのアプリーションとの連携強化。
+      端末アプリケーションからGeckoにアクセスしてポップアップとか動動画表示とかOAuthとかやるための仕様の策定。
+      特別なプラグインを書かずとも端末からyoutube見たりtwitterやったりできるようになります。
+
+#endif
+
+
 #if __EN__
 == Requirements
     - Firefox 4.0+.
@@ -233,14 +268,14 @@ make
 
 .Mac, Linux
 ----
-  > ln -s $PWD $RUNTIME/coterminal
-  > ln $PWD/modules/corun.js $RUNTIME/plugin/ 
+ln -s $PWD $RUNTIME/coterminal
+ln $PWD/modules/corun.js $RUNTIME/plugin/ 
 ----
         
 .Cygwin
 ----
-  > cmd /c mklink /D $(cygpath -w $RUNTIME/coterminal) $(cygpath -w $PWD);
-  >	ln $PWD/modules/corun.js $RUNTIME/plugin/
+cmd /c mklink /D $(cygpath -w $RUNTIME/coterminal) $(cygpath -w $PWD);
+ln $PWD/modules/corun.js $RUNTIME/plugin/
 ----
 
     $RUNTIME is Vimperator runtime directory such as 
@@ -252,14 +287,14 @@ make
 
 .Mac, Linux
 ----
-  > ln -s $PWD $RUNTIME/coterminal
-  > ln $PWD/modules/corun.js $RUNTIME/plugin/ 
+ln -s $PWD $RUNTIME/coterminal
+ln $PWD/modules/corun.js $RUNTIME/plugin/ 
 ----
         
 .Cygwin
 ----
-  > cmd /c mklink /D $(cygpath -w $RUNTIME/coterminal) $(cygpath -w $PWD);
-  >	ln $PWD/modules/corun.js $RUNTIME/plugin/
+cmd /c mklink /D $(cygpath -w $RUNTIME/coterminal) $(cygpath -w $PWD)
+ln $PWD/modules/corun.js $RUNTIME/plugin/
 ----
 
     $RUNTIMEは'$HOME/.vimperator'のようなVimperatorのランタイムディレクトリです。
@@ -302,13 +337,13 @@ cygstart firefox.exe --app application.ini
 ==== If it Installed as Vimperator plugin: 
 
 ----
-    :coterminal
+:coterminal
 ----
 
     or
 
 ----
-    :coterminal <command>
+:coterminal <command>
 ----
 
 #else
@@ -321,13 +356,13 @@ cygstart firefox.exe --app application.ini
 ==== Vimperatorのプラグインとしてインストールした場合: 
 
 ----
-    :coterminal
+:coterminal
 ----
 
     or
 
 ----
-    :coterminal <command>
+:coterminal <command>
 ----
 
 #endif
@@ -385,19 +420,12 @@ cygstart firefox.exe --app application.ini
     この部分は作りはじめてまだ1週間ちょっとなので、これから色々考えます。
 #endif
 
-#if __EN__
-== Bug reports
-    ... Did not work?
-    Please notfy me! > saitoha <user@zuse.jp>, initial develpper of coTerminal.
-#else
-== バグレポート
-    saitoha <user@zuse.jp>までどうぞ。
-#endif
 
 #if __EN__
+== Bug reports and patches
+    Patches and bug reports are are encouraged. > saitoha <user@zuse.jp>.
 #else
-== パッチ
-    パッチ超歓迎。プラグインの書き方は近日中にドキュメントにまとめます。
-    端末からcursesベースでyoutube見たりtwitterやったりできるものなどいかがでしょうか。
-    私は年末にそういうの作ろうと思ってOAuthとか調べてちょっとハゲそうになりました。
+== バグレポート・パッチ
+    バグレポート・パッチ超歓迎。saitoha <user@zuse.jp>までどうぞ。
 #endif
+

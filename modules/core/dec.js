@@ -476,11 +476,11 @@ DecPrivateMode.definition = {
 /**
  * @fn main
  * @brief Module entry point.
- * @param {Process} process The Process object.
+ * @param {Desktop} desktop The Desktop object.
  */
-function main(process) 
+function main(desktop) 
 {
-  process.subscribe(
+  desktop.subscribe(
     "initialized/session", 
     function(session) new DecPrivateMode(session));
 }

@@ -119,7 +119,7 @@ Session.definition = {
   },
 
   /** Create terminal UI and start tty session. */ 
-  "[subscribe('event/session-requested'), enabled]":
+  "[subscribe('@event/session-requested'), enabled]":
   function onRequested(request) 
   {
     this._request_id = coUtils.Uuid.generate().toString();
@@ -169,11 +169,11 @@ Session.definition = {
 /**
  * @fn main
  * @brief Module entry point.
- * @param {Process} process The Process object.
+ * @param {Desktop} desktop The Desktop object.
  */
-function main(process) 
+function main(desktop) 
 {
-  new Session(process);
+  new Session(desktop);
 }
 
 

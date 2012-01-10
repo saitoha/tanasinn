@@ -34,7 +34,6 @@
   }
   core=core {
    persist.js
-   desktop.js
    session.js
 
    ui.js

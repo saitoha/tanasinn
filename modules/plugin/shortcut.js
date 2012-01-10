@@ -124,7 +124,7 @@ Shortcut.definition = {
                 }
                 let [ settings ] = session.process.notify("command/get-settings", session) || [];
                 if (settings) {
-                  session.process.notify("command/save-settings", settings);
+                  session.process.notify(">command/save-settings", settings);
                   this.treebox.invalidate();
                 } else {
                   throw coUtils.Debug.Exception(
@@ -154,11 +154,11 @@ Shortcut.definition = {
 /**
  * @fn main
  * @brief Module entry point.
- * @param {Process} process The Process object.
+ * @param {Desktop} desktop The Desktop object.
  */
-function main(process) 
+function main(desktop) 
 {
-  process.subscribe(
+  desktop.subscribe(
     "initialized/session", 
     function(session) new Shortcut(session));
 }

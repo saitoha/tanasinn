@@ -22,7 +22,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// register vimperator commands.
+void function() {
+
 let liberator = window.liberator;
 let commands = liberator.modules.commands;
 let completion = liberator.modules.completion;
@@ -52,9 +53,10 @@ function getCoterminalProcess()
     process_class = Components
       .classes["@zuse.jp/coterminal/process;1"]
   }
-  return process_class
+  let process = process_class
     .getService(Components.interfaces.nsISupports)
     .wrappedJSObject;
+  return process;
 }
 
 commands.add(['cot[erminal]'], 
@@ -64,7 +66,8 @@ commands.add(['cot[erminal]'],
     let process = getCoterminalProcess();
     window.setTimeout(function() {
       let container = document.getElementById("coterminal-container");
-      process.start(
+      let desktop = process.getDesktopFromWindow(window);
+      desktop.start(
         document.documentElement,
         args.string,  // command
         null, // TERM
@@ -85,6 +88,9 @@ mappings.addUserMap([modes.NORMAL], ["!"],
    function () { commandline.open('', 'coterminal ', modes.EX); }
 );
 
+} ();
+
+/*
 mappings.addUserMap([modes.NORMAL], [">"],
   'Run commands in coTerminal',
    function () {
@@ -99,7 +105,7 @@ mappings.addUserMap([modes.NORMAL], [">"],
      }, 0);
    }
 );
-
+/*
 mappings.add(modes.getCharModes("i"),
   ["<C-S-i>"], "Edit text field with on external editor",
   function() 
@@ -132,4 +138,4 @@ mappings.add(modes.getCharModes("i"),
       });
     }
   });
-
+*/

@@ -1123,6 +1123,9 @@ TextCompletionDisplayDriver.definition = {
     for (let i = 0; i < result.labels.length; ++i) {
       let search_string = result.query.toLowerCase();
       let completion_text = result.labels[i];
+      if (completion_text.length > 32 && i != current_index) {
+        completion_text = completion_text.substr(0, 32) + "...";
+      }
       let match_position = completion_text
         .toLowerCase()
         .indexOf(search_string);
@@ -1139,6 +1142,7 @@ TextCompletionDisplayDriver.definition = {
             {
               tagName: "box",
               style: <>
+                font-size: 1.2em;
                 width: 50%;
                 margin: 0px;
                 overflow: hidden;
@@ -1163,6 +1167,7 @@ TextCompletionDisplayDriver.definition = {
             },
             {
               tagName: "label",
+              style: "font-size: 1em; color: #777;",
               value: result.comments && result.comments[i],
               crop: "end",
             },
@@ -1175,11 +1180,11 @@ TextCompletionDisplayDriver.definition = {
 /**
  * @fn main
  * @brief Module entry point.
- * @param {Process} process The Process object.
+ * @param {Desktop} desktop The Desktop object.
  */
-function main(process)
+function main(desktop)
 {
-  process.subscribe(
+  desktop.subscribe(
     "initialized/session", 
     function(session) 
     {

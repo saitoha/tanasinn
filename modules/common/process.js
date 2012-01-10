@@ -53,7 +53,7 @@ with (scope) {
     /** Load *.js files from specified directories. 
      *  @param {String} search path 
      */
-    load: function load(search_path) 
+    load: function load(desktop, search_path) 
     {
       let entries = coUtils.File.getFileEntriesFromSerchPath(search_path);
       for (let entry in entries) {
@@ -63,7 +63,7 @@ with (scope) {
           let url = coUtils.File.getURLSpec(entry); 
           coUtils.Runtime.loadScript(url, scope);
           if (scope.main) {
-            scope.main(this);
+            scope.main(desktop);
           } else {
             throw coUtils.Debug.Exception(
               _("Component scope symbol 'main' ",
@@ -140,12 +140,17 @@ with (scope) {
           coUtils.Debug.reportError(e);
         }
       }
-      this.load(this.autoload_path);
+      this.load(this, this.autoload_path);
+    },
+
+    getDesktopFromWindow: function getDesktopFromWindow(window)
+    {
+      return this.uniget("get/desktop-from-window", window);
     },
   
     /** Creates a session object and starts it. 
      */
-    start: function start(parent, command, term, size, search_path, callback) 
+    start: function start(parent, command, term, size, search_path, callback, desktop) 
     {
       let document = parent.ownerDocument;
       let box = document.createElement("box");
@@ -162,34 +167,12 @@ with (scope) {
       this.term = term || this.default_term;
       [this.width, this.height] 
         = size || [this.width, this.height];
-      this.clear();
+      desktop.clear();
       // search path list
       let path = search_path || this.default_search_path;
   
-      this.load(path);
+      this.load(desktop, path);
   
-      // create session object;
-      let request = { 
-        parent: box, 
-        command: this.command, 
-        term: this.term, 
-        width: this.width,
-        height: this.height,
-      };
-      this.notify("event/process-started", this);
-      let session = this.uniget("event/session-requested", request);
-      if (callback) {
-        let id = session.subscribe(
-          "event/session-stopping", 
-          function onSessionStoping() {
-            session.unsubscribe(id);
-            if (callback) {
-              let shadow_copy = callback;
-              callback = null;
-              shadow_copy();
-            }
-          });
-      }
       return box;
     },
 

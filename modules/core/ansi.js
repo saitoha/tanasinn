@@ -123,11 +123,11 @@ AnsiSpecifiedMode.definition = {
 /**
  * @fn main
  * @brief Module entry point.
- * @param {Process} process The Process object.
+ * @param {Desktop} desktop The desktop object.
  */
-function main(process) 
+function main(desktop) 
 {
-  process.subscribe(
+  desktop.subscribe(
     "initialized/session", 
     function(session) new AnsiSpecifiedMode(session));
 }
