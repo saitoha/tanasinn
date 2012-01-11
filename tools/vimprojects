@@ -125,7 +125,7 @@
    }
   }
   locale=locale {
-   ja_JP.js
+   ja-JP.js
   }
   config {
    key.conf

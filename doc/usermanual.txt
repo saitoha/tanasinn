@@ -14,7 +14,7 @@ link:./usermanual.html[English]
 
 == Introduction
 
-    "tanasinn terminal emurator" is a terminal emurator that runs on Firefox.
+    Here is a terminal emurator that runs on Firefox.
     It enables you to access flexible, powerful functionality 
     provided by operating systems, such as commandline shells, or curses-based 
     applications.
@@ -34,24 +34,21 @@ http:#//zuse.jp/tanasinn/tanasinn@zuse.jp.xpi[ここからダウンロード]
 #endif
 
 #if __EN__
-== Overview hilighting features
+== Hilighting features
     - Full Gecko based user interface, it is flexible and easy to customize.
     - Multi-platform, now supports Mac / Linux (Tested in Ubuntu) / 
       Windows + http:#//www.cygwin.com[Cygwin] (requires posix python).
     - Supports plugin architecture. it supports Plug-and-Play installing & uninstalling.
-      (documents for developing is comming soon... - -;)
     - Including debugger. You can run it in step-execution-mode or trace-mode 
       and observe terminal I/O sequence in real-time.
     - IME is supported.
     - Supports east asian double width characters. 
       but it is not render bidi languages correctly.
-    - Localization supported. localize resource can be edited on bottom-panel UI.
+    - Localization supported. It is using gettext-style method. you can edit localize resource on UI.
     - You can selects variable character encoding supported by Gecko.
     - Supports transparent window. it is useful when www-browseing while working at terminal.
     - Retaining TTY session duaring restarting browser.
-      (Now, this feature is not works well in Cygwin version. 
-      Frontend UI that makes you to select/edit session, ...such as screen/tmux, 
-      is not implemented yet. - -;)
+      (Now, this feature is not works well in Cygwin version. - -;)
     - xterm-like mouse emuration. supports smoothing pixel scroll.
     - Text selection / Rectangle text selection.
     - Supports copy / paste in Drag & Drop or keyboard shortcut.
@@ -65,18 +62,16 @@ http:#//zuse.jp/tanasinn/tanasinn@zuse.jp.xpi[ここからダウンロード]
     - マルチプラットフォーム。現在サポートされるのは、Mac / Linux(というかUbuntu) / 
       http:#//www.cygwin.com[Cygwin] + Cygwin環境 (POSIX版Pythonが必要)
     - プラグインアーキテクチャ。プラグアンドプレイでのインストール・アンインストールが可能。
-      (開発ドキュメントはこれから作成します。)
     - デバッガ内臓。ステップ実行やトレースができます。
       ターミナルとアプリケーションがやり取りするI/Oシーケンスをリアルタイムで観察できます。
     - IMEが使えます。
     - East Asian Width(ひらがななどの文字幅を考慮したレンダリング)に一応対応しています。 
       bidiには対応できていないと思います。
-    - 地域化のサポート。ローカライズリソースをパネルUIから編集することができます。
+    - 地域化のサポート。gettextのようなスタイルを採用しています。
+      ローカライズリソースをUI上から編集することができます。
     - Geckoがサポートする様々なエンコーディングを指定できます。
     - ウィンドウの透明化をサポート。これはブラウジングしながらターミナルで作業したい時に便利です。
-    - ブラウザの再起動中、ターミナルセッションを保持します。
-      (これは現在Windowsでは動作しません。screenやtmuxのように、セッションの編集・管理を行う
-      フロントエンドUIはまだ実装されていません。)
+    - ブラウザの再起動中、ターミナルセッションを保持します。(これは現在Windowsでは動作しません。)
     - xtermのようなマウスエミュレーションができます。ピクセルスクロールにも対応。
     - テキストの選択や矩形選択ができます。
     - ドラッグアンドドロップやキーボードショートカットによる選択テキストのコピー・ペーストが可能です。
@@ -190,6 +185,8 @@ image::images/xulapp.png[width=640]
 
     * Improving emuration. now emuration engine is running with xterm compatible mode. 
       but it ought to read terminfo entries.
+    * Frontend UI that makes you to select/edit session, ...such as screen/tmux.
+    * Documents for plug-in developers is comming soon... - -;)
     * Supporting color scheme. import/export color palette contains 16 or 256 colors.
     * Supporting skins. you can make it otakunized.
     * Making it to be more collaborative with curses-based applications.
@@ -202,6 +199,8 @@ image::images/xulapp.png[width=640]
     
     * エミュレーションの強化。今はとりあえずxterm系コンパチブルなエミュレーションで作ってますが、
       本来はterminfoエントリを見るべきでしょう。
+    * screenやtmuxのように、セッションの選択・編集を行うフロントエンドUIの作成。
+    * プラグイン開発用ドキュメント。
     * カラースキーマのサポート。16色or256色のパレットをインポート/エクスポートできるように。
     * スキンのサポート。痛端末化が可能に。
     * cursesベースのアプリーションとの連携強化。

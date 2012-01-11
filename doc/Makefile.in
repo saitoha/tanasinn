@@ -1,6 +1,6 @@
 
 ASCIIDOC=@ASCIIDOC@
-OPEN=@COTERMINAL_OPEN@
+OPEN=@TANASINN_OPEN@
 
 all: usermanual-ja.html usermanual.html
 

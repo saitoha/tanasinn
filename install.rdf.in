@@ -2,13 +2,13 @@
 <RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#" 
      xmlns:em="http://www.mozilla.org/2004/em-rdf#">
   <Description about="urn:mozilla:install-manifest">
-    <em:id>@COTERMINAL_XPI_ID@</em:id>
+    <em:id>@TANASINN_XPI_ID@</em:id>
     <em:type>2</em:type>
-    <em:name>@COTERMINAL_DISPLAY_NAME@</em:name>
+    <em:name>@TANASINN_DISPLAY_NAME@</em:name>
     <em:version>@PACKAGE_VERSION@</em:version>
     <em:creator>saitoha</em:creator>
     <em:description>Terminal Emurator Addon for Firefox</em:description>
-    <em:optionsURL>chrome://@COTERMINAL_PACKAGE_NAME@/content/preference.xul</em:optionsURL>
+    <em:optionsURL>chrome://@TANASINN_PACKAGE_NAME@/content/preference.xul</em:optionsURL>
     <em:unpack>true</em:unpack>
     <em:bootstrap>true</em:bootstrap>
     <em:targetApplication>
@@ -20,7 +20,7 @@
       </Description>
       <Description>
         <!-- XUL Application -->
-        <em:id>@COTERMINAL_XPI_ID@</em:id> 
+        <em:id>@TANASINN_XPI_ID@</em:id> 
         <em:minVersion>0.1</em:minVersion>
         <em:maxVersion>1.0</em:maxVersion>
       </Description>

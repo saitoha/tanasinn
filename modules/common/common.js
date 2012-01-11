@@ -1068,7 +1068,7 @@ coUtils.Localize = new function()
         .classes["@mozilla.org/intl/nslocaleservice;1"]
         .getService(Components.interfaces.nsILocaleService); 
       this._dictionaries_store = {};
-      this.locale = locale_service.getLocaleComponentForUserAgent().split("-").pop();
+      this.locale = locale_service.getLocaleComponentForUserAgent();
     },
 
     /** @property locale */
@@ -1095,8 +1095,17 @@ coUtils.Localize = new function()
     load: function load() 
     {
       let file_name = this.getMessageFileName();
-      let content = coUtils.IO.readFromFile(file_name, "utf-8");
-      let db = eval(content);
+      let file = coUtils.File.getFileLeafFromAbstractPath(file_name);
+      let db = null;
+      if (file.exists()) {
+        let content = coUtils.IO.readFromFile(file_name, "utf-8");
+        db = eval(content);
+      } else {
+        db = {
+          lang: this._locale, 
+          dict: {},
+        };
+      }
       this._dictionaries_store[db.lang] = db.dict;
     },
     
@@ -1140,7 +1149,7 @@ coUtils.Localize = new function()
      *  files.
      *  @return {Generator} Generator that yields message-id string.
      */
-    generateLocalizableMessages: function generateLocalizableMessages() 
+    generateMessages: function generateLocalizableMessages() 
     {
       let pattern = /_\(("(.+?)("[\n\r\s]*,[\n\r\s]*".+?)*"|'(.+?)')\)/g;
       let sources = this.generateSources([ "modules/" ]);
@@ -1156,6 +1165,32 @@ coUtils.Localize = new function()
         }
       }
     },
+
+    getDictionary: function getLocalizeDictionary(language)
+    {
+      let location = String(<>modules/locale/{language}.js</>);
+      let file = coUtils.File.getFileLeafFromAbstractPath(location);
+      let dict = null;
+      if (file.exists()) {
+        let content = coUtils.IO.readFromFile(location);
+        let db = eval(content);
+        return db.dict;
+      } else {
+        return {};
+      }
+    },
+
+    setDictionary: function getLocalizeDictionary(language, dictionary)
+    {
+      let location = String(<>modules/locale/{language}.js</>);
+      let db = {
+        lang: language,
+        dict: dictionary,
+      };
+      coUtils.IO.writeToFile(location, db.toSource());
+      this._dictionaries_store[db.lang] = db.dict;
+    },
+
   };
   prototype.initialize();
   return prototype; 
@@ -1174,4 +1209,12 @@ function _()
     return lines.join("");
   }
 }
-
+/*
+try {
+let content = coUtils.IO.readFromFile("$Home/locales.txt");
+alert(content)
+let db = eval(content);
+alert(db.toSource());
+coUtils.IO.writeToFile("$Home/locales.js", db.toSource());
+} catch (e) {alert(e)}
+*/

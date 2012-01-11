@@ -332,8 +332,8 @@ Localize.definition = {
  */
 function main(desktop) 
 {
-  desktop.subscribe(
-    "initialized/session", 
-    function(session) new Localize(session));
+//  desktop.subscribe(
+//    "initialized/session", 
+//    function(session) new Localize(session));
 }
 
