@@ -33,18 +33,13 @@ PersistManager.definition = {
 
   "[persistable] path": "$Home/.tanasinn/persist.js",
 
-  "[subscribe('event/process-started'), enabled]":
-  function onProcessStarted(process)
-  {
-    process.notify("initialized/persistmanager", this);
-  },
-
   "[subscribe('command/load-settings'), enabled]":
   function load(session)
   {
     try {
       let content = coUtils.IO.readFromFile(this.path, "utf-8");
       let data = eval(content);
+      let session = this._broker;
       session.notify("command/before-load-persistable-data", data);
       session.notify("command/load-persistable-data", data);
     } catch (e) {
@@ -60,9 +55,10 @@ PersistManager.definition = {
   },
 
   "[subscribe('command/get-settings'), enabled]":
-  function get(session)
+  function get()
   {
     let data = {};
+    let session = this._broker;
     session.notify("command/before-save-persistable-data", data);
     session.notify("command/save-persistable-data", data);
     return data;
@@ -72,11 +68,18 @@ PersistManager.definition = {
 
 /**
  * @fn main
- * @brief Module entry point.
- * @param {Desktop} desktop The Desktop object.
+ * @brief Module entry point
+ * @param {Desktop} process The Desktop object.
  */
-function main(desktop)
+function main(desktop) 
 {
-  new PersistManager(desktop);
+  desktop.subscribe(
+    "@initialized/session",
+    function(session) 
+    {
+      new PersistManager(session);
+    });
 }
+
+
 

@@ -33,15 +33,15 @@
    launcher.js
   }
   core=core {
-   persist.js
    session.js
+   domevent.js
+   persist.js
 
    ui.js
    builder.js
    grammer.js
    parser.js
    renderer.js
-   domevent.js
 
    line.js
    cursorstate.js
@@ -73,7 +73,6 @@
    paste.js
    step.js
    move.js
-   fontsize.js
    resizable.js
 
    localize.js
@@ -97,7 +96,6 @@
    encodings.js
    kill.js
 
-   ime.js
    w3m.js
    vimp.js
 

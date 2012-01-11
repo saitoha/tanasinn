@@ -305,7 +305,7 @@ EventBroker.definition = {
   /** constructor */
   initialize: function initialize(parent)
   {
-    this._parent = parent;
+    //this._parent = parent;
     this._base = new EventBrokerBase;
     this._processer = new EventExpressionProcesser(this._base);
   },
@@ -332,7 +332,7 @@ EventBroker.definition = {
    *  @param {String} id An ID of registered event.
    *  @return {Number} Number in which it succeeded to remove from event map.
    */
-  unsubscribe: function(id)
+  unsubscribe: function unsubscribe(id)
   {
     //if (this._parent) {
     //  this._parent.unsubscribe(id);
@@ -361,9 +361,9 @@ EventBroker.definition = {
   {
     let base = this._base;
     base.post(String(topic), data);
-    if (this._parent) {
-      this._parent.post(topic, data);
-    }
+    //if (this._parent) {
+    //  this._parent.post(topic, data);
+    //}
   },
 
   /** Notify listeners that event is occurring. 
@@ -376,9 +376,9 @@ EventBroker.definition = {
   {
     let base = this._base;
     let result = base.multiget(String(topic), data);
-    if (this._parent) {
-      result.concat(this._parent.multiget(topic, data));
-    }
+    //if (this._parent) {
+    //  result.concat(this._parent.multiget(topic, data));
+    //}
     return result;
   },
 
@@ -392,9 +392,9 @@ EventBroker.definition = {
   {
     let base = this._base;
     let result = base.uniget(String(topic), data);
-    if (!result && this._parent) {
-      return this._parent.uniget(topic, data);
-    }
+    //if (!result && this._parent) {
+    //  return this._parent.uniget(topic, data);
+    //}
     return result;
   },
 
@@ -425,7 +425,7 @@ function Once(rhs) ({
   reset: function() 
     this.__defineGetter__("test", function() false),
 
-  toString: function() "[Once " + this.lhs + " " + this.rhs + " ]",
+  toString: function() "[Once " + this.rhs + " ]",
 
 }); // class Once
 
@@ -499,8 +499,8 @@ function Actor(broker, token, stack, delegate, id) {
     toString: function() "[Actor " + token + "]",
   };
 
-  let self = this;
-  broker.addEventListener(token, function(subject) {
+  broker.addEventListener(token, let (self = this) function(subject) 
+  {
     self.test = true;
     self.value = [ subject ];
     let [root] = stack; // get root node of parse tree from stack top.
@@ -560,7 +560,7 @@ EventExpressionProcesser.definition = {
    *  @param {Function} delegate An event handler function.
    *  @param {String} id specified event ID string.
    */
-  _parseExpression: function(tokens, delegate, id) 
+  _parseExpression: function _parseExpression(tokens, delegate, id) 
   {
     let stack = [];
     while (tokens.length) {

@@ -29,8 +29,7 @@ View.definition = {
   "[subscribe('event/session-started'), enabled]":
   function onSessionStarted(session)
   {
-    this._process = session.process;
-    [ this._settings ] = this._process.notify("command/get-settings", session) || [];
+    this._settings = session.uniget("command/get-settings", session) || [];
     if (!this._settings) {
       throw coUtils.Debug.Exception(
         _("'command/get-settings' returns null."));
@@ -63,7 +62,7 @@ View.definition = {
       session.notify("command/focus");
       this._settings[this._data[row].key] = value;
       this._data[row].value = value;
-      this._process.notify("command/save-settings", this._settings);
+      session.notify("command/save-settings", this._settings);
       if (this._treebox) {
         this._treebox.invalidate();
       }
@@ -200,7 +199,7 @@ SettingsBrowser.definition = {
 function main(desktop) 
 {
 //  desktop.subscribe(
-//    "initialized/session", 
+//    "@initialized/session", 
 //    function(session) new SettingsBrowser(session));
 }
 

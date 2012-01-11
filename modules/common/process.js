@@ -83,6 +83,9 @@ with (scope) {
    */
   let Process = new CoClass().extends(EventBroker).mix(ComponentLoader);
   Process.definition = {
+
+    get id()
+      "process",
   
     get classID()
       Components.ID("{BA5BFE08-CEFB-4C20-BEE6-FCEE9EABBDC1}"),
@@ -167,7 +170,7 @@ with (scope) {
       this.term = term || this.default_term;
       [this.width, this.height] 
         = size || [this.width, this.height];
-      desktop.clear();
+      //desktop.clear();
       // search path list
       let path = search_path || this.default_search_path;
   

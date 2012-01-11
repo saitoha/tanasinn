@@ -614,6 +614,7 @@ ListenAttribute.definition = {
                 broker.notify("command/remove-domlistener", listener_info.id);
               }
             }
+            return newval;
           });
       if (attribute["enabled"]) {
         wrapped_handler.enabled = true;
@@ -674,6 +675,7 @@ SubscribeAttribute.definition = {
                 broker.unsubscribe(wrapped_handler.id);
               }
             }
+            return newval;
           });
       if (attribute["enabled"]) {
         wrapped_handler.enabled = true;
@@ -784,6 +786,7 @@ KeyAttribute.definition = {
                   broker.unsubscribe(delegate.id);
                 }
               }
+              return newval;
             });
         if (attribute["enabled"]) {
           delegate.enabled = true;
@@ -897,6 +900,7 @@ CommandAttribute.definition = {
                 broker.unsubscribe(delegate.id);
               }
             }
+            return newval;
           });
       if (attribute["enabled"]) {
         delegate.enabled = true;
@@ -989,7 +993,9 @@ Plugin.definition = {
         try {
         this.install(broker);
         } catch (e) {
-          alert(this.id)
+          coUtils.Debug.reportError(e);
+          coUtils.Debug.reportError(_("Failed to enable plugin: %s"), this.id);
+          throw e;
         }
         broker.notify("installed/" + this.id, this);
       } else {

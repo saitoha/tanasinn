@@ -572,9 +572,9 @@ Console.definition = {
  */
 function main(desktop) 
 {
-  if (false) // now it is disabled dealing with performance issue.
+//  if (false) // now it is disabled dealing with performance issue.
   desktop.subscribe(
-    "initialized/session", 
+    "@initialized/session", 
     function(session)
     {
       new Console(session);

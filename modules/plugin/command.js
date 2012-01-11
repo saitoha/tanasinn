@@ -264,7 +264,7 @@ FontCommands.definition = {
   },
 
   /** Makes font size smaller. */
-  "[command('decrement/df'), key('meta -', 'ctrl shift ='), _('Make font size smaller.'), enabled]":
+  "[command('decrease'), key('meta -', 'ctrl shift ='), _('Make font size smaller.'), enabled]":
   function decrease()
   {
     let session = this._broker;
@@ -273,7 +273,7 @@ FontCommands.definition = {
   },
 
   /** Makes font size bigger. */
-  "[command('inc[lement]/if'), key('meta shift \\\\+'), _('Make font size bigger.'), enabled]":
+  "[command('increase'), key('meta shift \\\\+'), _('Make font size bigger.'), enabled]":
   function increase()
   {
     let session = this._broker;
@@ -355,13 +355,10 @@ PersistCommand.definition = {
   function persist(arguments_string)
   {
     let session = this._broker;
-    let desktop = session.parent;
-
-    let settings = desktop.uniget("command/get-settings", session);
+    let settings = session.uniget("command/get-settings", session);
     if (settings) {
-      desktop.notify("command/save-settings", settings);
+      session.notify("command/save-settings", settings);
     }
-
   },
 };
 
@@ -443,7 +440,7 @@ ShortcutCommand.definition = {
 function main(desktop)
 {
   desktop.subscribe(
-    "initialized/session", 
+    "@initialized/session", 
     function(session) 
     {
       new CommandProvider(session);

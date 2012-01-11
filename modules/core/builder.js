@@ -368,7 +368,7 @@ function main(desktop)
 {
 //  new ChromeBuilder(desktop);
   desktop.subscribe(
-    "initialized/session", 
+    "@initialized/session", 
     function(session) new ChromeBuilder(session));
 }
 

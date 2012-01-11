@@ -134,14 +134,17 @@ DOMEventManager.definition = {
 
 /**
  * @fn main
- * @brief Module entry point.
- * @param {Desktop} desktop The Desktop object.
+ * @brief Module entry point
+ * @param {Process} process The Process object.
  */
 function main(desktop) 
 {
-  desktop.subscribe(
-    "initialized/session", 
-    function(session) new DOMEventManager(session));
+   desktop.subscribe(
+     "@initialized/session", 
+     function(session)
+     {
+       new DOMEventManager(session);
+     });
 }
 
 

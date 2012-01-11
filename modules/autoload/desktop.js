@@ -58,7 +58,6 @@ Desktop.definition = {
     let box = broker.start(parent, command, term, size, search_path, callback, this); 
 
     // create session object;
-    broker.notify("event/process-started", this);
     let request = { 
       parent: box, 
       command: broker.command, 
@@ -66,6 +65,7 @@ Desktop.definition = {
       width: broker.width,
       height: broker.height,
     };
+    
     let session = this.uniget("event/session-requested", request);
     if (callback) {
       let id = session.subscribe(

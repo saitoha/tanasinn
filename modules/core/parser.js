@@ -235,7 +235,7 @@ Parser.definition = {
 function main(desktop) 
 {
   desktop.subscribe(
-    "initialized/session", 
+    "@initialized/session", 
     function (session) {
       new Parser(session);
       new Scanner(session);

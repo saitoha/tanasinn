@@ -122,8 +122,7 @@ Session.definition = {
   },
 
   /** Create terminal UI and start tty session. */ 
-  "[subscribe('@event/session-requested'), enabled]":
-  function onRequested(request) 
+  initializeWithRequest: function initializeWithRequest(request) 
   {
     this._request_id = coUtils.Uuid.generate().toString();
 
@@ -142,7 +141,7 @@ Session.definition = {
     this._term = request.term;
 
     process.notify("initialized/session", this);
-    process.notify("command/load-settings", this);
+    this.notify("command/load-settings", this);
     this.notify("event/session-started", this);
     coUtils.Timer.setTimeout(function() {
       this.notify("command/focus");
@@ -176,7 +175,15 @@ Session.definition = {
  */
 function main(desktop) 
 {
-  new Session(desktop);
+  let id = new Date().getTime();
+  desktop.subscribe(
+    "event/session-requested", 
+    function(request) 
+    {
+      desktop.unsubscribe(id);
+  //    alert(id)
+      new Session(desktop).initializeWithRequest(request);
+    }, this, id);
 }
 
 

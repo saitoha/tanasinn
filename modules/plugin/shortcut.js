@@ -85,9 +85,9 @@ Shortcut.definition = {
                   handler.enabled = false;
                   handler.enabled = true;
                 }
-                let [ settings ] = session.process.notify("command/get-settings", session) || [];
+                let settings = session.uniget("command/get-settings", session) || [];
                 if (settings) {
-                  session.process.notify("command/save-settings", settings);
+                  session.notify("command/save-settings", settings);
                   this.treebox.invalidate();
                 } else {
                   throw coUtils.Debug.Exception(
@@ -169,7 +169,7 @@ Shortcut.definition = {
 function main(desktop) 
 {
 //  desktop.subscribe(
-//    "initialized/session", 
+//    "@initialized/session", 
 //    function(session) new Shortcut(session));
 }
 
