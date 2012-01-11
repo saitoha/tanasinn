@@ -71,7 +71,7 @@ ComponentViewer.definition = {
                       function(event) self._setState(module, this)
                   }
                 },
-                { tagName: "label", value: info..name.toString() },
+                { tagName: "label", style: { fontWeight: "bold" }, value: info..name.toString() },
                 { tagName: "label", value: info..version.toString() },
                 { tagName: "label", value: info..description.toString() },
               ],
