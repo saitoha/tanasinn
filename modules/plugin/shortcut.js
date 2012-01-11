@@ -40,6 +40,78 @@ Shortcut.definition = {
         <version>0.1</version>
     </plugin>,
 
+  get template()
+    let (session = this._broker)
+    let (shortcuts = session.notify("get/shortcuts"))
+    ({ 
+      parentNode: this._panel,
+      tagName: "tree", flex: 1, editable: true,
+      childNodes: [
+        {
+          tagName: "treecols",
+          childNodes: [
+            { tagName: "treecol", id: "id", label: "id", flex: 1, },
+            { tagName: "splitter" },
+            { tagName: "treecol", id: "description", label: "description", flex: 2, },
+            { tagName: "splitter" },
+            { tagName: "treecol", id: "expressions", label: "key", flex: 2, },
+          ]
+        },
+        { tagName: "treechildren", editable: true }
+      ],
+      onconstruct: function onconstruct()
+      {
+        this.view = {
+          rowCount : shortcuts.length,
+          getCellText : function(row, column) {
+            try {
+            let value = shortcuts[row][column.id];
+            if ("expressions" == column.id) {
+              return value.toSource();
+            }
+            } catch (e) {alert(e)}
+            return value;
+          },
+          setCellText : function(row, column, value) {
+            if ("expressions" == column.id) {
+              try {
+                if (session.window.content) {
+                  session.window._content.focus();
+                }
+                session.notify("command/focus");
+                let handler = shortcuts[row];
+                handler.expressions = eval(value);
+                if (handler.enabled) {
+                  handler.enabled = false;
+                  handler.enabled = true;
+                }
+                let [ settings ] = session.process.notify("command/get-settings", session) || [];
+                if (settings) {
+                  session.process.notify("command/save-settings", settings);
+                  this.treebox.invalidate();
+                } else {
+                  throw coUtils.Debug.Exception(
+                    _("'command/get-settings' returns null."));
+                }
+              } catch (e) {
+                coUtils.Debug.reportError(e);
+              }
+            }
+          },
+          setTree: function(treebox) this.treebox = treebox,
+          isContainer: function(row) false,
+          isSeparator: function(row) false,
+          isSorted: function() false,
+          isEditable: function(row, column) "expressions" == column.id,
+          getLevel: function(row) row,
+          getImageSrc: function(row, col) null,
+          getRowProperties: function(row, props) undefined,
+          getCellProperties: function(row, col, props) undefined,
+          getColumnProperties: function(colid, col, props) undefined
+        };
+      },
+    }),
+
   _bottom_panel: null,
   _viewer: null,
 
@@ -75,80 +147,18 @@ Shortcut.definition = {
   "[subscribe('panel-selected/' + this.id), enabled]":
   function onSelected(name) 
   {
+    coUtils.Timer.setTimeout(function(){
+    try {
     let panel = this._panel;
     let session = this._broker;
-    let shortcuts = session.notify("get/shortcuts");
     if (panel.firstChild) {
       panel.removeChild(panel.firstChild);
     }
-    session.uniget("command/construct-chrome", {
-      parentNode: panel,
-      tagName: "tree", flex: 1, editable: true, treelines: true,
-      style: { MozUserFocus: "ignore" },
-      childNodes: [
-        {
-          tagName: "treecols",
-          childNodes: [
-            { tagName: "treecol", id: "id", label: "id", flex: 1, },
-            { tagName: "splitter" },
-            { tagName: "treecol", id: "description", label: "description", flex: 2, },
-            { tagName: "splitter" },
-            { tagName: "treecol", id: "expressions", label: "key", flex: 2, },
-          ]
-        },
-        { tagName: "treechildren", editable: true }
-      ],
-      onconstruct: function onconstruct()
-      {
-        this.view = {
-          rowCount : shortcuts.length,
-          getCellText : function(row, column) {
-            let value = shortcuts[row][column.id];
-            if ("expressions" == column.id) {
-              return value.toSource();
-            }
-            return value;
-          },
-          setCellText : function(row, column, value) {
-            if ("expressions" == column.id) {
-              try {
-                if (session.window.content) {
-                  session.window._content.focus();
-                }
-                session.notify("command/focus");
-                let handler = shortcuts[row];
-                handler.expressions = eval(value);
-                if (handler.enabled) {
-                  handler.enabled = false;
-                  handler.enabled = true;
-                }
-                let [ settings ] = session.process.notify("command/get-settings", session) || [];
-                if (settings) {
-                  session.process.notify(">command/save-settings", settings);
-                  this.treebox.invalidate();
-                } else {
-                  throw coUtils.Debug.Exception(
-                    _("'command/get-settings' returns null."));
-                }
-              } catch (e) {
-                coUtils.Debug.reportError(e);
-              }
-            }
-          },
-          setTree: function(treebox) this.treebox = treebox,
-          isContainer: function(row) false,
-          isSeparator: function(row) false,
-          isSorted: function() false,
-          isEditable: function(row, column) "expressions" == column.id,
-          getLevel: function(row) row,
-          getImageSrc: function(row, col) null,
-          getRowProperties: function(row, props) undefined,
-          getCellProperties: function(row, col, props) undefined,
-          getColumnProperties: function(colid, col, props) undefined
-        };
-      },
-    });
+    session.post("command/construct-chrome", this.template);
+    } catch (e) {alert(e)}
+    }, 10, this)
   },
+
 };
 
 /**
@@ -158,8 +168,8 @@ Shortcut.definition = {
  */
 function main(desktop) 
 {
-  desktop.subscribe(
-    "initialized/session", 
-    function(session) new Shortcut(session));
+//  desktop.subscribe(
+//    "initialized/session", 
+//    function(session) new Shortcut(session));
 }
 

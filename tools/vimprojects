@@ -76,7 +76,6 @@
    fontsize.js
    resizable.js
 
-   color.js
    localize.js
    moduleview.js
    console.js
@@ -110,8 +109,6 @@
    incomplete {
     minimize.js
     search.js
-    stylemanager.js
-    font.js
    }
 
    notimpl {

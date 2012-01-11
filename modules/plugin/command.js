@@ -399,6 +399,42 @@ LocalizeCommand.definition = {
   },
 };
 
+
+/**
+ * @class ShortcutCommand
+ */
+/*
+let ShortcutCommand = new Class().extends(Component);
+ShortcutCommand.definition = {
+
+  get id()
+    "shortcut",
+
+  "[command('shortcut', ['shortcut']), _('Edit shortcut settings.'), enabled]":
+  function evaluate(arguments_string)
+  {
+    try {
+    let session = this._broker;
+    let desktop = session.parent;
+    let pattern = /^\s*([a-zA-Z-]+)\s+"((?:[^"])*)"\s+"(.+)"\s*$/;
+    let match = arguments_string.match(pattern);
+    if (!match) {
+      session.notify(
+        "command/report-status-message", 
+        _("Fail to parse given commandline code."));
+      return;
+    }
+    let [, language, key, value] = match;
+    key = key.replace(/\\(?!\\)/g, "\\");
+    value = value.replace(/\\(?!\\)/g, "\\");
+    let dict = coUtils.Localize.getDictionary(language);
+    dict[key] = value;
+    coUtils.Localize.setDictionary(language, dict);
+    } catch(e) {alert(e)}
+  },
+};
+*/
+
 /**
  * @fn main
  * @brief Module entry point.

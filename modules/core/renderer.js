@@ -75,7 +75,7 @@ const CO_XTERM_256_COLOR_PROFILE = [
  * @class Renderer
  * @brief Scan screen state and render it to canvas element.
  */ 
-let Renderer = new Class().extends(Component);
+let Renderer = new Class().extends(Plugin);
 Renderer.definition = {
 
   get id()
@@ -122,7 +122,7 @@ Renderer.definition = {
   {
     this.font_family = this["font_family@" + coUtils.Runtime.os] || this.font_family;
     this._screen = screen;
-    this.install(this._broker);
+    this.enabled = this.enabled_when_startup;
   },
 
   /** Installs itself.

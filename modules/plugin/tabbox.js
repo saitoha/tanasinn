@@ -53,7 +53,7 @@ BottomPanel.definition = {
       id: "tanasinn_bottompanel",
       listener: {
         type: "select",
-        handler: function(event) 
+        handler: let (self = this) function(event) 
         {
           let panel = event.target.selectedPanel;
           if (panel) {
@@ -291,10 +291,13 @@ BottomPanel.definition = {
     new_panel.appendChild(content);
     session.subscribe("panel-selected/" + panel_object.id, function(selected_panel) 
     {
+      try {
       let template = panel_object.template;
       template.parentNode = new_panel;
       new_panel.removeChild(new_panel.firstChild);
-      session.uniget("command/construct-chrome", template);
+      let content = session.uniget("command/construct-chrome", panel_object.template)["#root"];
+      new_panel.appendChild(content);
+      } catch (e) {alert(e)}
     }, this);
   },
 
