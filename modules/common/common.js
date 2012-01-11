@@ -1210,11 +1210,3 @@ function _()
   }
 }
 
-try {
-let content = coUtils.IO.readFromFile("$Home/locales.txt", "UTF-8");
-alert(content)
-let db = eval(content);
-alert(db.toSource());
-coUtils.IO.writeToFile("$Home/locales.js", db.toSource());
-} catch (e) {alert(e)}
-
