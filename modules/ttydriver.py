@@ -415,7 +415,7 @@ def fork_app_process(master, slave, command, term):
         #if sid == None:
         #    os.system("echo 'tanasinn: os.setsid failed.'")
         fcntl.ioctl(master, termios.TIOCSCTTY, 1)
-        os.execlp(shell, "$SHELL", "-c", "cd $HOME && exec %s" % command)
+        os.execlp("/bin/bash", "/bin/bash", "-c", "cd $HOME && exec %s" % command)
 
     # slave handle is to be closed in master's process.
     #os.close(slave)

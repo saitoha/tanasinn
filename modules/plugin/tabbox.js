@@ -47,10 +47,14 @@ BottomPanel.definition = {
   get template()
     let (session = this._broker)
     {
-      tagName: "vbox",
+      tagName: "stack",
       parentNode: "#tanasinn_chrome",
       collapsed: true,
       id: "tanasinn_bottompanel",
+      style: <> 
+//        background: -moz-linear-gradient(top, #999, #666);
+//        border: solid 3px red;
+      </>,
       listener: {
         type: "select",
         handler: let (self = this) function(event) 
@@ -62,37 +66,66 @@ BottomPanel.definition = {
           }
         },
       },
-      childNodes: {
-        tagName: "tabbox",
-        id: "tanasinn_tabbox",
-        width: 0,
-        style: { 
-          MozAppearance: "statusbar",
-          margin: "0px",
-          padding: "0px",
-          overflowX: "hidden",
-          overflowY: "hidden",
+      childNodes: [
+        {
+          tagName: "vbox",
+          flex: 1,
+          style: <>
+            background: black;
+            opacity: 0.7;
+            </>,
         },
-        childNodes: [
-          { 
-            tagName: "arrowscrollbox",
-            id: "tanasinn_arrowscrollbox",
-            clicktoscroll: "true",
-            orient: "horizontal",
-            childNodes: {
-              tagName: "tabs", 
-              id: "tanasinn_tabbox_tabs",
-              label: "pause", 
-              flex: 1,
-              //setfocus: false, 
-            },
-          },
-          { 
-            tagName: "tabpanels", 
-            id: "tanasinn_tabbox_tabpanels",
-          },
-        ]
-      }
+        {
+          tagName: "vbox",
+          childNodes: {
+            tagName: "tabbox",
+            id: "tanasinn_tabbox",
+            width: 0,
+            style: <>
+              //MozAppearance: "statusbar",
+              //margin: "0px",
+              //padding: "0px",
+              -moz-appearance: none;
+//              border: solid 3px green;
+              overflow-x: hidden;
+              overflow-y: hidden;
+              border: 0px;
+              outer: 0px;
+              //background: -moz-linear-gradient(top, #999, #666);
+            </>,
+            childNodes: [
+              { 
+                tagName: "arrowscrollbox",
+                id: "tanasinn_arrowscrollbox",
+                clicktoscroll: "true",
+                orient: "horizontal",
+                childNodes: {
+                  tagName: "tabs", 
+                  id: "tanasinn_tabbox_tabs",
+                  style: <>
+//                    background: -moz-linear-gradient(top, #999, #666);
+//                    border-top-right-radius: 4px;
+                    //border: solid 3px yellow;
+                  </>,
+                  setfocus: false, 
+                },
+              },
+              { 
+                tagName: "tabpanels", 
+                id: "tanasinn_tabbox_tabpanels",
+                style: <>
+                  -moz-appearance: none;
+//                  border: solid 3px orange;
+                  background: -moz-linear-gradient(top, #ccc, #777);
+//                  outer: 0px;
+                  border: 0px;
+//                  background: transparent;
+                </>,
+              },
+            ]
+          }
+        },
+      ],
     },
 
   _panel_map: null,
@@ -257,10 +290,15 @@ BottomPanel.definition = {
         id: "tanasinn_tab",
         name: id,
         label: name,
-        style: { 
-          margin: "0px",
-          padding: "0px",
-        },
+        style: <>
+//          -moz-appearance: none;
+//          border: solid 3px red;
+          border: 0px;
+//          background: transparent;
+//          MozAppearance: "none",
+          //margin: "0px",
+          //padding: "0px",
+        </>,
       });
     let tab_panel = session.uniget(
       "command/construct-chrome", 
@@ -270,11 +308,14 @@ BottomPanel.definition = {
         id: id,
         orient: "vertical",
         height: 180,
-        style: { 
-          padding: "0px",
-          marginTop: "-18px",
-          marginBottom: "-18px",
-        },
+        style: <>
+            -moz-appearance: none;
+            //border: solid 3px pink;
+            background: transparent;
+//          padding: "0px",
+//          marginTop: "-18px",
+//          marginBottom: "-18px",
+        </>,
       })[id];
     this._panel_map[id] = [tanasinn_tab, tab_panel];
     return tab_panel;

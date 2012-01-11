@@ -112,7 +112,7 @@ Tracer.definition = {
       value: [message],
     };
     let session = this._broker;
-    session.notify("command/report-status-message", message); 
+//    session.notify("command/report-status-message", message); 
     session.notify("command/trace-sequence", [info, undefined]); 
   },
 
@@ -253,16 +253,19 @@ StepExecution.definition = {
       parentNode: this._bottom_panel.alloc(this.id, _("Debugger")),
       tagName: "hbox",
       flex: 1,
-      style: {
-        MozAppearance: "tabpanels",
-        overflowY: "auto", 
-        wordWrap: "break-word",
-        fontSize: "13px",
-        fontWeight: "bold",
-      },
+      style: <>
+//        background: -moz-linear-gradient(top, #999, #666);
+//        border: solid 3px blue;
+        //overflow-y: auto; 
+        //wordWrap: break-word;
+        //font-size: 13px;
+        //fontWeight: bold;
+      </>,
       childNodes: [
         {
           tagName: "vbox",
+          style: <>
+            </>,
           childNodes: [
             {
               tagName: "checkbox",
@@ -335,13 +338,21 @@ StepExecution.definition = {
         {
           tagName: "vbox",
           flex: 1,
-          id: "tanasinn_trace",
-          style: {
-            MozAppearance: "tabpanels",
-            //background: "white",
-            padding: "5px",
-            height: "100%",
-            overflowY: "auto",
+          style: <> 
+            /*MozAppearance: "tabpanels",*/
+//            background: -moz-linear-gradient(top, #999, #666);
+           // background-attachment: fixed;
+            width: 100%;
+            height: 100%;
+          </>,
+          childNodes: {
+            tagName: "vbox",
+            flex: 1,
+            id: "tanasinn_trace",
+            style: <>
+              padding: 5px;
+              overflow-y: auto;
+            </>
           },
         },
       ]

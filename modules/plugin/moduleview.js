@@ -46,7 +46,11 @@ ComponentViewer.definition = {
     ({
       parentNode: this._panel,
       tagName: "grid", flex: 1,
-      style: { MozAppearance: "tabpanels", overflowY: "auto" },
+      style: <> 
+        overflow-y: auto;
+//        background: transient;//-moz-linear-gradient(top, #ccc, #aaa);
+//        border: solid 3px orange;
+      </>,
       childNodes: {
         tagName: "rows",
         childNodes: [

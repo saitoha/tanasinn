@@ -296,7 +296,7 @@ ConsoleListener.definition = {
     this._display_manager = display_manager;
 
     // set unregistration listener.
-    this.onQuitApplication.enabled = true;
+    //this.onQuitApplication.enabled = true;
     this.onSessionStopping.enabled = true;
     
     // register object which implements nsIConsoleListener.
@@ -362,7 +362,7 @@ ConsoleListener.definition = {
     coUtils.Debug.reportMessage(
       _("Succeeded to unregister console listener."));
     this.onSessionStopping.enabled = false;
-    this.onQuitApplication.enabled = false;
+    //this.onQuitApplication.enabled = false;
   },
 
   /** Get recent console messages from buffer of console services. */
@@ -453,11 +453,14 @@ Console.definition = {
              },
              childNodes: [
                {
-                 tagName: "hbox",
-                 style: { 
-                   MozBoxPack: "center",
-                   margin: "4px 0 9px",
-                 },
+                 tagName: "toolbar",
+                 style: <>
+                   -moz-appearance: none;
+                   //-moz-box-pack: center;
+                   border-radius: 8px;
+                   //border: solid 1px black;
+                   //margin: 0px 9px;
+                 </>,
                  childNodes: [
                    {
                      tagName: "toolbarbutton",
@@ -467,11 +470,17 @@ Console.definition = {
                      group: "mode",
                      style: {
                        cssText: <>
-                         -moz-appearance: toolbarbutton;
+                         background: -moz-linear-gradient(top, #ccc, #777);
+                         -moz-appearance: none;
+//                         border-radius: 8px;
                          font: menu;
-                         //text-hadow: 0 1px rgba(255, 255, 255, .4);
-                         margin: 0;
-                         padding: 0 1px;
+                         text-hadow: 0 1px rgba(255, 255, 255, .4);
+                         margin: 0px;
+                         //margin-left: -1px;
+                         margin-right: -1px;
+                         padding: 0px 4px;
+                         border-radius: 2px;
+                         border: solid 1px black;
                          //heihgt: 22px;
                        </>,
                      },
@@ -509,11 +518,14 @@ Console.definition = {
                    cssText: <>
                      //-moz-box-orient: vertical;
                      //-moz-box-align: center;
-                     -moz-appearance: toolbarbutton;
+                     -moz-appearance: none;
+                     background: -moz-linear-gradient(top, #ccc, #777);
                      font: menu;
-                     //text-hadow: 0 1px rgba(255, 255, 255, .4);
-                     margin: 4px 0 9px;
-                     padding: 0 1px;
+                     border-radius: 2px;
+                     border: solid 1px #444;
+                     text-hadow: 0 1px rgba(255, 255, 255, .4);
+                     margin: 0px 9px;
+                     padding: 0px 9px 0px 4px;
                    </>
                  },
                  listener: {

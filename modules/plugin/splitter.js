@@ -43,10 +43,15 @@ Splitter.definition = {
 
   get template()
     ({
-      tagName: "splitter",
+      tagName: "vbox",
       id: "tanasinn_splitter",
       height: 16,
-      style: { MozAppearance: "statusbar" },
+      style: <> 
+        -moz-appearance: none;
+        cursor: ns-resize;
+        background: transparent;
+//        border: solid 3px blue;
+      </>,
       listener: {
         type: "dragstart", 
         context: this,
