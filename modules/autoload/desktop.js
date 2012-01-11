@@ -36,15 +36,43 @@ Desktop.definition = {
     this._window,
 
   get root_element()
-    this._window,
+    this._root_element,
 
   initializeWithWindow: 
   function initializeWithWindow(window)
   {
     this._window = window;
+    this.install();
+  },
+
+  install: function install()
+  {
+    this.onShutdown.enabled = true;
     this.getDesktopFromWindow.enabled = true;
+    let document = this._window.document;
+    this._root_element = document
+      .documentElement
+      .appendChild(document.createElement("box"));
+
     let broker = this._broker;
     broker.notify(<>initialized/{this.id}</>, this);
+
+    this.notify("event/desktop-started", this);
+  },
+
+  uninstall: function uninstall()
+  {
+    this.onShutdown.enabled = false;
+    this.getDesktopFromWindow.enabled = false;
+    this.clear();
+    this._root_element.parentNode.removeChild(this._root_element);
+  },
+  
+  "[subscribe('event/shutdown')]":
+  function onShutdown()
+  {
+    this.notify("event/shutdown");
+    this.uninstall();
   },
   
   "[subscribe('get/desktop-from-window')]":

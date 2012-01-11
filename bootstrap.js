@@ -107,14 +107,24 @@ function startup(data, reason)
 function shutdown(data, reason) 
 {
   loader.uninitialize();
+  Components.classes['@zuse.jp/tanasinn/process;1']
+    .getService(Components.interfaces.nsISupports)
+    .wrappedJSObject
+    .notify("event/shutdown");
 //  var prompts = Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
 //                    .getService(Components.interfaces.nsIPromptService);
 //  if (reason !== APP_SHUTDOWN) unload(); 
+  return true;
 }
 
-//function install(data, reason) {
-//}
-//
-//
-//function uninstall(data, reason) {
-//}
+function install(data, reason) 
+{
+  return true;
+}
+
+
+function uninstall(data, reason) 
+{
+  return true;
+}
+

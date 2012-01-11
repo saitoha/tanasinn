@@ -398,6 +398,39 @@ LocalizeCommand.definition = {
 
 
 /**
+ * @class ManageCommands
+ */
+/*
+let PluginManagementCommands = new Class().extends(Component);
+EnableCommand.definition = {
+
+  get id()
+    "enable-command",
+
+  "[command('enable', ['modules']), _('enable a plugin.'), enabled]":
+  function evaluate(arguments_string)
+  {
+    try {
+    let session = this._broker;
+    let modules = session.notify("get/module-instances");
+    /*
+    let desktop = session.parent;
+    let pattern = /^\s*([a-zA-Z-]+)\s+"((?:[^"])*)"\s+"(.+)"\s*$/;
+    let match = arguments_string.match(pattern);
+    if (!match) {
+      session.notify(
+        "command/report-status-message", 
+        _("Fail to parse given commandline code."));
+      return;
+    }
+    let [, language, key, value] = match;
+    } catch(e) {alert(e)}
+  },
+};
+*/
+
+
+/**
  * @class ShortcutCommand
  */
 /*

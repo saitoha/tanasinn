@@ -177,8 +177,8 @@ TemplateBuilder.definition = {
   buildChrome: 
   function buildChrome(template, results) 
   {
-    if (Array.prototype.isPrototypeOf(value)) {
-      return value.map(function(node)
+    if (Array.prototype.isPrototypeOf(template)) {
+      return template.map(function(node)
       {
         return this.buildChrome(node, results);
       }, this);
@@ -342,9 +342,9 @@ ChromeBuilder.definition = {
   _template_builder: null,
 
   /** constructor */
-  initialize: function initialize(session)
+  initialize: function initialize(broker)
   {
-    session.notify(<>initialized/{this.id}</>, this);
+    broker.notify(<>initialized/{this.id}</>, this);
   },
 
 // public

@@ -59,15 +59,15 @@
    encoder.js
    focus.js
    window.js
+   tabbox.js
+   commandline.js
   }
 
   ttydriver.py
 
   plugin=plugin {
    cursor.js
-   tabbox.js
    splitter.js
-   titlebar.js
 
    copy.js
    paste.js
@@ -100,9 +100,10 @@
    vimp.js
 
    overlay.js
-   commandline.js
    completer.js
    command.js
+
+   plugins.js
 
    incomplete {
     minimize.js

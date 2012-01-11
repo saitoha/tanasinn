@@ -34,14 +34,20 @@ Launcher.definition = {
   top: 20,
   left: 20,
 
-  initialize: function initialize(desktop)
+  "[subscribe('event/desktop-started'), enabled]":
+  function onLoad(desktop)
   {
     let window = desktop.window;
     let broker = this._broker;
     let document = window.document;
-    let parent = window
-      .document.documentElement
-      .appendChild(document.createElement("box"));
+    //let parent = window
+    //  .document.documentElement
+    //  .appendChild(document.createElement("box"));
+    let parent = desktop.uniget("command/construct-chrome", {
+      parentNode: document.documentElement,
+      tagName: "box",
+      id: "coterimnal_launcher",
+    })["#root"];
 
     let outer = window
       .document.documentElement
