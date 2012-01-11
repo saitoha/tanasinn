@@ -35,6 +35,9 @@ Desktop.definition = {
   get window()
     this._window,
 
+  get root_element()
+    this._window,
+
   initializeWithWindow: 
   function initializeWithWindow(window)
   {

@@ -267,12 +267,11 @@ ln $PWD/modules/corun.js $RUNTIME/plugin/
         
 .Cygwin
 ----
-cmd /c mklink /D $(cygpath -w $RUNTIME/tanasinn) $(cygpath -w $PWD);
+$(cygpath $COMSPEC) /c mklink /D $(cygpath -w $VIMRUNTIME/tanasinn) $(cygpath -w $PWD);
 ln $PWD/modules/corun.js $RUNTIME/plugin/
 ----
 
-    $RUNTIME is Vimperator runtime directory such as 
-    '$HOME/.vimperator'.
+    $RUNTIME is Vimperator runtime directory such as '$HOME/.vimperator'.
 #else
 === Vimperatorプラグインとしてインストール:
 
@@ -286,7 +285,7 @@ ln $PWD/modules/corun.js $RUNTIME/plugin/
         
 .Cygwin
 ----
-cmd /c mklink /D $(cygpath -w $RUNTIME/tanasinn) $(cygpath -w $PWD)
+$(cygpath $COMSPEC) /c mklink /D $(cygpath -w $RUNTIME/tanasinn) $(cygpath -w $PWD)
 ln $PWD/modules/corun.js $RUNTIME/plugin/
 ----
 

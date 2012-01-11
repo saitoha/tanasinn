@@ -42,10 +42,10 @@ DOMEventManager.definition = {
   _listener_list_map: null,
 
   /** constructor */
-  initialize: function initialize(session) 
+  initialize: function initialize(broker) 
   {
     this._listener_list_map = {};
-    session.notify("initialized/domeventmanager", this);
+    broker.notify("initialized/domeventmanager", this);
   },
 
   /** A thin wrapper function of Element.addEventListener. 
@@ -76,10 +76,11 @@ DOMEventManager.definition = {
   "[subscribe('command/add-domlistener'), enabled]":
   function add(listener) 
   {
-    let session = this._broker;
+    let broker = this._broker;
     let target = listener.target;
     if ("string" == typeof target) {
-      target = session.uniget("command/query-selector", target);
+//      target = borker.uniget("command/query-selector", target);
+      target = broker.root_element.querySelector(target);
       if (!target) {
         throw coUtils.Debug.Exception(
           _("Target element specified by given id is Not Found: %s."), 
@@ -137,14 +138,20 @@ DOMEventManager.definition = {
  * @brief Module entry point
  * @param {Process} process The Process object.
  */
-function main(desktop) 
+function main(process) 
 {
-   desktop.subscribe(
-     "@initialized/session", 
-     function(session)
-     {
-       new DOMEventManager(session);
-     });
+  process.subscribe(
+    "initialized/desktop",
+    function(desktop)
+    {
+      new DOMEventManager(desktop);
+      desktop.subscribe(
+        "initialized/session", 
+        function(session)
+        {
+          new DOMEventManager(session);
+        });
+    });
 }
 
 

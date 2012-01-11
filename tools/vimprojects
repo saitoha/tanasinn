@@ -31,14 +31,14 @@
    desktop.js
    appmenu.js
    launcher.js
+   builder.js
+   domevent.js
   }
   core=core {
    session.js
-   domevent.js
    persist.js
 
    ui.js
-   builder.js
    grammer.js
    parser.js
    renderer.js

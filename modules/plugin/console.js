@@ -474,7 +474,7 @@ Console.definition = {
                          -moz-appearance: none;
 //                         border-radius: 8px;
                          font: menu;
-                         text-hadow: 0 1px rgba(255, 255, 255, .4);
+                         text-shadow: 0 1px rgba(255, 255, 255, .4);
                          margin: 0px;
                          //margin-left: -1px;
                          margin-right: -1px;
@@ -523,9 +523,9 @@ Console.definition = {
                      font: menu;
                      border-radius: 2px;
                      border: solid 1px #444;
-                     text-hadow: 0 1px rgba(255, 255, 255, .4);
+                     text-shadow: 0 1px rgba(255, 255, 255, .4);
                      margin: 0px 9px;
-                     padding: 0px 9px 0px 4px;
+                     padding: 0px 7px 0px 4px;
                    </>
                  },
                  listener: {

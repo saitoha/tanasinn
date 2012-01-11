@@ -361,15 +361,23 @@ ChromeBuilder.definition = {
 
 /**
  * @fn main
- * @brief Module entry point.
- * @param {Desktop} Desktop The Desktop object.
+ * @brief Module entry point
+ * @param {Process} process The Process object.
  */
-function main(desktop) 
+function main(process) 
 {
-//  new ChromeBuilder(desktop);
-  desktop.subscribe(
-    "@initialized/session", 
-    function(session) new ChromeBuilder(session));
+  process.subscribe(
+    "initialized/desktop",
+    function(desktop)
+    {
+      new ChromeBuilder(desktop);
+      desktop.subscribe(
+        "initialized/session", 
+        function(session)
+        {
+          new ChromeBuilder(session);
+        });
+    });
 }
 
 

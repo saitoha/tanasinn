@@ -55,17 +55,6 @@ BottomPanel.definition = {
 //        background: -moz-linear-gradient(top, #999, #666);
 //        border: solid 3px red;
       </>,
-      listener: {
-        type: "select",
-        handler: let (self = this) function(event) 
-        {
-          let panel = event.target.selectedPanel;
-          if (panel) {
-            session.notify("command/report-overlay-message", panel.id);
-            session.notify("panel-selected/" + panel.id, panel);
-          }
-        },
-      },
       childNodes: [
         {
           tagName: "vbox",
@@ -81,6 +70,24 @@ BottomPanel.definition = {
             tagName: "tabbox",
             id: "tanasinn_tabbox",
             width: 0,
+            listener: {
+              type: "select",
+              handler: let (self = this) function(event) 
+              {
+                let panel = event.target.selectedPanel;
+                let tab = this.selectedTab;
+                for (let [, tab] in Iterator(this.tabs.childNodes)) {
+                  tab.style.color = "#777";
+                  tab.style.weight = "normal";
+                }
+                tab.style.color = "black";
+                tab.style.weight = "bold";
+                if (panel) {
+//                  session.notify("command/report-overlay-message", panel.id);
+                  session.notify(<>panel-selected/{panel.id}</>, panel);
+                }
+              },
+            },
             style: <>
               //MozAppearance: "statusbar",
               //margin: "0px",
@@ -159,6 +166,8 @@ BottomPanel.definition = {
     this.add.enabled = true;
     this.select.enabled = true;
     this.remove.enabled = true;
+    this.open.enabled = true;
+    this.close.enabled = true;
     session.notify(<>initialized/{this.id}</>, this);
   },
 
@@ -170,6 +179,8 @@ BottomPanel.definition = {
     this.add.enabled = false;
     this.select.enabled = false;
     this.remove.enabled = false;
+    this.open.enabled = false;
+    this.close.enabled = false;
     let target = this._bottom_panel;
     target.parentNode.removeChild(target);
   },
@@ -204,7 +215,8 @@ BottomPanel.definition = {
    *   |               |             | bottom panel  |     is not
    *   +---------------+             +---------------+ <-- changed.
    */
-  open: function open() 
+  "[command('openpanel')]":
+  function open() 
   {
     let bottomPanel = this._bottom_panel;
     let renderer = this._renderer;
@@ -239,7 +251,8 @@ BottomPanel.definition = {
    *   | bottom panel  | height is   |               |     is not
    *   +---------------+ expanded.-> +---------------+ <-- changed.
    */
-  close: function close() 
+  "[command('closepanel')]":
+  function close() 
   {
     let bottom_panel = this._bottom_panel;
     let renderer = this._renderer;
@@ -290,10 +303,26 @@ BottomPanel.definition = {
         id: "tanasinn_tab",
         name: id,
         label: name,
+        listener: {
+          type: "select",
+          handler: function(event) {
+            alert(event)
+          },
+        },
         style: <>
-//          -moz-appearance: none;
-//          border: solid 3px red;
-          border: 0px;
+          -moz-appearance: none;
+          font: menu;
+          color: black;
+          text-shadow: 0 1px rgba(255, 255, 255, .4);
+          background: -moz-linear-gradient(top, #fff, #ccc);
+          border-top-left-radius: 4px;
+          border-top-right-radius: 4px;
+          //border: solid 1px #888;
+          border-bottom: 0px;
+          border-left: 2px solid #aaa;
+          border-right: 2px solid #ccc;
+          margin-left: -2px;
+          margin-right: -4px;
 //          background: transparent;
 //          MozAppearance: "none",
           //margin: "0px",
