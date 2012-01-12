@@ -1,5 +1,5 @@
 
-= ∴∵∴∵ミ∴∵ tanasinn terminal emurator ∵(・)∴∴∵∴.(・)∵∵
+= ∵ tanasinn terminal emurator 
 
 #if __EN__
 link:./usermanual-ja.html[日本語/Japanese]
@@ -15,8 +15,9 @@ link:./usermanual.html[English/英語]
     It enables you to access flexible, powerful functionality 
     provided by operating systems, such as commandline shells, or curses-based 
     applications.
-
+#if 0
 http:#//zuse.jp/tanasinn/tanasinn-current.xpi[Download from here]
+#endif
 
 #else
 
@@ -26,7 +27,9 @@ http:#//zuse.jp/tanasinn/tanasinn-current.xpi[Download from here]
     コマンドラインシェルやcursesベースのアプリケーション等、オペレーティングシステムが提供する
     柔軟でパワフルな機能群にブラウザ上のUIからアクセスすることができます。
 
+#if 0
 http:#//zuse.jp/tanasinn/tanasinn@zuse.jp.xpi[ここからダウンロード]
+#endif
 
 #endif
 
@@ -415,9 +418,13 @@ cygstart firefox.exe --app application.ini
 
 #if __EN__
 == Bug reports and patches
-    Patches and bug reports are are encouraged. > saitoha <user@zuse.jp>.
+
+Patches and bug reports are are encouraged. > saitoha <user@zuse.jp>,
+or toweet me (http:#//twitter.com/feel_tanasinn[English] / http:#//twitter.com/kefir_[Japanese]).
 #else
 == バグレポート・パッチ
-    バグレポート・パッチ超歓迎。saitoha <user@zuse.jp>までどうぞ。
+
+.バグレポート・パッチ超歓迎。 saitoha <user@zuse.jp>にメールするか、 twitterで教えてください。 
+(http:#//twitter.com//kefir_[日本語] / http:#//twitter.com/feel_tanasinn[英語])
 #endif
 
