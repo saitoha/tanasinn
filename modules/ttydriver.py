@@ -446,8 +446,8 @@ if __name__ == "__main__":
     #pid, ttyname = fork_app_process(master, slave, command, term)    
     pid, master = pty.fork()
     if not pid:
-        os.environ["TERM"] = "xterm"
-        os.execlp("/bin/zsh", "$SHELL", "-c", "cd $HOME && exec %s" % command)
+        os.environ["TERM"] = term 
+        os.execlp("/bin/sh", "/bin/sh", "-c", "cd $HOME && exec %s" % command)
     ttyname = ""
 
     # send control channel's port, pid, ttyname

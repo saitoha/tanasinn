@@ -141,7 +141,7 @@ Session.definition = {
     this._term = request.term;
 
     process.notify("initialized/session", this);
-    this.notify("command/load-settings", this);
+    this.notify("command/load-settings");
     this.notify("event/session-started", this);
     coUtils.Timer.setTimeout(function() {
       this.notify("command/focus");

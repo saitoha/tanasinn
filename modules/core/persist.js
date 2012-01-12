@@ -29,15 +29,18 @@ let PersistManager = new Class().extends(Component);
 PersistManager.definition = {
 
   get id()
-    "persistmanager",
+    "persist-manager",
 
-  "[persistable] path": "$Home/.tanasinn/persist.js",
+  "[persistable] profile_directory": "$Home/.tanasinn/profile",
+  "[persistable] default_filename": "persist.js",
 
   "[subscribe('command/load-settings'), enabled]":
-  function load(session)
+  function load(name)
   {
     try {
-      let content = coUtils.IO.readFromFile(this.path, "utf-8");
+      let filename = this.default_filename;
+      let profile_path = <>{this.profile_directory}/{filename}</>.toString();
+      let content = coUtils.IO.readFromFile(profile_path, "utf-8");
       let data = eval(content);
       let session = this._broker;
       session.notify("command/before-load-persistable-data", data);
@@ -50,8 +53,10 @@ PersistManager.definition = {
   "[subscribe('command/save-settings'), enabled]":
   function save(data)
   {
+    let filename = this.default_filename;
+    let profile_path = <>{this.profile_directory}/{filename}</>.toString();
     let serialized_data = data.toSource();
-    coUtils.IO.writeToFile(this.path, serialized_data);
+    coUtils.IO.writeToFile(profile_path, serialized_data);
   },
 
   "[subscribe('command/get-settings'), enabled]":

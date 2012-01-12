@@ -59,8 +59,6 @@
    encoder.js
    focus.js
    window.js
-   tabbox.js
-   commandline.js
   }
 
   ttydriver.py
@@ -102,6 +100,8 @@
    overlay.js
    completer.js
    command.js
+   tabbox.js
+   commandline.js
 
    plugins.js
 

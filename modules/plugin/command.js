@@ -355,7 +355,7 @@ PersistCommand.definition = {
   function persist(arguments_string)
   {
     let session = this._broker;
-    let settings = session.uniget("command/get-settings", session);
+    let settings = session.uniget("command/get-settings");
     if (settings) {
       session.notify("command/save-settings", settings);
     }

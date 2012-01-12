@@ -85,7 +85,7 @@ Shortcut.definition = {
                   handler.enabled = false;
                   handler.enabled = true;
                 }
-                let settings = session.uniget("command/get-settings", session) || [];
+                let settings = session.uniget("command/get-settings");
                 if (settings) {
                   session.notify("command/save-settings", settings);
                   this.treebox.invalidate();

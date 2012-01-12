@@ -313,7 +313,7 @@ TemplateBuilder.definition = {
         arguments.callee(element, key, value); // call recersively.
       }
     } else {
-      value = value.toString();
+      value = String(value);
       try {
         if (element.hasAttribute && element.hasAttribute(key)) {
           element.setAttribute(key, value);

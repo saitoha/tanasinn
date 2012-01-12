@@ -1134,8 +1134,8 @@ Screen.definition = {
   "[subscribe('initialized/{cursorstate & linegenerator}'), enabled]":
   function onLoad(cursor_state, line_generator) 
   {
-    this._width = this.initial_column;
-    this._height = this.initial_row;
+    //this._width = this.initial_column;
+    //this._height = this.initial_row;
     this._buffer = line_generator.allocate(this._width, this._height * 2);
     this._switchScreen();
     this.cursor = cursor_state;
@@ -1162,57 +1162,65 @@ Screen.definition = {
    * @property width
    * Screen width in counting the number of columns.
    */
-  get width() 
+  get "[persistable] width"() 
   {
     return this._width;
   },
 
-  set width(value) 
+  set "[persistable] width"(value) 
   {
-    let width = this._width;
-    if (value == width) {
-      return;
-    } else if (width < value) {
-      this._pushColumns(value - width);
-    } else if (width > value) {
-      this._popColumns(width - value);
-    }
+    if (this._buffer) {
+      let width = this._width;
+      if (value == width) {
+        return;
+      } else if (width < value) {
+        this._pushColumns(value - width);
+      } else if (width > value) {
+        this._popColumns(width - value);
+      }
 
-    let cursor = this.cursor;
-    if (cursor.positionX >= this._width) {
-      cursor.positionX = this._width - 1;
-    }
+      let cursor = this.cursor;
+      if (cursor.positionX >= this._width) {
+        cursor.positionX = this._width - 1;
+      }
 
-    let session = this._broker;
-    session.notify("variable-changed/screen.width", this.width);
+      let session = this._broker;
+      session.notify("variable-changed/screen.width", this.width);
+    } else {
+      this._width = value;
+    }
   },
 
   /** 
    * @property height
    * Screen height in counting the number of lines.
    */
-  get height() 
+  get "[persistable] height"() 
   {
     return this._height;
   },
 
-  set height(value) 
+  set "[persistable] height"(value) 
   {
-    if (value == this._height) {
-      return;
-    } else if (this._height < value) {
-      this._pushLines(value - this._height);
-    } else if (this._height > value) {
-      this._popLines(this._height - value);
-    }
-    // I Wonder if we should trim cursor position when screen is resized.
-    let cursor = this.cursor;
-    if (cursor.positionY >= this._height) {
-      cursor.positionY = this._height - 1;
-    }
+    if (this._buffer) {
+      if (value == this._height) {
+        return;
+      } else if (this._height < value) {
+        this._pushLines(value - this._height);
+      } else if (this._height > value) {
+        this._popLines(this._height - value);
+      }
+      // I Wonder if we should trim cursor position when screen is resized.
+      let cursor = this.cursor;
+      if (cursor.positionY >= this._height) {
+        cursor.positionY = this._height - 1;
+      }
 
-    let session = this._broker;
-    session.notify("variable-changed/screen.height", this.height);
+      let session = this._broker;
+      session.notify("variable-changed/screen.height", this.height);
+    } else {
+      this._height = value;
+    }
   },
 
   get bufferTop()

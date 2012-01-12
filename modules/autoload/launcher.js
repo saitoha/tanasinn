@@ -168,8 +168,6 @@ Launcher.definition = {
     let diff_max = 400;
     if (16 == event.keyCode && 16 == event.which 
         && !event.ctrlKey && !event.altKey && !event.isChar) {
-      broker.notify("event/shift-key-up");
-      let broker = this._broker;
       let now = parseInt(new Date().getTime());
       let diff = now - this._last_shiftup_time;
       if (diff_min < diff && diff < diff_max) {
@@ -178,6 +176,7 @@ Launcher.definition = {
       } else {
         this._last_shiftup_time = now;
       }
+      broker.notify("event/shift-key-up");
     } else if (17 == event.keyCode && 17 == event.which 
         && !event.altKey && !event.shiftKey && !event.isChar) {
       let now = parseInt(new Date().getTime());
@@ -188,6 +187,7 @@ Launcher.definition = {
       } else {
         this._last_ctrlup_time = now;
       }
+      broker.notify("event/ctrl-key-up");
     } else if (18 == event.keyCode && 18 == event.which 
         && !event.ctrlKey && !event.shiftKey && !event.isChar) {
       let now = parseInt(new Date().getTime());
@@ -226,10 +226,7 @@ function main(process)
 {
   process.subscribe(
     "initialized/desktop",
-    function(desktop) 
-    {
-      new Launcher(desktop);
-    });
+    function(desktop) new Launcher(desktop));
 }
 
 
