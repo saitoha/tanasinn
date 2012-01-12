@@ -53,6 +53,7 @@ Desktop.definition = {
     this._root_element = document
       .documentElement
       .appendChild(document.createElement("box"));
+    this._root_element.id = "tanasinn_desktop";
 
     let broker = this._broker;
     broker.notify(<>initialized/{this.id}</>, this);

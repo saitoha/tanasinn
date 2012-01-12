@@ -1,13 +1,10 @@
 
+= ∴∵∴∵ミ∴∵ tanasinn terminal emurator ∵(・)∴∴∵∴.(・)∵∵
 
 #if __EN__
-= tanasinn terminal emurator 
-
-link:./usermanual-ja.html[日本語]
+link:./usermanual-ja.html[日本語/Japanese]
 #else
-= tanasinn terminal emurator 
-
-link:./usermanual.html[English]
+link:./usermanual.html[English/英語]
 #endif
 
 #if __EN__
@@ -53,7 +50,7 @@ http:#//zuse.jp/tanasinn/tanasinn@zuse.jp.xpi[ここからダウンロード]
     - Text selection / Rectangle text selection.
     - Supports copy / paste in Drag & Drop or keyboard shortcut.
     - Supports move / resize through Drag & Drop operation.
-    - Supports 256 terminal color, you can assign 32bit colors for them.
+    - Supports 256 terminal colors, you can assign 32bit colors for them.
     - Vimperator / Keysnail like commandline interface.
     - Running as standalone XUL application if you want. (but now buggy!)
 #else

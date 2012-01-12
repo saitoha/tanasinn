@@ -72,7 +72,7 @@ commands.add(['tan[asinn]'],
         args.string,  // command
         null, // TERM
         null, // size
-        ["modules/core", "modules/standard", "modules/plugin"])
+        ["modules/core", "modules/plugin"])
     }, 0);
   },
   { 
@@ -101,7 +101,7 @@ mappings.addUserMap([modes.NORMAL], [">"],
          null, // command 
          null, // TERM evnironment
          null, // size
-         ["modules/core", "modules/standard", "modules/plugin"])
+         ["modules/core", "modules/plugin"])
      }, 0);
    }
 );
@@ -128,7 +128,7 @@ mappings.add(modes.getCharModes("i"),
             "vim " + coUtils.File.getFileLeafFromAbstractPath(path).path, 
             null, // TERM environment
             null, // size
-            ["modules/core", "modules/standard", "modules/plugin"],
+            ["modules/core", "modules/plugin"],
             function callback() 
             {
               let content = coUtils.IO.readFromFile(path, "UTF-8");

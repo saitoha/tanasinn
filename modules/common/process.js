@@ -130,7 +130,6 @@ with (scope) {
       this.search_path = [ 
         "modules/core",
         "modules/plugin", 
-        "modules/standard", 
         this.runtime_path + "/plugin" 
       ];
       // load initial settings.
@@ -170,7 +169,6 @@ with (scope) {
       this.term = term || this.default_term;
       [this.width, this.height] 
         = size || [this.width, this.height];
-      //desktop.clear();
       // search path list
       let path = search_path || this.default_search_path;
   

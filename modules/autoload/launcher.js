@@ -37,54 +37,49 @@ Launcher.definition = {
   "[subscribe('event/desktop-started'), enabled]":
   function onLoad(desktop)
   {
+    try {
     let window = desktop.window;
     let broker = this._broker;
     let document = window.document;
-    //let parent = window
-    //  .document.documentElement
-    //  .appendChild(document.createElement("box"));
-    let parent = desktop.uniget("command/construct-chrome", {
-      parentNode: document.documentElement,
-      tagName: "box",
-      id: "coterimnal_launcher",
-    })["#root"];
-
-    let outer = window
-      .document.documentElement
-      .appendChild(document.createElement("box"));
-    outer.hidden = true;
-    outer.style.cssText = <>
-      position: fixed;
-      left: 0px;
-      top: 10%;
-      width: 100%;
-    </>;
-
-    let textbox = outer
-      .appendChild(document.createElement("textbox"));
-    textbox.style.cssText = <>
-      font-size: 80px;
-      padding: 0px;
-      width: 80%;
-      margin-left: 10%;
-    </>;
-
-    this._desktop = parent;
-    this._element = outer;
-    this._textbox = textbox;
-
-    textbox.addEventListener(
-      "blur", let (self = this)
-      function onblur(event) 
+    let {
+      tanasinn_window_layer,
+      tanasinn_launcher_layer,
+      tanasinn_launcher_textbox,
+    } = desktop.uniget("command/construct-chrome", 
+    [
       {
-        self.hide();
-      }, false);
-
-    textbox.addEventListener(
-      "keypress", let (self = this) function () 
+        parentNode: desktop.root_element,
+        tagName: "box",
+        id: "tanasinn_window_layer",
+      },
       {
-        self.onkeypress.apply(self, arguments);
-      }, false);
+        parentNode: desktop.root_element,
+        tagName: "box",
+        id: "tanasinn_launcher_layer",
+        hidden: true,
+        style: <>
+          position: fixed;
+          left: 0px;
+          top: 10%;
+          width: 100%;
+        </>,
+        childNodes: {
+          tagName: "textbox",
+          id: "tanasinn_launcher_textbox",
+          style: <>
+            font-size: 80px;
+            padding: 0px;
+            width: 80%;
+            margin-left: 10%;
+          </>,
+        },
+      },
+    ]);
+    this.onkeypress.enabled = true;
+    this.onblur.enabled = true;
+    this._window_layer = tanasinn_window_layer;
+    this._element = tanasinn_launcher_layer;
+    this._textbox = tanasinn_launcher_textbox;
 
     window.addEventListener(
       "keyup", let (self = this) function() 
@@ -99,9 +94,11 @@ Launcher.definition = {
       }, /* capture */ true);
 
     broker.notify(<>initialized/{this.id}</>, this);
+    } catch(e) {alert(e)}
   },
 
-  onDoubleCtrl: function onDoubleCtrl() 
+  "[subscribe('event/hotkey-double-ctrl'), enabled]":
+  function onDoubleCtrl() 
   {
     let box = this._element;
     if (box.hidden) {
@@ -136,19 +133,25 @@ Launcher.definition = {
     this.hide();
     coUtils.Timer.setTimeout(function() {
       let terminal =  desktop.start(
-        this._desktop,
+        this._window_layer,
         this._textbox.value.replace(/^\s+|\s+$/, ""),  // command
         null,  // TERM environment
         null,  // size 
         ["modules/core", 
-         "modules/standard", 
          "modules/plugin"]);
       terminal.style.left = <>{this.left = (this.left + Math.random() * 40 - 20) % 40 + 10}%</>;
       terminal.style.top = <>{this.top = (this.top + Math.random() * 40 - 20) % 40 + 10}%</>;
     }, 0, this);
   },
 
-  onkeypress: function onkeypress(event) 
+  "[listen('blur', '#tanasinn_launcher_textbox')]":
+  function onblur(event) 
+  {
+    this.hide();
+  },
+
+  "[listen('keypress', '#tanasinn_launcher_textbox')]":
+  function onkeypress(event) 
   { // nothrow
     if (13 == event.keyCode && 13 == event.which 
         && !event.ctrlKey && !event.altKey 
@@ -160,36 +163,41 @@ Launcher.definition = {
   onkeyup: function onkeyup(event) 
   { // nothrow
     //alert([event.keyCode, event.keyCode, event.ctrlKey, event.shiftKey, event.altKey, event.isChar].join("/"))
+    let broker = this._broker;
+    let diff_min = 30;
+    let diff_max = 400;
     if (16 == event.keyCode && 16 == event.which 
-        && !event.ctrlKey && !event.altKey 
-        && !event.shiftKey && !event.isChar) {
+        && !event.ctrlKey && !event.altKey && !event.isChar) {
+      broker.notify("event/shift-key-up");
       let broker = this._broker;
       let now = parseInt(new Date().getTime());
-      let diff = now - this._last_ctrlkey_time;
-      if (30 < diff && diff < 400) {
-        //session.notify("command/focus");
-        //session.notify("introducer-pressed/double-shift");
-        //session.notify("command/report-overlay-message", "shift + shift pressed");
-        this._last_ctrlkey_time = 0;
+      let diff = now - this._last_shiftup_time;
+      if (diff_min < diff && diff < diff_max) {
+        broker.notify("introducer-pressed/double-shift");
+        this._last_shiftup_time = 0;
       } else {
-        this._last_ctrlkey_time = now;
+        this._last_shiftup_time = now;
       }
-      //session.notify("event/shift-key-up");
     } else if (17 == event.keyCode && 17 == event.which 
-        /*&& !event.ctrlKey*/ && !event.altKey 
-        && !event.shiftKey && !event.isChar) {
+        && !event.altKey && !event.shiftKey && !event.isChar) {
       let now = parseInt(new Date().getTime());
-      let diff = now - this._last_ctrlkey_time;
-      if (30 < diff && diff < 400) {
-        this.onDoubleCtrl();
-        this._last_ctrlkey_time = 0;
+      let diff = now - this._last_ctrlup_time;
+      if (diff_min < diff && diff < diff_max) {
+        this._last_ctrlup_time = 0;
+        broker.notify("event/hotkey-double-ctrl");
       } else {
-        this._last_ctrlkey_time = now;
+        this._last_ctrlup_time = now;
       }
     } else if (18 == event.keyCode && 18 == event.which 
-        && !event.ctrlKey && !event.altKey 
-        && !event.shiftKey && !event.isChar) {
-      //session.notify("event/alt-key-up");
+        && !event.ctrlKey && !event.shiftKey && !event.isChar) {
+      let now = parseInt(new Date().getTime());
+      let diff = now - this._last_altup_time;
+      if (diff_min < diff && diff < diff_max) {
+        this._last_altup_time = 0;
+      } else {
+        this._last_altup_time = now;
+      }
+      broker.notify("event/alt-key-up");
     }
   },
 
