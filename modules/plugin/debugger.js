@@ -408,6 +408,9 @@ StepExecution.definition = {
       style: { 
         width: "400px", 
         maxWidth: "400px", 
+        fontWeight: "bold",
+        textShadow: "0px 0px 8px black",
+        fontSize: "20px",
       },
       childNodes: CO_TRACE_CONTROL == type ? [
         {

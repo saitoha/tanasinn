@@ -46,7 +46,8 @@ function getPackedKeycodeFromEvent(event)
         | !!event.ctrlKey                 << coUtils.Keyboard.KEY_CTRL 
         | (!!event.altKey || code > 0xff) << coUtils.Keyboard.KEY_ALT 
         | !!event.shiftKey                << coUtils.Keyboard.KEY_SHIFT 
-        | !event.isChar                   << coUtils.Keyboard.KEY_NOCHAR 
+        | 0 == event.which                << coUtils.Keyboard.KEY_NOCHAR 
+//        | !event.isChar                   << coUtils.Keyboard.KEY_NOCHAR 
         | !!event.metaKey                 << coUtils.Keyboard.KEY_META
         ;
       return packed_code;

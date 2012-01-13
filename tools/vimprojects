@@ -1,6 +1,7 @@
 =. {
  ChangeLog
  README
+ application.ini
  configure.ac
  acgecko.m4
  acplatform.m4
@@ -38,7 +39,7 @@
    session.js
    persist.js
 
-   ui.js
+   chrome.js
    grammer.js
    parser.js
    renderer.js
@@ -69,7 +70,7 @@
 
    copy.js
    paste.js
-   step.js
+   debugger.js
    move.js
    resizable.js
 
@@ -131,9 +132,7 @@
    .tanasinn.js
    licence.pl
    EastAsianWidthDetectorGenerator.pl
-   corun.js
-   ~/tanasinn-native.log
-   ~/tanasinn-js.log
+   tanasinn-vimp.js
   }
   mappings=mappings {
    cp932.txt.js

@@ -46,7 +46,7 @@ Scrollbar.definition = {
   "[persistable] border_width": 4,
   "[persistable] transition_duration": 500,
   "[persistable] color": "white",
-  "[persistable] background_color": "black",
+  "[persistable] background_color": "white",
 
   get template()
     ({
@@ -63,7 +63,6 @@ Scrollbar.definition = {
           MozTransitionProperty: "opacity",
           MozTransitionDuration: <>{this.transition_duration}ms</>,
           borderRadius: <>{this.inner_width + this.border_width * 2}px</>,
-          backgroundColor: this.background_color,
           border: <>{this.border_width}px solid {this.color}</>,
           width: <>{this.inner_width + this.border_width * 2}px</>,
           margin: "8px",

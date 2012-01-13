@@ -60,7 +60,7 @@ BottomPanel.definition = {
           tagName: "vbox",
           flex: 1,
           style: <>
-            background: black;
+//            background: black;
             opacity: 0.7;
             </>,
         },

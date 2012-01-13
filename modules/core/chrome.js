@@ -167,6 +167,11 @@ OuterChrome.definition = {
         = session.uniget("command/construct-chrome", this.template);
     this._element = box_element;
 
+    if ("Firefox" != coUtils.Runtime.app_name) {
+      this._element.firstChild.style.borderRadius = "0px";
+      this._element.firstChild.style.margin = "0px";
+    }
+
     session.notify(<>initialized/{this.id}</>, this);
   },
 
@@ -263,10 +268,6 @@ Chrome.definition = {
     let {tanasinn_content} 
       = session.uniget("command/construct-chrome", this.template);
     this._element = tanasinn_content;
-    if ("Firefox" == coUtils.Runtime.app_name) {
-      this._element.style.borderTopLeftRadius = "8px";
-      this._element.style.borderTopRightRadius = "8px";
-    }
     this.onGotFocus.enabled = true;
     this.onLostFocus.enabled = true;
     session.notify(<>initialized/{this.id}</>, this);

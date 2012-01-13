@@ -136,6 +136,7 @@ Renderer.definition = {
       {
         parentNode: "#tanasinn_center_area",
         tagName: "html:canvas",
+        style: "letter-spacing: 1em",
         id: "foreground_canvas",
       });
 
@@ -238,8 +239,8 @@ Renderer.definition = {
   "[subscribe('command/change-fontsize-by-offset')]":
   function changeFontSizeByOffset(offset) 
   {
-    this.font_size += offset;
-    this.line_height += offset;
+    this.font_size = Number(this.font_size) + offset;
+    this.line_height = Number(this.line_height) + offset;
     let session = this._broker;
     session.notify("event/font-size-changed", this.font_size);
   },
@@ -289,7 +290,7 @@ Renderer.definition = {
       let width = char_width * (end - column);
       let height = line_height | 0;
       this._drawBackground(context, left, top, width, height, attr.bg);
-      this._drawWord(context, text, left, top + text_offset, width, height, attr);
+      this._drawWord(context, text, left, top + text_offset, char_width, end - column, height, attr);
     }
   },
 
@@ -313,7 +314,7 @@ Renderer.definition = {
 
   /** Render text in specified cells.
    */
-  _drawWord: function _drawWord(context, text, x, y, width, height, attr)
+  _drawWord: function _drawWord(context, text, x, y, char_width, length, height, attr)
   {
     // Get hexadecimal formatted text color (#xxxxxx) 
     // form given attribute structure. 
@@ -321,13 +322,26 @@ Renderer.definition = {
     let fore_color = fore_color_map[attr.fg];
     this._setFont(context, attr.bold); 
     context.fillStyle = fore_color;
-    context.fillText(text, x, y, width + 1);
+    if (text.length == length) {
+      context.fillText(text, x, y);
+    } else if (text.length * 2 == length) {
+      text.split("").forEach(function(ch, index) {
+        context.fillText(ch, x + char_width * 2 * index, y);
+      }, this);
+    } else {
+      let position = x;
+      text.split("").forEach(function(ch, index) {
+        let is_wide = coUCS2EastAsianWidthTest(ch);
+        context.fillText(ch, position, y);
+        position += char_width * (is_wide ? 2: 1);
+      }, this);
+    }
     //if (attr.bold) {
     //  context.strokeStyle = fore_color;
     //  context.strokeText(text, x, y, width);
     //}
     if (attr.underline) {
-      this._drawUnderline(context, x, y, width, fore_color);
+      this._drawUnderline(context, x, y, char_width * length, fore_color);
     }
   },
 

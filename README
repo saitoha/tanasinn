@@ -230,13 +230,13 @@ make
 .Mac, Linux
 ----
   > ln -s $PWD $RUNTIME/tanasinn
-  > ln $PWD/modules/corun.js $RUNTIME/plugin/ 
+  > ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/ 
 ----
         
 .Cygwin
 ----
   > cmd /c mklink /D $(cygpath -w $RUNTIME/tanasinn) $(cygpath -w $PWD);
-  >	ln $PWD/modules/corun.js $RUNTIME/plugin/
+  >	ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/
 ----
 
     $RUNTIME is Vimperator runtime directory such as 
@@ -249,13 +249,13 @@ make
 .Mac, Linux
 ----
   > ln -s $PWD $RUNTIME/tanasinn
-  > ln $PWD/modules/corun.js $RUNTIME/plugin/ 
+  > ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/ 
 ----
         
 .Cygwin
 ----
   > cmd /c mklink /D $(cygpath -w $RUNTIME/tanasinn) $(cygpath -w $PWD);
-  >	ln $PWD/modules/corun.js $RUNTIME/plugin/
+  >	ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/
 ----
 
     $RUNTIMEは'$HOME/.vimperator'のようなVimperatorのランタイムディレクトリです。

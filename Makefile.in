@@ -109,21 +109,21 @@ install-vimperator:
 	case @host_os@ in \
 		cygwin*) \
 			cmd /c mklink /D $$(cygpath -w $$(cygpath $$USERPROFILE)/vimperator/tanasinn) $$(cygpath -w $(PWD)); \
-			ln -f $(PWD)/modules/corun.js ~/vimperator/plugin/ \
+			ln -f $(PWD)/modules/tanasinn-vimp.js ~/vimperator/plugin/ \
 			;; \
 		*) \
 			ln -sf $(PWD) ~/.vimperator/tanasinn; \
-			ln -f $(PWD)/modules/corun.js ~/.vimperator/plugin/ \
+			ln -f $(PWD)/modules/tanasinn-vimp.js ~/.vimperator/plugin/ \
 			;; \
 	esac
 
 uninstall-vimperator:
 	case @host_os@ in \
 		cygwin*) \
-			rm $$(cygpath $$USERPROFILE)/vimperator/plugin/corun.js \
+			rm $$(cygpath $$USERPROFILE)/vimperator/plugin/tanasinn-vimp.js \
 			;; \
 		*) \
-			rm ~/.vimperator/plugin/corun.js \
+			rm ~/.vimperator/plugin/tanasinn-vimp.js \
 			;; \
 	esac \
 
@@ -174,7 +174,7 @@ uninstall-extension:
 run-xulapp:
 	case @host_os@ in \
 		Darwin|darwin*) \
-			open /Applications/Aurora.app \
+			open /Applications/Firefox.app \
 				-n --args --app $(PWD)/application.ini \
 			;; \
 		Linux*) \

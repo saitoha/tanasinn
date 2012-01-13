@@ -35,13 +35,6 @@ function getTanasinnProcess()
   let process_class = Components
     .classes["@zuse.jp/tanasinn/process;1"]
   if (!process_class) {
-    /*
-    let file = Components.stack
-        .filename
-        .split(" -> ").pop()
-        .split("?").shift()
-        .replace(/\/[^\/]+?\/[^\/]+$/, "/tanasinn/modules/initialize.js");
-        */
     let file = [
       Components.stack.filename.split(" -> ").pop().split("?").shift(),
       "/../../tanasinn/modules/common/process.js"
@@ -60,15 +53,14 @@ function getTanasinnProcess()
 }
 
 commands.add(['tan[asinn]'], 
-  "Run a terminal emurator into this browser.", 
+  "Run a terminal emurator on this browser.", 
   function (args) 
   { 
     let process = getTanasinnProcess();
     window.setTimeout(function() {
-      let container = document.getElementById("tanasinn-container");
       let desktop = process.getDesktopFromWindow(window);
       desktop.start(
-        document.documentElement,
+        desktop.root_element.querySelector("#tanasinn_window_layer"),
         args.string,  // command
         null, // TERM
         null, // size
@@ -90,52 +82,3 @@ mappings.addUserMap([modes.NORMAL], ["!"],
 
 } ();
 
-/*
-mappings.addUserMap([modes.NORMAL], [">"],
-  'Run commands in tanasinn',
-   function () {
-     let process = getTanasinnProcess();
-     window.setTimeout(function() {
-       process.start(
-         document.documentElement,
-         null, // command 
-         null, // TERM evnironment
-         null, // size
-         ["modules/core", "modules/plugin"])
-     }, 0);
-   }
-);
-/*
-mappings.add(modes.getCharModes("i"),
-  ["<C-S-i>"], "Edit text field with on external editor",
-  function() 
-  {
-    let process = getTanasinnProcess();
-    let scope = process.createNewScope();
-    let file = Components
-      .classes["@mozilla.org/file/directory_service;1"]
-      .getService(Components.interfaces.nsIProperties)
-      .get("TmpD", Components.interfaces.nsIFile);  
-    file.append("suggestedName.tmp");  
-    file.append(Date.now());
-    //file.createUnique(Components.interfaces.nsIFile.NORMAL_FILE_TYPE, -1);  
-    let textbox = liberator.focus;
-    with (scope) {
-      let path = "$TmpD/" + Date.now();
-      coUtils.IO.writeToFile(path, textbox.value, function callback() {
-        process.start(
-            document.documentElement,
-            "vim " + coUtils.File.getFileLeafFromAbstractPath(path).path, 
-            null, // TERM environment
-            null, // size
-            ["modules/core", "modules/plugin"],
-            function callback() 
-            {
-              let content = coUtils.IO.readFromFile(path, "UTF-8");
-              textbox.value = content;
-              textbox.focus();
-            })
-      });
-    }
-  });
-*/

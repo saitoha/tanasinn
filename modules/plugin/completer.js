@@ -1537,6 +1537,7 @@ FontCompletionDisplayDriver.definition = {
                 font-size: 40px;
                 font-family: '{completion_text}';
                 margin: 0px;
+                margin-left: 8px;
               </>,
               childNodes: -1 == match_position ? 
                 { text: completion_text }:

@@ -106,14 +106,14 @@ image::images/color.png[width=640]
 #else
 .IMEで日本語を打ってみたところ (http:#//aquaskk.sourceforge.jp/[AquaSKK]使用)。
 #endif
-image::images/ime.png[width=640]
+image::images/ime2.png[width=640]
 
 #if __EN__
 .Scrollbar interface emerges only when it is needed (like OSX Lion).
 #else
 .スクロールバーインターフェースは必要なときにあらわれます(OSX Lionのように)。
 #endif
-image::images/scroll.png[width=640]
+image::images/scroll2.png[width=640]
 
 #if __EN__
 .Overlay indicator dislays various messages. it emerges when font size / window size / titlebar message is chenged.
@@ -148,14 +148,14 @@ image::images/fontsize.png[width=640]
 #else
 .http:#//www.blacktree.com/[QuckSilver] や https:#//addons.mozilla.org/ja/firefox/addon/mozilla-labs-ubiquity/[Ubiquity] にインスパイアされたランチャーインターフェース。
 #endif
-image::images/launcher.png[width=640]
+image::images/launcher2.png[width=640]
 
 #if __EN__
 .Reconnecting a detached session.
 #else
 .デタッチ済みのセッションに再接続しているところ。
 #endif
-image::images/session.png[width=640]
+image::images/session2.png[width=640]
 
 #if __EN__
 .running "http:#//www.tkl.iis.u-tokyo.ac.jp/~toyoda/index_e.html[sl]" (a joke software) on cygwin/Windows7.
@@ -165,11 +165,11 @@ image::images/session.png[width=640]
 image::images/sl.png[width=640]
 
 #if __EN__
-.Tracing terminal I/O sequence in real-time.
+.Self-Debugging and tracing terminal I/O sequence in real-time.
 #else
-.ターミナルI/Oシーケンスをリアルタイムにトレースしています。
+.セルフデバッギング。ターミナルI/Oシーケンスをリアルタイムにトレースしています。
 #endif
-image::images/debug.png[width=640]
+image::images/debug2.png[width=640]
 
 #if __EN__
 .Browser-in-browser. running http:#//w3m.sourceforge.net/index.en.html[w3m] (applied private patch) with inline images. How crazy!!!
@@ -183,7 +183,7 @@ image::images/w3m.png[width=640]
 #else
 .ブラウザの中でメーラー。http:#//www.gohome.org/wl/index.html[Wonderlust]をemacs上で動かしています。
 #endif
-image::images/wl.png[width=640]
+image::images/wl2.png[width=640]
 
 #if __EN__
 .Developping tanasinn with tanasinn at out of jail. here is running as a standalone XUL application.
@@ -276,13 +276,13 @@ make
 .Mac, Linux
 ----
 ln -s $PWD $RUNTIME/tanasinn
-ln $PWD/modules/corun.js $RUNTIME/plugin/ 
+ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/ 
 ----
         
 .Cygwin
 ----
 $(cygpath $COMSPEC) /c mklink /D $(cygpath -w $VIMRUNTIME/tanasinn) $(cygpath -w $PWD);
-ln $PWD/modules/corun.js $RUNTIME/plugin/
+ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/
 ----
 
     $RUNTIME is Vimperator runtime directory such as '$HOME/.vimperator'.
@@ -294,13 +294,13 @@ ln $PWD/modules/corun.js $RUNTIME/plugin/
 .Mac, Linux
 ----
 ln -s $PWD $RUNTIME/tanasinn
-ln $PWD/modules/corun.js $RUNTIME/plugin/ 
+ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/ 
 ----
         
 .Cygwin
 ----
 $(cygpath $COMSPEC) /c mklink /D $(cygpath -w $RUNTIME/tanasinn) $(cygpath -w $PWD)
-ln $PWD/modules/corun.js $RUNTIME/plugin/
+ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/
 ----
 
     $RUNTIMEは'$HOME/.vimperator'のようなVimperatorのランタイムディレクトリです。
