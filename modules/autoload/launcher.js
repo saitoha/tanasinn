@@ -130,17 +130,27 @@ ProgramCompleter.definition = {
 coUtils.Sessions = {
 
   _records: null,
+  _dirty: true,
 
   session_data_path: "$Home/.tanasinn/sessions.txt",
 
   remove: function remove(request_id)
   {
     delete this._records[request_id];
+    this._dirty = true;
     let backup_data_path = String(<>$Home/.tanasinn/persist/{request_id}.txt</>);
     let file = coUtils.File.getFileLeafFromAbstractPath(backup_data_path);
     if (file.exists()) {
       coUtils.Timer.setTimeout(function() file.remove(true), 1000);
     }
+  },
+
+  get: function get(request_id)
+  {
+    if (!this._records) {
+      this.load();
+    }
+    return this._records[request_id];
   },
 
   load: function load() 
@@ -161,6 +171,7 @@ coUtils.Sessions = {
         };
       }, this);
     }
+    this._dirty = false;
   },
 
   update: function update()
@@ -178,10 +189,14 @@ coUtils.Sessions = {
     }
     let content = lines.join("\n");
     coUtils.IO.writeToFile(this.session_data_path, content);
+    this._dirty = false;
   },
 
   getRecords: function getRecords()
   {
+    if (!this._records) {
+      this.load();
+    }
     return this._records;
   },
 
@@ -210,7 +225,43 @@ ProcessManager.definition = {
    */
   processIsAvailable: function processIsAvailable(pid) 
   {
-    return 0 == this.sendSignal(0, pid);
+   // return 0 == this.sendSignal(0, pid);
+    if ("number" != typeof pid) {
+      throw coUtils.Debug.Exception(
+        _("sendSignal: Invalid argument is detected. [%s]"), 
+        pid);
+    }
+    let runtime_path;
+    let args;
+    if ("WINNT" == coUtils.Runtime.os) {
+      runtime_path = String(<>{this.cygwin_root}\bin\run.exe</>);
+      args = [ "/bin/ps", "-p", String(pid) ];
+    } else { // Darwin, Linux or FreeBSD
+      runtime_path = "/bin/ps";
+      args = [ "-p", String(pid) ];
+    }
+
+    // create new localfile object.
+    let runtime = Components
+      .classes["@mozilla.org/file/local;1"]
+      .createInstance(Components.interfaces.nsILocalFile);
+    runtime.initWithPath(runtime_path);
+
+    // create new process object.
+    let process = Components
+      .classes["@mozilla.org/process/util;1"]
+      .createInstance(Components.interfaces.nsIProcess);
+    process.init(runtime);
+
+    try {
+      process.run(/* blocking */ true, args, args.length);
+    } catch (e) {
+      coUtils.Debug.reportMessage(
+        _("command '%s' failed."), 
+        args.join(" "));
+      return false;
+    }
+    return 0 == process.exitValue;
   },
 
   /** Sends a signal to specified process. it runs "kill" command.
@@ -257,6 +308,15 @@ ProcessManager.definition = {
     }
     return process.exitValue;
   },
+
+  /** Sends a signal to specified process. it runs "kill" command.
+   *  @param {Number} signal value to be sent.
+   *  @param {Number} pid the process ID to be checked.
+   *  @return {Number} a return value of kill command. 
+   */
+  sendSignal: function sendSignal(signal, pid) 
+  {
+  },
 };
 
 /** 
@@ -285,7 +345,7 @@ SessionsCompleter.definition = {
       try {
         if (this._process_manager.processIsAvailable(record.pid)) {
           yield {
-            name: "&" + request_id + " " + record.pid + " " + record.control_port,
+            name: "&" + request_id,
             value: record,
           };
         } else {
@@ -443,7 +503,7 @@ SessionsCompletionDisplayDriver.definition = {
     let session = this._broker;
     let rows = grid.appendChild(document.createElement("rows"))
     for (let i = 0; i < result.labels.length; ++i) {
-      let search_string = result.query.toLowerCase();
+      let search_string = result.query.toLowerCase().substr(1);
       let completion_text = result.comments[i].command;
       if (completion_text.length > 32 && i != current_index) {
         completion_text = completion_text.substr(0, 32) + "...";

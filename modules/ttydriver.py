@@ -143,8 +143,8 @@ if not hasattr(os, "uname"):
 system = os.uname()
 
 def trace(message):
-    #if system[0] == 'Darwin':
-    #    os.system("say -v vict '%s'" % message)
+    if system[0] == 'Darwin':
+        os.system("say -v vict '%s'" % message)
     #if system[0] == 'Linux':
     #    os.system("espeak '%s'" % message)
     os.system("echo '%s' >> ~/.tanasinn/log/tty.log &" % message);
@@ -336,6 +336,7 @@ class TeletypeDriver:
         while True:
             pid, status = os.wait()
             if pid == control_process_pid:
+                trace("in time eee.")
                 break;
             if pid == self.__app_process_pid:
                 try:
@@ -343,6 +344,7 @@ class TeletypeDriver:
                 except:
                     pass
                 break;
+        trace("before.")
 
         #os.waitpid(control_process_pid, 0)
         try:
@@ -396,7 +398,7 @@ def fork_app_process(master, slave, command, term):
         # make this process session leader.
         sid = os.setsid()
 
-        fcntl.ioctl(master, termios.TIOCSCTTY, 1)
+        #fcntl.ioctl(master, termios.TIOCSCTTY, 1)
         # master handle is to be closed in slave's process branch.
         #os.close(master)
         os.chdir("/")
@@ -414,7 +416,7 @@ def fork_app_process(master, slave, command, term):
         #command = "showkey -a"
         #if sid == None:
         #    os.system("echo 'tanasinn: os.setsid failed.'")
-        fcntl.ioctl(master, termios.TIOCSCTTY, 1)
+        #fcntl.ioctl(master, termios.TIOCSCTTY, 1)
         os.execlp("/bin/bash", "/bin/bash", "-c", "cd $HOME && exec %s" % command)
 
     # slave handle is to be closed in master's process.
@@ -440,15 +442,15 @@ if __name__ == "__main__":
     command, term = [ base64.b64decode(value) for value in startup_info]
     
     ## modify termios properties, and enables master's output flow control ON. 
-    #master, slave = create_a_pair_of_tty_device();
+    master, slave = create_a_pair_of_tty_device();
 
     ## fork slave's process, and get tty name.
-    #pid, ttyname = fork_app_process(master, slave, command, term)    
-    pid, master = pty.fork()
-    if not pid:
-        os.environ["TERM"] = term 
-        os.execlp("/bin/sh", "/bin/sh", "-c", "cd $HOME && exec %s" % command)
-    ttyname = ""
+    pid, ttyname = fork_app_process(master, slave, command, term)    
+    #pid, master = pty.fork()
+    #if not pid:
+    #    os.environ["TERM"] = term 
+    #    os.execlp("/bin/sh", "/bin/sh", "-c", "cd $HOME && exec %s" % command)
+    #ttyname = ""
 
     # send control channel's port, pid, ttyname
     connection_socket.send("%s:%s:%s" % (control_port, pid, ttyname))
@@ -486,11 +488,15 @@ if __name__ == "__main__":
                 if system[0] == 'cygwin':
                     sessiondb_path = os.system("cygpath '%s'" % sessiondb_path)
 
-                f = open(sessiondb_path, "a")
-                f.write("%s,%s,%s,%s,%s\n" % (request_id, base64.b64encode(command), control_port, pid, ttyname));
-                f.flush()
-                f.close()
+                with open(sys.argv[0], "r") as lockfile:
+                    fcntl.flock(lockfile.fileno(), fcntl.LOCK_EX)
+                    f = open(sessiondb_path, "a")
+                    f.write("%s,%s,%s,%s,%s\n" % (request_id, base64.b64encode(command), control_port, pid, ttyname));
+                    f.flush()
+                    f.close()
 
+#                os.system("echo '%s,%s,%s,%s,%s' >> ~/.tanasinn/sessions.txt" 
+#                    % (request_id, base64.b64encode(command), control_port, pid, ttyname));
                 trace("suspended.")
 
                 # re-establish <Control channel> socket connection. 

@@ -640,9 +640,10 @@ SocketTeletypeService.definition = {
     let session = this._broker;
     if (0 == session.command.indexOf("&")) {
       try {
-      let [, request_id, pid, control_port] = session.command.split(/[& ]/);
-      this.connect(Number(control_port));
-      this._pid = Number(pid);
+      let request_id = session.command.substr(1);
+      let record = coUtils.Sessions.get(request_id);
+      this.connect(Number(record.control_port));
+      this._pid = Number(record.pid);
       coUtils.Sessions.remove(request_id);
       coUtils.Sessions.update();
       let backup_data_path = String(<>$Home/.tanasinn/persist/{request_id}.txt</>);
@@ -653,7 +654,7 @@ SocketTeletypeService.definition = {
         session.subscribe(
           "@initialized/renderer", 
           function() session.notify("command/draw", true));
-        coUtils.Timer.setTimeout(function() file.remove(true), 1000);
+        coUtils.Timer.setTimeout(function() file.exists() && file.remove(true), 1000);
       }
       } catch(e) {alert(e)}
     } else {
