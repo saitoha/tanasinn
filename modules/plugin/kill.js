@@ -51,12 +51,16 @@ Kill.definition = {
   /** Installs itself. */
   install: function install() 
   {
+    this.detach.enabled = true;
+    this.kill.enabled = true;
     this.onContextMenu.enabled = true;
   }, 
 
   /** Uninstall itself. */
   uninstall: function() 
   {
+    this.detach.enabled = false;
+    this.kill.enabled = false;
     this.onContextMenu.enabled = false;
   },
 
@@ -85,8 +89,9 @@ Kill.definition = {
     ];
   },
 
-  /** detach from process and stop tty */
-  detach: function detach() 
+  /** detach from process */
+  "[command('detach'), _('detach from process.')]":
+  function detach() 
   {
     // stops TTY device.
     let session = this._broker;
@@ -94,8 +99,9 @@ Kill.definition = {
     session.stop();
   },
 
-  /** detach from process and stop tty */
-  kill: function kill() 
+  /** kill process and stop tty */
+  "[command('kill'), _('kill process and stop tty')]":
+  function kill() 
   {
     // stops TTY device.
     let session = this._broker;

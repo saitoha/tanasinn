@@ -540,6 +540,8 @@ Console.definition = {
        ]
      },
 
+  enabled_when_startup: false, // override
+
   /** constructor */
   "[subscribe('@initialized/{chrome & bottompanel}'), enabled]":
   function onLoad(chrome, bottom_panel) 

@@ -429,7 +429,7 @@ if __name__ == "__main__":
 
     #socket.setdefaulttimeout(1)
     control_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    control_socket.bind(('', 0))
+    control_socket.bind(("127.0.0.1", 0))
     control_socket.listen(1)
     addr, control_port = control_socket.getsockname()
 
@@ -455,8 +455,9 @@ if __name__ == "__main__":
 
     # establish <Control channel> socket connection. 
     control_connection, addr = control_socket.accept()
-    io_port_str, request_id = control_connection.recv(BUFFER_SIZE).split(" ")
+    io_port_str, request_id, sessiondb_path = control_connection.recv(BUFFER_SIZE).split(" ")
     io_port = int(io_port_str)
+    sessiondb_path = base64.b64decode(sessiondb_path)
 
     try:
         while True:
@@ -482,19 +483,29 @@ if __name__ == "__main__":
                 break
             else:
                 #os.write(master, "\x1a")
-                os.system("echo '%s,%s,%s,%s,%s' >> ~/.tanasinn/sessions.txt" 
-                    % (request_id, connection_port, control_port, pid, ttyname));
+                if system[0] == 'cygwin':
+                    sessiondb_path = os.system("cygpath '%s'" % sessiondb_path)
+
+                f = open(sessiondb_path, "a")
+                f.write("%s,%s,%s,%s,%s\n" % (request_id, base64.b64encode(command), control_port, pid, ttyname));
+                f.flush()
+                f.close()
+
                 trace("suspended.")
 
                 # re-establish <Control channel> socket connection. 
                 control_connection, addr = control_socket.accept()
-                io_port_str, request_id = control_connection.recv(BUFFER_SIZE).split(" ")
+                trace("resume.")
+                io_port_str, request_id, sessiondb_path = control_connection.recv(BUFFER_SIZE).split(" ")
                 io_port = int(io_port_str)
+                sessiondb_path = base64.b64decode(sessiondb_path)
 
                 os.system("test -e ~/.tanasinn/sessions.txt && sed -i -e '/^%s,/d' ~/.tanasinn/sessions.txt" % request_id)
 
     except socket.error, e:
         trace("A socket error occured.")
+    except e:
+        trace(str(e))
     finally:
         os.close(master)
         #os.close(slave)

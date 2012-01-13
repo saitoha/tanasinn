@@ -40,8 +40,10 @@ Commandline.definition = {
         <version>0.1</version>
     </plugin>,
 
-  _result: null,
   "[persistable] completion_delay": 180,
+
+  _index: -1,
+  _result: null,
 
   get rowCount() 
   {
@@ -55,8 +57,6 @@ Commandline.definition = {
   {
     return this._index;
   },
-
-  _index: -1,
 
   select: function select(index)
   {
@@ -291,8 +291,6 @@ Commandline.definition = {
   function onblur(event) 
   {
     this._popup.hidePopup();
-    //let session = this._broker;
-    //session.notify("command/focus");
   },
 
 
@@ -322,8 +320,8 @@ Commandline.definition = {
   invalidate: function invalidate(result) 
   {
 
-  let textbox = this._textbox;
-  if (textbox.boxObject.scrollLeft > 0) {
+    let textbox = this._textbox;
+    if (textbox.boxObject.scrollLeft > 0) {
       this._completion.inputField.value = "";
     } else if (result.labels.length > 0) {
       if ("closed" == this._popup.state || "hiding" == this._popup.state) {
@@ -382,7 +380,7 @@ Commandline.definition = {
       this.select(-1);
       let session = this._broker;
       session.notify(
-        "command/complete", 
+        "command/complete-commandline", 
         {
           source: current_text, 
           listener: this,
@@ -464,6 +462,56 @@ Commandline.definition = {
       event.stopPropagation();
       event.preventDefault();
     }
+    if ("a".charCodeAt(0) == code && event.ctrlKey) { // ^a
+      let textbox = this._textbox;
+      textbox.selectionStart = 0;
+      textbox.selectionEnd = 0;
+    }
+    if ("e".charCodeAt(0) == code && event.ctrlKey) { // ^e
+      let textbox = this._textbox;
+      let length = this._textbox.value.length;
+      textbox.selectionStart = length - 1;
+      textbox.selectionEnd = length - 1;
+    }
+    if ("b".charCodeAt(0) == code && event.ctrlKey) { // ^b
+      let textbox = this._textbox;
+      let start = textbox.selectionStart;
+      let end = textbox.selectionEnd;
+      if (start == end) {
+        textbox.selectionStart = start - 1;
+        textbox.selectionEnd = start - 1;
+      } else {
+        textbox.selectionEnd = start;
+      }
+    }
+    if ("f".charCodeAt(0) == code && event.ctrlKey) { // ^f
+      let textbox = this._textbox;
+      let start = textbox.selectionStart;
+      let end = textbox.selectionEnd;
+      if (start == end) {
+        textbox.selectionStart = start + 1;
+        textbox.selectionEnd = start + 1;
+      } else {
+        textbox.selectionStart = end;
+      }
+    }
+    if ("k".charCodeAt(0) == code && event.ctrlKey) { // ^k
+      let textbox = this._textbox;
+      let value = textbox.value;
+      let start = textbox.selectionStart;
+      let end = textbox.selectionEnd;
+      if (start == end) {
+        this._textbox.inputField.value 
+          = value.substr(0, textbox.selectionStart);
+      } else {
+        this._textbox.inputField.value 
+          = value.substr(0, textbox.selectionStart) 
+          + value.substr(textbox.selectionEnd);
+        textbox.selectionStart = start;
+        textbox.selectionEnd = start;
+      }
+      this.setCompletionTrigger();
+    }
     if ("p".charCodeAt(0) == code && event.ctrlKey) { // ^p
       this.up();
     }
@@ -479,6 +527,7 @@ Commandline.definition = {
       if (position > 0) {
         this._textbox.inputField.value 
           = value.substr(0, position - 1) + value.substr(position);
+        this.setCompletionTrigger();
       }
     }
     if ("w".charCodeAt(0) == code && event.ctrlKey) { // ^w
@@ -487,6 +536,7 @@ Commandline.definition = {
       this._textbox.inputField.value
         = value.substr(0, position).replace(/\w+$|\W+$/, "") 
         + value.substr(position);
+      this.setCompletionTrigger();
     }
     if ("f".charCodeAt(0) == code && event.ctrlKey) { // ^h
       this._textbox.selectionStart += 1;

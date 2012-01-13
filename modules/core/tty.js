@@ -637,49 +637,38 @@ SocketTeletypeService.definition = {
     this._controller = controller;
     this._external_driver = external_driver;
 
-    let session_data_path = "$Home/.tanasinn/sessions.txt";
-    if (coUtils.File.exists(session_data_path)) {
-      let sessions = coUtils.IO.readFromFile(session_data_path);
-      let lines = sessions.split(/[\r\n]/);
-      for (let [, session_data] in Iterator(lines.reverse())) {
-        try {
-          let sequence = session_data.split(",");
-          if (sequence.length == 5) {
-            let [request_id, connection_port, control_port, pid, ttyname] = sequence;
-            if (external_driver.processIsAvailable(pid)) {
-              this.connect(Number(control_port));
-              let session = this._broker;
-              let backup_data_path = String(<>$Home/.tanasinn/persist/{request_id}.txt</>);
-              let file = coUtils.File.getFileLeafFromAbstractPath(backup_data_path);
-              this._pid = Number(pid);
-              if (file.exists()) {
-                let context = eval(coUtils.IO.readFromFile(backup_data_path));
-                session.notify("command/restore", context);
-                session.subscribe(
-                  "@initialized/renderer", 
-                  function() session.notify("command/draw", true));
-                coUtils.Timer.setTimeout(function() file.remove(true), 1000);
-              }
-              return;
-            }
-          }
-        } catch (e) {
-          coUtils.Debug.reportError(e);
-        }
+    let session = this._broker;
+    if (0 == session.command.indexOf("&")) {
+      try {
+      let [, request_id, pid, control_port] = session.command.split(/[& ]/);
+      this.connect(Number(control_port));
+      this._pid = Number(pid);
+      coUtils.Sessions.remove(request_id);
+      coUtils.Sessions.update();
+      let backup_data_path = String(<>$Home/.tanasinn/persist/{request_id}.txt</>);
+      let file = coUtils.File.getFileLeafFromAbstractPath(backup_data_path);
+      if (file.exists()) {
+        let context = eval(coUtils.IO.readFromFile(backup_data_path));
+        session.notify("command/restore", context);
+        session.subscribe(
+          "@initialized/renderer", 
+          function() session.notify("command/draw", true));
+        coUtils.Timer.setTimeout(function() file.remove(true), 1000);
       }
+      } catch(e) {alert(e)}
+    } else {
+      let socket = Components
+        .classes["@mozilla.org/network/server-socket;1"]
+        .createInstance(Components.interfaces.nsIServerSocket);
+  
+      // initialize server socket.
+      socket.init(/* port */ -1, /* loop back */ true, /* connection count */ 1);
+      socket.asyncListen(this);
+  
+      coUtils.Timer.setTimeout(function() { // ensure that "runAsync" is called after "asyncListen".
+        external_driver.start(socket.port); // nsIProcess::runAsync.
+      }, 100);
     }
-
-    let socket = Components
-      .classes["@mozilla.org/network/server-socket;1"]
-      .createInstance(Components.interfaces.nsIServerSocket);
-
-    // initialize server socket.
-    socket.init(/* port */ -1, /* loop back */ true, /* connection count */ 1);
-    socket.asyncListen(this);
-
-    coUtils.Timer.setTimeout(function() { // ensure that "runAsync" is called after "asyncListen".
-      external_driver.start(socket.port); // nsIProcess::runAsync.
-    }, 100);
   },
 
   "[subscribe('@command/kill'), enabled]": 
@@ -703,7 +692,13 @@ SocketTeletypeService.definition = {
   {
     let session = this._broker;
     this._controller.start(control_port);
-    let message = [this._io_manager.port, session.request_id].join(" ");
+    let sessiondb_path = coUtils.File
+      .getFileLeafFromAbstractPath("$Home/.tanasinn/sessions.txt").path;
+    let message = [
+      this._io_manager.port, 
+      session.request_id,
+      coUtils.Text.base64encode(sessiondb_path),
+    ].join(" ");
     this._controller.post(message);
     this.send.enabled = true;
     session.notify("initialized/tty", this);

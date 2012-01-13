@@ -62,7 +62,7 @@ CommandProvider.definition = {
     return filtered_command.shift();
   },
   
-  "[subscribe('command/complete')]":
+  "[subscribe('command/complete-commandline')]":
   function complete(completion_info) 
   {
     let {source, listener} = completion_info;
