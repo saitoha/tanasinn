@@ -103,37 +103,56 @@ OuterChrome.definition = {
     {
       parentNode: broker.root_element, 
       id: "box_element",
-      className: "tanasinn",
-      tagName: "grid",
-      childNodes: {
-        tagName: "rows",
-        childNodes: [
-          {
-            tagName: "row",
+      tagName: "stack",
+      childNodes: [
+        {
+          tagName: "box",
+          style: <>
+            -moz-box-shadow: 5px 4px 29px black;
+            border-radius: 8px;
+            //background: black;
+            background: -moz-linear-gradient(top, #777, #000);
+//            background: -moz-radial-gradient(top, #000, #888);
+            margin: 5px;
+            opacity: 0.8;
+          </>,
+        },
+        {
+          tagName: "grid",
+          className: "tanasinn",
+          style: <>
+          </>,
+          childNodes: {
+            tagName: "rows",
             childNodes: [
-              { tagName: "box", id: "tanasinn_resizer_topleft", },
-              { tagName: "vbox", id: "tanasinn_resizer_top", },
-              { tagName: "box", id: "tanasinn_resizer_topright", },
+              {
+                tagName: "row",
+                childNodes: [
+                  { tagName: "box", id: "tanasinn_resizer_topleft", },
+                  { tagName: "vbox", id: "tanasinn_resizer_top", },
+                  { tagName: "box", id: "tanasinn_resizer_topright", },
+                ],
+              },
+              {
+                tagName: "row",
+                childNodes: [
+                  { tagName: "hbox", id: "tanasinn_resizer_left", },
+                  { tagName: "vbox", id: "tanasinn_chrome", },
+                  { tagName: "hbox", id: "tanasinn_resizer_right", },
+                ]
+              },
+              { 
+                tagName: "row",
+                childNodes: [
+                  { tagName: "box", id: "tanasinn_resizer_bottomleft", },
+                  { tagName: "vbox", id: "tanasinn_resizer_bottom", },
+                  { tagName: "box", id: "tanasinn_resizer_bottomright", },
+                ],
+              },
             ],
           },
-          {
-            tagName: "row",
-            childNodes: [
-              { tagName: "hbox", id: "tanasinn_resizer_left", },
-              { tagName: "vbox", id: "tanasinn_chrome", },
-              { tagName: "hbox", id: "tanasinn_resizer_right", },
-            ]
-          },
-          { 
-            tagName: "row",
-            childNodes: [
-              { tagName: "box", id: "tanasinn_resizer_bottomleft", },
-              { tagName: "vbox", id: "tanasinn_resizer_bottom", },
-              { tagName: "box", id: "tanasinn_resizer_bottomright", },
-            ],
-          }
-        ]
-      }
+        },
+      ],
     },
 
   board: null,
@@ -192,7 +211,7 @@ OuterChrome.definition = {
   "[subscribe('command/set-opacity'), enabled]": 
   function setOpacity(opacity, duration) 
   {
-    let target = this._element.querySelector("#tanasinn_chrome");
+    let target = this._element.querySelector("#box_element");
     if (target.style.opacity <= opacity) {
       duration = 0; 
     }
@@ -225,10 +244,6 @@ Chrome.definition = {
       parentNode: "#tanasinn_chrome",
       tagName: "stack",
       id: "tanasinn_content",
-      style: { 
-        opacity: 0.7,
-        background: "#000", 
-      },
       childNodes: {
         id: "tanasinn_center_area",
         tagName: "stack",

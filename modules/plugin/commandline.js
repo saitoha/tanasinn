@@ -140,10 +140,8 @@ Commandline.definition = {
             tagName: "box",
             margin: 0,
             style: { 
-              backgroundColor: "black", 
-              opacity: 0.7, 
-              borderBottomLeftRadius: "8px",
-              borderBottomRightRadius: "8px",
+//              borderBottomLeftRadius: "8px",
+//              borderBottomRightRadius: "8px",
             },
           },
           {

@@ -92,14 +92,14 @@ OverlayIndicator.definition = {
         tagName: "label",
         crop: "end",
         id: "tanasinn_overlay_indicator_content",
-        style: {
-          background: "black",
-          color: "white",
-          fontSize: "30px",
-          padding: "0.3em", 
-          borderRadius: "0.5em", 
-          border: "solid 8px white",
-        },
+        style: <> 
+          background: -moz-linear-gradient(top, #777, #000);
+          color: white;
+          font-size: 30px;
+          padding: 0.3em; 
+          border-radius: 0.5em; 
+          border: solid 8px white;
+        </>,
       },
     }),
 

@@ -99,7 +99,8 @@ ProgramCompleter.definition = {
   {
     try {
     let lower_source = source.toLowerCase();
-    let files = [file for (file in generateEntries(["/bin", "/usr/bin", "/usr/local/bin"]))];
+    let search_path = ["/bin", "/usr/bin", "/usr/local/bin"];
+    let files = [file for (file in generateEntries(search_path))];
     let data = files.map(function(file) {
       return {
         name: file.path,
@@ -138,11 +139,18 @@ coUtils.Sessions = {
   {
     delete this._records[request_id];
     this._dirty = true;
-    let backup_data_path = String(<>$Home/.tanasinn/persist/{request_id}.txt</>);
-    let file = coUtils.File.getFileLeafFromAbstractPath(backup_data_path);
-    if (file.exists()) {
-      coUtils.Timer.setTimeout(function() file.remove(true), 1000);
-    }
+    coUtils.Timer.setTimeout(function() {
+      let backup_data_path = String(<>$Home/.tanasinn/persist/{request_id}.txt</>);
+      let file = coUtils.File.getFileLeafFromAbstractPath(backup_data_path);
+      if (file.exists()) {
+        file.remove(true);
+      }
+      backup_data_path = String(<>$Home/.tanasinn/persist/{request_id}.png</>);
+      file = coUtils.File.getFileLeafFromAbstractPath(backup_data_path);
+      if (file.exists()) {
+        file.remove(true);
+      }
+    }, 1000);
   },
 
   get: function get(request_id)
@@ -308,15 +316,6 @@ ProcessManager.definition = {
     }
     return process.exitValue;
   },
-
-  /** Sends a signal to specified process. it runs "kill" command.
-   *  @param {Number} signal value to be sent.
-   *  @param {Number} pid the process ID to be checked.
-   *  @return {Number} a return value of kill command. 
-   */
-  sendSignal: function sendSignal(signal, pid) 
-  {
-  },
 };
 
 /** 
@@ -417,8 +416,8 @@ TextCompletionDisplayDriver.definition = {
       if ("quoted" == result.option) {
         completion_text = completion_text.slice(1, -1);
       }
-      if (completion_text.length > 32 && i != current_index) {
-        completion_text = completion_text.substr(0, 32) + "...";
+      if (completion_text.length > 20 && i != current_index) {
+        completion_text = completion_text.substr(0, 20) + "...";
       }
       let match_position = completion_text
         .toLowerCase()
@@ -452,8 +451,8 @@ TextCompletionDisplayDriver.definition = {
                     style: <>
                       margin: 0px; 
                       font-weight: bold; 
-                      color: #f00; 
-                      text-decoration: underline;
+                      text-shadow: 1px 1px 2px black;
+                      color: #f88; 
                     </>,
                   },
                   { text: completion_text.substr(match_position + search_string.length) },
@@ -461,7 +460,7 @@ TextCompletionDisplayDriver.definition = {
             },
             {
               tagName: "label",
-              style: "font-size: 1em; color: #777;",
+              style: "font-size: 1em; color: #555;",
               value: result.comments && result.comments[i],
               crop: "end",
             },
@@ -505,8 +504,8 @@ SessionsCompletionDisplayDriver.definition = {
     for (let i = 0; i < result.labels.length; ++i) {
       let search_string = result.query.toLowerCase().substr(1);
       let completion_text = result.comments[i].command;
-      if (completion_text.length > 32 && i != current_index) {
-        completion_text = completion_text.substr(0, 32) + "...";
+      if (completion_text.length > 20 && i != current_index) {
+        completion_text = completion_text.substr(0, 20) + "...";
       }
 
       session.uniget(
@@ -548,43 +547,13 @@ SessionsCompletionDisplayDriver.definition = {
               childNodes: [
                 {
                   tagName: "box",
-                  childNodes: let (match_position = completion_text.toLowerCase().indexOf(search_string))
-                    -1 == match_position ? 
-                      { text: completion_text }:
-                      [
-                        { text: completion_text.substr(0, match_position) },
-                        {
-                          tagName: "label",
-                          innerText: completion_text.substr(match_position, search_string.length),
-                          style: <>
-                            margin: 0px; 
-                            font-weight: bold; 
-                            color: #f00; 
-                            text-decoration: underline;
-                          </>,
-                        },
-                        { text: completion_text.substr(match_position + search_string.length) },
-                      ],
+                  childNodes: { text: completion_text },
                 },
+                let (completion_text = result.comments[i].pid.toString())
+                let (match_position = completion_text.indexOf(search_string))
                 {
                   tagName: "box",
-                  childNodes: let (match_position = completion_text.toLowerCase().indexOf(search_string))
-                    -1 == match_position ? 
-                      { text: completion_text }:
-                      [
-                        { text: completion_text.substr(0, match_position) },
-                        {
-                          tagName: "label",
-                          innerText: completion_text.substr(match_position, search_string.length),
-                          style: <>
-                            margin: 0px; 
-                            font-weight: bold; 
-                            color: #f00; 
-                            text-decoration: underline;
-                          </>,
-                        },
-                        { text: completion_text.substr(match_position + search_string.length) },
-                      ],
+                  childNodes: { text: completion_text },
                 },
               ],
             },
@@ -682,23 +651,17 @@ Launcher.definition = {
         hidden: true,
         style: <>
           position: fixed;
-          left: 0px;
-          top: 10%;
-          width: 100%;
+          left: 60px;
+          top: 80px;
         </>,
         childNodes: [
-          {
-            tagName: "spacer",
-            style: <>
-              width: 10%;
-            </>,
-          },
           {
             tagName: "vbox",
             style: <>
               padding: 20px;
               border-radius: 20px;
               background: -moz-linear-gradient(top, #999, #444);
+              -moz-box-shadow: 10px 10px 20px black;
               opacity: 0.85;
             </>,
             childNodes: {
@@ -715,22 +678,57 @@ Launcher.definition = {
           },
           {
             tagName: "panel",
-            //style: { MozAppearance: "none", },
-            style: { MozUserFocus: "ignore", /*font: "menu",*/ },
+            style: <> 
+              -moz-appearance: none;
+              -moz-user-focus: ignore; 
+              -moz-box-shadow: 15px 14px 9px black;
+              font: menu;
+              opacity: 0.87;
+              background: transparent;
+//              background: -moz-linear-gradient(top, #cce, #aae);
+            </>,
             noautofocus: true,
             height: 400,
             id: "tanasinn_launcher_completion_popup",
             childNodes: {
-              tagName: "scrollbox",
-              id: "tanasinn_launcher_completion_scroll",
-              orient: "vertical", // box-packing
+              tagName: "stack",
               flex: 1,
-              childNodes: {
-                tagName: "grid",
-                style: { overflowX: "hidden", overflowY: "auto", fontSize: "20", },
-                id: "tanasinn_launcher_completion_root",
-              }
-            }, // tree
+              childNodes: [
+                {
+                  tagName: "box",
+                  style: <> 
+                    border: 1px solid #aaa;
+                    border-radius: 12px;
+                    background: -moz-linear-gradient(top, #ccc, #aaa);
+                  </>,
+                },
+                {
+                  tagName: "scrollbox",
+                  id: "tanasinn_launcher_completion_scroll",
+                  flex: 1,
+                  style: <> 
+                    margin: 12px;
+                    overflow-x: hidden;
+                    overflow-y: auto;
+                  </>,
+                  orient: "vertical", // box-packing
+                  childNodes: {
+                    tagName: "grid",
+                    flex: 1,
+                    id: "tanasinn_launcher_completion_root",
+                    style: <> 
+                      //overflow-x: hidden;
+                      //overflow-y: auto;
+                      font-size: 20px;
+                      color: #fff;
+                      -moz-box-shadow: 15px 14px 19px black;
+                      text-shadow: 3px 3px 9px black;
+                  //background: transparent;
+                    </>,
+                  }
+                }, // scrollbox
+              ],
+            }, // stack
           },  // panel
         ],
       },
@@ -778,8 +776,11 @@ Launcher.definition = {
     }
     if (index > -1) {
       row = completion_root.querySelector("rows").childNodes[index];
-      row.style.background = "#999";
-      row.style.color = "white";
+      row.style.color = "black";
+      row.style.cssText = <>
+        background: -moz-linear-gradient(top, #ddd, #eee);
+        border-radius: 4px;
+      </>;
       try {
         let scroll_box = completion_root.parentNode;
         let box_object = scroll_box.boxObject
@@ -834,13 +835,14 @@ Launcher.definition = {
     if (textbox.boxObject.scrollLeft > 0) {
 //      this._completion.inputField.value = "";
     } else if (result.labels.length > 0) {
-      if ("closed" == this._popup.state || "hiding" == this._popup.state) {
-        let focused_element = this._popup.ownerDocument.commandDispatcher.focusedElement;
+      let popup = this._popup;
+      if ("closed" == popup.state || "hiding" == this._popup.state) {
+        let focused_element = popup.ownerDocument.commandDispatcher.focusedElement;
         if (focused_element && focused_element.isEqualNode(textbox.inputField)) {
           let completion_root = this._completion_root;
-          completion_root.width = textbox.boxObject.width;
+          popup.width = textbox.boxObject.width;
           completion_root.height = 500;
-          this._popup.openPopup(textbox, "after_start", 0, 0, true, true);
+          popup.openPopup(textbox, "after_start", 0, 0, true, true);
         }
       }
       let index = Math.max(0, this.currentIndex);

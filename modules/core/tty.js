@@ -150,6 +150,7 @@ Controller.definition = {
   "[subscribe('@event/session-stopping'), enabled]":
   function stop() 
   {
+    this.post("disconnect\n");
     this._input.close();
     this._output.close();
   },
@@ -702,17 +703,27 @@ SocketTeletypeService.definition = {
     ].join(" ");
     this._controller.post(message);
     this.send.enabled = true;
+    try { 
+    let timer = coUtils.Timer.setInterval(function() {
+      this._controller.post("beacon\n") 
+    }, 5000, this);
+    let id = new Date().getTime().toString();
+    session.subscribe("event/session-stopping", function() {
+      session.unsubscribe(id);
+      timer.cancel();
+    }, this, id);
+    } catch(e) {alert(e)}
     session.notify("initialized/tty", this);
   },
 
-  onSocketAccepted: function onSocketAccepted(a_serv, a_transport) 
+  onSocketAccepted: function onSocketAccepted(serv, transport) 
   {
     let session = this._broker;
+    let istream = transport.openInputStream(0, 1024 * 1024, 1);
+    let ostream = transport.openOutputStream(0, 1024 * 1024, 1);
     let message = [session.command, session.term]
       .map(function(value) coUtils.Text.base64encode(value))
       .join(" ")
-    let istream = a_transport.openInputStream(0, 1024 * 1024, 1);
-    let ostream = a_transport.openOutputStream(0, 1024 * 1024, 1);
     ostream.write(message, message.length);
     let scriptable_input_stream = Components
       .classes["@mozilla.org/scriptableinputstream;1"]
@@ -774,6 +785,7 @@ SocketTeletypeService.definition = {
   function onDataAvailable(request, context, input, offset, count) 
   {
     let data = context.readBytes(count);
+    context.close()
     let [control_port, pid, ttyname] = data.split(":");
     this._pid = Number(pid);
     this._ttyname = ttyname;

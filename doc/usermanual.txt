@@ -125,7 +125,7 @@ image::images/overlay.png[width=640]
 #if __EN__
 .Commandline interface inspired by http:#//vimperator.org/vimperator[Vimperator] / https:#//github.com/mooz/keysnail/wiki/[Keysnail] (here is fgcolor command).
 #else
-.http:#//vimperator.org/vimperator[Vimperator] や https:#//github.com/mooz/keysnail/wiki/[Keysnail]にインスパイアされたコマンドラインインターフェース。
+.http:#//vimperator.org/vimperator[Vimperator] や https:#//github.com/mooz/keysnail/wiki/[Keysnail] にインスパイアされたコマンドラインインターフェース。
 #endif
 image::images/completion.png[width=640]
 
@@ -142,6 +142,20 @@ image::images/fontfamily.png[width=640]
 .フォントサイズを選択しています。
 #endif
 image::images/fontsize.png[width=640]
+
+#if __EN__
+.Launcher interface inspired by http#://www.blacktree.com/[QuckSilver] / https:#//addons.mozilla.org/ja/firefox/addon/mozilla-labs-ubiquity/[Ubiquity].
+#else
+.http:#//www.blacktree.com/[QuckSilver] や https:#//addons.mozilla.org/ja/firefox/addon/mozilla-labs-ubiquity/[Ubiquity] にインスパイアされたランチャーインターフェース。
+#endif
+image::images/launcher.png[width=640]
+
+#if __EN__
+.Reconnecting a detached session.
+#else
+.デタッチ済みのセッションに再接続しているところ。
+#endif
+image::images/session.png[width=640]
 
 #if __EN__
 .running "http:#//www.tkl.iis.u-tokyo.ac.jp/~toyoda/index_e.html[sl]" (a joke software) on cygwin/Windows7.
