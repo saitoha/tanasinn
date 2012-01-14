@@ -540,14 +540,14 @@ Console.definition = {
        ]
      },
 
-  enabled_when_startup: false, // override
+  "[persistable] enabled_when_startup": false,
 
   /** constructor */
   "[subscribe('@initialized/{chrome & bottompanel}'), enabled]":
   function onLoad(chrome, bottom_panel) 
   {
     this._bottom_panel = bottom_panel;
-    this.enabled = this.enabled_when_startup;
+    //this.enabled = this.enabled_when_startup;
   },
 
   /** Installs itself */

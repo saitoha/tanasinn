@@ -99,6 +99,9 @@ ProgramCompleter.definition = {
   {
     try {
     let lower_source = source.toLowerCase();
+    if ("WINNT" == coUtils.Runtime.os) {
+      return -1;
+    }
     let search_path = ["/bin", "/usr/bin", "/usr/local/bin"];
     let files = [file for (file in generateEntries(search_path))];
     let data = files.map(function(file) {
@@ -169,13 +172,15 @@ coUtils.Sessions = {
       let lines = sessions.split(/[\r\n]+/);
       lines.forEach(function(line) {
         let sequence = line.split(",");
-        let [request_id, command, control_port, pid, ttyname] = sequence;
-        this._records[request_id] = {
-          request_id: request_id,
-          command: command && coUtils.Text.base64decode(command),
-          control_port: Number(control_port),
-          pid: Number(pid),
-          ttyname: ttyname,
+        if (sequence.length > 4) {
+          let [request_id, command, control_port, pid, ttyname] = sequence;
+          this._records[request_id] = {
+            request_id: request_id,
+            command: command && coUtils.Text.base64decode(command),
+            control_port: Number(control_port),
+            pid: Number(pid),
+            ttyname: ttyname,
+          }
         };
       }, this);
     }
@@ -233,7 +238,7 @@ ProcessManager.definition = {
    */
   processIsAvailable: function processIsAvailable(pid) 
   {
-   // return 0 == this.sendSignal(0, pid);
+    return 0 == this.sendSignal(0, pid);
     if ("number" != typeof pid) {
       throw coUtils.Debug.Exception(
         _("sendSignal: Invalid argument is detected. [%s]"), 
@@ -288,7 +293,7 @@ ProcessManager.definition = {
     let args;
     if ("WINNT" == coUtils.Runtime.os) {
       runtime_path = String(<>{this.cygwin_root}\bin\run.exe</>);
-      args = [ "/bin/kill", "-" + signal, String(pid) ];
+      args = [ "kill", "-wait", "-" + signal, String(pid) ];
     } else { // Darwin, Linux or FreeBSD
       runtime_path = "/bin/kill";
       args = [ "-" + signal, String(pid) ];

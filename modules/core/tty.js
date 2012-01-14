@@ -696,6 +696,18 @@ SocketTeletypeService.definition = {
     this._controller.start(control_port);
     let sessiondb_path = coUtils.File
       .getFileLeafFromAbstractPath("$Home/.tanasinn/sessions.txt").path;
+
+    let os = coUtils.Runtime.os;
+    if ("WINNT" == os) {
+      sessiondb_path 
+        = sessiondb_path
+          .replace(/\\/g, "/")
+          .replace(
+            /^([a-zA-Z]):/, 
+            function() String(<>/cygdrive/{arguments[1].toLowerCase()}</>))
+          ;
+    }
+
     let message = [
       this._io_manager.port, 
       session.request_id,

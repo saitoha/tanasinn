@@ -502,18 +502,16 @@ if __name__ == "__main__":
                 break
             else:
                 #os.write(master, "\x1a")
-                if system[0] == 'cygwin':
-                    sessiondb_path = os.system("cygpath '%s'" % sessiondb_path)
 
-#                with open(sys.argv[0], "r") as lockfile:
-#                    fcntl.flock(lockfile.fileno(), fcntl.LOCK_EX)
-#                    f = open(sessiondb_path, "a")
-#                    f.write("%s,%s,%s,%s,%s\n" % (request_id, base64.b64encode(command), control_port, pid, ttyname));
-#                    f.flush()
-#                    f.close()
+                with open(sys.argv[0], "r") as lockfile:
+                    fcntl.flock(lockfile.fileno(), fcntl.LOCK_EX)
+                    f = open(sessiondb_path, "a")
+                    f.write("%s,%s,%s,%s,%s\n" % (request_id, base64.b64encode(command), control_port, pid, ttyname));
+                    f.flush()
+                    f.close()
 
-                os.system("echo '%s,%s,%s,%s,%s' >> ~/.tanasinn/sessions.txt" 
-                    % (request_id, base64.b64encode(command), control_port, pid, ttyname));
+#                os.system("echo '%s,%s,%s,%s,%s' >> ~/.tanasinn/sessions.txt" 
+#                    % (request_id, base64.b64encode(command), control_port, pid, ttyname));
                 trace("suspended.")
 
                 # re-establish <Control channel> socket connection. 
