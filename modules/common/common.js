@@ -398,7 +398,7 @@ coUtils.File = new function() {
       target_leaf = Components
         .classes["@mozilla.org/file/local;1"]
         .createInstance(Components.interfaces.nsILocalFile);
-      target_leaf.initWithPath(path);
+      target_leaf.initWithPath(abstract_path);
     } else { // relative path
       let file_name = [
         Components.stack.filename.split(" -> ").pop().split("?").shift()

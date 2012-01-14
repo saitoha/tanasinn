@@ -83,7 +83,7 @@ $(XPI): lint chrome.manifest install.rdf tanasinn-docs.zip
 lint: 
 	@echo "$(MSTART) Ckecking JavaScript syntax error....$(MEND)" 
 	# Check syntax errors.
-	@for file in $$(find $$PWD | egrep "\.js$$|\.jsm$$"); do \
+	@for file in $$(/usr/bin/find $$PWD | egrep "\.js$$|\.jsm$$"); do \
 		for version in 185; do \
 			if [ @host_os@ = cygwin ]; then file=$$(cygpath -wa $$file); fi; \
 			cd $$(dirname $(JS)) && $(JS) -C -v $$version -o strict -o werror -f $$file || exit; \

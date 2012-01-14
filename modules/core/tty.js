@@ -186,7 +186,7 @@ Controller.definition = {
     coUtils.Debug.reportMessage(
       _("Controller::onStopRequest called. status: %s."), status);
     try {
-//      session.stop();
+      session.stop();
     } catch (e) { 
       coUtils.Debug.reportError(e)
     }
@@ -391,7 +391,7 @@ IOManager.definition = {
     coUtils.Debug.reportMessage(
       _("onStopRequest called. status: %s"), status);
     try {
-//      session.stop();
+      session.stop();
     } catch (e) { 
       coUtils.Debug.reportError(e)
     }

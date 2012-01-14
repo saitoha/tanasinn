@@ -56,23 +56,27 @@ CompletionDisplayDriverBase.definition = {
 };
 
 
-function generateEntries(pathes) 
+function generateEntries(paths) 
 {
-  for (let [, path] in Iterator(pathes)) {
+  for (let [, path] in Iterator(paths)) {
     let directory = Components
       .classes["@mozilla.org/file/local;1"]
       .createInstance(Components.interfaces.nsILocalFile);
     try {
     directory.initWithPath(path);
-    let entries = directory.directoryEntries;
-    while (entries.hasMoreElements()) {
-      let file = entries.getNext()
-        .QueryInterface(Components.interfaces.nsIFile);
-      if (file.isExecutable()) {
-        yield file;
+    if (directory.exists() && directory.isDirectory()) {
+      let entries = directory.directoryEntries;
+      while (entries.hasMoreElements()) {
+        let file = entries.getNext()
+          .QueryInterface(Components.interfaces.nsIFile);
+        if (file.isExecutable()) {
+          yield file;
+        }
       }
     }
-    } catch (e) {alert(e) + path}
+    } catch (e) {
+      alert(e) + "[" + path + "]"
+    }
   }
 }
 
@@ -88,6 +92,15 @@ ProgramCompleter.definition = {
   get type()
     "program",
 
+  _getSearchPath: function _getSearchPath()
+  {
+    let environment = Components
+      .classes["@mozilla.org/process/environment;1"].
+      getService(Components.interfaces.nsIEnvironment);
+    let path = environment.get("Path");
+    return path;
+  },
+
   /*
    * Search for a given string and notify a listener (either synchronously
    * or asynchronously) of the result
@@ -99,18 +112,48 @@ ProgramCompleter.definition = {
   {
     try {
     let lower_source = source.toLowerCase();
+    let search_path = this._getSearchPath()
+      .split(";")
+      .filter(function(path) {
+        if (!path)
+          return false;
+        try {
+          coUtils.File.exists(path);
+        } catch (e) {
+          return false;
+        }
+        return true;
+      }).concat([
+        "/usr/bin", 
+        "/usr/local/bin"
+      ].map(function(posix_path) "C:\\cygwin" + posix_path.replace(/\//g, "\\")));
     if ("WINNT" == coUtils.Runtime.os) {
-      return -1;
+      let map = search_path.reduce(function(map, path) {
+        let key = path.replace(/\\$/, "");
+        map[key] = undefined;
+        return map; 
+      }, {});
+      search_path = [key for ([key,] in Iterator(map))];
     }
-    let search_path = ["/bin", "/usr/bin", "/usr/local/bin"];
+//    alert(search_path.join("\n"))
     let files = [file for (file in generateEntries(search_path))];
     let data = files.map(function(file) {
+      let path = file.path;
+      if ("WINNT" == coUtils.Runtime.os) {
+        path = path
+          .replace(/\\/g, "/")
+          .replace(
+            /^([a-zA-Z]):/, 
+            function() String(<>/cygdrive/{arguments[1].toLowerCase()}</>));
+      }
       return {
-        name: file.path,
-        value: file.path,
+        name: path,
+        value: path,
       };
     }).filter(function(data) {
-      return -1 != data.name.toLowerCase().indexOf(lower_source);
+      return -1 != data.name
+        .toLowerCase()
+        .indexOf(lower_source);
     });
     if (0 == data.length) {
       listener.doCompletion(null);
@@ -125,7 +168,7 @@ ProgramCompleter.definition = {
     };
     listener.doCompletion(autocomplete_result);
 
-    } catch (e) {alert(e)}
+    } catch (e) {alert(e+e.lineNumber)}
     return 0;
   },
 

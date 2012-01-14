@@ -77,18 +77,7 @@ Contextmenu.definition = {
   install: function install(session) 
   {
     // register DOM listener.
-    session.notify(
-      "command/add-domlistener", 
-      {
-        target: session.root_element,
-        type: "contextmenu",
-        id: "contextmenu.install",
-        context: this,
-        handler: function oncontextmenu(event) 
-        {
-          this.show(event.screenX, event.screenY);
-        }
-      });
+    this.show.enabled = true;
   },
 
   /** Uninstalls itself.
@@ -97,13 +86,13 @@ Contextmenu.definition = {
   uninstall: function uninstall(session) 
   {
     // unregister DOM listener.
-    session.notify(
-      "command/remove-domlistener", 
-      "contextmenu.install");
+    this.show.enabled = false;
   },
 
-  show: function show(x, y) 
+  "[listen('contextmenu', '#coterminal_content')]":
+  function show(event) 
   {
+    let {screenX, screenY} = event;
     let session = this._broker;
     let entries = session
       .notify("get/contextmenu-entries")
@@ -114,7 +103,7 @@ Contextmenu.definition = {
     this._entries = entries;
     let {tanasinn_contextmenu} 
       = session.uniget("command/construct-chrome", this.template);
-    tanasinn_contextmenu.openPopupAtScreen(x, y, true);
+    tanasinn_contextmenu.openPopupAtScreen(screenX, screenY, true);
   },
 };
 
