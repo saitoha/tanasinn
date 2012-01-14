@@ -14,6 +14,8 @@ AC_CHECK_PROG(PERL, perl, perl)
 AC_CHECK_PROG(ZIP, zip, zip) 
 [[ -z "${ZIP}" ]] && AC_MSG_ERROR(zip was not found.)
 
+AC_CHECK_PROG(TPUT, tput, tput) 
+AC_CHECK_PROG(CPP, cpp, cpp) 
 AC_CHECK_PROG(ASCIIDOC, asciidoc, asciidoc) 
 #[[ -n "${ASCIIDOC}" ]] && AC_MSG_ERROR(zip was not found.)
 

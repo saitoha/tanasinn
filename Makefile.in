@@ -4,12 +4,20 @@ ID=@PACKAGE_BUGREPORT@
 XPI=$(ID).xpi
 JS=@TANASINN_JS_PATH@ 
 ZIP=@ZIP@
+TPUT=@TPUT@
 ASCIIDOC=@ASCIIDOC@
 
-MSTART="$$(tput setaf 2)====================\>$$(tput setaf 6)"
-MEND="$$(tput sgr0)"
-ESTART="$$(tput bold; tput setaf 1)"
-EEND="$$(tput sgr0; tput setaf 6)"
+ifeq ($(TPUT), )
+MSTART=
+MEND=
+ESTART=
+EEND=
+else
+MSTART="$$($(TPUT) setaf 2)====================\>$$($(TPUT) setaf 6)"
+MEND="$$($(TPUT)t sgr0)"
+ESTART="$$($(TPUT) bold; $(TPUT) setaf 1)"
+EEND="$$($(TPUT) sgr0; $(TPUT) setaf 6)"
+endif
 
 all: $(XPI) tanasinn-docs.zip
 
@@ -136,7 +144,7 @@ install-extension:
 			PROFILE_ROOT=~/.mozilla/firefox \
 			;; \
 		cygwin*) \
-			PROFILE_ROOT=$$(cygpath $$APPDATA\\Mozilla\\Firefox\\Profiles) \
+			PROFILE_ROOT="$$(cygpath "$$APPDATA\\Mozilla\\Firefox\\Profiles")" \
 			;; \
 	esac \
 	&& PROFILES=$$(ls "$$PROFILE_ROOT") \
@@ -145,7 +153,18 @@ install-extension:
 	do \
 		case @host_os@ in \
 			cygwin*) \
-				cmd /c mklink /d $$(cygpath -w "$$PROFILE_ROOT/$$PROFILE/extensions/$(ID)") $$(cygpath -w $(PWD)) \
+				case $$(cmd /c ver) in \
+					*XP*) \
+						cmd /c linkd \
+							"$$(cygpath -w "$$PROFILE_ROOT/$$PROFILE/extensions/$(ID)")" \
+							"$$(cygpath -w $(PWD))" \
+						;; \
+					*) \
+						cmd /c mklink /d \
+							$$(cygpath -w "$$PROFILE_ROOT/$$PROFILE/extensions/$(ID)") \
+							$$(cygpath -w $(PWD)) \
+						;; \
+				esac \
 				;; \
 			*) \
 				[ -e "$$PROFILE_ROOT/$$PROFILE" ] && ln -sf $(PWD) "$$PROFILE_ROOT/$$PROFILE/extensions/$(ID)"; \
