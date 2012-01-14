@@ -118,6 +118,22 @@ Renderer.definition = {
   "[persistable]            font_family@WINNT" : "Lucida Console",
   "[watchable, persistable] font_size": 13,
 
+  "[persistable] adaptive_rendering": true,
+
+  get "[persistable] smoothing"()
+  {
+    if (this._context) {
+      this._context.mozImageSmoothingEnabled;
+    }
+  },
+
+  set "[persistable] smoothing"(value)
+  {
+    if (this._context) {
+      this._context.mozImageSmoothingEnabled = value;
+    }
+  },
+
   "[subscribe('@initialized/{screen & chrome}'), enabled]": 
   function onLoad(screen, chrome) 
   {
@@ -277,7 +293,6 @@ Renderer.definition = {
     if (redraw_flag)
       this._screen.dirty = true;
     let context = this._context;
-    //context.mozImageSmoothingEnabled = true;
     let screen = this._screen;
     let font_size = this.font_size;
     let font_family = this.font_family;
@@ -318,28 +333,28 @@ Renderer.definition = {
   {
     // Get hexadecimal formatted text color (#xxxxxx) 
     // form given attribute structure. 
-    let fore_color_map = attr.bold ? this.bold_color: this.normal_color;
+    let fore_color_map = this.normal_color;// attr.bold ? this.bold_color: this.normal_color;
     let fore_color = fore_color_map[attr.fg];
     this._setFont(context, attr.bold); 
     context.fillStyle = fore_color;
-    if (text.length == length) {
-      context.fillText(text, x, y);
-    } else if (text.length * 2 == length) {
-      text.split("").forEach(function(ch, index) {
-        context.fillText(ch, x + char_width * 2 * index, y);
-      }, this);
+    if (this.adaptive_rendering) {
+      if (text.length == length) {
+        context.fillText(text, x, y, char_width * length);
+      } else if (text.length * 2 == length) {
+        text.split("").forEach(function(ch, index) {
+          context.fillText(ch, x + char_width * 2 * index, y);
+        }, this);
+      } else {
+        let position = x;
+        text.split("").forEach(function(ch, index) {
+          let is_wide = coUCS2EastAsianWidthTest(ch);
+          context.fillText(ch, position, y);
+          position += char_width * (is_wide ? 2: 1);
+        }, this);
+      }
     } else {
-      let position = x;
-      text.split("").forEach(function(ch, index) {
-        let is_wide = coUCS2EastAsianWidthTest(ch);
-        context.fillText(ch, position, y);
-        position += char_width * (is_wide ? 2: 1);
-      }, this);
+      context.fillText(text, x, y, char_width * length);
     }
-    //if (attr.bold) {
-    //  context.strokeStyle = fore_color;
-    //  context.strokeText(text, x, y, width);
-    //}
     if (attr.underline) {
       this._drawUnderline(context, x, y, char_width * length, fore_color);
     }
@@ -374,9 +389,9 @@ Renderer.definition = {
   {
     let font_size = this.font_size;
     let font_family = this.font_family;
-    context.font = (is_bold ? "bold ": " ") 
+    context.font = " "//(is_bold ? "bold ": " ") 
                  + (font_size | 0) + "px "
-                 + font_family;
+                 + "'" + font_family + "'";
   },
         
 }

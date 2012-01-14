@@ -33,6 +33,8 @@ function getPackedKeycodeFromEvent(event)
         | !!event.ctrlKey   << coUtils.Keyboard.KEY_CTRL 
         | !!event.altKey    << coUtils.Keyboard.KEY_ALT 
         | !!event.shiftKey  << coUtils.Keyboard.KEY_SHIFT 
+        | !!event.keyCode                   << coUtils.Keyboard.KEY_NOCHAR
+//        | (0 != event.keyCode && 0 == event.which) << coUtils.Keyboard.KEY_NOCHAR 
 //        | !event.isChar     << coUtils.Keyboard.KEY_NOCHAR 
         | !!event.metaKey   << coUtils.Keyboard.KEY_META
         ;
@@ -46,7 +48,9 @@ function getPackedKeycodeFromEvent(event)
         | !!event.ctrlKey                 << coUtils.Keyboard.KEY_CTRL 
         | (!!event.altKey || code > 0xff) << coUtils.Keyboard.KEY_ALT 
         | !!event.shiftKey                << coUtils.Keyboard.KEY_SHIFT 
-        | 0 == event.which                << coUtils.Keyboard.KEY_NOCHAR 
+//        | (0 != event.keyCode && 0 == event.which) << coUtils.Keyboard.KEY_NOCHAR 
+        | !!event.keyCode                   << coUtils.Keyboard.KEY_NOCHAR
+//        | 0 == event.which                << coUtils.Keyboard.KEY_NOCHAR 
 //        | !event.isChar                   << coUtils.Keyboard.KEY_NOCHAR 
         | !!event.metaKey                 << coUtils.Keyboard.KEY_META
         ;
@@ -324,13 +328,21 @@ InputManager.definition = {
         || String.fromCharCode(packed_code & 0xfffff);
       session.notify("event/before-input", message);
 
-      /*
+      
       session.notify(
         "command/report-status-message", 
         String.fromCharCode(packed_code & 0xffff) + " " +
-        <>shift: {event.shiftKey}, ctrl: {event.ctrlKey}, alt: {event.altKey}, meta: {event.metaKey}</>
+<>
+  keyCode: {event.keyCode}, 
+  which: {event.which}, 
+  shift: {event.shiftKey}, 
+  ctrl: {event.ctrlKey}, 
+  alt: {event.altKey}, 
+  meta: {event.metaKey},
+  ischar: {event.isChar},
+</>
         + " -> " + message);
-      */
+      
       this._processInputSequence(message);
       event.preventDefault();
     }

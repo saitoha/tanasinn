@@ -103,7 +103,8 @@ Tracer.definition = {
     delete emurator.write; // uninstall hook
   },
 
-  "[subscribe('event/before-input')]":
+//  "[subscribe('event/before-input')]":
+  "[subscribe('command/send-to-tty')]":
   function onBeforeInput(message) 
   {
     let info = {

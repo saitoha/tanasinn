@@ -394,7 +394,7 @@ FontsizeCompleter.definition = {
     }
     let generator = function() 
     { 
-      for (let i = 1; i < 100; ++i) {
+      for (let i = 8; i < 100; ++i) {
         let str = i.toString(); 
         if (-1 != str.indexOf(source)) {
           yield str;
@@ -427,17 +427,17 @@ FontsizeCompleter.definition = {
 
 
 /**
- * @class FontCompleter
+ * @class FontFamilyCompleter
  *
  */
-let FontCompleter = new Class().extends(CompleterBase);
-FontCompleter.definition = {
+let FontFamilyCompleter = new Class().extends(CompleterBase);
+FontFamilyCompleter.definition = {
 
   get id()
-    "fontcompleter",
+    "font-family-completer",
 
   get type()
-    "font",
+    "font-family",
 
   /*
    * Search for a given string and notify a listener (either synchronously
@@ -459,11 +459,12 @@ FontCompleter.definition = {
     let font_list = Components
       .classes["@mozilla.org/gfx/fontenumerator;1"]
       .getService(Components.interfaces.nsIFontEnumerator)
-      .EnumerateFonts("", "", {})
+//      .EnumerateAllFonts({})
+      .EnumerateFonts("x-western", "monospace", {})
       .filter(function(font_family) 
         -1 != font_family.toLowerCase().indexOf(name.toLowerCase()));
     let autocomplete_result = {
-      type: "font",
+      type: "font-family",
       query: source, 
       labels: font_list, 
       comments: font_list,
@@ -1280,7 +1281,7 @@ ColorNumberCompletionDisplayDriver.definition = {
               tagName: "box",
               style: <> 
                 background-color: {pair.value};
-                padding: 0px 10px; 
+                padding: 10px 20px; 
               </>,
             },
           ].concat([
@@ -1300,7 +1301,10 @@ ColorNumberCompletionDisplayDriver.definition = {
           ].map(function(range) {
             return {
               tagName: "box",
-              style: <> margin: 0px 10px; </>,
+              style: <> 
+                font-size: 20px; 
+                margin: 0px 10px; 
+              </>,
               childNodes: -1 == range.start ?
                 { text: range.text }:
                 [
@@ -1376,14 +1380,14 @@ ColorCompletionDisplayDriver.definition = {
               tagName: "box",
               style: <> 
                 background-color: {result.option};
-                padding: 0px 10px; 
+                padding: 0px 20px; 
               </>,
             },
             {
               tagName: "box",
               style: <> 
                 background-color: {pair.name};
-                padding: 0px 10px; 
+                padding: 0px 20px; 
               </>,
             },
           ].concat([
@@ -1400,7 +1404,10 @@ ColorCompletionDisplayDriver.definition = {
           ].map(function(range) {
             return {
               tagName: "box",
-              style: <> margin: 0px 10px; </>,
+              style: <> 
+                font-size: 20px;
+                margin: 0px 10px; 
+              </>,
               childNodes: -1 == range.start ?
                 { text: range.text }:
                 [
@@ -1498,17 +1505,17 @@ FontsizeCompletionDisplayDriver.definition = {
 };
 
 /**
- * @class FontCompletionDisplayDriver
+ * @class FontFamilyCompletionDisplayDriver
  *
  */
-let FontCompletionDisplayDriver = new Class().extends(CompletionDisplayDriverBase);
-FontCompletionDisplayDriver.definition = {
+let FontFamilyCompletionDisplayDriver = new Class().extends(CompletionDisplayDriverBase);
+FontFamilyCompletionDisplayDriver.definition = {
 
   get id()
-    "font-completion-display-driver",
+    "font-family-completion-display-driver",
 
   get type()
-    "font",
+    "font-family",
 
   drive: function drive(grid, result, current_index) 
   {
@@ -1599,17 +1606,17 @@ TextCompletionDisplayDriver.definition = {
           tagName: "row",
           style: i == current_index ? <>
             background: #226;
+            padding: 2px;
             color: white;
           </>: "",
           childNodes: [
             {
               tagName: "box",
               style: <>
-                font-size: 1.2em;
-                width: 50%;
                 margin: 0px;
                 overflow: hidden;
                 padding-left: 8px;
+                font-size: 19px;
               </>,
               childNodes: -1 == match_position ? 
                 { text: completion_text }:
@@ -1630,7 +1637,13 @@ TextCompletionDisplayDriver.definition = {
             },
             {
               tagName: "label",
-              style: "font-size: 1em; color: #777;",
+              style: <>
+                padding-top: 4px;
+                font-size: 16px;
+                text-shadow: 0px 0px 2px white;
+                font-family: 'Times New Roman';
+                color: #000;
+              </>,
               value: result.comments && result.comments[i],
               crop: "end",
             },
@@ -1657,14 +1670,14 @@ function main(desktop)
       new OptionCompleter(session);
       new CommandCompleter(session);
       new FontsizeCompleter(session);
-      new FontCompleter(session);
+      new FontFamilyCompleter(session);
       new ColorNumberCompleter(session);
       new LocalizeCompleter(session);
 
       new ColorCompletionDisplayDriver(session);
       new ColorNumberCompletionDisplayDriver(session);
       new FontsizeCompletionDisplayDriver(session);
-      new FontCompletionDisplayDriver(session);
+      new FontFamilyCompletionDisplayDriver(session);
       new TextCompletionDisplayDriver(session);
       } catch (e) {alert(e)}
     });

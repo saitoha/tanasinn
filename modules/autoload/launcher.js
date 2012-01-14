@@ -686,11 +686,13 @@ Launcher.definition = {
             style: <> 
               -moz-appearance: none;
               -moz-user-focus: ignore; 
-              -moz-box-shadow: 15px 14px 9px black;
+//              -moz-box-shadow: 15px 14px 9px black;
+              border: 1px solid #aaa;
+              border-radius: 10px;
               font: menu;
               opacity: 0.87;
               background: transparent;
-//              background: -moz-linear-gradient(top, #cce, #aae);
+              background: -moz-linear-gradient(top, #ccc, #aaa);
             </>,
             noautofocus: true,
             height: 400,
@@ -702,9 +704,11 @@ Launcher.definition = {
                 {
                   tagName: "box",
                   style: <> 
-                    border: 1px solid #aaa;
+                    //border: 1px solid #aaa;
                     border-radius: 12px;
-                    background: -moz-linear-gradient(top, #ccc, #aaa);
+                    outline: none;
+                    border: none;
+                    //background: -moz-linear-gradient(top, #ccc, #aaa);
                   </>,
                 },
                 {
@@ -726,7 +730,7 @@ Launcher.definition = {
                       //overflow-y: auto;
                       font-size: 20px;
                       color: #fff;
-                      -moz-box-shadow: 15px 14px 19px black;
+//                      -moz-box-shadow: 15px 14px 19px black;
                       text-shadow: 3px 3px 9px black;
                   //background: transparent;
                     </>,

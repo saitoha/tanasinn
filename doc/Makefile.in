@@ -1,5 +1,5 @@
 
-CPP=@CPP@
+CC=@CC@
 ASCIIDOC=@ASCIIDOC@
 OPEN=@TANASINN_OPEN@
 
@@ -17,22 +17,22 @@ Makefile: Makefile.in
 	cd .. && ./configure
 
 usermanual.html: usermanual.txt Makefile
-	if [ -a ( -n "$(ASCIIDOC)" ) ( -n "$(CPP)" ) ]; \
+	if [ -a ( -n "$(ASCIIDOC)" ) ( -n "$(GCC)" ) ]; \
 	then \
 		$(RM) $@ && cat $< \
 		| sed -e 's/#\/\//#\/#\//g;s/#\/\*/#\/#*/g' \
-		| $(CPP) -D__EN__ - \
+		| $(CC) -E -D__EN__ - \
 		| sed -e 's/#\/#\//\/\//g;s/#\/#\*/\/*/g' \
 		| sed -e 's/^#.*//' \
 		| $(ASCIIDOC) - > $@; \
 	fi
 
 usermanual-ja.html: usermanual.txt Makefile
-	if [ -a ( -n "$(ASCIIDOC)" ) ( -n "$(CPP)" ) ]; \
+	if [ -a ( -n "$(ASCIIDOC)" ) ( -n "$(GCC)" ) ]; \
 	then \
 		$(RM) $@ && cat $< \
 		| sed -e 's/#\/\//#\/#\//g;s/#\/\*/#\/#*/g' \
-		| $(CPP) -D__JP__ - \
+		| $(CC) -E -D__JP__ - \
 		| sed -e 's/#\/#\//\/\//g;s/#\/#\*/\/*/g' \
 		| sed -e 's/^#.*//' \
 		| $(ASCIIDOC) - > $@; \

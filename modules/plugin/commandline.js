@@ -70,12 +70,14 @@ Commandline.definition = {
       row = this._tree.querySelector("rows").childNodes[this._index];
       if (!row)
         return;
+      row.style.borderRadius = "0px";
       row.style.background = "";
       row.style.color = "";
     }
     if (index > -1) {
       row = this._tree.querySelector("rows").childNodes[index];
-      row.style.background = "#999";
+      row.style.borderRadius = "6px";
+      row.style.backgroundImage = "-moz-linear-gradient(top, #777, #666)";
       row.style.color = "white";
       try {
         let scroll_box = this._tree.parentNode;
@@ -129,33 +131,35 @@ Commandline.definition = {
         tagName: "stack",
         id: "tanasinn_commandline_box",
         style: <>
-          font-size: 12px;
-          font-family: monospace;
-          //background: "#4c4c4c",
-          //background: "transparent",
+          font-size: 19px;
+          font-family: 'Lucida Console',Latha,'Georgia',monospace;
+          text-shadow: 1px 1px 3px #555;
+          font-weight: bold;
         </>,
         childNodes: [
           {
             id: "tanasinn_commandline_background",
             tagName: "box",
             margin: 0,
-            style: { 
-//              borderBottomLeftRadius: "8px",
-//              borderBottomRightRadius: "8px",
-            },
           },
           {
             tagName: "stack",
-            style: {
-              padding: "2px 8px 3px 8px", 
-            },
+            style: <> 
+              padding: 0px 8px 0px 8px;
+            //        border: solid 1px red;
+            </>,
             childNodes: [
               {
                 id: "tanasinn_commandline_completion",
                 value: "",
                 tagName: "textbox",
                 className: "plain",
-                style: { color: "#888", backgroundColor: "transparent", },
+                style: <> 
+                  padding: 0px;
+                  margin: 0px;
+                  color: #888; 
+                  background-color: transparent;
+                </>,
               },
               {
                 tagName: "textbox",
@@ -163,34 +167,85 @@ Commandline.definition = {
                 className: "plain",
                 //placeholder: "input commands here.",
                 newlines: "replacewithspaces",
-                style: { color: "#fff", },
+                style: <> 
+                  padding: 0px;
+                  margin: 0px;
+                  color: #eee;
+                  text-shadow: 0px 1px 4px #484;
+                </>,
               },
               {
                 tagName: "textbox",
                 className: "plain",
                 readonly: "true",
                 id: "tanasinn_statusbar",
+                style: <> 
+                  padding: 0px;
+                  margin: 0px;
+                  color: #ccc;
+                  text-shadow: 0px 1px 4px white;
+                </>,
                 hidden: true,
-                style: { color: "#fff", },
               },
               {
                 tagName: "panel",
-                //style: { MozAppearance: "none", },
-                style: { MozUserFocus: "ignore", /*font: "menu",*/ },
+                id: "tanasinn_completion_popup",
+                style: <> 
+                  -moz-appearance: none;
+                  -moz-user-focus: ignore;
+                  background: transparent;
+                  margin: 0px;
+                  border: none;
+                  //-moz-box-shadow: 3px 3px 8px black;
+                  //border-radius: 7px;
+                  font: menu;
+                  
+                </>,
                 noautofocus: true,
                 height: 200,
-                id: "tanasinn_completion_popup",
                 childNodes: {
-                  tagName: "scrollbox",
-                  id: "tanasinn_completion_scroll",
-                  orient: "vertical", // box-packing
+                  tagName: "stack",
                   flex: 1,
-                  childNodes: {
-                    tagName: "grid",
-                    style: { overflowX: "hidden", overflowY: "auto", },
-                    id: "tanasinn_completion_tree",
-                  }
-                }, // tree
+                  style: <>
+                  </>,
+                  childNodes: [
+                    {
+                      tagName: "box",
+                      flex: 1,
+                      style: <>
+                        border-radius: 7px;
+                        background: -moz-linear-gradient(top, #bbb, #888);
+                        opacity: 0.8;
+                      </>,
+                    },
+                    {
+                      tagName: "scrollbox",
+                      id: "tanasinn_completion_scroll",
+                      orient: "vertical", // box-packing
+                      flex: 1,
+                      style: <>
+                        margin: 8px;
+                          //overflow-x: auto; 
+                          overflow-y: auto;
+                         // background: transparent;
+                        </>,
+                      childNodes: {
+                        tagName: "grid",
+                        id: "tanasinn_completion_tree",
+                        style: <> 
+                          background: transparent;
+                          color: white;
+                          font-family: 'Lucida Console';
+                          font-weight: bold;
+                          font-size: 16px;
+                          text-shadow: 1px 2px 4px black;
+                          //overflow-x: auto; 
+                          //overflow-y: auto;
+                        </>,
+                      }
+                    }, // tree
+                  ],
+                }, // stack
               },  // panel
             ]
           } // stack
@@ -281,7 +336,7 @@ Commandline.definition = {
     this._statusbar.hidden = true;
     this._textbox.hidden = false;
     this._completion.hidden = false;
-    this._tree.width = this._textbox.boxObject.width;
+    this._tree.parentNode.width = this._textbox.boxObject.width;
     this.setCompletionTrigger();
   },
 
@@ -326,7 +381,7 @@ Commandline.definition = {
         let session = this._broker;
         let focused_element = session.document.commandDispatcher.focusedElement;
         if (focused_element && focused_element.isEqualNode(textbox.inputField)) {
-          this._popup.openPopup(textbox, "after_start", 0, 0, true, true);
+          this._popup.openPopup(this._element, "after_start", 0, 0, true, true);
         }
       }
       let index = Math.max(0, this.currentIndex);

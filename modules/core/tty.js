@@ -186,7 +186,7 @@ Controller.definition = {
     coUtils.Debug.reportMessage(
       _("Controller::onStopRequest called. status: %s."), status);
     try {
-      session.stop();
+//      session.stop();
     } catch (e) { 
       coUtils.Debug.reportError(e)
     }
@@ -391,7 +391,7 @@ IOManager.definition = {
     coUtils.Debug.reportMessage(
       _("onStopRequest called. status: %s"), status);
     try {
-      session.stop();
+//      session.stop();
     } catch (e) { 
       coUtils.Debug.reportError(e)
     }
@@ -578,29 +578,29 @@ ExternalDriver.definition = {
     let args;
     if ("WINNT" == coUtils.Runtime.os) { // Windows
       args = [
-        "/bin/sh", "-l", "-c",
+        "/bin/sh", "-wait", "-l", "-c",
         coUtils.Text.format(
           "exec python \"$(cygpath '%s')\" %d", 
           script_absolute_path,
           connection_port)
       ];
-      this._external_process.runAsync(args, args.length, null, false);
     } else { // Darwin, Linux
       args = [ script_absolute_path, connection_port ];
-      this._external_process.runAsync(args, args.length, this, false);
     }
+    this._external_process.runAsync(args, args.length, this, false);
     coUtils.Debug.reportMessage(
       _("TTY Server started. arguments: [%s]."), args.join(", "));
   },
 
   observe: function observe()
   {
-    if (this.success) {
-      return;
-    }
+//    if (this.success) {
+//      return;
+//    }
     this.success = true;
     let session = this._broker;
-    coUtils.Debug.reportError(_("Failed to start TTY. try it again."));
+    coUtils.Debug.reportError(
+      _("Failed to start TTY. try it again."));
     session.stop();
   },
 

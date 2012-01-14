@@ -243,8 +243,8 @@ FontCommands.definition = {
     return true;
   },
 
-  "[command('fontsel', ['font']), _('Select terminal font.'), enabled]":
-  function fontsel(arguments_string)
+  "[command('fontfamily/ff', ['font-family']), _('Select terminal font family.'), enabled]":
+  function fontfamily(arguments_string)
   {
     let session = this._broker;
     let pattern = /^\s*(.+)\s*$/;
