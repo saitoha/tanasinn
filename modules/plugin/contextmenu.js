@@ -35,7 +35,8 @@ Contextmenu.definition = {
     <plugin>
         <name>Context Menu</name>
         <description>{
-          _("Provides context menu interface which emerges when we right-clicks the screen.")
+          _("Provides context menu interface which ",
+            "emerges when we right-clicks the screen.")
         }</description>
         <version>0.1</version>
     </plugin>,
@@ -89,7 +90,7 @@ Contextmenu.definition = {
     this.show.enabled = false;
   },
 
-  "[listen('contextmenu', '#coterminal_content')]":
+  "[listen('contextmenu', '#tanasinn_content')]":
   function show(event) 
   {
     let {screenX, screenY} = event;
@@ -115,7 +116,7 @@ Contextmenu.definition = {
 function main(desktop) 
 {
   desktop.subscribe(
-    "@initialized/session", 
+    "@initialized/broker", 
     function(session) new Contextmenu(session));
 }
 

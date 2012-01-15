@@ -124,13 +124,18 @@ with (scope) {
     initialize: function initialize() 
     {
       // set search path.
+      let runtime_path = this.runtime_path;
       this.autoload_path = [
-        "modules/autoload"
+        "modules/autoload",
+        "modules/base",
+        String(<>{runtime_path}/autoload</>),
+        String(<>{runtime_path}/base</>)
       ];
       this.search_path = [ 
         "modules/core",
         "modules/plugin", 
-        this.runtime_path + "/plugin" 
+        String(<>{runtime_path}/core</>),
+        String(<>{runtime_path}/plugin</>)
       ];
       // load initial settings.
       let path = this.initial_settings_path;

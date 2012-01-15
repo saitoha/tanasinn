@@ -201,7 +201,7 @@ DragCopy.definition = {
 function main(desktop) 
 {
   desktop.subscribe(
-    "@initialized/session", 
+    "@initialized/broker", 
     function(session) new DragCopy(session));
 }
 

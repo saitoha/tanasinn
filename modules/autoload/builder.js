@@ -367,12 +367,12 @@ ChromeBuilder.definition = {
 function main(process) 
 {
   process.subscribe(
-    "initialized/desktop",
+    "initialized/broker",
     function(desktop)
     {
       new ChromeBuilder(desktop);
       desktop.subscribe(
-        "initialized/session", 
+        "initialized/broker", 
         function(session)
         {
           new ChromeBuilder(session);

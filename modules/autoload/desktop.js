@@ -56,7 +56,7 @@ Desktop.definition = {
     this._root_element.id = "tanasinn_desktop";
 
     let broker = this._broker;
-    broker.notify(<>initialized/{this.id}</>, this);
+    broker.notify(<>initialized/broker</>, this);
 
     this.notify("event/desktop-started", this);
   },

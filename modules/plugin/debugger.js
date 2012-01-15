@@ -497,7 +497,7 @@ StepExecution.definition = {
 function main(desktop) 
 {
   desktop.subscribe(
-    "@initialized/session", 
+    "@initialized/broker", 
     function(session) {
       new StepExecution(session);
       new Hooker(session);

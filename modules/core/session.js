@@ -140,7 +140,7 @@ Session.definition = {
     this._command = request.command;
     this._term = request.term;
 
-    process.notify("initialized/session", this);
+    process.notify("initialized/broker", this);
     this.notify("command/load-settings");
     this.notify("event/session-started", this);
     coUtils.Timer.setTimeout(function() {

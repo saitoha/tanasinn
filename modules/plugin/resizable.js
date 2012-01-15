@@ -208,7 +208,7 @@ Resize.definition = {
 function main(desktop) 
 {
   desktop.subscribe(
-    "@initialized/session", 
+    "@initialized/broker", 
     function(session) new Resize(session));
 }
 

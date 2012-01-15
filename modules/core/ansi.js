@@ -128,7 +128,7 @@ AnsiSpecifiedMode.definition = {
 function main(desktop) 
 {
   desktop.subscribe(
-    "@initialized/session", 
+    "@initialized/broker", 
     function(session) new AnsiSpecifiedMode(session));
 }
 

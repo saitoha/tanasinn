@@ -142,7 +142,7 @@ MoveShortcut.definition = {
 function main(desktop)
 {
   desktop.subscribe(
-    "@initialized/session", 
+    "@initialized/broker", 
     function(session) new MoveShortcut(session));
 }
 

@@ -63,19 +63,26 @@ function generateEntries(paths)
       .classes["@mozilla.org/file/local;1"]
       .createInstance(Components.interfaces.nsILocalFile);
     try {
-    directory.initWithPath(path);
-    if (directory.exists() && directory.isDirectory()) {
-      let entries = directory.directoryEntries;
-      while (entries.hasMoreElements()) {
-        let file = entries.getNext()
-          .QueryInterface(Components.interfaces.nsIFile);
-        if (file.isExecutable()) {
-          yield file;
+      directory.initWithPath(path);
+      if (directory.exists() && directory.isDirectory()) {
+        let entries = directory.directoryEntries;
+        while (entries.hasMoreElements()) {
+          let file = entries.getNext()
+            .QueryInterface(Components.interfaces.nsIFile);
+          if ("WINNT" == coUtils.Runtime.os 
+              && file.isFile()
+              && !file.path.match(/\.(dll|manifest)$/)) {
+            yield file;
+          } else {
+            if (file.isExecutable()) {
+              yield file;
+            } 
+          }
         }
       }
-    }
     } catch (e) {
-      alert(e) + "[" + path + "]"
+      coUtils.Debug.reportError(e);
+      //alert(e) + "[" + path + "]"
     }
   }
 }
@@ -97,8 +104,20 @@ ProgramCompleter.definition = {
     let environment = Components
       .classes["@mozilla.org/process/environment;1"].
       getService(Components.interfaces.nsIEnvironment);
-    let path = environment.get("Path");
-    return path;
+    let path = environment.get("PATH");
+    let delimiter = ("WINNT" == coUtils.Runtime.os) ? ";": ":"
+    let paths = path.split(delimiter)
+      .filter(function(path) {
+        if (!path)
+          return false;
+        try {
+          coUtils.File.exists(path);
+        } catch (e) {
+          return false;
+        }
+        return true;
+      });
+    return paths;
   },
 
   /*
@@ -112,28 +131,25 @@ ProgramCompleter.definition = {
   {
     try {
     let lower_source = source.toLowerCase();
-    let search_path = this._getSearchPath()
-      .split(";")
-      .filter(function(path) {
-        if (!path)
-          return false;
-        try {
-          coUtils.File.exists(path);
-        } catch (e) {
-          return false;
-        }
-        return true;
-      }).concat([
-        "/usr/bin", 
-        "/usr/local/bin"
-      ].map(function(posix_path) "C:\\cygwin" + posix_path.replace(/\//g, "\\")));
+    let search_path;
+    //  alert(search_path)
     if ("WINNT" == coUtils.Runtime.os) {
+      search_path = [
+        "/bin", 
+        "/usr/local/bin"
+      ];
+      search_path = search_path.map(function(posix_path) 
+      {
+        return "C:\\cygwin" + posix_path.replace(/\//g, "\\");
+      });
       let map = search_path.reduce(function(map, path) {
         let key = path.replace(/\\$/, "");
         map[key] = undefined;
         return map; 
       }, {});
       search_path = [key for ([key,] in Iterator(map))];
+    } else {
+      search_path = this._getSearchPath();
     }
 //    alert(search_path.join("\n"))
     let files = [file for (file in generateEntries(search_path))];
@@ -142,6 +158,7 @@ ProgramCompleter.definition = {
       if ("WINNT" == coUtils.Runtime.os) {
         path = path
           .replace(/\\/g, "/")
+          .replace(/.exe$/ig, "")
           .replace(
             /^([a-zA-Z]):/, 
             function() String(<>/cygdrive/{arguments[1].toLowerCase()}</>));
@@ -718,7 +735,10 @@ Launcher.definition = {
               className: "plain",
               style: <>
                 font-size: 40px;
-                font-family: Lucida Calligraph, Apple Chancery;
+                font-family: 'Lucida Calligraph','Apple Chancery','Times New Roman','Lucida Console';
+                weight: bold;
+                font-style: italic;
+                text-shadow: 1px 1px 3px black;
                 width: 80%;
                 color: #ddd;
               </>,
@@ -772,9 +792,11 @@ Launcher.definition = {
                       //overflow-x: hidden;
                       //overflow-y: auto;
                       font-size: 20px;
+                      font-family: 'Lucida Console';
+                      font-weight: bold;
                       color: #fff;
 //                      -moz-box-shadow: 15px 14px 19px black;
-                      text-shadow: 3px 3px 9px black;
+                      text-shadow: 1px 1px 7px black;
                   //background: transparent;
                     </>,
                   }
@@ -1226,7 +1248,7 @@ Launcher.definition = {
 function main(process) 
 {
   process.subscribe(
-    "initialized/desktop",
+    "initialized/broker",
     function(desktop) 
     {
       new Launcher(desktop);

@@ -22,10 +22,125 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+let CompletionView = new Aspect();
+CompletionView.definition = {
+
+  _index: -1,
+
+  get rowCount() 
+  {
+    if (!this._result) {
+      return 0;
+    }
+    return this._result.labels.length;
+  },
+
+  get currentIndex()
+  {
+    return this._index;
+  },
+
+  _unselectRow: function _unselectRow(row)
+  {
+    row.style.borderRadius = "0px";
+    row.style.background = "";
+    row.style.color = "";
+  },
+
+  _selectRow: function _selectRow(row)
+  {
+    row.style.borderRadius = "6px";
+    row.style.backgroundImage 
+      = "-moz-linear-gradient(top, #777, #666)";
+    row.style.color = "white";
+    let completion_root = this._completion_root;
+    let scroll_box = completion_root.parentNode;
+    let box_object = scroll_box.boxObject
+      .QueryInterface(Components.interfaces.nsIScrollBoxObject)
+    if (box_object) {
+      let scrollY = {};
+      box_object.getPosition({}, scrollY);
+      let first_position = row.boxObject.y 
+        - scroll_box.boxObject.y;
+      let last_position = first_position 
+        - scroll_box.boxObject.height 
+        + row.boxObject.height;
+      if (first_position < scrollY.value) {
+        box_object.scrollTo(0, first_position);
+      } else if (last_position > scrollY.value) {
+        box_object.scrollTo(0, last_position);
+      }
+    }
+  },
+
+  select: function select(index)
+  {
+    // restrict range of index.
+    if (index < -1) {
+      index = -1;
+    }
+    if (index > this.rowCount) {
+      index = this.rowCount - 1;
+    }
+
+    if (index != this.currentIndex) {
+      let rows = this._completion_root
+          .querySelector("rows")
+      if (-1 != this.currentIndex) {
+        let row = rows.childNodes[this.currentIndex];
+        if (row) {
+          this._unselectRow(row);
+        }
+      }
+      if (-1 != index) {
+        let row = rows.childNodes[index];
+        if (row) {
+          this._selectRow(row);
+        }
+      }
+      this._index = index; // update index
+    };
+  },
+
+  down: function down()
+  {
+    let index = Math.min(this.currentIndex + 1, this.rowCount - 1);
+    try {
+    if (index >= 0) {
+      this.select(index);
+    }
+    //this.invalidate();
+    this.fill();
+    } catch (e) {
+      alert(e + e.lineNumber);
+    }
+  },
+
+  up: function up()
+  {
+    let index = Math.max(this.currentIndex - 1, -1);
+    if (index >= 0) {
+      this.select(index);
+    }
+    //this.invalidate();
+    this.fill();
+  },
+
+  enter: function enter()
+  {
+    this.onselect();
+    this._textbox.blur();
+    let session = this._broker;
+    session.notify("command/focus");
+  },
+
+};
+
 /**
  * @class Commandline
  */
-let Commandline = new Class().extends(Plugin);
+let Commandline = new Class().extends(Plugin)
+                             .mix(CompletionView);
 Commandline.definition = {
 
   get id()
@@ -42,65 +157,7 @@ Commandline.definition = {
 
   "[persistable] completion_delay": 180,
 
-  _index: -1,
   _result: null,
-
-  get rowCount() 
-  {
-    if (!this._result) {
-      return 0;
-    }
-    return this._result.labels.length;
-  },
-
-  get currentIndex()
-  {
-    return this._index;
-  },
-
-  select: function select(index)
-  {
-    if (index < -1)
-      index = -1;
-    if (index > this.rowCount)
-      index = this.rowCount - 1;
-
-    let row;
-    if (this._index > -1) {
-      row = this._tree.querySelector("rows").childNodes[this._index];
-      if (!row)
-        return;
-      row.style.borderRadius = "0px";
-      row.style.background = "";
-      row.style.color = "";
-    }
-    if (index > -1) {
-      row = this._tree.querySelector("rows").childNodes[index];
-      row.style.borderRadius = "6px";
-      row.style.backgroundImage = "-moz-linear-gradient(top, #777, #666)";
-      row.style.color = "white";
-      try {
-        let scroll_box = this._tree.parentNode;
-        let box_object = scroll_box.boxObject
-          .QueryInterface(Components.interfaces.nsIScrollBoxObject)
-        if (box_object) {
-          let scrollY = {};
-          box_object.getPosition({}, scrollY);
-          let first_position = row.boxObject.y - this._tree.boxObject.y;
-          let last_position = first_position - scroll_box.boxObject.height + row.boxObject.height;
-          if (first_position < scrollY.value) {
-            box_object.scrollTo(0, first_position);
-          } else if (last_position > scrollY.value) {
-            box_object.scrollTo(0, last_position);
-          }
-        }
-      } catch (e) { 
-       alert(e)
-      }
-    }
-    this._index = index;
-
-  },
 
   /** post constructor. */
   "[subscribe('@event/session-started'), enabled]":
@@ -123,7 +180,7 @@ Commandline.definition = {
       tanasinn_statusbar,
       tanasinn_completion_popup, 
       tanasinn_completion_scroll, 
-      tanasinn_completion_tree
+      tanasinn_completion_root,
     } = session.uniget(
       "command/construct-chrome", 
       {
@@ -231,7 +288,7 @@ Commandline.definition = {
                         </>,
                       childNodes: {
                         tagName: "grid",
-                        id: "tanasinn_completion_tree",
+                        id: "tanasinn_completion_root",
                         style: <> 
                           background: transparent;
                           color: white;
@@ -256,7 +313,7 @@ Commandline.definition = {
     this._textbox = tanasinn_commandline;
     this._popup = tanasinn_completion_popup;
     this._scroll = tanasinn_completion_scroll;
-    this._tree = tanasinn_completion_tree;
+    this._completion_root = tanasinn_completion_root;
     this._statusbar = tanasinn_statusbar;
     this.show.enabled = true;
     this.onStatusMessage.enabled = true;
@@ -309,11 +366,9 @@ Commandline.definition = {
     this._textbox.hidden = false;
     this._completion.hidden = false;
     this._textbox.focus();
-    //coUtils.Timer.setTimeout(function() {
-      this._textbox.focus();
-      this._textbox.focus();
-      this._textbox.focus();
-    //}, 109, this);
+    this._textbox.focus();
+    this._textbox.focus();
+    this._textbox.focus();
   },
 
   /** Shows commandline interface. 
@@ -336,7 +391,7 @@ Commandline.definition = {
     this._statusbar.hidden = true;
     this._textbox.hidden = false;
     this._completion.hidden = false;
-    this._tree.parentNode.width = this._textbox.boxObject.width;
+    this._completion_root.parentNode.width = this._textbox.boxObject.width;
     this.setCompletionTrigger();
   },
 
@@ -351,14 +406,15 @@ Commandline.definition = {
   {
     this._result = result;
     delete this._timer;
-    let grid = this._tree;
+    let grid = this._completion_root;
     while (grid.firstChild) {
       grid.removeChild(grid.firstChild);
     }
     if (result) {
       let type = result.type || "text";
       let session = this._broker;
-      let driver = session.uniget(<>get/completion-display-driver/{type}</>); 
+      let driver = session
+        .uniget(<>get/completion-display-driver/{type}</>); 
       if (driver) {
         driver.drive(grid, result, this.currentIndex);
         this.invalidate(result);
@@ -445,38 +501,6 @@ Commandline.definition = {
   function oninput(event) 
   {
     this.setCompletionTrigger();
-  },
-
-  down: function down()
-  {
-    let index = Math.min(this.currentIndex + 1, this.rowCount - 1);
-    try {
-    if (index >= 0) {
-      this.select(index);
-    }
-    //this.invalidate();
-    this.fill();
-    } catch (e) {
-      alert(e + e.lineNumber);
-    }
-  },
-
-  up: function up()
-  {
-    let index = Math.max(this.currentIndex - 1, -1);
-    if (index >= 0) {
-      this.select(index);
-    }
-    //this.invalidate();
-    this.fill();
-  },
-
-  enter: function enter()
-  {
-    this.onselect();
-    this._textbox.blur();
-    let session = this._broker;
-    session.notify("command/focus");
   },
 
   "[listen('keyup', '#tanasinn_commandline', true)]":
@@ -658,7 +682,7 @@ Commandline.definition = {
 function main(desktop)
 {
   desktop.subscribe(
-    "@initialized/session", 
+    "@initialized/broker", 
     function(session) 
     {
       new Commandline(session);

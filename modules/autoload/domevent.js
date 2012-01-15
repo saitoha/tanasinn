@@ -141,12 +141,12 @@ DOMEventManager.definition = {
 function main(process) 
 {
   process.subscribe(
-    "initialized/desktop",
+    "initialized/broker",
     function(desktop)
     {
       new DOMEventManager(desktop);
       desktop.subscribe(
-        "initialized/session", 
+        "initialized/broker", 
         function(session)
         {
           new DOMEventManager(session);

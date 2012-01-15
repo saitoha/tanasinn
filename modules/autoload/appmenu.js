@@ -103,7 +103,7 @@ AppMenu.definition = {
 function main(process)
 {
   process.subscribe(
-    "initialized/desktop", 
+    "initialized/broker", 
     function(desktop) new AppMenu(desktop));
 }
 

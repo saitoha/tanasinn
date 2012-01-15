@@ -262,7 +262,7 @@ CursorState.definition = {
 function main(desktop) 
 {
   desktop.subscribe(
-    "@initialized/session", 
+    "@initialized/broker", 
     function(session) new CursorState(session));
 }
 

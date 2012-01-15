@@ -35,6 +35,8 @@
    builder.js
    domevent.js
   }
+  base=base {
+  }
   core=core {
    session.js
    persist.js

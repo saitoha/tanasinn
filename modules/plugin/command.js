@@ -473,7 +473,7 @@ ShortcutCommand.definition = {
 function main(desktop)
 {
   desktop.subscribe(
-    "@initialized/session", 
+    "@initialized/broker", 
     function(session) 
     {
       new CommandProvider(session);

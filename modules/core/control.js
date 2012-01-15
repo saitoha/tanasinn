@@ -365,7 +365,7 @@ Control.definition = {
 function main(desktop) 
 {
   desktop.subscribe(
-    "@initialized/session", 
+    "@initialized/broker", 
     function(session) new Control(session));
 }
 

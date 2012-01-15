@@ -260,7 +260,7 @@ W3m.definition = {
 function main(desktop) 
 {
   desktop.subscribe(
-    "@initialized/session", 
+    "@initialized/broker", 
     function(session) new W3m(session));
 }
 

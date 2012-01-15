@@ -67,7 +67,7 @@ Emurator.definition = {
 function main(desktop) 
 {
   desktop.subscribe(
-    "@initialized/session", 
+    "@initialized/broker", 
     function(session) new Emurator(session));
 }
 

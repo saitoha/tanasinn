@@ -331,7 +331,7 @@ BottomResizer.definition = {
 function main(desktop) 
 {
   desktop.subscribe(
-    "@initialized/session", 
+    "@initialized/broker", 
     function(session) 
     {
       if ("Firefox" == coUtils.Runtime.app_name) {

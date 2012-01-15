@@ -359,7 +359,7 @@ coUtils.File = new function() {
   {
     let self = this;
     let entries = function entries() {
-      for each (let path in search_directories) {
+      for each (let [, path] in Iterator(search_directories)) {
         try {
           let target_leaf = self.getFileLeafFromAbstractPath(path);
           if (!target_leaf || !target_leaf.exists()) {
