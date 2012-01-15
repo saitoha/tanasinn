@@ -151,9 +151,9 @@ image::images/fontsize.png[width=640]
 image::images/launcher2.png[width=640]
 
 #if __EN__
-.Reconnecting a detached session.
+.Reconnecting a detached session. It's all OK if your browser crashes or restarting unexpectedly.
 #else
-.デタッチ済みのセッションに再接続しているところ。
+.デタッチ済みのセッションに再接続しているところ。ブラウザがクラッシュしたり再起動しても安心です。
 #endif
 image::images/session2.png[width=640]
 
@@ -174,7 +174,7 @@ image::images/debug2.png[width=640]
 #if __EN__
 .Browser-in-browser. running http:#//w3m.sourceforge.net/index.en.html[w3m] (applied private patch) with inline images. How crazy!!!
 #else
-.ブラウザの中でブラウザ。プライベートパッチを当てたhttp:#//w3m.sourceforge.net/index.en.html[w3m]でインラインイメージを表示させました。意味不明ですね。
+.ブラウザの中でブラウザ。プライベートパッチを当てたhttp:#//w3m.sourceforge.net/index.en.html[w3m]でインラインイメージを表示させました。ここまでくるとちょっと意味不明ですね。
 #endif
 image::images/w3m.png[width=640]
 
@@ -438,7 +438,9 @@ or toweet me (http:#//twitter.com/feel_tanasinn[English] / http:#//twitter.com/k
 #else
 == バグレポート・パッチ
 
-.バグレポート・パッチ超歓迎。 saitoha <user@zuse.jp>にメールするか、 twitterで教えてください。 
-(http:#//twitter.com//kefir_[日本語] / http:#//twitter.com/feel_tanasinn[英語])
+.バグレポート・パッチ超歓迎。 
+saitoha <user@zuse.jp> 
+twitter: http:#//twitter.com/kefir_[日本語] / http:#//twitter.com/feel_tanasinn[英語] 
+
 #endif
 
