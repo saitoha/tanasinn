@@ -1543,6 +1543,7 @@ FontFamilyCompletionDisplayDriver.definition = {
               style: <>
                 font-size: 40px;
                 font-family: '{completion_text}';
+                font-weight: normal;
                 margin: 0px;
                 margin-left: 8px;
               </>,

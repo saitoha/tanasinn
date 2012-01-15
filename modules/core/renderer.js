@@ -118,7 +118,7 @@ Renderer.definition = {
   "[persistable]            font_family@WINNT" : "Lucida Console",
   "[watchable, persistable] font_size": 13,
 
-  "[persistable] adaptive_rendering": true,
+  "[persistable] force_monospace_rendering": true,
 
   get "[persistable] smoothing"()
   {
@@ -170,6 +170,7 @@ Renderer.definition = {
     this.changeFontSizeByOffset.enabled = true;
     this.draw.enabled = true;
     this.backup.enabled = true;
+    this.restore.enabled = true;
     session.notify("initialized/renderer", this);
   },
 
@@ -186,12 +187,19 @@ Renderer.definition = {
     this.changeFontSizeByOffset.enabled = false;
     this.draw.enabled = false;
     this.backup.enabled = false;
+    this.restore.enabled = false;
     this._canvas.parentNode.removeChild(this._canvas);
   },
 
   "[subscribe('command/backup')]": 
-  function backup() 
+  function backup(context) 
   {
+    context[this.id] = {
+      line_height: this.line_height,
+      font_family: this.font_family,
+      font_size: this.font_size,
+      force_monospace_rendering: this.force_manospace_rendering,
+    };
     try {
     let session = this._broker;
     let path = String(<>$Home/.tanasinn/persist/{session.request_id}.png</>);
@@ -228,6 +236,17 @@ Renderer.definition = {
     // save the canvas data to the file  
     persist.saveURI(source, null, null, null, null, file);
     } catch(e) {alert(e)}
+  },
+
+  "[subscribe('@command/restore')]": 
+  function restore(context) 
+  {
+    let data = context[this.id];
+    this.force_manospace_rendering = data.force_manospace_rendering;
+    this.line_height = data.line_height;
+    this.font_family = data.font_family;
+    this.font_size = data.font_size;
+    this.draw();
   },
 
   "[subscribe('set/font-size')]": 
@@ -290,8 +309,9 @@ Renderer.definition = {
   "[subscribe('command/draw')]": 
   function draw(redraw_flag)
   {
-    if (redraw_flag)
+    if (redraw_flag) {
       this._screen.dirty = true;
+    }
     let context = this._context;
     let screen = this._screen;
     let font_size = this.font_size;

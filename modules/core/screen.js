@@ -1242,13 +1242,14 @@ Screen.definition = {
   "[subscribe('command/backup'), enabled]": 
   function backup(context) 
   {
-    this.serialize(context);
+    context[this.id] = [];
+    this.serialize(context[this.id]);
   },
 
   "[subscribe('command/restore'), enabled]": 
   function restore(context) 
   {
-    this.deserialize(context);
+    this.deserialize(context[this.id]);
   },
 
   serialize: function serialize(context)

@@ -792,7 +792,7 @@ Launcher.definition = {
                       //overflow-x: hidden;
                       //overflow-y: auto;
                       font-size: 20px;
-                      font-family: 'Lucida Console';
+                      font-family: 'Menlo','Lucida Console';
                       font-weight: bold;
                       color: #fff;
 //                      -moz-box-shadow: 15px 14px 19px black;

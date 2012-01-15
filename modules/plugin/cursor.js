@@ -133,6 +133,18 @@ Cursor.definition = {
     this.onScrollSessionClosed.enabled = false;
   },
 
+  "[subscribe('command/backup')]": 
+  function backup(context) 
+  {
+    // TODO: write backup code here.
+  },
+
+  "[subscribe('command/restore')]": 
+  function restore(context) 
+  {
+    // TODO: write restore code here.
+  },
+
   "[subscribe('terminal-cursor-blinking-mode-change')]": 
   function onBlinkingModeChanged(blink) 
   {

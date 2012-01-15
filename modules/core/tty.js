@@ -640,7 +640,6 @@ SocketTeletypeService.definition = {
 
     let session = this._broker;
     if (0 == session.command.indexOf("&")) {
-      try {
       let request_id = session.command.substr(1);
       let record = coUtils.Sessions.get(request_id);
       this.connect(Number(record.control_port));
@@ -648,16 +647,11 @@ SocketTeletypeService.definition = {
       coUtils.Sessions.remove(request_id);
       coUtils.Sessions.update();
       let backup_data_path = String(<>$Home/.tanasinn/persist/{request_id}.txt</>);
-      let file = coUtils.File.getFileLeafFromAbstractPath(backup_data_path);
-      if (file.exists()) {
+      if (coUtils.File.exists(backup_data_path)) {
         let context = eval(coUtils.IO.readFromFile(backup_data_path));
         session.notify("command/restore", context);
-        session.subscribe(
-          "@initialized/renderer", 
-          function() session.notify("command/draw", true));
-        coUtils.Timer.setTimeout(function() file.exists() && file.remove(true), 1000);
+        file.remove(true)
       }
-      } catch(e) {alert(e)}
     } else {
       let socket = Components
         .classes["@mozilla.org/network/server-socket;1"]
@@ -683,7 +677,7 @@ SocketTeletypeService.definition = {
   "[subscribe('@command/detach'), enabled]": 
   function detach()
   {
-    let context = [];
+    let context = {};
     let session = this._broker;
     session.notify("command/backup", context);
     let path = String(<>$Home/.tanasinn/persist/{session.request_id}.txt</>);
