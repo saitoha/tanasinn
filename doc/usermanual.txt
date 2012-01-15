@@ -9,25 +9,27 @@ link:./usermanual.html[English/英語]
 
 #if __EN__
 
-== Introduction
+== Overview
 
     Here is a terminal emurator that runs on Firefox.
     It enables you to access flexible, powerful functionality 
     provided by operating systems, such as commandline shells, or curses-based 
     applications.
-#if 0
+#if 1
+- Unstable, snapshot version.
 http:#//zuse.jp/tanasinn/tanasinn-current.xpi[Download from here]
 #endif
 
 #else
 
-== イントロダクション
+== 概要
 
     "tanasinn terminal emurator" は Firefox上で動作する端末エミュレータです。
     コマンドラインシェルやcursesベースのアプリケーション等、オペレーティングシステムが提供する
     柔軟でパワフルな機能群にブラウザ上のUIからアクセスすることができます。
 
-#if 0
+#if 1
+- スナップショット版
 http:#//zuse.jp/tanasinn/tanasinn@zuse.jp.xpi[ここからダウンロード]
 #endif
 
@@ -84,7 +86,7 @@ http:#//zuse.jp/tanasinn/tanasinn@zuse.jp.xpi[ここからダウンロード]
 
 #if __EN__
 == Distribution/License
-It is istributed under Mozilla Public License 2.0 (MPL2) 
+It is istributed under Mozilla Public License 1.1 (MPL1.1) .
 #else
 == 配布/ライセンス
 #endif
