@@ -83,6 +83,14 @@ http:#//zuse.jp/tanasinn/tanasinn@zuse.jp.xpi[ここからダウンロード]
 #endif
 
 #if __EN__
+== Distribution/License
+It is istributed under Mozilla Public License 2.0 (MPL2) 
+#else
+== 配布/ライセンス
+#endif
+
+
+#if __EN__
 == Screenshots
 #else
 == スクリーンショット
@@ -200,25 +208,25 @@ image::images/xulapp.png[width=640]
 
     * Improving emuration. now emuration engine is running with xterm compatible mode. 
       but it ought to read terminfo entries.
-    * Documents for plug-in developers is comming soon... - -;)
     * Supporting color scheme. import/export color palette contains 16 or 256 colors.
     * Supporting skins. you can make it otakunized.
     * Making it to be more collaborative with curses-based applications.
       Accessing to Gecko and do something like opening popup windows, playing movies, 
       OAuth authorication, ...etc., from terminal applications. 
       We're dreaming of enjoying youtube or twitter with no plugins, from terminal, don't you?
+    * Documents for plug-in developers is comming soon... - -;)
 
 #else
 == 将来的にサポートされる仕様
     
     * エミュレーションの強化。今はとりあえずxterm系コンパチブルなエミュレーションで作ってますが、
       本来はterminfoエントリを見るべきでしょう。
-    * プラグイン開発用ドキュメント。
     * カラースキーマのサポート。16色or256色のパレットをインポート/エクスポートできるように。
     * スキンのサポート。痛端末化が可能に。
     * cursesベースのアプリーションとの連携強化。
-      端末アプリケーションからGeckoにアクセスしてポップアップとか動動画表示とかOAuthとかやるための仕様の策定。
+      端末アプリケーションからGeckoにアクセスしてポップアップとか動画表示とかOAuthとかやるための仕様の策定。
       特別なプラグインを書かずとも端末からyoutube見たりtwitterやったりできるようになります。
+    * プラグイン開発用ドキュメント。
 
 #endif
 
