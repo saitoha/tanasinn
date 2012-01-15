@@ -807,30 +807,43 @@ Launcher.definition = {
         ],
       },
     ]);
-    this.onkeypress.enabled = true;
-    this.onfocus.enabled = true;
-    this.onblur.enabled = true;
-    this.oninput.enabled = true;
     this._window_layer = tanasinn_window_layer;
     this._element = tanasinn_launcher_layer;
     this._textbox = tanasinn_launcher_textbox;
     this._popup = tanasinn_launcher_completion_popup;
     this._completion_root = tanasinn_launcher_completion_root;
 
-    window.addEventListener(
-      "keyup", let (self = this) function() 
-      {
-        self.onkeyup.apply(self, arguments);
-      }, /* capture */ true);
+    let (handler = let (self = this) function() self.onkeydown.apply(self, arguments)) {
+      window.addEventListener("keydown", handler, /* capture */ true);
+      broker.subscribe(
+        "event/shutdown", 
+        function() window.removeEventListener("keyup", handler, true));
+    }
 
-    window.addEventListener(
-      "keydown", let (self = this) function() 
-      {
-        self.onkeydown.apply(self, arguments);
-      }, /* capture */ true);
+    let (handler = let (self = this) function() self.onkeyup.apply(self, arguments)) {
+      window.addEventListener("keyup", handler, /* capture */ true);
+      broker.subscribe(
+        "event/shutdown", 
+        function() window.removeEventListener("keyup", handler, true));
+    }
 
     broker.notify(<>initialized/{this.id}</>, this);
+    this.onkeypress.enabled = true;
+    this.onfocus.enabled = true;
+    this.onblur.enabled = true;
+    this.oninput.enabled = true;
     } catch(e) {alert(e)}
+  },
+
+  "[subscribe('event/shutdown'), enabled]":
+  function shutdown()
+  {
+    this.notify("event/shutdown");
+    this.onkeypress.enabled = false;
+    this.onfocus.enabled = false;
+    this.onblur.enabled = false;
+    this.oninput.enabled = false;
+    this._element.removeChild(this._element);
   },
 
   select: function select(index)

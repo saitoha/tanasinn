@@ -122,8 +122,8 @@ OverlayIndicator.definition = {
   /** installs itself. 
    *  @param {Session} session A session object.
    */
-  "[subscribe('install/' + this.id)]":
-  function install(session) 
+//  "[subscribe('install/' + this.id)]":
+  install: function install(session) 
   {
     let {tanasinn_overlay_indicator, tanasinn_overlay_indicator_content}
       = session.uniget("command/construct-chrome", this.template);
@@ -138,8 +138,8 @@ OverlayIndicator.definition = {
   /** Uninstalls itself.
    *  @param {Session} session A session object.
    */
-  "[subscribe('uninstall/' + this.id)]":
-  function uninstall(session) 
+//  "[subscribe('uninstall/' + this.id)]":
+  uninstall: function uninstall(session) 
   {
     if (this._element) {
       this._element.parentNode.removeChild(this._element);

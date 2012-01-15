@@ -39,6 +39,8 @@ http:#//zuse.jp/tanasinn/tanasinn@zuse.jp.xpi[ここからダウンロード]
     - Multi-platform, now supports Mac / Linux (Tested in Ubuntu) / 
       Windows + http:#//www.cygwin.com[Cygwin] (requires posix python).
     - Supports plugin architecture. it supports Plug-and-Play installing & uninstalling.
+    - Retaining TTY session duaring closing/restarting browser.
+      you can reconnect suspended terminal session.
     - Including debugger. You can run it in step-execution-mode or trace-mode 
       and observe terminal I/O sequence in real-time.
     - IME is supported.
@@ -47,8 +49,6 @@ http:#//zuse.jp/tanasinn/tanasinn@zuse.jp.xpi[ここからダウンロード]
     - Localization supported. It is using gettext-style method. you can edit localize resource on UI.
     - You can selects variable character encoding supported by Gecko.
     - Supports transparent window. it is useful when www-browseing while working at terminal.
-    - Retaining TTY session duaring restarting browser.
-      (Now, this feature is not works well in Cygwin version. - -;)
     - xterm-like mouse emuration. supports smoothing pixel scroll.
     - Text selection / Rectangle text selection.
     - Supports copy / paste in Drag & Drop or keyboard shortcut.
@@ -62,6 +62,8 @@ http:#//zuse.jp/tanasinn/tanasinn@zuse.jp.xpi[ここからダウンロード]
     - マルチプラットフォーム。現在サポートされるのは、Mac / Linux(というかUbuntu) / 
       http:#//www.cygwin.com[Cygwin] + Cygwin環境 (POSIX版Pythonが必要)
     - プラグインアーキテクチャ。プラグアンドプレイでのインストール・アンインストールが可能。
+    - ブラウザを再起動したり閉じたりしている間、ターミナルセッションを保持します。
+      サスペンドしたセッションに後から再接続できます。 
     - デバッガ内臓。ステップ実行やトレースができます。
       ターミナルとアプリケーションがやり取りするI/Oシーケンスをリアルタイムで観察できます。
     - IMEが使えます。
@@ -71,7 +73,6 @@ http:#//zuse.jp/tanasinn/tanasinn@zuse.jp.xpi[ここからダウンロード]
       ローカライズリソースをUI上から編集することができます。
     - Geckoがサポートする様々なエンコーディングを指定できます。
     - ウィンドウの透明化をサポート。これはブラウジングしながらターミナルで作業したい時に便利です。
-    - ブラウザの再起動中、ターミナルセッションを保持します。(これは現在Windowsでは動作しません。)
     - xtermのようなマウスエミュレーションができます。ピクセルスクロールにも対応。
     - テキストの選択や矩形選択ができます。
     - ドラッグアンドドロップやキーボードショートカットによる選択テキストのコピー・ペーストが可能です。
@@ -120,7 +121,7 @@ image::images/scroll2.png[width=640]
 #else
 .オーバーレイインジケータがフォントサイズ、ウィンドウサイズ、タイトルバーメッセージが変更されたときなどに表示されます。
 #endif
-image::images/overlay.png[width=640]
+image::images/overlay2.png[width=640]
 
 #if __EN__
 .Commandline interface inspired by http:#//vimperator.org/vimperator[Vimperator] / https:#//github.com/mooz/keysnail/wiki/[Keysnail] (here is fgcolor command).
@@ -134,14 +135,14 @@ image::images/completion2.png[width=640]
 #else
 .フォントファミリを選択しています。
 #endif
-image::images/fontfamily.png[width=640]
+image::images/fontfamily2.png[width=640]
 
 #if __EN__
 .Selecting font-size.
 #else
 .フォントサイズを選択しています。
 #endif
-image::images/fontsize.png[width=640]
+image::images/fontsize2.png[width=640]
 
 #if __EN__
 .Launcher interface inspired by http:#//www.blacktree.com/[QuckSilver] / https:#//addons.mozilla.org/ja/firefox/addon/mozilla-labs-ubiquity/[Ubiquity].
@@ -158,9 +159,9 @@ image::images/launcher2.png[width=640]
 image::images/session2.png[width=640]
 
 #if __EN__
-.running "http:#//www.tkl.iis.u-tokyo.ac.jp/~toyoda/index_e.html[sl]" (a joke software) on cygwin/Windows7.
+.running "http:#//www.tkl.iis.u-tokyo.ac.jp/~toyoda/index_e.html[sl]" (a joke software).
 #else
-.Cygwin1.7/Windows7環境で"http:#//www.tkl.iis.u-tokyo.ac.jp/~toyoda/index_e.html[sl]" (ジョークウェア)を走らせたところ。
+."http:#//www.tkl.iis.u-tokyo.ac.jp/~toyoda/index_e.html[sl]" (ジョークウェア)を走らせたところ。
 #endif
 image::images/sl2.png[width=640]
 
@@ -176,7 +177,7 @@ image::images/debug2.png[width=640]
 #else
 .ブラウザの中でブラウザ。プライベートパッチを当てたhttp:#//w3m.sourceforge.net/index.en.html[w3m]でインラインイメージを表示させました。ここまでくるとちょっと意味不明ですね。
 #endif
-image::images/w3m.png[width=640]
+image::images/w3m2.png[width=640]
 
 #if __EN__
 .Mailer-in-browser. running http:#//www.gohome.org/wl/index.html[Wonderlust] on emacs.
@@ -199,7 +200,6 @@ image::images/xulapp.png[width=640]
 
     * Improving emuration. now emuration engine is running with xterm compatible mode. 
       but it ought to read terminfo entries.
-    * Frontend UI that makes you to select/edit session, ...such as screen/tmux.
     * Documents for plug-in developers is comming soon... - -;)
     * Supporting color scheme. import/export color palette contains 16 or 256 colors.
     * Supporting skins. you can make it otakunized.
@@ -213,7 +213,6 @@ image::images/xulapp.png[width=640]
     
     * エミュレーションの強化。今はとりあえずxterm系コンパチブルなエミュレーションで作ってますが、
       本来はterminfoエントリを見るべきでしょう。
-    * screenやtmuxのように、セッションの選択・編集を行うフロントエンドUIの作成。
     * プラグイン開発用ドキュメント。
     * カラースキーマのサポート。16色or256色のパレットをインポート/エクスポートできるように。
     * スキンのサポート。痛端末化が可能に。
@@ -426,7 +425,7 @@ cygstart firefox.exe --app application.ini
 === コマンドラインインターフェースを使う
     
     …仕様が全然固まってませんのでまだ書けません。
-    この部分は作りはじめてまだ1週間ちょっとなので、これから色々考えます。
+    この部分は作りはじめて日が浅いので、これから色々考えます。
 #endif
 
 

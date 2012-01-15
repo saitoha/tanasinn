@@ -547,7 +547,7 @@ Console.definition = {
   function onLoad(chrome, bottom_panel) 
   {
     this._bottom_panel = bottom_panel;
-    //this.enabled = this.enabled_when_startup;
+    this.enabled = this.enabled_when_startup;
   },
 
   /** Installs itself */
