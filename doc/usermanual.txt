@@ -38,7 +38,7 @@ link:./usermanual.html[English/英語]
 == ダウンロード/ライセンス
     Mozilla Public License 1.1 (MPL1.1) で配布しています。 
 
-- スナップショット版 http:#//zuse.jp/tanasinn/tanasinn@zuse.jp.xpi[ここからダウンロード]
+- スナップショット版 http:#//zuse.jp/tanasinn/tanasinn-current.xpi[ここからダウンロード]
 - git repo: http:#//zuse.jp/tanasinn.git
 - gitweb: http:#//zuse.jp/git/?p=tanasinn.git
 
@@ -65,7 +65,7 @@ link:./usermanual.html[English/英語]
     - xterm-like mouse emuration. supports smoothing pixel scroll.
     - Text selection / Rectangle text selection.
     - Supports copy / paste in Drag & Drop or keyboard shortcut.
-    - Supports move / resize through Drag & Drop operation.
+    - Supports move / resize through draging operation.
     - Supports 256 terminal colors, you can assign 32bit colors for them.
     - Vimperator / Keysnail like commandline interface.
     - Running as standalone XUL application if you want. (but now buggy!)
@@ -89,7 +89,7 @@ link:./usermanual.html[English/英語]
     - xtermのようなマウスエミュレーションができます。ピクセルスクロールにも対応。
     - テキストの選択や矩形選択ができます。
     - ドラッグアンドドロップやキーボードショートカットによる選択テキストのコピー・ペーストが可能です。
-    - ドラッグアンドドロップによる移動・リサイズができます。
+    - ドラッグによる移動・リサイズができます。
     - 256色表示対応。32bitカラーをパレットに割り当てることができます。
     - VimperatorやKeysnailのようなコマンドラインインターフェース。
     - スタンドアロンのXULアプリケーションとして動作させることができます。(現在はかなりバギーです!)
@@ -416,7 +416,7 @@ cygstart firefox.exe --app application.ini
 #endif
 
 #if __EN__
-=== basic operating procedure 
+=== Basic operating procedure 
 
     It is similer to well-known terminal emurators, like xterm. 
     but including specific fetures as follows.
@@ -471,6 +471,23 @@ cygstart firefox.exe --app application.ini
     この部分は作りはじめて日が浅いので、これから色々考えます。
 #endif
 
+
+#if __EN__
+== Known issue
+
+ - In Windows + Cygwin enviroinment, emuration performance is so damn slow!!
+ - At SandS(Space and Shihft) keyboard enviroinment, shift + shift 
+   (shift key twice) key sequence are detected by space + space, unfortunately!!
+   I think something other way for it should be provided.
+
+
+#else
+== 既知の問題
+
+ - Windows + Cygwin 環境ではエミュレーションが糞遅いです。
+ - キーボードがSandS(Space and Shihft)環境だとspace + space で shift + shift を検出してしまいます。代替手段を用意しなければいけません。
+
+#endif
 
 #if __EN__
 == Bug reports and patches
