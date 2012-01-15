@@ -88,18 +88,18 @@ http:#//zuse.jp/tanasinn/tanasinn@zuse.jp.xpi[ここからダウンロード]
 #endif
 
 #if __EN__
-.ssh Debian from MacOSX and run "http:#//w3m.sourceforge.net/index.en.html[BB]", an ascii art demo program.
+.Running "http:#//w3m.sourceforge.net/index.en.html[BB]", an ascii art demo program.
 #else
-.MacOSXからDebianにsshして"http:#//w3m.sourceforge.net/index.en.html[BB]"(アスキーアートのデモプログラム)を走らせたところ。
+."http:#//w3m.sourceforge.net/index.en.html[BB]"(アスキーアートのデモプログラム)を走らせたところ。
 #endif
-image::images/zebra.png[width=640]
+image::images/bb2.png[width=640]
 
 #if __EN__
 .Displaying color chart with http:#//code.google.com/p/myminios/source/browse/trunk/colortable16.sh?r=10[colortable.sh] and http:#//code.google.com/p/joeldotfiles/source/browse/trunk/256colors2.pl[256color2.pl].
 #else
 .http:#//code.google.com/p/myminios/source/browse/trunk/colortable16.sh?r=10[colortable.sh] and http:#//code.google.com/p/joeldotfiles/source/browse/trunk/256colors2.pl[256color2.pl]でカラーチャートを表示させたところ。
 #endif
-image::images/color.png[width=640]
+image::images/color2.png[width=640]
 
 #if __EN__
 .Typing Japanese with IME (here is http:#//aquaskk.sourceforge.jp/[AquaSKK]).
@@ -144,7 +144,7 @@ image::images/fontfamily.png[width=640]
 image::images/fontsize.png[width=640]
 
 #if __EN__
-.Launcher interface inspired by http#://www.blacktree.com/[QuckSilver] / https:#//addons.mozilla.org/ja/firefox/addon/mozilla-labs-ubiquity/[Ubiquity].
+.Launcher interface inspired by http:#//www.blacktree.com/[QuckSilver] / https:#//addons.mozilla.org/ja/firefox/addon/mozilla-labs-ubiquity/[Ubiquity].
 #else
 .http:#//www.blacktree.com/[QuckSilver] や https:#//addons.mozilla.org/ja/firefox/addon/mozilla-labs-ubiquity/[Ubiquity] にインスパイアされたランチャーインターフェース。
 #endif

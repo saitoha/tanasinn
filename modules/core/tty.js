@@ -709,7 +709,6 @@ SocketTeletypeService.definition = {
     ].join(" ");
     this._controller.post(message);
     this.send.enabled = true;
-    try { 
     let timer = coUtils.Timer.setInterval(function() {
       this._controller.post("beacon\n") 
     }, 5000, this);
@@ -718,7 +717,6 @@ SocketTeletypeService.definition = {
       session.unsubscribe(id);
       timer.cancel();
     }, this, id);
-    } catch(e) {alert(e)}
     session.notify("initialized/tty", this);
   },
 

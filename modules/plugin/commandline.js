@@ -240,7 +240,7 @@ Commandline.definition = {
                   padding: 0px;
                   margin: 0px;
                   color: #ccc;
-                  text-shadow: 0px 1px 4px white;
+                  text-shadow: 0px 1px 4px #444;
                 </>,
                 hidden: true,
               },
