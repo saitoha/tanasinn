@@ -1,5 +1,5 @@
 
-= ∵ tanasinn terminal emurator 
+= tanasinn terminal emurator 
 
 #if __EN__
 link:./usermanual-ja.html[日本語/Japanese]
@@ -16,8 +16,11 @@ link:./usermanual.html[English/英語]
     provided by operating systems, such as commandline shells, or curses-based 
     applications.
 #if 1
-- Unstable, snapshot version.
-http:#//zuse.jp/tanasinn/tanasinn-current.xpi[Download from here]
+
+== Distribution/License
+    This software is istributed under Mozilla Public License 1.1 (MPL1.1) .
+
+- Unstable, snapshot version, http:#//zuse.jp/tanasinn/tanasinn-current.xpi[Download from here].
 #endif
 
 #else
@@ -29,8 +32,10 @@ http:#//zuse.jp/tanasinn/tanasinn-current.xpi[Download from here]
     柔軟でパワフルな機能群にブラウザ上のUIからアクセスすることができます。
 
 #if 1
-- スナップショット版
-http:#//zuse.jp/tanasinn/tanasinn@zuse.jp.xpi[ここからダウンロード]
+== 配布/ライセンス
+    Mozilla Public License 1.1 (MPL1.1) で配布しています。 
+
+- スナップショット版 http:#//zuse.jp/tanasinn/tanasinn@zuse.jp.xpi[ここからダウンロード]
 #endif
 
 #endif
@@ -85,10 +90,7 @@ http:#//zuse.jp/tanasinn/tanasinn@zuse.jp.xpi[ここからダウンロード]
 #endif
 
 #if __EN__
-== Distribution/License
-It is istributed under Mozilla Public License 1.1 (MPL1.1) .
 #else
-== 配布/ライセンス
 #endif
 
 

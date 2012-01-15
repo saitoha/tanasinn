@@ -57,14 +57,16 @@ commands.add(['tan[asinn]'],
   function (args) 
   { 
     let process = getTanasinnProcess();
+    process.notify("event/new-window-detected", window);
     window.setTimeout(function() {
       let desktop = process.getDesktopFromWindow(window);
-      desktop.start(
-        desktop.root_element.querySelector("#tanasinn_window_layer"),
-        args.string,  // command
-        null, // TERM
-        null, // size
-        ["modules/core", "modules/plugin"])
+      desktop.post("command/show-launcher");
+      //desktop.start(
+      //  desktop.root_element.querySelector("#tanasinn_window_layer"),
+      //  args.string,  // command
+      //  null, // TERM
+      //  null, // size
+      //  ["modules/core", "modules/plugin"])
     }, 0);
   },
   { 

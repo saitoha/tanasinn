@@ -1,69 +1,83 @@
+
+= ∵ tanasinn terminal emurator 
+
 #if __EN__
-= tanasinn Project
-
-link:./usermanual-ja.html[日本語]
+link:./usermanual-ja.html[日本語/Japanese]
 #else
-= tanasinn Project
-
-link:./usermanual.html[English]
+link:./usermanual.html[English/英語]
 #endif
 
 #if __EN__
-== Introduction: What is it?
-    "tanasinn" is a Firefox browser extension, shows a terminal emurator 
-    interface and enables you to access flexible, powerful functionality 
-    provided by operating systems, such as commandline shells, curses-based 
+
+== Overview
+
+    Here is a terminal emurator that runs on Firefox.
+    It enables you to access flexible, powerful functionality 
+    provided by operating systems, such as commandline shells, or curses-based 
     applications.
+#if 1
+
+== Distribution/License
+    This software is istributed under Mozilla Public License 1.1 (MPL1.1) .
+    - Unstable, snapshot version, http:#//zuse.jp/tanasinn/tanasinn-current.xpi[Download from here]
+#endif
 
 #else
-== イントロダクション: これは何ですか?
-    "tanasinn"は Firefox上で動作する端末エミュレータです。
+
+== 概要
+
+    "tanasinn terminal emurator" は Firefox上で動作する端末エミュレータです。
     コマンドラインシェルやcursesベースのアプリケーション等、オペレーティングシステムが提供する
     柔軟でパワフルな機能群にブラウザ上のUIからアクセスすることができます。
+
+#if 1
+== 配布/ライセンス
+    Mozilla Public License 1.1 (MPL1.1) で配布しています。 
+    スナップショット版 http:#//zuse.jp/tanasinn/tanasinn@zuse.jp.xpi[ここからダウンロード]
+#endif
+
 #endif
 
 #if __EN__
-== Overview hilighting features
+== Hilighting features
     - Full Gecko based user interface, it is flexible and easy to customize.
-    - Multi-platform, now supports Mac / Linux (Tested in Ubuntu) / Windows + http://www.cygwin.com[Cygwin] (requires posix python).
+    - Multi-platform, now supports Mac / Linux (Tested in Ubuntu) / 
+      Windows + http:#//www.cygwin.com[Cygwin] (requires posix python).
     - Supports plugin architecture. it supports Plug-and-Play installing & uninstalling.
-      (documents for developing is comming soon... - -;)
+    - Retaining TTY session duaring closing/restarting browser.
+      you can reconnect suspended terminal session.
     - Including debugger. You can run it in step-execution-mode or trace-mode 
       and observe terminal I/O sequence in real-time.
     - IME is supported.
     - Supports east asian double width characters. 
       but it is not render bidi languages correctly.
-    - Localization supported. localize resource can be edited on bottom-panel UI.
+    - Localization supported. It is using gettext-style method. you can edit localize resource on UI.
     - You can selects variable character encoding supported by Gecko.
     - Supports transparent window. it is useful when www-browseing while working at terminal.
-    - Retaining TTY session duaring restarting browser.
-      (Now, this feature is not works well in Cygwin version. 
-      Frontend UI that makes you to select/edit session, ...such as screen/tmux, 
-      is not implemented yet. - -;)
     - xterm-like mouse emuration. supports smoothing pixel scroll.
     - Text selection / Rectangle text selection.
     - Supports copy / paste in Drag & Drop or keyboard shortcut.
     - Supports move / resize through Drag & Drop operation.
-    - Supports 256 terminal color, you can assign 32bit colors for them.
+    - Supports 256 terminal colors, you can assign 32bit colors for them.
     - Vimperator / Keysnail like commandline interface.
     - Running as standalone XUL application if you want. (but now buggy!)
 #else
 == 特色
     - Geckoベースのユーザーインターフェース。柔軟でカスタマイズが容易です。
-    - マルチプラットフォーム。現在サポートされるのは、Mac / Linux(というかUbuntu) / Windows + Cygwin環境 (POSIX版Pythonが必要)
-    - プラグインアーキテクチャ。プラグアンドプレイでのインストール・アンインストールを可能にします。
-      (開発ドキュメントは鋭意作成中です。)
+    - マルチプラットフォーム。現在サポートされるのは、Mac / Linux(というかUbuntu) / 
+      http:#//www.cygwin.com[Cygwin] + Cygwin環境 (POSIX版Pythonが必要)
+    - プラグインアーキテクチャ。プラグアンドプレイでのインストール・アンインストールが可能。
+    - ブラウザを再起動したり閉じたりしている間、ターミナルセッションを保持します。
+      サスペンドしたセッションに後から再接続できます。 
     - デバッガ内臓。ステップ実行やトレースができます。
-      ターミナルとアプリケーションがやり取りするI/Oシーケンスをリアルタイムで観察できます(これは面白いです)。
+      ターミナルとアプリケーションがやり取りするI/Oシーケンスをリアルタイムで観察できます。
     - IMEが使えます。
     - East Asian Width(ひらがななどの文字幅を考慮したレンダリング)に一応対応しています。 
       bidiには対応できていないと思います。
-    - 地域化のサポート。ローカライズリソースをパネルUIから編集することができます。
+    - 地域化のサポート。gettextのようなスタイルを採用しています。
+      ローカライズリソースをUI上から編集することができます。
     - Geckoがサポートする様々なエンコーディングを指定できます。
     - ウィンドウの透明化をサポート。これはブラウジングしながらターミナルで作業したい時に便利です。
-    - ブラウザの再起動中、ターミナルセッションを保持します。
-      (これは現在Windowsでは動作しません。screenやtmuxのように、セッションの編集・管理を行う
-      フロントエンドUIはまだ実装されていません。)
     - xtermのようなマウスエミュレーションができます。ピクセルスクロールにも対応。
     - テキストの選択や矩形選択ができます。
     - ドラッグアンドドロップやキーボードショートカットによる選択テキストのコピー・ペーストが可能です。
@@ -74,101 +88,113 @@ link:./usermanual.html[English]
 #endif
 
 #if __EN__
+#else
+#endif
+
+
+#if __EN__
 == Screenshots
 #else
 == スクリーンショット
 #endif
 
 #if __EN__
-.ssh Debian from MacOSX and run "http://w3m.sourceforge.net/index.en.html[BB]", an ascii art demo program.
+.Running "http:#//w3m.sourceforge.net/index.en.html[BB]", an ascii art demo program.
 #else
-.MacOSXからDebianにsshして"http://w3m.sourceforge.net/index.en.html[BB]"(アスキーアートのデモプログラム)を走らせたところ。
+."http:#//w3m.sourceforge.net/index.en.html[BB]"(アスキーアートのデモプログラム)を走らせたところ。
 #endif
-image::images/zebra.png[width=640]
+image::images/bb2.png[width=640]
 
 #if __EN__
-.Displaying color chart with http://code.google.com/p/myminios/source/browse/trunk/colortable16.sh?r=10[colortable.sh] and http://code.google.com/p/joeldotfiles/source/browse/trunk/256colors2.pl[256color2.pl].
+.Displaying color chart with http:#//code.google.com/p/myminios/source/browse/trunk/colortable16.sh?r=10[colortable.sh] and http:#//code.google.com/p/joeldotfiles/source/browse/trunk/256colors2.pl[256color2.pl].
 #else
-.http://code.google.com/p/myminios/source/browse/trunk/colortable16.sh?r=10[colortable.sh] and http://code.google.com/p/joeldotfiles/source/browse/trunk/256colors2.pl[256color2.pl]でカラーチャートを表示させたところ。
+.http:#//code.google.com/p/myminios/source/browse/trunk/colortable16.sh?r=10[colortable.sh] and http:#//code.google.com/p/joeldotfiles/source/browse/trunk/256colors2.pl[256color2.pl]でカラーチャートを表示させたところ。
 #endif
-image::images/color.png[width=640]
+image::images/color2.png[width=640]
 
 #if __EN__
-.Typing Japanese with IME (here is http://aquaskk.sourceforge.jp/[AquaSKK]).
+.Typing Japanese with IME (here is http:#//aquaskk.sourceforge.jp/[AquaSKK]).
 #else
-.IMEで日本語を打ってみたところ (http://aquaskk.sourceforge.jp/[AquaSKK]使用)。
+.IMEで日本語を打ってみたところ (http:#//aquaskk.sourceforge.jp/[AquaSKK]使用)。
 #endif
-image::images/ime.png[width=640]
+image::images/ime2.png[width=640]
 
 #if __EN__
 .Scrollbar interface emerges only when it is needed (like OSX Lion).
 #else
-スクロールバーインターフェースは必要なときにあらわれます(OSX Lionのように)。
+.スクロールバーインターフェースは必要なときにあらわれます(OSX Lionのように)。
 #endif
-image::images/scroll.png[width=640]
+image::images/scroll2.png[width=640]
 
 #if __EN__
 .Overlay indicator dislays various messages. it emerges when font size / window size / titlebar message is chenged.
 #else
-オーバーレイインジケータがフォントサイズ、ウィンドウサイズ、タイトルバーメッセージが変更されたときなどに表示されます。
+.オーバーレイインジケータがフォントサイズ、ウィンドウサイズ、タイトルバーメッセージが変更されたときなどに表示されます。
 #endif
-image::images/overlay.png[width=640]
+image::images/overlay2.png[width=640]
 
 #if __EN__
-.Commandline interface inspired by http://vimperator.org/vimperator[Vimperator] / https://github.com/mooz/keysnail/wiki/[Keysnail] (here is fgcolor command).
+.Commandline interface inspired by http:#//vimperator.org/vimperator[Vimperator] / https:#//github.com/mooz/keysnail/wiki/[Keysnail] (here is fgcolor command).
 #else
-.http://vimperator.org/vimperator[Vimperator] や https://github.com/mooz/keysnail/wiki/[Keysnail]にインスパイアされたコマンドラインインターフェース (これはfgcolorコマンド).
+.http:#//vimperator.org/vimperator[Vimperator] や https:#//github.com/mooz/keysnail/wiki/[Keysnail] にインスパイアされたコマンドラインインターフェース。
 #endif
-image::images/completion.png[width=640]
+image::images/completion2.png[width=640]
 
 #if __EN__
 .Choosing font-family.
 #else
-フォントファミリを選択しています。
+.フォントファミリを選択しています。
 #endif
-image::images/fontfamily.png[width=640]
+image::images/fontfamily2.png[width=640]
 
 #if __EN__
 .Selecting font-size.
 #else
-フォントサイズを選択しています。
+.フォントサイズを選択しています。
 #endif
-image::images/fontsize.png[width=640]
+image::images/fontsize2.png[width=640]
 
 #if __EN__
-.running "http://www.tkl.iis.u-tokyo.ac.jp/~toyoda/index_e.html[sl]" (a joke software) on cygwin/Windows7.
+.Launcher interface inspired by http:#//www.blacktree.com/[QuckSilver] / https:#//addons.mozilla.org/ja/firefox/addon/mozilla-labs-ubiquity/[Ubiquity].
 #else
-.running cygwin/Windows7環境で"http://www.tkl.iis.u-tokyo.ac.jp/~toyoda/index_e.html[sl]" (ジョークウェア)を走らせたところ。
+.http:#//www.blacktree.com/[QuckSilver] や https:#//addons.mozilla.org/ja/firefox/addon/mozilla-labs-ubiquity/[Ubiquity] にインスパイアされたランチャーインターフェース。
 #endif
-image::images/sl.png[width=640]
+image::images/launcher2.png[width=640]
 
 #if __EN__
-.Tracing terminal I/O sequence in real-time.
+.Reconnecting a detached session. It's all OK if your browser crashes or restarting unexpectedly.
 #else
-.ターミナルI/Oシーケンスをリアルタイムにトレースしています。
+.デタッチ済みのセッションに再接続しているところ。ブラウザがクラッシュしたり再起動しても安心です。
 #endif
-image::images/debug.png[width=640]
+image::images/session2.png[width=640]
 
 #if __EN__
-.Browser-in-browser. running http://w3m.sourceforge.net/index.en.html[w3m] (applied private patch) with inline images. How crazy!!!
+.running "http:#//www.tkl.iis.u-tokyo.ac.jp/~toyoda/index_e.html[sl]" (a joke software).
 #else
-.ブラウザの中でブラウザ。プライベートパッチを当てたhttp://w3m.sourceforge.net/index.en.html[w3m]でインラインイメージを表示させました。意味不明ですね。
+."http:#//www.tkl.iis.u-tokyo.ac.jp/~toyoda/index_e.html[sl]" (ジョークウェア)を走らせたところ。
 #endif
-image::images/w3m.png[width=640]
+image::images/sl2.png[width=640]
 
 #if __EN__
-.Mailer-in-browser. running http://www.gohome.org/wl/index.html[Wonderlust] on emacs.
+.Self-Debugging and tracing terminal I/O sequence in real-time.
 #else
-.ブラウザの中でメーラー。http://www.gohome.org/wl/index.html[Wonderlust]をemacs上で動かしています。
+.セルフデバッギング。ターミナルI/Oシーケンスをリアルタイムにトレースしています。
 #endif
-image::images/wl.png[width=640]
+image::images/debug2.png[width=640]
 
 #if __EN__
-.2ch Browser-in-browser. http://navi2ch.sourceforge.net/index.en.html[navi2ch]. wwwwwwwwwwwwwwwwwwwwwwww.
+.Browser-in-browser. running http:#//w3m.sourceforge.net/index.en.html[w3m] (applied private patch) with inline images. How crazy!!!
 #else
-.ブラウザの中で2chブラウザ。http://navi2ch.sourceforge.net/index.en.html[navi2ch]. 
+.ブラウザの中でブラウザ。プライベートパッチを当てたhttp:#//w3m.sourceforge.net/index.en.html[w3m]でインラインイメージを表示させました。ここまでくるとちょっと意味不明ですね。
 #endif
-image::images/2ch.png[width=640]
+image::images/w3m2.png[width=640]
+
+#if __EN__
+.Mailer-in-browser. running http:#//www.gohome.org/wl/index.html[Wonderlust] on emacs.
+#else
+.ブラウザの中でメーラー。http:#//www.gohome.org/wl/index.html[Wonderlust]をemacs上で動かしています。
+#endif
+image::images/wl2.png[width=640]
 
 #if __EN__
 .Developping tanasinn with tanasinn at out of jail. here is running as a standalone XUL application.
@@ -176,6 +202,36 @@ image::images/2ch.png[width=640]
 .tanasinnをtanasinnで開発中。これはスタンドアロンXULアプリケーションとして動作させているところです。
 #endif
 image::images/xulapp.png[width=640]
+
+
+#if __EN__
+
+== Features in future...
+
+    * Improving emuration. now emuration engine is running with xterm compatible mode. 
+      but it ought to read terminfo entries.
+    * Supporting color scheme. import/export color palette contains 16 or 256 colors.
+    * Supporting skins. you can make it otakunized.
+    * Making it to be more collaborative with curses-based applications.
+      Accessing to Gecko and do something like opening popup windows, playing movies, 
+      OAuth authorication, ...etc., from terminal applications. 
+      We're dreaming of enjoying youtube or twitter with no plugins, from terminal, don't you?
+    * Documents for plug-in developers is comming soon... - -;)
+
+#else
+== 将来的にサポートされる仕様
+    
+    * エミュレーションの強化。今はとりあえずxterm系コンパチブルなエミュレーションで作ってますが、
+      本来はterminfoエントリを見るべきでしょう。
+    * カラースキーマのサポート。16色or256色のパレットをインポート/エクスポートできるように。
+    * スキンのサポート。痛端末化が可能に。
+    * cursesベースのアプリーションとの連携強化。
+      端末アプリケーションからGeckoにアクセスしてポップアップとか動画表示とかOAuthとかやるための仕様の策定。
+      特別なプラグインを書かずとも端末からyoutube見たりtwitterやったりできるようになります。
+    * プラグイン開発用ドキュメント。
+
+#endif
+
 
 #if __EN__
 == Requirements
@@ -190,8 +246,7 @@ image::images/xulapp.png[width=640]
 == 動作要件
     - Firefox 4.0+。
     - POSIX用にビルドされたPython (バージョンはたぶん 2.5+, Mac、 Linux、 または cygwin用のもの)。
-      Python for Win32 や ActivePython 等はダメです。
-      なぜならos.fork() や os.openpty() を使うので。
+      Python for Win32 や ActivePython 等はforkや仮想端末をサポートしないと思うのでダメしょう。
     - POSIX環境。 
       もしWindowsをお使いでしたら、C:\cygwinにCygwinをインストールしてください。
 #endif
@@ -229,18 +284,17 @@ make
 
 .Mac, Linux
 ----
-  > ln -s $PWD $RUNTIME/tanasinn
-  > ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/ 
+ln -s $PWD $RUNTIME/tanasinn
+ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/ 
 ----
         
 .Cygwin
 ----
-  > cmd /c mklink /D $(cygpath -w $RUNTIME/tanasinn) $(cygpath -w $PWD);
-  >	ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/
+$(cygpath $COMSPEC) /c mklink /D $(cygpath -w $VIMRUNTIME/tanasinn) $(cygpath -w $PWD);
+ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/
 ----
 
-    $RUNTIME is Vimperator runtime directory such as 
-    '$HOME/.vimperator'.
+    $RUNTIME is Vimperator runtime directory such as '$HOME/.vimperator'.
 #else
 === Vimperatorプラグインとしてインストール:
 
@@ -248,14 +302,14 @@ make
 
 .Mac, Linux
 ----
-  > ln -s $PWD $RUNTIME/tanasinn
-  > ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/ 
+ln -s $PWD $RUNTIME/tanasinn
+ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/ 
 ----
         
 .Cygwin
 ----
-  > cmd /c mklink /D $(cygpath -w $RUNTIME/tanasinn) $(cygpath -w $PWD);
-  >	ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/
+$(cygpath $COMSPEC) /c mklink /D $(cygpath -w $RUNTIME/tanasinn) $(cygpath -w $PWD)
+ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/
 ----
 
     $RUNTIMEは'$HOME/.vimperator'のようなVimperatorのランタイムディレクトリです。
@@ -298,13 +352,13 @@ cygstart firefox.exe --app application.ini
 ==== If it Installed as Vimperator plugin: 
 
 ----
-    :tanasinn
+:tanasinn
 ----
 
     or
 
 ----
-    :tanasinn <command>
+:tanasinn <command>
 ----
 
 #else
@@ -317,13 +371,13 @@ cygstart firefox.exe --app application.ini
 ==== Vimperatorのプラグインとしてインストールした場合: 
 
 ----
-    :tanasinn
+:tanasinn
 ----
 
     or
 
 ----
-    :tanasinn <command>
+:tanasinn <command>
 ----
 
 #endif
@@ -374,26 +428,28 @@ cygstart firefox.exe --app application.ini
 === Using commandline interface
     
     The specification of commands is not frozen. Comming soon...
+    Now the implementation of this part is witten by rush job, commandline parser 
+    is not proper one.
+
 #else
 === コマンドラインインターフェースを使う
     
     …仕様が全然固まってませんのでまだ書けません。
-    この部分は作りはじめてまだ1週間ちょっとなので、これから色々考えます。
+    この部分は作りはじめて日が浅いので、これから色々考えます。
 #endif
 
-#if __EN__
-== Bug reports
-    ... Did not work?
-    Please notfy me! > saitoha <user@zuse.jp>, initial develpper of tanasinn.
-#else
-== バグレポート
-    saitoha <user@zuse.jp>までどうぞ。
-#endif
 
 #if __EN__
+== Bug reports and patches
+
+Patches and bug reports are are encouraged. > saitoha <user@zuse.jp>,
+or toweet me (http:#//twitter.com/feel_tanasinn[English] / http:#//twitter.com/kefir_[Japanese]).
 #else
-== パッチ
-    パッチ超歓迎。プラグインの書き方は近日中にドキュメントにまとめます。
-    端末からcursesベースでyoutube見たりtwitterやったりできるものなどいかがでしょうか。
-    私は年末にそういうの作ろうと思ってOAuthとか調べてちょっとハゲそうになりました。
+== バグレポート・パッチ
+
+.バグレポート・パッチ超歓迎。 
+saitoha <user@zuse.jp> 
+twitter: http:#//twitter.com/kefir_[日本語] / http:#//twitter.com/feel_tanasinn[英語] 
+
 #endif
+

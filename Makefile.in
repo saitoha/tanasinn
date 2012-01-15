@@ -128,7 +128,7 @@ install-vimperator:
 uninstall-vimperator:
 	case @host_os@ in \
 		cygwin*) \
-			rm $$(cygpath $$USERPROFILE)/vimperator/plugin/tanasinn-vimp.js \
+			rm "$$(cygpath $$USERPROFILE)/vimperator/plugin/tanasinn-vimp.js" \
 			;; \
 		*) \
 			rm ~/.vimperator/plugin/tanasinn-vimp.js \
@@ -184,10 +184,10 @@ uninstall-extension:
 			PROFILE_ROOT=$$(cygpath $$APPDATA\\Mozilla\\Firefox\\Profiles) \
 			;; \
 	esac \
-	&& PROFILES=$$(ls $$PROFILE_ROOT) \
+	&& PROFILES=$$(ls "$$PROFILE_ROOT") \
 	&& for PROFILE in $$PROFILES;  \
 	do \
-		rm -f $$PROFILE_ROOT/$$PROFILE/extensions/$(ID); \
+		rm -f "$$PROFILE_ROOT/$$PROFILE/extensions/$(ID)"; \
 	done;
 
 run-xulapp:

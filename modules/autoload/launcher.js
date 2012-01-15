@@ -1035,7 +1035,8 @@ Launcher.definition = {
     }
   },
 
-  show: function show()
+  "[subscribe('command/show-launcher'), enabled]":
+  function show()
   {
     let box = this._element;
     let textbox = this._textbox;
@@ -1045,7 +1046,8 @@ Launcher.definition = {
     textbox.focus();
   },
 
-  hide: function hide()
+  "[subscribe('command/hide-launcher'), enabled]":
+  function hide()
   {
     let box = this._element;
     let textbox = this._textbox;
