@@ -17,10 +17,12 @@ link:./usermanual.html[English/英語]
     applications.
 #if 1
 
-== Distribution/License
+== Download/License
     This software is istributed under Mozilla Public License 1.1 (MPL1.1) .
 
 - Unstable, snapshot version, http:#//zuse.jp/tanasinn/tanasinn-current.xpi[Download from here].
+- git repo: http:#//zuse.jp/tanasinn.git
+
 #endif
 
 #else
@@ -32,10 +34,12 @@ link:./usermanual.html[English/英語]
     柔軟でパワフルな機能群にブラウザ上のUIからアクセスすることができます。
 
 #if 1
-== 配布/ライセンス
+== ダウンロード/ライセンス
     Mozilla Public License 1.1 (MPL1.1) で配布しています。 
 
 - スナップショット版 http:#//zuse.jp/tanasinn/tanasinn@zuse.jp.xpi[ここからダウンロード]
+- git repo: http:#//zuse.jp/tanasinn.git
+
 #endif
 
 #endif
@@ -263,6 +267,8 @@ image::images/xulapp.png[width=640]
 === Building Firefox extension:
 .Mac, Linux, Cygwin
 ----
+git clone http://zuse.jp/tanasinn.git
+cd tanasinn
 ./configure
 make
 ----
@@ -272,6 +278,8 @@ make
 === Firefox拡張としてビルドする:
 .Mac, Linux, Cygwin
 ----
+git clone http://zuse.jp/tanasinn.git
+cd tanasinn
 ./configure
 make
 ----
@@ -286,12 +294,18 @@ make
 
 .Mac, Linux
 ----
+git clone http://zuse.jp/tanasinn.git
+cd tanasinn
+./configure
 ln -s $PWD $RUNTIME/tanasinn
 ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/ 
 ----
         
 .Cygwin
 ----
+git clone http://zuse.jp/tanasinn.git
+cd tanasinn
+./configure
 $(cygpath $COMSPEC) /c mklink /D $(cygpath -w $VIMRUNTIME/tanasinn) $(cygpath -w $PWD);
 ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/
 ----
@@ -304,12 +318,18 @@ ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/
 
 .Mac, Linux
 ----
+git clone http://zuse.jp/tanasinn.git
+cd tanasinn
+./configure
 ln -s $PWD $RUNTIME/tanasinn
 ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/ 
 ----
         
 .Cygwin
 ----
+git clone http://zuse.jp/tanasinn.git
+cd tanasinn
+./configure
 $(cygpath $COMSPEC) /c mklink /D $(cygpath -w $RUNTIME/tanasinn) $(cygpath -w $PWD)
 ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/
 ----
@@ -322,18 +342,27 @@ ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/
 .MacOSX
 
 ----
+git clone http://zuse.jp/tanasinn.git
+cd tanasinn
+./configure
 open /Applications/Firefox.app --args --app $(PWD)/application.ini
 ----
 
 .Linux
 
 ----
+git clone http://zuse.jp/tanasinn.git
+cd tanasinn
+./configure
 firefox --app application.ini
 ----
 
 .Cygwin on Windows
 
 ----
+git clone http://zuse.jp/tanasinn.git
+cd tanasinn
+./configure
 cygstart firefox.exe --app application.ini
 ----
     

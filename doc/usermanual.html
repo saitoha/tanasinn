@@ -860,7 +860,7 @@ applications.</tt></pre>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_distribution_license">Distribution/License</h2>
+<h2 id="_download_license">Download/License</h2>
 <div class="sectionbody">
 <div class="literalblock">
 <div class="content">
@@ -870,6 +870,11 @@ applications.</tt></pre>
 <li>
 <p>
 Unstable, snapshot version, <a href="http://zuse.jp/tanasinn/tanasinn-current.xpi">Download from here</a>.
+</p>
+</li>
+<li>
+<p>
+git repo: <a href="http://zuse.jp/tanasinn.git">http://zuse.jp/tanasinn.git</a>
 </p>
 </li>
 </ul></div>
@@ -1136,7 +1141,9 @@ Posix enviroinment.
 <div class="listingblock">
 <div class="title">Mac, Linux, Cygwin</div>
 <div class="content">
-<pre><tt>./configure
+<pre><tt>git clone http:
+cd tanasinn
+./configure
 make</tt></pre>
 </div></div>
 <div class="literalblock">
@@ -1154,13 +1161,19 @@ make</tt></pre>
 <div class="listingblock">
 <div class="title">Mac, Linux</div>
 <div class="content">
-<pre><tt>ln -s $PWD $RUNTIME/tanasinn
+<pre><tt>git clone http:
+cd tanasinn
+./configure
+ln -s $PWD $RUNTIME/tanasinn
 ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/</tt></pre>
 </div></div>
 <div class="listingblock">
 <div class="title">Cygwin</div>
 <div class="content">
-<pre><tt>$(cygpath $COMSPEC) /c mklink /D $(cygpath -w $VIMRUNTIME/tanasinn) $(cygpath -w $PWD);
+<pre><tt>git clone http:
+cd tanasinn
+./configure
+$(cygpath $COMSPEC) /c mklink /D $(cygpath -w $VIMRUNTIME/tanasinn) $(cygpath -w $PWD);
 ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/</tt></pre>
 </div></div>
 <div class="literalblock">
@@ -1173,17 +1186,26 @@ ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/</tt></pre>
 <div class="listingblock">
 <div class="title">MacOSX</div>
 <div class="content">
-<pre><tt>open /Applications/Firefox.app --args --app $(PWD)/application.ini</tt></pre>
+<pre><tt>git clone http:
+cd tanasinn
+./configure
+open /Applications/Firefox.app --args --app $(PWD)/application.ini</tt></pre>
 </div></div>
 <div class="listingblock">
 <div class="title">Linux</div>
 <div class="content">
-<pre><tt>firefox --app application.ini</tt></pre>
+<pre><tt>git clone http:
+cd tanasinn
+./configure
+firefox --app application.ini</tt></pre>
 </div></div>
 <div class="listingblock">
 <div class="title">Cygwin on Windows</div>
 <div class="content">
-<pre><tt>cygstart firefox.exe --app application.ini</tt></pre>
+<pre><tt>git clone http:
+cd tanasinn
+./configure
+cygstart firefox.exe --app application.ini</tt></pre>
 </div></div>
 </div>
 </div>
@@ -1263,7 +1285,7 @@ or toweet me (<a href="http://twitter.com/feel_tanasinn">English</a> / <a href="
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2012-01-15 19:17:44 JST
+Last updated 2012-01-15 20:15:18 JST
 </div>
 </div>
 </body>

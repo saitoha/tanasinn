@@ -205,6 +205,9 @@ run-xulapp:
 			;; \
 	esac	
 
+update-web:
+	ssh zuse.jp ./build.sh
+
 update: all
 	rm -r -f /var/www/tanasinn/*/ && rm -f /var/www/tanasinn/*
 	cp tanasinn@zuse.jp.xpi /var/www/tanasinn/tanasinn-current.xpi
