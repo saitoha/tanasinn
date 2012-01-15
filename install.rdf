@@ -20,12 +20,12 @@
         <em:minVersion>4.0</em:minVersion>
         <em:maxVersion>12.0.*</em:maxVersion>
       </Description>
-      <Description>
-        <!-- XUL Application -->
+      <!-- XUL Application -->
+      <!--Description>
         <em:id>tanasinn@zuse.jp</em:id> 
         <em:minVersion>0.1</em:minVersion>
         <em:maxVersion>1.0</em:maxVersion>
-      </Description>
+      </Description-->
     </em:targetApplication>
     <em:targetPlatform>WINNT_x86-msvc</em:targetPlatform>
     <em:targetPlatform>Darwin_x86_64-gcc3</em:targetPlatform>
