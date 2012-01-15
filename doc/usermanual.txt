@@ -22,6 +22,7 @@ link:./usermanual.html[English/英語]
 
 - Unstable, snapshot version, http:#//zuse.jp/tanasinn/tanasinn-current.xpi[Download from here].
 - git repo: http:#//zuse.jp/tanasinn.git
+- gitweb: http:#//zuse.jp/git/?p=tanasinn.git
 
 #endif
 
@@ -39,6 +40,7 @@ link:./usermanual.html[English/英語]
 
 - スナップショット版 http:#//zuse.jp/tanasinn/tanasinn@zuse.jp.xpi[ここからダウンロード]
 - git repo: http:#//zuse.jp/tanasinn.git
+- gitweb: http:#//zuse.jp/git/?p=tanasinn.git
 
 #endif
 
@@ -267,7 +269,7 @@ image::images/xulapp.png[width=640]
 === Building Firefox extension:
 .Mac, Linux, Cygwin
 ----
-git clone http://zuse.jp/tanasinn.git
+git clone http:#//zuse.jp/tanasinn.git
 cd tanasinn
 ./configure
 make
@@ -278,7 +280,7 @@ make
 === Firefox拡張としてビルドする:
 .Mac, Linux, Cygwin
 ----
-git clone http://zuse.jp/tanasinn.git
+git clone http:#//zuse.jp/tanasinn.git
 cd tanasinn
 ./configure
 make
@@ -294,7 +296,7 @@ make
 
 .Mac, Linux
 ----
-git clone http://zuse.jp/tanasinn.git
+git clone http:#//zuse.jp/tanasinn.git
 cd tanasinn
 ./configure
 ln -s $PWD $RUNTIME/tanasinn
@@ -303,7 +305,7 @@ ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/
         
 .Cygwin
 ----
-git clone http://zuse.jp/tanasinn.git
+git clone http:#//zuse.jp/tanasinn.git
 cd tanasinn
 ./configure
 $(cygpath $COMSPEC) /c mklink /D $(cygpath -w $VIMRUNTIME/tanasinn) $(cygpath -w $PWD);
@@ -318,7 +320,7 @@ ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/
 
 .Mac, Linux
 ----
-git clone http://zuse.jp/tanasinn.git
+git clone http:#//zuse.jp/tanasinn.git
 cd tanasinn
 ./configure
 ln -s $PWD $RUNTIME/tanasinn
@@ -327,7 +329,7 @@ ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/
         
 .Cygwin
 ----
-git clone http://zuse.jp/tanasinn.git
+git clone http:#//zuse.jp/tanasinn.git
 cd tanasinn
 ./configure
 $(cygpath $COMSPEC) /c mklink /D $(cygpath -w $RUNTIME/tanasinn) $(cygpath -w $PWD)
@@ -342,7 +344,7 @@ ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/
 .MacOSX
 
 ----
-git clone http://zuse.jp/tanasinn.git
+git clone http:#//zuse.jp/tanasinn.git
 cd tanasinn
 ./configure
 open /Applications/Firefox.app --args --app $(PWD)/application.ini
@@ -351,7 +353,7 @@ open /Applications/Firefox.app --args --app $(PWD)/application.ini
 .Linux
 
 ----
-git clone http://zuse.jp/tanasinn.git
+git clone http:#//zuse.jp/tanasinn.git
 cd tanasinn
 ./configure
 firefox --app application.ini
@@ -360,7 +362,7 @@ firefox --app application.ini
 .Cygwin on Windows
 
 ----
-git clone http://zuse.jp/tanasinn.git
+git clone http:#//zuse.jp/tanasinn.git
 cd tanasinn
 ./configure
 cygstart firefox.exe --app application.ini
