@@ -48,7 +48,7 @@ link:./usermanual.html[English/英語]
 == Hilighting features
     - Full Gecko based user interface, it is flexible and easy to customize.
     - Multi-platform, now supports Mac / Linux (Tested in Ubuntu) / 
-      Windows + http:#//www.cygwin.com[Cygwin] (requires posix python).
+      Windows(XP/Vista/7) + http:#//www.cygwin.com[Cygwin] (requires posix python).
     - Supports plugin architecture. it supports Plug-and-Play installing & uninstalling.
     - Retaining TTY session duaring closing/restarting browser.
       you can reconnect suspended terminal session.
@@ -71,7 +71,7 @@ link:./usermanual.html[English/英語]
 == 特色
     - Geckoベースのユーザーインターフェース。柔軟でカスタマイズが容易です。
     - マルチプラットフォーム。現在サポートされるのは、Mac / Linux(というかUbuntu) / 
-      http:#//www.cygwin.com[Cygwin] + Cygwin環境 (POSIX版Pythonが必要)
+      Windows(XP/Vista/7) + http:#//www.cygwin.com[Cygwin]環境 (POSIX版Pythonが必要)
     - プラグインアーキテクチャ。プラグアンドプレイでのインストール・アンインストールが可能。
     - ブラウザを再起動したり閉じたりしている間、ターミナルセッションを保持します。
       サスペンドしたセッションに後から再接続できます。 
