@@ -164,7 +164,7 @@ image::images/fontsize2.png[width=640]
 image::images/launcher2.png[width=640]
 
 #if __EN__
-.Reconnecting a detached session. It's all OK if your browser crashes or restarting unexpectedly.
+.Reconnecting a detached session. It is all OK if your browser crashes or restarting unexpectedly.
 #else
 .デタッチ済みのセッションに再接続しているところ。ブラウザがクラッシュしたり再起動しても安心です。
 #endif

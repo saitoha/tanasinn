@@ -101,6 +101,7 @@ clean:
 	$(RM) $(XPI)
 	@echo "$(MSTART) Done.$(MEND)\n" 
 	$(MAKE) -C modules $@
+	$(MAKE) -C doc $@
 
 maintainer-clean: clean
 	@echo "$(MSTART) Cleaning configuration info....$(MEND)"
