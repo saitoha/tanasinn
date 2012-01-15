@@ -127,7 +127,7 @@ image::images/overlay.png[width=640]
 #else
 .http:#//vimperator.org/vimperator[Vimperator] や https:#//github.com/mooz/keysnail/wiki/[Keysnail] にインスパイアされたコマンドラインインターフェース。
 #endif
-image::images/completion.png[width=640]
+image::images/completion2.png[width=640]
 
 #if __EN__
 .Choosing font-family.
@@ -162,7 +162,7 @@ image::images/session2.png[width=640]
 #else
 .Cygwin1.7/Windows7環境で"http:#//www.tkl.iis.u-tokyo.ac.jp/~toyoda/index_e.html[sl]" (ジョークウェア)を走らせたところ。
 #endif
-image::images/sl.png[width=640]
+image::images/sl2.png[width=640]
 
 #if __EN__
 .Self-Debugging and tracing terminal I/O sequence in real-time.

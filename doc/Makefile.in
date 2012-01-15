@@ -3,21 +3,13 @@ CC=@CC@
 ASCIIDOC=@ASCIIDOC@
 OPEN=@TANASINN_OPEN@
 
-ifdef $(CPP)
-ifdef $(ASCIIDOC)
 all: usermanual-ja.html usermanual.html
-else
-all:
-endif
-else
-all:
-endif
 
 Makefile: Makefile.in
 	cd .. && ./configure
 
 usermanual.html: usermanual.txt Makefile
-	if [ -a ( -n "$(ASCIIDOC)" ) ( -n "$(GCC)" ) ]; \
+	if [ -n "$(ASCIIDOC)" ] && [ -n "$(CC)" ]; \
 	then \
 		$(RM) $@ && cat $< \
 		| sed -e 's/#\/\//#\/#\//g;s/#\/\*/#\/#*/g' \
@@ -28,7 +20,7 @@ usermanual.html: usermanual.txt Makefile
 	fi
 
 usermanual-ja.html: usermanual.txt Makefile
-	if [ -a ( -n "$(ASCIIDOC)" ) ( -n "$(GCC)" ) ]; \
+	if [ -n "$(ASCIIDOC)" ] && [ -n "$(CC)" ]; \
 	then \
 		$(RM) $@ && cat $< \
 		| sed -e 's/#\/\//#\/#\//g;s/#\/\*/#\/#*/g' \
