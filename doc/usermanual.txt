@@ -383,15 +383,11 @@ cygstart firefox.exe --app application.ini
     window-like UI emerges into browser chrome window and display manpage.  
 
 ==== If it Installed as Vimperator plugin: 
+    You can launch tanasinn as same as Add-on version, by pressing control key twice (ctrl + ctrl).
+    For launching vimperator's commandline, type as follows:
 
 ----
 :tanasinn
-----
-
-    or
-
-----
-:tanasinn <command>
 ----
 
 #else
@@ -402,15 +398,11 @@ cygstart firefox.exe --app application.ini
     ウィンドウのようなUIがブラウザウィンドウ内に現れ、manページが表示されると思います。
 
 ==== Vimperatorのプラグインとしてインストールした場合: 
+    アドオン版と同様、Controlキーの2度押し (ctrl + ctrl) でtanasinnが起動します。
+    Vimperatorのコマンドライン上から起動したい場合は、以下のようにタイプしてください。
 
 ----
 :tanasinn
-----
-
-    or
-
-----
-:tanasinn <command>
 ----
 
 #endif

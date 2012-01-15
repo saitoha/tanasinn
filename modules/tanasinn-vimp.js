@@ -77,10 +77,13 @@ commands.add(['tan[asinn]'],
   } 
 );
 
+getTanasinnProcess().notify("event/new-window-detected", window);
+
 mappings.addUserMap([modes.NORMAL], ["!"],
   'Run commands in tanasinn',
    function () { commandline.open('', 'tanasinn ', modes.EX); }
 );
+
 
 } ();
 
