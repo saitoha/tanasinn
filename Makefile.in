@@ -162,8 +162,8 @@ install-extension:
 						;; \
 					*) \
 						cmd /c mklink /d \
-							$$(cygpath -w "$$PROFILE_ROOT/$$PROFILE/extensions/$(ID)") \
-							$$(cygpath -w $(PWD)) \
+							"$$(cygpath -w "$$PROFILE_ROOT/$$PROFILE/extensions/$(ID)")" \
+							"$$(cygpath -w "$(PWD)")" \
 						;; \
 				esac \
 				;; \

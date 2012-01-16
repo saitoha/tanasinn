@@ -215,7 +215,7 @@ BottomPanel.definition = {
    *   |               |             | bottom panel  |     is not
    *   +---------------+             +---------------+ <-- changed.
    */
-  "[command('openpanel')]":
+  "[command('openpanel'), _('Open bottom panel.')]":
   function open() 
   {
     let bottomPanel = this._bottom_panel;
@@ -251,7 +251,7 @@ BottomPanel.definition = {
    *   | bottom panel  | height is   |               |     is not
    *   +---------------+ expanded.-> +---------------+ <-- changed.
    */
-  "[command('closepanel')]":
+  "[command('closepanel'), _('Close bottom panel')]":
   function close() 
   {
     let bottom_panel = this._bottom_panel;

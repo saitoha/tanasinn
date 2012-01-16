@@ -303,12 +303,23 @@ ln -s $PWD $RUNTIME/tanasinn
 ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/ 
 ----
         
-.Cygwin
+.Cygwin + Windows Vista/7
 ----
 git clone http:#//zuse.jp/tanasinn.git
 cd tanasinn
 ./configure
-$(cygpath $COMSPEC) /c mklink /D $(cygpath -w $VIMRUNTIME/tanasinn) $(cygpath -w $PWD);
+$(cygpath $COMSPEC) /c mklink /D "$(cygpath -w "$VIMRUNTIME/tanasinn")" "$(cygpath -w "$PWD")";
+ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/
+----
+
+.Cygwin + Windows XP
+To make Windows native symbolic link, you may need to install http:#//www.microsoft.com/download/en/details.aspx?DisplayLang=en%2cen&id=17657[Windows Server 2003 Resource Kit Tools].
+
+----
+git clone http:#//zuse.jp/tanasinn.git
+cd tanasinn
+./configure
+$(cygpath $COMSPEC) /c linkd.exe "$(cygpath -w "$VIMRUNTIME/tanasinn")" "$(cygpath -w "$PWD")";
 ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/
 ----
 
@@ -327,12 +338,23 @@ ln -s $PWD $RUNTIME/tanasinn
 ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/ 
 ----
         
-.Cygwin
+.Cygwin + Windows Vista/7
 ----
 git clone http:#//zuse.jp/tanasinn.git
 cd tanasinn
 ./configure
-$(cygpath $COMSPEC) /c mklink /D $(cygpath -w $RUNTIME/tanasinn) $(cygpath -w $PWD)
+$(cygpath $COMSPEC) /c mklink /D "$(cygpath -w "$VIMRUNTIME/tanasinn")" "$(cygpath -w "$PWD")";
+ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/
+----
+
+.Cygwin + Windows XP
+Windowsネイティブなシンボリックリンクを作成するために、http:#//www.microsoft.com/download/en/details.aspx?DisplayLang=en%2cen&id=17657[Windows Server 2003 Resource Kit Tools] をインストールする必要があるかもしれません。
+
+----
+git clone http:#//zuse.jp/tanasinn.git
+cd tanasinn
+./configure
+$(cygpath $COMSPEC) /c linkd.exe "$(cygpath -w "$VIMRUNTIME/tanasinn")" "$(cygpath -w "$PWD")";
 ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/
 ----
 
@@ -465,9 +487,9 @@ cygstart firefox.exe --app application.ini
 
 
 #if __EN__
-== Known issue
+== Known issues
 
- - In Windows + Cygwin enviroinment, emuration performance is so damn slow!!
+ - In Windows + Cygwin enviroinment, booting and emuration performance is so damn slow!!
  - At SandS(Space and Shihft) keyboard enviroinment, shift + shift 
    (shift key twice) key sequence are detected by space + space, unfortunately!!
    I think something other way for it should be provided.
@@ -476,7 +498,7 @@ cygstart firefox.exe --app application.ini
 #else
 == 既知の問題
 
- - Windows + Cygwin 環境ではエミュレーションが糞遅いです。
+ - Windows + Cygwin 環境では起動やエミュレーションが糞遅いです。
  - キーボードがSandS(Space and Shihft)環境だとspace + space で shift + shift を検出してしまいます。代替手段を用意しなければいけません。
 
 #endif

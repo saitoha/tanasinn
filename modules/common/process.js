@@ -134,8 +134,10 @@ with (scope) {
       this.search_path = [ 
         "modules/core",
         "modules/plugin", 
+        "modules/base",
         String(<>{runtime_path}/core</>),
-        String(<>{runtime_path}/plugin</>)
+        String(<>{runtime_path}/plugin</>),
+        String(<>{runtime_path}/base</>)
       ];
       // load initial settings.
       let path = this.initial_settings_path;
@@ -175,7 +177,7 @@ with (scope) {
       [this.width, this.height] 
         = size || [this.width, this.height];
       // search path list
-      let path = search_path || this.default_search_path;
+      let path = search_path || this.search_path;
   
       this.load(desktop, path);
   

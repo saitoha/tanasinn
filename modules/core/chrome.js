@@ -104,6 +104,12 @@ OuterChrome.definition = {
       parentNode: broker.root_element, 
       id: "box_element",
       tagName: "stack",
+      listener: {
+        type: "click",
+        handler: function() {
+          broker.notify("command/focus");
+        },
+      },
       childNodes: [
         {
           tagName: "box",

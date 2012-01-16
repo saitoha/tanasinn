@@ -1614,6 +1614,7 @@ TextCompletionDisplayDriver.definition = {
             {
               tagName: "box",
               style: <>
+                padding-top: 3px;
                 margin: 0px;
                 overflow: hidden;
                 padding-left: 8px;
@@ -1639,7 +1640,7 @@ TextCompletionDisplayDriver.definition = {
             {
               tagName: "label",
               style: <>
-                padding-top: 4px;
+                padding-top: 2px;
                 font-size: 16px;
                 text-shadow: 0px 0px 2px white;
                 font-family: 'Times New Roman';

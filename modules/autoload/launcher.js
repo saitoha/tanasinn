@@ -1065,11 +1065,8 @@ Launcher.definition = {
     coUtils.Timer.setTimeout(function() {
       let terminal =  desktop.start(
         this._window_layer,
-        this._textbox.value.replace(/^\s+|\s+$/, ""),  // command
-        null,  // TERM environment
-        null,  // size 
-        ["modules/core", 
-         "modules/plugin"]);
+        this._textbox.value.replace(/^\s+|\s+$/, "")  // command
+        );
       terminal.style.left = <>{this.left = (this.left + Math.random() * 40 - 20) % 40 + 10}%</>;
       terminal.style.top = <>{this.top = (this.top + Math.random() * 40 - 20) % 40 + 10}%</>;
     }, 0, this);

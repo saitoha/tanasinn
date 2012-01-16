@@ -1173,12 +1173,21 @@ ln -s $PWD $RUNTIME/tanasinn
 ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/</tt></pre>
 </div></div>
 <div class="listingblock">
-<div class="title">Cygwin</div>
+<div class="title">Cygwin + Windows Vista/7</div>
 <div class="content">
 <pre><tt>git clone http://zuse.jp/tanasinn.git
 cd tanasinn
 ./configure
-$(cygpath $COMSPEC) /c mklink /D $(cygpath -w $VIMRUNTIME/tanasinn) $(cygpath -w $PWD);
+$(cygpath $COMSPEC) /c mklink /D "$(cygpath -w "$VIMRUNTIME/tanasinn")" "$(cygpath -w "$PWD")";
+ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/</tt></pre>
+</div></div>
+<div class="paragraph"><div class="title">Cygwin + Windows XP</div><p>To make Windows native symbolic link, you may need to install <a href="http://www.microsoft.com/download/en/details.aspx?DisplayLang=en%2cen&amp;id=17657">Windows Server 2003 Resource Kit Tools</a>.</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>git clone http://zuse.jp/tanasinn.git
+cd tanasinn
+./configure
+$(cygpath $COMSPEC) /c linkd.exe "$(cygpath -w "$VIMRUNTIME/tanasinn")" "$(cygpath -w "$PWD")";
 ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/</tt></pre>
 </div></div>
 <div class="literalblock">
@@ -1277,12 +1286,12 @@ is not proper one.</tt></pre>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_known_issue">Known issue</h2>
+<h2 id="_known_issues">Known issues</h2>
 <div class="sectionbody">
 <div class="ulist"><ul>
 <li>
 <p>
-In Windows + Cygwin enviroinment, emuration performance is so damn slow!!
+In Windows + Cygwin enviroinment, booting and emuration performance is so damn slow!!
 </p>
 </li>
 <li>
@@ -1306,7 +1315,7 @@ or toweet me (<a href="http://twitter.com/feel_tanasinn">English</a> / <a href="
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2012-01-15 22:55:02 JST
+Last updated 2012-01-16 14:46:18 JST
 </div>
 </div>
 </body>

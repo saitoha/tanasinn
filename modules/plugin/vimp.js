@@ -71,7 +71,7 @@ Vimperator.definition = {
   },
 
   /** install focus event. */
-  "[subscribe('event/got-focus')]":
+  "[subscribe('event/got-focus | command/focus')]":
   function onGotFocus() 
   {
     let modules = this._modules;
@@ -81,7 +81,7 @@ Vimperator.definition = {
   },
 
   /** install blur evnet. */
-  "[subscribe('event/lost-focus')]":
+  "[subscribe('event/lost-focus | command/blur')]":
   function onLostFocus() 
   {
     let modules = this._modules;
@@ -94,10 +94,10 @@ Vimperator.definition = {
   "[subscribe('@event/session-stopping'), enabled]":
   function onSessionStopping() 
   {
-    //let modules = this._modules;
-    //if (!modules)
-    //  return;
-    //modules.events.onEscape();
+    let modules = this._modules;
+    if (!modules)
+      return;
+    modules.events.onEscape();
   },
 
   /** get "liberator.modules" */

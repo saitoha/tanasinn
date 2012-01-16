@@ -582,8 +582,9 @@ ListenAttribute.definition = {
     let attributes = this.__attributes;
     for (key in attributes) {
       let attribute = attributes[key];
-      if (!attribute["listen"])
+      if (!attribute["listen"]) {
         continue;
+      }
       let handler = this[key];
       let wrapped_handler;
       let id = [this.id, key].join(".");

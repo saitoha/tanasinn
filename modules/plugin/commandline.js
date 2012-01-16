@@ -105,15 +105,11 @@ CompletionView.definition = {
   down: function down()
   {
     let index = Math.min(this.currentIndex + 1, this.rowCount - 1);
-    try {
     if (index >= 0) {
       this.select(index);
     }
-    //this.invalidate();
-    this.fill();
-    } catch (e) {
-      alert(e + e.lineNumber);
-    }
+    let broker = this._broker;
+    broker.notify("command/fill");
   },
 
   up: function up()
@@ -122,16 +118,8 @@ CompletionView.definition = {
     if (index >= 0) {
       this.select(index);
     }
-    //this.invalidate();
-    this.fill();
-  },
-
-  enter: function enter()
-  {
-    this.onselect();
-    this._textbox.blur();
-    let session = this._broker;
-    session.notify("command/focus");
+    let broker = this._broker;
+    broker.notify("command/fill");
   },
 
 };
@@ -316,6 +304,7 @@ Commandline.definition = {
     this._completion_root = tanasinn_completion_root;
     this._statusbar = tanasinn_statusbar;
     this.show.enabled = true;
+    this.fill.enabled = true;
     this.onStatusMessage.enabled = true;
     this.onfocus.enabled = true;
     this.onblur.enabled = true;
@@ -327,6 +316,7 @@ Commandline.definition = {
     this.onclick.enabled = true;
     this.onchange.enabled = true;
     this.enableCommandline.enabled = true;
+    this.onmouseenter.enabled = true;
   },
   
   /** Uninstalls itself.
@@ -336,6 +326,7 @@ Commandline.definition = {
   function uninstall(session) 
   {
     this.show.enabled = false;
+    this.fill.enabled = false;
     this.onStatusMessage.enabled = false;
     this.onfocus.enabled = false;
     this.onblur.enabled = false;
@@ -347,6 +338,7 @@ Commandline.definition = {
     this.onclick.enabled = false;
     this.onchange.enabled = false;
     this.enableCommandline.enabled = false;
+    this.onmouseenter.enabled = true;
     this._element.parentNode.removeChild(this._element);
   },
 
@@ -400,7 +392,6 @@ Commandline.definition = {
   {
     this._popup.hidePopup();
   },
-
 
   doCompletion: function doCompletion(result) 
   {
@@ -457,7 +448,8 @@ Commandline.definition = {
     }
   },
 
-  fill: function fill()
+  "[subscribe('command/fill')]":
+  function fill()
   {
     let index = Math.max(0, this.currentIndex);
     let result = this._result;
@@ -648,6 +640,14 @@ Commandline.definition = {
     session.notify("command/eval-commandline", command);
   },
 
+  enter: function enter()
+  {
+    this.onselect();
+    this._textbox.blur();
+    let broker = this._broker;
+    broker.notify("command/focus");
+  },
+
   "[listen('popupshown', '#tanasinn_commandline', false)]":
   function onpopupshown(event) 
   {
@@ -663,7 +663,8 @@ Commandline.definition = {
   "[listen('click', '#tanasinn_commandline_box', false)]":
   function onclick(event) 
   {
-    this.onfocus();
+    this._textbox.focus();
+    this._textbox.focus();
   },
 
   "[listen('change', '#tanasinn_commandline', true)]":

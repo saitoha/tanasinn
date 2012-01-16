@@ -1,7 +1,7 @@
 
-- Renewal console interface, adding text search feature.
+- renewal console plugin's interface, adding text search feature.
  
-- Add fontsel commandline plugin.
+- improve focus management.
 
-- Add colorsel commandline plugin.
+- fix scrollbar plugin's bug.
 

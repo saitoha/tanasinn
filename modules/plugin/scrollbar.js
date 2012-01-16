@@ -231,7 +231,7 @@ Scrollbar.definition = {
     event.stopPropagation();
     //event.preventDefault();
     let initial_y = event.screenY;
-    let document = session.document;
+    let document = session.document; // managed by DOM
     let radius = this.inner_width + this.border_width;
     let height = this._scrollbar.boxObject.height - radius * 2;
     let before_flex = parseInt(this._before.flex);
@@ -275,6 +275,10 @@ Scrollbar.definition = {
           }
         },
       });
+
+    // to prevent leak.
+    document = null;
+    event = null;
   },
 
 } // class Scrollbar

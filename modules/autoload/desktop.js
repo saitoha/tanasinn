@@ -88,7 +88,6 @@ Desktop.definition = {
   {
     let broker = this._broker;
     let box = broker.start(parent, command, term, size, search_path, callback, this); 
-
     // create session object;
     let request = { 
       parent: box, 
@@ -97,22 +96,8 @@ Desktop.definition = {
       width: broker.width,
       height: broker.height,
     };
-    
     let session = this.uniget("event/session-requested", request);
-    if (callback) {
-      let id = session.subscribe(
-        "event/session-stopping", 
-        function onSessionStoping() {
-          session.unsubscribe(id);
-          if (callback) {
-            let shadow_copy = callback;
-            callback = null;
-            shadow_copy();
-          }
-        });
-    }
     return box;
-
   },
 
 };

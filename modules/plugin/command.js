@@ -126,7 +126,7 @@ JsCommand.definition = {
   get id()
     "jscommand",
 
-  "[command('js', ['js']), _('Run a javascript code.'), enabled]":
+  "[command('javascript/js', ['js']), _('Run a javascript code.'), enabled]":
   function evaluate(arguments_string)
   {
     let session = this._broker;

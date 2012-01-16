@@ -352,8 +352,7 @@ ChromeBuilder.definition = {
   function constructChrome(template) 
   {
     let results = {}
-    let element = this.buildChrome(template, results);
-    results["#root"] = element;
+    results["#root"] = this.buildChrome(template, results);
     return results;
   },
 
@@ -367,16 +366,10 @@ ChromeBuilder.definition = {
 function main(process) 
 {
   process.subscribe(
-    "initialized/broker",
-    function(desktop)
+    "@initialized/broker",
+    function(broker)
     {
-      new ChromeBuilder(desktop);
-      desktop.subscribe(
-        "initialized/broker", 
-        function(session)
-        {
-          new ChromeBuilder(session);
-        });
+      new ChromeBuilder(broker);
     });
 }
 

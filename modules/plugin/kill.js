@@ -41,10 +41,9 @@ Kill.definition = {
     </plugin>,
 
   /** post-constructor */
-  "[subscribe('initialized/tty'), enabled]":
-  function onLoad(tty) 
+  "[subscribe('event/session-started'), enabled]":
+  function onLoad(session) 
   {
-    this._tty = tty;
     this.enabled = this.enabled_when_startup;
   },
 

@@ -1170,12 +1170,21 @@ ln -s $PWD $RUNTIME/tanasinn
 ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/</tt></pre>
 </div></div>
 <div class="listingblock">
-<div class="title">Cygwin</div>
+<div class="title">Cygwin + Windows Vista/7</div>
 <div class="content">
 <pre><tt>git clone http://zuse.jp/tanasinn.git
 cd tanasinn
 ./configure
-$(cygpath $COMSPEC) /c mklink /D $(cygpath -w $RUNTIME/tanasinn) $(cygpath -w $PWD)
+$(cygpath $COMSPEC) /c mklink /D "$(cygpath -w "$VIMRUNTIME/tanasinn")" "$(cygpath -w "$PWD")";
+ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/</tt></pre>
+</div></div>
+<div class="paragraph"><div class="title">Cygwin + Windows XP</div><p>Windowsネイティブなシンボリックリンクを作成するために、<a href="http://www.microsoft.com/download/en/details.aspx?DisplayLang=en%2cen&amp;id=17657">Windows Server 2003 Resource Kit Tools</a> をインストールする必要があるかもしれません。</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>git clone http://zuse.jp/tanasinn.git
+cd tanasinn
+./configure
+$(cygpath $COMSPEC) /c linkd.exe "$(cygpath -w "$VIMRUNTIME/tanasinn")" "$(cygpath -w "$PWD")";
 ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/</tt></pre>
 </div></div>
 <div class="literalblock">
@@ -1278,7 +1287,7 @@ Vimperatorのコマンドライン上から起動したい場合は、以下の�
 <div class="ulist"><ul>
 <li>
 <p>
-Windows + Cygwin 環境ではエミュレーションが糞遅いです。
+Windows + Cygwin 環境では起動やエミュレーションが糞遅いです。
 </p>
 </li>
 <li>
@@ -1300,7 +1309,7 @@ twitter: <a href="http://twitter.com/kefir_">日本語</a> / <a href="http://twi
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2012-01-15 22:55:01 JST
+Last updated 2012-01-16 14:46:17 JST
 </div>
 </div>
 </body>

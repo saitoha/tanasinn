@@ -40,7 +40,7 @@ WindowWatcher.definition = {
   function onSessionStarted(session) 
   {
     session.notify("command/add-domlistener", {
-      target: session.window,
+      target: session.window.document,
       type: "resize",
       context: this,
       handler: this.onresize,
@@ -56,7 +56,7 @@ WindowWatcher.definition = {
     });
 
     session.notify("command/add-domlistener", {
-      target: session.window,
+      target: session.window.document,
       type: "keyup",
       context: this,
       handler: this.onkeyup,
@@ -65,7 +65,7 @@ WindowWatcher.definition = {
     });
 
     session.notify("command/add-domlistener", {
-      target: session.window,
+      target: session.window.document,
       type: "keydown",
       context: this,
       handler: this.onkeydown,

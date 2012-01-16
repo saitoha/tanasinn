@@ -143,10 +143,10 @@ Session.definition = {
     process.notify("initialized/broker", this);
     this.notify("command/load-settings");
     this.notify("event/session-started", this);
-    coUtils.Timer.setTimeout(function() {
+    //coUtils.Timer.setTimeout(function() {
       this.notify("command/focus");
       this.notify("command/focus");
-    }, 100, this);
+    //}, 100, this);
     return this;
   },
 
@@ -163,6 +163,7 @@ Session.definition = {
         .getService(Components.interfaces.fuelIApplication);
       application.quit();
     }
+    this._observers = null;
   },
 
 }; // class Session

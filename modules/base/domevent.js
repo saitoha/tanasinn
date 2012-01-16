@@ -105,9 +105,14 @@ DOMEventManager.definition = {
         let list = this._listener_list_map[id];
         if (!list)
           list = this._listener_list_map[id] = [];
-        list.push(function() target.removeEventListener(type, delegate, capture));
+        list.push(function() {
+          target.removeEventListener(type, delegate, capture);
+          target = null;
+        });
 //        coUtils.Debug.reportMessage(_("Registered DOM listener '%s'"), id);
       }
+      listener = null;
+      broker = null;
     } else {
       throw coUtils.Debug.Exception(
         _("Invalid argument was given. id: [%s], type: [%s]."), 
@@ -124,6 +129,7 @@ DOMEventManager.definition = {
     let list = this._listener_list_map[id];
     if (list) {
       list.forEach(function(action) action());
+      delete this._listener_list_map[id];
     } else {
       coUtils.Debug.reportWarning(
         _("Registered DOM listener specified by given ID '%s' is not found."), id);
@@ -141,16 +147,10 @@ DOMEventManager.definition = {
 function main(process) 
 {
   process.subscribe(
-    "initialized/broker",
-    function(desktop)
+    "@initialized/broker",
+    function(broker)
     {
-      new DOMEventManager(desktop);
-      desktop.subscribe(
-        "initialized/broker", 
-        function(session)
-        {
-          new DOMEventManager(session);
-        });
+      new DOMEventManager(broker);
     });
 }
 

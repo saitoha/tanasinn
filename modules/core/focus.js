@@ -102,7 +102,7 @@ FocusTracker.definition = {
           }
           let focused_element = command_dispatcher.focusedElement;
           session.notify("event/got-focus");
-          session.notify("event/focus-changed", focused_element);
+//          session.notify("event/focus-changed", focused_element);
         }
         else {
           session.notify("event/lost-focus");

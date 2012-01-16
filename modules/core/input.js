@@ -325,7 +325,13 @@ InputManager.definition = {
       event.preventDefault();
     } else {
       let message = this._key_map[packed_code] 
-        || String.fromCharCode(packed_code & 0xfffff);
+      if (!message) {
+        if (packed_code & (1 << coUtils.Keyboard.KEY_CTRL | 1 << coUtils.Keyboard.KEY_ALT)) {
+          return; 
+        } else {
+          message = String.fromCharCode(packed_code & 0xfffff);
+        }
+      }
       session.notify("event/before-input", message);
 
 //      

@@ -140,6 +140,11 @@ EventBrokerBase.definition = {
     this._delegate_map = {}; 
   },
 
+  get __count()
+  {
+    return [key for ([key,] in Iterator(this._delegate_map))].length;
+  },
+
   get: function get(topic)
   {
     return this._delegate_map[topic];
@@ -299,8 +304,8 @@ EventBrokerBase.definition = {
 let EventBroker = new Abstruct();
 EventBroker.definition = {
 
-  get parentBroker()
-    this._parent,
+  get __count()
+    this._base.__count,
 
   /** constructor */
   initialize: function initialize(parent)
@@ -422,8 +427,11 @@ function Once(rhs) ({
   get value() 
     this.rhs.value,
 
-  reset: function() 
-    this.__defineGetter__("test", function() false),
+  reset: function reset() 
+  {
+    this.rhs = null;
+    this.__defineGetter__("test", function() false);
+  },
 
   toString: function() "[Once " + this.rhs + " ]",
 
@@ -526,6 +534,7 @@ EventExpressionProcesser.definition = {
   {
     this._broker = broker;
   },
+
 
   /** An generator method which iterates identifiers and operators. 
    *  @param text {String} An source text which is to be tokenized.

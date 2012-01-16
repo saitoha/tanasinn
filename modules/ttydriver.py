@@ -143,8 +143,8 @@ if not hasattr(os, "uname"):
 system = os.uname()
 
 def trace(message):
-    #if system[0] == 'Darwin':
-    #    os.system("say -v vict '%s'" % message)
+    if system[0] == 'Darwin':
+        os.system("say -v vict '%s'" % message)
     #if system[0] == 'Linux':
     #    os.system("espeak '%s'" % message)
     os.system("echo '%s' >> ~/.tanasinn/log/tty.log &" % message);
@@ -464,6 +464,7 @@ if __name__ == "__main__":
     #pid, ttyname = fork_app_process(master, slave, command, term)    
     pid, master = pty.fork()
     if not pid:
+        print "\x1B]97;%s\x07" % os.ttyname(0)
         os.environ["TERM"] = term 
         os.execlp("/bin/sh", "/bin/sh", "-c", "cd $HOME && exec %s" % command)
     ttyname = ""
