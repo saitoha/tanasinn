@@ -3,7 +3,7 @@
 
 #if __EN__
 link:./usermanual-ja.html[日本語/Japanese]
-#else
+#elif __JP__
 link:./usermanual.html[English/英語]
 #endif
 
@@ -15,18 +15,8 @@ link:./usermanual.html[English/英語]
     It enables you to access flexible, powerful functionality 
     provided by operating systems, such as commandline shells, or curses-based 
     applications.
-#if 1
 
-== Download/License
-    This software is istributed under Mozilla Public License 1.1 (MPL1.1) .
-
-- Unstable, snapshot version, http:#//zuse.jp/tanasinn/tanasinn-current.xpi[Download from here].
-- git repo: http:#//zuse.jp/tanasinn.git
-- gitweb: http:#//zuse.jp/git/?p=tanasinn.git
-
-#endif
-
-#else
+#elif __JP__
 
 == 概要
 
@@ -34,15 +24,24 @@ link:./usermanual.html[English/英語]
     コマンドラインシェルやcursesベースのアプリケーション等、オペレーティングシステムが提供する
     柔軟でパワフルな機能群にブラウザ上のUIからアクセスすることができます。
 
-#if 1
+#endif
+
+#if __EN__
+== Download/License
+    This software is distributed under Mozilla Public License 1.1 (MPL1.1) .
+
+- Unstable, snapshot version, http:#//zuse.jp/tanasinn/tanasinn-current.xpi[Download from here].
+- git repo: http:#//zuse.jp/tanasinn.git
+- gitweb: http:#//zuse.jp/git/?p=tanasinn.git
+
+#elif __JP__
+
 == ダウンロード/ライセンス
     Mozilla Public License 1.1 (MPL1.1) で配布しています。 
 
 - スナップショット版 http:#//zuse.jp/tanasinn/tanasinn-current.xpi[ここからダウンロード]
 - git repo: http:#//zuse.jp/tanasinn.git
 - gitweb: http:#//zuse.jp/git/?p=tanasinn.git
-
-#endif
 
 #endif
 
@@ -69,7 +68,7 @@ link:./usermanual.html[English/英語]
     - Supports 256 terminal colors, you can assign 32bit colors for them.
     - Vimperator / Keysnail like commandline interface.
     - Running as standalone XUL application if you want. (but now buggy!)
-#else
+#elif __JP__
 == 特色
     - Geckoベースのユーザーインターフェース。柔軟でカスタマイズが容易です。
     - マルチプラットフォーム。現在サポートされるのは、Mac / Linux(というかUbuntu) / 
@@ -96,117 +95,117 @@ link:./usermanual.html[English/英語]
 #endif
 
 #if __EN__
-#else
+#elif __JP__
 #endif
 
 
 #if __EN__
 == Screenshots
-#else
+#elif __JP__
 == スクリーンショット
 #endif
 
 #if __EN__
 .Running "http:#//w3m.sourceforge.net/index.en.html[BB]", an ascii art demo program.
-#else
+#elif __JP__
 ."http:#//w3m.sourceforge.net/index.en.html[BB]"(アスキーアートのデモプログラム)を走らせたところ。
 #endif
 image::images/bb2.png[width=640]
 
 #if __EN__
 .Displaying color chart with http:#//code.google.com/p/myminios/source/browse/trunk/colortable16.sh?r=10[colortable.sh] and http:#//code.google.com/p/joeldotfiles/source/browse/trunk/256colors2.pl[256color2.pl].
-#else
+#elif __JP__
 .http:#//code.google.com/p/myminios/source/browse/trunk/colortable16.sh?r=10[colortable.sh] and http:#//code.google.com/p/joeldotfiles/source/browse/trunk/256colors2.pl[256color2.pl]でカラーチャートを表示させたところ。
 #endif
 image::images/color2.png[width=640]
 
 #if __EN__
 .Typing Japanese with IME (here is http:#//aquaskk.sourceforge.jp/[AquaSKK]).
-#else
+#elif __JP__
 .IMEで日本語を打ってみたところ (http:#//aquaskk.sourceforge.jp/[AquaSKK]使用)。
 #endif
 image::images/ime2.png[width=640]
 
 #if __EN__
 .Scrollbar interface emerges only when it is needed (like OSX Lion).
-#else
+#elif __JP__
 .スクロールバーインターフェースは必要なときにあらわれます(OSX Lionのように)。
 #endif
 image::images/scroll2.png[width=640]
 
 #if __EN__
 .Overlay indicator dislays various messages. it emerges when font size / window size / titlebar message is chenged.
-#else
+#elif __JP__
 .オーバーレイインジケータがフォントサイズ、ウィンドウサイズ、タイトルバーメッセージが変更されたときなどに表示されます。
 #endif
 image::images/overlay2.png[width=640]
 
 #if __EN__
 .Commandline interface inspired by http:#//vimperator.org/vimperator[Vimperator] / https:#//github.com/mooz/keysnail/wiki/[Keysnail] (here is fgcolor command).
-#else
+#elif __JP__
 .http:#//vimperator.org/vimperator[Vimperator] や https:#//github.com/mooz/keysnail/wiki/[Keysnail] にインスパイアされたコマンドラインインターフェース。
 #endif
 image::images/completion2.png[width=640]
 
 #if __EN__
 .Choosing font-family.
-#else
+#elif __JP__
 .フォントファミリを選択しています。
 #endif
 image::images/fontfamily2.png[width=640]
 
 #if __EN__
 .Selecting font-size.
-#else
+#elif __JP__
 .フォントサイズを選択しています。
 #endif
 image::images/fontsize2.png[width=640]
 
 #if __EN__
 .Launcher interface inspired by http:#//www.blacktree.com/[QuckSilver] / https:#//addons.mozilla.org/ja/firefox/addon/mozilla-labs-ubiquity/[Ubiquity].
-#else
+#elif __JP__
 .http:#//www.blacktree.com/[QuckSilver] や https:#//addons.mozilla.org/ja/firefox/addon/mozilla-labs-ubiquity/[Ubiquity] にインスパイアされたランチャーインターフェース。
 #endif
 image::images/launcher2.png[width=640]
 
 #if __EN__
-.Reconnecting a detached session. It is all OK if your browser crashes or restarting unexpectedly.
-#else
+.Reconnecting a detached session. It is all OK if your browser will crash or restart unexpectedly.
+#elif __JP__
 .デタッチ済みのセッションに再接続しているところ。ブラウザがクラッシュしたり再起動しても安心です。
 #endif
 image::images/session2.png[width=640]
 
 #if __EN__
 .running "http:#//www.tkl.iis.u-tokyo.ac.jp/~toyoda/index_e.html[sl]" (a joke software).
-#else
+#elif __JP__
 ."http:#//www.tkl.iis.u-tokyo.ac.jp/~toyoda/index_e.html[sl]" (ジョークウェア)を走らせたところ。
 #endif
 image::images/sl2.png[width=640]
 
 #if __EN__
 .Self-Debugging and tracing terminal I/O sequence in real-time.
-#else
+#elif __JP__
 .セルフデバッギング。ターミナルI/Oシーケンスをリアルタイムにトレースしています。
 #endif
 image::images/debug2.png[width=640]
 
 #if __EN__
 .Browser-in-browser. running http:#//w3m.sourceforge.net/index.en.html[w3m] (applied private patch) with inline images. How crazy!!!
-#else
+#elif __JP__
 .ブラウザの中でブラウザ。プライベートパッチを当てたhttp:#//w3m.sourceforge.net/index.en.html[w3m]でインラインイメージを表示させました。ここまでくるとちょっと意味不明ですね。
 #endif
 image::images/w3m2.png[width=640]
 
 #if __EN__
 .Mailer-in-browser. running http:#//www.gohome.org/wl/index.html[Wonderlust] on emacs.
-#else
+#elif __JP__
 .ブラウザの中でメーラー。http:#//www.gohome.org/wl/index.html[Wonderlust]をemacs上で動かしています。
 #endif
 image::images/wl2.png[width=640]
 
 #if __EN__
 .Developping tanasinn with tanasinn at out of jail. here is running as a standalone XUL application.
-#else
+#elif __JP__
 .tanasinnをtanasinnで開発中。これはスタンドアロンXULアプリケーションとして動作させているところです。
 #endif
 image::images/xulapp.png[width=640]
@@ -226,7 +225,7 @@ image::images/xulapp.png[width=640]
       We're dreaming of enjoying youtube or twitter with no plugins, from terminal, don't you?
     * Documents for plug-in developers is comming soon... - -;)
 
-#else
+#elif __JP__
 == 将来的にサポートされる仕様
     
     * エミュレーションの強化。今はとりあえずxterm系コンパチブルなエミュレーションで作ってますが、
@@ -250,7 +249,7 @@ image::images/xulapp.png[width=640]
       'os.fork', 'os.openpty' ..etc.
     - Posix enviroinment. 
       If you are running Windows, you need to install cygwin at C:\cygwin.
-#else
+#elif __JP__
 == 動作要件
     - Firefox 4.0+。
     - POSIX用にビルドされたPython (バージョンはたぶん 2.5+, Mac、 Linux、 または cygwin用のもの)。
@@ -261,7 +260,7 @@ image::images/xulapp.png[width=640]
 
 #if __EN__
 == Installing
-#else
+#elif __JP__
 == インストール
 #endif
 
@@ -274,9 +273,9 @@ cd tanasinn
 ./configure
 make
 ----
-    If build process was succeeded, target XPI file 
+    If build process is succeeded, target XPI file 
     "tanasinn@zuse.jp.xpi" is to be generated. enjoy it!
-#else
+#elif __JP__
 === Firefox拡張としてビルドする:
 .Mac, Linux, Cygwin
 ----
@@ -324,7 +323,7 @@ ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/
 ----
 
     $RUNTIME is Vimperator runtime directory such as '$HOME/.vimperator'.
-#else
+#elif __JP__
 === Vimperatorプラグインとしてインストール:
 
     Vimperatorのランタイムディレクトリ以下にリンクを作成します。
@@ -392,7 +391,7 @@ cygstart firefox.exe --app application.ini
     
 #if __EN__
 == Usage
-#else
+#elif __JP__
 == 使いかた
 #endif
 
@@ -412,7 +411,7 @@ cygstart firefox.exe --app application.ini
 :tanasinn
 ----
 
-#else
+#elif __JP__
 === 端末の起動
 ==== 拡張としてインストールした場合
     Controlキーの2度押し (ctrl + ctrl) でコマンドラインランチャーインターフェースが出現します。
@@ -434,7 +433,7 @@ cygstart firefox.exe --app application.ini
 
     It is similer to well-known terminal emurators, like xterm. 
     but including specific fetures as follows.
-#else
+#elif __JP__
 === 基本的な操作方法
 
     xtermのような端末エミュレータを使ったことがあれば大体いけると思いますが、
@@ -445,7 +444,7 @@ cygstart firefox.exe --app application.ini
 .shift + shift (shift key twice)
 
     switch input focus between terminal and commandline textbox.
-#else
+#elif __JP__
 .shift + shift (shiftキーの2度押し)
 
     ターミナルとコマンドラインテキストボックスの間でフォーカスを切り替えます。
@@ -455,7 +454,7 @@ cygstart firefox.exe --app application.ini
 .shift + mouse drag
 
     move window.
-#else
+#elif __JP__
 .shift + マウスドラッグ
 
     ウィンドウの移動。
@@ -465,7 +464,7 @@ cygstart firefox.exe --app application.ini
 .alt + mouse select
 
     select rectangle region. (like Terminal.app)
-#else
+#elif __JP__
 .alt + マウスで範囲選択
 
     矩形選択。 (Terminal.appの真似)
@@ -478,7 +477,7 @@ cygstart firefox.exe --app application.ini
     Now the implementation of this part is witten by rush job, commandline parser 
     is not proper one.
 
-#else
+#elif __JP__
 === コマンドラインインターフェースを使う
     
     …仕様が全然固まってませんのでまだ書けません。
@@ -495,7 +494,7 @@ cygstart firefox.exe --app application.ini
    I think something other way for it should be provided.
 
 
-#else
+#elif __JP__
 == 既知の問題
 
  - Windows + Cygwin 環境では起動やエミュレーションが糞遅いです。
@@ -508,7 +507,7 @@ cygstart firefox.exe --app application.ini
 
 Patches and bug reports are are encouraged. > saitoha <user@zuse.jp>,
 or toweet me (http:#//twitter.com/feel_tanasinn[English] / http:#//twitter.com/kefir_[Japanese]).
-#else
+#elif __JP__
 == バグレポート・パッチ
 
 .バグレポート・パッチ超歓迎。 
