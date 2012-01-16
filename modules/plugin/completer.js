@@ -67,7 +67,7 @@ CommandCompleter.definition = {
       .filter(function(command) {
         return 0 == command.name.replace(/[\[\]]+/g, "")
           .indexOf(command_name);
-      });
+      }).sort(function(lhs, rhs) lhs.name.localeCompare(rhs.name));
     if (0 == commands.length) {
       listener.doCompletion(null);
       return -1;
@@ -94,6 +94,77 @@ CommandCompleter.definition = {
   },
 
 };
+
+/**
+ * @class ProfileCompleter
+ *
+ */
+let ProfileCompleter = new Class().extends(CompleterBase);
+ProfileCompleter.definition = {
+
+  get id()
+    "profile-completer",
+
+  get type()
+    "profile",
+
+  /*
+   * Search for a given string and notify a listener (either synchronously
+   * or asynchronously) of the result
+   *
+   * @param source - The string to search for
+   * @param listener - A listener to notify when the search is complete
+   */
+  startSearch: function startSearch(source, listener)
+  {
+    let session = this._broker;
+
+    let match = source.match(/^(\s*)([$_\-@a-zA-Z\.]*)(\s?)/);
+    if (null === match) {
+      listener.doCompletion(null);
+      return -1;
+    }
+    let [, space, name, next] = match;
+    if (next) {
+      return space.length + name.length;
+    }
+    let entries = coUtils.File.getFileEntriesFromSerchPath([session.profile_directory]);
+
+    let lower_name = name.toLowerCase();
+    let candidates = [
+      {
+        key: file.leafName.replace(/\.js$/, ""), 
+        value: file.path,
+      } for (file in entries) 
+        if (-1 != file.leafName.toLowerCase().indexOf(lower_name))
+    ];
+    if (0 == candidates.length) {
+      listener.doCompletion(null);
+      return -1;
+    }
+    let autocomplete_result = {
+      type: "text",
+      query: source, 
+      labels: candidates.map(function(candidate) candidate.key),
+      comments: candidates.map(function(candidate) String(candidate.value)),
+      data: candidates.map(function(candidate) ({
+        name: candidate.key,
+        value: String(candidate.value),
+      })),
+    };
+    listener.doCompletion(autocomplete_result);
+    return 0;
+  },
+
+  /*
+   * Stop all searches that are in progress
+   */
+  stopSearch: function stopSearch() 
+  {
+  },
+
+};
+
 
 /**
  * @class JsCompleter
@@ -235,7 +306,7 @@ let HistoryCompleter = new Class().extends(CompleterBase);
 HistoryCompleter.definition = {
 
   get id()
-    "historycompleter",
+    "history-completer",
 
   get type()
     "history",
@@ -283,6 +354,74 @@ HistoryCompleter.definition = {
 };
 
 /**
+ * @class PluginsCompleter
+ */
+let PluginsCompleter = new Class().extends(CompleterBase);
+PluginsCompleter.definition = {
+
+  get id()
+    "plugins-completer",
+
+  get type()
+    "plugin",
+
+  /*
+   * Search for a given string and notify a listener (either synchronously
+   * or asynchronously) of the result
+   *
+   * @param source - The string to search for
+   * @param listener - A listener to notify when the search is complete
+   */
+  startSearch: function startSearch(source, listener, option)
+  {
+    let match = source.match(/^(\s*)([$_\-@a-zA-Z\.]*)(\s?)/);
+    if (null === match) {
+      listener.doCompletion(null);
+      return -1;
+    }
+    let [, space, name, next] = match;
+    if (next) {
+      return space.length + name.length;
+    }
+    let session = this._broker;
+    let modules = session.notify("get/module-instances");
+    let candidates = [
+      {
+        key: module.id, 
+        value: module
+      } for ([, module] in Iterator(modules)) 
+        if (Plugin.prototype.isPrototypeOf(module) 
+            && module.id && module.id.match(source) 
+            && module.enabled == (option == "enabled"))
+    ];
+    if (0 == candidates.length) {
+      listener.doCompletion(null);
+      return -1;
+    }
+    let autocomplete_result = {
+      type: "text",
+      query: source, 
+      labels: candidates.map(function(candidate) candidate.key),
+      comments: candidates.map(function(candidate) String(candidate.value)),
+      data: candidates.map(function(candidate) ({
+        name: candidate.key,
+        value: String(candidate.value),
+      })),
+    };
+    listener.doCompletion(autocomplete_result);
+    return 0;
+  },
+
+  /*
+   * Stop all searches that are in progress
+   */
+  stopSearch: function stopSearch() 
+  {
+  },
+
+};
+
+/**
  * @class OptionCompleter
  */
 let OptionCompleter = new Class().extends(CompleterBase);
@@ -303,7 +442,7 @@ OptionCompleter.definition = {
    */
   startSearch: function startSearch(source, listener)
   {
-    let match = source.match(/^(\s*)([$_@a-zA-Z\.]*)(=?)(.*)/);
+    let match = source.match(/^(\s*)([$_\-@a-zA-Z\.]*)(=?)(.*)/);
     if (null === match) {
       listener.doCompletion(null);
       return -1;
@@ -1671,10 +1810,12 @@ function main(desktop)
       new HistoryCompleter(session);
       new OptionCompleter(session);
       new CommandCompleter(session);
+      new ProfileCompleter(session);
       new FontsizeCompleter(session);
       new FontFamilyCompleter(session);
       new ColorNumberCompleter(session);
       new LocalizeCompleter(session);
+      new PluginsCompleter(session);
 
       new ColorCompletionDisplayDriver(session);
       new ColorNumberCompletionDisplayDriver(session);

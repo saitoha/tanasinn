@@ -87,7 +87,7 @@ Shortcut.definition = {
                 }
                 let settings = session.uniget("command/get-settings");
                 if (settings) {
-                  session.notify("command/save-settings", settings);
+                  session.notify("command/save-settings", {name: undefined, data: settings});
                   this.treebox.invalidate();
                 } else {
                   throw coUtils.Debug.Exception(

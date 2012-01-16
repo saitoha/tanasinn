@@ -14,7 +14,7 @@ ESTART=
 EEND=
 else
 MSTART="$$($(TPUT) setaf 2)====================\>$$($(TPUT) setaf 6)"
-MEND="$$($(TPUT)t sgr0)"
+MEND="$$($(TPUT) sgr0)"
 ESTART="$$($(TPUT) bold; $(TPUT) setaf 1)"
 EEND="$$($(TPUT) sgr0; $(TPUT) setaf 6)"
 endif

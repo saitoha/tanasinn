@@ -127,6 +127,9 @@ Tracer.definition = {
 let Hooker = new Class().extends(Component);
 Hooker.definition = {
 
+  get id()
+    "hooker",
+
   _parser: null, 
   _buffer: null, 
   _hooked: false,

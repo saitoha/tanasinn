@@ -857,11 +857,8 @@ It enables you to access flexible, powerful functionality
 provided by operating systems, such as commandline shells, or curses-based
 applications.</tt></pre>
 </div></div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_download_license">Download/License</h2>
-<div class="sectionbody">
+<div class="sect2">
+<h3 id="_download_license">Download/License</h3>
 <div class="literalblock">
 <div class="content">
 <pre><tt>This software is distributed under Mozilla Public License 1.1 (MPL1.1) .</tt></pre>
@@ -869,7 +866,12 @@ applications.</tt></pre>
 <div class="ulist"><ul>
 <li>
 <p>
-Unstable, snapshot version, <a href="http://zuse.jp/tanasinn/tanasinn-current.xpi">Download from here</a>.
+Testing version (it may buggy!): <a href="http://zuse.jp/tanasinn/downloads/versions/0.1.1/tanasinn@zuse.jp.xpi">Download</a>
+</p>
+</li>
+<li>
+<p>
+Unstable, Snapshot version (it may so bugful!): <a href="http://zuse.jp/tanasinn/tanasinn-current.xpi">Download</a>
 </p>
 </li>
 <li>
@@ -883,6 +885,7 @@ gitweb: <a href="http://zuse.jp/git/?p=tanasinn.git">http://zuse.jp/git/?p=tanas
 </p>
 </li>
 </ul></div>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -1072,7 +1075,7 @@ Running as standalone XUL application if you want. (but now buggy!)
 <div class="content">
 <img src="images/xulapp.png" alt="images/xulapp.png" width="640" />
 </div>
-<div class="title">Figure 15. Developping tanasinn with tanasinn at out of jail. here is running as a standalone XUL application.</div>
+<div class="title">Figure 15. Developping tanasinn with tanasinn at out of jail. it runs as a standalone XUL application.</div>
 </div>
 </div>
 </div>
@@ -1106,7 +1109,7 @@ Making it to be more collaborative with curses-based applications.
 </li>
 <li>
 <p>
-Documents for plug-in developers is comming soon&#8230; - -;)
+Documents for plug-in developers are comming soon&#8230; - -;)
 </p>
 </li>
 </ul></div>
@@ -1286,6 +1289,61 @@ is not proper one.</tt></pre>
 </div>
 </div>
 <div class="sect1">
+<h2 id="_tips">Tips</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_to_enable_disable_plugins">To enable/disable plugins.</h3>
+<div class="paragraph"><p>type it in the command-line input field.</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>enable &lt;plugin id&gt;</tt></pre>
+</div></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>disable &lt;plugin id&gt;</tt></pre>
+</div></div>
+</div>
+<div class="sect2">
+<h3 id="_to_save_load_session_8217_s_settings">To save/load session&#8217;s settings.</h3>
+<div class="paragraph"><p>type it in the command-line input field.</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>save</tt></pre>
+</div></div>
+<div class="paragraph"><p>Then current session&#8217;s configuration settings will be persisted to
+"$HOME/.tanasinn/profile/default.js".
+If you would like to save it as other file, type as follows:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>save &lt;profile name&gt;</tt></pre>
+</div></div>
+<div class="paragraph"><p>Therefore the settings will be persisted to "$HOME/.tanasinn/profile/&lt;profile name&gt;.js".</p></div>
+<div class="paragraph"><p>And to load it, type as follows:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>load &lt;profile name&gt;</tt></pre>
+</div></div>
+</div>
+<div class="sect2">
+<h3 id="_to_detach_from_current_session">To detach from current session.</h3>
+<div class="paragraph"><p>type it in the command-line input field.</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>detach</tt></pre>
+</div></div>
+<div class="paragraph"><p>The session will be suspended. and you can reconnect to it from launcher interface.</p></div>
+</div>
+<div class="sect2">
+<h3 id="_to_kill_current_session">To kill current session.</h3>
+<div class="paragraph"><p>type it in the command-line input field.</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>kill</tt></pre>
+</div></div>
+</div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="_known_issues">Known issues</h2>
 <div class="sectionbody">
 <div class="ulist"><ul>
@@ -1315,7 +1373,7 @@ or toweet me (<a href="http://twitter.com/feel_tanasinn">English</a> / <a href="
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2012-01-16 16:38:21 JST
+Last updated 2012-01-17 00:25:35 JST
 </div>
 </div>
 </body>

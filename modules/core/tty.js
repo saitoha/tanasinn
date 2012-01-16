@@ -93,7 +93,7 @@ let Controller = new Class().extends(Component);
 Controller.definition = {
 
   get id()
-    "ttycontroller",
+    "tty-controller",
 
   // shell settings
   "[persistable] command": "login -pfq $USER", // login command (login, bash, screen, ...etc)
@@ -109,7 +109,7 @@ Controller.definition = {
   {
     this._screen = screen;
     let session = this._broker;
-    session.notify("initialized/controller", this);
+    session.notify(<>initialized/{this.id}</>, this);
   },
 
   /** Starts TCP client socket, and listen it asynchronously.
@@ -254,6 +254,9 @@ Controller.definition = {
 let IOManager = new Class().extends(Component);
 IOManager.definition = {
 
+  get id()
+    "tty-iomanager",
+
   _input: null,
   _output: null,
 
@@ -270,7 +273,7 @@ IOManager.definition = {
     socket.init(/* port */ -1, /* loop back */ true, /* connection count */ 1);
     socket.asyncListen(this);
     this._port = socket.port;
-    session.notify("initialized/iomanager", this);
+    session.notify(<>initialized/{this.id}</>, this);
   },
 
 
@@ -478,12 +481,6 @@ ExternalDriver.definition = {
     session.notify("initialized/externaldriver", this);
   },
 
-  "[subscribe('@initialized/tty'), enabled]":
-  function onSuccess(tty) 
-  {
-    this.success = true;
-  },
-
   /** Kill target process. */
   kill: function kill(pid) 
   {
@@ -597,10 +594,7 @@ ExternalDriver.definition = {
 //    if (this.success) {
 //      return;
 //    }
-    this.success = true;
     let session = this._broker;
-    coUtils.Debug.reportError(
-      _("Failed to start TTY. try it again."));
     session.stop();
   },
 
@@ -631,7 +625,7 @@ SocketTeletypeService.definition = {
   _io_manager: null,
   _controller: null,
 
-  "[subscribe('@initialized/{iomanager & controller & externaldriver}'), enabled]":
+  "[subscribe('@initialized/{tty-iomanager & tty-controller & externaldriver}'), enabled]":
   function onLoad(io_manager, controller, external_driver) 
   {
     this._io_manager = io_manager;

@@ -77,6 +77,9 @@ Session.definition = {
   get parent()
     this._broker,
 
+  "[persistable] profile_directory": "$Home/.tanasinn/profile",
+  "[persistable] profile": "default",
+
   observerService: Components
     .classes["@mozilla.org/observer-service;1"]
     .getService(Components.interfaces.nsIObserverService),
@@ -106,7 +109,7 @@ Session.definition = {
   
   removeGlobalEvent: function removeGlobalEvent(topic)
   {
-    if (this.observerService) {
+    if (this.observerService && this._observers) {
       let observers = this._observers[topic];
       if (observers) {
         observers.forEach(function(observer) 
@@ -117,6 +120,7 @@ Session.definition = {
             coUtils.Debug.reportWarning(e);
           }
         }, this);
+        this._observers = null;
       }
     }
   },
@@ -141,7 +145,7 @@ Session.definition = {
     this._term = request.term;
 
     process.notify("initialized/broker", this);
-    this.notify("command/load-settings");
+    this.notify("command/load-settings", this.profile);
     this.notify("event/session-started", this);
     //coUtils.Timer.setTimeout(function() {
       this.notify("command/focus");
@@ -163,7 +167,6 @@ Session.definition = {
         .getService(Components.interfaces.fuelIApplication);
       application.quit();
     }
-    this._observers = null;
   },
 
 }; // class Session

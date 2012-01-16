@@ -13,9 +13,8 @@ usermanual.html: usermanual.txt Makefile.in
 	if [ -n "$(ASCIIDOC)" ] && [ -n "$(CC)" ]; \
 	then \
 		$(RM) $@ && cat $< \
-		| sed -e 's/#\/\//#\/#\//g;s/#\/\*/#\/#*/g' \
 		| $(CC) -E -D__EN__ - \
-		| sed -e 's/#\/#\//\/\//g;s/#\/#\*/\/*/g' \
+		| sed -e 's:/#/://:g' \
 		| sed -e 's/^#.*//' \
 		| $(ASCIIDOC) $(ASCIIDOCFLAGS) - > $@; \
 	fi
@@ -24,9 +23,8 @@ usermanual-ja.html: usermanual.txt Makefile.in
 	if [ -n "$(ASCIIDOC)" ] && [ -n "$(CC)" ]; \
 	then \
 		$(RM) $@ && cat $< \
-		| sed -e 's/#\/\//#\/#\//g;s/#\/\*/#\/#*/g' \
 		| $(CC) -E -D__JP__ - \
-		| sed -e 's/#\/#\//\/\//g;s/#\/#\*/\/*/g' \
+		| sed -e 's/#\/#\//\/\//g' \
 		| sed -e 's/^#.*//' \
 		| $(ASCIIDOC) $(ASCIIDOCFLAGS) - > $@; \
 	fi

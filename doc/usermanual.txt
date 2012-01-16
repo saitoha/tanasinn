@@ -27,21 +27,24 @@ link:./usermanual.html[English/英語]
 #endif
 
 #if __EN__
-== Download/License
+
+=== Download/License
     This software is distributed under Mozilla Public License 1.1 (MPL1.1) .
 
-- Unstable, snapshot version, http:#//zuse.jp/tanasinn/tanasinn-current.xpi[Download from here].
-- git repo: http:#//zuse.jp/tanasinn.git
-- gitweb: http:#//zuse.jp/git/?p=tanasinn.git
+- Testing version (it may buggy!): http:/#/zuse.jp/tanasinn/downloads/versions/0.1.1/tanasinn@zuse.jp.xpi[Download]
+- Unstable, Snapshot version (it may so bugful!): http:/#/zuse.jp/tanasinn/tanasinn-current.xpi[Download]
+- git repo: http:/#/zuse.jp/tanasinn.git
+- gitweb: http:/#/zuse.jp/git/?p=tanasinn.git
 
 #elif __JP__
 
-== ダウンロード/ライセンス
+=== ダウンロード/ライセンス
     Mozilla Public License 1.1 (MPL1.1) で配布しています。 
 
-- スナップショット版 http:#//zuse.jp/tanasinn/tanasinn-current.xpi[ここからダウンロード]
-- git repo: http:#//zuse.jp/tanasinn.git
-- gitweb: http:#//zuse.jp/git/?p=tanasinn.git
+- テスト版: http:/#/zuse.jp/tanasinn/downloads/versions/0.1.1/tanasinn@zuse.jp.xpi[ダウンロード].
+- スナップショット版: http:/#/zuse.jp/tanasinn/tanasinn-current.xpi[ダウンロード]
+- git repo: http:/#/zuse.jp/tanasinn.git
+- gitweb: http:/#/zuse.jp/git/?p=tanasinn.git
 
 #endif
 
@@ -49,7 +52,7 @@ link:./usermanual.html[English/英語]
 == Hilighting features
     - Full Gecko based user interface, it is flexible and easy to customize.
     - Multi-platform, now supports Mac / Linux (Tested in Ubuntu) / 
-      Windows(XP/Vista/7) + http:#//www.cygwin.com[Cygwin] (requires posix python).
+      Windows(XP/Vista/7) + http:/#/www.cygwin.com[Cygwin] (requires posix python).
     - Supports plugin architecture. it supports Plug-and-Play installing & uninstalling.
     - Retaining TTY session duaring closing/restarting browser.
       you can reconnect suspended terminal session.
@@ -72,7 +75,7 @@ link:./usermanual.html[English/英語]
 == 特色
     - Geckoベースのユーザーインターフェース。柔軟でカスタマイズが容易です。
     - マルチプラットフォーム。現在サポートされるのは、Mac / Linux(というかUbuntu) / 
-      Windows(XP/Vista/7) + http:#//www.cygwin.com[Cygwin]環境 (POSIX版Pythonが必要)
+      Windows(XP/Vista/7) + http:/#/www.cygwin.com[Cygwin]環境 (POSIX版Pythonが必要)
     - プラグインアーキテクチャ。プラグアンドプレイでのインストール・アンインストールが可能。
     - ブラウザを再起動したり閉じたりしている間、ターミナルセッションを保持します。
       サスペンドしたセッションに後から再接続できます。 
@@ -106,23 +109,23 @@ link:./usermanual.html[English/英語]
 #endif
 
 #if __EN__
-.Running "http:#//w3m.sourceforge.net/index.en.html[BB]", an ascii art demo program.
+.Running "http:/#/w3m.sourceforge.net/index.en.html[BB]", an ascii art demo program.
 #elif __JP__
-."http:#//w3m.sourceforge.net/index.en.html[BB]"(アスキーアートのデモプログラム)を走らせたところ。
+."http:/#/w3m.sourceforge.net/index.en.html[BB]"(アスキーアートのデモプログラム)を走らせたところ。
 #endif
 image::images/bb2.png[width=640]
 
 #if __EN__
-.Displaying color chart with http:#//code.google.com/p/myminios/source/browse/trunk/colortable16.sh?r=10[colortable.sh] and http:#//code.google.com/p/joeldotfiles/source/browse/trunk/256colors2.pl[256color2.pl].
+.Displaying color chart with http:/#/code.google.com/p/myminios/source/browse/trunk/colortable16.sh?r=10[colortable.sh] and http:/#/code.google.com/p/joeldotfiles/source/browse/trunk/256colors2.pl[256color2.pl].
 #elif __JP__
-.http:#//code.google.com/p/myminios/source/browse/trunk/colortable16.sh?r=10[colortable.sh] and http:#//code.google.com/p/joeldotfiles/source/browse/trunk/256colors2.pl[256color2.pl]でカラーチャートを表示させたところ。
+.http:/#/code.google.com/p/myminios/source/browse/trunk/colortable16.sh?r=10[colortable.sh] and http:/#/code.google.com/p/joeldotfiles/source/browse/trunk/256colors2.pl[256color2.pl]でカラーチャートを表示させたところ。
 #endif
 image::images/color2.png[width=640]
 
 #if __EN__
-.Typing Japanese with IME (here is http:#//aquaskk.sourceforge.jp/[AquaSKK]).
+.Typing Japanese with IME (here is http:/#/aquaskk.sourceforge.jp/[AquaSKK]).
 #elif __JP__
-.IMEで日本語を打ってみたところ (http:#//aquaskk.sourceforge.jp/[AquaSKK]使用)。
+.IMEで日本語を打ってみたところ (http:/#/aquaskk.sourceforge.jp/[AquaSKK]使用)。
 #endif
 image::images/ime2.png[width=640]
 
@@ -141,9 +144,9 @@ image::images/scroll2.png[width=640]
 image::images/overlay2.png[width=640]
 
 #if __EN__
-.Commandline interface inspired by http:#//vimperator.org/vimperator[Vimperator] / https:#//github.com/mooz/keysnail/wiki/[Keysnail] (here is fgcolor command).
+.Commandline interface inspired by http:/#/vimperator.org/vimperator[Vimperator] / https:/#/github.com/mooz/keysnail/wiki/[Keysnail] (here is fgcolor command).
 #elif __JP__
-.http:#//vimperator.org/vimperator[Vimperator] や https:#//github.com/mooz/keysnail/wiki/[Keysnail] にインスパイアされたコマンドラインインターフェース。
+.http:/#/vimperator.org/vimperator[Vimperator] や https:/#/github.com/mooz/keysnail/wiki/[Keysnail] にインスパイアされたコマンドラインインターフェース。
 #endif
 image::images/completion2.png[width=640]
 
@@ -162,9 +165,9 @@ image::images/fontfamily2.png[width=640]
 image::images/fontsize2.png[width=640]
 
 #if __EN__
-.Launcher interface inspired by http:#//www.blacktree.com/[QuckSilver] / https:#//addons.mozilla.org/ja/firefox/addon/mozilla-labs-ubiquity/[Ubiquity].
+.Launcher interface inspired by http:/#/www.blacktree.com/[QuckSilver] / https:/#/addons.mozilla.org/ja/firefox/addon/mozilla-labs-ubiquity/[Ubiquity].
 #elif __JP__
-.http:#//www.blacktree.com/[QuckSilver] や https:#//addons.mozilla.org/ja/firefox/addon/mozilla-labs-ubiquity/[Ubiquity] にインスパイアされたランチャーインターフェース。
+.http:/#/www.blacktree.com/[QuckSilver] や https:/#/addons.mozilla.org/ja/firefox/addon/mozilla-labs-ubiquity/[Ubiquity] にインスパイアされたランチャーインターフェース。
 #endif
 image::images/launcher2.png[width=640]
 
@@ -176,9 +179,9 @@ image::images/launcher2.png[width=640]
 image::images/session2.png[width=640]
 
 #if __EN__
-.running "http:#//www.tkl.iis.u-tokyo.ac.jp/~toyoda/index_e.html[sl]" (a joke software).
+.running "http:/#/www.tkl.iis.u-tokyo.ac.jp/~toyoda/index_e.html[sl]" (a joke software).
 #elif __JP__
-."http:#//www.tkl.iis.u-tokyo.ac.jp/~toyoda/index_e.html[sl]" (ジョークウェア)を走らせたところ。
+."http:/#/www.tkl.iis.u-tokyo.ac.jp/~toyoda/index_e.html[sl]" (ジョークウェア)を走らせたところ。
 #endif
 image::images/sl2.png[width=640]
 
@@ -190,21 +193,21 @@ image::images/sl2.png[width=640]
 image::images/debug2.png[width=640]
 
 #if __EN__
-.Browser-in-browser. running http:#//w3m.sourceforge.net/index.en.html[w3m] (applied private patch) with inline images. How crazy!!!
+.Browser-in-browser. running http:/#/w3m.sourceforge.net/index.en.html[w3m] (applied private patch) with inline images. How crazy!!!
 #elif __JP__
-.ブラウザの中でブラウザ。プライベートパッチを当てたhttp:#//w3m.sourceforge.net/index.en.html[w3m]でインラインイメージを表示させました。ここまでくるとちょっと意味不明ですね。
+.ブラウザの中でブラウザ。プライベートパッチを当てたhttp:/#/w3m.sourceforge.net/index.en.html[w3m]でインラインイメージを表示させました。ここまでくるとちょっと意味不明ですね。
 #endif
 image::images/w3m2.png[width=640]
 
 #if __EN__
-.Mailer-in-browser. running http:#//www.gohome.org/wl/index.html[Wonderlust] on emacs.
+.Mailer-in-browser. running http:/#/www.gohome.org/wl/index.html[Wonderlust] on emacs.
 #elif __JP__
-.ブラウザの中でメーラー。http:#//www.gohome.org/wl/index.html[Wonderlust]をemacs上で動かしています。
+.ブラウザの中でメーラー。http:/#/www.gohome.org/wl/index.html[Wonderlust]をemacs上で動かしています。
 #endif
 image::images/wl2.png[width=640]
 
 #if __EN__
-.Developping tanasinn with tanasinn at out of jail. here is running as a standalone XUL application.
+.Developping tanasinn with tanasinn at out of jail. it runs as a standalone XUL application.
 #elif __JP__
 .tanasinnをtanasinnで開発中。これはスタンドアロンXULアプリケーションとして動作させているところです。
 #endif
@@ -223,7 +226,7 @@ image::images/xulapp.png[width=640]
       Accessing to Gecko and do something like opening popup windows, playing movies, 
       OAuth authorication, ...etc., from terminal applications. 
       We're dreaming of enjoying youtube or twitter with no plugins, from terminal, don't you?
-    * Documents for plug-in developers is comming soon... - -;)
+    * Documents for plug-in developers are comming soon... - -;)
 
 #elif __JP__
 == 将来的にサポートされる仕様
@@ -265,10 +268,11 @@ image::images/xulapp.png[width=640]
 #endif
 
 #if __EN__
+
 === Building Firefox extension:
 .Mac, Linux, Cygwin
 ----
-git clone http:#//zuse.jp/tanasinn.git
+git clone http:/#/zuse.jp/tanasinn.git
 cd tanasinn
 ./configure
 make
@@ -276,10 +280,11 @@ make
     If build process is succeeded, target XPI file 
     "tanasinn@zuse.jp.xpi" is to be generated. enjoy it!
 #elif __JP__
+
 === Firefox拡張としてビルドする:
 .Mac, Linux, Cygwin
 ----
-git clone http:#//zuse.jp/tanasinn.git
+git clone http:/#/zuse.jp/tanasinn.git
 cd tanasinn
 ./configure
 make
@@ -295,7 +300,7 @@ make
 
 .Mac, Linux
 ----
-git clone http:#//zuse.jp/tanasinn.git
+git clone http:/#/zuse.jp/tanasinn.git
 cd tanasinn
 ./configure
 ln -s $PWD $RUNTIME/tanasinn
@@ -304,7 +309,7 @@ ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/
         
 .Cygwin + Windows Vista/7
 ----
-git clone http:#//zuse.jp/tanasinn.git
+git clone http:/#/zuse.jp/tanasinn.git
 cd tanasinn
 ./configure
 $(cygpath $COMSPEC) /c mklink /D "$(cygpath -w "$VIMRUNTIME/tanasinn")" "$(cygpath -w "$PWD")";
@@ -312,10 +317,10 @@ ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/
 ----
 
 .Cygwin + Windows XP
-To make Windows native symbolic link, you may need to install http:#//www.microsoft.com/download/en/details.aspx?DisplayLang=en%2cen&id=17657[Windows Server 2003 Resource Kit Tools].
+To make Windows native symbolic link, you may need to install http:/#/www.microsoft.com/download/en/details.aspx?DisplayLang=en%2cen&id=17657[Windows Server 2003 Resource Kit Tools].
 
 ----
-git clone http:#//zuse.jp/tanasinn.git
+git clone http:/#/zuse.jp/tanasinn.git
 cd tanasinn
 ./configure
 $(cygpath $COMSPEC) /c linkd.exe "$(cygpath -w "$VIMRUNTIME/tanasinn")" "$(cygpath -w "$PWD")";
@@ -330,7 +335,7 @@ ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/
 
 .Mac, Linux
 ----
-git clone http:#//zuse.jp/tanasinn.git
+git clone http:/#/zuse.jp/tanasinn.git
 cd tanasinn
 ./configure
 ln -s $PWD $RUNTIME/tanasinn
@@ -339,7 +344,7 @@ ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/
         
 .Cygwin + Windows Vista/7
 ----
-git clone http:#//zuse.jp/tanasinn.git
+git clone http:/#/zuse.jp/tanasinn.git
 cd tanasinn
 ./configure
 $(cygpath $COMSPEC) /c mklink /D "$(cygpath -w "$VIMRUNTIME/tanasinn")" "$(cygpath -w "$PWD")";
@@ -347,10 +352,10 @@ ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/
 ----
 
 .Cygwin + Windows XP
-Windowsネイティブなシンボリックリンクを作成するために、http:#//www.microsoft.com/download/en/details.aspx?DisplayLang=en%2cen&id=17657[Windows Server 2003 Resource Kit Tools] をインストールする必要があるかもしれません。
+Windowsネイティブなシンボリックリンクを作成するために、http:/#/www.microsoft.com/download/en/details.aspx?DisplayLang=en%2cen&id=17657[Windows Server 2003 Resource Kit Tools] をインストールする必要があるかもしれません。
 
 ----
-git clone http:#//zuse.jp/tanasinn.git
+git clone http:/#/zuse.jp/tanasinn.git
 cd tanasinn
 ./configure
 $(cygpath $COMSPEC) /c linkd.exe "$(cygpath -w "$VIMRUNTIME/tanasinn")" "$(cygpath -w "$PWD")";
@@ -365,7 +370,7 @@ ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/
 .MacOSX
 
 ----
-git clone http:#//zuse.jp/tanasinn.git
+git clone http:/#/zuse.jp/tanasinn.git
 cd tanasinn
 ./configure
 open /Applications/Firefox.app --args --app $(PWD)/application.ini
@@ -374,7 +379,7 @@ open /Applications/Firefox.app --args --app $(PWD)/application.ini
 .Linux
 
 ----
-git clone http:#//zuse.jp/tanasinn.git
+git clone http:/#/zuse.jp/tanasinn.git
 cd tanasinn
 ./configure
 firefox --app application.ini
@@ -383,7 +388,7 @@ firefox --app application.ini
 .Cygwin on Windows
 
 ----
-git clone http:#//zuse.jp/tanasinn.git
+git clone http:/#/zuse.jp/tanasinn.git
 cd tanasinn
 ./configure
 cygstart firefox.exe --app application.ini
@@ -486,6 +491,129 @@ cygstart firefox.exe --app application.ini
 
 
 #if __EN__
+
+== Tips
+
+=== To enable/disable plugins.
+type it in the command-line input field.
+
+----
+enable <plugin id>
+----
+
+----
+disable <plugin id>
+----
+
+=== To save/load session's settings.
+type it in the command-line input field.
+
+----
+save
+----
+
+Then current session's configuration settings will be persisted to 
+"$HOME/.tanasinn/profile/default.js".
+If you would like to save it as other file, type as follows:
+
+----
+save <profile name>
+----
+
+Therefore the settings will be persisted to "$HOME/.tanasinn/profile/<profile name>.js".
+
+And to load it, type as follows:
+
+----
+load <profile name>
+----
+
+
+=== To detach from current session.
+type it in the command-line input field.
+
+----
+detach
+----
+
+The session will be suspended. and you can reconnect to it from launcher interface.
+
+=== To kill current session.
+type it in the command-line input field.
+
+----
+kill
+----
+
+
+#elif __JP__
+
+== Tips
+
+=== 現在のセッションの設定を永続化するには
+コマンドラインから以下のようにタイプしてみてください。
+
+----
+save
+----
+現在のセッションの設定が "$HOME/.tanasinn/persist/default.js" へ書き出されるでしょう。
+
+
+=== モジュールの有効・無効を切り替えるには
+コマンドラインから以下のようにタイプしてみてください。
+
+----
+enable <plugin id>
+----
+
+----
+disable <plugin id>
+----
+
+=== To save/load session's settings.
+type it in the command-line input field.
+
+----
+save
+----
+
+Then current session's configuration settings will be persisted to 
+"$HOME/.tanasinn/profile/default.js".
+If you would like to save it as other file, type as follows:
+
+----
+save <profile name>
+----
+
+Therefore the settings will be persisted to "$HOME/.tanasinn/profile/<profile name>.js".
+
+And to load it, type as follows:
+
+----
+load <profile name>
+----
+
+
+=== 現在のセッションからデタッチするには
+コマンドラインから以下のようにタイプしてみてください。
+
+----
+detach
+----
+
+セッションはサスペンドされます。ランチャーインターフェースからこのセッションに再接続することができます。
+
+=== 現在のセッションを終了するには
+コマンドラインから以下のようにタイプしてみてください。
+
+----
+kill
+----
+
+#endif
+
+
+#if __EN__
 == Known issues
 
  - In Windows + Cygwin enviroinment, booting and emuration performance is so damn slow!!
@@ -506,13 +634,13 @@ cygstart firefox.exe --app application.ini
 == Bug reports and patches
 
 Patches and bug reports are are encouraged. > saitoha <user@zuse.jp>,
-or toweet me (http:#//twitter.com/feel_tanasinn[English] / http:#//twitter.com/kefir_[Japanese]).
+or toweet me (http:/#/twitter.com/feel_tanasinn[English] / http:/#/twitter.com/kefir_[Japanese]).
 #elif __JP__
 == バグレポート・パッチ
 
 .バグレポート・パッチ超歓迎。 
 saitoha <user@zuse.jp> 
-twitter: http:#//twitter.com/kefir_[日本語] / http:#//twitter.com/feel_tanasinn[英語] 
+twitter: http:/#/twitter.com/kefir_[日本語] / http:/#/twitter.com/feel_tanasinn[英語] 
 
 #endif
 

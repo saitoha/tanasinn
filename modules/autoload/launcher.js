@@ -29,9 +29,9 @@ let CompleterBase = new Abstruct().extends(Component);
 CompleterBase.definition = {
 
   "[subscribe('@event/desktop-started'), enabled]":
-  function onLoad(session)
+  function onLoad(broker)
   {
-    session.subscribe(
+    broker.subscribe(
       <>get/completer/{this.type}</>, 
       let (self = this) function() self);
   },
@@ -45,12 +45,12 @@ let CompletionDisplayDriverBase = new Abstruct().extends(Component);
 CompletionDisplayDriverBase.definition = {
 
   "[subscribe('@event/desktop-started'), enabled]":
-  function onLoad(session)
+  function onLoad(broker)
   {
-    session.subscribe(
+    broker.subscribe(
       <>get/completion-display-driver/{this.type}</>, 
       let (self = this) function() self);
-    session.notify(<>initialized/{this.id}</>, this);
+    broker.notify(<>initialized/{this.id}</>, this);
   },
 
 };
@@ -473,7 +473,7 @@ TextCompletionDisplayDriver.definition = {
   drive: function drive(grid, result, current_index) 
   {
     let document = grid.ownerDocument;
-    let session = this._broker;
+    let broker = this._broker;
     let rows = grid.appendChild(document.createElement("rows"))
     for (let i = 0; i < result.labels.length; ++i) {
       let search_string = result.query.toLowerCase();
@@ -487,7 +487,7 @@ TextCompletionDisplayDriver.definition = {
       let match_position = completion_text
         .toLowerCase()
         .indexOf(search_string);
-      session.uniget(
+      broker.uniget(
         "command/construct-chrome", 
         {
           parentNode: rows,
@@ -564,7 +564,7 @@ SessionsCompletionDisplayDriver.definition = {
   drive: function drive(grid, result, current_index) 
   {
     let document = grid.ownerDocument;
-    let session = this._broker;
+    let broker = this._broker;
     let rows = grid.appendChild(document.createElement("rows"))
     for (let i = 0; i < result.labels.length; ++i) {
       let search_string = result.query.toLowerCase().substr(1);
@@ -573,7 +573,7 @@ SessionsCompletionDisplayDriver.definition = {
         completion_text = completion_text.substr(0, 20) + "...";
       }
 
-      session.uniget(
+      broker.uniget(
         "command/construct-chrome", 
         {
           parentNode: rows,
@@ -902,8 +902,8 @@ Launcher.definition = {
     }
     if (result) {
       let type = result.type || "text";
-      let session = this._broker;
-      let driver = session.uniget(<>get/completion-display-driver/{type}</>); 
+      let broker = this._broker;
+      let driver = broker.uniget(<>get/completion-display-driver/{type}</>); 
       if (driver) {
         driver.drive(completion_root, result, this.currentIndex);
         this.invalidate(result);
@@ -1241,13 +1241,13 @@ Launcher.definition = {
     if (16 == event.keyCode && 16 == event.which 
         && !event.ctrlKey && !event.altKey 
         && event.shiftKey && !event.isChar) {
-      let session = this._broker;
-      session.notify("event/shift-key-down");
+      let broker = this._broker;
+      broker.notify("event/shift-key-down");
     } else if (18 == event.keyCode && 18 == event.which 
         && !event.ctrlKey && event.altKey 
         && !event.shiftKey && !event.isChar) {
-      let session = this._broker;
-      session.notify("event/alt-key-down");
+      let broker = this._broker;
+      broker.notify("event/alt-key-down");
     }
   },
 };

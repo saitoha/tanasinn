@@ -183,117 +183,102 @@ Commandline.definition = {
         </>,
         childNodes: [
           {
-            id: "tanasinn_commandline_background",
-            tagName: "box",
-            margin: 0,
+            id: "tanasinn_commandline_completion",
+            value: "",
+            tagName: "textbox",
+            className: "plain",
+            style: <> 
+              padding: 0px;
+              margin: 0px;
+              color: #888; 
+              background-color: transparent;
+            </>,
           },
           {
-            tagName: "stack",
+            tagName: "textbox",
+            id: "tanasinn_commandline",
+            className: "plain",
+            //placeholder: "input commands here.",
+            newlines: "replacewithspaces",
             style: <> 
-              padding: 0px 8px 0px 8px;
-            //        border: solid 1px red;
+              padding: 0px;
+              margin: 0px;
+              color: #eee;
+              text-shadow: 0px 1px 4px #484;
             </>,
-            childNodes: [
-              {
-                id: "tanasinn_commandline_completion",
-                value: "",
-                tagName: "textbox",
-                className: "plain",
-                style: <> 
-                  padding: 0px;
-                  margin: 0px;
-                  color: #888; 
-                  background-color: transparent;
-                </>,
-              },
-              {
-                tagName: "textbox",
-                id: "tanasinn_commandline",
-                className: "plain",
-                //placeholder: "input commands here.",
-                newlines: "replacewithspaces",
-                style: <> 
-                  padding: 0px;
-                  margin: 0px;
-                  color: #eee;
-                  text-shadow: 0px 1px 4px #484;
-                </>,
-              },
-              {
-                tagName: "textbox",
-                className: "plain",
-                readonly: "true",
-                id: "tanasinn_statusbar",
-                style: <> 
-                  padding: 0px;
-                  margin: 0px;
-                  color: #ccc;
-                  text-shadow: 0px 1px 4px #444;
-                </>,
-                hidden: true,
-              },
-              {
-                tagName: "panel",
-                id: "tanasinn_completion_popup",
-                style: <> 
-                  -moz-appearance: none;
-                  -moz-user-focus: ignore;
-                  background: transparent;
-                  margin: 0px;
-                  border: none;
-                  //-moz-box-shadow: 3px 3px 8px black;
-                  //border-radius: 7px;
-                  font: menu;
-                  
-                </>,
-                noautofocus: true,
-                height: 200,
-                childNodes: {
-                  tagName: "stack",
+          },
+          {
+            tagName: "textbox",
+            id: "tanasinn_statusbar",
+            className: "plain",
+            style: <> 
+              padding: 0px;
+              margin: 0px;
+              color: #ccc;
+              text-shadow: 0px 1px 4px #444;
+            </>,
+            hidden: true,
+          },
+          {
+            tagName: "panel",
+            id: "tanasinn_completion_popup",
+            style: <> 
+              -moz-appearance: none;
+              -moz-user-focus: ignore;
+              background: transparent;
+              margin: 0px;
+              border: none;
+              //-moz-box-shadow: 3px 3px 8px black;
+              //border-radius: 7px;
+              font: menu;
+              
+            </>,
+            noautofocus: true,
+            height: 200,
+            childNodes: {
+              tagName: "stack",
+              flex: 1,
+              style: <>
+              </>,
+              childNodes: [
+                {
+                  tagName: "box",
                   flex: 1,
                   style: <>
+                    border-radius: 7px;
+                    background: -moz-linear-gradient(top, #bbb, #888);
+                    opacity: 0.8;
                   </>,
-                  childNodes: [
-                    {
-                      tagName: "box",
-                      flex: 1,
-                      style: <>
-                        border-radius: 7px;
-                        background: -moz-linear-gradient(top, #bbb, #888);
-                        opacity: 0.8;
-                      </>,
-                    },
-                    {
-                      tagName: "scrollbox",
-                      id: "tanasinn_completion_scroll",
-                      orient: "vertical", // box-packing
-                      flex: 1,
-                      style: <>
-                        margin: 8px;
-                          //overflow-x: auto; 
-                          overflow-y: auto;
-                         // background: transparent;
-                        </>,
-                      childNodes: {
-                        tagName: "grid",
-                        id: "tanasinn_completion_root",
-                        style: <> 
-                          background: transparent;
-                          color: white;
-                          font-family: 'Lucida Console';
-                          font-weight: bold;
-                          font-size: 16px;
-                          text-shadow: 1px 2px 4px black;
-                          //overflow-x: auto; 
-                          //overflow-y: auto;
-                        </>,
-                      }
-                    }, // tree
-                  ],
-                }, // stack
-              },  // panel
-            ]
-          } // stack
+                },
+                {
+                  tagName: "scrollbox",
+                  id: "tanasinn_completion_scroll",
+                  orient: "vertical", // box-packing
+                  flex: 1,
+                  style: <>
+                    margin: 8px;
+                      //overflow-x: auto; 
+                      overflow-y: auto;
+                     // background: transparent;
+                    </>,
+                  childNodes: {
+                    tagName: "grid",
+                    id: "tanasinn_completion_root",
+                    style: <> 
+                      background: transparent;
+                      color: white;
+                      font-family: 'Lucida Console';
+                      font-weight: bold;
+                      font-size: 16px;
+                      text-shadow: 1px 2px 4px black;
+                      //overflow-x: auto; 
+                      //overflow-y: auto;
+                    </>,
+                  }
+                }, // tree
+              ],
+            }, // stack
+          },  // panel
         ] 
       });
     this._element = tanasinn_commandline_box;
@@ -316,7 +301,6 @@ Commandline.definition = {
     this.onclick.enabled = true;
     this.onchange.enabled = true;
     this.enableCommandline.enabled = true;
-    this.onmouseenter.enabled = true;
   },
   
   /** Uninstalls itself.
@@ -338,7 +322,6 @@ Commandline.definition = {
     this.onclick.enabled = false;
     this.onchange.enabled = false;
     this.enableCommandline.enabled = false;
-    this.onmouseenter.enabled = true;
     this._element.parentNode.removeChild(this._element);
   },
 
@@ -348,12 +331,15 @@ Commandline.definition = {
     this._statusbar.hidden = false;
     this._textbox.hidden = true;
     this._completion.hidden = true;
-    this._statusbar.value = message;
+    coUtils.Timer.setTimeout(function() {
+      this._statusbar.inputField.value = message;
+    }, 0, this);
   },
 
   "[subscribe('command/enable-commandline')]":
   function enableCommandline() 
   {
+    this._statusbar.inputField.value = "";
     this._statusbar.hidden = true;
     this._textbox.hidden = false;
     this._completion.hidden = false;
@@ -663,8 +649,10 @@ Commandline.definition = {
   "[listen('click', '#tanasinn_commandline_box', false)]":
   function onclick(event) 
   {
-    this._textbox.focus();
-    this._textbox.focus();
+    let session = this._broker;
+    //alert(event)
+    //session.notify("command/blur");
+    //session.notify("command/enable-commandline");
   },
 
   "[listen('change', '#tanasinn_commandline', true)]":

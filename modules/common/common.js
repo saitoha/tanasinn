@@ -372,8 +372,9 @@ coUtils.File = new function() {
             yield target_leaf;
           } else {
             let entries = self.getFilesRecursively(target_leaf, /\.js$/);
-            for (let entry in entries)
+            for (let entry in entries) {
               yield entry;
+            }
           }
         } catch (e) {
           coUtils.Debug.reportWarning(e);

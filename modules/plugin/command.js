@@ -56,8 +56,9 @@ CommandProvider.definition = {
       if (tophit.name.length == command_name.length) {
         return tophit;
       }
-      throw coUtils.Debug.Exception(
+      coUtils.Debug.reportWarning(
         _("Ambiguous command name detected: %s"), command_name);
+      return null;
     }
     return filtered_command.shift();
   },
@@ -75,8 +76,10 @@ CommandProvider.definition = {
     } else {
       let [, command_name, /* blank */] = match;
       let command = this._getCommand(command_name);
-      let text = source.substr(pattern.lastIndex);
-      command.complete(text, listener);
+      if (command) {
+        let text = source.substr(pattern.lastIndex);
+        command.complete(text, listener);
+      }
     }
   },
   
@@ -90,7 +93,7 @@ CommandProvider.definition = {
       session.notify(
         "command/report-status-message", 
         _("Fail to parse given commandline code."));
-      return null
+      return;
     }
     let [, command_name, /* blank */] = match;
     let command = this._getCommand(command_name);
@@ -100,19 +103,23 @@ CommandProvider.definition = {
         "command/report-status-message", 
         coUtils.Text.format(
           _("Command '%s' is not found."), command_name));
-      return null; // unknown command;
+      return; // unknown command;
     }
 
+    let session = this._broker;
     try {
       let text = source.substr(pattern.lastIndex);
-      return command.evaluate(text);
+      let result = command.evaluate(text);
+      if (result) {
+        session.notify(
+          "command/report-status-message", result.message);
+      }
     } catch (e) {
-      let session = this._broker;
       session.notify(
         "command/report-status-message", 
         coUtils.Text.format(
           _("Fail to evaluate given commandline code: %s"), e));
-      return null;
+      return;
     }
   },
 };
@@ -351,14 +358,51 @@ PersistCommand.definition = {
   get id()
     "persist",
 
-  "[command('persist'), _('Persist current settings.'), enabled]":
+  "[command('save', ['profile']), _('Persist current settings.'), enabled]":
   function persist(arguments_string)
   {
     let session = this._broker;
-    let settings = session.uniget("command/get-settings");
-    if (settings) {
-      session.notify("command/save-settings", settings);
+
+    let match = arguments_string.match(/^\s*([$_\-@a-zA-Z\.]*)\s*$/);
+    if (null === match) {
+      return {
+        success: false,
+        message: _("Failed to parse commandline argument."),
+      };
     }
+    let [, profile] = match;
+
+    let settings = session.uniget("command/get-settings");
+    if (!settings) {
+      return {
+        success: false,
+        message: _("Failed to gather settings information."),
+      };
+    }
+    session.notify("command/save-settings", {name: profile || undefined, data: settings});
+    return {
+      success: true,
+      message: _("Succeeded."),
+    };
+  },
+
+  "[command('load', ['profile']), _('Load a profile.'), enabled]":
+  function load(arguments_string)
+  {
+    let session = this._broker;
+
+    let match = arguments_string.match(/^\s*([$_\-@a-zA-Z\.]*)\s*$/);
+    if (null === match) {
+      return {
+        success: false,
+        message: _("Failed to parse commandline argument."),
+      };
+    }
+    let [, profile] = match;
+
+    session.notify("command/load-settings", profile || undefined);
+    session.notify("command/draw", true);
+    return null;
   },
 };
 
@@ -394,6 +438,61 @@ LocalizeCommand.definition = {
     coUtils.Localize.setDictionary(language, dict);
     } catch(e) {alert(e)}
   },
+};
+
+/**
+ * @class DeployCommands
+ */
+let DeployCommands = new Class().extends(Component);
+DeployCommands.definition = {
+
+  get id()
+    "deploy",
+
+  _impl: function _impl(arguments_string, is_enable) 
+  {
+    let session = this._broker;
+    let match = arguments_string.match(/^(\s*)([$_\-@a-zA-Z\.]+)(\s*)$/);
+    if (null === match) {
+      return {
+        success: false,
+        message: _("Failed to parse commandline argument."),
+      };
+    }
+    let [, space, name, next] = match;
+    let modules = session.notify("get/module-instances");
+    modules = modules.filter(function(module) module.id == name);
+    if (0 == modules.length) {
+      return {
+        success: false,
+        message: _("Cannot enabled the module specified by given argument."),
+      };
+    }
+    modules.forEach(function(module) {
+      try {
+        module.enabled = is_enable;
+      } catch(e) {
+        coUtils.Debug.reportError(e); 
+      }
+    });
+    return {
+      success: true,
+      message: _("Succeeded."),
+    };
+  },
+
+  "[command('disable', ['plugin/enabled']), _('Disable a plugin.'), enabled]":
+  function disable(arguments_string)
+  {
+    return this._impl(arguments_string, /* is_enable */ false);
+  },
+
+  "[command('enable', ['plugin/disabled']), _('Enable a plugin.'), enabled]":
+  function enable(arguments_string)
+  {
+    return this._impl(arguments_string, /* is_enable */ true);
+  },
+
 };
 
 
@@ -484,6 +583,7 @@ function main(desktop)
       new ColorCommands(session);
       new PersistCommand(session);
       new LocalizeCommand(session);
+      new DeployCommands(session);
     });
 }
 

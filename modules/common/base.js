@@ -844,8 +844,9 @@ CommandAttribute.definition = {
     for (key in attributes) {
       let attribute = attributes[key];
       let command_info = attribute["command"];
-      if (!command_info)
+      if (!command_info) {
         continue;
+      }
       let handler = this[key];
       let delegate = this[key] = handler.id ? 
         this[key]
@@ -881,7 +882,7 @@ CommandAttribute.definition = {
 
           evaluate: function evaluate() 
           {
-            handler.apply(self, arguments);
+            return handler.apply(self, arguments);
           },
         }, this);
 

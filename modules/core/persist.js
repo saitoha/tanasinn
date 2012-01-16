@@ -31,30 +31,29 @@ PersistManager.definition = {
   get id()
     "persist-manager",
 
-  "[persistable] profile_directory": "$Home/.tanasinn/profile",
-  "[persistable] default_filename": "persist.js",
-
   "[subscribe('command/load-settings'), enabled]":
   function load(name)
   {
     try {
-      let filename = this.default_filename;
-      let profile_path = <>{this.profile_directory}/{filename}</>.toString();
+      let broker = this._broker;
+      let filename = (name || broker.profile) + ".js";
+      let profile_path = <>{broker.profile_directory}/{filename}</>.toString();
       let content = coUtils.IO.readFromFile(profile_path, "utf-8");
       let data = eval(content);
-      let session = this._broker;
-      session.notify("command/before-load-persistable-data", data);
-      session.notify("command/load-persistable-data", data);
+      broker.notify("command/before-load-persistable-data", data);
+      broker.notify("command/load-persistable-data", data);
     } catch (e) {
       coUtils.Debug.reportWarning(e);
     }
   },
 
   "[subscribe('command/save-settings'), enabled]":
-  function save(data)
+  function save(info)
   {
-    let filename = this.default_filename;
-    let profile_path = <>{this.profile_directory}/{filename}</>.toString();
+    let broker = this._broker;
+    let {name, data} = info;
+    let filename = (name || broker.profile) + ".js";
+    let profile_path = <>{broker.profile_directory}/{filename}</>.toString();
     let serialized_data = data.toSource();
     coUtils.IO.writeToFile(profile_path, serialized_data);
   },
@@ -63,9 +62,9 @@ PersistManager.definition = {
   function get()
   {
     let data = {};
-    let session = this._broker;
-    session.notify("command/before-save-persistable-data", data);
-    session.notify("command/save-persistable-data", data);
+    let broker = this._broker;
+    broker.notify("command/before-save-persistable-data", data);
+    broker.notify("command/save-persistable-data", data);
     return data;
   },
 
