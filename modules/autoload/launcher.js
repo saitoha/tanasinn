@@ -612,13 +612,15 @@ SessionsCompletionDisplayDriver.definition = {
               childNodes: [
                 {
                   tagName: "box",
-                  childNodes: { text: completion_text },
+                  childNodes: { text: result.comments[i].command },
                 },
-                let (completion_text = result.comments[i].pid.toString())
-                let (match_position = completion_text.indexOf(search_string))
                 {
                   tagName: "box",
-                  childNodes: { text: completion_text },
+                  childNodes: { text: result.comments[i].ttyname },
+                },
+                {
+                  tagName: "box",
+                  childNodes: { text: result.comments[i].pid },
                 },
               ],
             },
@@ -1067,8 +1069,8 @@ Launcher.definition = {
         this._window_layer,
         this._textbox.value.replace(/^\s+|\s+$/, "")  // command
         );
-      terminal.style.left = <>{this.left = (this.left + Math.random() * 40 - 20) % 40 + 10}%</>;
-      terminal.style.top = <>{this.top = (this.top + Math.random() * 40 - 20) % 40 + 10}%</>;
+      terminal.style.left = <>{this.left = (this.left + Math.random() * 1000) % 140 + 20}px</>;
+      terminal.style.top = <>{this.top = (this.top + Math.random() * 1000) % 140 + 20}px</>;
     }, 0, this);
   },
 

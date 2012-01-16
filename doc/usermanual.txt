@@ -506,7 +506,7 @@ disable <plugin id>
 ----
 
 === To save/load session's settings.
-type it in the command-line input field.
+To persist the state of current session (font, color, screen size, ...etc), Type it in the command-line input field.
 
 ----
 save

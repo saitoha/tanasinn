@@ -354,6 +354,73 @@ HistoryCompleter.definition = {
 };
 
 /**
+ * @class CharsetCompleter
+ */
+let CharsetCompleter = new Class().extends(CompleterBase);
+CharsetCompleter.definition = {
+
+  get id()
+    "charset-completer",
+
+  get type()
+    "charset",
+
+  /*
+   * Search for a given string and notify a listener (either synchronously
+   * or asynchronously) of the result
+   *
+   * @param source - The string to search for
+   * @param listener - A listener to notify when the search is complete
+   */
+  startSearch: function startSearch(source, listener, option)
+  {
+    let match = source.match(/^(\s*)([$_\-@a-zA-Z\.]*)(\s?)/);
+    if (null === match) {
+      listener.doCompletion(null);
+      return -1;
+    }
+    let [, space, name, next] = match;
+    if (next) {
+      return space.length + name.length;
+    }
+    let session = this._broker;
+    let components = session.notify(<>get/{option}</>);
+    let lower_source = source.toLowerCase();
+    let candidates = [
+      {
+        key: component.charset, 
+        value: component.title
+      } for ([, component] in Iterator(components)) 
+        if (-1 != component.charset.toLowerCase().indexOf(lower_source))
+    ];
+    if (0 == candidates.length) {
+      listener.doCompletion(null);
+      return -1;
+    }
+    let autocomplete_result = {
+      type: "text",
+      query: source, 
+      labels: candidates.map(function(candidate) candidate.key),
+      comments: candidates.map(function(candidate) String(candidate.value)),
+      data: candidates.map(function(candidate) ({
+        name: candidate.key,
+        value: String(candidate.value),
+      })),
+    };
+    listener.doCompletion(autocomplete_result);
+    return 0;
+  },
+
+  /*
+   * Stop all searches that are in progress
+   */
+  stopSearch: function stopSearch() 
+  {
+  },
+
+};
+
+/**
  * @class PluginsCompleter
  */
 let PluginsCompleter = new Class().extends(CompleterBase);
@@ -1305,7 +1372,7 @@ LocalizeCompleter.definition = {
     let data = [
       {
         name: key,
-        value: dict[key] || " - ",
+        value: dict[key] || "",
       } for ([, key] in Iterator(this._keys))
     ].filter(function(pair) 
     {
@@ -1816,6 +1883,7 @@ function main(desktop)
       new ColorNumberCompleter(session);
       new LocalizeCompleter(session);
       new PluginsCompleter(session);
+      new CharsetCompleter(session);
 
       new ColorCompletionDisplayDriver(session);
       new ColorNumberCompletionDisplayDriver(session);

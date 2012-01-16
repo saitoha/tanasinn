@@ -632,6 +632,8 @@ SocketTeletypeService.definition = {
     this._controller = controller;
     this._external_driver = external_driver;
 
+    this.osc97.enabled = true;
+
     let session = this._broker;
     if (0 == session.command.indexOf("&")) {
       let request_id = session.command.substr(1);
@@ -676,6 +678,12 @@ SocketTeletypeService.definition = {
     session.notify("command/backup", context);
     let path = String(<>$Home/.tanasinn/persist/{session.request_id}.txt</>);
     coUtils.IO.writeToFile(path, context.toSource());
+  },
+
+  "[subscribe('sequence/osc/97')]":
+  function osc97(ttyname) 
+  {
+    this._ttyname = ttyname;
   },
 
   connect: function connect(control_port) 
@@ -786,7 +794,6 @@ SocketTeletypeService.definition = {
     context.close()
     let [control_port, pid, ttyname] = data.split(":");
     this._pid = Number(pid);
-    this._ttyname = ttyname;
     if (control_port) {
       this.connect(Number(control_port));
     } else {

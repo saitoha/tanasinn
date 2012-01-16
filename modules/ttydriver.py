@@ -463,11 +463,13 @@ if __name__ == "__main__":
     ## fork slave's process, and get tty name.
     #pid, ttyname = fork_app_process(master, slave, command, term)    
     pid, master = pty.fork()
+    ttyname_max_length = 1024
     if not pid:
-        print "\x1B]97;%s\x07" % os.ttyname(0)
+        sys.stdout.write("%%-%ds" % ttyname_max_length % os.ttyname(0))
+        sys.stdout.flush()
         os.environ["TERM"] = term 
         os.execlp("/bin/sh", "/bin/sh", "-c", "cd $HOME && exec %s" % command)
-    ttyname = ""
+    ttyname = os.read(master, ttyname_max_length).rstrip()
 
     # send control channel's port, pid, ttyname
     connection_socket.send("%s:%s:%s" % (control_port, pid, ttyname))

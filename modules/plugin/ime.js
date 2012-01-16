@@ -126,6 +126,8 @@ Ime.definition = {
 
     // Encodes the text message and send it to the tty device.
     let session = this._broker;
+    session.notify("command/report-status-message", value);
+    session.notify("command/report-overlay-message", value);
     session.notify("command/input-text", value);
   },
 

@@ -67,26 +67,26 @@ CommandProvider.definition = {
   function complete(completion_info) 
   {
     let {source, listener} = completion_info;
-    let pattern = /^\s*(\w+)(\s+)/y;
+    let pattern = /^\s*([0-9]*)(\w*)(\s*)/y;
     let match = pattern.exec(source);
-    if (null === match) {
-      let session = this._broker;
-      let completer = session.uniget("get/completer/command");
-      completer.startSearch(source, listener);
-    } else {
-      let [, command_name, /* blank */] = match;
+    let [, repeat, command_name, blank] = match;
+    if (blank) {
       let command = this._getCommand(command_name);
       if (command) {
         let text = source.substr(pattern.lastIndex);
         command.complete(text, listener);
       }
+    } else {
+      let session = this._broker;
+      let completer = session.uniget("get/completer/command");
+      completer.startSearch(command_name, listener);
     }
   },
   
   "[subscribe('command/eval-commandline')]":
   function evaluate(source) 
   {
-    let pattern = /^\s*(\w+)(\s*)/y;
+    let pattern = /^\s*([0-9]*)(\w+)(\s*)/y;
     let match = pattern.exec(source);
     if (null === match) {
       let session = this._broker;
@@ -95,7 +95,7 @@ CommandProvider.definition = {
         _("Fail to parse given commandline code."));
       return;
     }
-    let [, command_name, /* blank */] = match;
+    let [, repeat, command_name, /* blank */] = match;
     let command = this._getCommand(command_name);
     if (!command) {
       let session = this._broker;
@@ -109,10 +109,13 @@ CommandProvider.definition = {
     let session = this._broker;
     try {
       let text = source.substr(pattern.lastIndex);
-      let result = command.evaluate(text);
-      if (result) {
-        session.notify(
-          "command/report-status-message", result.message);
+      repeat = Number(repeat) || 1;
+      for (let i = 0; i < repeat; ++i) {
+        let result = command.evaluate(text);
+        if (result) {
+          session.notify(
+            "command/report-status-message", result.message);
+        }
       }
     } catch (e) {
       session.notify(
@@ -419,16 +422,15 @@ LocalizeCommand.definition = {
   "[command('localize', ['localize']), _('Edit localization resource.'), enabled]":
   function evaluate(arguments_string)
   {
-    try {
     let session = this._broker;
     let desktop = session.parent;
     let pattern = /^\s*([a-zA-Z-]+)\s+"((?:[^"])*)"\s+"(.+)"\s*$/;
     let match = arguments_string.match(pattern);
     if (!match) {
-      session.notify(
-        "command/report-status-message", 
-        _("Fail to parse given commandline code."));
-      return;
+      return {
+        success: true,
+        message: _("Fail to parse given commandline code."),
+      };
     }
     let [, language, key, value] = match;
     key = key.replace(/\\(?!\\)/g, "\\");
@@ -436,7 +438,10 @@ LocalizeCommand.definition = {
     let dict = coUtils.Localize.getDictionary(language);
     dict[key] = value;
     coUtils.Localize.setDictionary(language, dict);
-    } catch(e) {alert(e)}
+    return {
+      success: true,
+      message: _("Succeeded."),
+    };
   },
 };
 
@@ -491,6 +496,62 @@ DeployCommands.definition = {
   function enable(arguments_string)
   {
     return this._impl(arguments_string, /* is_enable */ true);
+  },
+
+};
+
+
+/**
+ * @class CharsetCommands
+ */
+let CharsetCommands = new Class().extends(Component);
+CharsetCommands.definition = {
+
+  get id()
+    "charset",
+
+  _impl: function _impl(arguments_string, is_encoder) 
+  {
+    let session = this._broker;
+    let match = arguments_string.match(/^(\s*)([$_\-@a-zA-Z\.]+)(\s*)$/);
+    if (null === match) {
+      return {
+        success: false,
+        message: _("Failed to parse commandline argument."),
+      };
+    }
+    let [, space, name, next] = match;
+    let modules = session.notify("get/module-instances");
+    modules = modules.filter(function(module) module.id == name);
+    if (0 == modules.length) {
+      return {
+        success: false,
+        message: _("Cannot enabled the module specified by given argument."),
+      };
+    }
+    modules.forEach(function(module) {
+      try {
+        module.enabled = is_enable;
+      } catch(e) {
+        coUtils.Debug.reportError(e); 
+      }
+    });
+    return {
+      success: true,
+      message: _("Succeeded."),
+    };
+  },
+
+  "[command('encoder', ['charset/encoders']), _('Select encoder component.'), enabled]":
+  function disable(arguments_string)
+  {
+    return this._impl(arguments_string, "encoders");
+  },
+
+  "[command('decoder', ['charset/decoders']), _('Select a decoder component.'), enabled]":
+  function enable(arguments_string)
+  {
+    return this._impl(arguments_string, "decoders");
   },
 
 };
@@ -584,6 +645,7 @@ function main(desktop)
       new PersistCommand(session);
       new LocalizeCommand(session);
       new DeployCommands(session);
+      new CharsetCommands(session);
     });
 }
 

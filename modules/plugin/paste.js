@@ -33,9 +33,9 @@ Paste.definition = {
 
   get info()
     <plugin>
-        <name>{_("Title Bar")}</name>
+        <name>{_("Paste")}</name>
         <description>{
-          _("Shows titlebar at the top of window.")
+          _("Paste a string from clipboard.")
         }</description>
         <version>0.1</version>
     </plugin>,

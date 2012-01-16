@@ -131,6 +131,7 @@ Cursor.definition = {
     this.onImeModeOff.enabled = false;
     this.onScrollSessionStarted.enabled = false;
     this.onScrollSessionClosed.enabled = false;
+    this._canvas.parentNode.removeChild(this._canvas);
   },
 
   "[subscribe('command/backup')]": 
