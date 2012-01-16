@@ -144,9 +144,9 @@ DOMEventManager.definition = {
  * @brief Module entry point
  * @param {Process} process The Process object.
  */
-function main(process) 
+function main(broker) 
 {
-  process.subscribe(
+  broker.subscribe(
     "@initialized/broker",
     function(broker)
     {

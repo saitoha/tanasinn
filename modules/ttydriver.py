@@ -143,8 +143,8 @@ if not hasattr(os, "uname"):
 system = os.uname()
 
 def trace(message):
-    if system[0] == 'Darwin':
-        os.system("say -v vict '%s'" % message)
+    #if system[0] == 'Darwin':
+    #    os.system("say -v vict '%s'" % message)
     #if system[0] == 'Linux':
     #    os.system("espeak '%s'" % message)
     os.system("echo '%s' >> ~/.tanasinn/log/tty.log &" % message);
