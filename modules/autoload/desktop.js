@@ -69,6 +69,18 @@ Desktop.definition = {
     this._root_element.parentNode.removeChild(this._root_element);
   },
   
+  "[subscribe('event/enabled'), enabled]":
+  function onEnabled()
+  {
+    this.notify("event/enabled");
+  },
+
+  "[subscribe('event/disabled'), enabled]":
+  function onDisabled()
+  {
+    this.notify("event/disabled");
+  },
+
   "[subscribe('event/shutdown')]":
   function onShutdown()
   {

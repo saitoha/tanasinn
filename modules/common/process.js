@@ -159,7 +159,14 @@ with (scope) {
   
     /** Creates a session object and starts it. 
      */
-    start: function start(parent, command, term, size, search_path, callback, desktop) 
+    start: function start(
+       parent, 
+       command, 
+       term, 
+       size, 
+       search_path, 
+       callback, 
+       desktop) 
     {
       let document = parent.ownerDocument;
       let box = document.createElement("box");

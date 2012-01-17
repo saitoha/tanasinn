@@ -90,28 +90,43 @@ let loader = {
 
 function startup(data, reason) 
 {
-  AddonManager.getAddonByID(data.id, function(addon) 
-  {
-    try {
-      let process_file = addon.getResourceURI("modules/common/process.js").spec;
-      let initialize_file = addon.getResourceURI("modules/initialize.js").spec;
-      Services.scriptloader.loadSubScript(process_file);
-      loader.initializeWithFileURI(initialize_file);
-    } catch(e) {
-      let message = <>{e.fileName}({e.lineNumber}):{e.toString()}</>.toString();
-      Components.reportError(message);
-    }
-  });
+  let tanasinn_class = Components
+    .classes["@zuse.jp/tanasinn/process;1"];
+  if (tanasinn_class) {
+    let process = Components.classes['@zuse.jp/tanasinn/process;1']
+      .getService(Components.interfaces.nsISupports)
+      .wrappedJSObject;
+    process.notify("event/enabled");
+  } else {
+    AddonManager.getAddonByID(data.id, function(addon) 
+    {
+      try {
+        let process_file = addon.getResourceURI("modules/common/process.js").spec;
+        let initialize_file = addon.getResourceURI("modules/initialize.js").spec;
+        Services.scriptloader.loadSubScript(process_file);
+  //Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
+  //.getService(Components.interfaces.nsIPromptService)
+  //.alert(null, "", "initialize_file");
+        loader.initializeWithFileURI(initialize_file);
+      } catch(e) {
+        let message = <>{e.fileName}({e.lineNumber}):{e.toString()}</>.toString();
+        Components.reportError(message);
+      }
+    });
+  }
   return true;
 }
 
 function shutdown(data, reason) 
 {
   loader.uninitialize();
-  Components.classes['@zuse.jp/tanasinn/process;1']
+  let process = Components.classes['@zuse.jp/tanasinn/process;1']
     .getService(Components.interfaces.nsISupports)
-    .wrappedJSObject
-    .notify("event/shutdown");
+    .wrappedJSObject;
+  process.notify("event/disabled");
+//  process.notify("event/shutdown");
+//  process.clear();
+
 //  var prompts = Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
 //                    .getService(Components.interfaces.nsIPromptService);
 //  if (reason !== APP_SHUTDOWN) unload(); 

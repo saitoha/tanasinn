@@ -815,38 +815,50 @@ Launcher.definition = {
     this._popup = tanasinn_launcher_completion_popup;
     this._completion_root = tanasinn_launcher_completion_root;
 
-    let (handler = let (self = this) function() self.onkeydown.apply(self, arguments)) {
-      window.addEventListener("keydown", handler, /* capture */ true);
-      broker.subscribe(
-        "event/shutdown", 
-        function() window.removeEventListener("keyup", handler, true));
-    }
-
-    let (handler = let (self = this) function() self.onkeyup.apply(self, arguments)) {
-      window.addEventListener("keyup", handler, /* capture */ true);
-      broker.subscribe(
-        "event/shutdown", 
-        function() window.removeEventListener("keyup", handler, true));
-    }
-
     broker.notify(<>initialized/{this.id}</>, this);
-    this.onkeypress.enabled = true;
-    this.onfocus.enabled = true;
-    this.onblur.enabled = true;
-    this.oninput.enabled = true;
+    this.onEnabled();
     } catch(e) {alert(e)}
   },
 
   "[subscribe('event/shutdown'), enabled]":
   function shutdown()
   {
-    this.notify("event/shutdown");
+    this.onDisabled();
+    this._element.removeChild(this._element);
+  },
+  
+  "[subscribe('event/enabled'), enabled]":
+  function onEnabled()
+  {
+    this.onkeypress.enabled = true;
+    this.onfocus.enabled = true;
+    this.onblur.enabled = true;
+    this.oninput.enabled = true;
+    let broker = this._broker;
+    let keydown_handler = let (self = this) 
+      function() self.onkeydown.apply(self, arguments);
+    broker.window.addEventListener("keydown", keydown_handler, /* capture */ true);
+    broker.subscribe(
+      "event/disabled", 
+      function() broker.window.removeEventListener("keydown", key_handler, true));
+    let keyup_handler = let (self = this) 
+      function() self.onkeyup.apply(self, arguments);
+    broker.window.addEventListener("keyup", keyup_handler, /* capture */ true);
+    broker.subscribe(
+      "event/disabled", 
+      function() broker.window.removeEventListener("keyup", keyup_handler, true));
+  },
+
+  "[subscribe('event/disabled'), enabled]":
+  function onDisabled()
+  {
+    this._textbox.blur();
     this.onkeypress.enabled = false;
     this.onfocus.enabled = false;
     this.onblur.enabled = false;
     this.oninput.enabled = false;
-    this._element.removeChild(this._element);
   },
+
 
   select: function select(index)
   {

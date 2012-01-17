@@ -125,12 +125,18 @@ Session.definition = {
     }
   },
 
+  "[subscribe('event/disabled'), enabled]":
+  function onDisabled() 
+  {
+    this.notify("command/detach", this);
+  },
+
   /** Create terminal UI and start tty session. */ 
   initializeWithRequest: function initializeWithRequest(request) 
   {
     this._request_id = coUtils.Uuid.generate().toString();
 
-    let process = this._broker;
+    let desktop = this._broker;
     this._observers = {};
     this.subscribeGlobalEvent(
       "quit-application", 
@@ -144,7 +150,7 @@ Session.definition = {
     this._command = request.command;
     this._term = request.term;
 
-    process.notify("initialized/broker", this);
+    desktop.notify("initialized/broker", this);
     this.notify("command/load-settings", this.profile);
     this.notify("event/session-started", this);
     //coUtils.Timer.setTimeout(function() {
