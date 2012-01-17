@@ -462,10 +462,12 @@ if __name__ == "__main__":
 
     ## fork slave's process, and get tty name.
     #pid, ttyname = fork_app_process(master, slave, command, term)    
+    ttyname_max_length = 20 #1024
     pid, master = pty.fork()
-    ttyname_max_length = 1024
     if not pid:
         sys.stdout.write("%%-%ds" % ttyname_max_length % os.ttyname(0))
+        sys.stdout.flush()
+        sys.stdout.write("\x1bc")
         sys.stdout.flush()
         os.environ["TERM"] = term 
         os.execlp("/bin/sh", "/bin/sh", "-c", "cd $HOME && exec %s" % command)

@@ -26,6 +26,12 @@
         <em:minVersion>5.0</em:minVersion>
         <em:maxVersion>12.0a1</em:maxVersion>
       </Description>
+      <Description>
+        <!-- SeaMonkey -->
+        <em:id>{92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}</em:id> 
+        <em:minVersion>2.1</em:minVersion>
+        <em:maxVersion>2.9a1</em:maxVersion>
+      </Description>
   <!-- XUL Application -->
       <!--Description>
         <em:id>@TANASINN_XPI_ID@</em:id> 

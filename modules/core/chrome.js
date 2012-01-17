@@ -173,7 +173,7 @@ OuterChrome.definition = {
         = session.uniget("command/construct-chrome", this.template);
     this._element = box_element;
 
-    if (!coUtils.Runtime.app_name.match(/^(Firefox|Thunderbird)$/)) {
+    if (!coUtils.Runtime.app_name.match(/^(Firefox|Thunderbird|SeaMonkey)$/)) {
       this._element.firstChild.style.borderRadius = "0px";
       this._element.firstChild.style.margin = "0px";
     }

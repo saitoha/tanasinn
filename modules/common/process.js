@@ -170,7 +170,7 @@ with (scope) {
     {
       let document = parent.ownerDocument;
       let box = document.createElement("box");
-      if (coUtils.Runtime.app_name.match(/^(Firefox|Thunderbird)$/)) {
+      if (coUtils.Runtime.app_name.match(/^(Firefox|Thunderbird|SeaMonkey)$/)) {
         box.style.position = "fixed";
         box.style.top = "0px";
         box.style.left = "0px";

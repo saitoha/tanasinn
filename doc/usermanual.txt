@@ -114,105 +114,105 @@ link:./usermanual.html[English/英語]
 #elif __JP__
 ."http:/#/w3m.sourceforge.net/index.en.html[BB]"(アスキーアートのデモプログラム)を走らせたところ。
 #endif
-image::images/bb2.png[width=640]
+image::images/bb2.png[width=780]
 
 #if __EN__
 .Displaying color chart with http:/#/code.google.com/p/myminios/source/browse/trunk/colortable16.sh?r=10[colortable.sh] and http:/#/code.google.com/p/joeldotfiles/source/browse/trunk/256colors2.pl[256color2.pl].
 #elif __JP__
 .http:/#/code.google.com/p/myminios/source/browse/trunk/colortable16.sh?r=10[colortable.sh] and http:/#/code.google.com/p/joeldotfiles/source/browse/trunk/256colors2.pl[256color2.pl]でカラーチャートを表示させたところ。
 #endif
-image::images/color2.png[width=640]
+image::images/color2.png[width=780]
 
 #if __EN__
 .Typing Japanese with IME (here is http:/#/aquaskk.sourceforge.jp/[AquaSKK]).
 #elif __JP__
 .IMEで日本語を打ってみたところ (http:/#/aquaskk.sourceforge.jp/[AquaSKK]使用)。
 #endif
-image::images/ime2.png[width=640]
+image::images/ime2.png[width=780]
 
 #if __EN__
 .Scrollbar interface emerges only when it is needed (like OSX Lion).
 #elif __JP__
 .スクロールバーインターフェースは必要なときにあらわれます(OSX Lionのように)。
 #endif
-image::images/scroll2.png[width=640]
+image::images/scroll2.png[width=780]
 
 #if __EN__
 .Overlay indicator dislays various messages. it emerges when font size / window size / titlebar message is chenged.
 #elif __JP__
 .オーバーレイインジケータがフォントサイズ、ウィンドウサイズ、タイトルバーメッセージが変更されたときなどに表示されます。
 #endif
-image::images/overlay2.png[width=640]
+image::images/overlay2.png[width=780]
 
 #if __EN__
 .Commandline interface inspired by http:/#/vimperator.org/vimperator[Vimperator] / https:/#/github.com/mooz/keysnail/wiki/[Keysnail] (here is fgcolor command).
 #elif __JP__
 .http:/#/vimperator.org/vimperator[Vimperator] や https:/#/github.com/mooz/keysnail/wiki/[Keysnail] にインスパイアされたコマンドラインインターフェース。
 #endif
-image::images/completion2.png[width=640]
+image::images/completion2.png[width=780]
 
 #if __EN__
 .Choosing font-family.
 #elif __JP__
 .フォントファミリを選択しています。
 #endif
-image::images/fontfamily2.png[width=640]
+image::images/fontfamily2.png[width=780]
 
 #if __EN__
 .Selecting font-size.
 #elif __JP__
 .フォントサイズを選択しています。
 #endif
-image::images/fontsize2.png[width=640]
+image::images/fontsize2.png[width=780]
 
 #if __EN__
 .Launcher interface inspired by http:/#/www.blacktree.com/[QuckSilver] / https:/#/addons.mozilla.org/ja/firefox/addon/mozilla-labs-ubiquity/[Ubiquity].
 #elif __JP__
 .http:/#/www.blacktree.com/[QuckSilver] や https:/#/addons.mozilla.org/ja/firefox/addon/mozilla-labs-ubiquity/[Ubiquity] にインスパイアされたランチャーインターフェース。
 #endif
-image::images/launcher2.png[width=640]
+image::images/launcher2.png[width=780]
 
 #if __EN__
 .Reconnecting a detached session. It is all OK if your browser will crash or restart unexpectedly.
 #elif __JP__
 .デタッチ済みのセッションに再接続しているところ。ブラウザがクラッシュしたり再起動しても安心です。
 #endif
-image::images/session2.png[width=640]
+image::images/session2.png[width=780]
 
 #if __EN__
 .running "http:/#/www.tkl.iis.u-tokyo.ac.jp/~toyoda/index_e.html[sl]" (a joke software).
 #elif __JP__
 ."http:/#/www.tkl.iis.u-tokyo.ac.jp/~toyoda/index_e.html[sl]" (ジョークウェア)を走らせたところ。
 #endif
-image::images/sl2.png[width=640]
+image::images/sl2.png[width=780]
 
 #if __EN__
 .Self-Debugging and tracing terminal I/O sequence in real-time.
 #elif __JP__
 .セルフデバッギング。ターミナルI/Oシーケンスをリアルタイムにトレースしています。
 #endif
-image::images/debug2.png[width=640]
+image::images/debug2.png[width=780]
 
 #if __EN__
 .Browser-in-browser. running http:/#/w3m.sourceforge.net/index.en.html[w3m] (applied private patch) with inline images. How crazy!!!
 #elif __JP__
 .ブラウザの中でブラウザ。プライベートパッチを当てたhttp:/#/w3m.sourceforge.net/index.en.html[w3m]でインラインイメージを表示させました。ここまでくるとちょっと意味不明ですね。
 #endif
-image::images/w3m2.png[width=640]
+image::images/w3m2.png[width=780]
 
 #if __EN__
 .Mailer-in-mailer. running http:/#/www.gohome.org/wl/index.html[Wonderlust] on emacs on Thunderbird.
 #elif __JP__
 .メーラーの中でメーラー。http:/#/www.gohome.org/wl/index.html[Wonderlust]をemacs上で動かしているものをThunderbird上で動かしています。
 #endif
-image::images/wl3.png[width=640]
+image::images/wl3.png[width=780]
 
 #if __EN__
 .Developping tanasinn with tanasinn at out of jail. it runs as a standalone XUL application.
 #elif __JP__
 .tanasinnをtanasinnで開発中。これはスタンドアロンXULアプリケーションとして動作させているところです。
 #endif
-image::images/xulapp.png[width=640]
+image::images/xulapp.png[width=780]
 
 
 #if __EN__
@@ -313,7 +313,7 @@ ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/
 git clone http:/#/zuse.jp/tanasinn.git
 cd tanasinn
 ./configure
-$(cygpath $COMSPEC) /c mklink /D "$(cygpath -w "$VIMRUNTIME/tanasinn")" "$(cygpath -w "$PWD")";
+$(cygpath $COMSPEC) /c mklink /D "$(cygpath -w "$RUNTIME/tanasinn")" "$(cygpath -w "$PWD")";
 ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/
 ----
 
@@ -324,7 +324,7 @@ To make Windows native symbolic link, you may need to install http:/#/www.micros
 git clone http:/#/zuse.jp/tanasinn.git
 cd tanasinn
 ./configure
-$(cygpath $COMSPEC) /c linkd.exe "$(cygpath -w "$VIMRUNTIME/tanasinn")" "$(cygpath -w "$PWD")";
+$(cygpath $COMSPEC) /c linkd.exe "$(cygpath -w "$RUNTIME/tanasinn")" "$(cygpath -w "$PWD")";
 ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/
 ----
 
@@ -348,7 +348,7 @@ ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/
 git clone http:/#/zuse.jp/tanasinn.git
 cd tanasinn
 ./configure
-$(cygpath $COMSPEC) /c mklink /D "$(cygpath -w "$VIMRUNTIME/tanasinn")" "$(cygpath -w "$PWD")";
+$(cygpath $COMSPEC) /c mklink /D "$(cygpath -w "$RUNTIME/tanasinn")" "$(cygpath -w "$PWD")";
 ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/
 ----
 
@@ -359,7 +359,7 @@ Windowsネイティブなシンボリックリンクを作成するために、h
 git clone http:/#/zuse.jp/tanasinn.git
 cd tanasinn
 ./configure
-$(cygpath $COMSPEC) /c linkd.exe "$(cygpath -w "$VIMRUNTIME/tanasinn")" "$(cygpath -w "$PWD")";
+$(cygpath $COMSPEC) /c linkd.exe "$(cygpath -w "$RUNTIME/tanasinn")" "$(cygpath -w "$PWD")";
 ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/
 ----
 
@@ -515,7 +515,7 @@ saveprofile
 
 Then current session's configuration settings will be persisted to 
 "$HOME/.tanasinn/profile/default.js".
-If you would like to save it as other file, type as follows:
+If you would like to save it as other file name, type as follows:
 
 ----
 saveprofile <profile name>
@@ -523,7 +523,7 @@ saveprofile <profile name>
 
 Therefore the settings will be persisted to "$HOME/.tanasinn/profile/<profile name>.js".
 
-And to load it, type as follows:
+And to load it again, type as follows:
 
 ----
 loadprofile <profile name>
@@ -551,47 +551,38 @@ kill
 
 == Tips
 
-=== 現在のセッションの設定を永続化するには
-コマンドラインから以下のようにタイプしてみてください。
-
-----
-save
-----
-現在のセッションの設定が "$HOME/.tanasinn/persist/default.js" へ書き出されるでしょう。
-
 
 === モジュールの有効・無効を切り替えるには
 コマンドラインから以下のようにタイプしてみてください。
 
 ----
-enable <plugin id>
+enable <プラグインID>
 ----
 
 ----
-disable <plugin id>
+disable <プラグインID>
 ----
 
-=== To save/load session's settings.
-type it in the command-line input field.
+=== セッションの設定を永続化・ロードするには
+コマンドラインから以下のようにタイプしてみてください。
 
 ----
 saveprofile
 ----
 
-Then current session's configuration settings will be persisted to 
-"$HOME/.tanasinn/profile/default.js".
-If you would like to save it as other file, type as follows:
+こうすれば現在のセッションの設定が "$HOME/.tanasinn/persist/default.js" へ書き出されるでしょう。
+もし別の名前で書き出したければ:
 
 ----
-saveprofile <profile name>
+saveprofile <プロファイル名>
 ----
 
-Therefore the settings will be persisted to "$HOME/.tanasinn/profile/<profile name>.js".
+これで設定が"$HOME/.tanasinn/profile/<プロファイル名>.js"に書き出されます。
 
-And to load it, type as follows:
+この設定を再び読み込むには以下のようにします:
 
 ----
-loadprofile <profile name>
+loadprofile <プロファイル名>
 ----
 
 
