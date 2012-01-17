@@ -208,9 +208,9 @@ image::images/w3m2.png[width=780]
 image::images/wl3.png[width=780]
 
 #if __EN__
-.Developping tanasinn with tanasinn at out of jail. it runs as a standalone XUL application.
+.Meta-developing tanasinn with tanasinn at out of jail. it runs as a standalone XUL application.
 #elif __JP__
-.tanasinnをtanasinnで開発中。これはスタンドアロンXULアプリケーションとして動作させているところです。
+.tanasinnをtanasinnでメタ開発中。これはスタンドアロンXULアプリケーションとして動作させているところです。
 #endif
 image::images/xulapp.png[width=780]
 
