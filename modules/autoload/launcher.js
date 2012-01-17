@@ -451,7 +451,7 @@ SessionsCompleter.definition = {
       data: data,
     };
     listener.doCompletion(autocomplete_result);
-    } catch (e) {alert(e)}
+    } catch (e) {alert(e+e.fileName + ":"+e.lineNumber)}
     return 0;
   },
 

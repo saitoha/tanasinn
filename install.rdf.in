@@ -12,6 +12,7 @@
     <em:unpack>true</em:unpack>
     <em:bootstrap>true</em:bootstrap>
     <!--em:updateKey>MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDDTc3Y8e8/VxD+aeSbYzbH4guPHbG2d+d2R8ktCIZtoQgKdhcpjP1bTAZdRlrTlmT7TfjParkTDPRc3UB6avgdmL3dk7tGznuAZBLyXIoENcIDB0quBsbv+6vK73DBuMvF47NwVWw9uDy1amSD8Jdbpscn90MtIuiane7jh+kIZwIDAQAB</em:updateKey-->
+
     <em:targetApplication>
       <Description>
         <!-- Firefox -->
@@ -19,7 +20,13 @@
         <em:minVersion>4.0</em:minVersion>
         <em:maxVersion>12.0a1</em:maxVersion>
       </Description>
-      <!-- XUL Application -->
+      <Description>
+        <!-- Thunderbird -->
+        <em:id>{3550f703-e582-4d05-9a08-453d09bdfdc6}</em:id> 
+        <em:minVersion>5.0</em:minVersion>
+        <em:maxVersion>12.0a1</em:maxVersion>
+      </Description>
+  <!-- XUL Application -->
       <!--Description>
         <em:id>@TANASINN_XPI_ID@</em:id> 
         <em:minVersion>0.1</em:minVersion>

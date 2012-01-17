@@ -58,7 +58,17 @@ coUtils.getWindow = function getWindow()
   let windowMediator = Components
     .classes["@mozilla.org/appshell/window-mediator;1"]
     .getService(Components.interfaces.nsIWindowMediator);
-  let result = windowMediator.getMostRecentWindow("navigator:browser") || window;
+  let result;
+  let app_info = Components
+    .classes["@mozilla.org/xre/app-info;1"]
+    .getService(Components.interfaces.nsIXULAppInfo);
+  if ("Thunderbird" == app_info.name) {
+    result = windowMediator
+      .getMostRecentWindow("mail:3pane") || window;
+  } else {
+    result = windowMediator
+      .getMostRecentWindow("navigator:browser") || window;
+  }
   // cache result
   return (coUtils.getWindow = function() {
     return result;

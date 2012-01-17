@@ -11,7 +11,7 @@ link:./usermanual.html[English/英語]
 
 == Overview
 
-    Here is a terminal emurator that runs on Firefox.
+    Here is a terminal emurator that runs on Firefox/Thunderbird.
     It enables you to access flexible, powerful functionality 
     provided by operating systems, such as commandline shells, or curses-based 
     applications.
@@ -20,7 +20,7 @@ link:./usermanual.html[English/英語]
 
 == 概要
 
-    "tanasinn terminal emurator" は Firefox上で動作する端末エミュレータです。
+    "tanasinn terminal emurator" は Firefox/Thunderbird上で動作する端末エミュレータです。
     コマンドラインシェルやcursesベースのアプリケーション等、オペレーティングシステムが提供する
     柔軟でパワフルな機能群にブラウザ上のUIからアクセスすることができます。
 
@@ -245,7 +245,7 @@ image::images/xulapp.png[width=640]
 
 #if __EN__
 == Requirements
-    - Firefox 4.0+.
+    - Firefox 4.0+ / Thunderbird 5.0+.
     - Python for POSIX (Probably 2.5+, Mac, Linux, or cygwin version)
       Python for Win32, ActivePython, etc... are not well.
       because this software depends on many posix functions 
@@ -254,7 +254,7 @@ image::images/xulapp.png[width=640]
       If you are running Windows, you need to install cygwin at C:\cygwin.
 #elif __JP__
 == 動作要件
-    - Firefox 4.0+。
+    - Firefox 4.0+ / Thunderbird 5.0+。
     - POSIX用にビルドされたPython (バージョンはたぶん 2.5+, Mac、 Linux、 または cygwin用のもの)。
       Python for Win32 や ActivePython 等はforkや仮想端末をサポートしないと思うのでダメしょう。
     - POSIX環境。 
@@ -269,7 +269,7 @@ image::images/xulapp.png[width=640]
 
 #if __EN__
 
-=== Building Firefox extension:
+=== Building Firefox/Thunderbird extension:
 .Mac, Linux, Cygwin
 ----
 git clone http:/#/zuse.jp/tanasinn.git
@@ -281,7 +281,7 @@ make
     "tanasinn@zuse.jp.xpi" is to be generated. enjoy it!
 #elif __JP__
 
-=== Firefox拡張としてビルドする:
+=== Firefox/Thunderbird拡張としてビルドする:
 .Mac, Linux, Cygwin
 ----
 git clone http:/#/zuse.jp/tanasinn.git

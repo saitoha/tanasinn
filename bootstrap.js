@@ -34,23 +34,24 @@ let loader = {
   {
     this.file = file;
     Services.ww.registerNotification(this);
-
-    // add functionality to existing windows
-    let browser_windows = Services.wm.getEnumerator("navigator:browser");
-    while (browser_windows.hasMoreElements()) { // enumerate existing windows.
-      // only run the "start" immediately if the browser is completely loaded
-      let window = browser_windows.getNext();
-      if ("complete" == window.document.readyState) {
-        this.dispatchWindowEvent(window);
-      } else {
-        // Wait for the window to finish loading before running the callback
-        // Listen for one load event before checking the window type
-        window.addEventListener(
-          "load", 
-          let (self = this) function() self.dispatchWindowEvent(window), 
-          false);
-      }
-    } // while
+    ["navigator:browser", "mail:3pane"].forEach(function(window_type) {
+      // add functionality to existing windows
+      let browser_windows = Services.wm.getEnumerator(window_type);
+      while (browser_windows.hasMoreElements()) { // enumerate existing windows.
+        // only run the "start" immediately if the browser is completely loaded
+        let window = browser_windows.getNext();
+        if ("complete" == window.document.readyState) {
+          this.dispatchWindowEvent(window);
+        } else {
+          // Wait for the window to finish loading before running the callback
+          // Listen for one load event before checking the window type
+          window.addEventListener(
+            "load", 
+            let (self = this) function() self.dispatchWindowEvent(window), 
+            false);
+        }
+      } // while
+    }, this);
   },
 
   uninitialize: function uninitialize()
