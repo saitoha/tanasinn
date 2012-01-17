@@ -822,6 +822,7 @@ Launcher.definition = {
     this.onfocus.enabled = true;
     this.onblur.enabled = true;
     this.oninput.enabled = true;
+    this.startSession.enabled = true;
     let broker = this._broker;
     let keydown_handler = let (self = this) 
       function() self.onkeydown.apply(self, arguments);
@@ -845,6 +846,7 @@ Launcher.definition = {
     this.onfocus.enabled = false;
     this.onblur.enabled = false;
     this.oninput.enabled = false;
+    this.startSession.enabled = false;
   },
 
 
@@ -1035,11 +1037,12 @@ Launcher.definition = {
   function show()
   {
     let box = this._element;
-    let textbox = this._textbox;
-    box.hidden = false;
-    textbox.focus();
     box.parentNode.appendChild(box);
-    textbox.focus();
+    box.hidden = false;
+    coUtils.Timer.setTimeout(function() {
+      this._textbox.focus();
+      this._textbox.focus();
+    }, 0, this);
   },
 
   "[subscribe('command/hide-launcher'), enabled]":
@@ -1055,14 +1058,20 @@ Launcher.definition = {
 
   enter: function enter() 
   {
+    let command = this._textbox.value;
+    this.startSession(command);
+  },
+
+  "[subscribe('command/start-session')]":
+  function startSession(command) 
+  {
     let desktop = this._broker; 
     let document = this._element.ownerDocument;
     this.hide();
     coUtils.Timer.setTimeout(function() {
       let terminal =  desktop.start(
         this._window_layer,
-        this._textbox.value.replace(/^\s+|\s+$/, "")  // command
-        );
+        command.replace(/^\s+|\s+$/g, ""));  // command
       terminal.style.left = <>{this.left = (this.left + Math.random() * 1000) % 140 + 20}px</>;
       terminal.style.top = <>{this.top = (this.top + Math.random() * 1000) % 140 + 20}px</>;
     }, 0, this);

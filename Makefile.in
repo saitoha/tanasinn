@@ -89,12 +89,6 @@ lint:
 			cd $$(dirname $(JS)) && $(JS) -C -v $$version -o strict -o werror -f $$file || exit; \
 		done; \
 	done;
-	##new js shell
-	#@for file in $$(find $$PWD | egrep "\.js$$|\.jsm$$"); do \
-	#	if [ @host_os@ = cygwin ]; then file=$$(cygpath -wa $$file); fi; \
-	#	echo "var a = function(){" | cat - $$file | sed -e '$$a\}' | $(JS) -f - || exit; \
-	#done;
-	#@echo "$(MSTART) Done.$(MEND)\n" 
 
 clean:
 	@echo "$(MSTART) Cleaning $(ESTART)$(CD)$(EEND)....$(MEND)" 
@@ -115,7 +109,7 @@ dev:
 
 
 install-vimperator:
-	case @host_os@ in \
+	@case @host_os@ in \
 		cygwin*) \
 			cmd /c mklink /D $$(cygpath -w $$(cygpath $$USERPROFILE)/vimperator/tanasinn) $$(cygpath -w $(PWD)); \
 			ln -f $(PWD)/modules/tanasinn-vimp.js ~/vimperator/plugin/ \
@@ -127,7 +121,7 @@ install-vimperator:
 	esac
 
 uninstall-vimperator:
-	case @host_os@ in \
+	@case @host_os@ in \
 		cygwin*) \
 			rm "$$(cygpath $$USERPROFILE)/vimperator/plugin/tanasinn-vimp.js" \
 			;; \

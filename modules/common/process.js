@@ -154,7 +154,11 @@ with (scope) {
 
     getDesktopFromWindow: function getDesktopFromWindow(window)
     {
+      alert(1)
+      try {
       return this.uniget("get/desktop-from-window", window);
+      } catch(e) {return alert(e)}
+      alert(2)
     },
   
     /** Creates a session object and starts it. 

@@ -52,22 +52,23 @@ function getTanasinnProcess()
   return process;
 }
 
-commands.add(['tan[asinn]'], 
+commands.add(['tanasinnlaunch'], 
+  "Show tanasinn's Launcher.", 
+  function (args) 
+  { 
+    let process = getTanasinnProcess();
+    let desktop = process.getDesktopFromWindow(window);
+    desktop.post("command/show-launcher");
+  }
+);
+
+commands.add(['tanasinncommand'], 
   "Run a terminal emurator on this browser.", 
   function (args) 
   { 
     let process = getTanasinnProcess();
-    process.notify("event/new-window-detected", window);
-    window.setTimeout(function() {
-      let desktop = process.getDesktopFromWindow(window);
-      desktop.post("command/show-launcher");
-      //desktop.start(
-      //  desktop.root_element.querySelector("#tanasinn_window_layer"),
-      //  args.string,  // command
-      //  null, // TERM
-      //  null, // size
-      //  ["modules/core", "modules/plugin"])
-    }, 0);
+    let desktop = process.getDesktopFromWindow(window);
+    desktop.post("command/start-session", args.string);
   },
   { 
     argCount: "?",
@@ -78,12 +79,6 @@ commands.add(['tan[asinn]'],
 );
 
 getTanasinnProcess().notify("event/new-window-detected", window);
-
-mappings.addUserMap([modes.NORMAL], ["!"],
-  'Run commands in tanasinn',
-   function () { commandline.open('', 'tanasinn ', modes.EX); }
-);
-
 
 } ();
 
