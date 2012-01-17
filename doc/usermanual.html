@@ -852,7 +852,7 @@ asciidoc.install(2);
 <div class="sectionbody">
 <div class="literalblock">
 <div class="content">
-<pre><tt>Here is a terminal emurator that runs on Firefox/Thunderbird.
+<pre><tt>Here is a terminal emurator that runs on Firefox/Thunderbird/SeaMonkey.
 It enables you to access flexible, powerful functionality
 provided by operating systems, such as commandline shells, or curses-based
 applications.</tt></pre>
@@ -866,7 +866,7 @@ applications.</tt></pre>
 <div class="ulist"><ul>
 <li>
 <p>
-Developping version (0.1.2): <a href="http://zuse.jp/tanasinn/downloads/versions/0.1.2/tanasinn@zuse.jp.xpi">Download</a>
+Developping version (0.1.2r2): <a href="http://zuse.jp/tanasinn/downloads/versions/0.1.2r2/tanasinn@zuse.jp.xpi">Download</a>
 </p>
 </li>
 <li>
@@ -1150,7 +1150,7 @@ Posix enviroinment.
 <h2 id="_installing">Installing</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_building_firefox_thunderbird_extension">Building Firefox/Thunderbird extension:</h3>
+<h3 id="_building_firefox_thunderbird_seamonkey_extension">Building Firefox/Thunderbird/SeaMonkey extension:</h3>
 <div class="listingblock">
 <div class="title">Mac, Linux, Cygwin</div>
 <div class="content">
@@ -1181,7 +1181,7 @@ ln -s $PWD $RUNTIME/tanasinn
 ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/</tt></pre>
 </div></div>
 <div class="listingblock">
-<div class="title">Cygwin + Windows Vista/7</div>
+<div class="title">Windows Vista/7 + Cygwin</div>
 <div class="content">
 <pre><tt>git clone http://zuse.jp/tanasinn.git
 cd tanasinn
@@ -1189,7 +1189,7 @@ cd tanasinn
 $(cygpath $COMSPEC) /c mklink /D "$(cygpath -w "$RUNTIME/tanasinn")" "$(cygpath -w "$PWD")";
 ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/</tt></pre>
 </div></div>
-<div class="paragraph"><div class="title">Cygwin + Windows XP</div><p>To make Windows native symbolic link, you may need to install <a href="http://www.microsoft.com/download/en/details.aspx?DisplayLang=en%2cen&amp;id=17657">Windows Server 2003 Resource Kit Tools</a>.</p></div>
+<div class="paragraph"><div class="title">Windows XP + Cygwin</div><p>To make Windows native symbolic link, you may need to install <a href="http://www.microsoft.com/download/en/details.aspx?DisplayLang=en%2cen&amp;id=17657">Windows Server 2003 Resource Kit Tools</a>.</p></div>
 <div class="listingblock">
 <div class="content">
 <pre><tt>git clone http://zuse.jp/tanasinn.git
@@ -1378,7 +1378,7 @@ or toweet me (<a href="http://twitter.com/feel_tanasinn">English</a> / <a href="
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2012-01-17 18:47:03 JST
+Last updated 2012-01-17 21:51:17 JST
 </div>
 </div>
 </body>

@@ -852,7 +852,7 @@ asciidoc.install(2);
 <div class="sectionbody">
 <div class="literalblock">
 <div class="content">
-<pre><tt>"tanasinn terminal emurator" は Firefox/Thunderbird上で動作する端末エミュレータです。
+<pre><tt>"tanasinn terminal emurator" は Firefox/Thunderbird/SeaMonkey上で動作する端末エミュレータです。
 コマンドラインシェルやcursesベースのアプリケーション等、オペレーティングシステムが提供する
 柔軟でパワフルな機能群にブラウザ上のUIからアクセスすることができます。</tt></pre>
 </div></div>
@@ -865,7 +865,7 @@ asciidoc.install(2);
 <div class="ulist"><ul>
 <li>
 <p>
-開発版 (0.1.2): <a href="http://zuse.jp/tanasinn/downloads/versions/0.1.2/tanasinn@zuse.jp.xpi">ダウンロード</a>.
+開発版 (0.1.2r2): <a href="http://zuse.jp/tanasinn/downloads/versions/0.1.2r2/tanasinn@zuse.jp.xpi">ダウンロード</a>.
 </p>
 </li>
 <li>
@@ -1120,7 +1120,7 @@ cursesベースのアプリーションとの連携強化。
 <div class="ulist"><ul>
 <li>
 <p>
-Firefox 4.0+ / Thunderbird 5.0+。
+Firefox 4.0+ / Thunderbird 5.0+ (ver 0.1.2+) / SeaMonkey 2.1+ (ver 0.1.3+).
 </p>
 </li>
 <li>
@@ -1142,7 +1142,7 @@ POSIX環境。
 <h2 id="_インストール">インストール</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_firefox_thunderbird拡張としてビルドする">Firefox/Thunderbird拡張としてビルドする:</h3>
+<h3 id="_firefox_thunderbird_seamonkey拡張としてビルドする">Firefox/Thunderbird/SeaMonkey拡張としてビルドする:</h3>
 <div class="listingblock">
 <div class="title">Mac, Linux, Cygwin</div>
 <div class="content">
@@ -1158,10 +1158,10 @@ make</tt></pre>
 </div></div>
 </div>
 <div class="sect2">
-<h3 id="_vimperatorプラグインとしてインストール">Vimperatorプラグインとしてインストール:</h3>
+<h3 id="_vimperator_muttatorプラグインとしてインストール">Vimperator/Muttatorプラグインとしてインストール:</h3>
 <div class="literalblock">
 <div class="content">
-<pre><tt>Vimperatorのランタイムディレクトリ以下にリンクを作成します。</tt></pre>
+<pre><tt>Vimperator/Muttatorのランタイムディレクトリ以下にリンクを作成します。</tt></pre>
 </div></div>
 <div class="listingblock">
 <div class="title">Mac, Linux</div>
@@ -1173,7 +1173,7 @@ ln -s $PWD $RUNTIME/tanasinn
 ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/</tt></pre>
 </div></div>
 <div class="listingblock">
-<div class="title">Cygwin + Windows Vista/7</div>
+<div class="title">Windows Vista/7 + Cygwin</div>
 <div class="content">
 <pre><tt>git clone http://zuse.jp/tanasinn.git
 cd tanasinn
@@ -1181,7 +1181,7 @@ cd tanasinn
 $(cygpath $COMSPEC) /c mklink /D "$(cygpath -w "$RUNTIME/tanasinn")" "$(cygpath -w "$PWD")";
 ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/</tt></pre>
 </div></div>
-<div class="paragraph"><div class="title">Cygwin + Windows XP</div><p>Windowsネイティブなシンボリックリンクを作成するために、<a href="http://www.microsoft.com/download/en/details.aspx?DisplayLang=en%2cen&amp;id=17657">Windows Server 2003 Resource Kit Tools</a> をインストールする必要があるかもしれません。</p></div>
+<div class="paragraph"><div class="title">Windows XP + Cygwin</div><p>Windowsネイティブなシンボリックリンクを作成するために、<a href="http://www.microsoft.com/download/en/details.aspx?DisplayLang=en%2cen&amp;id=17657">Windows Server 2003 Resource Kit Tools</a> をインストールする必要があるかもしれません。</p></div>
 <div class="listingblock">
 <div class="content">
 <pre><tt>git clone http://zuse.jp/tanasinn.git
@@ -1366,7 +1366,7 @@ twitter: <a href="http://twitter.com/kefir_">日本語</a> / <a href="http://twi
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2012-01-17 18:47:02 JST
+Last updated 2012-01-17 21:51:16 JST
 </div>
 </div>
 </body>
