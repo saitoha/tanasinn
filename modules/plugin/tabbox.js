@@ -303,12 +303,6 @@ BottomPanel.definition = {
         id: "tanasinn_tab",
         name: id,
         label: name,
-        listener: {
-          type: "select",
-          handler: function(event) {
-            alert(event)
-          },
-        },
         style: <>
           -moz-appearance: none;
           font: menu;
@@ -361,13 +355,11 @@ BottomPanel.definition = {
     new_panel.appendChild(content);
     session.subscribe("panel-selected/" + panel_object.id, function(selected_panel) 
     {
-      try {
       let template = panel_object.template;
       template.parentNode = new_panel;
       new_panel.removeChild(new_panel.firstChild);
       let content = session.uniget("command/construct-chrome", panel_object.template)["#root"];
       new_panel.appendChild(content);
-      } catch (e) {alert(e)}
     }, this);
   },
 

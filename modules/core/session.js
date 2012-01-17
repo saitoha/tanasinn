@@ -191,7 +191,6 @@ function main(desktop)
     function(request) 
     {
       desktop.unsubscribe(id);
-  //    alert(id)
       new Session(desktop).initializeWithRequest(request);
     }, this, id);
 }

@@ -200,42 +200,11 @@ Renderer.definition = {
       font_size: this.font_size,
       force_monospace_rendering: this.force_manospace_rendering,
     };
-    try {
     let session = this._broker;
     let path = String(<>$Home/.tanasinn/persist/{session.request_id}.png</>);
     let file = coUtils.File.getFileLeafFromAbstractPath(path);
     let source_canvas = this._canvas;
-    let canvas = session.uniget("command/construct-chrome", {tagName: "html:canvas"})["#root"];
-    canvas.style.background = "black";
-    canvas.width = 120;
-    canvas.height = 80;
-    let context = canvas.getContext("2d");
-    context.fillStyle = "rgba(0, 0, 0, 0.7)";
-    context.fillRect(0, 0, 120, 80);
-    context.drawImage(source_canvas, 0, 0, 120, 80);
-
-    // create a data url from the canvas and then create URIs of the source and targets.
-    let io = Components
-      .classes["@mozilla.org/network/io-service;1"]
-      .getService(Components.interfaces.nsIIOService);
-    let source = io.newURI(canvas.toDataURL("image/png", ""), "UTF8", null);
-    let target = io.newFileURI(file)
-
-    // prepare to save the canvas data  
-    let persist = Components
-      .classes["@mozilla.org/embedding/browser/nsWebBrowserPersist;1"]
-      .createInstance(Components.interfaces.nsIWebBrowserPersist);
-    
-    persist.persistFlags = Components
-      .interfaces.nsIWebBrowserPersist
-      .PERSIST_FLAGS_REPLACE_EXISTING_FILES;
-    persist.persistFlags |= Components
-      .interfaces.nsIWebBrowserPersist
-      .PERSIST_FLAGS_AUTODETECT_APPLY_CONVERSION;
-
-    // save the canvas data to the file  
-    persist.saveURI(source, null, null, null, null, file);
-    } catch(e) {alert(e)}
+    coUtils.IO.saveCanvas(source_canvas, file);
   },
 
   "[subscribe('@command/restore')]": 

@@ -650,7 +650,6 @@ Commandline.definition = {
   function onclick(event) 
   {
     let session = this._broker;
-    //alert(event)
     //session.notify("command/blur");
     //session.notify("command/enable-commandline");
   },

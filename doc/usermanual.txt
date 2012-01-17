@@ -31,7 +31,7 @@ link:./usermanual.html[English/英語]
 === Download/License
     This software is distributed under Mozilla Public License 1.1 (MPL1.1) .
 
-- Ver. 0.1.2: http:/#/zuse.jp/tanasinn/downloads/versions/0.1.2/tanasinn@zuse.jp.xpi[Download]
+- Developping version (0.1.2): http:/#/zuse.jp/tanasinn/downloads/versions/0.1.2/tanasinn@zuse.jp.xpi[Download]
 - Unstable, Snapshot version (it may so bugful!): http:/#/zuse.jp/tanasinn/tanasinn-current.xpi[Download]
 - git repo: http:/#/zuse.jp/tanasinn.git
 - gitweb: http:/#/zuse.jp/git/?p=tanasinn.git
@@ -41,7 +41,7 @@ link:./usermanual.html[English/英語]
 === ダウンロード/ライセンス
     Mozilla Public License 1.1 (MPL1.1) で配布しています。 
 
-- Ver 0.1.2: http:/#/zuse.jp/tanasinn/downloads/versions/0.1.2/tanasinn@zuse.jp.xpi[ダウンロード].
+- 開発版 (0.1.2): http:/#/zuse.jp/tanasinn/downloads/versions/0.1.2/tanasinn@zuse.jp.xpi[ダウンロード].
 - スナップショット版: http:/#/zuse.jp/tanasinn/tanasinn-current.xpi[ダウンロード]
 - git repo: http:/#/zuse.jp/tanasinn.git
 - gitweb: http:/#/zuse.jp/git/?p=tanasinn.git
@@ -246,7 +246,7 @@ image::images/xulapp.png[width=780]
 
 #if __EN__
 == Requirements
-    - Firefox 4.0+ / Thunderbird 5.0+.
+    - Firefox 4.0+ / Thunderbird 5.0+ (ver 0.1.2+) / SeaMonkey 2.1+ (ver 0.1.3+).
     - Python for POSIX (Probably 2.5+, Mac, Linux, or cygwin version)
       Python for Win32, ActivePython, etc... are not well.
       because this software depends on many posix functions 

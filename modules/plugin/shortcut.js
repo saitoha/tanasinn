@@ -64,12 +64,10 @@ Shortcut.definition = {
         this.view = {
           rowCount : shortcuts.length,
           getCellText : function(row, column) {
-            try {
             let value = shortcuts[row][column.id];
             if ("expressions" == column.id) {
               return value.toSource();
             }
-            } catch (e) {alert(e)}
             return value;
           },
           setCellText : function(row, column, value) {
@@ -148,14 +146,12 @@ Shortcut.definition = {
   function onSelected(name) 
   {
     coUtils.Timer.setTimeout(function(){
-    try {
-    let panel = this._panel;
-    let session = this._broker;
-    if (panel.firstChild) {
-      panel.removeChild(panel.firstChild);
-    }
-    session.post("command/construct-chrome", this.template);
-    } catch (e) {alert(e)}
+      let panel = this._panel;
+      let session = this._broker;
+      if (panel.firstChild) {
+        panel.removeChild(panel.firstChild);
+      }
+      session.post("command/construct-chrome", this.template);
     }, 10, this)
   },
 

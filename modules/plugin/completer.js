@@ -188,7 +188,6 @@ JsCompleter.definition = {
   startSearch: function startSearch(source, listener)
   {
     let session = this._broker;
-    try{
     let autocomplete_result = null; 
     let pattern = /(.*?)(?:(\.|\[|\['|\[")(\w*))?$/;
     let match = pattern.exec(source);
@@ -285,7 +284,6 @@ JsCompleter.definition = {
       };
     }
     listener.doCompletion(autocomplete_result);
-    } catch(e) {alert("###" + e + " " + e.lineNumber)}
     return 0;
   },
 
@@ -1334,7 +1332,6 @@ LocalizeCompleter.definition = {
    */
   startSearch: function startSearch(source, listener, option)
   {
-    try {
     let session = this._broker;
     let pattern = /^\s*([a-zA-Z-]*)(\s*)("?)((?:[^"])*)("?)(\s*)(.*)/;
     let match = source.match(pattern);
@@ -1407,8 +1404,6 @@ LocalizeCompleter.definition = {
     };
     listener.doCompletion(autocomplete_result);
     return 0;
-    } catch(e) {alert(e)}
-    return 0;
   },
 
   /*
@@ -1460,7 +1455,6 @@ ColorNumberCompletionDisplayDriver.definition = {
 
   drive: function drive(grid, result, current_index) 
   {
-    try {
     let document = grid.ownerDocument;
     let columns = grid.appendChild(document.createElement("colmns"))
     columns.appendChild(document.createElement("column"));
@@ -1531,7 +1525,6 @@ ColorNumberCompletionDisplayDriver.definition = {
           }))
         });
     }, this); 
-    } catch(e) {alert(e)}
   },
 
 };
@@ -1559,7 +1552,6 @@ ColorCompletionDisplayDriver.definition = {
 
   drive: function drive(grid, result, current_index) 
   {
-    try {
     let document = grid.ownerDocument;
     let columns = grid.appendChild(document.createElement("colmns"))
     columns.appendChild(document.createElement("column"));
@@ -1634,7 +1626,6 @@ ColorCompletionDisplayDriver.definition = {
           }))
         });
     }, this); 
-    } catch(e) {alert(e)}
   },
 
 };
@@ -1872,7 +1863,6 @@ function main(desktop)
     "@initialized/broker", 
     function(session) 
     {
-      try {
       new JsCompleter(session);
       new HistoryCompleter(session);
       new OptionCompleter(session);
@@ -1890,7 +1880,6 @@ function main(desktop)
       new FontsizeCompletionDisplayDriver(session);
       new FontFamilyCompletionDisplayDriver(session);
       new TextCompletionDisplayDriver(session);
-      } catch (e) {alert(e)}
     });
 }
 

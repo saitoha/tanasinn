@@ -284,6 +284,42 @@ coUtils.IO = {
   	}); // writeToFile
   },
 
+  saveCanvas: function saveCanvas(source_canvas, file) 
+  {
+    const NS_XHTML = "http://www.w3.org/1999/xhtml";
+    let canvas = source_canvas.ownerDocument.createElementNS(NS_XHTML, "canvas");
+    canvas.style.background = "black";
+    canvas.width = 120;
+    canvas.height = 80;
+  
+    let context = canvas.getContext("2d");
+    context.fillStyle = "rgba(0, 0, 0, 0.7)";
+    context.fillRect(0, 0, 120, 80);
+    context.drawImage(source_canvas, 0, 0, 120, 80);
+  
+    // create a data url from the canvas and then create URIs of the source and targets.
+    let io = Components
+      .classes["@mozilla.org/network/io-service;1"]
+      .getService(Components.interfaces.nsIIOService);
+    let source = io.newURI(canvas.toDataURL("image/png", ""), "UTF8", null);
+    let target = io.newFileURI(file)
+  
+    // prepare to save the canvas data  
+    let persist = Components
+      .classes["@mozilla.org/embedding/browser/nsWebBrowserPersist;1"]
+      .createInstance(Components.interfaces.nsIWebBrowserPersist);
+    
+    persist.persistFlags = Components
+      .interfaces.nsIWebBrowserPersist
+      .PERSIST_FLAGS_REPLACE_EXISTING_FILES;
+    persist.persistFlags |= Components
+      .interfaces.nsIWebBrowserPersist
+      .PERSIST_FLAGS_AUTODETECT_APPLY_CONVERSION;
+  
+    // save the canvas data to the file  
+    persist.saveURI(source, null, null, null, null, file);
+  },
+
 };
 
 coUtils.File = new function() {

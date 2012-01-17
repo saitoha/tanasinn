@@ -588,7 +588,6 @@ EnableCommand.definition = {
   "[command('enable', ['modules']), _('enable a plugin.'), enabled]":
   function evaluate(arguments_string)
   {
-    try {
     let session = this._broker;
     let modules = session.notify("get/module-instances");
     /*
@@ -602,7 +601,6 @@ EnableCommand.definition = {
       return;
     }
     let [, language, key, value] = match;
-    } catch(e) {alert(e)}
   },
 };
 */
@@ -621,7 +619,6 @@ ShortcutCommand.definition = {
   "[command('shortcut', ['shortcut']), _('Edit shortcut settings.'), enabled]":
   function evaluate(arguments_string)
   {
-    try {
     let session = this._broker;
     let desktop = session.parent;
     let pattern = /^\s*([a-zA-Z-]+)\s+"((?:[^"])*)"\s+"(.+)"\s*$/;
@@ -638,7 +635,6 @@ ShortcutCommand.definition = {
     let dict = coUtils.Localize.getDictionary(language);
     dict[key] = value;
     coUtils.Localize.setDictionary(language, dict);
-    } catch(e) {alert(e)}
   },
 };
 */

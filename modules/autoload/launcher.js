@@ -82,7 +82,6 @@ function generateEntries(paths)
       }
     } catch (e) {
       coUtils.Debug.reportError(e);
-      //alert(e) + "[" + path + "]"
     }
   }
 }
@@ -129,10 +128,8 @@ ProgramCompleter.definition = {
    */
   startSearch: function startSearch(source, listener)
   {
-    try {
     let lower_source = source.toLowerCase();
     let search_path;
-    //  alert(search_path)
     if ("WINNT" == coUtils.Runtime.os) {
       search_path = [
         "/bin", 
@@ -151,7 +148,6 @@ ProgramCompleter.definition = {
     } else {
       search_path = this._getSearchPath();
     }
-//    alert(search_path.join("\n"))
     let files = [file for (file in generateEntries(search_path))];
     let data = files.map(function(file) {
       let path = file.path;
@@ -184,8 +180,6 @@ ProgramCompleter.definition = {
       data: data,
     };
     listener.doCompletion(autocomplete_result);
-
-    } catch (e) {alert(e+e.lineNumber)}
     return 0;
   },
 
@@ -416,7 +410,6 @@ SessionsCompleter.definition = {
           coUtils.Sessions.remove(request_id);
         }
       } catch (e) {
-        alert(e + e.lineNumber)
         coUtils.Debug.reportError(e);
       }
     }
@@ -432,8 +425,6 @@ SessionsCompleter.definition = {
    */
   startSearch: function startSearch(source, listener)
   {
-    try {
-
     let candidates = [candidate for (candidate in this._generateAvailableSession())];
     let lower_source = source.toLowerCase();
     let data = candidates.filter(function(data) {
@@ -451,7 +442,6 @@ SessionsCompleter.definition = {
       data: data,
     };
     listener.doCompletion(autocomplete_result);
-    } catch (e) {alert(e+e.fileName + ":"+e.lineNumber)}
     return 0;
   },
 
@@ -694,7 +684,6 @@ Launcher.definition = {
   "[subscribe('event/desktop-started'), enabled]":
   function onLoad(desktop)
   {
-    try {
     let window = desktop.window;
     let broker = this._broker;
     let document = window.document;
@@ -817,7 +806,6 @@ Launcher.definition = {
 
     broker.notify(<>initialized/{this.id}</>, this);
     this.onEnabled();
-    } catch(e) {alert(e)}
   },
 
   "[subscribe('event/shutdown'), enabled]":
@@ -898,7 +886,7 @@ Launcher.definition = {
           }
         }
       } catch (e) { 
-       alert(e)
+       coUtils.Debug.reportError(e)
       }
     }
     this._index = index;
@@ -907,7 +895,6 @@ Launcher.definition = {
 
   doCompletion: function doCompletion(result) 
   {
-    try {
     this._result = result;
     delete this._timer;
     let completion_root = this._completion_root;
@@ -927,7 +914,6 @@ Launcher.definition = {
           type);
       }
     }
-    } catch (e) {alert(e+"/"+e.lineNumber)}
   },
 
   invalidate: function invalidate(result) 
@@ -965,15 +951,11 @@ Launcher.definition = {
   down: function down()
   {
     let index = Math.min(this.currentIndex + 1, this.rowCount - 1);
-    try {
     if (index >= 0) {
       this.select(index);
     }
     //this.invalidate();
     this.fill();
-    } catch (e) {
-      alert(e + e.lineNumber);
-    }
   },
 
   up: function up()
@@ -1095,7 +1077,6 @@ Launcher.definition = {
   "[listen('keypress', '#tanasinn_launcher_textbox')]":
   function onkeypress(event) 
   { // nothrow
-    try {
     let code = event.keyCode || event.which;
     /*
     this._broker.notify(
@@ -1205,7 +1186,6 @@ Launcher.definition = {
     } else if (0x0d == code && !is_char) {
       this.enter();
     } 
-    } catch(e) {alert(e)}
   },
 
 
