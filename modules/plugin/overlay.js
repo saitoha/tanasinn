@@ -93,21 +93,24 @@ OverlayIndicator.definition = {
         crop: "end",
         id: "tanasinn_overlay_indicator_content",
         style: <> 
-          background: -moz-linear-gradient(top, #777, #000);
-          color: white;
-          font-size: 30px;
-          padding: 0.3em; 
-          border-radius: 0.5em; 
-          border: solid 8px white;
+          background: {this.background};
+          color: {this.color};
+          font-size: {this.fontSize};
+          padding: {this.padding}; 
+          border-radius: {this.borderRadius}; 
+          border: {this.border};
         </>,
       },
     }),
 
-  "[persistable] duration": 500,
-  "[persistable] color": "white",
+  "[persistable] fadeout_duration": 500,
   "[persistable] opacity": 0.80,
-  "[persistable] visual_bell": true,
-  "[persistable] sound_bell": true,
+  "[persistable, watchable] color": "white",
+  "[persistable, watchable] fontSize": "30px",
+  "[persistable, watchable] padding": "0.3em",
+  "[persistable, watchable] borderRadius": "0.5em",
+  "[persistable, watchable] border": "solid 8px white",
+  "[persistable, watchable] background": "-moz-linear-gradient(top, #777, #000)",
 
   _element: null,
   
@@ -118,7 +121,8 @@ OverlayIndicator.definition = {
     this._decoder = decoder;
     this.enabled = this.enabled_when_startup;
   },
- 
+
+
   /** installs itself. 
    *  @param {Session} session A session object.
    */
@@ -133,6 +137,7 @@ OverlayIndicator.definition = {
     this.onScreenSizeChanged.enabled = true;
     this.onFontSizeChanged.enabled = true;
     this.onCommandReceived.enabled = true;
+    this.onStyleChanged.enabled = true;
   },
 
   /** Uninstalls itself.
@@ -148,6 +153,7 @@ OverlayIndicator.definition = {
     this.onScreenSizeChanged.enabled = false;
     this.onFontSizeChanged.enabled = false;
     this.onCommandReceived.enabled = false;
+    this.onStyleChanged.enabled = false;
   },
 
   "[subscribe('command/report-overlay-message')]":
@@ -155,6 +161,21 @@ OverlayIndicator.definition = {
   {
     this.print(message);
     this.show(2000);
+  },
+
+  "[subscribe('variable-changed/' + this.id + '.{background | color | fontSize | padding | borderRadius | border}')]":
+  function onStyleChanged(chrome, decoder) 
+  {
+    if (this._content) {
+      this._content.style.cssText = <> 
+        background: {this.background};
+        color: {this.color};
+        font-size: {this.fontSize};
+        padding: {this.padding}; 
+        border-radius: {this.borderRadius}; 
+        border: {this.border};
+      </>;
+    }
   },
 
   show: function show(timeout) 
@@ -176,7 +197,7 @@ OverlayIndicator.definition = {
   {
     this._enabled = false;
     let style = this._element.style;
-    style.MozTransitionDuration = this.duration + "ms";
+    style.MozTransitionDuration = this.fadeout_duration + "ms";
     style.opacity = 0.0; 
   },
 

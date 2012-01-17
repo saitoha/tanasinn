@@ -159,7 +159,7 @@ Session.definition = {
   {
     this.removeGlobalEvent("quit-application");
     this.notify("event/session-stopping", this);
-    if ("Firefox" != coUtils.Runtime.app_name) {
+    if (!coUtils.Runtime.app_name.match(/^(Firefox|Thunderbird)$/)) {
       this.window.close(); // close window
       // exit application
       let application = Components

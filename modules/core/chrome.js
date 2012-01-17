@@ -173,7 +173,7 @@ OuterChrome.definition = {
         = session.uniget("command/construct-chrome", this.template);
     this._element = box_element;
 
-    if ("Firefox" != coUtils.Runtime.app_name) {
+    if (!coUtils.Runtime.app_name.match(/^(Firefox|Thunderbird)$/)) {
       this._element.firstChild.style.borderRadius = "0px";
       this._element.firstChild.style.margin = "0px";
     }
@@ -222,7 +222,7 @@ OuterChrome.definition = {
   "[subscribe('command/set-opacity'), enabled]": 
   function setOpacity(opacity, duration) 
   {
-    let target = this._element.querySelector("#box_element");
+    let target = this._element;
     if (target.style.opacity <= opacity) {
       duration = 0; 
     }
@@ -263,7 +263,7 @@ Chrome.definition = {
     }),
 
   "[persistable] margin": 8,
-  "[persistable] inactive_opacity": 0.20,
+  "[persistable] inactive_opacity": 0.50,
 
   _element: null,
 

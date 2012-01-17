@@ -24,7 +24,7 @@ usermanual-ja.html: usermanual.txt Makefile.in
 	then \
 		$(RM) $@ && cat $< \
 		| $(CC) -E -D__JP__ - \
-		| sed -e 's/#\/#\//\/\//g' \
+		| sed -e 's:/#/://:g' \
 		| sed -e 's/^#.*//' \
 		| $(ASCIIDOC) $(ASCIIDOCFLAGS) - > $@; \
 	fi

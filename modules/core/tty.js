@@ -322,8 +322,8 @@ IOManager.definition = {
       coUtils.Debug.reportMessage(
         _("Connected to ttydriver. port: %d"), 
         serv.port);
-      let ostream = transport.openOutputStream(0, 1024 * 8, 1);
-      let istream = transport.openInputStream(0, 1024 * 8, 1);
+      let ostream = transport.openOutputStream(0, 1024 * 1024, 1);
+      let istream = transport.openInputStream(0, 1024 * 1024, 1);
       coUtils.Debug.reportMessage(_("Started to observe incoming data."));
 
       // handle given stream as binary stream (null characters are allowed).
@@ -797,7 +797,7 @@ SocketTeletypeService.definition = {
     if (control_port) {
       this.connect(Number(control_port));
     } else {
-      coUtils.Debug.reportError(_("Fail to connect to ttydriver."));
+      coUtils.Debug.reportError(_("Failed to connect to ttydriver."));
     }
   },
 

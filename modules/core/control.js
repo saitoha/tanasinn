@@ -34,71 +34,71 @@ Control.definition = {
 
   "[persistable] answerback_message": "tanasinn\r",
 
-//  /** Null.
-//   */
-//  "[sequence('0x00')]":
-//  function NUL() 
-//  {
-//  },
-//  
-//  /** Start of heading.
-//   */
-//  "[sequence('0x01')]":
-//  function SOH() 
-//  {
-//    coUtils.Debug.reportWarning(
-//      "%s sequence [%s] was ignored.",
-//      arguments.callee.name, [n for each (n in arguments)]);
-//  },
-//  
-//  /** Start of text.
-//   */
-//  "[sequence('0x02')]":
-//  function STX()  
-//  {
-//    coUtils.Debug.reportWarning(
-//      "%s sequence [%s] was ignored.",
-//      arguments.callee.name, [n for each (n in arguments)]);
-//  },
-// 
-//  /** End of text.
-//   */
-//  "[sequence('0x03')]":
-//  function ETX() 
-//  {
-//    coUtils.Debug.reportWarning(
-//      "%s sequence [%s] was ignored.",
-//      arguments.callee.name, [n for each (n in arguments)]);
-//  },
-//
-//  /** Start of transmission.
-//   */
-//  "[sequence('0x04')]":
-//  function EOT() 
-//  {
-//    coUtils.Debug.reportWarning(
-//      "%s sequence [%s] was ignored.",
-//      arguments.callee.name, [n for each (n in arguments)]);
-//  },
-//  
-//  /** Enquire.
-//   */
-//  "[sequence('0x05')]":
-//  function ENQ() 
-//  {
-//    let session = this._broker;
-//    session.notify("command/send-to-tty", this.answerback_message);
-//  },
-//  
-//  /** Acknowledge.
-//   */
-//  "[sequence('0x06')]":
-//  function ACK() 
-//  {
-//    coUtils.Debug.reportWarning(
-//      "%s sequence [%s] was ignored.",
-//      arguments.callee.name, [n for each (n in arguments)]);
-//  },
+  /** Null.
+   */
+  "[sequence('0x00')]":
+  function NUL() 
+  {
+  },
+  
+  /** Start of heading.
+   */
+  "[sequence('0x01')]":
+  function SOH() 
+  {
+    coUtils.Debug.reportWarning(
+      "%s sequence [%s] was ignored.",
+      arguments.callee.name, [n for each (n in arguments)]);
+  },
+  
+  /** Start of text.
+   */
+  "[sequence('0x02')]":
+  function STX()  
+  {
+    coUtils.Debug.reportWarning(
+      "%s sequence [%s] was ignored.",
+      arguments.callee.name, [n for each (n in arguments)]);
+  },
+ 
+  /** End of text.
+   */
+  "[sequence('0x03')]":
+  function ETX() 
+  {
+    coUtils.Debug.reportWarning(
+      "%s sequence [%s] was ignored.",
+      arguments.callee.name, [n for each (n in arguments)]);
+  },
+
+  /** Start of transmission.
+   */
+  "[sequence('0x04')]":
+  function EOT() 
+  {
+    coUtils.Debug.reportWarning(
+      "%s sequence [%s] was ignored.",
+      arguments.callee.name, [n for each (n in arguments)]);
+  },
+  
+  /** Enquire.
+   */
+  "[sequence('0x05')]":
+  function ENQ() 
+  {
+    let session = this._broker;
+    session.notify("command/send-to-tty", this.answerback_message);
+  },
+  
+  /** Acknowledge.
+   */
+  "[sequence('0x06')]":
+  function ACK() 
+  {
+    coUtils.Debug.reportWarning(
+      "%s sequence [%s] was ignored.",
+      arguments.callee.name, [n for each (n in arguments)]);
+  },
    
   /** Bell.
    */
@@ -191,16 +191,16 @@ Control.definition = {
     session.notify("sequence/g0", coUtils.Constant.CHARSET_US);
   },
 
-//  /** Data link escape.
-//   */
-//  "[sequence('0x10')]":
-//  function DLE() 
-//  {
-//    coUtils.Debug.reportWarning(
-//      "%s sequence [%s] was ignored.",
-//      arguments.callee.name, [n for each (n in arguments)]);
-//  },
-// 
+  /** Data link escape.
+   */
+  "[sequence('0x10')]":
+  function DLE() 
+  {
+    coUtils.Debug.reportWarning(
+      "%s sequence [%s] was ignored.",
+      arguments.callee.name, [n for each (n in arguments)]);
+  },
+ 
   /** Device control 1.
    */
   "[sequence('0x11')]":
@@ -211,142 +211,142 @@ Control.definition = {
     session.notify("command/flow-control", true);
   },
   
-//  /** Device control 2.
-//   */
-//  "[sequence('0x12')]":
-//  function DC2() 
-//  {
-//    coUtils.Debug.reportWarning(
-//      _("%s sequence [%s] was ignored.",
-//        arguments.callee.name, [n for each (n in arguments)]));
-//  },
-//
-//  /** Device control 3.
-//   */
-//  "[sequence('0x13')]":
-//  function DC3() 
-//  {
-//    let session = this._broker;
-//    //session.notify("command/send-to-tty", "\u0013");
-//    session.notify("command/flow-control", false);
-//  },
-//  
-//  /** Device control 4.
-//   */
-//  "[sequence('0x14')]":
-//  function DC4() 
-//  {
-//    coUtils.Debug.reportWarning(
-//      _("%s sequence [%s] was ignored.",
-//        arguments.callee.name, [n for each (n in arguments)]));
-//  },
-//  
-//  /** Negative acknowledge.
-//   */
-//  "[sequence('0x15')]":
-//  function NAK() 
-//  {
-//    coUtils.Debug.reportWarning(
-//      _("%s sequence [%s] was ignored.",
-//        arguments.callee.name, [n for each (n in arguments)]));
-//  },
-//  
-//  /** Synchronous idle.
-//   */
-//  "[sequence('0x16')]":
-//  function SYN() 
-//  {
-//    coUtils.Debug.reportWarning(
-//      _("%s sequence [%s] was ignored.",
-//        arguments.callee.name, [n for each (n in arguments)]));
-//  },
-//  
-//  /** End of transmission block.
-//   */
-//  "[sequence('0x17')]":
-//  function ETB() 
-//  {
-//    coUtils.Debug.reportWarning(
-//      _("%s sequence [%s] was ignored.",
-//        arguments.callee.name, [n for each (n in arguments)]));
-//  },
-//  
-//  /** Cancel of previous word or charactor.
-//   */
-//  "[sequence('0x18')]":
-//  function CAN() 
-//  {
-//    coUtils.Debug.reportWarning(
-//      _("%s sequence [%s] was ignored.",
-//        arguments.callee.name, [n for each (n in arguments)]));
-//  },
-//  
-//  /** End of medium.
-//   */
-//  "[sequence('0x19')]":
-//  function EM() 
-//  {
-//    coUtils.Debug.reportWarning(
-//      _("%s sequence [%s] was ignored.",
-//        arguments.callee.name, [n for each (n in arguments)]));
-//  },
-//  
-//  /** Substitute.
-//   */
-//  "[sequence('0x1A')]":
-//  function SUB()
-//  {
-//    coUtils.Debug.reportWarning(
-//      _("%s sequence [%s] was ignored.",
-//        arguments.callee.name, [n for each (n in arguments)]));
-//  },
-//  
-//  /** File separator.
-//   */
-//  "[sequence('0x1C')]":
-//  function FS() 
-//  {
-//    coUtils.Debug.reportWarning(
-//      _("%s sequence [%s] was ignored.",
-//        arguments.callee.name, [n for each (n in arguments)]));
-//  },
-// 
-//  /** Group separator.
-//   */
-//  "[sequence('0x1D')]":
-//  function GS() 
-//  {
-//    coUtils.Debug.reportWarning(
-//      _("%s sequence [%s] was ignored.",
-//        arguments.callee.name, [n for each (n in arguments)]));
-//  },
-//  
-//  /** Record separator.
-//   */
-//  "[sequence('0x1E')]":
-//  function RS() 
-//  {
-//    coUtils.Debug.reportWarning(
-//      _("%s sequence [%s] was ignored.",
-//        arguments.callee.name, [n for each (n in arguments)]));
-//  },
-//  
-//  /** Unit separator.
-//   */
-//  "[sequence('0x1F')]":
-//  function US() 
-//  {
-//    coUtils.Debug.reportWarning(
-//      _("%s sequence [%s] was ignored.",
-//        arguments.callee.name, [n for each (n in arguments)]));
-//  },
-//  
-//  /** Delete.
-//   */
-//  "[sequence('0x7F', '0xFF')]":
-//  function DEL() 
-//  {
-//  },
+  /** Device control 2.
+   */
+  "[sequence('0x12')]":
+  function DC2() 
+  {
+    coUtils.Debug.reportWarning(
+      _("%s sequence [%s] was ignored.",
+        arguments.callee.name, [n for each (n in arguments)]));
+  },
+
+  /** Device control 3.
+   */
+  "[sequence('0x13')]":
+  function DC3() 
+  {
+    let session = this._broker;
+    //session.notify("command/send-to-tty", "\u0013");
+    session.notify("command/flow-control", false);
+  },
+  
+  /** Device control 4.
+   */
+  "[sequence('0x14')]":
+  function DC4() 
+  {
+    coUtils.Debug.reportWarning(
+      _("%s sequence [%s] was ignored.",
+        arguments.callee.name, [n for each (n in arguments)]));
+  },
+  
+  /** Negative acknowledge.
+   */
+  "[sequence('0x15')]":
+  function NAK() 
+  {
+    coUtils.Debug.reportWarning(
+      _("%s sequence [%s] was ignored.",
+        arguments.callee.name, [n for each (n in arguments)]));
+  },
+  
+  /** Synchronous idle.
+   */
+  "[sequence('0x16')]":
+  function SYN() 
+  {
+    coUtils.Debug.reportWarning(
+      _("%s sequence [%s] was ignored.",
+        arguments.callee.name, [n for each (n in arguments)]));
+  },
+  
+  /** End of transmission block.
+   */
+  "[sequence('0x17')]":
+  function ETB() 
+  {
+    coUtils.Debug.reportWarning(
+      _("%s sequence [%s] was ignored.",
+        arguments.callee.name, [n for each (n in arguments)]));
+  },
+  
+  /** Cancel of previous word or charactor.
+   */
+  "[sequence('0x18')]":
+  function CAN() 
+  {
+    coUtils.Debug.reportWarning(
+      _("%s sequence [%s] was ignored.",
+        arguments.callee.name, [n for each (n in arguments)]));
+  },
+  
+  /** End of medium.
+   */
+  "[sequence('0x19')]":
+  function EM() 
+  {
+    coUtils.Debug.reportWarning(
+      _("%s sequence [%s] was ignored.",
+        arguments.callee.name, [n for each (n in arguments)]));
+  },
+  
+  /** Substitute.
+   */
+  "[sequence('0x1A')]":
+  function SUB()
+  {
+    coUtils.Debug.reportWarning(
+      _("%s sequence [%s] was ignored.",
+        arguments.callee.name, [n for each (n in arguments)]));
+  },
+  
+  /** File separator.
+   */
+  "[sequence('0x1C')]":
+  function FS() 
+  {
+    coUtils.Debug.reportWarning(
+      _("%s sequence [%s] was ignored.",
+        arguments.callee.name, [n for each (n in arguments)]));
+  },
+ 
+  /** Group separator.
+   */
+  "[sequence('0x1D')]":
+  function GS() 
+  {
+    coUtils.Debug.reportWarning(
+      _("%s sequence [%s] was ignored.",
+        arguments.callee.name, [n for each (n in arguments)]));
+  },
+  
+  /** Record separator.
+   */
+  "[sequence('0x1E')]":
+  function RS() 
+  {
+    coUtils.Debug.reportWarning(
+      _("%s sequence [%s] was ignored.",
+        arguments.callee.name, [n for each (n in arguments)]));
+  },
+  
+  /** Unit separator.
+   */
+  "[sequence('0x1F')]":
+  function US() 
+  {
+    coUtils.Debug.reportWarning(
+      _("%s sequence [%s] was ignored.",
+        arguments.callee.name, [n for each (n in arguments)]));
+  },
+  
+  /** Delete.
+   */
+  "[sequence('0x7F', '0xFF')]":
+  function DEL() 
+  {
+  },
 
   /** constructor */
   "[subscribe('initialized/{screen & ansimode}'), enabled]":

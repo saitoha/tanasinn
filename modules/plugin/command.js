@@ -92,7 +92,7 @@ CommandProvider.definition = {
       let session = this._broker;
       session.notify(
         "command/report-status-message", 
-        _("Fail to parse given commandline code."));
+        _("Failed to parse given commandline code."));
       return;
     }
     let [, repeat, command_name, /* blank */] = match;
@@ -121,7 +121,7 @@ CommandProvider.definition = {
       session.notify(
         "command/report-status-message", 
         coUtils.Text.format(
-          _("Fail to evaluate given commandline code: %s"), e));
+          _("Failed to evaluate given commandline code: %s"), e));
       return;
     }
   },
@@ -361,7 +361,7 @@ PersistCommand.definition = {
   get id()
     "persist",
 
-  "[command('save', ['profile']), _('Persist current settings.'), enabled]":
+  "[command('saveprofile/sp', ['profile']), _('Persist current settings.'), enabled]":
   function persist(arguments_string)
   {
     let session = this._broker;
@@ -389,7 +389,7 @@ PersistCommand.definition = {
     };
   },
 
-  "[command('load', ['profile']), _('Load a profile.'), enabled]":
+  "[command('loadprofile/lp', ['profile']), _('Load a profile.'), enabled]":
   function load(arguments_string)
   {
     let session = this._broker;
@@ -405,6 +405,24 @@ PersistCommand.definition = {
 
     session.notify("command/load-settings", profile || undefined);
     session.notify("command/draw", true);
+    return null;
+  },
+
+  "[command('deleteprofile/dp', ['profile']), _('Delete a profile.'), enabled]":
+  function deleteprofile(arguments_string)
+  {
+    let session = this._broker;
+
+    let match = arguments_string.match(/^\s*([$_\-@a-zA-Z\.]*)\s*$/);
+    if (null === match) {
+      return {
+        success: false,
+        message: _("Failed to parse commandline argument."),
+      };
+    }
+    let [, profile] = match;
+
+    session.notify("command/delete-settings", profile || undefined);
     return null;
   },
 };
@@ -429,7 +447,7 @@ LocalizeCommand.definition = {
     if (!match) {
       return {
         success: true,
-        message: _("Fail to parse given commandline code."),
+        message: _("Failed to parse given commandline code."),
       };
     }
     let [, language, key, value] = match;
@@ -580,7 +598,7 @@ EnableCommand.definition = {
     if (!match) {
       session.notify(
         "command/report-status-message", 
-        _("Fail to parse given commandline code."));
+        _("Failed to parse given commandline code."));
       return;
     }
     let [, language, key, value] = match;
@@ -611,7 +629,7 @@ ShortcutCommand.definition = {
     if (!match) {
       session.notify(
         "command/report-status-message", 
-        _("Fail to parse given commandline code."));
+        _("Failed to parse given commandline code."));
       return;
     }
     let [, language, key, value] = match;

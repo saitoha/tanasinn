@@ -58,6 +58,18 @@ PersistManager.definition = {
     coUtils.IO.writeToFile(profile_path, serialized_data);
   },
 
+  "[subscribe('command/delete-settings'), enabled]":
+  function deleteSettings(name)
+  {
+    let broker = this._broker;
+    let filename = (name || broker.profile) + ".js";
+    let profile_path = <>{broker.profile_directory}/{filename}</>.toString();
+    let file = coUtils.File.getFileLeafFromAbstractPath(profile_path);
+    if (file.exists()) {
+      file.remove(true);
+    }
+  },
+
   "[subscribe('command/get-settings'), enabled]":
   function get()
   {
@@ -79,9 +91,9 @@ function main(desktop)
 {
   desktop.subscribe(
     "@initialized/broker",
-    function(session) 
+    function(broker) 
     {
-      new PersistManager(session);
+      new PersistManager(broker);
     });
 }
 

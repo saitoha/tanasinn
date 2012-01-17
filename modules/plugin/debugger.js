@@ -239,11 +239,11 @@ let StepExecution = new Class().extends(Plugin);
 StepExecution.definition = {
 
   get id()
-    "step_execution",
+    "debugger",
 
   get info()
     <plugin>
-        <name>{_("Step Execution")}</name>
+        <name>{_("Debugger")}</name>
         <description>{
           _("Enables you to run terminal emurator step-by-step and ", 
             "observe input/output character sequence.")
@@ -258,12 +258,7 @@ StepExecution.definition = {
       tagName: "hbox",
       flex: 1,
       style: <>
-//        background: -moz-linear-gradient(top, #999, #666);
-//        border: solid 3px blue;
-        //overflow-y: auto; 
-        //wordWrap: break-word;
         //font-size: 13px;
-        //fontWeight: bold;
       </>,
       childNodes: [
         {
@@ -273,19 +268,22 @@ StepExecution.definition = {
           childNodes: [
             {
               tagName: "checkbox",
+              id: "tanasinn_debugger_attach",
               label: _("attach"),
               listener: {
                 type: "command",
+                context: this,
                 handler: function oncommand() 
                 {
+                  let session = this._broker;
                   try {
-                    if (this.checked) {
-                      this.nextSibling.setAttribute("disabled", !this.checked);
+                    if (this._checkbox_attach.checked) {
+                      this._checkbox_break.setAttribute("disabled", !this._checkbox_attach.checked);
                       session.notify("command/trace-on");
                     } else {
-                      this.nextSibling.setAttribute("disabled", true);
-                      this.nextSibling.nextSibling.setAttribute("disabled", true);
-                      this.nextSibling.nextSibling.nextSibling.setAttribute("disabled", true);
+                      this._checkbox_break.setAttribute("disabled", true);
+                      this._checkbox_resume.setAttribute("disabled", true);
+                      this._checkbox_step.setAttribute("disabled", true);
                       session.notify("command/trace-off");
                       session.notify("command/resume");
                     }
@@ -297,42 +295,51 @@ StepExecution.definition = {
             },
             {
               tagName: "button",
+              id: "tanasinn_debugger_break",
               label: _("break"),
               disabled: true,
               listener: {
                 type: "command",
+                context: this,
                 handler: function oncommand() 
                 {
-                  this.setAttribute("disabled", true);
-                  this.nextSibling.setAttribute("disabled", false);
-                  this.nextSibling.nextSibling.setAttribute("disabled", false);
+                  let session = this._broker;
+                  this._checkbox_break.setAttribute("disabled", true);
+                  this._checkbox_resume.setAttribute("disabled", false);
+                  this._checkbox_step.setAttribute("disabled", false);
                   session.notify("command/pause");
                 }
               }
             },
             {
               tagName: "button",
+              id: "tanasinn_debugger_resume",
               label: _("resume"),
               disabled: true,
               listener: {
                 type: "command",
+                context: this,
                 handler: function oncommand() 
                 {
-                  this.setAttribute("disabled", true);
-                  this.nextSibling.setAttribute("disabled", true);
-                  this.previousSibling.setAttribute("disabled", false);
+                  let session = this._broker;
+                  this._checkbox_resume.setAttribute("disabled", true);
+                  this._checkbox_step.setAttribute("disabled", true);
+                  this._checkbox_break.setAttribute("disabled", false);
                   session.notify("command/resume");
                 }
               }
             },
             {
               tagName: "button",
+              id: "tanasinn_debugger_step",
               label: _("step"),
               disabled: true,
               listener: {
                 type: "command",
+                context: this,
                 handler: function oncommand() 
                 {
+                  let session = this._broker;
                   session.notify("command/step");
                 }
               }
@@ -374,9 +381,18 @@ StepExecution.definition = {
    */
   install: function install(session) 
   {
-    let {tanasinn_trace} 
-      = session.uniget("command/construct-chrome", this.template);
+    let {
+      tanasinn_trace,
+      tanasinn_debugger_attach,
+      tanasinn_debugger_break,
+      tanasinn_debugger_resume,
+      tanasinn_debugger_step,
+    } = session.uniget("command/construct-chrome", this.template);
     this._trace_box = tanasinn_trace;
+    this._checkbox_attach = tanasinn_debugger_attach;
+    this._checkbox_break = tanasinn_debugger_break;
+    this._checkbox_resume = tanasinn_debugger_resume;
+    this._checkbox_step = tanasinn_debugger_step;
     this.select.enabled = true;
     this.trace.enabled = true;
   },

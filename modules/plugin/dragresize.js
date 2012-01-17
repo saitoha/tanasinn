@@ -334,7 +334,7 @@ function main(desktop)
     "@initialized/broker", 
     function(session) 
     {
-      if ("Firefox" == coUtils.Runtime.app_name) {
+      if (coUtils.Runtime.app_name.match(/^(Firefox|Thunderbird)$/)) {
         new CaptureBox(session);
         new TopLeftResizer(session);
         new TopRightResizer(session);

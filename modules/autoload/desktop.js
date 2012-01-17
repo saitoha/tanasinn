@@ -88,6 +88,7 @@ Desktop.definition = {
   {
     let broker = this._broker;
     let box = broker.start(parent, command, term, size, search_path, callback, this); 
+    box.style.cssText = "position: fixed; top: 0px; left: 0px";
     // create session object;
     let request = { 
       parent: box, 

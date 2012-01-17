@@ -188,7 +188,7 @@ Parser.definition = {
         } else {
           break;
           //throw coUtils.Debug.Exception(
-          //  _("Fail to decode text. text length: %d, source text: [%s]."), 
+          //  _("Failed to decode text. text length: %d, source text: [%s]."), 
           //  data.length, scanner._nextvalue);
         }
       } else { // scanner.isEnd

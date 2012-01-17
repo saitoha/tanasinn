@@ -200,11 +200,11 @@ image::images/debug2.png[width=640]
 image::images/w3m2.png[width=640]
 
 #if __EN__
-.Mailer-in-browser. running http:/#/www.gohome.org/wl/index.html[Wonderlust] on emacs.
+.Mailer-in-mailer. running http:/#/www.gohome.org/wl/index.html[Wonderlust] on emacs on Thunderbird.
 #elif __JP__
-.ブラウザの中でメーラー。http:/#/www.gohome.org/wl/index.html[Wonderlust]をemacs上で動かしています。
+.メーラーの中でメーラー。http:/#/www.gohome.org/wl/index.html[Wonderlust]をemacs上で動かしているものをThunderbird上で動かしています。
 #endif
-image::images/wl2.png[width=640]
+image::images/wl3.png[width=640]
 
 #if __EN__
 .Developping tanasinn with tanasinn at out of jail. it runs as a standalone XUL application.
@@ -509,7 +509,7 @@ disable <plugin id>
 To persist the state of current session (font, color, screen size, ...etc), Type it in the command-line input field.
 
 ----
-save
+saveprofile
 ----
 
 Then current session's configuration settings will be persisted to 
@@ -517,7 +517,7 @@ Then current session's configuration settings will be persisted to
 If you would like to save it as other file, type as follows:
 
 ----
-save <profile name>
+saveprofile <profile name>
 ----
 
 Therefore the settings will be persisted to "$HOME/.tanasinn/profile/<profile name>.js".
@@ -525,7 +525,7 @@ Therefore the settings will be persisted to "$HOME/.tanasinn/profile/<profile na
 And to load it, type as follows:
 
 ----
-load <profile name>
+loadprofile <profile name>
 ----
 
 
@@ -574,7 +574,7 @@ disable <plugin id>
 type it in the command-line input field.
 
 ----
-save
+saveprofile
 ----
 
 Then current session's configuration settings will be persisted to 
@@ -582,7 +582,7 @@ Then current session's configuration settings will be persisted to
 If you would like to save it as other file, type as follows:
 
 ----
-save <profile name>
+saveprofile <profile name>
 ----
 
 Therefore the settings will be persisted to "$HOME/.tanasinn/profile/<profile name>.js".
@@ -590,7 +590,7 @@ Therefore the settings will be persisted to "$HOME/.tanasinn/profile/<profile na
 And to load it, type as follows:
 
 ----
-load <profile name>
+loadprofile <profile name>
 ----
 
 

@@ -163,7 +163,7 @@ with (scope) {
     {
       let document = parent.ownerDocument;
       let box = document.createElement("box");
-      if ("Firefox" == coUtils.Runtime.app_name) {
+      if (coUtils.Runtime.app_name.match(/^(Firefox|Thunderbird)$/)) {
         box.style.position = "fixed";
         box.style.top = "0px";
         box.style.left = "0px";
