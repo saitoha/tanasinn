@@ -238,7 +238,7 @@ class TeletypeDriver:
                 rfds = [control_fd]
                 wfds = []
                 xfds = [self.master, io_fd, control_fd]
-                rfd, wfd, xfd = select.select(rfds, wfds, xfds, 7)
+                rfd, wfd, xfd = select.select(rfds, wfds, xfds, 10)
                 if xfd: # checking error.
                     break    
                 if not rfd: # checking error.

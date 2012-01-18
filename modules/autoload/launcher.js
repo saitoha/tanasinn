@@ -28,7 +28,7 @@
 let CompleterBase = new Abstruct().extends(Component);
 CompleterBase.definition = {
 
-  "[subscribe('@event/desktop-started'), enabled]":
+  "[subscribe('@event/broker-started'), enabled]":
   function onLoad(broker)
   {
     broker.subscribe(
@@ -44,7 +44,7 @@ CompleterBase.definition = {
 let CompletionDisplayDriverBase = new Abstruct().extends(Component);
 CompletionDisplayDriverBase.definition = {
 
-  "[subscribe('@event/desktop-started'), enabled]":
+  "[subscribe('@event/broker-started'), enabled]":
   function onLoad(broker)
   {
     broker.subscribe(
@@ -98,6 +98,11 @@ ProgramCompleter.definition = {
   get type()
     "program",
 
+  cygwin_search_path: [
+    "/bin", 
+    "/usr/local/bin"
+  ],
+
   _getSearchPath: function _getSearchPath()
   {
     let environment = Components
@@ -128,16 +133,13 @@ ProgramCompleter.definition = {
    */
   startSearch: function startSearch(source, listener)
   {
+    let broker = this._broker;
     let lower_source = source.toLowerCase();
     let search_path;
     if ("WINNT" == coUtils.Runtime.os) {
-      search_path = [
-        "/bin", 
-        "/usr/local/bin"
-      ];
-      search_path = search_path.map(function(posix_path) 
+      let search_path = this.cygwin_search_path.map(function(posix_path) 
       {
-        return "C:\\cygwin" + posix_path.replace(/\//g, "\\");
+        return broker.cygwin_root + "\\" + posix_path.replace(/\//g, "\\");
       });
       let map = search_path.reduce(function(map, path) {
         let key = path.replace(/\\$/, "");
@@ -275,9 +277,7 @@ ProcessManager.definition = {
   get id()
     "process-manager",
 
-  "[persistable] cygwin_root": "C:\\cygwin",
-
-  "[subscribe('@event/desktop-started'), enabled]":
+  "[subscribe('@event/broker-started'), enabled]":
   function onLoad(broker)
   {
     broker.notify(<>initialized/{this.id}</>, this);
@@ -301,7 +301,8 @@ ProcessManager.definition = {
     let runtime_path;
     let args;
     if ("WINNT" == coUtils.Runtime.os) {
-      runtime_path = String(<>{this.cygwin_root}\bin\run.exe</>);
+      let broker = this._broker;
+      runtime_path = String(<>{broker.cygwin_root}\bin\run.exe</>);
       args = [ "/bin/ps", "-p", String(pid) ];
     } else { // Darwin, Linux or FreeBSD
       runtime_path = "/bin/ps";
@@ -346,7 +347,8 @@ ProcessManager.definition = {
     let runtime_path;
     let args;
     if ("WINNT" == coUtils.Runtime.os) {
-      runtime_path = String(<>{this.cygwin_root}\bin\run.exe</>);
+      let broker = this._broker;
+      runtime_path = String(<>{broker.cygwin_root}\bin\run.exe</>);
       args = [ "kill", "-wait", "-" + signal, String(pid) ];
     } else { // Darwin, Linux or FreeBSD
       runtime_path = "/bin/kill";
@@ -606,11 +608,11 @@ SessionsCompletionDisplayDriver.definition = {
                 },
                 {
                   tagName: "box",
-                  childNodes: { text: result.comments[i].ttyname },
+                  childNodes: { text: result.comments[i].ttyname + " $$" + result.comments[i].pid },
                 },
                 {
                   tagName: "box",
-                  childNodes: { text: result.comments[i].pid },
+                  childNodes: { text: result.comments[i].request_id },
                 },
               ],
             },
@@ -630,14 +632,14 @@ LauncherCompletionProvider.definition = {
   get id()
     "launcher-completion-provider",
 
-  "[subscribe('command/complete-launcher'), enabled]": 
+  "[subscribe('command/complete'), enabled]": 
   function complete(request)
   {
     let {source, listener} = request;
     let broker = this._broker;
     if (0 == source.length || 0 == source.indexOf("&")) {
       let program_completer = broker.uniget(<>get/completer/sessions</>);
-      let position = program_completer.startSearch(source, listener);
+      let position = program_completer.startSearch(source.substr(1), listener);
       if (0 != position) {
         let program_completer = broker.uniget(<>get/completer/program</>);
         let position = program_completer.startSearch(source, listener);
@@ -681,7 +683,7 @@ Launcher.definition = {
     return this._index;
   },
 
-  "[subscribe('event/desktop-started'), enabled]":
+  "[subscribe('event/broker-started'), enabled]":
   function onLoad(desktop)
   {
     let window = desktop.window;
@@ -703,6 +705,11 @@ Launcher.definition = {
       {
         parentNode: desktop.root_element,
         tagName: "box",
+        id: "tanasinn_drag_cover",
+      },
+      {
+        parentNode: desktop.root_element,
+        tagName: "box",
         id: "tanasinn_launcher_layer",
         hidden: true,
         style: <>
@@ -719,6 +726,7 @@ Launcher.definition = {
               background: -moz-linear-gradient(top, #999, #444);
               -moz-box-shadow: 10px 10px 20px black;
               opacity: 0.85;
+              cursor: move;
             </>,
             childNodes: {
               tagName: "textbox",
@@ -808,6 +816,15 @@ Launcher.definition = {
     this.onEnabled();
   },
 
+  "[subscribe('command/move-to'), enabled]":
+  function moveTo(info)
+  {
+    let [left, top] = info;
+    this._element.style.left = left + "px";
+    this._element.style.top = top + "px";
+    this._popup.hidePopup();
+  },
+  
   "[subscribe('event/shutdown'), enabled]":
   function shutdown()
   {
@@ -1002,7 +1019,7 @@ Launcher.definition = {
       this.select(-1);
       let broker = this._broker;
       broker.notify(
-        "command/complete-launcher", 
+        "command/complete", 
         {
           source: current_text, 
           listener: this,
@@ -1106,8 +1123,8 @@ Launcher.definition = {
     if ("e".charCodeAt(0) == code && event.ctrlKey) { // ^e
       let textbox = this._textbox;
       let length = this._textbox.value.length;
-      textbox.selectionStart = length - 1;
-      textbox.selectionEnd = length - 1;
+      textbox.selectionStart = length;
+      textbox.selectionEnd = length;
     }
     if ("b".charCodeAt(0) == code && event.ctrlKey) { // ^b
       let textbox = this._textbox;
@@ -1255,6 +1272,117 @@ Launcher.definition = {
   },
 };
 
+
+/**
+ * @class DragMove
+ * @fn Enable Drag-and-Drop operation.
+ */
+let DragMove = new Class().extends(Component);
+DragMove.definition = {
+
+  get id()
+    "launcher-dragmove",
+
+  /** post-constructor */
+  "[subscribe('@initialized/launcher'), enabled]":
+  function onLoad(launcher) 
+  {
+    let broker = this._broker;
+    this.install(broker);
+  },
+
+  /** Installs itself. */
+  install: function install(broker) 
+  {
+    this.ondragstart.enabled = true;
+    let {tanasinn_drag_cover}
+      = broker.uniget(
+        "command/construct-chrome",
+        {
+          parentNode: "#tanasinn_launcher_layer",
+          tagName: "box",
+          id: "tanasinn_drag_cover",
+          hidden: true,
+          style: <>
+            position: fixed;
+            left: 0px;
+            top: 0px;
+            padding: 100px;
+//            border: 1px solid red;
+          </>,
+        });
+    this._drag_cover = tanasinn_drag_cover;
+  },
+
+  /** Uninstalls itself. */
+  uninstall: function uninstall(broker) 
+  {
+    this.ondragstart.enabled = false;
+    this._drag_cover.parentNode.removeChild(this._drag_cover);
+  },
+
+  "[listen('dragstart', '#tanasinn_launcher_layer', true)]":
+  function ondragstart(event) 
+  {
+    event.stopPropagation();
+    let session = this._broker;
+    // get relative coodinates on target element.
+    let offsetX = event.clientX - event.target.boxObject.x; 
+    let offsetY = event.clientY - event.target.boxObject.y;
+    this._drag_cover.hidden = false;
+    this._drag_cover.style.left = event.clientX - this._drag_cover.boxObject.width / 2 + "px";
+    this._drag_cover.style.top = event.clientY - this._drag_cover.boxObject.height / 2 + "px";
+    coUtils.Timer.setTimeout(function() {
+      this._drag_cover.hidden = true;
+    }, 1000, this);
+    session.notify("command/set-opacity", 0.30);
+    // define mousemove hanler.
+    let document = event.target.ownerDocument; // managed by DOM
+    session.notify("command/add-domlistener", {
+      target: document, 
+      type: "mousemove", 
+      id: "_DRAGGING", 
+      context: this,
+      handler: function onmouseup(event) 
+      {
+        let left = event.clientX - offsetX;
+        let top = event.clientY - offsetY;
+        session.notify("command/move-to", [left, top]);
+      }
+    });
+    session.notify("command/add-domlistener", {
+      target: document, 
+      type: "mouseup", 
+      id: "_DRAGGING",
+      context: this,
+      handler: function onmouseup(event) 
+      {
+        // uninstall listeners.
+        session.notify("command/remove-domlistener", "_DRAGGING");
+        session.notify("command/set-opacity", 1.00);
+        this._drag_cover.hidden = true;
+      }, 
+    });
+    session.notify("command/add-domlistener", {
+      target: document, 
+      type: "keyup", 
+      id: "_DRAGGING",
+      context: this,
+      handler: function onkeyup(event) 
+      {
+        if (!event.shiftKey) {
+          // uninstall listeners.
+          session.notify("command/remove-domlistener", "_DRAGGING");
+          session.notify("command/set-opacity", 1.00);
+        }
+      }, 
+    });
+
+    event = null;
+    document = null;
+  },
+};
+
 /**
  * @fn main
  * @brief Module entry point
@@ -1273,6 +1401,7 @@ function main(process)
       new ProcessManager(desktop);
       new TextCompletionDisplayDriver(desktop);
       new SessionsCompletionDisplayDriver(desktop);
+      new DragMove(desktop);
     });
 }
 

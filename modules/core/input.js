@@ -152,14 +152,15 @@ InputManager.definition = {
         //tagName: "textbox",
         tagName: "html:input",
         id: "tanasinn_default_input",
-        style: { imeMode: "disabled", border: "0px", opacity: 0 },
+        style: <> 
+          ime-mode: disabled;
+          border: 0px; 
+          opacity: 0;
+        </>,
         top: 0,
         left: 0,
       },
     }),
-
-  get style()
-    "#tanasinn_default_input { ime-mode: disabled; border: 0px; opacity: 0.2; }",
 
   _key_map: null,
 
@@ -178,7 +179,6 @@ InputManager.definition = {
   "[subscribe('install/' + this.id)]":
   function install(session)
   {
-    this._rule = coUtils.Style.addRule(session.root_element, this.style);
     // Get [bit-packed keycode -> terminal input sequence] map
     this._key_map = coCreateKeyMap();
     let {tanasinn_default_input} 
@@ -202,7 +202,6 @@ InputManager.definition = {
   "[subscribe('uninstall/' + this.id)]":
   function uninstall(session)
   {
-    coUtils.Style.removeRule(this._rule);
     this._key_map = null; 
     this._processInputSequence.enabled = false;
     this.onFocusChanged.enabled = false; 

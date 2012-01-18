@@ -214,6 +214,9 @@ function main(desktop)
 {
   desktop.subscribe(
     "@initialized/broker", 
-    function(session) new Ime(session));
+    function(session) 
+    {
+      new Ime(session);
+    });
 }
 

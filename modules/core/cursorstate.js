@@ -46,11 +46,11 @@ CursorState.definition = {
 
   /** constructor */
   "[subscribe('@initialized/linegenerator'), enabled]":
-  function construct(line_generator) 
+  function onLoad(line_generator) 
   {
     this.attr = line_generator.allocate(1, 1).shift().cells.shift();
     let session = this._broker;
-    session.notify("initialized/" + this.id, this);
+    session.notify(<>initialized/{this.id}</>, this);
   },
 
   /** reset cursor state. */
@@ -247,7 +247,7 @@ CursorState.definition = {
           : 107  == p ? attr.bg = 15
           : coUtils.Debug.reportWarning(
             _("Ignored SGR %s, arguments: [%s]"), 
-            p, [n for each (n in arguments)]);
+            p, [].slice.apply(arguments));
       }
     }
   },

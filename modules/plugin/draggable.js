@@ -52,18 +52,12 @@ DragMove.definition = {
   /** Installs itself. */
   install: function install(session) 
   {
-    let targets = session.notify("get/draggable-targets");
-    if (targets) {
-      targets.forEach(this.setDragListener, this);
-    }
     this.ondragstart.enabled = true;
   },
 
   /** Uninstalls itself. */
   uninstall: function uninstall(session) 
   {
-    let id = "dragmove.install";
-    session.notify("command/remove-domlistener", id);
     this.ondragstart.enabled = false;
   },
 

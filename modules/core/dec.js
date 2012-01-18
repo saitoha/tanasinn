@@ -97,7 +97,7 @@ DecModeSequenceHandler.definition = {
   { // DEC Private Mode Set
     if (arguments.length == 0)
       coUtils.Debug.reportWarning(_("DECSET: Length of Arguments is zero. "));
-    for each (let n in arguments) {
+    [].slice.apply(arguments).forEach(function(n) {
         n == 1    ? this.CKM = true // application cursor
       : n == 3    ? this.COLM = true // TODO: 132 column mode
       : n == 7    ? this.AWM = true
@@ -115,7 +115,7 @@ DecModeSequenceHandler.definition = {
       : coUtils.Debug.reportWarning(
         _("%s sequence [%s] was ignored."),
         arguments.callee.name, n);
-    }
+    }, this);
   },
   
   "[sequence('CSI ?%dl')]":
@@ -123,7 +123,7 @@ DecModeSequenceHandler.definition = {
   { // TODO: DEC-Private Mode Reset
     if (arguments.length == 0)
       coUtils.Debug.reportWarning(_("DECRST: Length of Arguments is zero. "));
-    for each (let n in arguments) {
+    [].slice.apply(arguments).forEach(function(n) {
         n == 1    ? this.CKM = false
       : n == 3    ? this.COLM = false // TODO: 80 column mode
       : n == 7    ? this.AWM = false
@@ -141,13 +141,13 @@ DecModeSequenceHandler.definition = {
       : coUtils.Debug.reportWarning(
         _("%s sequence [%s] was ignored."),
         arguments.callee.name, n);
-    }
+    }, this);
   },
 
   "[sequence('CSI ?%dr')]":
   function DECRSTR() 
   { // TODO: DEC Private Mode Restore
-    for each (let n in arguments) {
+    [].slice.apply(arguments).forEach(function(n) {
       let value = this._decsave_buffer[n];
       delete this._decsave_buffer[n];
       if (value) {
@@ -157,13 +157,13 @@ DecModeSequenceHandler.definition = {
           _("%s sequence [%s] was ignored."),
           arguments.callee.name, n);
       }
-    }
+    }, this);
   },
 
   "[sequence('CSI ?%ds')]":
   function DECSAVE(n) 
   {  // TODO: DEC Private Mode Save
-    for each (let n in arguments) {
+    [].slice.apply(arguments).forEach(function(n) {
       let value = n == 1    ? let (value = this.CKM) 
                   function() this.CKM = value // application cursor
                 : n == 3    ? let (value = this.COLM)
@@ -193,9 +193,10 @@ DecModeSequenceHandler.definition = {
                 : n == 1049 ? 
                   function() this._screen.selectAlternateScreen()
                 : coUtils.Debug.reportWarning(_("Ignored DECSAVE [%d]."), n);
-      if (value)
+      if (value) {
         this._decsave_buffer[n] = value;
-    }
+      }
+    }, this);
   },
 
   /**
@@ -245,7 +246,7 @@ DecModeSequenceHandler.definition = {
     } else {
       coUtils.Debug.reportWarning(
         _("%s sequence [%s] was ignored."),
-        arguments.callee.name, [n for each (n in arguments)]);
+        arguments.callee.name, [].slice.apply(arguments));
     }
     // TODO: I wonder if I should implement this feature.
     // DECSTBM moves the cursor to column 1, line 1 of the page.
@@ -292,77 +293,77 @@ DecModeSequenceHandler.definition = {
   { // TODO: DEC specific - Soft Terminal Reset
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
-      arguments.callee.name, [n for each (n in arguments)]);
+      arguments.callee.name, [].slice.apply(arguments));
   },
 
   set_DECSCL: function set_DECSCL()
   { // TODO: set conformance level DECSCL
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
-      arguments.callee.name, [n for each (n in arguments)]);
+      arguments.callee.name, [].slice.apply(arguments));
   },
 
   set_DECSCA: function set_DECSCA() 
   { //TODO: set character protection attribute DECSCA
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
-      arguments.callee.name, [n for each (n in arguments)]);
+      arguments.callee.name, [].slice.apply(arguments));
   },
 
   DECEFR: function DECEFR() 
   { // TODO: Enable Filter Rectangle
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
-      arguments.callee.name, [n for each (n in arguments)]);
+      arguments.callee.name, [].slice.apply(arguments));
   },
 
   DECREQTPARM: function DECREQTPARM() 
   { // TODO: Request Terminal Parameters
     coUtils.Debug.reportWarning(
       "%s sequence [%s] was ignored.",
-      arguments.callee.name, [n for each (n in arguments)]);
+      arguments.callee.name, [].slice.apply(arguments));
   },
 
   DECELR: function DECELR() 
   { // TODO: Enable Locator Reporting
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
-      arguments.callee.name, [n for each (n in arguments)]);
+      arguments.callee.name, [].slice.apply(arguments));
   },
 
   DECSLE: function DECSLE() 
   { // TODO: Select Locator Events
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
-      arguments.callee.name, [n for each (n in arguments)]);
+      arguments.callee.name, [].slice.apply(arguments));
   },
 
   DECRQLP: function DECRQLP() 
   { // TODO: Request Locator Position
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
-      arguments.callee.name, [n for each (n in arguments)]);
+      arguments.callee.name, [].slice.apply(arguments));
   },
 
   DECLRP: function DECLRP() 
   { // TODO: Locator Report
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
-      arguments.callee.name, [n for each (n in arguments)]);
+      arguments.callee.name, [].slice.apply(arguments));
   },
 
   DECSED: function DECSED(n) 
   { // TODO: DEC Selectively Erase in Display
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
-      arguments.callee.name, [n for each (n in arguments)]);
+      arguments.callee.name, [].slice.apply(arguments));
   },
 
   DECSEL: function DECSEL(n) 
   { // DEC Selectively Elase in Line
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
-      arguments.callee.name, [n for each (n in arguments)]);
+      arguments.callee.name, [].slice.apply(arguments));
   },
 
 

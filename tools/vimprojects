@@ -30,16 +30,15 @@
   }
   autoload=autoload {
    desktop.js
-   appmenu.js
    launcher.js
-   builder.js
-   domevent.js
   }
   base=base {
+   builder.js
+   domevent.js
+   persist.js
   }
   core=core {
    session.js
-   persist.js
 
    chrome.js
    grammer.js
@@ -70,6 +69,7 @@
    cursor.js
    splitter.js
 
+   ime.js
    copy.js
    paste.js
    debugger.js
@@ -106,14 +106,13 @@
    tabbox.js
    commandline.js
 
-   plugins.js
-
    incomplete {
     minimize.js
     search.js
    }
 
    notimpl {
+    hint.js
     test.js
     eventviewer.js
     messagemonitor.js

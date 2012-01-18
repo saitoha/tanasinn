@@ -366,10 +366,13 @@ ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/
     $RUNTIMEは'$HOME/.{vimperator,muttator}'のようなVimperator/Muttatorのランタイムディレクトリです。
 #endif
 
-=== Run as XUL Application (advanced, test version, it does not works well...):
+#if __EN__
+=== Running as XUL Application (advanced, unstable, it does not works well...):
+#elif __JP__
+=== XULアプリケーションとして起動 (不安定、うまく動かないかもしれません):
+#endif
     
 .MacOSX
-
 ----
 git clone http:/#/zuse.jp/tanasinn.git
 cd tanasinn
@@ -378,7 +381,6 @@ open /Applications/Firefox.app --args --app $(PWD)/application.ini
 ----
 
 .Linux
-
 ----
 git clone http:/#/zuse.jp/tanasinn.git
 cd tanasinn
@@ -387,13 +389,13 @@ firefox --app application.ini
 ----
 
 .Cygwin on Windows
-
 ----
 git clone http:/#/zuse.jp/tanasinn.git
 cd tanasinn
 ./configure
 cygstart firefox.exe --app application.ini
 ----
+
     
 #if __EN__
 == Usage
@@ -411,10 +413,16 @@ cygstart firefox.exe --app application.ini
 
 ==== If it Installed as Vimperator/Muttator plugin: 
     You can launch tanasinn as same as Add-on version, by pressing control key twice (ctrl + ctrl).
-    For launching from commandline, type as follows:
+    For displaying launcher interface from commandline, type as follows:
 
 ----
-:tanasinn
+:tanasinnlaunch
+----
+
+    Or, if you would like to launch terminal screen in direct, type as below:
+
+----
+:tanasinncommand <command line>
 ----
 
 #elif __JP__
@@ -429,7 +437,13 @@ cygstart firefox.exe --app application.ini
     Vimperator/Muttatorのコマンドライン上から起動したい場合は、以下のようにタイプしてください。
 
 ----
-:tanasinn
+:tanasinnlaunch
+----
+
+    もしターミナルスクリーンをVimperator/Muttatorから直接起動させたければ、以下のようにします:
+
+----
+:tanasinncommand <コマンド>
 ----
 
 #endif

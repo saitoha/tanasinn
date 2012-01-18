@@ -85,11 +85,11 @@ PersistManager.definition = {
 /**
  * @fn main
  * @brief Module entry point
- * @param {Desktop} process The Desktop object.
+ * @param {Broker} broker parent broker object.
  */
-function main(desktop) 
+function main(broker) 
 {
-  desktop.subscribe(
+  broker.subscribe(
     "@initialized/broker",
     function(broker) 
     {

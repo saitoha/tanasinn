@@ -63,7 +63,7 @@ Tracer.definition = {
           let info = {
             type: CO_TRACE_CONTROL,
             name: handler.name, 
-            value: [arg for ([, arg] in Iterator(arguments))],
+            value: [].slice.apply(arguments),
           };
           return info;
         };
@@ -273,24 +273,7 @@ StepExecution.definition = {
               listener: {
                 type: "command",
                 context: this,
-                handler: function oncommand() 
-                {
-                  let session = this._broker;
-                  try {
-                    if (this._checkbox_attach.checked) {
-                      this._checkbox_break.setAttribute("disabled", !this._checkbox_attach.checked);
-                      session.notify("command/trace-on");
-                    } else {
-                      this._checkbox_break.setAttribute("disabled", true);
-                      this._checkbox_resume.setAttribute("disabled", true);
-                      this._checkbox_step.setAttribute("disabled", true);
-                      session.notify("command/trace-off");
-                      session.notify("command/resume");
-                    }
-                  } catch (e) {
-                    coUtils.Debug.reportError(e);
-                  }
-                },
+                handler: this.doAttach,
               }
             },
             {
@@ -301,14 +284,7 @@ StepExecution.definition = {
               listener: {
                 type: "command",
                 context: this,
-                handler: function oncommand() 
-                {
-                  let session = this._broker;
-                  this._checkbox_break.setAttribute("disabled", true);
-                  this._checkbox_resume.setAttribute("disabled", false);
-                  this._checkbox_step.setAttribute("disabled", false);
-                  session.notify("command/pause");
-                }
+                handler: this.doBreak,
               }
             },
             {
@@ -319,14 +295,7 @@ StepExecution.definition = {
               listener: {
                 type: "command",
                 context: this,
-                handler: function oncommand() 
-                {
-                  let session = this._broker;
-                  this._checkbox_resume.setAttribute("disabled", true);
-                  this._checkbox_step.setAttribute("disabled", true);
-                  this._checkbox_break.setAttribute("disabled", false);
-                  session.notify("command/resume");
-                }
+                handler: this.doResume,
               }
             },
             {
@@ -337,11 +306,7 @@ StepExecution.definition = {
               listener: {
                 type: "command",
                 context: this,
-                handler: function oncommand() 
-                {
-                  let session = this._broker;
-                  session.notify("command/step");
-                }
+                handler: this.doStep,
               }
             },
           ],
@@ -368,7 +333,50 @@ StepExecution.definition = {
         },
       ]
     },
+
+  doAttach: function doAttach() 
+  {
+    let session = this._broker;
+    try {
+      if (this._checkbox_attach.checked) {
+        this._checkbox_break.setAttribute("disabled", !this._checkbox_attach.checked);
+        session.notify("command/trace-on");
+      } else {
+        this._checkbox_break.setAttribute("disabled", true);
+        this._checkbox_resume.setAttribute("disabled", true);
+        this._checkbox_step.setAttribute("disabled", true);
+        session.notify("command/trace-off");
+        session.notify("command/resume");
+      }
+    } catch (e) {
+      coUtils.Debug.reportError(e);
+    }
+  },
  
+  doBreak: function doBreak() 
+  {
+    let session = this._broker;
+    this._checkbox_break.setAttribute("disabled", true);
+    this._checkbox_resume.setAttribute("disabled", false);
+    this._checkbox_step.setAttribute("disabled", false);
+    session.notify("command/pause");
+  },
+
+  doResume: function doResume() 
+  {
+    let session = this._broker;
+    this._checkbox_resume.setAttribute("disabled", true);
+    this._checkbox_step.setAttribute("disabled", true);
+    this._checkbox_break.setAttribute("disabled", false);
+    session.notify("command/resume");
+  },
+
+  doStep: function doStep() 
+  {
+    let session = this._broker;
+    session.notify("command/step");
+  },
+
   "[subscribe('initialized/bottompanel'), enabled]":
   function onLoad(bottom_panel)
   {
@@ -425,47 +433,69 @@ StepExecution.definition = {
     session.uniget("command/construct-chrome", {
       parentNode: trace_box,
       tagName: "hbox",
-      style: { 
-        width: "400px", 
-        maxWidth: "400px", 
-        fontWeight: "bold",
-        textShadow: "0px 0px 2px black",
-        fontSize: "20px",
-      },
+      style: <> 
+        width: 400px; 
+        max-width: 400px; 
+        font-weight: bold;
+        text-shadow: 0px 0px 2px black;
+        font-size: 20px;
+      </>,
       childNodes: CO_TRACE_CONTROL == type ? [
         {
           tagName: "label",
           value: ">",
-          style: { padding: "3px", color: "darkred" },
+          style: <>
+            padding: 3px;
+            color: darkred;
+          </>,
         },
         {
           tagName: "box",
-          style: { width: "120px" },
+          width: 120,
           childNodes:
           {
             tagName: "label",
             value: escape(sequence),
-            style: { color: "red", background: "lightblue", borderRadius: "6px", padding: "3px", },
+            style: <>
+              color: red;
+              background: lightblue; 
+              border-radius: 6px;
+              padding: 3px;
+            </>,
           },
         },
         {
           tagName: "label",
           value: "-",
-          style: { color: "black", padding: "3px", },
+          style: <>
+            color: black;
+            padding: 3px;
+          </>,
         },
         {
           tagName: "box",
-          style: { background: "lightyellow", borderRadius: "6px", margin: "2px", padding: "0px", },
+          style: <> 
+            background: lightyellow;
+            border-radius: 6px;
+            margin: 2px;
+            padding: 0px;
+          </>,
           childNodes: [
             {
               tagName: "label",
               value: name,
-              style: { color: "blue", padding: "1px", },
+              style: <>
+                color: blue;
+                padding: 1px;
+              </>,
             },
             {
               tagName: "label",
               value: escape(value.toString()),
-              style: { color: "green", padding: "1px", },
+              style: <>
+                color: green;
+                padding: 1px;
+              </>,
             }
           ],
         },
@@ -473,23 +503,39 @@ StepExecution.definition = {
         {
           tagName: "label",
           value: ">",
-          style: { padding: "3px", color: "darkred" },
+          style: <>
+            padding: 3px;
+            color: darkred;
+          </>,
         },
         {
           tagName: "label",
           value: escape(value.shift()),
-          style: { color: "darkcyan", background: "lightgray", borderRadius: "6px", padding: "3px", },
+          style: <>
+            color: darkcyan;
+            background: lightgray;
+            border-radius: 6px;
+            padding: 3px;
+          </>,
         },
       ]: [
         {
           tagName: "label",
           value: "<",
-          style: { padding: "3px", color: "darkblue" },
+          style: <> 
+            padding: 3px; 
+            color: darkblue;
+          </>,
         },
         {
           tagName: "label",
           value: escape(value.shift()),
-          style: { color: "darkcyan", background: "lightpink", borderRadius: "6px", padding: "3px", },
+          style: <>
+            color: darkcyan;
+            background: lightpink;
+            border-radius: 6px;
+            padding: 3px;
+          </>,
         },
       ],
     });
@@ -517,7 +563,8 @@ function main(desktop)
 {
   desktop.subscribe(
     "@initialized/broker", 
-    function(session) {
+    function(session) 
+    {
       new StepExecution(session);
       new Hooker(session);
       new Tracer(session);

@@ -202,7 +202,7 @@ Class.prototype = {
   /** constructor 
    * @param {Class} base_class A Class object.
    */
-  initialize: function initialize(base_class) 
+  initialize: function initialize() 
   {
     this._interface_list = [];
     this._mixin_list = [];
@@ -211,14 +211,6 @@ Class.prototype = {
         return this.initialize.apply(this, arguments);
       return this;
     };
-    if (0 < arguments.length) {
-      this.extends.call(constructor, base_class);
-      let args = [arg for each (arg in arguments)];
-      args.shift(); // discard first argument.
-      for each (let arg in args) {
-        this.implements.call(constructor, arg);
-      }
-    }
     constructor.watch("prototype", 
       function(name, oldval, newval) this.applyDefinition(newval));
     constructor.__proto__ = this;
@@ -551,7 +543,7 @@ WatchableAttribute.definition = {
         this.__defineGetter__(key, function() body);
         this.__defineSetter__(key, function(value) {
           if (body != value) {
-            body = value
+            body = value;
             broker.notify("variable-changed/" + path, value);
           }
         });
@@ -698,7 +690,7 @@ SubscribeAttribute.definition = {
 Attribute.prototype.sequence = function sequence()
 {
   let target = this._target;
-  target["sequence"] = [arg for each (arg in arguments)];
+  target["sequence"] = [].slice.apply(arguments);
 };
 
 let SequenceAttribute = new Aspect();
@@ -741,7 +733,7 @@ SequenceAttribute.definition = {
 Attribute.prototype.key = function key(expression) 
 {
   let target = this._target;
-  target["key"] = [expression for each (expression in arguments)];
+  target["key"] = [].slice.apply(arguments);
 };
 
 let KeyAttribute = new Aspect();
@@ -820,6 +812,91 @@ KeyAttribute.definition = {
   },
 };
 
+/**
+ * @aspect CmapAttribute
+ *
+ */
+Attribute.prototype.cmap = function cmap(expression) 
+{
+  let target = this._target;
+  target["cmap"] = [].slice.apply(arguments);
+};
+
+let CmapAttribute = new Aspect();
+CmapAttribute.definition = {
+
+  /** constructor 
+   *  @param {EventBroker} broker Parent broker object.
+   */
+  initialize: function initialize(broker) 
+  {
+    let attributes = this.__attributes;
+    for (key in attributes) {
+      let attribute = attributes[key];
+      let expressions = attribute["cmap"];
+      if (!expressions)
+        continue;
+        let handler = this[key];
+        let delegate = this[key] = handler.id ? 
+          this[key]
+        : let (self = this) function() handler.apply(self, arguments);
+        delegate.id = delegate.id || [this.id, key].join(".");
+        delegate.description = attribute.description;
+        delegate.expressions = expressions;
+
+        delegate.watch("enabled", 
+          delegate.onChange = let (self = this, old_onchange = delegate.onChange) 
+            function(name, oldval, newval) 
+            {
+              if (old_onchange) {
+                old_onchange.apply(delegate, arguments);
+              }
+              if (oldval != newval) {
+                if (newval) {
+                  expressions.forEach(function(expression) {
+                    let expressions = delegate.expressions;
+                    let packed_code = coUtils.Keyboard.parseKeymapExpression(expression);
+                    broker.subscribe(<>cmap/{packed_code.join("-")}</>, function(info) {
+                      delegate.call(this, info.event);
+                      info.handled = true;
+                    }, this, delegate.id);
+                  }, self); // expressions.forEach
+                } else {
+                  broker.unsubscribe(delegate.id);
+                }
+              }
+              return newval;
+            });
+        if (attribute["enabled"]) {
+          delegate.enabled = true;
+        };
+        broker.subscribe("get/cmap", function() delegate);
+
+        // Register load handler.
+        broker.subscribe(
+          "command/load-persistable-data", 
+          function load(context) // Restores settings from context object.
+          {
+            let expressions = context[delegate.id];
+            if (expressions) {
+              delegate.expressions = expressions;
+              if (delegate.enabled) {
+                delegate.enabled = false;
+                delegate.enabled = true;
+              }
+            }
+          }, this);
+
+        // Register persist handler.
+        broker.subscribe(
+          "command/save-persistable-data", 
+          function persist(context) // Save settings to persistent context.
+          {
+            context[delegate.id] = delegate.expressions;
+          }, this);
+    }
+  },
+};
 
 /**
  * @aspect CommandAttribute
@@ -919,6 +996,7 @@ let Component = new Abstruct().mix(PersistableAttribute)
                               .mix(WatchableAttribute)
                               .mix(SequenceAttribute)
                               .mix(KeyAttribute)
+                              .mix(CmapAttribute)
                               .mix(SubscribeAttribute)
                               .mix(ListenAttribute)
                               .mix(CommandAttribute)

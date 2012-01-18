@@ -120,8 +120,8 @@ Controller.definition = {
       .classes["@mozilla.org/network/socket-transport-service;1"]
       .getService(Components.interfaces.nsISocketTransportService)
       .createTransport(null, 0, "127.0.0.1", control_port, null);
-    let istream = transport.openInputStream(0, 1024 * 1024, 1);
-    let ostream = transport.openOutputStream(0, 1024 * 1024, 1);
+    let istream = transport.openInputStream(0, 1024, 1);
+    let ostream = transport.openOutputStream(0, 1024, 1);
     let scriptable_input_stream = Components
       .classes["@mozilla.org/scriptableinputstream;1"]
       .createInstance(Components.interfaces.nsIScriptableInputStream);
@@ -260,6 +260,9 @@ IOManager.definition = {
   _input: null,
   _output: null,
 
+  "[persistable] outgoing_buffer_size": 1024 * 4,
+  "[persistable] incoming_buffer_size": 1024 * 4,
+
   /** 
    * initialize it with Session object.
    * @param {Session} session
@@ -282,8 +285,9 @@ IOManager.definition = {
    */
   get port() 
   {
-    if (!this._port)
+    if (!this._port) {
       throw coUtils.Debug.Exception(_("I/O socket is not available."));
+    }
     return this._port;
   },
 
@@ -322,8 +326,8 @@ IOManager.definition = {
       coUtils.Debug.reportMessage(
         _("Connected to ttydriver. port: %d"), 
         serv.port);
-      let ostream = transport.openOutputStream(0, 1024 * 1024, 1);
-      let istream = transport.openInputStream(0, 1024 * 1024, 1);
+      let ostream = transport.openOutputStream(0, this.incoming_buffer_size, 1);
+      let istream = transport.openInputStream(0, this.outgoing_buffer_size, 1);
       coUtils.Debug.reportMessage(_("Started to observe incoming data."));
 
       // handle given stream as binary stream (null characters are allowed).
@@ -477,7 +481,6 @@ ExternalDriver.definition = {
       .createInstance(Components.interfaces.nsIProcess);
     external_process.init(runtime);
     this._external_process = external_process;
-
     session.notify("initialized/externaldriver", this);
   },
 
@@ -565,7 +568,6 @@ ExternalDriver.definition = {
    */
   start: function start(connection_port) 
   {
-
     // get script absolute path from abstract path.
     let script_absolute_path
       = coUtils.File
@@ -646,7 +648,10 @@ SocketTeletypeService.definition = {
       if (coUtils.File.exists(backup_data_path)) {
         let context = eval(coUtils.IO.readFromFile(backup_data_path));
         session.notify("command/restore", context);
-        file.remove(true)
+        let file = coUtils.File.getFileLeafFromAbstractPath(backup_data_path);
+        if (file.exists()) {
+          file.remove(false)
+        }
       }
     } else {
       let socket = Components
@@ -659,6 +664,7 @@ SocketTeletypeService.definition = {
   
       coUtils.Timer.setTimeout(function() { // ensure that "runAsync" is called after "asyncListen".
         external_driver.start(socket.port); // nsIProcess::runAsync.
+
       }, 100);
     }
   },
@@ -725,8 +731,8 @@ SocketTeletypeService.definition = {
   onSocketAccepted: function onSocketAccepted(serv, transport) 
   {
     let session = this._broker;
-    let istream = transport.openInputStream(0, 1024 * 1024, 1);
-    let ostream = transport.openOutputStream(0, 1024 * 1024, 1);
+    let istream = transport.openInputStream(0, 1024, 1);
+    let ostream = transport.openOutputStream(0, 1024, 1);
     let message = [session.command, session.term]
       .map(function(value) coUtils.Text.base64encode(value))
       .join(" ")

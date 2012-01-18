@@ -24,7 +24,6 @@
 
 /**
  * @class CommandProvider
- *
  */
 let CommandProvider = new Class().extends(Component);
 CommandProvider.definition = {
@@ -42,8 +41,8 @@ CommandProvider.definition = {
 
   _getCommand: function _getCommand(command_name)
   {
-    let session = this._broker;
-    let commands = session.notify("get/commands");
+    let broker = this._broker;
+    let commands = broker.notify("get/commands");
     let filtered_command = commands.filter(function(command) {
       return 0 == command.name.replace(/[\[\]]/g, "")
         .indexOf(command_name);
@@ -77,8 +76,8 @@ CommandProvider.definition = {
         command.complete(text, listener);
       }
     } else {
-      let session = this._broker;
-      let completer = session.uniget("get/completer/command");
+      let broker = this._broker;
+      let completer = broker.uniget("get/completer/command");
       completer.startSearch(command_name, listener);
     }
   },
@@ -86,11 +85,11 @@ CommandProvider.definition = {
   "[subscribe('command/eval-commandline')]":
   function evaluate(source) 
   {
+    let broker = this._broker;
     let pattern = /^\s*([0-9]*)(\w+)(\s*)/y;
     let match = pattern.exec(source);
     if (null === match) {
-      let session = this._broker;
-      session.notify(
+      broker.notify(
         "command/report-status-message", 
         _("Failed to parse given commandline code."));
       return;
@@ -98,27 +97,25 @@ CommandProvider.definition = {
     let [, repeat, command_name, /* blank */] = match;
     let command = this._getCommand(command_name);
     if (!command) {
-      let session = this._broker;
-      session.notify(
+      broker.notify(
         "command/report-status-message", 
         coUtils.Text.format(
           _("Command '%s' is not found."), command_name));
       return; // unknown command;
     }
 
-    let session = this._broker;
     try {
       let text = source.substr(pattern.lastIndex);
       repeat = Number(repeat) || 1;
       for (let i = 0; i < repeat; ++i) {
         let result = command.evaluate(text);
         if (result) {
-          session.notify(
+          broker.notify(
             "command/report-status-message", result.message);
         }
       }
     } catch (e) {
-      session.notify(
+      broker.notify(
         "command/report-status-message", 
         coUtils.Text.format(
           _("Failed to evaluate given commandline code: %s"), e));

@@ -124,6 +124,67 @@ CompletionView.definition = {
 
 };
 
+
+  /**
+   * @fn parseKeymapExpression
+   * Convert from a key map expression to a packed key code.
+   */
+coUtils.Keyboard.parseKeymapExpression = function parseKeymapExpression(expression) 
+{
+  expression = "s<C-n><A-del><S-alt-\\->c";
+  let pattern = /<.+?>|./g;
+  let match = expression.match(pattern);
+  let strokes = match;
+  let key_code_array = strokes.map(function(stroke) {
+    let tokens = null;
+    if (1 < stroke.length) {
+      stroke = stroke.slice(1, -1); // <...> -> ...
+      tokens = stroke
+        .match(/\\-|[^-]+/g)
+        .map(function(token) token.replace(/^\\/, ""));
+    } else {
+      tokens = [stroke];
+    }
+    alert(tokens);
+    
+    let key_code = null;
+    let last_key = tokens.pop();
+    if (!last_key.match(/^.$/)) {
+      // if last_key is not a printable character (ex. space, f1, del) ...
+      key_code = coUtils.Keyboard.KEYNAME_PACKEDCODE_MAP[last_key.toLowerCase()];
+      if (!key_code) {
+        throw coUtils.Debug.Exception(
+          _("Invalid last key sequence. '%s'. \nSource text: '%s'"),
+          last_key, expression);
+      }
+    } else {
+      // if last_key is a printable character (ex, a, b, X, Y)
+      key_code = last_key.charCodeAt(0);
+    }
+ 
+    tokens.forEach(function(sequence) 
+    {
+      if (sequence.match(/^(c|C|ctrl|ctl|\^)$/)) {
+        key_code |= 0x1 << this.KEY_CTRL;
+      } else if (sequence.match(/^(a|A|alt)$/)) {
+        key_code |= 0x1 << this.KEY_ALT;
+      } else if (sequence.match(/^(s|S|shift)$/)) {
+        key_code |= 0x1 << this.KEY_SHIFT;
+      } else if (sequence.match(/^(m|M|meta)$/)) {
+        key_code |= 0x1 << this.KEY_META;
+      } else {
+        throw coUtils.Debug.Exception(
+          _("Invalid key sequence '%s'."), sequence);
+      }
+    }, this);
+    alert(key_code)
+    return key_code;
+      
+  }, this); 
+  return key_code_array;
+};
+
+
 /**
  * @class Commandline
  */
@@ -300,6 +361,7 @@ Commandline.definition = {
     this.onpopupshown.enabled = true;
     this.onclick.enabled = true;
     this.onchange.enabled = true;
+//    this.key_next.enabled = true;
     this.enableCommandline.enabled = true;
   },
   
@@ -321,6 +383,7 @@ Commandline.definition = {
     this.onpopupshown.enabled = false;
     this.onclick.enabled = false;
     this.onchange.enabled = false;
+//    this.key_next.enabled = false;
     this.enableCommandline.enabled = false;
     this._element.parentNode.removeChild(this._element);
   },
@@ -439,7 +502,7 @@ Commandline.definition = {
   {
     let index = Math.max(0, this.currentIndex);
     let result = this._result;
-    if (this._result) {
+    if (result) {
       let textbox = this._textbox;
       let completion_text = result.labels[index];
       let settled_length = 
@@ -461,7 +524,9 @@ Commandline.definition = {
       let current_text = this._textbox.value;
       // if current text does not match completion text, hide it immediatly.
       if (0 != this._completion.value.indexOf(current_text)) {
-        this._completion.inputField.value = "";
+        if (this._completion.inputField) {
+          this._completion.inputField.value = "";
+        }
       }
       this._stem_text = current_text;
       this.select(-1);
@@ -525,8 +590,8 @@ Commandline.definition = {
     if ("e".charCodeAt(0) == code && event.ctrlKey) { // ^e
       let textbox = this._textbox;
       let length = this._textbox.value.length;
-      textbox.selectionStart = length - 1;
-      textbox.selectionEnd = length - 1;
+      textbox.selectionStart = length;
+      textbox.selectionEnd = length;
     }
     if ("b".charCodeAt(0) == code && event.ctrlKey) { // ^b
       let textbox = this._textbox;
@@ -633,6 +698,13 @@ Commandline.definition = {
     let broker = this._broker;
     broker.notify("command/focus");
   },
+/*
+  "[cmap('<C-n>')]":
+  function key_next() 
+  {
+    alert("key_next");
+  },
+  */
 
   "[listen('popupshown', '#tanasinn_commandline', false)]":
   function onpopupshown(event) 

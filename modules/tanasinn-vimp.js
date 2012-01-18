@@ -42,7 +42,7 @@ function getTanasinnProcess()
     Components
       .classes["@mozilla.org/moz/jssubscript-loader;1"]
       .getService(Components.interfaces.mozIJSSubScriptLoader)
-      .loadSubScript(file, {window: window});
+      .loadSubScript(file);
     process_class = Components
       .classes["@zuse.jp/tanasinn/process;1"]
   }
@@ -52,7 +52,7 @@ function getTanasinnProcess()
   return process;
 }
 
-commands.add(['tanasinnlaunch'], 
+commands.add(["tanasinnlaunch", "tlaunch"], 
   "Show tanasinn's Launcher.", 
   function (args) 
   { 
@@ -62,8 +62,8 @@ commands.add(['tanasinnlaunch'],
   }
 );
 
-commands.add(['tanasinncommand'], 
-  "Run a terminal emurator on this browser.", 
+commands.add(["tanasinncommand", "tcommand"], 
+  "Run a command on tanasinn.", 
   function (args) 
   { 
     let process = getTanasinnProcess();

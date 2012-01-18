@@ -245,7 +245,7 @@ EventBrokerBase.definition = {
             _("called at: '%s'.\n", 
               "The above Error is trapped in the ",
               "following local event handler. '%s'."), 
-            let (stack = Components.stack .caller.caller .caller)
+            let (stack = Components.stack .caller.caller.caller)
               stack.filename.split("->").pop().split("?").shift() + ": " + stack.lineNumber, 
             topic);
           return null;
@@ -530,7 +530,7 @@ let EventExpressionProcesser = new Class();
 EventExpressionProcesser.definition = {
 
   /** constructor */
-  initialize: function(broker) 
+  initialize: function _generateTokens(broker) 
   {
     this._broker = broker;
   },
@@ -539,14 +539,17 @@ EventExpressionProcesser.definition = {
   /** An generator method which iterates identifiers and operators. 
    *  @param text {String} An source text which is to be tokenized.
    */
-  _generateTokens: function(text) 
+  _generateTokens: function _generateTokens(text) 
   {
     // [blank] or [operators] or [identifier]
-    let pattern = /\s*(?:(@|~|&|\||\(|\))|([A-Za-z0-9_\-\/\.]*)\{([^\}]+)\}([A-Za-z0-9_\-\/\.]*)|([A-Za-z0-9_\-\/\.]+))/y;
+    let pattern = new RegExp(/\s*(?:(@|~|&|\||\(|\))|([A-Za-z0-9_\-\/\.]*)\{([^\}]+)\}([A-Za-z0-9_\-\/\.]*)|([A-Za-z0-9_\-\/\.]+))/y);
+
+    //pattern.lastIndex = 0;
     while (true) {
       let match = pattern.exec(text);
-      if (!match)
+      if (!match) {
         break;
+      }
       let [/* blank */, operator, first, expression, last, identifier] = match;
       if (operator) {
         yield operator;
@@ -605,7 +608,7 @@ EventExpressionProcesser.definition = {
       }.call(this);
     };
     if (1 != stack.length) {
-      throw coUtils.Debug.Exception(_("Invalid Expression: '%s'."), expression);
+      throw coUtils.Debug.Exception(_("Invalid Expression: '%s'."), tokens);
     }
   },
 

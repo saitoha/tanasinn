@@ -117,7 +117,10 @@ function main(desktop)
 {
   desktop.subscribe(
     "@initialized/broker", 
-    function(session) new Contextmenu(session));
+    function(session) 
+    {
+      new Contextmenu(session);
+    });
 }
 
 

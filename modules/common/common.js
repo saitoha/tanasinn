@@ -81,10 +81,10 @@ coUtils.getWindow = function getWindow()
  */
 coUtils.format = function format(/* template, arg1, arg2, .... */) 
 {
-  let it = Iterator(arguments);
-  let [, template] = it.next();
+  let args = [].slice.apply(arguments);
+  let template = args.shift();
   let result = template.replace(/%[s|f|d|i|x]/g, function(matchString) {
-    let [, value] = it.next();
+    let value = args.shift();
     if ("%s" == matchString) {
       return String(value);
     } else if ("%f" == matchString) {
@@ -567,7 +567,6 @@ coUtils.Keyboard = {
   
     return key_code;
   },
-
 };
 
 coUtils.Unicode = {
@@ -780,10 +779,10 @@ coUtils.Text = {
    */
   format: function format(/* template, arg1, arg2, .... */) 
   {
-    let it = Iterator(arguments);
-    let [, template] = it.next();
+    let args = [].slice.apply(arguments);
+    let template = args.shift();
     let result = template.replace(/%[s|f|d|i|x]/g, function(matchString) {
-      let [, value] = it.next();
+      let value = args.shift();
       if ("%s" == matchString) {
         return String(value);
       } else if ("%f" == matchString) {
@@ -843,35 +842,6 @@ coUtils.Timer = {
     return timer;
   },
 
-};
-
-coUtils.Style = {
-
-  /** Create CSS style section and add rules to the document. 
-   *  @param {String} css_text Styles described in CSS format.
-   */
-  addRule: function addRule(element, css_text) 
-  {
-    let document = element.ownerDocument;
-    let style = document.createProcessingInstruction(
-      "xml-stylesheet",
-      "type=\"text/css\" href=\"data:text/css," + encodeURIComponent(css_text.toString()) + "\"");
-    document.insertBefore(style, document.documentElement);
-    return style;
-  },
-
-  /** Remove CSS rules from the document. 
-   *  @param {Object} A style element.
-   */
-  removeRule: function removeRule(style) 
-  {
-    let document = coUtils.getWindow().document;
-    document.removeChild(style);
-  },
-
-};
-
-coUtils.Algorithm = {
 };
 
 coUtils.Debug = {
@@ -1248,7 +1218,7 @@ coUtils.Localize = new function()
  */
 function _() 
 {
-  let lines = [line for each (line in arguments)];
+  let lines = [].slice.apply(arguments);
   if (coUtils.Localize) {
     let result =  coUtils.Localize.get(lines.join(""));
     return result;

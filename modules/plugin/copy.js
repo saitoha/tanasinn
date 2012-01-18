@@ -114,7 +114,10 @@ function main(desktop)
 {
   desktop.subscribe(
     "@initialized/broker", 
-    function(session) new Copy(session));
+    function(session) 
+    {
+      new Copy(session);
+    });
 }
 
 

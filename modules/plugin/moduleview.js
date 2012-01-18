@@ -172,6 +172,9 @@ function main(desktop)
 {
   desktop.subscribe(
     "@initialized/broker", 
-    function(session) new ComponentViewer(session));
+    function(session) 
+    {
+      new ComponentViewer(session);
+    });
 }
 

@@ -78,7 +78,7 @@
  *      }
  *    })
  *
- *    It will be converted as bellow.
+ *    It will be converted as below.
  *
  *    <html:div style="text-align: center;">
  *      <html:div style="font-size: 1.5em;">
@@ -313,17 +313,20 @@ TemplateBuilder.definition = {
         arguments.callee(element, key, value); // call recersively.
       }
     } else {
-      value = String(value);
-      try {
-        if (element.hasAttribute && element.hasAttribute(key)) {
-          element.setAttribute(key, value);
-        } else {
-          element.setAttribute && element.setAttribute(key, value);
-          element[key] = value;
+      if ("style" == key) {
+        element.style.cssText = value;
+      } else {
+        try {
+          if (element.hasAttribute && element.hasAttribute(key)) {
+            element.setAttribute(key, value);
+          } else {
+            element.setAttribute && element.setAttribute(key, value);
+            element[key] = value;
+          }
+        } catch(e) {
+          coUtils.Debug.reportError(e);
+          coUtils.Debug.reportError("key: " + key + ", value: " + value);
         }
-      } catch(e) {
-        coUtils.Debug.reportError(e);
-        coUtils.Debug.reportError("key: " + key + ", value: " + value);
       }
     }
   }

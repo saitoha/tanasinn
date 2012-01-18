@@ -211,11 +211,16 @@ Renderer.definition = {
   function restore(context) 
   {
     let data = context[this.id];
-    this.force_manospace_rendering = data.force_manospace_rendering;
-    this.line_height = data.line_height;
-    this.font_family = data.font_family;
-    this.font_size = data.font_size;
-    this.draw();
+    if (data) {
+      this.force_manospace_rendering = data.force_manospace_rendering;
+      this.line_height = data.line_height;
+      this.font_family = data.font_family;
+      this.font_size = data.font_size;
+      this.draw();
+    } else {
+      coUtils.Debug.reportWarning(
+        _("Cannot restore last state of renderer: data not found."));
+    }
   },
 
   "[subscribe('set/font-size')]": 
@@ -394,7 +399,10 @@ function main(desktop)
 {
   desktop.subscribe(
     "@initialized/broker", 
-    function(session) new Renderer(session));
+    function(session) 
+    {
+      new Renderer(session);
+    });
 }
 
 

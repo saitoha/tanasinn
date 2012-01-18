@@ -210,7 +210,7 @@ ScreenSequenceHandler.definition = {
     //  undefined // TODO: 
     : coUtils.Debug.reportWarning(
         _("%s sequence [%s] was ignored."),
-        arguments.callee.name, [n for each (n in arguments)]);
+        arguments.callee.name, [].slice.apply(arguments));
   },
 
   "[sequence('CSI %dK')]":
@@ -224,7 +224,7 @@ ScreenSequenceHandler.definition = {
       this.eraseLine()
     : coUtils.Debug.reportWarning(
         _("%s sequence [%s] was ignored."),
-        arguments.callee.name, [n for each (n in arguments)]);
+        arguments.callee.name, [].slice.apply(arguments));
   },
 
   "[sequence('CSI %dL')]":
@@ -439,7 +439,7 @@ ScreenSequenceHandler.definition = {
     if (n1 !== undefined && n1 != 0) {
       coUtils.Debug.reportWarning(
         _("%s sequence [%s] was ignored."),
-        arguments.callee.name, [n for each (n in arguments)]);
+        arguments.callee.name, [].slice.apply(arguments));
     } else { //
       const reply_map = {
         "VT100"  : "\x1b[?1;2c"
@@ -662,14 +662,14 @@ ScreenSequenceHandler.definition = {
   { // TODO: Cursor Horaizontal Tabulation
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
-      arguments.callee.name, [n for each (n in arguments)]);
+      arguments.callee.name, [].slice.apply(arguments));
   },
 
   CBT: function CBT(n) 
   { // Cursor Backward Tabulation
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
-      arguments.callee.name, [n for each (n in arguments)]);
+      arguments.callee.name, [].slice.apply(arguments));
   },
 
   /**
@@ -701,35 +701,35 @@ ScreenSequenceHandler.definition = {
   { // TODO: REPeat the preceding graphic character
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
-      arguments.callee.name, [n for each (n in arguments)]);
+      arguments.callee.name, [].slice.apply(arguments));
   },
 
   HVP: function HVP(n1, n2) 
   { // TODO: Horizontal and Vertical Position
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
-      arguments.callee.name, [n for each (n in arguments)]);
+      arguments.callee.name, [].slice.apply(arguments));
   },
 
   TBC: function TBC(n) 
   { // TODO: TaB Clear
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
-      arguments.callee.name, [n for each (n in arguments)]);
+      arguments.callee.name, [].slice.apply(arguments));
   },
 
   MC: function MC(n) 
   { // TODO: Media Copy
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
-      arguments.callee.name, [n for each (n in arguments)]);
+      arguments.callee.name, [].slice.apply(arguments));
   },
 
   DSR: function DSR() 
   { // TODO: Device Status Report
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
-      arguments.callee.name, [n for each (n in arguments)]);
+      arguments.callee.name, [].slice.apply(arguments));
   },
  
   DCS: function DCS() 
@@ -1590,7 +1590,10 @@ function main(desktop)
 {
   desktop.subscribe(
     "@initialized/broker", 
-    function(session) new Screen(session));
+    function(session) 
+    {
+      new Screen(session);
+    });
 }
 
 

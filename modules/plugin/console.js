@@ -41,19 +41,19 @@ MessageFilter.definition = {
         <version>0.1</version>
     </module>,
 
-  get style() <![CDATA[
-    @import "chrome://global/skin/viewbuttons.css";
-    .tanasinn-console-error   { background-color: lightpink; }
-    .tanasinn-console-warning { background-color: lightyellow; }
-    .tanasinn-console-message { background-color: lightblue; }
-    .tanasinn-console-native  { background-color: silver; }
-    .tanasinn-console-unknown { background-color: orange; }
-    .tanasinn-console-line { border-bottom: 1px solid green; padding: 0px 5px; }
-    .tanasinn-console > *:not([class~="error"  ]) > .tanasinn-console-error { display: none !important; }
-    .tanasinn-console > *:not([class~="warning"]) > .tanasinn-console-warning { display: none !important; }
-    .tanasinn-console > *:not([class~="message"]) > .tanasinn-console-message { display: none !important; }
-    .tanasinn-console > *:not([class~="native" ]) > .tanasinn-console-native { display: none !important; }
-  ]]>,
+//  get style() <![CDATA[
+//    @import "chrome://global/skin/viewbuttons.css";
+//    .tanasinn-console-error   { background-color: lightpink; }
+//    .tanasinn-console-warning { background-color: lightyellow; }
+//    .tanasinn-console-message { background-color: lightblue; }
+//    .tanasinn-console-native  { background-color: silver; }
+//    .tanasinn-console-unknown { background-color: orange; }
+//    .tanasinn-console-line { border-bottom: 1px solid green; padding: 0px 5px; }
+//    .tanasinn-console > *:not([class~="error"  ]) > .tanasinn-console-error { display: none !important; }
+//    .tanasinn-console > *:not([class~="warning"]) > .tanasinn-console-warning { display: none !important; }
+//    .tanasinn-console > *:not([class~="message"]) > .tanasinn-console-message { display: none !important; }
+//    .tanasinn-console > *:not([class~="native" ]) > .tanasinn-console-native { display: none !important; }
+//  ]]>,
 
   get filter_expression()
     /^\[(.+?): "(tanasinn: )?([^"]*?)" {file: "([^"]*?)" line: ([0-9]+?)( name: "([^"]*?)")?}\]$/m,
@@ -73,7 +73,6 @@ MessageFilter.definition = {
    */
   install: function uninstall(session) 
   {
-    this._css = coUtils.Style.addRule(session.root_element, this.style);
     this.onMessageFiltersRequired.enabled = true;
   },
 
@@ -83,7 +82,6 @@ MessageFilter.definition = {
   uninstall: function uninstall(session) 
   {
     this.onMessageFiltersRequired.enabled = false;
-    coUtils.Style.removeRule(this._css);
   },
 
   "[subscribe('get/message-filters')]": 
@@ -114,7 +112,6 @@ MessageFilter.definition = {
         Components.classes["@mozilla.org/alerts-service;1"]
           .getService(Components.interfaces.nsIAlertsService)
           .showAlertNotification(
-            //"chrome://mozapps/skin/downloads/downloadIcon.png",   // imageUrl
             "chrome://mozapps/skin/extensions/alerticon-error.png",
             category,
             file + ":" + line + " " + message,    // text
@@ -140,21 +137,33 @@ MessageFilter.definition = {
     return {
       tagName: "row",
       className: "tanasinn-console-line " + class_string,
+      style: let (color_map = {
+        "JavaScript Error"  : "lightpink",
+        "JavaScript Warning": "lightyellow",
+        "JavaScript Message": "lightblue",
+      }) <>
+        background-color: { color_map[category] || "" };
+        border-bottom: 1px solid green;
+      </>,
       childNodes: [
         { 
           tagName: "label", 
           crop: "start",
           width: 100,
           value: file + " ", 
-          style: { color: "red", width: "4em", }   
+          style: <>
+            color: red;
+            width: 4em;
+          </>,
         },
         { 
           tagName: "box", 
-          innerText: "line: " + line
+          innerText: "line: " + line,
+          style: "padding: 0px 4px",
         },
         { 
           tagName: "box", 
-          innerText: message + " ", 
+          innerText: message, 
         },
       ]
     };
@@ -247,7 +256,9 @@ DisplayManager.definition = {
     // returns fallback template.
     return {
       tagName: "row",
-      style: { borderBottom: "1px solid green" },
+      style: <>
+        border-bottom: 1px solid green;,
+      </>,
       childNodes: [
         { tagName: "box", innerText: "" },
         { tagName: "box", innerText: "" },

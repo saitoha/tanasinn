@@ -48,7 +48,7 @@ Control.definition = {
   {
     coUtils.Debug.reportWarning(
       "%s sequence [%s] was ignored.",
-      arguments.callee.name, [n for each (n in arguments)]);
+      arguments.callee.name, [].slice.apply(arguments));
   },
   
   /** Start of text.
@@ -58,7 +58,7 @@ Control.definition = {
   {
     coUtils.Debug.reportWarning(
       "%s sequence [%s] was ignored.",
-      arguments.callee.name, [n for each (n in arguments)]);
+      arguments.callee.name, [].slice.apply(arguments));
   },
  
   /** End of text.
@@ -68,7 +68,7 @@ Control.definition = {
   {
     coUtils.Debug.reportWarning(
       "%s sequence [%s] was ignored.",
-      arguments.callee.name, [n for each (n in arguments)]);
+      arguments.callee.name, [].slice.apply(arguments));
   },
 
   /** Start of transmission.
@@ -78,7 +78,7 @@ Control.definition = {
   {
     coUtils.Debug.reportWarning(
       "%s sequence [%s] was ignored.",
-      arguments.callee.name, [n for each (n in arguments)]);
+      arguments.callee.name, [].slice.apply(arguments));
   },
   
   /** Enquire.
@@ -97,7 +97,7 @@ Control.definition = {
   {
     coUtils.Debug.reportWarning(
       "%s sequence [%s] was ignored.",
-      arguments.callee.name, [n for each (n in arguments)]);
+      arguments.callee.name, [].slice.apply(arguments));
   },
    
   /** Bell.
@@ -198,7 +198,7 @@ Control.definition = {
   {
     coUtils.Debug.reportWarning(
       "%s sequence [%s] was ignored.",
-      arguments.callee.name, [n for each (n in arguments)]);
+      arguments.callee.name, [].slice.apply(arguments));
   },
  
   /** Device control 1.
@@ -218,7 +218,7 @@ Control.definition = {
   {
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored.",
-        arguments.callee.name, [n for each (n in arguments)]));
+        arguments.callee.name, [].slice.apply(arguments)));
   },
 
   /** Device control 3.
@@ -238,7 +238,7 @@ Control.definition = {
   {
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored.",
-        arguments.callee.name, [n for each (n in arguments)]));
+        arguments.callee.name, [].slice.apply(arguments)));
   },
   
   /** Negative acknowledge.
@@ -248,7 +248,7 @@ Control.definition = {
   {
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored.",
-        arguments.callee.name, [n for each (n in arguments)]));
+        arguments.callee.name, [].slice.apply(arguments)));
   },
   
   /** Synchronous idle.
@@ -258,7 +258,7 @@ Control.definition = {
   {
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored.",
-        arguments.callee.name, [n for each (n in arguments)]));
+        arguments.callee.name, [].slice.apply(arguments)));
   },
   
   /** End of transmission block.
@@ -268,7 +268,7 @@ Control.definition = {
   {
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored.",
-        arguments.callee.name, [n for each (n in arguments)]));
+        arguments.callee.name, [].slice.apply(arguments)));
   },
   
   /** Cancel of previous word or charactor.
@@ -278,7 +278,7 @@ Control.definition = {
   {
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored.",
-        arguments.callee.name, [n for each (n in arguments)]));
+        arguments.callee.name, [].slice.apply(arguments)));
   },
   
   /** End of medium.
@@ -288,7 +288,7 @@ Control.definition = {
   {
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored.",
-        arguments.callee.name, [n for each (n in arguments)]));
+        arguments.callee.name, [].slice.apply(arguments)));
   },
   
   /** Substitute.
@@ -298,7 +298,7 @@ Control.definition = {
   {
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored.",
-        arguments.callee.name, [n for each (n in arguments)]));
+        arguments.callee.name, [].slice.apply(arguments)));
   },
   
   /** File separator.
@@ -308,7 +308,7 @@ Control.definition = {
   {
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored.",
-        arguments.callee.name, [n for each (n in arguments)]));
+        arguments.callee.name, [].slice.apply(arguments)));
   },
  
   /** Group separator.
@@ -318,7 +318,7 @@ Control.definition = {
   {
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored.",
-        arguments.callee.name, [n for each (n in arguments)]));
+        arguments.callee.name, [].slice.apply(arguments)));
   },
   
   /** Record separator.
@@ -328,7 +328,7 @@ Control.definition = {
   {
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored.",
-        arguments.callee.name, [n for each (n in arguments)]));
+        arguments.callee.name, [].slice.apply(arguments)));
   },
   
   /** Unit separator.
@@ -338,7 +338,7 @@ Control.definition = {
   {
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored.",
-        arguments.callee.name, [n for each (n in arguments)]));
+        arguments.callee.name, [].slice.apply(arguments)));
   },
   
   /** Delete.

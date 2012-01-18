@@ -38,6 +38,21 @@ Desktop.definition = {
   get root_element()
     this._root_element,
 
+  "[persistable] profile_directory": "$Home/.tanasinn/settings",
+  "[persistable] profile": "default",
+  "[persistable] cygwin_root": "C:\\cygwin",
+
+  command: null,
+  default_command: "login -pf $USER",
+  "default_command@Linux" : "$SHELL",
+  "default_command@Darwin": "login -pf $USER",
+  "default_command@WINNT" : "login -pf $USER",
+  term: null,
+  default_term: "xterm",
+
+  width: 120,
+  height: 36,
+
   initializeWithWindow: 
   function initializeWithWindow(window)
   {
@@ -58,7 +73,7 @@ Desktop.definition = {
     let broker = this._broker;
     broker.notify(<>initialized/broker</>, this);
 
-    this.notify("event/desktop-started", this);
+    this.notify("event/broker-started", this);
   },
 
   uninstall: function uninstall()
@@ -99,15 +114,31 @@ Desktop.definition = {
   start: function start(parent, command, term, size, search_path, callback) 
   {
     let broker = this._broker;
-    let box = broker.start(parent, command, term, size, search_path, callback, this); 
-    box.style.cssText = "position: fixed; top: 0px; left: 0px";
-    // create session object;
+    broker.load(this, search_path);
+    let document = parent.ownerDocument;
+    let box = document.createElement("box");
+    if (coUtils.Runtime.app_name.match(/^(Firefox|Thunderbird|SeaMonkey|Songbird)$/)) {
+      box.style.cssText = "position: fixed; top: 0px; left: 0px";
+    }
+    // xul app
+    parent.appendChild(box);
+
+    // create request object;
+    command = command 
+      || this["default_command@" + coUtils.Runtime.os] 
+      || this.default_command;
+
+    term = term || this.default_term;
+
+    let [width, height] 
+      = size || [this.width, this.height];
+
     let request = { 
       parent: box, 
-      command: broker.command, 
-      term: broker.term, 
-      width: broker.width,
-      height: broker.height,
+      command: command, 
+      term: term, 
+      width: width,
+      height: height,
     };
     let session = this.uniget("event/session-requested", request);
     return box;
