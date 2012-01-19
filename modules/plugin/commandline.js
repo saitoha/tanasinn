@@ -298,7 +298,7 @@ Commandline.definition = {
               
             </>,
             noautofocus: true,
-//            height: 200,
+            height: 200,
             childNodes: {
               tagName: "stack",
               flex: 1,
