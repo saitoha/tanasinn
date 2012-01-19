@@ -115,6 +115,7 @@ OuterChrome.definition = {
           tagName: "box",
           style: <>
             -moz-box-shadow: 5px 4px 29px black;
+            -moz-border-radius: 8px;
             border-radius: 8px;
             //background: black;
             background: -moz-linear-gradient(top, #777, #000);
@@ -173,8 +174,9 @@ OuterChrome.definition = {
         = session.uniget("command/construct-chrome", this.template);
     this._element = box_element;
 
-    if (!coUtils.Runtime.app_name.match(/^(Firefox|Thunderbird|SeaMonkey)$/)) {
+    if (!coUtils.Runtime.app_name.match(/^(Firefox|Thunderbird|SeaMonkey|Songbird)$/)) {
       this._element.firstChild.style.borderRadius = "0px";
+      this._element.firstChild.style.MozBorderRadius = "0px";
       this._element.firstChild.style.margin = "0px";
     }
 

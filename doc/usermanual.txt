@@ -640,7 +640,7 @@ kill
 == Bug reports and patches
 
 Patches and bug reports are are encouraged. > saitoha <user@zuse.jp>,
-or toweet me (http:/#/twitter.com/feel_tanasinn[English] / http:/#/twitter.com/kefir_[Japanese]).
+or tweet to me (http:/#/twitter.com/feel_tanasinn[English] / http:/#/twitter.com/kefir_[Japanese]).
 #elif __JP__
 == バグレポート・パッチ
 

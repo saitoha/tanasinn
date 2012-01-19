@@ -167,7 +167,7 @@ CharsetMode.definition = {
   function SCSG0(mode) 
   {
     let session = this._broker;
-    session.notify("sequnece/g0", mode);
+    session.notify("sequence/g0", mode);
   },
   
   "[sequence('ESC )%c')]": 

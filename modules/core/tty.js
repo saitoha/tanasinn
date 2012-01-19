@@ -217,7 +217,14 @@ Controller.definition = {
   onDataAvailable: 
   function onDataAvailable(request, context, input, offset, count) 
   {
-    let data = context.readBytes(count);
+    let data;
+    if (context.readBytes) { // Gecko2
+      data = context.readBytes(count);
+    } else {
+      data = context
+        .QueryInterface(Components.interfaces.nsIScriptableInputStream)
+        .read(count);
+    }
     let command_list = data.split(/[\n\r]/);
     command_list.pop();
     try {
@@ -296,7 +303,9 @@ IOManager.definition = {
    */
   send: function send(data) 
   {
-    this._output.write(data, data.length);
+    if (this._output) {
+      this._output.write(data, data.length);
+    }
   },
 
   /** Close I/O channel and stop communication with TTY device.
@@ -429,7 +438,7 @@ IOManager.definition = {
   onDataAvailable: 
   function onDataAvailable(request, context, input, offset, count)
   {
-    let data = context.readBytes(count);
+    let data = this._input.readBytes(count);
     let session = this._broker;
     session.notify("event/data-arrived", data);
   }
@@ -746,6 +755,7 @@ SocketTeletypeService.definition = {
       .createInstance(Components.interfaces.nsIInputStreamPump);
     pump.init(istream, -1, -1, 0, 0, false);
     pump.asyncRead(this, scriptable_input_stream);
+    this._istream = scriptable_input_stream;
   },
 
   /**
@@ -796,7 +806,14 @@ SocketTeletypeService.definition = {
   onDataAvailable: 
   function onDataAvailable(request, context, input, offset, count) 
   {
-    let data = context.readBytes(count);
+    let data;
+    if (context.readBytes) { // Gecko2
+      data = context.readBytes(count);
+    } else {
+      data = context
+        .QueryInterface(Components.interfaces.nsIScriptableInputStream)
+        .read(count);
+    }
     context.close()
     let [control_port, pid, ttyname] = data.split(":");
     this._pid = Number(pid);

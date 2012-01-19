@@ -43,6 +43,7 @@ CompletionView.definition = {
   _unselectRow: function _unselectRow(row)
   {
     row.style.borderRadius = "0px";
+    row.style.MozBorderRadius = "0px";
     row.style.background = "";
     row.style.color = "";
   },
@@ -50,6 +51,7 @@ CompletionView.definition = {
   _selectRow: function _selectRow(row)
   {
     row.style.borderRadius = "6px";
+    row.style.MozBborderRadius = "6px";
     row.style.backgroundImage 
       = "-moz-linear-gradient(top, #777, #666)";
     row.style.color = "white";
@@ -290,12 +292,13 @@ Commandline.definition = {
               margin: 0px;
               border: none;
               //-moz-box-shadow: 3px 3px 8px black;
+              //-moz-border-radius: 7px;
               //border-radius: 7px;
               font: menu;
               
             </>,
             noautofocus: true,
-            height: 200,
+//            height: 200,
             childNodes: {
               tagName: "stack",
               flex: 1,
@@ -304,8 +307,9 @@ Commandline.definition = {
               childNodes: [
                 {
                   tagName: "box",
-                  flex: 1,
+//                  flex: 1,
                   style: <>
+                    -moz-border-radius: 7px;
                     border-radius: 7px;
                     background: -moz-linear-gradient(top, #bbb, #888);
                     opacity: 0.8;
@@ -315,7 +319,7 @@ Commandline.definition = {
                   tagName: "scrollbox",
                   id: "tanasinn_completion_scroll",
                   orient: "vertical", // box-packing
-                  flex: 1,
+//                  flex: 1,
                   style: <>
                     margin: 8px;
                       //overflow-x: auto; 

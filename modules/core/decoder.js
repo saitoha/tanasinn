@@ -500,14 +500,26 @@ Decoder.definition = {
   function onLoad(session) 
   {
     this._decoder_map = {};
-    session.subscribe("set_g0", function(map) this._g0 = map, this);
-    session.subscribe("set_g1", function(map) this._g1 = map, this);
+    this.setG0.enabled = true;
+    this.setG1.enabled = true;
     session.notify("get/decoders").map(function(information)
     {
       this._decoder_map[information.charset] = information; 
     }, this);
     this.scheme = this.initial_scheme;
     session.notify("initialized/decoder", this);
+  },
+
+  "[subscribe('sequence/g0'), enabled]": 
+  function setG0(mode) 
+  {
+    this._g0 = mode;
+  },
+
+  "[subscribe('sequence/g1')]": 
+  function setG1(mode) 
+  {
+    this._g1 = mode;
   },
 
   "[subscribe('change/decoder'), enabled]": 

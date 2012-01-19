@@ -1825,8 +1825,9 @@ TextCompletionDisplayDriver.definition = {
                     tagName: "label",
                     innerText: completion_text.substr(match_position, search_string.length),
                     style: <>
-                      margin: 0px; 
+                      font-size: 19px;
                       font-weight: bold; 
+                      margin: 0px; 
                       color: #f00; 
                       text-decoration: underline;
                     </>,
