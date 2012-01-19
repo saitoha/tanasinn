@@ -1162,12 +1162,12 @@ Screen.definition = {
    * @property width
    * Screen width in counting the number of columns.
    */
-  get width() 
+  get "[persistable] width"() 
   {
     return this._width;
   },
 
-  set width(value) 
+  set "[persistable] width"(value) 
   {
     if (this._buffer) {
       let width = this._width;
@@ -1195,12 +1195,12 @@ Screen.definition = {
    * @property height
    * Screen height in counting the number of lines.
    */
-  get height() 
+  get "[persistable] height"() 
   {
     return this._height;
   },
 
-  set height(value) 
+  set "[persistable] height"(value) 
   {
     if (this._buffer) {
       if (value == this._height) {
@@ -1506,7 +1506,7 @@ Screen.definition = {
   { // Erase CHaracters
     let start = this.cursor.positionX;
     let end = start + n;
-    this._getCurrentLine().erase(start, end, this.cursor.attr);
+    this._getCurrentLine().erase(start, end);
   },
 
   deleteCharacters: function deleteCharacters(n) 

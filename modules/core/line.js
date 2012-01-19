@@ -289,10 +289,10 @@ Cell.definition = {
   },
 
   /** Erase the pair of character and attribute structure */
-  erase: function erase(attr) 
+  erase: function erase() 
   {
     this.c = 0x20;
-    this.value = attr ? attr.value: 0x7;
+    this.value = 0x7;
   },
 
   serialize: function serialize(context)
@@ -623,12 +623,12 @@ Line.definition = {
    * 
    * [ a b c d e f g h ] -> [ a b       f g h ]
    */
-  erase: function erase(start, end, attr) 
+  erase: function erase(start, end) 
   {
     this.addRange(start, end);
     this.cells
       .slice(start, end)
-      .forEach(function(cell) cell.erase(attr));
+      .forEach(function(cell) cell.erase());
   },
 
    /**

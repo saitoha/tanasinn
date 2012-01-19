@@ -63,7 +63,6 @@ Scrollbar.definition = {
           MozTransitionProperty: "opacity",
           MozTransitionDuration: <>{this.transition_duration}ms</>,
           borderRadius: <>{this.inner_width + this.border_width * 2}px</>,
-          MozBorderRadius: <>{this.inner_width + this.border_width * 2}px</>,
           border: <>{this.border_width}px solid {this.color}</>,
           width: <>{this.inner_width + this.border_width * 2}px</>,
           margin: "8px",
@@ -91,7 +90,6 @@ Scrollbar.definition = {
             height: this.inner_width * 2,
             style: { 
               borderRadius: <>{this.inner_width / 2}px</>,
-              MozBorderRadius: <>{this.inner_width / 2}px</>,
               backgroundColor: this.color,
             },
           },

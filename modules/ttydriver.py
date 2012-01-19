@@ -143,8 +143,8 @@ if not hasattr(os, "uname"):
 system = os.uname()
 
 def trace(message):
-    if system[0] == 'Darwin':
-        os.system("say -v vict '%s'" % message)
+    #if system[0] == 'Darwin':
+    #    os.system("say -v vict '%s'" % message)
     #if system[0] == 'Linux':
     #    os.system("espeak '%s'" % message)
     os.system("echo '%s' >> ~/.tanasinn/log/tty.log &" % message);
@@ -241,7 +241,7 @@ class TeletypeDriver:
                 rfd, wfd, xfd = select.select(rfds, wfds, xfds, 10)
                 if xfd: # checking error.
                     break    
-                if not rfd: 
+                if not rfd: # checking error.
                     break    
                 data = self.control_socket.recv(BUFFER_SIZE)
                 if data == "beacon\n":

@@ -722,7 +722,6 @@ Launcher.definition = {
             tagName: "vbox",
             style: <>
               padding: 20px;
-              -moz-border-radius: 20px;
               border-radius: 20px;
               background: -moz-linear-gradient(top, #999, #444);
               -moz-box-shadow: 10px 10px 20px black;
@@ -751,7 +750,6 @@ Launcher.definition = {
               -moz-user-focus: ignore; 
 //              -moz-box-shadow: 15px 14px 9px black;
               border: 1px solid #aaa;
-              -moz-border-radius: 10px;
               border-radius: 10px;
               font: menu;
               opacity: 0.87;
@@ -769,7 +767,6 @@ Launcher.definition = {
                   tagName: "box",
                   style: <> 
                     //border: 1px solid #aaa;
-                    -moz-border-radius: 12px;
                     border-radius: 12px;
                     outline: none;
                     border: none;
@@ -890,7 +887,6 @@ Launcher.definition = {
       row.style.color = "black";
       row.style.cssText = <>
         background: -moz-linear-gradient(top, #ddd, #eee);
-        -moz-border-radius: 4px;
         border-radius: 4px;
       </>;
       try {

@@ -459,7 +459,6 @@ StepExecution.definition = {
             style: <>
               color: red;
               background: lightblue; 
-              -moz-border-radius: 6px;
               border-radius: 6px;
               padding: 3px;
             </>,
@@ -477,7 +476,6 @@ StepExecution.definition = {
           tagName: "box",
           style: <> 
             background: lightyellow;
-            -moz-border-radius: 6px;
             border-radius: 6px;
             margin: 2px;
             padding: 0px;
@@ -516,7 +514,6 @@ StepExecution.definition = {
           style: <>
             color: darkcyan;
             background: lightgray;
-            -moz-border-radius: 6px;
             border-radius: 6px;
             padding: 3px;
           </>,
@@ -536,8 +533,6 @@ StepExecution.definition = {
           style: <>
             color: darkcyan;
             background: lightpink;
-            -moz-border-radius: 6px;
-            moz-border-radius: 6px;
             border-radius: 6px;
             padding: 3px;
           </>,

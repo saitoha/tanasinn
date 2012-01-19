@@ -97,7 +97,6 @@ OverlayIndicator.definition = {
           color: {this.color};
           font-size: {this.fontSize};
           padding: {this.padding}; 
-          -moz-border-radius: {this.borderRadius}; 
           border-radius: {this.borderRadius}; 
           border: {this.border};
         </>,
@@ -173,7 +172,6 @@ OverlayIndicator.definition = {
         color: {this.color};
         font-size: {this.fontSize};
         padding: {this.padding}; 
-        -moz-border-radius: {this.borderRadius}; 
         border-radius: {this.borderRadius}; 
         border: {this.border};
       </>;

@@ -117,7 +117,7 @@ Desktop.definition = {
     broker.load(this, search_path);
     let document = parent.ownerDocument;
     let box = document.createElement("box");
-    if (coUtils.Runtime.app_name.match(/^(Firefox|Thunderbird|SeaMonkey|Songbird|Songbird)$/)) {
+    if (coUtils.Runtime.app_name.match(/^(Firefox|Thunderbird|SeaMonkey|Songbird)$/)) {
       box.style.cssText = "position: fixed; top: 0px; left: 0px";
     }
     // xul app

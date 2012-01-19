@@ -120,14 +120,14 @@ Renderer.definition = {
 
   "[persistable] force_monospace_rendering": true,
 
-  get smoothing()
+  get "[persistable] smoothing"()
   {
     if (this._context) {
       this._context.mozImageSmoothingEnabled;
     }
   },
 
-  set smoothing(value)
+  set "[persistable] smoothing"(value)
   {
     if (this._context) {
       this._context.mozImageSmoothingEnabled = value;

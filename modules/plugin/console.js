@@ -468,7 +468,6 @@ Console.definition = {
                  style: <>
                    -moz-appearance: none;
                    //-moz-box-pack: center;
-                   -moz-border-radius: 8px;
                    border-radius: 8px;
                    //border: solid 1px black;
                    //margin: 0px 9px;
@@ -484,7 +483,6 @@ Console.definition = {
                        cssText: <>
                          background: -moz-linear-gradient(top, #ccc, #777);
                          -moz-appearance: none;
-//                         -moz-border-radius: 8px;
 //                         border-radius: 8px;
                          font: menu;
                          text-shadow: 0 1px rgba(255, 255, 255, .4);
@@ -492,7 +490,6 @@ Console.definition = {
                          //margin-left: -1px;
                          margin-right: -1px;
                          padding: 0px 4px;
-                         -moz-border-radius: 2px;
                          border-radius: 2px;
                          border: solid 1px black;
                          //heihgt: 22px;
@@ -535,7 +532,6 @@ Console.definition = {
                      -moz-appearance: none;
                      background: -moz-linear-gradient(top, #ccc, #777);
                      font: menu;
-                     -moz-border-radius: 2px;
                      border-radius: 2px;
                      border: solid 1px #444;
                      text-shadow: 0 1px rgba(255, 255, 255, .4);
