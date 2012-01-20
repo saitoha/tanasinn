@@ -104,7 +104,14 @@ CompletionView.definition = {
     };
   },
 
-  down: function down()
+  "[subscribe('command/select-current-candidate'), enabled]":
+  function enter()
+  {
+    this.onsubmit();
+  },
+
+  "[subscribe('command/select-next-candidate'), enabled]":
+  function down()
   {
     let index = Math.min(this.currentIndex + 1, this.rowCount - 1);
     if (index >= 0) {
@@ -114,7 +121,8 @@ CompletionView.definition = {
     broker.notify("command/fill");
   },
 
-  up: function up()
+  "[subscribe('command/select-previous-candidate'), enabled]":
+  function up()
   {
     let index = Math.max(this.currentIndex - 1, -1);
     if (index >= 0) {
@@ -127,13 +135,26 @@ CompletionView.definition = {
 };
 
 
+coUtils.Keyboard.getPackedKeycodeFromEvent 
+  = function getPackedKeycodeFromEvent(event) 
+  {
+    let code = event.keyCode || event.which;
+    let packed_code = code 
+      | !!event.ctrlKey   << coUtils.Keyboard.KEY_CTRL 
+      | (!!event.altKey || code > 0xff) << coUtils.Keyboard.KEY_ALT 
+      | !!event.shiftKey  << coUtils.Keyboard.KEY_SHIFT 
+      | !!event.keyCode   << coUtils.Keyboard.KEY_NOCHAR
+      | !!event.metaKey   << coUtils.Keyboard.KEY_META
+      ;
+    return packed_code;
+  };
+
   /**
    * @fn parseKeymapExpression
    * Convert from a key map expression to a packed key code.
    */
 coUtils.Keyboard.parseKeymapExpression = function parseKeymapExpression(expression) 
 {
-  expression = "s<C-n><A-del><S-alt-\\->c";
   let pattern = /<.+?>|./g;
   let match = expression.match(pattern);
   let strokes = match;
@@ -147,8 +168,6 @@ coUtils.Keyboard.parseKeymapExpression = function parseKeymapExpression(expressi
     } else {
       tokens = [stroke];
     }
-    alert(tokens);
-    
     let key_code = null;
     let last_key = tokens.pop();
     if (!last_key.match(/^.$/)) {
@@ -179,16 +198,149 @@ coUtils.Keyboard.parseKeymapExpression = function parseKeymapExpression(expressi
           _("Invalid key sequence '%s'."), sequence);
       }
     }, this);
-    alert(key_code)
     return key_code;
       
   }, this); 
   return key_code_array;
 };
 
+/**
+ * @Aspect CompletionKeyHandler
+ * @brief Provides emacs-like keybinds for command line input field.
+ */
+let CompletionKeyHandler = new Class().extends(Component);
+CompletionKeyHandler.definition = {
+
+  "[cmap('<C-b>'), enabled]":
+  function key_back(info) 
+  {
+    let textbox = info.textbox;
+    let start = textbox.selectionStart;
+    let end = textbox.selectionEnd;
+    if (start == end) {
+      textbox.selectionStart = start - 1;
+      textbox.selectionEnd = start - 1;
+    } else {
+      textbox.selectionEnd = start;
+    }
+    return true;
+  },
+
+  "[cmap('<C-f>'), enabled]":
+  function key_forward(info)
+  {
+    let textbox = info.textbox;
+    let start = textbox.selectionStart;
+    let end = textbox.selectionEnd;
+    if (start == end) {
+      textbox.selectionStart = start + 1;
+      textbox.selectionEnd = start + 1;
+    } else {
+      textbox.selectionStart = end;
+    }
+    return true;
+  },
+
+  "[cmap('<C-k>'), enabled]":
+  function key_truncate(info) 
+  {
+    let textbox = info.textbox;
+    let value = textbox.value;
+    let start = textbox.selectionStart;
+    let end = textbox.selectionEnd;
+    if (start == end) {
+      textbox.inputField.value 
+        = value.substr(0, textbox.selectionStart);
+    } else {
+      textbox.inputField.value 
+        = value.substr(0, textbox.selectionStart) 
+        + value.substr(textbox.selectionEnd);
+      textbox.selectionStart = start;
+      textbox.selectionEnd = start;
+    }
+    let session = this._broker;
+    session.notify("command/set-completion-trigger");
+    return true;
+  },
+
+  "[cmap('<C-h>', '<BS>'), enabled]":
+  function key_truncate(info) 
+  {
+    let textbox = info.textbox;
+    let value = textbox.value;
+    let position = textbox.selectionEnd;
+    if (position > 0) {
+      textbox.inputField.value 
+        = value.substr(0, position - 1) + value.substr(position);
+      let session = this._broker;
+      session.notify("command/set-completion-trigger");
+    }
+    return true;
+  },
+ 
+  "[cmap('<C-a>'), enabled]":
+  function key_first(info) 
+  {
+    let textbox = info.textbox;
+    textbox.selectionStart = 0;
+    textbox.selectionEnd = 0;
+    return true;
+  },
+
+  "[cmap('<C-e>'), enabled]":
+  function key_end(info) 
+  {
+    let textbox = info.textbox;
+    let length = textbox.value.length;
+    textbox.selectionStart = length;
+    textbox.selectionEnd = length;
+    return true;
+  },
+
+  "[cmap('<C-j>', '<CR>'), enabled]":
+  function key_enter(info) 
+  {
+    let session = this._broker;
+    session.notify("command/select-current-candidate");
+    return true;
+  },
+
+  "[cmap('<C-p>', '<Up>', '<S-Tab>'), enabled]":
+  function key_down(info) 
+  {
+    let session = this._broker;
+    session.notify("command/select-previous-candidate");
+    return true;
+  },
+
+  "[cmap('<C-n>', '<Down>', '<Tab>'), enabled]":
+  function key_next(info) 
+  {
+    let session = this._broker;
+    session.notify("command/select-next-candidate");
+    return true;
+  },
+
+  "[cmap('<C-w>'), enabled]":
+  function key_deleteword(info) 
+  {
+    let textbox = info.textbox;
+    let value = textbox.value;
+    let position = textbox.selectionEnd;
+    textbox.inputField.value
+      = value.substr(0, position).replace(/\w+$|\W+$/, "") 
+      + value.substr(position);
+    let session = this._broker;
+    session.notify("command/set-completion-trigger");
+    return true;
+  },
+
+};
+
 
 /**
  * @class Commandline
+ *
  */
 let Commandline = new Class().extends(Plugin)
                              .mix(CompletionView);
@@ -207,6 +359,8 @@ Commandline.definition = {
     </plugin>,
 
   "[persistable] completion_delay": 180,
+  "[persistable] completion_popup_opacity": 1.00,
+  "[persistable] completion_popup_max_height": 300,
 
   _result: null,
 
@@ -298,10 +452,10 @@ Commandline.definition = {
               
             </>,
             noautofocus: true,
-            height: 200,
             childNodes: {
               tagName: "stack",
-              flex: 1,
+              maxHeight: this.completion_popup_max_height,
+//              flex: 1,
               style: <>
               </>,
               childNodes: [
@@ -365,7 +519,6 @@ Commandline.definition = {
     this.onpopupshown.enabled = true;
     this.onclick.enabled = true;
     this.onchange.enabled = true;
-//    this.key_next.enabled = true;
     this.enableCommandline.enabled = true;
   },
   
@@ -387,7 +540,6 @@ Commandline.definition = {
     this.onpopupshown.enabled = false;
     this.onclick.enabled = false;
     this.onchange.enabled = false;
-//    this.key_next.enabled = false;
     this.enableCommandline.enabled = false;
     this._element.parentNode.removeChild(this._element);
   },
@@ -413,7 +565,6 @@ Commandline.definition = {
     this._textbox.focus();
     this._textbox.focus();
     this._textbox.focus();
-    this._textbox.focus();
   },
 
   /** Shows commandline interface. 
@@ -425,6 +576,7 @@ Commandline.definition = {
     this._statusbar.hidden = true;
     this._textbox.hidden = false;
     this._completion.hidden = false;
+    this._textbox.focus();
     this._textbox.focus();
     this._textbox.focus();
   },
@@ -467,6 +619,8 @@ Commandline.definition = {
           _("Unknown completion display driver type: '%s'."), 
           type);
       }
+    } else {
+      this._popup.style.opacity = 0;
     }
   },
 
@@ -477,6 +631,7 @@ Commandline.definition = {
     if (textbox.boxObject.scrollLeft > 0) {
       this._completion.inputField.value = "";
     } else if (result.labels.length > 0) {
+      this._popup.style.opacity = this.completion_popup_opacity;
       if ("closed" == this._popup.state || "hiding" == this._popup.state) {
         let session = this._broker;
         let focused_element = session.document.commandDispatcher.focusedElement;
@@ -517,7 +672,8 @@ Commandline.definition = {
     }
   },
 
-  setCompletionTrigger: function setCompletionTrigger() 
+  "[subscribe('command/set-completion-trigger')]":
+  function setCompletionTrigger() 
   {
     if (this._timer) {
       this._timer.cancel();
@@ -574,6 +730,8 @@ Commandline.definition = {
   "[listen('keypress', '#tanasinn_commandline', true)]":
   function onkeypress(event) 
   {
+    let session = this._broker;
+    session.notify("command/report-overlay-message", "<" + ">");
     let code = event.keyCode || event.which;
     /*
     this._broker.notify(
@@ -581,134 +739,35 @@ Commandline.definition = {
       [event.keyCode,event.which,event.isChar].join("/"));
       */
     let is_char = 0 == event.keyCode;
-
-    if (event.ctrlKey) { // ^
+    try {
+    let key_code = coUtils.Keyboard.getPackedKeycodeFromEvent(event);
+    let result = session.uniget(
+      <>event/commandline-input</>, 
+      {
+        textbox: this._textbox, 
+        code: key_code,
+      });
+    if (result) {
       event.stopPropagation();
       event.preventDefault();
+      coUtils.Timer.setTimeout(function() {
+        session.notify("command/report-overlay-message", key_code);
+      }, 1000);
     }
-    if ("a".charCodeAt(0) == code && event.ctrlKey) { // ^a
-      let textbox = this._textbox;
-      textbox.selectionStart = 0;
-      textbox.selectionEnd = 0;
-    }
-    if ("e".charCodeAt(0) == code && event.ctrlKey) { // ^e
-      let textbox = this._textbox;
-      let length = this._textbox.value.length;
-      textbox.selectionStart = length;
-      textbox.selectionEnd = length;
-    }
-    if ("b".charCodeAt(0) == code && event.ctrlKey) { // ^b
-      let textbox = this._textbox;
-      let start = textbox.selectionStart;
-      let end = textbox.selectionEnd;
-      if (start == end) {
-        textbox.selectionStart = start - 1;
-        textbox.selectionEnd = start - 1;
-      } else {
-        textbox.selectionEnd = start;
-      }
-    }
-    if ("f".charCodeAt(0) == code && event.ctrlKey) { // ^f
-      let textbox = this._textbox;
-      let start = textbox.selectionStart;
-      let end = textbox.selectionEnd;
-      if (start == end) {
-        textbox.selectionStart = start + 1;
-        textbox.selectionEnd = start + 1;
-      } else {
-        textbox.selectionStart = end;
-      }
-    }
-    if ("k".charCodeAt(0) == code && event.ctrlKey) { // ^k
-      let textbox = this._textbox;
-      let value = textbox.value;
-      let start = textbox.selectionStart;
-      let end = textbox.selectionEnd;
-      if (start == end) {
-        this._textbox.inputField.value 
-          = value.substr(0, textbox.selectionStart);
-      } else {
-        this._textbox.inputField.value 
-          = value.substr(0, textbox.selectionStart) 
-          + value.substr(textbox.selectionEnd);
-        textbox.selectionStart = start;
-        textbox.selectionEnd = start;
-      }
-      this.setCompletionTrigger();
-    }
-    if ("p".charCodeAt(0) == code && event.ctrlKey) { // ^p
-      this.up();
-    }
-    if ("n".charCodeAt(0) == code && event.ctrlKey) { // ^n
-      this.down();
-    }
-    if ("j".charCodeAt(0) == code && event.ctrlKey) { // ^j
-      this.enter()
-    }
-    if ("h".charCodeAt(0) == code && event.ctrlKey) { // ^h
-      let value = this._textbox.value;
-      let position = this._textbox.selectionEnd;
-      if (position > 0) {
-        this._textbox.inputField.value 
-          = value.substr(0, position - 1) + value.substr(position);
-        this.setCompletionTrigger();
-      }
-    }
-    if ("w".charCodeAt(0) == code && event.ctrlKey) { // ^w
-      let value = this._textbox.value;
-      let position = this._textbox.selectionEnd;
-      this._textbox.inputField.value
-        = value.substr(0, position).replace(/\w+$|\W+$/, "") 
-        + value.substr(position);
-      this.setCompletionTrigger();
-    }
-    if ("f".charCodeAt(0) == code && event.ctrlKey) { // ^h
-      this._textbox.selectionStart += 1;
-    }
-    if ("b".charCodeAt(0) == code && event.ctrlKey) { // ^h
-      this._textbox.selectionEnd -= 1;
-    }
-    if (0x09 == code) { // tab
-      event.stopPropagation();
-      event.preventDefault();
-    }
-    if (0x09 == code && event.shiftKey) // shift + tab
-      code = 0x26;
-    if (0x09 == code && !event.shiftKey) // tab
-      code = 0x28;
-    if (0x26 == code && !is_char) { // up 
-      this.up();
-    } else if (0x28 == code && !is_char) { // down
-      this.down();
-    } else if (0x0d == code && !is_char) {
-      this.enter();
-    } 
-    //this._completion.inputField.value = "";
+    } catch (e) {alert(e)}
   },
 
-  onselect: function onselect(event) 
+  onsubmit: function onsubmit(event) 
   {
     let session = this._broker;
     let command = this._textbox.value;
     this._textbox.inputField.value = "";
     this._completion.inputField.value = "";
     session.notify("command/eval-commandline", command);
-  },
-
-  enter: function enter()
-  {
-    this.onselect();
     this._textbox.blur();
     let broker = this._broker;
     broker.notify("command/focus");
   },
-/*
-  "[cmap('<C-n>')]":
-  function key_next() 
-  {
-    alert("key_next");
-  },
-  */
 
   "[listen('popupshown', '#tanasinn_commandline', false)]":
   function onpopupshown(event) 
@@ -750,6 +809,7 @@ function main(desktop)
     function(session) 
     {
       new Commandline(session);
+      new CompletionKeyHandler(session);
     });
 }
 

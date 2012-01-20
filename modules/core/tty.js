@@ -474,7 +474,8 @@ ExternalDriver.definition = {
     if ("WINNT" == os) {
       runtime_path = String(<>{this.cygwin_root}\bin\run.exe</>);
     } else if ("Darwin" == os) {
-      runtime_path = "/usr/bin/pythonw";
+      //runtime_path = "/opt/local/bin/pythonw2.7";
+      runtime_path = "/usr/bin/python2.5";
     } else /* Linux */ {
       runtime_path = "/usr/bin/python";
     }
@@ -681,8 +682,11 @@ SocketTeletypeService.definition = {
   "[subscribe('@command/kill'), enabled]": 
   function kill()
   {
-    let external_driver = this._external_driver;
-    external_driver.kill(this._pid);
+    if (this._controller) {
+      this._controller.post("kill\n") 
+    }
+//    let external_driver = this._external_driver;
+//    external_driver.kill(this._pid);
   },
 
   "[subscribe('@command/detach'), enabled]": 

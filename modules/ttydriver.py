@@ -143,14 +143,13 @@ if not hasattr(os, "uname"):
 system = os.uname()
 
 def trace(message):
-    if system[0] == 'Darwin':
-        os.system("say -v vict '%s'" % message)
+    #if system[0] == 'Darwin':
+    #    os.system("say -v vict '%s'" % message)
     #if system[0] == 'Linux':
     #    os.system("espeak '%s'" % message)
     os.system("echo '%s' >> ~/.tanasinn/log/tty.log &" % message);
 
 trace("start.")
-#trace("--- start ----")
 
 class TeletypeDriver:
 
@@ -159,6 +158,7 @@ class TeletypeDriver:
 
     master = None
     resume = False
+    killed = False
 
     def __init__(self, pid, ttyname, master, io_socket, control_socket):
         self.__app_process_pid = pid
@@ -276,9 +276,14 @@ class TeletypeDriver:
 
     def kill(self, argv):
         os.kill(self.__app_process_pid, signal.SIGKILL)
+        self.killed = True
+        trace("exit from control process.")
+        os._exit(0)
 
     def isalive(self):
         """Check whether pid exists in the current process table."""
+        if self.killed:
+            return False
         #if not os.isatty(self.master):
         #    return False
         try:
@@ -356,7 +361,6 @@ class TeletypeDriver:
                 except:
                     pass
                 break;
-        trace("before.")
 
         #os.waitpid(control_process_pid, 0)
         try:
@@ -439,6 +443,20 @@ def fork_app_process(master, slave, command, term):
     #os.close(slave)
     return pid, ttyname
 
+def add_record(request_id, command, control_port, pid, ttyname):
+    lockfile = open(sys.argv[0], "r")
+    try:
+        fcntl.flock(lockfile.fileno(), fcntl.LOCK_EX)
+        f = open(sessiondb_path, "a")
+        try:
+            f.write("%s,%s,%s,%s,%s\n" 
+                    % (request_id, base64.b64encode(command), control_port, pid, ttyname));
+            f.flush()
+        finally:
+            f.close()
+    finally:
+        lockfile.close()
+
 if __name__ == "__main__":    
     if len(sys.argv) < 1:
         sys.exit("usage %s [connection_channel_port]" % sys.argv[0])
@@ -502,19 +520,14 @@ if __name__ == "__main__":
             #if not os.isatty(slave):
             #    trace("closed.")
             #    break
+            time.sleep(1)
             if not driver.isalive():
                 trace("closed.")
                 break
             else:
                 #os.write(master, "\x1a")
 
-                with open(sys.argv[0], "r") as lockfile:
-                    fcntl.flock(lockfile.fileno(), fcntl.LOCK_EX)
-                    f = open(sessiondb_path, "a")
-                    f.write("%s,%s,%s,%s,%s\n" % (request_id, base64.b64encode(command), control_port, pid, ttyname));
-                    f.flush()
-                    f.close()
-
+                add_record(request_id, command, control_port, pid, ttyname)
 #                os.system("echo '%s,%s,%s,%s,%s' >> ~/.tanasinn/sessions.txt" 
 #                    % (request_id, base64.b64encode(command), control_port, pid, ttyname));
                 trace("suspended.")

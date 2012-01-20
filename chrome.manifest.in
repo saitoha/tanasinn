@@ -2,4 +2,7 @@
 # for Firefox
 content @TANASINN_PACKAGE_NAME@ chrome/content/
 resource @TANASINN_PACKAGE_NAME@ modules/
+#overlay chrome://songbird/content/xul/layoutWithBrowserOverlay.xul chrome://tanasinn/content/songbird.xul
+#overlay chrome://songbird/content/xul/layoutBaseOverlay.xul chrome://tanasinn/content/songbird.xul
+#overlay chrome://browser/content/browser.xul chrome://tanasinn/content/songbird.xul
 

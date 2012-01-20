@@ -24,15 +24,15 @@
 
 
 Components.utils.import("resource://gre/modules/Services.jsm");
-Components.utils.import("resource://gre/modules/AddonManager.jsm");
 
 let loader = {
 
-  file: null,
+  install_path: null,
+  is_first: false,
 
-  initializeWithFileURI: function initialize(file)
+  initializeWithFileURI: function initialize(install_path)
   {
-    this.file = file;
+    this.install_path = install_path;
     Services.ww.registerNotification(this);
     ["navigator:browser", "mail:3pane"].forEach(function(window_type) {
       // add functionality to existing windows
@@ -56,7 +56,7 @@ let loader = {
 
   uninitialize: function uninitialize()
   {
-    this.file = null;
+    this.install_path = null;
     Services.ww.unregisterNotification(this);
   },
 
@@ -66,6 +66,23 @@ let loader = {
       .getService(Components.interfaces.nsISupports)
       .wrappedJSObject
       .notify("event/new-window-detected", window);
+    if (this.is_first) {
+      this.is_first = false;
+      let path = this.install_path.clone();
+      path.append("doc");
+      path.append("usermanual.html");
+      let io_service = Components
+        .classes["@mozilla.org/network/io-service;1"]
+        .getService(Components.interfaces.nsIIOService);
+      let file_handler = io_service.getProtocolHandler("file")
+        .QueryInterface(Components.interfaces.nsIFileProtocolHandler);
+      let document_url = file_handler.getURLSpecFromFile(path);
+
+      //Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
+      //  .getService(Components.interfaces.nsIPromptService)
+      //  .alert(null, "message", "bootstrap.js:startup called!!" + document_url);
+      window.gBrowser.addTab(document_url);
+    }
   },
 
   // Handles opening new navigator window.
@@ -90,6 +107,9 @@ let loader = {
 
 function startup(data, reason) 
 {
+  //Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
+  //  .getService(Components.interfaces.nsIPromptService)
+  //  .alert(null, "message", "bootstrap.js:startup called!!");
   let tanasinn_class = Components
     .classes["@zuse.jp/tanasinn/process;1"];
   if (tanasinn_class) {
@@ -98,21 +118,29 @@ function startup(data, reason)
       .wrappedJSObject;
     process.notify("event/enabled");
   } else {
-    AddonManager.getAddonByID(data.id, function(addon) 
-    {
-      try {
-        let process_file = addon.getResourceURI("modules/common/process.js").spec;
-        let initialize_file = addon.getResourceURI("modules/initialize.js").spec;
-        Services.scriptloader.loadSubScript(process_file);
-  //Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
-  //.getService(Components.interfaces.nsIPromptService)
-  //.alert(null, "", "initialize_file");
-        loader.initializeWithFileURI(initialize_file);
-      } catch(e) {
-        let message = <>{e.fileName}({e.lineNumber}):{e.toString()}</>.toString();
-        Components.reportError(message);
-      }
-    });
+    loader.is_first = true;
+    try {
+      let io_service = Components
+        .classes["@mozilla.org/network/io-service;1"]
+        .getService(Components.interfaces.nsIIOService);
+      let file_handler = io_service.getProtocolHandler("file")
+        .QueryInterface(Components.interfaces.nsIFileProtocolHandler);
+      let process = data.installPath.clone();
+      process.append("modules");
+      process.append("common");
+      process.append("process.js");
+      let process_url = file_handler.getURLSpecFromFile(process);
+      //Components
+      //  .classes["@mozilla.org/moz/jssubscript-loader;1"]
+      //  .getService(Components.interfaces.mozIJSSubScriptLoader)
+      //  .loadSubScript(process_url);
+      Services.scriptloader.loadSubScript(process_url);
+      loader.initializeWithFileURI(data.installPath);
+    } catch(e) {
+      let message = <>{e.fileName}({e.lineNumber}):{e.toString()}</>.toString();
+      Components.reportError(message);
+      return false;
+    }
   }
   return true;
 }
@@ -135,6 +163,9 @@ function shutdown(data, reason)
 
 function install(data, reason) 
 {
+  //Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
+  //  .getService(Components.interfaces.nsIPromptService)
+  //  .alert(null, "message", "bootstrap.js:startup called!!");
   return true;
 }
 

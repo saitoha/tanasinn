@@ -14,6 +14,7 @@
  bootstrap.js
  content=chrome/content {
    app.xul
+   songbird.xul
  }
  doc=doc {
   Makefile.in
@@ -61,6 +62,8 @@
    encoder.js
    focus.js
    window.js
+
+   map.js
   }
 
   ttydriver.py

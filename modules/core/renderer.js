@@ -119,20 +119,8 @@ Renderer.definition = {
   "[watchable, persistable] font_size": 13,
 
   "[persistable] force_monospace_rendering": true,
-
-  get smoothing()
-  {
-    if (this._context) {
-      this._context.mozImageSmoothingEnabled;
-    }
-  },
-
-  set smoothing(value)
-  {
-    if (this._context) {
-      this._context.mozImageSmoothingEnabled = value;
-    }
-  },
+  "[persistable] enable_text_shadow": true,
+  "[persistable, watchable] smoothing": true,
 
   "[subscribe('@initialized/{screen & chrome}'), enabled]": 
   function onLoad(screen, chrome) 
@@ -158,6 +146,7 @@ Renderer.definition = {
 
     this._canvas = foreground_canvas;
     this._context = this._canvas.getContext("2d");
+    this._context.mozImageSmoothingEnabled = this.smoothing;
     this._calculateGryphWidth();
     this.onWidthChanged();
     this.onHeightChanged();
@@ -220,6 +209,14 @@ Renderer.definition = {
     } else {
       coUtils.Debug.reportWarning(
         _("Cannot restore last state of renderer: data not found."));
+    }
+  },
+
+  "[subscribe('variable-changed/' + this.id + '.smoothing')]": 
+  function onSmoothingChanged(value) 
+  {
+    if (this._context) {
+      this._context.mozImageSmoothingEnabled = value;
     }
   },
 
@@ -317,6 +314,12 @@ Renderer.definition = {
 
       /* Draw background */
       context.fillStyle = back_color;
+      if (this.enable_text_shadow) {
+        context.shadowColor = "";
+        context.shadowOffsetX = 0;
+        context.shadowOffsetY = 0;
+        context.shadowBlur = 0;
+      }
       context.fillRect(x, y, width, height);
     }
   },
@@ -331,7 +334,13 @@ Renderer.definition = {
     let fore_color = fore_color_map[attr.fg];
     this._setFont(context, attr.bold); 
     context.fillStyle = fore_color;
-    if (this.adaptive_rendering) {
+    if (this.enable_text_shadow) {
+      context.shadowColor = "black";
+      context.shadowOffsetX = 2;
+      context.shadowOffsetY = 1;
+      context.shadowBlur = 3;
+    }
+    if (this.force_manospace_rendering) {
       if (text.length == length) {
         context.fillText(text, x, y, char_width * length);
       } else if (text.length * 2 == length) {
