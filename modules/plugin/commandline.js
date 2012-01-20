@@ -203,140 +203,6 @@ coUtils.Keyboard.parseKeymapExpression = function parseKeymapExpression(expressi
 };
 
 /**
- * @Aspect CompletionKeyHandler
- * @brief Provides emacs-like keybinds for command line input field.
- */
-let CompletionKeyHandler = new Class().extends(Component);
-CompletionKeyHandler.definition = {
-
-  "[cmap('<C-b>'), enabled]":
-  function key_back(info) 
-  {
-    let textbox = info.textbox;
-    let start = textbox.selectionStart;
-    let end = textbox.selectionEnd;
-    if (start == end) {
-      textbox.selectionStart = start - 1;
-      textbox.selectionEnd = start - 1;
-    } else {
-      textbox.selectionEnd = start;
-    }
-    return true;
-  },
-
-  "[cmap('<C-f>'), enabled]":
-  function key_forward(info)
-  {
-    let textbox = info.textbox;
-    let start = textbox.selectionStart;
-    let end = textbox.selectionEnd;
-    if (start == end) {
-      textbox.selectionStart = start + 1;
-      textbox.selectionEnd = start + 1;
-    } else {
-      textbox.selectionStart = end;
-    }
-    return true;
-  },
-
-  "[cmap('<C-k>'), enabled]":
-  function key_truncate(info) 
-  {
-    let textbox = info.textbox;
-    let value = textbox.value;
-    let start = textbox.selectionStart;
-    let end = textbox.selectionEnd;
-    if (start == end) {
-      textbox.inputField.value 
-        = value.substr(0, textbox.selectionStart);
-    } else {
-      textbox.inputField.value 
-        = value.substr(0, textbox.selectionStart) 
-        + value.substr(textbox.selectionEnd);
-      textbox.selectionStart = start;
-      textbox.selectionEnd = start;
-    }
-    let session = this._broker;
-    session.notify("command/set-completion-trigger");
-    return true;
-  },
-
-  "[cmap('<C-h>', '<BS>'), enabled]":
-  function key_truncate(info) 
-  {
-    let textbox = info.textbox;
-    let value = textbox.value;
-    let position = textbox.selectionEnd;
-    if (position > 0) {
-      textbox.inputField.value 
-        = value.substr(0, position - 1) + value.substr(position);
-      let session = this._broker;
-      session.notify("command/set-completion-trigger");
-    }
-    return true;
-  },
- 
-  "[cmap('<C-a>'), enabled]":
-  function key_first(info) 
-  {
-    let textbox = info.textbox;
-    textbox.selectionStart = 0;
-    textbox.selectionEnd = 0;
-    return true;
-  },
-
-  "[cmap('<C-e>'), enabled]":
-  function key_end(info) 
-  {
-    let textbox = info.textbox;
-    let length = textbox.value.length;
-    textbox.selectionStart = length;
-    textbox.selectionEnd = length;
-    return true;
-  },
-
-  "[cmap('<C-j>', '<CR>'), enabled]":
-  function key_enter(info) 
-  {
-    let session = this._broker;
-    session.notify("command/select-current-candidate");
-    return true;
-  },
-
-  "[cmap('<C-p>', '<Up>', '<S-Tab>'), enabled]":
-  function key_down(info) 
-  {
-    let session = this._broker;
-    session.notify("command/select-previous-candidate");
-    return true;
-  },
-
-  "[cmap('<C-n>', '<Down>', '<Tab>'), enabled]":
-  function key_next(info) 
-  {
-    let session = this._broker;
-    session.notify("command/select-next-candidate");
-    return true;
-  },
-
-  "[cmap('<C-w>'), enabled]":
-  function key_deleteword(info) 
-  {
-    let textbox = info.textbox;
-    let value = textbox.value;
-    let position = textbox.selectionEnd;
-    textbox.inputField.value
-      = value.substr(0, position).replace(/\w+$|\W+$/, "") 
-      + value.substr(position);
-    let session = this._broker;
-    session.notify("command/set-completion-trigger");
-    return true;
-  },
-
-};
-
-
-/**
  * @class Commandline
  *
  */
@@ -797,8 +663,8 @@ function main(desktop)
     function(session) 
     {
       new Commandline(session);
-      new CompletionKeyHandler(session);
     });
 }
+
 
 
