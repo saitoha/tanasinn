@@ -520,6 +520,7 @@ Commandline.definition = {
     this.onclick.enabled = true;
     this.onchange.enabled = true;
     this.enableCommandline.enabled = true;
+    this.setCompletionTrigger.enabled = true;
   },
   
   /** Uninstalls itself.
@@ -541,6 +542,7 @@ Commandline.definition = {
     this.onclick.enabled = false;
     this.onchange.enabled = false;
     this.enableCommandline.enabled = false;
+    this.setCompletionTrigger.enabled = false;
     this._element.parentNode.removeChild(this._element);
   },
 
@@ -731,7 +733,6 @@ Commandline.definition = {
   function onkeypress(event) 
   {
     let session = this._broker;
-    session.notify("command/report-overlay-message", "<" + ">");
     let code = event.keyCode || event.which;
     /*
     this._broker.notify(
@@ -739,7 +740,6 @@ Commandline.definition = {
       [event.keyCode,event.which,event.isChar].join("/"));
       */
     let is_char = 0 == event.keyCode;
-    try {
     let key_code = coUtils.Keyboard.getPackedKeycodeFromEvent(event);
     let result = session.uniget(
       <>event/commandline-input</>, 
@@ -750,11 +750,7 @@ Commandline.definition = {
     if (result) {
       event.stopPropagation();
       event.preventDefault();
-      coUtils.Timer.setTimeout(function() {
-        session.notify("command/report-overlay-message", key_code);
-      }, 1000);
     }
-    } catch (e) {alert(e)}
   },
 
   onsubmit: function onsubmit(event) 

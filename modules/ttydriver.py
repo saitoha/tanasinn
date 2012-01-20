@@ -194,7 +194,7 @@ class TeletypeDriver:
             self.io_socket.close()
             self.control_socket.close()
             trace("exit from writing process.")
-            os._exit(0)
+            sys.exit(0)
         return pid
     
     def fork_reading_process(self):
@@ -219,7 +219,7 @@ class TeletypeDriver:
             self.io_socket.close()
             self.control_socket.close()
             trace("exit from reading process.")
-            os._exit(0)
+            sys.exit(0)
         return pid
    
     def fork_control_process(self):
@@ -253,7 +253,7 @@ class TeletypeDriver:
             self.io_socket.close()
             self.control_socket.close()
             trace("exit from control process.")
-            os._exit(0)
+            sys.exit(0)
         return pid
 
     def request(self, argv):
@@ -272,13 +272,13 @@ class TeletypeDriver:
         self.io_socket.close()
         self.control_socket.close()
         trace("exit from control process.")
-        os._exit(0)
+        sys.exit(0)
 
     def kill(self, argv):
         os.kill(self.__app_process_pid, signal.SIGKILL)
         self.killed = True
         trace("exit from control process.")
-        os._exit(0)
+        sys.exit(0)
 
     def isalive(self):
         """Check whether pid exists in the current process table."""
