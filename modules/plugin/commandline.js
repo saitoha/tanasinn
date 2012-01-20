@@ -774,7 +774,7 @@ Commandline.definition = {
     //session.notify("command/blur");
     coUtils.Timer.setTimeout(function() {
       session.notify("command/enable-commandline");
-    }, 100);
+    }, 0);
   },
 
   "[listen('change', '#tanasinn_commandline', true)]":

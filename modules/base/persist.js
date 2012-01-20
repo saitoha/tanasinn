@@ -39,7 +39,7 @@ PersistManager.definition = {
       let filename = (name || broker.profile) + ".js";
       let profile_path = <>{broker.profile_directory}/{filename}</>.toString();
       let content = coUtils.IO.readFromFile(profile_path, "utf-8");
-      let data = eval(content);
+      let data = JSON.parse(content);
       broker.notify("command/before-load-persistable-data", data);
       broker.notify("command/load-persistable-data", data);
     } catch (e) {
@@ -54,7 +54,7 @@ PersistManager.definition = {
     let {name, data} = info;
     let filename = (name || broker.profile) + ".js";
     let profile_path = <>{broker.profile_directory}/{filename}</>.toString();
-    let serialized_data = JSON.stringfy(data);
+    let serialized_data = JSON.stringify(data);
     coUtils.IO.writeToFile(profile_path, serialized_data);
   },
 

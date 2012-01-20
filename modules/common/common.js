@@ -1210,7 +1210,7 @@ coUtils.Localize = new function()
         lang: language,
         dict: dictionary,
       };
-      coUtils.IO.writeToFile(location, JSON.stringfy(db));
+      coUtils.IO.writeToFile(location, db.toSource());
       this._dictionaries_store[db.lang] = db.dict;
     },
 
