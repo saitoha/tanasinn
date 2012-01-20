@@ -528,29 +528,19 @@ CharsetCommands.definition = {
   _impl: function _impl(arguments_string, is_encoder) 
   {
     let session = this._broker;
-    let match = arguments_string.match(/^(\s*)([$_\-@a-zA-Z\.]+)(\s*)$/);
-    if (null === match) {
-      return {
-        success: false,
-        message: _("Failed to parse commandline argument."),
-      };
-    }
-    let [, space, name, next] = match;
-    let modules = session.notify("get/module-instances");
-    modules = modules.filter(function(module) module.id == name);
-    if (0 == modules.length) {
+    let modules = session.notify(
+      is_encoder ? "get/encoders": "get/decoders");
+    let name = arguments_string.replace(/^\s+|\s+$/g, "");
+    modules = modules.filter(function(module) module.charset == name);
+    if (1 != modules.length) {
       return {
         success: false,
         message: _("Cannot enabled the module specified by given argument."),
       };
     }
-    modules.forEach(function(module) {
-      try {
-        module.enabled = is_enable;
-      } catch(e) {
-        coUtils.Debug.reportError(e); 
-      }
-    });
+    session.notify(
+      is_encoder ? "change/encoder": "change/decoder", 
+      name)
     return {
       success: true,
       message: _("Succeeded."),
@@ -560,13 +550,13 @@ CharsetCommands.definition = {
   "[command('encoder', ['charset/encoders']), _('Select encoder component.'), enabled]":
   function disable(arguments_string)
   {
-    return this._impl(arguments_string, "encoders");
+    return this._impl(arguments_string, /* is_encoder */ true);
   },
 
   "[command('decoder', ['charset/decoders']), _('Select a decoder component.'), enabled]":
   function enable(arguments_string)
   {
-    return this._impl(arguments_string, "decoders");
+    return this._impl(arguments_string, /* is_encoder */ false);
   },
 
 };
