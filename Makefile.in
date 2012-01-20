@@ -6,18 +6,19 @@ JS=@TANASINN_JS_PATH@
 ZIP=@ZIP@
 TPUT=@TPUT@
 ASCIIDOC=@ASCIIDOC@
+RM=rm -f
 
-ifeq ($(TPUT), )
-MSTART=
-MEND=
-ESTART=
-EEND=
-else
+##ifeq ($(TPUT), )
+#MSTART=
+#MEND=
+#ESTART=
+#EEND=
+##else
 MSTART="$$($(TPUT) setaf 2)====================\>$$($(TPUT) setaf 6)"
 MEND="$$($(TPUT) sgr0)"
 ESTART="$$($(TPUT) bold; $(TPUT) setaf 1)"
 EEND="$$($(TPUT) sgr0; $(TPUT) setaf 6)"
-endif
+##endif
 
 all: $(XPI) tanasinn-docs.zip
 
@@ -81,14 +82,18 @@ $(XPI): lint chrome.manifest install.rdf tanasinn-docs.zip
 
 
 lint: 
-	@echo "$(MSTART) Ckecking JavaScript syntax error....$(MEND)" 
 	# Check syntax errors.
-	@for file in $$(/usr/bin/find $$PWD | egrep "\.js$$|\.jsm$$"); do \
-		for version in 185; do \
-			if [ @host_os@ = cygwin ]; then file=$$(cygpath -wa $$file); fi; \
-			cd $$(dirname $(JS)) && $(JS) -C -v $$version -o strict -o werror -f $$file || exit; \
-		done; \
-	done;
+	case @host_os@ in \
+		cygwin*|linux*|darwin*) \
+			echo "$(MSTART) Ckecking JavaScript syntax error....$(MEND)"; \
+			for file in $$(/usr/bin/find $$PWD | egrep "\.js$$|\.jsm$$"); do \
+				for version in 185; do \
+					if [ @host_os@ = cygwin ]; then file=$$(cygpath -wa $$file); fi; \
+					cd $$(dirname $(JS)) && $(JS) -C -v $$version -o strict -o werror -f $$file || exit; \
+				done; \
+			done; \
+			;; \
+	esac
 
 clean:
 	@echo "$(MSTART) Cleaning $(ESTART)$(CD)$(EEND)....$(MEND)" 
@@ -131,11 +136,11 @@ uninstall-vimperator:
 	esac \
 
 install-extension:
-	case @host_os@ in \
+	@case @host_os@ in \
 		Darwin*|darwin*) \
 			PROFILE_ROOT=~/Library/Application\ Support/Firefox/Profiles \
 			;; \
-		linux*) \
+		linux*|freebsd) \
 			PROFILE_ROOT=~/.mozilla/firefox \
 			;; \
 		cygwin*) \
@@ -162,7 +167,7 @@ install-extension:
 				esac \
 				;; \
 			*) \
-				[ -e "$$PROFILE_ROOT/$$PROFILE" ] && ln -sf $(PWD) "$$PROFILE_ROOT/$$PROFILE/extensions/$(ID)"; \
+				[ -d "$$PROFILE_ROOT/$$PROFILE" ] && ln -sf $(PWD) "$$PROFILE_ROOT/$$PROFILE/extensions/$(ID)"; \
 				;; \
 		esac \
 	done;
@@ -172,7 +177,7 @@ uninstall-extension:
 		Darwin|darwin*) \
 			PROFILE_ROOT=~/Library/Application\ Support/Firefox/Profiles \
 			;; \
-		linux*) \
+		linux*|freebsd) \
 			PROFILE_ROOT=~/.mozilla/firefox \
 			;; \
 		cygwin*) \
@@ -191,7 +196,7 @@ run-xulapp:
 			open /Applications/Firefox.app \
 				-n --args --app $(PWD)/application.ini \
 			;; \
-		Linux*) \
+		Linux*|freebsd) \
 			firefox --app application.ini \
 			;; \
 		cygwin*) \

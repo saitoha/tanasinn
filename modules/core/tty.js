@@ -468,6 +468,8 @@ ExternalDriver.definition = {
       //runtime_path = "/opt/local/bin/pythonw2.7";
       //runtime_path = "/usr/bin/python2.5";
       runtime_path = "/usr/bin/python";
+    } else if ("FreeBSD" == os) {
+      runtime_path = "/usr/local/bin/python";
     } else /* Linux */ {
       runtime_path = "/usr/bin/python";
     }
@@ -593,7 +595,7 @@ ExternalDriver.definition = {
       _("TTY Server started. arguments: [%s]."), args.join(", "));
   },
 
-  observe: function observe()
+  observe: function observe(subject, topic, data)
   {
 //    if (this.success) {
 //      return;

@@ -45,6 +45,7 @@ Desktop.definition = {
   command: null,
   default_command: "login -pf $USER",
   "default_command@Linux" : "$SHELL",
+  "default_command@FreeBSD" : "$SHELL",
   "default_command@Darwin": "login -pf $USER",
   "default_command@WINNT" : "login -pf $USER",
   term: null,
