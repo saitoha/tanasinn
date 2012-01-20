@@ -1,9 +1,10 @@
+#include "define.h"
 
-= ∵ tanasinn terminal emurator 
+= tanasinn terminal emurator 
 
 #if __EN__
 link:./usermanual-ja.html[日本語/Japanese]
-#else
+#elif __JP__
 link:./usermanual.html[English/英語]
 #endif
 
@@ -11,43 +12,53 @@ link:./usermanual.html[English/英語]
 
 == Overview
 
-    Here is a terminal emurator that runs on Firefox.
+    Here is a terminal emurator that runs on Firefox/Thunderbird/SeaMonkey.
     It enables you to access flexible, powerful functionality 
     provided by operating systems, such as commandline shells, or curses-based 
     applications.
-#if 1
 
-== Distribution/License
-    This software is istributed under Mozilla Public License 1.1 (MPL1.1) .
-    - Unstable, snapshot version, http:#//zuse.jp/tanasinn/tanasinn-current.xpi[Download from here]
-#endif
-
-#else
+#elif __JP__
 
 == 概要
 
-    "tanasinn terminal emurator" は Firefox上で動作する端末エミュレータです。
+    "tanasinn terminal emurator" は Firefox/Thunderbird/SeaMonkey上で動作する端末エミュレータです。
     コマンドラインシェルやcursesベースのアプリケーション等、オペレーティングシステムが提供する
     柔軟でパワフルな機能群にブラウザ上のUIからアクセスすることができます。
 
-#if 1
-== 配布/ライセンス
-    Mozilla Public License 1.1 (MPL1.1) で配布しています。 
-    スナップショット版 http:#//zuse.jp/tanasinn/tanasinn@zuse.jp.xpi[ここからダウンロード]
 #endif
 
+#if __EN__
+
+=== Download/License
+    This software is distributed under Mozilla Public License 1.1 (MPL1.1) .
+
+- Developping version (0.1.2r3): http:/#/zuse.jp/tanasinn/downloads/versions/0.1.2r3/TANASINN_XPI_ID.xpi[Download]
+- Unstable, Snapshot version (it may so bugful!): http:/#/zuse.jp/tanasinn/tanasinn-current.xpi[Download]
+
+#elif __JP__
+
+=== ダウンロード/ライセンス
+    Mozilla Public License 1.1 (MPL1.1) で配布しています。 
+
+- 開発版 (0.1.2r3): http:/#/zuse.jp/tanasinn/downloads/versions/0.1.2r3/TANASINN_XPI_ID.xpi[ダウンロード].
+- スナップショット版: http:/#/zuse.jp/tanasinn/tanasinn-current.xpi[ダウンロード]
+
 #endif
+
+- git repo: TANASINN_GIT_REPOSITORY
+- gitweb: http:/#/zuse.jp/git/?p=tanasinn.git
 
 #if __EN__
 == Hilighting features
     - Full Gecko based user interface, it is flexible and easy to customize.
     - Multi-platform, now supports Mac / Linux (Tested in Ubuntu) / 
-      Windows + http:#//www.cygwin.com[Cygwin] (requires posix python).
+      Windows(XP/Vista/7) + http:/#/www.cygwin.com[Cygwin] (requires posix python).
     - Supports plugin architecture. it supports Plug-and-Play installing & uninstalling.
     - Retaining TTY session duaring closing/restarting browser.
       you can reconnect suspended terminal session.
     - Including debugger. You can run it in step-execution-mode or trace-mode 
       and observe terminal I/O sequence in real-time.
+    - Supports basic features, scrollback, alternate screen, visual bell, audio bell ...etc.
     - IME is supported.
     - Supports east asian double width characters. 
       but it is not render bidi languages correctly.
@@ -57,20 +68,22 @@ link:./usermanual.html[English/英語]
     - xterm-like mouse emuration. supports smoothing pixel scroll.
     - Text selection / Rectangle text selection.
     - Supports copy / paste in Drag & Drop or keyboard shortcut.
-    - Supports move / resize through Drag & Drop operation.
+    - Supports move / resize through draging operation.
     - Supports 256 terminal colors, you can assign 32bit colors for them.
     - Vimperator / Keysnail like commandline interface.
+    - It can be installed as a plugin for Vimperator/Muttator.
     - Running as standalone XUL application if you want. (but now buggy!)
-#else
+#elif __JP__
 == 特色
     - Geckoベースのユーザーインターフェース。柔軟でカスタマイズが容易です。
     - マルチプラットフォーム。現在サポートされるのは、Mac / Linux(というかUbuntu) / 
-      http:#//www.cygwin.com[Cygwin] + Cygwin環境 (POSIX版Pythonが必要)
+      Windows(XP/Vista/7) + http:/#/www.cygwin.com[Cygwin]環境 (POSIX版Pythonが必要)
     - プラグインアーキテクチャ。プラグアンドプレイでのインストール・アンインストールが可能。
     - ブラウザを再起動したり閉じたりしている間、ターミナルセッションを保持します。
       サスペンドしたセッションに後から再接続できます。 
     - デバッガ内臓。ステップ実行やトレースができます。
       ターミナルとアプリケーションがやり取りするI/Oシーケンスをリアルタイムで観察できます。
+    - スクロールバック、代替スクリーン、ビジュアルベル、オーディオベルなど基本的な機能はサポートしています。
     - IMEが使えます。
     - East Asian Width(ひらがななどの文字幅を考慮したレンダリング)に一応対応しています。 
       bidiには対応できていないと思います。
@@ -81,127 +94,127 @@ link:./usermanual.html[English/英語]
     - xtermのようなマウスエミュレーションができます。ピクセルスクロールにも対応。
     - テキストの選択や矩形選択ができます。
     - ドラッグアンドドロップやキーボードショートカットによる選択テキストのコピー・ペーストが可能です。
-    - ドラッグアンドドロップによる移動・リサイズができます。
+    - ドラッグによる移動・リサイズができます。
     - 256色表示対応。32bitカラーをパレットに割り当てることができます。
     - VimperatorやKeysnailのようなコマンドラインインターフェース。
     - スタンドアロンのXULアプリケーションとして動作させることができます。(現在はかなりバギーです!)
 #endif
 
 #if __EN__
-#else
+#elif __JP__
 #endif
 
 
 #if __EN__
 == Screenshots
-#else
+#elif __JP__
 == スクリーンショット
 #endif
 
 #if __EN__
-.Running "http:#//w3m.sourceforge.net/index.en.html[BB]", an ascii art demo program.
-#else
-."http:#//w3m.sourceforge.net/index.en.html[BB]"(アスキーアートのデモプログラム)を走らせたところ。
+.Running "http:/#/w3m.sourceforge.net/index.en.html[BB]", an ascii art demo program.
+#elif __JP__
+."http:/#/w3m.sourceforge.net/index.en.html[BB]"(アスキーアートのデモプログラム)を走らせたところ。
 #endif
-image::images/bb2.png[width=640]
+image::images/bb2.png[width=780]
 
 #if __EN__
-.Displaying color chart with http:#//code.google.com/p/myminios/source/browse/trunk/colortable16.sh?r=10[colortable.sh] and http:#//code.google.com/p/joeldotfiles/source/browse/trunk/256colors2.pl[256color2.pl].
-#else
-.http:#//code.google.com/p/myminios/source/browse/trunk/colortable16.sh?r=10[colortable.sh] and http:#//code.google.com/p/joeldotfiles/source/browse/trunk/256colors2.pl[256color2.pl]でカラーチャートを表示させたところ。
+.Displaying color chart with http:/#/code.google.com/p/myminios/source/browse/trunk/colortable16.sh?r=10[colortable.sh] and http:/#/code.google.com/p/joeldotfiles/source/browse/trunk/256colors2.pl[256color2.pl].
+#elif __JP__
+.http:/#/code.google.com/p/myminios/source/browse/trunk/colortable16.sh?r=10[colortable.sh] and http:/#/code.google.com/p/joeldotfiles/source/browse/trunk/256colors2.pl[256color2.pl]でカラーチャートを表示させたところ。
 #endif
-image::images/color2.png[width=640]
+image::images/color2.png[width=780]
 
 #if __EN__
-.Typing Japanese with IME (here is http:#//aquaskk.sourceforge.jp/[AquaSKK]).
-#else
-.IMEで日本語を打ってみたところ (http:#//aquaskk.sourceforge.jp/[AquaSKK]使用)。
+.Typing Japanese with IME (here is http:/#/aquaskk.sourceforge.jp/[AquaSKK]).
+#elif __JP__
+.IMEで日本語を打ってみたところ (http:/#/aquaskk.sourceforge.jp/[AquaSKK]使用)。
 #endif
-image::images/ime2.png[width=640]
+image::images/ime2.png[width=780]
 
 #if __EN__
 .Scrollbar interface emerges only when it is needed (like OSX Lion).
-#else
+#elif __JP__
 .スクロールバーインターフェースは必要なときにあらわれます(OSX Lionのように)。
 #endif
-image::images/scroll2.png[width=640]
+image::images/scroll2.png[width=780]
 
 #if __EN__
 .Overlay indicator dislays various messages. it emerges when font size / window size / titlebar message is chenged.
-#else
+#elif __JP__
 .オーバーレイインジケータがフォントサイズ、ウィンドウサイズ、タイトルバーメッセージが変更されたときなどに表示されます。
 #endif
-image::images/overlay2.png[width=640]
+image::images/overlay2.png[width=780]
 
 #if __EN__
-.Commandline interface inspired by http:#//vimperator.org/vimperator[Vimperator] / https:#//github.com/mooz/keysnail/wiki/[Keysnail] (here is fgcolor command).
-#else
-.http:#//vimperator.org/vimperator[Vimperator] や https:#//github.com/mooz/keysnail/wiki/[Keysnail] にインスパイアされたコマンドラインインターフェース。
+.Commandline interface inspired by http:/#/vimperator.org/vimperator[Vimperator] / https:/#/github.com/mooz/keysnail/wiki/[Keysnail] (here is fgcolor command).
+#elif __JP__
+.http:/#/vimperator.org/vimperator[Vimperator] や https:/#/github.com/mooz/keysnail/wiki/[Keysnail] にインスパイアされたコマンドラインインターフェース。
 #endif
-image::images/completion2.png[width=640]
+image::images/completion2.png[width=780]
 
 #if __EN__
 .Choosing font-family.
-#else
+#elif __JP__
 .フォントファミリを選択しています。
 #endif
-image::images/fontfamily2.png[width=640]
+image::images/fontfamily2.png[width=780]
 
 #if __EN__
 .Selecting font-size.
-#else
+#elif __JP__
 .フォントサイズを選択しています。
 #endif
-image::images/fontsize2.png[width=640]
+image::images/fontsize2.png[width=780]
 
 #if __EN__
-.Launcher interface inspired by http:#//www.blacktree.com/[QuckSilver] / https:#//addons.mozilla.org/ja/firefox/addon/mozilla-labs-ubiquity/[Ubiquity].
-#else
-.http:#//www.blacktree.com/[QuckSilver] や https:#//addons.mozilla.org/ja/firefox/addon/mozilla-labs-ubiquity/[Ubiquity] にインスパイアされたランチャーインターフェース。
+.Launcher interface inspired by http:/#/www.blacktree.com/[QuckSilver] / https:/#/addons.mozilla.org/ja/firefox/addon/mozilla-labs-ubiquity/[Ubiquity].
+#elif __JP__
+.http:/#/www.blacktree.com/[QuckSilver] や https:/#/addons.mozilla.org/ja/firefox/addon/mozilla-labs-ubiquity/[Ubiquity] にインスパイアされたランチャーインターフェース。
 #endif
-image::images/launcher2.png[width=640]
+image::images/launcher2.png[width=780]
 
 #if __EN__
-.Reconnecting a detached session. It's all OK if your browser crashes or restarting unexpectedly.
-#else
+.Reconnecting a detached session. It is all OK if your browser will crash or restart unexpectedly.
+#elif __JP__
 .デタッチ済みのセッションに再接続しているところ。ブラウザがクラッシュしたり再起動しても安心です。
 #endif
-image::images/session2.png[width=640]
+image::images/session2.png[width=780]
 
 #if __EN__
-.running "http:#//www.tkl.iis.u-tokyo.ac.jp/~toyoda/index_e.html[sl]" (a joke software).
-#else
-."http:#//www.tkl.iis.u-tokyo.ac.jp/~toyoda/index_e.html[sl]" (ジョークウェア)を走らせたところ。
+.running "http:/#/www.tkl.iis.u-tokyo.ac.jp/~toyoda/index_e.html[sl]" (a joke software).
+#elif __JP__
+."http:/#/www.tkl.iis.u-tokyo.ac.jp/~toyoda/index_e.html[sl]" (ジョークウェア)を走らせたところ。
 #endif
-image::images/sl2.png[width=640]
+image::images/sl2.png[width=780]
 
 #if __EN__
 .Self-Debugging and tracing terminal I/O sequence in real-time.
-#else
+#elif __JP__
 .セルフデバッギング。ターミナルI/Oシーケンスをリアルタイムにトレースしています。
 #endif
-image::images/debug2.png[width=640]
+image::images/debug2.png[width=780]
 
 #if __EN__
-.Browser-in-browser. running http:#//w3m.sourceforge.net/index.en.html[w3m] (applied private patch) with inline images. How crazy!!!
-#else
-.ブラウザの中でブラウザ。プライベートパッチを当てたhttp:#//w3m.sourceforge.net/index.en.html[w3m]でインラインイメージを表示させました。ここまでくるとちょっと意味不明ですね。
+.Browser-in-browser. running http:/#/w3m.sourceforge.net/index.en.html[w3m] (applied private patch) with inline images. How crazy!!!
+#elif __JP__
+.ブラウザの中でブラウザ。プライベートパッチを当てたhttp:/#/w3m.sourceforge.net/index.en.html[w3m]でインラインイメージを表示させました。ここまでくるとちょっと意味不明ですね。
 #endif
-image::images/w3m2.png[width=640]
+image::images/w3m2.png[width=780]
 
 #if __EN__
-.Mailer-in-browser. running http:#//www.gohome.org/wl/index.html[Wonderlust] on emacs.
-#else
-.ブラウザの中でメーラー。http:#//www.gohome.org/wl/index.html[Wonderlust]をemacs上で動かしています。
+.Mailer-in-mailer. running http:/#/www.gohome.org/wl/index.html[Wonderlust] on emacs on Thunderbird.
+#elif __JP__
+.メーラーの中でメーラー。http:/#/www.gohome.org/wl/index.html[Wonderlust]をemacs上で動かしているものをThunderbird上で動かしています。
 #endif
-image::images/wl2.png[width=640]
+image::images/wl3.png[width=780]
 
 #if __EN__
-.Developping tanasinn with tanasinn at out of jail. here is running as a standalone XUL application.
-#else
-.tanasinnをtanasinnで開発中。これはスタンドアロンXULアプリケーションとして動作させているところです。
+.Meta-developing tanasinn with tanasinn at out of jail. it runs as a standalone XUL application.
+#elif __JP__
+.tanasinnをtanasinnでメタ開発中。これはスタンドアロンXULアプリケーションとして動作させているところです。
 #endif
-image::images/xulapp.png[width=640]
+image::images/xulapp.png[width=780]
 
 
 #if __EN__
@@ -216,9 +229,9 @@ image::images/xulapp.png[width=640]
       Accessing to Gecko and do something like opening popup windows, playing movies, 
       OAuth authorication, ...etc., from terminal applications. 
       We're dreaming of enjoying youtube or twitter with no plugins, from terminal, don't you?
-    * Documents for plug-in developers is comming soon... - -;)
+    * Documents for plug-in developers are comming soon... - -;)
 
-#else
+#elif __JP__
 == 将来的にサポートされる仕様
     
     * エミュレーションの強化。今はとりあえずxterm系コンパチブルなエミュレーションで作ってますが、
@@ -235,17 +248,17 @@ image::images/xulapp.png[width=640]
 
 #if __EN__
 == Requirements
-    - Firefox 4.0+.
-    - Python for POSIX (Probably 2.5+, Mac, Linux, or cygwin version)
+    - Firefox 4.02pre+ / Thunderbird 5.0+ / SeaMonkey 2.1+.
+    - Python for POSIX (2.5+, Mac, Linux, or cygwin version)
       Python for Win32, ActivePython, etc... are not well.
       because this software depends on many posix functions 
       'os.fork', 'os.openpty' ..etc.
     - Posix enviroinment. 
       If you are running Windows, you need to install cygwin at C:\cygwin.
-#else
+#elif __JP__
 == 動作要件
-    - Firefox 4.0+。
-    - POSIX用にビルドされたPython (バージョンはたぶん 2.5+, Mac、 Linux、 または cygwin用のもの)。
+    - Firefox 4.02pre+ / Thunderbird 5.0+ / SeaMonkey 2.1+.
+    - POSIX用にビルドされたPython (2.5+, Mac、 Linux、 または cygwin用のもの)。
       Python for Win32 や ActivePython 等はforkや仮想端末をサポートしないと思うのでダメしょう。
     - POSIX環境。 
       もしWindowsをお使いでしたら、C:\cygwinにCygwinをインストールしてください。
@@ -253,91 +266,142 @@ image::images/xulapp.png[width=640]
 
 #if __EN__
 == Installing
-#else
+#elif __JP__
 == インストール
 #endif
 
 #if __EN__
-=== Building Firefox extension:
+
+=== Building Firefox/Thunderbird/SeaMonkey extension:
 .Mac, Linux, Cygwin
 ----
+git clone TANASINN_GIT_REPOSITORY
+cd tanasinn
 ./configure
 make
 ----
-    If build process was succeeded, target XPI file 
-    "tanasinn@zuse.jp.xpi" is to be generated. enjoy it!
-#else
-=== Firefox拡張としてビルドする:
+    If build process is succeeded, target XPI file 
+    TANASINN_XPI_ID is to be generated. enjoy it!
+#elif __JP__
+
+=== Firefox/Thunderbird/SeaMonkey拡張としてビルドする:
 .Mac, Linux, Cygwin
 ----
+git clone TANASINN_GIT_REPOSITORY
+cd tanasinn
 ./configure
 make
 ----
-    ビルドが成功すると、"tanasinn@zuse.jp.xpi"というXPIファイルが生成されます。
+    ビルドが成功すると、TANASINN_XPI_IDというXPIファイルが生成されます。
     これをインストールしてください。
 #endif
     
 #if __EN__
-=== Installing as Vimperator plugin:
+=== Installing as Vimperator/Muttator plugin:
 
-    Make some links into Vimperator runtime directory as following:
+    Make some links into Vimperator/Muttator runtime directory as following:
 
 .Mac, Linux
 ----
+git clone TANASINN_GIT_REPOSITORY
+cd tanasinn
+./configure
 ln -s $PWD $RUNTIME/tanasinn
 ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/ 
 ----
         
-.Cygwin
+.Windows Vista/7 + Cygwin
 ----
-$(cygpath $COMSPEC) /c mklink /D $(cygpath -w $VIMRUNTIME/tanasinn) $(cygpath -w $PWD);
+git clone TANASINN_GIT_REPOSITORY
+cd tanasinn
+./configure
+$(cygpath $COMSPEC) /c mklink /D "$(cygpath -w "$RUNTIME/tanasinn")" "$(cygpath -w "$PWD")";
 ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/
 ----
 
-    $RUNTIME is Vimperator runtime directory such as '$HOME/.vimperator'.
-#else
-=== Vimperatorプラグインとしてインストール:
+.Windows XP + Cygwin
+To make Windows native symbolic link, you may need to install http:/#/www.microsoft.com/download/en/details.aspx?DisplayLang=en%2cen&id=17657[Windows Server 2003 Resource Kit Tools].
 
-    Vimperatorのランタイムディレクトリ以下にリンクを作成します。
+----
+git clone TANASINN_GIT_REPOSITORY
+cd tanasinn
+./configure
+$(cygpath $COMSPEC) /c linkd.exe "$(cygpath -w "$RUNTIME/tanasinn")" "$(cygpath -w "$PWD")";
+ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/
+----
+
+    $RUNTIME is Vimperator/Muttator runtime directory such as '$HOME/.{vimperator,muttator}'.
+#elif __JP__
+=== Vimperator/Muttatorプラグインとしてインストール:
+
+    Vimperator/Muttatorのランタイムディレクトリ以下にリンクを作成します。
 
 .Mac, Linux
 ----
+git clone TANASINN_GIT_REPOSITORY
+cd tanasinn
+./configure
 ln -s $PWD $RUNTIME/tanasinn
 ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/ 
 ----
         
-.Cygwin
+.Windows Vista/7 + Cygwin
 ----
-$(cygpath $COMSPEC) /c mklink /D $(cygpath -w $RUNTIME/tanasinn) $(cygpath -w $PWD)
+git clone TANASINN_GIT_REPOSITORY
+cd tanasinn
+./configure
+$(cygpath $COMSPEC) /c mklink /D "$(cygpath -w "$RUNTIME/tanasinn")" "$(cygpath -w "$PWD")";
 ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/
 ----
 
-    $RUNTIMEは'$HOME/.vimperator'のようなVimperatorのランタイムディレクトリです。
+.Windows XP + Cygwin
+Windowsネイティブなシンボリックリンクを作成するために、http:/#/www.microsoft.com/download/en/details.aspx?DisplayLang=en%2cen&id=17657[Windows Server 2003 Resource Kit Tools] をインストールする必要があるかもしれません。
+
+----
+git clone TANASINN_GIT_REPOSITORY
+cd tanasinn
+./configure
+$(cygpath $COMSPEC) /c linkd.exe "$(cygpath -w "$RUNTIME/tanasinn")" "$(cygpath -w "$PWD")";
+ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/
+----
+
+    $RUNTIMEは'$HOME/.{vimperator,muttator}'のようなVimperator/Muttatorのランタイムディレクトリです。
 #endif
 
-=== Run as XUL Application (advanced, test version, it does not works well...):
+#if __EN__
+=== Running as XUL Application (advanced, unstable, it does not works well...):
+#elif __JP__
+=== XULアプリケーションとして起動 (不安定、うまく動かないかもしれません):
+#endif
     
 .MacOSX
-
 ----
+git clone TANASINN_GIT_REPOSITORY
+cd tanasinn
+./configure
 open /Applications/Firefox.app --args --app $(PWD)/application.ini
 ----
 
 .Linux
-
 ----
+git clone TANASINN_GIT_REPOSITORY
+cd tanasinn
+./configure
 firefox --app application.ini
 ----
 
 .Cygwin on Windows
-
 ----
+git clone TANASINN_GIT_REPOSITORY
+cd tanasinn
+./configure
 cygstart firefox.exe --app application.ini
 ----
+
     
 #if __EN__
 == Usage
-#else
+#elif __JP__
 == 使いかた
 #endif
 
@@ -349,45 +413,49 @@ cygstart firefox.exe --app application.ini
     For example, if you type "man man[Enter key]" to this launcher textbox, 
     window-like UI emerges into browser chrome window and display manpage.  
 
-==== If it Installed as Vimperator plugin: 
+==== If it Installed as Vimperator/Muttator plugin: 
+    You can launch tanasinn as same as Add-on version, by pressing control key twice (ctrl + ctrl).
+    For displaying launcher interface from commandline, type as follows:
 
 ----
-:tanasinn
+:tanasinnlaunch
 ----
 
-    or
+    Or, if you would like to launch terminal screen in direct, type as below:
 
 ----
-:tanasinn <command>
+:tanasinncommand <command line>
 ----
 
-#else
+#elif __JP__
 === 端末の起動
 ==== 拡張としてインストールした場合
     Controlキーの2度押し (ctrl + ctrl) でコマンドラインランチャーインターフェースが出現します。
     そこで例えば、"man man[Enterキー]" とタイプしてみてください。
     ウィンドウのようなUIがブラウザウィンドウ内に現れ、manページが表示されると思います。
 
-==== Vimperatorのプラグインとしてインストールした場合: 
+==== Vimperator/Muttatorのプラグインとしてインストールした場合: 
+    アドオン版と同様、Controlキーの2度押し (ctrl + ctrl) でtanasinnが起動します。
+    Vimperator/Muttatorのコマンドライン上から起動したい場合は、以下のようにタイプしてください。
 
 ----
-:tanasinn
+:tanasinnlaunch
 ----
 
-    or
+    もしターミナルスクリーンをVimperator/Muttatorから直接起動させたければ、以下のようにします:
 
 ----
-:tanasinn <command>
+:tanasinncommand <コマンド>
 ----
 
 #endif
 
 #if __EN__
-=== basic operating procedure 
+=== Basic operating procedure 
 
     It is similer to well-known terminal emurators, like xterm. 
     but including specific fetures as follows.
-#else
+#elif __JP__
 === 基本的な操作方法
 
     xtermのような端末エミュレータを使ったことがあれば大体いけると思いますが、
@@ -398,7 +466,7 @@ cygstart firefox.exe --app application.ini
 .shift + shift (shift key twice)
 
     switch input focus between terminal and commandline textbox.
-#else
+#elif __JP__
 .shift + shift (shiftキーの2度押し)
 
     ターミナルとコマンドラインテキストボックスの間でフォーカスを切り替えます。
@@ -408,7 +476,7 @@ cygstart firefox.exe --app application.ini
 .shift + mouse drag
 
     move window.
-#else
+#elif __JP__
 .shift + マウスドラッグ
 
     ウィンドウの移動。
@@ -418,7 +486,7 @@ cygstart firefox.exe --app application.ini
 .alt + mouse select
 
     select rectangle region. (like Terminal.app)
-#else
+#elif __JP__
 .alt + マウスで範囲選択
 
     矩形選択。 (Terminal.appの真似)
@@ -431,7 +499,7 @@ cygstart firefox.exe --app application.ini
     Now the implementation of this part is witten by rush job, commandline parser 
     is not proper one.
 
-#else
+#elif __JP__
 === コマンドラインインターフェースを使う
     
     …仕様が全然固まってませんのでまだ書けません。
@@ -440,16 +508,147 @@ cygstart firefox.exe --app application.ini
 
 
 #if __EN__
+
+== Tips
+
+=== To enable/disable plugins.
+type it in the command-line input field.
+
+----
+enable <plugin id>
+----
+
+----
+disable <plugin id>
+----
+
+=== To save/load session's settings.
+To persist the state of current session (font, color, screen size, ...etc), Type it in the command-line input field.
+
+----
+saveprofile
+----
+
+Then current session's configuration settings will be persisted to 
+"$HOME/.tanasinn/profile/default.js".
+If you would like to save it as other file name, type as follows:
+
+----
+saveprofile <profile name>
+----
+
+Therefore the settings will be persisted to "$HOME/.tanasinn/profile/<profile name>.js".
+
+And to load it again, type as follows:
+
+----
+loadprofile <profile name>
+----
+
+
+=== To detach from current session.
+type it in the command-line input field.
+
+----
+detach
+----
+
+The session will be suspended. and you can reconnect to it from launcher interface.
+
+=== To kill current session.
+type it in the command-line input field.
+
+----
+kill
+----
+
+
+#elif __JP__
+
+== Tips
+
+
+=== モジュールの有効・無効を切り替えるには
+コマンドラインから以下のようにタイプしてみてください。
+
+----
+enable <プラグインID>
+----
+
+----
+disable <プラグインID>
+----
+
+=== セッションの設定を永続化・ロードするには
+コマンドラインから以下のようにタイプしてみてください。
+
+----
+saveprofile
+----
+
+こうすれば現在のセッションの設定が "$HOME/.tanasinn/persist/default.js" へ書き出されるでしょう。
+もし別の名前で書き出したければ:
+
+----
+saveprofile <プロファイル名>
+----
+
+これで設定が"$HOME/.tanasinn/profile/<プロファイル名>.js"に書き出されます。
+
+この設定を再び読み込むには以下のようにします:
+
+----
+loadprofile <プロファイル名>
+----
+
+
+=== 現在のセッションからデタッチするには
+コマンドラインから以下のようにタイプしてみてください。
+
+----
+detach
+----
+
+セッションはサスペンドされます。ランチャーインターフェースからこのセッションに再接続することができます。
+
+=== 現在のセッションを終了するには
+コマンドラインから以下のようにタイプしてみてください。
+
+----
+kill
+----
+
+#endif
+
+
+#if __EN__
+== Known issues
+
+ - In Windows + Cygwin enviroinment, booting and emuration performance is so damn slow!!
+ - At SandS(Space and Shihft) keyboard enviroinment, shift + shift 
+   (shift key twice) key sequence are detected by space + space, unfortunately!!
+   I think something other way for it should be provided.
+
+
+#elif __JP__
+== 既知の問題
+
+ - Windows + Cygwin 環境では起動やエミュレーションが糞遅いです。
+ - キーボードがSandS(Space and Shihft)環境だとspace + space で shift + shift を検出してしまいます。代替手段を用意しなければいけません。
+
+#endif
+
+#if __EN__
 == Bug reports and patches
 
 Patches and bug reports are are encouraged. > saitoha <user@zuse.jp>,
-or toweet me (http:#//twitter.com/feel_tanasinn[English] / http:#//twitter.com/kefir_[Japanese]).
-#else
+or toweet me (http:/#/twitter.com/feel_tanasinn[English] / http:/#/twitter.com/kefir_[Japanese]).
+#elif __JP__
 == バグレポート・パッチ
 
 .バグレポート・パッチ超歓迎。 
 saitoha <user@zuse.jp> 
-twitter: http:#//twitter.com/kefir_[日本語] / http:#//twitter.com/feel_tanasinn[英語] 
+twitter: http:/#/twitter.com/kefir_[日本語] / http:/#/twitter.com/feel_tanasinn[英語] 
 
 #endif
 
