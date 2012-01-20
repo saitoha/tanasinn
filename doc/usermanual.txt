@@ -51,7 +51,7 @@ link:./usermanual.html[English/英語]
 #if __EN__
 == Hilighting features
     - Full Gecko based user interface, it is flexible and easy to customize.
-    - Multi-platform, now supports Mac / Linux (Tested in Ubuntu) / 
+    - Multi-platform, now supports Mac / FreeBSD / Linux (Tested in Ubuntu) / 
       Windows(XP/Vista/7) + http:/#/www.cygwin.com[Cygwin] (requires posix python).
     - Supports plugin architecture. it supports Plug-and-Play installing & uninstalling.
     - Retaining TTY session duaring closing/restarting browser.
@@ -76,7 +76,7 @@ link:./usermanual.html[English/英語]
 #elif __JP__
 == 特色
     - Geckoベースのユーザーインターフェース。柔軟でカスタマイズが容易です。
-    - マルチプラットフォーム。現在サポートされるのは、Mac / Linux(というかUbuntu) / 
+    - マルチプラットフォーム。現在サポートされるのは、Mac / FreeBSD / Linux(というかUbuntu) / 
       Windows(XP/Vista/7) + http:/#/www.cygwin.com[Cygwin]環境 (POSIX版Pythonが必要)
     - プラグインアーキテクチャ。プラグアンドプレイでのインストール・アンインストールが可能。
     - ブラウザを再起動したり閉じたりしている間、ターミナルセッションを保持します。
@@ -249,7 +249,7 @@ image::images/xulapp.png[width=780]
 #if __EN__
 == Requirements
     - Firefox 4.02pre+ / Thunderbird 5.0+ / SeaMonkey 2.1+.
-    - Python for POSIX (2.5+, Mac, Linux, or cygwin version)
+    - Python for POSIX (2.5+, Mac, FreeBSD, Linux, or cygwin version)
       Python for Win32, ActivePython, etc... are not well.
       because this software depends on many posix functions 
       'os.fork', 'os.openpty' ..etc.
@@ -258,7 +258,7 @@ image::images/xulapp.png[width=780]
 #elif __JP__
 == 動作要件
     - Firefox 4.02pre+ / Thunderbird 5.0+ / SeaMonkey 2.1+.
-    - POSIX用にビルドされたPython (2.5+, Mac、 Linux、 または cygwin用のもの)。
+    - POSIX用にビルドされたPython (2.5+, Mac、FreeBSD、Linux、 または cygwin用のもの)。
       Python for Win32 や ActivePython 等はforkや仮想端末をサポートしないと思うのでダメしょう。
     - POSIX環境。 
       もしWindowsをお使いでしたら、C:\cygwinにCygwinをインストールしてください。
@@ -273,7 +273,7 @@ image::images/xulapp.png[width=780]
 #if __EN__
 
 === Building Firefox/Thunderbird/SeaMonkey extension:
-.Mac, Linux, Cygwin
+.Mac, FreeBSD, Linux, Cygwin
 ----
 git clone TANASINN_GIT_REPOSITORY
 cd tanasinn
@@ -285,7 +285,7 @@ make
 #elif __JP__
 
 === Firefox/Thunderbird/SeaMonkey拡張としてビルドする:
-.Mac, Linux, Cygwin
+.Mac, FreeBSD, Linux, Cygwin
 ----
 git clone TANASINN_GIT_REPOSITORY
 cd tanasinn
@@ -301,7 +301,7 @@ make
 
     Make some links into Vimperator/Muttator runtime directory as following:
 
-.Mac, Linux
+.Mac, FreeBSD, Linux
 ----
 git clone TANASINN_GIT_REPOSITORY
 cd tanasinn
@@ -336,7 +336,7 @@ ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/
 
     Vimperator/Muttatorのランタイムディレクトリ以下にリンクを作成します。
 
-.Mac, Linux
+.Mac, FreeBSD, Linux
 ----
 git clone TANASINN_GIT_REPOSITORY
 cd tanasinn
@@ -382,7 +382,7 @@ cd tanasinn
 open /Applications/Firefox.app --args --app $(PWD)/application.ini
 ----
 
-.Linux
+.Linux, FreeBSD
 ----
 git clone TANASINN_GIT_REPOSITORY
 cd tanasinn
