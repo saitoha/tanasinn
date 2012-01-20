@@ -33,8 +33,6 @@ link:./usermanual.html[English/英語]
 
 - Developping version (0.1.2r3): http:/#/zuse.jp/tanasinn/downloads/versions/0.1.2r3/tanasinn@zuse.jp.xpi[Download]
 - Unstable, Snapshot version (it may so bugful!): http:/#/zuse.jp/tanasinn/tanasinn-current.xpi[Download]
-- git repo: http:/#/zuse.jp/tanasinn.git
-- gitweb: http:/#/zuse.jp/git/?p=tanasinn.git
 
 #elif __JP__
 
@@ -43,10 +41,11 @@ link:./usermanual.html[English/英語]
 
 - 開発版 (0.1.2r3): http:/#/zuse.jp/tanasinn/downloads/versions/0.1.2r3/tanasinn@zuse.jp.xpi[ダウンロード].
 - スナップショット版: http:/#/zuse.jp/tanasinn/tanasinn-current.xpi[ダウンロード]
-- git repo: http:/#/zuse.jp/tanasinn.git
-- gitweb: http:/#/zuse.jp/git/?p=tanasinn.git
 
 #endif
+
+- git repo: git:/#/zuse.jp/git/tanasinn.git
+- gitweb: http:/#/zuse.jp/git/?p=tanasinn.git
 
 #if __EN__
 == Hilighting features
@@ -58,6 +57,7 @@ link:./usermanual.html[English/英語]
       you can reconnect suspended terminal session.
     - Including debugger. You can run it in step-execution-mode or trace-mode 
       and observe terminal I/O sequence in real-time.
+    - Supports basic features, scrollback, alternate screen, visual bell, audio bell ...etc.
     - IME is supported.
     - Supports east asian double width characters. 
       but it is not render bidi languages correctly.
@@ -82,6 +82,7 @@ link:./usermanual.html[English/英語]
       サスペンドしたセッションに後から再接続できます。 
     - デバッガ内臓。ステップ実行やトレースができます。
       ターミナルとアプリケーションがやり取りするI/Oシーケンスをリアルタイムで観察できます。
+    - スクロールバック、代替スクリーン、ビジュアルベル、オーディオベルなど基本的な機能はサポートしています。
     - IMEが使えます。
     - East Asian Width(ひらがななどの文字幅を考慮したレンダリング)に一応対応しています。 
       bidiには対応できていないと思います。
@@ -246,8 +247,8 @@ image::images/xulapp.png[width=780]
 
 #if __EN__
 == Requirements
-    - Firefox 4.0+ / Thunderbird 5.0+ (ver 0.1.2+) / SeaMonkey 2.1+ (ver 0.1.3+).
-    - Python for POSIX (Probably 2.5+, Mac, Linux, or cygwin version)
+    - Firefox 4.02pre+ / Thunderbird 5.0+ / SeaMonkey 2.1+.
+    - Python for POSIX (2.5+, Mac, Linux, or cygwin version)
       Python for Win32, ActivePython, etc... are not well.
       because this software depends on many posix functions 
       'os.fork', 'os.openpty' ..etc.
@@ -255,8 +256,8 @@ image::images/xulapp.png[width=780]
       If you are running Windows, you need to install cygwin at C:\cygwin.
 #elif __JP__
 == 動作要件
-    - Firefox 4.0+ / Thunderbird 5.0+ (ver 0.1.2+) / SeaMonkey 2.1+ (ver 0.1.3+).
-    - POSIX用にビルドされたPython (バージョンはたぶん 2.5+, Mac、 Linux、 または cygwin用のもの)。
+    - Firefox 4.02pre+ / Thunderbird 5.0+ / SeaMonkey 2.1+.
+    - POSIX用にビルドされたPython (2.5+, Mac、 Linux、 または cygwin用のもの)。
       Python for Win32 や ActivePython 等はforkや仮想端末をサポートしないと思うのでダメしょう。
     - POSIX環境。 
       もしWindowsをお使いでしたら、C:\cygwinにCygwinをインストールしてください。
@@ -273,7 +274,7 @@ image::images/xulapp.png[width=780]
 === Building Firefox/Thunderbird/SeaMonkey extension:
 .Mac, Linux, Cygwin
 ----
-git clone http:/#/zuse.jp/tanasinn.git
+git clone git:/#/zuse.jp/git/tanasinn.git
 cd tanasinn
 ./configure
 make
@@ -285,7 +286,7 @@ make
 === Firefox/Thunderbird/SeaMonkey拡張としてビルドする:
 .Mac, Linux, Cygwin
 ----
-git clone http:/#/zuse.jp/tanasinn.git
+git clone git:/#/zuse.jp/git/tanasinn.git
 cd tanasinn
 ./configure
 make
@@ -301,7 +302,7 @@ make
 
 .Mac, Linux
 ----
-git clone http:/#/zuse.jp/tanasinn.git
+git clone git:/#/zuse.jp/git/tanasinn.git
 cd tanasinn
 ./configure
 ln -s $PWD $RUNTIME/tanasinn
@@ -310,7 +311,7 @@ ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/
         
 .Windows Vista/7 + Cygwin
 ----
-git clone http:/#/zuse.jp/tanasinn.git
+git clone git:/#/zuse.jp/git/tanasinn.git
 cd tanasinn
 ./configure
 $(cygpath $COMSPEC) /c mklink /D "$(cygpath -w "$RUNTIME/tanasinn")" "$(cygpath -w "$PWD")";
@@ -321,7 +322,7 @@ ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/
 To make Windows native symbolic link, you may need to install http:/#/www.microsoft.com/download/en/details.aspx?DisplayLang=en%2cen&id=17657[Windows Server 2003 Resource Kit Tools].
 
 ----
-git clone http:/#/zuse.jp/tanasinn.git
+git clone git:/#/zuse.jp/git/tanasinn.git
 cd tanasinn
 ./configure
 $(cygpath $COMSPEC) /c linkd.exe "$(cygpath -w "$RUNTIME/tanasinn")" "$(cygpath -w "$PWD")";
@@ -336,7 +337,7 @@ ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/
 
 .Mac, Linux
 ----
-git clone http:/#/zuse.jp/tanasinn.git
+git clone git:/#/zuse.jp/git/tanasinn.git
 cd tanasinn
 ./configure
 ln -s $PWD $RUNTIME/tanasinn
@@ -345,7 +346,7 @@ ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/
         
 .Windows Vista/7 + Cygwin
 ----
-git clone http:/#/zuse.jp/tanasinn.git
+git clone git:/#/zuse.jp/git/tanasinn.git
 cd tanasinn
 ./configure
 $(cygpath $COMSPEC) /c mklink /D "$(cygpath -w "$RUNTIME/tanasinn")" "$(cygpath -w "$PWD")";
@@ -356,7 +357,7 @@ ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/
 Windowsネイティブなシンボリックリンクを作成するために、http:/#/www.microsoft.com/download/en/details.aspx?DisplayLang=en%2cen&id=17657[Windows Server 2003 Resource Kit Tools] をインストールする必要があるかもしれません。
 
 ----
-git clone http:/#/zuse.jp/tanasinn.git
+git clone git:/#/zuse.jp/git/tanasinn.git
 cd tanasinn
 ./configure
 $(cygpath $COMSPEC) /c linkd.exe "$(cygpath -w "$RUNTIME/tanasinn")" "$(cygpath -w "$PWD")";
@@ -374,7 +375,7 @@ ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/
     
 .MacOSX
 ----
-git clone http:/#/zuse.jp/tanasinn.git
+git clone git:/#/zuse.jp/git/tanasinn.git
 cd tanasinn
 ./configure
 open /Applications/Firefox.app --args --app $(PWD)/application.ini
@@ -382,7 +383,7 @@ open /Applications/Firefox.app --args --app $(PWD)/application.ini
 
 .Linux
 ----
-git clone http:/#/zuse.jp/tanasinn.git
+git clone git:/#/zuse.jp/git/tanasinn.git
 cd tanasinn
 ./configure
 firefox --app application.ini
@@ -390,7 +391,7 @@ firefox --app application.ini
 
 .Cygwin on Windows
 ----
-git clone http:/#/zuse.jp/tanasinn.git
+git clone git:/#/zuse.jp/git/tanasinn.git
 cd tanasinn
 ./configure
 cygstart firefox.exe --app application.ini

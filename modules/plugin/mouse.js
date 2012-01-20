@@ -255,7 +255,12 @@ Mouse.definition = {
     let tracking_mode = this._tracking_mode;
     if  (/BTN_EVENT_MOUSE|ANY_EVENT_MOUSE/.test(tracking_mode)) {
       // Send motion event.
-      let code = 32 + 0 + 32;
+      let code = 32 
+             | (event.shiftKey << 2) 
+             | (event.metaKey << 3)
+             | (event.ctrlKey << 4)
+             | (1 << 5);
+
       let [column, row] = this._getCurrentPosition(event);
       column += 32;
       row += 32;

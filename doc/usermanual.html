@@ -876,7 +876,7 @@ Unstable, Snapshot version (it may so bugful!): <a href="http://zuse.jp/tanasinn
 </li>
 <li>
 <p>
-git repo: <a href="http://zuse.jp/tanasinn.git">http://zuse.jp/tanasinn.git</a>
+git repo: git://zuse.jp/git/tanasinn.git
 </p>
 </li>
 <li>
@@ -918,6 +918,11 @@ Retaining TTY session duaring closing/restarting browser.
 <p>
 Including debugger. You can run it in step-execution-mode or trace-mode
       and observe terminal I/O sequence in real-time.
+</p>
+</li>
+<li>
+<p>
+Supports basic features, scrollback, alternate screen, visual bell, audio bell &#8230;etc.
 </p>
 </li>
 <li>
@@ -1126,12 +1131,12 @@ Documents for plug-in developers are comming soon&#8230; - -;)
 <div class="ulist"><ul>
 <li>
 <p>
-Firefox 4.0+ / Thunderbird 5.0+ (ver 0.1.2+) / SeaMonkey 2.1+ (ver 0.1.3+).
+Firefox 4.02pre+ / Thunderbird 5.0+ / SeaMonkey 2.1+.
 </p>
 </li>
 <li>
 <p>
-Python for POSIX (Probably 2.5+, Mac, Linux, or cygwin version)
+Python for POSIX (2.5+, Mac, Linux, or cygwin version)
       Python for Win32, ActivePython, etc&#8230; are not well.
       because this software depends on many posix functions
       <em>os.fork</em>, <em>os.openpty</em> ..etc.
@@ -1154,7 +1159,7 @@ Posix enviroinment.
 <div class="listingblock">
 <div class="title">Mac, Linux, Cygwin</div>
 <div class="content">
-<pre><tt>git clone http://zuse.jp/tanasinn.git
+<pre><tt>git clone git://zuse.jp/git/tanasinn.git
 cd tanasinn
 ./configure
 make</tt></pre>
@@ -1174,7 +1179,7 @@ make</tt></pre>
 <div class="listingblock">
 <div class="title">Mac, Linux</div>
 <div class="content">
-<pre><tt>git clone http://zuse.jp/tanasinn.git
+<pre><tt>git clone git://zuse.jp/git/tanasinn.git
 cd tanasinn
 ./configure
 ln -s $PWD $RUNTIME/tanasinn
@@ -1183,7 +1188,7 @@ ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/</tt></pre>
 <div class="listingblock">
 <div class="title">Windows Vista/7 + Cygwin</div>
 <div class="content">
-<pre><tt>git clone http://zuse.jp/tanasinn.git
+<pre><tt>git clone git://zuse.jp/git/tanasinn.git
 cd tanasinn
 ./configure
 $(cygpath $COMSPEC) /c mklink /D "$(cygpath -w "$RUNTIME/tanasinn")" "$(cygpath -w "$PWD")";
@@ -1192,7 +1197,7 @@ ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/</tt></pre>
 <div class="paragraph"><div class="title">Windows XP + Cygwin</div><p>To make Windows native symbolic link, you may need to install <a href="http://www.microsoft.com/download/en/details.aspx?DisplayLang=en%2cen&amp;id=17657">Windows Server 2003 Resource Kit Tools</a>.</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>git clone http://zuse.jp/tanasinn.git
+<pre><tt>git clone git://zuse.jp/git/tanasinn.git
 cd tanasinn
 ./configure
 $(cygpath $COMSPEC) /c linkd.exe "$(cygpath -w "$RUNTIME/tanasinn")" "$(cygpath -w "$PWD")";
@@ -1208,7 +1213,7 @@ ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/</tt></pre>
 <div class="listingblock">
 <div class="title">MacOSX</div>
 <div class="content">
-<pre><tt>git clone http://zuse.jp/tanasinn.git
+<pre><tt>git clone git://zuse.jp/git/tanasinn.git
 cd tanasinn
 ./configure
 open /Applications/Firefox.app --args --app $(PWD)/application.ini</tt></pre>
@@ -1216,7 +1221,7 @@ open /Applications/Firefox.app --args --app $(PWD)/application.ini</tt></pre>
 <div class="listingblock">
 <div class="title">Linux</div>
 <div class="content">
-<pre><tt>git clone http://zuse.jp/tanasinn.git
+<pre><tt>git clone git://zuse.jp/git/tanasinn.git
 cd tanasinn
 ./configure
 firefox --app application.ini</tt></pre>
@@ -1224,7 +1229,7 @@ firefox --app application.ini</tt></pre>
 <div class="listingblock">
 <div class="title">Cygwin on Windows</div>
 <div class="content">
-<pre><tt>git clone http://zuse.jp/tanasinn.git
+<pre><tt>git clone git://zuse.jp/git/tanasinn.git
 cd tanasinn
 ./configure
 cygstart firefox.exe --app application.ini</tt></pre>
@@ -1386,7 +1391,11 @@ or toweet me (<a href="http://twitter.com/feel_tanasinn">English</a> / <a href="
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
+<<<<<<< HEAD
 Last updated 2012-01-18 21:27:34 JST
+=======
+Last updated 2012-01-20 17:04:53 JST
+>>>>>>> cmap_feature
 </div>
 </div>
 </body>

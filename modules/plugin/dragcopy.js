@@ -53,6 +53,7 @@ DragCopy.definition = {
     this.enabled = this.enabled_when_startup;
   },
 
+  /** Installs itself. */
   install: function install(session)
   {
     let {feedback_canvas} = session.uniget(
@@ -67,6 +68,7 @@ DragCopy.definition = {
     this.ondragstart.enabled = true;
   },
 
+  /** Uninstalls itself. */
   uninstall: function install(session)
   {
     this.ondragstart.enabled = false;

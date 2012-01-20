@@ -875,7 +875,7 @@ asciidoc.install(2);
 </li>
 <li>
 <p>
-git repo: <a href="http://zuse.jp/tanasinn.git">http://zuse.jp/tanasinn.git</a>
+git repo: git://zuse.jp/git/tanasinn.git
 </p>
 </li>
 <li>
@@ -917,6 +917,11 @@ Geckoベースのユーザーインターフェース。柔軟でカスタマイ
 <p>
 デバッガ内臓。ステップ実行やトレースができます。
       ターミナルとアプリケーションがやり取りするI/Oシーケンスをリアルタイムで観察できます。
+</p>
+</li>
+<li>
+<p>
+スクロールバック、代替スクリーン、ビジュアルベル、オーディオベルなど基本的な機能はサポートしています。
 </p>
 </li>
 <li>
@@ -1120,12 +1125,12 @@ cursesベースのアプリーションとの連携強化。
 <div class="ulist"><ul>
 <li>
 <p>
-Firefox 4.0+ / Thunderbird 5.0+ (ver 0.1.2+) / SeaMonkey 2.1+ (ver 0.1.3+).
+Firefox 4.02pre+ / Thunderbird 5.0+ / SeaMonkey 2.1+.
 </p>
 </li>
 <li>
 <p>
-POSIX用にビルドされたPython (バージョンはたぶん 2.5+, Mac、 Linux、 または cygwin用のもの)。
+POSIX用にビルドされたPython (2.5+, Mac、 Linux、 または cygwin用のもの)。
       Python for Win32 や ActivePython 等はforkや仮想端末をサポートしないと思うのでダメしょう。
 </p>
 </li>
@@ -1146,7 +1151,7 @@ POSIX環境。
 <div class="listingblock">
 <div class="title">Mac, Linux, Cygwin</div>
 <div class="content">
-<pre><tt>git clone http://zuse.jp/tanasinn.git
+<pre><tt>git clone git://zuse.jp/git/tanasinn.git
 cd tanasinn
 ./configure
 make</tt></pre>
@@ -1166,7 +1171,7 @@ make</tt></pre>
 <div class="listingblock">
 <div class="title">Mac, Linux</div>
 <div class="content">
-<pre><tt>git clone http://zuse.jp/tanasinn.git
+<pre><tt>git clone git://zuse.jp/git/tanasinn.git
 cd tanasinn
 ./configure
 ln -s $PWD $RUNTIME/tanasinn
@@ -1175,7 +1180,7 @@ ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/</tt></pre>
 <div class="listingblock">
 <div class="title">Windows Vista/7 + Cygwin</div>
 <div class="content">
-<pre><tt>git clone http://zuse.jp/tanasinn.git
+<pre><tt>git clone git://zuse.jp/git/tanasinn.git
 cd tanasinn
 ./configure
 $(cygpath $COMSPEC) /c mklink /D "$(cygpath -w "$RUNTIME/tanasinn")" "$(cygpath -w "$PWD")";
@@ -1184,7 +1189,7 @@ ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/</tt></pre>
 <div class="paragraph"><div class="title">Windows XP + Cygwin</div><p>Windowsネイティブなシンボリックリンクを作成するために、<a href="http://www.microsoft.com/download/en/details.aspx?DisplayLang=en%2cen&amp;id=17657">Windows Server 2003 Resource Kit Tools</a> をインストールする必要があるかもしれません。</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>git clone http://zuse.jp/tanasinn.git
+<pre><tt>git clone git://zuse.jp/git/tanasinn.git
 cd tanasinn
 ./configure
 $(cygpath $COMSPEC) /c linkd.exe "$(cygpath -w "$RUNTIME/tanasinn")" "$(cygpath -w "$PWD")";
@@ -1200,7 +1205,7 @@ ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/</tt></pre>
 <div class="listingblock">
 <div class="title">MacOSX</div>
 <div class="content">
-<pre><tt>git clone http://zuse.jp/tanasinn.git
+<pre><tt>git clone git://zuse.jp/git/tanasinn.git
 cd tanasinn
 ./configure
 open /Applications/Firefox.app --args --app $(PWD)/application.ini</tt></pre>
@@ -1208,7 +1213,7 @@ open /Applications/Firefox.app --args --app $(PWD)/application.ini</tt></pre>
 <div class="listingblock">
 <div class="title">Linux</div>
 <div class="content">
-<pre><tt>git clone http://zuse.jp/tanasinn.git
+<pre><tt>git clone git://zuse.jp/git/tanasinn.git
 cd tanasinn
 ./configure
 firefox --app application.ini</tt></pre>
@@ -1216,7 +1221,7 @@ firefox --app application.ini</tt></pre>
 <div class="listingblock">
 <div class="title">Cygwin on Windows</div>
 <div class="content">
-<pre><tt>git clone http://zuse.jp/tanasinn.git
+<pre><tt>git clone git://zuse.jp/git/tanasinn.git
 cd tanasinn
 ./configure
 cygstart firefox.exe --app application.ini</tt></pre>
@@ -1374,7 +1379,11 @@ twitter: <a href="http://twitter.com/kefir_">日本語</a> / <a href="http://twi
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
+<<<<<<< HEAD
 Last updated 2012-01-18 21:27:33 JST
+=======
+Last updated 2012-01-20 17:04:52 JST
+>>>>>>> cmap_feature
 </div>
 </div>
 </body>

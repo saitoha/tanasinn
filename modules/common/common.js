@@ -363,10 +363,10 @@ coUtils.File = new function() {
    */
   getURLSpec: function getURLSpec(file) 
   {
-    let ioService = Components
+    let io_service = Components
       .classes["@mozilla.org/network/io-service;1"]
       .getService(Components.interfaces.nsIIOService);
-    let file_handler = ioService.getProtocolHandler("file")
+    let file_handler = io_service.getProtocolHandler("file")
       .QueryInterface(Components.interfaces.nsIFileProtocolHandler);
     return file_handler.getURLSpecFromFile(file);
   },
@@ -493,29 +493,35 @@ coUtils.Keyboard = {
   KEY_APP    : 26,
 
   KEYNAME_PACKEDCODE_MAP: let (KEY_NOCHAR = 24) {
-     space : 0x0020
-    ,pgup  : 0x1 << KEY_NOCHAR | 0x0021 
-    ,pgdn  : 0x1 << KEY_NOCHAR | 0x0022
-    ,end   : 0x1 << KEY_NOCHAR | 0x0023
-    ,home  : 0x1 << KEY_NOCHAR | 0x0024
-    ,left  : 0x1 << KEY_NOCHAR | 0x0025
-    ,up    : 0x1 << KEY_NOCHAR | 0x0026
-    ,right : 0x1 << KEY_NOCHAR | 0x0027
-    ,down  : 0x1 << KEY_NOCHAR | 0x0028
-    ,ins   : 0x1 << KEY_NOCHAR | 0x002d
-    ,del   : 0x1 << KEY_NOCHAR | 0x002e
-    ,f1    : 0x1 << KEY_NOCHAR | 0x0070
-    ,f2    : 0x1 << KEY_NOCHAR | 0x0071
-    ,f3    : 0x1 << KEY_NOCHAR | 0x0072
-    ,f4    : 0x1 << KEY_NOCHAR | 0x0073
-    ,f5    : 0x1 << KEY_NOCHAR | 0x0074
-    ,f6    : 0x1 << KEY_NOCHAR | 0x0075
-    ,f7    : 0x1 << KEY_NOCHAR | 0x0076
-    ,f8    : 0x1 << KEY_NOCHAR | 0x0077
-    ,f9    : 0x1 << KEY_NOCHAR | 0x0078
-    ,f10   : 0x1 << KEY_NOCHAR | 0x0079
-    ,f11   : 0x1 << KEY_NOCHAR | 0x007a
-    ,f12   : 0x1 << KEY_NOCHAR | 0x007b
+    space     : 0x0020,
+    bs        : 0x1 << KEY_NOCHAR | 0x0008, 
+    backspace : 0x1 << KEY_NOCHAR | 0x0008, 
+    tab       : 0x1 << KEY_NOCHAR | 0x0009, 
+    enter     : 0x1 << KEY_NOCHAR | 0x000d,
+    cr        : 0x1 << KEY_NOCHAR | 0x000d,
+    lf        : 0x1 << KEY_NOCHAR | 0x000a,
+    pgup      : 0x1 << KEY_NOCHAR | 0x0021,
+    pgdn      : 0x1 << KEY_NOCHAR | 0x0022,
+    end       : 0x1 << KEY_NOCHAR | 0x0023,
+    home      : 0x1 << KEY_NOCHAR | 0x0024,
+    left      : 0x1 << KEY_NOCHAR | 0x0025,
+    up        : 0x1 << KEY_NOCHAR | 0x0026,
+    right     : 0x1 << KEY_NOCHAR | 0x0027,
+    down      : 0x1 << KEY_NOCHAR | 0x0028,
+    ins       : 0x1 << KEY_NOCHAR | 0x002d,
+    del       : 0x1 << KEY_NOCHAR | 0x002e,
+    f1        : 0x1 << KEY_NOCHAR | 0x0070,
+    f2        : 0x1 << KEY_NOCHAR | 0x0071,
+    f3        : 0x1 << KEY_NOCHAR | 0x0072,
+    f4        : 0x1 << KEY_NOCHAR | 0x0073,
+    f5        : 0x1 << KEY_NOCHAR | 0x0074,
+    f6        : 0x1 << KEY_NOCHAR | 0x0075,
+    f7        : 0x1 << KEY_NOCHAR | 0x0076,
+    f8        : 0x1 << KEY_NOCHAR | 0x0077,
+    f9        : 0x1 << KEY_NOCHAR | 0x0078,
+    f10       : 0x1 << KEY_NOCHAR | 0x0079,
+    f11       : 0x1 << KEY_NOCHAR | 0x007a,
+    f12       : 0x1 << KEY_NOCHAR | 0x007b,
   },
 
   /**
@@ -1204,7 +1210,7 @@ coUtils.Localize = new function()
         lang: language,
         dict: dictionary,
       };
-      coUtils.IO.writeToFile(location, db.toSource());
+      coUtils.IO.writeToFile(location, JSON.stringfy(db));
       this._dictionaries_store[db.lang] = db.dict;
     },
 

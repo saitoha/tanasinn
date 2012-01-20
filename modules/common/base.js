@@ -101,7 +101,8 @@ function Prototype(definition, base_class, interface_list)
   {
     let match = key.match(/^([\w-@]+)$|^\[(.+)\]\s*(.*)\s*$/);
     if (!match) {
-      throw coUtils.Debug.Exception(_("Ill-formed property name: '%s'."), key)
+      throw coUtils.Debug.Exception(
+        _("Ill-formed property name: '%s'."), key)
     }
     let [, , annotation, name] = match;
     if (annotation) {
@@ -855,11 +856,15 @@ CmapAttribute.definition = {
                 if (newval) {
                   expressions.forEach(function(expression) {
                     let expressions = delegate.expressions;
-                    let packed_code = coUtils.Keyboard.parseKeymapExpression(expression);
-                    broker.subscribe(<>cmap/{packed_code.join("-")}</>, function(info) {
-                      delegate.call(this, info.event);
-                      info.handled = true;
-                    }, this, delegate.id);
+                    try {
+                      let packed_code = coUtils.Keyboard.parseKeymapExpression(expression);
+                      broker.subscribe(<>cmap/{packed_code.join("-")}</>, function(info) {
+                        delegate.call(this, info.event);
+                        info.handled = true;
+                      }, this, delegate.id);
+                    } catch (e) {
+                      coUtils.Debug.reportError(e);
+                    }
                   }, self); // expressions.forEach
                 } else {
                   broker.unsubscribe(delegate.id);
@@ -1131,8 +1136,9 @@ XPCOMFactory.definition = {
 
   registerSelf: function registerSelf()
   {
-    if (Components.classes[this._contractID])
+    if (Components.classes[this._contractID]) {
       return;
+    }
     Components.manager
       .QueryInterface(Components.interfaces.nsIComponentRegistrar)
       .registerFactory(

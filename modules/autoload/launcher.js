@@ -292,6 +292,10 @@ ProcessManager.definition = {
    */
   processIsAvailable: function processIsAvailable(pid) 
   {
+    let exit_code = this.sendSignal(0, pid);
+    if (exit_code) {
+      alert(exit_code + " " + pid)
+    }
     return 0 == this.sendSignal(0, pid);
     if ("number" != typeof pid) {
       throw coUtils.Debug.Exception(
@@ -664,7 +668,13 @@ Launcher.definition = {
   top: 200,
   left: 500,
 
-  "[persistable] completion_delay": 180,
+  "[persistable, watchable] completion_delay": 180,
+  "[persistable, watchable] font_size": "40px",
+  "[persistable, watchable] font_family": "Lucida Calligraph,Times New Roman,Lucida Console",
+  "[persistable, watchable] font_weight": "bold",
+  "[persistable, watchable] font_style": "italic",
+  "[persistable, watchable] textbox_width": "500px",
+  "[persistable, watchable] textbox_color": "#ddd",
 
   _index: -1,
   _result: null,
@@ -682,6 +692,17 @@ Launcher.definition = {
   {
     return this._index;
   },
+
+  get textboxStyle()
+    <>
+      font-size: {this.font_size};
+      font-family: {this.font_family};
+      font-weight: {this.font_weight};
+      font-style: {this.font_style};
+      text-shadow: 1px 1px 3px black;
+      width: {this.textbox_width};
+      color: {this.textbox_color};
+    </>,
 
   "[subscribe('event/broker-started'), enabled]":
   function onLoad(desktop)
@@ -732,15 +753,7 @@ Launcher.definition = {
               tagName: "textbox",
               id: "tanasinn_launcher_textbox",
               className: "plain",
-              style: <>
-                font-size: 40px;
-                font-family: 'Lucida Calligraph','Apple Chancery','Times New Roman','Lucida Console';
-                weight: bold;
-                font-style: italic;
-                text-shadow: 1px 1px 3px black;
-                width: 80%;
-                color: #ddd;
-              </>,
+              style: this.textboxStyle,
             },
           },
           {
@@ -866,6 +879,13 @@ Launcher.definition = {
     this.startSession.enabled = false;
   },
 
+  "[subscribe('variable-changed/' + this.id + '.{font_size | font_family | font_weight | font_style}')]":
+  function onStyleChanged(chrome, decoder) 
+  {
+    if (this._textbox) {
+      this._textbox.style.cssText = this.textboxStyle;
+    }
+  },
 
   select: function select(index)
   {

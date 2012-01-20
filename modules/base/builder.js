@@ -185,7 +185,9 @@ TemplateBuilder.definition = {
     }
     if (!template.tagName) {
       if (!template.hasOwnProperty("text")) {
-        throw coUtils.Debug.Exception(_("tagName property not found: %s."), template.toSource());
+        throw coUtils.Debug.Exception(
+          _("tagName property not found: %s."),
+          template.toSource());
       }
       let document = this._root_element.ownerDocument;
       return document.createTextNode(template.text);
