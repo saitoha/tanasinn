@@ -202,7 +202,7 @@ Grammer.definition = {
   /** post constructor. 
    *  @param {Session} session A Session object.
    */
-  "[subscribe('@event/session-started'), enabled]":
+  "[subscribe('@event/broker-started'), enabled]":
   function onLoad(session)
   {
     this.ESC = new SequenceParser();

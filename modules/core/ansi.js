@@ -68,7 +68,7 @@ AnsiSpecifiedMode.definition = {
   LNM: false, 
 
   /** constructor */
-  "[subscribe('@event/session-started'), enabled]":
+  "[subscribe('@event/broker-started'), enabled]":
   function onLoad(session) 
   {
     session.notify("initialized/ansimode", this);

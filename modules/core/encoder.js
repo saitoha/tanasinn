@@ -130,7 +130,7 @@ Encoder.definition = {
     session.notify("command/report-status-message", message); 
   },
 
-  "[subscribe('@event/session-started'), enabled]": 
+  "[subscribe('@event/broker-started'), enabled]": 
   function onLoad(session) 
   {
     this._cache = {};

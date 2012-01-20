@@ -152,7 +152,7 @@ Session.definition = {
 
     desktop.notify("initialized/broker", this);
     this.notify("command/load-settings", this.profile);
-    this.notify("event/session-started", this);
+    this.notify("event/broker-started", this);
     //coUtils.Timer.setTimeout(function() {
       this.notify("command/focus");
       this.notify("command/focus");

@@ -165,7 +165,7 @@ OuterChrome.definition = {
 
 // constructor
   /** post initializer. */
-  "[subscribe('@event/session-started'), enabled]": 
+  "[subscribe('@event/broker-started'), enabled]": 
   function onLoad(session) 
   {
     // construct chrome elements. 

@@ -28,7 +28,7 @@
 let CompleterBase = new Abstruct().extends(Component);
 CompleterBase.definition = {
 
-  "[subscribe('@event/session-started'), enabled]":
+  "[subscribe('@event/broker-started'), enabled]":
   function onLoad(session)
   {
     session.subscribe(
@@ -1420,7 +1420,7 @@ LocalizeCompleter.definition = {
 let CompletionDisplayDriverBase = new Abstruct().extends(Component);
 CompletionDisplayDriverBase.definition = {
 
-  "[subscribe('@event/session-started'), enabled]":
+  "[subscribe('@event/broker-started'), enabled]":
   function onLoad(session)
   {
     session.subscribe(

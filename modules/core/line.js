@@ -681,7 +681,7 @@ LineGenerator.definition = {
   get id()
     "linegenerator",
 
-  "[subscribe('@event/session-started'), enabled]":
+  "[subscribe('@event/broker-started'), enabled]":
   function onLoad(session) 
   {
     session.notify("initialized/" + this.id, this);

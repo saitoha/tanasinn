@@ -43,7 +43,7 @@ FocusTracker.definition = {
   /** post-constructor 
    *  @param {Session} session A session object.
    */
-  "[subscribe('event/session-started'), enabled]": 
+  "[subscribe('event/broker-started'), enabled]": 
   function onLoad(session) 
   {
     this._command_dispatcher = session.document.commandDispatcher;

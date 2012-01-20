@@ -761,7 +761,7 @@ Viewable.definition = {
   {
   },
 
-  "[subscribe('event/session-started'), enabled]":
+  "[subscribe('event/broker-started'), enabled]":
   function(session) 
   {
     this.resetScrollRegion();

@@ -267,7 +267,7 @@ IOManager.definition = {
    * initialize it with Session object.
    * @param {Session} session
    */
-  "[subscribe('@event/session-started'), enabled]":
+  "[subscribe('@event/broker-started'), enabled]":
   function onLoad(session) 
   {
     let socket = Components
@@ -457,7 +457,7 @@ ExternalDriver.definition = {
   /** post-constructor 
    * @param {Session} session A session object.
    */
-  "[subscribe('@event/session-started'), enabled]":
+  "[subscribe('@event/broker-started'), enabled]":
   function onLoad(session) 
   {
     let runtime_path;

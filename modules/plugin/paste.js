@@ -41,7 +41,7 @@ Paste.definition = {
     </plugin>,
 
   /** post-constructor */
-  "[subscribe('@event/session-started'), enabled]":
+  "[subscribe('@event/broker-started'), enabled]":
   function onLoad(session) 
   {
     this.enabled = this.enabled_when_startup;

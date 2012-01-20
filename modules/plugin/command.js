@@ -31,7 +31,7 @@ CommandProvider.definition = {
   get id()
     "commandprovider",
 
-  "[subscribe('@event/session-started'), enabled]":
+  "[subscribe('@event/broker-started'), enabled]":
   function onLoad(session)
   {
     this.complete.enabled = true;

@@ -36,21 +36,21 @@ MappingManager.definition = {
   _context: null,
 
   /** post-constructor */
-  "[subscribe('event/session-started'), enabled]": 
-  function onLoad(session) 
+  "[subscribe('event/broker-started'), enabled]": 
+  function onLoad(broker) 
   {
     this.enabled = this.enabled_when_startup;
   },
 
   /** Installs itself. 
-   *  @param {Session} a session object.
+   *  @param {Broker} a broker object.
    *  @notify initialized/inputmanager
    */
   "[subscribe('install/' + this.id)]":
-  function install(session)
+  function install(broker)
   {
     this._context = this._map = {};
-    let cmaps = session.notify("get/cmap");
+    let cmaps = broker.notify("get/cmap");
     cmaps.forEach(function(delegate) {
       delegate.expressions.forEach(function(expression) {
         let packed_code_array = coUtils.Keyboard.parseKeymapExpression(expression);
@@ -61,14 +61,14 @@ MappingManager.definition = {
         context.value = delegate;
       }, this);
     }, this);
-    session.notify(<>initialized/{this.id}</>, this);
+    broker.notify(<>initialized/{this.id}</>, this);
   },
 
   /** Uninstalls itself. 
-   *  @param {Session} a session object.
+   *  @param {Broker} a broker object.
    */
   "[subscribe('uninstall/' + this.id)]":
-  function uninstall(session)
+  function uninstall(broker)
   {
   },
 

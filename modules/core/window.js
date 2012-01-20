@@ -36,7 +36,7 @@ WindowWatcher.definition = {
   get id()
     "windowwatcher",
 
-  "[subscribe('@event/session-started'), enabled]": 
+  "[subscribe('@event/broker-started'), enabled]": 
   function onSessionStarted(session) 
   {
     session.notify("command/add-domlistener", {

@@ -42,7 +42,7 @@ Vimperator.definition = {
     </module>,
 
   /** post-constructor */
-  "[subscribe('@event/session-started'), enabled]": 
+  "[subscribe('@event/broker-started'), enabled]": 
   function onLoad(session) 
   {
     this._modules = this._getComponents();
