@@ -466,7 +466,8 @@ ExternalDriver.definition = {
       runtime_path = String(<>{this.cygwin_root}\bin\run.exe</>);
     } else if ("Darwin" == os) {
       //runtime_path = "/opt/local/bin/pythonw2.7";
-      runtime_path = "/usr/bin/python2.5";
+      //runtime_path = "/usr/bin/python2.5";
+      runtime_path = "/usr/bin/python";
     } else /* Linux */ {
       runtime_path = "/usr/bin/python";
     }

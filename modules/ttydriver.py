@@ -132,7 +132,6 @@ import termios
 import time
 import base64
 import select
-import uuid
 import pty
 
 BUFFER_SIZE = 1024
@@ -183,9 +182,9 @@ class TeletypeDriver:
             wfds = []
             xfds = [self.master, io_fd, control_fd]
             while True: 
-                rfd, wfd, xfd = select.select(rfds, wfds, xfds)
-                if xfd: # checking error.
-                    break
+                #rfd, wfd, xfd = select.select(rfds, wfds, xfds)
+                #if xfd: # checking error.
+                #    break
                 data = self.io_socket.recv(BUFFER_SIZE)
                 if not data:
                     break
@@ -206,9 +205,9 @@ class TeletypeDriver:
             wfds = []
             xfds = [self.master, io_fd, control_fd]
             while True:
-                rfd, wfd, xfd = select.select(rfds, wfds, xfds)
-                if xfd: # checking error.
-                    break    
+                #rfd, wfd, xfd = select.select(rfds, wfds, xfds)
+                #if xfd: # checking error.
+                #    break    
                 data = os.read(self.master, BUFFER_SIZE)
                 if not data:
                     break
@@ -230,19 +229,17 @@ class TeletypeDriver:
         pid = os.fork()
         if pid == 0:
             # receive control command and reply.
-            #flag = fcntl.fcntl(control_fd, fcntl.F_GETFL) | os.O_NONBLOCK
-            #fcntl.fcntl(control_fd, fcntl.F_SETFL, flag)
+            io_fd = self.io_socket.fileno()
+            control_fd = self.control_socket.fileno()
+            rfds = [control_fd]
+            wfds = []
+            xfds = [self.master, io_fd, control_fd]
             while True: # TTY -> mozilla
-                io_fd = self.io_socket.fileno()
-                control_fd = self.control_socket.fileno()
-                rfds = [control_fd]
-                wfds = []
-                xfds = [self.master, io_fd, control_fd]
-                rfd, wfd, xfd = select.select(rfds, wfds, xfds, 10)
-                if xfd: # checking error.
-                    break    
-                if not rfd: # checking error.
-                    break    
+                #rfd, wfd, xfd = select.select(rfds, wfds, xfds, 10)
+                #if xfd: # checking error.
+                #    break    
+                #if not rfd: # checking error.
+                #    break    
                 data = self.control_socket.recv(BUFFER_SIZE)
                 if data == "beacon\n":
                     continue
@@ -363,10 +360,10 @@ class TeletypeDriver:
                 break;
 
         #os.waitpid(control_process_pid, 0)
-        try:
-            os.kill(control_process_pid, signal.SIGKILL)
-        except:
-            pass
+        #try:
+        #    os.kill(control_process_pid, signal.SIGKILL)
+        #except:
+        #    pass
         try:
             os.kill(writing_process_pid, signal.SIGKILL)
         except:
@@ -376,72 +373,72 @@ class TeletypeDriver:
         except:
             pass 
         #trace("complete.")
-
-    
-def create_a_pair_of_tty_device():
-    """ Creates a tty device and modify its termios properties. """
-    master, slave = os.openpty()
-
-    backup_termios = termios.tcgetattr(master)
-    new_termios = termios.tcgetattr(master)
-
-    # clear size bits, parity checking off.
-    new_termios[3] &= ~(termios.CSIZE|termios.PARENB)
-
-    # receive 8bit size sequence.
-    new_termios[3] |= termios.CS8
-
-    # enable XON/XOFF flow control on output.
-    new_termios[0] |= termios.IXON
-    # enable XON/XOFF flow control on input.
-    new_termios[0] |= termios.IXOFF
-
-    new_termios[6][termios.VINTR] = 0x03
-    #new_termios[6][termios.VEOF] = 2
-
-    try:
-        termios.tcsetattr(master, termios.TCSANOW, new_termios)
-    except:
-        termios.tcsetattr(master, termios.TCSANOW, old_termios)
-
-    return master, slave
-
-    
-def fork_app_process(master, slave, command, term):
-
-    # get TTY name from slave file descripter.
-    ttyname = os.ttyname(slave)
-
-    pid = os.fork()
-    if not pid:
-        # slave side operations.
-        # make this process session leader.
-        sid = os.setsid()
-
-        #fcntl.ioctl(master, termios.TIOCSCTTY, 1)
-        # master handle is to be closed in slave's process branch.
-        #os.close(master)
-        os.chdir("/")
-        os.umask(0)
-        # replace standard I/O with slave file descripter.
-        os.dup2(slave, sys.stdin.fileno())
-        os.dup2(slave, sys.stdout.fileno())
-        os.dup2(slave, sys.stderr.fileno())
-        os.close(slave)
-        # set TERM environment.
-        os.environ["TERM"] = "xterm"
-        #os.environ["CYGWIN"] = "tty"
-        shell = os.environ["SHELL"] 
-        # execute specified command.
-        #command = "showkey -a"
-        #if sid == None:
-        #    os.system("echo 'tanasinn: os.setsid failed.'")
-        #fcntl.ioctl(master, termios.TIOCSCTTY, 1)
-        os.execlp("/bin/bash", "/bin/bash", "-c", "cd $HOME && exec %s" % command)
-
-    # slave handle is to be closed in master's process.
-    #os.close(slave)
-    return pid, ttyname
+#
+#    
+#def create_a_pair_of_tty_device():
+#    """ Creates a tty device and modify its termios properties. """
+#    master, slave = os.openpty()
+#
+#    backup_termios = termios.tcgetattr(master)
+#    new_termios = termios.tcgetattr(master)
+#
+#    # clear size bits, parity checking off.
+#    new_termios[3] &= ~(termios.CSIZE|termios.PARENB)
+#
+#    # receive 8bit size sequence.
+#    new_termios[3] |= termios.CS8
+#
+#    # enable XON/XOFF flow control on output.
+#    new_termios[0] |= termios.IXON
+#    # enable XON/XOFF flow control on input.
+#    new_termios[0] |= termios.IXOFF
+#
+#    new_termios[6][termios.VINTR] = 0x03
+#    #new_termios[6][termios.VEOF] = 2
+#
+#    try:
+#        termios.tcsetattr(master, termios.TCSANOW, new_termios)
+#    except:
+#        termios.tcsetattr(master, termios.TCSANOW, old_termios)
+#
+#    return master, slave
+#
+#    
+#def fork_app_process(master, slave, command, term):
+#
+#    # get TTY name from slave file descripter.
+#    ttyname = os.ttyname(slave)
+#
+#    pid = os.fork()
+#    if not pid:
+#        # slave side operations.
+#        # make this process session leader.
+#        sid = os.setsid()
+#
+#        #fcntl.ioctl(master, termios.TIOCSCTTY, 1)
+#        # master handle is to be closed in slave's process branch.
+#        #os.close(master)
+#        os.chdir("/")
+#        os.umask(0)
+#        # replace standard I/O with slave file descripter.
+#        os.dup2(slave, sys.stdin.fileno())
+#        os.dup2(slave, sys.stdout.fileno())
+#        os.dup2(slave, sys.stderr.fileno())
+#        os.close(slave)
+#        # set TERM environment.
+#        os.environ["TERM"] = "xterm"
+#        #os.environ["CYGWIN"] = "tty"
+#        shell = os.environ["SHELL"] 
+#        # execute specified command.
+#        #command = "showkey -a"
+#        #if sid == None:
+#        #    os.system("echo 'tanasinn: os.setsid failed.'")
+#        #fcntl.ioctl(master, termios.TIOCSCTTY, 1)
+#        os.execlp("/bin/bash", "/bin/bash", "-c", "cd $HOME && exec %s" % command)
+#
+#    # slave handle is to be closed in master's process.
+#    #os.close(slave)
+#    return pid, ttyname
 
 def add_record(request_id, command, control_port, pid, ttyname):
     lockfile = open(sys.argv[0], "r")
