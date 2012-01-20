@@ -32,7 +32,7 @@ link:./usermanual.html[English/英語]
 === Download/License
     This software is distributed under Mozilla Public License 1.1 (MPL1.1) .
 
-- Developping version (0.1.2r3): http:/#/zuse.jp/tanasinn/downloads/versions/0.1.2r3/TANASINN_XPI_ID.xpi[Download]
+- Developping version (0.1.3a): http:/#/zuse.jp/tanasinn/downloads/versions/0.1.3a/TANASINN_XPI_ID.xpi[Download]
 - Unstable, Snapshot version (it may so bugful!): http:/#/zuse.jp/tanasinn/tanasinn-current.xpi[Download]
 
 #elif __JP__
@@ -40,7 +40,7 @@ link:./usermanual.html[English/英語]
 === ダウンロード/ライセンス
     Mozilla Public License 1.1 (MPL1.1) で配布しています。 
 
-- 開発版 (0.1.2r3): http:/#/zuse.jp/tanasinn/downloads/versions/0.1.2r3/TANASINN_XPI_ID.xpi[ダウンロード].
+- 開発版 (0.1.3a): http:/#/zuse.jp/tanasinn/downloads/versions/0.1.3a/TANASINN_XPI_ID.xpi[ダウンロード].
 - スナップショット版: http:/#/zuse.jp/tanasinn/tanasinn-current.xpi[ダウンロード]
 
 #endif

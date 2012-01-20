@@ -95,7 +95,7 @@ let loader = {
           let document = window.document;
           let window_type = document.documentElement.getAttribute("windowtype");
           // ensure that "window" is a navigator window.
-          if ("navigator:browser" == window_type) {
+          if (/^(navigator:browser|mail:3pane)$/.test(window_type)) {
             window.removeEventListener("load", arguments.callee, false);
             self.dispatchWindowEvent(window);
           }
