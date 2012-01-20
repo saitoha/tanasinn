@@ -118,7 +118,7 @@ function startup(data, reason)
       .wrappedJSObject;
     process.notify("event/enabled");
   } else {
-    loader.is_first = true;
+//    loader.is_first = true;
     try {
       let io_service = Components
         .classes["@mozilla.org/network/io-service;1"]
