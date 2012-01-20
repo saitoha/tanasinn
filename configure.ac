@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.61)
-AC_INIT([tanasinn],[0.1.2r3],[tanasinn@zuse.jp])
+AC_INIT([tanasinn],[0.1.3a],[tanasinn@zuse.jp])
 
 AC_CANONICAL_TARGET
 
@@ -23,17 +23,14 @@ AC_CHECK_PROG(ASCIIDOC, asciidoc, asciidoc)
 AC_SUBST([TANASINN_PACKAGE_NAME])
 TANASINN_PACKAGE_NAME="tanasinn"
 
-AC_SUBST([TANASINN_PACKAGE_NAME])
-TANASINN_PACKAGE_NAME="tanasinn"
-
-AC_SUBST([TANASINN_VENDER_DOMAIN])
-TANASINN_VENDER_DOMAIN="zuse.jp"
+AC_SUBST([TANASINN_VENDOR_DOMAIN])
+TANASINN_VENDOR_DOMAIN="zuse.jp"
 
 AC_SUBST([TANASINN_DISPLAY_NAME])
 TANASINN_DISPLAY_NAME="tanasinn"
 
 AC_SUBST([TANASINN_XPI_ID])
-TANASINN_XPI_ID=$TANASINN_PACKAGE_NAME@$TANASINN_VENDER_DOMAIN
+TANASINN_XPI_ID=$TANASINN_PACKAGE_NAME@$TANASINN_VENDOR_DOMAIN
 
 AC_SUBST([TANASINN_FIREFOX_APPID])
 TANASINN_FIREFOX_APPID="{ec8030f7-c20a-464f-9b0e-13a3a9e97384}"
@@ -58,9 +55,9 @@ AC_TANASINN_JS_PATH
 # ----------------------------------------------------------------------------
 #
 AC_CONFIG_FILES([Makefile 
+                 doc/define.h
                  doc/Makefile
                  chrome.manifest 
-                 install.rdf 
-                 ])
+                 install.rdf])
 AC_OUTPUT
 

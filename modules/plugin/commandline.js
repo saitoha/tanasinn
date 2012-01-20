@@ -707,12 +707,8 @@ Commandline.definition = {
   "[listen('keyup', '#tanasinn_commandline', true)]":
   function onkeyup(event) 
   { // nothrow
-    if (16 == event.keyCode &&
-        16 == event.which &&
-        !event.ctrlKey &&
-        !event.altKey &&
-        !event.isChar
-        ) {
+    if (16 == event.keyCode && 16 == event.which &&
+        !event.ctrlKey && !event.altKey && !event.isChar) {
       let now = parseInt(new Date().getTime());
       let diff = now - this._last_ctrlkey_time;
       if (30 < diff && diff < 400) {
@@ -728,15 +724,13 @@ Commandline.definition = {
   "[listen('keypress', '#tanasinn_commandline', true)]":
   function onkeypress(event) 
   {
-    let session = this._broker;
-    let code = event.keyCode || event.which;
     /*
     this._broker.notify(
       "command/report-overlay-message", 
       [event.keyCode,event.which,event.isChar].join("/"));
       */
-    let is_char = 0 == event.keyCode;
     let key_code = coUtils.Keyboard.getPackedKeycodeFromEvent(event);
+    let session = this._broker;
     let result = session.uniget(
       <>event/commandline-input</>, 
       {
@@ -749,7 +743,7 @@ Commandline.definition = {
     }
   },
 
-  onsubmit: function onsubmit(event) 
+  onsubmit: function onsubmit() 
   {
     let session = this._broker;
     let command = this._textbox.value;
@@ -778,7 +772,9 @@ Commandline.definition = {
   {
     let session = this._broker;
     //session.notify("command/blur");
-    //session.notify("command/enable-commandline");
+    coUtils.Timer.setTimeout(function() {
+      session.notify("command/enable-commandline");
+    }, 100);
   },
 
   "[listen('change', '#tanasinn_commandline', true)]":

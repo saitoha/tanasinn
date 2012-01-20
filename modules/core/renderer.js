@@ -119,7 +119,7 @@ Renderer.definition = {
   "[watchable, persistable] font_size": 13,
 
   "[persistable] force_monospace_rendering": true,
-  "[persistable] enable_text_shadow": true,
+  "[persistable] enable_text_shadow": false,
   "[persistable, watchable] smoothing": true,
 
   "[subscribe('@initialized/{screen & chrome}'), enabled]": 
@@ -305,6 +305,12 @@ Renderer.definition = {
    */
   _drawBackground: function _drawBackground(context, x, y, width, height, bg)
   {
+    if (this.enable_text_shadow) {
+      context.shadowColor = "";
+      context.shadowOffsetX = 0;
+      context.shadowOffsetY = 0;
+      context.shadowBlur = 0;
+    }
     if (0 == bg) {
       context.clearRect(x, y, width, height);
     } else {
@@ -314,12 +320,6 @@ Renderer.definition = {
 
       /* Draw background */
       context.fillStyle = back_color;
-      if (this.enable_text_shadow) {
-        context.shadowColor = "";
-        context.shadowOffsetX = 0;
-        context.shadowOffsetY = 0;
-        context.shadowBlur = 0;
-      }
       context.fillRect(x, y, width, height);
     }
   },
@@ -334,11 +334,14 @@ Renderer.definition = {
     let fore_color = fore_color_map[attr.fg];
     this._setFont(context, attr.bold); 
     context.fillStyle = fore_color;
+    if (attr.underline) {
+      this._drawUnderline(context, x, y, char_width * length, fore_color);
+    }
     if (this.enable_text_shadow) {
       context.shadowColor = "black";
       context.shadowOffsetX = 2;
-      context.shadowOffsetY = 1;
-      context.shadowBlur = 3;
+      context.shadowOffsetY = 0;
+      context.shadowBlur = 2;
     }
     if (this.force_manospace_rendering) {
       if (text.length == length) {
@@ -357,9 +360,6 @@ Renderer.definition = {
       }
     } else {
       context.fillText(text, x, y, char_width * length);
-    }
-    if (attr.underline) {
-      this._drawUnderline(context, x, y, char_width * length, fore_color);
     }
   },
 

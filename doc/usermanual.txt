@@ -1,3 +1,4 @@
+#include "define.h"
 
 = tanasinn terminal emurator 
 
@@ -31,7 +32,7 @@ link:./usermanual.html[English/英語]
 === Download/License
     This software is distributed under Mozilla Public License 1.1 (MPL1.1) .
 
-- Developping version (0.1.2r3): http:/#/zuse.jp/tanasinn/downloads/versions/0.1.2r3/tanasinn@zuse.jp.xpi[Download]
+- Developping version (0.1.2r3): http:/#/zuse.jp/tanasinn/downloads/versions/0.1.2r3/TANASINN_XPI_ID.xpi[Download]
 - Unstable, Snapshot version (it may so bugful!): http:/#/zuse.jp/tanasinn/tanasinn-current.xpi[Download]
 
 #elif __JP__
@@ -39,12 +40,12 @@ link:./usermanual.html[English/英語]
 === ダウンロード/ライセンス
     Mozilla Public License 1.1 (MPL1.1) で配布しています。 
 
-- 開発版 (0.1.2r3): http:/#/zuse.jp/tanasinn/downloads/versions/0.1.2r3/tanasinn@zuse.jp.xpi[ダウンロード].
+- 開発版 (0.1.2r3): http:/#/zuse.jp/tanasinn/downloads/versions/0.1.2r3/TANASINN_XPI_ID.xpi[ダウンロード].
 - スナップショット版: http:/#/zuse.jp/tanasinn/tanasinn-current.xpi[ダウンロード]
 
 #endif
 
-- git repo: git:/#/zuse.jp/git/tanasinn.git
+- git repo: TANASINN_GIT_REPOSITORY
 - gitweb: http:/#/zuse.jp/git/?p=tanasinn.git
 
 #if __EN__
@@ -274,24 +275,24 @@ image::images/xulapp.png[width=780]
 === Building Firefox/Thunderbird/SeaMonkey extension:
 .Mac, Linux, Cygwin
 ----
-git clone git:/#/zuse.jp/git/tanasinn.git
+git clone TANASINN_GIT_REPOSITORY
 cd tanasinn
 ./configure
 make
 ----
     If build process is succeeded, target XPI file 
-    "tanasinn@zuse.jp.xpi" is to be generated. enjoy it!
+    TANASINN_XPI_ID is to be generated. enjoy it!
 #elif __JP__
 
 === Firefox/Thunderbird/SeaMonkey拡張としてビルドする:
 .Mac, Linux, Cygwin
 ----
-git clone git:/#/zuse.jp/git/tanasinn.git
+git clone TANASINN_GIT_REPOSITORY
 cd tanasinn
 ./configure
 make
 ----
-    ビルドが成功すると、"tanasinn@zuse.jp.xpi"というXPIファイルが生成されます。
+    ビルドが成功すると、TANASINN_XPI_IDというXPIファイルが生成されます。
     これをインストールしてください。
 #endif
     
@@ -302,7 +303,7 @@ make
 
 .Mac, Linux
 ----
-git clone git:/#/zuse.jp/git/tanasinn.git
+git clone TANASINN_GIT_REPOSITORY
 cd tanasinn
 ./configure
 ln -s $PWD $RUNTIME/tanasinn
@@ -311,7 +312,7 @@ ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/
         
 .Windows Vista/7 + Cygwin
 ----
-git clone git:/#/zuse.jp/git/tanasinn.git
+git clone TANASINN_GIT_REPOSITORY
 cd tanasinn
 ./configure
 $(cygpath $COMSPEC) /c mklink /D "$(cygpath -w "$RUNTIME/tanasinn")" "$(cygpath -w "$PWD")";
@@ -322,7 +323,7 @@ ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/
 To make Windows native symbolic link, you may need to install http:/#/www.microsoft.com/download/en/details.aspx?DisplayLang=en%2cen&id=17657[Windows Server 2003 Resource Kit Tools].
 
 ----
-git clone git:/#/zuse.jp/git/tanasinn.git
+git clone TANASINN_GIT_REPOSITORY
 cd tanasinn
 ./configure
 $(cygpath $COMSPEC) /c linkd.exe "$(cygpath -w "$RUNTIME/tanasinn")" "$(cygpath -w "$PWD")";
@@ -337,7 +338,7 @@ ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/
 
 .Mac, Linux
 ----
-git clone git:/#/zuse.jp/git/tanasinn.git
+git clone TANASINN_GIT_REPOSITORY
 cd tanasinn
 ./configure
 ln -s $PWD $RUNTIME/tanasinn
@@ -346,7 +347,7 @@ ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/
         
 .Windows Vista/7 + Cygwin
 ----
-git clone git:/#/zuse.jp/git/tanasinn.git
+git clone TANASINN_GIT_REPOSITORY
 cd tanasinn
 ./configure
 $(cygpath $COMSPEC) /c mklink /D "$(cygpath -w "$RUNTIME/tanasinn")" "$(cygpath -w "$PWD")";
@@ -357,7 +358,7 @@ ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/
 Windowsネイティブなシンボリックリンクを作成するために、http:/#/www.microsoft.com/download/en/details.aspx?DisplayLang=en%2cen&id=17657[Windows Server 2003 Resource Kit Tools] をインストールする必要があるかもしれません。
 
 ----
-git clone git:/#/zuse.jp/git/tanasinn.git
+git clone TANASINN_GIT_REPOSITORY
 cd tanasinn
 ./configure
 $(cygpath $COMSPEC) /c linkd.exe "$(cygpath -w "$RUNTIME/tanasinn")" "$(cygpath -w "$PWD")";
@@ -375,7 +376,7 @@ ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/
     
 .MacOSX
 ----
-git clone git:/#/zuse.jp/git/tanasinn.git
+git clone TANASINN_GIT_REPOSITORY
 cd tanasinn
 ./configure
 open /Applications/Firefox.app --args --app $(PWD)/application.ini
@@ -383,7 +384,7 @@ open /Applications/Firefox.app --args --app $(PWD)/application.ini
 
 .Linux
 ----
-git clone git:/#/zuse.jp/git/tanasinn.git
+git clone TANASINN_GIT_REPOSITORY
 cd tanasinn
 ./configure
 firefox --app application.ini
@@ -391,7 +392,7 @@ firefox --app application.ini
 
 .Cygwin on Windows
 ----
-git clone git:/#/zuse.jp/git/tanasinn.git
+git clone TANASINN_GIT_REPOSITORY
 cd tanasinn
 ./configure
 cygstart firefox.exe --app application.ini
