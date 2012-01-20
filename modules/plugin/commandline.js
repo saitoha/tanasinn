@@ -449,10 +449,6 @@ Commandline.definition = {
               
             </>,
             noautofocus: true,
-<<<<<<< HEAD
-            height: 200,
-=======
->>>>>>> cmap_feature
             childNodes: {
               tagName: "stack",
               maxHeight: this.completion_popup_max_height,

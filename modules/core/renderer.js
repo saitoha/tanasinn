@@ -119,25 +119,8 @@ Renderer.definition = {
   "[watchable, persistable] font_size": 13,
 
   "[persistable] force_monospace_rendering": true,
-<<<<<<< HEAD
-
-  get "[persistable] smoothing"()
-  {
-    if (this._context) {
-      this._context.mozImageSmoothingEnabled;
-    }
-  },
-
-  set "[persistable] smoothing"(value)
-  {
-    if (this._context) {
-      this._context.mozImageSmoothingEnabled = value;
-    }
-  },
-=======
   "[persistable] enable_text_shadow": true,
   "[persistable, watchable] smoothing": true,
->>>>>>> cmap_feature
 
   "[subscribe('@initialized/{screen & chrome}'), enabled]": 
   function onLoad(screen, chrome) 
