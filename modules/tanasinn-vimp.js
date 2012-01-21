@@ -117,40 +117,45 @@ commands.add(["tanasinncommand", "tco[mmand]"],
   } 
 );
 
-//mappings.addUserMap([modes.NORMAL], ["!"],
-//  "Run commands in tanasinn",
-//   function () 
-//   { 
-//     commandline.open("", "tanasinncommand ", modes.EX); 
-//   }
-//);
-
 /**
- * Hooks <C-i> key mappings and runs "g:tanasinneditor" 
+ * Hooks "<C-i>" and "gF" key mappings and runs "g:tanasinneditor" 
  * instead of default "editor" option.
  */
 let editor = liberator.modules.editor;
 editor.editFileExternally = let (default_func = editor.editFileExternally) function (path) 
 {
   let tanasinn_editor = liberator.globalVariables.tanasinneditor;
-  if (!tanasinn_editor) {
-    default_func.apply(liberator.modules.editor, arguments);
-  } else {
-    let complete = false;
-    let desktop = process.getDesktopFromWindow(window);
-    desktop.subscribe("@initialized/broker", function(session) {
-      session.subscribe("@event/session-stopping", function(session) {
-        complete = true;
+  let viewsource_command = liberator.globalVariables.tanasinnviewsourcecommand;
+
+  if (/^[a-z]+:\/\//.test(path)) { // when path is url spec.
+    if (!viewsource_command) {
+      default_func.apply(liberator.modules.editor, arguments);
+    } else {
+      process.getDesktopFromWindow(window)
+        .notify(
+          "command/start-session", 
+          viewsource_command.replace(/%/g, path));
+    };
+  } else { // when path is native one.
+    if (!tanasinn_editor) {
+      default_func.apply(liberator.modules.editor, arguments);
+    } else {
+      let complete = false;
+      let desktop = process.getDesktopFromWindow(window);
+      desktop.subscribe("@initialized/broker", function(session) {
+        session.subscribe("@event/session-stopping", function(session) {
+          complete = true;
+        }, this);
       }, this);
-    }, this);
-    desktop.notify("command/start-session", String(<>{tanasinn_editor} "{path}"</>));
-    let thread = Components.classes["@mozilla.org/thread-manager;1"]
-      .getService(Components.interfaces.nsIThreadManager)
-      .currentThread;
-    while (!complete) {
-      thread.processNextEvent(true);
-    }
-  };
+      desktop.notify("command/start-session", String(<>{tanasinn_editor} "{path}"</>));
+      let thread = Components.classes["@mozilla.org/thread-manager;1"]
+        .getService(Components.interfaces.nsIThreadManager)
+        .currentThread;
+      while (!complete) {
+        thread.processNextEvent(true);
+      }
+    };
+  }
 };
 
 } ();
