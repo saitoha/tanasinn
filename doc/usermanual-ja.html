@@ -893,7 +893,7 @@ gitweb: <a href="http://zuse.jp/git/?p=tanasinn.git">http://zuse.jp/git/?p=tanas
 <div class="ulist"><ul>
 <li>
 <p>
-Geckoベースのユーザーインターフェース。柔軟でカスタマイズが容易です。
+Geckoベースのユーザーインターフェース (HTML Canvas + XUL)。柔軟でカスタマイズが容易です。
 </p>
 </li>
 <li>
@@ -979,6 +979,11 @@ xtermのようなマウスエミュレーションができます。ピクセル
 <li>
 <p>
 VimperatorやKeysnailのようなコマンドラインインターフェース。
+</p>
+</li>
+<li>
+<p>
+Vimperator/Muttator のプラグインとして導入することができます。必要なら"&lt;C-i&gt;"や"gF"マッピングをフックすることができます。
 </p>
 </li>
 <li>
@@ -1348,6 +1353,24 @@ Vimperator/Muttatorのコマンドライン上から起動したい場合は、�
 <div class="content">
 <pre><tt>kill</tt></pre>
 </div></div>
+<div class="sect3">
+<h4 id="_vimperator_muttatorプラグインとしてインストールしたとき_lt_c_i_gt_インプットフィールドを外部エディタで編集_と_gf_htmlソースを外部ビューワで閲覧_マッピングをフックするには">Vimperator/Muttatorプラグインとしてインストールしたとき、 "&lt;C-i&gt;"(インプットフィールドを外部エディタで編集) と "gF"(HTMLソースを外部ビューワで閲覧) マッピングをフックするには</h4>
+<div class="paragraph"><p>If you would like to edit input field by external editor on tanasinn,
+add following command to your vimperatorrc/muttatorrc.</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>let g:tanasinneditorcommand="vim %"</tt></pre>
+</div></div>
+<div class="paragraph"><p>It requires "vim" command on your system.
+<em>%</em> is to be replaced with a temporary file path.</p></div>
+<div class="paragraph"><p>To view HTML source on tanasinn, add fllowing command.</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>let g:tanasinnviewsourcecommand="curl '%' | vim -"</tt></pre>
+</div></div>
+<div class="paragraph"><p><em>%</em> is to be replaced with an escaped URL string.
+It requires "vim" and "curl" command on your system.</p></div>
+</div>
 </div>
 </div>
 </div>
@@ -1379,7 +1402,7 @@ twitter: <a href="http://twitter.com/kefir_">日本語</a> / <a href="http://twi
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2012-01-21 01:31:53 JST
+Last updated 2012-01-21 17:06:08 JST
 </div>
 </div>
 </body>

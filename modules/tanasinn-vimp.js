@@ -124,10 +124,10 @@ commands.add(["tanasinncommand", "tco[mmand]"],
 let editor = liberator.modules.editor;
 editor.editFileExternally = let (default_func = editor.editFileExternally) function (path) 
 {
-  let tanasinn_editor = liberator.globalVariables.tanasinneditor;
+  let editor_command = liberator.globalVariables.tanasinneditorcommand;
   let viewsource_command = liberator.globalVariables.tanasinnviewsourcecommand;
 
-  if (/^[a-z]+:\/\//.test(path)) { // when path is url spec.
+  if (/^[a-z]+:\/\//.test(path)) { // when path is url spec. (path is expected to be escaped.)
     if (!viewsource_command) {
       default_func.apply(liberator.modules.editor, arguments);
     } else {
@@ -137,7 +137,7 @@ editor.editFileExternally = let (default_func = editor.editFileExternally) funct
           viewsource_command.replace(/%/g, path));
     };
   } else { // when path is native one.
-    if (!tanasinn_editor) {
+    if (!editor_command) {
       default_func.apply(liberator.modules.editor, arguments);
     } else {
       let complete = false;
@@ -147,7 +147,7 @@ editor.editFileExternally = let (default_func = editor.editFileExternally) funct
           complete = true;
         }, this);
       }, this);
-      desktop.notify("command/start-session", String(<>{tanasinn_editor} "{path}"</>));
+      desktop.notify("command/start-session", editor_command.replace(/%/g, path));
       let thread = Components.classes["@mozilla.org/thread-manager;1"]
         .getService(Components.interfaces.nsIThreadManager)
         .currentThread;

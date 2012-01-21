@@ -50,7 +50,7 @@ link:./usermanual.html[English/英語]
 
 #if __EN__
 == Hilighting features
-    - Full Gecko based user interface, it is flexible and easy to customize.
+    - Full Gecko based user interface (HTML Canvas + XUL), it is flexible and easy to customize.
     - Multi-platform, now supports Mac / FreeBSD / Linux (Tested in Ubuntu) / 
       Windows(XP/Vista/7) + http:/#/www.cygwin.com[Cygwin] (requires posix python).
     - Supports plugin architecture. it supports Plug-and-Play installing & uninstalling.
@@ -71,11 +71,11 @@ link:./usermanual.html[English/英語]
     - Supports move / resize through draging operation.
     - Supports 256 terminal colors, you can assign 32bit colors for them.
     - Vimperator / Keysnail like commandline interface.
-    - It can be installed as a plugin for Vimperator/Muttator.
+    - It can be installed as a plugin for Vimperator/Muttator. It hooks "<C-i>" and "gF" mappings if you want.
     - Running as standalone XUL application if you want. (but now buggy!)
 #elif __JP__
 == 特色
-    - Geckoベースのユーザーインターフェース。柔軟でカスタマイズが容易です。
+    - Geckoベースのユーザーインターフェース (HTML Canvas + XUL)。柔軟でカスタマイズが容易です。
     - マルチプラットフォーム。現在サポートされるのは、Mac / FreeBSD / Linux(というかUbuntu) / 
       Windows(XP/Vista/7) + http:/#/www.cygwin.com[Cygwin]環境 (POSIX版Pythonが必要)
     - プラグインアーキテクチャ。プラグアンドプレイでのインストール・アンインストールが可能。
@@ -97,6 +97,7 @@ link:./usermanual.html[English/英語]
     - ドラッグによる移動・リサイズができます。
     - 256色表示対応。32bitカラーをパレットに割り当てることができます。
     - VimperatorやKeysnailのようなコマンドラインインターフェース。
+    - Vimperator/Muttator のプラグインとして導入することができます。必要なら"<C-i>"や"gF"マッピングをフックすることができます。
     - スタンドアロンのXULアプリケーションとして動作させることができます。(現在はかなりバギーです!)
 #endif
 
@@ -408,12 +409,12 @@ cygstart firefox.exe --app application.ini
 #if __EN__
 === Launching terminal
 
-==== If it Installed as Add-on: 
+==== If it is Installed as Add-on: 
     Pressing control key twice (ctrl + ctrl), it shows Commandline Launcher interface.
     For example, if you type "man man[Enter key]" to this launcher textbox, 
     window-like UI emerges into browser chrome window and display manpage.  
 
-==== If it Installed as Vimperator/Muttator plugin: 
+==== If it is Installed as Vimperator/Muttator plugin: 
     You can launch tanasinn as same as Add-on version, by pressing control key twice (ctrl + ctrl).
     For displaying launcher interface from commandline, type as follows:
 
@@ -512,7 +513,7 @@ cygstart firefox.exe --app application.ini
 == Tips
 
 === To enable/disable plugins.
-type it in the command-line input field.
+Type it in the command-line input field.
 
 ----
 enable <plugin id>
@@ -547,7 +548,7 @@ loadprofile <profile name>
 
 
 === To detach from current session.
-type it in the command-line input field.
+Type it in the command-line input field.
 
 ----
 detach
@@ -556,12 +557,32 @@ detach
 The session will be suspended. and you can reconnect to it from launcher interface.
 
 === To kill current session.
-type it in the command-line input field.
+Type it in the command-line input field.
 
 ----
 kill
 ----
 
+==== How to Hook "<C-i>"(edit input field by external editor) and "gF"(view source in external viewer) mappings if tanasinn is Installed as Vimperator/Muttator plugin. 
+
+If you would like to edit input field by external editor on tanasinn,
+add following command to your vimperatorrc/muttatorrc. 
+
+----
+let g:tanasinneditorcommand="vim %"
+----
+
+It requires "vim" command on your system. 
+'%' is to be replaced with a temporary file path.
+
+To view HTML source on tanasinn, add fllowing command. 
+
+----
+let g:tanasinnviewsourcecommand="curl '%' | vim -"
+----
+
+'%' is to be replaced with an escaped URL string.
+It requires "vim" and "curl" command on your system. 
 
 #elif __JP__
 
@@ -617,6 +638,27 @@ detach
 ----
 kill
 ----
+
+==== Vimperator/Muttatorプラグインとしてインストールしたとき、 "<C-i>"(インプットフィールドを外部エディタで編集) と "gF"(HTMLソースを外部ビューワで閲覧) マッピングをフックするには
+
+If you would like to edit input field by external editor on tanasinn,
+add following command to your vimperatorrc/muttatorrc. 
+
+----
+let g:tanasinneditorcommand="vim %"
+----
+
+It requires "vim" command on your system. 
+'%' is to be replaced with a temporary file path.
+
+To view HTML source on tanasinn, add fllowing command. 
+
+----
+let g:tanasinnviewsourcecommand="curl '%' | vim -"
+----
+
+'%' is to be replaced with an escaped URL string.
+It requires "vim" and "curl" command on your system. 
 
 #endif
 

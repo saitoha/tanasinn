@@ -894,7 +894,7 @@ gitweb: <a href="http://zuse.jp/git/?p=tanasinn.git">http://zuse.jp/git/?p=tanas
 <div class="ulist"><ul>
 <li>
 <p>
-Full Gecko based user interface, it is flexible and easy to customize.
+Full Gecko based user interface (HTML Canvas + XUL), it is flexible and easy to customize.
 </p>
 </li>
 <li>
@@ -983,7 +983,7 @@ Vimperator / Keysnail like commandline interface.
 </li>
 <li>
 <p>
-It can be installed as a plugin for Vimperator/Muttator.
+It can be installed as a plugin for Vimperator/Muttator. It hooks "&lt;C-i&gt;" and "gF" mappings if you want.
 </p>
 </li>
 <li>
@@ -1243,7 +1243,7 @@ cygstart firefox.exe --app application.ini</tt></pre>
 <div class="sect2">
 <h3 id="_launching_terminal">Launching terminal</h3>
 <div class="sect3">
-<h4 id="_if_it_installed_as_add_on">If it Installed as Add-on:</h4>
+<h4 id="_if_it_is_installed_as_add_on">If it is Installed as Add-on:</h4>
 <div class="literalblock">
 <div class="content">
 <pre><tt>Pressing control key twice (ctrl + ctrl), it shows Commandline Launcher interface.
@@ -1252,7 +1252,7 @@ window-like UI emerges into browser chrome window and display manpage.</tt></pre
 </div></div>
 </div>
 <div class="sect3">
-<h4 id="_if_it_installed_as_vimperator_muttator_plugin">If it Installed as Vimperator/Muttator plugin:</h4>
+<h4 id="_if_it_is_installed_as_vimperator_muttator_plugin">If it is Installed as Vimperator/Muttator plugin:</h4>
 <div class="literalblock">
 <div class="content">
 <pre><tt>You can launch tanasinn as same as Add-on version, by pressing control key twice (ctrl + ctrl).
@@ -1311,7 +1311,7 @@ is not proper one.</tt></pre>
 <div class="sectionbody">
 <div class="sect2">
 <h3 id="_to_enable_disable_plugins">To enable/disable plugins.</h3>
-<div class="paragraph"><p>type it in the command-line input field.</p></div>
+<div class="paragraph"><p>Type it in the command-line input field.</p></div>
 <div class="listingblock">
 <div class="content">
 <pre><tt>enable &lt;plugin id&gt;</tt></pre>
@@ -1344,7 +1344,7 @@ If you would like to save it as other file name, type as follows:</p></div>
 </div>
 <div class="sect2">
 <h3 id="_to_detach_from_current_session">To detach from current session.</h3>
-<div class="paragraph"><p>type it in the command-line input field.</p></div>
+<div class="paragraph"><p>Type it in the command-line input field.</p></div>
 <div class="listingblock">
 <div class="content">
 <pre><tt>detach</tt></pre>
@@ -1353,11 +1353,29 @@ If you would like to save it as other file name, type as follows:</p></div>
 </div>
 <div class="sect2">
 <h3 id="_to_kill_current_session">To kill current session.</h3>
-<div class="paragraph"><p>type it in the command-line input field.</p></div>
+<div class="paragraph"><p>Type it in the command-line input field.</p></div>
 <div class="listingblock">
 <div class="content">
 <pre><tt>kill</tt></pre>
 </div></div>
+<div class="sect3">
+<h4 id="_how_to_hook_lt_c_i_gt_edit_input_field_by_external_editor_and_gf_view_source_in_external_viewer_mappings_if_tanasinn_is_installed_as_vimperator_muttator_plugin">How to Hook "&lt;C-i&gt;"(edit input field by external editor) and "gF"(view source in external viewer) mappings if tanasinn is Installed as Vimperator/Muttator plugin.</h4>
+<div class="paragraph"><p>If you would like to edit input field by external editor on tanasinn,
+add following command to your vimperatorrc/muttatorrc.</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>let g:tanasinneditorcommand="vim %"</tt></pre>
+</div></div>
+<div class="paragraph"><p>It requires "vim" command on your system.
+<em>%</em> is to be replaced with a temporary file path.</p></div>
+<div class="paragraph"><p>To view HTML source on tanasinn, add fllowing command.</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>let g:tanasinnviewsourcecommand="curl '%' | vim -"</tt></pre>
+</div></div>
+<div class="paragraph"><p><em>%</em> is to be replaced with an escaped URL string.
+It requires "vim" and "curl" command on your system.</p></div>
+</div>
 </div>
 </div>
 </div>
@@ -1391,7 +1409,7 @@ or toweet me (<a href="http://twitter.com/feel_tanasinn">English</a> / <a href="
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2012-01-21 01:31:53 JST
+Last updated 2012-01-21 17:06:09 JST
 </div>
 </div>
 </body>
