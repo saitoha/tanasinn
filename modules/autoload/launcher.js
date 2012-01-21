@@ -81,6 +81,7 @@ function generateEntries(paths)
         }
       }
     } catch (e) {
+      alert(e)
       coUtils.Debug.reportError(e);
     }
   }
@@ -137,7 +138,7 @@ ProgramCompleter.definition = {
     let lower_source = source.toLowerCase();
     let search_path;
     if ("WINNT" == coUtils.Runtime.os) {
-      let search_path = this.cygwin_search_path.map(function(posix_path) 
+      search_path = this.cygwin_search_path.map(function(posix_path) 
       {
         return broker.cygwin_root + "\\" + posix_path.replace(/\//g, "\\");
       });
