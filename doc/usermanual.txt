@@ -32,7 +32,7 @@ link:./usermanual.html[English/英語]
 === Download/License
     This software is distributed under Mozilla Public License 1.1 (MPL1.1) .
 
-- Developping version (0.1.3a): http:/#/zuse.jp/tanasinn/downloads/versions/0.1.3a/TANASINN_XPI_ID.xpi[Download]
+- Developping version (0.1.3a2): http:/#/zuse.jp/tanasinn/downloads/versions/0.1.3a2/TANASINN_XPI_ID.xpi[Download]
 - Unstable, Snapshot version (it may so bugful!): http:/#/zuse.jp/tanasinn/tanasinn-current.xpi[Download]
 
 #elif __JP__
@@ -40,7 +40,7 @@ link:./usermanual.html[English/英語]
 === ダウンロード/ライセンス
     Mozilla Public License 1.1 (MPL1.1) で配布しています。 
 
-- 開発版 (0.1.3a): http:/#/zuse.jp/tanasinn/downloads/versions/0.1.3a/TANASINN_XPI_ID.xpi[ダウンロード].
+- 開発版 (0.1.3a2): http:/#/zuse.jp/tanasinn/downloads/versions/0.1.3a2/TANASINN_XPI_ID.xpi[ダウンロード].
 - スナップショット版: http:/#/zuse.jp/tanasinn/tanasinn-current.xpi[ダウンロード]
 
 #endif
@@ -563,7 +563,7 @@ Type it in the command-line input field.
 kill
 ----
 
-==== How to Hook "<C-i>"(edit input field by external editor) and "gF"(view source in external viewer) mappings if tanasinn is Installed as Vimperator/Muttator plugin. 
+=== How to Hook "<C-i>"(edit input field by external editor) and "gF"(view source in external viewer) mappings if tanasinn is Installed as Vimperator/Muttator plugin. 
 
 If you would like to edit input field by external editor on tanasinn,
 add following command to your vimperatorrc/muttatorrc. 
@@ -639,7 +639,7 @@ detach
 kill
 ----
 
-==== Vimperator/Muttatorプラグインとしてインストールしたとき、 "<C-i>"(インプットフィールドを外部エディタで編集) と "gF"(HTMLソースを外部ビューワで閲覧) マッピングをフックするには
+=== Vimperator/Muttatorプラグインとしてインストールしたとき、 "<C-i>"(インプットフィールドを外部エディタで編集) と "gF"(HTMLソースを外部ビューワで閲覧) マッピングをフックするには
 
 If you would like to edit input field by external editor on tanasinn,
 add following command to your vimperatorrc/muttatorrc. 
