@@ -156,6 +156,13 @@ function shutdown(data, reason)
     .getService(Components.interfaces.nsISupports)
     .wrappedJSObject;
   process.notify("event/disabled");
+  let io_service = Components
+    .classes["@mozilla.org/network/io-service;1"]
+    .getService(Components.interfaces.nsIIOService);
+  io_service.getProtocolHandler("resource")
+    .QueryInterface(Components.interfaces.nsIResProtocolHandler)
+    .setSubstitution("tanasinn", null);
+
 //  process.notify("event/shutdown");
 //  process.clear();
 

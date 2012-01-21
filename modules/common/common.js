@@ -1110,7 +1110,7 @@ coUtils.Localize = new function()
     getMessageFileName: function getMessageFileName() 
     {
       let locale = this._locale;
-      let file_name = String(<>modules/locale/{locale}.js</>);
+      let file_name = String(<>modules/locale/{locale}.json</>);
       return file_name;
     },
 
@@ -1191,7 +1191,7 @@ coUtils.Localize = new function()
 
     getDictionary: function getLocalizeDictionary(language)
     {
-      let location = String(<>modules/locale/{language}.js</>);
+      let location = String(<>modules/locale/{language}.json</>);
       let file = coUtils.File.getFileLeafFromAbstractPath(location);
       let dict = null;
       if (file.exists()) {
@@ -1205,7 +1205,7 @@ coUtils.Localize = new function()
 
     setDictionary: function getLocalizeDictionary(language, dictionary)
     {
-      let location = String(<>modules/locale/{language}.js</>);
+      let location = String(<>modules/locale/{language}.json</>);
       let db = {
         lang: language,
         dict: dictionary,

@@ -12,6 +12,9 @@
  chrome.manifest.in
  chrome.manifest
  bootstrap.js
+ content=content {
+  tanasinn.svg
+ }
  content=chrome/content {
    app.xul
    songbird.xul
