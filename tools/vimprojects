@@ -20,6 +20,8 @@
    songbird.xul
  }
  doc=doc {
+  define.h
+  define.h.in
   Makefile.in
   usermanual.txt
  }
