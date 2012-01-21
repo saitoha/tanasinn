@@ -650,7 +650,7 @@ SocketTeletypeService.definition = {
       coUtils.Sessions.update();
       let backup_data_path = String(<>$Home/.tanasinn/persist/{request_id}.txt</>);
       if (coUtils.File.exists(backup_data_path)) {
-        let context = eval(coUtils.IO.readFromFile(backup_data_path));
+        let context = JSON.parse(coUtils.IO.readFromFile(backup_data_path, "utf-8"));
         session.notify("command/restore", context);
         let file = coUtils.File.getFileLeafFromAbstractPath(backup_data_path);
         if (file.exists()) {
@@ -690,7 +690,8 @@ SocketTeletypeService.definition = {
     let session = this._broker;
     session.notify("command/backup", context);
     let path = String(<>$Home/.tanasinn/persist/{session.request_id}.txt</>);
-    coUtils.IO.writeToFile(path, context.toSource());
+    let data = JSON.stringify(context);
+    coUtils.IO.writeToFile(path, data);
   },
 
   "[subscribe('sequence/osc/97')]":

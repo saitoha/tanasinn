@@ -107,22 +107,26 @@ let loader = {
 
 function startup(data, reason) 
 {
+  let io_service = Components
+    .classes["@mozilla.org/network/io-service;1"]
+    .getService(Components.interfaces.nsIIOService);
+  let uri = io_service.newFileURI(data.installPath.clone());
   //Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
   //  .getService(Components.interfaces.nsIPromptService)
-  //  .alert(null, "message", "bootstrap.js:startup called!!");
+  //  .alert(null, "message", "bootstrap.js:startup called!!" + uri);
+  io_service.getProtocolHandler("resource")
+    .QueryInterface(Components.interfaces.nsIResProtocolHandler)
+    .setSubstitution("tanasinn", uri)
   let tanasinn_class = Components
     .classes["@zuse.jp/tanasinn/process;1"];
   if (tanasinn_class) {
-    let process = Components.classes['@zuse.jp/tanasinn/process;1']
+    Components.classes['@zuse.jp/tanasinn/process;1']
       .getService(Components.interfaces.nsISupports)
-      .wrappedJSObject;
-    process.notify("event/enabled");
+      .wrappedJSObject
+      .notify("event/enabled");
   } else {
 //    loader.is_first = true;
     try {
-      let io_service = Components
-        .classes["@mozilla.org/network/io-service;1"]
-        .getService(Components.interfaces.nsIIOService);
       let file_handler = io_service.getProtocolHandler("file")
         .QueryInterface(Components.interfaces.nsIFileProtocolHandler);
       let process = data.installPath.clone();

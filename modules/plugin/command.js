@@ -349,6 +349,86 @@ ColorCommands.definition = {
   },
 };
 
+
+/**
+ * @class GlobalPersistCommand
+ */
+let GlobalPersistCommand = new Class().extends(Component);
+GlobalPersistCommand.definition = {
+
+  get id()
+    "persist",
+
+  "[command('globalsave/ss', ['profile/global']), _('Persist current global settings.'), enabled]":
+  function persist(arguments_string)
+  {
+    let session = this._broker;
+    let desktop = session._broker;
+
+    let match = arguments_string.match(/^\s*([$_\-@a-zA-Z\.]*)\s*$/);
+    if (null === match) {
+      return {
+        success: false,
+        message: _("Failed to parse commandline argument."),
+      };
+    }
+    let [, profile] = match;
+
+    let settings = desktop.uniget("command/get-settings");
+    if (!settings) {
+      return {
+        success: false,
+        message: _("Failed to gather settings information."),
+      };
+    }
+    desktop.notify("command/save-settings", {name: profile || undefined, data: settings});
+    return {
+      success: true,
+      message: _("Succeeded."),
+    };
+  },
+
+  "[command('globalload/ls', ['profile/global']), _('Load a global settings.'), enabled]":
+  function load(arguments_string)
+  {
+    let session = this._broker;
+    let desktop = session._broker;
+
+    let match = arguments_string.match(/^\s*([$_\-@a-zA-Z\.]*)\s*$/);
+    if (null === match) {
+      return {
+        success: false,
+        message: _("Failed to parse commandline argument."),
+      };
+    }
+    let [, profile] = match;
+
+    desktop.notify("command/load-settings", profile || undefined);
+    desktop.notify("command/draw", true);
+    return null;
+  },
+
+  "[command('globaldelete/ds', ['profile/global']), _('Delete a global settings.'), enabled]":
+  function deleteprofile(arguments_string)
+  {
+    let session = this._broker;
+    let desktop = session._broker;
+
+    let match = arguments_string.match(/^\s*([$_\-@a-zA-Z\.]*)\s*$/);
+    if (null === match) {
+      return {
+        success: false,
+        message: _("Failed to parse commandline argument."),
+      };
+    }
+    let [, profile] = match;
+
+    desktop.notify("command/delete-settings", profile || undefined);
+    return null;
+  },
+};
+
+
 /**
  * @class PersistCommand
  */
@@ -644,6 +724,7 @@ function main(desktop)
       new FontCommands(session);
       new ColorCommands(session);
       new PersistCommand(session);
+      new GlobalPersistCommand(session);
       new LocalizeCommand(session);
       new DeployCommands(session);
       new CharsetCommands(session);

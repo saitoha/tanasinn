@@ -69,6 +69,9 @@ with (scope) {
     get wrappedJSObject()
       this,
 
+    "[persistable] profile_directory": "$Home/.tanasinn/globalsettings",
+    "[persistable] profile": "default",
+
     initial_settings_path: "$Home/.tanasinn.js",
     runtime_path: "$Home/.tanasinn",
     search_path: null,

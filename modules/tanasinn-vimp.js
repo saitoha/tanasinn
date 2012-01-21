@@ -32,8 +32,6 @@ var PLUGIN_INFO =
     <maxVersion>3.1.1</maxVersion>
     <updateURL>http://svn.coderepos.org/share/lang/javascript/vimperator-plugins/trunk/char-hints-mod2.js</updateURL>
     <detail><![CDATA[
-== Usage ==
-== SETTING ==
 let g:tanasinneditor:
     set editor used by char-hint.
     e.g.)
@@ -42,8 +40,6 @@ let g:tanasinneditor:
     The editor must be console editor.
     If this variable is empty or undefined, default procedure 
     will be called when <C-i> is pressed in Insert and TextArea.
-== TODO ==
-
      ]]></detail>
 </VimperatorPlugin>;
 //}}}

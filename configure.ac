@@ -2,8 +2,10 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.61)
-AC_INIT([tanasinn],[0.1.3a2],[tanasinn@zuse.jp])
 
+
+
+AC_INIT([tanasinn],[0.1.3a2],[tanasinn@zuse.jp])
 AC_CANONICAL_TARGET
 
 # Checks for programs.

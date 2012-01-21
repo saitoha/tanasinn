@@ -177,7 +177,7 @@ TemplateBuilder.definition = {
   buildChrome: 
   function buildChrome(template, results) 
   {
-    if (Array.prototype.isPrototypeOf(template)) {
+    if (Array.isArray(template)) {
       return template.map(function(node)
       {
         return this.buildChrome(node, results);
@@ -250,7 +250,7 @@ TemplateBuilder.definition = {
   _processListener: 
   function _processListener(element, value) 
   {
-    if (!Array.prototype.isPrototypeOf(value)) {
+    if (!Array.isArray(value)) {
       value = [ value ];
     };
     value.forEach(function(listener_info) {
@@ -287,7 +287,7 @@ TemplateBuilder.definition = {
   function _processChildChromeNodes(element, value, results) 
   {
 
-    if (Array.prototype.isPrototypeOf(value)) {  // value is Array object.
+    if (Array.isArray(value)) {  // value is Array object.
       value.forEach(function(node) {
         this._processChildChromeNodes(element, node, results);
       }, this);

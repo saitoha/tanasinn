@@ -1122,7 +1122,7 @@ coUtils.Localize = new function()
       let db = null;
       if (file.exists()) {
         let content = coUtils.IO.readFromFile(file_name, "utf-8");
-        db = eval(content);
+        db = JSON.parse(content);
       } else {
         db = {
           lang: this._locale, 
@@ -1195,8 +1195,8 @@ coUtils.Localize = new function()
       let file = coUtils.File.getFileLeafFromAbstractPath(location);
       let dict = null;
       if (file.exists()) {
-        let content = coUtils.IO.readFromFile(location);
-        let db = eval(content);
+        let content = coUtils.IO.readFromFile(location, "utf-8");
+        let db = JSON.parse(content);
         return db.dict;
       } else {
         return {};
@@ -1210,7 +1210,7 @@ coUtils.Localize = new function()
         lang: language,
         dict: dictionary,
       };
-      coUtils.IO.writeToFile(location, db.toSource());
+      coUtils.IO.writeToFile(location, JSON.stringify(db));
       this._dictionaries_store[db.lang] = db.dict;
     },
 
