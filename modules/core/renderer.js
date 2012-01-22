@@ -212,7 +212,7 @@ Renderer.definition = {
     }
   },
 
-  "[subscribe('variable-changed/' + this.id + '.smoothing')]": 
+  "[subscribe('variable-changed/' + this.id + '.smoothing'), enabled]": 
   function onSmoothingChanged(value) 
   {
     if (this._context) {

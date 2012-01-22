@@ -294,10 +294,8 @@ ProcessManager.definition = {
   processIsAvailable: function processIsAvailable(pid) 
   {
     let exit_code = this.sendSignal(0, pid);
-    if (exit_code) {
-      alert(exit_code + " " + pid)
-    }
     return 0 == this.sendSignal(0, pid);
+    
     if ("number" != typeof pid) {
       throw coUtils.Debug.Exception(
         _("sendSignal: Invalid argument is detected. [%s]"), 
@@ -880,7 +878,7 @@ Launcher.definition = {
     this.startSession.enabled = false;
   },
 
-  "[subscribe('variable-changed/' + this.id + '.{font_size | font_family | font_weight | font_style}')]":
+  "[subscribe('variable-changed/' + this.id + '.{font_size | font_family | font_weight | font_style}'), enabled]":
   function onStyleChanged(chrome, decoder) 
   {
     if (this._textbox) {
@@ -898,8 +896,9 @@ Launcher.definition = {
     let row;
     if (this._index > -1) {
       row = completion_root.querySelector("rows").childNodes[this._index];
-      if (!row)
+      if (!row) {
         return;
+      }
       row.style.background = "";
       row.style.color = "";
     }

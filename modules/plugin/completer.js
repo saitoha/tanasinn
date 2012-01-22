@@ -115,10 +115,8 @@ ProfileCompleter.definition = {
    * @param source - The string to search for
    * @param listener - A listener to notify when the search is complete
    */
-  startSearch: function startSearch(source, listener)
+  startSearch: function startSearch(source, listener, option)
   {
-    let session = this._broker;
-
     let match = source.match(/^(\s*)([$_\-@a-zA-Z\.]*)(\s?)/);
     if (null === match) {
       listener.doCompletion(null);
@@ -128,7 +126,13 @@ ProfileCompleter.definition = {
     if (next) {
       return space.length + name.length;
     }
-    let entries = coUtils.File.getFileEntriesFromSerchPath([session.profile_directory]);
+
+    let broker = this._broker;
+    if ("global" == option) {
+      broker = broker._broker;
+    }
+
+    let entries = coUtils.File.getFileEntriesFromSerchPath([broker.profile_directory]);
 
     let lower_name = name.toLowerCase();
     let candidates = [
@@ -505,29 +509,31 @@ OptionCompleter.definition = {
    * @param source - The string to search for
    * @param listener - A listener to notify when the search is complete
    */
-  startSearch: function startSearch(source, listener)
+  startSearch: function startSearch(source, listener, option)
   {
     let match = source.match(/^(\s*)([$_\-@a-zA-Z\.]*)(=?)(.*)/);
     if (null === match) {
       listener.doCompletion(null);
       return -1;
     }
-    let [, space, option, equal, next] = match;
+    let [, space, name, equal, next] = match;
     if (!equal && next) {
       listener.doCompletion(null);
       return -1;
     }
     
     let session = this._broker;
+    let broker = "global" ==  option ? session._broker: session;
     let context = {};
-    session.notify("command/save-persistable-data", context);
+    let lower_name = name.toLowerCase();
+    broker.notify("command/save-persistable-data", context);
     if (!equal) {
       let options = [
         {
           key: key, 
           value: value
         } for ([key, value] in Iterator(context)) 
-          if (key.match(source))
+          if (-1 != key.toLowerCase().indexOf(lower_name))
       ];
       if (0 == options.length) {
         listener.doCompletion(null);
@@ -549,8 +555,7 @@ OptionCompleter.definition = {
     if (context.hasOwnProperty(option)) {
       let js_completer = session.uniget("get/completer/js");
       if (js_completer) {
-        js_completer.startSearch(next, listener);
-        return 0;
+        return js_completer.startSearch(next, listener);
       }
     }
     listener.doCompletion(null);

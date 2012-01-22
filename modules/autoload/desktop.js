@@ -73,6 +73,7 @@ Desktop.definition = {
 
     let broker = this._broker;
     broker.notify(<>initialized/broker</>, this);
+    this.notify("command/load-settings");
 
     this.notify("event/broker-started", this);
   },

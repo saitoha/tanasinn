@@ -158,7 +158,66 @@ SetCommand.definition = {
   {
     let session = this._broker;
     let modules = session.notify("get/module-instances");
-    let pattern = /^\s*([$_a-zA-Z\.]+)\.([$_a-zA-Z]+)(=?)/y;
+    let pattern = /^\s*([$_a-zA-Z\.\-]+)\.([$_a-zA-Z]+)(=?)/y;
+    let match = arguments_string.match(pattern);
+    if (null === match) {
+      session.notify(
+        "command/report-status-message",
+        _("Ill-formed option name is detected. ",
+          "valid format is such as '<component name>.<property name>'."));
+      return;
+    }
+    let [all, component_name, property, equal] = match;
+    if (!component_name || !property) {
+      session.notify(
+        "command/report-status-message",
+        _("Ill-formed option name is detected. ",
+          "valid format is such as '<component name>.<property name>'."));
+      return;
+    }
+    let [module] = modules.filter(function(module) {
+      return module.id == component_name;
+    });
+    if (!module) {
+      session.notify(
+        "command/report-status-message",
+        _("Module %s is not found."), component_name);
+      return;
+    }  
+    if (!equal) {
+      module[property] = true;
+    } else {
+      let code = arguments_string.substr(all.length); 
+      try {
+        let result = new Function(
+          "with (arguments[0]) { return (" + code + ");}"
+        ) (session.window);
+        module[property] = result; 
+      } catch (e) {
+        coUtils.Debug.reportError(e);
+      }
+    }
+  },
+
+};
+
+/**
+ * @class SetGlobalCommand
+ *
+ */
+let SetGlobalCommand = new Class().extends(Component);
+SetGlobalCommand.definition = {
+
+  get id()
+    "setglobalcommand",
+
+  "[command('setglobal', ['option/global']), _('Set a global option.'), enabled]":
+  function evaluate(arguments_string)
+  {
+    let session = this._broker;
+    let desktop = session._broker;
+    let modules = desktop.notify("get/module-instances");
+    let pattern = /^\s*([$_a-zA-Z\.\-]+)\.([$_a-zA-Z]+)(=?)/y;
     let match = arguments_string.match(pattern);
     if (null === match) {
       session.notify(
@@ -721,6 +780,7 @@ function main(desktop)
       new JsCommand(session);
 //      new GoCommand(session);
       new SetCommand(session);
+      new SetGlobalCommand(session);
       new FontCommands(session);
       new ColorCommands(session);
       new PersistCommand(session);

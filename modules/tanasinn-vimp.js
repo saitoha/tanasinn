@@ -79,12 +79,14 @@ function getTanasinnProcess()
   return process;
 }
 let process = getTanasinnProcess();
-let [desktop] = process.notify("get/desktop-from-window", window);
-if (!desktop) {
+let desktops = process.notify("get/desktop-from-window", window);
+let desktop;
+if (desktops) {
+  [desktop] = desktop;
+} else {
   process.notify("event/new-window-detected", window);
   desktop = process.uniget("get/desktop-from-window", window);
 };
-
 
 /**
  * @command tanasinnlaunch 
