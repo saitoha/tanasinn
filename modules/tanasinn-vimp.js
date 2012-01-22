@@ -72,7 +72,6 @@ function getTanasinnProcess()
       .getService(Components.interfaces.mozIJSSubScriptLoader)
       .loadSubScript(file);
     process_class = Components.classes[contractID]
-    getTanasinnProcess().notify("event/new-window-detected", window);
   }
   let process = process_class
     .getService(Components.interfaces.nsISupports)
@@ -80,16 +79,20 @@ function getTanasinnProcess()
   return process;
 }
 let process = getTanasinnProcess();
+let [desktop] = process.notify("get/desktop-from-window", window);
+if (!desktop) {
+  process.notify("event/new-window-detected", window);
+  desktop = process.uniget("get/desktop-from-window", window);
+};
+
 
 /**
  * @command tanasinnlaunch 
  */
-commands.add(["tanasinnlaunch", "tla[unch]"], 
+commands.addUserCommand(["tanasinnlaunch", "tla[unch]"], 
   "Show tanasinn's Launcher.", 
   function (args) 
   { 
-    let process = getTanasinnProcess();
-    let desktop = process.getDesktopFromWindow(window);
     desktop.post("command/show-launcher");
   }
 );
@@ -97,12 +100,10 @@ commands.add(["tanasinnlaunch", "tla[unch]"],
 /**
  * @command tanasinncommand 
  */
-commands.add(["tanasinncommand", "tco[mmand]"], 
+commands.addUserCommand(["tanasinncommand", "tco[mmand]"], 
   "Run a command on tanasinn.", 
   function (args) 
   { 
-    let process = getTanasinnProcess();
-    let desktop = process.getDesktopFromWindow(window);
     desktop.post("command/start-session", args.string);
   },
   { 
@@ -114,8 +115,8 @@ commands.add(["tanasinncommand", "tco[mmand]"],
 );
 
 /**
- * Hooks "<C-i>" and "gF" key mappings and runs "g:tanasinneditor" 
- * instead of default "editor" option.
+ * Hooks "<C-i>" and "gF" key mappings and runs "g:tanasinneditorcommand" 
+ * or "g:tanasinnviewsourcecommand", instead of default "editor" option.
  */
 let editor = liberator.modules.editor;
 editor.editFileExternally = let (default_func = editor.editFileExternally) function (path) 
@@ -127,17 +128,15 @@ editor.editFileExternally = let (default_func = editor.editFileExternally) funct
     if (!viewsource_command) {
       default_func.apply(liberator.modules.editor, arguments);
     } else {
-      process.getDesktopFromWindow(window)
-        .notify(
-          "command/start-session", 
-          viewsource_command.replace(/%/g, path));
+      desktop.notify(
+        "command/start-session", 
+        viewsource_command.replace(/%/g, path));
     };
   } else { // when path is native one.
     if (!editor_command) {
       default_func.apply(liberator.modules.editor, arguments);
     } else {
       let complete = false;
-      let desktop = process.getDesktopFromWindow(window);
       desktop.subscribe("@initialized/broker", function(session) {
         session.subscribe("@event/session-stopping", function(session) {
           complete = true;

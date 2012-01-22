@@ -35,8 +35,10 @@
    base.js
   }
   autoload=autoload {
+   .
    desktop.js
    launcher.js
+   vimpex.js
   }
   base=base {
    builder.js
