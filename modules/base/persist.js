@@ -54,7 +54,6 @@ PersistManager.definition = {
     let {name, data} = info;
     let filename = (name || broker.profile) + ".js";
     let profile_path = <>{broker.profile_directory}/{filename}</>.toString();
-      alert(profile_path)
     let serialized_data = JSON.stringify(data);
     coUtils.IO.writeToFile(profile_path, serialized_data);
   },

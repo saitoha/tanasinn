@@ -1356,7 +1356,7 @@ Vimperator/Muttatorのコマンドライン上から起動したい場合は、�
 </div>
 <div class="sect2">
 <h3 id="_vimperator_muttatorプラグインとしてインストールしたとき_lt_c_i_gt_インプットフィールドを外部エディタで編集_と_gf_htmlソースを外部ビューワで閲覧_マッピングをフックするには">Vimperator/Muttatorプラグインとしてインストールしたとき、 "&lt;C-i&gt;"(インプットフィールドを外部エディタで編集) と "gF"(HTMLソースを外部ビューワで閲覧) マッピングをフックするには</h3>
-<div class="paragraph"><p>インプトッフィールトをtanasinn上の外部エディタで編集したければ、vimperatorrc/muttatorrcに
+<div class="paragraph"><p>インプトッフィールドをtanasinn上の外部エディタで編集したければ、vimperatorrc/muttatorrcに
 以下のコマンドを追加してください。</p></div>
 <div class="listingblock">
 <div class="content">
@@ -1367,7 +1367,7 @@ Vimperator/Muttatorのコマンドライン上から起動したい場合は、�
 <div class="paragraph"><p>HTMLソースをtanasinnで見るには、以下のコマンドを追加します。</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>let g:tanasinnviewsourcecommand="curl '%' | vim -"</tt></pre>
+<pre><tt>let g:tanasinnviewsourcecommand="curl '%' | tidy | vim -"</tt></pre>
 </div></div>
 <div class="paragraph"><p>「%」はエスケープ済みのURL文字列に置換されます。
 この例ではvimとcurlコマンドのインストールが必要になります。</p></div>
@@ -1402,7 +1402,7 @@ twitter: <a href="http://twitter.com/kefir_">日本語</a> / <a href="http://twi
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2012-01-22 12:49:08 JST
+Last updated 2012-01-22 12:56:10 JST
 </div>
 </div>
 </body>

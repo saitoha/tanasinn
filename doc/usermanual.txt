@@ -641,7 +641,7 @@ kill
 
 === Vimperator/Muttatorプラグインとしてインストールしたとき、 "<C-i>"(インプットフィールドを外部エディタで編集) と "gF"(HTMLソースを外部ビューワで閲覧) マッピングをフックするには
 
-インプトッフィールトをtanasinn上の外部エディタで編集したければ、vimperatorrc/muttatorrcに
+インプトッフィールドをtanasinn上の外部エディタで編集したければ、vimperatorrc/muttatorrcに
 以下のコマンドを追加してください。
 
 ----
@@ -654,7 +654,7 @@ let g:tanasinneditorcommand="vim %"
 HTMLソースをtanasinnで見るには、以下のコマンドを追加します。 
 
 ----
-let g:tanasinnviewsourcecommand="curl '%' | vim -"
+let g:tanasinnviewsourcecommand="curl '%' | tidy | vim -"
 ----
 
 「%」はエスケープ済みのURL文字列に置換されます。
