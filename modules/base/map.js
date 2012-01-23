@@ -23,17 +23,63 @@
  * ***** END LICENSE BLOCK ***** */
 
 /**
- * @class MappingManager
+ * @class MappingManagerBase
  * @brief Manage mappings.
  */
-let MappingManager = new Class().extends(Plugin);
-MappingManager.definition = {
-
-  get id()
-    "mapping_manager",
+let MappingManagerBase = new Abstruct().extends(Plugin);
+MappingManagerBase.definition = {
 
   _map: null,
-  _context: null,
+  _state: null,
+
+  installImpl: function installImpl(type)
+  {
+    this._state = this._map = {};
+    let broker = this._broker;
+    let mappings = broker.notify("get/" + type);
+    if (mappings) {
+      mappings.forEach(function(delegate) {
+        delegate.expressions.forEach(function(expression) {
+          let packed_code_array = coUtils.Keyboard
+            .parseKeymapExpression(expression);
+          let context = this._map;
+          packed_code_array.forEach(function(key_code) {
+            context = context[key_code] = context[key_code] || {};
+          }, this);
+          context.value = delegate;
+        }, this);
+      }, this);
+    }
+  },
+
+  uninstallImpl: function uninstallImpl(broker)
+  {
+    this._map = null;
+  },
+
+  dispatch: function dispatch(map, info)
+  {
+    let result = this._state = this._state[info.code];
+    if (result && result.value) {
+      this._state = map;
+      return result.value(info);
+    } else if (!result) {
+      this._state = map;
+    }
+    return undefined;
+  },
+
+};
+
+/**
+ * @class NormalMappingManager
+ * @brief Manage mappings.
+ */
+let NormalMappingManager = new Class().extends(MappingManagerBase);
+NormalMappingManager.definition = {
+
+  get id()
+    "nmap_manager",
 
   /** post-constructor */
   "[subscribe('event/broker-started'), enabled]": 
@@ -49,18 +95,7 @@ MappingManager.definition = {
   "[subscribe('install/' + this.id)]":
   function install(broker)
   {
-    this._context = this._map = {};
-    let cmaps = broker.notify("get/cmap");
-    cmaps.forEach(function(delegate) {
-      delegate.expressions.forEach(function(expression) {
-        let packed_code_array = coUtils.Keyboard.parseKeymapExpression(expression);
-        let context = this._map;
-        packed_code_array.forEach(function(key_code) {
-          context = context[key_code] = context[key_code] || {};
-        }, this);
-        context.value = delegate;
-      }, this);
-    }, this);
+    this.installImpl("nmap");
     broker.notify(<>initialized/{this.id}</>, this);
   },
 
@@ -70,25 +105,69 @@ MappingManager.definition = {
   "[subscribe('uninstall/' + this.id)]":
   function uninstall(broker)
   {
+    this.uninstallImpl();
+  },
+
+  /** Handles normal input event and dispatches stored nmap handler. 
+   *  @param {Object} An object includes XUL textbox field element 
+   *                  and key code.
+   */ 
+  "[subscribe('event/normal-input'), enabled]":
+  function onNormalInput(info)
+  {
+    return this.dispatch(this._map, info);
+  },
+
+};
+
+
+/**
+ * @class CommandlineMappingManager
+ * @brief Manage mappings.
+ */
+let CommandlineMappingManager = new Class().extends(MappingManagerBase);
+CommandlineMappingManager.definition = {
+
+  get id()
+    "cmap_manager",
+
+  /** post-constructor */
+  "[subscribe('event/broker-started'), enabled]": 
+  function onLoad(broker) 
+  {
+    this.enabled = this.enabled_when_startup;
+  },
+
+  /** Installs itself. 
+   *  @param {Broker} a broker object.
+   *  @notify initialized/inputmanager
+   */
+  "[subscribe('install/' + this.id)]":
+  function install(broker)
+  {
+    this.installImpl("cmap");
+    broker.notify(<>initialized/{this.id}</>, this);
+  },
+
+  /** Uninstalls itself. 
+   *  @param {Broker} a broker object.
+   */
+  "[subscribe('uninstall/' + this.id)]":
+  function uninstall(broker)
+  {
+    this.uninstallImpl();
   },
 
   /** Handles command line input event and dispatches stored cmap handler. 
-   *  @param {Object} An object includes XUL textbox field element and key code.
+   *  @param {Object} An object includes XUL textbox field element 
+   *                  and key code.
    */ 
   "[subscribe('event/commandline-input'), enabled]":
   function onCommandlineInput(info)
   {
-    let { textbox, code } = info;
-    let result = this._context = this._context[code];
-    if (result && result.value) {
-      this._context = this._map;
-      return result.value(info);
-    } else if (!result) {
-      this._context = this._map;
-    }
-    return undefined;
+    return this.dispatch(this._map, info);
   },
-} 
+};
 
 /**
  * @Aspect CommandlineKeyHandler
@@ -238,7 +317,7 @@ function main(broker)
     "@initialized/broker", 
     function(broker) 
     {
-      new MappingManager(broker);
+      new CommandlineMappingManager(broker);
       new CommandlineKeyHandler(broker);
     });
 }

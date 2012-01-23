@@ -814,6 +814,97 @@ KeyAttribute.definition = {
 };
 
 /**
+ * @aspect NmapAttribute
+ *
+ */
+Attribute.prototype.nmap = function nmap(expression) 
+{
+  let target = this._target;
+  target["nmap"] = [].slice.apply(arguments);
+};
+
+let NmapAttribute = new Aspect();
+NmapAttribute.definition = {
+
+  /** constructor 
+   *  @param {EventBroker} broker Parent broker object.
+   */
+  initialize: function initialize(broker) 
+  {
+    let attributes = this.__attributes;
+    for (key in attributes) {
+      let attribute = attributes[key];
+      let expressions = attribute["nmap"];
+      if (!expressions)
+        continue;
+        let handler = this[key];
+        let delegate = this[key] = handler.id ? 
+          this[key]
+        : let (self = this) function() handler.apply(self, arguments);
+        delegate.id = delegate.id || [this.id, key].join(".");
+        delegate.description = attribute.description;
+        delegate.expressions = expressions;
+
+        delegate.watch("enabled", 
+          delegate.onChange = let (self = this, old_onchange = delegate.onChange) 
+            function(name, oldval, newval) 
+            {
+              if (old_onchange) {
+                old_onchange.apply(delegate, arguments);
+              }
+              if (oldval != newval) {
+                if (newval) {
+                  expressions.forEach(function(expression) {
+                    let expressions = delegate.expressions;
+                    try {
+                      let packed_code = coUtils.Keyboard.parseKeymapExpression(expression);
+                      broker.subscribe(<>cmap/{packed_code.join("-")}</>, function(info) {
+                        delegate.call(this, info.event);
+                        info.handled = true;
+                      }, this, delegate.id);
+                    } catch (e) {
+                      coUtils.Debug.reportError(e);
+                    }
+                  }, self); // expressions.forEach
+                } else {
+                  broker.unsubscribe(delegate.id);
+                }
+              }
+              return newval;
+            });
+        if (attribute["enabled"]) {
+          delegate.enabled = true;
+        };
+        broker.subscribe("get/nmap", function() delegate);
+
+        // Register load handler.
+        broker.subscribe(
+          "command/load-persistable-data", 
+          function load(context) // Restores settings from context object.
+          {
+            let expressions = context[delegate.id];
+            if (expressions) {
+              delegate.expressions = expressions;
+              if (delegate.enabled) {
+                delegate.enabled = false;
+                delegate.enabled = true;
+              }
+            }
+          }, this);
+
+        // Register persist handler.
+        broker.subscribe(
+          "command/save-persistable-data", 
+          function persist(context) // Save settings to persistent context.
+          {
+            context[delegate.id] = delegate.expressions;
+          }, this);
+    }
+  },
+};
+
+
+/**
  * @aspect CmapAttribute
  *
  */

@@ -44,6 +44,7 @@
    builder.js
    domevent.js
    persist.js
+   map.js
   }
   core=core {
    session.js
@@ -69,8 +70,6 @@
    encoder.js
    focus.js
    window.js
-
-   map.js
   }
 
   ttydriver.py
@@ -102,6 +101,7 @@
    draggable.js
    mouse.js
    bell.js
+   popup.js
 
    contextmenu.js
    encodings.js

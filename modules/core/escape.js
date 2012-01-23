@@ -199,9 +199,9 @@ Escape.definition = {
   function OSC() 
   {
     let message = String.fromCharCode.apply(String, arguments);
-    let args = message.split(";");
-    let num = args.shift();
-    let command = args.shift();
+    let delimiter_position = message.indexOf(";");
+    let num = message.substr(0, delimiter_position);
+    let command = message.substr(delimiter_position + 1);
     let session = this._broker;
     session.notify("sequence/osc/" + num, command);
   },

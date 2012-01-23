@@ -255,12 +255,7 @@ Mouse.definition = {
     let tracking_mode = this._tracking_mode;
     if  (/BTN_EVENT_MOUSE|ANY_EVENT_MOUSE/.test(tracking_mode)) {
       // Send motion event.
-      let code = 32 
-             | (event.shiftKey << 2) 
-             | (event.metaKey << 3)
-             | (event.ctrlKey << 4)
-             | (1 << 5);
-
+      let code = 32 + 0 + 32;
       let [column, row] = this._getCurrentPosition(event);
       column += 32;
       row += 32;
@@ -285,7 +280,9 @@ Mouse.definition = {
   _getCurrentPosition: function _getCurrentPosition(event) 
   {
     let session = this._broker;
-    let target_element = session.uniget("command/query-selector", "#tanasinn_center_area");
+    let target_element = session.uniget(
+      "command/query-selector", 
+      "#tanasinn_center_area");
     let box = target_element.boxObject;
     let offsetX = box.screenX - session.root_element.boxObject.screenX;
     let offsetY = box.screenY - session.root_element.boxObject.screenY;

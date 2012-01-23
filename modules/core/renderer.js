@@ -343,7 +343,7 @@ Renderer.definition = {
       context.shadowOffsetY = 0;
       context.shadowBlur = 2;
     }
-    if (this.force_manospace_rendering) {
+    if (this.force_monospace_rendering) {
       if (text.length == length) {
         context.fillText(text, x, y, char_width * length);
       } else if (text.length * 2 == length) {
