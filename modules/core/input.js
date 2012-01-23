@@ -189,6 +189,7 @@ InputManager.definition = {
     this.focus.enabled = true;
     this.blur.enabled = true;
     this.onkeypress.enabled = true;
+    this.onkeydown.enabled = true;
     this.onkeyup.enabled = true;
     this.oninput.enabled = true;
     this.enableInputManager.enabled = true;
@@ -304,13 +305,72 @@ InputManager.definition = {
       }
     }
   },
+
+  /** Keydown event handler. 
+   *  @param {Event} event A event object.
+   */
+  "[listen('keydown', '#tanasinn_default_input', true)]":
+  function onkeydown(event) 
+  { // nothrow
+  //      
+      this._broker.notify(
+        "command/report-status-message", 
+<>
+  keyCode: {event.keyCode}, 
+  which: {event.which}, 
+  shift: {event.shiftKey}, 
+  ctrl: {event.ctrlKey}, 
+  alt: {event.altKey}, 
+  meta: {event.metaKey},
+  ischar: {event.isChar},
+</>);
+
+      try {
+    if (event.ctrlKey && event.keyCode == event.which) {
+      let map = { 
+        9   :null,  // <C-Tab>
+        13  :null,  // <C-Enter>
+        27  :null,  // <C-Esc>
+        32  :null,  // <C-Space>
+        48  :null,  // <C-0>
+        49  :null,  // <C-1>
+        50  :null,  // <C-2>
+        51  :null,  // <C-3>
+        52  :null,  // <C-4>
+        53  :null,  // <C-5>
+        54  :null,  // <C-6>
+        55  :null,  // <C-7>
+        56  :null,  // <C-8>
+        57  :null,  // <C-9>
+        59  :null,  // <C-;>
+        109 :null,  // <C-\->
+        188 :null,  // <C-,>
+        190 :null,  // <C-.>
+        191 :null,  // <C-/>
+        219 :null,  // <C-[>
+        221 :null,  // <C-[>
+      }
+      if (null === map[event.keyCode]) {
+        //this._processKeyEvent(event);
+      }
+    }
+      } catch(e) {alert(e)}
   
+  },
+
   /** Keypress event handler. 
    *  @param {Event} event A event object.
    */
   "[listen('keypress', '#tanasinn_default_input', true)]":
   function onkeypress(event) 
   { // nothrow
+    this._processKeyEvent(event);
+  },
+
+  _processKeyEvent: function _processKeyEvent(event)
+  {
+    try {
+
     let packed_code = getPackedKeycodeFromEvent(event);
     let info = { 
       event: event, 
@@ -319,19 +379,22 @@ InputManager.definition = {
     };
     let session = this._broker;
     session.notify(<>key-pressed/{packed_code}</>, info);
-
     if (info.handled) {
       event.preventDefault();
     } else {
       let message = this._key_map[packed_code] 
       if (!message) {
-        if (packed_code & (1 << coUtils.Keyboard.KEY_CTRL | 1 << coUtils.Keyboard.KEY_ALT)) {
-          return; 
-        } else {
-          message = String.fromCharCode(packed_code & 0xfffff);
+        if (packed_code & (1 << coUtils.Keyboard.KEY_CTRL | 
+                           1 << coUtils.Keyboard.KEY_ALT)) {
+          if (0x20 <= event.which && event.which < 0x7f) {
+            return; 
+          }
         }
+        message = String.fromCharCode(packed_code & 0xfffff);
       }
       session.notify("event/before-input", message);
+      //session.notify(
+      //  "command/report-overlay-message", event.keyCode + " " + event.which);
 
 //      
 //      session.notify(
@@ -351,6 +414,7 @@ InputManager.definition = {
       this._processInputSequence(message);
       event.preventDefault();
     }
+    } catch(e) {alert(e)}
   },
 
   /** input event handler. 
