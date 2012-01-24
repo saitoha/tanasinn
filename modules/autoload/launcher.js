@@ -81,7 +81,6 @@ function generateEntries(paths)
         }
       }
     } catch (e) {
-      alert(e)
       coUtils.Debug.reportError(e);
     }
   }

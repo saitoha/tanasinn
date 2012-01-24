@@ -117,8 +117,8 @@ OuterChrome.definition = {
             -moz-box-shadow: 5px 4px 29px black;
             border-radius: 8px;
             //background: black;
-            background: -moz-linear-gradient(top, #777, #000);
-//            background: -moz-radial-gradient(center, #000, #555);
+            background: -moz-linear-gradient(top, #444, #000);
+//            background: -moz-radial-gradient(0px 0px, cover, #555, #000);
             margin: 5px;
             opacity: 0.8;
           </>,
@@ -263,7 +263,7 @@ Chrome.definition = {
     }),
 
   "[persistable] margin": 8,
-  "[persistable] inactive_opacity": 0.50,
+  "[persistable] inactive_opacity": 0.20,
 
   _element: null,
 

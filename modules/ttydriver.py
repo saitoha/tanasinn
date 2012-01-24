@@ -485,6 +485,7 @@ if __name__ == "__main__":
         sys.stdout.write("\x1bc")
         sys.stdout.flush()
         os.environ["TERM"] = term 
+        os.environ["__TANASINN"] = term 
         os.execlp("/bin/sh", "/bin/sh", "-c", "cd $HOME && exec %s" % command)
     ttyname = os.read(master, ttyname_max_length).rstrip()
 

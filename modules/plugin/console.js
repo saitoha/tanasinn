@@ -581,14 +581,13 @@ Console.definition = {
     this._bottom_panel.remove("console.panel");
   },
 
-  "[command('console'), key('meta a'), _('Open console.')]":
+  "[command('console'), nmap('<M-a>', '<C-S-a>'), _('Open console.')]":
   function select(info) 
   {
     this._bottom_panel.select("console.panel");
   },
 
 };
-
 
 /**
  * @fn main

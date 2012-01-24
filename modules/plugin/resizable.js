@@ -34,31 +34,35 @@ let ResizeShortcut = new Aspect();
 ResizeShortcut.definition = {
 
   /** Make the screen narrower by 1 column. */ 
-  "[command('narrower'), key('meta ,'), _('Make the screen narrower.')]":
+  "[command('narrower'), nmap('<M-,>', '<C-S-,>'), _('Make the screen narrower.')]":
   function makeNarrower() 
   {
     this.shrinkColumn(1);
+    return true;
   },
 
   /** Make the screen wider by 1 column. */ 
-  "[command('wider'), key('meta .'), _('Make the screen wider.')]":
+  "[command('wider'), nmap('<M-.>', '<C-S-.>'), _('Make the screen wider.')]":
   function makeWider() 
   {
     this.expandColumn(1);
+    return true;
   },
 
   /** Make the screen shorter by 1 row. */ 
-  "[command('shorter'), key('meta ['), _('Make the screen shorter.')]":
+  "[command('shorter'), nmap('<M-S-(>', '<C-S-8>'), _('Make the screen shorter.')]":
   function makeShorter() 
   {
     this.shrinkRow(1);
+    return true;
   },
 
   /** Make the screen taller by 1 row. */ 
-  "[command('taller'), key('meta ]'), _('Make the screen taller.')]":
+  "[command('taller'), nmap('<M-S-)>', '<C-S-9>'), _('Make the screen taller.')]":
   function makeTaller() 
   {
     this.expandRow(1);
+    return true;
   },
 
 };

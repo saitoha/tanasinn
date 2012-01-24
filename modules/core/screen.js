@@ -1254,7 +1254,7 @@ Screen.definition = {
 
   serialize: function serialize(context)
   {
-    context.push(this._width, this._height, this._buffer_top);
+    context.push(this.width, this.height, this._buffer_top);
     context.push(this._scroll_top, this._scroll_bottom);
     context.push(this._buffer.length);
     this._buffer.forEach(function(line) line.serialize(context));
@@ -1264,8 +1264,8 @@ Screen.definition = {
 
   deserialize: function deserialize(context)
   {
-    this._width = context.shift();
-    this._height = context.shift();
+    this.width = context.shift();
+    this.height = context.shift();
     this._buffer_top = context.shift();
     this._scroll_top = context.shift();
     this._scroll_bottom = context.shift();

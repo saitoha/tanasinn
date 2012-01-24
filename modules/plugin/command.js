@@ -330,21 +330,23 @@ FontCommands.definition = {
   },
 
   /** Makes font size smaller. */
-  "[command('decrease'), key('meta -', 'ctrl shift ='), _('Make font size smaller.'), enabled]":
+  "[command('decrease'), nmap('<M-\\\\->', '<C-S-\\\\->'), _('Make font size smaller.'), enabled]":
   function decrease()
   {
     let session = this._broker;
     session.notify("command/change-fontsize-by-offset", -1);
     session.notify("command/draw");
+    return true;
   },
 
   /** Makes font size bigger. */
-  "[command('increase'), key('meta shift \\\\+'), _('Make font size bigger.'), enabled]":
+  "[command('increase'), nmap('<M-S-+>', '<C-S-;>'), _('Make font size bigger.'), enabled]":
   function increase()
   {
     let session = this._broker;
     session.notify("command/change-fontsize-by-offset", +1);
     session.notify("command/draw");
+    return true;
   },
 
 };

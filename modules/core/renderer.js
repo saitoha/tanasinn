@@ -24,16 +24,16 @@
 
 const CO_XTERM_256_COLOR_PROFILE = [
   /* 0   */ "#000000", // black
-  /* 1   */ "#cd0000", // red
-  /* 2   */ "#00cd00", // green
-  /* 3   */ "#cdcd00", // yellow
-  /* 4   */ "#0000ee", // blue
-  /* 5   */ "#cd00cd", // magenta
-  /* 6   */ "#00cdcd", // cyan
+  /* 1   */ "#cd2222", // red
+  /* 2   */ "#44cd44", // green
+  /* 3   */ "#cdcd88", // yellow
+  /* 4   */ "#2222ee", // blue
+  /* 5   */ "#cd88cd", // magenta
+  /* 6   */ "#66cdcd", // cyan
   /* 7   */ "#e5e5e5", // white
   /* 8   */ "#7f7f7f", // blight black
   /* 9   */ "#ff0000", // blight red
-  /* 10  */ "#00ff00", // blight green　　
+  /* 10  */ "#00ff00", // blight green
   /* 11  */ "#ffff00", // blight yellow
   /* 12  */ "#5c5cff", // blight blue
   /* 13  */ "#ff00ff", // blight magenta
@@ -105,7 +105,7 @@ Renderer.definition = {
   "[watchable, persistable] background_color": CO_XTERM_256_COLOR_PROFILE.slice(0),   
 
   // cell geometry (in pixel)
-  "[watchable, persistable] line_height": 13,
+  "[watchable, persistable] line_height": 16,
   "[watchable] char_width": 6.5, 
   "[watchable] char_height": 4, 
   "[watchable] char_offset": 11, 
@@ -116,7 +116,7 @@ Renderer.definition = {
   "[persistable]            font_family@Linux" : "monospace",
   "[persistable]            font_family@Darwin": "Menlo",
   "[persistable]            font_family@WINNT" : "Lucida Console",
-  "[watchable, persistable] font_size": 13,
+  "[watchable, persistable] font_size": 14,
 
   "[persistable] force_monospace_rendering": true,
   "[persistable] enable_text_shadow": false,
@@ -294,7 +294,7 @@ Renderer.definition = {
       let left = char_width * column;
       let top = line_height * row;
       let width = char_width * (end - column);
-      let height = line_height | 0;
+      let height = line_height;// | 0;
       this._drawBackground(context, left, top, width, height, attr.bg);
       this._drawWord(context, text, left, top + text_offset, char_width, end - column, height, attr);
     }
@@ -385,7 +385,7 @@ Renderer.definition = {
     this.char_width = char_width;
     this.char_offset = char_offset;
     this.char_height = char_height;
-    this._text_offset = ((this.line_height + char_height + char_offset / 2) / 2 - 3) | 0;
+    this._text_offset = ((this.line_height + char_height + char_offset / 2) / 2 - 3);// | 0;
   },
 
   _setFont: function setFontSize(context, is_bold) 
@@ -393,7 +393,7 @@ Renderer.definition = {
     let font_size = this.font_size;
     let font_family = this.font_family;
     context.font = " "//(is_bold ? "bold ": " ") 
-                 + (font_size | 0) + "px "
+                 + (font_size/* | 0*/) + "px "
                  + "'" + font_family + "'";
   },
         

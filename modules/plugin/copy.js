@@ -83,7 +83,7 @@ Copy.definition = {
   },
 
   /** Get selected text and put it to clipboard.  */
-  "[command('copy'), key('meta + c', 'ctrl + shift + C'), _('Copy selected text.')] copy": 
+  "[command('copy'), nmap('<M-c>', '<C-S-c>'), _('Copy selected text.')] copy": 
   function copy(info) 
   {
     // get selection range from "selection plugin"
@@ -102,6 +102,7 @@ Copy.definition = {
       let session = this._broker;
       session.notify("command/report-status-message", statusMessage);
     }
+    return true;
   }
 };
 

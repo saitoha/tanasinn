@@ -133,75 +133,6 @@ CompletionView.definition = {
 };
 
 
-coUtils.Keyboard.getPackedKeycodeFromEvent 
-  = function getPackedKeycodeFromEvent(event) 
-  {
-    let code = event.keyCode || event.which;
-    let packed_code = code 
-      | !!event.ctrlKey   << coUtils.Keyboard.KEY_CTRL 
-      | (!!event.altKey || code > 0xff) << coUtils.Keyboard.KEY_ALT 
-      | !!event.shiftKey  << coUtils.Keyboard.KEY_SHIFT 
-      | !!event.keyCode   << coUtils.Keyboard.KEY_NOCHAR
-      | !!event.metaKey   << coUtils.Keyboard.KEY_META
-      ;
-    return packed_code;
-  };
-
-  /**
-   * @fn parseKeymapExpression
-   * Convert from a key map expression to a packed key code.
-   */
-coUtils.Keyboard.parseKeymapExpression = function parseKeymapExpression(expression) 
-{
-  let pattern = /<.+?>|./g;
-  let match = expression.match(pattern);
-  let strokes = match;
-  let key_code_array = strokes.map(function(stroke) {
-    let tokens = null;
-    if (1 < stroke.length) {
-      stroke = stroke.slice(1, -1); // <...> -> ...
-      tokens = stroke
-        .match(/\\-|[^-]+/g)
-        .map(function(token) token.replace(/^\\/, ""));
-    } else {
-      tokens = [stroke];
-    }
-    let key_code = null;
-    let last_key = tokens.pop();
-    if (!last_key.match(/^.$/)) {
-      // if last_key is not a printable character (ex. space, f1, del) ...
-      key_code = coUtils.Keyboard.KEYNAME_PACKEDCODE_MAP[last_key.toLowerCase()];
-      if (!key_code) {
-        throw coUtils.Debug.Exception(
-          _("Invalid last key sequence. '%s'. \nSource text: '%s'"),
-          last_key, expression);
-      }
-    } else {
-      // if last_key is a printable character (ex, a, b, X, Y)
-      key_code = last_key.charCodeAt(0);
-    }
- 
-    tokens.forEach(function(sequence) 
-    {
-      if (sequence.match(/^(c|C|ctrl|ctl|\^)$/)) {
-        key_code |= 0x1 << this.KEY_CTRL;
-      } else if (sequence.match(/^(a|A|alt)$/)) {
-        key_code |= 0x1 << this.KEY_ALT;
-      } else if (sequence.match(/^(s|S|shift)$/)) {
-        key_code |= 0x1 << this.KEY_SHIFT;
-      } else if (sequence.match(/^(m|M|meta)$/)) {
-        key_code |= 0x1 << this.KEY_META;
-      } else {
-        throw coUtils.Debug.Exception(
-          _("Invalid key sequence '%s'."), sequence);
-      }
-    }, this);
-    return key_code;
-      
-  }, this); 
-  return key_code_array;
-};
-
 /**
  * @class Commandline
  *
@@ -434,7 +365,7 @@ Commandline.definition = {
   /** Shows commandline interface. 
    *  @param {Object} A shortcut information object.
    */
-  "[key('meta + :', 'ctrl + shift + *'), _('Show commandline interface.')]":
+  "[nmap('<M-:>'), _('Show commandline interface.')]":
   function show(info)
   {
     this._statusbar.hidden = true;
@@ -443,6 +374,7 @@ Commandline.definition = {
     this._textbox.focus();
     this._textbox.focus();
     this._textbox.focus();
+    return true;
   },
 
   "[listen('focus', '#tanasinn_commandline', true)]":

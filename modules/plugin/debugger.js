@@ -547,10 +547,11 @@ StepExecution.definition = {
     }
   },
 
-  "[command('debugger'), key('meta + d'), _('Open debugger.')]":
+  "[command('debugger'), nmap('<M-d>', '<C-S-d>'), _('Open debugger.')]":
   function select() 
   {
     this._bottom_panel.select(this.id);
+    return true;
   },
 };
 

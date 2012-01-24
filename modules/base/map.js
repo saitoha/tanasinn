@@ -318,6 +318,7 @@ function main(broker)
     function(broker) 
     {
       new CommandlineMappingManager(broker);
+      new NormalMappingManager(broker);
       new CommandlineKeyHandler(broker);
     });
 }

@@ -38,7 +38,7 @@ Scanner.definition = {
   _nextvalue: null,
 
   /** Constructor **/
-  "[subscribe('event/broker-started'), enabled]":
+  "[subscribe('@event/broker-started'), enabled]":
   function onLoad(session) 
   {
     session.notify("initialized/scanner", this);

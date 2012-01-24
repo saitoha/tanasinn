@@ -101,6 +101,7 @@ Paste.definition = {
       let session = this._broker;
       session.notify("command/input-text", text);
     }
+    return true; /* prevent default action */
   }
 
 };

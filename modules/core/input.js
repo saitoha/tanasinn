@@ -22,70 +22,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-function getPackedKeycodeFromEvent(event) 
-{
-  let os = coUtils.Runtime.os;
-  if ("WINNT" == os) {
-    getPackedKeycodeFromEvent = function(event) 
-    {
-      let code = event.keyCode || event.which;
-      let packed_code = code 
-        | !!event.ctrlKey   << coUtils.Keyboard.KEY_CTRL 
-        | !!event.altKey    << coUtils.Keyboard.KEY_ALT 
-        | !!event.shiftKey  << coUtils.Keyboard.KEY_SHIFT 
-        | !!event.keyCode                   << coUtils.Keyboard.KEY_NOCHAR
-//        | (0 != event.keyCode && 0 == event.which) << coUtils.Keyboard.KEY_NOCHAR 
-//        | !event.isChar     << coUtils.Keyboard.KEY_NOCHAR 
-        | !!event.metaKey   << coUtils.Keyboard.KEY_META
-        ;
-      return packed_code;
-    }
-  } else if ("Darwin" == os) {
-    getPackedKeycodeFromEvent = function(event) 
-    {
-      let code = event.keyCode || event.which;
-      let packed_code = code 
-        | !!event.ctrlKey                 << coUtils.Keyboard.KEY_CTRL 
-        | (!!event.altKey || code > 0xff) << coUtils.Keyboard.KEY_ALT 
-        | !!event.shiftKey                << coUtils.Keyboard.KEY_SHIFT 
-//        | (0 != event.keyCode && 0 == event.which) << coUtils.Keyboard.KEY_NOCHAR 
-        | !!event.keyCode                   << coUtils.Keyboard.KEY_NOCHAR
-//        | 0 == event.which                << coUtils.Keyboard.KEY_NOCHAR 
-//        | !event.isChar                   << coUtils.Keyboard.KEY_NOCHAR 
-        | !!event.metaKey                 << coUtils.Keyboard.KEY_META
-        ;
-      return packed_code;
-    }
-  } else /* Linux */ {
-    getPackedKeycodeFromEvent = function(event) 
-    {
-      let code = event.keyCode || event.which;
-      let packed_code = code 
-        | !!event.ctrlKey                 << coUtils.Keyboard.KEY_CTRL 
-        | !!event.altKey                  << coUtils.Keyboard.KEY_ALT 
-        | !!event.shiftKey                << coUtils.Keyboard.KEY_SHIFT 
-        | !!event.keyCode                   << coUtils.Keyboard.KEY_NOCHAR
-//        | !event.isChar                   << coUtils.Keyboard.KEY_NOCHAR 
-        | !!event.metaKey                 << coUtils.Keyboard.KEY_META
-        ;
-      return packed_code;
-    }
-  }
-     /* 
-      coUtils.Debug.reportMessage(
-        "code: %s, ctrl: %s, alt: %s, shift: %s, meta: %s",
-        code,
-        event.ctrlKey,
-        event.altKey,
-        event.shiftKey,
-        event.meta
-        );
-        */
-        
-  return getPackedKeycodeFromEvent(event);
-};
-
-
 /**
  * @fn coCreateKeyMap
  * @brief Create [bit-packed keycode -> terminal input sequence] map 
@@ -189,7 +125,6 @@ InputManager.definition = {
     this.focus.enabled = true;
     this.blur.enabled = true;
     this.onkeypress.enabled = true;
-    this.onkeydown.enabled = true;
     this.onkeyup.enabled = true;
     this.oninput.enabled = true;
     this.enableInputManager.enabled = true;
@@ -258,10 +193,17 @@ InputManager.definition = {
   },
 
   /** blur focus from the textbox elment. */
-  "[subscribe('command/blur'), key('meta + z'), _('Hide tanasinn')]":
+  "[subscribe('command/blur'), nmap('<M-z>', '<C-S-Z>'), _('Hide tanasinn')]":
   function blur() 
   {
     this._textbox.blur(); // raise blur event.
+    let session = this._broker;
+    let document = session.window.document;
+    let dispatcher = document.commandDispatcher;
+    if (dispatcher) {
+      dispatcher.rewindFocus();
+    }
+    return true;
   },
 
   "[subscribe('event/focus-changed')]":
@@ -306,58 +248,6 @@ InputManager.definition = {
     }
   },
 
-  /** Keydown event handler. 
-   *  @param {Event} event A event object.
-   */
-  "[listen('keydown', '#tanasinn_default_input', true)]":
-  function onkeydown(event) 
-  { // nothrow
-  //      
-      this._broker.notify(
-        "command/report-status-message", 
-<>
-  keyCode: {event.keyCode}, 
-  which: {event.which}, 
-  shift: {event.shiftKey}, 
-  ctrl: {event.ctrlKey}, 
-  alt: {event.altKey}, 
-  meta: {event.metaKey},
-  ischar: {event.isChar},
-</>);
-
-      try {
-    if (event.ctrlKey && event.keyCode == event.which) {
-      let map = { 
-        9   :null,  // <C-Tab>
-        13  :null,  // <C-Enter>
-        27  :null,  // <C-Esc>
-        32  :null,  // <C-Space>
-        48  :null,  // <C-0>
-        49  :null,  // <C-1>
-        50  :null,  // <C-2>
-        51  :null,  // <C-3>
-        52  :null,  // <C-4>
-        53  :null,  // <C-5>
-        54  :null,  // <C-6>
-        55  :null,  // <C-7>
-        56  :null,  // <C-8>
-        57  :null,  // <C-9>
-        59  :null,  // <C-;>
-        109 :null,  // <C-\->
-        188 :null,  // <C-,>
-        190 :null,  // <C-.>
-        191 :null,  // <C-/>
-        219 :null,  // <C-[>
-        221 :null,  // <C-[>
-      }
-      if (null === map[event.keyCode]) {
-        //this._processKeyEvent(event);
-      }
-    }
-      } catch(e) {alert(e)}
-  
-  },
-
   /** Keypress event handler. 
    *  @param {Event} event A event object.
    */
@@ -369,17 +259,38 @@ InputManager.definition = {
 
   _processKeyEvent: function _processKeyEvent(event)
   {
-    try {
-
-    let packed_code = getPackedKeycodeFromEvent(event);
+    let packed_code = coUtils.Keyboard.getPackedKeycodeFromEvent(event);
     let info = { 
       event: event, 
       packedCode: packed_code, 
       handled: false,
     };
+
     let session = this._broker;
+    
+      session.notify(
+        "command/report-status-message", 
+        event.which + "-" + event.keyCode + " " + 
+        packed_code + " " +
+        (coUtils.Keyboard.parseKeymapExpression("<C-S-\\->")) + " " +
+        
+        String.fromCharCode(packed_code & 0xffff) + " " +
+<>
+  k:{event.keyCode}, 
+  w:{event.which}, 
+  s:{event.shiftKey}, 
+  c:{event.ctrlKey}, 
+  a:{event.altKey}, 
+  m:{event.metaKey},
+  c:{event.isChar},
+</>);
+
     session.notify(<>key-pressed/{packed_code}</>, info);
-    if (info.handled) {
+    let result = session.uniget(<>event/normal-input</>, {
+      textbox: this._textbox, 
+      code: packed_code,
+    });
+    if (info.handled || result) {
       event.preventDefault();
     } else {
       let message = this._key_map[packed_code] 
@@ -390,31 +301,15 @@ InputManager.definition = {
             return; 
           }
         }
-        message = String.fromCharCode(packed_code & 0xfffff);
+        message = String.fromCharCode(event.keyCode || event.which);
       }
       session.notify("event/before-input", message);
       //session.notify(
       //  "command/report-overlay-message", event.keyCode + " " + event.which);
-
-//      
-//      session.notify(
-//        "command/report-status-message", 
-//        String.fromCharCode(packed_code & 0xffff) + " " +
-//<>
-//  keyCode: {event.keyCode}, 
-//  which: {event.which}, 
-//  shift: {event.shiftKey}, 
-//  ctrl: {event.ctrlKey}, 
-//  alt: {event.altKey}, 
-//  meta: {event.metaKey},
-//  ischar: {event.isChar},
-//</>
-//        + " -> " + message);
       
       this._processInputSequence(message);
       event.preventDefault();
     }
-    } catch(e) {alert(e)}
   },
 
   /** input event handler. 

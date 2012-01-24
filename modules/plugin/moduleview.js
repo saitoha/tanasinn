@@ -123,10 +123,11 @@ ComponentViewer.definition = {
     this.update();
   },
 
-  "[command('moduleviewer/mv'), key('meta m'), _('Open module viewer.')]":
+  "[command('moduleviewer/mv'), nmap('<M-m>', '<C-S-m>'), _('Open module viewer.')]":
   function select()
   {
     this._bottom_panel.select(this.id);
+    return true;
   },
 
   update: function update()    
