@@ -268,23 +268,23 @@ InputManager.definition = {
 
     let session = this._broker;
     
-      session.notify(
-        "command/report-status-message", 
-        event.which + "-" + event.keyCode + " " + 
-        packed_code + " " +
-        (coUtils.Keyboard.parseKeymapExpression("<C-S-\\->")) + " " +
-        
-        String.fromCharCode(packed_code & 0xffff) + " " +
-<>
-  k:{event.keyCode}, 
-  w:{event.which}, 
-  s:{event.shiftKey}, 
-  c:{event.ctrlKey}, 
-  a:{event.altKey}, 
-  m:{event.metaKey},
-  c:{event.isChar},
-</>);
-
+//      session.notify(
+//        "command/report-status-message", 
+//        event.which + "-" + event.keyCode + " " + 
+//        packed_code + " " +
+//        (coUtils.Keyboard.parseKeymapExpression("<C-S-\\->")) + " " +
+//        
+//        String.fromCharCode(packed_code & 0xffff) + " " +
+//<>
+//  k:{event.keyCode}, 
+//  w:{event.which}, 
+//  s:{event.shiftKey}, 
+//  c:{event.ctrlKey}, 
+//  a:{event.altKey}, 
+//  m:{event.metaKey},
+//  c:{event.isChar},
+//</>);
+//
     session.notify(<>key-pressed/{packed_code}</>, info);
     let result = session.uniget(<>event/normal-input</>, {
       textbox: this._textbox, 
