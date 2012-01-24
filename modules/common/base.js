@@ -57,13 +57,116 @@ Aspect.prototype = {
 
 };
 
+///** 
+// * @class ForwardInputIterator
+// */ 
+//let ForwardInputIterator = function ForwardInputIterator() this.initialize.apply(this, arguments);
+//ForwardInputIterator.prototype = {
+//
+//  _value: null,
+//  _position: 0,
+//
+//  /** Assign new string data. position is reset. */
+//  initialize: function initialize(value) 
+//  {
+//    this._value = value;
+//    this._position = 0;
+//  },
+//
+//  /** Returns single byte code point. */
+//  current: function current() 
+//  {
+//    return this._value.charCodeAt(this._position);
+//  },
+//
+//  /** Moves to next position. */
+//  moveNext: function moveNext() 
+//  {
+//    ++this._position;
+//  },
+//
+//  /** Returns whether scanner position is at end. */
+//  get isEnd() 
+//  {
+//    return this._position >= this._value.length;
+//  },
+//};
+//
+///**
+// * @class AnnotationScanner
+// */
+//let AnnotationScanner = function AttributeScanner() this.initialize.apply(this, arguments);
+//AnnotationScanner.prototype = {
+//
+//  skip: function skip()
+//  {
+//    while (true) {
+//      let c = this.current()
+//      if (" ".charCodeAt(0) != c && ",".charCodeAt(0) != c) {
+//        break;
+//      }
+//      this.moveNext();
+//    }
+//  },
+//
+//};
+//AnnotationScanner.prototype.__proto__ = ForwardInputIterator.prototype;
+//
+////
+//// IdentifierCharacter := [a-z]
+//// Identifier          := IdentifierCharacter, IdentifierCharacter*
+////
+////
+//
+///**
+// * @class AnnotationParser
+// */
+//let AnnotationParser = function AttributeParser() this.initialize.apply(this, arguments);
+//AnnotationParser.prototype = {
+//
+//  /** Parses annotation string(decorated function name). */
+//  parse: function parse(annotation)
+//  {
+//    let scanner = new AnnotationScanner(annotation);
+//    let match_result = [];
+//
+//    scanner.skip();
+//
+//    let identifir = [ c for ( c in function() {
+//      if ("a".charCodeAt(0) <= c && c <= "z".charCodeAt(0)) {
+//        yield c;
+//      }
+//    }) ];
+//
+//    if (0 == identifir.length) {
+//      return null; // parse error;
+//    }
+//
+//    scanner.current();
+//    if ("(".charCodeAt(0) == scanner.current()) {
+//      return null; // parse error;
+//    }
+//
+//    scanner.moveNext();
+//
+//    scanner.skip();
+//
+//    if ("(".charCodeAt(0) == c) {
+//      return null; // parse error;
+//    }
+//    return match_result;
+//  },
+//
+//};
+
 /**
  * @class Attribute
  */
-let Attribute = function() this.initialize.apply(this, arguments);
+let Attribute = function Attribute() this.initialize.apply(this, arguments);
 Attribute.prototype = {
 
   _target: null,
+//  _parser: null,
 
   /** constructor */
   initialize: function initialize(target, context, name) 
@@ -71,6 +174,7 @@ Attribute.prototype = {
     this._target = target;
     this._context = context;
     this._name = name;
+//    this._parser = new AnnotationParser;
   },
 
   get enabled() 
@@ -85,6 +189,20 @@ Attribute.prototype = {
     target["description"] = _(description);
   },
 
+  parse: function(annotation) 
+  {
+    with (this) {
+      try {
+        eval(annotation);
+      } catch(e) {
+        coUtils.Debug.reportError(
+          _("Failed to parse annotation string: '%'."), annotation);
+        throw e;
+      }
+    }
+  },
+
+  /** Returns this object's info */
   toString: function toString() // override
   {
     return String(<>[Attribute enabled({this.enabled})]</>);
@@ -116,15 +234,7 @@ function Prototype(definition, base_class, interface_list)
       if (!target_attribute) {
         attributes[name] = target_attribute = {};
       }
-      with (new Attribute(target_attribute, this, name)) {
-        try {
-          eval(annotation);
-        } catch(e) {
-          coUtils.Debug.reportError(
-            "Fails to parse annotation string: '" + annotation + "'");
-          throw e;
-        }
-      }
+      new Attribute(target_attribute, this, name).parse(annotation);
       return name;
     }
     return key;

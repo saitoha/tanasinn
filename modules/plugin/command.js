@@ -735,21 +735,19 @@ EnableCommand.definition = {
 
 
 /**
- * @class ShortcutCommand
+ * @class MapCommands
  */
-/*
-let ShortcutCommand = new Class().extends(Component);
-ShortcutCommand.definition = {
+let MapCommands = new Class().extends(Component);
+MapCommands.definition = {
 
   get id()
-    "shortcut",
+    "map_command",
 
-  "[command('shortcut', ['shortcut']), _('Edit shortcut settings.'), enabled]":
+  "[command('nmap', ['nmap', 'nmap']), _('Edit normal mapping configuration.'), enabled]":
   function evaluate(arguments_string)
   {
     let session = this._broker;
-    let desktop = session.parent;
-    let pattern = /^\s*([a-zA-Z-]+)\s+"((?:[^"])*)"\s+"(.+)"\s*$/;
+    let pattern = /^\s*(.+)\s+(.+)\s*$/;
     let match = arguments_string.match(pattern);
     if (!match) {
       session.notify(
@@ -757,15 +755,14 @@ ShortcutCommand.definition = {
         _("Failed to parse given commandline code."));
       return;
     }
-    let [, language, key, value] = match;
-    key = key.replace(/\\(?!\\)/g, "\\");
-    value = value.replace(/\\(?!\\)/g, "\\");
-    let dict = coUtils.Localize.getDictionary(language);
-    dict[key] = value;
-    coUtils.Localize.setDictionary(language, dict);
+    let [, source_mapping, destination_mapping] = match;
+    let mapping_info = {
+      source: source_mapping,
+      destination: destination_mapping,
+    };
+    session.notify("command/register-nmap", mapping_info);
   },
 };
-*/
 
 /**
  * @fn main
@@ -790,6 +787,7 @@ function main(desktop)
       new LocalizeCommand(session);
       new DeployCommands(session);
       new CharsetCommands(session);
+      new MapCommands(session);
     });
 }
 

@@ -528,57 +528,17 @@ coUtils.Keyboard = {
    * @fn parseExpression
    * Convert from a key map expression to a packed key code.
    */
-  parseExpression: function parseExpression(expression) 
-  {
-  
-    let tokens = expression
-      .replace(/\\(.)/, function() 
-        "\\u" + arguments[1].charCodeAt(0).toString(16))
-      //.toLowerCase()
-      .split(/\s*\+\s*|\s*\+?\s+|\s+\+?\s*/)
-      .map(function(token) 
-        token.replace(/\\u([a-z0-9]+)/, function() 
-          String.fromCharCode(parseInt(arguments[1], 16))));
-  
-    let key_code = null;
-    let last_key = tokens.pop();
-    if (!last_key.match(/^.$/)) {
-      // if last_key is not a printable character (ex. space, f1, del) ...
-      key_code = this.KEYNAME_PACKEDCODE_MAP[last_key.toLowerCase()];
-      if (!key_code) {
-        throw coUtils.Debug.Exception(
-          _("Invalid last key sequence. '%s'. \nSource text: '%s'"),
-          last_key, expression);
-      }
-    } else {
-      // if last_key is a printable character (ex, a, b, X, Y)
-      key_code = last_key.charCodeAt(0);
-    }
-  
-    tokens.forEach(function(sequence) 
-    {
-      if (sequence.match(/^ctrl|ctl|\^$/)) {
-        key_code |= 0x1 << this.KEY_CTRL;
-      } else if (sequence.match(/^alt$/)) {
-        key_code |= 0x1 << this.KEY_ALT;
-      } else if (sequence.match(/^shift$/)) {
-        key_code |= 0x1 << this.KEY_SHIFT;
-      } else if (sequence.match(/^meta/)) {
-        key_code |= 0x1 << this.KEY_META;
-      } else {
-        throw coUtils.Debug.Exception(
-          _("Invalid key sequence '%s'."), sequence);
-      }
-    }, this);
-  
-    return key_code;
-  },
 };
 
 coUtils.Keyboard.getPackedKeycodeFromEvent 
   = function getPackedKeycodeFromEvent(event) 
   {
     let code = event.keyCode || event.which;
+    if (event.shiftKey && (event.ctrlKey || event.altKey || event.metaKey)) {
+      if (/* A */ 65 <= code && code <= 90 /* Z */) {
+        code += 32;
+      }
+    }
     let packed_code = code 
       | !!event.ctrlKey   << coUtils.Keyboard.KEY_CTRL 
       | (!!event.altKey || code > 0xff) << coUtils.Keyboard.KEY_ALT 
@@ -586,11 +546,6 @@ coUtils.Keyboard.getPackedKeycodeFromEvent
       | !!event.keyCode   << coUtils.Keyboard.KEY_NOCHAR
       | !!event.metaKey   << coUtils.Keyboard.KEY_META
       ;
-    if (event.shiftKey) {
-      if (/* A */ 65 <= code && code <= 90 /* Z */) {
-        packed_code += 32;
-      }
-    }
     return packed_code;
   };
 

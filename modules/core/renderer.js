@@ -24,10 +24,10 @@
 
 const CO_XTERM_256_COLOR_PROFILE = [
   /* 0   */ "#000000", // black
-  /* 1   */ "#cd2222", // red
+  /* 1   */ "#cd9988", // red
   /* 2   */ "#44cd44", // green
   /* 3   */ "#cdcd88", // yellow
-  /* 4   */ "#2222ee", // blue
+  /* 4   */ "#8899ef", // blue
   /* 5   */ "#cd88cd", // magenta
   /* 6   */ "#66cdcd", // cyan
   /* 7   */ "#e5e5e5", // white
@@ -291,9 +291,9 @@ Renderer.definition = {
     let char_width = this.char_width;
     let text_offset = this._text_offset;
     for (let { text, row, column, end, attr } in screen.getDirtyWords()) {
-      let left = char_width * column;
+      let left = (char_width * column) | 0;
       let top = line_height * row;
-      let width = char_width * (end - column);
+      let width = (char_width * (end - column)) | 0;
       let height = line_height;// | 0;
       this._drawBackground(context, left, top, width, height, attr.bg);
       this._drawWord(context, text, left, top + text_offset, char_width, end - column, height, attr);

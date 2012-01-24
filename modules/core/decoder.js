@@ -294,7 +294,7 @@ CP932Decoder.definition = {
   {
     let resource_path = "modules/mappings/cp932.txt.js";
     let content = coUtils.IO.readFromFile(resource_path);
-    let mapping = eval(content);
+    let mapping = JSON.parse(content);
     this._map = mapping.map;    
   },
 
@@ -353,7 +353,7 @@ UTF8Decoder.definition = {
     "utf8_decoder",
 
   get scheme()
-    "UTF-8",
+    "UTF-8-js",
 
   /** Constructor **/
   "[subscribe('get/decoders'), enabled]":
@@ -362,7 +362,7 @@ UTF8Decoder.definition = {
     return {
       charset: this.scheme,
       converter: this,
-      title: this.scheme,
+      title: "UTF-8 decoder implemented by js",
     };
   },
 
@@ -470,7 +470,7 @@ Decoder.definition = {
   _g0: coUtils.Constant.CHARSET_US,
   _g1: coUtils.Constant.CHARSET_US,
 
-  "[persistable] initial_scheme": "UTF-8",
+  "[persistable] initial_scheme": "UTF-8-js",
 
   /** Gets character encoding scheme */
   get scheme()

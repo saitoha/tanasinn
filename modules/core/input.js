@@ -100,6 +100,8 @@ InputManager.definition = {
 
   _key_map: null,
 
+  "[persistable] debug_mode": false,
+
   /** post-constructor */
   "[subscribe('initialized/{chrome & encoder}'), enabled]": 
   function onLoad(chrome, encoder) 
@@ -127,6 +129,8 @@ InputManager.definition = {
     this.onkeypress.enabled = true;
     this.onkeyup.enabled = true;
     this.oninput.enabled = true;
+    this.inputWithMapping.enabled = true;
+    this.inputWithNoMapping.enabled = true;
     this.enableInputManager.enabled = true;
     this.disableInputManager.enabled = true;
     session.notify("initialized/inputmanager", this);
@@ -146,6 +150,8 @@ InputManager.definition = {
     this.onkeypress.enabled = false;
     this.onkeyup.enabled = false;
     this.oninput.enabled = false;
+    this.inputWithMapping.enabled = false;
+    this.inputWithNoMapping.enabled = false;
     this.enableInputManager.enabled = false;
     this.disableInputManager.enabled = false;
     this._textbox.parentNode.removeChild(this._textbox);
@@ -254,64 +260,49 @@ InputManager.definition = {
   "[listen('keypress', '#tanasinn_default_input', true)]":
   function onkeypress(event) 
   { // nothrow
-    this._processKeyEvent(event);
+    if (this.debug_mode) {
+      let session = this._broker;
+      session.notify(
+        "command/report-status-message", 
+        <>code:{event.keyCode},which:{event.which},shift:{event.shiftKey?"t":"f"},ctl:{event.ctrlKey?"t":"f"},alt:{event.altKey?"t":"f"},meta:{event.metaKey?"t":"f"},char:{event.isChar?"t":"f"},</>);
+    };
+    event.preventDefault();
+    let packed_code = coUtils.Keyboard.getPackedKeycodeFromEvent(event);
+    this.inputWithMapping(packed_code);
   },
 
-  _processKeyEvent: function _processKeyEvent(event)
+  "[subscribe('command/input-with-mapping')]": 
+  function inputWithMapping(packed_code)
   {
-    let packed_code = coUtils.Keyboard.getPackedKeycodeFromEvent(event);
-    let info = { 
-      event: event, 
-      packedCode: packed_code, 
-      handled: false,
-    };
-
     let session = this._broker;
-    
-//      session.notify(
-//        "command/report-status-message", 
-//        event.which + "-" + event.keyCode + " " + 
-//        packed_code + " " +
-//        (coUtils.Keyboard.parseKeymapExpression("<C-S-\\->")) + " " +
-//        
-//        String.fromCharCode(packed_code & 0xffff) + " " +
-//<>
-//  k:{event.keyCode}, 
-//  w:{event.which}, 
-//  s:{event.shiftKey}, 
-//  c:{event.ctrlKey}, 
-//  a:{event.altKey}, 
-//  m:{event.metaKey},
-//  c:{event.isChar},
-//</>);
-//
-    session.notify(<>key-pressed/{packed_code}</>, info);
     let result = session.uniget(<>event/normal-input</>, {
       textbox: this._textbox, 
       code: packed_code,
     });
-    if (info.handled || result) {
-      event.preventDefault();
-    } else {
-      let message = this._key_map[packed_code] 
-      if (!message) {
-        if (packed_code & (1 << coUtils.Keyboard.KEY_CTRL | 
-                           1 << coUtils.Keyboard.KEY_ALT)) {
-          if (0x20 <= event.which && event.which < 0x7f) {
-            return; 
-          }
-        }
-        message = String.fromCharCode(event.keyCode || event.which);
-      }
-      session.notify("event/before-input", message);
-      //session.notify(
-      //  "command/report-overlay-message", event.keyCode + " " + event.which);
-      
-      this._processInputSequence(message);
-      event.preventDefault();
+    if (!result) {
+      this.inputWithNoMapping(packed_code);
     }
   },
 
+  "[subscribe('command/input-with-no-mapping')]": 
+  function inputWithNoMapping(packed_code)
+  {
+    let message = this._key_map[packed_code];
+    let c = packed_code & 0xffffff;// event.which;
+    if (!message) {
+      if (packed_code & (1 << coUtils.Keyboard.KEY_CTRL | 
+                         1 << coUtils.Keyboard.KEY_ALT)) {
+        if (0x20 <= c && c < 0x7f) {
+          return; 
+        }
+      }
+      message = String.fromCharCode(c);
+    }
+    let session = this._broker;
+    session.notify("event/before-input", message);
+    this._processInputSequence(message);
+  },
+  
   /** input event handler. 
    *  @{Event} event A event object.
    *  @notify event/input Notifies that a input event is occured.

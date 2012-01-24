@@ -40,13 +40,7 @@ MappingManagerBase.definition = {
     if (mappings) {
       mappings.forEach(function(delegate) {
         delegate.expressions.forEach(function(expression) {
-          let packed_code_array = coUtils.Keyboard
-            .parseKeymapExpression(expression);
-          let context = this._map;
-          packed_code_array.forEach(function(key_code) {
-            context = context[key_code] = context[key_code] || {};
-          }, this);
-          context.value = delegate;
+          this.register(expression, delegate);
         }, this);
       }, this);
     }
@@ -55,6 +49,16 @@ MappingManagerBase.definition = {
   uninstallImpl: function uninstallImpl(broker)
   {
     this._map = null;
+  },
+
+  register: function register(expression, delegate) 
+  {
+    let packed_code_array = coUtils.Keyboard.parseKeymapExpression(expression);
+    let context = this._map;
+    packed_code_array.forEach(function(key_code) {
+      context = context[key_code] = context[key_code] || {};
+    }, this);
+    context.value = delegate;
   },
 
   dispatch: function dispatch(map, info)
@@ -69,6 +73,51 @@ MappingManagerBase.definition = {
     return undefined;
   },
 
+  expand: function expand()
+  {
+    let result = {};
+    let context = this._map;
+    void function walk(context, previous) {
+      Object.getOwnPropertyNames(context).forEach(function(name) {
+        if ("value" == name) {
+          let expression = coUtils.Keyboard.convertCodeToExpression(previous);
+          result[expression] = context[name].description || context[name];
+        } else {
+          walk(context[name], previous.concat(Number(name)));
+        }
+      });
+    } (this._map, []);
+    return result;
+  },
+
+};
+
+coUtils.Keyboard.convertCodeToExpression = function convertCodeToExpression(packed_code)
+{
+  let buffer = [];
+  if (packed_code & (1 << coUtils.Keyboard.KEY_CTRL)) {
+    buffer.push("C");
+  }
+  if (packed_code & (1 << coUtils.Keyboard.KEY_ALT)) {
+    buffer.push("A");
+  }
+  if (packed_code & (1 << coUtils.Keyboard.KEY_SHIFT)) {
+    buffer.push("S");
+  }
+  if (packed_code & (1 << coUtils.Keyboard.KEY_META)) {
+    buffer.push("M");
+  }
+  let char = String.fromCharCode(0xffffff & packed_code);
+  if ("-" == char || "<" == char || ">" == char) {
+    char = "\\" + char;
+  }
+  buffer.push(char);
+  if (1 == buffer.length) {
+    return buffer.pop();
+  } else if (2 == buffer.length && "S" == buffer[0]) {
+    return buffer.pop();
+  }
+  return "<" + buffer.join("-") + ">";
 };
 
 /**
@@ -116,6 +165,40 @@ NormalMappingManager.definition = {
   function onNormalInput(info)
   {
     return this.dispatch(this._map, info);
+  },
+
+  "[subscribe('get/registered-nmap'), enabled]":
+  function getRegisteredNmap()
+  {
+    return this.expand();
+  },
+
+  "[subscribe('command/register-nmap'), enabled]":
+  function registerNmap(info)
+  {
+    let {source, destination} = info;
+    let session = this._broker;
+    let codes = coUtils.Keyboard.parseKeymapExpression(destination);
+    let delegate = function() {
+      codes.forEach(function(packed_code) {
+        session.notify("command/input-with-mapping", packed_code); 
+      });
+    }
+    this.register(source, delegate);
+  },
+
+  "[subscribe('command/register-nnoremap'), enabled]":
+  function registerNmap(info)
+  {
+    let {source, destination} = info;
+    let session = this._broker;
+    let codes = coUtils.Keyboard.parseKeymapExpression(destination);
+    let delegate = function() {
+      codes.forEach(function(packed_code) {
+        session.notify("command/input-with-no-mapping", packed_code); 
+      });
+    }
+    this.register(source, delegate);
   },
 
 };
@@ -167,6 +250,41 @@ CommandlineMappingManager.definition = {
   {
     return this.dispatch(this._map, info);
   },
+
+  "[subscribe('get/registered-cmap'), enabled]":
+  function getRegisteredCmap()
+  {
+    return this.expand();
+  },
+
+  "[subscribe('command/register-cmap'), enabled]":
+  function registerCmap(info)
+  {
+    let {source, destination} = info;
+    let session = this._broker;
+    let codes = coUtils.Keyboard.parseKeymapExpression(destination);
+    let delegate = function() {
+      codes.forEach(function(packed_code) {
+//        session.notify("command/input-with-mapping", packed_code); 
+      });
+    }
+    this.register(source, delegate);
+  },
+
+  "[subscribe('command/register-cnoremap'), enabled]":
+  function registerNmap(info)
+  {
+    let {source, destination} = info;
+    let session = this._broker;
+    let codes = coUtils.Keyboard.parseKeymapExpression(destination);
+    let delegate = function() {
+      codes.forEach(function(packed_code) {
+//        session.notify("command/input-with-no-mapping", packed_code); 
+      });
+    }
+    this.register(source, delegate);
+  },
+
 };
 
 /**

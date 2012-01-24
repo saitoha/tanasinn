@@ -423,6 +423,79 @@ CharsetCompleter.definition = {
 };
 
 /**
+ * @class NmapCompleter
+ *
+ */
+let NmapCompleter = new Class().extends(CompleterBase);
+NmapCompleter.definition = {
+
+  get id()
+    "nmap-completer",
+
+  get type()
+    "nmap",
+
+  /*
+   * Search for a given string and notify a listener (either synchronously
+   * or asynchronously) of the result
+   *
+   * @param source - The string to search for
+   * @param listener - A listener to notify when the search is complete
+   */
+  startSearch: function startSearch(source, listener)
+  {
+    let match = source.match(/^\s*(\S*)(\s*)/);
+    if (null === match) {
+      listener.doCompletion(null);
+      return -1;
+    }
+    let [all, name, next] = match;
+    if (next) {
+      return all.length;
+    }
+
+    let broker = this._broker;
+    let expressions = broker.uniget("get/registered-nmap");
+    let lower_name = name.toLowerCase();
+    let candidates = Object.getOwnPropertyNames(expressions)
+      .filter(function(expression) {
+        return -1 != expression.toLowerCase().indexOf(lower_name); 
+      })
+      .map(function(key) {
+        return { 
+          key: key, 
+          value: expressions[key],
+        };
+      });
+    if (0 == candidates.length) {
+      listener.doCompletion(null);
+      return -1;
+    }
+    let autocomplete_result = {
+      type: "text",
+      query: source, 
+      labels: candidates.map(function(candidate) candidate.key),
+      comments: candidates.map(function(candidate) String(candidate.value)),
+      data: candidates.map(function(candidate) ({
+        name: candidate.key,
+        value: String(candidate.value),
+      })),
+    };
+    listener.doCompletion(autocomplete_result);
+    return 0;
+  },
+
+  /*
+   * Stop all searches that are in progress
+   */
+  stopSearch: function stopSearch() 
+  {
+  },
+
+};
+
+
+/**
  * @class PluginsCompleter
  */
 let PluginsCompleter = new Class().extends(CompleterBase);
@@ -1879,6 +1952,7 @@ function main(desktop)
       new LocalizeCompleter(session);
       new PluginsCompleter(session);
       new CharsetCompleter(session);
+      new NmapCompleter(session);
 
       new ColorCompletionDisplayDriver(session);
       new ColorNumberCompletionDisplayDriver(session);
