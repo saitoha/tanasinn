@@ -41,20 +41,6 @@ MessageFilter.definition = {
         <version>0.1</version>
     </module>,
 
-//  get style() <![CDATA[
-//    @import "chrome://global/skin/viewbuttons.css";
-//    .tanasinn-console-error   { background-color: lightpink; }
-//    .tanasinn-console-warning { background-color: lightyellow; }
-//    .tanasinn-console-message { background-color: lightblue; }
-//    .tanasinn-console-native  { background-color: silver; }
-//    .tanasinn-console-unknown { background-color: orange; }
-//    .tanasinn-console-line { border-bottom: 1px solid green; padding: 0px 5px; }
-//    .tanasinn-console > *:not([class~="error"  ]) > .tanasinn-console-error { display: none !important; }
-//    .tanasinn-console > *:not([class~="warning"]) > .tanasinn-console-warning { display: none !important; }
-//    .tanasinn-console > *:not([class~="message"]) > .tanasinn-console-message { display: none !important; }
-//    .tanasinn-console > *:not([class~="native" ]) > .tanasinn-console-native { display: none !important; }
-//  ]]>,
-
   get filter_expression()
     /^\[(.+?): "(tanasinn: )?([^"]*?)" {file: "([^"]*?)" line: ([0-9]+?)( name: "([^"]*?)")?}\]$/m,
   
@@ -427,128 +413,130 @@ Console.definition = {
     let (bottom_panel = this._bottom_panel)
     let (tab_panel = bottom_panel.alloc("console.panel", _("Console")))
     { 
-       parentNode: tab_panel,
-       tagName: "vbox",
-       id: "tanasinn_console_panel",
-       className: "tanasinn-console",
-       flex: 1,
-       style: { 
-         margin: "0px",
-       },
-       childNodes: [
-         {  // output box
-           tagName: "grid",
-           flex: 1,
-           style: {
-             MozAppearance: "tabpanels",
-             overflowY: "auto",
-             fontSize: "12px",
-             fontWeight: "bold",
-           },
-           childNodes: {
-             tagName: "rows",
-             id: "console_output_box",
-             className: "error",
-           }
-         },
-         {
-           tagName: "vbox",
-           align: "center",
-           valign: "top",
-           childNodes: {
-             tagName: "hbox",
-             style: {
-               overflow: "hidden", 
-               margin: "0px", 
-               MozBoxPack: "center",
-             },
-             childNodes: [
-               {
-                 tagName: "toolbar",
-                 style: <>
-                   -moz-appearance: none;
-                   //-moz-box-pack: center;
-                   border-radius: 8px;
-                   //border: solid 1px black;
-                   //margin: 0px 9px;
-                 </>,
-                 childNodes: [
-                   {
-                     tagName: "toolbarbutton",
-                     type: "radio",
-                     label: mode.label,
-                     value: mode.value,
-                     group: "mode",
-                     style: {
-                       cssText: <>
-                         background: -moz-linear-gradient(top, #ccc, #777);
-                         -moz-appearance: none;
-//                         border-radius: 8px;
-                         font: menu;
-                         text-shadow: 0 1px rgba(255, 255, 255, .4);
-                         margin: 0px;
-                         //margin-left: -1px;
-                         margin-right: -1px;
-                         padding: 0px 4px;
-                         border-radius: 2px;
-                         border: solid 1px black;
-                         //heihgt: 22px;
-                       </>,
-                     },
-                     listener: {
-                       type: "command",
-                       handler: function(event) 
-                       { 
-                         let id = "#console_output_box";
-                         let output_box = tab_panel.querySelector(id);
-                         output_box.className = this.value;
-                       },
-                     },
-                     onconstruct: function() {
-                       if ("error" == this.value) {
-                         coUtils.Timer.setTimeout(
-                           function() this.checked = true, 
-                           10, this);
-                       }
-                     },
-                   } for each (mode in [
-                     { label: _("All"),     value: "error warning message native" },
-                     { label: _("Error"),   value: "error" },
-                     { label: _("Warning"), value: "warning" },
-                     { label: _("Message"), value: "message" },
-                     { label: _("native"),  value: "native" },
-                   ])
-                 ]
-               },
-               { tagName: "toolbarseparator", },
-               {
-                 tagName: "toolbarbutton",
-                 label: _("Clear"),
-                 //id: "Console:clear",
-                 style: { 
-                   cssText: <>
-                     //-moz-box-orient: vertical;
-                     //-moz-box-align: center;
-                     -moz-appearance: none;
-                     background: -moz-linear-gradient(top, #ccc, #777);
-                     font: menu;
-                     border-radius: 2px;
-                     border: solid 1px #444;
-                     text-shadow: 0 1px rgba(255, 255, 255, .4);
-                     margin: 0px 9px;
-                     padding: 0px 7px 0px 4px;
-                   </>
-                 },
-                 listener: {
-                   type: "command",
-                   context: this,
-                   handler: function() session.notify("command/clear-messages"),
-                 }
-               }
-             ]
-           }
-         },
-       ]
+      parentNode: tab_panel,
+      tagName: "vbox",
+      id: "tanasinn_console_panel",
+      className: "tanasinn-console",
+      flex: 1,
+      style: { 
+        margin: "0px",
+      },
+      childNodes: [
+        {
+        },
+        {  // output box
+          tagName: "grid",
+          flex: 1,
+          style: {
+            MozAppearance: "tabpanels",
+            overflowY: "auto",
+            fontSize: "12px",
+            fontWeight: "bold",
+          },
+          childNodes: {
+            tagName: "rows",
+            id: "console_output_box",
+            className: "error",
+          }
+        },
+        {
+          tagName: "vbox",
+          align: "center",
+          valign: "top",
+          childNodes: {
+            tagName: "hbox",
+            style: {
+              overflow: "hidden", 
+              margin: "0px", 
+              MozBoxPack: "center",
+            },
+            childNodes: [
+              {
+                tagName: "toolbar",
+                style: <>
+                  -moz-appearance: none;
+                  //-moz-box-pack: center;
+                  border-radius: 8px;
+                  //border: solid 1px black;
+                  //margin: 0px 9px;
+                </>,
+                childNodes: [
+                  {
+                    tagName: "toolbarbutton",
+                    type: "radio",
+                    label: mode.label,
+                    value: mode.value,
+                    group: "mode",
+                    style: {
+                      cssText: <>
+                        background: -moz-linear-gradient(top, #ccc, #777);
+                        -moz-appearance: none;
+//                        border-radius: 8px;
+                        font: menu;
+                        text-shadow: 0 1px rgba(255, 255, 255, .4);
+                        margin: 0px;
+                        //margin-left: -1px;
+                        margin-right: -1px;
+                        padding: 0px 4px;
+                        border-radius: 2px;
+                        border: solid 1px black;
+                        //heihgt: 22px;
+                      </>,
+                    },
+                    listener: {
+                      type: "command",
+                      handler: function(event) 
+                      { 
+                        let id = "#console_output_box";
+                        let output_box = tab_panel.querySelector(id);
+                        output_box.className = this.value;
+                      },
+                    },
+                    onconstruct: function() {
+                      if ("error" == this.value) {
+                        coUtils.Timer.setTimeout(
+                          function() this.checked = true, 
+                          10, this);
+                      }
+                    },
+                  } for each (mode in [
+                    { label: _("All"),     value: "error warning message native" },
+                    { label: _("Error"),   value: "error" },
+                    { label: _("Warning"), value: "warning" },
+                    { label: _("Message"), value: "message" },
+                    { label: _("native"),  value: "native" },
+                  ])
+                ]
+              },
+              { tagName: "toolbarseparator", },
+              {
+                tagName: "toolbarbutton",
+                label: _("Clear"),
+                //id: "Console:clear",
+                style: { 
+                  cssText: <>
+                    //-moz-box-orient: vertical;
+                    //-moz-box-align: center;
+                    -moz-appearance: none;
+                    background: -moz-linear-gradient(top, #ccc, #777);
+                    font: menu;
+                    border-radius: 2px;
+                    border: solid 1px #444;
+                    text-shadow: 0 1px rgba(255, 255, 255, .4);
+                    margin: 0px 9px;
+                    padding: 0px 7px 0px 4px;
+                  </>
+                },
+                listener: {
+                  type: "command",
+                  context: this,
+                  handler: function() session.notify("command/clear-messages"),
+                }
+              }
+            ]
+          }
+        },
+      ]
      },
 
   "[persistable] enabled_when_startup": false,

@@ -494,12 +494,16 @@ coUtils.Keyboard = {
 
   KEYNAME_PACKEDCODE_MAP: let (KEY_NOCHAR = 24) {
     space     : 0x0020,
+    sp        : 0x0020,
     bs        : 0x1 << KEY_NOCHAR | 0x0008, 
     backspace : 0x1 << KEY_NOCHAR | 0x0008, 
     tab       : 0x1 << KEY_NOCHAR | 0x0009, 
     enter     : 0x1 << KEY_NOCHAR | 0x000d,
+    return    : 0x1 << KEY_NOCHAR | 0x000d,
     cr        : 0x1 << KEY_NOCHAR | 0x000d,
     lf        : 0x1 << KEY_NOCHAR | 0x000a,
+    escape    : 0x1 << KEY_NOCHAR | 0x001b,
+    esc       : 0x1 << KEY_NOCHAR | 0x001b,
     pgup      : 0x1 << KEY_NOCHAR | 0x0021,
     pgdn      : 0x1 << KEY_NOCHAR | 0x0022,
     end       : 0x1 << KEY_NOCHAR | 0x0023,
@@ -1101,13 +1105,13 @@ coUtils.Runtime = {
     }
 
     // compare last modified times between cached file and current one.
-    coUtils.Debug.reportMessage(_("Loading script '%s'."), file.leafName);
+//    coUtils.Debug.reportMessage(_("Loading script '%s'."), file.leafName);
 
     // avoiding subscript-caching (firefox8's new feature).
     url += "?" + coUtils.File.getLastModifiedTime(file);
 
     // load
-    this.subscript_loader.loadSubScript(url, scope);
+    this.subscript_loader.loadSubScript(url, scope, "UTF-8");
 
   }, // loadScript
 

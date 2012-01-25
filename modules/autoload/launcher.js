@@ -1282,6 +1282,11 @@ Launcher.definition = {
         && event.shiftKey && !event.isChar) {
       let broker = this._broker;
       broker.notify("event/shift-key-down");
+    } else if (17 == event.keyCode && 17 == event.which 
+        && !event.ctrlKey && !event.altKey 
+        && event.shiftKey && !event.isChar) {
+      let broker = this._broker;
+      broker.notify("event/ctrl-key-down");
     } else if (18 == event.keyCode && 18 == event.which 
         && !event.ctrlKey && event.altKey 
         && !event.shiftKey && !event.isChar) {

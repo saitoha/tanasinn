@@ -260,26 +260,6 @@ SetGlobalCommand.definition = {
 
 };
 
-let GoCommand = new Class().extends(Component);
-GoCommand.definition = {
-
-  get id()
-    "gocommand",
-
-  "[command('go', ['history']), _('Open an URL in current window.'), enabled]":
-  function evaluate(arguments_string)
-  {
-    let session = this._broker;
-    let content = session.window._content;
-    if (content) {
-      content.location.href = arguments_string;
-      session.notify("command/focus");
-      session.notify("command/blur");
-      session.notify("event/lost-focus");
-    }
-  },
-};
-
 /**
  * @class FontCommands
  */
@@ -702,38 +682,6 @@ CharsetCommands.definition = {
 
 };
 
-
-/**
- * @class ManageCommands
- */
-/*
-let PluginManagementCommands = new Class().extends(Component);
-EnableCommand.definition = {
-
-  get id()
-    "enable-command",
-
-  "[command('enable', ['modules']), _('enable a plugin.'), enabled]":
-  function evaluate(arguments_string)
-  {
-    let session = this._broker;
-    let modules = session.notify("get/module-instances");
-    /*
-    let desktop = session.parent;
-    let pattern = /^\s*([a-zA-Z-]+)\s+"((?:[^"])*)"\s+"(.+)"\s*$/;
-    let match = arguments_string.match(pattern);
-    if (!match) {
-      session.notify(
-        "command/report-status-message", 
-        _("Failed to parse given commandline code."));
-      return;
-    }
-    let [, language, key, value] = match;
-  },
-};
-*/
-
-
 /**
  * @class MapCommands
  */
@@ -744,7 +692,7 @@ MapCommands.definition = {
     "map_command",
 
   "[command('nmap', ['nmap', 'nmap']), _('Edit normal mapping configuration.'), enabled]":
-  function evaluate(arguments_string)
+  function nmap(arguments_string)
   {
     let session = this._broker;
     let pattern = /^\s*(.+)\s+(.+)\s*$/;
@@ -762,6 +710,27 @@ MapCommands.definition = {
     };
     session.notify("command/register-nmap", mapping_info);
   },
+
+  "[command('nnoremap', ['nmap', 'nmap']), _('Edit normal mapping configuration.'), enabled]":
+  function nnoremap(arguments_string)
+  {
+    let session = this._broker;
+    let pattern = /^\s*(.+)\s+(.+)\s*$/;
+    let match = arguments_string.match(pattern);
+    if (!match) {
+      session.notify(
+        "command/report-status-message", 
+        _("Failed to parse given commandline code."));
+      return;
+    }
+    let [, source_mapping, destination_mapping] = match;
+    let mapping_info = {
+      source: source_mapping,
+      destination: destination_mapping,
+    };
+    session.notify("command/register-nnoremap", mapping_info);
+  },
+
 };
 
 /**
@@ -777,7 +746,6 @@ function main(desktop)
     {
       new CommandProvider(session);
       new JsCommand(session);
-//      new GoCommand(session);
       new SetCommand(session);
       new SetGlobalCommand(session);
       new FontCommands(session);

@@ -400,8 +400,8 @@ BottomPanel.definition = {
         this._selectTab(tab);
       }
     } else { // Invalid ID was specified.
-      throw coUtils.Debug.Exception(
-        _("Specified tab ID '%s' not found."), id);
+//      throw coUtils.Debug.Exception(
+//        _("Specified tab ID '%s' not found."), id);
     }
   },
 

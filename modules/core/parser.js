@@ -84,6 +84,11 @@ Scanner.definition = {
     this._anchor = this._position;
   },
 
+  rollback: function rollback()
+  {
+    this._position = this._anchor;
+  },
+
   setSurplus: function setSurplus() 
   {
     this._nextvalue = this._value.substr(this._anchor);
@@ -121,6 +126,8 @@ Parser.definition = {
   _emurator: null,
   _decoder: null,
   _scanner: null,
+  _normalizer: 
+    Components.classes["@mozilla.org/intl/unicodenormalizer;1"].createInstance(Components.interfaces.nsIUnicodeNormalizer),
 
 // post-constructor
   "[subscribe('initialized/{scanner & grammer & emurator & decoder}'), enabled]":
@@ -183,6 +190,10 @@ Parser.definition = {
       } else if (!scanner.isEnd) {
         let codes = decoder.decode(scanner);
         if (codes && codes.length) {
+//          let result = {};
+//          let str = String.fromCharCode.apply(String, codes);
+//          this._normalizer.NormalizeUnicodeNFKC(str, result);
+//          codes = result.value.split("").map(function(c) c.charCodeAt(0));
           codes = [c for (c in this._padWideCharacter(codes))];
           yield function() emurator.write(codes);
         } else {
@@ -215,6 +226,7 @@ Parser.definition = {
    *                                 ^                          ^
    *                              inserted                   inserted
    */
+
   _padWideCharacter: function _padWideCharacter(codes)
   {
     for (let [, c] in Iterator(codes)) {

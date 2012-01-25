@@ -17,7 +17,6 @@
  }
  content=chrome/content {
    app.xul
-   songbird.xul
  }
  doc=doc {
   define.h

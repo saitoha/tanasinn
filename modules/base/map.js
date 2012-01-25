@@ -36,7 +36,7 @@ MappingManagerBase.definition = {
   {
     this._state = this._map = {};
     let broker = this._broker;
-    let mappings = broker.notify("get/" + type);
+    let mappings = broker.notify(<>get/{type}</>);
     if (mappings) {
       mappings.forEach(function(delegate) {
         delegate.expressions.forEach(function(expression) {
@@ -179,16 +179,19 @@ NormalMappingManager.definition = {
     let {source, destination} = info;
     let session = this._broker;
     let codes = coUtils.Keyboard.parseKeymapExpression(destination);
-    let delegate = function() {
-      codes.forEach(function(packed_code) {
-        session.notify("command/input-with-mapping", packed_code); 
-      });
+    if (0 < codes.length) {
+      let delegate = function() {
+        codes.forEach(function(packed_code) {
+          session.notify("command/input-with-mapping", packed_code); 
+        });
+        return true;
+      }
+      this.register(source, delegate);
     }
-    this.register(source, delegate);
   },
 
   "[subscribe('command/register-nnoremap'), enabled]":
-  function registerNmap(info)
+  function registerNnoremap(info)
   {
     let {source, destination} = info;
     let session = this._broker;
@@ -272,7 +275,7 @@ CommandlineMappingManager.definition = {
   },
 
   "[subscribe('command/register-cnoremap'), enabled]":
-  function registerNmap(info)
+  function registerCnoremap(info)
   {
     let {source, destination} = info;
     let session = this._broker;
@@ -296,6 +299,14 @@ CommandlineKeyHandler.definition = {
 
   get id()
     "commandline-key-handler",
+
+  "[cmap('<Esc>', '<C-Esc>', '<C-g>'), enabled]":
+  function key_escape(info) 
+  {
+    let session = this._broker;
+    session.notify("command/focus");
+    return true;
+  },
 
   "[cmap('<C-b>'), enabled]":
   function key_back(info) 

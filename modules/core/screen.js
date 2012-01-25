@@ -1546,7 +1546,7 @@ Screen.definition = {
       this._screen_choice = CO_SCREEN_ALTERNATE;
     } else {
       coUtils.Debug.reportWarning(
-        _("Alternate screen has been already serected."));
+        _("Alternate screen had been already selected."));
     }
   },
 

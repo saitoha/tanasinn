@@ -107,8 +107,6 @@ Selection.definition = {
     this._canvas = selection_canvas;
     this._context = selection_canvas.getContext("2d");
 
-    let id = "selection.install";
-
     this.onWidthChanged.enabled = true;
     this.onHeightChanged.enabled = true;
     this.getRange.enabled = true;
@@ -125,8 +123,6 @@ Selection.definition = {
    */
   uninstall: function uninstall(session) 
   {
-    let id = "selection.install";
-
     this.clear();
     this.onWidthChanged.enabled = false;
     this.onHeightChanged.enabled = false;
@@ -134,12 +130,6 @@ Selection.definition = {
 
     this.ondragstart.enabled = false;
     this.ondblclick.enabled = false;
-
-    // unsubscribe events.
-    session.unsubscribe(id);
-
-    // unregister dom listeners.
-    session.notify("command/remove-domlistener", id);
 
     this._canvas.parentNode.removeChild(this._canvas);
     this._canvas = null;

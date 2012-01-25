@@ -185,8 +185,13 @@ MultiDecoder.definition = {
   {
     let data = [c for (c in this._generate(scanner)) ];
     if (data.length) {
-      //let str = String.fromCharCode.apply(String, data);
-      let str = this._converter.convertFromByteArray(data, data.length); 
+      let str;
+      try {
+      //let str0 = String.fromCharCode.apply(String, data);
+        str = this._converter.convertFromByteArray(data, data.length); 
+      } catch(e) {
+        return ["?".charCodeAt(0)];
+      }
       return str.split("").map(function(c) c.charCodeAt(0));
       //let str = String.fromCharCode.apply(String, data);
       //return this._converter.ConvertToUnicode(str).split(""); 

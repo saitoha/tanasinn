@@ -291,11 +291,11 @@ Renderer.definition = {
     let char_width = this.char_width;
     let text_offset = this._text_offset;
     for (let { text, row, column, end, attr } in screen.getDirtyWords()) {
-      let left = (char_width * column) | 0;
+      let left = (char_width * column);// | 0;
       let top = line_height * row;
-      let width = (char_width * (end - column)) | 0;
+      let width = (char_width * (end - column));// | 0;
       let height = line_height;// | 0;
-      this._drawBackground(context, left, top, width, height, attr.bg);
+      this._drawBackground(context, left | 0, top, width + Math.ceil(left) - left, height, attr.bg);
       this._drawWord(context, text, left, top + text_offset, char_width, end - column, height, attr);
     }
   },
@@ -344,20 +344,20 @@ Renderer.definition = {
       context.shadowBlur = 2;
     }
     if (this.force_monospace_rendering) {
-      if (text.length == length) {
-        context.fillText(text, x, y, char_width * length);
-      } else if (text.length * 2 == length) {
-        text.split("").forEach(function(ch, index) {
-          context.fillText(ch, x + char_width * 2 * index, y);
-        }, this);
-      } else {
+      //if (text.length == length) {
+      //  context.fillText(text, x, y, char_width * length);
+      //} else if (text.length * 2 == length) {
+      //  text.split("").forEach(function(ch, index) {
+      //    context.fillText(ch, x + char_width * 2 * index, y);
+      //  }, this);
+      //} else {
         let position = x;
         text.split("").forEach(function(ch, index) {
           let is_wide = coUCS2EastAsianWidthTest(ch);
           context.fillText(ch, position, y);
           position += char_width * (is_wide ? 2: 1);
         }, this);
-      }
+      //}
     } else {
       context.fillText(text, x, y, char_width * length);
     }
@@ -413,5 +413,4 @@ function main(desktop)
       new Renderer(session);
     });
 }
-
 

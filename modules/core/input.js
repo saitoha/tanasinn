@@ -85,13 +85,12 @@ InputManager.definition = {
       tagName: "bulletinboard",
 //      style: "border: solid 1px red",
       childNodes: {
-        //tagName: "textbox",
         tagName: "html:input",
         id: "tanasinn_default_input",
         style: <> 
           ime-mode: disabled;
           border: 0px; 
-          opacity: 0;
+          opacity: 0.00;
         </>,
         top: 0,
         left: 0,
@@ -205,9 +204,11 @@ InputManager.definition = {
     this._textbox.blur(); // raise blur event.
     let session = this._broker;
     let document = session.window.document;
-    let dispatcher = document.commandDispatcher;
-    if (dispatcher) {
-      dispatcher.rewindFocus();
+    if (document) {
+      let dispatcher = document.commandDispatcher;
+      if (dispatcher) {
+        dispatcher.rewindFocus();
+      }
     }
     return true;
   },
@@ -260,14 +261,14 @@ InputManager.definition = {
   "[listen('keypress', '#tanasinn_default_input', true)]":
   function onkeypress(event) 
   { // nothrow
+    event.preventDefault();
+    let packed_code = coUtils.Keyboard.getPackedKeycodeFromEvent(event);
     if (this.debug_mode) {
       let session = this._broker;
       session.notify(
         "command/report-status-message", 
-        <>code:{event.keyCode},which:{event.which},shift:{event.shiftKey?"t":"f"},ctl:{event.ctrlKey?"t":"f"},alt:{event.altKey?"t":"f"},meta:{event.metaKey?"t":"f"},char:{event.isChar?"t":"f"},</>);
+        <>code:{event.keyCode},which:{event.which},shift:{event.shiftKey?"t":"f"},ctl:{event.ctrlKey?"t":"f"},alt:{event.altKey?"t":"f"},meta:{event.metaKey?"t":"f"},char:{event.isChar?"t":"f"},{coUtils.Keyboard.convertCodeToExpression(packed_code)}</>);
     };
-    event.preventDefault();
-    let packed_code = coUtils.Keyboard.getPackedKeycodeFromEvent(event);
     this.inputWithMapping(packed_code);
   },
 

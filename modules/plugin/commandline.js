@@ -178,6 +178,8 @@ Commandline.definition = {
       tanasinn_commandline_completion, 
       tanasinn_commandline, 
       tanasinn_statusbar,
+      tanasinn_status_message,
+      tanasinn_status_keystate,
       tanasinn_completion_popup, 
       tanasinn_completion_scroll, 
       tanasinn_completion_root,
@@ -195,9 +197,9 @@ Commandline.definition = {
         </>,
         childNodes: [
           {
+            tagName: "textbox",
             id: "tanasinn_commandline_completion",
             value: "",
-            tagName: "textbox",
             className: "plain",
             style: <> 
               padding: 0px;
@@ -210,7 +212,6 @@ Commandline.definition = {
             tagName: "textbox",
             id: "tanasinn_commandline",
             className: "plain",
-            //placeholder: "input commands here.",
             newlines: "replacewithspaces",
             style: <> 
               padding: 0px;
@@ -220,16 +221,43 @@ Commandline.definition = {
             </>,
           },
           {
-            tagName: "textbox",
+            tagName: "box",
             id: "tanasinn_statusbar",
-            className: "plain",
-            style: <> 
-              padding: 0px;
-              margin: 0px;
-              color: #ccc;
-              text-shadow: 0px 1px 4px #444;
-            </>,
             hidden: true,
+            flex: 1,
+            style: <>
+              border: solid 1px red;
+            </>,
+            childNodes: [
+              {
+                tagName: "box",
+                flex: 1,
+                style: "overflow: hidden",
+                childNodes: {
+                  tagName: "label",
+                  id: "tanasinn_status_message",
+                  style: <> 
+                    padding: 0px;
+                    margin: 0px;
+                    color: #ccc;
+                    text-shadow: 0px 1px 4px #444;
+                  </>,
+                },
+              },
+              {
+                tagName: "label",
+                id: "tanasinn_status_keystate",
+                flex: 0,
+                value: "key",
+                style: <> 
+                  border: solid 1px yellow,
+                  padding: 0px;
+                  margin: 0px;
+                  color: #ccc;
+                  text-shadow: 0px 1px 4px #444;
+                </>,
+              },
+            ],
           },
           {
             tagName: "panel",
@@ -243,9 +271,15 @@ Commandline.definition = {
               //-moz-box-shadow: 3px 3px 8px black;
               //border-radius: 7px;
               font: menu;
-              
             </>,
+            onconstruct: function() {
+              this.setAttribute("noautofocus", true);
+              this.setAttribute("noautohide", true);
+              this.setAttribute("ignorekeys", true);
+            },  
             noautofocus: true,
+            noautohide: true,
+            ignorekeys: true,
             childNodes: {
               tagName: "stack",
               maxHeight: this.completion_popup_max_height,
@@ -269,10 +303,8 @@ Commandline.definition = {
                   flex: 1,
                   style: <>
                     margin: 8px;
-                      //overflow-x: auto; 
-                      overflow-y: auto;
-                     // background: transparent;
-                    </>,
+                    overflow-y: auto;
+                  </>,
                   childNodes: {
                     tagName: "grid",
                     id: "tanasinn_completion_root",
@@ -283,8 +315,6 @@ Commandline.definition = {
                       font-weight: bold;
                       font-size: 16px;
                       text-shadow: 1px 2px 4px black;
-                      //overflow-x: auto; 
-                      //overflow-y: auto;
                     </>,
                   }
                 }, // tree
@@ -300,6 +330,7 @@ Commandline.definition = {
     this._scroll = tanasinn_completion_scroll;
     this._completion_root = tanasinn_completion_root;
     this._statusbar = tanasinn_statusbar;
+    this._status_message = tanasinn_status_message;
     this.show.enabled = true;
     this.fill.enabled = true;
     this.onStatusMessage.enabled = true;
@@ -346,14 +377,14 @@ Commandline.definition = {
     this._textbox.hidden = true;
     this._completion.hidden = true;
     coUtils.Timer.setTimeout(function() {
-      this._statusbar.inputField.value = message;
+      this._status_message.setAttribute("value", message);
     }, 0, this);
   },
 
   "[subscribe('command/enable-commandline')]":
   function enableCommandline() 
   {
-    this._statusbar.inputField.value = "";
+    this._status_message.setAttribute("value", "");
     this._statusbar.hidden = true;
     this._textbox.hidden = false;
     this._completion.hidden = false;
@@ -430,9 +461,12 @@ Commandline.definition = {
       this._popup.style.opacity = this.completion_popup_opacity;
       if ("closed" == this._popup.state || "hiding" == this._popup.state) {
         let session = this._broker;
-        let focused_element = session.document.commandDispatcher.focusedElement;
-        if (focused_element && focused_element.isEqualNode(textbox.inputField)) {
-          this._popup.openPopup(this._element, "after_start", 0, 0, true, true);
+        let doucment = session.window.document;
+        if (document) {
+          let focused_element = document.commandDispatcher.focusedElement;
+          if (focused_element && focused_element.isEqualNode(textbox.inputField)) {
+            this._popup.openPopup(this._element, "after_start", 0, 0, true, true);
+          }
         }
       }
       let index = Math.max(0, this.currentIndex);
