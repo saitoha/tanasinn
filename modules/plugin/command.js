@@ -695,7 +695,7 @@ MapCommands.definition = {
   function nmap(arguments_string)
   {
     let session = this._broker;
-    let pattern = /^\s*(.+)\s+(.+)\s*$/;
+    let pattern = /^\s*(\S+)\s+(\S+)\s*$/;
     let match = arguments_string.match(pattern);
     if (!match) {
       session.notify(
@@ -715,7 +715,7 @@ MapCommands.definition = {
   function nnoremap(arguments_string)
   {
     let session = this._broker;
-    let pattern = /^\s*(.+)\s+(.+)\s*$/;
+    let pattern = /^\s*(\S+)\s+(\S+)\s*$/;
     let match = arguments_string.match(pattern);
     if (!match) {
       session.notify(
@@ -729,6 +729,22 @@ MapCommands.definition = {
       destination: destination_mapping,
     };
     session.notify("command/register-nnoremap", mapping_info);
+  },
+
+  "[command('nunmap', ['nmap']), _('Delete a normal mapping configuration.'), enabled]":
+  function nunmap(arguments_string)
+  {
+    let session = this._broker;
+    let pattern = /^\s*(\S+)\s*$/;
+    let match = arguments_string.match(pattern);
+    if (!match) {
+      session.notify(
+        "command/report-status-message", 
+        _("Failed to parse given commandline code."));
+      return;
+    }
+    let [, expression] = match;
+    session.notify("command/unregister-nmap", expression);
   },
 
 };

@@ -226,7 +226,7 @@ Commandline.definition = {
             hidden: true,
             flex: 1,
             style: <>
-              border: solid 1px red;
+            //  border: solid 1px red;
             </>,
             childNodes: [
               {
@@ -248,9 +248,8 @@ Commandline.definition = {
                 tagName: "label",
                 id: "tanasinn_status_keystate",
                 flex: 0,
-                value: "key",
                 style: <> 
-                  border: solid 1px yellow,
+                //  border: solid 1px yellow,
                   padding: 0px;
                   margin: 0px;
                   color: #ccc;
@@ -331,6 +330,7 @@ Commandline.definition = {
     this._completion_root = tanasinn_completion_root;
     this._statusbar = tanasinn_statusbar;
     this._status_message = tanasinn_status_message;
+    this._status_keystate = tanasinn_status_keystate;
     this.show.enabled = true;
     this.fill.enabled = true;
     this.onStatusMessage.enabled = true;
@@ -391,6 +391,22 @@ Commandline.definition = {
     this._textbox.focus();
     this._textbox.focus();
     this._textbox.focus();
+  },
+
+  "[subscribe('event/input-state-changed'), enabled]":
+  function onInputStateChanged(code)
+  {
+    this._statusbar.hidden = false;
+    let current_value = this._status_keystate.getAttribute("value");
+    let new_value = current_value 
+      + coUtils.Keyboard.convertCodeToExpression(code);
+    this._status_keystate.setAttribute("value", new_value);
+  },
+
+  "[subscribe('event/input-state-reset'), enabled]":
+  function onInputStateReset(info)
+  {
+    this._status_keystate.setAttribute("value", "");
   },
 
   /** Shows commandline interface. 

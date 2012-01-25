@@ -53,7 +53,8 @@ MappingManagerBase.definition = {
 
   register: function register(expression, delegate) 
   {
-    let packed_code_array = coUtils.Keyboard.parseKeymapExpression(expression);
+    let packed_code_array 
+      = coUtils.Keyboard.parseKeymapExpression(expression);
     let context = this._map;
     packed_code_array.forEach(function(key_code) {
       context = context[key_code] = context[key_code] || {};
@@ -61,15 +62,43 @@ MappingManagerBase.definition = {
     context.value = delegate;
   },
 
+  unregister: function unregister(expression) 
+  {
+    let packed_code_array 
+      = coUtils.Keyboard.parseKeymapExpression(expression);
+    void function(context) {
+      let code = packed_code_array.shift();
+      let new_context = context[code];
+      if (new_context.value) {
+        delete new_context.value;
+      } else {
+        arguments.callee(new_context);
+      }
+      if (!Object.getOwnPropertyNames(new_context).length) {
+        delete context[code];
+      }
+    } (this._map);
+  },
+
   dispatch: function dispatch(map, info)
   {
+    try {
+    let session = this._broker;
     let result = this._state = this._state[info.code];
     if (result && result.value) {
+      session.notify("event/input-state-reset");
       this._state = map;
       return result.value(info);
     } else if (!result) {
+      if (map !== this._state) {
+        session.notify("event/input-state-reset");
+      }
       this._state = map;
+    } else {
+      session.notify("event/input-state-changed", info.code);
+      return true;
     }
+    } catch(e) {alert(e + e.lineNumber)}
     return undefined;
   },
 
@@ -80,7 +109,8 @@ MappingManagerBase.definition = {
     void function walk(context, previous) {
       Object.getOwnPropertyNames(context).forEach(function(name) {
         if ("value" == name) {
-          let expression = coUtils.Keyboard.convertCodeToExpression(previous);
+          let expression = coUtils.Keyboard
+            .convertCodeToExpression(previous);
           result[expression] = context[name].description || context[name];
         } else {
           walk(context[name], previous.concat(Number(name)));
@@ -186,6 +216,8 @@ NormalMappingManager.definition = {
         });
         return true;
       }
+      delegate.expression = source;
+      delegate.description = destination;
       this.register(source, delegate);
     }
   },
@@ -200,8 +232,15 @@ NormalMappingManager.definition = {
       codes.forEach(function(packed_code) {
         session.notify("command/input-with-no-mapping", packed_code); 
       });
+      return true;
     }
     this.register(source, delegate);
+  },
+
+  "[subscribe('command/unregister-nmap'), enabled]":
+  function unregisterNmap(expression)
+  {
+    this.unregister(expression);
   },
 
 };
