@@ -77,6 +77,8 @@ Mouse.definition = {
     this.onmouseup.enabled = true;
     this.onmousescroll.enabled = true;
     this.onMouseTrackingModeChanged.enabled = true;
+    this.backup.enabled = true;
+    this.restore.enabled = true;
   },
 
   /** Uninstalls itself. */
@@ -89,6 +91,8 @@ Mouse.definition = {
     this.onmouseup.enabled = false;
     this.onmousescroll.enabled = false;
     this.onMouseTrackingModeChanged.enabled = false;
+    this.backup.enabled = false;
+    this.restore.enabled = false;
   },
     
   /** Fired at the keypad mode is changed. */
@@ -128,6 +132,23 @@ Mouse.definition = {
       session.notify(_("Entering mouse tracking mode: [%s]."), data)
     }
     this._tracking_mode = data;
+  },
+
+  "[subscribe('command/backup')]": 
+  function backup(context) 
+  {
+    context.mouse = {
+      tracking_mode: this._tracking_mode,
+      keypad_mode: this._keypad_mode,
+    }; 
+  },
+
+  "[subscribe('command/restore')]": 
+  function restore(context) 
+  {
+    let {tracking_mode, keypad_mode} = context.mouse;
+    this._tracking_mode = tracking_mode;
+    this._keypad_mode = keypad_mode;
   },
 
   /** Make packed mouse event data and send it to tty device. */

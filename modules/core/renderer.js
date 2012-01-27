@@ -71,6 +71,60 @@ const CO_XTERM_256_COLOR_PROFILE = [
   /* 248-255 */ "#a8a8a8", "#b2b2b2", "#bcbcbc", "#c6c6c6", "#d0d0d0", "#dadada", "#e4e4e4", "#eeeeee"
 ]; // CO_XTERM_256_COLOR_PROFILE
 
+coUtils.Font = {
+
+  /**
+   * @fn getAverageGryphWidth
+   * @brief Test font rendering and calculate average gryph width.
+   */
+  getAverageGryphWidth: function getAverageGryphWidth(font_size, font_family, test_string)
+  {
+    const NS_XHTML = "http://www.w3.org/1999/xhtml";
+    let canvas = coUtils.getWindow()
+      .document
+      .createElementNS(NS_XHTML , "html:canvas");
+    let context = canvas.getContext("2d");
+    let unit = test_string || "Mbc123-XYM";
+    let repeat_generator = function(n) { while(n--) yield; } (10);
+    let text = [ unit for (_ in repeat_generator) ].join("");
+    let css_font_property = [font_size, "px ", font_family].join("");
+    context.font = css_font_property;
+    let metrics = context.measureText(text);
+    let char_width = metrics.width / text.length;
+    let height = metrics.height;
+  
+    text = "g\u3075";
+    metrics = context.measureText(text);
+    canvas.width = metrics.width;
+    canvas.height = (font_size * 2) | 0;
+    context.save();
+    context.translate(0, font_size);
+    context.fillText(text, 0, 0);
+    context.strokeText(text, 0, 0);
+    context.restore();
+    let data = context.getImageData(0, 0, canvas.width, canvas.height).data; 
+    let line_length = data.length / (canvas.height * 4);
+  
+    let first, last;
+  detect_first:
+    for (let i = 3; i < data.length; i += 4) {
+      if (data[i]) {
+        first = Math.floor(i / (canvas.width * 4));
+        break detect_first;
+      }
+    }
+  detect_last:
+    for (let i = data.length - 1; i >= 0; i -= 4) {
+      if (data[i]) {
+        last = Math.floor(i / (canvas.width * 4)) + 1;
+        break detect_last;
+      }
+    }
+    return [char_width, last - first, first];
+  }
+
+};
+
 /** 
  * @class Renderer
  * @brief Scan screen state and render it to canvas element.
@@ -112,20 +166,16 @@ Renderer.definition = {
   "_text_offset": 10, 
 
   // font
-  "[watchable, persistable] font_family"       : "monospace",
-  "[persistable]            font_family@Linux" : "monospace",
-  "[persistable]            font_family@Darwin": "Menlo",
-  "[persistable]            font_family@WINNT" : "Lucida Console",
+  "[watchable, persistable] font_family": "Monaco,Menlo,Lucida Console,monospace",
   "[watchable, persistable] font_size": 14,
 
-  "[persistable] force_monospace_rendering": true,
-  "[persistable] enable_text_shadow": false,
+  "[persistable] force_precious_rendering": false,
+//  "[persistable] enable_text_shadow": false,
   "[persistable, watchable] smoothing": true,
 
   "[subscribe('@initialized/{screen & chrome}'), enabled]": 
   function onLoad(screen, chrome) 
   {
-    this.font_family = this["font_family@" + coUtils.Runtime.os] || this.font_family;
     this._screen = screen;
     this.enabled = this.enabled_when_startup;
   },
@@ -187,7 +237,7 @@ Renderer.definition = {
       line_height: this.line_height,
       font_family: this.font_family,
       font_size: this.font_size,
-      force_monospace_rendering: this.force_manospace_rendering,
+      force_precious_rendering: this.force_precious_rendering,
     };
     let session = this._broker;
     let path = String(<>$Home/.tanasinn/persist/{session.request_id}.png</>);
@@ -201,7 +251,7 @@ Renderer.definition = {
   {
     let data = context[this.id];
     if (data) {
-      this.force_manospace_rendering = data.force_manospace_rendering;
+      this.force_monospace_rendering = data.force_precious_rendering;
       this.line_height = data.line_height;
       this.font_family = data.font_family;
       this.font_size = data.font_size;
@@ -290,13 +340,13 @@ Renderer.definition = {
     let line_height = this.line_height;
     let char_width = this.char_width;
     let text_offset = this._text_offset;
-    for (let { text, row, column, end, attr } in screen.getDirtyWords()) {
+    for (let { codes, row, column, end, attr } in screen.getDirtyWords()) {
       let left = (char_width * column);// | 0;
       let top = line_height * row;
       let width = (char_width * (end - column));// | 0;
       let height = line_height;// | 0;
       this._drawBackground(context, left | 0, top, width + Math.ceil(left) - left, height, attr.bg);
-      this._drawWord(context, text, left, top + text_offset, char_width, end - column, height, attr);
+      this._drawWord(context, codes, left, top + text_offset, char_width, end - column, height, attr);
     }
   },
 
@@ -305,12 +355,12 @@ Renderer.definition = {
    */
   _drawBackground: function _drawBackground(context, x, y, width, height, bg)
   {
-    if (this.enable_text_shadow) {
-      context.shadowColor = "";
-      context.shadowOffsetX = 0;
-      context.shadowOffsetY = 0;
-      context.shadowBlur = 0;
-    }
+//    if (this.enable_text_shadow) {
+//      context.shadowColor = "";
+//      context.shadowOffsetX = 0;
+//      context.shadowOffsetY = 0;
+//      context.shadowBlur = 0;
+//    }
     if (0 == bg) {
       context.clearRect(x, y, width, height);
     } else {
@@ -326,7 +376,7 @@ Renderer.definition = {
 
   /** Render text in specified cells.
    */
-  _drawWord: function _drawWord(context, text, x, y, char_width, length, height, attr)
+  _drawWord: function _drawWord(context, codes, x, y, char_width, length, height, attr)
   {
     // Get hexadecimal formatted text color (#xxxxxx) 
     // form given attribute structure. 
@@ -337,28 +387,47 @@ Renderer.definition = {
     if (attr.underline) {
       this._drawUnderline(context, x, y, char_width * length, fore_color);
     }
-    if (this.enable_text_shadow) {
-      context.shadowColor = "black";
-      context.shadowOffsetX = 2;
-      context.shadowOffsetY = 0;
-      context.shadowBlur = 2;
-    }
+//    if (this.enable_text_shadow) {
+//      context.shadowColor = "black";
+//      context.shadowOffsetX = 2;
+//      context.shadowOffsetY = 0;
+//      context.shadowBlur = 2;
+//    }
     if (this.force_monospace_rendering) {
-      //if (text.length == length) {
-      //  context.fillText(text, x, y, char_width * length);
-      //} else if (text.length * 2 == length) {
-      //  text.split("").forEach(function(ch, index) {
-      //    context.fillText(ch, x + char_width * 2 * index, y);
-      //  }, this);
-      //} else {
         let position = x;
-        text.split("").forEach(function(ch, index) {
-          let is_wide = coUCS2EastAsianWidthTest(ch);
-          context.fillText(ch, position, y);
-          position += char_width * (is_wide ? 2: 1);
-        }, this);
-      //}
+        let previous_position = x;
+        for (let i = 0; i < codes.length; ++i) {
+          let cell = codes[i];
+          let code = cell.c;
+          let is_wide = 0 == code;
+          if (is_wide) {
+            cell = codes[++i];
+            code = cell.c;
+          }
+          if (cell.combining) {
+            let combined_character = String.fromCharCode(codes[i - 1].c, code);
+            context.fillText(combined_character, previous_position, y);
+            continue;
+          }
+          let current_width = char_width * (is_wide ? 2: 1);
+          let ch = String.fromCharCode(code);
+          let metrics = context.measureText(ch);
+          let bg = cell.bg;
+          if (0 == bg) {
+            context.clearRect(position, y - this._text_offset, current_width, height);
+          } else {
+            context.fillStyle = this.background_color[bg];
+            context.fillRect(position, y - this._text_offset, current_width, height);
+            context.fillStyle = fore_color;
+          }
+          context.fillText(ch, position + (current_width - metrics.width) / 2, y);
+          //context.fillText(ch, position, y);
+          previous_position = position;
+          position += current_width;
+        };
+//      }
     } else {
+      let text = String.fromCharCode.apply(String, codes.map(function(code) code.c));
       context.fillText(text, x, y, char_width * length);
     }
   },
@@ -394,7 +463,7 @@ Renderer.definition = {
     let font_family = this.font_family;
     context.font = " "//(is_bold ? "bold ": " ") 
                  + (font_size/* | 0*/) + "px "
-                 + "'" + font_family + "'";
+                 + font_family;
   },
         
 }

@@ -188,13 +188,21 @@ Parser.definition = {
         yield action;
         scanner.moveNext();
       } else if (!scanner.isEnd) {
-        let codes = decoder.decode(scanner);
+        let generator = function() {
+          for (let c in decoder.decode(scanner)) {
+            if (c >= 0x1100 && coUtils.Unicode.doubleWidthTest(c)) {
+              yield 0;
+            }
+            yield c;
+          }
+        };
+        let codes = [c for (c in generator())];
         if (codes && codes.length) {
 //          let result = {};
 //          let str = String.fromCharCode.apply(String, codes);
-//          this._normalizer.NormalizeUnicodeNFKC(str, result);
+//          this._normalizer.NormalizeUnicodeNFC(str, result);
 //          codes = result.value.split("").map(function(c) c.charCodeAt(0));
-          codes = [c for (c in this._padWideCharacter(codes))];
+//          codes = [c for (c in this._padWideCharacter(codes))];
           yield function() emurator.write(codes);
         } else {
           break;
@@ -230,6 +238,14 @@ Parser.definition = {
   _padWideCharacter: function _padWideCharacter(codes)
   {
     for (let [, c] in Iterator(codes)) {
+      let match = coUtils.Unicode
+        .detectCategory(String.fromCharCode(c));
+      if (match) {
+        let [is_non_spacing_mark, is_spacing_combining_mark] = match;  
+        if (is_non_spacing_mark || is_spacing_combining_mark) {
+          continue;
+        }
+      }
       let is_wide = coUtils.Unicode.doubleWidthTest(c);
       if (is_wide)
         yield 0;

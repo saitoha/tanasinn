@@ -578,11 +578,11 @@ It requires "vim" command on your system.
 To view HTML source on tanasinn, add fllowing command. 
 
 ----
-let g:tanasinnviewsourcecommand="curl '%' | vim -"
+let g:tanasinnviewsourcecommand="vim +e '%'"
 ----
 
 '%' is to be replaced with an escaped URL string.
-This example requires "vim", and "curl" command on your system. 
+This example requires "vim" command on your system. 
 
 #elif __JP__
 
@@ -654,11 +654,11 @@ let g:tanasinneditorcommand="vim %"
 HTMLソースをtanasinnで見るには、以下のコマンドを追加します。 
 
 ----
-let g:tanasinnviewsourcecommand="curl '%' | vim -"
+let g:tanasinnviewsourcecommand="vim +e '%'"
 ----
 
 「%」はエスケープ済みのURL文字列に置換されます。
-この例ではvimとcurlコマンドのインストールが必要になります。
+この例ではvimのインストールが必要になります。
 
 #endif
 

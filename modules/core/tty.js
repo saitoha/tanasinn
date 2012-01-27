@@ -656,6 +656,7 @@ SocketTeletypeService.definition = {
         if (file.exists()) {
           file.remove(false)
         }
+        session.notify("command/draw", true);
       }
     } else {
       let socket = Components

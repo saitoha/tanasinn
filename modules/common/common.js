@@ -493,6 +493,8 @@ coUtils.Keyboard = {
   KEY_APP    : 26,
 
   KEYNAME_PACKEDCODE_MAP: let (KEY_NOCHAR = 24) {
+    nmode     : 0xffffffff,
+    cmode     : 0xffffffff,
     space     : 0x0020,
     sp        : 0x0020,
     bs        : 0x1 << KEY_NOCHAR | 0x0008, 
@@ -631,13 +633,19 @@ coUtils.Unicode = {
    * @return true if given character code point is categorized in 
    *         F(FullWidth) or W(Wide).
    */
-  doubleWidthTest: function(code) 
+  doubleWidthTest: function doubleWidthTest(code) 
   { // TODO: See EastAsianWidth.txt
     let c = String.fromCharCode(code);
     return coUCS2EastAsianWidthTest(c);
   },
 
-  getUTF8ByteStreamGenerator: function(str) 
+  isNonSpacingMark: function isNonSpacingMark(code)
+  {
+    let c = String.fromCharCode(code);
+    return coUCS2NonSpacingMarkTest(c);
+  },
+
+  getUTF8ByteStreamGenerator: function getUTF8ByteStreamGenerator(str) 
   {
     for each (let c in str) {
       let code = c.charCodeAt(0);
@@ -675,59 +683,6 @@ coUtils.Unicode = {
 
 };
 
-coUtils.Font = {
-
-  /**
-   * @fn getAverageGryphWidth
-   * @brief Test font rendering and calculate average gryph width.
-   */
-  getAverageGryphWidth: function getAverageGryphWidth(font_size, font_family, test_string)
-  {
-    const NS_XHTML = "http://www.w3.org/1999/xhtml";
-    let canvas = coUtils.getWindow()
-      .document
-      .createElementNS(NS_XHTML , "html:canvas");
-    let context = canvas.getContext("2d");
-    let unit = test_string || "Mbc123-XYM";
-    let repeat_generator = function(n) { while(n--) yield; } (10);
-    let text = [ unit for (_ in repeat_generator) ].join("");
-    let css_font_property = [font_size, "px ", font_family].join("");
-    context.font = css_font_property;
-    let metrics = context.measureText(text);
-    let char_width = metrics.width / text.length;
-    let height = metrics.height;
-  
-    text = "g\u3075";
-    metrics = context.measureText(text);
-    canvas.width = metrics.width;
-    canvas.height = (font_size * 2) | 0;
-    context.save();
-    context.translate(0, font_size);
-    context.fillText(text, 0, 0);
-    context.strokeText(text, 0, 0);
-    context.restore();
-    let data = context.getImageData(0, 0, canvas.width, canvas.height).data; 
-    let line_length = data.length / (canvas.height * 4);
-  
-    let first, last;
-  detect_first:
-    for (let i = 3; i < data.length; i += 4) {
-      if (data[i]) {
-        first = Math.floor(i / (canvas.width * 4));
-        break detect_first;
-      }
-    }
-  detect_last:
-    for (let i = data.length - 1; i >= 0; i -= 4) {
-      if (data[i]) {
-        last = Math.floor(i / (canvas.width * 4)) + 1;
-        break detect_last;
-      }
-    }
-    return [char_width, last - first, first];
-  }
-
-};
 
 coUtils.Logger = function() this.initialize.apply(this, arguments);
 coUtils.Logger.prototype = {

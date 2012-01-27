@@ -38,9 +38,9 @@ with (scope) {
   coUtils.Debug.reportMessage("Booting base services...");
   coUtils.Runtime.loadScript("modules/common/base.js", scope);
   coUtils.Runtime.loadScript("modules/common/event.js", scope);
+  coUtils.Runtime.loadScript("modules/common/category.js", scope);
   coUtils.Runtime.loadScript("modules/common/eastasian.js", scope);
 }
-
 with (scope) {
   /**
    * @class Process

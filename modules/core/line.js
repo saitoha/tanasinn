@@ -175,6 +175,13 @@ const ATTR2_INVERSE     = 19    // 00000000 00000100 00000000 00000000
 const ATTR2_HALFBLIGHT  = 20    // 00000000 00001000 00000000 00000000
 const ATTR2_BLINK       = 21    // 00000000 00010000 00000000 00000000
 
+// tanasinn specific properties
+const ATTR2_LINK        = 22    // 00000000 00100000 00000000 00000000
+const ATTR2_HIGHLIGHT   = 23    // 00000000 01000000 00000000 00000000
+
+const ATTR2_WIDE        = 24    // 00000000 10000000 00000000 00000000
+const ATTR2_COMBINING   = 25    // 00000001 00000000 00000000 00000000
+
 
 let Cell = new Class();
 Cell.definition = {
@@ -263,11 +270,37 @@ Cell.definition = {
     this.value = this.value & ~(0x1 << ATTR2_UNDERLINE) 
                             | value << ATTR2_UNDERLINE;
   },
+  
+  /** getter of wide attribute */
+  get wide()
+  {
+    return this.value >>> ATTR2_WIDE & 0x1;
+  },
+
+  /** setter of wide attribute */
+  set wide(value) 
+  {
+    this.value = this.value & ~(0x1 << ATTR2_WIDE) 
+                            | value << ATTR2_WIDE;
+  },
+  
+  /** getter of combining attribute */
+  get combining()
+  {
+    return this.value >>> ATTR2_COMBINING & 0x1;
+  },
+
+  /** setter of combining attribute */
+  set combining(value) 
+  {
+    this.value = this.value & ~(0x1 << ATTR2_COMBINING) 
+                            | value << ATTR2_COMBINING;
+  },
 
   /** Compare every bit and detect equality of both objects. */
   equals: function equals(other)
   {
-    return this.value == other.value;
+    return this.value << 8 == other.value << 8;
   },
 
   /** Clear all properties and make it default state. */
@@ -286,6 +319,16 @@ Cell.definition = {
   {
     this.c = c;
     this.value = attr.value;
+    if (c >= 0x300) {
+      let match = coUtils.Unicode
+        .detectCategory(String.fromCharCode(c));
+      if (match) {
+        let [is_non_spacing_mark, is_spacing_combining_mark] = match;  
+        if (is_non_spacing_mark || is_spacing_combining_mark) {
+          this.combining = true;
+        }
+      }
+    }
   },
 
   /** Erase the pair of character and attribute structure */
@@ -325,7 +368,9 @@ DirtyRange.definition = {
   
   /** Detect whether it has some range. */
   get dirty()
-    this.first != this.last,
+  {
+    return this.first != this.last;
+  },
 
   invalidate: function invalidate() 
   {
@@ -539,6 +584,16 @@ Line.definition = {
     let backwardBreakPoint = getBackwardBreakPoint(backwardChars, column, category);
     return [backwardBreakPoint, forwardBreakPoint];
   },
+//            let match = coUtils.Unicode
+//              .detectCategory(String.fromCharCode(c));
+//            if (match) {
+//              let [is_non_spacing_mark, is_spacing_combining_mark] = match;  
+////              if (is_spacing_combining_mark) {
+//              if (is_non_spacing_mark || is_spacing_combining_mark) {
+//                continue;
+//              }
+//            }
+
 
   /** returns a generator which iterates dirty words. */
   getDirtyWords: function getDirtyWords() 
@@ -549,18 +604,35 @@ Line.definition = {
       for (current = this.first; current < this.last; ++current) {
         let cell = cells[current];
         if (attr) {
-          if (attr.equals(cell)) {
+          if (attr.equals(cell) && cell.c) {
             continue;
           } else {
             let codes = cells
               .slice(start, current)
-              .filter(function(cell) cell.c)
-              .map(function(cell) cell.c)
+//              .filter(function(cell) cell.c)
+//              .map(function(cell) cell.c)
               ;
-
-            let word = String.fromCharCode.apply(String, codes);
-            yield { text: word, column: start, end: current, attr: attr };
+//            let word = String.fromCharCode.apply(String, codes);
+            yield { 
+              codes: codes, 
+              column: start, 
+              end: current, 
+              attr: attr,
+            };
           } 
+        }
+        if (0 == cell.c) {
+          let cell = cells[current + 1];
+          yield { 
+            codes: [ cell ], 
+            column: current, 
+            end: current + 2, 
+            attr: cell,
+          };
+          ++current;
+          start = current + 1;
+          attr = cell;
+          continue;
         }
         start = current;
         attr = cell;
@@ -568,10 +640,15 @@ Line.definition = {
       if (start < current) {
         let codes = cells
           .slice(start, current)
-          .filter(function(cell) cell.c)
-          .map(function(cell) cell.c);
-        let word = String.fromCharCode.apply(String, codes);
-        yield { text: word, column: start, end: current, attr: attr };
+//          .filter(function(cell) cell.c)
+//          .map(function(cell) cell.c);
+//        let word = String.fromCharCode.apply(String, codes);
+        yield { 
+          codes: codes, 
+          column: start, 
+          end: current, 
+          attr: attr,
+        };
       }
       this.clearRange();
     }

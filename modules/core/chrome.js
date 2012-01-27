@@ -113,15 +113,23 @@ OuterChrome.definition = {
       childNodes: [
         {
           tagName: "box",
+          id: "tanasinn_outer_frame",
           style: <>
             -moz-box-shadow: 5px 4px 29px black;
             border-radius: 8px;
+//            border: 10px solid red;
             //background: black;
             background: -moz-linear-gradient(top, #444, #000);
 //            background: -moz-radial-gradient(0px 0px, cover, #555, #000);
-            margin: 5px;
-            opacity: 0.8;
+//            margin: 5px;
+            opacity: 0.7;
           </>,
+          listener: {
+            type: "mouseover",
+            handler: function() {
+              alert(1)
+            },
+          },
         },
         {
           tagName: "grid",
@@ -169,8 +177,10 @@ OuterChrome.definition = {
   function onLoad(session) 
   {
     // construct chrome elements. 
-    let {box_element} 
-        = session.uniget("command/construct-chrome", this.template);
+    let {
+      box_element,
+      tanasinn_outer_frame,  
+    } = session.uniget("command/construct-chrome", this.template);
     this._element = box_element;
 
     if (!coUtils.Runtime.app_name.match(/^(Firefox|Thunderbird|SeaMonkey)$/)) {

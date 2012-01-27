@@ -1,6 +1,7 @@
 =. {
  ChangeLog
  README
+ TODO
  application.ini
  configure.ac
  acgecko.m4
@@ -30,6 +31,7 @@
    process.js
    common.js
    eastasian.js
+   category.js
    event.js
    base.js
   }
@@ -91,7 +93,6 @@
    shortcut.js
 
    scrollbar.js
-   statusbar.js
    selection.js
 
    dragresize.js
@@ -147,6 +148,9 @@
   mappings=mappings {
    cp932.txt.js
   }
+  EastAsianWidthDetectorGenerator.pl
+  UnicodeCategoryDetector.pl
+  Makefile
  }
  =defaults/preferences {
   prefs.js

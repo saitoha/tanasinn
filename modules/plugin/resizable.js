@@ -144,7 +144,7 @@ Resize.definition = {
     if (row < min_row) row = min_row;
     screen.width = column;
     screen.height = row;
-    this.update();
+//    this.update();
   },
 
   /** notify "event/screen-size-changed" event. 
@@ -170,6 +170,7 @@ Resize.definition = {
   {
     let screen = this._screen;
     this.resize({column: screen.width - n, row: screen.height});
+    this.update();
   },
 
   /** Make the screen wider by n columns.
@@ -180,6 +181,7 @@ Resize.definition = {
   {
     let screen = this._screen;
     this.resize({column: screen.width + n, row: screen.height});
+    this.update();
   },
 
   /** Make the screen shorter by n rows.
@@ -190,6 +192,7 @@ Resize.definition = {
   {
     let screen = this._screen;
     this.resize({column: screen.width, row: screen.height - n});
+    this.update();
   },
   
   /** Make the screen taller by n rows. 
@@ -200,6 +203,7 @@ Resize.definition = {
   {
     let screen = this._screen;
     this.resize({column: screen.width, row: screen.height + n});
+    this.update();
   },
 };
 

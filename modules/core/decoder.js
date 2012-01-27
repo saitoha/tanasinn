@@ -247,7 +247,7 @@ AsciiDecoder.definition = {
 
   decode: function decode(scanner) 
   {
-    return [c for (c in this._generate(scanner)) ];
+    return this._generate(scanner);
   },
 
   _generate: function _generate(scanner) 
@@ -313,7 +313,7 @@ CP932Decoder.definition = {
   decode: function decode(scanner) 
   {
     let map = this._map;
-    let generator = function(scanner)
+    return function(scanner)
     {
       while (!scanner.isEnd) {
         let c1 = scanner.current();
@@ -343,8 +343,6 @@ CP932Decoder.definition = {
         scanner.moveNext();
       };
     } (scanner);
-    let result = [c for (c in generator)]; 
-    return result;
   },
 };
 
@@ -381,7 +379,7 @@ UTF8Decoder.definition = {
   decode: function decode(scanner) 
   {
     let self = this;
-    let generator = function(scanner) {
+    return function(scanner) {
       while (!scanner.isEnd) {
         let c = self._getNextCharacter(scanner);
         if (!c || c < 0x20) {
@@ -391,8 +389,6 @@ UTF8Decoder.definition = {
         scanner.moveNext();
       };
     } (scanner);
-    let result = [c for (c in generator)]; 
-    return result;
   },
 
   /** Decode UTF-8 encoded byte sequences 
@@ -530,11 +526,14 @@ Decoder.definition = {
    */ 
   decode: function decode(scanner) 
   {
-    let codes = this._decoder.decode(scanner);
     if (coUtils.Constant.CHARSET_DEC == this._g0) {
-      return codes.map(decSpecialCharacterMap);
+      return function() {
+        for (c in this._decoder.decode(scanner)) {
+          yield decSpecialCharacterMap(c);
+        }
+      }();
     }
-    return codes;
+    return this._decoder.decode(scanner);
   },
 
 };

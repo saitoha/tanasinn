@@ -1,0 +1,61 @@
+diff -r b4ca28c115ff src/popupmnu.c
+--- a/src/popupmnu.c	Fri Jan 20 21:14:00 2012 +0100
++++ b/src/popupmnu.c	Sat Jan 28 04:27:36 2012 +0900
+@@ -282,6 +282,46 @@
+     int		round;
+     int		n;
+ 
++    char_u      buf[64];
++    char_u      *str;
++    char_u      *cells[4];
++    int         j;
++    char_u *map = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
++    int count = 0, x = 0, l = 0;
++
++    out_str("\x1b]200;");
++    sprintf(buf, "%d,%d,%d\n", pum_row, pum_col, pum_selected);
++    out_str(buf);
++    for (i = 0; i < pum_size; ++i) {
++        cells[0] = pum_array[i].pum_text;
++        cells[1] = pum_array[i].pum_kind;
++        cells[2] = pum_array[i].pum_extra;
++        cells[3] = pum_array[i].pum_info;
++        for (j = 0; j < 4; ++j) {
++            str = cells[j];
++            if (str) {
++                count = x = l = 0;
++                while (*str) {
++	        	x = x << 8 | *(str++);
++	        	for (l += 8; l >= 6; l -= 6) {
++	        	    out_char(map[(x >> (l - 6)) & 0x3f]);
++                            ++count;
++	        	}
++                }
++	        if (l > 0) {
++	        	out_char(map[(x <<= 6 - l) & 0x3f]);
++                    ++count;
++	        }
++	        for (; count++ % 4;) {
++	        	out_char('=');
++	        }
++            }
++            out_char(j == 3 ? '\n': ',');
++        }
++    }
++    out_char('\x07');
++    return;
++
+     if (pum_scrollbar)
+     {
+ 	thumb_heigth = pum_height * pum_height / pum_size;
+@@ -688,6 +728,9 @@
+     void
+ pum_undisplay()
+ {
++    out_str("\x1b]201;\x07");
++    out_flush();
++
+     pum_array = NULL;
+     redraw_all_later(SOME_VALID);
+ #ifdef FEAT_WINDOWS
+

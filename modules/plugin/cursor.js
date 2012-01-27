@@ -115,6 +115,8 @@ Cursor.definition = {
     this.onImeModeOff.enabled = true;
     this.onScrollSessionStarted.enabled = true;
     this.onScrollSessionClosed.enabled = true;
+    this.backup.enabled = true;
+    this.restore.enabled = true;
     
     // initial update
     this.update();
@@ -131,19 +133,26 @@ Cursor.definition = {
     this.onImeModeOff.enabled = false;
     this.onScrollSessionStarted.enabled = false;
     this.onScrollSessionClosed.enabled = false;
+    this.backup.enabled = false;
+    this.restore.enabled = false;
     this._canvas.parentNode.removeChild(this._canvas);
   },
 
   "[subscribe('command/backup')]": 
   function backup(context) 
   {
-    // TODO: write backup code here.
+    context.cursor = {
+      opacity: this.opacity,
+      color: this.color,
+    }; 
   },
 
   "[subscribe('command/restore')]": 
   function restore(context) 
   {
-    // TODO: write restore code here.
+    let {opacity, color} = context.cursor;
+    this.opacity = opacity;
+    this.color = color;
   },
 
   "[subscribe('terminal-cursor-blinking-mode-change')]": 

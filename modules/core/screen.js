@@ -878,9 +878,9 @@ Viewable.definition = {
   {
     let lines = this._getCurrentViewLines();
     for (let [row, line] in this._interracedScan(lines)) {
-      for (let { text, column, end, attr } in line.getDirtyWords()) {
+      for (let { codes, column, end, attr } in line.getDirtyWords()) {
         yield { 
-          text: text, 
+          codes: codes, 
           row: row, 
           column: column, 
           end: end,
@@ -960,7 +960,7 @@ Viewable.definition = {
 let Scrollable = new Aspect("Scrollable");
 Scrollable.definition = {
 
-  "[persistable] scrollback_limit": 500,
+  "[persistable] scrollback_limit": 200,
 
   /** Scroll up the buffer by n lines. */
   _scrollUp: function _scrollUp(top, bottom, n) 

@@ -227,7 +227,7 @@ OverlayIndicator.definition = {
   function onCommandReceived(data) 
   { // process OSC command.
     let scanner = new ForwardInputIterator(data);
-    let sequence = this._decoder.decode(scanner);
+    let sequence = [c for (c in this._decoder.decode(scanner))];
     let text = String.fromCharCode.apply(String, sequence);
     this.print(text);
     this.show(400);
