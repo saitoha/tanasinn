@@ -537,7 +537,7 @@ Console.definition = {
       ]
      },
 
-  "[persistable] enabled_when_startup": true,
+  "[persistable] enabled_when_startup": false,
 
   /** constructor */
   "[subscribe('@initialized/{chrome & bottompanel}'), enabled]":
