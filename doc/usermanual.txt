@@ -199,7 +199,7 @@ image::images/debug2.png[width=780]
 #if __EN__
 .Providing cool popup menu. it is cooperating with patched http:/#/www.vim.org[Vim].
 #elif __JP__
-.ポップアップメニューを表示しています。改造http:/#/www.vim.org[Vim]を使っています。
+.ポップアップメニューを表示しています。http:/#/www.vim.org[Vim]の方をちょっと改造しました。
 #endif
 image::images/vim.png[width=780]
 
