@@ -192,6 +192,7 @@ Attribute.prototype = {
   parse: function(annotation) 
   {
     with (this) {
+      let pattern = /[a-z]+\('.a'\)|/y;
       try {
         eval(annotation);
       } catch(e) {

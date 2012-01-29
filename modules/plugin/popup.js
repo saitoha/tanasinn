@@ -72,15 +72,17 @@ PopupMenu.definition = {
       tanasinn_app_popup_container,
     } = session.uniget(
       "command/construct-chrome", 
-      {
-        parentNode: "#tanasinn_center_area",
-        tagName: "box",
-        id: "tanasinn_app_popup_datum",
-        style: <>
-          position: absolute;
-        </>,
-        childNodes: 
+      [
         {
+          parentNode: "#tanasinn_center_area",
+          tagName: "box",
+          id: "tanasinn_app_popup_datum",
+          style: <>
+            position: absolute;
+          </>,
+        },
+        {
+          parentNode: "#tanasinn_outer_frame",
           tagName: "panel",
           id: "tanasinn_app_popup",
           style: <>
@@ -122,7 +124,10 @@ PopupMenu.definition = {
             ],
           },
         },
-      });
+      ]);
+    this.onmousedown.enabled = true;
+    this.onmousemove.enabled = true;
+    this.onmouseup.enabled = true;
     this._datum = tanasinn_app_popup_datum;
     this._popup = tanasinn_app_popup;
     this._scrollbox = tanasinn_app_popup_scrollbox;
@@ -135,9 +140,48 @@ PopupMenu.definition = {
   "[subscribe('uninstall/popup_menu')]":
   function uninstall(session) 
   {
+    this.onmousedown.enabled = false;
+    this.onmousemove.enabled = false;
+    this.onmouseup.enabled = false;
     this.onDisplay.enabled = false;
     this.onUndisplay.enabled = false;
     this._datum.parentNode.removeChild(this._datum);
+    this._popup.parentNode.removeChild(this._datum);
+  },
+
+  "[listen('mousedown', '#tanasinn_app_popup', true)]":
+  function onmousedown(event) 
+  {
+    let target = event.explicitOriginalTarget;
+    while ("row" != target.tagName) {
+      target = target.parentNode;
+    }
+    let packed_code = coUtils.Keyboard.parseKeymapExpression("<C-n>");
+    let session = this._broker;
+    session.notify("command/input-with-no-mapping", packed_code);
+    //alert(target.innerText);
+  },
+
+  "[listen('mousemove', '#tanasinn_app_popup', true)]":
+  function onmousemove(event) 
+  {
+    let target = event.explicitOriginalTarget;
+    while ("row" != target.tagName) {
+      target = target.parentNode;
+    }
+    if (this._mouseover) {
+      this._mouseover.style.backgroundColor = ""; 
+      this._mouseover.style.borderRadius = "5px";
+    }
+    this._mouseover = target;
+    target.style.backgroundColor = "#ccc"; 
+  },
+
+  "[listen('mouseup', '#tanasinn_app_popup', true)]":
+  function onmouseup(event) 
+  {
+    event.stopPropagation();
+    event.preventDefault();
   },
 
   "[subscribe('sequence/osc/201')]":
@@ -163,6 +207,7 @@ PopupMenu.definition = {
     let [row, column, selected] = lines.shift()
       .split(",")
       .map(function(str) Number(str));
+    this._selected = selected;
     let cursor_state = this._cursor_state;
     row = row || cursor_state.positionY + 1;
     let renderer = this._renderer;

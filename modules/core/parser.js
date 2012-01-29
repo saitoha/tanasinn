@@ -182,18 +182,21 @@ Parser.definition = {
     let decoder = this._decoder;
     let grammer = this._grammer;
     scanner.assign(data);
+    try {
     if (scanner.generator) {
       let result = scanner.generator(scanner);
       if (result) {
-        if (result.isGenerator && result.isGenerator()) {
-          scanner.generator = result;
+        let next = result.next();
+        if (next.isGenerator()) {
+          scanner.generator = next;
         } else {
           scanner.generator = null;
-          yield result.next();
+          yield next;
           scanner.moveNext();
         }
       }
     }
+    } catch (e) {alert(e)}
     while (!scanner.isEnd) {
       scanner.setAnchor(); // memorize current position.
       let action = grammer.parse(scanner);

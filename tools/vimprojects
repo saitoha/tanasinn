@@ -18,6 +18,7 @@
  }
  content=chrome/content {
    app.xul
+   checking.xul
  }
  doc=doc {
   define.h

@@ -368,6 +368,7 @@ Renderer.definition = {
       /* Get hexadecimal formatted background color (#xxxxxx) 
        * form given attribute structure. */
       let back_color = this.background_color[bg];
+      context.globalAlpha = 1.0;
 
       /* Draw background */
       context.fillStyle = back_color;
@@ -395,43 +396,43 @@ Renderer.definition = {
 //      context.shadowOffsetY = 0;
 //      context.shadowBlur = 2;
 //    }
-    if (this.force_monospace_rendering) {
-        let position = x;
-        let previous_position = x;
-        for (let i = 0; i < codes.length; ++i) {
-          let cell = codes[i];
-          let code = cell.c;
-          let is_wide = 0 == code;
-          if (is_wide) {
-            cell = codes[++i];
-            code = cell.c;
-          }
-          if (cell.combining) {
-            let combined_character = String.fromCharCode(codes[i - 1].c, code);
-            context.fillText(combined_character, previous_position, y);
-            continue;
-          }
-          let current_width = char_width * (is_wide ? 2: 1);
-          let ch = String.fromCharCode(code);
-          let metrics = context.measureText(ch);
-          let bg = cell.bg;
-          if (0 == bg) {
-            context.clearRect(position, y - this._text_offset, current_width, height);
-          } else {
-            context.fillStyle = this.background_color[bg];
-            context.fillRect(position, y - this._text_offset, current_width, height);
-            context.fillStyle = fore_color;
-          }
-          context.fillText(ch, position + (current_width - metrics.width) / 2, y);
-          //context.fillText(ch, position, y);
-          previous_position = position;
-          position += current_width;
-        };
-//      }
-    } else {
+//    if (this.force_monospace_rendering) {
+//        let position = x;
+//        let previous_position = x;
+//        for (let i = 0; i < codes.length; ++i) {
+//          let cell = codes[i];
+//          let code = cell.c;
+//          let is_wide = 0 == code;
+//          if (is_wide) {
+//            cell = codes[++i];
+//            code = cell.c;
+//          }
+//          if (cell.combining) {
+//            let combined_character = String.fromCharCode(codes[i - 1].c, code);
+//            context.fillText(combined_character, previous_position, y);
+//            continue;
+//          }
+//          let current_width = char_width * (is_wide ? 2: 1);
+//          let ch = String.fromCharCode(code);
+//          let metrics = context.measureText(ch);
+//          let bg = cell.bg;
+//          if (0 == bg) {
+//            context.clearRect(position, y - this._text_offset, current_width, height);
+//          } else {
+//            context.fillStyle = this.background_color[bg];
+//            context.fillRect(position, y - this._text_offset, current_width, height);
+//            context.fillStyle = fore_color;
+//          }
+//          context.fillText(ch, position + (current_width - metrics.width) / 2, y);
+//          //context.fillText(ch, position, y);
+//          previous_position = position;
+//          position += current_width;
+//        };
+////      }
+//    } else {
       let text = String.fromCharCode.apply(String, codes.map(function(code) code.c));
       context.fillText(text, x, y, char_width * length);
-    }
+//    }
   },
 
   /** Rnder underline at specified position.
