@@ -93,7 +93,7 @@ ComponentViewer.definition = {
   /** Installs itself.
    *  @param {Session} session A session object.
    */
-  "[subscribe('install/ + this.id')]":
+  "[subscribe('install/module_viewer')]":
   function install(session) 
   {
     let bottom_panel = this._bottom_panel;
@@ -105,7 +105,7 @@ ComponentViewer.definition = {
   /** Uninstalls itself.
    *  @param {Session} session A session object.
    */
-  "[subscribe('uninstall/ + this.id')]":
+  "[subscribe('uninstall/module_viewer')]":
   function uninstall(session) 
   {
     this.onPanelSelected.enabled = false;
@@ -113,7 +113,7 @@ ComponentViewer.definition = {
     this._bottom_panel.remove(this.id);
   },
 
-  "[subscribe('panel-selected/' + this.id)]":
+  "[subscribe('panel-selected/module_viewer')]":
   function onPanelSelected(name) 
   {
     let session = this._broker;

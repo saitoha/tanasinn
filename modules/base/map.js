@@ -82,7 +82,6 @@ MappingManagerBase.definition = {
 
   dispatch: function dispatch(map, info)
   {
-    try {
     let session = this._broker;
     let result = this._state = this._state[info.code];
     if (result && result.value) {
@@ -98,7 +97,6 @@ MappingManagerBase.definition = {
       session.notify("event/input-state-changed", info.code);
       return true;
     }
-    } catch(e) {alert(e + e.lineNumber)}
     return undefined;
   },
 
@@ -171,7 +169,7 @@ NormalMappingManager.definition = {
    *  @param {Broker} a broker object.
    *  @notify initialized/inputmanager
    */
-  "[subscribe('install/' + this.id)]":
+  "[subscribe('install/nmap_manager')]":
   function install(broker)
   {
     this.installImpl("nmap");
@@ -181,7 +179,7 @@ NormalMappingManager.definition = {
   /** Uninstalls itself. 
    *  @param {Broker} a broker object.
    */
-  "[subscribe('uninstall/' + this.id)]":
+  "[subscribe('uninstall/nmap_manager')]":
   function uninstall(broker)
   {
     this.uninstallImpl();
@@ -267,7 +265,7 @@ CommandlineMappingManager.definition = {
    *  @param {Broker} a broker object.
    *  @notify initialized/inputmanager
    */
-  "[subscribe('install/' + this.id)]":
+  "[subscribe('install/cmap_manager')]":
   function install(broker)
   {
     this.installImpl("cmap");
@@ -277,7 +275,7 @@ CommandlineMappingManager.definition = {
   /** Uninstalls itself. 
    *  @param {Broker} a broker object.
    */
-  "[subscribe('uninstall/' + this.id)]":
+  "[subscribe('uninstall/cmap_manager')]":
   function uninstall(broker)
   {
     this.uninstallImpl();

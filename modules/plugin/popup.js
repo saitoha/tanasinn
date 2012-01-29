@@ -60,7 +60,7 @@ PopupMenu.definition = {
   /** installs itself. 
    *  @param {Session} session A session object.
    */
-  "[subscribe('install/' + this.id)]":
+  "[subscribe('install/pupup_menu')]":
   function install(session) 
   {
     this.onDisplay.enabled = true;
@@ -132,7 +132,7 @@ PopupMenu.definition = {
   /** Uninstalls itself.
    *  @param {Session} session A session object.
    */
-  "[subscribe('uninstall/' + this.id)]":
+  "[subscribe('uninstall/popup_menu')]":
   function uninstall(session) 
   {
     this.onDisplay.enabled = false;
@@ -163,7 +163,6 @@ PopupMenu.definition = {
     let [row, column, selected] = lines.shift()
       .split(",")
       .map(function(str) Number(str));
-try {
     let cursor_state = this._cursor_state;
     row = row || cursor_state.positionY + 1;
     let renderer = this._renderer;
@@ -251,7 +250,6 @@ try {
       scrollbox.setAttribute("orient", "vertical");
     }
 //    box_object.scrollTo(0, selected * rows.firstChild.boxObject.height);
-} catch(e) {alert(e)}
   },
 
   _selectRow: function _selectRow(row)

@@ -170,6 +170,7 @@ Renderer.definition = {
   "[watchable, persistable] font_size": 14,
 
   "[persistable] force_precious_rendering": false,
+  "[persistable] normal_alpha": 0.80,
 //  "[persistable] enable_text_shadow": false,
   "[persistable, watchable] smoothing": true,
 
@@ -262,7 +263,7 @@ Renderer.definition = {
     }
   },
 
-  "[subscribe('variable-changed/' + this.id + '.smoothing'), enabled]": 
+  "[subscribe('variable-changed/renderer.smoothing'), enabled]": 
   function onSmoothingChanged(value) 
   {
     if (this._context) {
@@ -383,6 +384,7 @@ Renderer.definition = {
     let fore_color_map = this.normal_color;// attr.bold ? this.bold_color: this.normal_color;
     let fore_color = fore_color_map[attr.fg];
     this._setFont(context, attr.bold); 
+    context.globalAlpha = attr.bold ? 1.0: this.normal_alpha;
     context.fillStyle = fore_color;
     if (attr.underline) {
       this._drawUnderline(context, x, y, char_width * length, fore_color);

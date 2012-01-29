@@ -124,12 +124,6 @@ OuterChrome.definition = {
 //            margin: 5px;
             opacity: 0.7;
           </>,
-          listener: {
-            type: "mouseover",
-            handler: function() {
-              alert(1)
-            },
-          },
         },
         {
           tagName: "grid",

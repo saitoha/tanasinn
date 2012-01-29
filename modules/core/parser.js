@@ -126,8 +126,9 @@ Parser.definition = {
   _emurator: null,
   _decoder: null,
   _scanner: null,
-  _normalizer: 
-    Components.classes["@mozilla.org/intl/unicodenormalizer;1"].createInstance(Components.interfaces.nsIUnicodeNormalizer),
+//  _normalizer: Components
+//      .classes["@mozilla.org/intl/unicodenormalizer;1"]
+//      .createInstance(Components.interfaces.nsIUnicodeNormalizer),
 
 // post-constructor
   "[subscribe('initialized/{scanner & grammer & emurator & decoder}'), enabled]":
@@ -181,12 +182,28 @@ Parser.definition = {
     let decoder = this._decoder;
     let grammer = this._grammer;
     scanner.assign(data);
+    if (scanner.generator) {
+      let result = scanner.generator(scanner);
+      if (result) {
+        if (result.isGenerator && result.isGenerator()) {
+          scanner.generator = result;
+        } else {
+          scanner.generator = null;
+          yield result.next();
+          scanner.moveNext();
+        }
+      }
+    }
     while (!scanner.isEnd) {
       scanner.setAnchor(); // memorize current position.
       let action = grammer.parse(scanner);
       if (action) {
-        yield action;
-        scanner.moveNext();
+        if (action.isGenerator()) {
+          scanner.generator = action;
+        } else {
+          yield action;
+          scanner.moveNext();
+        }
       } else if (!scanner.isEnd) {
         let generator = function() {
           for (let c in decoder.decode(scanner)) {

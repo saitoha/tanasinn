@@ -126,7 +126,6 @@ OverlayIndicator.definition = {
   /** installs itself. 
    *  @param {Session} session A session object.
    */
-//  "[subscribe('install/' + this.id)]":
   install: function install(session) 
   {
     let {tanasinn_overlay_indicator, tanasinn_overlay_indicator_content}
@@ -143,7 +142,6 @@ OverlayIndicator.definition = {
   /** Uninstalls itself.
    *  @param {Session} session A session object.
    */
-//  "[subscribe('uninstall/' + this.id)]":
   uninstall: function uninstall(session) 
   {
     if (this._element) {
@@ -163,7 +161,7 @@ OverlayIndicator.definition = {
     this.show(2000);
   },
 
-  "[subscribe('variable-changed/' + this.id + '.{background | color | fontSize | padding | borderRadius | border}')]":
+  "[subscribe('variable-changed/overlayindicator.{background | color | fontSize | padding | borderRadius | border}')]":
   function onStyleChanged(chrome, decoder) 
   {
     if (this._content) {

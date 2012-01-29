@@ -319,16 +319,16 @@ Cell.definition = {
   {
     this.c = c;
     this.value = attr.value;
-    if (c >= 0x300) {
-      let match = coUtils.Unicode
-        .detectCategory(String.fromCharCode(c));
-      if (match) {
-        let [is_non_spacing_mark, is_spacing_combining_mark] = match;  
-        if (is_non_spacing_mark || is_spacing_combining_mark) {
-          this.combining = true;
-        }
-      }
-    }
+//    if (c >= 0x300) {
+//      let match = coUtils.Unicode
+//        .detectCategory(String.fromCharCode(c));
+//      if (match) {
+//        let [is_non_spacing_mark, is_spacing_combining_mark] = match;  
+//        if (is_non_spacing_mark || is_spacing_combining_mark) {
+//          this.combining = true;
+//        }
+//      }
+//    }
   },
 
   /** Erase the pair of character and attribute structure */

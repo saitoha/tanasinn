@@ -1182,7 +1182,12 @@ coUtils.Localize = new function()
         let match = source.match(pattern)
         if (match) {
           match = match.map(function(text) {
-            return eval("[" + text.slice(2, -1)/*.replace("\\", "\\\\")*/ + "]").join("");
+            let quoted_source = text.slice(2, -1);
+            let quote_char = text[0];
+            let escaped_quote_char = "\\" + quote_char;
+            return quoted_source
+              .replace(/\\/g, "\\\\")
+              .replace(new RegExp(escaped_quote_char, "g"), quoted_char);
           })
           for (let [, message] in Iterator(match)) {
             yield message;

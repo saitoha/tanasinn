@@ -1247,12 +1247,25 @@ CoClass.prototype = {
   {
     let prototype = Class.prototype.applyDefinition.apply(this, arguments);
     if (!Components.classes[prototype.contractID]) {
-      new XPCOMFactory(
+      let factory = new XPCOMFactory(
         this, 
         prototype.classID,
         prototype.description,
         prototype.contractID
-      ).registerSelf();
+      );
+      factory.registerSelf();
+
+      let observer_service = Components
+        .classes["@mozilla.org/observer-service;1"]
+        .getService(Components.interfaces.nsIObserverService);
+      let observer = { 
+        observe: function observe() 
+        {
+          observer_service.removeObserver(this, "quit-application");
+          factory.unregisterSelf();
+        },
+      };
+      observer_service.addObserver(observer, "quit-application", false);
     }
     return prototype;
   },

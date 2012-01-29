@@ -163,7 +163,7 @@ function shutdown(data, reason)
     .QueryInterface(Components.interfaces.nsIResProtocolHandler)
     .setSubstitution("tanasinn", null);
 
-//  process.notify("event/shutdown");
+  process.notify("event/shutdown");
 //  process.clear();
 
 //  var prompts = Components.classes["@mozilla.org/embedcomp/prompt-service;1"]

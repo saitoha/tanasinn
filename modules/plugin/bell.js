@@ -68,7 +68,7 @@ Bell.definition = {
   /** installs itself. 
    *  @param {Session} session A session object.
    */
-  "[subscribe('install/' + this.id)]":
+  "[subscribe('install/bell')]":
   function install(session) 
   {
     let {tanasinn_visual_bell}
@@ -80,7 +80,7 @@ Bell.definition = {
   /** Uninstalls itself.
    *  @param {Session} session A session object.
    */
-  "[subscribe('uninstall/' + this.id)]":
+  "[subscribe('uninstall/bell')]":
   function uninstall(session) 
   {
     if (this._cover) {

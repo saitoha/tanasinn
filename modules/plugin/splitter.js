@@ -72,7 +72,7 @@ Splitter.definition = {
   /** Installs itself. 
    *  @param {Session} session A session object.
    */
-  "[subscribe('install/ + this.id')]":
+  "[subscribe('install/splitter')]":
   function install(session) 
   {
     let tabbox = this._tabbox;
@@ -89,7 +89,7 @@ Splitter.definition = {
   /** Unnstalls itself.
    *  @param {Session} session A session object.
    */
-  "[subscribe('uninstall/ + this.id')]":
+  "[subscribe('uninstall/splitter')]":
   function uninstall(session) 
   {
     // remove splitter element

@@ -839,8 +839,8 @@ Launcher.definition = {
   "[subscribe('event/shutdown'), enabled]":
   function shutdown()
   {
-    this.onDisabled();
-    this._element.removeChild(this._element);
+//    this.onDisabled();
+//    this._element.removeChild(this._element);
   },
   
   "[subscribe('event/enabled'), enabled]":
@@ -877,7 +877,7 @@ Launcher.definition = {
     this.startSession.enabled = false;
   },
 
-  "[subscribe('variable-changed/' + this.id + '.{font_size | font_family | font_weight | font_style}'), enabled]":
+  "[subscribe('variable-changed/launcher.{font_size | font_family | font_weight | font_style}'), enabled]":
   function onStyleChanged(chrome, decoder) 
   {
     if (this._textbox) {
@@ -1236,7 +1236,6 @@ Launcher.definition = {
 
   onkeyup: function onkeyup(event) 
   { // nothrow
-    //alert([event.keyCode, event.keyCode, event.ctrlKey, event.shiftKey, event.altKey, event.isChar].join("/"))
     let broker = this._broker;
     let diff_min = 30;
     let diff_max = 400;

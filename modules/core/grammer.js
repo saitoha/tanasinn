@@ -42,11 +42,18 @@ StringParser.definition = {
   /** Parse string parameter. 
    *  @param {Scanner} scanner A Scanner object.
    */
-  parse: function parse(scanner) 
+  parse: function parse(scanner, previous) 
   {
-    let sequence = [c for (c in this._parseString(scanner))];
-    if (scanner.isEnd)
-      return undefined;
+    let sequence = previous || [];
+    for (let c in this._parseString(scanner)) {
+      sequence.push(c);
+    }
+    if (scanner.isEnd) {
+      return let (self = this) function(scanner) {
+        let result = parse.apply(self, [scanner, sequence]);
+        yield result;
+      };
+    }
     return this._action(sequence);
   },
 
@@ -130,43 +137,49 @@ SequenceParser.definition = {
   /** Construct child parsers from definition and make parser-chain. */
   append: function append(key, value, context) 
   {
-    if (key.match(/^[0-9]+$/)) { // parse number
-      let code = parseInt(key);
+    let match = key.match(/^([0-9]+)$|^%d(.)$|^(.)%s$|^(%c)|^(.)$|^(.)(.+)$/);
+    let [, 
+      number, char_with_param, 
+      char_with_string, single_char, 
+      normal_char, first, next_chars
+    ] = match;
+    if (number) { // parse number
+      let code = Number(number);
       if ("parse" in value) {
         this[code] = value;
       } else {
         this[code] = function() value.apply(context);
       }
-    } else if (key.match(/^%d.$/)) {
+    } else if (char_with_param) {
       let action = function(params) function() value.apply(context, params);
-      let accept_char = key.charCodeAt(2);
+      let accept_char = char_with_param.charCodeAt(0);
       for (let i = 0; i < 10; ++i) {
         let code = i + 0x30;
         this[code] = this[code] || new ParameterParser(i);
         this[code][accept_char] = action;
       }
-      this[key.charCodeAt(2)] = function() value.call(context, 0);
-    } else if (key.match(/^.%s$/)) {
+      this[accept_char] = function() value.call(context, 0);
+    } else if (char_with_string) {
       // define action
       let action = function(params) function() value.apply(context, params)
-      this[key.charCodeAt(0)] = new StringParser(action) // chain to string parser.
-    } else if (key.match(/^%c/)) { // parse a char.
+      this[char_with_string.charCodeAt(0)] = new StringParser(action) // chain to string parser.
+    } else if (single_char) { // parse a char.
       this["0".charCodeAt(0)] = function() value.call(context, "0")
       this["B".charCodeAt(0)] = function() value.call(context, "B")
-    } else if (key.length == 1) {
-      let code = key.charCodeAt(0);
+    } else if (normal_char) {
+      let code = normal_char.charCodeAt(0);
       if ("parse" in value) {
         this[code] = value;
       } else {
         this[code] = function() value.apply(context);
       }
     } else {
-      let code = key.charCodeAt(0);
+      let code = first.charCodeAt(0);
       let next = this[code] = this[code] || new SequenceParser;
       if (!next.append) {
         next = this[code] = new SequenceParser;
       }
-      next.append(key.substr(1), value, context);
+      next.append(next_chars, value, context);
     }
   },
 
