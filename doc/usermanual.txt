@@ -256,7 +256,7 @@ image::images/xulapp.png[width=780]
 
 #if __EN__
 == Requirements
-    - Firefox 4.02pre+ / Thunderbird 5.0+ / SeaMonkey 2.1+.
+    - Firefox 4.02pre+ / Thunderbird 7.0a1+ / SeaMonkey 2.1+.
     - Python for POSIX (2.5+, Mac, FreeBSD, Linux, or cygwin version)
       Python for Win32, ActivePython, etc... are not well.
       because this software depends on many posix functions 
@@ -265,7 +265,7 @@ image::images/xulapp.png[width=780]
       If you are running Windows, you need to install cygwin at C:\cygwin.
 #elif __JP__
 == 動作要件
-    - Firefox 4.02pre+ / Thunderbird 5.0+ / SeaMonkey 2.1+.
+    - Firefox 4.02pre+ / Thunderbird 7.0a1+ / SeaMonkey 2.1+.
     - POSIX用にビルドされたPython (2.5+, Mac、FreeBSD、Linux、 または cygwin用のもの)。
       Python for Win32 や ActivePython 等はforkや仮想端末をサポートしないと思うのでダメしょう。
     - POSIX環境。 

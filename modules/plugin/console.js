@@ -422,8 +422,6 @@ Console.definition = {
         margin: "0px",
       },
       childNodes: [
-        {
-        },
         {  // output box
           tagName: "grid",
           flex: 1,
@@ -539,7 +537,7 @@ Console.definition = {
       ]
      },
 
-  "[persistable] enabled_when_startup": false,
+  "[persistable] enabled_when_startup": true,
 
   /** constructor */
   "[subscribe('@initialized/{chrome & bottompanel}'), enabled]":
@@ -552,12 +550,14 @@ Console.definition = {
   /** Installs itself */
   install: function install(session) 
   {
+    try {
     let {
       tanasinn_console_panel, 
       console_output_box,
     } = session.uniget("command/construct-chrome", this.template);
     this._console_box = tanasinn_console_panel;
     this._output_box = console_output_box;
+    } catch(e) {alert(e)}
     this.select.enabled = true;
     session.notify("initialized/console", this);
   }, 

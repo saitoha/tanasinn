@@ -89,7 +89,6 @@
    localize.js
    moduleview.js
    console.js
-   shortcut.js
 
    scrollbar.js
    selection.js
