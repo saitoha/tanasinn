@@ -213,7 +213,7 @@ class TeletypeDriver:
                     break
                 self.io_socket.send(data)
                 #if len(data) < 1200:
-                #time.sleep(0.001)
+                time.sleep(0.01)
             os.close(self.master)
             self.io_socket.close()
             self.control_socket.close()

@@ -197,6 +197,13 @@ image::images/sl2.png[width=780]
 image::images/debug2.png[width=780]
 
 #if __EN__
+.Providing cool popup menu. it is cooperating with patched http:/#/www.vim.org[Vim].
+#elif __JP__
+.ポップアップメニューを表示しています。改造http:/#/www.vim.org[Vim]を使っています。
+#endif
+image::images/vim.png[width=780]
+
+#if __EN__
 .Browser-in-browser. running http:/#/w3m.sourceforge.net/index.en.html[w3m] (applied private patch) with inline images. How crazy!!!
 #elif __JP__
 .ブラウザの中でブラウザ。プライベートパッチを当てたhttp:/#/w3m.sourceforge.net/index.en.html[w3m]でインラインイメージを表示させました。ここまでくるとちょっと意味不明ですね。
@@ -369,6 +376,8 @@ ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/
     $RUNTIMEは'$HOME/.{vimperator,muttator}'のようなVimperator/Muttatorのランタイムディレクトリです。
 #endif
 
+
+#if 0
 #if __EN__
 === Running as XUL Application (advanced, unstable, it does not works well...):
 #elif __JP__
@@ -398,7 +407,7 @@ cd tanasinn
 ./configure
 cygstart firefox.exe --app application.ini
 ----
-
+#endif
     
 #if __EN__
 == Usage
