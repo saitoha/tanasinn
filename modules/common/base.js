@@ -213,7 +213,7 @@ Attribute.prototype = {
 /**
  * @class Prototype 
  */
-function Prototype(definition, base_class, interface_list) 
+function Prototype(definition, base_class, dependency_list) 
 {
   /** Parses decorated key and sets attributes. */
   function intercept(key) 
@@ -275,24 +275,14 @@ function Prototype(definition, base_class, interface_list)
     copy.call(this, definition, decorated_key, base_class);
   }
 
-  if (interface_list) {
-    let interfaces = this.__interfaces = {};
-    for each (let interface_info in interface_list) {
-      let id = interface_info.id;
-      let interface_definition = interface_info.definition;;
-      interfaces[id] = interface_definition;
-    }
+  if (dependency_list) {
+    this.__dependency = dependency_list.slice(0);
   }
 
   if (base_class) {
     // attribute chain.
     if (this.__attributes && base_class.prototype.__attributes) {
       this.__attributes.__proto__ = base_class.prototype.__attributes;
-    }
-
-    // interface chain.
-    if (this.__interfaces && base_class.prototype.__interfaces) {
-      this.__interfaces.__proto__ = base_class.prototype.__interfaces;
     }
 
     // prototype chain.
@@ -308,7 +298,7 @@ let Class = function() this.initialize.apply(this, arguments);
 Class.prototype = {
 
   _base: null,
-  _interface_list: null,
+  _dependency_list: null,
   _mixin_list: null,
 
   /** constructor 
@@ -316,7 +306,6 @@ Class.prototype = {
    */
   initialize: function initialize() 
   {
-    this._interface_list = [];
     this._mixin_list = [];
     let constructor = function() {
       if (this.initialize)
@@ -348,6 +337,13 @@ Class.prototype = {
     return this;
   }, 
 
+  depends: function depends(id)
+  {
+    this._dependency_list = this._dependency_list || [];
+    this._dependency_list.push(id);
+    return this;
+  },
+
   /** @property definition 
    *  It is same to "prototype" property.
    */
@@ -361,7 +357,6 @@ Class.prototype = {
   {
     // set the argument to prototype object, and raise global event.
     this.prototype = definition;
-    coUtils.Event.notifyGlobalEvent("defined/" + this.__id__, this);
   },
 
   /** The watcher method of "prototype" property.
@@ -372,17 +367,13 @@ Class.prototype = {
   applyDefinition: function applyDefinition(definition)
   {
     let prototype = new Prototype(
-      definition, this._base, this._interface_list);
+      definition, this._base, this._dependency_list);
 
     // Apply aspects.
     for (let [, aspect] in Iterator(this._mixin_list)) {
       this.applyAspect(prototype, new Prototype(aspect.definition));
     }
 
-    // Check interface.
-    for (let [, interface_info] in Iterator(this._interface_list)) {
-      this.checkInterface(prototype, interface_info);
-    }
     return prototype; 
   },
 
@@ -494,7 +485,7 @@ Abstruct.prototype = {
 
   applyDefinition: function(definition) 
   {
-    let prototype = new Prototype(definition, this._base, this._interface_list);
+    let prototype = new Prototype(definition, this._base, this._dependency_list);
     for (let [, aspect] in Iterator(this._mixin_list)) {
       this.applyAspect(prototype, new Prototype(aspect.definition));
     }
@@ -1101,15 +1092,34 @@ Component.definition = {
 let Plugin = new Abstruct().extends(Component)
 Plugin.definition = {
 
-  _enabled: false,
+  __enabled: false,
+  dependency: null,
   "[persistable] enabled_when_startup": true,
 
   /** constructor */
-  initialize: function initialize(session)
+  initialize: function initialize(broker)
   {
-    let topic = coUtils.Text.format("command/set-enabled/%s", this.id);
-    session.subscribe(topic, function(value) this.enabled = value, this);
-    session.subscribe(
+    if (this.__dependency) {
+      try {
+      this.dependency = {};
+      let topic = "@initialized/{" + this.__dependency.join("&") + "}";
+      broker.subscribe(
+        topic, 
+        function() 
+        {
+          let args = arguments;
+          this.__dependency.forEach(function(key, index) {
+            this.dependency[key] = args[index];
+          }, this);
+          this.enabled = this.enabled_when_startup;
+        }, 
+        this);
+      } catch(e) {alert(e)}
+    }
+    broker.subscribe(
+      <>command/set-enabled/{this.id}</>, 
+      function(value) this.enabled = value, this);
+    broker.subscribe(
       "@event/session-stopping", 
       function() this.enabled = false, 
       this);
@@ -1121,17 +1131,17 @@ Plugin.definition = {
    */
   get enabled() 
   {
-    return this._enabled;
+    return this.__enabled;
   },
 
   set enabled(value) 
   {
     value = Boolean(value);
-    if (value != this._enabled) {
+    if (value != this.__enabled) {
       let broker = this._broker;
       if (value) {
         try {
-        this.install(broker);
+          this.install(broker);
         } catch (e) {
           coUtils.Debug.reportError(e);
           coUtils.Debug.reportError(_("Failed to enable plugin: %s"), this.id);
@@ -1142,7 +1152,7 @@ Plugin.definition = {
         broker.notify("uninstalling/" + this.id, this);
         this.uninstall(broker);
       }
-      this._enabled = value;
+      this.__enabled = value;
       this.enabled_when_startup = value;
     }
   },

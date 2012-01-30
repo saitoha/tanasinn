@@ -25,7 +25,10 @@
 /**
  *  @class Cursor
  */ 
-let Cursor = new Class().extends(Plugin);
+let Cursor = new Class().extends(Plugin)
+                        .depends("renderer")
+                        .depends("screen")
+                        .depends("cursorstate");
 Cursor.definition = {
 
   get id()
@@ -42,20 +45,20 @@ Cursor.definition = {
 
   /** UI template */
   get template() 
+    let (renderer = this.dependency["renderer"])
+    let (screen = this.dependency["screen"])
     ({
       parentNode: "#tanasinn_center_area",
       tagName: "html:canvas",
       id: "cursor_canvas",
       style: { opacity: 0.5, },
-      width: this._renderer.char_width * this._screen.width,
-      height: this._renderer.line_height * this._screen.height,
+      width: renderer.char_width * screen.width,
+      height: renderer.line_height * screen.height,
     }),
 
   _cursorVisibility: true,
   _blinkVisibility: false,
   _blink: true,
-  _screen: null,
-  _renderer: null,
 
   _color: "#77ff77",
   _opacity: 0.6,
@@ -81,17 +84,7 @@ Cursor.definition = {
   {
     this._opacity = value;
   },
-  
-  /** post-constructor */
-  "[subscribe('@initialized/{renderer & screen & cursorstate}'), enabled]":
-  function onLoad(renderer, screen, cursor_state) 
-  {
-    this._renderer = renderer;
-    this._screen = screen;
-    this._cursor_state = cursor_state;
-    this.enabled = this.enabled_when_startup;
-  },
-
+ 
   /** Installs itself. */
   install: function install(session) 
   {
@@ -182,8 +175,8 @@ Cursor.definition = {
   "[subscribe('command/draw | variable-changed/renderer.{line_height | char_width}')]": 
   function update() 
   {
-    let screen = this._screen;
-    let cursor_state = this._cursor_state;
+    let screen = this.dependency["screen"];
+    let cursor_state = this.dependency["cursorstate"];
     let isWide = screen.currentCharacterIsWide; // take care, it may be NULL!
     this._blink = cursor_state.blink;
     this._render(cursor_state.positionY, cursor_state.positionX, isWide);
@@ -218,8 +211,8 @@ Cursor.definition = {
   /** Render cursor. */
   _render: function _render(row, column, isWide) 
   {
-    let cursor_state = this._cursor_state;
-    let renderer = this._renderer;
+    let cursor_state = this.dependency["cursorstate"];
+    let renderer = this.dependency["renderer"];
     let line_height = renderer.line_height;
     let char_width = renderer.char_width;
     let context = this._context;
