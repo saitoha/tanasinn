@@ -110,19 +110,19 @@ maintainer-clean: clean
 	$(MAKE) -C modules $@
 
 dev:
-	ln -f $(PWD)/tools/gitignore .gitignore	
-	ln -f $(PWD)/tools/vimprojects .vimprojects
+	ln -f "$(PWD)/tools/gitignore" .gitignore	
+	ln -f "$(PWD)/tools/vimprojects" .vimprojects
 
 
 install-vimperator:
 	@case @host_os@ in \
 		cygwin*) \
-			cmd /c mklink /D $$(cygpath -w $$(cygpath $$USERPROFILE)/vimperator/tanasinn) $$(cygpath -w $(PWD)); \
-			ln -f $(PWD)/modules/tanasinn-vimp.js ~/vimperator/plugin/ \
+			cmd /c mklink /D "$$(cygpath -w "$$(cygpath "$$USERPROFILE")/vimperator/tanasinn")" "$$(cygpath -w "$(PWD)")"; \
+			ln -f "$(PWD)/modules/tanasinn-vimp.js" ~/vimperator/plugin/ \
 			;; \
 		*) \
-			ln -sf $(PWD) ~/.vimperator/tanasinn; \
-			ln -f $(PWD)/modules/tanasinn-vimp.js ~/.vimperator/plugin/ \
+			ln -sf "$(PWD)" ~/.vimperator/tanasinn; \
+			ln -f "$(PWD)/modules/tanasinn-vimp.js" ~/.vimperator/plugin/ \
 			;; \
 	esac
 
@@ -158,7 +158,7 @@ install-extension:
 					*XP*) \
 						cmd /c linkd \
 							"$$(cygpath -w "$$PROFILE_ROOT/$$PROFILE/extensions/$(ID)")" \
-							"$$(cygpath -w $(PWD))" \
+							"$$(cygpath -w "$(PWD)")" \
 						;; \
 					*) \
 						cmd /c mklink /d \
