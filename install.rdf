@@ -5,7 +5,7 @@
     <em:id>tanasinn@zuse.jp</em:id>
     <em:type>2</em:type>
     <em:name>tanasinn</em:name>
-    <em:version>0.1.4</em:version>
+    <em:version>0.1.4.1</em:version>
     <em:creator>saitoha</em:creator>
     <em:description>Terminal Emurator Addon for Firefox/Thunderbird/SeaMonkey</em:description>
     <!--em:optionsURL>chrome://tanasinn/content/preference.xul</em:optionsURL-->
