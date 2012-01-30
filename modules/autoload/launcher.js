@@ -1098,7 +1098,7 @@ Launcher.definition = {
   {
     let command = this._textbox.value;
     let broker = this._broker;
-    broker.notify("command/start-session");
+    broker.notify("command/start-session", command);
   },
 
   "[subscribe('command/start-session')]":

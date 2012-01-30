@@ -528,35 +528,13 @@ PersistableAttribute.definition = {
       {
         this.__persist(context);
       }, this);
-  },
 
-  /** . */
-  __get_wrapper: function __get_wrapper(context) 
-  {
-    let attributes = this.__attributes;
-    let keys = [
-      key for (key in attributes) 
-        if (attributes[key]["persistable"])
-    ];
-    if (keys.length) {
-      let id = this.id;
-      let current = context[id] = context[id] || {};
-      for (let [, key] in Iterator(keys)) {
-        try {
-          context.__defineGetter__(key, let (self = this) function() {
-            return self[key];
-          });
-          context.__defineSetter__(key, let (self = this) function(value) {
-            self[key] = value;
-          });
-        } catch (e) {
-          coUtils.Debug.reportError(e);
-          coUtils.Debug.reportError(
-            _("An Error occured when making wrapper '%s.%s'."),
-            id, key);
-        }
-      }
-    }
+    broker.subscribe(
+      "command/get-persistable-data", 
+      function get(context) 
+      {
+        this.__get(context);
+      }, this);
   },
 
   /** Load persistable parameter value from context object. */
@@ -589,26 +567,52 @@ PersistableAttribute.definition = {
   /** Sets persistable parameter value to context object. */
   __persist: function __persist(context) 
   {
-    let attributes = this.__attributes;
-    let keys = [
-      key for (key in attributes) 
-        if (attributes[key]["persistable"])
-    ];
-    if (keys.length) {
-      let id = this.id;
-      for each (let key in keys) {
+    Object.getOwnPropertyNames(this.__attributes)
+      .filter(function(key) this.__attributes[key]["persistable"], this)
+      .forEach(function(key)
+      {
         try {
-          let path = [id, key].join(".");
-          context[path] = this[key];
+          if (this[key] != this.__proto__[key]) {
+            let path = [this.id, key].join(".");
+            context[path] = this[key];
+            context[path + ".default"] = this.__proto__[key];
+          }
         } catch (e) {
           coUtils.Debug.reportError(e);
           coUtils.Debug.reportError(
             _("An Error occured when persisting member '%s'."),
             path);
         }
-      }
-    }
+      }, this);
   },
+
+  /** . */
+  __get: function __get(context) 
+  {
+    let attributes = this.__attributes;
+    let keys = [
+      key for (key in attributes) 
+        if (attributes[key]["persistable"])
+    ];
+    keys.forEach(function(key) 
+    {
+      let path = [this.id, key].join(".");
+      try {
+        context.__defineGetter__(path, let (self = this) function() {
+          return self[key];
+        });
+        context.__defineSetter__(path, let (self = this) function(value) {
+          self[key] = value;
+        });
+      } catch (e) {
+        coUtils.Debug.reportError(e);
+        coUtils.Debug.reportError(
+          _("An Error occured when making wrapper '%s.%s'."),
+          id, key);
+      }
+    }, this);
+  },
+
 
 }; // PersistableAttribute
 
@@ -853,37 +857,39 @@ NmapAttribute.definition = {
       let expressions = attribute["nmap"];
       if (!expressions)
         continue;
-        let handler = this[key];
-        let delegate = this[key] = handler.id ? 
-          this[key]
-        : let (self = this) function() handler.apply(self, arguments);
-        delegate.id = delegate.id || [this.id, key].join(".");
-        delegate.description = attribute.description;
-        delegate.expressions = expressions;
-        broker.subscribe("get/nmap", function() delegate);
+      let handler = this[key];
+      let delegate = this[key] = handler.id ? 
+        this[key]
+      : let (self = this) function() handler.apply(self, arguments);
+      delegate.id = delegate.id || [this.id, key].join(".");
+      delegate.description = attribute.description;
+      delegate.expressions = expressions;
+      broker.subscribe("get/nmap", function() delegate);
 
-        // Register load handler.
-        broker.subscribe(
-          "command/load-persistable-data", 
-          function load(context) // Restores settings from context object.
-          {
-            let expressions = context[delegate.id + ".nmap"];
-            if (expressions) {
-              delegate.expressions = expressions;
-              if (delegate.enabled) {
-                delegate.enabled = false;
-                delegate.enabled = true;
-              }
+      // Register load handler.
+      broker.subscribe(
+        "command/load-persistable-data", 
+        function load(context) // Restores settings from context object.
+        {
+          let expressions = context[delegate.id + ".nmap"];
+          if (expressions) {
+            delegate.expressions = expressions;
+            if (delegate.enabled) {
+              delegate.enabled = false;
+              delegate.enabled = true;
             }
-          }, this);
+          }
+        }, this);
 
-        // Register persist handler.
-        broker.subscribe(
-          "command/save-persistable-data", 
-          function persist(context) // Save settings to persistent context.
-          {
+      // Register persist handler.
+      broker.subscribe(
+        "command/save-persistable-data", 
+        function persist(context) // Save settings to persistent context.
+        {
+          if (expression.join("") != delegate.expression.join("")) {
             context[delegate.id + ".nmap"] = delegate.expressions;
-          }, this);
+          }
+        }, this);
     }
   },
 };
@@ -928,7 +934,7 @@ CmapAttribute.definition = {
           "command/load-persistable-data", 
           function load(context) // Restores settings from context object.
           {
-            let expressions = context[delegate.id];
+            let expressions = context[delegate.id + ".cmap"];
             if (expressions) {
               delegate.expressions = expressions;
               if (delegate.enabled) {
@@ -943,7 +949,9 @@ CmapAttribute.definition = {
           "command/save-persistable-data", 
           function persist(context) // Save settings to persistent context.
           {
-            context[delegate.id] = delegate.expressions;
+            if (expression.join("") != delegate.expression.join("")) {
+              context[delegate.id + ".cmap"] = delegate.expressions;
+            }
           }, this);
     }
   },

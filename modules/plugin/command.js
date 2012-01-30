@@ -414,15 +414,7 @@ GlobalPersistCommand.definition = {
       };
     }
     let [, profile] = match;
-
-    let settings = desktop.uniget("command/get-settings");
-    if (!settings) {
-      return {
-        success: false,
-        message: _("Failed to gather settings information."),
-      };
-    }
-    desktop.notify("command/save-settings", {name: profile || undefined, data: settings});
+    desktop.notify("command/save-settings",  profile);
     return {
       success: true,
       message: _("Succeeded."),
@@ -492,15 +484,7 @@ PersistCommand.definition = {
       };
     }
     let [, profile] = match;
-
-    let settings = session.uniget("command/get-settings");
-    if (!settings) {
-      return {
-        success: false,
-        message: _("Failed to gather settings information."),
-      };
-    }
-    session.notify("command/save-settings", {name: profile || undefined, data: settings});
+    session.notify("command/save-settings", profile);
     return {
       success: true,
       message: _("Succeeded."),

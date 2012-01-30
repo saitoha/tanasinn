@@ -48,10 +48,12 @@ PersistManager.definition = {
   },
 
   "[subscribe('command/save-settings'), enabled]":
-  function save(info)
+  function save(name)
   {
     let broker = this._broker;
-    let {name, data} = info;
+    let data = {};
+    broker.notify("command/before-save-persistable-data", data);
+    broker.notify("command/save-persistable-data", data);
     let filename = (name || broker.profile) + ".js";
     let profile_path = <>{broker.profile_directory}/{filename}</>.toString();
     let serialized_data = JSON.stringify(data);
@@ -75,8 +77,7 @@ PersistManager.definition = {
   {
     let data = {};
     let broker = this._broker;
-    broker.notify("command/before-save-persistable-data", data);
-    broker.notify("command/save-persistable-data", data);
+    broker.notify("command/get-persistable-data", data);
     return data;
   },
 

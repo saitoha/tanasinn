@@ -599,7 +599,7 @@ OptionCompleter.definition = {
     let broker = "global" ==  option ? session._broker: session;
     let context = {};
     let lower_name = name.toLowerCase();
-    broker.notify("command/save-persistable-data", context);
+    broker.notify("command/get-persistable-data", context);
     if (!equal) {
       let options = [
         {

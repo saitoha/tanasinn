@@ -182,9 +182,9 @@ class TeletypeDriver:
             wfds = []
             xfds = [self.master, io_fd, control_fd]
             while True: 
-                #rfd, wfd, xfd = select.select(rfds, wfds, xfds)
-                #if xfd: # checking error.
-                #    break
+                rfd, wfd, xfd = select.select(rfds, wfds, xfds)
+                if xfd: # checking error.
+                    break
                 data = self.io_socket.recv(BUFFER_SIZE)
                 if not data:
                     break
@@ -205,9 +205,9 @@ class TeletypeDriver:
             wfds = []
             xfds = [self.master, io_fd, control_fd]
             while True:
-                #rfd, wfd, xfd = select.select(rfds, wfds, xfds)
-                #if xfd: # checking error.
-                #    break    
+                rfd, wfd, xfd = select.select(rfds, wfds, xfds)
+                if xfd: # checking error.
+                    break    
                 data = os.read(self.master, BUFFER_SIZE)
                 if not data:
                     break
@@ -235,11 +235,11 @@ class TeletypeDriver:
             wfds = []
             xfds = [self.master, io_fd, control_fd]
             while True: # TTY -> mozilla
-                #rfd, wfd, xfd = select.select(rfds, wfds, xfds, 10)
-                #if xfd: # checking error.
-                #    break    
-                #if not rfd: # checking error.
-                #    break    
+                rfd, wfd, xfd = select.select(rfds, wfds, xfds, 10)
+                if xfd: # checking error.
+                    break    
+                if not rfd: # checking error.
+                    break    
                 data = self.control_socket.recv(BUFFER_SIZE)
                 if data == "beacon\n":
                     continue

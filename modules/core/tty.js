@@ -121,7 +121,7 @@ Controller.definition = {
       .getService(Components.interfaces.nsISocketTransportService)
       .createTransport(null, 0, "127.0.0.1", control_port, null);
     let istream = transport.openInputStream(0, 1024, 1);
-    let ostream = transport.openOutputStream(0, 1024, 1);
+    let ostream = transport.openOutputStream(0, 128, 1);
     let scriptable_input_stream = Components
       .classes["@mozilla.org/scriptableinputstream;1"]
       .createInstance(Components.interfaces.nsIScriptableInputStream);
@@ -260,8 +260,8 @@ IOManager.definition = {
   _input: null,
   _output: null,
 
-  "[persistable] outgoing_buffer_size": 1024 * 4,
-  "[persistable] incoming_buffer_size": 1024 * 4,
+  "[persistable] outgoing_buffer_size": 1024 * 16,
+  "[persistable] incoming_buffer_size": 1024 * 1,
 
   /** 
    * initialize it with Session object.
@@ -296,7 +296,15 @@ IOManager.definition = {
    */
   send: function send(data) 
   {
-    this._output.write(data, data.length);
+
+    this._output
+      .QueryInterface(Components.interfaces.nsIAsyncOutputStream)
+      .asyncWait({
+        onOutputStreamReady: function onOutputStreamReady(stream) {
+          stream.write(data, data.length);
+        },
+      }, 0, 0, null)
+    //this._output.write(data, data.length);
   },
 
   /** Close I/O channel and stop communication with TTY device.
@@ -431,7 +439,9 @@ IOManager.definition = {
   {
     let data = context.readBytes(count);
     let session = this._broker;
+  //  coUtils.Timer.setTimeout(function() {
     session.notify("event/data-arrived", data);
+  //  }, 30);
   }
 }
 

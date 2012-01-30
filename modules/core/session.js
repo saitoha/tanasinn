@@ -168,7 +168,7 @@ Session.definition = {
     this.notify("event/session-stopping", this);
     if (!coUtils.Runtime.app_name.match(/^(Firefox|Thunderbird|SeaMonkey|Songbird)$/)) {
       this.window.close(); // close window
-      // exit application
+
       let application = Components
         .classes["@mozilla.org/fuel/application;1"]
         .getService(Components.interfaces.fuelIApplication);
