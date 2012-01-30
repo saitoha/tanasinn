@@ -194,8 +194,8 @@ uninstall-extension:
 run-xulapp:
 	case @host_os@ in \
 		Darwin|darwin*) \
-			open /Applications/Firefox.app \
-				-n --args --app $(PWD)/application.ini \
+			open /Applications/Aurora.app \
+			-n --args --app "$(PWD)/application.ini" \
 			;; \
 		Linux*|freebsd) \
 			firefox --app application.ini \

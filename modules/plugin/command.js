@@ -364,7 +364,7 @@ ColorCommands.definition = {
     }
     let [, number, color] = match;
     let renderer = this._renderer;
-    renderer.normal_color[number] = color;
+    renderer.normal_color[number] = coUtils.Constant.WEB140_COLOR_MAP[color] || color;
     session.notify("command/draw", /* redraw */true);
     return true;
   },
@@ -384,7 +384,7 @@ ColorCommands.definition = {
     }
     let [, number, color] = match;
     let renderer = this._renderer;
-    renderer.background_color[number] = color;
+    renderer.background_color[number] = coUtils.Constant.WEB140_COLOR_MAP[color] || color;
     session.notify("command/draw", /* redraw */true);
     return true;
   },

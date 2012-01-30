@@ -204,7 +204,7 @@ OverlayIndicator.definition = {
     this._content.setAttribute("value", message);
   },
 
-  "[subscribe('event/screen-size-changed')]":
+  "[subscribe('command/resize-screen')]":
   function onScreenSizeChanged(size)
   {
     let {column, row} = size;

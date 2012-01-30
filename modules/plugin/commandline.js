@@ -153,6 +153,145 @@ Commandline.definition = {
         <version>0.1</version>
     </plugin>,
 
+  get template()
+    ({
+      parentNode: "#tanasinn_chrome",
+      tagName: "stack",
+      id: "tanasinn_commandline_box",
+      style: <>
+        font-size: 19px;
+        font-family: 'Lucida Console',Latha,'Georgia',monospace;
+        text-shadow: 1px 1px 3px #555;
+        font-weight: bold;
+      </>,
+      childNodes: [
+        {
+          tagName: "textbox",
+          id: "tanasinn_commandline_completion",
+          value: "",
+          className: "plain",
+          style: <> 
+            padding: 0px;
+            margin: 0px;
+            color: #888; 
+            background-color: transparent;
+          </>,
+        },
+        {
+          tagName: "textbox",
+          id: "tanasinn_commandline",
+          className: "plain",
+          newlines: "replacewithspaces",
+          style: <> 
+            padding: 0px;
+            margin: 0px;
+            color: #eee;
+            text-shadow: 0px 1px 4px #484;
+          </>,
+        },
+        {
+          tagName: "box",
+          id: "tanasinn_statusbar",
+          hidden: true,
+          flex: 1,
+          style: <>
+          //  border: solid 1px red;
+          </>,
+          childNodes: [
+            {
+              tagName: "box",
+              flex: 1,
+              style: "overflow: hidden",
+              childNodes: {
+                tagName: "label",
+                id: "tanasinn_status_message",
+                style: <> 
+                  padding: 0px;
+                  margin: 0px;
+                  color: #ccc;
+                  text-shadow: 0px 1px 4px #444;
+                </>,
+              },
+            },
+            {
+              tagName: "label",
+              id: "tanasinn_status_keystate",
+              flex: 0,
+              style: <> 
+              //  border: solid 1px yellow,
+                padding: 0px;
+                margin: 0px;
+                color: #ccc;
+                text-shadow: 0px 1px 4px #444;
+              </>,
+            },
+          ],
+        },
+        {
+          tagName: "panel",
+          id: "tanasinn_completion_popup",
+          style: <> 
+            -moz-appearance: none;
+            -moz-user-focus: ignore;
+            background: transparent;
+            margin: 0px;
+            border: none;
+            //-moz-box-shadow: 3px 3px 8px black;
+            //border-radius: 7px;
+            font: menu;
+          </>,
+          onconstruct: function() {
+            this.setAttribute("noautofocus", true);
+            this.setAttribute("noautohide", true);
+            this.setAttribute("ignorekeys", true);
+          },  
+          noautofocus: true,
+          noautohide: true,
+          ignorekeys: true,
+          childNodes: {
+            tagName: "stack",
+            maxHeight: this.completion_popup_max_height,
+//            flex: 1,
+            style: <>
+            </>,
+            childNodes: [
+              {
+                tagName: "box",
+                flex: 1,
+                style: <>
+                  border-radius: 7px;
+                  background: -moz-linear-gradient(top, #bbb, #888);
+                  opacity: 0.8;
+                </>,
+              },
+              {
+                tagName: "scrollbox",
+                id: "tanasinn_completion_scroll",
+                orient: "vertical", // box-packing
+                flex: 1,
+                style: <>
+                  margin: 8px;
+                  overflow-y: auto;
+                </>,
+                childNodes: {
+                  tagName: "grid",
+                  id: "tanasinn_completion_root",
+                  style: <> 
+                    background: transparent;
+                    color: white;
+                    font-family: 'Lucida Console';
+                    font-weight: bold;
+                    font-size: 16px;
+                    text-shadow: 1px 2px 4px black;
+                  </>,
+                }
+              }, // tree
+            ],
+          }, // stack
+        },  // panel
+      ] 
+    }),
+
   "[persistable] completion_delay": 180,
   "[persistable] completion_popup_opacity": 1.00,
   "[persistable] completion_popup_max_height": 300,
@@ -183,145 +322,8 @@ Commandline.definition = {
       tanasinn_completion_popup, 
       tanasinn_completion_scroll, 
       tanasinn_completion_root,
-    } = session.uniget(
-      "command/construct-chrome", 
-      {
-        parentNode: "#tanasinn_chrome",
-        tagName: "stack",
-        id: "tanasinn_commandline_box",
-        style: <>
-          font-size: 19px;
-          font-family: 'Lucida Console',Latha,'Georgia',monospace;
-          text-shadow: 1px 1px 3px #555;
-          font-weight: bold;
-        </>,
-        childNodes: [
-          {
-            tagName: "textbox",
-            id: "tanasinn_commandline_completion",
-            value: "",
-            className: "plain",
-            style: <> 
-              padding: 0px;
-              margin: 0px;
-              color: #888; 
-              background-color: transparent;
-            </>,
-          },
-          {
-            tagName: "textbox",
-            id: "tanasinn_commandline",
-            className: "plain",
-            newlines: "replacewithspaces",
-            style: <> 
-              padding: 0px;
-              margin: 0px;
-              color: #eee;
-              text-shadow: 0px 1px 4px #484;
-            </>,
-          },
-          {
-            tagName: "box",
-            id: "tanasinn_statusbar",
-            hidden: true,
-            flex: 1,
-            style: <>
-            //  border: solid 1px red;
-            </>,
-            childNodes: [
-              {
-                tagName: "box",
-                flex: 1,
-                style: "overflow: hidden",
-                childNodes: {
-                  tagName: "label",
-                  id: "tanasinn_status_message",
-                  style: <> 
-                    padding: 0px;
-                    margin: 0px;
-                    color: #ccc;
-                    text-shadow: 0px 1px 4px #444;
-                  </>,
-                },
-              },
-              {
-                tagName: "label",
-                id: "tanasinn_status_keystate",
-                flex: 0,
-                style: <> 
-                //  border: solid 1px yellow,
-                  padding: 0px;
-                  margin: 0px;
-                  color: #ccc;
-                  text-shadow: 0px 1px 4px #444;
-                </>,
-              },
-            ],
-          },
-          {
-            tagName: "panel",
-            id: "tanasinn_completion_popup",
-            style: <> 
-              -moz-appearance: none;
-              -moz-user-focus: ignore;
-              background: transparent;
-              margin: 0px;
-              border: none;
-              //-moz-box-shadow: 3px 3px 8px black;
-              //border-radius: 7px;
-              font: menu;
-            </>,
-            onconstruct: function() {
-              this.setAttribute("noautofocus", true);
-              this.setAttribute("noautohide", true);
-              this.setAttribute("ignorekeys", true);
-            },  
-            noautofocus: true,
-            noautohide: true,
-            ignorekeys: true,
-            childNodes: {
-              tagName: "stack",
-              maxHeight: this.completion_popup_max_height,
-//              flex: 1,
-              style: <>
-              </>,
-              childNodes: [
-                {
-                  tagName: "box",
-                  flex: 1,
-                  style: <>
-                    border-radius: 7px;
-                    background: -moz-linear-gradient(top, #bbb, #888);
-                    opacity: 0.8;
-                  </>,
-                },
-                {
-                  tagName: "scrollbox",
-                  id: "tanasinn_completion_scroll",
-                  orient: "vertical", // box-packing
-                  flex: 1,
-                  style: <>
-                    margin: 8px;
-                    overflow-y: auto;
-                  </>,
-                  childNodes: {
-                    tagName: "grid",
-                    id: "tanasinn_completion_root",
-                    style: <> 
-                      background: transparent;
-                      color: white;
-                      font-family: 'Lucida Console';
-                      font-weight: bold;
-                      font-size: 16px;
-                      text-shadow: 1px 2px 4px black;
-                    </>,
-                  }
-                }, // tree
-              ],
-            }, // stack
-          },  // panel
-        ] 
-      });
+    } = session.uniget("command/construct-chrome", this.template);
+
     this._element = tanasinn_commandline_box;
     this._completion = tanasinn_commandline_completion;
     this._textbox = tanasinn_commandline;
@@ -331,6 +333,7 @@ Commandline.definition = {
     this._statusbar = tanasinn_statusbar;
     this._status_message = tanasinn_status_message;
     this._status_keystate = tanasinn_status_keystate;
+
     this.show.enabled = true;
     this.fill.enabled = true;
     this.onStatusMessage.enabled = true;
@@ -367,6 +370,7 @@ Commandline.definition = {
     this.onchange.enabled = false;
     this.enableCommandline.enabled = false;
     this.setCompletionTrigger.enabled = false;
+
     this._element.parentNode.removeChild(this._element);
   },
 
@@ -469,7 +473,6 @@ Commandline.definition = {
 
   invalidate: function invalidate(result) 
   {
-
     let textbox = this._textbox;
     if (textbox.boxObject.scrollLeft > 0) {
       this._completion.inputField.value = "";

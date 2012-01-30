@@ -1,33 +1,14 @@
 <?xml version="1.0"?>
-<box title="tanasinn" 
-    xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+<window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+    width="800" height="600" title="tanasinn 0.1.4.2">
     <script type="application/x-javascript">
     <![CDATA[
-      try {
-        Components
-          .classes["@mozilla.org/moz/jssubscript-loader;1"]
-          .getService(Components.interfaces.mozIJSSubScriptLoader)
-          .loadSubScript("resource://tanasinn/common/process.js");
-        let process = Components.classes['@zuse.jp/tanasinn/process;1']
-          .getService(Components.interfaces.nsISupports)
-          .wrappedJSObject;
-        process.notify("event/new-window-detected", window);
-        let desktop = process.getDesktopFromWindow(window);
-        desktop.start(
-            //desktop.root_element.querySelector("#tanasinn_window_layer"),
-            document.documentElement,
-            null, 
-            null, 
-            null, 
-            ["modules/core", 
-             "modules/plugin"]);
-      } catch(e) {
-        let message = <>{e.fileName}({e.lineNumber}):{e.toString()}</>.toString();
-        Components.reportError(message);
-        //window.setTimeout(function() alert(message), 1000);
-      }
+      Components
+        .classes["@mozilla.org/moz/jssubscript-loader;1"]
+        .getService(Components.interfaces.mozIJSSubScriptLoader)
+        .loadSubScript("chrome://tanasinn/content/testsuite.js?" + new Date().getTime());
     ]]>
     </script>
-</box>
+</window>
 
 

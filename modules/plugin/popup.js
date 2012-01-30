@@ -153,13 +153,33 @@ PopupMenu.definition = {
   function onmousedown(event) 
   {
     let target = event.explicitOriginalTarget;
+    if (!target) {
+      return;
+    }
     while ("row" != target.tagName) {
       target = target.parentNode;
     }
-    let packed_code = coUtils.Keyboard.parseKeymapExpression("<C-n>");
+    let diff = - this._selected;
+    while ((target = target.previousSibling)) {
+      ++diff;
+    }
+
     let session = this._broker;
+    this.onDisplay.enabled = false;
+    this._popup.hidePopup();
+    session.notify("command/focus");
+
+    let packed_code;
+    if (diff < 0) {
+      packed_code = coUtils.Keyboard.parseKeymapExpression("<C-p>");
+    } else {
+      packed_code = coUtils.Keyboard.parseKeymapExpression("<C-n>");
+    }
+    for (let i = 0; i < Math.abs(diff); ++i) {
+      session.notify("command/input-with-no-mapping", packed_code);
+    }
+    packed_code = coUtils.Keyboard.parseKeymapExpression("<Escape>");
     session.notify("command/input-with-no-mapping", packed_code);
-    //alert(target.innerText);
   },
 
   "[listen('mousemove', '#tanasinn_app_popup', true)]":
@@ -185,7 +205,7 @@ PopupMenu.definition = {
   },
 
   "[subscribe('sequence/osc/201')]":
-  function onUndisplay(data) 
+  function onUndisplay() 
   {
     this._is_showing = false;
     coUtils.Timer.setTimeout(function() {
@@ -195,6 +215,7 @@ PopupMenu.definition = {
         session.notify("command/focus");
       }
     }, 30, this);
+    this.onDisplay.enabled = true;
   },
 
   "[subscribe('sequence/osc/200')]":

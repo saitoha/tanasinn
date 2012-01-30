@@ -1087,7 +1087,9 @@ Launcher.definition = {
     let box = this._element;
     let textbox = this._textbox;
     let popup = this._popup;
-    popup.hidePopup();
+    if (popup.hidePopup) {
+      popup.hidePopup();
+    }
     textbox.blur();
     box.hidden = true;
   },
@@ -1095,7 +1097,8 @@ Launcher.definition = {
   enter: function enter() 
   {
     let command = this._textbox.value;
-    this.startSession(command);
+    let broker = this._broker;
+    broker.notify("command/start-session");
   },
 
   "[subscribe('command/start-session')]":
@@ -1103,7 +1106,7 @@ Launcher.definition = {
   {
     let desktop = this._broker; 
     let document = this._element.ownerDocument;
-    this.hide();
+    command = command || "";
     coUtils.Timer.setTimeout(function() {
       let terminal =  desktop.start(
         this._window_layer,
@@ -1111,6 +1114,7 @@ Launcher.definition = {
       terminal.style.left = <>{this.left = (this.left + Math.random() * 1000) % 140 + 20}px</>;
       terminal.style.top = <>{this.top = (this.top + Math.random() * 1000) % 140 + 20}px</>;
     }, 0, this);
+    this.hide();
   },
 
   "[listen('blur', '#tanasinn_launcher_textbox')]":
@@ -1345,24 +1349,24 @@ DragMove.definition = {
   },
 
   "[listen('dragstart', '#tanasinn_launcher_layer', true)]":
-  function ondragstart(event) 
+  function ondragstart(dom_event) 
   {
-    event.stopPropagation();
+    dom_event.stopPropagation();
     let session = this._broker;
     // get relative coodinates on target element.
-    let offsetX = event.clientX - event.target.boxObject.x; 
-    let offsetY = event.clientY - event.target.boxObject.y;
+    let offsetX = dom_event.clientX - dom_event.target.boxObject.x; 
+    let offsetY = dom_event.clientY - dom_event.target.boxObject.y;
     this._drag_cover.hidden = false;
-    this._drag_cover.style.left = event.clientX - this._drag_cover.boxObject.width / 2 + "px";
-    this._drag_cover.style.top = event.clientY - this._drag_cover.boxObject.height / 2 + "px";
+    this._drag_cover.style.left = dom_event.clientX - this._drag_cover.boxObject.width / 2 + "px";
+    this._drag_cover.style.top = dom_event.clientY - this._drag_cover.boxObject.height / 2 + "px";
     coUtils.Timer.setTimeout(function() {
       this._drag_cover.hidden = true;
     }, 1000, this);
     session.notify("command/set-opacity", 0.30);
     // define mousemove hanler.
-    let document = event.target.ownerDocument; // managed by DOM
+    let dom_document = dom_event.target.ownerDocument; // managed by DOM
     session.notify("command/add-domlistener", {
-      target: document, 
+      target: dom_document, 
       type: "mousemove", 
       id: "_DRAGGING", 
       context: this,
@@ -1374,7 +1378,7 @@ DragMove.definition = {
       }
     });
     session.notify("command/add-domlistener", {
-      target: document, 
+      target: dom_document, 
       type: "mouseup", 
       id: "_DRAGGING",
       context: this,
@@ -1387,7 +1391,7 @@ DragMove.definition = {
       }, 
     });
     session.notify("command/add-domlistener", {
-      target: document, 
+      target: dom_document, 
       type: "keyup", 
       id: "_DRAGGING",
       context: this,
@@ -1401,8 +1405,8 @@ DragMove.definition = {
       }, 
     });
 
-    event = null;
-    document = null;
+    dom_event = null;
+    dom_document = null;
   },
 };
 

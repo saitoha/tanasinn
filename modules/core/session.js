@@ -161,7 +161,8 @@ Session.definition = {
   },
 
   /** Send event/session-stopping message. */
-  stop: function stop() 
+  "[subscribe('event/shutdown'), enabled]":
+  function stop() 
   {
     this.removeGlobalEvent("quit-application");
     this.notify("event/session-stopping", this);

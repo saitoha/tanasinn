@@ -26,11 +26,6 @@ var PLUGIN_INFO =
 <VimperatorPlugin>
     <name>{NAME}</name>
     <description>character hint mode.</description>
-    <author mail="user@zuse.jp" homepage="http://zuse.jp/tanasinn/usermanual.html">hogelog</author>
-    <version>0.3.1</version>
-    <minVersion>3.1</minVersion>
-    <maxVersion>3.1.1</maxVersion>
-    <updateURL>http://svn.coderepos.org/share/lang/javascript/vimperator-plugins/trunk/char-hints-mod2.js</updateURL>
     <detail><![CDATA[
 let g:tanasinneditor:
     set editor used by char-hint.

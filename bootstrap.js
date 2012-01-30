@@ -77,10 +77,6 @@ let loader = {
       let file_handler = io_service.getProtocolHandler("file")
         .QueryInterface(Components.interfaces.nsIFileProtocolHandler);
       let document_url = file_handler.getURLSpecFromFile(path);
-
-      //Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
-      //  .getService(Components.interfaces.nsIPromptService)
-      //  .alert(null, "message", "bootstrap.js:startup called!!" + document_url);
       window.gBrowser.addTab(document_url);
     }
   },
@@ -111,9 +107,6 @@ function startup(data, reason)
     .classes["@mozilla.org/network/io-service;1"]
     .getService(Components.interfaces.nsIIOService);
   let uri = io_service.newFileURI(data.installPath.clone());
-  //Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
-  //  .getService(Components.interfaces.nsIPromptService)
-  //  .alert(null, "message", "bootstrap.js:startup called!!" + uri);
   io_service.getProtocolHandler("resource")
     .QueryInterface(Components.interfaces.nsIResProtocolHandler)
     .setSubstitution("tanasinn", uri)
@@ -134,11 +127,11 @@ function startup(data, reason)
       process.append("common");
       process.append("process.js");
       let process_url = file_handler.getURLSpecFromFile(process);
-      //Components
-      //  .classes["@mozilla.org/moz/jssubscript-loader;1"]
-      //  .getService(Components.interfaces.mozIJSSubScriptLoader)
-      //  .loadSubScript(process_url);
-      Services.scriptloader.loadSubScript(process_url);
+      Components
+        .classes["@mozilla.org/moz/jssubscript-loader;1"]
+        .getService(Components.interfaces.mozIJSSubScriptLoader)
+        .loadSubScript(process_url);
+      //Services.scriptloader.loadSubScript(process_url);
       loader.initializeWithFileURI(data.installPath);
     } catch(e) {
       let message = <>{e.fileName}({e.lineNumber}):{e.toString()}</>.toString();
@@ -162,24 +155,15 @@ function shutdown(data, reason)
   io_service.getProtocolHandler("resource")
     .QueryInterface(Components.interfaces.nsIResProtocolHandler)
     .setSubstitution("tanasinn", null);
-
   process.notify("event/shutdown");
 //  process.clear();
-
-//  var prompts = Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
-//                    .getService(Components.interfaces.nsIPromptService);
-//  if (reason !== APP_SHUTDOWN) unload(); 
   return true;
 }
 
 function install(data, reason) 
 {
-  //Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
-  //  .getService(Components.interfaces.nsIPromptService)
-  //  .alert(null, "message", "bootstrap.js:startup called!!");
   return true;
 }
-
 
 function uninstall(data, reason) 
 {

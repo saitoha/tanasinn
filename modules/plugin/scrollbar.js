@@ -224,14 +224,14 @@ Scrollbar.definition = {
   },
 
   "[listen('dragstart', '#tanasinn_scrollbar_current')]":
-  function ondragstart(event) 
+  function ondragstart(dom_event) 
   {
     let session = this._broker;
     this._dragging = true;
-    event.stopPropagation();
-    //event.preventDefault();
-    let initial_y = event.screenY;
-    let document = session.document; // managed by DOM
+    dom_event.stopPropagation();
+    //dom_event.preventDefault();
+    let initial_y = dom_event.screenY;
+    let dom_document = session.document; // managed by DOM
     let radius = this.inner_width + this.border_width;
     let height = this._scrollbar.boxObject.height - radius * 2;
     let before_flex = parseInt(this._before.flex);
@@ -247,7 +247,7 @@ Scrollbar.definition = {
       {
         type: "mousemove",
         id: "_DRAGGING",
-        target: document,
+        target: dom_document,
         context: this,
         handler: function onmousemove(event) 
         {
@@ -263,7 +263,7 @@ Scrollbar.definition = {
       {
         type: "mouseup",
         id: "_DRAGGING",
-        target: document,
+        target: dom_document,
         capture: true,
         context: this,
         handler: function onmouseup(event) 
@@ -277,8 +277,8 @@ Scrollbar.definition = {
       });
 
     // to prevent leak.
-    document = null;
-    event = null;
+    dom_document = null;
+    dom_event = null;
   },
 
 } // class Scrollbar

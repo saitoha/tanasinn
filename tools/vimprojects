@@ -18,7 +18,9 @@
  }
  content=chrome/content {
    app.xul
+   testsuite.xul
    checking.xul
+   testsuite.js
  }
  doc=doc {
   define.h
@@ -111,6 +113,7 @@
 
    overlay.js
    completer.js
+   display.js
    command.js
    tabbox.js
    commandline.js

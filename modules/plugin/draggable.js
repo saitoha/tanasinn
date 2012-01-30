@@ -62,21 +62,21 @@ DragMove.definition = {
   },
 
   "[listen('dragstart', '#tanasinn_content', true)]":
-  function ondragstart(event) 
+  function ondragstart(dom_event) 
   {
-    if (!event.shiftKey) {
+    if (!dom_event.shiftKey) {
       return;
     }
-    event.stopPropagation();
+    dom_event.stopPropagation();
     let session = this._broker;
     // get relative coodinates on target element.
-    let offsetX = event.screenX - session.root_element.boxObject.x; 
-    let offsetY = event.screenY - session.root_element.boxObject.y;
+    let offsetX = dom_event.screenX - session.root_element.boxObject.x; 
+    let offsetY = dom_event.screenY - session.root_element.boxObject.y;
     session.notify("command/set-opacity", 0.30);
     // define mousemove hanler.
-    let document = event.target.ownerDocument; // managed by DOM
+    let dom_document = dom_event.target.ownerDocument; // managed by DOM
     session.notify("command/add-domlistener", {
-      target: document, 
+      target: dom_document, 
       type: "mousemove", 
       id: "_DRAGGING", 
       context: this,
@@ -88,7 +88,7 @@ DragMove.definition = {
       }
     });
     session.notify("command/add-domlistener", {
-      target: document, 
+      target: dom_document, 
       type: "mouseup", 
       id: "_DRAGGING",
       context: this,
@@ -100,7 +100,7 @@ DragMove.definition = {
       }, 
     });
     session.notify("command/add-domlistener", {
-      target: document, 
+      target: dom_document, 
       type: "keyup", 
       id: "_DRAGGING",
       context: this,
@@ -114,8 +114,8 @@ DragMove.definition = {
       }, 
     });
 
-    event = null;
-    document = null;
+    dom_event = null;
+    dom_document = null;
   },
 };
 

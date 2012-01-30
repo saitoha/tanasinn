@@ -32,6 +32,9 @@ MappingManagerBase.definition = {
   _map: null,
   _state: null,
 
+  /** Gets pre-defined mappings and store them. 
+   *  @param {String} type "nmap" or "cmap".
+   * */
   installImpl: function installImpl(type)
   {
     this._state = this._map = {};
@@ -46,11 +49,15 @@ MappingManagerBase.definition = {
     }
   },
 
+  /** Clear the key mappings and the input state. 
+   *  @param {EventBroker} broker parent broker object.
+   */
   uninstallImpl: function uninstallImpl(broker)
   {
-    this._map = null;
+    this._state = this._map = null;
   },
 
+  /** Registers a mapping specified by given expression. */
   register: function register(expression, delegate) 
   {
     let packed_code_array 
@@ -62,6 +69,7 @@ MappingManagerBase.definition = {
     context.value = delegate;
   },
 
+  /** Unregisters a mapping. */
   unregister: function unregister(expression) 
   {
     let packed_code_array 
@@ -118,34 +126,6 @@ MappingManagerBase.definition = {
     return result;
   },
 
-};
-
-coUtils.Keyboard.convertCodeToExpression = function convertCodeToExpression(packed_code)
-{
-  let buffer = [];
-  if (packed_code & (1 << coUtils.Keyboard.KEY_CTRL)) {
-    buffer.push("C");
-  }
-  if (packed_code & (1 << coUtils.Keyboard.KEY_ALT)) {
-    buffer.push("A");
-  }
-  if (packed_code & (1 << coUtils.Keyboard.KEY_SHIFT)) {
-    buffer.push("S");
-  }
-  if (packed_code & (1 << coUtils.Keyboard.KEY_META)) {
-    buffer.push("M");
-  }
-  let char = String.fromCharCode(0xffffff & packed_code);
-  if ("-" == char || "<" == char || ">" == char) {
-    char = "\\" + char;
-  }
-  buffer.push(char);
-  if (1 == buffer.length) {
-    return buffer.pop();
-  } else if (2 == buffer.length && "S" == buffer[0]) {
-    return buffer.pop();
-  }
-  return "<" + buffer.join("-") + ">";
 };
 
 /**
