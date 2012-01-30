@@ -477,7 +477,7 @@ Commandline.definition = {
       this._popup.style.opacity = this.completion_popup_opacity;
       if ("closed" == this._popup.state || "hiding" == this._popup.state) {
         let session = this._broker;
-        let doucment = session.window.document;
+        let document = session.window.document;
         if (document) {
           let focused_element = document.commandDispatcher.focusedElement;
           if (focused_element && focused_element.isEqualNode(textbox.inputField)) {
