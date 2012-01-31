@@ -316,13 +316,13 @@ TemplateBuilder.definition = {
       }
     } else {
       if ("style" == key) {
-        element.style.cssText = value;
+        element.style.cssText = String(value);
       } else {
         try {
           if (element.hasAttribute && element.hasAttribute(key)) {
-            element.setAttribute(key, value);
+            element.setAttribute(key, String(value));
           } else {
-            element.setAttribute && element.setAttribute(key, value);
+            element.setAttribute && element.setAttribute(key, String(value));
             element[key] = value;
           }
         } catch(e) {

@@ -869,7 +869,9 @@ Launcher.definition = {
   "[subscribe('event/disabled'), enabled]":
   function onDisabled()
   {
-    this._textbox.blur();
+    if (this._textbox) {
+      this._textbox.blur();
+    }
     this.onkeypress.enabled = false;
     this.onfocus.enabled = false;
     this.onblur.enabled = false;
