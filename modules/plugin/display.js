@@ -70,7 +70,6 @@ ColorNumberCompletionDisplayDriver.definition = {
     columns.appendChild(document.createElement("column")).flex = 1;
     let rows = grid.appendChild(document.createElement("rows"))
     //rows.style.border = "1px solid blue";
-    try {
     result.data.forEach(function(pair, index) {
       let search_string = result.query.toLowerCase();
       let renderer = this._renderer;
@@ -135,7 +134,6 @@ ColorNumberCompletionDisplayDriver.definition = {
           }))
         });
     }, this); 
-    } catch (e) {alert(e)}
   },
 
 };

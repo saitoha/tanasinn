@@ -1108,7 +1108,6 @@ Plugin.definition = {
   initialize: function initialize(broker)
   {
     if (this.__dependency) {
-      try {
       this.dependency = {};
       let topic = "@initialized/{" + this.__dependency.join("&") + "}";
       broker.subscribe(
@@ -1122,7 +1121,6 @@ Plugin.definition = {
           this.enabled = this.enabled_when_startup;
         }, 
         this);
-      } catch(e) {alert(e)}
     }
     broker.subscribe(
       <>command/set-enabled/{this.id}</>, 

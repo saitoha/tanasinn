@@ -154,7 +154,8 @@ Commandline.definition = {
     </plugin>,
 
   get template()
-    ({
+  [
+    {
       parentNode: "#tanasinn_chrome",
       tagName: "stack",
       id: "tanasinn_commandline_box",
@@ -227,70 +228,72 @@ Commandline.definition = {
             },
           ],
         },
-        {
-          tagName: "panel",
-          id: "tanasinn_completion_popup",
-          style: <> 
-            -moz-appearance: none;
-            -moz-user-focus: ignore;
-            background: transparent;
-            margin: 0px;
-            border: none;
-            //-moz-box-shadow: 3px 3px 8px black;
-            //border-radius: 7px;
-            font: menu;
-          </>,
-          onconstruct: function() {
-            this.setAttribute("noautofocus", true);
-            this.setAttribute("noautohide", true);
-            this.setAttribute("ignorekeys", true);
-          },  
-          noautofocus: true,
-          noautohide: true,
-          ignorekeys: true,
-          childNodes: {
-            tagName: "stack",
-            maxHeight: this.completion_popup_max_height,
-//            flex: 1,
-            style: <>
-            </>,
-            childNodes: [
-              {
-                tagName: "box",
-                flex: 1,
-                style: <>
-                  border-radius: 7px;
-                  background: -moz-linear-gradient(top, #bbb, #888);
-                  opacity: 0.8;
-                </>,
-              },
-              {
-                tagName: "scrollbox",
-                id: "tanasinn_completion_scroll",
-                orient: "vertical", // box-packing
-                flex: 1,
-                style: <>
-                  margin: 8px;
-                  overflow-y: auto;
-                </>,
-                childNodes: {
-                  tagName: "grid",
-                  id: "tanasinn_completion_root",
-                  style: <> 
-                    background: transparent;
-                    color: white;
-                    font-family: 'Lucida Console';
-                    font-weight: bold;
-                    font-size: 16px;
-                    text-shadow: 1px 2px 4px black;
-                  </>,
-                }
-              }, // tree
-            ],
-          }, // stack
-        },  // panel
       ] 
-    }),
+    },
+    {
+      parentNode: "#tanasinn_chrome",
+      tagName: "panel",
+      id: "tanasinn_completion_popup",
+      style: <> 
+        -moz-appearance: none;
+        -moz-user-focus: ignore;
+        background: transparent;
+        margin: 0px;
+        border: none;
+        //-moz-box-shadow: 3px 3px 8px black;
+        //border-radius: 7px;
+        font: menu;
+      </>,
+      onconstruct: function() {
+        this.setAttribute("noautofocus", true);
+        this.setAttribute("noautohide", true);
+        this.setAttribute("ignorekeys", true);
+      },  
+      noautofocus: true,
+      noautohide: true,
+      ignorekeys: true,
+      childNodes: {
+        tagName: "stack",
+        maxHeight: this.completion_popup_max_height,
+//        flex: 1,
+        style: <>
+        </>,
+        childNodes: [
+          {
+            tagName: "box",
+            flex: 1,
+            style: <>
+              border-radius: 7px;
+              background: -moz-linear-gradient(top, #bbb, #888);
+              opacity: 0.8;
+            </>,
+          },
+          {
+            tagName: "scrollbox",
+            id: "tanasinn_completion_scroll",
+            orient: "vertical", // box-packing
+            flex: 1,
+            style: <>
+              margin: 8px;
+              overflow-y: auto;
+            </>,
+            childNodes: {
+              tagName: "grid",
+              id: "tanasinn_completion_root",
+              style: <> 
+                background: transparent;
+                color: white;
+                font-family: 'Lucida Console';
+                font-weight: bold;
+                font-size: 16px;
+                text-shadow: 1px 2px 4px black;
+              </>,
+            }
+          }, // tree
+        ],
+      }, // stack
+    },  // panel
+  ],
 
   "[persistable] completion_delay": 180,
   "[persistable] completion_popup_opacity": 1.00,
@@ -348,6 +351,8 @@ Commandline.definition = {
     this.onchange.enabled = true;
     this.enableCommandline.enabled = true;
     this.setCompletionTrigger.enabled = true;
+
+    this.onmousedown.enabled = true;
   },
   
   /** Uninstalls itself.
@@ -370,6 +375,8 @@ Commandline.definition = {
     this.onchange.enabled = false;
     this.enableCommandline.enabled = false;
     this.setCompletionTrigger.enabled = false;
+
+    this.onmousedown.enabled = false;
 
     this._element.parentNode.removeChild(this._element);
   },
@@ -592,6 +599,12 @@ Commandline.definition = {
       event.stopPropagation();
       event.preventDefault();
     }
+  },
+
+  "[listen('mousedown', '#tanasinn_completion_popup', true)]":
+  function onmousedown(event) 
+  {
+    event.stopPropagation();
   },
 
   onsubmit: function onsubmit() 

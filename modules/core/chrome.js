@@ -117,11 +117,7 @@ OuterChrome.definition = {
           style: <>
             -moz-box-shadow: 5px 4px 29px black;
             border-radius: 8px;
-//            border: 10px solid red;
-            //background: black;
             background: -moz-linear-gradient(top, #444, #000);
-//            background: -moz-radial-gradient(0px 0px, cover, #555, #000);
-//            margin: 5px;
             opacity: 0.7;
           </>,
         },
@@ -160,6 +156,23 @@ OuterChrome.definition = {
             ],
           },
         },
+        /*
+        {
+          tagName: "box",
+          id: "tanasinn_overlay_layer",
+          style: <>
+            position: fixed;
+            margin-top: -130px;
+            left: 50%;
+          </>,
+          childNodes: {
+            tagName: "image",
+            width: 200,
+            height: 200,
+            src: "file:///Users/user/yu.png",
+          },
+        },
+*/
       ],
     },
 
