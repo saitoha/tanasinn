@@ -192,7 +192,11 @@ MultiDecoder.definition = {
       } catch(e) {
         return ["?".charCodeAt(0)];
       }
-      return str.split("").map(function(c) c.charCodeAt(0));
+      return function() {
+        for (let [, c] in Iterator(str.split(""))) {
+          yield c.charCodeAt(0);
+        }
+      } ();
       //let str = String.fromCharCode.apply(String, data);
       //return this._converter.ConvertToUnicode(str).split(""); 
     }
@@ -312,8 +316,7 @@ CP932Decoder.definition = {
    */
   decode: function decode(scanner) 
   {
-    let map = this._map;
-    return function(scanner)
+    return let (map = this._map) function(scanner)
     {
       while (!scanner.isEnd) {
         let c1 = scanner.current();
@@ -378,8 +381,7 @@ UTF8Decoder.definition = {
    */
   decode: function decode(scanner) 
   {
-    let self = this;
-    return function(scanner) {
+    return let (self = this) function(scanner) {
       while (!scanner.isEnd) {
         let c = self._getNextCharacter(scanner);
         if (!c || c < 0x20) {
