@@ -129,7 +129,7 @@ coUtils.Font = {
  * @class Renderer
  * @brief Scan screen state and render it to canvas element.
  */ 
-let Renderer = new Class().extends(Plugin);
+let Renderer = new Class().extends(Plugin).depends("screen");
 Renderer.definition = {
 
   get id()
@@ -170,16 +170,9 @@ Renderer.definition = {
   "[watchable, persistable] font_size": 14,
 
   "[persistable] force_precious_rendering": false,
-  "[persistable] normal_alpha": 0.80,
+  "[persistable] normal_alpha": 0.85,
 //  "[persistable] enable_text_shadow": false,
   "[persistable, watchable] smoothing": true,
-
-  "[subscribe('@initialized/{screen & chrome}'), enabled]": 
-  function onLoad(screen, chrome) 
-  {
-    this._screen = screen;
-    this.enabled = this.enabled_when_startup;
-  },
 
   /** Installs itself.
    *  @param session {Session} A session object.
@@ -289,7 +282,7 @@ Renderer.definition = {
   "[subscribe('variable-changed/renderer.font_{size | family}')]": 
   function onFontChanged(font_size) 
   {
-    this._screen.dirty = true;
+    this.dependency["screen"].dirty = true;
     this._calculateGryphWidth();
   },
 
@@ -305,7 +298,7 @@ Renderer.definition = {
   "[subscribe('variable-changed/{screen.width | renderer.char_width}')]":
   function onWidthChanged(width, char_width) 
   {
-    width = width || this._screen.width;
+    width = width || this.dependency["screen"].width;
     char_width = char_width || this.char_width;
     let canvas_width = 0 | (width * char_width);
     this._canvas.width = canvas_width;
@@ -317,7 +310,7 @@ Renderer.definition = {
   "[subscribe('variable-changed/{screen.height | renderer.line_height}')]":
   function onHeightChanged(height, line_height)
   {
-    height = height || this._screen.height;
+    height = height || this.dependency["screen"].height;
     line_height = line_height || this.line_height;
     let canvas_height = 0 | (height * line_height);
 
@@ -332,10 +325,10 @@ Renderer.definition = {
   function draw(redraw_flag)
   {
     if (redraw_flag) {
-      this._screen.dirty = true;
+      this.dependency["screen"].dirty = true;
     }
     let context = this._context;
-    let screen = this._screen;
+    let screen = this.dependency["screen"];
     let font_size = this.font_size;
     let font_family = this.font_family;
     let line_height = this.line_height;

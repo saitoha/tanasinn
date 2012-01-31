@@ -27,13 +27,16 @@
  *  
  *  This plugin makes it enable to supports IME mode.
  *  It watches the value of main inputbox element with polling. 
- *  (NOTE that HTML's inputbox at IME editing mode does not fires ANY DOM 
+ *  (NOTE that Mozilla's inputbox at IME editing mode does not fires ANY DOM 
  *  events!)
  *  When IME mode turns on, we moves inputbox at the position of cursor 
  *  object. and shows a line on editing as an watermark/overlay object. 
  *
  */ 
-let Ime = new Class().extends(Plugin);
+let Ime = new Class().extends(Plugin)
+                     .depends("renderer")
+                     .depends("cursorstate")
+                     .depends("inputmanager");
 Ime.definition = {
 
   get id()
@@ -53,28 +56,13 @@ Ime.definition = {
   _timer: null,
   _ime_input_flag: false,
 
-  // module instances.
-  _renderer: null,      // core module Renderer
-  _cursor: null,        // core module CursorState
-  _textbox: null,       // input field of InputManager
-
-  /** post-constructor */
-  "[subscribe('@initialized/{renderer & cursorstate & inputmanager}'), enabled]":
-  function onLoad(renderer, cursor_state, im) 
-  {
-    this._renderer = renderer;
-    this._cursor = cursor_state;
-    this._textbox = im.getInputField();
-    this.enabled = this.enabled_when_startup;
-  },
-
   /** Installs plugin 
    *  @param {Session} session A session object.
    */ 
   install: function install(session) 
   {
-    let textbox = this._textbox;
-    let renderer = this._renderer;
+    let textbox = this.dependency["inputmanager"].getInputField();
+    let renderer = this.dependency["renderer"];
     textbox.style.width = "0%";
     textbox.style.imeMode = "inactive"; // disabled -> inactive
     textbox.style.border = "none"; // hide border
@@ -91,7 +79,7 @@ Ime.definition = {
 
     let document = session.window.document;
     let focusedElement = document.commandDispatcher.focusedElement;
-    if (focusedElement && focusedElement.isEqualNode(this._textbox)) {
+    if (focusedElement && focusedElement.isEqualNode(textbox)) {
       this.startPolling();
     }
       
@@ -103,7 +91,7 @@ Ime.definition = {
   uninstall: function uninstall(session) 
   {
     this.endPolling(); // stops polling timer. 
-    let textbox = this._textbox;
+    let textbox = this.dependency["inputmanager"].getInputField();
     textbox.style.width = "";
     textbox.style.imeMode = "disabled";
     textbox.style.border = "";  
@@ -119,7 +107,7 @@ Ime.definition = {
   function oninput(event) 
   {
     //coUtils.Debug.reportMessage(textbox.value)
-    let textbox = this._textbox;
+    let textbox = this.dependency["inputmanager"].getInputField();
     let value = textbox.value;
     textbox.value = "";
     this._disableImeMode(); // closes IME input session.
@@ -157,7 +145,7 @@ Ime.definition = {
    */  
   onpoll: function onpoll() 
   {
-    let text = this._textbox.value;
+    let text = this.dependency["inputmanager"].getInputField().value;
     if (text) { // if textbox contains some text data.
       if (!this._ime_input_flag) {
         this._enableImeMode(); // makes the IME mode enabled.
@@ -172,9 +160,9 @@ Ime.definition = {
   /** Shows textbox element. */
   _enableImeMode: function _enableImeMode() 
   {
-    let textbox = this._textbox;
-    let renderer = this._renderer;
-    let cursor = this._cursor;
+    let textbox = this.dependency["inputmanager"].getInputField();
+    let renderer = this.dependency["renderer"];
+    let cursor = this.dependency["cursorstate"];
     let line_height = renderer.line_height;
     let char_width = renderer.char_width;
     let char_height = renderer.char_height;
@@ -198,7 +186,7 @@ Ime.definition = {
 
   _disableImeMode: function _disableImeMode() 
   {
-    this._textbox.style.opacity = 0.0;
+    this.dependency["inputmanager"].getInputField().style.opacity = 0.0;
     this._ime_input_flag = false;
     let session = this._broker;
     session.notify("command/ime-mode-off", this);

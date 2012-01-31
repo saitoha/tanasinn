@@ -25,7 +25,11 @@
 /** 
  * @class Splitter
  */
-let Splitter = new Class().extends(Plugin);
+let Splitter = new Class().extends(Plugin)
+                          .depends("screen")
+                          .depends("renderer")
+                          .depends("bottompanel")
+                          ;
 Splitter.definition = {
 
   get id()
@@ -59,28 +63,18 @@ Splitter.definition = {
       }
     }),
 
-  /** post-constructor */
-  "[subscribe('@initialized/{screen & renderer & bottompanel}'), enabled]": 
-  function onLoad(screen, renderer, tabbox) 
-  {
-    this._screen = screen;
-    this._renderer = renderer;
-    this._tabbox = tabbox;
-    this.enabled = this.enabled_when_startup;
-  },
-
   /** Installs itself. 
    *  @param {Session} session A session object.
    */
   "[subscribe('install/splitter')]":
   function install(session) 
   {
-    let tabbox = this._tabbox;
+    let bottompanel = this.dependency["bottompanel"];
 
     // create splitter element.
     let {tanasinn_splitter}
       = session.uniget("command/construct-chrome", this.template);
-    let tabbox_element = tabbox.getElement();
+    let tabbox_element = bottompanel.getElement();
     tabbox_element.parentNode.insertBefore(tanasinn_splitter, tabbox_element);
 
     this._splitter = tanasinn_splitter;
@@ -112,11 +106,11 @@ Splitter.definition = {
   ondragstart: function ondragstart(event) 
   {
     let session = this._broker;
-    let renderer = this._renderer;
-    let screen = this._screen;
-    let tabbox = this._tabbox;
+    let renderer = this.dependency["renderer"];
+    let screen = this.dependency["screen"];
+    let bottompanel = this.dependency["bottompanel"];
     let document = session.window.document;
-    let initial_height = tabbox.panelHeight;
+    let initial_height = bottompanel.panelHeight;
     let initial_row = screen.height;
     let line_height = renderer.line_height;
     document.documentElement.style.cursor = "row-resize";
@@ -135,10 +129,10 @@ Splitter.definition = {
         screen.height = row;
         diff = (row - initial_row) * line_height;
         if (initial_height - diff < 0) {
-          tabbox.close();
-          tabbox.panelHeight = initial_height;
+          bottompanel.close();
+          bottompanel.panelHeight = initial_height;
         } else {
-          tabbox.panelHeight = initial_height - diff;
+          bottompanel.panelHeight = initial_height - diff;
         }
       },
     });

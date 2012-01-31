@@ -26,7 +26,7 @@
  * @class MappingManagerBase
  * @brief Manage mappings.
  */
-let MappingManagerBase = new Abstruct().extends(Plugin);
+let MappingManagerBase = new Abstruct().extends(Plugin).depends(null);
 MappingManagerBase.definition = {
 
   _map: null,
@@ -138,13 +138,6 @@ NormalMappingManager.definition = {
   get id()
     "nmap_manager",
 
-  /** post-constructor */
-  "[subscribe('event/broker-started'), enabled]": 
-  function onLoad(broker) 
-  {
-    this.enabled = this.enabled_when_startup;
-  },
-
   /** Installs itself. 
    *  @param {Broker} a broker object.
    *  @notify initialized/inputmanager
@@ -233,13 +226,6 @@ CommandlineMappingManager.definition = {
 
   get id()
     "cmap_manager",
-
-  /** post-constructor */
-  "[subscribe('event/broker-started'), enabled]": 
-  function onLoad(broker) 
-  {
-    this.enabled = this.enabled_when_startup;
-  },
 
   /** Installs itself. 
    *  @param {Broker} a broker object.

@@ -37,8 +37,13 @@ Aspect.prototype = {
 
   set definition(value) 
   {
+    this.define(value);
+  },
+
+  define: function define(definition)
+  {
     if (value) {
-      this._definition = value;
+      this._definition = definition;
       coUtils.Event.notifyGlobalEvent("defined/" + this.id, this);
     }
   },
@@ -192,7 +197,32 @@ Attribute.prototype = {
   parse: function(annotation) 
   {
     with (this) {
-      let pattern = /[a-z]+\('.a'\)|/y;
+//      let pattern = /([a-z]+)\('(.*?)'\s*(?:,\s*'(.*?)')*\)|([a-z]+)/y;
+//      try {
+//      do {
+//        let match = pattern.exec(annotation);
+//        if (null === match) {
+//          break;
+//        }
+//        let all = match.shift();
+//        let func = match.shift();
+//        let prop = match.pop();
+//        let args = match;
+//        if (func)
+//        //alert(typeof args + " " + arg)
+//        if (prop) {
+//          this[prop];
+//        } else if (func) {
+//          //alert(match.join("/"))
+//          args = args
+//            .filter(function(arg) arg)
+//            .map(function(arg) arg.replace(/\\(.)/, function() arguments[1]));
+//          //if (args.length > 1)
+//          //alert(args.join("-"))
+//          this[func].apply(this, args);
+//        }
+//      } while (true)
+//      } catch(e) {alert(e)}
       try {
         eval(annotation);
       } catch(e) {
@@ -340,7 +370,9 @@ Class.prototype = {
   depends: function depends(id)
   {
     this._dependency_list = this._dependency_list || [];
-    this._dependency_list.push(id);
+    if (id) {
+      this._dependency_list.push(id);
+    }
     return this;
   },
 
@@ -1109,7 +1141,12 @@ Plugin.definition = {
   {
     if (this.__dependency) {
       this.dependency = {};
-      let topic = "@initialized/{" + this.__dependency.join("&") + "}";
+      let topic;
+      if (this.__dependency.length > 0) {
+        topic = "@initialized/{" + this.__dependency.join("&") + "}";
+      } else {
+        topic = "@event/broker-started";
+      }
       broker.subscribe(
         topic, 
         function() 
