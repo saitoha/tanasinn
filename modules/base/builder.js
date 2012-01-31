@@ -315,14 +315,15 @@ TemplateBuilder.definition = {
         arguments.callee(element, key, value); // call recersively.
       }
     } else {
+      value = String(value);
       if ("style" == key) {
-        element.style.cssText = String(value);
+        element.style.cssText = value;
       } else {
         try {
           if (element.hasAttribute && element.hasAttribute(key)) {
-            element.setAttribute(key, String(value));
+            element.setAttribute(key, value);
           } else {
-            element.setAttribute && element.setAttribute(key, String(value));
+            element.setAttribute && element.setAttribute(key, value);
             element[key] = value;
           }
         } catch(e) {

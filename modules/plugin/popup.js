@@ -145,8 +145,14 @@ PopupMenu.definition = {
     this.onmouseup.enabled = false;
     this.onDisplay.enabled = false;
     this.onUndisplay.enabled = false;
-    this._datum.parentNode.removeChild(this._datum);
-    this._popup.parentNode.removeChild(this._datum);
+    if (this._datam && this._datam.parentNode) {
+      this._datum.parentNode.removeChild(this._datum);
+      this._datum = null;
+    }
+    if (this._popup && this._popup.parentNode) {
+      this._popup.parentNode.removeChild(this._datum);
+      this._popup = null;
+    }
   },
 
   "[listen('mousedown', '#tanasinn_app_popup', true)]":
