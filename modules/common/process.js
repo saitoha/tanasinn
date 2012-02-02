@@ -136,16 +136,6 @@ with (scope) {
         }
       }
     },
-
-    getDesktopFromWindow: function getDesktopFromWindow(window)
-    {
-      return this.uniget("get/desktop-from-window", window);
-    },
-  
-    createNewScope: function createNewScope()
-    {
-      return new this.default_scope;
-    },
   
     /* override */
     toString: function toString()

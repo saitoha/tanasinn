@@ -22,10 +22,161 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+let ZshCompletion = new Aspect();
+ZshCompletion.definition = {
+
+  _clearGrid: function _clearGrid() 
+  {
+    while (this._container.firstChild) {
+      this._container.removeChild(this._container.firstChild);
+    }
+  },
+
+  "[subscribe('event/data-arrived')]": 
+  function onDataArrived(data)
+  {
+//    try {
+    //let lines = data//.replace(/\x1b\[J|\n|<space>\s+<end><item>/g, "")
+    //  .split(/<item>/)
+      //.map(function(line) line.split(/<end>/).shift());
+    let lines = data.match(/<item>(.*?)<end>/gm).map(function(s) s.slice(6, -5)).filter(function(s) !s.match(/<space>/));  
+    Array.prototype.push.apply(this.lines, lines);
+    let match = data.match(/\x1b.*$/);
+    if (null !== match) {
+      let [prompt] = match;
+      this.onDataArrived.enabled = false;
+      let session = this._broker;
+      session.notify("command/enable-default-parser");
+      session.notify("event/data-arrived", "\r" + prompt);
+      this._clearGrid();
+      this.display();
+//      alert(this.lines.join("\n"));
+    }
+//    } catch(e) {alert(e)}
+  },
+
+  display: function() 
+  {
+    let lines = this.lines;
+    this.onDataArrived.enabled = false;
+    let colormap = [ "", "#cdffcf", "#cdd", "#dfffdd" ];
+    let session = this._broker;
+    let renderer = this._renderer;
+    let selected = -1;
+    try {
+    let {} = session.uniget(
+      "command/construct-chrome", 
+      {
+        parentNode: "#tanasinn_app_popup_container",
+        tagName: "rows",
+        style: <>
+          -moz-user-focus: none;
+          font-family: {renderer.font_family};
+          font-size: {renderer.font_size}px;
+          font-weight: bold;
+          color: #ffefff;
+          text-shadow: 1px 1px 3px black, 0px 0px 4px black;
+        </>,
+        childNodes: [
+          {
+            tagName: "row",
+            style: <>
+              padding: 0px 10px;
+            </> + (index == selected && <>
+              background-image: -moz-linear-gradient(top, #ddd, #eee); 
+              -moz-box-shadow: 1px 1px 5px black;
+              color: #ffefef;
+              border-radius: 5px;
+            </>),
+            childNodes: [
+              {
+                tagName: "box",
+                innerText: function() 
+                { 
+                  try { 
+                    return cell;//coUtils.Text.base64decode(cell); 
+                  } catch(e) { 
+                    return cell;
+                  }
+                }(),
+                style: <>
+                  padding: 0px 5px;
+                  color: {colormap[index]};
+                </>,
+              } for ([index, cell] in Iterator(line.split(",")))
+            ]
+          } for ([index, line] in Iterator(lines))
+        ],
+      });
+    this._datum.style.height = renderer.line_height + "px";
+//    this._datum.style.top = y + "px";
+    this._is_showing = true;
+    this._popup.openPopup(
+      this._datum, 
+      "after_start", 0, 0, true, true);
+//    session.notify("command/focus");
+    /*
+    if (-1 != selected) {
+      let scrollbox = this._scrollbox;
+      let rows = scrollbox.querySelector("rows");
+      let box_object = scrollbox.boxObject
+        .QueryInterface(Components.interfaces.nsIScrollBoxObject)
+      if (box_object) {
+        let row = rows.childNodes[selected];
+        let scrollY = {};
+        box_object.getPosition({}, scrollY);
+        let first_position = row.boxObject.y 
+          - scrollbox.boxObject.y;
+        let last_position = first_position 
+          - scrollbox.boxObject.height 
+          + row.boxObject.height;
+        if (first_position < scrollY.value) {
+          box_object.scrollTo(0, first_position);
+        } else if (last_position > scrollY.value) {
+          box_object.scrollTo(0, last_position);
+        }
+      }
+      scrollbox.setAttribute("orient", "vertical");
+    }
+    */
+    } catch (e) {alert(e)}
+  },
+
+  "[subscribe('sequence/osc/202')]":
+  function onZshCompletion(data) 
+  {
+    let session = this._broker;
+    session.notify("command/disable-default-parser");
+    this.onDataArrived.enabled = true;
+    this.lines = [];
+//    coUtils.Timer.setTimeout(function() {
+//      this.display();
+//    }, 100, this);
+  },
+
+  "[subscribe('sequence/osc/203'), enabled]":
+  function onZshCompletionCategory(data) 
+  {
+    //this.onDataArrived.enabled = true;
+    this.lines.push("-----" + data);
+  },
+
+  "[subscribe('sequence/osc/204'), enabled]":
+  function onThingy(data) 
+  {
+    let [kind, str] = data.split("|");
+    if (3 != kind) {
+      this.lines.push(str);
+    }
+//      alert(data)
+  },
+
+};
+
 /**
  *  @class PopupMenu
  */
-let PopupMenu = new Class().extends(Plugin);
+let PopupMenu = new Class().extends(Plugin).mix(ZshCompletion);
 PopupMenu.definition = {
 
   get id()
@@ -49,7 +200,7 @@ PopupMenu.definition = {
   _is_showing: false,
   
   /** post-constructor */
-  "[subscribe('initialized/{renderer & cursorstate}'), enabled]":
+  "[subscribe('initialized/{screen & renderer & cursorstate}'), enabled]":
   function onLoad(renderer, cursor_state) 
   {
     this._renderer = renderer;
@@ -65,6 +216,7 @@ PopupMenu.definition = {
   {
     this.onDisplay.enabled = true;
     this.onUndisplay.enabled = true;
+    this.onZshCompletion.enabled = true;
     let {
       tanasinn_app_popup_datum,
       tanasinn_app_popup,
@@ -145,6 +297,7 @@ PopupMenu.definition = {
     this.onmouseup.enabled = false;
     this.onDisplay.enabled = false;
     this.onUndisplay.enabled = false;
+    this.onZshCompletion.enabled = false;
     this._datum.parentNode.removeChild(this._datum);
     this._popup.parentNode.removeChild(this._popup);
     this._datum = null;
@@ -204,20 +357,6 @@ PopupMenu.definition = {
   {
     event.stopPropagation();
     event.preventDefault();
-  },
-
-  "[subscribe('sequence/osc/201')]":
-  function onUndisplay() 
-  {
-    this._is_showing = false;
-    coUtils.Timer.setTimeout(function() {
-      if (false === this._is_showing) {
-        this._popup.hidePopup();
-        let session = this._broker;
-        session.notify("command/focus");
-      }
-    }, 30, this);
-    this.onDisplay.enabled = true;
   },
 
   "[subscribe('sequence/osc/200')]":
@@ -318,6 +457,20 @@ PopupMenu.definition = {
       scrollbox.setAttribute("orient", "vertical");
     }
 //    box_object.scrollTo(0, selected * rows.firstChild.boxObject.height);
+  },
+
+  "[subscribe('sequence/osc/201')]":
+  function onUndisplay() 
+  {
+    this._is_showing = false;
+    coUtils.Timer.setTimeout(function() {
+      if (false === this._is_showing) {
+        this._popup.hidePopup();
+        let session = this._broker;
+        session.notify("command/focus");
+      }
+    }, 30, this);
+    this.onDisplay.enabled = true;
   },
 
   _selectRow: function _selectRow(row)

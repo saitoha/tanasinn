@@ -159,6 +159,18 @@ Parser.definition = {
     this.drive.enabled = false;
   },
 
+  "[subscribe('command/enable-default-parser'), enabled]": 
+  function enableDefaultParser()
+  {
+    this.drive.enabled = true;
+  },
+
+  "[subscribe('command/disable-default-parser'), enabled]": 
+  function disableDefaultParser()
+  {
+    this.drive.enabled = false;
+  },
+
   /** Parse and evaluate control codes and text pieces from the scanner. 
    *  @param {String} data incoming data in text format.
    */
@@ -177,6 +189,7 @@ Parser.definition = {
    */
   parse: function parse(data)
   {
+    try {
     let scanner = this._scanner;
     let emurator = this._emurator;
     let decoder = this._decoder;
@@ -232,6 +245,7 @@ Parser.definition = {
         scanner.setSurplus(); // backup surplus (unparsed) sequence.
       }
     }
+    } catch(e) {alert(e)}
   },
 
   /** Pads NULL characters before each of wide characters.

@@ -371,7 +371,7 @@ Renderer.definition = {
 
   /** Render text in specified cells.
    */
-  _drawWord: function _drawWord(context, codes, x, y, char_width, length, height, attr)
+  _drawWord: function _drawWord(context, cells, x, y, char_width, length, height, attr)
   {
     // Get hexadecimal formatted text color (#xxxxxx) 
     // form given attribute structure. 
@@ -392,16 +392,16 @@ Renderer.definition = {
 //    if (this.force_monospace_rendering) {
 //        let position = x;
 //        let previous_position = x;
-//        for (let i = 0; i < codes.length; ++i) {
-//          let cell = codes[i];
+//        for (let i = 0; i < cells.length; ++i) {
+//          let cell = cells[i];
 //          let code = cell.c;
 //          let is_wide = 0 == code;
 //          if (is_wide) {
-//            cell = codes[++i];
+//            cell = cells[++i];
 //            code = cell.c;
 //          }
 //          if (cell.combining) {
-//            let combined_character = String.fromCharCode(codes[i - 1].c, code);
+//            let combined_character = String.fromCharCode(cells[i - 1].c, code);
 //            context.fillText(combined_character, previous_position, y);
 //            continue;
 //          }
@@ -423,7 +423,20 @@ Renderer.definition = {
 //        };
 ////      }
 //    } else {
-      let text = String.fromCharCode.apply(String, codes.map(function(code) code.c));
+      let codes = [code for (code in function () {
+        for (let [, cell] in Iterator(cells)) {
+          let code = cell.c;
+          if (code > 0xffff) {
+            // emit 16bit + 16bit surrogate pair.
+            code -= 0x10000;
+            yield (code >> 10) | 0xD800;
+            yield (code & 0x3FF) | 0xDC00;
+          } else {
+            yield code;
+          }
+        }
+      }())];
+      let text = String.fromCharCode.apply(String, codes);
       context.fillText(text, x, y, char_width * length);
 //    }
   },
@@ -463,6 +476,9 @@ Renderer.definition = {
   },
         
 }
+//alert(String.fromCharCode("𠁐".charCodeAt(0)) == "𠁐")
+//alert("𠁐")
+//alert(String.fromCharCode(0x20040) == "@")
 
 /**
  * @fn main

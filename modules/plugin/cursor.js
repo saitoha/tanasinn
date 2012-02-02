@@ -225,6 +225,7 @@ Cursor.definition = {
       let width = char_width * (isWide ? 2: 1);
       let height = line_height;
       context.fillRect(x, y, width, height);
+
     }
   },
 

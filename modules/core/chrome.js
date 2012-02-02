@@ -156,23 +156,7 @@ OuterChrome.definition = {
             ],
           },
         },
-        /*
-        {
-          tagName: "box",
-          id: "tanasinn_overlay_layer",
-          style: <>
-            position: fixed;
-            margin-top: -130px;
-            left: 50%;
-          </>,
-          childNodes: {
-            tagName: "image",
-            width: 200,
-            height: 200,
-            src: "file:///Users/user/yu.png",
-          },
-        },
-*/
+
       ],
     },
 

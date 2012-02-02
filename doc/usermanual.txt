@@ -1,6 +1,6 @@
 #include "define.h"
 
-= tanasinn terminal emurator 
+= tanasinn terminal emulator 
 
 #if __EN__
 link:./usermanual-ja.html[日本語/Japanese]
@@ -12,7 +12,7 @@ link:./usermanual.html[English/英語]
 
 == Overview
 
-    Here is a terminal emurator that runs on Firefox/Thunderbird/SeaMonkey.
+    Here is a terminal emulator that runs on Firefox/Thunderbird/SeaMonkey.
     It enables you to access flexible, powerful functionality 
     provided by operating systems, such as commandline shells, or curses-based 
     applications.
@@ -21,7 +21,7 @@ link:./usermanual.html[English/英語]
 
 == 概要
 
-    "tanasinn terminal emurator" は Firefox/Thunderbird/SeaMonkey上で動作する端末エミュレータです。
+    "tanasinn terminal emulator" は Firefox/Thunderbird/SeaMonkey上で動作する端末エミュレータです。
     コマンドラインシェルやcursesベースのアプリケーション等、オペレーティングシステムが提供する
     柔軟でパワフルな機能群にブラウザ上のUIからアクセスすることができます。
 
@@ -65,7 +65,7 @@ link:./usermanual.html[English/英語]
     - Localization supported. It is using gettext-style method. you can edit localize resource on UI.
     - You can selects variable character encoding supported by Gecko.
     - Supports transparent window. it is useful when www-browseing while working at terminal.
-    - xterm-like mouse emuration. supports smoothing pixel scroll.
+    - xterm-like mouse emulation. supports smoothing pixel scroll.
     - Text selection / Rectangle text selection.
     - Supports copy / paste in Drag & Drop or keyboard shortcut.
     - Supports move / resize through draging operation.
@@ -229,7 +229,7 @@ image::images/xulapp.png[width=780]
 
 == Features in future...
 
-    * Improving emuration. now emuration engine is running with xterm compatible mode. 
+    * Improving emulation. now emulation engine is running with xterm compatible mode. 
       but it ought to read terminfo entries.
     * Supporting color scheme. import/export color palette contains 16 or 256 colors.
     * Supporting skins. you can make it otakunized.
@@ -463,7 +463,7 @@ cygstart firefox.exe --app application.ini
 #if __EN__
 === Basic operating procedure 
 
-    It is similer to well-known terminal emurators, like xterm. 
+    It is similer to well-known terminal emulators, like xterm. 
     but including specific fetures as follows.
 #elif __JP__
 === 基本的な操作方法
@@ -675,7 +675,7 @@ let g:tanasinnviewsourcecommand="vim +e '%'"
 #if __EN__
 == Known issues
 
- - In Windows + Cygwin enviroinment, booting and emuration performance is so damn slow!!
+ - In Windows + Cygwin enviroinment, booting and emulation performance is so damn slow!!
  - At SandS(Space and Shihft) keyboard enviroinment, shift + shift 
    (shift key twice) key sequence are detected by space + space, unfortunately!!
    I think something other way for it should be provided.
