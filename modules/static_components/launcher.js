@@ -519,7 +519,7 @@ TextCompletionDisplayDriver.definition = {
             },
             {
               tagName: "label",
-              style: "font-size: 1em; color: #555;",
+              style: "font-size: 1em; color: #555; text-shadow: none;",
               value: result.comments && result.comments[i],
               crop: "end",
             },

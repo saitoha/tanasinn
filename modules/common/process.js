@@ -41,6 +41,7 @@ with (scope) {
   coUtils.Runtime.loadScript("modules/common/category.js", scope);
   coUtils.Runtime.loadScript("modules/common/eastasian.js", scope);
 }
+
 with (scope) {
 
   let Environment = new Aspect();
@@ -92,38 +93,36 @@ with (scope) {
       this._runtime_path = value;
     },
 
-    /** @property autoload_path */
-    get autoload_path()
+    /** @property static_path */
+    get static_path()
     {
-      return this._autoload_path || [
-        "modules/autoload",
-        "modules/base",
-        String(<>{this.runtime_path}/autoload</>),
+      return this._static_path || [
+        "modules/static_components",
+        "modules/static_dynamic_components",
+        String(<>{this.runtime_path}/static_components</>),
         String(<>{this.runtime_path}/base</>)
       ];
     },
 
-    set autoload_path(value)
+    set static_path(value)
     {
-      this._autoload_path = value;
+      this._static_path = value;
     },
 
-    /** @property search_path */
-    get search_path()
+    /** @property dynamic_path */
+    get dynamic_path()
     {
-      return this._search_path || [ 
-        "modules/core",
-        "modules/plugin", 
-        "modules/base",
-        String(<>{this.runtime_path}/core</>),
-        String(<>{this.runtime_path}/plugin</>),
-        String(<>{this.runtime_path}/base</>)
+      return this._dynamic_path || [ 
+        "modules/static_dynamic_components",
+        "modules/dynamic_components",
+        String(<>{this.runtime_path}/static_dynamic_components</>),
+        String(<>{this.runtime_path}/dynamic_components</>)
       ];
     },
 
-    set search_path(value)
+    set dynamic_path(value)
     {
-      this._search_path = value;
+      this._dynamic_path = value;
     },
 
     _guessCygwinRoot: function _guessCygwinRoot() 
@@ -219,7 +218,7 @@ with (scope) {
           coUtils.Debug.reportError(e);
         }
       }
-      this.load(this, this.autoload_path);
+      this.load(this, this.static_path);
     },
 
     checkEnvironment: function checkEnvironment()
@@ -231,7 +230,7 @@ with (scope) {
      */
     load: function load(desktop, search_path) 
     {
-      search_path = search_path || this.search_path;
+      search_path = search_path || this.dynamic_path;
       let entries = coUtils.File.getFileEntriesFromSerchPath(search_path);
       for (let entry in entries) {
         let scope = new this.default_scope;

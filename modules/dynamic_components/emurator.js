@@ -22,14 +22,14 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// @class Emurator
+// @class Emulator
 
 /**
- * @class Emurator 
- * @brief Emuration core object, manages screen object, some flags and buffers.
+ * @class Emulator 
+ * @brief Emulation core object, manages screen object, some flags and buffers.
  */
-let Emurator = new Class().extends(Component);
-Emurator.definition = {
+let Emulator = new Class().extends(Component);
+Emulator.definition = {
 
   get id()
     "emurator",
@@ -68,7 +68,7 @@ function main(desktop)
 {
   desktop.subscribe(
     "@initialized/broker", 
-    function(session) new Emurator(session));
+    function(session) new Emulator(session));
 }
 
 

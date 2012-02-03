@@ -301,7 +301,7 @@ CP932Decoder.definition = {
 
   activate: function activate() 
   {
-    let resource_path = "modules/mappings/cp932.txt.js";
+    let resource_path = "modules/charset/cp932.txt.js";
     let content = coUtils.IO.readFromFile(resource_path);
     let mapping = JSON.parse(content);
     this._map = mapping.map;    

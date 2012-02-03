@@ -38,7 +38,7 @@
    event.js
    base.js
   }
-  autoload=autoload {
+  static_components=static_components {
    .
    desktop.js
    launcher.js
@@ -50,7 +50,7 @@
    persist.js
    map.js
   }
-  core=core {
+  dynamic_components=dynamic_components {
    session.js
 
    chrome.js
@@ -74,11 +74,7 @@
    encoder.js
    focus.js
    window.js
-  }
 
-  ttydriver.py
-
-  plugin=plugin {
    cursor.js
    splitter.js
 
@@ -134,6 +130,9 @@
     sequence.js
    }
   }
+
+  ttydriver.py
+
   locale=locale {
    ja-JP.js
   }

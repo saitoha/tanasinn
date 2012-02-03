@@ -417,6 +417,13 @@ cygstart firefox.exe --app application.ini
 
 #if __EN__
 === Launching terminal
+#elif __JP__
+=== 端末の起動
+#endif
+
+image::images/launcher.png[width=320]
+
+#if __EN__
 
 ==== If it is Installed as Add-on: 
     Pressing control key twice (ctrl + ctrl), it shows Commandline Launcher interface.
@@ -438,7 +445,7 @@ cygstart firefox.exe --app application.ini
 ----
 
 #elif __JP__
-=== 端末の起動
+
 ==== 拡張としてインストールした場合
     Controlキーの2度押し (ctrl + ctrl) でコマンドラインランチャーインターフェースが出現します。
     そこで例えば、"man man[Enterキー]" とタイプしてみてください。
@@ -459,6 +466,22 @@ cygstart firefox.exe --app application.ini
 ----
 
 #endif
+
+#if __EN__
+=== Appearance and User interface
+    
+    Tanasinn window 
+    Now the implementation of this part is witten by rush job, commandline parser 
+    is not proper one.
+
+#elif __JP__
+=== コマンドラインインターフェースを使う
+    
+    shift + shift でコマンドライン
+
+
+#endif
+
 
 #if __EN__
 === Basic operating procedure 
@@ -502,6 +525,7 @@ cygstart firefox.exe --app application.ini
     矩形選択。 (Terminal.appの真似)
 #endif
 
+
 #if __EN__
 === Using commandline interface
     
@@ -512,9 +536,27 @@ cygstart firefox.exe --app application.ini
 #elif __JP__
 === コマンドラインインターフェースを使う
     
+    shift + shift でコマンドライン
+
+
+#endif
+
+
+#if __EN__
+=== Setting enviroinment variables.
+    
+
+#elif __JP__
+=== コマンドラインインターフェースを使う
+    
     …仕様が全然固まってませんのでまだ書けません。
     この部分は作りはじめて日が浅いので、これから色々考えます。
 #endif
+
+
+----
+:tanasinncommand <コマンド>
+----
 
 
 #if __EN__
