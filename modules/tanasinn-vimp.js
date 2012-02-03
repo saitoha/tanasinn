@@ -25,16 +25,21 @@
 var PLUGIN_INFO =
 <VimperatorPlugin>
     <name>{NAME}</name>
-    <description>character hint mode.</description>
+    <description>Provides some commands for driving tanasinn.</description>
     <detail><![CDATA[
-let g:tanasinneditor:
-    set editor used by char-hint.
+
+let g:tanasinneditorcommand:
     e.g.)
-      let g:tanasinneditor="vim"
-    Set the external text editor, running on tanasinn window. 
+      let g:tanasinneditorcommand="vim '%'"
+    Set the external text editor command running on tanasinn window. 
     The editor must be console editor.
     If this variable is empty or undefined, default procedure 
     will be called when <C-i> is pressed in Insert and TextArea.
+
+let g:tanasinnviewsourcecommand:
+    e.g.)
+      let g:tanasinnviewsourcecommand="vim +e '%'"
+
      ]]></detail>
 </VimperatorPlugin>;
 //}}}
@@ -61,7 +66,7 @@ function getTanasinnProcess()
       .filename
       .split(" -> ").pop()
       .split("?").shift();
-    let file = current_file + "/../../tanasinn/modules/common/process.js";
+    let file = current_file + "/../../tanasinn/modules/common/process.js?" + new Date().getTime();
     Components
       .classes["@mozilla.org/moz/jssubscript-loader;1"]
       .getService(Components.interfaces.mozIJSSubScriptLoader)
@@ -77,7 +82,7 @@ let process = getTanasinnProcess();
 let desktops = process.notify("get/desktop-from-window", window);
 let desktop;
 if (desktops) {
-  [desktop] = desktop;
+  [desktop] = desktops;
 } else {
   process.notify("event/new-window-detected", window);
   desktop = process.uniget("get/desktop-from-window", window);

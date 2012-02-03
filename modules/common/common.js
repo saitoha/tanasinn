@@ -572,21 +572,10 @@ coUtils.getWindow = function getWindow()
   let windowMediator = Components
     .classes["@mozilla.org/appshell/window-mediator;1"]
     .getService(Components.interfaces.nsIWindowMediator);
-  let result;
-  let app_info = Components
-    .classes["@mozilla.org/xre/app-info;1"]
-    .getService(Components.interfaces.nsIXULAppInfo);
-  if ("Thunderbird" == app_info.name) {
-    result = windowMediator
-      .getMostRecentWindow("mail:3pane") || window;
-  } else {
-    result = windowMediator
-      .getMostRecentWindow("navigator:browser") || window;
-  }
+  let result = windowMediator.getMostRecentWindow("navigator:browser")
+            || windowMediator.getMostRecentWindow("mail:3pane");
   // cache result
-  return (coUtils.getWindow = function() {
-    return result;
-  })();
+  return result;
 }
 
 /** Provides printf-like formatting.
@@ -949,6 +938,7 @@ coUtils.File = new function() {
   getFileLeafFromAbstractPath: 
   function getFileLeafFromAbstractPath(abstract_path) 
   {
+    abstract_path = String(abstract_path);
     let target_leaf;
     let split_path = abstract_path.split(/[\/\\]/);
     let root_entry = split_path.shift();
@@ -1644,22 +1634,15 @@ coUtils.Localize = new function()
       this.load();
     },
 
-    /** Gets locale-mapping file for current locale. */
-    getMessageFileName: function getMessageFileName() 
-    {
-      let locale = this._locale;
-      let file_name = String(<>modules/locale/{locale}.json</>);
-      return file_name;
-    },
-
     /** Loads locale-mapping file and apply it. */
     load: function load() 
     {
-      let file_name = this.getMessageFileName();
-      let file = coUtils.File.getFileLeafFromAbstractPath(file_name);
+      let locale = this._locale;
+      let path = <>modules/locale/{locale}.json</>;
+      let file = coUtils.File.getFileLeafFromAbstractPath(path);
       let db = null;
       if (file.exists()) {
-        let content = coUtils.IO.readFromFile(file_name, "utf-8");
+        let content = coUtils.IO.readFromFile(path, "utf-8");
         db = JSON.parse(content);
       } else {
         db = {
@@ -1718,12 +1701,12 @@ coUtils.Localize = new function()
         let match = source.match(pattern)
         if (match) {
           match = match.map(function(text) {
-            let quoted_source = text.slice(2, -1);
+            let quoted_source = text.slice(3, -2);
             let quote_char = text[0];
             let escaped_quote_char = "\\" + quote_char;
             return quoted_source
-              .replace(/\\/g, "\\\\")
-              .replace(new RegExp(escaped_quote_char, "g"), quoted_char);
+              .replace(/"[\s\n\r]*,[\s\n\r]*"/g, "")
+              .replace(new RegExp(escaped_quote_char, "g"), quote_char);
           })
           for (let [, message] in Iterator(match)) {
             yield message;

@@ -143,6 +143,7 @@
   }
   tool {
    ~/.zshrc
+   ~/.tanasinn.js
    .tanasinn.js
    licence.pl
    EastAsianWidthDetectorGenerator.pl

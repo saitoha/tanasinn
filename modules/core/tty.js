@@ -279,7 +279,6 @@ IOManager.definition = {
     session.notify(<>initialized/{this.id}</>, this);
   },
 
-
   /**
    * @property {Number} port Port number for I/O communication.
    */
@@ -454,8 +453,6 @@ ExternalDriver.definition = {
   get id()
     "externaldriver",
 
-  "[persistable] cygwin_root": "C:\\cygwin",
-
   _external_process: null,
 
   /*
@@ -470,24 +467,20 @@ ExternalDriver.definition = {
   "[subscribe('@event/broker-started'), enabled]":
   function onLoad(session) 
   {
-    let runtime_path;
+    let executable_path;
+    let desktop = session._broker;
+    let process = desktop._broker;
     let os = coUtils.Runtime.os;
     if ("WINNT" == os) {
-      runtime_path = String(<>{this.cygwin_root}\bin\run.exe</>);
-    } else if ("Darwin" == os) {
-      //runtime_path = "/opt/local/bin/pythonw2.7";
-      //runtime_path = "/usr/bin/python2.5";
-      runtime_path = "/usr/bin/python";
-    } else if ("FreeBSD" == os) {
-      runtime_path = "/usr/local/bin/python";
-    } else /* Linux */ {
-      runtime_path = "/usr/bin/python";
+      executable_path = String(<>{process.cygwin_root}\bin\run.exe</>);
+    } else {
+      executable_path = session.uniget("get/python-path");
     }
     // create new localfile object.
     let runtime = Components
       .classes["@mozilla.org/file/local;1"]
       .createInstance(Components.interfaces.nsILocalFile);
-    runtime.initWithPath(runtime_path);
+    runtime.initWithPath(executable_path);
 
     // create new process object.
     let external_process = Components
@@ -501,23 +494,26 @@ ExternalDriver.definition = {
   /** Kill target process. */
   kill: function kill(pid) 
   {
-    let runtime_path;
+    let kill_path;
     let args;
     if ("WINNT" != coUtils.Runtime.os) {
       let external_process = this._external_process;
       //if (external_process.isRunning)
       //  external_process.kill();
-      runtime_path = "/bin/kill";
+      kill_path = "/bin/kill";
       args = [ "-9", String(pid) ];
     } else { // Darwin, Linux or FreeBSD
-      runtime_path = String(<>{this.cygwin_root}\bin\run.exe</>);
+      let session = this._broker;
+      let desktop = session._broker;
+      let process = desktop._broker;
+      kill_path = String(<>{process.cygwin_root}\bin\run.exe</>);
       args = [ "/bin/kill", "-9", String(pid) ];
     }
     // create new localfile object.
     let runtime = Components
       .classes["@mozilla.org/file/local;1"]
       .createInstance(Components.interfaces.nsILocalFile);
-    runtime.initWithPath(runtime_path);
+    runtime.initWithPath(kill_path);
 
     // create new process object.
     let process = Components
@@ -539,13 +535,13 @@ ExternalDriver.definition = {
   /** Checks if the process is running. */
   processIsAvailable: function processIsAvailable(pid) 
   {
-    let runtime_path;
+    let kill_path;
     let args;
     if ("WINNT" == coUtils.Runtime.os) {
-      runtime_path = String(<>{this.cygwin_root}\bin\run.exe</>);
+      kill_path = String(<>{this.cygwin_root}\bin\run.exe</>);
       args = [ "/bin/kill", "-0", String(pid) ];
     } else { // Darwin, Linux or FreeBSD
-      runtime_path = "/bin/kill";
+      kill_path = "/bin/kill";
       args = [ "-0", String(pid) ];
     }
 
@@ -553,7 +549,7 @@ ExternalDriver.definition = {
     let runtime = Components
       .classes["@mozilla.org/file/local;1"]
       .createInstance(Components.interfaces.nsILocalFile);
-    runtime.initWithPath(runtime_path);
+    runtime.initWithPath(kill_path);
 
     // create new process object.
     let process = Components

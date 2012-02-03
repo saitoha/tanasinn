@@ -22,7 +22,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-
 /** 
  * @class Desktop
  */
@@ -58,6 +57,13 @@ Desktop.definition = {
   function initializeWithWindow(window)
   {
     this._window = window;
+
+    // register getter topic.
+    let broker = this._broker;
+    alert("desktop:"+broker.python_path);
+    this.subscribe("get/cygwin-root", function() broker.cygwin_root);
+    this.subscribe("get/python-path", function() broker.python_path);
+
     this.install();
   },
 
@@ -119,7 +125,7 @@ Desktop.definition = {
     broker.load(this, search_path);
     let document = parent.ownerDocument;
     let box = document.createElement("box");
-    if (coUtils.Runtime.app_name.match(/^(Firefox|Thunderbird|SeaMonkey|Songbird)$/)) {
+    if (!coUtils.Runtime.app_name.match(/tanasinn/)) {
       box.style.cssText = "position: fixed; top: 0px; left: 0px";
     }
     // xul app

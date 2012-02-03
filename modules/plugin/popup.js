@@ -200,7 +200,7 @@ PopupMenu.definition = {
   _is_showing: false,
   
   /** post-constructor */
-  "[subscribe('initialized/{screen & renderer & cursorstate}'), enabled]":
+  "[subscribe('initialized/{renderer & cursorstate}'), enabled]":
   function onLoad(renderer, cursor_state) 
   {
     this._renderer = renderer;

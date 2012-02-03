@@ -80,6 +80,12 @@ Session.definition = {
   "[persistable] profile_directory": "$Home/.tanasinn/profile",
   "[persistable] profile": "default",
 
+  get python_path()
+  {
+    let broker = this._broker;
+    return broker.uniget("get/python-path");
+  },
+
   observerService: Components
     .classes["@mozilla.org/observer-service;1"]
     .getService(Components.interfaces.nsIObserverService),
@@ -134,6 +140,11 @@ Session.definition = {
   /** Create terminal UI and start tty session. */ 
   initializeWithRequest: function initializeWithRequest(request) 
   {
+    // register getter topic.
+    let broker = this._broker;
+    this.subscribe("get/cygwin-root", function() broker.uniget("get/cygwin-root"));
+    this.subscribe("get/python-path", function() broker.uniget("get/python-path"));
+
     this._request_id = coUtils.Uuid.generate().toString();
 
     let desktop = this._broker;
@@ -166,7 +177,7 @@ Session.definition = {
   {
     this.removeGlobalEvent("quit-application");
     this.notify("event/session-stopping", this);
-    if (!coUtils.Runtime.app_name.match(/^(Firefox|Thunderbird|SeaMonkey|Songbird)$/)) {
+    if (coUtils.Runtime.app_name.match(/tanasinn/)) {
       this.window.close(); // close window
 
       let application = Components

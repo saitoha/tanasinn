@@ -334,7 +334,7 @@ function main(desktop)
     "@initialized/broker", 
     function(session) 
     {
-      if (coUtils.Runtime.app_name.match(/^(Firefox|Thunderbird|SeaMonkey)$/)) {
+      if (!coUtils.Runtime.app_name.match(/tanasinn/)) {
         new CaptureBox(session);
         new TopLeftResizer(session);
         new TopRightResizer(session);

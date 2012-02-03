@@ -1247,11 +1247,17 @@ XPCOMFactory.definition = {
     if (Components.classes[this._contractID]) {
       return;
     }
+
     Components.manager
       .QueryInterface(Components.interfaces.nsIComponentRegistrar)
       .registerFactory(
         this._classID, this._description, this._contractID, this);
     this._registered = true;
+
+    let observer_service = Components
+      .classes["@mozilla.org/observer-service;1"]
+      .getService(Components.interfaces.nsIObserverService);
+    observer_service.addObserver(this, "quit-application", false);
   },
 
   unregisterSelf: function unregisterSelf()
@@ -1283,6 +1289,15 @@ XPCOMFactory.definition = {
     throw Componetns.results.NS_ERROR_NOT_IMPLEMENTED;
   },
 
+  observe: function observe() 
+  {
+    let observer_service = Components
+      .classes["@mozilla.org/observer-service;1"]
+      .getService(Components.interfaces.nsIObserverService);
+    observer_service.removeObserver(this, "quit-application");
+    this.unregisterSelf();
+  },
+
   QueryInterface: function QueryInterface(a_IID)
   {
     if (!a_IID.equals(Components.interafaces.nsIFactory) 
@@ -1297,31 +1312,29 @@ XPCOMFactory.definition = {
 let CoClass = function() this.initialize.apply(this, arguments);
 CoClass.prototype = {
 
+  factory: null,
+
   applyDefinition: function applyDefinition(definition) 
   {
     let prototype = Class.prototype.applyDefinition.apply(this, arguments);
     if (!Components.classes[prototype.contractID]) {
-      let factory = new XPCOMFactory(
+      this.factory = new XPCOMFactory(
         this, 
         prototype.classID,
         prototype.description,
         prototype.contractID
       );
-      factory.registerSelf();
-
-      let observer_service = Components
-        .classes["@mozilla.org/observer-service;1"]
-        .getService(Components.interfaces.nsIObserverService);
-      let observer = { 
-        observe: function observe() 
-        {
-          observer_service.removeObserver(this, "quit-application");
-          factory.unregisterSelf();
-        },
-      };
-      observer_service.addObserver(observer, "quit-application", false);
+      this.factory.registerSelf();
     }
     return prototype;
+  },
+
+  destroy: function destory()
+  {
+    if (this.factory) {
+      this.factory.unregisterSelf();
+      this.factory = null;
+    }
   },
 
 };

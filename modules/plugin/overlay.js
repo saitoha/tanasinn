@@ -113,6 +113,7 @@ OverlayIndicator.definition = {
   "[persistable, watchable] background": "-moz-linear-gradient(top, #777, #000)",
 
   _element: null,
+  _timer: null,
   
   /** post-constructor */
   "[subscribe('initialized/{chrome & decoder}'), enabled]":
@@ -178,22 +179,22 @@ OverlayIndicator.definition = {
 
   show: function show(timeout) 
   {
-    this._enabled = true;
+    if (this._timer) {
+      this._timer.cancel();
+    }
     let style = this._element.style;
     style.MozTransitionDuration = "0ms";
     style.opacity = this.opacity;
     if (timeout) {
-      coUtils.Timer.setTimeout(function() {
-        if (this._enabled) {
-          this.hide();
-        }
+      this._timer = coUtils.Timer.setTimeout(function() {
+        this._timer = null;
+        this.hide();
       }, timeout, this);
     }
   },
 
   hide: function hide() 
   {
-    this._enabled = false;
     let style = this._element.style;
     style.MozTransitionDuration = this.fadeout_duration + "ms";
     style.opacity = 0.0; 

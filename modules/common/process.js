@@ -42,10 +42,142 @@ with (scope) {
   coUtils.Runtime.loadScript("modules/common/eastasian.js", scope);
 }
 with (scope) {
+
+  let Environment = new Aspect();
+  Environment.definition = {
+
+  // public properties
+
+    /** @property cygwin_root */
+    get cygwin_root()
+    {
+      return this._cygwin_root || this._guessCygwinRoot();
+    },
+
+    set cygwin_root(value)
+    {
+      this._cygwin_root = value;
+    },
+
+    /** @property bin_path */
+    get bin_path()
+    {
+      return this._bin_path || this._guessBinPath();
+    },
+
+    set bin_path(value)
+    {
+      this._bin_path = value;
+    },
+
+    /** @property python_path */
+    get python_path()
+    {
+      return this._python_path || this._guessPythonPath();
+    },
+
+    set python_path(value)
+    {
+      this._python_path = value;
+    },
+
+    /** @property runtime_path */
+    get runtime_path()
+    {
+      return this._runtime_path || "$Home/.tanasinn";
+    },
+
+    set runtime_path(value)
+    {
+      this._runtime_path = value;
+    },
+
+    /** @property autoload_path */
+    get autoload_path()
+    {
+      return this._autoload_path || [
+        "modules/autoload",
+        "modules/base",
+        String(<>{this.runtime_path}/autoload</>),
+        String(<>{this.runtime_path}/base</>)
+      ];
+    },
+
+    set autoload_path(value)
+    {
+      this._autoload_path = value;
+    },
+
+    /** @property search_path */
+    get search_path()
+    {
+      return this._search_path || [ 
+        "modules/core",
+        "modules/plugin", 
+        "modules/base",
+        String(<>{this.runtime_path}/core</>),
+        String(<>{this.runtime_path}/plugin</>),
+        String(<>{this.runtime_path}/base</>)
+      ];
+    },
+
+    set search_path(value)
+    {
+      this._search_path = value;
+    },
+
+    _guessCygwinRoot: function _guessCygwinRoot() 
+    {
+      return "C:\\cygwin";
+    },
+
+    _guessBinPath: function _guessBinPath()
+    {
+      return ["/bin", "/usr/bin/", "/usr/local/bin", "/opt/local/bin"].join(":");
+    },
+
+    _guessPythonPath: function _guessPythonPath() 
+    {
+      let os = coUtils.Runtime.os;
+      let bin_path = this.bin_path;
+      let executeable_postfix = "WINNT" == os ? ".exe": "";
+      let python_paths = bin_path.split(":").map(function(path) {
+        let directory = Components
+          .classes["@mozilla.org/file/local;1"]
+          .createInstance(Components.interfaces.nsILocalFile);
+        if ("WINNT" == os) {
+          // FIXME: this code is not works well when path includes space characters.
+          path = this.cygwin_root + path.replace(/\//g, "\\");
+        }
+        directory.initWithPath(path);
+        return directory;
+      }).filter(function(directory) 
+      {
+        return directory.exists() && directory.isDirectory();
+      }).reduce(function(accumulator, directory) {
+        let paths = [2.9, 2.8, 2.7, 2.6, 2.5].map(function(version) 
+          {
+            let file = directory.clone();
+            file.append("python" + version + executeable_postfix);
+            return file;
+          }).filter(function(file)
+          {
+            return file.exists() && file.isExecutable();
+          }).map(function(file) {
+            return file.path;
+          });
+        Array.prototype.push.apply(accumulator, paths);
+        return accumulator;
+      }, []);
+      return python_paths.shift();
+    },
+
+  };
+
   /**
    * @class Process
    */
-  let Process = new CoClass().extends(EventBroker);
+  let Process = new CoClass().extends(EventBroker).mix(Environment);
   Process.definition = {
 
     get id()
@@ -69,44 +201,29 @@ with (scope) {
     get wrappedJSObject()
       this,
 
-    "[persistable] profile_directory": "$Home/.tanasinn/globalsettings",
-    "[persistable] profile": "default",
+    profile_directory: "$Home/.tanasinn/globalsettings",
+    profile: "default",
 
     initial_settings_path: "$Home/.tanasinn.js",
-    runtime_path: "$Home/.tanasinn",
-    search_path: null,
-    autoload_path: null,
-  
+ 
     /** constructor. */
     initialize: function initialize() 
     {
-      // set search path.
-      let runtime_path = this.runtime_path;
-      this.autoload_path = [
-        "modules/autoload",
-        "modules/base",
-        String(<>{runtime_path}/autoload</>),
-        String(<>{runtime_path}/base</>)
-      ];
-      this.search_path = [ 
-        "modules/core",
-        "modules/plugin", 
-        "modules/base",
-        String(<>{runtime_path}/core</>),
-        String(<>{runtime_path}/plugin</>),
-        String(<>{runtime_path}/base</>)
-      ];
       // load initial settings.
       let path = this.initial_settings_path;
       let file = coUtils.File.getFileLeafFromAbstractPath(path);
       if (file && file.exists()) {
         try {
-          coUtils.Runtime.loadScript(path, new this.default_scope);
+          coUtils.Runtime.loadScript(path, { process: this } );
         } catch (e) {
           coUtils.Debug.reportError(e);
         }
       }
       this.load(this, this.autoload_path);
+    },
+
+    checkEnvironment: function checkEnvironment()
+    {
     },
 
     /** Load *.js files from specified directories. 
