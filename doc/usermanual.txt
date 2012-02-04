@@ -42,11 +42,11 @@ Now version 0.1.5.1 available.
 
     動かなかった場合は ~/.tanasinn.js に、このように書いてみてください。
 
----
-    process.cygwin_root = "C:\\cygwin";
-    process.bin_path = "/bin:/usr/bin:/usr/local/bin:/opt/local/bin";
-    process.python_path = "/usr/bin/python"
----
+----
+process.cygwin_root = "C:\\cygwin";
+process.bin_path = "/bin:/usr/bin:/usr/local/bin:/opt/local/bin";
+process.python_path = "/usr/bin/python"
+----
 
     それでもだめな環境もあるかもしれません。
     こちらからはtwitter用ハッシュタグ #tanasinn / #tanasinnが動かない / #tanasinn_do_not_works あたりで探してみます。
