@@ -99,8 +99,8 @@ with (scope) {
       return this._static_path || [
         "modules/static_components",
         "modules/static_dynamic_components",
-        String(<>{this.runtime_path}/static_components</>),
-        String(<>{this.runtime_path}/base</>)
+        String(<>{this.runtime_path}/modules/static_components</>),
+        String(<>{this.runtime_path}/modules/base</>)
       ];
     },
 
@@ -115,8 +115,8 @@ with (scope) {
       return this._dynamic_path || [ 
         "modules/static_dynamic_components",
         "modules/dynamic_components",
-        String(<>{this.runtime_path}/static_dynamic_components</>),
-        String(<>{this.runtime_path}/dynamic_components</>)
+        String(<>{this.runtime_path}/modules/static_dynamic_components</>),
+        String(<>{this.runtime_path}/modules/dynamic_components</>)
       ];
     },
 

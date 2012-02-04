@@ -5,14 +5,13 @@ UNICODE_SOURCE=UnicodeData.txt
 EASTASIAN_SOURCE=EastAsianWidth.txt
 CATEGORY_JS=common/category.js
 EASTASIAN_JS=common/eastasian.js
-CATEGORY_GENERATOR=UnicodeCategoryDetector.pl
+CATEGORY_GENERATOR=UnicodeCategoryDetectorGenerator.pl
 EASTASIAN_GENERATOR=EastAsianWidthDetectorGenerator.pl
 
 MSTART="\\033[32m====================\>\\033[36m"
 MEND="\\033[0m"
 ESTART="\\033[31m"
 EEND="\\033[36m"
-
 
 all: $(MAKEFILE) $(CATEGORY_JS) $(EASTASIAN_JS)
 
@@ -52,5 +51,5 @@ $(EASTASIAN_SOURCE):
 clean:
 
 maintainer-clean:
-	$(RM) $(EASTASIAN_JS) $(EASTASIAN_SOURCE)
+	$(RM) $(CATEGORY_JS) $(UNICODE_SOURCE) $(EASTASIAN_JS) $(EASTASIAN_SOURCE)
 

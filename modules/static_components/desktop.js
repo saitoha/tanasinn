@@ -60,7 +60,6 @@ Desktop.definition = {
 
     // register getter topic.
     let broker = this._broker;
-    alert("desktop:"+broker.python_path);
     this.subscribe("get/cygwin-root", function() broker.cygwin_root);
     this.subscribe("get/python-path", function() broker.python_path);
 

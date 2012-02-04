@@ -476,19 +476,27 @@ ExternalDriver.definition = {
     } else {
       executable_path = session.uniget("get/python-path");
     }
-    // create new localfile object.
-    let runtime = Components
-      .classes["@mozilla.org/file/local;1"]
-      .createInstance(Components.interfaces.nsILocalFile);
-    runtime.initWithPath(executable_path);
+      try {
+    executable_path.split(":").some(function(path) {
+      // create new localfile object.
+      let runtime = Components
+        .classes["@mozilla.org/file/local;1"]
+        .createInstance(Components.interfaces.nsILocalFile);
+      runtime.initWithPath(path);
+      if (!runtime.exists() || !runtime.isExecutable()) {
+        return false;
+      }
 
-    // create new process object.
-    let external_process = Components
-      .classes["@mozilla.org/process/util;1"]
-      .createInstance(Components.interfaces.nsIProcess);
-    external_process.init(runtime);
-    this._external_process = external_process;
-    session.notify("initialized/externaldriver", this);
+      // create new process object.
+      let external_process = Components
+        .classes["@mozilla.org/process/util;1"]
+        .createInstance(Components.interfaces.nsIProcess);
+      external_process.init(runtime);
+      this._external_process = external_process;
+      session.notify("initialized/externaldriver", this);
+      return true;
+    }, this);
+      } catch(e) {alert(e)}
   },
 
   /** Kill target process. */
