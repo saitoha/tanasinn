@@ -129,7 +129,7 @@ coUtils.Font = {
  * @class Renderer
  * @brief Scan screen state and render it to canvas element.
  */ 
-let Renderer = new Class().extends(Plugin).depends("screen");
+let Renderer = new Class().extends(Plugin).depends("chrome").depends("screen");
 Renderer.definition = {
 
   get id()

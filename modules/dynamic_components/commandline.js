@@ -302,9 +302,10 @@ Commandline.definition = {
   _result: null,
 
   /** post constructor. */
-  "[subscribe('@event/broker-started'), enabled]":
-  function onLoad(session) 
+  "[subscribe('@initialized/chrome'), enabled]":
+  function onLoad(chrome) 
   {
+    let session = this._broker;
     this.enabled = this.enabled_when_startup;
     session.notify(<>initialized/{this.id}</>, this);
   },
