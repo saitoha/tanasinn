@@ -472,31 +472,27 @@ ExternalDriver.definition = {
     let process = desktop._broker;
     let os = coUtils.Runtime.os;
     if ("WINNT" == os) {
-      executable_paths = [ String(<>{process.cygwin_root}\bin\run.exe</>) ];
+      executable_path = String(<>{process.cygwin_root}\bin\run.exe</>);
     } else {
-      executable_paths = session.uniget("get/python-path").split(":");
+      executable_path = session.uniget("get/python-path");
     }
-      try {
-    executable_paths.some(function(path) {
-      // create new localfile object.
-      let runtime = Components
-        .classes["@mozilla.org/file/local;1"]
-        .createInstance(Components.interfaces.nsILocalFile);
-      runtime.initWithPath(path);
-      if (!runtime.exists() || !runtime.isExecutable()) {
-        return false;
-      }
+    // create new localfile object.
+    let runtime = Components
+      .classes["@mozilla.org/file/local;1"]
+      .createInstance(Components.interfaces.nsILocalFile);
+    runtime.initWithPath(executable_path);
+    if (!runtime.exists() || !runtime.isExecutable()) {
+      return false;
+    }
 
-      // create new process object.
-      let external_process = Components
-        .classes["@mozilla.org/process/util;1"]
-        .createInstance(Components.interfaces.nsIProcess);
-      external_process.init(runtime);
-      this._external_process = external_process;
-      session.notify("initialized/externaldriver", this);
-      return true;
-    }, this);
-      } catch(e) {alert(e)}
+    // create new process object.
+    let external_process = Components
+      .classes["@mozilla.org/process/util;1"]
+      .createInstance(Components.interfaces.nsIProcess);
+    external_process.init(runtime);
+    this._external_process = external_process;
+    session.notify("initialized/externaldriver", this);
+    return true;
   },
 
   /** Kill target process. */

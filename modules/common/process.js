@@ -132,48 +132,62 @@ with (scope) {
 
     _guessBinPath: function _guessBinPath()
     {
-      return ["/bin", "/usr/bin/", "/usr/local/bin", "/opt/local/bin"].join(":");
+      return [
+        "/bin", 
+        "/usr/bin/", 
+        "/usr/local/bin", 
+        "/opt/local/bin"
+      ].join(":");
     },
 
     _guessPythonPath: function _guessPythonPath() 
     {
       let os = coUtils.Runtime.os;
       let bin_path = this.bin_path;
-      let executeable_postfix = "WINNT" == os ? ".exe": "";
-      let python_paths = bin_path.split(":").map(function(path) {
-        let directory = Components
-          .classes["@mozilla.org/file/local;1"]
-          .createInstance(Components.interfaces.nsILocalFile);
-        if ("WINNT" == os) {
-          // FIXME: this code is not works well when path includes space characters.
-          path = this.cygwin_root + path.replace(/\//g, "\\");
-        }
-        directory.initWithPath(path);
-        return directory;
-      }, this).filter(function(directory) 
-      {
-        return directory.exists() && directory.isDirectory();
-      }).reduce(function(accumulator, directory) {
-        let paths = [2.9, 2.8, 2.7, 2.6, 2.5].map(function(version) 
-          {
-            let file = directory.clone();
-            file.append("python" + version + executeable_postfix);
-            return file;
-          }).filter(function(file)
-          {
-            return file.exists() && file.isExecutable();
-          }).map(function(file) {
-            if ("WINNT" == os) {
-              let native_path = file.path;
-              return native_path
-                .replace(/^([a-zA-Z])\:/, function(all, letter) "/cygdrive/" + letter)
-                .replace(/\\/g, "/");
-            }
-            return file.path;
-          });
-        Array.prototype.push.apply(accumulator, paths);
-        return accumulator;
-      }, []);
+      let executeable_postfix 
+        = "WINNT" == os ? ".exe": "";
+      let python_paths = bin_path.split(":")
+        .map(function(path) 
+        {
+          let directory = Components
+            .classes["@mozilla.org/file/local;1"]
+            .createInstance(Components.interfaces.nsILocalFile);
+          let native_path;
+          if ("WINNT" == os) {
+            // FIXME: this code is not works well when path includes space characters.
+            native_path = this.cygwin_root 
+                 + path.replace(/\//g, "\\");
+          } else {
+            native_path = path;
+          }
+          directory.initWithPath(native_path);
+          return {
+            directory: directory,
+            path: path,
+          };
+        }, this).filter(function(info) 
+        {
+          return info.directory.exists() && info.directory.isDirectory();
+        }).reduce(function(accumulator, info) {
+          let paths = [2.9, 2.8, 2.7, 2.6, 2.5]
+            .map(function(version) 
+            {
+              let file = info.directory.clone();
+              file.append("python" + version + executeable_postfix);
+              return file;
+            }).filter(function(file)
+            {
+              return file.exists() && file.isExecutable();
+            }).map(function(file) 
+            {
+              if ("WINNT" == os) {
+                return info.path + "/" + file.leafName;
+              }
+              return file.path;
+            });
+          Array.prototype.push.apply(accumulator, paths);
+          return accumulator;
+        }, []);
       return python_paths.shift();
     },
 
