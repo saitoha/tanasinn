@@ -3,7 +3,7 @@
 
 AC_PREREQ(2.61)
 
-AC_INIT([tanasinn],[0.1.5.2],[tanasinn@zuse.jp])
+AC_INIT([tanasinn],[0.1.5.3],[tanasinn@zuse.jp])
 AC_CANONICAL_TARGET
 
 # Checks for programs.
