@@ -579,7 +579,7 @@ example)
 
     process.cygwin_root = "C:\\cygwin";
     process.bin_path = "/usr/bin:/usr/local/bin:/opt/local/bin";
-    process.python_path = "/usr/bin/python2.7:/usr/local/bin/python"
+    process.python_path = "/usr/bin/python"
    
 #if __EN__
 

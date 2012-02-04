@@ -1,5 +1,5 @@
 
-CC=@CC@
+CPP=@CPP@
 ASCIIDOC=@ASCIIDOC@
 OPEN=@TANASINN_OPEN@
 ASCIIDOCFLAGS= -a toc -a icons -a toc2 -a theme=flask 
@@ -10,20 +10,20 @@ Makefile: Makefile.in
 	cd .. && ./configure
 
 usermanual.html: usermanual.txt Makefile.in
-	if [ -n "$(ASCIIDOC)" ] && [ -n "$(CC)" ]; \
+	if [ -n "$(ASCIIDOC)" ] && [ -n "$(CPP)" ]; \
 	then \
 		$(RM) $@ && cat $< \
-		| $(CC) -E -D__EN__ - \
+		| $(CPP) -D__EN__ - \
 		| sed -e 's:/#/://:g' \
 		| sed -e 's/^#.*//' \
 		| $(ASCIIDOC) $(ASCIIDOCFLAGS) - > $@; \
 	fi
 
 usermanual-ja.html: usermanual.txt Makefile.in
-	if [ -n "$(ASCIIDOC)" ] && [ -n "$(CC)" ]; \
+	if [ -n "$(ASCIIDOC)" ] && [ -n "$(CPP)" ]; \
 	then \
 		$(RM) $@ && cat $< \
-		| $(CC) -E -D__JP__ - \
+		| $(CPP) -D__JP__ - \
 		| sed -e 's:/#/://:g' \
 		| sed -e 's/^#.*//' \
 		| $(ASCIIDOC) $(ASCIIDOCFLAGS) - > $@; \
