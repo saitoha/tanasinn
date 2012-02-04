@@ -74,10 +74,9 @@ $(XPI): lint chrome.manifest install.rdf tanasinn-docs.zip
 		modules/*.conf \
 		modules/common/*.js \
 		modules/locale/*.js \
-		modules/core/*.js \
-		modules/base/*.js \
-		modules/autoload/*.js \
-		modules/plugin/*.js \
+		modules/static_dynamic_components/*.js \
+		modules/static_components/*.js \
+		modules/dynamic_components/*.js \
 		| sed -e "s/\(adding:\) \([^(]*\)(deflated \([0-9]*%\)/`tput setaf 5`\\1 `tput setaf 3`\\2`tput sgr0` (deflated `tput setaf 6`\\3`tput sgr0`/g"
 	@echo "$(MSTART) Done.$(MEND)\n" 
 
