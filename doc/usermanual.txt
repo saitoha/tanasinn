@@ -28,26 +28,29 @@ link:./usermanual.html[English/英語]
 #endif
 
 #if __EN__
-=== News
+== News
 
 2012/02/04
-Now version 0.1.5.0 available.
+Now version 0.1.5.1 available.
 
 #elif __JP__
-=== 構成変数の設定 
+== News 
 
-2012/02/04
-バージョン0.1.5.0
-今回のバージョンはPython2.x系のパスやCygwinのルートディレクトリなどを探しまわります。
+===2012/02/04 バージョン0.1.5.1
+
+====Python2.x系のパスやCygwinのルートディレクトリなどを探しまわり、環境情報を推定しようとします。
+    動かなかった場合は ~/.tanasinn.js に、このように書いてみてください。
 
 ---
-    ~/.tanasinn.js
-
     process.cygwin_root = "C:\\cygwin";
-    process.bin_path = "/usr/bin:/usr/local/bin:/opt/local/bin";
+    process.bin_path = "/bin:/usr/bin:/usr/local/bin:/opt/local/bin";
     process.python_path = "/usr/bin/python"
 ---
 
+    それでもだめな環境もあるかもしれません。
+    こちらからはtwitter用ハッシュタグ #tanasinn / #tanasinnが動かない / #tanasinn_do_not_works あたりで探してみます。
+
+====拡張フォルダ内のディレクトリ名が歴史的理由により意味不明になっていたので、かなり変えました。
 
 #endif
 
@@ -603,7 +606,7 @@ example)
     ~/.tanasinn.js
 
     process.cygwin_root = "C:\\cygwin";
-    process.bin_path = "/usr/bin:/usr/local/bin:/opt/local/bin";
+    process.bin_path = "/bin:/usr/bin:/usr/local/bin:/opt/local/bin";
     process.python_path = "/usr/bin/python"
    
 #if __EN__
