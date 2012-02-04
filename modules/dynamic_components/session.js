@@ -77,7 +77,7 @@ Session.definition = {
   get parent()
     this._broker,
 
-  "[persistable] profile_directory": "$Home/.tanasinn/profile",
+  "[persistable] profile_directory": "$Home/.tanasinn/session_profile",
   "[persistable] profile": "default",
 
   get python_path()

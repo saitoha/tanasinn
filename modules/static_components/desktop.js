@@ -37,7 +37,7 @@ Desktop.definition = {
   get root_element()
     this._root_element,
 
-  "[persistable] profile_directory": "$Home/.tanasinn/settings",
+  "[persistable] profile_directory": "$Home/.tanasinn/desktop_profile",
   "[persistable] profile": "default",
   "[persistable] cygwin_root": "C:\\cygwin",
 
