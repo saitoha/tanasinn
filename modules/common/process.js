@@ -127,7 +127,16 @@ with (scope) {
 
     _guessCygwinRoot: function _guessCygwinRoot() 
     {
-      return "C:\\cygwin";
+      for (let letter in Iterator(["CDEFGHIJKLMNOPQRSTUVWXYZ"].split(""))) {
+        let directory = Components
+          .classes["@mozilla.org/file/local;1"]
+          .createInstance(Components.interfaces.nsILocalFile);
+        directory.initWithPath(String(<>{letter}:\cygwin</>));
+        if (directory.exists() && directory.isDirectory) {
+          return directory.path;
+        }
+      }
+      return null;
     },
 
     _guessBinPath: function _guessBinPath()
