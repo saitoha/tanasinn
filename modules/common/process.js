@@ -127,7 +127,8 @@ with (scope) {
 
     _guessCygwinRoot: function _guessCygwinRoot() 
     {
-      for (let letter in Iterator(["CDEFGHIJKLMNOPQRSTUVWXYZ"].split(""))) {
+      return "C:\\cygwin";
+      for (let letter in Iterator("CDEFGHIJKLMNOPQRSTUVWXYZ".split(""))) {
         let directory = Components
           .classes["@mozilla.org/file/local;1"]
           .createInstance(Components.interfaces.nsILocalFile);
