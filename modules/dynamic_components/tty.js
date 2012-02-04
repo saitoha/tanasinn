@@ -483,7 +483,6 @@ ExternalDriver.definition = {
     if (!runtime.exists() || !runtime.isExecutable()) {
       return false;
     }
-
     // create new process object.
     let external_process = Components
       .classes["@mozilla.org/process/util;1"]
