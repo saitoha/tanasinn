@@ -28,6 +28,30 @@ link:./usermanual.html[English/英語]
 #endif
 
 #if __EN__
+=== News
+
+2012/02/04
+Now version 0.1.5.0 available.
+
+#elif __JP__
+=== 構成変数の設定 
+
+2012/02/04
+バージョン0.1.5.0
+今回のバージョンはPython2.x系のパスやCygwinのルートディレクトリなどを探しまわります。
+
+---
+    ~/.tanasinn.js
+
+    process.cygwin_root = "C:\\cygwin";
+    process.bin_path = "/usr/bin:/usr/local/bin:/opt/local/bin";
+    process.python_path = "/usr/bin/python"
+---
+
+
+#endif
+
+#if __EN__
 
 === Download/License
     This software is distributed under Mozilla Public License 1.1 (MPL1.1) .
@@ -549,11 +573,11 @@ image::images/commandline.png[width=480]
          |
          +-- sessions.txt        <---------------------- (3)
          |
-         +-- profile/            <---------------------- (4)
+         +-- desktop_profile/    <---------------------- (4)
          |    
-         +-- globalsettings/     <---------------------- (5)
+         +-- session_profile/    <---------------------- (5)
          |    
-         +-- settings/           <---------------------- (6)
+         +-- persist/            <---------------------- (6)
          |    
          +-- log/                <---------------------- (7)
          |
@@ -564,6 +588,7 @@ image::images/commandline.png[width=480]
                 +-- static_dynamic_components/   <------ (10)
                 |
                 +-- dynamic_components/          <------ (11)
+
 ----
 
 

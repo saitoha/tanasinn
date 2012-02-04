@@ -98,11 +98,6 @@ ProgramCompleter.definition = {
   get type()
     "program",
 
-  cygwin_search_path: [
-    "/bin", 
-    "/usr/local/bin"
-  ],
-
   _getSearchPath: function _getSearchPath()
   {
     let environment = Components
@@ -134,42 +129,48 @@ ProgramCompleter.definition = {
   startSearch: function startSearch(source, listener)
   {
     let broker = this._broker;
+    let cygwin_root = broker.uniget("get/cygwin-root");
     let lower_source = source.toLowerCase();
     let search_path;
     if ("WINNT" == coUtils.Runtime.os) {
-      search_path = this.cygwin_search_path.map(function(posix_path) 
-      {
-        return broker.cygwin_root + "\\" + posix_path.replace(/\//g, "\\");
-      });
-      let map = search_path.reduce(function(map, path) {
-        let key = path.replace(/\\$/, "");
-        map[key] = undefined;
-        return map; 
-      }, {});
+      let map = (broker.uniget("get/bin-path") || "/bin:/usr/local/bin")
+        .split(":")
+        .map(function(posix_path) 
+        {
+          return cygwin_root + "\\" + posix_path.replace(/\//g, "\\");
+        })
+        .reduce(function(map, path) 
+        {
+          let key = path.replace(/\\$/, "");
+          map[key] = undefined;
+          return map; 
+        }, {});
       search_path = [key for ([key,] in Iterator(map))];
     } else {
       search_path = this._getSearchPath();
     }
     let files = [file for (file in generateEntries(search_path))];
-    let data = files.map(function(file) {
-      let path = file.path;
-      if ("WINNT" == coUtils.Runtime.os) {
-        path = path
-          .replace(/\\/g, "/")
-          .replace(/.exe$/ig, "")
-          .replace(
-            /^([a-zA-Z]):/, 
-            function() String(<>/cygdrive/{arguments[1].toLowerCase()}</>));
-      }
-      return {
-        name: path,
-        value: path,
-      };
-    }).filter(function(data) {
-      return -1 != data.name
-        .toLowerCase()
-        .indexOf(lower_source);
-    });
+    let data = files.map(function(file) 
+      {
+        let path = file.path;
+        if ("WINNT" == coUtils.Runtime.os) {
+          path = path
+            .replace(/\\/g, "/")
+            .replace(/.exe$/ig, "")
+            .replace(
+              /^([a-zA-Z]):/, 
+              function() String(<>/cygdrive/{arguments[1].toLowerCase()}</>));
+        }
+        return {
+          name: path,
+          value: path,
+        };
+      })
+      .filter(function(data) {
+        return -1 != data.name
+          .toLowerCase()
+          .indexOf(lower_source);
+      });
     if (0 == data.length) {
       listener.doCompletion(null);
       return -1;
@@ -304,7 +305,8 @@ ProcessManager.definition = {
     let args;
     if ("WINNT" == coUtils.Runtime.os) {
       let broker = this._broker;
-      runtime_path = String(<>{broker.cygwin_root}\bin\run.exe</>);
+      let cygwin_root = broker.uniget("get/cygwin-root");
+      runtime_path = String(<>{cygwin_root}\bin\run.exe</>);
       args = [ "/bin/ps", "-p", String(pid) ];
     } else { // Darwin, Linux or FreeBSD
       runtime_path = "/bin/ps";
@@ -350,7 +352,8 @@ ProcessManager.definition = {
     let args;
     if ("WINNT" == coUtils.Runtime.os) {
       let broker = this._broker;
-      runtime_path = String(<>{broker.cygwin_root}\bin\run.exe</>);
+      let cygwin_root = this.uniget("get/cygwin-root");
+      runtime_path = String(<>{cygwin_root}\bin\run.exe</>);
       args = [ "kill", "-wait", "-" + signal, String(pid) ];
     } else { // Darwin, Linux or FreeBSD
       runtime_path = "/bin/kill";

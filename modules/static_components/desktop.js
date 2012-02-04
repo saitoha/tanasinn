@@ -39,7 +39,6 @@ Desktop.definition = {
 
   "[persistable] profile_directory": "$Home/.tanasinn/desktop_profile",
   "[persistable] profile": "default",
-  "[persistable] cygwin_root": "C:\\cygwin",
 
   command: null,
   default_command: "login -pf $USER",
@@ -61,6 +60,7 @@ Desktop.definition = {
     // register getter topic.
     let broker = this._broker;
     this.subscribe("get/cygwin-root", function() broker.cygwin_root);
+    this.subscribe("get/bin-path", function() broker.bin_path);
     this.subscribe("get/python-path", function() broker.python_path);
 
     this.install();

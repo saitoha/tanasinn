@@ -468,11 +468,10 @@ ExternalDriver.definition = {
   function onLoad(session) 
   {
     let executable_path;
-    let desktop = session._broker;
-    let process = desktop._broker;
+    let cygwin_root = session.uniget("get/cygwin-root");
     let os = coUtils.Runtime.os;
     if ("WINNT" == os) {
-      executable_path = String(<>{process.cygwin_root}\bin\run.exe</>);
+      executable_path = String(<>{cygwin_root}\bin\run.exe</>);
     } else {
       executable_path = session.uniget("get/python-path");
     }
@@ -508,47 +507,10 @@ ExternalDriver.definition = {
       args = [ "-9", String(pid) ];
     } else { // Darwin, Linux or FreeBSD
       let session = this._broker;
-      let desktop = session._broker;
-      let process = desktop._broker;
-      kill_path = String(<>{process.cygwin_root}\bin\run.exe</>);
+      let cygwin_root = session.uniget("get/cygwin-root");
+      kill_path = String(<>{cygwin_root}\bin\run.exe</>);
       args = [ "/bin/kill", "-9", String(pid) ];
     }
-    // create new localfile object.
-    let runtime = Components
-      .classes["@mozilla.org/file/local;1"]
-      .createInstance(Components.interfaces.nsILocalFile);
-    runtime.initWithPath(kill_path);
-
-    // create new process object.
-    let process = Components
-      .classes["@mozilla.org/process/util;1"]
-      .createInstance(Components.interfaces.nsIProcess);
-    process.init(runtime);
-
-    try {
-      process.run(/* blocking */ true, args, args.length);
-    } catch (e) {
-      coUtils.Debug.reportMessage(
-        _("command '%s' failed."), 
-        args.join(" "));
-      return false;
-    }
-    return 0 == process.exitValue;
-  },
-
-  /** Checks if the process is running. */
-  processIsAvailable: function processIsAvailable(pid) 
-  {
-    let kill_path;
-    let args;
-    if ("WINNT" == coUtils.Runtime.os) {
-      kill_path = String(<>{this.cygwin_root}\bin\run.exe</>);
-      args = [ "/bin/kill", "-0", String(pid) ];
-    } else { // Darwin, Linux or FreeBSD
-      kill_path = "/bin/kill";
-      args = [ "-0", String(pid) ];
-    }
-
     // create new localfile object.
     let runtime = Components
       .classes["@mozilla.org/file/local;1"]

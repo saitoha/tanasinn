@@ -857,6 +857,21 @@ asciidoc.install(2);
 柔軟でパワフルな機能群にブラウザ上のUIからアクセスすることができます。</tt></pre>
 </div></div>
 <div class="sect2">
+<h3 id="_構成変数の設定">構成変数の設定</h3>
+<div class="paragraph"><p>2012/02/04
+バージョン0.1.5.0
+今回のバージョンはPython2.x系のパスやCygwinのルートディレクトリなどを探しまわります。</p></div>
+<div class="paragraph"><p>---
+    ~/.tanasinn.js</p></div>
+<div class="literalblock">
+<div class="content">
+<pre><tt>    process.cygwin_root = "C:\\cygwin";
+    process.bin_path = "/usr/bin:/usr/local/bin:/opt/local/bin";
+    process.python_path = "/usr/bin/python"
+---</tt></pre>
+</div></div>
+</div>
+<div class="sect2">
 <h3 id="_ダウンロード_ライセンス">ダウンロード/ライセンス</h3>
 <div class="literalblock">
 <div class="content">
@@ -1296,31 +1311,31 @@ Vimperator/Muttatorのコマンドライン上から起動したい場合は、�
 <div class="content">
 <pre><tt>  ~/
    |
-   +-- .tanasinn.js &lt;-------------------------------- (1)
+   +-- .tanasinn.js    &lt;-------------------------------- (1)
    |
-   +-- .tanasinn/ &lt;-------------------------------- (2)
+   +-- .tanasinn/      &lt;-------------------------------- (2)
          |
-         +-- sessions.txt &lt;---------------------- (3)
+         +-- sessions.txt        &lt;---------------------- (3)
          |
-         +-- profile/ &lt;---------------------- (4)
+         +-- desktop_profile/    &lt;---------------------- (4)
          |
-         +-- globalsettings/ &lt;---------------------- (5)
+         +-- session_profile/    &lt;---------------------- (5)
          |
-         +-- settings/ &lt;---------------------- (6)
+         +-- persist/            &lt;---------------------- (6)
          |
-         +-- log/ &lt;---------------------- (7)
+         +-- log/                &lt;---------------------- (7)
          |
-         +-- modules/ &lt;---------------------- (8)
+         +-- modules/            &lt;---------------------- (8)
                 |
-                +-- static_components/ &lt;------ (9)
+                +-- static_components/           &lt;------ (9)
                 |
-                +-- static_dynamic_components/ &lt;------ (10)
+                +-- static_dynamic_components/   &lt;------ (10)
                 |
-                +-- dynamic_components/ &lt;------ (11)</tt></pre>
+                +-- dynamic_components/          &lt;------ (11)</tt></pre>
 </div></div>
 </div>
 <div class="sect2">
-<h3 id="_構成変数の設定">構成変数の設定</h3>
+<h3 id="_構成変数の設定_2">構成変数の設定</h3>
 <div class="paragraph"><p>example)</p></div>
 <div class="literalblock">
 <div class="content">
@@ -1435,7 +1450,7 @@ twitter: <a href="http://twitter.com/kefir_">日本語</a> / <a href="http://twi
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2012-02-04 15:00:36 JST
+Last updated 2012-02-04 18:20:21 JST
 </div>
 </div>
 </body>
