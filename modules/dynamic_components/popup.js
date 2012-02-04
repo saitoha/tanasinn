@@ -50,7 +50,6 @@ ZshCompletion.definition = {
       session.notify("event/data-arrived", "\r" + prompt);
       this._clearGrid();
       this.display();
-//      alert(this.lines.join("\n"));
     }
 //    } catch(e) {alert(e)}
   },
@@ -63,7 +62,6 @@ ZshCompletion.definition = {
     let session = this._broker;
     let renderer = this._renderer;
     let selected = -1;
-    try {
     let {} = session.uniget(
       "command/construct-chrome", 
       {
@@ -139,7 +137,6 @@ ZshCompletion.definition = {
       scrollbox.setAttribute("orient", "vertical");
     }
     */
-    } catch (e) {alert(e)}
   },
 
   "[subscribe('sequence/osc/202')]":
@@ -168,7 +165,6 @@ ZshCompletion.definition = {
     if (3 != kind) {
       this.lines.push(str);
     }
-//      alert(data)
   },
 
 };

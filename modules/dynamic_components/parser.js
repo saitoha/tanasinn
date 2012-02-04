@@ -189,7 +189,6 @@ Parser.definition = {
    */
   parse: function parse(data)
   {
-    try {
     let scanner = this._scanner;
     let emurator = this._emurator;
     let decoder = this._decoder;
@@ -245,7 +244,6 @@ Parser.definition = {
         scanner.setSurplus(); // backup surplus (unparsed) sequence.
       }
     }
-    } catch(e) {alert(e)}
   },
 
   /** Pads NULL characters before each of wide characters.

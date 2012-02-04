@@ -476,9 +476,6 @@ Renderer.definition = {
   },
         
 }
-//alert(String.fromCharCode("𠁐".charCodeAt(0)) == "𠁐")
-//alert("𠁐")
-//alert(String.fromCharCode(0x20040) == "@")
 
 /**
  * @fn main

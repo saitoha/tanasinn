@@ -550,14 +550,12 @@ Console.definition = {
   /** Installs itself */
   install: function install(session) 
   {
-    try {
     let {
       tanasinn_console_panel, 
       console_output_box,
     } = session.uniget("command/construct-chrome", this.template);
     this._console_box = tanasinn_console_panel;
     this._output_box = console_output_box;
-    } catch(e) {alert(e)}
     this.select.enabled = true;
     session.notify("initialized/console", this);
   }, 
