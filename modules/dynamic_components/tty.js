@@ -472,12 +472,12 @@ ExternalDriver.definition = {
     let process = desktop._broker;
     let os = coUtils.Runtime.os;
     if ("WINNT" == os) {
-      executable_path = String(<>{process.cygwin_root}\bin\run.exe</>);
+      executable_paths = [ String(<>{process.cygwin_root}\bin\run.exe</>) ];
     } else {
-      executable_path = session.uniget("get/python-path");
+      executable_paths = [ session.uniget("get/python-path") ];
     }
       try {
-    executable_path.split(":").some(function(path) {
+    executable_paths.some(function(path) {
       // create new localfile object.
       let runtime = Components
         .classes["@mozilla.org/file/local;1"]
