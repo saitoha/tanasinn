@@ -474,7 +474,7 @@ ExternalDriver.definition = {
     if ("WINNT" == os) {
       executable_paths = [ String(<>{process.cygwin_root}\bin\run.exe</>) ];
     } else {
-      executable_paths = [ session.uniget("get/python-path") ];
+      executable_paths = session.uniget("get/python-path").split(":");
     }
       try {
     executable_paths.some(function(path) {
@@ -593,11 +593,14 @@ ExternalDriver.definition = {
         .path;
 
     let args;
+    let session = this._broker;
+    let python_path = session.uniget("get/python-path");
     if ("WINNT" == coUtils.Runtime.os) { // Windows
       args = [
         "/bin/sh", "-wait", "-l", "-c",
         coUtils.Text.format(
-          "exec python \"$(cygpath '%s')\" %d", 
+          "exec %s \"$(cygpath '%s')\" %d", 
+          python_path,
           script_absolute_path,
           connection_port)
       ];

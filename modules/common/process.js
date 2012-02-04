@@ -150,7 +150,7 @@ with (scope) {
         }
         directory.initWithPath(path);
         return directory;
-      }).filter(function(directory) 
+      }, this).filter(function(directory) 
       {
         return directory.exists() && directory.isDirectory();
       }).reduce(function(accumulator, directory) {
@@ -163,6 +163,12 @@ with (scope) {
           {
             return file.exists() && file.isExecutable();
           }).map(function(file) {
+            if ("WINNT" == os) {
+              let native_path = file.path;
+              return native_path
+                .replace(/^([a-zA-Z])\:/, function(all, letter) "/cygdrive/" + letter)
+                .replace(/\\/g, "/");
+            }
             return file.path;
           });
         Array.prototype.push.apply(accumulator, paths);
