@@ -1004,21 +1004,21 @@ establish TCP connection, and finally forks new 4 processes as follows:
 ----
    figure-1. Communication among TTY device pair, TeletypeDrive, tanasinn.
 
-=== About [Control channel]'s protocol 
+==== About [Control channel]'s protocol 
 
-==== Protocol Overview
+===== Protocol Overview
 
-    1. This protocol is line-oriented. line terminator is '\n' (0x0a).
+    . This protocol is line-oriented. line terminator is '\n' (0x0a).
 
-    2. This protocol is command-based. 1 line should be interpreted as 1 
+    . This protocol is command-based. 1 line should be interpreted as 1 
        command.
        A command is composed of 1 or multiple tokens. delimiter character is 
        ' ' (0x20).
 
-    3. First token is <b>opecode</b>, represent a operation.
+    . First token is <b>opecode</b>, represent a operation.
        An opecode consists of lower-case alphabetic sets ([a-z]+).
 
-    4. Tokens after <b>opecode</b> represent arguments.
+    . Tokens after <b>opecode</b> represent arguments.
        An arguments consists of multiple printable characters, that is 
        encoded in base64 Data Encodings, defined in RFC-3548.
 ----
@@ -1035,7 +1035,7 @@ establish TCP connection, and finally forks new 4 processes as follows:
          Arguments are "ODA=" and "MjQ=", these strings mean "80" and "24"
          when decoded.
 
-=== builder.js / XUL dynamic creation
+=== builder.js / XUL dynamic construction
 
 Accept UI-template object and convert it to a tree of DOM element.
 
