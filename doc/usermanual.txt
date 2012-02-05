@@ -800,7 +800,7 @@ let g:tanasinnviewsourcecommand="vim +e '%'"
 
 == Developing materials
 
-=== Herarchical event broker pattern
+=== Hierarchical event broker pattern
 
 ----
 
@@ -857,16 +857,16 @@ Defines class EventBroker, which is able to interpret and evaluate
 
       var id = broker.subscribe(<topic>, <handler>, ....);
 
-   This event handler could be fired as fllowing code:
+   This event handler could be fired as following code:
 
       broker.notify(<topic>);
 
-   The subscribe method retuns an ID string.
+   The subscribe method returns an ID string.
    When you want to unregister handler, use it as follows:
 
       broker.unsubscribe(id);
 
-   NOTE that this ID is NOT correnponds to a handler, one-to-one.
+   NOTE that this ID is NOT corresponds to a handler, one-to-one.
    The relation between Topic-ID is as same as that, because this event 
    system is based on the concept of multicast delegate system.
 
@@ -886,10 +886,10 @@ Defines class EventBroker, which is able to interpret and evaluate
       broker.subscribe(<expression>, ....);
 
    <expression> consists of 1 or multiple event topics and other tokens, 
-   that ruled by simple grammer. the detail of it is as below...
+   that ruled by simple grammar. the detail of it is as below...
 
 
-==== Grammer of Event Expression
+==== Crammer of Event Expression
 
 ----
 
@@ -918,7 +918,7 @@ Defines class EventBroker, which is able to interpret and evaluate
 
 ----
 
-==== Event Expression Exsample
+==== Event Expression Example
 
    - case 1.
 
@@ -931,14 +931,14 @@ Defines class EventBroker, which is able to interpret and evaluate
      "A | B"
 
      -> wait for multiple events "A" OR "B". 
-        it is triggerd when one of either events is signaled. 
+        it is triggered when one of either events is signaled. 
 
    - case 3.
 
      "A & B"
 
      -> wait for both events "A" AND "B" 
-        it is triggerd when both of these events is signaled. 
+        it is triggered when both of these events is signaled. 
 
 
 
@@ -952,7 +952,7 @@ First, tanasinn opens TCP channel and listen on 2 ports, [I/O channel] and
 [Control channel].
 Next, tanasinn should call this script, with 2 arguments that is represent 
 above-mentioned 2 channel's port numbers.
-Then, A TeletypeDriver object is instanciate. it connect these channels and 
+Then, A TeletypeDriver object is instantiate. it connect these channels and 
 establish TCP connection, and finally forks new 4 processes as follows:
 
 1. Application Process
@@ -974,7 +974,7 @@ establish TCP connection, and finally forks new 4 processes as follows:
    As receiving data, the Process passes it to tanasinn through [I/O channel].
 
 4. Controlling Process
-   This process comminucate with tanasinn through [Control channel] in 
+   This process communicate with tanasinn through [Control channel] in 
    simple, lightweight, 7bit ascii-based protocol.
 
 ----
@@ -1002,7 +1002,7 @@ establish TCP connection, and finally forks new 4 processes as follows:
  +-----------------+       +------------------+
 
 ----
-   figure-1. Communication among TTY device pair, TeletypeDrive, tanasinn.
+   figure-1. Communication among TTY device pair, TeletypeDriver, tanasinn.
 
 ==== About [Control channel]'s protocol 
 
@@ -1020,7 +1020,7 @@ establish TCP connection, and finally forks new 4 processes as follows:
 
     . Tokens after <b>opecode</b> represent arguments.
        An arguments consists of multiple printable characters, that is 
-       encoded in base64 Data Encodings, defined in RFC-3548.
+       encoded in base64 Data Encoding, defined in RFC-3548.
 ----
        example 1:
          xoff\n
@@ -1072,7 +1072,7 @@ Example 1:
    typically a tree set of <Element node>s. 
    It always includes "tagName" property (2), and often includes 
    <Style node> (3).
-   <Style node> may have some CSS properties in camelcase (4).
+   <Style node> may have some CSS properties in camel-case (4).
 
 Example 2: 
 
