@@ -6,7 +6,7 @@
       Components
         .classes["@mozilla.org/moz/jssubscript-loader;1"]
         .getService(Components.interfaces.mozIJSSubScriptLoader)
-        .loadSubScript("chrome://tanasinn/content/testsuite.js?" + new Date().getTime());
+        .loadSubScript("resource://tanasinn/common/process.js");
     ]]>
     </script>
 </window>

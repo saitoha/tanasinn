@@ -64,7 +64,7 @@ process.python_path = "/usr/bin/python"
 === Download/License
     This software is distributed under Mozilla Public License 1.1 (MPL1.1) .
 
-- Developping version (PACKAGE_VERSION): http:/#/zuse.jp/tanasinn/downloads/versions/PACKAGE_VERSION/TANASINN_XPI_ID.xpi[Download]
+- Developing version (PACKAGE_VERSION): http:/#/zuse.jp/tanasinn/downloads/versions/PACKAGE_VERSION/TANASINN_XPI_ID.xpi[Download]
 - Unstable, Snapshot version (it may so bugful!): http:/#/zuse.jp/tanasinn/tanasinn-current.xpi[Download]
 
 #elif __JP__
@@ -81,26 +81,26 @@ process.python_path = "/usr/bin/python"
 - gitweb: http:/#/zuse.jp/git/?p=tanasinn.git
 
 #if __EN__
-== Hilighting features
+== Highlighting features
     - Full Gecko based user interface (HTML Canvas + XUL), it is flexible and easy to customize.
     - Multi-platform, now supports Mac / FreeBSD / Linux (Tested in Ubuntu) / 
       Windows(XP/Vista/7) + http:/#/www.cygwin.com[Cygwin] (requires posix python).
     - Supports plugin architecture. it supports Plug-and-Play installing & uninstalling.
-    - Retaining TTY session duaring closing/restarting browser.
+    - Retaining TTY session during closing/restarting browser.
       you can reconnect suspended terminal session.
     - Including debugger. You can run it in step-execution-mode or trace-mode 
       and observe terminal I/O sequence in real-time.
-    - Supports basic features, scrollback, alternate screen, visual bell, audio bell ...etc.
+    - Supports basic features, scroll-back, alternate screen, visual bell, audio bell ...etc.
     - IME is supported.
     - Supports east asian double width characters. 
       but it is not render bidi languages correctly.
     - Localization supported. It is using gettext-style method. you can edit localize resource on UI.
     - You can selects variable character encoding supported by Gecko.
-    - Supports transparent window. it is useful when www-browseing while working at terminal.
+    - Supports transparent window. it is useful when www-browsing while working at terminal.
     - xterm-like mouse emulation. supports smoothing pixel scroll.
     - Text selection / Rectangle text selection.
     - Supports copy / paste in Drag & Drop or keyboard shortcut.
-    - Supports move / resize through draging operation.
+    - Supports move / re-size through dragging operation.
     - Supports 256 terminal colors, you can assign 32bit colors for them.
     - Vimperator / Keysnail like commandline interface.
     - It can be installed as a plugin for Vimperator/Muttator. It hooks "<C-i>" and "gF" mappings if you want.
@@ -139,7 +139,7 @@ process.python_path = "/usr/bin/python"
 
 
 #if __EN__
-== Screenshots
+== Screen-shots
 #elif __JP__
 == スクリーンショット
 #endif
@@ -166,14 +166,14 @@ image::images/color2.png[width=780]
 image::images/ime2.png[width=780]
 
 #if __EN__
-.Scrollbar interface emerges only when it is needed (like OSX Lion).
+.Scroll bar interface emerges only when it is needed (like OSX Lion).
 #elif __JP__
 .スクロールバーインターフェースは必要なときにあらわれます(OSX Lionのように)。
 #endif
 image::images/scroll2.png[width=780]
 
 #if __EN__
-.Overlay indicator dislays various messages. it emerges when font size / window size / titlebar message is chenged.
+.Overlay indicator dislays various messages. it emerges when font size / window size / title bar message is changed.
 #elif __JP__
 .オーバーレイインジケータがフォントサイズ、ウィンドウサイズ、タイトルバーメッセージが変更されたときなどに表示されます。
 #endif
@@ -229,7 +229,7 @@ image::images/sl2.png[width=780]
 image::images/debug2.png[width=780]
 
 #if __EN__
-.Providing cool popup menu. it is cooperating with patched http:/#/www.vim.org[Vim].
+.Providing cool pop-up menu. it is cooperating with patched http:/#/www.vim.org[Vim].
 #elif __JP__
 .ポップアップメニューを表示しています。http:/#/www.vim.org[Vim]の方をちょっと改造しました。
 #endif
@@ -266,8 +266,8 @@ image::images/xulapp.png[width=780]
     * Supporting color scheme. import/export color palette contains 16 or 256 colors.
     * Supporting skins. you can make it otakunized.
     * Making it to be more collaborative with curses-based applications.
-      Accessing to Gecko and do something like opening popup windows, playing movies, 
-      OAuth authorication, ...etc., from terminal applications. 
+      Accessing to Gecko and do something like opening pop-up windows, playing movies, 
+      OAuth authorization, ...etc., from terminal applications. 
       We're dreaming of enjoying youtube or twitter with no plugins, from terminal, don't you?
     * Documents for plug-in developers are comming soon... - -;)
 
@@ -293,7 +293,7 @@ image::images/xulapp.png[width=780]
       Python for Win32, ActivePython, etc... are not well.
       because this software depends on many posix functions 
       'os.fork', 'os.openpty' ..etc.
-    - Posix enviroinment. 
+    - Posix environment. 
       If you are running Windows, you need to install cygwin at C:\cygwin.
 #elif __JP__
 == 動作要件
@@ -503,8 +503,8 @@ image::images/launcher.png[width=480]
 #if __EN__
 === Basic operating procedure 
 
-    It is similer to well-known terminal emulators, like xterm. 
-    but including specific fetures as follows.
+    It is similar to well-known terminal emulators, like xterm. 
+    but including specific features as follows.
 #elif __JP__
 === 基本的な操作方法
 
@@ -554,7 +554,7 @@ image::images/commandline.png[width=480]
 #if __EN__
 
     The specification of commands is not frozen. Comming soon...
-    Now the implementation of this part is witten by rush job, commandline parser 
+    Now the implementation of this part is written by rush job, commandline parser 
     is not proper one.
 
 #elif __JP__
@@ -687,7 +687,7 @@ let g:tanasinneditorcommand="vim %"
 It requires "vim" command on your system. 
 '%' is to be replaced with a temporary file path.
 
-To view HTML source on tanasinn, add fllowing command. 
+To view HTML source on tanasinn, add following command. 
 
 ----
 let g:tanasinnviewsourcecommand="vim +e '%'"
@@ -778,8 +778,8 @@ let g:tanasinnviewsourcecommand="vim +e '%'"
 #if __EN__
 == Known issues
 
- - In Windows + Cygwin enviroinment, booting and emulation performance is so damn slow!!
- - At SandS(Space and Shihft) keyboard enviroinment, shift + shift 
+ - In Windows + Cygwin environment, booting and emulation performance is so damn slow!!
+ - At SandS(Space and Shift) keyboard environment, shift + shift 
    (shift key twice) key sequence are detected by space + space, unfortunately!!
    I think something other way for it should be provided.
 
@@ -788,7 +788,7 @@ let g:tanasinnviewsourcecommand="vim +e '%'"
 == 既知の問題
 
  - Windows + Cygwin 環境では起動やエミュレーションが糞遅いです。
- - キーボードがSandS(Space and Shihft)環境だとspace + space で shift + shift を検出してしまいます。代替手段を用意しなければいけません。
+ - キーボードがSandS(Space and Shift)環境だとspace + space で shift + shift を検出してしまいます。代替手段を用意しなければいけません。
 
 #endif
 
@@ -796,7 +796,7 @@ let g:tanasinnviewsourcecommand="vim +e '%'"
 == Bug reports and patches
 
 Patches and bug reports are are encouraged. > saitoha <user@zuse.jp>,
-or toweet me (http:/#/twitter.com/feel_tanasinn[English] / http:/#/twitter.com/kefir_[Japanese]).
+or tweet me (http:/#/twitter.com/feel_tanasinn[English] / http:/#/twitter.com/kefir_[Japanese]).
 #elif __JP__
 == バグレポート・パッチ
 
