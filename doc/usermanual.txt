@@ -53,7 +53,7 @@ process.python_path = "/usr/bin/python"
 ----
 
     それでもだめな環境もあるかもしれません。
-    こちらからはtwitter用ハッシュタグ #tanasinn / #tanasinnが動かない / #tanasinn_do_not_works あたりで探してみます。
+    こちらからはtwitter用ハッシュタグ #tanasinn / #tanasinnが動かない あたりで探してみます。
 
     拡張フォルダ内のディレクトリ名が歴史的理由により意味不明になっていたので、かなり変えました。
 
