@@ -21,7 +21,44 @@
  * the Initial Developer. All Rights Reserved.
  *
  * ***** END LICENSE BLOCK ***** */
-
+/*
+ * [ Overview ]
+ *
+ * - Herarchical Event Broker Pattern
+ *
+ *                                                      +----------------+
+ *                                                      |                |
+ *                                                      A                |
+ *     +-----------------------+          +--------------------------+   |         +---------------------+
+ *     |                       |          |                          +---+         |                     |
+ *     | The Root Event Broker +---------<| EventBroker & Component  =------------<| Component or Plugin |
+ *     |                       |          |                          |             |                     |
+ *     +-----------------------+          +---------------------------             +---------------------+
+ *
+ *
+ * - Event Bus
+ *                                  +---------+
+ *                                  | Process |
+ *                                  +----+----+
+ *                                       |
+ *              process bus   -----------+---+-------
+ *                                           |
+ *                                      +----+----+
+ *                                      | desktop |
+ *                                      +----+----+
+ *                                           |
+ *                             ----+---------+------+------- 
+ *                                 |                |
+ *                            +----+-----+     +----+----+
+ *                            | launcher |     | session |
+ *                            +----------+     +----+----+
+ *                                                  |
+ *                             .... -------+--------+---+-----------+------- ....
+ *                                         |            |           |
+ *                                   +----------+  +----+----+  +---------+
+ *                             ....  | renderer |  |   tty   |  | screen  |  ....
+ *                                   +----------+  +---------+  +---------+
+ */
 let scope = {}; // create scope.
 
 with (scope) {
@@ -165,8 +202,7 @@ with (scope) {
           let native_path;
           if ("WINNT" == os) {
             // FIXME: this code is not works well when path includes space characters.
-            native_path = this.cygwin_root 
-                 + path.replace(/\//g, "\\");
+            native_path = this.cygwin_root + path.replace(/\//g, "\\");
           } else {
             native_path = path;
           }
@@ -179,7 +215,7 @@ with (scope) {
         {
           return info.directory.exists() && info.directory.isDirectory();
         }).reduce(function(accumulator, info) {
-          let paths = [2.9, 2.8, 2.7, 2.6, 2.5]
+          let paths = [ 2.9, 2.8, 2.7, 2.6, 2.5 ]
             .map(function(version) 
             {
               let file = info.directory.clone();
@@ -229,9 +265,6 @@ with (scope) {
   
     get wrappedJSObject()
       this,
-
-    profile_directory: "$Home/.tanasinn/globalsettings",
-    profile: "default",
 
     initial_settings_path: "$Home/.tanasinn.js",
  

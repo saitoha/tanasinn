@@ -599,6 +599,12 @@ image::images/commandline.png[width=480]
 
 ----
 
+#if __EN__
+#elif __JP__
+- .tanasinn.js  起動時に読み込まれます。
+- .tanasinn/    ランタイムディレクトリ。
+#endif
+
 
 #if __EN__
 === Setting configuration variables.
@@ -791,6 +797,408 @@ let g:tanasinnviewsourcecommand="vim +e '%'"
  - キーボードがSandS(Space and Shift)環境だとspace + space で shift + shift を検出してしまいます。代替手段を用意しなければいけません。
 
 #endif
+
+== Developing materials
+
+=== Herarchical event broker pattern
+
+----
+
+                                                +----------------+
+                                                |                |
+                                                |                |
+    +-----------------------+     +-------------A------------+   |   +---------------------+
+    |                       |     |                          +---+   |                     |
+    | The Root Event Broker +----<| EventBroker & Component  =------<| Component or Plugin |
+    |                       |     |                          |       |                     |
+    +-----------------------+     +---------------------------       +---------------------+
+
+----
+
+=== Event bus
+
+----
+
+                                 +---------+
+                                 | Process |
+                                 +----+----+
+                                      |
+             Process bus   -----------+---+-------
+                                          |
+                                     +----+----+
+                                     | desktop |
+                                     +----+----+
+                                          |
+             Desktop bus    ----+---------+------+------- 
+                                |                |
+                           +----+-----+     +----+----+
+                           | launcher |     | session |
+                           +----------+     +----+----+
+                                                 |
+             Session bus    .... -------+--------+---+-----------+------- ....
+                                        |            |           |
+                                  +----------+  +----+----+  +---------+
+                            ....  | renderer |  |   tty   |  | screen  |  ....
+                                  +----------+  +---------+  +---------+
+
+----
+
+=== event.js / Event system
+
+Defines class EventBroker, which is able to interpret and evaluate 
+"Topic" and "Event Expression".
+
+==== "Topic" Overview
+
+   In this event system, registered events is concerned by "topic" that
+   is string variable consists of some digits and alphabets.
+    
+   If you registered an event as follows:
+
+      var id = broker.subscribe(<topic>, <handler>, ....);
+
+   This event handler could be fired as fllowing code:
+
+      broker.notify(<topic>);
+
+   The subscribe method retuns an ID string.
+   When you want to unregister handler, use it as follows:
+
+      broker.unsubscribe(id);
+
+   NOTE that this ID is NOT correnponds to a handler, one-to-one.
+   The relation between Topic-ID is as same as that, because this event 
+   system is based on the concept of multicast delegate system.
+
+----
+
+   +----------+ n      1 +-----------+ n      1 +-----------+
+   | handler  |>---------|    ID     |>---------|   topic   |
+   +----------+          +-----------+          +-----------+
+
+----   
+
+==== "Event Expression" Overview
+
+   Event Expression indicates how the broker waits multiple events.
+   It was given to subscriber method, that called such as: 
+
+      broker.subscribe(<expression>, ....);
+
+   <expression> consists of 1 or multiple event topics and other tokens, 
+   that ruled by simple grammer. the detail of it is as below...
+
+
+==== Grammer of Event Expression
+
+----
+
+   IdentifierCharacter := '_' | '-' | digit | alphabet
+
+   NormalToken := IdentifierCharacter, IdentifierCharacter*
+
+   GlobToken := '{', NormalToken, '}'
+              | '{', NormalToken, '}', NormalToken
+              | NormalToken, '{', NormalToken, '}'
+              | NormalToken, '{', NormalToken, '}', NormalToken
+
+   GlobToken := NormalToken | GlobToken
+
+   PrimaryExpression := Token | '(', Expression, ')'
+
+   UnaryOperator := '@' | '~'
+
+   UnaryExpression := PrimaryExpression | UnaryOperator, PrimaryExpression 
+
+   BinaryOperator := 'and' | 'or' | '&' | '|'
+
+   BinaryExpression := UnaryExpression | UnaryExpression, BinaryOperator, UnaryExpression 
+
+   Expression := BinaryExpression
+
+----
+
+==== Event Expression Exsample
+
+   - case 1.
+
+     "A"  
+
+      -> it triggered when the event "A" is signaled.
+
+   - case 2.
+
+     "A | B"
+
+     -> wait for multiple events "A" OR "B". 
+        it is triggerd when one of either events is signaled. 
+
+   - case 3.
+
+     "A & B"
+
+     -> wait for both events "A" AND "B" 
+        it is triggerd when both of these events is signaled. 
+
+
+
+
+=== ttydriver.py / TTY Driver 
+ 
+==== Module Overview
+
+This module is assumed to be called by tanasinn's "tty.js".
+First, tanasinn opens TCP channel and listen on 2 ports, [I/O channel] and 
+[Control channel].
+Next, tanasinn should call this script, with 2 arguments that is represent 
+above-mentioned 2 channel's port numbers.
+Then, A TeletypeDriver object is instanciate. it connect these channels and 
+establish TCP connection, and finally forks new 4 processes as follows:
+
+1. Application Process
+   This is user-specified application process, launched by command such as 
+   the following.
+----
+      /bin/sh -c 'exec <startcommand>'
+----
+   <startcommand> is asked for tanasinn through the <Control channel>.
+   
+2. Writing Process
+   This process wait to receive data from tanasinn through <I/O channel>,
+   which is user's input key sequence in many cases. 
+   As receiving data, the Process passes it to TTY master device as it is.
+
+3. Reading Process
+   This process wait to receive data from TTY master device, which is output 
+   sequence from application program in many cases.
+   As receiving data, the Process passes it to tanasinn through [I/O channel].
+
+4. Controlling Process
+   This process comminucate with tanasinn through [Control channel] in 
+   simple, lightweight, 7bit ascii-based protocol.
+
+----
+
+   TTY Device pair            Python script                   tanasinn
+   Master / Slave          class TeletypeDriver                 tty.js
+ +-----------------+       +------------------+           +-----------------+
+ |                 |       |                  |           |                 |
+ | +-------------+ |       | +--------------+ |           | +-------------+ |
+ | |             |---------->| Writing Proc |<--- recv -----|             | |
+ | |             | | read  | +--------------+ |           | |             | |
+ | |             | |       |                  <I/O channel> | I/O Manager | |
+ | |             | |       | +--------------+ |           | |             | |
+ | |   Master    |<----------| Reading Proc |---- send ---->|             | |
+ | |             | | write | +--------------+ |           | +-------------+ |
+ | |             | |       |                  |           |                 |
+ | |             | |       | +--------------+ |           | +-------------+ |
+ | |             |<--------->| Control Proc |<- send/recv ->| Controller  | |
+ | +-------------+ | ioctl | +--------------+ |           | +-------------+ |
+ |        |        |       |                <Control channel>               |
+ | +-------------+ |       | +--------------+ |           +-----------------+
+ | |    Slave    |<--------->|   App Proc   | |
+ | +-------------+ | stdio | +--------------+ |
+ |                 |       |                  |
+ +-----------------+       +------------------+
+
+----
+   figure-1. Communication among TTY device pair, TeletypeDrive, tanasinn.
+
+=== About [Control channel]'s protocol 
+
+==== Protocol Overview
+
+    1. This protocol is line-oriented. line terminator is '\n' (0x0a).
+
+    2. This protocol is command-based. 1 line should be interpreted as 1 
+       command.
+       A command is composed of 1 or multiple tokens. delimiter character is 
+       ' ' (0x20).
+
+    3. First token is <b>opecode</b>, represent a operation.
+       An opecode consists of lower-case alphabetic sets ([a-z]+).
+
+    4. Tokens after <b>opecode</b> represent arguments.
+       An arguments consists of multiple printable characters, that is 
+       encoded in base64 Data Encodings, defined in RFC-3548.
+----
+       example 1:
+         xoff\n
+----
+
+         Opecode of this command is "xoff". "\n" is line terminator.
+----
+       example 2: 
+         resize ODA= MjQ=\n
+----
+         In this case, opecode is "resize".
+         Arguments are "ODA=" and "MjQ=", these strings mean "80" and "24"
+         when decoded.
+
+=== builder.js / XUL dynamic creation
+
+Accept UI-template object and convert it to a tree of DOM element.
+
+==== UI-template overview
+ 
+  UI-template is JSON-style object that is described as based on the 
+  specific rule.
+  It is to be converted to a node set of XUL/HTML/SVG elements by 
+  "Template Builder" object.
+
+==== Examples
+
+Example 1: 
+
+----
+
+   ({                          // <--- (1)
+     tagName: "box",           // <--- (2)
+     flex: 1,
+     style: {                  // <--- (3)
+       backgroundColor: "red"  // <--- (4)
+     }
+   })
+
+----
+
+   It will be converted to following XUL element.
+
+----
+     <box flex="1" style="background-color: red;"/>
+----
+
+   Every UI-template object consists of <Element node> (1), and it is 
+   typically a tree set of <Element node>s. 
+   It always includes "tagName" property (2), and often includes 
+   <Style node> (3).
+   <Style node> may have some CSS properties in camelcase (4).
+
+Example 2: 
+
+----
+
+   ({
+     tagName: "html:div",
+     parentNode: "id-of-parent", // <--- (5)
+     style: {
+       textAlign: "center"
+     }
+     childNodes: {               // <--- (6)
+       tagName: "html:div",
+       style: {
+         fontSize: "1.5em"
+       },
+       childNodes: [             // <--- (7)
+         {
+           tagName: "html:span",
+           innerText: "abcde"    // <--- (8)
+         },
+         {
+           tagName: "html:div",
+         }
+       ]
+     }
+   })
+
+----
+
+   It will be converted as below.
+
+----
+
+   <html:div style="text-align: center;">
+     <html:div style="font-size: 1.5em;">
+       <html:span>abcde</html:span>
+       <html:div/>
+     </html:span>
+   </html:div>
+
+----
+
+   The "parentNode" property (5) indicates at which the current node is to 
+   be set. if the type of property value was "string", it regards as node
+   ID of the parent node. or if its type is "object", especially 
+   HTMLElement, it regards as the parent node object itself.
+   The "childNodes" property has an effect which cascades down 
+   following <Element node> (6). If you wanted to create two or more 
+   child nodes under the same node, you should substitute an Array of 
+   <Element node>s (7) in "childNodes" property.
+   The "innerText" property (8) creates a text node under current 
+   <Element node>. 
+
+Example 2: 
+
+----
+
+   ({
+     tagName: "hbox",
+     id: "parent",
+     flex: 1,
+     onconstruct: {              // <--- (9)
+       handler: function() { window.alert(this.id); }
+     },
+     childNodes: [
+       {
+         tagName: "vbox",
+         id: "left",
+         flex: 1,
+         listener: {             // <--- (10)
+           type: "mouseover",
+           context: window,
+           handler: onMouseOver
+         }
+       },
+       {
+         tagName: "vbox",
+         id: "right",
+         flex: 1,
+         listener: [
+           {
+             type: "mouseup",
+             handler: onMouseUp
+           },
+           {
+             type: "mousedown",
+             handler: onMouseDown
+           }
+         ]
+       }
+     ]
+   })
+
+----
+
+   It almost corresponds to following XUL code.
+
+----
+
+   <hbox id="parent" flex="1">
+     <vbox id="left" flex="1" onmouseover=""/>
+     <vbox id="right" flex="1"/>
+   </hbox>
+   <script type="application/x-javascript"/>
+     <![CDATA[
+       var parent = document.getElementById("parent");
+       var left = document.getElementById("left");
+       var right = document.getElementById("right");
+       (function() window.alert(this.id)).apply(parent);
+       left.addEventListener("mouseover", function() { 
+         onMouseOver.apply(window, arguments); 
+       }, false);
+       right.addEventListener("mouseup", onMouseUp, false);
+       right.addEventListener("mousedown", onMouseOver, false);
+     ]]>
+   </script>
+
+----
+
+   The "onconstruct" property (9) defines a event function which fired 
+   when the property itself is parsed. 
+   The "listener" property (10) attaches a event handler at the current 
+   <Element node>. 
+
+
 
 #if __EN__
 == Bug reports and patches

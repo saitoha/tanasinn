@@ -1353,6 +1353,18 @@ Vimperator/Muttatorのコマンドライン上から起動したい場合は、�
                 |
                 +-- dynamic_components/          &lt;------ (11)</tt></pre>
 </div></div>
+<div class="ulist"><ul>
+<li>
+<p>
+.tanasinn.js  起動時に読み込まれます。
+</p>
+</li>
+<li>
+<p>
+.tanasinn/    ランタイムディレクトリ。
+</p>
+</li>
+</ul></div>
 </div>
 <div class="sect2">
 <h3 id="_構成変数の設定">構成変数の設定</h3>
@@ -1460,6 +1472,496 @@ Windows + Cygwin 環境では起動やエミュレーションが糞遅いです
 </div>
 </div>
 <div class="sect1">
+<h2 id="_developing_materials">Developing materials</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_herarchical_event_broker_pattern">Herarchical event broker pattern</h3>
+<div class="listingblock">
+<div class="content">
+<pre><tt>                                                +----------------+
+                                                |                |
+                                                |                |
+    +-----------------------+     +-------------A------------+   |   +---------------------+
+    |                       |     |                          +---+   |                     |
+    | The Root Event Broker +----&lt;| EventBroker &amp; Component  =------&lt;| Component or Plugin |
+    |                       |     |                          |       |                     |
+    +-----------------------+     +---------------------------       +---------------------+</tt></pre>
+</div></div>
+</div>
+<div class="sect2">
+<h3 id="_event_bus">Event bus</h3>
+<div class="listingblock">
+<div class="content">
+<pre><tt>                                 +---------+
+                                 | Process |
+                                 +----+----+
+                                      |
+             Process bus   -----------+---+-------
+                                          |
+                                     +----+----+
+                                     | desktop |
+                                     +----+----+
+                                          |
+             Desktop bus    ----+---------+------+-------
+                                |                |
+                           +----+-----+     +----+----+
+                           | launcher |     | session |
+                           +----------+     +----+----+
+                                                 |
+             Session bus    .... -------+--------+---+-----------+------- ....
+                                        |            |           |
+                                  +----------+  +----+----+  +---------+
+                            ....  | renderer |  |   tty   |  | screen  |  ....
+                                  +----------+  +---------+  +---------+</tt></pre>
+</div></div>
+</div>
+<div class="sect2">
+<h3 id="_event_js_event_system">event.js / Event system</h3>
+<div class="paragraph"><p>Defines class EventBroker, which is able to interpret and evaluate
+"Topic" and "Event Expression".</p></div>
+<div class="sect3">
+<h4 id="_topic_overview">"Topic" Overview</h4>
+<div class="literalblock">
+<div class="content">
+<pre><tt>In this event system, registered events is concerned by "topic" that
+is string variable consists of some digits and alphabets.</tt></pre>
+</div></div>
+<div class="literalblock">
+<div class="content">
+<pre><tt>If you registered an event as follows:</tt></pre>
+</div></div>
+<div class="literalblock">
+<div class="content">
+<pre><tt>var id = broker.subscribe(&lt;topic&gt;, &lt;handler&gt;, ....);</tt></pre>
+</div></div>
+<div class="literalblock">
+<div class="content">
+<pre><tt>This event handler could be fired as fllowing code:</tt></pre>
+</div></div>
+<div class="literalblock">
+<div class="content">
+<pre><tt>broker.notify(&lt;topic&gt;);</tt></pre>
+</div></div>
+<div class="literalblock">
+<div class="content">
+<pre><tt>The subscribe method retuns an ID string.
+When you want to unregister handler, use it as follows:</tt></pre>
+</div></div>
+<div class="literalblock">
+<div class="content">
+<pre><tt>broker.unsubscribe(id);</tt></pre>
+</div></div>
+<div class="literalblock">
+<div class="content">
+<pre><tt>NOTE that this ID is NOT correnponds to a handler, one-to-one.
+The relation between Topic-ID is as same as that, because this event
+system is based on the concept of multicast delegate system.</tt></pre>
+</div></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>   +----------+ n      1 +-----------+ n      1 +-----------+
+   | handler  |&gt;---------|    ID     |&gt;---------|   topic   |
+   +----------+          +-----------+          +-----------+</tt></pre>
+</div></div>
+</div>
+<div class="sect3">
+<h4 id="_event_expression_overview">"Event Expression" Overview</h4>
+<div class="literalblock">
+<div class="content">
+<pre><tt>Event Expression indicates how the broker waits multiple events.
+It was given to subscriber method, that called such as:</tt></pre>
+</div></div>
+<div class="literalblock">
+<div class="content">
+<pre><tt>broker.subscribe(&lt;expression&gt;, ....);</tt></pre>
+</div></div>
+<div class="literalblock">
+<div class="content">
+<pre><tt>&lt;expression&gt; consists of 1 or multiple event topics and other tokens,
+that ruled by simple grammer. the detail of it is as below...</tt></pre>
+</div></div>
+</div>
+<div class="sect3">
+<h4 id="_grammer_of_event_expression">Grammer of Event Expression</h4>
+<div class="listingblock">
+<div class="content">
+<pre><tt>   IdentifierCharacter := '_' | '-' | digit | alphabet
+
+   NormalToken := IdentifierCharacter, IdentifierCharacter*
+
+   GlobToken := '{', NormalToken, '}'
+              | '{', NormalToken, '}', NormalToken
+              | NormalToken, '{', NormalToken, '}'
+              | NormalToken, '{', NormalToken, '}', NormalToken
+
+   GlobToken := NormalToken | GlobToken
+
+   PrimaryExpression := Token | '(', Expression, ')'
+
+   UnaryOperator := '@' | '~'
+
+   UnaryExpression := PrimaryExpression | UnaryOperator, PrimaryExpression
+
+   BinaryOperator := 'and' | 'or' | '&amp;' | '|'
+
+   BinaryExpression := UnaryExpression | UnaryExpression, BinaryOperator, UnaryExpression
+
+   Expression := BinaryExpression</tt></pre>
+</div></div>
+</div>
+<div class="sect3">
+<h4 id="_event_expression_exsample">Event Expression Exsample</h4>
+<div class="ulist"><ul>
+<li>
+<p>
+case 1.
+</p>
+<div class="literalblock">
+<div class="content">
+<pre><tt>"A"</tt></pre>
+</div></div>
+<div class="literalblock">
+<div class="content">
+<pre><tt>-&gt; it triggered when the event "A" is signaled.</tt></pre>
+</div></div>
+</li>
+<li>
+<p>
+case 2.
+</p>
+<div class="literalblock">
+<div class="content">
+<pre><tt>"A | B"</tt></pre>
+</div></div>
+<div class="literalblock">
+<div class="content">
+<pre><tt>-&gt; wait for multiple events "A" OR "B".
+   it is triggerd when one of either events is signaled.</tt></pre>
+</div></div>
+</li>
+<li>
+<p>
+case 3.
+</p>
+<div class="literalblock">
+<div class="content">
+<pre><tt>"A &amp; B"</tt></pre>
+</div></div>
+<div class="literalblock">
+<div class="content">
+<pre><tt>-&gt; wait for both events "A" AND "B"
+   it is triggerd when both of these events is signaled.</tt></pre>
+</div></div>
+</li>
+</ul></div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_tty_driver_ttydriver_py">TTY Driver / ttydriver.py</h3>
+<div class="sect3">
+<h4 id="_module_overview">Module Overview</h4>
+<div class="paragraph"><p>This module is assumed to be called by tanasinn&#8217;s "tty.js".
+First, tanasinn opens TCP channel and listen on 2 ports, [I/O channel] and
+[Control channel].
+Next, tanasinn should call this script, with 2 arguments that is represent
+above-mentioned 2 channel&#8217;s port numbers.
+Then, A TeletypeDriver object is instanciate. it connect these channels and
+establish TCP connection, and finally forks new 4 processes as follows:</p></div>
+<div class="olist arabic"><ol class="arabic">
+<li>
+<p>
+Application Process
+   This is user-specified application process, launched by command such as
+   the following.
+</p>
+</li>
+</ol></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>      /bin/sh -c 'exec &lt;startcommand&gt;'</tt></pre>
+</div></div>
+<div class="literalblock">
+<div class="content">
+<pre><tt>&lt;startcommand&gt; is asked for tanasinn through the &lt;Control channel&gt;.</tt></pre>
+</div></div>
+<div class="olist arabic"><ol class="arabic">
+<li>
+<p>
+Writing Process
+   This process wait to receive data from tanasinn through &lt;I/O channel&gt;,
+   which is user&#8217;s input key sequence in many cases.
+   As receiving data, the Process passes it to TTY master device as it is.
+</p>
+</li>
+<li>
+<p>
+Reading Process
+   This process wait to receive data from TTY master device, which is output
+   sequence from application program in many cases.
+   As receiving data, the Process passes it to tanasinn through [I/O channel].
+</p>
+</li>
+<li>
+<p>
+Controlling Process
+   This process comminucate with tanasinn through [Control channel] in
+   simple, lightweight, 7bit ascii-based protocol.
+</p>
+</li>
+</ol></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>   TTY Device pair            Python script                   tanasinn
+   Master / Slave          class TeletypeDriver                 tty.js
+ +-----------------+       +------------------+           +-----------------+
+ |                 |       |                  |           |                 |
+ | +-------------+ |       | +--------------+ |           | +-------------+ |
+ | |             |----------&gt;| Writing Proc |&lt;--- recv -----|             | |
+ | |             | | read  | +--------------+ |           | |             | |
+ | |             | |       |                  &lt;I/O channel&gt; | I/O Manager | |
+ | |             | |       | +--------------+ |           | |             | |
+ | |   Master    |&lt;----------| Reading Proc |---- send ----&gt;|             | |
+ | |             | | write | +--------------+ |           | +-------------+ |
+ | |             | |       |                  |           |                 |
+ | |             | |       | +--------------+ |           | +-------------+ |
+ | |             |&lt;---------&gt;| Control Proc |&lt;- send/recv -&gt;| Controller  | |
+ | +-------------+ | ioctl | +--------------+ |           | +-------------+ |
+ |        |        |       |                &lt;Control channel&gt;               |
+ | +-------------+ |       | +--------------+ |           +-----------------+
+ | |    Slave    |&lt;---------&gt;|   App Proc   | |
+ | +-------------+ | stdio | +--------------+ |
+ |                 |       |                  |
+ +-----------------+       +------------------+</tt></pre>
+</div></div>
+<div class="literalblock">
+<div class="content">
+<pre><tt>figure-1. Communication among TTY device pair, TeletypeDrive, tanasinn.</tt></pre>
+</div></div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_about_control_channel_s_protocol">About [Control channel]'s protocol</h3>
+<div class="sect3">
+<h4 id="_protocol_overview">Protocol Overview</h4>
+<div class="olist arabic"><ol class="arabic">
+<li>
+<p>
+This protocol is line-oriented. line terminator is <em>\n</em> (0x0a).
+</p>
+</li>
+<li>
+<p>
+This protocol is command-based. 1 line should be interpreted as 1
+       command.
+       A command is composed of 1 or multiple tokens. delimiter character is
+       ' ' (0x20).
+</p>
+</li>
+<li>
+<p>
+First token is &lt;b&gt;opecode&lt;/b&gt;, represent a operation.
+       An opecode consists of lower-case alphabetic sets ([a-z]+).
+</p>
+</li>
+<li>
+<p>
+Tokens after &lt;b&gt;opecode&lt;/b&gt; represent arguments.
+       An arguments consists of multiple printable characters, that is
+       encoded in base64 Data Encodings, defined in RFC-3548.
+</p>
+</li>
+</ol></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>       example 1:
+         xoff\n</tt></pre>
+</div></div>
+<div class="literalblock">
+<div class="content">
+<pre><tt>Opecode of this command is "xoff". "\n" is line terminator.</tt></pre>
+</div></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>       example 2:
+         resize ODA= MjQ=\n</tt></pre>
+</div></div>
+<div class="literalblock">
+<div class="content">
+<pre><tt>In this case, opecode is "resize".
+Arguments are "ODA=" and "MjQ=", these strings mean "80" and "24"
+when decoded.</tt></pre>
+</div></div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_builder_js_xul_dynamic_creation">builder.js / XUL dynamic creation</h3>
+<div class="paragraph"><p>Accept UI-template object and convert it to a tree of DOM element.</p></div>
+<div class="sect3">
+<h4 id="_ui_template_overview">UI-template overview</h4>
+<div class="literalblock">
+<div class="content">
+<pre><tt>UI-template is JSON-style object that is described as based on the
+specific rule.
+It is to be converted to a node set of XUL/HTML/SVG elements by
+"Template Builder" object.</tt></pre>
+</div></div>
+</div>
+<div class="sect3">
+<h4 id="_examples">Examples</h4>
+<div class="paragraph"><p>Example 1:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>   ({                          // &lt;--- (1)
+     tagName: "box",           // &lt;--- (2)
+     flex: 1,
+     style: {                  // &lt;--- (3)
+       backgroundColor: "red"  // &lt;--- (4)
+     }
+   })</tt></pre>
+</div></div>
+<div class="literalblock">
+<div class="content">
+<pre><tt>It will be converted to following XUL element.</tt></pre>
+</div></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>     &lt;box flex="1" style="background-color: red;"/&gt;</tt></pre>
+</div></div>
+<div class="literalblock">
+<div class="content">
+<pre><tt>Every UI-template object consists of &lt;Element node&gt; (1), and it is
+typically a tree set of &lt;Element node&gt;s.
+It always includes "tagName" property (2), and often includes
+&lt;Style node&gt; (3).
+&lt;Style node&gt; may have some CSS properties in camelcase (4).</tt></pre>
+</div></div>
+<div class="paragraph"><p>Example 2:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>   ({
+     tagName: "html:div",
+     parentNode: "id-of-parent", // &lt;--- (5)
+     style: {
+       textAlign: "center"
+     }
+     childNodes: {               // &lt;--- (6)
+       tagName: "html:div",
+       style: {
+         fontSize: "1.5em"
+       },
+       childNodes: [             // &lt;--- (7)
+         {
+           tagName: "html:span",
+           innerText: "abcde"    // &lt;--- (8)
+         },
+         {
+           tagName: "html:div",
+         }
+       ]
+     }
+   })</tt></pre>
+</div></div>
+<div class="literalblock">
+<div class="content">
+<pre><tt>It will be converted as below.</tt></pre>
+</div></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>   &lt;html:div style="text-align: center;"&gt;
+     &lt;html:div style="font-size: 1.5em;"&gt;
+       &lt;html:span&gt;abcde&lt;/html:span&gt;
+       &lt;html:div/&gt;
+     &lt;/html:span&gt;
+   &lt;/html:div&gt;</tt></pre>
+</div></div>
+<div class="literalblock">
+<div class="content">
+<pre><tt>The "parentNode" property (5) indicates at which the current node is to
+be set. if the type of property value was "string", it regards as node
+ID of the parent node. or if its type is "object", especially
+HTMLElement, it regards as the parent node object itself.
+The "childNodes" property has an effect which cascades down
+following &lt;Element node&gt; (6). If you wanted to create two or more
+child nodes under the same node, you should substitute an Array of
+&lt;Element node&gt;s (7) in "childNodes" property.
+The "innerText" property (8) creates a text node under current
+&lt;Element node&gt;.</tt></pre>
+</div></div>
+<div class="paragraph"><p>Example 2:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>   ({
+     tagName: "hbox",
+     id: "parent",
+     flex: 1,
+     onconstruct: {              // &lt;--- (9)
+       handler: function() { window.alert(this.id); }
+     },
+     childNodes: [
+       {
+         tagName: "vbox",
+         id: "left",
+         flex: 1,
+         listener: {             // &lt;--- (10)
+           type: "mouseover",
+           context: window,
+           handler: onMouseOver
+         }
+       },
+       {
+         tagName: "vbox",
+         id: "right",
+         flex: 1,
+         listener: [
+           {
+             type: "mouseup",
+             handler: onMouseUp
+           },
+           {
+             type: "mousedown",
+             handler: onMouseDown
+           }
+         ]
+       }
+     ]
+   })</tt></pre>
+</div></div>
+<div class="literalblock">
+<div class="content">
+<pre><tt>It almost corresponds to following XUL code.</tt></pre>
+</div></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>   &lt;hbox id="parent" flex="1"&gt;
+     &lt;vbox id="left" flex="1" onmouseover=""/&gt;
+     &lt;vbox id="right" flex="1"/&gt;
+   &lt;/hbox&gt;
+   &lt;script type="application/x-javascript"/&gt;
+     &lt;![CDATA[
+       var parent = document.getElementById("parent");
+       var left = document.getElementById("left");
+       var right = document.getElementById("right");
+       (function() window.alert(this.id)).apply(parent);
+       left.addEventListener("mouseover", function() {
+         onMouseOver.apply(window, arguments);
+       }, false);
+       right.addEventListener("mouseup", onMouseUp, false);
+       right.addEventListener("mousedown", onMouseOver, false);
+     ]]&gt;
+   &lt;/script&gt;</tt></pre>
+</div></div>
+<div class="literalblock">
+<div class="content">
+<pre><tt>The "onconstruct" property (9) defines a event function which fired
+when the property itself is parsed.
+The "listener" property (10) attaches a event handler at the current
+&lt;Element node&gt;.</tt></pre>
+</div></div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="_バグレポート_パッチ">バグレポート・パッチ</h2>
 <div class="sectionbody">
 <div class="paragraph"><div class="title">バグレポート・パッチ超歓迎。</div><p>saitoha &lt;<a href="mailto:user@zuse.jp">user@zuse.jp</a>&gt;
@@ -1470,7 +1972,7 @@ twitter: <a href="http://twitter.com/kefir_">日本語</a> / <a href="http://twi
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2012-02-05 16:44:53 JST
+Last updated 2012-02-05 22:07:11 JST
 </div>
 </div>
 </body>
