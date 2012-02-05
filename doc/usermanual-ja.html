@@ -1472,6 +1472,11 @@ Windows + Cygwin 環境では起動やエミュレーションが糞遅いです
 </div>
 </div>
 <div class="sect1">
+<h2 id="_developing_component_plugin_tutorial">Developing component/plugin - Tutorial</h2>
+<div class="sectionbody">
+</div>
+</div>
+<div class="sect1">
 <h2 id="_developing_materials">Developing materials</h2>
 <div class="sectionbody">
 <div class="sect2">
@@ -1492,28 +1497,67 @@ Windows + Cygwin 環境では起動やエミュレーションが糞遅いです
 <h3 id="_event_bus">Event bus</h3>
 <div class="listingblock">
 <div class="content">
-<pre><tt>                                 +---------+
-                                 | Process |
-                                 +----+----+
-                                      |
-             Process bus   -----------+---+-------
-                                          |
-                                     +----+----+
-                                     | desktop |
-                                     +----+----+
-                                          |
-             Desktop bus    ----+---------+------+-------
-                                |                |
-                           +----+-----+     +----+----+
-                           | launcher |     | session |
-                           +----------+     +----+----+
-                                                 |
-             Session bus    .... -------+--------+---+-----------+------- ....
-                                        |            |           |
-                                  +----------+  +----+----+  +---------+
-                            ....  | renderer |  |   tty   |  | screen  |  ....
-                                  +----------+  +---------+  +---------+</tt></pre>
+<pre><tt>                            +---------+
+                            | Process |             &lt;---- corresponds to application process.
+                            +----+----+
+                                 |
+        Process bus   -----------+---+------- ....
+                                     |
+                                +----+----+
+                                | Desktop |         &lt;---- corresponds to chrome window.
+                                +----+----+
+                                     |
+        Desktop bus    ----+---------+------+------- ....
+                           |                |
+                      +----+-----+     +----+----+
+                      | Launcher |     | Session |  &lt;---- corresponds to terminal screen.
+                      +----------+     +----+----+
+                                            |
+        Session bus    .... -------+--------+---+-----------+------- ....
+                                   |            |           |
+                             +----------+  +----+----+  +---------+
+                       ....  | renderer |  |   tty   |  | screen  |  ....
+                             +----------+  +---------+  +---------+</tt></pre>
 </div></div>
+</div>
+<div class="sect2">
+<h3 id="_object_system">Object system</h3>
+<div class="sect3">
+<h4 id="_class_and_aspect">Class and Aspect</h4>
+</div>
+<div class="sect3">
+<h4 id="_processing_decorated_annotated_member_name">Processing decorated (annotated) member name</h4>
+</div>
+<div class="sect3">
+<h4 id="_attributes">Attributes</h4>
+<div class="sect4">
+<h5 id="_serializeable">serializeable</h5>
+</div>
+<div class="sect4">
+<h5 id="_watchable">watchable</h5>
+</div>
+<div class="sect4">
+<h5 id="_listen">listen</h5>
+</div>
+<div class="sect4">
+<h5 id="_subscribe">subscribe</h5>
+</div>
+<div class="sect4">
+<h5 id="_sequence">sequence</h5>
+</div>
+<div class="sect4">
+<h5 id="_command">command</h5>
+</div>
+<div class="sect4">
+<h5 id="_nmap">nmap</h5>
+</div>
+<div class="sect4">
+<h5 id="_cmap">cmap</h5>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_plug_and_play_dynamic_module_loading">Plug-and-play dynamic module loading</h3>
 </div>
 <div class="sect2">
 <h3 id="_event_js_event_system">event.js / Event system</h3>
@@ -1616,44 +1660,48 @@ that ruled by simple grammar. the detail of it is as below...</tt></pre>
 <p>
 case 1.
 </p>
-<div class="literalblock">
+</li>
+</ul></div>
+<div class="listingblock">
 <div class="content">
-<pre><tt>"A"</tt></pre>
+<pre><tt>     "A"</tt></pre>
 </div></div>
 <div class="literalblock">
 <div class="content">
 <pre><tt>-&gt; it triggered when the event "A" is signaled.</tt></pre>
 </div></div>
-</li>
+<div class="ulist"><ul>
 <li>
 <p>
 case 2.
 </p>
-<div class="literalblock">
+</li>
+</ul></div>
+<div class="listingblock">
 <div class="content">
-<pre><tt>"A | B"</tt></pre>
+<pre><tt>     "A | B"</tt></pre>
 </div></div>
 <div class="literalblock">
 <div class="content">
 <pre><tt>-&gt; wait for multiple events "A" OR "B".
    it is triggered when one of either events is signaled.</tt></pre>
 </div></div>
-</li>
+<div class="ulist"><ul>
 <li>
 <p>
 case 3.
 </p>
-<div class="literalblock">
+</li>
+</ul></div>
+<div class="listingblock">
 <div class="content">
-<pre><tt>"A &amp; B"</tt></pre>
+<pre><tt>     "A &amp; B"</tt></pre>
 </div></div>
 <div class="literalblock">
 <div class="content">
 <pre><tt>-&gt; wait for both events "A" AND "B"
    it is triggered when both of these events is signaled.</tt></pre>
 </div></div>
-</li>
-</ul></div>
 </div>
 </div>
 <div class="sect2">
@@ -1972,7 +2020,7 @@ twitter: <a href="http://twitter.com/kefir_">日本語</a> / <a href="http://twi
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2012-02-05 22:21:58 JST
+Last updated 2012-02-06 00:45:35 JST
 </div>
 </div>
 </body>

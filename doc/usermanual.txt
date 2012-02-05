@@ -798,6 +798,8 @@ let g:tanasinnviewsourcecommand="vim +e '%'"
 
 #endif
 
+== Developing component/plugin - Tutorial
+
 == Developing materials
 
 === Hierarchical event broker pattern
@@ -819,29 +821,55 @@ let g:tanasinnviewsourcecommand="vim +e '%'"
 
 ----
 
-                                 +---------+
-                                 | Process |
-                                 +----+----+
-                                      |
-             Process bus   -----------+---+-------
-                                          |
-                                     +----+----+
-                                     | desktop |
-                                     +----+----+
-                                          |
-             Desktop bus    ----+---------+------+------- 
-                                |                |
-                           +----+-----+     +----+----+
-                           | launcher |     | session |
-                           +----------+     +----+----+
-                                                 |
-             Session bus    .... -------+--------+---+-----------+------- ....
-                                        |            |           |
-                                  +----------+  +----+----+  +---------+
-                            ....  | renderer |  |   tty   |  | screen  |  ....
-                                  +----------+  +---------+  +---------+
+                            +---------+
+                            | Process |             <---- corresponds to application process.
+                            +----+----+
+                                 |
+        Process bus   -----------+---+------- ....
+                                     |
+                                +----+----+
+                                | Desktop |         <---- corresponds to chrome window.
+                                +----+----+
+                                     |
+        Desktop bus    ----+---------+------+------- ....
+                           |                |
+                      +----+-----+     +----+----+
+                      | Launcher |     | Session |  <---- corresponds to terminal screen.
+                      +----------+     +----+----+
+                                            |
+        Session bus    .... -------+--------+---+-----------+------- ....
+                                   |            |           |
+                             +----------+  +----+----+  +---------+
+                       ....  | renderer |  |   tty   |  | screen  |  ....
+                             +----------+  +---------+  +---------+
 
 ----
+
+=== Object system
+
+==== Class and Aspect
+
+==== Processing decorated (annotated) member name
+
+==== Attributes
+
+===== serializeable
+
+===== watchable
+
+===== listen
+
+===== subscribe
+
+===== sequence
+
+===== command
+
+===== nmap
+
+===== cmap
+
+=== Plug-and-play dynamic module loading
 
 === event.js / Event system
 
@@ -922,21 +950,24 @@ Defines class EventBroker, which is able to interpret and evaluate
 
    - case 1.
 
+----
      "A"  
-
+----
       -> it triggered when the event "A" is signaled.
 
    - case 2.
 
+----
      "A | B"
-
+----
      -> wait for multiple events "A" OR "B". 
         it is triggered when one of either events is signaled. 
 
    - case 3.
 
+----
      "A & B"
-
+----
      -> wait for both events "A" AND "B" 
         it is triggered when both of these events is signaled. 
 
