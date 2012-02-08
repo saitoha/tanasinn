@@ -2,33 +2,48 @@
 CPP=@CPP@
 ASCIIDOC=@ASCIIDOC@
 OPEN=@TANASINN_OPEN@
-ASCIIDOCFLAGS= -a toc -a icons -a toc2 -a theme=flask 
+SOURCE=usermanual.txt
+ASCIIDOCFLAGS= -a toc -a icons -a toc2 -a theme=flask --filter=ditaa
+README_EN=README-en.asciidoc
+README_JA=README-ja.asciidoc
+HTML_EN=usermanual.html
+HTML_JA=usermanual-ja.html
 
-all: usermanual-ja.html usermanual.html
+all: usermanual.html #usermanual-ja.html
 
 Makefile: Makefile.in
 	cd .. && ./configure
 
-usermanual.html: usermanual.txt Makefile.in
-	if [ -n "$(ASCIIDOC)" ] && [ -n "$(CPP)" ]; \
+$(README_EN): $(SOURCE) Makefile.in
+	if [ -n "$(CPP)" ]; \
 	then \
 		$(RM) $@ && cat $< \
 		| $(CPP) -D__EN__ - \
 		| sed -e 's:/#/://:g' \
-		| sed -e 's/^#.*//' \
-		| $(ASCIIDOC) $(ASCIIDOCFLAGS) - > $@; \
+		| sed -e 's/^#.*//' > $@ ; \
 	fi
 
-usermanual-ja.html: usermanual.txt Makefile.in
-	if [ -n "$(ASCIIDOC)" ] && [ -n "$(CPP)" ]; \
+$(README_JA): $(SOURCE) Makefile.in
+	if [ -n "$(CPP)" ]; \
 	then \
 		$(RM) $@ && cat $< \
 		| $(CPP) -D__JP__ - \
 		| sed -e 's:/#/://:g' \
-		| sed -e 's/^#.*//' \
-		| $(ASCIIDOC) $(ASCIIDOCFLAGS) - > $@; \
+		| sed -e 's/^#.*//' > $@ ; \
 	fi
 
+$(HTML_EN): $(README_EN)
+	if [ -n "$(ASCIIDOC)" ]; \
+	then \
+		$(RM) $@ && $(ASCIIDOC) $(ASCIIDOCFLAGS) -o $@ $<; \
+	fi || true
+
+$(HTML_JA): $(README_JA)
+	if [ -n "$(ASCIIDOC)" ]; \
+	then \
+		$(RM) $@ && $(ASCIIDOC) $(ASCIIDOCFLAGS) -o $@ $<; \
+	fi || true
+
 clean:
-	rm *.html
+	$(RM) *.html $(README_EN) $(README_JA)
 

@@ -64,6 +64,8 @@ Contextmenu.definition = {
   _entries: null,
   _ui_manager: null,
 
+  enabled_when_startup: false,
+
   /** post-constructor */
   "[subscribe('initialized/chrome'), enabled]": 
   function onLoad(ui_manager) 

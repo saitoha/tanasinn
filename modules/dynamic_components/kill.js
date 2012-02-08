@@ -56,7 +56,7 @@ Kill.definition = {
   }, 
 
   /** Uninstall itself. */
-  uninstall: function() 
+  uninstall: function uninstall() 
   {
     this.detach.enabled = false;
     this.kill.enabled = false;

@@ -1440,6 +1440,10 @@ At SandS(Space and Shift) keyboard environment, shift + shift
 <div class="sect1">
 <h2 id="_developing_component_plugin_tutorial">Developing component/plugin - Tutorial</h2>
 <div class="sectionbody">
+<div class="literalblock">
+<div class="content">
+<pre><tt>Coming soon.</tt></pre>
+</div></div>
 </div>
 </div>
 <div class="sect1">
@@ -1447,47 +1451,26 @@ At SandS(Space and Shift) keyboard environment, shift + shift
 <div class="sectionbody">
 <div class="sect2">
 <h3 id="_hierarchical_event_broker_pattern">Hierarchical event broker pattern</h3>
-<div class="listingblock">
+<div class="imageblock ditaa">
 <div class="content">
-<pre><tt>                                                +----------------+
-                                                |                |
-                                                |                |
-    +-----------------------+     +-------------A------------+   |   +---------------------+
-    |                       |     |                          +---+   |                     |
-    | The Root Event Broker +----&lt;| EventBroker &amp; Component  =------&lt;| Component or Plugin |
-    |                       |     |                          |       |                     |
-    +-----------------------+     +---------------------------       +---------------------+</tt></pre>
-</div></div>
+<img src="README-en__1.png" alt="README-en__1.png" />
+</div>
+</div>
 </div>
 <div class="sect2">
 <h3 id="_event_bus">Event bus</h3>
-<div class="listingblock">
+<div class="imageblock ditaa">
 <div class="content">
-<pre><tt>                            +---------+
-                            | Process |             &lt;---- corresponds to application process.
-                            +----+----+
-                                 |
-        Process bus   -----------+---+------- ....
-                                     |
-                                +----+----+
-                                | Desktop |         &lt;---- corresponds to chrome window.
-                                +----+----+
-                                     |
-        Desktop bus    ----+---------+------+------- ....
-                           |                |
-                      +----+-----+     +----+----+
-                      | Launcher |     | Session |  &lt;---- corresponds to terminal screen.
-                      +----------+     +----+----+
-                                            |
-        Session bus    .... -------+--------+---+-----------+------- ....
-                                   |            |           |
-                             +----------+  +----+----+  +---------+
-                       ....  | renderer |  |   tty   |  | screen  |  ....
-                             +----------+  +---------+  +---------+</tt></pre>
-</div></div>
+<img src="README-en__2.png" alt="README-en__2.png" />
+</div>
+</div>
 </div>
 <div class="sect2">
 <h3 id="_object_system">Object system</h3>
+<div class="literalblock">
+<div class="content">
+<pre><tt>Coming soon.</tt></pre>
+</div></div>
 <div class="sect3">
 <h4 id="_class_and_aspect">Class and Aspect</h4>
 </div>
@@ -1523,7 +1506,11 @@ At SandS(Space and Shift) keyboard environment, shift + shift
 </div>
 </div>
 <div class="sect2">
-<h3 id="_plug_and_play_dynamic_module_loading">Plug-and-play dynamic module loading</h3>
+<h3 id="_process_js_plug_and_play_dynamic_module_loading">process.js / Plug-and-play dynamic module loading</h3>
+<div class="literalblock">
+<div class="content">
+<pre><tt>Coming soon.</tt></pre>
+</div></div>
 </div>
 <div class="sect2">
 <h3 id="_event_js_event_system">event.js / Event system</h3>
@@ -1567,12 +1554,11 @@ When you want to unregister handler, use it as follows:</tt></pre>
 The relation between Topic-ID is as same as that, because this event
 system is based on the concept of multicast delegate system.</tt></pre>
 </div></div>
-<div class="listingblock">
+<div class="imageblock ditaa">
 <div class="content">
-<pre><tt>   +----------+ n      1 +-----------+ n      1 +-----------+
-   | handler  |&gt;---------|    ID     |&gt;---------|   topic   |
-   +----------+          +-----------+          +-----------+</tt></pre>
-</div></div>
+<img src="README-en__3.png" alt="README-en__3.png" />
+</div>
+</div>
 </div>
 <div class="sect3">
 <h4 id="_event_expression_overview">"Event Expression" Overview</h4>
@@ -1723,30 +1709,11 @@ Controlling Process
 </p>
 </li>
 </ol></div>
-<div class="listingblock">
+<div class="imageblock ditaa">
 <div class="content">
-<pre><tt>   TTY Device pair            Python script                   tanasinn
-   Master / Slave          class TeletypeDriver                 tty.js
- +-----------------+       +------------------+           +-----------------+
- |                 |       |                  |           |                 |
- | +-------------+ |       | +--------------+ |           | +-------------+ |
- | |             |----------&gt;| Writing Proc |&lt;--- recv -----|             | |
- | |             | | read  | +--------------+ |           | |             | |
- | |             | |       |                  &lt;I/O channel&gt; | I/O Manager | |
- | |             | |       | +--------------+ |           | |             | |
- | |   Master    |&lt;----------| Reading Proc |---- send ----&gt;|             | |
- | |             | | write | +--------------+ |           | +-------------+ |
- | |             | |       |                  |           |                 |
- | |             | |       | +--------------+ |           | +-------------+ |
- | |             |&lt;---------&gt;| Control Proc |&lt;- send/recv -&gt;| Controller  | |
- | +-------------+ | ioctl | +--------------+ |           | +-------------+ |
- |        |        |       |                &lt;Control channel&gt;               |
- | +-------------+ |       | +--------------+ |           +-----------------+
- | |    Slave    |&lt;---------&gt;|   App Proc   | |
- | +-------------+ | stdio | +--------------+ |
- |                 |       |                  |
- +-----------------+       +------------------+</tt></pre>
-</div></div>
+<img src="README-en__4.png" alt="README-en__4.png" />
+</div>
+</div>
 <div class="literalblock">
 <div class="content">
 <pre><tt>figure-1. Communication among TTY device pair, TeletypeDriver, tanasinn.</tt></pre>
@@ -1986,7 +1953,7 @@ or tweet me (<a href="http://twitter.com/feel_tanasinn">English</a> / <a href="h
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2012-02-06 00:45:37 JST
+Last updated 2012-02-06 14:02:35 JST
 </div>
 </div>
 </body>
