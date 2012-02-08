@@ -9,7 +9,7 @@ README_JA=README-ja.asciidoc
 HTML_EN=usermanual.html
 HTML_JA=usermanual-ja.html
 
-all: usermanual.html usermanual-ja.html
+all: $(HTML_EN) $(HTML_JA)
 
 Makefile: Makefile.in
 	cd .. && ./configure
@@ -45,5 +45,5 @@ $(HTML_JA): $(README_JA)
 	fi || true
 
 clean:
-	$(RM) *.html $(README_EN) $(README_JA)
+	$(RM) $(HTML_JA) $(HTML_EN) $(README_EN) $(README_JA)
 
