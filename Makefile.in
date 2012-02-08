@@ -210,6 +210,6 @@ update-web:
 update: all
 #	rm -r -f /var/www/tanasinn/*/ && rm -f /var/www/tanasinn/*
 	cp tanasinn@zuse.jp.xpi /var/www/tanasinn/tanasinn-current.xpi
-	cp doc/*.html /var/www/tanasinn/
-	cp doc/*.png doc/images/*.png /var/www/tanasinn/images/
+	cp doc/*.png doc/*.html /var/www/tanasinn/
+	cp doc/images/*.png /var/www/tanasinn/images/
 
