@@ -40,14 +40,6 @@ Vimperator.definition = {
         }</description>
         <version>0.1</version>
     </module>,
-
-  /** post-constructor */
-  "[subscribe('@event/broker-started'), enabled]": 
-  function onLoad(session) 
-  {
-    this._modules = this._getComponents();
-    this.enabled = this.enabled_when_startup;
-  },
   
   /** Install itself. 
    *  @param {Session} session A session object.
@@ -57,7 +49,6 @@ Vimperator.definition = {
     this.onGotFocus();
     this.onGotFocus.enabled = true;  
     this.onLostFocus.enabled = true;  
-
   },
 
   /** Uninstall itself. 
@@ -74,7 +65,7 @@ Vimperator.definition = {
   "[subscribe('event/got-focus | command/focus')]":
   function onGotFocus() 
   {
-    let modules = this._modules;
+    let modules = this._getModules();
     if (!modules)
       return;
     modules.modes.isMenuShown = true;
@@ -84,7 +75,7 @@ Vimperator.definition = {
   "[subscribe('event/lost-focus | command/blur')]":
   function onLostFocus() 
   {
-    let modules = this._modules;
+    let modules = this._getModules();
     if (!modules)
       return;
     modules.modes.isMenuShown = false;
@@ -94,14 +85,14 @@ Vimperator.definition = {
   "[subscribe('@event/session-stopping'), enabled]":
   function onSessionStopping() 
   {
-    let modules = this._modules;
+    let modules = this._getModules();
     if (!modules)
       return;
     modules.events.onEscape();
   },
 
   /** get "liberator.modules" */
-  _getComponents: function _getEvents()
+  _getModules: function _getModules()
   {
     let session = this._broker;
     let window = session.window;

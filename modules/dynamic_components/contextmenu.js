@@ -25,7 +25,7 @@
 /**
  * @class Contextmenu
  */
-let Contextmenu = new Class().extends(Plugin);
+let Contextmenu = new Class().extends(Plugin).depends("chrome");
 Contextmenu.definition = {
 
   get id()
@@ -42,7 +42,6 @@ Contextmenu.definition = {
     </plugin>,
 
   get template() 
-    let (ui_manager = this._ui_manager)
     let (entries = this._entries)
     {
       tagName: "menupopup",
@@ -62,22 +61,14 @@ Contextmenu.definition = {
     },
 
   _entries: null,
-  _ui_manager: null,
 
   enabled_when_startup: false,
-
-  /** post-constructor */
-  "[subscribe('initialized/chrome'), enabled]": 
-  function onLoad(ui_manager) 
-  {
-    this._ui_manager = ui_manager;
-    this.enabled = this.enabled_when_startup;
-  },
 
   /** Installs itself.
    *  @param {Session} session A Session object.
    */
-  install: function install(session) 
+  "[subscribe('install/contextmenu'), enabled]": 
+  function install(session) 
   {
     // register DOM listener.
     this.show.enabled = true;
@@ -86,7 +77,8 @@ Contextmenu.definition = {
   /** Uninstalls itself.
    *  @param {Session} session A Session object.
    */
-  uninstall: function uninstall(session) 
+  "[subscribe('uninstall/contextmenu'), enabled]": 
+  function uninstall(session) 
   {
     // unregister DOM listener.
     this.show.enabled = false;

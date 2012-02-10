@@ -42,12 +42,6 @@ MoveShortcut.definition = {
 
   "[persistable] step": 60,
 
-  "[subscribe('@event/broker-started'), enabled]":
-  function onLoad(session) 
-  {
-    this.enabled = this.enabled_when_startup;
-  },
-
   /** Installs itself. 
    *  @param {Session} session A Session object.
    */

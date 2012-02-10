@@ -44,14 +44,16 @@ Copy.definition = {
     </TanasinnPlugin>,
 
   /** Installs itself. */
-  install: function install(session) 
+  "[subscribe('install/copy'), enabled]": 
+  function install(session) 
   {
     this.copy.enabled = true;
     this.onContextMenuEntriesRequested.enabled = true;
   },
 
   /** Uninstalls itself. */
-  uninstall: function uninstall(session) 
+  "[subscribe('uninstall/copy'), enabled]": 
+  function uninstall(session) 
   {
     this.copy.enabled = false;
     this.onContextMenuEntriesRequested.enabled = false;

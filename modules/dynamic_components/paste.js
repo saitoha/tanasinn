@@ -40,13 +40,6 @@ Paste.definition = {
         <version>0.1</version>
     </plugin>,
 
-  /** post-constructor */
-  "[subscribe('@event/broker-started'), enabled]":
-  function onLoad(session) 
-  {
-    this.enabled = this.enabled_when_startup;
-  },
-
   /** Install itself. */
   install: function install(session) 
   {

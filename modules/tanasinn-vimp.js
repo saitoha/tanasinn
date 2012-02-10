@@ -44,7 +44,6 @@ let g:tanasinnviewsourcecommand:
 </VimperatorPlugin>;
 //}}}
 
-
 void function() {
 
 let liberator = window.liberator;
@@ -79,14 +78,20 @@ function getTanasinnProcess()
   return process;
 }
 let process = getTanasinnProcess();
-let desktops = process.notify("get/desktop-from-window", window);
-let desktop;
-if (desktops) {
-  [desktop] = desktops;
-} else {
-  process.notify("event/new-window-detected", window);
-  desktop = process.uniget("get/desktop-from-window", window);
-};
+
+function getDesktop() 
+{
+  let desktops = process.notify("get/desktop-from-window", window);
+  if (desktops) {
+    let [desktop] = desktops.filter(function(desktop) desktop);
+    if (desktop) {
+      return desktop;
+    }
+  }
+  let desktop = process.uniget("event/new-window-detected", window);
+  return desktop;
+}
+getDesktop();
 
 /**
  * @command tanasinnlaunch 
@@ -95,7 +100,7 @@ commands.addUserCommand(["tanasinnlaunch", "tla[unch]"],
   "Show tanasinn's Launcher.", 
   function (args) 
   { 
-    desktop.post("command/show-launcher");
+    getDesktop().post("command/show-launcher");
   }
 );
 
@@ -106,7 +111,7 @@ commands.addUserCommand(["tanasinncommand", "tco[mmand]"],
   "Run a command on tanasinn.", 
   function (args) 
   { 
-    desktop.post("command/start-session", args.string);
+    getDesktop().post("command/start-session", args.string);
   },
   { 
     argCount: "?",
@@ -125,7 +130,7 @@ editor.editFileExternally = let (default_func = editor.editFileExternally) funct
 {
   let editor_command = liberator.globalVariables.tanasinneditorcommand;
   let viewsource_command = liberator.globalVariables.tanasinnviewsourcecommand;
-
+  let desktop = getDesktop();
   if (/^[a-z]+:\/\//.test(path)) { // when path is url spec. (path is expected to be escaped.)
     if (!viewsource_command) {
       default_func.apply(liberator.modules.editor, arguments);
@@ -145,11 +150,11 @@ editor.editFileExternally = let (default_func = editor.editFileExternally) funct
         }, this);
       }, this);
       desktop.notify("command/start-session", editor_command.replace(/%/g, path));
-      let thread = Components.classes["@mozilla.org/thread-manager;1"]
-        .getService(Components.interfaces.nsIThreadManager)
-        .currentThread;
+      let thread = components.classes["@mozilla.org/thread-manager;1"]
+        .getservice(components.interfaces.nsithreadmanager)
+        .currentthread;
       while (!complete) {
-        thread.processNextEvent(true);
+        thread.processnextevent(true);
       }
     };
   }

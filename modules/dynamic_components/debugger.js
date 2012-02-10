@@ -233,10 +233,10 @@ Hooker.definition = {
 }
 
 /**
- * @class StepExecution
+ * @class Debugger
  */
-let StepExecution = new Class().extends(Plugin);
-StepExecution.definition = {
+let Debugger = new Class().extends(Plugin).depends("bottompanel");
+Debugger.definition = {
 
   get id()
     "debugger",
@@ -254,7 +254,7 @@ StepExecution.definition = {
   get template()
     let (session = this._broker)
     {
-      parentNode: this._bottom_panel.alloc(this.id, _("Debugger")),
+      parentNode: this.dependency["bottompanel"].alloc(this.id, _("Debugger")),
       tagName: "hbox",
       flex: 1,
       style: <>
@@ -334,6 +334,40 @@ StepExecution.definition = {
       ]
     },
 
+  /** Installs itself. 
+   *  @param {Session} session A session object.
+   */
+  "[subscribe('install/debugger'), enabled]": 
+  function install(session) 
+  {
+    let {
+      tanasinn_trace,
+      tanasinn_debugger_attach,
+      tanasinn_debugger_break,
+      tanasinn_debugger_resume,
+      tanasinn_debugger_step,
+    } = session.uniget("command/construct-chrome", this.template);
+    this._trace_box = tanasinn_trace;
+    this._checkbox_attach = tanasinn_debugger_attach;
+    this._checkbox_break = tanasinn_debugger_break;
+    this._checkbox_resume = tanasinn_debugger_resume;
+    this._checkbox_step = tanasinn_debugger_step;
+    this.select.enabled = true;
+    this.trace.enabled = true;
+  },
+
+  /** Uninstalls itself 
+   *  @param {Session} session A session object.
+   */
+  "[subscribe('uninstall/debugger'), enabled]": 
+  function uninstall(session)
+  {
+    let bottom_panel = this.dependency["bottompanel"];
+    bottom_panel.remove(this.id);
+    this.select.enabled = false;
+    this.trace.enabled = false;
+  },
+
   doAttach: function doAttach() 
   {
     let session = this._broker;
@@ -375,45 +409,6 @@ StepExecution.definition = {
   {
     let session = this._broker;
     session.notify("command/step");
-  },
-
-  "[subscribe('initialized/bottompanel'), enabled]":
-  function onLoad(bottom_panel)
-  {
-    this._bottom_panel = bottom_panel;
-    this.enabled = this.enabled_when_startup;
-  },
-
-  /** Installs itself. 
-   *  @param {Session} session A session object.
-   */
-  install: function install(session) 
-  {
-    let {
-      tanasinn_trace,
-      tanasinn_debugger_attach,
-      tanasinn_debugger_break,
-      tanasinn_debugger_resume,
-      tanasinn_debugger_step,
-    } = session.uniget("command/construct-chrome", this.template);
-    this._trace_box = tanasinn_trace;
-    this._checkbox_attach = tanasinn_debugger_attach;
-    this._checkbox_break = tanasinn_debugger_break;
-    this._checkbox_resume = tanasinn_debugger_resume;
-    this._checkbox_step = tanasinn_debugger_step;
-    this.select.enabled = true;
-    this.trace.enabled = true;
-  },
-
-  /** Uninstalls itself 
-   *  @param {Session} session A session object.
-   */
-  uninstall: function uninstall(session)
-  {
-    let bottom_panel = this._bottom_panel;
-    bottom_panel.remove(this.id);
-    this.select.enabled = false;
-    this.trace.enabled = false;
   },
 
   "[subscribe('command/trace-sequence')]": 
@@ -550,7 +545,7 @@ StepExecution.definition = {
   "[command('debugger'), nmap('<M-d>', '<C-S-d>'), _('Open debugger.')]":
   function select() 
   {
-    this._bottom_panel.select(this.id);
+    this.dependency["bottompanel"].select(this.id);
     return true;
   },
 };
@@ -566,7 +561,7 @@ function main(desktop)
     "@initialized/broker", 
     function(session) 
     {
-      new StepExecution(session);
+      new Debugger(session);
       new Hooker(session);
       new Tracer(session);
     });

@@ -13,6 +13,7 @@ link:./usermanual.html[English/英語]
 == Overview
 
     Here is a terminal emulator that runs on Firefox/Thunderbird/SeaMonkey.
+    It Supports Windows(XP/Vista/7) + Cygwin / Mac / Linux / FreeBSD. 
     It enables you to access flexible, powerful functionality 
     provided by operating systems, such as commandline shells, or curses-based 
     applications.
@@ -22,6 +23,8 @@ link:./usermanual.html[English/英語]
 == 概要
 
     "tanasinn terminal emulator" は Firefox/Thunderbird/SeaMonkey上で動作する端末エミュレータです。
+    Windows(XP/Vista/7) + Cygwin / Mac / Linux / FreeBSD 環境で動作します。
+    ほぼJavascriptによる実装(2%のPython)。
     コマンドラインシェルやcursesベースのアプリケーション等、オペレーティングシステムが提供する
     柔軟でパワフルな機能群にブラウザ上のUIからアクセスすることができます。
 
@@ -118,7 +121,10 @@ process.python_path = "/usr/bin/python"
     - スクロールバック、代替スクリーン、ビジュアルベル、オーディオベルなど基本的な機能はサポートしています。
     - IMEが使えます。
     - East Asian Width(ひらがななどの文字幅を考慮したレンダリング)に一応対応しています。 
-      bidiには対応できていないと思います。
+      CJK拡張漢字B集合などのサロゲートペアで表現される文字にも対応しています。
+      異体字セレクタ、インド系諸語等で頻出する合字やアラビア系文字の置換などの複雑グリフ処理は、
+      現在主にパフォーマンス上の理由により実装されませんが、 別途プラグインで対応することも可能です。
+      bidiには完全に対応できていないと思います。
     - 地域化のサポート。gettextのようなスタイルを採用しています。
       ローカライズリソースをUI上から編集することができます。
     - Geckoがサポートする様々なエンコーディングを指定できます。
@@ -571,7 +577,8 @@ image::images/commandline.png[width=480]
 === ユーザーディレクトリ
 #endif
 
-----
+["aafigure"]
+-----------------------------------------------------------------
 
   ~/
    |
@@ -597,7 +604,7 @@ image::images/commandline.png[width=480]
                 |
                 +-- dynamic_components/          <------ (11)
 
-----
+-----------------------------------------------------------------
 
 #if __EN__
 #elif __JP__
@@ -788,13 +795,14 @@ let g:tanasinnviewsourcecommand="vim +e '%'"
  - At SandS(Space and Shift) keyboard environment, shift + shift 
    (shift key twice) key sequence are detected by space + space, unfortunately!!
    I think something other way for it should be provided.
-
+ - It does'nt work when all NIC is disabled.
 
 #elif __JP__
 == 既知の問題
 
  - Windows + Cygwin 環境では起動やエミュレーションが糞遅いです。
  - キーボードがSandS(Space and Shift)環境だとspace + space で shift + shift を検出してしまいます。代替手段を用意しなければいけません。
+ - NIC無効時には動きません。
 
 #endif
 
@@ -806,7 +814,7 @@ let g:tanasinnviewsourcecommand="vim +e '%'"
 
 === Hierarchical event broker pattern
 
-["ditaa"]
+["ditaa", options="no-separation,round-corners"]
 ----------------------------------------------------------------------------------------------
 
                                                 +----------------+
@@ -822,7 +830,7 @@ let g:tanasinnviewsourcecommand="vim +e '%'"
 
 === Event bus
 
-["ditaa"]
+["ditaa", options="no-separation"]
 ----------------------------------------------------------------------------------------------
 
                             +---------+
@@ -906,7 +914,7 @@ Defines class EventBroker, which is able to interpret and evaluate
    The relation between Topic-ID is as same as that, because this event 
    system is based on the concept of multicast delegate system.
 
-["ditaa"]
+["ditaa", options="no-separation,round-corners"]
 --------------------------------------------------------------------------------
 
    +----------+ n      1 +-----------+ n      1 +-----------+
@@ -926,7 +934,7 @@ Defines class EventBroker, which is able to interpret and evaluate
    that ruled by simple grammar. the detail of it is as below...
 
 
-==== Crammer of Event Expression
+==== Grammer of Event Expression
 
 ----
 
@@ -1017,13 +1025,13 @@ establish TCP connection, and finally forks new 4 processes as follows:
    This process communicate with tanasinn through [Control channel] in 
    simple, lightweight, 7bit ascii-based protocol.
 
-["ditaa"]
+["ditaa", options="round-corners"]
 --------------------------------------------------------------------------------
 
    TTY Device pair            Python script                   tanasinn
    Master / Slave          class TeletypeDriver                 tty.js
  +-----------------+       +------------------+           +-----------------+
- |                 |       |                  |           |                 |
+ | cCCD            |       | cC0C             |           | cDCC            |
  | +-------------+ |       | +--------------+ |           | +-------------+ |
  | |             +---------->| Writing Proc +---- recv ---->|             | |
  | |             | | read  | +--------------+ |           | |             | |

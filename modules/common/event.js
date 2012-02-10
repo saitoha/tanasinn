@@ -408,7 +408,33 @@ EventBroker.definition = {
   {
     let base = this._base;
     return base.clearEvents();
-  }
+  },
+
+  /** Load *.js files from specified directories. 
+   *  @param {String} search path 
+   */
+  load: function load(broker, search_path, scope) 
+  {
+    let entries = coUtils.File.getFileEntriesFromSerchPath(search_path);
+    for (let entry in entries) {
+      try {
+        // make URI string such as "file://....".
+        let url = coUtils.File.getURLSpec(entry); 
+        coUtils.Runtime.loadScript(url, scope);
+        if (scope.main) {
+          scope.main(broker);
+        } else {
+          throw coUtils.Debug.Exception(
+            _("Component scope symbol 'main' ",
+              "required by module loader was not defined. \n",
+              "file: '%s'."), 
+            url.split("/").pop());
+        }
+      } catch (e) {
+        coUtils.Debug.reportError(e);
+      }
+    }
+  },
 
 };
 

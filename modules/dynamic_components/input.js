@@ -73,7 +73,9 @@ function coCreateKeyMap()
  * @class InputManager
  * @brief Listen keyboard input events and send ones to TTY device.
  */
-let InputManager = new Class().extends(Plugin);
+let InputManager = new Class().extends(Plugin)
+                              .depends("chrome")
+                              .depends("encoder");
 InputManager.definition = {
 
   get id()
@@ -101,14 +103,6 @@ InputManager.definition = {
 
   "[persistable] debug_mode": false,
 
-  /** post-constructor */
-  "[subscribe('initialized/{chrome & encoder}'), enabled]": 
-  function onLoad(chrome, encoder) 
-  {
-    this._encoder = encoder;
-    this.enabled = this.enabled_when_startup;
-  },
-
   /** Installs itself. 
    *  @param {Session} a session object.
    *  @notify initialized/inputmanager
@@ -128,6 +122,8 @@ InputManager.definition = {
     this.onkeypress.enabled = true;
     this.onkeyup.enabled = true;
     this.oninput.enabled = true;
+    this.oncompositionstart.enabled = true;
+    this.oncompositionend.enabled = true;
     this.inputWithMapping.enabled = true;
     this.inputWithNoMapping.enabled = true;
     this.enableInputManager.enabled = true;
@@ -149,6 +145,8 @@ InputManager.definition = {
     this.onkeypress.enabled = false;
     this.onkeyup.enabled = false;
     this.oninput.enabled = false;
+    this.oncompositionstart.enabled = false;
+    this.oncompositionend.enabled = false;
     this.inputWithMapping.enabled = false;
     this.inputWithNoMapping.enabled = false;
     this.enableInputManager.enabled = false;
@@ -164,7 +162,7 @@ InputManager.definition = {
   function _processInputSequence(data)
   {
     if (data) {
-      let message = this._encoder.encode(data);
+      let message = this.dependency["encoder"].encode(data);
       let session = this._broker;
       session.notify("command/send-to-tty", message);
     }
@@ -304,15 +302,35 @@ InputManager.definition = {
     this._processInputSequence(message);
   },
   
-  /** input event handler. 
+  /** compositionstart event handler. 
    *  @{Event} event A event object.
+   */
+  "[listen('compositionstart', '#tanasinn_default_input')]":
+  function oncompositionstart(event) 
+  {
+    this.oninput.enabled = false;
+  },
+  
+  /** compositionend event handler. 
+   *  @{Event} event A event object.
+   */
+  "[listen('compositionend', '#tanasinn_default_input')]":
+  function oncompositionend(event) 
+  {
+    this.oninput.enabled = true;
+  },
+  
+  /** input event handler. 
+   *  @param {Event} event A event object.
    *  @notify event/input Notifies that a input event is occured.
    */
   "[listen('input', '#tanasinn_default_input')]":
   function oninput(event) 
   {
     let session = this._broker;
-    session.notify("event/input", event);
+    let value = this._textbox.value;
+    this._textbox.value = "";
+    session.notify("command/input-text", value);
   }
 } 
 

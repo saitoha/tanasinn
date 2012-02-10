@@ -48,7 +48,9 @@ Suitable.definition = {
  * @class Selection
  */
 let Selection = new Class().extends(Plugin)
-                           .mix(Suitable);
+                           .mix(Suitable)
+                           .depends("renderer")
+                           .depends("screen");
 Selection.definition = {
 
   get id()
@@ -63,22 +65,12 @@ Selection.definition = {
         <version>0.1</version>
     </module>,
 
-  _screen: null,
   _canvas: null,
   _context: null,
   _range: null,
   _mouse_mode: null,
 
   color: "white",
-
-  /** post-constructor */
-  "[subscribe('@initialized/{renderer & screen}'), enabled]":
-  function onLoad(renderer, screen) 
-  {
-    this._renderer = renderer;
-    this._screen = screen;
-    this.enabled = this.enabled_when_startup;
-  },
   
   "[subscribe('event/mouse-tracking-mode-changed'), enabled]": 
   function onMouseTrackingModeChanged(data) 
@@ -155,7 +147,7 @@ Selection.definition = {
     if (null !== this._mouse_mode)
       return;
     let session = this._broker;
-    let screen = this._screen;
+    let screen = this.dependency["screen"];
     let column = screen.width;
     let row = screen.height;
     let [x, y] = this.convertPixelToScreen(event);
@@ -287,8 +279,8 @@ Selection.definition = {
       [first, last] = arguments;
 
     let context = this._context;
-    let screen = this._screen;
-    let renderer = this._renderer;
+    let screen = this.dependency["screen"];
+    let renderer = this.dependency["renderer"];
     let column = screen.width;
     let char_width = renderer.char_width;
     let line_height = renderer.line_height;
@@ -326,7 +318,7 @@ Selection.definition = {
   selectSurroundChars: function selectSurroundChars(column, row) 
   {
     let context = this._context;
-    let screen = this._screen;
+    let screen = this.dependency["screen"];
     let [start, end] = screen.getWordRangeFromPoint(column, row);
     this.drawSelectionRange(start, end);
     this.setRange(start, end);
@@ -381,8 +373,8 @@ Selection.definition = {
     let offsetY = box.screenY - root_element.boxObject.screenY;
     let left = event.layerX - offsetX; 
     let top = event.layerY - offsetY;
-    let renderer = this._renderer;
-    let screen = this._screen;
+    let renderer = this.dependency["renderer"];
+    let screen = this.dependency["screen"];
     let char_width = renderer.char_width;
     let line_height = renderer.line_height;
     let column = Math.round(left / char_width + 1.0);

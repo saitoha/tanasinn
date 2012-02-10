@@ -25,7 +25,10 @@
 /**
  * @class DragCopy
  */
-let DragCopy = new Class().extends(Plugin);
+let DragCopy = new Class().extends(Plugin)
+                          .depends("screen")
+                          .depends("renderer")
+                          .depends("selection");
 DragCopy.definition = {
 
   _feedback_canvas: null,
@@ -33,7 +36,7 @@ DragCopy.definition = {
   _mouse_mode: null,
 
   get id()
-    "comopnents.dragcopy",
+    "dragcopy",
 
   get info()
     <plugin>
@@ -43,15 +46,6 @@ DragCopy.definition = {
         }</description>
         <version>0.1</version>
     </plugin>,
-
-  /** post-constructor */
-  "[subscribe('@initialized/{screen & renderer & selection}'), enabled]":
-  function onLoad(screen, renderer, selection) 
-  {
-    this._screen = screen;
-    this._renderer = renderer;
-    this.enabled = this.enabled_when_startup;
-  },
 
   /** Installs itself. */
   install: function install(session)
@@ -90,7 +84,7 @@ DragCopy.definition = {
     session = this._broker;
 
     let canvas = this._canvas;
-    let screen = this._screen;
+    let screen = this.dependency["screen"];
     let feedback_canvas = this._feedback_canvas;
     feedback_canvas.hidden = false;
     let foreground_canvas = session.uniget("command/query-selector", "#foreground_canvas");
@@ -146,7 +140,7 @@ DragCopy.definition = {
     if (null !== this._mouse_mode)
       return;
     let session = this._broker;
-    let screen = this._screen;
+    let screen = this.dependency["screen"];
     let column = screen.width;
     let [x, y] = this.convertPixelToScreen(event);
     let position = y * column + x;
@@ -180,8 +174,8 @@ DragCopy.definition = {
     let offsetY = box.screenY - root_element.boxObject.screenY;
     let left = event.layerX - offsetX; 
     let top = event.layerY - offsetY;
-    let renderer = this._renderer;
-    let screen = this._screen;
+    let renderer = this.dependency["renderer"];
+    let screen = this.dependency["screen"];
     let char_width = renderer.char_width;
     let line_height = renderer.line_height;
     let column = Math.round(left / char_width);

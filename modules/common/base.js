@@ -33,7 +33,9 @@ Aspect.prototype = {
 
   /** @property {Object} definition */
   get definition()
-    this._definition,
+  {
+    return this._definition;
+  },
 
   set definition(value) 
   {
@@ -197,32 +199,6 @@ Attribute.prototype = {
   parse: function(annotation) 
   {
     with (this) {
-//      let pattern = /([a-z]+)\('(.*?)'\s*(?:,\s*'(.*?)')*\)|([a-z]+)/y;
-//      try {
-//      do {
-//        let match = pattern.exec(annotation);
-//        if (null === match) {
-//          break;
-//        }
-//        let all = match.shift();
-//        let func = match.shift();
-//        let prop = match.pop();
-//        let args = match;
-//        if (func)
-//        //alert(typeof args + " " + arg)
-//        if (prop) {
-//          this[prop];
-//        } else if (func) {
-//          //alert(match.join("/"))
-//          args = args
-//            .filter(function(arg) arg)
-//            .map(function(arg) arg.replace(/\\(.)/, function() arguments[1]));
-//          //if (args.length > 1)
-//          //alert(args.join("-"))
-//          this[func].apply(this, args);
-//        }
-//      } while (true)
-//      } catch(e) {alert(e)}
       try {
         eval(annotation);
       } catch(e) {
@@ -337,6 +313,7 @@ Class.prototype = {
   initialize: function initialize() 
   {
     this._mixin_list = [];
+    this._dependency_list = [];
     let constructor = function() {
       if (this.initialize)
         return this.initialize.apply(this, arguments);
@@ -358,7 +335,7 @@ Class.prototype = {
     return this;
   },
 
-  /** Mix-ins specified aspect.
+  /** Mixes specified aspect.
    * @param {Aspect} aspect
    */
   mix: function mix(aspect) 
@@ -369,7 +346,6 @@ Class.prototype = {
 
   depends: function depends(id)
   {
-    this._dependency_list = this._dependency_list || [];
     if (id) {
       this._dependency_list.push(id);
     }
@@ -416,97 +392,45 @@ Class.prototype = {
   applyAspect: function applyAspect(prototype, aspect) 
   {
     for (let key in aspect) {
-      //if (aspect.hasOwnProperty(key)) {
-        //if ("initialize" != key) {
-        //  if (prototype.__lookupGetter__(key) 
-        //   || prototype.__lookupSetter__(key) 
-        //   || prototype.hasOwnProperty(key))
-        //  {
-        //    coUtils.Debug.reportMessage(
-        //      _("applyAspect '%s' is already defined."), key)
-        //  }
-        //}
-        
-        // Detects whether the property specified by given key is
-        // a getter or setter. NOTE that we should NOT access property 
-        // by ordinaly way, like "aspect.<property-neme>".
-        let getter = aspect.__lookupGetter__(key);
-        let setter = aspect.__lookupSetter__(key);
-        // if key is a getter method...
-        if (getter) {
-          prototype.__defineGetter__(key, getter);
-        }
-        // if key is a setter method...
-        if (setter) {
-          prototype.__defineSetter__(key, setter);
-        }
-        // if key is a generic property or method...
-        if (!getter && !setter) {
-          if ("initialize" == key && aspect.initialize) {
-            let value = prototype.initialize;
+      // Detects whether the property specified by given key is
+      // a getter or setter. NOTE that we should NOT access property 
+      // by ordinaly way, like "aspect.<property-neme>".
+      let getter = aspect.__lookupGetter__(key);
+      let setter = aspect.__lookupSetter__(key);
+      // if key is a getter method...
+      if (getter) {
+        prototype.__defineGetter__(key, getter);
+      }
+      // if key is a setter method...
+      if (setter) {
+        prototype.__defineSetter__(key, setter);
+      }
+      // if key is a generic property or method...
+      if (!getter && !setter) {
+        if ("initialize" == key && aspect.initialize) {
+          let value = prototype.initialize;
 
-            // makes constructor chain.
-            prototype.initialize = function initialize() 
-            {
-              aspect.initialize.apply(this, arguments);
-              value.apply(this, arguments);
-            };
-          } else if ("__attributes" == key) {
-            if (prototype.__attributes) {
-              for (name in aspect.__attributes) {
-                let attribute = aspect.__attributes[name];
-                prototype.__attributes[name] = attribute;
-              }
-            } else {
-              prototype.__attributes = aspect.__attributes;
+          // makes constructor chain.
+          prototype.initialize = function initialize() 
+          {
+            aspect.initialize.apply(this, arguments);
+            value.apply(this, arguments);
+          };
+        } else if ("__attributes" == key) {
+          if (prototype.__attributes) {
+            for ([name, ] in Iterator(aspect.__attributes)) {
+              let attribute = aspect.__attributes[name];
+              prototype.__attributes[name] = attribute;
             }
           } else {
-            prototype[key] = aspect[key];
+            prototype.__attributes = aspect.__attributes;
           }
-        }
-      //}
-    }
-  },
-
-  /** Checks prototype object if methods and properties in specified 
-   *  interface was implemented. 
-   *  @param {Object} prototype A prototype object.
-   *  @param {Object} interface_info A interface object.
-   */
-  checkInterface: function(prototype, interface_info) 
-  {
-    let id = interface_info.id;
-    let definition = interface_info.definition;
-    for (let key in definition) {
-      if (definition.hasOwnProperty(key)) {
-        let getter = interface_info.__lookupGetter__(key);
-        let setter = interface_info.__lookupSetter__(key);
-        if (getter) {
-          let my_getter = prototype.__lookupGetter__(key);
-          if (!my_getter) {
-            throw coUtils.Debug.Exception(
-              _("Interface member '%s.%s' (getter function) not defined."),
-              id, key);
-          }
-        }
-        if (setter) {
-          let my_getter = prototype.__lookupSetter__(key);
-          if (!my_getter) {
-            throw coUtils.Debug.Exception(
-              _("Interface member '%s.%s' (setter function) not defined."),
-              id, key);
-          }
-        }
-        if (!getter && !setter) {
-          if (undefined === prototype[key]) {
-            throw coUtils.Debug.Exception(
-              _("Interface member '%s.%s' not defined."),
-              id, key);
-          }
+        } else {
+          prototype[key] = aspect[key];
         }
       }
     }
-  }, // checkInterface
+  },
 };
 
 /**
@@ -573,14 +497,11 @@ PersistableAttribute.definition = {
   __load: function __load(context) 
   {
     let attributes = this.__attributes;
-    let keys = [
-      key for (key in attributes) 
-        if (attributes[key]["persistable"])
-    ];
-    if (keys.length) {
-      let id = this.id;
-      for (let [, key] in Iterator(keys)) {
-        let path = [id, key].join(".");
+    attributes && Object.keys(attributes)
+      .filter(function(key) attributes[key]["persistable"], this)
+      .forEach(function(key)
+      {
+        let path = [this.id, key].join(".");
         try {
           let value = context[path];
           if (undefined !== value) {
@@ -592,15 +513,15 @@ PersistableAttribute.definition = {
             _("An Error occured when loading member '%s'."),
             path);
         }
-      }
-    }
+      }, this);
   },
 
   /** Sets persistable parameter value to context object. */
   __persist: function __persist(context) 
   {
-    Object.getOwnPropertyNames(this.__attributes)
-      .filter(function(key) this.__attributes[key]["persistable"], this)
+    let attributes = this.__attributes;
+    attributes && Object.keys(attributes)
+      .filter(function(key) attributes[key]["persistable"], this)
       .forEach(function(key)
       {
         try {
@@ -1149,13 +1070,14 @@ Plugin.definition = {
       }
       broker.subscribe(
         topic, 
-        function() 
+        function onLoad() 
         {
           let args = arguments;
           this.__dependency.forEach(function(key, index) {
             this.dependency[key] = args[index];
           }, this);
           this.enabled = this.enabled_when_startup;
+          broker.notify(<>initialized/{this.id}</>, this);
         }, 
         this);
     }

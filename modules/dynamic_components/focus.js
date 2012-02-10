@@ -40,21 +40,13 @@ FocusTracker.definition = {
         <version>0.1</version>
     </plugin>,
 
-  /** post-constructor 
-   *  @param {Session} session A session object.
-   */
-  "[subscribe('event/broker-started'), enabled]": 
-  function onLoad(session) 
-  {
-    this._command_dispatcher = session.document.commandDispatcher;
-    this._window = session.window;
-    this.enabled = this.enabled_when_startup;
-  },
+  disabled: false,
 
   /** Installs itself. 
    *  @param {Session} session A session object.
    */
-  install: function install(session)
+  "[subscribe('install/focustracker'), enabled]": 
+  function install(session)
   {
     session.post("command/add-domlistener", {
       target: session.window,
@@ -69,20 +61,19 @@ FocusTracker.definition = {
   /** Uninstalls itself. 
    *  @param {Session} session A session object.
    */
-  uninstall: function uninstall(session)
+  "[subscribe('uninstall/focustracker'), enabled]": 
+  function uninstall(session)
   {
     session.notify("command/remove-domlistener", this.id)
   },
-
-  disabled: false,
 
   /** Fires when a focus event occured. 
    *  @param {Event} event A event object.
    */
   onfocus: function onfocus(event)
   {
-    let command_dispatcher = this._command_dispatcher;
     let session = this._broker;
+    let command_dispatcher = session.document.commandDispatcher;
     let root_element = session.root_element;
     let target = event.explicitOriginalTarget;
     if (null !== target && target.nodeType != target.NODE_DOCUMENT) {

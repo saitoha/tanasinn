@@ -40,19 +40,12 @@ KeySnail.definition = {
         }</description>
         <version>0.1</version>
     </module>,
-
-  /** post-constructor */
-  "[subscribe('@event/broker-started'), enabled]": 
-  function onLoad(session) 
-  {
-    this._key = this._getKeyModule();
-    this.enabled = this.enabled_when_startup;
-  },
   
   /** Install itself. 
    *  @param {Session} session A session object.
    */
-  install: function install(session)
+  "[subscribe('install/keysnail'), enabled]":
+  function install(session)
   {
     this.onGotFocus();
     this.onGotFocus.enabled = true;  
@@ -63,7 +56,8 @@ KeySnail.definition = {
   /** Uninstall itself. 
    *  @param {Session} session A session object.
    */
-  uninstall: function uninstall(session) 
+  "[subscribe('uninstall/keysnail'), enabled]":
+  function uninstall(session) 
   {
     this.onLostFocus();
     this.onGotFocus.enabled = false;  
@@ -74,7 +68,7 @@ KeySnail.definition = {
   "[subscribe('event/got-focus | command/focus')]":
   function onGotFocus() 
   {
-    let key = this._key;
+    let key = this._getKeyModule();
     if (!key) {
       return;
     }
@@ -87,7 +81,7 @@ KeySnail.definition = {
   "[subscribe('event/lost-focus | command/blur')]":
   function onLostFocus() 
   {
-    let key = this._key;
+    let key = this._getKeyModule();
     if (!key) {
       return;
     }
@@ -101,7 +95,6 @@ KeySnail.definition = {
   function onSessionStopping() 
   {
     this.onLostFocus();
-    this._key = null;
   },
 
   /** get "KeySnail.modules" */

@@ -60,7 +60,7 @@ ZshCompletion.definition = {
     this.onDataArrived.enabled = false;
     let colormap = [ "", "#cdffcf", "#cdd", "#dfffdd" ];
     let session = this._broker;
-    let renderer = this._renderer;
+    let renderer = this.dependency["renderer"];
     let selected = -1;
     let {} = session.uniget(
       "command/construct-chrome", 
@@ -172,7 +172,11 @@ ZshCompletion.definition = {
 /**
  *  @class PopupMenu
  */
-let PopupMenu = new Class().extends(Plugin).mix(ZshCompletion);
+let PopupMenu = new Class().extends(Plugin)
+                           .mix(ZshCompletion)
+                           .depends("renderer")
+                           .depends("cursorstate")
+                           ;
 PopupMenu.definition = {
 
   get id()
@@ -194,15 +198,6 @@ PopupMenu.definition = {
 
   _cover: null,
   _is_showing: false,
-  
-  /** post-constructor */
-  "[subscribe('initialized/{renderer & cursorstate}'), enabled]":
-  function onLoad(renderer, cursor_state) 
-  {
-    this._renderer = renderer;
-    this._cursor_state = cursor_state;
-    this.enabled = this.enabled_when_startup;
-  },
  
   /** installs itself. 
    *  @param {Session} session A session object.
@@ -366,9 +361,9 @@ PopupMenu.definition = {
       .split(",")
       .map(function(str) Number(str));
     this._selected = selected;
-    let cursor_state = this._cursor_state;
+    let cursor_state = this.dependency["cursorstate"];
     row = row || cursor_state.positionY + 1;
-    let renderer = this._renderer;
+    let renderer = this.dependency["renderer"];
     let line_height = renderer.line_height;
     let char_width = renderer.char_width;
     let x = column * char_width - 10;

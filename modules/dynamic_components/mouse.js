@@ -37,7 +37,7 @@ const MOUSE_WHEEL_DOWN = 65;
  *   - brodie's MouseTerm Project    https://github.com/brodie/mouseterm
  *   - Vivek Dasmohapatra            http://rtfm.etla.org/xterm/ctlseq.html
  */
-let Mouse = new Class().extends(Plugin);
+let Mouse = new Class().extends(Plugin).depends("renderer");
 Mouse.definition = {
 
   get id()
@@ -58,17 +58,16 @@ Mouse.definition = {
   _keypad_mode: coUtils.Constant.KEYPAD_MODE_NORMAL,
   _in_scroll_session: false,
 
-  _renderer: null,
-
   "[subscribe('initialized/renderer'), enabled]":
   function onLoad(renderer)
   {
-    this._renderer = renderer;
+    this.dependency["renderer"] = renderer;
     this.enabled = this.enabled_when_startup;
   },
 
   /** Installs itself. */
-  install: function install(session) 
+  "[subscribe('install/mouse'), enabled]":
+  function install(session) 
   {
     /** Start to listen mouse event. */
     this.onmousedown.enabled = true;
@@ -82,7 +81,8 @@ Mouse.definition = {
   },
 
   /** Uninstalls itself. */
-  uninstall: function uninstall(session) 
+  "[subscribe('uninstall/mouse'), enabled]":
+  function uninstall(session) 
   {
     // unregister mouse event DOM listeners.
     this.onmousedown.enabled = false;
@@ -203,7 +203,7 @@ Mouse.definition = {
   "[listen('DOMMouseScroll', '#tanasinn_content')]": 
   function onmousescroll(event) 
   {
-    let renderer = this._renderer;
+    let renderer = this.dependency["renderer"];
     if(event.axis === event.VERTICAL_AXIS) {
       let count = event.detail;
       if (event.hasPixels) {
@@ -311,7 +311,7 @@ Mouse.definition = {
     let top = event.layerY - offsetY;  // top position in pixel.
 
     // converts pixel coordinate to [column, row] style.
-    let renderer = this._renderer;
+    let renderer = this.dependency["renderer"];
     let column = Math.round(left / renderer.char_width);
     let row = Math.round(top / renderer.line_height);
     return [column, row];

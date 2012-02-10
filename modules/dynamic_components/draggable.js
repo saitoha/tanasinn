@@ -27,7 +27,7 @@
  * @fn Enable Drag-and-Drop operation.
  */
 
-let DragMove = new Class().extends(Plugin);
+let DragMove = new Class().extends(Plugin).depends("chrome");
 DragMove.definition = {
 
   get id()
@@ -42,21 +42,16 @@ DragMove.definition = {
         <version>0.1</version>
     </plugin>,
 
-  /** post-constructor */
-  "[subscribe('@event/broker-started'), enabled]":
-  function onLoad(session) 
-  {
-    this.enabled = this.enabled_when_startup;
-  },
-
   /** Installs itself. */
-  install: function install(session) 
+  "[subscribe('install/dragcopy'), enabled]":
+  function install(session) 
   {
     this.ondragstart.enabled = true;
   },
 
   /** Uninstalls itself. */
-  uninstall: function uninstall(session) 
+  "[subscribe('uninstall/dragcopy'), enabled]":
+  function uninstall(session) 
   {
     this.ondragstart.enabled = false;
   },
@@ -125,7 +120,8 @@ DragMove.definition = {
  * @brief Module entry point.
  * @param {Desktop} desktop The Desktop object.
  */
-function main(desktop) {
+function main(desktop) 
+{
   desktop.subscribe(
     "@initialized/broker", 
     function(session) new DragMove(session));

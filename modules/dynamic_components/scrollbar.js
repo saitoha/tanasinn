@@ -110,13 +110,6 @@ Scrollbar.definition = {
       },
     }),
 
-  /** post-constructor */
-  "[subscribe('initialized/chrome'), enabled]":
-  function onLoad(chrome) 
-  {
-    this.enabled = this.enabled_when_startup;
-  },
-
   /** Installs itself.
    * @param {Session} session A session object.
    */

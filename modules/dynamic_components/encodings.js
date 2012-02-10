@@ -26,7 +26,7 @@
  *  @class EncoderMenu
  *  @brief Makes it enable to switch terminal encoding by context menu.
  */
-let EncoderMenu = new Class().extends(Plugin);
+let EncoderMenu = new Class().extends(Plugin).depends("encoder");
 EncoderMenu.definition = {
 
   get id()
@@ -34,29 +34,23 @@ EncoderMenu.definition = {
 
   get info()
     <TanasinnPlugin>
-        <name>Encodings</name>
+        <name>{_("Encodings")}</name>
         <description>{
           _("Makes it enable to switch terminal encoding by context menu.")
         }</description>
         <version>0.1</version>
     </TanasinnPlugin>,
 
-  /** Constructor */
-  "[subscribe('@initialized/encoder'), enabled]":
-  function onLoad(encoder) 
-  {
-    this._encoder = encoder;
-    this.enabled = this.enabled_when_startup;
-  },
-
   /** Installs itself. */
-  install: function install(session) 
+  "[subscribe('install/encodings'), enabled]":
+  function install(session) 
   {
     this.onContextMenu.enabled = true;
   },
 
   /** Uninstalls itself. */
-  uninstall: function uninstall(session) 
+  "[subscribe('uninstall/encodings'), enabled]":
+  function uninstall(session) 
   {
     this.onContextMenu.enabled = false;
   },
@@ -64,7 +58,7 @@ EncoderMenu.definition = {
   "[subscribe('get/contextmenu-entries')]": 
   function onContextMenu() 
   {
-    let encoder = this._encoder;
+    let encoder = this.dependency["encoder"];
     let encoder_scheme = encoder.scheme;
     let session = this._broker;
     return {
@@ -107,7 +101,7 @@ EncoderMenu.definition = {
  *  @class DecoderMenu
  *  @brief Makes it enable to switch terminal decoder by context menu.
  */
-let DecoderMenu = new Class().extends(Plugin);
+let DecoderMenu = new Class().extends(Plugin).depends("decoder");
 DecoderMenu.definition = {
 
   get id()
@@ -115,7 +109,7 @@ DecoderMenu.definition = {
 
   get info()
     <Plugin>
-        <name>Decoder Menu</name>
+        <name>{_("Decoder Menu")}</name>
         <description>{
           _("Makes it enable to switch terminal decoder by context menu.")
         }</description>
@@ -124,21 +118,16 @@ DecoderMenu.definition = {
 
   "[persistable] send_ff_when_encoding_changed": true,
 
-  "[subscribe('@initialized/decoder'), enabled]":
-  function construct(decoder) 
-  {
-    this._decoder = decoder;
-    this.enabled = this.enabled_when_startup;
-  },
-
   /** Installs itself. */
-  install: function() 
+  "[subscribe('install/decodermenu'), enabled]":
+  function install(session) 
   {
     this.onContextMenu.enabled = true;
   },
 
   /** Uninstalls itself. */
-  uninstall: function() 
+  "[subscribe('uninstall/decodermenu'), enabled]":
+  function uninstall(session) 
   {
     this.onContextMenu.enabled = false;
   },
@@ -147,7 +136,7 @@ DecoderMenu.definition = {
   function onContextMenu() 
   {
     let session = this._broker;
-    let decoder = this._decoder;
+    let decoder = this.dependency["decoder"];
     let decoders = session.notify("get/decoders");
     let decoder_scheme = decoder.scheme;
     return {

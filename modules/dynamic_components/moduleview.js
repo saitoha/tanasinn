@@ -26,7 +26,7 @@
 /**
  * @class ComponentViewer
  */
-let ComponentViewer = new Class().extends(Plugin);
+let ComponentViewer = new Class().extends(Plugin).depends("bottompanel");
 ComponentViewer.definition = {
 
   get id()
@@ -48,8 +48,6 @@ ComponentViewer.definition = {
       tagName: "grid", flex: 1,
       style: <> 
         overflow-y: auto;
-//        background: transient;//-moz-linear-gradient(top, #ccc, #aaa);
-//        border: solid 3px orange;
       </>,
       childNodes: {
         tagName: "rows",
@@ -59,36 +57,53 @@ ComponentViewer.definition = {
             childNodes: 
               let (module = module) // memorize "module".
               let (info = module.info) 
+              let (depends_on = Object.keys(this._depends_map[module.id]).map(function(key) this._depends_map[module.id][key], this))
+              let (depended_by = Object.keys(this._depended_map[module.id]).map(function(key) this._depended_map[module.id][key], this))
               [
                 {
                   tagName: "checkbox",
                   className: "tanasinn-moduleviewer-checkbox",
                   onconstruct: function()
                     this.setAttribute("checked", module.enabled),
+                  disabled: module.enabled ? 
+                    depended_by.some(function(module) module.enabled):
+                    depends_on.some(function(module) !module.enabled),
                   listener: {
                     type: "command",
                     handler: let (self = this) 
                       function(event) self._setState(module, this)
                   }
                 },
-                { tagName: "label", style: { fontWeight: "bold" }, value: info..name.toString() },
+                { 
+                  tagName: "label", 
+                  style: { fontWeight: "bold" }, 
+                  value: info..name.toString(),
+                },
                 { tagName: "label", value: info..version.toString() },
-                { tagName: "label", value: info..description.toString() },
+                { 
+                  tagName: "vbox", 
+                  childNodes: [
+                    {
+                      tagName: "label",
+                      value: info..description.toString(),
+                    },
+                    {
+                      tagName: "label",
+                      value: _("depends on: ") + depends_on.map(function(module) module.info..name, this).join("/"),
+                    },
+                    {
+                      tagName: "label",
+                      value: _("depended by: ") + depended_by.map(function(module) module.info..name, this).join("/"),
+                    },
+                  ]
+                },
               ],
           } for each (module in this._modules)
         ]
       }
     }),
 
-  _bottom_panel: null,
   _viewer: null,
-
-  "[subscribe('initialized/bottompanel'), enabled]": 
-  function onLoad(bottom_panel) 
-  {
-    this._bottom_panel = bottom_panel;
-    this.enabled = this.enabled_when_startup;
-  },
 
   /** Installs itself.
    *  @param {Session} session A session object.
@@ -96,7 +111,7 @@ ComponentViewer.definition = {
   "[subscribe('install/module_viewer')]":
   function install(session) 
   {
-    let bottom_panel = this._bottom_panel;
+    let bottom_panel = this.dependency["bottompanel"];
     this._panel = bottom_panel.alloc(this.id, _("Component"));
     this.onPanelSelected.enabled = true;
     this.select.enabled = true;
@@ -110,7 +125,7 @@ ComponentViewer.definition = {
   {
     this.onPanelSelected.enabled = false;
     this.select.enabled = false;
-    this._bottom_panel.remove(this.id);
+    this.dependency["bottompanel"].remove(this.id);
   },
 
   "[subscribe('panel-selected/module_viewer')]":
@@ -126,12 +141,30 @@ ComponentViewer.definition = {
   "[command('moduleviewer/mv'), nmap('<M-m>', '<C-S-m>'), _('Open module viewer.')]":
   function select()
   {
-    this._bottom_panel.select(this.id);
+    this.dependency["bottompanel"].select(this.id);
     return true;
   },
 
   update: function update()    
   {
+    let depends_on = {};
+    let depended_by = {};
+    this._modules.forEach(function(module) 
+    {
+      depends_on[module.id] = depends_on[module.id] || {};
+      depended_by[module.id] = depended_by[module.id] || {};
+      Object.keys(module.dependency)
+        .map(function(key) module.dependency[key])
+        .filter(function(dependency) dependency.info)
+        .forEach(function(dependency) 
+        {
+          depends_on[module.id][dependency.id] = dependency;
+          depended_by[dependency.id] = depended_by[dependency.id] || {};
+          depended_by[dependency.id][module.id] = module;
+        });
+    }, this);
+    this._depends_map = depends_on;
+    this._depended_map = depended_by;
     if (this._panel.firstChild) {
       this._panel.removeChild(this._panel.firstChild);
     }
@@ -142,13 +175,15 @@ ComponentViewer.definition = {
   /** Fired when checkbox state is changed. */
   _setState: function _setState(plugin, checkbox) 
   {
-    let enabled = checkbox.checked;
+    let enabled = !checkbox.checked;
     try {
+      checkbox.setAttribute("checked", enabled);
       plugin.enabled = enabled;
       let message = coUtils.Text.format(
         _("Succeeded to %s module %s."), 
         plugin.enabled ? _("install"): _("uninstall"), 
         plugin.info..name);
+      this.update();
       let session = this._broker;
       session.notify("command/report-status-message", message);
     } catch (e) {

@@ -95,10 +95,6 @@ Controller.definition = {
   get id()
     "tty-controller",
 
-  // shell settings
-  "[persistable] command": "login -pfq $USER", // login command (login, bash, screen, ...etc)
-  "[persistable] term": "xterm",     // default "TERM" environment
-
   _screen: null,
   _input: null,
   _output: null,
@@ -546,7 +542,7 @@ ExternalDriver.definition = {
     // get script absolute path from abstract path.
     let script_absolute_path
       = coUtils.File
-        .getFileLeafFromAbstractPath(this.script_path)
+        .getFileLeafFromVirtualPath(this.script_path)
         .path;
 
     let args;
@@ -571,9 +567,6 @@ ExternalDriver.definition = {
 
   observe: function observe(subject, topic, data)
   {
-//    if (this.success) {
-//      return;
-//    }
     let session = this._broker;
     session.stop();
   },
@@ -626,7 +619,7 @@ SocketTeletypeService.definition = {
       if (coUtils.File.exists(backup_data_path)) {
         let context = JSON.parse(coUtils.IO.readFromFile(backup_data_path, "utf-8"));
         session.notify("command/restore", context);
-        let file = coUtils.File.getFileLeafFromAbstractPath(backup_data_path);
+        let file = coUtils.File.getFileLeafFromVirtualPath(backup_data_path);
         if (file.exists()) {
           file.remove(false)
         }
@@ -643,7 +636,6 @@ SocketTeletypeService.definition = {
   
       coUtils.Timer.setTimeout(function() { // ensure that "runAsync" is called after "asyncListen".
         external_driver.start(socket.port); // nsIProcess::runAsync.
-
       }, 100);
     }
   },
@@ -680,7 +672,7 @@ SocketTeletypeService.definition = {
     let session = this._broker;
     this._controller.start(control_port);
     let sessiondb_path = coUtils.File
-      .getFileLeafFromAbstractPath("$Home/.tanasinn/sessions.txt").path;
+      .getFileLeafFromVirtualPath("$Home/.tanasinn/sessions.txt").path;
 
     let os = coUtils.Runtime.os;
     if ("WINNT" == os) {

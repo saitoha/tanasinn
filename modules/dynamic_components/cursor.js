@@ -86,7 +86,8 @@ Cursor.definition = {
   },
  
   /** Installs itself. */
-  install: function install(session) 
+  "[subscribe('install/cursor'), enabled]": 
+  function install(session) 
   {
     /** Create cursor element. */
     let {cursor_canvas} 
@@ -116,7 +117,8 @@ Cursor.definition = {
   },
 
   /** Uninstalls itself. */
-  uninstall: function uninstall(session) 
+  "[subscribe('uninstall/cursor'), enabled]": 
+  function uninstall(session) 
   {
     this.update.enabled = false;
     this.onBlinkingModeChanged.enabled = false;

@@ -73,9 +73,16 @@ Ime.definition = {
       renderer.font_family);
 
     // enables session event handlers.
-    this.startPolling.enabled = true;
-    this.endPolling.enabled = true;
+    let version_comparator = Components
+      .classes["@mozilla.org/xpcom/version-comparator;1"]
+      .getService(Components.interfaces.nsIVersionComparator);
+    if (version_comparator.compare(coUtils.Runtime.version, "9.0") < 0)
+    {
+      this.startPolling.enabled = true;
+      this.endPolling.enabled = true;
+    }
     this.oninput.enabled = true;
+    this.oncompositionupdate.enabled = true;
 
     let document = session.window.document;
     let focusedElement = document.commandDispatcher.focusedElement;
@@ -101,30 +108,22 @@ Ime.definition = {
     this.startPolling.enabled = false;
     this.endPolling.enabled = false;
     this.oninput.enabled = false;
+    this.oncompositionupdate.enabled = false;
   },
 
-  "[subscribe('event/input'), enabled] oninput": 
-  function oninput(event) 
+  "[subscribe('command/input-text'), enabled]": 
+  function oninput(value) 
   {
-    //coUtils.Debug.reportMessage(textbox.value)
-    let textbox = this.dependency["inputmanager"].getInputField();
-    let value = textbox.value;
-    textbox.value = "";
     this._disableImeMode(); // closes IME input session.
-
-    // Encodes the text message and send it to the tty device.
-    let session = this._broker;
-    //session.notify("command/report-status-message", value);
-    //session.notify("command/report-overlay-message", value);
-    session.notify("command/input-text", value);
   },
 
   /** Starts the polling timer. */
   "[subscribe('event/got-focus')]":
   function startPolling() 
   {
-    if (this._timer)
+    if (this._timer) {
       this._timer.cancel();
+    }
     this._ime_input_flag = false;
     this._timer = coUtils.Timer
       .setInterval(this.onpoll, this.polling_interval, this);
@@ -138,6 +137,15 @@ Ime.definition = {
       this._timer.cancel();
       this._timer = null;
     }
+  },
+  
+  /** compositionend event handler. 
+   *  @{Event} event A event object.
+   */
+  "[listen('compositionupdate', '#tanasinn_default_input')]":
+  function oncompositionupdate(event) 
+  {
+    this.onpoll();
   },
 
   /** A interval timer handler function that observes the textbox content
@@ -179,7 +187,6 @@ Ime.definition = {
     textbox.style.fontSize = font_size + "px";
     textbox.style.width = "100%";
     this._ime_input_flag = true;
-
     let session = this._broker;
     session.notify("command/ime-mode-on", this);
   },

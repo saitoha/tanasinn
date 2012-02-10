@@ -26,7 +26,7 @@
  * @class MappingManagerBase
  * @brief Manage mappings.
  */
-let MappingManagerBase = new Abstruct().extends(Plugin).depends(null);
+let MappingManagerBase = new Abstruct().extends(Plugin);
 MappingManagerBase.definition = {
 
   _map: null,
@@ -446,7 +446,7 @@ CommandlineKeyHandler.definition = {
 function main(broker)
 {
   broker.subscribe(
-    "@initialized/broker", 
+    "@initialized/broker",
     function(broker) 
     {
       new CommandlineMappingManager(broker);

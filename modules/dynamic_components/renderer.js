@@ -129,7 +129,9 @@ coUtils.Font = {
  * @class Renderer
  * @brief Scan screen state and render it to canvas element.
  */ 
-let Renderer = new Class().extends(Plugin).depends("chrome").depends("screen");
+let Renderer = new Class().extends(Plugin)
+                          .depends("chrome")
+                          .depends("screen");
 Renderer.definition = {
 
   get id()
@@ -141,7 +143,7 @@ Renderer.definition = {
         <description>{
           _("Handles draw event and render output data to main canvas.")
         }</description>
-        <version>0.1</version>
+        <version>0.2.0</version>
     </module>,
 
   _context: null,
@@ -177,7 +179,8 @@ Renderer.definition = {
   /** Installs itself.
    *  @param session {Session} A session object.
    */
-  install: function install(session) 
+  "[subscribe('install/renderer'), enabled]":
+  function install(session) 
   {
     let {foreground_canvas} = session.uniget(
       "command/construct-chrome", 
@@ -210,7 +213,8 @@ Renderer.definition = {
   /** Uninstalls itself.
    *  @param session {Session} A session object.
    */
-  uninstall: function uninstall(session) 
+  "[subscribe('uninstall/renderer'), enabled]":
+  function uninstall(session) 
   {
     this.onWidthChanged.enabled = false;
     this.onHeightChanged.enabled = false;
@@ -235,7 +239,7 @@ Renderer.definition = {
     };
     let session = this._broker;
     let path = String(<>$Home/.tanasinn/persist/{session.request_id}.png</>);
-    let file = coUtils.File.getFileLeafFromAbstractPath(path);
+    let file = coUtils.File.getFileLeafFromVirtualPath(path);
     let source_canvas = this._canvas;
     coUtils.IO.saveCanvas(source_canvas, file);
   },

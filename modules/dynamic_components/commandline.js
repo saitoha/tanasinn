@@ -138,7 +138,8 @@ CompletionView.definition = {
  *
  */
 let Commandline = new Class().extends(Plugin)
-                             .mix(CompletionView);
+                             .mix(CompletionView)
+                             .depends("chrome");
 Commandline.definition = {
 
   get id()
@@ -301,15 +302,6 @@ Commandline.definition = {
 
   _result: null,
 
-  /** post constructor. */
-  "[subscribe('@initialized/chrome'), enabled]":
-  function onLoad(chrome) 
-  {
-    let session = this._broker;
-    this.enabled = this.enabled_when_startup;
-    session.notify(<>initialized/{this.id}</>, this);
-  },
-
   /** Installs itself. 
    *  @param {Session} session A Session object.
    */
@@ -379,7 +371,20 @@ Commandline.definition = {
 
     this.onmousedown.enabled = false;
 
-    this._element.parentNode.removeChild(this._element);
+    if (this._element) {
+      this._element.parentNode.removeChild(this._element);
+      this._element = null;
+    }
+    if (this._popup) {
+      while (this._popup.firstChild) {
+        this._popup.removeChild(this._popup.firstChild);
+      }
+      if (this._popup.hidePopup) {
+        this._popup.hidePopup();
+      }
+      this._popup.parentNode.removeChild(this._popup);
+      this._popup = null;
+    }
   },
 
   "[subscribe('command/report-status-message')]":

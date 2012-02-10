@@ -26,20 +26,11 @@
 /**
  * @class MessageFilter
  */
-let MessageFilter = new Class().extends(Plugin);
+let MessageFilter = new Class().extends(Component);
 MessageFilter.definition = {
 
   get id()
     "messagefilter",
-
-  get info()
-    <module>
-        <name>{_("Message Filter")}</name>
-        <description>{
-          _("Receives raw console messages and formats them.")
-        }</description>
-        <version>0.1</version>
-    </module>,
 
   get filter_expression()
     /^\[(.+?): "(tanasinn: )?([^"]*?)" {file: "([^"]*?)" line: ([0-9]+?)( name: "([^"]*?)")?}\]$/m,
@@ -51,7 +42,7 @@ MessageFilter.definition = {
    */
   initialize: function initialize(session) 
   {
-    this.enabled = this.enabled_when_startup;
+    this.install(session);
   },
 
   /** Installs itself.
@@ -393,7 +384,7 @@ ConsoleListener.definition = {
  * @class Console
  * @brief Shows formmated console messages.
  */
-let Console = new Class().extends(Plugin);
+let Console = new Class().extends(Plugin).depends("bottompanel");
 Console.definition = {
 
   get id()
@@ -410,7 +401,7 @@ Console.definition = {
 
   get template()
     let (session = this._broker) 
-    let (bottom_panel = this._bottom_panel)
+    let (bottom_panel = this.dependency["bottompanel"])
     let (tab_panel = bottom_panel.alloc("console.panel", _("Console")))
     { 
       parentNode: tab_panel,
@@ -539,16 +530,9 @@ Console.definition = {
 
   "[persistable] enabled_when_startup": false,
 
-  /** constructor */
-  "[subscribe('@initialized/{chrome & bottompanel}'), enabled]":
-  function onLoad(chrome, bottom_panel) 
-  {
-    this._bottom_panel = bottom_panel;
-    this.enabled = this.enabled_when_startup;
-  },
-
   /** Installs itself */
-  install: function install(session) 
+  "[subscribe('install/console'), enabled]":
+  function install(session) 
   {
     let {
       tanasinn_console_panel, 
@@ -561,16 +545,17 @@ Console.definition = {
   }, 
 
   /** Uninstalls itself. */
-  uninstall: function uninstall(session) 
+  "[subscribe('uninstall/console'), enabled]":
+  function uninstall(session) 
   {
     this.select.enabled = false;
-    this._bottom_panel.remove("console.panel");
+    this.dependency["bottompanel"].remove("console.panel");
   },
 
   "[command('console'), nmap('<M-a>', '<C-S-a>'), _('Open console.')]":
   function select(info) 
   {
-    this._bottom_panel.select("console.panel");
+    this.dependency["bottompanel"].select("console.panel");
   },
 
 };

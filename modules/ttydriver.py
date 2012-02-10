@@ -372,73 +372,6 @@ class TeletypeDriver:
             os.kill(reading_process_pid, signal.SIGKILL)
         except:
             pass 
-        #trace("complete.")
-#
-#    
-#def create_a_pair_of_tty_device():
-#    """ Creates a tty device and modify its termios properties. """
-#    master, slave = os.openpty()
-#
-#    backup_termios = termios.tcgetattr(master)
-#    new_termios = termios.tcgetattr(master)
-#
-#    # clear size bits, parity checking off.
-#    new_termios[3] &= ~(termios.CSIZE|termios.PARENB)
-#
-#    # receive 8bit size sequence.
-#    new_termios[3] |= termios.CS8
-#
-#    # enable XON/XOFF flow control on output.
-#    new_termios[0] |= termios.IXON
-#    # enable XON/XOFF flow control on input.
-#    new_termios[0] |= termios.IXOFF
-#
-#    new_termios[6][termios.VINTR] = 0x03
-#    #new_termios[6][termios.VEOF] = 2
-#
-#    try:
-#        termios.tcsetattr(master, termios.TCSANOW, new_termios)
-#    except:
-#        termios.tcsetattr(master, termios.TCSANOW, old_termios)
-#
-#    return master, slave
-#
-#    
-#def fork_app_process(master, slave, command, term):
-#
-#    # get TTY name from slave file descripter.
-#    ttyname = os.ttyname(slave)
-#
-#    pid = os.fork()
-#    if not pid:
-#        # slave side operations.
-#        # make this process session leader.
-#        sid = os.setsid()
-#
-#        #fcntl.ioctl(master, termios.TIOCSCTTY, 1)
-#        # master handle is to be closed in slave's process branch.
-#        #os.close(master)
-#        os.chdir("/")
-#        os.umask(0)
-#        # replace standard I/O with slave file descripter.
-#        os.dup2(slave, sys.stdin.fileno())
-#        os.dup2(slave, sys.stdout.fileno())
-#        os.dup2(slave, sys.stderr.fileno())
-#        os.close(slave)
-#        # set TERM environment.
-#        os.environ["TERM"] = "xterm"
-#        #os.environ["CYGWIN"] = "tty"
-#        shell = os.environ["SHELL"] 
-#        # execute specified command.
-#        #command = "showkey -a"
-#        #if sid == None:
-#        #    os.system("echo 'tanasinn: os.setsid failed.'")
-#        #fcntl.ioctl(master, termios.TIOCSCTTY, 1)
-#        os.execlp("/bin/bash", "/bin/bash", "-c", "cd $HOME && exec %s" % command)
-#
-#    # slave handle is to be closed in master's process.
-#    #os.close(slave)
-#    return pid, ttyname
 
 def add_record(request_id, command, control_port, pid, ttyname):
     lockfile = open(sys.argv[0], "r")
@@ -503,7 +436,6 @@ if __name__ == "__main__":
         while True:
             # establish <I/O channel> socket connection. 
             io_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            #io_socket.setsockopt(socket.SOL_TCP, socket.TCP_NODELAY, 1)
             io_socket.connect(("127.0.0.1", io_port))
 
             driver = TeletypeDriver(
@@ -513,21 +445,12 @@ if __name__ == "__main__":
                 io_socket, 
                 control_connection)
             driver.drive_tty()
-            #os.kill(pid, signal.SIGWINCH)
-            
-            #if not os.isatty(slave):
-            #    trace("closed.")
-            #    break
             time.sleep(1)
             if not driver.isalive():
                 trace("closed.")
                 break
             else:
-                #os.write(master, "\x1a")
-
                 add_record(request_id, command, control_port, pid, ttyname)
-#                os.system("echo '%s,%s,%s,%s,%s' >> ~/.tanasinn/sessions.txt" 
-#                    % (request_id, base64.b64encode(command), control_port, pid, ttyname));
                 trace("suspended.")
 
                 # re-establish <Control channel> socket connection. 
@@ -539,11 +462,10 @@ if __name__ == "__main__":
 
                 os.system("test -e ~/.tanasinn/sessions.txt && sed -i -e '/^%s,/d' ~/.tanasinn/sessions.txt" % request_id)
 
-    except socket.error, e:
+    except socket.error:
         trace("A socket error occured.")
     except e:
         trace(str(e))
     finally:
         os.close(master)
-        #os.close(slave)
 

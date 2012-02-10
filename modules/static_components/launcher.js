@@ -201,12 +201,12 @@ coUtils.Sessions = {
     this._dirty = true;
     coUtils.Timer.setTimeout(function() {
       let backup_data_path = String(<>$Home/.tanasinn/persist/{request_id}.txt</>);
-      let file = coUtils.File.getFileLeafFromAbstractPath(backup_data_path);
+      let file = coUtils.File.getFileLeafFromVirtualPath(backup_data_path);
       if (file.exists()) {
         file.remove(true);
       }
       backup_data_path = String(<>$Home/.tanasinn/persist/{request_id}.png</>);
-      file = coUtils.File.getFileLeafFromAbstractPath(backup_data_path);
+      file = coUtils.File.getFileLeafFromVirtualPath(backup_data_path);
       if (file.exists()) {
         file.remove(true);
       }
@@ -549,7 +549,7 @@ SessionsCompletionDisplayDriver.definition = {
   {
     try {
       let image_path = String(<>$Home/.tanasinn/persist/{request_id}.png</>);
-      let image_file = coUtils.File.getFileLeafFromAbstractPath(image_path);
+      let image_file = coUtils.File.getFileLeafFromVirtualPath(image_path);
       let image_url = coUtils.File.getURLSpec(image_file);
       return image_url;
     } catch (e) {
@@ -1112,9 +1112,16 @@ Launcher.definition = {
     let desktop = this._broker; 
     let document = this._element.ownerDocument;
     command = command || "";
+
+    let box = document.createElement("box");
+    if (!/tanasinn/.test(coUtils.Runtime.app_name)) {
+      box.style.cssText = "position: fixed; top: 0px; left: 0px";
+    }
+    this._window_layer.appendChild(box);
+
     coUtils.Timer.setTimeout(function() {
       let terminal =  desktop.start(
-        this._window_layer,
+        box,
         command.replace(/^\s+|\s+$/g, ""));  // command
       terminal.style.left = <>{this.left = (this.left + Math.random() * 1000) % 140 + 20}px</>;
       terminal.style.top = <>{this.top = (this.top + Math.random() * 1000) % 140 + 20}px</>;
@@ -1423,7 +1430,7 @@ DragMove.definition = {
 function main(process) 
 {
   process.subscribe(
-    "initialized/broker",
+    "@initialized/broker",
     function(desktop) 
     {
       new Launcher(desktop);

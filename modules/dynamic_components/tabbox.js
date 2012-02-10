@@ -28,7 +28,9 @@
  * messages:
  *
  */
-let BottomPanel = new Class().extends(Plugin);
+let BottomPanel = new Class().extends(Plugin)
+                             .depends("renderer")
+                             .depends("screen");
 BottomPanel.definition = {
 
   get id()
@@ -140,16 +142,6 @@ BottomPanel.definition = {
   _bottom_panel: null,
   _scrollbox: null,
 
-  /** post-constructor */
-  "[subscribe('@initialized/{renderer & screen}'), enabled]":
-  function onLoad(renderer, screen) 
-  {
-    this._renderer = renderer;
-    this._screen = screen;
-    this._panel_map = {};
-    this.enabled = this.enabled_when_startup;
-  },
-
   /** Installs itself 
    *  @param {Session} session A session object.
    */
@@ -219,8 +211,8 @@ BottomPanel.definition = {
   function open() 
   {
     let bottomPanel = this._bottom_panel;
-    let renderer = this._renderer;
-    let screen = this._screen;
+    let renderer = this.dependency["renderer"];
+    let screen = this.dependency["screen"];
 
     // restricts bottom panel's height.
     let line_height = renderer.line_height;
@@ -255,7 +247,7 @@ BottomPanel.definition = {
   function close() 
   {
     let bottom_panel = this._bottom_panel;
-    let renderer = this._renderer;
+    let renderer = this.dependency["renderer"];
     let line_height = renderer.line_height;
     let diff = Math.floor(bottom_panel.boxObject.height / line_height);
     bottom_panel.setAttribute("collapsed", true);
@@ -289,6 +281,7 @@ BottomPanel.definition = {
   alloc: function alloc(id, name) 
   {
     // check duplicated allocation.
+    this._panel_map = this._panel_map || {};
     if (this._panel_map[id]) {
       throw coUtils.Debug.Exception(
         _("Specified id '%s' already exists."), id);
@@ -384,6 +377,7 @@ BottomPanel.definition = {
       toggle = false;
       id = id.substr(1);
     }
+    this._panel_map = this._panel_map || {};
     let panel_map = this._panel_map;
     if (id in panel_map) { // Check if specified id was registered.
       let [tab, ] = this._panel_map[id];
@@ -413,6 +407,7 @@ BottomPanel.definition = {
   function remove(id) 
   {
     id = id.id || id;
+    this._panel_map = this._panel_map || {};
     let panel_map = this._panel_map;
     let [tab, tab_panel] = panel_map[id];
     tab.parentNode.removeChild(tab);

@@ -677,7 +677,7 @@ coUtils.IO = {
     if (location.match(/^[a-z]+:\/\//)) {
       url = location;
     } else {
-      let file = coUtils.File.getFileLeafFromAbstractPath(location);
+      let file = coUtils.File.getFileLeafFromVirtualPath(location);
       if (!file.exists()) {
         throw coUtils.Debug.Exception(
           coUtils.Text.format(
@@ -738,7 +738,7 @@ coUtils.IO = {
    */
   writeToFile: function writeToFile(path, data, callback) 
   {
-    let file = coUtils.File.getFileLeafFromAbstractPath(path);
+    let file = coUtils.File.getFileLeafFromVirtualPath(path);
     if (file.exists()) { // check if target exists.
       // check if target is file node.
       if (!file.isFile) {
@@ -831,7 +831,7 @@ coUtils.File = new function() {
 
   exists: function exists(path)
   {
-    let file = this.getFileLeafFromAbstractPath(path);
+    let file = this.getFileLeafFromVirtualPath(path);
     return file.exists();
   },
 
@@ -910,7 +910,7 @@ coUtils.File = new function() {
     let entries = function entries() {
       for each (let [, path] in Iterator(search_directories)) {
         try {
-          let target_leaf = self.getFileLeafFromAbstractPath(path);
+          let target_leaf = self.getFileLeafFromVirtualPath(path);
           if (!target_leaf || !target_leaf.exists()) {
             coUtils.Debug.reportWarning(
               _("Cannot get file entries from '%s'. ",
@@ -935,8 +935,8 @@ coUtils.File = new function() {
     return entries;
   },
 
-  getFileLeafFromAbstractPath: 
-  function getFileLeafFromAbstractPath(abstract_path) 
+  getFileLeafFromVirtualPath: 
+  function getFileLeafFromVirtualPath(abstract_path) 
   {
     abstract_path = String(abstract_path);
     let target_leaf;
@@ -1223,7 +1223,7 @@ coUtils.Logger.prototype = {
   {
     // create nsIFile object.
     let path = coUtils.File
-      .getFileLeafFromAbstractPath(this.log_file_path)
+      .getFileLeafFromVirtualPath(this.log_file_path)
       .path;
     let file = Components
       .classes["@mozilla.org/file/local;1"]
@@ -1552,6 +1552,11 @@ coUtils.Runtime = {
     return this._app_info.name;
   },
 
+  get version()
+  {
+    return this._app_info.version;
+  },
+
   get os()
   {
     return this._app_info
@@ -1576,7 +1581,7 @@ coUtils.Runtime = {
       }
       url = location;
     } else { // location is platform-specific formatted path.
-      file = coUtils.File.getFileLeafFromAbstractPath(location);
+      file = coUtils.File.getFileLeafFromVirtualPath(location);
       if (!file || !file.exists()) {
         throw coUtils.Debug.Exception(
           _("Cannot get file entries from '%s'. ", 
@@ -1639,7 +1644,7 @@ coUtils.Localize = new function()
     {
       let locale = this._locale;
       let path = <>modules/locale/{locale}.json</>;
-      let file = coUtils.File.getFileLeafFromAbstractPath(path);
+      let file = coUtils.File.getFileLeafFromVirtualPath(path);
       let db = null;
       if (file.exists()) {
         let content = coUtils.IO.readFromFile(path, "utf-8");
@@ -1718,7 +1723,7 @@ coUtils.Localize = new function()
     getDictionary: function getLocalizeDictionary(language)
     {
       let location = String(<>modules/locale/{language}.json</>);
-      let file = coUtils.File.getFileLeafFromAbstractPath(location);
+      let file = coUtils.File.getFileLeafFromVirtualPath(location);
       let dict = null;
       if (file.exists()) {
         let content = coUtils.IO.readFromFile(location, "utf-8");

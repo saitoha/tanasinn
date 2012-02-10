@@ -31,7 +31,7 @@
  *                                                      A                |
  *     +-----------------------+          +--------------------------+   |         +---------------------+
  *     |                       |          |                          +---+         |                     |
- *     | The Root Event Broker +---------<| EventBroker & Component  =------------<| Component or Plugin |
+ *     | The Root Event Broker +---------<| EventBroker & Component  |------------<| Component or Plugin |
  *     |                       |          |                          |             |                     |
  *     +-----------------------+          +---------------------------             +---------------------+
  *
@@ -259,7 +259,7 @@ with (scope) {
    
     get default_scope()
       function() { this.__proto__ = scope; },
-  
+
     QueryInterface: function QueryInterface(a_IID)
       this,
   
@@ -273,7 +273,7 @@ with (scope) {
     {
       // load initial settings.
       let path = this.initial_settings_path;
-      let file = coUtils.File.getFileLeafFromAbstractPath(path);
+      let file = coUtils.File.getFileLeafFromVirtualPath(path);
       if (file && file.exists()) {
         try {
           coUtils.Runtime.loadScript(path, { process: this } );
@@ -281,39 +281,11 @@ with (scope) {
           coUtils.Debug.reportError(e);
         }
       }
-      this.load(this, this.static_path);
-    },
-
-    checkEnvironment: function checkEnvironment()
-    {
-    },
-
-    /** Load *.js files from specified directories. 
-     *  @param {String} search path 
-     */
-    load: function load(desktop, search_path) 
-    {
-      search_path = search_path || this.dynamic_path;
-      let entries = coUtils.File.getFileEntriesFromSerchPath(search_path);
-      for (let entry in entries) {
-        let scope = new this.default_scope;
-        try {
-          // make URI string such as "file://....".
-          let url = coUtils.File.getURLSpec(entry); 
-          coUtils.Runtime.loadScript(url, scope);
-          if (scope.main) {
-            scope.main(desktop);
-          } else {
-            throw coUtils.Debug.Exception(
-              _("Component scope symbol 'main' ",
-                "required by module loader was not defined. \n",
-                "file: '%s'."), 
-              url.split("/").pop());
-          }
-        } catch (e) {
-          coUtils.Debug.reportError(e);
-        }
-      }
+      this.subscribe("event/new-window-detected", function (window) 
+      {
+        this.load(this, this.static_path, new this.default_scope);
+        this.notify("event/desktop-requested", window);
+      }, this);
     },
   
     /* override */

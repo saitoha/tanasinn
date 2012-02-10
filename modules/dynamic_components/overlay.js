@@ -60,7 +60,9 @@ ForwardInputIterator.definition = {
 /**
  *  @class OverlayIndicator
  */
-let OverlayIndicator = new Class().extends(Plugin);
+let OverlayIndicator = new Class().extends(Plugin)
+                                  .depends("chrome")
+                                  .depends("decoder");
 OverlayIndicator.definition = {
 
   get id()
@@ -114,16 +116,7 @@ OverlayIndicator.definition = {
 
   _element: null,
   _timer: null,
-  
-  /** post-constructor */
-  "[subscribe('initialized/{chrome & decoder}'), enabled]":
-  function onLoad(chrome, decoder) 
-  {
-    this._decoder = decoder;
-    this.enabled = this.enabled_when_startup;
-  },
-
-
+ 
   /** installs itself. 
    *  @param {Session} session A session object.
    */
@@ -226,7 +219,8 @@ OverlayIndicator.definition = {
   function onCommandReceived(data) 
   { // process OSC command.
     let scanner = new ForwardInputIterator(data);
-    let sequence = [c for (c in this._decoder.decode(scanner))];
+    let decoder = this.dependency["decoder"];
+    let sequence = [c for (c in decoder.decode(scanner))];
     let text = String.fromCharCode.apply(String, sequence);
     this.print(text);
     this.show(400);

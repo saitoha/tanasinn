@@ -36,13 +36,13 @@ $(HTML_EN): $(README_EN)
 	if [ -n "$(ASCIIDOC)" ]; \
 	then \
 		$(RM) $@ && $(ASCIIDOC) $(ASCIIDOCFLAGS) -o $@ $<; \
-	fi || true
+	fi
 
 $(HTML_JA): $(README_JA)
 	if [ -n "$(ASCIIDOC)" ]; \
 	then \
 		$(RM) $@ && $(ASCIIDOC) $(ASCIIDOCFLAGS) -o $@ $<; \
-	fi || true
+	fi
 
 clean:
 	$(RM) $(HTML_JA) $(HTML_EN) $(README_EN) $(README_JA)

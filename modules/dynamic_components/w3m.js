@@ -26,7 +26,7 @@
  * @class W3m
  * @fn Handle OSC command and draw w3m's inline image.
  */
-let W3m = new Class().extends(Plugin);
+let W3m = new Class().extends(Plugin).depends("renderer");
 W3m.definition = {
 
   get id()
@@ -52,23 +52,13 @@ W3m.definition = {
   _canvas: null,
   _context: null,
   _cache_holder: null,
-  _renderer: null,
-
-  /** post-constructor */
-  "[subscribe('@initialized/renderer'), enabled]": 
-  function onLoad(renderer) 
-  {
-    this._cache_holder = {};
-    this._renderer = renderer;
-    this.enabled = this.enabled_when_startup;
-  },
 
   /** Installs itself. 
    *  @param {Session} session A session object.
    */ 
   install: function install(session) 
   {
-    let renderer = this._renderer;
+    let renderer = this.dependency["renderer"];
     let {tanasinn_w3m_canvas} = session.uniget(
       "command/construct-chrome", this.template);
     // set initial size.
@@ -133,6 +123,7 @@ W3m.definition = {
     sy = parseInt(sy);
     sh = parseInt(sh);
     sw = parseInt(sw);
+    this._cache_holder = this._cache_holder || {};
     let cache = this._cache_holder[filename];
     let session = this._broker;
     const NS_XHTML = "http://www.w3.org/1999/xhtml";
@@ -153,8 +144,9 @@ W3m.definition = {
   /** Process "w3m-size" command. */
   "w3m-size": function(op, filename)
   {
-    let cacheHolder = this._cache_holder;
-    let cache = cacheHolder[filename];
+    this._cache_holder = this._cache_holder || {};
+    let cache_holder = this._cache_holder;
+    let cache = cache_holder[filename];
     if (cache) {
       this._sendSize(cache); // send immediately.
     } else {
@@ -164,7 +156,7 @@ W3m.definition = {
       // get metrics and send after the image is fully loaded.
       let self = this;
       cache.onload = function() { 
-        cacheHolder[filename] = cache; // cache loaded image.
+        cache_holder[filename] = cache; // cache loaded image.
         self._sendSize(cache);
       }
       cache.src = "file://" + filename;
@@ -186,7 +178,7 @@ W3m.definition = {
   {
     coUtils.Debug.reportMessage(_("w3m-getcharsize called."));
     let canvas = this._canvas;
-    let renderer = this._renderer;
+    let renderer = this.dependency["renderer"];
     let char_width = renderer.char_width;
     let line_height = renderer.line_height;
     let w = 0 | (x * char_width + 0.5); // round off

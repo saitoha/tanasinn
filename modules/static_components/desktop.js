@@ -22,10 +22,37 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+let Environment = new Aspect();
+Environment.definition = {
+
+// public properties
+
+  /** @property dynamic_path */
+  get dynamic_path()
+  {
+    let broker = this._broker;
+    return this._dynamic_path || [ 
+      "modules/static_dynamic_components",
+      "modules/dynamic_components",
+      String(<>{broker.runtime_path}/modules/static_dynamic_components</>),
+      String(<>{broker.runtime_path}/modules/dynamic_components</>)
+    ];
+  },
+
+  set dynamic_path(value)
+  {
+    this._dynamic_path = value;
+  },
+
+};
+
+
 /** 
  * @class Desktop
  */
-let Desktop = new Class().extends(Component).mix(EventBroker);
+let Desktop = new Class().extends(Component)
+                         .mix(Environment)
+                         .mix(EventBroker);
 Desktop.definition = {
 
   get id()
@@ -113,7 +140,8 @@ Desktop.definition = {
   "[subscribe('get/desktop-from-window')]":
   function getDesktopFromWindow(window)
   {
-    return window === this._window ? this: null;
+    return window.document.documentElement.isEqualNode(this._window.document.documentElement) ? 
+      this: null;
   },
 
   /** Creates a session object and starts it. 
@@ -121,14 +149,7 @@ Desktop.definition = {
   start: function start(parent, command, term, size, search_path, callback) 
   {
     let broker = this._broker;
-    broker.load(this, search_path);
-    let document = parent.ownerDocument;
-    let box = document.createElement("box");
-    if (!coUtils.Runtime.app_name.match(/tanasinn/)) {
-      box.style.cssText = "position: fixed; top: 0px; left: 0px";
-    }
-    // xul app
-    parent.appendChild(box);
+    this.load(this, this.dynamic_path, new broker.default_scope);
 
     // create request object;
     command = command 
@@ -137,18 +158,17 @@ Desktop.definition = {
 
     term = term || this.default_term;
 
-    let [width, height] 
-      = size || [this.width, this.height];
+    let [width, height] = size || [this.width, this.height];
 
     let request = { 
-      parent: box, 
+      parent: parent, 
       command: command, 
       term: term, 
       width: width,
       height: height,
     };
     let session = this.uniget("event/session-requested", request);
-    return box;
+    return parent;
   },
 
 };
@@ -161,11 +181,12 @@ Desktop.definition = {
 function main(process) 
 {
   process.subscribe(
-    "event/new-window-detected",
-    function onNewWindow(window) 
+    "@event/desktop-requested",
+    function onDesktopRequested(window) 
     {
-      new Desktop(process)
-        .initializeWithWindow(window);
+      let desktop = new Desktop(process);
+      desktop.initializeWithWindow(window);
+      return desktop;
     });
 }
 

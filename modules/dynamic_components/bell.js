@@ -25,7 +25,7 @@
 /**
  *  @class Bell
  */
-let Bell = new Class().extends(Plugin);
+let Bell = new Class().extends(Plugin).depends("chrome");
 Bell.definition = {
 
   get id()
@@ -37,7 +37,7 @@ Bell.definition = {
         <description>{
           _("Enables it to show visual bell / audio bell.")
         }</description>
-        <version>0.1</version>
+        <version>0.2.0</version>
     </module>,
 
   get template()
@@ -57,13 +57,6 @@ Bell.definition = {
   "[persistable] sound_bell": true,
 
   _cover: null,
-  
-  /** post-constructor */
-  "[subscribe('initialized/chrome'), enabled]":
-  function onLoad(chrome) 
-  {
-    this.enabled = this.enabled_when_startup;
-  },
  
   /** installs itself. 
    *  @param {Session} session A session object.

@@ -66,7 +66,7 @@ PersistManager.definition = {
     let broker = this._broker;
     let filename = (name || broker.profile) + ".js";
     let profile_path = <>{broker.profile_directory}/{filename}</>.toString();
-    let file = coUtils.File.getFileLeafFromAbstractPath(profile_path);
+    let file = coUtils.File.getFileLeafFromVirtualPath(profile_path);
     if (file.exists()) {
       file.remove(true);
     }

@@ -40,15 +40,9 @@ Kill.definition = {
         <version>0.1</version>
     </plugin>,
 
-  /** post-constructor */
-  "[subscribe('event/broker-started'), enabled]":
-  function onLoad(session) 
-  {
-    this.enabled = this.enabled_when_startup;
-  },
-
   /** Installs itself. */
-  install: function install() 
+  "[subscribe('install/kill'), enabled]":
+  function install() 
   {
     this.detach.enabled = true;
     this.kill.enabled = true;
@@ -56,7 +50,8 @@ Kill.definition = {
   }, 
 
   /** Uninstall itself. */
-  uninstall: function uninstall() 
+  "[subscribe('uninstall/kill'), enabled]":
+  function uninstall() 
   {
     this.detach.enabled = false;
     this.kill.enabled = false;
@@ -105,7 +100,6 @@ Kill.definition = {
     // stops TTY device.
     let session = this._broker;
     session.notify("command/kill"); 
-    session.stop();
   },
 }
 

@@ -25,11 +25,11 @@
 /**
  *  @class DragPaste
  */
-let DragPaste = new Class().extends(Plugin);
+let DragPaste = new Class().extends(Plugin).depends("chrome");
 DragPaste.definition = {
 
   get id()
-    "drag_paste",
+    "dragpaste",
 
   get info()
     <plugin>
@@ -40,19 +40,12 @@ DragPaste.definition = {
         <version>0.1</version>
     </plugin>,
 
-  /** post-constructor */
-  "[subscribe('initialized/chrome'), enabled]":
-  function onLoad(chrome) 
-  {
-    this.enabled = this.enabled_when_startup;
-  },
-
   /** Installs itself. 
    *  @param {Session} session A session object.
    */
-  install: function install(session) 
+  "[subscribe('install/dragpaste'), enabled]":
+  function install(session) 
   {
-    let id = "drag_paste.install";
     this.ondragover.enabled = true;
     this.ondragenter.enabled = true;
     this.ondrop.enabled = true;
@@ -61,7 +54,8 @@ DragPaste.definition = {
   /** Uninstalls itself. 
    *  @param {Session} session A session object.
    */
-  uninstall: function uninstall(session) 
+  "[subscribe('uninstall/dragpaste'), enabled]":
+  function uninstall(session) 
   {
     this.ondragover.enabled = false;
     this.ondragenter.enabled = false;

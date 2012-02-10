@@ -88,7 +88,7 @@ Movable.definition = {
  * @brief Manage a terminal UI and a session.
  */
 let OuterChrome = new Class().extends(Component)
-                               .mix(Movable);
+                             .mix(Movable);
 OuterChrome.definition = {
 
   get id()
@@ -245,11 +245,20 @@ OuterChrome.definition = {
  * @class Chrome
  * @brief Manage a terminal UI and a session.
  */
-let Chrome = new Class().extends(Component);
+let Chrome = new Class().extends(Plugin).depends("outerchrome");
 Chrome.definition = {
 
   get id()
     "chrome",
+
+  get info()
+    <plugin>
+        <name>{_("Inner Chrome")}</name>
+        <description>{
+          _("Manages '#tanasinn_content' XUL element.")
+        }</description>
+        <version>0.1.0</version>
+    </plugin>,
 
   get template()
     ({
@@ -268,16 +277,22 @@ Chrome.definition = {
 
   _element: null,
 
-  "[subscribe('@initialized/outerchrome'), enabled]": 
-  function onLoad(outer_chrome) 
+  "[subscribe('install/chrome'), enabled]": 
+  function install(session) 
   {
-    let session = this._broker;
     let {tanasinn_content} 
       = session.uniget("command/construct-chrome", this.template);
     this._element = tanasinn_content;
     this.onGotFocus.enabled = true;
     this.onLostFocus.enabled = true;
-    session.notify(<>initialized/{this.id}</>, this);
+  },
+
+  "[subscribe('uninstall/chrome'), enabled]": 
+  function uninstall(session) 
+  {
+    this.onGotFocus.enabled = false;
+    this.onLostFocus.enabled = false;
+    this._element.parentNode.removeChild(this._element);
   },
 
   /** Fired when The session is stopping. */
