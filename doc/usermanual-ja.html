@@ -902,7 +902,7 @@ process.python_path = "/usr/bin/python"</tt></pre>
 <div class="ulist"><ul>
 <li>
 <p>
-開発版 (0.1.5.3): <a href="http://zuse.jp/tanasinn/downloads/versions/0.1.5.3/tanasinn@zuse.jp.xpi">ダウンロード</a>.
+開発版 (0.1.5.4): <a href="http://zuse.jp/tanasinn/downloads/versions/0.1.5.4/tanasinn@zuse.jp.xpi">ダウンロード</a>.
 </p>
 </li>
 <li>
@@ -969,10 +969,9 @@ IMEが使えます。
 <li>
 <p>
 East Asian Width(ひらがななどの文字幅を考慮したレンダリング)に一応対応しています。
-      CJK拡張漢字B集合などのサロゲートペアで表現される文字にも対応しています。
+      bidiには対応できていません。CJK拡張漢字B集合などのサロゲートペアで表現される文字には対応しています。
       異体字セレクタ、インド系諸語等で頻出する合字やアラビア系文字の置換などの複雑グリフ処理は、
       現在主にパフォーマンス上の理由により実装されませんが、 別途プラグインで対応することも可能です。
-      bidiには完全に対応できていないと思います。
 </p>
 </li>
 <li>
@@ -1467,30 +1466,35 @@ NIC無効時には動きません。
 <h3 id="_チュートリアルの方針">チュートリアルの方針</h3>
 <div class="paragraph"><p>このチュートリアルでは、簡単なtanasinnプラグインの作成過程を、なるべく平易な形で説明していきたいと思います。
 「覚えることを最小限に」をモットーとしたいと思います。
-もし、tanasinnの組み込みプラグインのソースを読んで理解しようとしてしまった人がいたら、すみません&gt;&lt;。
-あれはいろいろとやばいものが何重にも階層化しており、プラグインを書きたい人向きではないかもしれません。
-あんな煮詰まった恐しい書き方をせずとも、実はそこそこクリーンなJavascriptコードでプラグインを記述することができます。
+もし、tanasinnの組み込みプラグインのソースを読んで理解しようとしてしまった人がいたら、すみません。
+あそこには何年もわたって煮詰められた狂気が一種の層を形成しており、プラグインを書きたい人向けではありません。
+あのような書き方をせずとも、実はそこそこクリーンなJavascriptコードでプラグインを記述することができます。
 記述は少し冗長になりますが、コアを読むよりは生産的だし、精神上良いです。</p></div>
 </div>
 <div class="sect2">
-<h3 id="_tanasinnにおける_プラグイン_の定義">tanasinnにおける「プラグイン」の定義</h3>
+<h3 id="_tanasinnにおける_プラグイン">tanasinnにおける「プラグイン」</h3>
 <div class="paragraph"><p>tanasinnにおけるプラグインは、必要に応じてロードしたり、すきなときにアンロードできる
-ソフトウェア部品、とだけ理解しておいてください。</p></div>
+ソフトウェア部品、とだけ理解しておけばよいと思います。
+tanasinnバージョン0.1.5.4からは、プラグインマネージャが下図のように依存関係を追跡して管理しますので、
+プラグインの動的な有効化・無効化がそこそこ安全に行なえるようになっています。
+<span class="image">
+<img src=":images/pluginview.png" alt=":images/pluginview.png" width="400" />
+</span></p></div>
 </div>
 <div class="sect2">
 <h3 id="_これだけはどうしても_イベントバスの概念">これだけはどうしても - イベントバスの概念</h3>
 <div class="paragraph"><p>チュートリアルに入る前に、これだけは触れておかなければなりません。「イベントバス」です。
 「覚えることを最小限に」をふまえたうえでも、この概念の説明だけはちょっとはずせません。
-tanasinnはわりと結合のゆるいコンポーネントフレームワークの上に構築されており、
-コンポーネント間のコミュニケーションは基本、メッセージベースです。
-そのメッセージ(イベントやコマンドといったりもする)は、下図のような階層化されたバスの上を流れます。</p></div>
+tanasinnは結合のゆるいタイプのコンポーネントフレームワークの上に構築されており、
+コンポーネント間のコミュニケーションは基本、同期的なメッセージベースです。
+そのメッセージ(イベントやコマンドといったりもする)は、下図のような階層化されたバス上を流れます。</p></div>
 <div class="imageblock ditaa">
 <div class="content">
 <img src="README-ja__2.png" alt="README-ja__2.png" />
 </div>
 </div>
 <div class="paragraph"><p>階層的に構築されたLANのようなものをイメージしてもらえるといいと思います。
-ソフトウェア的には、Observerパターンを階層化したもの、ととらえるとわかりやすいかと思います。
+ソフトウェアパターン的には、Observerパターンを階層化したもの、ととらえるとわかりやすいかと思います。
 このような階層において子要素を持つもの、上図においては、Process,Desktop,Sessionのようなものを、
 「イベントブローカー」、あるいは単に「ブローカー」と呼んでいます。
 逆に親要素にぶらさがっているもの、上図においてはProcess以外を、「コンポーネント」と呼んでいます。
@@ -1500,10 +1504,41 @@ tanasinnはわりと結合のゆるいコンポーネントフレームワーク
 メッセージを送ったりできるわけです。
 イベントはUIウィジェットのようにキャプチャリングされたり、バブリングしたりすることはなく、
 必要なら明示的にルーティングしてやる必要があります。
-また親は子に対する参照をもちません。Vimperator使いはやや戸惑うかと思われますが、
+またブローカーはその子供(コンポーネント)に対する参照をもちません。
+Vimperator使い的にはやや戸惑うかと思われますが、
 たとえばSessionというオブジェクトからttyへの参照を明示的にひっぱってくることができません。
 ややめんどくさいですがtanasinn全体がこのようなルールで構築されています。</p></div>
-<div class="paragraph"><p>つづく。</p></div>
+</div>
+<div class="sect2">
+<h3 id="_準備">準備</h3>
+<div class="paragraph"><p>とりあえず、お使いのFirefox/Thunderbird/SeaMonkey等にtanasinnを導入してください。
+以下の説明はtanasinn 0.1.5.4以上の環境を想定しているので、tanasinnは最新版を入れておいてください。
+$HOME/.tanasinnがすでにある場合、以下の説明がtanasinnの実際の動きと食い違うことがあるかもしれませんので、
+リネーム等しておくとよいです。</p></div>
+</div>
+<div class="sect2">
+<h3 id="_最初のサンプル">最初のサンプル</h3>
+<div class="paragraph"><p>以下のようなサンプルを作成してください。</p></div>
+<div class="paragraph"><p>sample1.js</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>function main(broker) {
+  coUtils.alert(broker);
+}</tt></pre>
+</div></div>
+<div class="paragraph"><p>これを
+%USERPROFILE%¥.tanasinn¥modules¥session_components (Windows)
+$HOME/.tanasinn/modules/session_components (Mac/Linux/FreeBSD)
+につっこんでください。フォルダ(ディレクトリ)は無いと思うので作成してください。
+&lt;Ctrl&gt;2度押し + &lt;Enter&gt;でターミナルセッションを開始すると、アラートボックスが出ると思います。</p></div>
+</div>
+<div class="sect2">
+<h3 id="_最初のサンプル_hello_world">最初のサンプル - Hello! World!</h3>
+<div class="literalblock">
+<div class="title">プラグインのエントリポイントシンボルはmain、引数にはSessionオブジェクトが与えられる。</div>
+<div class="content">
+<pre><tt>----- つづく。</tt></pre>
+</div></div>
 </div>
 </div>
 </div>
@@ -2014,7 +2049,7 @@ twitter: <a href="http://twitter.com/kefir_">日本語</a> / <a href="http://twi
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2012-02-11 09:36:37 JST
+Last updated 2012-02-11 16:09:25 JST
 </div>
 </div>
 </body>

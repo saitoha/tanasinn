@@ -27,21 +27,20 @@ Environment.definition = {
 
 // public properties
 
-  /** @property dynamic_path */
-  get dynamic_path()
+  /** @property search_path */
+  get search_path()
   {
-    let broker = this._broker;
-    return this._dynamic_path || [ 
-      "modules/static_dynamic_components",
-      "modules/dynamic_components",
-      String(<>{broker.runtime_path}/modules/static_dynamic_components</>),
-      String(<>{broker.runtime_path}/modules/dynamic_components</>)
+    return this._search_path || [
+      "modules/desktop_components",
+      "modules/shared_components",
+      String(<>{this.runtime_path}/modules/desktop_components</>),
+      String(<>{this.runtime_path}/modules/shared_components</>)
     ];
   },
 
-  set dynamic_path(value)
+  set search_path(value)
   {
-    this._dynamic_path = value;
+    this._search_path = value;
   },
 
 };
@@ -79,6 +78,11 @@ Desktop.definition = {
   width: 120,
   height: 36,
 
+  initialize: function initialize(broker)
+  {
+    this.load(this, this.search_path, new broker.default_scope);
+  },
+
   initializeWithWindow: 
   function initializeWithWindow(window)
   {
@@ -107,6 +111,7 @@ Desktop.definition = {
     broker.notify(<>initialized/broker</>, this);
     this.notify("command/load-settings");
 
+    this.notify("initialized/broker", this);
     this.notify("event/broker-started", this);
   },
 
@@ -149,8 +154,6 @@ Desktop.definition = {
   start: function start(parent, command, term, size, search_path, callback) 
   {
     let broker = this._broker;
-    this.load(this, this.dynamic_path, new broker.default_scope);
-
     // create request object;
     command = command 
       || this["default_command@" + coUtils.Runtime.os] 
@@ -181,11 +184,10 @@ Desktop.definition = {
 function main(process) 
 {
   process.subscribe(
-    "@event/desktop-requested",
+    "event/new-window-detected",
     function onDesktopRequested(window) 
     {
-      let desktop = new Desktop(process);
-      desktop.initializeWithWindow(window);
+      let desktop = new Desktop(process).initializeWithWindow(window);
       return desktop;
     });
 }

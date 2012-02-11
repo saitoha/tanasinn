@@ -130,38 +130,6 @@ with (scope) {
       this._runtime_path = value;
     },
 
-    /** @property static_path */
-    get static_path()
-    {
-      return this._static_path || [
-        "modules/static_components",
-        "modules/static_dynamic_components",
-        String(<>{this.runtime_path}/modules/static_components</>),
-        String(<>{this.runtime_path}/modules/base</>)
-      ];
-    },
-
-    set static_path(value)
-    {
-      this._static_path = value;
-    },
-
-    /** @property dynamic_path */
-    get dynamic_path()
-    {
-      return this._dynamic_path || [ 
-        "modules/static_dynamic_components",
-        "modules/dynamic_components",
-        String(<>{this.runtime_path}/modules/static_dynamic_components</>),
-        String(<>{this.runtime_path}/modules/dynamic_components</>)
-      ];
-    },
-
-    set dynamic_path(value)
-    {
-      this._dynamic_path = value;
-    },
-
     _guessCygwinRoot: function _guessCygwinRoot() 
     {
       return "C:\\cygwin";
@@ -281,11 +249,7 @@ with (scope) {
           coUtils.Debug.reportError(e);
         }
       }
-      this.subscribe("event/new-window-detected", function (window) 
-      {
-        this.load(this, this.static_path, new this.default_scope);
-        this.notify("event/desktop-requested", window);
-      }, this);
+      this.load(this, ["modules/process_components"], new this.default_scope);
     },
   
     /* override */

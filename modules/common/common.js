@@ -915,7 +915,7 @@ coUtils.File = new function() {
             coUtils.Debug.reportWarning(
               _("Cannot get file entries from '%s'. ",
                 "It seems that specified path does not exist."), path);
-            return;
+            continue;
           }
           if (target_leaf.isFile()) {
             yield target_leaf;

@@ -30,7 +30,7 @@ let ComponentViewer = new Class().extends(Plugin).depends("bottompanel");
 ComponentViewer.definition = {
 
   get id()
-    "module_viewer",
+    "plugin_viewer",
 
   get info()
     <plugin>
@@ -80,7 +80,7 @@ ComponentViewer.definition = {
                 },
                 { 
                   tagName: "label", 
-                  class: "text-link",
+                  //className: "text-link",
                   style: <>
                     font-size: 1.4em;
                     font-weight: bold;
@@ -123,7 +123,7 @@ ComponentViewer.definition = {
   /** Installs itself.
    *  @param {Session} session A session object.
    */
-  "[subscribe('install/module_viewer'), enabled]":
+  "[subscribe('install/plugin_viewer'), enabled]":
   function install(session) 
   {
     let bottom_panel = this.dependency["bottompanel"];
@@ -135,7 +135,7 @@ ComponentViewer.definition = {
   /** Uninstalls itself.
    *  @param {Session} session A session object.
    */
-  "[subscribe('uninstall/module_viewer'), enabled]":
+  "[subscribe('uninstall/plugin_viewer'), enabled]":
   function uninstall(session) 
   {
     this.onPanelSelected.enabled = false;
@@ -143,7 +143,7 @@ ComponentViewer.definition = {
     this.dependency["bottompanel"].remove(this.id);
   },
 
-  "[subscribe('panel-selected/module_viewer')]":
+  "[subscribe('panel-selected/plugin_viewer')]":
   function onPanelSelected(name) 
   {
     let session = this._broker;
@@ -153,7 +153,7 @@ ComponentViewer.definition = {
     this.update();
   },
 
-  "[command('moduleviewer/mv'), nmap('<M-m>', '<C-S-m>'), _('Open module viewer.')]":
+  "[command('pluginviewer/pv'), nmap('<M-m>', '<C-S-m>'), _('Open module viewer.')]":
   function select()
   {
     this.dependency["bottompanel"].select(this.id);

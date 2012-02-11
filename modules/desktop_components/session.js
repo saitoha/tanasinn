@@ -42,12 +42,39 @@
  *
  */
 
+let Environment = new Aspect();
+Environment.definition = {
+
+// public properties
+
+  /** @property search_path */
+  get search_path()
+  {
+    let broker = this._broker;
+    return this._search_path || [ 
+      "modules/shared_components",
+      "modules/session_components",
+      <>{broker.runtime_path}/modules/shared_components</>.toString(),
+      <>{broker.runtime_path}/modules/session_components</>.toString()
+  ];
+
+  },
+
+  set search_path(value)
+  {
+    this._search_path = value;
+  },
+
+};
+
 /**
  *
  * @class Session
  *
  */
-let Session = new Class().extends(Component).mix(EventBroker);
+let Session = new Class().extends(Component)
+                         .mix(Environment)
+                         .mix(EventBroker);
 Session.definition = {
 
   get id()
@@ -92,6 +119,11 @@ Session.definition = {
 
   _request_id: null,
   _observers: null,
+
+  initialize: function initialize(broker)
+  {
+    this.load(this, this.search_path, new broker._broker.default_scope);
+  },
 
   subscribeGlobalEvent: 
   function subscribeGlobalEvent(topic, handler, context)
@@ -162,7 +194,7 @@ Session.definition = {
     this._command = request.command;
     this._term = request.term;
 
-    desktop.notify("initialized/broker", this);
+    this.notify("initialized/broker", this);
     this.notify("command/load-settings", this.profile);
     this.notify("event/broker-started", this);
     //coUtils.Timer.setTimeout(function() {
@@ -198,14 +230,12 @@ Session.definition = {
  */
 function main(desktop) 
 {
-  let id = new Date().getTime();
   desktop.subscribe(
     "event/session-requested", 
     function(request) 
     {
-      desktop.unsubscribe(id);
       new Session(desktop).initializeWithRequest(request);
-    }, this, id);
+    });
 }
 
 
