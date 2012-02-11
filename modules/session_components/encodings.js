@@ -169,11 +169,11 @@ DecoderMenu.definition = {
   _onChange: function(scheme) 
   {
     this._scheme = scheme;
-    let session = this._broker;
-    session.notify("change/decoder", scheme)
+    let broker = this._broker;
+    broker.notify("change/decoder", scheme)
     // send control + l 
     if (this.send_ff_when_encoding_changed) {
-      session.notify("command/send-to-tty", String.fromCharCode(0x0c)); 
+      broker.notify("command/send-to-tty", String.fromCharCode(0x0c)); 
     }
   }
 };
@@ -182,16 +182,16 @@ DecoderMenu.definition = {
 /**
  * @fn main
  * @brief Module entry point.
- * @param {Desktop} desktop The Desktop object.
+ * @param {Broker} broker The Broker object.
  */
-function main(desktop) 
+function main(broker) 
 {
-  desktop.subscribe(
+  broker.subscribe(
     "@initialized/broker", 
-    function(session) 
+    function(broker) 
     {
-      new EncoderMenu(session)
-      new DecoderMenu(session)
+      new EncoderMenu(broker)
+      new DecoderMenu(broker)
     });
 }
 

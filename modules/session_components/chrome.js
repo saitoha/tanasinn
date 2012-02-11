@@ -363,16 +363,16 @@ Chrome.definition = {
 /**
  * @fn main
  * @brief Module entry point.
- * @param {Desktop} desktop The Desktop object.
+ * @param {Broker} Broker The Desktop object.
  */
-function main(desktop) 
+function main(broker) 
 {
-  desktop.subscribe(
+  broker.subscribe(
     "@initialized/broker", 
-    function(session) 
+    function(broker) 
     {
-      new OuterChrome(session);
-      new Chrome(session);
+      new OuterChrome(broker);
+      new Chrome(broker);
     });
 }
 

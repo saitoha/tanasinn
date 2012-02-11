@@ -588,11 +588,6 @@ Commandline.definition = {
   "[listen('keypress', '#tanasinn_commandline', true)]":
   function onkeypress(event) 
   {
-    /*
-    this._broker.notify(
-      "command/report-overlay-message", 
-      [event.keyCode,event.which,event.isChar].join("/"));
-      */
     let key_code = coUtils.Keyboard.getPackedKeycodeFromEvent(event);
     let session = this._broker;
     let result = session.uniget(
@@ -658,15 +653,15 @@ Commandline.definition = {
 /**
  * @fn main
  * @brief Module entry point.
- * @param {Desktop} desktop The Desktop object.
+ * @param {Broker} broker The Broker object.
  */
-function main(desktop)
+function main(broker)
 {
-  desktop.subscribe(
+  broker.subscribe(
     "@initialized/broker", 
-    function(session) 
+    function(broker) 
     {
-      new Commandline(session);
+      new Commandline(broker);
     });
 }
 

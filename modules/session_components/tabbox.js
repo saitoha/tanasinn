@@ -422,15 +422,15 @@ BottomPanel.definition = {
 /**
  * @fn main
  * @brief Module entry point.
- * @param {Desktop} desktop The Desktop object.
+ * @param {Broker} broker The Broker object.
  */
-function main(desktop) 
+function main(broker) 
 {
-  desktop.subscribe(
+  broker.subscribe(
     "@initialized/broker", 
-    function(session) 
+    function(broker) 
     {
-      new BottomPanel(session);
+      new BottomPanel(broker);
     });
 }
 

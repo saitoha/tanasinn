@@ -123,13 +123,13 @@ AnsiSpecifiedMode.definition = {
 /**
  * @fn main
  * @brief Module entry point.
- * @param {Desktop} desktop The desktop object.
+ * @param {Broker} broker The Broker object.
  */
-function main(desktop) 
+function main(broker) 
 {
-  desktop.subscribe(
+  broker.subscribe(
     "@initialized/broker", 
-    function(session) new AnsiSpecifiedMode(session));
+    function(broker) new AnsiSpecifiedMode(broker));
 }
 
 

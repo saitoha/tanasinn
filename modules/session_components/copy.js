@@ -107,15 +107,15 @@ Copy.definition = {
 /**
  * @fn main
  * @brief Module entry point.
- * @param {Desktop} desktop The Desktop object.
+ * @param {Broker} broker The Broker object.
  */
-function main(desktop) 
+function main(broker) 
 {
-  desktop.subscribe(
+  broker.subscribe(
     "@initialized/broker", 
-    function(session) 
+    function(broker) 
     {
-      new Copy(session);
+      new Copy(broker);
     });
 }
 

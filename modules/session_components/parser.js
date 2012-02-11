@@ -288,15 +288,15 @@ Parser.definition = {
 /**
  * @fn main
  * @brief Module entry point.
- * @param {Desktop} desktop The Desktop object.
+ * @param {Broker} broker The Broker object.
  */
-function main(desktop) 
+function main(broker) 
 {
-  desktop.subscribe(
+  broker.subscribe(
     "@initialized/broker", 
-    function (session) {
-      new Parser(session);
-      new Scanner(session);
+    function (broker) {
+      new Parser(broker);
+      new Scanner(broker);
     });
 }
 

@@ -464,19 +464,19 @@ TextCompletionDisplayDriver.definition = {
 /**
  * @fn main
  * @brief Module entry point.
- * @param {Desktop} desktop The Desktop object.
+ * @param {Broker} broker The Broker object.
  */
-function main(desktop)
+function main(broker)
 {
-  desktop.subscribe(
+  broker.subscribe(
     "@initialized/broker", 
-    function(session) 
+    function(broker) 
     {
-      new ColorCompletionDisplayDriver(session);
-      new ColorNumberCompletionDisplayDriver(session);
-      new FontsizeCompletionDisplayDriver(session);
-      new FontFamilyCompletionDisplayDriver(session);
-      new TextCompletionDisplayDriver(session);
+      new ColorCompletionDisplayDriver(broker);
+      new ColorNumberCompletionDisplayDriver(broker);
+      new FontsizeCompletionDisplayDriver(broker);
+      new FontFamilyCompletionDisplayDriver(broker);
+      new TextCompletionDisplayDriver(broker);
     });
 }
 

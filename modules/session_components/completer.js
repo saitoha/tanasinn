@@ -983,26 +983,26 @@ LocalizeCompleter.definition = {
 /**
  * @fn main
  * @brief Module entry point.
- * @param {Desktop} desktop The Desktop object.
+ * @param {Broker} broker The Broker object.
  */
-function main(desktop)
+function main(broker)
 {
-  desktop.subscribe(
+  broker.subscribe(
     "@initialized/broker", 
-    function(session) 
+    function(broker) 
     {
-      new JsCompleter(session);
-      new HistoryCompleter(session);
-      new OptionCompleter(session);
-      new CommandCompleter(session);
-      new ProfileCompleter(session);
-      new FontsizeCompleter(session);
-      new FontFamilyCompleter(session);
-      new ColorNumberCompleter(session);
-      new LocalizeCompleter(session);
-      new PluginsCompleter(session);
-      new CharsetCompleter(session);
-      new NmapCompleter(session);
+      new JsCompleter(broker);
+      new HistoryCompleter(broker);
+      new OptionCompleter(broker);
+      new CommandCompleter(broker);
+      new ProfileCompleter(broker);
+      new FontsizeCompleter(broker);
+      new FontFamilyCompleter(broker);
+      new ColorNumberCompleter(broker);
+      new LocalizeCompleter(broker);
+      new PluginsCompleter(broker);
+      new CharsetCompleter(broker);
+      new NmapCompleter(broker);
     });
 }
 

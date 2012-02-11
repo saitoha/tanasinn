@@ -543,19 +543,19 @@ Decoder.definition = {
 /**
  * @fn main
  * @brief Module entry point.
- * @param {Desktop} desktop The Desktop object.
+ * @param {Broker} broker The Broker object.
  */
-function main(desktop) 
+function main(broker) 
 {
-  desktop.subscribe(
+  broker.subscribe(
     "@initialized/broker", 
-    function(session) 
+    function(broker) 
     {
-      new Decoder(session);
-      new MultiDecoder(session);
-      new AsciiDecoder(session);
-      new UTF8Decoder(session);
-      new CP932Decoder(session);
+      new Decoder(broker);
+      new MultiDecoder(broker);
+      new AsciiDecoder(broker);
+      new UTF8Decoder(broker);
+      new CP932Decoder(broker);
     });
 }
 

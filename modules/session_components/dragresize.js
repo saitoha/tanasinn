@@ -326,26 +326,26 @@ BottomResizer.definition = {
 /**
  * @fn main
  * @brief Module entry point.
- * @param {Desktop} desktop The Desktop object.
+ * @param {Broker} broker The Broker object.
  */
-function main(desktop) 
+function main(broker) 
 {
-  desktop.subscribe(
+  broker.subscribe(
     "@initialized/broker", 
-    function(session) 
+    function(broker) 
     {
       if (!coUtils.Runtime.app_name.match(/tanasinn/)) {
-        new CaptureBox(session);
-        new TopLeftResizer(session);
-        new TopRightResizer(session);
-        new BottomLeftResizer(session);
-        new BottomRightResizer(session);
-        new LeftResizer(session);
-        new RightResizer(session);
-        new TopResizer(session);
-        new BottomResizer(session);
+        new CaptureBox(broker);
+        new TopLeftResizer(broker);
+        new TopRightResizer(broker);
+        new BottomLeftResizer(broker);
+        new BottomRightResizer(broker);
+        new LeftResizer(broker);
+        new RightResizer(broker);
+        new TopResizer(broker);
+        new BottomResizer(broker);
       } else {
-        new SnapResize(session);
+        new SnapResize(broker);
       }
     });
 }

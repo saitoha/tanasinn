@@ -563,19 +563,19 @@ Console.definition = {
 /**
  * @fn main
  * @brief Module entry point.
- * @param {Desktop} desktop The Desktop object.
+ * @param {Broker} broker The Broker object.
  */
-function main(desktop) 
+function main(broker) 
 {
 //  if (false) // now it is disabled dealing with performance issue.
-  desktop.subscribe(
+  broker.subscribe(
     "@initialized/broker", 
-    function(session)
+    function(broker)
     {
-      new Console(session);
-      new MessageFilter(session);
-      new DisplayManager(session);
-      new ConsoleListener(session);
+      new Console(broker);
+      new MessageFilter(broker);
+      new DisplayManager(broker);
+      new ConsoleListener(broker);
     });
 }
 

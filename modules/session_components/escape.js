@@ -290,17 +290,17 @@ Escape.definition = {
 /**
  * @fn main
  * @brief Module entry point.
- * @param {Desktop} desktop The Desktop object.
+ * @param {Broker} broker The Broker object.
  */
-function main(desktop) 
+function main(broker) 
 {
-  desktop.subscribe(
+  broker.subscribe(
     "@initialized/broker", 
-    function(session) 
+    function(broker) 
     {
-      new Escape(session);
-      new KeypadMode(session);
-      new CharsetMode(session);
+      new Escape(broker);
+      new KeypadMode(broker);
+      new CharsetMode(broker);
     });
 }
 

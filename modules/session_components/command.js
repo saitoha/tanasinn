@@ -736,26 +736,26 @@ MapCommands.definition = {
 /**
  * @fn main
  * @brief Module entry point.
- * @param {Desktop} desktop The Desktop object.
+ * @param {Broker} broker The Broker object.
  */
-function main(desktop)
+function main(broker)
 {
-  desktop.subscribe(
+  broker.subscribe(
     "@initialized/broker", 
-    function(session) 
+    function(broker) 
     {
-      new CommandProvider(session);
-      new JsCommand(session);
-      new SetCommand(session);
-      new SetGlobalCommand(session);
-      new FontCommands(session);
-      new ColorCommands(session);
-      new PersistCommand(session);
-      new GlobalPersistCommand(session);
-      new LocalizeCommand(session);
-      new DeployCommands(session);
-      new CharsetCommands(session);
-      new MapCommands(session);
+      new CommandProvider(broker);
+      new JsCommand(broker);
+      new SetCommand(broker);
+      new SetGlobalCommand(broker);
+      new FontCommands(broker);
+      new ColorCommands(broker);
+      new PersistCommand(broker);
+      new GlobalPersistCommand(broker);
+      new LocalizeCommand(broker);
+      new DeployCommands(broker);
+      new CharsetCommands(broker);
+      new MapCommands(broker);
     });
 }
 
