@@ -87,7 +87,7 @@ Movable.definition = {
  * @class OuterChrome
  * @brief Manage a terminal UI and a session.
  */
-let OuterChrome = new Class().extends(Component)
+let OuterChrome = new Class().extends(Plugin)
                              .mix(Movable);
 OuterChrome.definition = {
 
@@ -164,8 +164,8 @@ OuterChrome.definition = {
 
 // constructor
   /** post initializer. */
-  "[subscribe('@event/broker-started'), enabled]": 
-  function onLoad(session) 
+  "[subscribe('install/outerchrome'), enabled]": 
+  function install(session) 
   {
     // construct chrome elements. 
     let {
@@ -178,8 +178,13 @@ OuterChrome.definition = {
       this._element.firstChild.style.borderRadius = "0px";
       this._element.firstChild.style.margin = "0px";
     }
+  },
 
-    session.notify(<>initialized/{this.id}</>, this);
+  "[subscribe('uninstall/outerchrome'), enabled]": 
+  function uninstall(session) 
+  {
+    // destruct chrome elements. 
+    this._element.parentNode.removeChild(this._element);
   },
 
   "[subscribe('event/shift-key-down'), enabled]": 
@@ -363,7 +368,7 @@ Chrome.definition = {
 /**
  * @fn main
  * @brief Module entry point.
- * @param {Broker} Broker The Desktop object.
+ * @param {Broker} Broker The Broker object.
  */
 function main(broker) 
 {

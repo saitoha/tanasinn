@@ -969,9 +969,10 @@ IMEが使えます。
 <li>
 <p>
 East Asian Width(ひらがななどの文字幅を考慮したレンダリング)に一応対応しています。
-      bidiには対応できていません。CJK拡張漢字B集合などのサロゲートペアで表現される文字には対応しています。
+      CJK拡張漢字B集合などのサロゲートペアで表現される文字にも対応しています。
       異体字セレクタ、インド系諸語等で頻出する合字やアラビア系文字の置換などの複雑グリフ処理は、
       現在主にパフォーマンス上の理由により実装されませんが、 別途プラグインで対応することも可能です。
+      bidiには完全に対応できていないと思います。
 </p>
 </li>
 <li>
@@ -1467,7 +1468,7 @@ NIC無効時には動きません。
 <div class="paragraph"><p>このチュートリアルでは、簡単なtanasinnプラグインの作成過程を、なるべく平易な形で説明していきたいと思います。
 「覚えることを最小限に」をモットーとしたいと思います。
 もし、tanasinnの組み込みプラグインのソースを読んで理解しようとしてしまった人がいたら、すみません。
-あそこには何年もわたって煮詰められた狂気が一種の層を形成しており、プラグインを書きたい人向けではありません。
+あそこには何年もわたって煮詰められた狂気が一種の層のようなものを形成しており、プラグインを書きたい人向けではありません。
 あのような書き方をせずとも、実はそこそこクリーンなJavascriptコードでプラグインを記述することができます。
 記述は少し冗長になりますが、コアを読むよりは生産的だし、精神上良いです。</p></div>
 </div>
@@ -1476,7 +1477,7 @@ NIC無効時には動きません。
 <div class="paragraph"><p>tanasinnにおけるプラグインは、必要に応じてロードしたり、すきなときにアンロードできる
 ソフトウェア部品、とだけ理解しておけばよいと思います。
 tanasinnバージョン0.1.5.4からは、プラグインマネージャが下図のように依存関係を追跡して管理しますので、
-プラグインの動的な有効化・無効化がそこそこ安全に行なえるようになっています。
+プラグインの動的な有効化・無効化がそれなりに安全に行なえるようになっています。
 <span class="image">
 <img src=":images/pluginview.png" alt=":images/pluginview.png" width="400" />
 </span></p></div>
@@ -1485,7 +1486,7 @@ tanasinnバージョン0.1.5.4からは、プラグインマネージャが下�
 <h3 id="_これだけはどうしても_イベントバスの概念">これだけはどうしても - イベントバスの概念</h3>
 <div class="paragraph"><p>チュートリアルに入る前に、これだけは触れておかなければなりません。「イベントバス」です。
 「覚えることを最小限に」をふまえたうえでも、この概念の説明だけはちょっとはずせません。
-tanasinnは結合のゆるいタイプのコンポーネントフレームワークの上に構築されており、
+tanasinnは結合度的にかなりゆるいタイプのコンポーネントフレームワークの上に構築されており、
 コンポーネント間のコミュニケーションは基本、同期的なメッセージベースです。
 そのメッセージ(イベントやコマンドといったりもする)は、下図のような階層化されたバス上を流れます。</p></div>
 <div class="imageblock ditaa">
@@ -1504,8 +1505,8 @@ tanasinnは結合のゆるいタイプのコンポーネントフレームワー
 メッセージを送ったりできるわけです。
 イベントはUIウィジェットのようにキャプチャリングされたり、バブリングしたりすることはなく、
 必要なら明示的にルーティングしてやる必要があります。
-またブローカーはその子供(コンポーネント)に対する参照をもちません。
-Vimperator使い的にはやや戸惑うかと思われますが、
+またVimperator/KeySnail使い的にはやや戸惑うかと思われますが、
+ブローカーはその子供(コンポーネント)に対する参照をもちません。
 たとえばSessionというオブジェクトからttyへの参照を明示的にひっぱってくることができません。
 ややめんどくさいですがtanasinn全体がこのようなルールで構築されています。</p></div>
 </div>
@@ -1514,10 +1515,10 @@ Vimperator使い的にはやや戸惑うかと思われますが、
 <div class="paragraph"><p>とりあえず、お使いのFirefox/Thunderbird/SeaMonkey等にtanasinnを導入してください。
 以下の説明はtanasinn 0.1.5.4以上の環境を想定しているので、tanasinnは最新版を入れておいてください。
 $HOME/.tanasinnがすでにある場合、以下の説明がtanasinnの実際の動きと食い違うことがあるかもしれませんので、
-リネーム等しておくとよいです。</p></div>
+リネーム等しておくとはまらなくてよいです。</p></div>
 </div>
 <div class="sect2">
-<h3 id="_最初のサンプル">最初のサンプル</h3>
+<h3 id="_サンプル1">サンプル1</h3>
 <div class="paragraph"><p>以下のようなサンプルを作成してください。</p></div>
 <div class="paragraph"><p>sample1.js</p></div>
 <div class="listingblock">
@@ -1526,16 +1527,61 @@ $HOME/.tanasinnがすでにある場合、以下の説明がtanasinnの実際の
   coUtils.alert(broker);
 }</tt></pre>
 </div></div>
-<div class="paragraph"><p>これを
+<div class="paragraph"><p>これを、
 %USERPROFILE%¥.tanasinn¥modules¥session_components (Windows)
 $HOME/.tanasinn/modules/session_components (Mac/Linux/FreeBSD)
-につっこんでください。フォルダ(ディレクトリ)は無いと思うので作成してください。
-&lt;Ctrl&gt;2度押し + &lt;Enter&gt;でターミナルセッションを開始すると、アラートボックスが出ると思います。</p></div>
+につっこみます。フォルダ(ディレクトリ)は無いと思うので作成してください。</p></div>
+<div class="paragraph"><p>この状態でターミナルセッションを開始してみます。
+こうなります。</p></div>
+<div class="imageblock">
+<div class="content">
+<img src="images/sample1.png" alt="images/sample1.png" width="500" />
+</div>
+</div>
+<div class="paragraph"><p>alertの中身を変えるなどして、いろいろ実験してみてください。以下のことがわかると思います。</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+このプラグインモジュールのエントリポイントはmain。引数にはSessionオジェクトが与えられている。
+</p>
+</li>
+<li>
+<p>
+このプラグインモジュールはセッションが開始されるタイミングで読み込み直され、変更等も反映されている。
+</p>
+</li>
+<li>
+<p>
+このプラグインモジュールのスコープでは、「coUtils」というシンボルが事前定義されている。
+</p>
+</li>
+</ul></div>
+<div class="paragraph"><p>Sessionオブジェクトはセッションバスを管理するブローカーです。
+ターミナルウィンドウがひとつ立ち上がるごとに、Sessionオブジェクトが生成されています。</p></div>
 </div>
 <div class="sect2">
-<h3 id="_最初のサンプル_hello_world">最初のサンプル - Hello! World!</h3>
+<h3 id="_サンプル2">サンプル2</h3>
+<div class="paragraph"><p>今度はセッションバス上を飛び交うメッセージを補足し、他のプラグインとコミュニケートしてみます。簡単です。</p></div>
+<div class="paragraph"><p>sample2.js</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>function main(broker) {
+  broker.subscribe("event/before-input", function(message) {
+    broker.notify("command/report-overlay-message", "key pressed: '" + message + "'");
+  });
+}</tt></pre>
+</div></div>
+<div class="paragraph"><p>下図のように、キーボードを押すたびにオーバーレイインジケータが出てくると思います。</p></div>
+<div class="imageblock">
+<div class="content">
+<img src="images/sample2.png" alt="images/sample2.png" width="500" />
+</div>
+</div>
+<div class="paragraph"><p>「input」というコンポーネントからメッセージを受けとり、プラグイン「Overlay Indicator」にデータを渡しています。
+"event/before-input" や "command/report-overlay-message" はイベントソースを識別するための文字列で、
+これは「トピック」と呼ばれています。トピックと所定の演算子を組み合わせて式を構築し、
+broker.subscribeにわたしてやることも可能です。これは「イベント式」とよばれています。</p></div>
 <div class="literalblock">
-<div class="title">プラグインのエントリポイントシンボルはmain、引数にはSessionオブジェクトが与えられる。</div>
 <div class="content">
 <pre><tt>----- つづく。</tt></pre>
 </div></div>
@@ -2049,7 +2095,7 @@ twitter: <a href="http://twitter.com/kefir_">日本語</a> / <a href="http://twi
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2012-02-11 16:09:25 JST
+Last updated 2012-02-11 18:55:31 JST
 </div>
 </div>
 </body>

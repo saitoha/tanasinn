@@ -27,6 +27,17 @@ Environment.definition = {
 
 // public properties
 
+  /** @property runtime_path */
+  get runtime_path()
+  {
+    return this._runtime_path || "$Home/.tanasinn";
+  },
+
+  set runtime_path(value)
+  {
+    this._runtime_path = value;
+  },
+
   /** @property search_path */
   get search_path()
   {

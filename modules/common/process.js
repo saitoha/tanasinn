@@ -119,17 +119,6 @@ with (scope) {
       this._python_path = value;
     },
 
-    /** @property runtime_path */
-    get runtime_path()
-    {
-      return this._runtime_path || "$Home/.tanasinn";
-    },
-
-    set runtime_path(value)
-    {
-      this._runtime_path = value;
-    },
-
     _guessCygwinRoot: function _guessCygwinRoot() 
     {
       return "C:\\cygwin";
