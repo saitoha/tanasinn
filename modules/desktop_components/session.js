@@ -194,7 +194,7 @@ Session.definition = {
     this._command = request.command;
     this._term = request.term;
 
-    this.notify("initialized/broker", this);
+    desktop.notify("initialized/session", this);
     this.notify("command/load-settings", this.profile);
     this.notify("event/broker-started", this);
     //coUtils.Timer.setTimeout(function() {

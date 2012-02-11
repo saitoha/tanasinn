@@ -186,13 +186,8 @@ DecoderMenu.definition = {
  */
 function main(broker) 
 {
-  broker.subscribe(
-    "@initialized/broker", 
-    function(broker) 
-    {
-      new EncoderMenu(broker)
-      new DecoderMenu(broker)
-    });
+  new EncoderMenu(broker)
+  new DecoderMenu(broker)
 }
 
 

@@ -426,12 +426,7 @@ BottomPanel.definition = {
  */
 function main(broker) 
 {
-  broker.subscribe(
-    "@initialized/broker", 
-    function(broker) 
-    {
-      new BottomPanel(broker);
-    });
+  new BottomPanel(broker);
 }
 
 

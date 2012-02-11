@@ -127,9 +127,7 @@ AnsiSpecifiedMode.definition = {
  */
 function main(broker) 
 {
-  broker.subscribe(
-    "@initialized/broker", 
-    function(broker) new AnsiSpecifiedMode(broker));
+  new AnsiSpecifiedMode(broker);
 }
 
 

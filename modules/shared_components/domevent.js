@@ -41,13 +41,6 @@ DOMEventManager.definition = {
 
   _listener_list_map: null,
 
-  /** constructor */
-  initialize: function initialize(broker) 
-  {
-    this._listener_list_map = {};
-    broker.notify("initialized/domeventmanager", this);
-  },
-
   /** A thin wrapper function of Element.addEventListener. 
    * @param listener {coIDOMEventListener} A listener object implements following interface.
    *
@@ -102,6 +95,7 @@ DOMEventManager.definition = {
       target.addEventListener(type, delegate, capture); 
       let id = listener.id;
       if (id) {
+        this._listener_list_map = this._listener_list_map || {};
         let list = this._listener_list_map[id];
         if (!list)
           list = this._listener_list_map[id] = [];
@@ -126,6 +120,7 @@ DOMEventManager.definition = {
   "[subscribe('command/remove-domlistener'), enabled]":
   function remove(id)
   {
+    this._listener_list_map = this._listener_list_map || {};
     let list = this._listener_list_map[id];
     if (list) {
       list.forEach(function(action) action());
@@ -146,12 +141,7 @@ DOMEventManager.definition = {
  */
 function main(broker) 
 {
-  broker.subscribe(
-    "@initialized/broker",
-    function(broker)
-    {
-      new DOMEventManager(broker);
-    });
+  new DOMEventManager(broker);
 }
 
 

@@ -364,9 +364,7 @@ Control.definition = {
  */
 function main(broker) 
 {
-  broker.subscribe(
-    "@initialized/broker", 
-    function(broker) new Control(broker));
+  new Control(broker);
 }
 
 

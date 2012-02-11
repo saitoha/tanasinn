@@ -285,8 +285,6 @@ Scrollbar.definition = {
  */
 function main(broker) 
 {
-  broker.subscribe(
-    "@initialized/broker", 
-    function(broker) new Scrollbar(broker));
+  new Scrollbar(broker);
 }
 

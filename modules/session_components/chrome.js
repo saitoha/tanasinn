@@ -372,13 +372,8 @@ Chrome.definition = {
  */
 function main(broker) 
 {
-  broker.subscribe(
-    "@initialized/broker", 
-    function(broker) 
-    {
-      new OuterChrome(broker);
-      new Chrome(broker);
-    });
+  new OuterChrome(broker);
+  new Chrome(broker);
 }
 
 

@@ -117,8 +117,6 @@ DragPaste.definition = {
  */
 function main(broker) 
 {
-  broker.subscribe(
-    "@initialized/broker", 
-    function(broker) new DragPaste(broker));
+  new DragPaste(broker);
 }
 

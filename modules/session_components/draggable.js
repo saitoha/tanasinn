@@ -122,8 +122,6 @@ DragMove.definition = {
  */
 function main(broker) 
 {
-  broker.subscribe(
-    "@initialized/broker", 
-    function(broker) new DragMove(broker));
+  new DragMove(broker);
 }
 

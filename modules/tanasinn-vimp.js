@@ -144,17 +144,18 @@ editor.editFileExternally = let (default_func = editor.editFileExternally) funct
       default_func.apply(liberator.modules.editor, arguments);
     } else {
       let complete = false;
-      desktop.subscribe("@initialized/broker", function(session) {
+      desktop.subscribe("@initialized/session", function(session) {
         session.subscribe("@event/session-stopping", function(session) {
           complete = true;
         }, this);
       }, this);
-      desktop.notify("command/start-session", editor_command.replace(/%/g, path));
-      let thread = components.classes["@mozilla.org/thread-manager;1"]
-        .getservice(components.interfaces.nsithreadmanager)
-        .currentthread;
+      let command = editor_command.replace(/%/g, path);
+      desktop.notify("command/start-session", command);
+      let thread = Components.classes["@mozilla.org/thread-manager;1"]
+        .getService(Components.interfaces.nsIThreadManager)
+        .currentThread;
       while (!complete) {
-        thread.processnextevent(true);
+        thread.processNextEvent(true);
       }
     };
   }

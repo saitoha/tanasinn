@@ -557,13 +557,8 @@ Debugger.definition = {
  */
 function main(broker) 
 {
-  broker.subscribe(
-    "@initialized/broker", 
-    function(broker) 
-    {
-      new Debugger(broker);
-      new Hooker(broker);
-      new Tracer(broker);
-    });
+  new Debugger(broker);
+  new Hooker(broker);
+  new Tracer(broker);
 }
 

@@ -468,16 +468,11 @@ TextCompletionDisplayDriver.definition = {
  */
 function main(broker)
 {
-  broker.subscribe(
-    "@initialized/broker", 
-    function(broker) 
-    {
-      new ColorCompletionDisplayDriver(broker);
-      new ColorNumberCompletionDisplayDriver(broker);
-      new FontsizeCompletionDisplayDriver(broker);
-      new FontFamilyCompletionDisplayDriver(broker);
-      new TextCompletionDisplayDriver(broker);
-    });
+  new ColorCompletionDisplayDriver(broker);
+  new ColorNumberCompletionDisplayDriver(broker);
+  new FontsizeCompletionDisplayDriver(broker);
+  new FontFamilyCompletionDisplayDriver(broker);
+  new TextCompletionDisplayDriver(broker);
 }
 
 

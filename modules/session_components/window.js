@@ -152,9 +152,7 @@ WindowWatcher.definition = {
  */
 function main(broker) 
 {
-  broker.subscribe(
-    "@initialized/broker", 
-    function(broker) new WindowWatcher(broker));
+  new WindowWatcher(broker);
 }
 
 

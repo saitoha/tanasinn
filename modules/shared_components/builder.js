@@ -167,16 +167,12 @@
 let TemplateBuilder = new Aspect();
 TemplateBuilder.definition = {
 
-  /** constructor */
-  initialize: function initialize(broker)
-  {
-    this._root_element = broker.root_element;
-  },
-
   /** Builds a set of nodes of XUL/HTML/SVG elements. */
   buildChrome: 
   function buildChrome(template, results) 
   {
+    let broker = this._broker;
+    let root_element = broker.root_element;
     if (Array.isArray(template)) {
       return template.map(function(node)
       {
@@ -189,7 +185,7 @@ TemplateBuilder.definition = {
           _("tagName property not found: %s."),
           template.toSource());
       }
-      let document = this._root_element.ownerDocument;
+      let document = root_element.ownerDocument;
       return document.createTextNode(template.text);
     }
     let element = this._createElement(template.tagName);
@@ -227,8 +223,10 @@ TemplateBuilder.definition = {
   _createElement: 
   function _createElement(tagName) 
   {
+    let broker = this._broker;
+    let root_element = broker.root_element;
     let touple = tagName.split(":"); // (tagName) or (namespace, tagName).
-    let document = this._root_element.ownerDocument;
+    let document = root_element.ownerDocument;
     if (1 == touple.length) {
       return document.createElement(tagName);
     } else {
@@ -266,7 +264,9 @@ TemplateBuilder.definition = {
   _processInnerText: 
   function _processInnerText(element, value) 
   {
-    let textNode = this._root_element.ownerDocument.createTextNode(value);
+    let broker = this._broker;
+    let root_element = broker.root_element;
+    let textNode = root_element.ownerDocument.createTextNode(value);
     element.appendChild(textNode);
   },
 
@@ -275,7 +275,8 @@ TemplateBuilder.definition = {
   function _processParentNode(element, value) 
   {
     if ("string" == typeof value) {
-      let root_element = this._root_element;
+      let broker = this._broker;
+      let root_element = broker.root_element;
       root_element.querySelector(value).appendChild(element);
     } else {
       value.appendChild(element);
@@ -371,12 +372,7 @@ ChromeBuilder.definition = {
  */
 function main(broker) 
 {
-  broker.subscribe(
-    "@initialized/broker",
-    function(broker)
-    {
-      new ChromeBuilder(broker);
-    });
+  new ChromeBuilder(broker);
 }
 
 

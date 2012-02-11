@@ -1588,12 +1588,7 @@ Screen.definition = {
  */
 function main(broker) 
 {
-  broker.subscribe(
-    "@initialized/broker", 
-    function(broker) 
-    {
-      new Screen(broker);
-    });
+  new Screen(broker);
 }
 
 

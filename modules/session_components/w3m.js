@@ -253,8 +253,6 @@ W3m.definition = {
  */
 function main(broker) 
 {
-  broker.subscribe(
-    "@initialized/broker", 
-    function(broker) new W3m(broker));
+  new W3m(broker);
 }
 

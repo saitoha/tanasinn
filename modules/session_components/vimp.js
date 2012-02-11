@@ -127,9 +127,7 @@ Vimperator.definition = {
  */
 function main(broker) 
 {
-  broker.subscribe(
-    "@initialized/broker", 
-    function(broker) new Vimperator(broker));
+  new Vimperator(broker);
 }
 
 

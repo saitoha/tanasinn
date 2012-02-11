@@ -238,9 +238,7 @@ OverlayIndicator.definition = {
  */
 function main(broker) 
 {
-  broker.subscribe(
-    "@initialized/broker", 
-    function(broker) new OverlayIndicator(broker));
+  new OverlayIndicator(broker);
 }
 
 

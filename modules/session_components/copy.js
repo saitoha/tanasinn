@@ -111,12 +111,7 @@ Copy.definition = {
  */
 function main(broker) 
 {
-  broker.subscribe(
-    "@initialized/broker", 
-    function(broker) 
-    {
-      new Copy(broker);
-    });
+  new Copy(broker);
 }
 
 

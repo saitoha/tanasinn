@@ -120,9 +120,7 @@ Bell.definition = {
  */
 function main(broker) 
 {
-  broker.subscribe(
-    "@initialized/broker", 
-    function(broker) new Bell(broker));
+  new Bell(broker);
 }
 
 

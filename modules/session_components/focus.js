@@ -110,9 +110,7 @@ FocusTracker.definition = {
  */
 function main(broker)
 {
-  broker.subscribe(
-    "@initialized/broker", 
-    function(broker) new FocusTracker(broker));
+  new FocusTracker(broker);
 }
 
 

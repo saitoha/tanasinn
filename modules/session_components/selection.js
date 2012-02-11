@@ -397,9 +397,7 @@ Selection.definition = {
  */
 function main(broker) 
 {
-  broker.subscribe(
-    "@initialized/broker", 
-    function(broker) new Selection(broker));
+  new Selection(broker);
 }
 
 

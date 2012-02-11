@@ -209,8 +209,6 @@ Resize.definition = {
  */
 function main(broker) 
 {
-  broker.subscribe(
-    "@initialized/broker", 
-    function(broker) new Resize(broker));
+  new Resize(broker);
 }
 

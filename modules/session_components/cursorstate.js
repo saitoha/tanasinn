@@ -261,9 +261,7 @@ CursorState.definition = {
  */
 function main(broker) 
 {
-  broker.subscribe(
-    "@initialized/broker", 
-    function(broker) new CursorState(broker));
+  new CursorState(broker);
 }
 
 

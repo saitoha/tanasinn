@@ -481,9 +481,7 @@ DecPrivateMode.definition = {
  */
 function main(broker) 
 {
-  broker.subscribe(
-    "@initialized/broker", 
-    function(broker) new DecPrivateMode(broker));
+  new DecPrivateMode(broker);
 }
 
 

@@ -209,11 +209,6 @@ Ime.definition = {
  */
 function main(broker) 
 {
-  broker.subscribe(
-    "@initialized/broker", 
-    function(broker) 
-    {
-      new Ime(broker);
-    });
+  new Ime(broker);
 }
 

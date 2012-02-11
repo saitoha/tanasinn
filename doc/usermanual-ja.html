@@ -1332,11 +1332,34 @@ Vimperator/Muttatorのコマンドライン上から起動したい場合は、�
 </div>
 <div class="sect2">
 <h3 id="_ユーザーディレクトリ">ユーザーディレクトリ</h3>
-<div class="imageblock aafigure">
+<div class="listingblock">
 <div class="content">
-<img src="README-ja__1.png" alt="README-ja__1.png" />
-</div>
-</div>
+<pre><tt>  ~/
+   |
+   +-- .tanasinn.js    &lt;-------------------------------- (1)
+   |
+   +-- .tanasinn/      &lt;-------------------------------- (2)
+         |
+         +-- sessions.txt        &lt;---------------------- (3)
+         |
+         +-- desktop_profile/    &lt;---------------------- (4)
+         |
+         +-- session_profile/    &lt;---------------------- (5)
+         |
+         +-- persist/            &lt;---------------------- (6)
+         |
+         +-- log/                &lt;---------------------- (7)
+         |
+         +-- modules/            &lt;---------------------- (8)
+                |
+                +-- process_components/          &lt;------ (9)
+                |
+                +-- desktop_components/          &lt;------ (10)
+                |
+                +-- session_components/          &lt;------ (11)
+                |
+                +-- shared_components/           &lt;------ (12)</tt></pre>
+</div></div>
 <div class="ulist"><ul>
 <li>
 <p>
@@ -1461,64 +1484,68 @@ NIC無効時には動きません。
 </div>
 </div>
 <div class="sect1">
-<h2 id="_プラグイン開発_チュートリアル">プラグイン開発 - チュートリアル</h2>
+<h2 id="_プラグイン開発_初級編チュートリアル">プラグイン開発 - 初級編チュートリアル</h2>
 <div class="sectionbody">
 <div class="sect2">
 <h3 id="_チュートリアルの方針">チュートリアルの方針</h3>
 <div class="paragraph"><p>このチュートリアルでは、簡単なtanasinnプラグインの作成過程を、なるべく平易な形で説明していきたいと思います。
 「覚えることを最小限に」をモットーとしたいと思います。
-もし、tanasinnの組み込みプラグインのソースを読んで理解しようとしてしまった人がいたら、すみません。
-あそこには何年もわたって煮詰められた狂気が一種の層のようなものを形成しており、プラグインを書きたい人向けではありません。
+もし、tanasinnコアのソースを読んで理解しようとしてしまった人がいたら、すみません。
+あそこには何年にもわたって煮詰められた狂気が一種の層のようなものを形成しており、読むと精神的にやられます。
 あのような書き方をせずとも、実はそこそこクリーンなJavascriptコードでプラグインを記述することができます。
-記述は少し冗長になりますが、コアを読むよりは生産的だし、精神上良いです。</p></div>
+記述は少し冗長になりますが、tanasinnコアを読むよりはずっと生産的です。</p></div>
 </div>
 <div class="sect2">
 <h3 id="_tanasinnにおける_プラグイン">tanasinnにおける「プラグイン」</h3>
 <div class="paragraph"><p>tanasinnにおけるプラグインは、必要に応じてロードしたり、すきなときにアンロードできる
 ソフトウェア部品、とだけ理解しておけばよいと思います。
 tanasinnバージョン0.1.5.4からは、プラグインマネージャが下図のように依存関係を追跡して管理しますので、
-プラグインの動的な有効化・無効化がそれなりに安全に行なえるようになっています。
-<span class="image">
-<img src=":images/pluginview.png" alt=":images/pluginview.png" width="400" />
-</span></p></div>
+プラグインの動的な有効化・無効化がかなり安全に行なえるようになっています。
+TUI環境の限界を突破したGUI的エンハンスやWebとの融合に興味を持たれている方などはぜひ拡張開発にご参加ください。</p></div>
+<div class="imageblock">
+<div class="content">
+<img src="images/pluginview.png" alt="images/pluginview.png" width="500" />
+</div>
+</div>
 </div>
 <div class="sect2">
-<h3 id="_これだけはどうしても_イベントバスの概念">これだけはどうしても - イベントバスの概念</h3>
-<div class="paragraph"><p>チュートリアルに入る前に、これだけは触れておかなければなりません。「イベントバス」です。
-「覚えることを最小限に」をふまえたうえでも、この概念の説明だけはちょっとはずせません。
-tanasinnは結合度的にかなりゆるいタイプのコンポーネントフレームワークの上に構築されており、
+<h3 id="_イベントバスの概念">イベントバスの概念</h3>
+<div class="paragraph"><p>チュートリアルに入る前に、これだけはどうしても触れておかなければなりません。「イベントバス」です。
+「覚えることを最小限に」をふまえたうえでも、この説明だけはちょっとはずせません。
+tanasinnは「tupstart2」と名付けられた結合度的にかなりゆるいタイプの
+コンポーネントフレームワークを基盤として構築されており、
 コンポーネント間のコミュニケーションは基本、同期的なメッセージベースです。
-そのメッセージ(イベントやコマンドといったりもする)は、下図のような階層化されたバス上を流れます。</p></div>
+そのメッセージ(イベントやコマンドといったりもする)は、下図のような階層化されたバス上を流れています。</p></div>
 <div class="imageblock ditaa">
 <div class="content">
-<img src="README-ja__2.png" alt="README-ja__2.png" />
+<img src="README-ja__1.png" alt="README-ja__1.png" />
 </div>
 </div>
 <div class="paragraph"><p>階層的に構築されたLANのようなものをイメージしてもらえるといいと思います。
 ソフトウェアパターン的には、Observerパターンを階層化したもの、ととらえるとわかりやすいかと思います。
-このような階層において子要素を持つもの、上図においては、Process,Desktop,Sessionのようなものを、
-「イベントブローカー」、あるいは単に「ブローカー」と呼んでいます。
-逆に親要素にぶらさがっているもの、上図においてはProcess以外を、「コンポーネント」と呼んでいます。
-名付け方が適切でない可能性がありますが、歴史的理由によりそう呼ばれています。
+このような階層において子要素を持つもの、上図においては、Process,Desktop,Sessionのようなものが、イベントを管理しています。
+tanasinnハッカー達はこれを「イベントブローカー」、あるいは単に「ブローカー」と呼んでいます。
+また逆にこの親要素にぶらさがっているもの、上図においてはProcess以外のノードを、「コンポーネント」と呼んでいます。
+名付け方があまり適切でない可能性がありますが、彼らのもつ歴史的背景によりそう呼ばれています。
 たとえば上の図でいうと、DesktopとSessionはイベントブローカー兼コンポーネントということになります。
-コンポーネントttyはSessionというイベントブローカーを介してコンポーネントscreenに
+コンポーネント「tty」はSessionというイベントブローカーを介してコンポーネント「screen」に
 メッセージを送ったりできるわけです。
-イベントはUIウィジェットのようにキャプチャリングされたり、バブリングしたりすることはなく、
+イベントはUIウィジェットにおけるそれのようにキャプチャリングされたり、バブリングしたりすることはなく、
 必要なら明示的にルーティングしてやる必要があります。
 またVimperator/KeySnail使い的にはやや戸惑うかと思われますが、
 ブローカーはその子供(コンポーネント)に対する参照をもちません。
-たとえばSessionというオブジェクトからttyへの参照を明示的にひっぱってくることができません。
-ややめんどくさいですがtanasinn全体がこのようなルールで構築されています。</p></div>
+たとえばSessionというオブジェクトから「tty」への参照を明示的にひっぱってくることができません。
+ややめんどくさいですが仕様です。tanasinn全体がこのようなルールで構築されています。</p></div>
 </div>
 <div class="sect2">
 <h3 id="_準備">準備</h3>
 <div class="paragraph"><p>とりあえず、お使いのFirefox/Thunderbird/SeaMonkey等にtanasinnを導入してください。
 以下の説明はtanasinn 0.1.5.4以上の環境を想定しているので、tanasinnは最新版を入れておいてください。
 $HOME/.tanasinnがすでにある場合、以下の説明がtanasinnの実際の動きと食い違うことがあるかもしれませんので、
-リネーム等しておくとはまらなくてよいです。</p></div>
+リネーム等しておくと、はまらなくてよいです。</p></div>
 </div>
 <div class="sect2">
-<h3 id="_サンプル1">サンプル1</h3>
+<h3 id="_サンプル1_エントリーポイント">サンプル1 - エントリーポイント</h3>
 <div class="paragraph"><p>以下のようなサンプルを作成してください。</p></div>
 <div class="paragraph"><p>sample1.js</p></div>
 <div class="listingblock">
@@ -1528,8 +1555,8 @@ $HOME/.tanasinnがすでにある場合、以下の説明がtanasinnの実際の
 }</tt></pre>
 </div></div>
 <div class="paragraph"><p>これを、
-%USERPROFILE%¥.tanasinn¥modules¥session_components (Windows)
-$HOME/.tanasinn/modules/session_components (Mac/Linux/FreeBSD)
+%USERPROFILE%¥.tanasinn¥modules¥session_components¥ (Windows)
+$HOME/.tanasinn/modules/session_components/ (Mac/Linux/FreeBSD)
 につっこみます。フォルダ(ディレクトリ)は無いと思うので作成してください。</p></div>
 <div class="paragraph"><p>この状態でターミナルセッションを開始してみます。
 こうなります。</p></div>
@@ -1538,11 +1565,12 @@ $HOME/.tanasinn/modules/session_components (Mac/Linux/FreeBSD)
 <img src="images/sample1.png" alt="images/sample1.png" width="500" />
 </div>
 </div>
-<div class="paragraph"><p>alertの中身を変えるなどして、いろいろ実験してみてください。以下のことがわかると思います。</p></div>
+<div class="paragraph"><p>ここでもし余裕があればalert関数の中身を変えるなどして、いろいろ実験してみてください。
+聡明な方なら以下のことがわかると思います。</p></div>
 <div class="ulist"><ul>
 <li>
 <p>
-このプラグインモジュールのエントリポイントはmain。引数にはSessionオジェクトが与えられている。
+このプラグインモジュールのエントリポイントはmainというシンボルをもつ関数。引数にはSessionオジェクトが与えられている。
 </p>
 </li>
 <li>
@@ -1558,9 +1586,11 @@ $HOME/.tanasinn/modules/session_components (Mac/Linux/FreeBSD)
 </ul></div>
 <div class="paragraph"><p>Sessionオブジェクトはセッションバスを管理するブローカーです。
 ターミナルウィンドウがひとつ立ち上がるごとに、Sessionオブジェクトが生成されています。</p></div>
+<div class="paragraph"><p>coUtilsはtanasinnで使用するユーティリティ関数群をまとめたネームスペースです。
+かならずこの中のものを使え、というわけではありません。</p></div>
 </div>
 <div class="sect2">
-<h3 id="_サンプル2">サンプル2</h3>
+<h3 id="_サンプル2_イベントとトピック">サンプル2 - イベントとトピック</h3>
 <div class="paragraph"><p>今度はセッションバス上を飛び交うメッセージを補足し、他のプラグインとコミュニケートしてみます。簡単です。</p></div>
 <div class="paragraph"><p>sample2.js</p></div>
 <div class="listingblock">
@@ -1574,13 +1604,22 @@ $HOME/.tanasinn/modules/session_components (Mac/Linux/FreeBSD)
 <div class="paragraph"><p>下図のように、キーボードを押すたびにオーバーレイインジケータが出てくると思います。</p></div>
 <div class="imageblock">
 <div class="content">
-<img src="images/sample2.png" alt="images/sample2.png" width="500" />
+<img src="images/sample2.png" alt="images/sample2.png" width="700" />
 </div>
 </div>
 <div class="paragraph"><p>「input」というコンポーネントからメッセージを受けとり、プラグイン「Overlay Indicator」にデータを渡しています。
 "event/before-input" や "command/report-overlay-message" はイベントソースを識別するための文字列で、
-これは「トピック」と呼ばれています。トピックと所定の演算子を組み合わせて式を構築し、
-broker.subscribeにわたしてやることも可能です。これは「イベント式」とよばれています。</p></div>
+「トピック」と呼ばれています。
+なお、tanasinnにおけるプラグインの振舞いの記述では、このようなメッセージパッシングが頻出するため、
+特に工夫せずに書いているとたちまちクロージャー地獄に陥ります。
+熟練したtanasinnプログラマはトピックと所定の演算子を組み合わせてイベント式を構築し、
+brokerに対してトリガ条件を詳細に指定することがあります。たとえばこんなふうに。</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>broker.subscribe(
+  "@(initialized/{tty &amp; screen} &amp; ~variable-changed/renderer.font_{size|family})",
+  function (tty, screen, font_size, font_family) { … })；</tt></pre>
+</div></div>
 <div class="literalblock">
 <div class="content">
 <pre><tt>----- つづく。</tt></pre>
@@ -1595,7 +1634,7 @@ broker.subscribeにわたしてやることも可能です。これは「イベ�
 <h3 id="_hierarchical_event_broker_pattern">Hierarchical event broker pattern</h3>
 <div class="imageblock ditaa">
 <div class="content">
-<img src="README-ja__3.png" alt="README-ja__3.png" />
+<img src="README-ja__2.png" alt="README-ja__2.png" />
 </div>
 </div>
 </div>
@@ -1603,7 +1642,7 @@ broker.subscribeにわたしてやることも可能です。これは「イベ�
 <h3 id="_event_bus">Event bus</h3>
 <div class="imageblock ditaa">
 <div class="content">
-<img src="README-ja__4.png" alt="README-ja__4.png" />
+<img src="README-ja__3.png" alt="README-ja__3.png" />
 </div>
 </div>
 </div>
@@ -1698,7 +1737,7 @@ system is based on the concept of multicast delegate system.</tt></pre>
 </div></div>
 <div class="imageblock ditaa">
 <div class="content">
-<img src="README-ja__5.png" alt="README-ja__5.png" />
+<img src="README-ja__4.png" alt="README-ja__4.png" />
 </div>
 </div>
 </div>
@@ -1853,7 +1892,7 @@ Controlling Process
 </ol></div>
 <div class="imageblock ditaa">
 <div class="content">
-<img src="README-ja__6.png" alt="README-ja__6.png" />
+<img src="README-ja__5.png" alt="README-ja__5.png" />
 </div>
 </div>
 <div class="literalblock">
@@ -2085,6 +2124,14 @@ The "listener" property (10) attaches a event handler at the current
 </div>
 </div>
 <div class="sect1">
+<h2 id="_謝辞">謝辞</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>本ソフトウェアを作成するにあっては、同系統のソフトウェアである<a href="http://anyterm.org/">Anyterm</a>や
+<a href="https://github.com/unconed/TermKit">TermKit</a>より、多大なインスピレーションを頂きました。
+ここに御礼申し上げます。</p></div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="_バグレポート_パッチ">バグレポート・パッチ</h2>
 <div class="sectionbody">
 <div class="paragraph"><div class="title">バグレポート・パッチ超歓迎。</div><p>saitoha &lt;<a href="mailto:user@zuse.jp">user@zuse.jp</a>&gt;
@@ -2095,7 +2142,7 @@ twitter: <a href="http://twitter.com/kefir_">日本語</a> / <a href="http://twi
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2012-02-11 18:55:31 JST
+Last updated 2012-02-11 23:54:07 JST
 </div>
 </div>
 </body>

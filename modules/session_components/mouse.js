@@ -326,8 +326,6 @@ Mouse.definition = {
  */
 function main(broker) 
 {
-  broker.subscribe(
-    "@initialized/broker", 
-    function(broker) new Mouse(broker));
+  new Mouse(broker);
 }
 

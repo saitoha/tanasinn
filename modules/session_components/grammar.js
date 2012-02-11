@@ -277,8 +277,6 @@ Grammer.definition = {
  */
 function main(broker) 
 {
-  broker.subscribe(
-    "@initialized/broker", 
-    function(broker) new Grammer(broker));
+  new Grammer(broker);
 }
 

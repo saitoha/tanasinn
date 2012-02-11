@@ -119,10 +119,8 @@ Desktop.definition = {
     this._root_element.id = "tanasinn_desktop";
 
     let broker = this._broker;
-    broker.notify(<>initialized/broker</>, this);
     this.notify("command/load-settings");
 
-    this.notify("initialized/broker", this);
     this.notify("event/broker-started", this);
   },
 
@@ -169,7 +167,6 @@ Desktop.definition = {
     command = command 
       || this["default_command@" + coUtils.Runtime.os] 
       || this.default_command;
-
     term = term || this.default_term;
 
     let [width, height] = size || [this.width, this.height];

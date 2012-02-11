@@ -500,9 +500,7 @@ PopupMenu.definition = {
  */
 function main(broker) 
 {
-  broker.subscribe(
-    "@initialized/broker", 
-    function(broker) new PopupMenu(broker));
+  new PopupMenu(broker);
 }
 
 

@@ -90,12 +90,7 @@ PersistManager.definition = {
  */
 function main(broker) 
 {
-  broker.subscribe(
-    "@initialized/broker",
-    function(broker) 
-    {
-      new PersistManager(broker);
-    });
+  new PersistManager(broker);
 }
 
 

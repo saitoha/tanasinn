@@ -567,15 +567,9 @@ Console.definition = {
  */
 function main(broker) 
 {
-//  if (false) // now it is disabled dealing with performance issue.
-  broker.subscribe(
-    "@initialized/broker", 
-    function(broker)
-    {
-      new Console(broker);
-      new MessageFilter(broker);
-      new DisplayManager(broker);
-      new ConsoleListener(broker);
-    });
+  new Console(broker);
+  new MessageFilter(broker);
+  new DisplayManager(broker);
+  new ConsoleListener(broker);
 }
 

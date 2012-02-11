@@ -166,13 +166,8 @@ Encoder.definition = {
  */
 function main(broker) 
 {
-  broker.subscribe(
-    "@initialized/broker", 
-    function(broker) 
-    {
-      new Encoder(broker);
-      new MultiEncoder(broker);
-    });
+  new Encoder(broker);
+  new MultiEncoder(broker);
 }
 
 

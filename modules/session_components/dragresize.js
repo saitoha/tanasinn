@@ -330,24 +330,19 @@ BottomResizer.definition = {
  */
 function main(broker) 
 {
-  broker.subscribe(
-    "@initialized/broker", 
-    function(broker) 
-    {
-      if (!coUtils.Runtime.app_name.match(/tanasinn/)) {
-        new CaptureBox(broker);
-        new TopLeftResizer(broker);
-        new TopRightResizer(broker);
-        new BottomLeftResizer(broker);
-        new BottomRightResizer(broker);
-        new LeftResizer(broker);
-        new RightResizer(broker);
-        new TopResizer(broker);
-        new BottomResizer(broker);
-      } else {
-        new SnapResize(broker);
-      }
-    });
+  if (!coUtils.Runtime.app_name.match(/tanasinn/)) {
+    new CaptureBox(broker);
+    new TopLeftResizer(broker);
+    new TopRightResizer(broker);
+    new BottomLeftResizer(broker);
+    new BottomRightResizer(broker);
+    new LeftResizer(broker);
+    new RightResizer(broker);
+    new TopResizer(broker);
+    new BottomResizer(broker);
+  } else {
+    new SnapResize(broker);
+  }
 }
 
 

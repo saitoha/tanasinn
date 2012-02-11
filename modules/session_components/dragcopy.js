@@ -198,8 +198,6 @@ DragCopy.definition = {
  */
 function main(broker) 
 {
-  broker.subscribe(
-    "@initialized/broker", 
-    function(broker) new DragCopy(broker));
+  new DragCopy(broker);
 }
 

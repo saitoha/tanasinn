@@ -327,12 +327,12 @@ InputManager.definition = {
   "[listen('input', '#tanasinn_default_input')]":
   function oninput(event) 
   {
-    let session = this._broker;
+    let broker = this._broker;
     let value = this._textbox.value;
     this._textbox.value = "";
-    session.notify("command/input-text", value);
+    broker.notify("command/input-text", value);
   }
-} 
+};
 
 /**
  * @fn main
@@ -341,8 +341,6 @@ InputManager.definition = {
  */
 function main(broker) 
 {
-  broker.subscribe(
-    "@initialized/broker", 
-    function(broker) new InputManager(broker));
+  new InputManager(broker);
 }
 

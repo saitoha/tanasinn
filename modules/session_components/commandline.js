@@ -132,7 +132,6 @@ CompletionView.definition = {
 
 };
 
-
 /**
  * @class Commandline
  *
@@ -148,10 +147,10 @@ Commandline.definition = {
   get info()
     <plugin>
         <name>{_("Commandline Interface")}</name>
+        <version>0.1</version>
         <description>{
           _("Provides commandline interafce.")
         }</description>
-        <version>0.1</version>
     </plugin>,
 
   get template()
@@ -657,12 +656,7 @@ Commandline.definition = {
  */
 function main(broker)
 {
-  broker.subscribe(
-    "@initialized/broker", 
-    function(broker) 
-    {
-      new Commandline(broker);
-    });
+  new Commandline(broker);
 }
 
 

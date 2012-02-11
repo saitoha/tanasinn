@@ -221,11 +221,6 @@ ComponentViewer.definition = {
  */
 function main(broker)
 {
-  broker.subscribe(
-    "@initialized/broker", 
-    function(broker) 
-    {
-      new ComponentViewer(broker);
-    });
+  new ComponentViewer(broker);
 }
 

@@ -443,13 +443,8 @@ CommandlineKeyHandler.definition = {
  */
 function main(broker)
 {
-  broker.subscribe(
-    "@initialized/broker",
-    function(broker) 
-    {
-      new CommandlineMappingManager(broker);
-      new NormalMappingManager(broker);
-      new CommandlineKeyHandler(broker);
-    });
+  new CommandlineMappingManager(broker);
+  new NormalMappingManager(broker);
+  new CommandlineKeyHandler(broker);
 }
 

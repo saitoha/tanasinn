@@ -740,23 +740,18 @@ MapCommands.definition = {
  */
 function main(broker)
 {
-  broker.subscribe(
-    "@initialized/broker", 
-    function(broker) 
-    {
-      new CommandProvider(broker);
-      new JsCommand(broker);
-      new SetCommand(broker);
-      new SetGlobalCommand(broker);
-      new FontCommands(broker);
-      new ColorCommands(broker);
-      new PersistCommand(broker);
-      new GlobalPersistCommand(broker);
-      new LocalizeCommand(broker);
-      new DeployCommands(broker);
-      new CharsetCommands(broker);
-      new MapCommands(broker);
-    });
+  new CommandProvider(broker);
+  new JsCommand(broker);
+  new SetCommand(broker);
+  new SetGlobalCommand(broker);
+  new FontCommands(broker);
+  new ColorCommands(broker);
+  new PersistCommand(broker);
+  new GlobalPersistCommand(broker);
+  new LocalizeCommand(broker);
+  new DeployCommands(broker);
+  new CharsetCommands(broker);
+  new MapCommands(broker);
 }
 
 

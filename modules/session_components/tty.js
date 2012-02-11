@@ -841,15 +841,10 @@ SocketTeletypeService.definition = {
  */
 function main(broker) 
 {
-  broker.subscribe(
-    "@initialized/broker", 
-    function(session) 
-    {
-      new IOManager(session);
-      new Controller(session);
-      new SocketTeletypeService(session);
-      new ExternalDriver(session);
-    });
+  new IOManager(broker);
+  new Controller(broker);
+  new SocketTeletypeService(broker);
+  new ExternalDriver(broker);
 }
 
 

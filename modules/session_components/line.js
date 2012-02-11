@@ -781,9 +781,7 @@ LineGenerator.definition = {
  */
 function main(broker) 
 {
-  broker.subscribe(
-    "@initialized/broker", 
-    function(broker) new LineGenerator(broker));
+  new LineGenerator(broker);
 }
 
 

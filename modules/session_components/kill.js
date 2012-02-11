@@ -111,9 +111,7 @@ Kill.definition = {
  */
 function main(broker) 
 {
-  broker.subscribe(
-    "@initialized/broker", 
-    function(broker) new Kill(broker));
+  new Kill(broker);
 }
 
 

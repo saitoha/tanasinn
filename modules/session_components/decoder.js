@@ -547,16 +547,11 @@ Decoder.definition = {
  */
 function main(broker) 
 {
-  broker.subscribe(
-    "@initialized/broker", 
-    function(broker) 
-    {
-      new Decoder(broker);
-      new MultiDecoder(broker);
-      new AsciiDecoder(broker);
-      new UTF8Decoder(broker);
-      new CP932Decoder(broker);
-    });
+  new Decoder(broker);
+  new MultiDecoder(broker);
+  new AsciiDecoder(broker);
+  new UTF8Decoder(broker);
+  new CP932Decoder(broker);
 }
 
 

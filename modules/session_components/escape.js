@@ -294,14 +294,9 @@ Escape.definition = {
  */
 function main(broker) 
 {
-  broker.subscribe(
-    "@initialized/broker", 
-    function(broker) 
-    {
-      new Escape(broker);
-      new KeypadMode(broker);
-      new CharsetMode(broker);
-    });
+  new Escape(broker);
+  new KeypadMode(broker);
+  new CharsetMode(broker);
 }
 
 

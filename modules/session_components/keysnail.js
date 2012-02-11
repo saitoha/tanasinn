@@ -130,9 +130,7 @@ KeySnail.definition = {
  */
 function main(broker) 
 {
-  broker.subscribe(
-    "@initialized/broker", 
-    function(broker) new KeySnail(broker));
+  new KeySnail(broker);
 }
 
 

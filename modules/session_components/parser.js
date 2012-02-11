@@ -292,11 +292,7 @@ Parser.definition = {
  */
 function main(broker) 
 {
-  broker.subscribe(
-    "@initialized/broker", 
-    function (broker) {
-      new Parser(broker);
-      new Scanner(broker);
-    });
+  new Parser(broker);
+  new Scanner(broker);
 }
 

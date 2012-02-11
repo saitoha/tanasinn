@@ -1112,17 +1112,15 @@ Launcher.definition = {
     let desktop = this._broker; 
     let document = this._element.ownerDocument;
     command = command || "";
+    command = command.replace(/^\s+|\s+$/g, "");
 
     let box = document.createElement("box");
     if (!/tanasinn/.test(coUtils.Runtime.app_name)) {
       box.style.cssText = "position: fixed; top: 0px; left: 0px";
     }
     this._window_layer.appendChild(box);
-
     coUtils.Timer.setTimeout(function() {
-      desktop.start(
-        box,
-        command.replace(/^\s+|\s+$/g, ""));  // command
+      desktop.start(box, command);  // command
       box.style.left = <>{this.left = (this.left + Math.random() * 1000) % 140 + 20}px</>.toString();
       box.style.top = <>{this.top = (this.top + Math.random() * 1000) % 140 + 20}px</>.toString();
     }, 0, this);
@@ -1429,19 +1427,14 @@ DragMove.definition = {
  */
 function main(desktop) 
 {
-  desktop.subscribe(
-    "@initialized/broker",
-    function(desktop) 
-    {
-      new Launcher(desktop);
-      new LauncherCompletionProvider(desktop);
-      new ProgramCompleter(desktop);
-      new SessionsCompleter(desktop);
-      new ProcessManager(desktop);
-      new TextCompletionDisplayDriver(desktop);
-      new SessionsCompletionDisplayDriver(desktop);
-      new DragMove(desktop);
-    });
+  new Launcher(desktop);
+  new LauncherCompletionProvider(desktop);
+  new ProgramCompleter(desktop);
+  new SessionsCompleter(desktop);
+  new ProcessManager(desktop);
+  new TextCompletionDisplayDriver(desktop);
+  new SessionsCompletionDisplayDriver(desktop);
+  new DragMove(desktop);
 }
 
 

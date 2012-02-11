@@ -66,9 +66,7 @@ Emulator.definition = {
  */
 function main(broker) 
 {
-  broker.subscribe(
-    "@initialized/broker", 
-    function(broker) new Emulator(broker));
+  new Emulator(broker);
 }
 
 

@@ -161,11 +161,6 @@ Splitter.definition = {
  */
 function main(broker) 
 {
-  broker.subscribe(
-    "@initialized/broker", 
-    function(broker) 
-    {
-      new Splitter(broker);
-    });
+  new Splitter(broker);
 }
 

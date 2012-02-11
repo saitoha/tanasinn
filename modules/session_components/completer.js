@@ -987,23 +987,18 @@ LocalizeCompleter.definition = {
  */
 function main(broker)
 {
-  broker.subscribe(
-    "@initialized/broker", 
-    function(broker) 
-    {
-      new JsCompleter(broker);
-      new HistoryCompleter(broker);
-      new OptionCompleter(broker);
-      new CommandCompleter(broker);
-      new ProfileCompleter(broker);
-      new FontsizeCompleter(broker);
-      new FontFamilyCompleter(broker);
-      new ColorNumberCompleter(broker);
-      new LocalizeCompleter(broker);
-      new PluginsCompleter(broker);
-      new CharsetCompleter(broker);
-      new NmapCompleter(broker);
-    });
+  new JsCompleter(broker);
+  new HistoryCompleter(broker);
+  new OptionCompleter(broker);
+  new CommandCompleter(broker);
+  new ProfileCompleter(broker);
+  new FontsizeCompleter(broker);
+  new FontFamilyCompleter(broker);
+  new ColorNumberCompleter(broker);
+  new LocalizeCompleter(broker);
+  new PluginsCompleter(broker);
+  new CharsetCompleter(broker);
+  new NmapCompleter(broker);
 }
 
 
