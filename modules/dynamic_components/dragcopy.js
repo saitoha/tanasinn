@@ -48,7 +48,8 @@ DragCopy.definition = {
     </plugin>,
 
   /** Installs itself. */
-  install: function install(session)
+  "[subscribe('install/dragcopy'), enabled]":
+  function install(session)
   {
     let {feedback_canvas} = session.uniget(
       "command/construct-chrome", 
@@ -63,7 +64,8 @@ DragCopy.definition = {
   },
 
   /** Uninstalls itself. */
-  uninstall: function install(session)
+  "[subscribe('uninstall/dragcopy'), enabled]":
+  function uninstall(session)
   {
     this.ondragstart.enabled = false;
     this._feedback_canvas.parentNode.removeChild(this._feedback_canvas);

@@ -1120,11 +1120,11 @@ Launcher.definition = {
     this._window_layer.appendChild(box);
 
     coUtils.Timer.setTimeout(function() {
-      let terminal =  desktop.start(
+      desktop.start(
         box,
         command.replace(/^\s+|\s+$/g, ""));  // command
-      terminal.style.left = <>{this.left = (this.left + Math.random() * 1000) % 140 + 20}px</>;
-      terminal.style.top = <>{this.top = (this.top + Math.random() * 1000) % 140 + 20}px</>;
+      box.style.left = <>{this.left = (this.left + Math.random() * 1000) % 140 + 20}px</>.toString();
+      box.style.top = <>{this.top = (this.top + Math.random() * 1000) % 140 + 20}px</>.toString();
     }, 0, this);
     this.hide();
   },

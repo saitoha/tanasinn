@@ -33,7 +33,7 @@ Bell.definition = {
 
   get info()
     <module>
-        <name>Bell</name>
+        <name>{_("Bell")}</name>
         <description>{
           _("Enables it to show visual bell / audio bell.")
         }</description>
@@ -61,7 +61,7 @@ Bell.definition = {
   /** installs itself. 
    *  @param {Session} session A session object.
    */
-  "[subscribe('install/bell')]":
+  "[subscribe('install/bell'), enabled]":
   function install(session) 
   {
     let {tanasinn_visual_bell}
@@ -73,7 +73,7 @@ Bell.definition = {
   /** Uninstalls itself.
    *  @param {Session} session A session object.
    */
-  "[subscribe('uninstall/bell')]":
+  "[subscribe('uninstall/bell'), enabled]":
   function uninstall(session) 
   {
     if (this._cover) {

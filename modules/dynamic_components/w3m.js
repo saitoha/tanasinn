@@ -56,7 +56,8 @@ W3m.definition = {
   /** Installs itself. 
    *  @param {Session} session A session object.
    */ 
-  install: function install(session) 
+  "[subscribe('install/w3m'), enabled]":
+  function install(session) 
   {
     let renderer = this.dependency["renderer"];
     let {tanasinn_w3m_canvas} = session.uniget(
@@ -76,7 +77,8 @@ W3m.definition = {
   /** Uninstall itself. 
    *  @param {Session} session A session object.
    */
-  uninstall: function uninstall(session) 
+  "[subscribe('uninstall/w3m'), enabled]":
+  function uninstall(session) 
   {
     this.onWidthChanged.enabled = false;
     this.onHeightChanged.enabled = false;

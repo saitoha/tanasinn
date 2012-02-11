@@ -34,21 +34,23 @@ Paste.definition = {
   get info()
     <plugin>
         <name>{_("Paste")}</name>
+        <version>0.1</version>
         <description>{
           _("Paste a string from clipboard.")
         }</description>
-        <version>0.1</version>
     </plugin>,
 
   /** Install itself. */
-  install: function install(session) 
+  "[subscribe('install/paste'), enabled]":
+  function install(session) 
   {
     this.paste.enabled = true;
     this.onContextMenu.enabled = true;
   },
 
   /** Uninstall itself. */
-  uninstall: function uninstall(session) 
+  "[subscribe('uninstall/paste'), enabled]":
+  function uninstall(session) 
   {
     this.paste.enabled = false;
     this.onContextMenu.enabled = false;

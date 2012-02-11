@@ -37,10 +37,15 @@ Cursor.definition = {
   get info()
     <plugin>
         <name>{_("Cursor")}</name>
+        <version>0.1</version>
         <description>{
           _("Make it Enabled to show cursor.")
         }</description>
-        <version>0.1</version>
+        <detail lang="ja">
+        <![CDATA[
+          
+        ]]>
+        </detail>
     </plugin>,
 
   /** UI template */
@@ -51,7 +56,6 @@ Cursor.definition = {
       parentNode: "#tanasinn_center_area",
       tagName: "html:canvas",
       id: "cursor_canvas",
-      style: { opacity: 0.5, },
       width: renderer.char_width * screen.width,
       height: renderer.line_height * screen.height,
     }),
@@ -60,30 +64,8 @@ Cursor.definition = {
   _blinkVisibility: false,
   _blink: true,
 
-  _color: "#77ff77",
-  _opacity: 0.6,
-
-  // color
-  get "[persistable] color"() 
-  {
-    return this._color;
-  },
-
-  set "[persistable] color"(value) 
-  {
-    this._color = value;
-  },
-
-  // opacity
-  get "[persistable] opacity"() 
-  {
-    return this._opacity;
-  },
-
-  set "[persistable] opacity"(value) 
-  {
-    this._opacity = value;
-  },
+  "[persistable, watchable] color": "#77ff77",
+  "[persistable, watchable] opacity": 0.3,
  
   /** Installs itself. */
   "[subscribe('install/cursor'), enabled]": 
@@ -174,12 +156,13 @@ Cursor.definition = {
   },
 
   /** Set cursor position */
-  "[subscribe('command/draw | variable-changed/renderer.{line_height | char_width}')]": 
+  "[subscribe('command/draw | variable-changed/renderer.{line_height | char_width} | variable-changed/cursor.{color | opacity}')]": 
   function update() 
   {
     let screen = this.dependency["screen"];
     let cursor_state = this.dependency["cursorstate"];
     let isWide = screen.currentCharacterIsWide; // take care, it may be NULL!
+    this._setVisibility(true);
     this._blink = cursor_state.blink;
     this._render(cursor_state.positionY, cursor_state.positionX, isWide);
   },
@@ -221,7 +204,7 @@ Cursor.definition = {
     let canvas = this._canvas;
     context.clearRect(0, 0, canvas.width, canvas.height);
     if (this._cursorVisibility && cursor_state.visibility) {
-      context.fillStyle = "yellow";
+      context.fillStyle = this.color;
       let y = row * line_height;
       let x = column * char_width;
       let width = char_width * (isWide ? 2: 1);
@@ -247,7 +230,7 @@ Cursor.definition = {
   /** Set cursor visibility. */
   _setVisibility: function _setVisibility(visibility) 
   {
-    this._canvas.style.opacity = visibility ? this._opacity: 0.00;
+    this._canvas.style.opacity = visibility ? this.opacity: 0.00;
   }
 }
 

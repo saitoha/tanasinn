@@ -305,7 +305,7 @@ Commandline.definition = {
   /** Installs itself. 
    *  @param {Session} session A Session object.
    */
-  "[subscribe('install/commandline')]":
+  "[subscribe('install/commandline'), enabled]":
   function install(session) 
   {
     let {
@@ -351,7 +351,7 @@ Commandline.definition = {
   /** Uninstalls itself.
    *  @param {Session} session A Session object.
    */
-  "[subscribe('uninstall/commandline')]":
+  "[subscribe('uninstall/commandline'), enabled]":
   function uninstall(session) 
   {
     this.show.enabled = false;

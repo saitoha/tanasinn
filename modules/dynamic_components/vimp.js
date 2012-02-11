@@ -44,7 +44,8 @@ Vimperator.definition = {
   /** Install itself. 
    *  @param {Session} session A session object.
    */
-  install: function install(session)
+  "[subscribe('install/vimperator'), enabled]":
+  function install(session)
   {
     this.onGotFocus();
     this.onGotFocus.enabled = true;  
@@ -54,7 +55,8 @@ Vimperator.definition = {
   /** Uninstall itself. 
    *  @param {Session} session A session object.
    */
-  uninstall: function uninstall(session) 
+  "[subscribe('uninstall/vimperator'), enabled]":
+  function uninstall(session) 
   {
     this.onLostFocus();
     this.onGotFocus.enabled = false;  

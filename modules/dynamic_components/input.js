@@ -107,7 +107,7 @@ InputManager.definition = {
    *  @param {Session} a session object.
    *  @notify initialized/inputmanager
    */
-  "[subscribe('install/inputmanager')]":
+  "[subscribe('install/inputmanager'), enabled]":
   function install(session)
   {
     // Get [bit-packed keycode -> terminal input sequence] map
@@ -134,7 +134,7 @@ InputManager.definition = {
   /** Uninstalls itself. 
    *  @param {Session} a session object.
    */
-  "[subscribe('uninstall/inputmanager')]":
+  "[subscribe('uninstall/inputmanager'), enabled]":
   function uninstall(session)
   {
     this._key_map = null; 

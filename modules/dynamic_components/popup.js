@@ -202,7 +202,7 @@ PopupMenu.definition = {
   /** installs itself. 
    *  @param {Session} session A session object.
    */
-  "[subscribe('install/pupup_menu')]":
+  "[subscribe('install/pupup_menu'), enabled]":
   function install(session) 
   {
     this.onDisplay.enabled = true;
@@ -280,7 +280,7 @@ PopupMenu.definition = {
   /** Uninstalls itself.
    *  @param {Session} session A session object.
    */
-  "[subscribe('uninstall/popup_menu')]":
+  "[subscribe('uninstall/popup_menu'), enabled]":
   function uninstall(session) 
   {
     this.onmousedown.enabled = false;

@@ -1461,12 +1461,49 @@ NIC無効時には動きません。
 </div>
 </div>
 <div class="sect1">
-<h2 id="_developing_component_plugin_tutorial">Developing component/plugin - Tutorial</h2>
+<h2 id="_プラグイン開発_ー_チュートリアル">プラグイン開発 ー チュートリアル</h2>
 <div class="sectionbody">
-<div class="literalblock">
+<div class="sect2">
+<h3 id="_チュートリアルの方針">チュートリアルの方針</h3>
+<div class="paragraph"><p>このチュートリアルでは、簡単なtanasinnプラグインの作成過程を、なるべく平易な形で説明していきたいと思います。
+「覚えることを最小限に」をモットーとしたいと思います。
+もし、tanasinnの組み込みプラグインのソースを読んで理解しようとしてしまった人がいたら、すみません。
+あれはいろいろとやばいものが何重にも階層化しており、プラグインを書きたい人向きではないかもしれません。
+あんな書き方をせずとも、実はそこそこクリーンなJavascriptでプラグインを記述することができます。
+記述は少し冗長になりますが、コアを読むよりは生産的だし、精神上良いです。</p></div>
+</div>
+<div class="sect2">
+<h3 id="_tanasinnにおける_プラグイン_の定義">tanasinnにおける「プラグイン」の定義</h3>
+<div class="paragraph"><p>tanasinnにおけるプラグインは、必要に応じてロードしたり、すきなときにアンロードできる
+ソフトウェア部品、とだけ理解しておいてください。</p></div>
+</div>
+<div class="sect2">
+<h3 id="_これだけはどうしても_ー_イベントバスの概念">これだけはどうしても ー イベントバスの概念</h3>
+<div class="paragraph"><p>チュートリアルに入る前に、これだけは触れておかなければなりません。「イベントバス」です。
+「覚えることを最小限に」をふまえたうえでも、この概念の説明だけはちょっとはずせません。
+tanasinnはわりと結合のゆるいコンポーネントフレームワークの上に構築されており、
+コンポーネント間のコミュニケーションは基本、メッセージベースです。
+そのメッセージ(イベントやコマンドといったりもする)は、下図のような階層化されたバスの上を流れます。</p></div>
+<div class="imageblock ditaa">
 <div class="content">
-<pre><tt>Coming soon.</tt></pre>
-</div></div>
+<img src="README-ja__2.png" alt="README-ja__2.png" />
+</div>
+</div>
+<div class="paragraph"><p>階層的に構築されたLANのようなものをイメージしてもらえるといいと思います。
+ソフトウェア的には、Observerパターンを階層化したもの、ととらえるとわかりやすいかと思います。
+このような階層において子要素を持つもの、上図においては、Process,Desktop,Sessionのようなものを、
+「イベントブローカー」、あるいは単に「ブローカー」と呼んでいます。
+逆に親要素にぶらさがっているもの、上図においてはProcess以外を、「コンポーネント」と呼んでいます。
+DesktopとSessionはイベントブローカー兼コンポーネントということになります。</p></div>
+<div class="paragraph"><p>たとえば上の図でいうと、コンポーネントttyはSessionというイベントブローカーを介してコンポーネントscreenに
+メッセージを送ったりできるわけです。
+イベントはUIウィジェットのようにキャプチャリングされたり、バブリングしたりすることはなく、
+必要なら明示的にルーティングしてやる必要があります。
+また親は子に対する参照をもちません。Vimperator使いはやや戸惑うかと思われますが、
+たとえばSessionというオブジェクトからttyへの参照を明示的にひっぱってくることができません。
+ややめんどくさいですがtanasinn全体がこのようなルールで構築されています。</p></div>
+<div class="paragraph"><p>つづく。</p></div>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -1476,7 +1513,7 @@ NIC無効時には動きません。
 <h3 id="_hierarchical_event_broker_pattern">Hierarchical event broker pattern</h3>
 <div class="imageblock ditaa">
 <div class="content">
-<img src="README-ja__2.png" alt="README-ja__2.png" />
+<img src="README-ja__3.png" alt="README-ja__3.png" />
 </div>
 </div>
 </div>
@@ -1484,7 +1521,7 @@ NIC無効時には動きません。
 <h3 id="_event_bus">Event bus</h3>
 <div class="imageblock ditaa">
 <div class="content">
-<img src="README-ja__3.png" alt="README-ja__3.png" />
+<img src="README-ja__4.png" alt="README-ja__4.png" />
 </div>
 </div>
 </div>
@@ -1495,7 +1532,7 @@ NIC無効時には動きません。
 <pre><tt>Coming soon.</tt></pre>
 </div></div>
 <div class="sect3">
-<h4 id="_class_and_aspect">Class and Aspect</h4>
+<h4 id="_class">Class</h4>
 </div>
 <div class="sect3">
 <h4 id="_processing_decorated_annotated_member_name">Processing decorated (annotated) member name</h4>
@@ -1579,7 +1616,7 @@ system is based on the concept of multicast delegate system.</tt></pre>
 </div></div>
 <div class="imageblock ditaa">
 <div class="content">
-<img src="README-ja__4.png" alt="README-ja__4.png" />
+<img src="README-ja__5.png" alt="README-ja__5.png" />
 </div>
 </div>
 </div>
@@ -1734,7 +1771,7 @@ Controlling Process
 </ol></div>
 <div class="imageblock ditaa">
 <div class="content">
-<img src="README-ja__5.png" alt="README-ja__5.png" />
+<img src="README-ja__6.png" alt="README-ja__6.png" />
 </div>
 </div>
 <div class="literalblock">
@@ -1976,7 +2013,7 @@ twitter: <a href="http://twitter.com/kefir_">日本語</a> / <a href="http://twi
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2012-02-11 02:50:29 JST
+Last updated 2012-02-11 09:23:35 JST
 </div>
 </div>
 </body>

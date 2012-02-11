@@ -145,7 +145,8 @@ BottomPanel.definition = {
   /** Installs itself 
    *  @param {Session} session A session object.
    */
-  install: function install(session) 
+  "[subscribe('install/bottompanel'), enabled]":
+  function install(session) 
   {
     let {
       tanasinn_bottompanel, 
@@ -166,7 +167,8 @@ BottomPanel.definition = {
   /** Uninstalls itself 
    *  @param {Session} session A session object.
    */
-  uninstall: function uninstall(session) 
+  "[subscribe('uninstall/bottompanel'), enabled]":
+  function uninstall(session) 
   {
     this.add.enabled = false;
     this.select.enabled = false;

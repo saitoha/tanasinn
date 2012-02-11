@@ -113,7 +113,8 @@ Scrollbar.definition = {
   /** Installs itself.
    * @param {Session} session A session object.
    */
-  install: function install(session) 
+  "[subscribe('install/scrollbar'), enabled]":
+  function install(session) 
   {
     let {
       tanasinn_scrollbar_overlay,
@@ -139,7 +140,8 @@ Scrollbar.definition = {
   /** Unnstalls itself. 
    * @param {Session} session A session object.
    */
-  uninstall: function uninstall(session) 
+  "[subscribe('uninstall/scrollbar'), enabled]":
+  function uninstall(session) 
   {
     this.onScrollPositionChanged.enabled = false;
     this.ondblclick.enabled = false;

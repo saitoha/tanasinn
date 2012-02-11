@@ -82,7 +82,8 @@ Selection.definition = {
   },
 
   /** Installs itself */
-  install: function install(session) 
+  "[subscribe('install/selection'), enabled]":
+  function install(session) 
   {
     let renderer = this._renderer;
     let {selection_canvas} = session.uniget(
@@ -113,7 +114,8 @@ Selection.definition = {
   /** Uninstalls itself 
    *  @param {Session} A Session object.
    */
-  uninstall: function uninstall(session) 
+  "[subscribe('uninstall/selection'), enabled]":
+  function uninstall(session) 
   {
     this.clear();
     this.onWidthChanged.enabled = false;

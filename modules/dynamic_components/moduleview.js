@@ -63,6 +63,10 @@ ComponentViewer.definition = {
                 {
                   tagName: "checkbox",
                   className: "tanasinn-moduleviewer-checkbox",
+                  align: "top",
+                  style: <>
+                    font-size: 1.4em;
+                  </>,
                   onconstruct: function()
                     this.setAttribute("checked", module.enabled),
                   disabled: module.enabled ? 
@@ -76,10 +80,21 @@ ComponentViewer.definition = {
                 },
                 { 
                   tagName: "label", 
-                  style: { fontWeight: "bold" }, 
+                  class: "text-link",
+                  style: <>
+                    font-size: 1.4em;
+                    font-weight: bold;
+                  </>,
                   value: info..name.toString(),
                 },
-                { tagName: "label", value: info..version.toString() },
+                { 
+                  tagName: "label", 
+                  style: <>
+                    font-size: 1.4em;
+                    font-weight: bold;
+                  </>,
+                  value: info..version.toString() 
+                },
                 { 
                   tagName: "vbox", 
                   childNodes: [
@@ -108,7 +123,7 @@ ComponentViewer.definition = {
   /** Installs itself.
    *  @param {Session} session A session object.
    */
-  "[subscribe('install/module_viewer')]":
+  "[subscribe('install/module_viewer'), enabled]":
   function install(session) 
   {
     let bottom_panel = this.dependency["bottompanel"];
@@ -120,7 +135,7 @@ ComponentViewer.definition = {
   /** Uninstalls itself.
    *  @param {Session} session A session object.
    */
-  "[subscribe('uninstall/module_viewer')]":
+  "[subscribe('uninstall/module_viewer'), enabled]":
   function uninstall(session) 
   {
     this.onPanelSelected.enabled = false;
