@@ -100,6 +100,9 @@ Kill.definition = {
     // stops TTY device.
     let session = this._broker;
     session.notify("command/kill"); 
+    coUtils.Timer.setTimeout(function() {
+      session.stop(); 
+    }, 1500);
   },
 }
 

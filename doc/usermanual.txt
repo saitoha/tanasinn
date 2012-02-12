@@ -797,6 +797,8 @@ let g:tanasinnviewsourcecommand="vim +e '%'"
    (shift key twice) key sequence are detected by space + space, unfortunately!!
    I think something other way for it should be provided.
  - It does'nt work when all NIC is disabled.
+ - Now, it (developing version) requires too much memory.
+ - It doesn't work in Python3 environment.
 
 #elif __JP__
 == 既知の問題
@@ -804,6 +806,8 @@ let g:tanasinnviewsourcecommand="vim +e '%'"
  - Windows + Cygwin 環境では起動やエミュレーションが糞遅いです。
  - キーボードがSandS(Space and Shift)環境だとspace + space で shift + shift を検出してしまいます。代替手段を用意しなければいけません。
  - NIC無効時には動きません。
+ - 開発版につき無駄に何回もloadScriptします。メモリ食いすぎ。
+ - Python3環境では動きません。
 
 #endif
 
@@ -812,26 +816,35 @@ let g:tanasinnviewsourcecommand="vim +e '%'"
 
   Coming soon.
 #elif __JP__
-== プラグイン開発 - 初級編チュートリアル
-=== チュートリアルの方針
-このチュートリアルでは、簡単なtanasinnプラグインの作成過程を、なるべく平易な形で説明していきたいと思います。
-「覚えることを最小限に」をモットーとしたいと思います。
-もし、tanasinnコアのソースを読んで理解しようとしてしまった人がいたら、すみません。
-あそこには何年にもわたって煮詰められた狂気が一種の層のようなものを形成しており、読むと精神的にやられます。
-あのような書き方をせずとも、実はそこそこクリーンなJavascriptコードでプラグインを記述することができます。
-記述は少し冗長になりますが、tanasinnコアを読むよりはずっと生産的です。
+
+== プラグイン開発
 
 === tanasinnにおける「プラグイン」
 tanasinnにおけるプラグインは、必要に応じてロードしたり、すきなときにアンロードできる
 ソフトウェア部品、とだけ理解しておけばよいと思います。
 tanasinnバージョン0.1.5.4からは、プラグインマネージャが下図のように依存関係を追跡して管理しますので、
 プラグインの動的な有効化・無効化がかなり安全に行なえるようになっています。
-TUI環境の限界を突破したGUI的エンハンスやWebとの融合に興味を持たれている方などはぜひ拡張開発にご参加ください。
+
+- Mozilla環境のTUI的エンハンスに興味を持たれている方
+- TUI環境のGUI的エンハンスやWebとの融合に興味を持たれている方
+- エミュレーションマニアでVT52やTektronixやWyseやSixelを実装するのが大好きな方
+
+などはぜひ拡張開発にご参加ください。
 
 image::images/pluginview.png[width=500]
 
+=== 初級編チュートリアル
 
-=== イベントバスの概念
+==== チュートリアルの方針
+このチュートリアルでは、簡単なtanasinnプラグインの作成過程を、なるべく平易な形で説明していきたいと思います。
+「覚えることを最小限に」をモットーとしたいと思います。
+プラグインを書くためにtanasinnコアのソースをいきなり読みはじめるのはおすすめしません。
+あそこには何年にもわたって煮詰められた狂気が一種の層のようなものを形成しており、読むと精神的にやられます。
+あのような書き方をせずとも、実はそこそこクリーンなJavascriptコードでプラグインを記述することができます。
+記述は少し冗長になりますが総合的にみてずっと生産的です。
+本チュートリアルではクリーンで単純なサンプル提示を心掛けます。
+
+==== イベントバスの概念
 チュートリアルに入る前に、これだけはどうしても触れておかなければなりません。「イベントバス」です。
 「覚えることを最小限に」をふまえたうえでも、この説明だけはちょっとはずせません。
 tanasinnは「tupstart2」と名付けられた結合度的にかなりゆるいタイプの
@@ -881,15 +894,15 @@ tanasinnハッカー達はこれを「イベントブローカー」、あるい
 またVimperator/KeySnail使い的にはやや戸惑うかと思われますが、
 ブローカーはその子供(コンポーネント)に対する参照をもちません。
 たとえばSessionというオブジェクトから「tty」への参照を明示的にひっぱってくることができません。
-ややめんどくさいですが仕様です。tanasinn全体がこのようなルールで構築されています。
+ややめんどくさいですがtanasinn全体がこのようなルールで構築されています。
 
-=== 準備
+==== 準備
 とりあえず、お使いのFirefox/Thunderbird/SeaMonkey等にtanasinnを導入してください。
 以下の説明はtanasinn 0.1.5.4以上の環境を想定しているので、tanasinnは最新版を入れておいてください。
 $HOME/.tanasinnがすでにある場合、以下の説明がtanasinnの実際の動きと食い違うことがあるかもしれませんので、
 リネーム等しておくと、はまらなくてよいです。
 
-=== サンプル1 - エントリーポイント
+==== サンプル1 - エントリーポイント
 
 以下のようなサンプルを作成してください。
 
@@ -926,7 +939,7 @@ Sessionオブジェクトはセッションバスを管理するブローカー�
 coUtilsはtanasinnで使用するユーティリティ関数群をまとめたネームスペースです。
 かならずこの中のものを使え、というわけではありません。
 
-=== サンプル2 - イベントとトピック
+==== サンプル2 - イベントとトピック
 
 今度はセッションバス上を飛び交うメッセージを補足し、他のプラグインとコミュニケートしてみます。簡単です。
 
@@ -948,8 +961,8 @@ image::images/sample2.png[width=700]
 「input」というコンポーネントからメッセージを受けとり、プラグイン「Overlay Indicator」にデータを渡しています。
 "event/before-input" や "command/report-overlay-message" はイベントソースを識別するための文字列で、
 「トピック」と呼ばれています。
-なお、tanasinnにおけるプラグインの振舞いの記述では、このようなメッセージパッシングが頻出するため、
-特に工夫せずに書いているとたちまちクロージャー地獄に陥ります。
+なお余談ですが、tanasinnでプラグインの振舞いを記述しているとこのようなメッセージパッシングが頻出するため、
+特に工夫しない場合たちまちクロージャー地獄に陥ります。
 熟練したtanasinnプログラマはトピックと所定の演算子を組み合わせてイベント式を構築し、
 brokerに対してトリガ条件を詳細に指定することがあります。たとえばこんなふうに。
 
@@ -961,7 +974,7 @@ broker.subscribe(
 
 ----
 /*
-=== サンプル3 - 初期化のタイミング
+==== サンプル3 - 初期化のタイミング
 
 今度はセッションバス上を飛び交うメッセージを補足し、他のプラグインとコミュニケートしてみます。簡単です。
 
@@ -1254,10 +1267,10 @@ establish TCP connection, and finally forks new 4 processes as follows:
        A command is composed of 1 or multiple tokens. delimiter character is 
        ' ' (0x20).
 
-    . First token is <b>opecode</b>, represent a operation.
-       An opecode consists of lower-case alphabetic sets ([a-z]+).
+    . First token is [bold]*opecode*, represent a operation.
+       An [bold]*opecode* consists of lower-case alphabetic sets ([a-z]+).
 
-    . Tokens after <b>opecode</b> represent arguments.
+    . Tokens after [bold]*opecode* represent arguments.
        An arguments consists of multiple printable characters, that is 
        encoded in base64 Data Encoding, defined in RFC-3548.
 ----
@@ -1270,7 +1283,7 @@ establish TCP connection, and finally forks new 4 processes as follows:
        example 2: 
          resize ODA= MjQ=\n
 ----
-         In this case, opecode is "resize".
+         In this case, [bold]*opecode* is "resize".
          Arguments are "ODA=" and "MjQ=", these strings mean "80" and "24"
          when decoded.
 
@@ -1439,10 +1452,12 @@ Example 2:
 
 #if __EN__
 #elif __JP__
+/*
 == 謝辞
 本ソフトウェアを作成するにあっては、同系統のソフトウェアであるhttp:/#/anyterm.org/[Anyterm]や
 https:/#/github.com/unconed/TermKit[TermKit]より、多大なインスピレーションを頂きました。
 ここに御礼申し上げます。
+*/
 #endif
 
 #if __EN__

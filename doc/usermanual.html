@@ -1442,6 +1442,16 @@ At SandS(Space and Shift) keyboard environment, shift + shift
 It does&#8217;nt work when all NIC is disabled.
 </p>
 </li>
+<li>
+<p>
+Now, it (developing version) requires too much memory.
+</p>
+</li>
+<li>
+<p>
+It doesn&#8217;t work in Python3 environment.
+</p>
+</li>
 </ul></div>
 </div>
 </div>
@@ -1747,13 +1757,13 @@ This protocol is command-based. 1 line should be interpreted as 1
 </li>
 <li>
 <p>
-First token is &lt;b&gt;opecode&lt;/b&gt;, represent a operation.
-       An opecode consists of lower-case alphabetic sets ([a-z]+).
+First token is <strong><span class="bold">opecode</span></strong>, represent a operation.
+       An <strong><span class="bold">opecode</span></strong> consists of lower-case alphabetic sets ([a-z]+).
 </p>
 </li>
 <li>
 <p>
-Tokens after &lt;b&gt;opecode&lt;/b&gt; represent arguments.
+Tokens after <strong><span class="bold">opecode</span></strong> represent arguments.
        An arguments consists of multiple printable characters, that is
        encoded in base64 Data Encoding, defined in RFC-3548.
 </p>
@@ -1775,7 +1785,7 @@ Tokens after &lt;b&gt;opecode&lt;/b&gt; represent arguments.
 </div></div>
 <div class="literalblock">
 <div class="content">
-<pre><tt>In this case, opecode is "resize".
+<pre><tt>In this case, [bold]*opecode* is "resize".
 Arguments are "ODA=" and "MjQ=", these strings mean "80" and "24"
 when decoded.</tt></pre>
 </div></div>
@@ -1961,7 +1971,7 @@ or tweet me (<a href="http://twitter.com/feel_tanasinn">English</a> / <a href="h
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2012-02-11 23:53:49 JST
+Last updated 2012-02-12 12:50:51 JST
 </div>
 </div>
 </body>
