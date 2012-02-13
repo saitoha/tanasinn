@@ -1794,13 +1794,14 @@ tanasinnの規約によるとコンポーネントの最小要件は、以下の
 </div></div>
 <div class="literalblock">
 <div class="content">
-<pre><tt>.英数字及びアンダースコア(_)、ドット(.)の組み合せで表現されるString型のidをもつ。
+<pre><tt>.英数字及びアンダースコア(_)、ハイフン(-)、ドット(.)の組み合せで表現されるString型のidをもつ。
 .メッセージ "get/components" に対して、自分自身を返す。</tt></pre>
 </div></div>
 <div class="literalblock">
 <div class="content">
 <pre><tt>コードで表現してみましょう。</tt></pre>
 </div></div>
+<div class="paragraph"><p>sample4.js</p></div>
 <div class="listingblock">
 <div class="content">
 <pre><tt>function main(broker) {
@@ -1822,8 +1823,16 @@ idやenabledというシグネチャを要求することもあるので部分�
 </div></div>
 <div class="literalblock">
 <div class="content">
-<pre><tt>今回はまったく達成感のないサンプルだったのですが、他のコンポーネントとおしゃべりするための準備だと思ってください。</tt></pre>
+<pre><tt>今回のサンプルは他のコンポーネントとおしゃべりするための準備だったのですが、このままだと達成感ゼロなので、
+最新ビルドにはlscomponentというコマンドを入れておきました。
+何もしないコマンドなのですが、補完でコンポーネントを列挙します。
+これです。今回作成したsampleが、ちゃんとコンポーネントとして認識されていますね。</tt></pre>
 </div></div>
+<div class="imageblock">
+<div class="content">
+<img src="images/sample4.png" alt="images/sample4.png" width="770" />
+</div>
+</div>
 <div class="literalblock">
 <div class="content">
 <pre><tt>----- つづく。</tt></pre>
@@ -2355,7 +2364,7 @@ twitter: <a href="http://twitter.com/kefir_">日本語</a> / <a href="http://twi
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2012-02-13 18:09:02 JST
+Last updated 2012-02-13 18:41:30 JST
 </div>
 </div>
 </body>
