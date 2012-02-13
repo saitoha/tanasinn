@@ -75,12 +75,12 @@ process.python_path = "/usr/bin/python"
 === ダウンロード/ライセンス
     Mozilla Public License 1.1 (MPL1.1) で配布しています。 
     チュートリアルを書き終わるまで、スナップショット版しか提供しません。
-    現在開発者がオープンソースにおけるソースコードの共有のしかたとワークフローモデルについて必死に勉強中です。
+    現在開発者がオープンソースにおけるソースコード共有モデルとワークフロー管理について必死に勉強中です。
     そこそこgitが使えるようになってきたら、安定したリリースビルドを提供していきたいと考えています。
 
 //- 開発版 (PACKAGE_VERSION): http:/#/zuse.jp/tanasinn/downloads/versions/PACKAGE_VERSION/TANASINN_XPI_ID.xpi[ダウンロード].
-- スナップショット版: http:/#/zuse.jp/tanasinn/tanasinn-current.xpi[ダウンロード]
-- 過去のバージョン (PACKAGE_VERSION): http:/#/zuse.jp/tanasinn/downloads/versions/
+- スナップショット版(PACKAGE_VERSION): http:/#/zuse.jp/tanasinn/tanasinn-current.xpi[ダウンロード]
+- 過去のバージョン: http:/#/zuse.jp/tanasinn/downloads/versions/
 
 #endif
 
@@ -1160,7 +1160,7 @@ function main(broker) {
   登録というよりも、コンポーネントいるかーとか、メニューアイテムいるかーとか、バスに対して訊いてみて、
   だれかが反応するような感じです。tanasinnではだいたいの事柄がそんなふうに表現されています。
   ほとんどがメッセージです。
-  idやenabledというシグネチャを要求することもあるので部分的にインターフェース指向ですが。
+  ただし、idやenabledというシグネチャ等を要求することもあるので部分的にインターフェース指向でもあります。
 
   今回のサンプルは他のコンポーネントとおしゃべりするための準備だったのですが、このままだと達成感ゼロなので、
   最新ビルドにはlscomponentというコマンドを入れておきました。
