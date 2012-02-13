@@ -39,15 +39,21 @@ Now version 0.1.5.3 available.
 #elif __JP__
 == News 
 
+.2012/02/13 リリースポリシー変更
+
+  チュートリアル書きながらソースを変更しまくってるので、
+  しばらくスナップショット版しか提供しません。
+
 .2012/02/04 バージョン0.1.5.3
 
-    重要：0.1.5.0 / 0.1.5.1はビルド時のバグのため「動きません」。
+  重要：0.1.5.0 / 0.1.5.1はビルド時のバグのため「動きません」。
           0.1.5.2は一部のプラットフォームで動きません。  
           いろいろ試行錯誤しちゃった人はすみません。
 
-    Python2.x系のパスやCygwinのルートディレクトリなどを探しまわり、環境情報を推定しようとします。
+  Python2.x系のパスやCygwinのルートディレクトリなどを探しまわり、環境情報を推定しようとします。
 
-    動かなかった場合は ~/.tanasinn.js に、このように書いてみてください。
+  動かなかった場合は %USERPROFILE%¥.tanasinn.js (Windows)、または~/.tanasinn.js(それ以外のOS) に、
+  このように書いてみてください。
 
 ----
 process.cygwin_root = "C:\\cygwin";
@@ -78,8 +84,8 @@ process.python_path = "/usr/bin/python"
     現在開発者がオープンソースにおけるソースコード共有モデルとワークフロー管理について必死に勉強中です。
     そこそこgitが使えるようになってきたら、安定したリリースビルドを提供していきたいと考えています。
 
-//- 開発版 (PACKAGE_VERSION): http:/#/zuse.jp/tanasinn/downloads/versions/PACKAGE_VERSION/TANASINN_XPI_ID.xpi[ダウンロード].
 - スナップショット版(PACKAGE_VERSION): http:/#/zuse.jp/tanasinn/tanasinn-current.xpi[ダウンロード]
+- 開発版 (PACKAGE_VERSION): http:/#/zuse.jp/tanasinn/downloads/versions/0.1.5.4/TANASINN_XPI_ID.xpi[ダウンロード].
 - 過去のバージョン: http:/#/zuse.jp/tanasinn/downloads/versions/
 
 #endif
@@ -573,7 +579,50 @@ image::images/commandline.png[width=480]
     この部分は作りはじめて日が浅いので、これから色々考えます。
     とりあえず、shift + shiftでコマンドラインにカーソルが移動します。
 
+    順次解説予定
+
 #endif
+==== bgcolor
+==== closepanel
+==== console
+==== copy
+==== debugger
+==== decoder
+==== decrease
+==== deleteprofile
+==== detach
+==== disable
+==== down
+==== enable
+==== encoder
+==== fgcolor
+==== fontfamily
+==== fontsize
+==== globaldelete
+==== globalload
+==== globalsave
+==== increase
+==== javascript
+==== kill
+==== left
+==== loadprofile
+==== localize
+==== lscomponent
+==== narrower
+==== nmap
+==== nnoremap
+==== nunmap
+==== openpanel
+==== paste
+==== pluginviewer
+==== right
+==== saveprofile
+==== set
+==== setglobal
+==== shorter
+==== taller
+==== up
+==== wider
 
 #if __EN__
 === User directories
@@ -730,7 +779,7 @@ Sessionオブジェクトの設定が書き出されるディレクトリ。
  
 example)
 
-    ~/.tanasinn.js
+    ~/.tanasinn.js Or %USERPROFILE%¥.tanasinn.js
 
     process.cygwin_root = "C:\\cygwin";
     process.bin_path = "/bin:/usr/bin:/usr/local/bin:/opt/local/bin";
@@ -927,12 +976,14 @@ let g:tanasinnviewsourcecommand="vim +e '%'"
 
 == 拡張モジュール開発
 
-=== tanasinnにおける「プラグイン」
+=== tanasinnにおける「拡張モジュール」と「プラグイン」
 
-tanasinnにおけるプラグインは、必要に応じてロードしたり、すきなときにアンロードできる
-ソフトウェア部品、とだけ理解しておけばよいと思います。
-tanasinnバージョン0.1.5.4からは、プラグインマネージャが下図のように依存関係を追跡して管理しますので、
-プラグインの動的な有効化・無効化がかなり安全に行なえるようになっています。
+拡張モジュールは、ファイル単位で認識され、所定のタイミングで実行されるJavascriptコードです。
+Vimperatorにおけるプラグインと似たような概念です。
+tanasinnにおけるプラグインは、拡張モジュールによりエクスポートされ、必要に応じてロードしたり、すきなとき
+にアンロードできるソフトウェア部品です。プラグアンドプレイのための一定の仕様を満たしたソフトウェア的実体、
+という感じです。tanasinnバージョン0.1.5.4からは、プラグインマネージャが下図のように依存関係を追跡して
+管理しますので、プラグインの動的な有効化・無効化がかなり安全に行なえるようになっています。
 
 image::images/pluginview.png[width=780]
 
@@ -1047,9 +1098,9 @@ image::images/sample1.png[width=500]
 
   Sessionオブジェクトはセッションバスを管理するブローカーです。
   ターミナルウィンドウがひとつ立ち上がるごとに、Sessionオブジェクトが生成されています。
-
   coUtilsはtanasinnで使用するユーティリティ関数群をまとめたネームスペースです。
   かならずこの中のものを使え、というわけではありません。
+  またwindowやdocument等のDOMオブジェクトがコンテキストに入ってきていないことにも注意してください。
 
 ==== サンプル2 - イベントとトピック
 
@@ -1124,7 +1175,10 @@ function main(broker)
 
 image::images/sample3.png[width=770]
 
-さきほどconsoleを有効化しましたが、通常使用時にはパフォーマンスを下げるので無効化しておいたほうが良いです。
+  例外が自動補足されるということは、例外が伝播されないということでもあり、tanasinnでのプログラミングは
+  エラーに対してとてもルーズです。こまめにコンソールをチェックしておきましょう。
+  さきほどconsoleを有効化しましたが、通常使用時にはパフォーマンスを下げるので無効化しておいたほうが良いです。
+  consoleがなくても、ランタイムディレクトリ以下のlog/tanasinn-js.logを見ればエラー等を診断できます。
 
 ----
 disable console
@@ -1247,7 +1301,7 @@ tanasinnが提供する基礎的なサービスである、coUtils、イベン�
 
 ==== Attributes
 
-===== serializeable
+===== persistable
 
 ===== watchable
 
@@ -1262,6 +1316,9 @@ tanasinnが提供する基礎的なサービスである、coUtils、イベン�
 ===== nmap
 
 ===== cmap
+
+===== add-hook
+
 
 === process.js / Plug-and-play dynamic module loading
 
