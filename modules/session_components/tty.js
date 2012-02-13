@@ -615,7 +615,7 @@ SocketTeletypeService.definition = {
       this._pid = Number(record.pid);
       coUtils.Sessions.remove(request_id);
       coUtils.Sessions.update();
-      let backup_data_path = String(<>$Home/.tanasinn/persist/{request_id}.txt</>);
+      let backup_data_path = <>$Home/.tanasinn/persist/{request_id}.txt</>.toString();
       if (coUtils.File.exists(backup_data_path)) {
         let context = JSON.parse(coUtils.IO.readFromFile(backup_data_path, "utf-8"));
         session.notify("command/restore", context);

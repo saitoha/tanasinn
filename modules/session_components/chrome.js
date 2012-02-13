@@ -102,7 +102,7 @@ OuterChrome.definition = {
     let (broker = this._broker)
     {
       parentNode: broker.root_element, 
-      id: "box_element",
+      id: "tanasinn_outer_chrome",
       tagName: "stack",
       listener: {
         type: "click",
@@ -113,7 +113,7 @@ OuterChrome.definition = {
       childNodes: [
         {
           tagName: "box",
-          id: "tanasinn_outer_frame",
+          id: "tanasinn_background_frame",
           style: <>
             -moz-box-shadow: 5px 4px 29px black;
             border-radius: 8px;
@@ -169,10 +169,10 @@ OuterChrome.definition = {
   {
     // construct chrome elements. 
     let {
-      box_element,
-      tanasinn_outer_frame,  
+      tanasinn_outer_chrome,
+      tanasinn_background_frame,  
     } = session.uniget("command/construct-chrome", this.template);
-    this._element = box_element;
+    this._element = tanasinn_outer_chrome;
 
     if (coUtils.Runtime.app_name.match(/tanasinn/)) {
       this._element.firstChild.style.borderRadius = "0px";
@@ -184,7 +184,10 @@ OuterChrome.definition = {
   function uninstall(session) 
   {
     // destruct chrome elements. 
-    this._element.parentNode.removeChild(this._element);
+    if (this._element && this._element.parentNode) {
+      this._element.parentNode.removeChild(this._element);
+      this._element = null;
+    }
   },
 
   "[subscribe('event/shift-key-down'), enabled]": 
@@ -297,7 +300,10 @@ Chrome.definition = {
   {
     this.onGotFocus.enabled = false;
     this.onLostFocus.enabled = false;
-    this._element.parentNode.removeChild(this._element);
+    if (this._element && this._element.parentNode) {
+      this._element.parentNode.removeChild(this._element);
+      this._element = null;
+    }
   },
 
   /** Fired when The session is stopping. */

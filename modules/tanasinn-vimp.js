@@ -66,10 +66,15 @@ function getTanasinnProcess()
       .split(" -> ").pop()
       .split("?").shift();
     let file = current_file + "/../../tanasinn/modules/common/process.js?" + new Date().getTime();
+    try {
     Components
       .classes["@mozilla.org/moz/jssubscript-loader;1"]
       .getService(Components.interfaces.mozIJSSubScriptLoader)
       .loadSubScript(file);
+    } catch(e) {
+      alert(e.fileName + " " + e.lineNumber + " " + e);
+      throw e;
+    }
     process_class = Components.classes[contractID]
   }
   let process = process_class
@@ -100,7 +105,7 @@ commands.addUserCommand(["tanasinnlaunch", "tla[unch]"],
   "Show tanasinn's Launcher.", 
   function (args) 
   { 
-    getDesktop().post("command/show-launcher");
+    getDesktop().notify("command/show-launcher");
   }
 );
 
@@ -111,7 +116,7 @@ commands.addUserCommand(["tanasinncommand", "tco[mmand]"],
   "Run a command on tanasinn.", 
   function (args) 
   { 
-    getDesktop().post("command/start-session", args.string);
+    getDesktop().notify("command/start-session", args.string);
   },
   { 
     argCount: "?",

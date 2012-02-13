@@ -48,7 +48,7 @@ FocusTracker.definition = {
   "[subscribe('install/focustracker'), enabled]": 
   function install(session)
   {
-    session.post("command/add-domlistener", {
+    session.notify("command/add-domlistener", {
       target: session.window,
       type: "focus",
       context: this,

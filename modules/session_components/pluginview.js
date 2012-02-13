@@ -147,7 +147,7 @@ ComponentViewer.definition = {
   function onPanelSelected(name) 
   {
     let session = this._broker;
-    let modules = session.notify("get/module-instances");
+    let modules = session.notify("get/components");
     this._modules = modules.filter(function(module) module.info)
       .sort(function(lhs, rhs) lhs.info..name > rhs.info..name ? 1: -1);
     this.update();

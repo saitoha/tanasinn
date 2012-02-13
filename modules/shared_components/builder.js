@@ -260,7 +260,7 @@ TemplateBuilder.definition = {
     });
   },
 
-  /** Processes an "parentNode" property. */
+  /** Processes an "innerText" property. */
   _processInnerText: 
   function _processInnerText(element, value) 
   {
@@ -270,20 +270,38 @@ TemplateBuilder.definition = {
     element.appendChild(textNode);
   },
 
-  /** Processes an "parentNode" property. */
+  /** Processes a "parentNode" property. */
   _processParentNode: 
   function _processParentNode(element, value) 
   {
-    if ("string" == typeof value) {
+    let type = typeof value;
+    if ("string" == type || "xml" == type) {
       let broker = this._broker;
       let root_element = broker.root_element;
-      root_element.querySelector(value).appendChild(element);
+      let target_element = root_element.querySelector(String(value));
+      if (target_element) {
+        target_element.appendChild(element);
+      } else {
+        if ("#" == value.charAt(0)) {
+          let id = value.substr(1);
+          broker.subscribe(
+            <>@event/domnode-created/{id}</>, 
+            function(target_element)
+            {
+              target_element.appendChild(element);
+              element = null; // prevent leak.
+            });
+        } else {
+          coUtils.Debug.reportError(
+            _("DOM node specified by given selecter is not found: '%s'."), value);
+        }
+      }
     } else {
       value.appendChild(element);
     }
   },
 
-  /** Processes an "childNodes" property. */
+  /** Processes a "childNodes" property. */
   _processChildChromeNodes: 
   function _processChildChromeNodes(element, value, results) 
   {
@@ -359,7 +377,12 @@ ChromeBuilder.definition = {
   function constructChrome(template) 
   {
     let results = {}
-    results["#root"] = this.buildChrome(template, results);
+    let root = this.buildChrome(template, results);
+    let broker = this._broker;
+    for (let [id, element] in Iterator(results)) {
+      broker.notify(<>event/domnode-created/{id}</>, element);
+    }
+    results["#root"] = root;
     return results;
   },
 

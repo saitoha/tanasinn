@@ -239,7 +239,7 @@ CommandlineMappingManager.definition = {
   /** Uninstalls itself. 
    *  @param {Broker} a broker object.
    */
-  "[subscribe('uninstall/cmap_manager') enabled]":
+  "[subscribe('uninstall/cmap_manager'), enabled]":
   function uninstall(broker)
   {
     this.uninstallImpl();

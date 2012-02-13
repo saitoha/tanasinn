@@ -79,16 +79,17 @@ OverlayIndicator.definition = {
 
   get template()
     ({
-      parentNode: "#tanasinn_center_area",
+      parentNode: "#tanasinn_outer_chrome",
       tagName: "box",
       orient: "vertical",
       align: "center",
       valign: "middle",
+      id: "tanasinn_overlay_indicator",
       style: {
+        visibility: "hidden",
         opacity: 0.00,
         maxWidth: "0px",
       },
-      id: "tanasinn_overlay_indicator",
       MozTransitionProperty: "opacity",
       childNodes: {
         tagName: "label",
@@ -178,6 +179,7 @@ OverlayIndicator.definition = {
       this._timer.cancel();
     }
     let style = this._element.style;
+    style.visibility = "visible";
     style.MozTransitionDuration = "0ms";
     style.opacity = this.opacity;
     if (timeout) {
@@ -193,6 +195,9 @@ OverlayIndicator.definition = {
     let style = this._element.style;
     style.MozTransitionDuration = this.fadeout_duration + "ms";
     style.opacity = 0.0; 
+    coUtils.Timer.setTimeout(function() {
+      style.visibility = "hidden";
+    }, this.fadeout_duration);
   },
 
   print: function print(message) 

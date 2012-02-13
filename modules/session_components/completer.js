@@ -496,6 +496,73 @@ NmapCompleter.definition = {
 
 
 /**
+ * @class ComponentsCompleter
+ */
+let ComponentsCompleter = new Class().extends(CompleterBase);
+ComponentsCompleter.definition = {
+
+  get id()
+    "components-completer",
+
+  get type()
+    "components",
+
+  /*
+   * Search for a given string and notify a listener (either synchronously
+   * or asynchronously) of the result
+   *
+   * @param source - The string to search for
+   * @param listener - A listener to notify when the search is complete
+   */
+  startSearch: function startSearch(source, listener, option)
+  {
+    let match = source.match(/^(\s*)([$_\-@a-zA-Z\.]*)(\s?)/);
+    if (null === match) {
+      listener.doCompletion(null);
+      return -1;
+    }
+    let [, space, name, next] = match;
+    if (next) {
+      return space.length + name.length;
+    }
+    let session = this._broker;
+    let modules = session.notify("get/components");
+    let candidates = [
+      {
+        key: module.id, 
+        value: module.info ? "[" + module.info..name + "] " + module.info..description: module.toString()
+      } for ([, module] in Iterator(modules)) 
+        if (module.id && module.id.match(source))
+    ];
+    //alert(modules.filter(function(module) module.id.match()))
+    if (0 == candidates.length) {
+      listener.doCompletion(null);
+      return -1;
+    }
+    let autocomplete_result = {
+      type: "text",
+      query: source, 
+      labels: candidates.map(function(candidate) candidate.key),
+      comments: candidates.map(function(candidate) String(candidate.value)),
+      data: candidates.map(function(candidate) ({
+        name: candidate.key,
+        value: String(candidate.value),
+      })),
+    };
+    listener.doCompletion(autocomplete_result);
+    return 0;
+  },
+
+  /*
+   * Stop all searches that are in progress
+   */
+  stopSearch: function stopSearch() 
+  {
+  },
+
+};
+
+/**
  * @class PluginsCompleter
  */
 let PluginsCompleter = new Class().extends(CompleterBase);
@@ -526,14 +593,13 @@ PluginsCompleter.definition = {
       return space.length + name.length;
     }
     let session = this._broker;
-    let modules = session.notify("get/module-instances");
+    let modules = session.notify("get/components");
     let candidates = [
       {
         key: module.id, 
         value: module
       } for ([, module] in Iterator(modules)) 
-        if (Plugin.prototype.isPrototypeOf(module) 
-            && module.id && module.id.match(source) 
+        if (module.id && module.id.match(source) 
             && module.enabled == (option == "enabled"))
     ];
     if (0 == candidates.length) {
@@ -996,6 +1062,7 @@ function main(broker)
   new FontFamilyCompleter(broker);
   new ColorNumberCompleter(broker);
   new LocalizeCompleter(broker);
+  new ComponentsCompleter(broker);
   new PluginsCompleter(broker);
   new CharsetCompleter(broker);
   new NmapCompleter(broker);

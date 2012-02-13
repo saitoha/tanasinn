@@ -46,7 +46,6 @@ Aspect.prototype = {
   {
     if (value) {
       this._definition = definition;
-      coUtils.Event.notifyGlobalEvent("defined/" + this.id, this);
     }
   },
 
@@ -57,9 +56,10 @@ Aspect.prototype = {
     this.definition = definition;
   },
 
+  /* override */
   toString: function toString()  // override
   {
-    return "[Aspect " + this.id + "]";
+    return <>[Aspect {this.id}]</>;
   }
 
 };
@@ -196,14 +196,15 @@ Attribute.prototype = {
     target["description"] = _(description);
   },
 
-  parse: function(annotation) 
+  parse: function parse(annotation) 
   {
     with (this) {
       try {
         eval(annotation);
       } catch(e) {
-        coUtils.Debug.reportError(
-          _("Failed to parse annotation string: '%'."), annotation);
+        coUtils.Debug.reportError("Failed to parse annotation string: '" + annotation + "'");
+//        coUtils.Debug.reportError(
+//          _("Failed to parse annotation string: '%s'."), annotation);
         throw e;
       }
     }
@@ -497,7 +498,7 @@ PersistableAttribute.definition = {
   __load: function __load(context) 
   {
     let attributes = this.__attributes;
-    attributes && Object.keys(attributes)
+    attributes && Object.getOwnPropertyNames(attributes)
       .filter(function(key) attributes[key]["persistable"], this)
       .forEach(function(key)
       {
@@ -520,7 +521,7 @@ PersistableAttribute.definition = {
   __persist: function __persist(context) 
   {
     let attributes = this.__attributes;
-    attributes && Object.keys(attributes)
+    attributes && Object.getOwnPropertyNames(attributes)
       .filter(function(key) attributes[key]["persistable"], this)
       .forEach(function(key)
       {
@@ -902,7 +903,7 @@ CmapAttribute.definition = {
           "command/save-persistable-data", 
           function persist(context) // Save settings to persistent context.
           {
-            if (expression.join("") != delegate.expression.join("")) {
+            if (expressions.join("") != delegate.expressions.join("")) {
               context[delegate.id + ".cmap"] = delegate.expressions;
             }
           }, this);
@@ -1021,7 +1022,7 @@ Component.definition = {
     broker.subscribe(<>change/enabled-state/{this.id}</>, 
       function(enabled) this.enabled = enabled, this);
 
-    broker.subscribe("get/module-instances", 
+    broker.subscribe("get/components", 
       function(instances) this, this);
 
   },

@@ -37,6 +37,12 @@ Tracer.definition = {
   get id()
     "tracer",
 
+  hook: function() 
+  {
+    let hook_target = "emurator.write";
+
+  },
+
   "[subscribe('@initialized/emurator'), enabled]":
   function construct(emurator) 
   { 

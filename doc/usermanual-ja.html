@@ -897,17 +897,20 @@ process.python_path = "/usr/bin/python"</tt></pre>
 <h3 id="_ダウンロード_ライセンス">ダウンロード/ライセンス</h3>
 <div class="literalblock">
 <div class="content">
-<pre><tt>Mozilla Public License 1.1 (MPL1.1) で配布しています。</tt></pre>
+<pre><tt>Mozilla Public License 1.1 (MPL1.1) で配布しています。
+チュートリアルを書き終わるまで、スナップショット版しか提供しません。
+現在開発者がオープンソースにおけるソースコードの共有のしかたとワークフローモデルについて必死に勉強中です。
+そこそこgitが使えるようになってきたら、安定したリリースビルドを提供していきたいと考えています。</tt></pre>
 </div></div>
 <div class="ulist"><ul>
 <li>
 <p>
-開発版 (0.1.5.4): <a href="http://zuse.jp/tanasinn/downloads/versions/0.1.5.4/tanasinn@zuse.jp.xpi">ダウンロード</a>.
+スナップショット版: <a href="http://zuse.jp/tanasinn/tanasinn-current.xpi">ダウンロード</a>
 </p>
 </li>
 <li>
 <p>
-スナップショット版: <a href="http://zuse.jp/tanasinn/tanasinn-current.xpi">ダウンロード</a>
+過去のバージョン (0.1.5.4): <a href="http://zuse.jp/tanasinn/downloads/versions/">http://zuse.jp/tanasinn/downloads/versions/</a>
 </p>
 </li>
 <li>
@@ -969,8 +972,8 @@ IMEが使えます。
 <li>
 <p>
 East Asian Width(ひらがななどの文字幅を考慮したレンダリング)に一応対応しています。
-      CJK拡張漢字B集合などのサロゲートペアで表現される文字にも対応しています。
-      異体字セレクタ、インド系諸語等で頻出する合字やアラビア系文字の置換などの複雑グリフ処理は、
+      B集合以降のCJK統合拡張漢字等、サロゲートペアで表現される文字にも対応しています。
+      異体字セレクタ、インド系諸語等で頻出する合字やアラビア系文字の置換などの複雑なグリフ処理は、
       現在主にパフォーマンス上の理由により実装されませんが、 別途プラグインで対応することも可能です。
       bidiには完全に対応できていないと思います。
 </p>
@@ -993,7 +996,7 @@ Geckoがサポートする様々なエンコーディングを指定できます
 </li>
 <li>
 <p>
-xtermのようなマウスエミュレーションができます。ピクセルスクロールにも対応。
+xtermのようなマウスエミュレーションができます。ホイールスクロールにも対応。
 </p>
 </li>
 <li>
@@ -1159,7 +1162,7 @@ Vimperator/Muttator のプラグインとして導入することができます
 <p>
 cursesベースのアプリーションとの連携強化。
       端末アプリケーションからGeckoにアクセスしてポップアップとか動画表示とかOAuthとかやるための仕様の策定。
-      特別なプラグインを書かずとも端末からyoutube見たりtwitterやったりできるようになります。
+      特別なプラグインを書かずとも端末からyoutubeを見たりtwitterやったりできるようになります。
 </p>
 </li>
 <li>
@@ -1334,7 +1337,7 @@ Vimperator/Muttatorのコマンドライン上から起動したい場合は、�
 <h3 id="_ユーザーディレクトリ">ユーザーディレクトリ</h3>
 <div class="listingblock">
 <div class="content">
-<pre><tt>  ~/
+<pre><tt>~/ or %USERPROFILE%/
    |
    +-- .tanasinn.js    &lt;-------------------------------- (1)
    |
@@ -1360,18 +1363,50 @@ Vimperator/Muttatorのコマンドライン上から起動したい場合は、�
                 |
                 +-- shared_components/           &lt;------ (12)</tt></pre>
 </div></div>
-<div class="ulist"><ul>
-<li>
-<p>
-.tanasinn.js  起動時に読み込まれます。
-</p>
-</li>
-<li>
-<p>
-.tanasinn/    ランタイムディレクトリ。
-</p>
-</li>
-</ul></div>
+<div class="sect3">
+<h4 id="_tanasinn_js">.tanasinn.js</h4>
+<div class="paragraph"><p>起動時(Processオブジェクトが生成されるタイミング)に読み込まれ、実行されるJavascriptファイル。</p></div>
+</div>
+<div class="sect3">
+<h4 id="_tanasinn">.tanasinn/</h4>
+<div class="paragraph"><p>ランタイムディレクトリ。</p></div>
+</div>
+<div class="sect3">
+<h4 id="_tanasinn_desktop_profile">.tanasinn/desktop_profile/</h4>
+<div class="paragraph"><p>Desktopオブジェクトの設定が書き出されるディレクトリ。</p></div>
+</div>
+<div class="sect3">
+<h4 id="_tanasinn_session_profile">.tanasinn/session_profile/</h4>
+<div class="paragraph"><p>Sessionオブジェクトの設定が書き出されるディレクトリ。</p></div>
+</div>
+<div class="sect3">
+<h4 id="_tanasinn_persist">.tanasinn/persist/</h4>
+<div class="paragraph"><p>休眠中のセッションが永続化されて書き出されるディレクトリ。</p></div>
+</div>
+<div class="sect3">
+<h4 id="_tanasinn_log">.tanasinn/log/</h4>
+<div class="paragraph"><p>ログが書き出されるディレクトリ。</p></div>
+</div>
+<div class="sect3">
+<h4 id="_tanasinn_modules">.tanasinn/modules/</h4>
+<div class="paragraph"><p>このディレクトリ内にユーザー拡張やユーザーデータが配置されます。</p></div>
+</div>
+<div class="sect3">
+<h4 id="_tanasinn_modules_process_components">.tanasinn/modules/process_components/</h4>
+<div class="paragraph"><p>プロセスバスに接続されるユーザー拡張が配置されるディレクトリ。</p></div>
+</div>
+<div class="sect3">
+<h4 id="_tanasinn_modules_desktop_components">.tanasinn/modules/desktop_components/</h4>
+<div class="paragraph"><p>デスクトップバスに接続されるユーザー拡張が配置されるディレクトリ。</p></div>
+</div>
+<div class="sect3">
+<h4 id="_tanasinn_modules_session_components">.tanasinn/modules/session_components/</h4>
+<div class="paragraph"><p>セッションバスに接続されるユーザー拡張が配置されるディレクトリ。</p></div>
+</div>
+<div class="sect3">
+<h4 id="_tanasinn_modules_shared_components">.tanasinn/modules/shared_components/</h4>
+<div class="paragraph"><p>デスクトップバス・セッションバス両方に接続されるユーザー拡張が配置されるディレクトリ。</p></div>
+</div>
 </div>
 <div class="sect2">
 <h3 id="_構成変数の設定">構成変数の設定</h3>
@@ -1487,14 +1522,14 @@ NIC無効時には動きません。
 </li>
 <li>
 <p>
-Python3環境では動きません。
+Python3未対応。Python2系が必要。
 </p>
 </li>
 </ul></div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_プラグイン開発">プラグイン開発</h2>
+<h2 id="_拡張モジュール開発">拡張モジュール開発</h2>
 <div class="sectionbody">
 <div class="sect2">
 <h3 id="_tanasinnにおける_プラグイン">tanasinnにおける「プラグイン」</h3>
@@ -1502,10 +1537,19 @@ Python3環境では動きません。
 ソフトウェア部品、とだけ理解しておけばよいと思います。
 tanasinnバージョン0.1.5.4からは、プラグインマネージャが下図のように依存関係を追跡して管理しますので、
 プラグインの動的な有効化・無効化がかなり安全に行なえるようになっています。</p></div>
+<div class="imageblock">
+<div class="content">
+<img src="images/pluginview.png" alt="images/pluginview.png" width="780" />
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_拡張モジュール開発に向いている人">拡張モジュール開発に向いている人</h3>
+<div class="paragraph"><p>以下のような方はぜひ拡張モジュールを書いてみてください。</p></div>
 <div class="ulist"><ul>
 <li>
 <p>
-Mozilla環境のTUI的エンハンスに興味を持たれている方
+Mozilla環境のCUI/TUI的エンハンスに興味を持たれている方
 </p>
 </li>
 <li>
@@ -1515,64 +1559,74 @@ TUI環境のGUI的エンハンスやWebとの融合に興味を持たれてい�
 </li>
 <li>
 <p>
-エミュレーションマニアでVT52やTektronixやWyseやSixelを実装するのが大好きな方
+端末エミュレーションマニアでVTやTektronixやWyse端末やSixelを実装するのが好きな方
 </p>
 </li>
 </ul></div>
-<div class="paragraph"><p>などはぜひ拡張開発にご参加ください。</p></div>
-<div class="imageblock">
-<div class="content">
-<img src="images/pluginview.png" alt="images/pluginview.png" width="500" />
-</div>
-</div>
 </div>
 <div class="sect2">
-<h3 id="_初級編チュートリアル">初級編チュートリアル</h3>
+<h3 id="_拡張モジュール作成_初級編チュートリアル">拡張モジュール作成 初級編チュートリアル</h3>
+<div class="literalblock">
+<div class="content">
+<pre><tt>tanasinnの基礎概念の習得からセッションプラグイン作成まで、なるべく飛ばないように順を追って説明していきます。
+注：現在、チュートリアルを書いていて、「この説明だるい、まどろっこしい」と思ったところは思い切ってプログラム
+   の方を変更して単純化していますので、サンプルコードがかなりバージョンセンシティブ化しています。
+   最新版のtanasinnでお試しください。</tt></pre>
+</div></div>
 <div class="sect3">
 <h4 id="_チュートリアルの方針">チュートリアルの方針</h4>
-<div class="paragraph"><p>このチュートリアルでは、簡単なtanasinnプラグインの作成過程を、なるべく平易な形で説明していきたいと思います。
-「覚えることを最小限に」をモットーとしたいと思います。
-プラグインを書くためにtanasinnコアのソースをいきなり読みはじめるのはおすすめしません。
-あそこには何年にもわたって煮詰められた狂気が一種の層のようなものを形成しており、読むと精神的にやられます。
+<div class="literalblock">
+<div class="content">
+<pre><tt>このチュートリアルでは、簡単なtanasinnプラグインの作成過程を、なるべく平易な形で説明していきたいと思います。
+初級編なので、「覚えることを最小限に」をモットーとしたいと思います。
+拡張モジュールを書くためにtanasinnコアのソースをいきなり読みはじめるのはおすすめしません。
+読むと精神的にやられます。
 あのような書き方をせずとも、実はそこそこクリーンなJavascriptコードでプラグインを記述することができます。
 記述は少し冗長になりますが総合的にみてずっと生産的です。
-本チュートリアルではクリーンで単純なサンプル提示を心掛けます。</p></div>
+本チュートリアルではクリーンで単純なサンプル提示を心掛けます。</tt></pre>
+</div></div>
 </div>
 <div class="sect3">
 <h4 id="_イベントバスの概念">イベントバスの概念</h4>
-<div class="paragraph"><p>チュートリアルに入る前に、これだけはどうしても触れておかなければなりません。「イベントバス」です。
+<div class="literalblock">
+<div class="content">
+<pre><tt>チュートリアルに入る前に、これだけはどうしても触れておかなければなりません。「イベントバス」です。
 「覚えることを最小限に」をふまえたうえでも、この説明だけはちょっとはずせません。
-tanasinnは「tupstart2」と名付けられた結合度的にかなりゆるいタイプの
-コンポーネントフレームワークを基盤として構築されており、
-コンポーネント間のコミュニケーションは基本、同期的なメッセージベースです。
-そのメッセージ(イベントやコマンドといったりもする)は、下図のような階層化されたバス上を流れています。</p></div>
+tanasinnは「tupstart2」と名付けられた結合度的にかなりゆるいタイプのコンポーネントフレームワークを基盤として
+構築されており、コンポーネント間のコミュニケーションは基本、同期的なメッセージ指向です。
+そのメッセージ(セマンティクス上はイベントだったりコマンドだったりget関数だったりする)は、下図に示されるような
+階層化されたバス上を流れています。</tt></pre>
+</div></div>
 <div class="imageblock ditaa">
 <div class="content">
 <img src="README-ja__1.png" alt="README-ja__1.png" />
 </div>
 </div>
-<div class="paragraph"><p>階層的に構築されたLANのようなものをイメージしてもらえるといいと思います。
-ソフトウェアパターン的には、Observerパターンを階層化したもの、ととらえるとわかりやすいかと思います。
-このような階層において子要素を持つもの、上図においては、Process,Desktop,Sessionのようなものが、イベントを管理しています。
+<div class="literalblock">
+<div class="content">
+<pre><tt>階層的に構築されたLANのようなものをイメージしてもらえるといいと思います。
+ソフトウェアパターン的には、Observerパターンを階層化したもの、ととらえるとわかりやすいかなと思います。
+このような階層において子要素を持つもの、上図においては、Process、Desktop、Sessionのようなものが、イベントを管理しています。
 tanasinnハッカー達はこれを「イベントブローカー」、あるいは単に「ブローカー」と呼んでいます。
 また逆にこの親要素にぶらさがっているもの、上図においてはProcess以外のノードを、「コンポーネント」と呼んでいます。
 名付け方があまり適切でない可能性がありますが、彼らのもつ歴史的背景によりそう呼ばれています。
 たとえば上の図でいうと、DesktopとSessionはイベントブローカー兼コンポーネントということになります。
-コンポーネント「tty」はSessionというイベントブローカーを介してコンポーネント「screen」に
-メッセージを送ったりできるわけです。
+コンポーネント「tty」はSessionというイベントブローカーを介してコンポーネント「screen」にメッセージを送ったりできるわけです。
 イベントはUIウィジェットにおけるそれのようにキャプチャリングされたり、バブリングしたりすることはなく、
 必要なら明示的にルーティングしてやる必要があります。
-またVimperator/KeySnail使い的にはやや戸惑うかと思われますが、
-ブローカーはその子供(コンポーネント)に対する参照をもちません。
+またVimperator/KeySnail使い的にはやや戸惑うかと思われますが、ブローカーはその子供(コンポーネント)に対する参照をもちません。
 たとえばSessionというオブジェクトから「tty」への参照を明示的にひっぱってくることができません。
-ややめんどくさいですがtanasinn全体がこのようなルールで構築されています。</p></div>
+ややめんどくさいですがtanasinn全体がこのようなルールで構築されています。</tt></pre>
+</div></div>
 </div>
 <div class="sect3">
 <h4 id="_準備">準備</h4>
-<div class="paragraph"><p>とりあえず、お使いのFirefox/Thunderbird/SeaMonkey等にtanasinnを導入してください。
+<div class="literalblock">
+<div class="content">
+<pre><tt>まず、お使いのFirefox/Thunderbird/SeaMonkey等にtanasinnを導入してください。
 以下の説明はtanasinn 0.1.5.4以上の環境を想定しているので、tanasinnは最新版を入れておいてください。
-$HOME/.tanasinnがすでにある場合、以下の説明がtanasinnの実際の動きと食い違うことがあるかもしれませんので、
-リネーム等しておくと、はまらなくてよいです。</p></div>
+$HOME/.tanasinnがすでにある場合、以降の説明がtanasinnの実際の動きと食い違うことがあるかもしれませんので、リネーム等しておくと、はまらなくてよいです。</tt></pre>
+</div></div>
 </div>
 <div class="sect3">
 <h4 id="_サンプル1_エントリーポイント">サンプル1 - エントリーポイント</h4>
@@ -1584,19 +1638,28 @@ $HOME/.tanasinnがすでにある場合、以下の説明がtanasinnの実際の
   coUtils.alert(broker);
 }</tt></pre>
 </div></div>
-<div class="paragraph"><p>これを、
+<div class="literalblock">
+<div class="content">
+<pre><tt>これを、
 %USERPROFILE%¥.tanasinn¥modules¥session_components¥ (Windows)
 $HOME/.tanasinn/modules/session_components/ (Mac/Linux/FreeBSD)
-につっこみます。フォルダ(ディレクトリ)は無いと思うので作成してください。</p></div>
-<div class="paragraph"><p>この状態でターミナルセッションを開始してみます。
-こうなります。</p></div>
+につっこみます。フォルダ(ディレクトリ)は無いと思うので作成してください。</tt></pre>
+</div></div>
+<div class="literalblock">
+<div class="content">
+<pre><tt>この状態でターミナルセッションを開始してみます。
+こうなります。</tt></pre>
+</div></div>
 <div class="imageblock">
 <div class="content">
 <img src="images/sample1.png" alt="images/sample1.png" width="500" />
 </div>
 </div>
-<div class="paragraph"><p>ここでもし余裕があればalert関数の中身を変えるなどして、いろいろ実験してみてください。
-聡明な方なら以下のことがわかると思います。</p></div>
+<div class="literalblock">
+<div class="content">
+<pre><tt>ここでもし余裕があればalert関数の中身を変えるなどして、いろいろ実験してみてください。
+聡明な方なら以下のことがわかると思います。</tt></pre>
+</div></div>
 <div class="ulist"><ul>
 <li>
 <p>
@@ -1612,16 +1675,25 @@ $HOME/.tanasinn/modules/session_components/ (Mac/Linux/FreeBSD)
 <p>
 このプラグインモジュールのスコープでは、「coUtils」というシンボルが事前定義されている。
 </p>
+<div class="literalblock">
+<div class="content">
+<pre><tt>Sessionオブジェクトはセッションバスを管理するブローカーです。
+ターミナルウィンドウがひとつ立ち上がるごとに、Sessionオブジェクトが生成されています。</tt></pre>
+</div></div>
+<div class="literalblock">
+<div class="content">
+<pre><tt>coUtilsはtanasinnで使用するユーティリティ関数群をまとめたネームスペースです。
+かならずこの中のものを使え、というわけではありません。</tt></pre>
+</div></div>
 </li>
 </ul></div>
-<div class="paragraph"><p>Sessionオブジェクトはセッションバスを管理するブローカーです。
-ターミナルウィンドウがひとつ立ち上がるごとに、Sessionオブジェクトが生成されています。</p></div>
-<div class="paragraph"><p>coUtilsはtanasinnで使用するユーティリティ関数群をまとめたネームスペースです。
-かならずこの中のものを使え、というわけではありません。</p></div>
 </div>
 <div class="sect3">
 <h4 id="_サンプル2_イベントとトピック">サンプル2 - イベントとトピック</h4>
-<div class="paragraph"><p>今度はセッションバス上を飛び交うメッセージを補足し、他のプラグインとコミュニケートしてみます。簡単です。</p></div>
+<div class="literalblock">
+<div class="content">
+<pre><tt>今度はセッションバス上を飛び交うメッセージを補足し、他のプラグインとコミュニケートしてみます。簡単です。</tt></pre>
+</div></div>
 <div class="paragraph"><p>sample2.js</p></div>
 <div class="listingblock">
 <div class="content">
@@ -1631,30 +1703,148 @@ $HOME/.tanasinn/modules/session_components/ (Mac/Linux/FreeBSD)
   });
 }</tt></pre>
 </div></div>
-<div class="paragraph"><p>下図のように、キーボードを押すたびにオーバーレイインジケータが出てくると思います。</p></div>
+<div class="literalblock">
+<div class="content">
+<pre><tt>下図のように、キーボードを押すたびにオーバーレイインジケータが出てくると思います。</tt></pre>
+</div></div>
 <div class="imageblock">
 <div class="content">
 <img src="images/sample2.png" alt="images/sample2.png" width="700" />
 </div>
 </div>
-<div class="paragraph"><p>「input」というコンポーネントからメッセージを受けとり、プラグイン「Overlay Indicator」にデータを渡しています。
-"event/before-input" や "command/report-overlay-message" はイベントソースを識別するための文字列で、
-「トピック」と呼ばれています。
+<div class="literalblock">
+<div class="content">
+<pre><tt>これは、「input」というコンポーネントからメッセージを受けとり、プラグイン「Overlay Indicator」にデータを
+渡しています。"event/before-input" や "command/report-overlay-message" はイベントソースを識別するた
+めの文字列で、「トピック」と呼ばれています。
 なお余談ですが、tanasinnでプラグインの振舞いを記述しているとこのようなメッセージパッシングが頻出するため、
 特に工夫しない場合たちまちクロージャー地獄に陥ります。
-熟練したtanasinnプログラマはトピックと所定の演算子を組み合わせてイベント式を構築し、
-brokerに対してトリガ条件を詳細に指定することがあります。たとえばこんなふうに。</p></div>
+熟練したtanasinnプログラマはトピックと所定の演算子を組み合わせてイベント式を構築し、brokerに対してトリガ条件
+を詳細に指定することがあります。たとえばこんなふうに。</tt></pre>
+</div></div>
 <div class="listingblock">
 <div class="content">
 <pre><tt>broker.subscribe(
   "@(initialized/{tty &amp; screen} &amp; ~variable-changed/renderer.font_{size|family})",
   function (tty, screen, font_size, font_family) { … })；</tt></pre>
 </div></div>
+</div>
+<div class="sect3">
+<h4 id="_サンプル3_デバッグ環境をととのえる">サンプル3 - デバッグ環境をととのえる</h4>
+<div class="literalblock">
+<div class="content">
+<pre><tt>つぎのサンプルにとりかかる前に、デバッグ環境を補強しましょう。
+コンソールを有効化します。</tt></pre>
+</div></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>enable console
+saveprofile</tt></pre>
+</div></div>
+<div class="imageblock">
+<div class="content">
+<img src="images/enableconsole.png" alt="images/enableconsole.png" width="500" />
+</div>
+</div>
+<div class="paragraph"><p>起動してみましょう。</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>console</tt></pre>
+</div></div>
+<div class="imageblock">
+<div class="content">
+<img src="images/console.png" alt="images/console.png" width="770" />
+</div>
+</div>
+<div class="paragraph"><p>すこしコードも書いてみましょう。</p></div>
+<div class="paragraph"><p>sample3.js</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>function main(broker)
+{
+  broker.subscribe("event/before-input", function(message) {
+    throw "an error occured !!";
+  });
+}</tt></pre>
+</div></div>
+<div class="literalblock">
+<div class="content">
+<pre><tt>なにかキーボードを押して"event/before-input"イベントを発生させるたびに、エラーが補足されます。
+こうなります。</tt></pre>
+</div></div>
+<div class="imageblock">
+<div class="content">
+<img src="images/sample3.png" alt="images/sample3.png" width="770" />
+</div>
+</div>
+<div class="paragraph"><p>さきほどconsoleを有効化しましたが、通常使用時にはパフォーマンスを下げるので無効化しておいたほうが良いです。</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>disable console
+saveprofile</tt></pre>
+</div></div>
+</div>
+<div class="sect3">
+<h4 id="_サンプル4_コンポーネントオブジェクトの作成">サンプル4 - コンポーネントオブジェクトの作成</h4>
+<div class="literalblock">
+<div class="content">
+<pre><tt>コンポーネントを作成しましょう。
+コンポーネントはプラグインの一歩手前の、プラグアンドプレイをサポートしない原始的なオブジェクトです。
+tanasinnの規約によるとコンポーネントの最小要件は、以下のとおりです。</tt></pre>
+</div></div>
+<div class="literalblock">
+<div class="content">
+<pre><tt>.英数字及びアンダースコア(_)、ドット(.)の組み合せで表現されるString型のidをもつ。
+.メッセージ "get/components" に対して、自分自身を返す。</tt></pre>
+</div></div>
+<div class="literalblock">
+<div class="content">
+<pre><tt>コードで表現してみましょう。</tt></pre>
+</div></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>function main(broker) {
+  var plugin = {
+    id: "sample"
+  };
+  broker.subscribe("get/components", function(message) {
+    return plugin;
+  });
+}</tt></pre>
+</div></div>
+<div class="literalblock">
+<div class="content">
+<pre><tt>コンポーネントの登録に相当する部分です。
+登録というよりも、コンポーネントいるかーとか、メニューアイテムいるかーとか、バスに対して訊いてみて、
+だれかが反応するような感じです。tanasinnではだいたいの事柄がそんなふうに表現されています。
+ほとんどがメッセージです。
+idやenabledというシグネチャを要求することもあるので部分的にインターフェース指向ですが。</tt></pre>
+</div></div>
+<div class="literalblock">
+<div class="content">
+<pre><tt>今回はまったく達成感のないサンプルだったのですが、他のコンポーネントとおしゃべりするための準備だと思ってください。</tt></pre>
+</div></div>
 <div class="literalblock">
 <div class="content">
 <pre><tt>----- つづく。</tt></pre>
 </div></div>
 </div>
+</div>
+<div class="sect2">
+<h3 id="_拡張モジュール作成_中級編チュートリアル">拡張モジュール作成 中級編チュートリアル</h3>
+<div class="paragraph"><p>tanasinnが提供する基礎的なサービスである、coUtils、イベント式、ビルダーテンプレート等の意義を説明し、それらを使用した実践的なプログラミング手法を例示します。これらの概念を覚えてもtanasinnプログラミング以外ではまったく役に立ちません。</p></div>
+<div class="literalblock">
+<div class="content">
+<pre><tt>----- coming soon.</tt></pre>
+</div></div>
+</div>
+<div class="sect2">
+<h3 id="_拡張モジュール作成_上級編チュートリアル">拡張モジュール作成 上級編チュートリアル</h3>
+<div class="paragraph"><p>煮詰められた狂気のオブジェクトシステムtupbaseの制御法を説明します。コアモジュール開発向け。デスクトップ拡張やプロセス拡張、独自端末モード拡張等についてもここで触れます。</p></div>
+<div class="literalblock">
+<div class="content">
+<pre><tt>----- coming soon.</tt></pre>
+</div></div>
 </div>
 </div>
 </div>
@@ -2165,7 +2355,7 @@ twitter: <a href="http://twitter.com/kefir_">日本語</a> / <a href="http://twi
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2012-02-12 12:51:10 JST
+Last updated 2012-02-13 18:09:02 JST
 </div>
 </div>
 </body>

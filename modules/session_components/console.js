@@ -26,24 +26,25 @@
 /**
  * @class MessageFilter
  */
-let MessageFilter = new Class().extends(Component);
+let MessageFilter = new Class().extends(Plugin);
 MessageFilter.definition = {
 
   get id()
     "messagefilter",
 
+  get info()
+    <module>
+        <name>{_("Message Filter")}</name>
+        <description>{
+          _("Receives raw console messages and formats them.")
+        }</description>
+        <version>0.1</version>
+    </module>,
+
   get filter_expression()
     /^\[(.+?): "(tanasinn: )?([^"]*?)" {file: "([^"]*?)" line: ([0-9]+?)( name: "([^"]*?)")?}\]$/m,
   
   _css: null,
-
-  /** constructor 
-   *  @param {Session} session A Session object.
-   */
-  initialize: function initialize(session) 
-  {
-    this.install(session);
-  },
 
   /** Installs itself.
    *  @param {Session} session A Session object.
@@ -112,6 +113,7 @@ MessageFilter.definition = {
       }
     }
     return {
+      parentNode: "#console_output_box",
       tagName: "row",
       className: "tanasinn-console-line " + class_string,
       style: let (color_map = {
@@ -176,18 +178,16 @@ DisplayManager.definition = {
   /** @Property {Boolean} whether auto scroll feature is enabled.  */
   "[persistable] auto_scroll": true,
 
-  _ui: null,
-  _output_element: null,
   _filters: null,
+  _console: null,
 
   /** post-constructor */
   "[subscribe('@initialized/console'), enabled]":
   function onLoad(console) 
   {
+    this._console = console;
     let session = this._broker;
-    let id = "#console_output_box";
-    this._output_element = session.uniget("command/query-selector", id);
-    session.subscribe("command/clear-messages", function() this.clear(), this);
+  
     this._filters = session.notify("get/message-filters", this._filters);
     session.notify("initialized/displaymanager", this);
   },
@@ -197,26 +197,12 @@ DisplayManager.definition = {
    */
   append: function append(message) 
   {
-    let output_element = this._output_element;
-    if (output_element) {
-      let session = this._broker;
-      let template = this.applyFilters(message);
-      template.parentNode = output_element;
-      session.uniget("command/construct-chrome", template);
-      // makes scrollbar follow page's height.
-      if (this.auto_scroll) {
-        this.scrollToBottom();
-      }
-    }
-  },
-  
-  /** Clears all message lines from output container. 
-   */
-  clear: function clear() 
-  {
-    let output_element = this._output_element;
-    while (output_element.firstChild) { // MUST NOT allow infinity loop.
-      output_element.removeChild(output_element.firstChild);
+    let session = this._broker;
+    let template = this.applyFilters(message);
+    session.uniget("command/construct-chrome", template);
+    // makes scrollbar follow page's height.
+    if (this.auto_scroll) {
+      this._console.scrollToBottom();
     }
   },
 
@@ -243,22 +229,6 @@ DisplayManager.definition = {
       ]
     };
   },
-  
-  /** tracks growing scroll region. */
-  scrollToBottom: function scrollToBottom() 
-  {
-    let output_element = this._output_element;
-    let frameElement = output_element//.parentNode;
-    if (frameElement && frameElement.scrollHeight && frameElement.boxObject) {
-      let currentScrollPosition 
-        = frameElement.scrollTop + frameElement.boxObject.height;
-      if (currentScrollPosition + 50 > frameElement.scrollHeight) {
-        coUtils.Timer.setTimeout(function() {
-          frameElement.scrollTop = frameElement.scrollHeight;
-        }, 10);
-      }
-    }
-  }
 };
 
 /** 
@@ -313,7 +283,7 @@ ConsoleListener.definition = {
   /**
    * @param {nsIConsoleMessage} console_message nsIConsoleMessage beging posted.
    */
-  observe: function(console_message)
+  observe: function observe(console_message)
   {
     try {
       let message = console_message.message;
@@ -333,16 +303,14 @@ ConsoleListener.definition = {
   },
 
   /** Register isself to console service */
-  "[subscribe('command/register-console-listener'), enabled]":
-  function register()
+  register: function register()
   {
     // register listener.
     this._console_service.registerListener(this);
   },
 
   /** Unregister isself from console service */
-  "[subscribe('command/unregister-console-listener'), enabled]":
-  function unregister() 
+  unregister: function unregister() 
   {
     coUtils.Debug.reportMessage(
       _("Unregister listener from console service."));
@@ -428,6 +396,7 @@ Console.definition = {
             className: "error",
           }
         },
+      /*
         {
           tagName: "vbox",
           align: "center",
@@ -525,6 +494,7 @@ Console.definition = {
             ]
           }
         },
+      */
       ]
      },
 
@@ -557,6 +527,32 @@ Console.definition = {
   {
     this.dependency["bottompanel"].select("console.panel");
   },
+  
+  /** Clears all message lines from output container. 
+   */
+  "[subscribe('command/clear-messages')]":
+  function clear() 
+  {
+    while (this._console_box.firstChild) {
+      this._console_box.removeChild(this._console_box.firstChild);
+    }
+  },
+
+  /** tracks growing scroll region. */
+  scrollToBottom: function scrollToBottom() 
+  {
+    let output_element = this._output_box;
+    let frame_element = output_element.parentNode;
+    if (frame_element && frame_element.scrollHeight && frame_element.boxObject) {
+      let current_scroll_position 
+        = frame_element.scrollTop + frame_element.boxObject.height;
+      if (current_scroll_position + 50 > frame_element.scrollHeight) {
+        //coUtils.Timer.setTimeout(function() {
+          frame_element.scrollTop = frame_element.scrollHeight;
+        //}, 10);
+      }
+    }
+  }
 
 };
 

@@ -157,7 +157,7 @@ SetCommand.definition = {
   function evaluate(arguments_string)
   {
     let session = this._broker;
-    let modules = session.notify("get/module-instances");
+    let modules = session.notify("get/components");
     let pattern = /^\s*([$_a-zA-Z\.\-]+)\.([$_a-zA-Z]+)(=?)/y;
     let match = arguments_string.match(pattern);
     if (null === match) {
@@ -216,7 +216,7 @@ SetGlobalCommand.definition = {
   {
     let session = this._broker;
     let desktop = session._broker;
-    let modules = desktop.notify("get/module-instances");
+    let modules = desktop.notify("get/components");
     let pattern = /^\s*([$_a-zA-Z\.\-]+)\.([$_a-zA-Z]+)(=?)/y;
     let match = arguments_string.match(pattern);
     if (null === match) {
@@ -585,7 +585,7 @@ DeployCommands.definition = {
       };
     }
     let [, space, name, next] = match;
-    let modules = session.notify("get/module-instances");
+    let modules = session.notify("get/components");
     modules = modules.filter(function(module) module.id == name);
     if (0 == modules.length) {
       return {
@@ -734,6 +734,25 @@ MapCommands.definition = {
 };
 
 /**
+ * @class LscomponentCommand
+ */
+let LscomponentCommand = new Class().extends(Component);
+LscomponentCommand.definition = {
+
+  get id()
+    "lscomponent_command",
+
+  "[command('lscomponent/lc', ['components']), _('list components.'), enabled]":
+  function evaluate(arguments_string)
+  {
+    return true;
+  },
+
+};
+
+
+
+/**
  * @fn main
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
@@ -752,6 +771,7 @@ function main(broker)
   new DeployCommands(broker);
   new CharsetCommands(broker);
   new MapCommands(broker);
+  new LscomponentCommand(broker);
 }
 
 

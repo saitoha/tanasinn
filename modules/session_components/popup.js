@@ -225,7 +225,7 @@ PopupMenu.definition = {
           </>,
         },
         {
-          parentNode: "#tanasinn_outer_frame",
+          parentNode: "#tanasinn_background_frame",
           tagName: "panel",
           id: "tanasinn_app_popup",
           style: <>

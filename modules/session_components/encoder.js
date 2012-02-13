@@ -47,7 +47,7 @@ MultiEncoder.definition = {
     while (encoder_list.hasMore()) {
       let charset = encoder_list.getNext();
       try {
-        let alias = converter_manager.getCharsetAlias(charset);
+//        let alias = converter_manager.getCharsetAlias(charset);
         let title;
         try {
           title = converter_manager.getCharsetTitle(charset);
@@ -64,7 +64,7 @@ MultiEncoder.definition = {
               converter: this,
               title: title,
 //              group: group,
-              alias: alias,
+//              alias: alias,
             };
           }, this);
       } catch (e) {
