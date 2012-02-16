@@ -36,7 +36,7 @@ ComponentViewer.definition = {
     <plugin>
         <name>{_("Component")}</name>
         <description>{
-          _("List informatioin of modules and makes it enable to ",
+          _("List informatioin of plugins and makes it enable to ",
             "install or uninstall plugins dynamically.")
         }</description>
         <version>0.1</version>
@@ -127,7 +127,7 @@ ComponentViewer.definition = {
   function install(session) 
   {
     let bottom_panel = this.dependency["bottompanel"];
-    this._panel = bottom_panel.alloc(this.id, _("Component"));
+    this._panel = bottom_panel.alloc(this.id, _("Plugins"));
     this.onPanelSelected.enabled = true;
     this.select.enabled = true;
   },
