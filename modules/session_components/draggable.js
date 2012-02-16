@@ -27,7 +27,7 @@
  * @fn Enable Drag-and-Drop operation.
  */
 
-let DragMove = new Class().extends(Plugin).depends("chrome");
+let DragMove = new Class().extends(Plugin);
 DragMove.definition = {
 
   get id()

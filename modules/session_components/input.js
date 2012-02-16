@@ -74,7 +74,6 @@ function coCreateKeyMap()
  * @brief Listen keyboard input events and send ones to TTY device.
  */
 let InputManager = new Class().extends(Plugin)
-                              .depends("chrome")
                               .depends("encoder");
 InputManager.definition = {
 

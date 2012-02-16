@@ -25,7 +25,7 @@
 /**
  * @class Contextmenu
  */
-let Contextmenu = new Class().extends(Plugin).depends("chrome");
+let Contextmenu = new Class().extends(Plugin);
 Contextmenu.definition = {
 
   get id()
@@ -62,7 +62,7 @@ Contextmenu.definition = {
 
   _entries: null,
 
-  enabled_when_startup: false,
+  "[persistable, watchable] handle_right_click_insted_of_oncontextmenu": true,
 
   /** Installs itself.
    *  @param {Session} session A Session object.
@@ -72,6 +72,8 @@ Contextmenu.definition = {
   {
     // register DOM listener.
     this.show.enabled = true;
+    this.onFlagChanged(this.handle_right_click_insted_of_oncontextmenu);
+    this.onFlagChanged.enabled = true;
   },
 
   /** Uninstalls itself.
@@ -82,10 +84,33 @@ Contextmenu.definition = {
   {
     // unregister DOM listener.
     this.show.enabled = false;
+    this.onFlagChanged.enabled = false;
+    this.onrightbuttondown.enabled = false;
+    this.oncontextmenu.enabled = false;
+  },
+
+  "[subscribe('variable-changed/contextmenu.handle_right_click_insted_of_oncontextmenu')]":
+  function onFlagChanged(value) 
+  {
+    this.onrightbuttondown.enabled = value;
+    this.oncontextmenu.enabled = !value;
+  },
+
+  "[listen('click', '#tanasinn_content')]":
+  function onrightbuttondown(event) 
+  {
+    if (2 == event.button) {
+      this.show(event);
+    }
   },
 
   "[listen('contextmenu', '#tanasinn_content')]":
-  function show(event) 
+  function oncontextmenu(event) 
+  {
+    this.show(event);
+  },
+
+  show: function show(event) 
   {
     let {screenX, screenY} = event;
     let session = this._broker;

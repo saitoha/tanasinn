@@ -526,6 +526,7 @@ Console.definition = {
   function select(info) 
   {
     this.dependency["bottompanel"].select("console.panel");
+    return true;
   },
   
   /** Clears all message lines from output container. 
@@ -542,14 +543,16 @@ Console.definition = {
   scrollToBottom: function scrollToBottom() 
   {
     let output_element = this._output_box;
-    let frame_element = output_element.parentNode;
-    if (frame_element && frame_element.scrollHeight && frame_element.boxObject) {
-      let current_scroll_position 
-        = frame_element.scrollTop + frame_element.boxObject.height;
-      if (current_scroll_position + 50 > frame_element.scrollHeight) {
-        //coUtils.Timer.setTimeout(function() {
-          frame_element.scrollTop = frame_element.scrollHeight;
-        //}, 10);
+    if (this._output_box) {
+      let frame_element = output_element.parentNode;
+      if (frame_element && frame_element.scrollHeight && frame_element.boxObject) {
+        let current_scroll_position 
+          = frame_element.scrollTop + frame_element.boxObject.height;
+        if (current_scroll_position + 50 > frame_element.scrollHeight) {
+          //coUtils.Timer.setTimeout(function() {
+            frame_element.scrollTop = frame_element.scrollHeight;
+          //}, 10);
+        }
       }
     }
   }

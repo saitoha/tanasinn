@@ -126,8 +126,8 @@
  * Stored observers are not objects, but simple delegate functions.
  *
  */
-let EventBrokerBase = new Class();
-EventBrokerBase.definition = {
+let EventBrokerBase = function EventBrokerBase() this.initialize.apply(this, arguments);
+EventBrokerBase.prototype = {
 
   /** 
    * @property {Object} A map of stored delegate lists, indexed by topic.
@@ -301,8 +301,8 @@ EventBrokerBase.definition = {
  *  It can understand Event Expression, and interpret it to a complex of 
  *  multiple topics.
  */
-let EventBroker = new Abstruct();
-EventBroker.definition = {
+let EventBroker = {}; // Abstruct
+EventBroker.prototype = {
 
   get __count()
     this._base.__count,
@@ -415,8 +415,10 @@ EventBroker.definition = {
    */
   load: function load(broker, search_path, scope) 
   {
-    let entries = coUtils.File.getFileEntriesFromSerchPath(search_path);
-    for (let entry in entries) {
+    let entries = [entry for (entry in coUtils.File.getFileEntriesFromSerchPath(search_path))];
+    //entries = entries.sort();
+    entries = entries.reverse();
+    for (let [, entry] in Iterator(entries)) {
       try {
         // make URI string such as "file://....".
         let url = coUtils.File.getURLSpec(entry); 
@@ -552,8 +554,8 @@ function Actor(broker, token, stack, delegate, id) {
  *
  * Parses Event Expressions and evaluates them.
  */
-let EventExpressionProcesser = new Class();
-EventExpressionProcesser.definition = {
+let EventExpressionProcesser = function EventExpressionProcesser() this.initialize.apply(this, arguments);
+EventExpressionProcesser.prototype = {
 
   /** constructor */
   initialize: function _generateTokens(broker) 

@@ -25,7 +25,7 @@
 /**
  *  @class DragPaste
  */
-let DragPaste = new Class().extends(Plugin).depends("chrome");
+let DragPaste = new Class().extends(Plugin);
 DragPaste.definition = {
 
   get id()

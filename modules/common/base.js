@@ -31,6 +31,12 @@ Aspect.prototype = {
   id: null,
   _definition: null,
 
+  /** @property {Object} prototype */
+  get prototype()
+  {
+    return this._definition;
+  },
+
   /** @property {Object} definition */
   get definition()
   {
@@ -380,7 +386,7 @@ Class.prototype = {
 
     // Apply aspects.
     for (let [, aspect] in Iterator(this._mixin_list)) {
-      this.applyAspect(prototype, new Prototype(aspect.definition));
+      this.applyAspect(prototype, new Prototype(aspect.prototype));
     }
 
     return prototype; 
@@ -444,7 +450,7 @@ Abstruct.prototype = {
   {
     let prototype = new Prototype(definition, this._base, this._dependency_list);
     for (let [, aspect] in Iterator(this._mixin_list)) {
-      this.applyAspect(prototype, new Prototype(aspect.definition));
+      this.applyAspect(prototype, new Prototype(aspect.prototype));
     }
     return prototype;
   },

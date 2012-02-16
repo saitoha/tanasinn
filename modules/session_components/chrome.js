@@ -269,16 +269,38 @@ Chrome.definition = {
     </plugin>,
 
   get template()
-    ({
-      parentNode: "#tanasinn_chrome",
-      tagName: "stack",
-      id: "tanasinn_content",
-      childNodes: {
-        id: "tanasinn_center_area",
+    [
+      {
+        parentNode: "#tanasinn_chrome",
         tagName: "stack",
-        style: { margin: <>{this.margin}px</>, },
+        id: "tanasinn_content",
+        childNodes: [
+          {
+            id: "tanasinn_center_area",
+            tagName: "stack",
+            style: <>
+              margin: {this.margin}px;
+            </>,
+          },
+        ],
       },
-    }),
+      {
+        parentNode: "#tanasinn_chrome",
+        id: "tanasinn_panel_area",
+        tagName: "box",
+        style: <>
+        //  border: solid green 5px;
+        </>,
+      },
+      {
+        parentNode: "#tanasinn_chrome",
+        id: "tanasinn_commandline_area",
+        tagName: "box",
+        style: <>
+        //  border: solid red 5px;
+        </>,
+      },
+    ],
 
   "[persistable] margin": 8,
   "[persistable] inactive_opacity": 0.20,

@@ -62,6 +62,7 @@
 let scope = {}; // create scope.
 
 with (scope) {
+  let id = new Date().getTime();
   Components
     .classes["@mozilla.org/moz/jssubscript-loader;1"]
     .getService(Components.interfaces.mozIJSSubScriptLoader)
@@ -69,14 +70,12 @@ with (scope) {
       Components
         .stack.filename.split(" -> ").pop()
         .split("?").shift()
-    }/../common.js?{
-      new Date().getTime()
-    }</>.toString(), scope);
+    }/../common.js?{id}</>.toString(), scope);
   coUtils.Debug.reportMessage("Booting base services...");
-  coUtils.Runtime.loadScript("modules/common/base.js", scope);
-  coUtils.Runtime.loadScript("modules/common/event.js", scope);
-  coUtils.Runtime.loadScript("modules/common/category.js", scope);
-  coUtils.Runtime.loadScript("modules/common/eastasian.js", scope);
+  coUtils.Runtime.loadScript("modules/common/event.js", scope);     // tupstart
+  coUtils.Runtime.loadScript("modules/common/base.js", scope);      // tupbase
+  coUtils.Runtime.loadScript("modules/common/category.js", scope);  // unicode category db
+  coUtils.Runtime.loadScript("modules/common/eastasian.js", scope); // unicode eastasian db
 }
 
 with (scope) {
@@ -121,8 +120,9 @@ with (scope) {
 
     _guessCygwinRoot: function _guessCygwinRoot() 
     {
-      return "C:\\cygwin";
-      for (let letter in Iterator("CDEFGHIJKLMNOPQRSTUVWXYZ".split(""))) {
+      //return "C:\\cygwin";
+      try {
+      for (let [, letter] in Iterator("CDEFGHIJKLMNOPQRSTUVWXYZ".split(""))) {
         let directory = Components
           .classes["@mozilla.org/file/local;1"]
           .createInstance(Components.interfaces.nsILocalFile);
@@ -130,6 +130,9 @@ with (scope) {
         if (directory.exists() && directory.isDirectory) {
           return directory.path;
         }
+      }
+      } catch(e) {
+        alert(e);
       }
       return null;
     },

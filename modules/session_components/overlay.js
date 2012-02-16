@@ -61,7 +61,6 @@ ForwardInputIterator.definition = {
  *  @class OverlayIndicator
  */
 let OverlayIndicator = new Class().extends(Plugin)
-                                  .depends("chrome")
                                   .depends("decoder");
 OverlayIndicator.definition = {
 

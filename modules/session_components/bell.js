@@ -25,7 +25,7 @@
 /**
  *  @class Bell
  */
-let Bell = new Class().extends(Plugin).depends("chrome");
+let Bell = new Class().extends(Plugin);
 Bell.definition = {
 
   get id()

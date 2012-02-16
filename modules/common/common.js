@@ -1019,6 +1019,7 @@ coUtils.Keyboard = {
     right     : 0x1 << KEY_NOCHAR | 0x0027,
     down      : 0x1 << KEY_NOCHAR | 0x0028,
     ins       : 0x1 << KEY_NOCHAR | 0x002d,
+    insert    : 0x1 << KEY_NOCHAR | 0x002d,
     del       : 0x1 << KEY_NOCHAR | 0x002e,
     f1        : 0x1 << KEY_NOCHAR | 0x0070,
     f2        : 0x1 << KEY_NOCHAR | 0x0071,

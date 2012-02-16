@@ -3,7 +3,7 @@ CPP=@CPP@
 ASCIIDOC=@ASCIIDOC@
 OPEN=@TANASINN_OPEN@
 SOURCE=usermanual.txt
-ASCIIDOCFLAGS= -a toc -a icons -a toc2 -a theme=flask --filter=ditaa
+ASCIIDOCFLAGS= -a toc -a icons -a toc2 -a theme=flask --filter=ditaa -a numbered
 README_EN=README-en.asciidoc
 README_JA=README-ja.asciidoc
 HTML_EN=usermanual.html

@@ -182,7 +182,10 @@ const ATTR2_HIGHLIGHT   = 23    // 00000000 01000000 00000000 00000000
 const ATTR2_WIDE        = 24    // 00000000 10000000 00000000 00000000
 const ATTR2_COMBINING   = 25    // 00000001 00000000 00000000 00000000
 
-
+/**
+ * @class Cell
+ *
+ */
 let Cell = new Class();
 Cell.definition = {
 
@@ -584,16 +587,6 @@ Line.definition = {
     let backwardBreakPoint = getBackwardBreakPoint(backwardChars, column, category);
     return [backwardBreakPoint, forwardBreakPoint];
   },
-//            let match = coUtils.Unicode
-//              .detectCategory(String.fromCharCode(c));
-//            if (match) {
-//              let [is_non_spacing_mark, is_spacing_combining_mark] = match;  
-////              if (is_spacing_combining_mark) {
-//              if (is_non_spacing_mark || is_spacing_combining_mark) {
-//                continue;
-//              }
-//            }
-
 
   /** returns a generator which iterates dirty words. */
   getDirtyWords: function getDirtyWords() 
@@ -607,12 +600,7 @@ Line.definition = {
           if (attr.equals(cell) && cell.c) {
             continue;
           } else {
-            let codes = cells
-              .slice(start, current)
-//              .filter(function(cell) cell.c)
-//              .map(function(cell) cell.c)
-              ;
-//            let word = String.fromCharCode.apply(String, codes);
+            let codes = cells.slice(start, current);
             yield { 
               codes: codes, 
               column: start, 
@@ -623,26 +611,24 @@ Line.definition = {
         }
         if (0 == cell.c) {
           let cell = cells[current + 1];
-          yield { 
-            codes: [ cell ], 
-            column: current, 
-            end: current + 2, 
-            attr: cell,
-          };
-          ++current;
-          start = current + 1;
-          attr = cell;
+          if (cell) {
+            yield { 
+              codes: [ cell ], 
+              column: current, 
+              end: current + 2, 
+              attr: cell,
+            };
+            ++current;
+            start = current + 1;
+            attr = cell;
+          }
           continue;
         }
         start = current;
         attr = cell;
       }
-      if (start < current) {
-        let codes = cells
-          .slice(start, current)
-//          .filter(function(cell) cell.c)
-//          .map(function(cell) cell.c);
-//        let word = String.fromCharCode.apply(String, codes);
+      if (start < current && attr) {
+        let codes = cells.slice(start, current)
         yield { 
           codes: codes, 
           column: start, 

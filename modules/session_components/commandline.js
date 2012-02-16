@@ -137,8 +137,7 @@ CompletionView.definition = {
  *
  */
 let Commandline = new Class().extends(Plugin)
-                             .mix(CompletionView)
-                             .depends("chrome");
+                             .mix(CompletionView);
 Commandline.definition = {
 
   get id()
@@ -156,14 +155,16 @@ Commandline.definition = {
   get template()
   [
     {
-      parentNode: "#tanasinn_chrome",
+      parentNode: "#tanasinn_commandline_area",
       tagName: "stack",
       id: "tanasinn_commandline_box",
+      flex: 1,
       style: <>
         font-size: 19px;
         font-family: 'Lucida Console',Latha,'Georgia',monospace;
         text-shadow: 1px 1px 3px #555;
         font-weight: bold;
+//        border: solid 2px blue;
       </>,
       childNodes: [
         {
@@ -194,7 +195,6 @@ Commandline.definition = {
           tagName: "box",
           id: "tanasinn_statusbar",
           hidden: true,
-          flex: 1,
           style: <>
           //  border: solid 1px red;
           </>,
@@ -205,6 +205,8 @@ Commandline.definition = {
               style: "overflow: hidden",
               childNodes: {
                 tagName: "label",
+                //className: "plain",
+                flex: 1,
                 id: "tanasinn_status_message",
                 style: <> 
                   padding: 0px;

@@ -352,7 +352,7 @@ ProcessManager.definition = {
     let args;
     if ("WINNT" == coUtils.Runtime.os) {
       let broker = this._broker;
-      let cygwin_root = this.uniget("get/cygwin-root");
+      let cygwin_root = broker.uniget("get/cygwin-root");
       runtime_path = String(<>{cygwin_root}\bin\run.exe</>);
       args = [ "kill", "-wait", "-" + signal, String(pid) ];
     } else { // Darwin, Linux or FreeBSD
@@ -1329,7 +1329,8 @@ DragMove.definition = {
   },
 
   /** Installs itself. */
-  install: function install(broker) 
+  "[subscribe('install/launcher-dragmove'), enabled]":
+  function install(broker) 
   {
     this.ondragstart.enabled = true;
     let {tanasinn_drag_cover}
@@ -1352,7 +1353,8 @@ DragMove.definition = {
   },
 
   /** Uninstalls itself. */
-  uninstall: function uninstall(broker) 
+  "[subscribe('uninstall/launcher-dragmove'), enabled]":
+  function uninstall(broker) 
   {
     this.ondragstart.enabled = false;
     this._drag_cover.parentNode.removeChild(this._drag_cover);

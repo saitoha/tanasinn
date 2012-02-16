@@ -277,12 +277,12 @@ TemplateBuilder.definition = {
     let type = typeof value;
     if ("string" == type || "xml" == type) {
       let broker = this._broker;
-      let root_element = broker.root_element;
-      let target_element = root_element.querySelector(String(value));
+      let target_element = broker.root_element.querySelector(String(value));
       if (target_element) {
         target_element.appendChild(element);
       } else {
         if ("#" == value.charAt(0)) {
+          //alert(element + " " + element.tagName + " " + element.id + " " + value)
           let id = value.substr(1);
           broker.subscribe(
             <>@event/domnode-created/{id}</>, 
@@ -305,7 +305,6 @@ TemplateBuilder.definition = {
   _processChildChromeNodes: 
   function _processChildChromeNodes(element, value, results) 
   {
-
     if (Array.isArray(value)) {  // value is Array object.
       value.forEach(function(node) {
         this._processChildChromeNodes(element, node, results);
@@ -358,17 +357,19 @@ TemplateBuilder.definition = {
  * @class ChromeBuilder
  */
 let ChromeBuilder = new Class().extends(Component)
-                           .mix(TemplateBuilder); 
+                               .mix(TemplateBuilder); 
 ChromeBuilder.definition = {
 
   get id()
     "chromebuilder",
 
   _template_builder: null,
+  _map: null,
 
   /** constructor */
   initialize: function initialize(broker)
   {
+    this._map = {};
     broker.notify(<>initialized/{this.id}</>, this);
   },
 
@@ -380,10 +381,17 @@ ChromeBuilder.definition = {
     let root = this.buildChrome(template, results);
     let broker = this._broker;
     for (let [id, element] in Iterator(results)) {
+      this._map[id] = element;
       broker.notify(<>event/domnode-created/{id}</>, element);
     }
     results["#root"] = root;
     return results;
+  },
+
+  "[subscribe('get/element'), enabled]":
+  function get(id) 
+  {
+    return this._map[id];
   },
 
 }; // ChromeBuilder

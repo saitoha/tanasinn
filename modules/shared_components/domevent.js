@@ -70,16 +70,42 @@ DOMEventManager.definition = {
   function add(listener) 
   {
     let broker = this._broker;
-    let target = listener.target;
-    if ("string" == typeof target) {
-//      target = borker.uniget("command/query-selector", target);
-      target = broker.root_element.querySelector(target);
-      if (!target) {
-        throw coUtils.Debug.Exception(
-          _("Target element specified by given id is Not Found: %s."), 
-          target);
+    let target;
+    if ("string" == typeof listener.target) {
+      let id = listener.target.substr(1);
+      try {
+        target = broker.uniget("get/element", id);
+        //if (!target) {
+        //  target = broker.root_element.querySelector(listener.target);
+        //}
+      } catch(e) {
+        target = null;
       }
+      if (target) {
+        this._addImpl(listener, target);
+      } else {
+//          alert(listener.target)
+        if ("#" == listener.target.charAt(0)) {
+          broker.subscribe(
+            <>@event/domnode-created/{id}</>, 
+            function onNodeCreated(target_element) 
+            {
+              this._addImpl(listener, target_element);
+            }, this);
+        } else {
+          throw coUtils.Debug.Exception(
+            _("Target element specified by given id is Not Found: %s."), 
+            listener.target);
+        }
+      }
+    } else {
+      this._addImpl(listener, listener.target);
     }
+  },
+
+  _addImpl: function _addImpl(listener, target)
+  {
+    let broker = this._broker;
     let type = listener.type;
     let capture = !!listener.capture;
     let context = listener.context || target;

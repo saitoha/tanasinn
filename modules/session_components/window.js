@@ -79,28 +79,9 @@ WindowWatcher.definition = {
     if (16 == event.keyCode && 16 == event.which 
         && !event.ctrlKey && !event.altKey && !event.isChar) {
       let session = this._broker;
-      let now = parseInt(new Date().getTime());
-      if (now - this._last_ctrlkey_time < 500) {
-        //session.notify("command/focus");
-        //session.notify("introducer-pressed/double-shift");
-        //session.notify("command/report-overlay-message", "shift + shift pressed");
-        this._last_ctrlkey_time = 0;
-      } else {
-        this._last_ctrlkey_time = now;
-      }
       session.notify("event/shift-key-up");
     } else if (17 == event.keyCode && 17 == event.which 
         && !event.altKey && !event.shiftKey && !event.isChar) {
-      let now = parseInt(new Date().getTime());
-      if (now - this._last_ctrlkey_time < 500) {
-        let session = this._broker;
-        //session.notify("command/focus");
-        //session.notify("command/report-overlay-message", "ctrl + ctrl pressed");
-        //session.notify("introducer-pressed/double-ctrl");
-        this._last_ctrlkey_time = 0;
-      } else {
-        this._last_ctrlkey_time = now;
-      }
     } else if (18 == event.keyCode && 18 == event.which 
         && !event.ctrlKey && !event.shiftKey && !event.isChar) {
       let session = this._broker;
