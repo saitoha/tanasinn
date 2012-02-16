@@ -417,7 +417,7 @@ EventBroker.prototype = {
   {
     let entries = [entry for (entry in coUtils.File.getFileEntriesFromSerchPath(search_path))];
     //entries = entries.sort();
-    entries = entries.reverse();
+    //entries = entries.reverse();
     for (let [, entry] in Iterator(entries)) {
       try {
         // make URI string such as "file://....".
