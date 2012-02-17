@@ -129,10 +129,10 @@ ProgramCompleter.definition = {
   startSearch: function startSearch(source, listener)
   {
     let broker = this._broker;
-    let cygwin_root = broker.uniget("get/cygwin-root");
     let lower_source = source.toLowerCase();
     let search_path;
     if ("WINNT" == coUtils.Runtime.os) {
+      let cygwin_root = broker.uniget("get/cygwin-root");
       let map = (broker.uniget("get/bin-path") || "/bin:/usr/local/bin")
         .split(":")
         .map(function(posix_path) 

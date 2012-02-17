@@ -464,9 +464,9 @@ ExternalDriver.definition = {
   function onLoad(session) 
   {
     let executable_path;
-    let cygwin_root = session.uniget("get/cygwin-root");
     let os = coUtils.Runtime.os;
     if ("WINNT" == os) {
+      let cygwin_root = session.uniget("get/cygwin-root");
       executable_path = String(<>{cygwin_root}\bin\run.exe</>);
     } else {
       executable_path = session.uniget("get/python-path");
@@ -494,17 +494,17 @@ ExternalDriver.definition = {
   {
     let kill_path;
     let args;
-    if ("WINNT" != coUtils.Runtime.os) {
+    if ("WINNT" == coUtils.Runtime.os) {
+      let session = this._broker;
+      let cygwin_root = session.uniget("get/cygwin-root");
+      kill_path = String(<>{cygwin_root}\bin\run.exe</>);
+      args = [ "/bin/kill", "-9", String(pid) ];
+    } else { // Darwin, Linux or FreeBSD
       let external_process = this._external_process;
       //if (external_process.isRunning)
       //  external_process.kill();
       kill_path = "/bin/kill";
       args = [ "-9", String(pid) ];
-    } else { // Darwin, Linux or FreeBSD
-      let session = this._broker;
-      let cygwin_root = session.uniget("get/cygwin-root");
-      kill_path = String(<>{cygwin_root}\bin\run.exe</>);
-      args = [ "/bin/kill", "-9", String(pid) ];
     }
     // create new localfile object.
     let runtime = Components
