@@ -163,6 +163,13 @@ http:/#/www.mozilla-japan.org/MPL/MPL-1.1J.html[Mozilla Public License 1.1 (MPL1
 #endif
 
 #if __EN__
+.Running "http:/#/miku.acm.uiuc.edu[Nyan Cat]".
+#elif __JP__
+."http:/#/miku.acm.uiuc.edu[Nyan Cat]"を走らせたところ。
+#endif
+image::images/nyan.png[width=780]
+
+#if __EN__
 .Running "http:/#/w3m.sourceforge.net/index.en.html[BB]", an ascii art demo program.
 #elif __JP__
 ."http:/#/w3m.sourceforge.net/index.en.html[BB]"(アスキーアートのデモプログラム)を走らせたところ。
@@ -274,6 +281,19 @@ image::images/wl3.png[width=780]
 #endif
 image::images/xulapp.png[width=780]
 
+#if __EN__
+.https://github.com/pda/roflbalt[roflbalt]. A game written in Ruby.
+#elif __JP__
+.https://github.com/pda/roflbalt[roflbalt]。Rubyで書かれたゲームです。
+#endif
+image::images/roflbalt.png[width=780]
+
+#if __EN__
+.zsh's "correct".
+#elif __JP__
+.zshのcorrect機能にプライベートシーケンスを仕込みました。シーケンスハンドラの応用例です。
+#endif
+image::images/zsh.png[width=780]
 
 #if __EN__
 
@@ -577,9 +597,6 @@ image::images/commandline.png[width=480]
     [bold]*shift + shiftでコマンドラインにカーソルが移動します*。
     これだけおぼえておけばとりあえず補完でなんとかなると思います。    
 
-    順次解説予定
-
-#endif
 ==== 文字コード設定
 
 ===== decoder
@@ -600,8 +617,8 @@ encoder [キャラクタセット・符号化方式名]
 
 image::images/decoder.png[width=780]
 
-この設定は環境に依存するので現在は永続化可能にしていません。
-将来的にも永続化せず、.tanasinn.jsか.tanasinnrcで設定する方向で検討しています。
+この設定は現在、永続化可能ではありません。
+将来的には永続化プロパティとする方向で検討しています。
 
 ==== 地域化
 
@@ -628,6 +645,7 @@ saveprofileのような保存操作はとくに必要ありません。
 ----
 fgcolor [色番号] [CSS color]
 ----
+[色番号]に対応する前景色パレットに、[CSS color]で表現される色が設定・適用されます。
 
 ===== bgcolor
 
@@ -635,31 +653,102 @@ fgcolor [色番号] [CSS color]
 ----
 bgcolor [色番号] [CSS color]
 ----
+[色番号]に対応する背景色パレットに、[CSS color]で表現される色が設定・適用されます。
 
 image::images/bgcolor.png[width=780]
 
 色番号は0から255までの整数です。
 通常の16色カラー端末では0から15までが使用されます。
 
-===== bgcolor / fgcolor
 ===== fontfamily
+
+フォントファミリを設定します。
+----
+fontfamily [フォント名]
+----
+ターミナルのフォントファミリが[フォント名]に設定・適用されます。
+
+image::images/fontfamily3.png[width=780]
+
+
 ===== fontsize
+
+フォントサイズを設定します。
+----
+fontsize [フォントサイズ]
+----
+ターミナルのフォントサイズが[フォントサイズ]pxに設定・適用されます。
+単位がpixelであることに注意してください。
+
+image::images/fontsize3.png[width=780]
+
 ===== increase
+
+フォントサイズを1px増加させます。
+----
+increase
+----
+
+数字のプレフィクスをつけて、以下のようにすると、フォントサイズが5px増加します。
+----
+5increase
+----
+
+
 ===== decrease
 
+フォントサイズを1px減少させます。
+----
+decrease
+----
+
+数字のプレフィクスをつけて、以下のようにすると、フォントサイズが5px減少します。
+----
+5decrease
+----
+
 ==== ウィンドウ操作
-===== up
-===== down
-===== left
-===== right
-===== wider
-===== narrower
-===== shorter
-===== taller
+
+===== up / down / left / right
+
+ウィンドウを上下左右に移動させます。移動量はデフォルトで60pxです。
+この値は、設定値moveshortcut.stepで変更できます。
+
+数字のプレフィクスをつけて、たとえば以下のようにすると、5 x 60px = 300px 右に移動します。
+
+----
+5right
+----
+
+===== wider / narrower / shorter / taller
+
+ウィンドウサイズを調整します。
+
+数字のプレフィクスをつけて、たとえば以下のようにすると、スクリーンが5カラム拡大します。
+
+----
+5wider
+----
 
 ==== 編集系操作
+
 ===== copy
+
+選択されたテキストをクリップボードへコピーします。
+
+---
+copy
+---
+
 ===== paste
+
+クリップボード内のテキストを現在のエンコーダーで符号化し、端末に送信します。
+
+---
+paste
+---
+
+    順次解説予定
 
 ==== マッピング管理
 ==== nmap
@@ -695,6 +784,8 @@ image::images/bgcolor.png[width=780]
 
 ==== ユーティリティ
 ===== javascript
+
+#endif
 
 #if __EN__
 === User directories
@@ -1316,7 +1407,7 @@ tanasinnが提供する基礎的なサービスである、イベント式、遅
    ----- coming soon.
 
 === 拡張モジュール作成 上級編チュートリアル
-tupstart2上に構築され、tanasinn向けにデザインされたMOPシステムtupbaseの概要と、その拡張法について説明します。これを読むとひょっとしたら、いままで説明してきためんどくさい書き方はいったいなんだったのかという感想を持たれるかもしれません。コアモジュールを読みたい・いじりたい人向け。デスクトップ拡張やプロセス拡張、独自端末モード拡張等についてもここで触れます。これもtanasinn以外ではまったく役に立ちません。
+tanasinn向けにデザインされたMOPシステムtupbaseの概要と、その拡張法について説明します。コアモジュールを読みたい・いじりたい人向け。デスクトップ拡張やプロセス拡張、独自端末モード拡張等についてもここで触れます。これもtanasinn以外ではまったく役に立ちません。
 
    ----- coming soon.
 
@@ -1375,29 +1466,17 @@ tupstart2上に構築され、tanasinn向けにデザインされたMOPシステ
 ----------------------------------------------------------------------------------------------
 
 
-                                            Extension Modules
-        +---------------------------------------------=----------------------------------------+ 
-        |                                                                                      |
-        |                                                                                      |
-        |                                                                                      |
-        :                                                                                      :
-        |                                                                                      |
-        |                                                                                      |
-        |                                                                                      |
-        +---------------------------------------------=----------------------------------------+
+                        tanasinn Standard Modules                    Extension Modules
 
-   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        tanasinn Standard Modules
-
-                           +--------------+  +--------------+  +-------------+ 
-                           |   process    |  |   desktop    |  |  session    |
-                           |   plugins    |  |   plugins    |  |  plugins    |
-                           +--------------+  +--------------+  +-------------+ 
-
-                           +--------------+  +--------------+  +-------------+ 
-                           |   process    |  |   desktop    |  |  session    |
-                           |  components  |  |  components  |  | components  |
-                           +--------------+  +--------------+  +-------------+ 
+           +--------------+  +--------------+  +-------------+  +-------------=-------------+
+           |   Process    |  |   Desktop    |  |  Session    |  |                           |
+           |   plugins    |  |   plugins    |  |  plugins    |  |                           |
+           +--------------+  +--------------+  +-------------+  |                           |
+                                                                |                           |
+           +--------------+  +--------------+  +-------------+  |                           |
+           |   Process    |  |   Desktop    |  |  Session    |  |                           |
+           |  components  |  |  components  |  | components  |  |                           |
+           +--------------+  +--------------+  +-------------+  +---------------------------+
 
    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                      tanasinn Application Frameworks
@@ -1432,22 +1511,22 @@ tupstart2上に構築され、tanasinn向けにデザインされたMOPシステ
         +-----------------------------------+--------------------------------------------------+
         |                                   |              tupbase Object Model                |
         |                                   |                                                  |
-        |    /-------------------------\    |    /-----------------\   /-----------------\     |
-        |    |                         |    |    |                 |   |                 |     |
-        |    |       EventBroker       |    |    |    Component    |   |     Plugin      |     |
-        |    |                         |    |    |                 |   |                 |     |
-        |    \-------------------------/    |    \-----------------/   \-----------------/     |
+        |    +-------------------------+    |    +-----------------+    +-----------------+    |
+        |    |                         |    |    |                 |    |                 |    |
+        |    |       EventBroker       |    |    |    Component    |    |     Plugin      |    |
+        |    |                         |    |    |                 |    |                 |    |
+        |    +-------------------------+    |    +-----------------+    +-----------------+    |
         |                                   |                                                  |
-        |                                   \------+ - - - - - - - - - - - - - - - - - - - - - +
+        |                                   +------+ - - - - - - - - - - - - - - - - - - - - - +
         |                                          |                                           |
         |                                          |            tupbase Attributes             |
         |                                          |                                           |
-        |                                          \-------+ - - - - - - - - - - - - - - - - - +
+        |                                          +-------+ - - - - - - - - - - - - - - - - - +
         |                                                  |                                   |
         |             tupstart2                            |           tupbase Core            |
         |           (Event system)                         |           (MOP system)            |
         |                                                  |                                   |
-        |                         /------------------------+-----\                             |
+        |                         +------------------------+-----+                             |
         |                         |   Core Utils                 |                             |
         |                         |   Localization Framework     |                             |
         |                         |   Logging Framework          |                             |
