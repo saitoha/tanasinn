@@ -1295,127 +1295,212 @@ Now the implementation of this part is written by rush job, commandline parser
 is not proper one.</tt></pre>
 </div></div>
 <div class="sect3">
-<h4 id="_bgcolor">8.3.1. bgcolor</h4>
+<h4 id="_文字コード設定">8.3.1. 文字コード設定</h4>
+<div class="sect4">
+<h5 id="_decoder">decoder</h5>
+<div class="paragraph"><p>アプリケーションの出力を解釈するための文字コード体系を設定します。</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>decoder [キャラクタセット・符号化方式名]</tt></pre>
+</div></div>
+</div>
+<div class="sect4">
+<h5 id="_encoder">encoder</h5>
+<div class="paragraph"><p>アプリケーションへの入力操作を行うときの文字コード体系を設定します。</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>encoder [キャラクタセット・符号化方式名]</tt></pre>
+</div></div>
+<div class="paragraph"><p>使用可能な文字コード名はGeckoに依存します。補完で確認してください。</p></div>
+<div class="imageblock">
+<div class="content">
+<img src="images/decoder.png" alt="images/decoder.png" width="780" />
+</div>
+</div>
+<div class="paragraph"><p>この設定は環境に依存するので現在は永続化可能にしていません。
+将来的にも永続化せず、.tanasinn.jsか.tanasinnrcで設定する方向で検討しています。</p></div>
+</div>
 </div>
 <div class="sect3">
-<h4 id="_closepanel">8.3.2. closepanel</h4>
+<h4 id="_地域化">8.3.2. 地域化</h4>
+<div class="sect4">
+<h5 id="_localize">localize</h5>
+<div class="paragraph"><p>メッセージやUI要素のローカライズを行います。</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>localize [ロケールID] "[メッセージID]" "[翻訳済み文字列]"</tt></pre>
+</div></div>
+<div class="paragraph"><p>ロケールID(LCID)は日本語環境をお使いならたいていja-JPだと思います。</p></div>
+<div class="imageblock">
+<div class="content">
+<img src="images/localize.png" alt="images/localize.png" width="780" />
+</div>
+</div>
+<div class="paragraph"><p>メッセージIDはgettextのように英語表現になっています。
+この設定は通常の永続化機構とは別の仕組みで保存されますので、
+saveprofileのような保存操作はとくに必要ありません。</p></div>
+</div>
 </div>
 <div class="sect3">
-<h4 id="_console">8.3.3. console</h4>
+<h4 id="_外観の設定">8.3.3. 外観の設定</h4>
+<div class="sect4">
+<h5 id="_fgcolor">fgcolor</h5>
+<div class="paragraph"><p>前景色を設定します。</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>fgcolor [色番号] [CSS color]</tt></pre>
+</div></div>
+</div>
+<div class="sect4">
+<h5 id="_bgcolor">bgcolor</h5>
+<div class="paragraph"><p>背景色を設定します。</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>bgcolor [色番号] [CSS color]</tt></pre>
+</div></div>
+<div class="imageblock">
+<div class="content">
+<img src="images/bgcolor.png" alt="images/bgcolor.png" width="780" />
+</div>
+</div>
+<div class="paragraph"><p>色番号は0から255までの整数です。
+通常の16色カラー端末では0から15までが使用されます。</p></div>
+</div>
+<div class="sect4">
+<h5 id="_bgcolor_fgcolor">bgcolor / fgcolor</h5>
+</div>
+<div class="sect4">
+<h5 id="_fontfamily">fontfamily</h5>
+</div>
+<div class="sect4">
+<h5 id="_fontsize">fontsize</h5>
+</div>
+<div class="sect4">
+<h5 id="_increase">increase</h5>
+</div>
+<div class="sect4">
+<h5 id="_decrease">decrease</h5>
+</div>
 </div>
 <div class="sect3">
-<h4 id="_copy">8.3.4. copy</h4>
+<h4 id="_ウィンドウ操作">8.3.4. ウィンドウ操作</h4>
+<div class="sect4">
+<h5 id="_up">up</h5>
+</div>
+<div class="sect4">
+<h5 id="_down">down</h5>
+</div>
+<div class="sect4">
+<h5 id="_left">left</h5>
+</div>
+<div class="sect4">
+<h5 id="_right">right</h5>
+</div>
+<div class="sect4">
+<h5 id="_wider">wider</h5>
+</div>
+<div class="sect4">
+<h5 id="_narrower">narrower</h5>
+</div>
+<div class="sect4">
+<h5 id="_shorter">shorter</h5>
+</div>
+<div class="sect4">
+<h5 id="_taller">taller</h5>
+</div>
 </div>
 <div class="sect3">
-<h4 id="_debugger">8.3.5. debugger</h4>
+<h4 id="_編集系操作">8.3.5. 編集系操作</h4>
+<div class="sect4">
+<h5 id="_copy">copy</h5>
+</div>
+<div class="sect4">
+<h5 id="_paste">paste</h5>
+</div>
 </div>
 <div class="sect3">
-<h4 id="_decoder">8.3.6. decoder</h4>
+<h4 id="_マッピング管理">8.3.6. マッピング管理</h4>
 </div>
 <div class="sect3">
-<h4 id="_decrease">8.3.7. decrease</h4>
+<h4 id="_nmap">8.3.7. nmap</h4>
 </div>
 <div class="sect3">
-<h4 id="_deleteprofile">8.3.8. deleteprofile</h4>
+<h4 id="_nnoremap">8.3.8. nnoremap</h4>
 </div>
 <div class="sect3">
-<h4 id="_detach">8.3.9. detach</h4>
+<h4 id="_nunmap">8.3.9. nunmap</h4>
 </div>
 <div class="sect3">
-<h4 id="_disable">8.3.10. disable</h4>
+<h4 id="_コンポーネント管理">8.3.10. コンポーネント管理</h4>
+<div class="sect4">
+<h5 id="_pluginviewer">pluginviewer</h5>
+</div>
+<div class="sect4">
+<h5 id="_lscomponent">lscomponent</h5>
+</div>
+<div class="sect4">
+<h5 id="_disable">disable</h5>
+</div>
+<div class="sect4">
+<h5 id="_enable">enable</h5>
+</div>
 </div>
 <div class="sect3">
-<h4 id="_down">8.3.11. down</h4>
+<h4 id="_セッション操作">8.3.11. セッション操作</h4>
+<div class="sect4">
+<h5 id="_kill">kill</h5>
+</div>
+<div class="sect4">
+<h5 id="_detach">detach</h5>
+</div>
 </div>
 <div class="sect3">
-<h4 id="_enable">8.3.12. enable</h4>
+<h4 id="_プロファイル操作">8.3.12. プロファイル操作</h4>
+<div class="sect4">
+<h5 id="_loadprofile">loadprofile</h5>
+</div>
+<div class="sect4">
+<h5 id="_saveprofile">saveprofile</h5>
+</div>
+<div class="sect4">
+<h5 id="_deleteprofile">deleteprofile</h5>
+</div>
+<div class="sect4">
+<h5 id="_globalload">globalload</h5>
+</div>
+<div class="sect4">
+<h5 id="_globalsave">globalsave</h5>
+</div>
+<div class="sect4">
+<h5 id="_globaldelete">globaldelete</h5>
+</div>
 </div>
 <div class="sect3">
-<h4 id="_encoder">8.3.13. encoder</h4>
+<h4 id="_デバッギングパネル">8.3.13. デバッギングパネル</h4>
+<div class="sect4">
+<h5 id="_openpanel_closepanel">openpanel / closepanel</h5>
+</div>
+<div class="sect4">
+<h5 id="_console">console</h5>
+</div>
+<div class="sect4">
+<h5 id="_debugger">debugger</h5>
+</div>
 </div>
 <div class="sect3">
-<h4 id="_fgcolor">8.3.14. fgcolor</h4>
+<h4 id="_低レベル設定操作">8.3.14. 低レベル設定操作</h4>
+<div class="sect4">
+<h5 id="_set">set</h5>
+</div>
+<div class="sect4">
+<h5 id="_setglobal">setglobal</h5>
+</div>
 </div>
 <div class="sect3">
-<h4 id="_fontfamily">8.3.15. fontfamily</h4>
+<h4 id="_ユーティリティ">8.3.15. ユーティリティ</h4>
+<div class="sect4">
+<h5 id="_javascript">javascript</h5>
 </div>
-<div class="sect3">
-<h4 id="_fontsize">8.3.16. fontsize</h4>
-</div>
-<div class="sect3">
-<h4 id="_globaldelete">8.3.17. globaldelete</h4>
-</div>
-<div class="sect3">
-<h4 id="_globalload">8.3.18. globalload</h4>
-</div>
-<div class="sect3">
-<h4 id="_globalsave">8.3.19. globalsave</h4>
-</div>
-<div class="sect3">
-<h4 id="_increase">8.3.20. increase</h4>
-</div>
-<div class="sect3">
-<h4 id="_javascript">8.3.21. javascript</h4>
-</div>
-<div class="sect3">
-<h4 id="_kill">8.3.22. kill</h4>
-</div>
-<div class="sect3">
-<h4 id="_left">8.3.23. left</h4>
-</div>
-<div class="sect3">
-<h4 id="_loadprofile">8.3.24. loadprofile</h4>
-</div>
-<div class="sect3">
-<h4 id="_localize">8.3.25. localize</h4>
-</div>
-<div class="sect3">
-<h4 id="_lscomponent">8.3.26. lscomponent</h4>
-</div>
-<div class="sect3">
-<h4 id="_narrower">8.3.27. narrower</h4>
-</div>
-<div class="sect3">
-<h4 id="_nmap">8.3.28. nmap</h4>
-</div>
-<div class="sect3">
-<h4 id="_nnoremap">8.3.29. nnoremap</h4>
-</div>
-<div class="sect3">
-<h4 id="_nunmap">8.3.30. nunmap</h4>
-</div>
-<div class="sect3">
-<h4 id="_openpanel">8.3.31. openpanel</h4>
-</div>
-<div class="sect3">
-<h4 id="_paste">8.3.32. paste</h4>
-</div>
-<div class="sect3">
-<h4 id="_pluginviewer">8.3.33. pluginviewer</h4>
-</div>
-<div class="sect3">
-<h4 id="_right">8.3.34. right</h4>
-</div>
-<div class="sect3">
-<h4 id="_saveprofile">8.3.35. saveprofile</h4>
-</div>
-<div class="sect3">
-<h4 id="_set">8.3.36. set</h4>
-</div>
-<div class="sect3">
-<h4 id="_setglobal">8.3.37. setglobal</h4>
-</div>
-<div class="sect3">
-<h4 id="_shorter">8.3.38. shorter</h4>
-</div>
-<div class="sect3">
-<h4 id="_taller">8.3.39. taller</h4>
-</div>
-<div class="sect3">
-<h4 id="_up">8.3.40. up</h4>
-</div>
-<div class="sect3">
-<h4 id="_wider">8.3.41. wider</h4>
 </div>
 </div>
 <div class="sect2">
@@ -2156,7 +2241,7 @@ or tweet me (<a href="http://twitter.com/feel_tanasinn">English</a> / <a href="h
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2012-02-17 17:15:51 JST
+Last updated 2012-02-17 18:57:29 JST
 </div>
 </div>
 </body>

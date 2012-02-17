@@ -573,52 +573,128 @@ image::images/commandline.png[width=480]
     
     …仕様が全然固まってませんのでまだ書けません。
     この部分は作りはじめて日が浅いので、これから色々考えます。
-    とりあえず、shift + shiftでコマンドラインにカーソルが移動します。
+    
+    [bold]*shift + shiftでコマンドラインにカーソルが移動します*。
+    これだけおぼえておけばとりあえず補完でなんとかなると思います。    
 
     順次解説予定
 
 #endif
-==== bgcolor
-==== closepanel
-==== console
-==== copy
-==== debugger
-==== decoder
-==== decrease
-==== deleteprofile
-==== detach
-==== disable
-==== down
-==== enable
-==== encoder
-==== fgcolor
-==== fontfamily
-==== fontsize
-==== globaldelete
-==== globalload
-==== globalsave
-==== increase
-==== javascript
-==== kill
-==== left
-==== loadprofile
-==== localize
-==== lscomponent
-==== narrower
+==== 文字コード設定
+
+===== decoder
+
+アプリケーションの出力を解釈するための文字コード体系を設定します。
+----
+decoder [キャラクタセット・符号化方式名]
+----
+
+===== encoder
+
+アプリケーションへの入力操作を行うときの文字コード体系を設定します。
+----
+encoder [キャラクタセット・符号化方式名]
+----
+
+使用可能な文字コード名はGeckoに依存します。補完で確認してください。
+
+image::images/decoder.png[width=780]
+
+この設定は環境に依存するので現在は永続化可能にしていません。
+将来的にも永続化せず、.tanasinn.jsか.tanasinnrcで設定する方向で検討しています。
+
+==== 地域化
+
+===== localize
+メッセージやUI要素のローカライズを行います。
+
+----
+localize [ロケールID] "[メッセージID]" "[翻訳済み文字列]"
+----
+
+ロケールID(LCID)は日本語環境をお使いならたいていja-JPだと思います。
+
+image::images/localize.png[width=780]
+
+メッセージIDはgettextのように英語表現になっています。
+この設定は通常の永続化機構とは別の仕組みで保存されますので、
+saveprofileのような保存操作はとくに必要ありません。
+
+==== 外観の設定
+
+===== fgcolor
+
+前景色を設定します。
+----
+fgcolor [色番号] [CSS color]
+----
+
+===== bgcolor
+
+背景色を設定します。
+----
+bgcolor [色番号] [CSS color]
+----
+
+image::images/bgcolor.png[width=780]
+
+色番号は0から255までの整数です。
+通常の16色カラー端末では0から15までが使用されます。
+
+===== bgcolor / fgcolor
+===== fontfamily
+===== fontsize
+===== increase
+===== decrease
+
+==== ウィンドウ操作
+===== up
+===== down
+===== left
+===== right
+===== wider
+===== narrower
+===== shorter
+===== taller
+
+==== 編集系操作
+===== copy
+===== paste
+
+==== マッピング管理
 ==== nmap
 ==== nnoremap
 ==== nunmap
-==== openpanel
-==== paste
-==== pluginviewer
-==== right
-==== saveprofile
-==== set
-==== setglobal
-==== shorter
-==== taller
-==== up
-==== wider
+
+==== コンポーネント管理
+===== pluginviewer
+===== lscomponent
+===== disable
+===== enable
+
+==== セッション操作
+===== kill
+===== detach
+
+==== プロファイル操作
+===== loadprofile
+===== saveprofile
+===== deleteprofile
+===== globalload
+===== globalsave
+===== globaldelete
+
+==== デバッギングパネル
+===== openpanel / closepanel
+===== console
+===== debugger
+
+==== 低レベル設定操作
+===== set
+===== setglobal
+
+==== ユーティリティ
+===== javascript
 
 #if __EN__
 === User directories
