@@ -852,11 +852,12 @@ asciidoc.install(2);
 <div class="sectionbody">
 <div class="literalblock">
 <div class="content">
-<pre><tt>"tanasinn terminal emulator" は Firefox/Thunderbird/SeaMonkey上で動作する端末エミュレータです。
+<pre><tt>"tanasinn terminal emulator" は Firefox/Thunderbird/SeaMonkey上で動作し、
+「あらゆる挙動をカスタマイズ可能に」をモットーに製作された最重量級の端末エミュレータです。
 Windows(XP/Vista/7) + Cygwin / Mac / Linux / FreeBSD 環境で動作します。
-ほぼJavascriptによる実装(2%のPython)。
-コマンドラインシェルやcursesベースのアプリケーション等、オペレーティングシステムが提供する
-柔軟でパワフルな機能群にブラウザ上のUIからアクセスすることができます。</tt></pre>
+ほぼJavascriptによる実装(2%のPython)です。
+コマンドラインシェルやターミナルエディタが提供するCUI/TUIを用いて、オペレーティングシステムの
+機能群にブラウザからアクセスすることができます。</tt></pre>
 </div></div>
 </div>
 </div>
@@ -902,10 +903,10 @@ process.python_path = "/usr/bin/python"</tt></pre>
 </div></div>
 <div class="sect2">
 <h3 id="_ダウンロード_ライセンス">2.1. ダウンロード/ライセンス</h3>
+<div class="paragraph"><p><a href="http://www.mozilla-japan.org/MPL/MPL-1.1J.html">Mozilla Public License 1.1 (MPL1.1)</a> で配布しています。</p></div>
 <div class="literalblock">
 <div class="content">
-<pre><tt>Mozilla Public License 1.1 (MPL1.1) で配布しています。
-チュートリアルを書き終わるまで、スナップショット版しか提供しません。
+<pre><tt>チュートリアルを書き終わるまで、スナップショット版しか提供しません。
 現在開発者がオープンソースにおけるソースコード共有モデルとワークフロー管理について必死に勉強中です。
 そこそこgitが使えるようになってきたら、安定したリリースビルドを提供していきたいと考えています。</tt></pre>
 </div></div>
@@ -1239,7 +1240,6 @@ make</tt></pre>
 <div class="content">
 <pre><tt>git clone git://zuse.jp/git/tanasinn.git
 cd tanasinn
-./configure
 ln -s $PWD $RUNTIME/tanasinn
 ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/</tt></pre>
 </div></div>
@@ -1248,7 +1248,6 @@ ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/</tt></pre>
 <div class="content">
 <pre><tt>git clone git://zuse.jp/git/tanasinn.git
 cd tanasinn
-./configure
 $(cygpath $COMSPEC) /c mklink /D "$(cygpath -w "$RUNTIME/tanasinn")" "$(cygpath -w "$PWD")";
 ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/</tt></pre>
 </div></div>
@@ -1257,7 +1256,6 @@ ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/</tt></pre>
 <div class="content">
 <pre><tt>git clone git://zuse.jp/git/tanasinn.git
 cd tanasinn
-./configure
 $(cygpath $COMSPEC) /c linkd.exe "$(cygpath -w "$RUNTIME/tanasinn")" "$(cygpath -w "$PWD")";
 ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/</tt></pre>
 </div></div>
@@ -2004,7 +2002,7 @@ http://www.gnu.org/software/src-highlite -->
 </div>
 <div class="sect2">
 <h3 id="_拡張モジュール作成_上級編チュートリアル">11.5. 拡張モジュール作成 上級編チュートリアル</h3>
-<div class="paragraph"><p>tupstart2上に構築され、tanasinn向けにデザインされたMOPシステムtupbaseの概要と、その拡張法について説明します。コアモジュールを読みたい・いじりたい人向け。デスクトップ拡張やプロセス拡張、独自端末モード拡張等についてもここで触れます。これもtanasinn以外ではまったく役に立ちません。</p></div>
+<div class="paragraph"><p>tupstart2上に構築され、tanasinn向けにデザインされたMOPシステムtupbaseの概要と、その拡張法について説明します。これを読むとひょっとしたら、いままで説明してきためんどくさい書き方はいったいなんだったのかという感想を持たれるかもしれません。コアモジュールを読みたい・いじりたい人向け。デスクトップ拡張やプロセス拡張、独自端末モード拡張等についてもここで触れます。これもtanasinn以外ではまったく役に立ちません。</p></div>
 <div class="literalblock">
 <div class="content">
 <pre><tt>----- coming soon.</tt></pre>
@@ -2361,7 +2359,9 @@ when decoded.</tt></pre>
 <pre><tt>UI-template is JSON-style object that is described as based on the
 specific rule.
 It is to be converted to a node set of XUL/HTML/SVG elements by
-"Template Builder" object.</tt></pre>
+"Template Builder" object.
+Dependencies between DOM fragments are automatically resolved.
+You need not to take care of order for building them.</tt></pre>
 </div></div>
 </div>
 <div class="sect3">
@@ -2552,7 +2552,7 @@ twitter: <a href="http://twitter.com/kefir_">日本語</a> / <a href="http://twi
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2012-02-17 04:06:45 JST
+Last updated 2012-02-17 15:00:07 JST
 </div>
 </div>
 </body>

@@ -146,9 +146,11 @@ Mouse.definition = {
   "[subscribe('command/restore')]": 
   function restore(context) 
   {
-    let {tracking_mode, keypad_mode} = context.mouse;
-    this._tracking_mode = tracking_mode;
-    this._keypad_mode = keypad_mode;
+    if (context.mouse) {
+      let {tracking_mode, keypad_mode} = context.mouse;
+      this._tracking_mode = tracking_mode;
+      this._keypad_mode = keypad_mode;
+    }
   },
 
   /** Make packed mouse event data and send it to tty device. */

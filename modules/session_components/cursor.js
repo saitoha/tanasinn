@@ -127,9 +127,11 @@ Cursor.definition = {
   "[subscribe('command/restore')]": 
   function restore(context) 
   {
-    let {opacity, color} = context.cursor;
-    this.opacity = opacity;
-    this.color = color;
+    if (context.cursor) {
+      let {opacity, color} = context.cursor;
+      this.opacity = opacity;
+      this.color = color;
+    }
   },
 
   "[subscribe('terminal-cursor-blinking-mode-change')]": 

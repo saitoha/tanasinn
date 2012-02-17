@@ -864,13 +864,10 @@ applications.</tt></pre>
 <h2 id="_news">2. News</h2>
 <div class="sectionbody">
 <div class="paragraph"><p>2012/02/04
-Now version 0.1.5.3 available.</p></div>
+Now version 0.1.5.4 available.</p></div>
 <div class="sect2">
 <h3 id="_download_license">2.1. Download/License</h3>
-<div class="literalblock">
-<div class="content">
-<pre><tt>This software is distributed under Mozilla Public License 1.1 (MPL1.1) .</tt></pre>
-</div></div>
+<div class="paragraph"><p>This software is distributed under <a href="http://www.mozilla.org/MPL/1.1/">Mozilla Public License 1.1 (MPL1.1)</a> .</p></div>
 <div class="ulist"><ul>
 <li>
 <p>
@@ -1195,7 +1192,6 @@ tanasinn@zuse.jp is to be generated. enjoy it!</tt></pre>
 <div class="content">
 <pre><tt>git clone git://zuse.jp/git/tanasinn.git
 cd tanasinn
-./configure
 ln -s $PWD $RUNTIME/tanasinn
 ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/</tt></pre>
 </div></div>
@@ -1204,7 +1200,6 @@ ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/</tt></pre>
 <div class="content">
 <pre><tt>git clone git://zuse.jp/git/tanasinn.git
 cd tanasinn
-./configure
 $(cygpath $COMSPEC) /c mklink /D "$(cygpath -w "$RUNTIME/tanasinn")" "$(cygpath -w "$PWD")";
 ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/</tt></pre>
 </div></div>
@@ -1213,7 +1208,6 @@ ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/</tt></pre>
 <div class="content">
 <pre><tt>git clone git://zuse.jp/git/tanasinn.git
 cd tanasinn
-./configure
 $(cygpath $COMSPEC) /c linkd.exe "$(cygpath -w "$RUNTIME/tanasinn")" "$(cygpath -w "$PWD")";
 ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/</tt></pre>
 </div></div>
@@ -1969,7 +1963,9 @@ when decoded.</tt></pre>
 <pre><tt>UI-template is JSON-style object that is described as based on the
 specific rule.
 It is to be converted to a node set of XUL/HTML/SVG elements by
-"Template Builder" object.</tt></pre>
+"Template Builder" object.
+Dependencies between DOM fragments are automatically resolved.
+You need not to take care of order for building them.</tt></pre>
 </div></div>
 </div>
 <div class="sect3">
@@ -2160,7 +2156,7 @@ or tweet me (<a href="http://twitter.com/feel_tanasinn">English</a> / <a href="h
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2012-02-17 04:05:51 JST
+Last updated 2012-02-17 14:59:07 JST
 </div>
 </div>
 </body>

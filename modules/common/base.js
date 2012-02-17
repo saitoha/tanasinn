@@ -56,10 +56,8 @@ Aspect.prototype = {
   },
 
   /** constructor */
-  initialize: function initialize(id, definition) 
+  initialize: function initialize() 
   {
-    this.id = id;
-    this.definition = definition;
   },
 
   /* override */
@@ -173,10 +171,10 @@ Aspect.prototype = {
 //};
 
 /**
- * @class Attribute
+ * @class AttributeContext
  */
-let Attribute = function Attribute() this.initialize.apply(this, arguments);
-Attribute.prototype = {
+let AttributeContext = function AttributeContext() this.initialize.apply(this, arguments);
+AttributeContext.prototype = {
 
   _target: null,
 //  _parser: null,
@@ -219,7 +217,7 @@ Attribute.prototype = {
   /** Returns this object's info */
   toString: function toString() // override
   {
-    return String(<>[Attribute enabled({this.enabled})]</>);
+    return String(<>[AttributeContext enabled({this.enabled})]</>);
   }
 };
 
@@ -248,7 +246,7 @@ function Prototype(definition, base_class, dependency_list)
       if (!target_attribute) {
         attributes[name] = target_attribute = {};
       }
-      new Attribute(target_attribute, this, name).parse(annotation);
+      new AttributeContext(target_attribute, this, name).parse(annotation);
       return name;
     }
     return key;
@@ -313,6 +311,7 @@ Class.prototype = {
   _base: null,
   _dependency_list: null,
   _mixin_list: null,
+  _defined: false,
 
   /** constructor 
    * @param {Class} base_class A Class object.
@@ -347,7 +346,11 @@ Class.prototype = {
    */
   mix: function mix(aspect) 
   {
-    this._mixin_list.push(aspect);
+    if (this._defined) {
+      this.applyAspect(this.prototype, new Prototype(aspect.prototype));
+    } else {
+      this._mixin_list.push(aspect);
+    }
     return this;
   }, 
 
@@ -388,7 +391,7 @@ Class.prototype = {
     for (let [, aspect] in Iterator(this._mixin_list)) {
       this.applyAspect(prototype, new Prototype(aspect.prototype));
     }
-
+    this._defined = true;
     return prototype; 
   },
 
@@ -452,6 +455,7 @@ Abstruct.prototype = {
     for (let [, aspect] in Iterator(this._mixin_list)) {
       this.applyAspect(prototype, new Prototype(aspect.prototype));
     }
+    this._defined = true;
     return prototype;
   },
 
@@ -459,17 +463,43 @@ Abstruct.prototype = {
 Abstruct.prototype.__proto__ = Class.prototype;
 
 /**
+ * @class Attribute
+ */
+let Attribute = function() this.initialize.apply(this, arguments);
+Attribute.prototype = {
+
+  initialize: function initialize(id) 
+  {
+    AttributeContext.prototype[id] = function() this._target[id] = Array.slice(arguments);
+  },
+
+};
+Attribute.prototype.__proto__ = Aspect.prototype;
+
+
+/**
+ * @class FlagAttribute
+ */
+let FlagAttribute = function() this.initialize.apply(this, arguments);
+FlagAttribute.prototype = {
+
+  initialize: function initialize(id) 
+  {
+    AttributeContext.prototype.__defineGetter__(id, function() 
+    {
+      let target = this._target;
+      target[id] = true;
+      return function(flag) target[id] = flag;
+    });
+  },
+
+};
+FlagAttribute.prototype.__proto__ = Aspect.prototype;
+
+/**
  * @aspect PersistableAttribute
  */
-Attribute.prototype.__defineGetter__("persistable", function() {
-  let target = this._target;
-  target["persistable"] = true;
-  return function(flag) 
-    target["persistable"] = flag;
-});
-
-// implements MS IPersist like interface.
-let PersistableAttribute = new Aspect();
+let PersistableAttribute = new FlagAttribute("persistable");
 PersistableAttribute.definition = {
 
   /** constructor 
@@ -576,461 +606,18 @@ PersistableAttribute.definition = {
 
 }; // PersistableAttribute
 
-/**
- * @aspect WatchableAttribute
- *
- */
-
-Attribute.prototype.__defineGetter__("watchable", function() 
-{
-  let target = this._target;
-  target["watchable"] = true;
-  return function(flag) 
-  {
-    target["watchable"] = flag;
-  }
-});
-
-let WatchableAttribute = new Aspect();
-WatchableAttribute.definition = {
-
-  /** constructor */
-  initialize: function initialize(broker)
-  {
-    let attributes = this.__attributes;
-    for (key in attributes) {
-      if (!attributes[key]["watchable"])
-        continue;
-      let getter = this.__lookupGetter__(key);
-      let setter = this.__lookupSetter__(key);
-      let path = [this.id, key].join(".");
-      if (!getter && !setter) {
-        let body = this[key];
-        delete this[key];
-        this.__defineGetter__(key, function() body);
-        this.__defineSetter__(key, function(value) {
-          if (body != value) {
-            body = value;
-            broker.notify("variable-changed/" + path, value);
-          }
-        });
-      }
-    } // for (key in attributes)
-  },
-
-};
-
-/**
- * @aspect ListenAttribute
- */
-Attribute.prototype.listen = function listen(type, target, capture) 
-{
-  let attribute = this._target;
-  attribute["listen"] = {
-    type: type,
-    target: target,
-    capture: capture || false,
-  };
-};
-
-let ListenAttribute = new Aspect();
-ListenAttribute.definition = {
-
-  initialize: function initialize(broker) 
-  {
-    let attributes = this.__attributes;
-    for (key in attributes) {
-      let attribute = attributes[key];
-      if (!attribute["listen"]) {
-        continue;
-      }
-      let handler = this[key];
-      let wrapped_handler;
-      let id = [this.id, key].join(".");
-      if (handler.id) {
-        wrapped_handler = handler;
-      } else {
-        let self = this;
-        wrapped_handler = function() handler.apply(self, arguments);
-        wrapped_handler.id = id;
-        this[key] = wrapped_handler;
-      }
-      let listener_info = attribute["listen"];
-
-      wrapped_handler.watch("enabled", 
-        wrapped_handler.onChange = let (self = this, old_onchange = wrapped_handler.onChange) 
-          function(name, oldval, newval) 
-          {
-            if (old_onchange) {
-              old_onchange.apply(wrapped_handler, arguments);
-            }
-            if (oldval != newval) {
-              if (newval) {
-                listener_info.context = this;
-                listener_info.handler = wrapped_handler;
-                listener_info.id = listener_info.id || id;
-                broker.notify("command/add-domlistener", listener_info);
-              } else {
-                broker.notify("command/remove-domlistener", listener_info.id);
-              }
-            }
-            return newval;
-          });
-      if (attribute["enabled"]) {
-        wrapped_handler.enabled = true;
-      };
-    } // key for (key in attributes) 
-  },
-
-};
-
-
-/**
- * @aspect SubscribeAttribute
- */
-Attribute.prototype.subscribe = function subscribe(expression) 
-{
-  let target = this._target;
-  target["subscribe"] = expression;
-};
-
-let SubscribeAttribute = new Aspect();
-SubscribeAttribute.definition = {
-
-  initialize: function(broker) 
-  {
-    let attributes = this.__attributes;
-    for (key in attributes) {
-      let attribute = attributes[key];
-      if (!attribute["subscribe"])
-        continue;
-      let handler = this[key];
-      let wrapped_handler;
-      let id = [this.id, key].join(".");
-      if (handler.id) {
-        wrapped_handler = handler;
-      } else {
-        let self = this;
-        wrapped_handler = function() handler.apply(self, arguments);
-        wrapped_handler.id = id;
-        this[key] = wrapped_handler;
-      }
-      let listen = function() {
-        let topic = attribute.subscribe;
-        broker.subscribe(topic, wrapped_handler, undefined, id);
-      };
-
-      wrapped_handler.watch("enabled", 
-        wrapped_handler.onChange = let (self = this, old_onchange = wrapped_handler.onChange) 
-          function(name, oldval, newval) 
-          {
-            if (old_onchange) {
-              old_onchange.apply(wrapped_handler, arguments);
-            }
-            if (oldval != newval) {
-              if (newval) {
-                let topic = attribute.subscribe;
-                broker.subscribe(topic, wrapped_handler, undefined, id);
-              } else {
-                broker.unsubscribe(wrapped_handler.id);
-              }
-            }
-            return newval;
-          });
-      if (attribute["enabled"]) {
-        wrapped_handler.enabled = true;
-      };
-
-      broker.subscribe("get/subscribers", 
-        function(subscribers) {
-          subscribers[id] = handler;
-        });
-    } // key for (key in attributes) 
-  },
-
-};
-
-/**
- * @aspect SequenceAttribute
- *
- */
-Attribute.prototype.sequence = function sequence()
-{
-  let target = this._target;
-  target["sequence"] = [].slice.apply(arguments);
-};
-
-let SequenceAttribute = new Aspect();
-SequenceAttribute.definition = {
-
-  /** constructor 
-   *  @param {EventBroker} broker Parent broker object.
-   */
-  initialize: function initialize(broker)
-  {
-    let attributes = this.__attributes;
-    for (let key in attributes) {
-      let expressions = attributes[key]["sequence"];
-      if (expressions) {
-        let handler = this[key];
-        expressions.forEach(
-          function(expression) 
-          {
-            broker.subscribe(
-              "get/sequences", 
-              function getSequences() 
-              {
-                return {
-                  expression: expression,
-                  handler: handler,
-                  context: this,
-                };
-              }, this);
-          }, this);
-      }
-    }
-  },
-
-}
-
-/**
- * @aspect NmapAttribute
- *
- */
-Attribute.prototype.nmap = function nmap(expression) 
-{
-  let target = this._target;
-  target["nmap"] = [].slice.apply(arguments);
-};
-
-let NmapAttribute = new Aspect();
-NmapAttribute.definition = {
-
-  /** constructor 
-   *  @param {EventBroker} broker Parent broker object.
-   */
-  initialize: function initialize(broker) 
-  {
-    let attributes = this.__attributes;
-    for (key in attributes) {
-      let attribute = attributes[key];
-      let expressions = attribute["nmap"];
-      if (!expressions)
-        continue;
-      let handler = this[key];
-      let delegate = this[key] = handler.id ? 
-        this[key]
-      : let (self = this) function() handler.apply(self, arguments);
-      delegate.id = delegate.id || [this.id, key].join(".");
-      delegate.description = attribute.description;
-      delegate.expressions = expressions;
-      broker.subscribe("get/nmap", function() delegate);
-
-      // Register load handler.
-      broker.subscribe(
-        "command/load-persistable-data", 
-        function load(context) // Restores settings from context object.
-        {
-          let expressions = context[delegate.id + ".nmap"];
-          if (expressions) {
-            delegate.expressions = expressions;
-            if (delegate.enabled) {
-              delegate.enabled = false;
-              delegate.enabled = true;
-            }
-          }
-        }, this);
-
-      // Register persist handler.
-      broker.subscribe(
-        "command/save-persistable-data", 
-        function persist(context) // Save settings to persistent context.
-        {
-          if (expression.join("") != delegate.expression.join("")) {
-            context[delegate.id + ".nmap"] = delegate.expressions;
-          }
-        }, this);
-    }
-  },
-};
-
-
-/**
- * @aspect CmapAttribute
- *
- */
-Attribute.prototype.cmap = function cmap(expression) 
-{
-  let target = this._target;
-  target["cmap"] = [].slice.apply(arguments);
-};
-
-let CmapAttribute = new Aspect();
-CmapAttribute.definition = {
-
-  /** constructor 
-   *  @param {EventBroker} broker Parent broker object.
-   */
-  initialize: function initialize(broker) 
-  {
-    let attributes = this.__attributes;
-    for (key in attributes) {
-      let attribute = attributes[key];
-      let expressions = attribute["cmap"];
-      if (!expressions)
-        continue;
-        let handler = this[key];
-        let delegate = this[key] = handler.id ? 
-          this[key]
-        : let (self = this) function() handler.apply(self, arguments);
-        delegate.id = delegate.id || [this.id, key].join(".");
-        delegate.description = attribute.description;
-        delegate.expressions = expressions;
-
-        broker.subscribe("get/cmap", function() delegate);
-
-        // Register load handler.
-        broker.subscribe(
-          "command/load-persistable-data", 
-          function load(context) // Restores settings from context object.
-          {
-            let expressions = context[delegate.id + ".cmap"];
-            if (expressions) {
-              delegate.expressions = expressions;
-              if (delegate.enabled) {
-                delegate.enabled = false;
-                delegate.enabled = true;
-              }
-            }
-          }, this);
-
-        // Register persist handler.
-        broker.subscribe(
-          "command/save-persistable-data", 
-          function persist(context) // Save settings to persistent context.
-          {
-            if (expressions.join("") != delegate.expressions.join("")) {
-              context[delegate.id + ".cmap"] = delegate.expressions;
-            }
-          }, this);
-    }
-  },
-};
-
-/**
- * @aspect CommandAttribute
- *
- */
-Attribute.prototype.command 
-  = function command(name, args) 
-{
-  let target = this._target;
-  target["command"] = { name: name, args: args };
-};
-
-let CommandAttribute = new Aspect();
-CommandAttribute.definition = {
-
-  /** constructor 
-   *  @param {EventBroker} broker Parent broker object.
-   */
-  initialize: function initialize(broker) 
-  {
-    let attributes = this.__attributes;
-    for (key in attributes) {
-      let attribute = attributes[key];
-      let command_info = attribute["command"];
-      if (!command_info) {
-        continue;
-      }
-      let handler = this[key];
-      let delegate = this[key] = handler.id ? 
-        this[key]
-      : let (self = this) function() handler.apply(self, arguments);
-      delegate.id = delegate.id || [this.id, key].join(".");
-      delegate.description = attribute.description;
-
-      let commands = command_info.name
-        .split("/")
-        .map(function(name)
-        let (self = this) {
-          name: name,
-          description: attribute.description,
-          args: command_info.args,
-
-          complete: function complete(source, listener) 
-          {
-            let args = this.args;
-            args && args.some(function(arg)
-            {
-              let [name, option] = arg.split("/");
-              let completer = broker.uniget(<>get/completer/{name}</>);
-              let position = completer.startSearch(source, listener, option);
-              const NOT_MATCH = -1;
-              const MATCH = 0;
-              if (NOT_MATCH == position || MATCH == position) {
-                return true;
-              }
-              source = source.substr(position); // advance current position
-              return false;
-            });
-          },
-
-          evaluate: function evaluate() 
-          {
-            return handler.apply(self, arguments);
-          },
-        }, this);
-
-      delegate.watch("enabled", 
-        delegate.onChange = let (self = this, old_onchange = delegate.onChange) 
-          function(name, oldval, newval) 
-          {
-            if (old_onchange) {
-              old_onchange.apply(delegate, arguments);
-            }
-            if (oldval != newval) {
-              if (newval) {
-                commands.forEach(function(command) {
-                  broker.subscribe("get/commands", function() command, undefined, delegate.id);
-                });
-              } else {
-                broker.unsubscribe(delegate.id);
-              }
-            }
-            return newval;
-          });
-      if (attribute["enabled"]) {
-        delegate.enabled = true;
-      };
-    }
-  },
-};
-
 /** 
  * @abstruct Component
  * The base class of module.
  */
-let Component = new Abstruct().mix(PersistableAttribute)
-                              .mix(WatchableAttribute)
-                              .mix(SequenceAttribute)
-                              .mix(NmapAttribute)
-                              .mix(CmapAttribute)
-                              .mix(SubscribeAttribute)
-                              .mix(ListenAttribute)
-                              .mix(CommandAttribute)
+let Component = new Abstruct();
 Component.definition = {
 
   /** constructor */
   initialize: function initialize(broker) 
   {
     this._broker = broker;
-    broker.subscribe(<>change/enabled-state/{this.id}</>, 
-      function(enabled) this.enabled = enabled, this);
-
-    broker.subscribe("get/components", 
-      function(instances) this, this);
-
+    broker.subscribe("get/components", function(instances) this, this);
   },
 
   /** This method is expected to run test methods.
@@ -1057,7 +644,7 @@ Component.definition = {
  *  - function install(session)    Install itself.
  *  - function uninstall(session)  Uninstall itself.
  */
-let Plugin = new Abstruct().extends(Component)
+let Plugin = new Abstruct().extends(Component).mix(PersistableAttribute)
 Plugin.definition = {
 
   __enabled: false,
@@ -1269,4 +856,404 @@ CoClass.prototype = {
 };
 CoClass.prototype.__proto__ = Class.prototype;
 
+
+
+/**
+ * @Attribute SubscribeAttribute
+ */
+let SubscribeAttribute = new Attribute("subscribe");
+SubscribeAttribute.definition = {
+
+  initialize: function(broker) 
+  {
+    let attributes = this.__attributes;
+    for (key in attributes) {
+      let attribute = attributes[key];
+      if (!attribute["subscribe"])
+        continue;
+      let topic = attribute["subscribe"][0];
+      if (!topic) {
+        throw coUtils.Debug.Exception(_("topic is not specified."));
+      }
+      let handler = this[key];
+      let wrapped_handler;
+      let id = [this.id, key].join(".");
+      if (handler.id) {
+        wrapped_handler = handler;
+      } else {
+        let self = this;
+        wrapped_handler = function() handler.apply(self, arguments);
+        wrapped_handler.id = id;
+        this[key] = wrapped_handler;
+      }
+      let listen = function() {
+        broker.subscribe(topic, wrapped_handler, undefined, id);
+      };
+      wrapped_handler.watch("enabled", 
+        wrapped_handler.onChange = let (self = this, old_onchange = wrapped_handler.onChange) 
+          function(name, oldval, newval) 
+          {
+            if (old_onchange) {
+              old_onchange.apply(wrapped_handler, arguments);
+            }
+            if (oldval != newval) {
+              if (newval) {
+                broker.subscribe(topic, wrapped_handler, undefined, id);
+              } else {
+                broker.unsubscribe(wrapped_handler.id);
+              }
+            }
+            return newval;
+          });
+      if (attribute["enabled"]) {
+        wrapped_handler.enabled = true;
+      };
+
+      broker.subscribe("get/subscribers", 
+        function(subscribers) {
+          subscribers[id] = handler;
+        });
+    } // key for (key in attributes) 
+  },
+};
+Component.mix(SubscribeAttribute);
+
+/**
+ * @Attribute WatchableAttribute
+ *
+ */
+let WatchableAttribute = new FlagAttribute("watchable");
+WatchableAttribute.definition = {
+
+  /** constructor */
+  initialize: function initialize(broker)
+  {
+    let attributes = this.__attributes;
+    for (key in attributes) {
+      if (!attributes[key]["watchable"])
+        continue;
+      let getter = this.__lookupGetter__(key);
+      let setter = this.__lookupSetter__(key);
+      let path = [this.id, key].join(".");
+      if (!getter && !setter) {
+        let body = this[key];
+        delete this[key];
+        this.__defineGetter__(key, function() body);
+        this.__defineSetter__(key, function(value) {
+          if (body != value) {
+            body = value;
+            broker.notify("variable-changed/" + path, value);
+          }
+        });
+      }
+    } // for (key in attributes)
+  },
+
+};
+
+Component.mix(WatchableAttribute);
+
+/**
+ * @Attribute SequenceAttribute
+ *
+ */
+let SequenceAttribute = new Attribute("sequence");
+SequenceAttribute.definition = {
+
+  /** constructor 
+   *  @param {EventBroker} broker Parent broker object.
+   */
+  initialize: function initialize(broker)
+  {
+    let attributes = this.__attributes;
+    for (let key in attributes) {
+      let expressions = attributes[key]["sequence"];
+      if (expressions) {
+        let handler = this[key];
+        expressions.forEach(
+          function(expression) 
+          {
+            broker.subscribe(
+              "get/sequences", 
+              function getSequences() 
+              {
+                return {
+                  expression: expression,
+                  handler: handler,
+                  context: this,
+                };
+              }, this);
+          }, this);
+      }
+    }
+  },
+
+};
+
+Component.mix(SequenceAttribute);
+
+/**
+ * @Attribute NmapAttribute
+ *
+ */
+let NmapAttribute = new Attribute("nmap");
+NmapAttribute.definition = {
+
+  /** constructor 
+   *  @param {EventBroker} broker Parent broker object.
+   */
+  initialize: function initialize(broker) 
+  {
+    let attributes = this.__attributes;
+    for (key in attributes) {
+      let attribute = attributes[key];
+      let expressions = attribute["nmap"];
+      if (!expressions)
+        continue;
+      let handler = this[key];
+      let delegate = this[key] = handler.id ? 
+        this[key]
+      : let (self = this) function() handler.apply(self, arguments);
+      delegate.id = delegate.id || [this.id, key].join(".");
+      delegate.description = attribute.description;
+      delegate.expressions = expressions;
+      broker.subscribe("get/nmap", function() delegate);
+
+      // Register load handler.
+      broker.subscribe(
+        "command/load-persistable-data", 
+        function load(context) // Restores settings from context object.
+        {
+          let expressions = context[delegate.id + ".nmap"];
+          if (expressions) {
+            delegate.expressions = expressions;
+            if (delegate.enabled) {
+              delegate.enabled = false;
+              delegate.enabled = true;
+            }
+          }
+        }, this);
+
+      // Register persist handler.
+      broker.subscribe(
+        "command/save-persistable-data", 
+        function persist(context) // Save settings to persistent context.
+        {
+          if (expression.join("") != delegate.expression.join("")) {
+            context[delegate.id + ".nmap"] = delegate.expressions;
+          }
+        }, this);
+    }
+  },
+};
+
+Component.mix(NmapAttribute);
+
+
+/**
+ * @Attribute CmapAttribute
+ *
+ */
+let CmapAttribute = new Attribute("cmap");
+CmapAttribute.definition = {
+
+  /** constructor 
+   *  @param {EventBroker} broker Parent broker object.
+   */
+  initialize: function initialize(broker) 
+  {
+    let attributes = this.__attributes;
+    for (key in attributes) {
+      let attribute = attributes[key];
+      let expressions = attribute["cmap"];
+      if (!expressions)
+        continue;
+        let handler = this[key];
+        let delegate = this[key] = handler.id ? 
+          this[key]
+        : let (self = this) function() handler.apply(self, arguments);
+        delegate.id = delegate.id || [this.id, key].join(".");
+        delegate.description = attribute.description;
+        delegate.expressions = expressions;
+
+        broker.subscribe("get/cmap", function() delegate);
+
+        // Register load handler.
+        broker.subscribe(
+          "command/load-persistable-data", 
+          function load(context) // Restores settings from context object.
+          {
+            let expressions = context[delegate.id + ".cmap"];
+            if (expressions) {
+              delegate.expressions = expressions;
+              if (delegate.enabled) {
+                delegate.enabled = false;
+                delegate.enabled = true;
+              }
+            }
+          }, this);
+
+        // Register persist handler.
+        broker.subscribe(
+          "command/save-persistable-data", 
+          function persist(context) // Save settings to persistent context.
+          {
+            if (expressions.join("") != delegate.expressions.join("")) {
+              context[delegate.id + ".cmap"] = delegate.expressions;
+            }
+          }, this);
+    }
+  },
+};
+
+Component.mix(CmapAttribute);
+
+/**
+ * @aspect ListenAttribute
+ */
+let ListenAttribute = new Attribute("listen");
+ListenAttribute.definition = {
+
+  initialize: function initialize(broker) 
+  {
+    let attributes = this.__attributes;
+    for (key in attributes) {
+      let attribute = attributes[key];
+      if (!attribute["listen"]) {
+        continue;
+      }
+      let handler = this[key];
+      let wrapped_handler;
+      let id = [this.id, key].join(".");
+      if (handler.id) {
+        wrapped_handler = handler;
+      } else {
+        let self = this;
+        wrapped_handler = function() handler.apply(self, arguments);
+        wrapped_handler.id = id;
+        this[key] = wrapped_handler;
+      }
+      let [type, target, capture] = attribute["listen"];
+      let listener_info = attribute["listen"] = {
+        type: type,
+        target: target,
+        capture: capture || false,
+      };
+
+      wrapped_handler.watch("enabled", 
+        wrapped_handler.onChange = let (self = this, old_onchange = wrapped_handler.onChange) 
+          function(name, oldval, newval) 
+          {
+            if (old_onchange) {
+              old_onchange.apply(wrapped_handler, arguments);
+            }
+            if (oldval != newval) {
+              if (newval) {
+                listener_info.context = this;
+                listener_info.handler = wrapped_handler;
+                listener_info.id = listener_info.id || id;
+                broker.notify("command/add-domlistener", listener_info);
+              } else {
+                broker.notify("command/remove-domlistener", listener_info.id);
+              }
+            }
+            return newval;
+          });
+      if (attribute["enabled"]) {
+        wrapped_handler.enabled = true;
+      };
+    } // key for (key in attributes) 
+  },
+
+};
+Component.mix(ListenAttribute);
+
+/**
+ * @aspect CommandAttribute
+ *
+ */
+let CommandAttribute = new Attribute("command");
+CommandAttribute.definition = {
+
+  /** constructor 
+   *  @param {EventBroker} broker Parent broker object.
+   */
+  initialize: function initialize(broker) 
+  {
+    let attributes = this.__attributes;
+    for (key in attributes) {
+      let attribute = attributes[key];
+      if (!attribute["command"]) {
+        continue;
+      }
+      let [name, args] = attribute["command"];
+      let command_info = {
+        name: name,
+        args: args,
+      };
+      let handler = this[key];
+      let delegate = this[key] = handler.id ? 
+          this[key]
+        : let (self = this) function() handler.apply(self, arguments);
+      delegate.id = delegate.id || [this.id, key].join(".");
+      delegate.description = attribute.description;
+
+      let commands = command_info.name
+        .split("/")
+        .map(function(name)
+        let (self = this) {
+          name: name,
+          description: attribute.description,
+          args: command_info.args,
+
+          complete: function complete(source, listener) 
+          {
+            let args = this.args;
+            args && args.some(function(arg)
+            {
+              let [name, option] = arg.split("/");
+              let completer = broker.uniget(<>get/completer/{name}</>);
+              let position = completer.startSearch(source, listener, option);
+              const NOT_MATCH = -1;
+              const MATCH = 0;
+              if (NOT_MATCH == position || MATCH == position) {
+                return true;
+              }
+              source = source.substr(position); // advance current position
+              return false;
+            });
+          },
+
+          evaluate: function evaluate() 
+          {
+            return handler.apply(self, arguments);
+          },
+        }, this);
+
+      delegate.watch("enabled", 
+        delegate.onChange = let (self = this, old_onchange = delegate.onChange) 
+          function(name, oldval, newval) 
+          {
+            if (old_onchange) {
+              old_onchange.apply(delegate, arguments);
+            }
+            if (oldval != newval) {
+              if (newval) {
+                commands.forEach(function(command) {
+                  broker.subscribe("get/commands", function() command, undefined, delegate.id);
+                });
+              } else {
+                broker.unsubscribe(delegate.id);
+              }
+            }
+            return newval;
+          });
+      if (attribute["enabled"]) {
+        delegate.enabled = true;
+      };
+    }
+  },
+};
+
+Component.mix(CommandAttribute)
 

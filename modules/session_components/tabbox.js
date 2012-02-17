@@ -158,7 +158,6 @@ BottomPanel.definition = {
     this._bottom_panel = tanasinn_bottompanel;
     this._tabbox = tanasinn_tabbox;
     this._scrollbox = tanasinn_arrowscrollbox;
-    this.add.enabled = true;
     this.select.enabled = true;
     this.remove.enabled = true;
     this.open.enabled = true;
@@ -172,7 +171,6 @@ BottomPanel.definition = {
   "[subscribe('uninstall/bottompanel'), enabled]":
   function uninstall(session) 
   {
-    this.add.enabled = false;
     this.select.enabled = false;
     this.remove.enabled = false;
     this.open.enabled = false;
@@ -339,25 +337,6 @@ BottomPanel.definition = {
       })[id];
     this._panel_map[id] = [tanasinn_tab, tab_panel];
     return tab_panel;
-  },
-
-  "[subscribe('command/add-panel')]":
-  function add(panel_object) 
-  {
-    let id = panel_object.id;
-    let name = panel_object.info..name;
-    let new_panel = this.alloc(id, name);
-    let session = this._broker;
-    let content = session.uniget("command/construct-chrome", panel_object.template)["#root"];
-    new_panel.appendChild(content);
-    session.subscribe("panel-selected/" + panel_object.id, function(selected_panel) 
-    {
-      let template = panel_object.template;
-      template.parentNode = new_panel;
-      new_panel.removeChild(new_panel.firstChild);
-      let content = session.uniget("command/construct-chrome", panel_object.template)["#root"];
-      new_panel.appendChild(content);
-    }, this);
   },
 
   _selectTab: function _selectTab(tab) 
