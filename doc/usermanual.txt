@@ -87,7 +87,7 @@ http:/#/www.mozilla-japan.org/MPL/MPL-1.1J.html[Mozilla Public License 1.1 (MPL1
     そこそこgitが使えるようになってきたら、安定したリリースビルドを提供していきたいと考えています。
 
 - スナップショット版(PACKAGE_VERSION): http:/#/zuse.jp/tanasinn/tanasinn-current.xpi[ダウンロード]
-- 開発版 (PACKAGE_VERSION): http:/#/zuse.jp/tanasinn/downloads/versions/0.1.5.4/TANASINN_XPI_ID.xpi[ダウンロード].
+- 開発版 (PACKAGE_VERSION): http:/#/zuse.jp/tanasinn/downloads/versions/PACKAGE_VERSION/TANASINN_XPI_ID.xpi[ダウンロード].
 - 過去のバージョン: http:/#/zuse.jp/tanasinn/downloads/versions/
 
 #endif
