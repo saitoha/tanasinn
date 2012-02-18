@@ -117,7 +117,7 @@ OuterChrome.definition = {
           style: <>
             -moz-box-shadow: 5px 4px 29px black;
             border-radius: 8px;
-            background: -moz-linear-gradient(top, #444, #000);
+            background: -moz-linear-gradient(top, #555, #000);
             opacity: 0.7;
           </>,
         },

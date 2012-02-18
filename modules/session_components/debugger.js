@@ -240,7 +240,7 @@ Hooker.definition = {
 /**
  * @class Debugger
  */
-let Debugger = new Class().extends(Plugin).depends("bottompanel");
+let Debugger = new Class().extends(Plugin);
 Debugger.definition = {
 
   get id()
@@ -249,17 +249,22 @@ Debugger.definition = {
   get info()
     <plugin>
         <name>{_("Debugger")}</name>
+        <version>0.1</version>
         <description>{
           _("Enables you to run terminal emurator step-by-step and ", 
             "observe input/output character sequence.")
         }</description>
-        <version>0.1</version>
     </plugin>,
 
-  get template()
-    let (session = this._broker)
-    {
-      parentNode: this.dependency["bottompanel"].alloc(this.id, _("Debugger")),
+  "[persistable] auto_scroll": true,
+  "[persistable] auto_scroll_update_interval": 1000,
+
+  _timer_id: null,
+
+  getTemplate: function getTemplate(parent)
+  {
+    return {
+      parentNode: parent,
       tagName: "hbox",
       flex: 1,
       style: <>
@@ -337,7 +342,8 @@ Debugger.definition = {
           },
         },
       ]
-    },
+    };
+  },
 
   /** Installs itself. 
    *  @param {Session} session A session object.
@@ -345,20 +351,8 @@ Debugger.definition = {
   "[subscribe('install/debugger'), enabled]": 
   function install(session) 
   {
-    let {
-      tanasinn_trace,
-      tanasinn_debugger_attach,
-      tanasinn_debugger_break,
-      tanasinn_debugger_resume,
-      tanasinn_debugger_step,
-    } = session.uniget("command/construct-chrome", this.template);
-    this._trace_box = tanasinn_trace;
-    this._checkbox_attach = tanasinn_debugger_attach;
-    this._checkbox_break = tanasinn_debugger_break;
-    this._checkbox_resume = tanasinn_debugger_resume;
-    this._checkbox_step = tanasinn_debugger_step;
     this.select.enabled = true;
-    this.trace.enabled = true;
+    this.onPanelItemRequested.enabled = true;
   },
 
   /** Uninstalls itself 
@@ -367,10 +361,31 @@ Debugger.definition = {
   "[subscribe('uninstall/debugger'), enabled]": 
   function uninstall(session)
   {
-    let bottom_panel = this.dependency["bottompanel"];
-    bottom_panel.remove(this.id);
     this.select.enabled = false;
     this.trace.enabled = false;
+    this.onPanelItemRequested.enabled = false;
+    session.notify("command/remove-panel", this.id);
+  },
+
+  "[subscribe('@get/panel-items')]": 
+  function onPanelItemRequested(panel) 
+  {
+    let item = panel.alloc(this.id, _("Debugger"));
+    let template = this.getTemplate(item);
+    let session = this._broker;
+    let {
+      tanasinn_trace,
+      tanasinn_debugger_attach,
+      tanasinn_debugger_break,
+      tanasinn_debugger_resume,
+      tanasinn_debugger_step,
+    } = session.uniget("command/construct-chrome", template);
+    this._trace_box = tanasinn_trace;
+    this._checkbox_attach = tanasinn_debugger_attach;
+    this._checkbox_break = tanasinn_debugger_break;
+    this._checkbox_resume = tanasinn_debugger_resume;
+    this._checkbox_step = tanasinn_debugger_step;
+    this.trace.enabled = true;
   },
 
   doAttach: function doAttach() 
@@ -424,133 +439,141 @@ Debugger.definition = {
     let trace_box = this._trace_box;
     function escape(str) 
     {
-      return str.replace(/[\u0000-\u000f]/g, function(c) 
+      return str.replace(/[\u0000-\u001f]/g, function(c) 
       {
         return "<" + (0x100 + c.charCodeAt(0)).toString(16).substr(1, 2) + ">";
       });
     }
+
     let session = this._broker;
-    session.uniget("command/construct-chrome", {
-      parentNode: trace_box,
-      tagName: "hbox",
-      style: <> 
-        width: 400px; 
-        max-width: 400px; 
-        font-weight: bold;
-        text-shadow: 0px 0px 2px black;
-        font-size: 20px;
-      </>,
-      childNodes: CO_TRACE_CONTROL == type ? [
-        {
-          tagName: "label",
-          value: ">",
-          style: <>
-            padding: 3px;
-            color: darkred;
-          </>,
-        },
-        {
-          tagName: "box",
-          width: 120,
-          childNodes:
+    if (this.auto_scroll) {
+      if (this._timer_id) {
+        this._timer_id.cancel();
+      }
+      this._timer_id = coUtils.Timer.setTimeout(function() {
+        trace_box.scrollTop = trace_box.scrollHeight;
+        this._timer_id = null;
+      }, this.auto_scroll_update_interval, this);
+    }
+    
+    coUtils.Timer.setTimeout(function() {
+      session.uniget("command/construct-chrome", {
+        parentNode: trace_box,
+        tagName: "hbox",
+        style: <> 
+          width: 400px; 
+          max-width: 400px; 
+          font-weight: bold;
+          text-shadow: 0px 0px 2px black;
+          font-size: 20px;
+        </>,
+        childNodes: CO_TRACE_CONTROL == type ? [
           {
             tagName: "label",
-            value: escape(sequence),
+            value: ">",
             style: <>
-              color: red;
-              background: lightblue; 
+              padding: 3px;
+              color: darkred;
+            </>,
+          },
+          {
+            tagName: "box",
+            width: 120,
+            childNodes:
+            {
+              tagName: "label",
+              value: escape(sequence),
+              style: <>
+                color: red;
+                background: lightblue; 
+                border-radius: 6px;
+                padding: 3px;
+              </>,
+            },
+          },
+          {
+            tagName: "label",
+            value: "-",
+            style: <>
+              color: black;
+              padding: 3px;
+            </>,
+          },
+          {
+            tagName: "box",
+            style: <> 
+              background: lightyellow;
+              border-radius: 6px;
+              margin: 2px;
+              padding: 0px;
+            </>,
+            childNodes: [
+              {
+                tagName: "label",
+                value: name,
+                style: <>
+                  color: blue;
+                  padding: 1px;
+                </>,
+              },
+              {
+                tagName: "label",
+                value: escape(value.toString()),
+                style: <>
+                  color: green;
+                  padding: 1px;
+                </>,
+              }
+            ],
+          },
+        ]: CO_TRACE_OUTPUT == type ? [
+          {
+            tagName: "label",
+            value: ">",
+            style: <>
+              padding: 3px;
+              color: darkred;
+            </>,
+          },
+          {
+            tagName: "label",
+            value: escape(value.shift()),
+            style: <>
+              color: darkcyan;
+              background: lightgray;
               border-radius: 6px;
               padding: 3px;
             </>,
           },
-        },
-        {
-          tagName: "label",
-          value: "-",
-          style: <>
-            color: black;
-            padding: 3px;
-          </>,
-        },
-        {
-          tagName: "box",
-          style: <> 
-            background: lightyellow;
-            border-radius: 6px;
-            margin: 2px;
-            padding: 0px;
-          </>,
-          childNodes: [
-            {
-              tagName: "label",
-              value: name,
-              style: <>
-                color: blue;
-                padding: 1px;
-              </>,
-            },
-            {
-              tagName: "label",
-              value: escape(value.toString()),
-              style: <>
-                color: green;
-                padding: 1px;
-              </>,
-            }
-          ],
-        },
-      ]: CO_TRACE_OUTPUT == type ? [
-        {
-          tagName: "label",
-          value: ">",
-          style: <>
-            padding: 3px;
-            color: darkred;
-          </>,
-        },
-        {
-          tagName: "label",
-          value: escape(value.shift()),
-          style: <>
-            color: darkcyan;
-            background: lightgray;
-            border-radius: 6px;
-            padding: 3px;
-          </>,
-        },
-      ]: [
-        {
-          tagName: "label",
-          value: "<",
-          style: <> 
-            padding: 3px; 
-            color: darkblue;
-          </>,
-        },
-        {
-          tagName: "label",
-          value: escape(value.shift()),
-          style: <>
-            color: darkcyan;
-            background: lightpink;
-            border-radius: 6px;
-            padding: 3px;
-          </>,
-        },
-      ],
-    });
-    let current_scroll_position = trace_box.scrollTop + trace_box.boxObject.height;
-    if (current_scroll_position + 50 > trace_box.scrollHeight) {
-      coUtils.Timer.setTimeout(function() {
-        trace_box.scrollTop = trace_box.scrollHeight;
-      }, 10);
-    }
+        ]: [
+          {
+            tagName: "label",
+            value: "<",
+            style: <> 
+              padding: 3px; 
+              color: darkblue;
+            </>,
+          },
+          {
+            tagName: "label",
+            value: escape(value.shift()),
+            style: <>
+              color: darkcyan;
+              background: lightpink;
+              border-radius: 6px;
+              padding: 3px;
+            </>,
+          },
+        ],
+      });
+    }, 100);
   },
 
   "[command('debugger'), nmap('<M-d>', '<C-S-d>'), _('Open debugger.')]":
   function select() 
   {
-    this.dependency["bottompanel"].select(this.id);
+    let session = this._broker;
+    session.notify("command/select-panel", this.id);
     return true;
   },
 };

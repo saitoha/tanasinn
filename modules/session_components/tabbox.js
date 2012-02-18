@@ -216,6 +216,9 @@ BottomPanel.definition = {
     let renderer = this.dependency["renderer"];
     let screen = this.dependency["screen"];
 
+    let session = this._broker;
+    session.notify("get/panel-items", this);
+
     // restricts bottom panel's height.
     let line_height = renderer.line_height;
     let row = screen.height;
@@ -224,10 +227,13 @@ BottomPanel.definition = {
       if (panel.height > max_screen_height); 
         panel.height = max_screen_height;
     }
+
+    // open.
     bottomPanel.setAttribute("collapsed", false);
+
+    // shrink screen's row.
     let diff = Math.round(bottomPanel.boxObject.height / line_height);
     if (0 != diff) {
-      let session = this._broker;
       session.notify("command/shrink-row", diff);
     }
   },
@@ -290,13 +296,12 @@ BottomPanel.definition = {
     }
 
     let session = this._broker;
-    let {tanasinn_tab} = session.uniget(
+    let tanasinn_tab = session.uniget(
       "command/construct-chrome", 
       {
         parentNode: "#tanasinn_tabbox_tabs",
         tagName: "tab",
-        id: "tanasinn_tab",
-        name: id,
+        id: id,
         label: name,
         style: <>
           -moz-appearance: none;
@@ -317,7 +322,7 @@ BottomPanel.definition = {
           //margin: "0px",
           //padding: "0px",
         </>,
-      });
+      })[id];
     let tab_panel = session.uniget(
       "command/construct-chrome", 
       {
@@ -360,6 +365,8 @@ BottomPanel.definition = {
       toggle = false;
       id = id.substr(1);
     }
+    let session = this._broker;
+    session.notify("get/panel-items", this);
     this._panel_map = this._panel_map || {};
     let panel_map = this._panel_map;
     if (id in panel_map) { // Check if specified id was registered.
@@ -392,10 +399,12 @@ BottomPanel.definition = {
     id = id.id || id;
     this._panel_map = this._panel_map || {};
     let panel_map = this._panel_map;
-    let [tab, tab_panel] = panel_map[id];
-    tab.parentNode.removeChild(tab);
-    tab_panel.parentNode.removeChild(tab_panel);
-    delete panel_map[id];
+    if (panel_map[id]) {
+      let [tab, tab_panel] = panel_map[id];
+      tab.parentNode.removeChild(tab);
+      tab_panel.parentNode.removeChild(tab_panel);
+      delete panel_map[id];
+    }
   },
 };
 
