@@ -196,7 +196,7 @@ InputManager.definition = {
     this._textbox.focus(); // <-- set focus to textbox element.
   },
 
-  "[command('blur', []), _('Blur tanasinn window')]":
+  "[command('blur', []), nmap('<M-z>', '<C-S-Z>'), _('Blur tanasinn window')]":
   function blurCommand() 
   {
     coUtils.Timer.setTimeout(function() {
@@ -205,7 +205,7 @@ InputManager.definition = {
   },
 
   /** blur focus from the textbox elment. */
-  "[subscribe('command/blur'), nmap('<M-z>', '<C-S-Z>'), _('Blur tanasinn window')]":
+  "[subscribe('command/blur')]":
   function blur() 
   {
     this._textbox.blur(); // raise blur event.
@@ -274,7 +274,16 @@ InputManager.definition = {
       let session = this._broker;
       session.notify(
         "command/report-status-message", 
-        <>code:{event.keyCode},which:{event.which},shift:{event.shiftKey?"t":"f"},ctl:{event.ctrlKey?"t":"f"},alt:{event.altKey?"t":"f"},meta:{event.metaKey?"t":"f"},char:{event.isChar?"t":"f"},{coUtils.Keyboard.convertCodeToExpression(packed_code)}</>);
+        <>
+code:{event.keyCode},
+which:{event.which},
+shift:{event.shiftKey?"t":"f"},
+ctl:{event.ctrlKey?"t":"f"},
+alt:{event.altKey?"t":"f"},
+meta:{event.metaKey?"t":"f"},
+char:{event.isChar?"t":"f"},
+{coUtils.Keyboard.convertCodeToExpression(packed_code)}
+        </>);
     };
     this.inputWithMapping(packed_code);
   },

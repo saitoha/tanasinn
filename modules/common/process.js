@@ -130,7 +130,7 @@ with (scope) {
         .split("")
         .map(function(letter) String(<>{letter}:\cygwin</>));
       search_paths.push(<>D:\User\Program\cygwin</>.toString());
-      for (let [, path] in Iterator(search_paths) {
+      for (let [, path] in Iterator(search_paths)) {
         let directory = Components
           .classes["@mozilla.org/file/local;1"]
           .createInstance(Components.interfaces.nsILocalFile);
