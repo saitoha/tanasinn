@@ -50,7 +50,7 @@ Tracer.definition = {
     session.notify("initialized/tracer", this);
   },
 
-  "[subscribe('command/trace-on'), enabled]":
+  "[subscribe('command/debugger-trace-on'), enabled]":
   function enable() 
   {
     this.onBeforeInput.enabled = true;
@@ -94,7 +94,7 @@ Tracer.definition = {
     }
   },
 
-  "[subscribe('command/trace-off'), enabled]":
+  "[subscribe('command/debugger-trace-off'), enabled]":
   function disable() 
   {
     this.onBeforeInput.enabled = false;
@@ -119,7 +119,7 @@ Tracer.definition = {
     };
     let session = this._broker;
 //    session.notify("command/report-status-message", message); 
-    session.notify("command/trace-sequence", [info, undefined]); 
+    session.notify("command/debugger-trace-sequence", [info, undefined]); 
   },
 
 };
@@ -129,13 +129,12 @@ Tracer.definition = {
  * @class Hooker
  *
  */
-let Hooker = new Class().extends(Component);
+let Hooker = new Class().extends(Component).depends("parser");
 Hooker.definition = {
 
   get id()
     "hooker",
 
-  _parser: null, 
   _buffer: null, 
   _hooked: false,
   _step_mode: false,
@@ -146,24 +145,15 @@ Hooker.definition = {
     this._buffer = [];
   },
 
-  "[subscribe('@initialized/parser'), enabled]":
-  function onLoad(parser) 
-  { 
-    this._parser = parser; 
-
-    let session = this._broker;
-    session.notify("initialized/hooker", this);
-  },
-
   /** Suspend TTY and enter debug session. */
-  "[subscribe('command/pause'), enabled]":
+  "[subscribe('command/debugger-pause'), enabled]":
   function pause() 
   {
     this._step_mode = true;
   },
 
   /** Resume TTY and close debug session */
-  "[subscribe('command/resume'), enabled]":
+  "[subscribe('command/debugger-resume'), enabled]":
   function resume()  
   {
     this._step_mode = false;
@@ -173,13 +163,13 @@ Hooker.definition = {
     while (buffer.length) {
       let action = buffer.shift();
       let result = action();
-      session.notify("command/trace-sequence", result);
+      session.notify("command/debugger-trace-sequence", result);
     }
     session.notify("command/flow-control", true);
   },
 
   /** Execute 1 command. */
-  "[subscribe('command/step'), enabled]":
+  "[subscribe('command/debugger-step'), enabled]":
   function step()
   {
     if (this._hooked) {
@@ -189,7 +179,7 @@ Hooker.definition = {
       if (action) {
         let result = action();
         let session = this._broker;
-        session.notify("command/trace-sequence", result);
+        session.notify("command/debugger-trace-sequence", result);
         session.notify("command/draw"); // redraw
       } else {
         session.notify("command/flow-control", true);
@@ -197,11 +187,11 @@ Hooker.definition = {
     }
   },
 
-  "[subscribe('command/trace-on'), enabled]":
+  "[subscribe('command/debugger-trace-on'), enabled]":
   function set() 
   {
     if (!this._hooked) {
-      let parser = this._parser;
+      let parser = this.dependency["parser"];
       let buffer = this._buffer;
       let self = this;
       let session = this._broker;
@@ -219,18 +209,18 @@ Hooker.definition = {
           while (buffer.length) {
             let action = buffer.shift();
             let result = action();
-            session.notify("command/trace-sequence", result);
+            session.notify("command/debugger-trace-sequence", result);
           }
         }
       };
     };
   },
 
-  "[subscribe('command/trace-off'), enabled]":
+  "[subscribe('command/debugger-trace-off'), enabled]":
   function unset() 
   {
     if (this._hooked) {
-      let parser = this._parser;
+      let parser = this.dependency["parser"];
       delete parser.parse; // uninstall hook
       this._hooked = false;
     }
@@ -394,13 +384,13 @@ Debugger.definition = {
     try {
       if (this._checkbox_attach.checked) {
         this._checkbox_break.setAttribute("disabled", !this._checkbox_attach.checked);
-        session.notify("command/trace-on");
+        session.notify("command/debugger-trace-on");
       } else {
         this._checkbox_break.setAttribute("disabled", true);
         this._checkbox_resume.setAttribute("disabled", true);
         this._checkbox_step.setAttribute("disabled", true);
-        session.notify("command/trace-off");
-        session.notify("command/resume");
+        session.notify("command/debugger-trace-off");
+        session.notify("command/debugger-resume");
       }
     } catch (e) {
       coUtils.Debug.reportError(e);
@@ -413,7 +403,7 @@ Debugger.definition = {
     this._checkbox_break.setAttribute("disabled", true);
     this._checkbox_resume.setAttribute("disabled", false);
     this._checkbox_step.setAttribute("disabled", false);
-    session.notify("command/pause");
+    session.notify("command/debugger-pause");
   },
 
   doResume: function doResume() 
@@ -422,16 +412,16 @@ Debugger.definition = {
     this._checkbox_resume.setAttribute("disabled", true);
     this._checkbox_step.setAttribute("disabled", true);
     this._checkbox_break.setAttribute("disabled", false);
-    session.notify("command/resume");
+    session.notify("command/debugger-resume");
   },
 
   doStep: function doStep() 
   {
     let session = this._broker;
-    session.notify("command/step");
+    session.notify("command/debugger-step");
   },
 
-  "[subscribe('command/trace-sequence')]": 
+  "[subscribe('command/debugger-trace-sequence')]": 
   function trace(trace_info) 
   {
     let [info, sequence] = trace_info;

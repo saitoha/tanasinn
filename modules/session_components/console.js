@@ -201,7 +201,7 @@ DisplayManager.definition = {
     let template = this.applyFilters(message);
     session.uniget("command/construct-chrome", template);
     // makes scrollbar follow page's height.
-    if (this.auto_scroll) {
+    if (this.auto_scroll && this._console) {
       this._console.scrollToBottom();
     }
   },
@@ -211,11 +211,13 @@ DisplayManager.definition = {
    */
   applyFilters: function applyFilters(message) 
   {
-    for (let [, filter] in Iterator(this._filters)) {
-      if (filter.test(message)) {
-        return filter.action();
-      }
-    };
+    if (this._filters) {
+      for (let [, filter] in Iterator(this._filters)) {
+        if (filter.test(message)) {
+          return filter.action();
+        }
+      };
+    }
     // returns fallback template.
     return {
       tagName: "row",

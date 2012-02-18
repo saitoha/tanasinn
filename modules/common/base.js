@@ -613,9 +613,32 @@ PersistableAttribute.definition = {
 let Component = new Abstruct();
 Component.definition = {
 
+  dependency: null,
+
   /** constructor */
   initialize: function initialize(broker) 
   {
+    if (this.__dependency) {
+      this.dependency = {};
+      let topic;
+      if (this.__dependency.length > 0) {
+        topic = "@initialized/{" + this.__dependency.join("&") + "}";
+      } else {
+        topic = "@event/broker-started";
+      }
+      broker.subscribe(
+        topic, 
+        function onLoad() 
+        {
+          let args = arguments;
+          this.__dependency.forEach(function(key, index) {
+            this.dependency[key] = args[index];
+          }, this);
+          this.enabled = this.enabled_when_startup;
+          broker.notify(<>initialized/{this.id}</>, this);
+        }, 
+        this);
+    }
     this._broker = broker;
     broker.subscribe("get/components", function(instances) this, this);
   },
@@ -648,33 +671,11 @@ let Plugin = new Abstruct().extends(Component).mix(PersistableAttribute)
 Plugin.definition = {
 
   __enabled: false,
-  dependency: null,
   "[persistable] enabled_when_startup": true,
 
   /** constructor */
   initialize: function initialize(broker)
   {
-    if (this.__dependency) {
-      this.dependency = {};
-      let topic;
-      if (this.__dependency.length > 0) {
-        topic = "@initialized/{" + this.__dependency.join("&") + "}";
-      } else {
-        topic = "@event/broker-started";
-      }
-      broker.subscribe(
-        topic, 
-        function onLoad() 
-        {
-          let args = arguments;
-          this.__dependency.forEach(function(key, index) {
-            this.dependency[key] = args[index];
-          }, this);
-          this.enabled = this.enabled_when_startup;
-          broker.notify(<>initialized/{this.id}</>, this);
-        }, 
-        this);
-    }
     broker.subscribe(
       <>command/set-enabled/{this.id}</>, 
       function(value) this.enabled = value, this);
