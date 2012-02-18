@@ -57,6 +57,7 @@ Mouse.definition = {
 
   _keypad_mode: coUtils.Constant.KEYPAD_MODE_NORMAL,
   _in_scroll_session: false,
+  "[persistable] magnify_delta_per_fontsize": 200,
 
   "[subscribe('initialized/renderer'), enabled]":
   function onLoad(renderer)
@@ -75,6 +76,7 @@ Mouse.definition = {
     this.onmousemove.enabled = true;
     this.onmouseup.enabled = true;
     this.onmousescroll.enabled = true;
+    this.onmagnifyGesture.enabled = true;
     this.onMouseTrackingModeChanged.enabled = true;
     this.backup.enabled = true;
     this.restore.enabled = true;
@@ -90,6 +92,7 @@ Mouse.definition = {
     this.onmousemove.enabled = false;
     this.onmouseup.enabled = false;
     this.onmousescroll.enabled = false;
+    this.onmagnifyGesture.enabled = false;
     this.onMouseTrackingModeChanged.enabled = false;
     this.backup.enabled = false;
     this.restore.enabled = false;
@@ -251,6 +254,15 @@ Mouse.definition = {
       //    _("keypad_mode has ill value: [%d]"), keypad_mode);
       //}
     }
+  },
+
+  /** handles magnify-gesture evnet. */
+  "[subscribe('event/magnify-gesture')]": 
+  function onmagnifyGesture(delta) 
+  {
+    let session = this._broker
+    session.notify("command/change-fontsize-by-offset", Math.floor(delta / 200));
+    session.notify("command/draw");
   },
 
   /** Mouse down evnet listener */

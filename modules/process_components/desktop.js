@@ -113,12 +113,11 @@ Desktop.definition = {
   {
     this.onShutdown.enabled = true;
     this.getDesktopFromWindow.enabled = true;
-    let document = this._window.document;
-    this._root_element = document
+    this._root_element = this.window.document
       .documentElement
-      .appendChild(document.createElement("box"));
+      .appendChild(this.window.document.createElement("box"));
+    
     this._root_element.id = "tanasinn_desktop";
-
     let broker = this._broker;
     this.notify("command/load-settings");
 

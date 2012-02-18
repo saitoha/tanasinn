@@ -72,8 +72,28 @@ WindowWatcher.definition = {
       capture: true,
       id: this.id,
     });
+
+    session.notify("command/add-domlistener", {
+      target: session.window,
+      type: "MozMagnifyGesture",
+      context: this,
+      handler: this.onmagnifyGesture,
+      capture: true,
+      id: this.id,
+    });
+
   },
 
+  onmagnifyGesture: function onmagnifyGesture(event) 
+  {
+    let original_target = event.explicitOriginalTarget;
+    let session = this._broker;
+    let relation = session.root_element.compareDocumentPosition(original_target);
+    if ((relation & original_target.DOCUMENT_POSITION_CONTAINED_BY)) {
+      session.notify("event/magnify-gesture", event.delta);
+    }
+  },
+  
   onkeyup: function onkeyup(event) 
   { // nothrow
     if (16 == event.keyCode && 16 == event.which 

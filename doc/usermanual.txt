@@ -574,6 +574,16 @@ image::images/launcher.png[width=480]
     矩形選択。 (Terminal.appの真似)
 #endif
 
+#if __EN__
+.pinch open/close
+
+    increase/decrease font size. (like iTerm2)
+#elif __JP__
+.ピンチオープン／クローズ
+
+    フォントサイズの拡大・縮小。 (iTerm2の真似)
+#endif
+
 
 #if __EN__
 === Using commandline interface
@@ -736,17 +746,17 @@ decrease
 
 選択されたテキストをクリップボードへコピーします。
 
----
+----
 copy
----
+----
 
 ===== paste
 
 クリップボード内のテキストを現在のエンコーダーで符号化し、端末に送信します。
 
----
+----
 paste
----
+----
 
     順次解説予定
 
