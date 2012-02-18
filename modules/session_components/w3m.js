@@ -64,12 +64,11 @@ W3m.definition = {
       "command/construct-chrome", this.template);
     // set initial size.
     this._canvas = tanasinn_w3m_canvas;
-    this._canvas.width = this._canvas.parentNode.boxObject.width;
-    this._canvas.height = this._canvas.parentNode.boxObject.height;
     this._context = this._canvas.getContext("2d");
 
     this.onWidthChanged.enabled = true;
     this.onHeightChanged.enabled = true;
+    this.onFirstFocus.enabled = true;
     this.osc99.enabled = true;
 
   }, 
@@ -82,7 +81,16 @@ W3m.definition = {
   {
     this.onWidthChanged.enabled = false;
     this.onHeightChanged.enabled = false;
+    this.onFirstFocus.enabled = false;
     this.osc99.enabled = false;
+  },
+
+  "[subscribe('@command/focus')]":
+  function onFirstFocus() 
+  {
+    let canvas = this._canvas;
+    canvas.width = canvas.parentNode.boxObject.width;
+    canvas.height = canvas.parentNode.boxObject.height;
   },
 
   "[subscribe('event/screen-width-changed')]": 

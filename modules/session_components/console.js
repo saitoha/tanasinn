@@ -52,6 +52,7 @@ MessageFilter.definition = {
   install: function uninstall(session) 
   {
     this.onMessageFiltersRequired.enabled = true;
+    session.notify("event/console-filter-collection-changed");
   },
 
   /** Uninstalls itself. 
@@ -60,6 +61,7 @@ MessageFilter.definition = {
   uninstall: function uninstall(session) 
   {
     this.onMessageFiltersRequired.enabled = false;
+    session.notify("event/console-filter-collection-changed");
   },
 
   "[subscribe('get/message-filters')]": 
@@ -187,9 +189,16 @@ DisplayManager.definition = {
   {
     this._console = console;
     let session = this._broker;
-  
-    this._filters = session.notify("get/message-filters", this._filters);
+    this.onConsoleFilterCollectionChanged.enabled = true;
+    this.onConsoleFilterCollectionChanged();
     session.notify("initialized/displaymanager", this);
+  },
+
+  "[subscribe('event/console-filter-collection-changed')]":
+  function onConsoleFilterCollectionChanged() 
+  {
+    let session = this._broker;
+    this._filters = session.notify("get/message-filters");
   },
 
   /** Appends a message line to output container. 
@@ -220,6 +229,7 @@ DisplayManager.definition = {
     }
     // returns fallback template.
     return {
+      parentNode: "#console_output_box",
       tagName: "row",
       style: <>
         border-bottom: 1px solid green;,
@@ -246,6 +256,8 @@ ConsoleListener.definition = {
   _console_service: null,
   _display_manager: null,
 
+  "[persistable] register_delay": 1000,
+
   /** post-constructor */
   "[subscribe('initialized/displaymanager'), enabled]":
   function onLoad(display_manager) 
@@ -259,14 +271,13 @@ ConsoleListener.definition = {
     //this.onQuitApplication.enabled = true;
     this.onSessionStopping.enabled = true;
     
-    // register object which implements nsIConsoleListener.
-    this.register();
+    coUtils.Timer.setTimeout(function() {
+      // register object which implements nsIConsoleListener.
+      this.register();
 
-    // get histrical console messages and show them.
-    this._trackHistricalMessages(this);
-
-    let session = this._broker;
-    session.notify("initialized/consolelistener", this);
+      // get histrical console messages and show them.
+      this._trackHistricalMessages(this);
+    }, this.register_delay, this);
   },
 
   "[subscribe('@command/detach')]": 
@@ -354,7 +365,7 @@ ConsoleListener.definition = {
  * @class Console
  * @brief Shows formmated console messages.
  */
-let Console = new Class().extends(Plugin).depends("bottompanel");
+let Console = new Class().extends(Plugin);
 Console.definition = {
 
   get id()
@@ -371,10 +382,7 @@ Console.definition = {
 
   get template()
     let (session = this._broker) 
-    let (bottom_panel = this.dependency["bottompanel"])
-    let (tab_panel = bottom_panel.alloc("console.panel", _("Console")))
     { 
-      parentNode: tab_panel,
       tagName: "vbox",
       id: "tanasinn_console_panel",
       className: "tanasinn-console",
@@ -506,13 +514,8 @@ Console.definition = {
   "[subscribe('install/console'), enabled]":
   function install(session) 
   {
-    let {
-      tanasinn_console_panel, 
-      console_output_box,
-    } = session.uniget("command/construct-chrome", this.template);
-    this._console_box = tanasinn_console_panel;
-    this._output_box = console_output_box;
     this.select.enabled = true;
+    this.onPanelItemRequested.enabled = true;
     session.notify("initialized/console", this);
   }, 
 
@@ -521,13 +524,30 @@ Console.definition = {
   function uninstall(session) 
   {
     this.select.enabled = false;
-    this.dependency["bottompanel"].remove("console.panel");
+    session.notify("command/remove-panel", "console.panel");
+  },
+
+  "[subscribe('@get/panel-items')]": 
+  function onPanelItemRequested(panel) 
+  {
+    let session = this._broker;
+    let template = this.template;
+    let panel_item = panel.alloc("console.panel", _("Console"))
+    template.parentNode = panel_item;
+    let {
+      tanasinn_console_panel, 
+      console_output_box,
+    } = session.uniget("command/construct-chrome", template);
+    this._console_box = tanasinn_console_panel;
+    this._output_box = console_output_box;
+    return panel_item;
   },
 
   "[command('console'), nmap('<M-a>', '<C-S-a>'), _('Open console.')]":
   function select(info) 
   {
-    this.dependency["bottompanel"].select("console.panel");
+    let session = this._broker;
+    session.notify("command/select-panel", "console.panel");
     return true;
   },
   

@@ -24,10 +24,10 @@
 
 
 /**
- * @class ComponentViewer
+ * @class PluginViewer
  */
-let ComponentViewer = new Class().extends(Plugin).depends("bottompanel");
-ComponentViewer.definition = {
+let PluginViewer = new Class().extends(Plugin);
+PluginViewer.definition = {
 
   get id()
     "plugin_viewer",
@@ -57,12 +57,12 @@ ComponentViewer.definition = {
             childNodes: 
               let (module = module) // memorize "module".
               let (info = module.info) 
-              let (depends_on = Object.keys(this._depends_map[module.id]).map(function(key) this._depends_map[module.id][key], this))
-              let (depended_by = Object.keys(this._depended_map[module.id]).map(function(key) this._depended_map[module.id][key], this))
+              let (depends = this._depends_map[module.id])
+              let (depends_on = Object.keys(depends).map(function(key) depends[key], this))
+              let (depended_by = Object.keys(depends).map(function(key) depends[key], this))
               [
                 {
                   tagName: "checkbox",
-                  className: "tanasinn-moduleviewer-checkbox",
                   align: "top",
                   style: <>
                     font-size: 1.4em;
@@ -126,10 +126,8 @@ ComponentViewer.definition = {
   "[subscribe('install/plugin_viewer'), enabled]":
   function install(session) 
   {
-    let bottom_panel = this.dependency["bottompanel"];
-    this._panel = bottom_panel.alloc(this.id, _("Plugins"));
-    this.onPanelSelected.enabled = true;
     this.select.enabled = true;
+    this.onPanelItemRequested.enabled = true;
   },
 
   /** Uninstalls itself.
@@ -140,7 +138,14 @@ ComponentViewer.definition = {
   {
     this.onPanelSelected.enabled = false;
     this.select.enabled = false;
-    this.dependency["bottompanel"].remove(this.id);
+    session.notify("command/remove-panel", this.id);
+  },
+
+  "[subscribe('@get/panel-items')]": 
+  function onPanelItemRequested(panel) 
+  {
+    this._panel = panel.alloc(this.id, _("Plugins"));
+    this.onPanelSelected.enabled = true;
   },
 
   "[subscribe('panel-selected/plugin_viewer')]":
@@ -156,7 +161,8 @@ ComponentViewer.definition = {
   "[command('pluginviewer/pv'), nmap('<M-m>', '<C-S-m>'), _('Open module viewer.')]":
   function select()
   {
-    this.dependency["bottompanel"].select(this.id);
+    let session = this._broker;
+    session.notify("command/select-panel", this.id);
     return true;
   },
 
@@ -221,6 +227,6 @@ ComponentViewer.definition = {
  */
 function main(broker)
 {
-  new ComponentViewer(broker);
+  new PluginViewer(broker);
 }
 

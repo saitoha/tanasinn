@@ -251,10 +251,9 @@ Debugger.definition = {
 
   _timer_id: null,
 
-  getTemplate: function getTemplate(parent)
+  get template()
   {
     return {
-      parentNode: parent,
       tagName: "hbox",
       flex: 1,
       style: <>
@@ -360,8 +359,9 @@ Debugger.definition = {
   "[subscribe('@get/panel-items')]": 
   function onPanelItemRequested(panel) 
   {
+    let template = this.template;
     let item = panel.alloc(this.id, _("Debugger"));
-    let template = this.getTemplate(item);
+    template.parentNode = item;
     let session = this._broker;
     let {
       tanasinn_trace,
@@ -376,6 +376,7 @@ Debugger.definition = {
     this._checkbox_resume = tanasinn_debugger_resume;
     this._checkbox_step = tanasinn_debugger_step;
     this.trace.enabled = true;
+    return item;
   },
 
   doAttach: function doAttach() 

@@ -58,7 +58,7 @@ Selection.definition = {
 
   get info()
     <module>
-        <name>Selection</name>
+        <name>{_("Selection")}</name>
         <description>{
           _("Makes it enable to select text by dragging mouse.")
         }</description>
@@ -95,14 +95,13 @@ Selection.definition = {
         style: { opacity: 0.5, },
       });
     
-    selection_canvas.width = selection_canvas.parentNode.boxObject.width;
-    selection_canvas.height = selection_canvas.parentNode.boxObject.height;
     this._canvas = selection_canvas;
     this._context = selection_canvas.getContext("2d");
 
     this.onWidthChanged.enabled = true;
     this.onHeightChanged.enabled = true;
     this.getRange.enabled = true;
+    this.onFirstFocus.enabled = true;
 
     // register dom listeners.
     this.ondragstart.enabled = true;
@@ -121,6 +120,7 @@ Selection.definition = {
     this.onWidthChanged.enabled = false;
     this.onHeightChanged.enabled = false;
     this.getRange.enabled = false;
+    this.onFirstFocus.enabled = false;
 
     this.ondragstart.enabled = false;
     this.ondblclick.enabled = false;
@@ -128,6 +128,14 @@ Selection.definition = {
     this._canvas.parentNode.removeChild(this._canvas);
     this._canvas = null;
 
+  },
+
+  "[subscribe('@command/focus')]":
+  function onFirstFocus() 
+  {
+    let canvas = this._canvas;
+    canvas.width = canvas.parentNode.boxObject.width;
+    canvas.height = canvas.parentNode.boxObject.height;
   },
 
   /** Doubleclick handler. It selects word under the mouse pointer. */
