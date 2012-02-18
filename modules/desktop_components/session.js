@@ -106,6 +106,7 @@ Session.definition = {
 
   "[persistable] profile_directory": "$Home/.tanasinn/session_profile",
   "[persistable] profile": "default",
+  "[persistable] initial_focus_delay": 100,
 
   get python_path()
   {
@@ -197,8 +198,10 @@ Session.definition = {
     desktop.notify("initialized/session", this);
     this.notify("command/load-settings", this.profile);
     this.notify("event/broker-started", this);
-    this.notify("command/focus");
-    this.notify("command/focus");
+    coUtils.Timer.setTimeout(function() {
+      this.notify("command/focus");
+      this.notify("command/focus");
+    }, this.initial_focus_delay, this);
     return this;
   },
 

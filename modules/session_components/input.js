@@ -127,6 +127,7 @@ InputManager.definition = {
     this.inputWithNoMapping.enabled = true;
     this.enableInputManager.enabled = true;
     this.disableInputManager.enabled = true;
+    this.blurCommand.enabled = true;
     session.notify("initialized/inputmanager", this);
   },
 
@@ -150,6 +151,7 @@ InputManager.definition = {
     this.inputWithNoMapping.enabled = false;
     this.enableInputManager.enabled = false;
     this.disableInputManager.enabled = false;
+    this.blurCommand.enabled = false;
     this._textbox.parentNode.removeChild(this._textbox);
   },
 
@@ -194,8 +196,16 @@ InputManager.definition = {
     this._textbox.focus(); // <-- set focus to textbox element.
   },
 
+  "[command('blur', []), _('Blur tanasinn window')]":
+  function blurCommand() 
+  {
+    coUtils.Timer.setTimeout(function() {
+      this.blur();
+    }, 100, this);
+  },
+
   /** blur focus from the textbox elment. */
-  "[subscribe('command/blur'), nmap('<M-z>', '<C-S-Z>'), _('Hide tanasinn')]":
+  "[subscribe('command/blur'), nmap('<M-z>', '<C-S-Z>'), _('Blur tanasinn window')]":
   function blur() 
   {
     this._textbox.blur(); // raise blur event.
