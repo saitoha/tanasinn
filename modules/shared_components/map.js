@@ -280,6 +280,12 @@ CommandlineMappingManager.definition = {
     this.register(source, delegate);
   },
 
+  "[subscribe('command/unregister-cmap'), enabled]":
+  function unregisterNmap(expression)
+  {
+    this.unregister(expression);
+  },
+
 };
 
 /**
@@ -579,7 +585,7 @@ CMapCommands.definition = {
   },
 
   "[command('cunmap', ['cmap']), _('Delete a normal mapping.'), enabled]":
-  function nunmap(arguments_string)
+  function cunmap(arguments_string)
   {
     let session = this._broker;
     let pattern = /^\s*(\S+)\s*$/;
