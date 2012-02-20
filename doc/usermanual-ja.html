@@ -1755,27 +1755,29 @@ saveprofileのような保存操作はとくに必要ありません。</p></div
    |
    +-- .tanasinn/      &lt;-------------------------------- (2)
          |
-         +-- sessions.txt        &lt;---------------------- (3)
+         +-- tanasinnrc          &lt;---------------------- (3)
          |
-         +-- desktop_profile/    &lt;---------------------- (4)
+         +-- sessions.txt        &lt;---------------------- (4)
          |
-         +-- session_profile/    &lt;---------------------- (5)
+         +-- desktop_profile/    &lt;---------------------- (5)
          |
-         +-- persist/            &lt;---------------------- (6)
+         +-- session_profile/    &lt;---------------------- (6)
          |
-         +-- history/            &lt;---------------------- (7)
+         +-- persist/            &lt;---------------------- (7)
          |
-         +-- log/                &lt;---------------------- (8)
+         +-- history/            &lt;---------------------- (8)
          |
-         +-- modules/            &lt;---------------------- (9)
+         +-- log/                &lt;---------------------- (9)
+         |
+         +-- modules/            &lt;---------------------- (10)
                 |
-                +-- process_components/          &lt;------ (10)
+                +-- process_components/          &lt;------ (11)
                 |
-                +-- desktop_components/          &lt;------ (11)
+                +-- desktop_components/          &lt;------ (12)
                 |
-                +-- session_components/          &lt;------ (12)
+                +-- session_components/          &lt;------ (13)
                 |
-                +-- shared_components/           &lt;------ (13)</tt></pre>
+                +-- shared_components/           &lt;------ (14)</tt></pre>
 </div></div>
 <div class="sect3">
 <h4 id="_tanasinn_js">8.4.1. .tanasinn.js</h4>
@@ -1786,39 +1788,47 @@ saveprofileのような保存操作はとくに必要ありません。</p></div
 <div class="paragraph"><p>ランタイムディレクトリ。</p></div>
 </div>
 <div class="sect3">
-<h4 id="_tanasinn_desktop_profile">8.4.3. .tanasinn/desktop_profile/</h4>
+<h4 id="_tanasinn_tanasinnrc">8.4.3. .tanasinn/tanasinnrc</h4>
+<div class="paragraph"><p>セッション生成時(Sessionオブジェクトが生成されるタイミング)に読み込まれ、1行づつ実行されるtanasinnコマンドファイル。</p></div>
+</div>
+<div class="sect3">
+<h4 id="_tanasinn_sessions_txt">8.4.4. .tanasinn/sessions.txt</h4>
+<div class="paragraph"><p>デタッチ中のセッションを管理するためのファイル。</p></div>
+</div>
+<div class="sect3">
+<h4 id="_tanasinn_desktop_profile">8.4.5. .tanasinn/desktop_profile/</h4>
 <div class="paragraph"><p>Desktopオブジェクトの設定が書き出されるディレクトリ。</p></div>
 </div>
 <div class="sect3">
-<h4 id="_tanasinn_session_profile">8.4.4. .tanasinn/session_profile/</h4>
+<h4 id="_tanasinn_session_profile">8.4.6. .tanasinn/session_profile/</h4>
 <div class="paragraph"><p>Sessionオブジェクトの設定が書き出されるディレクトリ。</p></div>
 </div>
 <div class="sect3">
-<h4 id="_tanasinn_persist">8.4.5. .tanasinn/persist/</h4>
+<h4 id="_tanasinn_persist">8.4.7. .tanasinn/persist/</h4>
 <div class="paragraph"><p>休眠中のセッションが永続化されて書き出されるディレクトリ。</p></div>
 </div>
 <div class="sect3">
-<h4 id="_tanasinn_log">8.4.6. .tanasinn/log/</h4>
+<h4 id="_tanasinn_log">8.4.8. .tanasinn/log/</h4>
 <div class="paragraph"><p>ログが書き出されるディレクトリ。</p></div>
 </div>
 <div class="sect3">
-<h4 id="_tanasinn_modules">8.4.7. .tanasinn/modules/</h4>
+<h4 id="_tanasinn_modules">8.4.9. .tanasinn/modules/</h4>
 <div class="paragraph"><p>このディレクトリ内にユーザー拡張やユーザーデータが配置されます。</p></div>
 </div>
 <div class="sect3">
-<h4 id="_tanasinn_modules_process_components">8.4.8. .tanasinn/modules/process_components/</h4>
+<h4 id="_tanasinn_modules_process_components">8.4.10. .tanasinn/modules/process_components/</h4>
 <div class="paragraph"><p>プロセスバスに接続されるユーザー拡張が配置されるディレクトリ。</p></div>
 </div>
 <div class="sect3">
-<h4 id="_tanasinn_modules_desktop_components">8.4.9. .tanasinn/modules/desktop_components/</h4>
+<h4 id="_tanasinn_modules_desktop_components">8.4.11. .tanasinn/modules/desktop_components/</h4>
 <div class="paragraph"><p>デスクトップバスに接続されるユーザー拡張が配置されるディレクトリ。</p></div>
 </div>
 <div class="sect3">
-<h4 id="_tanasinn_modules_session_components">8.4.10. .tanasinn/modules/session_components/</h4>
+<h4 id="_tanasinn_modules_session_components">8.4.12. .tanasinn/modules/session_components/</h4>
 <div class="paragraph"><p>セッションバスに接続されるユーザー拡張が配置されるディレクトリ。</p></div>
 </div>
 <div class="sect3">
-<h4 id="_tanasinn_modules_shared_components">8.4.11. .tanasinn/modules/shared_components/</h4>
+<h4 id="_tanasinn_modules_shared_components">8.4.13. .tanasinn/modules/shared_components/</h4>
 <div class="paragraph"><p>デスクトップバス・セッションバス両方に接続されるユーザー拡張が配置されるディレクトリ。</p></div>
 </div>
 </div>
@@ -2832,7 +2842,7 @@ twitter: <a href="http://twitter.com/kefir_">日本語</a> / <a href="http://twi
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2012-02-20 19:01:01 JST
+Last updated 2012-02-21 00:53:32 JST
 </div>
 </div>
 </body>

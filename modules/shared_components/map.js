@@ -478,7 +478,10 @@ NMapCommands.definition = {
     session.notify("command/register-nmap", mapping_info);
     return {
       success: true,
-      message: coUtils.Text.format(_("Map was defined: '%s' -> '%s' (with re-mapping).")),
+      message: coUtils.Text.format(
+        _("Map was defined: '%s' -> '%s' (with re-mapping)."),
+        source_mapping, 
+        destination_mapping),
     };
   },
 
@@ -502,7 +505,10 @@ NMapCommands.definition = {
     session.notify("command/register-nnoremap", mapping_info);
     return {
       success: true,
-      message: coUtils.Text.format(_("Map was defined: '%s' -> '%s' (without re-mapping).")),
+      message: coUtils.Text.format(
+        _("Map was defined: '%s' -> '%s' (without re-mapping)."), 
+        source_mapping, 
+        destination_mapping),
     };
   },
 
@@ -556,7 +562,10 @@ CMapCommands.definition = {
     session.notify("command/register-cmap", mapping_info);
     return {
       success: true,
-      message: coUtils.Text.format(_("Map was defined: '%s' -> '%s' (with re-mapping).")),
+      message: coUtils.Text.format(
+        _("Map was defined: '%s' -> '%s' (with re-mapping)."),
+        source_mapping, 
+        destination_mapping),
     };
   },
 
@@ -580,7 +589,10 @@ CMapCommands.definition = {
     session.notify("command/register-cnoremap", mapping_info);
     return {
       success: true,
-      message: coUtils.Text.format(_("Map was defined: '%s' -> '%s' (without re-mapping).")),
+      message: coUtils.Text.format(
+        _("Map was defined: '%s' -> '%s' (without re-mapping)."), 
+        source_mapping, 
+        destination_mapping),
     };
   },
 

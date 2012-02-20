@@ -577,7 +577,9 @@ Commandline.definition = {
         let session = this._broker;
         let content = coUtils.IO.readFromFile(path, "utf-8");
         content.split(/[\n\r]+/).forEach(function(command) {
-          session.notify("command/eval-commandline", command);
+          if (!/^\s*$/.test(command)) {
+            session.notify("command/eval-commandline", command);
+          }
         });
       } catch (e) {
         coUtils.Debug.reportError(e);
