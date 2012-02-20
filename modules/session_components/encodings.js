@@ -34,7 +34,7 @@ EncoderMenu.definition = {
 
   get info()
     <TanasinnPlugin>
-        <name>{_("Encodings")}</name>
+        <name>{_("Encoder Menu")}</name>
         <description>{
           _("Makes it enable to switch terminal encoding by context menu.")
         }</description>

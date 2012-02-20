@@ -1366,7 +1366,7 @@ Vimperator/Muttatorのコマンドライン上から起動したい場合は、�
 </div></div>
 <div class="literalblock">
 <div class="content">
-<pre><tt>[bold]*shift + shiftでコマンドラインにカーソルが移動します*。
+<pre><tt>[bold]*shift+shiftでコマンドラインにカーソルが移動します*。
 これだけおぼえておけばとりあえず補完でなんとかなると思います。</tt></pre>
 </div></div>
 <div class="sect3">
@@ -1392,8 +1392,6 @@ Vimperator/Muttatorのコマンドライン上から起動したい場合は、�
 <img src="images/decoder.png" alt="images/decoder.png" width="780" />
 </div>
 </div>
-<div class="paragraph"><p>この設定は現在、永続化可能ではありません。
-将来的には永続化プロパティとする方向で検討しています。</p></div>
 </div>
 </div>
 <div class="sect3">
@@ -1405,13 +1403,13 @@ Vimperator/Muttatorのコマンドライン上から起動したい場合は、�
 <div class="content">
 <pre><tt>localize [ロケールID] "[メッセージID]" "[翻訳済み文字列]"</tt></pre>
 </div></div>
-<div class="paragraph"><p>ロケールID(LCID)は日本語環境をお使いならたいていja-JPだと思います。</p></div>
+<div class="paragraph"><p>[ロケールID](LCID)は日本語環境をお使いならたいていja-JPだと思います。</p></div>
 <div class="imageblock">
 <div class="content">
 <img src="images/localize.png" alt="images/localize.png" width="780" />
 </div>
 </div>
-<div class="paragraph"><p>メッセージIDはgettextのように英語表現になっています。
+<div class="paragraph"><p>[メッセージID]はgettextのように英語表現になっています。
 この設定は通常の永続化機構とは別の仕組みで保存されますので、
 saveprofileのような保存操作はとくに必要ありません。</p></div>
 </div>
@@ -1522,7 +1520,15 @@ saveprofileのような保存操作はとくに必要ありません。</p></div
 </div>
 </div>
 <div class="sect3">
-<h4 id="_編集系操作">8.3.5. 編集系操作</h4>
+<h4 id="_blur_new">8.3.5. blur (new!)</h4>
+<div class="paragraph"><p>ウィンドウからフォーカスをはずします。</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>blur</tt></pre>
+</div></div>
+</div>
+<div class="sect3">
+<h4 id="_編集系操作">8.3.6. 編集系操作</h4>
 <div class="sect4">
 <h5 id="_copy">copy</h5>
 <div class="paragraph"><p>選択されたテキストをクリップボードへコピーします。</p></div>
@@ -1545,51 +1551,127 @@ saveprofileのような保存操作はとくに必要ありません。</p></div
 </div>
 </div>
 <div class="sect3">
-<h4 id="_マッピング管理">8.3.6. マッピング管理</h4>
+<h4 id="_マッピング管理">8.3.7. マッピング管理</h4>
 </div>
 <div class="sect3">
-<h4 id="_nmap">8.3.7. nmap</h4>
+<h4 id="_nmap">8.3.8. nmap</h4>
 </div>
 <div class="sect3">
-<h4 id="_nnoremap">8.3.8. nnoremap</h4>
+<h4 id="_nnoremap">8.3.9. nnoremap</h4>
 </div>
 <div class="sect3">
-<h4 id="_nunmap">8.3.9. nunmap</h4>
+<h4 id="_nunmap">8.3.10. nunmap</h4>
 </div>
 <div class="sect3">
-<h4 id="_コンポーネント管理">8.3.10. コンポーネント管理</h4>
-<div class="sect4">
-<h5 id="_pluginviewer">pluginviewer</h5>
+<h4 id="_cmap_new">8.3.11. cmap (new!)</h4>
 </div>
+<div class="sect3">
+<h4 id="_cnoremap_new">8.3.12. cnoremap (new!)</h4>
+</div>
+<div class="sect3">
+<h4 id="_cunmap_new">8.3.13. cunmap (new!)</h4>
+</div>
+<div class="sect3">
+<h4 id="_コンポーネント管理">8.3.14. コンポーネント管理</h4>
 <div class="sect4">
 <h5 id="_lscomponent">lscomponent</h5>
 </div>
 <div class="sect4">
 <h5 id="_disable">disable</h5>
+<div class="paragraph"><p>プラグインを無効化します。</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>disable [プラグインID]</tt></pre>
+</div></div>
 </div>
 <div class="sect4">
 <h5 id="_enable">enable</h5>
+<div class="paragraph"><p>プラグインを有効化します。</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>enable [プラグインID]</tt></pre>
+</div></div>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_セッション操作">8.3.11. セッション操作</h4>
+<h4 id="_履歴管理">8.3.15. 履歴管理</h4>
+<div class="sect4">
+<h5 id="_clearhistory">clearhistory</h5>
+<div class="paragraph"><p>コマンドラインヒストリをクリアします。</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>clearhistory</tt></pre>
+</div></div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_セッション操作">8.3.16. セッション操作</h4>
 <div class="sect4">
 <h5 id="_kill">kill</h5>
+<div class="paragraph"><p>現在のセッションを終了し、ウィンドウを閉じます。</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>kill</tt></pre>
+</div></div>
 </div>
 <div class="sect4">
 <h5 id="_detach">detach</h5>
+<div class="paragraph"><p>現在のセッションをサスペンドし、ウィンドウを閉じます。</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>detach</tt></pre>
+</div></div>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_プロファイル操作">8.3.12. プロファイル操作</h4>
+<h4 id="_プロファイル操作">8.3.17. プロファイル操作</h4>
 <div class="sect4">
 <h5 id="_loadprofile">loadprofile</h5>
+<div class="paragraph"><p>永続化されたセッションプロファイルをロードします。
+以下のようにすると"default"という名前のセッションプロファイルが "$HOME/.tanasinn/persist/default.js" から読み込まれます。</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>loadprofile</tt></pre>
+</div></div>
+<div class="paragraph"><p>もし別のプロファイルを読み込みたければ:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>saveprofile [プロファイル名]</tt></pre>
+</div></div>
+<div class="paragraph"><p>としてください。
+[プロファイル名]は英数字、ドット(.)、アンダースコア(_)、ハイフン(-)が使用可能です。</p></div>
 </div>
 <div class="sect4">
 <h5 id="_saveprofile">saveprofile</h5>
+<div class="paragraph"><p>現在のセッション設定を永続化します。
+以下のようにすると現在のセッションプロファイルが"default"という名前で "$HOME/.tanasinn/persist/default.js" へ書き出されます。</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>saveprofile</tt></pre>
+</div></div>
+<div class="paragraph"><p>もし別の名前で書き出したければ:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>saveprofile [プロファイル名]</tt></pre>
+</div></div>
+<div class="paragraph"><p>としてください。
+[プロファイル名]は英数字、ドット(.)、アンダースコア(_)、ハイフン(-)が使用可能です。</p></div>
 </div>
 <div class="sect4">
 <h5 id="_deleteprofile">deleteprofile</h5>
+<div class="paragraph"><p>永続化されたセッション設定を削除します。
+以下のようにするとセッションプロファイル"default"が削除されます。</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>saveprofile</tt></pre>
+</div></div>
+<div class="paragraph"><p>もし別のセッションプロファイルを削除したければ:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>deleteprofile [プロファイル名]</tt></pre>
+</div></div>
+<div class="paragraph"><p>としてください。
+[プロファイル名]は英数字、ドット(.)、アンダースコア(_)、ハイフン(-)が使用可能です。</p></div>
 </div>
 <div class="sect4">
 <h5 id="_globalload">globalload</h5>
@@ -1602,19 +1684,45 @@ saveprofileのような保存操作はとくに必要ありません。</p></div
 </div>
 </div>
 <div class="sect3">
-<h4 id="_デバッギングパネル">8.3.13. デバッギングパネル</h4>
+<h4 id="_パネル操作">8.3.18. パネル操作</h4>
 <div class="sect4">
-<h5 id="_openpanel_closepanel">openpanel / closepanel</h5>
+<h5 id="_openpanel">openpanel</h5>
+<div class="paragraph"><p>パネルを表示します。</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>openpanel</tt></pre>
+</div></div>
 </div>
 <div class="sect4">
-<h5 id="_console">console</h5>
-</div>
-<div class="sect4">
-<h5 id="_debugger">debugger</h5>
+<h5 id="_closepanel">closepanel</h5>
+<div class="paragraph"><p>パネルを隠します。</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>closepanel</tt></pre>
+</div></div>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_低レベル設定操作">8.3.14. 低レベル設定操作</h4>
+<h4 id="_デバッグ支援">8.3.19. デバッグ支援</h4>
+<div class="sect4">
+<h5 id="_console">console</h5>
+<div class="paragraph"><p>コンソールパネルの表示状態をトグルします。</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>console</tt></pre>
+</div></div>
+</div>
+<div class="sect4">
+<h5 id="_debugger">debugger</h5>
+<div class="paragraph"><p>デバッガパネルの表示状態をトグルします。</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>debugger</tt></pre>
+</div></div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_低レベル設定操作">8.3.20. 低レベル設定操作</h4>
 <div class="sect4">
 <h5 id="_set">set</h5>
 </div>
@@ -1623,7 +1731,15 @@ saveprofileのような保存操作はとくに必要ありません。</p></div
 </div>
 </div>
 <div class="sect3">
-<h4 id="_ユーティリティ">8.3.15. ユーティリティ</h4>
+<h4 id="_ユーティリティ">8.3.21. ユーティリティ</h4>
+<div class="sect4">
+<h5 id="_vimperator_new">vimperator (new!)</h5>
+<div class="paragraph"><p>vimperatorにコマンドを送ります。</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>vimperator [command]</tt></pre>
+</div></div>
+</div>
 <div class="sect4">
 <h5 id="_javascript">javascript</h5>
 </div>
@@ -1647,17 +1763,19 @@ saveprofileのような保存操作はとくに必要ありません。</p></div
          |
          +-- persist/            &lt;---------------------- (6)
          |
-         +-- log/                &lt;---------------------- (7)
+         +-- history/            &lt;---------------------- (7)
          |
-         +-- modules/            &lt;---------------------- (8)
+         +-- log/                &lt;---------------------- (8)
+         |
+         +-- modules/            &lt;---------------------- (9)
                 |
-                +-- process_components/          &lt;------ (9)
+                +-- process_components/          &lt;------ (10)
                 |
-                +-- desktop_components/          &lt;------ (10)
+                +-- desktop_components/          &lt;------ (11)
                 |
-                +-- session_components/          &lt;------ (11)
+                +-- session_components/          &lt;------ (12)
                 |
-                +-- shared_components/           &lt;------ (12)</tt></pre>
+                +-- shared_components/           &lt;------ (13)</tt></pre>
 </div></div>
 <div class="sect3">
 <h4 id="_tanasinn_js">8.4.1. .tanasinn.js</h4>
@@ -2079,6 +2197,7 @@ http://www.gnu.org/software/src-highlite -->
 <pre><tt>例外が自動補足されるということは、例外がコンポーネント境界を超えて伝播されないということでもあり
 (実際は伝播させる方法もありますが)、tanasinnは基本、エラーに対してとてもルーズな
 立場をとります。こまめにコンソールをチェックして対処するというケースが多いです。
+テスト機構が完成すれば事情はもうちょっとましになりますが。
 さきほどconsoleを有効化しましたが、通常使用時にはパフォーマンスを下げるので無効化しておいたほうが良いです。
 consoleがなくても、ランタイムディレクトリ以下のlog/tanasinn-js.logを見ればエラー等を診断できます。</tt></pre>
 </div></div>
@@ -2701,9 +2820,11 @@ The "listener" property (10) attaches a event handler at the current
 </div>
 </div>
 <div class="sect1">
-<h2 id="_バグレポート_パッチ">13. バグレポート・パッチ</h2>
+<h2 id="_バグレポート">13. バグレポート</h2>
 <div class="sectionbody">
-<div class="paragraph"><div class="title">バグレポート・パッチ超歓迎。</div><p>saitoha &lt;<a href="mailto:user@zuse.jp">user@zuse.jp</a>&gt;
+<div class="paragraph"><p>バグレポートを歓迎します。
+とくに意地悪なバグ再現、重箱の隅をつつくような細かい不整合、誰も気に留めないようなくだらない不具合報告を頂くと優先的に対応します。
+saitoha &lt;<a href="mailto:user@zuse.jp">user@zuse.jp</a>&gt;
 twitter: <a href="http://twitter.com/kefir_">日本語</a> / <a href="http://twitter.com/feel_tanasinn">英語</a></p></div>
 </div>
 </div>
@@ -2711,7 +2832,7 @@ twitter: <a href="http://twitter.com/kefir_">日本語</a> / <a href="http://twi
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2012-02-18 17:06:43 JST
+Last updated 2012-02-20 19:01:01 JST
 </div>
 </div>
 </body>

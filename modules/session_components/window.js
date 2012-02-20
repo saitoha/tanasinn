@@ -56,24 +56,6 @@ WindowWatcher.definition = {
     });
 
     session.notify("command/add-domlistener", {
-      target: session.window.document,
-      type: "keyup",
-      context: this,
-      handler: this.onkeyup,
-      capture: true,
-      id: this.id,
-    });
-
-    session.notify("command/add-domlistener", {
-      target: session.window.document,
-      type: "keydown",
-      context: this,
-      handler: this.onkeydown,
-      capture: true,
-      id: this.id,
-    });
-
-    session.notify("command/add-domlistener", {
       target: session.window,
       type: "MozMagnifyGesture",
       context: this,
@@ -84,6 +66,12 @@ WindowWatcher.definition = {
 
   },
 
+  "[subscribe('@event/session-stopping'), enabled]": 
+  function onSessionStopping(session) 
+  {
+    session.notify("command/remove-domlistener", this.id);
+  },
+
   onmagnifyGesture: function onmagnifyGesture(event) 
   {
     let original_target = event.explicitOriginalTarget;
@@ -92,42 +80,6 @@ WindowWatcher.definition = {
     if ((relation & original_target.DOCUMENT_POSITION_CONTAINED_BY)) {
       session.notify("event/magnify-gesture", event.delta);
     }
-  },
-  
-  onkeyup: function onkeyup(event) 
-  { // nothrow
-    if (16 == event.keyCode && 16 == event.which 
-        && !event.ctrlKey && !event.altKey && !event.isChar) {
-      let session = this._broker;
-      session.notify("event/shift-key-up");
-    } else if (17 == event.keyCode && 17 == event.which 
-        && !event.altKey && !event.shiftKey && !event.isChar) {
-    } else if (18 == event.keyCode && 18 == event.which 
-        && !event.ctrlKey && !event.shiftKey && !event.isChar) {
-      let session = this._broker;
-      session.notify("event/alt-key-up");
-    }
-  },
-
-  onkeydown: function onkeydown(event) 
-  { // nothrow
-    if (16 == event.keyCode && 16 == event.which 
-        && !event.ctrlKey && !event.altKey 
-        && event.shiftKey && !event.isChar) {
-      let session = this._broker;
-      session.notify("event/shift-key-down");
-    } else if (18 == event.keyCode && 18 == event.which 
-        && !event.ctrlKey && event.altKey 
-        && !event.shiftKey && !event.isChar) {
-      let session = this._broker;
-      session.notify("event/alt-key-down");
-    }
-  },
-
-  "[subscribe('@event/session-stopping'), enabled]": 
-  function onSessionStopping(session) 
-  {
-    session.notify("command/remove-domlistener", this.id);
   },
   
   /** Handles window resize event. */

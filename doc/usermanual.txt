@@ -604,7 +604,7 @@ image::images/commandline.png[width=480]
     …仕様が全然固まってませんのでまだ書けません。
     この部分は作りはじめて日が浅いので、これから色々考えます。
     
-    [bold]*shift + shiftでコマンドラインにカーソルが移動します*。
+    [bold]*shift+shiftでコマンドラインにカーソルが移動します*。
     これだけおぼえておけばとりあえず補完でなんとかなると思います。    
 
 ==== 文字コード設定
@@ -627,9 +627,6 @@ encoder [キャラクタセット・符号化方式名]
 
 image::images/decoder.png[width=780]
 
-この設定は現在、永続化可能ではありません。
-将来的には永続化プロパティとする方向で検討しています。
-
 ==== 地域化
 
 ===== localize
@@ -639,11 +636,11 @@ image::images/decoder.png[width=780]
 localize [ロケールID] "[メッセージID]" "[翻訳済み文字列]"
 ----
 
-ロケールID(LCID)は日本語環境をお使いならたいていja-JPだと思います。
+[ロケールID](LCID)は日本語環境をお使いならたいていja-JPだと思います。
 
 image::images/localize.png[width=780]
 
-メッセージIDはgettextのように英語表現になっています。
+[メッセージID]はgettextのように英語表現になっています。
 この設定は通常の永続化機構とは別の仕組みで保存されますので、
 saveprofileのような保存操作はとくに必要ありません。
 
@@ -740,6 +737,14 @@ decrease
 5wider
 ----
 
+==== blur (new!)
+
+ウィンドウからフォーカスをはずします。
+
+----
+blur
+----
+
 ==== 編集系操作
 
 ===== copy
@@ -764,35 +769,162 @@ paste
 ==== nmap
 ==== nnoremap
 ==== nunmap
+==== cmap (new!)
+==== cnoremap (new!)
+==== cunmap (new!)
 
 ==== コンポーネント管理
-===== pluginviewer
 ===== lscomponent
+
 ===== disable
+
+プラグインを無効化します。
+
+----
+disable [プラグインID]
+----
+
 ===== enable
+
+プラグインを有効化します。
+
+----
+enable [プラグインID]
+----
+
+==== 履歴管理
+===== clearhistory
+
+コマンドラインヒストリをクリアします。
+
+----
+clearhistory
+----
 
 ==== セッション操作
 ===== kill
+
+現在のセッションを終了し、ウィンドウを閉じます。
+
+----
+kill
+----
+
 ===== detach
 
+現在のセッションをサスペンドし、ウィンドウを閉じます。
+
+----
+detach
+----
+
 ==== プロファイル操作
+
 ===== loadprofile
+
+永続化されたセッションプロファイルをロードします。
+以下のようにすると"default"という名前のセッションプロファイルが "$HOME/.tanasinn/persist/default.js" から読み込まれます。
+
+----
+loadprofile
+----
+
+もし別のプロファイルを読み込みたければ:
+
+----
+saveprofile [プロファイル名]
+----
+
+としてください。
+[プロファイル名]は英数字、ドット(.)、アンダースコア(_)、ハイフン(-)が使用可能です。
+
 ===== saveprofile
+
+現在のセッション設定を永続化します。
+以下のようにすると現在のセッションプロファイルが"default"という名前で "$HOME/.tanasinn/persist/default.js" へ書き出されます。
+
+----
+saveprofile
+----
+
+もし別の名前で書き出したければ:
+
+----
+saveprofile [プロファイル名]
+----
+
+としてください。
+[プロファイル名]は英数字、ドット(.)、アンダースコア(_)、ハイフン(-)が使用可能です。
+
 ===== deleteprofile
+
+永続化されたセッション設定を削除します。
+以下のようにするとセッションプロファイル"default"が削除されます。
+
+----
+saveprofile
+----
+
+もし別のセッションプロファイルを削除したければ:
+
+----
+deleteprofile [プロファイル名]
+----
+
+としてください。
+[プロファイル名]は英数字、ドット(.)、アンダースコア(_)、ハイフン(-)が使用可能です。
+
 ===== globalload
 ===== globalsave
 ===== globaldelete
 
-==== デバッギングパネル
-===== openpanel / closepanel
+==== パネル操作
+===== openpanel
+
+パネルを表示します。
+
+----
+openpanel
+----
+
+===== closepanel
+
+パネルを隠します。
+
+----
+closepanel
+----
+
+==== デバッグ支援
 ===== console
+
+コンソールパネルの表示状態をトグルします。
+
+----
+console
+----
+
 ===== debugger
+
+デバッガパネルの表示状態をトグルします。
+
+----
+debugger
+----
 
 ==== 低レベル設定操作
 ===== set
 ===== setglobal
 
 ==== ユーティリティ
+===== vimperator (new!)
+
+vimperatorにコマンドを送ります。
+
+----
+vimperator [command]
+----
+
 ===== javascript
 
 #endif
@@ -811,25 +943,29 @@ paste
    |
    +-- .tanasinn/      <-------------------------------- (2)
          |
-         +-- sessions.txt        <---------------------- (3)
+         +-- tanasinnrc          <---------------------- (3)
          |
-         +-- desktop_profile/    <---------------------- (4)
-         |    
-         +-- session_profile/    <---------------------- (5)
-         |    
-         +-- persist/            <---------------------- (6)
-         |    
-         +-- log/                <---------------------- (7)
+         +-- sessions.txt        <---------------------- (4)
          |
-         +-- modules/            <---------------------- (8)
+         +-- desktop_profile/    <---------------------- (5)
+         |    
+         +-- session_profile/    <---------------------- (6)
+         |    
+         +-- persist/            <---------------------- (7)
+         |    
+         +-- history/            <---------------------- (8)
+         |    
+         +-- log/                <---------------------- (9)
+         |
+         +-- modules/            <---------------------- (10)
                 |
-                +-- process_components/          <------ (9)
+                +-- process_components/          <------ (11)
                 |
-                +-- desktop_components/          <------ (10)
+                +-- desktop_components/          <------ (12)
                 |
-                +-- session_components/          <------ (11)
+                +-- session_components/          <------ (13)
                 |
-                +-- shared_components/           <------ (12)
+                +-- shared_components/           <------ (14)
 
 -----------------------------------------------------------------
 
@@ -850,6 +986,26 @@ paste
 #elif __JP__
 
 ランタイムディレクトリ。
+
+#endif
+
+==== .tanasinn/tanasinnrc
+
+#if __EN__
+
+#elif __JP__
+
+セッション生成時(Sessionオブジェクトが生成されるタイミング)に読み込まれ、1行づつ実行されるtanasinnコマンドファイル。
+
+#endif
+
+==== .tanasinn/sessions.txt
+
+#if __EN__
+
+#elif __JP__
+
+デタッチ中のセッションを管理するためのファイル。
 
 #endif
 
@@ -1356,6 +1512,7 @@ image::images/sample3.png[width=770]
   例外が自動補足されるということは、例外がコンポーネント境界を超えて伝播されないということでもあり
   (実際は伝播させる方法もありますが)、tanasinnは基本、エラーに対してとてもルーズな
   立場をとります。こまめにコンソールをチェックして対処するというケースが多いです。
+  テスト機構が完成すれば事情はもうちょっとましになりますが。
   さきほどconsoleを有効化しましたが、通常使用時にはパフォーマンスを下げるので無効化しておいたほうが良いです。
   consoleがなくても、ランタイムディレクトリ以下のlog/tanasinn-js.logを見ればエラー等を診断できます。
 
@@ -1952,15 +2109,6 @@ Example 2:
    The "listener" property (10) attaches a event handler at the current 
    <Element node>. 
 
-#if __EN__
-#elif __JP__
-/*
-== 謝辞
-本ソフトウェアを作成するにあっては、同系統のソフトウェアであるhttp:/#/anyterm.org/[Anyterm]や
-https:/#/github.com/unconed/TermKit[TermKit]より、多大なインスピレーションを頂きました。
-ここに御礼申し上げます。
-*/
-#endif
 
 #if __EN__
 == Bug reports and patches
@@ -1968,9 +2116,10 @@ https:/#/github.com/unconed/TermKit[TermKit]より、多大なインスピレー
 Patches and bug reports are are encouraged. > saitoha <user@zuse.jp>,
 or tweet me (http:/#/twitter.com/feel_tanasinn[English] / http:/#/twitter.com/kefir_[Japanese]).
 #elif __JP__
-== バグレポート・パッチ
+== バグレポート
 
-.バグレポート・パッチ超歓迎。 
+バグレポートを歓迎します。 
+とくに意地悪なバグ再現、重箱の隅をつつくような細かい不整合、誰も気に留めないようなくだらない不具合報告を頂くと優先的に対応します。
 saitoha <user@zuse.jp> 
 twitter: http:/#/twitter.com/kefir_[日本語] / http:/#/twitter.com/feel_tanasinn[英語] 
 

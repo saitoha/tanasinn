@@ -115,8 +115,7 @@ MappingManagerBase.definition = {
     void function walk(context, previous) {
       Object.getOwnPropertyNames(context).forEach(function(name) {
         if ("value" == name) {
-          let expression = coUtils.Keyboard
-            .convertCodeToExpression(previous);
+          let expression = coUtils.Keyboard.convertCodeToExpression(previous);
           result[expression] = context[name].description || context[name];
         } else {
           walk(context[name], previous.concat(Number(name)));
@@ -178,18 +177,13 @@ NormalMappingManager.definition = {
   {
     let {source, destination} = info;
     let session = this._broker;
-    let codes = coUtils.Keyboard.parseKeymapExpression(destination);
-    if (0 < codes.length) {
-      let delegate = function() {
-        codes.forEach(function(packed_code) {
-          session.notify("command/input-with-mapping", packed_code); 
-        });
-        return true;
-      }
-      delegate.expression = source;
-      delegate.description = destination;
-      this.register(source, delegate);
-    }
+    let delegate = function() {
+      session.notify("command/input-expression-with-mapping", destination);
+      return true;
+    };
+    delegate.expression = source;
+    delegate.description = destination;
+    this.register(source, delegate);
   },
 
   "[subscribe('command/register-nnoremap'), enabled]":
@@ -199,9 +193,7 @@ NormalMappingManager.definition = {
     let session = this._broker;
     let codes = coUtils.Keyboard.parseKeymapExpression(destination);
     let delegate = function() {
-      codes.forEach(function(packed_code) {
-        session.notify("command/input-with-no-mapping", packed_code); 
-      });
+      session.notify("command/input-expression-with-no-mapping", destination);
       return true;
     }
     this.register(source, delegate);
@@ -266,12 +258,12 @@ CommandlineMappingManager.definition = {
   {
     let {source, destination} = info;
     let session = this._broker;
-    let codes = coUtils.Keyboard.parseKeymapExpression(destination);
     let delegate = function() {
-      codes.forEach(function(packed_code) {
-//        session.notify("command/input-with-mapping", packed_code); 
-      });
-    }
+      session.notify("command/input-expression-with-mapping", destination);
+      return true;
+    };
+    delegate.expression = source;
+    delegate.description = destination;
     this.register(source, delegate);
   },
 
@@ -282,9 +274,8 @@ CommandlineMappingManager.definition = {
     let session = this._broker;
     let codes = coUtils.Keyboard.parseKeymapExpression(destination);
     let delegate = function() {
-      codes.forEach(function(packed_code) {
-//        session.notify("command/input-with-no-mapping", packed_code); 
-      });
+      session.notify("command/input-expression-with-no-mapping", destination);
+      return true;
     }
     this.register(source, delegate);
   },
@@ -292,7 +283,7 @@ CommandlineMappingManager.definition = {
 };
 
 /**
- * @Aspect CommandlineKeyHandler
+ * @class CommandlineKeyHandler
  * @brief Provides emacs-like keybinds for command line input field.
  */
 let CommandlineKeyHandler = new Class().extends(Component);
@@ -301,7 +292,7 @@ CommandlineKeyHandler.definition = {
   get id()
     "commandline-key-handler",
 
-  "[cmap('<Esc>', '<C-Esc>', '<C-g>'), enabled]":
+  "[cmap('<Esc>', '<C-Esc>', '<C-g>'), _('cancel to input.'), enabled]":
   function key_escape(info) 
   {
     let session = this._broker;
@@ -309,7 +300,7 @@ CommandlineKeyHandler.definition = {
     return true;
   },
 
-  "[cmap('<C-b>'), enabled]":
+  "[cmap('<C-b>'), _('move cursor backward.'), enabled]":
   function key_back(info) 
   {
     let textbox = info.textbox;
@@ -324,7 +315,7 @@ CommandlineKeyHandler.definition = {
     return true;
   },
 
-  "[cmap('<C-f>'), enabled]":
+  "[cmap('<C-f>'), _('move cursor forward.'), enabled]":
   function key_forward(info)
   {
     let textbox = info.textbox;
@@ -339,7 +330,7 @@ CommandlineKeyHandler.definition = {
     return true;
   },
 
-  "[cmap('<C-k>'), enabled]":
+  "[cmap('<C-k>'), _('delete chars after cursor position.'), enabled]":
   function key_truncate(info) 
   {
     let textbox = info.textbox;
@@ -357,12 +348,12 @@ CommandlineKeyHandler.definition = {
       textbox.selectionEnd = start;
     }
     let broker = this._broker;
-    broker.notify("command/set-completion-trigger");
+    broker.notify("command/set-completion-trigger", info);
     return true;
   },
 
-  "[cmap('<C-h>', '<BS>'), enabled]":
-  function key_truncate(info) 
+  "[cmap('<C-h>', '<BS>'), _('delete backward char.'), enabled]":
+  function key_backspace(info) 
   {
     let textbox = info.textbox;
     let value = textbox.value;
@@ -371,12 +362,12 @@ CommandlineKeyHandler.definition = {
       textbox.inputField.value 
         = value.substr(0, position - 1) + value.substr(position);
       let broker = this._broker;
-      broker.notify("command/set-completion-trigger");
+      broker.notify("command/set-completion-trigger", info);
     }
     return true;
   },
  
-  "[cmap('<C-a>'), enabled]":
+  "[cmap('<C-a>'), _('move cursor to head of line.'), enabled]":
   function key_first(info) 
   {
     let textbox = info.textbox;
@@ -385,7 +376,7 @@ CommandlineKeyHandler.definition = {
     return true;
   },
 
-  "[cmap('<C-e>'), enabled]":
+  "[cmap('<C-e>'), _('move cursor to end of line.'), enabled]":
   function key_end(info) 
   {
     let textbox = info.textbox;
@@ -395,31 +386,47 @@ CommandlineKeyHandler.definition = {
     return true;
   },
 
-  "[cmap('<C-j>', '<CR>'), enabled]":
+  "[cmap('<C-j>', '<CR>'), _('submit commandlne text.'), enabled]":
   function key_enter(info) 
   {
     let broker = this._broker;
-    broker.notify("command/select-current-candidate");
+    broker.notify("command/select-current-candidate", info);
     return true;
   },
 
-  "[cmap('<C-p>', '<Up>', '<S-Tab>'), enabled]":
-  function key_down(info) 
+  "[cmap('<C-p>', '<Up>', '<S-Tab>'), _('select previous candidate.'), enabled]":
+  function key_prev(info) 
   {
     let broker = this._broker;
-    broker.notify("command/select-previous-candidate");
+    broker.notify("command/select-previous-candidate", info);
     return true;
   },
 
-  "[cmap('<C-n>', '<Down>', '<Tab>'), enabled]":
+  "[cmap('<C-n>', '<Down>', '<Tab>'), _('select next candidate.'), enabled]":
   function key_next(info) 
   {
     let broker = this._broker;
-    broker.notify("command/select-next-candidate");
+    broker.notify("command/select-next-candidate", info);
     return true;
   },
 
-  "[cmap('<C-w>'), enabled]":
+  "[cmap('<C-S-p>'), _('select previous history.'), enabled]":
+  function key_history_prev(info) 
+  {
+    let broker = this._broker;
+    broker.notify("command/select-previous-history", info);
+    return true;
+  },
+
+  "[cmap('<C-S-n>'), _('select next history.'), enabled]":
+  function key_history_next(info) 
+  {
+    let broker = this._broker;
+    broker.notify("command/select-next-history", info);
+    return true;
+  },
+
+  "[cmap('<C-w>'), _('delete backward word.'), enabled]":
   function key_deleteword(info) 
   {
     let textbox = info.textbox;
@@ -429,12 +436,169 @@ CommandlineKeyHandler.definition = {
       = value.substr(0, position).replace(/\w+$|\W+$/, "") 
       + value.substr(position);
     let broker = this._broker;
-    broker.notify("command/set-completion-trigger");
+    broker.notify("command/set-completion-trigger", info);
     return true;
   },
 
 };
 
+
+/**
+ * @class NMapCommands
+ */
+let NMapCommands = new Class().extends(Component);
+NMapCommands.definition = {
+
+  get id()
+    "nmap_command",
+
+  "[command('nmap', ['nmap', 'nmap']), _('Add a normal mapping.'), enabled]":
+  function nmap(arguments_string)
+  {
+    let session = this._broker;
+    let pattern = /^\s*(\S+)\s+(\S+)\s*$/;
+    let match = arguments_string.match(pattern);
+    if (!match) {
+      return {
+        success: false,
+        message: _("Failed to parse given commandline code."),
+      };
+    }
+    let [, source_mapping, destination_mapping] = match;
+    let mapping_info = {
+      source: source_mapping,
+      destination: destination_mapping,
+    };
+    session.notify("command/register-nmap", mapping_info);
+    return {
+      success: true,
+      message: coUtils.Text.format(_("Map was defined: '%s' -> '%s' (with re-mapping).")),
+    };
+  },
+
+  "[command('nnoremap', ['nmap', 'nmap']), _('Add a normal mapping (without re-mapping).'), enabled]":
+  function nnoremap(arguments_string)
+  {
+    let session = this._broker;
+    let pattern = /^\s*(\S+)\s+(\S+)\s*$/;
+    let match = arguments_string.match(pattern);
+    if (!match) {
+      return {
+        success: false,
+        message: _("Failed to parse given commandline code."),
+      };
+    }
+    let [, source_mapping, destination_mapping] = match;
+    let mapping_info = {
+      source: source_mapping,
+      destination: destination_mapping,
+    };
+    session.notify("command/register-nnoremap", mapping_info);
+    return {
+      success: true,
+      message: coUtils.Text.format(_("Map was defined: '%s' -> '%s' (without re-mapping).")),
+    };
+  },
+
+  "[command('nunmap', ['nmap']), _('Delete a normal mapping.'), enabled]":
+  function nunmap(arguments_string)
+  {
+    let session = this._broker;
+    let pattern = /^\s*(\S+)\s*$/;
+    let match = arguments_string.match(pattern);
+    if (!match) {
+      return {
+        success: false,
+        message: _("Failed to parse given commandline code."),
+      };
+    }
+    let [, expression] = match;
+    session.notify("command/unregister-nmap", expression);
+    return {
+      success: true,
+      message: coUtils.Text.format(_("Map was removed: '%s'."), expression),
+    };
+  },
+};
+
+/**
+ * @class CMapCommands
+ */
+let CMapCommands = new Class().extends(Component);
+CMapCommands.definition = {
+
+  get id()
+    "cmap_command",
+
+  "[command('cmap', ['cmap', 'cmap']), _('Add a command line mapping.'), enabled]":
+  function cmap(arguments_string)
+  {
+    let session = this._broker;
+    let pattern = /^\s*(\S+)\s+(\S+)\s*$/;
+    let match = arguments_string.match(pattern);
+    if (!match) {
+      return {
+        success: false,
+        message: _("Failed to parse given commandline code."),
+      };
+    }
+    let [, source_mapping, destination_mapping] = match;
+    let mapping_info = {
+      source: source_mapping,
+      destination: destination_mapping,
+    };
+    session.notify("command/register-cmap", mapping_info);
+    return {
+      success: true,
+      message: coUtils.Text.format(_("Map was defined: '%s' -> '%s' (with re-mapping).")),
+    };
+  },
+
+  "[command('cnoremap', ['cmap', 'cmap']), _('Add a command line mapping (without re-mapping).'), enabled]":
+  function cnoremap(arguments_string)
+  {
+    let session = this._broker;
+    let pattern = /^\s*(\S+)\s+(\S+)\s*$/;
+    let match = arguments_string.match(pattern);
+    if (!match) {
+      return {
+        success: false,
+        message: _("Failed to parse given commandline code."),
+      };
+    }
+    let [, source_mapping, destination_mapping] = match;
+    let mapping_info = {
+      source: source_mapping,
+      destination: destination_mapping,
+    };
+    session.notify("command/register-cnoremap", mapping_info);
+    return {
+      success: true,
+      message: coUtils.Text.format(_("Map was defined: '%s' -> '%s' (without re-mapping).")),
+    };
+  },
+
+  "[command('cunmap', ['cmap']), _('Delete a normal mapping.'), enabled]":
+  function nunmap(arguments_string)
+  {
+    let session = this._broker;
+    let pattern = /^\s*(\S+)\s*$/;
+    let match = arguments_string.match(pattern);
+    if (!match) {
+      return {
+        success: false,
+        message: _("Failed to parse given commandline code."),
+      };
+    }
+    let [, expression] = match;
+    session.notify("command/unregister-cmap", expression);
+    return {
+      success: true,
+      message: coUtils.Text.format(_("Map was removed: '%s'."), expression),
+    };
+  },
+
+};
 
 /**
  * @fn main
@@ -446,5 +610,7 @@ function main(broker)
   new CommandlineMappingManager(broker);
   new NormalMappingManager(broker);
   new CommandlineKeyHandler(broker);
+  new NMapCommands(broker);
+  new CMapCommands(broker);
 }
 

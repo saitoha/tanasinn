@@ -569,6 +569,8 @@ let alert = coUtils.alert = function alert(message)
  */
 coUtils.getWindow = function getWindow() 
 {
+  if (window)
+    return window;
   let windowMediator = Components
     .classes["@mozilla.org/appshell/window-mediator;1"]
     .getService(Components.interfaces.nsIWindowMediator);
@@ -674,6 +676,7 @@ coUtils.IO = {
   readFromFile: function readFromFile(location, charset) 
   {
     let url;
+    location = String(location);
     if (location.match(/^[a-z]+:\/\//)) {
       url = location;
     } else {
@@ -835,6 +838,19 @@ coUtils.File = new function() {
     return file.exists();
   },
 
+  getPathDelimiter: function getPathDelimiter() 
+  {
+    return "WINNT" == coUtils.Runtime.os ? "\\": "/";
+  },
+  
+  isAbsolutePath: function isAbsolutePath(path) 
+  {
+    if ("WINNT" == coUtils.Runtime.os) {
+       return /^([a-zA-Z]:)?\\/.test(path);
+    }
+    return /^\//.test(path);
+  },
+
   /** Gets last modiried time from specified file.
    *  @param {nsIFile} file A nsIFile object.
    *  @return {Number} The time when the file referenced by specified nsIFile 
@@ -851,11 +867,8 @@ coUtils.File = new function() {
       } else if (file.isFile()) { // if file is generic file.
         last_modified_time = file.lastModifiedTime;
       } else {                    // directory etc...
-        let message = [
-          "Given script file is not a File. ",
-          "location: \"", location, "\"."
-        ].join("");
-        throw Components.Exception(message);
+        throw Components.Exception(
+          "Given script file is not a File. location '%s'.", location);
       }
     }
     return last_modified_time;
@@ -936,20 +949,21 @@ coUtils.File = new function() {
   },
 
   getFileLeafFromVirtualPath: 
-  function getFileLeafFromVirtualPath(abstract_path) 
+  function getFileLeafFromVirtualPath(virtual_path) 
   {
-    abstract_path = String(abstract_path);
+    virtual_path = String(virtual_path);
     let target_leaf;
-    let split_path = abstract_path.split(/[\/\\]/);
+    let split_path = virtual_path.split(/[\/\\]/);
     let root_entry = split_path.shift();
     let match = root_entry.match(/^\$([^/]+)$/);
     if (match) {
       target_leaf = this.getSpecialDirectoryName(match.pop());
-    } else if (abstract_path.match(/^([\/~\\]|[A-Za-z]:)/)) { // absolute path
+    } else if (coUtils.File.isAbsolutePath(virtual_path)) { // absolute path
       target_leaf = Components
         .classes["@mozilla.org/file/local;1"]
         .createInstance(Components.interfaces.nsILocalFile);
-      target_leaf.initWithPath(abstract_path);
+      target_leaf.initWithPath(virtual_path);
+      return target_leaf;
     } else { // relative path
       let file_name = [
         Components.stack.filename.split(" -> ").pop().split("?").shift()
@@ -987,18 +1001,28 @@ coUtils.File = new function() {
 
 };
 
+
+/**
+ *   prefix:  000000xxxxx000000000000000000000
+ *
+ *   char:    00000000000xxxxxxxxxxxxxxxxxxxxx
+ *   mode:    000001mmmmmxxxxxxxxxxxxxxxxxxxxx
+ */
 coUtils.Keyboard = {
 
-  KEY_CTRL   : 21,
-  KEY_ALT    : 22,
-  KEY_SHIFT  : 23,
-  KEY_NOCHAR : 24,
-  KEY_META   : 25,
-  KEY_APP    : 26,
+  KEY_CTRL   : 22,
+  KEY_ALT    : 23,
+  KEY_SHIFT  : 24,
+  KEY_NOCHAR : 25,
+  KEY_META   : 26,
+  KEY_MODE   : 27,
 
-  KEYNAME_PACKEDCODE_MAP: let (KEY_NOCHAR = 24) {
-    nmode     : 0xffffffff,
-    cmode     : 0xffffffff,
+  KEYNAME_PACKEDCODE_MAP: let (KEY_NOCHAR = 25) {
+    nmode     : 0x0fffffff,
+    cmode     : 0x1fffffff,
+    "2-shift" : 0x5fffffff,
+    "2-alt"   : 0x6fffffff,
+    "2-ctrl"  : 0x7fffffff,
     space     : 0x0020,
     sp        : 0x0020,
     bs        : 0x1 << KEY_NOCHAR | 0x0008, 
@@ -1035,6 +1059,19 @@ coUtils.Keyboard = {
     f12       : 0x1 << KEY_NOCHAR | 0x007b,
   },
 
+  getCodeToNameMap: function getCodeToNameMap() 
+  {
+    let result = {};
+    Object.keys(this.KEYNAME_PACKEDCODE_MAP).forEach(function(name) {
+      let value = this.KEYNAME_PACKEDCODE_MAP[name];
+      result[String.fromCharCode(value)] = name;
+    }, this);
+    this.getCodeToNameMap = function getCodeToNameMap() {
+      return result;
+    };
+    return result;
+  },
+
   convertCodeToExpression: function convertCodeToExpression(packed_code)
   {
     let buffer = [];
@@ -1051,13 +1088,19 @@ coUtils.Keyboard = {
       buffer.push("M");
     }
     let char = String.fromCharCode(0xffffff & packed_code);
+    let map = this.getCodeToNameMap();
+    char = map[char] || char;
     if ("-" == char || "<" == char || ">" == char) {
       char = "\\" + char;
     }
     buffer.push(char);
     if (1 == buffer.length) {
-      return buffer.pop();
-    } else if (2 == buffer.length && "S" == buffer[0]) {
+      if (1 == buffer[0].length) {
+        return buffer.pop();
+      } else {
+        return "<" + buffer.pop() + ">";
+      }
+    } else if (2 == buffer.length && "S" == buffer[0] && 1 == buffer[1].length) {
       return buffer.pop();
     }
     return "<" + buffer.join("-") + ">";
@@ -1095,7 +1138,7 @@ coUtils.Keyboard = {
       if (1 < stroke.length) {
         stroke = stroke.slice(1, -1); // <...> -> ...
         tokens = stroke
-          .match(/\\\-|[^-]+/g)
+          .match(/[0-9]+\-(\\\-|[^-]+)+|\\\-|[^-]+/g)
           .map(function(token) token.replace(/^\\/, ""));
       } else {
         tokens = [stroke];
@@ -1625,7 +1668,8 @@ coUtils.Localize = new function()
         .classes["@mozilla.org/intl/nslocaleservice;1"]
         .getService(Components.interfaces.nsILocaleService); 
       this._dictionaries_store = {};
-      this.locale = locale_service.getLocaleComponentForUserAgent();
+      let locale = locale_service.getLocaleComponentForUserAgent();
+      this.switchLocale(locale);
     },
 
     /** @property locale */
@@ -1637,6 +1681,11 @@ coUtils.Localize = new function()
     set locale(value) 
     {
       this._locale = value;
+    },
+
+    switchLocale: function switchLocale(locale)
+    {
+      this.locale = locale;
       this.load();
     },
 

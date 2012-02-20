@@ -701,34 +701,22 @@ Plugin.definition = {
       let broker = this._broker;
       if (value) {
         try {
-          this.install(broker);
+          broker.uniget(<>install/{this.id}</>, broker);
+          //this.install(broker);
         } catch (e) {
           coUtils.Debug.reportError(e);
           coUtils.Debug.reportError(_("Failed to enable plugin: %s"), this.id);
           throw e;
         }
-        broker.notify("installed/" + this.id, this);
+        broker.notify(<>installed/{this.id}</>, this);
       } else {
-        broker.notify("uninstalling/" + this.id, this);
-        this.uninstall(broker);
+        broker.notify(<>uninstalling/{this.id}</>, this);
+        broker.uniget(<>uninstall/{this.id}</>, broker);
+        //this.uninstall(broker);
       }
       this.__enabled = value;
       this.enabled_when_startup = value;
     }
-  },
-
-  /** This method is expected to install itself. */
-  install: function install(session) 
-  {
-    throw coUtils.Debug.Exception(
-      _("Method '%s::install' is not implemented."), this.id);
-  },
-
-  /** This method is expected to uninstall itself. */
-  uninstall: function uninstall(session) 
-  {
-    throw coUtils.Debug.Exception(
-      _("Method '%s::uninstall' is not implemented."), this.id);
   },
 
   /** Overrids toString */

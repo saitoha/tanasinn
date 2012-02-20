@@ -43,14 +43,14 @@ DragMove.definition = {
     </plugin>,
 
   /** Installs itself. */
-  "[subscribe('install/dragcopy'), enabled]":
+  "[subscribe('install/dragmove'), enabled]":
   function install(session) 
   {
     this.ondragstart.enabled = true;
   },
 
   /** Uninstalls itself. */
-  "[subscribe('uninstall/dragcopy'), enabled]":
+  "[subscribe('uninstall/dragmove'), enabled]":
   function uninstall(session) 
   {
     this.ondragstart.enabled = false;

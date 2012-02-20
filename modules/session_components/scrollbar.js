@@ -34,7 +34,7 @@ Scrollbar.definition = {
 
   get info()
     <plugin>
-        <name>Scroll Bar</name>
+        <name>{_("Scroll Bar")}</name>
         <description>{
           _("Shows scrollbar interface.")
         }</description>

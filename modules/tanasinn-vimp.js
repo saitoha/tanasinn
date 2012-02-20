@@ -51,6 +51,7 @@ let commands = liberator.modules.commands;
 let completion = liberator.modules.completion;
 let mappings = liberator.modules.mappings;
 let modes = liberator.modules.modes;
+let editor = liberator.modules.editor;
 
 /**
  * @fn getTanasinnProcess
@@ -113,7 +114,7 @@ commands.addUserCommand(["tanasinnlaunch", "tla[unch]"],
  * @command tanasinncommand 
  */
 commands.addUserCommand(["tanasinncommand", "tco[mmand]"], 
-  "Run a command on tanasinn.", 
+  "Run a operating system command on tanasinn.", 
   function (args) 
   { 
     getDesktop().notify("command/start-session", args.string);
@@ -127,10 +128,26 @@ commands.addUserCommand(["tanasinncommand", "tco[mmand]"],
 );
 
 /**
+ * @command tanasinnsend 
+ */
+commands.addUserCommand(["tanasinnsend", "ts[end]"], 
+  "Run a tanasinn command on active tanasinn sessions.", 
+  function (args) 
+  { 
+    getDesktop().notify("command/send-command", args.string);
+  },
+  { 
+    argCount: "?",
+//    completer: function (context) completion.shellCommand(context),
+    bang: true,
+    literal: 0,
+  } 
+);
+
+/**
  * Hooks "<C-i>" and "gF" key mappings and runs "g:tanasinneditorcommand" 
  * or "g:tanasinnviewsourcecommand", instead of default "editor" option.
  */
-let editor = liberator.modules.editor;
 editor.editFileExternally = let (default_func = editor.editFileExternally) function (path) 
 {
   let editor_command = liberator.globalVariables.tanasinneditorcommand;

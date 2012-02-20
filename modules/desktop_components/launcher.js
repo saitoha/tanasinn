@@ -1258,7 +1258,7 @@ Launcher.definition = {
       let now = parseInt(new Date().getTime());
       let diff = now - this._last_shiftup_time;
       if (diff_min < diff && diff < diff_max) {
-        broker.notify("introducer-pressed/double-shift");
+        broker.notify("event/hotkey-double-shift");
         this._last_shiftup_time = 0;
       } else {
         this._last_shiftup_time = now;

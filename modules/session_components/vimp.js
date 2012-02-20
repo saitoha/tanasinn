@@ -35,10 +35,10 @@ Vimperator.definition = {
   get info()
     <module>
         <name>Vimperator</name>
+        <version>0.1</version>
         <description>{
           _("Apply some fixes for vimperator-installed environment.")
         }</description>
-        <version>0.1</version>
     </module>,
   
   /** Install itself. 
@@ -47,9 +47,13 @@ Vimperator.definition = {
   "[subscribe('install/vimperator'), enabled]":
   function install(session)
   {
-    this.onGotFocus();
-    this.onGotFocus.enabled = true;  
-    this.onLostFocus.enabled = true;  
+    let modules = this._getModules();
+    if (modules) {
+      this.onGotFocus();
+      this.onGotFocus.enabled = true;  
+      this.onLostFocus.enabled = true;  
+      this.vimperatorCommand.enabled = true;  
+    }
   },
 
   /** Uninstall itself. 
@@ -58,9 +62,13 @@ Vimperator.definition = {
   "[subscribe('uninstall/vimperator'), enabled]":
   function uninstall(session) 
   {
-    this.onLostFocus();
-    this.onGotFocus.enabled = false;  
-    this.onLostFocus.enabled = false;  
+    let modules = this._getModules();
+    if (modules) {
+      this.onLostFocus();
+      this.onGotFocus.enabled = false;  
+      this.onLostFocus.enabled = false;  
+      this.vimperatorCommand.enabled = false;  
+    }
   },
 
   /** install focus event. */
@@ -93,12 +101,34 @@ Vimperator.definition = {
     modules.events.onEscape();
   },
 
-  /** get "liberator.modules" */
-  _getModules: function _getModules()
+  /** 
+   * @command vimperator
+   */
+  "[command('vimperator')]":
+  function vimperatorCommand(arguments_string) 
+  {
+    let liberator = this._getLiberator();
+    if (!liberator)
+      return false;
+    liberator.execute(arguments_string);
+    return true;
+  },
+
+  /** get "liberator" */
+  _getLiberator: function _getLiberator()
   {
     let session = this._broker;
     let window = session.window;
     let liberator = window.liberator;
+    if (!liberator)
+      return null;
+    return liberator;
+  },
+    
+  /** get "liberator.modules" */
+  _getModules: function _getModules()
+  {
+    let liberator = this._getLiberator();
     if (!liberator)
       return null;
 

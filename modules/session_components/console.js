@@ -49,7 +49,8 @@ MessageFilter.definition = {
   /** Installs itself.
    *  @param {Session} session A Session object.
    */
-  install: function uninstall(session) 
+  "[subscribe('install/messagefilter'), enabled]":
+  function install(session) 
   {
     this.onMessageFiltersRequired.enabled = true;
     session.notify("event/console-filter-collection-changed");
@@ -58,7 +59,8 @@ MessageFilter.definition = {
   /** Uninstalls itself. 
    *  @param {Session} session A Session object.
    */
-  uninstall: function uninstall(session) 
+  "[subscribe('uninstall/messagefilter'), enabled]":
+  function uninstall(session) 
   {
     this.onMessageFiltersRequired.enabled = false;
     session.notify("event/console-filter-collection-changed");

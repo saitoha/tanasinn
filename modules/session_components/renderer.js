@@ -23,22 +23,22 @@
  * ***** END LICENSE BLOCK ***** */
 
 const CO_XTERM_256_COLOR_PROFILE = [
-  /* 0   */ "#000000", // black
-  /* 1   */ "#cd9988", // red
-  /* 2   */ "#44cd44", // green
-  /* 3   */ "#cdcd88", // yellow
-  /* 4   */ "#8899ef", // blue
-  /* 5   */ "#cd88cd", // magenta
-  /* 6   */ "#66cdcd", // cyan
-  /* 7   */ "#e5e5e5", // white
-  /* 8   */ "#7f7f7f", // blight black
-  /* 9   */ "#ff0000", // blight red
-  /* 10  */ "#00ff00", // blight green
-  /* 11  */ "#ffff00", // blight yellow
-  /* 12  */ "#5c5cff", // blight blue
-  /* 13  */ "#ff00ff", // blight magenta
-  /* 14  */ "#00ffff", // blight cyan
-  /* 15  */ "#ffffff", // blight white
+  /* 0       */ "#000000", // black
+  /* 1       */ "#cd9988", // red
+  /* 2       */ "#44cd44", // green
+  /* 3       */ "#cdcd88", // yellow
+  /* 4       */ "#8899ef", // blue
+  /* 5       */ "#cd88cd", // magenta
+  /* 6       */ "#66cdcd", // cyan
+  /* 7       */ "#e5e5e5", // white
+  /* 8       */ "#7f7f7f", // blight black
+  /* 9       */ "#ff0000", // blight red
+  /* 10      */ "#00ff00", // blight green
+  /* 11      */ "#ffff00", // blight yellow
+  /* 12      */ "#5c5cff", // blight blue
+  /* 13      */ "#ff00ff", // blight magenta
+  /* 14      */ "#00ffff", // blight cyan
+  /* 15      */ "#ffffff", // blight white
   /* 16 -23  */ "#000000", "#00005f", "#000087", "#0000af", "#0000d7", "#0000ff", "#005f00", "#005f5f",
   /* 24 -31  */ "#005f87", "#005faf", "#005fd7", "#005fff", "#008700", "#00875f", "#008787", "#0087af",
   /* 32 -39  */ "#0087d7", "#0087ff", "#00af00", "#00af5f", "#00af87", "#00afaf", "#00afd7", "#00afff",
@@ -77,7 +77,8 @@ coUtils.Font = {
    * @fn getAverageGryphWidth
    * @brief Test font rendering and calculate average gryph width.
    */
-  getAverageGryphWidth: function getAverageGryphWidth(font_size, font_family, test_string)
+  getAverageGryphWidth: 
+  function getAverageGryphWidth(font_size, font_family, test_string)
   {
     const NS_XHTML = "http://www.w3.org/1999/xhtml";
     let canvas = coUtils.getWindow()
@@ -137,13 +138,13 @@ Renderer.definition = {
     "renderer",
 
   get info()
-    <module>
+    <plugin>
         <name>{_("Renderer")}</name>
         <description>{
           _("Handles draw event and render output data to main canvas.")
         }</description>
         <version>0.2.0</version>
-    </module>,
+    </plugin>,
 
   _context: null,
   _canvas: null,
@@ -164,15 +165,21 @@ Renderer.definition = {
   "[watchable] char_width": 6.5, 
   "[watchable] char_height": 4, 
   "[watchable] char_offset": 11, 
-  "_text_offset": 10, 
+
+  _text_offset: 10, 
 
   // font
   "[watchable, persistable] font_family": "Monaco,Menlo,Lucida Console,monospace",
   "[watchable, persistable] font_size": 14,
 
   "[persistable] force_precious_rendering": false,
-  "[persistable] normal_alpha": 0.85,
+  "[persistable] normal_alpha": 0.80,
+  "[persistable] bold_alpha": 1.00,
 //  "[persistable] enable_text_shadow": false,
+  "[persistable] enable_render_bold_as_textshadow": false,
+  "[persistable] shadow_offset_x": 0.50,
+  "[persistable] shadow_offset_y": 0.00,
+  "[persistable] shadow_blur": 0.50,
   "[persistable, watchable] smoothing": true,
 
   /** Installs itself.
@@ -381,7 +388,7 @@ Renderer.definition = {
     let fore_color_map = this.normal_color;// attr.bold ? this.bold_color: this.normal_color;
     let fore_color = fore_color_map[attr.fg];
     this._setFont(context, attr.bold); 
-    context.globalAlpha = attr.bold ? 1.0: this.normal_alpha;
+    context.globalAlpha = attr.bold ? this.bold_alpha: this.normal_alpha;
     context.fillStyle = fore_color;
     if (attr.underline) {
       this._drawUnderline(context, x, y, char_width * length, fore_color);
@@ -440,8 +447,16 @@ Renderer.definition = {
         }
       }())];
       let text = String.fromCharCode.apply(String, codes);
+      if (this.enable_render_bold_as_textshadow && attr.bold) {
+        context.shadowColor = "white";//fore_color;
+        context.shadowOffsetX = this.shadow_offset_x;
+        context.shadowOffsetY = this.shadow_offset_y;
+        context.shadowBlur = this.shadow_blur;
+      } else {
+        context.shadowOffsetX = 0;
+        context.shadowBlur = 0;
+      }
       context.fillText(text, x, y, char_width * length);
-//    }
   },
 
   /** Rnder underline at specified position.

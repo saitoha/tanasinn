@@ -36,6 +36,9 @@
 let Movable = new Aspect();
 Movable.definition = {
 
+  "[persistable] move_transition": false,
+  "[persistable] move_duration": 180, // in millisecond order.
+
   /**
    * @fn moveTo
    * @brief Move terminal window.
@@ -68,17 +71,18 @@ Movable.definition = {
     if (timer) {
       timer.cancel();
     }
-    const duration = 80; // in millisecond order.
-    style.MozTransitionProperty = "left, top";
-    style.MozTransitionDuration = duration + "ms";
+    if (this.move_transition) {
+      style.MozTransitionProperty = "left, top";
+      style.MozTransitionDuration = this.move_duration + "ms";
+      static_scope.timer = coUtils.Timer.setTimeout(function() 
+      {
+        style.MozTransitionProperty = "";
+        style.MozTransitionDuration = "0ms";
+      }, this.move_duration);
+    }
     let left = parseInt(style.left) + x;
     let top = parseInt(style.top) + y;
     this.moveTo([left, top]);
-    static_scope.timer = coUtils.Timer.setTimeout(function() 
-    {
-      style.MozTransitionProperty = "";
-      style.MozTransitionDuration = "0ms";
-    }, duration);
   },
 
 };
@@ -93,6 +97,28 @@ OuterChrome.definition = {
 
   get id()
     "outerchrome",
+
+  get info()
+    <plugin>
+        <name>{_("Outer Chrome")}</name>
+        <description>{
+          _("Manages '#tanasinn_outer_chrome' XUL element.")
+        }</description>
+        <version>0.1.0</version>
+    </plugin>,
+
+  "[persistable, watchable] background_opaicty": 0.83,
+  "[persistable, watchable] background": "-moz-linear-gradient(top, #444, #000)",
+  "[persistable, watchable] border_radius": 8,
+  "[persistable, watchable] box_shadow": "5px 4px 29px black",
+
+  get frame_style()
+    <>
+      -moz-box-shadow: {this.box_shadow};
+      border-radius: {this.border_radius}px;
+      background: {this.background}; 
+      opacity: {this.background_opaicty};
+    </>,
 
   /** 
    * Construct the skelton of user interface with some attributes 
@@ -114,18 +140,11 @@ OuterChrome.definition = {
         {
           tagName: "box",
           id: "tanasinn_background_frame",
-          style: <>
-            -moz-box-shadow: 5px 4px 29px black;
-            border-radius: 8px;
-            background: -moz-linear-gradient(top, #555, #000);
-            opacity: 0.7;
-          </>,
+          style: this.frame_style,
         },
         {
           tagName: "grid",
           className: "tanasinn",
-          style: <>
-          </>,
           childNodes: {
             tagName: "rows",
             childNodes: [
@@ -173,6 +192,8 @@ OuterChrome.definition = {
       tanasinn_background_frame,  
     } = session.uniget("command/construct-chrome", this.template);
     this._element = tanasinn_outer_chrome;
+    this._frame = tanasinn_background_frame;
+    this.updateStyle.enabled = true;
 
     if (coUtils.Runtime.app_name.match(/tanasinn/)) {
       this._element.firstChild.style.borderRadius = "0px";
@@ -183,11 +204,18 @@ OuterChrome.definition = {
   "[subscribe('uninstall/outerchrome'), enabled]": 
   function uninstall(session) 
   {
+    this.updateStyle.enabled = false;
     // destruct chrome elements. 
     if (this._element && this._element.parentNode) {
       this._element.parentNode.removeChild(this._element);
       this._element = null;
     }
+  },
+
+  "[subscribe('variable-changed/outerchrome.{background | background_opaicty | border_radius | box_shadow}')]": 
+  function updateStyle() 
+  {
+    this._frame.style.cssText = this.frame_style;
   },
 
   "[subscribe('event/shift-key-down'), enabled]": 
@@ -268,6 +296,12 @@ Chrome.definition = {
         <version>0.1.0</version>
     </plugin>,
 
+  get style()
+    <>
+      margin: {this.margin}px;
+      background: {this.background};
+    </>,
+
   get template()
     [
       {
@@ -278,9 +312,7 @@ Chrome.definition = {
           {
             id: "tanasinn_center_area",
             tagName: "stack",
-            style: <>
-              margin: {this.margin}px;
-            </>,
+            style: this.style,
           },
         ],
       },
@@ -288,33 +320,31 @@ Chrome.definition = {
         parentNode: "#tanasinn_chrome",
         id: "tanasinn_panel_area",
         tagName: "box",
-        style: <>
-        //  border: solid green 5px;
-        </>,
       },
       {
         parentNode: "#tanasinn_chrome",
         id: "tanasinn_commandline_area",
         tagName: "box",
-        style: <>
-        //  border: solid red 5px;
-        </>,
       },
     ],
 
-  "[persistable] margin": 8,
+  "[persistable, watchable] margin": 8,
+  "[persistable, watchable] background": "transparent",
   "[persistable] inactive_opacity": 0.20,
+  "[persistable] resize_opacity": 0.50,
 
   _element: null,
 
   "[subscribe('install/chrome'), enabled]": 
   function install(session) 
   {
-    let {tanasinn_content} 
+    let {tanasinn_content, tanasinn_center_area} 
       = session.uniget("command/construct-chrome", this.template);
     this._element = tanasinn_content;
+    this._center = tanasinn_center_area;
     this.onGotFocus.enabled = true;
     this.onLostFocus.enabled = true;
+    this.updateStyle.enabled = true;
   },
 
   "[subscribe('uninstall/chrome'), enabled]": 
@@ -322,10 +352,17 @@ Chrome.definition = {
   {
     this.onGotFocus.enabled = false;
     this.onLostFocus.enabled = false;
+    this.updateStyle.enabled = false;
     if (this._element && this._element.parentNode) {
       this._element.parentNode.removeChild(this._element);
       this._element = null;
     }
+  },
+
+  "[subscribe('variable-changed/chrome.{margin | background}'), enabled]": 
+  function updateStyle()
+  {
+    this._center.style.cssText = this.style;
   },
 
   /** Fired when The session is stopping. */
@@ -352,7 +389,7 @@ Chrome.definition = {
   function onResizeSessionStarted(subject) 
   {
     let session = this._broker;
-    session.notify("command/set-opacity", 0.50);
+    session.notify("command/set-opacity", this.resize_opacity);
   },
 
   /** Fired when a resize session closed. */

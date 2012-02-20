@@ -1,14 +1,8 @@
 <?xml version="1.0"?>
-<window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+<box xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
     width="800" height="600" title="tanasinn 0.1.4.2">
-    <script type="application/x-javascript">
-    <![CDATA[
-      Components
-        .classes["@mozilla.org/moz/jssubscript-loader;1"]
-        .getService(Components.interfaces.mozIJSSubScriptLoader)
-        .loadSubScript("resource://tanasinn/common/process.js");
-    ]]>
+    <script type="application/x-javascript" src="testsuite.js">
     </script>
-</window>
+</box>
 
 

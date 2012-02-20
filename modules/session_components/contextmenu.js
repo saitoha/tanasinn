@@ -33,7 +33,7 @@ Contextmenu.definition = {
 
   get info()
     <plugin>
-        <name>Context Menu</name>
+        <name>{_("Context Menu")}</name>
         <description>{
           _("Provides context menu interface which ",
             "emerges when we right-clicks the screen.")

@@ -139,7 +139,7 @@ with (scope) {
           return directory.path;
         }
       }
-      return null;
+      throw coUtils.Exception(_("Cannot guess cygwin root path."));
     },
 
     _guessBinPath: function _guessBinPath()

@@ -423,11 +423,11 @@ CharsetCompleter.definition = {
 };
 
 /**
- * @class NmapCompleter
+ * @class NMapCompleter
  *
  */
-let NmapCompleter = new Class().extends(CompleterBase);
-NmapCompleter.definition = {
+let NMapCompleter = new Class().extends(CompleterBase);
+NMapCompleter.definition = {
 
   get id()
     "nmap-completer",
@@ -464,6 +464,79 @@ NmapCompleter.definition = {
       .map(function(key) {
         return { 
           key: key, 
+          value: expressions[key],
+        };
+      });
+    if (0 == candidates.length) {
+      listener.doCompletion(null);
+      return -1;
+    }
+    let autocomplete_result = {
+      type: "text",
+      query: source, 
+      labels: candidates.map(function(candidate) candidate.key),
+      comments: candidates.map(function(candidate) String(candidate.value)),
+      data: candidates.map(function(candidate) ({
+        name: candidate.key,
+        value: String(candidate.value),
+      })),
+    };
+    listener.doCompletion(autocomplete_result);
+    return 0;
+  },
+
+  /*
+   * Stop all searches that are in progress
+   */
+  stopSearch: function stopSearch() 
+  {
+  },
+
+};
+
+
+/**
+ * @class CMapCompleter
+ *
+ */
+let CMapCompleter = new Class().extends(CompleterBase);
+CMapCompleter.definition = {
+
+  get id()
+    "cmap-completer",
+
+  get type()
+    "cmap",
+
+  /*
+   * Search for a given string and notify a listener (either synchronously
+   * or asynchronously) of the result
+   *
+   * @param source - The string to search for
+   * @param listener - A listener to notify when the search is complete
+   */
+  startSearch: function startSearch(source, listener)
+  {
+    let match = source.match(/^\s*(\S*)(\s*)/);
+    if (null === match) {
+      listener.doCompletion(null);
+      return -1;
+    }
+    let [all, name, next] = match;
+    if (next) {
+      return all.length;
+    }
+
+    let broker = this._broker;
+    let expressions = broker.uniget("get/registered-cmap");
+    let lower_name = name.toLowerCase();
+    let candidates = Object.getOwnPropertyNames(expressions)
+      .filter(function(expression) {
+        return -1 != expression.toLowerCase().indexOf(lower_name); 
+      })
+      .map(function(key) {
+        return { 
+          key: key,
           value: expressions[key],
         };
       });
@@ -1046,6 +1119,101 @@ LocalizeCompleter.definition = {
   },
 };
 
+
+function generateFileEntries(path) 
+{
+  let directory = Components
+    .classes["@mozilla.org/file/local;1"]
+    .createInstance(Components.interfaces.nsILocalFile);
+  try {
+    directory.initWithPath(path);
+    if (directory.exists() && directory.isDirectory()) {
+      let entries = directory.directoryEntries;
+      while (entries.hasMoreElements()) {
+        let file = entries.getNext();
+        yield file.QueryInterface(Components.interfaces.nsIFile);
+      }
+    }
+  } catch (e) {
+    coUtils.Debug.reportError(e);
+  }
+}
+
+/**
+ * @class FileCompleter
+ *
+ */
+let FileCompleter = new Class().extends(CompleterBase);
+FileCompleter.definition = {
+
+  get id()
+    "file-completer",
+
+  get type()
+    "file",
+
+  /*
+   * Search for a given string and notify a listener (either synchronously
+   * or asynchronously) of the result
+   *
+   * @param source - The string to search for
+   * @param listener - A listener to notify when the search is complete
+   */
+  startSearch: function startSearch(source, listener, option)
+  {
+    let session = this._broker;
+    let pattern = /^\s*(?:(.*\/))?(.*)?/;
+    let match = source.match(pattern);
+    let [all, stem, leaf] = match;
+    let candidates;
+    let home = coUtils.File.getFileLeafFromVirtualPath("$Home");
+    leaf = leaf || "";
+    let lower_leaf = leaf.toLowerCase();
+    let stem_length = 0;
+    if (stem) {
+      if (!coUtils.File.isAbsolutePath(stem)) {
+        if ("WINNT" == coUtils.Runtime.os) {
+          let cygwin_root = session.uniget("get/cygwin-root");
+          stem = cygwin_root + coUtils.File.getPathDelimiter() + stem;
+        } else {
+          stem = home.path + coUtils.File.getPathDelimiter() + stem;
+        }
+      }
+      stem_length = stem.length;
+      candidates = [file for (file in generateFileEntries(stem))];
+    } else {
+      candidates = [file for (file in generateFileEntries(home.path))];
+      stem_length = home.path.length + 1;
+    }
+    candidates = candidates
+      .map(function(file) file.path.substr(stem_length))
+      .filter(function(path) path.toLowerCase().match(lower_leaf))
+    if (0 == candidates.length) {
+      listener.doCompletion(autocomplete_result);
+      return -1;
+    }
+    let autocomplete_result = {
+      type: "text",
+      query: leaf, 
+      labels: candidates, 
+      comments: candidates,
+      data: candidates.map(function(path) ({
+        name: path, 
+        value: path,
+      })),
+    };
+    listener.doCompletion(autocomplete_result);
+    return 0;
+  },
+
+  /*
+   * Stop all searches that are in progress
+   */
+  stopSearch: function stopSearch() 
+  {
+  },
+};
+
 /**
  * @fn main
  * @brief Module entry point.
@@ -1065,7 +1233,9 @@ function main(broker)
   new ComponentsCompleter(broker);
   new PluginsCompleter(broker);
   new CharsetCompleter(broker);
-  new NmapCompleter(broker);
+  new NMapCompleter(broker);
+  new CMapCompleter(broker);
+  new FileCompleter(broker);
 }
 
 

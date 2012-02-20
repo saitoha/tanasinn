@@ -155,8 +155,10 @@ Desktop.definition = {
   "[subscribe('get/desktop-from-window')]":
   function getDesktopFromWindow(window)
   {
-    return window.document.documentElement.isEqualNode(this._window.document.documentElement) ? 
-      this: null;
+    return window.document
+      .documentElement
+      .isEqualNode(this._window.document.documentElement) ? 
+        this: null;
   },
 
   /** Creates a session object and starts it. 

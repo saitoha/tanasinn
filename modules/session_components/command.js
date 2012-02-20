@@ -310,7 +310,7 @@ FontCommands.definition = {
   },
 
   /** Makes font size smaller. */
-  "[command('decrease'), nmap('<M-\\\\->', '<C-S-\\\\->'), _('Make font size smaller.'), enabled]":
+  "[command('decrease'), nmap('<M-\\\\->', '<C-S-\\->', '<C-S-_>'), _('Make font size smaller.'), enabled]":
   function decrease()
   {
     let session = this._broker;
@@ -320,7 +320,7 @@ FontCommands.definition = {
   },
 
   /** Makes font size bigger. */
-  "[command('increase'), nmap('<M-S-+>', '<C-S-;>'), _('Make font size bigger.'), enabled]":
+  "[command('increase'), nmap('<M-S-+>', '<C-S-;>', '<C-S-=>'), _('Make font size bigger.'), enabled]":
   function increase()
   {
     let session = this._broker;
@@ -400,7 +400,7 @@ GlobalPersistCommand.definition = {
   get id()
     "persist",
 
-  "[command('globalsave/ss', ['profile/global']), _('Persist current global settings.'), enabled]":
+  "[command('globalsave/gs', ['profile/global']), _('Persist current global settings.'), enabled]":
   function persist(arguments_string)
   {
     let session = this._broker;
@@ -421,7 +421,7 @@ GlobalPersistCommand.definition = {
     };
   },
 
-  "[command('globalload/ls', ['profile/global']), _('Load a global settings.'), enabled]":
+  "[command('globalload/gl', ['profile/global']), _('Load a global settings.'), enabled]":
   function load(arguments_string)
   {
     let session = this._broker;
@@ -441,7 +441,7 @@ GlobalPersistCommand.definition = {
     return null;
   },
 
-  "[command('globaldelete/ds', ['profile/global']), _('Delete a global settings.'), enabled]":
+  "[command('globaldelete/gd', ['profile/global']), _('Delete a global settings.'), enabled]":
   function deleteprofile(arguments_string)
   {
     let session = this._broker;
@@ -667,73 +667,6 @@ CharsetCommands.definition = {
 };
 
 /**
- * @class MapCommands
- */
-let MapCommands = new Class().extends(Component);
-MapCommands.definition = {
-
-  get id()
-    "map_command",
-
-  "[command('nmap', ['nmap', 'nmap']), _('Edit normal mapping configuration.'), enabled]":
-  function nmap(arguments_string)
-  {
-    let session = this._broker;
-    let pattern = /^\s*(\S+)\s+(\S+)\s*$/;
-    let match = arguments_string.match(pattern);
-    if (!match) {
-      session.notify(
-        "command/report-status-message", 
-        _("Failed to parse given commandline code."));
-      return;
-    }
-    let [, source_mapping, destination_mapping] = match;
-    let mapping_info = {
-      source: source_mapping,
-      destination: destination_mapping,
-    };
-    session.notify("command/register-nmap", mapping_info);
-  },
-
-  "[command('nnoremap', ['nmap', 'nmap']), _('Edit normal mapping configuration.'), enabled]":
-  function nnoremap(arguments_string)
-  {
-    let session = this._broker;
-    let pattern = /^\s*(\S+)\s+(\S+)\s*$/;
-    let match = arguments_string.match(pattern);
-    if (!match) {
-      session.notify(
-        "command/report-status-message", 
-        _("Failed to parse given commandline code."));
-      return;
-    }
-    let [, source_mapping, destination_mapping] = match;
-    let mapping_info = {
-      source: source_mapping,
-      destination: destination_mapping,
-    };
-    session.notify("command/register-nnoremap", mapping_info);
-  },
-
-  "[command('nunmap', ['nmap']), _('Delete a normal mapping configuration.'), enabled]":
-  function nunmap(arguments_string)
-  {
-    let session = this._broker;
-    let pattern = /^\s*(\S+)\s*$/;
-    let match = arguments_string.match(pattern);
-    if (!match) {
-      session.notify(
-        "command/report-status-message", 
-        _("Failed to parse given commandline code."));
-      return;
-    }
-    let [, expression] = match;
-    session.notify("command/unregister-nmap", expression);
-  },
-
-};
-
-/**
  * @class LscomponentCommand
  */
 let LscomponentCommand = new Class().extends(Component);
@@ -749,8 +682,6 @@ LscomponentCommand.definition = {
   },
 
 };
-
-
 
 /**
  * @fn main
@@ -770,7 +701,6 @@ function main(broker)
   new LocalizeCommand(broker);
   new DeployCommands(broker);
   new CharsetCommands(broker);
-  new MapCommands(broker);
   new LscomponentCommand(broker);
 }
 

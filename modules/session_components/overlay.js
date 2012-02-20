@@ -69,7 +69,7 @@ OverlayIndicator.definition = {
 
   get info()
     <module>
-        <name>Overlay Indicator</name>
+        <name>{_("Overlay Indicator")}</name>
         <description>{
           _("Enables overlay indicator.")
         }</description>

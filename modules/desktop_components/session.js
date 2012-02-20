@@ -67,6 +67,41 @@ Environment.definition = {
 
 };
 
+let RouteKeyEvents = new Aspect()
+RouteKeyEvents.definition = {
+
+  "[subscribe('event/hotkey-double-shift'), enabled]":
+  function onDoubleShift() 
+  {
+    this.notify("event/hotkey-double-shift", this);
+  },
+
+  "[subscribe('event/alt-key-down'), enabled]":
+  function onAltKeyDown() 
+  {
+    this.notify("event/alt-key-down", this);
+  },
+
+  "[subscribe('event/alt-key-up'), enabled]":
+  function onAltKeyUp() 
+  {
+    this.notify("event/alt-key-up", this);
+  },
+
+  "[subscribe('event/shift-key-down'), enabled]":
+  function onShiftKeyDown() 
+  {
+    this.notify("event/shift-key-down", this);
+  },
+
+  "[subscribe('event/shift-key-up'), enabled]":
+  function onShiftKeyUp() 
+  {
+    this.notify("event/shift-key-up", this);
+  },
+
+};
+
 /**
  *
  * @class Session
@@ -74,6 +109,7 @@ Environment.definition = {
  */
 let Session = new Class().extends(Component)
                          .mix(Environment)
+                         .mix(RouteKeyEvents)
                          .mix(EventBroker);
 Session.definition = {
 
@@ -162,6 +198,12 @@ Session.definition = {
         this._observers = null;
       }
     }
+  },
+
+  "[subscribe('command/send-command'), enabled]":
+  function sendCommand(command) 
+  {
+    this.notify("command/eval-commandline", command);
   },
 
   "[subscribe('event/disabled'), enabled]":

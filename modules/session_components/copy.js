@@ -35,13 +35,13 @@ Copy.definition = {
     "copy",
 
   get info()
-    <TanasinnPlugin>
-        <name>Copy</name>
+    <Plugin>
+        <name>{_("Copy")}</name>
         <description>{
           _("Makes it enable to copy selected text by context menu or pressing short cut key.")
         }</description>
         <version>0.1</version>
-    </TanasinnPlugin>,
+    </Plugin>,
 
   /** Installs itself. */
   "[subscribe('install/copy'), enabled]": 

@@ -184,7 +184,7 @@ PopupMenu.definition = {
 
   get info()
     <module>
-        <name>Popup Menu</name>
+        <name>{_("Popup Menu")}</name>
         <description>{
           _("Handles application plivate sequence and shows native popup menu.")
         }</description>
@@ -202,7 +202,7 @@ PopupMenu.definition = {
   /** installs itself. 
    *  @param {Session} session A session object.
    */
-  "[subscribe('install/pupup_menu'), enabled]":
+  "[subscribe('install/popup_menu'), enabled]":
   function install(session) 
   {
     this.onDisplay.enabled = true;

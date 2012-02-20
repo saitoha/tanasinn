@@ -70,6 +70,159 @@ function coCreateKeyMap()
 }
 
 /**
+ * @class ModeManager
+ */
+let ModeManager = new Class().extends(Plugin);
+ModeManager.definition = {
+
+  get id()
+    "modemanager",
+
+  "[persistable] debug_flag": false,
+
+  _modes: null,
+  _mode: "normal",
+
+  /** Installs itself. 
+   *  @param {Session} a session object.
+   *  @notify collection-changed/modes
+   */
+  "[subscribe('install/modemanager'), enabled]":
+  function install(session)
+  {
+    this._modes = session.notify("get/modes");
+    this.onScanKeycode.enabled = true;
+    this.onScanKeycodeWithoutMapping.enabled = true;
+    this.onModeChanged.enabled = true;
+  },
+
+  /** Uninstalls itself. 
+   *  @param {Session} a session object.
+   */
+  "[subscribe('uninstall/modemanager'), enabled]":
+  function uninstall(session)
+  {
+    this._modes = null;
+    this.onScanKeycode.enabled = false;
+    this.onScanKeycodeWithoutMapping.enabled = false;
+    this.onModeChanged.enabled = false;
+  },
+
+  "[subscribe('event/scan-keycode')]":
+  function onScanKeycode(info) 
+  {
+    let session = this._broker;
+    let mode = info.mode || this._mode;
+    if ("normal" == mode) {
+      session.notify('command/input-with-mapping', info); 
+    } else if ("commandline" == mode) {
+      let event = session.window.document.createEvent("KeyboardEvent");
+      event.initKeyEvent("keypress", true, true, null,
+          Boolean(info.code & 1 << coUtils.Keyboard.KEY_CTRL),
+          Boolean(info.code & 1 << coUtils.Keyboard.KEY_ALT),
+          Boolean(info.code & 1 << coUtils.Keyboard.KEY_SHIFT),
+          Boolean(info.code & 1 << coUtils.Keyboard.KEY_META),
+          (info.code & 1 << coUtils.Keyboard.KEY_NOCHAR) ? (info.code & 0xfffff): 0,
+          info.code & 0xfffff
+          );
+//      let code = coUtils.Keyboard.getPackedKeycodeFromEvent(event);
+//      let exp = coUtils.Keyboard.convertCodeToExpression(code);
+      session.notify('event/keypress-commandline-with-mapping', event); 
+    } else {
+      throw coUtils.Debug.Exception(_("Unknown mode is specified: %s."), mode);
+    }
+  },
+
+  "[subscribe('event/scan-keycode-without-mapping')]":
+  function onScanKeycodeWithoutMapping(info) 
+  {
+    let session = this._broker;
+    let mode = info.mode || this._mode;
+    if ("normal" == mode) {
+      session.notify('command/input-with-no-mapping', info); 
+    } else if ("commandline" == mode) {
+      let event = session.window.document.createEvent("KeyboardEvent");
+      event.initKeyEvent("keypress", true, true, null,
+          Boolean(info.code & 1 << coUtils.Keyboard.KEY_CTRL),
+          Boolean(info.code & 1 << coUtils.Keyboard.KEY_ALT),
+          Boolean(info.code & 1 << coUtils.Keyboard.KEY_SHIFT),
+          Boolean(info.code & 1 << coUtils.Keyboard.KEY_META),
+          (info.code & 1 << coUtils.Keyboard.KEY_NOCHAR) ? (info.code & 0xfffff): 0,
+          info.code & 0xfffff
+          );
+//      let code = coUtils.Keyboard.getPackedKeycodeFromEvent(event);
+//      let exp = coUtils.Keyboard.convertCodeToExpression(code);
+      session.notify('event/keypress-commandline-with-no-mapping', event); 
+    } else {
+      throw coUtils.Debug.Exception(_("Unknown mode is specified: %s."), mode);
+    }
+  },
+
+  "[subscribe('command/input-expression-with-mapping'), enabled]":
+  function inputExpressionWithMapping(expression) 
+  {
+    let packed_code_array = coUtils.Keyboard.parseKeymapExpression(expression);
+    let session = this._broker;
+    packed_code_array.forEach(function(packed_code) {
+      session.notify("event/scan-keycode", { code: packed_code });
+    }, this);
+    return true;
+  },
+
+  "[subscribe('command/input-expression-with-no-mapping'), enabled]":
+  function inputExpressionWithNoMapping(expression) 
+  {
+    let packed_code_array = coUtils.Keyboard.parseKeymapExpression(expression);
+    let session = this._broker;
+    packed_code_array.forEach(function(packed_code) {
+      session.notify("event/scan-keycode-without-mapping", { code: packed_code });
+    }, this);
+    return true;
+  },
+
+  "[subscribe('command/input')]":
+  function input(sequence)
+  {
+  },
+
+  "[subscribe('event/mode-changed')]":
+  function onModeChanged(mode)
+  {
+    this._mode = mode;
+  },
+
+};
+
+
+/**
+ * @class NormalMode
+ */
+let NormalMode = new Class().extends(Plugin);
+NormalMode.definition = {
+
+  get id()
+    "normalmode",
+
+  /** Installs itself. 
+   *  @param {Session} a session object.
+   *  @notify collection-changed/modes
+   */
+  "[subscribe('install/normalmode'), enabled]":
+  function install(session)
+  {
+  },
+
+  /** Uninstalls itself. 
+   *  @param {Session} a session object.
+   */
+  "[subscribe('uninstall/normalmode'), enabled]":
+  function uninstall(session)
+  {
+  },
+
+};
+
+/**
  * @class InputManager
  * @brief Listen keyboard input events and send ones to TTY device.
  */
@@ -86,7 +239,8 @@ InputManager.definition = {
       tagName: "bulletinboard",
 //      style: "border: solid 1px red",
       childNodes: {
-        tagName: "html:input",
+        tagName: "textbox",
+        className: "plain",
         id: "tanasinn_default_input",
         style: <> 
           ime-mode: disabled;
@@ -100,11 +254,9 @@ InputManager.definition = {
 
   _key_map: null,
 
-  "[persistable] debug_mode": false,
-
   /** Installs itself. 
    *  @param {Session} a session object.
-   *  @notify initialized/inputmanager
+   *  @notify collection-changed/modes
    */
   "[subscribe('install/inputmanager'), enabled]":
   function install(session)
@@ -119,16 +271,18 @@ InputManager.definition = {
     this.focus.enabled = true;
     this.blur.enabled = true;
     this.onkeypress.enabled = true;
-    this.onkeyup.enabled = true;
+    this.onDoubleShift.enabled = true;
     this.oninput.enabled = true;
     this.oncompositionstart.enabled = true;
     this.oncompositionend.enabled = true;
+    this.switchToCommandline.enabled = true;
     this.inputWithMapping.enabled = true;
     this.inputWithNoMapping.enabled = true;
     this.enableInputManager.enabled = true;
     this.disableInputManager.enabled = true;
     this.blurCommand.enabled = true;
-    session.notify("initialized/inputmanager", this);
+    this.onModesRequested.enabled = true;
+    session.notify("event/collection-changed/modes");
   },
 
   /** Uninstalls itself. 
@@ -143,30 +297,25 @@ InputManager.definition = {
     this.focus.enabled = false;
     this.blur.enabled = false;
     this.onkeypress.enabled = false;
-    this.onkeyup.enabled = false;
+    this.onDoubleShift.enabled = false;
     this.oninput.enabled = false;
     this.oncompositionstart.enabled = false;
     this.oncompositionend.enabled = false;
+    this.switchToCommandline.enabled = false;
     this.inputWithMapping.enabled = false;
     this.inputWithNoMapping.enabled = false;
     this.enableInputManager.enabled = false;
     this.disableInputManager.enabled = false;
     this.blurCommand.enabled = false;
+    this.onModesRequested.enabled = false;
     this._textbox.parentNode.removeChild(this._textbox);
+    session.notify("event/collection-changed/modes");
   },
 
-  /** Send input sequences to TTY device. 
-   *  @param {String} data a text message in Unicode string.
-   *  @notify command/send-to-tty
-   */ 
-  "[subscribe('command/input-text')]":
-  function _processInputSequence(data)
+  "[subscribe('install/inputmanager')]":
+  function onModesRequested()
   {
-    if (data) {
-      let message = this.dependency["encoder"].encode(data);
-      let session = this._broker;
-      session.notify("command/send-to-tty", message);
-    }
+    return this;
   },
 
   /** Makes input event handler enabled. */
@@ -194,6 +343,8 @@ InputManager.definition = {
     this._textbox.focus(); // <-- blur out for current element.
     this._textbox.focus(); // <-- blur out for current element.
     this._textbox.focus(); // <-- set focus to textbox element.
+    let session = this._broker; 
+    session.notify("event/mode-changed", "normal");
   },
 
   "[command('blur', []), nmap('<M-z>', '<C-S-Z>'), _('Blur tanasinn window')]":
@@ -223,6 +374,7 @@ InputManager.definition = {
   "[subscribe('event/focus-changed')]":
   function onFocusChanged(focused_element)
   {
+    /*
     let target = this._textbox;
     let session = this._broker;
     let center = session.uniget(
@@ -231,8 +383,9 @@ InputManager.definition = {
     if (target.isEqualNode(focused_element)) {
       center.style.opacity = 1.00;
     } else {
-      center.style.opacity = 0.60;
+      center.style.opacity = 1.00;
     }
+    */
   },
 
   /** getter of the textbox element. */
@@ -241,25 +394,18 @@ InputManager.definition = {
     return this._textbox;
   },
 
-  "[listen('keyup', '#tanasinn_default_input', true)]":
-  function onkeyup(event) 
+  "[subscribe('event/hotkey-double-shift')]":
+  function onDoubleShift(event) 
+  {
+    let session = this._broker;
+    session.notify("command/input-expression-with-mapping", "<2-shift>")
+  },
+
+  "[nmap('<2-shift>', '<cmode>')]":
+  function switchToCommandline(event) 
   { // nothrow
-    //this._textbox.focus();
-    if (16 == event.keyCode &&
-        16 == event.which &&
-        !event.ctrlKey &&
-        !event.altKey &&
-        !event.isChar
-        ) {
-      let now = parseInt(new Date().getTime());
-      if (now - this._last_ctrlkey_time < 350) {
-        let session = this._broker;
-        session.notify("command/enable-commandline")
-        this._last_ctrlkey_time = 0;
-      } else {
-        this._last_ctrlkey_time = now;
-      }
-    }
+    let session = this._broker;
+    session.notify("command/enable-commandline")
   },
 
   /** Keypress event handler. 
@@ -270,10 +416,10 @@ InputManager.definition = {
   { // nothrow
     event.preventDefault();
     let packed_code = coUtils.Keyboard.getPackedKeycodeFromEvent(event);
-    if (this.debug_mode) {
-      let session = this._broker;
+    let session = this._broker;
+    if (this.debug_flag) {
       session.notify(
-        "command/report-status-message", 
+        "command/report-overlay-message", 
         <>
 code:{event.keyCode},
 which:{event.which},
@@ -284,28 +430,32 @@ meta:{event.metaKey?"t":"f"},
 char:{event.isChar?"t":"f"},
 {coUtils.Keyboard.convertCodeToExpression(packed_code)}
         </>);
-    };
-    this.inputWithMapping(packed_code);
+    }
+    session.notify("event/scan-keycode", {
+      mode: "normal", 
+      code: packed_code,
+    });
   },
 
   "[subscribe('command/input-with-mapping')]": 
-  function inputWithMapping(packed_code)
+  function inputWithMapping(info)
   {
+    let { event, code } = info;
     let session = this._broker;
-    let result = session.uniget(<>event/normal-input</>, {
+    let result = session.uniget("event/normal-input", {
       textbox: this._textbox, 
-      code: packed_code,
+      code: code,
     });
-    if (!result) {
-      this.inputWithNoMapping(packed_code);
+    if (!result && !(code & 1 << coUtils.Keyboard.KEY_MODE)) {
+      this.inputWithNoMapping(code);
     }
   },
 
   "[subscribe('command/input-with-no-mapping')]": 
   function inputWithNoMapping(packed_code)
   {
-    let message = this._key_map[packed_code];
     let c = packed_code & 0xffffff;// event.which;
+    let message = this._key_map[packed_code];
     if (!message) {
       if (packed_code & (1 << coUtils.Keyboard.KEY_CTRL | 
                          1 << coUtils.Keyboard.KEY_ALT)) {
@@ -317,9 +467,36 @@ char:{event.isChar?"t":"f"},
     }
     let session = this._broker;
     session.notify("event/before-input", message);
-    this._processInputSequence(message);
+    session.notify("command/input-text", message);
   },
-  
+
+  /** Send input sequences to TTY device. 
+   *  @param {String} data a text message in Unicode string.
+   *  @notify command/send-to-tty
+   */ 
+  "[subscribe('command/input-text')]":
+  function _processInputSequence(data)
+  {
+    if (data) {
+      let message = this.dependency["encoder"].encode(data);
+      let session = this._broker;
+      session.notify("command/send-to-tty", message);
+    }
+  },
+
+  /** input event handler. 
+   *  @param {Event} event A event object.
+   *  @notify event/input Notifies that a input event is occured.
+   */
+  "[listen('input', '#tanasinn_default_input')]":
+  function oninput(event) 
+  {
+    let broker = this._broker;
+    let value = this._textbox.value;
+    this._textbox.value = "";
+    broker.notify("command/input-text", value);
+  },
+ 
   /** compositionstart event handler. 
    *  @{Event} event A event object.
    */
@@ -338,18 +515,6 @@ char:{event.isChar?"t":"f"},
     this.oninput.enabled = true;
   },
   
-  /** input event handler. 
-   *  @param {Event} event A event object.
-   *  @notify event/input Notifies that a input event is occured.
-   */
-  "[listen('input', '#tanasinn_default_input')]":
-  function oninput(event) 
-  {
-    let broker = this._broker;
-    let value = this._textbox.value;
-    this._textbox.value = "";
-    broker.notify("command/input-text", value);
-  }
 };
 
 /**
@@ -359,6 +524,8 @@ char:{event.isChar?"t":"f"},
  */
 function main(broker) 
 {
+  new ModeManager(broker);
+  new NormalMode(broker);
   new InputManager(broker);
 }
 

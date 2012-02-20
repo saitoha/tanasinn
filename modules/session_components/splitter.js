@@ -37,7 +37,7 @@ Splitter.definition = {
 
   get info()
     <module type="plugin">
-        <name>Splitter</name>
+        <name>{_("Splitter")}</name>
         <description>{
           _("Make it enable to change the height of bottom-panel ",
             "by dragging horizontal bar like interface.")

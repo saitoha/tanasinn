@@ -71,7 +71,9 @@ DOMEventManager.definition = {
   {
     let broker = this._broker;
     let target;
-    if ("string" == typeof listener.target) {
+    if (!listener.target) {
+      this._addImpl(listener, broker.window.target);
+    } else if ("string" == typeof listener.target) {
       let id = listener.target.substr(1);
       try {
         target = broker.uniget("get/element", id);
