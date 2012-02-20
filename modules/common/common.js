@@ -569,8 +569,8 @@ let alert = coUtils.alert = function alert(message)
  */
 coUtils.getWindow = function getWindow() 
 {
-  if (window)
-    return window;
+//  if (window)
+//    return window;
   let windowMediator = Components
     .classes["@mozilla.org/appshell/window-mediator;1"]
     .getService(Components.interfaces.nsIWindowMediator);
