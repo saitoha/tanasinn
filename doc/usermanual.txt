@@ -917,6 +917,14 @@ debugger
 ===== setglobal
 
 ==== ユーティリティ
+===== source (new!)
+
+指定されたファイルをtanasinnコマンドバッチファイルとして読み込み、実行します。
+
+----
+source [ファイル・パス]
+----
+
 ===== vimperator (new!)
 
 vimperatorにコマンドを送ります。
@@ -996,6 +1004,22 @@ vimperator [command]
 #elif __JP__
 
 セッション生成時(Sessionオブジェクトが生成されるタイミング)に読み込まれ、1行づつ実行されるtanasinnコマンドファイル。
+
+設定例：
+
+.tanasinn/tanasinnrc
+----
+
+nmap <C-S-p> <cmode>detach<CR>
+nnoremap <F2> <cmode>
+cnoremap <C-z> <nmode>
+cmap <f3> <C-a><C-k>vimperator set!<CR> 
+set renderer.normal_alpha=0.8
+set renderer.font_size=20
+set outerchrome.background_opacity=0.8
+set outerchrome.background="-moz-radial-gradient(center, circle closest-side, #444, #000)"
+
+----
 
 #endif
 
@@ -2119,7 +2143,7 @@ or tweet me (http:/#/twitter.com/feel_tanasinn[English] / http:/#/twitter.com/ke
 == バグレポート
 
 バグレポートを歓迎します。 
-とくに意地悪なバグ再現、重箱の隅をつつくような細かい不整合、誰も気に留めないようなくだらない不具合報告を頂くと優先的に対応します。
+とくに文字の問題(Unicodeとか)は優先的にバグ修正する傾向があります。
 saitoha <user@zuse.jp> 
 twitter: http:/#/twitter.com/kefir_[日本語] / http:/#/twitter.com/feel_tanasinn[英語] 
 

@@ -34,10 +34,10 @@ FocusTracker.definition = {
   get info()
     <plugin>
         <name>{_("Focus")}</name>
+        <version>0.1</version>
         <description>{
           _("Enable focus management.")
         }</description>
-        <version>0.1</version>
     </plugin>,
 
   disabled: false,
@@ -112,6 +112,4 @@ function main(broker)
 {
   new FocusTracker(broker);
 }
-
-
 

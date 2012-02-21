@@ -298,7 +298,7 @@ CommandlineKeyHandler.definition = {
   get id()
     "commandline-key-handler",
 
-  "[cmap('<Esc>', '<C-Esc>', '<C-g>'), _('cancel to input.'), enabled]":
+  "[cmap('<Esc>', '<C-]>', '<C-g>', '<2-shift>'), _('cancel to input.'), enabled]":
   function key_escape(info) 
   {
     let session = this._broker;
@@ -306,7 +306,7 @@ CommandlineKeyHandler.definition = {
     return true;
   },
 
-  "[cmap('<C-b>'), _('move cursor backward.'), enabled]":
+  "[cmap('<left>', '<C-b>'), _('move cursor backward.'), enabled]":
   function key_back(info) 
   {
     let textbox = info.textbox;
@@ -321,7 +321,7 @@ CommandlineKeyHandler.definition = {
     return true;
   },
 
-  "[cmap('<C-f>'), _('move cursor forward.'), enabled]":
+  "[cmap('<right>', '<C-f>'), _('move cursor forward.'), enabled]":
   function key_forward(info)
   {
     let textbox = info.textbox;
@@ -373,7 +373,7 @@ CommandlineKeyHandler.definition = {
     return true;
   },
  
-  "[cmap('<C-a>'), _('move cursor to head of line.'), enabled]":
+  "[cmap('<Home>', '<C-a>'), _('move cursor to head of line.'), enabled]":
   function key_first(info) 
   {
     let textbox = info.textbox;
@@ -382,7 +382,7 @@ CommandlineKeyHandler.definition = {
     return true;
   },
 
-  "[cmap('<C-e>'), _('move cursor to end of line.'), enabled]":
+  "[cmap('<End>', '<C-e>'), _('move cursor to end of line.'), enabled]":
   function key_end(info) 
   {
     let textbox = info.textbox;

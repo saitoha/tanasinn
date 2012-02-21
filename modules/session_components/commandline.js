@@ -782,28 +782,27 @@ Commandline.definition = {
   "[listen('keyup', '#tanasinn_commandline', true)]":
   function onkeyup(event) 
   { // nothrow
-    if (16 == event.keyCode && 16 == event.which &&
-        !event.ctrlKey && !event.altKey && !event.isChar) {
-      let now = parseInt(new Date().getTime());
-      let diff = now - this._last_ctrlkey_time;
-      if (30 < diff && diff < 400) {
-        let session = this._broker;
-        session.notify("command/focus")
-        this._last_ctrlkey_time = 0;
-      } else {
-        this._last_ctrlkey_time = now;
-      }
-    }
   },
 
   "[subscribe('event/keypress-commandline-with-mapping'), enabled]":
   function onKeypressCommandlineWithMapping(event) 
   {
     let code = coUtils.Keyboard.getPackedKeycodeFromEvent(event);
-    let result = this.inputCommandlineWithMapping({ code: code, event: event });
+    let result = this.inputCommandlineWithMapping(code);
     if (!result) {
-      if (!event.keyCode && !event.ctrlKey) {
-        this._textbox.inputField.value += String.fromCharCode(event.which);
+      let with_ctrl = code & 1 << coUtils.Keyboard.KEY_CTRL;
+      let with_nochar = code & 1 << coUtils.Keyboard.KEY_NOCHAR;
+      if (!with_nochar && !with_ctrl) {
+        let textbox = this._textbox;
+        let value = textbox.value;
+        let start = textbox.selectionStart;
+        let end = textbox.selectionEnd;
+        textbox.inputField.value 
+          = value.substr(0, textbox.selectionStart) 
+          + String.fromCharCode(event.which)
+          + value.substr(textbox.selectionEnd);
+        textbox.selectionStart = start + 1;
+        textbox.selectionEnd = start + 1;
         this.setCompletionTrigger();
       }
     }
@@ -812,8 +811,20 @@ Commandline.definition = {
   "[subscribe('event/keypress-commandline-with-no-mapping'), enabled]":
   function onKeypressCommandlineWithNoMapping(event) 
   {
-    if (!event.keyCode && !event.ctrlKey) {
-      this._textbox.inputField.value += String.fromCharCode(event.which);
+    let code = coUtils.Keyboard.getPackedKeycodeFromEvent(event);
+    let with_ctrl = code & 1 << coUtils.Keyboard.KEY_CTRL;
+    let with_nochar = code & 1 << coUtils.Keyboard.KEY_NOCHAR;
+    if (!with_nochar && !with_ctrl) {
+      let textbox = this._textbox;
+      let value = textbox.value;
+      let start = textbox.selectionStart;
+      let end = textbox.selectionEnd;
+      textbox.inputField.value 
+        = value.substr(0, textbox.selectionStart) 
+        + String.fromCharCode(event.which)
+        + value.substr(textbox.selectionEnd);
+      textbox.selectionStart = start + 1;
+      textbox.selectionEnd = start + 1;
       this.setCompletionTrigger();
     }
   },
@@ -831,9 +842,8 @@ Commandline.definition = {
   },
 
   "[subscribe('command/input-commandline-with-mapping'), enabled]":
-  function inputCommandlineWithMapping(info)
+  function inputCommandlineWithMapping(code)
   {
-    let {event, code} = info;
     let session = this._broker;
     let result = session.uniget(
       "event/commandline-input", 
@@ -841,10 +851,6 @@ Commandline.definition = {
         textbox: this._textbox, 
         code: code,
       });
-    if (result && event) {
-      event.stopPropagation();
-      event.preventDefault();
-    }
     return result;
   },
 

@@ -33,6 +33,12 @@
         <em:minVersion>2.1</em:minVersion>
         <em:maxVersion>2.9a1</em:maxVersion>
       </Description>
+      <Description>
+        <!-- Fennec -->
+        <em:id>{a23983c0-fd0e-11dc-95ff-0800200c9a66}</em:id>
+        <em:minVersion>4.0</em:minVersion>
+        <em:maxVersion>13.*</em:maxVersion>
+      </Description>
       <!-- Songbird -->
       <!--Description>
         <em:id>songbird@songbirdnest.com</em:id>
