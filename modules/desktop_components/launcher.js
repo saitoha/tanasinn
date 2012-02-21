@@ -1063,7 +1063,7 @@ Launcher.definition = {
     this.setCompletionTrigger();
   },
 
-  "[subscribe('event/hotkey-double-ctrl'), enabled]":
+  "[subscribe('event/hotkey-double-{ctrl | alt}'), enabled]":
   function onDoubleCtrl() 
   {
     let box = this._element;
@@ -1269,8 +1269,8 @@ Launcher.definition = {
       let now = parseInt(new Date().getTime());
       let diff = now - this._last_ctrlup_time;
       if (diff_min < diff && diff < diff_max) {
-        this._last_ctrlup_time = 0;
         broker.notify("event/hotkey-double-ctrl");
+        this._last_ctrlup_time = 0;
       } else {
         this._last_ctrlup_time = now;
       }
@@ -1280,6 +1280,7 @@ Launcher.definition = {
       let now = parseInt(new Date().getTime());
       let diff = now - this._last_altup_time;
       if (diff_min < diff && diff < diff_max) {
+        broker.notify("event/hotkey-double-alt");
         this._last_altup_time = 0;
       } else {
         this._last_altup_time = now;
