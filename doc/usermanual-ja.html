@@ -1733,6 +1733,14 @@ saveprofileのような保存操作はとくに必要ありません。</p></div
 <div class="sect3">
 <h4 id="_ユーティリティ">8.3.21. ユーティリティ</h4>
 <div class="sect4">
+<h5 id="_source_new">source (new!)</h5>
+<div class="paragraph"><p>指定されたファイルをtanasinnコマンドバッチファイルとして読み込み、実行します。</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>source [ファイル・パス]</tt></pre>
+</div></div>
+</div>
+<div class="sect4">
 <h5 id="_vimperator_new">vimperator (new!)</h5>
 <div class="paragraph"><p>vimperatorにコマンドを送ります。</p></div>
 <div class="listingblock">
@@ -1790,6 +1798,19 @@ saveprofileのような保存操作はとくに必要ありません。</p></div
 <div class="sect3">
 <h4 id="_tanasinn_tanasinnrc">8.4.3. .tanasinn/tanasinnrc</h4>
 <div class="paragraph"><p>セッション生成時(Sessionオブジェクトが生成されるタイミング)に読み込まれ、1行づつ実行されるtanasinnコマンドファイル。</p></div>
+<div class="paragraph"><p>設定例：</p></div>
+<div class="listingblock">
+<div class="title">tanasinn/tanasinnrc</div>
+<div class="content">
+<pre><tt>nmap &lt;C-S-p&gt; &lt;cmode&gt;detach&lt;CR&gt;
+nnoremap &lt;F2&gt; &lt;cmode&gt;
+cnoremap &lt;C-z&gt; &lt;nmode&gt;
+cmap &lt;f3&gt; &lt;C-a&gt;&lt;C-k&gt;vimperator set!&lt;CR&gt;
+set renderer.normal_alpha=0.8
+set renderer.font_size=20
+set outerchrome.background_opacity=0.8
+set outerchrome.background="-moz-radial-gradient(center, circle closest-side, #444, #000)"</tt></pre>
+</div></div>
 </div>
 <div class="sect3">
 <h4 id="_tanasinn_sessions_txt">8.4.4. .tanasinn/sessions.txt</h4>
@@ -2833,7 +2854,7 @@ The "listener" property (10) attaches a event handler at the current
 <h2 id="_バグレポート">13. バグレポート</h2>
 <div class="sectionbody">
 <div class="paragraph"><p>バグレポートを歓迎します。
-意地悪なバグ再現、重箱の隅をつつくような細かい不整合、誰も気に留めないようなくだらない不具合報告を頂ければだいたい対応します。
+とくに文字の問題(Unicodeとか)は優先的にバグ修正する傾向があります。
 saitoha &lt;<a href="mailto:user@zuse.jp">user@zuse.jp</a>&gt;
 twitter: <a href="http://twitter.com/kefir_">日本語</a> / <a href="http://twitter.com/feel_tanasinn">英語</a></p></div>
 </div>
@@ -2842,7 +2863,7 @@ twitter: <a href="http://twitter.com/kefir_">日本語</a> / <a href="http://twi
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2012-02-21 01:39:46 JST
+Last updated 2012-02-21 20:50:11 JST
 </div>
 </div>
 </body>

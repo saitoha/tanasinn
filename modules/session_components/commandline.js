@@ -788,7 +788,13 @@ Commandline.definition = {
   function onKeypressCommandlineWithMapping(event) 
   {
     let code = coUtils.Keyboard.getPackedKeycodeFromEvent(event);
-    let result = this.inputCommandlineWithMapping(code);
+    let session = this._broker;
+    let result = session.uniget(
+      "event/commandline-input", 
+      {
+        textbox: this._textbox, 
+        code: code,
+      });
     if (!result) {
       let with_ctrl = code & 1 << coUtils.Keyboard.KEY_CTRL;
       let with_nochar = code & 1 << coUtils.Keyboard.KEY_NOCHAR;
