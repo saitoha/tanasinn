@@ -46,7 +46,6 @@ W3m.definition = {
       parentNode: "#tanasinn_center_area",
       tagName: "html:canvas",
       id: "tanasinn_w3m_canvas",
-//      style: "border: solid 1px red",
     }),
 
   _canvas: null,

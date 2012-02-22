@@ -216,11 +216,21 @@ TextboxWidget.definition = {
  * @class CommandlineHistory
  *
  */
-let CommandlineHistory = new Class().extends(Component);
+let CommandlineHistory = new Class().extends(Plugin);
 CommandlineHistory.definition = {
 
   get id()
     "commandline_history",
+
+  get info()
+    <plugin>
+        <name>{_("Commandline History")}</name>
+        <version>0.1</version>
+        <description>{
+          _("Provides commandline history database.")
+        }</description>
+    </plugin>,
+
 
   _history: null,
   _history_index: 0,
@@ -231,12 +241,29 @@ CommandlineHistory.definition = {
     this.loadHistory();
   },
 
-//  /** Installs itself. 
-//   *  @param {Session} session A Session object.
-//   */
-//  "[subscribe('install/commandline'), enabled]":
-//  function install(session) 
-//  {
+  /** Installs itself. 
+   *  @param {Session} session A Session object.
+   */
+  "[subscribe('install/commandline_history'), enabled]":
+  function install(session) 
+  {
+    this.clearHistory.enabled = true;
+    this.nextHistory.enabled = true;
+    this.previousHistory.enabled = true;
+    this.onCommand.enabled = true;
+  },
+
+  /** Uninstalls itself. 
+   *  @param {Session} session A Session object.
+   */
+  "[subscribe('uninstall/commandline_history'), enabled]":
+  function uninstall(session) 
+  {
+    this.clearHistory.enabled = false;
+    this.nextHistory.enabled = false;
+    this.previousHistory.enabled = false;
+    this.onCommand.enabled = false;
+  },
 
   loadHistory: function loadHistory() 
   {
@@ -307,7 +334,7 @@ CommandlineHistory.definition = {
     }
   },
 
-  "[command('clearhistory/chistory'), enabled]":
+  "[command('clearhistory/chistory')]":
   function clearHistory()
   {
     this.closeHistory();
@@ -325,7 +352,7 @@ CommandlineHistory.definition = {
     };
   },
 
-  "[subscribe('command/select-next-history'), enabled]":
+  "[subscribe('command/select-next-history')]":
   function nextHistory(info)
   {
     let index = ++this._history_index % this._history.length
@@ -339,7 +366,7 @@ CommandlineHistory.definition = {
     broker.notify("command/fill");
   },
 
-  "[subscribe('command/select-previous-history'), enabled]":
+  "[subscribe('command/select-previous-history')]":
   function previousHistory(info)
   {
     let index = --this._history_index % this._history.length
@@ -353,8 +380,8 @@ CommandlineHistory.definition = {
     broker.notify("command/fill");
   },
 
-  "[subscribe('command/eval-commandline'), enabled]":
-  function enter(command)
+  "[subscribe('command/eval-commandline')]":
+  function onCommand(command)
   {
     this._history.push(command);
     this._history_index = 0;
@@ -608,6 +635,7 @@ Commandline.definition = {
 
     this.show.enabled = true;
     this.fill.enabled = true;
+    this.invalidate.enabled = true;
     this.onStatusMessage.enabled = true;
     this.onfocus.enabled = true;
     this.onblur.enabled = true;
@@ -620,7 +648,6 @@ Commandline.definition = {
     this.enableCommandline.enabled = true;
     this.onFirstFocus.enabled = true;
     this.setCompletionTrigger.enabled = true;
-    this.sourceCommand.enabled = true;
     this.onStyleChanged.enabled = true;
     this.onWidthChanged.enabled = true;
 
@@ -635,6 +662,7 @@ Commandline.definition = {
   {
     this.show.enabled = false;
     this.fill.enabled = false;
+    this.invalidate.enabled = false;
     this.onStatusMessage.enabled = false;
     this.onfocus.enabled = false;
     this.onblur.enabled = false;
@@ -647,7 +675,6 @@ Commandline.definition = {
     this.enableCommandline.enabled = false;
     this.setCompletionTrigger.enabled = false;
     this.onFirstFocus.enabled = false;
-    this.sourceCommand.enabled = false;
     this.onStyleChanged.enabled = false;
     this.onWidthChanged.enabled = false;
 
@@ -687,40 +714,6 @@ Commandline.definition = {
     let path = "$Home/.tanasinn/tanasinnrc";
     let session = this._broker;
     session.notify("command/source", path);
-  },
-
-  "[subscribe('command/source'), command('source', ['file']), _('load and evaluate script file.')]":
-  function sourceCommand(arguments_string)
-  {
-    let path = arguments_string.replace(/^\s*|\s*$/g, "");
-    if ("$" != path.charAt(0) && !coUtils.File.isAbsolutePath(path)) {
-      if ("WINNT" == coUtils.Runtime.os) {
-        let session = this._broker;
-        let cygwin_root = session.uniget("get/cygwin-root");
-        path = cygwin_root + coUtils.File.getPathDelimiter() + path;
-      } else {
-        let home = coUtils.File.getFileLeafFromVirtualPath("$Home");
-        path = home.path + coUtils.File.getPathDelimiter() + path;
-      }
-    }
-    let file = coUtils.File.getFileLeafFromVirtualPath(path);
-    if (file && file.exists()) {
-      try {
-        let session = this._broker;
-        let content = coUtils.IO.readFromFile(path, "utf-8");
-        content.split(/[\n\r]+/).forEach(function(command) {
-          if (!/^\s*$/.test(command)) {
-            session.notify("command/eval-commandline", command);
-          }
-        });
-      } catch (e) {
-        coUtils.Debug.reportError(e);
-      }
-    }
-    return {
-      success: true,
-      message: _("Source file was loaded successfully."),
-    };
   },
 
   "[subscribe('command/report-status-message')]":
@@ -809,8 +802,7 @@ Commandline.definition = {
     if (result) {
       let type = result.type || "text";
       let session = this._broker;
-      let driver = session
-        .uniget(<>get/completion-display-driver/{type}</>); 
+      let driver = session.uniget(<>get/completion-display-driver/{type}</>); 
       if (driver) {
         driver.drive(grid, result, this.currentIndex);
         this.invalidate(result);
@@ -826,7 +818,8 @@ Commandline.definition = {
     }
   },
 
-  invalidate: function invalidate(result) 
+  "[subscribe('command/invalidate')]":
+  function invalidate(result) 
   {
     let textbox = this._textbox;
     if (result.labels.length > 0) {

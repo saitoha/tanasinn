@@ -67,6 +67,9 @@ Environment.definition = {
 
 };
 
+/**
+ * @aspect RouteKeyEvents
+ */
 let RouteKeyEvents = new Aspect()
 RouteKeyEvents.definition = {
 
@@ -141,6 +144,8 @@ Session.definition = {
     this._broker,
 
   "[persistable] profile_directory": "$Home/.tanasinn/session_profile",
+  "[persistable] batch_directory": "$Home/.tanasinn/batches",
+  "[persistable] cgi_directory": "$Home/.tanasinn/cgi",
   "[persistable] profile": "default",
   "[persistable] initial_focus_delay": 100,
 

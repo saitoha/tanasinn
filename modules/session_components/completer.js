@@ -39,6 +39,25 @@ CompleterBase.definition = {
 };
 
 
+function generateFileEntries(path) 
+{
+  let directory = Components
+    .classes["@mozilla.org/file/local;1"]
+    .createInstance(Components.interfaces.nsILocalFile);
+  try {
+    directory.initWithPath(path);
+    if (directory.exists() && directory.isDirectory()) {
+      let entries = directory.directoryEntries;
+      while (entries.hasMoreElements()) {
+        let file = entries.getNext();
+        yield file.QueryInterface(Components.interfaces.nsIFile);
+      }
+    }
+  } catch (e) {
+    coUtils.Debug.reportError(e);
+  }
+}
+
 /**
  * @class CommandCompleter
  *
@@ -94,6 +113,157 @@ CommandCompleter.definition = {
   },
 
 };
+
+/**
+ * @class CGICompleter
+ *
+ */
+let CGICompleter = new Class().extends(CompleterBase);
+CGICompleter.definition = {
+
+  get id()
+    "cgi_completer",
+
+  get type()
+    "cgi",
+
+  /*
+   * Search for a given string and notify a listener (either synchronously
+   * or asynchronously) of the result
+   *
+   * @param source - The string to search for
+   * @param listener - A listener to notify when the search is complete
+   */
+  startSearch: function startSearch(source, listener, option)
+  {
+    let match = source.match(/^(\s*)([$_\-@a-zA-Z\.]*)(\s?)/);
+    if (null === match) {
+      listener.doCompletion(null);
+      return -1;
+    }
+    let [, space, name, next] = match;
+    if (next) {
+      return space.length + name.length;
+    }
+
+    let broker = this._broker;
+    if ("global" == option) {
+      broker = broker._broker;
+    }
+
+    let entries = coUtils.File.getFileEntriesFromSerchPath([broker.cgi_directory]);
+
+    let lower_name = name.toLowerCase();
+    let candidates = [
+      {
+        key: file.leafName.replace(/\.js$/, ""), 
+        value: file.path,
+      } for (file in entries) 
+        if (-1 != file.leafName.toLowerCase().indexOf(lower_name))
+    ];
+    if (0 == candidates.length) {
+      listener.doCompletion(null);
+      return -1;
+    }
+    let autocomplete_result = {
+      type: "text",
+      query: source, 
+      labels: candidates.map(function(candidate) candidate.key),
+      comments: candidates.map(function(candidate) String(candidate.value)),
+      data: candidates.map(function(candidate) ({
+        name: candidate.key,
+        value: String(candidate.value),
+      })),
+    };
+    listener.doCompletion(autocomplete_result);
+    return 0;
+  },
+
+  /*
+   * Stop all searches that are in progress
+   */
+  stopSearch: function stopSearch() 
+  {
+  },
+
+};
+
+/**
+ * @class BatchCompleter
+ *
+ */
+let BatchCompleter = new Class().extends(CompleterBase);
+BatchCompleter.definition = {
+
+  get id()
+    "batch_completer",
+
+  get type()
+    "batch",
+
+  /*
+   * Search for a given string and notify a listener (either synchronously
+   * or asynchronously) of the result
+   *
+   * @param source - The string to search for
+   * @param listener - A listener to notify when the search is complete
+   */
+  startSearch: function startSearch(source, listener, option)
+  {
+    let match = source.match(/^(\s*)([$_\-@a-zA-Z\.]*)(\s?)/);
+    if (null === match) {
+      listener.doCompletion(null);
+      return -1;
+    }
+    let [, space, name, next] = match;
+    if (next) {
+      return space.length + name.length;
+    }
+
+    let broker = this._broker;
+    if ("global" == option) {
+      broker = broker._broker;
+    }
+
+    let directory = coUtils.File.getFileLeafFromVirtualPath(broker.batch_directory);
+    let entries = generateFileEntries(directory.path);
+
+    let lower_name = name.toLowerCase();
+    let candidates = [
+      {
+        key: file.leafName.replace(/\.js$/, ""), 
+        value: file.path,
+      } for (file in entries) 
+        if (-1 != file.leafName.toLowerCase().indexOf(lower_name))
+    ];
+
+    if (0 == candidates.length) {
+      listener.doCompletion(null);
+      return -1;
+    }
+    let autocomplete_result = {
+      type: "text",
+      query: source, 
+      labels: candidates.map(function(candidate) candidate.key),
+      comments: candidates.map(function(candidate) String(candidate.value)),
+      data: candidates.map(function(candidate) ({
+        name: candidate.key,
+        value: String(candidate.value),
+      })),
+    };
+    listener.doCompletion(autocomplete_result);
+    return 0;
+  },
+
+  /*
+   * Stop all searches that are in progress
+   */
+  stopSearch: function stopSearch() 
+  {
+  },
+
+};
+
 
 /**
  * @class ProfileCompleter
@@ -1120,25 +1290,6 @@ LocalizeCompleter.definition = {
 };
 
 
-function generateFileEntries(path) 
-{
-  let directory = Components
-    .classes["@mozilla.org/file/local;1"]
-    .createInstance(Components.interfaces.nsILocalFile);
-  try {
-    directory.initWithPath(path);
-    if (directory.exists() && directory.isDirectory()) {
-      let entries = directory.directoryEntries;
-      while (entries.hasMoreElements()) {
-        let file = entries.getNext();
-        yield file.QueryInterface(Components.interfaces.nsIFile);
-      }
-    }
-  } catch (e) {
-    coUtils.Debug.reportError(e);
-  }
-}
-
 /**
  * @class FileCompleter
  *
@@ -1225,6 +1376,8 @@ function main(broker)
   new HistoryCompleter(broker);
   new OptionCompleter(broker);
   new CommandCompleter(broker);
+  new CGICompleter(broker);
+  new BatchCompleter(broker);
   new ProfileCompleter(broker);
   new FontsizeCompleter(broker);
   new FontFamilyCompleter(broker);
