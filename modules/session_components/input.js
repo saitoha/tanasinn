@@ -113,21 +113,11 @@ ModeManager.definition = {
   {
     let session = this._broker;
     let mode = info.mode || this._mode;
+    let code = info.code;
     if ("normal" == mode) {
       session.notify('command/input-with-mapping', info); 
     } else if ("commandline" == mode) {
-      let event = session.window.document.createEvent("KeyboardEvent");
-      event.initKeyEvent("keypress", true, true, null,
-          Boolean(info.code & 1 << coUtils.Keyboard.KEY_CTRL),
-          Boolean(info.code & 1 << coUtils.Keyboard.KEY_ALT),
-          Boolean(info.code & 1 << coUtils.Keyboard.KEY_SHIFT),
-          Boolean(info.code & 1 << coUtils.Keyboard.KEY_META),
-          (info.code & 1 << coUtils.Keyboard.KEY_NOCHAR) ? (info.code & 0xfffff): 0,
-          info.code & 0xfffff
-          );
-//      let code = coUtils.Keyboard.getPackedKeycodeFromEvent(event);
-//      let exp = coUtils.Keyboard.convertCodeToExpression(code);
-      session.notify('event/keypress-commandline-with-mapping', event); 
+      session.notify('event/keypress-commandline-with-mapping', code); 
     } else {
       throw coUtils.Debug.Exception(_("Unknown mode is specified: %s."), mode);
     }
@@ -138,21 +128,11 @@ ModeManager.definition = {
   {
     let session = this._broker;
     let mode = info.mode || this._mode;
+    let code = info.code;
     if ("normal" == mode) {
       session.notify('command/input-with-no-mapping', info); 
     } else if ("commandline" == mode) {
-      let event = session.window.document.createEvent("KeyboardEvent");
-      event.initKeyEvent("keypress", true, true, null,
-          Boolean(info.code & 1 << coUtils.Keyboard.KEY_CTRL),
-          Boolean(info.code & 1 << coUtils.Keyboard.KEY_ALT),
-          Boolean(info.code & 1 << coUtils.Keyboard.KEY_SHIFT),
-          Boolean(info.code & 1 << coUtils.Keyboard.KEY_META),
-          (info.code & 1 << coUtils.Keyboard.KEY_NOCHAR) ? (info.code & 0xfffff): 0,
-          info.code & 0xfffff
-          );
-//      let code = coUtils.Keyboard.getPackedKeycodeFromEvent(event);
-//      let exp = coUtils.Keyboard.convertCodeToExpression(code);
-      session.notify('event/keypress-commandline-with-no-mapping', event); 
+      session.notify('event/keypress-commandline-with-no-mapping', code); 
     } else {
       throw coUtils.Debug.Exception(_("Unknown mode is specified: %s."), mode);
     }

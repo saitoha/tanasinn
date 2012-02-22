@@ -979,13 +979,26 @@ vimperator [command]
 
 ==== .tanasinn.js
 
+
 #if __EN__
+
+example)
+
 
 #elif __JP__
 
 起動時(Processオブジェクトが生成されるタイミング)に読み込まれ、実行されるJavascriptファイル。
 
 #endif
+
+.~/.tanasinn.js Or %USERPROFILE%¥.tanasinn.js
+----
+
+process.cygwin_root = "C:\\cygwin";
+process.bin_path = "/bin:/usr/bin:/usr/local/bin:/opt/local/bin";
+process.python_path = "/usr/bin/python"
+
+----   
 
 ==== .tanasinn/
 
@@ -1007,17 +1020,19 @@ vimperator [command]
 
 設定例：
 
-.tanasinn/tanasinnrc
+..tanasinn/tanasinnrc
 ----
 
-nmap <C-S-p> <cmode>detach<CR>
-nnoremap <F2> <cmode>
-cnoremap <C-z> <nmode>
-cmap <f3> <C-a><C-k>vimperator set!<CR> 
+nmap <C-S-o> <cmode>detach<CR>
+nmap <C-S-i> <2-shift>blur<CR>
+nnoremap <C-S-z> <2-shift>
+cmap <C-z> <2-shift>
+cmap <C-s> <C-a><C-k>vimperator set!<CR> 
 set renderer.normal_alpha=0.8
 set renderer.font_size=20
 set outerchrome.background_opacity=0.8
-set outerchrome.background="-moz-radial-gradient(center, circle closest-side, #444, #000)"
+set outerchrome.background="-moz-radial-gradient(center, circle closest-side, #404040, #000)"
+
 
 ----
 
@@ -1122,22 +1137,7 @@ Sessionオブジェクトの設定が書き出されるディレクトリ。
 デスクトップバス・セッションバス両方に接続されるユーザー拡張が配置されるディレクトリ。 
 
 #endif
-
-
-#if __EN__
-=== Setting configuration variables.
-#elif __JP__
-=== 構成変数の設定 
-#endif
  
-example)
-
-    ~/.tanasinn.js Or %USERPROFILE%¥.tanasinn.js
-
-    process.cygwin_root = "C:\\cygwin";
-    process.bin_path = "/bin:/usr/bin:/usr/local/bin:/opt/local/bin";
-    process.python_path = "/usr/bin/python"
-   
 #if __EN__
 
 #elif __JP__

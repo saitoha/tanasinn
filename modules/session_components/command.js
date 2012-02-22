@@ -158,45 +158,48 @@ SetCommand.definition = {
   {
     let session = this._broker;
     let modules = session.notify("get/components");
-    let pattern = /^\s*([$_a-zA-Z\.\-]+)\.([$_a-zA-Z]+)(=?)/y;
+    let pattern = /^\s*([$_a-zA-Z\.\-]+)\.([$_a-zA-Z]+)\s*(=?)\s*/;
     let match = arguments_string.match(pattern);
     if (null === match) {
-      session.notify(
-        "command/report-status-message",
-        _("Ill-formed option name is detected. ",
-          "valid format is such as '<component name>.<property name>'."));
-      return;
+      return {
+        success: false,
+        message: _("Ill-formed option name is detected. ",
+                   "valid format is such as '<component name>.<property name>'."),
+      }
     }
     let [all, component_name, property, equal] = match;
     if (!component_name || !property) {
-      session.notify(
-        "command/report-status-message",
-        _("Ill-formed option name is detected. ",
-          "valid format is such as '<component name>.<property name>'."));
-      return;
+      return {
+        success: false,
+        message: _("Ill-formed option name is detected. ",
+                   "valid format is such as '<component name>.<property name>'."),
+      };
     }
     let [module] = modules.filter(function(module) {
       return module.id == component_name;
     });
     if (!module) {
-      session.notify(
-        "command/report-status-message",
-        _("Module %s is not found."), component_name);
-      return;
+      return {
+        success: false,
+        message: coUtils.Text.format(_("Module %s is not found."), component_name),
+      };
     }  
     if (!equal) {
-      module[property] = true;
-    } else {
-      let code = arguments_string.substr(all.length); 
-      try {
-        let result = new Function(
-          "with (arguments[0]) { return (" + code + ");}"
-        ) (session.window);
-        module[property] = result; 
-      } catch (e) {
-        coUtils.Debug.reportError(e);
-      }
+      return {
+        success: true,
+        message: module[property].toSource(),
+      };
     }
+    let code = arguments_string.substr(all.length); 
+    let result = new Function(
+      "with (arguments[0]) { return (" + code + ");}"
+    ) (session.window);
+    module[property] = result; 
+    return {
+      success: true,
+      message: coUtils.Text.format(
+        _("%s.%s -> %s"), component_name, property, result && result.toSource()),
+    };
   },
 
 };
@@ -220,31 +223,34 @@ SetGlobalCommand.definition = {
     let pattern = /^\s*([$_a-zA-Z\.\-]+)\.([$_a-zA-Z]+)(=?)/y;
     let match = arguments_string.match(pattern);
     if (null === match) {
-      session.notify(
-        "command/report-status-message",
-        _("Ill-formed option name is detected. ",
-          "valid format is such as '<component name>.<property name>'."));
-      return;
+      return {
+        success: false,
+        message: _("Ill-formed option name is detected. ",
+                   "valid format is such as '<component name>.<property name>'."),
+      };
     }
     let [all, component_name, property, equal] = match;
     if (!component_name || !property) {
-      session.notify(
-        "command/report-status-message",
-        _("Ill-formed option name is detected. ",
-          "valid format is such as '<component name>.<property name>'."));
-      return;
+      return {
+        success: false,
+        message: _("Ill-formed option name is detected. ",
+                   "valid format is such as '<component name>.<property name>'."),
+      };
     }
     let [module] = modules.filter(function(module) {
       return module.id == component_name;
     });
     if (!module) {
-      session.notify(
-        "command/report-status-message",
-        _("Module %s is not found."), component_name);
-      return;
+      return {
+        success: false,
+        message: coUtils.Text.format(_("Module %s is not found."), component_name),
+      };
     }  
     if (!equal) {
-      module[property] = true;
+      return {
+        success: true,
+        message: module[property].toSource(),
+      };
     } else {
       let code = arguments_string.substr(all.length); 
       try {
@@ -253,9 +259,17 @@ SetGlobalCommand.definition = {
         ) (session.window);
         module[property] = result; 
       } catch (e) {
-        coUtils.Debug.reportError(e);
+        return {
+          success: false,
+          message: String(e),
+        };
       }
     }
+    return {
+      success: true,
+      message: coUtils.Text.format(
+        _("%s.%s -> %s"), component_name, property, result && result.toSource()),
+    };
   },
 
 };
@@ -276,17 +290,20 @@ FontCommands.definition = {
     let pattern = /^\s*([0-9]+)\s*$/;
     let match = arguments_string.match(pattern);
     if (null === match) {
-      let session = this._broker;
-      session.notify(
-        "command/report-status-message", 
-        _("Ill-formed arguments: %s."), 
-        arguments_string);
-      return false;
+      return {
+        success: false,
+        message: coUtils.Text.format(
+          _("Ill-formed arguments: %s."), 
+          arguments_string),
+      };
     }
     let [, font_size] = match;
     session.notify("set/font-size", font_size);
     session.notify("command/draw", true);
-    return true;
+    return {
+      success: true,
+      message: _("Font size was changed."),
+    };
   },
 
   "[command('fontfamily/ff', ['font-family']), _('Select terminal font family.'), enabled]":
@@ -296,17 +313,20 @@ FontCommands.definition = {
     let pattern = /^\s*(.+)\s*$/;
     let match = arguments_string.match(pattern);
     if (null === match) {
-      let session = this._broker;
-      session.notify(
-        "command/report-status-message", 
-        _("Ill-formed arguments: %s."), 
-        arguments_string);
-      return false;
+      return {
+        success: false,
+        message: coUtils.Text.format(
+          _("Ill-formed arguments: %s."), 
+          arguments_string),
+      };
     }
     let [, font_family] = match;
     session.notify("set/font-family", font_family);
     session.notify("command/draw", true);
-    return true;
+    return {
+      success: true,
+      message: _("Font family was changed."),
+    };
   },
 
   /** Makes font size smaller. */
@@ -316,7 +336,10 @@ FontCommands.definition = {
     let session = this._broker;
     session.notify("command/change-fontsize-by-offset", -1);
     session.notify("command/draw");
-    return true;
+    return {
+      success: true,
+      message: _("Font size was changed."),
+    };
   },
 
   /** Makes font size bigger. */
@@ -326,7 +349,10 @@ FontCommands.definition = {
     let session = this._broker;
     session.notify("command/change-fontsize-by-offset", +1);
     session.notify("command/draw");
-    return true;
+    return {
+      success: true,
+      message: _("Font size was changed."),
+    };
   },
 
 };
@@ -348,45 +374,52 @@ ColorCommands.definition = {
     this._renderer = renderer;
   },
 
-  "[command('fgcolor', ['color-number/fg']), _('Select terminal color.'), enabled]":
+  "[command('fgcolor', ['color-number/fg']), _('Select foreground color.'), enabled]":
   function fgcolor(arguments_string)
   {
     let session = this._broker;
     let pattern = /\s*([0-9]+)\s+([a-zA-Z]+|#[0-9a-fA-F]+)/;
     let match = arguments_string.match(pattern);
     if (null === match) {
-      let session = this._broker;
-      session.notify(
-        "command/report-status-message", 
-        _("Ill-formed arguments: %s."), 
-        arguments_string);
-      return false;
+      return {
+        success: false,
+        message: coUtils.Text.format(
+          _("Ill-formed arguments: %s."), 
+          arguments_string),
+      };
     }
     let [, number, color] = match;
     let renderer = this._renderer;
     renderer.normal_color[number] = coUtils.Constant.WEB140_COLOR_MAP[color] || color;
     session.notify("command/draw", /* redraw */true);
-    return true;
+    return {
+      success: true,
+      message: _("Foreground color was changed."),
+    };
   },
 
-  "[command('bgcolor', ['color-number/bg']), _('Select terminal color.'), enabled]":
+  "[command('bgcolor', ['color-number/bg']), _('Select background color.'), enabled]":
   function bgcolor(arguments_string)
   {
     let session = this._broker;
     let pattern = /\s*([0-9]+)\s+([a-zA-Z]+|#[0-9a-fA-F]+)/;
     let match = arguments_string.match(pattern);
     if (null === match) {
-      session.notify(
-        "command/report-status-message", 
-        _("Ill-formed arguments: %s."), 
-        arguments_string);
-      return false;
+      return {
+        success: false,
+        message: coUtils.Text.format(
+          _("Ill-formed arguments: %s."), 
+          arguments_string),
+      };
     }
     let [, number, color] = match;
     let renderer = this._renderer;
     renderer.background_color[number] = coUtils.Constant.WEB140_COLOR_MAP[color] || color;
     session.notify("command/draw", /* redraw */true);
-    return true;
+    return {
+      success: true,
+      message: _("Background color was changed."),
+    };
   },
 };
 
@@ -438,7 +471,10 @@ GlobalPersistCommand.definition = {
 
     desktop.notify("command/load-settings", profile || undefined);
     desktop.notify("command/draw", true);
-    return null;
+    return {
+      success: true,
+      message: _("Succeeded."),
+    };
   },
 
   "[command('globaldelete/gd', ['profile/global']), _('Delete a global settings.'), enabled]":
@@ -457,7 +493,10 @@ GlobalPersistCommand.definition = {
     let [, profile] = match;
 
     desktop.notify("command/delete-settings", profile || undefined);
-    return null;
+    return {
+      success: true,
+      message: _("Succeeded."),
+    };
   },
 };
 
@@ -507,7 +546,10 @@ PersistCommand.definition = {
 
     session.notify("command/load-settings", profile || undefined);
     session.notify("command/draw", true);
-    return null;
+    return {
+      success: true,
+      message: _("Succeeded."),
+    };
   },
 
   "[command('deleteprofile/dp', ['profile']), _('Delete a profile.'), enabled]":
@@ -525,7 +567,10 @@ PersistCommand.definition = {
     let [, profile] = match;
 
     session.notify("command/delete-settings", profile || undefined);
-    return null;
+    return {
+      success: true,
+      message: _("Succeeded."),
+    };
   },
 };
 

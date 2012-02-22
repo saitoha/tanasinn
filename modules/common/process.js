@@ -77,11 +77,6 @@ with (scope) {
         .stack.filename.split(" -> ").pop()
         .split("?").shift()
     }/../common.js?{id}</>.toString(), scope);
-  coUtils.Debug.reportMessage("Booting base services...");
-  coUtils.Runtime.loadScript("modules/common/event.js", scope);     // tupstart
-  coUtils.Runtime.loadScript("modules/common/base.js", scope);      // tupbase
-  coUtils.Runtime.loadScript("modules/common/category.js", scope);  // unicode category db
-  coUtils.Runtime.loadScript("modules/common/eastasian.js", scope); // unicode eastasian db
 }
 
 with (scope) {

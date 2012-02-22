@@ -666,6 +666,62 @@ coUtils.Event = {
 
 };
 
+coUtils.Font = {
+
+  /**
+   * @fn getAverageGryphWidth
+   * @brief Test font rendering and calculate average gryph width.
+   */
+  getAverageGryphWidth: 
+  function getAverageGryphWidth(font_size, font_family, test_string)
+  {
+    const NS_XHTML = "http://www.w3.org/1999/xhtml";
+    let canvas = coUtils.getWindow()
+      .document
+      .createElementNS(NS_XHTML , "html:canvas");
+    let context = canvas.getContext("2d");
+    let unit = test_string || "Mbc123-XYM";
+    let repeat_generator = function(n) { while(n--) yield; } (10);
+    let text = [ unit for (_ in repeat_generator) ].join("");
+    let css_font_property = [font_size, "px ", font_family].join("");
+    context.font = css_font_property;
+    let metrics = context.measureText(text);
+    let char_width = metrics.width / text.length;
+    let height = metrics.height;
+  
+    text = "g\u3075";
+    metrics = context.measureText(text);
+    canvas.width = metrics.width;
+    canvas.height = (font_size * 2) | 0;
+    context.save();
+    context.translate(0, font_size);
+    context.fillText(text, 0, 0);
+    context.strokeText(text, 0, 0);
+    context.restore();
+    let data = context.getImageData(0, 0, canvas.width, canvas.height).data; 
+    let line_length = data.length / (canvas.height * 4);
+  
+    let first, last;
+  detect_first:
+    for (let i = 3; i < data.length; i += 4) {
+      if (data[i]) {
+        first = Math.floor(i / (canvas.width * 4));
+        break detect_first;
+      }
+    }
+  detect_last:
+    for (let i = data.length - 1; i >= 0; i -= 4) {
+      if (data[i]) {
+        last = Math.floor(i / (canvas.width * 4)) + 1;
+        break detect_last;
+      }
+    }
+    return [char_width, last - first, first];
+  }
+
+};
+
+
 /** I/O Functions. */
 coUtils.IO = {
 
@@ -1018,11 +1074,11 @@ coUtils.Keyboard = {
   KEY_MODE   : 27,
 
   KEYNAME_PACKEDCODE_MAP: let (KEY_NOCHAR = 25) {
-    nmode     : 0x0fffffff,
-    cmode     : 0x1fffffff,
-    "2-shift" : 0x5fffffff,
-    "2-alt"   : 0x6fffffff,
-    "2-ctrl"  : 0x7fffffff,
+    nmode     : 0x10000001,
+    cmode     : 0x20000001,
+    "2-shift" : 0x50000001,
+    "2-alt"   : 0x60000001,
+    "2-ctrl"  : 0x70000001,
     space     : 0x0020,
     sp        : 0x0020,
     bs        : 0x1 << KEY_NOCHAR | 0x0008, 
@@ -1813,4 +1869,10 @@ function _()
     return lines.join("");
   }
 }
+
+coUtils.Runtime.loadScript("modules/common/category.js", scope);  // unicode category db
+coUtils.Runtime.loadScript("modules/common/eastasian.js", scope); // unicode eastasian db
+
+coUtils.Runtime.loadScript("modules/common/tupstart.js", scope);
+coUtils.Runtime.loadScript("modules/common/tupbase.js", scope);
 

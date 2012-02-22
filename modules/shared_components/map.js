@@ -296,13 +296,16 @@ let CommandlineKeyHandler = new Class().extends(Component);
 CommandlineKeyHandler.definition = {
 
   get id()
-    "commandline-key-handler",
+    "emacs_keybind",
 
-  "[cmap('<Esc>', '<C-]>', '<C-g>', '<2-shift>'), _('cancel to input.'), enabled]":
+  _mark: -1,
+
+  "[cmap('<Esc>', '<C-]>', '<C-2>', '<C-g>', '<2-shift>', '<nmode>'), _('cancel to input.'), enabled]":
   function key_escape(info) 
   {
     let session = this._broker;
     session.notify("command/focus");
+    this._mark = -1;
     return true;
   },
 
@@ -312,7 +315,9 @@ CommandlineKeyHandler.definition = {
     let textbox = info.textbox;
     let start = textbox.selectionStart;
     let end = textbox.selectionEnd;
-    if (start == end) {
+    if (-1 != this._mark) {
+      textbox.selectionStart = start - 1;
+    } else if (start == end) {
       textbox.selectionStart = start - 1;
       textbox.selectionEnd = start - 1;
     } else {
@@ -344,12 +349,40 @@ CommandlineKeyHandler.definition = {
     let start = textbox.selectionStart;
     let end = textbox.selectionEnd;
     if (start == end) {
-      textbox.inputField.value 
+      textbox.value 
         = value.substr(0, textbox.selectionStart);
     } else {
-      textbox.inputField.value 
+      textbox.value 
         = value.substr(0, textbox.selectionStart) 
         + value.substr(textbox.selectionEnd);
+      textbox.selectionStart = start;
+      textbox.selectionEnd = start;
+    }
+    let broker = this._broker;
+    broker.notify("command/set-completion-trigger", info);
+    return true;
+  },
+
+  "[cmap('<C-d>', '<Del>'), _('delete forward char.'), enabled]":
+  function key_delete(info) 
+  {
+    let textbox = info.textbox;
+    let value = textbox.value;
+    let start = textbox.selectionStart;
+    let end = textbox.selectionEnd;
+    if (start == end) {
+      if (0 == start) {
+        return true;
+      }
+      textbox.value 
+        = value.substr(0, start)
+        + value.substr(start + 1)
+      textbox.selectionStart = start;
+      textbox.selectionEnd = start;
+    } else {
+      textbox.value 
+        = value.substr(0, start) 
+        + value.substr(end);
       textbox.selectionStart = start;
       textbox.selectionEnd = start;
     }
@@ -363,13 +396,26 @@ CommandlineKeyHandler.definition = {
   {
     let textbox = info.textbox;
     let value = textbox.value;
-    let position = textbox.selectionEnd;
-    if (position > 0) {
-      textbox.inputField.value 
-        = value.substr(0, position - 1) + value.substr(position);
-      let broker = this._broker;
-      broker.notify("command/set-completion-trigger", info);
+    let start = textbox.selectionStart;
+    let end = textbox.selectionEnd;
+    if (start == end) {
+      if (0 == start) {
+        return true;
+      }
+      textbox.value 
+        = value.substr(0, start - 1)
+        + value.substr(start)
+      textbox.selectionStart = start - 1;
+      textbox.selectionEnd = start - 1;
+    } else {
+      textbox.value 
+        = value.substr(0, start) 
+        + value.substr(end);
+      textbox.selectionStart = start;
+      textbox.selectionEnd = start;
     }
+    let broker = this._broker;
+    broker.notify("command/set-completion-trigger", info);
     return true;
   },
  
@@ -429,6 +475,7 @@ CommandlineKeyHandler.definition = {
   {
     let broker = this._broker;
     broker.notify("command/select-next-history", info);
+    this._mark = -1;
     return true;
   },
 
@@ -438,9 +485,23 @@ CommandlineKeyHandler.definition = {
     let textbox = info.textbox;
     let value = textbox.value;
     let position = textbox.selectionEnd;
-    textbox.inputField.value
+    textbox.value
       = value.substr(0, position).replace(/\w+$|\W+$/, "") 
       + value.substr(position);
+    this._mark = -1;
+    let broker = this._broker;
+    broker.notify("command/set-completion-trigger", info);
+    return true;
+  },
+
+  "[cmap('<C-Space>', '<C-@>', '<C-2>'), _('set mark.'), enabled]":
+  function set_mark(info) 
+  {
+    alert(info)
+    let textbox = info.textbox;
+    let value = textbox.value;
+    let position = textbox.selectionEnd;
+    this._mark = position;
     let broker = this._broker;
     broker.notify("command/set-completion-trigger", info);
     return true;
@@ -462,7 +523,7 @@ NMapCommands.definition = {
   function nmap(arguments_string)
   {
     let session = this._broker;
-    let pattern = /^\s*(\S+)\s+(\S+)\s*$/;
+    let pattern = /^\s*(\S+)\s+(.+)\s*$/;
     let match = arguments_string.match(pattern);
     if (!match) {
       return {
@@ -489,7 +550,7 @@ NMapCommands.definition = {
   function nnoremap(arguments_string)
   {
     let session = this._broker;
-    let pattern = /^\s*(\S+)\s+(\S+)\s*$/;
+    let pattern = /^\s*(\S+)\s+(.+)\s*$/;
     let match = arguments_string.match(pattern);
     if (!match) {
       return {
@@ -546,7 +607,7 @@ CMapCommands.definition = {
   function cmap(arguments_string)
   {
     let session = this._broker;
-    let pattern = /^\s*(\S+)\s+(\S+)\s*$/;
+    let pattern = /^\s*(\S+)\s+(.+)\s*$/;
     let match = arguments_string.match(pattern);
     if (!match) {
       return {
@@ -573,7 +634,7 @@ CMapCommands.definition = {
   function cnoremap(arguments_string)
   {
     let session = this._broker;
-    let pattern = /^\s*(\S+)\s+(\S+)\s*$/;
+    let pattern = /^\s*(\S+)\s+(.+)\s*$/;
     let match = arguments_string.match(pattern);
     if (!match) {
       return {

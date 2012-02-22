@@ -723,7 +723,7 @@ OptionCompleter.definition = {
    */
   startSearch: function startSearch(source, listener, option)
   {
-    let match = source.match(/^(\s*)([$_\-@a-zA-Z\.]*)(=?)(.*)/);
+    let match = source.match(/^(\s*)([$_\-@a-zA-Z\.]*)\s*(=?)\s*(.*)/);
     if (null === match) {
       listener.doCompletion(null);
       return -1;

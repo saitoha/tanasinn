@@ -324,7 +324,7 @@ Chrome.definition = {
       {
         parentNode: "#tanasinn_chrome",
         id: "tanasinn_commandline_area",
-        tagName: "box",
+        tagName: "vbox",
       },
     ],
 

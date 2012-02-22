@@ -94,6 +94,7 @@ Contextmenu.definition = {
   {
     this.onrightbuttondown.enabled = value;
     this.oncontextmenu.enabled = !value;
+//    this.disablecontextmenu.enabled = value;
   },
 
   "[listen('click', '#tanasinn_content')]":
@@ -103,6 +104,12 @@ Contextmenu.definition = {
       this.show(event);
     }
   },
+
+//  "[listen('contextmenu', '#tanasinn_content')] disablecontextmenu":
+//  function disablecontextmenu(event) 
+//  {
+//////    event.preventDefault();
+//  },
 
   "[listen('contextmenu', '#tanasinn_content')]":
   function oncontextmenu(event) 

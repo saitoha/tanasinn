@@ -131,6 +131,8 @@ Controller.definition = {
       .createInstance(Components.interfaces.nsIInputStreamPump);
     pump.init(istream, -1, -1, 0, 0, false);
     pump.asyncRead(this, scriptable_input_stream);
+
+    this.post.enabled = true;
   },
 
   /** Posts a command message asynchronously. 
@@ -138,12 +140,14 @@ Controller.definition = {
    */
   post: function post(command) 
   {
-    this._output.write(command, command.length);
+    if (this._output) {
+      this._output.write(command, command.length);
+    }
   },
 
   /** Close Control channel and stop communication with TTY device.
    */
-  "[subscribe('@event/session-stopping'), enabled]":
+  "[subscribe('@event/session-stopping')]":
   function stop() 
   {
     this.post("disconnect\n");
@@ -304,7 +308,7 @@ IOManager.definition = {
 
   /** Close I/O channel and stop communication with TTY device.
    */
-  "[subscribe('@event/session-stopping'), enabled]":
+  "[subscribe('@event/session-stopping')]":
   function stop() 
   {
     this._input.close();
@@ -348,6 +352,8 @@ IOManager.definition = {
 
       this._input = binary_stream;
       this._output = ostream;
+
+      this.send.enabled = true;
     } catch (e) {
       coUtils.Debug.reportError(e);
     }

@@ -1790,6 +1790,13 @@ saveprofileのような保存操作はとくに必要ありません。</p></div
 <div class="sect3">
 <h4 id="_tanasinn_js">8.4.1. .tanasinn.js</h4>
 <div class="paragraph"><p>起動時(Processオブジェクトが生成されるタイミング)に読み込まれ、実行されるJavascriptファイル。</p></div>
+<div class="listingblock">
+<div class="title">~/.tanasinn.js Or %USERPROFILE%¥.tanasinn.js</div>
+<div class="content">
+<pre><tt>process.cygwin_root = "C:\\cygwin";
+process.bin_path = "/bin:/usr/bin:/usr/local/bin:/opt/local/bin";
+process.python_path = "/usr/bin/python"</tt></pre>
+</div></div>
 </div>
 <div class="sect3">
 <h4 id="_tanasinn">8.4.2. .tanasinn/</h4>
@@ -1800,16 +1807,17 @@ saveprofileのような保存操作はとくに必要ありません。</p></div
 <div class="paragraph"><p>セッション生成時(Sessionオブジェクトが生成されるタイミング)に読み込まれ、1行づつ実行されるtanasinnコマンドファイル。</p></div>
 <div class="paragraph"><p>設定例：</p></div>
 <div class="listingblock">
-<div class="title">tanasinn/tanasinnrc</div>
+<div class="title">.tanasinn/tanasinnrc</div>
 <div class="content">
-<pre><tt>nmap &lt;C-S-p&gt; &lt;cmode&gt;detach&lt;CR&gt;
-nnoremap &lt;F2&gt; &lt;cmode&gt;
-cnoremap &lt;C-z&gt; &lt;nmode&gt;
-cmap &lt;f3&gt; &lt;C-a&gt;&lt;C-k&gt;vimperator set!&lt;CR&gt;
+<pre><tt>nmap &lt;C-S-o&gt; &lt;cmode&gt;detach&lt;CR&gt;
+nmap &lt;C-S-i&gt; &lt;2-shift&gt;blur&lt;CR&gt;
+nnoremap &lt;C-S-z&gt; &lt;2-shift&gt;
+cmap &lt;C-z&gt; &lt;2-shift&gt;
+cmap &lt;C-s&gt; &lt;C-a&gt;&lt;C-k&gt;vimperator set!&lt;CR&gt;
 set renderer.normal_alpha=0.8
 set renderer.font_size=20
 set outerchrome.background_opacity=0.8
-set outerchrome.background="-moz-radial-gradient(center, circle closest-side, #444, #000)"</tt></pre>
+set outerchrome.background="-moz-radial-gradient(center, circle closest-side, #404040, #000)"</tt></pre>
 </div></div>
 </div>
 <div class="sect3">
@@ -1852,20 +1860,6 @@ set outerchrome.background="-moz-radial-gradient(center, circle closest-side, #4
 <h4 id="_tanasinn_modules_shared_components">8.4.13. .tanasinn/modules/shared_components/</h4>
 <div class="paragraph"><p>デスクトップバス・セッションバス両方に接続されるユーザー拡張が配置されるディレクトリ。</p></div>
 </div>
-</div>
-<div class="sect2">
-<h3 id="_構成変数の設定">8.5. 構成変数の設定</h3>
-<div class="paragraph"><p>example)</p></div>
-<div class="literalblock">
-<div class="content">
-<pre><tt>~/.tanasinn.js Or %USERPROFILE%¥.tanasinn.js</tt></pre>
-</div></div>
-<div class="literalblock">
-<div class="content">
-<pre><tt>process.cygwin_root = "C:\\cygwin";
-process.bin_path = "/bin:/usr/bin:/usr/local/bin:/opt/local/bin";
-process.python_path = "/usr/bin/python"</tt></pre>
-</div></div>
 </div>
 </div>
 </div>
@@ -2863,7 +2857,7 @@ twitter: <a href="http://twitter.com/kefir_">日本語</a> / <a href="http://twi
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2012-02-21 20:50:11 JST
+Last updated 2012-02-22 01:24:36 JST
 </div>
 </div>
 </body>
