@@ -77,8 +77,7 @@ CommandProvider.definition = {
       }
     } else {
       let broker = this._broker;
-      let completer = broker.uniget("get/completer/command");
-      completer.startSearch(command_name, listener);
+      broker.notify("command/query-completion/command", { source: source });
     }
   },
   

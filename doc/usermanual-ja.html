@@ -1741,6 +1741,14 @@ saveprofileのような保存操作はとくに必要ありません。</p></div
 </div></div>
 </div>
 <div class="sect4">
+<h5 id="_import_new">import (new!)</h5>
+<div class="paragraph"><p>指定されたファイル名を~/.tanasinn/batchesディレクトリから検索し、コマンドバッチファイルとして実行します。</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>import [ファイル名]</tt></pre>
+</div></div>
+</div>
+<div class="sect4">
 <h5 id="_vimperator_new">vimperator (new!)</h5>
 <div class="paragraph"><p>vimperatorにコマンドを送ります。</p></div>
 <div class="listingblock">
@@ -1775,17 +1783,19 @@ saveprofileのような保存操作はとくに必要ありません。</p></div
          |
          +-- history/            &lt;---------------------- (8)
          |
-         +-- log/                &lt;---------------------- (9)
+         +-- batches/            &lt;---------------------- (9)
          |
-         +-- modules/            &lt;---------------------- (10)
+         +-- log/                &lt;---------------------- (10)
+         |
+         +-- modules/            &lt;---------------------- (11)
                 |
-                +-- process_components/          &lt;------ (11)
+                +-- process_components/          &lt;------ (12)
                 |
-                +-- desktop_components/          &lt;------ (12)
+                +-- desktop_components/          &lt;------ (13)
                 |
-                +-- session_components/          &lt;------ (13)
+                +-- session_components/          &lt;------ (14)
                 |
-                +-- shared_components/           &lt;------ (14)</tt></pre>
+                +-- shared_components/           &lt;------ (15)</tt></pre>
 </div></div>
 <div class="sect3">
 <h4 id="_tanasinn_js">8.4.1. .tanasinn.js</h4>
@@ -1841,23 +1851,27 @@ set outerchrome.background="-moz-radial-gradient(center, circle closest-side, #4
 <div class="paragraph"><p>ログが書き出されるディレクトリ。</p></div>
 </div>
 <div class="sect3">
-<h4 id="_tanasinn_modules">8.4.9. .tanasinn/modules/</h4>
+<h4 id="_tanasinn_batches">8.4.9. .tanasinn/batches/</h4>
+<div class="paragraph"><p>importコマンドで検索されるディレクトリ。</p></div>
+</div>
+<div class="sect3">
+<h4 id="_tanasinn_modules">8.4.10. .tanasinn/modules/</h4>
 <div class="paragraph"><p>このディレクトリ内にユーザー拡張やユーザーデータが配置されます。</p></div>
 </div>
 <div class="sect3">
-<h4 id="_tanasinn_modules_process_components">8.4.10. .tanasinn/modules/process_components/</h4>
+<h4 id="_tanasinn_modules_process_components">8.4.11. .tanasinn/modules/process_components/</h4>
 <div class="paragraph"><p>プロセスバスに接続されるユーザー拡張が配置されるディレクトリ。</p></div>
 </div>
 <div class="sect3">
-<h4 id="_tanasinn_modules_desktop_components">8.4.11. .tanasinn/modules/desktop_components/</h4>
+<h4 id="_tanasinn_modules_desktop_components">8.4.12. .tanasinn/modules/desktop_components/</h4>
 <div class="paragraph"><p>デスクトップバスに接続されるユーザー拡張が配置されるディレクトリ。</p></div>
 </div>
 <div class="sect3">
-<h4 id="_tanasinn_modules_session_components">8.4.12. .tanasinn/modules/session_components/</h4>
+<h4 id="_tanasinn_modules_session_components">8.4.13. .tanasinn/modules/session_components/</h4>
 <div class="paragraph"><p>セッションバスに接続されるユーザー拡張が配置されるディレクトリ。</p></div>
 </div>
 <div class="sect3">
-<h4 id="_tanasinn_modules_shared_components">8.4.13. .tanasinn/modules/shared_components/</h4>
+<h4 id="_tanasinn_modules_shared_components">8.4.14. .tanasinn/modules/shared_components/</h4>
 <div class="paragraph"><p>デスクトップバス・セッションバス両方に接続されるユーザー拡張が配置されるディレクトリ。</p></div>
 </div>
 </div>
@@ -1932,6 +1946,46 @@ set outerchrome.background="-moz-radial-gradient(center, circle closest-side, #4
 </div></div>
 <div class="paragraph"><p>「%」はエスケープ済みのURL文字列に置換されます。
 この例ではvimのインストールが必要になります。</p></div>
+</div>
+<div class="sect2">
+<h3 id="_vimで現在のウィンドウにブラウザをオーバーレイで出したい">9.6. Vimで現在のウィンドウにブラウザをオーバーレイで出したい</h3>
+<div class="paragraph"><p>「Overlay Browser」という拡張をやっつけで書いてスナップショットビルドに入れておいたので、とりいそぎですが使用方法をご説明します。</p></div>
+<div class="paragraph"><p>以下のようなVim Scriptを書いてください。</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>function! s:open_gecko_window(src)
+    let nr = winnr()
+    let col = wincol()
+    let line = winline()
+    let width = winwidth(nr)
+    let height = winheight(nr)
+    call system('echo -n "\x1b]210;'.col.' '.line.' '.width.' '.height.' '.a:src.'\x07" &gt; /dev/tty')
+endfunction
+
+function! s:close_gecko_window()
+    call system('echo -n "\x1b]211;\x07" &gt; /dev/tty')
+endfunction
+
+command -nargs=1 OpenMozilla call s:open_gecko_window(&lt;f-args&gt;)
+command CloseMozilla call s:close_gecko_window()</tt></pre>
+</div></div>
+<div class="paragraph"><p>このようにして使用します。</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>OpenMozilla http://google.com</tt></pre>
+</div></div>
+<div class="imageblock">
+<div class="content">
+<img src="images/browser.png" alt="images/browser.png" width="780" />
+</div>
+</div>
+<div class="paragraph"><p>Vim側では、ウィンドウを閉じるとき</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>CloseMozilla</tt></pre>
+</div></div>
+<div class="paragraph"><p>を呼んで自分で状態管理していただく必要があります。
+まだリサイズとかアップデートを実装していませんので使いづらいと思います。</p></div>
 </div>
 </div>
 </div>
@@ -2857,7 +2911,7 @@ twitter: <a href="http://twitter.com/kefir_">日本語</a> / <a href="http://twi
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2012-02-22 01:24:36 JST
+Last updated 2012-02-23 23:04:00 JST
 </div>
 </div>
 </body>

@@ -62,24 +62,21 @@ function generateFileEntries(path)
  * @class CommandCompleter
  *
  */
-let CommandCompleter = new Class().extends(CompleterBase);
+let CommandCompleter = new Class().extends(Component);
 CommandCompleter.definition = {
 
   get id()
-    "commandcompleter",
-
-  get type()
-    "command",
+    "command_completer",
 
   /*
-   * Search for a given string and notify a listener (either synchronously
-   * or asynchronously) of the result
+   * Search for a given string and notify the result.
    *
    * @param source - The string to search for
-   * @param listener - A listener to notify when the search is complete
    */
-  startSearch: function startSearch(source, listener)
+  "[subscribe('command/query-completion/command'), enabled]":
+  function startSearch(context)
   {
+    let { source, option } = context;
     let session = this._broker;
     let command_name = source.split(/\s+/).pop();
     let commands = session.notify("get/commands")
@@ -88,102 +85,19 @@ CommandCompleter.definition = {
           .indexOf(command_name);
       }).sort(function(lhs, rhs) lhs.name.localeCompare(rhs.name));
     if (0 == commands.length) {
-      listener.doCompletion(null);
-      return -1;
+      session.notify("event/answer-completion", null);
+    } else {
+      session.notify("event/answer-completion", {
+        type: "text",
+        query: source, 
+        labels: commands.map(function(command) command.name.replace(/[\[\]]+/g, "")),
+        comments: commands.map(function(command) command.description),
+        data: commands.map(function(command) ({
+          name: command.name.replace(/[\[\]]+/g, ""),
+          value: command.description,
+        })),
+      });
     }
-    let autocomplete_result = {
-      type: "text",
-      query: source, 
-      labels: commands.map(function(command) command.name.replace(/[\[\]]+/g, "")),
-      comments: commands.map(function(command) command.description),
-      data: commands.map(function(command) ({
-        name: command.name.replace(/[\[\]]+/g, ""),
-        value: command.description,
-      })),
-    };
-    listener.doCompletion(autocomplete_result);
-    return 0;
-  },
-
-  /*
-   * Stop all searches that are in progress
-   */
-  stopSearch: function stopSearch() 
-  {
-  },
-
-};
-
-/**
- * @class CGICompleter
- *
- */
-let CGICompleter = new Class().extends(CompleterBase);
-CGICompleter.definition = {
-
-  get id()
-    "cgi_completer",
-
-  get type()
-    "cgi",
-
-  /*
-   * Search for a given string and notify a listener (either synchronously
-   * or asynchronously) of the result
-   *
-   * @param source - The string to search for
-   * @param listener - A listener to notify when the search is complete
-   */
-  startSearch: function startSearch(source, listener, option)
-  {
-    let match = source.match(/^(\s*)([$_\-@a-zA-Z\.]*)(\s?)/);
-    if (null === match) {
-      listener.doCompletion(null);
-      return -1;
-    }
-    let [, space, name, next] = match;
-    if (next) {
-      return space.length + name.length;
-    }
-
-    let broker = this._broker;
-    if ("global" == option) {
-      broker = broker._broker;
-    }
-
-    let entries = coUtils.File.getFileEntriesFromSerchPath([broker.cgi_directory]);
-
-    let lower_name = name.toLowerCase();
-    let candidates = [
-      {
-        key: file.leafName.replace(/\.js$/, ""), 
-        value: file.path,
-      } for (file in entries) 
-        if (-1 != file.leafName.toLowerCase().indexOf(lower_name))
-    ];
-    if (0 == candidates.length) {
-      listener.doCompletion(null);
-      return -1;
-    }
-    let autocomplete_result = {
-      type: "text",
-      query: source, 
-      labels: candidates.map(function(candidate) candidate.key),
-      comments: candidates.map(function(candidate) String(candidate.value)),
-      data: candidates.map(function(candidate) ({
-        name: candidate.key,
-        value: String(candidate.value),
-      })),
-    };
-    listener.doCompletion(autocomplete_result);
-    return 0;
-  },
-
-  /*
-   * Stop all searches that are in progress
-   */
-  stopSearch: function stopSearch() 
-  {
   },
 
 };
@@ -208,7 +122,8 @@ BatchCompleter.definition = {
    * @param source - The string to search for
    * @param listener - A listener to notify when the search is complete
    */
-  startSearch: function startSearch(source, listener, option)
+  "[subscribe('command/query-completion/batch'), enabled]":
+  function startSearch(source, listener, option)
   {
     let match = source.match(/^(\s*)([$_\-@a-zA-Z\.]*)(\s?)/);
     if (null === match) {
@@ -255,13 +170,6 @@ BatchCompleter.definition = {
     return 0;
   },
 
-  /*
-   * Stop all searches that are in progress
-   */
-  stopSearch: function stopSearch() 
-  {
-  },
-
 };
 
 
@@ -285,7 +193,8 @@ ProfileCompleter.definition = {
    * @param source - The string to search for
    * @param listener - A listener to notify when the search is complete
    */
-  startSearch: function startSearch(source, listener, option)
+  "[subscribe('command/query-completion/profile'), enabled]":
+  function startSearch(source, listener, option)
   {
     let match = source.match(/^(\s*)([$_\-@a-zA-Z\.]*)(\s?)/);
     if (null === match) {
@@ -330,13 +239,6 @@ ProfileCompleter.definition = {
     return 0;
   },
 
-  /*
-   * Stop all searches that are in progress
-   */
-  stopSearch: function stopSearch() 
-  {
-  },
-
 };
 
 
@@ -359,7 +261,8 @@ JsCompleter.definition = {
    * @param source - The string to search for
    * @param listener - A listener to notify when the search is complete
    */
-  startSearch: function startSearch(source, listener)
+  "[subscribe('command/query-completion/js'), enabled]":
+  function startSearch(source, listener)
   {
     let session = this._broker;
     let autocomplete_result = null; 
@@ -461,13 +364,6 @@ JsCompleter.definition = {
     return 0;
   },
 
-  /*
-   * Stop all searches that are in progress
-   */
-  stopSearch: function stopSearch() 
-  {
-  },
-
 };
 
 
@@ -494,7 +390,8 @@ HistoryCompleter.definition = {
    * @param source - The string to search for
    * @param listener - A listener to notify when the search is complete
    */
-  startSearch: function startSearch(source, listener)
+  "[subscribe('command/query-completion/history'), enabled]":
+  function startSearch(source, listener)
   {
     this._completion_component.startSearch(source, "", null, {
         onSearchResult: function onSearchResult(search, result) 
@@ -515,13 +412,6 @@ HistoryCompleter.definition = {
         }
       });
   },
-
-  /*
-   * Stop all searches that are in progress
-   */
-  stopSearch: function stopSearch() 
-  {
-  }
 
 };
 
@@ -544,7 +434,8 @@ CharsetCompleter.definition = {
    * @param source - The string to search for
    * @param listener - A listener to notify when the search is complete
    */
-  startSearch: function startSearch(source, listener, option)
+  "[subscribe('command/query-completion/charset'), enabled]":
+  function startSearch(source, listener, option)
   {
     let match = source.match(/^(\s*)([$_\-@a-zA-Z\.]*)(\s?)/);
     if (null === match) {
@@ -583,13 +474,6 @@ CharsetCompleter.definition = {
     return 0;
   },
 
-  /*
-   * Stop all searches that are in progress
-   */
-  stopSearch: function stopSearch() 
-  {
-  },
-
 };
 
 /**
@@ -612,7 +496,8 @@ NMapCompleter.definition = {
    * @param source - The string to search for
    * @param listener - A listener to notify when the search is complete
    */
-  startSearch: function startSearch(source, listener)
+  "[subscribe('command/query-completion/nmap'), enabled]":
+  function startSearch(source, listener)
   {
     let match = source.match(/^\s*(\S*)(\s*)/);
     if (null === match) {
@@ -655,13 +540,6 @@ NMapCompleter.definition = {
     return 0;
   },
 
-  /*
-   * Stop all searches that are in progress
-   */
-  stopSearch: function stopSearch() 
-  {
-  },
-
 };
 
 
@@ -685,7 +563,8 @@ CMapCompleter.definition = {
    * @param source - The string to search for
    * @param listener - A listener to notify when the search is complete
    */
-  startSearch: function startSearch(source, listener)
+  "[subscribe('command/query-completion/cmap'), enabled]":
+  function startSearch(source, listener)
   {
     let match = source.match(/^\s*(\S*)(\s*)/);
     if (null === match) {
@@ -728,13 +607,6 @@ CMapCompleter.definition = {
     return 0;
   },
 
-  /*
-   * Stop all searches that are in progress
-   */
-  stopSearch: function stopSearch() 
-  {
-  },
-
 };
 
 
@@ -757,7 +629,8 @@ ComponentsCompleter.definition = {
    * @param source - The string to search for
    * @param listener - A listener to notify when the search is complete
    */
-  startSearch: function startSearch(source, listener, option)
+  "[subscribe('command/query-completion/components'), enabled]":
+  function startSearch(source, listener, option)
   {
     let match = source.match(/^(\s*)([$_\-@a-zA-Z\.]*)(\s?)/);
     if (null === match) {
@@ -796,13 +669,6 @@ ComponentsCompleter.definition = {
     return 0;
   },
 
-  /*
-   * Stop all searches that are in progress
-   */
-  stopSearch: function stopSearch() 
-  {
-  },
-
 };
 
 /**
@@ -824,7 +690,8 @@ PluginsCompleter.definition = {
    * @param source - The string to search for
    * @param listener - A listener to notify when the search is complete
    */
-  startSearch: function startSearch(source, listener, option)
+  "[subscribe('command/query-completion/plugin'), enabled]":
+  function startSearch(source, listener, option)
   {
     let match = source.match(/^(\s*)([$_\-@a-zA-Z\.]*)(\s?)/);
     if (null === match) {
@@ -863,13 +730,6 @@ PluginsCompleter.definition = {
     return 0;
   },
 
-  /*
-   * Stop all searches that are in progress
-   */
-  stopSearch: function stopSearch() 
-  {
-  },
-
 };
 
 /**
@@ -891,7 +751,8 @@ OptionCompleter.definition = {
    * @param source - The string to search for
    * @param listener - A listener to notify when the search is complete
    */
-  startSearch: function startSearch(source, listener, option)
+  "[subscribe('command/query-completion/option'), enabled]":
+  function startSearch(source, listener, option)
   {
     let match = source.match(/^(\s*)([$_\-@a-zA-Z\.]*)\s*(=?)\s*(.*)/);
     if (null === match) {
@@ -944,13 +805,6 @@ OptionCompleter.definition = {
     return -1;
   },
 
-  /*
-   * Stop all searches that are in progress
-   */
-  stopSearch: function stopSearch() 
-  {
-  },
-
 };
 
 /**
@@ -973,7 +827,8 @@ FontsizeCompleter.definition = {
    * @param source - The string to search for
    * @param listener - A listener to notify when the search is complete
    */
-  startSearch: function startSearch(source, listener)
+  "[subscribe('command/query-completion/fontsize'), enabled]":
+  function startSearch(source, listener)
   {
     let session = this._broker;
     let pattern = /^\s*(.*)(\s?)/;
@@ -1007,13 +862,6 @@ FontsizeCompleter.definition = {
     return 0;
   },
 
-  /*
-   * Stop all searches that are in progress
-   */
-  stopSearch: function stopSearch() 
-  {
-  },
-
 };
 
 
@@ -1037,7 +885,8 @@ FontFamilyCompleter.definition = {
    * @param source - The string to search for
    * @param listener - A listener to notify when the search is complete
    */
-  startSearch: function startSearch(source, listener)
+  "[subscribe('command/query-completion/font-family'), enabled]":
+  function startSearch(source, listener)
   {
     let session = this._broker;
     let pattern = /^\s*(.*)(\s?)/;
@@ -1068,13 +917,6 @@ FontFamilyCompleter.definition = {
     return 0;
   },
 
-  /*
-   * Stop all searches that are in progress
-   */
-  stopSearch: function stopSearch() 
-  {
-  },
-
 };
 
 /**
@@ -1103,7 +945,8 @@ ColorNumberCompleter.definition = {
    * @param source - The string to search for
    * @param listener - A listener to notify when the search is complete
    */
-  startSearch: function startSearch(source, listener, option)
+  "[subscribe('command/query-completion/color-number'), enabled]":
+  function startSearch(source, listener, option)
   {
     let session = this._broker;
     let renderer = this._renderer;
@@ -1176,13 +1019,6 @@ ColorNumberCompleter.definition = {
     return 0;
   },
 
-  /*
-   * Stop all searches that are in progress
-   */
-  stopSearch: function stopSearch() 
-  {
-  },
-
 };
 
 /**
@@ -1205,7 +1041,8 @@ LocalizeCompleter.definition = {
    * @param source - The string to search for
    * @param listener - A listener to notify when the search is complete
    */
-  startSearch: function startSearch(source, listener, option)
+  "[subscribe('command/query-completion/localize'), enabled]":
+  function startSearch(source, listener, option)
   {
     let session = this._broker;
     let pattern = /^\s*([a-zA-Z-]*)(\s*)("?)((?:[^"])*)("?)(\s*)(.*)/;
@@ -1281,12 +1118,6 @@ LocalizeCompleter.definition = {
     return 0;
   },
 
-  /*
-   * Stop all searches that are in progress
-   */
-  stopSearch: function stopSearch() 
-  {
-  },
 };
 
 
@@ -1310,7 +1141,8 @@ FileCompleter.definition = {
    * @param source - The string to search for
    * @param listener - A listener to notify when the search is complete
    */
-  startSearch: function startSearch(source, listener, option)
+  "[subscribe('command/query-completion/file'), enabled]":
+  function startSearch(source, listener, option)
   {
     let session = this._broker;
     let pattern = /^\s*(?:(.*\/))?(.*)?/;
@@ -1357,12 +1189,6 @@ FileCompleter.definition = {
     return 0;
   },
 
-  /*
-   * Stop all searches that are in progress
-   */
-  stopSearch: function stopSearch() 
-  {
-  },
 };
 
 /**
@@ -1376,7 +1202,6 @@ function main(broker)
   new HistoryCompleter(broker);
   new OptionCompleter(broker);
   new CommandCompleter(broker);
-  new CGICompleter(broker);
   new BatchCompleter(broker);
   new ProfileCompleter(broker);
   new FontsizeCompleter(broker);

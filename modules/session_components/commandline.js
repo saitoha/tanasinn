@@ -54,6 +54,24 @@ TextboxWidget.definition = {
     this._context = canvas.getContext("2d");
   },
 
+  "[subscribe('install/textbox_widget'), enabled]":
+  function install(broker) 
+  {
+  },
+
+  "[subscribe('uninstall/textbox_widget'), enabled]":
+  function uninstall(broker) 
+  {
+    if (this._canvas) {
+      this._canvas.parentNode.removeChild(this._canvas);
+      this._canvas = null;
+    }
+    if (this._element) {
+      this._element.parentNode.removeChild(this._element);
+      this._element = null;
+    }
+  },
+
   get mode()
   {
     this._mode;
@@ -191,6 +209,11 @@ TextboxWidget.definition = {
     this._draw();
   },
 
+  blur: function() 
+  {
+    this._canvas.style.opacity = 0.7;
+  },
+
   focus: function() 
   {
     this._element.focus();
@@ -208,7 +231,6 @@ TextboxWidget.definition = {
     this._context.fillStyle = fill_style;
     this._context.font = font;
   },
-
 
 };
 
@@ -230,7 +252,6 @@ CommandlineHistory.definition = {
           _("Provides commandline history database.")
         }</description>
     </plugin>,
-
 
   _history: null,
   _history_index: 0,
@@ -527,11 +548,6 @@ Commandline.definition = {
         }</description>
     </plugin>,
 
-  "[persistable, watchable] default_font_color": "white",
-  "[persistable, watchable] font_size": 16,
-  "[persistable, watchable] font_family": "Lucida Console,Latha,Georgia,monospace",
-  "[persistable, watchable] default_text_shadow": "1px 1px 3px #555",
-  "[persistable, watchable] font_weight": "bold",
   "[persistable] completion_delay": 180,
   "[persistable] completion_popup_opacity": 1.00,
   "[persistable] completion_popup_max_height": 300,
@@ -650,6 +666,7 @@ Commandline.definition = {
     this.setCompletionTrigger.enabled = true;
     this.onStyleChanged.enabled = true;
     this.onWidthChanged.enabled = true;
+    this.doCompletion.enabled = true;
 
     this.onmousedown.enabled = true;
   },
@@ -677,13 +694,13 @@ Commandline.definition = {
     this.onFirstFocus.enabled = false;
     this.onStyleChanged.enabled = false;
     this.onWidthChanged.enabled = false;
+    this.doCompletion.enabled = false;
 
     this.onmousedown.enabled = false;
 
-    if (this._canvas) {
-      this._canvas.parentNode.removeChild(this._canvas);
-      this._canvas = null;
-    }
+//    if (this._textbox) {
+//      this._texbox.clear();
+//    }
     if (this._popup) {
       while (this._popup.firstChild) {
         this._popup.removeChild(this._popup.firstChild);
@@ -719,12 +736,10 @@ Commandline.definition = {
   "[subscribe('command/report-status-message')]":
   function onStatusMessage(message) 
   {
-    this._textbox.hidden = true;
     this._textbox.mode = "status";
-    this._canvas.style.opacity = 1.0;
-    coUtils.Timer.setTimeout(function() {
+    //coUtils.Timer.setTimeout(function() {
       this._textbox.status = message;
-    }, 0, this);
+    //}, 0, this);
   },
 
   "[subscribe('command/enable-commandline')]":
@@ -732,9 +747,7 @@ Commandline.definition = {
   {
     this._textbox.calculateSize();
     this._textbox.status = "";
-    this._textbox.hidden = false;
     this._textbox.mode = "command";
-    this._canvas.style.opacity = 1.0;
     this._textbox.focus();
     this._textbox.focus();
     this._textbox.focus();
@@ -762,7 +775,6 @@ Commandline.definition = {
   {
     this._textbox.hidden = false;
     this._textbox.mode = "command";
-    this._canvas.style.opacity = 1.0;
 
     this._textbox.focus();
     this._textbox.focus();
@@ -776,14 +788,13 @@ Commandline.definition = {
     let session = this._broker;
     this._textbox.hidden = false;
     this._textbox.mode = "command";
-    this._canvas.style.opacity = 1.0;
     this.setCompletionTrigger();
   },
 
   "[listen('blur', '#tanasinn_commandline', true)]":
   function onblur(event) 
   {
-    this._canvas.style.opacity = 0.7;
+    this._textbox.blur();
     if (this._timer) {
       this._timer.cancel();
       delete this._timer;
@@ -791,7 +802,8 @@ Commandline.definition = {
     this._popup.hidePopup();
   },
 
-  doCompletion: function doCompletion(result) 
+  "[subscribe('event/answer-completion')]":
+  function doCompletion(result) 
   {
     this._result = result;
     delete this._timer;
