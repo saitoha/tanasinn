@@ -1329,11 +1329,11 @@ function! s:open_gecko_window(src)
     let line = winline()
     let width = winwidth(nr)
     let height = winheight(nr)
-    call system('echo -n "\x1b]210;'.col.' '.line.' '.width.' '.height.' '.a:src.'\x07" > /dev/tty')
+    call system('echo -en "\x1b]210;'.col.' '.line.' '.width.' '.height.' '.a:src.'\x07" > /dev/tty')
 endfunction
 
 function! s:close_gecko_window()
-    call system('echo -n "\x1b]211;\x07" > /dev/tty')
+    call system('echo -en "\x1b]211;\x07" > /dev/tty')
 endfunction
 
 command -nargs=1 OpenMozilla call s:open_gecko_window(<f-args>)
