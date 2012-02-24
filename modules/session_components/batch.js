@@ -132,6 +132,7 @@ BatchLoader.definition = {
   "[command('execcgi', ['cgi']), subscribe('command/execute-cgi'), enabled]":
   function execCGI(arguments_string) 
   {
+    let session = this._broker;
     let path = "$Home/.tanasinn/cgi-bin/" + arguments_string.replace(/^\s+|\s+$/, "");
     let executable_path;
     let os = coUtils.Runtime.os;
@@ -169,7 +170,6 @@ BatchLoader.definition = {
       ];
     }
     external_process.run(true, args, args.length);
-    let session = this._broker;
     session.notify("command/source", "/tmp/tanasinn_tmp");
 
     return true;
