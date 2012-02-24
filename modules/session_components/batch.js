@@ -82,12 +82,13 @@ BatchLoader.definition = {
   "[subscribe('command/source'), command('source', ['file']), _('load and evaluate batch file.')]":
   function sourceCommand(arguments_string)
   {
+    try {
     let path = arguments_string.replace(/^\s*|\s*$/g, "");
     if ("$" != path.charAt(0) && !coUtils.File.isAbsolutePath(path)) {
       if ("WINNT" == coUtils.Runtime.os) {
         let session = this._broker;
         let cygwin_root = session.uniget("get/cygwin-root");
-        path = cygwin_root + coUtils.File.getPathDelimiter() + path;
+        path = cygwin_root + coUtils.File.getPathDelimiter() + path.replace(/\//g, "\\");
       } else {
         let home = coUtils.File.getFileLeafFromVirtualPath("$Home");
         path = home.path + coUtils.File.getPathDelimiter() + path;
@@ -103,6 +104,7 @@ BatchLoader.definition = {
         coUtils.Debug.reportError(e);
       }
     }
+    } catch(e) {alert(e)}
     return {
       success: true,
       message: _("Source file was loaded successfully."),
@@ -156,6 +158,8 @@ BatchLoader.definition = {
       .createInstance(Components.interfaces.nsIProcess);
     external_process.init(runtime);
 //alert(runtime.path)
+//        alert(coUtils.Text.format("\"$(cygpath '%s')\" > /tmp/tanasinn_tmp", path))
+    path = coUtils.File.getFileLeafFromVirtualPath(path).path;
     if ("WINNT" == coUtils.Runtime.os) { // Windows
       args = [
         "/bin/sh", "-wait", "-l", "-c",
@@ -163,7 +167,6 @@ BatchLoader.definition = {
           "\"$(cygpath '%s')\" > /tmp/tanasinn_tmp", path)
       ];
     } else { // Darwin, Linux
-      path = coUtils.File.getFileLeafFromVirtualPath(path).path;
       args = [
         "-c", 
         path + " > /tmp/tanasinn_tmp"
