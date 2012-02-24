@@ -74,7 +74,7 @@ BatchLoader.definition = {
         success: false,
         message: coUtils.Text.format(
           _("Specified batch module '%s' is not found."), name),
-      }
+      };
     }
     return this.sourceCommand(file.path);
   },
@@ -98,11 +98,7 @@ BatchLoader.definition = {
       try {
         let session = this._broker;
         let content = coUtils.IO.readFromFile(path, "utf-8");
-        content.split(/[\n\r]+/).forEach(function(command) {
-          if (!/^\s*$/.test(command)) {
-            session.notify("command/eval-commandline", command);
-          }
-        });
+        session.notify("command/eval-source", content);
       } catch (e) {
         coUtils.Debug.reportError(e);
       }
@@ -112,6 +108,73 @@ BatchLoader.definition = {
       message: _("Source file was loaded successfully."),
     };
   },
+
+  "[subscribe('command/eval-source'), enabled]":
+  function evalSource(source) 
+  {
+    let session = this._broker;
+    source.split(/[\n\r]+/).forEach(function(command) {
+      if (!/^\s*$/.test(command)) {
+        session.notify("command/eval-commandline", command);
+      }
+    });
+  },
+
+  "[subscribe('@command/focus'), enabled]":
+  function onFirstFocus() 
+  {
+    // load rc file.
+    let path = "$Home/.tanasinn/tanasinnrc";
+    let session = this._broker;
+    session.notify("command/source", path);
+  },
+
+  "[command('execcgi', ['cgi']), subscribe('command/execute-cgi'), enabled]":
+  function execCGI(arguments_string) 
+  {
+    let path = "$Home/.tanasinn/cgi-bin/" + arguments_string.replace(/^\s+|\s+$/, "");
+    let executable_path;
+    let os = coUtils.Runtime.os;
+    if ("WINNT" == os) {
+      let cygwin_root = session.uniget("get/cygwin-root");
+      executable_path = String(<>{cygwin_root}\bin\run.exe</>);
+    } else {
+      executable_path = "/bin/sh";
+    }
+    // create new localfile object.
+    let runtime = Components
+      .classes["@mozilla.org/file/local;1"]
+      .createInstance(Components.interfaces.nsILocalFile);
+    runtime.initWithPath(executable_path);
+    if (!runtime.exists() || !runtime.isExecutable()) {
+      return false;
+    }
+    // create new process object.
+    let external_process = Components
+      .classes["@mozilla.org/process/util;1"]
+      .createInstance(Components.interfaces.nsIProcess);
+    external_process.init(runtime);
+//alert(runtime.path)
+    if ("WINNT" == coUtils.Runtime.os) { // Windows
+      args = [
+        "/bin/sh", "-wait", "-l", "-c",
+        coUtils.Text.format(
+          "\"$(cygpath '%s')\" > /tmp/tanasinn_tmp", path)
+      ];
+    } else { // Darwin, Linux
+      path = coUtils.File.getFileLeafFromVirtualPath(path).path;
+      args = [
+        "-c", 
+        path + " > /tmp/tanasinn_tmp"
+      ];
+    }
+    external_process.run(true, args, args.length);
+    let session = this._broker;
+    session.notify("command/source", "/tmp/tanasinn_tmp");
+
+    return true;
+  },
+
 
 } // class BatchLoader
 

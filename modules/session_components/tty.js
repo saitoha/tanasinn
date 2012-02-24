@@ -93,7 +93,7 @@ let Controller = new Class().extends(Component);
 Controller.definition = {
 
   get id()
-    "tty-controller",
+    "tty_controller",
 
   _screen: null,
   _input: null,
@@ -255,7 +255,7 @@ let IOManager = new Class().extends(Component);
 IOManager.definition = {
 
   get id()
-    "tty-iomanager",
+    "tty_iomanager",
 
   _input: null,
   _output: null,
@@ -443,7 +443,7 @@ IOManager.definition = {
   //  coUtils.Timer.setTimeout(function() {
     session.notify("event/data-arrived", data);
   //  }, 30);
-  }
+  },
 }
 
 /**
@@ -458,7 +458,7 @@ ExternalDriver.definition = {
   _external_process: null,
 
   /*
-   * @param {String} script_path  The first argument which is passed to runtime,
+   * @param {String} script_path The first argument which is passed to runtime,
    *                             expected to be script file path. 
    */
   "[persistable] script_path": "modules/ttydriver.py",
@@ -539,11 +539,11 @@ ExternalDriver.definition = {
    * Run external driver with arguments 
    * which represents <I/O port No.> <Control port No.>.
    *
-   * @param {Number} io_channel_port 
-   * @param {Number} control_channel_port 
+   * @param {Number} control_port 
    *
    */
-  start: function start(connection_port) 
+  "[subscribe('command/start-ttydriver-process'), enabled]": 
+  function start(connection_port) 
   {
     // get script absolute path from abstract path.
     let script_absolute_path
@@ -595,25 +595,29 @@ ExternalDriver.definition = {
  *  @class SocketTeletypeService
  *  @brief Listen mouse input events and send them to TTY device.
  */
-let SocketTeletypeService = new Class().extends(Component);
+let SocketTeletypeService = new Class().extends(Plugin)
+                                       .depends("tty_iomanager")
+                                       .depends("tty_controller")
+                                       .depends("externaldriver")
+                                       ;
 SocketTeletypeService.definition = {
 
   get id()
     "tty",
 
-  _io_manager: null,
-  _controller: null,
+  get info()
+    <plugin>
+        <name>{_("TTY")}</name>
+        <version>0.1</version>
+        <description>{
+          _("Drives a TTY device and control it.")
+        }</description>
+    </plugin>,
 
-  "[subscribe('@initialized/{tty-iomanager & tty-controller & externaldriver}'), enabled]":
-  function onLoad(io_manager, controller, external_driver) 
+  "[subscribe('install/tty'), enabled]":
+  function install(session) 
   {
-    this._io_manager = io_manager;
-    this._controller = controller;
-    this._external_driver = external_driver;
-
     this.osc97.enabled = true;
-
-    let session = this._broker;
     if (0 == session.command.indexOf("&")) {
       let request_id = session.command.substr(1);
       let record = coUtils.Sessions.get(request_id);
@@ -640,23 +644,36 @@ SocketTeletypeService.definition = {
       socket.init(/* port */ -1, /* loop back */ true, /* connection count */ 1);
       socket.asyncListen(this);
   
-      coUtils.Timer.setTimeout(function() { // ensure that "runAsync" is called after "asyncListen".
-        external_driver.start(socket.port); // nsIProcess::runAsync.
-      }, 100);
+      // coUtils.Timer.setTimeout(function() { // ensure that "runAsync" is called after "asyncListen".
+      let session = this._broker;
+      session.notify("command/start-ttydriver-process", socket.port); // nsIProcess::runAsync.
+      // }, 100, this);
     }
+    this.kill.enabled = true;
+    this.detach.enabled = true;
   },
 
-  "[subscribe('@command/kill'), enabled]": 
+  "[subscribe('uninstall/tty'), enabled]": 
+  function uninstall()
+  {
+    this.kill();
+    this.kill.enabled = false;
+    this.detach.enabled = false;
+    this.send.enabled = false;
+    this.resize.enabled = false;
+    this.send.flowControl = false;
+  },
+
+  "[subscribe('@command/kill')]": 
   function kill()
   {
-    if (this._controller) {
-      this._controller.post("kill\n") 
+    let controller = this.dependency["tty_controller"];
+    if (controller) {
+      controller.post("kill\n") 
     }
-//    let external_driver = this._external_driver;
-//    external_driver.kill(this._pid);
   },
 
-  "[subscribe('@command/detach'), enabled]": 
+  "[subscribe('@command/detach')]": 
   function detach()
   {
     let context = {};
@@ -676,7 +693,8 @@ SocketTeletypeService.definition = {
   connect: function connect(control_port) 
   {
     let session = this._broker;
-    this._controller.start(control_port);
+    let controller = this.dependency["tty_controller"];
+    controller.start(control_port);
     let sessiondb_path = coUtils.File
       .getFileLeafFromVirtualPath("$Home/.tanasinn/sessions.txt").path;
 
@@ -692,14 +710,18 @@ SocketTeletypeService.definition = {
     }
 
     let message = [
-      this._io_manager.port, 
+      this.dependency["tty_iomanager"].port, 
       session.request_id,
       coUtils.Text.base64encode(sessiondb_path),
     ].join(" ");
-    this._controller.post(message);
+    controller.post(message);
+
     this.send.enabled = true;
+    this.resize.enabled = true;
+    this.send.flowControl = true;
+
     let timer = coUtils.Timer.setInterval(function() {
-      this._controller.post("beacon\n") 
+      controller.post("beacon\n") 
     }, 5000, this);
     let id = new Date().getTime().toString();
     session.subscribe("event/session-stopping", function() {
@@ -788,24 +810,19 @@ SocketTeletypeService.definition = {
     }
   },
 
-  "[subscribe('@command/stop-tty'), enabled]":
-  function stop() 
-  {
-  },
-         
   /**
    * Changes screen resolution of TTY device.
    * @param width new horizontal resolution of TTY device.
    * @param height new vertical resolution of TTY device.
    */
-  "[subscribe('event/screen-size-changed'), enabled]": 
+  "[subscribe('event/screen-size-changed')]": 
   function resize(size) 
   {
     let {column, row} = size; 
     let width = coUtils.Text.base64encode(column);
     let height = coUtils.Text.base64encode(row);
     let command = coUtils.Text.format("resize %s %s\n", width, height);
-    this._controller.post(command);
+    this.dependency["tty_controller"].post(command);
   },
 
   /** Send character sequence data to TTY device.
@@ -814,17 +831,17 @@ SocketTeletypeService.definition = {
   "[subscribe('command/send-to-tty')]":
   function send(data) 
   {
-    this._io_manager.send(data);
+    this.dependency["tty_iomanager"].send(data);
   },
 
   /** flow controll 
    * Suspend/Resume output.
    * @param {Boolean} flag true: resume output. false: suspend output.
    */
-  "[subscribe('command/flow-control'), enabled]":
+  "[subscribe('command/flow-control')]":
   function flowControl(flag) 
   {
-    this._controller.post(flag ? "xon\n": "xoff\n");
+    this.dependency["tty_controller"].post(flag ? "xon\n": "xoff\n");
   },
 
   /** @property Retrieve "pid" property value from TTY driver. */
@@ -838,6 +855,7 @@ SocketTeletypeService.definition = {
   {
     return this._ttyname;
   },
+
 };
 
 /**
@@ -849,8 +867,8 @@ function main(broker)
 {
   new IOManager(broker);
   new Controller(broker);
-  new SocketTeletypeService(broker);
   new ExternalDriver(broker);
+  new SocketTeletypeService(broker);
 }
 
 

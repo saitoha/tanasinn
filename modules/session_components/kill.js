@@ -94,7 +94,7 @@ Kill.definition = {
   },
 
   /** kill process and stop tty */
-  "[command('kill'), _('kill process and stop tty')]":
+  "[command('kill/quit'), _('kill process and stop tty')]":
   function kill() 
   {
     // stops TTY device.

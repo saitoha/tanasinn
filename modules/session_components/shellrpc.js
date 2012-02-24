@@ -22,10 +22,46 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+/** 
+ * @class ForwardInputIterator
+ */ 
+let ForwardInputIterator = new Class();
+ForwardInputIterator.definition = {
+
+  _value: null,
+  _position: 0,
+
+  /** Assign new string data. position is reset. */
+  initialize: function initialize(value) 
+  {
+    this._value = value;
+    this._position = 0;
+  },
+
+  /** Returns single byte code point. */
+  current: function current() 
+  {
+    return this._value.charCodeAt(this._position);
+  },
+
+  /** Moves to next position. */
+  moveNext: function moveNext() 
+  {
+    ++this._position;
+  },
+
+  /** Returns whether scanner position is at end. */
+  get isEnd() 
+  {
+    return this._position >= this._value.length;
+  },
+};
+
+
 /**
  *  @class ShellRPC
  */
-let ShellRPC = new Class().extends(Plugin);
+let ShellRPC = new Class().extends(Plugin).depends("decoder");
 ShellRPC.definition = {
 
   get id()
@@ -58,11 +94,21 @@ ShellRPC.definition = {
     this.onCall.enabled = false;
   },
 
-  "[subscribe('sequence/osc/220'), enabled]":
-  function onCall(command) 
+  "[subscribe('sequence/osc/220')]":
+  function onCall(data) 
   {
+    let scanner = new ForwardInputIterator(data);
+    let decoder = this.dependency["decoder"];
     let session = this._broker;
-    session.notify("command/eval-commandline", command);
+    do {
+      let sequence = [c for (c in decoder.decode(scanner))];
+      let command = String.fromCharCode.apply(String, sequence);
+      session.notify("command/eval-commandline", command);
+      if (scanner.isEnd) {
+        break;
+      }
+      scanner.moveNext();
+    } while (!scanner.isEnd);
   },
 
 } // class OverlayIndicator

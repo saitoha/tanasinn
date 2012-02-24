@@ -355,7 +355,7 @@ CommandlineHistory.definition = {
     }
   },
 
-  "[command('clearhistory/chistory')]":
+  "[command('clearhistory/chistory'), _('clear command line history.')]":
   function clearHistory()
   {
     this.closeHistory();
@@ -662,7 +662,7 @@ Commandline.definition = {
     this.onclick.enabled = true;
     this.onchange.enabled = true;
     this.enableCommandline.enabled = true;
-    this.onFirstFocus.enabled = true;
+//    this.onFirstFocus.enabled = true;
     this.setCompletionTrigger.enabled = true;
     this.onStyleChanged.enabled = true;
     this.onWidthChanged.enabled = true;
@@ -691,7 +691,7 @@ Commandline.definition = {
     this.onchange.enabled = false;
     this.enableCommandline.enabled = false;
     this.setCompletionTrigger.enabled = false;
-    this.onFirstFocus.enabled = false;
+//    this.onFirstFocus.enabled = false;
     this.onStyleChanged.enabled = false;
     this.onWidthChanged.enabled = false;
     this.doCompletion.enabled = false;
@@ -722,15 +722,6 @@ Commandline.definition = {
   function onWidthChanged(width) 
   {
     this._canvas.width = width;
-  },
-
-  "[subscribe('@command/focus')]":
-  function onFirstFocus(message) 
-  {
-    // load rc file.
-    let path = "$Home/.tanasinn/tanasinnrc";
-    let session = this._broker;
-    session.notify("command/source", path);
   },
 
   "[subscribe('command/report-status-message')]":

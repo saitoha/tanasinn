@@ -57,7 +57,7 @@ Mouse.definition = {
 
   _keypad_mode: coUtils.Constant.KEYPAD_MODE_NORMAL,
   _in_scroll_session: false,
-  "[persistable] magnify_delta_per_fontsize": 200,
+  "[persistable] magnify_delta_per_fontsize": 100,
 
   "[subscribe('initialized/renderer'), enabled]":
   function onLoad(renderer)
@@ -261,7 +261,17 @@ Mouse.definition = {
   function onmagnifyGesture(delta) 
   {
     let session = this._broker
-    session.notify("command/change-fontsize-by-offset", Math.floor(delta / 200));
+    if (delta > 0) {
+      let count = Math.ceil(delta / this.magnify_delta_per_fontsize);
+      for (let i = 0; i < count; ++i) {
+        session.notify("command/input-expression-with-mapping", "<PinchOpen>");
+      }
+    } else if (delta < 0) {
+      let count = Math.floor(- delta / this.magnify_delta_per_fontsize);
+      for (let i = 0; i < count; ++i) {
+        session.notify("command/input-expression-with-mapping", "<PinchClose>");
+      }
+    }
     session.notify("command/draw");
   },
 

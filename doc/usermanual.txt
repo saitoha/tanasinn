@@ -802,9 +802,15 @@ clearhistory
 ----
 
 ==== セッション操作
-===== kill
+===== kill/quit
 
 現在のセッションを終了し、ウィンドウを閉じます。
+
+----
+kill
+----
+
+または
 
 ----
 kill
@@ -933,12 +939,63 @@ source [ファイル・パス]
 import [ファイル名]
 ----
 
+===== execcgi (new!)
+
+指定されたファイル名を~/.tanasinn/cgi-binディレクトリから検索し、実行した結果をコマンドバッチとして再解釈し、実行します。
+
+----
+execcgi [ファイル名]
+----
+
+引数で指定されるファイルは実行可能なものであればなんでもよいです。
+たとえば、
+
+[source,perl]
+----
+#!/usr/bin/env perl
+
+print <<EOM
+
+overlayecho Hello, World!
+
+EOM
+
+----
+
+のようにすればperlで記述できますし、
+
+[source,lisp]
+----
+#!/usr/bin/emacs -nw --script
+
+(princ "enable console")
+
+----
+
+のようにすればelispが使えます。
+
 ===== vimperator (new!)
 
 vimperatorにコマンドを送ります。
 
 ----
 vimperator [command]
+----
+
+===== echo (new!)
+
+ステータスラインにメッセージを表示します。
+
+----
+echo [メッセージ]
+----
+
+===== overlayecho (new!)
+
+オーバーレイインジケータにメッセージを表示します。
+
+----
+overlayecho [メッセージ]
 ----
 
 ===== javascript
@@ -973,17 +1030,19 @@ vimperator [command]
          |    
          +-- batches/            <---------------------- (9)
          |    
-         +-- log/                <---------------------- (10)
+         +-- cgi-bin/            <---------------------- (10)
+         |    
+         +-- log/                <---------------------- (11)
          |
-         +-- modules/            <---------------------- (11)
+         +-- modules/            <---------------------- (12)
                 |
-                +-- process_components/          <------ (12)
+                +-- process_components/          <------ (13)
                 |
-                +-- desktop_components/          <------ (13)
+                +-- desktop_components/          <------ (14)
                 |
-                +-- session_components/          <------ (14)
+                +-- session_components/          <------ (15)
                 |
-                +-- shared_components/           <------ (15)
+                +-- shared_components/           <------ (16)
 
 -----------------------------------------------------------------
 
@@ -1104,7 +1163,17 @@ Sessionオブジェクトの設定が書き出されるディレクトリ。
 
 #elif __JP__
 
-importコマンドで検索されるディレクトリ。
+importコマンドの引数として与えられたファイル名が検索されるディレクトリ。
+
+#endif
+
+==== .tanasinn/cgi-bin/ 
+
+#if __EN__
+
+#elif __JP__
+
+execcgiコマンドの引数として与えられたファイル名が検索されるディレクトリ。
 
 #endif
 
@@ -1356,6 +1425,27 @@ CloseMozilla
 
 を呼んで自分で状態管理していただく必要があります。
 まだリサイズとかアップデートを実装していませんので使いづらいと思います。
+
+=== ターミナルからtanasinnに対してコマンドを送りたい
+
+以下のような文字列を、TTYデバイスに対して送ってください。
+----
+
+¥x1b]220;<コマンド>¥x07
+
+----
+
+tanasinnはこれをtanasinnコマンドとして解釈し、実行します。
+コマンドはtanasinnが使用しているデコーダーの符号化方式と同じものを使用してエンコードされている必要があります。
+
+たとえば、シェルから
+----
+
+echo -en "¥e]220;overlayecho Hello, World!¥e"
+
+----
+
+とタイプすると、tanasinnにはコマンド「overlayecho Hello, World!」が渡ります。
 
 #endif
 

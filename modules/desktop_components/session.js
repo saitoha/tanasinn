@@ -145,7 +145,7 @@ Session.definition = {
 
   "[persistable] profile_directory": "$Home/.tanasinn/session_profile",
   "[persistable] batch_directory": "$Home/.tanasinn/batches",
-  "[persistable] cgi_directory": "$Home/.tanasinn/cgi",
+  "[persistable] cgi_directory": "$Home/.tanasinn/cgi-bin",
   "[persistable] profile": "default",
   "[persistable] initial_focus_delay": 100,
 
@@ -209,6 +209,12 @@ Session.definition = {
   function sendCommand(command) 
   {
     this.notify("command/eval-commandline", command);
+  },
+
+  "[subscribe('command/send-keys'), enabled]":
+  function sendKeys(expression) 
+  {
+    this.notify("command/input-expression-with-mapping", expression);
   },
 
   "[subscribe('event/disabled'), enabled]":

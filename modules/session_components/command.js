@@ -329,7 +329,7 @@ FontCommands.definition = {
   },
 
   /** Makes font size smaller. */
-  "[command('decrease'), nmap('<M-\\\\->', '<C-S-\\->', '<C-S-_>'), _('Make font size smaller.'), enabled]":
+  "[command('decrease'), nmap('<M-\\\\->', '<C-S-\\->', '<C-S-_>', '<PinchClose>'), _('Make font size smaller.'), enabled]":
   function decrease()
   {
     let session = this._broker;
@@ -342,7 +342,7 @@ FontCommands.definition = {
   },
 
   /** Makes font size bigger. */
-  "[command('increase'), nmap('<M-S-+>', '<C-S-;>', '<C-S-=>'), _('Make font size bigger.'), enabled]":
+  "[command('increase'), nmap('<M-S-+>', '<C-S-;>', '<C-S-=>', '<PinchOpen>'), _('Make font size bigger.'), enabled]":
   function increase()
   {
     let session = this._broker;
@@ -728,6 +728,48 @@ LscomponentCommand.definition = {
 };
 
 /**
+ * @class EchoCommand
+ */
+let EchoCommand = new Class().extends(Component);
+EchoCommand.definition = {
+
+  get id()
+    "echo_command",
+
+  "[command('echo'), _('echo message to status line.'), enabled]":
+  function evaluate(arguments_string)
+  {
+    return {
+      success: true,
+      message: arguments_string,
+    };
+  },
+
+};
+
+/**
+ * @class OverlayEchoCommand
+ */
+let OverlayEchoCommand = new Class().extends(Component);
+OverlayEchoCommand.definition = {
+
+  get id()
+    "echo_command",
+
+  "[command('overlayecho/oe'), _('echo message at overlay indicator.'), enabled]":
+  function evaluate(arguments_string)
+  {
+    let session = this._broker;
+    session.notify("command/report-overlay-message", arguments_string);
+    return {
+      success: true,
+      message: _("Succeeded."),
+    };
+  },
+
+};
+
+/**
  * @fn main
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
@@ -746,6 +788,8 @@ function main(broker)
   new DeployCommands(broker);
   new CharsetCommands(broker);
   new LscomponentCommand(broker);
+  new EchoCommand(broker);
+  new OverlayEchoCommand(broker);
 }
 
 

@@ -74,46 +74,50 @@ OverlayBrowser.definition = {
   },
 
   "[subscribe('sequence/osc/210'), enabled]":
-  function open(data) 
+  function handleSequence(data) 
   {
-    let session = this._broker;
-    let renderer = this.dependency["renderer"];
-    let cursorstate = this.dependency["cursorstate"];
-
     coUtils.Timer.setTimeout(function() {
-
-      let [left, top, width, height, url] = data.split(" ");
-      left = Number(left);
-      top = Number(top);
-      width = Number(width);
-      height = Number(height);
-
-      this.close();
-
-      let {
-        tanasinn_browser_layer,
-        tanasinn_browser_overlay,
-      } = session.uniget("command/construct-chrome", {
-        parentNode: "#tanasinn_center_area",
-        tagName: "bulletinboard",
-        id: "tanasinn_browser_layer",
-        childNodes: {
-          tagName: "browser",
-          id: "tanasinn_browser_overlay",
-          src: url,
-          left: (cursorstate.positionX - left + 1) * renderer.char_width,
-          top: (cursorstate.positionY - top + 1) * renderer.line_height,
-          width: width * renderer.char_width,
-          height: height * renderer.line_height,
-        },
-      });
-
-      this._element = tanasinn_browser_layer;
-
+      let cursorstate = this.dependency["cursorstate"];
+      let [col, line, width, height, url] = data.split(" ");
+      this.open(
+        cursorstate.positionX - Number(col) + 1, 
+        cursorstate.positionY - Number(line) + 1,
+        Number(width), 
+        Number(height), 
+        url);
     }, this.open_delay, this);
   },
 
-  "[subscribe('sequence/osc/211'), enabled]":
+  "[subscribe('command/open-overlay-browser'), enabled]":
+  function open(left, top, width, height, url) 
+  {
+    let session = this._broker;
+    let renderer = this.dependency["renderer"];
+
+    this.close();
+
+    let {
+      tanasinn_browser_layer,
+    } = session.uniget("command/construct-chrome", {
+      parentNode: "#tanasinn_center_area",
+      tagName: "bulletinboard",
+      id: "tanasinn_browser_layer",
+      childNodes: {
+        tagName: "browser",
+        id: "tanasinn_browser_overlay",
+        src: url,
+        left: left * renderer.char_width,
+        top: top * renderer.line_height,
+        width: width * renderer.char_width,
+        height: height * renderer.line_height,
+      },
+    });
+
+    this._element = tanasinn_browser_layer;
+
+  },
+
+  "[subscribe('sequence/osc/211 | command/close-overlay-browser'), enabled]":
   function close(data) 
   {
     let element = this._element;

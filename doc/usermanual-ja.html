@@ -1607,8 +1607,13 @@ saveprofileのような保存操作はとくに必要ありません。</p></div
 <div class="sect3">
 <h4 id="_セッション操作">8.3.16. セッション操作</h4>
 <div class="sect4">
-<h5 id="_kill">kill</h5>
+<h5 id="_kill_quit">kill/quit</h5>
 <div class="paragraph"><p>現在のセッションを終了し、ウィンドウを閉じます。</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>kill</tt></pre>
+</div></div>
+<div class="paragraph"><p>または</p></div>
 <div class="listingblock">
 <div class="content">
 <pre><tt>kill</tt></pre>
@@ -1749,11 +1754,61 @@ saveprofileのような保存操作はとくに必要ありません。</p></div
 </div></div>
 </div>
 <div class="sect4">
+<h5 id="_execcgi_new">execcgi (new!)</h5>
+<div class="paragraph"><p>指定されたファイル名を~/.tanasinn/cgi-binディレクトリから検索し、実行した結果をコマンドバッチとして再解釈し、実行します。</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>execcgi [ファイル名]</tt></pre>
+</div></div>
+<div class="paragraph"><p>引数で指定されるファイルは実行可能なものであればなんでもよいです。
+たとえば、</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>
+
+<span style="font-weight: bold"><span style="color: #0000FF">print</span></span> <span style="color: #990000">&lt;&lt;</span>EOM
+
+overlayecho Hello<span style="color: #990000">,</span> World<span style="color: #990000">!</span>
+
+EOM
+</tt></pre></div></div>
+<div class="paragraph"><p>のようにすればperlで記述できますし、</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>
+
+<span style="color: #FF0000">(</span>princ <span style="color: #FF0000">"enable console"</span><span style="color: #FF0000">)</span>
+</tt></pre></div></div>
+<div class="paragraph"><p>のようにすればelispが使えます。</p></div>
+</div>
+<div class="sect4">
 <h5 id="_vimperator_new">vimperator (new!)</h5>
 <div class="paragraph"><p>vimperatorにコマンドを送ります。</p></div>
 <div class="listingblock">
 <div class="content">
 <pre><tt>vimperator [command]</tt></pre>
+</div></div>
+</div>
+<div class="sect4">
+<h5 id="_echo_new">echo (new!)</h5>
+<div class="paragraph"><p>ステータスラインにメッセージを表示します。</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>echo [メッセージ]</tt></pre>
+</div></div>
+</div>
+<div class="sect4">
+<h5 id="_overlayecho_new">overlayecho (new!)</h5>
+<div class="paragraph"><p>オーバーレイインジケータにメッセージを表示します。</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>overlayecho [メッセージ]</tt></pre>
 </div></div>
 </div>
 <div class="sect4">
@@ -1785,17 +1840,19 @@ saveprofileのような保存操作はとくに必要ありません。</p></div
          |
          +-- batches/            &lt;---------------------- (9)
          |
-         +-- log/                &lt;---------------------- (10)
+         +-- cgi-bin/            &lt;---------------------- (10)
          |
-         +-- modules/            &lt;---------------------- (11)
+         +-- log/                &lt;---------------------- (11)
+         |
+         +-- modules/            &lt;---------------------- (12)
                 |
-                +-- process_components/          &lt;------ (12)
+                +-- process_components/          &lt;------ (13)
                 |
-                +-- desktop_components/          &lt;------ (13)
+                +-- desktop_components/          &lt;------ (14)
                 |
-                +-- session_components/          &lt;------ (14)
+                +-- session_components/          &lt;------ (15)
                 |
-                +-- shared_components/           &lt;------ (15)</tt></pre>
+                +-- shared_components/           &lt;------ (16)</tt></pre>
 </div></div>
 <div class="sect3">
 <h4 id="_tanasinn_js">8.4.1. .tanasinn.js</h4>
@@ -1852,26 +1909,30 @@ set outerchrome.background="-moz-radial-gradient(center, circle closest-side, #4
 </div>
 <div class="sect3">
 <h4 id="_tanasinn_batches">8.4.9. .tanasinn/batches/</h4>
-<div class="paragraph"><p>importコマンドで検索されるディレクトリ。</p></div>
+<div class="paragraph"><p>importコマンドの引数として与えられたファイル名が検索されるディレクトリ。</p></div>
 </div>
 <div class="sect3">
-<h4 id="_tanasinn_modules">8.4.10. .tanasinn/modules/</h4>
+<h4 id="_tanasinn_cgi_bin">8.4.10. .tanasinn/cgi-bin/</h4>
+<div class="paragraph"><p>execcgiコマンドの引数として与えられたファイル名が検索されるディレクトリ。</p></div>
+</div>
+<div class="sect3">
+<h4 id="_tanasinn_modules">8.4.11. .tanasinn/modules/</h4>
 <div class="paragraph"><p>このディレクトリ内にユーザー拡張やユーザーデータが配置されます。</p></div>
 </div>
 <div class="sect3">
-<h4 id="_tanasinn_modules_process_components">8.4.11. .tanasinn/modules/process_components/</h4>
+<h4 id="_tanasinn_modules_process_components">8.4.12. .tanasinn/modules/process_components/</h4>
 <div class="paragraph"><p>プロセスバスに接続されるユーザー拡張が配置されるディレクトリ。</p></div>
 </div>
 <div class="sect3">
-<h4 id="_tanasinn_modules_desktop_components">8.4.12. .tanasinn/modules/desktop_components/</h4>
+<h4 id="_tanasinn_modules_desktop_components">8.4.13. .tanasinn/modules/desktop_components/</h4>
 <div class="paragraph"><p>デスクトップバスに接続されるユーザー拡張が配置されるディレクトリ。</p></div>
 </div>
 <div class="sect3">
-<h4 id="_tanasinn_modules_session_components">8.4.13. .tanasinn/modules/session_components/</h4>
+<h4 id="_tanasinn_modules_session_components">8.4.14. .tanasinn/modules/session_components/</h4>
 <div class="paragraph"><p>セッションバスに接続されるユーザー拡張が配置されるディレクトリ。</p></div>
 </div>
 <div class="sect3">
-<h4 id="_tanasinn_modules_shared_components">8.4.14. .tanasinn/modules/shared_components/</h4>
+<h4 id="_tanasinn_modules_shared_components">8.4.15. .tanasinn/modules/shared_components/</h4>
 <div class="paragraph"><p>デスクトップバス・セッションバス両方に接続されるユーザー拡張が配置されるディレクトリ。</p></div>
 </div>
 </div>
@@ -1986,6 +2047,22 @@ command CloseMozilla call s:close_gecko_window()</tt></pre>
 </div></div>
 <div class="paragraph"><p>を呼んで自分で状態管理していただく必要があります。
 まだリサイズとかアップデートを実装していませんので使いづらいと思います。</p></div>
+</div>
+<div class="sect2">
+<h3 id="_ターミナルからtanasinnに対してコマンドを送りたい">9.7. ターミナルからtanasinnに対してコマンドを送りたい</h3>
+<div class="paragraph"><p>以下のような文字列を、TTYデバイスに対して送ってください。</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>¥x1b]220;&lt;コマンド&gt;¥x07</tt></pre>
+</div></div>
+<div class="paragraph"><p>tanasinnはこれをtanasinnコマンドとして解釈し、実行します。
+コマンドはtanasinnが使用しているデコーダーの符号化方式と同じものを使用してエンコードされている必要があります。</p></div>
+<div class="paragraph"><p>たとえば、シェルから</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>echo -en "¥e]220;overlayecho Hello, World!¥e"</tt></pre>
+</div></div>
+<div class="paragraph"><p>とタイプすると、tanasinnにはコマンド「overlayecho Hello, World!」が渡ります。</p></div>
 </div>
 </div>
 </div>
@@ -2911,7 +2988,7 @@ twitter: <a href="http://twitter.com/kefir_">日本語</a> / <a href="http://twi
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2012-02-23 23:51:45 JST
+Last updated 2012-02-25 01:00:26 JST
 </div>
 </div>
 </body>

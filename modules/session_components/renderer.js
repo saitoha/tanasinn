@@ -257,7 +257,6 @@ Renderer.definition = {
     char_width = char_width || this.char_width;
     let canvas_width = 0 | (width * char_width);
     this._canvas.width = canvas_width;
-
     let session = this._broker;
     session.notify("event/screen-width-changed", canvas_width);
   },
@@ -268,10 +267,8 @@ Renderer.definition = {
     height = height || this.dependency["screen"].height;
     line_height = line_height || this.line_height;
     let canvas_height = 0 | (height * line_height);
-
     let session = this._broker;
     session.notify("event/screen-height-changed", canvas_height);
-
     this._canvas.height = canvas_height;
   },
 
@@ -304,12 +301,6 @@ Renderer.definition = {
    */
   _drawBackground: function _drawBackground(context, x, y, width, height, bg)
   {
-//    if (this.enable_text_shadow) {
-//      context.shadowColor = "";
-//      context.shadowOffsetX = 0;
-//      context.shadowOffsetY = 0;
-//      context.shadowBlur = 0;
-//    }
     if (0 == bg) {
       context.clearRect(x, y, width, height);
     } else {
@@ -338,70 +329,30 @@ Renderer.definition = {
     if (attr.underline) {
       this._drawUnderline(context, x, y, char_width * length, fore_color);
     }
-//    if (this.enable_text_shadow) {
-//      context.shadowColor = "black";
-//      context.shadowOffsetX = 2;
-//      context.shadowOffsetY = 0;
-//      context.shadowBlur = 2;
-//    }
-//    if (this.force_monospace_rendering) {
-//        let position = x;
-//        let previous_position = x;
-//        for (let i = 0; i < cells.length; ++i) {
-//          let cell = cells[i];
-//          let code = cell.c;
-//          let is_wide = 0 == code;
-//          if (is_wide) {
-//            cell = cells[++i];
-//            code = cell.c;
-//          }
-//          if (cell.combining) {
-//            let combined_character = String.fromCharCode(cells[i - 1].c, code);
-//            context.fillText(combined_character, previous_position, y);
-//            continue;
-//          }
-//          let current_width = char_width * (is_wide ? 2: 1);
-//          let ch = String.fromCharCode(code);
-//          let metrics = context.measureText(ch);
-//          let bg = cell.bg;
-//          if (0 == bg) {
-//            context.clearRect(position, y - this._text_offset, current_width, height);
-//          } else {
-//            context.fillStyle = this.background_color[bg];
-//            context.fillRect(position, y - this._text_offset, current_width, height);
-//            context.fillStyle = fore_color;
-//          }
-//          context.fillText(ch, position + (current_width - metrics.width) / 2, y);
-//          //context.fillText(ch, position, y);
-//          previous_position = position;
-//          position += current_width;
-//        };
-////      }
-//    } else {
-      let codes = [code for (code in function () {
-        for (let [, cell] in Iterator(cells)) {
-          let code = cell.c;
-          if (code > 0xffff) {
-            // emit 16bit + 16bit surrogate pair.
-            code -= 0x10000;
-            yield (code >> 10) | 0xD800;
-            yield (code & 0x3FF) | 0xDC00;
-          } else {
-            yield code;
-          }
+    let codes = [code for (code in function () {
+      for (let [, cell] in Iterator(cells)) {
+        let code = cell.c;
+        if (code > 0xffff) {
+          // emit 16bit + 16bit surrogate pair.
+          code -= 0x10000;
+          yield (code >> 10) | 0xD800;
+          yield (code & 0x3FF) | 0xDC00;
+        } else {
+          yield code;
         }
-      }())];
-      let text = String.fromCharCode.apply(String, codes);
-      if (this.enable_render_bold_as_textshadow && attr.bold) {
-        context.shadowColor = "white";//fore_color;
-        context.shadowOffsetX = this.shadow_offset_x;
-        context.shadowOffsetY = this.shadow_offset_y;
-        context.shadowBlur = this.shadow_blur;
-      } else {
-        context.shadowOffsetX = 0;
-        context.shadowBlur = 0;
       }
-      context.fillText(text, x, y, char_width * length);
+    }())];
+    let text = String.fromCharCode.apply(String, codes);
+    if (this.enable_render_bold_as_textshadow && attr.bold) {
+      context.shadowColor = "white";//fore_color;
+      context.shadowOffsetX = this.shadow_offset_x;
+      context.shadowOffsetY = this.shadow_offset_y;
+      context.shadowBlur = this.shadow_blur;
+    } else {
+      context.shadowOffsetX = 0;
+      context.shadowBlur = 0;
+    }
+    context.fillText(text, x, y, char_width * length);
   },
 
   /** Rnder underline at specified position.

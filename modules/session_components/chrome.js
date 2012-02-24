@@ -130,6 +130,7 @@ OuterChrome.definition = {
       parentNode: broker.root_element, 
       id: "tanasinn_outer_chrome",
       tagName: "stack",
+      hidden: true,
       listener: {
         type: "click",
         handler: function() {
@@ -210,6 +211,12 @@ OuterChrome.definition = {
       this._element.parentNode.removeChild(this._element);
       this._element = null;
     }
+  },
+
+  "[subscribe('@command/focus'), enabled]":
+  function onFirstFocus() 
+  {
+    this._element.hidden = false;
   },
 
   "[subscribe('variable-changed/outerchrome.{background | background_opaicty | border_radius | box_shadow}')]": 

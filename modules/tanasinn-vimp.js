@@ -25,7 +25,9 @@
 var PLUGIN_INFO =
 <VimperatorPlugin>
     <name>{NAME}</name>
-    <description>Provides some commands for driving tanasinn.</description>
+    <description>
+      Provides some commands for driving tanasinn.
+    </description>
     <detail><![CDATA[
 
 let g:tanasinneditorcommand:
@@ -130,11 +132,28 @@ commands.addUserCommand(["tanasinncommand", "tco[mmand]"],
 /**
  * @command tanasinnsend 
  */
-commands.addUserCommand(["tanasinnsend", "ts[end]"], 
+commands.addUserCommand(["tanasinncommand", "tco[mmand]"], 
   "Run a tanasinn command on active tanasinn sessions.", 
   function (args) 
   { 
     getDesktop().notify("command/send-command", args.string);
+  },
+  { 
+    argCount: "?",
+//    completer: function (context) completion.shellCommand(context),
+    bang: true,
+    literal: 0,
+  } 
+);
+
+/**
+ * @command tanasinnsendkeys
+ */
+commands.addUserCommand(["tanasinnsendkeys", "ts[end]"], 
+  "Send keys to tanasinn.", 
+  function (args) 
+  { 
+    getDesktop().notify("command/send-keys", args.string);
   },
   { 
     argCount: "?",
