@@ -82,7 +82,6 @@ BatchLoader.definition = {
   "[subscribe('command/source'), command('source', ['file']), _('load and evaluate batch file.')]":
   function sourceCommand(arguments_string)
   {
-    try {
     let path = arguments_string.replace(/^\s*|\s*$/g, "");
     if ("$" != path.charAt(0) && !coUtils.File.isAbsolutePath(path)) {
       if ("WINNT" == coUtils.Runtime.os) {
@@ -104,7 +103,6 @@ BatchLoader.definition = {
         coUtils.Debug.reportError(e);
       }
     }
-    } catch(e) {alert(e)}
     return {
       success: true,
       message: _("Source file was loaded successfully."),

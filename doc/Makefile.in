@@ -20,7 +20,8 @@ $(README_EN): $(SOURCE) Makefile.in
 		$(RM) $@ && cat $< \
 		| $(CPP) -D__EN__ - \
 		| sed -e 's:/#/://:g' \
-		| sed -e 's/^#.*//' > $@ ; \
+		| sed -e 's/^#.*//' \
+		| sed -e 's:\\#:#:g' > $@ ; \
 	fi
 
 $(README_JA): $(SOURCE) Makefile.in
@@ -29,7 +30,8 @@ $(README_JA): $(SOURCE) Makefile.in
 		$(RM) $@ && cat $< \
 		| $(CPP) -D__JP__ - \
 		| sed -e 's:/#/://:g' \
-		| sed -e 's/^#.*//' > $@ ; \
+		| sed -e 's/^#.*//' \
+		| sed -e 's:\\#:#:g' > $@ ; \
 	fi
 
 $(HTML_EN): $(README_EN)

@@ -952,13 +952,11 @@ execcgi [ファイル名]
 
 [source,perl]
 ----
-#!/usr/bin/env perl
+  #!/usr/bin/env perl
 
-print <<EOM
-
-overlayecho Hello, World!
-
-EOM
+  print <<EOM
+  overlayecho Hello, World!
+  EOM
 
 ----
 
@@ -966,9 +964,9 @@ EOM
 
 [source,lisp]
 ----
-#!/usr/bin/emacs -nw --script
+  #!/usr/bin/emacs -nw --script
 
-(princ "enable console")
+  (princ "enable console")
 
 ----
 

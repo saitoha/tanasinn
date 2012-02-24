@@ -115,7 +115,7 @@ commands.addUserCommand(["tanasinnlaunch", "tla[unch]"],
 /**
  * @command tanasinncommand 
  */
-commands.addUserCommand(["tanasinncommand", "tco[mmand]"], 
+commands.addUserCommand(["tanasinnstart", "tst[art]"], 
   "Run a operating system command on tanasinn.", 
   function (args) 
   { 
