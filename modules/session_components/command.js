@@ -610,62 +610,6 @@ LocalizeCommand.definition = {
 };
 
 /**
- * @class DeployCommands
- */
-let DeployCommands = new Class().extends(Component);
-DeployCommands.definition = {
-
-  get id()
-    "deploy",
-
-  _impl: function _impl(arguments_string, is_enable) 
-  {
-    let session = this._broker;
-    let match = arguments_string.match(/^(\s*)([$_\-@a-zA-Z\.]+)(\s*)$/);
-    if (null === match) {
-      return {
-        success: false,
-        message: _("Failed to parse commandline argument."),
-      };
-    }
-    let [, space, name, next] = match;
-    let modules = session.notify("get/components");
-    modules = modules.filter(function(module) module.id == name);
-    if (0 == modules.length) {
-      return {
-        success: false,
-        message: _("Cannot enabled the module specified by given argument."),
-      };
-    }
-    modules.forEach(function(module) {
-      try {
-        module.enabled = is_enable;
-      } catch(e) {
-        coUtils.Debug.reportError(e); 
-      }
-    });
-    return {
-      success: true,
-      message: _("Succeeded."),
-    };
-  },
-
-  "[command('disable', ['plugin/enabled']), _('Disable a plugin.'), enabled]":
-  function disable(arguments_string)
-  {
-    return this._impl(arguments_string, /* is_enable */ false);
-  },
-
-  "[command('enable', ['plugin/disabled']), _('Enable a plugin.'), enabled]":
-  function enable(arguments_string)
-  {
-    return this._impl(arguments_string, /* is_enable */ true);
-  },
-
-};
-
-
-/**
  * @class CharsetCommands
  */
 let CharsetCommands = new Class().extends(Component);
@@ -785,7 +729,6 @@ function main(broker)
   new PersistCommand(broker);
   new GlobalPersistCommand(broker);
   new LocalizeCommand(broker);
-  new DeployCommands(broker);
   new CharsetCommands(broker);
   new LscomponentCommand(broker);
   new EchoCommand(broker);

@@ -138,6 +138,16 @@ ModeManager.definition = {
     }
   },
 
+  "[command('sendkeys/sk'), enabled]":
+  function sendkeys(arguments_string) 
+  {
+    let session = this._broker;
+    session.notify("command/input-expression-with-mapping", arguments_string);
+    return {
+      result: true,
+    };
+  },
+
   "[subscribe('command/input-expression-with-mapping'), enabled]":
   function inputExpressionWithMapping(expression) 
   {

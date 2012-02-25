@@ -221,12 +221,69 @@ PluginViewer.definition = {
 };
 
 /**
+ * @class PluginManager
+ */
+let PluginManager = new Class().extends(Component);
+PluginManager.definition = {
+
+  get id()
+    "plugin_manager",
+
+  "[command('disable', ['plugin/enabled']), _('Disable a plugin.'), enabled]":
+  function disable(arguments_string)
+  {
+    return this._impl(arguments_string, /* is_enable */ false);
+  },
+
+  "[command('enable', ['plugin/disabled']), _('Enable a plugin.'), enabled]":
+  function enable(arguments_string)
+  {
+    return this._impl(arguments_string, /* is_enable */ true);
+  },
+
+  _impl: function _impl(arguments_string, is_enable) 
+  {
+    let session = this._broker;
+    let match = arguments_string.match(/^(\s*)([$_\-@a-zA-Z\.]+)(\s*)$/);
+    if (null === match) {
+      return {
+        success: false,
+        message: _("Failed to parse commandline argument."),
+      };
+    }
+    let [, space, name, next] = match;
+    let modules = session.notify("get/components");
+    modules = modules.filter(function(module) module.id == name);
+    if (0 == modules.length) {
+      return {
+        success: false,
+        message: _("Cannot enabled the module specified by given argument."),
+      };
+    }
+    modules.forEach(function(module) {
+      try {
+        module.enabled = is_enable;
+      } catch(e) {
+        coUtils.Debug.reportError(e); 
+      }
+    });
+    return {
+      success: true,
+      message: _("Succeeded."),
+    };
+  },
+
+};
+
+
+/**
  * @fn main
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
 function main(broker)
 {
+  new PluginManager(broker);
   new PluginViewer(broker);
 }
 

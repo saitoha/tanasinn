@@ -145,9 +145,9 @@ EventBrokerBase.prototype = {
     return [key for ([key,] in Iterator(this._delegate_map))].length;
   },
 
-  get: function get(topic)
+  get keys()
   {
-    return this._delegate_map[topic];
+    return Object.keys(this._delegate_map);
   },
 
   /** Subscribes event handler with a topic. 
@@ -306,6 +306,9 @@ EventBroker.prototype = {
 
   get __count()
     this._base.__count,
+
+  get keys()
+    this._base.keys,
 
   /** constructor */
   initialize: function initialize(parent)

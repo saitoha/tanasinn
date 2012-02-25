@@ -923,6 +923,23 @@ debugger
 ===== setglobal
 
 ==== ユーティリティ
+===== sendkeys (new!)
+
+指定されたキーシーケンス式を解釈し、キーイベントとして実行します。
+
+----
+sendkeys [キーシーケンス式]
+----
+
+例：
+----
+sendkeys <nmode><C-z>echo Hello, World!<CR>fg<CR>
+----
+
+----
+sendkeys <PinchOpen>
+----
+
 ===== source (new!)
 
 指定されたファイルをtanasinnコマンドバッチファイルとして読み込み、実行します。
@@ -964,7 +981,7 @@ execcgi [ファイル名]
 
 [source,lisp]
 ----
-  #!/usr/bin/emacs -nw --script
+  #!/usr/bin/emacs23 -nw --script
 
   (princ "enable console")
 

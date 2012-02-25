@@ -68,108 +68,6 @@ Aspect.prototype = {
 
 };
 
-///** 
-// * @class ForwardInputIterator
-// */ 
-//let ForwardInputIterator = function ForwardInputIterator() this.initialize.apply(this, arguments);
-//ForwardInputIterator.prototype = {
-//
-//  _value: null,
-//  _position: 0,
-//
-//  /** Assign new string data. position is reset. */
-//  initialize: function initialize(value) 
-//  {
-//    this._value = value;
-//    this._position = 0;
-//  },
-//
-//  /** Returns single byte code point. */
-//  current: function current() 
-//  {
-//    return this._value.charCodeAt(this._position);
-//  },
-//
-//  /** Moves to next position. */
-//  moveNext: function moveNext() 
-//  {
-//    ++this._position;
-//  },
-//
-//  /** Returns whether scanner position is at end. */
-//  get isEnd() 
-//  {
-//    return this._position >= this._value.length;
-//  },
-//};
-//
-///**
-// * @class AnnotationScanner
-// */
-//let AnnotationScanner = function AttributeScanner() this.initialize.apply(this, arguments);
-//AnnotationScanner.prototype = {
-//
-//  skip: function skip()
-//  {
-//    while (true) {
-//      let c = this.current()
-//      if (" ".charCodeAt(0) != c && ",".charCodeAt(0) != c) {
-//        break;
-//      }
-//      this.moveNext();
-//    }
-//  },
-//
-//};
-//AnnotationScanner.prototype.__proto__ = ForwardInputIterator.prototype;
-//
-////
-//// IdentifierCharacter := [a-z]
-//// Identifier          := IdentifierCharacter, IdentifierCharacter*
-////
-////
-//
-///**
-// * @class AnnotationParser
-// */
-//let AnnotationParser = function AttributeParser() this.initialize.apply(this, arguments);
-//AnnotationParser.prototype = {
-//
-//  /** Parses annotation string(decorated function name). */
-//  parse: function parse(annotation)
-//  {
-//    let scanner = new AnnotationScanner(annotation);
-//    let match_result = [];
-//
-//    scanner.skip();
-//
-//    let identifir = [ c for ( c in function() {
-//      if ("a".charCodeAt(0) <= c && c <= "z".charCodeAt(0)) {
-//        yield c;
-//      }
-//    }) ];
-//
-//    if (0 == identifir.length) {
-//      return null; // parse error;
-//    }
-//
-//    scanner.current();
-//    if ("(".charCodeAt(0) == scanner.current()) {
-//      return null; // parse error;
-//    }
-//
-//    scanner.moveNext();
-//
-//    scanner.skip();
-//
-//    if ("(".charCodeAt(0) == c) {
-//      return null; // parse error;
-//    }
-//    return match_result;
-//  },
-//
-//};
-
 /**
  * @class AttributeContext
  */
@@ -185,7 +83,6 @@ AttributeContext.prototype = {
     this._target = target;
     this._context = context;
     this._name = name;
-//    this._parser = new AnnotationParser;
   },
 
   get enabled() 
@@ -206,9 +103,8 @@ AttributeContext.prototype = {
       try {
         eval(annotation);
       } catch(e) {
-        coUtils.Debug.reportError("Failed to parse annotation string: '" + annotation + "'");
-//        coUtils.Debug.reportError(
-//          _("Failed to parse annotation string: '%s'."), annotation);
+        coUtils.Debug.reportError(
+          _("Failed to parse annotation string: '%s'."), annotation);
         throw e;
       }
     }
@@ -620,14 +516,15 @@ Component.definition = {
   {
     if (this.__dependency) {
       this.dependency = {};
-      let topic;
+      let install_trigger;
+      let uninstall_trigger;
       if (this.__dependency.length > 0) {
-        topic = "@initialized/{" + this.__dependency.join("&") + "}";
+        install_trigger = "initialized/{" + this.__dependency.join("&") + "}";
       } else {
-        topic = "@event/broker-started";
+        install_trigger = "@event/broker-started";
       }
       broker.subscribe(
-        topic, 
+        install_trigger, 
         function onLoad() 
         {
           let args = arguments;
@@ -636,6 +533,7 @@ Component.definition = {
           }, this);
           this.enabled = this.enabled_when_startup;
           broker.notify(<>initialized/{this.id}</>, this);
+          broker.notify(<>installed/{this.id}</>, this);
         }, 
         this);
     }

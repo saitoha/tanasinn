@@ -387,7 +387,8 @@ ProcessManager.definition = {
 /** 
  * @class SessionsCompleter
  */
-let SessionsCompleter = new Class().extends(CompleterBase);
+let SessionsCompleter = new Class().extends(CompleterBase)
+                                   .depends("process-manager");
 SessionsCompleter.definition = {
 
   get id()
@@ -396,19 +397,13 @@ SessionsCompleter.definition = {
   get type()
     "sessions",
 
-  "[subscribe('@initialized/process-manager'), enabled]":
-  function onProcessManagerInitialized(process_manager)
-  {
-    this._process_manager = process_manager;
-  },
-
   _generateAvailableSession: function _generateAvailableSession()
   {
     coUtils.Sessions.load();
     let records = coUtils.Sessions.getRecords();
     for (let [request_id, record] in Iterator(records)) {
       try {
-        if (this._process_manager.processIsAvailable(record.pid)) {
+        if (this.dependency["process-manager"].processIsAvailable(record.pid)) {
           yield {
             name: "&" + request_id,
             value: record,
@@ -825,8 +820,6 @@ Launcher.definition = {
     this._textbox = tanasinn_launcher_textbox;
     this._popup = tanasinn_launcher_completion_popup;
     this._completion_root = tanasinn_launcher_completion_root;
-
-    broker.notify(<>initialized/{this.id}</>, this);
     this.onEnabled();
   },
 
@@ -1113,17 +1106,14 @@ Launcher.definition = {
     let document = this._element.ownerDocument;
     command = command || "";
     command = command.replace(/^\s+|\s+$/g, "");
-
     let box = document.createElement("box");
     if (!/tanasinn/.test(coUtils.Runtime.app_name)) {
       box.style.cssText = "position: fixed; top: 0px; left: 0px";
     }
     this._window_layer.appendChild(box);
-    coUtils.Timer.setTimeout(function() {
-      desktop.start(box, command);  // command
-      box.style.left = <>{this.left = (this.left + Math.random() * 1000) % 140 + 20}px</>.toString();
-      box.style.top = <>{this.top = (this.top + Math.random() * 1000) % 140 + 20}px</>.toString();
-    }, 0, this);
+    desktop.start(box, command);  // command
+    box.style.left = <>{this.left = (this.left + Math.random() * 1000) % 140 + 20}px</>.toString();
+    box.style.top = <>{this.top = (this.top + Math.random() * 1000) % 140 + 20}px</>.toString();
     this.hide();
   },
 
@@ -1315,19 +1305,11 @@ Launcher.definition = {
  * @class DragMove
  * @fn Enable Drag-and-Drop operation.
  */
-let DragMove = new Class().extends(Component);
+let DragMove = new Class().extends(Plugin);
 DragMove.definition = {
 
   get id()
     "launcher-dragmove",
-
-  /** post-constructor */
-  "[subscribe('@initialized/launcher'), enabled]":
-  function onLoad(launcher) 
-  {
-    let broker = this._broker;
-    this.install(broker);
-  },
 
   /** Installs itself. */
   "[subscribe('install/launcher-dragmove'), enabled]":

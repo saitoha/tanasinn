@@ -943,7 +943,7 @@ let FontFamilyCompleter = new Class().extends(CompleterBase);
 FontFamilyCompleter.definition = {
 
   get id()
-    "font-family-completer",
+    "font_family_completer",
 
   get type()
     "font-family",
@@ -1262,6 +1262,57 @@ FileCompleter.definition = {
 };
 
 /**
+ * @class EventCompleter
+ *
+ */
+let EventCompleter = new Class().extends(CompleterBase);
+EventCompleter.definition = {
+
+  get id()
+    "event_completer",
+
+  get type()
+    "event",
+
+  /*
+   * Search for a given string and notify a listener (either synchronously
+   * or asynchronously) of the result
+   *
+   * @param source - The string to search for
+   * @param listener - A listener to notify when the search is complete
+   */
+  "[subscribe('command/query-completion/event'), enabled]":
+  function startSearch(source, listener)
+  {
+    let session = this._broker;
+    let pattern = /^\s*(\S*)(\s*)/;
+    let match = source.match(pattern);
+    let [all, name, space] = match;
+    if (space) {
+      return all.length;
+    }
+    let lower_name = name.toLowerCase();
+    let candidates = session.keys.filter(function(candidate) {
+      return -1 != candidate.toLowerCase().indexOf(lower_name);
+    });
+    let autocomplete_result = {
+      type: "text",
+      query: source, 
+      labels: candidates, 
+      comments: candidates,
+      data: candidates.map(function(candidate) ({
+        name: candidate, 
+        value: candidate,
+      })),
+    };
+    listener.doCompletion(autocomplete_result);
+    return 0;
+  },
+
+};
+
+
+/**
  * @fn main
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
@@ -1285,6 +1336,7 @@ function main(broker)
   new NMapCompleter(broker);
   new CMapCompleter(broker);
   new FileCompleter(broker);
+  new EventCompleter(broker);
 }
 
 

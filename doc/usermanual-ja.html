@@ -1738,143 +1738,191 @@ saveprofileのような保存操作はとくに必要ありません。</p></div
 <div class="sect3">
 <h4 id="_ユーティリティ">8.3.21. ユーティリティ</h4>
 <div class="sect4">
-<h5 id="_source_new">source (new!)</h5>
-<div class="paragraph"><p>指定されたファイルをtanasinnコマンドバッチファイルとして読み込み、実行します。</p></div>
+<h5 id="_sendkeys_new">sendkeys (new!)</h5>
+<div class="paragraph"><p>指定されたキーシーケンス式を解釈し、キーイベントとして実行します。</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>source [ファイル・パス]</tt></pre>
+<pre><tt>sendkeys [キーシーケンス式]</tt></pre>
 </div></div>
 </div>
-<div class="sect4">
-<h5 id="_import_new">import (new!)</h5>
-<div class="paragraph"><p>指定されたファイル名を~/.tanasinn/batchesディレクトリから検索し、コマンドバッチファイルとして実行します。</p></div>
-<div class="listingblock">
-<div class="content">
-<pre><tt>import [ファイル名]</tt></pre>
-</div></div>
 </div>
-<div class="sect4">
-<h5 id="_execcgi_new">execcgi (new!)</h5>
-<div class="paragraph"><p>指定されたファイル名を~/.tanasinn/cgi-binディレクトリから検索し、実行した結果をコマンドバッチとして再解釈し、実行します。</p></div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_例">9. 例：</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>sendkeys &lt;nmode&gt;&lt;C-z&gt;echo Hello, World!&lt;CR&gt;fg&lt;CR&gt;</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>execcgi [ファイル名]</tt></pre>
+<pre><tt></tt></pre>
 </div></div>
-<div class="paragraph"><p>引数で指定されるファイルは実行可能なものであればなんでもよいです。
-たとえば、</p></div>
+<div class="paragraph"><p>sendkeys &lt;PinchOpen&gt;</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.4
-by Lorenzo Bettini
-http://www.lorenzobettini.it
-http://www.gnu.org/software/src-highlite -->
-<pre><tt>  <span style="font-style: italic"><span style="color: #9A1900">#!/usr/bin/env perl</span></span>
+<div class="content">
+<pre><tt>===== source (new!)
 
-  <span style="font-weight: bold"><span style="color: #0000FF">print</span></span> <span style="color: #990000">&lt;&lt;</span>EOM
-  overlayecho Hello<span style="color: #990000">,</span> World<span style="color: #990000">!</span>
-  EOM
-</tt></pre></div></div>
-<div class="paragraph"><p>のようにすればperlで記述できますし、</p></div>
+指定されたファイルをtanasinnコマンドバッチファイルとして読み込み、実行します。</tt></pre>
+</div></div>
+<div class="paragraph"><p>source [ファイル・パス]</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.4
-by Lorenzo Bettini
-http://www.lorenzobettini.it
-http://www.gnu.org/software/src-highlite -->
-<pre><tt>  #!/usr/bin/emacs -nw --script
+<div class="content">
+<pre><tt>===== import (new!)
 
-  <span style="color: #FF0000">(</span>princ <span style="color: #FF0000">"enable console"</span><span style="color: #FF0000">)</span>
-</tt></pre></div></div>
-<div class="paragraph"><p>のようにすればelispが使えます。</p></div>
-</div>
-<div class="sect4">
-<h5 id="_vimperator_new">vimperator (new!)</h5>
-<div class="paragraph"><p>vimperatorにコマンドを送ります。</p></div>
-<div class="listingblock">
-<div class="content">
-<pre><tt>vimperator [command]</tt></pre>
+指定されたファイル名を~/.tanasinn/batchesディレクトリから検索し、コマンドバッチファイルとして実行します。</tt></pre>
 </div></div>
-</div>
-<div class="sect4">
-<h5 id="_echo_new">echo (new!)</h5>
-<div class="paragraph"><p>ステータスラインにメッセージを表示します。</p></div>
+<div class="paragraph"><p>import [ファイル名]</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>echo [メッセージ]</tt></pre>
+<pre><tt>===== execcgi (new!)
+
+指定されたファイル名を~/.tanasinn/cgi-binディレクトリから検索し、実行した結果をコマンドバッチとして再解釈し、実行します。</tt></pre>
 </div></div>
-</div>
-<div class="sect4">
-<h5 id="_overlayecho_new">overlayecho (new!)</h5>
-<div class="paragraph"><p>オーバーレイインジケータにメッセージを表示します。</p></div>
+<div class="paragraph"><p>execcgi [ファイル名]</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>overlayecho [メッセージ]</tt></pre>
+<pre><tt>引数で指定されるファイルは実行可能なものであればなんでもよいです。
+たとえば、
+
+[source,perl]</tt></pre>
 </div></div>
-</div>
-<div class="sect4">
-<h5 id="_javascript">javascript</h5>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_ユーザーディレクトリ">8.4. ユーザーディレクトリ</h3>
+<div class="literalblock">
+<div class="content">
+<pre><tt>#!/usr/bin/env perl</tt></pre>
+</div></div>
+<div class="literalblock">
+<div class="content">
+<pre><tt>print &lt;&lt;EOM
+overlayecho Hello, World!
+EOM</tt></pre>
+</div></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>~/ or %USERPROFILE%/
+<pre><tt>のようにすればperlで記述できますし、
+
+[source,lisp]</tt></pre>
+</div></div>
+<div class="literalblock">
+<div class="content">
+<pre><tt>#!/usr/bin/emacs23 -nw --script</tt></pre>
+</div></div>
+<div class="literalblock">
+<div class="content">
+<pre><tt>(princ "enable console")</tt></pre>
+</div></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>のようにすればelispが使えます。
+
+===== vimperator (new!)
+
+vimperatorにコマンドを送ります。</tt></pre>
+</div></div>
+<div class="paragraph"><p>vimperator [command]</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>===== echo (new!)
+
+ステータスラインにメッセージを表示します。</tt></pre>
+</div></div>
+<div class="paragraph"><p>echo [メッセージ]</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>===== overlayecho (new!)
+
+オーバーレイインジケータにメッセージを表示します。</tt></pre>
+</div></div>
+<div class="paragraph"><p>overlayecho [メッセージ]</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>===== javascript
+
+
+
+
+
+
+=== ユーザーディレクトリ</tt></pre>
+</div></div>
+<div class="paragraph"><p>~/ or %USERPROFILE%/
    |
-   +-- .tanasinn.js    &lt;-------------------------------- (1)
+   +-- .tanasinn.js    &#8592;------------------------------- (1)
    |
-   +-- .tanasinn/      &lt;-------------------------------- (2)
+   +-- .tanasinn/      &#8592;------------------------------- (2)
          |
-         +-- tanasinnrc          &lt;---------------------- (3)
+         +-- tanasinnrc          &#8592;--------------------- (3)
          |
-         +-- sessions.txt        &lt;---------------------- (4)
+         +-- sessions.txt        &#8592;--------------------- (4)
          |
-         +-- desktop_profile/    &lt;---------------------- (5)
+         +-- desktop_profile/    &#8592;--------------------- (5)
          |
-         +-- session_profile/    &lt;---------------------- (6)
+         +-- session_profile/    &#8592;--------------------- (6)
          |
-         +-- persist/            &lt;---------------------- (7)
+         +-- persist/            &#8592;--------------------- (7)
          |
-         +-- history/            &lt;---------------------- (8)
+         +-- history/            &#8592;--------------------- (8)
          |
-         +-- batches/            &lt;---------------------- (9)
+         +-- batches/            &#8592;--------------------- (9)
          |
-         +-- cgi-bin/            &lt;---------------------- (10)
+         +-- cgi-bin/            &#8592;--------------------- (10)
          |
-         +-- log/                &lt;---------------------- (11)
+         +-- log/                &#8592;--------------------- (11)
          |
-         +-- modules/            &lt;---------------------- (12)
+         +-- modules/            &#8592;--------------------- (12)
                 |
-                +-- process_components/          &lt;------ (13)
+                +-- process_components/          &#8592;----- (13)
                 |
-                +-- desktop_components/          &lt;------ (14)
+                +-- desktop_components/          &#8592;----- (14)
                 |
-                +-- session_components/          &lt;------ (15)
+                +-- session_components/          &#8592;----- (15)
                 |
-                +-- shared_components/           &lt;------ (16)</tt></pre>
-</div></div>
-<div class="sect3">
-<h4 id="_tanasinn_js">8.4.1. .tanasinn.js</h4>
-<div class="paragraph"><p>起動時(Processオブジェクトが生成されるタイミング)に読み込まれ、実行されるJavascriptファイル。</p></div>
+                +-- shared_components/           &#8592;----- (16)</p></div>
 <div class="listingblock">
-<div class="title">~/.tanasinn.js Or %USERPROFILE%¥.tanasinn.js</div>
 <div class="content">
-<pre><tt>process.cygwin_root = "C:\\cygwin";
+<pre><tt>==== .tanasinn.js
+
+
+
+
+
+
+
+
+
+起動時(Processオブジェクトが生成されるタイミング)に読み込まれ、実行されるJavascriptファイル。
+
+
+
+.~/.tanasinn.js Or %USERPROFILE%¥.tanasinn.js</tt></pre>
+</div></div>
+<div class="paragraph"><p>process.cygwin_root = "C:\\cygwin";
 process.bin_path = "/bin:/usr/bin:/usr/local/bin:/opt/local/bin";
-process.python_path = "/usr/bin/python"</tt></pre>
-</div></div>
-</div>
-<div class="sect3">
-<h4 id="_tanasinn">8.4.2. .tanasinn/</h4>
-<div class="paragraph"><p>ランタイムディレクトリ。</p></div>
-</div>
-<div class="sect3">
-<h4 id="_tanasinn_tanasinnrc">8.4.3. .tanasinn/tanasinnrc</h4>
-<div class="paragraph"><p>セッション生成時(Sessionオブジェクトが生成されるタイミング)に読み込まれ、1行づつ実行されるtanasinnコマンドファイル。</p></div>
-<div class="paragraph"><p>設定例：</p></div>
+process.python_path = "/usr/bin/python"</p></div>
 <div class="listingblock">
-<div class="title">.tanasinn/tanasinnrc</div>
 <div class="content">
-<pre><tt>nmap &lt;C-S-o&gt; &lt;cmode&gt;detach&lt;CR&gt;
+<pre><tt>==== .tanasinn/
+
+
+
+
+
+ランタイムディレクトリ。
+
+
+
+==== .tanasinn/tanasinnrc
+
+
+
+
+
+セッション生成時(Sessionオブジェクトが生成されるタイミング)に読み込まれ、1行づつ実行されるtanasinnコマンドファイル。
+
+設定例：
+
+..tanasinn/tanasinnrc</tt></pre>
+</div></div>
+<div class="paragraph"><p>nmap &lt;C-S-o&gt; &lt;cmode&gt;detach&lt;CR&gt;
 nmap &lt;C-S-i&gt; &lt;2-shift&gt;blur&lt;CR&gt;
 nnoremap &lt;C-S-z&gt; &lt;2-shift&gt;
 cmap &lt;C-z&gt; &lt;2-shift&gt;
@@ -1882,106 +1930,181 @@ cmap &lt;C-s&gt; &lt;C-a&gt;&lt;C-k&gt;vimperator set!&lt;CR&gt;
 set renderer.normal_alpha=0.8
 set renderer.font_size=20
 set outerchrome.background_opacity=0.8
-set outerchrome.background="-moz-radial-gradient(center, circle closest-side, #404040, #000)"</tt></pre>
+set outerchrome.background="-moz-radial-gradient(center, circle closest-side, #404040, #000)"</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>==== .tanasinn/sessions.txt
+
+
+
+
+
+デタッチ中のセッションを管理するためのファイル。
+
+
+
+==== .tanasinn/desktop_profile/
+
+
+
+
+
+Desktopオブジェクトの設定が書き出されるディレクトリ。
+
+
+
+==== .tanasinn/session_profile/
+
+
+
+
+
+Sessionオブジェクトの設定が書き出されるディレクトリ。
+
+
+
+==== .tanasinn/persist/
+
+
+
+
+
+休眠中のセッションが永続化されて書き出されるディレクトリ。
+
+
+
+==== .tanasinn/log/
+
+
+
+
+
+ログが書き出されるディレクトリ。
+
+
+
+==== .tanasinn/batches/
+
+
+
+
+
+importコマンドの引数として与えられたファイル名が検索されるディレクトリ。
+
+
+
+==== .tanasinn/cgi-bin/
+
+
+
+
+
+execcgiコマンドの引数として与えられたファイル名が検索されるディレクトリ。
+
+
+
+==== .tanasinn/modules/
+
+
+
+
+
+このディレクトリ内にユーザー拡張やユーザーデータが配置されます。
+
+
+
+==== .tanasinn/modules/process_components/
+
+
+
+
+
+プロセスバスに接続されるユーザー拡張が配置されるディレクトリ。
+
+
+
+==== .tanasinn/modules/desktop_components/
+
+
+
+
+
+デスクトップバスに接続されるユーザー拡張が配置されるディレクトリ。
+
+
+
+==== .tanasinn/modules/session_components/
+
+
+
+
+
+セッションバスに接続されるユーザー拡張が配置されるディレクトリ。
+
+
+
+==== .tanasinn/modules/shared_components/
+
+
+
+
+
+デスクトップバス・セッションバス両方に接続されるユーザー拡張が配置されるディレクトリ。
+
+
+
+
+
+
+
+
+
+
+
+== Tips
+
+
+=== モジュールの有効・無効を切り替えるには
+コマンドラインから以下のようにタイプしてみてください。</tt></pre>
 </div></div>
-</div>
-<div class="sect3">
-<h4 id="_tanasinn_sessions_txt">8.4.4. .tanasinn/sessions.txt</h4>
-<div class="paragraph"><p>デタッチ中のセッションを管理するためのファイル。</p></div>
-</div>
-<div class="sect3">
-<h4 id="_tanasinn_desktop_profile">8.4.5. .tanasinn/desktop_profile/</h4>
-<div class="paragraph"><p>Desktopオブジェクトの設定が書き出されるディレクトリ。</p></div>
-</div>
-<div class="sect3">
-<h4 id="_tanasinn_session_profile">8.4.6. .tanasinn/session_profile/</h4>
-<div class="paragraph"><p>Sessionオブジェクトの設定が書き出されるディレクトリ。</p></div>
-</div>
-<div class="sect3">
-<h4 id="_tanasinn_persist">8.4.7. .tanasinn/persist/</h4>
-<div class="paragraph"><p>休眠中のセッションが永続化されて書き出されるディレクトリ。</p></div>
-</div>
-<div class="sect3">
-<h4 id="_tanasinn_log">8.4.8. .tanasinn/log/</h4>
-<div class="paragraph"><p>ログが書き出されるディレクトリ。</p></div>
-</div>
-<div class="sect3">
-<h4 id="_tanasinn_batches">8.4.9. .tanasinn/batches/</h4>
-<div class="paragraph"><p>importコマンドの引数として与えられたファイル名が検索されるディレクトリ。</p></div>
-</div>
-<div class="sect3">
-<h4 id="_tanasinn_cgi_bin">8.4.10. .tanasinn/cgi-bin/</h4>
-<div class="paragraph"><p>execcgiコマンドの引数として与えられたファイル名が検索されるディレクトリ。</p></div>
-</div>
-<div class="sect3">
-<h4 id="_tanasinn_modules">8.4.11. .tanasinn/modules/</h4>
-<div class="paragraph"><p>このディレクトリ内にユーザー拡張やユーザーデータが配置されます。</p></div>
-</div>
-<div class="sect3">
-<h4 id="_tanasinn_modules_process_components">8.4.12. .tanasinn/modules/process_components/</h4>
-<div class="paragraph"><p>プロセスバスに接続されるユーザー拡張が配置されるディレクトリ。</p></div>
-</div>
-<div class="sect3">
-<h4 id="_tanasinn_modules_desktop_components">8.4.13. .tanasinn/modules/desktop_components/</h4>
-<div class="paragraph"><p>デスクトップバスに接続されるユーザー拡張が配置されるディレクトリ。</p></div>
-</div>
-<div class="sect3">
-<h4 id="_tanasinn_modules_session_components">8.4.14. .tanasinn/modules/session_components/</h4>
-<div class="paragraph"><p>セッションバスに接続されるユーザー拡張が配置されるディレクトリ。</p></div>
-</div>
-<div class="sect3">
-<h4 id="_tanasinn_modules_shared_components">8.4.15. .tanasinn/modules/shared_components/</h4>
-<div class="paragraph"><p>デスクトップバス・セッションバス両方に接続されるユーザー拡張が配置されるディレクトリ。</p></div>
-</div>
-</div>
+<div class="paragraph"><p>enable &lt;プラグインID&gt;</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt></tt></pre>
+</div></div>
+<div class="paragraph"><p>disable &lt;プラグインID&gt;</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>=== セッションの設定を永続化・ロードするには
+コマンドラインから以下のようにタイプしてみてください。</tt></pre>
+</div></div>
+<div class="paragraph"><p>saveprofile</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>こうすれば現在のセッションの設定が "$HOME/.tanasinn/persist/default.js" へ書き出されるでしょう。
+もし別の名前で書き出したければ:</tt></pre>
+</div></div>
+<div class="paragraph"><p>saveprofile &lt;プロファイル名&gt;</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>これで設定が"$HOME/.tanasinn/profile/&lt;プロファイル名&gt;.js"に書き出されます。
+
+この設定を再び読み込むには以下のようにします:</tt></pre>
+</div></div>
+<div class="paragraph"><p>loadprofile &lt;プロファイル名&gt;</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>=== 現在のセッションからデタッチするには
+コマンドラインから以下のようにタイプしてみてください。</tt></pre>
+</div></div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_tips">9. Tips</h2>
+<h2 id="_detach_2">10. detach</h2>
 <div class="sectionbody">
-<div class="sect2">
-<h3 id="_モジュールの有効_無効を切り替えるには">9.1. モジュールの有効・無効を切り替えるには</h3>
-<div class="paragraph"><p>コマンドラインから以下のようにタイプしてみてください。</p></div>
-<div class="listingblock">
-<div class="content">
-<pre><tt>enable &lt;プラグインID&gt;</tt></pre>
-</div></div>
-<div class="listingblock">
-<div class="content">
-<pre><tt>disable &lt;プラグインID&gt;</tt></pre>
-</div></div>
-</div>
-<div class="sect2">
-<h3 id="_セッションの設定を永続化_ロードするには">9.2. セッションの設定を永続化・ロードするには</h3>
-<div class="paragraph"><p>コマンドラインから以下のようにタイプしてみてください。</p></div>
-<div class="listingblock">
-<div class="content">
-<pre><tt>saveprofile</tt></pre>
-</div></div>
-<div class="paragraph"><p>こうすれば現在のセッションの設定が "$HOME/.tanasinn/persist/default.js" へ書き出されるでしょう。
-もし別の名前で書き出したければ:</p></div>
-<div class="listingblock">
-<div class="content">
-<pre><tt>saveprofile &lt;プロファイル名&gt;</tt></pre>
-</div></div>
-<div class="paragraph"><p>これで設定が"$HOME/.tanasinn/profile/&lt;プロファイル名&gt;.js"に書き出されます。</p></div>
-<div class="paragraph"><p>この設定を再び読み込むには以下のようにします:</p></div>
-<div class="listingblock">
-<div class="content">
-<pre><tt>loadprofile &lt;プロファイル名&gt;</tt></pre>
-</div></div>
-</div>
-<div class="sect2">
-<h3 id="_現在のセッションからデタッチするには">9.3. 現在のセッションからデタッチするには</h3>
-<div class="paragraph"><p>コマンドラインから以下のようにタイプしてみてください。</p></div>
-<div class="listingblock">
-<div class="content">
-<pre><tt>detach</tt></pre>
-</div></div>
 <div class="paragraph"><p>セッションはサスペンドされます。ランチャーインターフェースからこのセッションに再接続することができます。</p></div>
-</div>
 <div class="sect2">
-<h3 id="_現在のセッションを終了するには">9.4. 現在のセッションを終了するには</h3>
+<h3 id="_現在のセッションを終了するには">10.1. 現在のセッションを終了するには</h3>
 <div class="paragraph"><p>コマンドラインから以下のようにタイプしてみてください。</p></div>
 <div class="listingblock">
 <div class="content">
@@ -1989,7 +2112,7 @@ set outerchrome.background="-moz-radial-gradient(center, circle closest-side, #4
 </div></div>
 </div>
 <div class="sect2">
-<h3 id="_vimperator_muttatorプラグインとしてインストールしたとき_lt_c_i_gt_インプットフィールドを外部エディタで編集_と_gf_htmlソースを外部ビューワで閲覧_マッピングをフックするには">9.5. Vimperator/Muttatorプラグインとしてインストールしたとき、 "&lt;C-i&gt;"(インプットフィールドを外部エディタで編集) と "gF"(HTMLソースを外部ビューワで閲覧) マッピングをフックするには</h3>
+<h3 id="_vimperator_muttatorプラグインとしてインストールしたとき_lt_c_i_gt_インプットフィールドを外部エディタで編集_と_gf_htmlソースを外部ビューワで閲覧_マッピングをフックするには">10.2. Vimperator/Muttatorプラグインとしてインストールしたとき、 "&lt;C-i&gt;"(インプットフィールドを外部エディタで編集) と "gF"(HTMLソースを外部ビューワで閲覧) マッピングをフックするには</h3>
 <div class="paragraph"><p>インプトッフィールドをtanasinn上の外部エディタで編集したければ、vimperatorrc/muttatorrcに
 以下のコマンドを追加してください。</p></div>
 <div class="listingblock">
@@ -2007,7 +2130,7 @@ set outerchrome.background="-moz-radial-gradient(center, circle closest-side, #4
 この例ではvimのインストールが必要になります。</p></div>
 </div>
 <div class="sect2">
-<h3 id="_vimで現在のウィンドウにブラウザをオーバーレイで出したい">9.6. Vimで現在のウィンドウにブラウザをオーバーレイで出したい</h3>
+<h3 id="_vimで現在のウィンドウにブラウザをオーバーレイで出したい">10.3. Vimで現在のウィンドウにブラウザをオーバーレイで出したい</h3>
 <div class="paragraph"><p>「Overlay Browser」という拡張をやっつけで書いてスナップショットビルドに入れておいたので、とりいそぎですが使用方法をご説明します。</p></div>
 <div class="paragraph"><p>以下のようなVim Scriptを書いてください。</p></div>
 <div class="listingblock">
@@ -2047,7 +2170,7 @@ command CloseMozilla call s:close_gecko_window()</tt></pre>
 まだリサイズとかアップデートを実装していませんので使いづらいと思います。</p></div>
 </div>
 <div class="sect2">
-<h3 id="_ターミナルからtanasinnに対してコマンドを送りたい">9.7. ターミナルからtanasinnに対してコマンドを送りたい</h3>
+<h3 id="_ターミナルからtanasinnに対してコマンドを送りたい">10.4. ターミナルからtanasinnに対してコマンドを送りたい</h3>
 <div class="paragraph"><p>以下のような文字列を、TTYデバイスに対して送ってください。</p></div>
 <div class="listingblock">
 <div class="content">
@@ -2065,7 +2188,7 @@ command CloseMozilla call s:close_gecko_window()</tt></pre>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_既知の問題">10. 既知の問題</h2>
+<h2 id="_既知の問題">11. 既知の問題</h2>
 <div class="sectionbody">
 <div class="ulist"><ul>
 <li>
@@ -2097,10 +2220,10 @@ Python3未対応。Python2系が必要。
 </div>
 </div>
 <div class="sect1">
-<h2 id="_拡張モジュール開発">11. 拡張モジュール開発</h2>
+<h2 id="_拡張モジュール開発">12. 拡張モジュール開発</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_tanasinnにおける_拡張モジュール_と_プラグイン">11.1. tanasinnにおける「拡張モジュール」と「プラグイン」</h3>
+<h3 id="_tanasinnにおける_拡張モジュール_と_プラグイン">12.1. tanasinnにおける「拡張モジュール」と「プラグイン」</h3>
 <div class="paragraph"><p>拡張モジュールは、ファイル単位で認識され、所定のタイミングで実行されるJavascriptコードです。
 Vimperatorにおけるプラグインと似たような概念です。
 tanasinnにおけるプラグインは、拡張モジュールによりエクスポートされ、必要に応じてロードしたり、すきなとき
@@ -2114,7 +2237,7 @@ tanasinnにおけるプラグインは、拡張モジュールによりエクス
 </div>
 </div>
 <div class="sect2">
-<h3 id="_拡張モジュール開発に向いている人">11.2. 拡張モジュール開発に向いている人</h3>
+<h3 id="_拡張モジュール開発に向いている人">12.2. 拡張モジュール開発に向いている人</h3>
 <div class="paragraph"><p>以下のような方はぜひ拡張モジュールを書いてみてください。</p></div>
 <div class="ulist"><ul>
 <li>
@@ -2135,7 +2258,7 @@ TUI環境のGUI的エンハンスやWebとの融合に興味を持たれてい�
 </ul></div>
 </div>
 <div class="sect2">
-<h3 id="_拡張モジュール作成_初級編チュートリアル">11.3. 拡張モジュール作成 初級編チュートリアル</h3>
+<h3 id="_拡張モジュール作成_初級編チュートリアル">12.3. 拡張モジュール作成 初級編チュートリアル</h3>
 <div class="literalblock">
 <div class="content">
 <pre><tt>tanasinnの基礎概念の習得からコンポーネント作成を経て、セッションプラグイン作成まで、なるべく飛ばないように
@@ -2145,7 +2268,7 @@ TUI環境のGUI的エンハンスやWebとの融合に興味を持たれてい�
    最新版のtanasinnでお試しください。</tt></pre>
 </div></div>
 <div class="sect3">
-<h4 id="_チュートリアルの方針">11.3.1. チュートリアルの方針</h4>
+<h4 id="_チュートリアルの方針">12.3.1. チュートリアルの方針</h4>
 <div class="literalblock">
 <div class="content">
 <pre><tt>このチュートリアルでは、簡単なtanasinnプラグインの作成過程を、なるべく平易な形で説明していきたいと思います。
@@ -2158,7 +2281,7 @@ TUI環境のGUI的エンハンスやWebとの融合に興味を持たれてい�
 </div></div>
 </div>
 <div class="sect3">
-<h4 id="_イベントバスの概念">11.3.2. イベントバスの概念</h4>
+<h4 id="_イベントバスの概念">12.3.2. イベントバスの概念</h4>
 <div class="literalblock">
 <div class="content">
 <pre><tt>チュートリアルに入る前に、これだけはどうしても触れておかなければなりません。「イベントバス」です。
@@ -2191,7 +2314,7 @@ tanasinnハッカー達はこれを「イベントブローカー」、あるい
 </div></div>
 </div>
 <div class="sect3">
-<h4 id="_準備">11.3.3. 準備</h4>
+<h4 id="_準備">12.3.3. 準備</h4>
 <div class="literalblock">
 <div class="content">
 <pre><tt>まず、お使いのFirefox/Thunderbird/SeaMonkey等にtanasinnを導入してください。
@@ -2201,7 +2324,7 @@ $HOME/.tanasinnがすでにある場合、以降の説明がtanasinnの実際の
 </div></div>
 </div>
 <div class="sect3">
-<h4 id="_サンプル1_エントリーポイント">11.3.4. サンプル1 - エントリーポイント</h4>
+<h4 id="_サンプル1_エントリーポイント">12.3.4. サンプル1 - エントリーポイント</h4>
 <div class="paragraph"><p>以下のようなサンプルを作成してください。</p></div>
 <div class="listingblock">
 <div class="title">sample1.js</div>
@@ -2261,7 +2384,7 @@ windowやdocument等のDOMオブジェクトがコンテキストに入ってき
 </ul></div>
 </div>
 <div class="sect3">
-<h4 id="_サンプル2_イベントとトピック">11.3.5. サンプル2 - イベントとトピック</h4>
+<h4 id="_サンプル2_イベントとトピック">12.3.5. サンプル2 - イベントとトピック</h4>
 <div class="literalblock">
 <div class="content">
 <pre><tt>今度はセッションバス上を飛び交うメッセージを補足し、他のプラグインとコミュニケートしてみます。簡単です。</tt></pre>
@@ -2296,7 +2419,7 @@ http://www.gnu.org/software/src-highlite -->
 </div></div>
 </div>
 <div class="sect3">
-<h4 id="_サンプル3_デバッグ環境をととのえる">11.3.6. サンプル3 - デバッグ環境をととのえる</h4>
+<h4 id="_サンプル3_デバッグ環境をととのえる">12.3.6. サンプル3 - デバッグ環境をととのえる</h4>
 <div class="literalblock">
 <div class="content">
 <pre><tt>つぎのサンプルにとりかかる前に、デバッグ環境を補強しましょう。
@@ -2362,7 +2485,7 @@ saveprofile</tt></pre>
 </div></div>
 </div>
 <div class="sect3">
-<h4 id="_サンプル4_コンポーネントオブジェクトの作成">11.3.7. サンプル4 - コンポーネントオブジェクトの作成</h4>
+<h4 id="_サンプル4_コンポーネントオブジェクトの作成">12.3.7. サンプル4 - コンポーネントオブジェクトの作成</h4>
 <div class="literalblock">
 <div class="content">
 <pre><tt>コンポーネントを作成しましょう。
@@ -2425,7 +2548,7 @@ http://www.gnu.org/software/src-highlite -->
 </div>
 </div>
 <div class="sect2">
-<h3 id="_拡張モジュール作成_中級編チュートリアル">11.4. 拡張モジュール作成 中級編チュートリアル</h3>
+<h3 id="_拡張モジュール作成_中級編チュートリアル">12.4. 拡張モジュール作成 中級編チュートリアル</h3>
 <div class="paragraph"><p>tanasinnが提供する基礎的なサービスである、イベント式、遅延構築テンプレート、ローカライズ機構、フック機構等の意義と構造を説明し、それらを使用してシーケンスハンドラ、コンプリーター、補完表示ドライバ、エンコーダー・デコーダー、メニューアイテム等、実用的なコンポーネントを作成していく手法を例示します。これらのツールや概念を覚えるとtanasinn拡張を美しく優雅に書くことができますが、tanasinn以外ではまったく役に立ちません。</p></div>
 <div class="literalblock">
 <div class="content">
@@ -2433,7 +2556,7 @@ http://www.gnu.org/software/src-highlite -->
 </div></div>
 </div>
 <div class="sect2">
-<h3 id="_拡張モジュール作成_上級編チュートリアル">11.5. 拡張モジュール作成 上級編チュートリアル</h3>
+<h3 id="_拡張モジュール作成_上級編チュートリアル">12.5. 拡張モジュール作成 上級編チュートリアル</h3>
 <div class="paragraph"><p>tanasinn向けにデザインされたMOPシステムtupbaseの概要と、その拡張法について説明します。コアモジュールを読みたい・いじりたい人向け。デスクトップ拡張やプロセス拡張、独自端末モード拡張等についてもここで触れます。これもtanasinn以外ではまったく役に立ちません。</p></div>
 <div class="literalblock">
 <div class="content">
@@ -2443,10 +2566,10 @@ http://www.gnu.org/software/src-highlite -->
 </div>
 </div>
 <div class="sect1">
-<h2 id="_developing_materials">12. Developing materials</h2>
+<h2 id="_developing_materials">13. Developing materials</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_hierarchical_event_broker_pattern">12.1. Hierarchical event broker pattern</h3>
+<h3 id="_hierarchical_event_broker_pattern">13.1. Hierarchical event broker pattern</h3>
 <div class="imageblock ditaa">
 <div class="content">
 <img src="README-ja__2.png" alt="README-ja__2.png" />
@@ -2454,7 +2577,7 @@ http://www.gnu.org/software/src-highlite -->
 </div>
 </div>
 <div class="sect2">
-<h3 id="_event_bus">12.2. Event bus</h3>
+<h3 id="_event_bus">13.2. Event bus</h3>
 <div class="imageblock ditaa">
 <div class="content">
 <img src="README-ja__3.png" alt="README-ja__3.png" />
@@ -2462,7 +2585,7 @@ http://www.gnu.org/software/src-highlite -->
 </div>
 </div>
 <div class="sect2">
-<h3 id="_system_stack">12.3. System stack</h3>
+<h3 id="_system_stack">13.3. System stack</h3>
 <div class="imageblock ditaa">
 <div class="content">
 <img src="README-ja__4.png" alt="README-ja__4.png" />
@@ -2470,19 +2593,19 @@ http://www.gnu.org/software/src-highlite -->
 </div>
 </div>
 <div class="sect2">
-<h3 id="_object_system">12.4. Object system</h3>
+<h3 id="_object_system">13.4. Object system</h3>
 <div class="literalblock">
 <div class="content">
 <pre><tt>Coming soon.</tt></pre>
 </div></div>
 <div class="sect3">
-<h4 id="_class">12.4.1. Class</h4>
+<h4 id="_class">13.4.1. Class</h4>
 </div>
 <div class="sect3">
-<h4 id="_processing_decorated_annotated_member_name">12.4.2. Processing decorated (annotated) member name</h4>
+<h4 id="_processing_decorated_annotated_member_name">13.4.2. Processing decorated (annotated) member name</h4>
 </div>
 <div class="sect3">
-<h4 id="_attributes">12.4.3. Attributes</h4>
+<h4 id="_attributes">13.4.3. Attributes</h4>
 <div class="sect4">
 <h5 id="_persistable">persistable</h5>
 </div>
@@ -2513,18 +2636,18 @@ http://www.gnu.org/software/src-highlite -->
 </div>
 </div>
 <div class="sect2">
-<h3 id="_process_js_plug_and_play_dynamic_module_loading">12.5. process.js / Plug-and-play dynamic module loading</h3>
+<h3 id="_process_js_plug_and_play_dynamic_module_loading">13.5. process.js / Plug-and-play dynamic module loading</h3>
 <div class="literalblock">
 <div class="content">
 <pre><tt>Coming soon.</tt></pre>
 </div></div>
 </div>
 <div class="sect2">
-<h3 id="_event_js_event_system">12.6. event.js / Event system</h3>
+<h3 id="_event_js_event_system">13.6. event.js / Event system</h3>
 <div class="paragraph"><p>Defines class EventBroker, which is able to interpret and evaluate
 "Topic" and "Event Expression".</p></div>
 <div class="sect3">
-<h4 id="_topic_overview">12.6.1. "Topic" Overview</h4>
+<h4 id="_topic_overview">13.6.1. "Topic" Overview</h4>
 <div class="literalblock">
 <div class="content">
 <pre><tt>In this event system, registered events is concerned by "topic" that
@@ -2568,7 +2691,7 @@ system is based on the concept of multicast delegate system.</tt></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_event_expression_overview">12.6.2. "Event Expression" Overview</h4>
+<h4 id="_event_expression_overview">13.6.2. "Event Expression" Overview</h4>
 <div class="literalblock">
 <div class="content">
 <pre><tt>Event Expression indicates how the broker waits multiple events.
@@ -2585,7 +2708,7 @@ that ruled by simple grammar. the detail of it is as below...</tt></pre>
 </div></div>
 </div>
 <div class="sect3">
-<h4 id="_grammer_of_event_expression">12.6.3. Grammer of Event Expression</h4>
+<h4 id="_grammer_of_event_expression">13.6.3. Grammer of Event Expression</h4>
 <div class="listingblock">
 <div class="content">
 <pre><tt>   IdentifierCharacter := '_' | '-' | digit | alphabet
@@ -2613,7 +2736,7 @@ that ruled by simple grammar. the detail of it is as below...</tt></pre>
 </div></div>
 </div>
 <div class="sect3">
-<h4 id="_event_expression_example">12.6.4. Event Expression Example</h4>
+<h4 id="_event_expression_example">13.6.4. Event Expression Example</h4>
 <div class="ulist"><ul>
 <li>
 <p>
@@ -2664,9 +2787,9 @@ case 3.
 </div>
 </div>
 <div class="sect2">
-<h3 id="_ttydriver_py_tty_driver">12.7. ttydriver.py / TTY Driver</h3>
+<h3 id="_ttydriver_py_tty_driver">13.7. ttydriver.py / TTY Driver</h3>
 <div class="sect3">
-<h4 id="_module_overview">12.7.1. Module Overview</h4>
+<h4 id="_module_overview">13.7.1. Module Overview</h4>
 <div class="paragraph"><p>This module is assumed to be called by tanasinn&#8217;s "tty.js".
 First, tanasinn opens TCP channel and listen on 2 ports, [I/O channel] and
 [Control channel].
@@ -2727,7 +2850,7 @@ Controlling Process
 </div></div>
 </div>
 <div class="sect3">
-<h4 id="_about_control_channel_s_protocol">12.7.2. About [Control channel]'s protocol</h4>
+<h4 id="_about_control_channel_s_protocol">13.7.2. About [Control channel]'s protocol</h4>
 <div class="sect4">
 <h5 id="_protocol_overview">Protocol Overview</h5>
 <div class="olist arabic"><ol class="arabic">
@@ -2782,10 +2905,10 @@ when decoded.</tt></pre>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_builder_js_xul_dynamic_construction">12.8. builder.js / XUL dynamic construction</h3>
+<h3 id="_builder_js_xul_dynamic_construction">13.8. builder.js / XUL dynamic construction</h3>
 <div class="paragraph"><p>Accept UI-template object and convert it to a tree of DOM element.</p></div>
 <div class="sect3">
-<h4 id="_ui_template_overview">12.8.1. UI-template overview</h4>
+<h4 id="_ui_template_overview">13.8.1. UI-template overview</h4>
 <div class="literalblock">
 <div class="content">
 <pre><tt>UI-template is JSON-style object that is described as based on the
@@ -2797,7 +2920,7 @@ You need not to take care of order for building them.</tt></pre>
 </div></div>
 </div>
 <div class="sect3">
-<h4 id="_examples">12.8.2. Examples</h4>
+<h4 id="_examples">13.8.2. Examples</h4>
 <div class="paragraph"><p>Example 1:</p></div>
 <div class="listingblock">
 <div class="content"><!-- Generator: GNU source-highlight 3.1.4
@@ -2974,7 +3097,7 @@ The "listener" property (10) attaches a event handler at the current
 </div>
 </div>
 <div class="sect1">
-<h2 id="_バグレポート">13. バグレポート</h2>
+<h2 id="_バグレポート">14. バグレポート</h2>
 <div class="sectionbody">
 <div class="paragraph"><p>バグレポートを歓迎します。
 とくに文字の問題(Unicodeとか)は優先的にバグ修正する傾向があります。
@@ -2986,7 +3109,7 @@ twitter: <a href="http://twitter.com/kefir_">日本語</a> / <a href="http://twi
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2012-02-25 02:03:45 JST
+Last updated 2012-02-25 19:57:37 JST
 </div>
 </div>
 </body>
