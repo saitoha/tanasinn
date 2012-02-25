@@ -940,7 +940,7 @@ publish <メッセージ式> <Javascriptコード>
 sendkeys [キーシーケンス式]
 ----
 
-例：
+example:
 ----
 sendkeys <nmode><C-z>echo Hello, World!<CR>fg<CR>
 ----
