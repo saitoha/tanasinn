@@ -922,6 +922,15 @@ debugger
 ===== set
 ===== setglobal
 
+==== 低レベルメッセージング操作
+===== publish
+
+tupstartメッセージを発行します。
+
+----
+publish <メッセージ式> <Javascriptコード>
+----
+
 ==== ユーティリティ
 ===== sendkeys (new!)
 
