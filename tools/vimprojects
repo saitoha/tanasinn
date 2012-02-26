@@ -2,6 +2,7 @@
  ChangeLog
  README
  TODO
+ release_note.txt
  application.ini
  configure.ac
  acgecko.m4
@@ -28,6 +29,12 @@
   Makefile.in
   usermanual.txt
  }
+ tutorial=~/.tanasinn/modules {
+  session_components=session_components {
+   sample1.js
+  }
+ }
+
  modules=modules {
   Makefile
   common=common {
@@ -35,34 +42,33 @@
    common.js
    eastasian.js
    category.js
-   event.js
-   base.js
+   tupstart.js
+   tupbase.js
   }
-  static_components=static_components {
-   .
+  process_components=process_components {
    desktop.js
-   launcher.js
-   vimpex.js
+   trace.js
   }
-  static_dynamic_components=static_dynamic_components {
+  desktop_components=desktop_components {
+   .
+   launcher.js
+   session.js
+  }
+  shared_components=shared_components {
    builder.js
    domevent.js
    persist.js
    map.js
   }
-  dynamic_components=dynamic_components {
-   session.js
-
-   chrome.js
-   grammer.js
+  session_components=session_components {
+   grammar.js
    parser.js
-   renderer.js
 
    line.js
    cursorstate.js
    screen.js
 
-   emurator.js
+   emulator.js
    control.js
    escape.js
    ansi.js
@@ -75,44 +81,54 @@
    focus.js
    window.js
 
-   cursor.js
-   splitter.js
+   plugin=.{
+    chrome.js
+    renderer.js
 
-   ime.js
-   copy.js
-   paste.js
-   debugger.js
-   move.js
-   resizable.js
+    cursor.js
+    splitter.js
 
-   moduleview.js
-   console.js
+    ime.js
+    copy.js
+    paste.js
+    move.js
+    resizable.js
 
-   scrollbar.js
-   selection.js
+    pluginview.js
+    debugger.js
+    console.js
 
-   dragresize.js
-   dragcopy.js
-   dragpaste.js
-   draggable.js
-   mouse.js
-   bell.js
-   popup.js
+    scrollbar.js
+    selection.js
 
-   contextmenu.js
-   encodings.js
-   kill.js
+    dragresize.js
+    dragcopy.js
+    dragpaste.js
+    draggable.js
+    mouse.js
+    bell.js
+    popup.js
 
-   w3m.js
-   vimp.js
+    contextmenu.js
+    encodings.js
+    kill.js
 
-   overlay.js
-   agent.js
-   completer.js
-   display.js
-   command.js
-   tabbox.js
-   commandline.js
+    w3m.js
+    vimp.js
+    keysnail.js
+
+    overlay.js
+    browser.js
+    agent.js
+    completer.js
+    display.js
+    command.js
+    tabbox.js
+    commandline.js
+    batch.js
+    shellrpc.js
+    publish.js
+   }
 
    incomplete {
     minimize.js
@@ -134,19 +150,30 @@
   ttydriver.py
 
   locale=locale {
-   ja-JP.js
+   ja-JP.json
   }
   config {
    key.conf
    key-linux.conf
   }
   tool {
+   /etc/profile
+   ~/.profile
    ~/.zshrc
+   ~/.vimrc
+   ~/.keysnail.js
+   ~/.vimperatorrc
    ~/.tanasinn.js
+   ~/.tanasinn/tanasinnrc
+   ~/.tanasinn/bin
+   ~/.tanasinn/cgi-bin
+   ~/.vimperator/plugin/twittperator.js
    .tanasinn.js
    licence.pl
    EastAsianWidthDetectorGenerator.pl
    tanasinn-vimp.js
+   tanasinn-keysnail.js
+   gecko.vim
   }
   mappings=mappings {
    cp932.txt.js
