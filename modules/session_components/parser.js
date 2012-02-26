@@ -126,9 +126,6 @@ Parser.definition = {
   _emurator: null,
   _decoder: null,
   _scanner: null,
-//  _normalizer: Components
-//      .classes["@mozilla.org/intl/unicodenormalizer;1"]
-//      .createInstance(Components.interfaces.nsIUnicodeNormalizer),
 
 // post-constructor
   "[subscribe('initialized/{scanner & grammer & emurator & decoder}'), enabled]":
@@ -148,6 +145,7 @@ Parser.definition = {
   install: function install(session)
   {
     this.drive.enabled = true;
+    this.onDataArrivedRecursively.enabled = true;
     session.notify("initialized/parser", this);
   },
 
@@ -157,6 +155,7 @@ Parser.definition = {
   uninstall: function uninstall(session)
   {
     this.drive.enabled = false;
+    this.onDataArrivedRecursively.enabled = false;
   },
 
   "[subscribe('command/enable-default-parser'), enabled]": 
@@ -177,23 +176,40 @@ Parser.definition = {
   "[subscribe('event/data-arrived')]": 
   function drive(data)
   {
-    for (let action in this.parse(data)) {
+    let scanner = this._scanner;
+    scanner.assign(data);
+    for (let action in this.parse(scanner, data)) {
       action();
     }
+//    [action for (action in this.parse(scanner, data))].forEach(function(action) action());
     let session = this._broker;
     session.notify("command/draw"); // fire "draw" event.
+  },
+
+  /** Parse and evaluate control codes and text pieces from the scanner. 
+   *  @param {String} data incoming data in text format.
+   */
+  "[subscribe('event/data-arrived-recursively')]": 
+  function onDataArrivedRecursively(data)
+  {
+    let broker = this._broker;
+    let scanner = new Scanner(broker);
+    scanner.assign(data);
+    for (let action in this.parse(scanner, data)) {
+      action();
+    }
+    broker.notify("command/draw"); // fire "draw" event.
   },
 
   /** Parse control codes and text pieces from the scanner. 
    *  @param {String} data incoming data in text format.
    */
-  parse: function parse(data)
+  parse: function parse(scanner, data)
   {
-    let scanner = this._scanner;
+    let broker = this._broker;
     let emurator = this._emurator;
     let decoder = this._decoder;
     let grammer = this._grammer;
-    scanner.assign(data);
     if (scanner.generator) {
       let result = scanner.generator(scanner);
       if (result) {
@@ -228,11 +244,6 @@ Parser.definition = {
         };
         let codes = [c for (c in generator())];
         if (codes && codes.length) {
-//          let result = {};
-//          let str = String.fromCharCode.apply(String, codes);
-//          this._normalizer.NormalizeUnicodeNFC(str, result);
-//          codes = result.value.split("").map(function(c) c.charCodeAt(0));
-//          codes = [c for (c in this._padWideCharacter(codes))];
           yield function() emurator.write(codes);
         } else {
           break;

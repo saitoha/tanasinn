@@ -23,84 +23,6 @@
  * ***** END LICENSE BLOCK ***** */
 
 
-Components.utils.import("resource://gre/modules/Services.jsm");
-
-let loader = {
-
-  install_path: null,
-  is_first: false,
-
-  initializeWithFileURI: function initialize(install_path)
-  {
-    this.install_path = install_path;
-    Services.ww.registerNotification(this);
-    ["navigator:browser", "mail:3pane"].forEach(function(window_type) {
-      // add functionality to existing windows
-      let browser_windows = Services.wm.getEnumerator(window_type);
-      while (browser_windows.hasMoreElements()) { // enumerate existing windows.
-        // only run the "start" immediately if the browser is completely loaded
-        let window = browser_windows.getNext();
-        if ("complete" == window.document.readyState) {
-          this.dispatchWindowEvent(window);
-        } else {
-          // Wait for the window to finish loading before running the callback
-          // Listen for one load event before checking the window type
-          window.addEventListener(
-            "load", 
-            let (self = this) function() self.dispatchWindowEvent(window), 
-            false);
-        }
-      } // while
-    }, this);
-  },
-
-  uninitialize: function uninitialize()
-  {
-    this.install_path = null;
-    Services.ww.unregisterNotification(this);
-  },
-
-  dispatchWindowEvent: function dispatchWindowEvent(window) 
-  {
-    Components.classes['@zuse.jp/tanasinn/process;1']
-      .getService(Components.interfaces.nsISupports)
-      .wrappedJSObject
-      .notify("event/new-window-detected", window);
-    if (this.is_first) {
-      this.is_first = false;
-      let path = this.install_path.clone();
-      path.append("doc");
-      path.append("usermanual.html");
-      let io_service = Components
-        .classes["@mozilla.org/network/io-service;1"]
-        .getService(Components.interfaces.nsIIOService);
-      let file_handler = io_service.getProtocolHandler("file")
-        .QueryInterface(Components.interfaces.nsIFileProtocolHandler);
-      let document_url = file_handler.getURLSpecFromFile(path);
-      window.gBrowser.addTab(document_url);
-    }
-  },
-
-  // Handles opening new navigator window.
-  observe: function observe(subject, topic, data) 
-  {
-    let window = subject.QueryInterface(Components.interfaces.nsIDOMWindow);
-    if ("domwindowopened" == topic) {
-      window.addEventListener("load", let (self = this) function onLoad() 
-        {
-          let document = window.document;
-          let window_type = document.documentElement.getAttribute("windowtype");
-          // ensure that "window" is a navigator window.
-          if (/^(navigator:browser|mail:3pane)$/.test(window_type)) {
-            window.removeEventListener("load", arguments.callee, false);
-            self.dispatchWindowEvent(window);
-          }
-        }, false);
-    }
-  },
-}
-
-
 function startup(data, reason) 
 {
   let io_service = Components
@@ -118,7 +40,6 @@ function startup(data, reason)
       .wrappedJSObject
       .notify("event/enabled");
   } else {
-//    loader.is_first = true;
     try {
       let file_handler = io_service.getProtocolHandler("file")
         .QueryInterface(Components.interfaces.nsIFileProtocolHandler);
@@ -131,8 +52,6 @@ function startup(data, reason)
         .classes["@mozilla.org/moz/jssubscript-loader;1"]
         .getService(Components.interfaces.mozIJSSubScriptLoader)
         .loadSubScript(process_url);
-      //Services.scriptloader.loadSubScript(process_url);
-      loader.initializeWithFileURI(data.installPath);
     } catch(e) {
       let message = <>{e.fileName}({e.lineNumber}):{e.toString()}</>.toString();
       Components.reportError(message);
@@ -144,11 +63,11 @@ function startup(data, reason)
 
 function shutdown(data, reason) 
 {
-  loader.uninitialize();
   let process = Components.classes['@zuse.jp/tanasinn/process;1']
     .getService(Components.interfaces.nsISupports)
     .wrappedJSObject;
   process.notify("event/disabled");
+  process.uninitialize();
   let io_service = Components
     .classes["@mozilla.org/network/io-service;1"]
     .getService(Components.interfaces.nsIIOService);

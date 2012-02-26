@@ -1282,6 +1282,53 @@ ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/</tt></pre>
 <pre><tt>$RUNTIMEは'$HOME/.{vimperator,muttator}'のようなVimperator/Muttatorのランタイムディレクトリです。</tt></pre>
 </div></div>
 </div>
+<div class="sect2">
+<h3 id="_keysnail経由でインストール">7.3. KeySnail経由でインストール:</h3>
+<div class="listingblock">
+<div class="title">keysnail.js</div>
+<div class="content">
+<pre><tt>............
+
+void function install_tanasinn() {
+
+    var file = "file:///…………/tanasinn/modules/common/process.js"; // &lt;-- process.jsのパス(URL表現)
+
+    var contractID = "@zuse.jp/tanasinn/process;1";
+    var process_class = Components.classes[contractID]
+    if (!process_class) {
+        Components.classes["@mozilla.org/moz/jssubscript-loader;1"]
+            .getService(Components.interfaces.mozIJSSubScriptLoader)
+            .loadSubScript(file);
+        process_class = Components.classes[contractID]
+    }
+    var process = process_class
+        .getService(Components.interfaces.nsISupports)
+        .wrappedJSObject;
+
+    shell.add(["tanasinnlaunch","tla[unch]"],
+              "Show tanasinn's Launcher.",
+              function () {
+                  process.getDesktopFromWindow(window)
+                      .post("command/show-launcher");
+              }, {
+                argcount: "0",
+                bang: true
+              });
+
+    shell.add(["tanasinnstart","tst[art]"],
+              "Run a command on tanasinn.",
+              function (args, extra) {
+                  process.getDesktopFromWindow(window)
+                      .post("command/start-session", extra.left);
+              }, {
+                argcount: "?",
+                bang: true
+              });
+} ();
+
+............</tt></pre>
+</div></div>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -1743,6 +1790,11 @@ saveprofileのような保存操作はとくに必要ありません。</p></div
 <div class="listingblock">
 <div class="content">
 <pre><tt>publish &lt;メッセージ式&gt; &lt;Javascriptコード&gt;</tt></pre>
+</div></div>
+<div class="paragraph"><p>example</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>publish command/report-overlay-message "Hello, World!"</tt></pre>
 </div></div>
 </div>
 </div>
@@ -3014,7 +3066,7 @@ twitter: <a href="http://twitter.com/kefir_">日本語</a> / <a href="http://twi
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2012-02-25 21:26:37 JST
+Last updated 2012-02-26 13:36:47 JST
 </div>
 </div>
 </body>

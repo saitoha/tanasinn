@@ -188,11 +188,33 @@ Escape.definition = {
   get id()
     "escape",
 
-  "[sequence('ESC P%s', 'ESC X%s', 'ESC _%s')]": 
+  "[sequence('ESC P%s')]": 
+  function DCS() 
+  {
+    let broker = this._broker;
+    let message = String.fromCharCode.apply(String, arguments);
+    if (/[\x00-\x1f]/.test(message[0])) {
+      message = message.replace(/\x00/g, "\\");
+      broker.notify("event/data-arrived-recursively", message);
+    } else {
+      broker.notify("sequence/dcs", message);
+    }
+  },
+
+  "[sequence('ESC X%s')]": 
+  function SOS() 
+  {
+    let broker = this._broker;
+    let message = String.fromCharCode.apply(String, arguments);
+    broker.notify("sequence/sos", message);
+  },
+
+  "[sequence('ESC _%s')]": 
   function APC() 
   {
+    let broker = this._broker;
     let message = String.fromCharCode.apply(String, arguments);
-    session.notify("sequence/apc", message);
+    broker.notify("sequence/apc", message);
   },
   
   "[sequence('ESC ]%s')]": 
@@ -202,16 +224,17 @@ Escape.definition = {
     let delimiter_position = message.indexOf(";");
     let num = message.substr(0, delimiter_position);
     let command = message.substr(delimiter_position + 1);
-    let session = this._broker;
-    session.notify("sequence/osc/" + num, command);
+    let broker = this._broker;
+    broker.notify("sequence/osc/" + num, command);
   },
   
   /** private message */
   "[sequence('ESC ^%s')]": 
   function PM() 
   {
+    let broker = this._broker;
     let message = String.fromCharCode.apply(String, arguments);
-    session.notify("sequence/pm", message);
+    broker.notify("sequence/pm", message);
   },
 
   /** 
@@ -268,7 +291,7 @@ Escape.definition = {
   },
   
   /** reverse index */
-  "[sequence('ESC M')] RI": 
+  "[sequence('ESC M'), _('Reverse index.')]": 
   function RI() 
   {
     let screen = this._screen;

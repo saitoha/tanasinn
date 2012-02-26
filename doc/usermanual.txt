@@ -440,6 +440,60 @@ ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/
     $RUNTIMEは'$HOME/.{vimperator,muttator}'のようなVimperator/Muttatorのランタイムディレクトリです。
 #endif
 
+#if __EN__
+#elif __JP__
+=== KeySnail経由でインストール:
+
+.keysnail.jsに以下のように記述します。
+
+
+.keysnail.js
+----
+
+............
+
+void function install_tanasinn() {
+
+    var file = "file:///…………/tanasinn/modules/common/process.js"; // <-- process.jsのパス(URL表現)
+
+    var contractID = "@zuse.jp/tanasinn/process;1";
+    var process_class = Components.classes[contractID]
+    if (!process_class) {
+        Components.classes["@mozilla.org/moz/jssubscript-loader;1"]
+            .getService(Components.interfaces.mozIJSSubScriptLoader)
+            .loadSubScript(file);
+        process_class = Components.classes[contractID]
+    }
+    var process = process_class
+        .getService(Components.interfaces.nsISupports)
+        .wrappedJSObject;
+
+    shell.add(["tanasinnlaunch","tla[unch]"], 
+              "Show tanasinn's Launcher.", 
+              function () { 
+                  process.getDesktopFromWindow(window)
+                      .post("command/show-launcher");
+              }, {
+                argcount: "0",
+                bang: true
+              });
+    
+    shell.add(["tanasinnstart","tst[art]"], 
+              "Run a command on tanasinn.", 
+              function (args, extra) { 
+                  process.getDesktopFromWindow(window)
+                      .post("command/start-session", extra.left);
+              }, {
+                argcount: "?",
+                bang: true
+              });
+} ();
+
+............
+
+----
+
+#endif
 
 #if 0
 #if __EN__
@@ -929,6 +983,11 @@ tupstartメッセージを発行します。
 
 ----
 publish <メッセージ式> <Javascriptコード>
+----
+
+example
+----
+publish command/report-overlay-message "Hello, World!"
 ----
 
 ==== ユーティリティ

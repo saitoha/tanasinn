@@ -65,6 +65,66 @@
  *
  *
  */
+
+Components.utils.import("resource://gre/modules/Services.jsm");
+
+let loader = {
+
+  initialize: function initialize()
+  {
+    Services.ww.registerNotification(this);
+    ["navigator:browser", "mail:3pane"].forEach(function(window_type) {
+      // add functionality to existing windows
+      let browser_windows = Services.wm.getEnumerator(window_type);
+      while (browser_windows.hasMoreElements()) { // enumerate existing windows.
+        // only run the "start" immediately if the browser is completely loaded
+        let window = browser_windows.getNext();
+        if ("complete" == window.document.readyState) {
+          this.dispatchWindowEvent(window);
+        } else {
+          // Wait for the window to finish loading before running the callback
+          // Listen for one load event before checking the window type
+          window.addEventListener(
+            "load", 
+            let (self = this) function() self.dispatchWindowEvent(window), 
+            false);
+        }
+      } // while
+    }, this);
+  },
+
+  uninitialize: function uninitialize()
+  {
+    Services.ww.unregisterNotification(this);
+  },
+
+  dispatchWindowEvent: function dispatchWindowEvent(window) 
+  {
+    Components.classes['@zuse.jp/tanasinn/process;1']
+      .getService(Components.interfaces.nsISupports)
+      .wrappedJSObject
+      .notify("event/new-window-detected", window);
+  },
+
+  // Handles opening new navigator window.
+  observe: function observe(subject, topic, data) 
+  {
+    let window = subject.QueryInterface(Components.interfaces.nsIDOMWindow);
+    if ("domwindowopened" == topic) {
+      window.addEventListener("load", let (self = this) function onLoad() 
+        {
+          let document = window.document;
+          let window_type = document.documentElement.getAttribute("windowtype");
+          // ensure that "window" is a navigator window.
+          if (/^(navigator:browser|mail:3pane)$/.test(window_type)) {
+            window.removeEventListener("load", arguments.callee, false);
+            self.dispatchWindowEvent(window);
+          }
+        }, false);
+    }
+  },
+}
+
 let scope = {}; // create scope.
 
 with (scope) {
@@ -243,7 +303,22 @@ with (scope) {
       }
       this.load(this, ["modules/process_components"], new this.default_scope);
     },
+
+    uninitialize: function uninitialize()
+    {
+      loader.uninitialize();
+    },
   
+    getDesktopFromWindow: function getDesktopFromWindow(window) 
+    {
+        var desktops = this.notify("get/desktop-from-window", window);
+        if (!desktops) {
+            this.notify("event/new-window-detected", window);
+            desktops = this.notify("get/desktop-from-window", window);
+        }
+        return desktops.shift();
+    },
+
     /* override */
     toString: function toString()
     {
@@ -251,6 +326,8 @@ with (scope) {
     }
   
   }; // Process
+
+  loader.initialize();
 
 } // with scope
 
