@@ -110,19 +110,21 @@ maintainer-clean: clean
 	$(MAKE) -C modules $@
 
 dev:
-	ln -f "$(PWD)/tools/gitignore" .gitignore	
-	ln -f "$(PWD)/tools/vimprojects" .vimprojects
+	ln -sf "$(PWD)/tools/gitignore" .gitignore	
+	ln -sf "$(PWD)/tools/vimprojects" .vimprojects
 
 
 install-vimperator:
 	@case @host_os@ in \
 		cygwin*) \
 			cmd /c mklink /D "$$(cygpath -w "$$(cygpath "$$USERPROFILE")/vimperator/tanasinn")" "$$(cygpath -w "$(PWD)")"; \
-			ln -f "$(PWD)/modules/tanasinn-vimp.js" ~/vimperator/plugin/ \
+			ln -f "$(PWD)/modules/tanasinn-vimp.js" \
+				"$$(cygpath -w "$$(cygpath "$$USERPROFILE")/vimperator/plugin")" \
 			;; \
 		*) \
 			ln -sf "$(PWD)" ~/.vimperator/tanasinn; \
-			ln -f "$(PWD)/modules/tanasinn-vimp.js" ~/.vimperator/plugin/ \
+			ln -f "$(PWD)/modules/tanasinn-vimp.js" \
+				"$$(cygpath -w "$$(cygpath "$$USERPROFILE")/vimperator/plugin")" \
 			;; \
 	esac
 

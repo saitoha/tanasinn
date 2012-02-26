@@ -78,8 +78,6 @@ ModeManager.definition = {
   get id()
     "modemanager",
 
-  "[persistable] debug_flag": false,
-
   _modes: null,
   _mode: "normal",
 
@@ -241,6 +239,10 @@ InputManager.definition = {
         left: 0,
       },
     }),
+
+  "[persistable, _('whether keypress event will be traced.')] debug_flag": false,
+
+  "[persistable, _('where keypress event will be traced.')] debug_topic": "command/report-overlay-message",
 
   _key_map: null,
 
@@ -409,7 +411,7 @@ InputManager.definition = {
     let session = this._broker;
     if (this.debug_flag) {
       session.notify(
-        "command/report-overlay-message", 
+        this.debug_topic, 
         <>
 code:{event.keyCode},
 which:{event.which},
@@ -426,6 +428,7 @@ char:{event.isChar?"t":"f"},
       code: packed_code,
     });
   },
+  
 
   "[subscribe('command/input-with-mapping')]": 
   function inputWithMapping(info)
