@@ -135,16 +135,6 @@ ZshCompletion.definition = {
     */
   },
 
-  "[sequence('ESC l')]":
-  function onStartGuardedArea(data) 
-  {
-  },
-
-  "[sequence('ESC m')]":
-  function onEndGuardedArea(data) 
-  {
-  },
-
   "[subscribe('sequence/osc/202')]":
   function onZshCompletion(data) 
   {
