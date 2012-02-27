@@ -134,6 +134,8 @@ import base64
 import select
 import pty
 
+debug_flag = False
+
 BUFFER_SIZE = 1024
 
 if not hasattr(os, "uname"):
@@ -142,10 +144,13 @@ if not hasattr(os, "uname"):
 system = os.uname()
 
 def trace(message):
-    #if system[0] == 'Darwin':
-    #    os.system("say -v vict '%s'" % message)
-    #if system[0] == 'Linux':
-    #    os.system("espeak '%s'" % message)
+    if debug_flag:
+        if system[0] == 'Darwin':
+            os.system("say -v vict '%s'" % message)
+        if system[0] == 'Linux':
+            os.system("espeak '%s'" % message)
+        if system[0] == 'CYGWIN_NT-6.0':
+            os.system("SofTalk.exe /T:0 /W:%s" % message)
     os.system("echo '%s' >> ~/.tanasinn/log/tty.log &" % message);
 
 trace("start.")
@@ -242,6 +247,7 @@ class TeletypeDriver:
                     break    
                 data = self.control_socket.recv(BUFFER_SIZE)
                 if data == "beacon\n":
+                    trace("aa")
                     continue
                 if not data:
                     break
@@ -284,9 +290,10 @@ class TeletypeDriver:
         #if not os.isatty(self.master):
         #    return False
         try:
+            trace(self.__app_process_pid)
             os.kill(self.__app_process_pid, 0)
-        except:# OSError, e:
-            return False #e.errno == errno.EPERM
+        except OSError, e:
+            return e.errno != errno.ESRCH
         else:
             return True
 
@@ -464,8 +471,6 @@ if __name__ == "__main__":
 
     except socket.error:
         trace("A socket error occured.")
-    except e:
-        trace(str(e))
     finally:
         os.close(master)
 

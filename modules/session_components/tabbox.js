@@ -50,21 +50,15 @@ BottomPanel.definition = {
     let (session = this._broker)
     {
       tagName: "stack",
-      //parentNode: "#tanasinn_chrome",
       parentNode: "#tanasinn_panel_area",
       flex: 1,
       collapsed: true,
       id: "tanasinn_bottompanel",
-      style: <> 
-//        background: -moz-linear-gradient(top, #999, #666);
-//        border: solid 3px red;
-      </>,
       childNodes: [
         {
           tagName: "vbox",
           flex: 1,
           style: <>
-//            background: black;
             opacity: 0.7;
             </>,
         },
@@ -93,16 +87,11 @@ BottomPanel.definition = {
               },
             },
             style: <>
-              //MozAppearance: "statusbar",
-              //margin: "0px",
-              //padding: "0px",
               -moz-appearance: none;
               overflow-x: hidden;
               overflow-y: hidden;
               border: 0px;
               outer: 0px;
-//              border: solid 3px green;
-              //background: -moz-linear-gradient(top, #999, #666);
             </>,
             childNodes: [
               { 
@@ -113,11 +102,6 @@ BottomPanel.definition = {
                 childNodes: {
                   tagName: "tabs", 
                   id: "tanasinn_tabbox_tabs",
-                  style: <>
-//                    background: -moz-linear-gradient(top, #999, #666);
-//                    border-top-right-radius: 4px;
-//                    border: solid 3px yellow;
-                  </>,
                   setfocus: false, 
                 },
               },
@@ -127,10 +111,7 @@ BottomPanel.definition = {
                 style: <>
                   -moz-appearance: none;
                   background: -moz-linear-gradient(top, #ccc, #777);
-//                  outer: 0px;
                   border: 0px;
-//                  background: transparent;
-//                  border: solid 3px orange;
                 </>,
               },
             ]

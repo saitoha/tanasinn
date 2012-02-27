@@ -518,7 +518,6 @@ Console.definition = {
   {
     this.select.enabled = true;
     this.onPanelItemRequested.enabled = true;
-    session.notify("initialized/console", this);
   }, 
 
   /** Uninstalls itself. */
@@ -526,6 +525,7 @@ Console.definition = {
   function uninstall(session) 
   {
     this.select.enabled = false;
+    this.onPanelItemRequested.enabled = false;
     session.notify("command/remove-panel", "console.panel");
   },
 
@@ -545,7 +545,7 @@ Console.definition = {
     return panel_item;
   },
 
-  "[command('console'), nmap('<M-a>', '<C-S-a>'), _('Open console.')]":
+  "[command('console'), nmap('<C-S-a>', '<M-a>'), _('Open console.')]":
   function select(info) 
   {
     let session = this._broker;

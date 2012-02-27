@@ -120,7 +120,9 @@ TextboxWidget.definition = {
 
   _clear: function _clear()
   {
-    this._context.clearRect(0, 0, this._canvas.width, this._canvas.height);
+    this._context.clearRect(
+      0, 0, 
+      this._canvas.width, this._canvas.height);
   },
 
   _draw: function _draw()
@@ -560,6 +562,7 @@ Commandline.definition = {
       tagName: "html:canvas",
       height: this.font_size,
       style: <>
+        padding-top: 2px,
         opacity: 0.7,
       </>,
     },

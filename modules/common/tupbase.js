@@ -926,7 +926,7 @@ NmapAttribute.definition = {
         "command/save-persistable-data", 
         function persist(context) // Save settings to persistent context.
         {
-          if (expression.join("") != delegate.expression.join("")) {
+          if (expressions.join("") != delegate.expressions.join("")) {
             context[delegate.id + ".nmap"] = delegate.expressions;
           }
         }, this);

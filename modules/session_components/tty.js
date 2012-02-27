@@ -147,7 +147,7 @@ Controller.definition = {
 
   /** Close Control channel and stop communication with TTY device.
    */
-  "[subscribe('@event/session-stopping')]":
+  "[subscribe('@event/session-stopping'), enabled]":
   function stop() 
   {
     this.post("disconnect\n");
@@ -308,7 +308,7 @@ IOManager.definition = {
 
   /** Close I/O channel and stop communication with TTY device.
    */
-  "[subscribe('@event/session-stopping')]":
+  "[subscribe('@event/session-stopping'), enabled]":
   function stop() 
   {
     this._input.close();
@@ -644,24 +644,22 @@ SocketTeletypeService.definition = {
       socket.init(/* port */ -1, /* loop back */ true, /* connection count */ 1);
       socket.asyncListen(this);
   
-      // coUtils.Timer.setTimeout(function() { // ensure that "runAsync" is called after "asyncListen".
       let session = this._broker;
       session.notify("command/start-ttydriver-process", socket.port); // nsIProcess::runAsync.
-      // }, 100, this);
     }
     this.kill.enabled = true;
     this.detach.enabled = true;
   },
 
   "[subscribe('uninstall/tty'), enabled]": 
-  function uninstall()
+  function uninstall(session)
   {
-    this.kill();
     this.kill.enabled = false;
     this.detach.enabled = false;
     this.send.enabled = false;
     this.resize.enabled = false;
-    this.send.flowControl = false;
+    this.flowControl.enabled = false;
+    this.osc97.enabled = false;
   },
 
   "[subscribe('@command/kill')]": 

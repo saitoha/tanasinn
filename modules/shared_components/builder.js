@@ -194,7 +194,7 @@ TemplateBuilder.definition = {
         _("Invalid tagName was detected: '%s'."), template.tagName);
     }
     if (template.parentNode) { // processes "parentNode" property.
-      this._processParentNode(element, template.parentNode);
+      this._processParentNode({value: element}, template.parentNode);
     }
     for (let [key, value] in Iterator(template)) {
       if ("tagName" == key) {
@@ -205,7 +205,7 @@ TemplateBuilder.definition = {
       } else if ("parentNode" == key) {
         // pass
       } else if ("listener" == key) {
-        this._processListener(element, value);
+        this._processListener({value: element}, value);
       } else if ("onconstruct" == key) {
         value.call(element);
       } else if ("innerText" == key) {
@@ -252,10 +252,11 @@ TemplateBuilder.definition = {
       value = [ value ];
     };
     value.forEach(function(listener_info) {
-      let context = listener_info.context || element;
-      element.addEventListener(
+      element.value.addEventListener(
         listener_info.type, 
-        function() listener_info.handler.apply(context, arguments), 
+        function() listener_info
+          .handler
+          .apply(listener_info.context || element.value, arguments), 
         listener_info.capture || false);
     });
   },
@@ -279,17 +280,15 @@ TemplateBuilder.definition = {
       let broker = this._broker;
       let target_element = broker.root_element.querySelector(String(value));
       if (target_element) {
-        target_element.appendChild(element);
+        target_element.appendChild(element.value);
       } else {
         if ("#" == value.charAt(0)) {
-          //alert(element + " " + element.tagName + " " + element.id + " " + value)
           let id = value.substr(1);
           broker.subscribe(
             <>@event/domnode-created/{id}</>, 
             function(target_element)
             {
-              target_element.appendChild(element);
-              element = null; // prevent leak.
+              target_element.appendChild(element.value);
             });
         } else {
           coUtils.Debug.reportError(
@@ -297,7 +296,7 @@ TemplateBuilder.definition = {
         }
       }
     } else {
-      value.appendChild(element);
+      value.appendChild(element.value);
     }
   },
 
