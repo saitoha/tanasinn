@@ -150,6 +150,11 @@ EventBrokerBase.prototype = {
     return Object.keys(this._delegate_map);
   },
 
+  getListeners: function getListeners(topic)
+  {
+    return this._delegate_map[topic].slice(0);
+  },
+
   /** Subscribes event handler with a topic. 
    *  @param {String} topic The notification topic. This string-valued 
    *                        key uniquely identifies the notification. 
@@ -308,7 +313,14 @@ EventBroker.prototype = {
     this._base.__count,
 
   get keys()
-    this._base.keys,
+  {
+    return this._base.keys;
+  },
+
+  getListeners: function getListeners(topic)
+  {
+    return this._base.getListeners(topic);
+  },
 
   /** constructor */
   initialize: function initialize(parent)

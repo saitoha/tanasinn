@@ -29,7 +29,6 @@
  *  It watches the value of main inputbox element with polling. 
  *  (NOTE that Mozilla's inputbox at IME editing mode does not fires ANY DOM 
  *  events!)
- *  When IME mode turns on, we moves inputbox at the position of cursor 
  *  object. and shows a line on editing as an watermark/overlay object. 
  *
  */ 
@@ -77,7 +76,7 @@ Ime.definition = {
     let version_comparator = Components
       .classes["@mozilla.org/xpcom/version-comparator;1"]
       .getService(Components.interfaces.nsIVersionComparator);
-    if (version_comparator.compare(coUtils.Runtime.version, "9.0") < 0)
+    if (version_comparator.compare(coUtils.Runtime.version, "10.0") <= 0)
     {
       this.startPolling.enabled = true;
       this.endPolling.enabled = true;
@@ -113,7 +112,7 @@ Ime.definition = {
     this.oncompositionupdate.enabled = false;
   },
 
-  "[subscribe('command/input-text'), enabled]": 
+  "[subscribe('command/input-text')]": 
   function oninput(value) 
   {
     this._disableImeMode(); // closes IME input session.
@@ -123,6 +122,7 @@ Ime.definition = {
   "[subscribe('event/got-focus')]":
   function startPolling() 
   {
+    this._broker.notify("command/report-status-message", "start");
     if (this._timer) {
       this._timer.cancel();
     }

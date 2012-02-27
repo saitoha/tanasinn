@@ -1,6 +1,4 @@
 /* -*- Mode: JAVASCRIPT; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 4 -*-
- *
- * ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1
  *
  * The contents of this file are subject to the Mozilla Public License Version
@@ -35,7 +33,6 @@ ZshCompletion.definition = {
   "[subscribe('event/data-arrived')]": 
   function onDataArrived(data)
   {
-//    try {
     //let lines = data//.replace(/\x1b\[J|\n|<space>\s+<end><item>/g, "")
     //  .split(/<item>/)
       //.map(function(line) line.split(/<end>/).shift());
@@ -51,7 +48,6 @@ ZshCompletion.definition = {
       this._clearGrid();
       this.display();
     }
-//    } catch(e) {alert(e)}
   },
 
   display: function() 
@@ -137,6 +133,16 @@ ZshCompletion.definition = {
       scrollbox.setAttribute("orient", "vertical");
     }
     */
+  },
+
+  "[sequence('ESC l')]":
+  function onStartGuardedArea(data) 
+  {
+  },
+
+  "[sequence('ESC m')]":
+  function onEndGuardedArea(data) 
+  {
   },
 
   "[subscribe('sequence/osc/202')]":
@@ -229,6 +235,7 @@ PopupMenu.definition = {
           tagName: "panel",
           id: "tanasinn_app_popup",
           style: <>
+            border: 0px;
             -moz-appearance: none;
             -moz-user-focus: none;
             background-color: transparent;
