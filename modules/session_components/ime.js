@@ -122,7 +122,6 @@ Ime.definition = {
   "[subscribe('event/got-focus')]":
   function startPolling() 
   {
-    this._broker.notify("command/report-status-message", "start");
     if (this._timer) {
       this._timer.cancel();
     }

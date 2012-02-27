@@ -487,7 +487,7 @@ char:{event.isChar?"t":"f"},
     let broker = this._broker;
     let value = this._textbox.value;
     this._textbox.value = "";
-    broker.notify("command/report-status-message", "input: " + value);
+//    broker.notify("command/report-status-message", "input: " + value);
     broker.notify("command/input-text", value);
   },
  
@@ -497,13 +497,15 @@ char:{event.isChar?"t":"f"},
   "[listen('compositionstart', '#tanasinn_default_input')]":
   function oncompositionstart(event) 
   {
-    let version_comparator = Components
-      .classes["@mozilla.org/xpcom/version-comparator;1"]
-      .getService(Components.interfaces.nsIVersionComparator);
-    if (version_comparator.compare(coUtils.Runtime.version, "10.0") >= 0)
-    {
-      this.oninput.enabled = false;
-    }
+//    if ("WINNT" != coUtils.Runtime.OS) {
+      let version_comparator = Components
+        .classes["@mozilla.org/xpcom/version-comparator;1"]
+        .getService(Components.interfaces.nsIVersionComparator);
+      if (version_comparator.compare(coUtils.Runtime.version, "10.0") >= 0)
+      {
+        this.oninput.enabled = false;
+      }
+//    }
   },
   
   /** compositionend event handler. 
@@ -512,13 +514,16 @@ char:{event.isChar?"t":"f"},
   "[listen('compositionend', '#tanasinn_default_input')]":
   function oncompositionend(event) 
   {
-    let version_comparator = Components
-      .classes["@mozilla.org/xpcom/version-comparator;1"]
-      .getService(Components.interfaces.nsIVersionComparator);
-    if (version_comparator.compare(coUtils.Runtime.version, "10.0") >= 0)
-    {
-      this.oninput.enabled = true;
-    }
+//    if ("WINNT" != coUtils.Runtime.OS) {
+      let version_comparator = Components
+        .classes["@mozilla.org/xpcom/version-comparator;1"]
+        .getService(Components.interfaces.nsIVersionComparator);
+      if (version_comparator.compare(coUtils.Runtime.version, "10.0") >= 0)
+      {
+        this.oninput.enabled = true;
+        this.oninput(event);
+      }
+//    }
   },
   
 };
