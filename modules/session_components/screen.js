@@ -1310,13 +1310,15 @@ Screen.definition = {
         //}
       }
       let line = this._getCurrentLine();
-      let positionX = cursor.positionX;
-      let length = width - positionX;
-      let run = codes.slice(it, it + length);
-      it += length;
-      cursor.positionX += run.length;
+      if (line) {
+        let positionX = cursor.positionX;
+        let length = width - positionX;
+        let run = codes.slice(it, it + length);
+        it += length;
+        cursor.positionX += run.length;
 
-      line.write(positionX, run, cursor.attr, insert_mode);
+        line.write(positionX, run, cursor.attr, insert_mode);
+      }
     } while (it < codes.length);
   },
 
@@ -1393,9 +1395,10 @@ Screen.definition = {
   /** Erase cells from current position to end of line. */
   eraseLineToRight: function eraseLineToRight() 
   {
+    let cursor = this.cursor;
     let line = this._getCurrentLine();
     if (line) {
-      line.erase(this.cursor.positionX, this._width);
+      line.erase(this.cursor.positionX, this._width, cursor.attr);
     } else {
       coUtils.Debug.reportWarning(
         _("eraseLineToRight: Current line is null."));
@@ -1405,13 +1408,15 @@ Screen.definition = {
   /** Erase cells from specified position to head of line. */
   eraseLineToLeft: function eraseLineToLeft() 
   {
-    this._getCurrentLine().erase(0, this.cursor.positionX + 1);
+    let cursor = this.cursor;
+    this._getCurrentLine().erase(0, this.cursor.positionX + 1, cursor.attr);
   },
 
   /** Erase current line */
   eraseLine: function eraseLine() 
   {
-    this._getCurrentLine().erase(0, this._width);
+    let cursor = this.cursor;
+    this._getCurrentLine().erase(0, this._width, cursor.attr);
   },
 
   /** Erase cells from current position to head of buffer. */
@@ -1421,7 +1426,7 @@ Screen.definition = {
     let width = this._width;
     let range = this._lines.slice(0, cursor.positionY + 1);
     range.pop().erase(0, cursor.positionX + 1);
-    range.forEach(function(line) line.erase(0, width));
+    range.forEach(function(line) line.erase(0, width, this.cursor.attr));
   },
 
   /** Erase cells from current position to end of buffer. */
@@ -1431,20 +1436,22 @@ Screen.definition = {
     let width = this._width;
     let range = this._lines.slice(cursor.positionY, this._height);
     range.shift().erase(cursor.positionX, width);
-    range.forEach(function(line) line.erase(0, width));
+    range.forEach(function(line) line.erase(0, width, cursor.attr));
   },
 
   /** Erase every cells in screen. */
   eraseScreenAll: function eraseScreenAll() 
   {
+    let cursor = this.cursor;
     let width = this._width;
-    this._lines.forEach(function(line) line.erase(0, width));
+    this._lines.forEach(function(line) line.erase(0, width, cursor.attr));
   },
 
   /** Insert n cells at specified position. */
   insertBlanks: function insertBlanks(n) 
   {
-    this._getCurrentLine().insertBlanks(this.cursor.positionX, n);
+    let cursor = this.cursor;
+    this._getCurrentLine().insertBlanks(this.cursor.positionX, n, cursor.attr);
   },
       
   setScrollRegion: function setScrollRegion(top, bottom) 
@@ -1506,7 +1513,8 @@ Screen.definition = {
   { // Erase CHaracters
     let start = this.cursor.positionX;
     let end = start + n;
-    this._getCurrentLine().erase(start, end);
+    let cursor = this.cursor;
+    this._getCurrentLine().erase(start, end, cursor.attr);
   },
 
   deleteCharacters: function deleteCharacters(n) 

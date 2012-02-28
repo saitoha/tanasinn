@@ -166,6 +166,7 @@ Hooker.definition = {
       session.notify("command/debugger-trace-sequence", result);
     }
     session.notify("command/flow-control", true);
+    session.notify("command/draw"); // redraw
   },
 
   /** Execute 1 command. */
@@ -247,7 +248,7 @@ Debugger.definition = {
     </plugin>,
 
   "[persistable] auto_scroll": true,
-  "[persistable] auto_scroll_update_interval": 1000,
+  "[persistable] auto_scroll_update_interval": 300,
 
   _timer_id: null,
 
@@ -340,6 +341,7 @@ Debugger.definition = {
   "[subscribe('install/debugger'), enabled]": 
   function install(session) 
   {
+    this._queue = [];
     this.select.enabled = true;
     this.onPanelItemRequested.enabled = true;
   },
@@ -353,6 +355,11 @@ Debugger.definition = {
     this.select.enabled = false;
     this.trace.enabled = false;
     this.onPanelItemRequested.enabled = false;
+    if (this._timer) {
+      this._timer.cancel();
+    }
+    this._timer = null;
+    this._queue = null;
     session.notify("command/remove-panel", this.id);
   },
 
@@ -386,10 +393,33 @@ Debugger.definition = {
       if (this._checkbox_attach.checked) {
         this._checkbox_break.setAttribute("disabled", !this._checkbox_attach.checked);
         session.notify("command/debugger-trace-on");
+        if (this._timer) {
+          this._timer.cancel();
+        }
+        this._timer = coUtils.Timer.setInterval(function() {
+          let updated;
+          if (!this._queue && this._timer) {
+            this._timer.cancel();
+            this._timer = null;
+            return;
+          }
+          while (this._queue.length) {
+            this.update(this._queue.shift());
+            updated = true;
+          }
+          if (updated && this.auto_scroll) {
+            let trace_box = this._trace_box;
+            trace_box.scrollTop = trace_box.scrollHeight;
+          }
+        }, 200, this);
       } else {
         this._checkbox_break.setAttribute("disabled", true);
         this._checkbox_resume.setAttribute("disabled", true);
         this._checkbox_step.setAttribute("disabled", true);
+        if (this._timer) {
+          this._timer.cancel();
+        }
+        this._timer = null;
         session.notify("command/debugger-trace-off");
         session.notify("command/debugger-resume");
       }
@@ -425,9 +455,17 @@ Debugger.definition = {
   "[subscribe('command/debugger-trace-sequence')]": 
   function trace(trace_info) 
   {
+    if (this._queue) {
+      this._queue.push(trace_info);
+    }
+  },
+
+  "[subscribe('command/debugger-update-pane')]": 
+  function update(trace_info) 
+  {
     let [info, sequence] = trace_info;
     let {type, name, value} = info;
-    let trace_box = this._trace_box;
+
     function escape(str) 
     {
       return str.replace(/[\u0000-\u001f]/g, function(c) 
@@ -435,131 +473,120 @@ Debugger.definition = {
         return "<" + (0x100 + c.charCodeAt(0)).toString(16).substr(1, 2) + ">";
       });
     }
-
     let session = this._broker;
-    if (this.auto_scroll) {
-      if (this._timer_id) {
-        this._timer_id.cancel();
-      }
-      this._timer_id = coUtils.Timer.setTimeout(function() {
-        trace_box.scrollTop = trace_box.scrollHeight;
-        this._timer_id = null;
-      }, this.auto_scroll_update_interval, this);
-    }
-    
-    coUtils.Timer.setTimeout(function() {
-      session.uniget("command/construct-chrome", {
-        parentNode: trace_box,
-        tagName: "hbox",
-        style: <> 
-          width: 400px; 
-          max-width: 400px; 
-          font-weight: bold;
-          text-shadow: 0px 0px 2px black;
-          font-size: 20px;
-        </>,
-        childNodes: CO_TRACE_CONTROL == type ? [
+    session.uniget("command/construct-chrome", {
+      parentNode: "#tanasinn_trace",
+      tagName: "hbox",
+      style: <> 
+        width: 400px; 
+        max-width: 400px; 
+        font-weight: bold;
+        text-shadow: 0px 0px 2px black;
+        font-size: 20px;
+      </>,
+      childNodes: CO_TRACE_CONTROL == type ? [
+        {
+          tagName: "label",
+          value: ">",
+          style: <>
+            padding: 3px;
+            color: darkred;
+          </>,
+        },
+        {
+          tagName: "box",
+          width: 120,
+          childNodes:
           {
             tagName: "label",
-            value: ">",
+            value: escape(sequence),
             style: <>
+              color: red;
+              background: lightblue; 
+              border-radius: 6px;
               padding: 3px;
-              color: darkred;
             </>,
           },
-          {
-            tagName: "box",
-            width: 120,
-            childNodes:
+        },
+        {
+          tagName: "label",
+          value: "-",
+          style: <>
+            color: black;
+            padding: 3px;
+          </>,
+        },
+        {
+          tagName: "box",
+          style: <> 
+            background: lightyellow;
+            border-radius: 6px;
+            margin: 2px;
+            padding: 0px;
+          </>,
+          childNodes: [
             {
               tagName: "label",
-              value: escape(sequence),
+              value: name,
               style: <>
-                color: red;
-                background: lightblue; 
-                border-radius: 6px;
-                padding: 3px;
+                color: blue;
+                padding: 1px;
               </>,
             },
-          },
-          {
-            tagName: "label",
-            value: "-",
-            style: <>
-              color: black;
-              padding: 3px;
-            </>,
-          },
-          {
-            tagName: "box",
-            style: <> 
-              background: lightyellow;
-              border-radius: 6px;
-              margin: 2px;
-              padding: 0px;
-            </>,
-            childNodes: [
-              {
-                tagName: "label",
-                value: name,
-                style: <>
-                  color: blue;
-                  padding: 1px;
-                </>,
-              },
-              {
-                tagName: "label",
-                value: escape(value.toString()),
-                style: <>
-                  color: green;
-                  padding: 1px;
-                </>,
-              }
-            ],
-          },
-        ]: CO_TRACE_OUTPUT == type ? [
-          {
-            tagName: "label",
-            value: ">",
-            style: <>
-              padding: 3px;
-              color: darkred;
-            </>,
-          },
-          {
-            tagName: "label",
-            value: escape(value.shift()),
-            style: <>
-              color: darkcyan;
-              background: lightgray;
-              border-radius: 6px;
-              padding: 3px;
-            </>,
-          },
-        ]: [
-          {
-            tagName: "label",
-            value: "<",
-            style: <> 
-              padding: 3px; 
-              color: darkblue;
-            </>,
-          },
-          {
-            tagName: "label",
-            value: escape(value.shift()),
-            style: <>
-              color: darkcyan;
-              background: lightpink;
-              border-radius: 6px;
-              padding: 3px;
-            </>,
-          },
-        ],
-      });
-    }, 100);
+            {
+              tagName: "label",
+              value: escape(value.toString()),
+              style: <>
+                color: green;
+                padding: 1px;
+              </>,
+            }
+          ],
+        },
+      ]: CO_TRACE_OUTPUT == type ? [
+        {
+          tagName: "label",
+          value: ">",
+          style: <>
+            padding: 3px;
+            color: darkred;
+          </>,
+        },
+        {
+          tagName: "label",
+          value: escape(value.shift()),
+          style: <>
+            color: darkcyan;
+            background: lightgray;
+            border-radius: 6px;
+            padding: 3px;
+          </>,
+        },
+      ]: [
+        {
+          tagName: "label",
+          value: "<",
+          style: <> 
+            padding: 3px; 
+            color: darkblue;
+          </>,
+        },
+        {
+          tagName: "label",
+          value: escape(value.shift()),
+          style: <>
+            color: darkcyan;
+            background: lightpink;
+            border-radius: 6px;
+            padding: 3px;
+          </>,
+        },
+      ],
+    });
   },
 
+
+  /** select this panel */
   "[command('debugger'), nmap('<M-d>', '<C-S-d>'), _('Open debugger.')]":
   function select() 
   {
