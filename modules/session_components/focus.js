@@ -85,7 +85,9 @@ FocusTracker.definition = {
 //         || (relation & root_element.DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC)) {
           if (!this.disabled) {
             this.disabled = true;
-            session.root_element.parentNode.appendChild(session.root_element);
+            if (!/tanasinn/.test(coUtils.Runtime.app_name)) {
+              session.root_element.parentNode.appendChild(session.root_element);
+            }
             coUtils.Timer.setTimeout(function() {
               this.disabled = false;
             }, 0, this);

@@ -158,6 +158,7 @@ Renderer.definition = {
     this.draw.enabled = true;
     this.backup.enabled = true;
     this.restore.enabled = true;
+    this.captureScreen.enabled = true;
     session.notify("initialized/renderer", this);
   },
 
@@ -176,7 +177,15 @@ Renderer.definition = {
     this.draw.enabled = false;
     this.backup.enabled = false;
     this.restore.enabled = false;
+    this.captureScreen.enabled = false;
     this._canvas.parentNode.removeChild(this._canvas);
+  },
+
+  "[subscribe('command/capture-screen')]": 
+  function captureScreen(info) 
+  {
+    let source_canvas = this._canvas;
+    coUtils.IO.saveCanvas(source_canvas, info.file, info.thumbnail);
   },
 
   "[subscribe('command/backup')]": 
@@ -192,7 +201,7 @@ Renderer.definition = {
     let path = String(<>$Home/.tanasinn/persist/{session.request_id}.png</>);
     let file = coUtils.File.getFileLeafFromVirtualPath(path);
     let source_canvas = this._canvas;
-    coUtils.IO.saveCanvas(source_canvas, file);
+    coUtils.IO.saveCanvas(source_canvas, file, true);
   },
 
   "[subscribe('@command/restore')]": 

@@ -577,7 +577,10 @@ coUtils.getWindow = function getWindow()
   let result = windowMediator.getMostRecentWindow("navigator:browser")
             || windowMediator.getMostRecentWindow("mail:3pane");
   // cache result
-  return result;
+  if (result) {
+    return result;
+  }
+  return eval("window");
 }
 
 /** Provides printf-like formatting.
@@ -846,18 +849,24 @@ coUtils.IO = {
   	}); // writeToFile
   },
 
-  saveCanvas: function saveCanvas(source_canvas, file) 
+  saveCanvas: function saveCanvas(source_canvas, file, is_thumbnail) 
   {
     const NS_XHTML = "http://www.w3.org/1999/xhtml";
     let canvas = source_canvas.ownerDocument.createElementNS(NS_XHTML, "canvas");
     canvas.style.background = "black";
-    canvas.width = 120;
-    canvas.height = 80;
+
+    if (is_thumbnail) {
+      canvas.width = 120;
+      canvas.height = 80;
+    } else {
+      canvas.width = source_canvas.width;
+      canvas.height = source_canvas.height;
+    }
   
     let context = canvas.getContext("2d");
     context.fillStyle = "rgba(0, 0, 0, 0.7)";
-    context.fillRect(0, 0, 120, 80);
-    context.drawImage(source_canvas, 0, 0, 120, 80);
+    context.fillRect(0, 0, canvas.width, canvas.height);
+    context.drawImage(source_canvas, 0, 0, canvas.width, canvas.height);
   
     // create a data url from the canvas and then create URIs of the source and targets.
     let io = Components

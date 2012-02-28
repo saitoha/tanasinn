@@ -46,8 +46,8 @@ Tracer.definition = {
   function construct(emurator) 
   { 
     this._emurator = emurator; 
-    let session = this._broker;
-    session.notify("initialized/tracer", this);
+    let broker = this._broker;
+    broker.notify("initialized/tracer", this);
   },
 
   "[subscribe('command/debugger-trace-on'), enabled]":
@@ -343,6 +343,7 @@ Debugger.definition = {
   {
     this._queue = [];
     this.select.enabled = true;
+    this.breakpoint.enabled = true;
     this.onPanelItemRequested.enabled = true;
   },
 
@@ -353,6 +354,7 @@ Debugger.definition = {
   function uninstall(session)
   {
     this.select.enabled = false;
+    this.breakpoint.enabled = false;
     this.trace.enabled = false;
     this.onPanelItemRequested.enabled = false;
     if (this._timer) {
@@ -388,46 +390,58 @@ Debugger.definition = {
 
   doAttach: function doAttach() 
   {
-    let session = this._broker;
     try {
       if (this._checkbox_attach.checked) {
-        this._checkbox_break.setAttribute("disabled", !this._checkbox_attach.checked);
-        session.notify("command/debugger-trace-on");
-        if (this._timer) {
-          this._timer.cancel();
-        }
-        this._timer = coUtils.Timer.setInterval(function() {
-          let updated;
-          if (!this._queue && this._timer) {
-            this._timer.cancel();
-            this._timer = null;
-            return;
-          }
-          while (this._queue.length) {
-            this.update(this._queue.shift());
-            updated = true;
-          }
-          if (updated && this.auto_scroll) {
-            let trace_box = this._trace_box;
-            trace_box.scrollTop = trace_box.scrollHeight;
-          }
-        }, this.update_interval, this);
+        this._enableDebugger();
       } else {
-        this._checkbox_break.setAttribute("disabled", true);
-        this._checkbox_resume.setAttribute("disabled", true);
-        this._checkbox_step.setAttribute("disabled", true);
-        if (this._timer) {
-          this._timer.cancel();
-        }
-        this._timer = null;
-        session.notify("command/debugger-trace-off");
-        session.notify("command/debugger-resume");
+        this._disableDebugger();
       }
     } catch (e) {
       coUtils.Debug.reportError(e);
     }
   },
+
+  _enableDebugger: function _enableDebugger()
+  {
+    let session = this._broker;
+    this._checkbox_break.setAttribute("disabled", !this._checkbox_attach.checked);
+    session.notify("command/debugger-trace-on");
+    if (this._timer) {
+      this._timer.cancel();
+    }
+    this._timer = coUtils.Timer.setInterval(function() {
+      let updated;
+      if (!this._queue && this._timer) {
+        this._timer.cancel();
+        this._timer = null;
+        return;
+      }
+      while (this._queue.length) {
+        this.update(this._queue.shift());
+        updated = true;
+      }
+      if (updated && this.auto_scroll) {
+        let trace_box = this._trace_box;
+        trace_box.scrollTop = trace_box.scrollHeight;
+      }
+    }, this.update_interval, this);
+  },
  
+  _disableDebugger: function _disableDebugger()
+  {
+    let session = this._broker;
+    this._checkbox_break.setAttribute("disabled", !this._checkbox_attach.checked);
+    this._checkbox_break.setAttribute("disabled", true);
+    this._checkbox_resume.setAttribute("disabled", true);
+    this._checkbox_step.setAttribute("disabled", true);
+    if (this._timer) {
+      this._timer.cancel();
+    }
+    this._timer = null;
+    session.notify("command/debugger-trace-off");
+    session.notify("command/debugger-resume");
+  },
+
   doBreak: function doBreak() 
   {
     let session = this._broker;
@@ -452,6 +466,25 @@ Debugger.definition = {
     session.notify("command/debugger-step");
   },
 
+  "[command('breakpoint/bp')]": 
+  function breakpoint(arguments_string) 
+  {
+    this._pattern = new RegExp(arguments_string);
+    this.watchSequence.enabled = true;
+  },
+
+  _pattern: null,
+
+  "[subscribe('command/debugger-trace-sequence')] watchSequence": 
+  function watchSequence(trace_info) 
+  {
+    let [info, sequence] = trace_info;
+    if (this._pattern.test(sequence)) {
+      this.watchSequence.enabled = false;
+      this.doBreak();
+    }
+  },
+
   "[subscribe('command/debugger-trace-sequence')]": 
   function trace(trace_info) 
   {
@@ -460,19 +493,19 @@ Debugger.definition = {
     }
   },
 
+  _escape: function _escape(str) 
+  {
+    return str.replace(/[\u0000-\u001f]/g, function(c) 
+    {
+      return "<" + (0x100 + c.charCodeAt(0)).toString(16).substr(1, 2) + ">";
+    });
+  },
+
   "[subscribe('command/debugger-update-pane')]": 
   function update(trace_info) 
   {
     let [info, sequence] = trace_info;
     let {type, name, value} = info;
-
-    function escape(str) 
-    {
-      return str.replace(/[\u0000-\u001f]/g, function(c) 
-      {
-        return "<" + (0x100 + c.charCodeAt(0)).toString(16).substr(1, 2) + ">";
-      });
-    }
     let session = this._broker;
     session.uniget("command/construct-chrome", {
       parentNode: "#tanasinn_trace",
@@ -499,7 +532,7 @@ Debugger.definition = {
           childNodes:
           {
             tagName: "label",
-            value: escape(sequence),
+            value: this._escape(sequence),
             style: <>
               color: red;
               background: lightblue; 
@@ -535,7 +568,7 @@ Debugger.definition = {
             },
             {
               tagName: "label",
-              value: escape(value.toString()),
+              value: this._escape(value.toString()),
               style: <>
                 color: green;
                 padding: 1px;

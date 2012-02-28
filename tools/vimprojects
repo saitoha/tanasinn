@@ -19,6 +19,7 @@
  }
  content=chrome/content {
    app.xul
+   tanasinn.xul
    testsuite.xul
    checking.xul
    testsuite.js
