@@ -1367,7 +1367,38 @@ Vimperator/Muttatorのコマンドライン上から起動したい場合は、�
 </div></div>
 <div class="listingblock">
 <div class="content">
+<pre><tt>:tanasinnstart &lt;コマンド&gt;</tt></pre>
+</div></div>
+<div class="paragraph"><p>example:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>:tanasinnstart emacs -nw</tt></pre>
+</div></div>
+<div class="literalblock">
+<div class="content">
+<pre><tt>tanasinnにコマンドを送信したいときは、以下のようにします:</tt></pre>
+</div></div>
+<div class="listingblock">
+<div class="content">
 <pre><tt>:tanasinncommand &lt;コマンド&gt;</tt></pre>
+</div></div>
+<div class="paragraph"><p>example:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>:tanasinncommand overlayecho Hello, World!</tt></pre>
+</div></div>
+<div class="literalblock">
+<div class="content">
+<pre><tt>tanasinnにキー入力を送信したいときは、以下のようにします:</tt></pre>
+</div></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>:tanasinnsendkeys &lt;キーシーケンス式&gt;</tt></pre>
+</div></div>
+<div class="paragraph"><p>example:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>:tanasinnsendkeys &lt;nmode&gt;&lt;C-z&gt;top&lt;CR&gt;</tt></pre>
 </div></div>
 </div>
 </div>
@@ -1890,6 +1921,20 @@ http://www.gnu.org/software/src-highlite -->
 </div></div>
 </div>
 <div class="sect4">
+<h5 id="_screenshot_new">screenshot (new!)</h5>
+<div class="paragraph"><p>現在のスクリーンを画像形式(png)で保存します。</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>screenshot [ファイル名]</tt></pre>
+</div></div>
+<div class="paragraph"><p>たとえば</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>screenshot abc</tt></pre>
+</div></div>
+<div class="paragraph"><p>とすると、{$HOME,%USERPROFILE%}/.tanasinn/screenshot/abc.pngにスクリーンショット画像が保存されます。</p></div>
+</div>
+<div class="sect4">
 <h5 id="_javascript">javascript</h5>
 </div>
 </div>
@@ -1920,17 +1965,19 @@ http://www.gnu.org/software/src-highlite -->
          |
          +-- cgi-bin/            &lt;---------------------- (10)
          |
-         +-- log/                &lt;---------------------- (11)
+         +-- screenshot/            &lt;------------------- (11)
          |
-         +-- modules/            &lt;---------------------- (12)
+         +-- log/                &lt;---------------------- (12)
+         |
+         +-- modules/            &lt;---------------------- (13)
                 |
-                +-- process_components/          &lt;------ (13)
+                +-- process_components/          &lt;------ (14)
                 |
-                +-- desktop_components/          &lt;------ (14)
+                +-- desktop_components/          &lt;------ (15)
                 |
-                +-- session_components/          &lt;------ (15)
+                +-- session_components/          &lt;------ (16)
                 |
-                +-- shared_components/           &lt;------ (16)</tt></pre>
+                +-- shared_components/           &lt;------ (17)</tt></pre>
 </div></div>
 <div class="sect3">
 <h4 id="_tanasinn_js">8.4.1. .tanasinn.js</h4>
@@ -1982,35 +2029,39 @@ set outerchrome.background="-moz-radial-gradient(center, circle closest-side, #4
 <div class="paragraph"><p>休眠中のセッションが永続化されて書き出されるディレクトリ。</p></div>
 </div>
 <div class="sect3">
-<h4 id="_tanasinn_log">8.4.8. .tanasinn/log/</h4>
+<h4 id="_tanasinn_screenshot">8.4.8. .tanasinn/screenshot/</h4>
+<div class="paragraph"><p>スクリーンショット画像が書き出されるディレクトリ。</p></div>
+</div>
+<div class="sect3">
+<h4 id="_tanasinn_log">8.4.9. .tanasinn/log/</h4>
 <div class="paragraph"><p>ログが書き出されるディレクトリ。</p></div>
 </div>
 <div class="sect3">
-<h4 id="_tanasinn_batches">8.4.9. .tanasinn/batches/</h4>
+<h4 id="_tanasinn_batches">8.4.10. .tanasinn/batches/</h4>
 <div class="paragraph"><p>importコマンドの引数として与えられたファイル名が検索されるディレクトリ。</p></div>
 </div>
 <div class="sect3">
-<h4 id="_tanasinn_cgi_bin">8.4.10. .tanasinn/cgi-bin/</h4>
+<h4 id="_tanasinn_cgi_bin">8.4.11. .tanasinn/cgi-bin/</h4>
 <div class="paragraph"><p>execcgiコマンドの引数として与えられたファイル名が検索されるディレクトリ。</p></div>
 </div>
 <div class="sect3">
-<h4 id="_tanasinn_modules">8.4.11. .tanasinn/modules/</h4>
+<h4 id="_tanasinn_modules">8.4.12. .tanasinn/modules/</h4>
 <div class="paragraph"><p>このディレクトリ内にユーザー拡張やユーザーデータが配置されます。</p></div>
 </div>
 <div class="sect3">
-<h4 id="_tanasinn_modules_process_components">8.4.12. .tanasinn/modules/process_components/</h4>
+<h4 id="_tanasinn_modules_process_components">8.4.13. .tanasinn/modules/process_components/</h4>
 <div class="paragraph"><p>プロセスバスに接続されるユーザー拡張が配置されるディレクトリ。</p></div>
 </div>
 <div class="sect3">
-<h4 id="_tanasinn_modules_desktop_components">8.4.13. .tanasinn/modules/desktop_components/</h4>
+<h4 id="_tanasinn_modules_desktop_components">8.4.14. .tanasinn/modules/desktop_components/</h4>
 <div class="paragraph"><p>デスクトップバスに接続されるユーザー拡張が配置されるディレクトリ。</p></div>
 </div>
 <div class="sect3">
-<h4 id="_tanasinn_modules_session_components">8.4.14. .tanasinn/modules/session_components/</h4>
+<h4 id="_tanasinn_modules_session_components">8.4.15. .tanasinn/modules/session_components/</h4>
 <div class="paragraph"><p>セッションバスに接続されるユーザー拡張が配置されるディレクトリ。</p></div>
 </div>
 <div class="sect3">
-<h4 id="_tanasinn_modules_shared_components">8.4.15. .tanasinn/modules/shared_components/</h4>
+<h4 id="_tanasinn_modules_shared_components">8.4.16. .tanasinn/modules/shared_components/</h4>
 <div class="paragraph"><p>デスクトップバス・セッションバス両方に接続されるユーザー拡張が配置されるディレクトリ。</p></div>
 </div>
 </div>
@@ -2138,7 +2189,7 @@ command CloseMozilla call s:close_gecko_window()</tt></pre>
 <div class="paragraph"><p>たとえば、シェルから</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>echo -en "¥e]220;overlayecho Hello, World!¥e"</tt></pre>
+<pre><tt>echo -en "¥e]220;overlayecho Hello, World!¥a"</tt></pre>
 </div></div>
 <div class="paragraph"><p>とタイプすると、tanasinnにはコマンド「overlayecho Hello, World!」が渡ります。</p></div>
 </div>
@@ -3066,7 +3117,7 @@ twitter: <a href="http://twitter.com/kefir_">日本語</a> / <a href="http://twi
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2012-02-26 13:36:47 JST
+Last updated 2012-02-29 02:12:51 JST
 </div>
 </div>
 </body>

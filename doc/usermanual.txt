@@ -559,7 +559,7 @@ image::images/launcher.png[width=480]
     Or, if you would like to launch terminal screen in direct, type as below:
 
 ----
-:tanasinncommand <command line>
+:tanasinnstart <command line>
 ----
 
 #elif __JP__
@@ -580,7 +580,34 @@ image::images/launcher.png[width=480]
     もしターミナルスクリーンをVimperator/Muttatorから直接起動させたければ、以下のようにします:
 
 ----
+:tanasinnstart <コマンド>
+----
+
+example:
+----
+:tanasinnstart emacs -nw
+----
+
+    tanasinnにコマンドを送信したいときは、以下のようにします:
+
+----
 :tanasinncommand <コマンド>
+----
+
+example:
+----
+:tanasinncommand overlayecho Hello, World!
+----
+
+    tanasinnにキー入力を送信したいときは、以下のようにします:
+
+----
+:tanasinnsendkeys <キーシーケンス式>
+----
+
+example:
+----
+:tanasinnsendkeys <nmode><C-z>top<CR>
 ----
 
 #endif
@@ -1081,6 +1108,22 @@ echo [メッセージ]
 overlayecho [メッセージ]
 ----
 
+===== screenshot (new!)
+
+現在のスクリーンを画像形式(png)で保存します。
+
+----
+screenshot [ファイル名]
+----
+
+たとえば
+
+----
+screenshot abc
+----
+
+とすると、{$HOME,%USERPROFILE%}/.tanasinn/screenshot/abc.pngにスクリーンショット画像が保存されます。
+
 ===== javascript
 
 #endif
@@ -1115,17 +1158,19 @@ overlayecho [メッセージ]
          |    
          +-- cgi-bin/            <---------------------- (10)
          |    
-         +-- log/                <---------------------- (11)
+         +-- screenshot/            <------------------- (11)
+         |    
+         +-- log/                <---------------------- (12)
          |
-         +-- modules/            <---------------------- (12)
+         +-- modules/            <---------------------- (13)
                 |
-                +-- process_components/          <------ (13)
+                +-- process_components/          <------ (14)
                 |
-                +-- desktop_components/          <------ (14)
+                +-- desktop_components/          <------ (15)
                 |
-                +-- session_components/          <------ (15)
+                +-- session_components/          <------ (16)
                 |
-                +-- shared_components/           <------ (16)
+                +-- shared_components/           <------ (17)
 
 -----------------------------------------------------------------
 
@@ -1227,6 +1272,16 @@ Sessionオブジェクトの設定が書き出されるディレクトリ。
 #elif __JP__
 
 休眠中のセッションが永続化されて書き出されるディレクトリ。
+
+#endif
+
+==== .tanasinn/screenshot/ 
+
+#if __EN__
+
+#elif __JP__
+
+スクリーンショット画像が書き出されるディレクトリ。
 
 #endif
 
@@ -1524,7 +1579,7 @@ tanasinnはこれをtanasinnコマンドとして解釈し、実行します。
 たとえば、シェルから
 ----
 
-echo -en "¥e]220;overlayecho Hello, World!¥e"
+echo -en "¥e]220;overlayecho Hello, World!¥a"
 
 ----
 
