@@ -248,7 +248,7 @@ Debugger.definition = {
     </plugin>,
 
   "[persistable] auto_scroll": true,
-  "[persistable] auto_scroll_update_interval": 300,
+  "[persistable] update_interval": 300,
 
   _timer_id: null,
 
@@ -411,7 +411,7 @@ Debugger.definition = {
             let trace_box = this._trace_box;
             trace_box.scrollTop = trace_box.scrollHeight;
           }
-        }, 200, this);
+        }, this.update_interval, this);
       } else {
         this._checkbox_break.setAttribute("disabled", true);
         this._checkbox_resume.setAttribute("disabled", true);

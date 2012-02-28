@@ -519,6 +519,18 @@ Decoder.definition = {
     this.scheme = scheme;
   },
 
+  "[subscribe('sequence/g0'), enabled]": 
+  function scsg0(mode) 
+  {
+    this._g0 = mode;
+  },
+
+  "[subscribe('sequence/g1'), enabled]": 
+  function scsg1(mode) 
+  {
+    this._g1 = mode;
+  },
+
   /** Read input byte-stream sequence at the specified scanner's 
    *  current position, and convert it to an UCS-4 code point sequence.
    *
@@ -529,8 +541,9 @@ Decoder.definition = {
   decode: function decode(scanner) 
   {
     if (coUtils.Constant.CHARSET_DEC == this._g0) {
+      let decoder = this._decoder;
       return function() {
-        for (c in this._decoder.decode(scanner)) {
+        for (c in decoder.decode(scanner)) {
           yield decSpecialCharacterMap(c);
         }
       }();

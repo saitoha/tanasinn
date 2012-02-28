@@ -1425,8 +1425,8 @@ Screen.definition = {
     let cursor = this.cursor;
     let width = this._width;
     let range = this._lines.slice(0, cursor.positionY + 1);
-    range.pop().erase(0, cursor.positionX + 1);
-    range.forEach(function(line) line.erase(0, width, this.cursor.attr));
+    range.pop().erase(0, cursor.positionX + 1, cursor.attr);
+    range.forEach(function(line) line.erase(0, width, cursor.attr));
   },
 
   /** Erase cells from current position to end of buffer. */
@@ -1435,7 +1435,7 @@ Screen.definition = {
     let cursor = this.cursor;
     let width = this._width;
     let range = this._lines.slice(cursor.positionY, this._height);
-    range.shift().erase(cursor.positionX, width);
+    range.shift().erase(cursor.positionX, width, cursor.attr);
     range.forEach(function(line) line.erase(0, width, cursor.attr));
   },
 

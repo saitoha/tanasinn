@@ -166,16 +166,17 @@ CharsetMode.definition = {
   "[sequence('ESC (%c')]": 
   function SCSG0(mode) 
   {
-    let session = this._broker;
-    session.notify("sequnece/g0", mode);
+    let broker = this._broker;
+    broker.notify("sequence/g0", mode);
   },
   
   "[sequence('ESC )%c')]": 
   function SCSG1(mode) 
   {
-    let session = this._broker;
-    session.notify("sequence/g1", mode);
+    let broker = this._broker;
+    broker.notify("sequence/g1", mode);
   },
+
 };
 
 
