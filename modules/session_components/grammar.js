@@ -137,14 +137,14 @@ SequenceParser.definition = {
   /** Construct child parsers from definition and make parser-chain. */
   append: function append(key, value, context) 
   {
-    let match = key.match(/^([0-9]+)$|^%d(.)$|^(.)%s$|^(%c)|^(.)$|^(.)(.+)$/);
+    let match = key.match(/^(0x[0-9a-zA-Z]+)$|^%d(.)$|^(.)%s$|^(%c)|^(.)$|^(.)(.+)$/);
     let [, 
       number, char_with_param, 
       char_with_string, single_char, 
       normal_char, first, next_chars
     ] = match;
     if (number) { // parse number
-      let code = Number(number);
+      let code = parseInt(number);
       if ("parse" in value) {
         this[code] = value;
       } else {
@@ -259,8 +259,6 @@ Grammer.definition = {
     let prefix = match.pop() || "C0";
     if ("number" == typeof key) {
       key = key.toString();
-    } else if (key.match(/^0x[0-9a-fA-F]{2}$/)) {
-      key = parseInt(key).toString();
     }
     if (!this[prefix]) {
       this[prefix] = new SequenceParser();
