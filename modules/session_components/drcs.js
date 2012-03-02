@@ -1,0 +1,198 @@
+/* -*- Mode: JAVASCRIPT; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 4 -*-
+ *
+ * ***** BEGIN LICENSE BLOCK *****
+ * Version: MPL 1.1
+ *
+ * The contents of this file are subject to the Mozilla Public License Version
+ * 1.1 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * http://www.mozilla.org/MPL/
+ *
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ * for the specific language governing rights and limitations under the
+ * License.
+ *
+ * The Original Code is tanasinn
+ *
+ * The Initial Developer of the Original Code is
+ * Hayaki Saito.
+ * Portions created by the Initial Developer are Copyright (C) 2010 - 2011
+ * the Initial Developer. All Rights Reserved.
+ *
+ * ***** END LICENSE BLOCK ***** */
+
+/**
+ *  @class DRCSBuffer
+ */
+let DRCSBuffer = new Class().extends(Plugin);
+DRCSBuffer.definition = {
+
+  get id()
+    "drcs_buffer",
+
+  get info()
+    <module>
+        <name>{_("DRCS Buffer")}</name>
+        <version>0.1</version>
+        <description>{
+          _("Provides DRCS(Dynamic Rendering Character Sets) buffer.")
+        }</description>
+    </module>,
+
+  get template()
+    ({
+//      parentNode: "#tanasinn_center_area",
+      tagName: "html:canvas",
+      id: "tanasinn_drcs_canvas",
+    }),
+
+  _map: null,
+
+  /** installs itself. 
+   *  @param {Session} session A session object.
+   */
+  "[subscribe('install/drcs_buffer'), enabled]":
+  function install(session) 
+  {
+    this.onDCS.enabled = true;
+    this.onSCSG0.enabled = true;
+    this._map = {};
+
+    let {tanasinn_drcs_canvas} = session.uniget(
+      "command/construct-chrome", this.template);
+    // set initial size.
+    this._canvas = tanasinn_drcs_canvas;
+    this._canvas.style.border = "red 1px solid";
+    let context = this._canvas.getContext("2d");
+  },
+
+  /** Uninstalls itself.
+   *  @param {Session} session A session object.
+   */
+  "[subscribe('uninstall/drcs_buffer'), enabled]":
+  function uninstall(session) 
+  {
+    this._map = null;
+    this.onDCS.enabled = false;
+    this.onSCSG0.enabled = false;
+    this._canvas = null;
+  },
+
+  "[subscribe('sequence/g0')]":
+  function onSCSG0(mode) 
+  {
+    let broker = this._broker;
+    if (this._map[mode]) {
+      let char_width = 15;
+      let char_height = 12;
+      let vertical_position = (mode.charCodeAt(0) - "0".charCodeAt(0)) * char_height;
+      broker.notify("event/drcs-state-changed/g0", this._map[mode]);
+    } else {
+      broker.notify("event/drcs-state-changed/g0", null);
+    }
+  },
+
+  "[subscribe('sequence/dcs')]":
+  function onDCS(data) 
+  {
+    //               Pfn    Pcn      Pe      Pcmw     Pw      Pt      Pcmh     Pcss    Dscs
+    let pattern = /^([01]);([0-9]+);([012]);([0-9]+);([012]);([012]);([0-9]+);([01])\{([0-~])([\?-~\/;]+)$/;
+    let match = data.match(pattern);
+    if (null === match) {
+      return;
+    }
+    let [
+      all,
+      pfn,   // Pfn Font number
+      pcn,   // Starting Character
+      pe,    // Erase control:
+             //   0: erase all characters in the DRCS buffer with this number, 
+             //      width and rendition.
+             //   1: erase only characters in locations being reloaded.
+             //   2: erase all renditions of the soft character set 
+             //      (normal, bold, 80-column, 132-column).
+      pcmw,  // Character matrix width
+             //   Selects the maximum character cell width.
+             //   0: 15 pxiels wide for 80 columns, 9pixels wide for 132 columns. (Default)
+             //   1: illegal
+             //   2: 5 x 10 pixel cell
+             //   3: 6 x 10 pixel cell
+             //   4: 7 x 10 pixel cell
+             //   5: 5 pixels wide
+             //   6: 6 pixels wide
+             //   ...
+             //   15: 15 pixcels wide
+      pw,    // Font width        
+             //   Selects the number of columns per line (font set size).
+             //   0: 80 columns. (Default)
+             //   1: 80 columns.
+             //   2: 132 columns.
+      pt,    // Text or full-cell
+             //   0: text. (Default)
+             //   1: text.
+             //   2: full cell.
+      pcmh,  // Character matrix height
+             //   Selects the maximum character cell height.
+             //   0: 12 pxels high. (Default)
+             //   1: 1 pixcels high.
+             //   2: 2 pixcels high.
+             //   2: 3 pixcels high.
+             //   ...
+             //   12: 12 pixcels high.
+      pcss,  // Character set size
+             //   Defines the character set as a 94- or 96-character graphic set.
+             //   0: 94-character set. (Default)
+             //   1: 96-character set.
+      dscs,  //
+      value //
+    ] = match;
+    let char_width = 15;
+    let char_height = 12;
+    let charset_size = 0 == pcss ? 94: 96;
+    let start_position = Number(0 == pcss && 0 == pcn ? 1: pcn);
+    this._canvas.width = char_width * 96;
+    this._canvas.height = char_height * 1;
+    let sixels = value.split(";");
+    let pointer_x = start_position * char_width;
+
+    function char2sixelbits(c) {
+      return ("0000000" + (c.charCodeAt(0) - "?".charCodeAt(0)).toString(2)).substr(-6).split("").reverse();
+    }
+    let imagedata = this._canvas.getContext("2d").getImageData(0, 0, this._canvas.width, this._canvas.height);
+    for ([n, glyph] in Iterator(sixels)) {
+      for ([h, line] in Iterator(glyph.split("/"))) {
+        for ([x, c] in Iterator(line.split(""))) {
+          let bits = char2sixelbits(c); 
+          for ([y, bit] in Iterator(bits)) {
+            let position = (((y + h * 6) * 96 + start_position + n) * char_width + x) * 4;
+            imagedata.data[position + 0] = bit * 255;
+            imagedata.data[position + 1] = bit * 255;
+            imagedata.data[position + 2] = bit * 255;
+            imagedata.data[position + 3] = 255;
+          }
+        }
+      }
+    }
+    this._canvas.getContext("2d").putImageData(imagedata, 0, 0);
+    this._map[dscs] = {
+      dscs: dscs,
+      drcs_canvas: this._canvas,
+      drcs_width: char_width,
+      drcs_height: char_height,
+    };
+
+  },
+
+} // class OverlayIndicator
+
+/**
+ * @fn main
+ * @brief Module entry point.
+ * @param {Broker} broker The Broker object.
+ */
+function main(broker) 
+{
+  new DRCSBuffer(broker);
+}
+

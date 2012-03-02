@@ -58,8 +58,9 @@ PluginViewer.definition = {
               let (module = module) // memorize "module".
               let (info = module.info) 
               let (depends = this._depends_map[module.id])
+              let (depended = this._depended_map[module.id])
               let (depends_on = Object.keys(depends).map(function(key) depends[key], this))
-              let (depended_by = Object.keys(depends).map(function(key) depends[key], this))
+              let (depended_by = Object.keys(depended).map(function(key) depended[key], this))
               [
                 {
                   tagName: "checkbox",

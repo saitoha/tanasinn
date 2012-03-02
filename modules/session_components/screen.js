@@ -1316,7 +1316,6 @@ Screen.definition = {
         let run = codes.slice(it, it + length);
         it += length;
         cursor.positionX += run.length;
-
         line.write(positionX, run, cursor.attr, insert_mode);
       }
     } while (it < codes.length);

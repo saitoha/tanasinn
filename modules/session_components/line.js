@@ -180,7 +180,8 @@ const ATTR2_LINK        = 22    // 00000000 00100000 00000000 00000000
 const ATTR2_HIGHLIGHT   = 23    // 00000000 01000000 00000000 00000000
 
 const ATTR2_WIDE        = 24    // 00000000 10000000 00000000 00000000
-const ATTR2_COMBINING   = 25    // 00000001 00000000 00000000 00000000
+const ATTR2_DRCS        = 25    // 00000001 00000000 00000000 00000000
+const ATTR2_COMBINING   = 26    // 00000010 00000000 00000000 00000000
 
 /**
  * @class Cell
@@ -299,11 +300,25 @@ Cell.definition = {
     this.value = this.value & ~(0x1 << ATTR2_COMBINING) 
                             | value << ATTR2_COMBINING;
   },
+ 
+  /** getter of drcs attribute */
+  get drcs()
+  {
+    return this.value >>> ATTR2_DRCS & 0x1;
+  },
+
+  /** setter of drcs attribute */
+  set drcs(value) 
+  {
+    this.value = this.value & ~(0x1 << ATTR2_DRCS) 
+                            | value << ATTR2_DRCS;
+  },
 
   /** Compare every bit and detect equality of both objects. */
   equals: function equals(other)
   {
-    return this.value << 8 == other.value << 8;
+    //return this.value << 7 == other.value << 7;
+    return this.value == other.value;
   },
 
   /** Clear all properties and make it default state. */

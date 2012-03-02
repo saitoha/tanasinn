@@ -44,6 +44,8 @@ CursorState.definition = {
 
   _backup_instance: null,
 
+  _drcs_state: null, 
+
   /** constructor */
   "[subscribe('@initialized/linegenerator'), enabled]":
   function onLoad(line_generator) 
@@ -121,6 +123,16 @@ CursorState.definition = {
     }
   },
  
+  "[subscribe('event/drcs-state-changed/g0'), enabled]": 
+  function onDRCSStateChangedG0(state) 
+  {
+    if (null !== state) {
+      this.attr.drcs = true;
+    } else {
+      this.attr.drcs = false;
+    }
+  },
+
   /**
    *
    * DECSC — Save Cursor

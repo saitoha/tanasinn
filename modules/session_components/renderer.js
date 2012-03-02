@@ -113,6 +113,8 @@ Renderer.definition = {
 
   _text_offset: 10, 
 
+  _drcs_state: null, 
+
   // font
   "[watchable, persistable] font_family": "Monaco,Menlo,Lucida Console,monospace",
   "[watchable, persistable] font_size": 14,
@@ -159,6 +161,7 @@ Renderer.definition = {
     this.backup.enabled = true;
     this.restore.enabled = true;
     this.captureScreen.enabled = true;
+    this.onDRCSStateChangedG0.enabled = true;
     session.notify("initialized/renderer", this);
   },
 
@@ -178,7 +181,16 @@ Renderer.definition = {
     this.backup.enabled = false;
     this.restore.enabled = false;
     this.captureScreen.enabled = false;
+    this.onDRCSStateChangedG0.enabled = false;
     this._canvas.parentNode.removeChild(this._canvas);
+  },
+
+  "[subscribe('event/drcs-state-changed/g0')]": 
+  function onDRCSStateChangedG0(state) 
+  {
+    if (state) {
+      this._drcs_state = state;
+    }
   },
 
   "[subscribe('command/capture-screen')]": 
@@ -351,17 +363,34 @@ Renderer.definition = {
         }
       }
     }())];
-    let text = String.fromCharCode.apply(String, codes);
-    if (this.enable_render_bold_as_textshadow && attr.bold) {
-      context.shadowColor = "white";//fore_color;
-      context.shadowOffsetX = this.shadow_offset_x;
-      context.shadowOffsetY = this.shadow_offset_y;
-      context.shadowBlur = this.shadow_blur;
+
+    if (!attr.drcs) {
+      let text = String.fromCharCode.apply(String, codes);
+      if (this.enable_render_bold_as_textshadow && attr.bold) {
+        context.shadowColor = "white";//fore_color;
+        context.shadowOffsetX = this.shadow_offset_x;
+        context.shadowOffsetY = this.shadow_offset_y;
+        context.shadowBlur = this.shadow_blur;
+      } else {
+        context.shadowOffsetX = 0;
+        context.shadowBlur = 0;
+      }
+      context.fillText(text, x, y, char_width * length);
     } else {
-      context.shadowOffsetX = 0;
-      context.shadowBlur = 0;
+      let {
+        drcs_canvas,
+        drcs_width,
+        drcs_height,
+      } = this._drcs_state;
+      for (let [index, code] in Iterator(codes)) {
+        if (0x20 <= code && code << 0x7e) {
+          context.drawImage(
+            drcs_canvas, 
+            (code - 0x20) * drcs_width, 0, drcs_width, drcs_height, 
+            x + index * char_width, y - this._text_offset, char_width, height); 
+        }
+      }
     }
-    context.fillText(text, x, y, char_width * length);
   },
 
   /** Rnder underline at specified position.
