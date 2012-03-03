@@ -132,6 +132,16 @@ CursorState.definition = {
       this.attr.drcs = false;
     }
   },
+ 
+  "[subscribe('event/drcs-state-changed/g1'), enabled]": 
+  function onDRCSStateChangedG1(state) 
+  {
+    if (null !== state) {
+      this.attr.drcs = true;
+    } else {
+      this.attr.drcs = false;
+    }
+  },
 
   /**
    *

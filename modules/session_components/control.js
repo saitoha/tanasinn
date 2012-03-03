@@ -179,7 +179,7 @@ Control.definition = {
   function SO() 
   { // shift out
     let session = this._broker;
-    session.notify("sequence/g0", coUtils.Constant.CHARSET_PC);
+    session.notify("event/shift-out");
   },
   
   /** Shift in.
@@ -188,7 +188,7 @@ Control.definition = {
   function SI() 
   { // shift out
     let session = this._broker;
-    session.notify("sequence/g0", coUtils.Constant.CHARSET_US);
+    session.notify("event/shift-in");
   },
 
   /** Data link escape.

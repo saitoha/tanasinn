@@ -163,6 +163,7 @@ Renderer.definition = {
     this.restore.enabled = true;
     this.captureScreen.enabled = true;
     this.onDRCSStateChangedG0.enabled = true;
+    this.onDRCSStateChangedG1.enabled = true;
     session.notify("initialized/renderer", this);
   },
 
@@ -183,11 +184,20 @@ Renderer.definition = {
     this.restore.enabled = false;
     this.captureScreen.enabled = false;
     this.onDRCSStateChangedG0.enabled = false;
+    this.onDRCSStateChangedG1.enabled = false;
     this._canvas.parentNode.removeChild(this._canvas);
   },
 
   "[subscribe('event/drcs-state-changed/g0')]": 
   function onDRCSStateChangedG0(state) 
+  {
+    if (state) {
+      this._drcs_state = state;
+    }
+  },
+
+  "[subscribe('event/drcs-state-changed/g1')]": 
+  function onDRCSStateChangedG1(state) 
   {
     if (state) {
       this._drcs_state = state;
@@ -384,6 +394,7 @@ Renderer.definition = {
         drcs_height,
       } = this._drcs_state;
       for (let [index, code] in Iterator(codes)) {
+        code = code % 0x80;
         if (0x20 <= code && code << 0x7e) {
           context.drawImage(
             drcs_canvas, 

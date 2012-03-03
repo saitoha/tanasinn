@@ -58,7 +58,7 @@ StringParser.definition = {
   },
 
   /* 
-   *  StringTerminator ->   ( <0x07> | "\" | <LastCharacterOfStream> )
+   *  StringTerminator ->   ( <0x07> | "<0x1b>\" | <LastCharacterOfStream> )
    *  StringCharacter  -> any 1byte characters without StringTerminator
    *  String           -> <StringCharacter>+  , <StringTerminator>
    */
@@ -66,8 +66,22 @@ StringParser.definition = {
   {
     while (!scanner.isEnd) {
       let c = scanner.current();
-      if (0x07 == c || 0x5c == c)
+      if (0x1b == c) {
+        scanner.moveNext();
+        if (scanner.isEnd) {
+          break;
+        }
+        let c = scanner.current();
+        if (0x5c == c) {
+          break;
+        }
+        yield 0x1b;
+        yield c;
+        scanner.moveNext();
+      }
+      if (0x07 == c) {
         break;
+      }
       yield c;
       scanner.moveNext();
     }

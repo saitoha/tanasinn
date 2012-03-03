@@ -43,8 +43,11 @@ DRCSBuffer.definition = {
   get template()
     ({
 //      parentNode: "#tanasinn_center_area",
-      tagName: "html:canvas",
-      id: "tanasinn_drcs_canvas",
+      tagName: "vbox",
+      childNodes: {
+        tagName: "html:canvas",
+        id: "tanasinn_drcs_canvas",
+      },
     }),
 
   _map: null,
@@ -57,6 +60,7 @@ DRCSBuffer.definition = {
   {
     this.onDCS.enabled = true;
     this.onSCSG0.enabled = true;
+    this.onSCSG1.enabled = true;
     this._map = {};
 
     let {tanasinn_drcs_canvas} = session.uniget(
@@ -76,6 +80,7 @@ DRCSBuffer.definition = {
     this._map = null;
     this.onDCS.enabled = false;
     this.onSCSG0.enabled = false;
+    this.onSCSG1.enabled = false;
     this._canvas = null;
   },
 
@@ -84,12 +89,20 @@ DRCSBuffer.definition = {
   {
     let broker = this._broker;
     if (this._map[mode]) {
-      let char_width = 15;
-      let char_height = 12;
-      let vertical_position = (mode.charCodeAt(0) - "0".charCodeAt(0)) * char_height;
       broker.notify("event/drcs-state-changed/g0", this._map[mode]);
     } else {
       broker.notify("event/drcs-state-changed/g0", null);
+    }
+  },
+
+  "[subscribe('sequence/g1')]":
+  function onSCSG1(mode) 
+  {
+    let broker = this._broker;
+    if (this._map[mode]) {
+      broker.notify("event/drcs-state-changed/g1", this._map[mode]);
+    } else {
+      broker.notify("event/drcs-state-changed/g1", null);
     }
   },
 
@@ -97,7 +110,7 @@ DRCSBuffer.definition = {
   function onDCS(data) 
   {
     //               Pfn    Pcn      Pe      Pcmw     Pw      Pt      Pcmh     Pcss    Dscs
-    let pattern = /^([01]);([0-9]+);([012]);([0-9]+);([012]);([012]);([0-9]+);([01])\{([0-~])([\?-~\/;]+)$/;
+    let pattern = /^([01]);([0-9]+);([012]);([0-9]+);([012]);([012]);([0-9]+);([01])\{([0-~])([\?-~\/;\n\r]+)$/;
     let match = data.match(pattern);
     if (null === match) {
       return;
@@ -147,9 +160,20 @@ DRCSBuffer.definition = {
       dscs,  //
       value //
     ] = match;
-    let char_width = 15;
-    let char_height = 12;
+
+    let char_width = {
+      0: 2 == pw ? 9: 15,
+      2: 5,
+      3: 6,
+      4: 7,
+    } [pcmw] || Number(pcmw);
+    let char_height = {
+      2: 10,
+      3: 10,
+      4: 10,
+    } [pcmw] || Number(pcmh) || 12;
     let charset_size = 0 == pcss ? 94: 96;
+    let full_cell = pt == 2;
     let start_position = Number(0 == pcss && 0 == pcn ? 1: pcn);
     this._canvas.width = char_width * 96;
     this._canvas.height = char_height * 1;
@@ -163,13 +187,17 @@ DRCSBuffer.definition = {
     for ([n, glyph] in Iterator(sixels)) {
       for ([h, line] in Iterator(glyph.split("/"))) {
         for ([x, c] in Iterator(line.split(""))) {
-          let bits = char2sixelbits(c); 
-          for ([y, bit] in Iterator(bits)) {
-            let position = (((y + h * 6) * 96 + start_position + n) * char_width + x) * 4;
-            imagedata.data[position + 0] = bit * 255;
-            imagedata.data[position + 1] = bit * 255;
-            imagedata.data[position + 2] = bit * 255;
-            imagedata.data[position + 3] = 255;
+          if (/[\?-~]/.test(c)) {
+            let bits = char2sixelbits(c); 
+            for ([y, bit] in Iterator(bits)) {
+              let position = (((y + h * 6) * 96 + start_position + n) * char_width + x) * 4;
+              if ("1" == bit) {
+                imagedata.data[position + 0] = 255;
+                imagedata.data[position + 1] = 255;
+                imagedata.data[position + 2] = 255;
+                imagedata.data[position + 3] = 255;
+              }
+            }
           }
         }
       }
@@ -178,8 +206,9 @@ DRCSBuffer.definition = {
     this._map[dscs] = {
       dscs: dscs,
       drcs_canvas: this._canvas,
-      drcs_width: char_width,
+      drcs_width: 15,
       drcs_height: char_height,
+      full_cell: full_cell,
     };
 
   },

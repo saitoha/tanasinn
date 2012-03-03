@@ -361,6 +361,8 @@ UTF8Decoder.definition = {
   get scheme()
     "UTF-8-js",
 
+  _offset: 0,
+
   /** Constructor **/
   "[subscribe('get/decoders'), enabled]":
   function getDecoders(map) 
@@ -372,6 +374,20 @@ UTF8Decoder.definition = {
     };
   },
 
+  "[subscribe('event/shift-out'), enabled]": 
+  function shiftOut() 
+  {
+    this._offset += 0x80;
+  },
+
+  "[subscribe('event/shift-in'), enabled]": 
+  function shiftIn() 
+  {
+    if (0 != this._offset) {
+      this._offset -= 0x80;
+    }
+  },
+
   activate: function activate() 
   {
   },
@@ -381,13 +397,13 @@ UTF8Decoder.definition = {
    */
   decode: function decode(scanner) 
   {
-    return let (self = this) function(scanner) {
+    return let (self = this, offset = this._offset) function(scanner) {
       while (!scanner.isEnd) {
         let c = self._getNextCharacter(scanner);
         if (!c || c < 0x20) {
           break;
         }
-        yield c;
+        yield c + offset;
         scanner.moveNext();
       };
     } (scanner);
@@ -469,6 +485,7 @@ Decoder.definition = {
   _parser: null,
   _decoder_map: null,
   _scheme: "ascii",
+  _offset: 0,
 
   _g0: coUtils.Constant.CHARSET_US,
   _g1: coUtils.Constant.CHARSET_US,
@@ -517,6 +534,18 @@ Decoder.definition = {
   function changeDecoder(scheme) 
   {
     this.scheme = scheme;
+  },
+
+  "[subscribe('event/shift-out'), enabled]": 
+  function shiftOut() 
+  {
+    this._offset += 0x80;
+  },
+
+  "[subscribe('event/shift-in'), enabled]": 
+  function shiftIn() 
+  {
+    this._offset -= 0x80;
   },
 
   "[subscribe('sequence/g0'), enabled]": 
