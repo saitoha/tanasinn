@@ -10,6 +10,7 @@ HTML_EN=usermanual.html
 HTML_JA=usermanual-ja.html
 
 all: $(HTML_EN) $(HTML_JA)
+	make -C images
 
 Makefile: Makefile.in
 	cd .. && ./configure

@@ -1,0 +1,24 @@
+
+                            +---------+
+                            | Process |             <---- corresponds to application process.
+                            +----+----+
+                                 |
+        Process bus   -----------+---+------- ....
+                                     |
+                                +----+----+
+                                | Desktop |         <---- corresponds to chrome window.
+                                +----+----+
+                                     |
+        Desktop bus    ----+---------+------+------- ....
+                           |                |
+                      +----+-----+     +----+----+
+                      | Launcher |     | Session |  <---- corresponds to terminal screen.
+                      +----------+     +----+----+
+                                            |
+        Session bus   .... -------+---------+---+------------+------ ....
+                                  |             |            |
+                            +-----+-----+  +----+----+  +----+----+
+                      ....  | renderer  |  |   tty   |  | screen  |  ....
+                            +-----------+  +---------+  +---------+
+
+

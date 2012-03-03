@@ -36,7 +36,7 @@ DRCSBuffer.definition = {
         <name>{_("DRCS Buffer")}</name>
         <version>0.1</version>
         <description>{
-          _("Provides DRCS(Dynamic Rendering Character Sets) buffer.")
+          _("Provides DRCS(Dynamic Rendering Character Set) buffers.")
         }</description>
     </module>,
 

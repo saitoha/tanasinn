@@ -127,6 +127,7 @@ Renderer.definition = {
   "[persistable] shadow_offset_x": 0.50,
   "[persistable] shadow_offset_y": 0.00,
   "[persistable] shadow_blur": 0.50,
+  "[persistable] transparent_color": 0,
   "[persistable, watchable] smoothing": true,
 
   /** Installs itself.
@@ -322,7 +323,7 @@ Renderer.definition = {
    */
   _drawBackground: function _drawBackground(context, x, y, width, height, bg)
   {
-    if (0 == bg) {
+    if (this.transparent_color == bg) {
       context.clearRect(x, y, width, height);
     } else {
       /* Get hexadecimal formatted background color (#xxxxxx) 

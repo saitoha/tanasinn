@@ -513,7 +513,6 @@ PersistCommand.definition = {
   function persist(arguments_string)
   {
     let session = this._broker;
-
     let match = arguments_string.match(/^\s*([$_\-@a-zA-Z\.]*)\s*$/);
     if (null === match) {
       return {
