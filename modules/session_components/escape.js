@@ -237,6 +237,60 @@ Escape.definition = {
     let message = String.fromCharCode.apply(String, arguments);
     broker.notify("sequence/pm", message);
   },
+ 
+  /** DEC double-height line, top half. */
+  "[sequence('ESC #3')]": 
+  function DECDHL_top() 
+  {
+    let broker = this._broker;
+    broker.notify("sequence/double-height-line-top");
+  },
+
+  /** DEC double-height line, bottom half. */
+  "[sequence('ESC #4')]": 
+  function DECDHL_bottom() 
+  {
+    let broker = this._broker;
+    broker.notify("sequence/double-height-line-bottom");
+    this._screen.cursorUp(1);
+  },
+
+  /** Exit VT52 mode. */
+  "[sequence('ESC <')]": 
+  function ExitVT52() 
+  {
+    coUtils.Debug.reportWarning(
+      "%s sequence [%s] was ignored.",
+      arguments.callee.name, [].slice.apply(arguments));
+  },
+
+  /** Selective Erace Rectangle Area. */
+  "[sequence('CSI %d${')]": 
+  function DECSERA(n1, n2, n3, n4) 
+  {
+    coUtils.Debug.reportWarning(
+      "%s sequence [%s] was ignored.",
+      arguments.callee.name, [].slice.apply(arguments));
+  },
+
+  /** Soft Terminal reset. */
+  "[sequence('CSI !p')]": 
+  function DECSTR() 
+  {
+    coUtils.Debug.reportWarning(
+      "%s sequence [%s] was ignored.",
+      arguments.callee.name, [].slice.apply(arguments));
+  },
+
+  /** Soft Terminal reset. */
+  "[sequence('CSI %d\"p')]": 
+  function DECSCL() 
+  {
+    alert(4)
+    coUtils.Debug.reportWarning(
+      "%s sequence [%s] was ignored.",
+      arguments.callee.name, [].slice.apply(arguments));
+  },
 
   /** 
    * RIS — Reset to Initial State

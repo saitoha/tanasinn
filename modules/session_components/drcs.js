@@ -109,8 +109,9 @@ DRCSBuffer.definition = {
   "[subscribe('sequence/dcs')]":
   function onDCS(data) 
   {
+    try {
     //               Pfn    Pcn      Pe      Pcmw     Pw      Pt      Pcmh     Pcss    Dscs
-    let pattern = /^([01]);([0-9]+);([012]);([0-9]+);([012]);([012]);([0-9]+);([01])\{([0-~])([\?-~\/;\n\r]+)$/;
+    let pattern = /^([01]);([0-9]+);([012]);([0-9]+);([012]);([012]);([0-9]+);([01])\{\s*([0-~])([\?-~\/;\n\r]+)$/;
     let match = data.match(pattern);
     if (null === match) {
       return;
@@ -196,6 +197,8 @@ DRCSBuffer.definition = {
                 imagedata.data[position + 1] = 255;
                 imagedata.data[position + 2] = 255;
                 imagedata.data[position + 3] = 255;
+              } else {
+               // imagedata.data[position + 3] = 255;
               }
             }
           }
@@ -206,11 +209,11 @@ DRCSBuffer.definition = {
     this._map[dscs] = {
       dscs: dscs,
       drcs_canvas: this._canvas,
-      drcs_width: 15,
+      drcs_width: char_width,
       drcs_height: char_height,
       full_cell: full_cell,
     };
-
+    } catch(e) {alert(e)}
   },
 
 } // class OverlayIndicator

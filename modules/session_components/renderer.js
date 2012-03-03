@@ -388,6 +388,7 @@ Renderer.definition = {
       }
       context.fillText(text, x, y, char_width * length);
     } else {
+//      alert(codes.join("/"))
       let {
         drcs_canvas,
         drcs_width,

@@ -178,8 +178,9 @@ SequenceParser.definition = {
       let action = function(params) function() value.apply(context, params)
       this[char_with_string.charCodeAt(0)] = new StringParser(action) // chain to string parser.
     } else if (single_char) { // parse a char.
+      this[0x20] = this[0x20] || new SequenceParser();
       for (let code = 0x21; code < 0x7f; ++code) {
-        this[code] = let (c = String.fromCharCode(code)) function() value.call(context, c)
+        this[0x20][code] = this[code] = let (c = String.fromCharCode(code)) function() value.call(context, c)
       }
     } else if (normal_char) {
       let code = normal_char.charCodeAt(0);

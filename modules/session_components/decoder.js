@@ -536,18 +536,6 @@ Decoder.definition = {
     this.scheme = scheme;
   },
 
-  "[subscribe('event/shift-out'), enabled]": 
-  function shiftOut() 
-  {
-    this._offset += 0x80;
-  },
-
-  "[subscribe('event/shift-in'), enabled]": 
-  function shiftIn() 
-  {
-    this._offset -= 0x80;
-  },
-
   "[subscribe('sequence/g0'), enabled]": 
   function scsg0(mode) 
   {
