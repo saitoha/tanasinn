@@ -286,7 +286,6 @@ Escape.definition = {
   "[sequence('CSI %d\"p')]": 
   function DECSCL() 
   {
-    alert(4)
     coUtils.Debug.reportWarning(
       "%s sequence [%s] was ignored.",
       arguments.callee.name, [].slice.apply(arguments));

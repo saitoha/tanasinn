@@ -399,7 +399,8 @@ Renderer.definition = {
           context.drawImage(
             drcs_canvas, 
             (code - 0x20) * drcs_width, 0, drcs_width, drcs_height, 
-            x + index * char_width, y - this._text_offset, char_width, this.line_height); 
+            x + index * char_width, y - this._text_offset, 
+            Math.ceil(char_width + 0.5), this.line_height); 
         }
       }
     }

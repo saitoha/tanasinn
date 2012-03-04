@@ -852,7 +852,9 @@ coUtils.IO = {
   saveCanvas: function saveCanvas(source_canvas, file, is_thumbnail) 
   {
     const NS_XHTML = "http://www.w3.org/1999/xhtml";
-    let canvas = source_canvas.ownerDocument.createElementNS(NS_XHTML, "canvas");
+    let canvas = source_canvas
+      .ownerDocument
+      .createElementNS(NS_XHTML, "canvas");
     canvas.style.background = "black";
 
     if (is_thumbnail) {

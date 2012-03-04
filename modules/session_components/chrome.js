@@ -107,8 +107,8 @@ OuterChrome.definition = {
         <version>0.1.0</version>
     </plugin>,
 
-  "[persistable, watchable] background_opaicty": 0.83,
-  "[persistable, watchable] background": "-moz-linear-gradient(top, #444, #000)",
+  "[persistable, watchable] background_opaicty": 0.80,
+  "[persistable, watchable] background": "-moz-linear-gradient(top, #555, #101010)",
   "[persistable, watchable] border_radius": 8,
   "[persistable, watchable] box_shadow": "5px 4px 29px black",
 

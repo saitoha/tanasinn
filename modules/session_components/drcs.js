@@ -109,7 +109,6 @@ DRCSBuffer.definition = {
   "[subscribe('sequence/dcs')]":
   function onDCS(data) 
   {
-    try {
     //               Pfn    Pcn      Pe      Pcmw     Pw      Pt      Pcmh     Pcss    Dscs
     let pattern = /^([01]);([0-9]+);([012]);([0-9]+);([012]);([012]);([0-9]+);([01])\{\s*([0-~])([\?-~\/;\n\r]+)$/;
     let match = data.match(pattern);
@@ -182,9 +181,13 @@ DRCSBuffer.definition = {
     let pointer_x = start_position * char_width;
 
     function char2sixelbits(c) {
-      return ("0000000" + (c.charCodeAt(0) - "?".charCodeAt(0)).toString(2)).substr(-6).split("").reverse();
+      return ("0000000" + (c.charCodeAt(0) - "?".charCodeAt(0)).toString(2))
+        .substr(-6).split("").reverse();
     }
-    let imagedata = this._canvas.getContext("2d").getImageData(0, 0, this._canvas.width, this._canvas.height);
+
+    let imagedata = this._canvas
+      .getContext("2d")
+      .getImageData(0, 0, this._canvas.width, this._canvas.height);
     for ([n, glyph] in Iterator(sixels)) {
       for ([h, line] in Iterator(glyph.split("/"))) {
         for ([x, c] in Iterator(line.split(""))) {
@@ -198,7 +201,7 @@ DRCSBuffer.definition = {
                 imagedata.data[position + 2] = 255;
                 imagedata.data[position + 3] = 255;
               } else {
-               // imagedata.data[position + 3] = 255;
+                imagedata.data[position + 3] = 255;
               }
             }
           }
@@ -213,10 +216,9 @@ DRCSBuffer.definition = {
       drcs_height: char_height,
       full_cell: full_cell,
     };
-    } catch(e) {alert(e)}
   },
 
-} // class OverlayIndicator
+} // class DRCSBuffer
 
 /**
  * @fn main
