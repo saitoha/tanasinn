@@ -704,11 +704,39 @@ ScreenSequenceHandler.definition = {
       arguments.callee.name, [].slice.apply(arguments));
   },
 
-  HVP: function HVP(n1, n2) 
-  { // TODO: Horizontal and Vertical Position
-    coUtils.Debug.reportWarning(
-      _("%s sequence [%s] was ignored."),
-      arguments.callee.name, [].slice.apply(arguments));
+  /**
+   *
+   * HVP — Horizontal and Vertical Position
+   *
+   * This control function works the same as the cursor position (CUP) 
+   * function. New applications should use CUP instead of HVP. HVP is 
+   * provided for compatibility with earlier VT products.
+   *
+   * Format
+   *
+   * CSI    f
+   * 9/11 	6/6
+   *
+   * Cursor moves to home position selected by DECOM
+   *
+   * CSI    Pl    ;     Pc   f
+   * 9/11	  3/n   3/11 	3/n  6/6
+   *
+   * Moves cursor to line Pl, column Pc
+   *
+   * Parameters
+   *
+   * Pl; Pc
+   *
+   * If Pl or Pc is not selected or selected as 0, then the cursor moves to 
+   * the first line or column, respectively. Origin mode (DECOM) selects line
+   * numbering and the ability to move the cursor into margins.
+   */
+  "[sequence('CSI %df')]":
+  function HVP(n1, n2) 
+  { // Horizontal and Vertical Position
+    this.setPositionY(n1 || 1);
+    this.setPositionX(n2 || 1);
   },
 
   TBC: function TBC(n) 

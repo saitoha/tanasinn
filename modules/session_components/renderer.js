@@ -388,7 +388,6 @@ Renderer.definition = {
       }
       context.fillText(text, x, y, char_width * length);
     } else {
-//      alert(codes.join("/"))
       let {
         drcs_canvas,
         drcs_width,
@@ -396,11 +395,11 @@ Renderer.definition = {
       } = this._drcs_state;
       for (let [index, code] in Iterator(codes)) {
         code = code % 0x80;
-        if (0x20 <= code && code << 0x7e) {
+        if (0x20 <= code && code <= 0x7e) {
           context.drawImage(
             drcs_canvas, 
             (code - 0x20) * drcs_width, 0, drcs_width, drcs_height, 
-            x + index * char_width, y - this._text_offset, char_width, height); 
+            x + index * char_width, y - this._text_offset, char_width, this.line_height); 
         }
       }
     }
