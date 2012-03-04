@@ -91,7 +91,7 @@ KeySnail.definition = {
   },
 
   /** Handles stop event. */
-  "[subscribe('@event/session-stopping'), enabled]":
+  "[subscribe('@event/broker-stopping'), enabled]":
   function onSessionStopping() 
   {
     this.onLostFocus();

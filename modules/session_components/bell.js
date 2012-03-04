@@ -85,10 +85,14 @@ Bell.definition = {
   "[subscribe('sequence/bel')]":
   function onBell() 
   {
-    if (this.visual_bell)
-      this.visualBell();
-    if (this.sound_bell)
-      this.beep();
+    coUtils.Timer.setTimeout(function() {
+      if (this.visual_bell) {
+        this.visualBell();
+      }
+      if (this.sound_bell) {
+        this.beep();
+      }
+    }, 10);
   },
 
   /** Plays visual bell effect. */
@@ -98,7 +102,10 @@ Bell.definition = {
     style.backgroundColor = this.color;
     style.opacity = this.opacity;
     style.MozTransitionDuration = this.duration + "ms";
-    coUtils.Timer.setTimeout(function() style.opacity = 0.0, this.duration);
+    coUtils.Timer.setTimeout(function() {
+      style.opacity = 0.0;
+      style = null; // prevent leak.
+    }, this.duration);
   },
 
   /** Plays 'beep' sound asynchronously. */

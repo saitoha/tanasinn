@@ -106,9 +106,7 @@ Control.definition = {
   function BEL() 
   {
     let session = this._broker;
-    coUtils.Timer.setTimeout(function() {
-      session.notify("sequence/bel");
-    }, 10);
+    session.notify("sequence/bel");
   },
 
   /** Back space.

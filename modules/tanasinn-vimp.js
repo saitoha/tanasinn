@@ -186,7 +186,7 @@ editor.editFileExternally = let (default_func = editor.editFileExternally) funct
     } else {
       let complete = false;
       desktop.subscribe("@initialized/session", function(session) {
-        session.subscribe("@event/session-stopping", function(session) {
+        session.subscribe("@event/broker-stopping", function(session) {
           complete = true;
         }, this);
       }, this);

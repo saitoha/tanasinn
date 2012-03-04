@@ -147,7 +147,7 @@ Controller.definition = {
 
   /** Close Control channel and stop communication with TTY device.
    */
-  "[subscribe('@event/session-stopping'), enabled]":
+  "[subscribe('@event/broker-stopping'), enabled]":
   function stop() 
   {
     this.post("disconnect\n");
@@ -308,7 +308,7 @@ IOManager.definition = {
 
   /** Close I/O channel and stop communication with TTY device.
    */
-  "[subscribe('@event/session-stopping'), enabled]":
+  "[subscribe('@event/broker-stopping'), enabled]":
   function stop() 
   {
     this._input.close();
@@ -578,7 +578,7 @@ ExternalDriver.definition = {
   },
 
   /** Kills handling process if it was alive. */
-  "[subscribe('@event/session-stopping'), enabled]":
+  "[subscribe('@event/broker-stopping'), enabled]":
   function stop() 
   {
     try {
@@ -722,7 +722,7 @@ SocketTeletypeService.definition = {
       controller.post("beacon\n") 
     }, 5000, this);
     let id = new Date().getTime().toString();
-    session.subscribe("event/session-stopping", function() {
+    session.subscribe("event/broker-stopping", function() {
       session.unsubscribe(id);
       timer.cancel();
     }, this, id);

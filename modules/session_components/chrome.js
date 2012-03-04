@@ -254,7 +254,7 @@ OuterChrome.definition = {
   },
 
   /** Fired when The session is stopping. */
-  "[subscribe('@event/session-stopping'), enabled]": 
+  "[subscribe('@event/broker-stopping'), enabled]": 
   function onSessionStoping() 
   {
     let target = this._element;
@@ -373,7 +373,7 @@ Chrome.definition = {
   },
 
   /** Fired when The session is stopping. */
-  "[subscribe('@event/session-stopping'), enabled]": 
+  "[subscribe('@event/broker-stopping'), enabled]": 
   function onSessionStoping() 
   {
     let session = this._broker;

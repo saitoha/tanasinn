@@ -92,12 +92,13 @@ Vimperator.definition = {
   },
 
   /** Handles stop event. */
-  "[subscribe('@event/session-stopping'), enabled]":
+  "[subscribe('@event/broker-stopping'), enabled]":
   function onSessionStopping() 
   {
     let modules = this._getModules();
-    if (!modules)
+    if (!modules) {
       return;
+    }
     modules.events.onEscape();
   },
 

@@ -258,12 +258,12 @@ Session.definition = {
     return this;
   },
 
-  /** Send event/session-stopping message. */
+  /** Send event/broker-stopping message. */
   "[subscribe('event/shutdown'), enabled]":
   function stop() 
   {
     this.removeGlobalEvent("quit-application");
-    this.notify("event/session-stopping", this);
+    this.notify("event/broker-stopping", this);
     if (coUtils.Runtime.app_name.match(/tanasinn/)) {
       this.window.close(); // close window
 

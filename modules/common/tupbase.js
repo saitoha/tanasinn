@@ -578,7 +578,7 @@ Plugin.definition = {
       <>command/set-enabled/{this.id}</>, 
       function(value) this.enabled = value, this);
     broker.subscribe(
-      "@event/session-stopping", 
+      "@event/broker-stopping", 
       function() this.enabled = false, 
       this);
   },

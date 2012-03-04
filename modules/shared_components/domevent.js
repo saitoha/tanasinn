@@ -157,7 +157,16 @@ DOMEventManager.definition = {
       coUtils.Debug.reportWarning(
         _("Registered DOM listener specified by given ID '%s' is not found."), id);
     }
-  }
+  },
+
+  "[subscribe('event/broker-stopping'), enabled]":
+  function onSessionStopping(id)
+  {
+    if (this._listener_list_map) {
+      Object.keys(this._listener_list_map)
+        .forEach(function(id) this.remove(id), this);
+    }
+  },
 
 } // class DOMEventManager
 

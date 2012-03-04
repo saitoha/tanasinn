@@ -66,7 +66,7 @@ WindowWatcher.definition = {
 
   },
 
-  "[subscribe('@event/session-stopping'), enabled]": 
+  "[subscribe('@event/broker-stopping'), enabled]": 
   function onSessionStopping(session) 
   {
     session.notify("command/remove-domlistener", this.id);

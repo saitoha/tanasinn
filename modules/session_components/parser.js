@@ -306,16 +306,6 @@ Grammer.definition = {
 
 };
 
-/**
- * @fn main
- * @brief Module entry point.
- * @param {Broker} broker The Broker object.
- */
-function main(broker) 
-{
-  new Grammer(broker);
-}
-
 /** 
  * @class Scanner
  * @brief Character scanner for UTF-8 characters sequence.

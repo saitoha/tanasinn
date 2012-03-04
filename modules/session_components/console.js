@@ -288,7 +288,7 @@ ConsoleListener.definition = {
     coUtils.Timer.setTimeout(this.unregister, 10, this);
   },
   
-  "[subscribe('@event/session-stopping')]": 
+  "[subscribe('@event/broker-stopping')]": 
   function onSessionStopping() 
   {
     coUtils.Timer.setTimeout(this.unregister, 10, this);
