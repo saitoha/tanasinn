@@ -267,6 +267,10 @@ CursorState.definition = {
           : 105  == p ? attr.bg = 13
           : 106  == p ? attr.bg = 14
           : 107  == p ? attr.bg = 15
+          : 300 <= p && p <= 399 ? attr.bg = p - 300
+          : 400 <= p && p <= 499 ? attr.bg = p - 400
+          : 3000 <= p && p <= 3255 ? attr.bg = p - 3000
+          : 4000 <= p && p <= 4255 ? attr.bg = p - 4000
           : coUtils.Debug.reportWarning(
             _("Ignored SGR %s, arguments: [%s]"), 
             p, [].slice.apply(arguments));

@@ -375,7 +375,7 @@ Renderer.definition = {
       }
     }())];
 
-    if (!attr.drcs) {
+    if (this._drcs_state === null || !attr.drcs) {
       let text = String.fromCharCode.apply(String, codes);
       if (this.enable_render_bold_as_textshadow && attr.bold) {
         context.shadowColor = "white";//fore_color;
