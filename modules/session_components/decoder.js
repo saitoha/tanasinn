@@ -288,6 +288,7 @@ CP932Decoder.definition = {
   "[persistable] displacement": 0x20,
 
   _map: null,
+  _offset: 0,
 
   "[subscribe('get/decoder'), enabled]": 
   function getDecoders() 
@@ -307,6 +308,20 @@ CP932Decoder.definition = {
     this._map = mapping.map;    
   },
 
+  "[subscribe('event/shift-out'), enabled]": 
+  function shiftOut() 
+  {
+    this._offset += 0x80;
+  },
+
+  "[subscribe('event/shift-in'), enabled]": 
+  function shiftIn() 
+  {
+    if (0 != this._offset) {
+      this._offset -= 0x80;
+    }
+  },
+
   /** Parse CP-932 character byte sequence and convert it 
    *  to UCS-4 code point sequence. 
    *
@@ -319,7 +334,7 @@ CP932Decoder.definition = {
     return let (map = this._map) function(scanner)
     {
       while (!scanner.isEnd) {
-        let c1 = scanner.current();
+        let c1 = scanner.current() + this._offset;
         if (c1 < 0x20) { // control codes.
           break;
         } if (c1 < 0x7f) { // ASCII range.
@@ -399,11 +414,11 @@ UTF8Decoder.definition = {
   {
     return let (self = this, offset = this._offset) function(scanner) {
       while (!scanner.isEnd) {
-        let c = self._getNextCharacter(scanner);
-        if (!c || c < 0x20) {
+        let c = self._getNextCharacter(scanner) + offset;
+        if (c < 0x20 || (0x7f <= c && c < 0xa0) || c == 0xff) {
           break;
         }
-        yield c + offset;
+        yield c;
         scanner.moveNext();
       };
     } (scanner);

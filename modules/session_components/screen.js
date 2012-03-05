@@ -355,7 +355,7 @@ ScreenSequenceHandler.definition = {
   },
 
   /**
-   * DA1—Primary Device Attributes
+   * DA1 — Primary Device Attributes
    * 
    * In this DA exchange, the host asks for the terminal's architectural 
    * class and basic attributes.
@@ -455,32 +455,33 @@ ScreenSequenceHandler.definition = {
         ,"VT520" : "\x1b[?65;1;2;7;8;9;12;18;19;21;23;24;42;44;45;46c"
         ,"VT525" : "\x1b[?65;1;2;7;9;12;18;19;21;22;23;24;42;44;45;46c"
       };
-      //let reply = [
-      //  "\x1b[?" // header
-      //]
-      //reply.push(65) // VT520
-      ////if (this.length >= 132) 
-      //  reply.push(1) // 132 columns
-      //reply.push(2) // Printer
-      //reply.push(6) // Selective erase
-      //reply.push(8) // User-defined keys
-      //reply.push(9) // National replacememnt character sets
-      //reply.push(15) // Technical characters
-      //reply.push(22) // ANSI color
-      //reply.push(29) // ANSI text locator (i.e., DEC Locator mode)
-      //reply.push("c") // footer
-      //let message = reply.join(";");
+      let reply = [
+        "\x1b[?" // header
+      ]
+      reply.push(65) // VT520
+      //if (this.length >= 132) 
+      reply.push(1) // 132 columns
+      reply.push(2) // Printer
+      reply.push(6) // Selective erase
+      reply.push(8) // User-defined keys
+      reply.push(9) // National replacememnt character sets
+      reply.push(15) // Technical characters
+      reply.push(22) // ANSI color
+      reply.push(29) // ANSI text locator (i.e., DEC Locator mode)
+      reply.push("c") // footer
+      let message = reply.join(";");
       //let message = "\x1b[?1;2;6c";
       //let message = "\x1b[?c";
-      //this._tty.send(message);
-      //coUtils.Debug.reportMessage(
-      //  "Primary Device Attributes: \n" 
-      //  + "Send \"" + message.replace("\x1b", "\\e") + "\"." );
+      let session = this._broker;
+      session.notify("command/send-to-tty", message);
+      coUtils.Debug.reportMessage(
+        "Primary Device Attributes: \n" 
+        + "Send \"" + message.replace("\x1b", "\\e") + "\"." );
     }
   },
 
   /**
-   * DA2—Secondary Device Attributes
+   * DA2 — Secondary Device Attributes
    * 
    * In this DA exchange, the host requests the terminal's identification code, firmware version level, and hardware options.
    * Host Request
@@ -536,19 +537,19 @@ ScreenSequenceHandler.definition = {
   "[sequence('CSI >%dc')]":
   function DA2(n1, n2) 
   { // TODO: Secondary DA (Device Attributes)
-      //let message = "\x1b[>2;100;2c"
-      //let message = "\x1b[>32;100;2c"
-      //let reply = ["\x1b[>"];
-      //reply.push(65)  // VT520
-      //reply.push(100) // Firmware version (for xterm, this is the XFree86 patch number, starting with 95). 
-      //reply.push(0);  // DEC Terminal"s ROM cartridge registration number, always zero.
-      //reply.push("c") // footer
-      //let message = reply.join(";");
-      //message = "\x1b[>0;95;c"
-      //this._tty.send(message);
-      //coUtils.Debug.reportMessage(
-      //  "Secondary Device Attributes: \n" 
-      //  + "Send \"" + message.replace("\x1b", "\\e") + "\"." );
+      let message = "\x1b[>2;100;2c"
+      let message = "\x1b[>32;100;2c"
+      let reply = ["\x1b[>"]; // CSI >
+      reply.push(65)  // VT520
+      reply.push(100) // Firmware version (for xterm, this is the XFree86 patch number, starting with 95). 
+      reply.push(0);  // DEC Terminal"s ROM cartridge registration number, always zero.
+      reply.push("c") // footer
+      let message = reply.join(";");
+      let session = this._broker;
+      session.notify("command/send-to-tty", message);
+      coUtils.Debug.reportMessage(
+        "Secondary Device Attributes: \n" 
+        + "Send \"" + message.replace("\x1b", "\\e") + "\"." );
   },
 
   /**
@@ -605,6 +606,12 @@ ScreenSequenceHandler.definition = {
   function VPR(n) 
   { 
     this.cursorDown(n || 1);
+  },
+
+  "[sequence('CSI %dk')]":
+  function VPB(n) 
+  { 
+    this.cursorUp(n || 1);
   },
 
   /**

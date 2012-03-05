@@ -42,8 +42,9 @@ DRCSBuffer.definition = {
 
   get template()
     ({
-//      parentNode: "#tanasinn_center_area",
+      parentNode: "#tanasinn_center_area",
       tagName: "vbox",
+      style: <>position: absolute; top: -10px;</>,
       childNodes: {
         tagName: "html:canvas",
         id: "tanasinn_drcs_canvas",
@@ -106,6 +107,15 @@ DRCSBuffer.definition = {
     }
   },
 
+  getDRCSInfo: function hasDRCSGlyph(dscs, code) 
+  {
+    let drcs_info = this._map[dscs];
+    if (drcs_info) {
+      return drcs_info;
+    }
+    return null;
+  },
+
   "[subscribe('sequence/dcs')]":
   function onDCS(data) 
   {
@@ -121,10 +131,11 @@ DRCSBuffer.definition = {
       pcn,   // Starting Character
       pe,    // Erase control:
              //   0: erase all characters in the DRCS buffer with this number, 
-             //      width and rendition.
+             //      width and rendition. 
              //   1: erase only characters in locations being reloaded.
              //   2: erase all renditions of the soft character set 
              //      (normal, bold, 80-column, 132-column).
+             //   
       pcmw,  // Character matrix width
              //   Selects the maximum character cell width.
              //   0: 15 pxiels wide for 80 columns, 9pixels wide for 132 columns. (Default)
@@ -157,6 +168,7 @@ DRCSBuffer.definition = {
              //   Defines the character set as a 94- or 96-character graphic set.
              //   0: 94-character set. (Default)
              //   1: 96-character set.
+             //   2: unicode.
       dscs,  //
       value //
     ] = match;
@@ -174,11 +186,15 @@ DRCSBuffer.definition = {
     } [pcmw] || Number(pcmh) || 12;
     let charset_size = 0 == pcss ? 94: 96;
     let full_cell = pt == 2;
-    let start_position = Number(0 == pcss && 0 == pcn ? 1: pcn);
+    let start_code = 0 == pcss ? ({ // 94 character set.
+      0: 0x21,
+    }  [pcn] || Number(pcn) + 0x21): 
+    1 == pcss ? Number(pcn) + 0x20: // 96 character set.
+    Number(pcn) + 0x20; // unicode character set.
+
     this._canvas.width = char_width * 96;
     this._canvas.height = char_height * 1;
-    let sixels = value.split(";");
-    let pointer_x = start_position * char_width;
+    let pointer_x = start_code * char_width;
 
     function char2sixelbits(c) {
       return ("0000000" + (c.charCodeAt(0) - "?".charCodeAt(0)).toString(2))
@@ -188,20 +204,21 @@ DRCSBuffer.definition = {
     let imagedata = this._canvas
       .getContext("2d")
       .getImageData(0, 0, this._canvas.width, this._canvas.height);
+    let sixels = value.split(";");
     for ([n, glyph] in Iterator(sixels)) {
       for ([h, line] in Iterator(glyph.split("/"))) {
         for ([x, c] in Iterator(line.split(""))) {
           if (/[\?-~]/.test(c)) {
             let bits = char2sixelbits(c); 
             for ([y, bit] in Iterator(bits)) {
-              let position = (((y + h * 6) * 96 + start_position + n) * char_width + x) * 4;
+              let position = (((y + h * 6) * 96 + n) * char_width + x) * 4;
               if ("1" == bit) {
                 imagedata.data[position + 0] = 255;
                 imagedata.data[position + 1] = 255;
                 imagedata.data[position + 2] = 255;
                 imagedata.data[position + 3] = 255;
               } else {
-                imagedata.data[position + 3] = 255;
+            //    imagedata.data[position + 3] = 255;
               }
             }
           }
@@ -214,6 +231,8 @@ DRCSBuffer.definition = {
       drcs_canvas: this._canvas,
       drcs_width: char_width,
       drcs_height: char_height,
+      start_code: start_code,
+      end_code: start_code + sixels.length,
       full_cell: full_cell,
     };
   },

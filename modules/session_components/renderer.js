@@ -392,15 +392,17 @@ Renderer.definition = {
         drcs_canvas,
         drcs_width,
         drcs_height,
+        start_code,
+        end_code,
       } = this._drcs_state;
       for (let [index, code] in Iterator(codes)) {
         code = code % 0x80;
-        if (0x20 <= code && code <= 0x7e) {
+        if (start_code <= code && code <= end_code) {
           context.drawImage(
             drcs_canvas, 
-            (code - 0x20) * drcs_width, 0, drcs_width, drcs_height, 
+            (code - start_code) * drcs_width, 0, drcs_width, drcs_height, 
             x + index * char_width, y - this._text_offset, 
-            Math.ceil(char_width + 0.5), this.line_height); 
+            char_width, this.line_height); 
         }
       }
     }

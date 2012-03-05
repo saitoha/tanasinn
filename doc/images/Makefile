@@ -14,22 +14,22 @@ ditaa0_9.zip:
 clean:
 	$(RM) *.zip *.jar busmodel.png hebp.png systemstack.png topic.png tty.png
 
-busmodel.png: ditaa0_9.jar busmodel.ditaa
+busmodel.png: busmodel.ditaa ditaa0_9.jar
 	./ditaa --no-separation $< -o $@
 	chmod -x $@
 
-hebp.png: ditaa0_9.jar hebp.ditaa
+hebp.png: hebp.ditaa ditaa0_9.jar
 	./ditaa --no-separation --round-corners $< -o $@
 	chmod -x $@
 
-systemstack.png: ditaa0_9.jar systemstack.ditaa
+systemstack.png: systemstack.ditaa ditaa0_9.jar
 	./ditaa --round-corners $< -o $@
 	chmod -x $@
 
-topic.png: ditaa0_9.jar topic.ditaa
+topic.png: topic.ditaa ditaa0_9.jar
 	./ditaa --no-separation --round-corners $< -o $@
 	chmod -x $@
 
-tty.png: ditaa0_9.jar tty.ditaa
+tty.png: tty.ditaa ditaa0_9.jar
 	./ditaa --round-corners $< -o $@
 	chmod -x $@

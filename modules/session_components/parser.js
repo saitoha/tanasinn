@@ -559,7 +559,6 @@ Parser.definition = {
    *                                 ^                          ^
    *                              inserted                   inserted
    */
-
   _padWideCharacter: function _padWideCharacter(codes)
   {
     for (let [, c] in Iterator(codes)) {
@@ -572,8 +571,9 @@ Parser.definition = {
         }
       }
       let is_wide = coUtils.Unicode.doubleWidthTest(c);
-      if (is_wide)
+      if (is_wide) {
         yield 0;
+      }
       yield c;
     }
   },
