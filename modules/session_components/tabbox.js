@@ -204,7 +204,7 @@ BottomPanel.definition = {
     let line_height = renderer.line_height;
     let row = screen.height;
     let max_screen_height = Math.floor(line_height * row / 2);
-    for ([, panel] in Iterator(this._tabbox.tabpanels.childNodes)) {
+    for (let [, panel] in Iterator(this._tabbox.tabpanels.childNodes)) {
       if (panel.height > max_screen_height); 
         panel.height = max_screen_height;
     }

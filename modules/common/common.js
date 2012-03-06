@@ -182,14 +182,14 @@ coUtils.Constant = {
     Yellow: "#FFFF00",
     LightYellow: "#FFFFE0",
     Ivory: "#FFFFF0",
-    White: "#FFFFFF",
+    White: "#FFFFFF"
   },
 
 };
 
 coUtils.Constant.WEB140_COLOR_MAP_REVERSE = function() {
   let result = {};
-  for ([key, value] in Iterator(coUtils.Constant.WEB140_COLOR_MAP)) {
+  for (let [key, value] in Iterator(coUtils.Constant.WEB140_COLOR_MAP)) {
     result[value] = key;
   } 
   return result;
@@ -1184,11 +1184,11 @@ coUtils.Keyboard = {
       }
     }
     let packed_code = code 
-      | !!event.ctrlKey   << coUtils.Keyboard.KEY_CTRL 
-      | (!!event.altKey || code > 0xff) << coUtils.Keyboard.KEY_ALT 
-      | !!event.shiftKey  << coUtils.Keyboard.KEY_SHIFT 
-      | !!event.keyCode   << coUtils.Keyboard.KEY_NOCHAR
-      | !!event.metaKey   << coUtils.Keyboard.KEY_META
+      | Boolean(event.ctrlKey)   << coUtils.Keyboard.KEY_CTRL 
+      | (Boolean(event.altKey) || code > 0xff) << coUtils.Keyboard.KEY_ALT 
+      | Boolean(event.shiftKey)  << coUtils.Keyboard.KEY_SHIFT 
+      | Boolean(event.keyCode)   << coUtils.Keyboard.KEY_NOCHAR
+      | Boolean(event.metaKey)   << coUtils.Keyboard.KEY_META
       ;
     return packed_code;
   },

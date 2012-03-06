@@ -42,16 +42,18 @@ DRCSBuffer.definition = {
 
   get template()
     ({
-      parentNode: "#tanasinn_center_area",
-      tagName: "vbox",
-      style: <>position: absolute; top: -10px;</>,
-      childNodes: {
+//      parentNode: "#tanasinn_center_area",
+//      tagName: "vbox",
+//      style: <>position: absolute; top: -10px;</>,
+//      childNodes: {
         tagName: "html:canvas",
         id: "tanasinn_drcs_canvas",
-      },
+//      },
     }),
 
   _map: null,
+  _g0: "B",
+  _g1: "B",
 
   /** installs itself. 
    *  @param {Session} session A session object.
@@ -68,8 +70,6 @@ DRCSBuffer.definition = {
       "command/construct-chrome", this.template);
     // set initial size.
     this._canvas = tanasinn_drcs_canvas;
-    this._canvas.style.border = "red 1px solid";
-    let context = this._canvas.getContext("2d");
   },
 
   /** Uninstalls itself.
@@ -89,6 +89,7 @@ DRCSBuffer.definition = {
   function onSCSG0(mode) 
   {
     let broker = this._broker;
+    this._g0 = mode;
     if (this._map[mode]) {
       broker.notify("event/drcs-state-changed/g0", this._map[mode]);
     } else {
@@ -100,6 +101,7 @@ DRCSBuffer.definition = {
   function onSCSG1(mode) 
   {
     let broker = this._broker;
+    this._g1 = mode;
     if (this._map[mode]) {
       broker.notify("event/drcs-state-changed/g1", this._map[mode]);
     } else {
@@ -107,11 +109,15 @@ DRCSBuffer.definition = {
     }
   },
 
-  getDRCSInfo: function hasDRCSGlyph(dscs, code) 
+  getDRCSInfo: function getDRCSInfo(code) 
   {
-    let drcs_info = this._map[dscs];
-    if (drcs_info) {
-      return drcs_info;
+    if (this._map) {
+      let drcs_info = this._map[this._g0];
+      if (drcs_info) {
+        if (drcs_info.start_code <= code && code < drcs_info.end_code) {
+          return drcs_info;
+        }
+      }
     }
     return null;
   },
@@ -119,6 +125,7 @@ DRCSBuffer.definition = {
   "[subscribe('sequence/dcs')]":
   function onDCS(data) 
   {
+    try {
     //               Pfn    Pcn      Pe      Pcmw     Pw      Pt      Pcmh     Pcss    Dscs
     let pattern = /^([01]);([0-9]+);([012]);([0-9]+);([012]);([012]);([0-9]+);([01])\{\s*([0-~])([\?-~\/;\n\r]+)$/;
     let match = data.match(pattern);
@@ -188,9 +195,9 @@ DRCSBuffer.definition = {
     let full_cell = pt == 2;
     let start_code = 0 == pcss ? ({ // 94 character set.
       0: 0x21,
-    }  [pcn] || Number(pcn) + 0x21): 
-    1 == pcss ? Number(pcn) + 0x20: // 96 character set.
-    Number(pcn) + 0x20; // unicode character set.
+    }  [pcn] || Number(pcn) + 0x21) 
+    : 1 == pcss ? Number(pcn) + 0x20 // 96 character set.
+    : Number(pcn) + 0x20; // unicode character set.
 
     this._canvas.width = char_width * 96;
     this._canvas.height = char_height * 1;
@@ -205,26 +212,25 @@ DRCSBuffer.definition = {
       .getContext("2d")
       .getImageData(0, 0, this._canvas.width, this._canvas.height);
     let sixels = value.split(";");
-    for ([n, glyph] in Iterator(sixels)) {
-      for ([h, line] in Iterator(glyph.split("/"))) {
-        for ([x, c] in Iterator(line.split(""))) {
-          if (/[\?-~]/.test(c)) {
-            let bits = char2sixelbits(c); 
-            for ([y, bit] in Iterator(bits)) {
-              let position = (((y + h * 6) * 96 + n) * char_width + x) * 4;
-              if ("1" == bit) {
-                imagedata.data[position + 0] = 255;
-                imagedata.data[position + 1] = 255;
-                imagedata.data[position + 2] = 255;
-                imagedata.data[position + 3] = 255;
-              } else {
-            //    imagedata.data[position + 3] = 255;
-              }
+    for (let [n, glyph] in Iterator(sixels)) {
+      for (let [h, line] in Iterator(glyph.split("/"))) {
+        for (let [x, c] in Iterator(line.replace(/[^\?-~]/g, "").split(""))) {
+          let bits = char2sixelbits(c); 
+          for (let [y, bit] in Iterator(bits)) {
+            let position = (((y + h * 6) * 96 + n) * char_width + x) * 4;
+            if ("1" == bit) {
+              imagedata.data[position + 0] = 255;
+              imagedata.data[position + 1] = 255;
+              imagedata.data[position + 2] = 255;
+              imagedata.data[position + 3] = 255;
+            } else {
+          //    imagedata.data[position + 3] = 255;
             }
           }
         }
       }
     }
+
     this._canvas.getContext("2d").putImageData(imagedata, 0, 0);
     this._map[dscs] = {
       dscs: dscs,
@@ -235,6 +241,7 @@ DRCSBuffer.definition = {
       end_code: start_code + sixels.length,
       full_cell: full_cell,
     };
+    } catch (e) {alert(e)}
   },
 
 } // class DRCSBuffer

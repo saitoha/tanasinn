@@ -575,7 +575,7 @@ Line.definition = {
 
     function getForwardBreakPoint(forwardChars, column, category) {
       let result = column + 1;
-      for ([index, cell] in Iterator(forwardChars)) {
+      for (let [index, cell] in Iterator(forwardChars)) {
         if (0 == cell.c) {
           continue;
         } if (category == getCharacterCategory(cell.c)) {
@@ -589,7 +589,7 @@ Line.definition = {
     
     function getBackwardBreakPoint(backwardChars, column, category) {
       let result = column;
-      for ([index, cell] in Iterator(backwardChars.reverse())) {
+      for (let [index, cell] in Iterator(backwardChars.reverse())) {
         if (0 == cell.c) {
           result = backwardChars.length - index - 1;
           continue;

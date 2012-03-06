@@ -30,7 +30,7 @@
 let TextboxWidget = new Class();
 TextboxWidget.definition = {
 
-  "[persistable, watchable] default_font_color": "white",
+  "[persistable, watchable] font_color": "white",
   "[persistable, watchable] font_size": 16,
   "[persistable, watchable] font_family": "Lucida Console,Latha,Georgia,monospace",
   "[persistable, watchable] default_text_shadow": "1px 1px 3px #555",
@@ -107,15 +107,22 @@ TextboxWidget.definition = {
 
   get value() 
   {
-    return this._element.value;
+    return this._main_buffer;
   },
 
   set value(text) 
   {
     this._main_buffer = text;
-    this._element.value = text;
     this._start = text.length;
     this._draw();
+  },
+
+  commit: function commit()
+  {
+    this.value = this.value.substr(0, this.selectionStart) 
+      + this._element.value
+      + this.value.substr(this.selectionEnd);
+    this._element.value = "";
   },
 
   _clear: function _clear()
@@ -129,7 +136,7 @@ TextboxWidget.definition = {
   {
     this._clear();
 
-    this._context.fillStyle = this.default_font_color;
+    this._context.fillStyle = this.font_color;
     this._context.font = this.font_size + "px " + this.font_family + " " + this.font_weight;
     let height = this._glyph_height;
     if ("command" == this._mode) {
@@ -167,19 +174,18 @@ TextboxWidget.definition = {
 
   get selectionStart() 
   {
-    return this._element.selectionStart;
+    return this._start;
   },
 
   set selectionStart(position) 
   {
     this._start = position;
-    this._element.selectionStart = position;
     this._draw();
   },
 
   get selectionEnd() 
   {
-    return this._element.selectionStart;
+    return this._start;
   },
 
   set selectionEnd(position) 
@@ -221,6 +227,17 @@ TextboxWidget.definition = {
     this._element.focus();
   },
 
+  getCaretPosition: function getCaretPosition()
+  {
+    let text = this.value.substr(0, this.selectionStart);
+    let position = this._context.measureText(text).width;
+    this._element.style.fontFamily = this.font_family;
+    this._element.style.fontSize = (this.font_size - 2) + "px";
+    this._element.style.color = this.font_color;
+    this._element.parentNode.previousSibling.width = position;
+    return position;
+  },
+
   calculateSize: function() 
   {
     let fill_style = this._context.fillStyle;
@@ -229,9 +246,14 @@ TextboxWidget.definition = {
       .getAverageGryphWidth(this.font_size, this.font_family);
     this._canvas.width = this._canvas.parentNode.boxObject.width;
     this._glyph_height = height;
-    this._canvas.height = height + top;// this._canvas.parentNode.boxObject.height;
+    this._canvas.height = height + top;
     this._context.fillStyle = fill_style;
     this._context.font = font;
+  },
+
+  getInputField: function getInputField()
+  {
+    return this._element;
   },
 
 };
@@ -288,6 +310,9 @@ CommandlineHistory.definition = {
     this.onCommand.enabled = false;
   },
 
+  /**
+   *
+   */
   loadHistory: function loadHistory() 
   {
     // create nsIFile object.
@@ -415,13 +440,11 @@ CommandlineHistory.definition = {
     }
   },
 
-
-};
+}; // CommandlineHistory
 
 
 /**
  * @Aspect CompletionView
- *
  */
 let CompletionView = new Aspect();
 CompletionView.definition = {
@@ -451,7 +474,7 @@ CompletionView.definition = {
   _selectRow: function _selectRow(row)
   {
     row.style.borderRadius = "6px";
-    row.style.backgroundImage = "-moz-linear-gradient(top, #777, #666)";
+    row.style.backgroundImage = "-moz-linear-gradient(top, #777, #555)";
     row.style.color = "white";
     let completion_root = this._completion_root;
     let scroll_box = completion_root.parentNode;
@@ -528,7 +551,7 @@ CompletionView.definition = {
     broker.notify("command/fill");
   },
 
-};
+}; // CompletionView
 
 /**
  * @class Commandline
@@ -558,21 +581,37 @@ Commandline.definition = {
   [
     {
       parentNode: "#tanasinn_commandline_area",
+      tagName: "box",
+      style: <>position: absolute;</>,
+      childNodes: [
+        {
+          tagName: "box",
+          id: "tanasinn_input_stem",
+        },
+        {
+          tagName: "box",
+          childNodes: {
+            tagName: "html:input",
+            id: "tanasinn_commandline",
+            style: <> 
+              //position: absolute;
+              margin-top: -4px;
+              padding-top: 0px;
+              opacity: 1.0;
+              background: transparent;
+            </>,
+          },
+        },
+      ],
+    },
+    {
+      parentNode: "#tanasinn_commandline_area",
       id: "tanasinn_commandline_canvas",
       tagName: "html:canvas",
       height: this.font_size,
       style: <>
         padding-top: 2px,
         opacity: 0.7,
-      </>,
-    },
-    {
-      parentNode: "#tanasinn_commandline_area",
-      tagName: "html:input",
-      id: "tanasinn_commandline",
-      style: <> 
-        position: absolute;
-        opacity: 0;
       </>,
     },
     {
@@ -719,6 +758,21 @@ Commandline.definition = {
   "[subscribe('variable-changed/commandline.{font_weight | font_size | default_text_shadow | font_family}')]":
   function onStyleChanged() 
   {
+  },
+
+  getCaretPosition: function getCaretPosition() 
+  {
+    this._textbox.getCaretPosition();
+  },
+
+  commit: function commit() 
+  {
+    this._textbox.commit();
+  },
+
+  getInputField: function getInputField() 
+  {
+    return this._textbox.getInputField();
   },
 
   "[subscribe('event/screen-width-changed')]": 

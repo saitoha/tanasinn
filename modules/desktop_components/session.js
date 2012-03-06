@@ -264,6 +264,7 @@ Session.definition = {
   {
     this.removeGlobalEvent("quit-application");
     this.notify("event/broker-stopping", this);
+    /*
     if (coUtils.Runtime.app_name.match(/tanasinn/)) {
       this.window.close(); // close window
 
@@ -272,6 +273,7 @@ Session.definition = {
         .getService(Components.interfaces.fuelIApplication);
       application.quit();
     }
+    */
   },
 
 }; // class Session

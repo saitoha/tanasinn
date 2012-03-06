@@ -497,7 +497,6 @@ char:{event.isChar?"t":"f"},
   "[listen('compositionstart', '#tanasinn_default_input')]":
   function oncompositionstart(event) 
   {
-//    if ("WINNT" != coUtils.Runtime.OS) {
       let version_comparator = Components
         .classes["@mozilla.org/xpcom/version-comparator;1"]
         .getService(Components.interfaces.nsIVersionComparator);
@@ -505,7 +504,6 @@ char:{event.isChar?"t":"f"},
       {
         this.oninput.enabled = false;
       }
-//    }
   },
   
   /** compositionend event handler. 
@@ -514,7 +512,6 @@ char:{event.isChar?"t":"f"},
   "[listen('compositionend', '#tanasinn_default_input')]":
   function oncompositionend(event) 
   {
-//    if ("WINNT" != coUtils.Runtime.OS) {
       let version_comparator = Components
         .classes["@mozilla.org/xpcom/version-comparator;1"]
         .getService(Components.interfaces.nsIVersionComparator);
@@ -523,7 +520,6 @@ char:{event.isChar?"t":"f"},
         this.oninput.enabled = true;
         this.oninput(event);
       }
-//    }
   },
   
 };

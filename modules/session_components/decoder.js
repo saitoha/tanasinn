@@ -334,7 +334,7 @@ CP932Decoder.definition = {
     return let (map = this._map) function(scanner)
     {
       while (!scanner.isEnd) {
-        let c1 = scanner.current() + this._offset;
+        let c1 = scanner.current();// + this._offset;
         if (c1 < 0x20) { // control codes.
           break;
         } if (c1 < 0x7f) { // ASCII range.
@@ -412,9 +412,10 @@ UTF8Decoder.definition = {
    */
   decode: function decode(scanner) 
   {
-    return let (self = this, offset = this._offset) function(scanner) {
+    //let offset = this._offset;
+    return let (self = this) function(scanner) {
       while (!scanner.isEnd) {
-        let c = self._getNextCharacter(scanner) + offset;
+        let c = self._getNextCharacter(scanner);// + offset;
         if (c < 0x20 || (0x7f <= c && c < 0xa0) || c == 0xff) {
           break;
         }

@@ -50,7 +50,7 @@ Aspect.prototype = {
 
   define: function define(definition)
   {
-    if (value) {
+    if (definition) {
       this._definition = definition;
     }
   },
@@ -324,7 +324,7 @@ Class.prototype = {
           };
         } else if ("__attributes" == key) {
           if (prototype.__attributes) {
-            for ([name, ] in Iterator(aspect.__attributes)) {
+            for (let [name, ] in Iterator(aspect.__attributes)) {
               let attribute = aspect.__attributes[name];
               prototype.__attributes[name] = attribute;
             }
@@ -665,8 +665,13 @@ XPCOMFactory.definition = {
 
   unregisterSelf: function unregisterSelf()
   {
-    if (!this._registered)
+    if (!this._registered) {
       return;
+    }
+    let observer_service = Components
+      .classes["@mozilla.org/observer-service;1"]
+      .getService(Components.interfaces.nsIObserverService);
+    observer_service.removeObserver(this, "quit-application");
     Components.manager
       .QueryInterface(Components.interfaces.nsIComponentRegistrar)
       .unregisterFactory(this._classID, this);
@@ -694,10 +699,6 @@ XPCOMFactory.definition = {
 
   observe: function observe() 
   {
-    let observer_service = Components
-      .classes["@mozilla.org/observer-service;1"]
-      .getService(Components.interfaces.nsIObserverService);
-    observer_service.removeObserver(this, "quit-application");
     this.unregisterSelf();
   },
 

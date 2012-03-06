@@ -86,7 +86,6 @@ DOMEventManager.definition = {
       if (target) {
         this._addImpl(listener, target);
       } else {
-//          alert(listener.target)
         if ("#" == listener.target.charAt(0)) {
           broker.subscribe(
             <>@event/domnode-created/{id}</>, 
@@ -105,32 +104,35 @@ DOMEventManager.definition = {
     }
   },
 
+  createDelegate: function createDelegate(handler, context)
+  {
+    return function() {
+      try {
+        handler.apply(context, arguments);
+      } catch (e) {
+        coUtils.Debug.reportError(e);
+      }
+    };
+  },
+
   _addImpl: function _addImpl(listener, target)
   {
     let broker = this._broker;
     let type = listener.type;
-    let capture = !!listener.capture;
+    let capture = Boolean(listener.capture);
     let context = listener.context || target;
     let handler = listener.handler;
     if (target && type && handler) { // validate listener object.
-      let delegate = function() {
-        try {
-          handler.apply(context, arguments);
-        } catch (e) {
-          coUtils.Debug.reportError(e);
-        }
-      };
+      let delegate = this.createDelegate(handler, context);
       target.addEventListener(type, delegate, capture); 
       let id = listener.id;
       if (id) {
         this._listener_list_map = this._listener_list_map || {};
         let list = this._listener_list_map[id];
-        if (!list)
+        if (!list) {
           list = this._listener_list_map[id] = [];
-        list.push(function() {
-          target.removeEventListener(type, delegate, capture);
-          target = null;
-        });
+        }
+        list.push([target, type, delegate, capture]);
 //        coUtils.Debug.reportMessage(_("Registered DOM listener '%s'"), id);
       }
       listener = null;
@@ -151,7 +153,10 @@ DOMEventManager.definition = {
     this._listener_list_map = this._listener_list_map || {};
     let list = this._listener_list_map[id];
     if (list) {
-      list.forEach(function(action) action());
+      list.forEach(function(info) {
+        let [target, type, delegate, capture] = info;
+        target.removeEventListener(type, delegate, capture);
+      });
       delete this._listener_list_map[id];
     } else {
       coUtils.Debug.reportWarning(

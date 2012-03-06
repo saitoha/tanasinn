@@ -113,6 +113,8 @@ Renderer.definition = {
 
   _text_offset: 10, 
 
+  _offset: 0,
+
   _drcs_state: null, 
 
   // font
@@ -186,6 +188,20 @@ Renderer.definition = {
     this.onDRCSStateChangedG0.enabled = false;
     this.onDRCSStateChangedG1.enabled = false;
     this._canvas.parentNode.removeChild(this._canvas);
+  },
+
+  "[subscribe('event/shift-out'), enabled]": 
+  function shiftOut() 
+  {
+    this._offset += 0x80;
+  },
+
+  "[subscribe('event/shift-in'), enabled]": 
+  function shiftIn() 
+  {
+    if (0 != this._offset) {
+      this._offset -= 0x80;
+    }
   },
 
   "[subscribe('event/drcs-state-changed/g0')]": 
@@ -375,6 +391,7 @@ Renderer.definition = {
       }
     }())];
 
+
     if (this._drcs_state === null || !attr.drcs) {
       let text = String.fromCharCode.apply(String, codes);
       if (this.enable_render_bold_as_textshadow && attr.bold) {
@@ -394,15 +411,22 @@ Renderer.definition = {
         drcs_height,
         start_code,
         end_code,
+        glyphs,
       } = this._drcs_state;
       for (let [index, code] in Iterator(codes)) {
-        code = code % 0x80;
+        code = code - this._offset;
         if (start_code <= code && code <= end_code) {
+          //let glyph = glyphs[code - start_code];
+          //context.putImageData(glyph, 0, 0)
           context.drawImage(
             drcs_canvas, 
             (code - start_code) * drcs_width, 0, drcs_width, drcs_height, 
             x + index * char_width, y - this._text_offset, 
-            char_width, this.line_height); 
+            Math.ceil(char_width + 0.5), this.line_height); 
+          context.globalCompositeOperation = "source-atop";
+          context.fillRect(
+            x, Math.ceil(y - this._text_offset + 0.5), char_width + 1, this.line_height);
+          context.globalCompositeOperation = "source-over";
         }
       }
     }

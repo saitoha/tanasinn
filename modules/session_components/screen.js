@@ -463,6 +463,7 @@ ScreenSequenceHandler.definition = {
       reply.push(1) // 132 columns
       reply.push(2) // Printer
       reply.push(6) // Selective erase
+      reply.push(7) // Soft character set (DRCS)
       reply.push(8) // User-defined keys
       reply.push(9) // National replacememnt character sets
       reply.push(15) // Technical characters
