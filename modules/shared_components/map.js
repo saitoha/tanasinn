@@ -497,7 +497,6 @@ CommandlineKeyHandler.definition = {
   "[cmap('<C-Space>', '<C-@>', '<C-2>'), _('set mark.'), enabled]":
   function set_mark(info) 
   {
-    alert(info)
     let textbox = info.textbox;
     let value = textbox.value;
     let position = textbox.selectionEnd;

@@ -22,6 +22,33 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+/**
+ * @class AnswerBack
+ *
+ */
+let AnswerBack = new Class().extends(Component);
+AnswerBack.definition = {
+
+  "[persistable] answerback_message": "tanasinn\r",
+
+  _answerback_mode: false,
+
+  /** retuns answerback message */
+  "[subscribe('command/answerback'), enabled]":
+  function answerback()
+  {
+    let session = this._broker;
+    session.notify("command/send-to-tty", this.answerback_message);
+  },
+
+  /** */
+  "[subscribe('command/change-answerback-mode'), enabled]":
+  function changeAnswerBackMode(mode)
+  {
+    this._answerback_mode = Boolean(mode);
+  },
+
+};
 
 /**
  * @class Control
@@ -32,7 +59,13 @@ Control.definition = {
   get id()
     "control",
 
-  "[persistable] answerback_message": "tanasinn\r",
+  /** Post constructor */
+  "[subscribe('initialized/{screen & ansimode}'), enabled]":
+  function onLoad(screen, ansi_mode) 
+  {
+    this._screen = screen;
+    this._ansi_mode = ansi_mode;
+  },
 
   /** Null.
    */
@@ -87,7 +120,7 @@ Control.definition = {
   function ENQ() 
   {
     let session = this._broker;
-    session.notify("command/send-to-tty", this.answerback_message);
+    session.notify("command/answerback");
   },
   
   /** Acknowledge.
@@ -123,7 +156,8 @@ Control.definition = {
   "[sequence('0x09')]":
   function HT() 
   { // Horizontal Tab
-    this._screen.horizontalTab();
+    let screen = this._screen;
+    screen.horizontalTab();
   },
  
   /** Linefeed.
@@ -346,13 +380,6 @@ Control.definition = {
   {
   },
 
-  /** constructor */
-  "[subscribe('initialized/{screen & ansimode}'), enabled]":
-  function onLoad(screen, ansi_mode) 
-  {
-    this._screen = screen;
-    this._ansi_mode = ansi_mode;
-  },
 };
 
 /**
@@ -363,6 +390,7 @@ Control.definition = {
 function main(broker) 
 {
   new Control(broker);
+  new AnswerBack(broker);
 }
 
 

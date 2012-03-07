@@ -68,60 +68,327 @@
  * vertical line             ACS_VLINE     |        x
  */
 
-function decSpecialCharacterMap(code) {
-      /*
-         'j'.charCodeAt(0) == code ? 0x255b
-       : 'k'.charCodeAt(0) == code ? 0x2510
-       : 'l'.charCodeAt(0) == code ? 0x250c
-       : 'm'.charCodeAt(0) == code ? 0x2514
-       : 'n'.charCodeAt(0) == code ? 0x253c
-       : 'o'.charCodeAt(0) == code ? 0x2500
-       : 'p'.charCodeAt(0) == code ? 0x2500
-       : 'q'.charCodeAt(0) == code ? 0x2500
-       : 'r'.charCodeAt(0) == code ? 0x2500
-       : 's'.charCodeAt(0) == code ? 0x2500
-       : 't'.charCodeAt(0) == code ? 0x251c
-       : 'u'.charCodeAt(0) == code ? 0x2524
-       : 'v'.charCodeAt(0) == code ? 0x2534
-       : 'w'.charCodeAt(0) == code ? 0x252c
-       : 'x'.charCodeAt(0) == code ? 0x007c
-      */
+let ASCII = [
+  0x00, /* NUL  */
+  0x01, /* SOH  */
+  0x02, /* STX  */
+  0x03, /* ETX  */
+  0x04, /* EOT  */
+  0x05, /* ENQ  */
+  0x06, /* ACK  */
+  0x07, /* BEL  */
+  0x08, /* BS   */
+  0x09, /* HT   */
+  0x0a, /* LF   */
+  0x0b, /* VT   */
+  0x0c, /* FF   */
+  0x0d, /* CR   */
+  0x0e, /* SO   */
+  0x0f, /* SI   */
+  0x10, /* DLE  */
+  0x11, /* DC1  */
+  0x12, /* DC2  */
+  0x13, /* DC3  */
+  0x14, /* DC4  */
+  0x15, /* NAK  */
+  0x16, /* SYN  */
+  0x17, /* ETB  */
+  0x18, /* CAN  */
+  0x19, /* EM   */
+  0x1a, /* SUB  */
+  0x1b, /* ESC  */
+  0x1c, /* FS   */
+  0x1d, /* GS   */
+  0x1e, /* RS   */
+  0x1f, /* US   */
+  0x20, /* sp   */
+  0x21, /* !    */
+  0x22, /* "    */
+  0x23, /* #    */
+  0x24, /* $    */
+  0x25, /* %    */
+  0x26, /* &    */
+  0x27, /* '    */
+  0x28, /* (    */
+  0x29, /* )    */
+  0x2a, /* *    */
+  0x2b, /* +    */
+  0x2c, /* ,    */
+  0x2d, /* -    */
+  0x2e, /* .    */
+  0x2f, /* /    */
+  0x30, /* 0    */
+  0x31, /* 1    */
+  0x32, /* 2    */
+  0x33, /* 3    */
+  0x34, /* 4    */
+  0x35, /* 5    */
+  0x36, /* 6    */
+  0x37, /* 7    */
+  0x38, /* 8    */
+  0x39, /* 9    */
+  0x3a, /* :    */
+  0x3b, /* ;    */
+  0x3c, /* <    */
+  0x3d, /* =    */
+  0x3e, /* >    */
+  0x3f, /* ?    */
+  0x40, /* @    */
+  0x41, /* A    */
+  0x42, /* B    */
+  0x43, /* C    */
+  0x44, /* D    */
+  0x45, /* E    */
+  0x46, /* F    */
+  0x47, /* G    */
+  0x48, /* H    */
+  0x49, /* I    */
+  0x4a, /* J    */
+  0x4b, /* K    */
+  0x4c, /* L    */
+  0x4d, /* M    */
+  0x4e, /* N    */
+  0x4f, /* O    */
+  0x50, /* P    */
+  0x51, /* Q    */
+  0x52, /* R    */
+  0x53, /* S    */
+  0x54, /* T    */
+  0x55, /* U    */
+  0x56, /* V    */
+  0x57, /* W    */
+  0x58, /* X    */
+  0x59, /* Y    */
+  0x5a, /* Z    */
+  0x5b, /* [    */
+  0x5c, /* \    */
+  0x5d, /* ]    */
+  0x5e, /* ^    */
+  0x5f, /* _    */
+  0x60, /* `    */
+  0x61, /* a    */
+  0x62, /* b    */
+  0x63, /* c    */
+  0x64, /* d    */
+  0x65, /* e    */
+  0x66, /* f    */
+  0x67, /* g    */
+  0x68, /* h    */
+  0x69, /* i    */
+  0x6a, /* j    */
+  0x6b, /* k    */
+  0x6c, /* l    */
+  0x6d, /* m    */
+  0x6e, /* n    */
+  0x6f, /* o    */
+  0x70, /* p    */
+  0x71, /* q    */
+  0x72, /* r    */
+  0x73, /* s    */
+  0x74, /* t    */
+  0x75, /* u    */
+  0x76, /* v    */
+  0x77, /* w    */
+  0x78, /* x    */
+  0x79, /* y    */
+  0x7a, /* z    */
+  0x7b, /* {    */
+  0x7c, /* |    */
+  0x7d, /* }    */
+  0x7e, /* ~    */
+  0x7f, /* DEL  */
+];
 
-    return 0 ? 0
-       : '}'.charCodeAt(0) == code ? 'f'.charCodeAt(0)
-       : '.'.charCodeAt(0) == code ? 'v'.charCodeAt(0)
-       : ','.charCodeAt(0) == code ? '<'.charCodeAt(0)
-       : '+'.charCodeAt(0) == code ? '>'.charCodeAt(0)
-       : '-'.charCodeAt(0) == code ? '^'.charCodeAt(0)
-       : 'h'.charCodeAt(0) == code ? '#'.charCodeAt(0)
-       : '~'.charCodeAt(0) == code ? 'o'.charCodeAt(0)
-       : 'a'.charCodeAt(0) == code ? ':'.charCodeAt(0)
-       : 'f'.charCodeAt(0) == code ? '\\'.charCodeAt(0)
-       : '`'.charCodeAt(0) == code ? '+'.charCodeAt(0)
-       : 'z'.charCodeAt(0) == code ? '>'.charCodeAt(0)
-       : '{'.charCodeAt(0) == code ? '*'.charCodeAt(0)
-       : 'q'.charCodeAt(0) == code ? '-'.charCodeAt(0)
-       : 'i'.charCodeAt(0) == code ? '#'.charCodeAt(0)
-       : 'n'.charCodeAt(0) == code ? '+'.charCodeAt(0)
-       : 'y'.charCodeAt(0) == code ? '<'.charCodeAt(0)
-       : 'm'.charCodeAt(0) == code ? '+'.charCodeAt(0)
-       : 'j'.charCodeAt(0) == code ? '+'.charCodeAt(0)
-       : '|'.charCodeAt(0) == code ? '!'.charCodeAt(0)
-       : 'g'.charCodeAt(0) == code ? '#'.charCodeAt(0)
-       : 'o'.charCodeAt(0) == code ? '~'.charCodeAt(0)
-       : 'p'.charCodeAt(0) == code ? '-'.charCodeAt(0)
-       : 'r'.charCodeAt(0) == code ? '-'.charCodeAt(0)
-       : 's'.charCodeAt(0) == code ? '_'.charCodeAt(0)
-       : '0'.charCodeAt(0) == code ? '#'.charCodeAt(0)
-       : 'w'.charCodeAt(0) == code ? '+'.charCodeAt(0)
-       : 'u'.charCodeAt(0) == code ? '+'.charCodeAt(0)
-       : 't'.charCodeAt(0) == code ? '+'.charCodeAt(0)
-       : 'v'.charCodeAt(0) == code ? '+'.charCodeAt(0)
-       : 'l'.charCodeAt(0) == code ? '+'.charCodeAt(0)
-       : 'k'.charCodeAt(0) == code ? '+'.charCodeAt(0)
-       : 'x'.charCodeAt(0) == code ? '|'.charCodeAt(0)
-       : code;
-}
+/* DEC Multinational Character Set */
+let DEC_Multinational_Character_Set = ASCII.slice(0);
+
+/* DEC Special Graphics Character Set */
+let DEC_Special_Graphics_Character_Set = ASCII.slice(0);
+DEC_Special_Graphics_Character_Set[0x60] = 0x25c6; // 
+DEC_Special_Graphics_Character_Set[0x61] = 0x2592; // 
+DEC_Special_Graphics_Character_Set[0x62] = 0x2409; // HT
+DEC_Special_Graphics_Character_Set[0x63] = 0x240c; // FF
+DEC_Special_Graphics_Character_Set[0x64] = 0x240d; // CR
+DEC_Special_Graphics_Character_Set[0x65] = 0x240a; // LF
+DEC_Special_Graphics_Character_Set[0x66] = 0xb0; // 
+DEC_Special_Graphics_Character_Set[0x67] = 0xb1; // 
+DEC_Special_Graphics_Character_Set[0x68] = 0x2424; // NL
+DEC_Special_Graphics_Character_Set[0x69] = 0x240b; // VT
+DEC_Special_Graphics_Character_Set[0x6a] = 0x2518; // 
+DEC_Special_Graphics_Character_Set[0x6b] = 0x2510; // 
+DEC_Special_Graphics_Character_Set[0x6c] = 0x250c; // 
+DEC_Special_Graphics_Character_Set[0x6d] = 0x2514; // 
+DEC_Special_Graphics_Character_Set[0x6e] = 0x253c; // 
+DEC_Special_Graphics_Character_Set[0x6f] = 0x23ba; // 
+DEC_Special_Graphics_Character_Set[0x70] = 0x23bb; // 
+DEC_Special_Graphics_Character_Set[0x71] = 0x2500; // 
+DEC_Special_Graphics_Character_Set[0x72] = 0x23bc; // 
+DEC_Special_Graphics_Character_Set[0x73] = 0x23bd; // 
+DEC_Special_Graphics_Character_Set[0x74] = 0x251c; // 
+DEC_Special_Graphics_Character_Set[0x75] = 0x2524; // 
+DEC_Special_Graphics_Character_Set[0x76] = 0x2534; // 
+DEC_Special_Graphics_Character_Set[0x77] = 0x252c; // 
+DEC_Special_Graphics_Character_Set[0x78] = 0x2502; // 
+DEC_Special_Graphics_Character_Set[0x79] = 0x2264; // 
+DEC_Special_Graphics_Character_Set[0x7a] = 0x2265; // 
+DEC_Special_Graphics_Character_Set[0x7b] = 0x03c0; // 
+DEC_Special_Graphics_Character_Set[0x7c] = 0x2260; // 
+DEC_Special_Graphics_Character_Set[0x7d] = 0xa3; // 
+DEC_Special_Graphics_Character_Set[0x7e] = 0xb7; // 
+
+/* DEC British NRC Set 
+ * DSCS = B
+ */
+let DEC_British_NRC_Set = ASCII.slice(0);
+DEC_British_NRC_Set[0x23] = 0xa3; // pond
+
+/* DEC Dutch NRC Set 
+ * DSCS = 4
+ */
+let DEC_Dutch_NRC_Set = ASCII.slice(0);
+DEC_Dutch_NRC_Set[0x23] = 0xa3; // pond
+DEC_Dutch_NRC_Set[0x40] = 0xbe; // 3/4
+DEC_Dutch_NRC_Set[0x5b] = 0xff; // ij
+DEC_Dutch_NRC_Set[0x5c] = 0xbd; // 1/2
+DEC_Dutch_NRC_Set[0x5d] = 0x7c; // |
+DEC_Dutch_NRC_Set[0x7b] = 0xa8; // 
+DEC_Dutch_NRC_Set[0x7c] = 0x66; // 0x0192; // 
+DEC_Dutch_NRC_Set[0x7d] = 0xbc; // 
+DEC_Dutch_NRC_Set[0x7e] = 0xb4; // 
+
+/* DEC Finnish NRC Set 
+ * DSCS = 5, C
+ */
+let DEC_Finnish_NRC_Set = ASCII.slice(0);
+DEC_Finnish_NRC_Set[0x5b] = 0xc4; // 
+DEC_Finnish_NRC_Set[0x5c] = 0xd6; // 
+DEC_Finnish_NRC_Set[0x5d] = 0xc5; // 
+DEC_Finnish_NRC_Set[0x5e] = 0xdc; // 
+DEC_Finnish_NRC_Set[0x60] = 0xe9; // 
+DEC_Finnish_NRC_Set[0x7b] = 0xe4; // 
+DEC_Finnish_NRC_Set[0x7c] = 0xf6; // 
+DEC_Finnish_NRC_Set[0x7d] = 0xe5; // 
+DEC_Finnish_NRC_Set[0x7e] = 0xfc; // 
+
+/* DEC French NRC Set 
+ * DSCS = R
+ */
+let DEC_French_NRC_Set = ASCII.slice(0);
+DEC_French_NRC_Set[0x23] = 0xa3; // 
+DEC_French_NRC_Set[0x40] = 0xe0; // 
+DEC_French_NRC_Set[0x5b] = 0xb0; // 
+DEC_French_NRC_Set[0x5c] = 0xe7; // 
+DEC_French_NRC_Set[0x5d] = 0xa7; // 
+DEC_French_NRC_Set[0x7b] = 0xe9; // 
+DEC_French_NRC_Set[0x7c] = 0xf9; // 
+DEC_French_NRC_Set[0x7d] = 0xe8; // 
+DEC_French_NRC_Set[0x7e] = 0xa8; // 
+
+/* DEC French Canadian NRC Set 
+ * DSCS = Q
+ */
+let DEC_French_Canadian_NRC_Set = ASCII.slice(0);
+DEC_French_Canadian_NRC_Set[0x40] = 0xe0; // 
+DEC_French_Canadian_NRC_Set[0x5b] = 0xe2; // 
+DEC_French_Canadian_NRC_Set[0x5c] = 0xe7; // 
+DEC_French_Canadian_NRC_Set[0x5d] = 0xea; // 
+DEC_French_Canadian_NRC_Set[0x5e] = 0xee; // 
+DEC_French_Canadian_NRC_Set[0x60] = 0xf4; // 
+DEC_French_Canadian_NRC_Set[0x7b] = 0xe9; // 
+DEC_French_Canadian_NRC_Set[0x7c] = 0xf9; // 
+DEC_French_Canadian_NRC_Set[0x7d] = 0xe8; // 
+DEC_French_Canadian_NRC_Set[0x7e] = 0xfb; // 
+
+/* DEC German NRC Set 
+ * DSCS = K
+ */
+let DEC_German_NRC_Set = ASCII.slice(0);
+DEC_German_NRC_Set[0x40] = 0xa7; // 
+DEC_German_NRC_Set[0x5b] = 0xc4; // 
+DEC_German_NRC_Set[0x5c] = 0xd6; // 
+DEC_German_NRC_Set[0x5d] = 0xdc; // 
+DEC_German_NRC_Set[0x7b] = 0xe4; // 
+DEC_German_NRC_Set[0x7c] = 0xf6; // 
+DEC_German_NRC_Set[0x7d] = 0xfc; // 
+DEC_German_NRC_Set[0x7e] = 0xdf; // 
+
+/* DEC Italian German NRC Set 
+ * DSCS = Y
+ */
+let DEC_Italian_NRC_Set = ASCII.slice(0);
+DEC_Italian_NRC_Set[0x23] = 0xa3; // 
+DEC_Italian_NRC_Set[0x40] = 0xa7; // 
+DEC_Italian_NRC_Set[0x5b] = 0xb0; // 
+DEC_Italian_NRC_Set[0x5c] = 0xe7; // 
+DEC_Italian_NRC_Set[0x5d] = 0xe9; // 
+DEC_Italian_NRC_Set[0x60] = 0xf9; // 
+DEC_Italian_NRC_Set[0x7b] = 0xe0; // 
+DEC_Italian_NRC_Set[0x7c] = 0xf2; // 
+DEC_Italian_NRC_Set[0x7d] = 0xe8; // 
+DEC_Italian_NRC_Set[0x7e] = 0xec; // 
+
+/* DEC Norwegian/Danish NRC Set 
+ * DSCS = E, 6
+ */
+let DEC_Norwegian_Danish_NRC_Set = ASCII.slice(0);
+DEC_Norwegian_Danish_NRC_Set[0x40] = 0xc4; // 
+DEC_Norwegian_Danish_NRC_Set[0x5b] = 0xc6; // 
+DEC_Norwegian_Danish_NRC_Set[0x5c] = 0xd8; // 
+DEC_Norwegian_Danish_NRC_Set[0x5d] = 0xc5; // 
+DEC_Norwegian_Danish_NRC_Set[0x5e] = 0xdc; // 
+DEC_Norwegian_Danish_NRC_Set[0x60] = 0xe4; // 
+DEC_Norwegian_Danish_NRC_Set[0x7b] = 0xe6; // 
+DEC_Norwegian_Danish_NRC_Set[0x7c] = 0xf8; // 
+DEC_Norwegian_Danish_NRC_Set[0x7d] = 0xe5; // 
+DEC_Norwegian_Danish_NRC_Set[0x7e] = 0xfc; // 
+
+/* DEC Spanish NRC Set 
+ * DSCS = Z
+ */
+let DEC_Spanish_NRC_Set = ASCII.slice(0);
+DEC_Spanish_NRC_Set[0x23] = 0xa3; // 
+DEC_Spanish_NRC_Set[0x40] = 0xa7; // 
+DEC_Spanish_NRC_Set[0x5b] = 0xa1; // 
+DEC_Spanish_NRC_Set[0x5c] = 0xd1; // 
+DEC_Spanish_NRC_Set[0x5d] = 0xbf; // 
+DEC_Spanish_NRC_Set[0x7b] = 0xb0; // 
+DEC_Spanish_NRC_Set[0x7c] = 0xf1; // 
+DEC_Spanish_NRC_Set[0x7d] = 0xe7; // 
+
+/* DEC Swedish NRC Set 
+ * DSCS = H, 7
+ */
+let DEC_Swedish_NRC_Set = ASCII.slice(0);
+DEC_Swedish_NRC_Set[0x40] = 0xc9; // 
+DEC_Swedish_NRC_Set[0x5b] = 0xc4; // 
+DEC_Swedish_NRC_Set[0x5c] = 0xd6; // 
+DEC_Swedish_NRC_Set[0x5d] = 0xc5; // 
+DEC_Swedish_NRC_Set[0x5e] = 0xdc; // 
+DEC_Swedish_NRC_Set[0x60] = 0xe9; // 
+DEC_Swedish_NRC_Set[0x7b] = 0xe4; // 
+DEC_Swedish_NRC_Set[0x7c] = 0xf6; // 
+DEC_Swedish_NRC_Set[0x7d] = 0xe5; // 
+DEC_Swedish_NRC_Set[0x7e] = 0xfc; // 
+
+/* DEC Swiss NRC Set 
+ * DSCS = =
+ */
+//f9,20,e0,20,e9,e7,ea,ee,e8,20,f4,20,e4,f6,fc,fb
+let DEC_Swiss_NRC_Set = ASCII.slice(0);
+DEC_Swiss_NRC_Set[0x23] = 0xf9; // 
+DEC_Swiss_NRC_Set[0x40] = 0xe0; // 
+DEC_Swiss_NRC_Set[0x5b] = 0xe9; // 
+DEC_Swiss_NRC_Set[0x5c] = 0xe7; // 
+DEC_Swiss_NRC_Set[0x5d] = 0xea; // 
+DEC_Swiss_NRC_Set[0x5e] = 0xee; // 
+DEC_Swiss_NRC_Set[0x5f] = 0xe8; // 
+DEC_Swiss_NRC_Set[0x60] = 0xf4; // 
+DEC_Swiss_NRC_Set[0x7b] = 0xe4; // 
+DEC_Swiss_NRC_Set[0x7c] = 0xf6; // 
+DEC_Swiss_NRC_Set[0x7d] = 0xfc; // 
+DEC_Swiss_NRC_Set[0x7e] = 0xfb; // 
+
+
 
 /**
  * @class MultiDecoder
@@ -503,8 +770,25 @@ Decoder.definition = {
   _scheme: "ascii",
   _offset: 0,
 
-  _g0: coUtils.Constant.CHARSET_US,
-  _g1: coUtils.Constant.CHARSET_US,
+  _g0: ASCII,
+  _g1: ASCII,
+  _charset_table: {
+    "0": DEC_Special_Graphics_Character_Set,
+    "4": DEC_Dutch_NRC_Set,
+    "5": DEC_Finnish_NRC_Set,
+    "6": DEC_Norwegian_Danish_NRC_Set,
+    "7": DEC_Swedish_NRC_Set,
+    "B": ASCII,
+    "C": DEC_Finnish_NRC_Set,
+    "E": DEC_Norwegian_Danish_NRC_Set,
+    "H": DEC_Swedish_NRC_Set,
+    "K": DEC_German_NRC_Set,
+    "R": DEC_French_NRC_Set,
+    "Q": DEC_French_Canadian_NRC_Set,
+    "Y": DEC_Italian_NRC_Set,
+    "Z": DEC_Spanish_NRC_Set,
+    "=": DEC_Swiss_NRC_Set,
+  },
 
   "[persistable] initial_scheme": "UTF-8-js",
 
@@ -536,8 +820,6 @@ Decoder.definition = {
   function onLoad(session) 
   {
     this._decoder_map = {};
-    session.subscribe("set_g0", function(map) this._g0 = map, this);
-    session.subscribe("set_g1", function(map) this._g1 = map, this);
     session.notify("get/decoders").map(function(information)
     {
       this._decoder_map[information.charset] = information; 
@@ -553,15 +835,15 @@ Decoder.definition = {
   },
 
   "[subscribe('sequence/g0'), enabled]": 
-  function scsg0(mode) 
+  function scsg0(dscs) 
   {
-    this._g0 = mode;
+    this._g0 = this._charset_table[dscs];
   },
 
   "[subscribe('sequence/g1'), enabled]": 
-  function scsg1(mode) 
+  function scsg1(dscs) 
   {
-    this._g1 = mode;
+    this._g1 = this._charset_table[dscs];
   },
 
   /** Read input byte-stream sequence at the specified scanner's 
@@ -573,15 +855,20 @@ Decoder.definition = {
    */ 
   decode: function decode(scanner) 
   {
-    if (coUtils.Constant.CHARSET_DEC == this._g0) {
-      let decoder = this._decoder;
-      return function() {
-        for (c in decoder.decode(scanner)) {
-          yield decSpecialCharacterMap(c);
+    let decoder = this._decoder;
+    let g0 = this._g0 || ASCII;
+    let g1 = this._g1 || ASCII;
+    return function() {
+      for (let c in decoder.decode(scanner)) {
+        if (c < 0x80) {
+          yield g0[c];
+        } else if (c < 0x100) {
+          yield g1[c];
+        } else {
+          yield c;
         }
-      }();
-    }
-    return this._decoder.decode(scanner);
+      }
+    }();
   },
 
 };

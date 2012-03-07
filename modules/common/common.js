@@ -790,6 +790,7 @@ coUtils.IO = {
       }
     } finally {
       input.close();
+      channel.cancel(0);
     }
   },
 

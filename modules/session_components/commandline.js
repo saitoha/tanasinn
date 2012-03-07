@@ -281,11 +281,6 @@ CommandlineHistory.definition = {
   _history_index: 0,
   history_file_path: "$Home/.tanasinn/history/commandline.txt",
 
-  initialize: function initialize() 
-  {
-    this.loadHistory();
-  },
-
   /** Installs itself. 
    *  @param {Session} session A Session object.
    */
@@ -296,6 +291,7 @@ CommandlineHistory.definition = {
     this.nextHistory.enabled = true;
     this.previousHistory.enabled = true;
     this.onCommand.enabled = true;
+    this.loadHistory();
   },
 
   /** Uninstalls itself. 
@@ -308,6 +304,13 @@ CommandlineHistory.definition = {
     this.nextHistory.enabled = false;
     this.previousHistory.enabled = false;
     this.onCommand.enabled = false;
+
+    this._converter.flush();
+    this._converter.close();
+    this._converter = null;
+    this._file = null;
+    coUtils.Debug.reportMessage(
+      _("Resources in CommandlineHistory have been cleared."));
   },
 
   /**
@@ -323,12 +326,16 @@ CommandlineHistory.definition = {
       .classes["@mozilla.org/file/local;1"]
       .createInstance(Components.interfaces.nsILocalFile);
     file.initWithPath(path);
-
+    this._file = file;
     if (file.exists() && file.isReadable) {
-      let content = coUtils.IO.readFromFile(path, "utf-8");
-      this._history = content.split(/[\r\n]+/);
+      let content = coUtils.IO.readFromFile(path, "UTF-8");
+      this._history = content.split(/[\r\n]+/)
+        .reduce(function(prev, current) {
+          prev[current] = true;
+          return prev;
+        }, {});
     } else {
-      this._history = [];
+      this._history = {};
     }
 
     // check if target log file exists.
@@ -403,38 +410,34 @@ CommandlineHistory.definition = {
   "[subscribe('command/select-next-history')]":
   function nextHistory(info)
   {
-    let index = ++this._history_index % this._history.length
+    let history_list = Object.keys(this._history);
+    let index = ++this._history_index % history_list.length
     if (index < 0) {
-      index += this._history.length;
+      index += history_list.length;
     }
-    let value = this._history[index];
-
+    let value = history_list[index];
     info.textbox.value = value;
-    let broker = this._broker;
-    broker.notify("command/fill");
   },
 
   "[subscribe('command/select-previous-history')]":
   function previousHistory(info)
   {
-    let index = --this._history_index % this._history.length
+    let history_list = Object.keys(this._history);
+    let index = --this._history_index % history_list.length
     if (index < 0) {
-      index += this._history.length;
+      index += history_list.length;
     }
-    let value = this._history[index];
-
+    let value = history_list[index];
     info.textbox.value = value;
-    let broker = this._broker;
-    broker.notify("command/fill");
   },
 
   "[subscribe('command/eval-commandline')]":
   function onCommand(command)
   {
-    this._history.push(command);
+    this._history[command] = true;
     this._history_index = 0;
     try {
-      this._converter.writeString(value + "\n");
+      this._converter.writeString(command + "\n");
     } catch (e) {
       /* Ignore any errors to prevent recursive-call. */
     }
@@ -975,7 +978,6 @@ Commandline.definition = {
     if (!result) {
       let with_ctrl = code & 1 << coUtils.Keyboard.KEY_CTRL;
       let with_nochar = code & 1 << coUtils.Keyboard.KEY_NOCHAR;
-      if (code & 0xfffff == 0) alert(code)
       if (!with_nochar && !with_ctrl) {
         let textbox = this._textbox;
         let value = textbox.value;

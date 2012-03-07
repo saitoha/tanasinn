@@ -131,6 +131,7 @@ Controller.definition = {
       .createInstance(Components.interfaces.nsIInputStreamPump);
     pump.init(istream, -1, -1, 0, 0, false);
     pump.asyncRead(this, scriptable_input_stream);
+    this._pump = pump;
 
     this.post.enabled = true;
   },
@@ -153,6 +154,8 @@ Controller.definition = {
     this.post("disconnect\n");
     this._input.close();
     this._output.close();
+    this._pump.cancel(0);
+    coUtils.Debug.reportMessage(_("Resources in Controller have been cleared."));
   },
 
 // nsIRequestObserver implementation.
@@ -259,6 +262,7 @@ IOManager.definition = {
 
   _input: null,
   _output: null,
+  _socket: null,
 
   "[persistable] outgoing_buffer_size": 1024 * 16,
   "[persistable] incoming_buffer_size": 1024 * 1,
@@ -275,6 +279,7 @@ IOManager.definition = {
       .createInstance(Components.interfaces.nsIServerSocket);
     socket.init(/* port */ -1, /* loop back */ true, /* connection count */ 1);
     socket.asyncListen(this);
+    this._socket = socket;
     this._port = socket.port;
     session.notify(<>initialized/{this.id}</>, this);
   },
@@ -313,6 +318,15 @@ IOManager.definition = {
   {
     this._input.close();
     this._output.close();
+    this._binary_stream.close();
+    this._socket.close();
+    this._stream_pump.cancel(0);
+    this._input = null;
+    this._output = null;
+    this._socket = null;
+    this._stream_pump = null;
+    this._binary_stream = null;
+    coUtils.Debug.reportMessage(_("Resources in IOManager have been cleared."));
   },
 
 // nsIServerSocketListener implementation
@@ -342,6 +356,7 @@ IOManager.definition = {
         .classes["@mozilla.org/binaryinputstream;1"]
         .createInstance(Components.interfaces.nsIBinaryInputStream);
       binary_stream.setInputStream(istream);
+      this._binary_stream = binary_stream;
 
       // make "stream pump" object and listen it.
       let stream_pump = Components
@@ -349,6 +364,7 @@ IOManager.definition = {
         .createInstance(Components.interfaces.nsIInputStreamPump);
       stream_pump.init(istream, -1, -1, 0, 0, false);
       stream_pump.asyncRead(this, binary_stream);
+      this._stream_pump = stream_pump;
 
       this._input = binary_stream;
       this._output = ostream;
@@ -566,7 +582,7 @@ ExternalDriver.definition = {
     } else { // Darwin, Linux
       args = [ script_absolute_path, connection_port ];
     }
-    this._external_process.runAsync(args, args.length, this, false);
+    this._external_process.runAsync(args, args.length, this, false /* hold weak */);
     coUtils.Debug.reportMessage(
       _("TTY Server started. arguments: [%s]."), args.join(", "));
   },
@@ -588,7 +604,13 @@ ExternalDriver.definition = {
     } catch (e) {
       coUtils.Debug.reportWarning(e);
     }
+    this._external_process = null;
+    coUtils.Debug.reportMessage(_("Resources in ExternalDriver have been cleared."));
   },
+
+  QueryInterface: function QueryInterface(a_IID)
+    this,
+
 };
 
 /**
@@ -613,6 +635,8 @@ SocketTeletypeService.definition = {
           _("Drives a TTY device and control it.")
         }</description>
     </plugin>,
+
+  _socket: null,
 
   "[subscribe('install/tty'), enabled]":
   function install(session) 
@@ -643,6 +667,7 @@ SocketTeletypeService.definition = {
       // initialize server socket.
       socket.init(/* port */ -1, /* loop back */ true, /* connection count */ 1);
       socket.asyncListen(this);
+      this._socket = socket;
   
       let session = this._broker;
       session.notify("command/start-ttydriver-process", socket.port); // nsIProcess::runAsync.
@@ -747,6 +772,7 @@ SocketTeletypeService.definition = {
       .createInstance(Components.interfaces.nsIInputStreamPump);
     pump.init(istream, -1, -1, 0, 0, false);
     pump.asyncRead(this, scriptable_input_stream);
+    this._pump = pump;
   },
 
   /**
@@ -854,6 +880,15 @@ SocketTeletypeService.definition = {
     return this._ttyname;
   },
 
+  "[subscribe('@event/broker-stopping'), enabled]":
+  function stop() 
+  {
+    this._socket.close();
+    this._pump.cancel(0);
+    this._socket = null;
+    this._pump = null;
+    coUtils.Debug.reportMessage(_("Resources in TTY have been cleared."));
+  },
 };
 
 /**

@@ -170,6 +170,7 @@ DOMEventManager.definition = {
     if (this._listener_list_map) {
       Object.keys(this._listener_list_map)
         .forEach(function(id) this.remove(id), this);
+      this.remove.enabled = false;
     }
   },
 

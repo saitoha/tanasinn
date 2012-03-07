@@ -255,7 +255,27 @@ Escape.definition = {
     this._screen.cursorUp(1);
   },
 
-  /** Exit VT52 mode. */
+  /** Select default character set. */
+  "[sequence('ESC %@')]": 
+  function ISO_8859_1() 
+  {
+    let broker = this._broker;
+    broker.notify("change/decoder", "ISO-8859-1");
+    broker.notify("change/encoder", "ISO-8859-1");
+  },
+
+  /** Select UTF-8 character set. */
+  "[sequence('ESC %G')]": 
+  function UTF_8() 
+  {
+    let broker = this._broker;
+    broker.notify("change/decoder", "UTF-8");
+    broker.notify("change/encoder", "UTF-8");
+  },
+
+  /** Exit VT52 mode. 
+   * TODO exit VT52 mode
+   */
   "[sequence('ESC <')]": 
   function ExitVT52() 
   {
