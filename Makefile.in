@@ -73,6 +73,8 @@ $(XPI): lint chrome.manifest install.rdf tanasinn-docs.zip
 		modules/*.py \
 		modules/*.conf \
 		modules/common/*.js \
+		modules/unicode/*.js \
+		modules/attributes/*.js \
 		modules/locale/*.json \
 		modules/process_components/*.js \
 		modules/desktop_components/*.js \
