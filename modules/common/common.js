@@ -1158,8 +1158,28 @@ coUtils.Keyboard = {
       buffer.push("M");
     }
     let char = String.fromCharCode(0xffffff & packed_code);
-    let map = this.getCodeToNameMap();
-    char = map[char] || char;
+    if (packed_code & (1 << coUtils.Keyboard.KEY_NOCHAR)) {
+      let map = this.getCodeToNameMap();
+      char = map[char] || char;
+    } else {
+      char = {
+        "\x1b": "\x5b", // [
+        "\x1c": "\x5c", // \
+        "\x1d": "\x5d", // ]
+        "\x1e": "\x5e", // ^
+        "\x1f": "\x5f", // _
+      } [char] || char;
+    }
+/*
+Ctrl [           -> \x1b    #ESC
+Ctrl 3           -> \x1b    #ESC
+Ctrl \           -> \x1c    #FS
+Ctrl ]           -> \x1d    #GS
+Ctrl ^           -> \x1e    #RS
+Ctrl /           -> \x1f    #US
+Ctrl _           -> \x1f    #US
+*/
+
     if ("-" == char || "<" == char || ">" == char) {
       char = "\\" + char;
     }
@@ -1170,7 +1190,9 @@ coUtils.Keyboard = {
       } else {
         return "<" + buffer.pop() + ">";
       }
-    } else if (2 == buffer.length && "S" == buffer[0] && 1 == buffer[1].length) {
+    } else if (2 == buffer.length && 
+               "S" == buffer[0] && 
+               1 == buffer[1].length) {
       return buffer.pop();
     }
     return "<" + buffer.join("-") + ">";
