@@ -203,7 +203,7 @@ OverlayIndicator.definition = {
 
   print: function print(message) 
   {
-    this._content.setAttribute("value", message);
+    this._content.setAttribute("value", String(message));
   },
 
   "[subscribe('command/resize-screen')]":
