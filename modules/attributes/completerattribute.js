@@ -22,7 +22,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-
 /**
  * @trait CompleterAttribute
  *
@@ -42,6 +41,55 @@ CompleterAttribute.definition = {
         continue;
       }
       let [completer_name] = attribute["completer"];
+      let handler = this[key];
+      let delegate = this[key] = handler.id ? 
+          this[key]
+        : let (self = this) function() handler.apply(self, arguments);
+      delegate.id = delegate.id || [this.id, key].join(".");
+      delegate.description = attribute.description;
+      delegate.watch("enabled", 
+        delegate.onChange = let (self = this, old_onchange = delegate.onChange) 
+          function(name, oldval, newval) 
+          {
+            if (old_onchange) {
+              old_onchange.apply(delegate, arguments);
+            }
+            if (oldval != newval) {
+              if (newval) {
+                broker.subscribe(<>command/query-completion/{completer_name}</>, delegate);
+              } else {
+                broker.unsubscribe(delegate.id);
+              }
+            }
+            return newval;
+          });
+      if (attribute["enabled"]) {
+        delegate.enabled = true;
+      };
+    }
+  },
+};
+
+
+/**
+ * @trait TypeAttribute
+ *
+ */
+let TypeAttribute = new Attribute("type");
+TypeAttribute.definition = {
+
+  /** constructor 
+   *  @param {EventBroker} broker Parent broker object.
+   */
+  initialize: function initialize(broker) 
+  {
+    let attributes = this.__attributes;
+    for (key in attributes) {
+      let attribute = attributes[key];
+      if (!attribute["type"]) {
+        continue;
+      }
+      let [completer_name] = attribute["type"];
       let handler = this[key];
       let delegate = this[key] = handler.id ? 
           this[key]

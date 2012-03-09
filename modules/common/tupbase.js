@@ -71,7 +71,7 @@ Trait.prototype = {
 /**
  * @class AttributeContext
  */
-let AttributeContext = function AttributeContext() this.initialize.apply(this, arguments);
+let AttributeContext = function() this.initialize.apply(this, arguments);
 AttributeContext.prototype = {
 
   _target: null,
@@ -115,6 +115,7 @@ AttributeContext.prototype = {
   {
     return String(<>[AttributeContext enabled({this.enabled})]</>);
   }
+
 };
 
 /**

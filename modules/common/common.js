@@ -1170,15 +1170,6 @@ coUtils.Keyboard = {
         "\x1f": "\x5f", // _
       } [char] || char;
     }
-/*
-Ctrl [           -> \x1b    #ESC
-Ctrl 3           -> \x1b    #ESC
-Ctrl \           -> \x1c    #FS
-Ctrl ]           -> \x1d    #GS
-Ctrl ^           -> \x1e    #RS
-Ctrl /           -> \x1f    #US
-Ctrl _           -> \x1f    #US
-*/
 
     if ("-" == char || "<" == char || ">" == char) {
       char = "\\" + char;
