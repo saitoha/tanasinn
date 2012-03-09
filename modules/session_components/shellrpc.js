@@ -76,6 +76,8 @@ ShellRPC.definition = {
         }</description>
     </module>,
 
+  "[persistable] enabled_when_startup": true,
+
   /** installs itself. 
    *  @param {Session} session A session object.
    */

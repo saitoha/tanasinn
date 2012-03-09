@@ -50,6 +50,7 @@ Ime.definition = {
         <version>0.1</version>
     </plugin>,
 
+  "[persistable] enabled_when_startup": true,
   "[persistable] polling_interval": 500, // in milliseconds
 
   _timer: null,
@@ -226,6 +227,8 @@ CommandlineIme.definition = {
         }</description>
         <version>0.1</version>
     </plugin>,
+
+  "[persistable] enabled_when_startup": true,
 
   "[persistable] polling_interval": 500, // in milliseconds
 

@@ -48,6 +48,8 @@ W3m.definition = {
       id: "tanasinn_w3m_canvas",
     }),
 
+  "[persistable] enabled_when_startup": true,
+
   _canvas: null,
   _context: null,
   _cache_holder: null,

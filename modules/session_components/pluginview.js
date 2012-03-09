@@ -119,6 +119,8 @@ PluginViewer.definition = {
       }
     }),
 
+  "[persistable] enabled_when_startup": true,
+
   _viewer: null,
 
   /** Installs itself.

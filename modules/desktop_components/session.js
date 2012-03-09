@@ -42,10 +42,23 @@
  *
  */
 
-let Environment = new Aspect();
+let Environment = new Trait();
 Environment.definition = {
 
 // public properties
+
+  /** @property runtime_path */
+  get runtime_path()
+  {
+    let broker = this._broker;
+    return broker.runtime_path;
+  },
+
+  set runtime_path(value)
+  {
+    let broker = this._broker;
+    broker.runtime_path = value;
+  },
 
   /** @property search_path */
   get search_path()
@@ -68,9 +81,9 @@ Environment.definition = {
 };
 
 /**
- * @aspect RouteKeyEvents
+ * @trait RouteKeyEvents
  */
-let RouteKeyEvents = new Aspect()
+let RouteKeyEvents = new Trait()
 RouteKeyEvents.definition = {
 
   "[subscribe('event/hotkey-double-shift'), enabled]":
@@ -143,9 +156,10 @@ Session.definition = {
   get parent()
     this._broker,
 
-  "[persistable] profile_directory": "$Home/.tanasinn/session_profile",
-  "[persistable] batch_directory": "$Home/.tanasinn/batches",
-  "[persistable] cgi_directory": "$Home/.tanasinn/cgi-bin",
+  "[persistable] profile_directory": "session_profile",
+  "[persistable] batch_directory": "batches",
+  "[persistable] cgi_directory": "cgi-bin",
+  "[persistable] rcfile": "tanasinnrc",
   "[persistable] profile": "default",
   "[persistable] initial_focus_delay": 100,
 
@@ -252,6 +266,7 @@ Session.definition = {
     this.notify("command/load-settings", this.profile);
     this.notify("event/broker-started", this);
     coUtils.Timer.setTimeout(function() {
+      this.notify("command/focus");
       this.notify("command/focus");
       this.notify("command/focus");
     }, this.initial_focus_delay, this);

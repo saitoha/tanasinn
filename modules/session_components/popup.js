@@ -20,7 +20,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-let ZshCompletion = new Aspect();
+let ZshCompletion = new Trait();
 ZshCompletion.definition = {
 
   _clearGrid: function _clearGrid() 
@@ -186,6 +186,8 @@ PopupMenu.definition = {
         }</description>
         <version>0.1</version>
     </module>,
+
+  "[persistable] enabled_when_startup": true,
 
   "[persistable] duration": 150,
   "[persistable] color": "white",

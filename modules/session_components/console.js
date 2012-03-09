@@ -44,7 +44,7 @@ MessageFilter.definition = {
   get filter_expression()
     /^\[(.+?): "(tanasinn: )?([^"]*?)" {file: "([^"]*?)" line: ([0-9]+?)( name: "([^"]*?)")?}\]$/m,
   
-  _css: null,
+  "[persistable] enabled_when_startup": true,
 
   /** Installs itself.
    *  @param {Session} session A Session object.

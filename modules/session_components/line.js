@@ -378,7 +378,7 @@ Cell.definition = {
  * @class DirtyRange
  * @brief Simple range class for Tracking dirty cells' information.
  */
-let DirtyRange = new Aspect();
+let DirtyRange = new Trait();
 DirtyRange.definition = {
 
   first: 0,
@@ -445,10 +445,10 @@ DirtyRange.definition = {
 }
  
 /**
- * @aspect Resizable
+ * @trait Resizable
  *
  */
-let Resizable = new Aspect();
+let Resizable = new Trait();
 Resizable.definition = {
 
   /** pop last n cells from the line. 

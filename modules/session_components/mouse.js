@@ -52,19 +52,14 @@ Mouse.definition = {
         <version>0.1</version>
     </plugin>,
 
+  "[persistable] enabled_when_startup": true,
+
   _tracking_mode: null,
   _installed: false,
 
   _keypad_mode: coUtils.Constant.KEYPAD_MODE_NORMAL,
   _in_scroll_session: false,
   "[persistable] magnify_delta_per_fontsize": 100,
-
-  "[subscribe('initialized/renderer'), enabled]":
-  function onLoad(renderer)
-  {
-    this.dependency["renderer"] = renderer;
-    this.enabled = this.enabled_when_startup;
-  },
 
   /** Installs itself. */
   "[subscribe('install/mouse'), enabled]":

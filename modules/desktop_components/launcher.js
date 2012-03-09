@@ -200,17 +200,18 @@ coUtils.Sessions = {
     delete this._records[request_id];
     this._dirty = true;
     coUtils.Timer.setTimeout(function() {
-      let backup_data_path = String(<>$Home/.tanasinn/persist/{request_id}.txt</>);
+      let broker = this._broker;
+      let backup_data_path = String(<>{broker.runtime_path}/persist/{request_id}.txt</>);
       let file = coUtils.File.getFileLeafFromVirtualPath(backup_data_path);
       if (file.exists()) {
         file.remove(true);
       }
-      backup_data_path = String(<>$Home/.tanasinn/persist/{request_id}.png</>);
+      backup_data_path = String(<>{broker.runtime_path}/persist/{request_id}.png</>);
       file = coUtils.File.getFileLeafFromVirtualPath(backup_data_path);
       if (file.exists()) {
         file.remove(true);
       }
-    }, 1000);
+    }, 1000, this);
   },
 
   get: function get(request_id)
@@ -272,11 +273,15 @@ coUtils.Sessions = {
 
 };
 
+/**
+ * @class ProcessManager
+ *
+ */
 let ProcessManager = new Class().extends(Component);
 ProcessManager.definition = {
 
   get id()
-    "process-manager",
+    "process_manager",
 
   "[subscribe('@event/broker-started'), enabled]":
   function onLoad(broker)
@@ -388,7 +393,7 @@ ProcessManager.definition = {
  * @class SessionsCompleter
  */
 let SessionsCompleter = new Class().extends(CompleterBase)
-                                   .depends("process-manager");
+                                   .depends("process_manager");
 SessionsCompleter.definition = {
 
   get id()
@@ -403,7 +408,7 @@ SessionsCompleter.definition = {
     let records = coUtils.Sessions.getRecords();
     for (let [request_id, record] in Iterator(records)) {
       try {
-        if (this.dependency["process-manager"].processIsAvailable(record.pid)) {
+        if (this.dependency["process_manager"].processIsAvailable(record.pid)) {
           yield {
             name: "&" + request_id,
             value: record,
@@ -543,7 +548,8 @@ SessionsCompletionDisplayDriver.definition = {
   getImageSource: function(request_id)
   {
     try {
-      let image_path = String(<>$Home/.tanasinn/persist/{request_id}.png</>);
+      let broker = this._broker;
+      let image_path = String(<>{broker.runtime_path}/persist/{request_id}.png</>);
       let image_file = coUtils.File.getFileLeafFromVirtualPath(image_path);
       let image_url = coUtils.File.getURLSpec(image_file);
       return image_url;
@@ -1310,6 +1316,8 @@ DragMove.definition = {
 
   get id()
     "launcher-dragmove",
+
+  "[persistable] enabled_when_startup": true,
 
   /** Installs itself. */
   "[subscribe('install/launcher-dragmove'), enabled]":

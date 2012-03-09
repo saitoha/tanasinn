@@ -42,6 +42,8 @@ DragMove.definition = {
         <version>0.1</version>
     </plugin>,
 
+  "[persistable] enabled_when_startup": true,
+
   /** Installs itself. */
   "[subscribe('install/dragmove'), enabled]":
   function install(session) 

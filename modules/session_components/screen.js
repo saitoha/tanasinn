@@ -25,7 +25,7 @@
 const CO_SCREEN_MAIN = true;
 const CO_SCREEN_ALTERNATE = false;
 
-let ScreenSequenceHandler = new Aspect() 
+let ScreenSequenceHandler = new Trait() 
 ScreenSequenceHandler.definition = {
 
   /**
@@ -785,9 +785,9 @@ ScreenSequenceHandler.definition = {
 } // aspect ScreenSequenceHandler
 
 /**
- * @aspect Viewable
+ * @trait Viewable
  */
-let Viewable = new Aspect("Viewable");
+let Viewable = new Trait("Viewable");
 Viewable.definition = {
 
   _scrollback_amount: 0,
@@ -913,7 +913,7 @@ Viewable.definition = {
   getDirtyWords: function getDirtyWords() 
   {
     let lines = this._getCurrentViewLines();
-    for (let [row, line] in this._interracedScan(lines)) {
+    for (let [row, line] in Iterator(lines)) { //this._interracedScan(lines)) {
       for (let { codes, column, end, attr } in line.getDirtyWords()) {
         yield { 
           codes: codes, 
@@ -990,10 +990,10 @@ Viewable.definition = {
 
 
 /**
- * @aspect Scrollable
+ * @trait Scrollable
  *
  */
-let Scrollable = new Aspect("Scrollable");
+let Scrollable = new Trait("Scrollable");
 Scrollable.definition = {
 
   "[persistable] scrollback_limit": 200,
@@ -1054,9 +1054,9 @@ Scrollable.definition = {
 };
 
 /**
- * @aspect Resizable
+ * @trait Resizable
  */
-let Resizable = new Aspect("Resizable");
+let Resizable = new Trait("Resizable");
 Resizable.definition = {
 
   /** Pop and Remove last n lines from screen. */

@@ -51,6 +51,8 @@ DRCSBuffer.definition = {
 //      },
     }),
 
+  "[persistable] enabled_when_startup": true,
+
   _map: null,
   _g0: "B",
   _g1: "B",

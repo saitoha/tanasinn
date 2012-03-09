@@ -115,7 +115,7 @@ commands.addUserCommand(["tanasinnlaunch", "tla[unch]"],
 /**
  * @command tanasinncommand 
  */
-commands.addUserCommand(["tanasinnstart", "tst[art]"], 
+commands.addUserCommand(["tanasinnstart", "tstart"], 
   "Run a operating system command on tanasinn.", 
   function (args) 
   { 
@@ -132,7 +132,7 @@ commands.addUserCommand(["tanasinnstart", "tst[art]"],
 /**
  * @command tanasinnsend 
  */
-commands.addUserCommand(["tanasinncommand", "tco[mmand]"], 
+commands.addUserCommand(["tanasinncommand", "tcommand"], 
   "Run a tanasinn command on active tanasinn sessions.", 
   function (args) 
   { 
@@ -149,7 +149,7 @@ commands.addUserCommand(["tanasinncommand", "tco[mmand]"],
 /**
  * @command tanasinnsendkeys
  */
-commands.addUserCommand(["tanasinnsendkeys", "ts[end]"], 
+commands.addUserCommand(["tanasinnsendkeys", "tsend"], 
   "Send keys to tanasinn.", 
   function (args) 
   { 

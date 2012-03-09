@@ -65,7 +65,7 @@ CommandProvider.definition = {
   "[subscribe('command/complete-commandline')]":
   function complete(completion_info) 
   {
-    let {source, listener} = completion_info;
+    let {source} = completion_info;
     let pattern = /^\s*([0-9]*)(\w*)(\s*)/y;
     let match = pattern.exec(source);
     let [, repeat, command_name, blank] = match;
@@ -73,11 +73,11 @@ CommandProvider.definition = {
       let command = this._getCommand(command_name);
       if (command) {
         let text = source.substr(pattern.lastIndex);
-        command.complete(text, listener);
+        command.complete(text);
       }
     } else {
       let broker = this._broker;
-      broker.notify("command/query-completion/command", { source: source });
+      broker.notify("command/query-completion/command", completion_info);
     }
   },
   

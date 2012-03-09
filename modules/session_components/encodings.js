@@ -41,6 +41,8 @@ EncoderMenu.definition = {
         <version>0.1</version>
     </TanasinnPlugin>,
 
+  "[persistable] enabled_when_startup": true,
+
   /** Installs itself. */
   "[subscribe('install/encodings'), enabled]":
   function install(session) 
@@ -116,6 +118,7 @@ DecoderMenu.definition = {
         <version>0.1</version>
     </Plugin>,
 
+  "[persistable] enabled_when_startup": true,
   "[persistable] send_ff_when_encoding_changed": true,
 
   /** Installs itself. */

@@ -257,9 +257,9 @@ FontsizeCompletionDisplayDriver.definition = {
     let document = grid.ownerDocument;
     let session = this._broker;
     let rows = grid.appendChild(document.createElement("rows"))
-    for (let i = 0; i < result.labels.length; ++i) {
+    for (let i = 0; i < result.data.length; ++i) {
       let search_string = result.query.toLowerCase();
-      let completion_text = result.labels[i];
+      let completion_text = result.data[i].name;
       let match_position = completion_text
         .toLowerCase()
         .indexOf(search_string);
@@ -328,9 +328,9 @@ FontFamilyCompletionDisplayDriver.definition = {
     let document = grid.ownerDocument;
     let session = this._broker;
     let rows = grid.appendChild(document.createElement("rows"))
-    for (let i = 0; i < result.labels.length; ++i) {
+    for (let i = 0; i < result.data.length; ++i) {
       let search_string = result.query.toLowerCase();
-      let completion_text = result.labels[i];
+      let completion_text = result.data[i].name;
       let match_position = completion_text
         .toLowerCase()
         .indexOf(search_string);
@@ -394,9 +394,10 @@ TextCompletionDisplayDriver.definition = {
     let document = grid.ownerDocument;
     let session = this._broker;
     let rows = grid.appendChild(document.createElement("rows"))
-    for (let i = 0; i < result.labels.length; ++i) {
+    for (let i = 0; i < result.data.length; ++i) {
+      let data = result.data[i];
       let search_string = result.query.toLowerCase();
-      let completion_text = result.labels[i];
+      let completion_text = data.name;
       if ("quoted" == result.option) {
         completion_text = completion_text.slice(1, -1);
       }
@@ -452,7 +453,7 @@ TextCompletionDisplayDriver.definition = {
                 font-family: 'Times New Roman';
                 color: #000;
               </>,
-              value: result.comments && result.comments[i],
+              value: data.value,
               crop: "end",
             },
           ],

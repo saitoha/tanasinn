@@ -7,7 +7,6 @@ AC_INIT([tanasinn],[0.1.5.5],[tanasinn@zuse.jp])
 AC_CANONICAL_TARGET
 
 # Checks for programs.
-
 AC_CHECK_PROG(PERL, perl, perl) 
 [[ -z "${PERL}" ]] && AC_MSG_ERROR(perl was not found.)
 

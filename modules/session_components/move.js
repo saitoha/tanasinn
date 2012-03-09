@@ -40,6 +40,8 @@ MoveShortcut.definition = {
         <version>0.1</version>
     </plugin>,
 
+  "[persistable] enabled_when_startup": true,
+
   "[persistable] step": 60,
 
   /** Installs itself. 

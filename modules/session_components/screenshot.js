@@ -44,7 +44,8 @@ ScreenshotCommand.definition = {
     }
     let [, name] = match;
 
-    let path = String(<>$Home/.tanasinn/screenshot/{name}.png</>);
+    let broker = this._broker;
+    let path = String(<>{broker.runtime_path}/screenshot/{name}.png</>);
     let file = coUtils.File
       .getFileLeafFromVirtualPath(path)
       .QueryInterface(Components.interfaces.nsILocalFile);
@@ -58,7 +59,6 @@ ScreenshotCommand.definition = {
       }
     } (file);
 
-    let broker = this._broker;
     broker.notify("command/capture-screen", {file: file, thumbnail: false});
     return {
       success: true,

@@ -116,7 +116,7 @@ Controller.definition = {
       .classes["@mozilla.org/network/socket-transport-service;1"]
       .getService(Components.interfaces.nsISocketTransportService)
       .createTransport(null, 0, "127.0.0.1", control_port, null);
-    let istream = transport.openInputStream(0, 1024, 1);
+    let istream = transport.openInputStream(0, 128, 1);
     let ostream = transport.openOutputStream(0, 128, 1);
     let scriptable_input_stream = Components
       .classes["@mozilla.org/scriptableinputstream;1"]
@@ -636,28 +636,30 @@ SocketTeletypeService.definition = {
         }</description>
     </plugin>,
 
+  "[persistable] enabled_when_startup": true,
+
   _socket: null,
 
   "[subscribe('install/tty'), enabled]":
-  function install(session) 
+  function install(broker) 
   {
     this.osc97.enabled = true;
-    if (0 == session.command.indexOf("&")) {
-      let request_id = session.command.substr(1);
+    if (0 == broker.command.indexOf("&")) {
+      let request_id = broker.command.substr(1);
       let record = coUtils.Sessions.get(request_id);
       this.connect(Number(record.control_port));
       this._pid = Number(record.pid);
       coUtils.Sessions.remove(request_id);
       coUtils.Sessions.update();
-      let backup_data_path = <>$Home/.tanasinn/persist/{request_id}.txt</>.toString();
+      let backup_data_path = <>{broker.runtime_path}/persist/{request_id}.txt</>.toString();
       if (coUtils.File.exists(backup_data_path)) {
         let context = JSON.parse(coUtils.IO.readFromFile(backup_data_path, "utf-8"));
-        session.notify("command/restore", context);
+        broker.notify("command/restore", context);
         let file = coUtils.File.getFileLeafFromVirtualPath(backup_data_path);
         if (file.exists()) {
           file.remove(false)
         }
-        session.notify("command/draw", true);
+        broker.notify("command/draw", true);
       }
     } else {
       let socket = Components
@@ -669,15 +671,14 @@ SocketTeletypeService.definition = {
       socket.asyncListen(this);
       this._socket = socket;
   
-      let session = this._broker;
-      session.notify("command/start-ttydriver-process", socket.port); // nsIProcess::runAsync.
+      broker.notify("command/start-ttydriver-process", socket.port); // nsIProcess::runAsync.
     }
     this.kill.enabled = true;
     this.detach.enabled = true;
   },
 
   "[subscribe('uninstall/tty'), enabled]": 
-  function uninstall(session)
+  function uninstall(broker)
   {
     this.kill.enabled = false;
     this.detach.enabled = false;
@@ -685,6 +686,17 @@ SocketTeletypeService.definition = {
     this.resize.enabled = false;
     this.flowControl.enabled = false;
     this.osc97.enabled = false;
+
+    if (this._socket) {
+      this._socket.close();
+    }
+    if (this._pump) {
+      this._pump.cancel(0);
+    }
+    this._socket = null;
+    this._pump = null;
+    coUtils.Debug.reportMessage(_("Resources in TTY have been cleared."));
+
   },
 
   "[subscribe('@command/kill')]": 
@@ -700,9 +712,9 @@ SocketTeletypeService.definition = {
   function detach()
   {
     let context = {};
-    let session = this._broker;
-    session.notify("command/backup", context);
-    let path = String(<>$Home/.tanasinn/persist/{session.request_id}.txt</>);
+    let broker = this._broker;
+    broker.notify("command/backup", context);
+    let path = String(<>{broker.runtime_path}/persist/{broker.request_id}.txt</>);
     let data = JSON.stringify(context);
     coUtils.IO.writeToFile(path, data);
   },
@@ -715,11 +727,11 @@ SocketTeletypeService.definition = {
 
   connect: function connect(control_port) 
   {
-    let session = this._broker;
+    let broker = this._broker;
     let controller = this.dependency["tty_controller"];
     controller.start(control_port);
     let sessiondb_path = coUtils.File
-      .getFileLeafFromVirtualPath("$Home/.tanasinn/sessions.txt").path;
+      .getFileLeafFromVirtualPath(broker.runtime_path + "/sessions.txt").path;
 
     let os = coUtils.Runtime.os;
     if ("WINNT" == os) {
@@ -734,7 +746,7 @@ SocketTeletypeService.definition = {
 
     let message = [
       this.dependency["tty_iomanager"].port, 
-      session.request_id,
+      broker.request_id,
       coUtils.Text.base64encode(sessiondb_path),
     ].join(" ");
     controller.post(message);
@@ -745,13 +757,13 @@ SocketTeletypeService.definition = {
 
     let timer = coUtils.Timer.setInterval(function() {
       controller.post("beacon\n") 
-    }, 5000, this);
+    }, 2000, this);
     let id = new Date().getTime().toString();
-    session.subscribe("event/broker-stopping", function() {
-      session.unsubscribe(id);
+    broker.subscribe("event/broker-stopping", function() {
+      broker.unsubscribe(id);
       timer.cancel();
     }, this, id);
-    session.notify("initialized/tty", this);
+    broker.notify("initialized/tty", this);
   },
 
   onSocketAccepted: function onSocketAccepted(serv, transport) 
@@ -880,15 +892,6 @@ SocketTeletypeService.definition = {
     return this._ttyname;
   },
 
-  "[subscribe('@event/broker-stopping'), enabled]":
-  function stop() 
-  {
-    this._socket.close();
-    this._pump.cancel(0);
-    this._socket = null;
-    this._pump = null;
-    coUtils.Debug.reportMessage(_("Resources in TTY have been cleared."));
-  },
 };
 
 /**

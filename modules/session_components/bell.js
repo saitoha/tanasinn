@@ -50,6 +50,8 @@ Bell.definition = {
       MozTransitionProperty: "opacity",
     }),
 
+  "[persistable] enabled_when_startup": true,
+
   "[persistable] duration": 150,
   "[persistable] color": "white",
   "[persistable] opacity": 0.25,

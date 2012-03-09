@@ -42,6 +42,7 @@ OverlayBrowser.definition = {
         }</description>
     </module>,
 
+  "[persistable] enabled_when_startup": true,
   "[persistable] open_delay": 20,
 
   _element: null,

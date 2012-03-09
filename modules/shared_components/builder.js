@@ -164,7 +164,7 @@
 /**
  * @class TemplateBuilder
  */
-let TemplateBuilder = new Aspect();
+let TemplateBuilder = new Trait();
 TemplateBuilder.definition = {
 
   /** Builds a set of nodes of XUL/HTML/SVG elements. */

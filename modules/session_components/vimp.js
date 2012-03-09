@@ -41,6 +41,8 @@ Vimperator.definition = {
         }</description>
     </module>,
   
+  "[persistable] enabled_when_startup": true,
+
   /** Install itself. 
    *  @param {Session} session A session object.
    */

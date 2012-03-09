@@ -23,9 +23,9 @@
  * ***** END LICENSE BLOCK ***** */
 
 /**
- * @aspect Suitable
+ * @trait Suitable
  */
-let Suitable = new Aspect();
+let Suitable = new Trait();
 Suitable.definition = {
 
   "[subscribe('event/screen-width-changed')]":
@@ -64,6 +64,8 @@ Selection.definition = {
         }</description>
         <version>0.1</version>
     </module>,
+
+  "[persistable] enabled_when_startup": true,
 
   _canvas: null,
   _context: null,

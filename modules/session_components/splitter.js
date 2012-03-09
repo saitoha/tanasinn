@@ -63,6 +63,8 @@ Splitter.definition = {
       }
     }),
 
+  "[persistable] enabled_when_startup": true,
+
   /** Installs itself. 
    *  @param {Session} session A session object.
    */

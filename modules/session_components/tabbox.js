@@ -120,6 +120,8 @@ BottomPanel.definition = {
       ],
     },
 
+  "[persistable] enabled_when_startup": true,
+
   _panel_map: null,
   _tabbox: null,
   _bottom_panel: null,

@@ -41,6 +41,8 @@ KeySnail.definition = {
         <version>0.1</version>
     </module>,
   
+  "[persistable] enabled_when_startup": true,
+
   /** Install itself. 
    *  @param {Session} session A session object.
    */

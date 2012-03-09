@@ -40,6 +40,8 @@ Paste.definition = {
         }</description>
     </plugin>,
 
+  "[persistable] enabled_when_startup": true,
+
   /** Install itself. */
   "[subscribe('install/paste'), enabled]":
   function install(session) 

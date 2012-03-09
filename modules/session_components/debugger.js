@@ -247,6 +247,8 @@ Debugger.definition = {
         }</description>
     </plugin>,
 
+  "[persistable] enabled_when_startup": true,
+
   "[persistable] auto_scroll": true,
   "[persistable] update_interval": 300,
 

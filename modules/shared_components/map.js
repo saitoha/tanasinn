@@ -29,6 +29,8 @@
 let MappingManagerBase = new Abstruct().extends(Plugin);
 MappingManagerBase.definition = {
 
+  "[persistable] enabled_when_startup": true,
+
   _map: null,
   _state: null,
 

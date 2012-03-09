@@ -78,6 +78,8 @@ ModeManager.definition = {
   get id()
     "modemanager",
 
+  "[persistable] enabled_when_startup": true,
+
   _modes: null,
   _mode: "normal",
 
@@ -191,6 +193,8 @@ NormalMode.definition = {
   get id()
     "normalmode",
 
+  "[persistable] enabled_when_startup": true,
+
   /** Installs itself. 
    *  @param {Session} a session object.
    *  @notify collection-changed/modes
@@ -239,6 +243,8 @@ InputManager.definition = {
         left: 0,
       },
     }),
+
+  "[persistable] enabled_when_startup": true,
 
   "[persistable, _('whether keypress event will be traced.')] debug_flag": false,
 

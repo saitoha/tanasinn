@@ -41,6 +41,8 @@ BatchLoader.definition = {
         <version>0.1</version>
     </module>,
 
+  "[persistable] enabled_when_startup": true,
+
   _element: null,
  
   /** installs itself. 
@@ -67,7 +69,8 @@ BatchLoader.definition = {
   function loadBatchCommand(name) 
   {
     let session = this._broker;
-    let file = coUtils.File.getFileLeafFromVirtualPath(session.batch_directory);
+    let file = coUtils.File.getFileLeafFromVirtualPath(
+      session.runtime_path + "/" + session.batch_directory);
     file.append(name);
     if (!file.exists()) {
       return {
@@ -124,7 +127,8 @@ BatchLoader.definition = {
   function onFirstFocus() 
   {
     // load rc file.
-    let path = "$Home/.tanasinn/tanasinnrc";
+    let broker = this._broker;
+    let path = broker.runtime_path + "/" + broker.rcfile;
     let session = this._broker;
     session.notify("command/source", path);
   },
@@ -133,7 +137,7 @@ BatchLoader.definition = {
   function execCGI(arguments_string) 
   {
     let session = this._broker;
-    let path = "$Home/.tanasinn/cgi-bin/" + arguments_string.replace(/^\s+|\s+$/, "");
+    let path = session.runtime_path + "/cgi-bin/" + arguments_string.replace(/^\s+|\s+$/, "");
     let executable_path;
     let os = coUtils.Runtime.os;
     if ("WINNT" == os) {
@@ -175,7 +179,6 @@ BatchLoader.definition = {
 
     return true;
   },
-
 
 } // class BatchLoader
 

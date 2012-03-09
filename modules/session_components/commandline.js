@@ -139,14 +139,15 @@ TextboxWidget.definition = {
     this._context.fillStyle = this.font_color;
     this._context.font = this.font_size + "px " + this.font_family + " " + this.font_weight;
     let height = this._glyph_height;
+
     if ("command" == this._mode) {
       if (this._main_buffer) {
-        this._context.fillText(this._main_buffer, 0, height);
+        this._context.fillText(this._main_buffer, 0, height + 2);
       }
       this._context.globalAlpha = 0.5;
       let left = this._context.measureText(this._main_buffer).width;
       this._context.fillText(
-        this._completion_buffer.substr(this._main_buffer.length), left, height);
+        this._completion_buffer.substr(this._main_buffer.length), left, height + 2);
 
       this._context.globalAlpha = 0.5;
 
@@ -161,13 +162,13 @@ TextboxWidget.definition = {
 
     } else if ("status" == this._mode) {
       if (this._status_buffer) {
-        this._context.fillText(this._status_buffer, 0, height);
+        this._context.fillText(this._status_buffer, 0, height + 2);
       }
     }
     if (this._keystate_buffer) {
       let width = this._context.measureText(this._keystate_buffer).width;
       this._context.clearRect(this._canvas.width - width, 0, width, height);
-      this._context.fillText(this._keystate_buffer, this._canvas.width - width, height);
+      this._context.fillText(this._keystate_buffer, this._canvas.width - width, height + 2);
     }
 
   },
@@ -259,197 +260,9 @@ TextboxWidget.definition = {
 };
 
 /**
- * @class CommandlineHistory
- *
+ * @trait CompletionView
  */
-let CommandlineHistory = new Class().extends(Plugin);
-CommandlineHistory.definition = {
-
-  get id()
-    "commandline_history",
-
-  get info()
-    <plugin>
-        <name>{_("Commandline History")}</name>
-        <version>0.1</version>
-        <description>{
-          _("Provides commandline history database.")
-        }</description>
-    </plugin>,
-
-  _history: null,
-  _history_index: 0,
-  history_file_path: "$Home/.tanasinn/history/commandline.txt",
-
-  /** Installs itself. 
-   *  @param {Session} session A Session object.
-   */
-  "[subscribe('install/commandline_history'), enabled]":
-  function install(session) 
-  {
-    this.clearHistory.enabled = true;
-    this.nextHistory.enabled = true;
-    this.previousHistory.enabled = true;
-    this.onCommand.enabled = true;
-    this.loadHistory();
-  },
-
-  /** Uninstalls itself. 
-   *  @param {Session} session A Session object.
-   */
-  "[subscribe('uninstall/commandline_history'), enabled]":
-  function uninstall(session) 
-  {
-    this.clearHistory.enabled = false;
-    this.nextHistory.enabled = false;
-    this.previousHistory.enabled = false;
-    this.onCommand.enabled = false;
-
-    this._converter.flush();
-    this._converter.close();
-    this._converter = null;
-    this._file = null;
-    coUtils.Debug.reportMessage(
-      _("Resources in CommandlineHistory have been cleared."));
-  },
-
-  /**
-   *
-   */
-  loadHistory: function loadHistory() 
-  {
-    // create nsIFile object.
-    let path = coUtils.File
-      .getFileLeafFromVirtualPath(this.history_file_path)
-      .path;
-    let file = Components
-      .classes["@mozilla.org/file/local;1"]
-      .createInstance(Components.interfaces.nsILocalFile);
-    file.initWithPath(path);
-    this._file = file;
-    if (file.exists() && file.isReadable) {
-      let content = coUtils.IO.readFromFile(path, "UTF-8");
-      this._history = content.split(/[\r\n]+/)
-        .reduce(function(prev, current) {
-          prev[current] = true;
-          return prev;
-        }, {});
-    } else {
-      this._history = {};
-    }
-
-    // check if target log file exists.
-    if (file.exists()) {
-      // check if target is file node.
-      if (!file.isFile) {
-        throw coUtils.Debug.Exception(
-          _("Specified file '%s' is not a file node."), path);
-      }
-      // check if target is writable.
-      if (!file.isWritable) {
-        throw coUtils.Debug.Exception(
-          _("Specified file '%s' is not a writable file node."), path);
-      }
-    } else { // if target is not exists.
-      // create base directories recursively (= mkdir -p).
-      void function make_directory(current) 
-      {
-        let parent = current.parent;
-        if (!parent.exists()) {
-          make_directory(parent);
-          parent.create(Components.interfaces.nsIFile.DIRECTORY_TYPE, -1);
-        }
-      } (file);
-    }
-   
-    // create output stream.
-    let ostream = Components
-      .classes["@mozilla.org/network/file-output-stream;1"]
-      .createInstance(Components.interfaces.nsIFileOutputStream);  
-      
-    // write (0x02), appending (0x10), "rw"
-    const PR_WRONLY = 0x02;
-    const PR_CREATE_FILE = 0x08;
-    const PR_APPEND = 0x10;
-    const PR_TRUNCATE = 0x20;
-    ostream.init(file, PR_WRONLY| PR_CREATE_FILE| PR_APPEND, -1, 0);   
-    
-    let converter = Components
-      .classes["@mozilla.org/intl/converter-output-stream;1"].  
-      createInstance(Components.interfaces.nsIConverterOutputStream);  
-    converter.init(ostream, "UTF-8", 0, 0);  
-    this._converter = converter;
-  },
-
-  closeHistory: function closeHistory()
-  {
-    // close history file.
-    if (this._converter) {
-      this._converter.close(); // closes the output stream.  
-    }
-  },
-
-  "[command('clearhistory/chistory'), _('clear command line history.')]":
-  function clearHistory()
-  {
-    this.closeHistory();
-
-    // remove history file.
-    coUtils.File
-      .getFileLeafFromVirtualPath(this.history_file_path)
-      .remove(false);
-
-    this.loadHistory();
-
-    return {
-      success: true,
-      message: _("History file was removed successfully."),
-    };
-  },
-
-  "[subscribe('command/select-next-history')]":
-  function nextHistory(info)
-  {
-    let history_list = Object.keys(this._history);
-    let index = ++this._history_index % history_list.length
-    if (index < 0) {
-      index += history_list.length;
-    }
-    let value = history_list[index];
-    info.textbox.value = value;
-  },
-
-  "[subscribe('command/select-previous-history')]":
-  function previousHistory(info)
-  {
-    let history_list = Object.keys(this._history);
-    let index = --this._history_index % history_list.length
-    if (index < 0) {
-      index += history_list.length;
-    }
-    let value = history_list[index];
-    info.textbox.value = value;
-  },
-
-  "[subscribe('command/eval-commandline')]":
-  function onCommand(command)
-  {
-    this._history[command] = true;
-    this._history_index = 0;
-    try {
-      this._converter.writeString(command + "\n");
-    } catch (e) {
-      /* Ignore any errors to prevent recursive-call. */
-    }
-  },
-
-}; // CommandlineHistory
-
-
-/**
- * @Aspect CompletionView
- */
-let CompletionView = new Aspect();
+let CompletionView = new Trait();
 CompletionView.definition = {
 
   _index: -1,
@@ -459,7 +272,7 @@ CompletionView.definition = {
     if (!this._result) {
       return 0;
     }
-    return this._result.labels.length;
+    return this._result.data.length;
   },
 
   get currentIndex()
@@ -576,6 +389,8 @@ Commandline.definition = {
         }</description>
     </plugin>,
 
+  "[persistable] enabled_when_startup": true,
+
   "[persistable] completion_delay": 180,
   "[persistable] completion_popup_opacity": 1.00,
   "[persistable] completion_popup_max_height": 300,
@@ -613,7 +428,6 @@ Commandline.definition = {
       tagName: "html:canvas",
       height: this.font_size,
       style: <>
-        padding-top: 2px,
         opacity: 0.7,
       </>,
     },
@@ -885,7 +699,7 @@ Commandline.definition = {
   function invalidate(result) 
   {
     let textbox = this._textbox;
-    if (result.labels.length > 0) {
+    if (result.data.length > 0) {
       this._popup.style.opacity = this.completion_popup_opacity;
       if ("closed" == this._popup.state || "hiding" == this._popup.state) {
         let session = this._broker;
@@ -896,7 +710,7 @@ Commandline.definition = {
         }
       }
       let index = Math.max(0, this.currentIndex);
-      let completion_text = result.labels[index];
+      let completion_text = result.data[index].name;
       if (0 == completion_text.indexOf(result.query)) {
         let settled_length = 
           this._stem_text.length - result.query.length;
@@ -919,7 +733,7 @@ Commandline.definition = {
     let result = this._result;
     if (result) {
       let textbox = this._textbox;
-      let completion_text = result.labels[index];
+      let completion_text = result.data[index].name;
       let settled_length = 
         this._stem_text.length - result.query.length;
       let settled_text = textbox.value.substr(0, settled_length);
@@ -953,7 +767,6 @@ Commandline.definition = {
         "command/complete-commandline", 
         {
           source: current_text, 
-          listener: this,
         });
     }, this.completion_delay, this);
   },
@@ -1090,7 +903,6 @@ Commandline.definition = {
 function main(broker)
 {
   new Commandline(broker);
-  new CommandlineHistory(broker);
 }
 
 

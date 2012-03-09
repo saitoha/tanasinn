@@ -22,7 +22,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-let Environment = new Aspect();
+let Environment = new Trait();
 Environment.definition = {
 
 // public properties
@@ -30,12 +30,14 @@ Environment.definition = {
   /** @property runtime_path */
   get runtime_path()
   {
-    return this._runtime_path || "$Home/.tanasinn";
+    let broker = this._broker;
+    return broker.runtime_path;
   },
 
   set runtime_path(value)
   {
-    this._runtime_path = value;
+    let broker = this._broker;
+    broker.runtime_path = value;
   },
 
   /** @property search_path */
@@ -74,7 +76,7 @@ Desktop.definition = {
   get root_element()
     this._root_element,
 
-  "[persistable] profile_directory": "$Home/.tanasinn/desktop_profile",
+  "[persistable] profile_directory": "desktop_profile",
   "[persistable] profile": "default",
 
   command: null,

@@ -60,6 +60,8 @@ Cursor.definition = {
       height: renderer.line_height * screen.height,
     }),
 
+  "[persistable] enabled_when_startup": true,
+
   _cursorVisibility: true,
   _blinkVisibility: false,
   _blink: true,

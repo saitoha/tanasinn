@@ -30,10 +30,10 @@
  */
 
 /**
- * @aspect Movable
+ * @trait Movable
  *
  */
-let Movable = new Aspect();
+let Movable = new Trait();
 Movable.definition = {
 
   "[persistable] move_transition": false,
@@ -107,6 +107,7 @@ OuterChrome.definition = {
         <version>0.1.0</version>
     </plugin>,
 
+  "[persistable] enabled_when_startup": true,
   "[persistable, watchable] background_opaicty": 0.80,
   "[persistable, watchable] background": "-moz-linear-gradient(top, #555, #101010)",
   "[persistable, watchable] border_radius": 8,
@@ -334,6 +335,8 @@ Chrome.definition = {
         tagName: "vbox",
       },
     ],
+
+  "[persistable] enabled_when_startup": true,
 
   "[persistable, watchable] margin": 8,
   "[persistable, watchable] background": "transparent",

@@ -66,16 +66,20 @@
  *
  */
 
-Components.utils.import("resource://gre/modules/Services.jsm");
-
 let loader = {
 
   initialize: function initialize()
   {
-    Services.ww.registerNotification(this);
+    let window_watcher = Components
+      .classes["@mozilla.org/embedcomp/window-watcher;1"]
+      .getService(Components.interfaces.nsIWindowWatcher);
+    window_watcher.registerNotification(this);
     ["navigator:browser", "mail:3pane"].forEach(function(window_type) {
       // add functionality to existing windows
-      let browser_windows = Services.wm.getEnumerator(window_type);
+      let window_mediator = Components
+        .classes["@mozilla.org/appshell/window-mediator;1"]
+        .getService(Components.interfaces.nsIWindowMediator);
+      let browser_windows = window_mediator.getEnumerator(window_type);
       while (browser_windows.hasMoreElements()) { // enumerate existing windows.
         // only run the "start" immediately if the browser is completely loaded
         let window = browser_windows.getNext();
@@ -95,7 +99,10 @@ let loader = {
 
   uninitialize: function uninitialize()
   {
-    Services.ww.unregisterNotification(this);
+    let window_watcher = Components
+      .classes["@mozilla.org/embedcomp/window-watcher;1"]
+      .getService(Components.interfaces.nsIWindowWatcher);
+    window_watcher.unregisterNotification(this);
   },
 
   dispatchWindowEvent: function dispatchWindowEvent(window) 
@@ -141,10 +148,21 @@ with (scope) {
 
 with (scope) {
 
-  let Environment = new Aspect();
+  let Environment = new Trait();
   Environment.definition = {
 
   // public properties
+
+    /** @property runtime_path */
+    get runtime_path()
+    {
+      return this._runtime_path || "$Home/.tanasinn";
+    },
+
+    set runtime_path(value)
+    {
+      this._runtime_path = value;
+    },
 
     /** @property cygwin_root */
     get cygwin_root()

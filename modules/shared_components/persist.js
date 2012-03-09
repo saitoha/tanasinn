@@ -37,7 +37,7 @@ PersistManager.definition = {
     try {
       let broker = this._broker;
       let filename = (name || broker.profile) + ".js";
-      let profile_path = <>{broker.profile_directory}/{filename}</>.toString();
+      let profile_path = <>{broker.runtime_path}/{broker.profile_directory}/{filename}</>.toString();
       let content = coUtils.IO.readFromFile(profile_path, "utf-8");
       let data = JSON.parse(content);
       broker.notify("command/before-load-persistable-data", data);
@@ -55,7 +55,7 @@ PersistManager.definition = {
     broker.notify("command/before-save-persistable-data", data);
     broker.notify("command/save-persistable-data", data);
     let filename = (name || broker.profile) + ".js";
-    let profile_path = <>{broker.profile_directory}/{filename}</>.toString();
+    let profile_path = <>{broker.runtime_path}/{broker.profile_directory}/{filename}</>.toString();
     let serialized_data = JSON.stringify(data);
     coUtils.IO.writeToFile(profile_path, serialized_data);
   },
@@ -65,7 +65,7 @@ PersistManager.definition = {
   {
     let broker = this._broker;
     let filename = (name || broker.profile) + ".js";
-    let profile_path = <>{broker.profile_directory}/{filename}</>.toString();
+    let profile_path = <>{broker.runtime_path}/{broker.profile_directory}/{filename}</>.toString();
     let file = coUtils.File.getFileLeafFromVirtualPath(profile_path);
     if (file.exists()) {
       file.remove(true);

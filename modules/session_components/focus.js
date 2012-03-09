@@ -40,6 +40,8 @@ FocusTracker.definition = {
         }</description>
     </plugin>,
 
+  "[persistable] enabled_when_startup": true,
+  
   disabled: false,
 
   /** Installs itself. 

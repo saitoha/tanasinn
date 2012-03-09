@@ -60,9 +60,11 @@ Contextmenu.definition = {
       } ,
     },
 
-  _entries: null,
+  "[persistable] enabled_when_startup": true,
 
   "[persistable, watchable] handle_right_click_insted_of_oncontextmenu": true,
+
+  _entries: null,
 
   /** Installs itself.
    *  @param {Session} session A Session object.

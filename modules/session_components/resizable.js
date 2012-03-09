@@ -28,9 +28,9 @@
  */
 
 /**
- * @aspect ResizeShortcut
+ * @trait ResizeShortcut
  */
-let ResizeShortcut = new Aspect();
+let ResizeShortcut = new Trait();
 ResizeShortcut.definition = {
 
   /** Make the screen narrower by 1 column. */ 
@@ -87,6 +87,8 @@ Resize.definition = {
         }</description>
         <version>0.1</version>
     </plugin>,
+
+  "[persistable] enabled_when_startup": true,
 
   "[persistable] min_column": 48,
   "[persistable] min_row": 20,

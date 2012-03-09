@@ -66,9 +66,9 @@ const DEC_BBSM  = 40
 const DEC_ECM   = 41
 
 /**
- * @aspect DecModeSequenceHandler
+ * @trait DecModeSequenceHandler
  */
-let DecModeSequenceHandler = new Aspect();
+let DecModeSequenceHandler = new Trait();
 DecModeSequenceHandler.definition = {
 
   _mouseMode: null,

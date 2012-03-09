@@ -91,6 +91,8 @@ Renderer.definition = {
         <version>0.2.0</version>
     </plugin>,
 
+  "[persistable] enabled_when_startup": true,
+
   _context: null,
   _canvas: null,
 
@@ -230,14 +232,14 @@ Renderer.definition = {
   "[subscribe('command/backup')]": 
   function backup(context) 
   {
+    let broker = this._broker;
     context[this.id] = {
       line_height: this.line_height,
       font_family: this.font_family,
       font_size: this.font_size,
       force_precious_rendering: this.force_precious_rendering,
     };
-    let session = this._broker;
-    let path = String(<>$Home/.tanasinn/persist/{session.request_id}.png</>);
+    let path = String(<>{broker.runtime_path}/persist/{broker.request_id}.png</>);
     let file = coUtils.File.getFileLeafFromVirtualPath(path);
     let source_canvas = this._canvas;
     coUtils.IO.saveCanvas(source_canvas, file, true);

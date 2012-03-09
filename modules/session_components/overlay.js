@@ -105,6 +105,8 @@ OverlayIndicator.definition = {
       },
     }),
 
+  "[persistable] enabled_when_startup": true,
+
   "[persistable] fadeout_duration": 500,
   "[persistable] opacity": 0.80,
   "[persistable, watchable] color": "white",

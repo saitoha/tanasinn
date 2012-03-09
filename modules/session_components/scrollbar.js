@@ -41,6 +41,8 @@ Scrollbar.definition = {
         <version>0.1</version>
     </plugin>,
 
+  "[persistable] enabled_when_startup": true,
+
   "[persistable] active_opacity": 0.3,
   "[persistable] inner_width": 24,
   "[persistable] border_width": 4,
