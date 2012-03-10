@@ -200,7 +200,7 @@ Ime.definition = {
     let session = this._broker;
     session.notify("command/ime-mode-off", this);
   }
-}
+};
 
 /**
  *  @class CommandlineIme
@@ -403,7 +403,7 @@ CommandlineIme.definition = {
     let session = this._broker;
     session.notify("command/ime-mode-off", this);
   }
-}
+};
 
 /**
  * @fn main

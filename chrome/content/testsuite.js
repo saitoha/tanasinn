@@ -1,3 +1,4 @@
+
 try {
   Components
     .classes["@mozilla.org/moz/jssubscript-loader;1"]

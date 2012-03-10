@@ -42,6 +42,10 @@
  *
  */
 
+/**
+ * @Trait Environment
+ *
+ */
 let Environment = new Trait();
 Environment.definition = {
 
@@ -162,6 +166,7 @@ Session.definition = {
   "[persistable] rcfile": "tanasinnrc",
   "[persistable] profile": "default",
   "[persistable] initial_focus_delay": 100,
+  "[persistable] default_term": "xterm",
 
   get python_path()
   {
@@ -176,6 +181,7 @@ Session.definition = {
   _request_id: null,
   _observers: null,
 
+  /** constructor */
   initialize: function initialize(broker)
   {
     this.load(this, this.search_path, new broker._broker.default_scope);
@@ -260,7 +266,7 @@ Session.definition = {
     this._window = document.defaultView;
     this._root_element = request.parent;
     this._command = request.command;
-    this._term = request.term;
+    this._term = request.term || this.default_term;
 
     desktop.notify("initialized/session", this);
     this.notify("command/load-settings", this.profile);

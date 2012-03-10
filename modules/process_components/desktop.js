@@ -22,6 +22,10 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+/**
+ * @Trait Environment
+ *
+ */
 let Environment = new Trait();
 Environment.definition = {
 
@@ -86,7 +90,6 @@ Desktop.definition = {
   "default_command@Darwin": "login -pf $USER",
   "default_command@WINNT" : "login -pf $USER",
   term: null,
-  default_term: "xterm",
 
   width: 120,
   height: 36,
@@ -172,7 +175,6 @@ Desktop.definition = {
     command = command 
       || this["default_command@" + coUtils.Runtime.os] 
       || this.default_command;
-    term = term || this.default_term;
 
     let [width, height] = size || [this.width, this.height];
 
