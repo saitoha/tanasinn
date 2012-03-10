@@ -108,7 +108,7 @@ Desktop.definition = {
     this.subscribe("get/bin-path", function() broker.bin_path);
     this.subscribe("get/python-path", function() broker.python_path);
 
-    this.install();
+    this.install(broker);
   },
 
   "[subscribe('install/desktop'), enabled]":
@@ -121,7 +121,6 @@ Desktop.definition = {
       .appendChild(this.window.document.createElement("box"));
     
     this._root_element.id = "tanasinn_desktop";
-    let broker = this._broker;
     this.notify("command/load-settings");
 
     this.notify("event/broker-started", this);
@@ -152,7 +151,7 @@ Desktop.definition = {
   function onShutdown()
   {
     this.notify("event/shutdown");
-    this.uninstall();
+    this.uninstall(this._broker);
   },
   
   "[subscribe('get/desktop-from-window')]":
