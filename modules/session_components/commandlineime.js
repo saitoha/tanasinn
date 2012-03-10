@@ -22,8 +22,9 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+
 /**
- *  @class Ime
+ *  @class CommandlineIme
  *  
  *  This plugin makes it enable to supports IME mode.
  *  It watches the value of main inputbox element with polling. 
@@ -32,25 +33,24 @@
  *  object. and shows a line on editing as an watermark/overlay object. 
  *
  */ 
-let Ime = new Class().extends(Plugin)
-                     .depends("renderer")
-                     .depends("cursorstate")
-                     .depends("inputmanager");
-Ime.definition = {
+let CommandlineIme = new Class().extends(Plugin)
+                                .depends("commandline");
+CommandlineIme.definition = {
 
   get id()
-    "ime",
+    "commandline_ime",
 
   get info()
     <plugin>
-        <name>{_("IME")}</name>
+        <name>{_("Commandline IME")}</name>
         <description>{
-          _("Make you enable to input with IME.")
+          _("Make you enable to input with IME at the commandline field.")
         }</description>
         <version>0.1</version>
     </plugin>,
 
   "[persistable] enabled_when_startup": true,
+
   "[persistable] polling_interval": 500, // in milliseconds
 
   _timer: null,
@@ -59,20 +59,13 @@ Ime.definition = {
   /** Installs plugin 
    *  @param {Session} session A session object.
    */ 
-  "[subscribe('install/ime'), enabled]":
+  "[subscribe('install/commandline_ime'), enabled]":
   function install(session) 
   {
-    let textbox = this.dependency["inputmanager"].getInputField();
-    let renderer = this.dependency["renderer"];
+    let textbox = this.dependency["commandline"].getInputField();
     textbox.style.width = "0%";
     textbox.style.imeMode = "inactive"; // disabled -> inactive
     textbox.style.border = "none"; // hide border
-    //textbox.style.position = "absolute"; // relative -> absolute
-    textbox.style.font = coUtils.Text.format(
-      "%dpx %s", 
-      renderer.font_size,
-      renderer.font_family);
-
     // enables session event handlers.
     let version_comparator = Components
       .classes["@mozilla.org/xpcom/version-comparator;1"]
@@ -96,11 +89,11 @@ Ime.definition = {
   /** Uninstall plugin 
    *  @param {Session} session A session object.
    */
-  "[subscribe('uninstall/ime'), enabled]":
+  "[subscribe('uninstall/commandline_ime'), enabled]":
   function uninstall(session) 
   {
     this.endPolling(); // stops polling timer. 
-    let textbox = this.dependency["inputmanager"].getInputField();
+    let textbox = this.dependency["commandline"].getInputField();
     textbox.style.width = "";
     textbox.style.imeMode = "disabled";
     textbox.style.border = "";  
@@ -140,14 +133,56 @@ Ime.definition = {
       this._timer = null;
     }
   },
+ 
+  /** input event handler. 
+   *  @param {Event} event A event object.
+   *  @notify event/input Notifies that a input event is occured.
+   */
+  "[listen('input', '#tanasinn_default_input')]":
+  function oninput(event) 
+  {
+    this.dependency["commandline"].commit();
+    this._disableImeMode();
+  },
+ 
+  /** compositionend event handler. 
+   *  @{Event} event A event object.
+   */
+  "[listen('compositionupdate', '#tanasinn_commandline')]":
+  function oncompositionupdate(event) 
+  {
+    this.onpoll();
+  },
+ 
+  /** compositionstart event handler. 
+   *  @{Event} event A event object.
+   */
+  "[listen('compositionstart', '#tanasinn_commandline'), enabled]":
+  function oncompositionstart(event) 
+  {
+      let version_comparator = Components
+        .classes["@mozilla.org/xpcom/version-comparator;1"]
+        .getService(Components.interfaces.nsIVersionComparator);
+      if (version_comparator.compare(coUtils.Runtime.version, "10.0") >= 0)
+      {
+        this.oninput.enabled = false;
+      }
+  },
   
   /** compositionend event handler. 
    *  @{Event} event A event object.
    */
-  "[listen('compositionupdate', '#tanasinn_default_input')]":
-  function oncompositionupdate(event) 
+  "[listen('compositionend', '#tanasinn_commandline'), enabled]":
+  function oncompositionend(event) 
   {
-    this.onpoll();
+      let version_comparator = Components
+        .classes["@mozilla.org/xpcom/version-comparator;1"]
+        .getService(Components.interfaces.nsIVersionComparator);
+      if (version_comparator.compare(coUtils.Runtime.version, "10.0") >= 0)
+      {
+        this.oninput.enabled = true;
+        this.oninput(event);
+      }
   },
 
   /** A interval timer handler function that observes the textbox content
@@ -155,7 +190,7 @@ Ime.definition = {
    */  
   onpoll: function onpoll() 
   {
-    let text = this.dependency["inputmanager"].getInputField().value;
+    let text = this.dependency["commandline"].getInputField().value;
     if (text) { // if textbox contains some text data.
       if (!this._ime_input_flag) {
         this._enableImeMode(); // makes the IME mode enabled.
@@ -170,24 +205,11 @@ Ime.definition = {
   /** Shows textbox element. */
   _enableImeMode: function _enableImeMode() 
   {
-    let textbox = this.dependency["inputmanager"].getInputField();
-    let renderer = this.dependency["renderer"];
-    let cursor = this.dependency["cursorstate"];
-    let line_height = renderer.line_height;
-    let char_width = renderer.char_width;
-    let char_height = renderer.char_height;
-    let char_offset = renderer.char_offset;
-    let normal_color = renderer.normal_color;
-    let font_size = renderer.font_size;
-    let top = cursor.positionY * line_height + -4;
-    let left = cursor.positionX * char_width + -2;
-    textbox.setAttribute("top", top);
-    textbox.setAttribute("left", left);
+    let commandline = this.dependency["commandline"];
+    let textbox = this.dependency["commandline"].getInputField();
+    let top = 0; // cursor.positionY * line_height + -4;
+    let left = commandline.getCaretPosition(); // cursor.positionX * char_width + -2;
     textbox.style.opacity = 1.0;
-    textbox.style.backgroundColor = "transparent";
-    textbox.style.color = normal_color[7];
-    textbox.style.fontSize = font_size + "px";
-    textbox.style.width = "100%";
     this._ime_input_flag = true;
     let session = this._broker;
     session.notify("command/ime-mode-on", this);
@@ -195,7 +217,9 @@ Ime.definition = {
 
   _disableImeMode: function _disableImeMode() 
   {
-    this.dependency["inputmanager"].getInputField().style.opacity = 0.0;
+    let commandline = this.dependency["commandline"];
+    let textbox = this.dependency["commandline"].getInputField();
+    textbox.style.opacity = 0.0;
     this._ime_input_flag = false;
     let session = this._broker;
     session.notify("command/ime-mode-off", this);
@@ -209,6 +233,6 @@ Ime.definition = {
  */
 function main(broker) 
 {
-  new Ime(broker);
+  new CommandlineIme(broker);
 }
 

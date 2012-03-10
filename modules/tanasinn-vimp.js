@@ -69,15 +69,10 @@ function getTanasinnProcess()
       .split(" -> ").pop()
       .split("?").shift();
     let file = current_file + "/../../tanasinn/modules/common/process.js?" + new Date().getTime();
-    try {
     Components
       .classes["@mozilla.org/moz/jssubscript-loader;1"]
       .getService(Components.interfaces.mozIJSSubScriptLoader)
       .loadSubScript(file);
-    } catch(e) {
-      alert(e.fileName + " " + e.lineNumber + " " + e);
-      throw e;
-    }
     process_class = Components.classes[contractID]
   }
   let process = process_class
@@ -140,7 +135,6 @@ commands.addUserCommand(["tanasinncommand", "tcommand"],
   },
   { 
     argCount: "?",
-//    completer: function (context) completion.shellCommand(context),
     bang: true,
     literal: 0,
   } 
@@ -157,7 +151,6 @@ commands.addUserCommand(["tanasinnsendkeys", "tsend"],
   },
   { 
     argCount: "?",
-//    completer: function (context) completion.shellCommand(context),
     bang: true,
     literal: 0,
   } 
