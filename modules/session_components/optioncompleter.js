@@ -42,22 +42,24 @@ OptionCompleter.definition = {
   function complete(context)
   {
     let broker = this._broker;
-    let { source, option, completers } = context;
+    let { source, completers } = context;
     let match = source.match(/^(\s*)([$_\-@a-zA-Z\.]*)\s*(=?)\s*(.*)/);
     if (null === match) {
       broker.notify("event/answer-completion", null);
       return;
     }
-    let [, space, name, equal, next] = match;
-    if (!equal && next) {
+
+    let [, space, name, operator_equal, next] = match;
+    if (!operator_equal && next) {
       broker.notify("event/answer-completion", null);
       return;
     }
-    broker = "global" ==  option ? broker._broker: broker;
+    let target_broker = "global" ==  context.option ? broker._broker: broker;
+
     let scope = {};
     let lower_name = name.toLowerCase();
-    broker.notify("command/get-persistable-data", scope);
-    if (!equal) {
+    target_broker.notify("command/get-persistable-data", scope);
+    if (!operator_equal) {
       let options = [
         {
           key: key, 
@@ -80,11 +82,11 @@ OptionCompleter.definition = {
       broker.notify("event/answer-completion", autocomplete_result);
       return;
     }
-    if (scope.hasOwnProperty(option)) {
+
+    if (scope.hasOwnProperty(name)) {
       let completion_context = {
         source: next,
       };
-      alert(next)
       broker.notify("command/query-completion/js", completion_context);
       return;
     }

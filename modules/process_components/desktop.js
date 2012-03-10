@@ -91,6 +91,7 @@ Desktop.definition = {
   width: 120,
   height: 36,
 
+  /** constructor */
   initialize: function initialize(broker)
   {
     this.load(this, this.search_path, new broker.default_scope);
@@ -111,7 +112,7 @@ Desktop.definition = {
   },
 
   "[subscribe('install/desktop'), enabled]":
-  function install()
+  function install(broker)
   {
     this.onShutdown.enabled = true;
     this.getDesktopFromWindow.enabled = true;
@@ -127,7 +128,7 @@ Desktop.definition = {
   },
 
   "[subscribe('uninstall/desktop'), enabled]":
-  function uninstall()
+  function uninstall(broker)
   {
     this.onShutdown.enabled = false;
     this.getDesktopFromWindow.enabled = false;

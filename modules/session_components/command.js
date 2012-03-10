@@ -245,6 +245,7 @@ SetGlobalCommand.definition = {
         message: coUtils.Text.format(_("Module %s is not found."), component_name),
       };
     }  
+    let result;
     if (!equal) {
       return {
         success: true,
@@ -253,7 +254,7 @@ SetGlobalCommand.definition = {
     } else {
       let code = arguments_string.substr(all.length); 
       try {
-        let result = new Function(
+        result = new Function(
           "with (arguments[0]) { return (" + code + ");}"
         ) (session.window);
         module[property] = result; 

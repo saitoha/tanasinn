@@ -841,8 +841,8 @@ Launcher.definition = {
   "[subscribe('event/shutdown'), enabled]":
   function shutdown()
   {
-//    this.onDisabled();
-//    this._element.removeChild(this._element);
+    this.onDisabled();
+    this._element.removeChild(this._element);
   },
   
   "[subscribe('event/enabled'), enabled]":
@@ -859,7 +859,7 @@ Launcher.definition = {
     broker.window.addEventListener("keydown", keydown_handler, /* capture */ true);
     broker.subscribe(
       "event/disabled", 
-      function() broker.window.removeEventListener("keydown", key_handler, true));
+      function() broker.window.removeEventListener("keydown", keydown_handler, true));
     let keyup_handler = let (self = this) 
       function() self.onkeyup.apply(self, arguments);
     broker.window.addEventListener("keyup", keyup_handler, /* capture */ true);

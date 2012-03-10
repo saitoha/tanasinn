@@ -541,9 +541,11 @@ ScreenSequenceHandler.definition = {
       let message = "\x1b[>2;100;2c"
       let message = "\x1b[>32;100;2c"
       let reply = ["\x1b[>"]; // CSI >
-      reply.push(65)  // VT520
-      reply.push(100) // Firmware version (for xterm, this is the XFree86 patch number, starting with 95). 
-      reply.push(0);  // DEC Terminal"s ROM cartridge registration number, always zero.
+//      reply.push(65)  // VT520
+//      reply.push(100) // Firmware version (for xterm, this is the XFree86 patch number, starting with 95). 
+//      reply.push(0);  // DEC Terminal"s ROM cartridge registration number, always zero.
+      reply.push(0);
+      reply.push(95);
       reply.push("c") // footer
       let message = reply.join(";");
       let session = this._broker;

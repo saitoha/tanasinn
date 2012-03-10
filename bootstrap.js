@@ -75,7 +75,8 @@ function shutdown(data, reason)
     .QueryInterface(Components.interfaces.nsIResProtocolHandler)
     .setSubstitution("tanasinn", null);
   process.notify("event/shutdown");
-//  process.clear();
+  process.destroy();
+  process.clear();
   return true;
 }
 

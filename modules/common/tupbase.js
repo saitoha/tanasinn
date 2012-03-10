@@ -638,7 +638,7 @@ CoClass.prototype = {
     return prototype;
   },
 
-  destroy: function destory()
+  destroy: function destroy()
   {
     if (this.factory) {
       this.factory.unregisterSelf();

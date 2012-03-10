@@ -76,6 +76,7 @@ Contextmenu.definition = {
     this.show.enabled = true;
     this.onFlagChanged(this.handle_right_click_insted_of_oncontextmenu);
     this.onFlagChanged.enabled = true;
+    this.oncontextmenu.enabled = true;
   },
 
   /** Uninstalls itself.
@@ -95,7 +96,7 @@ Contextmenu.definition = {
   function onFlagChanged(value) 
   {
     this.onrightbuttondown.enabled = value;
-    this.oncontextmenu.enabled = !value;
+//    this.oncontextmenu.enabled = !value;
 //    this.disablecontextmenu.enabled = value;
   },
 
@@ -107,16 +108,14 @@ Contextmenu.definition = {
     }
   },
 
-//  "[listen('contextmenu', '#tanasinn_content')] disablecontextmenu":
-//  function disablecontextmenu(event) 
-//  {
-//////    event.preventDefault();
-//  },
-
   "[listen('contextmenu', '#tanasinn_content')]":
   function oncontextmenu(event) 
   {
-    this.show(event);
+    event.stopPropagation();
+    event.preventDefault();
+    if (!this.handle_right_click_insted_of_oncontextmenu) {
+      this.show(event);
+    }
   },
 
   show: function show(event) 
