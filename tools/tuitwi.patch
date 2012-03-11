@@ -1,0 +1,79 @@
+diff --git a/tuitwi/ui.py b/tuitwi/ui.py
+index c36ae9b..c4a17fc 100755
+--- a/tuitwi/ui.py
++++ b/tuitwi/ui.py
+@@ -8,6 +8,7 @@ import unicodedata
+ import datetime
+ import locale
+ import re
++import os
+ from widechartools import set_wide_chars ,get_wide_chars, adjust_n_width, split_from_width
+ 
+ # こんとろーる取り纏め
+@@ -169,21 +170,39 @@ class FullStatusArea(Control):
+ 
+     def _draw(self):
+         if self._status is None: return
++            
++        # tanasinn integration
++        tanasinn_integration = os.getenv("__TANASINN")
++        tanasinn_integration = True
++        if tanasinn_integration:
++            thumbnail_width = 10
++            y, x = self._win.getbegyx()
++            maxy, maxx = self._win.getmaxyx()
++            curses.putp(
++                "\x1b]213;%d;%d;%d;%d\x07\x1b]212;%d;%d;%d;%d;%s\x07" % 
++                (x, y,
++                 thumbnail_width, maxy, 
++                 x, y, 
++                 thumbnail_width, maxy, 
++                 self._status.user.profile_image_url))
++        else:
++            thumbnail_width = 0
++
+         name = (u'%s(%s)' % (self._status.user.name, self._status.user.screen_name))
+         source = self._status.source
+         info = (u'%s from %s' % (self._status.created_at+datetime.timedelta(hours=9), source))
+-        self._win.addstr(0, 0, adjust_n_width(name, self.width-1, fill=u''))
++        self._win.addstr(0, thumbnail_width, adjust_n_width(name, self.width-1-thumbnail_width, fill=u''))
+ 
+         h, i = 1, 0
+         lines = self._status.text.split('\n')
+         strings = reduce(lambda x, y: x+y,
+-                         map(lambda line: split_from_width(line, self.width-1, translate=False), lines),
++                         map(lambda line: split_from_width(line, self.width-1-thumbnail_width, translate=False), lines),
+                          [])
+         rem = 0
+         while h < self.height-1 and i < len(strings):
+             self._win.move(h, 0)
+             if rem:
+-                self._win.addstr(adjust_n_width(strings[i][:rem]), curses.A_REVERSE)
++                self._win.addstr(h, thumbnail_width, adjust_n_width(strings[i][:rem]), curses.A_REVERSE)
+ 
+             start, end = rem, rem
+             target = strings[i]
+@@ -193,19 +212,19 @@ class FullStatusArea(Control):
+             if self._keyword:
+                 while target[start:].find(self._keyword) >= 0:
+                     end = start+target[start:].find(self._keyword)
+-                    self._win.addstr(adjust_n_width(strings[i][start:end]))
+-                    self._win.addstr(adjust_n_width(strings[i][end:min(end+len(self._keyword),
++                    self._win.addstr(h, thumbnail_width, adjust_n_width(strings[i][start:end]))
++                    self._win.addstr(h, thumbnail_width, adjust_n_width(strings[i][end:min(end+len(self._keyword),
+                                                                        len(strings[i]))]),
+                                      curses.A_REVERSE)
+                     start = end+len(self._keyword)
+-            self._win.addstr(adjust_n_width(strings[i][start:]))
++            self._win.addstr(h, thumbnail_width, adjust_n_width(strings[i][start:]))
+             if end+len(self._keyword) >= len(strings[i]):
+                 rem = end+len(self._keyword)-len(strings[i])
+             else:
+                 rem = 0
+             h += 1
+             i += 1
+-        self._win.addstr(self.height-1, 0, adjust_n_width(info, self.width-1, fill=u''))
++        self._win.addstr(self.height-1, thumbnail_width, adjust_n_width(info, self.width-1-thumbnail_width, fill=u''))
+ 
+ class EditLineControl(Control):
+     u'''入力部分'''
