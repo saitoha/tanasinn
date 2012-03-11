@@ -96,6 +96,10 @@ OverlayImage.definition = {
   function onKeypadModeChanged(mode) 
   {
     let canvas = this._canvas;  
+    if (canvas) {
+      canvas.width = canvas.parentNode.boxObject.width;
+      canvas.height = canvas.parentNode.boxObject.height;
+    }
     let context = canvas.getContext("2d");
     if (canvas && context) {
       context.clearRect(0, 0, canvas.width, canvas.height);
