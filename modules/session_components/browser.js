@@ -55,6 +55,7 @@ OverlayBrowser.definition = {
   {
     this.open.enabled = true;
     this.close.enabled = true;
+    this.handleSequence.enabled = true;
   },
 
   /** Uninstalls itself.
@@ -72,9 +73,10 @@ OverlayBrowser.definition = {
 
     this.open.enabled = false;
     this.close.enabled = false;
+    this.handleSequence.enabled = false;
   },
 
-  "[subscribe('sequence/osc/210'), enabled]":
+  "[subscribe('sequence/osc/210')]":
   function handleSequence(data) 
   {
     coUtils.Timer.setTimeout(function() {
@@ -89,7 +91,7 @@ OverlayBrowser.definition = {
     }, this.open_delay, this);
   },
 
-  "[subscribe('command/open-overlay-browser'), enabled]":
+  "[subscribe('command/open-overlay-browser')]":
   function open(left, top, width, height, url) 
   {
     let session = this._broker;
@@ -118,7 +120,7 @@ OverlayBrowser.definition = {
 
   },
 
-  "[subscribe('sequence/osc/211 | command/close-overlay-browser'), enabled]":
+  "[subscribe('sequence/osc/211 | command/close-overlay-browser')]":
   function close(data) 
   {
     let element = this._element;
