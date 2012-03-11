@@ -70,6 +70,7 @@ W3m.definition = {
     this.onWidthChanged.enabled = true;
     this.onHeightChanged.enabled = true;
     this.onFirstFocus.enabled = true;
+    this.onKeypadModeChanged.enabled = true;
     this.osc99.enabled = true;
 
   }, 
@@ -83,7 +84,19 @@ W3m.definition = {
     this.onWidthChanged.enabled = false;
     this.onHeightChanged.enabled = false;
     this.onFirstFocus.enabled = false;
+    this.onKeypadModeChanged.enabled = false;
     this.osc99.enabled = false;
+  },
+    
+  /** Fired at the keypad mode is changed. */
+  "[subscribe('event/keypad-mode-changed')]": 
+  function onKeypadModeChanged(mode) 
+  {
+    let canvas = this._canvas;  
+    let context = canvas.getContext("2d");
+    if (canvas && context) {
+      context.clearRect(0, 0, canvas.width, canvas.height);
+    }
   },
 
   "[subscribe('@command/focus')]":

@@ -1,5 +1,5 @@
 diff --git a/tuitwi/ui.py b/tuitwi/ui.py
-index c36ae9b..c4a17fc 100755
+index c36ae9b..48be41d 100755
 --- a/tuitwi/ui.py
 +++ b/tuitwi/ui.py
 @@ -8,6 +8,7 @@ import unicodedata
@@ -10,14 +10,13 @@ index c36ae9b..c4a17fc 100755
  from widechartools import set_wide_chars ,get_wide_chars, adjust_n_width, split_from_width
  
  # こんとろーる取り纏め
-@@ -169,21 +170,39 @@ class FullStatusArea(Control):
+@@ -169,21 +170,38 @@ class FullStatusArea(Control):
  
      def _draw(self):
          if self._status is None: return
 +            
 +        # tanasinn integration
 +        tanasinn_integration = os.getenv("__TANASINN")
-+        tanasinn_integration = True
 +        if tanasinn_integration:
 +            thumbnail_width = 10
 +            y, x = self._win.getbegyx()
@@ -53,7 +52,7 @@ index c36ae9b..c4a17fc 100755
  
              start, end = rem, rem
              target = strings[i]
-@@ -193,19 +212,19 @@ class FullStatusArea(Control):
+@@ -193,19 +211,19 @@ class FullStatusArea(Control):
              if self._keyword:
                  while target[start:].find(self._keyword) >= 0:
                      end = start+target[start:].find(self._keyword)
