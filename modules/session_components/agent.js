@@ -167,6 +167,8 @@ Agent.definition = {
       = session.uniget("command/construct-chrome", this.template);
     this._element = tanasinn_agent_layer;
     this._message = tanasinn_agent_message;
+    this.onBeforeInput.enabled = true;
+    this.onCorrect.enabled = true;
   },
 
   /** Uninstalls itself.
@@ -178,15 +180,17 @@ Agent.definition = {
     if (this._element) {
       this._element.parentNode.removeChild(this._element);
     }
+    this.onBeforeInput.enabled = false;
+    this.onCorrect.enabled = false;
   },
 
-  "[subscribe('event/before-input'), enabled]":
+  "[subscribe('event/before-input')]":
   function onBeforeInput(data) 
   {
     this._element.hidden = true;
   },
 
-  "[subscribe('sequence/osc/206'), enabled]":
+  "[subscribe('sequence/osc/206')]":
   function onCorrect(data) 
   {
     this._element.hidden = false;
