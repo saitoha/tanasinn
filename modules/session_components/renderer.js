@@ -128,6 +128,7 @@ Renderer.definition = {
   "[persistable] bold_alpha": 1.00,
 //  "[persistable] enable_text_shadow": false,
   "[persistable] enable_render_bold_as_textshadow": false,
+  "[persistable] shadow_color": "white",
   "[persistable] shadow_offset_x": 0.50,
   "[persistable] shadow_offset_y": 0.00,
   "[persistable] shadow_blur": 0.50,
@@ -397,7 +398,7 @@ Renderer.definition = {
     if (this._drcs_state === null || !attr.drcs) {
       let text = String.fromCharCode.apply(String, codes);
       if (this.enable_render_bold_as_textshadow && attr.bold) {
-        context.shadowColor = "white";//fore_color;
+        context.shadowColor = this.shadow_color;
         context.shadowOffsetX = this.shadow_offset_x;
         context.shadowOffsetY = this.shadow_offset_y;
         context.shadowBlur = this.shadow_blur;

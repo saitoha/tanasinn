@@ -126,7 +126,7 @@ install-vimperator:
 		*) \
 			ln -sf "$(PWD)" ~/.vimperator/tanasinn; \
 			ln -f "$(PWD)/modules/tanasinn-vimp.js" \
-				"$$(cygpath -w "$$(cygpath "$$USERPROFILE")/vimperator/plugin")" \
+				"$(HOME)/.vimperator/plugin" \
 			;; \
 	esac
 
