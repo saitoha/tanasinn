@@ -628,8 +628,8 @@ ExternalDriver.definition = {
     let args;
     if ("WINNT" == coUtils.Runtime.os) {
       let broker = this._broker;
-      let cygwin_root = broker.uniget("get/cygwin-root");
-      kill_path = String(<>{cygwin_root}\bin\run.exe</>);
+      let cygwin_root = broker.cygwin_root;
+      kill_path = broker.cygwin_root + "\\bin\\run.exe";
       args = [ "/bin/kill", "-9", String(pid) ];
     } else { // Darwin, Linux or FreeBSD
       let external_process = this._external_process;

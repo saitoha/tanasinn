@@ -132,7 +132,7 @@ ProgramCompleter.definition = {
     let lower_source = source.toLowerCase();
     let search_path;
     if ("WINNT" == coUtils.Runtime.os) {
-      let cygwin_root = broker.uniget("get/cygwin-root");
+      let cygwin_root = broker.cygwin_root;
       let map = (broker.uniget("get/bin-path") || "/bin:/usr/local/bin")
         .split(":")
         .map(function(posix_path) 
@@ -197,10 +197,10 @@ coUtils.Sessions = {
 
   remove: function remove(request_id)
   {
+    let broker = this._broker;
     delete this._records[request_id];
     this._dirty = true;
     coUtils.Timer.setTimeout(function() {
-      let broker = this._broker;
       let backup_data_path = broker.runtime_path + "/persist/" + request_id + ".txt";
       let file = coUtils.File.getFileLeafFromVirtualPath(backup_data_path);
       if (file.exists()) {
@@ -357,7 +357,7 @@ ProcessManager.definition = {
     let args;
     if ("WINNT" == coUtils.Runtime.os) {
       let broker = this._broker;
-      let cygwin_root = broker.uniget("get/cygwin-root");
+      let cygwin_root = broker.cygwin_root;
       runtime_path = cygwin_root + "\\bin\\run.exe";
       args = [ "kill", "-wait", "-" + signal, String(pid) ];
     } else { // Darwin, Linux or FreeBSD
