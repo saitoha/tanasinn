@@ -677,7 +677,7 @@ ExternalDriver.definition = {
     let os = coUtils.Runtime.os;
     if ("WINNT" == os) {
       let cygwin_root = broker.uniget("get/cygwin-root");
-      executable_path = String(<>{cygwin_root}\bin\run.exe</>);
+      executable_path = cygwin_root + "\\bin\\run.exe";
     } else {
       executable_path = broker.uniget("get/python-path");
     }
@@ -685,7 +685,12 @@ ExternalDriver.definition = {
     let runtime = Components
       .classes["@mozilla.org/file/local;1"]
       .createInstance(Components.interfaces.nsILocalFile);
-    runtime.initWithPath(executable_path);
+    try {
+      runtime.initWithPath(executable_path);
+    } catch (e) {
+      alert(executable_path);
+      throw e;
+    }
     if (!runtime.exists() || !runtime.isExecutable()) {
       throw coUtils.Debug.Exeption(_("Could not launch python: file not found."));
     }
