@@ -676,7 +676,7 @@ ExternalDriver.definition = {
     let executable_path;
     let os = coUtils.Runtime.os;
     if ("WINNT" == os) {
-      let cygwin_root = broker.uniget("get/cygwin-root");
+      let cygwin_root = broker.cygwin_root;
       executable_path = cygwin_root + "\\bin\\run.exe";
     } else {
       executable_path = broker.uniget("get/python-path");
