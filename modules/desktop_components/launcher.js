@@ -310,7 +310,7 @@ ProcessManager.definition = {
     let args;
     if ("WINNT" == coUtils.Runtime.os) {
       let broker = this._broker;
-      let cygwin_root = broker.uniget("get/cygwin-root");
+      let cygwin_root = broker.cygwin_root;
       runtime_path = cygwin_root + "\\bin\\run.exe";
       args = [ "/bin/ps", "-p", String(pid) ];
     } else { // Darwin, Linux or FreeBSD
