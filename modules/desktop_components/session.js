@@ -253,7 +253,6 @@ Session.definition = {
   {
     // register getter topic.
     let broker = this._broker;
-    this.subscribe("get/cygwin-root", function() broker.uniget("get/cygwin-root"));
     this.subscribe("get/bin-path", function() broker.uniget("get/bin-path"));
     this.subscribe("get/python-path", function() broker.uniget("get/python-path"));
 

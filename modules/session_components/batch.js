@@ -88,8 +88,8 @@ BatchLoader.definition = {
     let path = arguments_string.replace(/^\s*|\s*$/g, "");
     if ("$" != path.charAt(0) && !coUtils.File.isAbsolutePath(path)) {
       if ("WINNT" == coUtils.Runtime.os) {
-        let session = this._broker;
-        let cygwin_root = session.uniget("get/cygwin-root");
+        let broker = this._broker;
+        let cygwin_root = broker.cygwin_root;
         path = cygwin_root + coUtils.File.getPathDelimiter() + path.replace(/\//g, "\\");
       } else {
         let home = coUtils.File.getFileLeafFromVirtualPath("$Home");
@@ -141,8 +141,8 @@ BatchLoader.definition = {
     let executable_path;
     let os = coUtils.Runtime.os;
     if ("WINNT" == os) {
-      let cygwin_root = session.uniget("get/cygwin-root");
-      executable_path = String(<>{cygwin_root}\bin\run.exe</>);
+      let cygwin_root = session.cygwin_root;
+      executable_path = cygwin_root + "\\bin\\run.exe";
     } else {
       executable_path = "/bin/sh";
     }

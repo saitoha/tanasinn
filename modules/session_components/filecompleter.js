@@ -300,7 +300,7 @@ FileCompleter.definition = {
     if (stem) {
       if (!coUtils.File.isAbsolutePath(stem)) {
         if ("WINNT" == coUtils.Runtime.os) {
-          let cygwin_root = broker.uniget("get/cygwin-root");
+          let cygwin_root = broker.cygwin_root;
           stem = cygwin_root + coUtils.File.getPathDelimiter() + stem;
         } else {
           stem = home.path + coUtils.File.getPathDelimiter() + stem;
