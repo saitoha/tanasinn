@@ -84,7 +84,7 @@ Environment.definition = {
 
   get cygwin_root()
   {
-    this._broker.cygwin_root;
+    return this._broker.cygwin_root;
   },
 };
 

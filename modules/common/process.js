@@ -167,7 +167,6 @@ with (scope) {
     get cygwin_root()
     {
       let cygwin_root =  this._cygwin_root || this._guessCygwinRoot();
-      return "sss";
       return cygwin_root;
     },
 
