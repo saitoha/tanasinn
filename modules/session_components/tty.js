@@ -685,12 +685,10 @@ ExternalDriver.definition = {
     let runtime = Components
       .classes["@mozilla.org/file/local;1"]
       .createInstance(Components.interfaces.nsILocalFile);
-    try {
-      runtime.initWithPath(executable_path);
-    } catch (e) {
-      alert(executable_path);
-      throw e;
-    }
+    //try {
+    //alert(this._broker.cygwin_root)
+    //} catch(e) {alert(e + " " + e.fileName + " " + e.lineNumber)}
+    runtime.initWithPath(executable_path);
     if (!runtime.exists() || !runtime.isExecutable()) {
       throw coUtils.Debug.Exeption(_("Could not launch python: file not found."));
     }

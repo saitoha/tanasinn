@@ -167,7 +167,7 @@ with (scope) {
     get cygwin_root()
     {
       let cygwin_root =  this._cygwin_root || this._guessCygwinRoot();
-      alert(cygwin_root);
+      return "sss";
       return cygwin_root;
     },
 
@@ -202,7 +202,7 @@ with (scope) {
     {
       let search_paths = "CDEFGHIJKLMNOPQRSTUVWXYZ"
         .split("")
-        .map(function(letter) letter + ":\\" + cygwin);
+        .map(function(letter) letter + ":\\cygwin");
       search_paths.push("D:\\User\\Program\\cygwin");
       for (let [, path] in Iterator(search_paths)) {
         let directory = Components

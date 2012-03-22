@@ -61,6 +61,11 @@ Environment.definition = {
     this._search_path = value;
   },
 
+  get cygwin_root()
+  {
+    return this._broker.cygwin_root;
+  },
+
 };
 
 
