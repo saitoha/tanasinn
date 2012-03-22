@@ -270,7 +270,7 @@ InputManager.definition = {
     this.blur.enabled = true;
     this.onkeypress.enabled = true;
     if ("Darwin" == coUtils.Runtime.os) {
-      this.onkeyup.enabled = true;
+    this.onkeyup.enabled = true;
     }
     this.onDoubleShift.enabled = true;
     this.oninput.enabled = true;
@@ -299,7 +299,7 @@ InputManager.definition = {
     this.blur.enabled = false;
     this.onkeypress.enabled = false;
     if ("Darwin" == coUtils.Runtime.os) {
-      this.onkeyup.enabled = false;
+    this.onkeyup.enabled = false;
     }
     this.onDoubleShift.enabled = false;
     this.oninput.enabled = false;
@@ -436,6 +436,14 @@ InputManager.definition = {
     //alert(event.keyCode + " - " + event.which + " - " + event.ctrlKey)
     event.preventDefault();
     event.stopPropagation();
+
+    if (0 == event.keyCode
+        && 32 == event.which
+        && event.ctrlKey) {
+      event.keyCode = 32;
+      event.isChar = false;
+    }
+
     let packed_code = coUtils.Keyboard
       .getPackedKeycodeFromEvent(event);
     let broker = this._broker;

@@ -1076,6 +1076,83 @@ coUtils.File = new function() {
 };
 
 
+coUtils.Runtime = {
+
+  _app_info: Components
+    .classes["@mozilla.org/xre/app-info;1"]
+    .getService(Components.interfaces.nsIXULAppInfo),
+
+  file_handler: Components
+    .classes["@mozilla.org/network/io-service;1"]
+    .getService(Components.interfaces.nsIIOService)
+    .getProtocolHandler("file")
+    .QueryInterface(Components.interfaces.nsIFileProtocolHandler),
+
+  subscript_loader: Components
+    .classes["@mozilla.org/moz/jssubscript-loader;1"]
+    .getService(Components.interfaces.mozIJSSubScriptLoader),
+
+  get app_id() 
+  {
+    return this._app_info.ID;
+  },
+
+  get app_name() 
+  {
+    return this._app_info.name;
+  },
+
+  get version()
+  {
+    return this._app_info.version;
+  },
+
+  get os()
+  {
+    return this._app_info
+      .QueryInterface(Components.interfaces.nsIXULRuntime)
+      .OS;
+  },
+
+  loadScript: function loadScript(location, scope) 
+  {
+    let url = null;
+    let file = null;
+
+    // detect if given location string is a URL formatted string.
+    let match = location.match(/^([a-z]+):\/\//);
+    if (match) { // location is URL spec formatted.
+      let [, protocol] = match;
+      if ("file" == protocol) { 
+        file = this.file_handler.getFileFromURLSpec(location);
+      } else {
+        throw coUtils.Debug.Exception(
+          _("'%s' is unknown protocol. location: '%s'."), protocol, location);
+      }
+      url = location;
+    } else { // location is platform-specific formatted path.
+      file = coUtils.File.getFileLeafFromVirtualPath(location);
+      if (!file || !file.exists()) {
+        throw coUtils.Debug.Exception(
+          _("Cannot get file entries from '%s'. ", 
+            "It seems that specified path does not exists."), file.path);
+      }
+      url = coUtils.File.getURLSpec(file);
+    }
+
+    // compare last modified times between cached file and current one.
+//    coUtils.Debug.reportMessage(_("Loading script '%s'."), file.leafName);
+
+    // avoiding subscript-caching (firefox8's new feature).
+    url += "?" + coUtils.File.getLastModifiedTime(file);
+
+    // load
+    this.subscript_loader.loadSubScript(url, scope, "UTF-8");
+
+  }, // loadScript
+
+}; // coUtils.Runtime
+
 /**
  *   prefix:  000000xxxxx000000000000000000000
  *
@@ -1103,8 +1180,8 @@ coUtils.Keyboard = {
     swiperight  : 0xb0000001,
     swipetop    : 0xc0000001,
     swipebottom : 0xd0000001,
-    space       : 0x1 << KEY_NOCHAR | 0x0020,
-    sp          : 0x1 << KEY_NOCHAR | 0x0020,
+    space       : ("Darwin" == coUtils.Runtime.os) << KEY_NOCHAR | 0x0020,
+    sp          : ("Darwin" == coUtils.Runtime.os) << KEY_NOCHAR | 0x0020,
     bs          : 0x1 << KEY_NOCHAR | 0x0008, 
     backspace   : 0x1 << KEY_NOCHAR | 0x0008, 
     tab         : 0x1 << KEY_NOCHAR | 0x0009, 
@@ -1682,83 +1759,6 @@ coUtils.Uuid = {
   },
 
 }; // coUtils.Uuid
-
-coUtils.Runtime = {
-
-  _app_info: Components
-    .classes["@mozilla.org/xre/app-info;1"]
-    .getService(Components.interfaces.nsIXULAppInfo),
-
-  file_handler: Components
-    .classes["@mozilla.org/network/io-service;1"]
-    .getService(Components.interfaces.nsIIOService)
-    .getProtocolHandler("file")
-    .QueryInterface(Components.interfaces.nsIFileProtocolHandler),
-
-  subscript_loader: Components
-    .classes["@mozilla.org/moz/jssubscript-loader;1"]
-    .getService(Components.interfaces.mozIJSSubScriptLoader),
-
-  get app_id() 
-  {
-    return this._app_info.ID;
-  },
-
-  get app_name() 
-  {
-    return this._app_info.name;
-  },
-
-  get version()
-  {
-    return this._app_info.version;
-  },
-
-  get os()
-  {
-    return this._app_info
-      .QueryInterface(Components.interfaces.nsIXULRuntime)
-      .OS;
-  },
-
-  loadScript: function loadScript(location, scope) 
-  {
-    let url = null;
-    let file = null;
-
-    // detect if given location string is a URL formatted string.
-    let match = location.match(/^([a-z]+):\/\//);
-    if (match) { // location is URL spec formatted.
-      let [, protocol] = match;
-      if ("file" == protocol) { 
-        file = this.file_handler.getFileFromURLSpec(location);
-      } else {
-        throw coUtils.Debug.Exception(
-          _("'%s' is unknown protocol. location: '%s'."), protocol, location);
-      }
-      url = location;
-    } else { // location is platform-specific formatted path.
-      file = coUtils.File.getFileLeafFromVirtualPath(location);
-      if (!file || !file.exists()) {
-        throw coUtils.Debug.Exception(
-          _("Cannot get file entries from '%s'. ", 
-            "It seems that specified path does not exists."), file.path);
-      }
-      url = coUtils.File.getURLSpec(file);
-    }
-
-    // compare last modified times between cached file and current one.
-//    coUtils.Debug.reportMessage(_("Loading script '%s'."), file.leafName);
-
-    // avoiding subscript-caching (firefox8's new feature).
-    url += "?" + coUtils.File.getLastModifiedTime(file);
-
-    // load
-    this.subscript_loader.loadSubScript(url, scope, "UTF-8");
-
-  }, // loadScript
-
-}; // coUtils.Runtime
 
 /**
  * @class Localize
