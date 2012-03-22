@@ -195,9 +195,8 @@ coUtils.Sessions = {
 
   session_data_path: "$Home/.tanasinn/sessions.txt",
 
-  remove: function remove(request_id)
+  remove: function remove(broker, request_id)
   {
-    let broker = this._broker;
     delete this._records[request_id];
     this._dirty = true;
     coUtils.Timer.setTimeout(function() {
@@ -414,7 +413,7 @@ SessionsCompleter.definition = {
             value: record,
           };
         } else {
-          coUtils.Sessions.remove(request_id);
+          coUtils.Sessions.remove(this._broker, request_id);
         }
       } catch (e) {
         coUtils.Debug.reportError(e);
@@ -909,7 +908,7 @@ Launcher.definition = {
       row.style.cssText = <>
         background: -moz-linear-gradient(top, #ddd, #eee);
         border-radius: 4px;
-      </>;
+      </>.toString();
       try {
         let scroll_box = completion_root.parentNode;
         let box_object = scroll_box.boxObject

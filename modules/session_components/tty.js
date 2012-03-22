@@ -787,7 +787,7 @@ SocketTeletypeService.definition = {
       let record = coUtils.Sessions.get(request_id);
       broker.notify("event/control-socket-ready", Number(record.control_port));
       this._pid = Number(record.pid);
-      coUtils.Sessions.remove(request_id);
+      coUtils.Sessions.remove(broker, request_id);
       coUtils.Sessions.update();
       let backup_data_path = broker.runtime_path + "/persist/" + request_id + ".txt";
       if (coUtils.File.exists(backup_data_path)) {
