@@ -167,6 +167,7 @@ Session.definition = {
   "[persistable] profile": "default",
   "[persistable] initial_focus_delay": 100,
   "[persistable] default_term": "xterm",
+  "[persistable] debug_flag": false,
 
   get python_path()
   {
@@ -285,6 +286,8 @@ Session.definition = {
   {
     this.removeGlobalEvent("quit-application");
     this.notify("event/broker-stopping", this);
+    this.clear();
+    this._observers = null;
     /*
     if (coUtils.Runtime.app_name.match(/tanasinn/)) {
       this.window.close(); // close window

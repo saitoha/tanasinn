@@ -31,6 +31,33 @@
 let NmapAttribute = new Attribute("nmap");
 NmapAttribute.definition = {
 
+  get __id()
+    "nmap",
+
+  get __info()
+    <Attribute>
+      <name>{_("Default NMap")}</name>
+      <description>{
+        _("Provides default keybind replacement settings in normal mode.")
+      }</description>
+      <detail>
+      <![CDATA[
+        "nmap" attribute defines default keybind replacement settings in normal mode. 
+        this settings are deald as "persistable".
+
+        usage:
+
+          "[nmap('<C-n>', '<F7>')]": 
+          function func1() 
+          {
+            ....
+          },
+
+      ]]>
+      </detail>
+    </Attribute>,
+
+
   /** constructor 
    *  @param {EventBroker} broker Parent broker object.
    */

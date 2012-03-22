@@ -56,7 +56,7 @@ PluginViewer.definition = {
             tagName: "row",
             childNodes: 
               let (module = module) // memorize "module".
-              let (info = module.info) 
+              let (info = ("info" in module) && module.info) 
               let (depends = this._depends_map[module.id])
               let (depended = this._depended_map[module.id])
               let (depends_on = Object.keys(depends).map(function(key) depends[key], this))
@@ -179,7 +179,7 @@ PluginViewer.definition = {
       depended_by[module.id] = depended_by[module.id] || {};
       Object.keys(module.dependency)
         .map(function(key) module.dependency[key])
-        .filter(function(dependency) dependency.info)
+        .filter(function(dependency) ("info" in dependency) && dependency.info)
         .forEach(function(dependency) 
         {
           depends_on[module.id][dependency.id] = dependency;

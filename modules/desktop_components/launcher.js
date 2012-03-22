@@ -32,7 +32,7 @@ CompleterBase.definition = {
   function onLoad(broker)
   {
     broker.subscribe(
-      <>get/completer/{this.type}</>, 
+      "get/completer/" + this.type, 
       let (self = this) function() self);
   },
 
@@ -48,9 +48,9 @@ CompletionDisplayDriverBase.definition = {
   function onLoad(broker)
   {
     broker.subscribe(
-      <>get/completion-display-driver/{this.type}</>, 
+      "get/completion-display-driver/" + this.type, 
       let (self = this) function() self);
-    broker.notify(<>initialized/{this.id}</>, this);
+    broker.notify("initialized/" + this.id, this);
   },
 
 };
@@ -159,8 +159,8 @@ ProgramCompleter.definition = {
             .replace(/.exe$/ig, "")
             .replace(
               /^([a-zA-Z]):/, 
-              function() String(<>/cygdrive/{arguments[1].toLowerCase()}</>));
-        }
+              function() "/cygdrive/" + arguments[1].toLowerCase());
+        } 
         return {
           name: path,
           value: path,
@@ -201,12 +201,12 @@ coUtils.Sessions = {
     this._dirty = true;
     coUtils.Timer.setTimeout(function() {
       let broker = this._broker;
-      let backup_data_path = String(<>{broker.runtime_path}/persist/{request_id}.txt</>);
+      let backup_data_path = broker.runtime_path + "/persist/" + request_id + ".txt";
       let file = coUtils.File.getFileLeafFromVirtualPath(backup_data_path);
       if (file.exists()) {
         file.remove(true);
       }
-      backup_data_path = String(<>{broker.runtime_path}/persist/{request_id}.png</>);
+      backup_data_path = broker.runtime_path + "/persist/" + request_id + ".png";
       file = coUtils.File.getFileLeafFromVirtualPath(backup_data_path);
       if (file.exists()) {
         file.remove(true);
@@ -286,7 +286,7 @@ ProcessManager.definition = {
   "[subscribe('@event/broker-started'), enabled]":
   function onLoad(broker)
   {
-    broker.notify(<>initialized/{this.id}</>, this);
+    broker.notify("initialized/" + this.id, this);
   },
 
   /** Checks if the process is running. 
@@ -311,7 +311,7 @@ ProcessManager.definition = {
     if ("WINNT" == coUtils.Runtime.os) {
       let broker = this._broker;
       let cygwin_root = broker.uniget("get/cygwin-root");
-      runtime_path = String(<>{cygwin_root}\bin\run.exe</>);
+      runtime_path = cygwin_root + "\\bin\\run.exe";
       args = [ "/bin/ps", "-p", String(pid) ];
     } else { // Darwin, Linux or FreeBSD
       runtime_path = "/bin/ps";
@@ -358,7 +358,7 @@ ProcessManager.definition = {
     if ("WINNT" == coUtils.Runtime.os) {
       let broker = this._broker;
       let cygwin_root = broker.uniget("get/cygwin-root");
-      runtime_path = String(<>{cygwin_root}\bin\run.exe</>);
+      runtime_path = cygwin_root + "\\bin\\run.exe";
       args = [ "kill", "-wait", "-" + signal, String(pid) ];
     } else { // Darwin, Linux or FreeBSD
       runtime_path = "/bin/kill";
@@ -545,11 +545,11 @@ SessionsCompletionDisplayDriver.definition = {
   get type()
     "sessions",
 
-  getImageSource: function(request_id)
+  getImageSource: function getImageSource(request_id)
   {
     try {
       let broker = this._broker;
-      let image_path = String(<>{broker.runtime_path}/persist/{request_id}.png</>);
+      let image_path = broker.runtime_path + "/persist/" + request_id + ".png";
       let image_file = coUtils.File.getFileLeafFromVirtualPath(image_path);
       let image_url = coUtils.File.getURLSpec(image_file);
       return image_url;
@@ -644,14 +644,14 @@ LauncherCompletionProvider.definition = {
     let {source, listener} = request;
     let broker = this._broker;
     if (0 == source.length || 0 == source.indexOf("&")) {
-      let program_completer = broker.uniget(<>get/completer/sessions</>);
+      let program_completer = broker.uniget("get/completer/sessions");
       let position = program_completer.startSearch(source.substr(1), listener);
       if (0 != position) {
-        let program_completer = broker.uniget(<>get/completer/program</>);
+        let program_completer = broker.uniget("get/completer/program");
         let position = program_completer.startSearch(source, listener);
       }
     } else {
-      let program_completer = broker.uniget(<>get/completer/program</>);
+      let program_completer = broker.uniget("get/completer/program");
       let position = program_completer.startSearch(source, listener);
     }
   },
@@ -670,6 +670,7 @@ Launcher.definition = {
   top: 200,
   left: 500,
 
+  "[persistable, watchable] popup_height": 400,
   "[persistable, watchable] completion_delay": 180,
   "[persistable, watchable] font_size": "40px",
   "[persistable, watchable] font_family": "Lucida Calligraph,Times New Roman,Lucida Console",
@@ -681,6 +682,9 @@ Launcher.definition = {
   _index: -1,
   _result: null,
   _stem_text: "",
+  _last_ctrlup_time: 0,
+  _last_altup_time: 0,
+  _last_shiftup_time: 0,
 
   get rowCount() 
   {
@@ -772,7 +776,7 @@ Launcher.definition = {
               background: -moz-linear-gradient(top, #ccc, #aaa);
             </>,
             noautofocus: true,
-            height: 400,
+            height: this.popup_height,
             id: "tanasinn_launcher_completion_popup",
             childNodes: {
               tagName: "stack",
@@ -781,11 +785,9 @@ Launcher.definition = {
                 {
                   tagName: "box",
                   style: <> 
-                    //border: 1px solid #aaa;
                     border-radius: 12px;
                     outline: none;
                     border: none;
-                    //background: -moz-linear-gradient(top, #ccc, #aaa);
                   </>,
                 },
                 {
@@ -803,15 +805,11 @@ Launcher.definition = {
                     flex: 1,
                     id: "tanasinn_launcher_completion_root",
                     style: <> 
-                      //overflow-x: hidden;
-                      //overflow-y: auto;
                       font-size: 20px;
                       font-family: 'Menlo','Lucida Console';
                       font-weight: bold;
                       color: #fff;
-//                      -moz-box-shadow: 15px 14px 19px black;
                       text-shadow: 1px 1px 7px black;
-                  //background: transparent;
                     </>,
                   }
                 }, // scrollbox
@@ -946,7 +944,7 @@ Launcher.definition = {
     if (result) {
       let type = result.type || "text";
       let broker = this._broker;
-      let driver = broker.uniget(<>get/completion-display-driver/{type}</>); 
+      let driver = broker.uniget("get/completion-display-driver/" + type); 
       if (driver) {
         driver.drive(completion_root, result, this.currentIndex);
         this.invalidate(result);
@@ -1118,8 +1116,8 @@ Launcher.definition = {
     }
     this._window_layer.appendChild(box);
     desktop.start(box, command);  // command
-    box.style.left = <>{this.left = (this.left + Math.random() * 1000) % 140 + 20}px</>.toString();
-    box.style.top = <>{this.top = (this.top + Math.random() * 1000) % 140 + 20}px</>.toString();
+    box.style.left = (this.left = (this.left + Math.random() * 1000) % 140 + 20) + "px";
+    box.style.top = (this.top = (this.top + Math.random() * 1000) % 140 + 20) + "px";
     this.hide();
   },
 
@@ -1337,7 +1335,6 @@ DragMove.definition = {
             left: 0px;
             top: 0px;
             padding: 100px;
-//            border: 1px solid red;
           </>,
         });
     this._drag_cover = tanasinn_drag_cover;

@@ -54,7 +54,6 @@ Splitter.definition = {
         -moz-appearance: none;
         cursor: ns-resize;
         background: transparent;
-//        border: solid 3px blue;
       </>,
       listener: {
         type: "dragstart", 

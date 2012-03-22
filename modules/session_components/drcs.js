@@ -42,13 +42,8 @@ DRCSBuffer.definition = {
 
   get template()
     ({
-//      parentNode: "#tanasinn_center_area",
-//      tagName: "vbox",
-//      style: <>position: absolute; top: -10px;</>,
-//      childNodes: {
-        tagName: "html:canvas",
-        id: "tanasinn_drcs_canvas",
-//      },
+      tagName: "html:canvas",
+      id: "tanasinn_drcs_canvas",
     }),
 
   "[persistable] enabled_when_startup": true,

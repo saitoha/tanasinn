@@ -7,7 +7,9 @@
     <em:name>tanasinn</em:name>
     <em:version>0.1.6.0</em:version>
     <em:creator>saitoha</em:creator>
-    <em:description>Terminal Emurator Addon for Firefox/Thunderbird/SeaMonkey</em:description>
+    <em:description>
+        A Terminal Emurator Extension for Firefox/Thunderbird/SeaMonkey
+    </em:description>
     <!--em:optionsURL>chrome://tanasinn/content/preference.xul</em:optionsURL-->
     <em:iconURL>resource://tanasinn/content/tanasinn.svg</em:iconURL>
     <em:unpack>true</em:unpack>
@@ -19,7 +21,7 @@
         <!-- Firefox -->
         <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id> 
         <em:minVersion>4.0.2pre</em:minVersion>
-        <em:maxVersion>12.0a1</em:maxVersion>
+        <em:maxVersion>14.0a1</em:maxVersion>
       </Description>
       <Description>
         <!-- Thunderbird -->

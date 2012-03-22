@@ -63,7 +63,7 @@ Mouse.definition = {
 
   /** Installs itself. */
   "[subscribe('install/mouse'), enabled]":
-  function install(session) 
+  function install(broker) 
   {
     /** Start to listen mouse event. */
     this.onmousedown.enabled = true;
@@ -71,7 +71,8 @@ Mouse.definition = {
     this.onmousemove.enabled = true;
     this.onmouseup.enabled = true;
     this.onmousescroll.enabled = true;
-    this.onmagnifyGesture.enabled = true;
+    this.onMagnifyGesture.enabled = true;
+    this.onSwipeGesture.enabled = true;
     this.onMouseTrackingModeChanged.enabled = true;
     this.backup.enabled = true;
     this.restore.enabled = true;
@@ -79,7 +80,7 @@ Mouse.definition = {
 
   /** Uninstalls itself. */
   "[subscribe('uninstall/mouse'), enabled]":
-  function uninstall(session) 
+  function uninstall(broker) 
   {
     // unregister mouse event DOM listeners.
     this.onmousedown.enabled = false;
@@ -87,7 +88,8 @@ Mouse.definition = {
     this.onmousemove.enabled = false;
     this.onmouseup.enabled = false;
     this.onmousescroll.enabled = false;
-    this.onmagnifyGesture.enabled = false;
+    this.onMagnifyGesture.enabled = false;
+    this.onSwipeGesture.enabled = false;
     this.onMouseTrackingModeChanged.enabled = false;
     this.backup.enabled = false;
     this.restore.enabled = false;
@@ -123,11 +125,11 @@ Mouse.definition = {
         _("FIXME: Now, We have not implemented ",
           "VT200_HIGHLIGHT_MOUSE mouse tracking mode."));
     }
-    let session = this._broker;
+    let broker = this._broker;
     if (null == data) {
-      session.notify(_("Leaving mouse tracking mode: [%s]."), this._tracking_mode)
+      broker.notify(_("Leaving mouse tracking mode: [%s]."), this._tracking_mode)
     } else {
-      session.notify(_("Entering mouse tracking mode: [%s]."), data)
+      broker.notify(_("Entering mouse tracking mode: [%s]."), data)
     }
     this._tracking_mode = data;
   },
@@ -186,8 +188,8 @@ Mouse.definition = {
     //                                 ESC    [     M          
     let message = String.fromCharCode(0x1b, 0x5b, 0x4d, code, column + 32, row + 32);
 
-    let session = this._broker;
-    session.notify("command/send-to-tty", message);
+    let broker = this._broker;
+    broker.notify("command/send-to-tty", message);
 //    coUtils.Debug.reportMessage("Mouse position reporting: " 
 //        + left + " " + top + " " + column + " " + row + "[" + message + "]")
   },
@@ -216,16 +218,16 @@ Mouse.definition = {
         return;
       let keypad_mode = this._keypad_mode;
       let tracking_mode = this._tracking_mode;
-      let session = this._broker;
+      let broker = this._broker;
       if (this._in_scroll_session 
           || null === tracking_mode 
           && coUtils.Constant.KEYPAD_MODE_NORMAL == keypad_mode) {
         if (count > 0) {
-          session.notify("command/scroll-down-view", count);
-          session.notify("command/draw");
+          broker.notify("command/scroll-down-view", count);
+          broker.notify("command/draw");
         } else if (count < 0) {
-          session.notify("command/scroll-up-view", -count);
-          session.notify("command/draw");
+          broker.notify("command/scroll-up-view", -count);
+          broker.notify("command/draw");
         } else { // count == 1
           return;
         }
@@ -242,7 +244,7 @@ Mouse.definition = {
           return; 
         }
         message = sequences.join("");
-        session.notify("command/send-to-tty", message);
+        broker.notify("command/send-to-tty", message);
       }
       //  else {
       //  throw coUtils.Debug.Exception(
@@ -251,23 +253,54 @@ Mouse.definition = {
     }
   },
 
+  /** Swipe down evnet listener */
+  "[subscribe('event/swipe-gesture')]": 
+  function onSwipeGesture(direction) 
+  {
+    let broker = this._broker
+
+    switch (direction) {
+
+      case SimpleGestureEvent.DIRECTION_LEFT:
+        broker.notify("command/input-expression-with-mapping", "<SwipeLeft>");
+        break;
+
+      case SimpleGestureEvent.DIRECTION_RIGHT:
+        broker.notify("command/input-expression-with-mapping", "<SwipeRight>");
+        break;
+
+      case SimpleGestureEvent.DIRECTION_UP:
+        broker.notify("command/input-expression-with-mapping", "<SwipeUp>");
+        break;
+
+      case SimpleGestureEvent.DIRECTION_DOWN:
+        broker.notify("command/input-expression-with-mapping", "<SwipeDown>");
+        break;
+
+      default:
+        coUtils.Debug.reportError(
+          _("Unknown direction id was specified: %s."), direction);
+
+    }
+  },
+ 
   /** handles magnify-gesture evnet. */
   "[subscribe('event/magnify-gesture')]": 
-  function onmagnifyGesture(delta) 
+  function onMagnifyGesture(delta) 
   {
-    let session = this._broker
+    let broker = this._broker
     if (delta > 0) {
       let count = Math.ceil(delta / this.magnify_delta_per_fontsize);
       for (let i = 0; i < count; ++i) {
-        session.notify("command/input-expression-with-mapping", "<PinchOpen>");
+        broker.notify("command/input-expression-with-mapping", "<PinchOpen>");
       }
     } else if (delta < 0) {
       let count = Math.floor(- delta / this.magnify_delta_per_fontsize);
       for (let i = 0; i < count; ++i) {
-        session.notify("command/input-expression-with-mapping", "<PinchClose>");
+        broker.notify("command/input-expression-with-mapping", "<PinchClose>");
       }
     }
-    session.notify("command/draw");
+    broker.notify("command/draw");
   },
 
   /** Mouse down evnet listener */
@@ -301,8 +334,8 @@ Mouse.definition = {
       row += 32;
       let message = String.fromCharCode(0x1b, 0x5b, 0x4d, code, column, row);
 
-      let session = this._broker;
-      session.notify("command/send-to-tty", message);
+      let broker = this._broker;
+      broker.notify("command/send-to-tty", message);
     }
   },
 
@@ -319,13 +352,13 @@ Mouse.definition = {
   // Helper: get current position from mouse event object.
   _getCurrentPosition: function _getCurrentPosition(event) 
   {
-    let session = this._broker;
-    let target_element = session.uniget(
+    let broker = this._broker;
+    let target_element = broker.uniget(
       "command/query-selector", 
       "#tanasinn_center_area");
     let box = target_element.boxObject;
-    let offsetX = box.screenX - session.root_element.boxObject.screenX;
-    let offsetY = box.screenY - session.root_element.boxObject.screenY;
+    let offsetX = box.screenX - broker.root_element.boxObject.screenX;
+    let offsetY = box.screenY - broker.root_element.boxObject.screenY;
     let left = event.layerX - offsetX; // left position in pixel.
     let top = event.layerY - offsetY;  // top position in pixel.
 

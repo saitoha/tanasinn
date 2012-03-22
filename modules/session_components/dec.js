@@ -95,59 +95,624 @@ DecModeSequenceHandler.definition = {
   "[sequence('CSI ?%dh')]":
   function DECSET(n) 
   { // DEC Private Mode Set
-    if (arguments.length == 0)
+
+    if (arguments.length == 0) {
       coUtils.Debug.reportWarning(_("DECSET: Length of Arguments is zero. "));
-    [].slice.apply(arguments).forEach(function(n) {
-        n == 1    ? this.CKM = true // application cursor
-      : n == 3    ? this.COLM = true // TODO: 132 column mode
-      : n == 7    ? this.AWM = true
-      : n == 9    ? this.mouseMode = "X10_MOUSE"
-      : n == 12   ? this._screen.cursor.blink = true
-      : n == 25   ? this.TCEM = true
-      : n == 47   ? this._screen.switchToAlternateScreen()
-      : n == 1000 ? this.mouseMode = "VT200_MOUSE"
-      : n == 1001 ? this.mouseMode = "VT200_HIGHLIGHT_MOUSE"
-      : n == 1002 ? this.mouseMode = "BTN_EVENT_MOUSE"
-      : n == 1003 ? this.mouseMode = "ANY_EVENT_MOUSE"
-      : n == 1047 ? this._screen.switchToAlternateScreen()
-      : n == 1048 ? this._screen.saveCursor()
-      : n == 1049 ? this._screen.selectAlternateScreen()
-      : coUtils.Debug.reportWarning(
-        _("%s sequence [%s] was ignored."),
-        arguments.callee.name, n);
-    }, this);
+    }
+
+    let broker = this._broker;
+
+    for (let i = 0; i < arguments.length; ++i) {
+      let n = arguments[i];
+      switch (n) {
+
+        // Application Cursor Keys (DECCKM)
+        case 1:
+          this.CKM = true; // application cursor
+          break;
+
+        // Designate USASCII for character sets G0-G3 (DECANM), and set VT100 mode.
+        case 2:
+          broker.notify("sequence/g0", "B");
+          broker.notify("sequence/g1", "B");
+          broker.notify("sequence/g2", "B");
+          broker.notify("sequence/g3", "B");
+          broker.notify("command/change-mode", "vt100"); // TODO: write subscriber
+          coUtils.Debug.reportWarning(
+            _("DECSET - DECANM was not implemented completely."));
+          break;
+
+        // 132 column mode (DECCOLM)
+        case 3:
+          if (this._allow_switching_80_and_132_mode) {
+            this.COLM = true;
+            this._broker.notify("command/resize-screen", {
+              column: 132,
+              row: this._screen.height,
+            });
+            //this._screen.width = 132; // 132 column mode
+            this._screen.eraseScreenAll();
+            this._screen.cursor.reset();
+          }
+          break;
+
+        // Smooth (Slow) Scloll (DECSCLM)
+        case 4:
+          // TODO: smooth scroll.
+          coUtils.Debug.reportWarning(
+            _("DECSET - DECSCLM (Smooth sclolling) was ignored."));
+          break;
+
+        // Reverse Video (DECSCNM)
+        case 5:
+          // TODO: reverse video.
+          coUtils.Debug.reportWarning(
+            _("DECSET - DECSCNM (Reverse video) was ignored."));
+          break;
+
+        // Origin Mode (DECOM)
+        case 6:
+          // TODO: origin mode.
+          this._screen.cursor.originX = this._screen.cursor.positionX; 
+          this._screen.cursor.originY = this._screen.cursor.positionY; 
+          coUtils.Debug.reportWarning(
+            _("DECSET - DECOM (Origin mode) was set: (%d, %d)."),
+            this._screen.cursor.originX,
+            this._screen.cursor.originY);
+          break;
+
+        // Wraparound Mode (DECAWM)
+        case 7:
+          this.AWM = true
+          break;
+
+        // Auto-repeat Keys (DECARM)
+        case 8:
+          // TODO: enable auto repeat.
+          coUtils.Debug.reportWarning(
+            _("DECSET - DECARM (Auto-repeat Keys) was ignored."));
+          break;
+
+        // X10_MOUSE mode
+        case 9:
+          this.mouseMode = "X10_MOUSE";
+          break;
+
+        // cursor blink mode
+        case 12:
+          this._screen.cursor.blink = true;
+          break;
+
+        // Print from feed (DECPFF)
+        case 18:
+          // TODO: print from feed.
+          coUtils.Debug.reportWarning(
+            _("DECSET - DECPFF (Print from feed) was ignored."));
+          break;
+
+        // Set print extent to full screen (DECPEX)
+        case 19:
+          // TODO: print from feed.
+          coUtils.Debug.reportWarning(
+            _("DECSET - DECPEX (Set print extent to full screen) was ignored."));
+          break;
+
+        // Show Cursor (DECTCEM)
+        case 25:
+          this.TCEM = true;
+          break;
+
+        // Show Scrollbar (rxvt)
+        case 30:
+          broker.notify("command/scrollbar-show");
+          coUtils.Debug.reportWarning(
+            _("DECSET - Show-Scrollbar feature (rxvt) was not implemented ",
+              "completely."));
+          break;
+
+        // Enable shifted key-functions (rxvt)
+        case 35:
+          broker.notify("command/enable-shifted-key-functions");
+          coUtils.Debug.reportWarning(
+            _("DECSET 35 - Enable-Shifted-Key-Function feature (rxvt) was not ", 
+              "implemented completely."));
+          break;
+
+        // Allow 80 <--> 132 mode
+        case 40:
+          this._allow_switching_80_and_132_mode = true;
+          coUtils.Debug.reportMessage(
+            _("DECSET 40 - (Allow 80 <--> 132 mode) was called."));
+          break;
+
+        // more(1) fix.
+        case 41:
+          coUtils.Debug.reportWarning(
+            _("DECSET 41 - enable fix for more(1) ", 
+              "was not implemented."));
+          break;
+
+        // Enable Nation Replacement Character sets (DECNRCM).
+        case 42:
+          coUtils.Debug.reportWarning(
+            _("DECSET 42 - Enable Nation Replacement Character sets (DECNRCM) ", 
+              "was not implemented."));
+          break;
+
+        // Turn On Margin Bell
+        case 44:
+          coUtils.Debug.reportWarning(
+            _("DECSET 44 - Turn On Margin Bell, ", 
+              "was not implemented."));
+          break;
+
+        // Reverse-wraparound Mode
+        case 45:
+          coUtils.Debug.reportWarning(
+            _("DECSET 45 - Reverse-wraparound Mode, ", 
+              "was not implemented."));
+          break;
+
+        // Start Logging
+        case 46:
+          coUtils.Debug.reportWarning(
+            _("DECSET 46 - Start Logging, ", 
+              "was not implemented."));
+          break;
+
+        // Use Alternate Screen Buffer 
+        // (unless disabled by the titleInhibit resource)
+        case 47:
+          this._screen.switchToAlternateScreen();
+          break;
+
+        // Application keypad (DECNKM)
+        case 66:
+          broker.notify(
+            "event/keypad-mode-changed", 
+            coUtils.Constant.KEYPAD_MODE_APPLICATION);
+          break;
+
+        // Backarrow key sends delete (DECBKM)
+        case 67:
+          coUtils.Debug.reportWarning(
+            _("DECSET 67 - Backarrow key sends delete (DECBKM), ", 
+              "was not implemented."));
+          break;
+
+        // Send Mouse X & Y on button press and release. 
+        // See the section Mouse Tracking.
+        case 1000:
+          this.mouseMode = "VT200_MOUSE";
+          break;
+
+        // Use Hilite Mouse Tracking.
+        case 1001:
+          this.mouseMode = "VT200_HIGHLIGHT_MOUSE";
+          break;
+
+        // Use Cell Motion Mouse Tracking.
+        case 1002:
+          this.mouseMode = "BTN_EVENT_MOUSE";
+          break;
+
+        // Use All Motion Mouse Tracking.
+        case 1003:
+          this.mouseMode = "ANY_EVENT_MOUSE";
+          break;
+
+        // Scroll to bottom on tty output (rxvt).
+        case 1010:
+          coUtils.Debug.reportWarning(
+            _("DECSET 1010 - Scroll to bottom on tty output (rxvt), ", 
+              "was not implemented."));
+          break;
+
+        // Scroll to bottom on key press (rxvt).
+        case 1011:
+          coUtils.Debug.reportWarning(
+            _("DECSET 1011 - Scroll to bottom on key press (rxvt), ", 
+              "was not implemented."));
+          break;
+
+        // Enable special modifiers for Alt and NumLock keys.
+        case 1035:
+          coUtils.Debug.reportWarning(
+            _("DECSET 1035 - Enable special modifiers for Alt and NumLock keys, ",
+              "was not implemented."));
+          break;
+
+        // Send ESC when Meta modifies a key 
+        // (enables the metaSendsEscape resource).
+        case 1036:
+          coUtils.Debug.reportWarning(
+            _("DECSET 1036 - Send ESC when Meta modifies a key ",
+              "(enables the metaSendsEscape resource), ", 
+              "was not implemented."));
+          break;
+
+        // Send DEL from the editing-keypad Delete key.
+        case 1037:
+          coUtils.Debug.reportWarning(
+            _("DECSET 1037 - Send DEL from ",
+              "the editing- keypad Delete key, ", 
+              "was not implemented."));
+          break;
+
+        // Use Alternate Screen Buffer 
+        // (unless disabled by the titleInhibit resource)
+        case 1047:
+          this._screen.switchToAlternateScreen();
+          break;
+
+        // Save cursor as in DECSC 
+        // (unless disabled by the titleinhibit resource)
+        case 1048:
+          this._screen.saveCursor();
+          break;
+
+        // Save cursor as in DECSC and use Alternate Screen Buffer, 
+        // clearing it first (unless disabled by the titleinhibit resource)
+        case 1049:
+          this._screen.selectAlternateScreen();
+          break;
+
+        // Set Sun function-key mode. 
+        case 1051:
+          coUtils.Debug.reportWarning(
+            _("DECSET 1051 - Set Sun function-key mode, ", 
+              "was not implemented."));
+          break;
+
+        // Set HP function-key mode. 
+        case 1052:
+          coUtils.Debug.reportWarning(
+            _("DECSET 1052 - Set HP function-key mode, ", 
+              "was not implemented."));
+          break;
+
+        // Set legacy keyboard emulation (X11R6). 
+        case 1060:
+          coUtils.Debug.reportWarning(
+            _("DECSET 1052 - Set legacy keyboard emulation (X11R6), ", 
+              "was not implemented."));
+          break;
+
+        // Set Sun/PC keyboard emulation of VT220 keyboard. 
+        case 1061:
+          coUtils.Debug.reportWarning(
+            _("DECSET 1052 - Set Sun/PC keyboard emulation of VT220 keyboard, ", 
+              "was not implemented."));
+          break;
+
+        // Set bracketed paste mode. 
+        case 2004:
+          coUtils.Debug.reportWarning(
+            _("DECSET 2004 - Set bracketed paste mode, ", 
+              "was not implemented."));
+          break;
+
+        default:
+          coUtils.Debug.reportWarning(
+            _("%s sequence [%s] was ignored."),
+            arguments.callee.name, n);
+
+      } // end switch
+    } // end for
   },
   
   "[sequence('CSI ?%dl')]":
   function DECRST() 
   { // TODO: DEC-Private Mode Reset
-    if (arguments.length == 0)
+
+    if (arguments.length == 0) {
       coUtils.Debug.reportWarning(_("DECRST: Length of Arguments is zero. "));
-    [].slice.apply(arguments).forEach(function(n) {
-        n == 1    ? this.CKM = false
-      : n == 3    ? this.COLM = false // TODO: 80 column mode
-      : n == 7    ? this.AWM = false
-      : n == 9    ? this.mouseMode = null
-      : n == 12   ? this._screen.cursor.blink = false  
-      : n == 25   ? this.TCEM = false
-      : n == 47   ? this._screen.switchToMainScreen()
-      : n == 1000 ? this.mouseMode = null
-      : n == 1001 ? this.mouseMode = null
-      : n == 1002 ? this.mouseMode = null
-      : n == 1003 ? this.mouseMode = null
-      : n == 1047 ? this._screen.switchToMainScreen()
-      : n == 1048 ? this._screen.restoreCursor()
-      : n == 1049 ? this._screen.selectMainScreen()
-      : coUtils.Debug.reportWarning(
-        _("%s sequence [%s] was ignored."),
-        arguments.callee.name, n);
-    }, this);
+    }
+
+    let broker = this._broker;
+
+    for (let i = 0; i < arguments.length; ++i) {
+
+      let n = arguments[i];
+
+      switch (n) {
+
+        // Normal Cursor Keys (DECCKM)
+        case 1:
+          this.CKM = false; // normal cursor
+          break;
+
+        // Designate VT52 mode.
+        case 2:
+          broker.notify("command/change-mode", "vt52"); // TODO: write subscriber
+          coUtils.Debug.reportWarning(
+            _("DECRST - DECANM was not implemented completely."));
+          break;
+
+        // 80 column mode (DECCOLM)
+        case 3:
+          if (this._allow_switching_80_and_132_mode) {
+            this.COLM = false;
+            broker.notify("command/resize-screen", {
+              column: 80,
+              row: this._screen.height,
+            });
+            //this._screen.width = 80; // 80 column mode
+            this._screen.eraseScreenAll();
+            this._screen.cursor.reset();
+          }
+          break;
+
+        // Smooth (Slow) Scloll (DECSCLM)
+        case 4:
+          // TODO: smooth scroll.
+          coUtils.Debug.reportWarning(
+            _("DECRST - DECSCLM (Smooth sclolling) was ignored."));
+          break;
+
+        // Reverse Video (DECSCNM)
+        case 5:
+          // TODO: reverse video.
+          coUtils.Debug.reportWarning(
+            _("DECRST - DECSCNM (Reverse video) was ignored."));
+          break;
+
+        // Reset Origin Mode (DECOM)
+        case 6:
+          // TODO: reset origin mode.
+          this._screen.cursor.originX = 0; 
+          this._screen.cursor.originY = 0; 
+          coUtils.Debug.reportWarning(
+            _("DECSET - DECOM (Origin mode) was reset: (%d, %d)."),
+            this._screen.cursor.positionX,
+            this._screen.cursor.positionY);
+          break;
+
+        // Wraparound Mode (DECAWM)
+        case 7:
+          this.AWM = false
+          break;
+
+        // Auto-repeat Keys (DECARM)
+        case 8:
+          // TODO: enable auto repeat.
+          coUtils.Debug.reportWarning(
+            _("DECRST - DECARM (Auto-repeat Keys) was ignored."));
+          break;
+
+        // X10_MOUSE mode
+        case 9:
+          this.mouseMode = null;
+          break;
+
+        // cursor blink mode
+        case 12:
+          this._screen.cursor.blink = false;
+          break;
+
+        // Print from feed (DECPFF)
+        case 18:
+          // TODO: print from feed.
+          coUtils.Debug.reportWarning(
+            _("DECRST - DECPFF (Print from feed) was ignored."));
+          break;
+
+        // Set print extent to full screen (DECPEX)
+        case 19:
+          // TODO: print from feed.
+          coUtils.Debug.reportWarning(
+            _("DECRST - DECPEX (Set print extent to full screen) was ignored."));
+          break;
+
+        // Show Cursor (DECTCEM)
+        case 25:
+          this.TCEM = false;
+          break;
+
+        // Show Scrollbar (rxvt)
+        case 30:
+          broker.notify("command/scrollbar-hide");
+          coUtils.Debug.reportWarning(
+            _("DECRST - Show-Scrollbar feature (rxvt) was not implemented ",
+              "completely."));
+          break;
+
+        // Enable shifted key-functions (rxvt)
+        case 35:
+          broker.notify("command/disable-shifted-key-functions");
+          coUtils.Debug.reportWarning(
+            _("DECRST - Enable-Shifted-Key-Function feature (rxvt) was not ", 
+              "implemented completely."));
+          break;
+
+        // Disallow 80 <--> 132 mode
+        case 40:
+          this._allow_switching_80_and_132_mode = false;
+          coUtils.Debug.reportMessage(
+            _("DECRST 40 - (Disallow 80 <--> 132 mode) was called."));
+          break;
+
+        // No more(1) fix.
+        case 41:
+          coUtils.Debug.reportWarning(
+            _("DECRST 41 - disable fix for more(1) ", 
+              "was not implemented."));
+          break;
+
+        // Enable Nation Replacement Character sets (DECNRCM).
+        case 42:
+          coUtils.Debug.reportWarning(
+            _("DECRST 42 - Enable Nation Replacement Character sets (DECNRCM) ", 
+              "was not implemented."));
+          break;
+
+        // Turn Off Margin Bell
+        case 44:
+          coUtils.Debug.reportWarning(
+            _("DECRST 44 - Turn Off Margin Bell, ", 
+              "was not implemented."));
+          break;
+
+        // No Reverse-wraparound Mode
+        case 45:
+          coUtils.Debug.reportWarning(
+            _("DECRST 45 - No Reverse-wraparound Mode, ", 
+              "was not implemented."));
+          break;
+
+        // Stop Logging
+        case 46:
+          coUtils.Debug.reportWarning(
+            _("DECRST 46 - Stop Logging, ", 
+              "was not implemented."));
+          break;
+
+        // Use Normal Screen Buffer 
+        // (unless disabled by the titleInhibit resource)
+        case 47:
+          this._screen.switchToMainScreen();
+          break;
+
+        // Numeric keypad (DECNKM)
+        case 66:
+          broker.notify(
+            "event/keypad-mode-changed", 
+            coUtils.Constant.KEYPAD_MODE_NUMERIC);
+          break;
+
+        // Backarrow key sends backspace (DECBKM)
+        case 67:
+          coUtils.Debug.reportWarning(
+            _("DECRST 67 - Backarrow key sends delete (DECBKM), ", 
+              "was not implemented."));
+          break;
+
+        // Don't Send Mouse X & Y on button press and release. 
+        case 1000:
+          this.mouseMode = null;
+          break;
+
+        // Don't Use Hilite Mouse Tracking.
+        case 1001:
+          this.mouseMode = null;
+          break;
+
+        // Don't Use Cell Motion Mouse Tracking.
+        case 1002:
+          this.mouseMode = null;
+          break;
+
+        // Don't Use All Motion Mouse Tracking.
+        case 1003:
+          this.mouseMode = null;
+          break;
+
+        // Don't scroll to bottom on tty output (rxvt).
+        case 1010:
+          coUtils.Debug.reportWarning(
+            _("DECRST 1010 - Don't scroll to bottom on tty output (rxvt), ", 
+              "was not implemented."));
+          break;
+
+        // Don't scroll to bottom on key press (rxvt).
+        case 1011:
+          coUtils.Debug.reportWarning(
+            _("DECRST 1010 - Don't scroll to bottom on key press (rxvt), ", 
+              "was not implemented."));
+          break;
+
+        // Disable special modifiers for Alt and NumLock keys.
+        case 1035:
+          coUtils.Debug.reportWarning(
+            _("DECRST 1035 - Disable special modifiers for Alt and NumLock keys, ",
+              "was not implemented."));
+          break;
+
+        // Don't send ESC when Meta modifies a key 
+        // (disables the metaSendsEscape resource).
+        case 1036:
+          coUtils.Debug.reportWarning(
+            _("DECRST 1036 - Don't send ESC when Meta modifies a key ",
+              "(disables the metaSendsEscape resource), ", 
+              "was not implemented."));
+          break;
+
+        // Send VT220 Remove from the editing- keypad Delete key.
+        case 1037:
+          coUtils.Debug.reportWarning(
+            _("DECRST 1037 - Send VT220 Remove from ",
+              "the editing- keypad Delete key, ", 
+              "was not implemented."));
+          break;
+
+        // Use Normal Screen Buffer, clearing screen first if in the 
+        // Alternate Screen (unless disabled by the titleinhibit resource)
+        case 1047:
+          this._screen.switchToMainScreen();
+          break;
+
+        // Restore cursor as in DECRC 
+        // (unless disabled by the titleinhibit resource)
+        case 1048:
+          this._screen.restoreCursor();
+          break;
+
+        // Use Normal Screen Buffer and restore cursor as in DECRC 
+        // (unless disabled by the titleinhibit resource)
+        case 1049:
+          this._screen.selectMainScreen();
+          break;
+
+        // Reset Sun function-key mode. 
+        case 1051:
+          coUtils.Debug.reportWarning(
+            _("DECRST 1051 - Reset Sun function-key mode, ", 
+              "was not implemented."));
+          break;
+
+        // Reset HP function-key mode. 
+        case 1052:
+          coUtils.Debug.reportWarning(
+            _("DECRST 1052 - Reset HP function-key mode, ", 
+              "was not implemented."));
+          break;
+
+        // Reset legacy keyboard emulation (X11R6). 
+        case 1060:
+          coUtils.Debug.reportWarning(
+            _("DECRST 1060 - Reset legacy keyboard emulation (X11R6), ", 
+              "was not implemented."));
+          break;
+
+        // Reset Sun/PC keyboard emulation of VT220 keyboard. 
+        case 1061:
+          coUtils.Debug.reportWarning(
+            _("DECRST 1061 - Reset Sun/PC keyboard emulation of VT220 keyboard, ", 
+              "was not implemented."));
+          break;
+
+        // Reset bracketed paste mode. 
+        case 2004:
+          coUtils.Debug.reportWarning(
+            _("DECRST 2004 - Reset bracketed paste mode, ", 
+              "was not implemented."));
+          break;
+
+        default:
+          coUtils.Debug.reportWarning(
+            _("%s sequence [%s] was ignored."),
+            arguments.callee.name, n);
+
+      } // end switch
+
+    } // end for
+
   },
 
   "[sequence('CSI ?%dr')]":
   function DECRSTR() 
   { // TODO: DEC Private Mode Restore
-    [].slice.apply(arguments).forEach(function(n) {
+    Array.slice(arguments).forEach(function(n) {
       let value = this._decsave_buffer[n];
       delete this._decsave_buffer[n];
       if (value) {
@@ -163,7 +728,7 @@ DecModeSequenceHandler.definition = {
   "[sequence('CSI ?%ds')]":
   function DECSAVE(n) 
   {  // TODO: DEC Private Mode Save
-    [].slice.apply(arguments).forEach(function(n) {
+    Array.slice(arguments).forEach(function(n) {
       let value = n == 1    ? let (value = this.CKM) 
                   function() this.CKM = value // application cursor
                 : n == 3    ? let (value = this.COLM)
@@ -246,12 +811,12 @@ DecModeSequenceHandler.definition = {
     } else {
       coUtils.Debug.reportWarning(
         _("%s sequence [%s] was ignored."),
-        arguments.callee.name, [].slice.apply(arguments));
+        arguments.callee.name, Array.slice(arguments));
     }
     // TODO: I wonder if I should implement this feature.
     // DECSTBM moves the cursor to column 1, line 1 of the page.
-    //screen.setPositionX(0);
-    //screen.setPositionY(0); // 0 or top
+    screen.setPositionX(0);
+    screen.setPositionY(top);
   },
 
   /**

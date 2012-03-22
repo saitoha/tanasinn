@@ -41,10 +41,24 @@
   common=common {
    process.js
    common.js
-   eastasian.js
-   category.js
    tupstart.js
    tupbase.js
+  }
+  unicode=unicode {
+   eastasian.js
+   category.js
+  }
+  attributes=attributes {
+   typeattribute.js
+   cmapattribute.js
+   commandattribute.js
+   completerattribute.js
+   listenattribute.js
+   nmapattribute.js
+   persistableattribute.js
+   sequenceattribute.js
+   subscribeattribute.js
+   watchableattribute.js
   }
   process_components=process_components {
    desktop.js
@@ -62,7 +76,6 @@
    map.js
   }
   session_components=session_components {
-   grammar.js
    parser.js
 
    line.js
@@ -130,7 +143,21 @@
     shellrpc.js
     publish.js
     screenshot.js
-   }
+
+    charsetcompleter.js
+    colorcompleter.js
+    completer.js
+    eventcompleter.js
+    filecompleter.js
+    fontfamilycompleter.js
+    fontsizecompleter.js
+    jscompleter.js
+    localizecompleter.js
+    mapcompleter.js
+    optioncompleter.js
+    pluginscompleter.js
+
+  }
 
    incomplete {
     minimize.js

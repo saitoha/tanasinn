@@ -902,6 +902,9 @@ Decoder.definition = {
 
   _g0: ASCII,
   _g1: ASCII,
+  _g2: ASCII,
+  _g3: ASCII,
+
   _charset_table: {
     "0": DEC_Special_Graphics_Character_Set,
     "4": DEC_Dutch_NRC_Set,
@@ -972,6 +975,18 @@ Decoder.definition = {
 
   "[subscribe('sequence/g1'), enabled]": 
   function scsg1(dscs) 
+  {
+    this._g1 = this._charset_table[dscs];
+  },
+
+  "[subscribe('sequence/g2'), enabled]": 
+  function scsg2(dscs) 
+  {
+    this._g0 = this._charset_table[dscs];
+  },
+
+  "[subscribe('sequence/g3'), enabled]": 
+  function scsg3(dscs) 
   {
     this._g1 = this._charset_table[dscs];
   },

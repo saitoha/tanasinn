@@ -60,7 +60,7 @@ BottomPanel.definition = {
           flex: 1,
           style: <>
             opacity: 0.7;
-            </>,
+          </>,
         },
         {
           tagName: "vbox",
@@ -91,7 +91,6 @@ BottomPanel.definition = {
               overflow-x: hidden;
               overflow-y: hidden;
               border: 0px;
-              outer: 0px;
             </>,
             childNodes: [
               { 
@@ -207,8 +206,9 @@ BottomPanel.definition = {
     let row = screen.height;
     let max_screen_height = Math.floor(line_height * row / 2);
     for (let [, panel] in Iterator(this._tabbox.tabpanels.childNodes)) {
-      if (panel.height > max_screen_height); 
+      if (panel.height > max_screen_height) {
         panel.height = max_screen_height;
+      }
     }
 
     // open.
@@ -294,16 +294,11 @@ BottomPanel.definition = {
           background: -moz-linear-gradient(top, #fff, #ccc);
           border-top-left-radius: 4px;
           border-top-right-radius: 4px;
-          //border: solid 1px #888;
           border-bottom: 0px;
           border-left: 2px solid #aaa;
           border-right: 2px solid #ccc;
           margin-left: -2px;
           margin-right: -4px;
-//          background: transparent;
-//          MozAppearance: "none",
-          //margin: "0px",
-          //padding: "0px",
         </>,
       })[id];
     let tab_panel = session.uniget(
@@ -316,11 +311,7 @@ BottomPanel.definition = {
         height: 180,
         style: <>
             -moz-appearance: none;
-            //border: solid 3px pink;
             background: transparent;
-//          padding: "0px",
-//          marginTop: "-18px",
-//          marginBottom: "-18px",
         </>,
       })[id];
     this._panel_map[id] = [tanasinn_tab, tab_panel];

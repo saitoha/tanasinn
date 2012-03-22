@@ -124,7 +124,7 @@ CommandProvider.definition = {
 };
 
 /**
- *
+ * @class JsCommand
  */
 let JsCommand = new Class().extends(Component);
 JsCommand.definition = {
@@ -146,6 +146,9 @@ JsCommand.definition = {
   },
 };
 
+/**
+ * @class SetCommand
+ */
 let SetCommand = new Class().extends(Component);
 SetCommand.definition = {
 
@@ -155,8 +158,9 @@ SetCommand.definition = {
   "[command('set', ['option']), _('Set an option.'), enabled]":
   function evaluate(arguments_string)
   {
-    let session = this._broker;
-    let modules = session.notify("get/components");
+    let broker = this._broker;
+    let modules = broker.notify("get/components");
+    modules.push(broker);
     let pattern = /^\s*([$_a-zA-Z\.\-]+)\.([$_a-zA-Z]+)\s*(=?)\s*/;
     let match = arguments_string.match(pattern);
     if (null === match) {
@@ -192,7 +196,7 @@ SetCommand.definition = {
     let code = arguments_string.substr(all.length); 
     let result = new Function(
       "with (arguments[0]) { return (" + code + ");}"
-    ) (session.window);
+    ) (broker.window);
     module[property] = result; 
     return {
       success: true,
@@ -513,7 +517,7 @@ PersistCommand.definition = {
   "[command('saveprofile/sp', ['profile']), _('Persist current settings.'), enabled]":
   function persist(arguments_string)
   {
-    let session = this._broker;
+    let broker = this._broker;
     let match = arguments_string.match(/^\s*([$_\-@a-zA-Z\.]*)\s*$/);
     if (null === match) {
       return {
@@ -522,7 +526,7 @@ PersistCommand.definition = {
       };
     }
     let [, profile] = match;
-    session.notify("command/save-settings", profile);
+    broker.notify("command/save-settings", profile);
     return {
       success: true,
       message: _("Succeeded."),
@@ -532,7 +536,7 @@ PersistCommand.definition = {
   "[command('loadprofile/lp', ['profile']), _('Load a profile.'), enabled]":
   function load(arguments_string)
   {
-    let session = this._broker;
+    let broker = this._broker;
 
     let match = arguments_string.match(/^\s*([$_\-@a-zA-Z\.]*)\s*$/);
     if (null === match) {
@@ -543,8 +547,8 @@ PersistCommand.definition = {
     }
     let [, profile] = match;
 
-    session.notify("command/load-settings", profile || undefined);
-    session.notify("command/draw", true);
+    broker.notify("command/load-settings", profile || undefined);
+    broker.notify("command/draw", true);
     return {
       success: true,
       message: _("Succeeded."),
@@ -554,7 +558,7 @@ PersistCommand.definition = {
   "[command('deleteprofile/dp', ['profile']), _('Delete a profile.'), enabled]":
   function deleteprofile(arguments_string)
   {
-    let session = this._broker;
+    let broker = this._broker;
 
     let match = arguments_string.match(/^\s*([$_\-@a-zA-Z\.]*)\s*$/);
     if (null === match) {
@@ -565,7 +569,7 @@ PersistCommand.definition = {
     }
     let [, profile] = match;
 
-    session.notify("command/delete-settings", profile || undefined);
+    broker.notify("command/delete-settings", profile || undefined);
     return {
       success: true,
       message: _("Succeeded."),
@@ -641,13 +645,13 @@ CharsetCommands.definition = {
   },
 
   "[command('encoder', ['charset/encoders']), _('Select encoder component.'), enabled]":
-  function disable(arguments_string)
+  function encoder(arguments_string)
   {
     return this._impl(arguments_string, /* is_encoder */ true);
   },
 
   "[command('decoder', ['charset/decoders']), _('Select a decoder component.'), enabled]":
-  function enable(arguments_string)
+  function decoder(arguments_string)
   {
     return this._impl(arguments_string, /* is_encoder */ false);
   },
@@ -711,7 +715,7 @@ OverlayEchoCommand.definition = {
     };
   },
 
-};
+}; // OverlayEchoCommand
 
 /**
  * @fn main

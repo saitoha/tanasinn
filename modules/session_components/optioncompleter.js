@@ -56,9 +56,8 @@ OptionCompleter.definition = {
     }
     let target_broker = "global" ==  context.option ? broker._broker: broker;
 
-    let scope = {};
     let lower_name = name.toLowerCase();
-    target_broker.notify("command/get-persistable-data", scope);
+    let scope = target_broker.uniget("command/get-settings");
     if (!operator_equal) {
       let options = [
         {

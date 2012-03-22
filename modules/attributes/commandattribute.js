@@ -30,6 +30,32 @@
 let CommandAttribute = new Attribute("command");
 CommandAttribute.definition = {
 
+  get __id()
+    "completer",
+
+  get __info()
+    <Attribute>
+      <name>{_("Command")}</name>
+      <description>{
+        _("Declares a command procedure.")
+      }</description>
+      <detail>
+      <![CDATA[
+        "command" attribute declares a command procedure. 
+
+        usage:
+
+          "[command('command1', ['arg1_completer']), _('description.'), enabled]":
+          function command1(arguments_string)
+          {
+            ....
+          },
+
+      ]]>
+      </detail>
+    </Attribute>,
+
+
   /** constructor 
    *  @param {EventBroker} broker Parent broker object.
    */
@@ -41,11 +67,9 @@ CommandAttribute.definition = {
       if (!attribute["command"]) {
         continue;
       }
-      let [name, args] = attribute["command"];
-      let command_info = {
-        name: name,
-        args: args,
-      };
+      let command_arguments = attribute["command"];
+      let name = command_arguments[0];
+      let args = command_arguments.length > 1 && command_arguments[1];
       let handler = this[key];
       let delegate = this[key] = handler.id ? 
           this[key]
@@ -53,7 +77,7 @@ CommandAttribute.definition = {
       delegate.id = delegate.id || [this.id, key].join(".");
       delegate.description = attribute.description;
 
-      let commands = command_info.name
+      let commands = name
         .split("/")
         .map(function(name) let (self = this) {
           name: name,
@@ -106,8 +130,7 @@ CommandAttribute.definition = {
       };
     }
   },
-};
-
+}; // CommandAttribute
 
 /**
  * @fn main

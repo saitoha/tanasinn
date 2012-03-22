@@ -22,6 +22,32 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+
+//////////////////////////////////////////////////////////////////////////////
+//
+// Concepts
+//
+
+/**
+ * @concept GrammarConcept
+ */
+let LineGeneratorConcept = new Concept();
+LineGeneratorConcept.definition = {
+
+  get id()
+    "LineGenerator",
+
+  // signature concept
+  "allocate :: Uint16 -> Uint16 -> Array":
+  _("Allocates n cells at once."),
+
+}; // GrammarConcept
+
+//////////////////////////////////////////////////////////////////////////////
+//
+// Implementation
+//
+
 ////                                    vvvv                     v    
 //const ATTR_CHARACTER   = 0     // 00000000 00011111 11111111 11111111
 //const ATTR_FORECOLOR   = 24    // 00001111 00000000 00000000 00000000
@@ -549,33 +575,36 @@ Line.definition = {
    *   start       end
    *
    */  
-  getWordRangeFromPoint: function getWordRangeFromPoint(column, row) 
+  getWordRangeFromPoint: 
+  function getWordRangeFromPoint(column, row) 
   {
     let cells = this.cells;
-    let currentChar;
-    if (0 == currentChar) {
-      currentChar = cells[column + 1].c;
+    let current_char;
+    if (0 == current_char) {
+      current_char = cells[column + 1].c;
     } else {
-      currentChar = cells[column].c;
+      current_char = cells[column].c;
     }
-    let backwardChars = cells.slice(0, column);
-    let forwardChars = cells.slice(column + 1);
+    let backward_chars = cells.slice(0, column);
+    let forward_chars = cells.slice(column + 1);
 
     function getCharacterCategory(code) {
       let c = String.fromCharCode(code);
-      if (/^\s$/.test(c))
+      if (/^\s$/.test(c)) {
         return 0;
-      else if (/^[0-9a-zA-Z]$/.test(c))
+      } else if (/^[0-9a-zA-Z]$/.test(c)) {
         return 1;
-      else if (/^\w$/.test(c))
+      } else if (/^\w$/.test(c)) {
         return 2;
-      else 
+      } else {
         return 3;
+      }
     }
 
-    function getForwardBreakPoint(forwardChars, column, category) {
+    function getForwardBreakPoint(forward_chars, column, category) 
+    {
       let result = column + 1;
-      for (let [index, cell] in Iterator(forwardChars)) {
+      for (let [index, cell] in Iterator(forward_chars)) {
         if (0 == cell.c) {
           continue;
         } if (category == getCharacterCategory(cell.c)) {
@@ -587,14 +616,15 @@ Line.definition = {
       return result;
     }
     
-    function getBackwardBreakPoint(backwardChars, column, category) {
+    function getBackwardBreakPoint(backward_chars, column, category) 
+    {
       let result = column;
-      for (let [index, cell] in Iterator(backwardChars.reverse())) {
+      for (let [index, cell] in Iterator(backward_chars.reverse())) {
         if (0 == cell.c) {
-          result = backwardChars.length - index - 1;
+          result = backward_chars.length - index - 1;
           continue;
         } else if (category == getCharacterCategory(cell.c)) {
-          result = backwardChars.length - index - 1;
+          result = backward_chars.length - index - 1;
           continue;
         }
         break;
@@ -602,10 +632,12 @@ Line.definition = {
       return result;
     }
 
-    let category = getCharacterCategory(currentChar);
-    let forwardBreakPoint = getForwardBreakPoint(forwardChars, column, category);
-    let backwardBreakPoint = getBackwardBreakPoint(backwardChars, column, category);
-    return [backwardBreakPoint, forwardBreakPoint];
+    let category = getCharacterCategory(current_char);
+    let forward_break_point 
+      = getForwardBreakPoint(forward_chars, column, category);
+    let backward_break_point 
+      = getBackwardBreakPoint(backward_chars, column, category);
+    return [backward_break_point, forward_break_point];
   },
 
   /** returns a generator which iterates dirty words. */
@@ -714,6 +746,19 @@ Line.definition = {
       .forEach(function(cell) cell.erase(attr));
   },
 
+  /** 
+   * erace cells with test pattern. 
+   *
+   * [ a b c d e f g h ] -> [ E E E E E E E E ]
+   */
+  eraseWithTestPattern: function eraseWithTestPattern(start, end, attr)
+  {
+    this.addRange(start, end);
+    this.cells
+      .slice(start, end)
+      .forEach(function(cell) cell.write(0x45 /* "E" */, attr));
+  },
+
    /**
    *
    * ex. deleteCells(2, 3)
@@ -758,27 +803,31 @@ Line.definition = {
  * @class LineGenerator
  *
  */
-let LineGenerator = new Class().extends(Component);
+let LineGenerator = new Class().extends(Component)
+                               .requires("LineGenerator");
 LineGenerator.definition = {
 
   get id()
     "linegenerator",
 
   "[subscribe('@event/broker-started'), enabled]":
-  function onLoad(session) 
+  function onLoad(broker) 
   {
-    session.notify("initialized/" + this.id, this);
+    broker.notify("initialized/" + this.id, this);
   },
 
   /** Allocates n cells at once. */
-  allocate: function allocate(width, n) 
+  "[type('Uint16 -> Uint16 -> Array')]":
+  function allocate(width, n) 
   {
     let buffer = [];
-    while (n--)
+    while (n--) {
       buffer.push(new Line(width));
+    }
     return buffer;
   },
-};
+
+}; // LineGenerator
 
 /**
  * @fn main

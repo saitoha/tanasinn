@@ -46,9 +46,6 @@ OverlayImage.definition = {
       parentNode: "#tanasinn_center_area",
       tagName: "html:canvas",
       id: "tanasinn_image_canvas",
-      //style: <>
-      //  border: solid 1px red;
-      //</>,
     }),
 
   "[persistable] enabled_when_startup": true,

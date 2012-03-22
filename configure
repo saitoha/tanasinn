@@ -2132,7 +2132,6 @@ $as_echo_n "checking open command... " >&6; }
  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $TANASINN_OS" >&5
 $as_echo "$TANASINN_OS" >&6; }
 
-#AC_TANASINN_MODULE_EXT
 
  { $as_echo "$as_me:${as_lineno-$LINENO}: checking target cpu architecture" >&5
 $as_echo_n "checking target cpu architecture... " >&6; }
@@ -2152,7 +2151,6 @@ $as_echo_n "checking target cpu architecture... " >&6; }
  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $TANASINN_ARCH" >&5
 $as_echo "$TANASINN_ARCH" >&6; }
 
-#AC_TANASINN_ABI
 
 
 
@@ -2309,10 +2307,6 @@ $as_echo "$TANASINN_ABI" >&6; }
 
 
 
-#AC_TANASINN_GECKO_VERSION
-#AC_TANASINN_GECKO_ROOT_PATH
-#AC_TANASINN_XPI_PLATFORM_DIRECTORY
-#AC_TANASINN_XPIDL_PATH
 
  { $as_echo "$as_me:${as_lineno-$LINENO}: checking js path" >&5
 $as_echo_n "checking js path... " >&6; }

@@ -87,9 +87,49 @@
  */
 
 /**
+ * @concept ControllerConcept
+ */
+let ControllerConcept = new Concept();
+ControllerConcept.definition = {
+
+  get id()
+    "Controller",
+
+// message concept
+  "<@event/broker-stopping> :: Undefined":
+  _("Close Control channel and stop communication with TTY device."),
+
+// signature concept
+  "post :: String -> Undefined":
+  _("Posts a command message asynchronously."),
+
+}; // ControllerConcept
+
+
+/**
+ * @concept IOManagerConcept
+ */
+let IOManagerConcept = new Concept();
+IOManagerConcept.definition = {
+
+  get id()
+    "IOManager",
+  
+// message concept
+  "<@event/broker-stopping> :: Undefined":
+  _("Close I/O channel and stop communication with TTY device."),
+
+// signature concept
+  "send :: String -> Undefined":
+  _("Send character sequence data to TTY device."),
+
+}; // IOManagerConcept
+
+
+/**
  * @class Controller
  */
-let Controller = new Class().extends(Component);
+let Controller = new Class().extends(Component).requires("Controller");
 Controller.definition = {
 
   get id()
@@ -99,47 +139,20 @@ Controller.definition = {
   _input: null,
   _output: null,
 
+  "[persistable] beacon_interval": 2000,
+
   /** constructor */
   "[subscribe('@initialized/screen'), enabled]":
   function onLoad(screen)
   {
     this._screen = screen;
-    let session = this._broker;
-    session.notify(<>initialized/{this.id}</>, this);
-  },
-
-  /** Starts TCP client socket, and listen it asynchronously.
-   */
-  start: function start(control_port) 
-  {
-    let transport = Components
-      .classes["@mozilla.org/network/socket-transport-service;1"]
-      .getService(Components.interfaces.nsISocketTransportService)
-      .createTransport(null, 0, "127.0.0.1", control_port, null);
-    let istream = transport.openInputStream(0, 128, 1);
-    let ostream = transport.openOutputStream(0, 128, 1);
-    let scriptable_input_stream = Components
-      .classes["@mozilla.org/scriptableinputstream;1"]
-      .createInstance(Components.interfaces.nsIScriptableInputStream);
-    scriptable_input_stream.init(istream);
-
-    this._input = scriptable_input_stream;
-    this._output = ostream;
-
-    let pump = Components
-      .classes["@mozilla.org/network/input-stream-pump;1"]
-      .createInstance(Components.interfaces.nsIInputStreamPump);
-    pump.init(istream, -1, -1, 0, 0, false);
-    pump.asyncRead(this, scriptable_input_stream);
-    this._pump = pump;
-
-    this.post.enabled = true;
   },
 
   /** Posts a command message asynchronously. 
    * @param {String} command command message string for external program. 
    */
-  post: function post(command) 
+  "[type('String -> Undefined')]":
+  function post(command) 
   {
     if (this._output) {
       this._output.write(command, command.length);
@@ -148,14 +161,71 @@ Controller.definition = {
 
   /** Close Control channel and stop communication with TTY device.
    */
-  "[subscribe('@event/broker-stopping'), enabled]":
+  "[subscribe('@event/broker-stopping'), type('Undefined'), enabled]":
   function stop() 
   {
     this.post("disconnect\n");
     this._input.close();
     this._output.close();
     this._pump.cancel(0);
-    coUtils.Debug.reportMessage(_("Resources in Controller have been cleared."));
+    this._input = null;
+    this._output = null;
+    this._pump = null;
+    this._screen = null;
+    coUtils.Debug.reportMessage(
+      _("Resources in Controller have been cleared."));
+  },
+
+  /**
+   * Changes screen resolution of TTY device.
+   * @param width new horizontal resolution of TTY device.
+   * @param height new vertical resolution of TTY device.
+   */
+  "[subscribe('event/screen-size-changed')]": 
+  function resize(size) 
+  {
+    let {column, row} = size; 
+    let width = coUtils.Text.base64encode(column);
+    let height = coUtils.Text.base64encode(row);
+    let command = coUtils.Text.format("resize %s %s\n", width, height);
+    this.post(command);
+  },
+
+  "[subscribe('@command/kill')]": 
+  function kill()
+  {
+    this.post("kill\n");
+  },
+
+  /** flow controll 
+   * Suspend/Resume output.
+   * @param {Boolean} flag true: resume output. false: suspend output.
+   */
+  "[subscribe('command/flow-control')]":
+  function flowControl(flag) 
+  {
+    this.post(flag ? "xon\n": "xoff\n");
+  },
+
+  "[subscribe('event/{control & io}-socket-ready'), enabled]":
+  function connect(control_port, io_port) 
+  {
+    let broker = this._broker;
+    this._start(control_port);
+
+    let self = this;
+    let timer = coUtils.Timer.setInterval(function() {
+      if (self.post) {
+        self.post("beacon\n");
+      } else {
+        timer.cancel();
+        self = null;
+        timer = null;
+      }
+    }, self.beacon_interval);
+
+    this._send_initial_data(io_port);
+    broker.notify("initialized/tty", this);
   },
 
 // nsIRequestObserver implementation.
@@ -185,11 +255,11 @@ Controller.definition = {
    */
   onStopRequest: function onStopRequest(request, context, status)
   {
-    let session = this._broker;
+    let broker = this._broker;
     coUtils.Debug.reportMessage(
       _("Controller::onStopRequest called. status: %s."), status);
     try {
-      session.stop();
+      broker.stop();
     } catch (e) { 
       coUtils.Debug.reportError(e)
     }
@@ -248,13 +318,71 @@ Controller.definition = {
     } catch (e) { 
       coUtils.Debug.reportError(e)
     }
-  }
-}
+  },
+
+// private
+  _send_initial_data: function _send_initial_data(io_port)
+  {
+    let broker = this._broker;
+    let sessiondb_path = coUtils.File
+      .getFileLeafFromVirtualPath(broker.runtime_path + "/sessions.txt").path;
+    let os = coUtils.Runtime.os;
+    if ("WINNT" == os) {
+      sessiondb_path 
+        = sessiondb_path
+          .replace(/\\/g, "/")
+          .replace(
+            /^([a-zA-Z]):/, 
+            function() String(<>/cygdrive/{arguments[1].toLowerCase()}</>))
+          ;
+    }
+    let message = [
+      io_port, 
+      broker.request_id,
+      coUtils.Text.base64encode(sessiondb_path),
+    ].join(" ");
+    this.post(message);
+
+    this.flowControl.enabled = true;
+    this.post.enabled = true;
+    this.resize.enabled = true;
+    this.kill.enabled = true;
+
+  },
+
+  /** Starts TCP client socket, and listen it asynchronously.
+   */
+  _start: function _start(control_port) 
+  {
+    let transport = Components
+      .classes["@mozilla.org/network/socket-transport-service;1"]
+      .getService(Components.interfaces.nsISocketTransportService)
+      .createTransport(null, 0, "127.0.0.1", control_port, null);
+    let istream = transport.openInputStream(0, 128, 1);
+    let ostream = transport.openOutputStream(0, 128, 1);
+    let scriptable_input_stream = Components
+      .classes["@mozilla.org/scriptableinputstream;1"]
+      .createInstance(Components.interfaces.nsIScriptableInputStream);
+    scriptable_input_stream.init(istream);
+
+    this._input = scriptable_input_stream;
+    this._output = ostream;
+
+    let pump = Components
+      .classes["@mozilla.org/network/input-stream-pump;1"]
+      .createInstance(Components.interfaces.nsIInputStreamPump);
+    pump.init(istream, -1, -1, 0, 0, false);
+    pump.asyncRead(this, scriptable_input_stream);
+    this._pump = pump;
+  },
+
+
+}; // Controller
 
 /**
  * @class IOManager
  */
-let IOManager = new Class().extends(Component);
+let IOManager = new Class().extends(Component).requires("IOManager");
 IOManager.definition = {
 
   get id()
@@ -269,10 +397,10 @@ IOManager.definition = {
 
   /** 
    * initialize it with Session object.
-   * @param {Session} session
+   * @param {Session} broker
    */
   "[subscribe('@event/broker-started'), enabled]":
-  function onLoad(session) 
+  function onLoad(broker) 
   {
     let socket = Components
       .classes["@mozilla.org/network/server-socket;1"]
@@ -281,7 +409,8 @@ IOManager.definition = {
     socket.asyncListen(this);
     this._socket = socket;
     this._port = socket.port;
-    session.notify(<>initialized/{this.id}</>, this);
+    this.send.enabled = true;
+    broker.notify("event/io-socket-ready", socket.port);
   },
 
   /**
@@ -298,35 +427,48 @@ IOManager.definition = {
   /** Send character sequence data to TTY device.
    * @param {String} data Character seqence data for sending to TTY device.
    */
-  send: function send(data) 
+  "[subscribe('command/send-to-tty'), type('String -> Undefined')]":
+  function send(data) 
   {
-
-    this._output
-      .QueryInterface(Components.interfaces.nsIAsyncOutputStream)
-      .asyncWait({
-        onOutputStreamReady: function onOutputStreamReady(stream) {
-          stream.write(data, data.length);
-        },
-      }, 0, 0, null)
-    //this._output.write(data, data.length);
+    if (this._output) {
+      this._output
+        .QueryInterface(Components.interfaces.nsIAsyncOutputStream)
+        .asyncWait({
+          onOutputStreamReady: function onOutputStreamReady(stream) {
+            stream.write(data, data.length);
+          },
+        }, 0, 0, null)
+      //this._output.write(data, data.length);
+    }
   },
 
   /** Close I/O channel and stop communication with TTY device.
    */
-  "[subscribe('@event/broker-stopping'), enabled]":
+  "[subscribe('@event/broker-stopping'), type('Undefined'), enabled]":
   function stop() 
   {
-    this._input.close();
-    this._output.close();
-    this._binary_stream.close();
-    this._socket.close();
-    this._stream_pump.cancel(0);
+    if (this._input) {
+      this._input.close();
+    }
+    if (this._output) {
+      this._output.close();
+    }
+    if (this._binary_stream) {
+      this._binary_stream.close();
+    }
+    if (this._socket) {
+      this._socket.close();
+    }
+    if (this._stream_pump) {
+      this._stream_pump.cancel(0);
+    }
     this._input = null;
     this._output = null;
     this._socket = null;
     this._stream_pump = null;
     this._binary_stream = null;
-    coUtils.Debug.reportMessage(_("Resources in IOManager have been cleared."));
+    coUtils.Debug.reportMessage(
+      _("Resources in IOManager have been cleared."));
   },
 
 // nsIServerSocketListener implementation
@@ -419,11 +561,11 @@ IOManager.definition = {
    */
   onStopRequest: function onStopRequest(request, context, status)
   {
-    let session = this._broker;
+    let broker = this._broker;
     coUtils.Debug.reportMessage(
       _("onStopRequest called. status: %s"), status);
     try {
-      session.stop();
+      broker.stop();
     } catch (e) { 
       coUtils.Debug.reportError(e)
     }
@@ -455,9 +597,9 @@ IOManager.definition = {
   function onDataAvailable(request, context, input, offset, count)
   {
     let data = context.readBytes(count);
-    let session = this._broker;
+    let broker = this._broker;
   //  coUtils.Timer.setTimeout(function() {
-    session.notify("event/data-arrived", data);
+    broker.notify("event/data-arrived", data);
   //  }, 30);
   },
 }
@@ -479,46 +621,14 @@ ExternalDriver.definition = {
    */
   "[persistable] script_path": "modules/ttydriver.py",
 
-  /** post-constructor 
-   * @param {Session} session A session object.
-   */
-  "[subscribe('@event/broker-started'), enabled]":
-  function onLoad(session) 
-  {
-    let executable_path;
-    let os = coUtils.Runtime.os;
-    if ("WINNT" == os) {
-      let cygwin_root = session.uniget("get/cygwin-root");
-      executable_path = String(<>{cygwin_root}\bin\run.exe</>);
-    } else {
-      executable_path = session.uniget("get/python-path");
-    }
-    // create new localfile object.
-    let runtime = Components
-      .classes["@mozilla.org/file/local;1"]
-      .createInstance(Components.interfaces.nsILocalFile);
-    runtime.initWithPath(executable_path);
-    if (!runtime.exists() || !runtime.isExecutable()) {
-      return false;
-    }
-    // create new process object.
-    let external_process = Components
-      .classes["@mozilla.org/process/util;1"]
-      .createInstance(Components.interfaces.nsIProcess);
-    external_process.init(runtime);
-    this._external_process = external_process;
-    session.notify("initialized/externaldriver", this);
-    return true;
-  },
-
   /** Kill target process. */
   kill: function kill(pid) 
   {
     let kill_path;
     let args;
     if ("WINNT" == coUtils.Runtime.os) {
-      let session = this._broker;
-      let cygwin_root = session.uniget("get/cygwin-root");
+      let broker = this._broker;
+      let cygwin_root = broker.uniget("get/cygwin-root");
       kill_path = String(<>{cygwin_root}\bin\run.exe</>);
       args = [ "/bin/kill", "-9", String(pid) ];
     } else { // Darwin, Linux or FreeBSD
@@ -561,6 +671,31 @@ ExternalDriver.definition = {
   "[subscribe('command/start-ttydriver-process'), enabled]": 
   function start(connection_port) 
   {
+    let broker = this._broker;
+    try {
+    let executable_path;
+    let os = coUtils.Runtime.os;
+    if ("WINNT" == os) {
+      let cygwin_root = broker.uniget("get/cygwin-root");
+      executable_path = String(<>{cygwin_root}\bin\run.exe</>);
+    } else {
+      executable_path = broker.uniget("get/python-path");
+    }
+    // create new localfile object.
+    let runtime = Components
+      .classes["@mozilla.org/file/local;1"]
+      .createInstance(Components.interfaces.nsILocalFile);
+    runtime.initWithPath(executable_path);
+    if (!runtime.exists() || !runtime.isExecutable()) {
+      throw coUtils.Debug.Exeption(_("Could not launch python: file not found."));
+    }
+    // create new process object.
+    let external_process = Components
+      .classes["@mozilla.org/process/util;1"]
+      .createInstance(Components.interfaces.nsIProcess);
+    external_process.init(runtime);
+    this._external_process = external_process;
+
     // get script absolute path from abstract path.
     let script_absolute_path
       = coUtils.File
@@ -568,8 +703,7 @@ ExternalDriver.definition = {
         .path;
 
     let args;
-    let session = this._broker;
-    let python_path = session.uniget("get/python-path");
+    let python_path = broker.uniget("get/python-path");
     if ("WINNT" == coUtils.Runtime.os) { // Windows
       args = [
         "/bin/sh", "-wait", "-l", "-c",
@@ -582,15 +716,20 @@ ExternalDriver.definition = {
     } else { // Darwin, Linux
       args = [ script_absolute_path, connection_port ];
     }
-    this._external_process.runAsync(args, args.length, this, false /* hold weak */);
+    this._external_process
+      .runAsync(args, args.length, this, false /* hold weak */);
     coUtils.Debug.reportMessage(
       _("TTY Server started. arguments: [%s]."), args.join(", "));
+
+    broker.notify("initialized/externaldriver", this);
+
+    } catch(e) {alert(e)}
   },
 
   observe: function observe(subject, topic, data)
   {
-    let session = this._broker;
-    session.stop();
+    let broker = this._broker;
+    broker.stop();
   },
 
   /** Kills handling process if it was alive. */
@@ -617,11 +756,7 @@ ExternalDriver.definition = {
  *  @class SocketTeletypeService
  *  @brief Listen mouse input events and send them to TTY device.
  */
-let SocketTeletypeService = new Class().extends(Plugin)
-                                       .depends("tty_iomanager")
-                                       .depends("tty_controller")
-                                       .depends("externaldriver")
-                                       ;
+let SocketTeletypeService = new Class().extends(Plugin);
 SocketTeletypeService.definition = {
 
   get id()
@@ -647,11 +782,11 @@ SocketTeletypeService.definition = {
     if (0 == broker.command.indexOf("&")) {
       let request_id = broker.command.substr(1);
       let record = coUtils.Sessions.get(request_id);
-      this.connect(Number(record.control_port));
+      broker.notify("event/control-socket-ready", Number(record.control_port));
       this._pid = Number(record.pid);
       coUtils.Sessions.remove(request_id);
       coUtils.Sessions.update();
-      let backup_data_path = <>{broker.runtime_path}/persist/{request_id}.txt</>.toString();
+      let backup_data_path = broker.runtime_path + "/persist/" + request_id + ".txt";
       if (coUtils.File.exists(backup_data_path)) {
         let context = JSON.parse(coUtils.IO.readFromFile(backup_data_path, "utf-8"));
         broker.notify("command/restore", context);
@@ -671,20 +806,16 @@ SocketTeletypeService.definition = {
       socket.asyncListen(this);
       this._socket = socket;
   
-      broker.notify("command/start-ttydriver-process", socket.port); // nsIProcess::runAsync.
+      // nsIProcess::runAsync.
+      broker.notify("command/start-ttydriver-process", socket.port); 
     }
-    this.kill.enabled = true;
     this.detach.enabled = true;
   },
 
   "[subscribe('uninstall/tty'), enabled]": 
   function uninstall(broker)
   {
-    this.kill.enabled = false;
     this.detach.enabled = false;
-    this.send.enabled = false;
-    this.resize.enabled = false;
-    this.flowControl.enabled = false;
     this.osc97.enabled = false;
 
     if (this._socket) {
@@ -699,22 +830,13 @@ SocketTeletypeService.definition = {
 
   },
 
-  "[subscribe('@command/kill')]": 
-  function kill()
-  {
-    let controller = this.dependency["tty_controller"];
-    if (controller) {
-      controller.post("kill\n") 
-    }
-  },
-
   "[subscribe('@command/detach')]": 
   function detach()
   {
     let context = {};
     let broker = this._broker;
     broker.notify("command/backup", context);
-    let path = String(<>{broker.runtime_path}/persist/{broker.request_id}.txt</>);
+    let path = broker.runtime_path + "/persist/" + broker.request_id + ".txt";
     let data = JSON.stringify(context);
     coUtils.IO.writeToFile(path, data);
   },
@@ -725,53 +847,12 @@ SocketTeletypeService.definition = {
     this._ttyname = ttyname;
   },
 
-  connect: function connect(control_port) 
-  {
-    let broker = this._broker;
-    let controller = this.dependency["tty_controller"];
-    controller.start(control_port);
-    let sessiondb_path = coUtils.File
-      .getFileLeafFromVirtualPath(broker.runtime_path + "/sessions.txt").path;
-
-    let os = coUtils.Runtime.os;
-    if ("WINNT" == os) {
-      sessiondb_path 
-        = sessiondb_path
-          .replace(/\\/g, "/")
-          .replace(
-            /^([a-zA-Z]):/, 
-            function() String(<>/cygdrive/{arguments[1].toLowerCase()}</>))
-          ;
-    }
-
-    let message = [
-      this.dependency["tty_iomanager"].port, 
-      broker.request_id,
-      coUtils.Text.base64encode(sessiondb_path),
-    ].join(" ");
-    controller.post(message);
-
-    this.send.enabled = true;
-    this.resize.enabled = true;
-    this.send.flowControl = true;
-
-    let timer = coUtils.Timer.setInterval(function() {
-      controller.post("beacon\n") 
-    }, 2000, this);
-    let id = new Date().getTime().toString();
-    broker.subscribe("event/broker-stopping", function() {
-      broker.unsubscribe(id);
-      timer.cancel();
-    }, this, id);
-    broker.notify("initialized/tty", this);
-  },
-
   onSocketAccepted: function onSocketAccepted(serv, transport) 
   {
-    let session = this._broker;
+    let broker = this._broker;
     let istream = transport.openInputStream(0, 1024, 1);
     let ostream = transport.openOutputStream(0, 1024, 1);
-    let message = [session.command, session.term]
+    let message = [broker.command, broker.term]
       .map(function(value) coUtils.Text.base64encode(value))
       .join(" ")
     ostream.write(message, message.length);
@@ -783,8 +864,9 @@ SocketTeletypeService.definition = {
       .classes["@mozilla.org/network/input-stream-pump;1"]
       .createInstance(Components.interfaces.nsIInputStreamPump);
     pump.init(istream, -1, -1, 0, 0, false);
-    pump.asyncRead(this, scriptable_input_stream);
+    pump.asyncRead(this, null);
     this._pump = pump;
+    this._input = scriptable_input_stream;
   },
 
   /**
@@ -835,49 +917,17 @@ SocketTeletypeService.definition = {
   onDataAvailable: 
   function onDataAvailable(request, context, input, offset, count) 
   {
-    let data = context.readBytes(count);
-    context.close()
+    let data = this._input.readBytes(count);
+    this._input.close();
+    this._input = null;
     let [control_port, pid, ttyname] = data.split(":");
     this._pid = Number(pid);
     if (control_port) {
-      this.connect(Number(control_port));
+      let broker = this._broker;
+      broker.notify("event/control-socket-ready", Number(control_port));
     } else {
       coUtils.Debug.reportError(_("Failed to connect to ttydriver."));
     }
-  },
-
-  /**
-   * Changes screen resolution of TTY device.
-   * @param width new horizontal resolution of TTY device.
-   * @param height new vertical resolution of TTY device.
-   */
-  "[subscribe('event/screen-size-changed')]": 
-  function resize(size) 
-  {
-    let {column, row} = size; 
-    let width = coUtils.Text.base64encode(column);
-    let height = coUtils.Text.base64encode(row);
-    let command = coUtils.Text.format("resize %s %s\n", width, height);
-    this.dependency["tty_controller"].post(command);
-  },
-
-  /** Send character sequence data to TTY device.
-   * @param {String} data Character seqence data for sending to TTY device.
-   */
-  "[subscribe('command/send-to-tty')]":
-  function send(data) 
-  {
-    this.dependency["tty_iomanager"].send(data);
-  },
-
-  /** flow controll 
-   * Suspend/Resume output.
-   * @param {Boolean} flag true: resume output. false: suspend output.
-   */
-  "[subscribe('command/flow-control')]":
-  function flowControl(flag) 
-  {
-    this.dependency["tty_controller"].post(flag ? "xon\n": "xoff\n");
   },
 
   /** @property Retrieve "pid" property value from TTY driver. */
@@ -892,7 +942,7 @@ SocketTeletypeService.definition = {
     return this._ttyname;
   },
 
-};
+}; // class SocketTeletypeService
 
 /**
  * @fn main

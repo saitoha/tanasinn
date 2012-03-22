@@ -34,6 +34,8 @@ CursorState.definition = {
 
   positionX: 0,
   positionY: 0,
+  originX: 0,
+  originY: 0,
   attr: null,
   DECOM: false,
 
@@ -60,6 +62,8 @@ CursorState.definition = {
   {
     this.positionX = 0;
     this.positionY = 0;
+    this.originX = 0;
+    this.originY = 0;
     this._backup_instance = null;
     this.blink = false;
     this.attr.clear(); // turns all character attributes off (normal settings).

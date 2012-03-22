@@ -29,11 +29,14 @@
 let coUtils = coUtils || { };
 
 coUtils.Constant = {
+
   CHARSET_US : "B",
   CHARSET_PC : "?",
   CHARSET_DEC: "0",
+
   KEYPAD_MODE_NORMAL: 0,
   KEYPAD_MODE_APPLICATION: 1,
+  KEYPAD_MODE_NUMERIC: 2,
 
   WEB140_COLOR_MAP: {
     Black: "#000000",
@@ -672,11 +675,11 @@ coUtils.Event = {
 coUtils.Font = {
 
   /**
-   * @fn getAverageGryphWidth
-   * @brief Test font rendering and calculate average gryph width.
+   * @fn getAverageGlyphSize
+   * @brief Test font rendering and calculate average glyph width.
    */
-  getAverageGryphWidth: 
-  function getAverageGryphWidth(font_size, font_family, test_string)
+  getAverageGlyphSize: 
+  function getAverageGlyphSize(font_size, font_family, test_string)
   {
     const NS_XHTML = "http://www.w3.org/1999/xhtml";
     let canvas = coUtils.getWindow()
@@ -719,6 +722,7 @@ coUtils.Font = {
         break detect_last;
       }
     }
+
     return [char_width, last - first, first];
   }
 
@@ -991,19 +995,21 @@ coUtils.File = new function() {
     let entries = function entries() {
       for each (let [, path] in Iterator(search_directories)) {
         try {
-          let target_leaf = self.getFileLeafFromVirtualPath(path);
-          if (!target_leaf || !target_leaf.exists()) {
-            coUtils.Debug.reportWarning(
-              _("Cannot get file entries from '%s'. ",
-                "It seems that specified path does not exist."), path);
-            continue;
-          }
-          if (target_leaf.isFile()) {
-            yield target_leaf;
-          } else {
-            let entries = self.getFilesRecursively(target_leaf, /\.js$/);
-            for (let entry in entries) {
-              yield entry;
+          if (coUtils.File.exists(path)) {
+            let target_leaf = coUtils.File.getFileLeafFromVirtualPath(path);
+            if (!target_leaf || !target_leaf.exists()) {
+              coUtils.Debug.reportWarning(
+                _("Cannot get file entries from '%s'. ",
+                  "It seems that specified path does not exist."), path);
+              continue;
+            }
+            if (target_leaf.isFile()) {
+              yield target_leaf;
+            } else {
+              let entries = self.getFilesRecursively(target_leaf, /\.js$/);
+              for (let entry in entries) {
+                yield entry;
+              }
             }
           }
         } catch (e) {
@@ -1086,47 +1092,51 @@ coUtils.Keyboard = {
   KEY_MODE   : 27,
 
   KEYNAME_PACKEDCODE_MAP: let (KEY_NOCHAR = 25) {
-    nmode      : 0x10000001,
-    cmode      : 0x20000001,
-    "2-shift"  : 0x50000001,
-    "2-alt"    : 0x60000001,
-    "2-ctrl"   : 0x70000001,
-    pinchopen  : 0x80000001,
-    pinchclose : 0x90000001,
-    space      : 0x0020,
-    sp         : 0x0020,
-    bs         : 0x1 << KEY_NOCHAR | 0x0008, 
-    backspace  : 0x1 << KEY_NOCHAR | 0x0008, 
-    tab        : 0x1 << KEY_NOCHAR | 0x0009, 
-    enter      : 0x1 << KEY_NOCHAR | 0x000d,
-    return     : 0x1 << KEY_NOCHAR | 0x000d,
-    cr         : 0x1 << KEY_NOCHAR | 0x000d,
-    lf         : 0x1 << KEY_NOCHAR | 0x000a,
-    escape     : 0x1 << KEY_NOCHAR | 0x001b,
-    esc        : 0x1 << KEY_NOCHAR | 0x001b,
-    pgup       : 0x1 << KEY_NOCHAR | 0x0021,
-    pgdn       : 0x1 << KEY_NOCHAR | 0x0022,
-    end        : 0x1 << KEY_NOCHAR | 0x0023,
-    home       : 0x1 << KEY_NOCHAR | 0x0024,
-    left       : 0x1 << KEY_NOCHAR | 0x0025,
-    up         : 0x1 << KEY_NOCHAR | 0x0026,
-    right      : 0x1 << KEY_NOCHAR | 0x0027,
-    down       : 0x1 << KEY_NOCHAR | 0x0028,
-    ins        : 0x1 << KEY_NOCHAR | 0x002d,
-    insert     : 0x1 << KEY_NOCHAR | 0x002d,
-    del        : 0x1 << KEY_NOCHAR | 0x002e,
-    f1         : 0x1 << KEY_NOCHAR | 0x0070,
-    f2         : 0x1 << KEY_NOCHAR | 0x0071,
-    f3         : 0x1 << KEY_NOCHAR | 0x0072,
-    f4         : 0x1 << KEY_NOCHAR | 0x0073,
-    f5         : 0x1 << KEY_NOCHAR | 0x0074,
-    f6         : 0x1 << KEY_NOCHAR | 0x0075,
-    f7         : 0x1 << KEY_NOCHAR | 0x0076,
-    f8         : 0x1 << KEY_NOCHAR | 0x0077,
-    f9         : 0x1 << KEY_NOCHAR | 0x0078,
-    f10        : 0x1 << KEY_NOCHAR | 0x0079,
-    f11        : 0x1 << KEY_NOCHAR | 0x007a,
-    f12        : 0x1 << KEY_NOCHAR | 0x007b,
+    nmode       : 0x10000001,
+    cmode       : 0x20000001,
+    "2-shift"   : 0x50000001,
+    "2-alt"     : 0x60000001,
+    "2-ctrl"    : 0x70000001,
+    pinchopen   : 0x80000001,
+    pinchclose  : 0x90000001,
+    swipeleft   : 0xa0000001,
+    swiperight  : 0xb0000001,
+    swipetop    : 0xc0000001,
+    swipebottom : 0xd0000001,
+    space       : 0x1 << KEY_NOCHAR | 0x0020,
+    sp          : 0x1 << KEY_NOCHAR | 0x0020,
+    bs          : 0x1 << KEY_NOCHAR | 0x0008, 
+    backspace   : 0x1 << KEY_NOCHAR | 0x0008, 
+    tab         : 0x1 << KEY_NOCHAR | 0x0009, 
+    enter       : 0x1 << KEY_NOCHAR | 0x000d,
+    return      : 0x1 << KEY_NOCHAR | 0x000d,
+    cr          : 0x1 << KEY_NOCHAR | 0x000d,
+    lf          : 0x1 << KEY_NOCHAR | 0x000a,
+    escape      : 0x1 << KEY_NOCHAR | 0x001b,
+    esc         : 0x1 << KEY_NOCHAR | 0x001b,
+    pgup        : 0x1 << KEY_NOCHAR | 0x0021,
+    pgdn        : 0x1 << KEY_NOCHAR | 0x0022,
+    end         : 0x1 << KEY_NOCHAR | 0x0023,
+    home        : 0x1 << KEY_NOCHAR | 0x0024,
+    left        : 0x1 << KEY_NOCHAR | 0x0025,
+    up          : 0x1 << KEY_NOCHAR | 0x0026,
+    right       : 0x1 << KEY_NOCHAR | 0x0027,
+    down        : 0x1 << KEY_NOCHAR | 0x0028,
+    ins         : 0x1 << KEY_NOCHAR | 0x002d,
+    insert      : 0x1 << KEY_NOCHAR | 0x002d,
+    del         : 0x1 << KEY_NOCHAR | 0x002e,
+    f1          : 0x1 << KEY_NOCHAR | 0x0070,
+    f2          : 0x1 << KEY_NOCHAR | 0x0071,
+    f3          : 0x1 << KEY_NOCHAR | 0x0072,
+    f4          : 0x1 << KEY_NOCHAR | 0x0073,
+    f5          : 0x1 << KEY_NOCHAR | 0x0074,
+    f6          : 0x1 << KEY_NOCHAR | 0x0075,
+    f7          : 0x1 << KEY_NOCHAR | 0x0076,
+    f8          : 0x1 << KEY_NOCHAR | 0x0077,
+    f9          : 0x1 << KEY_NOCHAR | 0x0078,
+    f10         : 0x1 << KEY_NOCHAR | 0x0079,
+    f11         : 0x1 << KEY_NOCHAR | 0x007a,
+    f12         : 0x1 << KEY_NOCHAR | 0x007b,
   },
 
   getCodeToNameMap: function getCodeToNameMap() 
@@ -1142,7 +1152,8 @@ coUtils.Keyboard = {
     return result;
   },
 
-  convertCodeToExpression: function convertCodeToExpression(packed_code)
+  convertCodeToExpression: 
+  function convertCodeToExpression(packed_code)
   {
     let buffer = [];
     if (packed_code & (1 << coUtils.Keyboard.KEY_CTRL)) {
@@ -1189,7 +1200,8 @@ coUtils.Keyboard = {
     return "<" + buffer.join("-") + ">";
   },
 
-  getPackedKeycodeFromEvent: function getPackedKeycodeFromEvent(event) 
+  getPackedKeycodeFromEvent: 
+  function getPackedKeycodeFromEvent(event) 
   {
     let code = event.keyCode || event.which;
     if (event.shiftKey && (event.ctrlKey || event.altKey || event.metaKey)) {
@@ -1211,7 +1223,8 @@ coUtils.Keyboard = {
    * @fn parseKeymapExpression
    * Convert from a key map expression to a packed key code.
    */
-  parseKeymapExpression: function parseKeymapExpression(expression) 
+  parseKeymapExpression: 
+  function parseKeymapExpression(expression) 
   {
     let pattern = /<.+?>|./g;
     let match = expression.match(pattern);
@@ -1472,38 +1485,55 @@ coUtils.Timer = {
    * @fn setTimeout
    * @brief Set timer callback.
    */
-  setTimeout: function setTimeout(timerProc, interval, context) 
+  setTimeout: function setTimeout(timer_proc, interval, context) 
   {
     let timer = Components
       .classes["@mozilla.org/timer;1"]
       .createInstance(Components.interfaces.nsITimer);
-    let aType = Components.interfaces.nsITimer.TYPE_ONE_SHOT;
-    let timerCallbackFunc = context ? 
-      function() timerProc.apply(context, arguments)
-    : timerProc;
-    let observer = { notify: timerCallbackFunc };
-    timer.initWithCallback(observer, interval, aType);
-    return timer;
+    let a_type = Components.interfaces.nsITimer.TYPE_ONE_SHOT;
+    let timer_callback_func = context ? 
+      function invoke() 
+      {
+        timer_proc.apply(context, arguments)
+        timer = null;
+      }
+    : timer_proc;
+    let observer = { notify: timer_callback_func };
+    timer.initWithCallback(observer, interval, a_type);
+    return {
+      cancel: function cancel() {
+        timer.cancel();
+        timer = null;
+      },
+    };
   },
 
   /**
    * @fn setInterval
    * @brief Set timer callback.
    */
-  setInterval: function setInterval(timerProc, interval, context) 
+  setInterval: function setInterval(timer_proc, interval, context) 
   {
     let timer = Components
       .classes["@mozilla.org/timer;1"]
       .createInstance(Components.interfaces.nsITimer);
-    let aType = Components.interfaces.nsITimer.TYPE_REPEATING_SLACK;
-    let timerCallbackFunc = context ? 
-      function() timerProc.apply(context, arguments)
-    : timerProc;
-    timer.initWithCallback({ notify: timerCallbackFunc }, interval, aType);
-    return timer;
+    let a_type = Components.interfaces.nsITimer.TYPE_REPEATING_SLACK;
+    let timer_callback_func = context ? 
+      function invoke() 
+      {
+        timer_proc.apply(context, arguments);
+      }
+    : timer_proc;
+    timer.initWithCallback({ notify: timer_callback_func }, interval, a_type);
+    return {
+      cancel: function cancel() {
+        timer.cancel();
+        timer = null;
+      },
+    };
   },
 
-};
+}; // coUtils.Timer
 
 coUtils.Debug = {
 
@@ -1651,7 +1681,7 @@ coUtils.Uuid = {
     return uuid;
   },
 
-};
+}; // coUtils.Uuid
 
 coUtils.Runtime = {
 
@@ -1728,7 +1758,7 @@ coUtils.Runtime = {
 
   }, // loadScript
 
-};
+}; // coUtils.Runtime
 
 /**
  * @class Localize
@@ -1776,7 +1806,7 @@ coUtils.Localize = new function()
     load: function load() 
     {
       let locale = this._locale;
-      let path = <>modules/locale/{locale}.json</>;
+      let path = "modules/locale/" + locale + ".json";
       let file = coUtils.File.getFileLeafFromVirtualPath(path);
       let db = null;
       if (file.exists()) {
@@ -1855,7 +1885,7 @@ coUtils.Localize = new function()
 
     getDictionary: function getLocalizeDictionary(language)
     {
-      let location = String(<>modules/locale/{language}.json</>);
+      let location = "modules/locale/" + language + ".json";
       let file = coUtils.File.getFileLeafFromVirtualPath(location);
       let dict = null;
       if (file.exists()) {
@@ -1869,7 +1899,7 @@ coUtils.Localize = new function()
 
     setDictionary: function getLocalizeDictionary(language, dictionary)
     {
-      let location = String(<>modules/locale/{language}.json</>);
+      let location = "modules/locale/" + language + ".json";
       let db = {
         lang: language,
         dict: dictionary,

@@ -159,7 +159,7 @@ Control.definition = {
     let screen = this._screen;
     screen.horizontalTab();
   },
- 
+  
   /** Linefeed.
    */
   "[sequence('0x0A', 'ESC D')]":
@@ -198,7 +198,17 @@ Control.definition = {
 
   /** Carriage return.
    */
-  "[sequence('0x0D', 'ESC E')]":
+  "[sequence('ESC E')]":
+  function CRLF() 
+  { // Carriage Return
+    let screen = this._screen;
+    screen.carriageReturn();
+    this.LF();
+  },
+
+  /** Carriage return.
+   */
+  "[sequence('0x0D')]":
   function CR() 
   { // Carriage Return
     let screen = this._screen;

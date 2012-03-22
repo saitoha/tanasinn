@@ -22,6 +22,68 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+//////////////////////////////////////////////////////////////////////////////
+//
+// Concepts
+//
+
+/**
+ * @concept GrammarConcept
+ */
+let GrammarConcept = new Concept();
+GrammarConcept.definition = {
+
+  get id()
+    "GrammarConcept",
+
+  // message concept
+  "<command/add-sequence> :: SequenceInfo -> Undefined":
+  _('Append a sequence handler and (re-)construct a FSM object.'),
+
+  // signature concept
+  "parse :: Scanner -> Action":
+  _('Receives a scanner object, get input sequence and parse it with the FSM.'),
+
+}; // GrammarConcept
+
+
+/**
+ * @concept ScannerConcept
+ */
+let ScannerConcept = new Concept();
+ScannerConcept.definition = {
+
+  get id()
+    "ScannerConcept",
+
+  // signature concept
+  "assign :: String -> Undefined":
+  _("Assign new string data. position is reset."),
+
+  "current :: Uint16":
+  _("Returns a code point at current scanning position."),
+
+  "moveNext :: Undefined":
+  _("Moves to next position."),
+
+  "setAnchor :: Undefined":
+  _("Momorize current position."),
+
+  "setSurplus :: Undefined":
+  _("Momorize surplus chars."),
+
+  "getCurrentToken :: String":
+  _("Returns chars from the momorized position to current position."),
+
+}; // ScannerConcept
+
+
+//////////////////////////////////////////////////////////////////////////////
+//
+// implementation
+//
+
+
 /**
  * @class StringParser
  * @brief Parse string.
@@ -66,13 +128,16 @@ StringParser.definition = {
   {
     while (!scanner.isEnd) {
       let c = scanner.current();
-      if (0x1b == c) {
+      if (0x1b == c) {    // '\e'
         scanner.moveNext();
         if (scanner.isEnd) {
           break;
         }
         let c = scanner.current();
-        if (0x5c == c) {
+//        if (0x5c == c) { // '\
+//          break;
+//        }
+        if (0x5d != c && 0x0d != c && 0xdd != c) {
           break;
         }
         yield 0x1b;
@@ -88,6 +153,39 @@ StringParser.definition = {
   },
 }
 
+let C0Parser = {
+
+  _map: [],
+
+  append: function append(key, value)
+  {
+    this._map[key] = value;
+  },
+
+  get: function get(key)
+  {
+    return this._map[key];
+  },
+
+  parse: function parse(scanner) 
+  {
+    if (scanner.isEnd) {
+      return undefined;
+    }
+    let c = scanner.current();
+    let action = this._map[c];
+    if (undefined === action) {
+      return undefined;
+    }
+    if ("parse" in action) {
+      scanner.moveNext();
+      return action.parse(scanner);
+    }
+    return action;
+  },
+
+}; // C0Parser
+
 /**
  * @class ParameterParser
  * @brief Parse parameter. 
@@ -95,10 +193,18 @@ StringParser.definition = {
 let ParameterParser = new Class().extends(Array);
 ParameterParser.definition = {
 
+  _default_action: null,
+  _c0action: null,
+
   /** constructor */
-  initialize: function initialize(first)  
+  initialize: function initialize(first, c)
   {
     this._first = first;
+    this._c0action = [];
+
+    if (2 == arguments.length) {
+      this._default_action = c;
+    }
   },
 
   /** Parse parameters and returns the correspond action.
@@ -107,20 +213,58 @@ ParameterParser.definition = {
   parse: function parse(scanner) 
   {
     let params = [param for (param in this._parseParameters(scanner))];
-    if (scanner.isEnd) {
-      return undefined;
-    }
-    let c = scanner.current();
+    let c;
+    do {
+      if (scanner.isEnd) {
+        //return let (self = this) function(scanner) {
+        //  let result = parse.apply(self, scanner);
+        //  yield result;
+        //};
+        return undefined;
+      }
+      c = scanner.current();
+      if (c < 0x20 || 0x7f == c) {
+        let action = C0Parser.get(c);
+        if (undefined !== action) {
+          this._c0action.push(action);
+        }
+        scanner.moveNext(); 
+        continue;
+      }
+      break;
+    } while (true);
+
     let next = this[c];
+    let action;
     if (undefined === next) {
-      return undefined;
+    } else if (next.hasOwnProperty("parse")) {
+      let meta_action = next.parse(scanner);
+      if (meta_action) {
+        action = meta_action(params);
+      }
+    } else {
+      action = next(params);
     }
-    if ("parse" in next) {
-      let action = next.parse(scanner);
-      return action && action(params);
-    }
-    return next(params);
-  },
+    let default_action = this._default_action;
+    if (0 == this._c0action.length && null === default_action) {
+      return action;
+    } 
+    let actions = this._c0action;
+    actions.push(action);
+
+    this._c0action = [];
+    return function() {
+      if (default_action) {
+        let action = C0Parser.get(default_action);
+        if (undefined !== action) {
+          action();
+        }
+      }
+      for (let i = 0; i < actions.length; ++i) {
+        actions[i]();
+      }
+    };
+  }, // parse
 
   /** Parse numeric parameters separated by semicolons ";". 
    *  @param {Scanner} scanner A Scanner object.
@@ -128,7 +272,8 @@ ParameterParser.definition = {
    * Paramter -> ([0-9]+, ";")*, [0-9]+
    *
    */
-  _parseParameters: function _parseParameters(scanner) 
+  _parseParameters: 
+  function _parseParameters(scanner) 
   {
     let accumulator = this._first;
     while (!scanner.isEnd) {
@@ -140,12 +285,19 @@ ParameterParser.definition = {
         scanner.moveNext();
         yield accumulator;
         accumulator = 0;
+      } else if (c < 0x20 || 0x7f == c) {
+        yield accumulator;
+        let action = C0Parser.get(c);
+        if (undefined !== action) {
+          this._c0action.push(action);
+        }
+        scanner.moveNext();
       } else {
         yield accumulator;
         break;
       }
     }
-  },
+  }, // _parseParameters
 };
 
 /**
@@ -157,7 +309,9 @@ SequenceParser.definition = {
   /** Construct child parsers from definition and make parser-chain. */
   append: function append(key, value, context) 
   {
-    let match = key.match(/^(0x[0-9a-zA-Z]+)$|^%d(.+)$|^(.)%s$|^(%c)|^(.)$|^(.)(.+)$/);
+    let match = key
+      .match(/^(0x[0-9a-zA-Z]+)|^%d(.+)$|^(.)%s$|^(%c)|^(.)$|^(.)(.+)$/);
+
     let [, 
       number, char_with_param, 
       char_with_string, single_char, 
@@ -166,24 +320,48 @@ SequenceParser.definition = {
     if (number) { // parse number
       let code = parseInt(number);
       if ("parse" in value) {
+        C0Parser.append(code, value);
         this[code] = value;
       } else {
+        C0Parser.append(code, function() value.apply(context));
         this[code] = function() value.apply(context);
       }
     } else if (char_with_param) {
       let action = function(params) function() value.apply(context, params);
       let accept_char = char_with_param.charCodeAt(0);
-      for (let i = 0; i < 10; ++i) {
-        let code = i + 0x30;
-        this[code] = this[code] || new ParameterParser(i);
+
+      let codes = [
+        0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 
+        0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f,
+        0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39,
+        0x7f,
+        0x3b
+      ];
+      for (let i = 0; i < codes.length; ++i) {
+        let code = codes[i];
+        if (0x30 <= code && code < 0x40) {
+          this[code] = this[code] || new ParameterParser(code - 0x30);
+        } else if (0x3b == code) {
+          this[code] = this[code] || new ParameterParser(0);
+        } else {
+          this[code] = this[code] || new ParameterParser(0, code);
+        }
         if (1 == char_with_param.length) {
           this[code][accept_char] = action;
         } else {
           let next_chars = char_with_param.substr(1);
           this[code][accept_char] = {
-            parse: function parse(scanner) {
+
+            parse: function parse(scanner) 
+            {
               for (let i = 0; i < next_chars.length; ++i) {
                 scanner.moveNext();
+                if (scanner.isEnd) {
+                  return let (self = this) function(scanner) {
+                    let result = parse.apply(self, scanner);
+                    yield result;
+                  };
+                }
                 let c = scanner.current();
                 if (c != next_chars.charCodeAt(i)) {
                   return undefined;
@@ -191,6 +369,7 @@ SequenceParser.definition = {
               }
               return action;
             }
+
           };
         }
       }
@@ -198,11 +377,13 @@ SequenceParser.definition = {
     } else if (char_with_string) {
       // define action
       let action = function(params) function() value.apply(context, params)
-      this[char_with_string.charCodeAt(0)] = new StringParser(action) // chain to string parser.
+      let index = char_with_string.charCodeAt(0);
+      this[index] = new StringParser(action) // chain to string parser.
     } else if (single_char) { // parse a char.
       this[0x20] = this[0x20] || new SequenceParser();
       for (let code = 0x21; code < 0x7f; ++code) {
-        this[0x20][code] = this[code] = let (c = String.fromCharCode(code)) function() value.call(context, c)
+        let c = String.fromCharCode(code);
+        this[0x20][code] = this[code] = function() value.call(context, c)
       }
     } else if (normal_char) {
       let code = normal_char.charCodeAt(0);
@@ -219,7 +400,7 @@ SequenceParser.definition = {
       }
       next.append(next_chars, value, context);
     }
-  },
+  }, // append
 
   /** Scan and get asocciated action. 
    *  @param {Scanner} scanner A Scanner object.
@@ -231,64 +412,73 @@ SequenceParser.definition = {
     if (next) { // c is part of control sequence.
       if ("parse" in next) { // next is parser.
         scanner.moveNext();
-        return next.parse(scanner) 
+        return next.parse(scanner);
       } else { 
         return next // next is action.
       }
+    } else {
+      return undefined;
     }
-    return undefined;
-  },
+  }, // parse
 
-}
+}; // class SequenceParser
 
 /**
- * @class Grammer
+ * @class Grammar
+ *
+ *
  */
-let Grammer = new Class().extends(Component);
-Grammer.definition = {
+let Grammar = new Class().extends(Component).requires("GrammarConcept");
+Grammar.definition = {
 
   get id()
-    "grammer",
+    "grammar",
 
   /** post constructor. 
-   *  @param {Session} session A Session object.
+   *  @param {Broker} broker A Broker object.
    */
   "[subscribe('@event/broker-started'), enabled]":
-  function onLoad(session)
+  function onLoad(broker)
   {
     this.ESC = new SequenceParser();
     this.CSI = new SequenceParser();
-    session.notify("command/add-sequence", {
+    broker.notify("command/add-sequence", {
       expression: "C0 0x1B", 
       handler: this.ESC,
       context: this,
     });
-    session.notify("command/add-sequence", {
+    broker.notify("command/add-sequence", {
       expression: "ESC [", 
       handler: this.CSI,
       context: this,
     });
-    let sequences = session.notify("get/sequences");
-    sequences.forEach(function(information) {
-      session.notify("command/add-sequence", information);
-    }, this);
-    session.notify("initialized/grammer", this);
+    let sequences = broker.notify("get/sequences");
+    for (let i = 0; i < sequences.length; ++i) {
+      broker.notify("command/add-sequence", sequences[i]);
+    }
+    broker.notify("initialized/grammar", this);
   },
 
   /** Parse and returns asocciated action. 
    *  @param {Scanner} scanner A Scanner object.
+   *  @param {Function|Undefined} Action object.
+   *
+   *  @implements Grammar.parse :: Scanner -> Action
    */
-  parse: function parse(scanner) 
+  "[type('Scanner -> Action')] parse":
+  function parse(scanner) 
   {
-    let action = this.C0.parse(scanner);
+    let action = C0Parser.parse(scanner);
     return action;
   },
 
   /** Append a sequence handler.
    *  @param {Object} information A register information object that has 
    *                              "expression", "handler", and "context" key.
+   *
+   *  @implements Grammar.<command/add-sequence> :: SequenceInfo -> Undefined
    */
-  "[subscribe('command/add-sequence'), enabled]":
+  "[subscribe('command/add-sequence'), type('SequenceInfo -> Undefined'), enabled]":
   function append(information) 
   {
     let {expression, handler, context} = information;
@@ -302,15 +492,15 @@ Grammer.definition = {
       this[prefix] = new SequenceParser();
     }
     this[prefix].append(key, handler, context);
-  },
+  }, // append
 
-};
+}; // Grammar
 
 /** 
  * @class Scanner
  * @brief Character scanner for UTF-8 characters sequence.
  */ 
-let Scanner = new Class().extends(Component);
+let Scanner = new Class().extends(Component).requires("ScannerConcept");
 Scanner.definition = {
 
   get id()
@@ -320,16 +510,19 @@ Scanner.definition = {
   _position: 0,
   _anchor: 0,
   _nextvalue: null,
+  _results: null,
 
   /** Constructor **/
   "[subscribe('@event/broker-started'), enabled]":
-  function onLoad(session) 
+  function onLoad(broker) 
   {
-    session.notify("initialized/scanner", this);
+    this._results = [];
+    broker.notify("initialized/scanner", this);
   },
 
   /** Assign new string data. position is reset. */
-  assign: function assign(value) 
+  "[type('String -> Undefined')] assign":
+  function assign(value) 
   { // re-assign new value.
     if (this._nextvalue) {
       this._value = this._nextvalue;  // TODO: performance improvment.
@@ -341,17 +534,20 @@ Scanner.definition = {
   },
 
   /** Returns single byte code point. */
-  current: function current() 
+  "[type('Uint16')] current":
+  function current() 
   {
-    return this._value.charCodeAt(this._position);
+    let code = this._value.charCodeAt(this._position);
+    return code;
   },
 
   /** Moves to next position. */
-  moveNext: function moveNext() 
+  "[type('Undefined')] moveNext":
+  function moveNext() 
   {
     ++this._position;
     if (this.isEnd) {
-      if (this.hasNextValue()) {
+      if (this._hasNextValue()) {
         this._switchToNextValue();
       }
     }
@@ -363,27 +559,37 @@ Scanner.definition = {
     return this._position >= this._value.length;
   },
 
-  setAnchor: function setAnchor() 
+  "[type('Undefined')] setAnchor":
+  function setAnchor() 
   {
     this._anchor = this._position;
   },
 
-  rollback: function rollback()
-  {
-    this._position = this._anchor;
-  },
-
-  setSurplus: function setSurplus() 
+  "[type('Undefined')] setSurplus":
+  function setSurplus() 
   {
     this._nextvalue = this._value.substr(this._anchor);
   },
 
-  getCurrentToken: function getCurrentToken() 
+  "[type('String')] getCurrentToken":
+  function getCurrentToken() 
   {
     return this._value.slice(this._anchor, this._position + 1);
   },
 
-  hasNextValue: function hasNextValue() 
+  pushResult: function pushResult(action)
+  {
+    this._results.push(action);
+  },
+
+  drainResults: function drainResults()
+  {
+    let results = this._results;
+    this._results = [];
+    return results;
+  },
+
+  _hasNextValue: function _hasNextValue() 
   {
     return null !== this._nextvalue;
   },
@@ -406,17 +612,17 @@ Parser.definition = {
   get id()
     "parser",
 
-  _grammer: null,
+  _grammar: null,
   _emurator: null,
   _decoder: null,
   _scanner: null,
 
 // post-constructor
-  "[subscribe('initialized/{scanner & grammer & emurator & decoder}'), enabled]":
-  function onLoad(scanner, grammer, emurator, decoder)
+  "[subscribe('initialized/{scanner & grammar & emurator & decoder}'), type('Scanner -> Grammer -> Object -> Object -> Undefined'), enabled]":
+  function onLoad(scanner, grammar, emurator, decoder)
   {
     this._scanner = scanner;    
-    this._grammer = grammer;
+    this._grammar = grammar;
     this._emurator = emurator;
     this._decoder = decoder;
 
@@ -424,19 +630,19 @@ Parser.definition = {
   },
 
   /** installs itself. 
-   *  @param {Session} session A session object.
+   *  @param {Broker} broker A Broker object.
    */
-  install: function install(session)
+  install: function install(broker)
   {
     this.drive.enabled = true;
     this.onDataArrivedRecursively.enabled = true;
-    session.notify("initialized/parser", this);
+    broker.notify("initialized/parser", this);
   },
 
   /** uninstalls itself. 
-   *  @param {Session} session A session object.
+   *  @param {Broker} broker A Broker object.
    */
-  uninstall: function uninstall(session)
+  uninstall: function uninstall(broker)
   {
     this.drive.enabled = false;
     this.onDataArrivedRecursively.enabled = false;
@@ -465,9 +671,8 @@ Parser.definition = {
     for (let action in this.parse(scanner, data)) {
       action();
     }
-//    [action for (action in this.parse(scanner, data))].forEach(function(action) action());
-    let session = this._broker;
-    session.notify("command/draw"); // fire "draw" event.
+    let broker = this._broker;
+    broker.notify("command/draw"); // fire "draw" event.
   },
 
   /** Parse and evaluate control codes and text pieces from the scanner. 
@@ -493,7 +698,8 @@ Parser.definition = {
     let broker = this._broker;
     let emurator = this._emurator;
     let decoder = this._decoder;
-    let grammer = this._grammer;
+    let grammar = this._grammar;
+
     if (scanner.generator) {
       let result = scanner.generator(scanner);
       if (result) {
@@ -507,9 +713,10 @@ Parser.definition = {
         }
       }
     }
+
     while (!scanner.isEnd) {
       scanner.setAnchor(); // memorize current position.
-      let action = grammer.parse(scanner);
+      let action = grammar.parse(scanner);
       if (action) {
         if (action.isGenerator()) {
           scanner.generator = action;
@@ -518,22 +725,20 @@ Parser.definition = {
           scanner.moveNext();
         }
       } else if (!scanner.isEnd) {
-        let generator = function() {
-          for (let c in decoder.decode(scanner)) {
-            if (c >= 0x1100 && coUtils.Unicode.doubleWidthTest(c)) {
-              yield 0;
-            }
-            yield c;
+        let codes = [];
+        for (let c in decoder.decode(scanner)) {
+          if (c >= 0x1100 && coUtils.Unicode.doubleWidthTest(c)) {
+            codes.push(0);
           }
-        };
-        let codes = [c for (c in generator())];
-        if (codes && codes.length) {
+          codes.push(c);
+        }
+        if (codes.length) {
           yield function() emurator.write(codes);
         } else {
+          coUtils.Debug.reportError(
+            _("Failed to decode text. text length: %d, source text: [%s]."), 
+            data.length, scanner._nextvalue);
           break;
-          //throw coUtils.Debug.Exception(
-          //  _("Failed to decode text. text length: %d, source text: [%s]."), 
-          //  data.length, scanner._nextvalue);
         }
       } else { // scanner.isEnd
         scanner.setSurplus(); // backup surplus (unparsed) sequence.
@@ -589,6 +794,6 @@ function main(broker)
 {
   new Parser(broker);
   new Scanner(broker);
-  new Grammer(broker);
+  new Grammar(broker);
 }
 

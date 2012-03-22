@@ -34,9 +34,6 @@ FontFamilyCompleter.definition = {
   get id()
     "font_family_completer",
 
-  get type()
-    "font-family",
-
   /*
    * Search for a given string and notify a listener (either synchronously
    * or asynchronously) of the result

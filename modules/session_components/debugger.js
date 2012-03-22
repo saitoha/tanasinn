@@ -259,14 +259,9 @@ Debugger.definition = {
     return {
       tagName: "hbox",
       flex: 1,
-      style: <>
-        //font-size: 13px;
-      </>,
       childNodes: [
         {
           tagName: "vbox",
-          style: <>
-            </>,
           childNodes: [
             {
               tagName: "checkbox",
@@ -317,9 +312,6 @@ Debugger.definition = {
           tagName: "vbox",
           flex: 1,
           style: <> 
-            /*MozAppearance: "tabpanels",*/
-//            background: -moz-linear-gradient(top, #999, #666);
-           // background-attachment: fixed;
             width: 100%;
             height: 100%;
           </>,

@@ -29,7 +29,35 @@
 let SubscribeAttribute = new Attribute("subscribe");
 SubscribeAttribute.definition = {
 
-  initialize: function(broker) 
+  get __id()
+    "subscribe",
+
+  get __info()
+    <Attribute>
+      <name>{_("Subscribe")}</name>
+      <description>{
+        _("Marks a function as a tupstart2 subscriber.")
+      }</description>
+      <detail>
+      <![CDATA[
+        "subscribe" attribute marks a function as tupstart2 subscriber.
+
+        usage:
+
+          "[subscribe('event/the-event-occured'), enabled]":
+          function func1(n) 
+          { 
+            ....
+          },
+
+      ]]>
+      </detail>
+    </Attribute>,
+
+  /** constructor 
+   *  @param {EventBroker} broker Parent broker object.
+   */
+  initialize: function initialize(broker) 
   {
     let attributes = this.__attributes;
     for (key in attributes) {
@@ -49,6 +77,7 @@ SubscribeAttribute.definition = {
         let self = this;
         wrapped_handler = function() handler.apply(self, arguments);
         wrapped_handler.id = id;
+        wrapped_handler.topic = topic;
         this[key] = wrapped_handler;
       }
       let listen = function() {
@@ -80,6 +109,7 @@ SubscribeAttribute.definition = {
         });
     } // key for (key in attributes) 
   },
+
 };
 
 

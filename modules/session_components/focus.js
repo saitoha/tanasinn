@@ -51,7 +51,7 @@ FocusTracker.definition = {
   function install(session)
   {
     session.notify("command/add-domlistener", {
-      target: session.window,
+      target: session.window.document,
       type: "focus",
       context: this,
       handler: this.onfocus,
@@ -78,9 +78,11 @@ FocusTracker.definition = {
     let command_dispatcher = session.document.commandDispatcher;
     let root_element = session.root_element;
     let target = event.explicitOriginalTarget;
-    if (null !== target && target.nodeType != target.NODE_DOCUMENT) {
+    if (null !== target && 
+        (!("nodeType" in target) || target.nodeType != target.NODE_DOCUMENT)) {
       target = target.parentNode;
-      if (null !== target && target.nodeType != target.NODE_DOCUMENT) {
+      if (null !== target && undefined !== target
+          && target.nodeType != target.NODE_DOCUMENT) {
         let relation = root_element.compareDocumentPosition(target);
 //        coUtils.Debug.reportMessage("focus-relation: " + relation);
         if ((relation & root_element.DOCUMENT_POSITION_CONTAINED_BY)) {

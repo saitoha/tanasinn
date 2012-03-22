@@ -30,6 +30,33 @@
 let SequenceAttribute = new Attribute("sequence");
 SequenceAttribute.definition = {
 
+  get __id()
+    "sequence",
+
+  get __info()
+    <Attribute>
+      <name>{_("Sequence")}</name>
+      <description>{
+        _("Marks a function as a sequence handler.")
+      }</description>
+      <detail>
+      <![CDATA[
+        "sequence" attribute marks a function as sequence handler.
+
+        usage:
+
+          "[sequence('CSI ?%dh')]":
+          function DECSET(n) 
+          { 
+            ....
+          },
+
+      ]]>
+      </detail>
+    </Attribute>,
+
+
+
   /** constructor 
    *  @param {EventBroker} broker Parent broker object.
    */

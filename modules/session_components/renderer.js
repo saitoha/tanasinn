@@ -141,19 +141,19 @@ Renderer.definition = {
   "[subscribe('install/renderer'), enabled]":
   function install(session) 
   {
-    let {foreground_canvas} = session.uniget(
+    let {tanasinn_renderer_canvas} = session.uniget(
       "command/construct-chrome", 
       {
         parentNode: "#tanasinn_center_area",
         tagName: "html:canvas",
         style: "letter-spacing: 1em",
-        id: "foreground_canvas",
+        id: "tanasinn_renderer_canvas",
       });
 
-    this._canvas = foreground_canvas;
+    this._canvas = tanasinn_renderer_canvas;
     this._context = this._canvas.getContext("2d");
     this._context.mozImageSmoothingEnabled = this.smoothing;
-    this._calculateGryphWidth();
+    this._calculateGlyphSize();
     this.onWidthChanged();
     this.onHeightChanged();
 
@@ -226,8 +226,7 @@ Renderer.definition = {
   "[subscribe('command/capture-screen')]": 
   function captureScreen(info) 
   {
-    let source_canvas = this._canvas;
-    coUtils.IO.saveCanvas(source_canvas, info.file, info.thumbnail);
+    coUtils.IO.saveCanvas(this._canvas, info.file, info.thumbnail);
   },
 
   "[subscribe('command/backup')]": 
@@ -242,8 +241,7 @@ Renderer.definition = {
     };
     let path = String(<>{broker.runtime_path}/persist/{broker.request_id}.png</>);
     let file = coUtils.File.getFileLeafFromVirtualPath(path);
-    let source_canvas = this._canvas;
-    coUtils.IO.saveCanvas(source_canvas, file, true);
+    coUtils.IO.saveCanvas(this._source_canvas, file, true);
   },
 
   "[subscribe('@command/restore')]": 
@@ -289,7 +287,7 @@ Renderer.definition = {
   function onFontChanged(font_size) 
   {
     this.dependency["screen"].dirty = true;
-    this._calculateGryphWidth();
+    this._calculateGlyphSize();
   },
 
   "[subscribe('command/change-fontsize-by-offset')]":
@@ -308,8 +306,8 @@ Renderer.definition = {
     char_width = char_width || this.char_width;
     let canvas_width = 0 | (width * char_width);
     this._canvas.width = canvas_width;
-    let session = this._broker;
-    session.notify("event/screen-width-changed", canvas_width);
+    let broker = this._broker;
+    broker.notify("event/screen-width-changed", canvas_width);
   },
 
   "[subscribe('variable-changed/{screen.height | renderer.line_height}')]":
@@ -318,9 +316,9 @@ Renderer.definition = {
     height = height || this.dependency["screen"].height;
     line_height = line_height || this.line_height;
     let canvas_height = 0 | (height * line_height);
-    let session = this._broker;
-    session.notify("event/screen-height-changed", canvas_height);
     this._canvas.height = canvas_height;
+    let broker = this._broker;
+    broker.notify("event/screen-height-changed", canvas_height);
   },
 
   /** Draw to canvas */
@@ -374,7 +372,7 @@ Renderer.definition = {
     // form given attribute structure. 
     let fore_color_map = this.normal_color;// attr.bold ? this.bold_color: this.normal_color;
     let fore_color = fore_color_map[attr.fg];
-    this._setFont(context, attr.bold); 
+    context.font = [this.font_size, "px ", this.font_family].join("");
     context.globalAlpha = attr.bold ? this.bold_alpha: this.normal_alpha;
     context.fillStyle = fore_color;
     if (attr.underline) {
@@ -408,22 +406,16 @@ Renderer.definition = {
       }
       context.fillText(text, x, y, char_width * length);
     } else {
-      let {
-        drcs_canvas,
-        drcs_width,
-        drcs_height,
-        start_code,
-        end_code,
-        glyphs,
-      } = this._drcs_state;
+      let drcs_state = this._drcs_state;
       for (let [index, code] in Iterator(codes)) {
         code = code - this._offset;
-        if (start_code <= code && code <= end_code) {
-          //let glyph = glyphs[code - start_code];
+        if (drcs_state.start_code <= code && code <= drcs_state.end_code) {
+          //let glyph = drcs_state.glyphs[code - drcs_state.start_code];
           //context.putImageData(glyph, 0, 0)
           context.drawImage(
-            drcs_canvas, 
-            (code - start_code) * drcs_width, 0, drcs_width, drcs_height, 
+            drcs_state.drcs_canvas, 
+            (code - drcs_state.start_code) * drcs_state.drcs_width, 0, 
+            drcs_state.drcs_width, drcs_state.drcs_height, 
             x + index * char_width, y - this._text_offset, 
             Math.ceil(char_width + 0.5), this.line_height); 
           context.globalCompositeOperation = "source-atop";
@@ -436,6 +428,10 @@ Renderer.definition = {
   },
 
   /** Rnder underline at specified position.
+   * @param {nsIRenderingContext} context  a rendering context object.
+   * @param {Number} x  the horizontal start position.
+   * @param {Number} y  the vertical base-line position.
+   * @param {String} fore_color  the stroke color of underline.
    */
   _drawUnderline: function _drawUnderline(context, x, y, width, fore_color)
   {
@@ -446,30 +442,25 @@ Renderer.definition = {
      context.moveTo(x, y + 2);
      context.lineTo(x + width, y + 2);
      context.stroke();
+//     context = null;
   },
 
-  _calculateGryphWidth: function _calculateGryphWidth() 
+  /** Do test rendering and calculate glyph width with current font and font size.
+   */
+  _calculateGlyphSize: function _calculateGlyphSize() 
   {
     let font_size = this.font_size;
     let font_family = this.font_family;
     let [char_width, char_height, char_offset] 
-      = coUtils.Font.getAverageGryphWidth(font_size, font_family);
+      = coUtils.Font.getAverageGlyphSize(font_size, font_family);
+    // store result
     this.char_width = char_width;
     this.char_offset = char_offset;
     this.char_height = char_height;
-    this._text_offset = ((this.line_height + char_height + char_offset / 2) / 2 - 3);// | 0;
+    this._text_offset = ((this.line_height + char_height + char_offset / 2) / 2 - 3);
   },
 
-  _setFont: function setFontSize(context, is_bold) 
-  {
-    let font_size = this.font_size;
-    let font_family = this.font_family;
-    context.font = " "//(is_bold ? "bold ": " ") 
-                 + (font_size/* | 0*/) + "px "
-                 + font_family;
-  },
-        
-}
+};
 
 /**
  * @fn main

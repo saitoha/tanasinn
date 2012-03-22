@@ -81,7 +81,6 @@ ColorNumberCompletionDisplayDriver.definition = {
           tagName: "row",
           style: current_index == index && <> 
             border: solid 2px blue;
-            outer: solid 3px red;
             background: #226;
             color: white;
           </>,
@@ -178,7 +177,6 @@ ColorCompletionDisplayDriver.definition = {
           tagName: "row",
           style: current_index == index && <> 
             border: solid 2px blue;
-            outer: solid 3px red;
             background: #226;
             color: white;
           </>,
@@ -348,7 +346,7 @@ FontFamilyCompletionDisplayDriver.definition = {
               tagName: "box",
               style: <>
                 font-size: 40px;
-                font-family: '{completion_text}';
+                font-family: {completion_text};
                 font-weight: normal;
                 margin: 0px;
                 margin-left: 8px;

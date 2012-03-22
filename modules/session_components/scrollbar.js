@@ -60,16 +60,16 @@ Scrollbar.definition = {
         tagName: "vbox",
         flex: 1,
         id: "tanasinn_scrollbar",
-        style: { 
-          opacity: 0.00,
-          MozTransitionProperty: "opacity",
-          MozTransitionDuration: <>{this.transition_duration}ms</>,
-          borderRadius: <>{this.inner_width + this.border_width * 2}px</>,
-          border: <>{this.border_width}px solid {this.color}</>,
-          width: <>{this.inner_width + this.border_width * 2}px</>,
-          margin: "8px",
-          height: "100%",
-        },
+        style: <> 
+          opacity: 0.00;
+          -moz-transition-property: opacity;
+          -moz-transition-duration: {this.transition_duration}ms;
+          border-radius: {this.inner_width + this.border_width * 2}px;
+          border: {this.border_width}px solid {this.color};
+          width: {this.inner_width + this.border_width * 2}px;
+          margin: 8px;
+          height: 100%;
+        </>,
         childNodes: [
           {
             tagName: "box",

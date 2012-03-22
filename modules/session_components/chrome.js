@@ -30,6 +30,26 @@
  */
 
 /**
+ * @concept MovableConcept
+ */
+let MovableConcept = new Concept();
+MovableConcept.definition = {
+
+  get id()
+    "Movable",
+
+// message concept
+  "<command/move-to> :: Array -> Undefined":
+  _("Moves window to specified position."),
+
+  "<command/move-by> :: Array -> Undefined":
+  _("Moves window by specified offset."),
+
+}; // MovableConcept
+
+
+
+/**
  * @trait Movable
  *
  */
@@ -43,7 +63,7 @@ Movable.definition = {
    * @fn moveTo
    * @brief Move terminal window.
    */
-  "[subscribe('command/move-to'), enabled]":
+  "[subscribe('command/move-to'), type('Array -> Undefined'), enabled]":
   function moveTo(coordinate) 
   {
     let [x, y] = coordinate;
@@ -59,7 +79,7 @@ Movable.definition = {
    * @fn moveBy
    * @brief Move terminal window.
    */
-  "[subscribe('command/move-by'), enabled]":
+  "[subscribe('command/move-by'), type('Array -> Undefined'), enabled]":
   function moveBy(offset) 
   {
     let [x, y] = offset;
@@ -92,7 +112,8 @@ Movable.definition = {
  * @brief Manage a terminal UI and a session.
  */
 let OuterChrome = new Class().extends(Plugin)
-                             .mix(Movable);
+                             .mix(Movable)
+                             .requires("Movable");
 OuterChrome.definition = {
 
   get id()

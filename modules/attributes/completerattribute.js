@@ -29,6 +29,32 @@
 let CompleterAttribute = new Attribute("completer");
 CompleterAttribute.definition = {
 
+  get __id()
+    "completer",
+
+  get __info()
+    <Attribute>
+      <name>{_("Completer")}</name>
+      <description>{
+        _("Marks a function as a completer procedure.")
+      }</description>
+      <detail>
+      <![CDATA[
+        "completer" attribute marks a function as a completer procedure. 
+
+        usage:
+
+          "[completer('fontsize'), enabled]": 
+          function func1() 
+          {
+            ....
+          },
+
+      ]]>
+      </detail>
+    </Attribute>,
+
+
   /** constructor 
    *  @param {EventBroker} broker Parent broker object.
    */

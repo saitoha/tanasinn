@@ -29,41 +29,88 @@
 let PersistableAttribute = new Attribute("persistable");
 PersistableAttribute.definition = {
 
+  get __id()
+    "persistable",
+
+  get __info()
+    <Attribute>
+      <name>{_("Persistable")}</name>
+      <description>{
+        _("Marks a member or property as 'persistable'.")
+      }</description>
+      <detail>
+      <![CDATA[
+        "persistable" attribute marks a member or property as "persistable".
+
+        usage:
+
+          "[persistable] polling_interval": 500, 
+
+      ]]>
+      </detail>
+    </Attribute>,
+
+
   /** constructor 
    *  @param {EventBroker} broker The "parent" broker object in 
    *                              the Event broker hierarchy.
    */
   initialize: function initialize(broker) 
   {
-    broker.subscribe(
-      "command/load-persistable-data", 
-      function load(context) 
-      {
-        this.__load(context);
-      }, this);
+    if ("__attributes" in this) { 
+      let attributes = this.__attributes;
+      let keys = Object.getOwnPropertyNames(attributes)
+        .filter(function(key) {
+          if (key in attributes) {
+            let attribute = attributes[key];
+            if ("persistable" in attribute) {
+              return attribute["persistable"];
+            }
+          }
+          return undefined;
+        });
 
-    broker.subscribe(
-      "command/save-persistable-data", 
-      function save(context) 
-      {
-        this.__persist(context);
-      }, this);
+      broker.subscribe(
+        "command/load-persistable-data", 
+        function load(context) 
+        {
+          this.__load(context, keys);
+        }, this);
 
-    broker.subscribe(
-      "command/get-persistable-data", 
-      function get(context) 
-      {
-        this.__get(context);
-      }, this);
-  },
+      broker.subscribe(
+        "command/save-persistable-data", 
+        function save(context) 
+        {
+          this.__persist(context, keys);
+        }, this);
+
+      broker.subscribe(
+        "command/get-persistable-data", 
+        function get(context) 
+        {
+          this.__get(context, keys);
+        }, this);
+    }
+
+  }, // initialize
 
   /** Load persistable parameter value from context object. */
-  __load: function __load(context) 
+  __load: function __load(context, keys) 
   {
-    let attributes = this.__attributes;
-    attributes && Object.getOwnPropertyNames(attributes)
-      .filter(function(key) attributes[key]["persistable"])
-      .forEach(function(key)
+    if ("__attributes" in this) { 
+      let attributes = this.__attributes;
+      keys = keys || Object.getOwnPropertyNames(attributes)
+        .filter(function(key) {
+          if (key in attributes) {
+            let attribute = attributes[key];
+            if ("persistable" in attribute) {
+              return attribute["persistable"];
+            }
+          }
+          return undefined;
+        });
+
+      keys.forEach(function(key)
       {
         let path = [this.id, key].join(".");
         try {
@@ -78,15 +125,26 @@ PersistableAttribute.definition = {
             path);
         }
       }, this);
-  },
+    }
+  }, // __load
 
   /** Sets persistable parameter value to context object. */
-  __persist: function __persist(context) 
+  __persist: function __persist(context, keys) 
   {
-    let attributes = this.__attributes;
-    attributes && Object.getOwnPropertyNames(attributes)
-      .filter(function(key) attributes[key]["persistable"], this)
-      .forEach(function(key)
+    if ("__attributes" in this) { 
+      let attributes = this.__attributes;
+      keys = keys || Object.getOwnPropertyNames(attributes)
+        .filter(function(key) {
+          if (key in attributes) {
+            let attribute = attributes[key];
+            if ("persistable" in attribute) {
+              return attribute["persistable"];
+            }
+          }
+          return undefined;
+        });
+
+      keys.forEach(function(key)
       {
         try {
           if (this[key] != this.__proto__[key]) {
@@ -101,34 +159,47 @@ PersistableAttribute.definition = {
             path);
         }
       }, this);
-  },
+    }
+  }, // __persist
 
-  /** . */
-  __get: function __get(context) 
+  /** set persistable members to context object. 
+   * @param {Object} context A context object.
+   */
+  __get: function __get(context, keys) 
   {
-    let attributes = this.__attributes;
-    let keys = [
-      key for (key in attributes) 
-        if (attributes[key]["persistable"])
-    ];
-    keys.forEach(function(key) 
-    {
-      let path = [this.id, key].join(".");
-      try {
-        context.__defineGetter__(path, let (self = this) function() {
-          return self[key];
+    if ("__attributes" in this) { 
+      let attributes = this.__attributes;
+      keys = keys || Object.getOwnPropertyNames(attributes)
+        .filter(function(key) {
+          if (key in attributes) {
+            let attribute = attributes[key];
+            if ("persistable" in attribute) {
+              return attribute["persistable"];
+            }
+          }
+          return undefined;
         });
-        context.__defineSetter__(path, let (self = this) function(value) {
-          self[key] = value;
-        });
-      } catch (e) {
-        coUtils.Debug.reportError(e);
-        coUtils.Debug.reportError(
-          _("An Error occured when making wrapper '%s.%s'."),
-          id, key);
-      }
-    }, this);
-  },
+
+      keys.forEach(function(key)
+      {
+        let path = [this.id, key].join(".");
+        try {
+          context.__defineGetter__(path, let (self = this) function() {
+            return self[key];
+          });
+          context.__defineSetter__(path, let (self = this) function(value) {
+            alert(value)
+            self[key] = value;
+          });
+        } catch (e) {
+          coUtils.Debug.reportError(e);
+          coUtils.Debug.reportError(
+            _("An Error occured when making wrapper '%s.%s'."),
+            id, key);
+        }
+      }, this);
+    }
+  }, // __get
 
 }; // PersistableAttribute
 

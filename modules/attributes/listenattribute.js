@@ -30,6 +30,32 @@
 let ListenAttribute = new Attribute("listen");
 ListenAttribute.definition = {
 
+  get __id()
+    "listen",
+
+  get __info()
+    <Attribute>
+      <name>{_("DOM Listener")}</name>
+      <description>{
+        _("Declares DOM listener procedure.")
+      }</description>
+      <detail>
+      <![CDATA[
+        "listen" attribute defines a DOM listener procedure.
+
+        usage:
+
+          "[listen('dblclick', '#tanasinn_content'), enabled]":
+          function func1() 
+          {
+            ....
+          },
+
+      ]]>
+      </detail>
+    </Attribute>,
+
+
   initialize: function initialize(broker) 
   {
     let attributes = this.__attributes;

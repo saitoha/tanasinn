@@ -22,7 +22,12 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-
+/**
+ * - cmap overview
+ *   "cmap" attribute defines default keybind replacement settings in command 
+ *   line field. this settings are deald as "persistable".
+ *
+ */
 
 /**
  * @Attribute CmapAttribute
@@ -30,6 +35,32 @@
  */
 let CmapAttribute = new Attribute("cmap");
 CmapAttribute.definition = {
+
+  get __id()
+    "cmap",
+
+  get __info()
+    <Attribute>
+      <name>{_("Default CMap")}</name>
+      <description>{
+        _("Provides default keybind replacement settings in command line field.")
+      }</description>
+      <detail>
+      <![CDATA[
+        "cmap" attribute defines default keybind replacement settings in command 
+        line field. this settings are deald as "persistable".
+
+        usage:
+
+          "[cmap('<C-n>', '<F7>')]": 
+          function func1() 
+          {
+            ....
+          },
+
+      ]]>
+      </detail>
+    </Attribute>,
 
   /** constructor 
    *  @param {EventBroker} broker Parent broker object.

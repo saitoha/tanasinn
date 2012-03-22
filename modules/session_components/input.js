@@ -269,6 +269,7 @@ InputManager.definition = {
     this.focus.enabled = true;
     this.blur.enabled = true;
     this.onkeypress.enabled = true;
+    this.onkeyup.enabled = true;
     this.onDoubleShift.enabled = true;
     this.oninput.enabled = true;
     this.oncompositionstart.enabled = true;
@@ -295,6 +296,7 @@ InputManager.definition = {
     this.focus.enabled = false;
     this.blur.enabled = false;
     this.onkeypress.enabled = false;
+    this.onkeyup.enabled = false;
     this.onDoubleShift.enabled = false;
     this.oninput.enabled = false;
     this.oncompositionstart.enabled = false;
@@ -321,6 +323,7 @@ InputManager.definition = {
   function enableInputManager() 
   {
     this.onkeypress.enabled = true;
+    this.onkeyup.enabled = true;
     this.oninput.enabled = true;
   },
 
@@ -329,6 +332,7 @@ InputManager.definition = {
   function disableInputManager() 
   {
     this.onkeypress.enabled = false;
+    this.onkeyup.enabled = false;
     this.oninput.enabled = false;
   },
 
@@ -409,14 +413,31 @@ InputManager.definition = {
   /** Keypress event handler. 
    *  @param {Event} event A event object.
    */
+  "[listen('keyup', '#tanasinn_default_input', true)]":
+  function onkeyup(event) 
+  { // nothrow
+    //alert(event.keyCode + " - " + event.which + " - " + event.ctrlKey)
+    if (32 == event.keyCode
+        && 32 == event.which
+        && event.ctrlKey) {
+      this.onkeypress(event);
+    }
+  },
+
+  /** Keypress event handler. 
+   *  @param {Event} event A event object.
+   */
   "[listen('keypress', '#tanasinn_default_input', true)]":
   function onkeypress(event) 
   { // nothrow
+    //alert(event.keyCode + " - " + event.which + " - " + event.ctrlKey)
     event.preventDefault();
-    let packed_code = coUtils.Keyboard.getPackedKeycodeFromEvent(event);
-    let session = this._broker;
+    event.stopPropagation();
+    let packed_code = coUtils.Keyboard
+      .getPackedKeycodeFromEvent(event);
+    let broker = this._broker;
     if (this.debug_flag) {
-      session.notify(
+      broker.notify(
         this.debug_topic, 
         <>
 code:{event.keyCode},
@@ -429,7 +450,7 @@ char:{event.isChar?"t":"f"},
 {coUtils.Keyboard.convertCodeToExpression(packed_code)}
         </>);
     }
-    session.notify("event/scan-keycode", {
+    broker.notify("event/scan-keycode", {
       mode: "normal", 
       code: packed_code,
     });
@@ -439,14 +460,13 @@ char:{event.isChar?"t":"f"},
   "[subscribe('command/input-with-mapping')]": 
   function inputWithMapping(info)
   {
-    let { event, code } = info;
-    let session = this._broker;
-    let result = session.uniget("event/normal-input", {
+    let broker = this._broker;
+    let result = broker.uniget("event/normal-input", {
       textbox: this._textbox, 
-      code: code,
+      code: info.code,
     });
-    if (!result && !(code & 1 << coUtils.Keyboard.KEY_MODE)) {
-      this.inputWithNoMapping(code);
+    if (!result && !(info.code & 1 << coUtils.Keyboard.KEY_MODE)) {
+      this.inputWithNoMapping(info.code);
     }
   },
 
@@ -464,9 +484,9 @@ char:{event.isChar?"t":"f"},
       }
       message = String.fromCharCode(c);
     }
-    let session = this._broker;
-    session.notify("event/before-input", message);
-    session.notify("command/input-text", message);
+    let broker = this._broker;
+    broker.notify("event/before-input", message);
+    broker.notify("command/input-text", message);
   },
 
   /** Send input sequences to TTY device. 

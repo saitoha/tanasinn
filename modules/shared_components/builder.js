@@ -285,7 +285,7 @@ TemplateBuilder.definition = {
         if ("#" == value.charAt(0)) {
           let id = value.substr(1);
           broker.subscribe(
-            <>@event/domnode-created/{id}</>, 
+            "@event/domnode-created/" + id, 
             function(target_element)
             {
               target_element.appendChild(element.value);
@@ -349,7 +349,8 @@ TemplateBuilder.definition = {
         }
       }
     }
-  }
+  },
+
 }; // class TemplateBuilder
 
 /**
@@ -369,7 +370,7 @@ ChromeBuilder.definition = {
   initialize: function initialize(broker)
   {
     this._map = {};
-    broker.notify(<>initialized/{this.id}</>, this);
+    broker.notify("initialized" + this.id, this);
   },
 
 // public
@@ -390,7 +391,17 @@ ChromeBuilder.definition = {
   "[subscribe('get/element'), enabled]":
   function get(id) 
   {
+    if (!this._map.hasOwnProperty(id)) {
+      return undefined;
+      //throw coUtils.Debug.Exception(_("Specified ID is not found."));
+    }
     return this._map[id];
+  },
+
+  "[subscribe('event/broker-stopping'), enabled]":
+  function onSessionStopping(id)
+  {
+    this._map = null;
   },
 
 }; // ChromeBuilder

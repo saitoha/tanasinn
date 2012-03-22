@@ -22,9 +22,182 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+
+//////////////////////////////////////////////////////////////////////////////
+//
+// Concepts
+//
+
+/**
+ * @concept GrammarConcept
+ */
+let ScreenConcept = new Concept();
+ScreenConcept.definition = {
+
+  get id()
+    "ScreenConcept",
+
+  // signature concept
+  "allocate :: Uint16 -> Uint16 -> Array":
+  _("Allocates n cells at once."),
+
+}; // ScreenConcept
+
+/**
+ * @concept ScreenSwitchConcept
+ */
+let ScreenSwitchConcept = new Concept();
+ScreenSwitchConcept.definition = {
+
+  get id()
+    "ScreenSwitch",
+
+  "switchToAlternateScreen :: Undefined":
+  _("Switch to Alternate screen."),
+
+  "switchToMainScreen :: Undefined":
+  _("Switch to Main screen."),
+
+  "selectAlternateScreen :: Undefined":
+  _("Memorize cursor state, switch to Main screen, and erase screen."),
+
+  "selectMainScreen :: Undefined":
+  _("Erase screen, switch to Main screen, and restore cursor."),
+
+}; // ScreenSwitchConcept
+
+/**
+* @concept ScreenBackupConcept
+*/
+let ScreenBackupConcept = new Concept();
+ScreenBackupConcept.definition = {
+
+  get id()
+    "ScreenBackup",
+
+  "<command/backup> :: Object -> Undefined": 
+  _("Backups screen into serialize context."),
+
+  "<command/restore> :: Object -> Undefined": 
+  _("Restores screen from serialize context."),
+
+}; // ScreenBackupConcept
+
+/**
+ * @concept ScreenCursorOperationsConcept
+ *
+ */
+let ScreenCursorOperationsConcept = new Concept();
+ScreenCursorOperationsConcept.definition = {  
+
+  get id()
+    "ScreenCursorOperations",
+
+  "cursorForward :: Uint16 -> Undefined":
+  _("Move cursor to forward (right)."),
+
+  "cursorBackward :: Uint16 -> Undefined":
+  _("Move cursor to backward (left)."),
+
+  "cursorUp :: Uint16 -> Undefined":
+  _("Move CUrsor Up (CUP)."),
+  
+  "cursorDown :: Uint16 -> Undefined":
+  _("Move CUrsor Down (CUD)."),
+
+  "setPositionX :: Uint16 -> Undefined":
+  _("cursor CHaracter Absolute column (CHA)."),
+
+  "setPositionY :: Uint16 -> Undefined":
+  _("set Virtical Position Absolutely (VPA)."),
+
+  "backSpace :: Undefined":
+  _("BackSpace (BS)."),
+ 
+  "carriageReturn :: Undefined":
+  _("CarriageReturn (CR)."),
+  
+  "horizontalTab :: Undefined":
+  _("horizontalTab (HT)."),
+
+}; // ScreenCursorOperations
+
+/**
+ * @concept ScreenEditConcept
+ *
+ */
+let ScreenEditConcept = new Concept();
+ScreenEditConcept.definition = {  
+
+  get id()
+    "ScreenEdit",
+
+  "eraseLineToRight :: Undefined":
+  _("Erase cells from current position to end of line."),
+
+  "eraseLineToLeft :: Undefined":
+  _("Erase cells from specified position to head of line."),
+
+  "eraseLine :: Undefined":
+  _("Erase current line"),
+
+  "eraseScreenAbove :: Undefined":
+  _("Erase cells from current position to head of buffer."),
+
+  "eraseScreenBelow :: Undefined":
+  _("Erase cells from current position to end of buffer."),
+
+  "eraseScreenAll :: Undefined":
+  _("Erase every cells in screen."),
+
+  "insertBlanks :: Uint16 -> Undefined":
+  _("Insert n cells at specified position."),
+      
+  "setScrollRegion :: Uint16 -> Uint16 -> Undefined":
+  _("Sets top margin and bottom margin of scroll region."),
+
+  "resetScrollRegion :: Undefined":
+  _("Resets top margin and bottom margin of scroll region."),
+
+  "reverseIndex :: Undefined":
+  _("Reverse Index (RI)."),
+  
+  "lineFeed :: Undefined":
+  _("Line Feed (LF)"),
+
+  "insertLine :: Uint16 -> Undefined":
+  _("Inserts new lines at the specified position."),
+
+  "deleteLine :: Uint16 -> Undefined":
+  _("Deletes n lines from the specified position."),
+
+  "scrollUpLine :: Uint16 -> Undefined":
+  _("Scrolls up n lines."),
+
+  "scrollDownLine :: Uint16 -> Undefined":
+  _("Scrolls down n lines."),
+
+  "eraseCharacters :: Uint16 -> Undefined":
+  _("Erases n characters."),
+
+  "deleteCharacters :: Uint16 -> Undefined":
+  _("Deletes n characters."),
+
+}; // ScreenEditConcept
+
+
+
+//////////////////////////////////////////////////////////////////////////////
+//
+// Implementation
+//
 const CO_SCREEN_MAIN = true;
 const CO_SCREEN_ALTERNATE = false;
 
+/**
+ * @trait ScreenSequenceHandler
+ *
+ */
 let ScreenSequenceHandler = new Trait() 
 ScreenSequenceHandler.definition = {
 
@@ -166,7 +339,7 @@ ScreenSequenceHandler.definition = {
   "[sequence('CSI %dG')]":
   function CHA(n) 
   { // cursor CHaracter Absolute column
-    this.setPositionX((n || 1) - 1);
+    this.setPositionX((n || 1) - 1 + this.cursor.originX);
   },
 
   /**
@@ -195,6 +368,12 @@ ScreenSequenceHandler.definition = {
     this.VPA(n1);
     this.CHA(n2);
     // with no parameters, move to origin
+  },
+
+  "[sequence('ESC #8')]":
+  function DECALN() 
+  { // DEC Screen Alignment Test
+      this.eraseScreenAllWithTestPattern();
   },
 
   "[sequence('CSI %dJ')]":
@@ -581,7 +760,7 @@ ScreenSequenceHandler.definition = {
   "[sequence('CSI %dd')]":
   function VPA(n) 
   { // set Virtical Position Absolutely
-    this.setPositionY((n || 1) - 1);
+    this.setPositionY((n || 1) - 1 + this.cursor.originY);
   },
 
   /**
@@ -611,6 +790,28 @@ ScreenSequenceHandler.definition = {
     this.cursorDown(n || 1);
   },
 
+  /**
+   * VPR — Vertical Position Relative
+   *
+   * @ref http://vt100.net/docs/vt520-rm/
+   *
+   * Move vertically Pn lines in the current column. The default value is 1.
+   *
+   * Format
+   *
+   * CSI   Pn   e 
+   * 9/11  3/n  6/5
+   *
+   * Parameters
+   * @param {Number} n number of lines to move.
+   *
+   * Description
+   * VPR causes the active position to be moved to vertically corresponding Pn 
+   * lines following the current position of the active line. If an attempt is 
+   * made to move the active position beyond the last line, the active position 
+   * stops at the last line.
+   *
+   */
   "[sequence('CSI %dk')]":
   function VPB(n) 
   { 
@@ -745,8 +946,8 @@ ScreenSequenceHandler.definition = {
   "[sequence('CSI %df')]":
   function HVP(n1, n2) 
   { // Horizontal and Vertical Position
-    this.setPositionY(n1 || 1);
-    this.setPositionX(n2 || 1);
+    this.setPositionY((n1 || 1) - 1 + this.cursor.originX);
+    this.setPositionX((n2 || 1) - 1 + this.cursor.originY);
   },
 
   TBC: function TBC(n) 
@@ -795,7 +996,7 @@ Viewable.definition = {
   _scrollback_amount: 0,
 
   /** constructor */
-  initialize: function(session)
+  initialize: function initialize(broker)
   {
   },
 
@@ -987,7 +1188,7 @@ Viewable.definition = {
     return result;
   },
 
-};
+}; // Viewable
 
 
 
@@ -1013,7 +1214,8 @@ Scrollable.definition = {
 
     // rotate lines.
     let range = lines.splice(offset + bottom - n, n);
-    range.forEach(function(line) line.erase(0, width));
+    let cursor = this.cursor;
+    range.forEach(function(line) line.erase(0, width, cursor.attr));
     range.unshift(offset + top, 0);
     Array.prototype.splice.apply(lines, range);
     this._lines = lines.slice(offset, offset + this.height);
@@ -1033,7 +1235,8 @@ Scrollable.definition = {
     let range;
     if (top > 0) {
       range = lines.splice(offset + top, n);
-      range.forEach(function(line) line.erase(0, width));
+      let cursor = this.cursor;
+      range.forEach(function(line) line.erase(0, width, cursor.attr));
     } else if (offset < this.scrollback_limit) {
       range = this._createLines(n);
       offset = this._buffer_top += n;
@@ -1053,7 +1256,7 @@ Scrollable.definition = {
     this._lines = lines.slice(offset, offset + this._height);
   },
 
-};
+}; // Scrollable
 
 /**
  * @trait Resizable
@@ -1130,7 +1333,7 @@ Resizable.definition = {
     this._lines.forEach(function(line) line.length = new_width);
   },
 
-};
+}; // Resize
 
  
 /**
@@ -1142,7 +1345,12 @@ let Screen = new Class().extends(Component)
                         .mix(Viewable)
                         .mix(Scrollable)
                         .mix(Resizable)
-                        .mix(ScreenSequenceHandler);
+                        .mix(ScreenSequenceHandler)
+                        .requires("ScreenSwitch")
+                        .requires("ScreenBackup")
+                        .requires("ScreenCursorOperations")
+                        .requires("ScreenEdit")
+                        ;
 Screen.definition = {
 
   /** Component ID */
@@ -1164,6 +1372,7 @@ Screen.definition = {
   _screen_choice: CO_SCREEN_MAIN,
   _line_generator: null,
 
+
   // geometry (in cell count)
   "[persistable] initial_column": 80,
   "[persistable] initial_row": 24,
@@ -1179,8 +1388,8 @@ Screen.definition = {
     this.cursor = cursor_state;
     this._line_generator = line_generator;
 
-    let session = this._broker;
-    session.notify("initialized/screen", this);
+    let broker = this._broker;
+    broker.notify("initialized/screen", this);
   },
 
   /** 
@@ -1266,59 +1475,9 @@ Screen.definition = {
     return this._buffer_top;
   },
 
-  /** Returns the line object which is on current cursor position. */
-  _getCurrentLine: function _getCurrentLine() 
-  {
-    return this._lines[this.cursor.positionY]
-  },
-
   getLines: function getLines(start, end) 
   {
     return this._buffer.slice(start, end);
-  },
-
-  "[subscribe('command/backup'), enabled]": 
-  function backup(context) 
-  {
-    context[this.id] = [];
-    this.serialize(context[this.id]);
-  },
-
-  "[subscribe('command/restore'), enabled]": 
-  function restore(context) 
-  {
-    this.deserialize(context[this.id]);
-  },
-
-  serialize: function serialize(context)
-  {
-    context.push(this.width, this.height, this._buffer_top);
-    context.push(this._scroll_top, this._scroll_bottom);
-    context.push(this._buffer.length);
-    this._buffer.forEach(function(line) line.serialize(context));
-    context.push(this._screen_choice);
-    this.cursor.serialize(context);
-  },
-
-  deserialize: function deserialize(context)
-  {
-    this.width = context.shift();
-    this.height = context.shift();
-    this._buffer_top = context.shift();
-    this._scroll_top = context.shift();
-    this._scroll_bottom = context.shift();
-
-    let buffer_length = context.shift();
-    this._buffer = this._createLines(buffer_length);
-    this._buffer.forEach(function(line) line.deserialize(context));
-    this._screen_choice = context.shift();
-    this.cursor.deserialize(context);
-    this._lines = this._buffer.slice(this._buffer_top, this._buffer_top + this._height);
-    if (CO_SCREEN_ALTERNATE == this._screen_choice) {
-      this.switchToAlternateScreen();
-    } else {
-      this.switchToMainScreen();
-    }
   },
 
   /** Detects whether caracter that is assigned current cursor position is
@@ -1333,7 +1492,8 @@ Screen.definition = {
   },
 
   /** Write printable charactor seqences. */
-  write: function write(codes, insert_mode, auto_wrap_mode) 
+  "[type('Array -> Boolean -> Boolean')] write":
+  function write(codes, insert_mode, auto_wrap_mode) 
   {
     let width = this._width;
     let cursor = this.cursor;
@@ -1341,10 +1501,10 @@ Screen.definition = {
     do {
       if (cursor.positionX >= width) {
         //if (auto_wrap_mode) {
-          this.carriageReturn();
-          this.lineFeed();
+        //  this.carriageReturn();
         //} else {
-        //  break;
+        this.carriageReturn();
+        this.lineFeed();
         //}
       }
       let line = this._getCurrentLine();
@@ -1352,18 +1512,23 @@ Screen.definition = {
         let positionX = cursor.positionX;
         let length = width - positionX;
         let run = codes.slice(it, it + length);
-        it += length;
+        it += run.length;
         cursor.positionX += run.length;
         line.write(positionX, run, cursor.attr, insert_mode);
       }
     } while (it < codes.length);
+    if (cursor.positionX >= width) {
+      cursor.positionX = width - 1;
+    }
   },
 
+// ScreenCursorOperations Implementation.
   //
   // Cursor operations
   //
   /** Move cursor to forward (right). */
-  cursorForward: function cursorForward(n) 
+  "[type('Uint16 -> Undefined')] cursorForward":
+  function cursorForward(n) 
   {
     let positionX = this.cursor.positionX + n;
     let max = this._width - 1;
@@ -1371,7 +1536,8 @@ Screen.definition = {
   },
 
   /** Move cursor to backward (left). */
-  cursorBackward: function cursorBackward(n) 
+  "[type('Uint16 -> Undefined')] cursorBackward":
+  function cursorBackward(n) 
   {
     let positionX = this.cursor.positionX - n;
     let min = 0;
@@ -1379,7 +1545,8 @@ Screen.definition = {
   },
 
   /** Move CUrsor Up (CUP). */
-  cursorUp: function cursorUp(n) 
+  "[type('Uint16 -> Undefined')] cursorUp":
+  function cursorUp(n) 
   { 
     let positionY = this.cursor.positionY - n;
     let min = 0;
@@ -1387,7 +1554,8 @@ Screen.definition = {
   },
   
   /** Move CUrsor Down (CUD). */
-  cursorDown: function cursorDown(n) 
+  "[type('Uint16 -> Undefined')] cursorDown":
+  function cursorDown(n) 
   {
     let positionY = this.cursor.positionY + n;
 
@@ -1398,39 +1566,47 @@ Screen.definition = {
   },
 
   /** cursor CHaracter Absolute column (CHA). */
-  setPositionX: function setPositionX(n) 
+  "[type('Uint16 -> Undefined')] setPositionX":
+  function setPositionX(n) 
   {
     let max = this._width - 1;
     this.cursor.positionX = n > max ? max: n;
   },
 
   /** set Virtical Position Absolutely (VPA). */
-  setPositionY: function setPositionY(n) 
+  "[type('Uint16 -> Undefined')] setPositionY":
+  function setPositionY(n) 
   {
     let max = this._height - 1;
     this.cursor.positionY = n > max ? max: n; // max(height - 1, n)
   },
 
   /** BackSpace (BS). */
-  backSpace: function backSpace() 
+  "[type('Undefined')] backSpace":
+  function backSpace() 
   {
     this.cursor.positionX > 0 && --this.cursor.positionX;
   },
  
   /** CarriageReturn (CR). */
-  carriageReturn: function carriageReturn() 
+  "[type('Undefined')] carriageReturn":
+  function carriageReturn() 
   {
     this.cursor.positionX = 0;
   },
   
   /** horizontalTab (HT). */
-  horizontalTab: function horizontalTab() 
+  "[type('Undefined')] horizontalTab":
+  function horizontalTab() 
   {
-    this.cursor.positionX = parseInt(this.cursor.positionX / 8 + 1) * 8;
+    let positionX = Math.ceil(this.cursor.positionX / 8 + 1) * 8;
+    this.cursor.positionX = Math.min(positionX, this.width - 1);
   },
 
+// ScreenEditConcept implementation
   /** Erase cells from current position to end of line. */
-  eraseLineToRight: function eraseLineToRight() 
+  "[type('Undefined')] eraseLineToRight":
+  function eraseLineToRight() 
   {
     let cursor = this.cursor;
     let line = this._getCurrentLine();
@@ -1443,21 +1619,24 @@ Screen.definition = {
   },
 
   /** Erase cells from specified position to head of line. */
-  eraseLineToLeft: function eraseLineToLeft() 
+  "[type('Undefined')] eraseLineToLeft":
+  function eraseLineToLeft() 
   {
     let cursor = this.cursor;
     this._getCurrentLine().erase(0, this.cursor.positionX + 1, cursor.attr);
   },
 
   /** Erase current line */
-  eraseLine: function eraseLine() 
+  "[type('Undefined')] eraseLine":
+  function eraseLine() 
   {
     let cursor = this.cursor;
     this._getCurrentLine().erase(0, this._width, cursor.attr);
   },
 
   /** Erase cells from current position to head of buffer. */
-  eraseScreenAbove: function eraseScreenAbove() 
+  "[type('Undefined')] eraseScreenAbove":
+  function eraseScreenAbove() 
   {
     let cursor = this.cursor;
     let width = this._width;
@@ -1467,7 +1646,8 @@ Screen.definition = {
   },
 
   /** Erase cells from current position to end of buffer. */
-  eraseScreenBelow: function eraseScreenBelow() 
+  "[type('Undefined')] eraseScreenBelow":
+  function eraseScreenBelow() 
   {
     let cursor = this.cursor;
     let width = this._width;
@@ -1477,33 +1657,47 @@ Screen.definition = {
   },
 
   /** Erase every cells in screen. */
-  eraseScreenAll: function eraseScreenAll() 
+  "[type('Undefined')] eraseScreenAll":
+  function eraseScreenAll() 
   {
     let cursor = this.cursor;
     let width = this._width;
     this._lines.forEach(function(line) line.erase(0, width, cursor.attr));
   },
 
+  /** Erase every cells in screen. */
+  "[type('Undefined')] eraseScreenAllWithTestPattern":
+  function eraseScreenAllWithTestPattern() 
+  {
+    let cursor = this.cursor;
+    let width = this._width;
+    this._lines.forEach(function(line) line.eraseWithTestPattern(0, width, cursor.attr));
+  },
+
   /** Insert n cells at specified position. */
-  insertBlanks: function insertBlanks(n) 
+  "[type('Uint16 -> Undefined')] insertBlanks":
+  function insertBlanks(n) 
   {
     let cursor = this.cursor;
     this._getCurrentLine().insertBlanks(this.cursor.positionX, n, cursor.attr);
   },
       
-  setScrollRegion: function setScrollRegion(top, bottom) 
+  "[type('Uint16 -> Uint16 -> Undefined')] setScrollRegion":
+  function setScrollRegion(top, bottom) 
   {
     [this._scroll_top, this._scroll_bottom] = arguments;
   },
 
-  resetScrollRegion: function resetScrollRegion() 
+  "[type('Undefined')] resetScrollRegion":
+  function resetScrollRegion() 
   {
     this._scroll_top = 0;
     this._scroll_bottom = this._height;
   },
 
   /** Reverse Index (RI) */
-  reverseIndex: function reverseIndex() 
+  "[type('Undefined')] reverseIndex":
+  function reverseIndex() 
   { // cursor up
     let cursor_state = this.cursor;
     let positionY = cursor_state.positionY;
@@ -1515,7 +1709,8 @@ Screen.definition = {
   },
   
   /** Line Feed (LF) */
-  lineFeed: function lineFeed() 
+  "[type('Undefined')] lineFeed":
+  function lineFeed() 
   { // cursor down
     let cursor_state = this.cursor;
     let positionY = cursor_state.positionY;
@@ -1526,27 +1721,32 @@ Screen.definition = {
     }
   },
 
-  insertLine: function insertLine(n) 
+  "[type('Uint16 -> Undefined')] insertLine":
+  function insertLine(n) 
   { // Insert Line
     this._scrollUp(this.cursor.positionY, this._scroll_bottom, n);
   },
 
-  deleteLine: function deleteLine(n) 
+  "[type('Uint16 -> Undefined')] deleteLine":
+  function deleteLine(n) 
   { // Delete Line.
     this._scrollDown(this.cursor.positionY, this._scroll_bottom, n);
   },
 
-  scrollUpLine: function scrollUpLine(n) 
+  "[type('Uint16 -> Undefined')] scrollUpLine":
+  function scrollUpLine(n) 
   { // Scroll Up line
     this._scrollUp(this._scroll_top, this._scroll_bottom, n);
   },
 
-  scrollDownLine: function scrollDownLine(n) 
+  "[type('Uint16 -> Undefined')] scrollDownLine":
+  function scrollDownLine(n) 
   { // Scroll Down line
     this._scrollDown(this._scroll_top, this._scroll_bottom, n);
   },
 
-  eraseCharacters: function eraseCharacters(n) 
+  "[type('Uint16 -> Undefined')] eraseCharacters":
+  function eraseCharacters(n) 
   { // Erase CHaracters
     let start = this.cursor.positionX;
     let end = start + n;
@@ -1554,11 +1754,131 @@ Screen.definition = {
     this._getCurrentLine().erase(start, end, cursor.attr);
   },
 
-  deleteCharacters: function deleteCharacters(n) 
+  "[type('Uint16 -> Undefined')] deleteCharacters":
+  function deleteCharacters(n) 
   { // Delete CHaracters
     this._getCurrentLine().deleteCells(this.cursor.positionX, n);
   },
+
+// ScreenSwitchConcept implementation
+
+  /** Switch to Alternate screen 
+   *
+   * @implements ScreenSwitchConcept.switchToAlternateScreen
+   */
+  "[type('Undefined')] switchToAlternateScreen":
+  function switchToAlternateScreen() 
+  {
+    // select alternate lines.
+    if (CO_SCREEN_MAIN == this._screen_choice) {
+      this._switchScreen();
+      this._screen_choice = CO_SCREEN_ALTERNATE;
+    } else {
+      coUtils.Debug.reportWarning(
+        _("Alternate screen had been already selected."));
+    }
+  },
+
+  /** Switch to Main screen 
+   *
+   * @implements ScreenSwitchConcept.switchToMainScreen
+   */
+  "[type('Undefined')] switchToMainScreen":
+  function switchToMainScreen() 
+  {
+    // select main lines.
+    if (CO_SCREEN_ALTERNATE == this._screen_choice) {
+      this._switchScreen();
+      this._screen_choice = CO_SCREEN_MAIN;
+    } else {
+      coUtils.Debug.reportWarning(
+        _("Main screen has been already serected."));
+    }
+  },
+
+  /** Memorize cursor state, switch to Main screen, and erase screen.
+   *
+   * @implements ScreenSwitchConcept.selectAlternateScreen
+   *
+   */ 
+  "[type('Undefined')] selectAlternateScreen":
+  function selectAlternateScreen() 
+  {
+    this.cursor.backup();
+    this.switchToAlternateScreen();
+    this.eraseScreenAll();
+  },
+
+  /** Erase screen, switch to Main screen, and restore cursor. 
+   *
+   * @implements ScreenSwitchConcept.selectMainScreen
+   *
+   */ 
+  "[type('Undefined')] selectMainScreen":
+  function selectMainScreen() 
+  {
+    this.eraseScreenAll();
+    this.switchToMainScreen();
+    this.cursor.restore();
+  },
   
+// ScreenBackupConcept Implementation
+
+  /** Backups screen into serialize context.
+   *
+   * @implements ScreenBackupConcept.<command/backup>
+   */
+  "[subscribe('command/backup'), type('Object -> Undefined'), enabled]": 
+  function backup(data) 
+  {
+    data[this.id] = [];
+    let context = data[this.id];
+
+    context.push(this.width, this.height, this._buffer_top);
+    context.push(this._scroll_top, this._scroll_bottom);
+    context.push(this._buffer.length);
+    this._buffer.forEach(function(line) line.serialize(context));
+    context.push(this._screen_choice);
+    this.cursor.serialize(context);
+  }, // backup
+
+  /** Restores screen from serialize context.
+   *
+   * @implements ScreenBackupConcept.<command/restore>
+   */
+  "[subscribe('command/restore'), type('Object -> Undefined'), enabled]": 
+  function restore(data) 
+  {
+    let context = data[this.id];
+
+    this.width = context.shift();
+    this.height = context.shift();
+    this._buffer_top = context.shift();
+    this._scroll_top = context.shift();
+    this._scroll_bottom = context.shift();
+
+    let buffer_length = context.shift();
+    this._buffer = this._createLines(buffer_length);
+    this._buffer.forEach(function(line) line.deserialize(context));
+    this._screen_choice = context.shift();
+    this.cursor.deserialize(context);
+    this._lines = this._buffer
+      .slice(this._buffer_top, this._buffer_top + this._height);
+    if (CO_SCREEN_ALTERNATE == this._screen_choice) {
+      this.switchToAlternateScreen();
+    } else {
+      this.switchToMainScreen();
+    }
+  }, // restore
+
+
+// private methods
+  /** Returns the line object which is on current cursor position. */
+  _getCurrentLine: function _getCurrentLine() 
+  {
+    return this._lines[this.cursor.positionY]
+  },
+
   _createLines: function _createLines(n) 
   {
     let buffer = [];
@@ -1571,58 +1891,17 @@ Screen.definition = {
   _switchScreen: function _switchScreen() 
   {
     // select alternate lines.
-    this._buffer_top = this._buffer.length - this._height * 2;
     let buffer = this._buffer;
-    let offset = this._buffer_top;
+    let width = this._width;
     let height = this._height;
+    let offset = this._buffer_top = buffer.length - height * 2;
     let lines = buffer.splice(- height);
-    lines.forEach(function(line) line.length = this._width, this);
+    lines.forEach(function(line) line.length = width, this);
     this._lines = lines;
     Array.prototype.splice.apply(buffer, [offset, 0].concat(lines));
     this.dirty = true;
   },
 
-  /** Switch to Alternate screen */
-  switchToAlternateScreen: function switchToAlternateScreen() 
-  {
-    // select alternate lines.
-    if (CO_SCREEN_MAIN == this._screen_choice) {
-      this._switchScreen();
-      this._screen_choice = CO_SCREEN_ALTERNATE;
-    } else {
-      coUtils.Debug.reportWarning(
-        _("Alternate screen had been already selected."));
-    }
-  },
-
-  /** Switch to Main screen */
-  switchToMainScreen: function switchToMainScreen() 
-  {
-    // select main lines.
-    if (CO_SCREEN_ALTERNATE == this._screen_choice) {
-      this._switchScreen();
-      this._screen_choice = CO_SCREEN_MAIN;
-    } else {
-      coUtils.Debug.reportWarning(
-        _("Main screen has been already serected."));
-    }
-  },
-
-  /** Memorize cursor state, switch to Main screen, and erase screen. */
-  selectAlternateScreen: function selectAlternateScreen() 
-  {
-    this.cursor.backup();
-    this.switchToAlternateScreen();
-    this.eraseScreenAll();
-  },
-
-  /** Erase screen, switch to Main screen, and restore cursor. */
-  selectMainScreen: function selectMainScreen() 
-  {
-    this.eraseScreenAll();
-    this.switchToMainScreen();
-    this.cursor.restore();
-  },
 };
 
 

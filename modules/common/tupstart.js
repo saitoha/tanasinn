@@ -430,7 +430,8 @@ EventBroker.prototype = {
    */
   load: function load(broker, search_path, scope) 
   {
-    let entries = [entry for (entry in coUtils.File.getFileEntriesFromSerchPath(search_path))];
+    let paths = coUtils.File.getFileEntriesFromSerchPath(search_path);
+    let entries = [entry for (entry in paths)];
     //entries = entries.sort();
     //entries = entries.reverse();
     for (let [, entry] in Iterator(entries)) {

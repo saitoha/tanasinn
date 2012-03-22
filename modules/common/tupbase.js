@@ -31,6 +31,11 @@ Trait.prototype = {
   id: null,
   _definition: null,
 
+  /** constructor */
+  initialize: function initialize() 
+  {
+  },
+
   /** @property {Object} prototype */
   get prototype()
   {
@@ -48,6 +53,9 @@ Trait.prototype = {
     this.define(value);
   },
 
+  /** define members. 
+   * @param {Object} definition.
+   */
   define: function define(definition)
   {
     if (definition) {
@@ -55,18 +63,13 @@ Trait.prototype = {
     }
   },
 
-  /** constructor */
-  initialize: function initialize() 
-  {
-  },
-
   /* override */
   toString: function toString()  // override
   {
-    return <>[Trait {this.id}]</>;
+    return "[Trait " + this.id + "]";
   }
 
-};
+}; // class Trait
 
 /**
  * @class AttributeContext
@@ -75,48 +78,122 @@ let AttributeContext = function() this.initialize.apply(this, arguments);
 AttributeContext.prototype = {
 
   _target: null,
-//  _parser: null,
+  _attributes_map: [], // static
 
   /** constructor */
-  initialize: function initialize(target, context, name) 
+  initialize: function initialize(target) 
   {
     this._target = target;
-    this._context = context;
-    this._name = name;
   },
 
   get enabled() 
   {
-    let target = this._target;
-    target["enabled"] = true;
+    this._target["enabled"] = true;
   },
 
   _: function(description) 
   {
-    let target = this._target;
-    target["description"] = _(description);
+    this._target["description"] = _(description);
   },
 
+  /** Parses and evaluate annotation string with default JS parser.
+   *  @param {String} annotation A annotation string.
+   */
   parse: function parse(annotation) 
   {
-    with (this) {
-      try {
-        eval(annotation);
-      } catch(e) {
-        coUtils.Debug.reportError(
-          _("Failed to parse annotation string: '%s'."), annotation);
-        throw e;
-      }
+    try {
+      // push "this" into activation context and evaluate annotation string.
+      new Function("with(arguments[0]) { return (" + annotation + ");}")(this);
+    } catch(e) {
+      coUtils.Debug.reportError(
+        _("Failed to parse annotation string: '%s'."), annotation);
+      throw e;
     }
+  },
+
+  /** Define new attribute.
+   *  @param {String} id
+   */
+  define: function define(id, attribute)
+  {
+    // store attribute object with id string.
+    this._attributes_map[id] = attribute;
+
+    // define id in attribute context.
+    this.__defineGetter__(id, function() 
+    {
+      this._target[id] = [true];
+      return function() this._target[id] = Array.slice(arguments);
+    });
   },
 
   /** Returns this object's info */
   toString: function toString() // override
   {
-    return String(<>[AttributeContext enabled({this.enabled})]</>);
-  }
+    return "[AttributeContext enabled(" + this.enabled + ")]";
+  },
 
-};
+}; // class AttributeContext
+
+
+let ConceptContext = {
+
+  "Object": function(value) 
+  { 
+    return "object" == typeof value; 
+  },
+
+  "Array": function(value) 
+  { 
+    return Array.isArray(value); 
+  },
+
+  "Action": function(value) 
+  { 
+    return "function" == typeof value
+      || "undefined" == typeof value
+      ; 
+  },
+
+  "Uint16": function(value) 
+  { 
+    return "number" == typeof value 
+      && 0 <= value 
+      && value < (1 << 16)
+      && 0 == value % 1
+      ; 
+  },
+
+  "Uint32": function(value) 
+  { 
+    return "number" == typeof value 
+      && 0 <= value 
+      && value < (1 << 32)
+      && 0 == value % 1
+      ; 
+  },
+
+  "Char": function(value) 
+  { 
+    return "string" == typeof value && 1 == value.length; 
+  },
+
+  "String": function(value) 
+  { 
+    return "string" == typeof value; 
+  },
+
+  "Undefined": function(value) 
+  { 
+    return undefined === value; 
+  },
+
+  "Boolean": function(value) 
+  { 
+    return true === value || false === value; 
+  },
+
+}; // ConceptContext
 
 /**
  * @class Prototype 
@@ -143,7 +220,7 @@ function Prototype(definition, base_class, dependency_list)
       if (!target_attribute) {
         attributes[name] = target_attribute = {};
       }
-      new AttributeContext(target_attribute, this, name).parse(annotation);
+      new AttributeContext(target_attribute).parse(annotation);
       return name;
     }
     return key;
@@ -197,10 +274,45 @@ function Prototype(definition, base_class, dependency_list)
     this.__proto__ = base_class.prototype;
   }
 
-};
+}; // Prototype
+
 
 /** 
  * @constructor Class
+ *
+ * The meta class constructor in tupbase.
+ *
+ * example 1:
+ * ----
+ *
+ * let A = new Class();
+ *
+ * ----
+ *
+ * It creates a new class constructor.
+ *
+ *
+ * example 2:
+ * ----
+ *
+ * let B = new Class().extends(A);
+ *
+ * ----
+ *
+ * It creates a new class constructor derived from class A.
+ *
+ *
+ * example 3:
+ * ----
+ *
+ * let C = new Class().extends(B).mix(Trait1).requires(Concept2);
+ *
+ * ----
+ *
+ * It creates a new class constructor derived from class B, mixed Trait1, 
+ * and requires Concept2.
+ * 
+ *
  */
 let Class = function() this.initialize.apply(this, arguments);
 Class.prototype = {
@@ -208,6 +320,7 @@ Class.prototype = {
   _base: null,
   _dependency_list: null,
   _mixin_list: null,
+  _concept_list: null,
   _defined: false,
 
   /** constructor 
@@ -217,6 +330,7 @@ Class.prototype = {
   {
     this._mixin_list = [];
     this._dependency_list = [];
+    this._concept_list = [];
     let constructor = function() {
       if (this.initialize)
         return this.initialize.apply(this, arguments);
@@ -238,24 +352,41 @@ Class.prototype = {
     return this;
   },
 
-  /** Mixes specified aspect.
-   * @param {Trait} aspect
+  /** Applys concept. 
+   * @param {String} name A Concept name string.
    */
-  mix: function mix(aspect) 
+  requires: function _requires(name) 
+  {
+    if (!(name in ConceptContext)) {
+      throw coUtils.Debug.Exception(
+        _("Specified concept name '%s' is not defined."), name);
+    } 
+    let concept = ConceptContext[name];
+    if (this._defined) {
+      ConceptContext[name](this.definition);
+    } else {
+      this._concept_list.push(name);
+    }
+    return this;
+  },
+
+  /** Mixes specified trait.
+   * @param {Trait} trait
+   */
+  mix: function mix(trait) 
   {
     if (this._defined) {
-      this.applyTrait(this.prototype, new Prototype(aspect.prototype));
+      this.applyTrait(this.definition, new Prototype(trait.definition));
     } else {
-      this._mixin_list.push(aspect);
+      this._mixin_list.push(trait);
     }
     return this;
   }, 
 
+  /** Stores a id to dependency_list. */
   depends: function depends(id)
   {
-    if (id) {
-      this._dependency_list.push(id);
-    }
+    this._dependency_list.push(id);
     return this;
   },
 
@@ -268,6 +399,7 @@ Class.prototype = {
     return this.prototype;
   },
 
+  /** Stores a definition object as "prototype". */
   set definition(definition) 
   {
     // set the argument to prototype object, and raise global event.
@@ -284,26 +416,36 @@ Class.prototype = {
     let prototype = new Prototype(
       definition, this._base, this._dependency_list);
 
-    // Apply aspects.
-    for (let [, aspect] in Iterator(this._mixin_list)) {
-      this.applyTrait(prototype, new Prototype(aspect.prototype));
+    // Apply traits.
+    for (let [, trait] in Iterator(this._mixin_list)) {
+      this.applyTrait(prototype, new Prototype(trait.prototype));
     }
+
+    // Apply concepts.
+    for (let [, concept_name] in Iterator(this._concept_list)) {
+      if (!(concept_name in ConceptContext)) {
+        throw coUtils.Debug.Exception(
+          _("Specified concept name '%s' is not defined."), concept_name);
+      } 
+      ConceptContext[concept_name](prototype);
+    }
+
     this._defined = true;
     return prototype; 
   },
 
   /** Apply specified Trait. 
    *  @param {Object} prototype A prototype object.
-   *  @param {Object} aspect A aspect object.
+   *  @param {Object} trait A trait object.
    */
-  applyTrait: function applyTrait(prototype, aspect) 
+  applyTrait: function applyTrait(prototype, trait) 
   {
-    for (let key in aspect) {
+    for (let key in trait) {
       // Detects whether the property specified by given key is
       // a getter or setter. NOTE that we should NOT access property 
-      // by ordinaly way, like "aspect.<property-neme>".
-      let getter = aspect.__lookupGetter__(key);
-      let setter = aspect.__lookupSetter__(key);
+      // by ordinaly way, like "trait.<property-neme>".
+      let getter = trait.__lookupGetter__(key);
+      let setter = trait.__lookupSetter__(key);
       // if key is a getter method...
       if (getter) {
         prototype.__defineGetter__(key, getter);
@@ -314,37 +456,38 @@ Class.prototype = {
       }
       // if key is a generic property or method...
       if (!getter && !setter) {
-        if ("initialize" == key && aspect.initialize) {
+        if ("initialize" == key && trait.initialize) {
           let value = prototype.initialize;
 
           // makes constructor chain.
           prototype.initialize = function initialize() 
           {
-            aspect.initialize.apply(this, arguments);
+            trait.initialize.apply(this, arguments);
             value.apply(this, arguments);
           };
         } else if ("__attributes" == key) {
           if (prototype.__attributes) {
-            for (let [name, ] in Iterator(aspect.__attributes)) {
-              let attribute = aspect.__attributes[name];
+            for (let [name, ] in Iterator(trait.__attributes)) {
+              let attribute = trait.__attributes[name];
               prototype.__attributes[name] = attribute;
             }
           } else {
-            prototype.__attributes = aspect.__attributes;
+            prototype.__attributes = trait.__attributes;
           }
         } else {
-          prototype[key] = aspect[key];
+          prototype[key] = trait[key];
         }
       }
     }
-  },
+  }, // applyTrait
 
   /** Load *.js files from specified directories. 
    *  @param {String} search path 
    */
   loadAttributes: function loadAttributes(search_path, scope) 
   {
-    let entries = [entry for (entry in coUtils.File.getFileEntriesFromSerchPath(search_path))];
+    let paths = coUtils.File.getFileEntriesFromSerchPath(search_path);
+    let entries = [entry for (entry in paths)];
     //entries = entries.sort();
     //entries = entries.reverse();
     for (let [, entry] in Iterator(entries)) {
@@ -365,7 +508,7 @@ Class.prototype = {
         coUtils.Debug.reportError(e);
       }
     }
-  },
+  }, // loadAttributes
 
 };
 
@@ -375,41 +518,24 @@ Class.prototype = {
 let Abstruct = function() this.initialize.apply(this, arguments);
 Abstruct.prototype = {
 
-  applyDefinition: function(definition) 
+  __proto__: Class.prototype,
+
+  /** Enumerates stored traits and apply them. */
+  applyDefinition: function applyDefinition(definition) 
   {
     let prototype = new Prototype(definition, this._base, this._dependency_list);
-    for (let [, aspect] in Iterator(this._mixin_list)) {
-      this.applyTrait(prototype, new Prototype(aspect.prototype));
+    for (let [, trait] in Iterator(this._mixin_list)) {
+      this.applyTrait(prototype, new Prototype(trait.definition));
     }
     this._defined = true;
     return prototype;
-  },
+  }, // applyDefinition
 
-};
-Abstruct.prototype.__proto__ = Class.prototype;
-
-/**
- * @class Attribute
- */
-let Attribute = function() this.initialize.apply(this, arguments);
-Attribute.prototype = {
-
-  initialize: function initialize(id) 
-  {
-    AttributeContext.prototype.__defineGetter__(id, function() 
-    {
-      let target = this._target;
-      target[id] = [true];
-      return function() target[id] = Array.slice(arguments);
-    });
-  },
-
-};
-Attribute.prototype.__proto__ = Trait.prototype;
+}; // Abstruct
 
 /** 
  * @abstruct Component
- * The base class of module.
+ * The base class of component node in tupbase2.
  */
 let Component = new Abstruct();
 Component.definition = {
@@ -437,8 +563,7 @@ Component.definition = {
             this.dependency[key] = args[index];
           }, this);
           this.enabled = this.enabled_when_startup;
-          broker.notify(<>initialized/{this.id}</>, this);
-          broker.notify(<>installed/{this.id}</>, this);
+          broker.notify("initialized/" + this.id, this);
         }, 
         this);
     }
@@ -456,10 +581,10 @@ Component.definition = {
   /** Overrids text format expression. */
   toString: function toString()  // override
   {
-    return String(<>[Component {this.id}]</>);
+    return String("[Component " + this.id + "]");
   }
   
-};
+}; // class Component
 
 
 /** 
@@ -480,7 +605,7 @@ Plugin.definition = {
   initialize: function initialize(broker)
   {
     broker.subscribe(
-      <>command/set-enabled/{this.id}</>, 
+      "command/set-enabled/" + this.id, 
       function(value) this.enabled = value, this);
     broker.subscribe(
       "@event/broker-stopping", 
@@ -504,17 +629,15 @@ Plugin.definition = {
       let broker = this._broker;
       if (value) {
         try {
-          broker.uniget(<>install/{this.id}</>, broker);
+          broker.uniget("install/" + this.id, broker);
           //this.install(broker);
         } catch (e) {
           coUtils.Debug.reportError(e);
           coUtils.Debug.reportError(_("Failed to enable plugin: %s"), this.id);
           throw e;
         }
-        broker.notify(<>installed/{this.id}</>, this);
       } else {
-        broker.notify(<>uninstalling/{this.id}</>, this);
-        broker.uniget(<>uninstall/{this.id}</>, broker);
+        broker.uniget("uninstall/" + this.id, broker);
         //this.uninstall(broker);
       }
       this.__enabled = value;
@@ -525,9 +648,9 @@ Plugin.definition = {
   /** Overrids toString */
   toString: function toString() 
   {
-    return String(<>[Plugin {this.id}]</>);
+    return String("[Plugin " + this.id + "]");
   },
-};  
+};   // class Plugin
 
 /** 
  * @class XPCOMFactory
@@ -550,6 +673,9 @@ XPCOMFactory.definition = {
     this._contractID = contractID;
   },
 
+  /** get nsIComponentRegistrar service instance and register "this" 
+   *  as a XPCOM component factory. 
+   */
   registerSelf: function registerSelf()
   {
     if (Components.classes[this._contractID]) {
@@ -568,6 +694,9 @@ XPCOMFactory.definition = {
     observer_service.addObserver(this, "quit-application", false);
   },
 
+  /** get nsIComponentRegistrar service instance and unregister "this" 
+   *  from XPCOM factory list. 
+   */
   unregisterSelf: function unregisterSelf()
   {
     if (!this._registered) {
@@ -577,6 +706,8 @@ XPCOMFactory.definition = {
       .classes["@mozilla.org/observer-service;1"]
       .getService(Components.interfaces.nsIObserverService);
     observer_service.removeObserver(this, "quit-application");
+
+    // unregister
     Components.manager
       .QueryInterface(Components.interfaces.nsIComponentRegistrar)
       .unregisterFactory(this._classID, this);
@@ -584,6 +715,21 @@ XPCOMFactory.definition = {
   },
 
 // nsIFactory implementation
+
+  /**
+   * Creates an instance of a component.
+   *
+   * @param aOuter Pointer to a component that wishes to be aggregated
+   *               in the resulting instance. This will be nsnull if no
+   *               aggregation is requested.
+   * @param iid    The IID of the interface being requested in
+   *               the component which is being currently created.
+   * @result Pointer to the newly created instance, if successful.
+   * @throw  NS_NOINTERFACE - Interface not accessible.
+   *         NS_ERROR_NO_AGGREGATION - if an 'outer' object is supplied, but the
+   *                                   component is not aggregatable.
+   *         NS_ERROR* - Method failure.
+   */
   createInstance: function createInstance(a_outer, a_IID)
   {
     if (a_outer) {
@@ -597,16 +743,49 @@ XPCOMFactory.definition = {
     }
   },
 
+  /**
+   * LockFactory provides the client a way to keep the component
+   * in memory until it is finished with it. The client can call
+   * LockFactory(PR_TRUE) to lock the factory and LockFactory(PR_FALSE)
+   * to release the factory.	 
+   *
+   * @param  {Boolean} a_lock 
+   * @throw  none - If the lock operation was successful.
+   *         NS_ERROR* - Method failure.
+   */
   lockFactory: function lockFactory(a_lock)
   {
     throw Componetns.results.NS_ERROR_NOT_IMPLEMENTED;
   },
 
-  observe: function observe() 
+  /**
+   * Observe will be called when there is a notification for the
+   * topic |aTopic|.  This assumes that the object implementing
+   * this interface has been registered with an observer service
+   * such as the nsIObserverService. 
+   *
+   * If you expect multiple topics/subjects, the impl is 
+   * responsible for filtering.
+   *
+   * You should not modify, add, remove, or enumerate 
+   * notifications in the implemention of observe. 
+   *
+   * @param a_subject : Notification specific interface pointer.
+   * @param a_topic   : The notification topic or subject.
+   * @param a_data    : Notification specific wide string.
+   *                    subject event.
+   */
+  observe: function observe(a_subject, a_topic, a_data) 
   {
     this.unregisterSelf();
   },
 
+// nsIObserver implementation
+  /**
+   * Provides runtime type discovery.
+   * @param aIID the IID of the requested interface.
+   * @return the resulting interface pointer.
+   */
   QueryInterface: function QueryInterface(a_IID)
   {
     if (!a_IID.equals(Components.interafaces.nsIFactory) 
@@ -614,15 +793,19 @@ XPCOMFactory.definition = {
       throw Components.results.NS_ERROR_NOT_IMPLEMENTED;
     return this;
   },
-};
+
+}; // class XPCOMFactory
 
 /** @constructor CoClass
  */
 let CoClass = function() this.initialize.apply(this, arguments);
 CoClass.prototype = {
 
+  __proto__: Class.prototype,
+
   factory: null,
 
+  /** Apply definition and register it as a XPCOM component. */
   applyDefinition: function applyDefinition(definition) 
   {
     let prototype = Class.prototype.applyDefinition.apply(this, arguments);
@@ -638,6 +821,7 @@ CoClass.prototype = {
     return prototype;
   },
 
+  /** Unregister itself from XPCOM component management list. */
   destroy: function destroy()
   {
     if (this.factory) {
@@ -647,7 +831,185 @@ CoClass.prototype = {
   },
 
 };
-CoClass.prototype.__proto__ = Class.prototype;
 
-Component.loadAttributes(["modules/attributes"], { Attribute: Attribute });
+/**
+ * @class Attribute
+ */
+let Attribute = function() this.initialize.apply(this, arguments);
+Attribute.prototype = {
+
+  __proto__: Trait.prototype,
+
+  /** constructor */
+  initialize: function initialize(id) 
+  {
+    AttributeContext.prototype.define(id, this);
+  },
+
+  toString: function toString()
+  {
+    return "[Attribute " + this.__id + "]";
+  },
+
+};
+
+Component.loadAttributes(["modules/attributes"], { 
+  ConceptContext: ConceptContext,
+  Attribute: Attribute,
+  coUtils: coUtils,
+  _: _,
+});
+
+/**
+ * @class ClassAttribute
+ */
+let ClassAttribute = function() this.initialize.apply(this, arguments);
+ClassAttribute.prototype = {
+
+  __proto__: Trait.prototype,
+
+  /** constructor */
+  initialize: function initialize(id) 
+  {
+    AttributeContext.prototype.define(id, this);
+  },
+
+}; // ClassAttribute
+
+
+/**
+ * @class Concept
+ */
+let Concept = function() this.initialize.apply(this, arguments);
+Concept.prototype = {
+
+  __proto__: Trait.prototype,
+
+  /** constructor */
+  initialize: function initialize(broker) 
+  {
+  },
+
+  /** */
+  check: function check(target)
+  {
+    let definition = this._definition;
+    let concept = {};
+    let subscribers = Object
+      .getOwnPropertyNames(target.__attributes)
+      .reduce(function(map, key) {
+        let value = target.__attributes[key];
+        if (value.subscribe) {
+          let tokens = value.subscribe.toString().split("/");
+          for (let i = 0; i < tokens.length; ++i) {
+            let key = tokens.slice(0, i + 1).join("/");
+            map[key] = value;
+          }
+        }
+        return map;
+      }, {});
+
+    for (let [rule, comment] in Iterator(definition)) {
+      let getter = definition.__lookupGetter__(rule);
+      let setter = definition.__lookupSetter__(rule);
+      if (!getter && !setter) {
+        try {
+
+        let match = rule.match(/^(?:<(.+?)>|(.+?)) :: (.+)$/);
+        if (null === match) {
+          throw coUtils.Debug.Exception(
+            _("Ill-formed concept rule expression is specified: %s."), rule);
+        }
+        let [, message, identifier, type] = match;
+
+        if (message) {
+          let key = message.replace(/\/\*$/, "");
+          if (undefined === subscribers[key]) {
+            throw coUtils.Debug.Exception(
+              _("Component '%s' does not implement required message-concept: %s."), 
+              target.id, rule);
+          }
+          if (subscribers[key].type) {
+            if (type != subscribers[key].type) {
+              throw coUtils.Debug.Exception(
+                _("Component '%s' does not implement required message-concept: %s.",
+                  " - ill-typed."),
+                target.id, rule);
+            }
+          }
+          subscribers[key].description = comment;
+        }
+
+        if (identifier) {
+          let getter = target.__lookupGetter__(rule);
+          let setter = target.__lookupSetter__(rule);
+
+          if (!getter && !setter && undefined === target[identifier]) {
+            throw coUtils.Debug.Exception(
+              _("Component '%s' does not implement required signature-concept: %s."), 
+              target.id, rule);
+
+            if (target[message].type) {
+              if (type != subscribers[message].type) {
+                throw coUtils.Debug.Exception(
+                  _("Component '%s' does not implement required signature-concept: %s",
+                    " - ill-typed."),
+                  target.id, rule);
+              }
+            }
+            target[message].description = comment;
+          }
+        }
+
+        } catch (e) {alert(e)}
+      }
+    }
+    return true;
+  }, // check
+
+  /** define members. 
+   * @param {Object} definition.
+   */
+  define: function define(definition) // definition
+  {
+    ConceptContext[definition.id] 
+      = let (self = this) function(target) self.check(target); 
+    this._definition = definition;
+  },
+
+  /** override */
+  toString: function toString()
+  {
+    return "[Trait Concept]";
+  },
+
+}; // Concept
+
+/**
+ * @concept CompletionContextConcept
+ */
+let CompletionContextConcept = new Concept();
+CompletionContextConcept.definition = {
+
+  get id()
+    "CompletionContext",
+
+}; // CompletionContextConcept
+
+
+/**
+ * @concept CompleterConcept
+ */
+let CompleterConcept = new Concept();
+CompleterConcept.definition = {
+
+  get id()
+    "Completer",
+
+  // signature concept
+  "<command/query-completion/*> :: CompletionContext -> Undefined":
+  _("Allocates n cells at once."),
+
+}; // CompleterConcept
+
 

@@ -239,12 +239,12 @@ TextboxWidget.definition = {
     return position;
   },
 
-  calculateSize: function() 
+  calculateSize: function calculateSize() 
   {
     let fill_style = this._context.fillStyle;
     let font = this._context.font;
     let [width, height, top] = coUtils.Font
-      .getAverageGryphWidth(this.font_size, this.font_family);
+      .getAverageGlyphSize(this.font_size, this.font_family);
     this._canvas.width = this._canvas.parentNode.boxObject.width;
     this._glyph_height = height;
     this._canvas.height = height + top;
@@ -400,7 +400,9 @@ Commandline.definition = {
     {
       parentNode: "#tanasinn_commandline_area",
       tagName: "box",
-      style: <>position: absolute;</>,
+      style: <>
+        position: absolute;
+      </>,
       childNodes: [
         {
           tagName: "box",
@@ -412,7 +414,6 @@ Commandline.definition = {
             tagName: "html:input",
             id: "tanasinn_commandline",
             style: <> 
-              //position: absolute;
               margin-top: -4px;
               padding-top: 0px;
               opacity: 1.0;
@@ -428,7 +429,7 @@ Commandline.definition = {
       tagName: "html:canvas",
       height: this.font_size,
       style: <>
-        opacity: 0.7,
+        opacity: 0.7;
       </>,
     },
     {

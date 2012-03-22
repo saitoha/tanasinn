@@ -26,7 +26,7 @@
  * @class CommandCompleter
  *
  */
-let CommandCompleter = new Class().extends(Component);
+let CommandCompleter = new Class().extends(Component).requires("Completer");
 CommandCompleter.definition = {
 
   get id()
@@ -37,12 +37,11 @@ CommandCompleter.definition = {
    *
    * @param source - The string to search for
    */
-  "[subscribe('command/query-completion/command'), enabled]":
+  "[subscribe('command/query-completion/command'), type('CompletionContext -> Undefined'), enabled]":
   function startSearch(context)
   {
     let broker = this._broker;
-    let { source, option } = context;
-    let lower_command_name = source.split(/\s+/).pop().toLowerCase();
+    let lower_command_name = context.source.split(/\s+/).pop().toLowerCase();
     let commands = broker.notify("get/commands")
       .filter(function(command) {
         return 0 == command.name
@@ -54,7 +53,7 @@ CommandCompleter.definition = {
     } else {
       broker.notify("event/answer-completion", {
         type: "text",
-        query: source, 
+        query: context.source, 
         data: commands.map(function(command) ({
           name: command.name.replace(/[\[\]]+/g, ""),
           value: command.description,

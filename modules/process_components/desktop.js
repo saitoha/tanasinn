@@ -22,6 +22,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+
 /**
  * @Trait Environment
  *
@@ -50,8 +51,8 @@ Environment.definition = {
     return this._search_path || [
       "modules/desktop_components",
       "modules/shared_components",
-      String(<>{this.runtime_path}/modules/desktop_components</>),
-      String(<>{this.runtime_path}/modules/shared_components</>)
+      this.runtime_path + "/modules/desktop_components",
+      this.runtime_path + "/modules/shared_components"
     ];
   },
 
@@ -124,7 +125,7 @@ Desktop.definition = {
       .appendChild(this.window.document.createElement("box"));
     
     this._root_element.id = "tanasinn_desktop";
-    this.notify("command/load-settings");
+    this.notify("command/load-settings", this.profile);
 
     this.notify("event/broker-started", this);
   },
@@ -189,7 +190,7 @@ Desktop.definition = {
     return parent;
   },
 
-};
+}; // Desktop
 
 /**
  * @fn main

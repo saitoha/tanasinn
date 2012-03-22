@@ -119,7 +119,7 @@ DOMEventManager.definition = {
   {
     let broker = this._broker;
     let type = listener.type;
-    let capture = Boolean(listener.capture);
+    let capture = ("capture" in listener) ? Boolean(listener.capture): false;
     let context = listener.context || target;
     let handler = listener.handler;
     if (target && type && handler) { // validate listener object.

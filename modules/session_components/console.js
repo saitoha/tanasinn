@@ -261,7 +261,7 @@ ConsoleListener.definition = {
   "[persistable] register_delay": 1000,
 
   /** post-constructor */
-  "[subscribe('initialized/displaymanager'), enabled]":
+  "[subscribe('@initialized/displaymanager'), enabled]":
   function onLoad(display_manager) 
   {
     this._console_service = Components

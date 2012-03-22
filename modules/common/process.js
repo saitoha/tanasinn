@@ -136,14 +136,13 @@ let scope = {}; // create scope.
 
 with (scope) {
   let id = new Date().getTime();
+  let current_file = Components
+    .stack.filename.split(" -> ").pop()
+    .split("?").shift()
   Components
     .classes["@mozilla.org/moz/jssubscript-loader;1"]
     .getService(Components.interfaces.mozIJSSubScriptLoader)
-    .loadSubScript(<>{
-      Components
-        .stack.filename.split(" -> ").pop()
-        .split("?").shift()
-    }/../common.js?{id}</>.toString(), scope);
+    .loadSubScript(current_file + "/../common.js?" + id, scope);
 }
 
 with (scope) {
@@ -201,8 +200,8 @@ with (scope) {
     {
       let search_paths = "CDEFGHIJKLMNOPQRSTUVWXYZ"
         .split("")
-        .map(function(letter) String(<>{letter}:\cygwin</>));
-      search_paths.push(<>D:\User\Program\cygwin</>.toString());
+        .map(function(letter) letter + ":\\" + cygwin);
+      search_paths.push("D:\\User\\Program\\cygwin");
       for (let [, path] in Iterator(search_paths)) {
         let directory = Components
           .classes["@mozilla.org/file/local;1"]

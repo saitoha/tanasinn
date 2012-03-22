@@ -84,11 +84,11 @@ OverlayIndicator.definition = {
       align: "center",
       valign: "middle",
       id: "tanasinn_overlay_indicator",
-      style: {
-        visibility: "hidden",
-        opacity: 0.00,
-        maxWidth: "0px",
-      },
+      style: <>
+        visibility: hidden;
+        opacity: 0.00;
+        max-width: 0px;
+      </>,
       MozTransitionProperty: "opacity",
       childNodes: {
         tagName: "label",

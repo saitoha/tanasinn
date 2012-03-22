@@ -40,7 +40,7 @@ WindowWatcher.definition = {
   function onSessionStarted(session) 
   {
     session.notify("command/add-domlistener", {
-      target: session.window.document,
+      target: session.window,
       type: "resize",
       context: this,
       handler: this.onresize,
@@ -59,41 +59,65 @@ WindowWatcher.definition = {
       target: session.window,
       type: "MozMagnifyGesture",
       context: this,
-      handler: this.onmagnifyGesture,
+      handler: this.onMagnifyGesture,
       capture: true,
       id: this.id,
     });
 
-  },
+    session.notify("command/add-domlistener", {
+      target: session.window,
+      type: "MozSwipeGesture",
+      context: this,
+      handler: this.onSwipeGesture,
+      capture: true,
+      id: this.id,
+    });
+
+  }, // onSessionStarted
 
   "[subscribe('@event/broker-stopping'), enabled]": 
-  function onSessionStopping(session) 
+  function onSessionStopping(broker) 
   {
-    session.notify("command/remove-domlistener", this.id);
+    broker.notify("command/remove-domlistener", this.id);
   },
 
-  onmagnifyGesture: function onmagnifyGesture(event) 
+  onSwipeGesture: function onSwipeGesture(event) 
   {
     let original_target = event.explicitOriginalTarget;
-    let session = this._broker;
-    let relation = session.root_element.compareDocumentPosition(original_target);
+    let broker = this._broker;
+    let relation = broker.root_element.compareDocumentPosition(original_target);
     if ((relation & original_target.DOCUMENT_POSITION_CONTAINED_BY)) {
-      session.notify("event/magnify-gesture", event.delta);
+      broker.notify("event/swipe-gesture", event.direction);
+    }
+    event.preventDefault();
+    event.stopPropagation();
+    return false;
+  },
+
+  onMagnifyGesture: function onMagnifyGesture(event) 
+  {
+    let original_target = event.explicitOriginalTarget;
+    let broker = this._broker;
+    let relation = broker.root_element.compareDocumentPosition(original_target);
+    if ((relation & original_target.DOCUMENT_POSITION_CONTAINED_BY)) {
+      broker.notify("event/magnify-gesture", event.delta);
+      event.preventDefault();
+      event.stopPropagation();
     }
   },
   
   /** Handles window resize event. */
   onresize: function onresize(event) 
   {
-    let session = this._broker;
-    session.notify("event/window-resized", event);
+    let broker = this._broker;
+    broker.notify("event/window-resized", event);
   },
 
   /** Handles window close event. */
   onclose: function onclose(event) 
   {
-    let session = this._broker;
-    session.notify("event/window-closing", event);
+    let broker = this._broker;
+    broker.notify("event/window-closing", event);
   }
 
 };

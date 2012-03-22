@@ -30,7 +30,30 @@
 let WatchableAttribute = new Attribute("watchable");
 WatchableAttribute.definition = {
 
-  /** constructor */
+  get __id()
+    "watchable",
+
+  get __info()
+    <Attribute>
+      <name>{_("Watchable")}</name>
+      <description>{
+        _("Declare a watchable member.")
+      }</description>
+      <detail>
+      <![CDATA[
+        "watchable" declare a watchable member.
+
+        usage:
+
+          "[watchable] char_width": 6.5, 
+
+      ]]>
+      </detail>
+    </Attribute>,
+
+  /** constructor 
+   *  @param {EventBroker} broker Parent broker object.
+   */
   initialize: function initialize(broker)
   {
     let attributes = this.__attributes;
@@ -54,9 +77,9 @@ WatchableAttribute.definition = {
         });
       }
     } // for (key in attributes)
-  },
+  }, // initialize
 
-};
+}; // attribute WatchableAttribute
 
 
 /**
