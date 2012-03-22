@@ -269,7 +269,9 @@ InputManager.definition = {
     this.focus.enabled = true;
     this.blur.enabled = true;
     this.onkeypress.enabled = true;
-    this.onkeyup.enabled = true;
+    if ("Darwin" == coUtils.Runtime.os) {
+      this.onkeyup.enabled = true;
+    }
     this.onDoubleShift.enabled = true;
     this.oninput.enabled = true;
     this.oncompositionstart.enabled = true;
@@ -296,7 +298,9 @@ InputManager.definition = {
     this.focus.enabled = false;
     this.blur.enabled = false;
     this.onkeypress.enabled = false;
-    this.onkeyup.enabled = false;
+    if ("Darwin" == coUtils.Runtime.os) {
+      this.onkeyup.enabled = false;
+    }
     this.onDoubleShift.enabled = false;
     this.oninput.enabled = false;
     this.oncompositionstart.enabled = false;
@@ -416,7 +420,6 @@ InputManager.definition = {
   "[listen('keyup', '#tanasinn_default_input', true)]":
   function onkeyup(event) 
   { // nothrow
-    //alert(event.keyCode + " - " + event.which + " - " + event.ctrlKey)
     if (32 == event.keyCode
         && 32 == event.which
         && event.ctrlKey) {
