@@ -81,7 +81,7 @@ Control.definition = {
   {
     coUtils.Debug.reportWarning(
       "%s sequence [%s] was ignored.",
-      arguments.callee.name, [].slice.apply(arguments));
+      arguments.callee.name, Array.slice(arguments));
   },
   
   /** Start of text.
@@ -91,7 +91,7 @@ Control.definition = {
   {
     coUtils.Debug.reportWarning(
       "%s sequence [%s] was ignored.",
-      arguments.callee.name, [].slice.apply(arguments));
+      arguments.callee.name, Array.slice(arguments));
   },
  
   /** End of text.
@@ -101,7 +101,7 @@ Control.definition = {
   {
     coUtils.Debug.reportWarning(
       "%s sequence [%s] was ignored.",
-      arguments.callee.name, [].slice.apply(arguments));
+      arguments.callee.name, Array.slice(arguments));
   },
 
   /** Start of transmission.
@@ -111,7 +111,7 @@ Control.definition = {
   {
     coUtils.Debug.reportWarning(
       "%s sequence [%s] was ignored.",
-      arguments.callee.name, [].slice.apply(arguments));
+      arguments.callee.name, Array.slice(arguments));
   },
   
   /** Enquire.
@@ -130,7 +130,7 @@ Control.definition = {
   {
     coUtils.Debug.reportWarning(
       "%s sequence [%s] was ignored.",
-      arguments.callee.name, [].slice.apply(arguments));
+      arguments.callee.name, Array.slice(arguments));
   },
    
   /** Bell.
@@ -162,7 +162,7 @@ Control.definition = {
   
   /** Linefeed.
    */
-  "[sequence('0x0A', 'ESC D')]":
+  "[sequence('0x0A')]":
   function LF() 
   {
     let screen = this._screen;
@@ -171,7 +171,19 @@ Control.definition = {
       screen.carriageReturn();
     }
   },
-  
+ 
+  /** Index.
+   */
+  "[sequence('0x84', 'ESC D'), _('Index')]":
+  function IND() 
+  {
+    let screen = this._screen;
+    screen.lineFeed();
+    if (this._ansi_mode.LNM) {
+      screen.carriageReturn();
+    }
+  },
+ 
   /** Vertical tabulation.
    */
   "[sequence('0x0B')]":
@@ -194,16 +206,6 @@ Control.definition = {
     if (this._ansi_mode.LNM) {
       screen.carriageReturn();
     }
-  },
-
-  /** Carriage return.
-   */
-  "[sequence('ESC E')]":
-  function CRLF() 
-  { // Carriage Return
-    let screen = this._screen;
-    screen.carriageReturn();
-    this.LF();
   },
 
   /** Carriage return.
@@ -240,7 +242,7 @@ Control.definition = {
   {
     coUtils.Debug.reportWarning(
       "%s sequence [%s] was ignored.",
-      arguments.callee.name, [].slice.apply(arguments));
+      arguments.callee.name, Array.slice(arguments));
   },
  
   /** Device control 1.
@@ -260,7 +262,7 @@ Control.definition = {
   {
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored.",
-        arguments.callee.name, [].slice.apply(arguments)));
+        arguments.callee.name, Array.slice(arguments)));
   },
 
   /** Device control 3.
@@ -280,7 +282,7 @@ Control.definition = {
   {
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored.",
-        arguments.callee.name, [].slice.apply(arguments)));
+        arguments.callee.name, Array.slice(arguments)));
   },
   
   /** Negative acknowledge.
@@ -290,7 +292,7 @@ Control.definition = {
   {
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored.",
-        arguments.callee.name, [].slice.apply(arguments)));
+        arguments.callee.name, Array.slice(arguments)));
   },
   
   /** Synchronous idle.
@@ -300,7 +302,7 @@ Control.definition = {
   {
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored.",
-        arguments.callee.name, [].slice.apply(arguments)));
+        arguments.callee.name, Array.slice(arguments)));
   },
   
   /** End of transmission block.
@@ -310,7 +312,7 @@ Control.definition = {
   {
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored.",
-        arguments.callee.name, [].slice.apply(arguments)));
+        arguments.callee.name, Array.slice(arguments)));
   },
   
   /** Cancel of previous word or charactor.
@@ -320,7 +322,7 @@ Control.definition = {
   {
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored.",
-        arguments.callee.name, [].slice.apply(arguments)));
+        arguments.callee.name, Array.slice(arguments)));
   },
   
   /** End of medium.
@@ -330,7 +332,7 @@ Control.definition = {
   {
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored.",
-        arguments.callee.name, [].slice.apply(arguments)));
+        arguments.callee.name, Array.slice(arguments)));
   },
   
   /** Substitute.
@@ -340,7 +342,7 @@ Control.definition = {
   {
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored.",
-        arguments.callee.name, [].slice.apply(arguments)));
+        arguments.callee.name, Array.slice(arguments)));
   },
   
   /** File separator.
@@ -350,7 +352,7 @@ Control.definition = {
   {
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored.",
-        arguments.callee.name, [].slice.apply(arguments)));
+        arguments.callee.name, Array.slice(arguments)));
   },
  
   /** Group separator.
@@ -360,7 +362,7 @@ Control.definition = {
   {
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored.",
-        arguments.callee.name, [].slice.apply(arguments)));
+        arguments.callee.name, Array.slice(arguments)));
   },
   
   /** Record separator.
@@ -370,7 +372,7 @@ Control.definition = {
   {
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored.",
-        arguments.callee.name, [].slice.apply(arguments)));
+        arguments.callee.name, Array.slice(arguments)));
   },
   
   /** Unit separator.
@@ -380,7 +382,7 @@ Control.definition = {
   {
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored.",
-        arguments.callee.name, [].slice.apply(arguments)));
+        arguments.callee.name, Array.slice(arguments)));
   },
   
   /** Delete.
@@ -388,6 +390,9 @@ Control.definition = {
   "[sequence('0x7F', '0xFF')]":
   function DEL() 
   {
+    coUtils.Debug.reportWarning(
+      _("%s sequence [%s] was ignored.",
+        arguments.callee.name, Array.slice(arguments)));
   },
 
 };

@@ -52,9 +52,10 @@ Emulator.definition = {
   write: function write(codes) 
   {
     let insert_mode = this._ansi_mode.IRM;
-    let auto_wrap_mode = this._dec_mode.AEM;
+    let auto_wrap_mode = this._dec_mode.AWM;
+    let reverse_wrap_mode = this._dec_mode.RWM;
     let screen = this._screen;
-    screen.write(codes, insert_mode, auto_wrap_mode);
+    screen.write(codes, insert_mode, auto_wrap_mode, reverse_wrap_mode);
   },
  
 }; // class Emurator

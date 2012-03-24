@@ -162,7 +162,7 @@ AnsiSpecifiedMode.definition = {
   },
 
 
-}  
+};
 
 /**
  * @fn main

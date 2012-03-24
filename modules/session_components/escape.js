@@ -189,6 +189,37 @@ Escape.definition = {
   get id()
     "escape",
 
+  /** Next line.
+   */
+  "[sequence('0x85', 'ESC E'), _('Next line')]":
+  function NEL() 
+  { // Carriage Return
+    let screen = this._screen;
+    screen.carriageReturn();
+    screen.lineFeed();
+  },
+
+  /** Tab set */
+  "[sequence('0x88', 'ESC H'), _('Tab set.')]": 
+  function HTS() 
+  {
+    let screen = this._screen;
+    screen.tab_stops.push(screen.cursor.positionX);
+    screen.tab_stops.sort(function(lhs, rhs) lhs > rhs);
+  },
+
+  /** reverse index */
+  "[sequence('0x8d', 'ESC M'), _('Reverse index.')]": 
+  function RI() 
+  {
+    let screen = this._screen;
+    screen.reverseIndex();
+    if (this._ansi_mode.LNM) {
+      screen.carriageReturn();
+    }
+  },
+
+
   "[sequence('ESC P%s')]": 
   function DCS() 
   {
@@ -364,17 +395,6 @@ Escape.definition = {
     screen.cursor.reset();
   },
   
-  /** reverse index */
-  "[sequence('ESC M'), _('Reverse index.')]": 
-  function RI() 
-  {
-    let screen = this._screen;
-    screen.reverseIndex();
-    if (this._ansi_mode.LNM) {
-      screen.carriageReturn();
-    }
-  },
-
   /** constructor */
   "[subscribe('initialized/{screen & ansimode}'), enabled]": 
   function onLoad(screen, ansi_mode) 

@@ -389,7 +389,7 @@ ScreenSequenceHandler.definition = {
     //  undefined // TODO: 
     : coUtils.Debug.reportWarning(
         _("%s sequence [%s] was ignored."),
-        arguments.callee.name, [].slice.apply(arguments));
+        arguments.callee.name, Array.slice(arguments));
   },
 
   "[sequence('CSI %dK')]":
@@ -403,7 +403,7 @@ ScreenSequenceHandler.definition = {
       this.eraseLine()
     : coUtils.Debug.reportWarning(
         _("%s sequence [%s] was ignored."),
-        arguments.callee.name, [].slice.apply(arguments));
+        arguments.callee.name, Array.slice(arguments));
   },
 
   "[sequence('CSI %dL')]":
@@ -618,7 +618,7 @@ ScreenSequenceHandler.definition = {
     if (n1 !== undefined && n1 != 0) {
       coUtils.Debug.reportWarning(
         _("%s sequence [%s] was ignored."),
-        arguments.callee.name, [].slice.apply(arguments));
+        arguments.callee.name, Array.slice(arguments));
     } else { //
       const reply_map = {
         "VT100"  : "\x1b[?1;2c"
@@ -869,18 +869,20 @@ ScreenSequenceHandler.definition = {
     this.setPositionX(0);
   },
 
-  CHT: function CHT(n) 
+  "[sequence('CSI %dI')]":
+  function CHT(n) 
   { // TODO: Cursor Horaizontal Tabulation
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
-      arguments.callee.name, [].slice.apply(arguments));
+      arguments.callee.name, Array.slice(arguments));
   },
 
-  CBT: function CBT(n) 
+  "[sequence('CSI %dZ')]":
+  function CBT(n) 
   { // Cursor Backward Tabulation
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
-      arguments.callee.name, [].slice.apply(arguments));
+      arguments.callee.name, Array.slice(arguments));
   },
 
   /**
@@ -912,7 +914,7 @@ ScreenSequenceHandler.definition = {
   { // TODO: REPeat the preceding graphic character
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
-      arguments.callee.name, [].slice.apply(arguments));
+      arguments.callee.name, Array.slice(arguments));
   },
 
   /**
@@ -950,35 +952,125 @@ ScreenSequenceHandler.definition = {
     this.setPositionX((n2 || 1) - 1 + this.cursor.originY);
   },
 
-  TBC: function TBC(n) 
-  { // TODO: TaB Clear
-    coUtils.Debug.reportWarning(
-      _("%s sequence [%s] was ignored."),
-      arguments.callee.name, [].slice.apply(arguments));
+  /**
+   *
+   * TBC—Tab Clear
+   *
+   * This control function clears tab stops.
+   *
+   * Format
+   *
+   * CSI    Ps    g
+   * 9/11   3/n   6/7
+   *
+   * Parameters
+   *
+   * Ps
+   * indicates the tab stops to clear. There are only two values for Ps, 0 and 3.
+   * 0 or none (default) - The terminal only clears the tab stop at the cursor.
+   * 3                   - The terminal clears all tab stops.
+   *
+   */
+  "[sequence('CSI %dg')]":
+  function TBC(n) 
+  { // TaB Clear
+
+    switch (n || 0) {
+
+      case 0:
+        let tab_stops = this.tab_stops;
+        let positionX = this.cursor.positionX;;
+        for (let i = 0; i < tab_stops.length; ++i) {
+          let stop = tab_stops[i];
+          if (stop == positionX) {
+            tab_stops.splice(i, 1); // remove current tabstop.
+          } else if (stop > positionX) {
+            break;
+          }
+        }
+        break;
+
+      case 3:
+        this.tab_stops = [0];
+        break;
+
+      defalut:
+        coUtils.Debug.reportWarning(
+          _("%s sequence [%s] was ignored."),
+          arguments.callee.name, Array.slice(arguments));
+
+    }
   },
 
-  MC: function MC(n) 
+
+  /**
+   *
+   * DECST8C — Set Tab at Every 8 Columns
+   *
+   * Set a tab stop at every eight columns starting with column 9.
+   *
+   * Format
+   *
+   * CSI    ?      5     W
+   * 9/11   3/15   3/5   5/7
+   *
+   * Description
+   *
+   * Any tab stop setting before this command is executed is cleared 
+   * automatically. Control function TBC clears the tab stops on the display;
+   * HTS sets a horizontal tab stop at the active column.
+   */
+//  "[sequence('CSI ?5W')]":
+//  function DECST8C(n) 
+//  { // Set Tab at Every 8 Columns
+//    coUtils.Debug.reportWarning(
+//      _("%s sequence [%s] was ignored."),
+//      arguments.callee.name, Array.slice(arguments));
+//    //this.setDefaultTaburation();
+//  },
+
+  "[sequence('CSI %di')]":
+  function MC(n) 
   { // TODO: Media Copy
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
-      arguments.callee.name, [].slice.apply(arguments));
+      arguments.callee.name, Array.slice(arguments));
   },
 
-  DSR: function DSR() 
+  "[sequence('CSI ?%di')]":
+  function DECMC(n) 
+  { // TODO: Media Copy, DEC-specific
+    coUtils.Debug.reportWarning(
+      _("%s sequence [%s] was ignored."),
+      arguments.callee.name, Array.slice(arguments));
+  },
+
+  "[sequence('CSI %dn')]":
+  function DSR() 
   { // TODO: Device Status Report
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
-      arguments.callee.name, [].slice.apply(arguments));
+      arguments.callee.name, Array.slice(arguments));
+  },
+
+  "[sequence('CSI ?%dn')]":
+  function DECDSR() 
+  { // TODO: Device Status Report
+    coUtils.Debug.reportWarning(
+      _("%s sequence [%s] was ignored."),
+      arguments.callee.name, Array.slice(arguments));
   },
  
-  DCS: function DCS() 
+  "[sequence('0x90', 'ESC P')]":
+  function DCS() 
   {
     let message = String.fromCharCode.apply(String, arguments);
     coUtils.Debug.reportWarning(
       _("Ignored %s [%s]"), arguments.callee.name, message);
   },
 
-  SOS: function SOS() 
+  "[sequence('0x98', 'ESC X')]":
+  function SOS() 
   {
     let message = String.fromCharCode.apply(String, arguments);
     coUtils.Debug.reportWarning(
@@ -1372,6 +1464,7 @@ Screen.definition = {
   _screen_choice: CO_SCREEN_MAIN,
   _line_generator: null,
 
+  tab_stops: null,
 
   // geometry (in cell count)
   "[persistable] initial_column": 80,
@@ -1387,6 +1480,7 @@ Screen.definition = {
     this._switchScreen();
     this.cursor = cursor_state;
     this._line_generator = line_generator;
+    this.tab_stops = [0, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 120];
 
     let broker = this._broker;
     broker.notify("initialized/screen", this);
@@ -1493,22 +1587,26 @@ Screen.definition = {
 
   /** Write printable charactor seqences. */
   "[type('Array -> Boolean -> Boolean')] write":
-  function write(codes, insert_mode, auto_wrap_mode) 
+  function write(codes, insert_mode, auto_wrap_mode, reverse_wrap_mode) 
   {
     let width = this._width;
     let cursor = this.cursor;
     let it = 0;
+    let line = this._getCurrentLine();
     do {
-      if (cursor.positionX >= width) {
-        //if (auto_wrap_mode) {
-        //  this.carriageReturn();
-        //} else {
-        this.carriageReturn();
-        this.lineFeed();
-        //}
-      }
-      let line = this._getCurrentLine();
       if (line) {
+        if (cursor.positionX >= width) {
+          this.carriageReturn();
+          if (auto_wrap_mode) {
+            this.carriageReturn();
+            if (reverse_wrap_mode) {
+              this.reverseIndex();
+            } else {
+              this.lineFeed();
+            }
+            line = this._getCurrentLine();
+          }
+        }
         let positionX = cursor.positionX;
         let length = width - positionX;
         let run = codes.slice(it, it + length);
@@ -1549,13 +1647,36 @@ Screen.definition = {
   function cursorUp(n) 
   { 
     let positionY = this.cursor.positionY - n;
-    let min = 0;
+    let min = this._scroll_top;
+    //let min = 0;
     this.cursor.positionY = positionY > min ? positionY: min;
   },
   
   /** Move CUrsor Down (CUD). */
   "[type('Uint16 -> Undefined')] cursorDown":
   function cursorDown(n) 
+  {
+    let positionY = this.cursor.positionY + n;
+
+    // If an attempt is made to move the active position below the last line, 
+    // the active position stops at the last line.
+    let max = this._scroll_bottom - 1;
+    //let max = this._height - 1;
+    this.cursor.positionY = positionY > max ? max: positionY;
+  },
+
+  /** Move CUrsor Up (CUP). */
+  "[type('Uint16 -> Undefined')] cursorUpAbsolutely":
+  function cursorUpAbsolutely(n) 
+  { 
+    let positionY = this.cursor.positionY - n;
+    let min = 0;
+    this.cursor.positionY = positionY > min ? positionY: min;
+  },
+  
+  /** Move CUrsor Down (CUD). */
+  "[type('Uint16 -> Undefined')] cursorDownAbsolutely":
+  function cursorDownAbsolutely(n) 
   {
     let positionY = this.cursor.positionY + n;
 
@@ -1599,8 +1720,17 @@ Screen.definition = {
   "[type('Undefined')] horizontalTab":
   function horizontalTab() 
   {
-    let positionX = Math.ceil(this.cursor.positionX / 8 + 1) * 8;
-    this.cursor.positionX = Math.min(positionX, this.width - 1);
+    let tab_stops = this.tab_stops;
+    let positionX = this.cursor.positionX;
+    let max = this._width - 1;
+    for (let i = 0; i < tab_stops.length; ++i) {
+      let stop = tab_stops[i];
+      if (stop > positionX) {
+        this.cursor.positionX = Math.min(max, stop);
+        return;
+      }
+    }
+    this.cursor.positionX = max;
   },
 
 // ScreenEditConcept implementation

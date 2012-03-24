@@ -22,48 +22,48 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-const DEC_CKM   = 0
-const DEC_ANM   = 1
-const DEC_COLM  = 2
-const DEC_SCLM  = 3
-const DEC_SCNM  = 4
-const DEC_OM    = 5
-const DEC_AWM   = 6
-const DEC_ARM   = 7
-const DEC_PFF   = 8
-const DEC_PEX   = 9
-const DEC_TCEM  = 10
-const DEC_RLM   = 11
-const DEC_HEBM  = 12
-const DEC_HEM   = 13
-const DEC_NRCM  = 14
-const DEC_NAKB  = 15
-const DEC_HCCM  = 16
-const DEC_VCCM  = 17
-const DEC_PCCM  = 18
-const DEC_NKM   = 19
-const DEC_BKM   = 20
-const DEC_KBUM  = 21
-const DEC_LRMM  = 22 // DECVSSM
-const DEC_XRLMM = 23
-const DEC_NCSM  = 24
-const DEC_RLCM  = 25
-const DEC_CRTSM = 26
-const DEC_ARSM  = 27
-const DEC_MCM   = 28
-const DEC_AAM   = 29
-const DEC_CANSM = 30
-const DEC_NULM  = 31
-const DEC_HDPXM = 32
-const DEC_ESKM  = 33
-const DEC_OSCNM = 34
-const DEC_FWM   = 35
-const DEC_RPL   = 36
-const DEC_HWUM  = 37
-const DEC_ATCUM = 38
-const DEC_ATCBM = 39
-const DEC_BBSM  = 40
-const DEC_ECM   = 41
+const DEC_CKM   = 1
+const DEC_ANM   = 2
+const DEC_COLM  = 3
+const DEC_SCLM  = 4
+const DEC_SCNM  = 5
+const DEC_OM    = 6
+const DEC_AWM   = 7
+const DEC_ARM   = 8
+const DEC_PFF   = 9
+const DEC_PEX   = 10
+const DEC_TCEM  = 11
+const DEC_RLM   = 12
+const DEC_HEBM  = 13
+const DEC_HEM   = 14
+const DEC_NRCM  = 15
+const DEC_NAKB  = 16
+const DEC_HCCM  = 17
+const DEC_VCCM  = 18
+const DEC_PCCM  = 19
+const DEC_NKM   = 20
+const DEC_BKM   = 21
+const DEC_KBUM  = 22
+const DEC_LRMM  = 23 // DECVSSM
+const DEC_XRLMM = 24
+const DEC_NCSM  = 25
+const DEC_RLCM  = 26
+const DEC_CRTSM = 27
+const DEC_ARSM  = 28
+const DEC_MCM   = 29
+const DEC_AAM   = 30
+const DEC_CANSM = 31
+const DEC_NULM  = 32
+const DEC_HDPXM = 33
+const DEC_ESKM  = 34
+const DEC_OSCNM = 35
+const DEC_FWM   = 36
+const DEC_RPL   = 37
+const DEC_HWUM  = 38
+const DEC_ATCUM = 39
+const DEC_ATCBM = 40
+const DEC_BBSM  = 41
+const DEC_ECM   = 42
 
 /**
  * @trait DecModeSequenceHandler
@@ -93,7 +93,7 @@ DecModeSequenceHandler.definition = {
   },
 
   "[sequence('CSI ?%dh')]":
-  function DECSET(n) 
+  function DECSET() 
   { // DEC Private Mode Set
 
     if (arguments.length == 0) {
@@ -104,6 +104,7 @@ DecModeSequenceHandler.definition = {
 
     for (let i = 0; i < arguments.length; ++i) {
       let n = arguments[i];
+
       switch (n) {
 
         // Application Cursor Keys (DECCKM)
@@ -145,9 +146,9 @@ DecModeSequenceHandler.definition = {
 
         // Reverse Video (DECSCNM)
         case 5:
-          // TODO: reverse video.
-          coUtils.Debug.reportWarning(
-            _("DECSET - DECSCNM (Reverse video) was ignored."));
+          broker.notify("command/reverse-video", true);
+          coUtils.Debug.reportMessage(
+            _("DECSET - DECSCNM (Reverse video) was called."));
           break;
 
         // Origin Mode (DECOM)
@@ -155,7 +156,7 @@ DecModeSequenceHandler.definition = {
           // TODO: origin mode.
           this._screen.cursor.originX = this._screen.cursor.positionX; 
           this._screen.cursor.originY = this._screen.cursor.positionY; 
-          coUtils.Debug.reportWarning(
+          coUtils.Debug.reportMessage(
             _("DECSET - DECOM (Origin mode) was set: (%d, %d)."),
             this._screen.cursor.originX,
             this._screen.cursor.originY);
@@ -164,6 +165,8 @@ DecModeSequenceHandler.definition = {
         // Wraparound Mode (DECAWM)
         case 7:
           this.AWM = true
+          coUtils.Debug.reportMessage(
+            _("DECSET - DECAWM (Auto-wrap Mode) was set."));
           break;
 
         // Auto-repeat Keys (DECARM)
@@ -248,9 +251,9 @@ DecModeSequenceHandler.definition = {
 
         // Reverse-wraparound Mode
         case 45:
-          coUtils.Debug.reportWarning(
-            _("DECSET 45 - Reverse-wraparound Mode, ", 
-              "was not implemented."));
+          this.RWM = true;
+          coUtils.Debug.reportMessage(
+            _("DECSET 45 - Reverse-wraparound Mode was set."));
           break;
 
         // Start Logging
@@ -452,9 +455,9 @@ DecModeSequenceHandler.definition = {
 
         // Reverse Video (DECSCNM)
         case 5:
-          // TODO: reverse video.
-          coUtils.Debug.reportWarning(
-            _("DECRST - DECSCNM (Reverse video) was ignored."));
+          broker.notify("command/reverse-video", false);
+          coUtils.Debug.reportMessage(
+            _("DECRST - DECSCNM (Reverse video) was called."));
           break;
 
         // Reset Origin Mode (DECOM)
@@ -462,7 +465,7 @@ DecModeSequenceHandler.definition = {
           // TODO: reset origin mode.
           this._screen.cursor.originX = 0; 
           this._screen.cursor.originY = 0; 
-          coUtils.Debug.reportWarning(
+          coUtils.Debug.reportMessage(
             _("DECSET - DECOM (Origin mode) was reset: (%d, %d)."),
             this._screen.cursor.positionX,
             this._screen.cursor.positionY);
@@ -471,6 +474,8 @@ DecModeSequenceHandler.definition = {
         // Wraparound Mode (DECAWM)
         case 7:
           this.AWM = false
+          coUtils.Debug.reportMessage(
+            _("DECRST - DECAWM (Auto-wrap Mode) was set."));
           break;
 
         // Auto-repeat Keys (DECARM)
@@ -555,9 +560,9 @@ DecModeSequenceHandler.definition = {
 
         // No Reverse-wraparound Mode
         case 45:
-          coUtils.Debug.reportWarning(
-            _("DECRST 45 - No Reverse-wraparound Mode, ", 
-              "was not implemented."));
+          this.RWM = false;
+          coUtils.Debug.reportMessage(
+            _("DECRST 45 - Reverse-wraparound Mode was reset."));
           break;
 
         // Stop Logging
@@ -817,6 +822,9 @@ DecModeSequenceHandler.definition = {
     // DECSTBM moves the cursor to column 1, line 1 of the page.
     screen.setPositionX(0);
     screen.setPositionY(top);
+    screen.cursor.originX = screen.cursor.positionX; 
+    screen.cursor.originY = screen.cursor.positionY; 
+
   },
 
   /**

@@ -420,8 +420,8 @@ InputManager.definition = {
   "[listen('keyup', '#tanasinn_default_input', true)]":
   function onkeyup(event) 
   { // nothrow
-    if (32 == event.keyCode
-        && 32 == event.which
+    if (0x20 == event.keyCode
+        && 0x20 == event.which
         && event.ctrlKey) {
       this.onkeypress(event);
     }
@@ -433,19 +433,20 @@ InputManager.definition = {
   "[listen('keypress', '#tanasinn_default_input', true)]":
   function onkeypress(event) 
   { // nothrow
-    //alert(event.keyCode + " - " + event.which + " - " + event.ctrlKey)
+
     event.preventDefault();
     event.stopPropagation();
 
-    if (0 == event.keyCode
-        && 32 == event.which
+    if (0x00 == event.keyCode
+        && 0x20 == event.which
         && event.ctrlKey) {
-      event.keyCode = 32;
+      event.keyCode = 0x20;
       event.isChar = false;
     }
 
     let packed_code = coUtils.Keyboard
       .getPackedKeycodeFromEvent(event);
+
     let broker = this._broker;
     if (this.debug_flag) {
       broker.notify(

@@ -116,6 +116,7 @@ Renderer.definition = {
   _text_offset: 10, 
 
   _offset: 0,
+  _reverse: false,
 
   _drcs_state: null, 
 
@@ -141,7 +142,7 @@ Renderer.definition = {
   "[subscribe('install/renderer'), enabled]":
   function install(session) 
   {
-    let {tanasinn_renderer_canvas} = session.uniget(
+    let { tanasinn_renderer_canvas } = session.uniget(
       "command/construct-chrome", 
       {
         parentNode: "#tanasinn_center_area",
@@ -193,6 +194,24 @@ Renderer.definition = {
     this._canvas.parentNode.removeChild(this._canvas);
   },
 
+  "[subscribe('command/reverse-video'), enabled]": 
+  function reverseVideo(value) 
+  {
+    if (this._reverse != value) {
+      this._reverse = value;
+      let maps = [this.normal_color, this.bold_color, this.background_color];
+      for (let [, map] in Iterator(maps)) {
+        for (let i = 0; i < map.length; ++i) {
+          let value = (parseInt(map[i].substr(1), 16) ^ 0x1ffffff)
+            .toString(16)
+            .replace(/^1/, "#");
+          map[i] = value;
+        }
+      }
+      this.draw(true);
+    }
+  },
+
   "[subscribe('event/shift-out'), enabled]": 
   function shiftOut() 
   {
@@ -238,8 +257,9 @@ Renderer.definition = {
       font_family: this.font_family,
       font_size: this.font_size,
       force_precious_rendering: this.force_precious_rendering,
+      reverse: this.reverse,
     };
-    let path = String(<>{broker.runtime_path}/persist/{broker.request_id}.png</>);
+    let path = broker.runtime_path + "/persist/" + broker.request_id + ".png";
     let file = coUtils.File.getFileLeafFromVirtualPath(path);
     coUtils.IO.saveCanvas(this._source_canvas, file, true);
   },
@@ -253,6 +273,7 @@ Renderer.definition = {
       this.line_height = data.line_height;
       this.font_family = data.font_family;
       this.font_size = data.font_size;
+      this._reverse = data.reverse;
       this.draw();
     } else {
       coUtils.Debug.reportWarning(
@@ -340,17 +361,34 @@ Renderer.definition = {
       let top = line_height * row;
       let width = (char_width * (end - column));// | 0;
       let height = line_height;// | 0;
-      this._drawBackground(context, left | 0, top, width + Math.ceil(left) - left, height, attr.bg);
-      this._drawWord(context, codes, left, top + text_offset, char_width, end - column, height, attr);
+
+      this._drawBackground(
+        context, 
+        left | 0, 
+        top, 
+        width + Math.ceil(left) - left, 
+        height, 
+        attr.bg);
+
+      this._drawWord(
+        context, 
+        codes, 
+        left, 
+        top + text_offset, 
+        char_width, 
+        end - column, 
+        height, attr);
     }
-  },
+
+  }, // draw
 
   /** Render background attribute. 
    *
    */
-  _drawBackground: function _drawBackground(context, x, y, width, height, bg)
+  _drawBackground: 
+  function _drawBackground(context, x, y, width, height, bg)
   {
-    if (this.transparent_color == bg) {
+    if (!this._reverse && this.transparent_color == bg) {
       context.clearRect(x, y, width, height);
     } else {
       /* Get hexadecimal formatted background color (#xxxxxx) 

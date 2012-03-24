@@ -1154,10 +1154,13 @@ coUtils.Runtime = {
 }; // coUtils.Runtime
 
 /**
+ * Layout of keycode:
+ *
  *   prefix:  000000xxxxx000000000000000000000
  *
  *   char:    00000000000xxxxxxxxxxxxxxxxxxxxx
  *   mode:    000001mmmmmxxxxxxxxxxxxxxxxxxxxx
+ *   gesture: gggg0000000000000000000000000001
  */
 coUtils.Keyboard = {
 
@@ -1281,11 +1284,16 @@ coUtils.Keyboard = {
   function getPackedKeycodeFromEvent(event) 
   {
     let code = event.keyCode || event.which;
-    if (event.shiftKey && (event.ctrlKey || event.altKey || event.metaKey)) {
+    if (event.shiftKey && (
+          event.ctrlKey || 
+          event.altKey ||
+          event.metaKey)) {
       if (/* A */ 65 <= code && code <= 90 /* Z */) {
         code += 32;
       }
     }
+
+    // make packed code
     let packed_code = code 
       | Boolean(event.ctrlKey)   << coUtils.Keyboard.KEY_CTRL 
       | (Boolean(event.altKey) || code > 0xff) << coUtils.Keyboard.KEY_ALT 
@@ -1293,6 +1301,11 @@ coUtils.Keyboard = {
       | Boolean(event.keyCode)   << coUtils.Keyboard.KEY_NOCHAR
       | Boolean(event.metaKey)   << coUtils.Keyboard.KEY_META
       ;
+
+    // fix for Space key with modifier.
+    if (0x20 == code && (event.shiftKey || event.ctrlKey || event.altKey)) {
+      packed_code |= 1 << coUtils.Keyboard.KEY_NOCHAR;
+    }
     return packed_code;
   },
 
@@ -1306,7 +1319,10 @@ coUtils.Keyboard = {
     let pattern = /<.+?>|./g;
     let match = expression.match(pattern);
     let strokes = match;
-    let key_code_array = strokes.map(function(stroke) {
+
+    let key_code_array = [];
+    for (let i = 0; i < strokes.length; ++i) {
+      let stroke = strokes[i];
       let tokens = null;
       if (1 < stroke.length) {
         stroke = stroke.slice(1, -1); // <...> -> ...
@@ -1328,25 +1344,11 @@ coUtils.Keyboard = {
         }
       } else {
         // if last_key is a printable character (ex, a, b, X, Y)
-  //      if (/^[A-Z]+$/.test(last_key) 
-  //          && tokens.some(function(token) /^S$/i.test(token))) {
-  //        key_code = last_key.toLowerCase().charCodeAt(0);
-  //      } else if ("[" == last_key 
-  //          && tokens.some(function(token) /^C$/i.test(token))) {  
-  //        key_code = 27;
-  //      } else if ("]" == last_key 
-  //          && tokens.some(function(token) /^C$/i.test(token))) {  
-  //        key_code = 29;
-  //      } else if ("-" == last_key 
-  //          && tokens.some(function(token) /^C$/i.test(token))) {  
-  //        key_code = 31;
-  //      } else {
-          key_code = last_key.charCodeAt(0);
-  //      }
+        key_code = last_key.charCodeAt(0);
       }
    
-      tokens.forEach(function(sequence) 
-      {
+      for (let j = 0; j < tokens.length; ++j) {
+        let sequence = tokens[j];
         if (sequence.match(/^C$/i)) {
           key_code |= 0x1 << this.KEY_CTRL;
         } else if (sequence.match(/^A$/i)) {
@@ -1359,13 +1361,13 @@ coUtils.Keyboard = {
           throw coUtils.Debug.Exception(
             _("Invalid key sequence '%s'."), sequence);
         }
-      }, this);
-      return key_code;
-        
-    }, this); 
+      }
+      key_code_array.push(key_code);
+    } 
     return key_code_array;
   },
-};
+
+}; // coUtils.Keyboard
 
 coUtils.Unicode = {
 
