@@ -70,8 +70,13 @@ CursorState.definition = {
   },
 
   /** backup current cursor state. */
-  backup: function backup(context) 
+  backup: function backup() 
   {
+    let broker = this._broker;
+    let context = {};
+    this._backup_instance = context;
+    broker.notify("command/save-cursor", context);
+
     context.positionX = this.positionX;
     context.positionY = this.positionY;
     context.originX = this.originX;
@@ -82,8 +87,17 @@ CursorState.definition = {
   },
 
   /** restore cursor state from the backup instance. */
-  restore: function restore(context) 
+  restore: function restore() 
   {
+    let broker = this._broker;
+    let context = this._backup_instance;
+    if (null === context) {
+      coUtils.Debug.reportWarning(
+        _('Cursor backup instance not found.'));
+      return;
+    }
+    broker.notify("command/restore-cursor", context);
+
     this.positionX = context.positionX;
     this.positionY = context.positionY;
     this.originX = context.originX;
@@ -104,14 +118,14 @@ CursorState.definition = {
     context.push(this.attr.value);
     context.push(null !== this._backup_instance);
     let backup = this._backup_instance;
-    if (backup) {
+    if (null !== backup) {
       context.push(backup.positionX);
       context.push(backup.positionY);
       context.push(backup.originX);
       context.push(backup.originY);
       context.push(backup.visibility);
       context.push(backup.blink);
-      context.push(backup.attr.value);
+      context.push(backup.attr_value);
     }
   },
 
@@ -126,14 +140,14 @@ CursorState.definition = {
     this.attr.value = context.shift();
     let backup_exists = context.shift();
     if (backup_exists) {
-      let backup = this._backup_instance = new this.constructor;
+      let backup = this._backup_instance = {};
       backup.positionX = context.shift();
       backup.positionY = context.shift();
       backup.originX = context.shift();
       backup.originY = context.shift();
       backup.visibility = context.shift();
       backup.blink = context.shift();
-      backup.attr.value = context.shift();
+      backup.attr_value = context.shift();
     }
   },
  
@@ -180,11 +194,7 @@ CursorState.definition = {
   "[sequence('ESC 7')] DECSC": 
   function DECSC() 
   {
-    let broker = this._broker;
-    let context = new this.constructor;
-    broker.notify("command/save-cursor", context);
-    this.backup(context); 
-    this._backup_instance = context;
+    this.backup(); 
   },
    
   /**
@@ -215,15 +225,7 @@ CursorState.definition = {
   "[sequence('ESC 8')] DECRC": 
   function DECRC() 
   {
-    let broker = this._broker;
-    let context = this._backup_instance;
-    if (null === context) {
-      coUtils.Debug.reportWarning(
-        _('Cursor backup instance not found. We create new instance and use it.'));
-      this._backup_instance = context = new this.constructor;
-    }
-    broker.notify("command/restore-cursor", context);
-    this.restore(context);
+    this.restore();
   },
 
   "[sequence('CSI %dm')]":

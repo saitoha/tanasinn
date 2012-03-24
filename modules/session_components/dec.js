@@ -83,11 +83,11 @@ DecModeSequenceHandler.definition = {
   {
     this._mouseMode = value;
 
-    let session = this._broker;
-    session.notify("event/mouse-tracking-mode-changed", value);
+    let broker = this._broker;
+    broker.notify("event/mouse-tracking-mode-changed", value);
   },
 
-  initialize: function initialize(session) 
+  initialize: function initialize(broker) 
   {
     this._decsave_buffer = {};
   },
@@ -957,8 +957,8 @@ DecPrivateMode.definition = {
   {
     this._screen = screen;
     this._cursor_state = cursor_state;
-    let session = this._broker;
-    session.notify("initialized/decmode", this);
+    let broker = this._broker;
+    broker.notify("initialized/decmode", this);
   },
 
   /* 
@@ -981,7 +981,7 @@ DecPrivateMode.definition = {
    * the cursor is at the right border of the page replace characters already 
    * on the page.
    */
-  AWM: true,   // Autowrap Mode (true: autowrap, false: no autowrap)
+  AWM: false,   // Autowrap Mode (true: autowrap, false: no autowrap)
 
   /* 
    * @Property TCEM
