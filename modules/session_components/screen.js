@@ -652,8 +652,8 @@ ScreenSequenceHandler.definition = {
       let message = reply.join(";");
       //let message = "\x1b[?1;2;6c";
       //let message = "\x1b[?c";
-      let session = this._broker;
-      session.notify("command/send-to-tty", message);
+      let broker = this._broker;
+      broker.notify("command/send-to-tty", message);
       coUtils.Debug.reportMessage(
         "Primary Device Attributes: \n" 
         + "Send \"" + message.replace("\x1b", "\\e") + "\"." );
@@ -727,8 +727,8 @@ ScreenSequenceHandler.definition = {
       reply.push(95);
       reply.push("c") // footer
       let message = reply.join(";");
-      let session = this._broker;
-      session.notify("command/send-to-tty", message);
+      let broker = this._broker;
+      broker.notify("command/send-to-tty", message);
       coUtils.Debug.reportMessage(
         "Secondary Device Attributes: \n" 
         + "Send \"" + message.replace("\x1b", "\\e") + "\"." );
@@ -1093,7 +1093,7 @@ Viewable.definition = {
   },
 
   "[subscribe('event/broker-started'), enabled]":
-  function(session) 
+  function(broker) 
   {
     this.resetScrollRegion();
   },
@@ -1107,8 +1107,8 @@ Viewable.definition = {
     if (this._scrollback_amount < n) {
       this._scrollback_amount = 0;
       // finishes scrolling session.
-      let session = this._broker;
-      session.notify("event/scroll-session-closed");
+      let broker = this._broker;
+      broker.notify("event/scroll-session-closed");
     } else {
       this._scrollback_amount -= n;
     }
@@ -1123,8 +1123,8 @@ Viewable.definition = {
       return;
     if (0 == this._scrollback_amount) {
       // starts scrolling session.
-      let session = this._broker;
-      session.notify("event/scroll-session-started");
+      let broker = this._broker;
+      broker.notify("event/scroll-session-started");
     }
     // move view position.
     if (buffer_top - this._scrollback_amount < n) {
@@ -1142,8 +1142,8 @@ Viewable.definition = {
     if (0 == this._scrollback_amount) {
       if (position != buffer_top - this._scrollback_amount) {
         // starts scrolling session.
-        let session = this._broker;
-        session.notify("event/scroll-session-started");
+        let broker = this._broker;
+        broker.notify("event/scroll-session-started");
       }
     }
     this._scrollback_amount = buffer_top - position;
@@ -1154,8 +1154,8 @@ Viewable.definition = {
   function updateScrollInformation()
   {
     let buffer_top = this.bufferTop;
-    let session = this._broker;
-    session.notify(
+    let broker = this._broker;
+    broker.notify(
       "event/scroll-position-changed", 
       {
         start: buffer_top - this._scrollback_amount,
@@ -1187,12 +1187,12 @@ Viewable.definition = {
   "[subscribe('event/before-input')]":
   function onBeforeInput(message) 
   {
-    let session = this._broker;
+    let broker = this._broker;
     this.onBeforeInput.enabled = false;
     this._scrollback_amount = 0;
     this.updateScrollInformation();
-    session.notify("command/draw", true);
-    session.notify("event/scroll-session-closed", true);
+    broker.notify("command/draw", true);
+    broker.notify("event/scroll-session-closed", true);
   },
 
   _interracedScan: function _interracedScan(lines) 
@@ -1480,7 +1480,11 @@ Screen.definition = {
     this._switchScreen();
     this.cursor = cursor_state;
     this._line_generator = line_generator;
-    this.tab_stops = [0, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 120];
+
+    this.tab_stops = [];
+    for (let i = 0; i < this._width; i += 8) {
+      this.tab_stops.push(i);
+    }
 
     let broker = this._broker;
     broker.notify("initialized/screen", this);
@@ -1525,8 +1529,14 @@ Screen.definition = {
         cursor.positionX = this._width - 1;
       }
 
-      let session = this._broker;
-      session.notify("variable-changed/screen.width", this.width);
+      // update tab stops
+      this.tab_stops = [];
+      for (let i = 0; i < this._width; i += 8) {
+        this.tab_stops.push(i);
+      }
+
+      let broker = this._broker;
+      broker.notify("variable-changed/screen.width", this.width);
     } else {
       this._width = value;
     }
@@ -1557,8 +1567,8 @@ Screen.definition = {
         cursor.positionY = this._height - 1;
       }
 
-      let session = this._broker;
-      session.notify("variable-changed/screen.height", this.height);
+      let broker = this._broker;
+      broker.notify("variable-changed/screen.height", this.height);
     } else {
       this._height = value;
     }

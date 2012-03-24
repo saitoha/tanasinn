@@ -945,20 +945,20 @@ Decoder.definition = {
     this.initial_scheme = scheme;
     let message = coUtils.Text.format(_("Character encoding changed: [%s]."), scheme);
 
-    let session = this._broker;
-    session.notify("command/report-status-message", message); 
+    let broker = this._broker;
+    broker.notify("command/report-status-message", message); 
   },
 
   "[subscribe('event/broker-started'), enabled]": 
-  function onLoad(session) 
+  function onLoad(broker) 
   {
     this._decoder_map = {};
-    session.notify("get/decoders").map(function(information)
+    broker.notify("get/decoders").map(function(information)
     {
       this._decoder_map[information.charset] = information; 
     }, this);
     this.scheme = this.initial_scheme;
-    session.notify("initialized/decoder", this);
+    broker.notify("initialized/decoder", this);
   },
 
   "[subscribe('change/decoder'), enabled]": 
@@ -982,13 +982,31 @@ Decoder.definition = {
   "[subscribe('sequence/g2'), enabled]": 
   function scsg2(dscs) 
   {
-    this._g0 = this._charset_table[dscs];
+    this._g2 = this._charset_table[dscs];
   },
 
   "[subscribe('sequence/g3'), enabled]": 
   function scsg3(dscs) 
   {
-    this._g1 = this._charset_table[dscs];
+    this._g3 = this._charset_table[dscs];
+  },
+
+  "[subscribe('command/save-cursor'), enabled]": 
+  function saveCursor(context) 
+  {
+    context.g0 = this._g0;
+    context.g1 = this._g1;
+    context.g2 = this._g2;
+    context.g3 = this._g3;
+  },
+
+  "[subscribe('command/restore-cursor'), enabled]": 
+  function restoreCursor(context) 
+  {
+    this._g0 = context.g0;
+    this._g1 = context.g1;
+    this._g2 = context.g2;
+    this._g3 = context.g3;
   },
 
   /** Read input byte-stream sequence at the specified scanner's 

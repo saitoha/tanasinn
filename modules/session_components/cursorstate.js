@@ -53,8 +53,8 @@ CursorState.definition = {
   function onLoad(line_generator) 
   {
     this.attr = line_generator.allocate(1, 1).shift().cells.shift();
-    let session = this._broker;
-    session.notify(<>initialized/{this.id}</>, this);
+    let broker = this._broker;
+    broker.notify("initialized/" + this.id, this);
   },
 
   /** reset cursor state. */
@@ -70,44 +70,48 @@ CursorState.definition = {
   },
 
   /** backup current cursor state. */
-  backup: function backup() 
+  backup: function backup(context) 
   {
-    let backup = new this.constructor;
-    backup.positionX = this.positionX;
-    backup.positionY = this.positionY;
-    backup.visibility = this.visibility;
-    backup.blink = this.blink;
-    this._backup_instance = backup;
+    context.positionX = this.positionX;
+    context.positionY = this.positionY;
+    context.originX = this.originX;
+    context.originY = this.originY;
+    context.visibility = this.visibility;
+    context.blink = this.blink;
+    context.attr_value = this.attr.value;
   },
 
   /** restore cursor state from the backup instance. */
-  restore: function restore() 
+  restore: function restore(context) 
   {
-    let backup = this._backup_instance;
-    if (backup === null) {
-      coUtils.Debug.reportWarning(
-        _('Cursor backup instance not found. We create new instance and use it.'));
-      this._backup_instance = backup = new this.constructor;
-    }
-    this.positionX = backup.positionX;
-    this.positionY = backup.positionY;
-    this.visibility = backup.visibility;
-    this.blink = backup.blink;
+    this.positionX = context.positionX;
+    this.positionY = context.positionY;
+    this.originX = context.originX;
+    this.originY = context.originY;
+    this.visibility = context.visibility;
+    this.blink = context.blink;
+    this.attr.value = context.attr_value;
   },
 
   serialize: function serialize(context)
   {
     context.push(this.positionX);
     context.push(this.positionY);
+    context.push(this.originX);
+    context.push(this.originY);
     context.push(this.visibility);
     context.push(this.blink);
+    context.push(this.attr.value);
     context.push(null !== this._backup_instance);
     let backup = this._backup_instance;
     if (backup) {
       context.push(backup.positionX);
       context.push(backup.positionY);
+      context.push(backup.originX);
+      context.push(backup.originY);
       context.push(backup.visibility);
       context.push(backup.blink);
+      context.push(backup.attr.value);
     }
   },
 
@@ -115,15 +119,21 @@ CursorState.definition = {
   {
     this.positionX = context.shift();
     this.positionY = context.shift();
+    this.originX = context.shift();
+    this.originY = context.shift();
     this.visibility = context.shift();
     this.blink = context.shift();
+    this.attr.value = context.shift();
     let backup_exists = context.shift();
     if (backup_exists) {
       let backup = this._backup_instance = new this.constructor;
       backup.positionX = context.shift();
       backup.positionY = context.shift();
+      backup.originX = context.shift();
+      backup.originY = context.shift();
       backup.visibility = context.shift();
       backup.blink = context.shift();
+      backup.attr.value = context.shift();
     }
   },
  
@@ -160,17 +170,21 @@ CursorState.definition = {
    * Saves the following items in the terminal's memory:
    * 
    *   - Cursor position
-   *   - TODO: Character attributes set by the SGR command
+   *   - Character attributes set by the SGR command
    *   - Character sets (G0, G1, G2, or G3) currently in GL and GR
    *   - TODO: Wrap flag (autowrap or no autowrap)
-   *   - TODO: State of origin mode (DECOM)
+   *   - State of origin mode (DECOM)
    *   - TODO: Selective erase attribute
    *   - TODO: Any single shift 2 (SS2) or single shift 3 (SS3) functions sent
    */
   "[sequence('ESC 7')] DECSC": 
   function DECSC() 
   {
-    this.backup();
+    let broker = this._broker;
+    let context = new this.constructor;
+    broker.notify("command/save-cursor", context);
+    this.backup(context); 
+    this._backup_instance = context;
   },
    
   /**
@@ -187,7 +201,7 @@ CursorState.definition = {
    * If nothing was saved by DECSC, then DECRC performs the following actions:
    * 
    *   - Moves the cursor to the home position (upper left of screen).
-   *   - TODO: Resets origin mode (DECOM).
+   *   - Resets origin mode (DECOM).
    *   - Turns all character attributes off (normal setting).
    *   - TODO: Maps the ASCII character set into GL, and the DEC Supplemental 
    *     Graphic set into GR.
@@ -201,7 +215,15 @@ CursorState.definition = {
   "[sequence('ESC 8')] DECRC": 
   function DECRC() 
   {
-    this.restore();
+    let broker = this._broker;
+    let context = this._backup_instance;
+    if (null === context) {
+      coUtils.Debug.reportWarning(
+        _('Cursor backup instance not found. We create new instance and use it.'));
+      this._backup_instance = context = new this.constructor;
+    }
+    broker.notify("command/restore-cursor", context);
+    this.restore(context);
   },
 
   "[sequence('CSI %dm')]":

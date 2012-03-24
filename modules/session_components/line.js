@@ -230,8 +230,9 @@ Cell.definition = {
   /** setter of foreground color */
   set fg(value)
   {
-    this.value = this.value & ~(0xff << ATTR2_FORECOLOR) 
-                            | value << ATTR2_FORECOLOR;
+    this.value = this.value 
+               & ~(0xff << ATTR2_FORECOLOR) 
+               | value << ATTR2_FORECOLOR;
   },
 
   /** getter of background color */
@@ -245,8 +246,9 @@ Cell.definition = {
   /** setter of background color */
   set bg(value)
   {
-    this.value = this.value & ~(0xff << ATTR2_BACKCOLOR) 
-                            | value << ATTR2_BACKCOLOR;
+    this.value = this.value 
+               & ~(0xff << ATTR2_BACKCOLOR) 
+               | value << ATTR2_BACKCOLOR;
   },
 
   /** getter of bold attribute */
@@ -258,8 +260,9 @@ Cell.definition = {
   /** setter of bold attribute */
   set bold(value)
   {
-    this.value = this.value & ~(0x1 << ATTR2_BOLD) 
-                            | value << ATTR2_BOLD;
+    this.value = this.value 
+               & ~(0x1 << ATTR2_BOLD) 
+               | value << ATTR2_BOLD;
   },
   
   /** getter of blink attribute */
@@ -271,8 +274,9 @@ Cell.definition = {
   /** setter of blink attribute */
   set blink(value)
   {
-    this.value = this.value & ~(0x1 << ATTR2_BLINK) 
-                            | value << ATTR2_BLINK;
+    this.value = this.value
+               & ~(0x1 << ATTR2_BLINK) 
+               | value << ATTR2_BLINK;
   },
 
   /** getter of inverse attribute */
@@ -284,8 +288,9 @@ Cell.definition = {
   /** setter of inverse attribute */
   set inverse(value)
   {
-    this.value = this.value & ~(0x1 << ATTR2_INVERSE) 
-                            | value << ATTR2_INVERSE;
+    this.value = this.value
+               & ~(0x1 << ATTR2_INVERSE) 
+               | value << ATTR2_INVERSE;
   },
   
   /** getter of underline attribute */
@@ -297,8 +302,9 @@ Cell.definition = {
   /** setter of underline attribute */
   set underline(value) 
   {
-    this.value = this.value & ~(0x1 << ATTR2_UNDERLINE) 
-                            | value << ATTR2_UNDERLINE;
+    this.value = this.value
+               & ~(0x1 << ATTR2_UNDERLINE) 
+               | value << ATTR2_UNDERLINE;
   },
   
   /** getter of wide attribute */
@@ -310,8 +316,9 @@ Cell.definition = {
   /** setter of wide attribute */
   set wide(value) 
   {
-    this.value = this.value & ~(0x1 << ATTR2_WIDE) 
-                            | value << ATTR2_WIDE;
+    this.value = this.value
+               & ~(0x1 << ATTR2_WIDE) 
+               | value << ATTR2_WIDE;
   },
   
   /** getter of combining attribute */
@@ -323,8 +330,9 @@ Cell.definition = {
   /** setter of combining attribute */
   set combining(value) 
   {
-    this.value = this.value & ~(0x1 << ATTR2_COMBINING) 
-                            | value << ATTR2_COMBINING;
+    this.value = this.value
+               & ~(0x1 << ATTR2_COMBINING) 
+               | value << ATTR2_COMBINING;
   },
  
   /** getter of drcs attribute */
@@ -336,8 +344,9 @@ Cell.definition = {
   /** setter of drcs attribute */
   set drcs(value) 
   {
-    this.value = this.value & ~(0x1 << ATTR2_DRCS) 
-                            | value << ATTR2_DRCS;
+    this.value = this.value
+               & ~(0x1 << ATTR2_DRCS) 
+               | value << ATTR2_DRCS;
   },
 
   /** Compare every bit and detect equality of both objects. */
@@ -373,7 +382,7 @@ Cell.definition = {
 //        }
 //      }
 //    }
-  },
+  }, // write
 
   /** Erase the pair of character and attribute structure */
   erase: function erase(attr) 
@@ -385,7 +394,9 @@ Cell.definition = {
       this.value = 0x7;
     }
 
-  },
+  }, // erase
+
+// Serialize or deserialize into/from "context" stream.
 
   serialize: function serialize(context)
   {
@@ -398,7 +409,7 @@ Cell.definition = {
     this.value = context.shift();
   },
 
-};
+}; // Cell
 
 /**
  * @class DirtyRange
@@ -491,14 +502,18 @@ Resizable.definition = {
    */
   expand: function expand(n) 
   {
-    let new_cells = [new Cell for (i in function(n) { 
-      while (n--) { yield; } 
-    } (n))];
+    let new_cells = [
+      new Cell for (i in function(n) { 
+        while (n--) { 
+          yield;
+        } 
+      } (n))
+    ];
     let cells = this.cells;
     cells.push.apply(cells, new_cells);
   },
 
-};
+}; // trait Resizable
 
 /** 
  * @brief The Line class, has a set of Cells,
