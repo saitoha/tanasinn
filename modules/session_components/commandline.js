@@ -36,9 +36,7 @@ TextboxWidget.definition = {
   "[persistable, watchable] default_text_shadow": "1px 1px 3px #555",
   "[persistable, watchable] font_weight": "bold",
 
-  _element: null,
-  _canvas: null,
-  _cantext: null,
+  _dom: null,
   _start: 0,
   _end: 0,
   _mode: "command",
@@ -49,28 +47,28 @@ TextboxWidget.definition = {
     this._completion_buffer = "";
     this._status_buffer = "";
     this._keystate_buffer = "";
-    this._element = element;
-    this._canvas = canvas;
-    this._context = canvas.getContext("2d");
+    this._dom = {
+      textbox: element,
+      canvas: canvas,
+      context: canvas.getContext("2d"),
+    };
   },
 
-  "[subscribe('install/textbox_widget'), enabled]":
-  function install(broker) 
+  dispose: function dispose(broker) 
   {
-  },
-
-  "[subscribe('uninstall/textbox_widget'), enabled]":
-  function uninstall(broker) 
-  {
-    if (this._canvas) {
-      this._canvas.parentNode.removeChild(this._canvas);
-      this._canvas = null;
+    let dom = this._dom;
+    if (dom.canvas) {
+      dom.canvas.parentNode.removeChild(dom.canvas);
+      dom.canvas = null;
     }
-    if (this._element) {
-      this._element.parentNode.removeChild(this._element);
-      this._element = null;
+    if (dom.context) {
+      dom.context = null;
     }
-  },
+    if (dom.textbox) {
+      dom.textbox.parentNode.removeChild(dom.textbox);
+      dom.textbox = null;
+    }
+  }, // clear
 
   get mode()
   {
@@ -119,56 +117,58 @@ TextboxWidget.definition = {
 
   commit: function commit()
   {
+    let dom = this._dom;
     this.value = this.value.substr(0, this.selectionStart) 
-      + this._element.value
+      + dom.textbox.value
       + this.value.substr(this.selectionEnd);
-    this._element.value = "";
+    dom.textbox.value = "";
   },
 
   _clear: function _clear()
   {
-    this._context.clearRect(
+    let dom = this._dom;
+    dom.context.clearRect(
       0, 0, 
-      this._canvas.width, this._canvas.height);
+      dom.canvas.width, dom.canvas.height);
   },
 
   _draw: function _draw()
   {
     this._clear();
-
-    this._context.fillStyle = this.font_color;
-    this._context.font = this.font_size + "px " + this.font_family + " " + this.font_weight;
+    let dom = this._dom;
+    dom.context.fillStyle = this.font_color;
+    dom.context.font = this.font_size + "px " + this.font_family + " " + this.font_weight;
     let height = this._glyph_height;
 
     if ("command" == this._mode) {
       if (this._main_buffer) {
-        this._context.fillText(this._main_buffer, 0, height + 2);
+        dom.context.fillText(this._main_buffer, 0, height + 2);
       }
-      this._context.globalAlpha = 0.5;
-      let left = this._context.measureText(this._main_buffer).width;
-      this._context.fillText(
+      dom.context.globalAlpha = 0.5;
+      let left = dom.context.measureText(this._main_buffer).width;
+      dom.context.fillText(
         this._completion_buffer.substr(this._main_buffer.length), left, height + 2);
 
-      this._context.globalAlpha = 0.5;
+      dom.context.globalAlpha = 0.5;
 
       let cursor_left = this._main_buffer.substr(0, this._start);
-      left = this._context.measureText(cursor_left).width;
-      let font = this._context.font;
-      this._context.font = "yellow";
-      this._context.fillRect(left, 0, 10, height);
-      this._context.font = font;
+      left = dom.context.measureText(cursor_left).width;
+      let font = dom.context.font;
+      dom.context.font = "yellow";
+      dom.context.fillRect(left, 0, 10, height);
+      dom.context.font = font;
 
-      this._context.globalAlpha = 1.0;
+      dom.context.globalAlpha = 1.0;
 
     } else if ("status" == this._mode) {
       if (this._status_buffer) {
-        this._context.fillText(this._status_buffer, 0, height + 2);
+        dom.context.fillText(this._status_buffer, 0, height + 2);
       }
     }
     if (this._keystate_buffer) {
-      let width = this._context.measureText(this._keystate_buffer).width;
-      this._context.clearRect(this._canvas.width - width, 0, width, height);
-      this._context.fillText(this._keystate_buffer, this._canvas.width - width, height + 2);
+      let width = dom.context.measureText(this._keystate_buffer).width;
+      dom.context.clearRect(dom.canvas.width - width, 0, width, height);
+      dom.context.fillText(this._keystate_buffer, dom.canvas.width - width, height + 2);
     }
 
   },
@@ -191,8 +191,9 @@ TextboxWidget.definition = {
 
   set selectionEnd(position) 
   {
+    let dom = this._dom;
     this._end = position;
-    this._element.selectionEnd = position;
+    dom.textbox.selectionEnd = position;
     this._draw();
   },
 
@@ -218,43 +219,48 @@ TextboxWidget.definition = {
     this._draw();
   },
 
-  blur: function() 
+  blur: function blur() 
   {
-    this._canvas.style.opacity = 0.7;
+    let dom = this._dom;
+    dom.canvas.style.opacity = 0.7;
   },
 
-  focus: function() 
+  focus: function focus() 
   {
-    this._element.focus();
+    let dom = this._dom;
+    dom.textbox.focus();
   },
 
   getCaretPosition: function getCaretPosition()
   {
+    let dom = this._dom;
     let text = this.value.substr(0, this.selectionStart);
-    let position = this._context.measureText(text).width;
-    this._element.style.fontFamily = this.font_family;
-    this._element.style.fontSize = (this.font_size - 2) + "px";
-    this._element.style.color = this.font_color;
-    this._element.parentNode.previousSibling.width = position;
+    let position = dom.context.measureText(text).width;
+    dom.textbox.style.fontFamily = this.font_family;
+    dom.textbox.style.fontSize = (this.font_size - 2) + "px";
+    dom.textbox.style.color = this.font_color;
+    dom.textbox.parentNode.previousSibling.width = position;
     return position;
   },
 
   calculateSize: function calculateSize() 
   {
-    let fill_style = this._context.fillStyle;
-    let font = this._context.font;
+    let dom = this._dom;
+    let fill_style = dom.context.fillStyle;
+    let font = dom.context.font;
     let [width, height, top] = coUtils.Font
       .getAverageGlyphSize(this.font_size, this.font_family);
-    this._canvas.width = this._canvas.parentNode.boxObject.width;
+    dom.canvas.width = dom.canvas.parentNode.boxObject.width;
     this._glyph_height = height;
-    this._canvas.height = height + top;
-    this._context.fillStyle = fill_style;
-    this._context.font = font;
+    dom.canvas.height = height + top;
+    dom.context.fillStyle = fill_style;
+    dom.context.font = font;
   },
 
   getInputField: function getInputField()
   {
-    return this._element;
+    let dom = this._dom;
+    return dom.textbox;
   },
 
 };
@@ -416,7 +422,7 @@ Commandline.definition = {
             style: <> 
               margin-top: -4px;
               padding-top: 0px;
-              opacity: 1.0;
+              opacity: 0.0;
               background: transparent;
             </>,
           },
@@ -557,10 +563,6 @@ Commandline.definition = {
     this.doCompletion.enabled = false;
 
     this.onmousedown.enabled = false;
-
-//    if (this._textbox) {
-//      this._texbox.clear();
-//    }
     if (this._popup) {
       while (this._popup.firstChild) {
         this._popup.removeChild(this._popup.firstChild);
@@ -570,6 +572,14 @@ Commandline.definition = {
       }
       this._popup.parentNode.removeChild(this._popup);
       this._popup = null;
+    }
+    if (null !== this._canvas) {
+      this._canvas = null;
+    }
+
+    if (null !== this._textbox) {
+      this._textbox.dispose();
+      this._textbox = null;
     }
   },
 

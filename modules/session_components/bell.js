@@ -61,25 +61,26 @@ Bell.definition = {
   _cover: null,
  
   /** installs itself. 
-   *  @param {Session} session A session object.
+   *  @param {Broker} broker A Broker object.
    */
   "[subscribe('install/bell'), enabled]":
-  function install(session) 
+  function install(broker) 
   {
-    let {tanasinn_visual_bell}
-      = session.uniget("command/construct-chrome", this.template);
+    let { tanasinn_visual_bell }
+      = broker.uniget("command/construct-chrome", this.template);
     this._cover = tanasinn_visual_bell;
     this.onBell.enabled = true;
   },
 
   /** Uninstalls itself.
-   *  @param {Session} session A session object.
+   *  @param {Broker} broker A Broker object.
    */
   "[subscribe('uninstall/bell'), enabled]":
-  function uninstall(session) 
+  function uninstall(broker) 
   {
-    if (this._cover) {
+    if (null !== this._cover) {
       this._cover.parentNode.removeChild(this._cover);
+      this._cover = null;
     }
     this.onBell.enabled = false;
   },
@@ -100,14 +101,13 @@ Bell.definition = {
   /** Plays visual bell effect. */
   visualBell: function visualBell() 
   {
-    let style = this._cover.style;
-    style.backgroundColor = this.color;
-    style.opacity = this.opacity;
-    style.MozTransitionDuration = this.duration + "ms";
+    this._cover.style.backgroundColor = this.color;
+    this._cover.style.opacity = this.opacity;
+    this._cover.style.MozTransitionDuration = this.duration + "ms";
     coUtils.Timer.setTimeout(function() {
-      style.opacity = 0.0;
-      style = null; // prevent leak.
-    }, this.duration);
+      this._cover.style.opacity = 0.0;
+      this._cover = null; // prevent leak.
+    }, this.duration, this);
   },
 
   /** Plays 'beep' sound asynchronously. */

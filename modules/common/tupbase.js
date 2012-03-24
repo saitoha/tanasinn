@@ -630,7 +630,6 @@ Plugin.definition = {
       if (value) {
         try {
           broker.uniget("install/" + this.id, broker);
-          //this.install(broker);
         } catch (e) {
           coUtils.Debug.reportError(e);
           coUtils.Debug.reportError(_("Failed to enable plugin: %s"), this.id);
@@ -638,7 +637,6 @@ Plugin.definition = {
         }
       } else {
         broker.uniget("uninstall/" + this.id, broker);
-        //this.uninstall(broker);
       }
       this.__enabled = value;
       this.enabled_when_startup = value;

@@ -127,8 +127,11 @@ Selection.definition = {
     this.ondragstart.enabled = false;
     this.ondblclick.enabled = false;
 
-    this._canvas.parentNode.removeChild(this._canvas);
-    this._canvas = null;
+    if (null !== this._canvas) {
+      this._canvas.parentNode.removeChild(this._canvas);
+      this._canvas = null;
+    }
+    this._context = null;
 
   },
 

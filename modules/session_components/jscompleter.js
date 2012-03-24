@@ -41,7 +41,6 @@ JsCompleter.definition = {
   "[completer('js'), enabled]":
   function complete(context)
   {
-    try {
     let broker = this._broker;
     let { source, option, completers } = context;
     let autocomplete_result = null; 
@@ -137,7 +136,6 @@ JsCompleter.definition = {
       };
     }
     broker.notify("event/answer-completion", autocomplete_result);
-    } catch(e) {alert(e)}
   },
 
 };

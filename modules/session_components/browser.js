@@ -124,10 +124,10 @@ OverlayBrowser.definition = {
   function close(data) 
   {
     let element = this._element;
-    if (element) {
+    if (null !== element) {
       element.parentNode.removeChild(element);
+      this._element = null;
     }
-    this._element = null;
   },
 
 } // class OverlayIndicator

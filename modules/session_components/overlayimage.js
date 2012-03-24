@@ -70,10 +70,10 @@ OverlayImage.definition = {
   },
 
   /** Uninstalls itself.
-   *  @param {Session} session A session object.
+   *  @param {Broker} broker A broker object.
    */
   "[subscribe('uninstall/overlay_image'), enabled]":
-  function uninstall(session) 
+  function uninstall(broker) 
   {
     if (this._canvas) {
       this._canvas.parentNode.removeChild(this._canvas);
@@ -141,10 +141,9 @@ OverlayImage.definition = {
     let pixel_h = Number(h) * line_height;
     this._cache_holder = this._cache_holder || {};
     let cache = this._cache_holder[filename];
-    let session = this._broker;
     const NS_XHTML = "http://www.w3.org/1999/xhtml";
     let image = cache 
-      || broker.document.createElementNS(NS_XHTML, "img");
+      || broker.window.document.createElementNS(NS_XHTML, "img");
     if (cache) {
       // draw immediately.
       canvas.context.drawImage(image, pixel_x, pixel_y, pixel_w, pixel_h);

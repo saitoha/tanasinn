@@ -572,8 +572,6 @@ let alert = coUtils.alert = function alert(message)
  */
 coUtils.getWindow = function getWindow() 
 {
-//  if (window)
-//    return window;
   let windowMediator = Components
     .classes["@mozilla.org/appshell/window-mediator;1"]
     .getService(Components.interfaces.nsIWindowMediator);
@@ -583,7 +581,7 @@ coUtils.getWindow = function getWindow()
   if (result) {
     return result;
   }
-  return eval("window");
+  return new Function("return window;")();
 }
 
 /** Provides printf-like formatting.
@@ -687,8 +685,12 @@ coUtils.Font = {
       .createElementNS(NS_XHTML , "html:canvas");
     let context = canvas.getContext("2d");
     let unit = test_string || "Mbc123-XYM";
-    let repeat_generator = function(n) { while(n--) yield; } (10);
-    let text = [ unit for (_ in repeat_generator) ].join("");
+    
+    let text = "";
+    for (let i = 0; i < 10; ++i) {
+      text += i;
+    }
+
     let css_font_property = [font_size, "px ", font_family].join("");
     context.font = css_font_property;
     let metrics = context.measureText(text);
@@ -722,7 +724,8 @@ coUtils.Font = {
         break detect_last;
       }
     }
-
+    canvas = null;
+    context = null;
     return [char_width, last - first, first];
   }
 
@@ -896,6 +899,10 @@ coUtils.IO = {
   
     // save the canvas data to the file  
     persist.saveURI(source, null, null, null, null, file);
+
+    source_canvas = null;
+    canvas = null;
+    context = null;
   },
 
 };

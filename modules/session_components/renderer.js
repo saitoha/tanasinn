@@ -137,12 +137,12 @@ Renderer.definition = {
   "[persistable, watchable] smoothing": true,
 
   /** Installs itself.
-   *  @param session {Session} A session object.
+   *  @param broker {Broker} A broker object.
    */
   "[subscribe('install/renderer'), enabled]":
-  function install(session) 
+  function install(broker) 
   {
-    let { tanasinn_renderer_canvas } = session.uniget(
+    let { tanasinn_renderer_canvas } = broker.uniget(
       "command/construct-chrome", 
       {
         parentNode: "#tanasinn_center_area",
@@ -170,14 +170,13 @@ Renderer.definition = {
     this.captureScreen.enabled = true;
     this.onDRCSStateChangedG0.enabled = true;
     this.onDRCSStateChangedG1.enabled = true;
-    session.notify("initialized/renderer", this);
   },
 
   /** Uninstalls itself.
-   *  @param session {Session} A session object.
+   *  @param broker {Broker} A Broker object.
    */
   "[subscribe('uninstall/renderer'), enabled]":
-  function uninstall(session) 
+  function uninstall(broker) 
   {
     this.onWidthChanged.enabled = false;
     this.onHeightChanged.enabled = false;
@@ -192,6 +191,8 @@ Renderer.definition = {
     this.onDRCSStateChangedG0.enabled = false;
     this.onDRCSStateChangedG1.enabled = false;
     this._canvas.parentNode.removeChild(this._canvas);
+    this._canvas = null;
+    this._context = null;
   },
 
   "[subscribe('command/reverse-video'), enabled]": 
@@ -294,8 +295,8 @@ Renderer.definition = {
   {
     this.line_height += font_size - this.font_size;
     this.font_size = font_size;
-    let session = this._broker;
-    session.notify("event/font-size-changed", this.font_size);
+    let broker = this._broker;
+    broker.notify("event/font-size-changed", this.font_size);
   },
 
   "[subscribe('set/font-family')]": 
@@ -316,8 +317,8 @@ Renderer.definition = {
   {
     this.font_size = Number(this.font_size) + offset;
     this.line_height = Number(this.line_height) + offset;
-    let session = this._broker;
-    session.notify("event/font-size-changed", this.font_size);
+    let broker = this._broker;
+    broker.notify("event/font-size-changed", this.font_size);
   },
 
   "[subscribe('variable-changed/{screen.width | renderer.char_width}')]":
@@ -400,6 +401,7 @@ Renderer.definition = {
       context.fillStyle = back_color;
       context.fillRect(x, y, width, height);
     }
+    context = null;
   },
 
   /** Render text in specified cells.
@@ -416,20 +418,19 @@ Renderer.definition = {
     if (attr.underline) {
       this._drawUnderline(context, x, y, char_width * length, fore_color);
     }
-    let codes = [code for (code in function () {
-      for (let [, cell] in Iterator(cells)) {
-        let code = cell.c;
-        if (code > 0xffff) {
-          // emit 16bit + 16bit surrogate pair.
-          code -= 0x10000;
-          yield (code >> 10) | 0xD800;
-          yield (code & 0x3FF) | 0xDC00;
-        } else {
-          yield code;
-        }
+    let codes = [];
+    for (let [, cell] in Iterator(cells)) {
+      let code = cell.c;
+      if (code > 0xffff) {
+        // emit 16bit + 16bit surrogate pair.
+        code -= 0x10000;
+        codes.push(
+          (code >> 10) | 0xD800, 
+          (code & 0x3FF) | 0xDC00);
+      } else {
+        codes.push(code);
       }
-    }())];
-
+    }
 
     if (this._drcs_state === null || !attr.drcs) {
       let text = String.fromCharCode.apply(String, codes);

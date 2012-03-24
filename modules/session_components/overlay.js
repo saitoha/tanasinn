@@ -142,8 +142,12 @@ OverlayIndicator.definition = {
   "[subscribe('uninstall/overlayindicator'), enabled]":
   function uninstall(session) 
   {
-    if (this._element) {
+    if (null !== this._element) {
       this._element.parentNode.removeChild(this._element);
+      this._element = null;
+    }
+    if (null !== this._content) {
+      this._content = null;
     }
     this.report.enabled = false;
     this.onScreenSizeChanged.enabled = false;

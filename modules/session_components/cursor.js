@@ -114,7 +114,11 @@ Cursor.definition = {
     this.onScrollSessionClosed.enabled = false;
     this.backup.enabled = false;
     this.restore.enabled = false;
-    this._canvas.parentNode.removeChild(this._canvas);
+    if (null !== this._canvas) {
+      this._canvas.parentNode.removeChild(this._canvas);
+      this._canvas = null;
+    }
+    this._context = null;
   },
 
   "[subscribe('command/backup')]": 

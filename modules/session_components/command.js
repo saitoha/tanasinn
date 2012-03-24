@@ -135,13 +135,13 @@ JsCommand.definition = {
   "[command('javascript/js', ['js']), _('Run a javascript code.'), enabled]":
   function evaluate(arguments_string)
   {
-    let session = this._broker;
+    let broker = this._broker;
     try {
       let result = new Function(
         "with (arguments[0]) { return (" + arguments_string + ");}"
-      ) (session.window);
+      ) (broker.window);
     } catch (e) {
-      session.notify("command/report-status-message", e);
+      broker.notify("command/report-status-message", e);
     }
   },
 };

@@ -76,16 +76,23 @@ W3m.definition = {
   }, 
 
   /** Uninstall itself. 
-   *  @param {Session} session A session object.
+   *  @param {Broker} broker A Broker object.
    */
   "[subscribe('uninstall/w3m'), enabled]":
-  function uninstall(session) 
+  function uninstall(broker) 
   {
     this.onWidthChanged.enabled = false;
     this.onHeightChanged.enabled = false;
     this.onFirstFocus.enabled = false;
     this.onKeypadModeChanged.enabled = false;
     this.osc99.enabled = false;
+    if (null !== this._canvas) {
+      this._canvas.parentNode.removeChild(this._canvas);
+      this._canvas = null
+    }
+    if (null !== this._context) {
+      this._context = null;
+    }
   },
     
   /** Fired at the keypad mode is changed. */

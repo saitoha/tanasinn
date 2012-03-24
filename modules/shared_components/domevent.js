@@ -88,7 +88,7 @@ DOMEventManager.definition = {
       } else {
         if ("#" == listener.target.charAt(0)) {
           broker.subscribe(
-            <>@event/domnode-created/{id}</>, 
+            "@event/domnode-created/" + id, 
             function onNodeCreated(target_element) 
             {
               this._addImpl(listener, target_element);
