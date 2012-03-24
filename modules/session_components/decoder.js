@@ -68,7 +68,7 @@
  * vertical line             ACS_VLINE     |        x
  */
 
-let ASCII = [
+let USASCII = [
   0x00, /* NUL  */
   0x01, /* SOH  */
   0x02, /* STX  */
@@ -331,10 +331,10 @@ let ISO_8859_Latin1 = [
 ];
 
 /* DEC Multinational Character Set */
-let DEC_Multinational_Character_Set = ASCII.slice(0);
+let DEC_Multinational_Character_Set = USASCII.slice(0);
 
 /* DEC Special Graphics Character Set */
-let DEC_Special_Graphics_Character_Set = ASCII.slice(0);
+let DEC_Special_Graphics_Character_Set = USASCII.slice(0);
 DEC_Special_Graphics_Character_Set[0x60] = 0x25c6; // 
 DEC_Special_Graphics_Character_Set[0x61] = 0x2592; // 
 DEC_Special_Graphics_Character_Set[0x62] = 0x2409; // HT
@@ -370,13 +370,13 @@ DEC_Special_Graphics_Character_Set[0x7e] = 0xb7; //
 /* DEC British NRC Set 
  * DSCS = B
  */
-let DEC_British_NRC_Set = ASCII.slice(0);
+let DEC_British_NRC_Set = USASCII.slice(0);
 DEC_British_NRC_Set[0x23] = 0xa3; // pond
 
 /* DEC Dutch NRC Set 
  * DSCS = 4
  */
-let DEC_Dutch_NRC_Set = ASCII.slice(0);
+let DEC_Dutch_NRC_Set = USASCII.slice(0);
 DEC_Dutch_NRC_Set[0x23] = 0xa3; // pond
 DEC_Dutch_NRC_Set[0x40] = 0xbe; // 3/4
 DEC_Dutch_NRC_Set[0x5b] = 0xff; // ij
@@ -390,7 +390,7 @@ DEC_Dutch_NRC_Set[0x7e] = 0xb4; //
 /* DEC Finnish NRC Set 
  * DSCS = 5, C
  */
-let DEC_Finnish_NRC_Set = ASCII.slice(0);
+let DEC_Finnish_NRC_Set = USASCII.slice(0);
 DEC_Finnish_NRC_Set[0x5b] = 0xc4; // 
 DEC_Finnish_NRC_Set[0x5c] = 0xd6; // 
 DEC_Finnish_NRC_Set[0x5d] = 0xc5; // 
@@ -404,7 +404,7 @@ DEC_Finnish_NRC_Set[0x7e] = 0xfc; //
 /* DEC French NRC Set 
  * DSCS = R
  */
-let DEC_French_NRC_Set = ASCII.slice(0);
+let DEC_French_NRC_Set = USASCII.slice(0);
 DEC_French_NRC_Set[0x23] = 0xa3; // 
 DEC_French_NRC_Set[0x40] = 0xe0; // 
 DEC_French_NRC_Set[0x5b] = 0xb0; // 
@@ -418,7 +418,7 @@ DEC_French_NRC_Set[0x7e] = 0xa8; //
 /* DEC French Canadian NRC Set 
  * DSCS = Q
  */
-let DEC_French_Canadian_NRC_Set = ASCII.slice(0);
+let DEC_French_Canadian_NRC_Set = USASCII.slice(0);
 DEC_French_Canadian_NRC_Set[0x40] = 0xe0; // 
 DEC_French_Canadian_NRC_Set[0x5b] = 0xe2; // 
 DEC_French_Canadian_NRC_Set[0x5c] = 0xe7; // 
@@ -433,7 +433,7 @@ DEC_French_Canadian_NRC_Set[0x7e] = 0xfb; //
 /* DEC German NRC Set 
  * DSCS = K
  */
-let DEC_German_NRC_Set = ASCII.slice(0);
+let DEC_German_NRC_Set = USASCII.slice(0);
 DEC_German_NRC_Set[0x40] = 0xa7; // 
 DEC_German_NRC_Set[0x5b] = 0xc4; // 
 DEC_German_NRC_Set[0x5c] = 0xd6; // 
@@ -446,7 +446,7 @@ DEC_German_NRC_Set[0x7e] = 0xdf; //
 /* DEC Italian German NRC Set 
  * DSCS = Y
  */
-let DEC_Italian_NRC_Set = ASCII.slice(0);
+let DEC_Italian_NRC_Set = USASCII.slice(0);
 DEC_Italian_NRC_Set[0x23] = 0xa3; // 
 DEC_Italian_NRC_Set[0x40] = 0xa7; // 
 DEC_Italian_NRC_Set[0x5b] = 0xb0; // 
@@ -461,7 +461,7 @@ DEC_Italian_NRC_Set[0x7e] = 0xec; //
 /* DEC Norwegian/Danish NRC Set 
  * DSCS = E, 6
  */
-let DEC_Norwegian_Danish_NRC_Set = ASCII.slice(0);
+let DEC_Norwegian_Danish_NRC_Set = USASCII.slice(0);
 DEC_Norwegian_Danish_NRC_Set[0x40] = 0xc4; // 
 DEC_Norwegian_Danish_NRC_Set[0x5b] = 0xc6; // 
 DEC_Norwegian_Danish_NRC_Set[0x5c] = 0xd8; // 
@@ -476,7 +476,7 @@ DEC_Norwegian_Danish_NRC_Set[0x7e] = 0xfc; //
 /* DEC Spanish NRC Set 
  * DSCS = Z
  */
-let DEC_Spanish_NRC_Set = ASCII.slice(0);
+let DEC_Spanish_NRC_Set = USASCII.slice(0);
 DEC_Spanish_NRC_Set[0x23] = 0xa3; // 
 DEC_Spanish_NRC_Set[0x40] = 0xa7; // 
 DEC_Spanish_NRC_Set[0x5b] = 0xa1; // 
@@ -489,7 +489,7 @@ DEC_Spanish_NRC_Set[0x7d] = 0xe7; //
 /* DEC Swedish NRC Set 
  * DSCS = H, 7
  */
-let DEC_Swedish_NRC_Set = ASCII.slice(0);
+let DEC_Swedish_NRC_Set = USASCII.slice(0);
 DEC_Swedish_NRC_Set[0x40] = 0xc9; // 
 DEC_Swedish_NRC_Set[0x5b] = 0xc4; // 
 DEC_Swedish_NRC_Set[0x5c] = 0xd6; // 
@@ -505,7 +505,7 @@ DEC_Swedish_NRC_Set[0x7e] = 0xfc; //
  * DSCS = =
  */
 //f9,20,e0,20,e9,e7,ea,ee,e8,20,f4,20,e4,f6,fc,fb
-let DEC_Swiss_NRC_Set = ASCII.slice(0);
+let DEC_Swiss_NRC_Set = USASCII.slice(0);
 DEC_Swiss_NRC_Set[0x23] = 0xf9; // 
 DEC_Swiss_NRC_Set[0x40] = 0xe0; // 
 DEC_Swiss_NRC_Set[0x5b] = 0xe9; // 
@@ -900,10 +900,10 @@ Decoder.definition = {
   _scheme: "ascii",
   _offset: 0,
 
-  _g0: ASCII,
-  _g1: ASCII,
-  _g2: ASCII,
-  _g3: ASCII,
+  _g0: USASCII,
+  _g1: USASCII,
+  _g2: USASCII,
+  _g3: USASCII,
 
   _charset_table: {
     "0": DEC_Special_Graphics_Character_Set,
@@ -911,7 +911,7 @@ Decoder.definition = {
     "5": DEC_Finnish_NRC_Set,
     "6": DEC_Norwegian_Danish_NRC_Set,
     "7": DEC_Swedish_NRC_Set,
-    "B": ASCII,
+    "B": USASCII,
     "C": DEC_Finnish_NRC_Set,
     "E": DEC_Norwegian_Danish_NRC_Set,
     "H": DEC_Swedish_NRC_Set,
@@ -1019,7 +1019,7 @@ Decoder.definition = {
   decode: function decode(scanner) 
   {
     let decoder = this._decoder;
-    let g0 = this._g0 || ASCII;
+    let g0 = this._g0 || USASCII;
     let g1 = this._g1 || ISO_8859_Latin1;
     return function() {
       for (let c in decoder.decode(scanner)) {

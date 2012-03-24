@@ -1608,7 +1608,6 @@ Screen.definition = {
         if (cursor.positionX >= width) {
           this.carriageReturn();
           if (auto_wrap_mode) {
-            this.carriageReturn();
             if (reverse_wrap_mode) {
               this.reverseIndex();
             } else {

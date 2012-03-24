@@ -981,7 +981,7 @@ DecPrivateMode.definition = {
    * the cursor is at the right border of the page replace characters already 
    * on the page.
    */
-  AWM: false,   // Autowrap Mode (true: autowrap, false: no autowrap)
+  AWM: true,   // Autowrap Mode (true: autowrap, false: no autowrap)
 
   /* 
    * @Property TCEM
