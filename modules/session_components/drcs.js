@@ -122,7 +122,6 @@ DRCSBuffer.definition = {
   "[subscribe('sequence/dcs')]":
   function onDCS(data) 
   {
-    try {
     //               Pfn    Pcn      Pe      Pcmw     Pw      Pt      Pcmh     Pcss    Dscs
     let pattern = /^([01]);([0-9]+);([012]);([0-9]+);([012]);([012]);([0-9]+);([01])\{\s*([0-~])([\?-~\/;\n\r]+)$/;
     let match = data.match(pattern);
@@ -238,7 +237,6 @@ DRCSBuffer.definition = {
       end_code: start_code + sixels.length,
       full_cell: full_cell,
     };
-    } catch (e) {alert(e)}
   },
 
 } // class DRCSBuffer

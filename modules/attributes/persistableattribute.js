@@ -188,7 +188,6 @@ PersistableAttribute.definition = {
             return self[key];
           });
           context.__defineSetter__(path, let (self = this) function(value) {
-            alert(value)
             self[key] = value;
           });
         } catch (e) {

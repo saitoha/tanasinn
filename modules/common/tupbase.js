@@ -911,8 +911,6 @@ Concept.prototype = {
       let getter = definition.__lookupGetter__(rule);
       let setter = definition.__lookupSetter__(rule);
       if (!getter && !setter) {
-        try {
-
         let match = rule.match(/^(?:<(.+?)>|(.+?)) :: (.+)$/);
         if (null === match) {
           throw coUtils.Debug.Exception(
@@ -958,8 +956,6 @@ Concept.prototype = {
             target[message].description = comment;
           }
         }
-
-        } catch (e) {alert(e)}
       }
     }
     return true;

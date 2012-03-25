@@ -672,7 +672,6 @@ ExternalDriver.definition = {
   function start(connection_port) 
   {
     let broker = this._broker;
-    try {
     let executable_path;
     let os = coUtils.Runtime.os;
     if ("WINNT" == os) {
@@ -685,9 +684,6 @@ ExternalDriver.definition = {
     let runtime = Components
       .classes["@mozilla.org/file/local;1"]
       .createInstance(Components.interfaces.nsILocalFile);
-    //try {
-    //alert(this._broker.cygwin_root)
-    //} catch(e) {alert(e + " " + e.fileName + " " + e.lineNumber)}
     runtime.initWithPath(executable_path);
     if (!runtime.exists() || !runtime.isExecutable()) {
       throw coUtils.Debug.Exeption(_("Could not launch python: file not found."));
@@ -726,7 +722,6 @@ ExternalDriver.definition = {
 
     broker.notify("initialized/externaldriver", this);
 
-    } catch(e) {alert(e)}
   },
 
   observe: function observe(subject, topic, data)

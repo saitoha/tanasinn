@@ -99,9 +99,9 @@ BatchLoader.definition = {
     let file = coUtils.File.getFileLeafFromVirtualPath(path);
     if (file && file.exists()) {
       try {
-        let session = this._broker;
+        let broker = this._broker;
         let content = coUtils.IO.readFromFile(path, "utf-8");
-        session.notify("command/eval-source", content);
+        broker.notify("command/eval-source", content);
       } catch (e) {
         coUtils.Debug.reportError(e);
       }
@@ -115,10 +115,10 @@ BatchLoader.definition = {
   "[subscribe('command/eval-source'), enabled]":
   function evalSource(source) 
   {
-    let session = this._broker;
+    let broker = this._broker;
     source.split(/[\n\r]+/).forEach(function(command) {
       if (!/^\s*$/.test(command)) {
-        session.notify("command/eval-commandline", command);
+        broker.notify("command/eval-commandline", command);
       }
     });
   },
@@ -159,8 +159,6 @@ BatchLoader.definition = {
       .classes["@mozilla.org/process/util;1"]
       .createInstance(Components.interfaces.nsIProcess);
     external_process.init(runtime);
-//alert(runtime.path)
-//        alert(coUtils.Text.format("\"$(cygpath '%s')\" > /tmp/tanasinn_tmp", path))
     path = coUtils.File.getFileLeafFromVirtualPath(path).path;
     if ("WINNT" == coUtils.Runtime.os) { // Windows
       args = [
