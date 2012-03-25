@@ -321,10 +321,10 @@ PopupMenu.definition = {
       packed_code = coUtils.Keyboard.parseKeymapExpression("<C-n>");
     }
     for (let i = 0; i < Math.abs(diff); ++i) {
-      session.notify("command/input-with-no-mapping", packed_code);
+      session.notify("command/input-with-no-remapping", packed_code);
     }
     packed_code = coUtils.Keyboard.parseKeymapExpression("<Escape>");
-    session.notify("command/input-with-no-mapping", packed_code);
+    session.notify("command/input-with-no-remapping", packed_code);
   },
 
   "[listen('mousemove', '#tanasinn_app_popup', true)]":

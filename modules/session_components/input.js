@@ -115,24 +115,24 @@ ModeManager.definition = {
     let mode = info.mode || this._mode;
     let code = info.code;
     if ("normal" == mode) {
-      session.notify('command/input-with-mapping', info); 
+      session.notify('command/input-with-remapping', info); 
     } else if ("commandline" == mode) {
-      session.notify('event/keypress-commandline-with-mapping', code); 
+      session.notify('event/keypress-commandline-with-remapping', code); 
     } else {
       throw coUtils.Debug.Exception(_("Unknown mode is specified: %s."), mode);
     }
   },
 
-  "[subscribe('event/scan-keycode-without-mapping')]":
+  "[subscribe('event/scan-keycode-with-no-remapping')]":
   function onScanKeycodeWithoutMapping(info) 
   {
-    let session = this._broker;
+    let broker = this._broker;
     let mode = info.mode || this._mode;
     let code = info.code;
     if ("normal" == mode) {
-      session.notify('command/input-with-no-mapping', info); 
+      broker.notify('command/input-with-no-remapping', info); 
     } else if ("commandline" == mode) {
-      session.notify('event/keypress-commandline-with-no-mapping', code); 
+      broker.notify('event/keypress-commandline-with-no-remapping', code); 
     } else {
       throw coUtils.Debug.Exception(_("Unknown mode is specified: %s."), mode);
     }
@@ -141,31 +141,31 @@ ModeManager.definition = {
   "[command('sendkeys/sk'), enabled]":
   function sendkeys(arguments_string) 
   {
-    let session = this._broker;
-    session.notify("command/input-expression-with-mapping", arguments_string);
+    let broker = this._broker;
+    broker.notify("command/input-expression-with-remapping", arguments_string);
     return {
       result: true,
     };
   },
 
-  "[subscribe('command/input-expression-with-mapping'), enabled]":
+  "[subscribe('command/input-expression-with-remapping'), enabled]":
   function inputExpressionWithMapping(expression) 
   {
     let packed_code_array = coUtils.Keyboard.parseKeymapExpression(expression);
-    let session = this._broker;
+    let broker = this._broker;
     packed_code_array.forEach(function(packed_code) {
-      session.notify("event/scan-keycode", { code: packed_code });
+      broker.notify("event/scan-keycode", { code: packed_code });
     }, this);
     return true;
   },
 
-  "[subscribe('command/input-expression-with-no-mapping'), enabled]":
-  function inputExpressionWithNoMapping(expression) 
+  "[subscribe('command/input-expression-with-no-remapping'), enabled]":
+  function inputExpressionWithNoRemapping(expression) 
   {
     let packed_code_array = coUtils.Keyboard.parseKeymapExpression(expression);
-    let session = this._broker;
+    let broker = this._broker;
     packed_code_array.forEach(function(packed_code) {
-      session.notify("event/scan-keycode-without-mapping", { code: packed_code });
+      broker.notify("event/scan-keycode-with-no-remapping", { code: packed_code });
     }, this);
     return true;
   },
@@ -404,7 +404,7 @@ InputManager.definition = {
   function onDoubleShift(event) 
   {
     let session = this._broker;
-    session.notify("command/input-expression-with-mapping", "<2-shift>")
+    session.notify("command/input-expression-with-remapping", "<2-shift>")
   },
 
   "[nmap('<2-shift>', '<cmode>')]":
@@ -469,7 +469,7 @@ char:{event.isChar?"t":"f"},
   },
   
 
-  "[subscribe('command/input-with-mapping')]": 
+  "[subscribe('command/input-with-remapping')]": 
   function inputWithMapping(info)
   {
     let broker = this._broker;
@@ -482,7 +482,7 @@ char:{event.isChar?"t":"f"},
     }
   },
 
-  "[subscribe('command/input-with-no-mapping')]": 
+  "[subscribe('command/input-with-no-remapping')]": 
   function inputWithNoMapping(packed_code)
   {
     let c = packed_code & 0xffffff;// event.which;

@@ -29,8 +29,6 @@
 let MappingManagerBase = new Abstruct().extends(Plugin);
 MappingManagerBase.definition = {
 
-  "[persistable] enabled_when_startup": true,
-
   _map: null,
   _state: null,
 
@@ -92,19 +90,26 @@ MappingManagerBase.definition = {
 
   dispatch: function dispatch(map, info)
   {
-    let session = this._broker;
-    let result = this._state = this._state[info.code];
+    let broker = this._broker;
+    let code = info.code;
+
+    // swap mapleader as <Leader>
+    if (code == coUtils.Keyboard.parseKeymapExpression(this.mapleader)) {
+      code = coUtils.Keyboard.KEYNAME_PACKEDCODE_MAP.leader;
+    }
+
+    let result = this._state = this._state[code];
     if (result && result.value) {
-      session.notify("event/input-state-reset");
+      broker.notify("event/input-state-reset");
       this._state = map;
       return result.value(info);
     } else if (!result) {
       if (map !== this._state) {
-        session.notify("event/input-state-reset");
+        broker.notify("event/input-state-reset");
       }
       this._state = map;
     } else {
-      session.notify("event/input-state-changed", info.code);
+      broker.notify("event/input-state-changed", code);
       return true;
     }
     return undefined;
@@ -114,10 +119,12 @@ MappingManagerBase.definition = {
   {
     let result = {};
     let context = this._map;
+    let mapleader = this.mapleader;
     void function walk(context, previous) {
       Object.getOwnPropertyNames(context).forEach(function(name) {
         if ("value" == name) {
-          let expression = coUtils.Keyboard.convertCodeToExpression(previous);
+          let expression = coUtils.Keyboard
+            .convertCodeToExpression(previous, mapleader);
           result[expression] = context[name].description || context[name];
         } else {
           walk(context[name], previous.concat(Number(name)));
@@ -138,6 +145,9 @@ NormalMappingManager.definition = {
 
   get id()
     "nmap_manager",
+
+  "[persistable] enabled_when_startup": true,
+  "[persistable] mapleader": "<C-s>",
 
   /** Installs itself. 
    *  @param {Broker} a broker object.
@@ -177,28 +187,29 @@ NormalMappingManager.definition = {
   "[subscribe('command/register-nmap'), enabled]":
   function registerNmap(info)
   {
-    let {source, destination} = info;
-    let session = this._broker;
+    let broker = this._broker;
     let delegate = function() {
-      session.notify("command/input-expression-with-mapping", destination);
+      broker.notify(
+        "command/input-expression-with-remapping", 
+        info.destination);
       return true;
     };
-    delegate.expression = source;
-    delegate.description = destination;
-    this.register(source, delegate);
+    delegate.expression = info.source;
+    delegate.description = info.destination;
+    this.register(info.source, delegate);
   },
 
   "[subscribe('command/register-nnoremap'), enabled]":
   function registerNnoremap(info)
   {
-    let {source, destination} = info;
-    let session = this._broker;
-    let codes = coUtils.Keyboard.parseKeymapExpression(destination);
+    let broker = this._broker;
     let delegate = function() {
-      session.notify("command/input-expression-with-no-mapping", destination);
+      broker.notify(
+        "command/input-expression-with-no-remapping", 
+        info.destination);
       return true;
     }
-    this.register(source, delegate);
+    this.register(info.source, delegate);
   },
 
   "[subscribe('command/unregister-nmap'), enabled]":
@@ -219,6 +230,9 @@ CommandlineMappingManager.definition = {
 
   get id()
     "cmap_manager",
+
+  "[persistable] enabled_when_startup": true,
+  "[persistable] mapleader": "<C-s>",
 
   /** Installs itself. 
    *  @param {Broker} a broker object.
@@ -258,28 +272,30 @@ CommandlineMappingManager.definition = {
   "[subscribe('command/register-cmap'), enabled]":
   function registerCmap(info)
   {
-    let {source, destination} = info;
-    let session = this._broker;
+    let broker = this._broker;
     let delegate = function() {
-      session.notify("command/input-expression-with-mapping", destination);
+      broker.notify(
+        "command/input-expression-with-remapping", 
+        info.destination);
       return true;
     };
-    delegate.expression = source;
-    delegate.description = destination;
-    this.register(source, delegate);
+    delegate.expression = info.source;
+    delegate.description = info.destination;
+    this.register(info.source, delegate);
   },
 
   "[subscribe('command/register-cnoremap'), enabled]":
   function registerCnoremap(info)
   {
-    let {source, destination} = info;
-    let session = this._broker;
-    let codes = coUtils.Keyboard.parseKeymapExpression(destination);
-    let delegate = function() {
-      session.notify("command/input-expression-with-no-mapping", destination);
+    let broker = this._broker;
+    let delegate = function() 
+    {
+      broker.notify(
+        "command/input-expression-with-no-remapping", 
+        info.destination);
       return true;
     }
-    this.register(source, delegate);
+    this.register(info.source, delegate);
   },
 
   "[subscribe('command/unregister-cmap'), enabled]":

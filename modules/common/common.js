@@ -1167,7 +1167,7 @@ coUtils.Runtime = {
  *
  *   char:    00000000000xxxxxxxxxxxxxxxxxxxxx
  *   mode:    000001mmmmmxxxxxxxxxxxxxxxxxxxxx
- *   gesture: gggg0000000000000000000000000001
+ *   gesture: ggggg000000000000000000000000001
  */
 coUtils.Keyboard = {
 
@@ -1179,8 +1179,9 @@ coUtils.Keyboard = {
   KEY_MODE   : 27,
 
   KEYNAME_PACKEDCODE_MAP: let (KEY_NOCHAR = 25) {
-    nmode       : 0x10000001,
-    cmode       : 0x20000001,
+    leader      : 0x08000001,
+    nmode       : 0x18000001,
+    cmode       : 0x28000001,
     "2-shift"   : 0x50000001,
     "2-alt"     : 0x60000001,
     "2-ctrl"    : 0x70000001,
@@ -1190,6 +1191,8 @@ coUtils.Keyboard = {
     swiperight  : 0xb0000001,
     swipetop    : 0xc0000001,
     swipebottom : 0xd0000001,
+    rotateleft  : 0xe0000001,
+    rotateright : 0xf0000001,
     space       : ("Darwin" == coUtils.Runtime.os) << KEY_NOCHAR | 0x0020,
     sp          : ("Darwin" == coUtils.Runtime.os) << KEY_NOCHAR | 0x0020,
     bs          : 0x1 << KEY_NOCHAR | 0x0008, 

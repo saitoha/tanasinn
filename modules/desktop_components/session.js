@@ -197,7 +197,7 @@ Session.definition = {
   "[subscribe('command/send-keys'), enabled]":
   function sendKeys(expression) 
   {
-    this.notify("command/input-expression-with-mapping", expression);
+    this.notify("command/input-expression-with-remapping", expression);
   },
 
   "[subscribe('event/disabled'), enabled]":

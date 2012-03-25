@@ -94,10 +94,12 @@ CommandlineIme.definition = {
   {
     this.endPolling(); // stops polling timer. 
     let textbox = this.dependency["commandline"].getInputField();
-    textbox.style.width = "";
-    textbox.style.imeMode = "disabled";
-    textbox.style.border = "";  
-    textbox.style.position = ""; 
+    if (null !== textbox) {
+      textbox.style.width = "";
+      textbox.style.imeMode = "disabled";
+      textbox.style.border = "";  
+      textbox.style.position = ""; 
+    }
 
     // disables session event handlers.
     this.startPolling.enabled = false;

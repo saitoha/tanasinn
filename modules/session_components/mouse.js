@@ -262,19 +262,19 @@ Mouse.definition = {
     switch (direction) {
 
       case SimpleGestureEvent.DIRECTION_LEFT:
-        broker.notify("command/input-expression-with-mapping", "<SwipeLeft>");
+        broker.notify("command/input-expression-with-remapping", "<SwipeLeft>");
         break;
 
       case SimpleGestureEvent.DIRECTION_RIGHT:
-        broker.notify("command/input-expression-with-mapping", "<SwipeRight>");
+        broker.notify("command/input-expression-with-remapping", "<SwipeRight>");
         break;
 
       case SimpleGestureEvent.DIRECTION_UP:
-        broker.notify("command/input-expression-with-mapping", "<SwipeUp>");
+        broker.notify("command/input-expression-with-remapping", "<SwipeUp>");
         break;
 
       case SimpleGestureEvent.DIRECTION_DOWN:
-        broker.notify("command/input-expression-with-mapping", "<SwipeDown>");
+        broker.notify("command/input-expression-with-remapping", "<SwipeDown>");
         break;
 
       default:
@@ -292,12 +292,12 @@ Mouse.definition = {
     if (delta > 0) {
       let count = Math.ceil(delta / this.magnify_delta_per_fontsize);
       for (let i = 0; i < count; ++i) {
-        broker.notify("command/input-expression-with-mapping", "<PinchOpen>");
+        broker.notify("command/input-expression-with-remapping", "<PinchOpen>");
       }
     } else if (delta < 0) {
       let count = Math.floor(- delta / this.magnify_delta_per_fontsize);
       for (let i = 0; i < count; ++i) {
-        broker.notify("command/input-expression-with-mapping", "<PinchClose>");
+        broker.notify("command/input-expression-with-remapping", "<PinchClose>");
       }
     }
     broker.notify("command/draw");

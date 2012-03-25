@@ -129,7 +129,7 @@ OuterChrome.definition = {
     </plugin>,
 
   "[persistable] enabled_when_startup": true,
-  "[persistable, watchable] background_opaicty": 0.80,
+  "[persistable, watchable] background_opacity": 0.80,
   "[persistable, watchable] background": "-moz-linear-gradient(top, #555, #101010)",
   "[persistable, watchable] border_radius": 8,
   "[persistable, watchable] box_shadow": "5px 4px 29px black",
@@ -139,7 +139,7 @@ OuterChrome.definition = {
       -moz-box-shadow: {this.box_shadow};
       border-radius: {this.border_radius}px;
       background: {this.background}; 
-      opacity: {this.background_opaicty};
+      opacity: {this.background_opacity};
     </>,
 
   /** 
@@ -241,7 +241,7 @@ OuterChrome.definition = {
     this._element.hidden = false;
   },
 
-  "[subscribe('variable-changed/outerchrome.{background | background_opaicty | border_radius | box_shadow}')]": 
+  "[subscribe('variable-changed/outerchrome.{background | background_opacity | border_radius | box_shadow}')]": 
   function updateStyle() 
   {
     this._frame.style.cssText = this.frame_style;

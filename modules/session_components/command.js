@@ -178,15 +178,19 @@ SetCommand.definition = {
                    "valid format is such as '<component name>.<property name>'."),
       };
     }
-    let [module] = modules.filter(function(module) {
-      return module.id == component_name;
+    let candidates = modules.filter(function(module) {
+      if ("id" in module) {
+        return module.id == component_name;
+      }
+      return false;
     });
-    if (!module) {
+    if (0 == candidates.length) {
       return {
         success: false,
         message: coUtils.Text.format(_("Module %s is not found."), component_name),
       };
-    }  
+    } 
+    let module = candidates.shift();
     if (!equal) {
       return {
         success: true,
@@ -334,7 +338,7 @@ FontCommands.definition = {
   },
 
   /** Makes font size smaller. */
-  "[command('decrease'), nmap('<M-\\\\->', '<C-S-\\->', '<C-S-_>', '<PinchClose>'), _('Make font size smaller.'), enabled]":
+  "[command('decrease'), _('Make font size smaller.'), enabled]":
   function decrease()
   {
     let session = this._broker;
@@ -347,7 +351,7 @@ FontCommands.definition = {
   },
 
   /** Makes font size bigger. */
-  "[command('increase'), nmap('<M-S-+>', '<C-S-;>', '<C-S-=>', '<PinchOpen>'), _('Make font size bigger.'), enabled]":
+  "[command('increase'), _('Make font size bigger.'), enabled]":
   function increase()
   {
     let session = this._broker;

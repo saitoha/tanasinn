@@ -495,18 +495,19 @@ Commandline.definition = {
   _result: null,
 
   /** Installs itself. 
-   *  @param {Session} session A Session object.
+   *  @param {Broker} broker A Broker object.
    */
   "[subscribe('install/commandline'), enabled]":
-  function install(session) 
+  function install(broker) 
   {
+    try {
     let {
       tanasinn_commandline_canvas, 
       tanasinn_commandline, 
       tanasinn_completion_popup, 
       tanasinn_completion_scroll, 
       tanasinn_completion_root,
-    } = session.uniget("command/construct-chrome", this.template);
+    } = broker.uniget("command/construct-chrome", this.template);
 
     this._canvas = tanasinn_commandline_canvas;
 
@@ -535,14 +536,16 @@ Commandline.definition = {
     this.doCompletion.enabled = true;
 
     this.onmousedown.enabled = true;
+    } catch(e) {alert(e)}
   },
   
   /** Uninstalls itself.
-   *  @param {Session} session A Session object.
+   *  @param {Broker} broker A Broker object.
    */
   "[subscribe('uninstall/commandline'), enabled]":
-  function uninstall(session) 
+  function uninstall(broker) 
   {
+    try {
     this.show.enabled = false;
     this.fill.enabled = false;
     this.invalidate.enabled = false;
@@ -581,6 +584,7 @@ Commandline.definition = {
       this._textbox.dispose();
       this._textbox = null;
     }
+    } catch(e) {alert(e)}
   },
 
   "[subscribe('variable-changed/commandline.{font_weight | font_size | default_text_shadow | font_family}')]":
@@ -600,6 +604,9 @@ Commandline.definition = {
 
   getInputField: function getInputField() 
   {
+    if (null === this._textbox) {
+      return null;
+    }
     return this._textbox.getInputField();
   },
 
@@ -627,8 +634,8 @@ Commandline.definition = {
     this._textbox.focus();
     this._textbox.focus();
     this._textbox.focus();
-    let session = this._broker;
-    session.notify("event/mode-changed", "commandline");
+    let broker = this._broker;
+    broker.notify("event/mode-changed", "commandline");
   },
 
   "[subscribe('event/input-state-changed'), enabled]":
@@ -789,7 +796,7 @@ Commandline.definition = {
     event.preventDefault();
   },
 
-  "[subscribe('event/keypress-commandline-with-mapping'), enabled]":
+  "[subscribe('event/keypress-commandline-with-remapping'), enabled]":
   function onKeypressCommandlineWithMapping(code) 
   {
     let session = this._broker;
@@ -820,7 +827,7 @@ Commandline.definition = {
     }
   },
 
-  "[subscribe('event/keypress-commandline-with-no-mapping'), enabled]":
+  "[subscribe('event/keypress-commandline-with-no-remapping'), enabled]":
   function onKeypressCommandlineWithNoMapping(code) 
   {
     let with_ctrl = code & 1 << coUtils.Keyboard.KEY_CTRL;

@@ -91,7 +91,8 @@ Tracer.definition = {
         name: undefined,
         value: [text]
       };
-      broker.notify("command/debugger-trace-sequence", [info, undefined]); 
+      //broker.notify("command/debugger-trace-sequence", [info, undefined]); 
+      //return [info, undefined];
     }
   },
 
@@ -338,6 +339,9 @@ Debugger.definition = {
     this._queue = [];
     this.select.enabled = true;
     this.breakpoint.enabled = true;
+    this.enableDebugger.enabled = true;
+    this.disableDebugger.enabled = true;
+    this.doBreak.enabled = true;
     this.onPanelItemRequested.enabled = true;
   },
 
@@ -349,6 +353,7 @@ Debugger.definition = {
   {
     this.select.enabled = false;
     this.breakpoint.enabled = false;
+    this.enableDebugger.enabled = false;
     this.trace.enabled = false;
     this.onPanelItemRequested.enabled = false;
     if (this._timer) {
@@ -386,17 +391,25 @@ Debugger.definition = {
   {
     try {
       if (this._checkbox_attach.checked) {
-        this._enableDebugger();
+        this.enableDebugger();
       } else {
-        this._disableDebugger();
+        this.disableDebugger();
       }
     } catch (e) {
       coUtils.Debug.reportError(e);
     }
   },
 
-  _enableDebugger: function _enableDebugger()
+  "[command('enabledebugger/eg'), _('Attach the debugger and trace incoming sequences.')]": 
+  function enableDebugger()
   {
+    if (!this._trace_box) {
+      this.select();
+    }
+    this.enableDebugger.enabled = false;
+    this.disableDebugger.enabled = true;
+    this.doBreak.enabled = true;
+    this._checkbox_attach.checked = true;
     let broker = this._broker;
     this._checkbox_break.setAttribute("disabled", !this._checkbox_attach.checked);
     broker.notify("command/debugger-trace-on");
@@ -421,8 +434,16 @@ Debugger.definition = {
     }, this.update_interval, this);
   },
  
-  _disableDebugger: function _disableDebugger()
+  "[command('disabledebugger'), _('Detach the debugger.')]": 
+  function disableDebugger()
   {
+    if (!this._trace_box) {
+      this.select();
+    }
+    this.doBreak.enabled = false;
+    this.doResume.enabled = false;
+    this.doStep.enabled = false;
+    this._checkbox_attach.checked = false;
     let broker = this._broker;
     this._checkbox_break.setAttribute("disabled", !this._checkbox_attach.checked);
     this._checkbox_break.setAttribute("disabled", true);
@@ -436,8 +457,18 @@ Debugger.definition = {
     broker.notify("command/debugger-resume");
   },
 
-  doBreak: function doBreak() 
+  "[command('breakdebugger'), _('Break debugger.')]": 
+  function doBreak() 
   {
+    if (!this._trace_box) {
+      this.select();
+    }
+    if (!this._checkbox_attach.checked) {
+      this.enableDebugger();
+    }
+    this.doBreak.enabled = false;
+    this.doResume.enabled = true;
+    this.doStep.enabled = true;
     let broker = this._broker;
     this._checkbox_break.setAttribute("disabled", true);
     this._checkbox_resume.setAttribute("disabled", false);
@@ -445,8 +476,15 @@ Debugger.definition = {
     broker.notify("command/debugger-pause");
   },
 
-  doResume: function doResume() 
+  "[command('resumedebugger'), _('Resume terminal.')]": 
+  function doResume() 
   {
+    if (!this._trace_box) {
+      this.select();
+    }
+    this.doBreak.enabled = true;
+    this.doResume.enabled = false;
+    this.doStep.enabled = false;
     let broker = this._broker;
     this._checkbox_resume.setAttribute("disabled", true);
     this._checkbox_step.setAttribute("disabled", true);
@@ -454,8 +492,12 @@ Debugger.definition = {
     broker.notify("command/debugger-resume");
   },
 
-  doStep: function doStep() 
+  "[command('step'), _('Do step over.')]":
+  function doStep() 
   {
+    if (!this._trace_box) {
+      this.select();
+    }
     let broker = this._broker;
     broker.notify("command/debugger-step");
   },
@@ -463,6 +505,9 @@ Debugger.definition = {
   "[command('breakpoint/bp')]": 
   function breakpoint(arguments_string) 
   {
+    if (!this._trace_box) {
+      this.select();
+    }
     this._pattern = new RegExp(arguments_string);
     this.watchSequence.enabled = true;
   },
@@ -495,11 +540,14 @@ Debugger.definition = {
     });
   },
 
-  "[subscribe('command/debugger-update-pane')]": 
-  function update(trace_info) 
+  update: function update(trace_info) 
   {
     let [info, sequence] = trace_info;
-    let {type, name, value} = info;
+    let {type, name, value} = info || {
+      type: CO_TRACE_OUTPUT,
+      name: undefined,
+      value: [sequence],
+    };
     let broker = this._broker;
     broker.uniget("command/construct-chrome", {
       parentNode: "#tanasinn_trace",

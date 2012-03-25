@@ -74,8 +74,8 @@ MoveShortcut.definition = {
   "[command('left'), nmap('<M-h>', '<C-S-h>'), _('Move window to left')]":
   function left(info)
   {
-    let session = this._broker;
-    session.notify("command/move-by", [-this.step, 0]);
+    let broker = this._broker;
+    broker.notify("command/move-by", [-this.step, 0]);
     return true;
   },
 
@@ -85,8 +85,8 @@ MoveShortcut.definition = {
   "[command('down'), nmap('<M-j>', '<C-S-j>'), _('Move window down')]":
   function down(info)
   {
-    let session = this._broker;
-    session.notify("command/move-by", [0, this.step]);
+    let broker = this._broker;
+    broker.notify("command/move-by", [0, this.step]);
     return true;
   },
 
@@ -96,8 +96,8 @@ MoveShortcut.definition = {
   "[command('up'), nmap('<M-k>', '<C-S-k>'), _('Move window up')]":
   function up(info)
   {
-    let session = this._broker;
-    session.notify("command/move-by", [0, -this.step]);
+    let broker = this._broker;
+    broker.notify("command/move-by", [0, -this.step]);
     return true;
   },
 
@@ -107,8 +107,8 @@ MoveShortcut.definition = {
   "[command('right'), nmap('<M-l>', '<C-S-l>'), _('Move window to right')]":
   function right(info)
   {
-    let session = this._broker;
-    session.notify("command/move-by", [this.step, 0]);
+    let broker = this._broker;
+    broker.notify("command/move-by", [this.step, 0]);
     return true;
   },
 

@@ -117,7 +117,7 @@ BatchLoader.definition = {
   {
     let broker = this._broker;
     source.split(/[\n\r]+/).forEach(function(command) {
-      if (!/^\s*$/.test(command)) {
+      if (!/^\s*$|^s*#/.test(command)) {
         broker.notify("command/eval-commandline", command);
       }
     });
@@ -129,8 +129,7 @@ BatchLoader.definition = {
     // load rc file.
     let broker = this._broker;
     let path = broker.runtime_path + "/" + broker.rcfile;
-    let session = this._broker;
-    session.notify("command/source", path);
+    broker.notify("command/source", path);
   },
 
   "[command('execcgi', ['cgi']), subscribe('command/execute-cgi'), enabled]":
