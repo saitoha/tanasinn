@@ -22,10 +22,10 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/** @class KeypadMode
+/** @class KeypadModeHandler
  */
-let KeypadMode = new Class().extends(Component);
-KeypadMode.definition = {
+let KeypadModeHandler = new Class().extends(Component);
+KeypadModeHandler.definition = {
  
   get id()
     "keypadmode",
@@ -93,13 +93,13 @@ KeypadMode.definition = {
       coUtils.Constant.KEYPAD_MODE_APPLICATION);
   },
 
-};
+}; // KeypadMode
 
 /**
- * @class CharsetMode
+ * @class CharsetModeHandler
  */
-let CharsetMode = new Class().extends(Component)
-CharsetMode.definition = {  
+let CharsetModeHandler = new Class().extends(Component)
+CharsetModeHandler.definition = {  
 
   get id()
     "charsetmode",
@@ -163,21 +163,35 @@ CharsetMode.definition = {
    * L            ISO Latin-Cyrillic
    * <            User-preferred Supplemental
    */
-  "[sequence('ESC (%c')]": 
+  "[sequence('ESC (%c'), _('Select Character Set G0')]": 
   function SCSG0(mode) 
   {
     let broker = this._broker;
     broker.notify("sequence/g0", mode);
   },
   
-  "[sequence('ESC )%c')]": 
+  "[sequence('ESC )%c'), _('Select Character Set G1')]": 
   function SCSG1(mode) 
   {
     let broker = this._broker;
     broker.notify("sequence/g1", mode);
   },
 
-};
+  "[sequence('ESC *%c'), _('Select Character Set G2')]": 
+  function SCSG2(mode) 
+  {
+    let broker = this._broker;
+    broker.notify("sequence/g2", mode);
+  },
+
+  "[sequence('ESC +%c'), _('Select Character Set G3')]": 
+  function SCSG3(mode) 
+  {
+    let broker = this._broker;
+    broker.notify("sequence/g3", mode);
+  },
+
+}; // CharsetModeHandler
 
 
 /**
@@ -267,23 +281,6 @@ Escape.definition = {
     let broker = this._broker;
     let message = String.fromCharCode.apply(String, arguments);
     broker.notify("sequence/pm", message);
-  },
- 
-  /** DEC double-height line, top half. */
-  "[sequence('ESC #3')]": 
-  function DECDHL_top() 
-  {
-    let broker = this._broker;
-    broker.notify("sequence/double-height-line-top");
-  },
-
-  /** DEC double-height line, bottom half. */
-  "[sequence('ESC #4')]": 
-  function DECDHL_bottom() 
-  {
-    let broker = this._broker;
-    broker.notify("sequence/double-height-line-bottom");
-    this._screen.cursorUp(1);
   },
 
   /** Select default character set. */
@@ -385,10 +382,10 @@ Escape.definition = {
   "[sequence('ESC c')]": 
   function RIS() 
   {
-    let session = this._broker;
-    session.notify("sequence/g0", coUtils.Constant.CHARSET_US);
-    session.notify("sequence/g1", coUtils.Constant.CHARSET_US);
-    session.notify("command/hard-terminal-reset");
+    let broker = this._broker;
+    broker.notify("sequence/g0", coUtils.Constant.CHARSET_US);
+    broker.notify("sequence/g1", coUtils.Constant.CHARSET_US);
+    broker.notify("command/hard-terminal-reset");
     this._ansi_mode.reset();
     let screen = this._screen;
     screen.resetScrollRegion();
@@ -412,8 +409,8 @@ Escape.definition = {
 function main(broker) 
 {
   new Escape(broker);
-  new KeypadMode(broker);
-  new CharsetMode(broker);
+  new KeypadModeHandler(broker);
+  new CharsetModeHandler(broker);
 }
 
 

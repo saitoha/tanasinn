@@ -119,6 +119,7 @@ Renderer.definition = {
   _reverse: false,
 
   _drcs_state: null, 
+  _double_height_mode : 0,
 
   // font
   "[watchable, persistable] font_family": "Monaco,Menlo,Lucida Console,monospace",
@@ -350,6 +351,7 @@ Renderer.definition = {
     if (redraw_flag) {
       this.dependency["screen"].dirty = true;
     }
+
     let context = this._context;
     let screen = this.dependency["screen"];
     let font_size = this.font_size;
@@ -357,28 +359,119 @@ Renderer.definition = {
     let line_height = this.line_height;
     let char_width = this.char_width;
     let text_offset = this._text_offset;
-    for (let { codes, row, column, end, attr } in screen.getDirtyWords()) {
-      let left = (char_width * column);// | 0;
-      let top = line_height * row;
-      let width = (char_width * (end - column));// | 0;
-      let height = line_height;// | 0;
 
-      this._drawBackground(
-        context, 
-        left | 0, 
-        top, 
-        width + Math.ceil(left) - left, 
-        height, 
-        attr.bg);
+
+    for (let { codes, row, column, end, attr, size } in screen.getDirtyWords()) {
+
+      let left, top, width, height;
+
+
+      switch (size) {
+
+        case 0:
+          left = char_width * column;
+          top = line_height * row;
+          width = (char_width * (end - column));
+          height = line_height;
+
+          this._drawBackground(
+            context, 
+            left | 0, 
+            top, 
+            width + Math.ceil(left) - left, 
+            height, 
+            attr.bg);
+          context.font = font_size + "px " + font_family;
+          break;
+
+        case 1:
+          context.font = (font_size * 2) + "px " + font_family;
+
+          left = char_width * 2 * column;
+          top = line_height * (row + 1);
+          width = char_width * 2 * (end - column);
+          height = line_height;
+
+          this._drawBackground(
+            context, 
+            left | 0, 
+            line_height * row, 
+            width + Math.ceil(left) - left, 
+            height, 
+            attr.bg);
+
+          context.save();
+          context.beginPath();
+          context.rect(left, line_height * row, width, height);
+          context.clip();
+          break;
+
+        case 2:
+          context.font = (font_size * 2) + "px " + font_family;
+
+          left = char_width * 2 * column;
+          top = line_height * row;
+          width = char_width * 2 * (end - column);
+          height = line_height;
+
+          this._drawBackground(
+            context, 
+            left | 0, 
+            line_height * row, 
+            width + Math.ceil(left) - left, 
+            height, 
+            attr.bg);
+
+          context.save();
+          context.beginPath();
+          context.rect(left, line_height * row, width, height);
+          context.clip();
+          break;
+
+        case 3:
+          context.font = (font_size * 2) + "px " + font_family;
+          //context.font = font_size + "px " + font_family;
+
+          left = char_width * 2 * column;
+          top = line_height * row;
+          width = char_width * 2 * (end - column);
+          height = line_height;
+
+          this._drawBackground(
+            context, 
+            left | 0, 
+            line_height * row, 
+            width + Math.ceil(left) - left, 
+            height, 
+            attr.bg);
+
+          context.save();
+          context.beginPath();
+          context.rect(left, line_height * row, width, height);
+          context.transform(1, 0, 0, 0.5, 0, (top + text_offset) / 2);
+          context.clip();
+          break;
+
+        default:
+          throw coUtils.Debug.Exception(
+            _("Invalid double height mode was detected: %d."), 
+            this._double_height_mode);
+      }
+
 
       this._drawWord(
         context, 
         codes, 
         left, 
         top + text_offset, 
-        char_width, 
+        char_width * (0 == size ? 1: 2), 
         end - column, 
-        height, attr);
+        height, 
+        attr);
+
+      if (0 != size) {
+        context.restore();
+      }
     }
 
   }, // draw
@@ -406,13 +499,20 @@ Renderer.definition = {
 
   /** Render text in specified cells.
    */
-  _drawWord: function _drawWord(context, cells, x, y, char_width, length, height, attr)
+  _drawWord: 
+  function _drawWord(context, 
+                     cells, 
+                     x, y, 
+                     char_width, 
+                     length, 
+                     height, 
+                     attr)
   {
     // Get hexadecimal formatted text color (#xxxxxx) 
     // form given attribute structure. 
     let fore_color_map = this.normal_color;// attr.bold ? this.bold_color: this.normal_color;
     let fore_color = fore_color_map[attr.fg];
-    context.font = [this.font_size, "px ", this.font_family].join("");
+
     context.globalAlpha = attr.bold ? this.bold_alpha: this.normal_alpha;
     context.fillStyle = fore_color;
     if (attr.underline) {
@@ -459,7 +559,10 @@ Renderer.definition = {
             Math.ceil(char_width + 0.5), this.line_height); 
           context.globalCompositeOperation = "source-atop";
           context.fillRect(
-            x, Math.ceil(y - this._text_offset + 0.5), char_width + 1, this.line_height);
+            x,
+            Math.ceil(y - this._text_offset + 0.5), 
+            char_width + 1, 
+            this.line_height);
           context.globalCompositeOperation = "source-over";
         }
       }

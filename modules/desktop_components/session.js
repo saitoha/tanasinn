@@ -71,8 +71,8 @@ Environment.definition = {
     return this._search_path || [ 
       "modules/shared_components",
       "modules/session_components",
-      <>{broker.runtime_path}/modules/shared_components</>.toString(),
-      <>{broker.runtime_path}/modules/session_components</>.toString()
+      broker.runtime_path + "/modules/shared_components",
+      broker.runtime_path + "/modules/session_components"
   ];
 
   },
@@ -86,7 +86,8 @@ Environment.definition = {
   {
     return this._broker.cygwin_root;
   },
-};
+
+}; // Environment
 
 /**
  * @trait RouteKeyEvents
@@ -179,55 +180,12 @@ Session.definition = {
     return broker.uniget("get/python-path");
   },
 
-  observerService: Components
-    .classes["@mozilla.org/observer-service;1"]
-    .getService(Components.interfaces.nsIObserverService),
-
   _request_id: null,
-  _observers: null,
 
   /** constructor */
   initialize: function initialize(broker)
   {
     this.load(this, this.search_path, new broker._broker.default_scope);
-  },
-
-  subscribeGlobalEvent: 
-  function subscribeGlobalEvent(topic, handler, context)
-  {
-    let delegate;
-    if (context) {
-      delegate = function() handler.apply(context, arguments);
-    } else {
-      delegate = handler;
-    }
-    let observer = { 
-      observe: function observe() 
-      {
-        delegate.apply(this, arguments);
-      },
-    };
-    this._observers[topic] = this._observers[topic] || [];
-    this._observers[topic].push(observer);
-    this.observerService.addObserver(observer, topic, false);
-  },
-  
-  removeGlobalEvent: function removeGlobalEvent(topic)
-  {
-    if (this.observerService && this._observers) {
-      let observers = this._observers[topic];
-      if (observers) {
-        observers.forEach(function(observer) 
-        {
-          try {
-            this.observerService.removeObserver(observer, topic);
-          } catch(e) {
-            coUtils.Debug.reportWarning(e);
-          }
-        }, this);
-        this._observers = null;
-      }
-    }
   },
 
   "[subscribe('command/send-command'), enabled]":
@@ -259,15 +217,7 @@ Session.definition = {
     this._request_id = coUtils.Uuid.generate().toString();
 
     let desktop = this._broker;
-    this._observers = {};
-    this.subscribeGlobalEvent(
-      "quit-application", 
-      function onQuitApplication() 
-      {
-        this.notify("command/detach", this);
-      }, this);
-    let document = request.parent.ownerDocument;
-    this._window = document.defaultView;
+    this._window = request.parent.ownerDocument.defaultView;
     this._root_element = request.parent;
     this._command = request.command;
     this._term = request.term || this.default_term;
@@ -287,10 +237,10 @@ Session.definition = {
   "[subscribe('event/shutdown'), enabled]":
   function stop() 
   {
-    this.removeGlobalEvent("quit-application");
     this.notify("event/broker-stopping", this);
     this.clear();
-    this._observers = null;
+    this._root_element = null;
+    this._window = null;
     /*
     if (coUtils.Runtime.app_name.match(/tanasinn/)) {
       this.window.close(); // close window

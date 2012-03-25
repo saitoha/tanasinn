@@ -55,11 +55,11 @@ Tracer.definition = {
   {
     this.onBeforeInput.enabled = true;
     let emurator = this._emurator;
-    let session = this._broker;
-    let sequences = this._backup_sequences = session.notify("get/sequences");
+    let broker = this._broker;
+    let sequences = this._backup_sequences = broker.notify("get/sequences");
 
-    sequences.forEach(function(information)
-    {
+    for (let i = 0; i < sequences.length; ++i) {
+      let information = sequences[i];
       try {
         let {expression, handler, context} = information;
         let delegate = function()
@@ -68,11 +68,11 @@ Tracer.definition = {
           let info = {
             type: CO_TRACE_CONTROL,
             name: handler.name, 
-            value: [].slice.apply(arguments),
+            value: Array.slice(arguments),
           };
           return info;
         };
-        session.notify("command/add-sequence", {
+        broker.notify("command/add-sequence", {
           expression: expression, 
           handler: delegate, 
           context: context,
@@ -80,17 +80,18 @@ Tracer.definition = {
       } catch (e) {
         coUtils.Debug.reportError(e);
       }
-    }, this);
+    }
 
     emurator.write = function(data) 
     {
       emurator.__proto__.write.call(emurator, data);    
       let text = String.fromCharCode.apply(String, data);
-      return {
+      let info = {
         type: CO_TRACE_OUTPUT, 
         name: undefined,
         value: [text]
       };
+      broker.notify("command/debugger-trace-sequence", [info, undefined]); 
     }
   },
 
@@ -99,11 +100,11 @@ Tracer.definition = {
   {
     this.onBeforeInput.enabled = false;
     let emurator = this._emurator;
-    let session = this._broker;
-    let sequences = session.notify("get/sequences");
+    let broker = this._broker;
+    let sequences = broker.notify("get/sequences");
     sequences.forEach(function(information) 
     {
-      session.notify("command/add-sequence", information);
+      broker.notify("command/add-sequence", information);
     }, this);
     delete emurator.write; // uninstall hook
   },
@@ -117,9 +118,9 @@ Tracer.definition = {
       name: undefined,
       value: [message],
     };
-    let session = this._broker;
-//    session.notify("command/report-status-message", message); 
-    session.notify("command/debugger-trace-sequence", [info, undefined]); 
+    let broker = this._broker;
+//    broker.notify("command/report-status-message", message); 
+    broker.notify("command/debugger-trace-sequence", [info, undefined]); 
   },
 
 };
@@ -140,7 +141,7 @@ Hooker.definition = {
   _step_mode: false,
 
   /** Constructor */
-  initialize: function initialize(session) 
+  initialize: function initialize(broker) 
   {
     this._buffer = [];
   },
@@ -159,14 +160,14 @@ Hooker.definition = {
     this._step_mode = false;
     let buffer = this._buffer;
     // drain queued actions.
-    let session = this._broker;
+    let broker = this._broker;
     while (buffer.length) {
       let action = buffer.shift();
       let result = action();
-      session.notify("command/debugger-trace-sequence", result);
+      broker.notify("command/debugger-trace-sequence", result);
     }
-    session.notify("command/flow-control", true);
-    session.notify("command/draw"); // redraw
+    broker.notify("command/flow-control", true);
+    broker.notify("command/draw"); // redraw
   },
 
   /** Execute 1 command. */
@@ -174,16 +175,15 @@ Hooker.definition = {
   function step()
   {
     if (this._hooked) {
-      let session = this._broker;
+      let broker = this._broker;
       let buffer = this._buffer;
       let action = buffer.shift();
       if (action) {
         let result = action();
-        let session = this._broker;
-        session.notify("command/debugger-trace-sequence", result);
-        session.notify("command/draw"); // redraw
+        broker.notify("command/debugger-trace-sequence", result);
+        broker.notify("command/draw"); // redraw
       } else {
-        session.notify("command/flow-control", true);
+        broker.notify("command/flow-control", true);
       }
     }
   },
@@ -195,12 +195,12 @@ Hooker.definition = {
       let parser = this.dependency["parser"];
       let buffer = this._buffer;
       let self = this;
-      let session = this._broker;
+      let broker = this._broker;
       this._hooked = true;
       parser.parse = function(data) 
       {
         if (self._step_mode) {
-          session.notify("command/flow-control", false);
+          broker.notify("command/flow-control", false);
         }
         for (let action in parser.__proto__.parse.call(parser, data)) {
           let sequence = parser._scanner.getCurrentToken();
@@ -210,7 +210,7 @@ Hooker.definition = {
           while (buffer.length) {
             let action = buffer.shift();
             let result = action();
-            session.notify("command/debugger-trace-sequence", result);
+            broker.notify("command/debugger-trace-sequence", result);
           }
         }
       };
@@ -250,7 +250,7 @@ Debugger.definition = {
   "[persistable] enabled_when_startup": true,
 
   "[persistable] auto_scroll": true,
-  "[persistable] update_interval": 300,
+  "[persistable] update_interval": 100,
 
   _timer_id: null,
 
@@ -330,10 +330,10 @@ Debugger.definition = {
   },
 
   /** Installs itself. 
-   *  @param {Session} session A session object.
+   *  @param {Broker} broker A Broker object.
    */
   "[subscribe('install/debugger'), enabled]": 
-  function install(session) 
+  function install(broker) 
   {
     this._queue = [];
     this.select.enabled = true;
@@ -342,10 +342,10 @@ Debugger.definition = {
   },
 
   /** Uninstalls itself 
-   *  @param {Session} session A session object.
+   *  @param {Broker} broker A Broker object.
    */
   "[subscribe('uninstall/debugger'), enabled]": 
-  function uninstall(session)
+  function uninstall(broker)
   {
     this.select.enabled = false;
     this.breakpoint.enabled = false;
@@ -356,7 +356,7 @@ Debugger.definition = {
     }
     this._timer = null;
     this._queue = null;
-    session.notify("command/remove-panel", this.id);
+    broker.notify("command/remove-panel", this.id);
   },
 
   "[subscribe('@get/panel-items')]": 
@@ -365,14 +365,14 @@ Debugger.definition = {
     let template = this.template;
     let item = panel.alloc(this.id, _("Debugger"));
     template.parentNode = item;
-    let session = this._broker;
+    let broker = this._broker;
     let {
       tanasinn_trace,
       tanasinn_debugger_attach,
       tanasinn_debugger_break,
       tanasinn_debugger_resume,
       tanasinn_debugger_step,
-    } = session.uniget("command/construct-chrome", template);
+    } = broker.uniget("command/construct-chrome", template);
     this._trace_box = tanasinn_trace;
     this._checkbox_attach = tanasinn_debugger_attach;
     this._checkbox_break = tanasinn_debugger_break;
@@ -397,9 +397,9 @@ Debugger.definition = {
 
   _enableDebugger: function _enableDebugger()
   {
-    let session = this._broker;
+    let broker = this._broker;
     this._checkbox_break.setAttribute("disabled", !this._checkbox_attach.checked);
-    session.notify("command/debugger-trace-on");
+    broker.notify("command/debugger-trace-on");
     if (this._timer) {
       this._timer.cancel();
     }
@@ -423,7 +423,7 @@ Debugger.definition = {
  
   _disableDebugger: function _disableDebugger()
   {
-    let session = this._broker;
+    let broker = this._broker;
     this._checkbox_break.setAttribute("disabled", !this._checkbox_attach.checked);
     this._checkbox_break.setAttribute("disabled", true);
     this._checkbox_resume.setAttribute("disabled", true);
@@ -432,32 +432,32 @@ Debugger.definition = {
       this._timer.cancel();
     }
     this._timer = null;
-    session.notify("command/debugger-trace-off");
-    session.notify("command/debugger-resume");
+    broker.notify("command/debugger-trace-off");
+    broker.notify("command/debugger-resume");
   },
 
   doBreak: function doBreak() 
   {
-    let session = this._broker;
+    let broker = this._broker;
     this._checkbox_break.setAttribute("disabled", true);
     this._checkbox_resume.setAttribute("disabled", false);
     this._checkbox_step.setAttribute("disabled", false);
-    session.notify("command/debugger-pause");
+    broker.notify("command/debugger-pause");
   },
 
   doResume: function doResume() 
   {
-    let session = this._broker;
+    let broker = this._broker;
     this._checkbox_resume.setAttribute("disabled", true);
     this._checkbox_step.setAttribute("disabled", true);
     this._checkbox_break.setAttribute("disabled", false);
-    session.notify("command/debugger-resume");
+    broker.notify("command/debugger-resume");
   },
 
   doStep: function doStep() 
   {
-    let session = this._broker;
-    session.notify("command/debugger-step");
+    let broker = this._broker;
+    broker.notify("command/debugger-step");
   },
 
   "[command('breakpoint/bp')]": 
@@ -500,8 +500,8 @@ Debugger.definition = {
   {
     let [info, sequence] = trace_info;
     let {type, name, value} = info;
-    let session = this._broker;
-    session.uniget("command/construct-chrome", {
+    let broker = this._broker;
+    broker.uniget("command/construct-chrome", {
       parentNode: "#tanasinn_trace",
       tagName: "hbox",
       style: <> 
@@ -617,8 +617,8 @@ Debugger.definition = {
   "[command('debugger'), nmap('<M-d>', '<C-S-d>'), _('Open debugger.')]":
   function select() 
   {
-    let session = this._broker;
-    session.notify("command/select-panel", this.id);
+    let broker = this._broker;
+    broker.notify("command/select-panel", this.id);
     return true;
   },
 };

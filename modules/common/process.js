@@ -65,7 +65,6 @@
  *
  *
  */
-
 let loader = {
 
   initialize: function initialize()
@@ -82,15 +81,17 @@ let loader = {
       let browser_windows = window_mediator.getEnumerator(window_type);
       while (browser_windows.hasMoreElements()) { // enumerate existing windows.
         // only run the "start" immediately if the browser is completely loaded
-        let window = browser_windows.getNext();
-        if ("complete" == window.document.readyState) {
-          this.dispatchWindowEvent(window);
+        let dom = {
+          window: browser_windows.getNext()
+        };
+        if ("complete" == dom.window.document.readyState) {
+          this.dispatchWindowEvent(dom.window);
         } else {
           // Wait for the window to finish loading before running the callback
           // Listen for one load event before checking the window type
-          window.addEventListener(
+          dom.window.addEventListener(
             "load", 
-            let (self = this) function() self.dispatchWindowEvent(window), 
+            let (self = this) function(event) self.dispatchWindowEvent(dom.window), 
             false);
         }
       } // while
@@ -275,7 +276,47 @@ with (scope) {
       return python_paths.shift();
     },
 
-  };
+    _observers: null,
+
+    subscribeGlobalEvent: 
+    function subscribeGlobalEvent(topic, handler, context)
+    {
+      let delegate;
+      if (context) {
+        delegate = function() handler.apply(context, arguments);
+      } else {
+        delegate = handler;
+      }
+      let observer = { 
+        observe: function observe() 
+        {
+          delegate.apply(this, arguments);
+        },
+      };
+      this._observers[topic] = this._observers[topic] || [];
+      this._observers[topic].push(observer);
+      this.observerService.addObserver(observer, topic, false);
+    },
+    
+    removeGlobalEvent: function removeGlobalEvent(topic)
+    {
+      if (this.observerService && this._observers) {
+        let observers = this._observers[topic];
+        if (observers) {
+          observers.forEach(function(observer) 
+          {
+            try {
+              this.observerService.removeObserver(observer, topic);
+            } catch(e) {
+              coUtils.Debug.reportWarning(e);
+            }
+          }, this);
+          this._observers = null;
+        }
+      }
+    },
+
+  }; // trait Environment
 
   /**
    * @class Process
@@ -306,6 +347,10 @@ with (scope) {
 
     initial_settings_path: "$Home/.tanasinn.js",
  
+    observerService: Components
+      .classes["@mozilla.org/observer-service;1"]
+      .getService(Components.interfaces.nsIObserverService),
+
     /** constructor. */
     initialize: function initialize() 
     {
@@ -320,6 +365,13 @@ with (scope) {
         }
       }
       this.load(this, ["modules/process_components"], new this.default_scope);
+      this._observers = {};
+      this.subscribeGlobalEvent(
+        "quit-application", 
+        function onQuitApplication() 
+        {
+          this.notify("event/disabled", this);
+        }, this);
     },
 
     uninitialize: function uninitialize()
@@ -348,4 +400,3 @@ with (scope) {
   loader.initialize();
 
 } // with scope
-

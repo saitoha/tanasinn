@@ -71,6 +71,11 @@ SnapResize.definition = {
   },
 };
 
+/**
+ *
+ * @class CaptureBox
+ *
+ */
 let CaptureBox = new Class().extends(Component);
 CaptureBox.definition = {
 

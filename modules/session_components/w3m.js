@@ -22,6 +22,20 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+let Canvas = new Class();
+Canvas.definition = {
+
+  initialize: function initialize(canvas)
+  {
+    this._canvas = canvas;
+  }, 
+
+  dispose: function dispose()
+  {
+  }
+
+};
+
 /**
  * @class W3m
  * @fn Handle OSC command and draw w3m's inline image.
@@ -55,13 +69,13 @@ W3m.definition = {
   _cache_holder: null,
 
   /** Installs itself. 
-   *  @param {Session} session A session object.
+   *  @param {Broker} broker A Broker object.
    */ 
   "[subscribe('install/w3m'), enabled]":
-  function install(session) 
+  function install(broker) 
   {
     let renderer = this.dependency["renderer"];
-    let {tanasinn_w3m_canvas} = session.uniget(
+    let { tanasinn_w3m_canvas } = broker.uniget(
       "command/construct-chrome", this.template);
     // set initial size.
     this._canvas = tanasinn_w3m_canvas;

@@ -43,7 +43,10 @@ MultiEncoder.definition = {
     let converter_manager = Components
       .classes["@mozilla.org/charset-converter-manager;1"]
       .getService(Components.interfaces.nsICharsetConverterManager);
+
     let encoder_list = converter_manager.getEncoderList();
+
+    // enumerate charcter sets.
     while (encoder_list.hasMore()) {
       let charset = encoder_list.getNext();
       try {

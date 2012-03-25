@@ -131,9 +131,18 @@ DecModeSequenceHandler.definition = {
               column: 132,
               row: this._screen.height,
             });
-            //this._screen.width = 132; // 132 column mode
-            this._screen.eraseScreenAll();
-            this._screen.cursor.reset();
+            
+            let (screen = this._screen) {
+              //this._screen.width = 132; // 132 column mode
+              screen.eraseScreenAll();
+              screen.reset();
+
+              broker.notify("event/screen-size-changed", { 
+                column: screen.width, 
+                row: screen.height 
+              });
+            }
+
           }
           break;
 
@@ -440,9 +449,18 @@ DecModeSequenceHandler.definition = {
               column: 80,
               row: this._screen.height,
             });
-            //this._screen.width = 80; // 80 column mode
-            this._screen.eraseScreenAll();
-            this._screen.cursor.reset();
+            
+            let (screen = this._screen) {
+              //this._screen.width = 80; // 80 column mode
+              screen.eraseScreenAll();
+              screen.reset();
+
+              broker.notify("event/screen-size-changed", { 
+                column: screen.width, 
+                row: screen.height 
+              });
+            }
+
           }
           break;
 

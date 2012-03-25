@@ -712,9 +712,7 @@ Launcher.definition = {
   "[subscribe('event/broker-started'), enabled]":
   function onLoad(desktop)
   {
-    let window = desktop.window;
     let broker = this._broker;
-    let document = window.document;
     let {
       tanasinn_window_layer,
       tanasinn_launcher_layer,

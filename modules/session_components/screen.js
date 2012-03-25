@@ -370,6 +370,57 @@ ScreenSequenceHandler.definition = {
     // with no parameters, move to origin
   },
 
+  /** DEC double-height line, top half. */
+  "[sequence('ESC #3')]": 
+  function DECDHL_top() 
+  {
+    //this.cursor.attr.size = 1;
+    let line = this._getCurrentLine();
+    line.size = 1;
+    line.dirty = 1;
+
+    let broker = this._broker;
+    broker.notify("sequence/double-height-line-top");
+  },
+
+  /** DEC double-height line, bottom half. */
+  "[sequence('ESC #4')]": 
+  function DECDHL_bottom() 
+  {
+    //this.cursor.attr.size = 2;
+    let line = this._getCurrentLine();
+    line.size = 2;
+    line.dirty = 1;
+    let broker = this._broker;
+    broker.notify("sequence/double-height-line-bottom");
+  //  this._screen.cursorUp(1);
+  },
+
+  /** DEC single-height line. */
+  "[sequence('ESC #5')]": 
+  function DECSWL() 
+  {
+    //this.cursor.attr.size = 3;
+    let line = this._getCurrentLine();
+    line.size = 0;
+    line.dirty = 1;
+    let broker = this._broker;
+    broker.notify("sequence/normal-size-line");
+  },
+
+  /** DEC double-width line. */
+  "[sequence('ESC #6')]": 
+  function DECDWL() 
+  {
+    //this.cursor.attr.size = 0;
+    let line = this._getCurrentLine();
+    line.size = 3;
+    line.dirty = 1;
+    let broker = this._broker;
+    broker.notify("sequence/double-width-line");
+   // this._screen.cursorUp(1);
+  },
+
   "[sequence('ESC #8')]":
   function DECALN() 
   { // DEC Screen Alignment Test
@@ -1216,6 +1267,7 @@ Viewable.definition = {
           column: column, 
           end: end,
           attr: attr, 
+          size: line.size || 0,
         };
       }
     }
@@ -1595,6 +1647,31 @@ Screen.definition = {
     return line.isWide(this.cursor.positionX);
   },
 
+
+  "[subscribe('sequence/normal-size-line'), enabled]":
+  function normalSizeLine() 
+  {
+    this._double_height_mode = 0;
+  },
+
+  "[subscribe('sequence/double-height-line-top'), enabled]":
+  function doubleHeightLineTop() 
+  {
+    this._double_height_mode = 1;
+  },
+
+  "[subscribe('sequence/double-height-line-bottom'), enabled]":
+  function doubleHeightLineBottom() 
+  {
+    this._double_height_mode = 2;
+  },
+
+  "[subscribe('sequence/double-width-line'), enabled]":
+  function doubleWidthLine() 
+  {
+    this._double_height_mode = 3;
+  },
+
   /** Write printable charactor seqences. */
   "[type('Array -> Boolean -> Boolean')] write":
   function write(codes, insert_mode, auto_wrap_mode, reverse_wrap_mode) 
@@ -1655,6 +1732,8 @@ Screen.definition = {
   "[type('Uint16 -> Undefined')] cursorUp":
   function cursorUp(n) 
   { 
+    //let line = this._getCurrentLine();
+    //n = 0 == line.size ? n: n * 2;
     let positionY = this.cursor.positionY - n;
     let min = this._scroll_top;
     //let min = 0;
@@ -1665,6 +1744,9 @@ Screen.definition = {
   "[type('Uint16 -> Undefined')] cursorDown":
   function cursorDown(n) 
   {
+    //let line = this._getCurrentLine();
+    //n = 0 == line.size ? n: n * 2;
+
     let positionY = this.cursor.positionY + n;
 
     // If an attempt is made to move the active position below the last line, 
@@ -1730,8 +1812,9 @@ Screen.definition = {
   function horizontalTab() 
   {
     let tab_stops = this.tab_stops;
+    let line = this._getCurrentLine();
     let positionX = this.cursor.positionX;
-    let max = this._width - 1;
+    let max = 0 == line.size ? this._width - 1: Math.floor(this._width / 2 - 1);
     for (let i = 0; i < tab_stops.length; ++i) {
       let stop = tab_stops[i];
       if (stop > positionX) {
@@ -1762,7 +1845,8 @@ Screen.definition = {
   function eraseLineToLeft() 
   {
     let cursor = this.cursor;
-    this._getCurrentLine().erase(0, this.cursor.positionX + 1, cursor.attr);
+    let line = this._getCurrentLine();
+    line.erase(0, this.cursor.positionX + 1, cursor.attr);
   },
 
   /** Erase current line */
@@ -1770,7 +1854,8 @@ Screen.definition = {
   function eraseLine() 
   {
     let cursor = this.cursor;
-    this._getCurrentLine().erase(0, this._width, cursor.attr);
+    let line = this._getCurrentLine();
+    line.erase(0, this._width, cursor.attr);
   },
 
   /** Erase cells from current position to head of buffer. */
@@ -1801,7 +1886,12 @@ Screen.definition = {
   {
     let cursor = this.cursor;
     let width = this._width;
-    this._lines.forEach(function(line) line.erase(0, width, cursor.attr));
+    let lines = this._lines;
+    for (let i = 0; i < lines.length; ++i) {
+      let line = lines[i];
+      line.erase(0, width, cursor.attr);
+      line.size = 0;
+    }
   },
 
   /** Erase every cells in screen. */
@@ -1832,6 +1922,17 @@ Screen.definition = {
   {
     this._scroll_top = 0;
     this._scroll_bottom = this._height;
+
+  },
+
+  reset: function reset()
+  {
+    this.resetScrollRegion();
+    this.cursor.reset();
+    let lines = this._getCurrentViewLines();
+    for (let i = 0; i < lines.length; ++i) {
+      lines[i].size = 0;
+    }
   },
 
   /** Reverse Index (RI) */
@@ -1839,11 +1940,15 @@ Screen.definition = {
   function reverseIndex() 
   { // cursor up
     let cursor_state = this.cursor;
-    let positionY = cursor_state.positionY;
-    if (positionY <= this._scroll_top) {
-      this._scrollUp(positionY, this._scroll_bottom, 1);
-    } else {
-      --cursor_state.positionY;
+    let line = this._getCurrentLine();
+    let repeat = (0 == line.size || 3 == line.size) ? 1: 2;
+    for (let i = 0; i < repeat; ++i) {
+      let positionY = cursor_state.positionY;
+      if (positionY <= this._scroll_top) {
+        this._scrollUp(positionY, this._scroll_bottom, 1);
+      } else {
+        --cursor_state.positionY;
+      }
     }
   },
   
@@ -2035,7 +2140,9 @@ Screen.definition = {
     let height = this._height;
     let offset = this._buffer_top = buffer.length - height * 2;
     let lines = buffer.splice(- height);
-    lines.forEach(function(line) line.length = width, this);
+    for (let i = 0; i < lines.length; ++i) {
+      lines[i].length = width;
+    }
     this._lines = lines;
     Array.prototype.splice.apply(buffer, [offset, 0].concat(lines));
     this.dirty = true;

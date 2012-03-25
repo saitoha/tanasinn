@@ -190,24 +190,26 @@ LineGeneratorConcept.definition = {
 //
 //}
 
-const ATTR2_FORECOLOR   = 0     // 00000000 00000000 00000000 11111111
-const ATTR2_BACKCOLOR   = 8     // 00000000 00000000 11111111 00000000
+const ATTR2_FORECOLOR    = 0     // 00000000 00000000 00000000 11111111
+const ATTR2_BACKCOLOR    = 8     // 00000000 00000000 11111111 00000000
 
-const ATTR2_BOLD        = 17    // 00000000 00000001 00000000 00000000
+const ATTR2_BOLD         = 17    // 00000000 00000001 00000000 00000000
 
-const ATTR2_UNDERLINE   = 18    // 00000000 00000010 00000000 00000000
-const ATTR2_INVERSE     = 19    // 00000000 00000100 00000000 00000000
+const ATTR2_UNDERLINE    = 18    // 00000000 00000010 00000000 00000000
+const ATTR2_INVERSE      = 19    // 00000000 00000100 00000000 00000000
 
-const ATTR2_HALFBLIGHT  = 20    // 00000000 00001000 00000000 00000000
-const ATTR2_BLINK       = 21    // 00000000 00010000 00000000 00000000
+const ATTR2_HALFBLIGHT   = 20    // 00000000 00001000 00000000 00000000
+const ATTR2_BLINK        = 21    // 00000000 00010000 00000000 00000000
+
+const ATTR2_SIZE         = 22    // 00000000 01100000 00000000 00000000
 
 // tanasinn specific properties
-const ATTR2_LINK        = 22    // 00000000 00100000 00000000 00000000
-const ATTR2_HIGHLIGHT   = 23    // 00000000 01000000 00000000 00000000
+const ATTR2_LINK         = 24    // 00000000 10000000 00000000 00000000
+const ATTR2_HIGHLIGHT    = 25    // 00000001 00000000 00000000 00000000
 
-const ATTR2_WIDE        = 24    // 00000000 10000000 00000000 00000000
-const ATTR2_DRCS        = 25    // 00000001 00000000 00000000 00000000
-const ATTR2_COMBINING   = 26    // 00000010 00000000 00000000 00000000
+const ATTR2_WIDE         = 26    // 00000010 00000000 00000000 00000000
+const ATTR2_DRCS         = 25    // 00000100 00000000 00000000 00000000
+const ATTR2_COMBINING    = 26    // 00001000 00000000 00000000 00000000
 
 /**
  * @class Cell
@@ -307,6 +309,20 @@ Cell.definition = {
                | value << ATTR2_UNDERLINE;
   },
   
+  /** getter of size attribute */
+  get size()
+  {
+    return this.value >>> ATTR2_SIZE & 0x3;
+  },
+
+  /** setter of size attribute */
+  set size(value) 
+  {
+    this.value = this.value
+               & ~(0x3 << ATTR2_SIZE) 
+               | value << ATTR2_SIZE;
+  },
+    
   /** getter of wide attribute */
   get wide()
   {
@@ -524,6 +540,7 @@ let Line = new Class().mix(DirtyRange)
 Line.definition = {
 
   cells: null,
+  size: 0,
 
   /** constructor */
   initialize: function initialize(length) 
@@ -661,7 +678,10 @@ Line.definition = {
     if (this.dirty) {
       let attr, start, current, cell;
       let cells = this.cells;
-      for (current = this.first; current < this.last; ++current) {
+      let max = 0 == this.size ? 
+        this.last: 
+        Math.min(this.last, Math.floor(this.length / 2));
+      for (current = this.first; current < max; ++current) {
         let cell = cells[current];
         if (attr) {
           if (attr.equals(cell) && cell.c) {

@@ -46,6 +46,7 @@ let g:tanasinnviewsourcecommand:
 </VimperatorPlugin>;
 //}}}
 
+try {
 void function() {
 
 let liberator = window.liberator;
@@ -196,4 +197,5 @@ editor.editFileExternally = let (default_func = editor.editFileExternally) funct
 };
 
 } ();
+} catch (e) {alert(e)}
 

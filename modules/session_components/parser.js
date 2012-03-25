@@ -618,13 +618,14 @@ Parser.definition = {
   _scanner: null,
 
 // post-constructor
-  "[subscribe('initialized/{scanner & grammar & emurator & decoder}'), type('Scanner -> Grammer -> Object -> Object -> Undefined'), enabled]":
-  function onLoad(scanner, grammar, emurator, decoder)
+  "[subscribe('initialized/{scanner & grammar & emurator & decoder & drcs_converter}'), enabled]":
+  function onLoad(scanner, grammar, emurator, decoder, drcs_converter)
   {
     this._scanner = scanner;    
     this._grammar = grammar;
     this._emurator = emurator;
     this._decoder = decoder;
+    this._drcs_converter = drcs_converter;
 
     this.install(this._broker);
   },
@@ -699,6 +700,7 @@ Parser.definition = {
     let emurator = this._emurator;
     let decoder = this._decoder;
     let grammar = this._grammar;
+    let drcs_converter = this._drcs_converter;
 
     if (scanner.generator) {
       let result = scanner.generator(scanner);
@@ -733,7 +735,11 @@ Parser.definition = {
           codes.push(c);
         }
         if (codes.length) {
-          yield function() emurator.write(codes);
+          yield function () 
+          {
+            let converted_codes = drcs_converter.convert(codes);
+            emurator.write(converted_codes);
+          };
         } else {
           coUtils.Debug.reportError(
             _("Failed to decode text. text length: %d, source text: [%s]."), 
@@ -783,7 +789,7 @@ Parser.definition = {
     }
   },
 
-}
+}; // Grammar
 
 /**
  * @fn main

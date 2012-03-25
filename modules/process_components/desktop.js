@@ -66,7 +66,7 @@ Environment.definition = {
     return this._broker.cygwin_root;
   },
 
-};
+}; // Environment
 
 
 /** 

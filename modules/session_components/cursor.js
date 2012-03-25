@@ -238,7 +238,9 @@ Cursor.definition = {
   /** Set cursor visibility. */
   _setVisibility: function _setVisibility(visibility) 
   {
-    this._canvas.style.opacity = visibility ? this.opacity: 0.00;
+    if (this._canvas) {
+      this._canvas.style.opacity = visibility ? this.opacity: 0.00;
+    }
   }
 }
 

@@ -209,7 +209,7 @@ EventBrokerBase.prototype = {
    */
   post: function post(topic, data) 
   {
-    let events =  this._delegate_map[topic];
+    let events = this._delegate_map[topic];
     if (events) {
       events.forEach(function(delegate) 
       { 
@@ -222,7 +222,9 @@ EventBrokerBase.prototype = {
               "The above Error is trapped in the ",
               "following local event handler. '%s'."), 
             let (stack = Components.stack .caller.caller .caller)
-              stack.filename.split("->").pop().split("?").shift() + ": " + stack.lineNumber, 
+              stack.filename
+                .split("->").pop()
+                .split("?").shift() + ": " + stack.lineNumber, 
             topic);
         }
       });
@@ -251,7 +253,9 @@ EventBrokerBase.prototype = {
               "The above Error is trapped in the ",
               "following local event handler. '%s'."), 
             let (stack = Components.stack .caller.caller.caller)
-              stack.filename.split("->").pop().split("?").shift() + ": " + stack.lineNumber, 
+              stack.filename
+                .split("->").pop()
+                .split("?").shift() + ": " + stack.lineNumber, 
             topic);
           return null;
         }
@@ -297,6 +301,8 @@ EventBrokerBase.prototype = {
   /** Reset event map. */
   clearEvents: function clearEvents()
   {
+    //for (let [key,] in Iterator(this._delegate_map))
+    //  delete this._delegate_map[key];
     this._delegate_map = {}; 
   },
 
@@ -570,7 +576,7 @@ function Actor(broker, token, stack, delegate, id) {
  *
  * Parses Event Expressions and evaluates them.
  */
-let EventExpressionProcesser = function EventExpressionProcesser() this.initialize.apply(this, arguments);
+let EventExpressionProcesser = function() this.initialize.apply(this, arguments);
 EventExpressionProcesser.prototype = {
 
   /** constructor */
