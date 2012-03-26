@@ -261,19 +261,19 @@ Mouse.definition = {
 
     switch (direction) {
 
-      case SimpleGestureEvent.DIRECTION_LEFT:
+      case coUtils.Constant.DIRECTION_LEFT:
         broker.notify("command/input-expression-with-remapping", "<SwipeLeft>");
         break;
 
-      case SimpleGestureEvent.DIRECTION_RIGHT:
+      case coUtils.Constant.DIRECTION_RIGHT:
         broker.notify("command/input-expression-with-remapping", "<SwipeRight>");
         break;
 
-      case SimpleGestureEvent.DIRECTION_UP:
+      case coUtils.Constant.DIRECTION_UP:
         broker.notify("command/input-expression-with-remapping", "<SwipeUp>");
         break;
 
-      case SimpleGestureEvent.DIRECTION_DOWN:
+      case coUtils.Constant.DIRECTION_DOWN:
         broker.notify("command/input-expression-with-remapping", "<SwipeDown>");
         break;
 
