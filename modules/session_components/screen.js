@@ -1684,14 +1684,14 @@ Screen.definition = {
       if (line) {
         if (cursor.positionX >= width) {
           this.carriageReturn();
-          if (auto_wrap_mode) {
+          //if (auto_wrap_mode) {
             if (reverse_wrap_mode) {
               this.reverseIndex();
             } else {
               this.lineFeed();
             }
             line = this._getCurrentLine();
-          }
+          //}
         }
         let positionX = cursor.positionX;
         let length = width - positionX;

@@ -96,24 +96,24 @@ WindowWatcher.definition = {
     let broker = this._broker;
     let relation = broker.root_element.compareDocumentPosition(original_target);
     if ((relation & original_target.DOCUMENT_POSITION_CONTAINED_BY)) {
+      event.preventDefault();
+      event.stopPropagation();
       broker.notify("event/rotate-gesture", event.direction);
+      event.direction = 0;
     }
-    event.preventDefault();
-    event.stopPropagation();
-    return true;
   },
 
   onSwipeGesture: function onSwipeGesture(event) 
   {
+    event.preventDefault();
+    event.stopPropagation();
     let original_target = event.explicitOriginalTarget;
     let broker = this._broker;
     let relation = broker.root_element.compareDocumentPosition(original_target);
     if ((relation & original_target.DOCUMENT_POSITION_CONTAINED_BY)) {
       broker.notify("event/swipe-gesture", event.direction);
     }
-    event.preventDefault();
-    event.stopPropagation();
-    return true;
+    event.direction = 0;
   },
 
   onMagnifyGesture: function onMagnifyGesture(event) 
@@ -125,6 +125,7 @@ WindowWatcher.definition = {
       broker.notify("event/magnify-gesture", event.delta);
       event.preventDefault();
       event.stopPropagation();
+      event.direction = 0;
     }
   },
   
