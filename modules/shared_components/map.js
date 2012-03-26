@@ -39,7 +39,7 @@ MappingManagerBase.definition = {
   {
     this._state = this._map = {};
     let broker = this._broker;
-    let mappings = broker.notify(<>get/{type}</>);
+    let mappings = broker.notify("get/" + type);
     if (mappings) {
       mappings.forEach(function(delegate) {
         delegate.expressions.forEach(function(expression) {
@@ -94,8 +94,10 @@ MappingManagerBase.definition = {
     let code = info.code;
 
     // swap mapleader as <Leader>
-    if (code == coUtils.Keyboard.parseKeymapExpression(this.mapleader)) {
-      code = coUtils.Keyboard.KEYNAME_PACKEDCODE_MAP.leader;
+    if (this._state[coUtils.Keyboard.KEYNAME_PACKEDCODE_MAP.leader]) {
+      if (code == coUtils.Keyboard.parseKeymapExpression(this.mapleader)) {
+        code = coUtils.Keyboard.KEYNAME_PACKEDCODE_MAP.leader;
+      }
     }
 
     let result = this._state = this._state[code];

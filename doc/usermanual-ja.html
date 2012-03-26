@@ -864,6 +864,10 @@ Windows(XP/Vista/7) + Cygwin / Mac / Linux / FreeBSD 環境で動作します。
 <div class="sect1">
 <h2 id="_news">2. News</h2>
 <div class="sectionbody">
+<div class="paragraph"><div class="title">2012/03/25</div><p>メモリーリークを修正したものがカレントにはいってます。
+いままで1セッションにつき10Mくらい、大量にリークしてました。</p></div>
+<div class="paragraph"><p>デフォルトのマッピング設定の一部(&lt;PinchOpen&gt;など)を廃止しています。
+.tanasinn/tanasinnrcにてユーザーの好みでマップするようにしたほうが良いと判断しました。</p></div>
 <div class="literalblock">
 <div class="title">2012/02/13 リリースポリシー変更</div>
 <div class="content">
@@ -1044,7 +1048,13 @@ Vimperator/Muttator のプラグインとして導入することができます
 </li>
 <li>
 <p>
-スタンドアロンのXULアプリケーションとして動作させることができます。(現在はかなりバギーです!)
+一部のプラットフォームでトラックパッドジェスチャー対応。
+      ピンチオープン・クローズ、スワイプを別のキーイベントにマップすることが可能。
+</p>
+</li>
+<li>
+<p>
+スタンドアロンのXULアプリケーションとして動作させることも頑張れば可能。
 </p>
 </li>
 </ul></div>
@@ -1437,11 +1447,6 @@ Vimperator/Muttatorのコマンドライン上から起動したい場合は、�
 <img src="images/commandline.png" alt="images/commandline.png" width="480" />
 </div>
 </div>
-<div class="literalblock">
-<div class="content">
-<pre><tt>…仕様が全然固まってませんのでまだ書けません。
-この部分は作りはじめて日が浅いので、これから色々考えます。</tt></pre>
-</div></div>
 <div class="literalblock">
 <div class="content">
 <pre><tt>[bold]*shift+shiftでコマンドラインにカーソルが移動します*。
@@ -2192,6 +2197,168 @@ command CloseMozilla call s:close_gecko_window()</tt></pre>
 <pre><tt>echo -en "¥e]220;overlayecho Hello, World!¥a"</tt></pre>
 </div></div>
 <div class="paragraph"><p>とタイプすると、tanasinnにはコマンド「overlayecho Hello, World!」が渡ります。</p></div>
+</div>
+<div class="sect2">
+<h3 id="_キーマッピングの設定">9.8. キーマッピングの設定</h3>
+<div class="literalblock">
+<div class="content">
+<pre><tt>tanasinnはVim scriptにファジーに似せた感じの書式でマッピング操作ができるコマンドを提供します。</tt></pre>
+</div></div>
+<div class="ulist"><ul>
+<li>
+<p>
+nmap [置換対象キーシーケンス式] [置換後のキーシーケンス式]
+</p>
+<div class="literalblock">
+<div class="content">
+<pre><tt>ノーマルモードのマッピングを設定します。</tt></pre>
+</div></div>
+</li>
+<li>
+<p>
+cmap [置換対象キーシーケンス式] [置換後のキーシーケンス式]
+</p>
+<div class="literalblock">
+<div class="content">
+<pre><tt>コマンドラインモードのマッピングを設定します。</tt></pre>
+</div></div>
+</li>
+<li>
+<p>
+特殊なキー
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+リーダーキー
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+&lt;Leader&gt;        - 設定値nmap_manager.mapleaderおよびcmap_manager.mapleaderの値
+</p>
+</li>
+</ul></div>
+</li>
+<li>
+<p>
+モードスイッチ仮想キー
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+&lt;nmode&gt;         - ノーマルモード
+</p>
+</li>
+<li>
+<p>
+&lt;cmode&gt;         - コマンドラインモード
+</p>
+</li>
+</ul></div>
+</li>
+<li>
+<p>
+モディファイヤ2度押し
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+&lt;2-Shift&gt;       - Shift key twice.
+</p>
+</li>
+</ul></div>
+</li>
+<li>
+<p>
+スワイプイベント仮想キー(一部のプラットフォームのみ)
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+&lt;SwipeLeft&gt;     - 左にスワイプ
+</p>
+</li>
+<li>
+<p>
+&lt;SwipeRight&gt;    - 右にスワイプ
+</p>
+</li>
+<li>
+<p>
+&lt;SwipeTop&gt;      - 上にスワイプ
+</p>
+</li>
+<li>
+<p>
+&lt;SwipeBottom&gt;   - 下にスワイプ
+</p>
+</li>
+</ul></div>
+</li>
+<li>
+<p>
+ピンチイベント仮想キー(一部のプラットフォームのみ)
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+&lt;PinchOpen&gt;     - ピンチオープン
+</p>
+</li>
+<li>
+<p>
+&lt;PinchClose&gt;    - ピンチクローズ
+</p>
+</li>
+</ul></div>
+</li>
+</ul></div>
+</li>
+</ul></div>
+<div class="listingblock">
+<div class="title">設定例 .tanasinn/tanasinnrc</div>
+<div class="content">
+<pre><tt> ##############################################################################
+ #
+ # Set Leader keys mappings
+ #
+
+ # set &lt;Leader&gt;
+ set nmap_manager.mapleader="&lt;C-s&gt;"
+ set cmap_manager.mapleader="&lt;C-s&gt;"
+
+ ##############################################################################
+ #
+ # Gesture mappings
+ #
+
+ #for tmux
+ nmap &lt;SwipeLeft&gt;    &lt;C-b&gt;p
+ nmap &lt;SwipeRight&gt;   &lt;C-b&gt;n
+
+ # zoom in/out
+ nmap &lt;PinchOpen&gt;    &lt;cmode&gt;increase&lt;CR&gt;
+ nmap &lt;PinchClose&gt;   &lt;cmode&gt;decrease&lt;CR&gt;
+
+ ##############################################################################
+ #
+ # &lt;Leader&gt; mode
+ #
+
+ # zoom in/out
+ nmap &lt;Leader&gt;, &lt;cmode&gt;decrease&lt;CR&gt;&lt;Leader&gt;
+ nmap &lt;Leader&gt;. &lt;cmode&gt;increase&lt;CR&gt;&lt;Leader&gt;
+
+ # move window
+ nmap &lt;Leader&gt;h &lt;cmode&gt;left&lt;CR&gt;&lt;Leader&gt;
+ nmap &lt;Leader&gt;j &lt;cmode&gt;down&lt;CR&gt;&lt;Leader&gt;
+ nmap &lt;Leader&gt;k &lt;cmode&gt;up&lt;CR&gt;&lt;Leader&gt;
+ nmap &lt;Leader&gt;l &lt;cmode&gt;right&lt;CR&gt;&lt;Leader&gt;
+
+ # break &lt;Leader&gt; mode
+ nmap &lt;Leader&gt;&lt;Esc&gt; &lt;nmode&gt;</tt></pre>
+</div></div>
 </div>
 </div>
 </div>
@@ -3117,7 +3284,7 @@ twitter: <a href="http://twitter.com/kefir_">日本語</a> / <a href="http://twi
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2012-03-10 04:39:30 JST
+Last updated 2012-03-26 21:24:14 JST
 </div>
 </div>
 </body>

@@ -37,26 +37,27 @@ Tracer.definition = {
   get id()
     "tracer",
 
-  hook: function() 
-  {
-    let hook_target = "emurator.write";
-  },
+  _mode: "vt100",
 
-  "[subscribe('@initialized/emurator'), enabled]":
-  function construct(emurator) 
+  "[subscribe('command/change-mode'), enabled]":
+  function onChangeMode(mode) 
   { 
-    this._emurator = emurator; 
-    let broker = this._broker;
-    broker.notify("initialized/tracer", this);
+    if (this.onBeforeInput.enabled) {
+      this.disable();
+      this._mode = mode;
+      this.enable();
+    } else {
+      this._mode = mode;
+    }
   },
 
   "[subscribe('command/debugger-trace-on'), enabled]":
   function enable() 
   {
     this.onBeforeInput.enabled = true;
-    let emurator = this._emurator;
     let broker = this._broker;
-    let sequences = this._backup_sequences = broker.notify("get/sequences");
+    let sequences = broker.notify("get/sequences/" + this._mode);
+    this._backup_sequences = sequences;
 
     for (let i = 0; i < sequences.length; ++i) {
       let information = sequences[i];
@@ -81,36 +82,20 @@ Tracer.definition = {
         coUtils.Debug.reportError(e);
       }
     }
-
-    emurator.write = function(data) 
-    {
-      emurator.__proto__.write.call(emurator, data);    
-      let text = String.fromCharCode.apply(String, data);
-      let info = {
-        type: CO_TRACE_OUTPUT, 
-        name: undefined,
-        value: [text]
-      };
-      //broker.notify("command/debugger-trace-sequence", [info, undefined]); 
-      //return [info, undefined];
-    }
   },
 
   "[subscribe('command/debugger-trace-off'), enabled]":
   function disable() 
   {
     this.onBeforeInput.enabled = false;
-    let emurator = this._emurator;
     let broker = this._broker;
-    let sequences = broker.notify("get/sequences");
-    sequences.forEach(function(information) 
-    {
+    let sequences = broker.notify("get/sequences/" + this._mode);
+    for (let i = 0; i < sequences.length; ++i) {
+      let information = sequences[i];
       broker.notify("command/add-sequence", information);
-    }, this);
-    delete emurator.write; // uninstall hook
+    }
   },
 
-//  "[subscribe('event/before-input')]":
   "[subscribe('command/send-to-tty')]":
   function onBeforeInput(message) 
   {
@@ -120,11 +105,10 @@ Tracer.definition = {
       value: [message],
     };
     let broker = this._broker;
-//    broker.notify("command/report-status-message", message); 
     broker.notify("command/debugger-trace-sequence", [info, undefined]); 
   },
 
-};
+}; // class Tracer
 
 /**
  *

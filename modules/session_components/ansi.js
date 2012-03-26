@@ -149,13 +149,13 @@ AnsiSpecifiedMode.definition = {
     this.EBM = false; 
   },
 
-  "[sequence('CSI %dh')]":
+  "[profile('vt100'), sequence('CSI %dh')]":
   function SM(n) 
   { // set ANSI-Specified Mode. 
     this.set(n, true);
   },
 
-  "[sequence('CSI %dl')]": 
+  "[profile('vt100'), sequence('CSI %dl')]": 
   function RM(n) 
   { // reset ANSI-Specified Mode. 
     this.set(n, false);

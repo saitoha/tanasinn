@@ -228,7 +228,7 @@ ScreenSequenceHandler.definition = {
    * scrolling margins.
    *
    */
-  "[sequence('CSI %d@')]":
+  "[profile('vt100'), sequence('CSI %d@')]":
   function ICH(n) 
   { // Insert (blank) CHaracters.
     this.insertBlanks(n || 1)
@@ -251,7 +251,7 @@ ScreenSequenceHandler.definition = {
    * @param {Number} n the number of lines to move the cursor up.
    *
    */
-  "[sequence('CSI %dA')]":
+  "[profile('vt100'), sequence('CSI %dA')]":
   function CUU(n) 
   { // CUrsor Up
     this.cursorUp(n || 1);
@@ -272,7 +272,7 @@ ScreenSequenceHandler.definition = {
    *
    * @param {Number} n the number of lines to move the cursor down.
    */
-  "[sequence('CSI %dB')]":
+  "[profile('vt100'), sequence('CSI %dB')]":
   function CUD(n) 
   { // CUrsor Down
     this.cursorDown(n || 1);
@@ -291,7 +291,7 @@ ScreenSequenceHandler.definition = {
    *
    * @param {Number} n the number of columns to move the cursor to the right.
    */
-  "[sequence('CSI %dC')]":
+  "[profile('vt100'), sequence('CSI %dC')]":
   function CUF(n) 
   { // CUrsor Forward (right).
     this.cursorForward(n || 1);
@@ -310,7 +310,7 @@ ScreenSequenceHandler.definition = {
    * 
    * @param {Number} n the number of columns to move the cursor to the left.
    */
-  "[sequence('CSI %dD')]":
+  "[profile('vt100'), sequence('CSI %dD')]":
   function CUB(n) 
   { // CUrsor Back (left).
     this.cursorBackward(n || 1);
@@ -336,7 +336,7 @@ ScreenSequenceHandler.definition = {
    * The active position is moved to the n-th character position of the
    * active line.
    */
-  "[sequence('CSI %dG')]":
+  "[profile('vt100'), sequence('CSI %dG')]":
   function CHA(n) 
   { // cursor CHaracter Absolute column
     this.setPositionX((n || 1) - 1 + this.cursor.originX);
@@ -362,7 +362,7 @@ ScreenSequenceHandler.definition = {
    * @param {Number} n2 the number of the column to move to. If n1 is 0 or 1, 
    *                    then the cursor moves to column 1.
    */
-  "[sequence('CSI %dH')]":
+  "[profile('vt100'), sequence('CSI %dH')]":
   function CUP(n1, n2) 
   { // move CUrsor to absolute Position 
     this.VPA(n1);
@@ -371,7 +371,7 @@ ScreenSequenceHandler.definition = {
   },
 
   /** DEC double-height line, top half. */
-  "[sequence('ESC #3')]": 
+  "[profile('vt100'), sequence('ESC #3')]": 
   function DECDHL_top() 
   {
     //this.cursor.attr.size = 1;
@@ -384,7 +384,7 @@ ScreenSequenceHandler.definition = {
   },
 
   /** DEC double-height line, bottom half. */
-  "[sequence('ESC #4')]": 
+  "[profile('vt100'), sequence('ESC #4')]": 
   function DECDHL_bottom() 
   {
     //this.cursor.attr.size = 2;
@@ -397,7 +397,7 @@ ScreenSequenceHandler.definition = {
   },
 
   /** DEC single-height line. */
-  "[sequence('ESC #5')]": 
+  "[profile('vt100'), sequence('ESC #5')]": 
   function DECSWL() 
   {
     //this.cursor.attr.size = 3;
@@ -409,7 +409,7 @@ ScreenSequenceHandler.definition = {
   },
 
   /** DEC double-width line. */
-  "[sequence('ESC #6')]": 
+  "[profile('vt100'), sequence('ESC #6')]": 
   function DECDWL() 
   {
     //this.cursor.attr.size = 0;
@@ -421,13 +421,13 @@ ScreenSequenceHandler.definition = {
    // this._screen.cursorUp(1);
   },
 
-  "[sequence('ESC #8')]":
+  "[profile('vt100'), sequence('ESC #8')]":
   function DECALN() 
   { // DEC Screen Alignment Test
       this.eraseScreenAllWithTestPattern();
   },
 
-  "[sequence('CSI %dJ')]":
+  "[profile('vt100'), sequence('CSI %dJ')]":
   function ED(n) 
   { // Erase Display
     n == 0 ?   // erase below
@@ -443,7 +443,7 @@ ScreenSequenceHandler.definition = {
         arguments.callee.name, Array.slice(arguments));
   },
 
-  "[sequence('CSI %dK')]":
+  "[profile('vt100'), sequence('CSI %dK')]":
   function EL(n) 
   { // Erase Line
     n == 0 ? // erase to right
@@ -457,13 +457,13 @@ ScreenSequenceHandler.definition = {
         arguments.callee.name, Array.slice(arguments));
   },
 
-  "[sequence('CSI %dL')]":
+  "[profile('vt100'), sequence('CSI %dL')]":
   function IL(n) 
   { // Insert Line
     this.insertLine(n || 1);
   },
 
-  "[sequence('CSI %dM')]":
+  "[profile('vt100'), sequence('CSI %dM')]":
   function DL(n) 
   { // Delete Line.
     this.deleteLine(n || 1);
@@ -484,7 +484,7 @@ ScreenSequenceHandler.definition = {
    *  The spaces created at the end of the line have all their character 
    *  attributes off.
    */
-  "[sequence('CSI %dP')]":
+  "[profile('vt100'), sequence('CSI %dP')]":
   function DCH(n) 
   { // Delete CHaracters
     this.deleteCharacters(n || 1);
@@ -507,7 +507,7 @@ ScreenSequenceHandler.definition = {
    *                   display. You cannot pan past the bottom margin of the 
    *                   current page.
    */
-  "[sequence('CSI %dS')]":
+  "[profile('vt100'), sequence('CSI %dS')]":
   function SU(n) 
   { // Scroll Up line
     this.scrollUpLine(n || 1);
@@ -529,7 +529,7 @@ ScreenSequenceHandler.definition = {
    *                   Pn old lines disappear at the bottom of the display. 
    *                   You cannot pan past the top margin of the current page.
    */
-  "[sequence('CSI %dT')]":
+  "[profile('vt100'), sequence('CSI %dT')]":
   function SD(n) 
   { // Scroll Down line
     this.scrollDownLine(n || 1);
@@ -548,7 +548,7 @@ ScreenSequenceHandler.definition = {
    *  line occurs.
    *  The cursor remains in the same position.
    */
-  "[sequence('CSI %dX')]":
+  "[profile('vt100'), sequence('CSI %dX')]":
   function ECH(n) 
   { // Erase CHaracters
     this.eraseCharacters(n || 1);
@@ -573,13 +573,13 @@ ScreenSequenceHandler.definition = {
    * the active position past the last position on the line, then the active 
    * position stops at the last position on the line.
    */
-  "[sequence('CSI %da')]":
+  "[profile('vt100'), sequence('CSI %da')]":
   function HPR(n) 
   { // 
     this.cursorForward(n || 1);
   },
 
-  "[sequence('CSI ?%dc')]":
+  "[profile('vt100'), sequence('CSI ?%dc')]":
   function () 
   {
   },
@@ -663,7 +663,7 @@ ScreenSequenceHandler.definition = {
    * The terminal is a class 4 device (64) and supports the Ps parameters 
    * listed above.
    */
-  "[sequence('CSI %dc')]":
+  "[profile('vt100'), sequence('CSI %dc')]":
   function DA1(n1, n2) 
   { // TODO: Primary DA (Device Attributes)
     if (n1 !== undefined && n1 != 0) {
@@ -765,7 +765,7 @@ ScreenSequenceHandler.definition = {
    * The terminal identifies itself as a VT510 that uses version 2.0 
    * firmware, and has a PC keyboard option.
    */
-  "[sequence('CSI >%dc')]":
+  "[profile('vt100'), sequence('CSI >%dc')]":
   function DA2(n1, n2) 
   { // TODO: Secondary DA (Device Attributes)
       let message = "\x1b[>2;100;2c"
@@ -808,7 +808,7 @@ ScreenSequenceHandler.definition = {
    * attempt is made to move the active position below the last line, then 
    * the active position stops on the last line.
    */
-  "[sequence('CSI %dd')]":
+  "[profile('vt100'), sequence('CSI %dd')]":
   function VPA(n) 
   { // set Virtical Position Absolutely
     this.setPositionY((n || 1) - 1 + this.cursor.originY);
@@ -835,7 +835,7 @@ ScreenSequenceHandler.definition = {
    * is made to move the active position below the last line, the active 
    * position stops at the last line.
    */
-  "[sequence('CSI %de')]":
+  "[profile('vt100'), sequence('CSI %de')]":
   function VPR(n) 
   { 
     this.cursorDown(n || 1);
@@ -863,7 +863,7 @@ ScreenSequenceHandler.definition = {
    * stops at the last line.
    *
    */
-  "[sequence('CSI %dk')]":
+  "[profile('vt100'), sequence('CSI %dk')]":
   function VPB(n) 
   { 
     this.cursorUp(n || 1);
@@ -887,7 +887,7 @@ ScreenSequenceHandler.definition = {
    * 
    * The active position is moved to the first character of the n-th following line.
    */
-  "[sequence('CSI %dE')]":
+  "[profile('vt100'), sequence('CSI %dE')]":
   function CNL(n) 
   {
     this.cursorDown(n || 1);
@@ -913,14 +913,14 @@ ScreenSequenceHandler.definition = {
    * 
    * The active position is moved to the first character of the n-th preceding line.
    */
-  "[sequence('CSI %dF')]":
+  "[profile('vt100'), sequence('CSI %dF')]":
   function CPL(n) 
   {
     this.cursorUp(n || 1);
     this.setPositionX(0);
   },
 
-  "[sequence('CSI %dI')]":
+  "[profile('vt100'), sequence('CSI %dI')]":
   function CHT(n) 
   { // TODO: Cursor Horaizontal Tabulation
     coUtils.Debug.reportWarning(
@@ -928,7 +928,7 @@ ScreenSequenceHandler.definition = {
       arguments.callee.name, Array.slice(arguments));
   },
 
-  "[sequence('CSI %dZ')]":
+  "[profile('vt100'), sequence('CSI %dZ')]":
   function CBT(n) 
   { // Cursor Backward Tabulation
     coUtils.Debug.reportWarning(
@@ -955,7 +955,7 @@ ScreenSequenceHandler.definition = {
    * position past the last position on the line, then the active position 
    * stops at the last position on the line.
    */
-  "[sequence('CSI %d`')]":
+  "[profile('vt100'), sequence('CSI %d`')]":
   function HPA(n) 
   { 
     this.setPositionX((n || 1) - 1);
@@ -996,7 +996,7 @@ ScreenSequenceHandler.definition = {
    * the first line or column, respectively. Origin mode (DECOM) selects line
    * numbering and the ability to move the cursor into margins.
    */
-  "[sequence('CSI %df')]":
+  "[profile('vt100'), sequence('CSI %df')]":
   function HVP(n1, n2) 
   { // Horizontal and Vertical Position
     this.setPositionY((n1 || 1) - 1 + this.cursor.originX);
@@ -1022,7 +1022,7 @@ ScreenSequenceHandler.definition = {
    * 3                   - The terminal clears all tab stops.
    *
    */
-  "[sequence('CSI %dg')]":
+  "[profile('vt100'), sequence('CSI %dg')]":
   function TBC(n) 
   { // TaB Clear
 
@@ -1071,7 +1071,7 @@ ScreenSequenceHandler.definition = {
    * automatically. Control function TBC clears the tab stops on the display;
    * HTS sets a horizontal tab stop at the active column.
    */
-//  "[sequence('CSI ?5W')]":
+//  "[profile('vt100'), sequence('CSI ?5W')]":
 //  function DECST8C(n) 
 //  { // Set Tab at Every 8 Columns
 //    coUtils.Debug.reportWarning(
@@ -1080,7 +1080,7 @@ ScreenSequenceHandler.definition = {
 //    //this.setDefaultTaburation();
 //  },
 
-  "[sequence('CSI %di')]":
+  "[profile('vt100'), sequence('CSI %di')]":
   function MC(n) 
   { // TODO: Media Copy
     coUtils.Debug.reportWarning(
@@ -1088,7 +1088,7 @@ ScreenSequenceHandler.definition = {
       arguments.callee.name, Array.slice(arguments));
   },
 
-  "[sequence('CSI ?%di')]":
+  "[profile('vt100'), sequence('CSI ?%di')]":
   function DECMC(n) 
   { // TODO: Media Copy, DEC-specific
     coUtils.Debug.reportWarning(
@@ -1096,7 +1096,7 @@ ScreenSequenceHandler.definition = {
       arguments.callee.name, Array.slice(arguments));
   },
 
-  "[sequence('CSI %dn')]":
+  "[profile('vt100'), sequence('CSI %dn')]":
   function DSR() 
   { // TODO: Device Status Report
     coUtils.Debug.reportWarning(
@@ -1104,7 +1104,7 @@ ScreenSequenceHandler.definition = {
       arguments.callee.name, Array.slice(arguments));
   },
 
-  "[sequence('CSI ?%dn')]":
+  "[profile('vt100'), sequence('CSI ?%dn')]":
   function DECDSR() 
   { // TODO: Device Status Report
     coUtils.Debug.reportWarning(
@@ -1112,7 +1112,7 @@ ScreenSequenceHandler.definition = {
       arguments.callee.name, Array.slice(arguments));
   },
  
-  "[sequence('0x90', 'ESC P')]":
+  "[profile('vt100'), sequence('0x90', 'ESC P')]":
   function DCS() 
   {
     let message = String.fromCharCode.apply(String, arguments);
@@ -1120,7 +1120,7 @@ ScreenSequenceHandler.definition = {
       _("Ignored %s [%s]"), arguments.callee.name, message);
   },
 
-  "[sequence('0x98', 'ESC X')]":
+  "[profile('vt100'), sequence('0x98', 'ESC X')]":
   function SOS() 
   {
     let message = String.fromCharCode.apply(String, arguments);

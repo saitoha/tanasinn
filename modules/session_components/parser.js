@@ -424,15 +424,15 @@ SequenceParser.definition = {
 }; // class SequenceParser
 
 /**
- * @class Grammar
+ * @class VT100Grammar
  *
  *
  */
-let Grammar = new Class().extends(Component).requires("GrammarConcept");
-Grammar.definition = {
+let VT100Grammar = new Class().extends(Component).requires("GrammarConcept");
+VT100Grammar.definition = {
 
   get id()
-    "grammar",
+    "vt100",
 
   /** post constructor. 
    *  @param {Broker} broker A Broker object.
@@ -443,7 +443,7 @@ Grammar.definition = {
     this.ESC = new SequenceParser();
     this.CSI = new SequenceParser();
     broker.notify("command/add-sequence", {
-      expression: "C0 0x1B", 
+      expression: "0x1B", 
       handler: this.ESC,
       context: this,
     });
@@ -452,11 +452,17 @@ Grammar.definition = {
       handler: this.CSI,
       context: this,
     });
-    let sequences = broker.notify("get/sequences");
+    let sequences = broker.notify("get/sequences/vt100");
     for (let i = 0; i < sequences.length; ++i) {
       broker.notify("command/add-sequence", sequences[i]);
     }
     broker.notify("initialized/grammar", this);
+  },
+
+  "[subscribe('get/grammars'), enabled]":
+  function onGrammarsRequested()
+  {
+    return this;
   },
 
   /** Parse and returns asocciated action. 
@@ -494,7 +500,7 @@ Grammar.definition = {
     this[prefix].append(key, handler, context);
   }, // append
 
-}; // Grammar
+}; // VT100Grammar
 
 /** 
  * @class Scanner
@@ -617,12 +623,13 @@ Parser.definition = {
   _decoder: null,
   _scanner: null,
 
+  "[persistable] initial_grammar": "vt100",
+
 // post-constructor
-  "[subscribe('initialized/{scanner & grammar & emurator & decoder & drcs_converter}'), enabled]":
-  function onLoad(scanner, grammar, emurator, decoder, drcs_converter)
+  "[subscribe('initialized/{scanner & emurator & decoder & drcs_converter}'), enabled]":
+  function onLoad(scanner, emurator, decoder, drcs_converter)
   {
     this._scanner = scanner;    
-    this._grammar = grammar;
     this._emurator = emurator;
     this._decoder = decoder;
     this._drcs_converter = drcs_converter;
@@ -637,6 +644,15 @@ Parser.definition = {
   {
     this.drive.enabled = true;
     this.onDataArrivedRecursively.enabled = true;
+
+    this._grammars = {};
+    let grammars = broker.notify("get/grammars");
+    for (let i = 0; i < grammars.length; ++i) {
+      let grammar = grammars[i];
+      this._grammars[grammar.id] = grammar;
+    }
+    this._grammar = this._grammars[this.initial_grammar];
+
     broker.notify("initialized/parser", this);
   },
 
@@ -647,6 +663,12 @@ Parser.definition = {
   {
     this.drive.enabled = false;
     this.onDataArrivedRecursively.enabled = false;
+  },
+
+  "[subscribe('command/change-mode'), enabled]":
+  function onChangeMode(mode)
+  {
+    this._grammar = this._grammars[mode];
   },
 
   "[subscribe('command/enable-default-parser'), enabled]": 
@@ -717,7 +739,9 @@ Parser.definition = {
     }
 
     while (!scanner.isEnd) {
+
       scanner.setAnchor(); // memorize current position.
+
       let action = grammar.parse(scanner);
       if (action) {
         if (action.isGenerator()) {
@@ -727,13 +751,16 @@ Parser.definition = {
           scanner.moveNext();
         }
       } else if (!scanner.isEnd) {
+
         let codes = [];
+        
         for (let c in decoder.decode(scanner)) {
           if (c >= 0x1100 && coUtils.Unicode.doubleWidthTest(c)) {
             codes.push(0);
           }
           codes.push(c);
         }
+
         if (codes.length) {
           yield function () 
           {
@@ -741,15 +768,22 @@ Parser.definition = {
             emurator.write(converted_codes);
           };
         } else {
+          let c1 = scanner.current();
+          //scanner.moveNext();
+          //let c2 = scanner.current();
           coUtils.Debug.reportError(
             _("Failed to decode text. text length: %d, source text: [%s]."), 
-            data.length, scanner._nextvalue);
-          break;
+            data.length, c1);
+          if (scanner.isEnd) {
+            break;
+          }
+          scanner.moveNext();
         }
       } else { // scanner.isEnd
         scanner.setSurplus(); // backup surplus (unparsed) sequence.
       }
     }
+
   },
 
   /** Pads NULL characters before each of wide characters.
@@ -800,6 +834,6 @@ function main(broker)
 {
   new Parser(broker);
   new Scanner(broker);
-  new Grammar(broker);
+  new VT100Grammar(broker);
 }
 

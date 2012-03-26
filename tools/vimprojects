@@ -87,6 +87,7 @@
    escape.js
    ansi.js
    dec.js
+   vt52.js
 
    tty.js
    input.js

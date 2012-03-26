@@ -92,7 +92,7 @@ DecModeSequenceHandler.definition = {
     this._decsave_buffer = {};
   },
 
-  "[sequence('CSI ?%dh')]":
+  "[profile('vt100'), sequence('CSI ?%dh')]":
   function DECSET() 
   { // DEC Private Mode Set
 
@@ -413,7 +413,7 @@ DecModeSequenceHandler.definition = {
     } // end for
   },
   
-  "[sequence('CSI ?%dl')]":
+  "[profile('vt100'), sequence('CSI ?%dl')]":
   function DECRST() 
   { // TODO: DEC-Private Mode Reset
 
@@ -732,7 +732,7 @@ DecModeSequenceHandler.definition = {
 
   },
 
-  "[sequence('CSI ?%dr')]":
+  "[profile('vt100'), sequence('CSI ?%dr')]":
   function DECRSTR() 
   { // TODO: DEC Private Mode Restore
     Array.slice(arguments).forEach(function(n) {
@@ -748,7 +748,7 @@ DecModeSequenceHandler.definition = {
     }, this);
   },
 
-  "[sequence('CSI ?%ds')]":
+  "[profile('vt100'), sequence('CSI ?%ds')]":
   function DECSAVE(n) 
   {  // TODO: DEC Private Mode Save
     Array.slice(arguments).forEach(function(n) {
@@ -810,7 +810,7 @@ DecModeSequenceHandler.definition = {
    *  - DECSTBM moves the cursor to column 1, line 1 of the page.
    *
    */
-  "[sequence('CSI %dr', 'CSI %d>')]":
+  "[profile('vt100'), sequence('CSI %dr', 'CSI %d>')]":
   function DECSTBM(n1, n2) 
   {
     // set scrolling region
@@ -879,82 +879,90 @@ DecModeSequenceHandler.definition = {
    * Cursor direction                         DECRLM                  Reset (Left-to-right), regardless of NVR setting.
    * PC Term mode                             DECPCTERM               Always reset.
    */
-  "[sequence('CSI !p')]": 
+  "[profile('vt100'), sequence('CSI !p')]": 
   function DECSTR() 
   { // TODO: DEC specific - Soft Terminal Reset
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
-      arguments.callee.name, [].slice.apply(arguments));
+      arguments.callee.name, Array.slice(arguments));
   },
 
   set_DECSCL: function set_DECSCL()
   { // TODO: set conformance level DECSCL
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
-      arguments.callee.name, [].slice.apply(arguments));
+      arguments.callee.name, Array.slice(arguments));
   },
 
   set_DECSCA: function set_DECSCA() 
   { //TODO: set character protection attribute DECSCA
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
-      arguments.callee.name, [].slice.apply(arguments));
+      arguments.callee.name, Array.slice(arguments));
   },
 
   DECEFR: function DECEFR() 
   { // TODO: Enable Filter Rectangle
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
-      arguments.callee.name, [].slice.apply(arguments));
+      arguments.callee.name, Array.slice(arguments));
   },
 
   DECREQTPARM: function DECREQTPARM() 
   { // TODO: Request Terminal Parameters
     coUtils.Debug.reportWarning(
       "%s sequence [%s] was ignored.",
-      arguments.callee.name, [].slice.apply(arguments));
+      arguments.callee.name, Array.slice(arguments));
   },
 
   DECELR: function DECELR() 
   { // TODO: Enable Locator Reporting
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
-      arguments.callee.name, [].slice.apply(arguments));
+      arguments.callee.name, Array.slice(arguments));
   },
 
   DECSLE: function DECSLE() 
   { // TODO: Select Locator Events
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
-      arguments.callee.name, [].slice.apply(arguments));
+      arguments.callee.name, Array.slice(arguments));
   },
 
   DECRQLP: function DECRQLP() 
   { // TODO: Request Locator Position
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
-      arguments.callee.name, [].slice.apply(arguments));
+      arguments.callee.name, Array.slice(arguments));
   },
 
   DECLRP: function DECLRP() 
   { // TODO: Locator Report
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
-      arguments.callee.name, [].slice.apply(arguments));
+      arguments.callee.name, Array.slice(arguments));
   },
 
   DECSED: function DECSED(n) 
   { // TODO: DEC Selectively Erase in Display
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
-      arguments.callee.name, [].slice.apply(arguments));
+      arguments.callee.name, Array.slice(arguments));
   },
 
   DECSEL: function DECSEL(n) 
   { // DEC Selectively Elase in Line
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
-      arguments.callee.name, [].slice.apply(arguments));
+      arguments.callee.name, Array.slice(arguments));
+  },
+
+  "[profile('vt100'), sequence('CSI %d\\ ~')]":
+  function DECTME(n) 
+  { // DEC Selectively Elase in Line
+    coUtils.Debug.reportWarning(
+      _("%s sequence [%s] was ignored."),
+      arguments.callee.name, Array.slice(arguments));
   },
 
 
@@ -968,7 +976,7 @@ let DecPrivateMode = new Class().extends(Component)
 DecPrivateMode.definition = {
 
   get id()
-    "module.decmode",
+    "decmode",
 
   "[subscribe('initialized/{screen & cursorstate}'), enabled]":
   function onLoad(screen, cursor_state)

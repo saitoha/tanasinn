@@ -191,7 +191,7 @@ CursorState.definition = {
    *   - TODO: Selective erase attribute
    *   - TODO: Any single shift 2 (SS2) or single shift 3 (SS3) functions sent
    */
-  "[sequence('ESC 7')] DECSC": 
+  "[profile('vt100'), sequence('ESC 7')] DECSC": 
   function DECSC() 
   {
     this.backup(); 
@@ -222,13 +222,13 @@ CursorState.definition = {
    * the status line. This feature lets you save a separate operating state 
    * for the main display and the status line.
    */
-  "[sequence('ESC 8')] DECRC": 
+  "[profile('vt100'), sequence('ESC 8')] DECRC": 
   function DECRC() 
   {
     this.restore();
   },
 
-  "[sequence('CSI %dm')]":
+  "[profile('vt100'), sequence('CSI %dm')]":
   function SGR(n) 
   { // character attributes
     // -- xterm-256color --

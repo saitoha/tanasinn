@@ -69,14 +69,14 @@ Control.definition = {
 
   /** Null.
    */
-  "[sequence('0x00')]":
+  "[profile('vt100'), sequence('0x00')]":
   function NUL() 
   {
   },
   
   /** Start of heading.
    */
-  "[sequence('0x01')]":
+  "[profile('vt100'), sequence('0x01')]":
   function SOH() 
   {
     coUtils.Debug.reportWarning(
@@ -86,7 +86,7 @@ Control.definition = {
   
   /** Start of text.
    */
-  "[sequence('0x02')]":
+  "[profile('vt100'), sequence('0x02')]":
   function STX()  
   {
     coUtils.Debug.reportWarning(
@@ -96,7 +96,7 @@ Control.definition = {
  
   /** End of text.
    */
-  "[sequence('0x03')]":
+  "[profile('vt100'), sequence('0x03')]":
   function ETX() 
   {
     coUtils.Debug.reportWarning(
@@ -106,7 +106,7 @@ Control.definition = {
 
   /** Start of transmission.
    */
-  "[sequence('0x04')]":
+  "[profile('vt100'), sequence('0x04')]":
   function EOT() 
   {
     coUtils.Debug.reportWarning(
@@ -116,7 +116,7 @@ Control.definition = {
   
   /** Enquire.
    */
-  "[sequence('0x05')]":
+  "[profile('vt100'), sequence('0x05')]":
   function ENQ() 
   {
     let session = this._broker;
@@ -125,7 +125,7 @@ Control.definition = {
   
   /** Acknowledge.
    */
-  "[sequence('0x06')]":
+  "[profile('vt100'), sequence('0x06')]":
   function ACK() 
   {
     coUtils.Debug.reportWarning(
@@ -135,7 +135,7 @@ Control.definition = {
    
   /** Bell.
    */
-  "[sequence('0x07', 'ESC \\\\')]":
+  "[profile('vt100'), sequence('0x07', 'ESC \\\\')]":
   function BEL() 
   {
     let session = this._broker;
@@ -144,7 +144,7 @@ Control.definition = {
 
   /** Back space.
    */
-  "[sequence('0x08')]":
+  "[profile('vt100'), sequence('0x08')]":
   function BS() 
   { // BackSpace
     let screen = this._screen;
@@ -153,7 +153,7 @@ Control.definition = {
    
   /** Horizontal tabulation.
    */
-  "[sequence('0x09')]":
+  "[profile('vt100'), sequence('0x09')]":
   function HT() 
   { // Horizontal Tab
     let screen = this._screen;
@@ -162,7 +162,7 @@ Control.definition = {
   
   /** Linefeed.
    */
-  "[sequence('0x0A')]":
+  "[profile('vt100'), sequence('0x0A')]":
   function LF() 
   {
     let screen = this._screen;
@@ -174,7 +174,7 @@ Control.definition = {
  
   /** Index.
    */
-  "[sequence('0x84', 'ESC D'), _('Index')]":
+  "[profile('vt100'), sequence('0x84', 'ESC D'), _('Index')]":
   function IND() 
   {
     let screen = this._screen;
@@ -186,7 +186,7 @@ Control.definition = {
  
   /** Vertical tabulation.
    */
-  "[sequence('0x0B')]":
+  "[profile('vt100'), sequence('0x0B')]":
   function VT() 
   {
     let screen = this._screen;
@@ -198,7 +198,7 @@ Control.definition = {
 
   /** Form feed.
    */
-  "[sequence('0x0C')]":
+  "[profile('vt100'), sequence('0x0C')]":
   function FF() 
   {
     let screen = this._screen;
@@ -210,7 +210,7 @@ Control.definition = {
 
   /** Carriage return.
    */
-  "[sequence('0x0D')]":
+  "[profile('vt100'), sequence('0x0D')]":
   function CR() 
   { // Carriage Return
     let screen = this._screen;
@@ -219,7 +219,7 @@ Control.definition = {
     
   /** Shift out.
    */
-  "[sequence('0x0E')]":
+  "[profile('vt100'), sequence('0x0E')]":
   function SO() 
   { // shift out
     let session = this._broker;
@@ -228,7 +228,7 @@ Control.definition = {
   
   /** Shift in.
    */
-  "[sequence('0x0F')]":
+  "[profile('vt100'), sequence('0x0F')]":
   function SI() 
   { // shift out
     let session = this._broker;
@@ -237,7 +237,7 @@ Control.definition = {
 
   /** Data link escape.
    */
-  "[sequence('0x10')]":
+  "[profile('vt100'), sequence('0x10')]":
   function DLE() 
   {
     coUtils.Debug.reportWarning(
@@ -247,7 +247,7 @@ Control.definition = {
  
   /** Device control 1.
    */
-  "[sequence('0x11')]":
+  "[profile('vt100'), sequence('0x11')]":
   function DC1() 
   {
     let session = this._broker;
@@ -257,7 +257,7 @@ Control.definition = {
   
   /** Device control 2.
    */
-  "[sequence('0x12')]":
+  "[profile('vt100'), sequence('0x12')]":
   function DC2() 
   {
     coUtils.Debug.reportWarning(
@@ -267,7 +267,7 @@ Control.definition = {
 
   /** Device control 3.
    */
-  "[sequence('0x13')]":
+  "[profile('vt100'), sequence('0x13')]":
   function DC3() 
   {
     let session = this._broker;
@@ -277,7 +277,7 @@ Control.definition = {
   
   /** Device control 4.
    */
-  "[sequence('0x14')]":
+  "[profile('vt100'), sequence('0x14')]":
   function DC4() 
   {
     coUtils.Debug.reportWarning(
@@ -287,7 +287,7 @@ Control.definition = {
   
   /** Negative acknowledge.
    */
-  "[sequence('0x15')]":
+  "[profile('vt100'), sequence('0x15')]":
   function NAK() 
   {
     coUtils.Debug.reportWarning(
@@ -297,7 +297,7 @@ Control.definition = {
   
   /** Synchronous idle.
    */
-  "[sequence('0x16')]":
+  "[profile('vt100'), sequence('0x16')]":
   function SYN() 
   {
     coUtils.Debug.reportWarning(
@@ -307,7 +307,7 @@ Control.definition = {
   
   /** End of transmission block.
    */
-  "[sequence('0x17')]":
+  "[profile('vt100'), sequence('0x17')]":
   function ETB() 
   {
     coUtils.Debug.reportWarning(
@@ -317,7 +317,7 @@ Control.definition = {
   
   /** Cancel of previous word or charactor.
    */
-  "[sequence('0x18')]":
+  "[profile('vt100'), sequence('0x18')]":
   function CAN() 
   {
     coUtils.Debug.reportWarning(
@@ -327,7 +327,7 @@ Control.definition = {
   
   /** End of medium.
    */
-  "[sequence('0x19')]":
+  "[profile('vt100'), sequence('0x19')]":
   function EM() 
   {
     coUtils.Debug.reportWarning(
@@ -337,7 +337,7 @@ Control.definition = {
   
   /** Substitute.
    */
-  "[sequence('0x1A')]":
+  "[profile('vt100'), sequence('0x1A')]":
   function SUB()
   {
     coUtils.Debug.reportWarning(
@@ -347,7 +347,7 @@ Control.definition = {
   
   /** File separator.
    */
-  "[sequence('0x1C')]":
+  "[profile('vt100'), sequence('0x1C')]":
   function FS() 
   {
     coUtils.Debug.reportWarning(
@@ -357,7 +357,7 @@ Control.definition = {
  
   /** Group separator.
    */
-  "[sequence('0x1D')]":
+  "[profile('vt100'), sequence('0x1D')]":
   function GS() 
   {
     coUtils.Debug.reportWarning(
@@ -367,7 +367,7 @@ Control.definition = {
   
   /** Record separator.
    */
-  "[sequence('0x1E')]":
+  "[profile('vt100'), sequence('0x1E')]":
   function RS() 
   {
     coUtils.Debug.reportWarning(
@@ -377,7 +377,7 @@ Control.definition = {
   
   /** Unit separator.
    */
-  "[sequence('0x1F')]":
+  "[profile('vt100'), sequence('0x1F')]":
   function US() 
   {
     coUtils.Debug.reportWarning(
@@ -387,7 +387,7 @@ Control.definition = {
   
   /** Delete.
    */
-  "[sequence('0x7F', '0xFF')]":
+  "[profile('vt100'), sequence('0x7F', '0xFF')]":
   function DEL() 
   {
     coUtils.Debug.reportWarning(

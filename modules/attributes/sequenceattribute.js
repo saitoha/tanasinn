@@ -45,7 +45,7 @@ SequenceAttribute.definition = {
 
         usage:
 
-          "[sequence('CSI ?%dh')]":
+          "[profile('vt100'), sequence('CSI ?%dh')]":
           function DECSET(n) 
           { 
             ....
@@ -66,12 +66,13 @@ SequenceAttribute.definition = {
     for (let key in attributes) {
       let expressions = attributes[key]["sequence"];
       if (expressions) {
+        let [name] = attributes[key]["profile"];
         let handler = this[key];
         expressions.forEach(
           function(expression) 
           {
             broker.subscribe(
-              "get/sequences", 
+              "get/sequences/" + name, 
               function getSequences() 
               {
                 return {
@@ -88,6 +89,49 @@ SequenceAttribute.definition = {
 };
 
 /**
+ * @Attribute ProfileAttribute
+ *
+ */
+let ProfileAttribute = new Attribute("profile");
+ProfileAttribute.definition = {
+
+  get __id()
+    "profile",
+
+  get __info()
+    <Attribute>
+      <name>{_("Profile")}</name>
+      <description>{
+        _("Marks a function as a profile handler.")
+      }</description>
+      <detail>
+      <![CDATA[
+        "profile" attribute marks a sequence handler as a feature of specified mode.
+
+        usage:
+
+          "[profile('vt100'), sequence('CSI ?%dh')]":
+          function DECSET(n) 
+          { 
+            ....
+          },
+
+      ]]>
+      </detail>
+    </Attribute>,
+
+
+
+  /** constructor 
+   *  @param {EventBroker} broker Parent broker object.
+   */
+  initialize: function initialize(broker)
+  {
+  },
+
+};
+
+/**
  * @fn main
  * @brief Module entry point
  * @param {target_class} target_class The Class object.
@@ -95,6 +139,7 @@ SequenceAttribute.definition = {
 function main(target_class)
 {
   target_class.mix(SequenceAttribute);
+  target_class.mix(ProfileAttribute);
 }
 
 

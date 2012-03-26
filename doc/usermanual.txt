@@ -1593,6 +1593,86 @@ echo -en "¥e]220;overlayecho Hello, World!¥a"
 
 とタイプすると、tanasinnにはコマンド「overlayecho Hello, World!」が渡ります。
 
+=== キーマッピングの設定
+
+  tanasinnはVim scriptにファジーに似せた感じの書式でマッピング操作ができるコマンドを提供します。
+
+- nmap [置換対象キーシーケンス式] [置換後のキーシーケンス式]
+
+  ノーマルモードのマッピングを設定します。
+
+- cmap [置換対象キーシーケンス式] [置換後のキーシーケンス式]
+
+  コマンドラインモードのマッピングを設定します。
+
+- 特殊なキー
+
+* リーダーキー
+** <Leader>        - 設定値nmap_manager.mapleaderおよびcmap_manager.mapleaderの値
+
+* モードスイッチ仮想キー
+** <nmode>         - ノーマルモード
+** <cmode>         - コマンドラインモード
+
+* モディファイヤ2度押し
+** <2-Shift>       - Shift key twice.
+
+* スワイプイベント仮想キー(一部のプラットフォームのみ)
+** <SwipeLeft>     - 左にスワイプ
+** <SwipeRight>    - 右にスワイプ
+** <SwipeTop>      - 上にスワイプ
+** <SwipeBottom>   - 下にスワイプ
+
+* ピンチイベント仮想キー(一部のプラットフォームのみ)
+   
+** <PinchOpen>     - ピンチオープン
+** <PinchClose>    - ピンチクローズ
+
+.設定例 .tanasinn/tanasinnrc
+----
+
+ ##############################################################################
+ #
+ # Set Leader keys mappings
+ #
+
+ # set <Leader>
+ set nmap_manager.mapleader="<C-s>"
+ set cmap_manager.mapleader="<C-s>"
+
+ ##############################################################################
+ #
+ # Gesture mappings
+ #
+
+ #for tmux
+ nmap <SwipeLeft>    <C-b>p
+ nmap <SwipeRight>   <C-b>n
+
+ # zoom in/out
+ nmap <PinchOpen>    <cmode>increase<CR>
+ nmap <PinchClose>   <cmode>decrease<CR>
+
+ ##############################################################################
+ #
+ # <Leader> mode
+ #
+
+ # zoom in/out
+ nmap <Leader>, <cmode>decrease<CR><Leader>
+ nmap <Leader>. <cmode>increase<CR><Leader>
+
+ # move window
+ nmap <Leader>h <cmode>left<CR><Leader>
+ nmap <Leader>j <cmode>down<CR><Leader>
+ nmap <Leader>k <cmode>up<CR><Leader>
+ nmap <Leader>l <cmode>right<CR><Leader>
+
+ # break <Leader> mode
+ nmap <Leader><Esc> <nmode>
+
+----
+
 #endif
 
 

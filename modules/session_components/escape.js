@@ -58,7 +58,7 @@ KeypadModeHandler.definition = {
    * The setting is not saved in NVM. When you turn on or reset the terminal, 
    * it automatically selects numeric keypad mode.
    */ 
-  "[sequence('ESC >')]": function DECPNM() 
+  "[profile('vt100'), sequence('ESC >')]": function DECPNM() 
   {
     let broker = this._broker;
     broker.notify(
@@ -85,7 +85,7 @@ KeypadModeHandler.definition = {
    * The setting is not saved in NVM. When you turn on or reset the terminal, 
    * it automatically selects numeric keypad mode.
    */
-  "[sequence('ESC =')]": function DECPAM() 
+  "[profile('vt100'), sequence('ESC =')]": function DECPAM() 
   {
     let broker = this._broker;
     broker.notify(
@@ -163,28 +163,28 @@ CharsetModeHandler.definition = {
    * L            ISO Latin-Cyrillic
    * <            User-preferred Supplemental
    */
-  "[sequence('ESC (%c'), _('Select Character Set G0')]": 
+  "[profile('vt100'), sequence('ESC (%c'), _('Select Character Set G0')]": 
   function SCSG0(mode) 
   {
     let broker = this._broker;
     broker.notify("sequence/g0", mode);
   },
   
-  "[sequence('ESC )%c'), _('Select Character Set G1')]": 
+  "[profile('vt100'), sequence('ESC )%c'), _('Select Character Set G1')]": 
   function SCSG1(mode) 
   {
     let broker = this._broker;
     broker.notify("sequence/g1", mode);
   },
 
-  "[sequence('ESC *%c'), _('Select Character Set G2')]": 
+  "[profile('vt100'), sequence('ESC *%c'), _('Select Character Set G2')]": 
   function SCSG2(mode) 
   {
     let broker = this._broker;
     broker.notify("sequence/g2", mode);
   },
 
-  "[sequence('ESC +%c'), _('Select Character Set G3')]": 
+  "[profile('vt100'), sequence('ESC +%c'), _('Select Character Set G3')]": 
   function SCSG3(mode) 
   {
     let broker = this._broker;
@@ -205,7 +205,7 @@ Escape.definition = {
 
   /** Next line.
    */
-  "[sequence('0x85', 'ESC E'), _('Next line')]":
+  "[profile('vt100'), sequence('0x85', 'ESC E'), _('Next line')]":
   function NEL() 
   { // Carriage Return
     let screen = this._screen;
@@ -214,7 +214,7 @@ Escape.definition = {
   },
 
   /** Tab set */
-  "[sequence('0x88', 'ESC H'), _('Tab set.')]": 
+  "[profile('vt100'), sequence('0x88', 'ESC H'), _('Tab set.')]": 
   function HTS() 
   {
     let screen = this._screen;
@@ -223,7 +223,7 @@ Escape.definition = {
   },
 
   /** reverse index */
-  "[sequence('0x8d', 'ESC M'), _('Reverse index.')]": 
+  "[profile('vt100'), sequence('0x8d', 'ESC M'), _('Reverse index.')]": 
   function RI() 
   {
     let screen = this._screen;
@@ -234,7 +234,7 @@ Escape.definition = {
   },
 
 
-  "[sequence('ESC P%s')]": 
+  "[profile('vt100'), sequence('ESC P%s')]": 
   function DCS() 
   {
     let broker = this._broker;
@@ -247,7 +247,7 @@ Escape.definition = {
     }
   },
 
-  "[sequence('ESC X%s')]": 
+  "[profile('vt100'), sequence('ESC X%s')]": 
   function SOS() 
   {
     let broker = this._broker;
@@ -255,7 +255,7 @@ Escape.definition = {
     broker.notify("sequence/sos", message);
   },
 
-  "[sequence('ESC _%s')]": 
+  "[profile('vt100'), sequence('ESC _%s')]": 
   function APC() 
   {
     let broker = this._broker;
@@ -263,7 +263,7 @@ Escape.definition = {
     broker.notify("sequence/apc", message);
   },
   
-  "[sequence('ESC ]%s')]": 
+  "[profile('vt100'), sequence('ESC ]%s')]": 
   function OSC() 
   {
     let message = String.fromCharCode.apply(String, arguments);
@@ -275,7 +275,7 @@ Escape.definition = {
   },
   
   /** private message */
-  "[sequence('ESC ^%s')]": 
+  "[profile('vt100'), sequence('ESC ^%s')]": 
   function PM() 
   {
     let broker = this._broker;
@@ -284,7 +284,7 @@ Escape.definition = {
   },
 
   /** Select default character set. */
-  "[sequence('ESC %@')]": 
+  "[profile('vt100'), sequence('ESC %@')]": 
   function ISO_8859_1() 
   {
     let broker = this._broker;
@@ -293,7 +293,7 @@ Escape.definition = {
   },
 
   /** Select UTF-8 character set. */
-  "[sequence('ESC %G')]": 
+  "[profile('vt100'), sequence('ESC %G')]": 
   function UTF_8() 
   {
     let broker = this._broker;
@@ -301,19 +301,8 @@ Escape.definition = {
     broker.notify("change/encoder", "UTF-8");
   },
 
-  /** Exit VT52 mode. 
-   * TODO exit VT52 mode
-   */
-  "[sequence('ESC <')]": 
-  function ExitVT52() 
-  {
-    coUtils.Debug.reportWarning(
-      "%s sequence [%s] was ignored.",
-      arguments.callee.name, [].slice.apply(arguments));
-  },
-
   /** Selective Erace Rectangle Area. */
-  "[sequence('CSI %d${')]": 
+  "[profile('vt100'), sequence('CSI %d${')]": 
   function DECSERA(n1, n2, n3, n4) 
   {
     coUtils.Debug.reportWarning(
@@ -322,7 +311,7 @@ Escape.definition = {
   },
 
   /** Soft Terminal reset. */
-  "[sequence('CSI !p')]": 
+  "[profile('vt100'), sequence('CSI !p')]": 
   function DECSTR() 
   {
     coUtils.Debug.reportWarning(
@@ -331,7 +320,7 @@ Escape.definition = {
   },
 
   /** Soft Terminal reset. */
-  "[sequence('CSI %d\"p')]": 
+  "[profile('vt100'), sequence('CSI %d\"p')]": 
   function DECSCL() 
   {
     coUtils.Debug.reportWarning(
@@ -379,7 +368,7 @@ Escape.definition = {
    *   - Erases the paste buffer.
    *
    */
-  "[sequence('ESC c')]": 
+  "[profile('vt100'), sequence('ESC c')]": 
   function RIS() 
   {
     let broker = this._broker;

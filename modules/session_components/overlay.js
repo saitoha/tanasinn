@@ -183,10 +183,9 @@ OverlayIndicator.definition = {
     if (this._timer) {
       this._timer.cancel();
     }
-    let style = this._element.style;
-    style.visibility = "visible";
-    style.MozTransitionDuration = "0ms";
-    style.opacity = this.opacity;
+    this._element.style.visibility = "visible";
+    this._element.style.MozTransitionDuration = "0ms";
+    this._element.style.opacity = this.opacity;
     if (timeout) {
       this._timer = coUtils.Timer.setTimeout(function() {
         this._timer = null;
@@ -197,12 +196,11 @@ OverlayIndicator.definition = {
 
   hide: function hide() 
   {
-    let style = this._element.style;
-    style.MozTransitionDuration = this.fadeout_duration + "ms";
-    style.opacity = 0.0; 
+    this._element.style.MozTransitionDuration = this.fadeout_duration + "ms";
+    this._element.style.opacity = 0.0; 
     coUtils.Timer.setTimeout(function() {
-      style.visibility = "hidden";
-    }, this.fadeout_duration);
+      this._element.style.visibility = "hidden";
+    }, this.fadeout_duration, this);
   },
 
   print: function print(message) 
@@ -214,7 +212,7 @@ OverlayIndicator.definition = {
   function onScreenSizeChanged(size)
   {
     let {column, row} = size;
-    let message = <>{column} x {row}</>.toString();
+    let message = column + " x " + row;
     this.print(message);
     this.show(2000);
   },

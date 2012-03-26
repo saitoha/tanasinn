@@ -70,21 +70,18 @@ DOMEventManager.definition = {
   function add(listener) 
   {
     let broker = this._broker;
-    let target;
+    let dom = {};
     if (!listener.target) {
       this._addImpl(listener, broker.window.target);
     } else if ("string" == typeof listener.target) {
       let id = listener.target.substr(1);
       try {
-        target = broker.uniget("get/element", id);
-        //if (!target) {
-        //  target = broker.root_element.querySelector(listener.target);
-        //}
+        dom.target = broker.uniget("get/element", id);
       } catch(e) {
-        target = null;
+        dom.target = null;
       }
-      if (target) {
-        this._addImpl(listener, target);
+      if (dom.target) {
+        this._addImpl(listener, dom.target);
       } else {
         if ("#" == listener.target.charAt(0)) {
           broker.subscribe(
@@ -92,6 +89,7 @@ DOMEventManager.definition = {
             function onNodeCreated(target_element) 
             {
               this._addImpl(listener, target_element);
+              target_element = null;
             }, this);
         } else {
           throw coUtils.Debug.Exception(
