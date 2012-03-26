@@ -1648,6 +1648,10 @@ echo -en "¥e]220;overlayecho Hello, World!¥a"
  #for tmux
  nmap <SwipeLeft>    <C-b>p
  nmap <SwipeRight>   <C-b>n
+ nmap <SwipeDown>    <C-b>%
+ nmap <SwipeUp>      <C-b>!
+ nmap <RotateLeft>   <C-b><Space>
+ nmap <RotateRight>  <C-b><Space>
 
  # zoom in/out
  nmap <PinchOpen>    <cmode>increase<CR>

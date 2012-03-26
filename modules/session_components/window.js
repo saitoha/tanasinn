@@ -73,12 +73,34 @@ WindowWatcher.definition = {
       id: this.id,
     });
 
+    session.notify("command/add-domlistener", {
+      target: session.window,
+      type: "MozRotateGesture",
+      context: this,
+      handler: this.onRotateGesture,
+      capture: true,
+      id: this.id,
+    });
+
   }, // onSessionStarted
 
   "[subscribe('@event/broker-stopping'), enabled]": 
   function onSessionStopping(broker) 
   {
     broker.notify("command/remove-domlistener", this.id);
+  },
+
+  onRotateGesture: function onSwipeGesture(event) 
+  {
+    let original_target = event.explicitOriginalTarget;
+    let broker = this._broker;
+    let relation = broker.root_element.compareDocumentPosition(original_target);
+    if ((relation & original_target.DOCUMENT_POSITION_CONTAINED_BY)) {
+      broker.notify("event/rotate-gesture", event.direction);
+    }
+    event.preventDefault();
+    event.stopPropagation();
+    return true;
   },
 
   onSwipeGesture: function onSwipeGesture(event) 
@@ -91,7 +113,7 @@ WindowWatcher.definition = {
     }
     event.preventDefault();
     event.stopPropagation();
-    return false;
+    return true;
   },
 
   onMagnifyGesture: function onMagnifyGesture(event) 

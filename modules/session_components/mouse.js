@@ -73,6 +73,7 @@ Mouse.definition = {
     this.onmousescroll.enabled = true;
     this.onMagnifyGesture.enabled = true;
     this.onSwipeGesture.enabled = true;
+    this.onRotateGesture.enabled = true;
     this.onMouseTrackingModeChanged.enabled = true;
     this.backup.enabled = true;
     this.restore.enabled = true;
@@ -90,6 +91,7 @@ Mouse.definition = {
     this.onmousescroll.enabled = false;
     this.onMagnifyGesture.enabled = false;
     this.onSwipeGesture.enabled = false;
+    this.onRotateGesture.enabled = false;
     this.onMouseTrackingModeChanged.enabled = false;
     this.backup.enabled = false;
     this.restore.enabled = false;
@@ -275,6 +277,29 @@ Mouse.definition = {
 
       case coUtils.Constant.DIRECTION_DOWN:
         broker.notify("command/input-expression-with-remapping", "<SwipeDown>");
+        break;
+
+      default:
+        coUtils.Debug.reportError(
+          _("Unknown direction id was specified: %s."), direction);
+
+    }
+  },
+
+   /** Swipe down evnet listener */
+  "[subscribe('event/rotate-gesture')]": 
+  function onRotateGesture(direction) 
+  {
+    let broker = this._broker
+
+    switch (direction) {
+
+      case coUtils.Constant.ROTATION_CLOCKWISE:
+        broker.notify("command/input-expression-with-remapping", "<RotateRight>");
+        break;
+
+      case coUtils.Constant.ROTATION_COUNTERCLOCKWISE:
+        broker.notify("command/input-expression-with-remapping", "<RotateLeft>");
         break;
 
       default:
