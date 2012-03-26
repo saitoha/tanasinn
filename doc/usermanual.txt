@@ -1617,16 +1617,19 @@ echo -en "¥e]220;overlayecho Hello, World!¥a"
 * モディファイヤ2度押し
 ** <2-Shift>       - Shift key twice.
 
-* スワイプイベント仮想キー(一部のプラットフォームのみ)
+* スワイプジェスチャイベント仮想キー(一部のプラットフォームのみ)
 ** <SwipeLeft>     - 左にスワイプ
 ** <SwipeRight>    - 右にスワイプ
 ** <SwipeTop>      - 上にスワイプ
 ** <SwipeBottom>   - 下にスワイプ
 
-* ピンチイベント仮想キー(一部のプラットフォームのみ)
-   
+* ピンチジェスチャイベント仮想キー(一部のプラットフォームのみ)
 ** <PinchOpen>     - ピンチオープン
 ** <PinchClose>    - ピンチクローズ
+
+* 回転ジェスチャイベント仮想キー(一部のプラットフォームのみ)
+** <RotateRight>   - 時計回りに回転
+** <RotateLeft>    - 反時計回りに回転
 
 .設定例 .tanasinn/tanasinnrc
 ----
