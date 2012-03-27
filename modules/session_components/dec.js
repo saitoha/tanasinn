@@ -109,7 +109,7 @@ DecModeSequenceHandler.definition = {
 
         // Application Cursor Keys (DECCKM)
         case 1:
-          this.CKM = true; // application cursor
+          this.DECCKM = true; // application cursor
           break;
 
         // Designate USASCII for character sets G0-G3 (DECANM), and set VT100 mode.
@@ -173,7 +173,7 @@ DecModeSequenceHandler.definition = {
 
         // Wraparound Mode (DECAWM)
         case 7:
-          this.AWM = true
+          this.DECAWM = true;
           coUtils.Debug.reportMessage(
             _("DECSET - DECAWM (Auto-wrap Mode) was set."));
           break;
@@ -260,7 +260,7 @@ DecModeSequenceHandler.definition = {
 
         // Reverse-wraparound Mode
         case 45:
-          this.RWM = true;
+          this.DECRWM = true;
           coUtils.Debug.reportMessage(
             _("DECSET 45 - Reverse-wraparound Mode was set."));
           break;
@@ -431,7 +431,7 @@ DecModeSequenceHandler.definition = {
 
         // Normal Cursor Keys (DECCKM)
         case 1:
-          this.CKM = false; // normal cursor
+          this.DECCKM = false; // normal cursor
           break;
 
         // Designate VT52 mode.
@@ -491,7 +491,7 @@ DecModeSequenceHandler.definition = {
 
         // Wraparound Mode (DECAWM)
         case 7:
-          this.AWM = false
+          this.DECAWM = false;
           coUtils.Debug.reportMessage(
             _("DECRST - DECAWM (Auto-wrap Mode) was set."));
           break;
@@ -578,7 +578,7 @@ DecModeSequenceHandler.definition = {
 
         // No Reverse-wraparound Mode
         case 45:
-          this.RWM = false;
+          this.DECRWM = false;
           coUtils.Debug.reportMessage(
             _("DECRST 45 - Reverse-wraparound Mode was reset."));
           break;
@@ -752,8 +752,8 @@ DecModeSequenceHandler.definition = {
   function DECSAVE(n) 
   {  // TODO: DEC Private Mode Save
     Array.slice(arguments).forEach(function(n) {
-      let value = n == 1    ? let (value = this.CKM) 
-                  function() this.CKM = value // application cursor
+      let value = n == 1    ? let (value = this.DECCKM) 
+                  function() this.DECCKM = value // application cursor
                 : n == 3    ? let (value = this.COLM)
                   function() this.COLM = value // TODO: 132 column mode
                 : n == 7    ? let (value = this.AEM)
@@ -859,25 +859,30 @@ DecModeSequenceHandler.definition = {
    * 
    * Terminal's Default Settings
    *
-   * Mode                                     Mnemonic                State after DECSTR
-   * Text cursor enable                       DECTCEM                 Cursor enabled.
-   * Insert/replace                           IRM                     Replace mode.
-   * Origin                                   DECOM                   Absolute (cursor origin at upper-left of screen.)
-   * Autowrap                                 DECAWM                  No autowrap.
-   * National replacement character set       DECNRCM                 Multinational set.
-   * Keyboard action                          KAM                     Unlocked.
-   * Numeric keypad                           DECNKM                  Numeric characters.
-   * Cursor keys                              DECCKM                  Normal (arrow keys).
-   * Set top and bottom margins               DECSTBM                 Top margin = 1; bottom margin = page length.
-   * All character sets                       G0, G1, G2, G3, GL, GR  Default settings.
-   * Select graphic rendition                 SGR                     Normal rendition.
-   * Select character attribute               DECSCA                  Normal (erasable by DECSEL and DECSED).
-   * Save cursor state                        DECSC                   Home position.
-   * Assign user preference supplemental set  DECAUPSS                Set selected in Set-Up.
-   * Select active status display             DECSASD                 Main display.
-   * Keyboard position mode                   DECKPM                  Character codes.
-   * Cursor direction                         DECRLM                  Reset (Left-to-right), regardless of NVR setting.
-   * PC Term mode                             DECPCTERM               Always reset.
+   * Mode                              Mnemonic   State after DECSTR
+   *
+   * Text cursor enable                DECTCEM    Cursor enabled.
+   * Insert/replace                    IRM        Replace mode.
+   * Origin                            DECOM      Absolute (cursor origin at 
+   *                                              upper-left of screen.)
+   * Autowrap                          DECAWM     No autowrap.
+   * National replacement CS           DECNRCM    Multinational set.
+   * Keyboard action                   KAM        Unlocked.
+   * Numeric keypad                    DECNKM     Numeric characters.
+   * Cursor keys                       DECCKM     Normal (arrow keys).
+   * Set top and bottom margins        DECSTBM    Top margin = 1; 
+   *                                              bottom margin = page length.
+   * All character sets                G0-3,GL,GR Default settings.
+   * Select graphic rendition          SGR        Normal rendition.
+   * Select character attribute        DECSCA     Normal (erasable by DECSEL 
+   *                                              and DECSED).
+   * Save cursor state                 DECSC      Home position.
+   * Assign user-pref supplemental set DECAUPSS   Set selected in Set-Up.
+   * Select active status display      DECSASD    Main display.
+   * Keyboard position mode            DECKPM     Character codes.
+   * Cursor direction                  DECRLM     Reset (Left-to-right), 
+   *                                              regardless of NVR setting.
+   * PC Term mode                      DECPCTERM  Always reset.
    */
   "[profile('vt100'), sequence('CSI !p')]": 
   function DECSTR() 
@@ -1007,16 +1012,73 @@ DecPrivateMode.definition = {
    * the cursor is at the right border of the page replace characters already 
    * on the page.
    */
-  AWM: false,   // Autowrap Mode (true: autowrap, false: no autowrap)
+  
+  _awm: false,
+
+  // Autowrap Mode (true: autowrap, false: no autowrap)
+  get DECAWM()
+  {
+    return this._awm;
+  },
+
+  set DECAWM(value)
+  {
+    let broker = this._broker;
+    if (value) {
+      broker.notify("command/enable-wraparound");
+    } else {
+      broker.notify("command/disable-wraparound");
+    }
+    this._awm = value;
+  },
+
+  
+  // Reverse Autowrap Mode (true: autowrap, false: no autowrap)
+  get DECRWM()
+  {
+    return this._rwm;
+  },
+
+  set DECRWM(value)
+  {
+    let broker = this._broker;
+    if (value) {
+      broker.notify("command/enable-reverse-wraparound");
+    } else {
+      broker.notify("command/disable-reverse-wraparound");
+    }
+    this._rwm = value;
+  },
+
+  /* 
+   * @Property DECCKM
+   */
+  get DECCKM() 
+  {
+    return this._ckm;
+  },
+
+  set DECCKM(value) 
+  {
+    let broker = this._broker;
+    broker.notify("command/change-cursor-mode", value);
+    this._ckm = value;
+  },
 
   /* 
    * @Property TCEM
-   * Text Cursor Enable Mode (true: makes the cursor visible, false: makes the cursor invisible)             
+   * Text Cursor Enable Mode 
+   * true:  makes the cursor visible 
+   * false: makes the cursor invisible
    */
-  get TCEM() this._tcem,
+  get TCEM() 
+  {
+    return this._tcem;
+  },
 
   set TCEM(value) 
   {
+    let broker = this._broker;
     let cursor_state = this._cursor_state;
     cursor_state.visibility = value;
     this._tcem = value;
@@ -1025,7 +1087,7 @@ DecPrivateMode.definition = {
   _tcem: true,
 
 
-  CKM:   false,   // Cursor Keys Mode (false: cursor sequence , true: application sequence)
+//  CKM:   false,   // Cursor Keys Mode (false: cursor sequence , true: application sequence)
   ANM:   false,   // Ansi Mode (use VT52 mode)
   COLM:  false,   // Selecting 80 or 132 Columns per Page (false: 80 columns, true: 132 columns)
   SCLM:  true,    // Scrolling Mode (true: smooth scroll, false: jump scroll)

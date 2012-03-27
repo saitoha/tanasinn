@@ -467,7 +467,7 @@ Renderer.definition = {
         char_width * (0 == size ? 1: 2), 
         end - column, 
         height, 
-        attr);
+        attr, size);
 
       if (0 != size) {
         context.restore();
@@ -506,7 +506,7 @@ Renderer.definition = {
                      char_width, 
                      length, 
                      height, 
-                     attr)
+                     attr, size)
   {
     // Get hexadecimal formatted text color (#xxxxxx) 
     // form given attribute structure. 
@@ -546,17 +546,72 @@ Renderer.definition = {
       context.fillText(text, x, y, char_width * length);
     } else {
       let drcs_state = this._drcs_state;
-      for (let [index, code] in Iterator(codes)) {
-        code = code - this._offset;
+try {
+      for (let index = 0; index < codes.length; ++index) {
+        let code = codes[index] - this._offset;
         if (drcs_state.start_code <= code && code <= drcs_state.end_code) {
           //let glyph = drcs_state.glyphs[code - drcs_state.start_code];
           //context.putImageData(glyph, 0, 0)
+          let glyph_index = code - drcs_state.start_code;
+          let source_top, source_left, source_width, source_height;
+          let destination_top, destination_left, destination_width, destination_height;
+          switch (size) {
+
+            case 0:
+              source_left = glyph_index * drcs_state.drcs_width;
+              source_top = 0;
+              source_width = drcs_state.drcs_width;
+              source_height = drcs_state.drcs_height;
+              destination_left = x + index * char_width;
+              destination_top = y - this._text_offset;
+              destination_width = Math.round(char_width);
+              destination_height = this.line_height;
+              break;
+
+            case 1:
+              source_left = glyph_index * drcs_state.drcs_width;
+              source_top = 0;
+              source_width = drcs_state.drcs_width;
+              source_height = drcs_state.drcs_height / 2;
+              destination_left = x + index * char_width;
+              destination_top = y - this._text_offset - this.line_height;
+              destination_width = Math.round(char_width);
+              destination_height = this.line_height;
+              break;
+
+            case 2:
+              source_left = glyph_index * drcs_state.drcs_width;
+              source_top = drcs_state.drcs_height / 2;
+              source_width = drcs_state.drcs_width;
+              source_height = drcs_state.drcs_height / 2;
+              destination_left = x + index * char_width;
+              destination_top = y - this._text_offset;
+              destination_width = Math.round(char_width);
+              destination_height = this.line_height;
+              break;
+
+            case 3:
+              source_left = glyph_index * drcs_state.drcs_width;
+              source_top = 0;
+              source_width = drcs_state.drcs_width;
+              source_height = drcs_state.drcs_height;
+              destination_left = x + index * char_width;
+              destination_top = y - this._text_offset 
+              destination_width = Math.round(char_width);
+              destination_height = this.line_height;
+              break;
+          }
           context.drawImage(
             drcs_state.drcs_canvas, 
-            (code - drcs_state.start_code) * drcs_state.drcs_width, 0, 
-            drcs_state.drcs_width, drcs_state.drcs_height, 
-            x + index * char_width, y - this._text_offset, 
-            Math.ceil(char_width + 0.5), this.line_height); 
+            source_left,            // source left
+            source_top,             // source top
+            source_width,           // source width
+            source_height,          // source height
+            destination_left,       // destination left
+            destination_top,        // destination top
+            destination_width,      // destination width
+            destination_height);    // destination height
+          /*
           context.globalCompositeOperation = "source-atop";
           context.fillRect(
             x,
@@ -564,8 +619,10 @@ Renderer.definition = {
             char_width + 1, 
             this.line_height);
           context.globalCompositeOperation = "source-over";
+          */
         }
       }
+}catch(e) {alert(e)}
     }
   },
 

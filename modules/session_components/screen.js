@@ -1111,14 +1111,6 @@ ScreenSequenceHandler.definition = {
       _("%s sequence [%s] was ignored."),
       arguments.callee.name, Array.slice(arguments));
   },
- 
-  "[profile('vt100'), sequence('0x90', 'ESC P')]":
-  function DCS() 
-  {
-    let message = String.fromCharCode.apply(String, arguments);
-    coUtils.Debug.reportWarning(
-      _("Ignored %s [%s]"), arguments.callee.name, message);
-  },
 
   "[profile('vt100'), sequence('0x98', 'ESC X')]":
   function SOS() 
@@ -1516,6 +1508,9 @@ Screen.definition = {
   _screen_choice: CO_SCREEN_MAIN,
   _line_generator: null,
 
+  _wraparound_mode: false,
+  _reverse_wraparound_mode: false,
+
   tab_stops: null,
 
   // geometry (in cell count)
@@ -1647,6 +1642,29 @@ Screen.definition = {
     return line.isWide(this.cursor.positionX);
   },
 
+  "[subscribe('command/enable-wraparound'), enabled]":
+  function enableWraparound() 
+  {
+    this._wraparound_mode = true;
+  },
+
+  "[subscribe('command/disable-wraparound'), enabled]":
+  function disableWraparound() 
+  {
+    this._wraparound_mode = false;
+  },
+
+  "[subscribe('command/enable-reverse-wraparound'), enabled]":
+  function enableReverseWraparound() 
+  {
+    this._reverse_wraparound_mode = true;
+  },
+
+  "[subscribe('command/disable-reverse-wraparound'), enabled]":
+  function disableReverseWraparound() 
+  {
+    this._reverse_wraparound_mode = false;
+  },
 
   "[subscribe('sequence/normal-size-line'), enabled]":
   function normalSizeLine() 
@@ -1673,8 +1691,8 @@ Screen.definition = {
   },
 
   /** Write printable charactor seqences. */
-  "[type('Array -> Boolean -> Boolean')] write":
-  function write(codes, insert_mode, auto_wrap_mode, reverse_wrap_mode) 
+  "[type('Array -> Boolean -> Undefined')] write":
+  function write(codes, insert_mode) 
   {
     let width = this._width;
     let cursor = this.cursor;
@@ -1684,12 +1702,8 @@ Screen.definition = {
       if (line) {
         if (cursor.positionX >= width) {
           this.carriageReturn();
-          //if (auto_wrap_mode) {
-            if (reverse_wrap_mode) {
-              this.reverseIndex();
-            } else {
-              this.lineFeed();
-            }
+          //if (this._wraparound_mode) {
+            this.lineFeed();
             line = this._getCurrentLine();
           //}
         }
@@ -1714,30 +1728,31 @@ Screen.definition = {
   "[type('Uint16 -> Undefined')] cursorForward":
   function cursorForward(n) 
   {
-    let positionX = this.cursor.positionX + n;
+    let cursor = this.cursor;
+    let positionX = cursor.positionX + n;
     let max = this._width - 1;
-    this.cursor.positionX = positionX > max ? max: positionX;
+    cursor.positionX = positionX > max ? max: positionX;
   },
 
   /** Move cursor to backward (left). */
   "[type('Uint16 -> Undefined')] cursorBackward":
   function cursorBackward(n) 
   {
-    let positionX = this.cursor.positionX - n;
+    let cursor = this.cursor;
+    let positionX = cursor.positionX - n;
     let min = 0;
-    this.cursor.positionX = positionX > min ? positionX: min;
+    cursor.positionX = positionX > min ? positionX: min;
   },
 
   /** Move CUrsor Up (CUP). */
   "[type('Uint16 -> Undefined')] cursorUp":
   function cursorUp(n) 
   { 
-    //let line = this._getCurrentLine();
     //n = 0 == line.size ? n: n * 2;
-    let positionY = this.cursor.positionY - n;
+    let cursor = this.cursor;
+    let positionY = cursor.positionY - n;
     let min = this._scroll_top;
-    //let min = 0;
-    this.cursor.positionY = positionY > min ? positionY: min;
+    cursor.positionY = positionY > min ? positionY: min;
   },
   
   /** Move CUrsor Down (CUD). */
@@ -1747,34 +1762,37 @@ Screen.definition = {
     //let line = this._getCurrentLine();
     //n = 0 == line.size ? n: n * 2;
 
-    let positionY = this.cursor.positionY + n;
+    let cursor = this.cursor;
+    let positionY = cursor.positionY + n;
 
     // If an attempt is made to move the active position below the last line, 
     // the active position stops at the last line.
     let max = this._scroll_bottom - 1;
     //let max = this._height - 1;
-    this.cursor.positionY = positionY > max ? max: positionY;
+    cursor.positionY = positionY > max ? max: positionY;
   },
 
   /** Move CUrsor Up (CUP). */
   "[type('Uint16 -> Undefined')] cursorUpAbsolutely":
   function cursorUpAbsolutely(n) 
   { 
-    let positionY = this.cursor.positionY - n;
+    let cursor = this.cursor;
+    let positionY = cursor.positionY - n;
     let min = 0;
-    this.cursor.positionY = positionY > min ? positionY: min;
+    cursor.positionY = positionY > min ? positionY: min;
   },
   
   /** Move CUrsor Down (CUD). */
   "[type('Uint16 -> Undefined')] cursorDownAbsolutely":
   function cursorDownAbsolutely(n) 
   {
-    let positionY = this.cursor.positionY + n;
+    let cursor = this.cursor;
+    let positionY = cursor.positionY + n;
 
     // If an attempt is made to move the active position below the last line, 
     // the active position stops at the last line.
     let max = this._height - 1;
-    this.cursor.positionY = positionY > max ? max: positionY;
+    cursor.positionY = positionY > max ? max: positionY;
   },
 
   /** cursor CHaracter Absolute column (CHA). */
@@ -1797,7 +1815,15 @@ Screen.definition = {
   "[type('Undefined')] backSpace":
   function backSpace() 
   {
-    this.cursor.positionX > 0 && --this.cursor.positionX;
+    let cursor = this.cursor;
+    let positionX = cursor.positionX;
+    if (positionX > 0) {
+      --cursor.positionX;
+    } else if (this._reverse_wraparound_mode) { // positionX == 0
+      //this.reverseIndex(); // 
+      this.cursorUp(1);
+      cursor.positionX = this._width - 1;
+    }
   },
  
   /** CarriageReturn (CR). */
@@ -1811,6 +1837,7 @@ Screen.definition = {
   "[type('Undefined')] horizontalTab":
   function horizontalTab() 
   {
+    let cursor = this.cursor;
     let tab_stops = this.tab_stops;
     let line = this._getCurrentLine();
     let positionX = this.cursor.positionX;
@@ -1818,11 +1845,11 @@ Screen.definition = {
     for (let i = 0; i < tab_stops.length; ++i) {
       let stop = tab_stops[i];
       if (stop > positionX) {
-        this.cursor.positionX = Math.min(max, stop);
+        cursor.positionX = Math.min(max, stop);
         return;
       }
     }
-    this.cursor.positionX = max;
+    cursor.positionX = max;
   },
 
 // ScreenEditConcept implementation
@@ -1833,7 +1860,7 @@ Screen.definition = {
     let cursor = this.cursor;
     let line = this._getCurrentLine();
     if (line) {
-      line.erase(this.cursor.positionX, this._width, cursor.attr);
+      line.erase(cursor.positionX, this._width, cursor.attr);
     } else {
       coUtils.Debug.reportWarning(
         _("eraseLineToRight: Current line is null."));
@@ -1846,7 +1873,7 @@ Screen.definition = {
   {
     let cursor = this.cursor;
     let line = this._getCurrentLine();
-    line.erase(0, this.cursor.positionX + 1, cursor.attr);
+    line.erase(0, cursor.positionX + 1, cursor.attr);
   },
 
   /** Erase current line */

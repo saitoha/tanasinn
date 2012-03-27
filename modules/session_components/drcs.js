@@ -53,27 +53,27 @@ DRCSBuffer.definition = {
   _g1: "B",
 
   /** installs itself. 
-   *  @param {Session} session A session object.
+   *  @param {Broker} broker A Broker object.
    */
   "[subscribe('install/drcs_buffer'), enabled]":
-  function install(session) 
+  function install(broker) 
   {
     this.onDCS.enabled = true;
     this.onSCSG0.enabled = true;
     this.onSCSG1.enabled = true;
     this._map = {};
 
-    let {tanasinn_drcs_canvas} = session.uniget(
+    let { tanasinn_drcs_canvas } = broker.uniget(
       "command/construct-chrome", this.template);
     // set initial size.
     this._canvas = tanasinn_drcs_canvas;
   },
 
   /** Uninstalls itself.
-   *  @param {Session} session A session object.
+   *  @param {Broker} broker A broker object.
    */
   "[subscribe('uninstall/drcs_buffer'), enabled]":
-  function uninstall(session) 
+  function uninstall(broker) 
   {
     this._map = null;
     this.onDCS.enabled = false;
