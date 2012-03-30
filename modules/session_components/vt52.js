@@ -761,7 +761,10 @@ VT52.definition = {
   function HTJ()
   {
     let screen = this._screen;
+    let broker = this._broker;
+    broker.notify("command/draw", true);
     screen.reverseIndex();
+    broker.notify("command/draw", true);
   },
 
   "[profile('vt52'), sequence('ESC J')]":
@@ -794,10 +797,14 @@ VT52.definition = {
   },
 
   "[profile('vt52'), sequence('ESC Z')]":
-  function ESC_Z()
+  function SCI()
   {
     coUtils.Debug.reportWarning(
-      _("ESC_Z was not implemented."));
+      _("SCI was not implemented."));
+    //let message = "\x1b[?1;2;6c";
+    //let message = "\x1b[?c";
+    let broker = this._broker;
+    broker.notify("command/send-to-tty", "\x1b/Z");
   },
 
   "[profile('vt52'), sequence('ESC =')]": 

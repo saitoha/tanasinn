@@ -787,7 +787,6 @@ Parser.definition = {
           };
         } else {
           let c1 = scanner.current();
-          alert(c1)
           //scanner.moveNext();
           //let c2 = scanner.current();
           coUtils.Debug.reportError(
