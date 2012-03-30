@@ -62,21 +62,20 @@ Tracer.definition = {
     for (let i = 0; i < sequences.length; ++i) {
       let information = sequences[i];
       try {
-        let {expression, handler, context} = information;
         let delegate = function()
         {
-          handler.apply(this, arguments);
+          information.handler.apply(this, arguments);
           let info = {
             type: CO_TRACE_CONTROL,
-            name: handler.name, 
+            name: information.handler.name, 
             value: Array.slice(arguments),
           };
           return info;
         };
         broker.notify("command/add-sequence", {
-          expression: expression, 
+          expression: information.expression, 
           handler: delegate, 
-          context: context,
+          context: information.context,
         });
       } catch (e) {
         coUtils.Debug.reportError(e);
@@ -181,13 +180,12 @@ Hooker.definition = {
       let buffer = this._buffer;
       let self = this;
       let broker = this._broker;
-      this._hooked = true;
-      parser.parse = function(data) 
+      parser.parse = function parse(data) 
       {
         if (self._step_mode) {
           broker.notify("command/flow-control", false);
         }
-        for (let action in parser.__proto__.parse.call(parser, data)) {
+        for (let action in this.__proto__.parse.call(this, data)) {
           let sequence = parser._scanner.getCurrentToken();
           buffer.push(let (action = action) function() [action(), sequence]);
         }

@@ -310,11 +310,13 @@ SequenceParser.definition = {
   append: function append(key, value, context) 
   {
     let match = key
-      .match(/^(0x[0-9a-zA-Z]+)|^%d(.+)$|^(.)%s$|^(%c)|^(.)$|^(.)(.+)$/);
+      .match(/^(0x[0-9a-zA-Z]+)|^%d(.+)$|^(.)%s$|^(%p)$|^(%c)$|^(.)$|^(.)(.+)$/);
 
     let [, 
       number, char_with_param, 
-      char_with_string, single_char, 
+      char_with_string, 
+      char_position,
+      single_char, 
       normal_char, first, next_chars
     ] = match;
     if (number) { // parse number
@@ -384,6 +386,15 @@ SequenceParser.definition = {
       for (let code = 0x21; code < 0x7f; ++code) {
         let c = String.fromCharCode(code);
         this[0x20][code] = this[code] = function() value.call(context, c)
+      }
+    } else if (char_position) { // 
+      for (let code1 = 0x21; code1 < 0x7f; ++code1) {
+        let c1 = String.fromCharCode(code1);
+        for (let code2 = 0x21; code2 < 0x7f; ++code2) {
+          let c2 = String.fromCharCode(code2);
+          this[code1] = new SequenceParser();
+          this[code1][code2] = function() value.apply(context, [code1, code2])
+        }
       }
     } else if (normal_char) {
       let code = normal_char.charCodeAt(0);
@@ -516,13 +527,11 @@ Scanner.definition = {
   _position: 0,
   _anchor: 0,
   _nextvalue: null,
-  _results: null,
 
   /** Constructor **/
   "[subscribe('@event/broker-started'), enabled]":
   function onLoad(broker) 
   {
-    this._results = [];
     broker.notify("initialized/scanner", this);
   },
 
@@ -583,16 +592,13 @@ Scanner.definition = {
     return this._value.slice(this._anchor, this._position + 1);
   },
 
-  pushResult: function pushResult(action)
+  drain: function drain()
   {
-    this._results.push(action);
-  },
-
-  drainResults: function drainResults()
-  {
-    let results = this._results;
-    this._results = [];
-    return results;
+    let value = this._value.substr(this._position);
+    this._value = "";
+    this._position = 0;
+    this._anchor = 0;
+    return value;
   },
 
   _hasNextValue: function _hasNextValue() 
@@ -668,7 +674,19 @@ Parser.definition = {
   "[subscribe('command/change-mode'), enabled]":
   function onChangeMode(mode)
   {
-    this._grammar = this._grammars[mode];
+    try {
+    let grammars = this._grammars;
+    if (grammars.hasOwnProperty(mode)) {
+      this._grammar = grammars[mode];
+      let value = this._scanner.drain();
+      this.drive(value);
+    } else {
+      coUtils.Debug.reportError(
+        _("Specified mode '%s' was not found."), mode);
+    }
+    } catch(e) {
+      alert(e);
+    }
   },
 
   "[subscribe('command/enable-default-parser'), enabled]": 
@@ -769,6 +787,7 @@ Parser.definition = {
           };
         } else {
           let c1 = scanner.current();
+          alert(c1)
           //scanner.moveNext();
           //let c2 = scanner.current();
           coUtils.Debug.reportError(

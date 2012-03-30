@@ -72,7 +72,8 @@ let DecModeSequenceHandler = new Trait();
 DecModeSequenceHandler.definition = {
 
   _mouseMode: null,
-  _decsaveBuffer: null,
+  _dec_save_buffer: null,
+  _dec_alternate_buffer: null,
 
   get mouseMode() 
   {
@@ -89,7 +90,8 @@ DecModeSequenceHandler.definition = {
 
   initialize: function initialize(broker) 
   {
-    this._decsave_buffer = {};
+    this._dec_save_buffer = {};
+    this._dec_alternate_buffer = {};
   },
 
   "[profile('vt100'), sequence('CSI ?%dh')]":
@@ -104,6 +106,8 @@ DecModeSequenceHandler.definition = {
 
     for (let i = 0; i < arguments.length; ++i) {
       let n = arguments[i];
+
+      this._dec_save_buffer[i] = true;
 
       switch (n) {
 
@@ -425,6 +429,8 @@ DecModeSequenceHandler.definition = {
 
     for (let i = 0; i < arguments.length; ++i) {
 
+      this._dec_save_buffer[i] = false;
+
       let n = arguments[i];
 
       switch (n) {
@@ -734,57 +740,29 @@ DecModeSequenceHandler.definition = {
 
   "[profile('vt100'), sequence('CSI ?%dr')]":
   function DECRSTR() 
-  { // TODO: DEC Private Mode Restore
-    Array.slice(arguments).forEach(function(n) {
-      let value = this._decsave_buffer[n];
-      delete this._decsave_buffer[n];
+  { // DEC Private Mode Restore
+    let save_buffer = this._dec_save_buffer;
+    let alternate_buffer = this._dec_alternate_buffer;
+    for (let i = 0; i < arguments.length; ++i) {
+      let key = arguments[i];
+      let value = save_buffer[key] = alternate_buffer[key];
       if (value) {
-        value.call(this);
+        this.DECSET(n);
       } else {
-        coUtils.Debug.reportWarning(
-          _("%s sequence [%s] was ignored."),
-          arguments.callee.name, n);
+        this.DECRST(n);
       }
-    }, this);
+    }
   },
 
   "[profile('vt100'), sequence('CSI ?%ds')]":
-  function DECSAVE(n) 
-  {  // TODO: DEC Private Mode Save
-    Array.slice(arguments).forEach(function(n) {
-      let value = n == 1    ? let (value = this.DECCKM) 
-                  function() this.DECCKM = value // application cursor
-                : n == 3    ? let (value = this.COLM)
-                  function() this.COLM = value // TODO: 132 column mode
-                : n == 7    ? let (value = this.AEM)
-                  function() this.AWM = value
-                : n == 9    ? let (value = this.mouseMode) 
-                  function() this.mouseMode = value
-                : n == 12   ? let (value = this._screen.cursor.blink)
-                  function() this._screen.cursor.blink = value
-                : n == 25   ? let (value = this.TCEM)
-                  function() this.TCEM = value
-                : n == 47   ? 
-                  function() this._screen.switchToAlternateScreen()
-                : n == 1000 ? let (value = this.mouseMode) 
-                  function() this.mouseMode = value 
-                : n == 1001 ? let (value = this.mouseMode) 
-                  function() this.mouseMode = value
-                : n == 1002 ? let (value = this.mouseMode) 
-                  function() this.mouseMode = value 
-                : n == 1003 ? let (value = this.mouseMode) 
-                  function() this.mouseMode = value 
-                : n == 1047 ? 
-                  function() this._screen.switchToAlternateScreen()
-                : n == 1048 ? 
-                  function() this._screen.saveCursor()
-                : n == 1049 ? 
-                  function() this._screen.selectAlternateScreen()
-                : coUtils.Debug.reportWarning(_("Ignored DECSAVE [%d]."), n);
-      if (value) {
-        this._decsave_buffer[n] = value;
-      }
-    }, this);
+  function DECSAVE() 
+  {  // DEC Private Mode Save
+    let save_buffer = this._dec_save_buffer;
+    let alternate_buffer = this._dec_alternate_buffer;
+    for (let i = 0; i < arguments.length; ++i) {
+      let key = arguments[i];
+      alternate_buffer[key] = save_buffer[key];
+    }
   },
 
   /**
@@ -824,6 +802,14 @@ DecModeSequenceHandler.definition = {
     top = Math.min(top, max);
     bottom = Math.max(bottom, min);
     bottom = Math.min(bottom, max);
+
+    if (top > bottom) {
+      // swap
+      let tmp = top;
+      top = bottom;
+      bottom = top;
+    }
+
     if (top < bottom) {
       screen.setScrollRegion(top, bottom);
       /*
@@ -1014,6 +1000,13 @@ DecPrivateMode.definition = {
    */
   
   _awm: false,
+
+  "[subscribe('command/change-mode'), enabled]":
+  function (mode)
+  {
+    this.DECAWM = false;
+    this.DECRWM = false;
+  },
 
   // Autowrap Mode (true: autowrap, false: no autowrap)
   get DECAWM()

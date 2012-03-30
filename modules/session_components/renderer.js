@@ -148,7 +148,9 @@ Renderer.definition = {
       {
         parentNode: "#tanasinn_center_area",
         tagName: "html:canvas",
-        style: "letter-spacing: 1em",
+        style: <>
+          letter-spacing: 1em;
+        </>,
         id: "tanasinn_renderer_canvas",
       });
 
@@ -261,7 +263,10 @@ Renderer.definition = {
       force_precious_rendering: this.force_precious_rendering,
       reverse: this.reverse,
     };
-    let path = broker.runtime_path + "/persist/" + broker.request_id + ".png";
+    let path = broker.runtime_path 
+             + "/persist/" 
+             + broker.request_id 
+             + ".png";
     let file = coUtils.File.getFileLeafFromVirtualPath(path);
     coUtils.IO.saveCanvas(this._source_canvas, file, true);
   },

@@ -180,11 +180,11 @@ VT52SequenceParser.definition = {
   append: function append(key, value, context) 
   {
     let match = key
-      .match(/^(0x[0-9a-zA-Z]+)|^%d(.+)$|^(.)%s$|^(%c)|^(.)$|^(.)(.+)$/);
+      .match(/^(0x[0-9a-zA-Z]+)|^%d(.+)$|^(.)%s$|^(%c)|^(%p)|^(.)$|^(.)(.+)$/);
 
     let [, 
       number, char_with_param, 
-      char_with_string, single_char, 
+      char_with_string, single_char, char_position,
       normal_char, first, next_chars
     ] = match;
     if (number) { // parse number
@@ -254,6 +254,15 @@ VT52SequenceParser.definition = {
       for (let code = 0x21; code < 0x7f; ++code) {
         let c = String.fromCharCode(code);
         this[0x20][code] = this[code] = function() value.call(context, c)
+      }
+    } else if (char_position) { // 
+      for (let code1 = 0x20; code1 < 0x7f; ++code1) {
+        let c1 = String.fromCharCode(code1);
+        this[code1] = new VT52SequenceParser();
+        for (let code2 = 0x20; code2 < 0x7f; ++code2) {
+          this[code1][code2] = let (y = code1, x = code2)
+            function() value.call(context, y, x);
+        }
       }
     } else if (normal_char) {
       let code = normal_char.charCodeAt(0);
@@ -680,9 +689,14 @@ VT52.definition = {
   "[profile('vt52'), sequence('0x7F', '0xFF')]":
   function DEL() 
   {
+    let screen = this._screen;
+    screen.cursorBackward(1);
+
+    /*
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored.",
         arguments.callee.name, Array.slice(arguments)));
+        */
   },
 
   "[profile('vt52'), sequence('ESC A')]":
@@ -721,14 +735,14 @@ VT52.definition = {
     screen.carriageReturn();
   },
 
-  "[profile('vt52'), sequence('ESC F')]":
+  "[profile('vt52'), sequence('ESC F'), _('Enter graphics mode.')]":
   function SSA()
   {
     coUtils.Debug.reportWarning(
       _("SSA was not implemented."));
   },
 
-  "[profile('vt52'), sequence('ESC G')]":
+  "[profile('vt52'), sequence('ESC G'), _('Enter graphics mode.')]":
   function ESA()
   {
     coUtils.Debug.reportWarning(
@@ -771,11 +785,33 @@ VT52.definition = {
       _("PLU was not implemented."));
   },
 
-  "[profile('vt52'), sequence('ESC Y')]":
-  function ESC_Y()
+  "[profile('vt52'), sequence('ESC Y%p')]":
+  function ESC_Y(y, x)
+  {
+    let screen = this._screen;
+    screen.setPositionY((y - 0x20 || 1) - 1);
+    screen.setPositionX((x - 0x20 || 1) - 1);
+  },
+
+  "[profile('vt52'), sequence('ESC Z')]":
+  function ESC_Z()
   {
     coUtils.Debug.reportWarning(
-      _("ESC_Y was not implemented."));
+      _("ESC_Z was not implemented."));
+  },
+
+  "[profile('vt52'), sequence('ESC =')]": 
+  function () 
+  {
+    coUtils.Debug.reportWarning(
+      _("EnterAlternativeKeypadMode was not implemented."));
+  },
+
+  "[profile('vt52'), sequence('ESC >')]": 
+  function () 
+  {
+    coUtils.Debug.reportWarning(
+      _("ExitAlternativeKeypadMode was not implemented."));
   },
 
   /** Exit VT52 mode. 
