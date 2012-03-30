@@ -678,25 +678,17 @@ VT52.definition = {
   "[profile('vt52'), sequence('ESC F'), _('Enter graphics mode.')]":
   function SSA()
   {
-    try {
     let broker = this._broker;
     broker.notify("sequence/g0", "0");
     broker.notify("event/shift-in");
-    coUtils.Debug.reportWarning(
-      _("SSA was not implemented."));
-    } catch (e) {alert(e)}
   },
 
   "[profile('vt52'), sequence('ESC G'), _('Exit graphics mode.')]":
   function ESA()
   {
-    try {
     let broker = this._broker;
     broker.notify("sequence/g0", "B");
     broker.notify("event/shift-in"); 
-    coUtils.Debug.reportWarning(
-      _("ESA was not implemented."));
-    } catch (e) {alert(e)}
   },
 
   "[profile('vt52'), sequence('ESC H')]":
