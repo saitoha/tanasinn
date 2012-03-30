@@ -787,8 +787,6 @@ Parser.definition = {
           };
         } else {
           let c1 = scanner.current();
-          //scanner.moveNext();
-          //let c2 = scanner.current();
           coUtils.Debug.reportError(
             _("Failed to decode text. text length: %d, source text: [%s]."), 
             data.length, c1);

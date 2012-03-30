@@ -196,11 +196,15 @@ OverlayIndicator.definition = {
 
   hide: function hide() 
   {
-    this._element.style.MozTransitionDuration = this.fadeout_duration + "ms";
-    this._element.style.opacity = 0.0; 
-    coUtils.Timer.setTimeout(function() {
-      this._element.style.visibility = "hidden";
-    }, this.fadeout_duration, this);
+    if (this._element) {
+      this._element.style.MozTransitionDuration = this.fadeout_duration + "ms";
+      this._element.style.opacity = 0.0; 
+      coUtils.Timer.setTimeout(function() {
+        if (this._element) {
+          this._element.style.visibility = "hidden";
+        }
+      }, this.fadeout_duration, this);
+    }
   },
 
   print: function print(message) 

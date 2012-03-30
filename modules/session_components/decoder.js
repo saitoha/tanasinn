@@ -274,20 +274,6 @@ UTF8Decoder.definition = {
     };
   },
 
-  "[subscribe('event/shift-out'), enabled]": 
-  function shiftOut() 
-  {
-    this._offset += 0x80;
-  },
-
-  "[subscribe('event/shift-in'), enabled]": 
-  function shiftIn() 
-  {
-    if (0 != this._offset) {
-      this._offset -= 0x80;
-    }
-  },
-
   activate: function activate() 
   {
   },

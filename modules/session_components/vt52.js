@@ -180,11 +180,10 @@ VT52SequenceParser.definition = {
   append: function append(key, value, context) 
   {
     let match = key
-      .match(/^(0x[0-9a-zA-Z]+)|^%d(.+)$|^(.)%s$|^(%c)|^(%p)|^(.)$|^(.)(.+)$/);
+      .match(/^(0x[0-9a-zA-Z]+)|^(%p)|^(.)$|^(.)(.+)$/);
 
     let [, 
-      number, char_with_param, 
-      char_with_string, single_char, char_position,
+      number, char_position,
       normal_char, first, next_chars
     ] = match;
     if (number) { // parse number
@@ -195,65 +194,6 @@ VT52SequenceParser.definition = {
       } else {
         vt52C0Parser.append(code, function() value.apply(context));
         this[code] = function() value.apply(context);
-      }
-    } else if (char_with_param) {
-      let action = function(params) function() value.apply(context, params);
-      let accept_char = char_with_param.charCodeAt(0);
-
-      let codes = [
-        0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 
-        0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f,
-        0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39,
-        0x7f,
-        0x3b
-      ];
-      for (let i = 0; i < codes.length; ++i) {
-        let code = codes[i];
-        if (0x30 <= code && code < 0x3a) {
-          this[code] = this[code] || new VT52ParameterParser(code - 0x30);
-        } else if (0x3b == code) {
-          this[code] = this[code] || new VT52ParameterParser(0);
-        } else {
-          this[code] = this[code] || new VT52ParameterParser(0, code);
-        }
-        if (1 == char_with_param.length) {
-          this[code][accept_char] = action;
-        } else {
-          let next_chars = char_with_param.substr(1);
-          this[code][accept_char] = {
-
-            parse: function parse(scanner) 
-            {
-              for (let i = 0; i < next_chars.length; ++i) {
-                scanner.moveNext();
-                if (scanner.isEnd) {
-                  return let (self = this) function(scanner) {
-                    let result = parse.apply(self, scanner);
-                    yield result;
-                  };
-                }
-                let c = scanner.current();
-                if (c != next_chars.charCodeAt(i)) {
-                  return undefined;
-                }
-              }
-              return action;
-            }
-
-          };
-        }
-      }
-      this[accept_char] = function() value.call(context, 0);
-    } else if (char_with_string) {
-      // define action
-      let action = function(params) function() value.apply(context, params)
-      let index = char_with_string.charCodeAt(0);
-      this[index] = new StringParser(action) // chain to string parser.
-    } else if (single_char) { // parse a char.
-      this[0x20] = this[0x20] || new VT52SequenceParser();
-      for (let code = 0x21; code < 0x7f; ++code) {
-        let c = String.fromCharCode(code);
-        this[0x20][code] = this[code] = function() value.call(context, c)
       }
     } else if (char_position) { // 
       for (let code1 = 0x20; code1 < 0x7f; ++code1) {
@@ -464,7 +404,7 @@ VT52.definition = {
    
   /** Horizontal tabulation.
    */
-  "[profile('vt52'), sequence('0x09')]":
+  "[profile('vt52'), sequence('0x09'), _('Horizontal tabulation')]":
   function HT() 
   { // Horizontal Tab
     let screen = this._screen;
@@ -473,7 +413,7 @@ VT52.definition = {
   
   /** Linefeed.
    */
-  "[profile('vt52'), sequence('0x0A')]":
+  "[profile('vt52'), sequence('0x0A'), _('Line Feed')]":
   function LF() 
   {
     let screen = this._screen;
@@ -521,8 +461,8 @@ VT52.definition = {
   "[profile('vt52'), sequence('0x0E')]":
   function SO() 
   { // shift out
-    let session = this._broker;
-    session.notify("event/shift-out");
+    let broker = this._broker;
+    broker.notify("event/shift-out");
   },
   
   /** Shift in.
@@ -530,8 +470,8 @@ VT52.definition = {
   "[profile('vt52'), sequence('0x0F')]":
   function SI() 
   { // shift out
-    let session = this._broker;
-    session.notify("event/shift-in");
+    let broker = this._broker;
+    broker.notify("event/shift-in");
   },
 
   /** Data link escape.
@@ -690,7 +630,7 @@ VT52.definition = {
   function DEL() 
   {
     let screen = this._screen;
-    screen.cursorBackward(1);
+    screen.backSpace();
 
     /*
     coUtils.Debug.reportWarning(
@@ -738,15 +678,25 @@ VT52.definition = {
   "[profile('vt52'), sequence('ESC F'), _('Enter graphics mode.')]":
   function SSA()
   {
+    try {
+    let broker = this._broker;
+    broker.notify("sequence/g0", "0");
+    broker.notify("event/shift-in");
     coUtils.Debug.reportWarning(
       _("SSA was not implemented."));
+    } catch (e) {alert(e)}
   },
 
-  "[profile('vt52'), sequence('ESC G'), _('Enter graphics mode.')]":
+  "[profile('vt52'), sequence('ESC G'), _('Exit graphics mode.')]":
   function ESA()
   {
+    try {
+    let broker = this._broker;
+    broker.notify("sequence/g0", "B");
+    broker.notify("event/shift-in"); 
     coUtils.Debug.reportWarning(
       _("ESA was not implemented."));
+    } catch (e) {alert(e)}
   },
 
   "[profile('vt52'), sequence('ESC H')]":
@@ -792,8 +742,10 @@ VT52.definition = {
   function ESC_Y(y, x)
   {
     let screen = this._screen;
-    screen.setPositionY((y - 0x20 || 1) - 1);
-    screen.setPositionX((x - 0x20 || 1) - 1);
+    screen.setPositionY(y - 0x20);
+    screen.setPositionX(x - 0x20);
+    //screen.setPositionY((y - 0x20 || 1) - 1);
+    //screen.setPositionX((x - 0x20 || 1) - 1);
   },
 
   "[profile('vt52'), sequence('ESC Z')]":
