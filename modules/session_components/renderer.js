@@ -173,6 +173,7 @@ Renderer.definition = {
     this.captureScreen.enabled = true;
     this.onDRCSStateChangedG0.enabled = true;
     this.onDRCSStateChangedG1.enabled = true;
+    coUtils.Timer.setTimeout(function() this._drawImpl(), 100, this);
   },
 
   /** Uninstalls itself.
@@ -212,7 +213,8 @@ Renderer.definition = {
           map[i] = value;
         }
       }
-      this.draw(true);
+      let broker = this._broker;
+      broker.notify("command/draw", true);
     }
   },
 
@@ -267,7 +269,8 @@ Renderer.definition = {
       this.font_family = data.font_family;
       this.font_size = data.font_size;
       this._reverse = data.reverse;
-      this.draw();
+      let broker = this._broker;
+      broker.notify("command/draw");
     } else {
       coUtils.Debug.reportWarning(
         _("Cannot restore last state of renderer: data not found."));
@@ -335,6 +338,8 @@ Renderer.definition = {
     broker.notify("event/screen-height-changed", canvas_height);
   },
 
+  _timer: null,
+
   /** Draw to canvas */
   "[subscribe('command/draw')]": 
   function draw(redraw_flag)
@@ -342,7 +347,19 @@ Renderer.definition = {
     if (redraw_flag) {
       this.dependency["screen"].dirty = true;
     }
+    try {
+    if (null !== this._timer) {
+      this._timer.cancel();
+    }
+    this._timer = coUtils.Timer.setTimeout(function() {
+      this._timer = null;
+      this._drawImpl();
+    }, 20, this);
+    } catch (e) {alert(e)}
+  },
 
+  _drawImpl: function _drawImpl()
+  {
     let context = this._context;
     let screen = this.dependency["screen"];
     let font_size = this.font_size;
@@ -355,7 +372,6 @@ Renderer.definition = {
     for (let { codes, row, column, end, attr, size } in screen.getDirtyWords()) {
 
       let left, top, width, height;
-
 
       switch (size) {
 
@@ -523,7 +539,7 @@ Renderer.definition = {
       }
     }
 
-    if (this._drcs_state === null || !attr.drcs) {
+    if (null === this._drcs_state || !attr.drcs) {
       let text = String.fromCharCode.apply(String, codes);
       if (this.enable_render_bold_as_textshadow && attr.bold) {
         context.shadowColor = this.shadow_color;
@@ -537,7 +553,6 @@ Renderer.definition = {
       context.fillText(text, x, y, char_width * length);
     } else {
       let drcs_state = this._drcs_state;
-try {
       for (let index = 0; index < codes.length; ++index) {
         let code = codes[index] - this._offset;
         if (drcs_state.start_code <= code && code <= drcs_state.end_code) {
@@ -613,7 +628,6 @@ try {
           */
         }
       }
-}catch(e) {alert(e)}
     }
   },
 

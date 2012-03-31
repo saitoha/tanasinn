@@ -453,6 +453,7 @@ VT100Grammar.definition = {
   {
     this.ESC = new SequenceParser();
     this.CSI = new SequenceParser();
+    SequenceParser.prototype[0x1b] = this.ESC;
     broker.notify("command/add-sequence", {
       expression: "0x1B", 
       handler: this.ESC,

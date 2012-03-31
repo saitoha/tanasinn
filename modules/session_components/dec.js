@@ -234,6 +234,14 @@ DecModeSequenceHandler.definition = {
               "implemented completely."));
           break;
 
+        // Enable Tektronix mode (DECTEK)
+        case 38:
+          broker.notify("command/change-mode", "tektronix");
+          coUtils.Debug.reportWarning(
+            _("DECSET 38 - Enable Tektronix mode feature (DECTEK), was not ", 
+              "implemented completely."));
+          break;
+
         // Allow 80 <--> 132 mode
         case 40:
           this._allow_switching_80_and_132_mode = true;

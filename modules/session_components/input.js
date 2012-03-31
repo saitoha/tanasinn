@@ -156,7 +156,7 @@ let KEY_APPLICATION_KEYPAD = {
 };
 
 let KEY_WIN_YEN_AS_5C = {
-  "\\xa5"  : "\x5c",
+  "\xa5"  : "\x5c",
 };
 
 let KEY_MAC_ALT_AS_META = {
@@ -326,30 +326,6 @@ function coCreateKeyMap(expression_map, destination_map)
   return map;
 }
 
-function coCreateKeyMapEx() 
-{
-  let os = coUtils.Runtime.os;
-  let map = {};
-
-  coCreateKeyMap(KEY_ANSI, map);
-  coCreateKeyMap(KEY_NORMAL_CURSOR);
-  coCreateKeyMap(KEY_NORMAL_KEYPAD);
-
-  switch (os) {
-    case "WINNT":
-      coCreateKeyMap(KEY_WIN_YEN_AS_5C, map);
-      break;
-    
-    case "Darwin":
-      coCreateKeyMap(KEY_MAC_ALT_AS_META, map);
-      break;
-
-    default:
-      break;
-  }
-  return map;
-};
-
 /**
  * @class DefaultKeyMappings
  */
@@ -359,7 +335,7 @@ DefaultKeyMappings.definition = {
   get id()
     "default_key_mappings",
 
-  "[persistable] windows_yen_as_5c": true,
+  "[persistable] yen_as_5c": true,
   "[persistable] mac_alt_as_meta": true,
 
   application_cursor: false,
@@ -396,14 +372,15 @@ DefaultKeyMappings.definition = {
     } else {
       settings.push(KEY_APPLICATION_KEYPAD);
     }
-    
+
+    if (this.yen_as_5c) {
+      settings.push(KEY_WIN_YEN_AS_5C);
+    }
+   
     // OS specific
     switch (coUtils.Runtime.os) {
 
       case "WINNT":
-        if (this.windows_yen_as_5c) {
-          settings.push(KEY_WIN_YEN_AS_5C);
-        }
         break;
 
       case "Darwin":

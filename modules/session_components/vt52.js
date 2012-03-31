@@ -264,6 +264,7 @@ VT52.definition = {
     broker.notify("initialized/vt52", this);
 
     this.ESC = new VT52SequenceParser();
+    VT52SequenceParser.prototype[0x1b] = this.ESC;
 
     broker.notify("command/add-sequence/vt52", {
       expression: "0x1B", 
@@ -736,17 +737,11 @@ VT52.definition = {
     let screen = this._screen;
     screen.setPositionY(y - 0x20);
     screen.setPositionX(x - 0x20);
-    //screen.setPositionY((y - 0x20 || 1) - 1);
-    //screen.setPositionX((x - 0x20 || 1) - 1);
   },
 
   "[profile('vt52'), sequence('ESC Z')]":
   function SCI()
   {
-    coUtils.Debug.reportWarning(
-      _("SCI was not implemented."));
-    //let message = "\x1b[?1;2;6c";
-    //let message = "\x1b[?c";
     let broker = this._broker;
     broker.notify("command/send-to-tty", "\x1b/Z");
   },
