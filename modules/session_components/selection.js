@@ -248,7 +248,7 @@ Selection.definition = {
       type: "DOMMouseScroll", 
       id: id,
       context: this,
-      handler: function(event) 
+      handler: function handler(event) 
       {
         session.notify("command/remove-domlistener", id); 
         this.clear();
@@ -278,16 +278,17 @@ Selection.definition = {
    * - Rectangle selection mode.
    *
    */
-  drawSelectionRange: function(first, last) 
+  drawSelectionRange: function drawSelectionRange(first, last) 
   {
     this.clear();
 
     // checking precondition
     if ("number" != typeof(first) 
-     || "number" != typeof(last))
+     || "number" != typeof(last)) {
       throw coUtils.Debug.Exception(
         _("Ill-typed arguments was given: [%d, %d]"), 
         first, last);
+    }
 
     // if first argument was less then second argument, swaps them.
     if (first > last)
@@ -377,7 +378,7 @@ Selection.definition = {
     this._range = null; // clear range.
   },
 
-  convertPixelToScreen: function(event) 
+  convertPixelToScreen: function convertPixelToScreen(event) 
   {
     let session = this._broker;
     let [target_element] 
@@ -399,8 +400,9 @@ Selection.definition = {
     column = column > maxColumn ? maxColumn: column;
     row = row > maxRow ? maxRow: row;
     return [column - 1, row - 1];
-  }
-}
+  },
+
+};
 
 
 /**

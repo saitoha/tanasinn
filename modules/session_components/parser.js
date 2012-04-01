@@ -323,10 +323,8 @@ SequenceParser.definition = {
       let code = parseInt(number);
       if ("parse" in value) {
         C0Parser.append(code, value);
-        this[code] = value;
       } else {
         C0Parser.append(code, function() value.apply(context));
-        this[code] = function() value.apply(context);
       }
     } else if (char_with_param) {
       let action = function(params) function() value.apply(context, params);
@@ -599,6 +597,8 @@ Scanner.definition = {
     this._value = "";
     this._position = 0;
     this._anchor = 0;
+    this._anchor = 0;
+    this._nextvalue = null;
     return value;
   },
 
@@ -791,10 +791,10 @@ Parser.definition = {
           coUtils.Debug.reportError(
             _("Failed to decode text. text length: %d, source text: [%s]."), 
             data.length, c1);
-          if (scanner.isEnd) {
+          //if (scanner.isEnd) {
             break;
-          }
-          scanner.moveNext();
+          //}
+          //scanner.moveNext();
         }
       } else { // scanner.isEnd
         scanner.setSurplus(); // backup surplus (unparsed) sequence.

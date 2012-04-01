@@ -148,9 +148,6 @@ Renderer.definition = {
       {
         parentNode: "#tanasinn_center_area",
         tagName: "html:canvas",
-        style: <>
-          letter-spacing: 1em;
-        </>,
         id: "tanasinn_renderer_canvas",
       });
 
@@ -173,7 +170,6 @@ Renderer.definition = {
     this.captureScreen.enabled = true;
     this.onDRCSStateChangedG0.enabled = true;
     this.onDRCSStateChangedG1.enabled = true;
-    coUtils.Timer.setTimeout(function() this._drawImpl(), 100, this);
   },
 
   /** Uninstalls itself.
@@ -347,19 +343,7 @@ Renderer.definition = {
     if (redraw_flag) {
       this.dependency["screen"].dirty = true;
     }
-    try {
-    if (null !== this._timer) {
-      this._timer.cancel();
-    }
-    this._timer = coUtils.Timer.setTimeout(function() {
-      this._timer = null;
-      this._drawImpl();
-    }, 20, this);
-    } catch (e) {alert(e)}
-  },
 
-  _drawImpl: function _drawImpl()
-  {
     let context = this._context;
     let screen = this.dependency["screen"];
     let font_size = this.font_size;
@@ -367,7 +351,6 @@ Renderer.definition = {
     let line_height = this.line_height;
     let char_width = this.char_width;
     let text_offset = this._text_offset;
-
 
     for (let { codes, row, column, end, attr, size } in screen.getDirtyWords()) {
 
