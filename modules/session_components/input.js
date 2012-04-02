@@ -155,8 +155,20 @@ let KEY_APPLICATION_KEYPAD = {
 
 };
 
-let KEY_WIN_YEN_AS_5C = {
-  "\xa5"  : "\x5c",
+let KEY_YEN_AS_5C = {
+  "\xa5"       : "\x5c",
+};
+
+let KEY_WON_AS_5C = {
+  "\u20a9"     : "\x5c",
+};
+
+let KEY_BACKSPACE_AS_DEL = {
+  "backspace"  : "\x7f",
+};
+
+let KEY_DELETE_AS_FUNC = {
+  "delete"     : "\x1b[3~",
 };
 
 let KEY_MAC_ALT_AS_META = {
@@ -336,7 +348,10 @@ DefaultKeyMappings.definition = {
     "default_key_mappings",
 
   "[persistable] yen_as_5c": true,
+  "[persistable] won_as_5c": true,
   "[persistable] mac_alt_as_meta": true,
+  "[persistable] backspace_as_delete": true,
+  "[persistable] delete_as_function": true,
 
   application_cursor: false,
   application_keypad: false,
@@ -374,7 +389,19 @@ DefaultKeyMappings.definition = {
     }
 
     if (this.yen_as_5c) {
-      settings.push(KEY_WIN_YEN_AS_5C);
+      settings.push(KEY_YEN_AS_5C);
+    }
+
+    if (this.won_as_5c) {
+      settings.push(KEY_WON_AS_5C);
+    }
+
+    if (this.backspace_as_delete) {
+      settings.push(KEY_BACKSPACE_AS_DEL);
+    }
+
+    if (this.delete_as_function) {
+      settings.push(KEY_DELETE_AS_FUNC);
     }
    
     // OS specific

@@ -593,7 +593,7 @@ Scanner.definition = {
 
   drain: function drain()
   {
-    let value = this._value.substr(this._position);
+    let value = this._value.substr(this._position + 1);
     this._value = "";
     this._position = 0;
     this._anchor = 0;
@@ -680,6 +680,7 @@ Parser.definition = {
     if (grammars.hasOwnProperty(mode)) {
       this._grammar = grammars[mode];
       let value = this._scanner.drain();
+      this._scanner.generator = null;
       this.drive(value);
     } else {
       coUtils.Debug.reportError(

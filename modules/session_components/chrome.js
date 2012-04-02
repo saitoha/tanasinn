@@ -130,7 +130,7 @@ OuterChrome.definition = {
 
   "[persistable] enabled_when_startup": true,
   "[persistable, watchable] background_opacity": 0.80,
-  "[persistable, watchable] background": "-moz-linear-gradient(top, #505451, #0a0a0a)",
+  "[persistable, watchable] background": "-moz-linear-gradient(top, #626462, #000000)",
   "[persistable, watchable] border_radius": 8,
   "[persistable, watchable] box_shadow": "5px 4px 29px black",
 
