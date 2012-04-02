@@ -400,9 +400,9 @@ DefaultKeyMappings.definition = {
       settings.push(KEY_BACKSPACE_AS_DEL);
     }
 
-    if (this.delete_as_function) {
-      settings.push(KEY_DELETE_AS_FUNC);
-    }
+//    if (this.delete_as_function) {
+//      settings.push(KEY_DELETE_AS_FUNC);
+//    }
    
     // OS specific
     switch (coUtils.Runtime.os) {
