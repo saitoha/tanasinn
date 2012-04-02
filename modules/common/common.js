@@ -1235,8 +1235,8 @@ coUtils.Keyboard = {
     f10         : 0x1 << KEY_NOCHAR | 0x0079,
     f11         : 0x1 << KEY_NOCHAR | 0x007a,
     f12         : 0x1 << KEY_NOCHAR | 0x007b,
-    del         : 0x1 << KEY_NOCHAR | 0x007f,
-    delete      : 0x1 << KEY_NOCHAR | 0x007f,
+//    del         : 0x1 << KEY_NOCHAR | 0x007f,
+//    delete      : 0x1 << KEY_NOCHAR | 0x007f,
   },
 
   getCodeToNameMap: function getCodeToNameMap() 
