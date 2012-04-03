@@ -3090,14 +3090,13 @@ Example 2:
 == Bug reports and patches
 
 Patches and bug reports are are encouraged. > saitoha <user@zuse.jp>,
-or tweet me (http:/#/twitter.com/feel_tanasinn[English] / http:/#/twitter.com/kefir_[Japanese]).
+or tweet me (http:/#/twitter.com/kefir_).
 #elif __JP__
 == バグレポート
 
 バグレポートを歓迎します。 
-とくに文字の問題(Unicodeとか)は優先的にバグ修正する傾向があります。
 saitoha <user@zuse.jp> 
-twitter: http:/#/twitter.com/kefir_[日本語] / http:/#/twitter.com/feel_tanasinn[英語] 
+twitter: http:/#/twitter.com/kefir_
 
 #endif
 
