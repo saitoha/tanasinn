@@ -97,8 +97,7 @@ http:/#/www.mozilla-japan.org/MPL/MPL-1.1J.html[Mozilla Public License 1.1 (MPL1
 
 #endif
 
-- git repo: TANASINN_GIT_REPOSITORY
-- gitweb: http:/#/zuse.jp/git/?p=tanasinn.git
+- github: https:/#/github.com/saitoha/tanasinn
 
 #if __EN__
 == Highlighting features
