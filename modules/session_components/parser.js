@@ -675,7 +675,6 @@ Parser.definition = {
   "[subscribe('command/change-mode'), enabled]":
   function onChangeMode(mode)
   {
-    try {
     let grammars = this._grammars;
     if (grammars.hasOwnProperty(mode)) {
       this._grammar = grammars[mode];
@@ -685,9 +684,6 @@ Parser.definition = {
     } else {
       coUtils.Debug.reportError(
         _("Specified mode '%s' was not found."), mode);
-    }
-    } catch(e) {
-      alert(e);
     }
   },
 

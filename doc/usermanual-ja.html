@@ -908,12 +908,6 @@ process.python_path = "/usr/bin/python"</tt></pre>
 <div class="sect2">
 <h3 id="_ダウンロード_ライセンス">2.1. ダウンロード/ライセンス</h3>
 <div class="paragraph"><p><a href="http://www.mozilla-japan.org/MPL/MPL-1.1J.html">Mozilla Public License 1.1 (MPL1.1)</a> で配布しています。</p></div>
-<div class="literalblock">
-<div class="content">
-<pre><tt>チュートリアルを書き終わるまで、スナップショット版しか提供しません。
-現在開発者がオープンソースにおけるソースコード共有モデルとワークフロー管理について必死に勉強中です。
-そこそこgitが使えるようになってきたら、安定したリリースビルドを提供していきたいと考えています。</tt></pre>
-</div></div>
 <div class="ulist"><ul>
 <li>
 <p>
@@ -988,6 +982,22 @@ IMEが使えます。
 </li>
 <li>
 <p>
+VT52互換モード搭載。
+</p>
+</li>
+<li>
+<p>
+Tektronix 4010/4014互換モード搭載 (一部未実装)。
+</p>
+</li>
+<li>
+<p>
+あまり使用されないロスト・コマンドを積極的に実装。
+      DECDHL/DECDWLやDRCS(Dynamically Redefined Character Set)など。
+</p>
+</li>
+<li>
+<p>
 East Asian Width(ひらがななどの文字幅を考慮したレンダリング)に一応対応しています。
       B集合以降のCJK統合拡張漢字等、サロゲートペアで表現される文字にも対応しています。
       異体字セレクタ、インド系諸語等で頻出する合字やアラビア系文字の置換などの複雑なグリフ処理は、
@@ -1049,7 +1059,7 @@ Vimperator/Muttator のプラグインとして導入することができます
 <li>
 <p>
 一部のプラットフォームでトラックパッドジェスチャー対応。
-      ピンチオープン・クローズ、スワイプを別のキーイベントにマップすることが可能。
+      ピンチオープン・クローズ、スワイプ、回転を別のキーイベントにマップすることが可能。
 </p>
 </li>
 <li>
@@ -1176,6 +1186,42 @@ Vimperator/Muttator のプラグインとして導入することができます
 <img src="images/zsh.png" alt="images/zsh.png" width="780" />
 </div>
 <div class="title">Figure 19. zshのcorrect機能にプライベートシーケンスを仕込みました。シーケンスハンドラの応用例です。</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/tektronix.png" alt="images/tektronix.png" width="780" />
+</div>
+<div class="title">Figure 20. Tektronix 4010/4014 エミュレーション。</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/decdhl.png" alt="images/decdhl.png" width="780" />
+</div>
+<div class="title">Figure 21. DECDHL/DECDWL。</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/drcs.png" alt="images/drcs.png" width="780" />
+</div>
+<div class="title">Figure 22. DECDHLおよびDECDLD/DRCS(Dynamically Redefined Character Set)のあわせ技でGuiness。</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/nethack.png" alt="images/nethack.png" width="780" />
+</div>
+<div class="title">Figure 23. jnethackで遊んでいるところ。</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/shellshock.png" alt="images/shellshock.png" width="780" />
+</div>
+<div class="title">Figure 24. shellshockで遊んでいるところ。</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/mplayer.png" alt="images/mplayer.png" width="780" />
+</div>
+<div class="title">Figure 25. mplayerで動画を再生したところ。</div>
 </div>
 </div>
 </div>
@@ -1699,7 +1745,7 @@ saveprofileのような保存操作はとくに必要ありません。</p></div
 <div class="paragraph"><p>または</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>kill</tt></pre>
+<pre><tt>quit</tt></pre>
 </div></div>
 </div>
 <div class="sect4">
@@ -2491,7 +2537,7 @@ tanasinnは結合度的にかなりゆるいタイプのコンポーネントフ
 <div class="content">
 <img src="images/busmodel.png" alt="images/busmodel.png" />
 </div>
-<div class="title">Figure 20. tanasinn Bus Model</div>
+<div class="title">Figure 26. tanasinn Bus Model</div>
 </div>
 <div class="literalblock">
 <div class="content">
@@ -3305,7 +3351,7 @@ twitter: <a href="http://twitter.com/kefir_">日本語</a> / <a href="http://twi
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2012-03-26 22:23:44 JST
+Last updated 2012-04-03 21:47:48 JST
 </div>
 </div>
 </body>
