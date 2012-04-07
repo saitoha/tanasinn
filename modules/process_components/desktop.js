@@ -32,6 +32,20 @@ Environment.definition = {
 
 // public properties
 
+  /** @property bin_path */
+  get bin_path()
+  {
+    let broker = this._broker;
+    return broker.bin_path;
+  },
+
+  set bin_path(value)
+  {
+    let broker = this._broker;
+    broker.bin_path = value;
+  },
+
+
   /** @property runtime_path */
   get runtime_path()
   {
@@ -72,7 +86,7 @@ Environment.definition = {
 /** 
  * @class Desktop
  */
-let Desktop = new Class().extends(Component)
+let Desktop = new Class().extends(Plugin)
                          .mix(Environment)
                          .mix(EventBroker);
 Desktop.definition = {
@@ -115,8 +129,7 @@ Desktop.definition = {
     let broker = this._broker;
     this.subscribe("get/bin-path", function() broker.bin_path);
     this.subscribe("get/python-path", function() broker.python_path);
-
-    this.install(broker);
+    broker.notify("install/desktop", broker);
   },
 
   "[subscribe('install/desktop'), enabled]":
@@ -190,6 +203,7 @@ Desktop.definition = {
       width: width,
       height: height,
     };
+
     let session = this.uniget("event/session-requested", request);
     return parent;
   },

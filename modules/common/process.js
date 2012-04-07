@@ -135,16 +135,14 @@ let loader = {
 
 let scope = {}; // create scope.
 
-with (scope) {
-  let id = new Date().getTime();
-  let current_file = Components
-    .stack.filename.split(" -> ").pop()
-    .split("?").shift()
-  Components
-    .classes["@mozilla.org/moz/jssubscript-loader;1"]
-    .getService(Components.interfaces.mozIJSSubScriptLoader)
-    .loadSubScript(current_file + "/../common.js?" + id, scope);
-}
+let id = new Date().getTime();
+let current_file = Components
+  .stack.filename.split(" -> ").pop()
+  .split("?").shift()
+Components
+  .classes["@mozilla.org/moz/jssubscript-loader;1"]
+  .getService(Components.interfaces.mozIJSSubScriptLoader)
+  .loadSubScript(current_file + "/../common.js?" + id, scope);
 
 with (scope) {
 

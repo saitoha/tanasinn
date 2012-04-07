@@ -22,8 +22,7 @@ link:./usermanual.html[English/英語]
 
 == 概要
 
-    "tanasinn terminal emulator" は Firefox/Thunderbird/SeaMonkey上で動作し、
-    「あらゆる挙動をカスタマイズ可能に」をモットーに製作された最重量級の端末エミュレータです。
+    "tanasinn terminal emulator" は Firefox/Thunderbird/SeaMonkey上で動作する端末エミュレータです。
     Windows(XP/Vista/7) + Cygwin / Mac / Linux / FreeBSD 環境で動作します。
     ほぼJavascriptによる実装(2%のPython)です。
     コマンドラインシェルやターミナルエディタが提供するCUI/TUIを用いて、オペレーティングシステムの
@@ -34,8 +33,8 @@ link:./usermanual.html[English/英語]
 #if __EN__
 == News
 
-2012/02/04
-Now version 0.1.5.4 available.
+2012/04/07
+Now version 0.1.7.1 available.
 
 #elif __JP__
 == News 
@@ -112,8 +111,8 @@ http:/#/www.mozilla-japan.org/MPL/MPL-1.1J.html[Mozilla Public License 1.1 (MPL1
     - Supports basic features, scroll-back, alternate screen, visual bell, audio bell ...etc.
     - IME is supported.
     - Supports VT52 compatibility mode.
-    - Supports Tektronix 4010/4014 compatibility mode (on progress).
-    - Supports ancient lost commands, such as DECDHL/DECDWL, DECDLD/DRCS(Dynamically Redefined Character Set)。
+    - Supports http:/#/en.wikipedia.org/wiki/Tektronix_4010[Tektronix 4010/4014] compatibility mode (on progress).
+    - Supports some ancient lost commands, such as DECDHL/DECDWL, DECDLD/http:/#/vt100.net/dec/vt320/soft_characters[DRCS(Dynamically Redefined Character Set)]。
     - Supports east asian double width characters. 
       but it is not render bidi languages correctly.
     - Localization supported. It is using gettext-style method. you can edit localize resource on UI.
@@ -141,9 +140,9 @@ http:/#/www.mozilla-japan.org/MPL/MPL-1.1J.html[Mozilla Public License 1.1 (MPL1
     - スクロールバック、代替スクリーン、ビジュアルベル、オーディオベルなど基本的な機能はサポートしています。
     - IMEが使えます。
     - VT52互換モード搭載。
-    - Tektronix 4010/4014互換モード搭載 (一部未実装)。
+    - http:/#/en.wikipedia.org/wiki/Tektronix_4010[Tektronix 4010/4014]互換モード搭載 (一部未実装)。
     - あまり使用されないロスト・コマンドを積極的に実装。
-      DECDHL/DECDWLやDRCS(Dynamically Redefined Character Set)など。
+      DECDHL/DECDWLやhttp:/#/vt100.net/dec/vt320/soft_characters[DRCS(Dynamically Redefined Character Set)]など。
     - East Asian Width(ひらがななどの文字幅を考慮したレンダリング)に一応対応しています。 
       B集合以降のCJK統合拡張漢字等、サロゲートペアで表現される文字にも対応しています。
       異体字セレクタ、インド系諸語等で頻出する合字やアラビア系文字の置換などの複雑なグリフ処理は、
@@ -310,9 +309,9 @@ image::images/roflbalt.png[width=780]
 image::images/zsh.png[width=780]
 
 #if __EN__
-.Tektronix 4010/4014 emulation.
+.http:/#/en.wikipedia.org/wiki/Tektronix_4010[Tektronix 4010/4014] emulation.
 #elif __JP__
-.Tektronix 4010/4014 エミュレーション。
+.http:/#/en.wikipedia.org/wiki/Tektronix_4010[Tektronix 4010/4014] エミュレーション。
 #endif
 image::images/tektronix.png[width=780]
 
@@ -324,9 +323,9 @@ image::images/tektronix.png[width=780]
 image::images/decdhl.png[width=780]
 
 #if __EN__
-."Guiness" with DECDLD/DRCS(Dynamically Redefined Character Set).
+."Guiness" with DECDLD/http:/#/vt100.net/dec/vt320/soft_characters[DRCS(Dynamically Redefined Character Set)].
 #elif __JP__
-.DECDHLおよびDECDLD/DRCS(Dynamically Redefined Character Set)のあわせ技でGuiness。
+.DECDHLおよびDECDLD/http:/#/vt100.net/dec/vt320/soft_characters[DRCS(Dynamically Redefined Character Set)]のあわせ技でGuiness。
 #endif
 image::images/drcs.png[width=780]
 
@@ -338,16 +337,16 @@ image::images/drcs.png[width=780]
 image::images/nethack.png[width=780]
 
 #if __EN__
-.playing shellshock.
+.playing http:/#/blog.dhampir.no/content/shellshock-a-bash-3-bash-4-spaceshooter[ShellShock].
 #elif __JP__
-.shellshockで遊んでいるところ。
+.http:/#/blog.dhampir.no/content/shellshock-a-bash-3-bash-4-spaceshooter[ShellShock]で遊んでいるところ。
 #endif
 image::images/shellshock.png[width=780]
 
 #if __EN__
-.playing mplayer.
+.playing http:/#/www.mplayerhq.hu/design7/news.html[MPlayer].
 #elif __JP__
-.mplayerで動画を再生したところ。
+.http:/#/www.mplayerhq.hu/design7/news.html[mplayer]で動画を再生したところ。
 #endif
 image::images/mplayer.png[width=780]
 

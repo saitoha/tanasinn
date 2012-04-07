@@ -71,12 +71,116 @@ const CO_XTERM_256_COLOR_PROFILE = [
   /* 248-255 */ "#a8a8a8", "#b2b2b2", "#bcbcbc", "#c6c6c6", "#d0d0d0", "#dadada", "#e4e4e4", "#eeeeee"
 ]; // CO_XTERM_256_COLOR_PROFILE
 
+//////////////////////////////////////////////////////////////////////////////
+//
+// Concepts
+//
+
+/**
+ * @Concept PersistentConcept
+ *
+ */
+let PersistentConcept = new Concept();
+PersistentConcept.definition = {
+
+  get id()
+    "PersistentConcept",
+
+  "<@command/backup> :: Object -> Undefined": 
+  _("Serialize and persist current state."),
+
+  "<@command/restore> :: Object -> Undefined": 
+  _("Deserialize and restore stored state."),
+
+}; // concept PersistentConcept
+
+/**
+ * @trait PersistentTrait
+ */
+let PersistentTrait = new Trait();
+PersistentTrait.definition = {
+
+  /**
+   * Serialize snd persist current state.
+   */
+  "[subscribe('@command/backup'), type('Object -> Undefined')]": 
+  function backup(context) 
+  {
+    let broker = this._broker;
+    context[this.id] = {
+      line_height: this.line_height,
+      font_family: this.font_family,
+      font_size: this.font_size,
+      force_precious_rendering: this.force_precious_rendering,
+      reverse: this.reverse,
+    };
+    let path = broker.runtime_path 
+             + "/persist/" 
+             + broker.request_id 
+             + ".png";
+    let file = coUtils.File.getFileLeafFromVirtualPath(path);
+    coUtils.IO.saveCanvas(this._source_canvas, file, true);
+  },
+
+  /**
+   * Deserialize snd restore stored state.
+   */
+  "[subscribe('@command/restore'), type('Object -> Undefined')]": 
+  function restore(context) 
+  {
+    let data = context[this.id];
+    if (data) {
+      this.force_monospace_rendering = data.force_precious_rendering;
+      this.line_height = data.line_height;
+      this.font_family = data.font_family;
+      this.font_size = data.font_size;
+      this._reverse = data.reverse;
+      let broker = this._broker;
+      broker.notify("command/draw");
+    } else {
+      coUtils.Debug.reportWarning(
+        _("Cannot restore last state of renderer: data not found."));
+    }
+  },
+
+}; // trait PersistentTrait
+
+/**
+ * @trait ReverseVideoTrait
+ */
+let ReverseVideoTrait = new Trait();
+ReverseVideoTrait.definition = {
+
+  "[subscribe('command/reverse-video'), enabled]": 
+  function reverseVideo(value) 
+  {
+    if (this._reverse != value) {
+      this._reverse = value;
+      let maps = [this.normal_color, this.bold_color, this.background_color];
+      for (let [, map] in Iterator(maps)) {
+        for (let i = 0; i < map.length; ++i) {
+          let value = (parseInt(map[i].substr(1), 16) ^ 0x1ffffff)
+            .toString(16)
+            .replace(/^1/, "#");
+          map[i] = value;
+        }
+      }
+      let broker = this._broker;
+      broker.notify("command/draw", true);
+    }
+  },
+
+}; // ReverseVideoTrait
+
 /** 
  * @class Renderer
  * @brief Scan screen state and render it to canvas element.
  */ 
 let Renderer = new Class().extends(Plugin)
-                          .depends("screen");
+                          .mix(PersistentTrait)
+                          .mix(ReverseVideoTrait)
+                          .depends("screen")
+                          .requires("PersistentConcept");
 Renderer.definition = {
 
   get id()
@@ -112,6 +216,7 @@ Renderer.definition = {
   "[watchable] char_width": 6.5, 
   "[watchable] char_height": 4, 
   "[watchable] char_offset": 11, 
+  "[persistable] blink_interval": 800, 
 
   _text_offset: 10, 
 
@@ -120,6 +225,7 @@ Renderer.definition = {
 
   _drcs_state: null, 
   _double_height_mode : 0,
+  _blink_layer: null,
 
   // font
   "[watchable, persistable] font_family": "Monaco,Menlo,Lucida Console,monospace",
@@ -153,7 +259,10 @@ Renderer.definition = {
 
     this._canvas = tanasinn_renderer_canvas;
     this._context = this._canvas.getContext("2d");
+
+    // set smoothing configuration
     this._context.mozImageSmoothingEnabled = this.smoothing;
+
     this._calculateGlyphSize();
     this.onWidthChanged();
     this.onHeightChanged();
@@ -193,24 +302,10 @@ Renderer.definition = {
     this._canvas.parentNode.removeChild(this._canvas);
     this._canvas = null;
     this._context = null;
-  },
-
-  "[subscribe('command/reverse-video'), enabled]": 
-  function reverseVideo(value) 
-  {
-    if (this._reverse != value) {
-      this._reverse = value;
-      let maps = [this.normal_color, this.bold_color, this.background_color];
-      for (let [, map] in Iterator(maps)) {
-        for (let i = 0; i < map.length; ++i) {
-          let value = (parseInt(map[i].substr(1), 16) ^ 0x1ffffff)
-            .toString(16)
-            .replace(/^1/, "#");
-          map[i] = value;
-        }
-      }
-      let broker = this._broker;
-      broker.notify("command/draw", true);
+    if (this._blink_layer) {
+      this._blink_layer.canvas = null;
+      this._blink_layer.context = null;
+      this._blink_layer = null;
     }
   },
 
@@ -230,47 +325,11 @@ Renderer.definition = {
     }
   },
 
+  /** Take screen capture and save it in png format. */
   "[subscribe('command/capture-screen')]": 
   function captureScreen(info) 
   {
     coUtils.IO.saveCanvas(this._canvas, info.file, info.thumbnail);
-  },
-
-  "[subscribe('command/backup')]": 
-  function backup(context) 
-  {
-    let broker = this._broker;
-    context[this.id] = {
-      line_height: this.line_height,
-      font_family: this.font_family,
-      font_size: this.font_size,
-      force_precious_rendering: this.force_precious_rendering,
-      reverse: this.reverse,
-    };
-    let path = broker.runtime_path 
-             + "/persist/" 
-             + broker.request_id 
-             + ".png";
-    let file = coUtils.File.getFileLeafFromVirtualPath(path);
-    coUtils.IO.saveCanvas(this._source_canvas, file, true);
-  },
-
-  "[subscribe('@command/restore')]": 
-  function restore(context) 
-  {
-    let data = context[this.id];
-    if (data) {
-      this.force_monospace_rendering = data.force_precious_rendering;
-      this.line_height = data.line_height;
-      this.font_family = data.font_family;
-      this.font_size = data.font_size;
-      this._reverse = data.reverse;
-      let broker = this._broker;
-      broker.notify("command/draw");
-    } else {
-      coUtils.Debug.reportWarning(
-        _("Cannot restore last state of renderer: data not found."));
-    }
   },
 
   "[subscribe('variable-changed/renderer.smoothing'), enabled]": 
@@ -319,6 +378,9 @@ Renderer.definition = {
     char_width = char_width || this.char_width;
     let canvas_width = 0 | (width * char_width);
     this._canvas.width = canvas_width;
+    if (this._blink_layer) {
+      this._blink_layer.canvas.width = canvas_width;
+    }
     let broker = this._broker;
     broker.notify("event/screen-width-changed", canvas_width);
   },
@@ -330,6 +392,9 @@ Renderer.definition = {
     line_height = line_height || this.line_height;
     let canvas_height = 0 | (height * line_height);
     this._canvas.height = canvas_height;
+    if (this._blink_layer) {
+      this._blink_layer.canvas.height = canvas_height;
+    }
     let broker = this._broker;
     broker.notify("event/screen-height-changed", canvas_height);
   },
@@ -363,14 +428,14 @@ Renderer.definition = {
           top = line_height * row;
           width = (char_width * (end - column));
           height = line_height;
-
           this._drawBackground(
             context, 
             left | 0, 
             top, 
             width + Math.ceil(left) - left, 
             height, 
-            attr.bg);
+            attr);
+
           context.font = font_size + "px " + font_family;
           break;
 
@@ -388,7 +453,7 @@ Renderer.definition = {
             line_height * row, 
             width + Math.ceil(left) - left, 
             height, 
-            attr.bg);
+            attr);
 
           context.save();
           context.beginPath();
@@ -410,7 +475,7 @@ Renderer.definition = {
             line_height * row, 
             width + Math.ceil(left) - left, 
             height, 
-            attr.bg);
+            attr);
 
           context.save();
           context.beginPath();
@@ -433,7 +498,7 @@ Renderer.definition = {
             line_height * row, 
             width + Math.ceil(left) - left, 
             height, 
-            attr.bg);
+            attr);
 
           context.save();
           context.beginPath();
@@ -470,14 +535,32 @@ Renderer.definition = {
    *
    */
   _drawBackground: 
-  function _drawBackground(context, x, y, width, height, bg)
+  function _drawBackground(context, x, y, width, height, attr)
   {
-    if (!this._reverse && this.transparent_color == bg) {
+
+    if (attr.blink) {
+      if (null === this._blink_layer) {
+        this._createBlinkLayer();
+      }
+      this._drawBackgroundImpl(context, x, y, width, height, attr);
+      this._drawBackgroundImpl(this._blink_layer.context, x, y, width, height, attr);
+    } else {
+      this._drawBackgroundImpl(context, x, y, width, height, attr);
+      if (null !== this._blink_layer) {
+        this._blink_layer.context.clearRect(x, y, width, height);
+      }
+    }
+  },
+
+  _drawBackgroundImpl: 
+  function _drawBackgroundImpl(context, x, y, width, height, attr) 
+  {
+    if (!this._reverse && this.transparent_color == attr.bg) {
       context.clearRect(x, y, width, height);
     } else {
       /* Get hexadecimal formatted background color (#xxxxxx) 
        * form given attribute structure. */
-      let back_color = this.background_color[bg];
+      let back_color = this.background_color[attr.bg];
       context.globalAlpha = 1.0;
 
       /* Draw background */
@@ -485,6 +568,32 @@ Renderer.definition = {
       context.fillRect(x, y, width, height);
     }
     context = null;
+  },
+
+  _createBlinkLayer: function _createBlinkLayer()
+  {
+    let broker = this._broker;
+    let { tanasinn_blink_canvas } = broker.uniget(
+      "command/construct-chrome", 
+      {
+        parentNode: "#tanasinn_center_area",
+        tagName: "html:canvas",
+        id: "tanasinn_blink_canvas",
+        width: this._canvas.width,
+        height: this._canvas.height,
+      });
+
+    this._blink_layer.canvas.style.opacity 
+      = 1 - this._blink_layer.canvas.style.opacity;
+    if (this._blink_layer) {
+      coUtils.Timer.setTimeout(arguments.callee, this.blink_interval, this);
+    }
+
+    this._blink_layer = {
+      canvas: tanasinn_blink_canvas,
+      context: tanasinn_blink_canvas.getContext("2d"),
+    };
+
   },
 
   /** Render text in specified cells.
@@ -498,6 +607,16 @@ Renderer.definition = {
                      height, 
                      attr, size)
   {
+    if (attr.blink) {
+
+      if (null === this._blink_layer) {
+        this._createBlinkLayer();
+      }
+
+      context = this._blink_layer.context;
+      context.font = this._context.font;
+    }
+
     // Get hexadecimal formatted text color (#xxxxxx) 
     // form given attribute structure. 
     let fore_color_map = this.normal_color;// attr.bold ? this.bold_color: this.normal_color;

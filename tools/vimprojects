@@ -89,6 +89,7 @@
    dec.js
    vt52.js
    tektronix.js
+   blink.js
 
    tty.js
    input.js

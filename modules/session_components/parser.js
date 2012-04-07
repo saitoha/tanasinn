@@ -153,6 +153,10 @@ StringParser.definition = {
   },
 }
 
+/**
+ * handle control characters in C0 area.
+ *
+ */
 let C0Parser = {
 
   _map: [],
@@ -301,6 +305,48 @@ ParameterParser.definition = {
 };
 
 /**
+ * @class ParameterParserStartingWithSemicolon
+ */
+let ParameterParserStartingWithSemicolon = new Class().extends(ParameterParser);
+ParameterParserStartingWithSemicolon.definition = {
+
+  /** Parse numeric parameters separated by semicolons ";". 
+   *  @param {Scanner} scanner A Scanner object.
+   *
+   * Paramter -> ([0-9]+, ";")*, [0-9]+
+   *
+   */
+  _parseParameters: 
+  function _parseParameters(scanner) 
+  {
+    yield 0;
+    let accumulator = this._first;
+    while (!scanner.isEnd) {
+      let c = scanner.current();
+      if (0x30 <= c && c <= 0x39) { // [0-9]
+        scanner.moveNext();
+        accumulator = accumulator * 10 + c - 0x30;
+      } else if (0x3b == c) { // ';'
+        scanner.moveNext();
+        yield accumulator;
+        accumulator = 0;
+      } else if (c < 0x20 || 0x7f == c) {
+        yield accumulator;
+        let action = C0Parser.get(c);
+        if (undefined !== action) {
+          this._c0action.push(action);
+        }
+        scanner.moveNext();
+      } else {
+        yield accumulator;
+        break;
+      }
+    }
+  }, // _parseParameters
+
+};
+
+/**
  * @class SequenceParser
  */
 let SequenceParser = new Class().extends(Array);
@@ -342,7 +388,7 @@ SequenceParser.definition = {
         if (0x30 <= code && code < 0x3a) {
           this[code] = this[code] || new ParameterParser(code - 0x30);
         } else if (0x3b == code) {
-          this[code] = this[code] || new ParameterParser(0);
+          this[code] = this[code] || new ParameterParserStartingWithSemicolon(0);
         } else {
           this[code] = this[code] || new ParameterParser(0, code);
         }
@@ -437,7 +483,8 @@ SequenceParser.definition = {
  *
  *
  */
-let VT100Grammar = new Class().extends(Component).requires("GrammarConcept");
+let VT100Grammar = new Class().extends(Component)
+                              .requires("GrammarConcept");
 VT100Grammar.definition = {
 
   get id()

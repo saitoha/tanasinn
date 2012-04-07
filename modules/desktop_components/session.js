@@ -51,6 +51,19 @@ Environment.definition = {
 
 // public properties
 
+  /** @property bin_path */
+  get bin_path()
+  {
+    let broker = this._broker;
+    return broker.bin_path;
+  },
+
+  set bin_path(value)
+  {
+    let broker = this._broker;
+    broker.bin_path = value;
+  },
+
   /** @property runtime_path */
   get runtime_path()
   {

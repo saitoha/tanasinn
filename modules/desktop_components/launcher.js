@@ -133,7 +133,7 @@ ProgramCompleter.definition = {
     let search_path;
     if ("WINNT" == coUtils.Runtime.os) {
       let cygwin_root = broker.cygwin_root;
-      let map = (broker.uniget("get/bin-path") || "/bin:/usr/local/bin")
+      let map = (broker.bin_path || "/bin:/usr/local/bin")
         .split(":")
         .map(function(posix_path) 
         {

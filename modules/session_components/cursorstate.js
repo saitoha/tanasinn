@@ -228,6 +228,134 @@ CursorState.definition = {
     this.restore();
   },
 
+  /**
+   * SGR — Select Graphic Rendition
+   *
+   * This control function selects one or more character attributes at the 
+   * same time.
+   *
+   * Default: Clear all attributes.
+   *
+   * Format
+   *
+   * CSI   Ps    ;     Ps    ...   m
+   * 9/11  3/n   3/11  3/n   ...   6/13
+   *
+   * Parameters
+   *
+   * Ps is a number representing a certain visual attribute. 
+   * You can use more than one Ps value to select different character 
+   * attributes. Table 5–16 lists Ps values and the attributes they select.
+   *
+   * Default: Ps = 0 (clears all attributes).
+   * 
+   * Table: Visual Character Attribute Values Ps Attribute
+   *
+   * 0   All attributes off
+   * 1   Bold
+   * 4   Underline
+   * 5   Blinking
+   * 7   Negative image
+   * 8   Invisible image
+   * 10  The ASCII character set is the current 7-bit display character set 
+   *     (default)—SCO Console only.
+   * 11  Map Hex 00-7F of the PC character set codes to the current 7-bit 
+   *     display character set—SCO Console only.
+   * 12  Map Hex 80-FF of the current character set to the current 7-bit 
+   *     display character set—SCO Console only.
+   * 22  Bold off
+   * 24  Underline off
+   * 25  Blinking off
+   * 27  Negative image off
+   * 28  Invisible image off
+   *
+   * Examples
+   *
+   * When you select more than one attribute in an SGR sequence, then they are
+   * executed in order. For example, you can use the following sequence to 
+   * display text that is bold, blinking, and underlined:
+   *
+   * CSI 0 ; 1 ; 5 ; 4 m
+   *
+   * The following sequence displays the negative image of text:
+   *
+   * CSI 7 m
+   *
+   * Notes on SGR
+   *
+   * After you select an attribute, the terminal applies that attribute to all 
+   * new characters received. If you move characters by scrolling, then the 
+   * attributes move with the characters.
+   * If you display control characters, then the terminal ignores the bold 
+   * attribute for displayed control characters.
+   *
+   *
+   * When a PC character set is selected . . .   Displays . . .
+   *
+   * Executing "CSI 10 m"         00-1F: control codes
+   *                              20-7F: ASCII characters
+   *                              80-FF: 8 bit PC characters
+   *
+   * Executing "CSI 11 m"         00-1F: PC characters, except the following 
+   *                                     codes when XON/XOFF is enabled:
+   *                                        1B (ESC)
+   *                                        11 (DC1)
+   *                                        13 (DC3)
+   *
+   *                              20-7F: ASCII characters (or PC 7 bit character)
+   *                              80-FF: 8 bit PC characters
+   *
+   * Executing "CSI 12 m"         00-1F: PC characters that are located in 
+   *                                     80 - 9F in PC character set, except 
+   *                                     the following codes when XON/XOFF is 
+   *                                     enabled:
+   *                                        9B (ESC)
+   *                                        91 (DC1)
+   *                                        93 (DC3)
+   *                              20-7F: PC characters located in A0-FF
+   *                              80-FF: 8 bit PC characters.
+   *
+   *
+   * When an ISO/ANSI character set is selected . . .  Displays . . .
+   *
+   * Executing "CSI 10 m"         00-1F: control codes
+   *                              20-7F: ASCII characters
+   *                              80-9F: control code
+   *                              A0-FF: GR characters
+   *
+   * Executing "CSI 12 m"         00-1F: control codes
+   *                              20-7F: ISO/ANSI characters located in A0-FF
+   *                              80-9F: control code
+   *                              A0-FF: GR characters
+   *
+   * Commands "CSI 10-12 m" affect only the Hex 00-7F portion of the display 
+   * character set. The hex 80-FF region of the display character set is left 
+   * intact.
+   *
+   * The ASCII character set with control codes residing in Hex 00 to 1F 
+   * region is the default 7-bit display character set. This is true 
+   * regardless of the ISO/ANSI or PC character set. When in an ISO/ANSI 
+   * character set, issuing "CSI 10 m" is equivalent to "designating and 
+   * invoking ASCII to G0 and GL."
+   *
+   * When "ESC 11 m" is executed, the display character set is loaded with 
+   * codes in the Hex 00 to 7F region of a PC character set. PC characters 
+   * whose code values are less than 1F can be displayed through this 
+   * sequence except 1B (ESC) and 11(DC1), 13(DC3) when XON/XOFF is enabled. 
+   * 1B is always executed as an ESC to allow the application to execute the 
+   * command to go back to the default character set. Hex 11 and 13 can be 
+   * displayed only when XON/XOFF is disabled. This command does not work when
+   * the ISO/ANSI character set is selected.
+   *
+   * Command "ESC 12 m" toggles the high bit of the current 8-bit character 
+   * set. All the characters in Hex 80-FF region can be displayed as 7-bit 
+   * codes except 9B (ESC) and 91(DC1), 93(DC3) when XON/XOFF is enabled. 
+   * After the command is executed, 1B is executed as an ESC. Hex 11 and 13 
+   * can be displayed only when XON/XOFF is disabled.
+   *
+   * When in an ISO/ANSI character set, issuing "CSI 12 m" is equivalent to 
+   * "designating and invoking current 8 bit char set to G2 and GL."
+   */
   "[profile('vt100'), sequence('CSI %dm')]":
   function SGR(n) 
   { // character attributes
@@ -237,71 +365,242 @@ CursorState.definition = {
     //  sgr=%?%p9%t\E(0%e\E(B%;\E[0%?%p6%t;1%;%?%p2%t;4%;%?%p1%p3%|%t;7%;%?%p4%t;5%;%?%p7%t;8%;m,
     //
     let attr = this.attr;
+    let broker = this._broker;
+
     if (0 == arguments.length) {
       attr.clear()
     } else {
+
       for (let i = 0; i < arguments.length; ++i) {
+
         let p = arguments[i];
-            0    == p ? attr.clear()
-          : 1    == p ? attr.bold = true
-          : 2    == p ? attr.halfbright = true // TODO: halfbright
+
+        switch (p) {
+
+          case 0:
+            attr.clear();
+            break;
+
+          case 1:
+            attr.bold = true;
+            break;
+
+          case 2:
+            attr.halfbright = true; // TODO: halfbright
+            break;
+
           //: 3    == p ? undefined
-          : 4    == p ? attr.underline = true
-          : 5    == p ? attr.blink = true // TODO: slow blink
-          : 6    == p ? attr.blink = true // TODO: rapid blink
-          : 7    == p ? attr.inverse = true
-          : 8    == p ? undefined // TODO: SGR invisible
-//          : 10   == p ? this.SI() // shift in
-//          : 11   == p ? this.SO() // shift out
-          : 21   == p ? attr.bold = false
-          : 22   == p ? attr.halfbright = false
+
+          case 4:
+            attr.underline = true;
+            break;
+
+          case 5:
+            attr.blink = true; // TODO: slow blink
+            break;
+
+          case 6:
+            attr.blink = true; // TODO: rapid blink
+            break;
+
+          case 7:
+            attr.inverse = true;
+            break;
+
+          case 8:
+            attr.invisible = true; // TODO: SGR invisible
+            break;
+
+          case 10:
+            broker.notify("event/shift-in");
+            break;
+
+          case 11:
+            broker.notify("event/shift-out");
+            break;
+
+          case 21:
+            attr.bold = false;
+            break;
+
+          case 22:
+            attr.halfbright = false;
+            break;
+
           //: 2  3 == p ? undefined
-          : 24   == p ? attr.underline = false
-          : 25   == p ? attr.blink = false
-          : 27   == p ? attr.inverse = false // SGR positive (not inverse)
-          : 30   == p ? attr.fg = 0
-          : 31   == p ? attr.fg = 1
-          : 32   == p ? attr.fg = 2
-          : 33   == p ? attr.fg = 3
-          : 34   == p ? attr.fg = 4
-          : 35   == p ? attr.fg = 5
-          : 36   == p ? attr.fg = 6
-          : 37   == p ? attr.fg = 7
-          : 38   == p ? arguments[++i] == 5 && (attr.fg = arguments[++i])
-          : 39   == p ? [attr.fg, attr.bold] = [7, false] // SGR default fg.
-          : 40   == p ? attr.bg = 0
-          : 41   == p ? attr.bg = 1
-          : 42   == p ? attr.bg = 2
-          : 43   == p ? attr.bg = 3
-          : 44   == p ? attr.bg = 4
-          : 45   == p ? attr.bg = 5
-          : 46   == p ? attr.bg = 6
-          : 47   == p ? attr.bg = 7
-          : 48   == p ? arguments[++i] == 5 && (attr.bg = arguments[++i])
-          : 49   == p ? attr.bg = 0 // SGR default bg.
-          : 90   == p ? attr.fg = 8
-          : 91   == p ? attr.fg = 9
-          : 92   == p ? attr.fg = 10
-          : 93   == p ? attr.fg = 11
-          : 94   == p ? attr.fg = 12
-          : 95   == p ? attr.fg = 13
-          : 96   == p ? attr.fg = 14
-          : 97   == p ? attr.fg = 15
-          : 100  == p ? attr.bg = 8
-          : 101  == p ? attr.bg = 9
-          : 102  == p ? attr.bg = 10
-          : 103  == p ? attr.bg = 11
-          : 104  == p ? attr.bg = 12
-          : 105  == p ? attr.bg = 13
-          : 106  == p ? attr.bg = 14
-          : 107  == p ? attr.bg = 15
-          : 300 <= p && p <= 399 ? attr.bg = p - 300
-          : 400 <= p && p <= 499 ? attr.bg = p - 400
-          : 3000 <= p && p <= 3255 ? attr.bg = p - 3000
-          : 4000 <= p && p <= 4255 ? attr.bg = p - 4000
-          : coUtils.Debug.reportWarning(
-            _("Ignored SGR %s, arguments: [%s]"), 
-            p, [].slice.apply(arguments));
+          
+          case 24:
+            attr.underline = false;
+            break;
+
+          case 25:
+            attr.blink = false;
+            break;
+
+          case 27:
+            attr.inverse = false; // SGR positive (not inverse)
+            break;
+
+          case 30:
+            attr.fg = 0;
+            break;
+
+          case 31:
+            attr.fg = 1;
+            break;
+
+          case 32:
+            attr.fg = 2;
+            break;
+
+          case 33:
+            attr.fg = 3;
+            break;
+
+          case 34:
+            attr.fg = 4;
+            break;
+
+          case 35:
+            attr.fg = 5;
+            break;
+
+          case 36:
+            attr.fg = 6;
+            break;
+
+          case 37:
+            attr.fg = 7;
+            break;
+
+          case 38:
+            arguments[++i] == 5 && (attr.fg = arguments[++i]);
+            break;
+
+          case 39:
+            attr.fg = 7;
+            attr.bold = false; // SGR default fg.
+            break;
+
+          case 40:
+            attr.bg = 0;
+            break;
+
+          case 41:
+            attr.bg = 1;
+            break;
+
+          case 42:
+            attr.bg = 2;
+            break;
+
+          case 43:
+            attr.bg = 3;
+            break;
+
+          case 44:
+            attr.bg = 4;
+            break;
+            
+          case 45:
+            attr.bg = 5;
+            break;
+
+          case 46:
+            attr.bg = 6;
+            break;
+
+          case 47:
+            attr.bg = 7;
+            break;
+
+          case 48:
+            arguments[++i] == 5 && (attr.bg = arguments[++i]);
+            break;
+
+          case 49:
+            attr.bg = 0; // SGR default bg.
+            break;
+
+          case 90:
+            attr.fg = 8;
+            break;
+
+          case 91:
+            attr.fg = 9;
+            break;
+
+          case 92:
+            attr.fg = 10;
+            break;
+
+          case 93:
+            attr.fg = 11;
+            break;
+
+          case 94:
+            attr.fg = 12;
+            break;
+
+          case 95:
+            attr.fg = 13
+            break;
+
+          case 96:
+            attr.fg = 14;
+            break;
+
+          case 97:
+            attr.fg = 15
+            break;
+
+          case 100:
+            attr.bg = 8;
+            break;
+
+          case 101:
+            attr.bg = 9;
+            break;
+
+          case 102:
+            attr.bg = 10;
+            break;
+
+          case 103:
+            attr.bg = 11;
+            break;
+
+          case 104:
+            attr.bg = 12;
+            break;
+
+          case 105:
+            attr.bg = 13;
+            break;
+
+          case 106:
+            attr.bg = 14;
+            break;
+
+          case 107:
+            attr.bg = 15;
+            break;
+
+          default:
+            if (300 <= p && p <= 399) {
+              attr.bg = p - 300;
+            } else if (400 <= p && p <= 499) {
+              attr.bg = p - 400;
+            } else if (3000 <= p && p <= 3255) {
+              attr.bg = p - 3000;
+            } else if (4000 <= p && p <= 4255) {
+              attr.bg = p - 4000;
+            } else {
+              coUtils.Debug.reportWarning(
+                _("Ignored SGR %s, arguments: [%s]"), 
+                p, Array.slice(arguments));
+            }
+        }
       }
     }
   },

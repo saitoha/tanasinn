@@ -23,37 +23,52 @@
  * ***** END LICENSE BLOCK ***** */
 
 
-function startup(data, reason) 
+function getProcessURI(data) 
 {
-  let io_service = Components
+  var io_service = Components
     .classes["@mozilla.org/network/io-service;1"]
     .getService(Components.interfaces.nsIIOService);
-  let uri = io_service.newFileURI(data.installPath.clone());
+  var file_handler = io_service.getProtocolHandler("file")
+    .QueryInterface(Components.interfaces.nsIFileProtocolHandler);
+  var process = data.installPath.clone();
+  process.append("modules");
+  process.append("common");
+  process.append("process.js");
+  var process_url = file_handler.getURLSpecFromFile(process);
+  Components
+    .classes["@mozilla.org/moz/jssubscript-loader;1"]
+    .getService(Components.interfaces.mozIJSSubScriptLoader)
+    .loadSubScript(process_url);
+}
+
+function registerResourceProtocolHandler()
+{
+  var io_service = Components
+    .classes["@mozilla.org/network/io-service;1"]
+    .getService(Components.interfaces.nsIIOService);
+  var uri = io_service.newFileURI(data.installPath.clone());
   io_service.getProtocolHandler("resource")
     .QueryInterface(Components.interfaces.nsIResProtocolHandler)
     .setSubstitution("tanasinn", uri)
-  let tanasinn_class = Components
-    .classes["@zuse.jp/tanasinn/process;1"];
-  if (tanasinn_class) {
+}
+
+
+/**
+ * Bootstrap entry point.
+ */
+function startup(data, reason) 
+{
+  registerResourceProtocolHandler();
+  if ("@zuse.jp/tanasinn/process;1" in Components.classes) {
     Components.classes['@zuse.jp/tanasinn/process;1']
       .getService(Components.interfaces.nsISupports)
       .wrappedJSObject
       .notify("event/enabled");
   } else {
     try {
-      let file_handler = io_service.getProtocolHandler("file")
-        .QueryInterface(Components.interfaces.nsIFileProtocolHandler);
-      let process = data.installPath.clone();
-      process.append("modules");
-      process.append("common");
-      process.append("process.js");
-      let process_url = file_handler.getURLSpecFromFile(process);
-      Components
-        .classes["@mozilla.org/moz/jssubscript-loader;1"]
-        .getService(Components.interfaces.mozIJSSubScriptLoader)
-        .loadSubScript(process_url);
+      startProcess(data);
     } catch(e) {
-      let message = <>{e.fileName}({e.lineNumber}):{e.toString()}</>.toString();
+      var message = e.fileName + " " + e.lineNumber + ": " + e;
       Components.reportError(message);
       return false;
     }
@@ -61,16 +76,20 @@ function startup(data, reason)
   return true;
 }
 
+/**
+ * Shutdown handler of bootstrap extension.
+ */
 function shutdown(data, reason) 
 {
-  let process = Components.classes['@zuse.jp/tanasinn/process;1']
-    .getService(Components.interfaces.nsISupports)
-    .wrappedJSObject;
-  process.notify("event/disabled");
-  process.uninitialize();
-  let io_service = Components
+  var io_service = Components
     .classes["@mozilla.org/network/io-service;1"]
     .getService(Components.interfaces.nsIIOService);
+  var process = Components.classes['@zuse.jp/tanasinn/process;1']
+    .getService(Components.interfaces.nsISupports)
+    .wrappedJSObject;
+
+  process.notify("event/disabled");
+  process.uninitialize();
   io_service.getProtocolHandler("resource")
     .QueryInterface(Components.interfaces.nsIResProtocolHandler)
     .setSubstitution("tanasinn", null);

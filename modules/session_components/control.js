@@ -222,8 +222,8 @@ Control.definition = {
   "[profile('vt100'), sequence('0x0E')]":
   function SO() 
   { // shift out
-    let session = this._broker;
-    session.notify("event/shift-out");
+    let broker = this._broker;
+    broker.notify("event/shift-out");
   },
   
   /** Shift in.
@@ -231,8 +231,8 @@ Control.definition = {
   "[profile('vt100'), sequence('0x0F')]":
   function SI() 
   { // shift out
-    let session = this._broker;
-    session.notify("event/shift-in");
+    let broker = this._broker;
+    broker.notify("event/shift-in");
   },
 
   /** Data link escape.
