@@ -583,17 +583,16 @@ Renderer.definition = {
         height: this._canvas.height,
       });
 
-    this._blink_layer.canvas.style.opacity 
-      = 1 - this._blink_layer.canvas.style.opacity;
-    if (this._blink_layer) {
-      coUtils.Timer.setTimeout(arguments.callee, this.blink_interval, this);
-    }
-
     this._blink_layer = {
       canvas: tanasinn_blink_canvas,
       context: tanasinn_blink_canvas.getContext("2d"),
     };
 
+    this._blink_layer.canvas.style.opacity 
+      = 1 - this._blink_layer.canvas.style.opacity;
+    if (this._blink_layer) {
+      coUtils.Timer.setTimeout(arguments.callee, this.blink_interval, this);
+    }
   },
 
   /** Render text in specified cells.
