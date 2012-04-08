@@ -38,6 +38,8 @@ link:./usermanual.html[English/英語]
 
     - Implement SGR blink feature. 
     - Implement SGR rapid blink feature(from DOS's ANSI.SYS).
+    - Implement SGR italic feature. 
+    - Implement SGR halfbright feature. 
 
 If tanasinn does not work, try creating tanasinn.js at your home directory, as follows:
 
@@ -56,6 +58,8 @@ process.python_path = "/usr/bin/python"
 
     - Implement SGR blink feature. 
     - Implement SGR rapid blink feature(from DOS's ANSI.SYS).
+    - Implement SGR italic feature. 
+    - Implement SGR halfbright feature. 
 
   重要：0.1.5.0 / 0.1.5.1はビルド時のバグのため「動きません」。
           0.1.5.2は一部のプラットフォームで動きません。  
@@ -144,7 +148,7 @@ http:/#/www.mozilla-japan.org/MPL/MPL-1.1J.html[Mozilla Public License 1.1 (MPL1
     - IMEが使えます。
     - VT52互換モード搭載。
     - http:/#/en.wikipedia.org/wiki/Tektronix_4010[Tektronix 4010/4014]互換モード搭載 (一部未実装)。
-    - あまり使用されないロスト・コマンドを積極的に実装。
+    - PC端末では実装例の少ないロスト・コマンドを積極的に実装。
       DECDHL/DECDWLやhttp:/#/vt100.net/dec/vt320/soft_characters[DRCS(Dynamically Redefined Character Set)]など。
     - East Asian Width(ひらがななどの文字幅を考慮したレンダリング)に一応対応しています。 
       B集合以降のCJK統合拡張漢字等、サロゲートペアで表現される文字にも対応しています。

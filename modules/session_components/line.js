@@ -198,7 +198,7 @@ const ATTR2_BOLD         = 17    // 00000000 00000001 00000000 00000000
 const ATTR2_UNDERLINE    = 18    // 00000000 00000010 00000000 00000000
 const ATTR2_INVERSE      = 19    // 00000000 00000100 00000000 00000000
 
-const ATTR2_HALFBLIGHT   = 20    // 00000000 00001000 00000000 00000000
+const ATTR2_HALFBRIGHT   = 20    // 00000000 00001000 00000000 00000000
 const ATTR2_BLINK        = 21    // 00000000 00010000 00000000 00000000
 const ATTR2_RAPIDBLINK   = 22    // 00000000 00100000 00000000 00000000
 const ATTR2_ITALIC       = 23    // 00000000 01000000 00000000 00000000
@@ -323,6 +323,20 @@ Cell.definition = {
     this.value = this.value
                & ~(0x1 << ATTR2_INVERSE) 
                | value << ATTR2_INVERSE;
+  },
+
+  /** getter of halfbright attribute */
+  get halfbright()
+  {
+    return this.value >>> ATTR2_HALFBRIGHT & 0x1;
+  },
+
+  /** setter of halfbright attribute */
+  set halfbright(value)
+  {
+    this.value = this.value
+               & ~(0x1 << ATTR2_HALFBRIGHT) 
+               | value << ATTR2_HALFBRIGHT;
   },
   
   /** getter of underline attribute */

@@ -386,6 +386,7 @@ CursorState.definition = {
             break;
 
           case 2:
+            attr.bold = false;
             attr.halfbright = true; // TODO: halfbright
             break;
 

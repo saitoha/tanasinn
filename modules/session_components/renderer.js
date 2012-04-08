@@ -316,6 +316,7 @@ Renderer.definition = {
 
   "[persistable] force_precious_rendering": false,
   "[persistable] normal_alpha": 0.80,
+  "[persistable] halfbright_alpha": 0.40,
   "[persistable] bold_alpha": 1.00,
   "[persistable] bold_as_blur": 1.00,
 //  "[persistable] enable_text_shadow": false,
@@ -713,7 +714,13 @@ Renderer.definition = {
     let fore_color_map = this.normal_color;// attr.bold ? this.bold_color: this.normal_color;
     let fore_color = fore_color_map[attr.fg];
 
-    context.globalAlpha = attr.bold ? this.bold_alpha: this.normal_alpha;
+    if (attr.bold) {
+      context.globalAlpha = this.bold_alpha;
+    } else if (attr.halfbright) {
+      context.globalAlpha = this.halfbright_alpha;
+    } else {
+      context.globalAlpha = this.normal_alpha;
+    }
     context.fillStyle = fore_color;
     if (attr.underline) {
       this._drawUnderline(context, x, y, char_width * length, fore_color);
