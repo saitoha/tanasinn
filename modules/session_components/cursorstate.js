@@ -396,11 +396,11 @@ CursorState.definition = {
             break;
 
           case 5:
-            attr.blink = true; // TODO: slow blink
+            attr.blink = true; // slow blink, less than 150 times per minute.
             break;
 
           case 6:
-            attr.blink = true; // TODO: rapid blink
+            attr.rapid_blink = true; // rapid blink, 150 times per minute or more.
             break;
 
           case 7:

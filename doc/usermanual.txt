@@ -33,27 +33,29 @@ link:./usermanual.html[English/英語]
 #if __EN__
 == News
 
-2012/04/07
-Now version 0.1.7.1 available.
+===2012/04/08
+    Now version 0.1.7.1 available.
+
+.Implement SGR blink feature. 
+.Implement SGR rapid blink feature(from DOS's ANSI.SYS).
+
+If tanasinn does not work, try creating tanasinn.js at your home directory, as follows:
+
+.%USERPROFILE%¥.tanasinn.js or $HOME/.tanasinn.js
+----
+process.cygwin_root = "C:\\cygwin";
+process.bin_path = "/bin:/usr/bin:/usr/local/bin:/opt/local/bin";
+process.python_path = "/usr/bin/python"
+----
 
 #elif __JP__
 == News 
+   
+===2012/04/08
+    Now version 0.1.7.1 available.
 
-.2012/03/25
-メモリーリークを修正したものがカレントにはいってます。
-いままで1セッションにつき10Mくらい、大量にリークしてました。
-
-デフォルトのマッピング設定の一部(<PinchOpen>など)を廃止しています。
-.tanasinn/tanasinnrcにてユーザーの好みでマップするようにしたほうが良いと判断しました。
-
-
-
-.2012/02/13 リリースポリシー変更
-
-  チュートリアル書きながらソースを変更しまくってるので、
-  しばらくスナップショット版しか提供しません。
-
-.2012/02/04 バージョン0.1.5.3
+.Implement SGR blink feature. 
+.Implement SGR rapid blink feature(from DOS's ANSI.SYS).
 
   重要：0.1.5.0 / 0.1.5.1はビルド時のバグのため「動きません」。
           0.1.5.2は一部のプラットフォームで動きません。  
@@ -64,6 +66,7 @@ Now version 0.1.7.1 available.
   動かなかった場合は %USERPROFILE%¥.tanasinn.js (Windows)、または~/.tanasinn.js(それ以外のOS) に、
   このように書いてみてください。
 
+.%USERPROFILE%¥.tanasinn.js or $HOME/.tanasinn.js
 ----
 process.cygwin_root = "C:\\cygwin";
 process.bin_path = "/bin:/usr/bin:/usr/local/bin:/opt/local/bin";

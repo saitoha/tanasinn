@@ -863,18 +863,10 @@ Windows(XP/Vista/7) + Cygwin / Mac / Linux / FreeBSD 環境で動作します。
 <div class="sect1">
 <h2 id="_news">2. News</h2>
 <div class="sectionbody">
-<div class="paragraph"><div class="title">2012/03/25</div><p>メモリーリークを修正したものがカレントにはいってます。
-いままで1セッションにつき10Mくらい、大量にリークしてました。</p></div>
-<div class="paragraph"><p>デフォルトのマッピング設定の一部(&lt;PinchOpen&gt;など)を廃止しています。
-.tanasinn/tanasinnrcにてユーザーの好みでマップするようにしたほうが良いと判断しました。</p></div>
+<div class="paragraph"><p>===2012/04/08
+    Now version 0.1.7.1 available.</p></div>
 <div class="literalblock">
-<div class="title">2012/02/13 リリースポリシー変更</div>
-<div class="content">
-<pre><tt>チュートリアル書きながらソースを変更しまくってるので、
-しばらくスナップショット版しか提供しません。</tt></pre>
-</div></div>
-<div class="literalblock">
-<div class="title">2012/02/04 バージョン0.1.5.3</div>
+<div class="title">Implement SGR rapid blink feature(from DOS&#8217;s ANSI.SYS).</div>
 <div class="content">
 <pre><tt>重要：0.1.5.0 / 0.1.5.1はビルド時のバグのため「動きません」。
         0.1.5.2は一部のプラットフォームで動きません。
@@ -890,6 +882,7 @@ Windows(XP/Vista/7) + Cygwin / Mac / Linux / FreeBSD 環境で動作します。
 このように書いてみてください。</tt></pre>
 </div></div>
 <div class="listingblock">
+<div class="title">%USERPROFILE%¥.tanasinn.js or $HOME/.tanasinn.js</div>
 <div class="content">
 <pre><tt>process.cygwin_root = "C:\\cygwin";
 process.bin_path = "/bin:/usr/bin:/usr/local/bin:/opt/local/bin";
@@ -3344,7 +3337,7 @@ twitter: <a href="http://twitter.com/kefir_">http://twitter.com/kefir_</a></p></
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2012-04-08 12:15:19 JST
+Last updated 2012-04-08 13:31:20 JST
 </div>
 </div>
 </body>

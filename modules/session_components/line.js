@@ -200,16 +200,17 @@ const ATTR2_INVERSE      = 19    // 00000000 00000100 00000000 00000000
 
 const ATTR2_HALFBLIGHT   = 20    // 00000000 00001000 00000000 00000000
 const ATTR2_BLINK        = 21    // 00000000 00010000 00000000 00000000
+const ATTR2_RAPIDBLINK   = 22    // 00000000 00100000 00000000 00000000
 
-const ATTR2_SIZE         = 22    // 00000000 01100000 00000000 00000000
+const ATTR2_SIZE         = 23    // 00000000 11000000 00000000 00000000
 
 // tanasinn specific properties
-const ATTR2_LINK         = 24    // 00000000 10000000 00000000 00000000
-const ATTR2_HIGHLIGHT    = 25    // 00000001 00000000 00000000 00000000
+const ATTR2_LINK         = 25    // 00000001 00000000 00000000 00000000
+const ATTR2_HIGHLIGHT    = 26    // 00000010 00000000 00000000 00000000
 
-const ATTR2_WIDE         = 26    // 00000010 00000000 00000000 00000000
-const ATTR2_DRCS         = 25    // 00000100 00000000 00000000 00000000
-const ATTR2_COMBINING    = 26    // 00001000 00000000 00000000 00000000
+const ATTR2_WIDE         = 27    // 00000100 00000000 00000000 00000000
+const ATTR2_DRCS         = 28    // 00001000 00000000 00000000 00000000
+const ATTR2_COMBINING    = 29    // 00010000 00000000 00000000 00000000
 
 /**
  * @class Cell
@@ -279,6 +280,20 @@ Cell.definition = {
     this.value = this.value
                & ~(0x1 << ATTR2_BLINK) 
                | value << ATTR2_BLINK;
+  },
+  
+  /** getter of rapid_blink attribute */
+  get rapid_blink()
+  {
+    return this.value >>> ATTR2_RAPIDBLINK & 0x1;
+  },
+
+  /** setter of rapid_blink attribute */
+  set rapid_blink(value)
+  {
+    this.value = this.value
+               & ~(0x1 << ATTR2_RAPIDBLINK) 
+               | value << ATTR2_RAPIDBLINK;
   },
 
   /** getter of inverse attribute */

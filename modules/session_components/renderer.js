@@ -146,6 +146,85 @@ PersistentTrait.definition = {
 }; // trait PersistentTrait
 
 /**
+ * @trait SlowBlinkTrait
+ */
+let SlowBlinkTrait = new Trait();
+SlowBlinkTrait.definition = {
+
+  /**
+   *
+   */
+  createSlowBlinkLayer: function createSlowBlinkLayer()
+  {
+    let broker = this._broker;
+    let { tanasinn_blink_canvas } = broker.uniget(
+      "command/construct-chrome", 
+      {
+        parentNode: "#tanasinn_center_area",
+        tagName: "html:canvas",
+        id: "tanasinn_blink_canvas",
+        width: this._canvas.width,
+        height: this._canvas.height,
+      });
+
+    coUtils.Timer.setTimeout(function() {
+      this._slow_blink_layer.canvas.style.opacity 
+        = 1 - this._slow_blink_layer.canvas.style.opacity;
+      if (this._slow_blink_layer) {
+        coUtils.Timer.setTimeout(arguments.callee, this.slow_blink_interval, this);
+      }
+    }, this.slow_blink_interval, this);
+
+    this._slow_blink_layer = {
+      canvas: tanasinn_blink_canvas,
+      context: tanasinn_blink_canvas.getContext("2d"),
+    };
+
+  }, // createSlowBlinkLayer
+
+}; // SlowBlinkTrait
+
+/**
+ * @trait RapidBlinkTrait
+ */
+let RapidBlinkTrait = new Trait();
+RapidBlinkTrait.definition = {
+
+  /**
+   *
+   */
+  createRapidBlinkLayer: function createRapidBlinkLayer()
+  {
+    let broker = this._broker;
+    let { tanasinn_rapid_blink_canvas } = broker.uniget(
+      "command/construct-chrome", 
+      {
+        parentNode: "#tanasinn_center_area",
+        tagName: "html:canvas",
+        id: "tanasinn_rapid_blink_canvas",
+        width: this._canvas.width,
+        height: this._canvas.height,
+      });
+
+    coUtils.Timer.setTimeout(function() {
+      this._rapid_blink_layer.canvas.style.opacity 
+        = 1 - this._rapid_blink_layer.canvas.style.opacity;
+      if (this._rapid_blink_layer) {
+        coUtils.Timer.setTimeout(arguments.callee, this.rapid_blink_interval, this);
+      }
+    }, this.rapid_blink_interval, this);
+
+    this._rapid_blink_layer = {
+      canvas: tanasinn_rapid_blink_canvas,
+      context: tanasinn_rapid_blink_canvas.getContext("2d"),
+    };
+
+  }, // createRapidBlinkLayer
+
+}; // RapidBlinkTrait
+
+
+/**
  * @trait ReverseVideoTrait
  */
 let ReverseVideoTrait = new Trait();
@@ -178,6 +257,8 @@ ReverseVideoTrait.definition = {
  */ 
 let Renderer = new Class().extends(Plugin)
                           .mix(PersistentTrait)
+                          .mix(SlowBlinkTrait)
+                          .mix(RapidBlinkTrait)
                           .mix(ReverseVideoTrait)
                           .depends("screen")
                           .requires("PersistentConcept");
@@ -216,7 +297,8 @@ Renderer.definition = {
   "[watchable] char_width": 6.5, 
   "[watchable] char_height": 4, 
   "[watchable] char_offset": 11, 
-  "[persistable] blink_interval": 800, 
+  "[persistable] slow_blink_interval": 800, 
+  "[persistable] rapid_blink_interval": 400, 
 
   _text_offset: 10, 
 
@@ -225,7 +307,8 @@ Renderer.definition = {
 
   _drcs_state: null, 
   _double_height_mode : 0,
-  _blink_layer: null,
+  _slow_blink_layer: null,
+  _rapid_blink_layer: null,
 
   // font
   "[watchable, persistable] font_family": "Monaco,Menlo,Lucida Console,monospace",
@@ -303,10 +386,15 @@ Renderer.definition = {
     this._canvas.parentNode.removeChild(this._canvas);
     this._canvas = null;
     this._context = null;
-    if (this._blink_layer) {
-      this._blink_layer.canvas = null;
-      this._blink_layer.context = null;
-      this._blink_layer = null;
+    if (this._slow_blink_layer) {
+      this._slow_blink_layer.canvas = null;
+      this._slow_blink_layer.context = null;
+      this._slow_blink_layer = null;
+    }
+    if (this._rapid_blink_layer) {
+      this._rapid_blink_layer.canvas = null;
+      this._rapid_blink_layer.context = null;
+      this._rapid_blink_layer = null;
     }
   },
 
@@ -379,8 +467,11 @@ Renderer.definition = {
     char_width = char_width || this.char_width;
     let canvas_width = 0 | (width * char_width);
     this._canvas.width = canvas_width;
-    if (this._blink_layer) {
-      this._blink_layer.canvas.width = canvas_width;
+    if (this._slow_blink_layer) {
+      this._slow_blink_layer.canvas.width = canvas_width;
+    }
+    if (this._rapid_blink_layer) {
+      this._rapid_blink_layer.canvas.width = canvas_width;
     }
     let broker = this._broker;
     broker.notify("event/screen-width-changed", canvas_width);
@@ -393,8 +484,8 @@ Renderer.definition = {
     line_height = line_height || this.line_height;
     let canvas_height = 0 | (height * line_height);
     this._canvas.height = canvas_height;
-    if (this._blink_layer) {
-      this._blink_layer.canvas.height = canvas_height;
+    if (this._rapid_blink_layer) {
+      this._rapid_blink_layer.canvas.height = canvas_height;
     }
     let broker = this._broker;
     broker.notify("event/screen-height-changed", canvas_height);
@@ -538,17 +629,25 @@ Renderer.definition = {
   _drawBackground: 
   function _drawBackground(context, x, y, width, height, attr)
   {
-
     if (attr.blink) {
-      if (null === this._blink_layer) {
-        this._createBlinkLayer();
+      if (null === this._slow_blink_layer) {
+        this.createSlowBlinkLayer(this.slow_blink_interval);
       }
       this._drawBackgroundImpl(context, x, y, width, height, attr);
-      this._drawBackgroundImpl(this._blink_layer.context, x, y, width, height, attr);
+      this._drawBackgroundImpl(this._slow_blink_layer.context, x, y, width, height, attr);
+    } else if (attr.rapid_blink) {
+      if (null === this._rapid_blink_layer) {
+        this.createRapidBlinkLayer(this.rapid_blink_interval);
+      }
+      this._drawBackgroundImpl(context, x, y, width, height, attr);
+      this._drawBackgroundImpl(this._rapid_blink_layer.context, x, y, width, height, attr);
     } else {
       this._drawBackgroundImpl(context, x, y, width, height, attr);
-      if (null !== this._blink_layer) {
-        this._blink_layer.context.clearRect(x, y, width, height);
+      if (null !== this._slow_blink_layer) {
+        this._slow_blink_layer.context.clearRect(x, y, width, height);
+      }
+      if (null !== this._rapid_blink_layer) {
+        this._rapid_blink_layer.context.clearRect(x, y, width, height);
       }
     }
   },
@@ -571,37 +670,6 @@ Renderer.definition = {
     context = null;
   },
 
-  /**
-   *
-   */
-  _createBlinkLayer: function _createBlinkLayer()
-  {
-    let broker = this._broker;
-    let { tanasinn_blink_canvas } = broker.uniget(
-      "command/construct-chrome", 
-      {
-        parentNode: "#tanasinn_center_area",
-        tagName: "html:canvas",
-        id: "tanasinn_blink_canvas",
-        width: this._canvas.width,
-        height: this._canvas.height,
-      });
-
-    coUtils.Timer.setTimeout(function() {
-      this._blink_layer.canvas.style.opacity 
-        = 1 - this._blink_layer.canvas.style.opacity;
-      if (this._blink_layer) {
-        coUtils.Timer.setTimeout(arguments.callee, this.blink_interval, this);
-      }
-    }, this.blink_interval, this);
-
-    this._blink_layer = {
-      canvas: tanasinn_blink_canvas,
-      context: tanasinn_blink_canvas.getContext("2d"),
-    };
-
-  },
-
   /** Render text in specified cells.
    */
   _drawWord: 
@@ -614,12 +682,18 @@ Renderer.definition = {
                      attr, size)
   {
     if (attr.blink) {
-
-      if (null === this._blink_layer) {
-        this._createBlinkLayer();
+      if (null === this._slow_blink_layer) {
+        this.createSlowBlinkLayer(this.slow_blink_interval);
       }
+      context = this._slow_blink_layer.context;
+      context.font = this._context.font;
+    }
 
-      context = this._blink_layer.context;
+    if (attr.rapid_blink) {
+      if (null === this._rapid_blink_layer) {
+        this.createRapidBlinkLayer(this.rapid_blink_interval);
+      }
+      context = this._rapid_blink_layer.context;
       context.font = this._context.font;
     }
 
