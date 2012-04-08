@@ -33,11 +33,11 @@ link:./usermanual.html[English/英語]
 #if __EN__
 == News
 
-===2012/04/08
+=== 2012/04/08 
     Now version 0.1.7.1 available.
 
-.Implement SGR blink feature. 
-.Implement SGR rapid blink feature(from DOS's ANSI.SYS).
+    - Implement SGR blink feature. 
+    - Implement SGR rapid blink feature(from DOS's ANSI.SYS).
 
 If tanasinn does not work, try creating tanasinn.js at your home directory, as follows:
 
@@ -51,11 +51,11 @@ process.python_path = "/usr/bin/python"
 #elif __JP__
 == News 
    
-===2012/04/08
+=== 2012/04/08 
     Now version 0.1.7.1 available.
 
-.Implement SGR blink feature. 
-.Implement SGR rapid blink feature(from DOS's ANSI.SYS).
+    - Implement SGR blink feature. 
+    - Implement SGR rapid blink feature(from DOS's ANSI.SYS).
 
   重要：0.1.5.0 / 0.1.5.1はビルド時のバグのため「動きません」。
           0.1.5.2は一部のプラットフォームで動きません。  

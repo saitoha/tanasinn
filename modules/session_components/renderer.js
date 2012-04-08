@@ -529,10 +529,16 @@ Renderer.definition = {
             attr);
 
           context.font = font_size + "px " + font_family;
+          if (attr.italic) {
+            context.font = "italic " + context.font;
+          }
           break;
 
         case 1:
           context.font = (font_size * 2) + "px " + font_family;
+          if (attr.italic) {
+            context.font = "italic " + context.font;
+          }
 
           left = char_width * 2 * column;
           top = line_height * (row + 1);
@@ -555,6 +561,9 @@ Renderer.definition = {
 
         case 2:
           context.font = (font_size * 2) + "px " + font_family;
+          if (attr.italic) {
+            context.font = "italic " + context.font;
+          }
 
           left = char_width * 2 * column;
           top = line_height * row;
@@ -577,7 +586,9 @@ Renderer.definition = {
 
         case 3:
           context.font = (font_size * 2) + "px " + font_family;
-          //context.font = font_size + "px " + font_family;
+          if (attr.italic) {
+            context.font = "italic " + context.font;
+          }
 
           left = char_width * 2 * column;
           top = line_height * row;

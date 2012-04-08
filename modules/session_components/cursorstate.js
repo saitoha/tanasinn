@@ -389,7 +389,9 @@ CursorState.definition = {
             attr.halfbright = true; // TODO: halfbright
             break;
 
-          //: 3    == p ? undefined
+          case 3:
+            attr.italic = true;
+            break;
 
           case 4:
             attr.underline = true;
@@ -427,7 +429,9 @@ CursorState.definition = {
             attr.halfbright = false;
             break;
 
-          //: 2  3 == p ? undefined
+          case 23:
+            attr.italic = false;
+            break;
           
           case 24:
             attr.underline = false;
@@ -435,6 +439,7 @@ CursorState.definition = {
 
           case 25:
             attr.blink = false;
+            attr.rapid_blink = false;
             break;
 
           case 27:
