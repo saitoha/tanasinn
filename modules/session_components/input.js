@@ -812,8 +812,7 @@ shift:{event.shiftKey?"t":"f"},
 ctl:{event.ctrlKey?"t":"f"},
 alt:{event.altKey?"t":"f"},
 meta:{event.metaKey?"t":"f"},
-char:{event.isChar?"t":"f"},
-{coUtils.Keyboard.convertCodeToExpression(packed_code)}
+char:{event.isChar?"t":"f"}
         </>);
     }
 
