@@ -291,30 +291,9 @@ let KEY_MAC_ALT_AS_META = {
   "Alt Shift \u0060" : "\x1b_",
 };
 
-/**
- * @fn coCreateKeyMap
- * @brief Create [bit-packed keycode -> terminal input sequence] map 
- *        from the definition file
- */ 
-function coLoadKeyMap() 
-{
-  let CO_KEY_DEFINITION = "modules/key.conf";
-  let keys = coUtils.IO.readFromFile(CO_KEY_DEFINITION) // load key settings from file.
-    .split(/[\n\r]+/) // LF or CR is line separator.
-    .filter(function(line) line) // Filter out empty lines.
-    .map(function(line) line.split(/#/).shift()) // # is line comment delimiter.
-    .map(function(line) line.replace(/[\s\t]+$/, '')) // chop line-end spaces.
-    .map(function(line) line.split(/[\s\t]*\->[\s\t]*/)) // make (key, value) touple.
-    .filter(function(pair) pair.length == 2)
-  let map = keys.reduce(function(map, pair) 
-    let (key = pair.shift()) (map[key] = pair.shift(), map), {});
-  return map;
-}
-
 function coCreateKeyMap(expression_map, destination_map) 
 {
   let map = destination_map || {};
-  //let expression_map = coLoadKeyMap();
   for (let [key, value] in Iterator(expression_map)) 
   {
     let tokens = key.split(/[\s\t]+/);
