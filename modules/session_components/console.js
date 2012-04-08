@@ -308,7 +308,7 @@ ConsoleListener.definition = {
     } catch (e) {
       try {
         this.unregister(this);
-        coUtils.Debug.reportError(e);
+        coUtils.Debug.reportWarning(e);
       } catch (e) {
         // Nothing to do.
         // To guard against stack overflow, 

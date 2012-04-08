@@ -617,16 +617,17 @@ Renderer.definition = {
             this._double_height_mode);
       }
 
-
-      this._drawWord(
-        context, 
-        codes, 
-        left, 
-        top + text_offset, 
-        char_width * (0 == size ? 1: 2), 
-        end - column, 
-        height, 
-        attr, size);
+      if (end - column) {
+        this._drawWord(
+          context, 
+          codes, 
+          left, 
+          top + text_offset, 
+          char_width * (0 == size ? 1: 2), 
+          end - column, 
+          height, 
+          attr, size);
+      }
 
       if (0 != size) {
         context.restore();
