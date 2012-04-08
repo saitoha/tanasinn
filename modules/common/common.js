@@ -569,10 +569,10 @@ let alert = coUtils.alert = function alert(message)
   if (arguments.length > 1 && "string" == typeof message) {
     message = coUtils.Text.format.apply(coUtils.Text, arguments);
   }
-  let promptService = Components
+  let prompt_service = Components
       .classes["@mozilla.org/embedcomp/prompt-service;1"]
       .getService(Components.interfaces.nsIPromptService)
-    promptService.alert(this.window || null, "tanasinn", message);
+    prompt_service.alert(this.window || null, "tanasinn", message);
 }
 
 /** Returns the window object.
@@ -580,11 +580,11 @@ let alert = coUtils.alert = function alert(message)
  */
 coUtils.getWindow = function getWindow() 
 {
-  let windowMediator = Components
+  let window_mediator = Components
     .classes["@mozilla.org/appshell/window-mediator;1"]
     .getService(Components.interfaces.nsIWindowMediator);
-  let result = windowMediator.getMostRecentWindow("navigator:browser")
-            || windowMediator.getMostRecentWindow("mail:3pane");
+  let result = window_mediator.getMostRecentWindow("navigator:browser")
+            || window_mediator.getMostRecentWindow("mail:3pane");
   // cache result
   if (result) {
     return result;
@@ -598,7 +598,7 @@ coUtils.getWindow = function getWindow()
  */
 coUtils.format = function format(/* template, arg1, arg2, .... */) 
 {
-  let args = [].slice.apply(arguments);
+  let args = Array.slice(arguments);
   let template = args.shift();
   let result = template.replace(/%[s|f|d|i|x]/g, function(matchString) {
     let value = args.shift();
@@ -814,7 +814,8 @@ coUtils.IO = {
    *  @param {String} data The contents written to target file.
    *  @param {Function} callback.
    */
-  writeToFile: function writeToFile(path, data, callback) 
+  writeToFile: 
+  function writeToFile(path, data, callback) 
   {
     let file = coUtils.File.getFileLeafFromVirtualPath(path);
     if (file.exists()) { // check if target exists.
@@ -865,9 +866,10 @@ coUtils.IO = {
   	}); // writeToFile
   },
 
-  saveCanvas: function saveCanvas(source_canvas, file, is_thumbnail) 
+  saveCanvas: 
+  function saveCanvas(source_canvas, file, is_thumbnail) 
   {
-    const NS_XHTML = "http://www.w3.org/1999/xhtml";
+    let NS_XHTML = "http://www.w3.org/1999/xhtml";
     let canvas = source_canvas
       .ownerDocument
       .createElementNS(NS_XHTML, "canvas");
@@ -1223,6 +1225,8 @@ coUtils.Keyboard = {
     ins         : 0x1 << KEY_NOCHAR | 0x002d,
     insert      : 0x1 << KEY_NOCHAR | 0x002d,
     del         : 0x1 << KEY_NOCHAR | 0x002e,
+    delete      : 0x1 << KEY_NOCHAR | 0x002e,
+    clear       : 0x1 << KEY_NOCHAR | 0x000c,
     f1          : 0x1 << KEY_NOCHAR | 0x0070,
     f2          : 0x1 << KEY_NOCHAR | 0x0071,
     f3          : 0x1 << KEY_NOCHAR | 0x0072,
@@ -1235,6 +1239,13 @@ coUtils.Keyboard = {
     f10         : 0x1 << KEY_NOCHAR | 0x0079,
     f11         : 0x1 << KEY_NOCHAR | 0x007a,
     f12         : 0x1 << KEY_NOCHAR | 0x007b,
+    f13         : 0x1 << KEY_NOCHAR | 0x002c,
+    f14         : 0x1 << KEY_NOCHAR | 0x0091,
+    f15         : 0x1 << KEY_NOCHAR | 0x0013,
+    f16         : 0x1 << KEY_NOCHAR | 0xf713,
+    f17         : 0x1 << KEY_NOCHAR | 0xf714,
+    f18         : 0x1 << KEY_NOCHAR | 0xf715,
+    f19         : 0x1 << KEY_NOCHAR | 0xf716,
 //    del         : 0x1 << KEY_NOCHAR | 0x007f,
 //    delete      : 0x1 << KEY_NOCHAR | 0x007f,
   },
