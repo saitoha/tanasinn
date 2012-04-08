@@ -318,7 +318,7 @@ Renderer.definition = {
   "[persistable] normal_alpha": 0.80,
   "[persistable] halfbright_alpha": 0.40,
   "[persistable] bold_alpha": 1.00,
-  "[persistable] bold_as_blur": 1.00,
+  "[persistable] bold_as_blur": false,
 //  "[persistable] enable_text_shadow": false,
 //  "[persistable] enable_render_bold_as_textshadow": false,
   "[persistable] shadow_color": "white",
