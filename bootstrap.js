@@ -27,7 +27,6 @@ function startup(data, reason)
 {
 var promptService = Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
                                 .getService(Components.interfaces.nsIPromptService);
-promptService.alert(null, null, "abc");
   let io_service = Components
     .classes["@mozilla.org/network/io-service;1"]
     .getService(Components.interfaces.nsIIOService);
@@ -61,7 +60,6 @@ promptService.alert(null, null, "abc");
       return false;
     }
   }
-promptService.alert(null, null, "def");
   return true;
 }
 
