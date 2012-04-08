@@ -500,7 +500,6 @@ Commandline.definition = {
   "[subscribe('install/commandline'), enabled]":
   function install(broker) 
   {
-    try {
     let {
       tanasinn_commandline_canvas, 
       tanasinn_commandline, 
@@ -536,7 +535,6 @@ Commandline.definition = {
     this.doCompletion.enabled = true;
 
     this.onmousedown.enabled = true;
-    } catch(e) {alert(e)}
   },
   
   /** Uninstalls itself.
@@ -545,7 +543,6 @@ Commandline.definition = {
   "[subscribe('uninstall/commandline'), enabled]":
   function uninstall(broker) 
   {
-    try {
     this.show.enabled = false;
     this.fill.enabled = false;
     this.invalidate.enabled = false;
@@ -584,7 +581,6 @@ Commandline.definition = {
       this._textbox.dispose();
       this._textbox = null;
     }
-    } catch(e) {alert(e)}
   },
 
   "[subscribe('variable-changed/commandline.{font_weight | font_size | default_text_shadow | font_family}')]":
@@ -857,8 +853,8 @@ Commandline.definition = {
   function onkeypress(event) 
   {
     let code = coUtils.Keyboard.getPackedKeycodeFromEvent(event);
-    let session = this._broker;
-    session.notify("event/scan-keycode", {
+    let broker = this._broker;
+    broker.notify("event/scan-keycode", {
       mode: "commandline", 
       code: code,
       event: event,

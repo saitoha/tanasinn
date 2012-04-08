@@ -234,8 +234,9 @@ Renderer.definition = {
   "[persistable] force_precious_rendering": false,
   "[persistable] normal_alpha": 0.80,
   "[persistable] bold_alpha": 1.00,
+  "[persistable] bold_as_blur": 1.00,
 //  "[persistable] enable_text_shadow": false,
-  "[persistable] enable_render_bold_as_textshadow": false,
+//  "[persistable] enable_render_bold_as_textshadow": false,
   "[persistable] shadow_color": "white",
   "[persistable] shadow_offset_x": 0.50,
   "[persistable] shadow_offset_y": 0.00,
@@ -570,6 +571,9 @@ Renderer.definition = {
     context = null;
   },
 
+  /**
+   *
+   */
   _createBlinkLayer: function _createBlinkLayer()
   {
     let broker = this._broker;
@@ -583,16 +587,19 @@ Renderer.definition = {
         height: this._canvas.height,
       });
 
+    coUtils.Timer.setTimeout(function() {
+      this._blink_layer.canvas.style.opacity 
+        = 1 - this._blink_layer.canvas.style.opacity;
+      if (this._blink_layer) {
+        coUtils.Timer.setTimeout(arguments.callee, this.blink_interval, this);
+      }
+    }, this.blink_interval, this);
+
     this._blink_layer = {
       canvas: tanasinn_blink_canvas,
       context: tanasinn_blink_canvas.getContext("2d"),
     };
 
-    this._blink_layer.canvas.style.opacity 
-      = 1 - this._blink_layer.canvas.style.opacity;
-    if (this._blink_layer) {
-      coUtils.Timer.setTimeout(arguments.callee, this.blink_interval, this);
-    }
   },
 
   /** Render text in specified cells.
@@ -642,16 +649,19 @@ Renderer.definition = {
 
     if (null === this._drcs_state || !attr.drcs) {
       let text = String.fromCharCode.apply(String, codes);
-      if (this.enable_render_bold_as_textshadow && attr.bold) {
-        context.shadowColor = this.shadow_color;
-        context.shadowOffsetX = this.shadow_offset_x;
-        context.shadowOffsetY = this.shadow_offset_y;
-        context.shadowBlur = this.shadow_blur;
-      } else {
-        context.shadowOffsetX = 0;
-        context.shadowBlur = 0;
-      }
+      //if (this.enable_render_bold_as_textshadow && attr.bold) {
+      //  context.shadowColor = this.shadow_color;
+      //  context.shadowOffsetX = this.shadow_offset_x;
+      //  context.shadowOffsetY = this.shadow_offset_y;
+      //  context.shadowBlur = this.shadow_blur;
+      //} else {
+      //  context.shadowOffsetX = 0;
+      //  context.shadowBlur = 0;
+      //}
       context.fillText(text, x, y, char_width * length);
+      if (attr.bold && this.bold_as_blur) {
+        context.fillText(text, x + 1, y, char_width * length - 1);
+      }
     } else {
       let drcs_state = this._drcs_state;
       for (let index = 0; index < codes.length; ++index) {

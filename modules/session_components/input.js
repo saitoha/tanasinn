@@ -339,6 +339,28 @@ function coCreateKeyMap(expression_map, destination_map)
 }
 
 /**
+ * @class MacAltKeyWatcher
+ */
+let MacAltKeyWatcher = new Trait();
+MacAltKeyWatcher.definition = {
+
+  _alt_on: false,
+
+  "[subscribe('event/alt-key-down'), enabled]":
+  function onAltKeyDown()
+  {
+    this._alt_key = true;
+  },
+
+  "[subscribe('event/alt-key-up'), enabled]":
+  function onAltKeyUp()
+  {
+    this._alt_key = false;
+  },
+
+}; // MacAltKeyWatcher
+
+/**
  * @class DefaultKeyMappings
  */
 let DefaultKeyMappings = new Class().extends(Component);
@@ -587,6 +609,7 @@ NormalMode.definition = {
  * @brief Listen keyboard input events and send ones to TTY device.
  */
 let InputManager = new Class().extends(Plugin)
+                              .mix(MacAltKeyWatcher)
                               .depends("encoder");
 InputManager.definition = {
 
@@ -799,9 +822,6 @@ InputManager.definition = {
       event.isChar = false;
     }
 
-    let packed_code = coUtils.Keyboard
-      .getPackedKeycodeFromEvent(event);
-
     let broker = this._broker;
     if (this.debug_flag) {
       broker.notify(
@@ -817,12 +837,25 @@ char:{event.isChar?"t":"f"},
 {coUtils.Keyboard.convertCodeToExpression(packed_code)}
         </>);
     }
-    broker.notify("event/scan-keycode", {
+
+    this.onKeyPressEventReceived({
       mode: "normal", 
+      event: event,
+    });
+ 
+  },
+
+  "[subscribe('event/keypress'), enabled]":
+  function onKeyPressEventReceived(info) 
+  {
+    let packed_code = coUtils.Keyboard
+      .getPackedKeycodeFromEvent(info.event, this._alt_key);
+    let broker = this._broker;
+    broker.notify("event/scan-keycode", {
+      mode: info.mode, 
       code: packed_code,
     });
   },
-  
 
   "[subscribe('command/input-with-remapping')]": 
   function inputWithMapping(info)

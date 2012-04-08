@@ -1301,7 +1301,7 @@ coUtils.Keyboard = {
   },
 
   getPackedKeycodeFromEvent: 
-  function getPackedKeycodeFromEvent(event) 
+  function getPackedKeycodeFromEvent(event, alt) 
   {
     let code = event.keyCode || event.which;
     if (event.shiftKey && (
@@ -1316,7 +1316,7 @@ coUtils.Keyboard = {
     // make packed code
     let packed_code = code 
       | Boolean(event.ctrlKey)   << coUtils.Keyboard.KEY_CTRL 
-      | (Boolean(event.altKey) || code > 0xff) << coUtils.Keyboard.KEY_ALT 
+      | (Boolean(event.altKey) || alt) << coUtils.Keyboard.KEY_ALT 
       | Boolean(event.shiftKey)  << coUtils.Keyboard.KEY_SHIFT 
       | Boolean(event.keyCode)   << coUtils.Keyboard.KEY_NOCHAR
       | Boolean(event.metaKey)   << coUtils.Keyboard.KEY_META
