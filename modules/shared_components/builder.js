@@ -305,9 +305,10 @@ TemplateBuilder.definition = {
   function _processChildChromeNodes(element, value, results) 
   {
     if (Array.isArray(value)) {  // value is Array object.
-      value.forEach(function(node) {
+      for (let i = 0; i < value.length; ++i) {
+        let node = value[i];
         this._processChildChromeNodes(element, node, results);
-      }, this);
+      }
     } else {
       if (value.QueryInterface) {
         element.appendChild(value);
@@ -328,8 +329,10 @@ TemplateBuilder.definition = {
         throw coUtils.Debug.Exception(
           _("Invalid attribute/property name: '%s'"), key);
       }
-      for (let [key, value] in Iterator(value)) {
-        arguments.callee(element, key, value); // call recersively.
+      let keys = Object.keys(value);
+      for (let i = 0; i < keys.length; ++i) {
+        let key = keys[i];
+        arguments.callee(element, key, value[key]); // call recersively.
       }
     } else {
       value = String(value);
@@ -382,7 +385,7 @@ ChromeBuilder.definition = {
     let broker = this._broker;
     for (let [id, element] in Iterator(results)) {
       this._map[id] = element;
-      broker.notify(<>event/domnode-created/{id}</>, element);
+      broker.notify("event/domnode-created/" + id, element);
     }
     results["#root"] = root;
     return results;

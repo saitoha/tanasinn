@@ -42,26 +42,30 @@ DragPaste.definition = {
 
   "[persistable] enabled_when_startup": true,
 
+  _bracketed_paste_mode: false,
+
   /** Installs itself. 
-   *  @param {Session} session A session object.
+   *  @param {Broker} broker A Broker object.
    */
   "[subscribe('install/dragpaste'), enabled]":
-  function install(session) 
+  function install(broker) 
   {
     this.ondragover.enabled = true;
     this.ondragenter.enabled = true;
     this.ondrop.enabled = true;
+    this.onBracketedPasteModeChanged.enabled = true;
   },
 
   /** Uninstalls itself. 
-   *  @param {Session} session A session object.
+   *  @param {Broker} broker A Broker object.
    */
   "[subscribe('uninstall/dragpaste'), enabled]":
-  function uninstall(session) 
+  function uninstall(broker) 
   {
     this.ondragover.enabled = false;
     this.ondragenter.enabled = false;
     this.ondrop.enabled = false;
+    this.onBracketedPasteModeChanged.enabled = false;
   },
 
   /** A dragover event handler for center area element. 
@@ -86,8 +90,8 @@ DragPaste.definition = {
   function ondragenter(event) 
   {
     if (event.dataTransfer.types.contains("text/plain")) {
-      let session = this._broker;
-      session.notify("command/focus");
+      let broker = this._broker;
+      broker.notify("command/focus");
     } else {
       event.preventDefault();
     }
@@ -103,10 +107,22 @@ DragPaste.definition = {
     if (data_transfer.types.contains("text/plain")) {
 	    let text = data_transfer.getData("text/plain");
 
+      if (true === this._bracketed_paste_mode) {
+        // add bracket sequences.
+        text = "\x1b[200~" + text + "\x1b[201~";
+      }
+
       // Encodes the text message and send it to the tty device.
-      let session = this._broker;
-      session.notify("command/input-text", text);
+      let broker = this._broker;
+      broker.notify("command/input-text", text);
     }
+  },
+
+  /** Set/Reset bracketed paste mode. */
+  "[subscribe('command/change-bracketed-paste-mode')]":
+  function onBracketedPasteModeChanged(mode) 
+  {
+    this._bracketed_paste_mode = mode;
   },
 
 };

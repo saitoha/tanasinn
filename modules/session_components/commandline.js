@@ -564,11 +564,11 @@ Commandline.definition = {
 
     this.onmousedown.enabled = false;
     if (this._popup) {
+      if (undefined !== this._popup.hidePopup) {
+        this._popup.hidePopup();
+      }
       while (this._popup.firstChild) {
         this._popup.removeChild(this._popup.firstChild);
-      }
-      if (this._popup.hidePopup) {
-        this._popup.hidePopup();
       }
       this._popup.parentNode.removeChild(this._popup);
       this._popup = null;
@@ -576,7 +576,6 @@ Commandline.definition = {
     if (null !== this._canvas) {
       this._canvas = null;
     }
-
     if (null !== this._textbox) {
       this._textbox.dispose();
       this._textbox = null;
@@ -678,7 +677,11 @@ Commandline.definition = {
       this._timer.cancel();
       delete this._timer;
     }
-    this._popup.hidePopup();
+    if (this._popup) {
+      if (this._popup.hidePopup) {
+        this._popup.hidePopup();
+      }
+    }
   },
 
   "[subscribe('event/answer-completion')]":
@@ -692,8 +695,8 @@ Commandline.definition = {
     }
     if (result) {
       let type = result.type || "text";
-      let session = this._broker;
-      let driver = session.uniget(<>get/completion-display-driver/{type}</>); 
+      let broker = this._broker;
+      let driver = broker.uniget("get/completion-display-driver/" + type); 
       if (driver) {
         driver.drive(grid, result, this.currentIndex);
         this.invalidate(result);
@@ -716,8 +719,8 @@ Commandline.definition = {
     if (result.data.length > 0) {
       this._popup.style.opacity = this.completion_popup_opacity;
       if ("closed" == this._popup.state || "hiding" == this._popup.state) {
-        let session = this._broker;
-        let document = session.window.document;
+        let broker = this._broker;
+        let document = broker.window.document;
         if (document) {
           this._popup.width = this._canvas.width;
           this._popup.openPopup(this._canvas, "after_start", 0, 0, true, true);
@@ -776,8 +779,8 @@ Commandline.definition = {
       }
       this._stem_text = current_text;
       this.select(-1);
-      let session = this._broker;
-      session.notify(
+      let broker = this._broker;
+      broker.notify(
         "command/complete-commandline", 
         {
           source: current_text, 
@@ -795,8 +798,8 @@ Commandline.definition = {
   "[subscribe('event/keypress-commandline-with-remapping'), enabled]":
   function onKeypressCommandlineWithMapping(code) 
   {
-    let session = this._broker;
-    let result = session.uniget(
+    let broker = this._broker;
+    let result = broker.uniget(
       "event/commandline-input", 
       {
         textbox: this._textbox, 
@@ -869,12 +872,12 @@ Commandline.definition = {
 
   onsubmit: function onsubmit() 
   {
-    let session = this._broker;
+    let broker = this._broker;
     let command = this._textbox.value;
 
     this._textbox.value = "";
     this._textbox.completion = "";
-    session.notify("command/eval-commandline", command);
+    broker.notify("command/eval-commandline", command);
 //    this._textbox.blur();
     let broker = this._broker;
     broker.notify("command/focus");
@@ -895,9 +898,9 @@ Commandline.definition = {
   "[listen('click', '#tanasinn_commandline_canvas', false)]":
   function onclick(event) 
   {
-    let session = this._broker;
+    let broker = this._broker;
     coUtils.Timer.setTimeout(function() {
-      session.notify("command/enable-commandline");
+      broker.notify("command/enable-commandline");
     }, 0);
   },
 

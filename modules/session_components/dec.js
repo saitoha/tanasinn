@@ -410,9 +410,9 @@ DecModeSequenceHandler.definition = {
 
         // Set bracketed paste mode. 
         case 2004:
-          coUtils.Debug.reportWarning(
-            _("DECSET 2004 - Set bracketed paste mode, ", 
-              "was not implemented."));
+          broker.notify("command/change-bracketed-paste-mode", true);
+          coUtils.Debug.reportMessage(
+            _("DECSET 2004 - Set bracketed paste mode is set."));
           break;
 
         default:
@@ -729,9 +729,9 @@ DecModeSequenceHandler.definition = {
 
         // Reset bracketed paste mode. 
         case 2004:
-          coUtils.Debug.reportWarning(
-            _("DECRST 2004 - Reset bracketed paste mode, ", 
-              "was not implemented."));
+          broker.notify("command/change-bracketed-paste-mode", false);
+          coUtils.Debug.reportMessage(
+            _("DECRST 2004 - Reset bracketed paste mode is reset."));
           break;
 
         default:

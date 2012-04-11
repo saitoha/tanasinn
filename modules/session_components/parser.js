@@ -344,7 +344,7 @@ ParameterParserStartingWithSemicolon.definition = {
     }
   }, // _parseParameters
 
-};
+}; // class ParameterParserStartingWithSemicolon
 
 /**
  * @class SequenceParser
@@ -359,7 +359,8 @@ SequenceParser.definition = {
       .match(/^(0x[0-9a-zA-Z]+)|^%d(.+)$|^(.)%s$|^(%p)$|^(%c)$|^(.)$|^(.)(.+)$/);
 
     let [, 
-      number, char_with_param, 
+      number, 
+      char_with_param, 
       char_with_string, 
       char_position,
       single_char, 
@@ -370,7 +371,10 @@ SequenceParser.definition = {
       if ("parse" in value) {
         C0Parser.append(code, value);
       } else {
-        C0Parser.append(code, function() value.apply(context));
+        C0Parser.append(code, function() 
+        {
+          return value.apply(context);
+        });
       }
     } else if (char_with_param) {
       let action = function(params) function() value.apply(context, params);
@@ -816,7 +820,25 @@ Parser.definition = {
       } else if (!scanner.isEnd) {
 
         let codes = [];
-        
+ 
+        /** Pads NULL characters before each of wide characters.
+         *
+         *  example:
+         *
+         *  +--------+--------+--------+--------+--------+--------+-
+         *  | 0x0041 | 0x0042 | 0x0043 | 0x3042 | 0x0044 | 0x3044 |  
+         *  +--------+--------+--------+--------+--------+--------+-
+         *                        ^                          ^
+         *                       wide                       wide
+         *
+         *  Above character sequence will to be converted as follows.
+         *
+         *  +--------+--------+--------+--------+--------+--------+--------+--------+-
+         *  | 0x0041 | 0x0042 | 0x0043 | 0x0000 | 0x3042 | 0x0044 | 0x0000 | 0x3044 |  
+         *  +--------+--------+--------+--------+--------+--------+--------+--------+-
+         *                                 ^                          ^
+         *                              inserted                   inserted
+         */
         for (let c in decoder.decode(scanner)) {
           if (c >= 0x1100 && coUtils.Unicode.doubleWidthTest(c)) {
             codes.push(0);
@@ -846,25 +868,7 @@ Parser.definition = {
     }
 
   },
-
-  /** Pads NULL characters before each of wide characters.
-   *
-   *  example:
-   *
-   *  +--------+--------+--------+--------+--------+--------+-
-   *  | 0x0041 | 0x0042 | 0x0043 | 0x3042 | 0x0044 | 0x3044 |  
-   *  +--------+--------+--------+--------+--------+--------+-
-   *                        ^                          ^
-   *                       wide                       wide
-   *
-   *  Above character sequence will to be converted as follows.
-   *
-   *  +--------+--------+--------+--------+--------+--------+--------+--------+-
-   *  | 0x0041 | 0x0042 | 0x0043 | 0x0000 | 0x3042 | 0x0044 | 0x0000 | 0x3044 |  
-   *  +--------+--------+--------+--------+--------+--------+--------+--------+-
-   *                                 ^                          ^
-   *                              inserted                   inserted
-   */
+  /*
   _padWideCharacter: function _padWideCharacter(codes)
   {
     for (let [, c] in Iterator(codes)) {
@@ -883,6 +887,7 @@ Parser.definition = {
       yield c;
     }
   },
+  */
 
 }; // Grammar
 

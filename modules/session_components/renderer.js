@@ -230,6 +230,8 @@ RapidBlinkTrait.definition = {
 let ReverseVideoTrait = new Trait();
 ReverseVideoTrait.definition = {
 
+  _reverse: false,
+
   "[subscribe('command/reverse-video'), enabled]": 
   function reverseVideo(value) 
   {
@@ -251,6 +253,33 @@ ReverseVideoTrait.definition = {
 
 }; // ReverseVideoTrait
 
+
+/**
+ * @trait DRCSStateTrait
+ */
+let DRCSStateTrait = new Trait();
+DRCSStateTrait.definition = {
+
+  _drcs_state: null, 
+
+  "[subscribe('event/drcs-state-changed/g0')]": 
+  function onDRCSStateChangedG0(state) 
+  {
+    if (state) {
+      this._drcs_state = state;
+    }
+  },
+
+  "[subscribe('event/drcs-state-changed/g1')]": 
+  function onDRCSStateChangedG1(state) 
+  {
+    if (state) {
+      this._drcs_state = state;
+    }
+  },
+
+}; // DRCSStateTrait
+
 /** 
  * @class Renderer
  * @brief Scan screen state and render it to canvas element.
@@ -260,6 +289,7 @@ let Renderer = new Class().extends(Plugin)
                           .mix(SlowBlinkTrait)
                           .mix(RapidBlinkTrait)
                           .mix(ReverseVideoTrait)
+                          .mix(DRCSStateTrait)
                           .depends("screen")
                           .requires("PersistentConcept");
 Renderer.definition = {
@@ -303,9 +333,7 @@ Renderer.definition = {
   _text_offset: 10, 
 
   _offset: 0,
-  _reverse: false,
 
-  _drcs_state: null, 
   _double_height_mode : 0,
   _slow_blink_layer: null,
   _rapid_blink_layer: null,
@@ -387,32 +415,23 @@ Renderer.definition = {
     this._canvas.parentNode.removeChild(this._canvas);
     this._canvas = null;
     this._context = null;
+
     if (this._slow_blink_layer) {
+      this._slow_blink_layer.canvas
+        .parentNode.removeChild(this._slow_blink_layer.canvas);
       this._slow_blink_layer.canvas = null;
       this._slow_blink_layer.context = null;
       this._slow_blink_layer = null;
     }
+
     if (this._rapid_blink_layer) {
+      this._rapid_blink_layer.canvas
+        .parentNode.removeChild(this._rapid_blink_layer.canvas);
       this._rapid_blink_layer.canvas = null;
       this._rapid_blink_layer.context = null;
       this._rapid_blink_layer = null;
     }
-  },
 
-  "[subscribe('event/drcs-state-changed/g0')]": 
-  function onDRCSStateChangedG0(state) 
-  {
-    if (state) {
-      this._drcs_state = state;
-    }
-  },
-
-  "[subscribe('event/drcs-state-changed/g1')]": 
-  function onDRCSStateChangedG1(state) 
-  {
-    if (state) {
-      this._drcs_state = state;
-    }
   },
 
   /** Take screen capture and save it in png format. */
@@ -492,123 +511,232 @@ Renderer.definition = {
     broker.notify("event/screen-height-changed", canvas_height);
   },
 
-  _timer: null,
+  _drawNormalText: 
+  function _drawNormalText(codes, row, column, end, attr, size)
+  {
+    let context = this._context;
+    let line_height = this.line_height;
+    let char_width = this.char_width;
+    let font_size = this.font_size;
+    let font_family = this.font_family;
+    let text_offset = this._text_offset;
+
+    let left, top, width, height;
+    left = char_width * column;
+    top = line_height * row;
+    width = (char_width * (end - column));
+    height = line_height;
+
+    this._drawBackground(
+      context, 
+      left | 0, 
+      top, 
+      width + Math.ceil(left) - left, 
+      height, 
+      attr);
+
+    context.font = font_size + "px " + font_family;
+    if (attr.italic) {
+      context.font = "italic " + context.font;
+    }
+
+    this._drawWord(
+      context, 
+      codes, 
+      left, 
+      top + text_offset, 
+      char_width, 
+      end - column, 
+      height, 
+      attr, size);
+
+  },
+
+  _drawDoubleHeightTextTop: 
+  function _drawDoubleHeightTextTop(codes, row, column, end, attr, size)
+  {
+    let context = this._context;
+    let line_height = this.line_height;
+    let char_width = this.char_width;
+    let font_size = this.font_size;
+    let font_family = this.font_family;
+    let text_offset = this._text_offset;
+
+    let left, top, width, height;
+
+    left = char_width * 2 * column;
+    top = line_height * (row + 1);
+    width = char_width * 2 * (end - column);
+    height = line_height;
+
+    context.font = (font_size * 2) + "px " + font_family;
+    if (attr.italic) {
+      context.font = "italic " + context.font;
+    }
+
+    this._drawBackground(
+      context, 
+      left | 0, 
+      line_height * row, 
+      width + Math.ceil(left) - left, 
+      height, 
+      attr);
+
+    context.save();
+    context.beginPath();
+    context.rect(left, line_height * row, width, height);
+    context.clip();
+
+    this._drawWord(
+      context, 
+      codes, 
+      left, 
+      top + text_offset, 
+      char_width * 2, 
+      end - column, 
+      height, 
+      attr, 
+      size);
+
+    context.restore();
+
+  },
+
+  _drawDoubleHeightTextBottom: 
+  function _drawDoubleHeightTextBottom(codes, row, column, end, attr, size)
+  {
+    let context = this._context;
+    let line_height = this.line_height;
+    let char_width = this.char_width;
+    let font_size = this.font_size;
+    let font_family = this.font_family;
+    let text_offset = this._text_offset;
+
+    let left, top, width, height;
+
+    left = char_width * 2 * column;
+    top = line_height * row;
+    width = char_width * 2 * (end - column);
+    height = line_height;
+
+    context.font = (font_size * 2) + "px " + font_family;
+    if (attr.italic) {
+      context.font = "italic " + context.font;
+    }
+
+    this._drawBackground(
+      context, 
+      left | 0, 
+      line_height * row, 
+      width + Math.ceil(left) - left, 
+      height, 
+      attr);
+
+    context.save();
+    context.beginPath();
+    context.rect(left, line_height * row, width, height);
+    context.clip();
+
+    this._drawWord(
+      context, 
+      codes, 
+      left, 
+      top + text_offset, 
+      char_width * 2, 
+      end - column, 
+      height, 
+      attr, 
+      size);
+
+    context.restore();
+
+  },
+
+  _drawDoubleWidthText: 
+  function _drawDoubleWidthText(codes, row, column, end, attr, size)
+  {
+    let context = this._context;
+    let line_height = this.line_height;
+    let char_width = this.char_width;
+    let font_size = this.font_size;
+    let font_family = this.font_family;
+    let text_offset = this._text_offset;
+
+    let left, top, width, height;
+
+    context.font = (font_size * 2) + "px " + font_family;
+    if (attr.italic) {
+      context.font = "italic " + context.font;
+    }
+
+    left = char_width * 2 * column;
+    top = line_height * row;
+    width = char_width * 2 * (end - column);
+    height = line_height;
+
+    this._drawBackground(
+      context, 
+      left | 0, 
+      line_height * row, 
+      width + Math.ceil(left) - left, 
+      height, 
+      attr);
+
+    context.save();
+    context.beginPath();
+    context.rect(left, line_height * row, width, height);
+    context.transform(1, 0, 0, 0.5, 0, (top + text_offset) / 2);
+    context.clip();
+
+    this._drawWord(
+      context, 
+      codes, 
+      left, 
+      top + text_offset, 
+      char_width * 2, 
+      end - column, 
+      height, 
+      attr, 
+      size);
+
+    context.restore();
+
+  },
 
   /** Draw to canvas */
   "[subscribe('command/draw')]": 
   function draw(redraw_flag)
   {
+    let screen = this.dependency["screen"];
+
     if (redraw_flag) {
-      this.dependency["screen"].dirty = true;
+      screen.dirty = true;
     }
 
-    let context = this._context;
-    let screen = this.dependency["screen"];
-    let font_size = this.font_size;
-    let font_family = this.font_family;
-    let line_height = this.line_height;
-    let char_width = this.char_width;
-    let text_offset = this._text_offset;
-
     for (let { codes, row, column, end, attr, size } in screen.getDirtyWords()) {
+
+      if (end == column) {
+        continue;
+      }
 
       let left, top, width, height;
 
       switch (size) {
 
         case 0:
-          left = char_width * column;
-          top = line_height * row;
-          width = (char_width * (end - column));
-          height = line_height;
-          this._drawBackground(
-            context, 
-            left | 0, 
-            top, 
-            width + Math.ceil(left) - left, 
-            height, 
-            attr);
-
-          context.font = font_size + "px " + font_family;
-          if (attr.italic) {
-            context.font = "italic " + context.font;
-          }
+          this._drawNormalText(codes, row, column, end, attr, size);
           break;
 
         case 1:
-          context.font = (font_size * 2) + "px " + font_family;
-          if (attr.italic) {
-            context.font = "italic " + context.font;
-          }
-
-          left = char_width * 2 * column;
-          top = line_height * (row + 1);
-          width = char_width * 2 * (end - column);
-          height = line_height;
-
-          this._drawBackground(
-            context, 
-            left | 0, 
-            line_height * row, 
-            width + Math.ceil(left) - left, 
-            height, 
-            attr);
-
-          context.save();
-          context.beginPath();
-          context.rect(left, line_height * row, width, height);
-          context.clip();
+          this._drawDoubleHeightTextTop(codes, row, column, end, attr, size);
           break;
 
         case 2:
-          context.font = (font_size * 2) + "px " + font_family;
-          if (attr.italic) {
-            context.font = "italic " + context.font;
-          }
-
-          left = char_width * 2 * column;
-          top = line_height * row;
-          width = char_width * 2 * (end - column);
-          height = line_height;
-
-          this._drawBackground(
-            context, 
-            left | 0, 
-            line_height * row, 
-            width + Math.ceil(left) - left, 
-            height, 
-            attr);
-
-          context.save();
-          context.beginPath();
-          context.rect(left, line_height * row, width, height);
-          context.clip();
+          this._drawDoubleHeightTextBottom(codes, row, column, end, attr, size);
           break;
 
         case 3:
-          context.font = (font_size * 2) + "px " + font_family;
-          if (attr.italic) {
-            context.font = "italic " + context.font;
-          }
-
-          left = char_width * 2 * column;
-          top = line_height * row;
-          width = char_width * 2 * (end - column);
-          height = line_height;
-
-          this._drawBackground(
-            context, 
-            left | 0, 
-            line_height * row, 
-            width + Math.ceil(left) - left, 
-            height, 
-            attr);
-
-          context.save();
-          context.beginPath();
-          context.rect(left, line_height * row, width, height);
-          context.transform(1, 0, 0, 0.5, 0, (top + text_offset) / 2);
-          context.clip();
+          this._drawDoubleWidthText(codes, row, column, end, attr, size);
           break;
 
         default:
@@ -616,24 +744,7 @@ Renderer.definition = {
             _("Invalid double height mode was detected: %d."), 
             this._double_height_mode);
       }
-
-      if (end - column) {
-        this._drawWord(
-          context, 
-          codes, 
-          left, 
-          top + text_offset, 
-          char_width * (0 == size ? 1: 2), 
-          end - column, 
-          height, 
-          attr, size);
-      }
-
-      if (0 != size) {
-        context.restore();
-      }
     }
-
   }, // draw
 
   /** Render background attribute. 
@@ -710,11 +821,6 @@ Renderer.definition = {
       context.font = this._context.font;
     }
 
-    // Get hexadecimal formatted text color (#xxxxxx) 
-    // form given attribute structure. 
-    let fore_color_map = this.normal_color;// attr.bold ? this.bold_color: this.normal_color;
-    let fore_color = fore_color_map[attr.fg];
-
     if (attr.bold) {
       context.globalAlpha = this.bold_alpha;
     } else if (attr.halfbright) {
@@ -722,12 +828,21 @@ Renderer.definition = {
     } else {
       context.globalAlpha = this.normal_alpha;
     }
+
+    // Get hexadecimal formatted text color (#xxxxxx) 
+    // form given attribute structure. 
+    let fore_color_map = this.normal_color;// attr.bold ? this.bold_color: this.normal_color;
+    let fore_color = fore_color_map[attr.fg];
+
     context.fillStyle = fore_color;
+
     if (attr.underline) {
       this._drawUnderline(context, x, y, char_width * length, fore_color);
     }
+
     let codes = [];
-    for (let [, cell] in Iterator(cells)) {
+    for (let i = 0; i < cells.length; ++i) {
+      let cell = cells[i];
       let code = cell.c;
       if (code > 0xffff) {
         // emit 16bit + 16bit surrogate pair.
@@ -821,7 +936,7 @@ Renderer.definition = {
             destination_top,        // destination top
             destination_width,      // destination width
             destination_height);    // destination height
-          /*
+          
           context.globalCompositeOperation = "source-atop";
           context.fillRect(
             x,
@@ -829,7 +944,7 @@ Renderer.definition = {
             char_width + 1, 
             this.line_height);
           context.globalCompositeOperation = "source-over";
-          */
+          
         }
       }
     }

@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 /**
- * @file event.js
+ * @file tupstart.js
  *
  * Defines class EventBroker, which is able to interpret and evaluate 
  * "Topic" and "Event Expression".
@@ -169,7 +169,8 @@ EventBrokerBase.prototype = {
     //coUtils.Debug.reportMessage(_("event registered: '%s'."), topic); 
     if (/\s/.test(topic)) { // detect whether topic includes space characters.
       throw Components.Exception(
-        _("Ill-formed topic string '%s' was given. \nIt includs space characters."), 
+        _("Ill-formed topic string '%s' was given. ",
+          "It includs space characters."), 
         topic);
     }
     id = id || coUtils.Uuid.generate().toString(); // generate new ID string if it was empty.
@@ -387,9 +388,6 @@ EventBroker.prototype = {
   {
     let base = this._base;
     base.post(String(topic), data);
-    //if (this._parent) {
-    //  this._parent.post(topic, data);
-    //}
   },
 
   /** Notify listeners that event is occurring. 
@@ -402,9 +400,6 @@ EventBroker.prototype = {
   {
     let base = this._base;
     let result = base.multiget(String(topic), data);
-    //if (this._parent) {
-    //  result.concat(this._parent.multiget(topic, data));
-    //}
     return result;
   },
 
@@ -418,9 +413,6 @@ EventBroker.prototype = {
   {
     let base = this._base;
     let result = base.uniget(String(topic), data);
-    //if (!result && this._parent) {
-    //  return this._parent.uniget(topic, data);
-    //}
     return result;
   },
 

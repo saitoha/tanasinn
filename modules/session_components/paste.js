@@ -42,20 +42,24 @@ Paste.definition = {
 
   "[persistable] enabled_when_startup": true,
 
+  _bracketed_paste_mode: false,
+
   /** Install itself. */
   "[subscribe('install/paste'), enabled]":
-  function install(session) 
+  function install(broker) 
   {
     this.paste.enabled = true;
     this.onContextMenu.enabled = true;
+    this.onBracketedPasteModeChanged.enabled = true;
   },
 
   /** Uninstall itself. */
   "[subscribe('uninstall/paste'), enabled]":
-  function uninstall(session) 
+  function uninstall(broker) 
   {
     this.paste.enabled = false;
     this.onContextMenu.enabled = false;
+    this.onBracketedPasteModeChanged.enabled = false;
   },
   
   /** Context menu handler. */
@@ -86,20 +90,32 @@ Paste.definition = {
     trans.addDataFlavor("text/unicode");
     clipboard.getData(trans, clipboard.kGlobalClipboard);
 	  let str = {};
-	  let strLength = {};
-	  trans.getTransferData("text/unicode", str, strLength);
-    if (str.value && strLength.value) {
+	  let str_length = {};
+	  trans.getTransferData("text/unicode", str, str_length);
+    if (str.value && str_length.value) {
       let text = str.value
         .QueryInterface(Components.interfaces.nsISupportsString)
         .data
-        .substring(0, strLength.value / 2);
+        .substring(0, str_length.value / 2);
+
+      if (true === this._bracketed_paste_mode) {
+        // add bracket sequences.
+        text = "\x1b[200~" + text + "\x1b[201~";
+      }
 
       // Encodes the text message and send it to the tty device.
-      let session = this._broker;
-      session.notify("command/input-text", text);
+      let broker = this._broker;
+      broker.notify("command/input-text", text);
     }
     return true; /* prevent default action */
-  }
+  },
+
+  /** Set/Reset bracketed paste mode. */
+  "[subscribe('command/change-bracketed-paste-mode')]":
+  function onBracketedPasteModeChanged(mode) 
+  {
+    this._bracketed_paste_mode = mode;
+  },
 
 };
 
