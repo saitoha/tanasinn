@@ -184,9 +184,10 @@ DecModeSequenceHandler.definition = {
 
         // Auto-repeat Keys (DECARM)
         case 8:
-          // TODO: enable auto repeat.
-          coUtils.Debug.reportWarning(
-            _("DECSET - DECARM (Auto-repeat Keys) was ignored."));
+          // enable auto repeat.
+          broker.notify("command/change-auto-repeat-mode", true);
+          coUtils.Debug.reportMessage(
+            _("DECSET - DECARM (Auto-repeat Keys) is set."));
           break;
 
         // X10_MOUSE mode
@@ -511,9 +512,10 @@ DecModeSequenceHandler.definition = {
 
         // Auto-repeat Keys (DECARM)
         case 8:
-          // TODO: enable auto repeat.
-          coUtils.Debug.reportWarning(
-            _("DECRST - DECARM (Auto-repeat Keys) was ignored."));
+          // enable auto repeat.
+          broker.notify("command/change-auto-repeat-mode", false);
+          coUtils.Debug.reportMessage(
+            _("DECRST - DECARM (Auto-repeat Keys) is reset."));
           break;
 
         // X10_MOUSE mode

@@ -623,6 +623,7 @@ InputManager.definition = {
   "command/report-overlay-message",
 
   _key_map: null,
+  _auto_repeat: true,
 
   /** Installs itself. 
    *  @param {Broker} brokr a Broker object.
@@ -655,7 +656,7 @@ InputManager.definition = {
     this.enableInputManager.enabled = true;
     this.disableInputManager.enabled = true;
     this.blurCommand.enabled = true;
-    this.onModesRequested.enabled = true;
+    this.onAutoRepeatModeChanged.enabled = true;
     broker.notify("event/collection-changed/modes");
   },
 
@@ -683,15 +684,15 @@ InputManager.definition = {
     this.enableInputManager.enabled = false;
     this.disableInputManager.enabled = false;
     this.blurCommand.enabled = false;
-    this.onModesRequested.enabled = false;
+    this.onAutoRepeatModeChanged.enabled = false;
     this._textbox.parentNode.removeChild(this._textbox);
     broker.notify("event/collection-changed/modes");
   },
 
-  "[subscribe('install/inputmanager')]":
-  function onModesRequested()
+  "[subscribe('command/change-auto-repeat-mode')]":
+  function onAutoRepeatModeChanged(mode) 
   {
-    return this;
+    this._auto_repeat = mode;
   },
 
   /** Makes input event handler enabled. */
@@ -777,11 +778,15 @@ InputManager.definition = {
   "[listen('keyup', '#tanasinn_default_input', true)]":
   function onkeyup(event) 
   { // nothrow
-    if (0x20 == event.keyCode
-        && 0x20 == event.which
-        && event.ctrlKey) {
-      this.onkeypress(event);
+    if ("Darwin" == coUtils.Runtime.os) {
+      if (0x20 == event.keyCode
+          && 0x20 == event.which
+          && event.ctrlKey) {
+        this.onkeypress(event);
+      }
     }
+    this.onkeypress.enabled = true;
+    this.oninput.enabled = true;
   },
 
   /** Keypress event handler. 
@@ -790,6 +795,10 @@ InputManager.definition = {
   "[listen('keypress', '#tanasinn_default_input', true)]":
   function onkeypress(event) 
   { // nothrow
+    if (false === this._auto_repeat) {
+      this.onkeypress.enabled = false;
+      this.oninput.enabled = false;
+    }
 
     event.preventDefault();
     event.stopPropagation();
