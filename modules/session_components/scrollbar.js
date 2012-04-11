@@ -137,6 +137,8 @@ Scrollbar.definition = {
     this.ondragstart.enabled = true;
     this.onmouseover.enabled = true;
     this.onmouseout.enabled = true;
+    this.onScrollbarHide.enabled = true;
+    this.onScrollbarShow.enabled = true;
   },
 
   /** Unnstalls itself. 
@@ -150,8 +152,29 @@ Scrollbar.definition = {
     this.ondragstart.enabled = false;
     this.onmouseover.enabled = false;
     this.onmouseout.enabled = false;
+    this.onScrollbarHide.enabled = false;
+    this.onScrollbarShow.enabled = false;
     // remove scrollbar element
-    this._scrollbar_overlay.parentNode.removeChild(this._scrollbar_overlay);
+    if (null !== this._scrollbar_overlay) {
+      this._scrollbar_overlay.parentNode.removeChild(this._scrollbar_overlay);
+      this._scrollbar_overlay = null;
+    }
+  },
+
+  "[subscribe('command/scrollbar-hide')]":
+  function onScrollbarHide() 
+  {
+    if (this._scrollbar_overlay) {
+      this._scrollbar_overlay.hidden = true;
+    }
+  },
+
+  "[subscribe('command/scrollbar-show')]":
+  function onScrollbarShow() 
+  {
+    if (this._scrollbar_overlay) {
+      this._scrollbar_overlay.hidden = false;
+    }
   },
 
   changePosition: function changePosition(position) 

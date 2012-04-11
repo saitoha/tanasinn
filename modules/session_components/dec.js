@@ -547,7 +547,7 @@ DecModeSequenceHandler.definition = {
           this.TCEM = false;
           break;
 
-        // Show Scrollbar (rxvt)
+        // TODO: Show Scrollbar (rxvt)
         case 30:
           broker.notify("command/scrollbar-hide");
           coUtils.Debug.reportWarning(
