@@ -1253,6 +1253,7 @@ Viewable.definition = {
     let lines = this._getCurrentViewLines();
     for (let [row, line] in Iterator(lines)) { //this._interracedScan(lines)) {
       for (let { codes, column, end, attr } in line.getDirtyWords()) {
+
         yield { 
           codes: codes, 
           row: row, 

@@ -107,6 +107,9 @@ DragPaste.definition = {
     if (data_transfer.types.contains("text/plain")) {
 	    let text = data_transfer.getData("text/plain");
 
+      // sanitize text.
+      text = text.replace(/[\x00-\x08\x0a-\x0c\x0e-\x1f]/g, "");
+
       if (true === this._bracketed_paste_mode) {
         // add bracket sequences.
         text = "\x1b[200~" + text + "\x1b[201~";

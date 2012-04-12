@@ -157,16 +157,9 @@ SlowBlinkTrait.definition = {
   createSlowBlinkLayer: function createSlowBlinkLayer()
   {
     let broker = this._broker;
-    let { tanasinn_blink_canvas } = broker.uniget(
-      "command/construct-chrome", 
-      {
-        parentNode: "#tanasinn_center_area",
-        tagName: "html:canvas",
-        id: "tanasinn_blink_canvas",
-        width: this._canvas.width,
-        height: this._canvas.height,
-      });
-
+    this._slow_blink_layer = new Layer(broker);
+    this._slow_blink_layer.canvas.width = this._main_layer.canvas.width;
+    this._slow_blink_layer.canvas.height = this._main_layer.canvas.height;
     coUtils.Timer.setTimeout(function() {
       this._slow_blink_layer.canvas.style.opacity 
         = 1 - this._slow_blink_layer.canvas.style.opacity;
@@ -174,11 +167,6 @@ SlowBlinkTrait.definition = {
         coUtils.Timer.setTimeout(arguments.callee, this.slow_blink_interval, this);
       }
     }, this.slow_blink_interval, this);
-
-    this._slow_blink_layer = {
-      canvas: tanasinn_blink_canvas,
-      context: tanasinn_blink_canvas.getContext("2d"),
-    };
 
   }, // createSlowBlinkLayer
 
@@ -196,15 +184,9 @@ RapidBlinkTrait.definition = {
   createRapidBlinkLayer: function createRapidBlinkLayer()
   {
     let broker = this._broker;
-    let { tanasinn_rapid_blink_canvas } = broker.uniget(
-      "command/construct-chrome", 
-      {
-        parentNode: "#tanasinn_center_area",
-        tagName: "html:canvas",
-        id: "tanasinn_rapid_blink_canvas",
-        width: this._canvas.width,
-        height: this._canvas.height,
-      });
+    this._rapid_blink_layer = new Layer(broker);
+    this._rapid_blink_layer.canvas.width = this._main_layer.canvas.width;
+    this._rapid_blink_layer.canvas.height = this._main_layer.canvas.height;
 
     coUtils.Timer.setTimeout(function() {
       this._rapid_blink_layer.canvas.style.opacity 
@@ -213,11 +195,6 @@ RapidBlinkTrait.definition = {
         coUtils.Timer.setTimeout(arguments.callee, this.rapid_blink_interval, this);
       }
     }, this.rapid_blink_interval, this);
-
-    this._rapid_blink_layer = {
-      canvas: tanasinn_rapid_blink_canvas,
-      context: tanasinn_rapid_blink_canvas.getContext("2d"),
-    };
 
   }, // createRapidBlinkLayer
 
@@ -279,6 +256,70 @@ DRCSStateTrait.definition = {
   },
 
 }; // DRCSStateTrait
+
+/**
+ * @class Layer
+ */
+let Layer = new Class();
+Layer.definition = {
+
+  canvas: null,
+  context: null,
+
+  get width()
+  {
+    return this.canvas.width;
+  },
+
+  set width(value)
+  {
+    this.canvas.width = value;
+  },
+
+  get height()
+  {
+    return this.canvas.height;
+  },
+
+  set height(value)
+  {
+    this.canvas.height = value;
+  },
+
+  get smoothing()
+  {
+    return this.context.mozImageSmoothingEnabled;
+  },
+
+  set smoothing(value)
+  {
+    this.context.mozImageSmoothingEnabled = value;
+  },
+
+  /** Constructor */
+  initialize: function initialize(broker) 
+  {
+    let { canvas } = broker.uniget(
+      "command/construct-chrome", 
+      {
+        parentNode: "#tanasinn_center_area",
+        tagName: "html:canvas",
+        id: "canvas",
+      });
+
+    this.canvas = canvas;
+    this.context = canvas.getContext("2d");
+  },
+
+  /** Release and destroy DOM resources. */
+  destroy: function destroy()
+  {
+    this.canvas.parentNode.removeChild(this.canvas);
+    this.canvas = null;
+    this.context = null;
+  },
+
+}; // class Layer
 
 /** 
  * @class Renderer
@@ -362,19 +403,10 @@ Renderer.definition = {
   "[subscribe('install/renderer'), enabled]":
   function install(broker) 
   {
-    let { tanasinn_renderer_canvas } = broker.uniget(
-      "command/construct-chrome", 
-      {
-        parentNode: "#tanasinn_center_area",
-        tagName: "html:canvas",
-        id: "tanasinn_renderer_canvas",
-      });
-
-    this._canvas = tanasinn_renderer_canvas;
-    this._context = this._canvas.getContext("2d");
+    this._main_layer = new Layer(broker);
 
     // set smoothing configuration
-    this._context.mozImageSmoothingEnabled = this.smoothing;
+    this._main_layer.smoothing = this.smoothing;
 
     this._calculateGlyphSize();
     this.onWidthChanged();
@@ -412,23 +444,17 @@ Renderer.definition = {
     this.captureScreen.enabled = false;
     this.onDRCSStateChangedG0.enabled = false;
     this.onDRCSStateChangedG1.enabled = false;
-    this._canvas.parentNode.removeChild(this._canvas);
-    this._canvas = null;
-    this._context = null;
+
+    this._main_layer.destroy();
+    this._main_layer = null;
 
     if (this._slow_blink_layer) {
-      this._slow_blink_layer.canvas
-        .parentNode.removeChild(this._slow_blink_layer.canvas);
-      this._slow_blink_layer.canvas = null;
-      this._slow_blink_layer.context = null;
+      this._slow_blink_layer.destroy();
       this._slow_blink_layer = null;
     }
 
     if (this._rapid_blink_layer) {
-      this._rapid_blink_layer.canvas
-        .parentNode.removeChild(this._rapid_blink_layer.canvas);
-      this._rapid_blink_layer.canvas = null;
-      this._rapid_blink_layer.context = null;
+      this._rapid_blink_layer.destroy();
       this._rapid_blink_layer = null;
     }
 
@@ -438,14 +464,20 @@ Renderer.definition = {
   "[subscribe('command/capture-screen')]": 
   function captureScreen(info) 
   {
-    coUtils.IO.saveCanvas(this._canvas, info.file, info.thumbnail);
+    coUtils.IO.saveCanvas(this._main_layer.canvas, info.file, info.thumbnail);
   },
 
   "[subscribe('variable-changed/renderer.smoothing'), enabled]": 
   function onSmoothingChanged(value) 
   {
-    if (this._context) {
-      this._context.mozImageSmoothingEnabled = value;
+    if (this._main_layer) {
+      this._main_layer.smoothing = value;
+    }
+    if (this._slow_blink_layer) {
+      this._slow_blink_layer.smoothing = value;
+    }
+    if (this._rapid_blink_layer) {
+      this._rapid_blink_layer.smoothing = value;
     }
   },
 
@@ -486,12 +518,12 @@ Renderer.definition = {
     width = width || this.dependency["screen"].width;
     char_width = char_width || this.char_width;
     let canvas_width = 0 | (width * char_width);
-    this._canvas.width = canvas_width;
+    this._main_layer.canvas.width = canvas_width;
     if (this._slow_blink_layer) {
-      this._slow_blink_layer.canvas.width = canvas_width;
+      this._slow_blink_layer.width = canvas_width;
     }
     if (this._rapid_blink_layer) {
-      this._rapid_blink_layer.canvas.width = canvas_width;
+      this._rapid_blink_layer.width = canvas_width;
     }
     let broker = this._broker;
     broker.notify("event/screen-width-changed", canvas_width);
@@ -503,7 +535,10 @@ Renderer.definition = {
     height = height || this.dependency["screen"].height;
     line_height = line_height || this.line_height;
     let canvas_height = 0 | (height * line_height);
-    this._canvas.height = canvas_height;
+    this._main_layer.canvas.height = canvas_height;
+    if (this._slow_blink_layer) {
+      this._slow_blink_layer.canvas.height = canvas_height;
+    }
     if (this._rapid_blink_layer) {
       this._rapid_blink_layer.canvas.height = canvas_height;
     }
@@ -514,7 +549,7 @@ Renderer.definition = {
   _drawNormalText: 
   function _drawNormalText(codes, row, column, end, attr, size)
   {
-    let context = this._context;
+    let context = this._main_layer.context;
     let line_height = this.line_height;
     let char_width = this.char_width;
     let font_size = this.font_size;
@@ -555,7 +590,7 @@ Renderer.definition = {
   _drawDoubleHeightTextTop: 
   function _drawDoubleHeightTextTop(codes, row, column, end, attr, size)
   {
-    let context = this._context;
+    let context = this._main_layer.context;
     let line_height = this.line_height;
     let char_width = this.char_width;
     let font_size = this.font_size;
@@ -605,7 +640,7 @@ Renderer.definition = {
   _drawDoubleHeightTextBottom: 
   function _drawDoubleHeightTextBottom(codes, row, column, end, attr, size)
   {
-    let context = this._context;
+    let context = this._main_layer.context;
     let line_height = this.line_height;
     let char_width = this.char_width;
     let font_size = this.font_size;
@@ -655,7 +690,7 @@ Renderer.definition = {
   _drawDoubleWidthText: 
   function _drawDoubleWidthText(codes, row, column, end, attr, size)
   {
-    let context = this._context;
+    let context = this._main_layer.context;
     let line_height = this.line_height;
     let char_width = this.char_width;
     let font_size = this.font_size;
@@ -715,6 +750,23 @@ Renderer.definition = {
 
     for (let { codes, row, column, end, attr, size } in screen.getDirtyWords()) {
 
+      let cells = codes;
+      let codes1 = [];
+      for (let i = 0; i < cells.length; ++i) {
+        let cell = cells[i];
+        let code = cell.c;
+        if (code > 0xffff) {
+          // emit 16bit + 16bit surrogate pair.
+          code -= 0x10000;
+          codes1.push(
+            (code >> 10) | 0xD800, 
+            (code & 0x3FF) | 0xDC00);
+        } else {
+          codes1.push(code);
+        }
+      }
+
+
       if (end == column) {
         continue;
       }
@@ -724,19 +776,19 @@ Renderer.definition = {
       switch (size) {
 
         case 0:
-          this._drawNormalText(codes, row, column, end, attr, size);
+          this._drawNormalText(codes1, row, column, end, attr, size);
           break;
 
         case 1:
-          this._drawDoubleHeightTextTop(codes, row, column, end, attr, size);
+          this._drawDoubleHeightTextTop(codes1, row, column, end, attr, size);
           break;
 
         case 2:
-          this._drawDoubleHeightTextBottom(codes, row, column, end, attr, size);
+          this._drawDoubleHeightTextBottom(codes1, row, column, end, attr, size);
           break;
 
         case 3:
-          this._drawDoubleWidthText(codes, row, column, end, attr, size);
+          this._drawDoubleWidthText(codes1, row, column, end, attr, size);
           break;
 
         default:
@@ -798,7 +850,7 @@ Renderer.definition = {
    */
   _drawWord: 
   function _drawWord(context, 
-                     cells, 
+                     codes, 
                      x, y, 
                      char_width, 
                      length, 
@@ -810,7 +862,7 @@ Renderer.definition = {
         this.createSlowBlinkLayer(this.slow_blink_interval);
       }
       context = this._slow_blink_layer.context;
-      context.font = this._context.font;
+      context.font = this._main_layer.context.font;
     }
 
     if (attr.rapid_blink) {
@@ -818,7 +870,7 @@ Renderer.definition = {
         this.createRapidBlinkLayer(this.rapid_blink_interval);
       }
       context = this._rapid_blink_layer.context;
-      context.font = this._context.font;
+      context.font = this._main_layer.context.font;
     }
 
     if (attr.bold) {
@@ -831,28 +883,13 @@ Renderer.definition = {
 
     // Get hexadecimal formatted text color (#xxxxxx) 
     // form given attribute structure. 
-    let fore_color_map = this.normal_color;// attr.bold ? this.bold_color: this.normal_color;
+    let fore_color_map = this.normal_color;
     let fore_color = fore_color_map[attr.fg];
 
     context.fillStyle = fore_color;
 
     if (attr.underline) {
       this._drawUnderline(context, x, y, char_width * length, fore_color);
-    }
-
-    let codes = [];
-    for (let i = 0; i < cells.length; ++i) {
-      let cell = cells[i];
-      let code = cell.c;
-      if (code > 0xffff) {
-        // emit 16bit + 16bit surrogate pair.
-        code -= 0x10000;
-        codes.push(
-          (code >> 10) | 0xD800, 
-          (code & 0x3FF) | 0xDC00);
-      } else {
-        codes.push(code);
-      }
     }
 
     if (null === this._drcs_state || !attr.drcs) {
@@ -965,7 +1002,6 @@ Renderer.definition = {
      context.moveTo(x, y + 2);
      context.lineTo(x + width, y + 2);
      context.stroke();
-//     context = null;
   },
 
   /** Do test rendering and calculate glyph width with current font and font size.

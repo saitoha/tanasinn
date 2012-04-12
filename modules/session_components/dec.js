@@ -222,9 +222,8 @@ DecModeSequenceHandler.definition = {
         // Show Scrollbar (rxvt)
         case 30:
           broker.notify("command/scrollbar-show");
-          coUtils.Debug.reportWarning(
-            _("DECSET - Show-Scrollbar feature (rxvt) was not implemented ",
-              "completely."));
+          coUtils.Debug.reportMessage(
+            _("DECSET 30 - Show scrollbar feature (rxvt) is set."));
           break;
 
         // Enable shifted key-functions (rxvt)
@@ -550,9 +549,8 @@ DecModeSequenceHandler.definition = {
         // TODO: Show Scrollbar (rxvt)
         case 30:
           broker.notify("command/scrollbar-hide");
-          coUtils.Debug.reportWarning(
-            _("DECRST - Show-Scrollbar feature (rxvt) was not implemented ",
-              "completely."));
+          coUtils.Debug.reportMessage(
+            _("DECRST 30 - Show-scrollbar feature (rxvt) is reset."));
           break;
 
         // Enable shifted key-functions (rxvt)

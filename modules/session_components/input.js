@@ -318,28 +318,6 @@ function coCreateKeyMap(expression_map, destination_map)
 }
 
 /**
- * @class MacAltKeyWatcher
- */
-let MacAltKeyWatcher = new Trait();
-MacAltKeyWatcher.definition = {
-
-  _alt_on: false,
-
-  "[subscribe('event/alt-key-down'), enabled]":
-  function onAltKeyDown()
-  {
-    this._alt_key = true;
-  },
-
-  "[subscribe('event/alt-key-up'), enabled]":
-  function onAltKeyUp()
-  {
-    this._alt_key = false;
-  },
-
-}; // MacAltKeyWatcher
-
-/**
  * @class DefaultKeyMappings
  */
 let DefaultKeyMappings = new Class().extends(Component);
@@ -583,12 +561,117 @@ NormalMode.definition = {
 
 };
 
+
+/**
+ * @class MacAltKeyWatcher
+ */
+let MacAltKeyWatcher = new Trait();
+MacAltKeyWatcher.definition = {
+
+  _alt_on: false,
+
+  "[subscribe('event/alt-key-down'), enabled]":
+  function onAltKeyDown()
+  {
+    this._alt_key = true;
+  },
+
+  "[subscribe('event/alt-key-up'), enabled]":
+  function onAltKeyUp()
+  {
+    this._alt_key = false;
+  },
+
+}; // MacAltKeyWatcher
+
+
+/**
+ * @class InputMacroTrait
+ */
+let InputMacroTrait = new Trait();
+InputMacroTrait.definition = {
+
+  _macros: null,
+  _macro_buffer: null,
+  _current_macro_name: null,
+
+  "[command('recordinputmacro', []), _('Record input macro with given name.')]": 
+  function recordInputMacro(name)
+  {
+    if (!name) {
+      throw coUtils.Exception(_("Given argument is invalid."));
+    }
+
+    if (null === this._macros) {
+      // Create the macro DB.
+      this._macros = {};
+    }
+
+    // Create a macro buffer.
+    this._macro_buffer = [];
+    this._current_macro_name = name;
+    return {
+      success: true,
+      message: coUtils.Text.format(_("Recording macro '%s'."), name),
+    }
+  },
+
+  "[command('playinputmacro', []), _('Play input macro.')]": 
+  function playInputMacro(name)
+  {
+    let buffer = this._macros[name];
+    if (!buffer) {
+      throw coUtils.Exception(
+        _("The macro specified by given name is not found."));
+    }
+    for (let i = 0; i < buffer.length; ++i) {
+
+      let complete = false;
+      let thread = Components.classes["@mozilla.org/thread-manager;1"]
+        .getService(Components.interfaces.nsIThreadManager)
+        .currentThread;
+
+      coUtils.Timer.setTimeout(function() {
+        complete = true;
+      }, 200);
+
+      while (!complete) {
+        thread.processNextEvent(true);
+      }
+      this.inputWithNoMapping(buffer[i]);
+    }
+
+    return {
+      success: true,
+      message: _("Done."),
+    }
+  },
+
+  "[command('completeinputmacro', []), _('Stop to recording current macro.')]": 
+  function completeInputMacro()
+  {
+    let buffer = this._macro_buffer;
+    let name = this._current_macro_name;
+    this._macro_buffer = null;
+    this._current_macro_name = null;
+    this._macros[name] = buffer;
+    return {
+      success: true,
+      message: coUtils.Text.format(_("Macro '%s' is defined."), name),
+    }
+  },
+
+
+}; // InputMacroTrait
+
+
 /**
  * @class InputManager
  * @brief Listen keyboard input events and send ones to TTY device.
  */
 let InputManager = new Class().extends(Plugin)
                               .mix(MacAltKeyWatcher)
+                              .mix(InputMacroTrait)
                               .depends("encoder");
 InputManager.definition = {
 
@@ -657,6 +740,11 @@ InputManager.definition = {
     this.disableInputManager.enabled = true;
     this.blurCommand.enabled = true;
     this.onAutoRepeatModeChanged.enabled = true;
+
+    this.recordInputMacro.enabled = true;
+    this.completeInputMacro.enabled = true;
+    this.playInputMacro.enabled = true;
+
     broker.notify("event/collection-changed/modes");
   },
 
@@ -685,6 +773,11 @@ InputManager.definition = {
     this.disableInputManager.enabled = false;
     this.blurCommand.enabled = false;
     this.onAutoRepeatModeChanged.enabled = false;
+
+    this.recordInputMacro.enabled = false;
+    this.completeInputMacro.enabled = false;
+    this.playInputMacro.enabled = false;
+
     this._textbox.parentNode.removeChild(this._textbox);
     broker.notify("event/collection-changed/modes");
   },
@@ -860,6 +953,10 @@ char:{event.isChar?"t":"f"}
   "[subscribe('command/input-with-no-remapping')]": 
   function inputWithNoMapping(packed_code)
   {
+    if (null !== this._macro_buffer) {
+      this._macro_buffer.push(packed_code);
+    }
+
     let c = packed_code & 0xffffff;// event.which;
     let message = this._key_map[packed_code];
     if (!message) {
