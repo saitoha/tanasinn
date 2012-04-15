@@ -24,6 +24,76 @@
 
 
 /**
+ * @class AlertService
+ */
+let AlertService = new Class().extends(Plugin);
+AlertService.definition = {
+
+  get id()
+    "alert_service",
+
+  get info()
+    <module>
+        <name>{_("Alert Service")}</name>
+        <description>{
+          _("Provides asyncronous popup alert window.")
+        }</description>
+        <version>0.1</version>
+    </module>,
+
+  /** Installs itself.
+   *  @param {Broker} broker A Broker object.
+   */
+  "[subscribe('install/alert_service'), enabled]":
+  function install(broker) 
+  {
+    this.show.enabled = true;
+  },
+
+  /** Uninstalls itself. 
+   *  @param {Broker} broker A Broker object.
+   */
+  "[subscribe('uninstall/alert_service'), enabled]":
+  function uninstall(broker) 
+  {
+    this.show.enabled = false;
+  },
+
+
+  "[subscribe('command/show-popup-alert')]":
+  function show(data)
+  {
+    let broker = this._broker;
+    try {
+      Components.classes["@mozilla.org/alerts-service;1"]
+        .getService(Components.interfaces.nsIAlertsService)
+        .showAlertNotification(
+          "chrome://mozapps/skin/extensions/alerticon-error.png",
+          data.title,
+          data.text,
+          true,  // textClickable
+          data.text,     // cookie
+          {
+            observe: function observe(subject, topic, data) 
+            {
+              if ("alertclickcallback" == topic) {
+                broker.notify("command/select-panel", "!console.panel");
+              }
+            }
+          },   // listener
+          "" // name
+          ); 
+    } catch (e) {
+      ; // pass
+      // Ignore this error.
+      // This is typically NS_ERROR_NOT_AVAILABLE,
+      // which may happen, for example, on Mac OS X if Growl is not installed.
+    }
+  },
+
+}; // AlertSerice
+
+/**
  * @class MessageFilter
  */
 let MessageFilter = new Class().extends(Plugin);
@@ -47,23 +117,23 @@ MessageFilter.definition = {
   "[persistable] enabled_when_startup": true,
 
   /** Installs itself.
-   *  @param {Session} session A Session object.
+   *  @param {Broker} broker A Broker object.
    */
   "[subscribe('install/messagefilter'), enabled]":
-  function install(session) 
+  function install(broker) 
   {
     this.onMessageFiltersRequired.enabled = true;
-    session.notify("event/console-filter-collection-changed");
+    broker.notify("event/console-filter-collection-changed");
   },
 
   /** Uninstalls itself. 
-   *  @param {Session} session A Session object.
+   *  @param {Broker} broker A Broker object.
    */
   "[subscribe('uninstall/messagefilter'), enabled]":
-  function uninstall(session) 
+  function uninstall(broker) 
   {
     this.onMessageFiltersRequired.enabled = false;
-    session.notify("event/console-filter-collection-changed");
+    broker.notify("event/console-filter-collection-changed");
   },
 
   "[subscribe('get/message-filters')]": 
@@ -81,40 +151,17 @@ MessageFilter.definition = {
 
   action: function action() 
   {
-    let session = this._broker;
+    let broker = this._broker;
     let logtext = this.logtext;
     let match = this.match;
     let [, category, , message, file, line] = match;
     let class_string = this._getClassString(category);
     file = file.split("/").pop().split("?").shift();
     if ("tanasinn-console-error" == class_string) {
-      //let session = this._broker;
-      //session.notify("an-error-occured", class_string);
-      try {
-        Components.classes["@mozilla.org/alerts-service;1"]
-          .getService(Components.interfaces.nsIAlertsService)
-          .showAlertNotification(
-            "chrome://mozapps/skin/extensions/alerticon-error.png",
-            category,
-            file + ":" + line + " " + message,    // text
-            true,  // textClickable
-            file,     // cookie
-            {
-              observe: function observe(subject, topic, data) 
-              {
-                if ("alertclickcallback" == topic) {
-                  session.notify("command/select-panel", "!console.panel");
-                }
-              }
-            },   // listener
-            "" // name
-            ); 
-      } catch (e) {
-        ; // pass
-        // Ignore this error.
-        // This is typically NS_ERROR_NOT_AVAILABLE,
-        // which may happen, for example, on Mac OS X if Growl is not installed.
-      }
+      let broker = this._broker;
+      let title = category;
+      let text = file + ":" + line + " " + message;
+      broker.notify("command/show-popup-alert", {title: title, text: text});
     }
     return {
       parentNode: "#console_output_box",
@@ -591,6 +638,7 @@ Console.definition = {
 function main(broker) 
 {
   new Console(broker);
+  new AlertService(broker);
   new MessageFilter(broker);
   new DisplayManager(broker);
   new ConsoleListener(broker);
