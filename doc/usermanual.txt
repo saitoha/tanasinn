@@ -33,6 +33,10 @@ link:./usermanual.html[English/英語]
 #if __EN__
 == News
 
+=== 2012/04/15 
+    Version 0.1.7.2
+    Important bug fix, Now it works en_US locale, sorry!
+
 === 2012/04/08 
     Now version 0.1.7.1 available.
 
@@ -86,7 +90,7 @@ process.python_path = "/usr/bin/python"
 
 #if __EN__
 
-=== Download/License
+== Download/License
 This software is distributed under http:/#/www.mozilla.org/MPL/1.1/[Mozilla Public License 1.1 (MPL1.1)] .
 
 - Developing version (PACKAGE_VERSION): http:/#/zuse.jp/tanasinn/downloads/versions/PACKAGE_VERSION/TANASINN_XPI_ID.xpi[Download]
@@ -94,7 +98,7 @@ This software is distributed under http:/#/www.mozilla.org/MPL/1.1/[Mozilla Publ
 
 #elif __JP__
 
-=== ダウンロード/ライセンス
+== ダウンロード/ライセンス
 http:/#/www.mozilla-japan.org/MPL/MPL-1.1J.html[Mozilla Public License 1.1 (MPL1.1)] で配布しています。 
     
 - スナップショット版(PACKAGE_VERSION): http:/#/zuse.jp/tanasinn/tanasinn-current.xpi[ダウンロード]

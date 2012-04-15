@@ -1409,9 +1409,8 @@ coUtils.Unicode = {
    * @return true if given character code point is categorized in 
    *         F(FullWidth) or W(Wide).
    */
-  doubleWidthTest: function doubleWidthTest(code) 
+  doubleWidthTest: function doubleWidthTest(c) 
   { // TODO: See EastAsianWidth.txt
-    let c = String.fromCharCode(code);
     return coUCS2EastAsianWidthTest(c);
   },
 

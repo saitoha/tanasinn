@@ -37,6 +37,7 @@ while (<IN>) {
         $previous = $2;
     }
 }
-print ']/.test(c);}', "\n";
+print ']';
+print '/.test(c);}', "\n";
 close(IN);
 

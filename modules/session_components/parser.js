@@ -840,7 +840,16 @@ Parser.definition = {
          *                              inserted                   inserted
          */
         for (let c in decoder.decode(scanner)) {
-          if (c >= 0x1100 && coUtils.Unicode.doubleWidthTest(c)) {
+          let character = String.fromCharCode(c);
+          let match = coUtils.Unicode
+            .detectCategory(character);
+          if (match) {
+            let [is_non_spacing_mark, is_spacing_combining_mark] = match;  
+            if (is_non_spacing_mark || is_spacing_combining_mark) {
+              continue;
+            }
+          }
+          if (c >= 0x1100 && coUtils.Unicode.doubleWidthTest(character)) {
             codes.push(0);
           }
           codes.push(c);

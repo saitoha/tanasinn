@@ -71,23 +71,10 @@ const DEC_ECM   = 42
 let DecModeSequenceHandler = new Trait();
 DecModeSequenceHandler.definition = {
 
-  _mouseMode: null,
   _dec_save_buffer: null,
   _dec_alternate_buffer: null,
 
-  get mouseMode() 
-  {
-    return this._mouseMode;
-  },
-
-  set mouseMode(value) 
-  {
-    this._mouseMode = value;
-
-    let broker = this._broker;
-    broker.notify("event/mouse-tracking-mode-changed", value);
-  },
-
+  /** Constructor */
   initialize: function initialize(broker) 
   {
     this._dec_save_buffer = {};
@@ -98,13 +85,14 @@ DecModeSequenceHandler.definition = {
   function DECSET() 
   { // DEC Private Mode Set
 
-    if (arguments.length == 0) {
+    if (0 == arguments.length) {
       coUtils.Debug.reportWarning(_("DECSET: Length of Arguments is zero. "));
     }
 
     let broker = this._broker;
 
     for (let i = 0; i < arguments.length; ++i) {
+
       let n = arguments[i];
 
       this._dec_save_buffer[i] = true;
@@ -192,7 +180,7 @@ DecModeSequenceHandler.definition = {
 
         // X10_MOUSE mode
         case 9:
-          this.mouseMode = "X10_MOUSE";
+          broker.notify("event/mouse-tracking-mode-changed", "X10_MOUSE");
           break;
 
         // cursor blink mode
@@ -306,22 +294,22 @@ DecModeSequenceHandler.definition = {
         // Send Mouse X & Y on button press and release. 
         // See the section Mouse Tracking.
         case 1000:
-          this.mouseMode = "VT200_MOUSE";
+          broker.notify("event/mouse-tracking-mode-changed", "VT200_MOUSE");
           break;
 
         // Use Hilite Mouse Tracking.
         case 1001:
-          this.mouseMode = "VT200_HIGHLIGHT_MOUSE";
+          broker.notify("event/mouse-tracking-mode-changed", "VT200_HIGHLIGHT_MOUSE");
           break;
 
         // Use Cell Motion Mouse Tracking.
         case 1002:
-          this.mouseMode = "BTN_EVENT_MOUSE";
+          broker.notify("event/mouse-tracking-mode-changed", "BTN_EVENT_MOUSE");
           break;
 
         // Use All Motion Mouse Tracking.
         case 1003:
-          this.mouseMode = "ANY_EVENT_MOUSE";
+          broker.notify("event/mouse-tracking-mode-changed", "ANY_EVENT_MOUSE");
           break;
 
         // Scroll to bottom on tty output (rxvt).
@@ -519,7 +507,7 @@ DecModeSequenceHandler.definition = {
 
         // X10_MOUSE mode
         case 9:
-          this.mouseMode = null;
+          broker.notify("event/mouse-tracking-mode-changed", null);
           break;
 
         // cursor blink mode
@@ -625,22 +613,22 @@ DecModeSequenceHandler.definition = {
 
         // Don't Send Mouse X & Y on button press and release. 
         case 1000:
-          this.mouseMode = null;
+          broker.notify("event/mouse-tracking-mode-changed", null);
           break;
 
         // Don't Use Hilite Mouse Tracking.
         case 1001:
-          this.mouseMode = null;
+          broker.notify("event/mouse-tracking-mode-changed", null);
           break;
 
         // Don't Use Cell Motion Mouse Tracking.
         case 1002:
-          this.mouseMode = null;
+          broker.notify("event/mouse-tracking-mode-changed", null);
           break;
 
         // Don't Use All Motion Mouse Tracking.
         case 1003:
-          this.mouseMode = null;
+          broker.notify("event/mouse-tracking-mode-changed", null);
           break;
 
         // Don't scroll to bottom on tty output (rxvt).
@@ -746,7 +734,7 @@ DecModeSequenceHandler.definition = {
   },
 
   "[profile('vt100'), sequence('CSI ?%dr')]":
-  function DECRSTR() 
+  function DECRSTR(n) 
   { // DEC Private Mode Restore
     let save_buffer = this._dec_save_buffer;
     let alternate_buffer = this._dec_alternate_buffer;
