@@ -818,8 +818,6 @@ Parser.definition = {
           scanner.moveNext();
         }
       } else if (!scanner.isEnd) {
-
-        let codes = [];
  
         /** Pads NULL characters before each of wide characters.
          *
@@ -839,22 +837,24 @@ Parser.definition = {
          *                                 ^                          ^
          *                              inserted                   inserted
          */
+        let codes = [];
         for (let c in decoder.decode(scanner)) {
           let character = String.fromCharCode(c);
-          let match = coUtils.Unicode
-            .detectCategory(character);
-          if (match) {
-            let [is_non_spacing_mark, is_spacing_combining_mark] = match;  
-            if (is_non_spacing_mark || is_spacing_combining_mark) {
-              continue;
-            }
-          }
+          //let match = coUtils.Unicode
+          //  .detectCategory(character);
+          //if (match) {
+          //  let [, is_spacing_combining_mark] = match;  
+          //  if (is_spacing_combining_mark) {
+          //    continue;
+          //  }
+          //}
           if (c >= 0x1100 && coUtils.Unicode.doubleWidthTest(character)) {
             codes.push(0);
           }
           codes.push(c);
         }
 
+//        let codes = decoder.decode(scanner);
         if (codes.length) {
           yield function () 
           {
