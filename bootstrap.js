@@ -60,6 +60,7 @@ var promptService = Components.classes["@mozilla.org/embedcomp/prompt-service;1"
       return false;
     }
   }
+promptService.alert(null, null, "def");
   return true;
 }
 
