@@ -155,8 +155,7 @@ DecModeSequenceHandler.definition = {
         // Origin Mode (DECOM)
         case 6:
           // TODO: origin mode.
-          this._screen.cursor.originX = this._screen.cursor.positionX; 
-          this._screen.cursor.originY = this._screen.cursor.positionY; 
+          this._screen.cursor.DECOM = true;
           coUtils.Debug.reportMessage(
             _("DECSET - DECOM (Origin mode) was set: (%d, %d)."),
             this._screen.cursor.originX,
@@ -482,8 +481,7 @@ DecModeSequenceHandler.definition = {
         // Reset Origin Mode (DECOM)
         case 6:
           // TODO: reset origin mode.
-          this._screen.cursor.originX = 0; 
-          this._screen.cursor.originY = 0; 
+          this._screen.cursor.DECOM = false;
           coUtils.Debug.reportMessage(
             _("DECSET - DECOM (Origin mode) was reset: (%d, %d)."),
             this._screen.cursor.positionX,
@@ -821,7 +819,7 @@ DecModeSequenceHandler.definition = {
     // DECSTBM moves the cursor to column 1, line 1 of the page.
     screen.setPositionX(0);
     screen.setPositionY(top);
-    screen.cursor.originX = screen.cursor.positionX; 
+//    screen.cursor.originX = screen.cursor.positionX; 
     screen.cursor.originY = screen.cursor.positionY; 
 
   },

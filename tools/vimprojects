@@ -78,6 +78,7 @@
   session_components=session_components {
    parser.js
 
+   drcs.js
    line.js
    cursorstate.js
    screen.js

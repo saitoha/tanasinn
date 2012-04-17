@@ -339,7 +339,8 @@ ScreenSequenceHandler.definition = {
   "[profile('vt100'), sequence('CSI %dG')]":
   function CHA(n) 
   { // cursor CHaracter Absolute column
-    this.setPositionX((n || 1) - 1 + this.cursor.originX);
+    this.setPositionX((n || 1) - 1);
+    //this.setPositionX((n || 1) - 1 + this.cursor.originX);
   },
 
   /**
@@ -365,9 +366,16 @@ ScreenSequenceHandler.definition = {
   "[profile('vt100'), sequence('CSI %dH')]":
   function CUP(n1, n2) 
   { // move CUrsor to absolute Position 
-    this.VPA(n1);
-    this.CHA(n2);
     // with no parameters, move to origin
+//    this.setPositionY((n1 || 1) - 1);
+//    this.setPositionY((n1 || 1) - 1 + this._scroll_top);
+    let y = (n1 || 1) - 1 + this.cursor.originY;
+    if (y >= this._scroll_bottom) {
+      y = this._scroll_bottom - 1;
+    }
+    let x = (n2 || 1) - 1;// + this.cursor.originX;
+    this.setPositionY(y);
+    this.setPositionX(x);
   },
 
   /** DEC double-height line, top half. */
@@ -510,7 +518,7 @@ ScreenSequenceHandler.definition = {
   "[profile('vt100'), sequence('CSI %dS')]":
   function SU(n) 
   { // Scroll Up line
-    this.scrollUpLine(n || 1);
+    this.scrollDownLine(n || 1);
   },
 
   /**
@@ -532,7 +540,7 @@ ScreenSequenceHandler.definition = {
   "[profile('vt100'), sequence('CSI %dT')]":
   function SD(n) 
   { // Scroll Down line
-    this.scrollDownLine(n || 1);
+    this.scrollUpLine(n || 1);
   },
 
   /** 
@@ -811,7 +819,8 @@ ScreenSequenceHandler.definition = {
   "[profile('vt100'), sequence('CSI %dd')]":
   function VPA(n) 
   { // set Virtical Position Absolutely
-    this.setPositionY((n || 1) - 1 + this.cursor.originY);
+    this.setPositionY((n || 1) - 1);
+    //this.setPositionY((n || 1) - 1 + this.cursor.originY);
   },
 
   /**
@@ -999,8 +1008,8 @@ ScreenSequenceHandler.definition = {
   "[profile('vt100'), sequence('CSI %df')]":
   function HVP(n1, n2) 
   { // Horizontal and Vertical Position
-    this.setPositionY((n1 || 1) - 1 + this.cursor.originX);
-    this.setPositionX((n2 || 1) - 1 + this.cursor.originY);
+    this.setPositionY((n1 || 1) - 1 + this.cursor.originY);
+    this.setPositionX((n2 || 1) - 1 + this.cursor.originX);
   },
 
   /**
@@ -1344,15 +1353,14 @@ Scrollable.definition = {
     let lines = this._buffer;
     let offset = this.bufferTop;
     let width = this.width;
+    let attr = this.cursor.attr;
 
     // set dirty flag.
     lines.slice(offset + top, offset + bottom - n)
       .forEach(function(line) line.invalidate());
-
     // rotate lines.
     let range = lines.splice(offset + bottom - n, n);
-    let cursor = this.cursor;
-    range.forEach(function(line) line.erase(0, width, cursor.attr));
+    range.forEach(function(line) line.erase(0, width, attr));
     range.unshift(offset + top, 0);
     Array.prototype.splice.apply(lines, range);
     this._lines = lines.slice(offset, offset + this.height);
@@ -1892,9 +1900,16 @@ Screen.definition = {
   {
     let cursor = this.cursor;
     let width = this._width;
-    let range = this._lines.slice(0, cursor.positionY + 1);
-    range.pop().erase(0, cursor.positionX + 1, cursor.attr);
-    range.forEach(function(line) line.erase(0, width, cursor.attr));
+    let lines = this._lines;
+    let attr = cursor._attr;
+//    let range = lines.slice(0, cursor.positionY + 1);
+//    range.pop().erase(0, cursor.positionX + 1, cursor.attr);
+//    range.forEach(function(line) line.erase(0, width, cursor.attr));
+    let positionY = cursor.positionY;
+    lines[positionY].erase(0, cursor.positionX + 1, attr);
+    for (let i = 1; i < positionY; ++i) {
+      lines[i].erase(0, width, attr);
+    }
   },
 
   /** Erase cells from current position to end of buffer. */
@@ -1903,9 +1918,17 @@ Screen.definition = {
   {
     let cursor = this.cursor;
     let width = this._width;
-    let range = this._lines.slice(cursor.positionY, this._height);
-    range.shift().erase(cursor.positionX, width, cursor.attr);
-    range.forEach(function(line) line.erase(0, width, cursor.attr));
+    let attr = cursor._attr;
+    let lines = this._lines;
+//    let range = lines.slice(cursor.positionY, this._height);
+//    range.shift().erase(cursor.positionX, width, cursor.attr);
+//    range.forEach(function(line) line.erase(0, width, cursor.attr));
+    let positionY = cursor.positionY;
+    let height = this._height;
+    lines[positionY].erase(cursor.positionX, width, attr);
+    for (let i = positionY + 1; i < height; ++i) {
+      lines[i].erase(0, width, attr);
+    }
   },
 
   /** Erase every cells in screen. */
@@ -1942,7 +1965,8 @@ Screen.definition = {
   "[type('Uint16 -> Uint16 -> Undefined')] setScrollRegion":
   function setScrollRegion(top, bottom) 
   {
-    [this._scroll_top, this._scroll_bottom] = arguments;
+    this._scroll_top = top;
+    this._scroll_bottom = bottom;
   },
 
   "[type('Undefined')] resetScrollRegion":
@@ -1970,10 +1994,13 @@ Screen.definition = {
     let cursor_state = this.cursor;
     let line = this._getCurrentLine();
     let repeat = (0 == line.size || 3 == line.size) ? 1: 2;
-    for (let i = 0; i < repeat; ++i) {
+    let top = this._scroll_top;
+    let bottom = this._scroll_bottom;
+    let i;
+    for (i = 0; i < repeat; ++i) {
       let positionY = cursor_state.positionY;
-      if (positionY <= this._scroll_top) {
-        this._scrollUp(positionY, this._scroll_bottom, 1);
+      if (positionY <= top) {
+        this._scrollUp(top, bottom, 1);
       } else {
         --cursor_state.positionY;
       }

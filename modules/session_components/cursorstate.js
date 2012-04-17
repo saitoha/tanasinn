@@ -34,10 +34,56 @@ CursorState.definition = {
 
   positionX: 0,
   positionY: 0,
-  originX: 0,
-  originY: 0,
+
   attr: null,
-  DECOM: false,
+
+  _originX: 0,
+  _originY: 0,
+
+  _DECOM: false,
+
+  get originX()
+  {
+    if (this._DECOM) {
+      return this._originX;
+    }
+    return 0;
+  },
+
+  set originX(value)
+  {
+    this._originX = value;
+  },
+
+  get originY()
+  {
+    if (this._DECOM) {
+      return this._originY;
+    }
+    return 0;
+  },
+
+  set originY(value)
+  {
+    this._originY = value;
+  },
+
+  get DECOM()
+  {
+    return this._DECOM;
+  },
+
+  set DECOM(value)
+  {
+    this._DECOM = value;
+//    if (value) {
+//      this._originY = this.positionY;
+//      this._originX = this.positionX;
+//    } else {
+//      this._originY = 0;
+//      this._originX = 0;
+//    }
+  },
 
   // Using this flag insted of emurator._decMode.TCEM.
   visibility: true,

@@ -113,20 +113,41 @@ AnsiSpecifiedMode.definition = {
 
   /** constructor */
   "[subscribe('@event/broker-started'), enabled]":
-  function onLoad(session) 
+  function onLoad(broker) 
   {
-    session.notify("initialized/ansimode", this);
+    broker.notify("initialized/ansimode", this);
   },
 
   set: function set(id, flag) 
   {
-      id == ANSI_KAM  ? this.KAM = flag
-    : id == ANSI_CRM  ? this.CRM = flag 
-    : id == ANSI_IRM  ? this.IRM = flag 
-    : id == ANSI_SRM  ? this.SRM = flag
-    : id == ANSI_LNM  ? this.LNM = flag
-    : coUtils.Debug.reportWarning(
-      _("Unknown ANSI Mode ID [%d] was specified."), id);
+    let broker = this._broker;
+    switch (id) {
+
+      case ANSI_KAM:
+        this.KAM = flag;
+        break;
+
+      case ANSI_CRM:
+        this.CRM = flag 
+        break;
+
+      case ANSI_IRM:
+        broker.notify("event/ansi-mode-changed/irm", flag);
+        this.IRM = flag 
+        break;
+
+      case ANSI_SRM:
+        this.SRM = flag
+        break;
+
+      case ANSI_LNM:
+        this.LNM = flag
+        break;
+
+      default:
+        coUtils.Debug.reportWarning(
+          _("Unknown ANSI Mode ID [%d] was specified."), id);
+    }
   },
 
   reset: function reset() 
