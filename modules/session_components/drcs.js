@@ -40,12 +40,6 @@ DRCSBuffer.definition = {
         }</description>
     </module>,
 
-  get template()
-    ({
-      tagName: "html:canvas",
-      id: "tanasinn_drcs_canvas",
-    }),
-
   "[persistable] enabled_when_startup": true,
 
   _map: null,
@@ -62,11 +56,6 @@ DRCSBuffer.definition = {
     this.onSCSG0.enabled = true;
     this.onSCSG1.enabled = true;
     this._map = {};
-
-    let { tanasinn_drcs_canvas } = broker.uniget(
-      "command/construct-chrome", this.template);
-    // set initial size.
-    this._canvas = tanasinn_drcs_canvas;
   },
 
   /** Uninstalls itself.
@@ -79,7 +68,6 @@ DRCSBuffer.definition = {
     this.onDCS.enabled = false;
     this.onSCSG0.enabled = false;
     this.onSCSG1.enabled = false;
-    this._canvas = null;
   },
 
   "[subscribe('sequence/g0')]":
@@ -122,6 +110,7 @@ DRCSBuffer.definition = {
   "[subscribe('sequence/dcs')]":
   function onDCS(data) 
   {
+
     //               Pfn    Pcn      Pe      Pcmw     Pw      Pt      Pcmh     Pcss    Dscs
     let pattern = /^([01]);([0-9]+);([012]);([0-9]+);([012]);([012]);([0-9]+);([01])\{\s*([0-~])([\?-~\/;\n\r]+)$/;
     let match = data.match(pattern);
@@ -195,8 +184,21 @@ DRCSBuffer.definition = {
     : 1 == pcss ? Number(pcn) + 0x20 // 96 character set.
     : Number(pcn) + 0x20; // unicode character set.
 
-    this._canvas.width = char_width * 96;
-    this._canvas.height = char_height * 1;
+    let canvas;
+    if (this._map[dscs]) {
+      canvas = this._map[dscs].drcs_canvas;
+    } else {
+      let broker = this._broker;
+      canvas = broker.uniget(
+        "command/construct-chrome",
+        {
+          //parentNode: "#tanasinn_chrome",
+          tagName: "html:canvas",
+        })["#root"];
+    }
+
+    canvas.width = char_width * 96;
+    canvas.height = char_height * 1;
     let pointer_x = start_code * char_width;
 
     function char2sixelbits(c) {
@@ -204,9 +206,9 @@ DRCSBuffer.definition = {
         .substr(-6).split("").reverse();
     }
 
-    let imagedata = this._canvas
+    let imagedata = canvas
       .getContext("2d")
-      .getImageData(0, 0, this._canvas.width, this._canvas.height);
+      .getImageData(0, 0, canvas.width, canvas.height);
     let sixels = value.split(";");
     for (let [n, glyph] in Iterator(sixels)) {
       for (let [h, line] in Iterator(glyph.split("/"))) {
@@ -227,10 +229,10 @@ DRCSBuffer.definition = {
       }
     }
 
-    this._canvas.getContext("2d").putImageData(imagedata, 0, 0);
+    canvas.getContext("2d").putImageData(imagedata, 0, 0);
     this._map[dscs] = {
       dscs: dscs,
-      drcs_canvas: this._canvas,
+      drcs_canvas: canvas,
       drcs_width: char_width,
       drcs_height: char_height,
       start_code: start_code,
