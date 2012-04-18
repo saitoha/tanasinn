@@ -841,34 +841,34 @@ DecModeSequenceHandler.definition = {
    * Mode                              Mnemonic   State after DECSTR
    *
    * Text cursor enable                DECTCEM    Cursor enabled.
-   * Insert/replace                    IRM        Replace mode.
-   * Origin                            DECOM      Absolute (cursor origin at 
+   * Insert/replace                    IRM        TODO: Replace mode.
+   * Origin                            DECOM      TODO: Absolute (cursor origin at 
    *                                              upper-left of screen.)
-   * Autowrap                          DECAWM     No autowrap.
-   * National replacement CS           DECNRCM    Multinational set.
-   * Keyboard action                   KAM        Unlocked.
-   * Numeric keypad                    DECNKM     Numeric characters.
-   * Cursor keys                       DECCKM     Normal (arrow keys).
-   * Set top and bottom margins        DECSTBM    Top margin = 1; 
-   *                                              bottom margin = page length.
-   * All character sets                G0-3,GL,GR Default settings.
-   * Select graphic rendition          SGR        Normal rendition.
-   * Select character attribute        DECSCA     Normal (erasable by DECSEL 
-   *                                              and DECSED).
-   * Save cursor state                 DECSC      Home position.
-   * Assign user-pref supplemental set DECAUPSS   Set selected in Set-Up.
-   * Select active status display      DECSASD    Main display.
-   * Keyboard position mode            DECKPM     Character codes.
-   * Cursor direction                  DECRLM     Reset (Left-to-right), 
-   *                                              regardless of NVR setting.
-   * PC Term mode                      DECPCTERM  Always reset.
+   * Autowrap                          DECAWM     TODO: No autowrap.
+   * National replacement CS           DECNRCM    TODO: Multinational set.
+   * Keyboard action                   KAM        TODO: Unlocked.
+   * Numeric keypad                    DECNKM     TODO: Numeric characters.
+   * Cursor keys                       DECCKM     TODO: Normal (arrow keys).
+   * Set top and bottom margins        DECSTBM    TODO: Top margin = 1; 
+   *                                              TODO: bottom margin = page length.
+   * All character sets                G0-3,GL,GR TODO: Default settings.
+   * Select graphic rendition          SGR        TODO: Normal rendition.
+   * Select character attribute        DECSCA     TODO: Normal (erasable by DECSEL 
+   *                                              TODO: and DECSED).
+   * Save cursor state                 DECSC      TODO: Home position.
+   * Assign user-pref supplemental set DECAUPSS   TODO: Set selected in Set-Up.
+   * Select active status display      DECSASD    TODO: Main display.
+   * Keyboard position mode            DECKPM     TODO: Character codes.
+   * Cursor direction                  DECRLM     TODO: Reset (Left-to-right), 
+   *                                              TODO: regardless of NVR setting.
+   * PC Term mode                      DECPCTERM  TODO: Always reset.
    */
   "[profile('vt100'), sequence('CSI !p')]": 
   function DECSTR() 
   { // TODO: DEC specific - Soft Terminal Reset
+    this.DECSET(25);
     coUtils.Debug.reportWarning(
-      _("%s sequence [%s] was ignored."),
-      arguments.callee.name, Array.slice(arguments));
+      _("DECSTR is not implemented completely."));
   },
 
   set_DECSCL: function set_DECSCL()
@@ -997,8 +997,8 @@ DecPrivateMode.definition = {
   "[subscribe('command/change-mode'), enabled]":
   function (mode)
   {
-    this.DECAWM = false;
-    this.DECRWM = false;
+//    this.DECAWM = false;
+//    this.DECRWM = false;
   },
 
   // Autowrap Mode (true: autowrap, false: no autowrap)

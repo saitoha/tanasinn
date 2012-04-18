@@ -32,11 +32,10 @@ CommandProvider.definition = {
     "commandprovider",
 
   "[subscribe('@event/broker-started'), enabled]":
-  function onLoad(session)
+  function onLoad(broker)
   {
     this.complete.enabled = true;
     this.evaluate.enabled = true;
-    session.notify(<>initialized/{this.id}</>, this);
   },
 
   _getCommand: function _getCommand(command_name)
@@ -187,7 +186,9 @@ SetCommand.definition = {
     if (0 == candidates.length) {
       return {
         success: false,
-        message: coUtils.Text.format(_("Module %s is not found."), component_name),
+        message: coUtils.Text.format(
+          _("Module %s is not found."), 
+          component_name),
       };
     } 
     let module = candidates.shift();
@@ -205,7 +206,8 @@ SetCommand.definition = {
     return {
       success: true,
       message: coUtils.Text.format(
-        _("%s.%s -> %s"), component_name, property, result && result.toSource()),
+        _("%s.%s -> %s"), 
+        component_name, property, result && result.toSource()),
     };
   },
 
@@ -224,8 +226,8 @@ SetGlobalCommand.definition = {
   "[command('setglobal', ['option/global']), _('Set a global option.'), enabled]":
   function evaluate(arguments_string)
   {
-    let session = this._broker;
-    let desktop = session._broker;
+    let broker = this._broker;
+    let desktop = broker._broker;
     let modules = desktop.notify("get/components");
     let pattern = /^\s*([$_a-zA-Z\.\-]+)\.([$_a-zA-Z]+)(=?)/y;
     let match = arguments_string.match(pattern);
@@ -264,7 +266,7 @@ SetGlobalCommand.definition = {
       try {
         result = new Function(
           "with (arguments[0]) { return (" + code + ");}"
-        ) (session.window);
+        ) (broker.window);
         module[property] = result; 
       } catch (e) {
         return {
@@ -294,7 +296,7 @@ FontCommands.definition = {
   "[command('fontsize/fsize', ['fontsize']), _('Change terminal font size.'), enabled]":
   function fontsize(arguments_string)
   {
-    let session = this._broker;
+    let broker = this._broker;
     let pattern = /^\s*([0-9]+)\s*$/;
     let match = arguments_string.match(pattern);
     if (null === match) {
@@ -306,8 +308,8 @@ FontCommands.definition = {
       };
     }
     let [, font_size] = match;
-    session.notify("set/font-size", font_size);
-    session.notify("command/draw", true);
+    broker.notify("set/font-size", font_size);
+    broker.notify("command/draw", true);
     return {
       success: true,
       message: _("Font size was changed."),
@@ -317,7 +319,7 @@ FontCommands.definition = {
   "[command('fontfamily/ff', ['font-family']), _('Select terminal font family.'), enabled]":
   function fontfamily(arguments_string)
   {
-    let session = this._broker;
+    let broker = this._broker;
     let pattern = /^\s*(.+)\s*$/;
     let match = arguments_string.match(pattern);
     if (null === match) {
@@ -329,8 +331,8 @@ FontCommands.definition = {
       };
     }
     let [, font_family] = match;
-    session.notify("set/font-family", font_family);
-    session.notify("command/draw", true);
+    broker.notify("set/font-family", font_family);
+    broker.notify("command/draw", true);
     return {
       success: true,
       message: _("Font family was changed."),
@@ -341,9 +343,9 @@ FontCommands.definition = {
   "[command('decrease'), _('Make font size smaller.'), enabled]":
   function decrease()
   {
-    let session = this._broker;
-    session.notify("command/change-fontsize-by-offset", -1);
-    session.notify("command/draw");
+    let broker = this._broker;
+    broker.notify("command/change-fontsize-by-offset", -1);
+    broker.notify("command/draw");
     return {
       success: true,
       message: _("Font size was changed."),
@@ -354,9 +356,9 @@ FontCommands.definition = {
   "[command('increase'), _('Make font size bigger.'), enabled]":
   function increase()
   {
-    let session = this._broker;
-    session.notify("command/change-fontsize-by-offset", +1);
-    session.notify("command/draw");
+    let broker = this._broker;
+    broker.notify("command/change-fontsize-by-offset", +1);
+    broker.notify("command/draw");
     return {
       success: true,
       message: _("Font size was changed."),
@@ -385,7 +387,7 @@ ColorCommands.definition = {
   "[command('fgcolor', ['color-number/fg']), _('Select foreground color.'), enabled]":
   function fgcolor(arguments_string)
   {
-    let session = this._broker;
+    let broker = this._broker;
     let pattern = /\s*([0-9]+)\s+([a-zA-Z]+|#[0-9a-fA-F]+)/;
     let match = arguments_string.match(pattern);
     if (null === match) {
@@ -398,8 +400,9 @@ ColorCommands.definition = {
     }
     let [, number, color] = match;
     let renderer = this._renderer;
-    renderer.normal_color[number] = coUtils.Constant.WEB140_COLOR_MAP[color] || color;
-    session.notify("command/draw", /* redraw */true);
+    renderer.normal_color[number] 
+      = coUtils.Constant.WEB140_COLOR_MAP[color] || color;
+    broker.notify("command/draw", /* redraw */true);
     return {
       success: true,
       message: _("Foreground color was changed."),
@@ -409,7 +412,7 @@ ColorCommands.definition = {
   "[command('bgcolor', ['color-number/bg']), _('Select background color.'), enabled]":
   function bgcolor(arguments_string)
   {
-    let session = this._broker;
+    let broker = this._broker;
     let pattern = /\s*([0-9]+)\s+([a-zA-Z]+|#[0-9a-fA-F]+)/;
     let match = arguments_string.match(pattern);
     if (null === match) {
@@ -422,8 +425,9 @@ ColorCommands.definition = {
     }
     let [, number, color] = match;
     let renderer = this._renderer;
-    renderer.background_color[number] = coUtils.Constant.WEB140_COLOR_MAP[color] || color;
-    session.notify("command/draw", /* redraw */true);
+    renderer.background_color[number] 
+      = coUtils.Constant.WEB140_COLOR_MAP[color] || color;
+    broker.notify("command/draw", /* redraw */true);
     return {
       success: true,
       message: _("Background color was changed."),
@@ -444,8 +448,8 @@ GlobalPersistCommand.definition = {
   "[command('globalsave/gs', ['profile/global']), _('Persist current global settings.'), enabled]":
   function persist(arguments_string)
   {
-    let session = this._broker;
-    let desktop = session._broker;
+    let broker = this._broker;
+    let desktop = broker._broker;
 
     let match = arguments_string.match(/^\s*([$_\-@a-zA-Z\.]*)\s*$/);
     if (null === match) {
@@ -465,8 +469,8 @@ GlobalPersistCommand.definition = {
   "[command('globalload/gl', ['profile/global']), _('Load a global settings.'), enabled]":
   function load(arguments_string)
   {
-    let session = this._broker;
-    let desktop = session._broker;
+    let broker = this._broker;
+    let desktop = broker._broker;
 
     let match = arguments_string.match(/^\s*([$_\-@a-zA-Z\.]*)\s*$/);
     if (null === match) {
@@ -488,8 +492,8 @@ GlobalPersistCommand.definition = {
   "[command('globaldelete/gd', ['profile/global']), _('Delete a global settings.'), enabled]":
   function deleteprofile(arguments_string)
   {
-    let session = this._broker;
-    let desktop = session._broker;
+    let broker = this._broker;
+    let desktop = broker._broker;
 
     let match = arguments_string.match(/^\s*([$_\-@a-zA-Z\.]*)\s*$/);
     if (null === match) {
@@ -594,8 +598,8 @@ LocalizeCommand.definition = {
   "[command('localize', ['localize']), _('Edit localization resource.'), enabled]":
   function evaluate(arguments_string)
   {
-    let session = this._broker;
-    let desktop = session.parent;
+    let broker = this._broker;
+    let desktop = broker.parent;
     let pattern = /^\s*([a-zA-Z-]+)\s+"((?:[^"])*)"\s+"(.+)"\s*$/;
     let match = arguments_string.match(pattern);
     if (!match) {
@@ -628,8 +632,8 @@ CharsetCommands.definition = {
 
   _impl: function _impl(arguments_string, is_encoder) 
   {
-    let session = this._broker;
-    let modules = session.notify(
+    let broker = this._broker;
+    let modules = broker.notify(
       is_encoder ? "get/encoders": "get/decoders");
     let name = arguments_string.replace(/^\s+|\s+$/g, "");
     modules = modules.filter(function(module) module.charset == name);
@@ -639,7 +643,7 @@ CharsetCommands.definition = {
         message: _("Cannot enabled the module specified by given argument."),
       };
     }
-    session.notify(
+    broker.notify(
       is_encoder ? "change/encoder": "change/decoder", 
       name)
     return {
@@ -711,8 +715,8 @@ OverlayEchoCommand.definition = {
   "[command('overlayecho/oe'), _('echo message at overlay indicator.'), enabled]":
   function evaluate(arguments_string)
   {
-    let session = this._broker;
-    session.notify("command/report-overlay-message", arguments_string);
+    let broker = this._broker;
+    broker.notify("command/report-overlay-message", arguments_string);
     return {
       success: true,
       message: _("Succeeded."),

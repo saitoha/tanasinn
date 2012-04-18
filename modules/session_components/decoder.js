@@ -942,13 +942,8 @@ DRCSConverter.definition = {
   get id()
     "drcs_converter",
 
-  _gl: USASCII,
-  _gr: USASCII,
-
-  _g0: USASCII,
-  _g1: USASCII,
-  _g2: USASCII,
-  _g3: USASCII,
+  _gl: 0,
+  _gr: 0,
 
   _charset_table: {
     "0": DEC_Special_Graphics_Character_Set,
@@ -968,49 +963,55 @@ DRCSConverter.definition = {
     "=": DEC_Swiss_NRC_Set,
   },
 
+  "[subscribe('event/broker-started'), enabled]": 
+  function onLoad(broker) 
+  {
+    this._g = [];
+  },
+
   "[subscribe('event/shift-out'), enabled]": 
   function shiftOut() 
   {
-    this._gl = this._g1;
+    this._gl = 1;
   },
 
   "[subscribe('event/shift-in'), enabled]": 
   function shiftIn() 
   {
-    this._gl = this._g0;
+    this._gl = 0;
   },
 
   "[subscribe('sequence/g0'), enabled]": 
   function scsg0(dscs) 
   {
-    this._g0 = this._charset_table[dscs];
+    this._g[0] = this._charset_table[dscs];
   },
 
   "[subscribe('sequence/g1'), enabled]": 
   function scsg1(dscs) 
   {
-    this._g1 = this._charset_table[dscs];
+    this._g[1] = this._charset_table[dscs];
   },
 
   "[subscribe('sequence/g2'), enabled]": 
   function scsg2(dscs) 
   {
-    this._g2 = this._charset_table[dscs];
+    this._g[2] = this._charset_table[dscs];
   },
 
   "[subscribe('sequence/g3'), enabled]": 
   function scsg3(dscs) 
   {
-    this._g3 = this._charset_table[dscs];
+    this._g[3] = this._charset_table[dscs];
   },
 
   "[subscribe('command/save-cursor'), enabled]": 
   function saveCursor(context) 
   {
-    context.g0 = this._g0;
-    context.g1 = this._g1;
-    context.g2 = this._g2;
-    context.g3 = this._g3;
+    context.g0 = this._g[0];
+    context.g1 = this._g[1];
+    context.g2 = this._g[2];
+    context.g3 = this._g[3];
     context.gl = this._gl;
     context.gr = this._gr;
   },
@@ -1018,10 +1019,10 @@ DRCSConverter.definition = {
   "[subscribe('command/restore-cursor'), enabled]": 
   function restoreCursor(context) 
   {
-    this._g0 = context.g0;
-    this._g1 = context.g1;
-    this._g2 = context.g2;
-    this._g2 = context.g2;
+    this._g[0] = context.g0;
+    this._g[1] = context.g1;
+    this._g[2] = context.g2;
+    this._g[3] = context.g3;
     this._gl = context.gl;
     this._gr = context.gr;
   },
@@ -1029,8 +1030,8 @@ DRCSConverter.definition = {
   convert: function convert(codes) 
   {
     let result = [];
-    let gl = this._gl || USASCII;
-    let gr = this._gr || ISO_8859_Latin1;
+    let gl = this._g[this._gl] || USASCII;
+    let gr = this._g[this._gr] || ISO_8859_Latin1;
     for (let i = 0; i < codes.length; ++i ) {
       let c = codes[i];
       if (c < 0x80) { // GL

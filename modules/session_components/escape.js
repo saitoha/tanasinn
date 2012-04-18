@@ -311,15 +311,6 @@ Escape.definition = {
   },
 
   /** Soft Terminal reset. */
-  "[profile('vt100'), sequence('CSI !p')]": 
-  function DECSTR() 
-  {
-    coUtils.Debug.reportWarning(
-      "%s sequence [%s] was ignored.",
-      arguments.callee.name, [].slice.apply(arguments));
-  },
-
-  /** Soft Terminal reset. */
   "[profile('vt100'), sequence('CSI %d\"p')]": 
   function DECSCL() 
   {
@@ -381,8 +372,110 @@ Escape.definition = {
 
     this._ansi_mode.reset();
     let screen = this._screen;
+    screen.eraseScreenAll();
     screen.resetScrollRegion();
     screen.cursor.reset();
+  },
+
+  /**
+   * DL — Delete Line
+   *
+   * This control function deletes one or more lines in the scrolling region, 
+   * starting with the line that has the cursor.
+   *
+   * Format
+   *
+   * CSI    Pn   M
+   * 9/11   3/n  4/13
+   *
+   * Parameters
+   *
+   * Pn is the number of lines to delete.
+   *
+   * Default: Pn = 1.
+   *
+   * Description
+   *
+   * As lines are deleted, lines below the cursor and in the scrolling region 
+   * move up. The terminal adds blank lines with no visual character 
+   * attributes at the bottom of the scrolling region. If Pn is greater than 
+   * the number of lines 
+   *
+   */
+  "[profile('vt100'), sequence('CSI %dy')]": 
+  function DECTST() 
+  {
+    let i;
+    let broker = this._broker;
+
+    for (i = 0; i < arguments.length; ++i) {
+
+      let n = arguments[i];
+      switch (n) {
+
+        case 0:
+          coUtils.Debug.reportWarning(
+            _("DECTST 0: Invoking all test is not implemented."));
+          break;
+
+        case 1:
+          coUtils.Debug.reportWarning(
+            _("DECTST 1: Invoking Power-Up self test is not implemented."));
+          break;
+
+        case 2:
+          coUtils.Debug.reportWarning(
+            _("DECTST 2: Invoking RS-232 port data loopback test ", 
+              "is not implemented."));
+          break;
+
+        case 3:
+          coUtils.Debug.reportWarning(
+            _("DECTST 3: Invoking printer port loopback test ", 
+              "is not implemented."));
+          break;
+
+        case 4:
+          coUtils.Debug.reportWarning(
+            _("DECTST 4: Invoking speed select and speed indicator test ", 
+              "is not implemented."));
+          break;
+
+        case 5:
+          coUtils.Debug.reportWarning(
+            _("DECTST 5: Invoking this test(reserved) is not implemented."));
+          break;
+
+        case 6:
+          coUtils.Debug.reportWarning(
+            _("DECTST 6: Invoking RS-232 port modem control line ",
+              "loopback test is not implemented."));
+          break;
+
+        case 7:
+          coUtils.Debug.reportWarning(
+            _("DECTST 7: Invoking EIA-423 port loopback test ", 
+              "is not implemented."));
+          break;
+
+        case 8:
+          coUtils.Debug.reportWarning(
+            _("DECTST 8: Invoking parallel port loopback test ", 
+              "is not implemented."));
+          break;
+
+        case 9:
+          coUtils.Debug.reportWarning(
+            _("DECTST 8: Repeat (Loop on) other tests in parameter string ", 
+              "is not implemented."));
+          break;
+
+        default:
+          coUtils.Debug.reportWarning(
+            _("DECTST: Unknown test parameter is specified: %d."), n);
+
+      }
+    }
   },
   
   /** constructor */

@@ -370,9 +370,9 @@ ScreenSequenceHandler.definition = {
 //    this.setPositionY((n1 || 1) - 1);
 //    this.setPositionY((n1 || 1) - 1 + this._scroll_top);
     let y = (n1 || 1) - 1 + this.cursor.originY;
-    if (y >= this._scroll_bottom) {
-      y = this._scroll_bottom - 1;
-    }
+//    if (y >= this._scroll_bottom) {
+//      y = this._scroll_bottom - 1;
+//    }
     let x = (n2 || 1) - 1;// + this.cursor.originX;
     this.setPositionY(y);
     this.setPositionX(x);
@@ -454,23 +454,83 @@ ScreenSequenceHandler.definition = {
   "[profile('vt100'), sequence('CSI %dK')]":
   function EL(n) 
   { // Erase Line
-    n == 0 ? // erase to right
-      this.eraseLineToRight()
-    : n == 1 ? // erase to left
-      this.eraseLineToLeft()
-    : n == 2 ? // erase all
-      this.eraseLine()
-    : coUtils.Debug.reportWarning(
-        _("%s sequence [%s] was ignored."),
-        arguments.callee.name, Array.slice(arguments));
+    switch (n) {
+
+      case 0: // erase to right
+        this.eraseLineToRight();
+        break;
+
+      case 1: // erase to left
+        this.eraseLineToLeft();
+        break;
+
+      case 2: // erase all
+        this.eraseLine();
+        break;
+
+      default:
+        coUtils.Debug.reportWarning(
+          _("%s sequence [%s] was ignored."),
+          arguments.callee.name, Array.slice(arguments));
+    }
   },
 
+  /**
+   *
+   *  IL — Insert Line
+   *
+   *  This control function inserts one or more blank lines, starting at the 
+   *  cursor.
+   *
+   *  Format
+   *
+   *  CSI   Pn    L
+   *  9/11  3/n   4/12
+   *
+   *  Parameters
+   *
+   *  Pn is the number of lines to insert.
+   *
+   *  Default: Pn = 1.
+   *
+   *  Description
+   *
+   *  As lines are inserted, lines below the cursor and in the scrolling region
+   *  move down. Lines scrolled off the page are lost. IL has no effect outside 
+   *  the page margins. 
+   *
+   */
   "[profile('vt100'), sequence('CSI %dL')]":
   function IL(n) 
   { // Insert Line
     this.insertLine(n || 1);
   },
 
+  /**
+   * DL — Delete Line
+   *
+   * This control function deletes one or more lines in the scrolling region, 
+   * starting with the line that has the cursor.
+   *
+   * Format
+   *
+   * CSI    Pn   M
+   * 9/11   3/n  4/13
+   *
+   * Parameters
+   *
+   * Pn is the number of lines to delete.
+   *
+   * Default: Pn = 1.
+   *
+   * Description
+   *
+   * As lines are deleted, lines below the cursor and in the scrolling region
+   * move up. The terminal adds blank lines with no visual character 
+   * attributes at the bottom of the scrolling region. If Pn is greater than 
+   * the number of lines 
+   *
+   */
   "[profile('vt100'), sequence('CSI %dM')]":
   function DL(n) 
   { // Delete Line.
@@ -1221,11 +1281,15 @@ Viewable.definition = {
 
     // redraw view
     let width = this.width;
-    this._getCurrentViewLines().forEach(function(line) {
-      if (line.length < width)
+    let lines = this._getCurrentViewLines();
+    let i;
+    for (i = 0; i < liens.length; ++i) {
+      let line = lines[i];
+      if (line.length < width) {
         line.length = width;
+      }
       line.dirty = true;
-    });
+    }
   },
 
   _getCurrentViewLines: function _getCurrentViewLines()
@@ -1352,18 +1416,24 @@ Scrollable.definition = {
   {
     let lines = this._buffer;
     let offset = this.bufferTop;
-    let width = this.width;
+    let width = this._width;
+    let height = this._height;
     let attr = this.cursor.attr;
+    let i;
 
     // set dirty flag.
-    lines.slice(offset + top, offset + bottom - n)
-      .forEach(function(line) line.invalidate());
+    for (i = offset + top; i < offset + bottom - n; ++i) {
+      lines[i].invalidate();
+    }
+
     // rotate lines.
     let range = lines.splice(offset + bottom - n, n);
-    range.forEach(function(line) line.erase(0, width, attr));
+    for (i = 0; i < range.length; ++i) {
+      range[i].erase(0, width, attr);
+    }
     range.unshift(offset + top, 0);
     Array.prototype.splice.apply(lines, range);
-    this._lines = lines.slice(offset, offset + this.height);
+    this._lines = lines.slice(offset, offset + height);
   },
 
   /** Scroll down the buffer by n lines. */
@@ -1371,26 +1441,37 @@ Scrollable.definition = {
   {
     let lines = this._buffer;
     let offset = this._buffer_top;
-    let width = this.width;
+    let width = this._width;
+    let height = this._height;
+    let attr = this.cursor.attr;
+    let i;
+    let range;
 
     // set dirty flag.
-    this._lines.slice(n).forEach(function(line) line.invalidate());
+    for (i = n; i < this._lines.length; ++i) {
+      this._lines[i].invalidate();
+    }
 
     // rotate lines.
-    let range;
     if (top > 0) {
       range = lines.splice(offset + top, n);
-      let cursor = this.cursor;
-      range.forEach(function(line) line.erase(0, width, cursor.attr));
+      for (i = 0; i < range.length; ++i) {
+        let line = range[i];
+        line.erase(0, width, attr);
+      }
     } else if (offset < this.scrollback_limit) {
       range = this._createLines(n);
       offset = this._buffer_top += n;
-      range.forEach(function(line) line.invalidate());
+      for (i = 0; i < range.length; ++i) {
+        let line = range[i];
+        line.invalidate();
+      }
     } else { // 0 == top && offset == this.scrollback_limit
       range = lines.splice(0, n);
       let width = this._width;
-      for (let [, line] in Iterator(range)) {
-        line.clear();
+      for (i = 0; i < range.length; ++i) {
+        let line = range[i];
+        line.erase(0, width, attr);
         line.invalidate();
         line.length = width;
       }
@@ -1398,7 +1479,7 @@ Scrollable.definition = {
     // line.splice(offset + bottom -m, 0, ....);
     range.unshift(offset + bottom - n, 0);
     Array.prototype.splice.apply(lines, range);
-    this._lines = lines.slice(offset, offset + this._height);
+    this._lines = lines.slice(offset, offset + height);
   },
 
 }; // Scrollable
@@ -1457,14 +1538,19 @@ Resizable.definition = {
   _popColumns: function _popColumns(n) 
   {
     // decrease width
-    let new_width = this._width -= n;
+    let cursor = this.cursor;
+    let width = this._width -= n;
+    let lines = this._lines;
+    let i;
 
     // set new width.
-    this._lines.forEach(function(line) line.length = new_width);
+    for (i = 0; i < lines.length; ++i) {
+      lines[i].length = width;
+    }
 
     // fix cursor position.
-    if (this.cursor.positionX >= this._width) {
-      this.cursor.positionX = this._width - 1;
+    if (cursor.positionX >= width) {
+      cursor.positionX = width - 1;
     }
   },
   
@@ -1472,10 +1558,14 @@ Resizable.definition = {
   _pushColumns: function _pushColumns(n) 
   {
     // increase width
-    let new_width = this._width += n;
+    let width = this._width += n;
+    let lines = this._lines;
+    let i;
 
     // set new width.
-    this._lines.forEach(function(line) line.length = new_width);
+    for (i = 0; i < lines.length; ++i) {
+      lines[i].length = width;
+    }
   },
 
 }; // Resize
@@ -1556,7 +1646,11 @@ Screen.definition = {
 
   set dirty(value)
   {
-    this._lines.forEach(function(line) line.dirty = value);
+    let lines = this._lines;
+    let i;
+    for (i = 0; i < lines.length; ++i) {
+      lines[i].dirty = value;
+    }
   },
 
   /** 
@@ -1711,10 +1805,10 @@ Screen.definition = {
       if (line) {
         if (cursor.positionX >= width) {
           this.carriageReturn();
-          //if (this._wraparound_mode) {
+          if (this._wraparound_mode) {
             this.lineFeed();
             line = this._getCurrentLine();
-          //}
+          }
         }
         let positionX = cursor.positionX;
         let length = width - positionX;
@@ -1902,12 +1996,10 @@ Screen.definition = {
     let width = this._width;
     let lines = this._lines;
     let attr = cursor._attr;
-//    let range = lines.slice(0, cursor.positionY + 1);
-//    range.pop().erase(0, cursor.positionX + 1, cursor.attr);
-//    range.forEach(function(line) line.erase(0, width, cursor.attr));
+    let i;
     let positionY = cursor.positionY;
     lines[positionY].erase(0, cursor.positionX + 1, attr);
-    for (let i = 1; i < positionY; ++i) {
+    for (i = 1; i < positionY; ++i) {
       lines[i].erase(0, width, attr);
     }
   },
@@ -1920,13 +2012,11 @@ Screen.definition = {
     let width = this._width;
     let attr = cursor._attr;
     let lines = this._lines;
-//    let range = lines.slice(cursor.positionY, this._height);
-//    range.shift().erase(cursor.positionX, width, cursor.attr);
-//    range.forEach(function(line) line.erase(0, width, cursor.attr));
     let positionY = cursor.positionY;
     let height = this._height;
+    let i;
     lines[positionY].erase(cursor.positionX, width, attr);
-    for (let i = positionY + 1; i < height; ++i) {
+    for (i = positionY + 1; i < height; ++i) {
       lines[i].erase(0, width, attr);
     }
   },
@@ -1949,9 +2039,13 @@ Screen.definition = {
   "[type('Undefined')] eraseScreenAllWithTestPattern":
   function eraseScreenAllWithTestPattern() 
   {
-    let cursor = this.cursor;
+    let attr = this.cursor.attr;
     let width = this._width;
-    this._lines.forEach(function(line) line.eraseWithTestPattern(0, width, cursor.attr));
+    let lines = this._lines;
+    let i;
+    for (i = 0; i < lines.length; ++i) {
+      lines[i].eraseWithTestPattern(0, width, attr);
+    }
   },
 
   /** Insert n cells at specified position. */
@@ -1959,7 +2053,7 @@ Screen.definition = {
   function insertBlanks(n) 
   {
     let cursor = this.cursor;
-    this._getCurrentLine().insertBlanks(this.cursor.positionX, n, cursor.attr);
+    this._getCurrentLine().insertBlanks(cursor.positionX, n, cursor.attr);
   },
       
   "[type('Uint16 -> Uint16 -> Undefined')] setScrollRegion":
@@ -1993,17 +2087,13 @@ Screen.definition = {
   { // cursor up
     let cursor_state = this.cursor;
     let line = this._getCurrentLine();
-    let repeat = (0 == line.size || 3 == line.size) ? 1: 2;
     let top = this._scroll_top;
     let bottom = this._scroll_bottom;
-    let i;
-    for (i = 0; i < repeat; ++i) {
-      let positionY = cursor_state.positionY;
-      if (positionY <= top) {
-        this._scrollUp(top, bottom, 1);
-      } else {
-        --cursor_state.positionY;
-      }
+    let positionY = cursor_state.positionY;
+    if (positionY <= top) {
+      this._scrollUp(top, bottom, 1);
+    } else {
+      --cursor_state.positionY;
     }
   },
   
@@ -2023,13 +2113,19 @@ Screen.definition = {
   "[type('Uint16 -> Undefined')] insertLine":
   function insertLine(n) 
   { // Insert Line
-    this._scrollUp(this.cursor.positionY, this._scroll_bottom, n);
+    let positionY = this.cursor.positionY;
+    let bottom = this._scroll_bottom;
+    let delta = Math.min(n, bottom - positionY);
+    this._scrollUp(positionY, bottom, delta);
   },
 
   "[type('Uint16 -> Undefined')] deleteLine":
   function deleteLine(n) 
   { // Delete Line.
-    this._scrollDown(this.cursor.positionY, this._scroll_bottom, n);
+    let positionY = this.cursor.positionY;
+    let bottom = this._scroll_bottom;
+    let delta = Math.min(n, bottom - positionY);
+    this._scrollDown(positionY, bottom, delta);
   },
 
   "[type('Uint16 -> Undefined')] scrollUpLine":
@@ -2130,15 +2226,25 @@ Screen.definition = {
   "[subscribe('command/backup'), type('Object -> Undefined'), enabled]": 
   function backup(data) 
   {
-    data[this.id] = [];
-    let context = data[this.id];
+    let context = data[this.id] = [];
+    let lines = this._buffer;
+    let i;
 
+    // serialize members.
     context.push(this.width, this.height, this._buffer_top);
     context.push(this._scroll_top, this._scroll_bottom);
     context.push(this._buffer.length);
-    this._buffer.forEach(function(line) line.serialize(context));
+
+    // serialize each lines.
+    for (i = 0; i < lines.length; ++i) {
+      lines[i].serialize(context);
+    }
+
     context.push(this._screen_choice);
+
+    // serialize cursor.
     this.cursor.serialize(context);
+
   }, // backup
 
   /** Restores screen from serialize context.
@@ -2149,6 +2255,7 @@ Screen.definition = {
   function restore(data) 
   {
     let context = data[this.id];
+    let i;
 
     this.width = context.shift();
     this.height = context.shift();
@@ -2157,8 +2264,11 @@ Screen.definition = {
     this._scroll_bottom = context.shift();
 
     let buffer_length = context.shift();
-    this._buffer = this._createLines(buffer_length);
-    this._buffer.forEach(function(line) line.deserialize(context));
+    let lines = this._buffer = this._createLines(buffer_length);
+    for (i = 0; i < lines.length; ++i) {
+      lines[i].deserialize(context);
+    }
+
     this._screen_choice = context.shift();
     this.cursor.deserialize(context);
     this._lines = this._buffer

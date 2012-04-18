@@ -76,13 +76,13 @@ CursorState.definition = {
   set DECOM(value)
   {
     this._DECOM = value;
-//    if (value) {
-//      this._originY = this.positionY;
-//      this._originX = this.positionX;
-//    } else {
-//      this._originY = 0;
-//      this._originX = 0;
-//    }
+    if (value) {
+      this._originY = this.positionY;
+      this._originX = this.positionX;
+    } else {
+      this._originY = 0;
+      this._originX = 0;
+    }
   },
 
   // Using this flag insted of emurator._decMode.TCEM.

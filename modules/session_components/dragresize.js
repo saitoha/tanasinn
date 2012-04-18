@@ -40,34 +40,34 @@ SnapResize.definition = {
   "[subscribe('event/window-resized')]":
   function onWindowResized(event)
   {
-     let session = this._broker;
-     let window = session.window;
+     let broker = this._broker;
+     let window = broker.window;
      try {
-       //session.notify("event/resize-session-started", this);
+       //broker.notify("event/resize-session-started", this);
        let renderer = this._renderer;
        let char_width = renderer.char_width;
        let line_height = renderer.line_height;
-       let box_element = session.uniget("command/query-selector", "#box_element");
-       let center_area = session.uniget("command/query-selector", "#tanasinn_content");
+       let box_element = broker.uniget("command/query-selector", "#box_element");
+       let center_area = broker.uniget("command/query-selector", "#tanasinn_content");
        let horizontal_margin = box_element.boxObject.width - center_area.boxObject.width;
        let vertical_margin = (box_element.boxObject.height - center_area.boxObject.height) / 2;
        let column = Math.floor((window.innerWidth - horizontal_margin) / char_width - 1);
        let row = Math.floor((window.innerHeight - vertical_margin) / line_height - 1);
        //coUtils.Debug.reportError(window.innerHeight + " " + vertical_margin + " " + row)
-       session.notify("command/resize-screen", {column: column, row: row});
-       session.notify("command/draw", true);
+       broker.notify("command/resize-screen", {column: column, row: row});
+       broker.notify("command/draw", true);
      } catch (e) {
        coUtils.Debug.reportError(e)
      } finally {
-       //session.notify("event/resize-session-closed", this);
+       //broker.notify("event/resize-session-closed", this);
      }
   },
 
   removeWindowResizeHandler: function() 
   {
     let id = [this.id, "install"].join(".");
-    let session = this._broker;
-    session.notify("command/add-domlistener", id); 
+    let broker = this._broker;
+    broker.notify("command/add-domlistener", id); 
   },
 };
 
@@ -104,9 +104,9 @@ CaptureBox.definition = {
   "[subscribe('@initialized/chrome'), enabled]":
   function onLoad(chrome) 
   {
-    let session = this._broker;
+    let broker = this._broker;
     let {tanasinn_capture_box} 
-      = session.uniget("command/construct-chrome", this.template);
+      = broker.uniget("command/construct-chrome", this.template);
     this._box = tanasinn_capture_box;
   },
 
@@ -153,15 +153,15 @@ Resizer.definition = {
   {
     this._renderer = renderer;
     this._screen = screen;
-    let session = this._broker;
-    session.uniget("command/construct-chrome", this.template);
+    let broker = this._broker;
+    broker.uniget("command/construct-chrome", this.template);
   },
 
   /** mousedown event handler. */
   onmousedown: function onmousedown(event) 
   {
-    let session = this._broker;
-    session.notify(
+    let broker = this._broker;
+    broker.notify(
       "command/show-capture-box", 
       {
         x: event.clientX, 
@@ -172,18 +172,18 @@ Resizer.definition = {
   ondragstart: function ondragstart(event)
   {
     let resizer = this._resizer;    
-    let session = this._broker;
-    let document = session.document;
+    let broker = this._broker;
+    let document = broker.document;
     let renderer = this._renderer;
     let screen = this._screen;
     //this._capture_margin.hidden = true;
     event.stopPropagation(); // cancel defaut behavior
-    session.notify("event/resize-session-started", this);
+    broker.notify("event/resize-session-started", this);
     let initial_column = screen.width;
     let initial_row = screen.height;
     let originX = event.screenX;
     let originY = event.screenY;
-    session.notify("command/add-domlistener", {
+    broker.notify("command/add-domlistener", {
       target: document,
       type: "mousemove",
       id: "_DRAGGING",
@@ -198,16 +198,16 @@ Resizer.definition = {
         let row = initial_row + ({ s: diffY, n: -diffY }[this.type[0]] || 0);
         let screen_width_cache = screen.width;
         let screen_height_cache = screen.height;
-        session.notify("command/resize-screen", {column: column, row: row});
+        broker.notify("command/resize-screen", {column: column, row: row});
         let moveX = this.type.slice(-1) == "w" ? screen_width_cache - screen.width: 0;
         let moveY = this.type[0] == "n" ? screen_height_cache - screen.height: 0;
         if (moveX != 0 || moveY != 0) {
-          session.notify("command/move-by", [moveX * char_width, moveY * line_height]);
+          broker.notify("command/move-by", [moveX * char_width, moveY * line_height]);
         }
-        session.notify("command/draw", true);
+        broker.notify("command/draw", true);
       }
     });
-    session.notify("command/add-domlistener", {
+    broker.notify("command/add-domlistener", {
       target: document,
       type: "mouseup",
       id: "_DRAGGING",
@@ -215,9 +215,9 @@ Resizer.definition = {
       handler: function onmouseup(event) 
       {
         // uninstall listeners.
-        session.notify("command/remove-domlistener", "_DRAGGING");
-        session.notify("event/resize-session-closed", this);
-        session.notify("command/draw", true);
+        broker.notify("command/remove-domlistener", "_DRAGGING");
+        broker.notify("event/resize-session-closed", this);
+        broker.notify("command/draw", true);
       },
     });
   },

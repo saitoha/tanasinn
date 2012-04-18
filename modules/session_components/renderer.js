@@ -454,6 +454,7 @@ Renderer.definition = {
     this.captureScreen.enabled = true;
     this.onDRCSStateChangedG0.enabled = true;
     this.onDRCSStateChangedG1.enabled = true;
+//    this._timer = coUtils.Timer.setInterval(this.drawImpl, 100, this);
   },
 
   /** Uninstalls itself.
@@ -487,7 +488,12 @@ Renderer.definition = {
       this._rapid_blink_layer.destroy();
       this._rapid_blink_layer = null;
     }
-
+//
+//    if (null !== this._timer) {
+//      this._timer.cancel();
+//      this._timer = null;
+//    }
+//
   },
 
   /** Take screen capture and save it in png format. */

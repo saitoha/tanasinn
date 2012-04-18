@@ -265,7 +265,13 @@ ParameterParser.definition = {
         }
       }
       for (let i = 0; i < actions.length; ++i) {
-        actions[i]();
+        let action = actions[i];
+        if (action) {
+          try {
+            action();
+          } catch(e) {
+          }
+        }
       }
     };
   }, // parse
@@ -756,13 +762,16 @@ Parser.definition = {
   "[subscribe('event/data-arrived')]": 
   function drive(data)
   {
+    let broker = this._broker;
     let scanner = this._scanner;
+
+//    coUtils.Timer.setTimeout(function(){
     scanner.assign(data);
     for (let action in this.parse(scanner, data)) {
       action();
     }
-    let broker = this._broker;
     broker.notify("command/draw"); // fire "draw" event.
+//    }, 10, this);
   },
 
   /** Parse and evaluate control codes and text pieces from the scanner. 
@@ -862,7 +871,9 @@ Parser.definition = {
             emurator.write(converted_codes);
           };
         } else {
+          continue;
           let c1 = scanner.current();
+          alert(c1)
           coUtils.Debug.reportError(
             _("Failed to decode text. text length: %d, source text: [%s]."), 
             data.length, c1);
