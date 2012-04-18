@@ -2104,7 +2104,7 @@ Screen.definition = {
     let cursor_state = this.cursor;
     let positionY = cursor_state.positionY;
     if (positionY + 1 >= this._scroll_bottom) {
-      this._scrollDown(this._scroll_top, positionY + 1, 1);
+      this._scrollUp(this._scroll_top, positionY + 1, 1);
     } else {
       ++cursor_state.positionY;
     }
