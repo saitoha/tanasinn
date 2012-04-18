@@ -967,6 +967,7 @@ DecPrivateMode.definition = {
   {
     this._screen = screen;
     this._cursor_state = cursor_state;
+    this.DECAWM = true;
     let broker = this._broker;
     broker.notify("initialized/decmode", this);
   },

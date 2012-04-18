@@ -1283,7 +1283,7 @@ Viewable.definition = {
     let width = this.width;
     let lines = this._getCurrentViewLines();
     let i;
-    for (i = 0; i < liens.length; ++i) {
+    for (i = 0; i < lines.length; ++i) {
       let line = lines[i];
       if (line.length < width) {
         line.length = width;
@@ -2028,8 +2028,10 @@ Screen.definition = {
     let cursor = this.cursor;
     let width = this._width;
     let lines = this._lines;
-    for (let i = 0; i < lines.length; ++i) {
-      let line = lines[i];
+    let i, line;
+
+    for (i = 0; i < lines.length; ++i) {
+      line = lines[i];
       line.erase(0, width, cursor.attr);
       line.size = 0;
     }
@@ -2042,9 +2044,10 @@ Screen.definition = {
     let attr = this.cursor.attr;
     let width = this._width;
     let lines = this._lines;
-    let i;
+    let i, line;
     for (i = 0; i < lines.length; ++i) {
-      lines[i].eraseWithTestPattern(0, width, attr);
+      line = lines[i];
+      line.eraseWithTestPattern(0, width, attr);
     }
   },
 
@@ -2075,9 +2078,13 @@ Screen.definition = {
   {
     this.resetScrollRegion();
     this.cursor.reset();
+
     let lines = this._getCurrentViewLines();
-    for (let i = 0; i < lines.length; ++i) {
-      lines[i].size = 0;
+    let i, line;
+
+    for (i = 0; i < lines.length; ++i) {
+      line = lines[i];
+      line.size = 0;
     }
   },
 
@@ -2101,12 +2108,14 @@ Screen.definition = {
   "[type('Undefined')] lineFeed":
   function lineFeed() 
   { // cursor down
-    let cursor_state = this.cursor;
-    let positionY = cursor_state.positionY;
-    if (positionY + 1 >= this._scroll_bottom) {
-      this._scrollDown(this._scroll_top, positionY + 1, 1);
+    let cursor = this.cursor;
+    let top = this._scroll_top;
+    let bottom = this._scroll_bottom;
+    let positionY = cursor.positionY;
+    if (positionY + 1 >= bottom) {
+      this._scrollDown(top, bottom, 1);
     } else {
-      ++cursor_state.positionY;
+      ++cursor.positionY;
     }
   },
 

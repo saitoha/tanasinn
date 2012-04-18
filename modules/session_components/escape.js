@@ -367,7 +367,7 @@ Escape.definition = {
     broker.notify("sequence/g1", coUtils.Constant.CHARSET_US);
     broker.notify("command/hard-terminal-reset");
 
-    broker.notify("command/disable-wraparound");
+    broker.notify("command/enable-wraparound");
     broker.notify("command/disable-reverse-wraparound");
 
     this._ansi_mode.reset();

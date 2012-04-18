@@ -270,6 +270,7 @@ ParameterParser.definition = {
           try {
             action();
           } catch(e) {
+            alert("["+action+"]")
           }
         }
       }
