@@ -386,9 +386,6 @@ ScreenSequenceHandler.definition = {
     let line = this._getCurrentLine();
     line.size = 1;
     line.dirty = 1;
-
-    let broker = this._broker;
-    broker.notify("sequence/double-height-line-top");
   },
 
   /** DEC double-height line, bottom half. */
@@ -399,9 +396,6 @@ ScreenSequenceHandler.definition = {
     let line = this._getCurrentLine();
     line.size = 2;
     line.dirty = 1;
-    let broker = this._broker;
-    broker.notify("sequence/double-height-line-bottom");
-  //  this._screen.cursorUp(1);
   },
 
   /** DEC single-height line. */
@@ -412,8 +406,6 @@ ScreenSequenceHandler.definition = {
     let line = this._getCurrentLine();
     line.size = 0;
     line.dirty = 1;
-    let broker = this._broker;
-    broker.notify("sequence/normal-size-line");
   },
 
   /** DEC double-width line. */
@@ -424,9 +416,6 @@ ScreenSequenceHandler.definition = {
     let line = this._getCurrentLine();
     line.size = 3;
     line.dirty = 1;
-    let broker = this._broker;
-    broker.notify("sequence/double-width-line");
-   // this._screen.cursorUp(1);
   },
 
   "[profile('vt100'), sequence('ESC #8')]":
@@ -1769,30 +1758,6 @@ Screen.definition = {
     this._reverse_wraparound_mode = false;
   },
 
-  "[subscribe('sequence/normal-size-line'), enabled]":
-  function normalSizeLine() 
-  {
-    this._double_height_mode = 0;
-  },
-
-  "[subscribe('sequence/double-height-line-top'), enabled]":
-  function doubleHeightLineTop() 
-  {
-    this._double_height_mode = 1;
-  },
-
-  "[subscribe('sequence/double-height-line-bottom'), enabled]":
-  function doubleHeightLineBottom() 
-  {
-    this._double_height_mode = 2;
-  },
-
-  "[subscribe('sequence/double-width-line'), enabled]":
-  function doubleWidthLine() 
-  {
-    this._double_height_mode = 3;
-  },
-
   /** Write printable charactor seqences. */
   "[type('Array -> Boolean -> Undefined')] write":
   function write(codes, insert_mode) 
@@ -2112,8 +2077,10 @@ Screen.definition = {
     let top = this._scroll_top;
     let bottom = this._scroll_bottom;
     let positionY = cursor.positionY;
-    if (positionY + 1 >= bottom) {
+    if (positionY == bottom - 1) {
       this._scrollDown(top, bottom, 1);
+    } else if (positionY > bottom - 1) {
+      cursor.positionY = bottom - 1;
     } else {
       ++cursor.positionY;
     }

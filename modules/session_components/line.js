@@ -596,13 +596,25 @@ Line.definition = {
   serialize: function serialize(context)
   {
     context.push(this.length);
-    this.cells.forEach(function(cell) cell.serialize(context));
+    // this.cells.forEach(function(cell) cell.serialize(context));
+    let cells = this.cells;
+    let i, cell;
+    for (i = 0; i < cells.length; ++i) {
+      cell = cells[i];
+      cell.serialize(context);
+    }
   },
 
   deserialize: function deserialize(context)
   {
     this.length = context.shift();
-    this.cells.forEach(function(cell) cell.deserialize(context));
+    // this.cells.forEach(function(cell) cell.deserialize(context));
+    let cells = this.cells;
+    let i, cell;
+    for (i = 0; i < cells.length; ++i) {
+      cell = cells[i];
+      cell.deserialize(context);
+    }
     this.dirty = true;
   },
 
@@ -616,10 +628,11 @@ Line.definition = {
   set length(value) 
   {
     let diff = value - this.cells.length;
-    if (diff > 0)
+    if (diff > 0) {
       this.expand(diff);
-    else if (diff < 0)
+    } else if (diff < 0) {
       this.collapse(-diff);
+    }
   },
       
   /** 
@@ -630,13 +643,16 @@ Line.definition = {
   {
     let cells = this.cells;
     let cell = cells[position];
-    if (!cell)
+    if (!cell) {
       return false;
-    if (0 == cell.c)
+    }
+    if (0 == cell.c) {
       return true;
+    }
     cell = cells[position - 1];
-    if (!cell)
+    if (!cell) {
       return false;
+    }
     return 0 == cell.c;
   },
 
@@ -788,17 +804,30 @@ Line.definition = {
    */
   write: function write(position, codes, attr, insert_mode) 
   {
+    let i, cell;
     let cells = this.cells
     if (insert_mode) {
       this.addRange(position, this.length);
       let length = codes.length;
       let range = cells.splice(-length);
-      range.forEach(function(cell) cell.write(codes.shift(), attr));
+
+      // range.forEach(function(cell) cell.write(codes.shift(), attr));
+      for (i = 0; i < range.length; ++i) {
+        cell = range[i];
+        cell.write(codes[i], attr);
+      }
+
       range.unshift(position, 0);
       Array.prototype.splice.apply(cells, range);
-    } else {
+
+    } else { // replace mode
+
       this.addRange(position, position + codes.length);
-      codes.forEach(function(code) cells[position++].write(code, attr));
+      // codes.forEach(function(code) cells[position++].write(code, attr));
+      for (i = 0; i < codes.length; ++i) {
+        cell = cells[position + i];
+        cell.write(codes[i], attr);
+      }
     }
   },
 
@@ -807,7 +836,12 @@ Line.definition = {
    */
   clear: function clear() 
   {
-    this.cells.forEach(function(cell) cell.erase());
+    let cells = this.cells;
+    let i, cell;
+    for (i = 0; i < cells.length; ++i) {
+      cell = cells[i];
+      cell.erase();
+    }
   },
 
   /** 
@@ -820,9 +854,15 @@ Line.definition = {
   erase: function erase(start, end, attr) 
   {
     this.addRange(start, end);
-    this.cells
-      .slice(start, end)
-      .forEach(function(cell) cell.erase(attr));
+//    this.cells
+//      .slice(start, end)
+//      .forEach(function(cell) cell.erase(attr));
+    let i, cell;
+    let cells = this.cells;
+    for (i = start; i < end; ++i) {
+      cell = cells[i];
+      cell.erase(attr);
+    }
   },
 
   /** 
@@ -833,9 +873,15 @@ Line.definition = {
   eraseWithTestPattern: function eraseWithTestPattern(start, end, attr)
   {
     this.addRange(start, end);
-    this.cells
-      .slice(start, end)
-      .forEach(function(cell) cell.write(0x45 /* "E" */, attr));
+//    this.cells
+//      .slice(start, end)
+//      .forEach(function(cell) cell.write(0x45 /* "E" */, attr));
+    let i, cell;
+    let cells = this.cells;
+    for (i = start; i < end; ++i) {
+      cell = cells[i];
+      cell.write(0x45 /* "E" */, attr);
+    }
   },
 
    /**
@@ -850,7 +896,14 @@ Line.definition = {
     let length = this.length;
     this.addRange(start, length);
     let range = cells.splice(start, n);
-    range.forEach(function(cell) cell.erase());
+
+    // range.forEach(function(cell) cell.erase());
+    let i, cell;
+    for (i = 0; i < range.length; ++i) {
+      cell = range[i];
+      cell.erase();
+    }
+
     range.unshift(length, 0) // make arguments.
     // cells.splice(this.length, 0, ....)
     Array.prototype.splice.apply(cells, range);

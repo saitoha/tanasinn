@@ -405,7 +405,6 @@ Renderer.definition = {
 
   _offset: 0,
 
-  _double_height_mode : 0,
   _slow_blink_layer: null,
   _rapid_blink_layer: null,
 
@@ -830,7 +829,7 @@ Renderer.definition = {
         default:
           throw coUtils.Debug.Exception(
             _("Invalid double height mode was detected: %d."), 
-            this._double_height_mode);
+            size);
       }
     }
   }, // draw
