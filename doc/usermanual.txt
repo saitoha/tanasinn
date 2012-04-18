@@ -33,6 +33,12 @@ link:./usermanual.html[English/英語]
 #if __EN__
 == News
 
+=== 2012/04/18 
+    Version 0.2.0.0
+    More precise emulation. 
+    Now it passes vttest 1, 2, 3, 4, 7, and 8.
+    Improve performance.
+
 === 2012/04/15 
     Version 0.1.7.2
     Important bug fix, Now it works en_US locale, sorry!
@@ -57,6 +63,16 @@ process.python_path = "/usr/bin/python"
 #elif __JP__
 == News 
    
+=== 2012/04/18 
+    Version 0.2.0.0
+    More precise emulation. 
+    Now it passes vttest 1, 2, 3, 4, 7, and 8.
+    Improve performance.
+
+=== 2012/04/15 
+    Version 0.1.7.2
+    Important bug fix, Now it works en_US locale, sorry!
+
 === 2012/04/08 
     Now version 0.1.7.1 available.
 
@@ -101,8 +117,8 @@ This software is distributed under http:/#/www.mozilla.org/MPL/1.1/[Mozilla Publ
 == ダウンロード/ライセンス
 http:/#/www.mozilla-japan.org/MPL/MPL-1.1J.html[Mozilla Public License 1.1 (MPL1.1)] で配布しています。 
     
-- スナップショット版(PACKAGE_VERSION): http:/#/zuse.jp/tanasinn/tanasinn-current.xpi[ダウンロード]
 - 開発版 (PACKAGE_VERSION): http:/#/zuse.jp/tanasinn/downloads/versions/PACKAGE_VERSION/TANASINN_XPI_ID.xpi[ダウンロード].
+- スナップショット版(PACKAGE_VERSION): http:/#/zuse.jp/tanasinn/tanasinn-current.xpi[ダウンロード]
 - 過去のバージョン: http:/#/zuse.jp/tanasinn/downloads/versions/
 
 #endif
