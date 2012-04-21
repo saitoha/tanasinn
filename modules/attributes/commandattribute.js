@@ -105,6 +105,7 @@ CommandAttribute.definition = {
           {
             return handler.apply(self, arguments);
           },
+
         }, this);
 
       delegate.watch("enabled", 
@@ -116,9 +117,15 @@ CommandAttribute.definition = {
             }
             if (oldval != newval) {
               if (newval) {
-                commands.forEach(function(command) {
-                  broker.subscribe("get/commands", function() command, undefined, delegate.id);
-                });
+                for (let i = 0; i < commands.length; ++i) {
+                  let command = commands[i];
+                  broker.subscribe(
+                    "get/commands", 
+                    function() 
+                    {
+                      return command;
+                    }, undefined, delegate.id);
+                };
               } else {
                 broker.unsubscribe(delegate.id);
               }

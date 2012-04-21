@@ -396,11 +396,14 @@ SequenceParser.definition = {
       for (let i = 0; i < codes.length; ++i) {
         let code = codes[i];
         if (0x30 <= code && code < 0x3a) {
-          this[code] = this[code] || new ParameterParser(code - 0x30);
+          this[code] = this[code] 
+                     || new ParameterParser(code - 0x30);
         } else if (0x3b == code) {
-          this[code] = this[code] || new ParameterParserStartingWithSemicolon(0);
+          this[code] = this[code] 
+                     || new ParameterParserStartingWithSemicolon(0);
         } else {
-          this[code] = this[code] || new ParameterParser(0, code);
+          this[code] = this[code] 
+                     || new ParameterParser(0, code);
         }
         if (1 == char_with_param.length) {
           this[code][accept_char] = action;

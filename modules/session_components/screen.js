@@ -1408,17 +1408,20 @@ Scrollable.definition = {
     let width = this._width;
     let height = this._height;
     let attr = this.cursor.attr;
-    let i;
+    let i, line;
 
     // set dirty flag.
     for (i = offset + top; i < offset + bottom - n; ++i) {
-      lines[i].invalidate();
+      line = lines[i];
+      line.invalidate();
     }
 
     // rotate lines.
     let range = lines.splice(offset + bottom - n, n);
     for (i = 0; i < range.length; ++i) {
-      range[i].erase(0, width, attr);
+      line = range[i];
+      line.erase(0, width, attr);
+      line.size = 0;
     }
     range.unshift(offset + top, 0);
     Array.prototype.splice.apply(lines, range);
@@ -1447,6 +1450,7 @@ Scrollable.definition = {
       for (i = 0; i < range.length; ++i) {
         let line = range[i];
         line.erase(0, width, attr);
+        line.size = 0;
       }
     } else if (offset < this.scrollback_limit) {
       range = this._createLines(n);
@@ -1463,6 +1467,7 @@ Scrollable.definition = {
         line.erase(0, width, attr);
         line.invalidate();
         line.length = width;
+        line.size = 0;
       }
     }
     // line.splice(offset + bottom -m, 0, ....);

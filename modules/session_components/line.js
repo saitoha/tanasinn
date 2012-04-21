@@ -842,6 +842,7 @@ Line.definition = {
       cell = cells[i];
       cell.erase();
     }
+    this.size = 0;
   },
 
   /** 
