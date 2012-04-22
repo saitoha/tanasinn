@@ -862,6 +862,7 @@ coUtils.Constant.WEB140_COLOR_MAP_REVERSE = function() {
   let result = {};
   for (let [key, value] in Iterator(coUtils.Constant.WEB140_COLOR_MAP)) {
     result[value] = key;
+    coUtils.Constant.WEB140_COLOR_MAP[key.toLowerCase()] = value;
   } 
   return result;
 } ();
@@ -871,6 +872,7 @@ coUtils.Constant.X11_COLOR_MAP_REVERSE = function() {
   let result = {};
   for (let [key, value] in Iterator(coUtils.Constant.X11_COLOR_MAP)) {
     result[value] = key;
+    coUtils.Constant.X11_COLOR_MAP[key.toLowerCase()] = value;
   } 
   return result;
 } ();
@@ -1287,6 +1289,133 @@ coUtils.format = function format(/* template, arg1, arg2, .... */)
   });
   return result;
 }
+
+coUtils.Color = {
+
+  parseX11ColorSpec: function parseX11ColorSpec(spec)
+  {
+    let result;
+    let pattern = /^#([0-9a-fA-F]{3,12})$|^rgb:([0-9a-fA-F]+)\/([0-9a-fA-F]+)\/([0-9a-fA-F]+)$|^([a-zA-Z0-9\s]+)$/;
+    let match = spec.match(pattern);
+  
+    if (null === match) {
+      throw coUtils.Debug.Exception(
+        _("Invalid spec string: %s."), spec);
+    }
+  
+    let [, rgb, r, g, b, name] = match;
+  
+    if (rgb) {
+      result = this._convertRGBSpec1(rgb); 
+    } else if (r) {
+      result = this._convertRGBSpec2(r, g, b);       
+    } else {
+      result = this._convertColorName(name); 
+    } 
+
+    return result;
+
+  }, // parseX11ColorSpec 
+ 
+  _convertRGBSpec1: function _parseRGBSpec(rgb)
+  {
+    let result;
+    
+    switch (rgb.length) {
+  
+      case 3:
+        result = "#" + rgb
+          .split("")
+          .map(function(c) 0x100 + (parseInt(c, 16) << 4))
+          .map(function(n) n.toString(16).substr(1))
+          .join("")
+          ;
+        break;
+  
+      case 6:
+        result = "#" + rgb;
+        break;
+  
+      case 9:
+        result = "#" + rgb
+          .match(/.../g)
+          .map(function(c) 0x100 + (parseInt(c, 16) >>> 4))
+          .map(function(n) n.toString(16).substr(1))
+          .join("")
+          ;
+        break;
+  
+      case 12:
+        result = "#" + rgb
+          .match(/..../g)
+          .map(function(c) 0x100 + (parseInt(c, 16) >>> 8))
+          .map(function(n) n.toString(16).substr(1))
+          .join("")
+          ;
+        break;
+  
+      default:
+        throw coUtils.Debug.Exception(
+          _("Invalid rgb format was specified: %s."), rgb);
+  
+    }
+
+    return result;
+  }, // _convertRGBSpec1
+
+  _convertRGBSpec2: function _parseRGBSpec(r, g, b)
+  {
+    let buffer = "#";
+  
+    for (let [, n] in Iterator([r, g, b])) {
+  
+      switch (n.length) {
+  
+        case 1:
+          n = parseInt(n, 16) << 4;
+          break;
+  
+        case 2:
+          n = parseInt(n, 16);
+          break;
+  
+        case 3:
+          n = parseInt(n, 16) >>> 4;
+          break;
+  
+        case 4:
+          n = parseInt(n, 16) >>> 8;
+          break;
+  
+        default:
+          throw coUtils.Debug.Exception(
+            _("Invalid rgb format was specified: %s."), spec);
+      }
+  
+      buffer += (0x100 + n)
+        .toString(16)
+        .substr(1)
+        ;
+    }
+    return buffer;
+  }, // _convertRGBSpec2
+
+  _convertColorName: function _convertColorName(name) 
+  {
+    let canonical_name = name
+      .replace(/\s+/g, "")
+      .toLowerCase()
+      ;
+    let color = coUtils.Constant.X11_COLOR_MAP[canonical_name]
+             || coUtils.Constant.WEB140_COLOR_MAP[canonical_name];
+    if (!color) {
+      throw coUtils.Debug.Exception(
+        _("Invalid color name was specified: %s."), name);
+    }
+    return color;
+  }, // _convertColorName
+
+}; // coUtils.Color
 
 coUtils.Event = {
 

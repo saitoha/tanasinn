@@ -384,8 +384,8 @@ ColorCommands.definition = {
     this._renderer = renderer;
   },
 
-  "[command('fgcolor', ['color-number/fg']), _('Select foreground color.'), enabled]":
-  function fgcolor(arguments_string)
+  "[command('changepallet', ['color-number/fg']), _('Change pallet.'), enabled]":
+  function changepallet(arguments_string)
   {
     let broker = this._broker;
     let pattern = /\s*([0-9]+)\s+([a-zA-Z]+|#[0-9a-fA-F]+)/;
@@ -400,35 +400,11 @@ ColorCommands.definition = {
     }
     let [, number, color] = match;
     let renderer = this._renderer;
-    renderer.normal_color[number] = color;
+    renderer.color[number] = color;
     broker.notify("command/draw", /* redraw */true);
     return {
       success: true,
       message: _("Foreground color was changed."),
-    };
-  },
-
-  "[command('bgcolor', ['color-number/bg']), _('Select background color.'), enabled]":
-  function bgcolor(arguments_string)
-  {
-    let broker = this._broker;
-    let pattern = /\s*([0-9]+)\s+([a-zA-Z]+|#[0-9a-fA-F]+)/;
-    let match = arguments_string.match(pattern);
-    if (null === match) {
-      return {
-        success: false,
-        message: coUtils.Text.format(
-          _("Ill-formed arguments: %s."), 
-          arguments_string),
-      };
-    }
-    let [, number, color] = match;
-    let renderer = this._renderer;
-    renderer.background_color[number] = color;
-    broker.notify("command/draw", /* redraw */true);
-    return {
-      success: true,
-      message: _("Background color was changed."),
     };
   },
 };

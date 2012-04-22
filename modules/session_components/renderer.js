@@ -142,7 +142,7 @@ PersistentTrait.definition = {
       font_family: this.font_family,
       font_size: this.font_size,
       force_precious_rendering: this.force_precious_rendering,
-      reverse: this.reverse,
+      reverse: this._reverse,
       color: this.color,
     };
     let path = broker.runtime_path 
@@ -246,18 +246,17 @@ ReverseVideoTrait.definition = {
   {
     if (this._reverse != value) {
       this._reverse = value;
-      let maps = [this.color, this.color, this.color];
-      for (let [, map] in Iterator(maps)) {
-        for (let i = 0; i < map.length; ++i) {
-          let value = (parseInt(map[i].substr(1), 16) ^ 0x1ffffff)
-            .toString(16)
-            .replace(/^1/, "#");
-          map[i] = value;
-        }
+      let map = this.color;
+      for (let i = 0; i < map.length; ++i) {
+        let value = (parseInt(map[i].substr(1), 16) ^ 0x1ffffff)
+          .toString(16)
+          .replace(/^1/, "#");
+        map[i] = value;
       }
       let broker = this._broker;
       broker.notify("command/draw", true);
     }
+
   },
 
 }; // ReverseVideoTrait
@@ -308,21 +307,20 @@ PalletManagerTrait.definition = {
   {
     let [number, spec] = value.split(";");
 
-    let pattern = /^(\?)$|^#([0-9a-fA-F]{6})$|rgb:([0-9a-fA-F]{2})\/([0-9a-fA-F]{2})\/([0-9a-fA-F]{2})$|rgb:([0-9a-fA-F]{4})\/([0-9a-fA-F]{4})\/([0-9a-fA-F]{4})$/;
-    let match = spec.match(pattern);
-    let [query, rgb, r2, g2, b2, r4, g4, b4] = match;
+    // range check.
+    if (0 > number && number > 254) {
+      throw coUtils.Debug.Exception(
+        _("Specified number is out of range: %d."), number);
+    }
+
+    // parse arguments.
     if ("?" == spec) {
       let broker = this._broker;
-      let rgb = this.color[number];
-      let message = "4" + number + ";" + rgb;
+      let message = "4;" + number + ";" + this.color[number];
       broker.notify("command/send-to-tty", message);
-    } else if (r2) {
+    } 
 
-    } else if (r4) {
-
-    } else {
-      coUtils.Debug.reportError(_("Invalid spec string: %s."), spec);
-    }
+    this.color[number] = coUtils.Color.parseX11ColorSpec(spec);
   },
 
 }; // PalletManagerTrait
@@ -404,6 +402,7 @@ let Renderer = new Class().extends(Plugin)
                           .mix(ReverseVideoTrait)
                           .mix(DRCSStateTrait)
                           .mix(PalletManagerTrait)
+                          .depends("outerchrome")
                           .depends("screen")
                           .requires("PersistentConcept");
 Renderer.definition = {
@@ -487,6 +486,9 @@ Renderer.definition = {
     this.captureScreen.enabled = true;
     this.onDRCSStateChangedG0.enabled = true;
     this.onDRCSStateChangedG1.enabled = true;
+    let outerchrome = this.dependency["outerchrome"];
+    this.foreground_color = outerchrome.foreground_color;
+    this.background_color = outerchrome.background_color;
   },
 
   /** Uninstalls itself.
@@ -520,6 +522,24 @@ Renderer.definition = {
       this._rapid_blink_layer.destroy();
       this._rapid_blink_layer = null;
     }
+  },
+
+  "[subscribe('sequence/osc/10'), enabled]": 
+  function osc10(info) 
+  {
+    let outerchrome = this.dependency["outerchrome"];
+    this.foreground_color = outerchrome.foreground_color;
+    this.background_color = outerchrome.background_color;
+    this.draw(true);
+  },
+
+  "[subscribe('sequence/osc/11'), enabled]": 
+  function osc11(info) 
+  {
+    let outerchrome = this.dependency["outerchrome"];
+    this.foreground_color = outerchrome.foreground_color;
+    this.background_color = outerchrome.background_color;
+    this.draw(true);
   },
 
   /** Take screen capture and save it in png format. */
@@ -893,18 +913,39 @@ Renderer.definition = {
   _drawBackgroundImpl: 
   function _drawBackgroundImpl(context, x, y, width, height, attr) 
   {
-    if (!this._reverse && this.transparent_color == attr.bg) {
-      context.clearRect(x, y, width, height);
+    //if (!this._reverse && !attr.bgcolor) {
+    //  context.clearRect(x, y, width, height);
+    //} else {
+    /* Get hexadecimal formatted background color (#xxxxxx) 
+     * form given attribute structure. */
+    let back_color;
+    if (attr.bgcolor) {
+      if (attr.inverse) {
+        back_color = this.color[attr.bg];
+      } else {
+        back_color = this.color[atstr.fg];
+      }
     } else {
-      /* Get hexadecimal formatted background color (#xxxxxx) 
-       * form given attribute structure. */
-      let back_color = this.color[attr.bg];
-      context.globalAlpha = 1.0;
-
-      /* Draw background */
-      context.fillStyle = back_color;
-      context.fillRect(x, y, width, height);
+      if (attr.inverse) {
+        back_color = this.foreground_color;
+      } else {
+        context.clearRect(x, y, width, height);
+        return;
+      }
     }
+
+    if (this._reverse) {
+      back_color = (parseInt(back_color.substr(1), 16) ^ 0x1ffffff)
+        .toString(16)
+        .replace(/^1/, "#");
+    }
+
+    context.globalAlpha = 1.0;
+
+    /* Draw background */
+    context.fillStyle = back_color;
+    context.fillRect(x, y, width, height);
+    //}
     context = null;
   },
 
@@ -946,7 +987,26 @@ Renderer.definition = {
     // Get hexadecimal formatted text color (#xxxxxx) 
     // form given attribute structure. 
     let fore_color_map = this.color;
-    let fore_color = fore_color_map[attr.fg];
+    let fore_color;
+    if (attr.fgcolor) {
+      if (attr.inverse) {
+        fore_color = fore_color_map[attr.bg];
+      } else {
+        fore_color = fore_color_map[attr.fg];
+      }
+    } else {
+      if (attr.inverse) {
+        fore_color = this.background_color;
+      } else {
+        fore_color = this.foreground_color;
+      }
+    }
+
+    if (this._reverse) {
+      fore_color = (parseInt(fore_color.substr(1), 16) ^ 0x1ffffff)
+        .toString(16)
+        .replace(/^1/, "#");
+    }
 
     context.fillStyle = fore_color;
 

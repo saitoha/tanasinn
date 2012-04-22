@@ -530,7 +530,7 @@ CursorState.definition = {
             break;
 
           case 39:
-            attr.fg = 7;
+            attr.fgcolor = false;
             attr.bold = false; // SGR default fg.
             break;
 
@@ -571,7 +571,7 @@ CursorState.definition = {
             break;
 
           case 49:
-            attr.bg = 0; // SGR default bg.
+            attr.bgcolor = false; // SGR default bg.
             break;
 
           case 90:

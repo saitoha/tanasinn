@@ -203,7 +203,8 @@ const ATTR2_BLINK        = 21    // 00000000 00010000 00000000 00000000
 const ATTR2_RAPIDBLINK   = 22    // 00000000 00100000 00000000 00000000
 const ATTR2_ITALIC       = 23    // 00000000 01000000 00000000 00000000
 
-const ATTR2_SIZE         = 25    // 00000011 00000000 00000000 00000000
+const ATTR2_FGCOLOR      = 24    // 00000001 00000000 00000000 00000000
+const ATTR2_BGCOLOR      = 25    // 00000010 00000000 00000000 00000000
 
 // tanasinn specific properties
 const ATTR2_LINK         = 27    // 00000100 00000000 00000000 00000000
@@ -226,14 +227,13 @@ Cell.definition = {
   /** getter of foreground color */
   get fg()
   {
-    return this.inverse ?
-      this.value >>> ATTR2_BACKCOLOR & 0xff
-    : this.value >>> ATTR2_FORECOLOR & 0xff;
+    return this.value >>> ATTR2_FORECOLOR & 0xff;
   },
 
   /** setter of foreground color */
   set fg(value)
   {
+    this.fgcolor = true;
     this.value = this.value 
                & ~(0xff << ATTR2_FORECOLOR) 
                | value << ATTR2_FORECOLOR;
@@ -242,14 +242,13 @@ Cell.definition = {
   /** getter of background color */
   get bg()
   {
-    return this.inverse ?
-      this.value >>> ATTR2_FORECOLOR & 0xff
-    : this.value >>> ATTR2_BACKCOLOR & 0xff;
+    return this.value >>> ATTR2_BACKCOLOR & 0xff;
   },
 
   /** setter of background color */
   set bg(value)
   {
+    this.bgcolor = true;
     this.value = this.value 
                & ~(0xff << ATTR2_BACKCOLOR) 
                | value << ATTR2_BACKCOLOR;
@@ -296,7 +295,7 @@ Cell.definition = {
                & ~(0x1 << ATTR2_RAPIDBLINK) 
                | value << ATTR2_RAPIDBLINK;
   },
-  
+   
   /** getter of italic attribute */
   get italic()
   {
@@ -310,6 +309,36 @@ Cell.definition = {
                & ~(0x1 << ATTR2_ITALIC) 
                | value << ATTR2_ITALIC;
   },
+ 
+  /** getter of fgcolor attribute */
+  get fgcolor()
+  {
+    return this.value >>> ATTR2_FGCOLOR & 0x1;
+  },
+
+  /** setter of fgcolor attribute */
+  set fgcolor(value)
+  {
+    this.value = this.value
+               & ~(0x1 << ATTR2_FGCOLOR) 
+               | value << ATTR2_FGCOLOR;
+  },
+
+  
+  /** getter of bgcolor attribute */
+  get bgcolor()
+  {
+    return this.value >>> ATTR2_BGCOLOR & 0x1;
+  },
+
+  /** setter of bgcolor attribute */
+  set bgcolor(value)
+  {
+    this.value = this.value
+               & ~(0x1 << ATTR2_BGCOLOR) 
+               | value << ATTR2_BGCOLOR;
+  },
+
 
   /** getter of inverse attribute */
   get inverse()
@@ -352,21 +381,7 @@ Cell.definition = {
                & ~(0x1 << ATTR2_UNDERLINE) 
                | value << ATTR2_UNDERLINE;
   },
-  
-  /** getter of size attribute */
-  get size()
-  {
-    return this.value >>> ATTR2_SIZE & 0x3;
-  },
-
-  /** setter of size attribute */
-  set size(value) 
-  {
-    this.value = this.value
-               & ~(0x3 << ATTR2_SIZE) 
-               | value << ATTR2_SIZE;
-  },
-    
+     
   /** getter of wide attribute */
   get wide()
   {

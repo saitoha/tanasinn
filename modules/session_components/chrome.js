@@ -130,7 +130,9 @@ OuterChrome.definition = {
 
   "[persistable] enabled_when_startup": true,
   "[persistable, watchable] background_opacity": 0.87,
-  "[persistable, watchable] background": "-moz-linear-gradient(top, #707070, #000000)",
+  "[persistable, watchable] background_color": "#000000",
+  "[persistable, watchable] foreground_color": "#ffffff",
+  "[persistable, watchable] gradation": true,
   "[persistable, watchable] border_radius": 8,
   "[persistable, watchable] box_shadow": "5px 4px 29px black",
 
@@ -138,10 +140,62 @@ OuterChrome.definition = {
     <>
       -moz-box-shadow: {this.box_shadow};
       border-radius: {this.border_radius}px;
-      background: {this.background}; 
+      background-image: {this.background}; 
       opacity: {this.background_opacity};
       cursor: text;
     </>,
+
+  get blend_color()
+  {
+    if (this.gradation) {
+      let f = parseInt(this.foreground_color.substr(1), 16);
+      let b = parseInt(this.background_color.substr(1), 16);
+      let color = (((((f >>> 16 & 0xff) + (b >>> 16 & 0xff) * 3) / 4) | 0) << 16)
+                | (((((f >>> 8  & 0xff) + (b >>>  8 & 0xff) * 3) / 4) | 0) << 8) 
+                | (((((f        & 0xff) + (b        & 0xff) * 3) / 4) | 0) << 0);
+      return (color + 0x1000000)
+          .toString(16)
+          .replace(/^1/, "#");
+    }
+    return this.background_color;
+  },
+
+  get background() 
+  {
+    return coUtils.Text.format(
+      "-moz-linear-gradient(top,%s,%s)", 
+      this.blend_color, this.background_color);
+  },
+
+  "[subscribe('command/reverse-video'), enabled]": 
+  function reverseVideo(value) 
+  {
+    if (value) {
+      let reverse_color = (parseInt(this.background_color.substr(1), 16) ^ 0x1ffffff)
+          .toString(16)
+          .replace(/^1/, "#");
+      this._frame.style.background 
+        = coUtils.Text.format(
+          "-moz-linear-gradient(top, %s, %s)", 
+          reverse_color, this.blend_color);
+    } else {
+      this._frame.style.background = this.background;
+    }
+  },
+
+  "[subscribe('sequence/osc/10'), enabled]": 
+  function changeForegroundColor(value) 
+  {
+    this.foreground_color = coUtils.Color.parseX11ColorSpec(value);
+    this._frame.style.cssText = this.frame_style;
+  },
+
+  "[subscribe('sequence/osc/11'), enabled]": 
+  function changeBackgroundColor(value) 
+  {
+    this.background_color = coUtils.Color.parseX11ColorSpec(value);
+    this._frame.style.cssText = this.frame_style;
+  },
 
   /** 
    * Construct the skelton of user interface with some attributes 
@@ -218,6 +272,7 @@ OuterChrome.definition = {
     this._element = tanasinn_outer_chrome;
     this._frame = tanasinn_background_frame;
     this.updateStyle.enabled = true;
+    this.updateColor.enabled = true;
 
     if (coUtils.Runtime.app_name.match(/tanasinn/)) {
       this._element.firstChild.style.borderRadius = "0px";
@@ -229,6 +284,7 @@ OuterChrome.definition = {
   function uninstall(session) 
   {
     this.updateStyle.enabled = false;
+    this.updateColor.enabled = false;
     // destruct chrome elements. 
     if (this._element && this._element.parentNode) {
       this._element.parentNode.removeChild(this._element);
@@ -242,7 +298,13 @@ OuterChrome.definition = {
     this._element.hidden = false;
   },
 
-  "[subscribe('variable-changed/outerchrome.{background | background_opacity | border_radius | box_shadow}')]": 
+  "[subscribe('variable-changed/outerchrome.{background_color | foreground_color | gradation}')]": 
+  function updateColor() 
+  {
+    this._frame.style.cssText = this.frame_style;
+  },
+
+  "[subscribe('variable-changed/outerchrome.{background_opacity | border_radius | box_shadow}')]": 
   function updateStyle() 
   {
     this._frame.style.cssText = this.frame_style;
