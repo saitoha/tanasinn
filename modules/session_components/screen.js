@@ -1473,6 +1473,7 @@ let Scrollable = new Trait("Scrollable");
 Scrollable.definition = {
 
   "[persistable] scrollback_limit": 200,
+  "[persistable] smooth_scrolling_delay": 20,
 
   _smooth_scrolling: false,
 
@@ -1523,7 +1524,7 @@ Scrollable.definition = {
     if (this._smooth_scrolling) {
       let broker = this._broker;
       broker.notify("command/draw");
-      wait(10);
+      wait(this.smooth_scrolling_delay);
     }
   },
 
@@ -1577,7 +1578,7 @@ Scrollable.definition = {
     if (this._smooth_scrolling) {
       let broker = this._broker;
       broker.notify("command/draw");
-      wait(10);
+      wait(this.smooth_scrolling_delay);
     }
 
   },
