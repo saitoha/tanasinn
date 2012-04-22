@@ -1048,7 +1048,13 @@ DecPrivateMode.definition = {
   set DECCKM(value) 
   {
     let broker = this._broker;
-    broker.notify("command/change-cursor-mode", value);
+    let mode;
+    if (value) {
+      mode = "normal";
+    } else {
+      mode = "application";
+    }
+    broker.notify("command/change-cursor-mode", mode);
     this._ckm = value;
   },
 

@@ -80,6 +80,13 @@ let KEY_APPLICATION_CURSOR = {
   "Down"   : "\x1bOB",  // kd / kcud1
 };
 
+let KEY_VT52_CURSOR = {
+  "Left"   : "\x1bD",  // kl / kcub1
+  "Up"     : "\x1bA",  // ku / kcuu1
+  "Right"  : "\x1bC",  // kr / kcuf1
+  "Down"   : "\x1bB",  // kd / kcud1
+};
+
 let KEY_NORMAL_KEYPAD = {
 
   "PgUp"   : "\x1b[5~", // kP / kpp 
@@ -154,6 +161,7 @@ let KEY_APPLICATION_KEYPAD = {
   "Shift F8"   : "\x1b[34~",
 
 };
+
 
 let KEY_YEN_AS_5C = {
   "\xa5"       : "\x5c",
@@ -332,7 +340,7 @@ DefaultKeyMappings.definition = {
   "[persistable] backspace_as_delete": true,
   "[persistable] delete_as_function": true,
 
-  application_cursor: false,
+  cursor_mode: "normal",
   application_keypad: false,
 
   _map: null,
@@ -340,8 +348,30 @@ DefaultKeyMappings.definition = {
   "[subscribe('command/change-cursor-mode'), enabled]":
   function onChangeCursorMode(mode)
   {
-    this.application_cursor = mode;
+    this.cursor_mode = mode;
     this.build(this._map);
+  },
+
+  "[subscribe('command/change-mode'), enabled]":
+  function onChangeEmulationMode(mode)
+  {
+    let broker = this._broker;
+    switch (mode) {
+
+      case "vt100":
+        broker.notify("command/change-cursor-mode", "normal");
+        break;
+
+      case "vt52":
+        broker.notify("command/change-cursor-mode", "vt52");
+        break;
+
+      default:
+        coUtils.Debug.reportError(
+          _("Invalid emulation mode was specified: %s."), 
+          mode);
+
+    }
   },
 
   "[subscribe('command/build-key-mappings'), type('Object -> Undefined'), enabled]":
@@ -354,9 +384,16 @@ DefaultKeyMappings.definition = {
     settings.push(KEY_ANSI);
 
     // set cursor mode
-    if (this.application_cursor) {
+    if ("normal" == this.cursor_mode) {
       settings.push(KEY_APPLICATION_CURSOR);
-    } else {
+    } else if ("application" == this.cursor_mode) {
+      settings.push(KEY_NORMAL_CURSOR);
+    } else if ("vt52" == this.cursor_mode) {
+      settings.push(KEY_VT52_CURSOR);
+    } else { // fallback
+      coUtils.Debug.reportError(
+        _("Invalid cursor mode was specified: %s."), 
+        this.cursor_mode);
       settings.push(KEY_NORMAL_CURSOR);
     }
 

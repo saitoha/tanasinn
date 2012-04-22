@@ -771,6 +771,11 @@ VT52.definition = {
     coUtils.Debug.reportMessage("Exit VT52 mode.");
   },
 
+  "[profile('vt100'), sequence('ESC <')]": 
+  function V5EX_VT100() 
+  {
+  },
+
 }; // VT52
 
 /**
