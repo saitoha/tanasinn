@@ -22,6 +22,21 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+let ThreadManager = Components
+  .classes["@mozilla.org/thread-manager;1"]
+  .getService();
+
+let wait = function(wait) {
+  let endTime = Date.now() + wait;
+  let mainThread = ThreadManager.mainThread;
+  let c = 0;
+  do {
+    c++;
+    mainThread.processNextEvent(true);
+  } while ( (mainThread.hasPendingEvents()) || Date.now() < endTime );
+  return c;
+};
+
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -424,25 +439,89 @@ ScreenSequenceHandler.definition = {
       this.eraseScreenAllWithTestPattern();
   },
 
+  /**
+   * ED — Erase in Display
+   * 
+   * This control function erases characters from part or all of the display.
+   * When you erase complete lines, they become single-height, single-width 
+   * lines, with all visual character attributes cleared. ED works inside or 
+   * outside the scrolling margins.
+   *
+   * Format
+   *
+   * CSI    Ps    J
+   * 9/11 	3/n   4/10
+   *
+   * Parameters
+   * 
+   * Ps   represents the amount of the display to erase.
+   *
+   * Ps 	Area Erased
+   *      0 (default) 	From the cursor through the end of the display
+   *      1 	From the beginning of the display through the cursor
+   *      2 	The complete display
+   * 
+   * Programming Tip
+   * Use a Ps value of 2 to erase the complete display in a fast, 
+   * efficient manner.
+   */
   "[profile('vt100'), sequence('CSI %dJ')]":
   function ED(n) 
   { // Erase Display
-    n == 0 ?   // erase below
-      this.eraseScreenBelow()
-    : n == 1 ?   // erase above
-      this.eraseScreenAbove()
-    : n == 2 ? // erase all
-      this.eraseScreenAll()
-    //: n == 3 ? // erase saved lines (xterm)
-    //  undefined // TODO: 
-    : coUtils.Debug.reportWarning(
-        _("%s sequence [%s] was ignored."),
-        arguments.callee.name, Array.slice(arguments));
+   
+    switch (n) {
+
+      case 0:   // erase below
+        this.eraseScreenBelow();
+        break;
+
+      case 1:   // erase above
+        this.eraseScreenAbove()
+        break;
+
+      case 2: // erase all
+        this.eraseScreenAll()
+        break;
+      
+      case 3: // TODO: erase saved lines (xterm)  
+        coUtils.Debug.reportWarning(
+          _("ED 3 (xterm, erase saved lines) was ignored."));
+        break;
+
+      default:
+        coUtils.Debug.reportWarning(
+          _("%s sequence [%s] was ignored."),
+          arguments.callee.name, Array.slice(arguments));
+    }
+
   },
 
+  /**
+   *
+   * EL — Erase in Line
+   * 
+   * This control function erases characters on the line that has the cursor.
+   * EL clears all character attributes from erased character positions. EL 
+   * works inside or outside the scrolling margins.
+   *
+   * Format
+   *
+   * CSI    Ps    K
+   * 9/11 	3/n   4/11
+   *
+   * Parameters
+   * 
+   * Ps   represents the section of the line to erase.
+   *
+   * Ps 	Section Erased
+   *      0 (default) 	From the cursor through the end of the line
+   *      1 	From the beginning of the line through the cursor
+   *      2 	The complete line
+   */
   "[profile('vt100'), sequence('CSI %dK')]":
   function EL(n) 
   { // Erase Line
+   
     switch (n) {
 
       case 0: // erase to right
@@ -634,11 +713,6 @@ ScreenSequenceHandler.definition = {
   function HPR(n) 
   { // 
     this.cursorForward(n || 1);
-  },
-
-  "[profile('vt100'), sequence('CSI ?%dc')]":
-  function () 
-  {
   },
 
   /**
@@ -1400,6 +1474,25 @@ Scrollable.definition = {
 
   "[persistable] scrollback_limit": 200,
 
+  _smooth_scrolling: false,
+
+  "[subscribe('command/change-scrolling-mode'), enabled]":
+  function onScrollingModeChanged(mode) 
+  {
+    switch (mode) {
+
+      case "normal":
+        this._smooth_scrolling = false;
+        break;
+
+      case "smooth":
+        this._smooth_scrolling = true;
+        break;
+
+      default:
+    }
+  },
+
   /** Scroll up the buffer by n lines. */
   _scrollUp: function _scrollUp(top, bottom, n) 
   {
@@ -1426,6 +1519,12 @@ Scrollable.definition = {
     range.unshift(offset + top, 0);
     Array.prototype.splice.apply(lines, range);
     this._lines = lines.slice(offset, offset + height);
+
+    if (this._smooth_scrolling) {
+      let broker = this._broker;
+      broker.notify("command/draw");
+      wait(10);
+    }
   },
 
   /** Scroll down the buffer by n lines. */
@@ -1474,6 +1573,13 @@ Scrollable.definition = {
     range.unshift(offset + bottom - n, 0);
     Array.prototype.splice.apply(lines, range);
     this._lines = lines.slice(offset, offset + height);
+
+    if (this._smooth_scrolling) {
+      let broker = this._broker;
+      broker.notify("command/draw");
+      wait(10);
+    }
+
   },
 
 }; // Scrollable
@@ -1767,6 +1873,16 @@ Screen.definition = {
   "[type('Array -> Boolean -> Undefined')] write":
   function write(codes, insert_mode) 
   {
+/*    
+//    if (this._smooth_scrolling) {
+        if ((this.flag = (this.flag + 1) % 10) == 0) {
+          let broker = this._broker;
+          broker.notify("command/draw");
+          wait(0);
+        }
+//    }
+*/
+
     let width = this._width;
     let cursor = this.cursor;
     let it = 0;
@@ -1967,6 +2083,7 @@ Screen.definition = {
     let lines = this._lines;
     let attr = cursor._attr;
     let i;
+    
     let positionY = cursor.positionY;
     lines[positionY].erase(0, cursor.positionX + 1, attr);
     for (i = 1; i < positionY; ++i) {
@@ -1985,6 +2102,7 @@ Screen.definition = {
     let positionY = cursor.positionY;
     let height = this._height;
     let i;
+   
     lines[positionY].erase(cursor.positionX, width, attr);
     for (i = positionY + 1; i < height; ++i) {
       lines[i].erase(0, width, attr);

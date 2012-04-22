@@ -1590,6 +1590,18 @@ coUtils.Xml = {
 
 coUtils.Timer = {
 
+  _thread_manager: Components
+    .classes["@mozilla.org/thread-manager;1"]
+    .getService(),
+
+  wait: function(wait) 
+  {
+    let end_time = Date.now() + wait;
+    do {
+      this._thread_manager.mainThread.processNextEvent(true);
+    } while ( (mainThread.hasPendingEvents()) || Date.now() < end_time );
+  },
+
   /**
    * @fn setTimeout
    * @brief Set timer callback.

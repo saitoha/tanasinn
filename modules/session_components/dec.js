@@ -140,9 +140,8 @@ DecModeSequenceHandler.definition = {
 
         // Smooth (Slow) Scloll (DECSCLM)
         case 4:
-          // TODO: smooth scroll.
-          coUtils.Debug.reportWarning(
-            _("DECSET - DECSCLM (Smooth sclolling) was ignored."));
+          // smooth scroll.
+          broker.notify("command/change-scrolling-mode", "smooth");
           break;
 
         // Reverse Video (DECSCNM)
@@ -466,9 +465,8 @@ DecModeSequenceHandler.definition = {
 
         // Smooth (Slow) Scloll (DECSCLM)
         case 4:
-          // TODO: smooth scroll.
-          coUtils.Debug.reportWarning(
-            _("DECRST - DECSCLM (Smooth sclolling) was ignored."));
+          // smooth scroll.
+          broker.notify("command/change-scrolling-mode", "normal");
           break;
 
         // Reverse Video (DECSCNM)
