@@ -82,6 +82,7 @@
    line.js
    cursorstate.js
    screen.js
+   mascot.js
 
    emulator.js
    control.js
