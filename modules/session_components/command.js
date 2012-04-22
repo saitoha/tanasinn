@@ -400,7 +400,7 @@ ColorCommands.definition = {
     }
     let [, number, color] = match;
     let renderer = this._renderer;
-    renderer.normal_color[number] 
+    renderer.color[number] 
       = coUtils.Constant.WEB140_COLOR_MAP[color] || color;
     broker.notify("command/draw", /* redraw */true);
     return {
@@ -425,7 +425,7 @@ ColorCommands.definition = {
     }
     let [, number, color] = match;
     let renderer = this._renderer;
-    renderer.background_color[number] 
+    renderer.color[number] 
       = coUtils.Constant.WEB140_COLOR_MAP[color] || color;
     broker.notify("command/draw", /* redraw */true);
     return {

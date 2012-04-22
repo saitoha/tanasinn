@@ -129,8 +129,8 @@ OuterChrome.definition = {
     </plugin>,
 
   "[persistable] enabled_when_startup": true,
-  "[persistable, watchable] background_opacity": 0.80,
-  "[persistable, watchable] background": "-moz-linear-gradient(top, #626462, #000000)",
+  "[persistable, watchable] background_opacity": 0.87,
+  "[persistable, watchable] background": "-moz-linear-gradient(top, #707070, #000000)",
   "[persistable, watchable] border_radius": 8,
   "[persistable, watchable] box_shadow": "5px 4px 29px black",
 
@@ -140,6 +140,7 @@ OuterChrome.definition = {
       border-radius: {this.border_radius}px;
       background: {this.background}; 
       opacity: {this.background_opacity};
+      cursor: text;
     </>,
 
   /** 

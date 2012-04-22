@@ -46,7 +46,7 @@ Agent.definition = {
       parentNode: "#tanasinn_outer_chrome",
       tagName: "box",
       id: "tanasinn_agent_layer",
-      hidden: true,
+      //hidden: true,
       style: <>
         position: absolute;
       </>,

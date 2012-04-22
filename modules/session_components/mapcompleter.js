@@ -164,7 +164,7 @@ CMapCompleter.definition = {
     return;
   },
 
-};
+}; // CMapCompleter
 
 /**
  * @fn main
