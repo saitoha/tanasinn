@@ -238,7 +238,9 @@ Scrollbar.definition = {
   function onmouseout(event) 
   {
     let scrollbar = this._scrollbar;
-    if (0 == this._after.flex && !this._dragging && 0.00 != scrollbar.style.opacity) {
+    if (0 == this._after.flex && 
+        !this._dragging && 
+        0.00 != scrollbar.style.opacity) {
       scrollbar.style.opacity = 0.00;
     }
   },

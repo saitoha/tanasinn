@@ -36,7 +36,7 @@ CompleterBase.definition = {
       let (self = this) function() self);
   },
 
-};
+}; // CompleterBase
 
 /**
  * @abstruct ComletionDisplayDriverBase
@@ -53,7 +53,7 @@ CompletionDisplayDriverBase.definition = {
     broker.notify("initialized/" + this.id, this);
   },
 
-};
+}; // CompletionDisplayDriverBase
 
 
 function generateEntries(paths) 

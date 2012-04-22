@@ -143,6 +143,7 @@ PersistentTrait.definition = {
       font_size: this.font_size,
       force_precious_rendering: this.force_precious_rendering,
       reverse: this.reverse,
+      color: this.color,
     };
     let path = broker.runtime_path 
              + "/persist/" 
@@ -165,6 +166,7 @@ PersistentTrait.definition = {
       this.font_family = data.font_family;
       this.font_size = data.font_size;
       this._reverse = data.reverse;
+      this.color = data.color;
       let broker = this._broker;
       broker.notify("command/draw");
     } else {
@@ -209,7 +211,7 @@ let RapidBlinkTrait = new Trait();
 RapidBlinkTrait.definition = {
 
   /**
-   *
+   * 
    */
   createRapidBlinkLayer: function createRapidBlinkLayer()
   {
@@ -244,7 +246,7 @@ ReverseVideoTrait.definition = {
   {
     if (this._reverse != value) {
       this._reverse = value;
-      let maps = [this.normal_color, this.bold_color, this.background_color];
+      let maps = [this.color, this.color, this.color];
       for (let [, map] in Iterator(maps)) {
         for (let i = 0; i < map.length; ++i) {
           let value = (parseInt(map[i].substr(1), 16) ^ 0x1ffffff)
@@ -286,6 +288,45 @@ DRCSStateTrait.definition = {
   },
 
 }; // DRCSStateTrait
+
+
+/**
+ * @trait PalletManagerTrait
+ */
+let PalletManagerTrait = new Trait();
+PalletManagerTrait.definition = {
+  
+  // color map (index No. is spacified by SGR escape sequences)
+  
+  /** color map for Normal characters. */
+  "[watchable, persistable] color": CO_XTERM_256_COLOR_PROFILE.slice(0),       
+
+  _reverse: false,
+
+  "[subscribe('sequence/osc/4'), enabled]": 
+  function changeColor(value) 
+  {
+    let [number, spec] = value.split(";");
+
+    let pattern = /^(\?)$|^#([0-9a-fA-F]{6})$|rgb:([0-9a-fA-F]{2})\/([0-9a-fA-F]{2})\/([0-9a-fA-F]{2})$|rgb:([0-9a-fA-F]{4})\/([0-9a-fA-F]{4})\/([0-9a-fA-F]{4})$/;
+    let match = spec.match(pattern);
+    let [query, rgb, r2, g2, b2, r4, g4, b4] = match;
+    if ("?" == spec) {
+      let broker = this._broker;
+      let rgb = this.color[number];
+      let message = "4" + number + ";" + rgb;
+      broker.notify("command/send-to-tty", message);
+    } else if (r2) {
+
+    } else if (r4) {
+
+    } else {
+      coUtils.Debug.reportError(_("Invalid spec string: %s."), spec);
+    }
+  },
+
+}; // PalletManagerTrait
+
 
 /**
  * @class Layer
@@ -351,6 +392,7 @@ Layer.definition = {
 
 }; // class Layer
 
+
 /** 
  * @class Renderer
  * @brief Scan screen state and render it to canvas element.
@@ -361,6 +403,7 @@ let Renderer = new Class().extends(Plugin)
                           .mix(RapidBlinkTrait)
                           .mix(ReverseVideoTrait)
                           .mix(DRCSStateTrait)
+                          .mix(PalletManagerTrait)
                           .depends("screen")
                           .requires("PersistentConcept");
 Renderer.definition = {
@@ -382,17 +425,6 @@ Renderer.definition = {
   _context: null,
   _canvas: null,
 
-  // color map (index No. is spacified by SGR escape sequences)
-  
-  /** color map for Normal characters. */
-  "[watchable, persistable] normal_color": CO_XTERM_256_COLOR_PROFILE.slice(0),       
-
-  /** color map for Bold characters. */
-  "[watchable, persistable] bold_color": CO_XTERM_256_COLOR_PROFILE.slice(0),         
-
-  /** color map for background. */
-  "[watchable, persistable] background_color": CO_XTERM_256_COLOR_PROFILE.slice(0),   
-
   // cell geometry (in pixel)
   "[watchable, persistable] line_height": 16,
   "[watchable] char_width": 6.5, 
@@ -409,7 +441,9 @@ Renderer.definition = {
   _rapid_blink_layer: null,
 
   // font
-  "[watchable, persistable] font_family": "Monaco,Menlo,Lucida Console,monospace",
+  "[watchable, persistable] font_family": 
+    "Monaco,Menlo,Lucida Console,monospace",
+
   "[watchable, persistable] font_size": 14,
 
   "[persistable] force_precious_rendering": false,
@@ -453,7 +487,6 @@ Renderer.definition = {
     this.captureScreen.enabled = true;
     this.onDRCSStateChangedG0.enabled = true;
     this.onDRCSStateChangedG1.enabled = true;
-//    this._timer = coUtils.Timer.setInterval(this.drawImpl, 100, this);
   },
 
   /** Uninstalls itself.
@@ -487,12 +520,6 @@ Renderer.definition = {
       this._rapid_blink_layer.destroy();
       this._rapid_blink_layer = null;
     }
-//
-//    if (null !== this._timer) {
-//      this._timer.cancel();
-//      this._timer = null;
-//    }
-//
   },
 
   /** Take screen capture and save it in png format. */
@@ -871,7 +898,7 @@ Renderer.definition = {
     } else {
       /* Get hexadecimal formatted background color (#xxxxxx) 
        * form given attribute structure. */
-      let back_color = this.background_color[attr.bg];
+      let back_color = this.color[attr.bg];
       context.globalAlpha = 1.0;
 
       /* Draw background */
@@ -918,7 +945,7 @@ Renderer.definition = {
 
     // Get hexadecimal formatted text color (#xxxxxx) 
     // form given attribute structure. 
-    let fore_color_map = this.normal_color;
+    let fore_color_map = this.color;
     let fore_color = fore_color_map[attr.fg];
 
     context.fillStyle = fore_color;

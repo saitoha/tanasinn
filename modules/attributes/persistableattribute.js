@@ -133,21 +133,23 @@ PersistableAttribute.definition = {
   {
     if ("__attributes" in this) { 
       let attributes = this.__attributes;
-      keys = keys || Object.getOwnPropertyNames(attributes)
-        .filter(function(key) {
-          if (key in attributes) {
-            let attribute = attributes[key];
-            if ("persistable" in attribute) {
-              return attribute["persistable"];
+      if (!keys) {
+        keys = Object.getOwnPropertyNames(attributes)
+          .filter(function(key) {
+            if (key in attributes) {
+              let attribute = attributes[key];
+              if ("persistable" in attribute) {
+                return attribute["persistable"];
+              }
             }
-          }
-          return undefined;
-        });
+            return undefined;
+          });
+      }
 
       keys.forEach(function(key)
       {
         try {
-          if (this[key] != this.__proto__[key]) {
+          if (this[key] != this.__proto__[key] || Array.isArray(this[key])) {
             let path = [this.id, key].join(".");
             context[path] = this[key];
             context[path + ".default"] = this.__proto__[key];
@@ -169,16 +171,18 @@ PersistableAttribute.definition = {
   {
     if ("__attributes" in this) { 
       let attributes = this.__attributes;
-      keys = keys || Object.getOwnPropertyNames(attributes)
-        .filter(function(key) {
-          if (key in attributes) {
-            let attribute = attributes[key];
-            if ("persistable" in attribute) {
-              return attribute["persistable"];
+      if (!keys) {
+        keys = Object.getOwnPropertyNames(attributes)
+          .filter(function(key) {
+            if (key in attributes) {
+              let attribute = attributes[key];
+              if ("persistable" in attribute) {
+                return attribute["persistable"];
+              }
             }
-          }
-          return undefined;
-        });
+            return undefined;
+          });
+      }
 
       keys.forEach(function(key)
       {

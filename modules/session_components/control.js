@@ -37,8 +37,8 @@ AnswerBack.definition = {
   "[subscribe('command/answerback'), enabled]":
   function answerback()
   {
-    let session = this._broker;
-    session.notify("command/send-to-tty", this.answerback_message);
+    let broker = this._broker;
+    broker.notify("command/send-to-tty", this.answerback_message);
   },
 
   /** */
@@ -119,8 +119,8 @@ Control.definition = {
   "[profile('vt100'), sequence('0x05')]":
   function ENQ() 
   {
-    let session = this._broker;
-    session.notify("command/answerback");
+    let broker = this._broker;
+    broker.notify("command/answerback");
   },
   
   /** Acknowledge.
@@ -138,8 +138,8 @@ Control.definition = {
   "[profile('vt100'), sequence('0x07', 'ESC \\\\')]":
   function BEL() 
   {
-    let session = this._broker;
-    session.notify("sequence/bel");
+    let broker = this._broker;
+    broker.notify("sequence/bel");
   },
 
   /** Back space.
@@ -250,9 +250,9 @@ Control.definition = {
   "[profile('vt100'), sequence('0x11')]":
   function DC1() 
   {
-    let session = this._broker;
-    //session.notify("command/send-to-tty", "\u0011");
-    session.notify("command/flow-control", true);
+    let broker = this._broker;
+    //broker.notify("command/send-to-tty", "\u0011");
+    broker.notify("command/flow-control", true);
   },
   
   /** Device control 2.
@@ -270,9 +270,9 @@ Control.definition = {
   "[profile('vt100'), sequence('0x13')]":
   function DC3() 
   {
-    let session = this._broker;
-    //session.notify("command/send-to-tty", "\u0013");
-    session.notify("command/flow-control", false);
+    let broker = this._broker;
+    //broker.notify("command/send-to-tty", "\u0013");
+    broker.notify("command/flow-control", false);
   },
   
   /** Device control 4.

@@ -47,8 +47,8 @@ ColorNumberCompleter.definition = {
     let broker = this._broker;
     let { source, option, completers } = context;
     let renderer = this.dependency["renderer"];
-    let color_map = "fg" == option ? renderer.normal_color: 
-                    "bg" == option ? renderer.background_color:
+    let color_map = "fg" == option ? renderer.color: 
+                    "bg" == option ? renderer.color:
                     null;
     if (null == color_map) {
       coUtils.Debug.reportError(
