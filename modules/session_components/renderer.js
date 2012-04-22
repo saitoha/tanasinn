@@ -921,9 +921,9 @@ Renderer.definition = {
     let back_color;
     if (attr.bgcolor) {
       if (attr.inverse) {
-        back_color = this.color[attr.bg];
+        back_color = this.color[attr.fg];
       } else {
-        back_color = this.color[atstr.fg];
+        back_color = this.color[attr.bg];
       }
     } else {
       if (attr.inverse) {

@@ -147,17 +147,17 @@ OuterChrome.definition = {
 
   get blend_color()
   {
-    if (this.gradation) {
+    //if (this.gradation) {
       let f = parseInt(this.foreground_color.substr(1), 16);
       let b = parseInt(this.background_color.substr(1), 16);
-      let color = (((((f >>> 16 & 0xff) + (b >>> 16 & 0xff) * 3) / 4) | 0) << 16)
-                | (((((f >>> 8  & 0xff) + (b >>>  8 & 0xff) * 3) / 4) | 0) << 8) 
-                | (((((f        & 0xff) + (b        & 0xff) * 3) / 4) | 0) << 0);
+      let color = (((((f >>> 16 & 0xff) + (b >>> 16 & 0xff) * 2) / 3) | 0) << 16)
+                | (((((f >>> 8  & 0xff) + (b >>>  8 & 0xff) * 2) / 3) | 0) << 8) 
+                | (((((f        & 0xff) + (b        & 0xff) * 2) / 3) | 0) << 0);
       return (color + 0x1000000)
           .toString(16)
           .replace(/^1/, "#");
-    }
-    return this.background_color;
+    //}
+    //return this.background_color;
   },
 
   get background() 
