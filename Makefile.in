@@ -68,6 +68,7 @@ $(XPI): lint chrome.manifest install.rdf tanasinn-docs.zip
 	$(RM) $@
 	$(ZIP) $@ install.rdf \
 		bootstrap.js \
+		images/* \
 		content/* \
 		modules/*.js \
 		modules/*.py \
