@@ -625,7 +625,55 @@ ScreenSequenceHandler.definition = {
   { // Delete CHaracters
     this.deleteCharacters(n || 1);
   },
-  
+   
+  /**
+   *
+   * SL — Scroll Left
+   * 
+   * Format
+   *
+   * CSI    Pn    SP    @
+   * 9/11   3/n   2/0   4/0
+   *
+   * Parameter default value: Pn = 1
+   *
+   * SL causes the data in the presentation component to be moved by n 
+   * character positions if the line orientation is horizontal, or by n 
+   * line positions if the line orientation is vertical, such that the data 
+   * appear to move to the left; where n equals the value of Pn.
+   * The active presentation position is not affected by this control function.
+   *
+   */
+  "[profile('vt100'), sequence('CSI %d @')]":
+  function SL(n) 
+  { // Scroll Left
+    this.scrollLeft(n || 1);
+  },
+   
+  /**
+   *
+   * SR — Scroll Right
+   * 
+   * Format
+   *
+   * CSI    Pn    SP    A
+   * 9/11   3/n   2/0   4/1
+   *
+   * Parameter default value: Pn = 1
+   *
+   * SR causes the data in the presentation component to be moved by n 
+   * character positions if the line orientation is horizontal, or by n line 
+   * positions if the line orientation is vertical, such that the data appear
+   * to move to the right; where n equals the value of Pn.
+   * The active presentation position is not affected by this control function.
+   *
+   */
+  "[profile('vt100'), sequence('CSI %d A')]":
+  function SR(n) 
+  { // Scroll Right
+    this.scrollRight(n || 1);
+  },
+ 
   /**
    * SU—Pan Down
    * 
@@ -672,17 +720,19 @@ ScreenSequenceHandler.definition = {
   },
 
   /** 
-   *  Erase Character (ECH)
-   *  (VT200 mode only)
    *
-   *  9/11     5/8
-   *  CSI  Pn   X
+   * Erase Character (ECH)
+   * (VT200 mode only)
    *
-   *  Erases characters at the cursor position and the next Pn-1 characters. 
-   *  A parameter of 0 or 1 erases a single character. 
-   *  Character attributes are set to normal. No reformatting of data on the 
-   *  line occurs.
-   *  The cursor remains in the same position.
+   * 9/11     5/8
+   * CSI  Pn   X
+   *
+   * Erases characters at the cursor position and the next Pn-1 characters. 
+   * A parameter of 0 or 1 erases a single character. 
+   * Character attributes are set to normal. No reformatting of data on the 
+   * line occurs.
+   * The cursor remains in the same position.
+   *
    */
   "[profile('vt100'), sequence('CSI %dX')]":
   function ECH(n) 
@@ -2258,7 +2308,6 @@ Screen.definition = {
     let attr = cursor.attr;
     let length = lines.length;
     let i, line;
-coUtils.Debug.reportError(attr.value);
     for (i = 0; i < length; ++i) {
       line = lines[i];
       line.erase(0, width, attr);
@@ -2370,16 +2419,44 @@ coUtils.Debug.reportError(attr.value);
     this._scrollDown(positionY, bottom, delta);
   },
 
+  "[type('Uint16 -> Undefined')] scrollLeft":
+  function scrollLeft(n) 
+  { // Scroll Left
+    let lines = this._lines;
+    let attr = this.cursor.attr;
+    let i, line;
+    for (i = 0; i < lines.length; ++i) {
+      line = lines[i];
+      line.deleteCells(0, n, attr);
+    }
+  },
+
+  "[type('Uint16 -> Undefined')] scrollRight":
+  function scrollRight(n) 
+  { // Scroll Right
+    let lines = this._lines;
+    let attr = this.cursor.attr;
+    let i, line;
+    for (i = 0; i < lines.length; ++i) {
+      line = lines[i];
+      line.insertBlanks(0, n, attr);
+    }
+  },
+
   "[type('Uint16 -> Undefined')] scrollUpLine":
   function scrollUpLine(n) 
   { // Scroll Up line
-    this._scrollUp(this._scroll_top, this._scroll_bottom, n);
+    let top = this._scroll_top;
+    let bottom = this._scroll_bottom;
+    this._scrollUp(top, bottom, n);
   },
 
   "[type('Uint16 -> Undefined')] scrollDownLine":
   function scrollDownLine(n) 
   { // Scroll Down line
-    this._scrollDown(this._scroll_top, this._scroll_bottom, n);
+    let top = this._scroll_top;
+    let bottom = this._scroll_bottom;
+    this._scrollDown(top, bottom, n);
   },
 
   "[type('Uint16 -> Undefined')] eraseCharacters":
@@ -2388,7 +2465,8 @@ coUtils.Debug.reportError(attr.value);
     let start = this.cursor.positionX;
     let end = start + n;
     let cursor = this.cursor;
-    this._getCurrentLine().erase(start, end, cursor.attr);
+    let line = this._getCurrentLine();
+    line.erase(start, end, cursor.attr);
   },
 
   "[type('Uint16 -> Undefined')] deleteCharacters":

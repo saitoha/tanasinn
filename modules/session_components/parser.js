@@ -241,8 +241,10 @@ ParameterParser.definition = {
     let next = this[c];
     let action;
     if (undefined === next) {
-    } else if (next.hasOwnProperty("parse")) {
-      let meta_action = next.parse(scanner);
+    } else if ("parse" in next) {
+      scanner.moveNext();
+      let c = scanner.current();
+      let meta_action = next[c];
       if (meta_action) {
         action = meta_action(params);
       }
@@ -362,7 +364,7 @@ SequenceParser.definition = {
   append: function append(key, value, context) 
   {
     let match = key
-      .match(/^(0x[0-9a-zA-Z]+)|^%d(.+)$|^(.)%s$|^(%p)$|^(%c)$|^(.)$|^(.)(.+)$/);
+      .match(/^(0x[0-9a-zA-Z]+)|^%d([\x20-\x7f]+)$|^(.)%s$|^(%p)$|^(%c)$|^(.)$|^(.)(.+)$/);
 
     let [, 
       number, 
@@ -383,6 +385,7 @@ SequenceParser.definition = {
         });
       }
     } else if (char_with_param) {
+
       let action = function(params) function() value.apply(context, params);
       let accept_char = char_with_param.charCodeAt(0);
 
@@ -407,8 +410,16 @@ SequenceParser.definition = {
         }
         if (1 == char_with_param.length) {
           this[code][accept_char] = action;
-        } else {
+        } else if (2 == char_with_param.length) {
+          let next_char = char_with_param.charCodeAt(1);
+          this[code][accept_char] = this[code][accept_char] || new SequenceParser();
+          this[code][accept_char][next_char] = action;
+          /*
           let next_chars = char_with_param.substr(1);
+
+          //if (char_with_param.match(/ /)) {
+          //  alert(char_with_param)
+          //}
           this[code][accept_char] = {
 
             parse: function parse(scanner) 
@@ -430,6 +441,9 @@ SequenceParser.definition = {
             }
 
           };
+          */
+        } else {
+          throw coUtile.Exception(_("Cannot add handler: %s."), key);
         }
       }
       this[accept_char] = function() value.call(context, 0);
@@ -559,8 +573,14 @@ VT100Grammar.definition = {
   {
     let {expression, handler, context} = information;
     let match = expression.split(/\s+/);
-    let key = match.pop();
-    let prefix = match.pop() || "C0";
+    let pos = expression.indexOf(" ");
+    let key = expression.substr(pos + 1)
+    let prefix;
+    if (-1 == pos) {
+      prefix = "C0";
+    } else {
+      prefix = expression.substr(0, pos) || "C0";
+    }
     if ("number" == typeof key) {
       key = key.toString();
     }
