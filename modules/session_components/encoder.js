@@ -129,8 +129,8 @@ Encoder.definition = {
 
     let message = coUtils
       .format(_("Input character encoding changed: [%s]."), scheme);
-    let session = this._broker;
-    session.notify("command/report-status-message", message); 
+    let broker = this._broker;
+    broker.notify("command/report-status-message", message); 
   },
 
   "[subscribe('@event/broker-started'), enabled]": 

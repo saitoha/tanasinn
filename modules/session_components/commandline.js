@@ -450,7 +450,7 @@ Commandline.definition = {
         font: menu;
       </>,
       noautofocus: true,
-      noautohide: true,
+      //noautohide: true, // commented out for linux.
       ignorekeys: true,
       childNodes: {
         tagName: "stack",
@@ -614,10 +614,12 @@ Commandline.definition = {
   "[subscribe('command/report-status-message')]":
   function onStatusMessage(message) 
   {
-    this._textbox.mode = "status";
-    //coUtils.Timer.setTimeout(function() {
-      this._textbox.status = message;
-    //}, 0, this);
+    if (this._textbox) {
+      this._textbox.mode = "status";
+      coUtils.Timer.setTimeout(function() {
+        this._textbox.status = message;
+      }, 0, this);
+    }
   },
 
   "[subscribe('command/enable-commandline')]":
@@ -629,6 +631,7 @@ Commandline.definition = {
     this._textbox.focus();
     this._textbox.focus();
     this._textbox.focus();
+
     let broker = this._broker;
     broker.notify("event/mode-changed", "commandline");
   },
