@@ -127,7 +127,7 @@ DecModeSequenceHandler.definition = {
             let (screen = this._screen) {
               //this._screen.width = 132; // 132 column mode
               screen.eraseScreenAll();
-              screen.reset();
+              //screen.reset();
 
               broker.notify("event/screen-size-changed", { 
                 column: screen.width, 
@@ -452,7 +452,7 @@ DecModeSequenceHandler.definition = {
             let (screen = this._screen) {
               //this._screen.width = 80; // 80 column mode
               screen.eraseScreenAll();
-              screen.reset();
+              //screen.reset();
 
               broker.notify("event/screen-size-changed", { 
                 column: screen.width, 

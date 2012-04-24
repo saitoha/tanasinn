@@ -28,7 +28,7 @@ let ThreadManager = Components
 
 let wait = function(wait) {
   let endTime = Date.now() + wait;
-  let mainThread = ThreadManager.mainThread;
+  let mainThread = ThreadManager.currentThread;
   let c = 0;
   do {
     c++;
@@ -476,11 +476,11 @@ ScreenSequenceHandler.definition = {
         break;
 
       case 1:   // erase above
-        this.eraseScreenAbove()
+        this.eraseScreenAbove();
         break;
 
       case 2: // erase all
-        this.eraseScreenAll()
+        this.eraseScreenAll();
         break;
       
       case 3: // TODO: erase saved lines (xterm)  
@@ -1052,20 +1052,106 @@ ScreenSequenceHandler.definition = {
     this.setPositionX(0);
   },
 
+  /**
+   *
+   * CHT — Cursor Horizontal Forward Tabulation
+   *
+   * Move the active position n tabs forward.
+   *
+   * Default: 1.
+   *
+   * Format
+   *
+   * CSI    Pn   I
+   * 9/11   3/n  4/9
+   *
+   * Parameters
+   *
+   * Pn is the number of active position tabs to move forward.
+   * Description
+   *
+   * The active position is moved to the character position corresponding to
+   * the following n-th horizontal tabulation stop.
+   *
+   */
   "[profile('vt100'), sequence('CSI %dI')]":
   function CHT(n) 
   { // TODO: Cursor Horaizontal Tabulation
-    coUtils.Debug.reportWarning(
-      _("%s sequence [%s] was ignored."),
-      arguments.callee.name, Array.slice(arguments));
+    n = (n || 1) - 1;
+    //for (let i = 0; i < n; ++i) {
+    //  this.horizontalTab();
+    //  if (this.cursor.positionX >= this._width) {
+    //    this.cursor.positionX = 0;
+    //  }
+    //}
+    //return;
+
+    let tab_stops = this.tab_stops;
+    let cursor = this.cursor;
+    let width = this._width;
+    let positionX = cursor.positionX;;
+ 
+    if (positionX > width - 1) {
+      if (this._wraparound_mode) {
+        cursor.positionX = 0;
+        this.lineFeed();
+        return;
+      }
+    }
+   
+    let i;
+    for (i = 0; i < tab_stops.length; ++i) {
+      let stop = tab_stops[i];
+      if (stop > positionX) {
+        let index = i + n;
+        cursor.positionX = tab_stops[index % tab_stops.length];
+        return;
+      }
+    }
+    //cursor.positionX = width;
   },
 
+  /**
+   *
+   * CBT — Cursor Backward Tabulation
+   *
+   * Move the active position n tabs backward.
+   *
+   * Default: 1.
+   *
+   * Format
+   *
+   * CSI    Pn   Z
+   * 9/11   3/n  5/10
+   *
+   * Parameters
+   *
+   * Pn is the number of active position tabs to move backward.
+   *
+   * Description
+   *
+   * The active position is moved to the character position corresponding to
+   * the n-th preceding horizontal tabulation stop. If an attempt is made to 
+   * move the active position past the first character position on the line, 
+   * then the active position stays at column one.
+   *
+   */
   "[profile('vt100'), sequence('CSI %dZ')]":
   function CBT(n) 
   { // Cursor Backward Tabulation
-    coUtils.Debug.reportWarning(
-      _("%s sequence [%s] was ignored."),
-      arguments.callee.name, Array.slice(arguments));
+    n = (n || 1) - 1;
+    let tab_stops = this.tab_stops;
+    let cursor = this.cursor;
+    let positionX = cursor.positionX;;
+    let i;
+    for (i = tab_stops.length - 1; i >= 0; --i) {
+      let stop = tab_stops[i];
+      if (stop < positionX) {
+        let index = Math.max(0, i - n);
+        cursor.positionX = tab_stops[index];
+        break;
+      }
+    }
   },
 
   /**
@@ -1174,7 +1260,7 @@ ScreenSequenceHandler.definition = {
         break;
 
       case 3:
-        this.tab_stops = [0];
+        this.tab_stops = [];
         break;
 
       defalut:
@@ -1472,7 +1558,7 @@ Viewable.definition = {
 let Scrollable = new Trait("Scrollable");
 Scrollable.definition = {
 
-  "[persistable] scrollback_limit": 200,
+  "[persistable] scrollback_limit": 50,
   "[persistable] smooth_scrolling_delay": 20,
 
   _smooth_scrolling: false,
@@ -1538,32 +1624,33 @@ Scrollable.definition = {
     let attr = this.cursor.attr;
     let i;
     let range;
+    let line;
 
     // set dirty flag.
     for (i = n; i < this._lines.length; ++i) {
-      this._lines[i].invalidate();
+      line = this._lines[i];
+      line.invalidate();
     }
 
     // rotate lines.
     if (top > 0) {
       range = lines.splice(offset + top, n);
       for (i = 0; i < range.length; ++i) {
-        let line = range[i];
+        line = range[i];
         line.erase(0, width, attr);
         line.size = 0;
       }
     } else if (offset < this.scrollback_limit) {
-      range = this._createLines(n);
+      range = this._createLines(n, attr);
       offset = this._buffer_top += n;
       for (i = 0; i < range.length; ++i) {
-        let line = range[i];
+        line = range[i];
         line.invalidate();
       }
     } else { // 0 == top && offset == this.scrollback_limit
       range = lines.splice(0, n);
-      let width = this._width;
       for (i = 0; i < range.length; ++i) {
-        let line = range[i];
+        line = range[i];
         line.erase(0, width, attr);
         line.invalidate();
         line.length = width;
@@ -1728,10 +1815,7 @@ Screen.definition = {
     this.cursor = cursor_state;
     this._line_generator = line_generator;
 
-    this.tab_stops = [];
-    for (let i = 0; i < this._width; i += 8) {
-      this.tab_stops.push(i);
-    }
+    this._resetTabStop();
 
     let broker = this._broker;
     broker.notify("initialized/screen", this);
@@ -1781,10 +1865,7 @@ Screen.definition = {
       }
 
       // update tab stops
-      this.tab_stops = [];
-      for (let i = 0; i < this._width; i += 8) {
-        this.tab_stops.push(i);
-      }
+      this._resetTabStop();
 
       let broker = this._broker;
       broker.notify("variable-changed/screen.width", this.width);
@@ -1828,6 +1909,20 @@ Screen.definition = {
   get bufferTop()
   {
     return this._buffer_top;
+  },
+
+  _resetTabStop: function _resetTabStop()
+  {
+    // update tab stops
+    let i;
+    let width = this._width;
+    this.tab_stops = [];
+    for (i = 0; i < width; i += 8) {
+      this.tab_stops.push(i);
+    }
+    if (i != width - 1) {
+      this.tab_stops.push(width - 1);
+    }
   },
 
   getLines: function getLines(start, end) 
@@ -1888,10 +1983,23 @@ Screen.definition = {
     let cursor = this.cursor;
     let it = 0;
     let line = this._getCurrentLine();
+
+
+    if (cursor.positionX >= width) {
+      if (this._wraparound_mode) {
+        cursor.positionX = 0;
+        this.lineFeed();
+      } else {
+        cursor.positionX = width - 1;
+      }
+    }
+
+
     do {
       if (line) {
         if (cursor.positionX >= width) {
-          this.carriageReturn();
+          cursor.positionX = 0;
+          //this.carriageReturn();
           if (this._wraparound_mode) {
             this.lineFeed();
             line = this._getCurrentLine();
@@ -1905,9 +2013,6 @@ Screen.definition = {
         line.write(positionX, run, cursor.attr, insert_mode);
       }
     } while (it < codes.length);
-    if (cursor.positionX >= width) {
-      cursor.positionX = width - 1;
-    }
   },
 
 // ScreenCursorOperations Implementation.
@@ -1928,6 +2033,15 @@ Screen.definition = {
   "[type('Uint16 -> Undefined')] cursorBackward":
   function cursorBackward(n) 
   {
+
+    let width = this._width;
+    let cursor = this.cursor;
+
+    let positionX = cursor.positionX;;
+    if (positionX > width - 1) {
+      positionX = width - 1;
+    }
+
     let cursor = this.cursor;
     let positionX = cursor.positionX - n;
     let min = 0;
@@ -2006,13 +2120,19 @@ Screen.definition = {
   function backSpace() 
   {
     let cursor = this.cursor;
-    let positionX = cursor.positionX;
+    let width = this._width;
+
+    let positionX = cursor.positionX;;
+    if (positionX >= width) {
+      positionX = width - 1;
+    }
+
     if (positionX > 0) {
-      --cursor.positionX;
+      cursor.positionX = positionX - 1;
     } else if (this._reverse_wraparound_mode) { // positionX == 0
       //this.reverseIndex(); // 
       this.cursorUp(1);
-      cursor.positionX = this._width - 1;
+      cursor.positionX = width - 1;
     }
   },
  
@@ -2030,12 +2150,30 @@ Screen.definition = {
     let cursor = this.cursor;
     let tab_stops = this.tab_stops;
     let line = this._getCurrentLine();
-    let positionX = this.cursor.positionX;
-    let max = 0 == line.size ? this._width - 1: Math.floor(this._width / 2 - 1);
-    for (let i = 0; i < tab_stops.length; ++i) {
-      let stop = tab_stops[i];
+    let width = this._width;
+    let max;
+    if (0 == line.size) {
+      max = width - 1;
+    } else {
+      max = width / 2 - 1 | 0;
+    }
+    let positionX = cursor.positionX;
+    if (positionX > max) {
+      if (this._wraparound_mode) {
+        cursor.positionX = 0;
+        this.lineFeed();
+        return;
+      }
+    }
+
+    let i, stop;
+    for (i = 0; i < tab_stops.length; ++i) {
+      stop = tab_stops[i];
       if (stop > positionX) {
-        cursor.positionX = Math.min(max, stop);
+        cursor.positionX = stop;
+        if (cursor.positionX >= max) {
+          break;
+        }
         return;
       }
     }
@@ -2082,12 +2220,12 @@ Screen.definition = {
     let cursor = this.cursor;
     let width = this._width;
     let lines = this._lines;
-    let attr = cursor._attr;
+    let attr = cursor.attr;
     let i;
     
     let positionY = cursor.positionY;
     lines[positionY].erase(0, cursor.positionX + 1, attr);
-    for (i = 1; i < positionY; ++i) {
+    for (i = 0; i < positionY; ++i) {
       lines[i].erase(0, width, attr);
     }
   },
@@ -2098,7 +2236,7 @@ Screen.definition = {
   {
     let cursor = this.cursor;
     let width = this._width;
-    let attr = cursor._attr;
+    let attr = cursor.attr;
     let lines = this._lines;
     let positionY = cursor.positionY;
     let height = this._height;
@@ -2114,14 +2252,16 @@ Screen.definition = {
   "[type('Undefined')] eraseScreenAll":
   function eraseScreenAll() 
   {
-    let cursor = this.cursor;
     let width = this._width;
+    let cursor = this.cursor;
     let lines = this._lines;
+    let attr = cursor.attr;
+    let length = lines.length;
     let i, line;
-
-    for (i = 0; i < lines.length; ++i) {
+coUtils.Debug.reportError(attr.value);
+    for (i = 0; i < length; ++i) {
       line = lines[i];
-      line.erase(0, width, cursor.attr);
+      line.erase(0, width, attr);
       line.size = 0;
     }
   },
@@ -2144,8 +2284,10 @@ Screen.definition = {
   "[type('Uint16 -> Undefined')] insertBlanks":
   function insertBlanks(n) 
   {
+    let line = this._getCurrentLine();
     let cursor = this.cursor;
-    this._getCurrentLine().insertBlanks(cursor.positionX, n, cursor.attr);
+    let attr = cursor.attr;
+    line.insertBlanks(cursor.positionX, n, attr);
   },
       
   "[type('Uint16 -> Uint16 -> Undefined')] setScrollRegion":
@@ -2252,7 +2394,9 @@ Screen.definition = {
   "[type('Uint16 -> Undefined')] deleteCharacters":
   function deleteCharacters(n) 
   { // Delete CHaracters
-    this._getCurrentLine().deleteCells(this.cursor.positionX, n);
+    let line = this._getCurrentLine();
+    let attr = this.cursor.attr;
+    line.deleteCells(this.cursor.positionX, n, attr);
   },
 
 // ScreenSwitchConcept implementation
@@ -2388,12 +2532,12 @@ Screen.definition = {
     return this._lines[this.cursor.positionY]
   },
 
-  _createLines: function _createLines(n) 
+  _createLines: function _createLines(n, attr) 
   {
     let buffer = [];
     let width = this._width;
     let line_generator = this._line_generator;
-    return line_generator.allocate(width, n);
+    return line_generator.allocate(width, n, attr);
   },
 
   /** Switch between Main/Alternate screens. */

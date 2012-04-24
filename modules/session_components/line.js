@@ -224,6 +224,13 @@ Cell.definition = {
   c: 0x20,
   value: 0x7,
 
+  initialize: function initialize(attr) 
+  {
+    if (undefined !== attr) {
+      this.value = attr.value;
+    }
+  },
+
   /** getter of foreground color */
   get fg()
   {
@@ -602,10 +609,14 @@ Line.definition = {
   size: 0,
 
   /** constructor */
-  initialize: function initialize(length) 
+  initialize: function initialize(length, attr) 
   {
-    let generator = function() { while (length--) yield }.call();
-    this.cells = [new Cell for (_ in generator)];
+    let cells = [];
+    while (length--) {
+      let cell = new Cell(attr);
+      cells.push(cell);
+    }
+    this.cells = cells;
   },
 
   serialize: function serialize(context)
@@ -852,8 +863,9 @@ Line.definition = {
   clear: function clear() 
   {
     let cells = this.cells;
+    let length = cells.length;
     let i, cell;
-    for (i = 0; i < cells.length; ++i) {
+    for (i = 0; i < length; ++i) {
       cell = cells[i];
       cell.erase();
     }
@@ -875,6 +887,7 @@ Line.definition = {
 //      .forEach(function(cell) cell.erase(attr));
     let i, cell;
     let cells = this.cells;
+    end = Math.min(end, cells.length);
     for (i = start; i < end; ++i) {
       cell = cells[i];
       cell.erase(attr);
@@ -894,6 +907,7 @@ Line.definition = {
 //      .forEach(function(cell) cell.write(0x45 /* "E" */, attr));
     let i, cell;
     let cells = this.cells;
+    end = Math.min(end, cells.length);
     for (i = start; i < end; ++i) {
       cell = cells[i];
       cell.write(0x45 /* "E" */, attr);
@@ -902,22 +916,22 @@ Line.definition = {
 
    /**
    *
-   * ex. deleteCells(2, 3)
+   * ex. deleteCells(2, 3, attr)
    * 
    * [ a b c d e f g h ] -> [ a b f g h       ]
    */
-  deleteCells: function deleteCells(start, n) 
+  deleteCells: function deleteCells(start, n, attr) 
   {
     let cells = this.cells;
     let length = this.length;
     this.addRange(start, length);
     let range = cells.splice(start, n);
 
-    // range.forEach(function(cell) cell.erase());
+    // range.forEach(function(cell) cell.erase(attr));
     let i, cell;
     for (i = 0; i < range.length; ++i) {
       cell = range[i];
-      cell.erase();
+      cell.erase(attr);
     }
 
     range.unshift(length, 0) // make arguments.
@@ -931,13 +945,20 @@ Line.definition = {
    * 
    * [ a b c d e f g h ] -> [ a b       c d e ]
    */
-  insertBlanks: function insertBlanks(start, n) 
+  insertBlanks: function insertBlanks(start, n, attr) 
   {
     let cells = this.cells;
     this.addRange(start, this.length);
     let length = cells.length;
     let range = cells.splice(-n);
-    range.forEach(function(cell) cell.erase());
+
+    // range.forEach(function(cell) cell.erase(attr));
+    let i, cell;
+    for (i = 0; i < range.length; ++i) {
+      let cell = range[i];
+      cell.erase(attr);
+    }
+
     range.unshift(start, 0) // make arguments.
     // cells.splice(start, 0, ....)
     Array.prototype.splice.apply(cells, range);
@@ -966,11 +987,13 @@ LineGenerator.definition = {
 
   /** Allocates n cells at once. */
   "[type('Uint16 -> Uint16 -> Array')]":
-  function allocate(width, n) 
+  function allocate(width, n, attr) 
   {
+    let line;
     let buffer = [];
     while (n--) {
-      buffer.push(new Line(width));
+      line = new Line(width, attr);
+      buffer.push(line);
     }
     return buffer;
   },
