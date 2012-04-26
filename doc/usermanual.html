@@ -927,7 +927,7 @@ process.python_path = "/usr/bin/python"</tt></pre>
 <div class="ulist"><ul>
 <li>
 <p>
-Developing version (0.2.0.1): <a href="http://zuse.jp/tanasinn/downloads/versions/0.2.0.1/tanasinn@zuse.jp.xpi">Download</a>
+Developing version (0.2.0.2): <a href="http://zuse.jp/tanasinn/downloads/versions/0.2.0.2/tanasinn@zuse.jp.xpi">Download</a>
 </p>
 </li>
 <li>
@@ -2378,13 +2378,29 @@ You need not to take care of order for building them.</tt></pre>
 <h4 id="_examples">13.8.2. Examples</h4>
 <div class="paragraph"><p>Example 1:</p></div>
 <div class="listingblock">
-<div class="content"></div></div>
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>
+   <span style="color: #990000">(</span><span style="color: #FF0000">{</span>                          <span style="font-style: italic"><span style="color: #9A1900">// &lt;--- (1)</span></span>
+     tagName<span style="color: #990000">:</span> <span style="color: #FF0000">"box"</span><span style="color: #990000">,</span>           <span style="font-style: italic"><span style="color: #9A1900">// &lt;--- (2)</span></span>
+     flex<span style="color: #990000">:</span> <span style="color: #993399">1</span><span style="color: #990000">,</span>
+     style<span style="color: #990000">:</span> <span style="color: #FF0000">{</span>                  <span style="font-style: italic"><span style="color: #9A1900">// &lt;--- (3)</span></span>
+       backgroundColor<span style="color: #990000">:</span> <span style="color: #FF0000">"red"</span>  <span style="font-style: italic"><span style="color: #9A1900">// &lt;--- (4)</span></span>
+     <span style="color: #FF0000">}</span>
+   <span style="color: #FF0000">}</span><span style="color: #990000">)</span>
+</tt></pre></div></div>
 <div class="literalblock">
 <div class="content">
 <pre><tt>It will be converted to following XUL element.</tt></pre>
 </div></div>
 <div class="listingblock">
-<div class="content"></div></div>
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>     <span style="font-weight: bold"><span style="color: #0000FF">&lt;box</span></span> <span style="color: #009900">flex</span><span style="color: #990000">=</span><span style="color: #FF0000">"1"</span> <span style="color: #009900">style</span><span style="color: #990000">=</span><span style="color: #FF0000">"background-color: red;"</span><span style="font-weight: bold"><span style="color: #0000FF">/&gt;</span></span></tt></pre></div></div>
 <div class="literalblock">
 <div class="content">
 <pre><tt>Every UI-template object consists of &lt;Element node&gt; (1), and it is
@@ -2395,13 +2411,51 @@ It always includes "tagName" property (2), and often includes
 </div></div>
 <div class="paragraph"><p>Example 2:</p></div>
 <div class="listingblock">
-<div class="content"></div></div>
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>
+   <span style="color: #990000">(</span><span style="color: #FF0000">{</span>
+     tagName<span style="color: #990000">:</span> <span style="color: #FF0000">"html:div"</span><span style="color: #990000">,</span>
+     parentNode<span style="color: #990000">:</span> <span style="color: #FF0000">"id-of-parent"</span><span style="color: #990000">,</span> <span style="font-style: italic"><span style="color: #9A1900">// &lt;--- (5)</span></span>
+     style<span style="color: #990000">:</span> <span style="color: #FF0000">{</span>
+       textAlign<span style="color: #990000">:</span> <span style="color: #FF0000">"center"</span>
+     <span style="color: #FF0000">}</span>
+     childNodes<span style="color: #990000">:</span> <span style="color: #FF0000">{</span>               <span style="font-style: italic"><span style="color: #9A1900">// &lt;--- (6)</span></span>
+       tagName<span style="color: #990000">:</span> <span style="color: #FF0000">"html:div"</span><span style="color: #990000">,</span>
+       style<span style="color: #990000">:</span> <span style="color: #FF0000">{</span>
+         fontSize<span style="color: #990000">:</span> <span style="color: #FF0000">"1.5em"</span>
+       <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
+       childNodes<span style="color: #990000">:</span> <span style="color: #990000">[</span>             <span style="font-style: italic"><span style="color: #9A1900">// &lt;--- (7)</span></span>
+         <span style="color: #FF0000">{</span>
+           tagName<span style="color: #990000">:</span> <span style="color: #FF0000">"html:span"</span><span style="color: #990000">,</span>
+           innerText<span style="color: #990000">:</span> <span style="color: #FF0000">"abcde"</span>    <span style="font-style: italic"><span style="color: #9A1900">// &lt;--- (8)</span></span>
+         <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
+         <span style="color: #FF0000">{</span>
+           tagName<span style="color: #990000">:</span> <span style="color: #FF0000">"html:div"</span><span style="color: #990000">,</span>
+         <span style="color: #FF0000">}</span>
+       <span style="color: #990000">]</span>
+     <span style="color: #FF0000">}</span>
+   <span style="color: #FF0000">}</span><span style="color: #990000">)</span>
+</tt></pre></div></div>
 <div class="literalblock">
 <div class="content">
 <pre><tt>It will be converted as below.</tt></pre>
 </div></div>
 <div class="listingblock">
-<div class="content"></div></div>
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>
+   <span style="font-weight: bold"><span style="color: #0000FF">&lt;html:div</span></span> <span style="color: #009900">style</span><span style="color: #990000">=</span><span style="color: #FF0000">"text-align: center;"</span><span style="font-weight: bold"><span style="color: #0000FF">&gt;</span></span>
+     <span style="font-weight: bold"><span style="color: #0000FF">&lt;html:div</span></span> <span style="color: #009900">style</span><span style="color: #990000">=</span><span style="color: #FF0000">"font-size: 1.5em;"</span><span style="font-weight: bold"><span style="color: #0000FF">&gt;</span></span>
+       <span style="font-weight: bold"><span style="color: #0000FF">&lt;html:span&gt;</span></span>abcde<span style="font-weight: bold"><span style="color: #0000FF">&lt;/html:span&gt;</span></span>
+       <span style="font-weight: bold"><span style="color: #0000FF">&lt;html:div/&gt;</span></span>
+     <span style="font-weight: bold"><span style="color: #0000FF">&lt;/html:span&gt;</span></span>
+   <span style="font-weight: bold"><span style="color: #0000FF">&lt;/html:div&gt;</span></span>
+</tt></pre></div></div>
 <div class="literalblock">
 <div class="content">
 <pre><tt>The "parentNode" property (5) indicates at which the current node is to
@@ -2417,13 +2471,75 @@ The "innerText" property (8) creates a text node under current
 </div></div>
 <div class="paragraph"><p>Example 2:</p></div>
 <div class="listingblock">
-<div class="content"></div></div>
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>
+   <span style="color: #990000">(</span><span style="color: #FF0000">{</span>
+     tagName<span style="color: #990000">:</span> <span style="color: #FF0000">"hbox"</span><span style="color: #990000">,</span>
+     id<span style="color: #990000">:</span> <span style="color: #FF0000">"parent"</span><span style="color: #990000">,</span>
+     flex<span style="color: #990000">:</span> <span style="color: #993399">1</span><span style="color: #990000">,</span>
+     onconstruct<span style="color: #990000">:</span> <span style="color: #FF0000">{</span>              <span style="font-style: italic"><span style="color: #9A1900">// &lt;--- (9)</span></span>
+       handler<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span> window<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">alert</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>id<span style="color: #990000">);</span> <span style="color: #FF0000">}</span>
+     <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
+     childNodes<span style="color: #990000">:</span> <span style="color: #990000">[</span>
+       <span style="color: #FF0000">{</span>
+         tagName<span style="color: #990000">:</span> <span style="color: #FF0000">"vbox"</span><span style="color: #990000">,</span>
+         id<span style="color: #990000">:</span> <span style="color: #FF0000">"left"</span><span style="color: #990000">,</span>
+         flex<span style="color: #990000">:</span> <span style="color: #993399">1</span><span style="color: #990000">,</span>
+         listener<span style="color: #990000">:</span> <span style="color: #FF0000">{</span>             <span style="font-style: italic"><span style="color: #9A1900">// &lt;--- (10)</span></span>
+           type<span style="color: #990000">:</span> <span style="color: #FF0000">"mouseover"</span><span style="color: #990000">,</span>
+           context<span style="color: #990000">:</span> window<span style="color: #990000">,</span>
+           handler<span style="color: #990000">:</span> onMouseOver
+         <span style="color: #FF0000">}</span>
+       <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
+       <span style="color: #FF0000">{</span>
+         tagName<span style="color: #990000">:</span> <span style="color: #FF0000">"vbox"</span><span style="color: #990000">,</span>
+         id<span style="color: #990000">:</span> <span style="color: #FF0000">"right"</span><span style="color: #990000">,</span>
+         flex<span style="color: #990000">:</span> <span style="color: #993399">1</span><span style="color: #990000">,</span>
+         listener<span style="color: #990000">:</span> <span style="color: #990000">[</span>
+           <span style="color: #FF0000">{</span>
+             type<span style="color: #990000">:</span> <span style="color: #FF0000">"mouseup"</span><span style="color: #990000">,</span>
+             handler<span style="color: #990000">:</span> onMouseUp
+           <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
+           <span style="color: #FF0000">{</span>
+             type<span style="color: #990000">:</span> <span style="color: #FF0000">"mousedown"</span><span style="color: #990000">,</span>
+             handler<span style="color: #990000">:</span> onMouseDown
+           <span style="color: #FF0000">}</span>
+         <span style="color: #990000">]</span>
+       <span style="color: #FF0000">}</span>
+     <span style="color: #990000">]</span>
+   <span style="color: #FF0000">}</span><span style="color: #990000">)</span>
+</tt></pre></div></div>
 <div class="literalblock">
 <div class="content">
 <pre><tt>It almost corresponds to following XUL code.</tt></pre>
 </div></div>
 <div class="listingblock">
-<div class="content"></div></div>
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>
+   <span style="font-weight: bold"><span style="color: #0000FF">&lt;hbox</span></span> <span style="color: #009900">id</span><span style="color: #990000">=</span><span style="color: #FF0000">"parent"</span> <span style="color: #009900">flex</span><span style="color: #990000">=</span><span style="color: #FF0000">"1"</span><span style="font-weight: bold"><span style="color: #0000FF">&gt;</span></span>
+     <span style="font-weight: bold"><span style="color: #0000FF">&lt;vbox</span></span> <span style="color: #009900">id</span><span style="color: #990000">=</span><span style="color: #FF0000">"left"</span> <span style="color: #009900">flex</span><span style="color: #990000">=</span><span style="color: #FF0000">"1"</span> <span style="color: #009900">onmouseover</span><span style="color: #990000">=</span><span style="color: #FF0000">""</span><span style="font-weight: bold"><span style="color: #0000FF">/&gt;</span></span>
+     <span style="font-weight: bold"><span style="color: #0000FF">&lt;vbox</span></span> <span style="color: #009900">id</span><span style="color: #990000">=</span><span style="color: #FF0000">"right"</span> <span style="color: #009900">flex</span><span style="color: #990000">=</span><span style="color: #FF0000">"1"</span><span style="font-weight: bold"><span style="color: #0000FF">/&gt;</span></span>
+   <span style="font-weight: bold"><span style="color: #0000FF">&lt;/hbox&gt;</span></span>
+   <span style="font-weight: bold"><span style="color: #0000FF">&lt;script</span></span> <span style="color: #009900">type</span><span style="color: #990000">=</span><span style="color: #FF0000">"application/x-javascript"</span>/<span style="font-weight: bold"><span style="color: #0000FF">&gt;</span></span>
+     <span style="color: #990000">&lt;![</span>CDATA<span style="color: #990000">[</span>
+       <span style="font-weight: bold"><span style="color: #0000FF">var</span></span> parent <span style="color: #990000">=</span> document<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">getElementById</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"parent"</span><span style="color: #990000">);</span>
+       <span style="font-weight: bold"><span style="color: #0000FF">var</span></span> left <span style="color: #990000">=</span> document<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">getElementById</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"left"</span><span style="color: #990000">);</span>
+       <span style="font-weight: bold"><span style="color: #0000FF">var</span></span> right <span style="color: #990000">=</span> document<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">getElementById</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"right"</span><span style="color: #990000">);</span>
+       <span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> window<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">alert</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>id<span style="color: #990000">)).</span><span style="font-weight: bold"><span style="color: #000000">apply</span></span><span style="color: #990000">(</span>parent<span style="color: #990000">);</span>
+       left<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">addEventListener</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"mouseover"</span><span style="color: #990000">,</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+         onMouseOver<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">apply</span></span><span style="color: #990000">(</span>window<span style="color: #990000">,</span> arguments<span style="color: #990000">);</span>
+       <span style="color: #FF0000">}</span><span style="color: #990000">,</span> <span style="font-weight: bold"><span style="color: #0000FF">false</span></span><span style="color: #990000">);</span>
+       right<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">addEventListener</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"mouseup"</span><span style="color: #990000">,</span> onMouseUp<span style="color: #990000">,</span> <span style="font-weight: bold"><span style="color: #0000FF">false</span></span><span style="color: #990000">);</span>
+       right<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">addEventListener</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"mousedown"</span><span style="color: #990000">,</span> onMouseOver<span style="color: #990000">,</span> <span style="font-weight: bold"><span style="color: #0000FF">false</span></span><span style="color: #990000">);</span>
+     <span style="color: #990000">]]&gt;</span>
+   <span style="font-weight: bold"><span style="color: #0000FF">&lt;/script&gt;</span></span>
+</tt></pre></div></div>
 <div class="literalblock">
 <div class="content">
 <pre><tt>The "onconstruct" property (9) defines a event function which fired
@@ -2446,7 +2562,7 @@ or tweet me (<a href="http://twitter.com/kefir_">http://twitter.com/kefir_</a>).
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2012-04-22 23:07:21 JST
+Last updated 2012-04-27 02:33:09 JST
 </div>
 </div>
 </body>

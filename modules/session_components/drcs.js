@@ -110,7 +110,6 @@ DRCSBuffer.definition = {
   "[subscribe('sequence/dcs')]":
   function onDCS(data) 
   {
-
     //               Pfn    Pcn      Pe      Pcmw     Pw      Pt      Pcmh     Pcss    Dscs
     let pattern = /^([01]);([0-9]+);([012]);([0-9]+);([012]);([012]);([0-9]+);([01])\{\s*([0-~])([\?-~\/;\n\r]+)$/;
     let match = data.match(pattern);

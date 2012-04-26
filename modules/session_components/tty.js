@@ -333,7 +333,7 @@ Controller.definition = {
           .replace(/\\/g, "/")
           .replace(
             /^([a-zA-Z]):/, 
-            function() String(<>/cygdrive/{arguments[1].toLowerCase()}</>))
+            function() "/cygdrive/" + arguments[1].toLowerCase())
           ;
     }
     let message = [

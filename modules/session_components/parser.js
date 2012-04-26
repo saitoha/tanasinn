@@ -364,10 +364,10 @@ SequenceParser.definition = {
   append: function append(key, value, context) 
   {
     let match = key
-      .match(/^(0x[0-9a-zA-Z]+)|^%d([\x20-\x7f]+)$|^(.)%s$|^(%p)$|^(%c)$|^(.)$|^(.)(.+)$/);
+      .match(/^(0x[0-9a-zA-Z]+)(%s)?$|^%d([\x20-\x7f]+)$|^(.)%s$|^(%p)$|^(%c)$|^(.)$|^(.)(.+)$/);
 
     let [, 
-      number, 
+      number, number2,
       char_with_param, 
       char_with_string, 
       char_position,
@@ -375,14 +375,20 @@ SequenceParser.definition = {
       normal_char, first, next_chars
     ] = match;
     if (number) { // parse number
-      let code = parseInt(number);
-      if ("parse" in value) {
-        C0Parser.append(code, value);
+      let code = parseInt(number, 16);
+      if (!number2) {
+        if ("parse" in value) {
+          C0Parser.append(code, value);
+        } else {
+          C0Parser.append(code, function() 
+          {
+            return value.apply(context);
+          });
+        }
       } else {
-        C0Parser.append(code, function() 
-        {
-          return value.apply(context);
-        });
+        let action = function(params) function() value.apply(context, params)
+        let parser = new StringParser(action);
+        C0Parser.append(code, parser);
       }
     } else if (char_with_param) {
 

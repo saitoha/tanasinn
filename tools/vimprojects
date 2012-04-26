@@ -79,6 +79,7 @@
    parser.js
 
    drcs.js
+   sixel.js
    line.js
    cursorstate.js
    screen.js
