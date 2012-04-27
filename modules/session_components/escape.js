@@ -234,7 +234,7 @@ Escape.definition = {
   },
 
 
-  "[profile('vt100'), sequence('ESC P%s')]": 
+  "[profile('vt100'), sequence('0x90%s', 'ESC P%s')]": 
   function DCS() 
   {
     let broker = this._broker;

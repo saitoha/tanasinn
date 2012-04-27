@@ -751,7 +751,9 @@ ExternalDriver.definition = {
   },
 
   QueryInterface: function QueryInterface(a_IID)
-    this,
+  {
+    return this;
+  },
 
 };
 
