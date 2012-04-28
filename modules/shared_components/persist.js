@@ -40,7 +40,7 @@ PersistManager.definition = {
       let profile_path = broker.runtime_path 
         + "/" + broker.profile_directory 
         + "/" + filename;
-      if (!coUtils.File.exists()) {
+      if (!coUtils.File.exists(profile_path)) {
         return;
       }
       let content = coUtils.IO.readFromFile(profile_path, "utf-8");
