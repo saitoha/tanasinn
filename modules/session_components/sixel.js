@@ -209,11 +209,6 @@ Sixel.definition = {
       context: sixel_canvas.getContext("2d"),
     };
     this._buffers.push(dom);
-    for (i = 0; i < 10; ++i) {
-      screen.lineFeed();
-      screen.markAsSixelLine(dom.canvas, i);
-    }
-
     try {
 
     let pattern = /^([0-9]);([01]);([0-9]+);?q((?:.|[\n\r])+)/;
@@ -224,7 +219,7 @@ Sixel.definition = {
     let [, P1, P2, P3, sixel] = match;
     let scanner = new ForwardInputIterator(sixel);
     let imagedata = dom.context
-      .getImageData(0, 0, dom.canvas.width, dom.canvas.height);
+      .getImageData(0, 0, dom.canvas.width, dom.canvas.height * 2);
     let x = 0;
     let y = 0;
     let color_no, r, g, b;
@@ -398,9 +393,8 @@ Sixel.definition = {
           break;
 
         case 0x9c: //
-          dom.context.putImageData(imagedata, 0, 0);
-          return;
-
+          scanner.moveNext();
+          break;
           
         default:
           alert(String.fromCharCode(c) + "*" + scanner._value[scanner._position - 1])
@@ -409,7 +403,13 @@ Sixel.definition = {
       }
     } while (!scanner.isEnd);
 
-
+    dom.context.putImageData(imagedata, 0, 0);
+    let line_count = Math.ceil(dom.canvas.height / renderer.line_height);
+    let i;
+    for (i = 0; i < line_count; ++i) {
+      screen.lineFeed();
+      screen.markAsSixelLine(dom.canvas, i);
+    }
 
     } catch (e) {alert(e + " " + e.lineNumber)}
   },

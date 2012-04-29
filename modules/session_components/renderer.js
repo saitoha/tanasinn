@@ -888,11 +888,12 @@ Renderer.definition = {
     let canvas = sixel_info.buffer;
     let position = sixel_info.position;
     let line_height = this.line_height;
+    let width = canvas.width;
+    context.clearRect(0, line_height * row, width, line_height);
     context.drawImage(
       canvas, 
-      0, line_height * position, canvas.width, line_height,
-      0, line_height * row, canvas.width, line_height
-      );
+      0, line_height * position, width, line_height,
+      0, line_height * row, width, line_height);
 
   },
 
