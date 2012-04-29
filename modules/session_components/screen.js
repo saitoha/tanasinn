@@ -398,7 +398,7 @@ ScreenSequenceHandler.definition = {
   function DECDHL_top() 
   {
     let line = this._getCurrentLine();
-    line.type = 1;
+    line.type = coUtils.Constant.LINETYPE_TOP;
     line.dirty = 1;
   },
 
@@ -407,7 +407,7 @@ ScreenSequenceHandler.definition = {
   function DECDHL_bottom() 
   {
     let line = this._getCurrentLine();
-    line.type = 2;
+    line.type = coUtils.Constant.LINETYPE_BOTTOM;
     line.dirty = 1;
   },
 
@@ -416,7 +416,7 @@ ScreenSequenceHandler.definition = {
   function DECSWL() 
   {
     let line = this._getCurrentLine();
-    line.type = 0;
+    line.type = coUtils.Constant.LINETYPE_NORMAL;
     line.dirty = 1;
   },
 
@@ -425,7 +425,7 @@ ScreenSequenceHandler.definition = {
   function DECDWL() 
   {
     let line = this._getCurrentLine();
-    line.type = 3;
+    line.type = coUtils.Constant.LINETYPE_DOUBLEWIDTH;
     line.dirty = 1;
   },
 
@@ -1528,7 +1528,7 @@ Viewable.definition = {
           column: column, 
           end: end,
           attr: attr, 
-          type: line.type || 0,
+          type: line.type,
         };
       }
     }
@@ -1647,7 +1647,7 @@ Scrollable.definition = {
     for (i = 0; i < range.length; ++i) {
       line = range[i];
       line.erase(0, width, attr);
-      line.type = 0;
+      line.type = coUtils.Constant.LINETYPE_NORMAL;
     }
     range.unshift(offset + top, 0);
     Array.prototype.splice.apply(lines, range);
@@ -1684,7 +1684,7 @@ Scrollable.definition = {
       for (i = 0; i < range.length; ++i) {
         line = range[i];
         line.erase(0, width, attr);
-        line.type = 0;
+        line.type = coUtils.Constant.LINETYPE_NORMAL;
       }
     } else if (offset < this.scrollback_limit) {
       range = this._createLines(n, attr);
@@ -1700,7 +1700,7 @@ Scrollable.definition = {
         line.erase(0, width, attr);
         line.invalidate();
         line.length = width;
-        line.type = 0;
+        line.type = coUtils.Constant.LINETYPE_NORMAL;
       }
     }
     // line.splice(offset + bottom -m, 0, ....);
@@ -2194,7 +2194,7 @@ Screen.definition = {
     let line = this._getCurrentLine();
     let width = this._width;
     let max;
-    if (0 == line.type) {
+    if (coUtils.Constant.LINETYPE_NORMAL == line.type) {
       max = width - 1;
     } else {
       max = width / 2 - 1 | 0;
@@ -2303,7 +2303,7 @@ Screen.definition = {
     for (i = 0; i < length; ++i) {
       line = lines[i];
       line.erase(0, width, attr);
-      line.type = 0;
+      line.type = coUtils.Constant.LINETYPE_NORMAL;
     }
   },
 
@@ -2356,7 +2356,7 @@ Screen.definition = {
 
     for (i = 0; i < lines.length; ++i) {
       line = lines[i];
-      line.type = 0;
+      line.type = coUtils.Constant.LINETYPE_NORMAL;
     }
   },
 
