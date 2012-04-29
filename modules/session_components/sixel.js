@@ -121,17 +121,15 @@ Sixel.definition = {
     let (renderer = this.dependency["renderer"])
     let (screen = this.dependency["screen"])
     ({
-      parentNode: "#tanasinn_center_area",
+//      parentNode: "#tanasinn_center_area",
       tagName: "html:canvas",
       id: "sixel_canvas",
-      style: <>
-        border: solid red 1px;
-      </>,
       width: renderer.char_width * screen.width,
       height: renderer.line_height * screen.height,
     }),
 
   _color: null,
+  _buffers: null,
 
   /** installs itself. 
    *  @param {Broker} broker A Broker object.
@@ -140,13 +138,8 @@ Sixel.definition = {
   function install(broker) 
   {
     this.onDCS.enabled = true;
-    let {sixel_canvas} = broker.uniget(
-      "command/construct-chrome", this.template);
-    this._dom = { 
-      canvas: sixel_canvas,
-      context: sixel_canvas.getContext("2d"),
-    };
     this._color_table = [];
+    this._buffers = [];
   },
 
   /** Uninstalls itself.
@@ -158,24 +151,27 @@ Sixel.definition = {
     this._map = null;
     this.onDCS.enabled = false;
     this._color_table = null;
-    if (null !== this._dom) {
-      this._dom.canvas.parentNode.removeChild(this._dom.canvas);
-      this._dom.canvas = null;
-      this._dom.context = null;
-      this._dom = null;
+    let i;
+    for (i = 0; i < this._buffers.length; ++i) {
+      let buffer = this._buffers[i];
+      if (buffer.canvas.parentNode) {
+        buffers.canvas.parentNode.removeChild(buffer.canvas);
+      }
+      buffer.canvas = null;
+      buffer.context = null;
     }
+    this._buffers = null;
   },
 
   _setSixel: function _setSixel(imagedata, x, y, c) 
   {
-    let dom = this._dom;
     let [r, g, b] = this._color_table[this._color];
     let data = imagedata.data;
     c -= 0x3f;
     let i;
     for (i = 5; i >= 0; --i) {
       if (c & 1 << i) {
-        let position = ((y + i) * dom.canvas.width * 1 + x) * 4;
+        let position = ((y + i) * imagedata.width * 1 + x) * 4;
         data[position] = r;
         data[position + 1] = g; 
         data[position + 2] = b;
@@ -202,6 +198,22 @@ Sixel.definition = {
   "[subscribe('sequence/dcs')]":
   function onDCS(data) 
   {
+    let renderer = this.dependency["renderer"];
+    let screen = this.dependency["screen"];
+
+    let broker = this._broker;
+    let {sixel_canvas} = broker.uniget(
+      "command/construct-chrome", this.template);
+    let dom = { 
+      canvas: sixel_canvas,
+      context: sixel_canvas.getContext("2d"),
+    };
+    this._buffers.push(dom);
+    for (i = 0; i < 10; ++i) {
+      screen.lineFeed();
+      screen.markAsSixelLine(dom.canvas, i);
+    }
+
     try {
 
     let pattern = /^([0-9]);([01]);([0-9]+);?q((?:.|[\n\r])+)/;
@@ -211,7 +223,6 @@ Sixel.definition = {
     }
     let [, P1, P2, P3, sixel] = match;
     let scanner = new ForwardInputIterator(sixel);
-    let dom = this._dom;
     let imagedata = dom.context
       .getImageData(0, 0, dom.canvas.width, dom.canvas.height);
     let x = 0;

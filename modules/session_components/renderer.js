@@ -421,9 +421,6 @@ Renderer.definition = {
 
   "[persistable] enabled_when_startup": true,
 
-  _context: null,
-  _canvas: null,
-
   // cell geometry (in pixel)
   "[watchable, persistable] line_height": 16,
   "[watchable] char_width": 6.5, 
@@ -830,10 +827,16 @@ Renderer.definition = {
       screen.dirty = true;
     }
 
-    for (let { codes, row, column, end, attr, type } in screen.getDirtyWords()) {
+    for (let { codes, row, column, end, attr, line } in screen.getDirtyWords()) {
+      let type = line.type;
       let cells = codes;
       let codes1 = [];
-      for (let i = 0; i < cells.length; ++i) {
+      let i;
+
+      if (end == column) {
+        continue;
+      }
+      for (i = 0; i < cells.length; ++i) {
         let cell = cells[i];
         let code = cell.c;
         if (code > 0xffff) {
@@ -847,29 +850,26 @@ Renderer.definition = {
         }
       }
 
-
-      if (end == column) {
-        continue;
-      }
-
-      let left, top, width, height;
-
       switch (type) {
 
-        case 0:
+        case coUtils.Constant.LINETYPE_NORMAL:
           this._drawNormalText(codes1, row, column, end, attr, type);
           break;
 
-        case 1:
+        case coUtils.Constant.LINETYPE_TOP:
           this._drawDoubleHeightTextTop(codes1, row, column, end, attr, type);
           break;
 
-        case 2:
+        case coUtils.Constant.LINETYPE_BOTTOM:
           this._drawDoubleHeightTextBottom(codes1, row, column, end, attr, type);
           break;
 
-        case 3:
+        case coUtils.Constant.LINETYPE_DOUBLEWIDTH:
           this._drawDoubleWidthText(codes1, row, column, end, attr, type);
+          break;
+
+        case coUtils.Constant.LINETYPE_SIXEL:
+          this._drawSixel(line, row);
           break;
 
         default:
@@ -879,6 +879,22 @@ Renderer.definition = {
       }
     }
   }, // draw
+
+  _drawSixel: 
+  function _drawSixel(line, row)
+  {
+    let context = this._main_layer.context;
+    let sixel_info = line.sixel_info;
+    let canvas = sixel_info.buffer;
+    let position = sixel_info.position;
+    let line_height = this.line_height;
+    context.drawImage(
+      canvas, 
+      0, line_height * position, canvas.width, line_height,
+      0, line_height * row, canvas.width, line_height
+      );
+
+  },
 
   /** Render background attribute. 
    *

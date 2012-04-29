@@ -1495,6 +1495,17 @@ Viewable.definition = {
     return this.getLines(start, end);
   },
 
+  markAsSixelLine: function markAsSixelLine(buffer, position)
+  {
+    let line = this._getCurrentLine();
+    line.type = coUtils.Constant.LINETYPE_SIXEL;
+    line.dirty = true;
+    line.sixel_info = {
+      buffer: buffer, 
+      position: position,
+    };
+  },
+
   "[subscribe('event/before-input')]":
   function onBeforeInput(message) 
   {
@@ -1521,14 +1532,13 @@ Viewable.definition = {
     let lines = this._getCurrentViewLines();
     for (let [row, line] in Iterator(lines)) { //this._interracedScan(lines)) {
       for (let { codes, column, end, attr } in line.getDirtyWords()) {
-
         yield { 
           codes: codes, 
           row: row, 
           column: column, 
           end: end,
           attr: attr, 
-          type: line.type,
+          line: line,
         };
       }
     }
