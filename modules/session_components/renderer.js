@@ -629,7 +629,7 @@ Renderer.definition = {
   },
 
   _drawNormalText: 
-  function _drawNormalText(codes, row, column, end, attr, size)
+  function _drawNormalText(codes, row, column, end, attr, type)
   {
     let context = this._main_layer.context;
     let line_height = this.line_height;
@@ -665,12 +665,12 @@ Renderer.definition = {
       char_width, 
       end - column, 
       height, 
-      attr, size);
+      attr, type);
 
   },
 
   _drawDoubleHeightTextTop: 
-  function _drawDoubleHeightTextTop(codes, row, column, end, attr, size)
+  function _drawDoubleHeightTextTop(codes, row, column, end, attr, type)
   {
     let context = this._main_layer.context;
     let line_height = this.line_height;
@@ -708,19 +708,19 @@ Renderer.definition = {
       context, 
       codes, 
       left, 
-      top + text_offset, 
+      top + text_offset / 2, 
       char_width * 2, 
       end - column, 
       height, 
       attr, 
-      size);
+      type);
 
     context.restore();
 
   },
 
   _drawDoubleHeightTextBottom: 
-  function _drawDoubleHeightTextBottom(codes, row, column, end, attr, size)
+  function _drawDoubleHeightTextBottom(codes, row, column, end, attr, type)
   {
     let context = this._main_layer.context;
     let line_height = this.line_height;
@@ -758,19 +758,19 @@ Renderer.definition = {
       context, 
       codes, 
       left, 
-      top + text_offset, 
+      top + text_offset / 2, 
       char_width * 2, 
       end - column, 
       height, 
       attr, 
-      size);
+      type);
 
     context.restore();
 
   },
 
   _drawDoubleWidthText: 
-  function _drawDoubleWidthText(codes, row, column, end, attr, size)
+  function _drawDoubleWidthText(codes, row, column, end, attr, type)
   {
     let context = this._main_layer.context;
     let line_height = this.line_height;
@@ -814,7 +814,7 @@ Renderer.definition = {
       end - column, 
       height, 
       attr, 
-      size);
+      type);
 
     context.restore();
 
@@ -830,8 +830,7 @@ Renderer.definition = {
       screen.dirty = true;
     }
 
-    for (let { codes, row, column, end, attr, size } in screen.getDirtyWords()) {
-
+    for (let { codes, row, column, end, attr, type } in screen.getDirtyWords()) {
       let cells = codes;
       let codes1 = [];
       for (let i = 0; i < cells.length; ++i) {
@@ -855,28 +854,28 @@ Renderer.definition = {
 
       let left, top, width, height;
 
-      switch (size) {
+      switch (type) {
 
         case 0:
-          this._drawNormalText(codes1, row, column, end, attr, size);
+          this._drawNormalText(codes1, row, column, end, attr, type);
           break;
 
         case 1:
-          this._drawDoubleHeightTextTop(codes1, row, column, end, attr, size);
+          this._drawDoubleHeightTextTop(codes1, row, column, end, attr, type);
           break;
 
         case 2:
-          this._drawDoubleHeightTextBottom(codes1, row, column, end, attr, size);
+          this._drawDoubleHeightTextBottom(codes1, row, column, end, attr, type);
           break;
 
         case 3:
-          this._drawDoubleWidthText(codes1, row, column, end, attr, size);
+          this._drawDoubleWidthText(codes1, row, column, end, attr, type);
           break;
 
         default:
           throw coUtils.Debug.Exception(
             _("Invalid double height mode was detected: %d."), 
-            size);
+            type);
       }
     }
   }, // draw
@@ -958,7 +957,7 @@ Renderer.definition = {
                      char_width, 
                      length, 
                      height, 
-                     attr, size)
+                     attr, type)
   {
     if (attr.blink) {
       if (null === this._slow_blink_layer) {
@@ -1039,7 +1038,7 @@ Renderer.definition = {
           let glyph_index = code - drcs_state.start_code;
           let source_top, source_left, source_width, source_height;
           let destination_top, destination_left, destination_width, destination_height;
-          switch (size) {
+          switch (type) {
 
             case 0:
               source_left = glyph_index * drcs_state.drcs_width;

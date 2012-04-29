@@ -58,26 +58,35 @@ ForwardInputIterator.definition = {
 
   parseChar: function parseChar(code) 
   {
+    if (this.isEnd) {
+      throw coUtils.Debug.Exception(_("Cannot parse number."));
+    }
     let c = this.current();
-    this.moveNext();
     return c == code;
   },
   
   parseUint: function parseUint() 
   {
-    let n = -1;
+    let n = 0;
     let c;
-    while (true) {
-      if (this.isEnd) {
-        throw coUtils.Exception(_("Cannot parse number."));
+
+    c = this.current();
+    if (0x30 <= c && c <= 0x39) {
+      n = c - 0x30;
+      while (true) {
+        this.moveNext();
+        if (this.isEnd) {
+          throw coUtils.Debug.Exception(_("Cannot parse number."));
+        }
+        c = this.current();
+        if (0x30 <= c && c <= 0x39) {
+          n = n * 10 + c - 0x30;
+        } else {
+          break;
+        }
       }
-      c = this.current();
-      this.moveNext();
-      if (0x30 <= c && c <= 0x39) {
-        n = n * 10 + c - 0x30;
-      } else {
-        break;
-      }
+    } else {
+      n = -1;
     }
     return n;
   },
@@ -122,6 +131,8 @@ Sixel.definition = {
       height: renderer.line_height * screen.height,
     }),
 
+  _color: null,
+
   /** installs itself. 
    *  @param {Broker} broker A Broker object.
    */
@@ -155,46 +166,42 @@ Sixel.definition = {
     }
   },
 
-  _setSixel: function _setSixel(x, y, c) 
+  _setSixel: function _setSixel(imagedata, x, y, c) 
   {
-
-    function char2sixelbits(c) {
-      return ("0000000" + (c.charCodeAt(0) - "?".charCodeAt(0)).toString(2))
-        .substr(-6).split("").reverse();
-    }
-
     let dom = this._dom;
-    let imagedata = dom.context
-      .getImageData(0, 0, dom.canvas.width, dom.canvas.height);
-    let i = 0;
-    let position = y * dom.canvas.width + x;
-
-    imagedata.data[position++] = this._color[0];
-    imagedata.data[position++] = this._color[1]; 
-    imagedata.data[position++] = this._color[2];
-    imagedata.data[position++] = 255;
-
-    dom.context.putImageData(imagedata, 0, 0);
-
-
-    coUtils.Debug.reportMessage("setsixel:"  + x + " " + y + " " + c);
+    let [r, g, b] = this._color_table[this._color];
+    let data = imagedata.data;
+    c -= 0x3f;
+    let i;
+    for (i = 5; i >= 0; --i) {
+      if (c & 1 << i) {
+        let position = ((y + i) * dom.canvas.width * 1 + x) * 4;
+        data[position] = r;
+        data[position + 1] = g; 
+        data[position + 2] = b;
+        data[position + 3] = 255;
+      }
+    }
   },
 
   _setColor: function _setColor(color_no, r, g, b) 
   {
-    let rgb_value = [r, g, b];
-    this._color_table[color_no] = rgb;
+    let rgb_value = [
+      Math.floor(r / 101 * 255), 
+      Math.floor(g / 101 * 255), 
+      Math.floor(b / 101 * 255)
+    ];
+    this._color_table[color_no] = rgb_value;
   },
 
   _selectColor: function _selectColor(color_no) 
   {
-    this._color = this._color_table[color_no];
+    this._color = color_no;
   },
 
   "[subscribe('sequence/dcs')]":
   function onDCS(data) 
   {
-
     try {
 
     let pattern = /^([0-9]);([01]);([0-9]+);?q((?:.|[\n\r])+)/;
@@ -204,73 +211,86 @@ Sixel.definition = {
     }
     let [, P1, P2, P3, sixel] = match;
     let scanner = new ForwardInputIterator(sixel);
-    
+    let dom = this._dom;
+    let imagedata = dom.context
+      .getImageData(0, 0, dom.canvas.width, dom.canvas.height);
+    let x = 0;
+    let y = 0;
+    let color_no, r, g, b;
+    let count = 1;
     do {
-      let color_no, r, g, b;
-      let x = 0;
-      let y = 0;
       let c = scanner.current();
-      scanner.moveNext();
       switch (c) {
 
         case 0x0d:
         case 0x0a:
-          continue;
+          scanner.moveNext();
+          break;
 
         case 0x21: // !
-          this._count = scanner.parseUint();
+          scanner.moveNext();
+          count = scanner.parseUint();
           break;
 
         case 0x22: // "
-          scanner.parseUint();
+          scanner.moveNext();
+          c = scanner.parseUint();
           scanner.parseChar(0x3b);
-          scanner.parseUint();
+
+          scanner.moveNext();
+          c = scanner.parseUint();
+
           break;
 
         case 0x23: // #
-          color_no = scanner.parseUint();
-          if (-1 == color_no) {
-            throw coUtils.Exception(_("Cannot parse sixel format."));
-          }
-          c = scanner.current();
           scanner.moveNext();
+          color_no = scanner.parseUint();
+      //    alert(color_no)
+          if (-1 == color_no) {
+            alert(color_no + "-" + scanner._position)
+            throw coUtils.Debug.Exception(_("Cannot parse sixel format."));
+          }
 
+          c = scanner.current();
           if (0x3b == c) { // ;
-
+            scanner.moveNext();
+            c = scanner.parseUint();
             let space_type = "";
             if (1 == c) { // HSL
               space_type = "HSL"; 
             } else if (2 == c) {
               space_type = "RGB";
             } else {
-              throw coUtils.Exception(_("Cannot parse sixel format."));
+              alert(String.fromCharCode(c) + " " + scanner._position)
+              throw coUtils.Debug.Exception(_("Cannot parse sixel format."));
             }
 
-            if (scanner.parseChar(0x3b)) {
-              throw coUtils.Exception(_("Cannot parse sixel format."));
+            if (!scanner.parseChar(0x3b)) {
+              throw coUtils.Debug.Exception(_("Cannot parse sixel format."));
             }
 
+            scanner.moveNext();
             r = scanner.parseUint();
             if (-1 == r) {
-              throw coUtils.Exception(_("Cannot parse sixel format."));
+              throw coUtils.Debug.Exception(_("Cannot parse sixel format."));
+            }
+            if (!scanner.parseChar(0x3b)) {
+              throw coUtils.Debug.Exception(_("Cannot parse sixel format."));
             }
 
-            if (scanner.parseChar(0x3b)) {
-              throw coUtils.Exception(_("Cannot parse sixel format."));
-            }
-
+            scanner.moveNext();
             g = scanner.parseUint();
             if (-1 == g) {
-              throw coUtils.Exception(_("Cannot parse sixel format."));
+              throw coUtils.Debug.Exception(_("Cannot parse sixel format."));
+            }
+            if (!scanner.parseChar(0x3b)) {
+              throw coUtils.Debug.Exception(_("Cannot parse sixel format."));
             }
 
-            if (scanner.parseChar(0x3b)) {
-              throw coUtils.Exception(_("Cannot parse sixel format."));
-            }
-
+            scanner.moveNext();
             b = scanner.parseUint();
             if (-1 == b) {
-              throw coUtils.Exception(_("Cannot parse sixel format."));
+              throw coUtils.Debug.Exception(_("Cannot parse sixel format."));
             }
 
             this._setColor(color_no, r, g, b);
@@ -280,15 +300,21 @@ Sixel.definition = {
           break;
 
         case 0x24: // $
+          count = 1;
           x = 0;
+          scanner.moveNext();
           break;
           
         case 0x2d: // -
-          ++y;
+          y += 6;
+          scanner.moveNext();
           break;
 
-        case 0x3e:
         case 0x3f:
+          ++x;
+          scanner.moveNext();
+          break;
+
         case 0x40:
         case 0x41:
         case 0x42:
@@ -352,18 +378,29 @@ Sixel.definition = {
         case 0x7c:
         case 0x7d:
         case 0x7e:
-          this._setSixel(x, y, c);
+          for (let i = 0; i < count; ++i) {
+            this._setSixel(imagedata, x, y, c);
+            ++x;
+          }
+          count = 1;
+          scanner.moveNext();
           break;
 
+        case 0x9c: //
+          dom.context.putImageData(imagedata, 0, 0);
+          return;
+
+          
         default:
-          throw coUtils.Exception(_("Cannot parse sixel format."));
+          alert(String.fromCharCode(c) + "*" + scanner._value[scanner._position - 1])
+          throw coUtils.Debug.Exception(_("Cannot parse sixel format."));
 
       }
-    } while (scanner.isEnd);
+    } while (!scanner.isEnd);
+
 
 
     } catch (e) {alert(e + " " + e.lineNumber)}
-    //alert(sixel)
   },
 
 }; // Sixel 

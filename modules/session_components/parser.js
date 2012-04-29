@@ -364,8 +364,7 @@ SequenceParser.definition = {
   append: function append(key, value, context) 
   {
     let match = key
-      .match(/^(0x[0-9a-zA-Z]+)(%s)?|^%d([\x20-\x7f]+)$|^(.)%s$|^(%p)$|^(%c)$|^(.)$|^(.)(.+)$/);
-
+      .match(/^(0x[0-9a-zA-Z]+)(%s)?$|^%d([\x20-\x7f]+)$|^(.)%s$|^(%p)$|^(%c)$|^(.)$|^(.)(.+)$/);
     let [, 
       number, number2,
       char_with_param, 
@@ -375,9 +374,28 @@ SequenceParser.definition = {
       normal_char, first, next_chars
     ] = match;
     if (number) { // parse number
-      let code = parseInt(number);
+      let code = parseInt(number, 16);
       if (number2) {
-        let action = function(params) function() value.apply(context, params)
+        let action = function(params) 
+        {
+          let data;
+          if (65000 > params.length) {
+            data = String.fromCharCode.apply(String, params);
+          } else {
+            data = "";
+            let i;
+            let buffer_length = 65000;
+            for (i = 0; i < params.length; i += buffer_length) {
+              let piece = Array.slice(params, i, i + buffer_length);
+              let str = String.fromCharCode.apply(String, piece);
+              data += str;
+            }
+          }
+          return function() 
+          {
+            return value.call(context, data);
+          };
+        };
         C0Parser.append(code, new StringParser(action));
       } else {
         if ("parse" in value) {
@@ -454,7 +472,11 @@ SequenceParser.definition = {
       this[accept_char] = function() value.call(context, 0);
     } else if (char_with_string) {
       // define action
-      let action = function(params) function() value.apply(context, params)
+      let action = function(params) 
+      {
+        let data = String.fromCharCode.apply(String, params);
+        return function() value.call(context, data);
+      };
       let index = char_with_string.charCodeAt(0);
       this[index] = new StringParser(action) // chain to string parser.
     } else if (single_char) { // parse a char.

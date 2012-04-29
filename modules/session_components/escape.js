@@ -235,10 +235,9 @@ Escape.definition = {
 
 
   "[profile('vt100'), sequence('0x90%s', 'ESC P%s')]": 
-  function DCS() 
+  function DCS(message) 
   {
     let broker = this._broker;
-    let message = String.fromCharCode.apply(String, arguments);
     if (/[\x00-\x1f]/.test(message[0])) {
       message = message.replace(/\x00/g, "\\");
       broker.notify("event/data-arrived-recursively", message);
@@ -264,9 +263,8 @@ Escape.definition = {
   },
   
   "[profile('vt100'), sequence('ESC ]%s')]": 
-  function OSC() 
+  function OSC(message) 
   {
-    let message = String.fromCharCode.apply(String, arguments);
     let delimiter_position = message.indexOf(";");
     let num = message.substr(0, delimiter_position);
     let command = message.substr(delimiter_position + 1);

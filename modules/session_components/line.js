@@ -606,7 +606,7 @@ let Line = new Class().mix(DirtyRange)
 Line.definition = {
 
   cells: null,
-  size: 0,
+  type: 0,
 
   /** constructor */
   initialize: function initialize(length, attr) 
@@ -764,7 +764,7 @@ Line.definition = {
     if (this.dirty) {
       let attr, start, current, cell;
       let cells = this.cells;
-      let max = 0 == this.size ? 
+      let max = 0 == this.type ? 
         this.last: 
         Math.min(this.last, Math.floor(this.length / 2));
       for (current = this.first; current < max; ++current) {
@@ -869,7 +869,7 @@ Line.definition = {
       cell = cells[i];
       cell.erase();
     }
-    this.size = 0;
+    this.type = 0;
   },
 
   /** 

@@ -397,9 +397,8 @@ ScreenSequenceHandler.definition = {
   "[profile('vt100'), sequence('ESC #3')]": 
   function DECDHL_top() 
   {
-    //this.cursor.attr.size = 1;
     let line = this._getCurrentLine();
-    line.size = 1;
+    line.type = 1;
     line.dirty = 1;
   },
 
@@ -407,9 +406,8 @@ ScreenSequenceHandler.definition = {
   "[profile('vt100'), sequence('ESC #4')]": 
   function DECDHL_bottom() 
   {
-    //this.cursor.attr.size = 2;
     let line = this._getCurrentLine();
-    line.size = 2;
+    line.type = 2;
     line.dirty = 1;
   },
 
@@ -417,9 +415,8 @@ ScreenSequenceHandler.definition = {
   "[profile('vt100'), sequence('ESC #5')]": 
   function DECSWL() 
   {
-    //this.cursor.attr.size = 3;
     let line = this._getCurrentLine();
-    line.size = 0;
+    line.type = 0;
     line.dirty = 1;
   },
 
@@ -427,9 +424,8 @@ ScreenSequenceHandler.definition = {
   "[profile('vt100'), sequence('ESC #6')]": 
   function DECDWL() 
   {
-    //this.cursor.attr.size = 0;
     let line = this._getCurrentLine();
-    line.size = 3;
+    line.type = 3;
     line.dirty = 1;
   },
 
@@ -1532,7 +1528,7 @@ Viewable.definition = {
           column: column, 
           end: end,
           attr: attr, 
-          size: line.size || 0,
+          type: line.type || 0,
         };
       }
     }
@@ -1651,7 +1647,7 @@ Scrollable.definition = {
     for (i = 0; i < range.length; ++i) {
       line = range[i];
       line.erase(0, width, attr);
-      line.size = 0;
+      line.type = 0;
     }
     range.unshift(offset + top, 0);
     Array.prototype.splice.apply(lines, range);
@@ -1688,7 +1684,7 @@ Scrollable.definition = {
       for (i = 0; i < range.length; ++i) {
         line = range[i];
         line.erase(0, width, attr);
-        line.size = 0;
+        line.type = 0;
       }
     } else if (offset < this.scrollback_limit) {
       range = this._createLines(n, attr);
@@ -1704,7 +1700,7 @@ Scrollable.definition = {
         line.erase(0, width, attr);
         line.invalidate();
         line.length = width;
-        line.size = 0;
+        line.type = 0;
       }
     }
     // line.splice(offset + bottom -m, 0, ....);
@@ -2102,7 +2098,6 @@ Screen.definition = {
   "[type('Uint16 -> Undefined')] cursorUp":
   function cursorUp(n) 
   { 
-    //n = 0 == line.size ? n: n * 2;
     let cursor = this.cursor;
     let positionY = cursor.positionY - n;
     let min = this._scroll_top;
@@ -2113,9 +2108,6 @@ Screen.definition = {
   "[type('Uint16 -> Undefined')] cursorDown":
   function cursorDown(n) 
   {
-    //let line = this._getCurrentLine();
-    //n = 0 == line.size ? n: n * 2;
-
     let cursor = this.cursor;
     let positionY = cursor.positionY + n;
 
@@ -2202,7 +2194,7 @@ Screen.definition = {
     let line = this._getCurrentLine();
     let width = this._width;
     let max;
-    if (0 == line.size) {
+    if (0 == line.type) {
       max = width - 1;
     } else {
       max = width / 2 - 1 | 0;
@@ -2311,7 +2303,7 @@ Screen.definition = {
     for (i = 0; i < length; ++i) {
       line = lines[i];
       line.erase(0, width, attr);
-      line.size = 0;
+      line.type = 0;
     }
   },
 
@@ -2364,7 +2356,7 @@ Screen.definition = {
 
     for (i = 0; i < lines.length; ++i) {
       line = lines[i];
-      line.size = 0;
+      line.type = 0;
     }
   },
 
