@@ -125,7 +125,7 @@ Sixel.definition = {
       tagName: "html:canvas",
       id: "sixel_canvas",
       width: renderer.char_width * screen.width,
-      height: renderer.line_height * screen.height,
+      height: renderer.line_height * screen.height * 2,
     }),
 
   _color: null,
@@ -209,7 +209,6 @@ Sixel.definition = {
       context: sixel_canvas.getContext("2d"),
     };
     this._buffers.push(dom);
-    try {
 
     let pattern = /^([0-9]);([01]);([0-9]+);?q((?:.|[\n\r])+)/;
     let match = data.match(pattern);
@@ -251,9 +250,7 @@ Sixel.definition = {
         case 0x23: // #
           scanner.moveNext();
           color_no = scanner.parseUint();
-      //    alert(color_no)
           if (-1 == color_no) {
-            alert(color_no + "-" + scanner._position)
             throw coUtils.Debug.Exception(_("Cannot parse sixel format."));
           }
 
@@ -267,7 +264,6 @@ Sixel.definition = {
             } else if (2 == c) {
               space_type = "RGB";
             } else {
-              alert(String.fromCharCode(c) + " " + scanner._position)
               throw coUtils.Debug.Exception(_("Cannot parse sixel format."));
             }
 
@@ -397,21 +393,20 @@ Sixel.definition = {
           break;
           
         default:
-          alert(String.fromCharCode(c) + "*" + scanner._value[scanner._position - 1])
-          throw coUtils.Debug.Exception(_("Cannot parse sixel format."));
+          scanner.moveNext();
+          //throw coUtils.Debug.Exception(_("Cannot parse sixel format."));
 
       }
     } while (!scanner.isEnd);
 
     dom.context.putImageData(imagedata, 0, 0);
-    let line_count = Math.ceil(dom.canvas.height / renderer.line_height);
+    let line_count = Math.ceil(y / renderer.line_height);
     let i;
     for (i = 0; i < line_count; ++i) {
       screen.lineFeed();
       screen.markAsSixelLine(dom.canvas, i);
     }
-
-    } catch (e) {alert(e + " " + e.lineNumber)}
+    screen.lineFeed();
   },
 
 }; // Sixel 
