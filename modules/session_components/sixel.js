@@ -240,10 +240,21 @@ Sixel.definition = {
         case 0x22: // "
           scanner.moveNext();
           c = scanner.parseUint();
-          scanner.parseChar(0x3b);
+          if (!scanner.parseChar(0x3b)) {
+            throw coUtils.Debug.Exception(_("Cannot parse sixel format."));
+          }
 
           scanner.moveNext();
           c = scanner.parseUint();
+
+          if (scanner.parseChar(0x3b)) {
+            scanner.moveNext();
+            c = scanner.parseUint();
+            if (scanner.parseChar(0x3b)) {
+              scanner.moveNext();
+              c = scanner.parseUint();
+            }
+          }
 
           break;
 

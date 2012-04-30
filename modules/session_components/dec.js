@@ -324,6 +324,13 @@ DecModeSequenceHandler.definition = {
               "was not implemented."));
           break;
 
+        // Enable 8bit meta.
+        case 1034:
+          coUtils.Debug.reportWarning(
+            _("DECSET 1034 - Enable 8bit meta, ",
+              "was not implemented."));
+          break;
+
         // Enable special modifiers for Alt and NumLock keys.
         case 1035:
           coUtils.Debug.reportWarning(
@@ -638,6 +645,13 @@ DecModeSequenceHandler.definition = {
         case 1011:
           coUtils.Debug.reportWarning(
             _("DECRST 1010 - Don't scroll to bottom on key press (rxvt), ", 
+              "was not implemented."));
+          break;
+          
+        // Enable 8bit meta.
+        case 1034:
+          coUtils.Debug.reportWarning(
+            _("DECRST 1034 - Disable 8bit meta, ",
               "was not implemented."));
           break;
 
