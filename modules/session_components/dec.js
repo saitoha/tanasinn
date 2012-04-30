@@ -293,21 +293,29 @@ DecModeSequenceHandler.definition = {
         // See the section Mouse Tracking.
         case 1000:
           broker.notify("event/mouse-tracking-mode-changed", "VT200_MOUSE");
+          coUtils.Debug.reportMessage(
+            _("DECSET 1000 - xterm VT200 mouse tracking mode was set."));
           break;
 
         // Use Hilite Mouse Tracking.
         case 1001:
           broker.notify("event/mouse-tracking-mode-changed", "VT200_HIGHLIGHT_MOUSE");
+          coUtils.Debug.reportMessage(
+            _("DECSET 1001 - xterm hilite mouse tracking mode was set."));
           break;
 
         // Use Cell Motion Mouse Tracking.
         case 1002:
           broker.notify("event/mouse-tracking-mode-changed", "BTN_EVENT_MOUSE");
+          coUtils.Debug.reportMessage(
+            _("DECSET 1002 - xterm cell motion mouse tracking mode was set."));
           break;
 
         // Use All Motion Mouse Tracking.
         case 1003:
           broker.notify("event/mouse-tracking-mode-changed", "ANY_EVENT_MOUSE");
+          coUtils.Debug.reportMessage(
+            _("DECSET 1003 - xterm all motion mouse tracking mode was set."));
           break;
 
         // Scroll to bottom on tty output (rxvt).
@@ -323,22 +331,30 @@ DecModeSequenceHandler.definition = {
             _("DECSET 1011 - Scroll to bottom on key press (rxvt), ", 
               "was not implemented."));
           break;
+          
+        // Enable urxvt-style mouse reporting.
+        case 1015:
+          broker.notify("event/mouse-tracking-type-changed", "urxvt");
+          coUtils.Debug.reportMessage(
+            _("DECSET 1015 - Enable urxvt-style mouse reporting, ", 
+              "was not implemented."));
+          break;
 
-        // Enable 8bit meta.
+        // TODO: Enable 8bit meta.
         case 1034:
           coUtils.Debug.reportWarning(
             _("DECSET 1034 - Enable 8bit meta, ",
               "was not implemented."));
           break;
 
-        // Enable special modifiers for Alt and NumLock keys.
+        // TODO: Enable special modifiers for Alt and NumLock keys.
         case 1035:
           coUtils.Debug.reportWarning(
             _("DECSET 1035 - Enable special modifiers for Alt and NumLock keys, ",
               "was not implemented."));
           break;
 
-        // Send ESC when Meta modifies a key 
+        // TODO: Send ESC when Meta modifies a key 
         // (enables the metaSendsEscape resource).
         case 1036:
           coUtils.Debug.reportWarning(
@@ -347,7 +363,7 @@ DecModeSequenceHandler.definition = {
               "was not implemented."));
           break;
 
-        // Send DEL from the editing-keypad Delete key.
+        // TODO: Send DEL from the editing-keypad Delete key.
         case 1037:
           coUtils.Debug.reportWarning(
             _("DECSET 1037 - Send DEL from ",
@@ -373,28 +389,28 @@ DecModeSequenceHandler.definition = {
           this._screen.selectAlternateScreen();
           break;
 
-        // Set Sun function-key mode. 
+        // TODO: Set Sun function-key mode. 
         case 1051:
           coUtils.Debug.reportWarning(
             _("DECSET 1051 - Set Sun function-key mode, ", 
               "was not implemented."));
           break;
 
-        // Set HP function-key mode. 
+        // TODO: Set HP function-key mode. 
         case 1052:
           coUtils.Debug.reportWarning(
             _("DECSET 1052 - Set HP function-key mode, ", 
               "was not implemented."));
           break;
 
-        // Set legacy keyboard emulation (X11R6). 
+        // TODO: Set legacy keyboard emulation (X11R6). 
         case 1060:
           coUtils.Debug.reportWarning(
             _("DECSET 1052 - Set legacy keyboard emulation (X11R6), ", 
               "was not implemented."));
           break;
 
-        // Set Sun/PC keyboard emulation of VT220 keyboard. 
+        // TODO: Set Sun/PC keyboard emulation of VT220 keyboard. 
         case 1061:
           coUtils.Debug.reportWarning(
             _("DECSET 1052 - Set Sun/PC keyboard emulation of VT220 keyboard, ", 
@@ -647,22 +663,30 @@ DecModeSequenceHandler.definition = {
             _("DECRST 1010 - Don't scroll to bottom on key press (rxvt), ", 
               "was not implemented."));
           break;
-          
-        // Enable 8bit meta.
+           
+        // TODO:Disable urxvt-style mouse reporting.
+        case 1015:
+          broker.notify("event/mouse-tracking-type-changed", null);
+          coUtils.Debug.reportWarning(
+            _("DECSET 1015 - Disable urxvt-style mouse reporting, ", 
+              "was not implemented."));
+          break;
+
+        // TODO:Disable 8bit meta.
         case 1034:
           coUtils.Debug.reportWarning(
             _("DECRST 1034 - Disable 8bit meta, ",
               "was not implemented."));
           break;
 
-        // Disable special modifiers for Alt and NumLock keys.
+        // TODO:Disable special modifiers for Alt and NumLock keys.
         case 1035:
           coUtils.Debug.reportWarning(
             _("DECRST 1035 - Disable special modifiers for Alt and NumLock keys, ",
               "was not implemented."));
           break;
 
-        // Don't send ESC when Meta modifies a key 
+        // TODO:Don't send ESC when Meta modifies a key 
         // (disables the metaSendsEscape resource).
         case 1036:
           coUtils.Debug.reportWarning(
@@ -671,7 +695,7 @@ DecModeSequenceHandler.definition = {
               "was not implemented."));
           break;
 
-        // Send VT220 Remove from the editing- keypad Delete key.
+        // TODO:Send VT220 Remove from the editing- keypad Delete key.
         case 1037:
           coUtils.Debug.reportWarning(
             _("DECRST 1037 - Send VT220 Remove from ",

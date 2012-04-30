@@ -55,6 +55,8 @@ Mouse.definition = {
   "[persistable] enabled_when_startup": true,
 
   _tracking_mode: null,
+  _tracking_type: null,
+  _dragged: false,
   _installed: false,
 
   _keypad_mode: coUtils.Constant.KEYPAD_MODE_NORMAL,
@@ -74,6 +76,7 @@ Mouse.definition = {
     this.onMagnifyGesture.enabled = true;
     this.onSwipeGesture.enabled = true;
     this.onRotateGesture.enabled = true;
+    this.onMouseTrackingTypeChanged.enabled = true;
     this.onMouseTrackingModeChanged.enabled = true;
     this.backup.enabled = true;
     this.restore.enabled = true;
@@ -92,6 +95,7 @@ Mouse.definition = {
     this.onMagnifyGesture.enabled = false;
     this.onSwipeGesture.enabled = false;
     this.onRotateGesture.enabled = false;
+    this.onMouseTrackingTypeChanged.enabled = false;
     this.onMouseTrackingModeChanged.enabled = false;
     this.backup.enabled = false;
     this.restore.enabled = false;
@@ -116,6 +120,24 @@ Mouse.definition = {
   function onScrolSessionClosed() 
   {
     this._in_scroll_session = false;
+  },
+
+  /** Fired at the mouse tracking type is changed. */
+  "[subscribe('event/mouse-tracking-type-changed')]":
+  function onMouseTrackingTypeChanged(data) 
+  {
+    if ("VT200_HIGHLIGHT_MOUSE" == data) {
+      coUtils.Debug.reportWarning(
+        _("FIXME: Now, We have not implemented ",
+          "VT200_HIGHLIGHT_MOUSE mouse tracking mode."));
+    }
+    let broker = this._broker;
+    if (null == data) {
+      broker.notify(_("Leaving mouse tracking type: [%s]."), this._tracking_type)
+    } else {
+      broker.notify(_("Entering mouse tracking type: [%s]."), data)
+    }
+    this._tracking_type = data;
   },
 
   /** Fired at the mouse tracking mode is changed. */
@@ -169,15 +191,22 @@ Mouse.definition = {
     // +-+-+-+-+-+-+-+-+
     // | | | | | | | | |
     // +-+-+-+-+-+-+-+-+
+    //
+    // --------------------------
     //              0 0  button1
     //              0 1  button2
     //              1 0  button3
     //              1 1  release
+    //    1           1  button4
+    //    1         1    button5
+    // --------------------------
     //        0 0 0      
     //        0 0 1      shift
     //        0 1 0      meta
     //        1 0 0      control
+    // --------------------------
     //  0 0 1            magic
+    // --------------------------
     //
     let code = button 
              | (event.shiftKey << 2) 
@@ -188,7 +217,14 @@ Mouse.definition = {
 
     // send escape sequence. 
     //                                 ESC    [     M          
-    let message = String.fromCharCode(0x1b, 0x5b, 0x4d, code, column + 32, row + 32);
+    let message;
+    if ("urxvt" == this._tracking_type) {
+      message = coUtils.Text.format("\x1b[%d;%d;%dM", code, column, row);
+    } else if ("sgr" == this._tracking_type) {
+      message = coUtils.Text.format("\x1b[<%d;%d;%dM", code, column, row);
+    } else {
+      message = String.fromCharCode(0x1b, 0x5b, 0x4d, code, column + 32, row + 32);
+    }
 
     let broker = this._broker;
     broker.notify("command/send-to-tty", message);
@@ -216,8 +252,17 @@ Mouse.definition = {
       } else {
         count = Math.round(count / 2);
       }
-      if (0 == count)
+      if (0 == count) {
         return;
+      }
+
+      if (count > 0) {
+        this._sendMouseEvent(event, 0x41); 
+      } else {
+        this._sendMouseEvent(event, 0x42); 
+      }
+      return;
+
       let keypad_mode = this._keypad_mode;
       let tracking_mode = this._tracking_mode;
       let broker = this._broker;
@@ -332,6 +377,7 @@ Mouse.definition = {
   "[listen('mousedown', '#tanasinn_content')]": 
   function onmousedown(event) 
   {
+    this._dragged = true;
     if (null !== this._tracking_mode) {
       let button = 0 == event.button ? MOUSE_BUTTON1
     //             : 2 == event.button ? MOUSE_BUTTON2
@@ -348,8 +394,9 @@ Mouse.definition = {
   "[listen('mousemove', '#tanasinn_content')]": 
   function onmousemove(event) 
   {
-    if (!this._dragged)
+    if (!this._dragged) {
       return;
+    }
     let tracking_mode = this._tracking_mode;
     if  (/BTN_EVENT_MOUSE|ANY_EVENT_MOUSE/.test(tracking_mode)) {
       // Send motion event.
