@@ -91,7 +91,8 @@ DecModeSequenceHandler.definition = {
 
     let broker = this._broker;
 
-    for (let i = 0; i < arguments.length; ++i) {
+    let i;
+    for (i = 0; i < arguments.length; ++i) {
 
       let n = arguments[i];
 
@@ -317,6 +318,22 @@ DecModeSequenceHandler.definition = {
           coUtils.Debug.reportMessage(
             _("DECSET 1003 - xterm all motion mouse tracking mode was set."));
           break;
+          
+        // Enable utf8-style mouse reporting.
+        case 1005:
+          broker.notify("event/mouse-tracking-type-changed", "utf8");
+          coUtils.Debug.reportMessage(
+            _("DECSET 1005 - Enable utf8-style mouse reporting, ", 
+              "was set."));
+          break;
+          
+        // Enable SGR-style mouse reporting.
+        case 1006:
+          broker.notify("event/mouse-tracking-type-changed", "sgr");
+          coUtils.Debug.reportMessage(
+            _("DECSET 1006 - Enable SGR-style mouse reporting, ", 
+              "was set."));
+          break;
 
         // Scroll to bottom on tty output (rxvt).
         case 1010:
@@ -337,7 +354,7 @@ DecModeSequenceHandler.definition = {
           broker.notify("event/mouse-tracking-type-changed", "urxvt");
           coUtils.Debug.reportMessage(
             _("DECSET 1015 - Enable urxvt-style mouse reporting, ", 
-              "was not implemented."));
+              "was set."));
           break;
 
         // TODO: Enable 8bit meta.
@@ -649,6 +666,22 @@ DecModeSequenceHandler.definition = {
         case 1003:
           broker.notify("event/mouse-tracking-mode-changed", null);
           break;
+        
+        // Enable utf8-style mouse reporting.
+        case 1005:
+          broker.notify("event/mouse-tracking-type-changed", null);
+          coUtils.Debug.reportMessage(
+            _("DECRST 1005 - Enable utf8-style mouse reporting, ", 
+              "was reset."));
+          break;
+          
+        // Enable SGR-style mouse reporting.
+        case 1006:
+          broker.notify("event/mouse-tracking-type-changed", null);
+          coUtils.Debug.reportMessage(
+            _("DECRST 1006 - Enable SGR-style mouse reporting, ", 
+              "was reset."));
+          break;
 
         // Don't scroll to bottom on tty output (rxvt).
         case 1010:
@@ -668,7 +701,7 @@ DecModeSequenceHandler.definition = {
         case 1015:
           broker.notify("event/mouse-tracking-type-changed", null);
           coUtils.Debug.reportWarning(
-            _("DECSET 1015 - Disable urxvt-style mouse reporting, ", 
+            _("DECRST 1015 - Disable urxvt-style mouse reporting, ", 
               "was not implemented."));
           break;
 
@@ -765,33 +798,6 @@ DecModeSequenceHandler.definition = {
 
     } // end for
 
-  },
-
-  "[profile('vt100'), sequence('CSI ?%dr')]":
-  function DECRSTR(n) 
-  { // DEC Private Mode Restore
-    let save_buffer = this._dec_save_buffer;
-    let alternate_buffer = this._dec_alternate_buffer;
-    for (let i = 0; i < arguments.length; ++i) {
-      let key = arguments[i];
-      let value = save_buffer[key] = alternate_buffer[key];
-      if (value) {
-        this.DECSET(n);
-      } else {
-        this.DECRST(n);
-      }
-    }
-  },
-
-  "[profile('vt100'), sequence('CSI ?%ds')]":
-  function DECSAVE() 
-  {  // DEC Private Mode Save
-    let save_buffer = this._dec_save_buffer;
-    let alternate_buffer = this._dec_alternate_buffer;
-    for (let i = 0; i < arguments.length; ++i) {
-      let key = arguments[i];
-      alternate_buffer[key] = save_buffer[key];
-    }
   },
 
   /**
@@ -986,13 +992,57 @@ DecModeSequenceHandler.definition = {
   },
 
 
-};
+}; // DecModeSequenceHandler
+
+/**
+ * @trait PeristOptionsTrait
+ */
+let PersistOptionsTrait = new Trait();
+PersistOptionsTrait.definition = {
+
+  /**
+   * XTREST — Restore extended options.
+   */
+  "[profile('vt100'), sequence('CSI ?%dr')]":
+  function XTREST(n) 
+  { // DEC Private Mode Restore
+    let save_buffer = this._dec_save_buffer;
+    let alternate_buffer = this._dec_alternate_buffer;
+    let i;
+    for (i = 0; i < arguments.length; ++i) {
+      let key = arguments[i];
+      let value = save_buffer[key] = alternate_buffer[key];
+      if (value) {
+        this.DECSET(n);
+      } else {
+        this.DECRST(n);
+      }
+    }
+  },
+
+  /**
+   * XTSAVE — Save extended options.
+   */
+  "[profile('vt100'), sequence('CSI ?%ds')]":
+  function XTSAVE() 
+  {  // DEC Private Mode Save
+    let save_buffer = this._dec_save_buffer;
+    let alternate_buffer = this._dec_alternate_buffer;
+    let i;
+    for (i = 0; i < arguments.length; ++i) {
+      let key = arguments[i];
+      alternate_buffer[key] = save_buffer[key];
+    }
+  },
+
+}; // PersistOptionsTrait
 
 /**
  * @class DecPrivateMode
  */
 let DecPrivateMode = new Class().extends(Component)
-                                .mix(DecModeSequenceHandler);
+                                .mix(DecModeSequenceHandler)
+                                .mix(PersistOptionsTrait);
 DecPrivateMode.definition = {
 
   get id()
@@ -1030,13 +1080,6 @@ DecPrivateMode.definition = {
    */
   
   _awm: false,
-
-  "[subscribe('command/change-mode'), enabled]":
-  function (mode)
-  {
-//    this.DECAWM = false;
-//    this.DECRWM = false;
-  },
 
   // Autowrap Mode (true: autowrap, false: no autowrap)
   get DECAWM()

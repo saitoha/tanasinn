@@ -364,10 +364,11 @@ SequenceParser.definition = {
   append: function append(key, value, context) 
   {
     let match = key
-      .match(/^(0x[0-9a-zA-Z]+)(%s)?$|^%d([\x20-\x7f]+)$|^(.)%s$|^(%p)$|^(%c)$|^(.)$|^(.)(.+)$/);
+      .match(/^(0x[0-9a-zA-Z]+)(%s)?$|^%d([\x20-\x7f]+)$|^%<Ps>([\x20-\x7f]+)$|^(.)%s$|^(%p)$|^(%c)$|^(.)$|^(.)(.+)$/);
     let [, 
       number, number2,
       char_with_param, 
+      char_with_single_param,
       char_with_string, 
       char_position,
       single_char, 
@@ -437,39 +438,43 @@ SequenceParser.definition = {
           let next_char = char_with_param.charCodeAt(1);
           this[code][accept_char] = this[code][accept_char] || new SequenceParser();
           this[code][accept_char][next_char] = action;
-          /*
-          let next_chars = char_with_param.substr(1);
-
-          //if (char_with_param.match(/ /)) {
-          //  alert(char_with_param)
-          //}
-          this[code][accept_char] = {
-
-            parse: function parse(scanner) 
-            {
-              for (let i = 0; i < next_chars.length; ++i) {
-                scanner.moveNext();
-                if (scanner.isEnd) {
-                  return let (self = this) function(scanner) {
-                    let result = parse.apply(self, scanner);
-                    yield result;
-                  };
-                }
-                let c = scanner.current();
-                if (c != next_chars.charCodeAt(i)) {
-                  return undefined;
-                }
-              }
-              return action;
-            }
-
-          };
-          */
         } else {
           throw coUtile.Exception(_("Cannot add handler: %s."), key);
         }
       }
-      this[accept_char] = function() value.call(context, 0);
+      this[accept_char] = function() 
+      {
+        return value.call(context, 0);
+      };
+
+    } else if (char_with_single_param) {
+
+      let action = function(params)
+      {
+        return function() 
+        {
+          return value.apply(context, params);
+        };
+      };
+      for (let i = 0; i < 10; ++i) {
+        let code = 0x30 + i;
+        this[code] = this[code] || new SequenceParser(0, code);
+        let parser = this[code];
+        for (let j = 0; j < char_with_single_param.length - 1; ++j) {
+          let accept_char = char_with_single_param.charCodeAt(j);
+          parser = parser[accept_char] = new SequenceParser();
+        }
+        code = char_with_single_param.charCodeAt(char_with_single_param.length - 1);
+        parser[code] = action;
+      }
+      let parser = this;
+      for (let j = 0; j < char_with_single_param.length - 1; ++j) {
+        let accept_char = char_with_single_param.charCodeAt(j);
+        parser = parser[accept_char] = new SequenceParser();
+      }
+      code = char_with_single_param.charCodeAt(char_with_single_param.length - 1);
+      parser[code] = action;
+
     } else if (char_with_string) {
       // define action
       let action = function(params) 

@@ -126,11 +126,6 @@ Mouse.definition = {
   "[subscribe('event/mouse-tracking-type-changed')]":
   function onMouseTrackingTypeChanged(data) 
   {
-    if ("VT200_HIGHLIGHT_MOUSE" == data) {
-      coUtils.Debug.reportWarning(
-        _("FIXME: Now, We have not implemented ",
-          "VT200_HIGHLIGHT_MOUSE mouse tracking mode."));
-    }
     let broker = this._broker;
     if (null == data) {
       broker.notify(_("Leaving mouse tracking type: [%s]."), this._tracking_type)
@@ -144,11 +139,6 @@ Mouse.definition = {
   "[subscribe('event/mouse-tracking-mode-changed')]":
   function onMouseTrackingModeChanged(data) 
   {
-    if ("VT200_HIGHLIGHT_MOUSE" == data) {
-      coUtils.Debug.reportWarning(
-        _("FIXME: Now, We have not implemented ",
-          "VT200_HIGHLIGHT_MOUSE mouse tracking mode."));
-    }
     let broker = this._broker;
     if (null == data) {
       broker.notify(_("Leaving mouse tracking mode: [%s]."), this._tracking_mode)
@@ -156,6 +146,14 @@ Mouse.definition = {
       broker.notify(_("Entering mouse tracking mode: [%s]."), data)
     }
     this._tracking_mode = data;
+  },
+
+  "[subscribe('event/start-highlight-mouse'), enabled]":
+  function onStartHighlightMouse(args)
+  {
+    if ("VT200_HIGHLIGHT_MOUSE" != this._tracking_mode) {
+      return;
+    }
   },
 
   "[subscribe('command/backup')]": 
@@ -180,12 +178,6 @@ Mouse.definition = {
   /** Make packed mouse event data and send it to tty device. */
   _sendMouseEvent: function _sendMouseEvent(event, button) 
   {
-    if ("VT200_HIGHLIGHT_MOUSE" == this._tracking_mode) {
-      coUtils.Debug.reportWarning(
-        _("FIXME: Now, We have not implemented ",
-          "VT200_HIGHLIGHT_MOUSE mouse tracking mode."));
-      return;
-    }
     // 0: button1, 1: button2, 2: button3, 3: release
     //
     // +-+-+-+-+-+-+-+-+
@@ -205,31 +197,61 @@ Mouse.definition = {
     //        0 1 0      meta
     //        1 0 0      control
     // --------------------------
-    //  0 0 1            magic
+    //  0 0 1            magic // +32
     // --------------------------
     //
     let code = button 
-             | (event.shiftKey << 2) 
-             | (event.metaKey << 3)
-             | (event.ctrlKey << 4)
-             | (1 << 5);
+             | event.shiftKey << 2 
+             | event.metaKey  << 3
+             | event.ctrlKey  << 4
+             | 1              << 5
+             ;
+
     let [column, row] = this._getCurrentPosition(event);
 
-    // send escape sequence. 
-    //                                 ESC    [     M          
     let message;
-    if ("urxvt" == this._tracking_type) {
-      message = coUtils.Text.format("\x1b[%d;%d;%dM", code, column, row);
-    } else if ("sgr" == this._tracking_type) {
-      message = coUtils.Text.format("\x1b[<%d;%d;%dM", code, column, row);
-    } else {
-      message = String.fromCharCode(0x1b, 0x5b, 0x4d, code, column + 32, row + 32);
-    }
+    let buffer;
+    switch (this._tracking_type) {
+
+      case "urxvt":
+        message = coUtils.Text.format("\x1b[%d;%d;%dM", code, column, row);
+        break;
+
+      case "sgr":
+        message = coUtils.Text.format("\x1b[<%d;%d;%dM", code, column, row);
+        break;
+
+      case "utf8":
+        column += 32;
+        row += 32;
+        buffer = [0x1b, 0x5b, 0x4d, code];
+        function putChar(c) {
+          if (c >= 0x80) {
+            // 110xxxxx 10xxxxxx
+            // (0x00000080 - 0x000007ff) // 11bit
+            let c1 = c >> 6 & 0x1f | 0xc0;
+            let c2 = c & 0x3f | 0x80;
+            buffer.push(c1); 
+            buffer.push(c2); 
+          } else {
+            buffer.push(c);
+          }
+        }
+        putChar(column);
+        putChar(row);
+        message = String.fromCharCode.apply(String, buffer);
+        break;
+
+      default:
+        // send escape sequence. 
+        //                            ESC    [     M          
+        message = String.fromCharCode(0x1b, 0x5b, 0x4d, code, column + 32, row + 32);
+
+    } // switch (this._tracking_type)
 
     let broker = this._broker;
     broker.notify("command/send-to-tty", message);
-//    coUtils.Debug.reportMessage("Mouse position reporting: " 
-//        + left + " " + top + " " + column + " " + row + "[" + message + "]")
+
   },
 
   /** Dragstart event listener. */
@@ -256,13 +278,6 @@ Mouse.definition = {
         return;
       }
 
-      if (count > 0) {
-        this._sendMouseEvent(event, 0x41); 
-      } else {
-        this._sendMouseEvent(event, 0x42); 
-      }
-      return;
-
       let keypad_mode = this._keypad_mode;
       let tracking_mode = this._tracking_mode;
       let broker = this._broker;
@@ -278,25 +293,37 @@ Mouse.definition = {
         } else { // count == 1
           return;
         }
-      } else { //if (coUtils.Constant.KEYPAD_MODE_APPLICATION == keypad_mode) {
-        let sequences = [];
+      } else if (coUtils.Constant.KEYPAD_MODE_APPLICATION == keypad_mode) {
+
+        let i;
         if (count > 0) {
-          while (count--)
-            sequences.push("\x1bOB")
-        } else if (count < 0) {
-          //sequences.push("\x1b[B")
-          while (count++)
-            sequences.push("\x1bOA")
+          for (i = 0; i < count; ++i) {
+            this._sendMouseEvent(event, 0x40); 
+          }
         } else {
-          return; 
+          for (i = 0; i < -count; ++i) {
+            this._sendMouseEvent(event, 0x41); 
+          }
         }
-        message = sequences.join("");
-        broker.notify("command/send-to-tty", message);
+
+//        let sequences = [];
+//        if (count > 0) {
+//          while (count--)
+//            sequences.push("\x1bOB")
+//        } else if (count < 0) {
+//          //sequences.push("\x1b[B")
+//          while (count++)
+//            sequences.push("\x1bOA")
+//        } else {
+//          return; 
+//        }
+//        message = sequences.join("");
+//        broker.notify("command/send-to-tty", message);
+
+      } else {
+        throw coUtils.Debug.Exception(
+          _("keypad_mode has ill value: [%d]"), keypad_mode);
       }
-      //  else {
-      //  throw coUtils.Debug.Exception(
-      //    _("keypad_mode has ill value: [%d]"), keypad_mode);
-      //}
     }
   },
 
@@ -383,9 +410,9 @@ Mouse.definition = {
     //             : 2 == event.button ? MOUSE_BUTTON2
                  : null;
                  ; 
-      if (null !== button) {
+//      if (null !== button) {
         this._sendMouseEvent(event, button); 
-      }
+//      }
     }
     // ev.button - 0: left click, 2: right click
   },
@@ -394,20 +421,11 @@ Mouse.definition = {
   "[listen('mousemove', '#tanasinn_content')]": 
   function onmousemove(event) 
   {
-    if (!this._dragged) {
-      return;
-    }
     let tracking_mode = this._tracking_mode;
     if  (/BTN_EVENT_MOUSE|ANY_EVENT_MOUSE/.test(tracking_mode)) {
       // Send motion event.
-      let code = 32 + 0 + 32;
-      let [column, row] = this._getCurrentPosition(event);
-      column += 32;
-      row += 32;
-      let message = String.fromCharCode(0x1b, 0x5b, 0x4d, code, column, row);
-
-      let broker = this._broker;
-      broker.notify("command/send-to-tty", message);
+      let button = MOUSE_RELEASE;//event.button;
+      this._sendMouseEvent(event, button); 
     }
   },
 
@@ -441,7 +459,7 @@ Mouse.definition = {
     return [column, row];
   },
 
-};
+}; // class Mouse
 
 /**
  * @fn main

@@ -712,7 +712,30 @@ ScreenSequenceHandler.definition = {
   "[profile('vt100'), sequence('CSI %dT')]":
   function SD(n) 
   { // Scroll Down line
-    this.scrollUpLine(n || 1);
+    let argc = arguments.length;
+    let broker;
+
+    switch (argc) {
+
+      case 0:
+        this.scrollUpLine(1);
+        break;
+
+      case 1:
+        this.scrollUpLine(n);
+        break;
+
+      case 6:
+        broker = this._broker;
+        broker.notify("event/start-highlight-mouse", Array.slice(arguments));
+        break;
+
+      default:
+        coUtils.Debug.reportError(
+          _("The size of arguments is wrong: [%s]."),
+            Array.slice(arguments));
+
+    } // switch argc
   },
 
   /** 

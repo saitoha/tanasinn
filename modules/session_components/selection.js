@@ -85,10 +85,10 @@ Selection.definition = {
 
   /** Installs itself */
   "[subscribe('install/selection'), enabled]":
-  function install(session) 
+  function install(broker) 
   {
     let renderer = this._renderer;
-    let {selection_canvas} = session.uniget(
+    let {selection_canvas} = broker.uniget(
       "command/construct-chrome", 
       {
         parentNode: "#tanasinn_center_area",
@@ -109,14 +109,14 @@ Selection.definition = {
     this.ondragstart.enabled = true;
     this.ondblclick.enabled = true;
 
-    session.notify("initialized/selection", this);
+    broker.notify("initialized/selection", this);
   },
 
   /** Uninstalls itself 
-   *  @param {Session} A Session object.
+   *  @param {Broker} A Broker object.
    */
   "[subscribe('uninstall/selection'), enabled]":
-  function uninstall(session) 
+  function uninstall(broker) 
   {
     this.clear();
     this.onWidthChanged.enabled = false;
@@ -147,8 +147,10 @@ Selection.definition = {
   "[listen('dblclick', '#tanasinn_content')]":
   function ondblclick(event) 
   {
-    if (null !== this._mouse_mode)
+    let mouse_mode = this._mouse_mode;
+    if (null !== mouse_mode || "VT200_HIGHLIGHT_MOUSE" !== mouse_mode) {
       return;
+    }
     let [column, row] = this.convertPixelToScreen(event);
     this.selectSurroundChars(column, row);
 
@@ -159,9 +161,11 @@ Selection.definition = {
   "[listen('dragstart', '#tanasinn_content')]":
   function ondragstart(event) 
   {
-    if (null !== this._mouse_mode)
+    let mouse_mode = this._mouse_mode;
+    if (null !== mouse_mode || "VT200_HIGHLIGHT_MOUSE" !== mouse_mode) {
       return;
-    let session = this._broker;
+    }
+    let broker = this._broker;
     let screen = this.dependency["screen"];
     let column = screen.width;
     let row = screen.height;
@@ -176,7 +180,8 @@ Selection.definition = {
     this._rectangle_selection_flag = event.altKey;
     this._context.fillStyle = this.color;
     let document = this._canvas.ownerDocument; 
-    session.notify(
+
+    broker.notify(
       "command/add-domlistener", 
       {
         target: document, 
@@ -195,15 +200,17 @@ Selection.definition = {
           this.setRange(startPosition, endPosition);
         }
       });
-    session.notify(
+
+    broker.notify(
       "command/add-domlistener", 
       {
         target: document,
         type: "mouseup", 
         id: "_DRAGGING",
         context: this,
-        handler: function selection_mouseup(event) {
-          session.notify("command/remove-domlistener", "_DRAGGING"); 
+        handler: function selection_mouseup(event) 
+        {
+          broker.notify("command/remove-domlistener", "_DRAGGING"); 
           if (this._range) {
             this._setClearAction();
           }
@@ -218,8 +225,8 @@ Selection.definition = {
   _setClearAction: function _setClearAction() 
   {
     let id = "selection.clear";
-    let session = this._broker;
-    session.notify("command/add-domlistener", {
+    let broker = this._broker;
+    broker.notify("command/add-domlistener", {
       target: "#tanasinn_content",
       type: "mouseup",
       id: id,
@@ -228,29 +235,29 @@ Selection.definition = {
       {
         if (2 == event.button) // right click
           return;
-        session.notify("command/remove-domlistener", id); 
+        broker.notify("command/remove-domlistener", id); 
         this.clear();
       },
     });
-    //session.notify("command/add-domlistener", {
+    //broker.notify("command/add-domlistener", {
     //  target: "#tanasinn_content",
     //  type: "dragstart",
     //  id: id,
     //  context: this,
     //  handler: function(event) 
     //  {
-    //    session.notify("remove-domlistener", id); 
+    //    broker.notify("remove-domlistener", id); 
     //    this.clear();
     //  },
     //});
-    session.notify("command/add-domlistener", {
+    broker.notify("command/add-domlistener", {
       target: "#tanasinn_content",
       type: "DOMMouseScroll", 
       id: id,
       context: this,
       handler: function handler(event) 
       {
-        session.notify("command/remove-domlistener", id); 
+        broker.notify("command/remove-domlistener", id); 
         this.clear();
       },
     });
@@ -343,8 +350,9 @@ Selection.definition = {
   "[subscribe('get/selection-info')]": 
   function getRange() 
   {
-    if (!this._range)
+    if (null === this._range) {
       return null;
+    }
     let [start, end] = this._range;
     return {
       start: start, 
@@ -362,11 +370,11 @@ Selection.definition = {
 
   setRange: function setRange(column, row) 
   {
-    let session = this._broker;
+    let broker = this._broker;
     this.onBeforeInput.enabled = true;
     this._range = [column, row];
     let message = coUtils.Text.format(_("selected: [%d, %d]"), column, row);
-    session.notify("command/report-status-message", message);
+    broker.notify("command/report-status-message", message);
   },
 
   /** Clear selection canvas and range information. */
@@ -380,10 +388,9 @@ Selection.definition = {
 
   convertPixelToScreen: function convertPixelToScreen(event) 
   {
-    let session = this._broker;
-    let [target_element] 
-      = session.notify("command/query-selector", "#tanasinn_center_area");
-    let root_element = session.root_element;
+    let broker = this._broker;
+    let target_element = broker.uniget("command/query-selector", "#tanasinn_center_area");
+    let root_element = broker.root_element;
     let box = target_element.boxObject;
     let offsetX = box.screenX - root_element.boxObject.screenX;
     let offsetY = box.screenY - root_element.boxObject.screenY;
