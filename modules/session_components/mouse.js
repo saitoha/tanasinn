@@ -154,6 +154,8 @@ Mouse.definition = {
     if ("VT200_HIGHLIGHT_MOUSE" != this._tracking_mode) {
       return;
     }
+    coUtils.Debug.reportWarning(
+      _("Highlight mouse tracking mode was not supported now."));
   },
 
   "[subscribe('command/backup')]": 
@@ -204,9 +206,9 @@ Mouse.definition = {
              | event.shiftKey << 2 
              | event.metaKey  << 3
              | event.ctrlKey  << 4
-             | 1              << 5
+//             | 1              << 5
              ;
-
+    code += 32;
     let [column, row] = this._getCurrentPosition(event);
 
     let message;
@@ -417,6 +419,27 @@ Mouse.definition = {
     // ev.button - 0: left click, 2: right click
   },
 
+//  /** Mouse move evnet listener */
+//  "[listen('mousemove', '#tanasinn_content')]": 
+//  function onmousemove(event) 
+//  {
+//    //if (!this._dragged) {
+//    //  return;
+//    //}
+//    let tracking_mode = this._tracking_mode;
+//    if  (/BTN_EVENT_MOUSE|ANY_EVENT_MOUSE/.test(tracking_mode)) {
+//      // Send motion event.
+//      let code = 32 + 0 + 32;
+//      let [column, row] = this._getCurrentPosition(event);
+//      column += 32;
+//      row += 32;
+//      let message = String.fromCharCode(0x1b, 0x5b, 0x4d, code, column, row);
+//
+//      let broker = this._broker;
+//      broker.notify("command/send-to-tty", message);
+//    }
+//  },
+
   /** Mouse move evnet listener */
   "[listen('mousemove', '#tanasinn_content')]": 
   function onmousemove(event) 
@@ -424,8 +447,11 @@ Mouse.definition = {
     let tracking_mode = this._tracking_mode;
     if  (/BTN_EVENT_MOUSE|ANY_EVENT_MOUSE/.test(tracking_mode)) {
       // Send motion event.
-      let button = MOUSE_RELEASE;//event.button;
-      this._sendMouseEvent(event, button); 
+      let button;
+      if (this._dragged) {
+        button = 32;//event.button;//MOUSE_RELEASE;//event.button;
+        this._sendMouseEvent(event, button); 
+      }
     }
   },
 

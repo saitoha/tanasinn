@@ -148,7 +148,7 @@ Selection.definition = {
   function ondblclick(event) 
   {
     let mouse_mode = this._mouse_mode;
-    if (null !== mouse_mode || "VT200_HIGHLIGHT_MOUSE" !== mouse_mode) {
+    if (null !== mouse_mode && "VT200_HIGHLIGHT_MOUSE" != mouse_mode) {
       return;
     }
     let [column, row] = this.convertPixelToScreen(event);
@@ -162,7 +162,7 @@ Selection.definition = {
   function ondragstart(event) 
   {
     let mouse_mode = this._mouse_mode;
-    if (null !== mouse_mode || "VT200_HIGHLIGHT_MOUSE" !== mouse_mode) {
+    if (null !== mouse_mode && "VT200_HIGHLIGHT_MOUSE" != mouse_mode) {
       return;
     }
     let broker = this._broker;
