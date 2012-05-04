@@ -21,6 +21,7 @@ EEND="$$($(TPUT) sgr0; $(TPUT) setaf 6)"
 ##endif
 
 all: $(XPI) tanasinn-docs.zip
+	cp -f $(XPI) tanasinn-docs.zip download/
 
 tanasinn-docs.zip: doc/usermanual.html
 	@echo "$(MSTART) Create documentation package....$(MEND)" 
