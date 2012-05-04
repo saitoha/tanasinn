@@ -329,6 +329,14 @@ DecModeSequenceHandler.definition = {
             _("DECSET 1003 - xterm all motion mouse tracking mode was set."));
           break;
           
+        // Focus reporting mode.
+        case 1004:
+          broker.notify(
+            "event/focus-reporting-mode-changed", true);
+          coUtils.Debug.reportMessage(
+            _("DECSET 1004 - focus reporting mode was set."));
+          break;
+          
         // Enable utf8-style mouse reporting.
         case 1005:
           broker.notify("event/mouse-tracking-type-changed", "utf8");
@@ -676,7 +684,15 @@ DecModeSequenceHandler.definition = {
         case 1003:
           broker.notify("event/mouse-tracking-mode-changed", null);
           break;
-        
+
+        // Focus reporting mode.
+        case 1004:
+          broker.notify(
+            "event/focus-reporting-mode-changed", false);
+          coUtils.Debug.reportMessage(
+            _("DECSET 1004 - focus reporting mode was reset."));
+          break;
+
         // Enable utf8-style mouse reporting.
         case 1005:
           broker.notify("event/mouse-tracking-type-changed", null);

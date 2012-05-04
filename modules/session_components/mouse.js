@@ -56,6 +56,8 @@ Mouse.definition = {
 
   _tracking_mode: null,
   _tracking_type: null,
+  _focus_mode: false,
+
   _dragged: false,
   _installed: false,
 
@@ -80,6 +82,8 @@ Mouse.definition = {
     this.onMouseTrackingModeChanged.enabled = true;
     this.backup.enabled = true;
     this.restore.enabled = true;
+    this.onGotFocus.enabled = true;
+    this.onLostFocus.enabled = true;
   },
 
   /** Uninstalls itself. */
@@ -99,6 +103,8 @@ Mouse.definition = {
     this.onMouseTrackingModeChanged.enabled = false;
     this.backup.enabled = false;
     this.restore.enabled = false;
+    this.onGotFocus.enabled = false;
+    this.onLostFocus.enabled = false;
   },
     
   /** Fired at the keypad mode is changed. */
@@ -115,6 +121,13 @@ Mouse.definition = {
     this._in_scroll_session = true;
   },
   
+  /** Fired at the focus reporting mode is changed. */
+  "[subscribe('event/focus-reporting-mode-changed'), enabled]": 
+  function onFocusReportingModeChanged(mode) 
+  {
+    this._focus_mode = mode;
+  },
+
   /** Fired at scroll session is closed. */
   "[subscribe('event/scroll-session-closed'), enabled]":
   function onScrolSessionClosed() 
@@ -165,6 +178,32 @@ Mouse.definition = {
       this._tracking_mode = tracking_mode;
       this._keypad_mode = keypad_mode;
     }
+  },
+
+  "[subscribe('event/got-focus')]":
+  function onGotFocus()
+  {
+    this.onLostFocus.enabled = true;
+    this.onGotFocus.enabled = false;
+    if (!this._focus_mode) {
+      return;
+    }
+    let broker = this._broker;
+    let message = "\x1b[I"; // focus in
+    broker.notify("command/send-to-tty", message);
+  },
+
+  "[subscribe('event/lost-focus')]":
+  function onLostFocus()
+  {
+    this.onLostFocus.enabled = false;
+    this.onGotFocus.enabled = true;
+    if (!this._focus_mode) {
+      return;
+    }
+    let broker = this._broker;
+    let message = "\x1b[O"; // focus out
+    broker.notify("command/send-to-tty", message);
   },
 
   /** Make packed mouse event data and send it to tty device. */
