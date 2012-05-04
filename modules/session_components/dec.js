@@ -179,7 +179,9 @@ DecModeSequenceHandler.definition = {
 
         // X10_MOUSE mode
         case 9:
-          broker.notify("event/mouse-tracking-mode-changed", "X10_MOUSE");
+          broker.notify("event/mouse-tracking-mode-changed", coUtils.Constant.TRACKING_X10);
+          coUtils.Debug.reportMessage(
+            _("DECSET 9 - X10 mouse tracking mode was set."));
           break;
 
         // cursor blink mode
@@ -293,28 +295,36 @@ DecModeSequenceHandler.definition = {
         // Send Mouse X & Y on button press and release. 
         // See the section Mouse Tracking.
         case 1000:
-          broker.notify("event/mouse-tracking-mode-changed", "VT200_MOUSE");
+          broker.notify(
+            "event/mouse-tracking-mode-changed", 
+            coUtils.Constant.TRACKING_NORMAL);
           coUtils.Debug.reportMessage(
-            _("DECSET 1000 - xterm VT200 mouse tracking mode was set."));
+            _("DECSET 1000 - VT200 mouse tracking mode was set."));
           break;
 
         // Use Hilite Mouse Tracking.
         case 1001:
-          broker.notify("event/mouse-tracking-mode-changed", "VT200_HIGHLIGHT_MOUSE");
+          broker.notify(
+            "event/mouse-tracking-mode-changed", 
+            coUtils.Constant.TRACKING_HIGHLIGHT);
           coUtils.Debug.reportMessage(
             _("DECSET 1001 - xterm hilite mouse tracking mode was set."));
           break;
 
         // Use Cell Motion Mouse Tracking.
         case 1002:
-          broker.notify("event/mouse-tracking-mode-changed", "BTN_EVENT_MOUSE");
+          broker.notify(
+            "event/mouse-tracking-mode-changed", 
+            coUtils.Constant.BUTTON);
           coUtils.Debug.reportMessage(
             _("DECSET 1002 - xterm cell motion mouse tracking mode was set."));
           break;
 
         // Use All Motion Mouse Tracking.
         case 1003:
-          broker.notify("event/mouse-tracking-mode-changed", "ANY_EVENT_MOUSE");
+          broker.notify(
+            "event/mouse-tracking-mode-changed", 
+            coUtils.Constant.ANY);
           coUtils.Debug.reportMessage(
             _("DECSET 1003 - xterm all motion mouse tracking mode was set."));
           break;

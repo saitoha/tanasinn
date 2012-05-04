@@ -70,15 +70,19 @@ Selection.definition = {
   _canvas: null,
   _context: null,
   _range: null,
-  _mouse_mode: null,
+  _tracking_mode: null,
+  _highlight_region: null,
 
-  color: "white",
-  
+  "[persistable] normal_selection_color": "white",
+  "[persistable] highlight_selection_color": "yellow",
+
+  _color: "white",
+
   "[subscribe('event/mouse-tracking-mode-changed'), enabled]": 
   function onMouseTrackingModeChanged(data) 
   {
-    this._mouse_mode = data;
-    if (null !== data && this.enabled) {
+    this._tracking_mode = data;
+    if (this.enabled) {
       this.clear();
     }
   },
@@ -147,64 +151,186 @@ Selection.definition = {
   "[listen('dblclick', '#tanasinn_content')]":
   function ondblclick(event) 
   {
-    let mouse_mode = this._mouse_mode;
-    if (null !== mouse_mode && "VT200_HIGHLIGHT_MOUSE" != mouse_mode) {
-      return;
+    let tracking_mode = this._tracking_mode;
+    if (null !== tracking_mode) {
+//      if (coUtils.Constant.TRACKING_HIGHLIGHT != tracking_mode) {
+        return;
+//      }
     }
     let [column, row] = this.convertPixelToScreen(event);
     this.selectSurroundChars(column, row);
 
     this._setClearAction();
   },
-
-  /** Dragstart handler. It starts a session of dragging selection. */
-  "[listen('dragstart', '#tanasinn_content')]":
-  function ondragstart(event) 
+  
+  /**
+   *
+   * Mouse highlight tracking notifies a program of a button press, receives 
+   * a range of lines from the program, highlights the region covered by the 
+   * mouse within that range until button release, and then sends the program 
+   * the release coordinates. It is enabled by specifying parameter 1001 to
+   * DECSET. Highlighting is performed only for button 1, though other button 
+   * events can be received. Warning: use of this mode requires a cooperating 
+   * program or it will hang xterm. On button press, the same information as 
+   * for normal tracking is generated; xterm then waits for the program to 
+   * send mouse tracking information. All X events are ignored until the 
+   * proper escape sequence is received from the pty: 
+   *
+   * CSI P s ; P s ; P s ; P s ; P s T . 
+   *
+   * The parameters are func, startx, starty, firstrow, and lastrow. 
+   * func is non-zero to initiate highlight tracking and zero to abort. 
+   * startx and starty give the starting x and y location for the highlighted 
+   * region. The ending location tracks the mouse, but will never be above row
+   * firstrow and will always be above row lastrow. (The top of the screen is 
+   * row 1.) When the button is released, xterm reports the ending position 
+   * one of two ways: if the start and end coordinates are valid text 
+   * locations: CSI t C x C y . If either coordinate is past the end of the 
+   * line: CSI T C x C y C x C y C x C y . The parameters are startx, starty, 
+   * endx, endy, mousex, and mousey. startx, starty, endx, and endy give the 
+   * starting and ending character positions of the region. mousex and mousey 
+   * give the location of the mouse at button up, which may not be over a 
+   * character.
+   *
+   */
+  "[subscribe('event/start-highlight-mouse'), enabled]":
+  function onStartHighlightMouse(args)
   {
-    let mouse_mode = this._mouse_mode;
-    if (null !== mouse_mode && "VT200_HIGHLIGHT_MOUSE" != mouse_mode) {
+    let tracking_mode = this._tracking_mode;
+    if (coUtils.Constant.TRACKING_HIGHLIGHT != tracking_mode) {
       return;
     }
+
+    let func = args[0];
+    if (0 == func) {
+      this.clear();
+      return;
+    }
+
     let broker = this._broker;
     let screen = this.dependency["screen"];
     let column = screen.width;
     let row = screen.height;
-    let [x, y] = this.convertPixelToScreen(event);
-    let initialPosition = y * column + x;
+    let x = args[1] - 1;
+    let y = args[2] - 1;;
+    let min_row = args[3] - 1;
+    let max_row = args[4] - 1;
+    let initial_position = y * column + x;
     if (this._range) {
       let [start, end] = this._range;
-      if (start <= initialPosition && initialPosition < end) {
+      if (start <= initial_position && initial_position < end) {
         return; // drag copy
       }
     }
-    this._rectangle_selection_flag = event.altKey;
-    this._context.fillStyle = this.color;
-    let document = this._canvas.ownerDocument; 
+    this._rectangle_selection_flag = false;
+    this._color = this.highlight_selection_color;
+    this._context.fillStyle = this._color;
 
     broker.notify(
       "command/add-domlistener", 
       {
-        target: document, 
+        target: this._canvas.ownerDocument, 
+        type: "dragstart", 
+        id: "_DRAGGING",
+        context: this,
+        handler: function selection_dragstart(event) 
+        {
+
+    broker.notify(
+      "command/add-domlistener", 
+      {
+        target: this._canvas.ownerDocument, 
         type: "mousemove", 
         id: "_DRAGGING",
         context: this,
         handler: function selection_mousemove(event) 
         {
           let [x, y] = this.convertPixelToScreen(event);
-          let currentPosition = y * column + x;
-          let startPosition = Math.min(initialPosition, currentPosition);
-          let endPosition = Math.max(initialPosition, currentPosition) 
-          startPosition = Math.max(0, startPosition);
-          endPosition = Math.min(row * column, endPosition);
-          this.drawSelectionRange(startPosition, endPosition);
-          this.setRange(startPosition, endPosition);
+          if (y < min_row) {
+            y = min_row;
+          }
+          if (y > max_row - 1) {
+            y = max_row - 1;
+          }
+          let current_position = y * column + x;
+          let start_position = Math.min(initial_position, current_position);
+          let end_position = Math.max(initial_position, current_position) 
+          start_position = Math.max(0, start_position);
+          end_position = Math.min(row * column, end_position);
+          this.drawSelectionRange(start_position, end_position);
+          this.setRange(start_position, end_position);
         }
       });
 
     broker.notify(
       "command/add-domlistener", 
       {
-        target: document,
+        target: this._canvas.ownerDocument,
+        type: "mouseup", 
+        id: "_DRAGGING",
+        context: this,
+        handler: function selection_mouseup(event) 
+        {
+          broker.notify("command/remove-domlistener", "_DRAGGING"); 
+          if (this._range) {
+            this._setClearAction();
+          }
+        }
+      });
+          }
+        });
+  },
+
+  /** Dragstart handler. It starts a session of dragging selection. */
+  "[listen('dragstart', '#tanasinn_content')]":
+  function ondragstart(event) 
+  {
+    let tracking_mode = this._tracking_mode;
+    if (null !== tracking_mode) {
+//      if (coUtils.Constant.TRACKING_HIGHLIGHT != tracking_mode) {
+        return;
+//      }
+    }
+    let broker = this._broker;
+    let screen = this.dependency["screen"];
+    let column = screen.width;
+    let row = screen.height;
+    let [x, y] = this.convertPixelToScreen(event);
+    let initial_position = y * column + x;
+    if (this._range) {
+      let [start, end] = this._range;
+      if (start <= initial_position && initial_position < end) {
+        return; // drag copy
+      }
+    }
+    this._rectangle_selection_flag = event.altKey;
+    this._color = this.normal_selection_color;
+    this._context.fillStyle = this._color;
+
+    broker.notify(
+      "command/add-domlistener", 
+      {
+        target: this._canvas.ownerDocument, 
+        type: "mousemove", 
+        id: "_DRAGGING",
+        context: this,
+        handler: function selection_mousemove(event) 
+        {
+          let [x, y] = this.convertPixelToScreen(event);
+          let current_position = y * column + x;
+          let start_position = Math.min(initial_position, current_position);
+          let end_position = Math.max(initial_position, current_position) 
+          start_position = Math.max(0, start_position);
+          end_position = Math.min(row * column, end_position);
+          this.drawSelectionRange(start_position, end_position);
+          this.setRange(start_position, end_position);
+        }
+      });
+
+    broker.notify(
+      "command/add-domlistener", 
+      {
+        target: this._canvas.ownerDocument,
         type: "mouseup", 
         id: "_DRAGGING",
         context: this,
@@ -233,23 +359,13 @@ Selection.definition = {
       context: this,
       handler: function(event) 
       {
-        if (2 == event.button) // right click
+        if (2 == event.button) { // right click
           return;
+        }
         broker.notify("command/remove-domlistener", id); 
         this.clear();
       },
     });
-    //broker.notify("command/add-domlistener", {
-    //  target: "#tanasinn_content",
-    //  type: "dragstart",
-    //  id: id,
-    //  context: this,
-    //  handler: function(event) 
-    //  {
-    //    broker.notify("remove-domlistener", id); 
-    //    this.clear();
-    //  },
-    //});
     broker.notify("command/add-domlistener", {
       target: "#tanasinn_content",
       type: "DOMMouseScroll", 
@@ -318,7 +434,7 @@ Selection.definition = {
       let y = start_row * line_height;
       let width = (end_column - start_column) * char_width;
       let height = (end_row - start_row) * line_height;
-      context.fillStyle = "white";
+      context.fillStyle = this._color;
       context.fillRect(x, y, width, height);
     } else {
       // draw outer region
@@ -326,7 +442,7 @@ Selection.definition = {
       let y = start_row * line_height;
       let width = column * char_width;
       let height = (end_row - start_row) * line_height;
-      context.fillStyle = "white";
+      context.fillStyle = this._color;
       context.fillRect(x, y, width, height);
 
       // clear pre-start region

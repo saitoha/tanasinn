@@ -148,16 +148,6 @@ Mouse.definition = {
     this._tracking_mode = data;
   },
 
-  "[subscribe('event/start-highlight-mouse'), enabled]":
-  function onStartHighlightMouse(args)
-  {
-    if ("VT200_HIGHLIGHT_MOUSE" != this._tracking_mode) {
-      return;
-    }
-    coUtils.Debug.reportWarning(
-      _("Highlight mouse tracking mode was not supported now."));
-  },
-
   "[subscribe('command/backup')]": 
   function backup(context) 
   {
@@ -323,8 +313,8 @@ Mouse.definition = {
 //        broker.notify("command/send-to-tty", message);
 
       } else {
-        throw coUtils.Debug.Exception(
-          _("keypad_mode has ill value: [%d]"), keypad_mode);
+//        throw coUtils.Debug.Exception(
+//          _("keypad_mode has ill value: [%d]"), keypad_mode);
       }
     }
   },
@@ -388,14 +378,16 @@ Mouse.definition = {
   function onMagnifyGesture(delta) 
   {
     let broker = this._broker
+    let i;
+    let magnify_delta = this.magnify_delta_per_fontsize;
     if (delta > 0) {
-      let count = Math.ceil(delta / this.magnify_delta_per_fontsize);
-      for (let i = 0; i < count; ++i) {
+      let count = Math.ceil(delta / magnify_delta);
+      for (i = 0; i < count; ++i) {
         broker.notify("command/input-expression-with-remapping", "<PinchOpen>");
       }
     } else if (delta < 0) {
-      let count = Math.floor(- delta / this.magnify_delta_per_fontsize);
-      for (let i = 0; i < count; ++i) {
+      let count = Math.floor(- delta / magnify_delta);
+      for (i = 0; i < count; ++i) {
         broker.notify("command/input-expression-with-remapping", "<PinchClose>");
       }
     }
@@ -407,52 +399,67 @@ Mouse.definition = {
   function onmousedown(event) 
   {
     this._dragged = true;
-    if (null !== this._tracking_mode) {
-      let button = 0 == event.button ? MOUSE_BUTTON1
-    //             : 2 == event.button ? MOUSE_BUTTON2
-                 : null;
-                 ; 
-//      if (null !== button) {
-        this._sendMouseEvent(event, button); 
-//      }
+ 
+    if (null === this._tracking_mode) {
+      return;
     }
-    // ev.button - 0: left click, 2: right click
-  },
 
-//  /** Mouse move evnet listener */
-//  "[listen('mousemove', '#tanasinn_content')]": 
-//  function onmousemove(event) 
-//  {
-//    //if (!this._dragged) {
-//    //  return;
-//    //}
-//    let tracking_mode = this._tracking_mode;
-//    if  (/BTN_EVENT_MOUSE|ANY_EVENT_MOUSE/.test(tracking_mode)) {
-//      // Send motion event.
-//      let code = 32 + 0 + 32;
-//      let [column, row] = this._getCurrentPosition(event);
-//      column += 32;
-//      row += 32;
-//      let message = String.fromCharCode(0x1b, 0x5b, 0x4d, code, column, row);
-//
-//      let broker = this._broker;
-//      broker.notify("command/send-to-tty", message);
-//    }
-//  },
+    let button;
+
+    switch (event.button) {
+
+      case MOUSE_BUTTON1:
+        button = coUtils.Constant.BUTTON_LEFT;
+        break;
+
+      case MOUSE_BUTTON2:
+        button = coUtils.Constant.BUTTON_MIDDLE;
+        break;
+
+      case MOUSE_BUTTON1:
+        button = coUtils.Constant.BUTTONE_LEFT;
+        break;
+
+      default:
+        throw coUtils.Debug.Error(
+          _("Unhandled mousedown event, button: %d."), 
+          event.button);
+
+    }
+    this._sendMouseEvent(event, button); 
+  },
 
   /** Mouse move evnet listener */
   "[listen('mousemove', '#tanasinn_content')]": 
   function onmousemove(event) 
   {
     let tracking_mode = this._tracking_mode;
-    if  (/BTN_EVENT_MOUSE|ANY_EVENT_MOUSE/.test(tracking_mode)) {
+
+    switch (tracking_mode) {
+
+      case coUtils.Constant.BUTTON:
+        if (this._dragged) {
+          button = event.button + 32;
+          this._sendMouseEvent(event, button); 
+        }
+        break;
+
+      case coUtils.Constant.ANY:
       // Send motion event.
-      let button;
-      if (this._dragged) {
-        button = 32;//event.button;//MOUSE_RELEASE;//event.button;
+        let button;
+        if (this._dragged) {
+          button = event.button + 32;
+        } else {
+          button = MOUSE_RELEASE;
+        }
         this._sendMouseEvent(event, button); 
-      }
-    }
+        break;
+
+      case coUtils.Constant.NORMAL:
+      case coUtils.Constant.TRACKING_HIGHLIGHT:
+      default:
+        // pass
+    } // switch tracking_mode
   },
 
   /** Mouse up evnet listener */
