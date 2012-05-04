@@ -70,7 +70,7 @@ Selection.definition = {
   _canvas: null,
   _context: null,
   _range: null,
-  _tracking_mode: null,
+  _tracking_mode: coUtils.Constant.TRACKING_NONE,
   _highlight_region: null,
 
   "[persistable] normal_selection_color": "white",
@@ -152,10 +152,8 @@ Selection.definition = {
   function ondblclick(event) 
   {
     let tracking_mode = this._tracking_mode;
-    if (null !== tracking_mode) {
-//      if (coUtils.Constant.TRACKING_HIGHLIGHT != tracking_mode) {
-        return;
-//      }
+    if (coUtils.Constant.TRACKING_NONE !== tracking_mode) {
+      return;
     }
     let [column, row] = this.convertPixelToScreen(event);
     this.selectSurroundChars(column, row);
@@ -285,10 +283,8 @@ Selection.definition = {
   function ondragstart(event) 
   {
     let tracking_mode = this._tracking_mode;
-    if (null !== tracking_mode) {
-//      if (coUtils.Constant.TRACKING_HIGHLIGHT != tracking_mode) {
-        return;
-//      }
+    if (coUtils.Constant.TRACKING_NONE !== tracking_mode) {
+      return;
     }
     let broker = this._broker;
     let screen = this.dependency["screen"];
@@ -423,7 +419,7 @@ Selection.definition = {
     let char_width = renderer.char_width;
     let line_height = renderer.line_height;
     let start_row = Math.floor(first / column);
-    let end_row = Math.ceil(last / column + 0.5);
+    let end_row = Math.floor(last / column + 1.0);
     let start_column = first % column;
     let end_column = last % column;
 
