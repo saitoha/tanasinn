@@ -235,48 +235,47 @@ Selection.definition = {
         context: this,
         handler: function selection_dragstart(event) 
         {
+          broker.notify(
+            "command/add-domlistener", 
+            {
+              target: this._canvas.ownerDocument, 
+              type: "mousemove", 
+              id: "_DRAGGING",
+              context: this,
+              handler: function selection_mousemove(event) 
+              {
+                let [x, y] = this.convertPixelToScreen(event);
+                if (y < min_row) {
+                  y = min_row;
+                }
+                if (y > max_row - 1) {
+                  y = max_row - 1;
+                }
+                let current_position = y * column + x;
+                let start_position = Math.min(initial_position, current_position);
+                let end_position = Math.max(initial_position, current_position) 
+                start_position = Math.max(0, start_position);
+                end_position = Math.min(row * column, end_position);
+                this.drawSelectionRange(start_position, end_position);
+                this.setRange(start_position, end_position);
+              }
+            });
 
-    broker.notify(
-      "command/add-domlistener", 
-      {
-        target: this._canvas.ownerDocument, 
-        type: "mousemove", 
-        id: "_DRAGGING",
-        context: this,
-        handler: function selection_mousemove(event) 
-        {
-          let [x, y] = this.convertPixelToScreen(event);
-          if (y < min_row) {
-            y = min_row;
-          }
-          if (y > max_row - 1) {
-            y = max_row - 1;
-          }
-          let current_position = y * column + x;
-          let start_position = Math.min(initial_position, current_position);
-          let end_position = Math.max(initial_position, current_position) 
-          start_position = Math.max(0, start_position);
-          end_position = Math.min(row * column, end_position);
-          this.drawSelectionRange(start_position, end_position);
-          this.setRange(start_position, end_position);
-        }
-      });
-
-    broker.notify(
-      "command/add-domlistener", 
-      {
-        target: this._canvas.ownerDocument,
-        type: "mouseup", 
-        id: "_DRAGGING",
-        context: this,
-        handler: function selection_mouseup(event) 
-        {
-          broker.notify("command/remove-domlistener", "_DRAGGING"); 
-          if (this._range) {
-            this._setClearAction();
-          }
-        }
-      });
+          broker.notify(
+            "command/add-domlistener", 
+            {
+              target: this._canvas.ownerDocument,
+              type: "mouseup", 
+              id: "_DRAGGING",
+              context: this,
+              handler: function selection_mouseup(event) 
+              {
+                broker.notify("command/remove-domlistener", "_DRAGGING"); 
+                if (this._range) {
+                  this._setClearAction();
+                }
+              }
+            });
           }
         });
   },
@@ -423,12 +422,13 @@ Selection.definition = {
     let column = screen.width;
     let char_width = renderer.char_width;
     let line_height = renderer.line_height;
-    let start_row = Math.round(first / column);
-    let end_row = Math.round(last / column) + 1;
+    let start_row = Math.floor(first / column);
+    let end_row = Math.ceil(last / column + 0.5);
     let start_column = first % column;
     let end_column = last % column;
 
     if (this._rectangle_selection_flag) {
+
       // draw outer region
       let x = start_column * char_width;
       let y = start_row * line_height;
@@ -436,6 +436,7 @@ Selection.definition = {
       let height = (end_row - start_row) * line_height;
       context.fillStyle = this._color;
       context.fillRect(x, y, width, height);
+
     } else {
       // draw outer region
       let x = 0;
@@ -516,12 +517,12 @@ Selection.definition = {
     let screen = this.dependency["screen"];
     let char_width = renderer.char_width;
     let line_height = renderer.line_height;
-    let column = Math.round(left / char_width + 1.0);
-    let row = Math.round(top / line_height + 0.0);
-    let maxColumn = screen.width;
-    let maxRow = screen.height;
-    column = column > maxColumn ? maxColumn: column;
-    row = row > maxRow ? maxRow: row;
+    let column = Math.floor(left / char_width + 1.0);
+    let row = Math.floor(top / line_height + 1.0);
+    let max_column = screen.width;
+    let max_row = screen.height;
+    column = column > max_column ? max_column: column;
+    row = row > max_row ? max_row: row;
     return [column - 1, row - 1];
   },
 
