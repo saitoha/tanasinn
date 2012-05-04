@@ -72,10 +72,11 @@ coUtils.Constant = {
   // Mouse Tracking type
   //
   TRACKING_NONE:              0x0,
-  TRACKING_NORMAL:            0x1,
-  TRACKING_BUTTON:            0x2,
-  TRACKING_HIGHLIGHT:         0x3,
-  TRACKING_ANY:               0x4,
+  TRACKING_X10:               0x1,
+  TRACKING_NORMAL:            0x2,
+  TRACKING_BUTTON:            0x3,
+  TRACKING_HIGHLIGHT:         0x4,
+  TRACKING_ANY:               0x5,
 
   //
   // Line Attribute

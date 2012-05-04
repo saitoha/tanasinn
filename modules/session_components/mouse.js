@@ -54,7 +54,7 @@ Mouse.definition = {
 
   "[persistable] enabled_when_startup": true,
 
-  _tracking_mode: null,
+  _tracking_mode: coUtils.Constant.TRACKING_NONE,
   _tracking_type: null,
   _focus_mode: false,
 
@@ -140,7 +140,7 @@ Mouse.definition = {
   function onMouseTrackingTypeChanged(data) 
   {
     let broker = this._broker;
-    if (null == data) {
+    if (coUtils.Constant.TRACKING_NONE == data) {
       broker.notify(_("Leaving mouse tracking type: [%s]."), this._tracking_type)
     } else {
       broker.notify(_("Entering mouse tracking type: [%s]."), data)
@@ -153,11 +153,12 @@ Mouse.definition = {
   function onMouseTrackingModeChanged(data) 
   {
     let broker = this._broker;
-    if (null == data) {
+    if (coUtils.Constant.TRACKING_NONE == data) {
       broker.notify(_("Leaving mouse tracking mode: [%s]."), this._tracking_mode)
     } else {
       broker.notify(_("Entering mouse tracking mode: [%s]."), data)
     }
+
     this._tracking_mode = data;
   },
 
@@ -242,6 +243,7 @@ Mouse.definition = {
 
     let message;
     let buffer;
+
     switch (this._tracking_type) {
 
       case "urxvt":
@@ -250,6 +252,7 @@ Mouse.definition = {
 
       case "sgr":
         message = coUtils.Text.format("\x1b[<%d;%d;%dM", code, column, row);
+        coUtils.Debug.reportError(message)
         break;
 
       case "utf8":
@@ -313,7 +316,7 @@ Mouse.definition = {
       let tracking_mode = this._tracking_mode;
       let broker = this._broker;
       if (this._in_scroll_session 
-          || null === tracking_mode 
+          || coUtils.Constant.TRACKING_NONE == tracking_mode 
           && coUtils.Constant.KEYPAD_MODE_NORMAL == keypad_mode) {
         if (count > 0) {
           broker.notify("command/scroll-down-view", count);
@@ -439,7 +442,7 @@ Mouse.definition = {
   {
     this._dragged = true;
  
-    if (null === this._tracking_mode) {
+    if (coUtils.Constant.TRACKING_NONE == this._tracking_mode) {
       return;
     }
 
@@ -476,14 +479,14 @@ Mouse.definition = {
 
     switch (tracking_mode) {
 
-      case coUtils.Constant.BUTTON:
+      case coUtils.Constant.TRACKING_BUTTON:
         if (this._dragged) {
           button = event.button + 32;
           this._sendMouseEvent(event, button); 
         }
         break;
 
-      case coUtils.Constant.ANY:
+      case coUtils.Constant.TRACING_ANY:
       // Send motion event.
         let button;
         if (this._dragged) {
@@ -494,7 +497,8 @@ Mouse.definition = {
         this._sendMouseEvent(event, button); 
         break;
 
-      case coUtils.Constant.NORMAL:
+      case coUtils.Constant.TRACKING_X10:
+      case coUtils.Constant.TRACKING_NORMAL:
       case coUtils.Constant.TRACKING_HIGHLIGHT:
       default:
         // pass
@@ -506,7 +510,7 @@ Mouse.definition = {
   function onmouseup(event) 
   {
     this._dragged = false;
-    if (null !== this._tracking_mode) {
+    if (coUtils.Constant.TRACKING_NONE != this._tracking_mode) {
       this._sendMouseEvent(event, MOUSE_RELEASE); // release
     }
   },
