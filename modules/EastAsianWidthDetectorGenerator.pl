@@ -8,7 +8,7 @@ my $last = 0;
 my $previous = 0; 
 my @array = [];
 while (<IN>) {
-    if ($_ =~ /^([0-9A-F]{4});(F|W)/) {
+    if ($_ =~ /^([0-9A-F]{4});(F|W|A)/) {
         my $current = $1;
         if (hex($current) - hex($previous) ne 1) {
             if ($last == $previous) {
@@ -24,7 +24,7 @@ while (<IN>) {
             $last = $current;
         }
         $previous = $current;
-    } elsif ($_ =~ /^([0-9A-F]{4})\.\.([0-9A-F]+);(F|W)/) {
+    } elsif ($_ =~ /^([0-9A-F]{4})\.\.([0-9A-F]+);(F|W|A)/) {
         my $current = $1;
         if (hex($current) - hex($previous) ne 1) {
             if ($last == $previous) {
