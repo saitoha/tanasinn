@@ -150,6 +150,7 @@ http:/#/www.mozilla-japan.org/MPL/MPL-1.1J.html[Mozilla Public License 1.1 (MPL1
     - IME is supported.
     - Supports VT52 compatibility mode.
     - Supports http:/#/en.wikipedia.org/wiki/Tektronix_4010[Tektronix 4010/4014] compatibility mode (on progress).
+    - Supports Sixel Graphics mode.
     - Supports some ancient lost commands, such as DECDHL/DECDWL, DECDLD/http:/#/vt100.net/dec/vt320/soft_characters[DRCS(Dynamically Redefined Character Set)]。
     - Supports east asian double width characters. 
       but it is not render bidi languages correctly.
@@ -179,6 +180,7 @@ http:/#/www.mozilla-japan.org/MPL/MPL-1.1J.html[Mozilla Public License 1.1 (MPL1
     - IMEが使えます。
     - VT52互換モード搭載。
     - http:/#/en.wikipedia.org/wiki/Tektronix_4010[Tektronix 4010/4014]互換モード搭載 (一部未実装)。
+    - Sixelグラフィクスモードをサポート。
     - PC端末では実装例の少ないロスト・コマンドを積極的に実装。
       DECDHL/DECDWLやhttp:/#/vt100.net/dec/vt320/soft_characters[DRCS(Dynamically Redefined Character Set)]など。
     - East Asian Width(ひらがななどの文字幅を考慮したレンダリング)に一応対応しています。 
