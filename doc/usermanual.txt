@@ -33,6 +33,11 @@ link:./usermanual.html[English/英語]
 #if __EN__
 == News
 
+=== 2012/05/05 
+    Version 0.2.1.1
+    Supports UTF8/urxvt/SGR style mouse reporting.
+    Improve performance.
+
 === 2012/04/18 
     Version 0.2.0.0
     More precise emulation. 
@@ -63,6 +68,12 @@ process.python_path = "/usr/bin/python"
 #elif __JP__
 == News 
    
+=== 2012/05/05 
+    Version 0.2.1.1
+    Supports inline Sixel Graphics.
+    Supports UTF8/urxvt/SGR style mouse reporting.
+    Improve performance.
+
 === 2012/04/18 
     Version 0.2.0.0
     More precise emulation. 
@@ -145,7 +156,7 @@ http:/#/www.mozilla-japan.org/MPL/MPL-1.1J.html[Mozilla Public License 1.1 (MPL1
     - Localization supported. It is using gettext-style method. you can edit localize resource on UI.
     - You can selects variable character encoding supported by Gecko.
     - Supports transparent window. it is useful when www-browsing while working at terminal.
-    - xterm-like mouse emulation. supports smoothing pixel scroll.
+    - Supports mouse emulation. xterm normal reporting, wheel scrolling and UTF8/urxvt/SGR extended styles are implemented.
     - Text selection / Rectangle text selection.
     - Supports copy / paste in Drag & Drop or keyboard shortcut.
     - Supports move / re-size through dragging operation.
@@ -179,7 +190,8 @@ http:/#/www.mozilla-japan.org/MPL/MPL-1.1J.html[Mozilla Public License 1.1 (MPL1
       ローカライズリソースをUI上から編集することができます。
     - Geckoがサポートする様々なエンコーディングを指定できます。
     - ウィンドウの透明化をサポート。これはブラウジングしながらターミナルで作業したい時に便利です。
-    - xtermのようなマウスエミュレーションができます。ホイールスクロールにも対応。
+    - マウスエミュレーションをサポート。xtermスタイルのノーマルレポーティング、ホイールスクロール、
+      UTF8/urxvt/SGRスタイルの拡張レポーティングにも対応。
     - テキストの選択や矩形選択ができます。
     - ドラッグアンドドロップやキーボードショートカットによる選択テキストのコピー・ペーストが可能です。
     - ドラッグによる移動・リサイズができます。
@@ -341,6 +353,13 @@ image::images/zsh.png[width=780]
 .http:/#/en.wikipedia.org/wiki/Tektronix_4010[Tektronix 4010/4014] エミュレーション。
 #endif
 image::images/tektronix.png[width=780]
+
+#if __EN__
+.https:/#/en.wikipedia.org/wiki/Sixel[Sixel Graphics] emulation.
+#elif __JP__
+.https:/#/en.wikipedia.org/wiki/Sixel[Sixel Graphics] エミュレーション。
+#endif
+image::images/sixel.png[width=780]
 
 #if __EN__
 .DECDHL/DECDWL.
