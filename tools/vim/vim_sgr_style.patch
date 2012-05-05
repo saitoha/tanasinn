@@ -1,0 +1,345 @@
+diff -r 8201108e9cf0 runtime/doc/eval.txt
+--- a/runtime/doc/eval.txt	Tue May 01 21:14:34 2012 +0200
++++ b/runtime/doc/eval.txt	Sat May 05 18:56:21 2012 +0900
+@@ -6296,6 +6296,7 @@
+ mouse_netterm		Compiled with support for netterm mouse.
+ mouse_pterm		Compiled with support for qnx pterm mouse.
+ mouse_sysmouse		Compiled with support for sysmouse (*BSD console mouse)
++mouse_sgr		Compiled with support for sgr mouse.
+ mouse_urxvt		Compiled with support for urxvt mouse.
+ mouse_xterm		Compiled with support for xterm mouse.
+ mouseshape		Compiled with support for 'mouseshape'.
+diff -r 8201108e9cf0 runtime/doc/options.txt
+--- a/runtime/doc/options.txt	Tue May 01 21:14:34 2012 +0200
++++ b/runtime/doc/options.txt	Sat May 05 18:56:21 2012 +0900
+@@ -7397,6 +7397,9 @@
+ 	   pterm	QNX pterm mouse handling.
+ 							*urxvt-mouse*
+ 	   urxvt	Mouse handling for the urxvt (rxvt-unicode) terminal.
++							sgr-mouse
++	   sgr		Mouse handling for the terminal that emits SGR-styled
++			mouse reporting.
+ 
+ 	The mouse handling must be enabled at compile time |+mouse_xterm|
+ 	|+mouse_dec| |+mouse_netterm|.
+diff -r 8201108e9cf0 runtime/doc/tags
+--- a/runtime/doc/tags	Tue May 01 21:14:34 2012 +0200
++++ b/runtime/doc/tags	Sat May 05 18:56:21 2012 +0900
+@@ -1185,6 +1185,7 @@
+ +mouse_gpm	various.txt	/*+mouse_gpm*
+ +mouse_netterm	various.txt	/*+mouse_netterm*
+ +mouse_pterm	various.txt	/*+mouse_pterm*
+++mouse_sgr	various.txt	/*+mouse_sgr*
+ +mouse_sysmouse	various.txt	/*+mouse_sysmouse*
+ +mouse_urxvt	various.txt	/*+mouse_urxvt*
+ +mouse_xterm	various.txt	/*+mouse_xterm*
+diff -r 8201108e9cf0 runtime/doc/various.txt
+--- a/runtime/doc/various.txt	Tue May 01 21:14:34 2012 +0200
++++ b/runtime/doc/various.txt	Sat May 05 18:56:21 2012 +0900
+@@ -355,6 +355,7 @@
+ B  *+mouse_netterm*	Unix only: netterm mouse handling |netterm-mouse|
+ N  *+mouse_pterm*		QNX only: pterm mouse handling |qnx-terminal|
+ N  *+mouse_sysmouse*	Unix only: *BSD console mouse handling |sysmouse|
++N  *+mouse_sgr*		Unix only: sgr mouse handling |sgr-mouse|
+ N  *+mouse_urxvt*		Unix only: urxvt mouse handling |urxvt-mouse|
+ N  *+mouse_xterm*		Unix only: xterm mouse handling |xterm-mouse|
+ B  *+multi_byte*		16 and 32 bit characters |multibyte|
+diff -r 8201108e9cf0 src/feature.h
+--- a/src/feature.h	Tue May 01 21:14:34 2012 +0200
++++ b/src/feature.h	Sat May 05 18:56:21 2012 +0900
+@@ -1055,6 +1055,7 @@
+ # endif
+ # ifdef FEAT_BIG
+ #  define FEAT_MOUSE_URXVT
++#  define FEAT_MOUSE_SGR
+ # endif
+ # if defined(FEAT_NORMAL) && (defined(MSDOS) || defined(WIN3264))
+ #  define DOS_MOUSE
+@@ -1077,6 +1078,11 @@
+ # define FEAT_MOUSE_XTERM
+ #endif
+ 
++/* sgr is a small variation of mouse_xterm, and shares its code */
++#if defined(FEAT_MOUSE_SGR) && !defined(FEAT_MOUSE_XTERM)
++# define FEAT_MOUSE_XTERM
++#endif
++
+ /* Define FEAT_MOUSE when any of the above is defined or FEAT_GUI. */
+ #if !defined(FEAT_MOUSE_TTY) \
+ 	&& (defined(FEAT_MOUSE_XTERM) \
+@@ -1087,7 +1093,8 @@
+ 	    || defined(FEAT_MOUSE_JSB) \
+ 	    || defined(FEAT_MOUSE_PTERM) \
+ 	    || defined(FEAT_SYSMOUSE) \
+-	    || defined(FEAT_MOUSE_URXVT))
++	    || defined(FEAT_MOUSE_URXVT) \
++	    || defined(FEAT_MOUSE_SGR))
+ # define FEAT_MOUSE_TTY		/* include non-GUI mouse support */
+ #endif
+ #if !defined(FEAT_MOUSE) && (defined(FEAT_MOUSE_TTY) || defined(FEAT_GUI))
+diff -r 8201108e9cf0 src/keymap.h
+--- a/src/keymap.h	Tue May 01 21:14:34 2012 +0200
++++ b/src/keymap.h	Sat May 05 18:56:21 2012 +0900
+@@ -110,6 +110,9 @@
+ /* Used for the urxvt mouse. */
+ #define KS_URXVT_MOUSE		238
+ 
++/* Used for the sgr mouse. */
++#define KS_SGR_MOUSE		237
++
+ /*
+  * Filler used after KS_SPECIAL and others
+  */
+@@ -412,6 +415,7 @@
+ #define K_JSBTERM_MOUSE	TERMCAP2KEY(KS_JSBTERM_MOUSE, KE_FILLER)
+ #define K_PTERM_MOUSE	TERMCAP2KEY(KS_PTERM_MOUSE, KE_FILLER)
+ #define K_URXVT_MOUSE	TERMCAP2KEY(KS_URXVT_MOUSE, KE_FILLER)
++#define K_SGR_MOUSE	TERMCAP2KEY(KS_SGR_MOUSE, KE_FILLER)
+ 
+ #define K_SELECT	TERMCAP2KEY(KS_SELECT, KE_FILLER)
+ #define K_TEAROFF	TERMCAP2KEY(KS_TEAROFF, KE_FILLER)
+diff -r 8201108e9cf0 src/misc2.c
+--- a/src/misc2.c	Tue May 01 21:14:34 2012 +0200
++++ b/src/misc2.c	Sat May 05 18:56:21 2012 +0900
+@@ -2429,6 +2429,9 @@
+ #ifdef FEAT_MOUSE_URXVT
+     {K_URXVT_MOUSE,	(char_u *)"UrxvtMouse"},
+ #endif
++#ifdef FEAT_MOUSE_SGR
++    {K_SGR_MOUSE,	(char_u *)"SgrMouse"},
++#endif
+     {K_LEFTMOUSE,	(char_u *)"LeftMouse"},
+     {K_LEFTMOUSE_NM,	(char_u *)"LeftMouseNM"},
+     {K_LEFTDRAG,	(char_u *)"LeftDrag"},
+diff -r 8201108e9cf0 src/option.h
+--- a/src/option.h	Tue May 01 21:14:34 2012 +0200
++++ b/src/option.h	Sat May 05 18:56:21 2012 +0900
+@@ -820,7 +820,7 @@
+ EXTERN char_u	*p_ttym;	/* 'ttymouse' */
+ EXTERN unsigned ttym_flags;
+ # ifdef IN_OPTION_C
+-static char *(p_ttym_values[]) = {"xterm", "xterm2", "dec", "netterm", "jsbterm", "pterm", "urxvt", NULL};
++static char *(p_ttym_values[]) = {"xterm", "xterm2", "dec", "netterm", "jsbterm", "pterm", "urxvt", "sgr", NULL};
+ # endif
+ # define TTYM_XTERM		0x01
+ # define TTYM_XTERM2		0x02
+@@ -829,6 +829,7 @@
+ # define TTYM_JSBTERM		0x10
+ # define TTYM_PTERM		0x20
+ # define TTYM_URXVT		0x40
++# define TTYM_SGR		0x80
+ #endif
+ EXTERN char_u	*p_udir;	/* 'undodir' */
+ EXTERN long	p_ul;		/* 'undolevels' */
+diff -r 8201108e9cf0 src/os_unix.c
+--- a/src/os_unix.c	Tue May 01 21:14:34 2012 +0200
++++ b/src/os_unix.c	Sat May 05 18:56:21 2012 +0900
+@@ -2159,10 +2159,13 @@
+  * Return 1 for "xterm".
+  * Return 2 for "xterm2".
+  * Return 3 for "urxvt".
++ * Return 4 for "sgr".
+  */
+     int
+ use_xterm_mouse()
+ {
++    if (ttym_flags == TTYM_SGR)
++	return 4;
+     if (ttym_flags == TTYM_URXVT)
+ 	return 3;
+     if (ttym_flags == TTYM_XTERM2)
+@@ -3348,6 +3351,16 @@
+     }
+ # endif
+ 
++# ifdef FEAT_MOUSE_SGR
++    if (ttym_flags == TTYM_SGR) {
++	out_str_nf((char_u *)
++		   (on
++		   ? IF_EB("\033[?1006h", ESC_STR "[?1006h")
++		   : IF_EB("\033[?1006l", ESC_STR "[?1006l")));
++	ison = on;
++    }
++# endif
++
+     if (xterm_mouse_vers > 0)
+     {
+ 	if (on)	/* enable mouse events, use mouse tracking if available */
+@@ -3467,6 +3480,9 @@
+ # ifdef FEAT_MOUSE_URXVT
+ 	    && use_xterm_mouse() != 3
+ # endif
++# ifdef FEAT_MOUSE_SGR
++	    && use_xterm_mouse() != 4
++# endif
+ #  ifdef FEAT_GUI
+ 	    && !gui.in_use
+ #  endif
+@@ -3577,6 +3593,27 @@
+     else
+ 	del_mouse_termcode(KS_URXVT_MOUSE);
+ # endif
++# ifdef FEAT_MOUSE_SGR
++    /* same as the dec mouse */
++    if (use_xterm_mouse() == 4
++#  ifdef FEAT_GUI
++	    && !gui.in_use
++#  endif
++	    )
++    {
++	set_mouse_termcode(KS_SGR_MOUSE, (char_u *)(term_is_8bit(T_NAME)
++		    ? IF_EB("\233<", CSI_STR "<")
++		    : IF_EB("\033[<", ESC_STR "[<")));
++
++	if (*p_mouse != NUL)
++	{
++	    mch_setmouse(FALSE);
++	    setmouse();
++	}
++    }
++    else
++	del_mouse_termcode(KS_SGR_MOUSE);
++# endif
+ }
+ #endif
+ 
+diff -r 8201108e9cf0 src/term.c
+--- a/src/term.c	Tue May 01 21:14:34 2012 +0200
++++ b/src/term.c	Sat May 05 18:56:21 2012 +0900
+@@ -1997,6 +1997,7 @@
+ #  define HMT_JSBTERM	8
+ #  define HMT_PTERM	16
+ #  define HMT_URXVT	32
++#  define HMT_SGR	64
+ static int has_mouse_termcode = 0;
+ # endif
+ 
+@@ -2037,6 +2038,11 @@
+ 	has_mouse_termcode |= HMT_URXVT;
+     else
+ #   endif
++#   ifdef FEAT_MOUSE_SGR
++    if (n == KS_SGR_MOUSE)
++	has_mouse_termcode |= HMT_SGR;
++    else
++#   endif
+ 	has_mouse_termcode |= HMT_NORMAL;
+ #  endif
+ }
+@@ -2079,6 +2085,11 @@
+ 	has_mouse_termcode &= ~HMT_URXVT;
+     else
+ #   endif
++#   ifdef FEAT_MOUSE_SGR
++    if (n == KS_SGR_MOUSE)
++	has_mouse_termcode &= ~HMT_SGR;
++    else
++#   endif
+ 	has_mouse_termcode &= ~HMT_NORMAL;
+ #  endif
+ }
+@@ -4023,7 +4034,8 @@
+ #ifdef FEAT_TERMRESPONSE
+ 	if (key_name[0] == NUL
+ 	    /* URXVT mouse uses <ESC>[#;#;#M, but we are matching <ESC>[ */
+-	    || key_name[0] == KS_URXVT_MOUSE)
++	    || key_name[0] == KS_URXVT_MOUSE
++	    || key_name[0] == KS_SGR_MOUSE)
+ 	{
+ 	    /* Check for xterm version string: "<Esc>[>{x};{vers};{y}c".  Also
+ 	     * eat other possible responses to t_RV, rxvt returns
+@@ -4066,6 +4078,9 @@
+ # ifdef TTYM_URXVT
+ 				&& ttym_flags != TTYM_URXVT
+ # endif
++# ifdef TTYM_SGR
++				&& ttym_flags != TTYM_SGR
++# endif
+ 				)
+ 			    set_option_value((char_u *)"ttym", 0L,
+ 						       (char_u *)"xterm2", 0);
+@@ -4163,6 +4178,9 @@
+ # ifdef FEAT_MOUSE_URXVT
+ 		|| key_name[0] == (int)KS_URXVT_MOUSE
+ # endif
++# ifdef FEAT_MOUSE_SGR
++		|| key_name[0] == (int)KS_SGR_MOUSE
++# endif
+ 		)
+ 	{
+ 	    is_click = is_drag = FALSE;
+@@ -4243,8 +4261,9 @@
+ 		}
+ 	    }
+ 
+-# ifdef FEAT_MOUSE_URXVT
+-	    if (key_name[0] == (int)KS_URXVT_MOUSE)
++# ifdef FEAT_MOUSE_URXVT || FEAT_MOUSE_SGR
++	    if (key_name[0] == (int)KS_URXVT_MOUSE
++	        || key_name[0] == (int)KS_SGR_MOUSE)
+ 	    {
+ 		for (;;)
+ 		{
+@@ -4256,6 +4275,22 @@
+ 		     *		  ^-- row
+ 		     *	       ^----- column
+ 		     *	    ^-------- code
++		     *
++		     * SGR 1006 mouse reporting mode:
++		     * Almost identical to xterm mouse mode, except the values
++		     * are decimal instead of bytes.
++		     *
++		     * \033[<%d;%d;%dM
++		     *		   ^-- row
++		     *	        ^----- column
++		     *	     ^-------- code
++		     *
++                     * or
++                     *
++		     * \033[<%d;%d;%dm        : mouse release event
++		     *		   ^-- row
++		     *	        ^----- column
++		     *	     ^-------- code
+ 		     */
+ 		    p = tp + slen;
+ 
+@@ -4268,9 +4303,13 @@
+ 			return -1;
+ 
+ 		    mouse_row = getdigits(&p) - 1;
+-		    if (*p++ != 'M')
++                    if (*p == 'm')
++			mouse_code |= 0x3;
++                    else if (*p != 'M')
+ 			return -1;
+ 
++                    *p++;
++
+ 		    slen += (int)(p - (tp + slen));
+ 
+ 		    /* skip this one if next one has same code (like xterm
+@@ -4302,6 +4341,9 @@
+ #ifdef FEAT_MOUSE_URXVT
+ 	    || key_name[0] == (int)KS_URXVT_MOUSE
+ #endif
++#ifdef FEAT_MOUSE_SGR
++	    || key_name[0] == (int)KS_SGR_MOUSE
++#endif
+ 	    )
+ 	{
+ #  if !defined(MSWIN) && !defined(MSDOS)
+diff -r 8201108e9cf0 src/version.c
+--- a/src/version.c	Tue May 01 21:14:34 2012 +0200
++++ b/src/version.c	Sat May 05 18:56:21 2012 +0900
+@@ -384,6 +384,11 @@
+ # else
+ 	"-mouse_urxvt",
+ # endif
++# ifdef FEAT_MOUSE_SGR
++	"+mouse_sgr",
++# else
++	"-mouse_sgr",
++# endif
+ #endif
+ #ifdef __QNX__
+ # ifdef FEAT_MOUSE_PTERM

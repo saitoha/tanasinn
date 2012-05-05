@@ -251,7 +251,15 @@ Mouse.definition = {
         break;
 
       case "sgr":
-        message = coUtils.Text.format("\x1b[<%d;%d;%dM", code, column, row);
+        if (MOUSE_RELEASE == button) {
+          if (null !== this._current_code) {
+            message = coUtils.Text.format("\x1b[<%d;%d;%dm", code, column, row);
+            this._current_code = null;
+          }
+        } else {
+          message = coUtils.Text.format("\x1b[<%d;%d;%dM", code, column, row);
+          this._current_code = code;
+        }
         coUtils.Debug.reportError(message)
         break;
 
@@ -450,16 +458,16 @@ Mouse.definition = {
 
     switch (event.button) {
 
-      case MOUSE_BUTTON1:
+      case 0:
         button = coUtils.Constant.BUTTON_LEFT;
         break;
 
-      case MOUSE_BUTTON2:
+      case 1:
         button = coUtils.Constant.BUTTON_MIDDLE;
         break;
 
-      case MOUSE_BUTTON1:
-        button = coUtils.Constant.BUTTONE_LEFT;
+      case 2:
+        button = coUtils.Constant.BUTTONE_RIGHT;
         break;
 
       default:

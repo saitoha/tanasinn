@@ -271,6 +271,7 @@ Selection.definition = {
                 broker.notify("command/remove-domlistener", "_DRAGGING"); 
                 if (this._range) {
                   this._setClearAction();
+                  this._reportRange();
                 }
               }
             });
@@ -334,6 +335,7 @@ Selection.definition = {
           broker.notify("command/remove-domlistener", "_DRAGGING"); 
           if (this._range) {
             this._setClearAction();
+            this._reportRange();
           }
         }
       });
@@ -458,6 +460,7 @@ Selection.definition = {
     let [start, end] = screen.getWordRangeFromPoint(column, row);
     this.drawSelectionRange(start, end);
     this.setRange(start, end);
+    this._reportRange();
   },
 
   "[subscribe('get/selection-info')]": 
@@ -483,10 +486,15 @@ Selection.definition = {
 
   setRange: function setRange(column, row) 
   {
-    let broker = this._broker;
     this.onBeforeInput.enabled = true;
     this._range = [column, row];
+  },
+
+  _reportRange: function _reportRange()
+  {
+    let [column, row] = this._range;
     let message = coUtils.Text.format(_("selected: [%d, %d]"), column, row);
+    let broker = this._broker;
     broker.notify("command/report-status-message", message);
   },
 
