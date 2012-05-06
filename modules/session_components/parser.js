@@ -410,7 +410,13 @@ SequenceParser.definition = {
       }
     } else if (char_with_param) {
 
-      let action = function(params) function() value.apply(context, params);
+      let action = function(params) 
+      {
+        return function() 
+        {
+          return value.apply(context, params);
+        };
+      };
       let accept_char = char_with_param.charCodeAt(0);
 
       let codes = [
@@ -420,7 +426,8 @@ SequenceParser.definition = {
         0x7f,
         0x3b
       ];
-      for (let i = 0; i < codes.length; ++i) {
+      let i;
+      for (i = 0; i < codes.length; ++i) {
         let code = codes[i];
         if (0x30 <= code && code < 0x3a) {
           this[code] = this[code] 
@@ -442,7 +449,13 @@ SequenceParser.definition = {
           throw coUtile.Exception(_("Cannot add handler: %s."), key);
         }
       }
-      this[accept_char] = function() 
+      let parser = this;
+      for (let j = 0; j < char_with_param.length - 1; ++j) {
+        let accept_char = char_with_param.charCodeAt(j);
+        parser = parser[accept_char] = new SequenceParser();
+      }
+      code = char_with_param.charCodeAt(char_with_param.length - 1);
+      parser[code] = parser[code] || function() 
       {
         return value.call(context, 0);
       };
@@ -470,10 +483,10 @@ SequenceParser.definition = {
       let parser = this;
       for (let j = 0; j < char_with_single_param.length - 1; ++j) {
         let accept_char = char_with_single_param.charCodeAt(j);
-        parser = parser[accept_char] = new SequenceParser();
+        parser = parser[accept_char] = parser[accept_char] || new SequenceParser();
       }
       code = char_with_single_param.charCodeAt(char_with_single_param.length - 1);
-      parser[code] = action;
+      parser[code] = parser[code] || action;
 
     } else if (char_with_string) {
       // define action

@@ -1637,26 +1637,15 @@ Viewable.definition = {
 let Scrollable = new Trait("Scrollable");
 Scrollable.definition = {
 
-  "[persistable] scrollback_limit": 50,
-  "[persistable] smooth_scrolling_delay": 20,
+  "[persistable] scrollback_limit": 500,
+  "[persistable] smooth_scrolling_delay": 0,
 
   _smooth_scrolling: false,
 
   "[subscribe('command/change-scrolling-mode'), enabled]":
   function onScrollingModeChanged(mode) 
   {
-    switch (mode) {
-
-      case "normal":
-        this._smooth_scrolling = false;
-        break;
-
-      case "smooth":
-        this._smooth_scrolling = true;
-        break;
-
-      default:
-    }
+    this._smooth_scrolling = false;
   },
 
   /** Scroll up the buffer by n lines. */

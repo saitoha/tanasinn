@@ -142,7 +142,7 @@ DecModeSequenceHandler.definition = {
         // Smooth (Slow) Scloll (DECSCLM)
         case 4:
           // smooth scroll.
-          broker.notify("command/change-scrolling-mode", "smooth");
+          broker.notify("command/change-scrolling-mode", true);
           break;
 
         // Reverse Video (DECSCNM)
@@ -525,7 +525,7 @@ DecModeSequenceHandler.definition = {
         // Smooth (Slow) Scloll (DECSCLM)
         case 4:
           // smooth scroll.
-          broker.notify("command/change-scrolling-mode", "normal");
+          broker.notify("command/change-scrolling-mode", false);
           break;
 
         // Reverse Video (DECSCNM)
@@ -998,11 +998,11 @@ DecModeSequenceHandler.definition = {
    * Pu = 2 → character cells
    *
    */
-  DECELR: function DECELR(n1, n2) 
+  "[profile('vt100'), sequence('CSI %d\\'z')]":
+  function DECELR(n1, n2) 
   { // Enable Locator Reporting
 
     let broker = this._broker;
-
     let oneshot;
     let pixel;
 
@@ -1034,12 +1034,12 @@ DecModeSequenceHandler.definition = {
       case 0:
       case 2:
         // character cells
-        pixel = true;
-        return;
+        pixel = false;
+        break;
 
       case 1:
         // device physical pixels
-        pixel = false;
+        pixel = true;
         break;
 
       default:
@@ -1054,24 +1054,147 @@ DecModeSequenceHandler.definition = {
         pixel: pixel,
       }); 
 
-    coUtils.Debug.reportWarning(
-      _("%s sequence [%s] was ignored."),
-      arguments.callee.name, Array.slice(arguments));
   },
 
-  DECSLE: function DECSLE() 
+  /**
+   * Select the locator event.
+   *
+   * Pm = 0      Disables button up/down events, Disables filter rectangle.
+   *    = 1      Enables button down event.
+   *    = 2      Disables button down event.
+   *    = 3      Enables button up event.
+   *    = 4      Disables button up event.
+   */
+  "[profile('vt100'), sequence('CSI %d\\'{')]":
+  function DECSLE(n) 
   { // TODO: Select Locator Events
-    coUtils.Debug.reportWarning(
-      _("%s sequence [%s] was ignored."),
-      arguments.callee.name, Array.slice(arguments));
+    let broker = this._broker;
+    switch (n) {
+
+      case 0:
+        broker.notify("command/change-decterm-buttonup-event-mode", false);
+        broker.notify("command/change-decterm-buttondown-event-mode", false);
+        break;
+
+      case 1:
+        broker.notify("command/change-decterm-buttondown-event-mode", true);
+        break;
+
+      case 2:
+        broker.notify("command/change-decterm-buttondown-event-mode", false);
+        break;
+
+      case 3:
+        broker.notify("command/change-decterm-buttonup-event-mode", true);
+        break;
+
+      case 3:
+        broker.notify("command/change-decterm-buttonup-event-mode", false);
+        break;
+
+      default:
+        throw coUtils.Debug.Error(
+          _("Invalid locator event mode was specified: %d."), n);
+    }
   },
 
-  DECRQLP: function DECRQLP() 
-  { // TODO: Request Locator Position
-    coUtils.Debug.reportWarning(
-      _("%s sequence [%s] was ignored."),
-      arguments.callee.name, Array.slice(arguments));
+  /**
+   * Requests Locator Report.
+   * 
+   * Response: CSI Pe ; Pb ; Pr ; Pc ; Pp & w
+   * Pe: Event code.
+   * Pe =  0    Received a locator report request (DECRQLP), but the locator is unavailable.
+   *    =  1    Received a locator report request (DECRQLP).
+   *    =  2    Left button down.
+   *    =  3    Left button up.
+   *    =  4    Middle button down.
+   *    =  5    Middle button up.
+   *    =  6    Right button down.
+   *    =  7    Right button up.
+   *    =  8    Button 4 down. (not supported)
+   *    =  9    Button 4 up. (not supported)
+   *    = 10    Locator outside filter rectangle.
+   * 
+   * Pb: Button code, ASCII decimal 0-15 indicating which buttons are down if any.
+   *     The state of the four buttons on the locator correspond to the low four
+   *     bits of the decimal value, "1" means button depressed.
+   *   1    Right button.
+   *   2    Middle button.
+   *   4    Left button.
+   *   8    Button 4. (not supported)
+   * 
+   * Pr: Row coordinate.
+   * 
+   * Pc: Column coordinate.
+   * 
+   * Pp: Page. Always 1.
+   *
+   */
+  "[profile('vt100'), sequence('CSI %d\\'|')]":
+  function DECRQLP(n) 
+  { // Request Locator Position
+    let broker = this._broker;
+    broker.notify("event/locator-reporting-requested"); 
   },
+
+  /**
+   * Window manipulation.
+   *
+   * Ps1 =  1    De-iconify window.
+   *     =  2    Minimize window.
+   *     =  3    Move window to [Ps2, Ps3].
+   *     =  4    Resize window to height Ps2 pixels and width Ps3 pixels.
+   *     =  5    Raise the window to the top of the stacking order.
+   *     =  6    Lower the window to the bottom of the stacking order.
+   *     =  7    Refresh window.
+   *     =  8    Resize window to Ps2 lines and Ps3 columns.
+   *     =  9    Change maximize state of window.
+   *             Ps2 = 0    Restore maximized window.
+   *                 = 1    Maximize window.
+   * 
+   *     = 11    Reports window state.
+   *             Response: CSI s t
+   *               s = 1    Normal. (non-iconified)
+   *                 = 2    Iconified.
+   * 
+   *     = 13    Reports window position.
+   *             Response: CSI 3 ; x ; y t
+   *               x    X position of window.
+   *               y    Y position of window.
+   * 
+   *     = 14    Reports window size in pixels.
+   *             Response: CSI 4 ; y ; x t
+   *               y    Window height in pixels.
+   *               x    Window width in pixels.
+   * 
+   *     = 18    Reports terminal size in characters.
+   *             Response: CSI 8 ; y ; x t
+   *               y    Terminal height in characters. (Lines)
+   *               x    Terminal width in characters. (Columns)
+   * 
+   *     = 19    Reports root window size in characters.
+   *             Response: CSI 9 ; y ; x t
+   *               y    Root window height in characters.
+   *               x    Root window width in characters.
+   * 
+   *     = 20    Reports icon label.
+   *             Response: OSC L title ST
+   *               title    icon label. (window title)
+   * 
+   *     = 21    Reports window title.
+   *             Response: OSC l title ST
+   *               title    Window title.
+   * 
+   */
+  "[profile('vt100'), sequence('CSI %dt')]":
+  function DECSLPP(n1, n2, n3) 
+  { // Request Locator Position
+    let broker = this._broker;
+    broker.notify(
+      "command/manipulate-window", 
+      Array.slice(arguments)); 
+  },
+
 
   DECLRP: function DECLRP() 
   { // TODO: Locator Report
@@ -1147,6 +1270,160 @@ PersistOptionsTrait.definition = {
   },
 
 }; // PersistOptionsTrait
+
+/**
+ * @class WindowManipulator
+ */
+let WindowManipulator = new Class().extends(Component)
+                                   .depends("screen");
+WindowManipulator.definition = {
+
+  "[subscribe('command/manipulate-window'), enabled]":
+  function manipulateWindow(args) 
+  { 
+    switch (args.shift()) {
+
+      case 1:
+        // TODO: De-iconify window.
+        coUtils.Debug.reportWarging(
+          _("DECSLPP 1: De-iconify window, is not supported."));
+        break;
+
+      case 2:
+        // TODO: minimize window.
+        coUtils.Debug.reportWarging(
+          _("DECSLPP 2: Minimize window, is not supported."));
+        break;
+
+      case 3:
+        // TODO: Move window to [Ps2, Ps3].
+        coUtils.Debug.reportWarging(
+          _("DECSLPP 3: Move window, is not supported."));
+        break;
+
+      case 4:
+        // TODO: Resize window to height Ps2 pixels and width Ps3 pixels.
+        coUtils.Debug.reportWarging(
+          _("DECSLPP 4: Resize window, is not supported."));
+        break;
+
+      case 5:
+        // TODO: Raise the window to the top of the stacking order.
+        coUtils.Debug.reportWarging(
+          _("DECSLPP 5: Raise the window to the top of the stacking order, ",
+            "is not supported."));
+        break;
+
+      case 6:
+        // TODO: Lower the window to the bottom of the stacking order.
+        coUtils.Debug.reportWarging(
+          _("DECSLPP 6: Lower the window to the bottom of the stacking order, ",
+            "is not supported."));
+        break;
+
+      case 7:
+        // TODO: Refresh window.
+        coUtils.Debug.reportWarging(_("DECSLPP 7: Refresh window."));
+        break;
+
+      case 8:
+        // TODO: Resize window to Ps2 lines and Ps3 columns.
+        coUtils.Debug.reportWarging(
+          _("DECSLPP 8: Resize window to Ps2 lines and Ps3 columns."));
+        break;
+
+      case 9:
+        // TODO: Change maximize state of window.
+        //       Ps2 = 0    Restore maximized window.
+        //           = 1    Maximize window.
+        coUtils.Debug.reportWarging(
+          _("DECSLPP 9: Change maximize state of window."));
+        break;
+
+      case 11:
+        // TODO: Reports window state.
+        //       Response: CSI s t
+        //         s = 1    Normal. (non-iconified)
+        //           = 2    Iconified.
+        coUtils.Debug.reportWarging(
+          _("DECSLPP 11: Reports window state."));
+        break;
+
+      case 13:
+        // TODO: Reports window position.
+        //       Response: CSI 3 ; x ; y t
+        //         x    X position of window.
+        //         y    Y position of window.
+        coUtils.Debug.reportWarging(
+          _("DECSLPP 13: Reports window position."));
+        break;
+
+      case 14:
+        // Reports window size in pixels.
+        // Response: CSI 4 ; y ; x t
+        //   y    Window height in pixels.
+        //   x    Window width in pixels.
+        //
+        {
+          let broker = this._broker;
+          let target_element = broker.root_element;
+          let width = target_element.boxObject.width;
+          let height = target_element.boxObject.height;
+          let message = coUtils.Text.format("\x1b[4;%d;%dt", height, width);
+          broker.notify("command/send-to-tty", message); 
+        }
+        break;
+
+      case 18:
+        // TODO: Reports terminal size in characters.
+        //       Response: CSI 8 ; y ; x t
+        //         y    Terminal height in characters. (Lines)
+        //         x    Terminal width in characters. (Columns)
+        {
+          let broker = this._broker;
+          let target_element = broker.root_element;
+          let screen = this.dependency["screen"];
+          let width = screen.width;
+          let height = screen.height;
+          let message = coUtils.Text.format("\x1b[8;%d;%dt", height, width);
+          broker.notify("command/send-to-tty", message); 
+        }
+        break;
+
+      case 19:
+        // TODO: Reports root window size in characters.
+        //       Response: CSI 9 ; y ; x t
+        //         y    Root window height in characters.
+        //         x    Root window width in characters.
+        coUtils.Debug.reportWarging(
+          _("DECSLPP 19: Reports root window size in characters."));
+        break;
+
+      case 20:
+        // TODO: Reports icon label.
+        //       Response: OSC L title ST
+        //         title    icon label. (window title)
+        coUtils.Debug.reportWarging(
+          _("DECSLPP 20: Reports icon label."));
+        break;
+
+      case 21:
+        // TODO: Reports window title.
+        //       Response: OSC l title ST
+        //         title    Window title.
+        coUtils.Debug.reportWarging(
+          _("DECSLPP 21: Reports window title."));
+        break;
+
+      default:
+        break;
+
+    }
+
+
+  },
+
+};
 
 /**
  * @class DecPrivateMode
@@ -1326,6 +1603,7 @@ DecPrivateMode.definition = {
 function main(broker) 
 {
   new DecPrivateMode(broker);
+  new WindowManipulator(broker);
 }
 
 

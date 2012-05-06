@@ -67,8 +67,8 @@ Movable.definition = {
   function moveTo(coordinate) 
   {
     let [x, y] = coordinate;
-    let session = this._broker;
-    let target_element = session.root_element//.parentNode;
+    let broker = this._broker;
+    let target_element = broker.root_element;
     if (x < -target_element.boxObject.width) x = 0;
     if (y < -target_element.boxObject.height) y = 0;
     target_element.style.left = x + "px";
@@ -83,25 +83,23 @@ Movable.definition = {
   function moveBy(offset) 
   {
     let [x, y] = offset;
-    let session = this._broker;
-    let target_element = session.root_element//.parentNode;
-    let style = target_element.style;
+    let broker = this._broker;
     let static_scope = arguments.callee;
     let timer = static_scope.timer;
     if (timer) {
       timer.cancel();
     }
     if (this.move_transition) {
-      style.MozTransitionProperty = "left, top";
-      style.MozTransitionDuration = this.move_duration + "ms";
+      broker.root_element.style.MozTransitionProperty = "left, top";
+      broker.root_element.style.MozTransitionDuration = this.move_duration + "ms";
       static_scope.timer = coUtils.Timer.setTimeout(function() 
       {
-        style.MozTransitionProperty = "";
-        style.MozTransitionDuration = "0ms";
+        broker.root_element.style.MozTransitionProperty = "";
+        broker.root_element.style.MozTransitionDuration = "0ms";
       }, this.move_duration);
     }
-    let left = parseInt(style.left) + x;
-    let top = parseInt(style.top) + y;
+    let left = parseInt(broker.root_element.style.left) + x;
+    let top = parseInt(broker.root_element.style.top) + y;
     this.moveTo([left, top]);
   },
 

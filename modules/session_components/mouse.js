@@ -57,6 +57,11 @@ Mouse.definition = {
   _tracking_mode: coUtils.Constant.TRACKING_NONE,
   _tracking_type: null,
   _focus_mode: false,
+  _locator_reporting_mode: null,
+  _locator_buttonup_reporting: true,
+  _locator_buttondown_reporting: true,
+  _locator_state: 0,
+  _locator_event: null,
 
   _dragged: false,
   _installed: false,
@@ -105,6 +110,7 @@ Mouse.definition = {
     this.restore.enabled = false;
     this.onGotFocus.enabled = false;
     this.onLostFocus.enabled = false;
+    this._locator_event = null;
   },
     
   /** Fired at the keypad mode is changed. */
@@ -112,6 +118,27 @@ Mouse.definition = {
   function onKeypadModeChanged(mode) 
   {
     this._keypad_mode = mode;
+  },
+
+  /** Fired at the locator reporting mode is changed. */
+  "[subscribe('command/change-locator-reporting-mode'), enabled]": 
+  function onChangeLocatorReportingMode(mode) 
+  {
+    this._locator_reporting_mode = mode;
+  },
+
+  /** Fired at the locator reporting mode(button up) is changed. */
+  "[subscribe('command/change-decterm-buttonup-event-mode'), enabled]": 
+  function onChangeLocatorReportingButtonUpMode(mode) 
+  {
+    this._locator_buttonup_reporting = mode;
+  },
+
+  /** Fired at the locator reporting mode(button down) is changed. */
+  "[subscribe('command/change-decterm-buttondown-event-mode'), enabled]": 
+  function onChangeLocatorReportingButtonDownMode(mode) 
+  {
+    this._locator_buttondown_reporting = mode;
   },
 
   /** Fired at scroll session is started. */
@@ -207,89 +234,192 @@ Mouse.definition = {
     broker.notify("command/send-to-tty", message);
   },
 
+  "[subscribe('event/locator-reporting-requested'), enabled]": 
+  function reportDECTermStyleLocatorInfo()
+  {
+    let code;
+    let event = this._locator_event;
+
+    if (null === event) {
+      code = 0;
+    } else {
+      code = 1;
+    }
+
+    let column, row;
+    if (locator_reporting_mode.pixel) {
+      [column, row] = this._getCurrentPositionInPixel(event);
+    } else {
+      [column, row] = this._getCurrentPosition(event);
+    }
+
+    message = coUtils.Text.format("\x1b[%d;%d;%d;%d;1&w", code, this._locator_state, row, column);
+
+    let broker = this._broker;
+    broker.notify("command/send-to-tty", message);
+
+  },
+
   /** Make packed mouse event data and send it to tty device. */
   _sendMouseEvent: function _sendMouseEvent(event, button) 
   {
-    // 0: button1, 1: button2, 2: button3, 3: release
-    //
-    // +-+-+-+-+-+-+-+-+
-    // | | | | | | | | |
-    // +-+-+-+-+-+-+-+-+
-    //
-    // --------------------------
-    //              0 0  button1
-    //              0 1  button2
-    //              1 0  button3
-    //              1 1  release
-    //    1           1  button4
-    //    1         1    button5
-    // --------------------------
-    //        0 0 0      
-    //        0 0 1      shift
-    //        0 1 0      meta
-    //        1 0 0      control
-    // --------------------------
-    //  0 0 1            magic // +32
-    // --------------------------
-    //
-    let code = button 
-             | event.shiftKey << 2 
-             | event.metaKey  << 3
-             | event.ctrlKey  << 4
-//             | 1              << 5
-             ;
-    code += 32;
-    let [column, row] = this._getCurrentPosition(event);
 
     let message;
     let buffer;
 
-    switch (this._tracking_type) {
+    let locator_reporting_mode = this._locator_reporting_mode;
+    if (null !== locator_reporting_mode) {
 
-      case "urxvt":
-        message = coUtils.Text.format("\x1b[%d;%d;%dM", code, column, row);
-        break;
+      let code;
 
-      case "sgr":
-        if (MOUSE_RELEASE == button) {
-          if (null !== this._current_code) {
-            message = coUtils.Text.format("\x1b[<%d;%d;%dm", code, column, row);
-            this._current_code = null;
+      switch (event.type) {
+
+        case "mousedown":
+
+          switch (event.button) {
+
+            case 0:
+              code = 2;
+              this._locator_state |= 4;
+              break;
+
+            case 1:
+              code = 4;
+              this._locator_state |= 2;
+              break;
+
+            case 2:
+              code = 6;
+              this._locator_state |= 1;
+              break;
+
+            case 3:
+              code = 8;
+              this._locator_state |= 8;
+              break;
+
           }
-        } else {
-          message = coUtils.Text.format("\x1b[<%d;%d;%dM", code, column, row);
-          this._current_code = code;
-        }
-        coUtils.Debug.reportError(message)
-        break;
+          break;
 
-      case "utf8":
-        column += 32;
-        row += 32;
-        buffer = [0x1b, 0x5b, 0x4d, code];
-        function putChar(c) {
-          if (c >= 0x80) {
-            // 110xxxxx 10xxxxxx
-            // (0x00000080 - 0x000007ff) // 11bit
-            let c1 = c >> 6 & 0x1f | 0xc0;
-            let c2 = c & 0x3f | 0x80;
-            buffer.push(c1); 
-            buffer.push(c2); 
+        case "mouseup":
+
+          switch (event.button) {
+
+            case 0:
+              code = 3;
+              this._locator_state ^= 4;
+              break;
+
+            case 1:
+              code = 5;
+              this._locator_state ^= 2;
+              break;
+
+            case 2:
+              code = 7;
+              this._locator_state ^= 1;
+              break;
+
+            case 3:
+              code = 9;
+              this._locator_state ^= 8;
+              break;
+
+          }
+          break;
+
+      }
+      if (locator_reporting_mode.oneshot) {
+        this._locator_reporting_mode = null;
+      }
+      let column, row 
+      if (locator_reporting_mode.pixel) {
+        [column, row] = this._getCurrentPositionInPixel(event);
+      } else {
+        [column, row] = this._getCurrentPosition(event);
+      }
+      message = coUtils.Text.format("\x1b[%d;%d;%d;%d;1&w", code, this._locator_state, row, column);
+
+    } else {
+
+      // 0: button1, 1: button2, 2: button3, 3: release
+      //
+      // +-+-+-+-+-+-+-+-+
+      // | | | | | | | | |
+      // +-+-+-+-+-+-+-+-+
+      //
+      // --------------------------
+      //              0 0  button1
+      //              0 1  button2
+      //              1 0  button3
+      //              1 1  release
+      //    1           1  button4
+      //    1         1    button5
+      // --------------------------
+      //        0 0 0      
+      //        0 0 1      shift
+      //        0 1 0      meta
+      //        1 0 0      control
+      // --------------------------
+      //  0 0 1            magic // +32
+      // --------------------------
+      //
+      let code = button 
+               | event.shiftKey << 2 
+               | event.metaKey  << 3
+               | event.ctrlKey  << 4
+//               | 1              << 5
+               ;
+      code += 32;
+      let [column, row] = this._getCurrentPosition(event);
+
+      switch (this._tracking_type) {
+
+        case "urxvt":
+          message = coUtils.Text.format("\x1b[%d;%d;%dM", code, column, row);
+          break;
+
+        case "sgr":
+          if (MOUSE_RELEASE == button) {
+            if (null !== this._current_code) {
+              message = coUtils.Text.format("\x1b[<%d;%d;%dm", code, column, row);
+              this._current_code = null;
+            }
           } else {
-            buffer.push(c);
+            message = coUtils.Text.format("\x1b[<%d;%d;%dM", code, column, row);
+            this._current_code = code;
           }
-        }
-        putChar(column);
-        putChar(row);
-        message = String.fromCharCode.apply(String, buffer);
-        break;
+          coUtils.Debug.reportError(message)
+          break;
 
-      default:
-        // send escape sequence. 
-        //                            ESC    [     M          
-        message = String.fromCharCode(0x1b, 0x5b, 0x4d, code, column + 32, row + 32);
+        case "utf8":
+          column += 32;
+          row += 32;
+          buffer = [0x1b, 0x5b, 0x4d, code];
+          function putChar(c) {
+            if (c >= 0x80) {
+              // 110xxxxx 10xxxxxx
+              // (0x00000080 - 0x000007ff) // 11bit
+              let c1 = c >> 6 & 0x1f | 0xc0;
+              let c2 = c & 0x3f | 0x80;
+              buffer.push(c1); 
+              buffer.push(c2); 
+            } else {
+              buffer.push(c);
+            }
+          }
+          putChar(column);
+          putChar(row);
+          message = String.fromCharCode.apply(String, buffer);
+          break;
 
-    } // switch (this._tracking_type)
+        default:
+          // send escape sequence. 
+          //                            ESC    [     M          
+          message = String.fromCharCode(0x1b, 0x5b, 0x4d, code, column + 32, row + 32);
+
+      } // switch (this._tracking_type)
+    }
 
     let broker = this._broker;
     broker.notify("command/send-to-tty", message);
@@ -451,7 +581,9 @@ Mouse.definition = {
     this._dragged = true;
  
     if (coUtils.Constant.TRACKING_NONE == this._tracking_mode) {
-      return;
+      if (null === this._locator_reporting_mode) {
+        return;
+      }
     }
 
     let button;
@@ -484,12 +616,13 @@ Mouse.definition = {
   function onmousemove(event) 
   {
     let tracking_mode = this._tracking_mode;
+    this._locator_event = event;
 
     switch (tracking_mode) {
 
       case coUtils.Constant.TRACKING_BUTTON:
         if (this._dragged) {
-          button = event.button + 32;
+          button = event.button;
           this._sendMouseEvent(event, button); 
         }
         break;
@@ -498,7 +631,7 @@ Mouse.definition = {
       // Send motion event.
         let button;
         if (this._dragged) {
-          button = event.button + 32;
+          button = event.button;
         } else {
           button = MOUSE_RELEASE;
         }
@@ -518,9 +651,13 @@ Mouse.definition = {
   function onmouseup(event) 
   {
     this._dragged = false;
-    if (coUtils.Constant.TRACKING_NONE != this._tracking_mode) {
-      this._sendMouseEvent(event, MOUSE_RELEASE); // release
+    if (coUtils.Constant.TRACKING_NONE == this._tracking_mode) {
+      if (null === this._locator_reporting_mode) {
+        return;
+      }
     }
+    let button = event.button;
+    this._sendMouseEvent(event, button); // release
   },
 
   // Helper: get current position from mouse event object.
@@ -541,6 +678,21 @@ Mouse.definition = {
     let column = Math.round(left / renderer.char_width);
     let row = Math.round(top / renderer.line_height);
     return [column, row];
+  },
+
+  // Helper: get current position from mouse event object in pixel.
+  _getCurrentPositionInPixel: function _getCurrentPositionInPixel(event) 
+  {
+    let broker = this._broker;
+    let target_element = broker.uniget(
+      "command/query-selector", 
+      "#tanasinn_center_area");
+    let box = target_element.boxObject;
+    let offsetX = box.screenX - broker.root_element.boxObject.screenX;
+    let offsetY = box.screenY - broker.root_element.boxObject.screenY;
+    let left = event.layerX - offsetX; // left position in pixel.
+    let top = event.layerY - offsetY;  // top position in pixel.
+    return [left, top];
   },
 
 }; // class Mouse

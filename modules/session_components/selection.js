@@ -70,7 +70,7 @@ Selection.definition = {
   _canvas: null,
   _context: null,
   _range: null,
-  _tracking_mode: coUtils.Constant.TRACKING_NONE,
+  _tracking_mode: false,
   _highlight_region: null,
 
   "[persistable] normal_selection_color": "white",
@@ -81,6 +81,24 @@ Selection.definition = {
   "[subscribe('event/mouse-tracking-mode-changed'), enabled]": 
   function onMouseTrackingModeChanged(data) 
   {
+    if (coUtils.Constant.TRACKING_NONE == data) {
+      this._tracking_mode = false;
+    } else {
+      this._tracking_mode = true;
+    }
+    if (this.enabled) {
+      this.clear();
+    }
+  },
+
+  "[subscribe('command/change-locator-reporting-mode'), enabled]": 
+  function onChangeLocatorReportingMode(mode) 
+  {
+    if (null === mode) {
+      this._tracking_mode = false;
+    } else {
+      this._tracking_mode = true;
+    }
     this._tracking_mode = data;
     if (this.enabled) {
       this.clear();
@@ -152,7 +170,7 @@ Selection.definition = {
   function ondblclick(event) 
   {
     let tracking_mode = this._tracking_mode;
-    if (coUtils.Constant.TRACKING_NONE !== tracking_mode) {
+    if (tracking_mode) {
       return;
     }
     let [column, row] = this.convertPixelToScreen(event);
@@ -284,7 +302,7 @@ Selection.definition = {
   function ondragstart(event) 
   {
     let tracking_mode = this._tracking_mode;
-    if (coUtils.Constant.TRACKING_NONE !== tracking_mode) {
+    if (tracking_mode) {
       return;
     }
     let broker = this._broker;
