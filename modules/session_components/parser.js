@@ -756,6 +756,8 @@ Parser.definition = {
   _scanner: null,
 
   "[persistable] initial_grammar": "vt100",
+  "[persistable] ambiguous_as_wide": false,
+  wcwidth: null,
 
 // post-constructor
   "[subscribe('initialized/{scanner & emurator & decoder & drcs_converter}'), enabled]":
@@ -784,6 +786,7 @@ Parser.definition = {
       this._grammars[grammar.id] = grammar;
     }
     this._grammar = this._grammars[this.initial_grammar];
+    this.onChangeAmbiguousCharacterWidth(this.ambiguous_as_wide);
 
     broker.notify("initialized/parser", this);
   },
@@ -795,6 +798,16 @@ Parser.definition = {
   {
     this.drive.enabled = false;
     this.onDataArrivedRecursively.enabled = false;
+  },
+
+  "[subscribe('variable-changed/parser.ambiguous_as_wide'), enabled]":
+  function onChangeAmbiguousCharacterWidth(is_wide)
+  {
+    if (is_wide) {
+      this.wcwidth = wcwidth_amb_as_double;
+    } else {
+      this.wcwidth = wcwidth_amb_as_single;
+    }
   },
 
   "[subscribe('command/change-mode'), enabled]":
@@ -925,10 +938,23 @@ Parser.definition = {
           //    continue;
           //  }
           //}
-          if (c >= 0x1100 && coUtils.Unicode.doubleWidthTest(character)) {
-            codes.push(0);
+          switch (this.wcwidth(c)) {
+
+            case 1:
+              codes.push(c);
+              break;
+
+            case 0:
+              break;
+
+            case 2:
+              codes.push(0, c);
+              break;
           }
-          codes.push(c);
+          //if (coUtils.Unicode.doubleWidthTest(character)) {
+          //  codes.push(0);
+          //}
+          //codes.push(c);
         }
 
 //        let codes = decoder.decode(scanner);
@@ -939,16 +965,15 @@ Parser.definition = {
             emurator.write(converted_codes);
           };
         } else {
-          continue;
+          //continue;
           let c1 = scanner.current();
-          alert(c1)
           coUtils.Debug.reportError(
             _("Failed to decode text. text length: %d, source text: [%s]."), 
             data.length, c1);
-          //if (scanner.isEnd) {
+          if (scanner.isEnd) {
             break;
-          //}
-          //scanner.moveNext();
+          }
+          scanner.moveNext();
         }
       } else { // scanner.isEnd
         scanner.setSurplus(); // backup surplus (unparsed) sequence.
