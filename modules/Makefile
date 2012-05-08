@@ -3,17 +3,15 @@ WGET=wget
 PERL=perl
 UNICODE_SOURCE=UnicodeData.txt
 EASTASIAN_SOURCE=EastAsianWidth.txt
-CATEGORY_JS=common/category.js
-EASTASIAN_JS=common/eastasian.js
-CATEGORY_GENERATOR=UnicodeCategoryDetectorGenerator.pl
-EASTASIAN_GENERATOR=EastAsianWidthDetectorGenerator.pl
+WCWIDTH_JS=unicode/wcwidth.js
+WCWIDTH_GENERATOR=WcwidthGenerator.pl
 
 MSTART="\\033[32m====================\>\\033[36m"
 MEND="\\033[0m"
 ESTART="\\033[31m"
 EEND="\\033[36m"
 
-all: $(MAKEFILE) $(CATEGORY_JS) $(EASTASIAN_JS)
+all: $(MAKEFILE) $(WCWIDTH_JS)
 
 ../configure: ../configure.ac ../acgecko.m4 ../acplatform.m4
 #	@echo "$(MSTART) Regenerate configure script....$(MEND)" 
@@ -27,15 +25,9 @@ Makefile: ../configure
 #	$(MAKE)
 #	exit 1
 
-$(CATEGORY_JS): $(UNICODE_SOURCE) $(CATEGORY_GENERATOR)
+$(WCWIDTH_JS): $(UNICODE_SOURCE) $(EASTASIAN_SOURCE) $(WCWIDTH_GENERATOR)
 	@echo "$(MSTART) Generate JavaScript module....$(MEND)" 
-	$(PERL) ./$(CATEGORY_GENERATOR) > $@ || ($(RM) $@; exit 1)
-
-	@echo "$(MSTART) Done. $(ESTART)$@$(EEND) generated. $(MEND)" 
-
-$(EASTASIAN_JS): $(EASTASIAN_SOURCE) $(EASTASIAN_GENERATOR)
-	@echo "$(MSTART) Generate JavaScript module....$(MEND)" 
-	$(PERL) ./$(EASTASIAN_GENERATOR) > $@ || ($(RM) $@; exit 1)
+	$(PERL) ./$(WCWIDTH_GENERATOR) > $@ || ($(RM) $@; exit 1)
 	@echo "$(MSTART) Done. $(ESTART)$@$(EEND) generated. $(MEND)" 
 
 $(UNICODE_SOURCE):
@@ -51,5 +43,5 @@ $(EASTASIAN_SOURCE):
 clean:
 
 maintainer-clean:
-	$(RM) $(CATEGORY_JS) $(UNICODE_SOURCE) $(EASTASIAN_JS) $(EASTASIAN_SOURCE)
+	$(RM) $(WCWIDTH_JS) $(UNICODE_SOURCE) $(EASTASIAN_SOURCE)
 

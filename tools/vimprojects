@@ -45,6 +45,7 @@
    tupbase.js
   }
   unicode=unicode {
+   wcwidth.js
    eastasian.js
    category.js
   }

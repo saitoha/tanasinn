@@ -72,7 +72,7 @@ Paste.definition = {
       listener: {
         type: "command", 
         context: this,
-        handler: function() this.paste()
+        handler: this.paste,
       }
     };
   },
