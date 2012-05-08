@@ -393,7 +393,7 @@ IOManager.definition = {
   _socket: null,
 
   "[persistable] outgoing_buffer_size": 1024 * 64,
-  "[persistable] incoming_buffer_size": 1024 * 1,
+  "[persistable] incoming_buffer_size": 1024 * 64,
 
   /** 
    * initialize it with Session object.
@@ -430,21 +430,21 @@ IOManager.definition = {
   "[subscribe('command/send-to-tty'), type('String -> Undefined')]":
   function send(data) 
   {
-    if (this._output) {
-      this._output
-        .QueryInterface(Components.interfaces.nsIAsyncOutputStream)
-        .asyncWait({
-          onOutputStreamReady: function onOutputStreamReady(stream) {
-            stream.write(data, data.length);
-          },
-        }, 0, 0, null)
-    }
-    /*
+    //if (this._output) {
+    //  this._output
+    //    .QueryInterface(Components.interfaces.nsIAsyncOutputStream)
+    //    .asyncWait({
+    //      onOutputStreamReady: function onOutputStreamReady(stream) {
+    //        stream.write(data, data.length);
+    //      },
+    //    }, 0, 0, null)
+    //}
+    
     if (this._output) {
       this._output.write(data, data.length);
       this._output.flush();
     }
-    */
+    
   },
 
   /** Close I/O channel and stop communication with TTY device.

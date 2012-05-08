@@ -239,6 +239,10 @@ Mouse.definition = {
   {
     let code;
     let event = this._locator_event;
+    let locator_reporting_mode = this._locator_reporting_mode;
+    if (null === locator_reporting_mode) {
+      return;
+    }
 
     if (null === event) {
       code = 0;
@@ -370,12 +374,13 @@ Mouse.definition = {
                | event.ctrlKey  << 4
 //               | 1              << 5
                ;
-      code += 32;
       let [column, row] = this._getCurrentPosition(event);
 
-      switch (this._tracking_type) {
+      let tracking_type = this._tracking_type;
+      switch (tracking_type) {
 
         case "urxvt":
+          code += 32;
           message = coUtils.Text.format("\x1b[%d;%d;%dM", code, column, row);
           break;
 
@@ -393,6 +398,7 @@ Mouse.definition = {
           break;
 
         case "utf8":
+          code += 32;
           column += 32;
           row += 32;
           buffer = [0x1b, 0x5b, 0x4d, code];
@@ -414,9 +420,13 @@ Mouse.definition = {
           break;
 
         default:
+          code += 32;
+          column += 32;
+          row += 32;
           // send escape sequence. 
           //                            ESC    [     M          
-          message = String.fromCharCode(0x1b, 0x5b, 0x4d, code, column + 32, row + 32);
+          message = String.fromCharCode(0x1b, 0x5b, 0x4d, code, column, row);
+          coUtils.Debug.reportMessage(message)
 
       } // switch (this._tracking_type)
     }
@@ -620,9 +630,16 @@ Mouse.definition = {
 
     switch (tracking_mode) {
 
+      case coUtils.Constant.TRACKING_NORMAL:
+        if (this._dragged) {
+          button = 32 + MOUSE_RELEASE;
+          this._sendMouseEvent(event, button); 
+        }
+        break;
+
       case coUtils.Constant.TRACKING_BUTTON:
         if (this._dragged) {
-          button = event.button;
+          button = 32 + event.button;//MOUSE_RELEASE;//event.button;
           this._sendMouseEvent(event, button); 
         }
         break;
@@ -631,7 +648,7 @@ Mouse.definition = {
       // Send motion event.
         let button;
         if (this._dragged) {
-          button = event.button;
+          button = 32 + event.button;
         } else {
           button = MOUSE_RELEASE;
         }
@@ -639,7 +656,6 @@ Mouse.definition = {
         break;
 
       case coUtils.Constant.TRACKING_X10:
-      case coUtils.Constant.TRACKING_NORMAL:
       case coUtils.Constant.TRACKING_HIGHLIGHT:
       default:
         // pass
@@ -657,6 +673,7 @@ Mouse.definition = {
       }
     }
     let button = event.button;
+    button = 3;
     this._sendMouseEvent(event, button); // release
   },
 

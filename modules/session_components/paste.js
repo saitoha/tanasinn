@@ -108,7 +108,9 @@ Paste.definition = {
 
       // Encodes the text message and send it to the tty device.
       let broker = this._broker;
+      //broker.notify("command/flow-control", false);
       broker.notify("command/input-text", text);
+      //broker.notify("command/flow-control", true);
     }
     return true; /* prevent default action */
   },

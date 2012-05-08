@@ -70,7 +70,6 @@ Selection.definition = {
   _canvas: null,
   _context: null,
   _range: null,
-  _tracking_mode: false,
   _highlight_region: null,
 
   "[persistable] normal_selection_color": "white",
@@ -81,10 +80,15 @@ Selection.definition = {
   "[subscribe('event/mouse-tracking-mode-changed'), enabled]": 
   function onMouseTrackingModeChanged(data) 
   {
-    if (coUtils.Constant.TRACKING_NONE == data) {
-      this._tracking_mode = false;
+    if (coUtils.Constant.TRACKING_NONE == data || coUtils.Constant.TRACKING_HIGHLIGHT == data) {
+      this.ondblclick.enabled = true;
     } else {
-      this._tracking_mode = true;
+      this.ondblclick.enabled = false;
+    }
+    if (coUtils.Constant.TRACKING_NONE == data) {
+      this.ondragstart.enabled = true;
+    } else {
+      this.ondragstart.enabled = false;
     }
     if (this.enabled) {
       this.clear();
@@ -95,11 +99,12 @@ Selection.definition = {
   function onChangeLocatorReportingMode(mode) 
   {
     if (null === mode) {
-      this._tracking_mode = false;
+      this.ondragstart.enabled = true;
+      this.ondblclick.enabled = false;
     } else {
-      this._tracking_mode = true;
+      this.ondragstart.enabled = false;
+      this.ondblclick.enabled = true;
     }
-    this._tracking_mode = data;
     if (this.enabled) {
       this.clear();
     }
@@ -128,7 +133,7 @@ Selection.definition = {
     this.onFirstFocus.enabled = true;
 
     // register dom listeners.
-    this.ondragstart.enabled = true;
+//    this.ondragstart.enabled = true;
     this.ondblclick.enabled = true;
 
     broker.notify("initialized/selection", this);
@@ -169,10 +174,6 @@ Selection.definition = {
   "[listen('dblclick', '#tanasinn_content')]":
   function ondblclick(event) 
   {
-    let tracking_mode = this._tracking_mode;
-    if (tracking_mode) {
-      return;
-    }
     let [column, row] = this.convertPixelToScreen(event);
     this.selectSurroundChars(column, row);
 
@@ -212,11 +213,6 @@ Selection.definition = {
   "[subscribe('event/start-highlight-mouse'), enabled]":
   function onStartHighlightMouse(args)
   {
-    let tracking_mode = this._tracking_mode;
-    if (coUtils.Constant.TRACKING_HIGHLIGHT != tracking_mode) {
-      return;
-    }
-
     let func = args[0];
     if (0 == func) {
       this.clear();
@@ -301,10 +297,6 @@ Selection.definition = {
   "[listen('dragstart', '#tanasinn_content')]":
   function ondragstart(event) 
   {
-    let tracking_mode = this._tracking_mode;
-    if (tracking_mode) {
-      return;
-    }
     let broker = this._broker;
     let screen = this.dependency["screen"];
     let column = screen.width;

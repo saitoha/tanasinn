@@ -2076,8 +2076,12 @@ Screen.definition = {
         let positionX = cursor.positionX;
         let length = width - positionX;
         let run = codes.slice(it, it + length);
-        it += run.length;
         cursor.positionX += run.length;
+        length = run.length;
+        //if (0 == run[length - 1]) {
+        //  run.pop();
+        //}
+        it += run.length;
         line.write(positionX, run, cursor.attr, insert_mode);
       }
     } while (it < codes.length);

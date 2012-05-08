@@ -2557,7 +2557,7 @@ coUtils.Debug = {
       source = coUtils.format.apply(coUtils, arguments);
     }
     let stack = Components.stack.caller;
-    let escapedSource = source.toString().replace(/"/g, "\u201d");
+    let escapedSource = String(source).replace(/"/g, "\u201d");
     let file = stack.filename.split(" -> ").pop().split("?").shift().replace(/"/g, "\u201d");
     let name = stack.name && stack.name.replace(/"/g, "\u201d");
     let message = [
@@ -2818,8 +2818,9 @@ function _()
 }
 
 //coUtils.Runtime.loadScript("modules/common/pot.js", scope);
-coUtils.Runtime.loadScript("modules/unicode/category.js", scope);  // unicode category db
-coUtils.Runtime.loadScript("modules/unicode/eastasian.js", scope); // unicode eastasian db
+coUtils.Runtime.loadScript("modules/unicode/wcwidth.js", scope);
+//coUtils.Runtime.loadScript("modules/unicode/category.js", scope);  // unicode category db
+//coUtils.Runtime.loadScript("modules/unicode/eastasian.js", scope); // unicode eastasian db
 
 coUtils.Runtime.loadScript("modules/common/tupstart.js", scope);
 coUtils.Runtime.loadScript("modules/common/tupbase.js", scope);
