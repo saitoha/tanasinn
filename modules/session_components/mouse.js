@@ -478,30 +478,34 @@ Mouse.definition = {
         }
       } else if (coUtils.Constant.KEYPAD_MODE_APPLICATION == keypad_mode) {
 
-        let i;
-        if (count > 0) {
-          for (i = 0; i < count; ++i) {
-            this._sendMouseEvent(event, 0x40); 
+        if (null === this._locator_reporting_mode) {
+          let i;
+          if (count > 0) {
+            for (i = 0; i < count; ++i) {
+              this._sendMouseEvent(event, 0x40); 
+            }
+          } else {
+            for (i = 0; i < -count; ++i) {
+              this._sendMouseEvent(event, 0x41); 
+            }
           }
-        } else {
-          for (i = 0; i < -count; ++i) {
-            this._sendMouseEvent(event, 0x41); 
-          }
-        }
 
-//        let sequences = [];
-//        if (count > 0) {
-//          while (count--)
-//            sequences.push("\x1bOB")
-//        } else if (count < 0) {
-//          //sequences.push("\x1b[B")
-//          while (count++)
-//            sequences.push("\x1bOA")
-//        } else {
-//          return; 
-//        }
-//        message = sequences.join("");
-//        broker.notify("command/send-to-tty", message);
+        } else {
+
+          let sequences = [];
+          if (count > 0) {
+            while (count--)
+              sequences.push("\x1bOB")
+          } else if (count < 0) {
+            //sequences.push("\x1b[B")
+            while (count++)
+              sequences.push("\x1bOA")
+          } else {
+            return; 
+          }
+          message = sequences.join("");
+          broker.notify("command/send-to-tty", message);
+        }
 
       } else {
 //        throw coUtils.Debug.Exception(
