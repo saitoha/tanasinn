@@ -167,6 +167,7 @@ Mouse.definition = {
   function onMouseTrackingTypeChanged(data) 
   {
     let broker = this._broker;
+    this._locator_reporting_mode = null;
     if (coUtils.Constant.TRACKING_NONE == data) {
       broker.notify(_("Leaving mouse tracking type: [%s]."), this._tracking_type)
     } else {

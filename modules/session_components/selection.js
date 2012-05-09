@@ -133,7 +133,7 @@ Selection.definition = {
     this.onFirstFocus.enabled = true;
 
     // register dom listeners.
-//    this.ondragstart.enabled = true;
+    this.ondragstart.enabled = true;
     this.ondblclick.enabled = true;
 
     broker.notify("initialized/selection", this);
