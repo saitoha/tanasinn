@@ -951,10 +951,6 @@ Parser.definition = {
               codes.push(0, c);
               break;
           }
-          //if (coUtils.Unicode.doubleWidthTest(character)) {
-          //  codes.push(0);
-          //}
-          //codes.push(c);
         }
 
 //        let codes = decoder.decode(scanner);
@@ -965,15 +961,17 @@ Parser.definition = {
             emurator.write(converted_codes);
           };
         } else {
-          //continue;
-          let c1 = scanner.current();
-          coUtils.Debug.reportError(
-            _("Failed to decode text. text length: %d, source text: [%s]."), 
-            data.length, c1);
-          if (scanner.isEnd) {
-            break;
-          }
-          scanner.moveNext();
+          continue;
+          //let c1 = scanner.current();
+          ////coUtils.Debug.reportError(
+          ////  _("Failed to decode text. text length: %d, source text: [%s]."), 
+          ////  data.length, c1);
+          ////if (scanner.isEnd) {
+          ////  break;
+          ////}
+          //scanner.setSurplus();
+          //scanner.moveNext();
+          //break;
         }
       } else { // scanner.isEnd
         scanner.setSurplus(); // backup surplus (unparsed) sequence.

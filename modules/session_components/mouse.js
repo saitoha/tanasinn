@@ -427,7 +427,6 @@ Mouse.definition = {
           // send escape sequence. 
           //                            ESC    [     M          
           message = String.fromCharCode(0x1b, 0x5b, 0x4d, code, column, row);
-          coUtils.Debug.reportMessage(message)
 
       } // switch (this._tracking_type)
     }

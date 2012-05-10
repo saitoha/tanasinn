@@ -1188,7 +1188,7 @@ DecModeSequenceHandler.definition = {
    */
   "[profile('vt100'), sequence('CSI %dt')]":
   function DECSLPP(n1, n2, n3) 
-  { // Request Locator Position
+  {
     let broker = this._broker;
     broker.notify(
       "command/manipulate-window", 

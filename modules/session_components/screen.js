@@ -22,19 +22,16 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-let ThreadManager = Components
+let thread_manager = Components
   .classes["@mozilla.org/thread-manager;1"]
   .getService();
 
-let wait = function(wait) {
-  let endTime = Date.now() + wait;
-  let mainThread = ThreadManager.currentThread;
-  let c = 0;
+function wait(span) {
+  let end_time = Date.now() + span;
+  let current_thread = thread_manager.currentThread;
   do {
-    c++;
-    mainThread.processNextEvent(true);
-  } while ( (mainThread.hasPendingEvents()) || Date.now() < endTime );
-  return c;
+    current_thread.processNextEvent(true);
+  } while ((current_thread.hasPendingEvents()) || Date.now() < end_time);
 };
 
 
@@ -1720,11 +1717,12 @@ Scrollable.definition = {
       for (i = 0; i < range.length; ++i) {
         line = range[i];
         line.erase(0, width, attr);
-        line.invalidate();
         line.length = width;
+        line.invalidate();
         line.type = coUtils.Constant.LINETYPE_NORMAL;
       }
     }
+
     // line.splice(offset + bottom -m, 0, ....);
     range.unshift(offset + bottom - n, 0);
     Array.prototype.splice.apply(lines, range);

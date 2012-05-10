@@ -189,9 +189,10 @@ SlowBlinkTrait.definition = {
   createSlowBlinkLayer: function createSlowBlinkLayer()
   {
     let broker = this._broker;
-    this._slow_blink_layer = new Layer(broker);
-    this._slow_blink_layer.canvas.width = this._main_layer.canvas.width;
-    this._slow_blink_layer.canvas.height = this._main_layer.canvas.height;
+    layer = new Layer(broker);
+    layer.canvas.width = this._main_layer.canvas.width;
+    layer.canvas.height = this._main_layer.canvas.height;
+    this._slow_blink_layer = layer;
     coUtils.Timer.setTimeout(function() {
       this._slow_blink_layer.canvas.style.opacity 
         = 1 - this._slow_blink_layer.canvas.style.opacity;
@@ -374,6 +375,7 @@ Layer.definition = {
         parentNode: "#tanasinn_center_area",
         tagName: "html:canvas",
         id: "canvas",
+        dir: "ltr",
       });
 
     this.canvas = canvas;

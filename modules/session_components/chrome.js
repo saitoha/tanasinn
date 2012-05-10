@@ -395,6 +395,7 @@ Chrome.definition = {
         parentNode: "#tanasinn_chrome",
         tagName: "stack",
         id: "tanasinn_content",
+        dir: "ltr",
         childNodes: [
           {
             id: "tanasinn_center_area",

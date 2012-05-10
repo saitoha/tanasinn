@@ -122,7 +122,7 @@ ShellRPC.definition = {
  */
 function main(broker) 
 {
-  new ShellRPC(broker);
+//  new ShellRPC(broker);
 }
 
 
