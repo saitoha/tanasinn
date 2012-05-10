@@ -433,6 +433,7 @@ Commandline.definition = {
       parentNode: "#tanasinn_commandline_area",
       id: "tanasinn_commandline_canvas",
       tagName: "html:canvas",
+      dir: "ltr",
       height: this.font_size,
       style: <>
         opacity: 0.7;

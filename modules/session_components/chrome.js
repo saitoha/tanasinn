@@ -218,6 +218,7 @@ OuterChrome.definition = {
         {
           tagName: "grid",
           className: "tanasinn",
+          dir: "ltr",
           childNodes: {
             tagName: "rows",
             childNodes: [
@@ -408,11 +409,13 @@ Chrome.definition = {
         parentNode: "#tanasinn_chrome",
         id: "tanasinn_panel_area",
         tagName: "box",
+        dir: "ltr",
       },
       {
         parentNode: "#tanasinn_chrome",
         id: "tanasinn_commandline_area",
         tagName: "vbox",
+        dir: "ltr",
       },
     ],
 
