@@ -179,9 +179,9 @@ Control.definition = {
   {
     let screen = this._screen;
     screen.lineFeed();
-    if (this._ansi_mode.LNM) {
-      screen.carriageReturn();
-    }
+//    if (this._ansi_mode.LNM) {
+//      screen.carriageReturn();
+//    }
   },
  
   /** Vertical tabulation.
@@ -191,9 +191,9 @@ Control.definition = {
   {
     let screen = this._screen;
     screen.lineFeed();
-    if (this._ansi_mode.LNM) {
-      screen.carriageReturn();
-    }
+//    if (this._ansi_mode.LNM) {
+//      screen.carriageReturn();
+//    }
   },
 
   /** Form feed.
@@ -203,9 +203,9 @@ Control.definition = {
   {
     let screen = this._screen;
     screen.lineFeed();
-    if (this._ansi_mode.LNM) {
-      screen.carriageReturn();
-    }
+//    if (this._ansi_mode.LNM) {
+//      screen.carriageReturn();
+//    }
   },
 
   /** Carriage return.
@@ -215,6 +215,9 @@ Control.definition = {
   { // Carriage Return
     let screen = this._screen;
     screen.carriageReturn();
+//    if (this._ansi_mode.LNM) {
+//      screen.lineFeed();
+//    }
   },
     
   /** Shift out.

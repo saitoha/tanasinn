@@ -745,6 +745,8 @@ InputManager.definition = {
   _key_map: null,
   _auto_repeat: true,
 
+  _newlne_mode: false,
+
   /** Installs itself. 
    *  @param {Broker} brokr a Broker object.
    *  @notify collection-changed/modes
@@ -817,6 +819,12 @@ InputManager.definition = {
 
     this._textbox.parentNode.removeChild(this._textbox);
     broker.notify("event/collection-changed/modes");
+  },
+
+  "[subscribe('set/newline-mode'), enabled]":
+  function onChangeNewlineMode(mode)
+  {
+    this._newline_mode = mode;
   },
 
   "[subscribe('command/change-auto-repeat-mode')]":
@@ -1003,7 +1011,11 @@ char:{event.isChar?"t":"f"}
           return; 
         }
       }
-      message = String.fromCharCode(c);
+      if (0x0d == c && this._newline_mode) {
+        message = "\x0d\x0a";
+      } else {
+        message = String.fromCharCode(c);
+      }
     }
     let broker = this._broker;
     broker.notify("event/before-input", message);

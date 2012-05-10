@@ -109,7 +109,24 @@ AnsiSpecifiedMode.definition = {
    * When the auxiliary keypad is in keypad numeric mode (DECKPNM), the Enter 
    * key sends the same characters as the Return key.
    */
-  LNM: false, 
+
+  _LNM: false, 
+
+  get LNM()
+  {
+    return this._LNM;
+  },
+  
+  set LNM(value) 
+  {
+    let broker = this._broker;
+    if (value) {
+      broker.notify("set/newline-mode", true);
+    } else {
+      broker.notify("set/newline-mode", false);
+    }
+    this._LNM = value;
+  },
 
   /** constructor */
   "[subscribe('@event/broker-started'), enabled]":

@@ -128,23 +128,20 @@ StringParser.definition = {
   {
     while (!scanner.isEnd) {
       let c = scanner.current();
-      if (0x1b == c) {    // '\e'
+      if (0x1b === c) {    // '\e'
         scanner.moveNext();
         if (scanner.isEnd) {
           break;
         }
         let c = scanner.current();
-//        if (0x5c == c) { // '\
-//          break;
-//        }
-        if (0x5d != c && 0x0d != c && 0xdd != c) {
+        if (0x5d !== c && 0x0d !== c && 0xdd !== c) {
           break;
         }
         yield 0x1b;
         yield c;
         scanner.moveNext();
       }
-      if (0x07 == c) {
+      if (0x07 === c) {
         break;
       }
       yield c;
@@ -206,7 +203,7 @@ ParameterParser.definition = {
     this._first = first;
     this._c0action = [];
 
-    if (2 == arguments.length) {
+    if (2 === arguments.length) {
       this._default_action = c;
     }
   },
@@ -227,7 +224,7 @@ ParameterParser.definition = {
         return undefined;
       }
       c = scanner.current();
-      if (c < 0x20 || 0x7f == c) {
+      if (c < 0x20 || 0x7f === c) {
         let action = C0Parser.get(c);
         if (undefined !== action) {
           this._c0action.push(action);
@@ -252,7 +249,7 @@ ParameterParser.definition = {
       action = next(params);
     }
     let default_action = this._default_action;
-    if (0 == this._c0action.length && null === default_action) {
+    if (0 === this._c0action.length && null === default_action) {
       return action;
     } 
     let actions = this._c0action;
@@ -293,11 +290,11 @@ ParameterParser.definition = {
       if (0x30 <= c && c <= 0x39) { // [0-9]
         scanner.moveNext();
         accumulator = accumulator * 10 + c - 0x30;
-      } else if (0x3b == c) { // ';'
+      } else if (0x3b === c) { // ';'
         scanner.moveNext();
         yield accumulator;
         accumulator = 0;
-      } else if (c < 0x20 || 0x7f == c) {
+      } else if (c < 0x20 || 0x7f === c) {
         yield accumulator;
         let action = C0Parser.get(c);
         if (undefined !== action) {
@@ -334,11 +331,11 @@ ParameterParserStartingWithSemicolon.definition = {
       if (0x30 <= c && c <= 0x39) { // [0-9]
         scanner.moveNext();
         accumulator = accumulator * 10 + c - 0x30;
-      } else if (0x3b == c) { // ';'
+      } else if (0x3b === c) { // ';'
         scanner.moveNext();
         yield accumulator;
         accumulator = 0;
-      } else if (c < 0x20 || 0x7f == c) {
+      } else if (c < 0x20 || 0x7f === c) {
         yield accumulator;
         let action = C0Parser.get(c);
         if (undefined !== action) {
@@ -432,16 +429,16 @@ SequenceParser.definition = {
         if (0x30 <= code && code < 0x3a) {
           this[code] = this[code] 
                      || new ParameterParser(code - 0x30);
-        } else if (0x3b == code) {
+        } else if (0x3b === code) {
           this[code] = this[code] 
                      || new ParameterParserStartingWithSemicolon(0);
         } else {
           this[code] = this[code] 
                      || new ParameterParser(0, code);
         }
-        if (1 == char_with_param.length) {
+        if (1 === char_with_param.length) {
           this[code][accept_char] = action;
-        } else if (2 == char_with_param.length) {
+        } else if (2 === char_with_param.length) {
           let next_char = char_with_param.charCodeAt(1);
           this[code][accept_char] = this[code][accept_char] || new SequenceParser();
           this[code][accept_char][next_char] = action;
@@ -621,12 +618,12 @@ VT100Grammar.definition = {
     let pos = expression.indexOf(" ");
     let key = expression.substr(pos + 1)
     let prefix;
-    if (-1 == pos) {
+    if (-1 === pos) {
       prefix = "C0";
     } else {
       prefix = expression.substr(0, pos) || "C0";
     }
-    if ("number" == typeof key) {
+    if ("number" === typeof key) {
       key = key.toString();
     }
     if (!this[prefix]) {
@@ -945,6 +942,9 @@ Parser.definition = {
               break;
 
             case 0:
+              if (0 === codes.length) {
+                codes.push(c);
+              }
               break;
 
             case 2:
