@@ -2818,9 +2818,10 @@ function _()
 }
 
 //coUtils.Runtime.loadScript("modules/common/pot.js", scope);
+//coUtils.Runtime.loadScript("modules/unicode/wcwidth.js", scope);
 coUtils.Runtime.loadScript("modules/unicode/wcwidth.js", scope);
 //coUtils.Runtime.loadScript("modules/unicode/category.js", scope);  // unicode category db
-//coUtils.Runtime.loadScript("modules/unicode/eastasian.js", scope); // unicode eastasian db
+//coUtils.Runtime.loadScript("modules/common/eastasian.js", scope); // unicode eastasian db
 
 coUtils.Runtime.loadScript("modules/common/tupstart.js", scope);
 coUtils.Runtime.loadScript("modules/common/tupbase.js", scope);

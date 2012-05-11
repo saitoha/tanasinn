@@ -26,7 +26,8 @@ let thread_manager = Components
   .classes["@mozilla.org/thread-manager;1"]
   .getService();
 
-function wait(span) {
+function wait(span) 
+{
   let end_time = Date.now() + span;
   let current_thread = thread_manager.currentThread;
   do {
@@ -429,7 +430,7 @@ ScreenSequenceHandler.definition = {
   "[profile('vt100'), sequence('ESC #8')]":
   function DECALN() 
   { // DEC Screen Alignment Test
-      this.eraseScreenAllWithTestPattern();
+    this.eraseScreenAllWithTestPattern();
   },
 
   /**
@@ -903,8 +904,8 @@ ScreenSequenceHandler.definition = {
       let broker = this._broker;
       broker.notify("command/send-to-tty", message);
       coUtils.Debug.reportMessage(
-        "Primary Device Attributes: \n" 
-        + "Send \"" + message.replace("\x1b", "\\e") + "\"." );
+        _("Primary Device Attributes: '%s'."), 
+        message.replace("\x1b", "\\e"));
     }
   },
 

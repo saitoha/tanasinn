@@ -841,14 +841,22 @@ Renderer.definition = {
       for (i = 0; i < cells.length; ++i) {
         let cell = cells[i];
         let code = cell.c;
-        if (code > 0xffff) {
-          // emit 16bit + 16bit surrogate pair.
-          code -= 0x10000;
-          codes1.push(
-            (code >> 10) | 0xD800, 
-            (code & 0x3FF) | 0xDC00);
-        } else {
+        if (code < 0x10000) {
           codes1.push(code);
+        } else {
+          if ("object" === typeof code) {
+            codes1.push.apply(codes1, code);
+            //if (codes1.some(function(c) c == 0x30a)) {
+            //  alert(codes1)
+            //  alert(String.fromCharCode.apply(String, codes1));
+            //}
+          } else {
+            // emit 16bit + 16bit surrogate pair.
+            code -= 0x10000;
+            codes1.push(
+              (code >> 10) | 0xD800, 
+              (code & 0x3FF) | 0xDC00);
+          }
         }
       }
 

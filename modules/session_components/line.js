@@ -769,8 +769,9 @@ Line.definition = {
         Math.min(this.last, Math.floor(this.length / 2));
       for (current = this.first; current < max; ++current) {
         let cell = cells[current];
+        let is_normal = cell.c > 0;
         if (attr) {
-          if (attr.equals(cell) && cell.c) {
+          if (attr.equals(cell) && is_normal) {
             continue;
           } else {
             let codes = cells.slice(start, current);
@@ -782,20 +783,38 @@ Line.definition = {
             };
           } 
         }
-        if (0 == cell.c) {
-          let cell = cells[current + 1];
-          if (cell) {
+        if (!is_normal) {
+          if (0 === cell.c) {
+            let cell = cells[current + 1]; // MUST not null
+            if (typeof cell === "object") {  // combined, wide
+              cell.combine = true;
+              yield { 
+                codes: [ cell ], 
+                column: current, 
+                end: current + 2, 
+                attr: cell,
+              };
+            } else if (cell) { // wide
+              yield { 
+                codes: [ cell ], 
+                column: current, 
+                end: current + 2, 
+                attr: cell,
+              };
+              ++current;
+              start = current + 1;
+              attr = cell;
+            }
+            continue;
+          } else { // combined
+            cell.combine = true;
             yield { 
               codes: [ cell ], 
               column: current, 
-              end: current + 2, 
+              end: current + 1, 
               attr: cell,
             };
-            ++current;
-            start = current + 1;
-            attr = cell;
           }
-          continue;
         }
         start = current;
         attr = cell;

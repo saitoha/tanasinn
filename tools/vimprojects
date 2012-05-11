@@ -80,12 +80,12 @@
    parser.js
 
    drcs.js
-   drcsconverter.js
    sixel.js
    line.js
    cursorstate.js
    screen.js
    mascot.js
+   base64copy.js
 
    emulator.js
    control.js
@@ -177,7 +177,6 @@
     test.js
     eventviewer.js
     messagemonitor.js
-    fullscreen.js
     key.js
     panelmanager.js
     sequence.js

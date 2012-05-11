@@ -860,8 +860,9 @@ Parser.definition = {
   {
     let broker = this._broker;
     let scanner = new Scanner(broker);
+    let action;
     scanner.assign(data);
-    for (let action in this.parse(scanner, data)) {
+    for (action in this.parse(scanner, data)) {
       action();
     }
     broker.notify("command/draw"); // fire "draw" event.
@@ -925,7 +926,8 @@ Parser.definition = {
          *                              inserted                   inserted
          */
         let codes = [];
-        for (let c in decoder.decode(scanner)) {
+        let c;
+        for (c in decoder.decode(scanner)) {
           let character = String.fromCharCode(c);
           //let match = coUtils.Unicode
           //  .detectCategory(character);
@@ -935,21 +937,31 @@ Parser.definition = {
           //    continue;
           //  }
           //}
-          switch (this.wcwidth(c)) {
+          if (c < 0xa1) {
+            codes.push(c);
+          } else {
+            switch (this.wcwidth(c)) {
 
-            case 1:
-              codes.push(c);
-              break;
-
-            case 0:
-              if (0 === codes.length) {
+              case 1:
                 codes.push(c);
-              }
-              break;
+                break;
 
-            case 2:
-              codes.push(0, c);
-              break;
+              case 2:
+                codes.push(0, c);
+                break;
+
+              default: // 0
+                if (0 === codes.length) {
+                  codes.push(c);
+                } else {
+                  let base = codes[codes.length - 1];
+                  if ("number" === typeof base) {
+                    codes[codes.length - 1] = [base, c];
+                  } else {
+                    base.push(c);
+                  }
+                }
+            }
           }
         }
 
