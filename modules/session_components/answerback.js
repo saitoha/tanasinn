@@ -41,7 +41,7 @@ AnswerBack.definition = {
         }</description>
     </module>,
 
-
+  "[persistable] enabled_when_startup": true,
   "[persistable] answerback_message": "",
 
   _answerback_mode: false,

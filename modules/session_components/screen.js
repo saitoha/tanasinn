@@ -863,49 +863,14 @@ ScreenSequenceHandler.definition = {
    */
   "[profile('vt100'), sequence('CSI %dc')]":
   function DA1(n1, n2) 
-  { // TODO: Primary DA (Device Attributes)
-    if (n1 !== undefined && n1 != 0) {
+  { // Primary DA (Device Attributes)
+    if (n1 !== undefined && n1 !== 0) {
       coUtils.Debug.reportWarning(
         _("%s sequence [%s] was ignored."),
         arguments.callee.name, Array.slice(arguments));
     } else { //
-      const reply_map = {
-        "VT100"  : "\x1b[?1;2c"
-        ,"VT100J": "\x1b[?5;2c"
-        ,"VT101" : "\x1b[?1;0c"
-        ,"VT102" : "\x1b[?6c"
-        ,"VT102J": "\x1b[?15c"
-        ,"VT220J": "\x1b[?62;1;2;5;6;7;8c"
-        ,"VT282" : "\x1b[?62;1;2;4;5;6;7;8;10;11c"
-        ,"VT320" : "\x1b[?63;1;2;6;7;8c"
-        ,"VT382" : "\x1b[?63;1;2;4;5;6;7;8;10;15c"
-        ,"VT420" : "\x1b[?64;1;2;7;8;9;15;18;21c"
-        ,"VT520" : "\x1b[?65;1;2;7;8;9;12;18;19;21;23;24;42;44;45;46c"
-        ,"VT525" : "\x1b[?65;1;2;7;9;12;18;19;21;22;23;24;42;44;45;46c"
-      };
-      let reply = [
-        "\x1b[?" // header
-      ]
-      reply.push(65) // VT520
-      //if (this.length >= 132) 
-      reply.push(1) // 132 columns
-      reply.push(2) // Printer
-      reply.push(6) // Selective erase
-      reply.push(7) // Soft character set (DRCS)
-      reply.push(8) // User-defined keys
-      reply.push(9) // National replacememnt character sets
-      reply.push(15) // Technical characters
-      reply.push(22) // ANSI color
-      reply.push(29) // ANSI text locator (i.e., DEC Locator mode)
-      reply.push("c") // footer
-      let message = reply.join(";");
-      //let message = "\x1b[?1;2;6c";
-      //let message = "\x1b[?c";
       let broker = this._broker;
-      broker.notify("command/send-to-tty", message);
-      coUtils.Debug.reportMessage(
-        _("Primary Device Attributes: '%s'."), 
-        message.replace("\x1b", "\\e"));
+      broker.notify("sequence/DA1");
     }
   },
 
@@ -966,8 +931,6 @@ ScreenSequenceHandler.definition = {
   "[profile('vt100'), sequence('CSI >%dc')]":
   function DA2(n1, n2) 
   { // TODO: Secondary DA (Device Attributes)
-      let message = "\x1b[>2;100;2c"
-      let message = "\x1b[>32;100;2c"
       let reply = ["\x1b[>"]; // CSI >
 //      reply.push(65)  // VT520
 //      reply.push(100) // Firmware version (for xterm, this is the XFree86 patch number, starting with 95). 
@@ -981,6 +944,68 @@ ScreenSequenceHandler.definition = {
       coUtils.Debug.reportMessage(
         "Secondary Device Attributes: \n" 
         + "Send \"" + message.replace("\x1b", "\\e") + "\"." );
+  },
+
+  /**
+   *
+   * DA3 — Tertiary Device Attributes
+   *
+   * In this DA exchange, the host asks for the terminal unit identification 
+   * code. This ID code serves as a way to identify each terminal in a system. 
+   * The unit ID code is preset at the factory.
+   *
+   * Host Request
+   *
+   * The host uses the following sequence to send this request:
+   *
+   * CSI    =      c        CSI    =      0    c
+   * 9/11   3/13   6/3  or  9/11   3/13   3/0  6/3
+   *
+   * Terminal Response
+   *
+   * The terminal responds by sending a report terminal unit ID (DECRPTUI) 
+   * control string to the host. DECRPTUI is available in VT Level 4 mode only.
+   *
+   * DCS  !    |      D . . . D   ST
+   * 9/0  2/1  7/12   ...         9/12
+   *
+   * Parameters
+   *
+   * D...D
+   * is the unit ID of the terminal, consisting of four hexadecimal pairs. The
+   * first pair represents the manufacturing site code. This code can be any 
+   * hexadecimal value from 00 through FF.
+   *
+   * The last three hexadecimal pairs are the terminal ID number. This number 
+   * is unique for each terminal manufactured at that site.
+   *
+   * Tertiary DA Example
+   *
+   * Here is a typical tertiary DA exchange.
+   *
+   * Request (Host to Terminal)   
+   *
+   * CSI = c or CSI = 0 c      The host asks for the terminal unit ID.
+   *
+   * DECRPTUI Response (Terminal to host)   
+   *
+   * DCS ! | 00 01 02 05 ST    The terminal was manufactured at site 00 and 
+   *                           has a unique ID number of 125.
+   */
+  "[profile('vt100'), sequence('CSI =%dc')]":
+  function DA3(n) 
+  { // Tirtiary DA (Device Attributes)
+    let reply = ["\x1bP!|"]; // DCS ! |
+    reply.push("FF");
+    reply.push("FF");
+    reply.push("FF");
+    reply.push("FF");
+    reply.push("\x1b\\");
+    let message = reply.join("");
+    let broker = this._broker;
+    broker.notify("command/send-to-tty", message);
+    coUtils.Debug.reportMessage(
+      _("Tirtiary Device Attributes is requested. reply: '%s'."), message);
   },
 
   /**

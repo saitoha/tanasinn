@@ -250,7 +250,16 @@ Escape.definition = {
     screen.tab_stops.sort(function(lhs, rhs) lhs > rhs);
   },
 
-  /** reverse index */
+  /**
+   *
+   * RI – Reverse Index
+   * ESC M   
+   *
+   * Move the active position to the same horizontal position on the preceding 
+   * line. If the active position is at the top margin, a scroll down is 
+   * performed. Format Effector
+   *
+   */
   "[profile('vt100'), sequence('0x8d', 'ESC M'), _('Reverse index.')]": 
   function RI() 
   {
@@ -262,6 +271,26 @@ Escape.definition = {
   },
 
 
+  /**
+   * Device Control Strings
+   *
+   * The terminal control DCS (ESC P) is used to load the programmable 
+   * strings. The Ambassador recognizes characters following this control 
+   * as programming instructions to the terminal.
+   *
+   * These programming instructions consist of a series of one or more string 
+   * table entries. Each entry indexes to one of the programmable strings and
+   * loads it with the character codes that follow. These characters then 
+   * become the string that is transmitted when a programmable key is 
+   * depressed, or an operational string is activated.
+   *
+   * Since DCS controls are normally sent from a host program to the 
+   * Ambassador for execution, the commands are designed to facilitate 
+   * programmatic control of the programmable strings. However, a terminal 
+   * operator may also make use of the DCS control by placing the Ambassador 
+   * into Local Test Mode (Setup T) and manually keying in the control sequence.
+   *
+   */
   "[profile('vt100'), sequence('0x90%s', 'ESC P%s')]": 
   function DCS(message) 
   {
