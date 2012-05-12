@@ -1446,12 +1446,36 @@ ScreenSequenceHandler.definition = {
    * can respond through the bidirectional printer port.
    *
    */
-  "[profile('vt100'), sequence('CSI %dn')]":
+  "[profile('vt100'), sequence('CSI %dn', 'CSI ?%dn')]":
   function DSR(n) 
   { // Device Status Report
-    coUtils.Debug.reportWarning(
-      _("%s sequence [%s] was ignored."),
-      arguments.callee.name, Array.slice(arguments));
+
+    let broker = this._broker;
+    let cursor = this.cursor;;
+    let message;
+
+    switch (n) {
+
+      // report terminal status
+      case 5:
+        message = "\x1b[0n";
+        broker.notify("command/send-to-tty", message);
+        break;
+
+      // report cursor position
+      case 6:
+        message = coUtils.Text.format(
+          "\x1b[%d;%dR", 
+          cursor.positionY + 1, 
+          cursor.positionX + 1);
+        broker.notify("command/send-to-tty", message);
+        break;
+
+      default:
+        coUtils.Debug.reportWarning(
+          _("%s sequence [%s] was ignored."),
+          arguments.callee.name, Array.slice(arguments));
+    }
   },
 
   "[profile('vt100'), sequence('CSI ?%dn')]":
