@@ -922,13 +922,14 @@ SocketTeletypeService.definition = {
   onDataAvailable: 
   function onDataAvailable(request, context, input, offset, count) 
   {
+    let broker = this._broker;
     let data = this._input.readBytes(count);
     this._input.close();
     this._input = null;
-    let [control_port, pid, ttyname] = data.split(":");
+    let [control_port, pid, ttyname, termattr] = data.split(":");
+    broker.notify("event/termattr-changed", termattr);
     this._pid = Number(pid);
     if (control_port) {
-      let broker = this._broker;
       broker.notify("event/control-socket-ready", Number(control_port));
     } else {
       coUtils.Debug.reportError(_("Failed to connect to ttydriver."));

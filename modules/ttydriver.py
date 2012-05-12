@@ -247,7 +247,6 @@ class TeletypeDriver:
                     break    
                 data = self.control_socket.recv(BUFFER_SIZE)
                 if data == "beacon\n":
-                    trace("aa")
                     continue
                 if not data:
                     break
@@ -429,8 +428,57 @@ if __name__ == "__main__":
         os.execlp("/bin/sh", "/bin/sh", "-c", "cd $HOME && exec %s" % command)
     ttyname = os.read(master, ttyname_max_length).rstrip()
 
+    iflag, oflag, cflag, lflag, ispeed, cspeed, cc = termios.tcgetattr(master)
+
+    # get par
+    if not cflag & termios.PARENB:
+        par = 1
+    elif clags & termios.PARODD:
+        par = 4
+    else:
+        par = 5
+
+    # get nbits
+    if not cflag & termios.ISTRIP:
+        nbits = 1
+    else:
+        nbits = 2
+
+    # get xspeed, rspeed
+    speed_map = { 
+        50         :0, 
+        75         :8, 
+        110        :16,
+        134.5      :24,
+        150        :32,
+        200        :40,
+        300        :48,
+        600        :56,
+        1200       :64,
+        1800       :72,
+        2000       :80,
+        2400       :88,
+        3600       :96,
+        4800       :104,
+        9600       :112,
+        19200      :120
+        }
+
+    try:
+        xspeed = speed_map[ospeed]
+    except:
+        xspeed = 112
+
+    try:
+        rspeed = speed_map[ispeed]
+    except:
+        rspeed = 112
+
+    # make termattr string
+    termattr = str(par) + ";" + str(nbits) + ";" + str(xspeed) + ";" + str(rspeed) + ";" + "1;0x"
+
     # send control channel's port, pid, ttyname
-    connection_socket.send("%s:%s:%s" % (control_port, pid, ttyname))
+    connection_socket.send("%s:%s:%s:%s" % (control_port, pid, ttyname, termattr))
     connection_socket.close();
 
     # establish <Control channel> socket connection. 
