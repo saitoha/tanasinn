@@ -137,6 +137,7 @@ OuterChrome.definition = {
   get frame_style()
     <>
       -moz-box-shadow: {this.box_shadow};
+      box-shadow: {this.box_shadow};
       border-radius: {this.border_radius}px;
       background-image: {this.background}; 
       opacity: {this.background_opacity};

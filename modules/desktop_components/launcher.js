@@ -749,6 +749,7 @@ Launcher.definition = {
               border-radius: 20px;
               background: -moz-linear-gradient(top, #999, #444);
               -moz-box-shadow: 10px 10px 20px black;
+              box-shadow: 10px 10px 20px black;
               opacity: 0.85;
               cursor: move;
             </>,
