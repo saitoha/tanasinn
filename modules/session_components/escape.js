@@ -205,6 +205,19 @@ Escape.definition = {
 
   /** Next line.
    */
+
+  /**
+   * NEL — Next Line
+   *
+   * Moves cursor to first position on next line. If cursor is at bottom 
+   * margin, then screen performs a scroll-up.
+   *
+   * Format
+   *
+   * ESC    E
+   * 1/11   4/5
+   *
+   */
   "[profile('vt100'), sequence('0x85', 'ESC E'), _('Next line')]":
   function NEL() 
   { // Carriage Return
@@ -213,7 +226,22 @@ Escape.definition = {
     screen.lineFeed();
   },
 
-  /** Tab set */
+  /**
+   * HTS — Horizontal Tab Set
+   *
+   * HTS sets a horizontal tab stop at the column position indicated by the 
+   * value of the active column when the terminal receives an HTS.
+   *
+   * You can use either one of the following formats:
+   *
+   * Format
+   * HTS  or  ESC    H
+   * 8/8  or  1/11   4/8
+   *
+   * Description
+   * Executing an HTS does not effect the other horizontal tab stop settings.
+   *
+   */
   "[profile('vt100'), sequence('0x88', 'ESC H'), _('Tab set.')]": 
   function HTS() 
   {

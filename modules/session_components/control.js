@@ -23,34 +23,6 @@
  * ***** END LICENSE BLOCK ***** */
 
 /**
- * @class AnswerBack
- *
- */
-let AnswerBack = new Class().extends(Component);
-AnswerBack.definition = {
-
-  "[persistable] answerback_message": "tanasinn\r",
-
-  _answerback_mode: false,
-
-  /** retuns answerback message */
-  "[subscribe('command/answerback'), enabled]":
-  function answerback()
-  {
-    let broker = this._broker;
-    broker.notify("command/send-to-tty", this.answerback_message);
-  },
-
-  /** */
-  "[subscribe('command/change-answerback-mode'), enabled]":
-  function changeAnswerBackMode(mode)
-  {
-    this._answerback_mode = Boolean(mode);
-  },
-
-};
-
-/**
  * @class Control
  */
 let Control = new Class().extends(Component);
@@ -408,7 +380,6 @@ Control.definition = {
 function main(broker) 
 {
   new Control(broker);
-  new AnswerBack(broker);
 }
 
 

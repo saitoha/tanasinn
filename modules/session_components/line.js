@@ -769,7 +769,7 @@ Line.definition = {
         Math.min(this.last, Math.floor(this.length / 2));
       for (current = this.first; current < max; ++current) {
         let cell = cells[current];
-        let is_normal = cell.c > 0;
+        let is_normal = cell.c > 1;
         if (attr) {
           if (attr.equals(cell) && is_normal) {
             continue;
@@ -783,28 +783,18 @@ Line.definition = {
             };
           } 
         }
-        if (!is_normal) {
+        if (is_normal <= 1) {
           if (0 === cell.c) {
             let cell = cells[current + 1]; // MUST not null
-            if (typeof cell === "object") {  // combined, wide
-              cell.combine = true;
-              yield { 
-                codes: [ cell ], 
-                column: current, 
-                end: current + 2, 
-                attr: cell,
-              };
-            } else if (cell) { // wide
-              yield { 
-                codes: [ cell ], 
-                column: current, 
-                end: current + 2, 
-                attr: cell,
-              };
-              ++current;
-              start = current + 1;
-              attr = cell;
-            }
+            yield { 
+              codes: [ cell ], 
+              column: current, 
+              end: current + 2, 
+              attr: cell,
+            };
+            ++current;
+            start = current + 1;
+            attr = cells[start];
             continue;
           } else { // combined
             cell.combine = true;
@@ -817,7 +807,7 @@ Line.definition = {
           }
         }
         start = current;
-        attr = cell;
+        attr = cells[current];
       }
       if (start < current && attr) {
         let codes = cells.slice(start, current)
@@ -909,6 +899,9 @@ Line.definition = {
     end = Math.min(end, cells.length);
     for (i = start; i < end; ++i) {
       cell = cells[i];
+      if ("object" === typeof cell.c) {
+        end += cell.c.length - 1;
+      }
       cell.erase(attr);
     }
   },
@@ -950,6 +943,9 @@ Line.definition = {
     let i, cell;
     for (i = 0; i < range.length; ++i) {
       cell = range[i];
+      if ("object" === typeof cell.c) {
+        end += cell.c.length - 1;
+      }
       cell.erase(attr);
     }
 
