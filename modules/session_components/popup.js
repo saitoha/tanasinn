@@ -79,6 +79,7 @@ ZshCompletion.definition = {
             </> + (index == selected && <>
               background-image: -moz-linear-gradient(top, #ddd, #eee); 
               -moz-box-shadow: 1px 1px 5px black;
+              box-shadow: 1px 1px 5px black;
               color: #ffefef;
               border-radius: 5px;
             </>),
@@ -391,6 +392,7 @@ PopupMenu.definition = {
             </> + (index == selected && <>
               background-image: -moz-linear-gradient(top, #ddd, #eee); 
               -moz-box-shadow: 1px 1px 5px black;
+              box-shadow: 1px 1px 5px black;
               color: #ffefef;
               border-radius: 5px;
             </>),
