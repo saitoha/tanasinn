@@ -862,9 +862,9 @@ ScreenSequenceHandler.definition = {
    * listed above.
    */
   "[profile('vt100'), sequence('CSI %dc')]":
-  function DA1(n1, n2) 
+  function DA1(n) 
   { // Primary DA (Device Attributes)
-    if (n1 !== undefined && n1 !== 0) {
+    if (n !== undefined && n !== 0) {
       coUtils.Debug.reportWarning(
         _("%s sequence [%s] was ignored."),
         arguments.callee.name, Array.slice(arguments));
@@ -929,21 +929,16 @@ ScreenSequenceHandler.definition = {
    * firmware, and has a PC keyboard option.
    */
   "[profile('vt100'), sequence('CSI >%dc')]":
-  function DA2(n1, n2) 
-  { // TODO: Secondary DA (Device Attributes)
-      let reply = ["\x1b[>"]; // CSI >
-//      reply.push(65)  // VT520
-//      reply.push(100) // Firmware version (for xterm, this is the XFree86 patch number, starting with 95). 
-//      reply.push(0);  // DEC Terminal"s ROM cartridge registration number, always zero.
-      reply.push(0);
-      reply.push(95);
-      reply.push("c") // footer
-      let message = reply.join(";");
+  function DA2(n) 
+  { // Secondary DA (Device Attributes)
+    if (n !== undefined && n !== 0) {
+      coUtils.Debug.reportWarning(
+        _("%s sequence [%s] was ignored."),
+        arguments.callee.name, Array.slice(arguments));
+    } else { //
       let broker = this._broker;
-      broker.notify("command/send-to-tty", message);
-      coUtils.Debug.reportMessage(
-        "Secondary Device Attributes: \n" 
-        + "Send \"" + message.replace("\x1b", "\\e") + "\"." );
+      broker.notify("sequence/DA2");
+    }
   },
 
   /**
@@ -1406,9 +1401,54 @@ ScreenSequenceHandler.definition = {
       arguments.callee.name, Array.slice(arguments));
   },
 
+  /**
+   * DSR—Device Status Reports
+   *
+   * The host computer and terminal exchange DSR sequences to provide the host 
+   * with the operating status of the following features:
+   *
+   * Operating status
+   * Keyboard status - language
+   * Cursor position report
+   * Cursor position with page
+   * Printer port   User-defined keys
+   * Macro space report
+   * Memory checksum
+   * Data integrity report
+   *
+   * DSR requests and reports follow one of two formats, ANSI or DEC format. 
+   * The format for each is as follows:
+   *
+   * Format
+   *
+   * ANSI format
+   *
+   * CSI    Ps   n
+   * 9/11   3/n  6/14   
+   *
+   * DEC format
+   *
+   * CSI    ?      Ps   n
+   * 9/11   3/15   3/n  6/14   
+   *
+   *
+   * Parameters
+   *
+   * Ps
+   * indicates the type of DSR requested. See the following individual DSR 
+   * reports for specific parameters within each report.
+   *
+   * Description
+   *
+   * There is a different DSR request for each feature. The following sections
+   * describe the possible DSR reports. If the terminal is in printer 
+   * controller mode, then the printer receives the DSR request. The printer 
+   * can respond through the bidirectional printer port.
+   *
+   */
   "[profile('vt100'), sequence('CSI %dn')]":
-  function DSR() 
-  { // TODO: Device Status Report
+  function DSR(n) 
+  { // Device Status Report
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
       arguments.callee.name, Array.slice(arguments));

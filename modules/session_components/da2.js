@@ -23,34 +23,31 @@
  * ***** END LICENSE BLOCK ***** */
 
 /**
- * @class DeviceAttribute
+ * @class SecondaryDA
  *
  */
-let DeviceAttribute = new Class().extends(Plugin);
-DeviceAttribute.definition = {
+let SecondaryDA = new Class().extends(Plugin);
+SecondaryDA.definition = {
 
   get id()
-    "device_attribute",
+    "secondary_da",
 
   get info()
     <module>
-        <name>{_("Device Attribute")}</name>
+        <name>{_("Secondary Device Attribute")}</name>
         <version>0.1</version>
         <description>{
-          _("Reply device attribute message against requests.")
+          _("Reply Secondary device attribute message against requests.")
         }</description>
     </module>,
 
 
   "[persistable] enabled_when_startup": true,
-  "[persistable] answerback_message": "",
-
-  _answerback_mode: false,
 
   /** installs itself. 
    *  @param {Broker} broker A Broker object.
    */
-  "[subscribe('install/device_attribute'), enabled]":
+  "[subscribe('install/secondary_da'), enabled]":
   function install(broker) 
   {
     this.reply.enabled = true;
@@ -59,52 +56,25 @@ DeviceAttribute.definition = {
   /** Uninstalls itself.
    *  @param {Broker} broker A broker object.
    */
-  "[subscribe('uninstall/device_attribute'), enabled]":
+  "[subscribe('uninstall/secondary_da'), enabled]":
   function uninstall(broker) 
   {
     this.reply.enabled = false;
   },
 
   /** retuns Device Attribute message */
-  "[subscribe('sequence/DA1')]":
+  "[subscribe('sequence/DA2')]":
   function reply()
   {
-    let reply_map = {
-      "VT100"  : "\x1b[?1;2c"
-      ,"VT100J": "\x1b[?5;2c"
-      ,"VT101" : "\x1b[?1;0c"
-      ,"VT102" : "\x1b[?6c"
-      ,"VT102J": "\x1b[?15c"
-      ,"VT220J": "\x1b[?62;1;2;5;6;7;8c"
-      ,"VT282" : "\x1b[?62;1;2;4;5;6;7;8;10;11c"
-      ,"VT320" : "\x1b[?63;1;2;6;7;8c"
-      ,"VT382" : "\x1b[?63;1;2;4;5;6;7;8;10;15c"
-      ,"VT420" : "\x1b[?64;1;2;7;8;9;15;18;21c"
-      ,"VT520" : "\x1b[?65;1;2;7;8;9;12;18;19;21;23;24;42;44;45;46c"
-      ,"VT525" : "\x1b[?65;1;2;7;9;12;18;19;21;22;23;24;42;44;45;46c"
-    };
-    let reply = [
-      "\x1b[?65" // header
-    ]
-    //reply.push(65) // VT520
-    //if (this.length >= 132) 
-    reply.push(1) // 132 columns
-    reply.push(2) // Printer
-    reply.push(6) // Selective erase
-    reply.push(7) // Soft character set (DRCS)
-    reply.push(8) // User-defined keys
-    reply.push(9) // National replacememnt character sets
-    reply.push(15) // Technical characters
-    reply.push(22) // ANSI color
-    reply.push(29) // ANSI text locator (i.e., DEC Locator mode)
-    reply.push("c") // footer
-    let message = reply.join(";");
-    //let message = "\x1b[?1;2;6c";
-    //let message = "\x1b[?c";
+    let reply = [];
+    reply.push(32);
+    reply.push(100); // Firmware version (for xterm, this is the XFree86 patch number, starting with 95). 
+    reply.push(2);   // DEC Terminal"s ROM cartridge registration number, always zero.
+    let message = "\x1b[>" + reply.join(";") + "c";
     let broker = this._broker;
     broker.notify("command/send-to-tty", message);
     coUtils.Debug.reportMessage(
-      _("Primary Device Attributes: '%s'."), 
+      _("Secondary Device Attributes is requested. reply: '%s'."), 
       message.replace("\x1b", "\\e"));
   },
 
@@ -117,7 +87,7 @@ DeviceAttribute.definition = {
  */
 function main(broker) 
 {
-  new DeviceAttribute(broker);
+  new SecondaryDA(broker);
 }
 
 

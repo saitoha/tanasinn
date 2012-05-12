@@ -392,7 +392,7 @@ IOManager.definition = {
   _output: null,
   _socket: null,
 
-  "[persistable] outgoing_buffer_size": 1024 * 1,
+  "[persistable] outgoing_buffer_size": 1024 * 8,
   "[persistable] incoming_buffer_size": 1024 * 1,
 
   /** 
