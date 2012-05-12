@@ -29,6 +29,10 @@ const MOUSE_RELEASE = 3;
 const MOUSE_WHEEL_UP = 64;
 const MOUSE_WHEEL_DOWN = 65;
 
+/**
+ * @class DECLocatorMouse
+ *
+ */
 let DECLocatorMouse = new Class().extends(Plugin).depends("renderer");
 DECLocatorMouse.definition = {
 
@@ -101,6 +105,7 @@ DECLocatorMouse.definition = {
       this._locator_repoting_mode = locator_repoting_mode;
     }
   },
+
   /** Fired at the mouse tracking mode is changed. */
   "[subscribe('event/mouse-tracking-mode-changed')]":
   function onMouseTrackingModeChanged(data) 
@@ -168,95 +173,6 @@ DECLocatorMouse.definition = {
 
   },
 
-  /** Make packed mouse event data and send it to tty device. */
-  _sendMouseEvent: function _sendMouseEvent(event, button) 
-  {
-
-    let message;
-    let buffer;
-
-    let locator_reporting_mode = this._locator_reporting_mode;
-    if (null === locator_reporting_mode) {
-      return;
-    }
-
-    let code;
-
-    switch (event.type) {
-
-      case "mousedown":
-
-        switch (event.button) {
-
-          case 0:
-            code = 2;
-            this._locator_state |= 4;
-            break;
-
-          case 1:
-            code = 4;
-            this._locator_state |= 2;
-            break;
-
-          case 2:
-            code = 6;
-            this._locator_state |= 1;
-            break;
-
-          case 3:
-            code = 8;
-            this._locator_state |= 8;
-            break;
-
-        }
-        break;
-
-      case "mouseup":
-
-        switch (event.button) {
-
-          case 0:
-            code = 3;
-            this._locator_state ^= 4;
-            break;
-
-          case 1:
-            code = 5;
-            this._locator_state ^= 2;
-            break;
-
-          case 2:
-            code = 7;
-            this._locator_state ^= 1;
-            break;
-
-          case 3:
-            code = 9;
-            this._locator_state ^= 8;
-            break;
-
-        }
-        break;
-
-    }
-    if (locator_reporting_mode.oneshot) {
-      this._locator_reporting_mode = null;
-    }
-    let column, row 
-    if (locator_reporting_mode.pixel) {
-      [column, row] = this._getCurrentPositionInPixel(event);
-    } else {
-      [column, row] = this._getCurrentPosition(event);
-    }
-    message = coUtils.Text.format(
-      "\x1b[%d;%d;%d;%d;1&w", 
-      code, this._locator_state, row, column);
-
-    let broker = this._broker;
-    broker.notify("command/send-to-tty", message);
-
-  },
-
   /** Mouse down evnet listener */
   "[listen('DOMMouseScroll', '#tanasinn_content')]": 
   function onmousescroll(event) 
@@ -307,29 +223,41 @@ DECLocatorMouse.definition = {
     }
   },
 
-
   /** Mouse down evnet listener */
   "[listen('mousedown', '#tanasinn_content')]": 
   function onmousedown(event) 
   {
+
     if (null === this._locator_reporting_mode) {
       return;
     }
 
-    let button;
+    let locator_reporting_mode = this._locator_reporting_mode;
+    if (null === locator_reporting_mode) {
+      return;
+    }
+
 
     switch (event.button) {
 
       case 0:
-        button = coUtils.Constant.BUTTON_LEFT;
+        code = 2;
+        this._locator_state |= 4;
         break;
 
       case 1:
-        button = coUtils.Constant.BUTTON_MIDDLE;
+        code = 4;
+        this._locator_state |= 2;
         break;
 
       case 2:
-        button = coUtils.Constant.BUTTONE_RIGHT;
+        code = 6;
+        this._locator_state |= 1;
+        break;
+
+      case 3:
+        code = 8;
+        this._locator_state |= 8;
         break;
 
       default:
@@ -338,7 +266,22 @@ DECLocatorMouse.definition = {
           event.button);
 
     }
-    this._sendMouseEvent(event, button); 
+
+    if (locator_reporting_mode.oneshot) {
+      this._locator_reporting_mode = null;
+    }
+    let column, row 
+    if (locator_reporting_mode.pixel) {
+      [column, row] = this._getCurrentPositionInPixel(event);
+    } else {
+      [column, row] = this._getCurrentPosition(event);
+    }
+    let message = coUtils.Text.format(
+      "\x1b[%d;%d;%d;%d;1&w", 
+      code, this._locator_state, row, column);
+
+    let broker = this._broker;
+    broker.notify("command/send-to-tty", message);
   },
 
   /** Mouse move evnet listener */
@@ -355,8 +298,51 @@ DECLocatorMouse.definition = {
     if (null === this._locator_reporting_mode) {
       return;
     }
-    let button = 3;
-    this._sendMouseEvent(event, button); // release
+
+    switch (event.button) {
+
+      case 0:
+        code = 3;
+        this._locator_state ^= 4;
+        break;
+
+      case 1:
+        code = 5;
+        this._locator_state ^= 2;
+        break;
+
+      case 2:
+        code = 7;
+        this._locator_state ^= 1;
+        break;
+
+      case 3:
+        code = 9;
+        this._locator_state ^= 8;
+        break;
+
+      default:
+        throw coUtils.Debug.Error(
+          _("Unhandled mouseup event, button: %d."), 
+          event.button);
+    }
+
+    if (locator_reporting_mode.oneshot) {
+      this._locator_reporting_mode = null;
+    }
+    let column, row 
+    if (locator_reporting_mode.pixel) {
+      [column, row] = this._getCurrentPositionInPixel(event);
+    } else {
+      [column, row] = this._getCurrentPosition(event);
+    }
+    let message = coUtils.Text.format(
+      "\x1b[%d;%d;%d;%d;1&w", 
+      code, this._locator_state, row, column);
+
+    let broker = this._broker;
+    broker.notify("command/send-to-tty", message);
+
   },
   
   // Helper: get current position from mouse event object.
@@ -423,7 +409,6 @@ Mouse.definition = {
 
   _tracking_mode: coUtils.Constant.TRACKING_NONE,
   _tracking_type: null,
-  _focus_mode: false,
 
   _dragged: false,
   _installed: false,
@@ -449,8 +434,6 @@ Mouse.definition = {
     this.onMouseTrackingModeChanged.enabled = true;
     this.backup.enabled = true;
     this.restore.enabled = true;
-    this.onGotFocus.enabled = true;
-    this.onLostFocus.enabled = true;
   },
 
   /** Uninstalls itself. */
@@ -470,8 +453,6 @@ Mouse.definition = {
     this.onMouseTrackingModeChanged.enabled = false;
     this.backup.enabled = false;
     this.restore.enabled = false;
-    this.onGotFocus.enabled = false;
-    this.onLostFocus.enabled = false;
   },
     
   /** Fired at scroll session is started. */
@@ -479,13 +460,6 @@ Mouse.definition = {
   function onScrollSessionStarted() 
   {
     this._in_scroll_session = true;
-  },
-  
-  /** Fired at the focus reporting mode is changed. */
-  "[subscribe('event/focus-reporting-mode-changed'), enabled]": 
-  function onFocusReportingModeChanged(mode) 
-  {
-    this._focus_mode = mode;
   },
 
   /** Fired at scroll session is closed. */
@@ -537,32 +511,6 @@ Mouse.definition = {
       let {tracking_mode} = context.mouse;
       this._tracking_mode = tracking_mode;
     }
-  },
-
-  "[subscribe('event/got-focus')]":
-  function onGotFocus()
-  {
-    this.onLostFocus.enabled = true;
-    this.onGotFocus.enabled = false;
-    if (!this._focus_mode) {
-      return;
-    }
-    let broker = this._broker;
-    let message = "\x1b[I"; // focus in
-    broker.notify("command/send-to-tty", message);
-  },
-
-  "[subscribe('event/lost-focus')]":
-  function onLostFocus()
-  {
-    this.onLostFocus.enabled = false;
-    this.onGotFocus.enabled = true;
-    if (!this._focus_mode) {
-      return;
-    }
-    let broker = this._broker;
-    let message = "\x1b[O"; // focus out
-    broker.notify("command/send-to-tty", message);
   },
 
   /** Make packed mouse event data and send it to tty device. */
