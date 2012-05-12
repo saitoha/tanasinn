@@ -68,7 +68,7 @@ SecondaryDA.definition = {
   {
     let reply = [];
     reply.push(32);
-    reply.push(100); // Firmware version (for xterm, this is the XFree86 patch number, starting with 95). 
+    reply.push(277); // Firmware version (for xterm, this is the XFree86 patch number, starting with 95). 
     reply.push(2);   // DEC Terminal"s ROM cartridge registration number, always zero.
     let message = "\x1b[>" + reply.join(";") + "c";
     let broker = this._broker;
