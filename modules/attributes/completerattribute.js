@@ -61,6 +61,7 @@ CompleterAttribute.definition = {
   initialize: function initialize(broker) 
   {
     let attributes = this.__attributes;
+    let key;
     for (key in attributes) {
       let attribute = attributes[key];
       if (!attribute["completer"]) {
@@ -110,6 +111,7 @@ TypeAttribute.definition = {
   initialize: function initialize(broker) 
   {
     let attributes = this.__attributes;
+    let key;
     for (key in attributes) {
       let attribute = attributes[key];
       if (!attribute["type"]) {

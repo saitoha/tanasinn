@@ -46,7 +46,7 @@ Copy.definition = {
   "[persistable] enabled_when_startup": true,
 
   /** Installs itself. */
-  "[subscribe('install/copy'), enabled]": 
+  "[install]": 
   function install(session) 
   {
     this.copy.enabled = true;
@@ -54,7 +54,7 @@ Copy.definition = {
   },
 
   /** Uninstalls itself. */
-  "[subscribe('uninstall/copy'), enabled]": 
+  "[uninstall]":
   function uninstall(session) 
   {
     this.copy.enabled = false;

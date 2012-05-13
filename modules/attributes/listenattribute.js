@@ -59,6 +59,7 @@ ListenAttribute.definition = {
   initialize: function initialize(broker) 
   {
     let attributes = this.__attributes;
+    let key;
     for (key in attributes) {
       let attribute = attributes[key];
       if (!attribute["listen"]) {

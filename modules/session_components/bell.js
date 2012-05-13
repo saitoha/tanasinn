@@ -63,7 +63,7 @@ Bell.definition = {
   /** installs itself. 
    *  @param {Broker} broker A Broker object.
    */
-  "[subscribe('install/bell'), enabled]":
+  "[install]":
   function install(broker) 
   {
     let { tanasinn_visual_bell }
@@ -75,7 +75,7 @@ Bell.definition = {
   /** Uninstalls itself.
    *  @param {Broker} broker A Broker object.
    */
-  "[subscribe('uninstall/bell'), enabled]":
+  "[uninstall]":
   function uninstall(broker) 
   {
     if (null !== this._cover) {

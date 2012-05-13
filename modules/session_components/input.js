@@ -468,7 +468,7 @@ ModeManager.definition = {
    *  @param {Broker} a broker object.
    *  @notify collection-changed/modes
    */
-  "[subscribe('install/modemanager'), enabled]":
+  "[install]":
   function install(broker)
   {
     this._modes = broker.notify("get/modes");
@@ -480,7 +480,7 @@ ModeManager.definition = {
   /** Uninstalls itself. 
    *  @param {Broker} a broker object.
    */
-  "[subscribe('uninstall/modemanager'), enabled]":
+  "[uninstall]":
   function uninstall(broker)
   {
     this._modes = null;
@@ -583,7 +583,7 @@ NormalMode.definition = {
    *  @param {Broker} broker a Broker object.
    *  @notify collection-changed/modes
    */
-  "[subscribe('install/normalmode'), enabled]":
+  "[install]":
   function install(broker)
   {
   },
@@ -591,7 +591,7 @@ NormalMode.definition = {
   /** Uninstalls itself. 
    *  @param {Broker} broker a Broker object.
    */
-  "[subscribe('uninstall/normalmode'), enabled]":
+  "[uninstall]":
   function uninstall(broker)
   {
   },
@@ -751,7 +751,7 @@ InputManager.definition = {
    *  @param {Broker} brokr a Broker object.
    *  @notify collection-changed/modes
    */
-  "[subscribe('install/inputmanager'), enabled]":
+  "[install]":
   function install(broker)
   {
     // Get [bit-packed keycode -> terminal input sequence] map
@@ -790,7 +790,7 @@ InputManager.definition = {
   /** Uninstalls itself. 
    *  @param {Broker} broker a Broker object.
    */
-  "[subscribe('uninstall/inputmanager'), enabled]":
+  "[uninstall]":
   function uninstall(broker)
   {
     this._key_map = null; 

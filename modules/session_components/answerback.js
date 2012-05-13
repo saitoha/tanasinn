@@ -49,7 +49,7 @@ AnswerBack.definition = {
   /** installs itself. 
    *  @param {Broker} broker A Broker object.
    */
-  "[subscribe('install/answerback'), enabled]":
+  "[install]":
   function install(broker) 
   {
     this.answerback.enabled = true;
@@ -59,7 +59,7 @@ AnswerBack.definition = {
   /** Uninstalls itself.
    *  @param {Broker} broker A broker object.
    */
-  "[subscribe('uninstall/answerback'), enabled]":
+  "[uninstall]":
   function uninstall(broker) 
   {
     this.answerback.enabled = false;

@@ -59,7 +59,7 @@ CommandlineIme.definition = {
   /** Installs plugin 
    *  @param {Session} session A session object.
    */ 
-  "[subscribe('install/commandline_ime'), enabled]":
+  "[install]":
   function install(session) 
   {
     let textbox = this.dependency["commandline"].getInputField();
@@ -89,7 +89,7 @@ CommandlineIme.definition = {
   /** Uninstall plugin 
    *  @param {Session} session A session object.
    */
-  "[subscribe('uninstall/commandline_ime'), enabled]":
+  "[uninstall]":
   function uninstall(session) 
   {
     this.endPolling(); // stops polling timer. 

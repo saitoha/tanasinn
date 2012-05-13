@@ -71,7 +71,7 @@ Gesture.definition = {
   /** installs itself. 
    *  @param {Session} session A session object.
    */
-  "[subscribe('install/gesture'), enabled]":
+  "[install]":
   function install(session) 
   {
     let {tanasinn_gesture_frame, tanasinn_gesture_canvas}
@@ -86,7 +86,7 @@ Gesture.definition = {
   /** Uninstalls itself.
    *  @param {Session} session A session object.
    */
-  "[subscribe('uninstall/gesture'), enabled]":
+  "[uninstall]":
   function uninstall(session) 
   {
     if (this._frame) {

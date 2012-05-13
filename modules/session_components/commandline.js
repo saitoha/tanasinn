@@ -498,7 +498,7 @@ Commandline.definition = {
   /** Installs itself. 
    *  @param {Broker} broker A Broker object.
    */
-  "[subscribe('install/commandline'), enabled]":
+  "[install]":
   function install(broker) 
   {
     let {
@@ -541,7 +541,7 @@ Commandline.definition = {
   /** Uninstalls itself.
    *  @param {Broker} broker A Broker object.
    */
-  "[subscribe('uninstall/commandline'), enabled]":
+  "[uninstall]":
   function uninstall(broker) 
   {
     this.show.enabled = false;

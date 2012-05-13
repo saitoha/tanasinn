@@ -155,7 +155,7 @@ NormalMappingManager.definition = {
    *  @param {Broker} a broker object.
    *  @notify initialized/inputmanager
    */
-  "[subscribe('install/nmap_manager'), enabled]":
+  "[install]":
   function install(broker)
   {
     this.installImpl("nmap");
@@ -164,7 +164,7 @@ NormalMappingManager.definition = {
   /** Uninstalls itself. 
    *  @param {Broker} a broker object.
    */
-  "[subscribe('uninstall/nmap_manager'), enabled]":
+  "[uninstall]":
   function uninstall(broker)
   {
     this.uninstallImpl();
@@ -240,7 +240,7 @@ CommandlineMappingManager.definition = {
    *  @param {Broker} a broker object.
    *  @notify initialized/inputmanager
    */
-  "[subscribe('install/cmap_manager'), enabled]":
+  "[install]":
   function install(broker)
   {
     this.installImpl("cmap");
@@ -249,7 +249,7 @@ CommandlineMappingManager.definition = {
   /** Uninstalls itself. 
    *  @param {Broker} a broker object.
    */
-  "[subscribe('uninstall/cmap_manager'), enabled]":
+  "[uninstall]":
   function uninstall(broker)
   {
     this.uninstallImpl();

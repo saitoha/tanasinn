@@ -52,7 +52,7 @@ CommandlineHistory.definition = {
   /** Installs itself. 
    *  @param {Session} session A Session object.
    */
-  "[subscribe('install/commandline_history'), enabled]":
+  "[install]":
   function install(session) 
   {
     this.clearHistory.enabled = true;
@@ -65,7 +65,7 @@ CommandlineHistory.definition = {
   /** Uninstalls itself. 
    *  @param {Session} session A Session object.
    */
-  "[subscribe('uninstall/commandline_history'), enabled]":
+  "[uninstall]":
   function uninstall(session) 
   {
     this.clearHistory.enabled = false;

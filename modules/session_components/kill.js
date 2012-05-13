@@ -43,7 +43,7 @@ Kill.definition = {
   "[persistable] enabled_when_startup": true,
 
   /** Installs itself. */
-  "[subscribe('install/kill'), enabled]":
+  "[install]":
   function install() 
   {
     this.detach.enabled = true;
@@ -52,7 +52,7 @@ Kill.definition = {
   }, 
 
   /** Uninstall itself. */
-  "[subscribe('uninstall/kill'), enabled]":
+  "[uninstall]":
   function uninstall() 
   {
     this.detach.enabled = false;

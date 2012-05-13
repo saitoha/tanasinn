@@ -44,7 +44,7 @@ MouseGesture.definition = {
   "[persistable] magnify_delta_per_fontsize": 100,
 
   /** Installs itself. */
-  "[subscribe('install/mouse_gesture'), enabled]":
+  "[install]":
   function install(broker) 
   {
     /** Start to listen gesture event. */
@@ -54,7 +54,7 @@ MouseGesture.definition = {
   },
 
   /** Uninstalls itself. */
-  "[subscribe('uninstall/mouse_gesture'), enabled]":
+  "[uninstall]":
   function uninstall(broker) 
   {
     // unregister gesture event DOM listeners.

@@ -126,7 +126,7 @@ PluginViewer.definition = {
   /** Installs itself.
    *  @param {Session} session A session object.
    */
-  "[subscribe('install/plugin_viewer'), enabled]":
+  "[install]":
   function install(session) 
   {
     this.select.enabled = true;
@@ -136,7 +136,7 @@ PluginViewer.definition = {
   /** Uninstalls itself.
    *  @param {Session} session A session object.
    */
-  "[subscribe('uninstall/plugin_viewer'), enabled]":
+  "[uninstall]":
   function uninstall(session) 
   {
     this.onPanelSelected.enabled = false;

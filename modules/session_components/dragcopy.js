@@ -50,7 +50,7 @@ DragCopy.definition = {
   "[persistable] enabled_when_startup": true,
 
   /** Installs itself. */
-  "[subscribe('install/dragcopy'), enabled]":
+  "[install]":
   function install(session)
   {
     let {feedback_canvas} = session.uniget(
@@ -66,7 +66,7 @@ DragCopy.definition = {
   },
 
   /** Uninstalls itself. */
-  "[subscribe('uninstall/dragcopy'), enabled]":
+  "[uninstall]":
   function uninstall(session)
   {
     this.ondragstart.enabled = false;

@@ -58,7 +58,7 @@ Tektronix.definition = {
     this._screen = screen;
   },
 
-  "[subscribe('install/tektronix'), enabled]":
+  "[install]":
   function install(broker) 
   {
     let { tanasinn_tektronix_canvas } = broker.uniget(
@@ -82,7 +82,7 @@ Tektronix.definition = {
     this.onHeightChanged(this._height);
   },
 
-  "[subscribe('uninstall/tektronix'), enabled]":
+  "[uninstall]":
   function uninstall(broker) 
   {
     if (this._dom) {

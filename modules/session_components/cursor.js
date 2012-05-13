@@ -70,7 +70,7 @@ Cursor.definition = {
   "[persistable, watchable] opacity": 0.3,
  
   /** Installs itself. */
-  "[subscribe('install/cursor'), enabled]": 
+  "[install]": 
   function install(session) 
   {
     /** Create cursor element. */
@@ -101,7 +101,7 @@ Cursor.definition = {
   },
 
   /** Uninstalls itself. */
-  "[subscribe('uninstall/cursor'), enabled]": 
+  "[uninstall]":
   function uninstall(session) 
   {
     this.update.enabled = false;

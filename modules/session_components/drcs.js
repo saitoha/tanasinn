@@ -49,7 +49,7 @@ DRCSBuffer.definition = {
   /** installs itself. 
    *  @param {Broker} broker A Broker object.
    */
-  "[subscribe('install/drcs_buffer'), enabled]":
+  "[install]":
   function install(broker) 
   {
     this.onDCS.enabled = true;
@@ -61,7 +61,7 @@ DRCSBuffer.definition = {
   /** Uninstalls itself.
    *  @param {Broker} broker A broker object.
    */
-  "[subscribe('uninstall/drcs_buffer'), enabled]":
+  "[uninstall]":
   function uninstall(broker) 
   {
     this._map = null;

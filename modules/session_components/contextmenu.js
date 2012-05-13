@@ -69,7 +69,7 @@ Contextmenu.definition = {
   /** Installs itself.
    *  @param {Session} session A Session object.
    */
-  "[subscribe('install/contextmenu'), enabled]": 
+  "[install]": 
   function install(session) 
   {
     // register DOM listener.
@@ -82,7 +82,7 @@ Contextmenu.definition = {
   /** Uninstalls itself.
    *  @param {Session} session A Session object.
    */
-  "[subscribe('uninstall/contextmenu'), enabled]": 
+  "[uninstall]":
   function uninstall(session) 
   {
     // unregister DOM listener.

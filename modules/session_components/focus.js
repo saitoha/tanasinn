@@ -47,7 +47,7 @@ FocusTracker.definition = {
   /** Installs itself. 
    *  @param {Session} session A session object.
    */
-  "[subscribe('install/focustracker'), enabled]": 
+  "[install]": 
   function install(session)
   {
     session.notify("command/add-domlistener", {
@@ -63,7 +63,7 @@ FocusTracker.definition = {
   /** Uninstalls itself. 
    *  @param {Session} session A session object.
    */
-  "[subscribe('uninstall/focustracker'), enabled]": 
+  "[uninstall]":
   function uninstall(session)
   {
     session.notify("command/remove-domlistener", this.id)

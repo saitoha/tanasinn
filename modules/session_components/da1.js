@@ -47,7 +47,7 @@ PrimaryDA.definition = {
   /** installs itself. 
    *  @param {Broker} broker A Broker object.
    */
-  "[subscribe('install/primary_da'), enabled]":
+  "[install]":
   function install(broker) 
   {
     this.reply.enabled = true;
@@ -56,7 +56,7 @@ PrimaryDA.definition = {
   /** Uninstalls itself.
    *  @param {Broker} broker A broker object.
    */
-  "[subscribe('uninstall/primary_da'), enabled]":
+  "[uninstall]":
   function uninstall(broker) 
   {
     this.reply.enabled = false;

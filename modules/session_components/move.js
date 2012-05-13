@@ -47,7 +47,7 @@ MoveShortcut.definition = {
   /** Installs itself. 
    *  @param {Session} session A Session object.
    */
-  "[subscribe('install/moveshortcut'), enabled]":
+  "[install]":
   function install(session) 
   {
     this.left.enabled = true;
@@ -59,7 +59,7 @@ MoveShortcut.definition = {
   /** Uninstalls itself.
    *  @param {Session} session A Session object.
    */
-  "[subscribe('uninstall/moveshortcut'), enabled]":
+  "[uninstall]":
   function uninstall(session) 
   {
     this.left.enabled = false;

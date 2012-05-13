@@ -258,7 +258,7 @@ OuterChrome.definition = {
 
 // constructor
   /** post initializer. */
-  "[subscribe('install/outerchrome'), enabled]": 
+  "[install]": 
   function install(session) 
   {
     // construct chrome elements. 
@@ -277,7 +277,7 @@ OuterChrome.definition = {
     }
   },
 
-  "[subscribe('uninstall/outerchrome'), enabled]": 
+  "[uninstall]":
   function uninstall(session) 
   {
     this.updateStyle.enabled = false;
@@ -429,7 +429,7 @@ Chrome.definition = {
 
   _element: null,
 
-  "[subscribe('install/chrome'), enabled]": 
+  "[install]": 
   function install(session) 
   {
     let {tanasinn_content, tanasinn_center_area} 
@@ -441,7 +441,7 @@ Chrome.definition = {
     this.updateStyle.enabled = true;
   },
 
-  "[subscribe('uninstall/chrome'), enabled]": 
+  "[uninstall]":
   function uninstall(session) 
   {
     this.onGotFocus.enabled = false;

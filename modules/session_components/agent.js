@@ -160,7 +160,7 @@ Agent.definition = {
   /** installs itself. 
    *  @param {Session} session A session object.
    */
-  "[subscribe('install/agent'), enabled]":
+  "[install]":
   function install(session) 
   {
     let {tanasinn_agent_layer, tanasinn_agent_message}
@@ -174,7 +174,7 @@ Agent.definition = {
   /** Uninstalls itself.
    *  @param {Session} session A session object.
    */
-  "[subscribe('uninstall/agent'), enabled]":
+  "[uninstall]":
   function uninstall(session) 
   {
     if (this._element) {

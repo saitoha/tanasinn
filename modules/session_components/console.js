@@ -44,7 +44,7 @@ AlertService.definition = {
   /** Installs itself.
    *  @param {Broker} broker A Broker object.
    */
-  "[subscribe('install/alert_service'), enabled]":
+  "[install]":
   function install(broker) 
   {
     this.show.enabled = true;
@@ -53,7 +53,7 @@ AlertService.definition = {
   /** Uninstalls itself. 
    *  @param {Broker} broker A Broker object.
    */
-  "[subscribe('uninstall/alert_service'), enabled]":
+  "[uninstall]":
   function uninstall(broker) 
   {
     this.show.enabled = false;
@@ -119,7 +119,7 @@ MessageFilter.definition = {
   /** Installs itself.
    *  @param {Broker} broker A Broker object.
    */
-  "[subscribe('install/messagefilter'), enabled]":
+  "[install]":
   function install(broker) 
   {
     this.onMessageFiltersRequired.enabled = true;
@@ -129,7 +129,7 @@ MessageFilter.definition = {
   /** Uninstalls itself. 
    *  @param {Broker} broker A Broker object.
    */
-  "[subscribe('uninstall/messagefilter'), enabled]":
+  "[uninstall]":
   function uninstall(broker) 
   {
     this.onMessageFiltersRequired.enabled = false;
@@ -560,7 +560,7 @@ Console.definition = {
   "[persistable] enabled_when_startup": false,
 
   /** Installs itself */
-  "[subscribe('install/console'), enabled]":
+  "[install]":
   function install(session) 
   {
     this.select.enabled = true;
@@ -568,7 +568,7 @@ Console.definition = {
   }, 
 
   /** Uninstalls itself. */
-  "[subscribe('uninstall/console'), enabled]":
+  "[uninstall]":
   function uninstall(session) 
   {
     this.select.enabled = false;

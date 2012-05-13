@@ -45,14 +45,14 @@ DragMove.definition = {
   "[persistable] enabled_when_startup": true,
 
   /** Installs itself. */
-  "[subscribe('install/dragmove'), enabled]":
+  "[install]":
   function install(session) 
   {
     this.ondragstart.enabled = true;
   },
 
   /** Uninstalls itself. */
-  "[subscribe('uninstall/dragmove'), enabled]":
+  "[uninstall]":
   function uninstall(session) 
   {
     this.ondragstart.enabled = false;

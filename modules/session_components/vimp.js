@@ -46,7 +46,7 @@ Vimperator.definition = {
   /** Install itself. 
    *  @param {Session} session A session object.
    */
-  "[subscribe('install/vimperator'), enabled]":
+  "[install]":
   function install(session)
   {
     let modules = this._getModules();
@@ -61,7 +61,7 @@ Vimperator.definition = {
   /** Uninstall itself. 
    *  @param {Session} session A session object.
    */
-  "[subscribe('uninstall/vimperator'), enabled]":
+  "[uninstall]":
   function uninstall(session) 
   {
     let modules = this._getModules();

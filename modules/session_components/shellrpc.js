@@ -81,7 +81,7 @@ ShellRPC.definition = {
   /** installs itself. 
    *  @param {Session} session A session object.
    */
-  "[subscribe('install/shell_rpc'), enabled]":
+  "[install]":
   function install(session) 
   {
     this.onCall.enabled = true;
@@ -90,7 +90,7 @@ ShellRPC.definition = {
   /** Uninstalls itself.
    *  @param {Session} session A session object.
    */
-  "[subscribe('uninstall/shell_rpc'), enabled]":
+  "[uninstall]":
   function uninstall(session) 
   {
     this.onCall.enabled = false;

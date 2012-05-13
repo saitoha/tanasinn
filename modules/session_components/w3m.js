@@ -71,7 +71,7 @@ W3m.definition = {
   /** Installs itself. 
    *  @param {Broker} broker A Broker object.
    */ 
-  "[subscribe('install/w3m'), enabled]":
+  "[install]":
   function install(broker) 
   {
     let renderer = this.dependency["renderer"];
@@ -92,7 +92,7 @@ W3m.definition = {
   /** Uninstall itself. 
    *  @param {Broker} broker A Broker object.
    */
-  "[subscribe('uninstall/w3m'), enabled]":
+  "[uninstall]":
   function uninstall(broker) 
   {
     this.onWidthChanged.enabled = false;

@@ -44,14 +44,14 @@ Base64Copy.definition = {
   "[persistable] enabled_when_startup": true,
 
   /** Installs itself. */
-  "[subscribe('install/base64copy'), enabled]": 
+  "[install]": 
   function install(session) 
   {
     this.copy.enabled = true;
   },
 
   /** Uninstalls itself. */
-  "[subscribe('uninstall/base64copy'), enabled]": 
+  "[uninstall]": 
   function uninstall(session) 
   {
     this.copy.enabled = false;

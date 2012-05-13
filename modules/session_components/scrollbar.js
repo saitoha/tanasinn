@@ -115,7 +115,7 @@ Scrollbar.definition = {
   /** Installs itself.
    * @param {Session} session A session object.
    */
-  "[subscribe('install/scrollbar'), enabled]":
+  "[install]":
   function install(session) 
   {
     let {
@@ -144,7 +144,7 @@ Scrollbar.definition = {
   /** Unnstalls itself. 
    * @param {Session} session A session object.
    */
-  "[subscribe('uninstall/scrollbar'), enabled]":
+  "[uninstall]":
   function uninstall(session) 
   {
     this.onScrollPositionChanged.enabled = false;

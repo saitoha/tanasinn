@@ -990,17 +990,14 @@ ScreenSequenceHandler.definition = {
   "[profile('vt100'), sequence('CSI =%dc')]":
   function DA3(n) 
   { // Tirtiary DA (Device Attributes)
-    let reply = ["\x1bP!|"]; // DCS ! |
-    reply.push("FF");
-    reply.push("FF");
-    reply.push("FF");
-    reply.push("FF");
-    reply.push("\x1b\\");
-    let message = reply.join("");
-    let broker = this._broker;
-    broker.notify("command/send-to-tty", message);
-    coUtils.Debug.reportMessage(
-      _("Tirtiary Device Attributes is requested. reply: '%s'."), message);
+    if (n !== undefined && n !== 0) {
+      coUtils.Debug.reportWarning(
+        _("%s sequence [%s] was ignored."),
+        arguments.callee.name, Array.slice(arguments));
+    } else { //
+      let broker = this._broker;
+      broker.notify("sequence/DA3");
+    }
   },
 
   /**

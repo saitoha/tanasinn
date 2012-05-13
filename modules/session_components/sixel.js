@@ -134,7 +134,7 @@ Sixel.definition = {
   /** installs itself. 
    *  @param {Broker} broker A Broker object.
    */
-  "[subscribe('install/sixel'), enabled]":
+  "[install]":
   function install(broker) 
   {
     this.onDCS.enabled = true;
@@ -145,7 +145,7 @@ Sixel.definition = {
   /** Uninstalls itself.
    *  @param {Broker} broker A broker object.
    */
-  "[subscribe('uninstall/sixel'), enabled]":
+  "[uninstall]":
   function uninstall(broker) 
   {
     this._map = null;

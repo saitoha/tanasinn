@@ -44,14 +44,14 @@ EncoderMenu.definition = {
   "[persistable] enabled_when_startup": true,
 
   /** Installs itself. */
-  "[subscribe('install/encodings'), enabled]":
+  "[install]":
   function install(session) 
   {
     this.onContextMenu.enabled = true;
   },
 
   /** Uninstalls itself. */
-  "[subscribe('uninstall/encodings'), enabled]":
+  "[uninstall]":
   function uninstall(session) 
   {
     this.onContextMenu.enabled = false;
@@ -122,14 +122,14 @@ DecoderMenu.definition = {
   "[persistable] send_ff_when_encoding_changed": true,
 
   /** Installs itself. */
-  "[subscribe('install/decodermenu'), enabled]":
+  "[install]":
   function install(session) 
   {
     this.onContextMenu.enabled = true;
   },
 
   /** Uninstalls itself. */
-  "[subscribe('uninstall/decodermenu'), enabled]":
+  "[uninstall]":
   function uninstall(session) 
   {
     this.onContextMenu.enabled = false;

@@ -45,7 +45,7 @@ Paste.definition = {
   _bracketed_paste_mode: false,
 
   /** Install itself. */
-  "[subscribe('install/paste'), enabled]":
+  "[install]":
   function install(broker) 
   {
     this.paste.enabled = true;
@@ -54,7 +54,7 @@ Paste.definition = {
   },
 
   /** Uninstall itself. */
-  "[subscribe('uninstall/paste'), enabled]":
+  "[uninstall]":
   function uninstall(broker) 
   {
     this.paste.enabled = false;

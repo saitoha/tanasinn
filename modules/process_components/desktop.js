@@ -132,7 +132,7 @@ Desktop.definition = {
     broker.notify("install/desktop", broker);
   },
 
-  "[subscribe('install/desktop'), enabled]":
+  "[install]":
   function install(broker)
   {
     this.onShutdown.enabled = true;
@@ -147,7 +147,7 @@ Desktop.definition = {
     this.notify("event/broker-started", this);
   },
 
-  "[subscribe('uninstall/desktop'), enabled]":
+  "[uninstall]":
   function uninstall(broker)
   {
     this.onShutdown.enabled = false;

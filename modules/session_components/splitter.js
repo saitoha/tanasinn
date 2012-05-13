@@ -67,7 +67,7 @@ Splitter.definition = {
   /** Installs itself. 
    *  @param {Session} session A session object.
    */
-  "[subscribe('install/splitter'), enabled]":
+  "[install]":
   function install(session) 
   {
     let bottompanel = this.dependency["bottompanel"];
@@ -84,7 +84,7 @@ Splitter.definition = {
   /** Unnstalls itself.
    *  @param {Session} session A session object.
    */
-  "[subscribe('uninstall/splitter'), enabled]":
+  "[uninstall]":
   function uninstall(session) 
   {
     // remove splitter element

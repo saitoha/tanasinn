@@ -47,7 +47,7 @@ SecondaryDA.definition = {
   /** installs itself. 
    *  @param {Broker} broker A Broker object.
    */
-  "[subscribe('install/secondary_da'), enabled]":
+  "[install]":
   function install(broker) 
   {
     this.reply.enabled = true;
@@ -56,7 +56,7 @@ SecondaryDA.definition = {
   /** Uninstalls itself.
    *  @param {Broker} broker A broker object.
    */
-  "[subscribe('uninstall/secondary_da'), enabled]":
+  "[uninstall]":
   function uninstall(broker) 
   {
     this.reply.enabled = false;

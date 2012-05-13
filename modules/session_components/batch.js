@@ -48,7 +48,7 @@ BatchLoader.definition = {
   /** installs itself. 
    *  @param {Session} session A session object.
    */
-  "[subscribe('install/batch_loader'), enabled]":
+  "[install]":
   function install(session) 
   {
     this.loadBatchCommand.enabled = true;
@@ -58,7 +58,7 @@ BatchLoader.definition = {
   /** Uninstalls itself.
    *  @param {Session} session A session object.
    */
-  "[subscribe('uninstall/batch_loader'), enabled]":
+  "[uninstall]":
   function uninstall(session) 
   {
     this.loadBatchCommand.enabled = false;

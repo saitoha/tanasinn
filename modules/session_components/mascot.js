@@ -73,7 +73,7 @@ Mascot.definition = {
   /** installs itself. 
    *  @param {Session} session A session object.
    */
-  "[subscribe('install/mascot'), enabled]":
+  "[install]":
   function install(session) 
   {
     let {tanasinn_mascot_layer}
@@ -84,7 +84,7 @@ Mascot.definition = {
   /** Uninstalls itself.
    *  @param {Session} session A session object.
    */
-  "[subscribe('uninstall/mascot'), enabled]":
+  "[uninstall]":
   function uninstall(session) 
   {
     if (null !== this._element) {

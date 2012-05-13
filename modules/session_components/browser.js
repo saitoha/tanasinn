@@ -50,7 +50,7 @@ OverlayBrowser.definition = {
   /** installs itself. 
    *  @param {Session} session A session object.
    */
-  "[subscribe('install/overlay_browser'), enabled]":
+  "[install]":
   function install(session) 
   {
     this.open.enabled = true;
@@ -61,7 +61,7 @@ OverlayBrowser.definition = {
   /** Uninstalls itself.
    *  @param {Session} session A session object.
    */
-  "[subscribe('uninstall/overlay_browser'), enabled]":
+  "[uninstall]":
   function uninstall(session) 
   {
     if (this._element) {

@@ -22,7 +22,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-
 /**
  * @Attribute WatchableAttribute
  *
@@ -57,6 +56,7 @@ WatchableAttribute.definition = {
   initialize: function initialize(broker)
   {
     let attributes = this.__attributes;
+    let key;
     for (key in attributes) {
       let watchable_attribute = attributes[key]["watchable"];
       if (!watchable_attribute || !watchable_attribute.shift()) {
@@ -64,7 +64,7 @@ WatchableAttribute.definition = {
       }
       let getter = this.__lookupGetter__(key);
       let setter = this.__lookupSetter__(key);
-      let path = [this.id, key].join(".");
+      let path = this.id + "." + key;
       if (!getter && !setter) {
         let body = this[key];
         delete this[key];

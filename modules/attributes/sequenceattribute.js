@@ -63,7 +63,9 @@ SequenceAttribute.definition = {
   initialize: function initialize(broker)
   {
     let attributes = this.__attributes;
-    for (let key in attributes) {
+    let id = this.id + "." + "__sequence";
+    let key;
+    for (key in attributes) {
       let expressions = attributes[key]["sequence"];
       if (expressions) {
         let [name] = attributes[key]["profile"];
@@ -80,10 +82,15 @@ SequenceAttribute.definition = {
                   handler: handler,
                   context: this,
                 };
-              }, this);
+              }, this, id);
           }, this);
       }
     }
+
+    broker.subscribe("event/broker-stopped", function() {
+      broker.unsubscribe(id);
+    }, this, id);
+
   },
 
 };

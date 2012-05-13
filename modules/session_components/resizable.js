@@ -94,7 +94,7 @@ Resize.definition = {
   "[persistable] min_row": 20,
 
   /** Installs itself. */
-  "[subscribe('install/resize'), enabled]":
+  "[install]":
   function install(session) 
   {
     this.makeNarrower.enabled = true;
@@ -111,7 +111,7 @@ Resize.definition = {
   },
 
   /** Unnstalls itself. */
-  "[subscribe('uninstall/resize'), enabled]":
+  "[uninstall]":
   function uninstall(session)
   {
     this.makeNarrower.enabled = false;

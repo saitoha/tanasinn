@@ -60,17 +60,19 @@ SubscribeAttribute.definition = {
   initialize: function initialize(broker) 
   {
     let attributes = this.__attributes;
+    let key;
     for (key in attributes) {
       let attribute = attributes[key];
-      if (!attribute["subscribe"])
+      if (!attribute["subscribe"]) {
         continue;
+      }
       let topic = attribute["subscribe"][0];
       if (!topic) {
         throw coUtils.Debug.Exception(_("topic is not specified."));
       }
       let handler = this[key];
       let wrapped_handler;
-      let id = [this.id, key].join(".");
+      let id = this.id + "." + key;
       if (handler.id) {
         wrapped_handler = handler;
       } else {
@@ -80,9 +82,6 @@ SubscribeAttribute.definition = {
         wrapped_handler.topic = topic;
         this[key] = wrapped_handler;
       }
-      let listen = function() {
-        broker.subscribe(topic, wrapped_handler, undefined, id);
-      };
       wrapped_handler.watch("enabled", 
         wrapped_handler.onChange = let (self = this, old_onchange = wrapped_handler.onChange) 
           function(name, oldval, newval) 
@@ -102,6 +101,10 @@ SubscribeAttribute.definition = {
       if (attribute["enabled"]) {
         wrapped_handler.enabled = true;
       };
+
+      broker.subscribe("event/broker-stopped", function() {
+        broker.unsubscribe(id);
+      }, this, id);
 
       broker.subscribe("get/subscribers", 
         function(subscribers) {

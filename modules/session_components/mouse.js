@@ -63,7 +63,7 @@ Mouse.definition = {
   _in_scroll_session: false,
 
   /** Installs itself. */
-  "[subscribe('install/mouse'), enabled]":
+  "[install]":
   function install(broker) 
   {
     /** Start to listen mouse event. */
@@ -79,7 +79,7 @@ Mouse.definition = {
   },
 
   /** Uninstalls itself. */
-  "[subscribe('uninstall/mouse'), enabled]":
+  "[uninstall]":
   function uninstall(broker) 
   {
     // unregister mouse event DOM listeners.

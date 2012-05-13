@@ -47,7 +47,7 @@ DragPaste.definition = {
   /** Installs itself. 
    *  @param {Broker} broker A Broker object.
    */
-  "[subscribe('install/dragpaste'), enabled]":
+  "[install]":
   function install(broker) 
   {
     this.ondragover.enabled = true;
@@ -59,7 +59,7 @@ DragPaste.definition = {
   /** Uninstalls itself. 
    *  @param {Broker} broker A Broker object.
    */
-  "[subscribe('uninstall/dragpaste'), enabled]":
+  "[uninstall]":
   function uninstall(broker) 
   {
     this.ondragover.enabled = false;

@@ -46,7 +46,7 @@ FocusEvent.definition = {
   _focus_mode: false,
 
   /** Installs itself. */
-  "[subscribe('install/focus_event'), enabled]":
+  "[install]":
   function install(broker) 
   {
     /** Start to listen mouse event. */
@@ -58,7 +58,7 @@ FocusEvent.definition = {
   },
 
   /** Uninstalls itself. */
-  "[subscribe('uninstall/focus_event'), enabled]":
+  "[uninstall]":
   function uninstall(broker) 
   {
     // unregister mouse event DOM listeners.

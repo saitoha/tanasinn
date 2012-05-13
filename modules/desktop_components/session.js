@@ -193,6 +193,7 @@ Session.definition = {
     return broker.uniget("get/python-path");
   },
 
+  _stopped: false,
   _request_id: null,
 
   /** constructor */
@@ -250,7 +251,13 @@ Session.definition = {
   "[subscribe('event/shutdown'), enabled]":
   function stop() 
   {
+    if (this._stopped) {
+      return;
+    }
+    this._stopped = true
+    this.stop.enabled = false;
     this.notify("event/broker-stopping", this);
+    this.notify("event/broker-stopped", this);
     this.clear();
     this._root_element = null;
     this._window = null;

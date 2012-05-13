@@ -60,6 +60,7 @@
    sequenceattribute.js
    subscribeattribute.js
    watchableattribute.js
+   installattribute.js
   }
   process_components=process_components {
    desktop.js
@@ -84,11 +85,6 @@
    line.js
    cursorstate.js
    screen.js
-   mascot.js
-   base64copy.js
-   answerback.js
-   da1.js
-   da2.js
 
    emulator.js
    control.js
@@ -107,6 +103,18 @@
    window.js
 
    plugin=.{
+
+    mascot.js
+    base64copy.js
+    answerback.js
+    da1.js
+    da2.js
+    da3.js
+    focusevent.js
+    declocatormouse.js
+    mousegesture.js
+    mouse.js
+
     chrome.js
     renderer.js
 
@@ -130,7 +138,6 @@
     dragcopy.js
     dragpaste.js
     draggable.js
-    mouse.js
     bell.js
     popup.js
 

@@ -129,7 +129,7 @@ BottomPanel.definition = {
   /** Installs itself 
    *  @param {Session} session A session object.
    */
-  "[subscribe('install/bottompanel'), enabled]":
+  "[install]":
   function install(session) 
   {
     let {
@@ -150,7 +150,7 @@ BottomPanel.definition = {
   /** Uninstalls itself 
    *  @param {Session} session A session object.
    */
-  "[subscribe('uninstall/bottompanel'), enabled]":
+  "[uninstall]":
   function uninstall(session) 
   {
     this.select.enabled = false;

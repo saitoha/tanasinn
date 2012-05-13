@@ -837,6 +837,7 @@ Launcher.definition = {
   "[subscribe('event/shutdown'), enabled]":
   function shutdown()
   {
+    this.enabled = false;
     this.onDisabled();
     this._element.removeChild(this._element);
   },
@@ -1316,7 +1317,7 @@ DragMove.definition = {
   "[persistable] enabled_when_startup": true,
 
   /** Installs itself. */
-  "[subscribe('install/launcher-dragmove'), enabled]":
+  "[install]":
   function install(broker) 
   {
     this.ondragstart.enabled = true;
@@ -1339,7 +1340,7 @@ DragMove.definition = {
   },
 
   /** Uninstalls itself. */
-  "[subscribe('uninstall/launcher-dragmove'), enabled]":
+  "[uninstall]":
   function uninstall(broker) 
   {
     this.ondragstart.enabled = false;

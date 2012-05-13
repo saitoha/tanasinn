@@ -56,7 +56,7 @@ OverlayImage.definition = {
   /** installs itself. 
    *  @param {Session} session A session object.
    */
-  "[subscribe('install/overlay_image'), enabled]":
+  "[install]":
   function install(session) 
   {
     let {tanasinn_image_canvas} = session.uniget(
@@ -72,7 +72,7 @@ OverlayImage.definition = {
   /** Uninstalls itself.
    *  @param {Broker} broker A broker object.
    */
-  "[subscribe('uninstall/overlay_image'), enabled]":
+  "[uninstall]":
   function uninstall(broker) 
   {
     if (this._canvas) {

@@ -59,7 +59,7 @@ Ime.definition = {
   /** Installs plugin 
    *  @param {Session} session A session object.
    */ 
-  "[subscribe('install/ime'), enabled]":
+  "[install]":
   function install(session) 
   {
     let textbox = this.dependency["inputmanager"].getInputField();
@@ -96,7 +96,7 @@ Ime.definition = {
   /** Uninstall plugin 
    *  @param {Session} session A session object.
    */
-  "[subscribe('uninstall/ime'), enabled]":
+  "[uninstall]":
   function uninstall(session) 
   {
     this.endPolling(); // stops polling timer. 

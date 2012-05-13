@@ -780,7 +780,7 @@ SocketTeletypeService.definition = {
 
   _socket: null,
 
-  "[subscribe('install/tty'), enabled]":
+  "[install]":
   function install(broker) 
   {
     this.osc97.enabled = true;
@@ -817,7 +817,7 @@ SocketTeletypeService.definition = {
     this.detach.enabled = true;
   },
 
-  "[subscribe('uninstall/tty'), enabled]": 
+  "[uninstall]":
   function uninstall(broker)
   {
     this.detach.enabled = false;

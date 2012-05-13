@@ -46,7 +46,7 @@ KeySnail.definition = {
   /** Install itself. 
    *  @param {Session} session A session object.
    */
-  "[subscribe('install/keysnail'), enabled]":
+  "[install]":
   function install(session)
   {
     this.onGotFocus();
@@ -58,7 +58,7 @@ KeySnail.definition = {
   /** Uninstall itself. 
    *  @param {Session} session A session object.
    */
-  "[subscribe('uninstall/keysnail'), enabled]":
+  "[uninstall]":
   function uninstall(session) 
   {
     this.onLostFocus();

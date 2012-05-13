@@ -317,7 +317,7 @@ Debugger.definition = {
   /** Installs itself. 
    *  @param {Broker} broker A Broker object.
    */
-  "[subscribe('install/debugger'), enabled]": 
+  "[install]": 
   function install(broker) 
   {
     this._queue = [];
@@ -332,7 +332,7 @@ Debugger.definition = {
   /** Uninstalls itself 
    *  @param {Broker} broker A Broker object.
    */
-  "[subscribe('uninstall/debugger'), enabled]": 
+  "[uninstall]":
   function uninstall(broker)
   {
     this.select.enabled = false;

@@ -461,7 +461,7 @@ Renderer.definition = {
   /** Installs itself.
    *  @param broker {Broker} A broker object.
    */
-  "[subscribe('install/renderer'), enabled]":
+  "[install]":
   function install(broker) 
   {
     this._main_layer = new Layer(broker);
@@ -493,7 +493,7 @@ Renderer.definition = {
   /** Uninstalls itself.
    *  @param broker {Broker} A Broker object.
    */
-  "[subscribe('uninstall/renderer'), enabled]":
+  "[uninstall]":
   function uninstall(broker) 
   {
     this.onWidthChanged.enabled = false;

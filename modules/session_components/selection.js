@@ -111,7 +111,7 @@ Selection.definition = {
   },
 
   /** Installs itself */
-  "[subscribe('install/selection'), enabled]":
+  "[install]":
   function install(broker) 
   {
     let renderer = this._renderer;
@@ -142,7 +142,7 @@ Selection.definition = {
   /** Uninstalls itself 
    *  @param {Broker} A Broker object.
    */
-  "[subscribe('uninstall/selection'), enabled]":
+  "[uninstall]":
   function uninstall(broker) 
   {
     this.clear();
