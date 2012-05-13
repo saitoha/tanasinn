@@ -738,7 +738,7 @@ DecModeSequenceHandler.definition = {
         // TODO:Disable urxvt-style mouse reporting.
         case 1015:
           broker.notify("event/mouse-tracking-type-changed", null);
-          coUtils.Debug.reportWarning(
+          coUtils.Debug.reportMessage(
             _("DECRST 1015 - Disable urxvt-style mouse reporting, ", 
               "was not implemented."));
           break;

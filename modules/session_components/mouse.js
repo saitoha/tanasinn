@@ -71,7 +71,6 @@ Mouse.definition = {
     this.ondragstart.enabled = true;
     this.onmousemove.enabled = true;
     this.onmouseup.enabled = true;
-    this.onmousescroll.enabled = true;
     this.onMouseTrackingTypeChanged.enabled = true;
     this.onMouseTrackingModeChanged.enabled = true;
     this.backup.enabled = true;
@@ -87,11 +86,12 @@ Mouse.definition = {
     this.ondragstart.enabled = false;
     this.onmousemove.enabled = false;
     this.onmouseup.enabled = false;
-    this.onmousescroll.enabled = false;
     this.onMouseTrackingTypeChanged.enabled = false;
     this.onMouseTrackingModeChanged.enabled = false;
     this.backup.enabled = false;
     this.restore.enabled = false;
+
+    this.onmousescroll.enabled = false;
   },
     
   /** Fired at scroll session is started. */
@@ -114,8 +114,10 @@ Mouse.definition = {
   {
     let broker = this._broker;
     if (coUtils.Constant.TRACKING_NONE == data) {
+      this.onmousescroll.enabled = false;
       broker.notify(_("Leaving mouse tracking type: [%s]."), this._tracking_type)
     } else {
+      this.onmousescroll.enabled = true;
       broker.notify(_("Entering mouse tracking type: [%s]."), data)
     }
     this._tracking_type = data;
@@ -135,6 +137,17 @@ Mouse.definition = {
     this._tracking_mode = data;
   },
 
+  /** Fired at the locator reporting mode is changed. */
+  "[subscribe('command/change-locator-reporting-mode'), enabled]": 
+  function onChangeLocatorReportingMode(mode) 
+  {
+    if (mode) {
+      this.onmousescroll.enabled = false;
+    } else {
+      this.onmousescroll.enabled = true;
+    }
+  },
+
   "[subscribe('command/backup')]": 
   function backup(context) 
   {
@@ -147,8 +160,7 @@ Mouse.definition = {
   function restore(context) 
   {
     if (context.mouse) {
-      let {tracking_mode} = context.mouse;
-      this._tracking_mode = tracking_mode;
+      this._tracking_mode = context.mouse.tracking_mode;
     }
   },
 
@@ -190,6 +202,9 @@ Mouse.definition = {
     switch (tracking_type) {
 
       case "urxvt":
+        if ("mouseup" === event.type) {
+          button = 3;
+        }
         code = button 
              | event.shiftKey << 2 
              | event.metaKey  << 3
@@ -200,17 +215,13 @@ Mouse.definition = {
         break;
 
       case "sgr":
-        if (MOUSE_RELEASE == button) {
-          if (null !== this._current_button) {
-            button = this._current_button;
-          }
+        if ("mouseup" === event.type || "mousemove" == event.type) {
           code = button 
              | event.shiftKey << 2 
              | event.metaKey  << 3
              | event.ctrlKey  << 4
              ;
           message = coUtils.Text.format("\x1b[<%d;%d;%dm", code, column, row);
-          this._current_button = null;
         } else {
           code = button 
              | event.shiftKey << 2 
@@ -218,12 +229,14 @@ Mouse.definition = {
              | event.ctrlKey  << 4
              ;
           message = coUtils.Text.format("\x1b[<%d;%d;%dM", code, column, row);
-          this._current_button = button;
         }
         //coUtils.Debug.reportError(message)
         break;
 
       case "utf8":
+        if ("mouseup" === event.type) {
+          button = 3;
+        }
         code = button 
              | event.shiftKey << 2 
              | event.metaKey  << 3
@@ -251,6 +264,9 @@ Mouse.definition = {
         break;
 
       default:
+        if ("mouseup" === event.type) {
+          button = 3;
+        }
         code = button 
              | event.shiftKey << 2 
              | event.metaKey  << 3
@@ -290,7 +306,7 @@ Mouse.definition = {
       } else {
         count = Math.round(count / 2);
       }
-      if (0 == count) {
+      if (0 === count) {
         return;
       }
 
@@ -313,11 +329,11 @@ Mouse.definition = {
         let i;
         if (count > 0) {
           for (i = 0; i < count; ++i) {
-            this._sendMouseEvent(event, 0x40); 
+            this._sendMouseEvent(event, 0x41); 
           }
         } else {
           for (i = 0; i < -count; ++i) {
-            this._sendMouseEvent(event, 0x41); 
+            this._sendMouseEvent(event, 0x40); 
           }
         }
 
@@ -330,12 +346,12 @@ Mouse.definition = {
   function onmousedown(event) 
   {
  
+    this._dragged = true;
+
     let tracking_mode = this._tracking_mode;
     if (coUtils.Constant.TRACKING_NONE == tracking_mode) {
       return;
     }
-
-    this._dragged = true;
 
     let button;
 
@@ -350,7 +366,7 @@ Mouse.definition = {
         break;
 
       case 2:
-        button = coUtils.Constant.BUTTONE_RIGHT;
+        button = coUtils.Constant.BUTTON_RIGHT;
         break;
 
       default:
@@ -367,9 +383,6 @@ Mouse.definition = {
   function onmousemove(event) 
   {
     let tracking_mode = this._tracking_mode;
-    if (coUtils.Constant.TRACKING_NONE == tracking_mode) {
-      return;
-    }
 
     switch (tracking_mode) {
 
@@ -392,12 +405,13 @@ Mouse.definition = {
         let button;
         if (this._dragged) {
           button = 32 + event.button;
+          this._sendMouseEvent(event, button); 
         } else {
           button = MOUSE_RELEASE;
         }
-        this._sendMouseEvent(event, button); 
         break;
 
+      case coUtils.Constant.TRACKING_NONE:
       case coUtils.Constant.TRACKING_X10:
       case coUtils.Constant.TRACKING_HIGHLIGHT:
       default:
@@ -409,14 +423,13 @@ Mouse.definition = {
   "[listen('mouseup', '#tanasinn_content')]": 
   function onmouseup(event) 
   {
+    this._dragged = false;
     let tracking_mode = this._tracking_mode;
-    if (coUtils.Constant.TRACKING_NONE == tracking_mode) {
+    if (coUtils.Constant.TRACKING_NONE === tracking_mode) {
       return;
     }
 
-    this._dragged = false;
-//    let button = event.button;
-    let button = 3;
+    let button = event.button;
     this._sendMouseEvent(event, button); // release
   },
 
