@@ -769,7 +769,7 @@ Line.definition = {
         Math.min(this.last, Math.floor(this.length / 2));
       for (current = this.first; current < max; ++current) {
         let cell = cells[current];
-        let is_normal = cell.c > 1;
+        let is_normal = cell.c > 1 && cell.c < 256;
         if (attr) {
           if (attr.equals(cell) && is_normal) {
             continue;
@@ -783,27 +783,29 @@ Line.definition = {
             };
           } 
         }
-        if (is_normal <= 1) {
+        if (!is_normal) {
           if (0 === cell.c) {
             let cell = cells[current + 1]; // MUST not null
-            yield { 
-              codes: [ cell ], 
-              column: current, 
-              end: current + 2, 
-              attr: cell,
-            };
-            ++current;
-            start = current + 1;
-            attr = cells[start];
+            if (undefined !== cell) {
+              yield { 
+                codes: [ cell ], 
+                column: current, 
+                end: current + 2, 
+                attr: cell,
+              };
+              ++current;
+              start = current + 1;
+              attr = cells[start];
+            }
             continue;
           } else { // combined
-            cell.combine = true;
             yield { 
               codes: [ cell ], 
               column: current, 
               end: current + 1, 
               attr: cell,
             };
+            //++current;
           }
         }
         start = current;
@@ -899,9 +901,11 @@ Line.definition = {
     end = Math.min(end, cells.length);
     for (i = start; i < end; ++i) {
       cell = cells[i];
-      if ("object" === typeof cell.c) {
-        end += cell.c.length - 1;
-      }
+      //if (cell) {
+      //  if ("object" === typeof cell.c) {
+      //    end += cell.c.length - 0;
+      //  }
+      //}
       cell.erase(attr);
     }
   },
@@ -943,9 +947,9 @@ Line.definition = {
     let i, cell;
     for (i = 0; i < range.length; ++i) {
       cell = range[i];
-      if ("object" === typeof cell.c) {
-        end += cell.c.length - 1;
-      }
+      //if ("object" === typeof cell.c) {
+      //  end += cell.c.length - 1;
+      //}
       cell.erase(attr);
     }
 

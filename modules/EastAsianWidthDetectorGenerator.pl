@@ -32,7 +32,8 @@ close(IN);
 
 open(IN, "UnicodeData.txt") or die;
 while (<IN>) {
-    if ($_ =~ /^([0-9A-F]{4});[^;]*;(Mn|Mc|Me|Sk)/) {
+    #if ($_ =~ /^([0-9A-F]{4});[^;]*;(Mn|Mc|Me|Sk)/) {
+    if ($_ =~ /^([0-9A-F]{4});[^;]*;(Mn|Mc)/) {
         $wcmap1{$1} = 0;
         $wcmap2{$1} = 0;
     }

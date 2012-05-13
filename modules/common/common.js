@@ -2392,6 +2392,10 @@ coUtils.Logging = new coUtils.Logger();
 
 coUtils.Text = {
 
+  _normalizer: Components
+    .classes["@mozilla.org/intl/unicodenormalizer;1"]
+    .createInstance(Components.interfaces.nsIUnicodeNormalizer),
+
   base64decode: function base64decode(str) 
   {
     return coUtils.getWindow().atob(str);
@@ -2400,6 +2404,13 @@ coUtils.Text = {
   base64encode: function base64encode(str) 
   {
     return coUtils.getWindow().btoa(str);
+  },
+
+  normalize: function normalize(text)
+  {
+    let result = {};
+    this._normalizer.NormalizeUnicodeNFC(text, result);
+    return result.value;
   },
 
   /** Provides printf-like formatting.

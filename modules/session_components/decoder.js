@@ -287,7 +287,7 @@ UTF8Decoder.definition = {
     return let (self = this) function(scanner) {
       while (!scanner.isEnd) {
         let c = self._getNextCharacter(scanner);// + offset;
-        if (c < 0x20 || (0x7f <= c && c < 0xa0) || c == 0xff) {
+        if (c < 0x20 || (0x7f <= c && c < 0xa0)) {
           break;
         }
         yield c;

@@ -623,15 +623,27 @@ DRCSConverter.definition = {
     let result = [];
     let gl = this._g[this._gl] || USASCII;
     let gr = this._g[this._gr] || ISO_8859_Latin1;
-    for (let i = 0; i < codes.length; ++i ) {
+    let i;
+    for (i = 0; i < codes.length; ++i ) {
       let c = codes[i];
-      if (c < 0x80) { // GL
-        result.push(gl[c]);
-      //} else if (c < 0x100) { // GR
-      //  yield g1[c];
-      } else {
-        result.push(c);
-      }
+      //if ("object" === typeof c) {
+      //  let str = String.fromCharCode.apply(String, c);
+      //  let normalized_str = coUtils.Text.normalize(str);
+      //  if (1 === normalized_str.length) {
+      //    c = normalized_str.charCodeAt(0);
+      //  } else {
+      //    c = normalized_str.split("").map(function(ch) ch.charCodeAt(0));
+      //  }
+      //  result.push(c);
+      //} else {
+        if (c < 0x80) { // GL
+          result.push(gl[c]);
+        //} else if (c < 0x100) { // GR
+        //  yield g1[c];
+        } else {
+          result.push(c);
+        }
+      //}
     }
     return result;
   },
