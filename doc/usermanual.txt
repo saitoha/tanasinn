@@ -120,17 +120,18 @@ process.python_path = "/usr/bin/python"
 == Download/License
 This software is distributed under http:/#/www.mozilla.org/MPL/1.1/[Mozilla Public License 1.1 (MPL1.1)] .
 
-- Developing version (PACKAGE_VERSION): http:/#/zuse.jp/tanasinn/downloads/versions/PACKAGE_VERSION/TANASINN_XPI_ID.xpi[Download]
-- Unstable, Snapshot version (it may so bugful!): http:/#/zuse.jp/tanasinn/tanasinn-current.xpi[Download]
+- "develop" branch(XPI): https:/#/github.com/saitoha/tanasinn/raw/develop/download/tanasinn@zuse.jp.xpi[download]
+- "master" branch(XPI): https:/#/github.com/saitoha/tanasinn/raw/master/download/tanasinn@zuse.jp.xpi[download]
+- Old releases: https:/#/github.com/saitoha/tanasinn/tree/master/download/releases[download]
 
 #elif __JP__
 
 == ダウンロード/ライセンス
 http:/#/www.mozilla-japan.org/MPL/MPL-1.1J.html[Mozilla Public License 1.1 (MPL1.1)] で配布しています。 
-    
-- 開発版 (PACKAGE_VERSION): http:/#/zuse.jp/tanasinn/downloads/versions/PACKAGE_VERSION/TANASINN_XPI_ID.xpi[ダウンロード].
-- スナップショット版(PACKAGE_VERSION): http:/#/zuse.jp/tanasinn/tanasinn-current.xpi[ダウンロード]
-- 過去のバージョン: http:/#/zuse.jp/tanasinn/downloads/versions/
+
+- "develop"ブランチ版(XPI): https:/#/github.com/saitoha/tanasinn/raw/develop/download/tanasinn@zuse.jp.xpi[ダウンロード]
+- "master"ブランチ版(XPI): https:/#/github.com/saitoha/tanasinn/raw/master/download/tanasinn@zuse.jp.xpi[ダウンロード]
+- 過去のバージョン: https:/#/github.com/saitoha/tanasinn/tree/master/download/releases[ダウンロード]
 
 #endif
 

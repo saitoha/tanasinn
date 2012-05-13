@@ -45,13 +45,13 @@ FocusTracker.definition = {
   disabled: false,
 
   /** Installs itself. 
-   *  @param {Session} session A session object.
+   *  @param {Broker} broker A broker object.
    */
   "[install]": 
-  function install(session)
+  function install(broker)
   {
-    session.notify("command/add-domlistener", {
-      target: session.window.document,
+    broker.notify("command/add-domlistener", {
+      target: broker.window.document,
       type: "focus",
       context: this,
       handler: this.onfocus,
@@ -61,12 +61,12 @@ FocusTracker.definition = {
   },
 
   /** Uninstalls itself. 
-   *  @param {Session} session A session object.
+   *  @param {Broker} broker A broker object.
    */
   "[uninstall]":
-  function uninstall(session)
+  function uninstall(broker)
   {
-    session.notify("command/remove-domlistener", this.id)
+    broker.notify("command/remove-domlistener", this.id)
   },
 
   /** Fires when a focus event occured. 
@@ -74,9 +74,9 @@ FocusTracker.definition = {
    */
   onfocus: function onfocus(event)
   {
-    let session = this._broker;
-    let command_dispatcher = session.document.commandDispatcher;
-    let root_element = session.root_element;
+    let broker = this._broker;
+    let command_dispatcher = broker.document.commandDispatcher;
+    let root_element = broker.root_element;
     let target = event.explicitOriginalTarget;
     if (null !== target && 
         (!("nodeType" in target) || target.nodeType != target.NODE_DOCUMENT)) {
@@ -90,7 +90,7 @@ FocusTracker.definition = {
           if (!this.disabled) {
             this.disabled = true;
             if (!/tanasinn/.test(coUtils.Runtime.app_name)) {
-              session.root_element.parentNode.appendChild(session.root_element);
+              broker.root_element.parentNode.appendChild(broker.root_element);
             }
             coUtils.Timer.setTimeout(function() {
               this.disabled = false;
@@ -98,11 +98,11 @@ FocusTracker.definition = {
             return;
           }
           let focused_element = command_dispatcher.focusedElement;
-          session.notify("event/got-focus");
-          session.notify("event/focus-changed", focused_element);
+          broker.notify("event/got-focus");
+          broker.notify("event/focus-changed", focused_element);
         }
         else {
-          session.notify("event/lost-focus");
+          broker.notify("event/lost-focus");
         }
       }
     }
