@@ -12,11 +12,8 @@ link:./usermanual.html[English/英語]
 
 == Overview
 
-    Here is a terminal emulator that runs on Firefox/Thunderbird/SeaMonkey.
+    Here is a terminal emulator that run on Firefox/Thunderbird/SeaMonkey.
     It Supports Windows(XP/Vista/7) + Cygwin / Mac / Linux / FreeBSD. 
-    It enables you to access flexible, powerful functionality 
-    provided by operating systems, such as commandline shells, or curses-based 
-    applications.
 
 #elif __JP__
 
@@ -24,14 +21,18 @@ link:./usermanual.html[English/英語]
 
     "tanasinn terminal emulator" は Firefox/Thunderbird/SeaMonkey上で動作する端末エミュレータです。
     Windows(XP/Vista/7) + Cygwin / Mac / Linux / FreeBSD 環境で動作します。
-    ほぼJavascriptによる実装(2%のPython)です。
-    コマンドラインシェルやターミナルエディタが提供するCUI/TUIを用いて、オペレーティングシステムの
-    機能群にブラウザからアクセスすることができます。
 
 #endif
 
 #if __EN__
 == News
+
+=== 2012/05/13 
+    Version 0.2.2.0
+    Supports DEC Locator Event Mode..
+    Supports character combining, more precise character rendering.
+    Implement LNM, Device Status Report(DSR), Tertiary Device Attributes (DA3), DECREQTPARM. 
+    Now it passes vttest Menu 6.
 
 === 2012/05/05 
     Version 0.2.1.1
@@ -68,6 +69,13 @@ process.python_path = "/usr/bin/python"
 #elif __JP__
 == News 
    
+=== 2012/05/13 
+    Version 0.2.2.0
+    Supports DEC Locator Event Mode..
+    Supports character combining, more precise character rendering.
+    Implement LNM, Device Status Report(DSR), Tertiary Device Attributes (DA3), DECREQTPARM. 
+    Now it passes vttest Menu 6.
+
 === 2012/05/05 
     Version 0.2.1.1
     Supports inline Sixel Graphics.
@@ -152,13 +160,15 @@ http:/#/www.mozilla-japan.org/MPL/MPL-1.1J.html[Mozilla Public License 1.1 (MPL1
     - Supports VT52 compatibility mode.
     - Supports http:/#/en.wikipedia.org/wiki/Tektronix_4010[Tektronix 4010/4014] compatibility mode (on progress).
     - Supports Sixel Graphics mode.
+    - Supports Various character attributes, Italic, blink, slow blink, underline, negative,...etc.
     - Supports some ancient lost commands, such as DECDHL/DECDWL, DECDLD/http:/#/vt100.net/dec/vt320/soft_characters[DRCS(Dynamically Redefined Character Set)]。
     - Supports east asian double width characters. 
       but it is not render bidi languages correctly.
     - Localization supported. It is using gettext-style method. you can edit localize resource on UI.
     - You can selects variable character encoding supported by Gecko.
     - Supports transparent window. it is useful when www-browsing while working at terminal.
-    - Supports mouse emulation. xterm normal reporting, wheel scrolling and UTF8/urxvt/SGR extended styles are implemented.
+    - Supports mouse emulation. xterm normal reporting, wheel scrolling, UTF8/urxvt/SGR extended styles,
+      and DEC Locator Event mode are implemented.
     - Text selection / Rectangle text selection.
     - Supports copy / paste in Drag & Drop or keyboard shortcut.
     - Supports move / re-size through dragging operation.
@@ -182,6 +192,7 @@ http:/#/www.mozilla-japan.org/MPL/MPL-1.1J.html[Mozilla Public License 1.1 (MPL1
     - VT52互換モード搭載。
     - http:/#/en.wikipedia.org/wiki/Tektronix_4010[Tektronix 4010/4014]互換モード搭載 (一部未実装)。
     - Sixelグラフィクスモードをサポート。
+    - イタリック・ブリンク・低速ブリンク・アンダーライン・反転などのさまざまなキャラクタアトリビュートを実装
     - PC端末では実装例の少ないロスト・コマンドを積極的に実装。
       DECDHL/DECDWLやhttp:/#/vt100.net/dec/vt320/soft_characters[DRCS(Dynamically Redefined Character Set)]など。
     - East Asian Width(ひらがななどの文字幅を考慮したレンダリング)に一応対応しています。 
@@ -194,7 +205,7 @@ http:/#/www.mozilla-japan.org/MPL/MPL-1.1J.html[Mozilla Public License 1.1 (MPL1
     - Geckoがサポートする様々なエンコーディングを指定できます。
     - ウィンドウの透明化をサポート。これはブラウジングしながらターミナルで作業したい時に便利です。
     - マウスエミュレーションをサポート。xtermスタイルのノーマルレポーティング、ホイールスクロール、
-      UTF8/urxvt/SGRスタイルの拡張レポーティングにも対応。
+      UTF8/urxvt/SGRスタイルの拡張レポーティングのほか、DEC Locator Eventsにも一部対応。
     - テキストの選択や矩形選択ができます。
     - ドラッグアンドドロップやキーボードショートカットによる選択テキストのコピー・ペーストが可能です。
     - ドラッグによる移動・リサイズができます。
