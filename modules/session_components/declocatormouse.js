@@ -23,6 +23,53 @@
  * ***** END LICENSE BLOCK ***** */
 
 /**
+ *
+ * @class WheelScroll
+ *
+ *
+ */
+let WheelScroll = new Class().extends(Plugin);
+WheelScroll.definition = {
+
+  get id()
+    "dec_locator_mouse",
+
+  get info()
+    <plugin>
+        <name>{_("Wheel Scroll")}</name>
+        <description>{
+          _("Handle Wheel/Touch scroll event.")
+        }</description>
+        <version>0.1</version>
+    </plugin>,
+
+  "[persistable] enabled_when_startup": true,
+
+  /** Installs itself. */
+  "[install]":
+  function install(broker) 
+  {
+    /** Start to listen mouse event. */
+    this.onMouseTrackingTypeChanged.enabled = true;
+    this.onMouseTrackingModeChanged.enabled = true;
+
+    this.onmousescroll.enabled = true;
+  },
+
+  /** Uninstalls itself. */
+  "[uninstall]":
+  function uninstall(broker) 
+  {
+    // unregister mouse event DOM listeners.
+    this.onMouseTrackingTypeChanged.enabled = false;
+    this.onMouseTrackingModeChanged.enabled = false;
+
+    this.onmousescroll.enabled = false;
+  },
+
+}; // class WheelScroll
+
+/**
  * @class DECLocatorMouse
  *
  */

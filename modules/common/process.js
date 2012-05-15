@@ -65,86 +65,92 @@
  *
  *
  */
-let loader = {
+//void function() {
 
-  initialize: function initialize()
-  {
-    let window_watcher = Components
-      .classes["@mozilla.org/embedcomp/window-watcher;1"]
-      .getService(Components.interfaces.nsIWindowWatcher);
-    window_watcher.registerNotification(this);
-    ["navigator:browser", "mail:3pane"].forEach(function(window_type) {
-      // add functionality to existing windows
+void function() {
+
+let tanasinn_scope = {}; // create scope.
+
+with (tanasinn_scope) {
+
+  let id = new Date().getTime();
+  let current_file = Components
+    .stack.filename.split(" -> ").pop()
+    .split("?").shift();
+  Components
+    .classes["@mozilla.org/moz/jssubscript-loader;1"]
+    .getService(Components.interfaces.mozIJSSubScriptLoader)
+    .loadSubScript(current_file + "/../common.js?" + id, tanasinn_scope);
+
+  coUtils.Runtime.loadScript("modules/common/pot.js", tanasinn_scope);
+  coUtils.Runtime.loadScript("modules/unicode/wcwidth.js", tanasinn_scope);
+  coUtils.Runtime.loadScript("modules/common/tupstart.js", tanasinn_scope);
+  coUtils.Runtime.loadScript("modules/common/tupbase.js", tanasinn_scope);
+
+  let loader = {
+  
+    initialize: function initialize()
+    {
       let window_mediator = Components
         .classes["@mozilla.org/appshell/window-mediator;1"]
         .getService(Components.interfaces.nsIWindowMediator);
-      let browser_windows = window_mediator.getEnumerator(window_type);
-      while (browser_windows.hasMoreElements()) { // enumerate existing windows.
-        // only run the "start" immediately if the browser is completely loaded
-        let dom = {
-          window: browser_windows.getNext()
-        };
-        if ("complete" == dom.window.document.readyState) {
-          this.dispatchWindowEvent(dom.window);
-        } else {
-          // Wait for the window to finish loading before running the callback
-          // Listen for one load event before checking the window type
-          dom.window.addEventListener(
-            "load", 
-            let (self = this) function(event) self.dispatchWindowEvent(dom.window), 
-            false);
-        }
-      } // while
-    }, this);
-  },
 
-  uninitialize: function uninitialize()
-  {
-    let window_watcher = Components
-      .classes["@mozilla.org/embedcomp/window-watcher;1"]
-      .getService(Components.interfaces.nsIWindowWatcher);
-    window_watcher.unregisterNotification(this);
-  },
-
-  dispatchWindowEvent: function dispatchWindowEvent(window) 
-  {
-    Components.classes['@zuse.jp/tanasinn/process;1']
-      .getService(Components.interfaces.nsISupports)
-      .wrappedJSObject
-      .notify("event/new-window-detected", window);
-  },
-
-  // Handles opening new navigator window.
-  observe: function observe(subject, topic, data) 
-  {
-    let window = subject.QueryInterface(Components.interfaces.nsIDOMWindow);
-    if ("domwindowopened" == topic) {
-      window.addEventListener("load", let (self = this) function onLoad() 
-        {
-          let document = window.document;
-          let window_type = document.documentElement.getAttribute("windowtype");
-          // ensure that "window" is a navigator window.
-          if (/^(navigator:browser|mail:3pane)$/.test(window_type)) {
-            window.removeEventListener("load", arguments.callee, false);
-            self.dispatchWindowEvent(window);
+      coUtils.Services.windowWatcher.registerNotification(this);
+      ["navigator:browser", "mail:3pane"].forEach(function(window_type) {
+        // add functionality to existing windows
+        let browser_windows = window_mediator.getEnumerator(window_type);
+        while (browser_windows.hasMoreElements()) { // enumerate existing windows.
+          // only run the "start" immediately if the browser is completely loaded
+          let dom = {
+            window: browser_windows.getNext()
+          };
+          if ("complete" === dom.window.document.readyState) {
+            this.dispatchWindowEvent(dom.window);
+          } else {
+            // Wait for the window to finish loading before running the callback
+            // Listen for one load event before checking the window type
+            let self = this;
+            dom.window.addEventListener(
+              "load", 
+              function(event) self.dispatchWindowEvent(dom.window), 
+              false);
           }
-        }, false);
-    }
-  },
-}
-
-let scope = {}; // create scope.
-
-let id = new Date().getTime();
-let current_file = Components
-  .stack.filename.split(" -> ").pop()
-  .split("?").shift()
-Components
-  .classes["@mozilla.org/moz/jssubscript-loader;1"]
-  .getService(Components.interfaces.mozIJSSubScriptLoader)
-  .loadSubScript(current_file + "/../common.js?" + id, scope);
-
-with (scope) {
+        } // while
+      }, this);
+    },
+  
+    uninitialize: function uninitialize()
+    {
+      let window_watcher = coUtils.Services.windowWatcher;
+      window_watcher.unregisterNotification(this);
+    },
+  
+    dispatchWindowEvent: function dispatchWindowEvent(window) 
+    {
+      Components.classes['@zuse.jp/tanasinn/process;1']
+        .getService(Components.interfaces.nsISupports)
+        .wrappedJSObject
+        .notify("event/new-window-detected", window);
+    },
+  
+    // Handles opening new navigator window.
+    observe: function observe(subject, topic, data) 
+    {
+      let window = subject.QueryInterface(Components.interfaces.nsIDOMWindow);
+      if ("domwindowopened" === topic) {
+        window.addEventListener("load", let (self = this) function onLoad() 
+          {
+            let document = window.document;
+            let window_type = document.documentElement.getAttribute("windowtype");
+            // ensure that "window" is a navigator window.
+            if (/^(navigator:browser|mail:3pane)$/.test(window_type)) {
+              window.removeEventListener("load", arguments.callee, false);
+              self.dispatchWindowEvent(window);
+            }
+          }, false);
+      }
+    },
+  }
 
   let Environment = new Trait();
   Environment.definition = {
@@ -229,7 +235,7 @@ with (scope) {
       let os = coUtils.Runtime.os;
       let bin_path = this.bin_path;
       let executeable_postfix 
-        = "WINNT" == os ? ".exe": "";
+        = "WINNT" === os ? ".exe": "";
       let python_paths = bin_path.split(":")
         .map(function(path) 
         {
@@ -237,7 +243,7 @@ with (scope) {
             .classes["@mozilla.org/file/local;1"]
             .createInstance(Components.interfaces.nsILocalFile);
           let native_path;
-          if ("WINNT" == os) {
+          if ("WINNT" === os) {
             // FIXME: this code is not works well when path includes space characters.
             native_path = this.cygwin_root + path.replace(/\//g, "\\");
           } else {
@@ -263,7 +269,7 @@ with (scope) {
               return file.exists() && file.isExecutable();
             }).map(function(file) 
             {
-              if ("WINNT" == os) {
+              if ("WINNT" === os) {
                 return info.path + "/" + file.leafName;
               }
               return file.path;
@@ -335,7 +341,7 @@ with (scope) {
       "@zuse.jp/tanasinn/process;1",
    
     get default_scope()
-      function() { this.__proto__ = scope; },
+      function() { this.__proto__ = tanasinn_scope; },
 
     QueryInterface: function QueryInterface(a_IID)
       this,
@@ -397,4 +403,8 @@ with (scope) {
 
   loader.initialize();
 
-} // with scope
+} // with tanasinn_scope
+
+} ();
+
+//} ();

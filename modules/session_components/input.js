@@ -765,9 +765,7 @@ InputManager.definition = {
     this.focus.enabled = true;
     this.blur.enabled = true;
     this.onkeypress.enabled = true;
-    if ("Darwin" == coUtils.Runtime.os) {
-      this.onkeyup.enabled = true;
-    }
+    this.onkeyup.enabled = true;
     this.onDoubleShift.enabled = true;
     this.oninput.enabled = true;
     this.oncompositionstart.enabled = true;
@@ -798,9 +796,7 @@ InputManager.definition = {
     this.focus.enabled = false;
     this.blur.enabled = false;
     this.onkeypress.enabled = false;
-    if ("Darwin" == coUtils.Runtime.os) {
-      this.onkeyup.enabled = false;
-    }
+    this.onkeyup.enabled = false;
     this.onDoubleShift.enabled = false;
     this.oninput.enabled = false;
     this.oncompositionstart.enabled = false;

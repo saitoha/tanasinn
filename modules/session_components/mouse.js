@@ -57,7 +57,7 @@ Mouse.definition = {
   _tracking_mode: coUtils.Constant.TRACKING_NONE,
   _tracking_type: null,
 
-  _dragged: false,
+  _pressed: false,
   _installed: false,
 
   _in_scroll_session: false,
@@ -168,9 +168,6 @@ Mouse.definition = {
   _sendMouseEvent: function _sendMouseEvent(event, button) 
   {
 
-    let message;
-    let buffer;
-
     // 0: button1, 1: button2, 2: button3, 3: release
     //
     // +-+-+-+-+-+-+-+-+
@@ -193,9 +190,11 @@ Mouse.definition = {
     //  0 0 1            magic // +32
     // --------------------------
     //
-//             | 1              << 5
-             ;
-    let code;
+    //             | 1              << 5
+
+    let message;
+    let buffer;
+    let code, action;
     let [column, row] = this._getCurrentPosition(event);
 
     let tracking_type = this._tracking_type;
@@ -211,25 +210,28 @@ Mouse.definition = {
              | event.ctrlKey  << 4
              ;
         code += 32;
-        message = coUtils.Text.format("\x1b[%d;%d;%dM", code, column, row);
+        column += 32;
+        row += 32;
+        message = coUtils.Text.format(
+          "\x1b[%d;%d;%dM", 
+          code, column, row);
+        coUtils.Debug.reportError(message)
         break;
 
       case "sgr":
-        if ("mouseup" === event.type || "mousemove" == event.type) {
-          code = button 
-             | event.shiftKey << 2 
-             | event.metaKey  << 3
-             | event.ctrlKey  << 4
-             ;
-          message = coUtils.Text.format("\x1b[<%d;%d;%dm", code, column, row);
+        code = button 
+           | event.shiftKey << 2 
+           | event.metaKey  << 3
+           | event.ctrlKey  << 4
+           ;
+        if (this._pressed) {
+          action = "m";
         } else {
-          code = button 
-             | event.shiftKey << 2 
-             | event.metaKey  << 3
-             | event.ctrlKey  << 4
-             ;
-          message = coUtils.Text.format("\x1b[<%d;%d;%dM", code, column, row);
+          action = "M";
         }
+        message = coUtils.Text.format(
+          "\x1b[<%d;%d;%d%s", 
+          code, column, row, action);
         //coUtils.Debug.reportError(message)
         break;
 
@@ -290,7 +292,7 @@ Mouse.definition = {
   "[listen('dragstart', '#tanasinn_content')]": 
   function ondragstart(event) 
   {
-    this._dragged = true;
+    this._pressed = true;
   },
 
   /** Mouse down evnet listener */
@@ -346,7 +348,7 @@ Mouse.definition = {
   function onmousedown(event) 
   {
  
-    this._dragged = true;
+    this._pressed = true;
 
     let tracking_mode = this._tracking_mode;
     if (coUtils.Constant.TRACKING_NONE == tracking_mode) {
@@ -387,14 +389,14 @@ Mouse.definition = {
     switch (tracking_mode) {
 
       case coUtils.Constant.TRACKING_NORMAL:
-        if (this._dragged) {
+        if (this._pressed) {
           button = 32 + MOUSE_RELEASE;
           this._sendMouseEvent(event, button); 
         }
         break;
 
       case coUtils.Constant.TRACKING_BUTTON:
-        if (this._dragged) {
+        if (this._pressed) {
           button = 32 + event.button;//MOUSE_RELEASE;//event.button;
           this._sendMouseEvent(event, button); 
         }
@@ -403,7 +405,7 @@ Mouse.definition = {
       case coUtils.Constant.TRACING_ANY:
       // Send motion event.
         let button;
-        if (this._dragged) {
+        if (this._pressed) {
           button = 32 + event.button;
           this._sendMouseEvent(event, button); 
         } else {
@@ -423,7 +425,7 @@ Mouse.definition = {
   "[listen('mouseup', '#tanasinn_content')]": 
   function onmouseup(event) 
   {
-    this._dragged = false;
+    this._pressed = false;
     let tracking_mode = this._tracking_mode;
     if (coUtils.Constant.TRACKING_NONE === tracking_mode) {
       return;

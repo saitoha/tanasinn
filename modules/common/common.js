@@ -1585,6 +1585,13 @@ coUtils.Font = {
 
 };
 
+coUtils.Services = {
+
+  windowWatcher: Components
+    .classes["@mozilla.org/embedcomp/window-watcher;1"]
+    .getService(Components.interfaces.nsIWindowWatcher),
+
+};
 
 /** I/O Functions. */
 coUtils.IO = {
@@ -1677,14 +1684,15 @@ coUtils.IO = {
       }
     } else { // if target is not exists.
       // create base directories recursively (= mkdir -p).
-      void function make_directory(current) 
+      function make_directory(current) 
       {
         let parent = current.parent;
         if (!parent.exists()) {
           make_directory(parent);
           parent.create(Components.interfaces.nsIFile.DIRECTORY_TYPE, -1);
         }
-      } (file);
+      }
+      make_directory(file);
     }
   	Components.utils.import("resource://gre/modules/NetUtil.jsm");
   	Components.utils.import("resource://gre/modules/FileUtils.jsm");
@@ -2827,14 +2835,5 @@ function _()
     return lines.join("");
   }
 }
-
-//coUtils.Runtime.loadScript("modules/common/pot.js", scope);
-//coUtils.Runtime.loadScript("modules/unicode/wcwidth.js", scope);
-coUtils.Runtime.loadScript("modules/unicode/wcwidth.js", scope);
-//coUtils.Runtime.loadScript("modules/unicode/category.js", scope);  // unicode category db
-//coUtils.Runtime.loadScript("modules/common/eastasian.js", scope); // unicode eastasian db
-
-coUtils.Runtime.loadScript("modules/common/tupstart.js", scope);
-coUtils.Runtime.loadScript("modules/common/tupbase.js", scope);
 
 

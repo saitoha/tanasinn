@@ -805,7 +805,7 @@ Line.definition = {
               end: current + 1, 
               attr: cell,
             };
-            //++current;
+            ++current;
           }
         }
         start = current;
