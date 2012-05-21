@@ -861,14 +861,19 @@ It Supports Windows(XP/Vista/7) + Cygwin / Mac / Linux / FreeBSD.</tt></pre>
 <h2 id="_news">2. News</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_2012_05_13">2.1. 2012/05/13</h3>
+<h3 id="_2012_05_23">2.1. 2012/05/23</h3>
 <div class="literalblock">
 <div class="content">
 <pre><tt>Version 0.2.2.0
-Supports DEC Locator Event Mode..
+Supports OSC 52 base64 copy.
+Supports DEC Locator Event Mode(without filter rectangle feature).
 Supports character combining, more precise character rendering.
-Implement LNM, Device Status Report(DSR), Tertiary Device Attributes (DA3), DECREQTPARM.
-Now it passes vttest Menu 6.</tt></pre>
+Implement LNM.
+Implement Device Status Report(DSR).
+Implement Tertiary Device Attributes (DA3).
+Implement DECREQTPARM.
+More precise emulation, Now it passes vttest Menu 1, 2, 3, 4, 6, 7, and 8.
+Disable ShellRPC plugin.</tt></pre>
 </div></div>
 </div>
 <div class="sect2">
@@ -995,6 +1000,11 @@ Retaining TTY session during closing/restarting browser.
 <p>
 Including debugger. You can run it in step-execution-mode or trace-mode
       and observe terminal I/O sequence in real-time.
+</p>
+</li>
+<li>
+<p>
+Precise emulation, passes vttest Menu 1, 2, 3, 4, 6, 7, and 8.
 </p>
 </li>
 <li>
@@ -1206,7 +1216,7 @@ Supports mapping trackpad gestures, such as pinch, swipe, rotate.
 <div class="content">
 <img src="images/roflbalt.png" alt="images/roflbalt.png" width="780" />
 </div>
-<div class="title">Figure 18. <a href="https://github.com/pda/roflbalt">roflbalt</a>. A game written in Ruby.</div>
+<div class="title">Figure 18. https:</div>
 </div>
 <div class="imageblock">
 <div class="content">
@@ -1850,39 +1860,39 @@ is not proper one.</tt></pre>
 <div class="content">
 <pre><tt>~/ or %USERPROFILE%/
    |
-   +-- .tanasinn.js    &lt;-------------------------------- (1)
+   +-- .tanasinn.js &lt;-------------------------------- (1)
    |
-   +-- .tanasinn/      &lt;-------------------------------- (2)
+   +-- .tanasinn/ &lt;-------------------------------- (2)
          |
-         +-- tanasinnrc          &lt;---------------------- (3)
+         +-- tanasinnrc &lt;---------------------- (3)
          |
-         +-- sessions.txt        &lt;---------------------- (4)
+         +-- sessions.txt &lt;---------------------- (4)
          |
-         +-- desktop_profile/    &lt;---------------------- (5)
+         +-- desktop_profile/ &lt;---------------------- (5)
          |
-         +-- session_profile/    &lt;---------------------- (6)
+         +-- session_profile/ &lt;---------------------- (6)
          |
-         +-- persist/            &lt;---------------------- (7)
+         +-- persist/ &lt;---------------------- (7)
          |
-         +-- history/            &lt;---------------------- (8)
+         +-- history/ &lt;---------------------- (8)
          |
-         +-- batches/            &lt;---------------------- (9)
+         +-- batches/ &lt;---------------------- (9)
          |
-         +-- cgi-bin/            &lt;---------------------- (10)
+         +-- cgi-bin/ &lt;---------------------- (10)
          |
-         +-- screenshot/            &lt;------------------- (11)
+         +-- screenshot/ &lt;------------------- (11)
          |
-         +-- log/                &lt;---------------------- (12)
+         +-- log/ &lt;---------------------- (12)
          |
-         +-- modules/            &lt;---------------------- (13)
+         +-- modules/ &lt;---------------------- (13)
                 |
-                +-- process_components/          &lt;------ (14)
+                +-- process_components/ &lt;------ (14)
                 |
-                +-- desktop_components/          &lt;------ (15)
+                +-- desktop_components/ &lt;------ (15)
                 |
-                +-- session_components/          &lt;------ (16)
+                +-- session_components/ &lt;------ (16)
                 |
-                +-- shared_components/           &lt;------ (17)</tt></pre>
+                +-- shared_components/ &lt;------ (17)</tt></pre>
 </div></div>
 <div class="sect3">
 <h4 id="_tanasinn_js">9.4.1. .tanasinn.js</h4>
@@ -2422,11 +2432,11 @@ by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
 <pre><tt>
-   <span style="color: #990000">(</span><span style="color: #FF0000">{</span>                          <span style="font-style: italic"><span style="color: #9A1900">// &lt;--- (1)</span></span>
-     tagName<span style="color: #990000">:</span> <span style="color: #FF0000">"box"</span><span style="color: #990000">,</span>           <span style="font-style: italic"><span style="color: #9A1900">// &lt;--- (2)</span></span>
+   <span style="color: #990000">(</span><span style="color: #FF0000">{</span>
+     tagName<span style="color: #990000">:</span> <span style="color: #FF0000">"box"</span><span style="color: #990000">,</span>
      flex<span style="color: #990000">:</span> <span style="color: #993399">1</span><span style="color: #990000">,</span>
-     style<span style="color: #990000">:</span> <span style="color: #FF0000">{</span>                  <span style="font-style: italic"><span style="color: #9A1900">// &lt;--- (3)</span></span>
-       backgroundColor<span style="color: #990000">:</span> <span style="color: #FF0000">"red"</span>  <span style="font-style: italic"><span style="color: #9A1900">// &lt;--- (4)</span></span>
+     style<span style="color: #990000">:</span> <span style="color: #FF0000">{</span>
+       backgroundColor<span style="color: #990000">:</span> <span style="color: #FF0000">"red"</span>
      <span style="color: #FF0000">}</span>
    <span style="color: #FF0000">}</span><span style="color: #990000">)</span>
 </tt></pre></div></div>
@@ -2457,19 +2467,19 @@ http://www.gnu.org/software/src-highlite -->
 <pre><tt>
    <span style="color: #990000">(</span><span style="color: #FF0000">{</span>
      tagName<span style="color: #990000">:</span> <span style="color: #FF0000">"html:div"</span><span style="color: #990000">,</span>
-     parentNode<span style="color: #990000">:</span> <span style="color: #FF0000">"id-of-parent"</span><span style="color: #990000">,</span> <span style="font-style: italic"><span style="color: #9A1900">// &lt;--- (5)</span></span>
+     parentNode<span style="color: #990000">:</span> <span style="color: #FF0000">"id-of-parent"</span><span style="color: #990000">,</span>
      style<span style="color: #990000">:</span> <span style="color: #FF0000">{</span>
        textAlign<span style="color: #990000">:</span> <span style="color: #FF0000">"center"</span>
      <span style="color: #FF0000">}</span>
-     childNodes<span style="color: #990000">:</span> <span style="color: #FF0000">{</span>               <span style="font-style: italic"><span style="color: #9A1900">// &lt;--- (6)</span></span>
+     childNodes<span style="color: #990000">:</span> <span style="color: #FF0000">{</span>
        tagName<span style="color: #990000">:</span> <span style="color: #FF0000">"html:div"</span><span style="color: #990000">,</span>
        style<span style="color: #990000">:</span> <span style="color: #FF0000">{</span>
          fontSize<span style="color: #990000">:</span> <span style="color: #FF0000">"1.5em"</span>
        <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
-       childNodes<span style="color: #990000">:</span> <span style="color: #990000">[</span>             <span style="font-style: italic"><span style="color: #9A1900">// &lt;--- (7)</span></span>
+       childNodes<span style="color: #990000">:</span> <span style="color: #990000">[</span>
          <span style="color: #FF0000">{</span>
            tagName<span style="color: #990000">:</span> <span style="color: #FF0000">"html:span"</span><span style="color: #990000">,</span>
-           innerText<span style="color: #990000">:</span> <span style="color: #FF0000">"abcde"</span>    <span style="font-style: italic"><span style="color: #9A1900">// &lt;--- (8)</span></span>
+           innerText<span style="color: #990000">:</span> <span style="color: #FF0000">"abcde"</span>
          <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
          <span style="color: #FF0000">{</span>
            tagName<span style="color: #990000">:</span> <span style="color: #FF0000">"html:div"</span><span style="color: #990000">,</span>
@@ -2519,7 +2529,7 @@ http://www.gnu.org/software/src-highlite -->
      tagName<span style="color: #990000">:</span> <span style="color: #FF0000">"hbox"</span><span style="color: #990000">,</span>
      id<span style="color: #990000">:</span> <span style="color: #FF0000">"parent"</span><span style="color: #990000">,</span>
      flex<span style="color: #990000">:</span> <span style="color: #993399">1</span><span style="color: #990000">,</span>
-     onconstruct<span style="color: #990000">:</span> <span style="color: #FF0000">{</span>              <span style="font-style: italic"><span style="color: #9A1900">// &lt;--- (9)</span></span>
+     onconstruct<span style="color: #990000">:</span> <span style="color: #FF0000">{</span>
        handler<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span> window<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">alert</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>id<span style="color: #990000">);</span> <span style="color: #FF0000">}</span>
      <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
      childNodes<span style="color: #990000">:</span> <span style="color: #990000">[</span>
@@ -2527,7 +2537,7 @@ http://www.gnu.org/software/src-highlite -->
          tagName<span style="color: #990000">:</span> <span style="color: #FF0000">"vbox"</span><span style="color: #990000">,</span>
          id<span style="color: #990000">:</span> <span style="color: #FF0000">"left"</span><span style="color: #990000">,</span>
          flex<span style="color: #990000">:</span> <span style="color: #993399">1</span><span style="color: #990000">,</span>
-         listener<span style="color: #990000">:</span> <span style="color: #FF0000">{</span>             <span style="font-style: italic"><span style="color: #9A1900">// &lt;--- (10)</span></span>
+         listener<span style="color: #990000">:</span> <span style="color: #FF0000">{</span>
            type<span style="color: #990000">:</span> <span style="color: #FF0000">"mouseover"</span><span style="color: #990000">,</span>
            context<span style="color: #990000">:</span> window<span style="color: #990000">,</span>
            handler<span style="color: #990000">:</span> onMouseOver
@@ -2601,7 +2611,7 @@ or tweet me (<a href="http://twitter.com/kefir_">http://twitter.com/kefir_</a>).
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2012-05-16 09:49:47 JST
+Last updated 2012-05-22 04:08:28 JST
 </div>
 </div>
 </body>

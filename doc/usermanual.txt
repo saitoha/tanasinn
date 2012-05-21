@@ -27,12 +27,17 @@ link:./usermanual.html[English/英語]
 #if __EN__
 == News
 
-=== 2012/05/13 
+=== 2012/05/23 
     Version 0.2.2.0
-    Supports DEC Locator Event Mode..
+    Supports OSC 52 base64 copy.
+    Supports DEC Locator Event Mode(without filter rectangle feature).
     Supports character combining, more precise character rendering.
-    Implement LNM, Device Status Report(DSR), Tertiary Device Attributes (DA3), DECREQTPARM. 
-    Now it passes vttest Menu 6.
+    Implement LNM.
+    Implement Device Status Report(DSR).
+    Implement Tertiary Device Attributes (DA3).
+    Implement DECREQTPARM. 
+    More precise emulation, Now it passes vttest Menu 1, 2, 3, 4, 6, 7, and 8.
+    Disable ShellRPC plugin.
 
 === 2012/05/05 
     Version 0.2.1.1
@@ -69,12 +74,17 @@ process.python_path = "/usr/bin/python"
 #elif __JP__
 == News 
    
-=== 2012/05/13 
+=== 2012/05/23 
     Version 0.2.2.0
-    Supports DEC Locator Event Mode..
+    Supports OSC 52 base64 copy.
+    Supports DEC Locator Event Mode(without filter rectangle feature).
     Supports character combining, more precise character rendering.
-    Implement LNM, Device Status Report(DSR), Tertiary Device Attributes (DA3), DECREQTPARM. 
-    Now it passes vttest Menu 6.
+    Implement LNM.
+    Implement Device Status Report(DSR).
+    Implement Tertiary Device Attributes (DA3).
+    Implement DECREQTPARM. 
+    More precise emulation, Now it passes vttest Menu 1, 2, 3, 4, 6, 7, and 8.
+    Disable ShellRPC plugin.
 
 === 2012/05/05 
     Version 0.2.1.1
@@ -155,6 +165,7 @@ http:/#/www.mozilla-japan.org/MPL/MPL-1.1J.html[Mozilla Public License 1.1 (MPL1
       you can reconnect suspended terminal session.
     - Including debugger. You can run it in step-execution-mode or trace-mode 
       and observe terminal I/O sequence in real-time.
+    - Precise emulation, passes vttest Menu 1, 2, 3, 4, 6, 7, and 8.
     - Supports basic features, scroll-back, alternate screen, visual bell, audio bell ...etc.
     - IME is supported.
     - Supports VT52 compatibility mode.
@@ -187,6 +198,7 @@ http:/#/www.mozilla-japan.org/MPL/MPL-1.1J.html[Mozilla Public License 1.1 (MPL1
       サスペンドしたセッションに後から再接続できます。 
     - デバッガ内臓。ステップ実行やトレースができます。
       ターミナルとアプリケーションがやり取りするI/Oシーケンスをリアルタイムで観察できます。
+    - 高品質なエミュレーション。vttestメニュー 1, 2, 3, 4, 6, 7, 8 のテストをパスしています。
     - スクロールバック、代替スクリーン、ビジュアルベル、オーディオベルなど基本的な機能はサポートしています。
     - IMEが使えます。
     - VT52互換モード搭載。
@@ -1837,7 +1849,7 @@ execcgi [ファイル名]
 
 [source,perl]
 ----
-  #!/usr/bin/env perl
+  \#!/usr/bin/env perl
 
   print <<EOM
   overlayecho Hello, World!
@@ -1849,7 +1861,7 @@ execcgi [ファイル名]
 
 [source,lisp]
 ----
-  #!/usr/bin/emacs23 -nw --script
+  \#!/usr/bin/emacs23 -nw --script
 
   (princ "enable console")
 
@@ -2028,15 +2040,15 @@ process.python_path = "/usr/bin/python"
 ..tanasinn/tanasinnrc
 ----
 
-nmap <C-S-o> <cmode>detach<CR>
-nmap <C-S-i> <2-shift>blur<CR>
-nnoremap <C-S-z> <2-shift>
-cmap <C-z> <2-shift>
-cmap <C-s> <C-a><C-k>vimperator set!<CR> 
-set renderer.normal_alpha=0.8
-set renderer.font_size=20
-set outerchrome.background_opacity=0.8
-set outerchrome.background="-moz-radial-gradient(center, circle closest-side, #404040, #000)"
+  nmap <C-S-o> <cmode>detach<CR>
+  nmap <C-S-i> <2-shift>blur<CR>
+  nnoremap <C-S-z> <2-shift>
+  cmap <C-z> <2-shift>
+  cmap <C-s> <C-a><C-k>vimperator set!<CR> 
+  set renderer.normal_alpha=0.8
+  set renderer.font_size=20
+  set outerchrome.background_opacity=0.8
+  set outerchrome.background="-moz-radial-gradient(center, circle closest-side, #404040, #000)"
 
 
 ----
@@ -2434,21 +2446,21 @@ echo -en "¥e]220;overlayecho Hello, World!¥a"
 .設定例 .tanasinn/tanasinnrc
 ----
 
- ##############################################################################
- #
- # Set Leader keys mappings
- #
+ \##############################################################################
+ \#
+ \# Set Leader keys mappings
+ \#
 
- # set <Leader>
+ \# set <Leader>
  set nmap_manager.mapleader="<C-s>"
  set cmap_manager.mapleader="<C-s>"
 
- ##############################################################################
- #
- # Gesture mappings
- #
+ \##############################################################################
+ \#
+ \# Gesture mappings
+ \#
 
- #for tmux
+ \#for tmux
  nmap <SwipeLeft>    <C-b>p
  nmap <SwipeRight>   <C-b>n
  nmap <SwipeDown>    <C-b>%
@@ -2456,26 +2468,26 @@ echo -en "¥e]220;overlayecho Hello, World!¥a"
  nmap <RotateLeft>   <C-b><Space>
  nmap <RotateRight>  <C-b><Space>
 
- # zoom in/out
+ \# zoom in/out
  nmap <PinchOpen>    <cmode>increase<CR>
  nmap <PinchClose>   <cmode>decrease<CR>
 
- ##############################################################################
- #
- # <Leader> mode
- #
+ \##############################################################################
+ \#
+ \# <Leader> mode
+ \#
 
- # zoom in/out
+ \# zoom in/out
  nmap <Leader>, <cmode>decrease<CR><Leader>
  nmap <Leader>. <cmode>increase<CR><Leader>
 
- # move window
+ \# move window
  nmap <Leader>h <cmode>left<CR><Leader>
  nmap <Leader>j <cmode>down<CR><Leader>
  nmap <Leader>k <cmode>up<CR><Leader>
  nmap <Leader>l <cmode>right<CR><Leader>
 
- # break <Leader> mode
+ \# break <Leader> mode
  nmap <Leader><Esc> <nmode>
 
 ----

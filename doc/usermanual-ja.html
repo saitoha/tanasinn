@@ -861,14 +861,19 @@ Windows(XP/Vista/7) + Cygwin / Mac / Linux / FreeBSD 環境で動作します。
 <h2 id="_news">2. News</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_2012_05_13">2.1. 2012/05/13</h3>
+<h3 id="_2012_05_23">2.1. 2012/05/23</h3>
 <div class="literalblock">
 <div class="content">
 <pre><tt>Version 0.2.2.0
-Supports DEC Locator Event Mode..
+Supports OSC 52 base64 copy.
+Supports DEC Locator Event Mode(without filter rectangle feature).
 Supports character combining, more precise character rendering.
-Implement LNM, Device Status Report(DSR), Tertiary Device Attributes (DA3), DECREQTPARM.
-Now it passes vttest Menu 6.</tt></pre>
+Implement LNM.
+Implement Device Status Report(DSR).
+Implement Tertiary Device Attributes (DA3).
+Implement DECREQTPARM.
+More precise emulation, Now it passes vttest Menu 1, 2, 3, 4, 6, 7, and 8.
+Disable ShellRPC plugin.</tt></pre>
 </div></div>
 </div>
 <div class="sect2">
@@ -1019,6 +1024,11 @@ Geckoベースのユーザーインターフェース (HTML Canvas + XUL)。柔�
 <p>
 デバッガ内臓。ステップ実行やトレースができます。
       ターミナルとアプリケーションがやり取りするI/Oシーケンスをリアルタイムで観察できます。
+</p>
+</li>
+<li>
+<p>
+高品質なエミュレーション。vttestメニュー 1, 2, 3, 4, 6, 7, 8 のテストをパスしています。
 </p>
 </li>
 <li>
@@ -1241,7 +1251,7 @@ Vimperator/Muttator のプラグインとして導入することができます
 <div class="content">
 <img src="images/roflbalt.png" alt="images/roflbalt.png" width="780" />
 </div>
-<div class="title">Figure 18. <a href="https://github.com/pda/roflbalt">roflbalt</a>。Rubyで書かれたゲームです。</div>
+<div class="title">Figure 18. https:</div>
 </div>
 <div class="imageblock">
 <div class="content">
@@ -1415,7 +1425,7 @@ ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/</tt></pre>
 
 void function install_tanasinn() {
 
-    var file = "file:///…………/tanasinn/modules/common/process.js"; // &lt;-- process.jsのパス(URL表現)
+    var file = "file:///…………/tanasinn/modules/common/process.js";
 
     var contractID = "@zuse.jp/tanasinn/process;1";
     var process_class = Components.classes[contractID]
@@ -2064,39 +2074,39 @@ http://www.gnu.org/software/src-highlite -->
 <div class="content">
 <pre><tt>~/ or %USERPROFILE%/
    |
-   +-- .tanasinn.js    &lt;-------------------------------- (1)
+   +-- .tanasinn.js &lt;-------------------------------- (1)
    |
-   +-- .tanasinn/      &lt;-------------------------------- (2)
+   +-- .tanasinn/ &lt;-------------------------------- (2)
          |
-         +-- tanasinnrc          &lt;---------------------- (3)
+         +-- tanasinnrc &lt;---------------------- (3)
          |
-         +-- sessions.txt        &lt;---------------------- (4)
+         +-- sessions.txt &lt;---------------------- (4)
          |
-         +-- desktop_profile/    &lt;---------------------- (5)
+         +-- desktop_profile/ &lt;---------------------- (5)
          |
-         +-- session_profile/    &lt;---------------------- (6)
+         +-- session_profile/ &lt;---------------------- (6)
          |
-         +-- persist/            &lt;---------------------- (7)
+         +-- persist/ &lt;---------------------- (7)
          |
-         +-- history/            &lt;---------------------- (8)
+         +-- history/ &lt;---------------------- (8)
          |
-         +-- batches/            &lt;---------------------- (9)
+         +-- batches/ &lt;---------------------- (9)
          |
-         +-- cgi-bin/            &lt;---------------------- (10)
+         +-- cgi-bin/ &lt;---------------------- (10)
          |
-         +-- screenshot/            &lt;------------------- (11)
+         +-- screenshot/ &lt;------------------- (11)
          |
-         +-- log/                &lt;---------------------- (12)
+         +-- log/ &lt;---------------------- (12)
          |
-         +-- modules/            &lt;---------------------- (13)
+         +-- modules/ &lt;---------------------- (13)
                 |
-                +-- process_components/          &lt;------ (14)
+                +-- process_components/ &lt;------ (14)
                 |
-                +-- desktop_components/          &lt;------ (15)
+                +-- desktop_components/ &lt;------ (15)
                 |
-                +-- session_components/          &lt;------ (16)
+                +-- session_components/ &lt;------ (16)
                 |
-                +-- shared_components/           &lt;------ (17)</tt></pre>
+                +-- shared_components/ &lt;------ (17)</tt></pre>
 </div></div>
 <div class="sect3">
 <h4 id="_tanasinn_js">9.4.1. .tanasinn.js</h4>
@@ -2120,15 +2130,15 @@ process.python_path = "/usr/bin/python"</tt></pre>
 <div class="listingblock">
 <div class="title">.tanasinn/tanasinnrc</div>
 <div class="content">
-<pre><tt>nmap &lt;C-S-o&gt; &lt;cmode&gt;detach&lt;CR&gt;
-nmap &lt;C-S-i&gt; &lt;2-shift&gt;blur&lt;CR&gt;
-nnoremap &lt;C-S-z&gt; &lt;2-shift&gt;
-cmap &lt;C-z&gt; &lt;2-shift&gt;
-cmap &lt;C-s&gt; &lt;C-a&gt;&lt;C-k&gt;vimperator set!&lt;CR&gt;
-set renderer.normal_alpha=0.8
-set renderer.font_size=20
-set outerchrome.background_opacity=0.8
-set outerchrome.background="-moz-radial-gradient(center, circle closest-side, #404040, #000)"</tt></pre>
+<pre><tt>  nmap &lt;C-S-o&gt; &lt;cmode&gt;detach&lt;CR&gt;
+  nmap &lt;C-S-i&gt; &lt;2-shift&gt;blur&lt;CR&gt;
+  nnoremap &lt;C-S-z&gt; &lt;2-shift&gt;
+  cmap &lt;C-z&gt; &lt;2-shift&gt;
+  cmap &lt;C-s&gt; &lt;C-a&gt;&lt;C-k&gt;vimperator set!&lt;CR&gt;
+  set renderer.normal_alpha=0.8
+  set renderer.font_size=20
+  set outerchrome.background_opacity=0.8
+  set outerchrome.background="-moz-radial-gradient(center, circle closest-side, #404040, #000)"</tt></pre>
 </div></div>
 </div>
 <div class="sect3">
@@ -2281,7 +2291,7 @@ command CloseMozilla call s:close_gecko_window()</tt></pre>
 <div class="paragraph"><p>このようにして使用します。</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>OpenMozilla http://google.com</tt></pre>
+<pre><tt>OpenMozilla http:</tt></pre>
 </div></div>
 <div class="imageblock">
 <div class="content">
@@ -2349,7 +2359,7 @@ cmap [置換対象キーシーケンス式] [置換後のキーシーケンス�
 <div class="ulist"><ul>
 <li>
 <p>
-&lt;Leader&gt;        - 設定値nmap_manager.mapleaderおよびcmap_manager.mapleaderの値
+&lt;Leader&gt; - 設定値nmap_manager.mapleaderおよびcmap_manager.mapleaderの値
 </p>
 </li>
 </ul></div>
@@ -2361,12 +2371,12 @@ cmap [置換対象キーシーケンス式] [置換後のキーシーケンス�
 <div class="ulist"><ul>
 <li>
 <p>
-&lt;nmode&gt;         - ノーマルモード
+&lt;nmode&gt; - ノーマルモード
 </p>
 </li>
 <li>
 <p>
-&lt;cmode&gt;         - コマンドラインモード
+&lt;cmode&gt; - コマンドラインモード
 </p>
 </li>
 </ul></div>
@@ -2378,7 +2388,7 @@ cmap [置換対象キーシーケンス式] [置換後のキーシーケンス�
 <div class="ulist"><ul>
 <li>
 <p>
-&lt;2-Shift&gt;       - Shift key twice.
+&lt;2-Shift&gt; - Shift key twice.
 </p>
 </li>
 </ul></div>
@@ -2390,22 +2400,22 @@ cmap [置換対象キーシーケンス式] [置換後のキーシーケンス�
 <div class="ulist"><ul>
 <li>
 <p>
-&lt;SwipeLeft&gt;     - 左にスワイプ
+&lt;SwipeLeft&gt; - 左にスワイプ
 </p>
 </li>
 <li>
 <p>
-&lt;SwipeRight&gt;    - 右にスワイプ
+&lt;SwipeRight&gt; - 右にスワイプ
 </p>
 </li>
 <li>
 <p>
-&lt;SwipeTop&gt;      - 上にスワイプ
+&lt;SwipeTop&gt; - 上にスワイプ
 </p>
 </li>
 <li>
 <p>
-&lt;SwipeBottom&gt;   - 下にスワイプ
+&lt;SwipeBottom&gt; - 下にスワイプ
 </p>
 </li>
 </ul></div>
@@ -2417,12 +2427,12 @@ cmap [置換対象キーシーケンス式] [置換後のキーシーケンス�
 <div class="ulist"><ul>
 <li>
 <p>
-&lt;PinchOpen&gt;     - ピンチオープン
+&lt;PinchOpen&gt; - ピンチオープン
 </p>
 </li>
 <li>
 <p>
-&lt;PinchClose&gt;    - ピンチクローズ
+&lt;PinchClose&gt; - ピンチクローズ
 </p>
 </li>
 </ul></div>
@@ -2434,12 +2444,12 @@ cmap [置換対象キーシーケンス式] [置換後のキーシーケンス�
 <div class="ulist"><ul>
 <li>
 <p>
-&lt;RotateRight&gt;   - 時計回りに回転
+&lt;RotateRight&gt; - 時計回りに回転
 </p>
 </li>
 <li>
 <p>
-&lt;RotateLeft&gt;    - 反時計回りに回転
+&lt;RotateLeft&gt; - 反時計回りに回転
 </p>
 </li>
 </ul></div>
@@ -2465,16 +2475,16 @@ cmap [置換対象キーシーケンス式] [置換後のキーシーケンス�
  #
 
  #for tmux
- nmap &lt;SwipeLeft&gt;    &lt;C-b&gt;p
- nmap &lt;SwipeRight&gt;   &lt;C-b&gt;n
- nmap &lt;SwipeDown&gt;    &lt;C-b&gt;%
- nmap &lt;SwipeUp&gt;      &lt;C-b&gt;!
- nmap &lt;RotateLeft&gt;   &lt;C-b&gt;&lt;Space&gt;
- nmap &lt;RotateRight&gt;  &lt;C-b&gt;&lt;Space&gt;
+ nmap &lt;SwipeLeft&gt; &lt;C-b&gt;p
+ nmap &lt;SwipeRight&gt; &lt;C-b&gt;n
+ nmap &lt;SwipeDown&gt; &lt;C-b&gt;%
+ nmap &lt;SwipeUp&gt; &lt;C-b&gt;!
+ nmap &lt;RotateLeft&gt; &lt;C-b&gt;&lt;Space&gt;
+ nmap &lt;RotateRight&gt; &lt;C-b&gt;&lt;Space&gt;
 
  # zoom in/out
- nmap &lt;PinchOpen&gt;    &lt;cmode&gt;increase&lt;CR&gt;
- nmap &lt;PinchClose&gt;   &lt;cmode&gt;decrease&lt;CR&gt;
+ nmap &lt;PinchOpen&gt; &lt;cmode&gt;increase&lt;CR&gt;
+ nmap &lt;PinchClose&gt; &lt;cmode&gt;decrease&lt;CR&gt;
 
  ##############################################################################
  #
@@ -3238,11 +3248,11 @@ by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
 <pre><tt>
-   <span style="color: #990000">(</span><span style="color: #FF0000">{</span>                          <span style="font-style: italic"><span style="color: #9A1900">// &lt;--- (1)</span></span>
-     tagName<span style="color: #990000">:</span> <span style="color: #FF0000">"box"</span><span style="color: #990000">,</span>           <span style="font-style: italic"><span style="color: #9A1900">// &lt;--- (2)</span></span>
+   <span style="color: #990000">(</span><span style="color: #FF0000">{</span>
+     tagName<span style="color: #990000">:</span> <span style="color: #FF0000">"box"</span><span style="color: #990000">,</span>
      flex<span style="color: #990000">:</span> <span style="color: #993399">1</span><span style="color: #990000">,</span>
-     style<span style="color: #990000">:</span> <span style="color: #FF0000">{</span>                  <span style="font-style: italic"><span style="color: #9A1900">// &lt;--- (3)</span></span>
-       backgroundColor<span style="color: #990000">:</span> <span style="color: #FF0000">"red"</span>  <span style="font-style: italic"><span style="color: #9A1900">// &lt;--- (4)</span></span>
+     style<span style="color: #990000">:</span> <span style="color: #FF0000">{</span>
+       backgroundColor<span style="color: #990000">:</span> <span style="color: #FF0000">"red"</span>
      <span style="color: #FF0000">}</span>
    <span style="color: #FF0000">}</span><span style="color: #990000">)</span>
 </tt></pre></div></div>
@@ -3273,19 +3283,19 @@ http://www.gnu.org/software/src-highlite -->
 <pre><tt>
    <span style="color: #990000">(</span><span style="color: #FF0000">{</span>
      tagName<span style="color: #990000">:</span> <span style="color: #FF0000">"html:div"</span><span style="color: #990000">,</span>
-     parentNode<span style="color: #990000">:</span> <span style="color: #FF0000">"id-of-parent"</span><span style="color: #990000">,</span> <span style="font-style: italic"><span style="color: #9A1900">// &lt;--- (5)</span></span>
+     parentNode<span style="color: #990000">:</span> <span style="color: #FF0000">"id-of-parent"</span><span style="color: #990000">,</span>
      style<span style="color: #990000">:</span> <span style="color: #FF0000">{</span>
        textAlign<span style="color: #990000">:</span> <span style="color: #FF0000">"center"</span>
      <span style="color: #FF0000">}</span>
-     childNodes<span style="color: #990000">:</span> <span style="color: #FF0000">{</span>               <span style="font-style: italic"><span style="color: #9A1900">// &lt;--- (6)</span></span>
+     childNodes<span style="color: #990000">:</span> <span style="color: #FF0000">{</span>
        tagName<span style="color: #990000">:</span> <span style="color: #FF0000">"html:div"</span><span style="color: #990000">,</span>
        style<span style="color: #990000">:</span> <span style="color: #FF0000">{</span>
          fontSize<span style="color: #990000">:</span> <span style="color: #FF0000">"1.5em"</span>
        <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
-       childNodes<span style="color: #990000">:</span> <span style="color: #990000">[</span>             <span style="font-style: italic"><span style="color: #9A1900">// &lt;--- (7)</span></span>
+       childNodes<span style="color: #990000">:</span> <span style="color: #990000">[</span>
          <span style="color: #FF0000">{</span>
            tagName<span style="color: #990000">:</span> <span style="color: #FF0000">"html:span"</span><span style="color: #990000">,</span>
-           innerText<span style="color: #990000">:</span> <span style="color: #FF0000">"abcde"</span>    <span style="font-style: italic"><span style="color: #9A1900">// &lt;--- (8)</span></span>
+           innerText<span style="color: #990000">:</span> <span style="color: #FF0000">"abcde"</span>
          <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
          <span style="color: #FF0000">{</span>
            tagName<span style="color: #990000">:</span> <span style="color: #FF0000">"html:div"</span><span style="color: #990000">,</span>
@@ -3335,7 +3345,7 @@ http://www.gnu.org/software/src-highlite -->
      tagName<span style="color: #990000">:</span> <span style="color: #FF0000">"hbox"</span><span style="color: #990000">,</span>
      id<span style="color: #990000">:</span> <span style="color: #FF0000">"parent"</span><span style="color: #990000">,</span>
      flex<span style="color: #990000">:</span> <span style="color: #993399">1</span><span style="color: #990000">,</span>
-     onconstruct<span style="color: #990000">:</span> <span style="color: #FF0000">{</span>              <span style="font-style: italic"><span style="color: #9A1900">// &lt;--- (9)</span></span>
+     onconstruct<span style="color: #990000">:</span> <span style="color: #FF0000">{</span>
        handler<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span> window<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">alert</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>id<span style="color: #990000">);</span> <span style="color: #FF0000">}</span>
      <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
      childNodes<span style="color: #990000">:</span> <span style="color: #990000">[</span>
@@ -3343,7 +3353,7 @@ http://www.gnu.org/software/src-highlite -->
          tagName<span style="color: #990000">:</span> <span style="color: #FF0000">"vbox"</span><span style="color: #990000">,</span>
          id<span style="color: #990000">:</span> <span style="color: #FF0000">"left"</span><span style="color: #990000">,</span>
          flex<span style="color: #990000">:</span> <span style="color: #993399">1</span><span style="color: #990000">,</span>
-         listener<span style="color: #990000">:</span> <span style="color: #FF0000">{</span>             <span style="font-style: italic"><span style="color: #9A1900">// &lt;--- (10)</span></span>
+         listener<span style="color: #990000">:</span> <span style="color: #FF0000">{</span>
            type<span style="color: #990000">:</span> <span style="color: #FF0000">"mouseover"</span><span style="color: #990000">,</span>
            context<span style="color: #990000">:</span> window<span style="color: #990000">,</span>
            handler<span style="color: #990000">:</span> onMouseOver
@@ -3418,7 +3428,7 @@ twitter: <a href="http://twitter.com/kefir_">http://twitter.com/kefir_</a></p></
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2012-05-16 09:49:52 JST
+Last updated 2012-05-22 04:08:30 JST
 </div>
 </div>
 </body>
