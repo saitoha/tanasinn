@@ -22,11 +22,48 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+/** 
+ * @class ForwardInputIterator
+ */ 
+let ForwardInputIterator = new Class();
+ForwardInputIterator.definition = {
+
+  _value: null,
+  _position: 0,
+
+  /** Assign new string data. position is reset. */
+  initialize: function initialize(value) 
+  {
+    this._value = value;
+    this._position = 0;
+  },
+
+  /** Returns single byte code point. */
+  current: function current() 
+  {
+    return this._value.charCodeAt(this._position);
+  },
+
+  /** Moves to next position. */
+  moveNext: function moveNext() 
+  {
+    ++this._position;
+  },
+
+  /** Returns whether scanner position is at end. */
+  get isEnd() 
+  {
+    return this._position >= this._value.length;
+  },
+};
+
+
 /**
  *  @class Base64Copy
  *  @brief Makes it enable to copy selected region by pressing short cut key.
  */
-let Base64Copy = new Class().extends(Plugin);
+let Base64Copy = new Class().extends(Plugin)
+                            .depends("decoder");
 Base64Copy.definition = {
 
   get id()
@@ -61,12 +98,21 @@ Base64Copy.definition = {
   "[subscribe('sequence/osc/52'), _('Copy selected text.')]": 
   function copy(command) 
   {
-    let [place, encoded_data] = command.split(";");
-    let text = coUtils.Text.base64decode(encoded_data);
-    let sanitized_text = [];
-    let i, c;
-    for (i = 0; i < text.length; ++i) {
-      c = text[i];
+    var [place, encoded_data] = command.split(";");
+    var data = coUtils.Text.base64decode(encoded_data);
+    var buffer = [];
+    var sanitized_text;
+    var clipboard_helper = Components
+      .classes["@mozilla.org/widget/clipboardhelper;1"]
+      .getService(Components.interfaces.nsIClipboardHelper);
+    var status_message;
+    var i, c;
+
+    var scanner = new ForwardInputIterator(data);
+    var decoder = this.dependency["decoder"];
+
+    for (c in decoder.decode(scanner)) {
+
       switch (c) {
         case 0x00: // nul
         case 0x01: // soh
@@ -102,13 +148,12 @@ Base64Copy.definition = {
         case 0x1f: // us
           continue;
       }
-      sanitized_text.push(c);
+      buffer.push(c);
     }
-    const clipboard_helper = Components
-      .classes["@mozilla.org/widget/clipboardhelper;1"]
-      .getService(Components.interfaces.nsIClipboardHelper);
+
+    sanitized_text = String.fromCharCode.apply(String, buffer);
     clipboard_helper.copyString(sanitized_text);
-    let status_message = coUtils.Text.format(
+    status_message = coUtils.Text.format(
       _("Copied text to clipboard: %s"), text);
 
     let broker = this._broker;
