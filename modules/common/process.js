@@ -65,346 +65,362 @@
  *
  *
  */
-//void function() {
 
 void function() {
 
-let tanasinn_scope = {}; // create scope.
-
-with (tanasinn_scope) {
-
-  let id = new Date().getTime();
-  let current_file = Components
-    .stack.filename.split(" -> ").pop()
-    .split("?").shift();
-  Components
-    .classes["@mozilla.org/moz/jssubscript-loader;1"]
-    .getService(Components.interfaces.mozIJSSubScriptLoader)
-    .loadSubScript(current_file + "/../common.js?" + id, tanasinn_scope);
-
-  coUtils.Runtime.loadScript("modules/common/pot.js", tanasinn_scope);
-  coUtils.Runtime.loadScript("modules/unicode/wcwidth.js", tanasinn_scope);
-  coUtils.Runtime.loadScript("modules/common/tupstart.js", tanasinn_scope);
-  coUtils.Runtime.loadScript("modules/common/tupbase.js", tanasinn_scope);
-
-  let loader = {
+  var tanasinn_scope = {}; // create scope.
+  var id, current_file;
+  var loader;
   
-    initialize: function initialize()
-    {
-      let window_mediator = Components
-        .classes["@mozilla.org/appshell/window-mediator;1"]
-        .getService(Components.interfaces.nsIWindowMediator);
-
-      coUtils.Services.windowWatcher.registerNotification(this);
-      ["navigator:browser", "mail:3pane"].forEach(function(window_type) {
-        // add functionality to existing windows
-        let browser_windows = window_mediator.getEnumerator(window_type);
-        while (browser_windows.hasMoreElements()) { // enumerate existing windows.
-          // only run the "start" immediately if the browser is completely loaded
-          let dom = {
-            window: browser_windows.getNext()
-          };
-          if ("complete" === dom.window.document.readyState) {
-            this.dispatchWindowEvent(dom.window);
-          } else {
-            // Wait for the window to finish loading before running the callback
-            // Listen for one load event before checking the window type
-            let self = this;
-            dom.window.addEventListener(
-              "load", 
-              function(event) self.dispatchWindowEvent(dom.window), 
-              false);
-          }
-        } // while
-      }, this);
-    },
+  with (tanasinn_scope) {
   
-    uninitialize: function uninitialize()
-    {
-      let window_watcher = coUtils.Services.windowWatcher;
-      window_watcher.unregisterNotification(this);
-    },
+    id = new Date().getTime();
+    current_file = Components
+      .stack.filename.split(" -> ").pop()
+      .split("?").shift();
+    Components
+      .classes["@mozilla.org/moz/jssubscript-loader;1"]
+      .getService(Components.interfaces.mozIJSSubScriptLoader)
+      .loadSubScript(current_file + "/../common.js?" + id, tanasinn_scope);
   
-    dispatchWindowEvent: function dispatchWindowEvent(window) 
-    {
-      Components.classes['@zuse.jp/tanasinn/process;1']
-        .getService(Components.interfaces.nsISupports)
-        .wrappedJSObject
-        .notify("event/new-window-detected", window);
-    },
+  //  coUtils.Runtime.loadScript("modules/common/pot.js", tanasinn_scope);
+    coUtils.Runtime.loadScript("modules/unicode/wcwidth.js", tanasinn_scope);
+    coUtils.Runtime.loadScript("modules/common/tupstart.js", tanasinn_scope);
+    coUtils.Runtime.loadScript("modules/common/tupbase.js", tanasinn_scope);
   
-    // Handles opening new navigator window.
-    observe: function observe(subject, topic, data) 
-    {
-      let window = subject.QueryInterface(Components.interfaces.nsIDOMWindow);
-      if ("domwindowopened" === topic) {
-        window.addEventListener("load", let (self = this) function onLoad() 
+    loader = {
+    
+      initialize: function initialize()
+      {
+        var window_mediator = Components
+          .classes["@mozilla.org/appshell/window-mediator;1"]
+          .getService(Components.interfaces.nsIWindowMediator);
+        var window_types = ["navigator:browser", "mail:3pane"];
+        var window_type;
+        var browser_windows;
+        var dom;
+        var self = this;
+        var i;
+  
+        coUtils.Services.windowWatcher.registerNotification(this);
+  
+        for (i = 0; i < window_types.length; ++i) {
+          window_type = window_types[i];
+          // add functionality to existing windows
+          browser_windows = window_mediator.getEnumerator(window_type);
+          while (browser_windows.hasMoreElements()) { // enumerate existing windows.
+            // only run the "start" immediately if the browser is completely loaded
+            dom = {
+              window: browser_windows.getNext()
+            };
+            if ("complete" === dom.window.document.readyState) {
+              this.dispatchWindowEvent(dom.window);
+            } else {
+              // Wait for the window to finish loading before running the callback
+              // Listen for one load event before checking the window type
+              dom.window.addEventListener(
+                "load", 
+                function(event) 
+                {
+                  self.dispatchWindowEvent(dom.window);
+                },
+                false);
+            }
+          } // while
+        }
+      },
+    
+      uninitialize: function uninitialize()
+      {
+        var window_watcher = coUtils.Services.windowWatcher;
+        window_watcher.unregisterNotification(this);
+      },
+    
+      dispatchWindowEvent: function dispatchWindowEvent(window) 
+      {
+        Components.classes['@zuse.jp/tanasinn/process;1']
+          .getService(Components.interfaces.nsISupports)
+          .wrappedJSObject
+          .notify("event/new-window-detected", window);
+      },
+    
+      // Handles opening new navigator window.
+      observe: function observe(subject, topic, data) 
+      {
+        var dom = {
+          window: subject.QueryInterface(Components.interfaces.nsIDOMWindow)
+        };
+        var self = this;
+        if ("domwindowopened" === topic) {
+          dom.window.addEventListener("load", function onLoad() 
           {
-            let document = window.document;
-            let window_type = document.documentElement.getAttribute("windowtype");
+            var document = dom.window.document;
+            var window_type = document.documentElement.getAttribute("windowtype");
             // ensure that "window" is a navigator window.
             if (/^(navigator:browser|mail:3pane)$/.test(window_type)) {
-              window.removeEventListener("load", arguments.callee, false);
-              self.dispatchWindowEvent(window);
+              dom.window.removeEventListener("load", arguments.callee, false);
+              self.dispatchWindowEvent(dom.window);
             }
           }, false);
-      }
-    },
-  }
-
-  let Environment = new Trait();
-  Environment.definition = {
-
-  // public properties
-
-    /** @property runtime_path */
-    get runtime_path()
-    {
-      return this._runtime_path || "$Home/.tanasinn";
-    },
-
-    set runtime_path(value)
-    {
-      this._runtime_path = value;
-    },
-
-    /** @property cygwin_root */
-    get cygwin_root()
-    {
-      let cygwin_root =  this._cygwin_root || this._guessCygwinRoot();
-      return cygwin_root;
-    },
-
-    set cygwin_root(value)
-    {
-      this._cygwin_root = value;
-    },
-
-    /** @property bin_path */
-    get bin_path()
-    {
-      return this._bin_path || this._guessBinPath();
-    },
-
-    set bin_path(value)
-    {
-      this._bin_path = value;
-    },
-
-    /** @property python_path */
-    get python_path()
-    {
-      return this._python_path || this._guessPythonPath();
-    },
-
-    set python_path(value)
-    {
-      this._python_path = value;
-    },
-
-    _guessCygwinRoot: function _guessCygwinRoot() 
-    {
-      let search_paths = "CDEFGHIJKLMNOPQRSTUVWXYZ"
-        .split("")
-        .map(function(letter) letter + ":\\cygwin");
-      search_paths.push("D:\\User\\Program\\cygwin");
-      for (let [, path] in Iterator(search_paths)) {
-        let directory = Components
-          .classes["@mozilla.org/file/local;1"]
-          .createInstance(Components.interfaces.nsILocalFile);
-        directory.initWithPath(path);
-        if (directory.exists() && directory.isDirectory) {
-          return directory.path;
         }
-      }
-      throw coUtils.Exception(_("Cannot guess cygwin root path."));
-    },
-
-    _guessBinPath: function _guessBinPath()
-    {
-      return [
-        "/bin", 
-        "/usr/bin/", 
-        "/usr/local/bin", 
-        "/opt/local/bin"
-      ].join(":");
-    },
-
-    _guessPythonPath: function _guessPythonPath() 
-    {
-      let os = coUtils.Runtime.os;
-      let bin_path = this.bin_path;
-      let executeable_postfix 
-        = "WINNT" === os ? ".exe": "";
-      let python_paths = bin_path.split(":")
-        .map(function(path) 
-        {
-          let directory = Components
-            .classes["@mozilla.org/file/local;1"]
-            .createInstance(Components.interfaces.nsILocalFile);
-          let native_path;
-          if ("WINNT" === os) {
-            // FIXME: this code is not works well when path includes space characters.
-            native_path = this.cygwin_root + path.replace(/\//g, "\\");
-          } else {
-            native_path = path;
-          }
-          directory.initWithPath(native_path);
-          return {
-            directory: directory,
-            path: path,
-          };
-        }, this).filter(function(info) 
-        {
-          return info.directory.exists() && info.directory.isDirectory();
-        }).reduce(function(accumulator, info) {
-          let paths = [ 2.9, 2.8, 2.7, 2.6, 2.5 ]
-            .map(function(version) 
-            {
-              let file = info.directory.clone();
-              file.append("python" + version + executeable_postfix);
-              return file;
-            }).filter(function(file)
-            {
-              return file.exists() && file.isExecutable();
-            }).map(function(file) 
-            {
-              if ("WINNT" === os) {
-                return info.path + "/" + file.leafName;
-              }
-              return file.path;
-            });
-          Array.prototype.push.apply(accumulator, paths);
-          return accumulator;
-        }, []);
-      return python_paths.shift();
-    },
-
-    _observers: null,
-
-    subscribeGlobalEvent: 
-    function subscribeGlobalEvent(topic, handler, context)
-    {
-      let delegate;
-      if (context) {
-        delegate = function() handler.apply(context, arguments);
-      } else {
-        delegate = handler;
-      }
-      let observer = { 
-        observe: function observe() 
-        {
-          delegate.apply(this, arguments);
-        },
-      };
-      this._observers[topic] = this._observers[topic] || [];
-      this._observers[topic].push(observer);
-      this.observerService.addObserver(observer, topic, false);
-    },
-    
-    removeGlobalEvent: function removeGlobalEvent(topic)
-    {
-      if (this.observerService && this._observers) {
-        let observers = this._observers[topic];
-        if (observers) {
-          observers.forEach(function(observer) 
-          {
-            try {
-              this.observerService.removeObserver(observer, topic);
-            } catch(e) {
-              coUtils.Debug.reportWarning(e);
-            }
-          }, this);
-          this._observers = null;
-        }
-      }
-    },
-
-  }; // trait Environment
-
-  /**
-   * @class Process
-   */
-  let Process = new CoClass().extends(EventBroker).mix(Environment);
-  Process.definition = {
-
-    get id()
-      "process",
-  
-    get classID()
-      Components.ID("{BA5BFE08-CEFB-4C20-BEE6-FCEE9EABBDC1}"),
-  
-    get description()
-      "tanasinn Process class.",
-  
-    get contractID()
-      "@zuse.jp/tanasinn/process;1",
-   
-    get default_scope()
-      function() { this.__proto__ = tanasinn_scope; },
-
-    QueryInterface: function QueryInterface(a_IID)
-      this,
-  
-    get wrappedJSObject()
-      this,
-
-    initial_settings_path: "$Home/.tanasinn.js",
- 
-    observerService: Components
-      .classes["@mozilla.org/observer-service;1"]
-      .getService(Components.interfaces.nsIObserverService),
-
-    /** constructor. */
-    initialize: function initialize() 
-    {
-      // load initial settings.
-      let path = this.initial_settings_path;
-      let file = coUtils.File.getFileLeafFromVirtualPath(path);
-      if (file && file.exists()) {
-        try {
-          coUtils.Runtime.loadScript(path, { process: this } );
-        } catch (e) {
-          coUtils.Debug.reportError(e);
-        }
-      }
-      this.load(this, ["modules/process_components"], new this.default_scope);
-      this._observers = {};
-      this.subscribeGlobalEvent(
-        "quit-application", 
-        function onQuitApplication() 
-        {
-          this.notify("event/disabled", this);
-        }, this);
-    },
-
-    uninitialize: function uninitialize()
-    {
-      loader.uninitialize();
-    },
-  
-    getDesktopFromWindow: function getDesktopFromWindow(window) 
-    {
-        var desktops = this.notify("get/desktop-from-window", window);
-        if (!desktops) {
-            this.notify("event/new-window-detected", window);
-            desktops = this.notify("get/desktop-from-window", window);
-        }
-        return desktops.shift();
-    },
-
-    /* override */
-    toString: function toString()
-    {
-      return "[Object Process]";
+      },
     }
   
-  }; // Process
-
-  loader.initialize();
-
-} // with tanasinn_scope
+    var Environment = new Trait();
+    Environment.definition = {
+  
+    // public properties
+  
+      /** @property runtime_path */
+      get runtime_path()
+      {
+        return this._runtime_path || "$Home/.tanasinn";
+      },
+  
+      set runtime_path(value)
+      {
+        this._runtime_path = value;
+      },
+  
+      /** @property cygwin_root */
+      get cygwin_root()
+      {
+        var cygwin_root = this._cygwin_root || this._guessCygwinRoot();
+        return cygwin_root;
+      },
+  
+      set cygwin_root(value)
+      {
+        this._cygwin_root = value;
+      },
+  
+      /** @property bin_path */
+      get bin_path()
+      {
+        return this._bin_path || this._guessBinPath();
+      },
+  
+      set bin_path(value)
+      {
+        this._bin_path = value;
+      },
+  
+      /** @property python_path */
+      get python_path()
+      {
+        return this._python_path || this._guessPythonPath();
+      },
+  
+      set python_path(value)
+      {
+        this._python_path = value;
+      },
+  
+      _guessCygwinRoot: function _guessCygwinRoot() 
+      {
+        var path;
+        var directory;
+        var search_paths = "CDEFGHIJKLMNOPQRSTUVWXYZ"
+          .split("")
+          .map(function(letter) letter + ":\\cygwin");
+        search_paths.push("D:\\User\\Program\\cygwin");
+        for ([, path] in Iterator(search_paths)) {
+          directory = Components
+            .classes["@mozilla.org/file/local;1"]
+            .createInstance(Components.interfaces.nsILocalFile);
+          directory.initWithPath(path);
+          if (directory.exists() && directory.isDirectory) {
+            return directory.path;
+          }
+        }
+        throw coUtils.Exception(_("Cannot guess cygwin root path."));
+      },
+  
+      _guessBinPath: function _guessBinPath()
+      {
+        return [
+          "/bin", 
+          "/usr/bin/", 
+          "/usr/local/bin", 
+          "/opt/local/bin"
+        ].join(":");
+      },
+  
+      _guessPythonPath: function _guessPythonPath() 
+      {
+        var os = coUtils.Runtime.os;
+        var bin_path = this.bin_path;
+        var executeable_postfix = "WINNT" === os ? ".exe": "";
+        var python_paths = bin_path.split(":")
+          .map(function(path) 
+          {
+            var directory = Components
+              .classes["@mozilla.org/file/local;1"]
+              .createInstance(Components.interfaces.nsILocalFile);
+            var native_path;
+            if ("WINNT" === os) {
+              // FIXME: this code is not works well when path includes space characters.
+              native_path = this.cygwin_root + path.replace(/\//g, "\\");
+            } else {
+              native_path = path;
+            }
+            directory.initWithPath(native_path);
+            return {
+              directory: directory,
+              path: path,
+            };
+          }, this).filter(function(info) 
+          {
+            return info.directory.exists() && info.directory.isDirectory();
+          }).reduce(function(accumulator, info) {
+            var paths = [ 2.9, 2.8, 2.7, 2.6, 2.5 ]
+              .map(function(version) 
+              {
+                var file = info.directory.clone();
+                file.append("python" + version + executeable_postfix);
+                return file;
+              }).filter(function(file)
+              {
+                return file.exists() && file.isExecutable();
+              }).map(function(file) 
+              {
+                if ("WINNT" === os) {
+                  return info.path + "/" + file.leafName;
+                }
+                return file.path;
+              });
+            Array.prototype.push.apply(accumulator, paths);
+            return accumulator;
+          }, []);
+        return python_paths.shift();
+      },
+  
+      _observers: null,
+  
+      subscribeGlobalEvent: 
+      function subscribeGlobalEvent(topic, handler, context)
+      {
+        var delegate;
+        var observer;
+        if (context) {
+          delegate = function() handler.apply(context, arguments);
+        } else {
+          delegate = handler;
+        }
+        observer = { 
+          observe: function observe() 
+          {
+            delegate.apply(this, arguments);
+          },
+        };
+        this._observers[topic] = this._observers[topic] || [];
+        this._observers[topic].push(observer);
+        this.observerService.addObserver(observer, topic, false);
+      },
+      
+      removeGlobalEvent: function removeGlobalEvent(topic)
+      {
+        var observers;
+        if (this.observerService && this._observers) {
+          observers = this._observers[topic];
+          if (observers) {
+            observers.forEach(function(observer) 
+            {
+              try {
+                this.observerService.removeObserver(observer, topic);
+              } catch(e) {
+                coUtils.Debug.reportWarning(e);
+              }
+            }, this);
+            this._observers = null;
+          }
+        }
+      },
+  
+    }; // trait Environment
+  
+    /**
+     * @class Process
+     */
+    var Process = new CoClass().extends(EventBroker).mix(Environment);
+    Process.definition = {
+  
+      get id()
+        "process",
+    
+      get classID()
+        Components.ID("{BA5BFE08-CEFB-4C20-BEE6-FCEE9EABBDC1}"),
+    
+      get description()
+        "tanasinn Process class.",
+    
+      get contractID()
+        "@zuse.jp/tanasinn/process;1",
+     
+      get default_scope()
+        function() { this.__proto__ = tanasinn_scope; },
+  
+      QueryInterface: function QueryInterface(a_IID)
+        this,
+    
+      get wrappedJSObject()
+        this,
+  
+      initial_settings_path: "$Home/.tanasinn.js",
+   
+      observerService: Components
+        .classes["@mozilla.org/observer-service;1"]
+        .getService(Components.interfaces.nsIObserverService),
+  
+      /** constructor. */
+      initialize: function initialize() 
+      {
+        // load initial settings.
+        var path = this.initial_settings_path;
+        var file = coUtils.File.getFileLeafFromVirtualPath(path);
+        if (file && file.exists()) {
+          try {
+            coUtils.Runtime.loadScript(path, { process: this } );
+          } catch (e) {
+            coUtils.Debug.reportError(e);
+          }
+        }
+        this.load(this, ["modules/process_components"], new this.default_scope);
+        this._observers = {};
+        this.subscribeGlobalEvent(
+          "quit-application", 
+          function onQuitApplication() 
+          {
+            this.notify("event/disabled", this);
+          }, this);
+      },
+  
+      uninitialize: function uninitialize()
+      {
+        loader.uninitialize();
+      },
+    
+      getDesktopFromWindow: function getDesktopFromWindow(window) 
+      {
+        var desktops = this.notify("get/desktop-from-window", window);
+        if (!desktops) {
+          this.notify("event/new-window-detected", window);
+          desktops = this.notify("get/desktop-from-window", window);
+        }
+        return desktops.shift();
+      },
+  
+      /* override */
+      toString: function toString()
+      {
+        return "[Object Process]";
+      }
+    
+    }; // Process
+  
+    loader.initialize();
+  
+  } // with tanasinn_scope
 
 } ();
 
-//} ();

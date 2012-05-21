@@ -87,7 +87,8 @@
  *
  *    BinaryOperator := 'and' | 'or' | '&' | '|'
  *
- *    BinaryExpression := UnaryExpression | UnaryExpression, BinaryOperator, UnaryExpression 
+ *    BinaryExpression := UnaryExpression 
+ *                      | UnaryExpression, BinaryOperator, UnaryExpression 
  *
  *    Expression := BinaryExpression
  *
@@ -126,7 +127,10 @@
  * Stored observers are not objects, but simple delegate functions.
  *
  */
-let EventBrokerBase = function EventBrokerBase() this.initialize.apply(this, arguments);
+function EventBrokerBase() 
+{
+  this.initialize.apply(this, arguments);
+}
 EventBrokerBase.prototype = {
 
   /** 
@@ -140,21 +144,6 @@ EventBrokerBase.prototype = {
     this._delegate_map = {}; 
   },
 
-  get __count()
-  {
-    return [key for ([key,] in Iterator(this._delegate_map))].length;
-  },
-
-  get keys()
-  {
-    return Object.keys(this._delegate_map);
-  },
-
-  getListeners: function getListeners(topic)
-  {
-    return this._delegate_map[topic].slice(0);
-  },
-
   /** Subscribes event handler with a topic. 
    *  @param {String} topic The notification topic. This string-valued 
    *                        key uniquely identifies the notification. 
@@ -164,8 +153,10 @@ EventBrokerBase.prototype = {
    *  @return {String} An event ID string which is needed to unregister the 
    *                   handler from event map.
    */ 
-  addEventListener: function addEventListener(topic, delegate, id) 
+  addListener: function addListener(topic, delegate, id) 
   {
+    var delegate_map;
+    var delegate_list;
     //coUtils.Debug.reportMessage(_("event registered: '%s'."), topic); 
     if (/\s/.test(topic)) { // detect whether topic includes space characters.
       throw Components.Exception(
@@ -174,11 +165,11 @@ EventBrokerBase.prototype = {
         topic);
     }
     id = id || coUtils.Uuid.generate().toString(); // generate new ID string if it was empty.
-    let delegate_map = this._delegate_map;
+    delegate_map = this._delegate_map;
     if (!delegate_map.hasOwnProperty(topic)) { // if delegate list associated with given 
       delegate_map[topic] = []; // topic was not found, create new list.
     }
-    let delegate_list = delegate_map[topic];
+    delegate_list = delegate_map[topic];
     delegate_list.push({ id: id, action: delegate }); // register given delegate
     return id;
   },
@@ -187,13 +178,14 @@ EventBrokerBase.prototype = {
    *  @param {String} id An ID of registered event.
    *  @return {Number} Number in which it succeeded to remove from event map.
    */ 
-  removeEventListener: function addEventListener(id) 
+  removeListener: function removeListener(id) 
   {
-    let count = 0;
+    var count = 0;
+    var delegates, key, value;
     // iterate delegate list and search target delegate(s) specified 
     // by the argument.
-    for (let [, delegates] in Iterator(this._delegate_map)) {
-      for (let [key, value] in Iterator(delegates)) {
+    for ([, delegates] in Iterator(this._delegate_map)) {
+      for ([key, value] in Iterator(delegates)) {
         if (value && value.id == id) {
           delegates.splice(key, 1); // remove registered delegate.
           ++count;
@@ -210,25 +202,26 @@ EventBrokerBase.prototype = {
    */
   post: function post(topic, data) 
   {
-    let events = this._delegate_map[topic];
+    var events = this._delegate_map[topic];
+    var i, delegate, stack;
     if (events) {
-      events.forEach(function(delegate) 
-      { 
+      for (i = 0; i < events.length; ++i) { 
+        delegate = events[i];
         try {
           delegate.action(data);
         } catch (e) {
+          stack = Components.stack.caller.caller.caller;
           coUtils.Debug.reportError(e);
           coUtils.Debug.reportError(
             _("called at: '%s'.\n", 
               "The above Error is trapped in the ",
               "following local event handler. '%s'."), 
-            let (stack = Components.stack .caller.caller .caller)
-              stack.filename
-                .split("->").pop()
-                .split("?").shift() + ": " + stack.lineNumber, 
+            stack.filename
+              .split("->").pop()
+              .split("?").shift() + ": " + stack.lineNumber, 
             topic);
         }
-      });
+      };
     }
   },
 
@@ -240,23 +233,23 @@ EventBrokerBase.prototype = {
    */
   multicast: function multicast(topic, data) 
   {
-    let events =  this._delegate_map[topic];
+    var events = this._delegate_map[topic];
+    var stack;
     if (events) {
       return events.map(function(delegate) 
       { 
         try {
-          let result = delegate.action(data);
-          return result;
+          return delegate.action(data);
         } catch (e) {
+          stack = Components.stack .caller.caller.caller;
           coUtils.Debug.reportError(e);
           coUtils.Debug.reportError(
             _("called at: '%s'.\n", 
               "The above Error is trapped in the ",
               "following local event handler. '%s'."), 
-            let (stack = Components.stack .caller.caller.caller)
-              stack.filename
-                .split("->").pop()
-                .split("?").shift() + ": " + stack.lineNumber, 
+            stack.filename
+              .split("->").pop()
+              .split("?").shift() + ": " + stack.lineNumber, 
             topic);
           return null;
         }
@@ -273,7 +266,8 @@ EventBrokerBase.prototype = {
    */
   uniget: function uniget(topic, data) 
   {
-    let events =  this._delegate_map[topic];
+    var events = this._delegate_map[topic];
+    var stack, delegate;
     if (!events) {
       throw coUtils.Debug.Exception(
         _("Subscriber not Found: '%s'."), topic);
@@ -283,17 +277,18 @@ EventBrokerBase.prototype = {
         events.length, topic);
     }
     try {
-      let [ delegate ] = events;
-      let result = delegate.action(data);
-      return result;
+      delegate = events[0];
+      return delegate.action(data);
     } catch (e) {
+      stack = Components.stack.caller.caller.caller;
       coUtils.Debug.reportError(e);
       coUtils.Debug.reportError(
         _("called at: '%s'.\n", 
           "The above Error is trapped in the ",
           "following local event handler. '%s'."), 
-        let (stack = Components.stack .caller.caller .caller)
-          stack.filename.split("->").pop().split("?").shift() + ": " + stack.lineNumber, 
+        stack.filename.split("->")
+          .pop().split("?")
+          .shift() + ": " + stack.lineNumber, 
         topic);
       return null;
     }
@@ -302,8 +297,6 @@ EventBrokerBase.prototype = {
   /** Reset event map. */
   clearEvents: function clearEvents()
   {
-    //for (let [key,] in Iterator(this._delegate_map))
-    //  delete this._delegate_map[key];
     this._delegate_map = {}; 
   },
 
@@ -313,21 +306,8 @@ EventBrokerBase.prototype = {
  *  It can understand Event Expression, and interpret it to a complex of 
  *  multiple topics.
  */
-let EventBroker = {}; // Abstruct
+var EventBroker = {}; // Abstruct
 EventBroker.prototype = {
-
-  get __count()
-    this._base.__count,
-
-  get keys()
-  {
-    return this._base.keys;
-  },
-
-  getListeners: function getListeners(topic)
-  {
-    return this._base.getListeners(topic);
-  },
 
   /** constructor */
   initialize: function initialize(parent)
@@ -348,7 +328,7 @@ EventBroker.prototype = {
    * */
   subscribe: function subscribe(expression, listener, context, id) 
   {
-    let delegate = function() listener.apply(context, arguments);
+    var delegate = function() listener.apply(context, arguments);
     this._processer.subscribe(expression, delegate, id);
     //if (this._parent) {
     //  this._parent.subscribe(expression, delegate, id);
@@ -364,7 +344,7 @@ EventBroker.prototype = {
     //if (this._parent) {
     //  this._parent.unsubscribe(id);
     //}
-    return this._base.removeEventListener(id);
+    return this._base.removeListener(id);
   },
 
   /** Notify listeners that event is occurring. 
@@ -375,7 +355,7 @@ EventBroker.prototype = {
    */
   notify: function notify(topic, data)
   {
-    let base = this._base;
+    var base = this._base;
     return base.multicast(String(topic), data);
   },
 
@@ -386,7 +366,7 @@ EventBroker.prototype = {
    */
   post: function post(topic, data)
   {
-    let base = this._base;
+    var base = this._base;
     base.post(String(topic), data);
   },
 
@@ -398,8 +378,8 @@ EventBroker.prototype = {
    */
   multiget: function multiget(topic, data)
   {
-    let base = this._base;
-    let result = base.multiget(String(topic), data);
+    var base = this._base;
+    var result = base.multiget(String(topic), data);
     return result;
   },
 
@@ -411,15 +391,15 @@ EventBroker.prototype = {
    */
   uniget: function uniget(topic, data)
   {
-    let base = this._base;
-    let result = base.uniget(String(topic), data);
+    var base = this._base;
+    var result = base.uniget(String(topic), data);
     return result;
   },
 
   /** Reset event map. */
   clear: function clear()
   {
-    let base = this._base;
+    var base = this._base;
     return base.clearEvents();
   },
 
@@ -428,14 +408,13 @@ EventBroker.prototype = {
    */
   load: function load(broker, search_path, scope) 
   {
-    let paths = coUtils.File.getFileEntriesFromSerchPath(search_path);
-    let entries = [entry for (entry in paths)];
-    //entries = entries.sort();
-    //entries = entries.reverse();
-    for (let [, entry] in Iterator(entries)) {
+    var paths = coUtils.File.getFileEntriesFromSerchPath(search_path);
+    var entry;
+    var url;
+    for (entry in paths) {
       try {
         // make URI string such as "file://....".
-        let url = coUtils.File.getURLSpec(entry); 
+        url = coUtils.File.getURLSpec(entry); 
         coUtils.Runtime.loadScript(url, scope);
         if (scope.main) {
           scope.main(broker);
@@ -450,7 +429,7 @@ EventBroker.prototype = {
         coUtils.Debug.reportError(e);
       }
     }
-  },
+  }, // load
 
 };
 
@@ -539,28 +518,34 @@ function Or(lhs, rhs) ({
 
 function Actor(broker, token, stack, delegate, id) {
 
+  var self = this;
+
   this.__proto__ = { 
     test: false,
     value: [ null ],
-    reset: function() { 
+    reset: function() 
+    { 
       this.value = [ null ];
       this.test = false;
     },
     toString: function() "[Actor " + token + "]",
   };
 
-  broker.addEventListener(token, let (self = this) function(subject) 
+  broker.addListener(token, function(subject) 
   {
+    var result;
+    var root;
     self.test = true;
     self.value = [ subject ];
-    let [root] = stack; // get root node of parse tree from stack top.
+    root = stack[0]; // get root node of parse tree from stack top.
     if (root.test) {
-      let result = delegate.apply(broker, root.value);
+      result = delegate.apply(broker, root.value);
       root.reset();
       return result;
     }
     return null;
   }, id);
+
 } // class Actor
 
 /**
@@ -568,7 +553,10 @@ function Actor(broker, token, stack, delegate, id) {
  *
  * Parses Event Expressions and evaluates them.
  */
-let EventExpressionProcesser = function() this.initialize.apply(this, arguments);
+function EventExpressionProcesser() 
+{
+  return this.initialize.apply(this, arguments);
+}
 EventExpressionProcesser.prototype = {
 
   /** constructor */
@@ -584,21 +572,23 @@ EventExpressionProcesser.prototype = {
   _generateTokens: function _generateTokens(text) 
   {
     // [blank] or [operators] or [identifier]
-    let pattern = new RegExp(/\s*(?:(@|~|&|\||\(|\))|([A-Za-z0-9_\-\/\.]*)\{([^\}]+)\}([A-Za-z0-9_\-\/\.]*)|([A-Za-z0-9_\-\/\.]+))/y);
-
+    var pattern = new RegExp(/\s*(?:(@|~|&|\||\(|\))|([A-Za-z0-9_\-\/\.]*)\{([^\}]+)\}([A-Za-z0-9_\-\/\.]*)|([A-Za-z0-9_\-\/\.]+))/y);
+    var match;
+    var operator, first, expression, last, identifier;
+    var token;
     //pattern.lastIndex = 0;
     while (true) {
-      let match = pattern.exec(text);
+      match = pattern.exec(text);
       if (!match) {
         break;
       }
-      let [/* blank */, operator, first, expression, last, identifier] = match;
+      [/* blank */, operator, first, expression, last, identifier] = match;
       if (operator) {
         yield operator;
       } else if (identifier) {
         yield identifier;
       } else {
-        for (let token in this._generateTokens(expression)) { // expand grob.
+        for (token in this._generateTokens(expression)) { // expand grob.
           if (token.match(/^(&|\||\(|\))$/)) {
             yield token; // normal tokens.
           } else {
@@ -616,10 +606,11 @@ EventExpressionProcesser.prototype = {
    */
   _parseExpression: function _parseExpression(tokens, delegate, id) 
   {
-    let stack = [];
+    var stack = [];
     while (tokens.length) {
       void function() {
-        let token = tokens.shift();
+        var token = tokens.shift();
+        var lhs, rhs;
         if ("(" == token) {
           while (tokens.length) {
             arguments.callee.call(this);
@@ -628,21 +619,21 @@ EventExpressionProcesser.prototype = {
           return;
         } else if ("@" == token) {
           arguments.callee.call(this);
-          let rhs = stack.pop();
+          rhs = stack.pop();
           stack.push(new Once(rhs));
         } else if ("~" == token) {
           arguments.callee.call(this);
-          let rhs = stack.pop();
+          rhs = stack.pop();
           stack.push(new Not(rhs));
         } else if ("&" == token || "and" == token) {
           arguments.callee.call(this);
-          let rhs = stack.pop();
-          let lhs = stack.pop();
+          rhs = stack.pop();
+          lhs = stack.pop();
           stack.push(new And(lhs, rhs));
         } else if ("|" == token || "or" == token) {
           arguments.callee.call(this);
-          let rhs = stack.pop();
-          let lhs = stack.pop();
+          rhs = stack.pop();
+          lhs = stack.pop();
           stack.push(new Or(lhs, rhs));
         } else {
           stack.push(new Actor(this._broker, token, stack, delegate, id));
@@ -658,8 +649,8 @@ EventExpressionProcesser.prototype = {
    */
   subscribe: function subscribe(expression, delegate, id) 
   {
-    let token_generator = this._generateTokens(expression);
-    let tokens = [token for (token in token_generator)];
+    var token_generator = this._generateTokens(expression);
+    var tokens = [token for (token in token_generator)];
     this._parseExpression(tokens, delegate, id);
   }
 
