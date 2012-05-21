@@ -241,7 +241,6 @@ function Prototype(definition, base_class, dependency_list)
     var getter = definition.__lookupGetter__(decorated_key);
     var setter = definition.__lookupSetter__(decorated_key);
     var key, value;
-    var decorated_key;
 
     try {
       key = intercept.call(this, decorated_key);

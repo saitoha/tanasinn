@@ -26,7 +26,7 @@
  * Provides basic utility and services.
  */
 
-let coUtils = coUtils || { };
+var coUtils = coUtils || { };
 
 coUtils.Constant = {
 
@@ -906,22 +906,30 @@ coUtils.Constant = {
 };
 
 coUtils.Constant.WEB140_COLOR_MAP_REVERSE = function() {
-  let result = {};
-  for (let [key, value] in Iterator(coUtils.Constant.WEB140_COLOR_MAP)) {
+
+  var result = {};
+  var key, value;
+
+  for ([key, value] in Iterator(coUtils.Constant.WEB140_COLOR_MAP)) {
     result[value] = key;
     coUtils.Constant.WEB140_COLOR_MAP[key.toLowerCase()] = value;
   } 
   return result;
+
 } ();
 
 
 coUtils.Constant.X11_COLOR_MAP_REVERSE = function() {
-  let result = {};
-  for (let [key, value] in Iterator(coUtils.Constant.X11_COLOR_MAP)) {
+
+  var result = {};
+  var key, value;
+
+  for ([key, value] in Iterator(coUtils.Constant.X11_COLOR_MAP)) {
     result[value] = key;
     coUtils.Constant.X11_COLOR_MAP[key.toLowerCase()] = value;
   } 
   return result;
+
 } ();
 
 
@@ -1282,15 +1290,16 @@ coUtils.Constant.LOCALE_ID_MAP = {
 /**
  * Show a message box dialog.
  */
-let alert = coUtils.alert = function alert(message)
+var alert = coUtils.alert = function alert(message)
 {
+  var prompt_service = Components
+      .classes["@mozilla.org/embedcomp/prompt-service;1"]
+      .getService(Components.interfaces.nsIPromptService);
+
   if (arguments.length > 1 && "string" == typeof message) {
     message = coUtils.Text.format.apply(coUtils.Text, arguments);
   }
-  let prompt_service = Components
-      .classes["@mozilla.org/embedcomp/prompt-service;1"]
-      .getService(Components.interfaces.nsIPromptService)
-    prompt_service.alert(this.window || null, "tanasinn", message);
+  prompt_service.alert(this.window || null, "tanasinn", message);
 }
 
 /** Returns the window object.
@@ -1298,12 +1307,16 @@ let alert = coUtils.alert = function alert(message)
  */
 coUtils.getWindow = function getWindow() 
 {
-  let window_mediator = Components
+  var result;
+  var window_mediator = Components
     .classes["@mozilla.org/appshell/window-mediator;1"]
     .getService(Components.interfaces.nsIWindowMediator);
-  let result = window_mediator.getMostRecentWindow("navigator:browser")
-            || window_mediator.getMostRecentWindow("mail:3pane");
-  // cache result
+
+  // Firefox/SeaMonkey - "navigator:browser"
+  // ThunderBird - "mail:3pane"
+  result = window_mediator.getMostRecentWindow("navigator:browser") 
+        || window_mediator.getMostRecentWindow("mail:3pane"); 
+
   if (result) {
     return result;
   }
@@ -1316,10 +1329,10 @@ coUtils.getWindow = function getWindow()
  */
 coUtils.format = function format(/* template, arg1, arg2, .... */) 
 {
-  let args = Array.slice(arguments);
-  let template = args.shift();
-  let result = template.replace(/%[s|f|d|i|x]/g, function(matchString) {
-    let value = args.shift();
+  var args = Array.slice(arguments);
+  var template = args.shift();
+  var result = template.replace(/%[s|f|d|i|x]/g, function(matchString) {
+    var value = args.shift();
     if ("%s" == matchString) {
       return String(value);
     } else if ("%f" == matchString) {
@@ -1341,16 +1354,17 @@ coUtils.Color = {
 
   parseX11ColorSpec: function parseX11ColorSpec(spec)
   {
-    let result;
-    let pattern = /^#([0-9a-fA-F]{3,12})$|^rgb:([0-9a-fA-F]+)\/([0-9a-fA-F]+)\/([0-9a-fA-F]+)$|^([a-zA-Z0-9\s]+)$/;
-    let match = spec.match(pattern);
+    var result;
+    var pattern = /^#([0-9a-fA-F]{3,12})$|^rgb:([0-9a-fA-F]+)\/([0-9a-fA-F]+)\/([0-9a-fA-F]+)$|^([a-zA-Z0-9\s]+)$/;
+    var match = spec.match(pattern);
+    var rgb, r, g, b, name;
   
     if (null === match) {
       throw coUtils.Debug.Exception(
         _("Invalid spec string: %s."), spec);
     }
   
-    let [, rgb, r, g, b, name] = match;
+    [, rgb, r, g, b, name] = match;
   
     if (rgb) {
       result = this._convertRGBSpec1(rgb); 
@@ -1366,7 +1380,7 @@ coUtils.Color = {
  
   _convertRGBSpec1: function _parseRGBSpec(rgb)
   {
-    let result;
+    var result;
     
     switch (rgb.length) {
   
@@ -1412,9 +1426,13 @@ coUtils.Color = {
 
   _convertRGBSpec2: function _parseRGBSpec(r, g, b)
   {
-    let buffer = "#";
+    var buffer = "#";
+    var n;
+    var i;
   
-    for (let [, n] in Iterator([r, g, b])) {
+    for (i = 0; i < arguments.length; ++i) {
+
+      n = arguments[i]; // r / g / b
   
       switch (n.length) {
   
@@ -1445,15 +1463,16 @@ coUtils.Color = {
         ;
     }
     return buffer;
+
   }, // _convertRGBSpec2
 
   _convertColorName: function _convertColorName(name) 
   {
-    let canonical_name = name
+    var canonical_name = name
       .replace(/\s+/g, "")
       .toLowerCase()
       ;
-    let color = coUtils.Constant.X11_COLOR_MAP[canonical_name]
+    var color = coUtils.Constant.X11_COLOR_MAP[canonical_name]
              || coUtils.Constant.WEB140_COLOR_MAP[canonical_name];
     if (!color) {
       throw coUtils.Debug.Exception(
@@ -1474,9 +1493,12 @@ coUtils.Event = {
     *  @param {Object} context A "this" object in which the listener handler 
     *                  is to be evalute.
     */
-  subscribeGlobalEvent: function subscribeGlobalEvent(topic, handler, context)
+  subscribeGlobalEvent: 
+  function subscribeGlobalEvent(topic, handler, context)
   {
-    let delegate;
+    var delegate;
+    var observer;
+
     if (context) {
       delegate = function() handler.apply(context, arguments);
     } else {
@@ -1485,7 +1507,7 @@ coUtils.Event = {
     this.observerService = this.observerService || Components
       .classes["@mozilla.org/observer-service;1"]
       .getService(Components.interfaces.nsIObserverService);
-    let observer = { 
+    observer = { 
       observe: function observe() 
       {
         delegate.apply(this, arguments);
@@ -1498,8 +1520,10 @@ coUtils.Event = {
   
   removeGlobalEvent: function removeGlobalEvent(topic)
   {
+    var observers;
+
     if (this.observerService) {
-      let observers = this._observers[topic];
+      observers = this._observers[topic];
       if (observers) {
         observers.forEach(function(observer) 
         {
@@ -1532,24 +1556,23 @@ coUtils.Font = {
   getAverageGlyphSize: 
   function getAverageGlyphSize(font_size, font_family, test_string)
   {
-    const NS_XHTML = "http://www.w3.org/1999/xhtml";
-    let canvas = coUtils.getWindow()
+    var NS_XHTML = "http://www.w3.org/1999/xhtml";
+    var canvas = coUtils.getWindow()
       .document
       .createElementNS(NS_XHTML , "html:canvas");
-    let context = canvas.getContext("2d");
-    let unit = test_string || "Mbc123-XYM";
-    
-    let text = "";
-    let i;
+    var context = canvas.getContext("2d");
+    var unit = test_string || "Mbc123-XYM";
+    var text = "";
+    var i;
+
     for (i = 0; i < 10; ++i) {
-      text += i;
+      text += unit;
     }
 
-    let css_font_property = font_size + "px " + font_family;
-    context.font = css_font_property;
-    let metrics = context.measureText(text);
-    let char_width = metrics.width / text.length;
-    let height = metrics.height;
+    context.font = font_size + "px " + font_family;
+    var metrics = context.measureText(text);
+    var char_width = metrics.width / text.length;
+    var height = metrics.height;
   
     text = "g\u3075";
     metrics = context.measureText(text);
@@ -1560,19 +1583,20 @@ coUtils.Font = {
     context.fillText(text, 0, 0);
     context.strokeText(text, 0, 0);
     context.restore();
-    let data = context.getImageData(0, 0, canvas.width, canvas.height).data; 
-    let line_length = data.length / (canvas.height * 4);
+    var data = context.getImageData(0, 0, canvas.width, canvas.height).data; 
+    var line_length = data.length / (canvas.height * 4);
   
-    let first, last;
+    var first, last;
+    var i;
   detect_first:
-    for (let i = 3; i < data.length; i += 4) {
+    for (i = 3; i < data.length; i += 4) {
       if (data[i]) {
         first = Math.floor(i / (canvas.width * 4));
         break detect_first;
       }
     }
   detect_last:
-    for (let i = data.length - 1; i >= 0; i -= 4) {
+    for (i = data.length - 1; i >= 0; i -= 4) {
       if (data[i]) {
         last = Math.floor(i / (canvas.width * 4)) + 1;
         break detect_last;
@@ -1602,12 +1626,13 @@ coUtils.IO = {
    */
   readFromFile: function readFromFile(location, charset) 
   {
-    let url;
+    var url;
+    var file;
     location = String(location);
     if (location.match(/^[a-z]+:\/\//)) {
       url = location;
     } else {
-      let file = coUtils.File.getFileLeafFromVirtualPath(location);
+      file = coUtils.File.getFileLeafFromVirtualPath(location);
       if (!file.exists()) {
         throw coUtils.Debug.Exception(
           coUtils.Text.format(
@@ -1620,23 +1645,35 @@ coUtils.IO = {
 
       url = coUtils.File.getURLSpec(file);
     }
-    let channel = Components
+
+    return this._readFromFileImpl(url, charset);
+  },
+
+  _readFromFileImpl: function _readFromFileImpl(url, charset) 
+  {
+    var channel = Components
       .classes["@mozilla.org/network/io-service;1"]
       .getService(Components.interfaces.nsIIOService2)
       .newChannel(url, null, null);
-    let input = channel.open();
+    var input = channel.open();
+    var stream;
+    var buffer;
+    var result;
+    var nread;
+    var stream;
+
     try {
       if (charset) {
-        let stream = Components
+        stream = Components
           .classes["@mozilla.org/intl/converter-input-stream;1"]
           .createInstance(Components.interfaces.nsIConverterInputStream);
         stream.init(input, charset, 1024, 
           Components.interfaces.nsIConverterInputStream.DEFAULT_REPLACEMENT_CHARACTER);
         try {
-          let buffer = [];
+          buffer = [];
           while (true) {
-            let result = {};
-            let nread = stream.readString(input.available(), result);
+            result = {};
+            nread = stream.readString(input.available(), result);
             buffer.push(result.value);
             if (0 == nread)
               break;
@@ -1646,7 +1683,7 @@ coUtils.IO = {
           stream.close();
         }
       } else {
-        let stream = Components
+        stream = Components
           .classes["@mozilla.org/scriptableinputstream;1"]
           .getService(Components.interfaces.nsIScriptableInputStream);
         stream.init(input); 
@@ -1670,7 +1707,8 @@ coUtils.IO = {
   writeToFile: 
   function writeToFile(path, data, callback) 
   {
-    let file = coUtils.File.getFileLeafFromVirtualPath(path);
+    var file = coUtils.File.getFileLeafFromVirtualPath(path);
+
     if (file.exists()) { // check if target exists.
       // check if target is file node.
       if (!file.isFile) {
@@ -1686,7 +1724,8 @@ coUtils.IO = {
       // create base directories recursively (= mkdir -p).
       function make_directory(current) 
       {
-        let parent = current.parent;
+        var parent = current.parent;
+
         if (!parent.exists()) {
           make_directory(parent);
           parent.create(Components.interfaces.nsIFile.DIRECTORY_TYPE, -1);
@@ -1694,21 +1733,33 @@ coUtils.IO = {
       }
       make_directory(file);
     }
+    this._writeToFileImpl(file, data, callback);
+  },	 
+
+  _writeToFileImpl: 
+  function _writeToFileImpl(file, data, callback) 
+  {
+    var mode, ostream, converter, istream;
+
   	Components.utils.import("resource://gre/modules/NetUtil.jsm");
   	Components.utils.import("resource://gre/modules/FileUtils.jsm");
-  	 
+
   	// file is nsIFile, data is a string
-  	let mode = FileUtils.MODE_WRONLY | FileUtils.MODE_CREATE | FileUtils.MODE_TRUNCATE;
-  	let ostream = FileUtils.openSafeFileOutputStream(file, mode);
-  	let converter = Components.classes["@mozilla.org/intl/scriptableunicodeconverter"].
-  	                createInstance(Components.interfaces.nsIScriptableUnicodeConverter);
+  	mode = FileUtils.MODE_WRONLY 
+         | FileUtils.MODE_CREATE 
+         | FileUtils.MODE_TRUNCATE;
+  	ostream = FileUtils.openSafeFileOutputStream(file, mode);
+  	converter = Components
+      .classes["@mozilla.org/intl/scriptableunicodeconverter"]
+      .createInstance(Components.interfaces.nsIScriptableUnicodeConverter);
   	converter.charset = "UTF-8";
-  	let istream = converter.convertToInputStream(data);
+  	istream = converter.convertToInputStream(data);
   	NetUtil.asyncCopy(istream, ostream, function(status) {
       try {
   	    if (!Components.isSuccessCode(status)) {
           throw coUtils.Debug.Exception(
-            _("An error occured when writing to local file [%s]. Status code is [%x]."),
+            _("An error occured when writing to ",
+              "local file [%s]. Status code is [%x]."),
             file, status);
   	    }
       } finally {
@@ -1717,16 +1768,20 @@ coUtils.IO = {
           callback();
         }
       }
-  	}); // writeToFile
+  	}); // _writeToFileImpl
   },
 
   saveCanvas: 
   function saveCanvas(source_canvas, file, is_thumbnail) 
   {
-    let NS_XHTML = "http://www.w3.org/1999/xhtml";
-    let canvas = source_canvas
+    var NS_XHTML = "http://www.w3.org/1999/xhtml";
+    var context;
+    var canvas = source_canvas
       .ownerDocument
       .createElementNS(NS_XHTML, "canvas");
+    var source, target;
+    var io, persist;
+
     canvas.style.background = "black";
 
     if (is_thumbnail) {
@@ -1737,20 +1792,20 @@ coUtils.IO = {
       canvas.height = source_canvas.height;
     }
   
-    let context = canvas.getContext("2d");
+    context = canvas.getContext("2d");
     context.fillStyle = "rgba(0, 0, 0, 0.7)";
     context.fillRect(0, 0, canvas.width, canvas.height);
     context.drawImage(source_canvas, 0, 0, canvas.width, canvas.height);
   
     // create a data url from the canvas and then create URIs of the source and targets.
-    let io = Components
+    io = Components
       .classes["@mozilla.org/network/io-service;1"]
       .getService(Components.interfaces.nsIIOService);
-    let source = io.newURI(canvas.toDataURL("image/png", ""), "UTF8", null);
-    let target = io.newFileURI(file)
+    source = io.newURI(canvas.toDataURL("image/png", ""), "UTF8", null);
+    target = io.newFileURI(file)
   
     // prepare to save the canvas data  
-    let persist = Components
+    persist = Components
       .classes["@mozilla.org/embedding/browser/nsWebBrowserPersist;1"]
       .createInstance(Components.interfaces.nsIWebBrowserPersist);
     
@@ -1777,7 +1832,7 @@ coUtils.File = new function() {
 
   exists: function exists(path)
   {
-    let file = this.getFileLeafFromVirtualPath(path);
+    var file = this.getFileLeafFromVirtualPath(path);
     return file.exists();
   },
 
@@ -1803,7 +1858,7 @@ coUtils.File = new function() {
    */
   getLastModifiedTime: function getLastModifiedTime(file) 
   {
-    let last_modified_time = null;
+    var last_modified_time = null;
     if (null !== file) {
       if (file.isSymlink()) {     // if file is symbolic link
         last_modified_time = file.lastModifiedTimeOfLink;
@@ -1822,10 +1877,10 @@ coUtils.File = new function() {
    */
   getURLSpec: function getURLSpec(file) 
   {
-    let io_service = Components
+    var io_service = Components
       .classes["@mozilla.org/network/io-service;1"]
       .getService(Components.interfaces.nsIIOService);
-    let file_handler = io_service.getProtocolHandler("file")
+    var file_handler = io_service.getProtocolHandler("file")
       .QueryInterface(Components.interfaces.nsIFileProtocolHandler);
     return file_handler.getURLSpecFromFile(file);
   },
@@ -1840,13 +1895,16 @@ coUtils.File = new function() {
   getFilesRecursively: 
   function getFilesRecursively(directory, filter) 
   {
-    let directory_entries = directory.clone().directoryEntries;
-    let callee = arguments.callee;
+    var directory_entries = directory.clone().directoryEntries;
+    var callee = arguments.callee;
     return function() { // return generator.
+      var file;
+      var name;
+
       while (directory_entries.hasMoreElements()) {
-        let file = directory_entries.getNext()
+        file = directory_entries.getNext()
           .QueryInterface(Components.interfaces.nsIFile);
-        let name = file.leafName;
+        name = file.leafName;
         if (file.isFile()) {
           if (filter && filter.test(file.leafName)) 
             yield file;
@@ -1862,12 +1920,18 @@ coUtils.File = new function() {
   getFileEntriesFromSerchPath: 
   function getFileEntriesFromSerchPath(search_directories) 
   {
-    let self = this;
-    let entries = function entries() {
-      for each (let [, path] in Iterator(search_directories)) {
+    var self = this;
+    var entries = function entries() 
+    {
+      var path;
+      var target_leaf;
+      var entries;
+      var entry;
+
+      for each ([, path] in Iterator(search_directories)) {
         try {
           if (coUtils.File.exists(path)) {
-            let target_leaf = coUtils.File.getFileLeafFromVirtualPath(path);
+            target_leaf = coUtils.File.getFileLeafFromVirtualPath(path);
             if (!target_leaf || !target_leaf.exists()) {
               coUtils.Debug.reportWarning(
                 _("Cannot get file entries from '%s'. ",
@@ -1877,8 +1941,8 @@ coUtils.File = new function() {
             if (target_leaf.isFile()) {
               yield target_leaf;
             } else {
-              let entries = self.getFilesRecursively(target_leaf, /\.js$/);
-              for (let entry in entries) {
+              entries = self.getFilesRecursively(target_leaf, /\.js$/);
+              for (entry in entries) {
                 yield entry;
               }
             }
@@ -1896,11 +1960,17 @@ coUtils.File = new function() {
   getFileLeafFromVirtualPath: 
   function getFileLeafFromVirtualPath(virtual_path) 
   {
+    var target_leaf;
+    var split_path;
+    var root_entry;
+    var match;
+    var file_name;
+
     virtual_path = String(virtual_path);
-    let target_leaf;
-    let split_path = virtual_path.split(/[\/\\]/);
-    let root_entry = split_path.shift();
-    let match = root_entry.match(/^\$([^/]+)$/);
+    split_path = virtual_path.split(/[\/\\]/);
+    root_entry = split_path.shift();
+    match = root_entry.match(/^\$([^/]+)$/);
+
     if (match) {
       target_leaf = this.getSpecialDirectoryName(match.pop());
     } else if (coUtils.File.isAbsolutePath(virtual_path)) { // absolute path
@@ -1910,7 +1980,7 @@ coUtils.File = new function() {
       target_leaf.initWithPath(virtual_path);
       return target_leaf;
     } else { // relative path
-      let file_name = [
+      file_name = [
         Components.stack.filename.split(" -> ").pop().split("?").shift()
       ].join("");
       if (file_name.match(/^resource:/)) {
@@ -1936,7 +2006,7 @@ coUtils.File = new function() {
   getSpecialDirectoryName: 
   function getSpecialDirectoryName(name) 
   {
-    let directoryService = Components
+    var directoryService = Components
       .classes["@mozilla.org/file/directory_service;1"]
       .getService(Components.interfaces.nsIProperties);
     return directoryService.get(name, Components.interfaces.nsIFile);
@@ -1987,13 +2057,15 @@ coUtils.Runtime = {
 
   loadScript: function loadScript(location, scope) 
   {
-    let url = null;
-    let file = null;
+    var url = null;
+    var file = null;
+    var match;
+    var protocol;
 
     // detect if given location string is a URL formatted string.
-    let match = location.match(/^([a-z]+):\/\//);
+    match = location.match(/^([a-z]+):\/\//);
     if (match) { // location is URL spec formatted.
-      let [, protocol] = match;
+      [, protocol] = match;
       if ("file" == protocol) { 
         file = this.file_handler.getFileFromURLSpec(location);
       } else {
