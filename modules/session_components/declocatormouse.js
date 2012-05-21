@@ -32,7 +32,7 @@ let WheelScroll = new Class().extends(Plugin);
 WheelScroll.definition = {
 
   get id()
-    "dec_locator_mouse",
+    "wheel_scroll",
 
   get info()
     <plugin>
@@ -65,6 +65,57 @@ WheelScroll.definition = {
     this.onMouseTrackingModeChanged.enabled = false;
 
     this.onmousescroll.enabled = false;
+  },
+
+  /** Fired at the mouse tracking mode is changed. */
+  "[subscribe('event/mouse-tracking-mode-changed')]":
+  function onMouseTrackingModeChanged(data) 
+  {
+  },
+
+  /** Fired at the mouse tracking type is changed. */
+  "[subscribe('event/mouse-tracking-type-changed')]":
+  function onMouseTrackingTypeChanged(data) 
+  {
+  },
+
+  /** Fired at the locator reporting mode is changed. */
+  "[subscribe('command/change-locator-reporting-mode'), enabled]": 
+  function onChangeLocatorReportingMode(mode) 
+  {
+  },
+
+  /** Mouse down evnet listener */
+  "[listen('DOMMouseScroll', '#tanasinn_content')]": 
+  function onmousescroll(event) 
+  {
+    if(event.axis === event.VERTICAL_AXIS) {
+
+      let count = event.detail;
+      if (event.hasPixels) {
+        let line_height = renderer.line_height;
+        count = Math.round(count / line_height + 0.5);
+      } else {
+        count = Math.round(count / 2);
+      }
+      if (0 == count) {
+        return;
+      }
+
+      let broker = this._broker;
+
+//      if (this._in_scroll_session) {
+        if (count > 0) {
+          broker.notify("command/scroll-down-view", count);
+          broker.notify("command/draw");
+        } else if (count < 0) {
+          broker.notify("command/scroll-up-view", -count);
+          broker.notify("command/draw");
+        } else { // count == 1
+          return;
+        }
+      }
+//    }
   },
 
 }; // class WheelScroll
@@ -451,6 +502,7 @@ DECLocatorMouse.definition = {
  */
 function main(broker) 
 {
+  new WheelScroll(broker);
   new DECLocatorMouse(broker);
 }
 

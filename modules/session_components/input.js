@@ -890,6 +890,7 @@ InputManager.definition = {
     return this._textbox;
   },
 
+  /** handle double-shift key event, and interpret it to <2-Shift> */
   "[subscribe('event/hotkey-double-shift')]":
   function onDoubleShift(event) 
   {
@@ -899,6 +900,7 @@ InputManager.definition = {
       "<2-shift>");
   },
 
+  /** handle <2-shift> event, and switch focus to commandline. */
   "[nmap('<2-shift>', '<cmode>')]":
   function switchToCommandline(event) 
   { // nothrow

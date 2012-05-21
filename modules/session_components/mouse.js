@@ -200,6 +200,7 @@ Mouse.definition = {
     let tracking_type = this._tracking_type;
     switch (tracking_type) {
 
+      // urxvt-style 
       case "urxvt":
         if ("mouseup" === event.type) {
           button = 3;
@@ -218,13 +219,14 @@ Mouse.definition = {
         coUtils.Debug.reportError(message)
         break;
 
+      // sgr-style 
       case "sgr":
         code = button 
            | event.shiftKey << 2 
            | event.metaKey  << 3
            | event.ctrlKey  << 4
            ;
-        if (this._pressed) {
+        if ("mouseup" == event.type) {
           action = "m";
         } else {
           action = "M";

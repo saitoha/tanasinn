@@ -1105,7 +1105,7 @@ DecModeSequenceHandler.definition = {
    *
    * Enable Locator Reporting (DECELR)
    *  
-   * CSI Ps ; Pu ’ z
+   * CSI Ps ; Pu ' z
    *
    * Valid values for the first parameter:
    * Ps = 0 → Locator disabled (default)
@@ -1317,13 +1317,6 @@ DecModeSequenceHandler.definition = {
       Array.slice(arguments)); 
   },
 
-
-  DECLRP: function DECLRP() 
-  { // TODO: Locator Report
-    coUtils.Debug.reportWarning(
-      _("%s sequence [%s] was ignored."),
-      arguments.callee.name, Array.slice(arguments));
-  },
 
   DECSED: function DECSED(n) 
   { // TODO: DEC Selectively Erase in Display
