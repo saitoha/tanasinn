@@ -2471,10 +2471,10 @@ coUtils.Logger.prototype = {
 coUtils.Logging = new coUtils.Logger();
 
 coUtils.Text = {
-
-  _normalizer: Components
-    .classes["@mozilla.org/intl/unicodenormalizer;1"]
-    .createInstance(Components.interfaces.nsIUnicodeNormalizer),
+//
+//  _normalizer: Components
+//    .classes["@mozilla.org/intl/unicodenormalizer;1"]
+//    .createInstance(Components.interfaces.nsIUnicodeNormalizer),
 
   base64decode: function base64decode(str) 
   {
@@ -2486,12 +2486,12 @@ coUtils.Text = {
     return coUtils.getWindow().btoa(str);
   },
 
-  normalize: function normalize(text)
-  {
-    let result = {};
-    this._normalizer.NormalizeUnicodeNFC(text, result);
-    return result.value;
-  },
+//  normalize: function normalize(text)
+//  {
+//    let result = {};
+//    this._normalizer.NormalizeUnicodeNFC(text, result);
+//    return result.value;
+//  },
 
   /** Provides printf-like formatting.
    *  @param {String} template 
@@ -2520,9 +2520,6 @@ coUtils.Text = {
     return result;
   },
 
-};
-
-coUtils.Xml = {
 };
 
 coUtils.Timer = {
