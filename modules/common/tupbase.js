@@ -25,7 +25,10 @@
 /**
  * @class Trait
  */
-let Trait = function() this.initialize.apply(this, arguments);
+function Trait() 
+{
+  return this.initialize.apply(this, arguments);
+}
 Trait.prototype = {
 
   id: null,
@@ -74,7 +77,10 @@ Trait.prototype = {
 /**
  * @class AttributeContext
  */
-let AttributeContext = function() this.initialize.apply(this, arguments);
+function AttributeContext()
+{
+  return this.initialize.apply(this, arguments);
+}
 AttributeContext.prototype = {
 
   _target: null,
@@ -136,7 +142,7 @@ AttributeContext.prototype = {
 }; // class AttributeContext
 
 
-let ConceptContext = {
+var ConceptContext = {
 
   "Object": function(value) 
   { 
@@ -203,20 +209,24 @@ function Prototype(definition, base_class, dependency_list)
   /** Parses decorated key and sets attributes. */
   function intercept(key) 
   {
-    let match = key.match(/^([\w-@]+)$|^\[(.+)\]\s*(.*)\s*$/);
+    var match = key.match(/^([\w-@]+)$|^\[(.+)\]\s*(.*)\s*$/);
+    var annotation, name;
+    var attributes;
+    var target_attribute;
+
     if (!match) {
       throw coUtils.Debug.Exception(
         _("Ill-formed property name: '%s'."), key)
     }
-    let [, , annotation, name] = match;
+    [, , annotation, name] = match;
     if (annotation) {
       if (!name)
         name = definition[key].name || coUtils.Uuid.generate().toString();
       if (!this.hasOwnProperty("__attributes")) {
         this.__attributes = {};
       }
-      let attributes = this.__attributes;
-      let target_attribute = attributes[name];
+      attributes = this.__attributes;
+      target_attribute = attributes[name];
       if (!target_attribute) {
         attributes[name] = target_attribute = {};
       }
@@ -228,10 +238,13 @@ function Prototype(definition, base_class, dependency_list)
 
   function copy(definition, decorated_key, base_class) 
   {
-    let getter = definition.__lookupGetter__(decorated_key);
-    let setter = definition.__lookupSetter__(decorated_key);
+    var getter = definition.__lookupGetter__(decorated_key);
+    var setter = definition.__lookupSetter__(decorated_key);
+    var key, value;
+    var decorated_key;
+
     try {
-      let key = intercept.call(this, decorated_key);
+      key = intercept.call(this, decorated_key);
 
       if (getter) { // has getter 
         this.__defineGetter__(key, getter);
@@ -240,7 +253,7 @@ function Prototype(definition, base_class, dependency_list)
         this.__defineSetter__(key, setter);
       }
       if (!getter && !setter) { // member variable or function
-        let value = definition[decorated_key];
+        value = definition[decorated_key];
         if ("initialize" == key && base_class && base_class.prototype.initialize) {
           // makes constructor chain.
           this.initialize = function() {
@@ -256,7 +269,7 @@ function Prototype(definition, base_class, dependency_list)
     }
   };
 
-  for (let decorated_key in definition) {
+  for (decorated_key in definition) {
     copy.call(this, definition, decorated_key, base_class);
   }
 
@@ -285,7 +298,7 @@ function Prototype(definition, base_class, dependency_list)
  * example 1:
  * ----
  *
- * let A = new Class();
+ * var A = new Class();
  *
  * ----
  *
@@ -295,7 +308,7 @@ function Prototype(definition, base_class, dependency_list)
  * example 2:
  * ----
  *
- * let B = new Class().extends(A);
+ * var B = new Class().extends(A);
  *
  * ----
  *
@@ -305,7 +318,7 @@ function Prototype(definition, base_class, dependency_list)
  * example 3:
  * ----
  *
- * let C = new Class().extends(B).mix(Trait1).requires(Concept2);
+ * var C = new Class().extends(B).mix(Trait1).requires(Concept2);
  *
  * ----
  *
@@ -314,7 +327,10 @@ function Prototype(definition, base_class, dependency_list)
  * 
  *
  */
-let Class = function() this.initialize.apply(this, arguments);
+function Class() 
+{
+  return this.initialize.apply(this, arguments);
+}
 Class.prototype = {
 
   _base: null,
@@ -328,14 +344,19 @@ Class.prototype = {
    */
   initialize: function initialize() 
   {
+    var constructor;
+
+    // initialize attribute lists.
     this._mixin_list = [];
     this._dependency_list = [];
     this._concept_list = [];
-    let constructor = function() {
+
+    constructor = function() {
       if (this.initialize)
         return this.initialize.apply(this, arguments);
       return this;
     };
+
     constructor.watch("prototype", 
       function(name, oldval, newval) this.applyDefinition(newval));
     constructor.__proto__ = this;
@@ -357,11 +378,13 @@ Class.prototype = {
    */
   requires: function _requires(name) 
   {
+    var concept;
+
     if (!(name in ConceptContext)) {
       throw coUtils.Debug.Exception(
         _("Specified concept name '%s' is not defined."), name);
     } 
-    let concept = ConceptContext[name];
+    concept = ConceptContext[name];
     if (this._defined) {
       ConceptContext[name](this.definition);
     } else {
@@ -413,16 +436,23 @@ Class.prototype = {
    */
   applyDefinition: function applyDefinition(definition)
   {
-    let prototype = new Prototype(
+    var trait;
+    var concept_name;
+    var i;
+    var mixin_list = this._mixin_list, 
+        concept_list = this._concept_list;
+    var prototype = new Prototype(
       definition, this._base, this._dependency_list);
 
     // Apply traits.
-    for (let [, trait] in Iterator(this._mixin_list)) {
+    for (i = 0; i < mixin_list.length; ++i) {
+      trait = mixin_list[i];
       this.applyTrait(prototype, new Prototype(trait.prototype));
     }
 
     // Apply concepts.
-    for (let [, concept_name] in Iterator(this._concept_list)) {
+    for (i = 0; i < concept_list.length; ++i) {
+      concept_name = concept_list[i];
       if (!(concept_name in ConceptContext)) {
         throw coUtils.Debug.Exception(
           _("Specified concept name '%s' is not defined."), concept_name);
@@ -440,12 +470,17 @@ Class.prototype = {
    */
   applyTrait: function applyTrait(prototype, trait) 
   {
-    for (let key in trait) {
+    var key;
+    var getter, setter;
+    var value;
+    var name, attribute;
+
+    for (key in trait) {
       // Detects whether the property specified by given key is
       // a getter or setter. NOTE that we should NOT access property 
       // by ordinaly way, like "trait.<property-neme>".
-      let getter = trait.__lookupGetter__(key);
-      let setter = trait.__lookupSetter__(key);
+      getter = trait.__lookupGetter__(key);
+      setter = trait.__lookupSetter__(key);
       // if key is a getter method...
       if (getter) {
         prototype.__defineGetter__(key, getter);
@@ -457,7 +492,7 @@ Class.prototype = {
       // if key is a generic property or method...
       if (!getter && !setter) {
         if ("initialize" == key && trait.initialize) {
-          let value = prototype.initialize;
+          value = prototype.initialize;
 
           // makes constructor chain.
           prototype.initialize = function initialize() 
@@ -467,8 +502,8 @@ Class.prototype = {
           };
         } else if ("__attributes" == key) {
           if (prototype.__attributes) {
-            for (let [name, ] in Iterator(trait.__attributes)) {
-              let attribute = trait.__attributes[name];
+            for ([name, ] in Iterator(trait.__attributes)) {
+              attribute = trait.__attributes[name];
               prototype.__attributes[name] = attribute;
             }
           } else {
@@ -486,14 +521,14 @@ Class.prototype = {
    */
   loadAttributes: function loadAttributes(search_path, scope) 
   {
-    let paths = coUtils.File.getFileEntriesFromSerchPath(search_path);
-    let entries = [entry for (entry in paths)];
-    //entries = entries.sort();
-    //entries = entries.reverse();
-    for (let [, entry] in Iterator(entries)) {
+    var paths = coUtils.File.getFileEntriesFromSerchPath(search_path);
+    var entry;
+    var url;
+
+    for (entry in paths) {
       try {
         // make URI string such as "file://....".
-        let url = coUtils.File.getURLSpec(entry); 
+        url = coUtils.File.getURLSpec(entry); 
         coUtils.Runtime.loadScript(url, scope);
         if (scope.main) {
           scope.main(this);
@@ -515,7 +550,10 @@ Class.prototype = {
 /**
  * @constructor Abstruct
  */
-let Abstruct = function() this.initialize.apply(this, arguments);
+function Abstruct()
+{
+  return this.initialize.apply(this, arguments);
+}
 Abstruct.prototype = {
 
   __proto__: Class.prototype,
@@ -523,12 +561,18 @@ Abstruct.prototype = {
   /** Enumerates stored traits and apply them. */
   applyDefinition: function applyDefinition(definition) 
   {
-    let prototype = new Prototype(definition, this._base, this._dependency_list);
-    for (let [, trait] in Iterator(this._mixin_list)) {
+    var prototype = new Prototype(definition, this._base, this._dependency_list);
+    var i;
+    var trait;
+    var mixin_list = this._mixin_list;
+
+    for (i = 0; i < mixin_list.length; ++i) {
+      trait = mixin_list[i];
       this.applyTrait(prototype, new Prototype(trait.definition));
     }
     this._defined = true;
     return prototype;
+
   }, // applyDefinition
 
 }; // Abstruct
@@ -537,7 +581,7 @@ Abstruct.prototype = {
  * @abstruct Component
  * The base class of component node in tupbase2.
  */
-let Component = new Abstruct();
+var Component = new Abstruct();
 Component.definition = {
 
   dependency: null,
@@ -545,10 +589,11 @@ Component.definition = {
   /** constructor */
   initialize: function initialize(broker) 
   {
+    var install_trigger;
+    var uninstall_trigger;
+
     if (this.__dependency) {
       this.dependency = {};
-      let install_trigger;
-      let uninstall_trigger;
       if (this.__dependency.length > 0) {
         install_trigger = "initialized/{" + this.__dependency.join("&") + "}";
       } else {
@@ -558,7 +603,7 @@ Component.definition = {
         install_trigger, 
         function onLoad() 
         {
-          let args = arguments;
+          var args = arguments;
           this.__dependency.forEach(function(key, index) {
             this.dependency[key] = args[index];
           }, this);
@@ -596,7 +641,7 @@ Component.definition = {
  *  - function install(session)    Install itself.
  *  - function uninstall(session)  Uninstall itself.
  */
-let Plugin = new Abstruct().extends(Component);
+var Plugin = new Abstruct().extends(Component);
 Plugin.definition = {
 
   __enabled: false,
@@ -624,9 +669,10 @@ Plugin.definition = {
 
   set enabled(value) 
   {
+    var broker;
     value = Boolean(value);
     if (value != this.__enabled) {
-      let broker = this._broker;
+      broker = this._broker;
       if (value) {
         try {
           broker.uniget("install/" + this.id, broker);
@@ -653,7 +699,7 @@ Plugin.definition = {
 /** 
  * @class XPCOMFactory
  */
-let XPCOMFactory = new Class();
+var XPCOMFactory = new Class();
 XPCOMFactory.definition = {
 
   _constructor: null,
@@ -676,6 +722,8 @@ XPCOMFactory.definition = {
    */
   registerSelf: function registerSelf()
   {
+    var observer_service;
+
     if (Components.classes[this._contractID]) {
       return;
     }
@@ -686,7 +734,7 @@ XPCOMFactory.definition = {
         this._classID, this._description, this._contractID, this);
     this._registered = true;
 
-    let observer_service = Components
+    observer_service = Components
       .classes["@mozilla.org/observer-service;1"]
       .getService(Components.interfaces.nsIObserverService);
     observer_service.addObserver(this, "quit-application", false);
@@ -697,10 +745,12 @@ XPCOMFactory.definition = {
    */
   unregisterSelf: function unregisterSelf()
   {
+    var observer_service;
+
     if (!this._registered) {
       return;
     }
-    let observer_service = Components
+    observer_service = Components
       .classes["@mozilla.org/observer-service;1"]
       .getService(Components.interfaces.nsIObserverService);
     observer_service.removeObserver(this, "quit-application");
@@ -796,7 +846,10 @@ XPCOMFactory.definition = {
 
 /** @constructor CoClass
  */
-let CoClass = function() this.initialize.apply(this, arguments);
+function CoClass()
+{
+  return this.initialize.apply(this, arguments);
+}
 CoClass.prototype = {
 
   __proto__: Class.prototype,
@@ -806,7 +859,7 @@ CoClass.prototype = {
   /** Apply definition and register it as a XPCOM component. */
   applyDefinition: function applyDefinition(definition) 
   {
-    let prototype = Class.prototype.applyDefinition.apply(this, arguments);
+    var prototype = Class.prototype.applyDefinition.apply(this, arguments);
     if (!Components.classes[prototype.contractID]) {
       this.factory = new XPCOMFactory(
         this, 
@@ -833,7 +886,10 @@ CoClass.prototype = {
 /**
  * @class Attribute
  */
-let Attribute = function() this.initialize.apply(this, arguments);
+function Attribute()
+{
+  return this.initialize.apply(this, arguments);
+}
 Attribute.prototype = {
 
   __proto__: Trait.prototype,
@@ -861,7 +917,10 @@ Component.loadAttributes(["modules/attributes"], {
 /**
  * @class ClassAttribute
  */
-let ClassAttribute = function() this.initialize.apply(this, arguments);
+function ClassAttribute()
+{
+  return this.initialize.apply(this, arguments);
+}
 ClassAttribute.prototype = {
 
   __proto__: Trait.prototype,
@@ -878,7 +937,10 @@ ClassAttribute.prototype = {
 /**
  * @class Concept
  */
-let Concept = function() this.initialize.apply(this, arguments);
+function Concept()
+{
+  return this.initialize.apply(this, arguments);
+}
 Concept.prototype = {
 
   __proto__: Trait.prototype,
@@ -888,38 +950,55 @@ Concept.prototype = {
   {
   },
 
+
   /** */
   check: function check(target)
   {
-    let definition = this._definition;
-    let concept = {};
-    let subscribers = Object
-      .getOwnPropertyNames(target.__attributes)
+    var attributes = target.__attributes;
+    var subscribers = Object
+      .getOwnPropertyNames(attributes)
       .reduce(function(map, key) {
-        let value = target.__attributes[key];
+        var value = attributes[key];
+        var tokens;
+        var i;
+        var k;
         if (value.subscribe) {
-          let tokens = value.subscribe.toString().split("/");
-          for (let i = 0; i < tokens.length; ++i) {
-            let key = tokens.slice(0, i + 1).join("/");
-            map[key] = value;
+          tokens = value.subscribe.toString().split("/");
+          for (i = 0; i < tokens.length; ++i) {
+            k = tokens.slice(0, i + 1).join("/");
+            map[k] = value;
           }
         }
         return map;
       }, {});
 
-    for (let [rule, comment] in Iterator(definition)) {
-      let getter = definition.__lookupGetter__(rule);
-      let setter = definition.__lookupSetter__(rule);
+    this._checkImpl(target, subscribers);
+    return true;
+
+  }, // check;
+
+  _checkImpl: function _checkImpl(target, subscribers)
+  {
+    var definition = this._definition;
+    var rule, comment;
+    var getter, setter;
+    var match;
+    var message, identifier, type;
+    var key;
+
+    for ([rule, comment] in Iterator(definition)) {
+      getter = definition.__lookupGetter__(rule);
+      setter = definition.__lookupSetter__(rule);
       if (!getter && !setter) {
-        let match = rule.match(/^(?:<(.+?)>|(.+?)) :: (.+)$/);
+        match = rule.match(/^(?:<(.+?)>|(.+?)) :: (.+)$/);
         if (null === match) {
           throw coUtils.Debug.Exception(
             _("Ill-formed concept rule expression is specified: %s."), rule);
         }
-        let [, message, identifier, type] = match;
+        [, message, identifier, type] = match;
 
         if (message) {
-          let key = message.replace(/\/\*$/, "");
+          key = message.replace(/\/\*$/, "");
           if (undefined === subscribers[key]) {
             throw coUtils.Debug.Exception(
               _("Component '%s' does not implement required message-concept: %s."), 
@@ -937,8 +1016,8 @@ Concept.prototype = {
         }
 
         if (identifier) {
-          let getter = target.__lookupGetter__(rule);
-          let setter = target.__lookupSetter__(rule);
+          getter = target.__lookupGetter__(rule);
+          setter = target.__lookupSetter__(rule);
 
           if (!getter && !setter && undefined === target[identifier]) {
             throw coUtils.Debug.Exception(
@@ -958,16 +1037,18 @@ Concept.prototype = {
         }
       }
     }
-    return true;
-  }, // check
+  }, // _checkImpl
 
   /** define members. 
    * @param {Object} definition.
    */
   define: function define(definition) // definition
   {
-    ConceptContext[definition.id] 
-      = let (self = this) function(target) self.check(target); 
+    var self = this;
+    ConceptContext[definition.id] = function(target) 
+    { 
+      return self.check(target); 
+    };
     this._definition = definition;
   },
 
@@ -982,7 +1063,7 @@ Concept.prototype = {
 /**
  * @concept CompletionContextConcept
  */
-let CompletionContextConcept = new Concept();
+var CompletionContextConcept = new Concept();
 CompletionContextConcept.definition = {
 
   get id()
@@ -994,7 +1075,7 @@ CompletionContextConcept.definition = {
 /**
  * @concept CompleterConcept
  */
-let CompleterConcept = new Concept();
+var CompleterConcept = new Concept();
 CompleterConcept.definition = {
 
   get id()
