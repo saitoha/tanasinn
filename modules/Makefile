@@ -41,6 +41,7 @@ $(EASTASIAN_SOURCE):
 	@echo "$(MSTART) Done.$(MEND)" 
 
 clean:
+	$(RM) $(WCWIDTH_JS)
 
 maintainer-clean:
 	$(RM) $(WCWIDTH_JS) $(UNICODE_SOURCE) $(EASTASIAN_SOURCE)
