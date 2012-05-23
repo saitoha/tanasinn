@@ -28,8 +28,8 @@ var thread_manager = Components
 
 function wait(span) 
 {
-  let end_time = Date.now() + span;
-  let current_thread = thread_manager.currentThread;
+  var end_time = Date.now() + span;
+  var current_thread = thread_manager.currentThread;
   do {
     current_thread.processNextEvent(true);
   } while ((current_thread.hasPendingEvents()) || Date.now() < end_time);
@@ -44,7 +44,7 @@ function wait(span)
 /**
  * @concept GrammarConcept
  */
-let ScreenConcept = new Concept();
+var ScreenConcept = new Concept();
 ScreenConcept.definition = {
 
   get id()
@@ -59,7 +59,7 @@ ScreenConcept.definition = {
 /**
  * @concept ScreenSwitchConcept
  */
-let ScreenSwitchConcept = new Concept();
+var ScreenSwitchConcept = new Concept();
 ScreenSwitchConcept.definition = {
 
   get id()
@@ -82,7 +82,7 @@ ScreenSwitchConcept.definition = {
 /**
 * @concept ScreenBackupConcept
 */
-let ScreenBackupConcept = new Concept();
+var ScreenBackupConcept = new Concept();
 ScreenBackupConcept.definition = {
 
   get id()
@@ -100,7 +100,7 @@ ScreenBackupConcept.definition = {
  * @concept ScreenCursorOperationsConcept
  *
  */
-let ScreenCursorOperationsConcept = new Concept();
+var ScreenCursorOperationsConcept = new Concept();
 ScreenCursorOperationsConcept.definition = {  
 
   get id()
@@ -139,7 +139,7 @@ ScreenCursorOperationsConcept.definition = {
  * @concept ScreenEditConcept
  *
  */
-let ScreenEditConcept = new Concept();
+var ScreenEditConcept = new Concept();
 ScreenEditConcept.definition = {  
 
   get id()
@@ -211,7 +211,7 @@ const CO_SCREEN_ALTERNATE = false;
  * @trait ScreenSequenceHandler
  *
  */
-let ScreenSequenceHandler = new Trait() 
+var ScreenSequenceHandler = new Trait() 
 ScreenSequenceHandler.definition = {
 
   /**
@@ -379,14 +379,15 @@ ScreenSequenceHandler.definition = {
   "[profile('vt100'), sequence('CSI %dH')]":
   function CUP(n1, n2) 
   { // move CUrsor to absolute Position 
+    var x, y;
     // with no parameters, move to origin
 //    this.setPositionY((n1 || 1) - 1);
 //    this.setPositionY((n1 || 1) - 1 + this._scroll_top);
-    let y = (n1 || 1) - 1 + this.cursor.originY;
+    y = (n1 || 1) - 1 + this.cursor.originY;
 //    if (y >= this._scroll_bottom) {
 //      y = this._scroll_bottom - 1;
 //    }
-    let x = (n2 || 1) - 1;// + this.cursor.originX;
+    x = (n2 || 1) - 1;// + this.cursor.originX;
     this.setPositionY(y);
     this.setPositionX(x);
   },
@@ -428,7 +429,7 @@ ScreenSequenceHandler.definition = {
   "[profile('vt100'), sequence('ESC #3')]": 
   function DECDHL_top() 
   {
-    let line = this._getCurrentLine();
+    var line = this._getCurrentLine();
     line.type = coUtils.Constant.LINETYPE_TOP;
     line.dirty = 1;
   },
@@ -437,7 +438,7 @@ ScreenSequenceHandler.definition = {
   "[profile('vt100'), sequence('ESC #4')]": 
   function DECDHL_bottom() 
   {
-    let line = this._getCurrentLine();
+    var line = this._getCurrentLine();
     line.type = coUtils.Constant.LINETYPE_BOTTOM;
     line.dirty = 1;
   },
@@ -446,7 +447,7 @@ ScreenSequenceHandler.definition = {
   "[profile('vt100'), sequence('ESC #5')]": 
   function DECSWL() 
   {
-    let line = this._getCurrentLine();
+    var line = this._getCurrentLine();
     line.type = coUtils.Constant.LINETYPE_NORMAL;
     line.dirty = 1;
   },
@@ -468,7 +469,7 @@ ScreenSequenceHandler.definition = {
   "[profile('vt100'), sequence('ESC #6')]": 
   function DECDWL() 
   {
-    let line = this._getCurrentLine();
+    var line = this._getCurrentLine();
     line.type = coUtils.Constant.LINETYPE_DOUBLEWIDTH;
     line.dirty = 1;
   },
@@ -1009,19 +1010,14 @@ ScreenSequenceHandler.definition = {
   "[profile('vt100'), sequence('CSI %dI')]":
   function CHT(n) 
   { // TODO: Cursor Horaizontal Tabulation
-    n = (n || 1) - 1;
-    //for (let i = 0; i < n; ++i) {
-    //  this.horizontalTab();
-    //  if (this.cursor.positionX >= this._width) {
-    //    this.cursor.positionX = 0;
-    //  }
-    //}
-    //return;
+    var tab_stops, cursor, width, positionX, i, stop, index;
 
-    let tab_stops = this.tab_stops;
-    let cursor = this.cursor;
-    let width = this._width;
-    let positionX = cursor.positionX;;
+    n = (n || 1) - 1;
+
+    tab_stops = this.tab_stops;
+    cursor = this.cursor;
+    width = this._width;
+    positionX = cursor.positionX;;
  
     if (positionX > width - 1) {
       if (this._wraparound_mode) {
@@ -1031,16 +1027,14 @@ ScreenSequenceHandler.definition = {
       }
     }
    
-    let i;
     for (i = 0; i < tab_stops.length; ++i) {
-      let stop = tab_stops[i];
+      stop = tab_stops[i];
       if (stop > positionX) {
-        let index = i + n;
+        index = i + n;
         cursor.positionX = tab_stops[index % tab_stops.length];
         return;
       }
     }
-    //cursor.positionX = width;
   },
 
   /**
@@ -1071,15 +1065,18 @@ ScreenSequenceHandler.definition = {
   "[profile('vt100'), sequence('CSI %dZ')]":
   function CBT(n) 
   { // Cursor Backward Tabulation
+    var tab_stops, cursor, positionX, i, stop, index;
+
     n = (n || 1) - 1;
-    let tab_stops = this.tab_stops;
-    let cursor = this.cursor;
-    let positionX = cursor.positionX;;
-    let i;
+
+    tab_stops = this.tab_stops;
+    cursor = this.cursor;
+    positionX = cursor.positionX;;
+
     for (i = tab_stops.length - 1; i >= 0; --i) {
-      let stop = tab_stops[i];
+      stop = tab_stops[i];
       if (stop < positionX) {
-        let index = Math.max(0, i - n);
+        index = Math.max(0, i - n);
         cursor.positionX = tab_stops[index];
         break;
       }
@@ -1189,13 +1186,15 @@ ScreenSequenceHandler.definition = {
   function TBC(n) 
   { // TaB Clear
 
+    var tab_stops, pisitionX, i, stop;
+
     switch (n || 0) {
 
       case 0:
-        let tab_stops = this.tab_stops;
-        let positionX = this.cursor.positionX;;
-        for (let i = 0; i < tab_stops.length; ++i) {
-          let stop = tab_stops[i];
+        tab_stops = this.tab_stops;
+        positionX = this.cursor.positionX;;
+        for (i = 0; i < tab_stops.length; ++i) {
+          stop = tab_stops[i];
           if (stop == positionX) {
             tab_stops.splice(i, 1); // remove current tabstop.
           } else if (stop > positionX) {
@@ -1234,14 +1233,18 @@ ScreenSequenceHandler.definition = {
    * automatically. Control function TBC clears the tab stops on the display;
    * HTS sets a horizontal tab stop at the active column.
    */
-//  "[profile('vt100'), sequence('CSI ?5W')]":
-//  function DECST8C(n) 
-//  { // Set Tab at Every 8 Columns
-//    coUtils.Debug.reportWarning(
-//      _("%s sequence [%s] was ignored."),
-//      arguments.callee.name, Array.slice(arguments));
-//    //this.setDefaultTaburation();
-//  },
+  "[profile('vt100'), sequence('CSI ?%dW')]":
+  function DECST8C(n) 
+  { 
+    if (5 === n) {
+      // Set Tab at Every 8 Columns
+      this._resetTabStop();
+    } else {
+      coUtils.Debug.reportWarning(
+        _("%s sequence [%s] was ignored."),
+        arguments.callee.name, Array.slice(arguments));
+    }
+  },
 
   "[profile('vt100'), sequence('CSI %di')]":
   function MC(n) 
@@ -1308,9 +1311,10 @@ ScreenSequenceHandler.definition = {
   function DSR(n) 
   { // Device Status Report
 
-    let broker = this._broker;
-    let cursor = this.cursor;;
-    let message;
+    var broker, cursor, message;
+
+    broker = this._broker;
+    cursor = this.cursor;;
 
     switch (n) {
 
@@ -1347,7 +1351,9 @@ ScreenSequenceHandler.definition = {
   "[profile('vt100'), sequence('0x98', 'ESC X')]":
   function SOS() 
   {
-    let message = String.fromCharCode.apply(String, arguments);
+    var message;
+
+    message = String.fromCharCode.apply(String, arguments);
     coUtils.Debug.reportWarning(
       _("Ignored %s [%s]"), arguments.callee.name, message);
   },
@@ -1357,7 +1363,7 @@ ScreenSequenceHandler.definition = {
 /**
  * @trait Viewable
  */
-let Viewable = new Trait("Viewable");
+var Viewable = new Trait("Viewable");
 Viewable.definition = {
 
   _scrollback_amount: 0,
@@ -1376,13 +1382,16 @@ Viewable.definition = {
   "[subscribe('command/scroll-down-view'), enabled]":
   function scrollDownView(n)
   {
-    if (0 == n || 0 == this._scrollback_amount) 
+    var broker;
+
+    if (0 == n || 0 == this._scrollback_amount) {
       return;
+    }
     // move view position.
     if (this._scrollback_amount < n) {
       this._scrollback_amount = 0;
       // finishes scrolling session.
-      let broker = this._broker;
+      broker = this._broker;
       broker.notify("event/scroll-session-closed");
     } else {
       this._scrollback_amount -= n;
@@ -1393,12 +1402,15 @@ Viewable.definition = {
   "[subscribe('command/scroll-up-view'), enabled]":
   function scrollUpView(n)
   {
-    let buffer_top = this.bufferTop;
-    if (0 == n || buffer_top == this._scrollback_amount)
+    var buffer_top, broker;
+    
+    buffer_top = this.bufferTop;
+    if (0 == n || buffer_top == this._scrollback_amount) {
       return;
+    }
     if (0 == this._scrollback_amount) {
       // starts scrolling session.
-      let broker = this._broker;
+      broker = this._broker;
       broker.notify("event/scroll-session-started");
     }
     // move view position.
@@ -1413,11 +1425,13 @@ Viewable.definition = {
   "[subscribe('command/set-scroll-position'), enabled]":
   function setViewPosition(position)
   {
-    let buffer_top = this.bufferTop;
+    var buffer_top, broker;
+
+    buffer_top = this.bufferTop;
     if (0 == this._scrollback_amount) {
       if (position != buffer_top - this._scrollback_amount) {
         // starts scrolling session.
-        let broker = this._broker;
+        broker = this._broker;
         broker.notify("event/scroll-session-started");
       }
     }
@@ -1428,8 +1442,10 @@ Viewable.definition = {
   "[subscribe('command/update-scroll-information'), enabled]":
   function updateScrollInformation()
   {
-    let buffer_top = this.bufferTop;
-    let broker = this._broker;
+    var buffer_top, broker, width, lines, i, line;
+
+    buffer_top = this.bufferTop;
+    broker = this._broker;
     broker.notify(
       "event/scroll-position-changed", 
       {
@@ -1443,11 +1459,10 @@ Viewable.definition = {
     }
 
     // redraw view
-    let width = this.width;
-    let lines = this._getCurrentViewLines();
-    let i;
+    width = this.width;
+    lines = this._getCurrentViewLines();
     for (i = 0; i < lines.length; ++i) {
-      let line = lines[i];
+      line = lines[i];
       if (line.length < width) {
         line.length = width;
       }
@@ -1457,15 +1472,19 @@ Viewable.definition = {
 
   _getCurrentViewLines: function _getCurrentViewLines()
   {
-    let buffer_top = this.bufferTop;
-    let start = buffer_top - this._scrollback_amount;
-    let end = start + this.height;
+    var buffer_top, start, end;
+
+    buffer_top = this.bufferTop;
+    start = buffer_top - this._scrollback_amount;
+    end = start + this.height;
     return this.getLines(start, end);
   },
 
   markAsSixelLine: function markAsSixelLine(buffer, position)
   {
-    let line = this._getCurrentLine();
+    var line;
+    
+    line = this._getCurrentLine();
     line.type = coUtils.Constant.LINETYPE_SIXEL;
     line.dirty = true;
     line.sixel_info = {
@@ -1477,7 +1496,9 @@ Viewable.definition = {
   "[subscribe('event/before-input')]":
   function onBeforeInput(message) 
   {
-    let broker = this._broker;
+    var broker;
+
+    broker = this._broker;
     this.onBeforeInput.enabled = false;
     this._scrollback_amount = 0;
     this.updateScrollInformation();
@@ -1487,10 +1508,12 @@ Viewable.definition = {
 
   _interracedScan: function _interracedScan(lines) 
   {
-    for (let row = 1; row < lines.length; row += 2) {
+    var row;
+    
+    for (row = 1; row < lines.length; row += 2) {
       yield [row, lines[row]];
     }
-    for (let row = 0; row < lines.length; row += 2) {
+    for (row = 0; row < lines.length; row += 2) {
       yield [row, lines[row]];
     }
   },
@@ -1778,7 +1801,7 @@ Resizable.definition = {
  * @brief The Screen class, manages Line objects and provides some functions,
  *        scroll, line operation, buffer-switching,...etc.
  */
-let Screen = new Class().extends(Component)
+var Screen = new Class().extends(Component)
                         .mix(Viewable)
                         .mix(Scrollable)
                         .mix(Resizable)
@@ -1822,6 +1845,8 @@ Screen.definition = {
   "[subscribe('initialized/{cursorstate & linegenerator}'), enabled]":
   function onLoad(cursor_state, line_generator) 
   {
+    var broker = this._broker;
+
     //this._width = this.initial_column;
     //this._height = this.initial_row;
     this._buffer = line_generator.allocate(this._width, this._height * 2);
@@ -1831,7 +1856,6 @@ Screen.definition = {
 
     this._resetTabStop();
 
-    let broker = this._broker;
     broker.notify("initialized/screen", this);
   },
 
@@ -1845,8 +1869,10 @@ Screen.definition = {
 
   set dirty(value)
   {
-    let lines = this._lines;
-    let i;
+    var lines, i;
+
+    lines = this._lines;
+
     for (i = 0; i < lines.length; ++i) {
       lines[i].dirty = value;
     }
@@ -1863,8 +1889,10 @@ Screen.definition = {
 
   set "[persistable] width"(value) 
   {
+    var width, cursor, broker;
+
     if (this._buffer) {
-      let width = this._width;
+      width = this._width;
       if (value == width) {
         return;
       } else if (width < value) {
@@ -1873,7 +1901,7 @@ Screen.definition = {
         this._popColumns(width - value);
       }
 
-      let cursor = this.cursor;
+      cursor = this.cursor;
       if (cursor.positionX >= this._width) {
         cursor.positionX = this._width - 1;
       }
@@ -1881,7 +1909,7 @@ Screen.definition = {
       // update tab stops
       this._resetTabStop();
 
-      let broker = this._broker;
+      broker = this._broker;
       broker.notify("variable-changed/screen.width", this.width);
     } else {
       this._width = value;
@@ -1899,6 +1927,8 @@ Screen.definition = {
 
   set "[persistable] height"(value) 
   {
+    var cursor, broker;
+    
     if (this._buffer) {
       if (value == this._height) {
         return;
@@ -1907,13 +1937,14 @@ Screen.definition = {
       } else if (this._height > value) {
         this._popLines(this._height - value);
       }
+
       // I Wonder if we should trim cursor position when screen is resized.
-      let cursor = this.cursor;
+      cursor = this.cursor;
       if (cursor.positionY >= this._height) {
         cursor.positionY = this._height - 1;
       }
 
-      let broker = this._broker;
+      broker = this._broker;
       broker.notify("variable-changed/screen.height", this.height);
     } else {
       this._height = value;
@@ -1927,9 +1958,10 @@ Screen.definition = {
 
   _resetTabStop: function _resetTabStop()
   {
+    var i, width;
+
     // update tab stops
-    let i;
-    let width = this._width;
+    width = this._width;
     this.tab_stops = [];
     for (i = 0; i < width; i += 8) {
       this.tab_stops.push(i);
@@ -1949,9 +1981,10 @@ Screen.definition = {
    */
   get currentCharacterIsWide() 
   {
-    let line = this._getCurrentLine();
-    if (!line)
+    var line = this._getCurrentLine();
+    if (!line) {
       return false;
+    }
     return line.isWide(this.cursor.positionX);
   },
 
@@ -2041,9 +2074,11 @@ Screen.definition = {
   "[type('Uint16 -> Undefined')] cursorForward":
   function cursorForward(n) 
   {
-    let cursor = this.cursor;
-    let positionX = cursor.positionX + n;
-    let max = this._width - 1;
+    var cursor, positionX, max;
+
+    cursor = this.cursor;
+    positionX = cursor.positionX + n;
+    max = this._width - 1;
     cursor.positionX = positionX > max ? max: positionX;
   },
 
@@ -2051,18 +2086,19 @@ Screen.definition = {
   "[type('Uint16 -> Undefined')] cursorBackward":
   function cursorBackward(n) 
   {
+    var width, cursor, positionX, min;
 
-    let width = this._width;
-    let cursor = this.cursor;
+    width = this._width;
+    cursor = this.cursor;
 
-    let positionX = cursor.positionX;;
+    positionX = cursor.positionX;;
     if (positionX > width - 1) {
       positionX = width - 1;
     }
 
-    let cursor = this.cursor;
-    let positionX = cursor.positionX - n;
-    let min = 0;
+    cursor = this.cursor;
+    positionX = positionX - n;
+    min = 0;
     cursor.positionX = positionX > min ? positionX: min;
   },
 
@@ -2070,9 +2106,11 @@ Screen.definition = {
   "[type('Uint16 -> Undefined')] cursorUp":
   function cursorUp(n) 
   { 
-    let cursor = this.cursor;
-    let positionY = cursor.positionY - n;
-    let min = this._scroll_top;
+    var cursor, positionY, min;
+
+    cursor = this.cursor;
+    positionY = cursor.positionY - n;
+    min = this._scroll_top;
     cursor.positionY = positionY > min ? positionY: min;
   },
   
@@ -2080,13 +2118,14 @@ Screen.definition = {
   "[type('Uint16 -> Undefined')] cursorDown":
   function cursorDown(n) 
   {
-    let cursor = this.cursor;
-    let positionY = cursor.positionY + n;
+    var cursor, positionY, max;
+
+    cursor = this.cursor;
+    positionY = cursor.positionY + n;
 
     // If an attempt is made to move the active position below the last line, 
     // the active position stops at the last line.
-    let max = this._scroll_bottom - 1;
-    //let max = this._height - 1;
+    max = this._scroll_bottom - 1;
     cursor.positionY = positionY > max ? max: positionY;
   },
 
@@ -2094,9 +2133,11 @@ Screen.definition = {
   "[type('Uint16 -> Undefined')] cursorUpAbsolutely":
   function cursorUpAbsolutely(n) 
   { 
-    let cursor = this.cursor;
-    let positionY = cursor.positionY - n;
-    let min = 0;
+    var cursor, positionY, min;
+
+    cursor = this.cursor;
+    positionY = cursor.positionY - n;
+    min = 0;
     cursor.positionY = positionY > min ? positionY: min;
   },
   
@@ -2104,12 +2145,14 @@ Screen.definition = {
   "[type('Uint16 -> Undefined')] cursorDownAbsolutely":
   function cursorDownAbsolutely(n) 
   {
-    let cursor = this.cursor;
-    let positionY = cursor.positionY + n;
+    var cursor, positionY, max;
+
+    cursor = this.cursor;
+    positionY = cursor.positionY + n;
 
     // If an attempt is made to move the active position below the last line, 
     // the active position stops at the last line.
-    let max = this._height - 1;
+    max = this._height - 1;
     cursor.positionY = positionY > max ? max: positionY;
   },
 
@@ -2117,7 +2160,9 @@ Screen.definition = {
   "[type('Uint16 -> Undefined')] setPositionX":
   function setPositionX(n) 
   {
-    let max = this._width - 1;
+    var max;
+
+    max = this._width - 1;
     this.cursor.positionX = n > max ? max: n;
   },
 
@@ -2125,7 +2170,9 @@ Screen.definition = {
   "[type('Uint16 -> Undefined')] setPositionY":
   function setPositionY(n) 
   {
-    let max = this._height - 1;
+    var max;
+
+    max = this._height - 1;
     this.cursor.positionY = n > max ? max: n; // max(height - 1, n)
   },
 
@@ -2199,8 +2246,10 @@ Screen.definition = {
   "[type('Undefined')] eraseLineToRight":
   function eraseLineToRight() 
   {
-    let cursor = this.cursor;
-    let line = this._getCurrentLine();
+    var cursor, line;
+
+    cursor = this.cursor;
+    line = this._getCurrentLine();
     if (line) {
       line.erase(cursor.positionX, this._width, cursor.attr);
     } else {
@@ -2213,8 +2262,10 @@ Screen.definition = {
   "[type('Undefined')] eraseLineToLeft":
   function eraseLineToLeft() 
   {
-    let cursor = this.cursor;
-    let line = this._getCurrentLine();
+    var cursor, line;
+
+    cursor = this.cursor;
+    line = this._getCurrentLine();
     line.erase(0, cursor.positionX + 1, cursor.attr);
   },
 
@@ -2222,8 +2273,10 @@ Screen.definition = {
   "[type('Undefined')] eraseLine":
   function eraseLine() 
   {
-    let cursor = this.cursor;
-    let line = this._getCurrentLine();
+    var cursor, line;
+
+    cursor = this.cursor;
+    line = this._getCurrentLine();
     line.erase(0, this._width, cursor.attr);
   },
 
@@ -2231,13 +2284,14 @@ Screen.definition = {
   "[type('Undefined')] eraseScreenAbove":
   function eraseScreenAbove() 
   {
-    let cursor = this.cursor;
-    let width = this._width;
-    let lines = this._lines;
-    let attr = cursor.attr;
-    let i;
+    var cursor, width, lines, attr, i, positionY;
+
+    cursor = this.cursor;
+    width = this._width;
+    lines = this._lines;
+    attr = cursor.attr;
     
-    let positionY = cursor.positionY;
+    positionY = cursor.positionY;
     lines[positionY].erase(0, cursor.positionX + 1, attr);
     for (i = 0; i < positionY; ++i) {
       lines[i].erase(0, width, attr);
@@ -2617,7 +2671,7 @@ Screen.definition = {
     this.dirty = true;
   },
 
-};
+}; // class Screen
 
 
 /**
