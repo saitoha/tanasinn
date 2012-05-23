@@ -145,13 +145,6 @@ DecModeSequenceHandler.definition = {
           broker.notify("command/change-scrolling-mode", true);
           break;
 
-        // Reverse Video (DECSCNM)
-        case 5:
-          broker.notify("command/reverse-video", true);
-          coUtils.Debug.reportMessage(
-            _("DECSET - DECSCNM (Reverse video) was called."));
-          break;
-
         // Origin Mode (DECOM)
         case 6:
           // TODO: origin mode.
@@ -167,14 +160,6 @@ DecModeSequenceHandler.definition = {
           this.DECAWM = true;
           coUtils.Debug.reportMessage(
             _("DECSET - DECAWM (Auto-wrap Mode) was set."));
-          break;
-
-        // Auto-repeat Keys (DECARM)
-        case 8:
-          // enable auto repeat.
-          broker.notify("command/change-auto-repeat-mode", true);
-          coUtils.Debug.reportMessage(
-            _("DECSET - DECARM (Auto-repeat Keys) is set."));
           break;
 
         // X10_MOUSE mode
@@ -461,9 +446,13 @@ DecModeSequenceHandler.definition = {
           break;
 
         default:
-          coUtils.Debug.reportWarning(
-            _("%s sequence [%s] was ignored."),
-            arguments.callee.name, n);
+          try {
+            broker.uniget("sequence/decset/" + n);
+          } catch (e) {
+            coUtils.Debug.reportWarning(
+              _("%s sequence [%s] was ignored."),
+              arguments.callee.name, n);
+          }
 
       } // end switch
     } // end for
@@ -528,13 +517,6 @@ DecModeSequenceHandler.definition = {
           broker.notify("command/change-scrolling-mode", false);
           break;
 
-        // Reverse Video (DECSCNM)
-        case 5:
-          broker.notify("command/reverse-video", false);
-          coUtils.Debug.reportMessage(
-            _("DECRST - DECSCNM (Reverse video) was called."));
-          break;
-
         // Reset Origin Mode (DECOM)
         case 6:
           // TODO: reset origin mode.
@@ -550,14 +532,6 @@ DecModeSequenceHandler.definition = {
           this.DECAWM = false;
           coUtils.Debug.reportMessage(
             _("DECRST - DECAWM (Auto-wrap Mode) was reset."));
-          break;
-
-        // Auto-repeat Keys (DECARM)
-        case 8:
-          // enable auto repeat.
-          broker.notify("command/change-auto-repeat-mode", false);
-          coUtils.Debug.reportMessage(
-            _("DECRST - DECARM (Auto-repeat Keys) is reset."));
           break;
 
         // X10_MOUSE mode
@@ -828,9 +802,13 @@ DecModeSequenceHandler.definition = {
           break;
 
         default:
-          coUtils.Debug.reportWarning(
-            _("%s sequence [%s] was ignored."),
-            arguments.callee.name, n);
+          try {
+            broker.uniget("sequence/decrst/" + n);
+          } catch (e) {
+            coUtils.Debug.reportWarning(
+              _("%s sequence [%s] was ignored."),
+              arguments.callee.name, n);
+          }
 
       } // end switch
 

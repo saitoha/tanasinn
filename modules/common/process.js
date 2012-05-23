@@ -66,7 +66,7 @@
  *
  */
 
-void function() {
+//void function() {
 
   var tanasinn_scope = {}; // create scope.
   var id, current_file;
@@ -422,5 +422,5 @@ void function() {
   
   } // with tanasinn_scope
 
-} ();
+//} ();
 

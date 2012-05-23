@@ -30,7 +30,7 @@
 /**
  * @concept GrammarConcept
  */
-let GrammarConcept = new Concept();
+var GrammarConcept = new Concept();
 GrammarConcept.definition = {
 
   get id()
@@ -50,7 +50,7 @@ GrammarConcept.definition = {
 /**
  * @concept ScannerConcept
  */
-let ScannerConcept = new Concept();
+var ScannerConcept = new Concept();
 ScannerConcept.definition = {
 
   get id()
@@ -88,7 +88,7 @@ ScannerConcept.definition = {
  * @class StringParser
  * @brief Parse string.
  */
-let StringParser = new Class();
+var StringParser = new Class();
 StringParser.definition = {
 
   _action: null, // semantic action
@@ -106,13 +106,17 @@ StringParser.definition = {
    */
   parse: function parse(scanner, previous) 
   {
-    let sequence = previous || [];
-    for (let c in this._parseString(scanner)) {
+    var sequence = previous || [];
+    var c;
+    var self = this;
+
+    for (c in this._parseString(scanner)) {
       sequence.push(c);
     }
     if (scanner.isEnd) {
-      return let (self = this) function(scanner) {
-        let result = parse.apply(self, [scanner, sequence]);
+      return function(scanner) 
+      {
+        var result = parse.apply(self, [scanner, sequence]);
         yield result;
       };
     }
@@ -126,14 +130,16 @@ StringParser.definition = {
    */
   _parseString: function _parseString(scanner) 
   {
+    var c;
+
     while (!scanner.isEnd) {
-      let c = scanner.current();
+      c = scanner.current();
       if (0x1b === c) {    // '\e'
         scanner.moveNext();
         if (scanner.isEnd) {
           break;
         }
-        let c = scanner.current();
+        c = scanner.current();
         if (0x5d !== c && 0x0d !== c && 0xdd !== c) {
           break;
         }
@@ -170,11 +176,14 @@ let C0Parser = {
 
   parse: function parse(scanner) 
   {
+    var c;
+    var action;
+
     if (scanner.isEnd) {
       return undefined;
     }
-    let c = scanner.current();
-    let action = this._map[c];
+    c = scanner.current();
+    action = this._map[c];
     if (undefined === action) {
       return undefined;
     }
@@ -191,7 +200,7 @@ let C0Parser = {
  * @class ParameterParser
  * @brief Parse parameter. 
  */ 
-let ParameterParser = new Class().extends(Array);
+var ParameterParser = new Class().extends(Array);
 ParameterParser.definition = {
 
   _default_action: null,
@@ -213,19 +222,21 @@ ParameterParser.definition = {
    */
   parse: function parse(scanner) 
   {
-    let params = [param for (param in this._parseParameters(scanner))];
-    let c;
+    var params = [param for (param in this._parseParameters(scanner))];
+    var c;
+    var action;
+    var meta_action;
+    var default_action;
+    var actions;
+    var next;
+
     do {
       if (scanner.isEnd) {
-        //return let (self = this) function(scanner) {
-        //  let result = parse.apply(self, scanner);
-        //  yield result;
-        //};
         return undefined;
       }
       c = scanner.current();
       if (c < 0x20 || 0x7f === c) {
-        let action = C0Parser.get(c);
+        action = C0Parser.get(c);
         if (undefined !== action) {
           this._c0action.push(action);
         }
@@ -235,36 +246,39 @@ ParameterParser.definition = {
       break;
     } while (true);
 
-    let next = this[c];
-    let action;
+    next = this[c];
     if (undefined === next) {
     } else if ("parse" in next) {
       scanner.moveNext();
-      let c = scanner.current();
-      let meta_action = next[c];
+      c = scanner.current();
+      meta_action = next[c];
       if (meta_action) {
         action = meta_action(params);
       }
     } else {
       action = next(params);
     }
-    let default_action = this._default_action;
+    default_action = this._default_action;
     if (0 === this._c0action.length && null === default_action) {
       return action;
     } 
-    let actions = this._c0action;
+    actions = this._c0action;
     actions.push(action);
 
     this._c0action = [];
+
     return function() {
+      var i;
+      var action;
+
       if (default_action) {
-        let action = C0Parser.get(default_action);
+        action = C0Parser.get(default_action);
         if (undefined !== action) {
           action();
         }
       }
-      for (let i = 0; i < actions.length; ++i) {
-        let action = actions[i];
+      for (i = 0; i < actions.length; ++i) {
+        action = actions[i];
         if (action) {
           try {
             action();
@@ -284,9 +298,12 @@ ParameterParser.definition = {
   _parseParameters: 
   function _parseParameters(scanner) 
   {
-    let accumulator = this._first;
+    var accumulator = this._first;
+    var c;
+    var action;
+
     while (!scanner.isEnd) {
-      let c = scanner.current();
+      c = scanner.current();
       if (0x30 <= c && c <= 0x39) { // [0-9]
         scanner.moveNext();
         accumulator = accumulator * 10 + c - 0x30;
@@ -296,7 +313,7 @@ ParameterParser.definition = {
         accumulator = 0;
       } else if (c < 0x20 || 0x7f === c) {
         yield accumulator;
-        let action = C0Parser.get(c);
+        action = C0Parser.get(c);
         if (undefined !== action) {
           this._c0action.push(action);
         }
@@ -312,7 +329,7 @@ ParameterParser.definition = {
 /**
  * @class ParameterParserStartingWithSemicolon
  */
-let ParameterParserStartingWithSemicolon = new Class().extends(ParameterParser);
+var ParameterParserStartingWithSemicolon = new Class().extends(ParameterParser);
 ParameterParserStartingWithSemicolon.definition = {
 
   /** Parse numeric parameters separated by semicolons ";". 
@@ -324,10 +341,15 @@ ParameterParserStartingWithSemicolon.definition = {
   _parseParameters: 
   function _parseParameters(scanner) 
   {
+    var accumulator;
+    var c;
+    var action;
+
     yield 0;
-    let accumulator = this._first;
+
+    accumulator = this._first;
     while (!scanner.isEnd) {
-      let c = scanner.current();
+      c = scanner.current();
       if (0x30 <= c && c <= 0x39) { // [0-9]
         scanner.moveNext();
         accumulator = accumulator * 10 + c - 0x30;
@@ -337,7 +359,7 @@ ParameterParserStartingWithSemicolon.definition = {
         accumulator = 0;
       } else if (c < 0x20 || 0x7f === c) {
         yield accumulator;
-        let action = C0Parser.get(c);
+        action = C0Parser.get(c);
         if (undefined !== action) {
           this._c0action.push(action);
         }
@@ -354,7 +376,7 @@ ParameterParserStartingWithSemicolon.definition = {
 /**
  * @class SequenceParser
  */
-let SequenceParser = new Class().extends(Array);
+var SequenceParser = new Class().extends(Array);
 SequenceParser.definition = {
 
   /** Construct child parsers from definition and make parser-chain. */
@@ -374,27 +396,18 @@ SequenceParser.definition = {
     if (number) { // parse number
       let code = parseInt(number, 16);
       if (number2) {
+
         let action = function(params) 
         {
-          let data;
-          if (65000 > params.length) {
-            data = String.fromCharCode.apply(String, params);
-          } else {
-            data = "";
-            let i;
-            let buffer_length = 65000;
-            for (i = 0; i < params.length; i += buffer_length) {
-              let piece = Array.slice(params, i, i + buffer_length);
-              let str = String.fromCharCode.apply(String, piece);
-              data += str;
-            }
-          }
+          var data = coUtils.Text.safeConvertFromArray(params);
           return function() 
           {
             return value.call(context, data);
           };
         };
+
         C0Parser.append(code, new StringParser(action));
+
       } else {
         if ("parse" in value) {
           C0Parser.append(code, value);
@@ -447,7 +460,8 @@ SequenceParser.definition = {
         }
       }
       let parser = this;
-      for (let j = 0; j < char_with_param.length - 1; ++j) {
+      let j;
+      for (j = 0; j < char_with_param.length - 1; ++j) {
         let accept_char = char_with_param.charCodeAt(j);
         parser = parser[accept_char] = new SequenceParser();
       }
@@ -531,8 +545,9 @@ SequenceParser.definition = {
    */
   parse: function parse(scanner) 
   {
-    let c = scanner.current();
-    let next = this[c];
+    var c = scanner.current();
+    var next = this[c];
+
     if (next) { // c is part of control sequence.
       if ("parse" in next) { // next is parser.
         scanner.moveNext();
@@ -552,7 +567,7 @@ SequenceParser.definition = {
  *
  *
  */
-let VT100Grammar = new Class().extends(Component)
+var VT100Grammar = new Class().extends(Component)
                               .requires("GrammarConcept");
 VT100Grammar.definition = {
 
@@ -565,6 +580,9 @@ VT100Grammar.definition = {
   "[subscribe('@event/broker-started'), enabled]":
   function onLoad(broker)
   {
+    var i;
+    var sequences;
+
     this.ESC = new SequenceParser();
     this.CSI = new SequenceParser();
     SequenceParser.prototype[0x1b] = this.ESC;
@@ -578,8 +596,8 @@ VT100Grammar.definition = {
       handler: this.CSI,
       context: this,
     });
-    let sequences = broker.notify("get/sequences/vt100");
-    for (let i = 0; i < sequences.length; ++i) {
+    sequences = broker.notify("get/sequences/vt100");
+    for (i = 0; i < sequences.length; ++i) {
       broker.notify("command/add-sequence", sequences[i]);
     }
     broker.notify("initialized/grammar", this);
@@ -600,7 +618,7 @@ VT100Grammar.definition = {
   "[type('Scanner -> Action')] parse":
   function parse(scanner) 
   {
-    let action = C0Parser.parse(scanner);
+    var action = C0Parser.parse(scanner);
     return action;
   },
 
@@ -613,11 +631,12 @@ VT100Grammar.definition = {
   "[subscribe('command/add-sequence'), type('SequenceInfo -> Undefined'), enabled]":
   function append(information) 
   {
-    let {expression, handler, context} = information;
-    let match = expression.split(/\s+/);
-    let pos = expression.indexOf(" ");
-    let key = expression.substr(pos + 1)
-    let prefix;
+    var {expression, handler, context} = information;
+    var match = expression.split(/\s+/);
+    var pos = expression.indexOf(" ");
+    var key = expression.substr(pos + 1)
+    var prefix;
+
     if (-1 === pos) {
       prefix = "C0";
     } else {
@@ -638,7 +657,7 @@ VT100Grammar.definition = {
  * @class Scanner
  * @brief Character scanner for UTF-8 characters sequence.
  */ 
-let Scanner = new Class().extends(Component).requires("ScannerConcept");
+var Scanner = new Class().extends(Component).requires("ScannerConcept");
 Scanner.definition = {
 
   get id()
@@ -673,7 +692,7 @@ Scanner.definition = {
   "[type('Uint16')] current":
   function current() 
   {
-    let code = this._value.charCodeAt(this._position);
+    var code = this._value.charCodeAt(this._position);
     return code;
   },
 
@@ -715,7 +734,7 @@ Scanner.definition = {
 
   drain: function drain()
   {
-    let value = this._value.substr(this._position + 1);
+    var value = this._value.substr(this._position + 1);
     this._value = "";
     this._position = 0;
     this._anchor = 0;
@@ -741,7 +760,7 @@ Scanner.definition = {
  * @class Parser
  * @brief Parse byte sequence emitted by TTY device.
  */
-let Parser = new Class().extends(Component);
+var Parser = new Class().extends(Component);
 Parser.definition = {
 
   get id()
@@ -753,7 +772,7 @@ Parser.definition = {
   _scanner: null,
 
   "[persistable] initial_grammar": "vt100",
-  "[persistable] ambiguous_as_wide": false,
+  "[persistable, watchable] ambiguous_as_wide": false,
   wcwidth: null,
 
 // post-constructor
@@ -773,13 +792,17 @@ Parser.definition = {
    */
   install: function install(broker)
   {
+    var grammars;
+    var grammar;
+    var i;
+
     this.drive.enabled = true;
     this.onDataArrivedRecursively.enabled = true;
 
     this._grammars = {};
-    let grammars = broker.notify("get/grammars");
-    for (let i = 0; i < grammars.length; ++i) {
-      let grammar = grammars[i];
+    grammars = broker.notify("get/grammars");
+    for (i = 0; i < grammars.length; ++i) {
+      grammar = grammars[i];
       this._grammars[grammar.id] = grammar;
     }
     this._grammar = this._grammars[this.initial_grammar];
@@ -800,6 +823,7 @@ Parser.definition = {
   "[subscribe('variable-changed/parser.ambiguous_as_wide'), enabled]":
   function onChangeAmbiguousCharacterWidth(is_wide)
   {
+    var broker = this._broker;
     if (is_wide) {
       this.wcwidth = wcwidth_amb_as_double;
     } else {
@@ -810,10 +834,12 @@ Parser.definition = {
   "[subscribe('command/change-mode'), enabled]":
   function onChangeMode(mode)
   {
-    let grammars = this._grammars;
+    var grammars = this._grammars;
+    var value;
+
     if (grammars.hasOwnProperty(mode)) {
       this._grammar = grammars[mode];
-      let value = this._scanner.drain();
+      value = this._scanner.drain();
       this._scanner.generator = null;
       this.drive(value);
     } else {
@@ -840,12 +866,13 @@ Parser.definition = {
   "[subscribe('event/data-arrived')]": 
   function drive(data)
   {
-    let broker = this._broker;
-    let scanner = this._scanner;
+    var broker = this._broker;
+    var scanner = this._scanner;
+    var action;
 
 //    coUtils.Timer.setTimeout(function(){
     scanner.assign(data);
-    for (let action in this.parse(scanner, data)) {
+    for (action in this.parse(scanner, data)) {
       action();
     }
     broker.notify("command/draw"); // fire "draw" event.
@@ -858,11 +885,12 @@ Parser.definition = {
   "[subscribe('event/data-arrived-recursively')]": 
   function onDataArrivedRecursively(data)
   {
-    let broker = this._broker;
-    let scanner = new Scanner(broker);
-    let action;
+    var broker = this._broker;
+    var scanner = new Scanner(broker);
+    var action;
+
     scanner.assign(data);
-    for (action in this.parse(scanner, data)) {
+    for (action in this.parse(scanner)) {
       action();
     }
     broker.notify("command/draw"); // fire "draw" event.
@@ -871,18 +899,20 @@ Parser.definition = {
   /** Parse control codes and text pieces from the scanner. 
    *  @param {String} data incoming data in text format.
    */
-  parse: function parse(scanner, data)
+  parse: function parse(scanner)
   {
-    let broker = this._broker;
-    let emurator = this._emurator;
-    let decoder = this._decoder;
-    let grammar = this._grammar;
-    let drcs_converter = this._drcs_converter;
+
+    var action;
+    var codes;
+    var grammar = this._grammar;
+    var emurator = this._emurator;
+    var drcs_converter = this._drcs_converter;
+    var result, next;
 
     if (scanner.generator) {
-      let result = scanner.generator(scanner);
+      result = scanner.generator(scanner);
       if (result) {
-        let next = result.next();
+        next = result.next();
         if (next.isGenerator()) {
           scanner.generator = next;
         } else {
@@ -892,12 +922,11 @@ Parser.definition = {
         }
       }
     }
-
     while (!scanner.isEnd) {
 
       scanner.setAnchor(); // memorize current position.
 
-      let action = grammar.parse(scanner);
+      action = grammar.parse(scanner);
       if (action) {
         if (action.isGenerator()) {
           scanner.generator = action;
@@ -907,6 +936,40 @@ Parser.definition = {
         }
       } else if (!scanner.isEnd) {
  
+        codes = this._decode(scanner);;
+        if (codes.length) {
+          yield function () 
+          {
+            var converted_codes = drcs_converter.convert(codes);
+            emurator.write(converted_codes);
+          };
+        } else {
+          if (scanner.isEnd) {
+            break;
+          }
+          scanner.moveNext();
+          break;
+        }
+      } else { // scanner.isEnd
+        scanner.setSurplus(); // backup surplus (unparsed) sequence.
+      }
+    }
+
+  },
+
+  _decode: function _decode(scanner)
+  {
+    var decoder = this._decoder;
+    var codes = [];
+    var c;
+    var base;
+
+    for (c in decoder.decode(scanner)) {
+
+      if (c < 0xa1) {
+        codes.push(c);
+      } else {
+
         /** Pads NULL characters before each of wide characters.
          *
          *  example:
@@ -925,92 +988,32 @@ Parser.definition = {
          *                                 ^                          ^
          *                              inserted                   inserted
          */
-        let codes = [];
-        let c;
-        for (c in decoder.decode(scanner)) {
-          let character = String.fromCharCode(c);
-          //let match = coUtils.Unicode
-          //  .detectCategory(character);
-          //if (match) {
-          //  let [, is_spacing_combining_mark] = match;  
-          //  if (is_spacing_combining_mark) {
-          //    continue;
-          //  }
-          //}
-          if (c < 0xa1) {
+        switch (this.wcwidth(c)) {
+
+          case 1:
             codes.push(c);
-          } else {
-            switch (this.wcwidth(c)) {
+            break;
 
-              case 1:
-                codes.push(c);
-                break;
+          case 2:
+            codes.push(0, c);
+            break;
 
-              case 2:
-                codes.push(0, c);
-                break;
-
-              default: // 0
-                if (0 === codes.length) {
-                  codes.push(c);
-                } else {
-                  let base = codes[codes.length - 1];
-                  if ("number" === typeof base) {
-                    codes[codes.length - 1] = [base, c];
-                  } else {
-                    base.push(c);
-                  }
-                }
+          default: // 0
+            if (0 === codes.length) {
+              codes.push(c);
+            } else {
+              base = codes[codes.length - 1];
+              if ("number" === typeof base) {
+                codes[codes.length - 1] = [base, c];
+              } else {
+                base.push(c);
+              }
             }
-          }
         }
-
-//        let codes = decoder.decode(scanner);
-        if (codes.length) {
-          yield function () 
-          {
-            let converted_codes = drcs_converter.convert(codes);
-            emurator.write(converted_codes);
-          };
-        } else {
-          continue;
-          //let c1 = scanner.current();
-          ////coUtils.Debug.reportError(
-          ////  _("Failed to decode text. text length: %d, source text: [%s]."), 
-          ////  data.length, c1);
-          ////if (scanner.isEnd) {
-          ////  break;
-          ////}
-          //scanner.setSurplus();
-          //scanner.moveNext();
-          //break;
-        }
-      } else { // scanner.isEnd
-        scanner.setSurplus(); // backup surplus (unparsed) sequence.
       }
     }
-
+    return codes;
   },
-  /*
-  _padWideCharacter: function _padWideCharacter(codes)
-  {
-    for (let [, c] in Iterator(codes)) {
-      let match = coUtils.Unicode
-        .detectCategory(String.fromCharCode(c));
-      if (match) {
-        let [is_non_spacing_mark, is_spacing_combining_mark] = match;  
-        if (is_non_spacing_mark || is_spacing_combining_mark) {
-          continue;
-        }
-      }
-      let is_wide = coUtils.Unicode.doubleWidthTest(c);
-      if (is_wide) {
-        yield 0;
-      }
-      yield c;
-    }
-  },
-  */
 
 }; // Grammar
 

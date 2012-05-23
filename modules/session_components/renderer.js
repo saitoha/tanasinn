@@ -245,16 +245,19 @@ ReverseVideoTrait.definition = {
   "[subscribe('command/reverse-video'), enabled]": 
   function reverseVideo(value) 
   {
+    var map;
+    var i;
+    var broker = this._broker;
+
     if (this._reverse != value) {
       this._reverse = value;
-      let map = this.color;
-      for (let i = 0; i < map.length; ++i) {
+      map = this.color;
+      for (i = 0; i < map.length; ++i) {
         let value = (parseInt(map[i].substr(1), 16) ^ 0x1ffffff)
           .toString(16)
           .replace(/^1/, "#");
         map[i] = value;
       }
-      let broker = this._broker;
       broker.notify("command/draw", true);
     }
 
@@ -266,7 +269,7 @@ ReverseVideoTrait.definition = {
 /**
  * @trait DRCSStateTrait
  */
-let DRCSStateTrait = new Trait();
+var DRCSStateTrait = new Trait();
 DRCSStateTrait.definition = {
 
   _drcs_state: null, 
@@ -293,7 +296,7 @@ DRCSStateTrait.definition = {
 /**
  * @trait PalletManagerTrait
  */
-let PalletManagerTrait = new Trait();
+var PalletManagerTrait = new Trait();
 PalletManagerTrait.definition = {
   
   // color map (index No. is spacified by SGR escape sequences)
@@ -306,7 +309,9 @@ PalletManagerTrait.definition = {
   "[subscribe('sequence/osc/4'), enabled]": 
   function changeColor(value) 
   {
-    let [number, spec] = value.split(";");
+    var broker = this._broker;
+    var message;
+    var [number, spec] = value.split(";");
 
     // range check.
     if (0 > number && number > 254) {
@@ -316,8 +321,7 @@ PalletManagerTrait.definition = {
 
     // parse arguments.
     if ("?" == spec) {
-      let broker = this._broker;
-      let message = "4;" + number + ";" + this.color[number];
+      message = "4;" + number + ";" + this.color[number];
       broker.notify("command/send-to-tty", message);
     } 
 
@@ -330,7 +334,7 @@ PalletManagerTrait.definition = {
 /**
  * @class Layer
  */
-let Layer = new Class();
+var Layer = new Class();
 Layer.definition = {
 
   canvas: null,
@@ -369,7 +373,7 @@ Layer.definition = {
   /** Constructor */
   initialize: function initialize(broker) 
   {
-    let { canvas } = broker.uniget(
+    var { canvas } = broker.uniget(
       "command/construct-chrome", 
       {
         parentNode: "#tanasinn_center_area",
@@ -397,7 +401,7 @@ Layer.definition = {
  * @class Renderer
  * @brief Scan screen state and render it to canvas element.
  */ 
-let Renderer = new Class().extends(Plugin)
+var Renderer = new Class().extends(Plugin)
                           .mix(PersistentTrait)
                           .mix(SlowBlinkTrait)
                           .mix(RapidBlinkTrait)
@@ -485,7 +489,8 @@ Renderer.definition = {
     this.captureScreen.enabled = true;
     this.onDRCSStateChangedG0.enabled = true;
     this.onDRCSStateChangedG1.enabled = true;
-    let outerchrome = this.dependency["outerchrome"];
+
+    var outerchrome = this.dependency["outerchrome"];
     this.foreground_color = outerchrome.foreground_color;
     this.background_color = outerchrome.background_color;
   },
@@ -526,7 +531,7 @@ Renderer.definition = {
   "[subscribe('sequence/osc/10'), enabled]": 
   function osc10(info) 
   {
-    let outerchrome = this.dependency["outerchrome"];
+    var outerchrome = this.dependency["outerchrome"];
     this.foreground_color = outerchrome.foreground_color;
     this.background_color = outerchrome.background_color;
     this.draw(true);
@@ -535,7 +540,7 @@ Renderer.definition = {
   "[subscribe('sequence/osc/11'), enabled]": 
   function osc11(info) 
   {
-    let outerchrome = this.dependency["outerchrome"];
+    var outerchrome = this.dependency["outerchrome"];
     this.foreground_color = outerchrome.foreground_color;
     this.background_color = outerchrome.background_color;
     this.draw(true);
@@ -565,9 +570,10 @@ Renderer.definition = {
   "[subscribe('set/font-size')]": 
   function setFontSize(font_size) 
   {
+    var broker = this._broker;
+
     this.line_height += font_size - this.font_size;
     this.font_size = font_size;
-    let broker = this._broker;
     broker.notify("event/font-size-changed", this.font_size);
   },
 
@@ -587,18 +593,22 @@ Renderer.definition = {
   "[subscribe('command/change-fontsize-by-offset')]":
   function changeFontSizeByOffset(offset) 
   {
+    var broker = this._broker;
+
     this.font_size = Number(this.font_size) + offset;
     this.line_height = Number(this.line_height) + offset;
-    let broker = this._broker;
     broker.notify("event/font-size-changed", this.font_size);
   },
 
   "[subscribe('variable-changed/{screen.width | renderer.char_width}')]":
   function onWidthChanged(width, char_width) 
   {
+    var canvas_width;
+    var broker = this._broker;
+
     width = width || this.dependency["screen"].width;
     char_width = char_width || this.char_width;
-    let canvas_width = 0 | (width * char_width);
+    canvas_width = 0 | (width * char_width);
     this._main_layer.canvas.width = canvas_width;
     if (this._slow_blink_layer) {
       this._slow_blink_layer.width = canvas_width;
@@ -606,16 +616,18 @@ Renderer.definition = {
     if (this._rapid_blink_layer) {
       this._rapid_blink_layer.width = canvas_width;
     }
-    let broker = this._broker;
     broker.notify("event/screen-width-changed", canvas_width);
   },
 
   "[subscribe('variable-changed/{screen.height | renderer.line_height}')]":
   function onHeightChanged(height, line_height)
   {
+    var canvas_height;
+    var broker = this._broker;
+
     height = height || this.dependency["screen"].height;
     line_height = line_height || this.line_height;
-    let canvas_height = 0 | (height * line_height);
+    canvas_height = 0 | (height * line_height);
     this._main_layer.canvas.height = canvas_height;
     if (this._slow_blink_layer) {
       this._slow_blink_layer.canvas.height = canvas_height;
@@ -623,21 +635,20 @@ Renderer.definition = {
     if (this._rapid_blink_layer) {
       this._rapid_blink_layer.canvas.height = canvas_height;
     }
-    let broker = this._broker;
     broker.notify("event/screen-height-changed", canvas_height);
   },
 
   _drawNormalText: 
   function _drawNormalText(codes, row, column, end, attr, type)
   {
-    let context = this._main_layer.context;
-    let line_height = this.line_height;
-    let char_width = this.char_width;
-    let font_size = this.font_size;
-    let font_family = this.font_family;
-    let text_offset = this._text_offset;
+    var context = this._main_layer.context;
+    var line_height = this.line_height;
+    var char_width = this.char_width;
+    var font_size = this.font_size;
+    var font_family = this.font_family;
+    var text_offset = this._text_offset;
+    var left, top, width, height;
 
-    let left, top, width, height;
     left = char_width * column;
     top = line_height * row;
     width = (char_width * (end - column));
@@ -671,14 +682,14 @@ Renderer.definition = {
   _drawDoubleHeightTextTop: 
   function _drawDoubleHeightTextTop(codes, row, column, end, attr, type)
   {
-    let context = this._main_layer.context;
-    let line_height = this.line_height;
-    let char_width = this.char_width;
-    let font_size = this.font_size;
-    let font_family = this.font_family;
-    let text_offset = this._text_offset;
+    var context = this._main_layer.context;
+    var line_height = this.line_height;
+    var char_width = this.char_width;
+    var font_size = this.font_size;
+    var font_family = this.font_family;
+    var text_offset = this._text_offset;
 
-    let left, top, width, height;
+    var left, top, width, height;
 
     left = char_width * 2 * column;
     top = line_height * (row + 1);
@@ -721,14 +732,14 @@ Renderer.definition = {
   _drawDoubleHeightTextBottom: 
   function _drawDoubleHeightTextBottom(codes, row, column, end, attr, type)
   {
-    let context = this._main_layer.context;
-    let line_height = this.line_height;
-    let char_width = this.char_width;
-    let font_size = this.font_size;
-    let font_family = this.font_family;
-    let text_offset = this._text_offset;
+    var context = this._main_layer.context;
+    var line_height = this.line_height;
+    var char_width = this.char_width;
+    var font_size = this.font_size;
+    var font_family = this.font_family;
+    var text_offset = this._text_offset;
 
-    let left, top, width, height;
+    var left, top, width, height;
 
     left = char_width * 2 * column;
     top = line_height * row;
@@ -771,14 +782,14 @@ Renderer.definition = {
   _drawDoubleWidthText: 
   function _drawDoubleWidthText(codes, row, column, end, attr, type)
   {
-    let context = this._main_layer.context;
-    let line_height = this.line_height;
-    let char_width = this.char_width;
-    let font_size = this.font_size;
-    let font_family = this.font_family;
-    let text_offset = this._text_offset;
+    var context = this._main_layer.context;
+    var line_height = this.line_height;
+    var char_width = this.char_width;
+    var font_size = this.font_size;
+    var font_family = this.font_family;
+    var text_offset = this._text_offset;
 
-    let left, top, width, height;
+    var left, top, width, height;
 
     context.font = (font_size * 2) + "px " + font_family;
     if (attr.italic) {
@@ -823,59 +834,38 @@ Renderer.definition = {
   "[subscribe('command/draw')]": 
   function draw(redraw_flag)
   {
-    let screen = this.dependency["screen"];
+    var screen = this.dependency["screen"];
+    var type;
+    var info;
 
     if (redraw_flag) {
       screen.dirty = true;
     }
 
-    for (let { codes, row, column, end, attr, line } in screen.getDirtyWords()) {
-      let type = line.type;
-      let cells = codes;
-      let codes1 = [];
-      let i;
+    for (info in screen.getDirtyWords()) {
 
+      let { codes, row, column, end, attr, line } = info;
       if (end == column) {
         continue;
       }
-      for (i = 0; i < cells.length; ++i) {
-        let cell = cells[i];
-        let code = cell.c;
-        if (code < 0x10000) {
-          codes1.push(code);
-        } else {
-          if ("object" === typeof code) {
-            codes1.push.apply(codes1, code);
-            //if (codes1.some(function(c) c == 0x30a)) {
-            //  alert(codes1)
-            //  alert(String.fromCharCode.apply(String, codes1));
-            //}
-          } else {
-            // emit 16bit + 16bit surrogate pair.
-            code -= 0x10000;
-            codes1.push(
-              (code >> 10) | 0xD800, 
-              (code & 0x3FF) | 0xDC00);
-          }
-        }
-      }
 
+      type = line.type;
       switch (type) {
 
         case coUtils.Constant.LINETYPE_NORMAL:
-          this._drawNormalText(codes1, row, column, end, attr, type);
+          this._drawNormalText(codes, row, column, end, attr, type);
           break;
 
         case coUtils.Constant.LINETYPE_TOP:
-          this._drawDoubleHeightTextTop(codes1, row, column, end, attr, type);
+          this._drawDoubleHeightTextTop(codes, row, column, end, attr, type);
           break;
 
         case coUtils.Constant.LINETYPE_BOTTOM:
-          this._drawDoubleHeightTextBottom(codes1, row, column, end, attr, type);
+          this._drawDoubleHeightTextBottom(codes, row, column, end, attr, type);
           break;
 
         case coUtils.Constant.LINETYPE_DOUBLEWIDTH:
-          this._drawDoubleWidthText(codes1, row, column, end, attr, type);
+          this._drawDoubleWidthText(codes, row, column, end, attr, type);
           break;
 
         case coUtils.Constant.LINETYPE_SIXEL:

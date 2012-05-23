@@ -50,6 +50,7 @@ AC_TANASINN_JS_PATH
 AC_CONFIG_FILES([Makefile 
                  doc/define.h
                  doc/Makefile
+                 tools/bin/Makefile
                  chrome.manifest 
                  install.rdf])
 AC_OUTPUT

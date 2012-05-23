@@ -2,7 +2,7 @@
 MODULENAME=@PACKAGE_NAME@
 ID=@PACKAGE_BUGREPORT@
 XPI=$(ID).xpi
-JS=@TANASINN_JS_PATH@ 
+JS=@TANASINN_JS_PATH@
 ZIP=@ZIP@
 TPUT=@TPUT@
 ASCIIDOC=@ASCIIDOC@
@@ -85,16 +85,19 @@ $(XPI): lint chrome.manifest install.rdf tanasinn-docs.zip
 		| sed -e "s/\(adding:\) \([^(]*\)(deflated \([0-9]*%\)/`tput setaf 5`\\1 `tput setaf 3`\\2`tput sgr0` (deflated `tput setaf 6`\\3`tput sgr0`/g"
 	@echo "$(MSTART) Done.$(MEND)\n" 
 
+$(JS): tools/bin/Makefile.in
+	$(MAKE) -C tools/bin
 
-lint: 
+lint: $(JS)
 	# Check syntax errors.
+	#cd $$(dirname $(JS)) && $(JS) -C -v $$version -o strict -o werror -f "$$file" || exit;
 	@case @host_os@ in \
 		cygwin*|linux*|darwin*) \
 			echo "$(MSTART) Ckecking JavaScript syntax error....$(MEND)"; \
 			for file in $$(/usr/bin/find $$PWD | egrep "\.js$$|\.jsm$$"); do \
 				for version in 185; do \
 					if [ @host_os@ = cygwin ]; then file=$$(cygpath -wa "$$file"); fi; \
-					cd $$(dirname $(JS)) && $(JS) -C -v $$version -o strict -o werror -f "$$file" || exit; \
+					cd $$(dirname $(JS)) && $(JS) -c -f "$$file" || exit; \
 				done; \
 			done; \
 			;; \
@@ -121,7 +124,9 @@ dev:
 install-vimperator:
 	@case @host_os@ in \
 		cygwin*) \
-			cmd /c mklink /D "$$(cygpath -w "$$(cygpath "$$USERPROFILE")/vimperator/tanasinn")" "$$(cygpath -w "$(PWD)")"; \
+			cmd /c mklink /D \
+				"$$(cygpath -w "$$(cygpath "$$USERPROFILE")/vimperator/tanasinn")" \
+				"$$(cygpath -w "$(PWD)")"; \
 			ln -f "$(PWD)/modules/tanasinn-vimp.js" \
 				"$$(cygpath -w "$$(cygpath "$$USERPROFILE")/vimperator/plugin")" \
 			;; \
@@ -174,7 +179,8 @@ install-extension:
 				esac \
 				;; \
 			*) \
-				[ -d "$$PROFILE_ROOT/$$PROFILE" ] && ln -sf $(PWD) "$$PROFILE_ROOT/$$PROFILE/extensions/$(ID)"; \
+				[ -d "$$PROFILE_ROOT/$$PROFILE" ] \
+					&& ln -sf $(PWD) "$$PROFILE_ROOT/$$PROFILE/extensions/$(ID)"; \
 				;; \
 		esac \
 	done;
@@ -215,7 +221,6 @@ update-web:
 	ssh user@zuse.jp ./build.sh
 
 update: all
-#	rm -r -f /var/www/tanasinn/*/ && rm -f /var/www/tanasinn/*
 	cp tanasinn@zuse.jp.xpi /var/www/tanasinn/tanasinn-current.xpi
 	cp doc/*.html /var/www/tanasinn/
 	cp doc/images/*.png /var/www/tanasinn/images/

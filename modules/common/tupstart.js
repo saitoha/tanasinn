@@ -157,6 +157,7 @@ EventBrokerBase.prototype = {
   {
     var delegate_map;
     var delegate_list;
+
     //coUtils.Debug.reportMessage(_("event registered: '%s'."), topic); 
     if (/\s/.test(topic)) { // detect whether topic includes space characters.
       throw Components.Exception(

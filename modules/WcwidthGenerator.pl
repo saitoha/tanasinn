@@ -9,7 +9,7 @@ open(IN, "EastAsianWidth.txt") or die;
 while (<IN>) {
     if ($_ =~ /^([0-9A-F]{4});(F|W)/) {
         $wcmap1{$1} = 2;
-    } elsif ($_ =~ /^([0-9A-F]{4})\.\.([0-9A-F]+);(F|W)/) {
+    } elsif ($_ =~ /^([0-9A-F]{4})\.\.([0-9A-F]{4});(F|W)/) {
         my $first = hex $1;
         my $last = hex $2;
         for (my $i = $first; $i <= $last; $i++) {
@@ -19,11 +19,11 @@ while (<IN>) {
     if ($_ =~ /^([0-9A-F]{4});(F|W|A)/) {
         my $key = $1;
         $wcmap2{$key} = 2;
-    } elsif ($_ =~ /^([0-9A-F]{4})\.\.([0-9A-F]+);(F|W|A)/) {
+    } elsif ($_ =~ /^([0-9A-F]{4})\.\.([0-9A-F]{4});(F|W|A)/) {
         my $first = hex $1;
         my $last = hex $2;
         for (my $i = $first; $i <= $last; $i++) {
-            $wcmap1{sprintf("%04x", $i)} = 2;
+            $wcmap2{sprintf("%04x", $i)} = 2;
         }
     }
 }

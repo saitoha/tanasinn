@@ -2172,15 +2172,13 @@ coUtils.Keyboard = {
     f17         : 0x1 << KEY_NOCHAR | 0xf714,
     f18         : 0x1 << KEY_NOCHAR | 0xf715,
     f19         : 0x1 << KEY_NOCHAR | 0xf716,
-//    del         : 0x1 << KEY_NOCHAR | 0x007f,
-//    delete      : 0x1 << KEY_NOCHAR | 0x007f,
   },
 
   getCodeToNameMap: function getCodeToNameMap() 
   {
-    let result = {};
+    var result = {};
     Object.keys(this.KEYNAME_PACKEDCODE_MAP).forEach(function(name) {
-      let value = this.KEYNAME_PACKEDCODE_MAP[name];
+      var value = this.KEYNAME_PACKEDCODE_MAP[name];
       result[String.fromCharCode(value)] = name;
     }, this);
     this.getCodeToNameMap = function getCodeToNameMap() {
@@ -2192,7 +2190,10 @@ coUtils.Keyboard = {
   convertCodeToExpression: 
   function convertCodeToExpression(packed_code)
   {
-    let buffer = [];
+    var char;
+    var buffer = [];
+    var map;
+
     if (packed_code & (1 << coUtils.Keyboard.KEY_CTRL)) {
       buffer.push("C");
     }
@@ -2205,9 +2206,9 @@ coUtils.Keyboard = {
     if (packed_code & (1 << coUtils.Keyboard.KEY_META)) {
       buffer.push("M");
     }
-    let char = String.fromCharCode(0xffffff & packed_code);
+    char = String.fromCharCode(0xffffff & packed_code);
     if (packed_code & (1 << coUtils.Keyboard.KEY_NOCHAR)) {
-      let map = this.getCodeToNameMap();
+      map = this.getCodeToNameMap();
       char = map[char] || char;
     } else {
       char = {
@@ -2240,7 +2241,8 @@ coUtils.Keyboard = {
   getPackedKeycodeFromEvent: 
   function getPackedKeycodeFromEvent(event, alt) 
   {
-    let code = event.keyCode || event.which;
+    var packed_code;
+    var code = event.keyCode || event.which;
     if (event.shiftKey && (
           event.ctrlKey || 
           event.altKey ||
@@ -2251,7 +2253,7 @@ coUtils.Keyboard = {
     }
 
     // make packed code
-    let packed_code = code 
+    packed_code = code 
       | Boolean(event.ctrlKey)   << coUtils.Keyboard.KEY_CTRL 
       | (Boolean(event.altKey) || alt) << coUtils.Keyboard.KEY_ALT 
       | Boolean(event.shiftKey)  << coUtils.Keyboard.KEY_SHIFT 
@@ -2273,14 +2275,20 @@ coUtils.Keyboard = {
   parseKeymapExpression: 
   function parseKeymapExpression(expression) 
   {
-    let pattern = /<.+?>|./g;
-    let match = expression.match(pattern);
-    let strokes = match;
+    var pattern = /<.+?>|./g;
+    var match = expression.match(pattern);
+    var strokes = match;
+    var key_code_array = [];
+    var i, j;
+    var stroke;
+    var tokens;
+    var key_code;
+    var last_key;
+    var sequence;
 
-    let key_code_array = [];
-    for (let i = 0; i < strokes.length; ++i) {
-      let stroke = strokes[i];
-      let tokens = null;
+    for (i = 0; i < strokes.length; ++i) {
+      stroke = strokes[i];
+      tokens = null;
       if (1 < stroke.length) {
         stroke = stroke.slice(1, -1); // <...> -> ...
         tokens = stroke
@@ -2289,8 +2297,8 @@ coUtils.Keyboard = {
       } else {
         tokens = [stroke];
       }
-      let key_code = null;
-      let last_key = tokens.pop();
+      key_code = null;
+      last_key = tokens.pop();
       if (!last_key.match(/^.$/)) {
         // if last_key is not a printable character (ex. space, f1, del) ...
         key_code = coUtils.Keyboard.KEYNAME_PACKEDCODE_MAP[last_key.toLowerCase()];
@@ -2304,8 +2312,8 @@ coUtils.Keyboard = {
         key_code = last_key.charCodeAt(0);
       }
    
-      for (let j = 0; j < tokens.length; ++j) {
-        let sequence = tokens[j];
+      for (j = 0; j < tokens.length; ++j) {
+        sequence = tokens[j];
         if (sequence.match(/^C$/i)) {
           key_code |= 0x1 << this.KEY_CTRL;
         } else if (sequence.match(/^A$/i)) {
@@ -2342,14 +2350,17 @@ coUtils.Unicode = {
 
   isNonSpacingMark: function isNonSpacingMark(code)
   {
-    let c = String.fromCharCode(code);
+    var c = String.fromCharCode(code);
     return coUCS2NonSpacingMarkTest(c);
   },
 
   getUTF8ByteStreamGenerator: function getUTF8ByteStreamGenerator(str) 
   {
-    for each (let c in str) {
-      let code = c.charCodeAt(0);
+    var c;
+    var code;
+
+    for each (c in str) {
+      code = c.charCodeAt(0);
       if (code < 0x80)
         // xxxxxxxx -> xxxxxxxx
         yield code;
@@ -2376,16 +2387,21 @@ coUtils.Unicode = {
 
   encodeUCS4toUTF8: function(str) 
   {
-    if (!str)
+    var byte_stream;
+    if (!str) {
       return "";
-    let byteStream = [byte for (byte in coUtils.getUTF8ByteStreamGenerator(str))];
-    return String.fromCharCode.apply(String, byteStream);
+    }
+    byte_stream = [byte for (byte in coUtils.getUTF8ByteStreamGenerator(str))];
+    return String.fromCharCode.apply(String, byte_stream);
   },
 
 };
 
 
-coUtils.Logger = function() this.initialize.apply(this, arguments);
+coUtils.Logger = function() 
+{
+  return this.initialize.apply(this, arguments);
+};
 coUtils.Logger.prototype = {
 
   _ostream: null,
@@ -2397,12 +2413,15 @@ coUtils.Logger.prototype = {
   initialize: function initialize()
   {
     // create nsIFile object.
-    let path = coUtils.File
+    var path = coUtils.File
       .getFileLeafFromVirtualPath(this.log_file_path)
       .path;
-    let file = Components
+    var file = Components
       .classes["@mozilla.org/file/local;1"]
       .createInstance(Components.interfaces.nsILocalFile);
+    var ostream;
+    var converter;
+    
     file.initWithPath(path);
 
     // check if target log file exists.
@@ -2421,7 +2440,7 @@ coUtils.Logger.prototype = {
       // create base directories recursively (= mkdir -p).
       void function make_directory(current) 
       {
-        let parent = current.parent;
+        var parent = current.parent;
         if (!parent.exists()) {
           make_directory(parent);
           parent.create(Components.interfaces.nsIFile.DIRECTORY_TYPE, -1);
@@ -2430,7 +2449,7 @@ coUtils.Logger.prototype = {
     }
    
     // create output stream.
-    let ostream = Components
+    ostream = Components
       .classes["@mozilla.org/network/file-output-stream;1"]
       .createInstance(Components.interfaces.nsIFileOutputStream);  
       
@@ -2441,7 +2460,7 @@ coUtils.Logger.prototype = {
     const PR_TRUNCATE = 0x20;
     ostream.init(file, PR_WRONLY| PR_CREATE_FILE| PR_APPEND, -1, 0);   
     
-    let converter = Components
+    converter = Components
       .classes["@mozilla.org/intl/converter-output-stream;1"].  
       createInstance(Components.interfaces.nsIConverterOutputStream);  
     converter.init(ostream, "UTF-8", 0, 0);  
@@ -2471,10 +2490,6 @@ coUtils.Logger.prototype = {
 coUtils.Logging = new coUtils.Logger();
 
 coUtils.Text = {
-//
-//  _normalizer: Components
-//    .classes["@mozilla.org/intl/unicodenormalizer;1"]
-//    .createInstance(Components.interfaces.nsIUnicodeNormalizer),
 
   base64decode: function base64decode(str) 
   {
@@ -2486,12 +2501,25 @@ coUtils.Text = {
     return coUtils.getWindow().btoa(str);
   },
 
-//  normalize: function normalize(text)
-//  {
-//    let result = {};
-//    this._normalizer.NormalizeUnicodeNFC(text, result);
-//    return result.value;
-//  },
+  safeConvertFromArray: function safaConvertFromArray(codes)
+  {
+    var result;
+    var i, buffer_length;
+    var piece;
+    var str;
+  
+    if (65000 > codes.length) {
+      result = String.fromCharCode.apply(String, codes);
+    } else {
+      result = "";
+      buffer_length = 65000;
+      for (i = 0; i < codes.length; i += buffer_length) {
+        piece = Array.slice(codes, i, i + buffer_length);
+        str = String.fromCharCode.apply(String, piece);
+        result += str;
+      }
+    }
+  },
 
   /** Provides printf-like formatting.
    *  @param {String} template 
@@ -2499,10 +2527,10 @@ coUtils.Text = {
    */
   format: function format(/* template, arg1, arg2, .... */) 
   {
-    let args = [].slice.apply(arguments);
-    let template = args.shift();
-    let result = template.replace(/%[s|f|d|i|x]/g, function(matchString) {
-      let value = args.shift();
+    var args = [].slice.apply(arguments);
+    var template = args.shift();
+    var result = template.replace(/%[s|f|d|i|x]/g, function(matchString) {
+      var value = args.shift();
       if ("%s" == matchString) {
         return String(value);
       } else if ("%f" == matchString) {
@@ -2530,7 +2558,7 @@ coUtils.Timer = {
 
   wait: function(wait) 
   {
-    let end_time = Date.now() + wait;
+    var end_time = Date.now() + wait;
     do {
       this._thread_manager.mainThread.processNextEvent(true);
     } while ( (mainThread.hasPendingEvents()) || Date.now() < end_time );
@@ -2542,19 +2570,21 @@ coUtils.Timer = {
    */
   setTimeout: function setTimeout(timer_proc, interval, context) 
   {
-    let timer = Components
+    var timer = Components
       .classes["@mozilla.org/timer;1"]
       .createInstance(Components.interfaces.nsITimer);
-    let a_type = Components.interfaces.nsITimer.TYPE_ONE_SHOT;
-    let timer_callback_func = context ? 
+    var type = Components.interfaces.nsITimer.TYPE_ONE_SHOT;
+    var observer;
+    var timer_callback_func = context ? 
       function invoke() 
       {
         timer_proc.apply(context, arguments)
         timer = null;
       }
     : timer_proc;
-    let observer = { notify: timer_callback_func };
-    timer.initWithCallback(observer, interval, a_type);
+
+    observer = { notify: timer_callback_func };
+    timer.initWithCallback(observer, interval, type);
     return {
       cancel: function cancel() {
         timer.cancel();
@@ -2569,17 +2599,18 @@ coUtils.Timer = {
    */
   setInterval: function setInterval(timer_proc, interval, context) 
   {
-    let timer = Components
+    var timer = Components
       .classes["@mozilla.org/timer;1"]
       .createInstance(Components.interfaces.nsITimer);
-    let a_type = Components.interfaces.nsITimer.TYPE_REPEATING_SLACK;
-    let timer_callback_func = context ? 
+    var type = Components.interfaces.nsITimer.TYPE_REPEATING_SLACK;
+    var timer_callback_func = context ? 
       function invoke() 
       {
         timer_proc.apply(context, arguments);
       }
     : timer_proc;
-    timer.initWithCallback({ notify: timer_callback_func }, interval, a_type);
+
+    timer.initWithCallback({ notify: timer_callback_func }, interval, type);
     return {
       cancel: function cancel() {
         timer.cancel();
@@ -2598,11 +2629,13 @@ coUtils.Debug = {
    */
   Exception: function Exception(message) 
   {
+    var stack, flag;
+
     if (arguments.length > 1 && "string" == typeof message) {
       message = coUtils.Text.format.apply(coUtils.Text, arguments);
     }
-    let stack = Components.stack.caller;  // get caller"s context.
-    let flag = Components.interfaces.nsIScriptError.errorFlag; // it"s warning
+    stack = Components.stack.caller;  // get caller"s context.
+    flag = Components.interfaces.nsIScriptError.errorFlag; // it"s warning
     return this.makeException(message, stack, flag);
   },
 
@@ -2612,12 +2645,14 @@ coUtils.Debug = {
    */
   reportError: function reportError(source /* arg1, arg2, arg3, ... */) 
   {
+    var stack, flag;
+
     // check if printf style arguments is given. 
     if (arguments.length > 1 && "string" == typeof source) {
       source = coUtils.Text.format.apply(coUtils.Text, arguments);
     }
-    let stack = Components.stack.caller;  // get caller"s context.
-    let flag = Components.interfaces.nsIScriptError.errorFlag; // it"s error.
+    stack = Components.stack.caller;  // get caller"s context.
+    flag = Components.interfaces.nsIScriptError.errorFlag; // it"s error.
     this.reportException(source, stack, flag);
   },
 
@@ -2627,11 +2662,13 @@ coUtils.Debug = {
    */
   reportWarning: function reportWarning(source /* arg1, arg2, arg3, ... */) 
   {
+    var stack, flag;
+
     if (arguments.length > 1 && "string" == typeof source) {
       source = coUtils.Text.format.apply(coUtils.Text, arguments);
     }
-    let stack = Components.stack.caller;  // get caller"s context.
-    let flag = Components.interfaces.nsIScriptError.warningFlag; // it"s warning.
+    stack = Components.stack.caller;  // get caller"s context.
+    flag = Components.interfaces.nsIScriptError.warningFlag; // it"s warning.
     this.reportException(source, stack, flag);
   },
 
@@ -2641,16 +2678,20 @@ coUtils.Debug = {
    */
   reportMessage: function reportMessage(source) 
   {
+    var stack;
+    var escaped_source;
+    var file, name, message;
+
     if (arguments.length > 1 && "string" == typeof source) {
       source = coUtils.format.apply(coUtils, arguments);
     }
-    let stack = Components.stack.caller;
-    let escapedSource = String(source).replace(/"/g, "\u201d");
-    let file = stack.filename.split(" -> ").pop().split("?").shift().replace(/"/g, "\u201d");
-    let name = stack.name && stack.name.replace(/"/g, "\u201d");
-    let message = [
+    stack = Components.stack.caller;
+    escaped_source = String(source).replace(/"/g, "\u201d");
+    file = stack.filename.split(" -> ").pop().split("?").shift().replace(/"/g, "\u201d");
+    name = stack.name && stack.name.replace(/"/g, "\u201d");
+    message = [
       "[",
-        "JavaScript Message: \"tanasinn: ", escapedSource, "\" ", 
+        "JavaScript Message: \"tanasinn: ", escaped_source, "\" ", 
         "{",
           "file: \"", file, "\" ",
           "line: ", stack.lineNumber, " ",
@@ -2667,6 +2708,8 @@ coUtils.Debug = {
 
   reportException: function reportException(source, stack, flag) 
   {
+    var error;
+
     if (source === null || source === undefined)
       source = String(source)
     if (typeof source == "xml")
@@ -2693,7 +2736,7 @@ coUtils.Debug = {
     //if (Error.prototype.isPrototypeOf(source)) // if source is Error object.
     if (source.stack)
       stack = source.stack; // use the stack of Error object.
-    let error = this.makeException(source, stack, flag);
+    error = this.makeException(source, stack, flag);
     coUtils.Logging.logMessage(source.toString());
     consoleService.logMessage(error);
     return;
@@ -2704,17 +2747,16 @@ coUtils.Debug = {
    */
   makeException: function makeException(source, stack, flag) 
   {
-    let exception = Components
+    var exception = Components
       .classes["@mozilla.org/scripterror;1"]
       .createInstance(Components.interfaces.nsIScriptError);
-    let is_error_object = !!source.fileName;
-  
-    let message = "tanasinn: " 
+    var is_error_object = !!source.fileName;
+    var message = "tanasinn: " 
       + (is_error_object ? source.message: source.toString()).replace(/"/g, "\u201d");
-    let file = (is_error_object ? source.fileName: stack.filename)
+    var file = (is_error_object ? source.fileName: stack.filename)
       .split(" -> ").pop().split("?").shift().replace(/"/g, "\u201d");
-    let sourceLine = is_error_object ? null: stack.sourceLine;
-    let line = is_error_object ? source.lineNumber: stack.lineNumber;
+    var sourceLine = is_error_object ? null: stack.sourceLine;
+    var line = is_error_object ? source.lineNumber: stack.lineNumber;
     exception.init(message, file, null, line, /* column */ 0, flag, "tanasinn");
     return exception;
   },
@@ -2732,7 +2774,7 @@ coUtils.Uuid = {
    */
   generate: function generate() 
   {
-    let uuid = this._uuid_generator.generateUUID();
+    var uuid = this._uuid_generator.generateUUID();
     return uuid;
   },
 
@@ -2744,7 +2786,7 @@ coUtils.Uuid = {
  */
 coUtils.Localize = new function()
 {
-  let prototype = {
+  var prototype = {
 
     /** locale string. (en_US, ja_JP, etc...) */
     _locale: null,
@@ -2755,11 +2797,12 @@ coUtils.Localize = new function()
     /** constructor */
     initialize: function initialize() 
     {
-      let locale_service = Components
+      var locale_service = Components
         .classes["@mozilla.org/intl/nslocaleservice;1"]
         .getService(Components.interfaces.nsILocaleService); 
+      var locale = locale_service.getLocaleComponentForUserAgent();
+
       this._dictionaries_store = {};
-      let locale = locale_service.getLocaleComponentForUserAgent();
       this.switchLocale(locale);
     },
 
@@ -2783,12 +2826,14 @@ coUtils.Localize = new function()
     /** Loads locale-mapping file and apply it. */
     load: function load() 
     {
-      let locale = this._locale;
-      let path = "modules/locale/" + locale + ".json";
-      let file = coUtils.File.getFileLeafFromVirtualPath(path);
-      let db = null;
+      var locale = this._locale;
+      var path = "modules/locale/" + locale + ".json";
+      var file = coUtils.File.getFileLeafFromVirtualPath(path);
+      var db = null;
+      var content;
+
       if (file.exists()) {
-        let content = coUtils.IO.readFromFile(path, "utf-8");
+        content = coUtils.IO.readFromFile(path, "utf-8");
         db = JSON.parse(content);
       } else {
         db = {
@@ -2802,7 +2847,8 @@ coUtils.Localize = new function()
     /** Translate message text. */
     get: function get(text) 
     {
-      let dictionary = this._dictionaries_store[this._locale] || {};
+      var dictionary = this._dictionaries_store[this._locale] || {};
+
       return dictionary[text] || text;
     },
 
@@ -2819,13 +2865,17 @@ coUtils.Localize = new function()
      */
     generateSources: function generateSources(search_path) 
     {
-      let entries = coUtils.File
+      var entries = coUtils.File
         .getFileEntriesFromSerchPath(search_path);
-      for (let entry in entries) {
+      var entry;
+      var url;
+      var content;
+
+      for (entry in entries) {
         // make URI string such as "file://....".
-        let url = coUtils.File.getURLSpec(entry); 
+        url = coUtils.File.getURLSpec(entry); 
         try {
-          let content = coUtils.IO.readFromFile(url);
+          content = coUtils.IO.readFromFile(url);
           yield content;
         } catch (e) {
           coUtils.Debug.reportError(e);
@@ -2841,20 +2891,27 @@ coUtils.Localize = new function()
      */
     generateMessages: function generateLocalizableMessages() 
     {
-      let pattern = /_\(("(.+?)("[\n\r\s]*,[\n\r\s]*".+?)*"|'(.+?)')\)/g;
-      let sources = this.generateSources([ "modules/" ]);
-      for (let source in sources) {
-        let match = source.match(pattern)
+      var pattern = /_\(("(.+?)("[\n\r\s]*,[\n\r\s]*".+?)*"|'(.+?)')\)/g;
+      var sources = this.generateSources([ "modules/" ]);
+      var source;
+      var match;
+      var quoted_source;
+      var quote_char;
+      var escaped_quote_char;
+      var message;
+
+      for (source in sources) {
+        match = source.match(pattern)
         if (match) {
           match = match.map(function(text) {
-            let quoted_source = text.slice(3, -2);
-            let quote_char = text[0];
-            let escaped_quote_char = "\\" + quote_char;
+            quoted_source = text.slice(3, -2);
+            quote_char = text[0];
+            escaped_quote_char = "\\" + quote_char;
             return quoted_source
               .replace(/"[\s\n\r]*,[\s\n\r]*"/g, "")
               .replace(new RegExp(escaped_quote_char, "g"), quote_char);
           })
-          for (let [, message] in Iterator(match)) {
+          for ([, message] in Iterator(match)) {
             yield message;
           }
         }
@@ -2863,12 +2920,15 @@ coUtils.Localize = new function()
 
     getDictionary: function getLocalizeDictionary(language)
     {
-      let location = "modules/locale/" + language + ".json";
-      let file = coUtils.File.getFileLeafFromVirtualPath(location);
-      let dict = null;
+      var location = "modules/locale/" + language + ".json";
+      var file = coUtils.File.getFileLeafFromVirtualPath(location);
+      var dict = null;
+      var content;
+      var db;
+
       if (file.exists()) {
-        let content = coUtils.IO.readFromFile(location, "utf-8");
-        let db = JSON.parse(content);
+        content = coUtils.IO.readFromFile(location, "utf-8");
+        db = JSON.parse(content);
         return db.dict;
       } else {
         return {};
@@ -2877,8 +2937,8 @@ coUtils.Localize = new function()
 
     setDictionary: function getLocalizeDictionary(language, dictionary)
     {
-      let location = "modules/locale/" + language + ".json";
-      let db = {
+      var location = "modules/locale/" + language + ".json";
+      var db = {
         lang: language,
         dict: dictionary,
       };
@@ -2896,9 +2956,11 @@ coUtils.Localize = new function()
  */
 function _() 
 {
-  let lines = [].slice.apply(arguments);
+  var lines = [].slice.apply(arguments);
+  var result;
+
   if (coUtils.Localize) {
-    let result =  coUtils.Localize.get(lines.join(""));
+    result =  coUtils.Localize.get(lines.join(""));
     return result;
   } else {
     return lines.join("");

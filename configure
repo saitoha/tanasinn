@@ -2333,7 +2333,7 @@ $as_echo "$TANASINN_JS_PATH" >&6; }
 # AC_TANASINN_OS
 # ----------------------------------------------------------------------------
 #
-ac_config_files="$ac_config_files Makefile doc/define.h doc/Makefile chrome.manifest install.rdf"
+ac_config_files="$ac_config_files Makefile doc/define.h doc/Makefile tools/bin/Makefile chrome.manifest install.rdf"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -3055,6 +3055,7 @@ do
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
     "doc/define.h") CONFIG_FILES="$CONFIG_FILES doc/define.h" ;;
     "doc/Makefile") CONFIG_FILES="$CONFIG_FILES doc/Makefile" ;;
+    "tools/bin/Makefile") CONFIG_FILES="$CONFIG_FILES tools/bin/Makefile" ;;
     "chrome.manifest") CONFIG_FILES="$CONFIG_FILES chrome.manifest" ;;
     "install.rdf") CONFIG_FILES="$CONFIG_FILES install.rdf" ;;
 

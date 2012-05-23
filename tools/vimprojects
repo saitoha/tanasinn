@@ -46,8 +46,6 @@
   }
   unicode=unicode {
    wcwidth.js
-   eastasian.js
-   category.js
   }
   attributes=attributes {
    typeattribute.js
@@ -110,6 +108,9 @@
     da1.js
     da2.js
     da3.js
+    eaw.js
+    reversevideo.js
+    autorepeat.js
     focusevent.js
     declocatormouse.js
     mousegesture.js

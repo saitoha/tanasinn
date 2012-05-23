@@ -758,6 +758,34 @@ Line.definition = {
     return [backward_break_point, forward_break_point];
   },
 
+  _getCodePointsFromCells: function _getCodePointsFromCells(cells)
+  {
+    var i;
+    var codes = [];
+    var cell;
+    var code;
+
+    for (i = 0; i < cells.length; ++i) {
+      let cell = cells[i];
+      let code = cell.c;
+      if (code < 0x10000) {
+        codes.push(code);
+      } else {
+        if ("object" === typeof code) {
+          codes.push.apply(codes, code);
+        } else {
+          // emit 16bit + 16bit surrogate pair.
+          code -= 0x10000;
+          codes.push(
+            (code >> 10) | 0xD800,
+            (code & 0x3FF) | 0xDC00);
+        }
+      }
+    }
+
+    return codes;
+  },
+
   /** returns a generator which iterates dirty words. */
   getDirtyWords: function getDirtyWords() 
   {
@@ -774,9 +802,9 @@ Line.definition = {
           if (attr.equals(cell) && is_normal) {
             continue;
           } else {
-            let codes = cells.slice(start, current);
+            let range = cells.slice(start, current);
             yield { 
-              codes: codes, 
+              codes: this._getCodePointsFromCells(range), 
               column: start, 
               end: current, 
               attr: attr,
@@ -786,9 +814,9 @@ Line.definition = {
         if (!is_normal) {
           if (0 === cell.c) {
             let cell = cells[current + 1]; // MUST not null
-            if (undefined !== cell) {
+            if (cell) {
               yield { 
-                codes: [ cell ], 
+                codes: this._getCodePointsFromCells([ cell ]), 
                 column: current, 
                 end: current + 2, 
                 attr: cell,
@@ -800,12 +828,11 @@ Line.definition = {
             continue;
           } else { // combined
             yield { 
-              codes: [ cell ], 
+              codes: this._getCodePointsFromCells([ cell ]), 
               column: current, 
               end: current + 1, 
               attr: cell,
             };
-            ++current;
           }
         }
         start = current;
@@ -814,7 +841,7 @@ Line.definition = {
       if (start < current && attr) {
         let codes = cells.slice(start, current)
         yield { 
-          codes: codes, 
+          codes: this._getCodePointsFromCells(codes), 
           column: start, 
           end: current, 
           attr: attr,
