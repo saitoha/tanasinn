@@ -777,8 +777,8 @@ ScreenSequenceHandler.definition = {
   "[profile('vt100'), sequence('CSI %dT')]":
   function SD(n) 
   { // Scroll Down line
-    let argc = arguments.length;
-    let broker;
+    var argc = arguments.length;
+    var broker = this._broker;
 
     switch (argc) {
 
@@ -791,7 +791,6 @@ ScreenSequenceHandler.definition = {
         break;
 
       case 6:
-        broker = this._broker;
         broker.notify("event/start-highlight-mouse", Array.slice(arguments));
         break;
 
@@ -1112,7 +1111,20 @@ ScreenSequenceHandler.definition = {
     this.setPositionX((n || 1) - 1);
   },
   
-  REP: function REP(n) 
+  /**
+   *
+   * REP - Repeat 
+   *
+   * Format
+   *
+   * ESC [ Pn b
+   *
+   * Causes the single graphic character immediately preceding the control
+   * to be repeated Pn times.
+   *
+   */
+  "[profile('vt100'), sequence('CSI %db')]":
+  function REP(n) 
   { // TODO: REPeat the preceding graphic character
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
@@ -2386,9 +2398,10 @@ Screen.definition = {
   "[type('Uint16 -> Undefined')] scrollRight":
   function scrollRight(n) 
   { // Scroll Right
-    let lines = this._lines;
-    let attr = this.cursor.attr;
-    let i, line;
+    var lines, attr, i, line;
+
+    lines = this._lines;
+    attr = this.cursor.attr;
     for (i = 0; i < lines.length; ++i) {
       line = lines[i];
       line.insertBlanks(0, n, attr);
@@ -2398,34 +2411,45 @@ Screen.definition = {
   "[type('Uint16 -> Undefined')] scrollUpLine":
   function scrollUpLine(n) 
   { // Scroll Up line
-    let top = this._scroll_top;
-    let bottom = this._scroll_bottom;
+    var top, bottom;
+
+    top = this._scroll_top;
+    bottom = this._scroll_bottom;
     this._scrollUp(top, bottom, n);
   },
 
   "[type('Uint16 -> Undefined')] scrollDownLine":
   function scrollDownLine(n) 
   { // Scroll Down line
-    let top = this._scroll_top;
-    let bottom = this._scroll_bottom;
+    var top, bottom;
+
+    top = this._scroll_top;
+    bottom = this._scroll_bottom;
     this._scrollDown(top, bottom, n);
   },
 
   "[type('Uint16 -> Undefined')] eraseCharacters":
   function eraseCharacters(n) 
   { // Erase CHaracters
-    let line = this._getCurrentLine();
-    let start = this.cursor.positionX;
-    let end = Math.min(start + n, line.length);
-    let cursor = this.cursor;
-    line.erase(start, end, cursor.attr);
+    var line, start, end, cursor;
+
+    line = this._getCurrentLine();
+    attr = this.cursor.attr;
+    start = this.cursor.positionX;
+    end = start + n;
+    if (end > line.length) {
+      end = line.length;
+    }
+    line.erase(start, end, attr);
   },
 
   "[type('Uint16 -> Undefined')] deleteCharacters":
   function deleteCharacters(n) 
   { // Delete CHaracters
-    let line = this._getCurrentLine();
-    let attr = this.cursor.attr;
+    var line, attr;
+
+    line = this._getCurrentLine();
+    attr = this.cursor.attr;
     line.deleteCells(this.cursor.positionX, n, attr);
   },
 
@@ -2500,9 +2524,10 @@ Screen.definition = {
   "[subscribe('command/backup'), type('Object -> Undefined'), enabled]": 
   function backup(data) 
   {
-    let context = data[this.id] = [];
-    let lines = this._buffer;
-    let i;
+    var context, lines, i;
+
+    context = data[this.id] = [];
+    lines = this._buffer;
 
     // serialize members.
     context.push(this.width, this.height, this._buffer_top);
@@ -2528,8 +2553,9 @@ Screen.definition = {
   "[subscribe('command/restore'), type('Object -> Undefined'), enabled]": 
   function restore(data) 
   {
-    let context = data[this.id];
-    let i;
+    var context, i, buffer_length, lines;
+
+    context = data[this.id];
 
     this.width = context.shift();
     this.height = context.shift();
@@ -2537,8 +2563,8 @@ Screen.definition = {
     this._scroll_top = context.shift();
     this._scroll_bottom = context.shift();
 
-    let buffer_length = context.shift();
-    let lines = this._buffer = this._createLines(buffer_length);
+    buffer_length = context.shift();
+    lines = this._buffer = this._createLines(buffer_length);
     for (i = 0; i < lines.length; ++i) {
       lines[i].deserialize(context);
     }
@@ -2564,22 +2590,26 @@ Screen.definition = {
 
   _createLines: function _createLines(n, attr) 
   {
-    let buffer = [];
-    let width = this._width;
-    let line_generator = this._line_generator;
+    var buffer, width, line_generator;
+
+    buffer = [];
+    width = this._width;
+    line_generator = this._line_generator;
     return line_generator.allocate(width, n, attr);
   },
 
   /** Switch between Main/Alternate screens. */
   _switchScreen: function _switchScreen() 
   {
+    var buffer, width, height, offset, lines, i;
+
     // select alternate lines.
-    let buffer = this._buffer;
-    let width = this._width;
-    let height = this._height;
-    let offset = this._buffer_top = buffer.length - height * 2;
-    let lines = buffer.splice(- height);
-    for (let i = 0; i < lines.length; ++i) {
+    buffer = this._buffer;
+    width = this._width;
+    height = this._height;
+    offset = this._buffer_top = buffer.length - height * 2;
+    lines = buffer.splice(- height);
+    for (i = 0; i < lines.length; ++i) {
       lines[i].length = width;
     }
     this._lines = lines;
