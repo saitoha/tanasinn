@@ -391,6 +391,39 @@ ScreenSequenceHandler.definition = {
     this.setPositionX(x);
   },
 
+  /** 
+   *
+   * DECDHL — Double-Width, Double-Height Line
+   *
+   * These two control functions make the line with the cursor the top or 
+   * bottom half of a double-height, double-width line. You must use these 
+   * sequences in pairs on adjacent lines. In other words, the same display 
+   * characters must appear in the same positions on both lines to form 
+   * double-height characters. If the line was single width and single height,
+   * then all characters to the right of the screen center are lost.
+   *
+   * Format
+   *
+   * ESC    #    3
+   * 1/11   2/3  3/3  
+   *
+   * Top Half
+   *
+   *
+   * ESC    #    4
+   * 1/11   2/3  3/4  
+   *
+   * Bottom Half
+   *
+   * Description
+   *
+   * The following sequences make the phrase "VT510 Video Terminal" a 
+   * double-height, double-width line.
+   *
+   * ESC#3 VT510 Video Terminal
+   * ESC#4 VT510 Video Terminal
+   *
+   * */
   /** DEC double-height line, top half. */
   "[profile('vt100'), sequence('ESC #3')]": 
   function DECDHL_top() 
@@ -418,7 +451,20 @@ ScreenSequenceHandler.definition = {
     line.dirty = 1;
   },
 
-  /** DEC double-width line. */
+  /** DEC double-width line. 
+   *
+   * DECDWL—Double-Width, Single-Height Line
+   *
+   * This control function makes the line with the cursor a double-width, 
+   * single-height line. If the line was single width and single height, then 
+   * all characters to the right of the screen's center are lost.
+   *
+   * Format
+   *
+   * ESC    #     6
+   * 1/11   2/3   3/6
+   *
+   */
   "[profile('vt100'), sequence('ESC #6')]": 
   function DECDWL() 
   {
@@ -427,6 +473,27 @@ ScreenSequenceHandler.definition = {
     line.dirty = 1;
   },
 
+  /**
+   *
+   * DECALN — Screen Alignment Pattern
+   *
+   * This control function fills the complete screen area with a test pattern 
+   * used for adjusting screen alignment. Normally, only manufacturing and 
+   * service personnel would use DECALN.
+   *
+   * Format
+   *
+   * ESC    #    8
+   * 1/11   2/3  3/8
+   *
+   * Notes on DECALN
+   *
+   * DECALN sets the margins to the extremes of the page, and moves the cursor
+   * to the home position.
+   *
+   * Also see the screen alignment in Chapter 2.
+   *
+   */
   "[profile('vt100'), sequence('ESC #8')]":
   function DECALN() 
   { // DEC Screen Alignment Test
@@ -2347,10 +2414,10 @@ Screen.definition = {
   "[type('Uint16 -> Undefined')] eraseCharacters":
   function eraseCharacters(n) 
   { // Erase CHaracters
-    let start = this.cursor.positionX;
-    let end = start + n;
-    let cursor = this.cursor;
     let line = this._getCurrentLine();
+    let start = this.cursor.positionX;
+    let end = Math.min(start + n, line.length);
+    let cursor = this.cursor;
     line.erase(start, end, cursor.attr);
   },
 
