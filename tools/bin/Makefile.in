@@ -1,0 +1,34 @@
+
+
+#TRUNK=http://ftp.mozilla.org/pub/mozilla.org/firefox/nightly/latest-oak
+TRUNK=http://ftp.mozilla.org/pub/mozilla.org/firefox/nightly/2012-05-16-mozilla-central-debug
+CURL=curl
+UNZIP=unzip
+TANASINN_PLATFORM=@TANASINN_PLATFORM@
+
+all: tmp Makefile.in
+	$(UNZIP) -o tmp -d @TANASINN_PLATFORM@
+	echo @host_os@
+
+Makefile: Makefile.in
+	cd ../.. && ./configure
+
+tmp: Makefile
+	@case $(TANASINN_PLATFORM) in \
+		win-*) \
+			$(CURL) $(TRUNK)/jsshell-win32.zip > tmp \
+			;; \
+		mac-*) \
+			$(CURL) $(TRUNK)/jsshell-mac.zip > tmp \
+			;; \
+		linux-x86) \
+			$(CURL) $(TRUNK)/jsshell-linux-i686.zip > tmp \
+			;; \
+		linux-x86_64) \
+			$(CURL) $(TRUNK)/jsshell-linux-x86_64.zip > tmp \
+			;; \
+		*) \
+			$(CURL) $(TRUNK)/jsshell-linux-i686.zip > tmp \
+			;; \
+	esac
+
