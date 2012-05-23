@@ -155,13 +155,6 @@ DecModeSequenceHandler.definition = {
             this._screen.cursor.originY);
           break;
 
-        // Wraparound Mode (DECAWM)
-        case 7:
-          broker.notify("command/enable-wraparound");
-          coUtils.Debug.reportMessage(
-            _("DECSET - DECAWM (Auto-wrap Mode) was set."));
-          break;
-
         // X10_MOUSE mode
         case 9:
           broker.notify(
@@ -525,13 +518,6 @@ DecModeSequenceHandler.definition = {
             _("DECSET - DECOM (Origin mode) was reset: (%d, %d)."),
             this._screen.cursor.positionX,
             this._screen.cursor.positionY);
-          break;
-
-        // Wraparound Mode (DECAWM)
-        case 7:
-          broker.notify("command/disable-wraparound");
-          coUtils.Debug.reportMessage(
-            _("DECRST - DECAWM (Auto-wrap Mode) was reset."));
           break;
 
         // X10_MOUSE mode
