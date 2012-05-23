@@ -64,7 +64,7 @@ modules-build:
 
 .PHONY: modules-build content-build document-build lint
 
-$(XPI): lint chrome.manifest install.rdf tanasinn-docs.zip
+$(XPI): modules-build lint chrome.manifest install.rdf tanasinn-docs.zip
 	@echo "$(MSTART) Make xpi package....$(MEND)" 
 	$(RM) $@
 	$(ZIP) $@ install.rdf \
