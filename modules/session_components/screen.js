@@ -1730,7 +1730,7 @@ Screen.definition = {
   _screen_choice: CO_SCREEN_MAIN,
   _line_generator: null,
 
-  _wraparound_mode: false,
+  _wraparound_mode: true,
   _reverse_wraparound_mode: false,
 
   tab_stops: null,

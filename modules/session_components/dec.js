@@ -157,7 +157,7 @@ DecModeSequenceHandler.definition = {
 
         // Wraparound Mode (DECAWM)
         case 7:
-          this.DECAWM = true;
+          broker.notify("command/enable-wraparound");
           coUtils.Debug.reportMessage(
             _("DECSET - DECAWM (Auto-wrap Mode) was set."));
           break;
@@ -247,7 +247,7 @@ DecModeSequenceHandler.definition = {
 
         // Reverse-wraparound Mode
         case 45:
-          this.DECRWM = true;
+          broker.notify("command/enable-reverse-wraparound");
           coUtils.Debug.reportMessage(
             _("DECSET 45 - Reverse-wraparound Mode was set."));
           break;
@@ -529,7 +529,7 @@ DecModeSequenceHandler.definition = {
 
         // Wraparound Mode (DECAWM)
         case 7:
-          this.DECAWM = false;
+          broker.notify("command/disable-wraparound");
           coUtils.Debug.reportMessage(
             _("DECRST - DECAWM (Auto-wrap Mode) was reset."));
           break;
@@ -612,7 +612,7 @@ DecModeSequenceHandler.definition = {
 
         // No Reverse-wraparound Mode
         case 45:
-          this.DECRWM = false;
+          broker.notify("command/disable-reverse-wraparound");
           coUtils.Debug.reportMessage(
             _("DECRST 45 - Reverse-wraparound Mode was reset."));
           break;
@@ -1365,160 +1365,6 @@ PersistOptionsTrait.definition = {
 }; // PersistOptionsTrait
 
 /**
- * @class WindowManipulator
- */
-let WindowManipulator = new Class().extends(Component)
-                                   .depends("screen");
-WindowManipulator.definition = {
-
-  "[subscribe('command/manipulate-window'), enabled]":
-  function manipulateWindow(args) 
-  { 
-    switch (args.shift()) {
-
-      case 1:
-        // TODO: De-iconify window.
-        coUtils.Debug.reportWarging(
-          _("DECSLPP 1: De-iconify window, is not supported."));
-        break;
-
-      case 2:
-        // TODO: minimize window.
-        coUtils.Debug.reportWarging(
-          _("DECSLPP 2: Minimize window, is not supported."));
-        break;
-
-      case 3:
-        // TODO: Move window to [Ps2, Ps3].
-        coUtils.Debug.reportWarging(
-          _("DECSLPP 3: Move window, is not supported."));
-        break;
-
-      case 4:
-        // TODO: Resize window to height Ps2 pixels and width Ps3 pixels.
-        coUtils.Debug.reportWarging(
-          _("DECSLPP 4: Resize window, is not supported."));
-        break;
-
-      case 5:
-        // TODO: Raise the window to the top of the stacking order.
-        coUtils.Debug.reportWarging(
-          _("DECSLPP 5: Raise the window to the top of the stacking order, ",
-            "is not supported."));
-        break;
-
-      case 6:
-        // TODO: Lower the window to the bottom of the stacking order.
-        coUtils.Debug.reportWarging(
-          _("DECSLPP 6: Lower the window to the bottom of the stacking order, ",
-            "is not supported."));
-        break;
-
-      case 7:
-        // TODO: Refresh window.
-        coUtils.Debug.reportWarging(_("DECSLPP 7: Refresh window."));
-        break;
-
-      case 8:
-        // TODO: Resize window to Ps2 lines and Ps3 columns.
-        coUtils.Debug.reportWarging(
-          _("DECSLPP 8: Resize window to Ps2 lines and Ps3 columns."));
-        break;
-
-      case 9:
-        // TODO: Change maximize state of window.
-        //       Ps2 = 0    Restore maximized window.
-        //           = 1    Maximize window.
-        coUtils.Debug.reportWarging(
-          _("DECSLPP 9: Change maximize state of window."));
-        break;
-
-      case 11:
-        // TODO: Reports window state.
-        //       Response: CSI s t
-        //         s = 1    Normal. (non-iconified)
-        //           = 2    Iconified.
-        coUtils.Debug.reportWarging(
-          _("DECSLPP 11: Reports window state."));
-        break;
-
-      case 13:
-        // TODO: Reports window position.
-        //       Response: CSI 3 ; x ; y t
-        //         x    X position of window.
-        //         y    Y position of window.
-        coUtils.Debug.reportWarging(
-          _("DECSLPP 13: Reports window position."));
-        break;
-
-      case 14:
-        // Reports window size in pixels.
-        // Response: CSI 4 ; y ; x t
-        //   y    Window height in pixels.
-        //   x    Window width in pixels.
-        //
-        {
-          let broker = this._broker;
-          let target_element = broker.root_element;
-          let width = target_element.boxObject.width;
-          let height = target_element.boxObject.height;
-          let message = coUtils.Text.format("\x1b[4;%d;%dt", height, width);
-          broker.notify("command/send-to-tty", message); 
-        }
-        break;
-
-      case 18:
-        // TODO: Reports terminal size in characters.
-        //       Response: CSI 8 ; y ; x t
-        //         y    Terminal height in characters. (Lines)
-        //         x    Terminal width in characters. (Columns)
-        {
-          let broker = this._broker;
-          let target_element = broker.root_element;
-          let screen = this.dependency["screen"];
-          let width = screen.width;
-          let height = screen.height;
-          let message = coUtils.Text.format("\x1b[8;%d;%dt", height, width);
-          broker.notify("command/send-to-tty", message); 
-        }
-        break;
-
-      case 19:
-        // TODO: Reports root window size in characters.
-        //       Response: CSI 9 ; y ; x t
-        //         y    Root window height in characters.
-        //         x    Root window width in characters.
-        coUtils.Debug.reportWarging(
-          _("DECSLPP 19: Reports root window size in characters."));
-        break;
-
-      case 20:
-        // TODO: Reports icon label.
-        //       Response: OSC L title ST
-        //         title    icon label. (window title)
-        coUtils.Debug.reportWarging(
-          _("DECSLPP 20: Reports icon label."));
-        break;
-
-      case 21:
-        // TODO: Reports window title.
-        //       Response: OSC l title ST
-        //         title    Window title.
-        coUtils.Debug.reportWarging(
-          _("DECSLPP 21: Reports window title."));
-        break;
-
-      default:
-        break;
-
-    }
-
-
-  },
-
-};
-
-/**
  * @class DecPrivateMode
  */
 let DecPrivateMode = new Class().extends(Component)
@@ -1532,10 +1378,10 @@ DecPrivateMode.definition = {
   "[subscribe('initialized/{screen & cursorstate}'), enabled]":
   function onLoad(screen, cursor_state)
   {
+    var broker = this._broker;
+
     this._screen = screen;
     this._cursor_state = cursor_state;
-    this.DECAWM = true;
-    let broker = this._broker;
     broker.notify("initialized/decmode", this);
   },
 
@@ -1560,42 +1406,7 @@ DecPrivateMode.definition = {
    * on the page.
    */
   
-  _awm: false,
-
-  // Autowrap Mode (true: autowrap, false: no autowrap)
-  get DECAWM()
-  {
-    return this._awm;
-  },
-
-  set DECAWM(value)
-  {
-    let broker = this._broker;
-    if (value) {
-      broker.notify("command/enable-wraparound");
-    } else {
-      broker.notify("command/disable-wraparound");
-    }
-    this._awm = value;
-  },
-
-  
   // Reverse Autowrap Mode (true: autowrap, false: no autowrap)
-  get DECRWM()
-  {
-    return this._rwm;
-  },
-
-  set DECRWM(value)
-  {
-    let broker = this._broker;
-    if (value) {
-      broker.notify("command/enable-reverse-wraparound");
-    } else {
-      broker.notify("command/disable-reverse-wraparound");
-    }
-    this._rwm = value;
-  },
 
   /* 
    * @Property DECCKM
@@ -1696,7 +1507,6 @@ DecPrivateMode.definition = {
 function main(broker) 
 {
   new DecPrivateMode(broker);
-  new WindowManipulator(broker);
 }
 
 

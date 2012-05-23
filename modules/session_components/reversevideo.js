@@ -27,8 +27,7 @@
  * @class ReverseVideo
  *
  */
-var ReverseVideo = new Class().extends(Plugin)
-                              .depends("parser");
+var ReverseVideo = new Class().extends(Plugin);
 ReverseVideo.definition = {
 
   get id()
@@ -43,7 +42,6 @@ ReverseVideo.definition = {
             " by escape seqnence.")
         }</description>
     </module>,
-
 
   "[persistable] enabled_when_startup": true,
 
