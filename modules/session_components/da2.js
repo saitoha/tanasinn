@@ -25,8 +25,61 @@
 /**
  * @class SecondaryDA
  *
+ * DA2 — Secondary Device Attributes
+ * 
+ * In this DA exchange, the host requests the terminal's 
+ * identification code, firmware version level, and hardware options.
+ * Host Request
+ * 
+ * The host uses the following sequence to send this request:
+ *
+ * CSI    >      c     or   CSI    >      0     c
+ * 9/11   3/14   6/3   or   9/11   3/14   3/0   6/3
+ *
+ * Terminal Response
+ * 
+ * The terminal with a VT keyboard uses the following sequence to respond:
+ *
+ * CSI    >      6     1     ;      Pv    ;      0     c
+ * 9/11   3/14   3/6   3/1   3/11   3/n   3/11   3/0   6/3
+ *
+ * DA2R for terminal with STD keyboard.
+ *
+ * CSI    >      6     1     ;      Pv    ;      1     c
+ * 9/11   3/14   3/6   3/1   3/11   3/n   3/11   3/1   6/3
+ *
+ * DA2R for terminal with PC keyboard.
+ *
+ * Parameters
+ * 
+ * 61
+ * indicates the identification code of the terminal for the secondary 
+ * device attributes command.
+ * 
+ * Pv
+ * indicates the version level of the firmware implementing the terminal
+ * management functions, for example, editing, as shown in the following 
+ * table.
+ *
+ * Pv   Version
+ * 10   V1.0 (released version 1.0)
+ * 20   V2.0 (released version 2.0)
+ *
+ * Secondary DA Example
+ * 
+ * The following is a typical secondary DA exchange:
+ *
+ * Request (Host to VT510)   
+ * CSI > c or CSI > 0 c   
+ * The host asks for the terminal's identification, firmware version, 
+ * current hardware options.
+ *
+ * Response (VT510 to host)   
+ * CSI > 61; 20; 1 c   
+ * The terminal identifies itself as a VT510 that uses version 2.0 
+ * firmware, and has a PC keyboard option.
  */
-let SecondaryDA = new Class().extends(Plugin);
+var SecondaryDA = new Class().extends(Plugin);
 SecondaryDA.definition = {
 
   get id()
@@ -62,70 +115,18 @@ SecondaryDA.definition = {
     this.reply.enabled = false;
   },
 
-  /**
-   * DA2 — Secondary Device Attributes
-   * 
-   * In this DA exchange, the host requests the terminal's 
-   * identification code, firmware version level, and hardware options.
-   * Host Request
-   * 
-   * The host uses the following sequence to send this request:
-   *
-   * CSI    >      c     or   CSI    >      0     c
-   * 9/11   3/14   6/3   or   9/11   3/14   3/0   6/3
-   *
-   * Terminal Response
-   * 
-   * The terminal with a VT keyboard uses the following sequence to respond:
-   *
-   * CSI    >      6     1     ;      Pv    ;      0     c
-   * 9/11   3/14   3/6   3/1   3/11   3/n   3/11   3/0   6/3
-   *
-   * DA2R for terminal with STD keyboard.
-   *
-   * CSI    >      6     1     ;      Pv    ;      1     c
-   * 9/11   3/14   3/6   3/1   3/11   3/n   3/11   3/1   6/3
-   *
-   * DA2R for terminal with PC keyboard.
-   *
-   * Parameters
-   * 
-   * 61
-   * indicates the identification code of the terminal for the secondary 
-   * device attributes command.
-   * 
-   * Pv
-   * indicates the version level of the firmware implementing the terminal
-   * management functions, for example, editing, as shown in the following 
-   * table.
-   *
-   * Pv   Version
-   * 10   V1.0 (released version 1.0)
-   * 20   V2.0 (released version 2.0)
-   *
-   * Secondary DA Example
-   * 
-   * The following is a typical secondary DA exchange:
-   *
-   * Request (Host to VT510)   
-   * CSI > c or CSI > 0 c   
-   * The host asks for the terminal's identification, firmware version, 
-   * current hardware options.
-   *
-   * Response (VT510 to host)   
-   * CSI > 61; 20; 1 c   
-   * The terminal identifies itself as a VT510 that uses version 2.0 
-   * firmware, and has a PC keyboard option.
-   */
+  /** handle DA2 request. */
   "[profile('vt100'), sequence('CSI >%dc')]":
   function DA2(n) 
   { // Secondary DA (Device Attributes)
+    var broker;
+
     if (n !== undefined && n !== 0) {
       coUtils.Debug.reportWarning(
         _("%s sequence [%s] was ignored."),
         arguments.callee.name, Array.slice(arguments));
     } else { //
-      let broker = this._broker;
+      broker = this._broker;
       broker.notify("sequence/DA2");
     }
   },
@@ -134,12 +135,16 @@ SecondaryDA.definition = {
   "[subscribe('sequence/DA2')]":
   function reply()
   {
-    let reply = [];
+    var reply, message, broker;
+   
+    reply = [];
     reply.push(32);
-    reply.push(277); // Firmware version (for xterm, this is the XFree86 patch number, starting with 95). 
-    reply.push(2);   // DEC Terminal"s ROM cartridge registration number, always zero.
-    let message = "\x1b[>" + reply.join(";") + "c";
-    let broker = this._broker;
+    reply.push(277); // Firmware version (for xterm, this is the XFree86 patch 
+                     // number, starting with 95). 
+    reply.push(2);   // DEC Terminal"s ROM cartridge registration number, 
+                     // always zero.
+    message = "\x1b[>" + reply.join(";") + "c";
+    broker = this._broker;
     broker.notify("command/send-to-tty", message);
     coUtils.Debug.reportMessage(
       _("Secondary Device Attributes is requested. reply: '%s'."), 

@@ -24,54 +24,21 @@
 
 
 /**
- * @class AutoWrap
- *
- * DECAWM — Autowrap Mode
- *
- * This control function determines whether or not received characters 
- * automatically wrap to the next line when the cursor reaches the right 
- * border of a page in page memory.
- *
- * Default: No autowrap
- *
- * Format
- *
- * CSI    ?      7    h
- * 9/11   3/15   3/7  6/8  
- *
- * Set: autowrap.
- *
- *
- * CSI    ?      7    l
- * 9/11   3/15   3/7  6/12   
- *
- * Reset: no autowrap.
- *
- *
- * Description
- *
- * If the DECAWM function is set, then graphic characters received when the 
- * cursor is at the right border of the page appear at the beginning of the 
- * next line. Any text on the page scrolls up if the cursor is at the end of 
- * the scrolling region.
- *
- * If the DECAWM function is reset, then graphic characters received when the 
- * cursor is at the right border of the page replace characters already on the
- * page.
+ * @class ReverseWrap
  *
  */
-var AutoWrap = new Class().extends(Plugin);
-AutoWrap.definition = {
+var ReverseWrap = new Class().extends(Plugin);
+ReverseWrap.definition = {
 
   get id()
-    "autowrap",
+    "reversewrap",
 
   get info()
     <module>
-        <name>{_("Auto Wrap Mode")}</name>
+        <name>{_("Reverse Wraparound Mode")}</name>
         <version>0.1</version>
         <description>{
-          _("Enable/disable auto-wrap feature(DECARM)",
+          _("Enable/disable reverse-wraparound feature(DECARM)",
             " by escape seqnence.")
         }</description>
     </module>,
@@ -100,29 +67,31 @@ AutoWrap.definition = {
 
   /** Activate auto-wrap feature(DECAWM).
    */
-  "[subscribe('sequence/decset/7')]":
+  "[subscribe('sequence/decset/45')]":
   function activate() 
   { 
     var broker = this._broker;
 
-    broker.notify("command/enable-wraparound");
+    // Reverse-wraparound Mode
+    broker.notify("command/enable-reverse-wraparound");
     coUtils.Debug.reportMessage(
-      _("DECSET - DECAWM (Auto-wrap Mode) was set."));
+      _("DECSET 45 - Reverse-wraparound Mode was set."));
   },
 
   /** Deactivate auto-wrap feature(DECAWM).
    */
-  "[subscribe('sequence/decrst/7')]":
+  "[subscribe('sequence/decrst/45')]":
   function deactivate() 
   {
     var broker = this._broker;
 
-    broker.notify("command/disable-wraparound");
+    // No Reverse-wraparound Mode
+    broker.notify("command/disable-reverse-wraparound");
     coUtils.Debug.reportMessage(
-      _("DECRST - DECAWM (Auto-wrap Mode) was reset."));
+      _("DECRST 45 - Reverse-wraparound Mode was reset."));
   },
 
-}; // class AutoWrap
+}; // class ReverseWrap
 
 /**
  * @fn main
@@ -131,7 +100,7 @@ AutoWrap.definition = {
  */
 function main(broker) 
 {
-  new AutoWrap(broker);
+  new ReverseWrap(broker);
 }
 
 

@@ -26,8 +26,51 @@
 /**
  * @class TirtiaryDA
  *
+ * DA3 — Tertiary Device Attributes
+ *
+ * In this DA exchange, the host asks for the terminal unit identification 
+ * code. This ID code serves as a way to identify each terminal in a system. 
+ * The unit ID code is preset at the factory.
+ *
+ * Host Request
+ *
+ * The host uses the following sequence to send this request:
+ *
+ * CSI    =      c        CSI    =      0    c
+ * 9/11   3/13   6/3  or  9/11   3/13   3/0  6/3
+ *
+ * Terminal Response
+ *
+ * The terminal responds by sending a report terminal unit ID (DECRPTUI) 
+ * control string to the host. DECRPTUI is available in VT Level 4 mode only.
+ *
+ * DCS  !    |      D . . . D   ST
+ * 9/0  2/1  7/12   ...         9/12
+ *
+ * Parameters
+ *
+ * D...D
+ * is the unit ID of the terminal, consisting of four hexadecimal pairs. The
+ * first pair represents the manufacturing site code. This code can be any 
+ * hexadecimal value from 00 through FF.
+ *
+ * The last three hexadecimal pairs are the terminal ID number. This number 
+ * is unique for each terminal manufactured at that site.
+ *
+ * Tertiary DA Example
+ *
+ * Here is a typical tertiary DA exchange.
+ *
+ * Request (Host to Terminal)   
+ *
+ * CSI = c or CSI = 0 c      The host asks for the terminal unit ID.
+ *
+ * DECRPTUI Response (Terminal to host)   
+ *
+ * DCS ! | 00 01 02 05 ST    The terminal was manufactured at site 00 and 
+ *                           has a unique ID number of 125.
  */
-let TirtiaryDA = new Class().extends(Plugin);
+var TirtiaryDA = new Class().extends(Plugin);
 TirtiaryDA.definition = {
 
   get id()
@@ -63,61 +106,18 @@ TirtiaryDA.definition = {
     this.reply.enabled = false;
   },
 
-  /**
-   *
-   * DA3 — Tertiary Device Attributes
-   *
-   * In this DA exchange, the host asks for the terminal unit identification 
-   * code. This ID code serves as a way to identify each terminal in a system. 
-   * The unit ID code is preset at the factory.
-   *
-   * Host Request
-   *
-   * The host uses the following sequence to send this request:
-   *
-   * CSI    =      c        CSI    =      0    c
-   * 9/11   3/13   6/3  or  9/11   3/13   3/0  6/3
-   *
-   * Terminal Response
-   *
-   * The terminal responds by sending a report terminal unit ID (DECRPTUI) 
-   * control string to the host. DECRPTUI is available in VT Level 4 mode only.
-   *
-   * DCS  !    |      D . . . D   ST
-   * 9/0  2/1  7/12   ...         9/12
-   *
-   * Parameters
-   *
-   * D...D
-   * is the unit ID of the terminal, consisting of four hexadecimal pairs. The
-   * first pair represents the manufacturing site code. This code can be any 
-   * hexadecimal value from 00 through FF.
-   *
-   * The last three hexadecimal pairs are the terminal ID number. This number 
-   * is unique for each terminal manufactured at that site.
-   *
-   * Tertiary DA Example
-   *
-   * Here is a typical tertiary DA exchange.
-   *
-   * Request (Host to Terminal)   
-   *
-   * CSI = c or CSI = 0 c      The host asks for the terminal unit ID.
-   *
-   * DECRPTUI Response (Terminal to host)   
-   *
-   * DCS ! | 00 01 02 05 ST    The terminal was manufactured at site 00 and 
-   *                           has a unique ID number of 125.
-   */
+  /** handle DA3 request. */
   "[profile('vt100'), sequence('CSI =%dc')]":
   function DA3(n) 
   { // Tirtiary DA (Device Attributes)
+    var broker;
+
     if (n !== undefined && n !== 0) {
       coUtils.Debug.reportWarning(
         _("%s sequence [%s] was ignored."),
         arguments.callee.name, Array.slice(arguments));
     } else { //
-      let broker = this._broker;
+      broker = this._broker;
       broker.notify("sequence/DA3");
     }
   },
@@ -126,14 +126,16 @@ TirtiaryDA.definition = {
   "[subscribe('sequence/DA3')]":
   function reply()
   {
-    let reply = ["\x1bP!|"]; // DCS ! |
+    var reply, message, broker;
+   
+    reply = ["\x1bP!|"]; // DCS ! |
     reply.push("FF");
     reply.push("FF");
     reply.push("FF");
     reply.push("FF");
     reply.push("\x1b\\");
-    let message = reply.join("");
-    let broker = this._broker;
+    message = reply.join("");
+    broker = this._broker;
     broker.notify("command/send-to-tty", message);
     coUtils.Debug.reportMessage(
       _("Tirtiary Device Attributes is requested. reply: '%s'."), message);

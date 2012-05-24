@@ -47,30 +47,10 @@ EastAsianWidth.definition = {
 
   "[persistable] enabled_when_startup": true,
 
-  /** installs itself. 
-   *  @param {Broker} broker A Broker object.
-   */
-  "[install]":
-  function install(broker) 
-  {
-    this.activate.enabled = true;
-    this.deactivate.enabled = true;
-  },
-
-  /** Uninstalls itself.
-   *  @param {Broker} broker A broker object.
-   */
-  "[uninstall]":
-  function uninstall(broker) 
-  {
-    this.activate.enabled = false;
-    this.deactivate.enabled = false;
-  },
-
   /**
    *
    */
-  "[subscribe('sequence/decset/8840')]":
+  "[subscribe('sequence/decset/8840'), pnp]":
   function activate() 
   { // Treat ambiguous characters as double
     var parser = this.dependency["parser"];
@@ -80,7 +60,7 @@ EastAsianWidth.definition = {
   /**
    *
    */
-  "[subscribe('sequence/decrst/8840')]":
+  "[subscribe('sequence/decrst/8840'), pnp]":
   function deactivate() 
   { // Treat ambiguous characters as single
     var parser = this.dependency["parser"];

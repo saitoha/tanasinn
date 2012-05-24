@@ -674,14 +674,14 @@ Plugin.definition = {
       broker = this._broker;
       if (value) {
         try {
-          broker.uniget("install/" + this.id, broker);
+          broker.notify("install/" + this.id, broker);
         } catch (e) {
           coUtils.Debug.reportError(e);
           coUtils.Debug.reportError(_("Failed to enable plugin: %s"), this.id);
           throw e;
         }
       } else {
-        broker.uniget("uninstall/" + this.id, broker);
+        broker.notify("uninstall/" + this.id, broker);
       }
       this.__enabled = value;
       this.enabled_when_startup = value;

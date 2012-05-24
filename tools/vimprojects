@@ -59,6 +59,7 @@
    subscribeattribute.js
    watchableattribute.js
    installattribute.js
+   pnpattribute.js
   }
   process_components=process_components {
    desktop.js
@@ -111,6 +112,7 @@
     eaw.js
     reversevideo.js
     autowrap.js
+    reversewrap.js
     windowmanipulation.js
 
     autorepeat.js

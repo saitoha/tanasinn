@@ -25,8 +25,85 @@
 /**
  * @class PrimaryDA
  *
+ * DA1 — Primary Device Attributes
+ * 
+ * In this DA exchange, the host asks for the terminal's architectural 
+ * class and basic attributes.
+ *
+ * Host Request
+ * 
+ * The host uses the following sequence to send this request:
+ *
+ * CSI    c     or   CSI    0     c
+ * 9/11   6/3   or   9/11   3/0   6/3
+ *
+ * Terminal Response
+ * 
+ * The terminal responds by sending its architectural class and basic 
+ * attributes to the host. This response depends on the terminal's current 
+ * operating VT level.
+ * 
+ * Response from North American Terminal
+ *
+ * CSI    ?      6     4     ;      Ps1   ;      ...   Psn   c
+ * 9/11   3/15   3/6   3/4   3/11   3/n   3/11   ...   3/n   6/3
+ *
+ * Response from International Terminal
+ *
+ * CSI    ?      6     4     ;      Ps1   ;      ...   Psn   c
+ * 9/11   3/15   3/6   3/4   3/11   3/n   3/11   ...   3/n   6/3
+ * 
+ * Parameters
+ * 
+ * Ps1 ; . . . Psn
+ * reports different device attributes between the North American terminal 
+ * and the international terminal.
+ * 
+ * The value of the first parameter is encoded so a simple range check can 
+ * be performed to determine the basic service class and level of the device. 
+ * The VT510 is a level 4 terminal so its service class code is 64. The 
+ * following extensions to level 4 are provided:
+ *
+ * Ps   Meaning
+ * 1    132 columns
+ * 2    Printer port
+ * 4    Sixel
+ * 6    Selective erase
+ * 7    Soft character set (DRCS)
+ * 8    User-defined keys (UDKs)
+ * 9    National replacement character sets (NRCS)
+ *      (International terminal only)
+ * 12   Yugoslavian (SCS)
+ * 15   Technical character set
+ * 18   Windowing capability
+ * 21   Horizontal scrolling
+ * 23   Greek
+ * 24   Turkish
+ * 42   ISO Latin-2 character set
+ * 44   PCTerm
+ * 45   Soft key map
+ * 46   ASCII emulation
+ *
+ * Primary DA Example
+ * 
+ * Here is a typical primary DA exchange.
+ *
+ * Request (Host to VT510)   
+ * CSI c or CSI 0 c   
+ * The host asks for the terminal's architectural class code and supported 
+ * extensions.
+ *
+ * Response—N.A. (VT510 to host)   
+ * CSI ? 64; 1; 2; 7; 8; 9; 15; 18; 21; 44; 45; 46 c   
+ * The terminal is a class 4 device (64) and supports the Ps parameters 
+ * listed above.
+ *
+ * Response— International (VT510 to host)   
+ * CSI ? 64; 1; 2; 7; 8; 9; 12; 15; 18; 21; 23; 24; 42; 44; 45; 46 c   
+ * The terminal is a class 4 device (64) and supports the Ps parameters 
+ * listed above.
  */
-let PrimaryDA = new Class().extends(Plugin);
+var PrimaryDA = new Class().extends(Plugin);
 PrimaryDA.definition = {
 
   get id()
@@ -62,94 +139,18 @@ PrimaryDA.definition = {
     this.reply.enabled = false;
   },
 
-  /**
-   * DA1 — Primary Device Attributes
-   * 
-   * In this DA exchange, the host asks for the terminal's architectural 
-   * class and basic attributes.
-   *
-   * Host Request
-   * 
-   * The host uses the following sequence to send this request:
-   *
-   * CSI    c     or   CSI    0     c
-   * 9/11   6/3   or   9/11   3/0   6/3
-   *
-   * Terminal Response
-   * 
-   * The terminal responds by sending its architectural class and basic 
-   * attributes to the host. This response depends on the terminal's current 
-   * operating VT level.
-   * 
-   * Response from North American Terminal
-   *
-   * CSI    ?      6     4     ;      Ps1   ;      ...   Psn   c
-   * 9/11   3/15   3/6   3/4   3/11   3/n   3/11   ...   3/n   6/3
-   *
-   * Response from International Terminal
-   *
-   * CSI    ?      6     4     ;      Ps1   ;      ...   Psn   c
-   * 9/11   3/15   3/6   3/4   3/11   3/n   3/11   ...   3/n   6/3
-   * 
-   * Parameters
-   * 
-   * Ps1 ; . . . Psn
-   * reports different device attributes between the North American terminal 
-   * and the international terminal.
-   * 
-   * The value of the first parameter is encoded so a simple range check can 
-   * be performed to determine the basic service class and level of the device. 
-   * The VT510 is a level 4 terminal so its service class code is 64. The 
-   * following extensions to level 4 are provided:
-   *
-   * Ps   Meaning
-   * 1    132 columns
-   * 2    Printer port
-   * 4    Sixel
-   * 6    Selective erase
-   * 7    Soft character set (DRCS)
-   * 8    User-defined keys (UDKs)
-   * 9    National replacement character sets (NRCS)
-   *      (International terminal only)
-   * 12   Yugoslavian (SCS)
-   * 15   Technical character set
-   * 18   Windowing capability
-   * 21   Horizontal scrolling
-   * 23   Greek
-   * 24   Turkish
-   * 42   ISO Latin-2 character set
-   * 44   PCTerm
-   * 45   Soft key map
-   * 46   ASCII emulation
-   *
-   * Primary DA Example
-   * 
-   * Here is a typical primary DA exchange.
-   *
-   * Request (Host to VT510)   
-   * CSI c or CSI 0 c   
-   * The host asks for the terminal's architectural class code and supported 
-   * extensions.
-   *
-   * Response—N.A. (VT510 to host)   
-   * CSI ? 64; 1; 2; 7; 8; 9; 15; 18; 21; 44; 45; 46 c   
-   * The terminal is a class 4 device (64) and supports the Ps parameters 
-   * listed above.
-   *
-   * Response— International (VT510 to host)   
-   * CSI ? 64; 1; 2; 7; 8; 9; 12; 15; 18; 21; 23; 24; 42; 44; 45; 46 c   
-   * The terminal is a class 4 device (64) and supports the Ps parameters 
-   * listed above.
-   */
+  /** handle DA1 request */
   "[profile('vt100'), sequence('CSI %dc')]":
   function DA1(n) 
   { // Primary DA (Device Attributes)
+    var broker;
+
     if (n !== undefined && n !== 0) {
       coUtils.Debug.reportWarning(
         _("%s sequence [%s] was ignored."),
         arguments.callee.name, Array.slice(arguments));
     } else { //
-      let broker = this._broker;
+      broker = this._broker;
       broker.notify("sequence/DA1");
     }
   },
@@ -158,7 +159,11 @@ PrimaryDA.definition = {
   "[subscribe('sequence/DA1')]":
   function reply()
   {
-//    let reply_map = {
+    var reply = [];
+    var broker;
+    var message;
+
+//    var reply_map = {
 //      "VT100"  : "\x1b[?1;2c"
 //      ,"VT100J": "\x1b[?5;2c"
 //      ,"VT101" : "\x1b[?1;0c"
@@ -172,9 +177,7 @@ PrimaryDA.definition = {
 //      ,"VT520" : "\x1b[?65;1;2;7;8;9;12;18;19;21;23;24;42;44;45;46c"
 //      ,"VT525" : "\x1b[?65;1;2;7;9;12;18;19;21;22;23;24;42;44;45;46c"
 //    };
-    let reply = [
-      "\x1b[?65" // header
-    ]
+    reply.push("\x1b[?65"); // header
     //reply.push(65) // VT520
     //if (this.length >= 132) 
     //reply.push(1) // 132 columns
@@ -186,11 +189,11 @@ PrimaryDA.definition = {
     //reply.push(15) // Technical characters
     //reply.push(22) // ANSI color
     //reply.push(29) // ANSI text locator (i.e., DEC Locator mode)
-    //let message = reply.join(";") + "c";
-    let message = "\x1b[?1;2c";
-    //let message = "\x1b[?1;2;6c";
-    //let message = "\x1b[?c";
-    let broker = this._broker;
+    //var message = reply.join(";") + "c";
+    message = "\x1b[?1;2c";
+    //var message = "\x1b[?1;2;6c";
+    //var message = "\x1b[?c";
+    broker = this._broker;
     //coUtils.Timer.setTimerout(function() {
     broker.notify("command/send-to-tty", message);
     coUtils.Debug.reportMessage(

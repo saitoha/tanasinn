@@ -238,13 +238,6 @@ DecModeSequenceHandler.definition = {
               "was not implemented."));
           break;
 
-        // Reverse-wraparound Mode
-        case 45:
-          broker.notify("command/enable-reverse-wraparound");
-          coUtils.Debug.reportMessage(
-            _("DECSET 45 - Reverse-wraparound Mode was set."));
-          break;
-
         // Start Logging
         case 46:
           coUtils.Debug.reportWarning(
@@ -594,13 +587,6 @@ DecModeSequenceHandler.definition = {
           coUtils.Debug.reportWarning(
             _("DECRST 44 - Turn Off Margin Bell, ", 
               "was not implemented."));
-          break;
-
-        // No Reverse-wraparound Mode
-        case 45:
-          broker.notify("command/disable-reverse-wraparound");
-          coUtils.Debug.reportMessage(
-            _("DECRST 45 - Reverse-wraparound Mode was reset."));
           break;
 
         // Stop Logging
