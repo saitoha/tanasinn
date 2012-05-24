@@ -179,8 +179,7 @@ DRCSBuffer.definition = {
     if (this._map[dscs]) {
       canvas = this._map[dscs].drcs_canvas;
     } else {
-      let broker = this._broker;
-      canvas = broker.uniget(
+      canvas = this.request(
         "command/construct-chrome",
         {
           //parentNode: "#tanasinn_chrome",

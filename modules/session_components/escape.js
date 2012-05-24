@@ -24,7 +24,7 @@
 
 /** @class KeypadModeHandler
  */
-let KeypadModeHandler = new Class().extends(Component);
+var KeypadModeHandler = new Class().extends(Component);
 KeypadModeHandler.definition = {
  
   get id()
@@ -60,8 +60,7 @@ KeypadModeHandler.definition = {
    */ 
   "[profile('vt100'), sequence('ESC >')]": function DECPNM() 
   {
-    let broker = this._broker;
-    broker.notify(
+    this.sendMessage(
       "event/keypad-mode-changed", 
       coUtils.Constant.KEYPAD_MODE_NORMAL);
   },
@@ -87,8 +86,7 @@ KeypadModeHandler.definition = {
    */
   "[profile('vt100'), sequence('ESC =')]": function DECPAM() 
   {
-    let broker = this._broker;
-    broker.notify(
+    this.sendMessage(
       "event/keypad-mode-changed", 
       coUtils.Constant.KEYPAD_MODE_APPLICATION);
   },
@@ -98,7 +96,7 @@ KeypadModeHandler.definition = {
 /**
  * @class CharsetModeHandler
  */
-let CharsetModeHandler = new Class().extends(Component)
+var CharsetModeHandler = new Class().extends(Component)
 CharsetModeHandler.definition = {  
 
   get id()
@@ -166,29 +164,25 @@ CharsetModeHandler.definition = {
   "[profile('vt100'), sequence('ESC (%c'), _('Select Character Set G0')]": 
   function SCSG0(mode) 
   {
-    let broker = this._broker;
-    broker.notify("sequence/g0", mode);
+    this.sendMessage("sequence/g0", mode);
   },
   
   "[profile('vt100'), sequence('ESC )%c'), _('Select Character Set G1')]": 
   function SCSG1(mode) 
   {
-    let broker = this._broker;
-    broker.notify("sequence/g1", mode);
+    this.sendMessage("sequence/g1", mode);
   },
 
   "[profile('vt100'), sequence('ESC *%c'), _('Select Character Set G2')]": 
   function SCSG2(mode) 
   {
-    let broker = this._broker;
-    broker.notify("sequence/g2", mode);
+    this.sendMessage("sequence/g2", mode);
   },
 
   "[profile('vt100'), sequence('ESC +%c'), _('Select Character Set G3')]": 
   function SCSG3(mode) 
   {
-    let broker = this._broker;
-    broker.notify("sequence/g3", mode);
+    this.sendMessage("sequence/g3", mode);
   },
 
 }; // CharsetModeHandler
@@ -197,7 +191,7 @@ CharsetModeHandler.definition = {
 /**
  * @class Escape
  */
-let Escape = new Class().extends(Component);
+var Escape = new Class().extends(Component);
 Escape.definition = {
 
   get id()
@@ -221,7 +215,9 @@ Escape.definition = {
   "[profile('vt100'), sequence('0x85', 'ESC E'), _('Next line')]":
   function NEL() 
   { // Carriage Return
-    let screen = this._screen;
+    var screen;
+   
+    screen = this._screen;
     screen.carriageReturn();
     screen.lineFeed();
   },
@@ -245,7 +241,9 @@ Escape.definition = {
   "[profile('vt100'), sequence('0x88', 'ESC H'), _('Tab set.')]": 
   function HTS() 
   {
-    let screen = this._screen;
+    var screen;
+
+    screen = this._screen;
     screen.tab_stops.push(screen.cursor.positionX);
     screen.tab_stops.sort(function(lhs, rhs) lhs > rhs);
   },
@@ -263,11 +261,13 @@ Escape.definition = {
   "[profile('vt100'), sequence('0x8d', 'ESC M'), _('Reverse index.')]": 
   function RI() 
   {
-    let screen = this._screen;
+    var screen;
+
+    screen = this._screen;
     screen.reverseIndex();
-    if (this._ansi_mode.LNM) {
-      screen.carriageReturn();
-    }
+    //if (this._ansi_mode.LNM) {
+    //  screen.carriageReturn();
+    //}
   },
 
 
@@ -294,66 +294,66 @@ Escape.definition = {
   "[profile('vt100'), sequence('0x90%s', 'ESC P%s')]": 
   function DCS(message) 
   {
-    let broker = this._broker;
+    var message;
+
     if (/[\x00-\x1f]/.test(message[0])) {
       message = message.replace(/\x00/g, "\\");
-      broker.notify("event/data-arrived-recursively", message);
+      this.sendMessage("event/data-arrived-recursively", message);
     } else {
-      broker.notify("sequence/dcs", message);
+      this.sendMessage("sequence/dcs", message);
     }
   },
 
   "[profile('vt100'), sequence('ESC X%s')]": 
   function SOS() 
   {
-    let broker = this._broker;
-    let message = String.fromCharCode.apply(String, arguments);
-    broker.notify("sequence/sos", message);
+    var message;
+
+    message = String.fromCharCode.apply(String, arguments);
+    this.sendMessage("sequence/sos", message);
   },
 
   "[profile('vt100'), sequence('ESC _%s')]": 
   function APC() 
   {
-    let broker = this._broker;
-    let message = String.fromCharCode.apply(String, arguments);
-    broker.notify("sequence/apc", message);
+    var message;
+
+    message = String.fromCharCode.apply(String, arguments);
+    this.sendMessage("sequence/apc", message);
   },
   
   "[profile('vt100'), sequence('ESC ]%s')]": 
   function OSC(message) 
   {
-    let delimiter_position = message.indexOf(";");
-    let num = message.substr(0, delimiter_position);
-    let command = message.substr(delimiter_position + 1);
-    let broker = this._broker;
-    broker.notify("sequence/osc/" + num, command);
+    var delimiter_position, num, command;
+
+    delimiter_position = message.indexOf(";");
+    num = message.substr(0, delimiter_position);
+    command = message.substr(delimiter_position + 1);
+    this.sendMessage("sequence/osc/" + num, command);
   },
   
   /** private message */
   "[profile('vt100'), sequence('ESC ^%s')]": 
-  function PM() 
+  function PM(message) 
   {
-    let broker = this._broker;
-    let message = String.fromCharCode.apply(String, arguments);
-    broker.notify("sequence/pm", message);
+    this.sendMessage("sequence/pm", message);
   },
 
   /** Select default character set. */
   "[profile('vt100'), sequence('ESC %@')]": 
   function ISO_8859_1() 
   {
-    let broker = this._broker;
-    broker.notify("change/decoder", "ISO-8859-1");
-    broker.notify("change/encoder", "ISO-8859-1");
+    this.sendMessage("change/decoder", "ISO-8859-1");
+    this.sendMessage("change/encoder", "ISO-8859-1");
   },
 
   /** Select UTF-8 character set. */
   "[profile('vt100'), sequence('ESC %G')]": 
   function UTF_8() 
   {
-    let broker = this._broker;
-    broker.notify("change/decoder", "UTF-8");
-    broker.notify("change/encoder", "UTF-8");
+    this.sendMessage("change/decoder", "UTF-8");
+    this.sendMessage("change/encoder", "UTF-8");
   },
 
   /** Selective Erace Rectangle Area. */
@@ -417,16 +417,18 @@ Escape.definition = {
   "[profile('vt100'), sequence('ESC c')]": 
   function RIS() 
   {
-    let broker = this._broker;
-    broker.notify("sequence/g0", coUtils.Constant.CHARSET_US);
-    broker.notify("sequence/g1", coUtils.Constant.CHARSET_US);
-    broker.notify("command/hard-terminal-reset");
+    var screen;
 
-    broker.notify("command/enable-wraparound");
-    broker.notify("command/disable-reverse-wraparound");
+    this.sendMessage("sequence/g0", coUtils.Constant.CHARSET_US);
+    this.sendMessage("sequence/g1", coUtils.Constant.CHARSET_US);
+    this.sendMessage("command/hard-terminal-reset");
+
+    this.sendMessage("command/enable-wraparound");
+    this.sendMessage("command/disable-reverse-wraparound");
 
     this._ansi_mode.reset();
-    let screen = this._screen;
+
+    screen = this._screen;
     screen.eraseScreenAll();
     screen.resetScrollRegion();
     screen.cursor.reset();
@@ -460,12 +462,12 @@ Escape.definition = {
   "[profile('vt100'), sequence('CSI %dy')]": 
   function DECTST() 
   {
-    let i;
-    let broker = this._broker;
+    var i, n;
 
     for (i = 0; i < arguments.length; ++i) {
 
-      let n = arguments[i];
+      n = arguments[i];
+
       switch (n) {
 
         case 0:

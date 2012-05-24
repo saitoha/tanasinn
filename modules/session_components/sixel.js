@@ -202,8 +202,7 @@ Sixel.definition = {
     let renderer = this.dependency["renderer"];
     let screen = this.dependency["screen"];
 
-    let broker = this._broker;
-    let {sixel_canvas} = broker.uniget(
+    let {sixel_canvas} = this.request(
       "command/construct-chrome", this.template);
     let dom = { 
       canvas: sixel_canvas,

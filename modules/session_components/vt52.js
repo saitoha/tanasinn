@@ -156,9 +156,11 @@ VT52ParameterParser.definition = {
   _parseParameters: 
   function _parseParameters(scanner) 
   {
-    let accumulator = this._first;
+    var accumulator, c, action;
+
+    accumulator = this._first;
     while (!scanner.isEnd) {
-      let c = scanner.current();
+      c = scanner.current();
       if (0x30 <= c && c <= 0x39) { // [0-9]
         scanner.moveNext();
         accumulator = accumulator * 10 + c - 0x30;
@@ -168,7 +170,7 @@ VT52ParameterParser.definition = {
         accumulator = 0;
       } else if (c < 0x20 || 0x7f == c) {
         yield accumulator;
-        let action = vt52C0Parser.get(c);
+        action = vt52C0Parser.get(c);
         if (undefined !== action) {
           this._c0action.push(action);
         }
@@ -184,7 +186,7 @@ VT52ParameterParser.definition = {
 /**
  * @class VT52SequenceParser
  */
-let VT52SequenceParser = new Class().extends(Array);
+var VT52SequenceParser = new Class().extends(Array);
 VT52SequenceParser.definition = {
 
   /** Construct child parsers from definition and make parser-chain. */
@@ -237,8 +239,10 @@ VT52SequenceParser.definition = {
    */
   parse: function parse(scanner) 
   {
-    let c = scanner.current();
-    let next = this[c];
+    var c, next;
+
+    c = scanner.current();
+    next = this[c];
     if (next) { // c is part of control sequence.
       if ("parse" in next) { // next is parser.
         scanner.moveNext();
@@ -257,7 +261,7 @@ VT52SequenceParser.definition = {
 /**
  * @class VT52
  */
-let VT52 = new Class().extends(Component);
+var VT52 = new Class().extends(Component);
 VT52.definition = {
 
   get id()
@@ -269,22 +273,24 @@ VT52.definition = {
   "[subscribe('initialized/{screen & cursorstate}'), enabled]":
   function onLoad(screen, cursor_state)
   {
+    var sequences, i;
+
     this._screen = screen;
     this._cursor_state = cursor_state;
-    let broker = this._broker;
-    broker.notify("initialized/vt52", this);
+
+    this.sendMessage("initialized/vt52", this);
 
     this.ESC = new VT52SequenceParser();
     VT52SequenceParser.prototype[0x1b] = this.ESC;
 
-    broker.notify("command/add-sequence/vt52", {
+    this.sendMessage("command/add-sequence/vt52", {
       expression: "0x1B", 
       handler: this.ESC,
       context: this,
     });
-    let sequences = broker.notify("get/sequences/vt52");
-    for (let i = 0; i < sequences.length; ++i) {
-      broker.notify("command/add-sequence/vt52", sequences[i]);
+    sequences = this.sendMessage("get/sequences/vt52");
+    for (i = 0; i < sequences.length; ++i) {
+      this.sendMessage("command/add-sequence/vt52", sequences[i]);
     }
   },
 
@@ -303,7 +309,9 @@ VT52.definition = {
   "[type('Scanner -> Action')] parse":
   function parse(scanner) 
   {
-    let action = vt52C0Parser.parse(scanner);
+    var action;
+
+    action = vt52C0Parser.parse(scanner);
     return action;
   },
 
@@ -316,17 +324,22 @@ VT52.definition = {
   "[subscribe('command/add-sequence/vt52'), type('SequenceInfo -> Undefined'), enabled]":
   function append(information) 
   {
-    let {expression, handler, context} = information;
-    let match = expression.split(/\s+/);
-    let key = match.pop();
-    let prefix = match.pop() || "C0";
+    var match, key, prefix;
+
+    match = information.expression.split(/\s+/);
+    key = match.pop();
+    prefix = match.pop() || "C0";
     if ("number" == typeof key) {
       key = key.toString();
     }
     if (!this[prefix]) {
       this[prefix] = new VT52SequenceParser();
     }
-    this[prefix].append(key, handler, context);
+    this[prefix].append(
+      key, 
+      information.handler, 
+      information.context);
+
   }, // append
 
 
@@ -382,8 +395,7 @@ VT52.definition = {
   "[profile('vt52'), sequence('0x05')]":
   function ENQ() 
   {
-    let session = this._broker;
-    session.notify("command/answerback");
+    this.sendMessage("command/answerback");
   },
   
   /** Acknowledge.
@@ -401,8 +413,7 @@ VT52.definition = {
   "[profile('vt52'), sequence('0x07', 'ESC \\\\')]":
   function BEL() 
   {
-    let session = this._broker;
-    session.notify("sequence/bel");
+    this.sendMessage("sequence/bel");
   },
 
   /** Back space.
@@ -410,7 +421,7 @@ VT52.definition = {
   "[profile('vt52'), sequence('0x08')]":
   function BS() 
   { // BackSpace
-    let screen = this._screen;
+    var screen = this._screen;
     screen.backSpace();
   },
    
@@ -419,7 +430,7 @@ VT52.definition = {
   "[profile('vt52'), sequence('0x09'), _('Horizontal tabulation')]":
   function HT() 
   { // Horizontal Tab
-    let screen = this._screen;
+    var screen = this._screen;
     screen.horizontalTab();
   },
   
@@ -428,7 +439,7 @@ VT52.definition = {
   "[profile('vt52'), sequence('0x0A'), _('Line Feed')]":
   function LF() 
   {
-    let screen = this._screen;
+    var screen = this._screen;
     screen.lineFeed();
   },
  
@@ -437,7 +448,7 @@ VT52.definition = {
   "[profile('vt52'), sequence('0x84'), _('Index')]":
   function IND() 
   {
-    let screen = this._screen;
+    var screen = this._screen;
     screen.lineFeed();
   },
  
@@ -446,7 +457,7 @@ VT52.definition = {
   "[profile('vt52'), sequence('0x0B')]":
   function VT() 
   {
-    let screen = this._screen;
+    var screen = this._screen;
     screen.lineFeed();
   },
 
@@ -455,7 +466,7 @@ VT52.definition = {
   "[profile('vt52'), sequence('0x0C')]":
   function FF() 
   {
-    let screen = this._screen;
+    var screen = this._screen;
     screen.lineFeed();
   },
 
@@ -464,7 +475,7 @@ VT52.definition = {
   "[profile('vt52'), sequence('0x0D')]":
   function CR() 
   { // Carriage Return
-    let screen = this._screen;
+    var screen = this._screen;
     screen.carriageReturn();
   },
     
@@ -473,8 +484,7 @@ VT52.definition = {
   "[profile('vt52'), sequence('0x0E')]":
   function SO() 
   { // shift out
-    let broker = this._broker;
-    broker.notify("event/shift-out");
+    this.sendMessage("event/shift-out");
   },
   
   /** Shift in.
@@ -482,8 +492,7 @@ VT52.definition = {
   "[profile('vt52'), sequence('0x0F')]":
   function SI() 
   { // shift out
-    let broker = this._broker;
-    broker.notify("event/shift-in");
+    this.sendMessage("event/shift-in");
   },
 
   /** Data link escape.
@@ -501,9 +510,8 @@ VT52.definition = {
   "[profile('vt52'), sequence('0x11')]":
   function DC1() 
   {
-    let session = this._broker;
     //session.notify("command/send-to-tty", "\u0011");
-    session.notify("command/flow-control", true);
+    this.sendMessage("command/flow-control", true);
   },
   
   /** Device control 2.
@@ -521,9 +529,8 @@ VT52.definition = {
   "[profile('vt52'), sequence('0x13')]":
   function DC3() 
   {
-    let session = this._broker;
     //session.notify("command/send-to-tty", "\u0013");
-    session.notify("command/flow-control", false);
+    this.sendMessage("command/flow-control", false);
   },
   
   /** Device control 4.
@@ -641,7 +648,7 @@ VT52.definition = {
   "[profile('vt52'), sequence('0x7F', '0xFF')]":
   function DEL() 
   {
-    let screen = this._screen;
+    var screen = this._screen;
     screen.backSpace();
 
     /*
@@ -654,35 +661,35 @@ VT52.definition = {
   "[profile('vt52'), sequence('ESC A')]":
   function CUP()
   {
-    let screen = this._screen;
+    var screen = this._screen;
     screen.cursorUp(1);
   },
 
   "[profile('vt52'), sequence('ESC B')]":
   function BPH()
   {
-    let screen = this._screen;
+    var screen = this._screen;
     screen.cursorDown(1);
   },
 
   "[profile('vt52'), sequence('ESC C')]":
   function NPH()
   {
-    let screen = this._screen;
+    var screen = this._screen;
     screen.cursorForward(1);
   },
 
   "[profile('vt52'), sequence('ESC D')]":
   function IND()
   {
-    let screen = this._screen;
+    var screen = this._screen;
     screen.cursorBackward(1);
   },
 
   "[profile('vt52'), sequence('ESC E')]":
   function NEL()
   {
-    let screen = this._screen;
+    var screen = this._screen;
     screen.cursorDown();
     screen.carriageReturn();
   },
@@ -690,23 +697,21 @@ VT52.definition = {
   "[profile('vt52'), sequence('ESC F'), _('Enter graphics mode.')]":
   function SSA()
   {
-    let broker = this._broker;
-    broker.notify("sequence/g0", "0");
-    broker.notify("event/shift-in");
+    this.sendMessage("sequence/g0", "0");
+    this.sendMessage("event/shift-in");
   },
 
   "[profile('vt52'), sequence('ESC G'), _('Exit graphics mode.')]":
   function ESA()
   {
-    let broker = this._broker;
-    broker.notify("sequence/g0", "B");
-    broker.notify("event/shift-in"); 
+    this.sendMessage("sequence/g0", "B");
+    this.sendMessage("event/shift-in"); 
   },
 
   "[profile('vt52'), sequence('ESC H')]":
   function HTS()
   {
-    let cursor = this._screen.cursor;
+    var cursor = this._screen.cursor;
     cursor.positionX = cursor.originX;
     cursor.positionY = cursor.originY;
   },
@@ -714,24 +719,23 @@ VT52.definition = {
   "[profile('vt52'), sequence('ESC I')]":
   function HTJ()
   {
-    let screen = this._screen;
-    let broker = this._broker;
-    broker.notify("command/draw", true);
+    var screen = this._screen;
+    this.sendMessage("command/draw", true);
     screen.reverseIndex();
-    broker.notify("command/draw", true);
+    this.sendMessage("command/draw", true);
   },
 
   "[profile('vt52'), sequence('ESC J')]":
   function VTS()
   {
-    let screen = this._screen;
+    var screen = this._screen;
     screen.eraseScreenBelow();
   },
 
   "[profile('vt52'), sequence('ESC K')]":
   function PLD()
   {
-    let screen = this._screen;
+    var screen = this._screen;
     screen.eraseLineToRight();
   },
 
@@ -745,7 +749,7 @@ VT52.definition = {
   "[profile('vt52'), sequence('ESC Y%p')]":
   function ESC_Y(y, x)
   {
-    let screen = this._screen;
+    var screen = this._screen;
     screen.setPositionY(y - 0x20);
     screen.setPositionX(x - 0x20);
   },
@@ -753,8 +757,7 @@ VT52.definition = {
   "[profile('vt52'), sequence('ESC Z')]":
   function SCI()
   {
-    let broker = this._broker;
-    broker.notify("command/send-to-tty", "\x1b/Z");
+    this.sendMessage("command/send-to-tty", "\x1b/Z");
   },
 
   "[profile('vt52'), sequence('ESC =')]": 
@@ -777,8 +780,7 @@ VT52.definition = {
   "[profile('vt52'), sequence('ESC <')]": 
   function V5EX() 
   {
-    let broker = this._broker;
-    broker.notify("command/change-mode", "vt100");
+    this.sendMessage("command/change-mode", "vt100");
     coUtils.Debug.reportMessage("Exit VT52 mode.");
   },
 

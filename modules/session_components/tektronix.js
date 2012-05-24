@@ -23,13 +23,13 @@
  * ***** END LICENSE BLOCK ***** */
 
 
-let MODE_ALPHA = 0;
-let MODE_GRAPHICS = 1;
+var MODE_ALPHA = 0;
+var MODE_GRAPHICS = 1;
 
 /**
  * @class Tektronix
  */
-let Tektronix = new Class().extends(Plugin);
+var Tektronix = new Class().extends(Plugin);
 Tektronix.definition = {
 
   get id()
@@ -61,13 +61,15 @@ Tektronix.definition = {
   "[install]":
   function install(broker) 
   {
-    let { tanasinn_tektronix_canvas } = broker.uniget(
+    var tanasinn_tektronix_canvas;
+
+    tanasinn_tektronix_canvas = this.request(
       "command/construct-chrome", 
       {
         parentNode: "#tanasinn_center_area",
         tagName: "html:canvas",
         id: "tanasinn_tektronix_canvas",
-      });
+      }).tanasinn_tektronix_canvas;
 
     this._x = 0;
     this._y = 0;
@@ -96,12 +98,13 @@ Tektronix.definition = {
   "[subscribe('event/screen-width-changed'), enabled]":
   function onWidthChanged(width) 
   {
-    //width = 1024;
-    let dom = this._dom;
+    var dom, scale;
+
+    dom = this._dom;
     this._width = width;
     if (dom) {
       dom.canvas.width = width;
-      let scale = Math.min(width, dom.canvas.height) / 1024;
+      scale = Math.min(width, dom.canvas.height) / 1024;
       this._scale = scale;
       dom.context.scale(scale, scale);
     }
@@ -110,12 +113,13 @@ Tektronix.definition = {
   "[subscribe('event/screen-height-changed'), enabled]": 
   function onHeightChanged(height) 
   {
-    //height = 1024;
-    let dom = this._dom;
+    var dom, scale;
+
+    dom = this._dom;
     this._height = height;
     if (dom) {
       dom.canvas.height = height;
-      let scale = Math.min(dom.canvas.width, height) / 1024;
+      scale = Math.min(dom.canvas.width, height) / 1024;
       dom.context.scale(scale, scale);
       this._scale = scale;
     }
@@ -129,13 +133,14 @@ Tektronix.definition = {
 
   _parseGraphics: function _parseGraphics(scanner) 
   {
-    let dom = this._dom;
+    var dom, high_y, low_y, high_x, low_x, path_open;
+
+    dom = this._dom;
     dom.context.fillStyle = this.default_text_color;
     dom.context.strokeStyle = this.default_line_style;
     dom.context.font = this.default_text_style;
 
-    let high_y, low_y, high_x, low_x;
-    let path_open = false;
+    path_open = false;
 
     scanner.moveNext();
 
@@ -261,9 +266,9 @@ Tektronix.definition = {
   "[type('Scanner -> Action')] parse":
   function parse(scanner) 
   {
+    var dom;
 
-    let broker = this._broker;
-    let dom = this._dom;
+    dom = this._dom;
     dom.context.fillStyle = this.default_text_color;
     dom.context.strokeStyle = this.default_line_style;
     dom.context.font = this.default_text_style;
@@ -293,11 +298,10 @@ scan:
       } else if (0x1b == c) {
         scanner.moveNext();
         c = scanner.current();
-        let broker = this._broker;
         if (0x03 == c) {
           scanner.moveNext();
           //let value = scanner.drain();
-          broker.notify("command/change-mode", "vt100");
+          this.sendMessage("command/change-mode", "vt100");
           coUtils.Debug.reportWarning(
             _("DECSET 38 - Leave Tektronix mode (DECTEK)."));
           return null;
@@ -332,7 +336,7 @@ scan:
                 if (0x68 == c) {           // h
                   //alert(c);
                 } else if (0x6c == c) {    // l
-                  broker.notify("command/change-mode", "vt100");
+                  this.sendMessage("command/change-mode", "vt100");
                   coUtils.Debug.reportWarning(
                     _("DECSET 38 - Leave Tektronix mode (DECTEK)."));
                 }

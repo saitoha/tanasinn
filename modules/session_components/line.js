@@ -1054,7 +1054,7 @@ LineGenerator.definition = {
   "[subscribe('@event/broker-started'), enabled]":
   function onLoad(broker) 
   {
-    broker.notify("initialized/" + this.id, this);
+    this.sendMessage("initialized/" + this.id, this);
   },
 
   /** Allocates n cells at once. */

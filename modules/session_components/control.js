@@ -25,7 +25,7 @@
 /**
  * @class Control
  */
-let Control = new Class().extends(Component);
+var Control = new Class().extends(Component);
 Control.definition = {
 
   get id()
@@ -91,8 +91,7 @@ Control.definition = {
   "[profile('vt100'), sequence('0x05')]":
   function ENQ() 
   {
-    let broker = this._broker;
-    broker.notify("command/answerback");
+    this.sendMessage("command/answerback");
   },
   
   /** Acknowledge.
@@ -110,8 +109,7 @@ Control.definition = {
   "[profile('vt100'), sequence('0x07', 'ESC \\\\')]":
   function BEL() 
   {
-    let broker = this._broker;
-    broker.notify("sequence/bel");
+    this.sendMessage("sequence/bel");
   },
 
   /** Back space.
@@ -119,7 +117,9 @@ Control.definition = {
   "[profile('vt100'), sequence('0x08')]":
   function BS() 
   { // BackSpace
-    let screen = this._screen;
+    var screen;
+
+    screen = this._screen;
     screen.backSpace();
   },
    
@@ -128,7 +128,9 @@ Control.definition = {
   "[profile('vt100'), sequence('0x09')]":
   function HT() 
   { // Horizontal Tab
-    let screen = this._screen;
+    var screen;
+
+    screen = this._screen;
     screen.horizontalTab();
   },
   
@@ -137,7 +139,9 @@ Control.definition = {
   "[profile('vt100'), sequence('0x0A')]":
   function LF() 
   {
-    let screen = this._screen;
+    var screen;
+
+    screen = this._screen;
     screen.lineFeed();
     if (this._ansi_mode.LNM) {
       screen.carriageReturn();
@@ -149,7 +153,9 @@ Control.definition = {
   "[profile('vt100'), sequence('0x84', 'ESC D'), _('Index')]":
   function IND() 
   {
-    let screen = this._screen;
+    var screen;
+
+    screen = this._screen;
     screen.lineFeed();
 //    if (this._ansi_mode.LNM) {
 //      screen.carriageReturn();
@@ -161,7 +167,9 @@ Control.definition = {
   "[profile('vt100'), sequence('0x0B')]":
   function VT() 
   {
-    let screen = this._screen;
+    var screen;
+
+    screen = this._screen;
     screen.lineFeed();
 //    if (this._ansi_mode.LNM) {
 //      screen.carriageReturn();
@@ -173,7 +181,9 @@ Control.definition = {
   "[profile('vt100'), sequence('0x0C')]":
   function FF() 
   {
-    let screen = this._screen;
+    var screen;
+
+    screen = this._screen;
     screen.lineFeed();
 //    if (this._ansi_mode.LNM) {
 //      screen.carriageReturn();
@@ -185,7 +195,9 @@ Control.definition = {
   "[profile('vt100'), sequence('0x0D')]":
   function CR() 
   { // Carriage Return
-    let screen = this._screen;
+    var screen;
+
+    screen = this._screen;
     screen.carriageReturn();
 //    if (this._ansi_mode.LNM) {
 //      screen.lineFeed();
@@ -197,8 +209,7 @@ Control.definition = {
   "[profile('vt100'), sequence('0x0E')]":
   function SO() 
   { // shift out
-    let broker = this._broker;
-    broker.notify("event/shift-out");
+    this.sendMessage("event/shift-out");
   },
   
   /** Shift in.
@@ -206,8 +217,7 @@ Control.definition = {
   "[profile('vt100'), sequence('0x0F')]":
   function SI() 
   { // shift out
-    let broker = this._broker;
-    broker.notify("event/shift-in");
+    this.sendMessage("event/shift-in");
   },
 
   /** Data link escape.
@@ -225,9 +235,8 @@ Control.definition = {
   "[profile('vt100'), sequence('0x11')]":
   function DC1() 
   {
-    let broker = this._broker;
-    //broker.notify("command/send-to-tty", "\u0011");
-    broker.notify("command/flow-control", true);
+    //this.sendMessage("command/send-to-tty", "\u0011");
+    this.sendMessage("command/flow-control", true);
   },
   
   /** Device control 2.
@@ -245,9 +254,8 @@ Control.definition = {
   "[profile('vt100'), sequence('0x13')]":
   function DC3() 
   {
-    let broker = this._broker;
-    //broker.notify("command/send-to-tty", "\u0013");
-    broker.notify("command/flow-control", false);
+    //this.sendMessage("command/send-to-tty", "\u0013");
+    this.sendMessage("command/flow-control", false);
   },
   
   /** Device control 4.

@@ -779,7 +779,6 @@ ScreenSequenceHandler.definition = {
   function SD(n) 
   { // Scroll Down line
     var argc = arguments.length;
-    var broker = this._broker;
 
     switch (argc) {
 
@@ -792,7 +791,7 @@ ScreenSequenceHandler.definition = {
         break;
 
       case 6:
-        broker.notify("event/start-highlight-mouse", Array.slice(arguments));
+        this.sendMessage("event/start-highlight-mouse", Array.slice(arguments));
         break;
 
       default:
@@ -1311,9 +1310,8 @@ ScreenSequenceHandler.definition = {
   function DSR(n) 
   { // Device Status Report
 
-    var broker, cursor, message;
+    var cursor, message;
 
-    broker = this._broker;
     cursor = this.cursor;;
 
     switch (n) {
@@ -1321,7 +1319,7 @@ ScreenSequenceHandler.definition = {
       // report terminal status
       case 5:
         message = "\x1b[0n";
-        broker.notify("command/send-to-tty", message);
+        this.sendMessage("command/send-to-tty", message);
         break;
 
       // report cursor position
@@ -1330,7 +1328,7 @@ ScreenSequenceHandler.definition = {
           "\x1b[%d;%dR", 
           cursor.positionY + 1, 
           cursor.positionX + 1);
-        broker.notify("command/send-to-tty", message);
+        this.sendMessage("command/send-to-tty", message);
         break;
 
       default:
@@ -1368,11 +1366,6 @@ Viewable.definition = {
 
   _scrollback_amount: 0,
 
-  /** constructor */
-  initialize: function initialize(broker)
-  {
-  },
-
   "[subscribe('event/broker-started'), enabled]":
   function(broker) 
   {
@@ -1382,8 +1375,6 @@ Viewable.definition = {
   "[subscribe('command/scroll-down-view'), enabled]":
   function scrollDownView(n)
   {
-    var broker;
-
     if (0 == n || 0 == this._scrollback_amount) {
       return;
     }
@@ -1391,8 +1382,7 @@ Viewable.definition = {
     if (this._scrollback_amount < n) {
       this._scrollback_amount = 0;
       // finishes scrolling session.
-      broker = this._broker;
-      broker.notify("event/scroll-session-closed");
+      this.sendMessage("event/scroll-session-closed");
     } else {
       this._scrollback_amount -= n;
     }
@@ -1402,7 +1392,7 @@ Viewable.definition = {
   "[subscribe('command/scroll-up-view'), enabled]":
   function scrollUpView(n)
   {
-    var buffer_top, broker;
+    var buffer_top;
     
     buffer_top = this.bufferTop;
     if (0 == n || buffer_top == this._scrollback_amount) {
@@ -1410,8 +1400,7 @@ Viewable.definition = {
     }
     if (0 == this._scrollback_amount) {
       // starts scrolling session.
-      broker = this._broker;
-      broker.notify("event/scroll-session-started");
+      this.sendMessage("event/scroll-session-started");
     }
     // move view position.
     if (buffer_top - this._scrollback_amount < n) {
@@ -1425,14 +1414,13 @@ Viewable.definition = {
   "[subscribe('command/set-scroll-position'), enabled]":
   function setViewPosition(position)
   {
-    var buffer_top, broker;
+    var buffer_top;
 
     buffer_top = this.bufferTop;
     if (0 == this._scrollback_amount) {
       if (position != buffer_top - this._scrollback_amount) {
         // starts scrolling session.
-        broker = this._broker;
-        broker.notify("event/scroll-session-started");
+        this.sendMessage("event/scroll-session-started");
       }
     }
     this._scrollback_amount = buffer_top - position;
@@ -1442,11 +1430,10 @@ Viewable.definition = {
   "[subscribe('command/update-scroll-information'), enabled]":
   function updateScrollInformation()
   {
-    var buffer_top, broker, width, lines, i, line;
+    var buffer_top, width, lines, i, line;
 
     buffer_top = this.bufferTop;
-    broker = this._broker;
-    broker.notify(
+    this.sendMessage(
       "event/scroll-position-changed", 
       {
         start: buffer_top - this._scrollback_amount,
@@ -1496,14 +1483,11 @@ Viewable.definition = {
   "[subscribe('event/before-input')]":
   function onBeforeInput(message) 
   {
-    var broker;
-
-    broker = this._broker;
     this.onBeforeInput.enabled = false;
     this._scrollback_amount = 0;
     this.updateScrollInformation();
-    broker.notify("command/draw", true);
-    broker.notify("event/scroll-session-closed", true);
+    this.sendMessage("command/draw", true);
+    this.sendMessage("event/scroll-session-closed", true);
   },
 
   _interracedScan: function _interracedScan(lines) 
@@ -1622,7 +1606,7 @@ Scrollable.definition = {
   /** Scroll up the buffer by n lines. */
   _scrollUp: function _scrollUp(top, bottom, n) 
   {
-    var lines, offset, width, height, attr, i, line, range, broker;
+    var lines, offset, width, height, attr, i, line, range;
 
     lines = this._buffer;
     offset = this.bufferTop;
@@ -1648,8 +1632,7 @@ Scrollable.definition = {
     this._lines = lines.slice(offset, offset + height);
 
     if (this._smooth_scrolling) {
-      broker = this._broker;
-      broker.notify("command/draw");
+      this.sendMessage("command/draw");
       wait(this.smooth_scrolling_delay);
     }
   },
@@ -1657,7 +1640,7 @@ Scrollable.definition = {
   /** Scroll down the buffer by n lines. */
   _scrollDown: function _scrollDown(top, bottom, n) 
   {
-    var lines, offset, width, height, attr, i, range, line, broker;
+    var lines, offset, width, height, attr, i, range, line;
 
     lines = this._buffer;
     offset = this._buffer_top;
@@ -1703,8 +1686,7 @@ Scrollable.definition = {
     this._lines = lines.slice(offset, offset + height);
 
     if (this._smooth_scrolling) {
-      broker = this._broker;
-      broker.notify("command/draw");
+      this.sendMessage("command/draw");
       wait(this.smooth_scrolling_delay);
     }
 
@@ -1854,8 +1836,6 @@ Screen.definition = {
   "[subscribe('initialized/{cursorstate & linegenerator}'), enabled]":
   function onLoad(cursor_state, line_generator) 
   {
-    var broker = this._broker;
-
     //this._width = this.initial_column;
     //this._height = this.initial_row;
     this._buffer = line_generator.allocate(this._width, this._height * 2);
@@ -1865,7 +1845,7 @@ Screen.definition = {
 
     this._resetTabStop();
 
-    broker.notify("initialized/screen", this);
+    this.sendMessage("initialized/screen", this);
   },
 
   /** 
@@ -1898,7 +1878,7 @@ Screen.definition = {
 
   set "[persistable] width"(value) 
   {
-    var width, cursor, broker;
+    var width, cursor;
 
     if (this._buffer) {
       width = this._width;
@@ -1918,8 +1898,7 @@ Screen.definition = {
       // update tab stops
       this._resetTabStop();
 
-      broker = this._broker;
-      broker.notify("variable-changed/screen.width", this.width);
+      this.sendMessage("variable-changed/screen.width", this.width);
     } else {
       this._width = value;
     }
@@ -1936,7 +1915,7 @@ Screen.definition = {
 
   set "[persistable] height"(value) 
   {
-    var cursor, broker;
+    var cursor;
     
     if (this._buffer) {
       if (value == this._height) {
@@ -1953,8 +1932,7 @@ Screen.definition = {
         cursor.positionY = this._height - 1;
       }
 
-      broker = this._broker;
-      broker.notify("variable-changed/screen.height", this.height);
+      this.sendMessage("variable-changed/screen.height", this.height);
     } else {
       this._height = value;
     }
@@ -2029,8 +2007,7 @@ Screen.definition = {
 /*    
 //    if (this._smooth_scrolling) {
         if ((this.flag = (this.flag + 1) % 10) == 0) {
-          var broker = this._broker;
-          broker.notify("command/draw");
+          this.sendMessage("command/draw");
           wait(0);
         }
 //    }

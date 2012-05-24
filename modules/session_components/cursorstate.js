@@ -26,7 +26,7 @@
  * @class CursorState
  * @brief Manages cursor position.
  */
-let CursorState = new Class().extends(Component);
+var CursorState = new Class().extends(Component);
 CursorState.definition = {
 
   get id()
@@ -99,8 +99,7 @@ CursorState.definition = {
   function onLoad(line_generator) 
   {
     this.attr = line_generator.allocate(1, 1).shift().cells.shift();
-    let broker = this._broker;
-    broker.notify("initialized/" + this.id, this);
+    this.sendMessage("initialized/" + this.id, this);
   },
 
   /** reset cursor state. */
@@ -118,10 +117,11 @@ CursorState.definition = {
   /** backup current cursor state. */
   backup: function backup() 
   {
-    let broker = this._broker;
-    let context = {};
+    var context;
+
+    context = {};
     this._backup_instance = context;
-    broker.notify("command/save-cursor", context);
+    this.sendMessage("command/save-cursor", context);
 
     context.positionX = this.positionX;
     context.positionY = this.positionY;
@@ -135,14 +135,15 @@ CursorState.definition = {
   /** restore cursor state from the backup instance. */
   restore: function restore() 
   {
-    let broker = this._broker;
-    let context = this._backup_instance;
+    var context;
+
+    context = this._backup_instance;
     if (null === context) {
       coUtils.Debug.reportWarning(
         _('Cursor backup instance not found.'));
       return;
     }
-    broker.notify("command/restore-cursor", context);
+    this.sendMessage("command/restore-cursor", context);
 
     this.positionX = context.positionX;
     this.positionY = context.positionY;
@@ -155,6 +156,8 @@ CursorState.definition = {
 
   serialize: function serialize(context)
   {
+    var backup;
+
     context.push(this.positionX);
     context.push(this.positionY);
     context.push(this.originX);
@@ -163,7 +166,7 @@ CursorState.definition = {
     context.push(this.blink);
     context.push(this.attr.value);
     context.push(null !== this._backup_instance);
-    let backup = this._backup_instance;
+    backup = this._backup_instance;
     if (null !== backup) {
       context.push(backup.positionX);
       context.push(backup.positionY);
@@ -177,6 +180,8 @@ CursorState.definition = {
 
   deserialize: function deserialize(context)
   {
+    var backup_exists, backup;
+
     this.positionX = context.shift();
     this.positionY = context.shift();
     this.originX = context.shift();
@@ -184,9 +189,9 @@ CursorState.definition = {
     this.visibility = context.shift();
     this.blink = context.shift();
     this.attr.value = context.shift();
-    let backup_exists = context.shift();
+    backup_exists = context.shift();
     if (backup_exists) {
-      let backup = this._backup_instance = {};
+      backup = this._backup_instance = {};
       backup.positionX = context.shift();
       backup.positionY = context.shift();
       backup.originX = context.shift();
@@ -405,21 +410,22 @@ CursorState.definition = {
   "[profile('vt100'), sequence('CSI %dm')]":
   function SGR(n) 
   { // character attributes
+    var attr, i, p;
+
     // -- xterm-256color --
     //  setab=\E[%?%p1%{8}%<%t4%p1%d%e%p1%{16}%<%t10%p1%{8}%-%d%e48;5;%p1%d%;m,
     //  setaf=\E[%?%p1%{8}%<%t3%p1%d%e%p1%{16}%<%t9%p1%{8}%-%d%e38;5;%p1%d%;m,
     //  sgr=%?%p9%t\E(0%e\E(B%;\E[0%?%p6%t;1%;%?%p2%t;4%;%?%p1%p3%|%t;7%;%?%p4%t;5%;%?%p7%t;8%;m,
     //
-    let attr = this.attr;
-    let broker = this._broker;
+    attr = this.attr;
 
     if (0 == arguments.length) {
       attr.clear()
     } else {
 
-      for (let i = 0; i < arguments.length; ++i) {
+      for (i = 0; i < arguments.length; ++i) {
 
-        let p = arguments[i];
+        p = arguments[i];
 
         switch (p) {
 
@@ -461,11 +467,11 @@ CursorState.definition = {
             break;
 
           case 10:
-            broker.notify("event/shift-in");
+            this.sendMessage("event/shift-in");
             break;
 
           case 11:
-            broker.notify("event/shift-out");
+            this.sendMessage("event/shift-out");
             break;
 
           case 21:

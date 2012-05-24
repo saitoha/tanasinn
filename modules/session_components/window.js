@@ -30,33 +30,33 @@
  * @class WindowWatcher
  *
  */
-let WindowWatcher = new Class().extends(Component);
+var WindowWatcher = new Class().extends(Component);
 WindowWatcher.definition = {
 
   get id()
     "windowwatcher",
 
   "[subscribe('@event/broker-started'), enabled]": 
-  function onSessionStarted(session) 
+  function onSessionStarted(broker) 
   {
-    session.notify("command/add-domlistener", {
-      target: session.window,
+    this.sendMessage("command/add-domlistener", {
+      target: broker.window,
       type: "resize",
       context: this,
       handler: this.onresize,
       id: this.id,
     });
 
-    session.notify("command/add-domlistener", {
-      target: session.window,
+    this.sendMessage("command/add-domlistener", {
+      target: broker.window,
       type: "close",
       context: this,
       handler: this.onclose,
       id: this.id,
     });
 
-    session.notify("command/add-domlistener", {
-      target: session.window,
+    this.sendMessage("command/add-domlistener", {
+      target: broker.window,
       type: "MozMagnifyGesture",
       context: this,
       handler: this.onMagnifyGesture,
@@ -64,8 +64,8 @@ WindowWatcher.definition = {
       id: this.id,
     });
 
-    session.notify("command/add-domlistener", {
-      target: session.window,
+    this.sendMessage("command/add-domlistener", {
+      target: broker.window,
       type: "MozSwipeGesture",
       context: this,
       handler: this.onSwipeGesture,
@@ -73,8 +73,8 @@ WindowWatcher.definition = {
       id: this.id,
     });
 
-    session.notify("command/add-domlistener", {
-      target: session.window,
+    this.sendMessage("command/add-domlistener", {
+      target: broker.window,
       type: "MozRotateGesture",
       context: this,
       handler: this.onRotateGesture,
@@ -87,42 +87,45 @@ WindowWatcher.definition = {
   "[subscribe('@event/broker-stopping'), enabled]": 
   function onSessionStopping(broker) 
   {
-    broker.notify("command/remove-domlistener", this.id);
+    this.sendMessage("command/remove-domlistener", this.id);
   },
 
   onRotateGesture: function onSwipeGesture(event) 
   {
-    let original_target = event.explicitOriginalTarget;
-    let broker = this._broker;
-    let relation = broker.root_element.compareDocumentPosition(original_target);
+    var origninal_target, relation;
+
+    original_target = event.explicitOriginalTarget;
+    relation = broker.root_element.compareDocumentPosition(original_target);
     if ((relation & original_target.DOCUMENT_POSITION_CONTAINED_BY)) {
       event.preventDefault();
       event.stopPropagation();
-      broker.notify("event/rotate-gesture", event.direction);
+      this.sendMessage("event/rotate-gesture", event.direction);
       event.direction = 0;
     }
   },
 
   onSwipeGesture: function onSwipeGesture(event) 
   {
+    var origninal_target, relation;
+
     event.preventDefault();
     event.stopPropagation();
-    let original_target = event.explicitOriginalTarget;
-    let broker = this._broker;
-    let relation = broker.root_element.compareDocumentPosition(original_target);
+    original_target = event.explicitOriginalTarget;
+    relation = broker.root_element.compareDocumentPosition(original_target);
     if ((relation & original_target.DOCUMENT_POSITION_CONTAINED_BY)) {
-      broker.notify("event/swipe-gesture", event.direction);
+      this.sendMessage("event/swipe-gesture", event.direction);
     }
     event.direction = 0;
   },
 
   onMagnifyGesture: function onMagnifyGesture(event) 
   {
-    let original_target = event.explicitOriginalTarget;
-    let broker = this._broker;
-    let relation = broker.root_element.compareDocumentPosition(original_target);
+    var origninal_target, relation;
+
+    original_target = event.explicitOriginalTarget;
+    relation = broker.root_element.compareDocumentPosition(original_target);
     if ((relation & original_target.DOCUMENT_POSITION_CONTAINED_BY)) {
-      broker.notify("event/magnify-gesture", event.delta);
+      this.sendMessage("event/magnify-gesture", event.delta);
       event.preventDefault();
       event.stopPropagation();
       event.direction = 0;
@@ -132,15 +135,13 @@ WindowWatcher.definition = {
   /** Handles window resize event. */
   onresize: function onresize(event) 
   {
-    let broker = this._broker;
-    broker.notify("event/window-resized", event);
+    this.sendMessage("event/window-resized", event);
   },
 
   /** Handles window close event. */
   onclose: function onclose(event) 
   {
-    let broker = this._broker;
-    broker.notify("event/window-closing", event);
+    this.sendMessage("event/window-closing", event);
   }
 
 };

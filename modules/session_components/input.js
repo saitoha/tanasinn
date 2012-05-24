@@ -26,7 +26,7 @@
 // Key mappings.
 //
 
-let KEY_ANSI = {
+var KEY_ANSI = {
   "Ctrl Space" : "\x00", //  NUL
   "Ctrl `"     : "\x00", //  NUL
   "Ctrl 2"     : "\x00", //  NUL
@@ -124,7 +124,7 @@ let KEY_NORMAL_KEYPAD = {
   "Shift F8"   : "\x1b[34~",
 };
 
-let KEY_APPLICATION_KEYPAD = {
+var KEY_APPLICATION_KEYPAD = {
 
   "PgUp"   : "\x1b[5~", // kP / kpp 
   "PgDn"   : "\x1b[6~", // kN / knp
@@ -163,23 +163,23 @@ let KEY_APPLICATION_KEYPAD = {
 };
 
 
-let KEY_YEN_AS_5C = {
+var KEY_YEN_AS_5C = {
   "\xa5"       : "\x5c",
 };
 
-let KEY_WON_AS_5C = {
+var KEY_WON_AS_5C = {
   "\u20a9"     : "\x5c",
 };
 
-let KEY_BACKSPACE_AS_DEL = {
+var KEY_BACKSPACE_AS_DEL = {
   "backspace"  : "\x7f",
 };
 
-let KEY_DELETE_AS_FUNC = {
+var KEY_DELETE_AS_FUNC = {
   "delete"     : "\x1b[3~",
 };
 
-let KEY_MAC_ALT_AS_META = {
+var KEY_MAC_ALT_AS_META = {
   // For mac
   "Alt \u0061" : "\x1ba",
   "Alt \u0062" : "\x1bb",
@@ -355,15 +355,14 @@ DefaultKeyMappings.definition = {
   "[subscribe('command/change-mode'), enabled]":
   function onChangeEmulationMode(mode)
   {
-    let broker = this._broker;
     switch (mode) {
 
       case "vt100":
-        broker.notify("command/change-cursor-mode", "normal");
+        this.sendMessage("command/change-cursor-mode", "normal");
         break;
 
       case "vt52":
-        broker.notify("command/change-cursor-mode", "vt52");
+        this.sendMessage("command/change-cursor-mode", "vt52");
         break;
 
       default:
@@ -377,9 +376,11 @@ DefaultKeyMappings.definition = {
   "[subscribe('command/build-key-mappings'), type('Object -> Undefined'), enabled]":
   function build(map)
   {
+    var settings, i, setting;
+
     this._map = map;
 
-    let settings = [];
+    settings = [];
 
     settings.push(KEY_ANSI);
 
@@ -436,8 +437,8 @@ DefaultKeyMappings.definition = {
         break;
     }
 
-    for (let i = 0; i < settings.length; ++i) {
-      let setting = settings[i];
+    for (i = 0; i < settings.length; ++i) {
+      setting = settings[i];
       coCreateKeyMap(setting, map);
     }
 
@@ -453,7 +454,7 @@ DefaultKeyMappings.definition = {
 /**
  * @class ModeManager
  */
-let ModeManager = new Class().extends(Plugin);
+var ModeManager = new Class().extends(Plugin);
 ModeManager.definition = {
 
   get id()
@@ -471,7 +472,7 @@ ModeManager.definition = {
   "[install]":
   function install(broker)
   {
-    this._modes = broker.notify("get/modes");
+    this._modes = this.sendMessage("get/modes");
     this.onScanKeycode.enabled = true;
     this.onScanKeycodeWithoutMapping.enabled = true;
     this.onModeChanged.enabled = true;
@@ -492,13 +493,15 @@ ModeManager.definition = {
   "[subscribe('event/scan-keycode')]":
   function onScanKeycode(info) 
   {
-    let broker = this._broker;
-    let mode = info.mode || this._mode;
-    let code = info.code;
+    var mode, code;
+
+    mode = info.mode || this._mode;
+    code = info.code;
+
     if ("normal" == mode) {
-      broker.notify('command/input-with-remapping', info); 
+      this.sendMessage('command/input-with-remapping', info); 
     } else if ("commandline" == mode) {
-      broker.notify('event/keypress-commandline-with-remapping', code); 
+      this.sendMessage('event/keypress-commandline-with-remapping', code); 
     } else {
       throw coUtils.Debug.Exception(_("Unknown mode is specified: %s."), mode);
     }
@@ -507,13 +510,15 @@ ModeManager.definition = {
   "[subscribe('event/scan-keycode-with-no-remapping')]":
   function onScanKeycodeWithoutMapping(info) 
   {
-    let broker = this._broker;
-    let mode = info.mode || this._mode;
-    let code = info.code;
+    var mode, code;
+
+    mode = info.mode || this._mode;
+    code = info.code;
+
     if ("normal" == mode) {
-      broker.notify('command/input-with-no-remapping', info); 
+      this.sendMessage('command/input-with-no-remapping', info); 
     } else if ("commandline" == mode) {
-      broker.notify('event/keypress-commandline-with-no-remapping', code); 
+      this.sendMessage('event/keypress-commandline-with-no-remapping', code); 
     } else {
       throw coUtils.Debug.Exception(_("Unknown mode is specified: %s."), mode);
     }
@@ -522,8 +527,7 @@ ModeManager.definition = {
   "[command('sendkeys/sk'), enabled]":
   function sendkeys(arguments_string) 
   {
-    let broker = this._broker;
-    broker.notify(
+    this.sendMessage(
       "command/input-expression-with-remapping", 
       arguments_string);
     return {
@@ -534,12 +538,14 @@ ModeManager.definition = {
   "[subscribe('command/input-expression-with-remapping'), enabled]":
   function inputExpressionWithMapping(expression) 
   {
-    let packed_code_array = coUtils.Keyboard
+    var packed_code_array, i, packed_code;
+
+    packed_code_array = coUtils.Keyboard
       .parseKeymapExpression(expression);
-    let broker = this._broker;
-    for (let i = 0; i < packed_code_array.length; ++i) {
-      let packed_code = packed_code_array[i];
-      broker.notify("event/scan-keycode", { code: packed_code });
+
+    for (i = 0; i < packed_code_array.length; ++i) {
+      packed_code = packed_code_array[i];
+      this.sendMessage("event/scan-keycode", { code: packed_code });
     }
     return true;
   },
@@ -547,12 +553,14 @@ ModeManager.definition = {
   "[subscribe('command/input-expression-with-no-remapping'), enabled]":
   function inputExpressionWithNoRemapping(expression) 
   {
-    let packed_code_array = coUtils.Keyboard
+    var packed_code_array, i, packed_code;
+
+    packed_code_array = coUtils.Keyboard
       .parseKeymapExpression(expression);
-    let broker = this._broker;
-    for (let i = 0; i < packed_code_array.length; ++i) {
-      let packed_code = packed_code_array[i];
-      broker.notify("event/scan-keycode-with-no-remapping", { 
+
+    for (i = 0; i < packed_code_array.length; ++i) {
+      packed_code = packed_code_array[i];
+      this.sendMessage("event/scan-keycode-with-no-remapping", { 
         code: packed_code 
       });
     }
@@ -569,40 +577,9 @@ ModeManager.definition = {
 
 
 /**
- * @class NormalMode
- */
-let NormalMode = new Class().extends(Plugin);
-NormalMode.definition = {
-
-  get id()
-    "normalmode",
-
-  "[persistable] enabled_when_startup": true,
-
-  /** Installs itself. 
-   *  @param {Broker} broker a Broker object.
-   *  @notify collection-changed/modes
-   */
-  "[install]":
-  function install(broker)
-  {
-  },
-
-  /** Uninstalls itself. 
-   *  @param {Broker} broker a Broker object.
-   */
-  "[uninstall]":
-  function uninstall(broker)
-  {
-  },
-
-};
-
-
-/**
  * @class MacAltKeyWatcher
  */
-let MacAltKeyWatcher = new Trait();
+var MacAltKeyWatcher = new Trait();
 MacAltKeyWatcher.definition = {
 
   _alt_on: false,
@@ -625,7 +602,7 @@ MacAltKeyWatcher.definition = {
 /**
  * @class InputMacroTrait
  */
-let InputMacroTrait = new Trait();
+var InputMacroTrait = new Trait();
 InputMacroTrait.definition = {
 
   _macros: null,
@@ -656,17 +633,21 @@ InputMacroTrait.definition = {
   "[command('playinputmacro', []), _('Play input macro.')]": 
   function playInputMacro(name)
   {
-    let buffer = this._macros[name];
+    var buffer, i, complete, thread;
+
+    buffer = this._macros[name];
     if (!buffer) {
       throw coUtils.Exception(
         _("The macro specified by given name is not found."));
     }
-    for (let i = 0; i < buffer.length; ++i) {
 
-      let complete = false;
-      let thread = Components.classes["@mozilla.org/thread-manager;1"]
-        .getService(Components.interfaces.nsIThreadManager)
-        .currentThread;
+    thread = Components.classes["@mozilla.org/thread-manager;1"]
+      .getService(Components.interfaces.nsIThreadManager)
+      .currentThread;
+
+    for (i = 0; i < buffer.length; ++i) {
+
+      complete = false;
 
       coUtils.Timer.setTimeout(function() {
         complete = true;
@@ -687,8 +668,10 @@ InputMacroTrait.definition = {
   "[command('completeinputmacro', []), _('Stop to recording current macro.')]": 
   function completeInputMacro()
   {
-    let buffer = this._macro_buffer;
-    let name = this._current_macro_name;
+    var buffer, name;
+
+    buffer = this._macro_buffer;
+    name = this._current_macro_name;
     this._macro_buffer = null;
     this._current_macro_name = null;
     this._macros[name] = buffer;
@@ -706,7 +689,7 @@ InputMacroTrait.definition = {
  * @class InputManager
  * @brief Listen keyboard input events and send ones to TTY device.
  */
-let InputManager = new Class().extends(Plugin)
+var InputManager = new Class().extends(Plugin)
                               .mix(MacAltKeyWatcher)
                               .mix(InputMacroTrait)
                               .depends("encoder");
@@ -754,12 +737,15 @@ InputManager.definition = {
   "[install]":
   function install(broker)
   {
+    var map, tanasinn_default_input;
+
     // Get [bit-packed keycode -> terminal input sequence] map
-    let map = {};
-    broker.uniget("command/build-key-mappings", map);
+    map = {};
+    this.sendMessage("command/build-key-mappings", map);
     this._key_map = map;
-    let {tanasinn_default_input} 
-      = broker.uniget("command/construct-chrome", this.template);
+    tanasinn_default_input
+      = this.request("command/construct-chrome", this.template)
+          .tanasinn_default_input;
     this._textbox = tanasinn_default_input;
     this._processInputSequence.enabled = true;
     this.focus.enabled = true;
@@ -782,7 +768,7 @@ InputManager.definition = {
     this.completeInputMacro.enabled = true;
     this.playInputMacro.enabled = true;
 
-    broker.notify("event/collection-changed/modes");
+    this.sendMessage("event/collection-changed/modes");
   },
 
   /** Uninstalls itself. 
@@ -814,7 +800,7 @@ InputManager.definition = {
     this.playInputMacro.enabled = false;
 
     this._textbox.parentNode.removeChild(this._textbox);
-    broker.notify("event/collection-changed/modes");
+    this.sendMessage("event/collection-changed/modes");
   },
 
   "[subscribe('set/newline-mode'), enabled]":
@@ -856,8 +842,7 @@ InputManager.definition = {
     this._textbox.focus(); // <-- blur out for current element.
     this._textbox.focus(); // <-- blur out for current element.
     this._textbox.focus(); // <-- set focus to textbox element.
-    let broker = this._broker; 
-    broker.notify("event/mode-changed", "normal");
+    this.sendMessage("event/mode-changed", "normal");
   },
 
   "[command('blur', []), nmap('<M-z>', '<C-S-Z>'), _('Blur tanasinn window')]":
@@ -872,11 +857,13 @@ InputManager.definition = {
   "[subscribe('command/blur')]":
   function blur() 
   {
+    var broker, document, dispatcher;
+
     this._textbox.blur(); // raise blur event.
-    let broker = this._broker;
-    let document = broker.window.document;
+    broker = this._broker;
+    document = broker.window.document;
     if (document) {
-      let dispatcher = document.commandDispatcher;
+      dispatcher = document.commandDispatcher;
       if (dispatcher) {
         dispatcher.rewindFocus();
       }
@@ -894,8 +881,7 @@ InputManager.definition = {
   "[subscribe('event/hotkey-double-shift')]":
   function onDoubleShift(event) 
   {
-    let broker = this._broker;
-    broker.notify(
+    this.sendMessage(
       "command/input-expression-with-remapping", 
       "<2-shift>");
   },
@@ -904,8 +890,7 @@ InputManager.definition = {
   "[nmap('<2-shift>', '<cmode>')]":
   function switchToCommandline(event) 
   { // nothrow
-    let broker = this._broker;
-    broker.notify("command/enable-commandline")
+    this.sendMessage("command/enable-commandline")
   },
 
   /** Keypress event handler. 
@@ -946,9 +931,8 @@ InputManager.definition = {
       event.isChar = false;
     }
 
-    let broker = this._broker;
     if (this.debug_flag) {
-      broker.notify(
+      this.sendMessage(
         this.debug_topic, 
         <>
 code:{event.keyCode},
@@ -971,10 +955,11 @@ char:{event.isChar?"t":"f"}
   "[subscribe('event/keypress'), enabled]":
   function onKeyPressEventReceived(info) 
   {
-    let packed_code = coUtils.Keyboard
+    var packed_code;
+
+    packed_code = coUtils.Keyboard
       .getPackedKeycodeFromEvent(info.event, this._alt_key);
-    let broker = this._broker;
-    broker.notify("event/scan-keycode", {
+    this.sendMessage("event/scan-keycode", {
       mode: info.mode, 
       code: packed_code,
     });
@@ -983,8 +968,9 @@ char:{event.isChar?"t":"f"}
   "[subscribe('command/input-with-remapping')]": 
   function inputWithMapping(info)
   {
-    let broker = this._broker;
-    let result = broker.uniget("event/normal-input", {
+    var result;
+
+    result = this.request("event/normal-input", {
       textbox: this._textbox, 
       code: info.code,
     });
@@ -996,12 +982,14 @@ char:{event.isChar?"t":"f"}
   "[subscribe('command/input-with-no-remapping')]": 
   function inputWithNoMapping(packed_code)
   {
+    var c, message;
+
     if (null !== this._macro_buffer) {
       this._macro_buffer.push(packed_code);
     }
 
-    let c = packed_code & 0xffffff;// event.which;
-    let message = this._key_map[packed_code];
+    c = packed_code & 0xffffff;// event.which;
+    message = this._key_map[packed_code];
     if (!message) {
       if (packed_code & (1 << coUtils.Keyboard.KEY_CTRL | 
                          1 << coUtils.Keyboard.KEY_ALT)) {
@@ -1015,9 +1003,8 @@ char:{event.isChar?"t":"f"}
         message = String.fromCharCode(c);
       }
     }
-    let broker = this._broker;
-    broker.notify("event/before-input", message);
-    broker.notify("command/input-text", message);
+    this.sendMessage("event/before-input", message);
+    this.sendMessage("command/input-text", message);
   },
 
   /** Send input sequences to TTY device. 
@@ -1027,10 +1014,11 @@ char:{event.isChar?"t":"f"}
   "[subscribe('command/input-text')]":
   function _processInputSequence(data)
   {
+    var message;
+
     if (data) {
-      let message = this.dependency["encoder"].encode(data);
-      let broker = this._broker;
-      broker.notify("command/send-to-tty", message);
+      message = this.dependency["encoder"].encode(data);
+      this.sendMessage("command/send-to-tty", message);
     }
   },
 
@@ -1041,11 +1029,11 @@ char:{event.isChar?"t":"f"}
   "[listen('input', '#tanasinn_default_input')]":
   function oninput(event) 
   {
-    let broker = this._broker;
-    let value = this._textbox.value;
+    var value;
+
+    value = this._textbox.value;
     this._textbox.value = "";
-//    broker.notify("command/report-status-message", "input: " + value);
-    broker.notify("command/input-text", value);
+    this.sendMessage("command/input-text", value);
   },
  
   /** compositionstart event handler. 
@@ -1054,13 +1042,15 @@ char:{event.isChar?"t":"f"}
   "[listen('compositionstart', '#tanasinn_default_input')]":
   function oncompositionstart(event) 
   {
-      let version_comparator = Components
-        .classes["@mozilla.org/xpcom/version-comparator;1"]
-        .getService(Components.interfaces.nsIVersionComparator);
-      if (version_comparator.compare(coUtils.Runtime.version, "10.0") >= 0)
-      {
-        this.oninput.enabled = false;
-      }
+    var version_comparator;
+
+    version_comparator = Components
+      .classes["@mozilla.org/xpcom/version-comparator;1"]
+      .getService(Components.interfaces.nsIVersionComparator);
+
+    if (version_comparator.compare(coUtils.Runtime.version, "10.0") >= 0) {
+      this.oninput.enabled = false;
+    }
   },
   
   /** compositionend event handler. 
@@ -1069,14 +1059,16 @@ char:{event.isChar?"t":"f"}
   "[listen('compositionend', '#tanasinn_default_input')]":
   function oncompositionend(event) 
   {
-      let version_comparator = Components
-        .classes["@mozilla.org/xpcom/version-comparator;1"]
-        .getService(Components.interfaces.nsIVersionComparator);
-      if (version_comparator.compare(coUtils.Runtime.version, "10.0") >= 0)
-      {
-        this.oninput.enabled = true;
-        this.oninput(event);
-      }
+    var version_comparator;
+
+    version_comparator = Components
+      .classes["@mozilla.org/xpcom/version-comparator;1"]
+      .getService(Components.interfaces.nsIVersionComparator);
+
+    if (version_comparator.compare(coUtils.Runtime.version, "10.0") >= 0) {
+      this.oninput.enabled = true;
+      this.oninput(event);
+    }
   },
   
 };
@@ -1090,7 +1082,6 @@ function main(broker)
 {
   new DefaultKeyMappings(broker);
   new ModeManager(broker);
-  new NormalMode(broker);
   new InputManager(broker);
 }
 

@@ -22,7 +22,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-
 /**
  * @class EastAsianWidth
  *
@@ -66,6 +65,73 @@ EastAsianWidth.definition = {
 
 }; // class EastAsianWidth
 
+
+/**
+ * @class AmbiguousWidthReporting
+ *
+ * http://code.google.com/p/mintty/wiki/CtrlSeqs
+ *
+ * Applications can ask to be notified when the width of the so-called 
+ * ambiguous width character category changes due to the user changing font.
+ *
+ * sequence   reporting
+ * ^[[?7700l  disabled
+ * ^[[?7700h  enabled
+ *
+ * When enabled, ^[[1W is sent when changing to an "ambiguous narrow" font 
+ * and ^[[2W is sent when changing to an "ambiguous wide" font. 
+ */
+var AmbiguousWidthReporting = new Class().extends(Plugin)
+                                .depends("parser");
+AmbiguousWidthReporting.definition = {
+
+  get id()
+    "ambiguous_width_reporting",
+
+  get info()
+    <module>
+        <name>{_("Ambiguous Width Reporting")}</name>
+        <version>0.1</version>
+        <description>{
+          _("Switch ambiguous width reporting. ")
+        }</description>
+    </module>,
+
+  "[persistable] enabled_when_startup": true,
+
+  /** Enable ambiguous width reporting.
+   */
+  "[subscribe('sequence/decset/7700'), pnp]":
+  function activate() 
+  { // Enable ambiguous width reporting
+    this.onAmbiguousWidthChanged.enabled = true;
+  },
+
+  /** Disable ambiguous width reporting.
+   */
+  "[subscribe('sequence/decrst/7700'), pnp]":
+  function deactivate() 
+  { // Disable ambigous width reporting
+    this.onAmbiguousWidthChanged.enabled = false;
+  },
+
+  /** Disable ambiguous width reporting.
+   */
+  "[subscribe('variable-changed/parser.ambiguous_as_wide')]":
+  function onAmbiguousWidthChanged(value) 
+  { // Disable ambigous width reporting
+    var message;
+
+    if (value) {
+      message = "\x1b[1W";
+    } else {
+      message = "\x1b[2W";
+    }
+    this.sendMessage("command/send-to-tty", message);
+  },
+
+}; // class EastAsianWidth
+
 /**
  * @fn main
  * @brief Module entry point.
@@ -74,6 +140,7 @@ EastAsianWidth.definition = {
 function main(broker) 
 {
   new EastAsianWidth(broker);
+  new AmbiguousWidthReporting(broker);
 }
 
 

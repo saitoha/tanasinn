@@ -612,7 +612,11 @@ Component.definition = {
         this);
     }
     this._broker = broker;
-    broker.subscribe("get/components", function(instances) this, this);
+    broker.subscribe("get/components", 
+      function(instances)
+      {
+        return this;
+      }, this);
   },
 
   sendMessage: function sendMessage(topic, data)
@@ -620,7 +624,7 @@ Component.definition = {
     var broker;
     
     broker = this._broker;
-    broker.notify(topic, data);
+    return broker.notify(topic, data);
   },
 
   postMessage: function sendMessage(topic, data)

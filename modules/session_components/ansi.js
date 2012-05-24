@@ -43,7 +43,7 @@ var ANSI_LNM  = 20
 /**
  * @class AnsiSpecifiedMode
  */
-let AnsiSpecifiedMode = new Class().extends(Component);
+var AnsiSpecifiedMode = new Class().extends(Component);
 AnsiSpecifiedMode.definition = {
 
   get id()
@@ -119,7 +119,6 @@ AnsiSpecifiedMode.definition = {
   
   set LNM(value) 
   {
-    let broker = this._broker;
     if (value) {
       this.sendMessage("set/newline-mode", true);
     } else {
@@ -132,12 +131,11 @@ AnsiSpecifiedMode.definition = {
   "[subscribe('@event/broker-started'), enabled]":
   function onLoad(broker) 
   {
-    broker.notify("initialized/ansimode", this);
+    this.sendMessage("initialized/ansimode", this);
   },
 
   set: function set(id, flag) 
   {
-    let broker = this._broker;
     switch (id) {
 
       case ANSI_KAM:
@@ -149,7 +147,7 @@ AnsiSpecifiedMode.definition = {
         break;
 
       case ANSI_IRM:
-        broker.notify("event/ansi-mode-changed/irm", flag);
+        this.sendMessage("event/ansi-mode-changed/irm", flag);
         this.IRM = flag 
         break;
 

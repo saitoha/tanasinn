@@ -156,6 +156,10 @@ StringParser.definition = {
   },
 }
 
+function null_function()
+{
+}
+
 /**
  * handle control characters in C0 area.
  *
@@ -189,7 +193,11 @@ let C0Parser = {
     }
     if ("parse" in action) {
       scanner.moveNext();
-      return action.parse(scanner);
+      action = action.parse(scanner);
+      if (undefined === action && !scanner.isEnd) {
+        return null_function;
+      }
+      return action;
     }
     return action;
   },
@@ -586,21 +594,21 @@ VT100Grammar.definition = {
     this.ESC = new SequenceParser();
     this.CSI = new SequenceParser();
     SequenceParser.prototype[0x1b] = this.ESC;
-    broker.notify("command/add-sequence", {
+    this.sendMessage("command/add-sequence", {
       expression: "0x1B", 
       handler: this.ESC,
       context: this,
     });
-    broker.notify("command/add-sequence", {
+    this.sendMessage("command/add-sequence", {
       expression: "ESC [", 
       handler: this.CSI,
       context: this,
     });
-    sequences = broker.notify("get/sequences/vt100");
+    sequences = this.sendMessage("get/sequences/vt100");
     for (i = 0; i < sequences.length; ++i) {
-      broker.notify("command/add-sequence", sequences[i]);
+      this.sendMessage("command/add-sequence", sequences[i]);
     }
-    broker.notify("initialized/grammar", this);
+    this.sendMessage("initialized/grammar", this);
   },
 
   "[subscribe('get/grammars'), enabled]":
@@ -672,7 +680,7 @@ Scanner.definition = {
   "[subscribe('@event/broker-started'), enabled]":
   function onLoad(broker) 
   {
-    broker.notify("initialized/scanner", this);
+    this.sendMessage("initialized/scanner", this);
   },
 
   /** Assign new string data. position is reset. */
@@ -800,7 +808,7 @@ Parser.definition = {
     this.onDataArrivedRecursively.enabled = true;
 
     this._grammars = {};
-    grammars = broker.notify("get/grammars");
+    grammars = this.sendMessage("get/grammars");
     for (i = 0; i < grammars.length; ++i) {
       grammar = grammars[i];
       this._grammars[grammar.id] = grammar;
@@ -808,7 +816,7 @@ Parser.definition = {
     this._grammar = this._grammars[this.initial_grammar];
     this.onChangeAmbiguousCharacterWidth(this.ambiguous_as_wide);
 
-    broker.notify("initialized/parser", this);
+    this.sendMessage("initialized/parser", this);
   },
 
   /** uninstalls itself. 
@@ -823,7 +831,6 @@ Parser.definition = {
   "[subscribe('variable-changed/parser.ambiguous_as_wide'), enabled]":
   function onChangeAmbiguousCharacterWidth(is_wide)
   {
-    var broker = this._broker;
     if (is_wide) {
       this.wcwidth = wcwidth_amb_as_double;
     } else {
@@ -866,7 +873,6 @@ Parser.definition = {
   "[subscribe('event/data-arrived')]": 
   function drive(data)
   {
-    var broker = this._broker;
     var scanner = this._scanner;
     var action;
 
@@ -875,7 +881,7 @@ Parser.definition = {
     for (action in this.parse(scanner, data)) {
       action();
     }
-    broker.notify("command/draw"); // fire "draw" event.
+    this.sendMessage("command/draw"); // fire "draw" event.
 //    }, 10, this);
   },
 
@@ -885,15 +891,15 @@ Parser.definition = {
   "[subscribe('event/data-arrived-recursively')]": 
   function onDataArrivedRecursively(data)
   {
-    var broker = this._broker;
-    var scanner = new Scanner(broker);
-    var action;
+    var scanner, action;
+
+    scanner = new Scanner(broker);
 
     scanner.assign(data);
     for (action in this.parse(scanner)) {
       action();
     }
-    broker.notify("command/draw"); // fire "draw" event.
+    this.sendMessage("command/draw"); // fire "draw" event.
   },
 
   /** Parse control codes and text pieces from the scanner. 
@@ -901,7 +907,6 @@ Parser.definition = {
    */
   parse: function parse(scanner)
   {
-
     var action;
     var codes;
     var grammar = this._grammar;
