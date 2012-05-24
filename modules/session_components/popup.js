@@ -356,7 +356,7 @@ PopupMenu.definition = {
     while (this._container.firstChild) {
       this._container.removeChild(this._container.firstChild);
     }
-    let lines = data.split("\n");
+    let lines = data.split("-");
     let [row, column, selected] = lines.shift()
       .split(",")
       .map(function(str) Number(str));

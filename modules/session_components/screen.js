@@ -2237,12 +2237,13 @@ Screen.definition = {
   "[type('Undefined')] eraseLineToRight":
   function eraseLineToRight() 
   {
-    var cursor, line;
+    var cursor, line, width;
 
-    cursor = this.cursor;
     line = this._getCurrentLine();
     if (line) {
-      line.erase(cursor.positionX, this._width, cursor.attr);
+      cursor = this.cursor;
+      width = this._width;
+      line.erase(cursor.positionX, width, cursor.attr);
     } else {
       coUtils.Debug.reportWarning(
         _("eraseLineToRight: Current line is null."));
@@ -2264,11 +2265,12 @@ Screen.definition = {
   "[type('Undefined')] eraseLine":
   function eraseLine() 
   {
-    var cursor, line;
+    var cursor, line, width;
 
     cursor = this.cursor;
     line = this._getCurrentLine();
-    line.erase(0, this._width, cursor.attr);
+    width = this._width;
+    line.erase(0, width, cursor.attr);
   },
 
   /** Erase cells from current position to head of buffer. */

@@ -25,7 +25,7 @@
 /**
  * @class MultiDecoder
  */
-let MultiDecoder = new Class().extends(Component);
+var MultiDecoder = new Class().extends(Component);
 MultiDecoder.definition = {
 
   get id()
@@ -37,37 +37,41 @@ MultiDecoder.definition = {
   _current_scheme: "UTF-8",
   _converter: null,
 
-  initialize: function initialize(session) 
+  /** Constructor
+   */
+  initialize: function initialize(broker) 
   {
+    var converter_manager, decoder_list, charset, 
+        alias, title, group;
+
     this._converter = Components
       .classes["@mozilla.org/intl/scriptableunicodeconverter"]
       .createInstance(Components.interfaces.nsIScriptableUnicodeConverter);
-    let converter_manager = Components
+    converter_manager = Components
       .classes["@mozilla.org/charset-converter-manager;1"]
       .getService(Components.interfaces.nsICharsetConverterManager);
-    let decoder_list = converter_manager.getDecoderList();
+    decoder_list = converter_manager.getDecoderList();
     while (decoder_list.hasMore()) {
-      let charset = decoder_list.getNext();
+      charset = decoder_list.getNext();
       try {
-        //let decoder = converter_manager.getCharsetTitleRaw(decoder);
-        let alias = converter_manager.getCharsetAlias(charset);
-        let title;
+        alias = converter_manager.getCharsetAlias(charset);
         try {
           title = converter_manager.getCharsetTitle(charset);
         } catch(e) {
           title = charset;
         }
-        let group = converter_manager.getCharsetLangGroup(charset);
-        session.subscribe("get/decoders", function() 
-        {
-          return {
-            charset: charset,
-            converter: this,
-            title: title,
-            group: group,
-            alias: alias,
-          };
-        }, this, this.id);
+        group = converter_manager.getCharsetLangGroup(charset);
+        broker.subscribe("get/decoders", 
+          function() 
+          {
+            return {
+              charset: charset,
+              converter: this,
+              title: title,
+              group: group,
+              alias: alias,
+            };
+          }, this, this.id);
       } catch (e) {
         coUtils.Debug.reportError(e);
       }
@@ -82,30 +86,32 @@ MultiDecoder.definition = {
 
   decode: function decode(scanner) 
   {
-    let data = [c for (c in this._generate(scanner)) ];
+    var data, str;
+
+    data = [c for (c in this._generate(scanner)) ];
     if (data.length) {
-      let str;
       try {
-      //let str0 = String.fromCharCode.apply(String, data);
         str = this._converter.convertFromByteArray(data, data.length); 
       } catch(e) {
         return ["?".charCodeAt(0)];
       }
       return function() {
-        for (let [, c] in Iterator(str.split(""))) {
+        var c;
+
+        for ([, c] in Iterator(str.split(""))) {
           yield c.charCodeAt(0);
         }
       } ();
-      //let str = String.fromCharCode.apply(String, data);
-      //return this._converter.ConvertToUnicode(str).split(""); 
     }
     return [];
   },
 
   _generate: function _generate(scanner) 
   {
+    var c;
+
     while (!scanner.isEnd) {
-      let c = scanner.current();
+      c = scanner.current();
       if (c < 0x20) {     // controll code
         break;
       } else {
@@ -123,7 +129,7 @@ MultiDecoder.definition = {
  * @class AsciiDecoder
  *
  */
-let AsciiDecoder = new Class().extends(Component);
+var AsciiDecoder = new Class().extends(Component);
 AsciiDecoder.definition = {
 
   get id()
@@ -155,8 +161,10 @@ AsciiDecoder.definition = {
 
   _generate: function _generate(scanner) 
   {
+    var c;
+
     while (!scanner.isEnd) {
-      let c = scanner.current();
+      c = scanner.current();
       if (c < 0x20) {     // controll code
         break;
       } else if (c < 0x80) { // ascii range.
@@ -175,7 +183,7 @@ AsciiDecoder.definition = {
  * @class CP932Decoder
  *
  */
-let CP932Decoder = new Class().extends(Component);
+var CP932Decoder = new Class().extends(Component);
 CP932Decoder.definition = {
 
   get id()
@@ -201,9 +209,11 @@ CP932Decoder.definition = {
 
   activate: function activate() 
   {
-    let resource_path = "modules/charset/cp932.txt.js";
-    let content = coUtils.IO.readFromFile(resource_path);
-    let mapping = JSON.parse(content);
+    var resource_path, content, mapping;
+
+    resource_path = "modules/charset/cp932.txt.js";
+    content = coUtils.IO.readFromFile(resource_path);
+    mapping = JSON.parse(content);
     this._map = mapping.map;    
   },
 
@@ -216,10 +226,14 @@ CP932Decoder.definition = {
    */
   decode: function decode(scanner) 
   {
-    return let (map = this._map) function(scanner)
+    var map;
+
+    map = this._map;
+    return function(scanner)
     {
+      var c1, c2;
       while (!scanner.isEnd) {
-        let c1 = scanner.current();// + this._offset;
+        c1 = scanner.current();// + this._offset;
         if (c1 < 0x20) { // control codes.
           break;
         } if (c1 < 0x7f) { // ASCII range.
@@ -228,7 +242,7 @@ CP932Decoder.definition = {
           (0x81 <= c1 && c1 <= 0x9f) || 
           (0xe0 <= c1 && c1 <= 0xfc)) { // cp932 first character
           scanner.moveNext();
-          let c2 = scanner.current();
+          c2 = scanner.current();
           if (
             (0x40 <= c2 && c2 <= 0x7e) || 
             (0x80 <= c2 && c2 <= 0xfc)) { // cp932 second character
@@ -252,7 +266,7 @@ CP932Decoder.definition = {
 /**
  * @class UTF8Decoder
  */
-let UTF8Decoder = new Class().extends(Component);
+var UTF8Decoder = new Class().extends(Component);
 UTF8Decoder.definition = {
 
   get id()
@@ -283,10 +297,14 @@ UTF8Decoder.definition = {
    */
   decode: function decode(scanner) 
   {
-    //let offset = this._offset;
-    return let (self = this) function(scanner) {
+    var self;
+
+    self = this;
+    return function(scanner) {
+      var c;
+
       while (!scanner.isEnd) {
-        let c = self._getNextCharacter(scanner);// + offset;
+        c = self._getNextCharacter(scanner);// + offset;
         if (c < 0x20 || (0x7f <= c && c < 0xa0)) {
           break;
         }
@@ -305,7 +323,9 @@ UTF8Decoder.definition = {
    */
   _getNextCharacter: function _getNextCharacter(scanner) 
   {
-    let c = scanner.current()
+    var c, first, second, third, fourth;
+
+    c = scanner.current()
     if (c < 0x20 || c == 0x7f) {
       return null;
     } else if (c < 0x7f) { // 8bit (ASCII/DEC/ISO)
@@ -316,33 +336,33 @@ UTF8Decoder.definition = {
     } else if (c < 0xe0) {
       // 110xxxxx 10xxxxxx 
       // (0x00000080 - 0x000007ff) // 11bit
-      let first = (c & 0x1f) << 6;
+      first = (c & 0x1f) << 6;
       scanner.moveNext();
-      let second = scanner.current() & 0x3f;
+      second = scanner.current() & 0x3f;
       return first | second;
     } else if (c < 0xf0) {
       // 1110xxxx 10xxxxxx 10xxxxxx 
       // (0x00000800 - 0x0000ffff) // 16bit (UCS-2)
-      let first = (c & 0xf) << 12;
+      first = (c & 0xf) << 12;
       scanner.moveNext();
-      let second = (scanner.current() & 0x3f) << 6;
+      second = (scanner.current() & 0x3f) << 6;
       scanner.moveNext();
-      let third = scanner.current() & 0x3f;
+      third = scanner.current() & 0x3f;
       return first | second | third;
     } else if (c < 0xf8) {
       // 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx 
       // (0x00010000 - 0x001fffff) // 21bit (UCS-4)
-      let first = (c & 0x7) << 18;
+      first = (c & 0x7) << 18;
       scanner.moveNext();
-      let second = (scanner.current() & 0x3f) << 12;
+      second = (scanner.current() & 0x3f) << 12;
       scanner.moveNext();
-      let third = (scanner.current() & 0x3f) << 6;
+      third = (scanner.current() & 0x3f) << 6;
       scanner.moveNext();
-      let fourth = scanner.current() & 0x3f;
+      fourth = scanner.current() & 0x3f;
       return first | second | third | fourth;
     } else {
       /*
-      let message = [
+      var message = [
         "SequeneScanner.getNextCharacter: ",
         "Unknown charcter detected. ",
         "(Provabliy it\"s unchached Escape sequence.)\n",
@@ -362,7 +382,7 @@ UTF8Decoder.definition = {
  * @class Decoder
  *
  */
-let Decoder = new Class().extends(Component);
+var Decoder = new Class().extends(Component);
 Decoder.definition = {
 
   get id()
@@ -382,33 +402,35 @@ Decoder.definition = {
   /** Sets character encoding scheme */
   set scheme(value) 
   {
-    let scheme = value;
-    let decoder_info = this._decoder_map[scheme];
+    var scheme, decoder_info, decoder, message;
+
+    scheme = value;
+    decoder_info = this._decoder_map[scheme];
     if (!decoder_info) {
       throw coUtils.Debug.Exception(
         _("Invalid character encoding schema specified: '%s'."), value);
     }
-    let decoder = decoder_info.converter;
+    decoder = decoder_info.converter;
     // Load resources if required.
     decoder.activate(scheme);
     this._decoder = decoder;
     this.initial_scheme = scheme;
-    let message = coUtils.Text.format(_("Character encoding changed: [%s]."), scheme);
+    message = coUtils.Text.format(_("Character encoding changed: [%s]."), scheme);
 
-    let broker = this._broker;
-    broker.notify("command/report-status-message", message); 
+    this.sendMessage("command/report-status-message", message); 
   },
 
   "[subscribe('event/broker-started'), enabled]": 
   function onLoad(broker) 
   {
     this._decoder_map = {};
-    broker.notify("get/decoders").map(function(information)
-    {
-      this._decoder_map[information.charset] = information; 
-    }, this);
+    this.sendMessage("get/decoders").map(
+      function(information)
+      {
+        this._decoder_map[information.charset] = information; 
+      }, this);
     this.scheme = this.initial_scheme;
-    broker.notify("initialized/decoder", this);
+    this.sendMessage("initialized/decoder", this);
   },
 
   "[subscribe('change/decoder'), enabled]": 
@@ -426,7 +448,9 @@ Decoder.definition = {
    */ 
   decode: function decode(scanner) 
   {
-    let input_decoder = this._decoder;
+    var input_decoder;
+
+    input_decoder = this._decoder;
     return input_decoder.decode(scanner);
   },
 

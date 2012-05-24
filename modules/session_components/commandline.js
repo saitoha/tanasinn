@@ -775,20 +775,23 @@ Commandline.definition = {
     }
     this._timer = coUtils.Timer.setTimeout(function() {
       delete this._timer;
-      let current_text = this._textbox.value;
-      // if current text does not match completion text, hide it immediatly.
-      if (!this._textbox.completion 
-        || 0 != this._textbox.completion.indexOf(current_text)) {
-        this._textbox.completion = "";
+      let textbox = this._textbox;
+      if (textbox) {
+        let current_text = this._textbox.value;
+        // if current text does not match completion text, hide it immediatly.
+        if (!this._textbox.completion 
+          || 0 != this._textbox.completion.indexOf(current_text)) {
+          this._textbox.completion = "";
+        }
+        this._stem_text = current_text;
+        this.select(-1);
+        let broker = this._broker;
+        broker.notify(
+          "command/complete-commandline", 
+          {
+            source: current_text, 
+          });
       }
-      this._stem_text = current_text;
-      this.select(-1);
-      let broker = this._broker;
-      broker.notify(
-        "command/complete-commandline", 
-        {
-          source: current_text, 
-        });
     }, this.completion_delay, this);
   },
 

@@ -193,7 +193,7 @@ DECLocatorMouse.definition = {
   {
     if (context.decmouse) {
       let {locator_reporting_mode} = context.decmouse;
-      this._locator_repoting_mode = locator_repoting_mode;
+      this._locator_reporting_mode = locator_reporting_mode;
     }
   },
 

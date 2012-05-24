@@ -92,8 +92,9 @@ WindowWatcher.definition = {
 
   onRotateGesture: function onSwipeGesture(event) 
   {
-    var origninal_target, relation;
+    var origninal_target, relation, broker;
 
+    broker = this._broker;
     original_target = event.explicitOriginalTarget;
     relation = broker.root_element.compareDocumentPosition(original_target);
     if ((relation & original_target.DOCUMENT_POSITION_CONTAINED_BY)) {
@@ -106,8 +107,9 @@ WindowWatcher.definition = {
 
   onSwipeGesture: function onSwipeGesture(event) 
   {
-    var origninal_target, relation;
+    var origninal_target, relation, broker;
 
+    broker = this._broker;
     event.preventDefault();
     event.stopPropagation();
     original_target = event.explicitOriginalTarget;
@@ -120,8 +122,9 @@ WindowWatcher.definition = {
 
   onMagnifyGesture: function onMagnifyGesture(event) 
   {
-    var origninal_target, relation;
+    var origninal_target, relation, broker;
 
+    this._broker;
     original_target = event.explicitOriginalTarget;
     relation = broker.root_element.compareDocumentPosition(original_target);
     if ((relation & original_target.DOCUMENT_POSITION_CONTAINED_BY)) {

@@ -22,7 +22,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-const CO_XTERM_256_COLOR_PROFILE = [
+var CO_XTERM_256_COLOR_PROFILE = [
   /* 0       */ "#000000", // black
   /* 1       */ "#cd9988", // red
   /* 2       */ "#44cd44", // green
@@ -133,10 +133,14 @@ PersistentTrait.definition = {
   /**
    * Serialize snd persist current state.
    */
-  "[subscribe('@command/backup'), type('Object -> Undefined')]": 
+  "[subscribe('@command/backup'), type('Object -> Undefined'), pnp]": 
   function backup(context) 
   {
-    let broker = this._broker;
+    var broker, path, file;
+
+    broker = this._broker;
+
+    // serialize this plugin object.
     context[this.id] = {
       line_height: this.line_height,
       font_family: this.font_family,
@@ -145,21 +149,28 @@ PersistentTrait.definition = {
       reverse: this._reverse,
       color: this.color,
     };
-    let path = broker.runtime_path 
+
+    // make image file path
+    path = broker.runtime_path 
              + "/persist/" 
              + broker.request_id 
              + ".png";
-    let file = coUtils.File.getFileLeafFromVirtualPath(path);
-    coUtils.IO.saveCanvas(this._source_canvas, file, true);
+
+    // get file object
+    file = coUtils.File.getFileLeafFromVirtualPath(path);
+
+    coUtils.IO.saveCanvas(this._main_layer.canvas, file, true);
   },
 
   /**
    * Deserialize snd restore stored state.
    */
-  "[subscribe('@command/restore'), type('Object -> Undefined')]": 
+  "[subscribe('@command/restore'), type('Object -> Undefined'), pnp]": 
   function restore(context) 
   {
-    let data = context[this.id];
+    var data;
+
+    data = context[this.id];
     if (data) {
       this.force_monospace_rendering = data.force_precious_rendering;
       this.line_height = data.line_height;
@@ -167,8 +178,7 @@ PersistentTrait.definition = {
       this.font_size = data.font_size;
       this._reverse = data.reverse;
       this.color = data.color;
-      let broker = this._broker;
-      broker.notify("command/draw");
+      this.sendMessage("command/draw");
     } else {
       coUtils.Debug.reportWarning(
         _("Cannot restore last state of renderer: data not found."));
@@ -188,7 +198,9 @@ SlowBlinkTrait.definition = {
    */
   createSlowBlinkLayer: function createSlowBlinkLayer()
   {
-    let broker = this._broker;
+    var broker;
+
+    broker = this._broker;
     layer = new Layer(broker);
     layer.canvas.width = this._main_layer.canvas.width;
     layer.canvas.height = this._main_layer.canvas.height;
@@ -216,7 +228,9 @@ RapidBlinkTrait.definition = {
    */
   createRapidBlinkLayer: function createRapidBlinkLayer()
   {
-    let broker = this._broker;
+    var broker;
+
+    broker = this._broker;
     this._rapid_blink_layer = new Layer(broker);
     this._rapid_blink_layer.canvas.width = this._main_layer.canvas.width;
     this._rapid_blink_layer.canvas.height = this._main_layer.canvas.height;
@@ -245,15 +259,15 @@ ReverseVideoTrait.definition = {
   "[subscribe('command/reverse-video'), enabled]": 
   function reverseVideo(value) 
   {
-    var map;
-    var i;
-    var broker = this._broker;
+    var map, i, broker, value;
+
+    broker = this._broker;
 
     if (this._reverse != value) {
       this._reverse = value;
       map = this.color;
       for (i = 0; i < map.length; ++i) {
-        let value = (parseInt(map[i].substr(1), 16) ^ 0x1ffffff)
+        value = (parseInt(map[i].substr(1), 16) ^ 0x1ffffff)
           .toString(16)
           .replace(/^1/, "#");
         map[i] = value;
@@ -274,7 +288,7 @@ DRCSStateTrait.definition = {
 
   _drcs_state: null, 
 
-  "[subscribe('event/drcs-state-changed/g0')]": 
+  "[subscribe('event/drcs-state-changed/g0'), pnp]": 
   function onDRCSStateChangedG0(state) 
   {
     if (state) {
@@ -282,7 +296,7 @@ DRCSStateTrait.definition = {
     }
   },
 
-  "[subscribe('event/drcs-state-changed/g1')]": 
+  "[subscribe('event/drcs-state-changed/g1'), pnp]": 
   function onDRCSStateChangedG1(state) 
   {
     if (state) {
@@ -468,6 +482,8 @@ Renderer.definition = {
   "[install]":
   function install(broker) 
   {
+    var outerchrome;
+
     this._main_layer = new Layer(broker);
 
     // set smoothing configuration
@@ -477,20 +493,7 @@ Renderer.definition = {
     this.onWidthChanged();
     this.onHeightChanged();
 
-    this.onWidthChanged.enabled = true;
-    this.onHeightChanged.enabled = true;
-    this.onFontChanged.enabled = true;
-    this.setFontSize.enabled = true;
-    this.setFontFamily.enabled = true;
-    this.changeFontSizeByOffset.enabled = true;
-    this.draw.enabled = true;
-    this.backup.enabled = true;
-    this.restore.enabled = true;
-    this.captureScreen.enabled = true;
-    this.onDRCSStateChangedG0.enabled = true;
-    this.onDRCSStateChangedG1.enabled = true;
-
-    var outerchrome = this.dependency["outerchrome"];
+    outerchrome = this.dependency["outerchrome"];
     this.foreground_color = outerchrome.foreground_color;
     this.background_color = outerchrome.background_color;
   },
@@ -501,19 +504,6 @@ Renderer.definition = {
   "[uninstall]":
   function uninstall(broker) 
   {
-    this.onWidthChanged.enabled = false;
-    this.onHeightChanged.enabled = false;
-    this.onFontChanged.enabled = false;
-    this.setFontSize.enabled = false;
-    this.setFontFamily.enabled = false;
-    this.changeFontSizeByOffset.enabled = false;
-    this.draw.enabled = false;
-    this.backup.enabled = false;
-    this.restore.enabled = false;
-    this.captureScreen.enabled = false;
-    this.onDRCSStateChangedG0.enabled = false;
-    this.onDRCSStateChangedG1.enabled = false;
-
     this._main_layer.destroy();
     this._main_layer = null;
 
@@ -528,29 +518,36 @@ Renderer.definition = {
     }
   },
 
-  "[subscribe('sequence/osc/10'), enabled]": 
+  "[subscribe('sequence/osc/10'), pnp]": 
   function osc10(info) 
   {
-    var outerchrome = this.dependency["outerchrome"];
+    var outerchrome;
+
+    outerchrome = this.dependency["outerchrome"];
     this.foreground_color = outerchrome.foreground_color;
     this.background_color = outerchrome.background_color;
     this.draw(true);
   },
 
-  "[subscribe('sequence/osc/11'), enabled]": 
+  "[subscribe('sequence/osc/11'), pnp]": 
   function osc11(info) 
   {
-    var outerchrome = this.dependency["outerchrome"];
+    var outerchrome;
+
+    outerchrome = this.dependency["outerchrome"];
     this.foreground_color = outerchrome.foreground_color;
     this.background_color = outerchrome.background_color;
     this.draw(true);
   },
 
   /** Take screen capture and save it in png format. */
-  "[subscribe('command/capture-screen')]": 
+  "[subscribe('command/capture-screen'), pnp]": 
   function captureScreen(info) 
   {
-    coUtils.IO.saveCanvas(this._main_layer.canvas, info.file, info.thumbnail);
+    coUtils.IO.saveCanvas(
+      this._main_layer.canvas, 
+      info.file, 
+      info.thumbnail);
   },
 
   "[subscribe('variable-changed/renderer.smoothing'), enabled]": 
@@ -567,7 +564,7 @@ Renderer.definition = {
     }
   },
 
-  "[subscribe('set/font-size')]": 
+  "[subscribe('set/font-size'), pnp]": 
   function setFontSize(font_size) 
   {
     var broker = this._broker;
@@ -577,20 +574,20 @@ Renderer.definition = {
     broker.notify("event/font-size-changed", this.font_size);
   },
 
-  "[subscribe('set/font-family')]": 
+  "[subscribe('set/font-family'), pnp]": 
   function setFontFamily(font_family) 
   {
     this.font_family = font_family;
   },
 
-  "[subscribe('variable-changed/renderer.font_{size | family}')]": 
+  "[subscribe('variable-changed/renderer.font_{size | family}'), pnp]": 
   function onFontChanged(font_size) 
   {
     this.dependency["screen"].dirty = true;
     this._calculateGlyphSize();
   },
 
-  "[subscribe('command/change-fontsize-by-offset')]":
+  "[subscribe('command/change-fontsize-by-offset'), pnp]":
   function changeFontSizeByOffset(offset) 
   {
     var broker = this._broker;
@@ -600,7 +597,7 @@ Renderer.definition = {
     broker.notify("event/font-size-changed", this.font_size);
   },
 
-  "[subscribe('variable-changed/{screen.width | renderer.char_width}')]":
+  "[subscribe('variable-changed/{screen.width | renderer.char_width}'), pnp]":
   function onWidthChanged(width, char_width) 
   {
     var canvas_width;
@@ -619,7 +616,7 @@ Renderer.definition = {
     broker.notify("event/screen-width-changed", canvas_width);
   },
 
-  "[subscribe('variable-changed/{screen.height | renderer.line_height}')]":
+  "[subscribe('variable-changed/{screen.height | renderer.line_height}'), pnp]":
   function onHeightChanged(height, line_height)
   {
     var canvas_height;
@@ -831,7 +828,7 @@ Renderer.definition = {
   },
 
   /** Draw to canvas */
-  "[subscribe('command/draw')]": 
+  "[subscribe('command/draw'), enabled]": 
   function draw(redraw_flag)
   {
     var screen = this.dependency["screen"];
