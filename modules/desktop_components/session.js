@@ -145,7 +145,7 @@ RouteKeyEvents.definition = {
  * @class Session
  *
  */
-let Session = new Class().extends(Component)
+var Session = new Class().extends(Component)
                          .mix(Environment)
                          .mix(RouteKeyEvents)
                          .mix(EventBroker);
@@ -189,8 +189,7 @@ Session.definition = {
 
   get python_path()
   {
-    let broker = this._broker;
-    return broker.uniget("get/python-path");
+    return this.request("get/python-path");
   },
 
   _stopped: false,
@@ -224,19 +223,26 @@ Session.definition = {
   initializeWithRequest: function initializeWithRequest(request) 
   {
     // register getter topic.
-    let broker = this._broker;
-    this.subscribe("get/bin-path", function() broker.uniget("get/bin-path"));
-    this.subscribe("get/python-path", function() broker.uniget("get/python-path"));
+    this.subscribe("get/bin-path", 
+      function()
+      {
+        return this.request("get/bin-path");
+      }, this);
+    this.subscribe("get/python-path", 
+      function()
+      { 
+        return this.request("get/python-path");
+      }, this);
 
     this._request_id = coUtils.Uuid.generate().toString();
 
-    let desktop = this._broker;
     this._window = request.parent.ownerDocument.defaultView;
     this._root_element = request.parent;
     this._command = request.command;
     this._term = request.term || this.default_term;
 
-    desktop.notify("initialized/session", this);
+    this.sendMessage("initialized/session", this);
+
     this.notify("command/load-settings", this.profile);
     this.notify("event/broker-started", this);
     coUtils.Timer.setTimeout(function() {

@@ -615,6 +615,34 @@ Component.definition = {
     broker.subscribe("get/components", function(instances) this, this);
   },
 
+  sendMessage: function sendMessage(topic, data)
+  {
+    var broker;
+    
+    broker = this._broker;
+    broker.notify(topic, data);
+  },
+
+  postMessage: function sendMessage(topic, data)
+  {
+    var broker;
+    
+    coUtils.Timer.setTimeout(
+      function()
+      {
+        broker = this._broker;
+        broker.notify(topic, data);
+      }, 0)
+  },
+
+  request: function request(topic, data)
+  {
+    var broker;
+    
+    broker = this._broker;
+    return broker.uniget(topic, data);
+  },
+
   /** This method is expected to run test methods.
    *  It should return result information of test. */
   test: function test() 
@@ -949,7 +977,6 @@ Concept.prototype = {
   {
   },
 
-
   /** */
   check: function check(target)
   {
@@ -992,7 +1019,8 @@ Concept.prototype = {
         match = rule.match(/^(?:<(.+?)>|(.+?)) :: (.+)$/);
         if (null === match) {
           throw coUtils.Debug.Exception(
-            _("Ill-formed concept rule expression is specified: %s."), rule);
+            _("Ill-formed concept rule expression is specified: %s."), 
+            rule);
         }
         [, message, identifier, type] = match;
 
@@ -1000,14 +1028,15 @@ Concept.prototype = {
           key = message.replace(/\/\*$/, "");
           if (undefined === subscribers[key]) {
             throw coUtils.Debug.Exception(
-              _("Component '%s' does not implement required message-concept: %s."), 
+              _("Component '%s' does not implement required ",
+                "message-concept: %s."), 
               target.id, rule);
           }
           if (subscribers[key].type) {
             if (type != subscribers[key].type) {
               throw coUtils.Debug.Exception(
-                _("Component '%s' does not implement required message-concept: %s.",
-                  " - ill-typed."),
+                _("Component '%s' does not implement required ",
+                  "message-concept: %s. - ill-typed."),
                 target.id, rule);
             }
           }
@@ -1020,14 +1049,15 @@ Concept.prototype = {
 
           if (!getter && !setter && undefined === target[identifier]) {
             throw coUtils.Debug.Exception(
-              _("Component '%s' does not implement required signature-concept: %s."), 
+              _("Component '%s' does not implement required ",
+                "signature-concept: %s."), 
               target.id, rule);
 
             if (target[message].type) {
               if (type != subscribers[message].type) {
                 throw coUtils.Debug.Exception(
-                  _("Component '%s' does not implement required signature-concept: %s",
-                    " - ill-typed."),
+                  _("Component '%s' does not implement required ",
+                    "signature-concept: %s - ill-typed."),
                   target.id, rule);
               }
             }
@@ -1085,13 +1115,5 @@ CompleterConcept.definition = {
   _("Allocates n cells at once."),
 
 }; // CompleterConcept
-
-
-
-
-
-
-
-
 
 

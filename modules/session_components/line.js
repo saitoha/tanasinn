@@ -31,7 +31,7 @@
 /**
  * @concept GrammarConcept
  */
-let LineGeneratorConcept = new Concept();
+var LineGeneratorConcept = new Concept();
 LineGeneratorConcept.definition = {
 
   get id()
@@ -61,7 +61,7 @@ LineGeneratorConcept.definition = {
 // * @class Cell
 // * @brief Bit-packed structure for terminal cell's attribute.
 // */
-//let Cell = new Class();
+//var Cell = new Class();
 //Cell.definition = {
 //
 //  /** default value */
@@ -190,35 +190,35 @@ LineGeneratorConcept.definition = {
 //
 //}
 
-const ATTR2_FORECOLOR    = 0     // 00000000 00000000 00000000 11111111
-const ATTR2_BACKCOLOR    = 8     // 00000000 00000000 11111111 00000000
+var ATTR2_FORECOLOR    = 0     // 00000000 00000000 00000000 11111111
+var ATTR2_BACKCOLOR    = 8     // 00000000 00000000 11111111 00000000
 
-const ATTR2_BOLD         = 17    // 00000000 00000001 00000000 00000000
+var ATTR2_BOLD         = 17    // 00000000 00000001 00000000 00000000
 
-const ATTR2_UNDERLINE    = 18    // 00000000 00000010 00000000 00000000
-const ATTR2_INVERSE      = 19    // 00000000 00000100 00000000 00000000
+var ATTR2_UNDERLINE    = 18    // 00000000 00000010 00000000 00000000
+var ATTR2_INVERSE      = 19    // 00000000 00000100 00000000 00000000
 
-const ATTR2_HALFBRIGHT   = 20    // 00000000 00001000 00000000 00000000
-const ATTR2_BLINK        = 21    // 00000000 00010000 00000000 00000000
-const ATTR2_RAPIDBLINK   = 22    // 00000000 00100000 00000000 00000000
-const ATTR2_ITALIC       = 23    // 00000000 01000000 00000000 00000000
+var ATTR2_HALFBRIGHT   = 20    // 00000000 00001000 00000000 00000000
+var ATTR2_BLINK        = 21    // 00000000 00010000 00000000 00000000
+var ATTR2_RAPIDBLINK   = 22    // 00000000 00100000 00000000 00000000
+var ATTR2_ITALIC       = 23    // 00000000 01000000 00000000 00000000
 
-const ATTR2_FGCOLOR      = 24    // 00000001 00000000 00000000 00000000
-const ATTR2_BGCOLOR      = 25    // 00000010 00000000 00000000 00000000
+var ATTR2_FGCOLOR      = 24    // 00000001 00000000 00000000 00000000
+var ATTR2_BGCOLOR      = 25    // 00000010 00000000 00000000 00000000
 
 // tanasinn specific properties
-const ATTR2_LINK         = 27    // 00000100 00000000 00000000 00000000
-const ATTR2_HIGHLIGHT    = 28    // 00001000 00000000 00000000 00000000
+var ATTR2_LINK         = 27    // 00000100 00000000 00000000 00000000
+var ATTR2_HIGHLIGHT    = 28    // 00001000 00000000 00000000 00000000
 
-const ATTR2_WIDE         = 29    // 00010000 00000000 00000000 00000000
-const ATTR2_DRCS         = 30    // 00100000 00000000 00000000 00000000
-const ATTR2_COMBINING    = 31    // 01000000 00000000 00000000 00000000
+var ATTR2_WIDE         = 29    // 00010000 00000000 00000000 00000000
+var ATTR2_DRCS         = 30    // 00100000 00000000 00000000 00000000
+var ATTR2_COMBINING    = 31    // 01000000 00000000 00000000 00000000
 
 /**
  * @class Cell
  *
  */
-let Cell = new Class();
+var Cell = new Class();
 Cell.definition = {
 
   c: 0x20,
@@ -454,16 +454,6 @@ Cell.definition = {
   {
     this.c = c;
     this.value = attr.value;
-//    if (c >= 0x300) {
-//      let match = coUtils.Unicode
-//        .detectCategory(String.fromCharCode(c));
-//      if (match) {
-//        let [is_non_spacing_mark, is_spacing_combining_mark] = match;  
-//        if (is_non_spacing_mark || is_spacing_combining_mark) {
-//          this.combining = true;
-//        }
-//      }
-//    }
   }, // write
 
   /** Erase the pair of character and attribute structure */
@@ -497,7 +487,7 @@ Cell.definition = {
  * @class DirtyRange
  * @brief Simple range class for Tracking dirty cells' information.
  */
-let DirtyRange = new Trait();
+var DirtyRange = new Trait();
 DirtyRange.definition = {
 
   first: 0,
@@ -571,7 +561,7 @@ DirtyRange.definition = {
  * @trait Resizable
  *
  */
-let Resizable = new Trait();
+var Resizable = new Trait();
 Resizable.definition = {
 
   /** pop last n cells from the line. 
@@ -588,14 +578,16 @@ Resizable.definition = {
    */
   expand: function expand(n) 
   {
-    let new_cells = [
+    var new_cells, cells;
+
+    new_cells = [
       new Cell for (i in function(n) { 
         while (n--) { 
           yield;
         } 
       } (n))
     ];
-    let cells = this.cells;
+    cells = this.cells;
     cells.push.apply(cells, new_cells);
   },
 
@@ -605,7 +597,7 @@ Resizable.definition = {
  * @brief The Line class, has a set of Cells,
  *        and Provides few functions for low-level input operation.
  */
-let Line = new Class().mix(DirtyRange)
+var Line = new Class().mix(DirtyRange)
                       .mix(Resizable);
 Line.definition = {
 
@@ -615,9 +607,11 @@ Line.definition = {
   /** constructor */
   initialize: function initialize(length, attr) 
   {
-    let cells = [];
+    var cells, cell;
+
+    cells = [];
     while (length--) {
-      let cell = new Cell(attr);
+      cell = new Cell(attr);
       cells.push(cell);
     }
     this.cells = cells;
@@ -625,10 +619,12 @@ Line.definition = {
 
   serialize: function serialize(context)
   {
+    var cells, i, cell;
+
     context.push(this.length);
     // this.cells.forEach(function(cell) cell.serialize(context));
-    let cells = this.cells;
-    let i, cell;
+    cells = this.cells;
+
     for (i = 0; i < cells.length; ++i) {
       cell = cells[i];
       cell.serialize(context);
@@ -637,10 +633,12 @@ Line.definition = {
 
   deserialize: function deserialize(context)
   {
+    var cells, i, cell;
+
     this.length = context.shift();
     // this.cells.forEach(function(cell) cell.deserialize(context));
-    let cells = this.cells;
-    let i, cell;
+    cells = this.cells;
+
     for (i = 0; i < cells.length; ++i) {
       cell = cells[i];
       cell.deserialize(context);
@@ -657,7 +655,9 @@ Line.definition = {
   /** sets count of cells. */
   set length(value) 
   {
-    let diff = value - this.cells.length;
+    var diff;
+    
+    diff = value - this.cells.length;
     if (diff > 0) {
       this.expand(diff);
     } else if (diff < 0) {
@@ -671,8 +671,10 @@ Line.definition = {
    */ 
   isWide: function isWide(position) 
   {
-    let cells = this.cells;
-    let cell = cells[position];
+    var cells, cell;
+
+    cells = this.cells;
+    cell = cells[position];
     if (!cell) {
       return false;
     }
@@ -700,18 +702,22 @@ Line.definition = {
   getWordRangeFromPoint: 
   function getWordRangeFromPoint(column, row) 
   {
-    let cells = this.cells;
-    let current_char;
+    var cells, current_char, backward_chars, forward_chars;;
+
+    cells = this.cells;
+    current_char;
     if (0 == current_char) {
       current_char = cells[column + 1].c;
     } else {
       current_char = cells[column].c;
     }
-    let backward_chars = cells.slice(0, column);
-    let forward_chars = cells.slice(column + 1);
+    backward_chars = cells.slice(0, column);
+    forward_chars = cells.slice(column + 1);
 
     function getCharacterCategory(code) {
-      let c = String.fromCharCode(code);
+      var c;
+
+      c = String.fromCharCode(code);
       if (/^\s$/.test(c)) {
         return 0;
       } else if (/^[0-9a-zA-Z]$/.test(c)) {
@@ -725,8 +731,10 @@ Line.definition = {
 
     function getForwardBreakPoint(forward_chars, column, category) 
     {
-      let result = column + 1;
-      for (let [index, cell] in Iterator(forward_chars)) {
+      var result, index, cell;
+
+      result = column + 1;
+      for ([index, cell] in Iterator(forward_chars)) {
         if (0 == cell.c) {
           continue;
         } if (category == getCharacterCategory(cell.c)) {
@@ -740,8 +748,11 @@ Line.definition = {
     
     function getBackwardBreakPoint(backward_chars, column, category) 
     {
-      let result = column;
-      for (let [index, cell] in Iterator(backward_chars.reverse())) {
+      var result, index, cell, category, 
+          forward_break_point, backward_break_point;
+
+      result = column;
+      for ([index, cell] in Iterator(backward_chars.reverse())) {
         if (0 == cell.c) {
           result = backward_chars.length - index - 1;
           continue;
@@ -754,10 +765,10 @@ Line.definition = {
       return result;
     }
 
-    let category = getCharacterCategory(current_char);
-    let forward_break_point 
+    category = getCharacterCategory(current_char);
+    forward_break_point 
       = getForwardBreakPoint(forward_chars, column, category);
-    let backward_break_point 
+    backward_break_point 
       = getBackwardBreakPoint(backward_chars, column, category);
     return [backward_break_point, forward_break_point];
   },
@@ -770,8 +781,8 @@ Line.definition = {
     var code;
 
     for (i = 0; i < cells.length; ++i) {
-      let cell = cells[i];
-      let code = cell.c;
+      cell = cells[i];
+      code = cell.c;
       if (code < 0x10000) {
         codes.push(code);
       } else {
@@ -860,7 +871,9 @@ Line.definition = {
    */
   getTextInRange: function getTextInRange(start, end) 
   {
-    let codes = this.cells
+    var codes;
+    
+    codes = this.cells
       .slice(start, end)
       .map(function(cell) cell.c)
       .filter(function(code) code)
@@ -872,12 +885,13 @@ Line.definition = {
    */
   write: function write(position, codes, attr, insert_mode) 
   {
-    let i, cell;
-    let cells = this.cells
+    var i, cell, cells, length, range;
+
+    cells = this.cells
     if (insert_mode) {
       this.addRange(position, this.length);
-      let length = codes.length;
-      let range = cells.splice(-length);
+      length = codes.length;
+      range = cells.splice(-length);
 
       // range.forEach(function(cell) cell.write(codes.shift(), attr));
       for (i = 0; i < range.length; ++i) {
@@ -904,9 +918,11 @@ Line.definition = {
    */
   clear: function clear() 
   {
-    let cells = this.cells;
-    let length = cells.length;
-    let i, cell;
+    var cells, length, i, cell;
+
+    cells = this.cells;
+    length = cells.length;
+
     for (i = 0; i < length; ++i) {
       cell = cells[i];
       cell.erase();
@@ -923,12 +939,14 @@ Line.definition = {
    */
   erase: function erase(start, end, attr) 
   {
+    var i, cell, cells;
+    
     this.addRange(start, end);
 //    this.cells
 //      .slice(start, end)
 //      .forEach(function(cell) cell.erase(attr));
-    let i, cell;
-    let cells = this.cells;
+
+    cells = this.cells;
     end = Math.min(end, cells.length);
     for (i = start; i < end; ++i) {
       cell = cells[i];
@@ -948,12 +966,14 @@ Line.definition = {
    */
   eraseWithTestPattern: function eraseWithTestPattern(start, end, attr)
   {
+    var i, cell, cells;
+
     this.addRange(start, end);
 //    this.cells
 //      .slice(start, end)
 //      .forEach(function(cell) cell.write(0x45 /* "E" */, attr));
-    let i, cell;
-    let cells = this.cells;
+
+    cells = this.cells;
     end = Math.min(end, cells.length);
     for (i = start; i < end; ++i) {
       cell = cells[i];
@@ -969,13 +989,14 @@ Line.definition = {
    */
   deleteCells: function deleteCells(start, n, attr) 
   {
-    let cells = this.cells;
-    let length = this.length;
+    var cells, length, range, i, cell;
+
+    cells = this.cells;
+    length = this.length;
     this.addRange(start, length);
-    let range = cells.splice(start, n);
+    range = cells.splice(start, n);
 
     // range.forEach(function(cell) cell.erase(attr));
-    let i, cell;
     for (i = 0; i < range.length; ++i) {
       cell = range[i];
       //if ("object" === typeof cell.c) {
@@ -997,15 +1018,16 @@ Line.definition = {
    */
   insertBlanks: function insertBlanks(start, n, attr) 
   {
-    let cells = this.cells;
+    var cells, length, range, i, cell;
+
+    cells = this.cells;
     this.addRange(start, this.length);
-    let length = cells.length;
-    let range = cells.splice(-n);
+    length = cells.length;
+    range = cells.splice(-n);
 
     // range.forEach(function(cell) cell.erase(attr));
-    let i, cell;
     for (i = 0; i < range.length; ++i) {
-      let cell = range[i];
+      cell = range[i];
       cell.erase(attr);
     }
 
@@ -1022,7 +1044,7 @@ Line.definition = {
  * @class LineGenerator
  *
  */
-let LineGenerator = new Class().extends(Component)
+var LineGenerator = new Class().extends(Component)
                                .requires("LineGenerator");
 LineGenerator.definition = {
 
@@ -1039,8 +1061,10 @@ LineGenerator.definition = {
   "[type('Uint16 -> Uint16 -> Array')]":
   function allocate(width, n, attr) 
   {
-    let line;
-    let buffer = [];
+    var line, buffer;
+    
+    buffer = [];
+
     while (n--) {
       line = new Line(width, attr);
       buffer.push(line);

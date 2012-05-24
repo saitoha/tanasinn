@@ -566,34 +566,6 @@ EventExpressionProcesser.prototype = {
     this._broker = broker;
   },
 
-  sendMessage: function sendMessage(topic, data)
-  {
-    var broker;
-    
-    broker = this._broker;
-    broker.notify(topic, data);
-  },
-
-  postMessage: function sendMessage(topic, data)
-  {
-    var broker;
-    
-    coUtils.Timer.setTimeout(
-      function()
-      {
-        broker = this._broker;
-        broker.notify(topic, data);
-      }, 0)
-  },
-
-  request: function request(topic, data)
-  {
-    var broker;
-    
-    broker = this._broker;
-    return broker.uniget(topic, data);
-  },
-
   /** An generator method which iterates identifiers and operators. 
    *  @param text {String} An source text which is to be tokenized.
    */

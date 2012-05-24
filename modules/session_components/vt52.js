@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 
-let vt52C0Parser = {
+var vt52C0Parser = {
 
   _map: [],
 
@@ -39,11 +39,13 @@ let vt52C0Parser = {
 
   parse: function parse(scanner) 
   {
+    var c, action;
+
     if (scanner.isEnd) {
       return undefined;
     }
-    let c = scanner.current();
-    let action = this._map[c];
+    c = scanner.current();
+    action = this._map[c];
     if (undefined === action) {
       return undefined;
     }
@@ -60,7 +62,7 @@ let vt52C0Parser = {
  * @class VT52ParameterParser
  * @brief Parse parameter. 
  */ 
-let VT52ParameterParser = new Class().extends(Array);
+var VT52ParameterParser = new Class().extends(Array);
 VT52ParameterParser.definition = {
 
   _default_action: null,
@@ -82,19 +84,26 @@ VT52ParameterParser.definition = {
    */
   parse: function parse(scanner) 
   {
-    let params = [param for (param in this._parseParameters(scanner))];
-    let c;
+    var params, c, action, self, next, 
+        meta_action, default_action, actions;
+
+    params = [param for (param in this._parseParameters(scanner))];
+
     do {
       if (scanner.isEnd) {
-        //return let (self = this) function(scanner) {
-        //  let result = parse.apply(self, scanner);
-        //  yield result;
-        //};
+        self = this;
+        return function(scanner) 
+        {
+          var result;
+
+          result = parse.apply(self, scanner);
+          yield result;
+        };
         return undefined;
       }
       c = scanner.current();
       if (c < 0x20 || 0x7f == c) {
-        let action = vt52C0Parser.get(c);
+        action = vt52C0Parser.get(c);
         if (undefined !== action) {
           this._c0action.push(action);
         }
@@ -104,33 +113,35 @@ VT52ParameterParser.definition = {
       break;
     } while (true);
 
-    let next = this[c];
-    let action;
+    next = this[c];
+
     if (undefined === next) {
     } else if (next.hasOwnProperty("parse")) {
-      let meta_action = next.parse(scanner);
+      meta_action = next.parse(scanner);
       if (meta_action) {
         action = meta_action(params);
       }
     } else {
       action = next(params);
     }
-    let default_action = this._default_action;
+    default_action = this._default_action;
     if (0 == this._c0action.length && null === default_action) {
       return action;
     } 
-    let actions = this._c0action;
+    actions = this._c0action;
     actions.push(action);
 
     this._c0action = [];
     return function() {
+      var action, i;
+
       if (default_action) {
-        let action = vt52C0Parser.get(default_action);
+        action = vt52C0Parser.get(default_action);
         if (undefined !== action) {
           action();
         }
       }
-      for (let i = 0; i < actions.length; ++i) {
+      for (i = 0; i < actions.length; ++i) {
         actions[i]();
       }
     };

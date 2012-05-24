@@ -25,7 +25,7 @@
 /**
  *  @class DRCSBuffer
  */
-let DRCSBuffer = new Class().extends(Plugin);
+var DRCSBuffer = new Class().extends(Plugin);
 DRCSBuffer.definition = {
 
   get id()
@@ -52,9 +52,6 @@ DRCSBuffer.definition = {
   "[install]":
   function install(broker) 
   {
-    this.onDCS.enabled = true;
-    this.onSCSG0.enabled = true;
-    this.onSCSG1.enabled = true;
     this._map = {};
   },
 
@@ -65,32 +62,27 @@ DRCSBuffer.definition = {
   function uninstall(broker) 
   {
     this._map = null;
-    this.onDCS.enabled = false;
-    this.onSCSG0.enabled = false;
-    this.onSCSG1.enabled = false;
   },
 
-  "[subscribe('sequence/g0')]":
+  "[subscribe('sequence/g0'), pnp]":
   function onSCSG0(mode) 
   {
-    let broker = this._broker;
     this._g0 = mode;
     if (this._map[mode]) {
-      broker.notify("event/drcs-state-changed/g0", this._map[mode]);
+      this.sendMessage("event/drcs-state-changed/g0", this._map[mode]);
     } else {
-      broker.notify("event/drcs-state-changed/g0", null);
+      this.sendMessage("event/drcs-state-changed/g0", null);
     }
   },
 
-  "[subscribe('sequence/g1')]":
+  "[subscribe('sequence/g1'), pnp]":
   function onSCSG1(mode) 
   {
-    let broker = this._broker;
     this._g1 = mode;
     if (this._map[mode]) {
-      broker.notify("event/drcs-state-changed/g1", this._map[mode]);
+      this.sendMessage("event/drcs-state-changed/g1", this._map[mode]);
     } else {
-      broker.notify("event/drcs-state-changed/g1", null);
+      this.sendMessage("event/drcs-state-changed/g1", null);
     }
   },
 
@@ -107,7 +99,7 @@ DRCSBuffer.definition = {
     return null;
   },
 
-  "[subscribe('sequence/dcs')]":
+  "[subscribe('sequence/dcs'), pnp]":
   function onDCS(data) 
   {
     //               Pfn    Pcn      Pe      Pcmw     Pw      Pt      Pcmh     Pcss    Dscs

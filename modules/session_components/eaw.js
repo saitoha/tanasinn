@@ -44,11 +44,9 @@ EastAsianWidth.definition = {
         }</description>
     </module>,
 
-
   "[persistable] enabled_when_startup": true,
 
-  /**
-   *
+  /** Treat ambiguous width characters as double-width.
    */
   "[subscribe('sequence/decset/8840'), pnp]":
   function activate() 
@@ -57,8 +55,7 @@ EastAsianWidth.definition = {
     parser.ambiguous_as_wide = true;
   },
 
-  /**
-   *
+  /** Treat ambiguous width characters as single-width.
    */
   "[subscribe('sequence/decrst/8840'), pnp]":
   function deactivate() 

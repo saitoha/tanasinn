@@ -25,7 +25,7 @@
 /** 
  * @class ForwardInputIterator
  */ 
-let ForwardInputIterator = new Class();
+var ForwardInputIterator = new Class();
 ForwardInputIterator.definition = {
 
   _value: null,
@@ -58,10 +58,12 @@ ForwardInputIterator.definition = {
 
   parseChar: function parseChar(code) 
   {
+    var c;
+
     if (this.isEnd) {
       throw coUtils.Debug.Exception(_("Cannot parse number."));
     }
-    let c = this.current();
+    c = this.current();
     return c == code;
   },
   
@@ -96,7 +98,7 @@ ForwardInputIterator.definition = {
 /**
  *  @class Sixel
  */
-let Sixel = new Class().extends(Plugin)
+var Sixel = new Class().extends(Plugin)
                        .depends("renderer")
                        .depends("screen")
                        ;
@@ -137,7 +139,6 @@ Sixel.definition = {
   "[install]":
   function install(broker) 
   {
-    this.onDCS.enabled = true;
     this._color_table = [];
     this._buffers = [];
   },
@@ -148,12 +149,12 @@ Sixel.definition = {
   "[uninstall]":
   function uninstall(broker) 
   {
+    var i, buffer;
+
     this._map = null;
-    this.onDCS.enabled = false;
     this._color_table = null;
-    let i;
     for (i = 0; i < this._buffers.length; ++i) {
-      let buffer = this._buffers[i];
+      buffer = this._buffers[i];
       if (buffer.canvas.parentNode) {
         buffers.canvas.parentNode.removeChild(buffer.canvas);
       }
@@ -195,7 +196,7 @@ Sixel.definition = {
     this._color = color_no;
   },
 
-  "[subscribe('sequence/dcs')]":
+  "[subscribe('sequence/dcs'), pnp]":
   function onDCS(data) 
   {
     let renderer = this.dependency["renderer"];

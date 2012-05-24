@@ -22,23 +22,23 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-const ANSI_GATM = 1
-const ANSI_KAM  = 2
-const ANSI_CRM  = 3
-const ANSI_IRM  = 4
-const ANSI_SRTM = 5
-const ANSI_VEM  = 7
-const ANSI_HEM  = 10
-const ANSI_PUM  = 11
-const ANSI_SRM  = 12
-const ANSI_FEAM = 13
-const ANSI_FETM = 14
-const ANSI_MATM = 15
-const ANSI_TTM  = 16
-const ANSI_SATM = 17
-const ANSI_TSM  = 18
-const ANSI_EBM  = 19
-const ANSI_LNM  = 20
+var ANSI_GATM = 1
+var ANSI_KAM  = 2
+var ANSI_CRM  = 3
+var ANSI_IRM  = 4
+var ANSI_SRTM = 5
+var ANSI_VEM  = 7
+var ANSI_HEM  = 10
+var ANSI_PUM  = 11
+var ANSI_SRM  = 12
+var ANSI_FEAM = 13
+var ANSI_FETM = 14
+var ANSI_MATM = 15
+var ANSI_TTM  = 16
+var ANSI_SATM = 17
+var ANSI_TSM  = 18
+var ANSI_EBM  = 19
+var ANSI_LNM  = 20
 
 /**
  * @class AnsiSpecifiedMode
@@ -121,9 +121,9 @@ AnsiSpecifiedMode.definition = {
   {
     let broker = this._broker;
     if (value) {
-      broker.notify("set/newline-mode", true);
+      this.sendMessage("set/newline-mode", true);
     } else {
-      broker.notify("set/newline-mode", false);
+      this.sendMessage("set/newline-mode", false);
     }
     this._LNM = value;
   },
@@ -162,8 +162,12 @@ AnsiSpecifiedMode.definition = {
         break;
 
       default:
-        coUtils.Debug.reportWarning(
-          _("Unknown ANSI Mode ID [%d] was specified."), id);
+        try {
+          this.request("sequencs/ansiset/" + id);
+        } catch (e) {
+          coUtils.Debug.reportWarning(
+            _("Unknown ANSI Mode ID [%d] was specified."), id);
+        }
     }
   },
 

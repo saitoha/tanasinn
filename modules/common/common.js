@@ -2519,6 +2519,7 @@ coUtils.Text = {
         result += str;
       }
     }
+    return result;
   },
 
   /** Provides printf-like formatting.

@@ -22,56 +22,57 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-let DEC_CKM   = 1
-let DEC_ANM   = 2
-let DEC_COLM  = 3
-let DEC_SCLM  = 4
-let DEC_SCNM  = 5
-let DEC_OM    = 6
-let DEC_AWM   = 7
-let DEC_ARM   = 8
-let DEC_PFF   = 9
-let DEC_PEX   = 10
-let DEC_TCEM  = 11
-let DEC_RLM   = 12
-let DEC_HEBM  = 13
-let DEC_HEM   = 14
-let DEC_NRCM  = 15
-let DEC_NAKB  = 16
-let DEC_HCCM  = 17
-let DEC_VCCM  = 18
-let DEC_PCCM  = 19
-let DEC_NKM   = 20
-let DEC_BKM   = 21
-let DEC_KBUM  = 22
-let DEC_LRMM  = 23 // DECVSSM
-let DEC_XRLMM = 24
-let DEC_NCSM  = 25
-let DEC_RLCM  = 26
-let DEC_CRTSM = 27
-let DEC_ARSM  = 28
-let DEC_MCM   = 29
-let DEC_AAM   = 30
-let DEC_CANSM = 31
-let DEC_NULM  = 32
-let DEC_HDPXM = 33
-let DEC_ESKM  = 34
-let DEC_OSCNM = 35
-let DEC_FWM   = 36
-let DEC_RPL   = 37
-let DEC_HWUM  = 38
-let DEC_ATCUM = 39
-let DEC_ATCBM = 40
-let DEC_BBSM  = 41
-let DEC_ECM   = 42
+var DEC_CKM   = 1
+var DEC_ANM   = 2
+var DEC_COLM  = 3
+var DEC_SCLM  = 4
+var DEC_SCNM  = 5
+var DEC_OM    = 6
+var DEC_AWM   = 7
+var DEC_ARM   = 8
+var DEC_PFF   = 9
+var DEC_PEX   = 10
+var DEC_TCEM  = 11
+var DEC_RLM   = 12
+var DEC_HEBM  = 13
+var DEC_HEM   = 14
+var DEC_NRCM  = 15
+var DEC_NAKB  = 16
+var DEC_HCCM  = 17
+var DEC_VCCM  = 18
+var DEC_PCCM  = 19
+var DEC_NKM   = 20
+var DEC_BKM   = 21
+var DEC_KBUM  = 22
+var DEC_LRMM  = 23 // DECVSSM
+var DEC_XRLMM = 24
+var DEC_NCSM  = 25
+var DEC_RLCM  = 26
+var DEC_CRTSM = 27
+var DEC_ARSM  = 28
+var DEC_MCM   = 29
+var DEC_AAM   = 30
+var DEC_CANSM = 31
+var DEC_NULM  = 32
+var DEC_HDPXM = 33
+var DEC_ESKM  = 34
+var DEC_OSCNM = 35
+var DEC_FWM   = 36
+var DEC_RPL   = 37
+var DEC_HWUM  = 38
+var DEC_ATCUM = 39
+var DEC_ATCBM = 40
+var DEC_BBSM  = 41
+var DEC_ECM   = 42
 
 /**
  * @trait DecModeSequenceHandler
  */
-let DecModeSequenceHandler = new Trait();
+var DecModeSequenceHandler = new Trait();
 DecModeSequenceHandler.definition = {
 
   _dec_save_buffer: null,
+
   _dec_alternate_buffer: null,
 
   /** Constructor */
@@ -84,17 +85,15 @@ DecModeSequenceHandler.definition = {
   "[profile('vt100'), sequence('CSI ?%dh')]":
   function DECSET() 
   { // DEC Private Mode Set
+    var i, n;
 
     if (0 == arguments.length) {
       coUtils.Debug.reportWarning(_("DECSET: Length of Arguments is zero. "));
     }
 
-    let broker = this._broker;
-
-    let i;
     for (i = 0; i < arguments.length; ++i) {
 
-      let n = arguments[i];
+      n = arguments[i];
 
       this._dec_save_buffer[i] = true;
 
@@ -107,11 +106,11 @@ DecModeSequenceHandler.definition = {
 
         // Designate USASCII for character sets G0-G3 (DECANM), and set VT100 mode.
         case 2:
-          broker.notify("sequence/g0", "B");
-          broker.notify("sequence/g1", "B");
-          broker.notify("sequence/g2", "B");
-          broker.notify("sequence/g3", "B");
-          broker.notify("command/change-mode", "vt100"); // TODO: write subscriber
+          this.sendMessage("sequence/g0", "B");
+          this.sendMessage("sequence/g1", "B");
+          this.sendMessage("sequence/g2", "B");
+          this.sendMessage("sequence/g3", "B");
+          this.sendMessage("command/change-mode", "vt100"); // TODO: write subscriber
           coUtils.Debug.reportWarning(
             _("DECSET - DECANM was not implemented completely."));
           break;
@@ -120,7 +119,7 @@ DecModeSequenceHandler.definition = {
         case 3:
           if (this._allow_switching_80_and_132_mode) {
             this.COLM = true;
-            this._broker.notify("command/resize-screen", {
+            this.sendMessage("command/resize-screen", {
               column: 132,
               row: this._screen.height,
             });
@@ -130,7 +129,7 @@ DecModeSequenceHandler.definition = {
               screen.eraseScreenAll();
               //screen.reset();
 
-              broker.notify("event/screen-size-changed", { 
+              this.sendMessage("event/screen-size-changed", { 
                 column: screen.width, 
                 row: screen.height 
               });
@@ -142,7 +141,7 @@ DecModeSequenceHandler.definition = {
         // Smooth (Slow) Scloll (DECSCLM)
         case 4:
           // smooth scroll.
-          broker.notify("command/change-scrolling-mode", true);
+          this.sendMessage("command/change-scrolling-mode", true);
           break;
 
         // Origin Mode (DECOM)
@@ -157,7 +156,7 @@ DecModeSequenceHandler.definition = {
 
         // X10_MOUSE mode
         case 9:
-          broker.notify(
+          this.sendMessage(
             "event/mouse-tracking-mode-changed", 
             coUtils.Constant.TRACKING_X10);
           coUtils.Debug.reportMessage(
@@ -190,14 +189,14 @@ DecModeSequenceHandler.definition = {
 
         // Show Scrollbar (rxvt)
         case 30:
-          broker.notify("command/scrollbar-show");
+          this.sendMessage("command/scrollbar-show");
           coUtils.Debug.reportMessage(
             _("DECSET 30 - Show scrollbar feature (rxvt) is set."));
           break;
 
         // Enable shifted key-functions (rxvt)
         case 35:
-          broker.notify("command/enable-shifted-key-functions");
+          this.sendMessage("command/enable-shifted-key-functions");
           coUtils.Debug.reportWarning(
             _("DECSET 35 - Enable-Shifted-Key-Function feature (rxvt) was not ", 
               "implemented completely."));
@@ -207,7 +206,7 @@ DecModeSequenceHandler.definition = {
         case 38:
           coUtils.Debug.reportWarning(
             _("DECSET 38 - Enter Tektronix mode (DECTEK)."));
-          broker.notify("command/change-mode", "tektronix");
+          this.sendMessage("command/change-mode", "tektronix");
           break;
 
         // Allow 80 <--> 132 mode
@@ -253,7 +252,7 @@ DecModeSequenceHandler.definition = {
 
         // Application keypad (DECNKM)
         case 66:
-          broker.notify(
+          this.sendMessage(
             "event/keypad-mode-changed", 
             coUtils.Constant.KEYPAD_MODE_APPLICATION);
           break;
@@ -268,7 +267,7 @@ DecModeSequenceHandler.definition = {
         // Send Mouse X & Y on button press and release. 
         // See the section Mouse Tracking.
         case 1000:
-          broker.notify(
+          this.sendMessage(
             "event/mouse-tracking-mode-changed", 
             coUtils.Constant.TRACKING_NORMAL);
           coUtils.Debug.reportMessage(
@@ -277,7 +276,7 @@ DecModeSequenceHandler.definition = {
 
         // Use Hilite Mouse Tracking.
         case 1001:
-          broker.notify(
+          this.sendMessage(
             "event/mouse-tracking-mode-changed", 
             coUtils.Constant.TRACKING_HIGHLIGHT);
           coUtils.Debug.reportMessage(
@@ -286,7 +285,7 @@ DecModeSequenceHandler.definition = {
 
         // Use Cell Motion Mouse Tracking.
         case 1002:
-          broker.notify(
+          this.sendMessage(
             "event/mouse-tracking-mode-changed", 
             coUtils.Constant.BUTTON);
           coUtils.Debug.reportMessage(
@@ -295,7 +294,7 @@ DecModeSequenceHandler.definition = {
 
         // Use All Motion Mouse Tracking.
         case 1003:
-          broker.notify(
+          this.sendMessage(
             "event/mouse-tracking-mode-changed", 
             coUtils.Constant.ANY);
           coUtils.Debug.reportMessage(
@@ -304,7 +303,7 @@ DecModeSequenceHandler.definition = {
           
         // Focus reporting mode.
         case 1004:
-          broker.notify(
+          this.sendMessage(
             "event/focus-reporting-mode-changed", true);
           coUtils.Debug.reportMessage(
             _("DECSET 1004 - focus reporting mode was set."));
@@ -312,7 +311,7 @@ DecModeSequenceHandler.definition = {
           
         // Enable utf8-style mouse reporting.
         case 1005:
-          broker.notify("event/mouse-tracking-type-changed", "utf8");
+          this.sendMessage("event/mouse-tracking-type-changed", "utf8");
           coUtils.Debug.reportMessage(
             _("DECSET 1005 - Enable utf8-style mouse reporting, ", 
               "was set."));
@@ -320,7 +319,7 @@ DecModeSequenceHandler.definition = {
           
         // Enable SGR-style mouse reporting.
         case 1006:
-          broker.notify("event/mouse-tracking-type-changed", "sgr");
+          this.sendMessage("event/mouse-tracking-type-changed", "sgr");
           coUtils.Debug.reportMessage(
             _("DECSET 1006 - Enable SGR-style mouse reporting."));
           break;
@@ -341,7 +340,7 @@ DecModeSequenceHandler.definition = {
           
         // Enable urxvt-style mouse reporting.
         case 1015:
-          broker.notify("event/mouse-tracking-type-changed", "urxvt");
+          this.sendMessage("event/mouse-tracking-type-changed", "urxvt");
           coUtils.Debug.reportMessage(
             _("DECSET 1015 - Enable urxvt-style mouse reporting, ", 
               "was set."));
@@ -426,14 +425,14 @@ DecModeSequenceHandler.definition = {
 
         // Set bracketed paste mode. 
         case 2004:
-          broker.notify("command/change-bracketed-paste-mode", true);
+          this.sendMessage("command/change-bracketed-paste-mode", true);
           coUtils.Debug.reportMessage(
             _("DECSET 2004 - Set bracketed paste mode is set."));
           break;
 
         default:
           try {
-            broker.uniget("sequence/decset/" + n);
+            this.request("sequence/decset/" + n);
           } catch (e) {
             coUtils.Debug.reportWarning(
               _("%s sequence [%s] was ignored."),
@@ -446,19 +445,18 @@ DecModeSequenceHandler.definition = {
   
   "[profile('vt100'), sequence('CSI ?%dl')]":
   function DECRST() 
-  { // TODO: DEC-Private Mode Reset
+  { // DEC-Private Mode Reset
+    var i, n;
 
     if (arguments.length == 0) {
       coUtils.Debug.reportWarning(_("DECRST: Length of Arguments is zero. "));
     }
 
-    let broker = this._broker;
-
-    for (let i = 0; i < arguments.length; ++i) {
+    for (i = 0; i < arguments.length; ++i) {
 
       this._dec_save_buffer[i] = false;
 
-      let n = arguments[i];
+      n = arguments[i];
 
       switch (n) {
 
@@ -469,7 +467,7 @@ DecModeSequenceHandler.definition = {
 
         // Designate VT52 mode.
         case 2:
-          broker.notify("command/change-mode", "vt52"); // TODO: write subscriber
+          this.sendMessage("command/change-mode", "vt52"); // TODO: write subscriber
           coUtils.Debug.reportWarning(
             _("DECRST - DECANM was not implemented completely."));
           break;
@@ -478,7 +476,7 @@ DecModeSequenceHandler.definition = {
         case 3:
           if (this._allow_switching_80_and_132_mode) {
             this.COLM = false;
-            broker.notify("command/resize-screen", {
+            this.sendMessage("command/resize-screen", {
               column: 80,
               row: this._screen.height,
             });
@@ -488,7 +486,7 @@ DecModeSequenceHandler.definition = {
               screen.eraseScreenAll();
               //screen.reset();
 
-              broker.notify("event/screen-size-changed", { 
+              this.sendMessage("event/screen-size-changed", { 
                 column: screen.width, 
                 row: screen.height 
               });
@@ -500,7 +498,7 @@ DecModeSequenceHandler.definition = {
         // Smooth (Slow) Scloll (DECSCLM)
         case 4:
           // smooth scroll.
-          broker.notify("command/change-scrolling-mode", false);
+          this.sendMessage("command/change-scrolling-mode", false);
           break;
 
         // Reset Origin Mode (DECOM)
@@ -515,7 +513,7 @@ DecModeSequenceHandler.definition = {
 
         // X10_MOUSE mode
         case 9:
-          broker.notify(
+          this.sendMessage(
             "event/mouse-tracking-mode-changed", 
             coUtils.Constant.TRACKING_NONE);
           coUtils.Debug.reportMessage(
@@ -548,14 +546,14 @@ DecModeSequenceHandler.definition = {
 
         // TODO: Show Scrollbar (rxvt)
         case 30:
-          broker.notify("command/scrollbar-hide");
+          this.sendMessage("command/scrollbar-hide");
           coUtils.Debug.reportMessage(
             _("DECRST 30 - Show-scrollbar feature (rxvt) is reset."));
           break;
 
         // Enable shifted key-functions (rxvt)
         case 35:
-          broker.notify("command/disable-shifted-key-functions");
+          this.sendMessage("command/disable-shifted-key-functions");
           coUtils.Debug.reportWarning(
             _("DECRST - Enable-Shifted-Key-Function feature (rxvt) was not ", 
               "implemented completely."));
@@ -604,7 +602,7 @@ DecModeSequenceHandler.definition = {
 
         // Numeric keypad (DECNKM)
         case 66:
-          broker.notify(
+          this.sendMessage(
             "event/keypad-mode-changed", 
             coUtils.Constant.KEYPAD_MODE_NUMERIC);
           break;
@@ -618,43 +616,54 @@ DecModeSequenceHandler.definition = {
 
         // Don't Send Mouse X & Y on button press and release. 
         case 1000:
-          broker.notify("event/mouse-tracking-mode-changed", coUtils.Constant.TRACKING_NONE);
+          this.sendMessage(
+            "event/mouse-tracking-mode-changed", 
+            coUtils.Constant.TRACKING_NONE);
           coUtils.Debug.reportMessage(
             _("DECRST 1000 - VT200 mouse tracking mode was reset."));
           break;
 
         // Don't Use Hilite Mouse Tracking.
         case 1001:
-          broker.notify("event/mouse-tracking-mode-changed", coUtils.Constant.TRACKING_NONE);
+          this.sendMessage(
+            "event/mouse-tracking-mode-changed", 
+            coUtils.Constant.TRACKING_NONE);
           coUtils.Debug.reportMessage(
             _("DECRST 1001 - xterm hilite mouse tracking mode was reset."));
           break;
 
         // Don't Use Cell Motion Mouse Tracking.
         case 1002:
-          broker.notify("event/mouse-tracking-mode-changed", coUtils.Constant.TRACKING_NONE);
+          this.sendMessage(
+            "event/mouse-tracking-mode-changed", 
+            coUtils.Constant.TRACKING_NONE);
           coUtils.Debug.reportMessage(
             _("DECRST 1002 - xterm cell motion mouse tracking mode was reset."));
           break;
 
         // Don't Use All Motion Mouse Tracking.
         case 1003:
-          broker.notify("event/mouse-tracking-mode-changed", coUtils.Constant.TRACKING_NONE);
+          this.sendMessage(
+            "event/mouse-tracking-mode-changed", 
+            coUtils.Constant.TRACKING_NONE);
           coUtils.Debug.reportMessage(
             _("DECRST 1003 - xterm all motion mouse tracking mode was reset."));
           break;
 
         // Focus reporting mode.
         case 1004:
-          broker.notify(
-            "event/focus-reporting-mode-changed", false);
+          this.sendMessage(
+            "event/focus-reporting-mode-changed", 
+            false);
           coUtils.Debug.reportMessage(
             _("DECSET 1004 - focus reporting mode was reset."));
           break;
 
         // Enable utf8-style mouse reporting.
         case 1005:
-          broker.notify("event/mouse-tracking-type-changed", null);
+          this.sendMessage(
+            "event/mouse-tracking-type-changed", 
+            null);
           coUtils.Debug.reportMessage(
             _("DECRST 1005 - Enable utf8-style mouse reporting, ", 
               "was reset."));
@@ -662,7 +671,9 @@ DecModeSequenceHandler.definition = {
           
         // Enable SGR-style mouse reporting.
         case 1006:
-          broker.notify("event/mouse-tracking-type-changed", null);
+          this.sendMessage(
+            "event/mouse-tracking-type-changed", 
+            null);
           coUtils.Debug.reportMessage(
             _("DECRST 1006 - Disable SGR-style mouse reporting."));
           break;
@@ -683,7 +694,9 @@ DecModeSequenceHandler.definition = {
            
         // TODO:Disable urxvt-style mouse reporting.
         case 1015:
-          broker.notify("event/mouse-tracking-type-changed", null);
+          this.sendMessage(
+            "event/mouse-tracking-type-changed", 
+            null);
           coUtils.Debug.reportMessage(
             _("DECRST 1015 - Disable urxvt-style mouse reporting, ", 
               "was not implemented."));
@@ -768,14 +781,16 @@ DecModeSequenceHandler.definition = {
 
         // Reset bracketed paste mode. 
         case 2004:
-          broker.notify("command/change-bracketed-paste-mode", false);
+          this.sendMessage(
+            "command/change-bracketed-paste-mode", 
+            false);
           coUtils.Debug.reportMessage(
             _("DECRST 2004 - Reset bracketed paste mode is reset."));
           break;
 
         default:
           try {
-            broker.uniget("sequence/decrst/" + n);
+            this.sendMessage("sequence/decrst/" + n);
           } catch (e) {
             coUtils.Debug.reportWarning(
               _("%s sequence [%s] was ignored."),
@@ -814,12 +829,15 @@ DecModeSequenceHandler.definition = {
   "[profile('vt100'), sequence('CSI %dr', 'CSI %d>')]":
   function DECSTBM(n1, n2) 
   {
+    var screen, min, max, top, bottom, tmp;
+
     // set scrolling region
-    let screen = this._screen;
-    let min = 0;
-    let max = screen.height;
-    let top = (n1 || min + 1) - 1, bottom = n2 || max;
-    let bottom = arguments.length > 1 ? n2: max;
+    screen = this._screen;
+    min = 0;
+    max = screen.height;
+    top = (n1 || min + 1) - 1, bottom = n2 || max;
+    bottom = arguments.length > 1 ? n2: max;
+
     // Trim top, bottom with min, max.
     top = Math.max(top, min);
     top = Math.min(top, max);
@@ -828,7 +846,7 @@ DecModeSequenceHandler.definition = {
 
     if (top > bottom) {
       // swap
-      let tmp = top;
+      tmp = top;
       top = bottom;
       bottom = top;
     }
@@ -1015,8 +1033,7 @@ DecModeSequenceHandler.definition = {
   function DECREQTPARM(n) 
   { // Request Terminal Parameters
 
-    let broker = this._broker;
-    let message;
+    var message;
 
     switch (n) {
 
@@ -1025,16 +1042,14 @@ DecModeSequenceHandler.definition = {
       // sent when the terminal exits the SET-UP mode).
       case 0:
         message = "\x1b[2;" + this._termattr;
-        broker.notify("command/send-to-tty", message);
-        //alert(message)
+        this.sendMessage("command/send-to-tty", message);
         break;
 
       // This message is a request; from now on the 
       // terminal may only report in response to a request.
       case 1:
         message = "\x1b[3;" + this._termattr;
-        broker.notify("command/send-to-tty", message);
-        //alert(message)
+        this.sendMessage("command/send-to-tty", message);
         break;
 
       default:
@@ -1074,15 +1089,15 @@ DecModeSequenceHandler.definition = {
   function DECELR(n1, n2) 
   { // Enable Locator Reporting
 
-    let broker = this._broker;
-    let oneshot;
-    let pixel;
+    var oneshot, pixel;
 
     switch (n1 || 0) {
 
       case 0:
         // Locator disabled (default)
-        broker.notify("command/change-locator-reporting-mode", null); 
+        this.sendMessage(
+          "command/change-locator-reporting-mode", 
+          null); 
         return;
 
       case 1:
@@ -1120,7 +1135,7 @@ DecModeSequenceHandler.definition = {
 
     }
 
-    broker.notify(
+    this.sendMessage(
       "command/change-locator-reporting-mode", {
         oneshot: oneshot, 
         pixel: pixel,
@@ -1140,28 +1155,27 @@ DecModeSequenceHandler.definition = {
   "[profile('vt100'), sequence('CSI %d\\'{')]":
   function DECSLE(n) 
   { // TODO: Select Locator Events
-    let broker = this._broker;
     switch (n) {
 
       case 0:
-        broker.notify("command/change-decterm-buttonup-event-mode", false);
-        broker.notify("command/change-decterm-buttondown-event-mode", false);
+        this.sendMessage("command/change-decterm-buttonup-event-mode", false);
+        this.sendMessage("command/change-decterm-buttondown-event-mode", false);
         break;
 
       case 1:
-        broker.notify("command/change-decterm-buttondown-event-mode", true);
+        this.sendMessage("command/change-decterm-buttondown-event-mode", true);
         break;
 
       case 2:
-        broker.notify("command/change-decterm-buttondown-event-mode", false);
+        this.sendMessage("command/change-decterm-buttondown-event-mode", false);
         break;
 
       case 3:
-        broker.notify("command/change-decterm-buttonup-event-mode", true);
+        this.sendMessage("command/change-decterm-buttonup-event-mode", true);
         break;
 
       case 3:
-        broker.notify("command/change-decterm-buttonup-event-mode", false);
+        this.sendMessage("command/change-decterm-buttonup-event-mode", false);
         break;
 
       default:
@@ -1205,8 +1219,7 @@ DecModeSequenceHandler.definition = {
   "[profile('vt100'), sequence('CSI %d\\'|')]":
   function DECRQLP(n) 
   { // Request Locator Position
-    let broker = this._broker;
-    broker.notify("event/locator-reporting-requested"); 
+    this.sendMessage("event/locator-reporting-requested"); 
   },
 
   /**
@@ -1261,8 +1274,7 @@ DecModeSequenceHandler.definition = {
   "[profile('vt100'), sequence('CSI %dt')]":
   function DECSLPP(n1, n2, n3) 
   {
-    let broker = this._broker;
-    broker.notify(
+    this.sendMessage(
       "command/manipulate-window", 
       Array.slice(arguments)); 
   },
@@ -1296,7 +1308,7 @@ DecModeSequenceHandler.definition = {
 /**
  * @trait PeristOptionsTrait
  */
-let PersistOptionsTrait = new Trait();
+var PersistOptionsTrait = new Trait();
 PersistOptionsTrait.definition = {
 
   /**
@@ -1305,12 +1317,14 @@ PersistOptionsTrait.definition = {
   "[profile('vt100'), sequence('CSI ?%dr')]":
   function XTREST(n) 
   { // DEC Private Mode Restore
-    let save_buffer = this._dec_save_buffer;
-    let alternate_buffer = this._dec_alternate_buffer;
-    let i;
+    var save_buffer, alternate_buffer, i, key, value;
+
+    save_buffer = this._dec_save_buffer;
+    alternate_buffer = this._dec_alternate_buffer;
+
     for (i = 0; i < arguments.length; ++i) {
-      let key = arguments[i];
-      let value = save_buffer[key] = alternate_buffer[key];
+      key = arguments[i];
+      value = save_buffer[key] = alternate_buffer[key];
       if (value) {
         this.DECSET(n);
       } else {
@@ -1325,11 +1339,13 @@ PersistOptionsTrait.definition = {
   "[profile('vt100'), sequence('CSI ?%ds')]":
   function XTSAVE() 
   {  // DEC Private Mode Save
-    let save_buffer = this._dec_save_buffer;
-    let alternate_buffer = this._dec_alternate_buffer;
-    let i;
+    var save_buffer, alternate_buffer, i, key;
+
+    save_buffer = this._dec_save_buffer;
+    alternate_buffer = this._dec_alternate_buffer;
+
     for (i = 0; i < arguments.length; ++i) {
-      let key = arguments[i];
+      key = arguments[i];
       alternate_buffer[key] = save_buffer[key];
     }
   },
@@ -1339,7 +1355,7 @@ PersistOptionsTrait.definition = {
 /**
  * @class DecPrivateMode
  */
-let DecPrivateMode = new Class().extends(Component)
+var DecPrivateMode = new Class().extends(Component)
                                 .mix(DecModeSequenceHandler)
                                 .mix(PersistOptionsTrait);
 DecPrivateMode.definition = {
@@ -1350,11 +1366,9 @@ DecPrivateMode.definition = {
   "[subscribe('initialized/{screen & cursorstate}'), enabled]":
   function onLoad(screen, cursor_state)
   {
-    var broker = this._broker;
-
     this._screen = screen;
     this._cursor_state = cursor_state;
-    broker.notify("initialized/decmode", this);
+    this.sendMessage("initialized/decmode", this);
   },
 
   /* 
@@ -1390,14 +1404,14 @@ DecPrivateMode.definition = {
 
   set DECCKM(value) 
   {
-    let broker = this._broker;
-    let mode;
+    var mode;
+
     if (value) {
       mode = "normal";
     } else {
       mode = "application";
     }
-    broker.notify("command/change-cursor-mode", mode);
+    this.sendMessage("command/change-cursor-mode", mode);
     this._ckm = value;
   },
 
@@ -1414,8 +1428,9 @@ DecPrivateMode.definition = {
 
   set TCEM(value) 
   {
-    let broker = this._broker;
-    let cursor_state = this._cursor_state;
+    var cursor_state;
+
+    cursor_state = this._cursor_state;
     cursor_state.visibility = value;
     this._tcem = value;
   },
