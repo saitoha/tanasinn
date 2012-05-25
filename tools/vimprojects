@@ -79,13 +79,10 @@
   session_components=session_components {
    parser.js
 
-   drcs.js
-   sixel.js
    line.js
    cursorstate.js
    screen.js
 
-   emulator.js
    control.js
    escape.js
    ansi.js
@@ -102,6 +99,8 @@
 
    plugin=.{
 
+    drcs.js
+    sixel.js
     mascot.js
     base64copy.js
     answerback.js

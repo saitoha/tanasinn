@@ -1008,7 +1008,7 @@ ScreenSequenceHandler.definition = {
    */
   "[profile('vt100'), sequence('CSI %dI')]":
   function CHT(n) 
-  { // TODO: Cursor Horaizontal Tabulation
+  { // Cursor Horaizontal Tabulation
     var tab_stops, cursor, width, positionX, i, stop, index;
 
     n = (n || 1) - 1;
@@ -1121,10 +1121,8 @@ ScreenSequenceHandler.definition = {
    */
   "[profile('vt100'), sequence('CSI %db')]":
   function REP(n) 
-  { // TODO: REPeat the preceding graphic character
-    coUtils.Debug.reportWarning(
-      _("%s sequence [%s] was ignored."),
-      arguments.callee.name, Array.slice(arguments));
+  { // REPeat the preceding graphic character
+    this.repeat(n || 1);
   },
 
   /**
@@ -2066,6 +2064,21 @@ Screen.definition = {
         line.write(positionX, run, cursor.attr, insert_mode);
       }
     } while (it < codes.length);
+
+    this._last_char = run.pop();
+  },
+
+  /** REPeat the preceding graphic character */
+  repeat: function repeat(n)
+  {
+    var codes, i, last_char;
+
+    last_char = this._last_char;
+    codes = [];
+    for (i = 0; i < n; ++i) {
+      codes.push(last_char);
+    }
+    this.write(codes);
   },
 
 // ScreenCursorOperations Implementation.

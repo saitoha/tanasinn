@@ -137,8 +137,7 @@ Encoder.definition = {
   function onLoad(session) 
   {
     this._cache = {};
-    this._encoder_map = session
-      .notify("get/encoders")
+    this._encoder_map = this.sendMessage("get/encoders")
       .reduce(function(map, information) 
       {
         map[information.charset] = information; 
@@ -146,8 +145,11 @@ Encoder.definition = {
       });
     this.scheme = this.initial_scheme;
     session.subscribe("change/encoder", 
-      function(scheme) this.scheme = scheme, this)
-    session.notify("initialized/encoder", this);
+      function(scheme) 
+      {
+        this.scheme = scheme;
+      }, this)
+    this.sendMessage("initialized/encoder", this);
   },
 
   /** Encode incoming string data.
