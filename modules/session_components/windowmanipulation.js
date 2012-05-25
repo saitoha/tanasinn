@@ -43,26 +43,7 @@ WindowManipulator.definition = {
 
   "[persistable] enabled_when_startup": true,
 
-  /** installs itself. 
-   *  @param {Broker} broker A Broker object.
-   */
-  "[install]":
-  function install(broker) 
-  {
-    this.manipulate.enabled = true;
-  },
-
-  /** Uninstalls itself.
-   *  @param {Broker} broker A broker object.
-   */
-  "[uninstall]":
-  function uninstall(broker) 
-  {
-    this.manipulate.enabled = false;
-  },
-
-
-  "[subscribe('command/manipulate-window')]":
+  "[subscribe('command/manipulate-window'), pnp]":
   function manipulate(args) 
   { 
     switch (args.shift()) {

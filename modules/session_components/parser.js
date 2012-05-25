@@ -775,7 +775,7 @@ Parser.definition = {
     "parser",
 
   _grammar: null,
-  _emurator: null,
+  _screen: null,
   _decoder: null,
   _scanner: null,
 
@@ -784,11 +784,11 @@ Parser.definition = {
   wcwidth: null,
 
 // post-constructor
-  "[subscribe('initialized/{scanner & emurator & decoder & drcs_converter}'), enabled]":
-  function onLoad(scanner, emurator, decoder, drcs_converter)
+  "[subscribe('initialized/{scanner & screen & decoder & drcs_converter}'), enabled]":
+  function onLoad(scanner, screen, decoder, drcs_converter)
   {
     this._scanner = scanner;    
-    this._emurator = emurator;
+    this._screen = screen;
     this._decoder = decoder;
     this._drcs_converter = drcs_converter;
 
@@ -910,7 +910,7 @@ Parser.definition = {
     var action;
     var codes;
     var grammar = this._grammar;
-    var emurator = this._emurator;
+    var screen = this._screen;
     var drcs_converter = this._drcs_converter;
     var result, next;
 
@@ -946,7 +946,7 @@ Parser.definition = {
           yield function () 
           {
             var converted_codes = drcs_converter.convert(codes);
-            emurator.write(converted_codes);
+            screen.write(converted_codes);
           };
         } else {
           if (scanner.isEnd) {

@@ -26,8 +26,8 @@
 /**
  *  @class Mascot
  */
-let Mascot = new Class().extends(Plugin)
-                       .depends("cursorstate");
+var Mascot = new Class().extends(Plugin)
+                        .depends("cursorstate");
 Mascot.definition = {
 
   get id()
@@ -48,9 +48,7 @@ Mascot.definition = {
       //parentNode: "#tanasinn_outer_chrome",
       tagName: "box",
       id: "tanasinn_mascot_layer",
-      style: <>
-        position: fixed;
-      </>,
+      style: "position: fixed;",
       childNodes: [
         {
           tagName: "image",
@@ -71,21 +69,21 @@ Mascot.definition = {
   _element: null,
 
   /** installs itself. 
-   *  @param {Session} session A session object.
+   *  @param {Broker} broker A broker object.
    */
   "[install]":
-  function install(session) 
+  function install(broker) 
   {
-    let {tanasinn_mascot_layer}
-      = session.uniget("command/construct-chrome", this.template);
+    var {tanasinn_mascot_layer}
+      = this.request("command/construct-chrome", this.template);
     this._element = tanasinn_mascot_layer;
   },
 
   /** Uninstalls itself.
-   *  @param {Session} session A session object.
+   *  @param {Broker} broker A broker object.
    */
   "[uninstall]":
-  function uninstall(session) 
+  function uninstall(broker) 
   {
     if (null !== this._element) {
       this._element.parentNode.removeChild(this._element);
@@ -95,8 +93,9 @@ Mascot.definition = {
 
   getMascotImagePath: function getMascotImagePath()
   {
-    let broker = this._broker;
-    let path, file;
+    var broker, path, file;
+
+    broker = this._broker;
     path = broker.runtime_path + "/" + this.mascot_image_file;
     file = coUtils.File.getFileLeafFromVirtualPath(path);
     if (!file.exists()) {

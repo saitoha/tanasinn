@@ -26,7 +26,7 @@
  * @class AnswerBack
  *
  */
-let AnswerBack = new Class().extends(Plugin);
+var AnswerBack = new Class().extends(Plugin);
 AnswerBack.definition = {
 
   get id()
@@ -70,10 +70,11 @@ AnswerBack.definition = {
   "[subscribe('command/answerback')]":
   function answerback()
   {
-    let message = String(this.answerback_message);
+    var message;
+
+    message = String(this.answerback_message);
     if (message.length) {
-      let broker = this._broker;
-      broker.notify("command/send-to-tty", this.answerback_message);
+      this.sendMessage("command/send-to-tty", message);
     }
   },
 

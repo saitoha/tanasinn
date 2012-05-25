@@ -72,54 +72,38 @@ AutoWrap.definition = {
         <version>0.1</version>
         <description>{
           _("Enable/disable auto-wrap feature(DECARM)",
-            " by escape seqnence.")
+            " with escape seqnence.")
         }</description>
     </module>,
 
   "[persistable] enabled_when_startup": true,
 
-  /** installs itself. 
-   *  @param {Broker} broker A Broker object.
-   */
-  "[install]":
-  function install(broker) 
-  {
-    this.activate.enabled = true;
-    this.deactivate.enabled = true;
-  },
-
-  /** Uninstalls itself.
-   *  @param {Broker} broker A broker object.
-   */
-  "[uninstall]":
-  function uninstall(broker) 
-  {
-    this.activate.enabled = false;
-    this.deactivate.enabled = false;
-  },
-
   /** Activate auto-wrap feature(DECAWM).
    */
-  "[subscribe('sequence/decset/7')]":
+  "[subscribe('sequence/decset/7'), pnp]":
   function activate() 
   { 
-    var broker = this._broker;
-
-    broker.notify("command/enable-wraparound");
+    this.sendMessage("command/enable-wraparound");
     coUtils.Debug.reportMessage(
       _("DECSET - DECAWM (Auto-wrap Mode) was set."));
   },
 
   /** Deactivate auto-wrap feature(DECAWM).
    */
-  "[subscribe('sequence/decrst/7')]":
+  "[subscribe('sequence/decrst/7'), pnp]":
   function deactivate() 
   {
-    var broker = this._broker;
-
-    broker.notify("command/disable-wraparound");
+    this.sendMessage("command/disable-wraparound");
     coUtils.Debug.reportMessage(
       _("DECRST - DECAWM (Auto-wrap Mode) was reset."));
+  },
+
+  /** Deactivate auto-wrap feature(DECAWM).
+   */
+  "[subscribe('command/{soft | hard}-terminal-reset'), pnp]":
+  function reset() 
+  {
+    this.deactivate();
   },
 
 }; // class AutoWrap

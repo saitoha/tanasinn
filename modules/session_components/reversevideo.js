@@ -39,7 +39,7 @@ ReverseVideo.definition = {
         <version>0.1</version>
         <description>{
           _("Enable/disable Reverse video feature(DECSCNM)",
-            " by escape seqnence.")
+            " with escape seqnence.")
         }</description>
     </module>,
 

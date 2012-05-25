@@ -26,6 +26,55 @@
 /**
  * @class AutoRepeat
  *
+ * DECARM — Autorepeat Mode
+ *
+ * This control function determines whether or not keys automatically repeat 
+ * their character when held down. If DECARM is set, then most keys you press 
+ * for more than 0.5 seconds send a character repeatedly until you release 
+ * the key.
+ *
+ * Default: Repeat (set)
+ *
+ * Format
+ *
+ * CSI    ?      8    h
+ * 9/11   3/15   3/8  6/8  
+ *
+ * Set: keys autorepeat when pressed for more than 0.5 seconds.
+ *
+ *
+ * CSI    ?      8    l
+ * 9/11   3/15   3/8  6/12   
+ *
+ * Reset: keys do not autorepeat.
+ *
+ * Notes on DECARM
+ *
+ * The following keys on the VT keyboard do not repeat:
+ *   F1 (Hold)
+ *   F2 (Print)
+ *   F3 (Set-Up)
+ *   F4 (Session)
+ *   F5 (Break) 
+ *   Compose Character
+ *   Shift
+ *   Alt Function
+ *   Return
+ *   Lock
+ *   Ctrl
+ *   Extend
+ *
+ * The following keys on the PC keyboard do not repeat:
+ *   Alt
+ *   Caps Lock
+ *   Ctrl
+ *   Enter
+ *   Num Lock
+ *   AltGr
+ *   Pause
+ *   Print Screen
+ *   Scroll Lock
+ *   Shift
  */
 var AutoRepeat = new Class().extends(Plugin)
                             .depends("parser");
@@ -40,36 +89,16 @@ AutoRepeat.definition = {
         <version>0.1</version>
         <description>{
           _("Enable/disable Auto repeat feature(DECARM) ",
-            "by escape seqnence.")
+            "with escape seqnence.")
         }</description>
     </module>,
 
 
   "[persistable] enabled_when_startup": true,
 
-  /** installs itself. 
-   *  @param {Broker} broker A Broker object.
-   */
-  "[install]":
-  function install(broker) 
-  {
-    this.activate.enabled = true;
-    this.deactivate.enabled = true;
-  },
-
-  /** Uninstalls itself.
-   *  @param {Broker} broker A broker object.
-   */
-  "[uninstall]":
-  function uninstall(broker) 
-  {
-    this.activate.enabled = false;
-    this.deactivate.enabled = false;
-  },
-
   /** Activate auto-repeat feature.
    */
-  "[subscribe('sequence/decset/8')]":
+  "[subscribe('sequence/decset/8'), pnp]":
   function activate() 
   { 
     // Auto-repeat Keys (DECARM)
@@ -83,7 +112,7 @@ AutoRepeat.definition = {
 
   /** Deactivate auto-repeat feature
    */
-  "[subscribe('sequence/decrst/8')]":
+  "[subscribe('sequence/decrst/8'), pnp]":
   function deactivate() 
   {
     // Auto-repeat Keys (DECARM)

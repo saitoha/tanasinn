@@ -49,6 +49,8 @@ AnsiSpecifiedMode.definition = {
   get id()
     "module.ansimode",
 
+  _mode: null,
+
   GATM: false, 
   KAM: false, 
   CRM: false, 
@@ -66,72 +68,21 @@ AnsiSpecifiedMode.definition = {
   TSM: false, 
   EBM: false, 
 
-  /**
-   * LNM—Line Feed/New Line Mode
-   *
-   * @ref http://vt100.net/docs/vt510-rm/LNM
-   *
-   * This control function selects the characters sent to the host when you 
-   * press the Return key. LNM also controls how the terminal interprets line 
-   * feed (LF), form feed (FF), and vertical tab (VT) characters.
-   *
-   * Note
-   *
-   * For compatibility with Digital's software, you should keep LNM reset 
-   * (line feed).
-   *
-   *
-   * Default: Line feed
-   *
-   * Format
-   *
-   * CSI   2     0     h
-   * 9/11  3/2   3/0   6/8
-   * Set: new line.
-   *
-   * CSI   2     0     l
-   * 9/11  3/2   3/0   6/12
-   * Reset: line feed.
-   *
-   * Description
-   *
-   * If LNM is set, then the cursor moves to the first column on the next 
-   * line when the terminal receives an LF, FF, or VT character. When you 
-   * press Return, the terminal sends both a carriage return (CR) and line 
-   * feed (LF).
-   *
-   * If LNM is reset, then the cursor moves to the current column on the next 
-   * line when the terminal receives an LF, FF, or VT character. When you 
-   * press Return, the terminal sends only a carriage return (CR) character.
-   *
-   * Note on LNM
-   *
-   * When the auxiliary keypad is in keypad numeric mode (DECKPNM), the Enter 
-   * key sends the same characters as the Return key.
-   */
 
-  _LNM: false, 
-
-  get LNM()
-  {
-    return this._LNM;
-  },
-  
-  set LNM(value) 
-  {
-    if (value) {
-      this.sendMessage("set/newline-mode", true);
-    } else {
-      this.sendMessage("set/newline-mode", false);
-    }
-    this._LNM = value;
-  },
+  LNM: false, 
 
   /** constructor */
   "[subscribe('@event/broker-started'), enabled]":
   function onLoad(broker) 
   {
+    this._mode = [];
     this.sendMessage("initialized/ansimode", this);
+  },
+
+  "[subscribe('command/{soft | hard}-terminal-reset'), enabled]":
+  function reset(broker) 
+  {
+    this.set(ANSI_IRM, false);
   },
 
   set: function set(id, flag) 
@@ -146,11 +97,6 @@ AnsiSpecifiedMode.definition = {
         this.CRM = flag 
         break;
 
-      case ANSI_IRM:
-        this.sendMessage("event/ansi-mode-changed/irm", flag);
-        this.IRM = flag 
-        break;
-
       case ANSI_SRM:
         this.SRM = flag
         break;
@@ -161,7 +107,11 @@ AnsiSpecifiedMode.definition = {
 
       default:
         try {
-          this.request("sequencs/ansiset/" + id);
+          if (flag) {
+            this.request("sequence/sm/" + id);
+          } else {
+            this.request("sequence/rm/" + id);
+          }
         } catch (e) {
           coUtils.Debug.reportWarning(
             _("Unknown ANSI Mode ID [%d] was specified."), id);
@@ -193,16 +143,16 @@ AnsiSpecifiedMode.definition = {
   function SM(n) 
   { // set ANSI-Specified Mode. 
     this.set(n, true);
+    this._mode[id] = true;
   },
 
   "[profile('vt100'), sequence('CSI %dl')]": 
   function RM(n) 
   { // reset ANSI-Specified Mode. 
     this.set(n, false);
+    this._mode[id] = false;
   },
-
-
-};
+}; // AnsiSpecifiedMode
 
 /**
  * @fn main

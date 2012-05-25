@@ -1483,6 +1483,21 @@ coUtils.Color = {
 
 }; // coUtils.Color
 
+coUtils.Clipboard = {
+
+  /** set text to clipboard */
+  set: function set(text) 
+  {
+    var clipboard_helper;
+
+    clipboard_helper = Components
+      .classes["@mozilla.org/widget/clipboardhelper;1"]
+      .getService(Components.interfaces.nsIClipboardHelper);
+    clipboard_helper.copyString(text);
+  },
+
+};
+
 coUtils.Event = {
 
   _observers: {},
@@ -2556,9 +2571,11 @@ coUtils.Timer = {
     .classes["@mozilla.org/thread-manager;1"]
     .getService(),
 
-  wait: function(wait) 
+  wait: function wait(wait) 
   {
-    var end_time = Date.now() + wait;
+    var enc_time;
+
+    end_time = Date.now() + wait;
     do {
       this._thread_manager.mainThread.processNextEvent(true);
     } while ( (mainThread.hasPendingEvents()) || Date.now() < end_time );
@@ -2570,12 +2587,13 @@ coUtils.Timer = {
    */
   setTimeout: function setTimeout(timer_proc, interval, context) 
   {
-    var timer = Components
+    var timer, type, observer, timer_callback_func;
+
+    timer = Components
       .classes["@mozilla.org/timer;1"]
       .createInstance(Components.interfaces.nsITimer);
-    var type = Components.interfaces.nsITimer.TYPE_ONE_SHOT;
-    var observer;
-    var timer_callback_func = context ? 
+    type = Components.interfaces.nsITimer.TYPE_ONE_SHOT;
+    timer_callback_func = context ? 
       function invoke() 
       {
         timer_proc.apply(context, arguments)

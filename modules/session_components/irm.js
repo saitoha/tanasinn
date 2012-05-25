@@ -24,54 +24,74 @@
 
 
 /**
- * @class ReverseWrap
+ * @class IRMSwitch
+ *
+ * IRM — Insert/Replace Mode
+ *
+ * This control function selects how the terminal adds characters to page 
+ * memory. The terminal always adds new characters at the cursor position.
+ *
+ * Default: Replace.
+ *
+ * Format
+ *
+ * CSI    4    h
+ * 9/11   3/4  6/8
+ *
+ * Set: insert mode.
+ * 
+ *
+ * CSI    4    l
+ * 9/11   3/4  6/12   
+ *
+ * Reset: replace mode.
+ *
+ * Description
+ *
+ * If IRM mode is set, then new characters move characters in page memory 
+ * to the right. Characters moved past the page's right border are lost.
+ *
+ * If IRM mode is reset, then new characters replace the character at the
+ * cursor position.
  *
  */
-var ReverseWrap = new Class().extends(Plugin);
-ReverseWrap.definition = {
+var IRMSwitch = new Class().extends(Plugin);
+IRMSwitch.definition = {
 
   get id()
-    "reversewrap",
+    "irm_switch",
 
   get info()
     <module>
-        <name>{_("Reverse Wraparound Mode")}</name>
+        <name>{_("IRM Switch")}</name>
         <version>0.1</version>
         <description>{
-          _("Enable/disable reverse-wraparound feature(DECARM)",
-            " by escape seqnence.")
+          _("Switch Insert/Replace mode(IRM) with escape seqnence.")
         }</description>
     </module>,
 
+
   "[persistable] enabled_when_startup": true,
 
-  /** Activate auto-wrap feature(DECAWM).
+  /** Activate auto-repeat feature.
    */
-  "[subscribe('sequence/decset/45'), pnp]":
+  "[subscribe('sequence/sm/4'), pnp]":
   function activate() 
   { 
-    var broker = this._broker;
-
-    // Reverse-wraparound Mode
-    broker.notify("command/enable-reverse-wraparound");
-    coUtils.Debug.reportMessage(
-      _("DECSET 45 - Reverse-wraparound Mode was set."));
+    // enable insert mode.
+    this.sendMessage("command/enable-insert-mode");
   },
 
-  /** Deactivate auto-wrap feature(DECAWM).
+  /** Deactivate auto-repeat feature
    */
-  "[subscribe('sequence/decrst/45'), pnp]":
+  "[subscribe('sequence/rm/4'), pnp]":
   function deactivate() 
   {
-    var broker = this._broker;
-
-    // No Reverse-wraparound Mode
-    broker.notify("command/disable-reverse-wraparound");
-    coUtils.Debug.reportMessage(
-      _("DECRST 45 - Reverse-wraparound Mode was reset."));
+    // disable insert mode.
+    this.sendMessage("command/disable-insert-mode");
   },
 
-}; // class ReverseWrap
+}; // class IRMSwitch
 
 /**
  * @fn main
@@ -80,7 +100,7 @@ ReverseWrap.definition = {
  */
 function main(broker) 
 {
-  new ReverseWrap(broker);
+  new IRMSwitch(broker);
 }
 
 

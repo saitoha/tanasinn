@@ -32,11 +32,10 @@ Control.definition = {
     "control",
 
   /** Post constructor */
-  "[subscribe('initialized/{screen & ansimode}'), enabled]":
-  function onLoad(screen, ansi_mode) 
+  "[subscribe('initialized/screen'), enabled]":
+  function onLoad(screen) 
   {
     this._screen = screen;
-    this._ansi_mode = ansi_mode;
   },
 
   /** Null.
@@ -143,9 +142,9 @@ Control.definition = {
 
     screen = this._screen;
     screen.lineFeed();
-    if (this._ansi_mode.LNM) {
-      screen.carriageReturn();
-    }
+//    if (this._ansi_mode.LNM) {
+//      screen.carriageReturn();
+//    }
   },
  
   /** Index.

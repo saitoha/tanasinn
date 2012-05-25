@@ -80,85 +80,123 @@ Base64Copy.definition = {
 
   "[persistable] enabled_when_startup": true,
 
-  /** Installs itself. */
-  "[install]": 
-  function install(session) 
-  {
-    this.copy.enabled = true;
-  },
-
-  /** Uninstalls itself. */
-  "[uninstall]": 
-  function uninstall(session) 
-  {
-    this.copy.enabled = false;
-  },
-
   /** Get selected text and put it to clipboard.  */
-  "[subscribe('sequence/osc/52'), _('Copy selected text.')]": 
-  function copy(command) 
+  "[subscribe('sequence/osc/52'), _('Copy selected text.'), pnp]": 
+  function copy(data) 
   {
-    var [place, encoded_data] = command.split(";");
-    var data = coUtils.Text.base64decode(encoded_data);
-    var buffer = [];
-    var sanitized_text;
-    var clipboard_helper = Components
-      .classes["@mozilla.org/widget/clipboardhelper;1"]
-      .getService(Components.interfaces.nsIClipboardHelper);
-    var status_message;
-    var i, c;
+    var buffer, text, scanner, encoded_data;
 
-    var scanner = new ForwardInputIterator(data);
-    var decoder = this.dependency["decoder"];
+    encoded_data = this._parseOSC52Data(data);
+    scanner = this._getScanner(encoded_data);
+    
+    buffer = [c for (c in this._decode(scanner))]; 
+    text = coUtils.Text.safeConvertFromArray(buffer);
+    coUtils.Clipboard.set(text);
+    this._showMessage(text);
+  },
 
-    for (c in decoder.decode(scanner)) {
+  /** parse OSC 52 text data stream. */
+  _parseOSC52Data: function _parseOSC52Data(data)
+  {
+    var position, content;
 
-      switch (c) {
-        case 0x00: // nul
-        case 0x01: // soh
-        case 0x02: // stx
-        case 0x03: // etx
-        case 0x04: // eot
-        case 0x05: // enq
-        case 0x06: // ack
-        case 0x07: // bel
-        case 0x08: // bs
-        //case 0x09: // ht
-        //case 0x0a: // nl
-        case 0x0b: // vt
-        case 0x0c: // np
-        //case 0x0d: // cr
-        case 0x0e: // so
-        case 0x0f: // si
-        case 0x10: // dle
-        case 0x11: // dc1
-        case 0x12: // dc2
-        case 0x13: // dc3
-        case 0x14: // dc4
-        case 0x15: // nak
-        case 0x16: // syn
-        case 0x17: // etb
-        case 0x18: // can
-        case 0x19: // em
-        case 0x1a: // sub
-        case 0x1b: // esc
-        case 0x1c: // fs
-        case 0x1d: // gs
-        case 0x1e: // rs
-        case 0x1f: // us
-          continue;
-      }
-      buffer.push(c);
+    position = data.indexOf(";");
+    if (-1 === position) {
+      throw coUtils.Exception(_("Cannot parse OSC 52 data."));
     }
 
-    sanitized_text = String.fromCharCode.apply(String, buffer);
-    clipboard_helper.copyString(sanitized_text);
+    ++position;
+
+    content = data.substr(position);
+
+    return content;
+  },
+
+  _setToClipboard: function _setToClipboard(text) 
+  {
+    var clipboard_helper
+     
+    clipboard_helper = Components
+      .classes["@mozilla.org/widget/clipboardhelper;1"]
+      .getService(Components.interfaces.nsIClipboardHelper);
+    clipboard_helper.copyString(text);
+  },
+
+  _getScanner: function _getScanner(text)
+  {
+    var data;
+
+    data = coUtils.Text.base64decode(text);
+    return new ForwardInputIterator(data);
+  },
+
+  /** send message text to status bar. */
+  _showMessage: function _showMessage(text)
+  {
+    var status_message;
+
     status_message = coUtils.Text.format(
       _("Copied text to clipboard: %s"), text);
 
-    let broker = this._broker;
-    broker.notify("command/report-status-message", status_message);
+    this.sendMessage(
+      "command/report-status-message", 
+      status_message);
   },
+
+  /** decode and sanitize encoded byte stream.  */
+  _decode: function _decode(scanner)
+  {
+    var c, decoder;
+
+    decoder = this.dependency["decoder"];
+
+    while (true) {
+
+      for (c in decoder.decode(scanner)) {
+
+        switch (c) {
+          case 0x00: // nul
+          case 0x01: // soh
+          case 0x02: // stx
+          case 0x03: // etx
+          case 0x04: // eot
+          case 0x05: // enq
+          case 0x06: // ack
+          case 0x07: // bel
+          case 0x08: // bs
+          //case 0x09: // ht
+          //case 0x0a: // nl
+          case 0x0b: // vt
+          case 0x0c: // np
+          //case 0x0d: // cr
+          case 0x0e: // so
+          case 0x0f: // si
+          case 0x10: // dle
+          case 0x11: // dc1
+          case 0x12: // dc2
+          case 0x13: // dc3
+          case 0x14: // dc4
+          case 0x15: // nak
+          case 0x16: // syn
+          case 0x17: // etb
+          case 0x18: // can
+          case 0x19: // em
+          case 0x1a: // sub
+          case 0x1b: // esc
+          case 0x1c: // fs
+          case 0x1d: // gs
+          case 0x1e: // rs
+          case 0x1f: // us
+            continue;
+        }
+        yield c;
+      }
+      if (scanner.isEnd) {
+        break;
+      }
+      scanner.moveNext();
+    }
+ },
 
 };
 

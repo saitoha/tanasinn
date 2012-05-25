@@ -41,10 +41,6 @@ Emulator.definition = {
   "[subscribe('@initialized/{screen & ansimode & decmode}'), enabled]": 
   function onLoad(screen, ansi_mode, dec_mode) 
   {
-    this._screen = screen;
-    this._ansi_mode = ansi_mode;
-    this._dec_mode = dec_mode;
-
     this.sendMessage("initialized/emurator", this);
   },
 
@@ -52,8 +48,6 @@ Emulator.definition = {
   {
     var insert_mode, auto_wrap_mode, screen;
 
-    insert_mode = this._ansi_mode.IRM;
-    auto_wrap_mode = this._dec_mode.AWM;
     screen = this._screen;
     screen.write(codes, insert_mode, auto_wrap_mode);
   },

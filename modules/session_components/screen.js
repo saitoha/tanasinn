@@ -1824,6 +1824,7 @@ Screen.definition = {
   _line_generator: null,
 
   _wraparound_mode: true,
+  _insert_mode: false,
   _reverse_wraparound_mode: false,
 
   tab_stops: null,
@@ -1975,6 +1976,18 @@ Screen.definition = {
     return line.isWide(this.cursor.positionX);
   },
 
+  "[subscribe('command/enable-insert-mode'), enabled]":
+  function enableInsertMode() 
+  {
+    this._insert_mode = true;
+  },
+
+  "[subscribe('command/disable-insert-mode'), enabled]":
+  function disableInsertMode() 
+  {
+    this._insert_mode = false;
+  },
+
   "[subscribe('command/enable-wraparound'), enabled]":
   function enableWraparound() 
   {
@@ -2001,9 +2014,11 @@ Screen.definition = {
 
   /** Write printable charactor seqences. */
   "[type('Array -> Boolean -> Undefined')] write":
-  function write(codes, insert_mode) 
+  function write(codes) 
   {
-    var width, cursor, it, line, positionX, length, run;
+    var width, cursor, it, line, positionX, length, run, insert_mode;
+
+    insert_mode = this._insert_mode;
 /*    
 //    if (this._smooth_scrolling) {
         if ((this.flag = (this.flag + 1) % 10) == 0) {

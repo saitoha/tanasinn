@@ -564,12 +564,14 @@ DRCSConverter.definition = {
   function shiftOut() 
   {
     this._gl = 1;
+    this._gr = 2;
   },
 
   "[subscribe('event/shift-in'), enabled]": 
   function shiftIn() 
   {
     this._gl = 0;
+    this._gr = 1;
   },
 
   "[subscribe('sequence/g0'), enabled]": 
@@ -603,8 +605,8 @@ DRCSConverter.definition = {
     context.g1 = this._g[1];
     context.g2 = this._g[2];
     context.g3 = this._g[3];
-    context.gl = this._gl;
-    context.gr = this._gr;
+    context.gl = 0;
+    context.gr = 0;
   },
 
   "[subscribe('command/restore-cursor'), enabled]": 
@@ -616,6 +618,17 @@ DRCSConverter.definition = {
     this._g[3] = context.g3;
     this._gl = context.gl;
     this._gr = context.gr;
+  },
+
+  "[subscribe('command/{soft | hard}-terminal-reset'), enabled]":
+  function reset(context) 
+  {
+    this._g[0] = USASCII;
+    this._g[1] = USASCII;
+    this._g[2] = USASCII;
+    this._g[3] = USASCII;
+    this._gl = 0;
+    this._gr = 0;
   },
 
   convert: function convert(codes) 

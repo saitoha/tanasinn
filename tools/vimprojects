@@ -110,11 +110,16 @@
     da3.js
     eaw.js
     reversevideo.js
+    autorepeat.js
     autowrap.js
     reversewrap.js
     windowmanipulation.js
+    scrollregion.js
+    softreset.js
+    sgrhandler.js
+    irm.js
+    lnm.js
 
-    autorepeat.js
     focusevent.js
     declocatormouse.js
     mousegesture.js

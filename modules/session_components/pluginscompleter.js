@@ -26,7 +26,7 @@
 /**
  * @class ComponentsCompleter
  */
-let ComponentsCompleter = new Class().extends(Component);
+var ComponentsCompleter = new Class().extends(Component);
 ComponentsCompleter.definition = {
 
   get id()
@@ -41,11 +41,10 @@ ComponentsCompleter.definition = {
   "[completer('components'), enabled]":
   function complete(context)
   {
-    let broker = this._broker;
     let { source, option, completers } = context;
     let match = source.match(/^(\s*)([$_\-@a-zA-Z\.]*)(\s?)/);
     if (null === match) {
-      broker.notify("event/answer-completion", null);
+      this.sendMessage("event/answer-completion", null);
       return;
     }
     let [all, space, name, next] = match;
@@ -53,27 +52,28 @@ ComponentsCompleter.definition = {
       let next_completer_info = completers.shift();
       if (next_completer_info) {
         let [next_completer, option] = next_completer_info.split("/");
-        broker.notify(<>command/query-completion/{next_completer}</>, {
+        this.sendMessage("command/query-completion/" + next_completer, {
           source: source.substr(all.length),
           option: option,
           completers: completers,
         });
       } else {
-        broker.notify("event/answer-completion", null);
+        this.sendMessage("event/answer-completion", null);
       }
       return;
     }
-    let modules = broker.notify("get/components");
+    let modules = this.sendMessage("get/components");
     let candidates = [
       {
         key: module.id, 
         value: module.info ? 
-          "[" + module.info..name + "] " + module.info..description: module.toString()
+          "[" + module.info..name + "] " + module.info..description: 
+          module.toString()
       } for ([, module] in Iterator(modules)) 
         if (module.id && module.id.match(source))
     ];
     if (0 == candidates.length) {
-      broker.notify("event/answer-completion", null);
+      this.sendMessage("event/answer-completion", null);
       return;
     }
     let autocomplete_result = {
@@ -84,7 +84,7 @@ ComponentsCompleter.definition = {
         value: String(candidate.value),
       })),
     };
-    broker.notify("event/answer-completion", autocomplete_result);
+    this.sendMessage("event/answer-completion", autocomplete_result);
   },
 
 };
@@ -92,7 +92,7 @@ ComponentsCompleter.definition = {
 /**
  * @class PluginsCompleter
  */
-let PluginsCompleter = new Class().extends(Component);
+var PluginsCompleter = new Class().extends(Component);
 PluginsCompleter.definition = {
 
   get id()
@@ -108,11 +108,10 @@ PluginsCompleter.definition = {
   "[completer('plugin'), enabled]":
   function complete(context)
   {
-    let broker = this._broker;
     let { source, option, completers } = context;
     let match = source.match(/^(\s*)([$_\-@a-zA-Z\.]*)(\s?)/);
     if (null === match) {
-      broker.notify("event/answer-completion", null);
+      this.sendMessage("event/answer-completion", null);
       return;
     }
     let [all, space, name, next] = match;
@@ -120,17 +119,17 @@ PluginsCompleter.definition = {
       let next_completer_info = completers.shift();
       if (next_completer_info) {
         let [next_completer, option] = next_completer_info.split("/");
-        broker.notify(<>command/query-completion/{next_completer}</>, {
+        this.sendMessage(<>command/query-completion/{next_completer}</>, {
           source: source.substr(all.length),
           option: option,
           completers: completers,
         });
       } else {
-        broker.notify("event/answer-completion", null);
+        this.sendMessage("event/answer-completion", null);
       }
       return;
     }
-    let modules = broker.notify("get/components");
+    let modules = this.sendMessage("get/components");
     let candidates = [
       {
         key: module.id, 
@@ -140,7 +139,7 @@ PluginsCompleter.definition = {
             && module.enabled == (option == "enabled"))
     ];
     if (0 == candidates.length) {
-      broker.notify("event/answer-completion", null);
+      this.sendMessage("event/answer-completion", null);
       return;
     }
     let autocomplete_result = {
@@ -151,7 +150,7 @@ PluginsCompleter.definition = {
         value: String(candidate.value),
       })),
     };
-    broker.notify("event/answer-completion", autocomplete_result);
+    this.sendMessage("event/answer-completion", autocomplete_result);
     return;
   },
 
