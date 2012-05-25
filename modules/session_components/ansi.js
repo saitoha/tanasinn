@@ -101,10 +101,6 @@ AnsiSpecifiedMode.definition = {
         this.SRM = flag
         break;
 
-      case ANSI_LNM:
-        this.LNM = flag
-        break;
-
       default:
         try {
           if (flag) {

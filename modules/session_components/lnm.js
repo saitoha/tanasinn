@@ -86,7 +86,7 @@ NewLineMode.definition = {
 
   "[persistable] enabled_when_startup": true,
 
-  /** Activate auto-repeat feature.
+  /** set new line.
    */
   "[subscribe('sequence/sm/20'), pnp]":
   function activate() 
@@ -95,7 +95,7 @@ NewLineMode.definition = {
     this.sendMessage("set/newline-mode", true);
   },
 
-  /** Deactivate auto-repeat feature
+  /** set line feed.
    */
   "[subscribe('sequence/rm/20'), pnp]":
   function deactivate() 

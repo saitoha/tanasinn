@@ -38,6 +38,12 @@ Control.definition = {
     this._screen = screen;
   },
 
+  "[subscribe('set/newline-mode'), enabled]":
+  function onChangeNewlineMode(mode)
+  {
+    this._newline_mode = mode;
+  },
+
   /** Null.
    */
   "[profile('vt100'), sequence('0x00')]":
@@ -142,9 +148,9 @@ Control.definition = {
 
     screen = this._screen;
     screen.lineFeed();
-//    if (this._ansi_mode.LNM) {
-//      screen.carriageReturn();
-//    }
+    if (this._newline_mode) {
+      screen.carriageReturn();
+    }
   },
  
   /** Index.
@@ -156,9 +162,6 @@ Control.definition = {
 
     screen = this._screen;
     screen.lineFeed();
-//    if (this._ansi_mode.LNM) {
-//      screen.carriageReturn();
-//    }
   },
  
   /** Vertical tabulation.
@@ -170,9 +173,9 @@ Control.definition = {
 
     screen = this._screen;
     screen.lineFeed();
-//    if (this._ansi_mode.LNM) {
-//      screen.carriageReturn();
-//    }
+    if (this._newline_mode) {
+      screen.carriageReturn();
+    }
   },
 
   /** Form feed.
@@ -184,9 +187,9 @@ Control.definition = {
 
     screen = this._screen;
     screen.lineFeed();
-//    if (this._ansi_mode.LNM) {
-//      screen.carriageReturn();
-//    }
+    if (this._newline_mode) {
+      screen.carriageReturn();
+    }
   },
 
   /** Carriage return.
@@ -198,9 +201,6 @@ Control.definition = {
 
     screen = this._screen;
     screen.carriageReturn();
-//    if (this._ansi_mode.LNM) {
-//      screen.lineFeed();
-//    }
   },
     
   /** Shift out.
