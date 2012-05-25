@@ -102,7 +102,7 @@ Base64Copy.definition = {
 
     position = data.indexOf(";");
     if (-1 === position) {
-      throw coUtils.Exception(_("Cannot parse OSC 52 data."));
+      throw coUtils.Debug.Exception(_("Cannot parse OSC 52 data."));
     }
 
     ++position;

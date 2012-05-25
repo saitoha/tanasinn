@@ -233,7 +233,7 @@
             return directory.path;
           }
         }
-        throw coUtils.Exception(_("Cannot guess cygwin root path."));
+        throw coUtils.Debug.Exception(_("Cannot guess cygwin root path."));
       },
   
       _guessBinPath: function _guessBinPath()

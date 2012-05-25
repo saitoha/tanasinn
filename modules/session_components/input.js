@@ -473,9 +473,6 @@ ModeManager.definition = {
   function install(broker)
   {
     this._modes = this.sendMessage("get/modes");
-    this.onScanKeycode.enabled = true;
-    this.onScanKeycodeWithoutMapping.enabled = true;
-    this.onModeChanged.enabled = true;
   },
 
   /** Uninstalls itself. 
@@ -485,12 +482,9 @@ ModeManager.definition = {
   function uninstall(broker)
   {
     this._modes = null;
-    this.onScanKeycode.enabled = false;
-    this.onScanKeycodeWithoutMapping.enabled = false;
-    this.onModeChanged.enabled = false;
   },
 
-  "[subscribe('event/scan-keycode')]":
+  "[subscribe('event/scan-keycode'), pnp]":
   function onScanKeycode(info) 
   {
     var mode, code;
@@ -507,7 +501,7 @@ ModeManager.definition = {
     }
   },
 
-  "[subscribe('event/scan-keycode-with-no-remapping')]":
+  "[subscribe('event/scan-keycode-with-no-remapping'), pnp]":
   function onScanKeycodeWithoutMapping(info) 
   {
     var mode, code;
@@ -524,7 +518,7 @@ ModeManager.definition = {
     }
   },
 
-  "[command('sendkeys/sk'), enabled]":
+  "[command('sendkeys/sk'), pnp]":
   function sendkeys(arguments_string) 
   {
     this.sendMessage(
@@ -535,7 +529,7 @@ ModeManager.definition = {
     };
   },
 
-  "[subscribe('command/input-expression-with-remapping'), enabled]":
+  "[subscribe('command/input-expression-with-remapping'), pnp]":
   function inputExpressionWithMapping(expression) 
   {
     var packed_code_array, i, packed_code;
@@ -550,7 +544,7 @@ ModeManager.definition = {
     return true;
   },
 
-  "[subscribe('command/input-expression-with-no-remapping'), enabled]":
+  "[subscribe('command/input-expression-with-no-remapping'), pnp]":
   function inputExpressionWithNoRemapping(expression) 
   {
     var packed_code_array, i, packed_code;
@@ -567,7 +561,7 @@ ModeManager.definition = {
     return true;
   },
 
-  "[subscribe('event/mode-changed')]":
+  "[subscribe('event/mode-changed'), pnp]":
   function onModeChanged(mode)
   {
     this._mode = mode;
@@ -598,105 +592,26 @@ MacAltKeyWatcher.definition = {
 
 }; // MacAltKeyWatcher
 
-
-/**
- * @class InputMacroTrait
- */
-var InputMacroTrait = new Trait();
-InputMacroTrait.definition = {
-
-  _macros: null,
-  _macro_buffer: null,
-  _current_macro_name: null,
-
-  "[command('recordinputmacro', []), _('Record input macro with given name.')]": 
-  function recordInputMacro(name)
-  {
-    if (!name) {
-      throw coUtils.Exception(_("Given argument is invalid."));
-    }
-
-    if (null === this._macros) {
-      // Create the macro DB.
-      this._macros = {};
-    }
-
-    // Create a macro buffer.
-    this._macro_buffer = [];
-    this._current_macro_name = name;
-    return {
-      success: true,
-      message: coUtils.Text.format(_("Recording macro '%s'."), name),
-    }
-  },
-
-  "[command('playinputmacro', []), _('Play input macro.')]": 
-  function playInputMacro(name)
-  {
-    var buffer, i, complete, thread;
-
-    buffer = this._macros[name];
-    if (!buffer) {
-      throw coUtils.Exception(
-        _("The macro specified by given name is not found."));
-    }
-
-    thread = Components.classes["@mozilla.org/thread-manager;1"]
-      .getService(Components.interfaces.nsIThreadManager)
-      .currentThread;
-
-    for (i = 0; i < buffer.length; ++i) {
-
-      complete = false;
-
-      coUtils.Timer.setTimeout(function() {
-        complete = true;
-      }, 200);
-
-      while (!complete) {
-        thread.processNextEvent(true);
-      }
-      this.inputWithNoMapping(buffer[i]);
-    }
-
-    return {
-      success: true,
-      message: _("Done."),
-    }
-  },
-
-  "[command('completeinputmacro', []), _('Stop to recording current macro.')]": 
-  function completeInputMacro()
-  {
-    var buffer, name;
-
-    buffer = this._macro_buffer;
-    name = this._current_macro_name;
-    this._macro_buffer = null;
-    this._current_macro_name = null;
-    this._macros[name] = buffer;
-    return {
-      success: true,
-      message: coUtils.Text.format(_("Macro '%s' is defined."), name),
-    }
-  },
-
-
-}; // InputMacroTrait
-
-
 /**
  * @class InputManager
  * @brief Listen keyboard input events and send ones to TTY device.
  */
 var InputManager = new Class().extends(Plugin)
                               .mix(MacAltKeyWatcher)
-                              .mix(InputMacroTrait)
                               .depends("encoder");
 InputManager.definition = {
 
   get id()
     "inputmanager",
+
+  get info()
+    <module>
+        <name>{_("Input Manager")}</name>
+        <description>{
+          _("Handle keyboard input event and send it to TTY device.")
+        }</description>
+        <version>0.1</version>
+    </module>,
 
   get template()
     ({ 
@@ -747,24 +662,6 @@ InputManager.definition = {
       = this.request("command/construct-chrome", this.template)
           .tanasinn_default_input;
     this._textbox = tanasinn_default_input;
-    this._processInputSequence.enabled = true;
-    this.focus.enabled = true;
-    this.blur.enabled = true;
-    this.onDoubleShift.enabled = true;
-    this.oncompositionstart.enabled = true;
-    this.oncompositionend.enabled = true;
-    this.switchToCommandline.enabled = true;
-    this.inputWithMapping.enabled = true;
-    this.inputWithNoMapping.enabled = true;
-    this.enableInputManager.enabled = true;
-    this.disableInputManager.enabled = true;
-    this.blurCommand.enabled = true;
-    this.onAutoRepeatModeChanged.enabled = true;
-
-    this.recordInputMacro.enabled = true;
-    this.completeInputMacro.enabled = true;
-    this.playInputMacro.enabled = true;
-
     this.sendMessage("event/collection-changed/modes");
   },
 
@@ -775,42 +672,24 @@ InputManager.definition = {
   function uninstall(broker)
   {
     this._key_map = null; 
-    this._processInputSequence.enabled = false;
-    this.focus.enabled = false;
-    this.blur.enabled = false;
-    this.onDoubleShift.enabled = false;
-    this.oncompositionstart.enabled = false;
-    this.oncompositionend.enabled = false;
-    this.switchToCommandline.enabled = false;
-    this.inputWithMapping.enabled = false;
-    this.inputWithNoMapping.enabled = false;
-    this.enableInputManager.enabled = false;
-    this.disableInputManager.enabled = false;
-    this.blurCommand.enabled = false;
-    this.onAutoRepeatModeChanged.enabled = false;
-
-    this.recordInputMacro.enabled = false;
-    this.completeInputMacro.enabled = false;
-    this.playInputMacro.enabled = false;
-
     this._textbox.parentNode.removeChild(this._textbox);
     this.sendMessage("event/collection-changed/modes");
   },
 
-  "[subscribe('set/newline-mode'), enabled]":
+  "[subscribe('set/newline-mode'), pnp]":
   function onChangeNewlineMode(mode)
   {
     this._newline_mode = mode;
   },
 
-  "[subscribe('command/change-auto-repeat-mode')]":
+  "[subscribe('command/change-auto-repeat-mode'), pnp]":
   function onAutoRepeatModeChanged(mode) 
   {
     this._auto_repeat = mode;
   },
 
   /** Makes input event handler enabled. */
-  "[subscribe('command/enable-input-manager')]":
+  "[subscribe('command/enable-input-manager'), pnp]":
   function enableInputManager() 
   {
     this.onkeypress.enabled = true;
@@ -819,7 +698,7 @@ InputManager.definition = {
   },
 
   /** Makes input event handler disabled. */
-  "[subscribe('command/disable-input-manager')]":
+  "[subscribe('command/disable-input-manager'), pnp]":
   function disableInputManager() 
   {
     this.onkeypress.enabled = false;
@@ -828,7 +707,7 @@ InputManager.definition = {
   },
 
   /** get focus on the textbox elment. */
-  "[subscribe('command/focus')]":
+  "[subscribe('command/focus'), pnp]":
   function focus() 
   {
     // call focus() 2 times.
@@ -839,7 +718,7 @@ InputManager.definition = {
     this.sendMessage("event/mode-changed", "normal");
   },
 
-  "[command('blur', []), nmap('<M-z>', '<C-S-Z>'), _('Blur tanasinn window')]":
+  "[command('blur', []), nmap('<M-z>', '<C-S-Z>'), _('Blur tanasinn window'), pnp]":
   function blurCommand() 
   {
     coUtils.Timer.setTimeout(function() {
@@ -872,7 +751,7 @@ InputManager.definition = {
   },
 
   /** handle double-shift key event, and interpret it to <2-Shift> */
-  "[subscribe('event/hotkey-double-shift')]":
+  "[subscribe('event/hotkey-double-shift'), enabled]":
   function onDoubleShift(event) 
   {
     this.sendMessage(
@@ -881,7 +760,7 @@ InputManager.definition = {
   },
 
   /** handle <2-shift> event, and switch focus to commandline. */
-  "[nmap('<2-shift>', '<cmode>')]":
+  "[nmap('<2-shift>', '<cmode>'), pnp]":
   function switchToCommandline(event) 
   { // nothrow
     this.sendMessage("command/enable-commandline")
@@ -959,7 +838,7 @@ char:{event.isChar?"t":"f"}
     });
   },
 
-  "[subscribe('command/input-with-remapping')]": 
+  "[subscribe('command/input-with-remapping'), pnp]": 
   function inputWithMapping(info)
   {
     var result;
@@ -969,18 +848,14 @@ char:{event.isChar?"t":"f"}
       code: info.code,
     });
     if (!result && !(info.code & 1 << coUtils.Keyboard.KEY_MODE)) {
-      this.inputWithNoMapping(info.code);
+      this.sendMessage("command/input-with-no-remapping", info.code);
     }
   },
 
-  "[subscribe('command/input-with-no-remapping')]": 
+  "[subscribe('command/input-with-no-remapping'), pnp]": 
   function inputWithNoMapping(packed_code)
   {
     var c, message;
-
-    if (null !== this._macro_buffer) {
-      this._macro_buffer.push(packed_code);
-    }
 
     c = packed_code & 0xffffff;// event.which;
     message = this._key_map[packed_code];
@@ -1005,8 +880,8 @@ char:{event.isChar?"t":"f"}
    *  @param {String} data a text message in Unicode string.
    *  @notify command/send-to-tty
    */ 
-  "[subscribe('command/input-text')]":
-  function _processInputSequence(data)
+  "[subscribe('command/input-text'), pnp]":
+  function processInputSequence(data)
   {
     var message;
 
@@ -1033,7 +908,7 @@ char:{event.isChar?"t":"f"}
   /** compositionstart event handler. 
    *  @{Event} event A event object.
    */
-  "[listen('compositionstart', '#tanasinn_default_input')]":
+  "[listen('compositionstart', '#tanasinn_default_input'), pnp]":
   function oncompositionstart(event) 
   {
     var version_comparator;
@@ -1050,7 +925,7 @@ char:{event.isChar?"t":"f"}
   /** compositionend event handler. 
    *  @{Event} event A event object.
    */
-  "[listen('compositionend', '#tanasinn_default_input')]":
+  "[listen('compositionend', '#tanasinn_default_input'), pnp]":
   function oncompositionend(event) 
   {
     var version_comparator;
