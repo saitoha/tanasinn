@@ -750,10 +750,7 @@ InputManager.definition = {
     this._processInputSequence.enabled = true;
     this.focus.enabled = true;
     this.blur.enabled = true;
-    this.onkeypress.enabled = true;
-    this.onkeyup.enabled = true;
     this.onDoubleShift.enabled = true;
-    this.oninput.enabled = true;
     this.oncompositionstart.enabled = true;
     this.oncompositionend.enabled = true;
     this.switchToCommandline.enabled = true;
@@ -781,10 +778,7 @@ InputManager.definition = {
     this._processInputSequence.enabled = false;
     this.focus.enabled = false;
     this.blur.enabled = false;
-    this.onkeypress.enabled = false;
-    this.onkeyup.enabled = false;
     this.onDoubleShift.enabled = false;
-    this.oninput.enabled = false;
     this.oncompositionstart.enabled = false;
     this.oncompositionend.enabled = false;
     this.switchToCommandline.enabled = false;
@@ -896,7 +890,7 @@ InputManager.definition = {
   /** Keypress event handler. 
    *  @param {Event} event A event object.
    */
-  "[listen('keyup', '#tanasinn_default_input', true)]":
+  "[listen('keyup', '#tanasinn_default_input', true), pnp]":
   function onkeyup(event) 
   { // nothrow
     if ("Darwin" == coUtils.Runtime.os) {
@@ -913,7 +907,7 @@ InputManager.definition = {
   /** Keypress event handler. 
    *  @param {Event} event A event object.
    */
-  "[listen('keypress', '#tanasinn_default_input', true)]":
+  "[listen('keypress', '#tanasinn_default_input', true), pnp]":
   function onkeypress(event) 
   { // nothrow
     if (false === this._auto_repeat) {
@@ -1026,7 +1020,7 @@ char:{event.isChar?"t":"f"}
    *  @param {Event} event A event object.
    *  @notify event/input Notifies that a input event is occured.
    */
-  "[listen('input', '#tanasinn_default_input')]":
+  "[listen('input', '#tanasinn_default_input'), pnp]":
   function oninput(event) 
   {
     var value;

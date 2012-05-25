@@ -59,7 +59,7 @@ PnPAttribute.definition = {
    */
   initialize: function initialize(broker) 
   {
-    var attributes, key, attribute, handler, id;
+    var attributes, key, attribute, id;
 
     attributes = this.__attributes;
 
@@ -68,7 +68,7 @@ PnPAttribute.definition = {
       if (!attribute["pnp"]) {
         continue;
       }
-      handler = this[key];
+      let handler = this[key];
       id = this.id + "." + key;
 
       let wrapped_handler;
@@ -76,7 +76,10 @@ PnPAttribute.definition = {
         wrapped_handler = handler;
       } else {
         let self = this;
-        wrapped_handler = function() handler.apply(self, arguments);
+        wrapped_handler = function() 
+          {
+            handler.apply(self, arguments);
+          };
         wrapped_handler.id = id;
         this[key] = wrapped_handler;
       }
@@ -85,7 +88,7 @@ PnPAttribute.definition = {
         function() 
         {
           wrapped_handler.enabled = true;
-        }, undefined, id);
+        }, this, id);
 
       broker.subscribe("uninstall/" + this.id, 
         function() 
