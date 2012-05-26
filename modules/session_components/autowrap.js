@@ -93,17 +93,17 @@ AutoWrap.definition = {
   "[subscribe('sequence/decrst/7'), pnp]":
   function deactivate() 
   {
-    this.sendMessage("command/enable-wraparound");
+    this.sendMessage("command/disable-wraparound");
     coUtils.Debug.reportMessage(
       _("DECRST - DECAWM (Auto-wrap Mode) was reset."));
   },
 
-  /** Deactivate auto-wrap feature(DECAWM).
+  /** handle terminal reset event.
    */
   "[subscribe('command/{soft | hard}-terminal-reset'), pnp]":
   function reset() 
   {
-    this.deactivate();
+    this.activate();
   },
 
 }; // class AutoWrap

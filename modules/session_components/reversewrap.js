@@ -45,7 +45,7 @@ ReverseWrap.definition = {
 
   "[persistable] enabled_when_startup": true,
 
-  /** Activate auto-wrap feature(DECAWM).
+  /** Activate auto-wrap feature.
    */
   "[subscribe('sequence/decset/45'), pnp]":
   function activate() 
@@ -58,7 +58,7 @@ ReverseWrap.definition = {
       _("DECSET 45 - Reverse-wraparound Mode was set."));
   },
 
-  /** Deactivate auto-wrap feature(DECAWM).
+  /** Deactivate reverse auto-wrap feature.
    */
   "[subscribe('sequence/decrst/45'), pnp]":
   function deactivate() 
@@ -71,7 +71,7 @@ ReverseWrap.definition = {
       _("DECRST 45 - Reverse-wraparound Mode was reset."));
   },
 
-  /** Deactivate auto-wrap feature(DECAWM).
+  /** Deactivate reverse auto-wrap feature.
    */
   "[subscribe('command/{soft | hard}-terminal-reset'), pnp]":
   function reset() 

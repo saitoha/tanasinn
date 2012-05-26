@@ -644,6 +644,7 @@ InputManager.definition = {
   _auto_repeat: true,
 
   _newlne_mode: false,
+  _local_echo_mode: false,
 
   /** Installs itself. 
    *  @param {Broker} brokr a Broker object.
@@ -674,6 +675,12 @@ InputManager.definition = {
     this._key_map = null; 
     this._textbox.parentNode.removeChild(this._textbox);
     this.sendMessage("event/collection-changed/modes");
+  },
+
+  "[subscribe('set/local-echo-mode'), enabled]":
+  function setLocalEchoMode(value) 
+  {
+    this._local_echo_mode = value;
   },
 
   "[subscribe('set/newline-mode'), pnp]":
@@ -888,7 +895,11 @@ char:{event.isChar?"t":"f"}
     if (data) {
       message = this.dependency["encoder"].encode(data);
       this.sendMessage("command/send-to-tty", message);
+      if (this._local_echo_mode) {
+        this.sendMessage("event/data-arrived", message);
+      }
     }
+
   },
 
   /** input event handler. 

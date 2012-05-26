@@ -212,7 +212,7 @@ var ATTR2_HIGHLIGHT    = 28    // 00001000 00000000 00000000 00000000
 
 var ATTR2_WIDE         = 29    // 00010000 00000000 00000000 00000000
 var ATTR2_DRCS         = 30    // 00100000 00000000 00000000 00000000
-var ATTR2_COMBINING    = 31    // 01000000 00000000 00000000 00000000
+var ATTR2_PROTECTED    = 31    // 01000000 00000000 00000000 00000000
 
 /**
  * @class Cell
@@ -403,18 +403,18 @@ Cell.definition = {
                | value << ATTR2_WIDE;
   },
   
-  /** getter of combining attribute */
-  get combining()
+  /** getter of protected attribute */
+  get protected()
   {
-    return this.value >>> ATTR2_COMBINING & 0x1;
+    return this.value >>> ATTR2_PROTECTED & 0x1;
   },
 
-  /** setter of combining attribute */
-  set combining(value) 
+  /** setter of protected attribute */
+  set protected(value) 
   {
     this.value = this.value
-               & ~(0x1 << ATTR2_COMBINING) 
-               | value << ATTR2_COMBINING;
+               & ~(0x1 << ATTR2_PROTECTED) 
+               | value << ATTR2_PROTECTED;
   },
  
   /** getter of drcs attribute */

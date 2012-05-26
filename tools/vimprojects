@@ -125,6 +125,7 @@
     macro.js
     dsr.js
     charset.js
+    protection.js
 
     focusevent.js
     declocatormouse.js

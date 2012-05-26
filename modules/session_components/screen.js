@@ -1934,7 +1934,7 @@ Screen.definition = {
   },
 
   /** Write printable charactor seqences. */
-  "[type('Array -> Boolean -> Undefined')] write":
+  "[subscribe('command/write'), type('Array -> Boolean -> Undefined')] write":
   function write(codes) 
   {
     var width, cursor, it, line, positionX, length, run, insert_mode;
@@ -1967,11 +1967,14 @@ Screen.definition = {
     do {
       if (line) {
         if (cursor.positionX >= width) {
-          cursor.positionX = 0;
-          //this.carriageReturn();
           if (this._wraparound_mode) {
+            cursor.positionX = 0;
+            //this.carriageReturn();
             this.lineFeed();
             line = this._getCurrentLine();
+          } else {
+            cursor.positionX = width - 1;
+            break;
           }
         }
         positionX = cursor.positionX;
@@ -1987,7 +1990,9 @@ Screen.definition = {
       }
     } while (it < codes.length);
 
-    this._last_char = run.pop();
+    if (undefined !== run) {
+      this._last_char = run.pop();
+    }
   },
 
   /** REPeat the preceding graphic character */
