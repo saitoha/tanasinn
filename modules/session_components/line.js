@@ -530,8 +530,6 @@ DirtyRange.definition = {
   /** makes a union of ranges and store it. */
   addRange: function addRange(first, last) 
   {
-    if (last == 158)
-      alert(first + " " + last + " " + Components.stack.caller.caller)
     if (this.first == this.last) {
       this.first = first;
       this.last = last;

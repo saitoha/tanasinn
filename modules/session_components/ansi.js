@@ -93,10 +93,6 @@ AnsiSpecifiedMode.definition = {
         this.CRM = flag 
         break;
 
-      case ANSI_SRM:
-        this.SRM = flag
-        break;
-
       default:
         try {
           if (flag) {

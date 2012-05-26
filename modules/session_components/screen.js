@@ -1954,7 +1954,6 @@ Screen.definition = {
     it = 0;
     line = this._getCurrentLine();
 
-
     if (cursor.positionX >= width) {
       if (this._wraparound_mode) {
         cursor.positionX = 0;

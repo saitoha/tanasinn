@@ -93,7 +93,7 @@ AutoWrap.definition = {
   "[subscribe('sequence/decrst/7'), pnp]":
   function deactivate() 
   {
-    this.sendMessage("command/disable-wraparound");
+    this.sendMessage("command/enable-wraparound");
     coUtils.Debug.reportMessage(
       _("DECRST - DECAWM (Auto-wrap Mode) was reset."));
   },

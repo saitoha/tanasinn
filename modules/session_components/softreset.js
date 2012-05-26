@@ -84,6 +84,7 @@ SoftReset.definition = {
   function DECSTR() 
   { // TODO: DEC specific - Soft Terminal Reset
     this.DECSET(25); // DECTCEM
+    this.DECRST(7); // DECAWM
 
     // notify soft terminal reset event.
     this.sendMessage("command/soft-terminal-reset");
