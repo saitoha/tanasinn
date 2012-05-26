@@ -211,8 +211,8 @@ Mouse.definition = {
              | event.ctrlKey  << 4
              ;
         code += 32;
-        column += 32;
-        row += 32;
+        //column += 32;
+        //row += 32;
         message = coUtils.Text.format(
           "\x1b[%d;%d;%dM", 
           code, column, row);
