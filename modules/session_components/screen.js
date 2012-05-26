@@ -380,6 +380,7 @@ ScreenSequenceHandler.definition = {
   function CUP(n1, n2) 
   { // move CUrsor to absolute Position 
     var x, y;
+
     // with no parameters, move to origin
 //    this.setPositionY((n1 || 1) - 1);
 //    this.setPositionY((n1 || 1) - 1 + this._scroll_top);
@@ -429,7 +430,9 @@ ScreenSequenceHandler.definition = {
   "[profile('vt100'), sequence('ESC #3')]": 
   function DECDHL_top() 
   {
-    var line = this._getCurrentLine();
+    var line;
+
+    line = this._getCurrentLine();
     line.type = coUtils.Constant.LINETYPE_TOP;
     line.dirty = 1;
   },
@@ -438,7 +441,9 @@ ScreenSequenceHandler.definition = {
   "[profile('vt100'), sequence('ESC #4')]": 
   function DECDHL_bottom() 
   {
-    var line = this._getCurrentLine();
+    var line;
+
+    line = this._getCurrentLine();
     line.type = coUtils.Constant.LINETYPE_BOTTOM;
     line.dirty = 1;
   },
@@ -447,14 +452,16 @@ ScreenSequenceHandler.definition = {
   "[profile('vt100'), sequence('ESC #5')]": 
   function DECSWL() 
   {
-    var line = this._getCurrentLine();
+    var line;
+
+    line = this._getCurrentLine();
     line.type = coUtils.Constant.LINETYPE_NORMAL;
     line.dirty = 1;
   },
 
   /** DEC double-width line. 
    *
-   * DECDWL—Double-Width, Single-Height Line
+   * DECDWL — Double-Width, Single-Height Line
    *
    * This control function makes the line with the cursor a double-width, 
    * single-height line. If the line was single width and single height, then 
@@ -469,7 +476,9 @@ ScreenSequenceHandler.definition = {
   "[profile('vt100'), sequence('ESC #6')]": 
   function DECDWL() 
   {
-    var line = this._getCurrentLine();
+    var line;
+   
+    line = this._getCurrentLine();
     line.type = coUtils.Constant.LINETYPE_DOUBLEWIDTH;
     line.dirty = 1;
   },
@@ -791,7 +800,9 @@ ScreenSequenceHandler.definition = {
         break;
 
       case 6:
-        this.sendMessage("event/start-highlight-mouse", Array.slice(arguments));
+        this.sendMessage(
+          "event/start-highlight-mouse", 
+          Array.slice(arguments));
         break;
 
       default:
@@ -1259,97 +1270,9 @@ ScreenSequenceHandler.definition = {
       arguments.callee.name, Array.slice(arguments));
   },
 
-  /**
-   * DSR—Device Status Reports
-   *
-   * The host computer and terminal exchange DSR sequences to provide the host 
-   * with the operating status of the following features:
-   *
-   * Operating status
-   * Keyboard status - language
-   * Cursor position report
-   * Cursor position with page
-   * Printer port   User-defined keys
-   * Macro space report
-   * Memory checksum
-   * Data integrity report
-   *
-   * DSR requests and reports follow one of two formats, ANSI or DEC format. 
-   * The format for each is as follows:
-   *
-   * Format
-   *
-   * ANSI format
-   *
-   * CSI    Ps   n
-   * 9/11   3/n  6/14   
-   *
-   * DEC format
-   *
-   * CSI    ?      Ps   n
-   * 9/11   3/15   3/n  6/14   
-   *
-   *
-   * Parameters
-   *
-   * Ps
-   * indicates the type of DSR requested. See the following individual DSR 
-   * reports for specific parameters within each report.
-   *
-   * Description
-   *
-   * There is a different DSR request for each feature. The following sections
-   * describe the possible DSR reports. If the terminal is in printer 
-   * controller mode, then the printer receives the DSR request. The printer 
-   * can respond through the bidirectional printer port.
-   *
-   */
-  "[profile('vt100'), sequence('CSI %dn', 'CSI ?%dn')]":
-  function DSR(n) 
-  { // Device Status Report
-
-    var cursor, message;
-
-    cursor = this.cursor;;
-
-    switch (n) {
-
-      // report terminal status
-      case 5:
-        message = "\x1b[0n";
-        this.sendMessage("command/send-to-tty", message);
-        break;
-
-      // report cursor position
-      case 6:
-        message = coUtils.Text.format(
-          "\x1b[%d;%dR", 
-          cursor.positionY + 1, 
-          cursor.positionX + 1);
-        this.sendMessage("command/send-to-tty", message);
-        break;
-
-      default:
-        coUtils.Debug.reportWarning(
-          _("%s sequence [%s] was ignored."),
-          arguments.callee.name, Array.slice(arguments));
-    }
-  },
-
-  "[profile('vt100'), sequence('CSI ?%dn')]":
-  function DECDSR() 
-  { // TODO: Device Status Report
-    coUtils.Debug.reportWarning(
-      _("%s sequence [%s] was ignored."),
-      arguments.callee.name, Array.slice(arguments));
-  },
-
   "[profile('vt100'), sequence('0x98', 'ESC X')]":
-  function SOS() 
+  function SOS(message) 
   {
-    var message;
-
-    message = String.fromCharCode.apply(String, arguments);
     coUtils.Debug.reportWarning(
       _("Ignored %s [%s]"), arguments.callee.name, message);
   },

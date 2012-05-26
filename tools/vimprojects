@@ -119,6 +119,7 @@
     irm.js
     lnm.js
     macro.js
+    dsr.js
 
     focusevent.js
     declocatormouse.js
