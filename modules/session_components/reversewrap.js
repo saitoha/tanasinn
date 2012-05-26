@@ -38,7 +38,7 @@ ReverseWrap.definition = {
         <name>{_("Reverse Wraparound Mode")}</name>
         <version>0.1</version>
         <description>{
-          _("Enable/disable reverse-wraparound feature(DECARM)",
+          _("Enable/disable reverse-wraparound feature",
             " by escape seqnence.")
         }</description>
     </module>,
@@ -69,6 +69,14 @@ ReverseWrap.definition = {
     broker.notify("command/disable-reverse-wraparound");
     coUtils.Debug.reportMessage(
       _("DECRST 45 - Reverse-wraparound Mode was reset."));
+  },
+
+  /** Deactivate auto-wrap feature(DECAWM).
+   */
+  "[subscribe('command/{soft | hard}-terminal-reset'), pnp]":
+  function reset() 
+  {
+    this.deactivate();
   },
 
 }; // class ReverseWrap
