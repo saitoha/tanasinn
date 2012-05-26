@@ -2323,15 +2323,16 @@ Screen.definition = {
 
   },
 
-  reset: function reset()
+  "[subscribe('command/{soft | hard}-terminal-reset'), enabled]": 
+  function reset()
   {
     var lines, i, line;
 
+    this.eraseScreenAll();
+    this.switchToMainScreen();
     this.resetScrollRegion();
-    this.cursor.reset();
 
     lines = this._getCurrentViewLines();
-    i, line;
 
     for (i = 0; i < lines.length; ++i) {
       line = lines[i];

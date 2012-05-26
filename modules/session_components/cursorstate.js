@@ -103,20 +103,8 @@ CursorState.definition = {
   },
 
   /** reset cursor state. */
-  reset: function reset() 
-  {
-    this.positionX = 0;
-    this.positionY = 0;
-    this.originX = 0;
-    this.originY = 0;
-    this._backup_instance = null;
-    this.blink = false;
-    this.attr.clear(); // turns all character attributes off (normal settings).
-  },
-
-  /** reset cursor state. */
-  "[subscribe('command/soft-terminal-reset'), enabled]":
-  function softReset() 
+  "[subscribe('command/{soft | hard}-terminal-reset'), enabled]":
+  function reset() 
   {
     this.positionX = 0;
     this.positionY = 0;

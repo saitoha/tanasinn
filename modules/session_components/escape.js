@@ -84,7 +84,8 @@ KeypadModeHandler.definition = {
    * The setting is not saved in NVM. When you turn on or reset the terminal, 
    * it automatically selects numeric keypad mode.
    */
-  "[profile('vt100'), sequence('ESC =')]": function DECPAM() 
+  "[profile('vt100'), sequence('ESC =')]": 
+  function DECPAM() 
   {
     this.sendMessage(
       "event/keypad-mode-changed", 
@@ -92,100 +93,6 @@ KeypadModeHandler.definition = {
   },
 
 }; // KeypadMode
-
-/**
- * @class CharsetModeHandler
- */
-var CharsetModeHandler = new Class().extends(Component)
-CharsetModeHandler.definition = {  
-
-  get id()
-    "charsetmode",
-
-  /**
-   * SCS — Select Character Set
-   * 
-   * Designate character sets to G-sets.
-   *
-   * Format
-   *
-   * ESC    I     Dscs
-   * 1/11   ...   ...
-   *
-   * Parameters
-   * 
-   * I is the intermediate character representing the G-set designator.
-   *
-   * I   94-Character G-set
-   * (   G0
-   * )   G1
-   * *   G2
-   * +   G3
-   * I   96-Character G-set
-   * -   G1
-   * .   G2
-   * /   G3
-   * 
-   * Dscs represents a character set designator.
-   * Dscs         Default 94-Character Set
-   * % 5          DEC Supplemental
-   * " ?          DEC Greek
-   * " 4          DEC Hebrew
-   * % 0          DEC Turkish
-   * & 4          DEC Cyrillic
-   * A            U.K. NRCS
-   * R            French NRCS
-   * 9 or Q       French Canadian NRCS
-   * `, E, or 6   Norwegian/Danish NRCS
-   * 5 or C       Finnish NRCS
-   * K            German NRCS
-   * Y            Italian NRCS
-   * =            Swiss NRCS
-   * 7 or H       Swedish NRCS
-   * Z            Spanish NRCS
-   * % 6          Portuguese NRCS
-   * " >          Greek NRCS
-   * % =          Hebrew NRCS
-   * % 2          Turkish NRCS
-   * % 3          SCS NRCS
-   * & 5          Russian NRCS
-   * 0            DEC Special Graphic
-   * >            DEC Technical Character Set
-   * <            User-preferred Supplemental
-   * Dscs         Default 96-Character Set
-   * A            ISO Latin-1 Supplemental
-   * B            ISO Latin-2 Supplemental
-   * F            ISO Greek Supplemental
-   * H            ISO Hebrew Supplemental
-   * M            ISO Latin-5 Supplemental
-   * L            ISO Latin-Cyrillic
-   * <            User-preferred Supplemental
-   */
-  "[profile('vt100'), sequence('ESC (%c'), _('Select Character Set G0')]": 
-  function SCSG0(mode) 
-  {
-    this.sendMessage("sequence/g0", mode);
-  },
-  
-  "[profile('vt100'), sequence('ESC )%c'), _('Select Character Set G1')]": 
-  function SCSG1(mode) 
-  {
-    this.sendMessage("sequence/g1", mode);
-  },
-
-  "[profile('vt100'), sequence('ESC *%c'), _('Select Character Set G2')]": 
-  function SCSG2(mode) 
-  {
-    this.sendMessage("sequence/g2", mode);
-  },
-
-  "[profile('vt100'), sequence('ESC +%c'), _('Select Character Set G3')]": 
-  function SCSG3(mode) 
-  {
-    this.sendMessage("sequence/g3", mode);
-  },
-
-}; // CharsetModeHandler
 
 
 /**
@@ -265,9 +172,6 @@ Escape.definition = {
 
     screen = this._screen;
     screen.reverseIndex();
-    //if (this._ansi_mode.LNM) {
-    //  screen.carriageReturn();
-    //}
   },
 
 
@@ -400,63 +304,73 @@ Escape.definition = {
    *
    * RIS Actions
    * 
-   *   - Sets all features listed on set-up screens to their saved settings.
-   *   - Causes a communication line disconnect.
+   *   Sets all features listed on set-up screens to their saved settings.
+   *
+   *   - TODO: Causes a communication line disconnect.
    *   - TODO: Clears user-defined keys.
    *   - TODO: Clears the screen and all off-screen page memory.
-   *   - Clears the soft character set.
-   *   - Clears page memory. All data stored in page memory is lost.
+   *   - TODO: Clears the soft character set.
+   *   - TODO: Clears page memory. All data stored in page memory is lost.
    *   - Clears the screen.
    *   - Returns the cursor to the upper-left corner of the screen.
    *   - Sets the select graphic rendition (SGR) function to normal rendition.
    *   - Selects the default character sets (ASCII in GL, and DEC Supplemental Graphic in GR).
-   *   - Clears all macro definitions.
-   *   - Erases the paste buffer.
+   *   - TODO: Clears all macro definitions.
+   *   - TODO: Erases the paste buffer.
    *
    */
   "[profile('vt100'), sequence('ESC c')]": 
   function RIS() 
   {
-    var screen;
-
-    this.sendMessage("sequence/g0", coUtils.Constant.CHARSET_US);
-    this.sendMessage("sequence/g1", coUtils.Constant.CHARSET_US);
     this.sendMessage("command/hard-terminal-reset");
 
     this.sendMessage("command/enable-wraparound");
     this.sendMessage("command/disable-reverse-wraparound");
-
-    this._ansi_mode.reset();
-
-    screen = this._screen;
-    screen.eraseScreenAll();
-    screen.resetScrollRegion();
-    screen.cursor.reset();
   },
 
   /**
-   * DL — Delete Line
+   * DECTST — Invoke Confidence Test
    *
-   * This control function deletes one or more lines in the scrolling region, 
-   * starting with the line that has the cursor.
+   * Select tests to be performed.
    *
    * Format
    *
-   * CSI    Pn   M
-   * 9/11   3/n  4/13
+   * CSI    4     ;      Ps   ...  ;     Ps   y
+   * 9/11   3/4   3/11   3/n  ...  3/11  3/n  7/9
+   *
    *
    * Parameters
+   * 
+   * Ps is the parameter indicating a test to be done.
    *
-   * Pn is the number of lines to delete.
-   *
-   * Default: Pn = 1.
+   *   Ps   Test
+   *   0 	  "All Tests" (1,2,3,6)
+   *   1 	  Power-Up Self Test
+   *   2 	  RS-232 Port Data Loopback Test
+   *   3 	  Printer Port Loopback Test
+   *   4 	  Speed Select and Speed Indicator Test
+   *   5 	  Reserved - No action
+   *   6 	  RS-232 Port Modem Control Line Loopback Test
+   *   7 	  EIA-423 Port Loopback Test
+   *   8 	  Parallel Port Loopback Test
+   *   9 	  Repeat (Loop On) Other Tests In Parameter String
    *
    * Description
+   * 
+   * After the first parameter, "4", the parameters each select one test. 
+   * Several tests may be invoked at once by chaining the parameters together 
+   * separated by semicolons. The tests are not necessarily executed in the 
+   * order in which they are entered in the parameter string.
    *
-   * As lines are deleted, lines below the cursor and in the scrolling region 
-   * move up. The terminal adds blank lines with no visual character 
-   * attributes at the bottom of the scrolling region. If Pn is greater than 
-   * the number of lines 
+   * "ESC # 8" invokes the Screen Alignment test for the VT510. Additionally,
+   * after executing the power-up selftest, the terminal displays either the 
+   * diagnostic messages in the upper left corner of the screen or the 
+   * "VT510 OK" message in the center of the screen and within a box. Upon 
+   * receipt of any character except XON or if the user types a keystroke, 
+   * the screen is cleared. If the terminal is in local mode, then characters 
+   * from the host are ignored and the message remains visible even if 
+   * characters are received from the host. DECTST causes a disconnect; 
+   * therefore, it should not be used in conjunction with a modem.
    *
    */
   "[profile('vt100'), sequence('CSI %dy')]": 
@@ -536,11 +450,10 @@ Escape.definition = {
   },
   
   /** constructor */
-  "[subscribe('initialized/{screen & ansimode}'), enabled]": 
-  function onLoad(screen, ansi_mode) 
+  "[subscribe('initialized/screen'), enabled]": 
+  function onLoad(screen) 
   {
     this._screen = screen;
-    this._ansi_mode = ansi_mode;
   },
 };
 
@@ -553,7 +466,6 @@ function main(broker)
 {
   new Escape(broker);
   new KeypadModeHandler(broker);
-  new CharsetModeHandler(broker);
 }
 
 

@@ -69,7 +69,7 @@
  * vertical line             ACS_VLINE     |        x
  */
 
-let USASCII = [
+var USASCII = [
   0x00, /* NUL  */
   0x01, /* SOH  */
   0x02, /* STX  */
@@ -200,7 +200,7 @@ let USASCII = [
   0x7f, /* DEL  */
 ];
 
-let ISO_8859_Latin1 = [
+var ISO_8859_Latin1 = [
   0x80, /*  */
   0x81, /*  */
   0x82, /*  */
@@ -332,10 +332,10 @@ let ISO_8859_Latin1 = [
 ];
 
 /* DEC Multinational Character Set */
-let DEC_Multinational_Character_Set = USASCII.slice(0);
+var DEC_Multinational_Character_Set = USASCII.slice(0);
 
 /* DEC Special Graphics Character Set */
-let DEC_Special_Graphics_Character_Set = USASCII.slice(0);
+var DEC_Special_Graphics_Character_Set = USASCII.slice(0);
 DEC_Special_Graphics_Character_Set[0x60] = 0x25c6; // 
 DEC_Special_Graphics_Character_Set[0x61] = 0x2592; // 
 DEC_Special_Graphics_Character_Set[0x62] = 0x2409; // HT
@@ -371,13 +371,13 @@ DEC_Special_Graphics_Character_Set[0x7e] = 0xb7; //
 /* DEC British NRC Set 
  * DSCS = B
  */
-let DEC_British_NRC_Set = USASCII.slice(0);
+var DEC_British_NRC_Set = USASCII.slice(0);
 DEC_British_NRC_Set[0x23] = 0xa3; // pond
 
 /* DEC Dutch NRC Set 
  * DSCS = 4
  */
-let DEC_Dutch_NRC_Set = USASCII.slice(0);
+var DEC_Dutch_NRC_Set = USASCII.slice(0);
 DEC_Dutch_NRC_Set[0x23] = 0xa3; // pond
 DEC_Dutch_NRC_Set[0x40] = 0xbe; // 3/4
 DEC_Dutch_NRC_Set[0x5b] = 0xff; // ij
@@ -391,7 +391,7 @@ DEC_Dutch_NRC_Set[0x7e] = 0xb4; //
 /* DEC Finnish NRC Set 
  * DSCS = 5, C
  */
-let DEC_Finnish_NRC_Set = USASCII.slice(0);
+var DEC_Finnish_NRC_Set = USASCII.slice(0);
 DEC_Finnish_NRC_Set[0x5b] = 0xc4; // 
 DEC_Finnish_NRC_Set[0x5c] = 0xd6; // 
 DEC_Finnish_NRC_Set[0x5d] = 0xc5; // 
@@ -405,7 +405,7 @@ DEC_Finnish_NRC_Set[0x7e] = 0xfc; //
 /* DEC French NRC Set 
  * DSCS = R
  */
-let DEC_French_NRC_Set = USASCII.slice(0);
+var DEC_French_NRC_Set = USASCII.slice(0);
 DEC_French_NRC_Set[0x23] = 0xa3; // 
 DEC_French_NRC_Set[0x40] = 0xe0; // 
 DEC_French_NRC_Set[0x5b] = 0xb0; // 
@@ -419,7 +419,7 @@ DEC_French_NRC_Set[0x7e] = 0xa8; //
 /* DEC French Canadian NRC Set 
  * DSCS = Q
  */
-let DEC_French_Canadian_NRC_Set = USASCII.slice(0);
+var DEC_French_Canadian_NRC_Set = USASCII.slice(0);
 DEC_French_Canadian_NRC_Set[0x40] = 0xe0; // 
 DEC_French_Canadian_NRC_Set[0x5b] = 0xe2; // 
 DEC_French_Canadian_NRC_Set[0x5c] = 0xe7; // 
@@ -434,7 +434,7 @@ DEC_French_Canadian_NRC_Set[0x7e] = 0xfb; //
 /* DEC German NRC Set 
  * DSCS = K
  */
-let DEC_German_NRC_Set = USASCII.slice(0);
+var DEC_German_NRC_Set = USASCII.slice(0);
 DEC_German_NRC_Set[0x40] = 0xa7; // 
 DEC_German_NRC_Set[0x5b] = 0xc4; // 
 DEC_German_NRC_Set[0x5c] = 0xd6; // 
@@ -447,7 +447,7 @@ DEC_German_NRC_Set[0x7e] = 0xdf; //
 /* DEC Italian German NRC Set 
  * DSCS = Y
  */
-let DEC_Italian_NRC_Set = USASCII.slice(0);
+var DEC_Italian_NRC_Set = USASCII.slice(0);
 DEC_Italian_NRC_Set[0x23] = 0xa3; // 
 DEC_Italian_NRC_Set[0x40] = 0xa7; // 
 DEC_Italian_NRC_Set[0x5b] = 0xb0; // 
@@ -462,7 +462,7 @@ DEC_Italian_NRC_Set[0x7e] = 0xec; //
 /* DEC Norwegian/Danish NRC Set 
  * DSCS = E, 6
  */
-let DEC_Norwegian_Danish_NRC_Set = USASCII.slice(0);
+var DEC_Norwegian_Danish_NRC_Set = USASCII.slice(0);
 DEC_Norwegian_Danish_NRC_Set[0x40] = 0xc4; // 
 DEC_Norwegian_Danish_NRC_Set[0x5b] = 0xc6; // 
 DEC_Norwegian_Danish_NRC_Set[0x5c] = 0xd8; // 
@@ -477,7 +477,7 @@ DEC_Norwegian_Danish_NRC_Set[0x7e] = 0xfc; //
 /* DEC Spanish NRC Set 
  * DSCS = Z
  */
-let DEC_Spanish_NRC_Set = USASCII.slice(0);
+var DEC_Spanish_NRC_Set = USASCII.slice(0);
 DEC_Spanish_NRC_Set[0x23] = 0xa3; // 
 DEC_Spanish_NRC_Set[0x40] = 0xa7; // 
 DEC_Spanish_NRC_Set[0x5b] = 0xa1; // 
@@ -490,7 +490,7 @@ DEC_Spanish_NRC_Set[0x7d] = 0xe7; //
 /* DEC Swedish NRC Set 
  * DSCS = H, 7
  */
-let DEC_Swedish_NRC_Set = USASCII.slice(0);
+var DEC_Swedish_NRC_Set = USASCII.slice(0);
 DEC_Swedish_NRC_Set[0x40] = 0xc9; // 
 DEC_Swedish_NRC_Set[0x5b] = 0xc4; // 
 DEC_Swedish_NRC_Set[0x5c] = 0xd6; // 
@@ -506,7 +506,7 @@ DEC_Swedish_NRC_Set[0x7e] = 0xfc; //
  * DSCS = =
  */
 //f9,20,e0,20,e9,e7,ea,ee,e8,20,f4,20,e4,f6,fc,fb
-let DEC_Swiss_NRC_Set = USASCII.slice(0);
+var DEC_Swiss_NRC_Set = USASCII.slice(0);
 DEC_Swiss_NRC_Set[0x23] = 0xf9; // 
 DEC_Swiss_NRC_Set[0x40] = 0xe0; // 
 DEC_Swiss_NRC_Set[0x5b] = 0xe9; // 
@@ -521,13 +521,11 @@ DEC_Swiss_NRC_Set[0x7d] = 0xfc; //
 DEC_Swiss_NRC_Set[0x7e] = 0xfb; // 
 
 
-
-
 /**
  * @class DRCConverter
  *
  */
-let DRCSConverter = new Class().extends(Component);
+var DRCSConverter = new Class().extends(Component);
 DRCSConverter.definition = {
 
   get id()
@@ -564,14 +562,12 @@ DRCSConverter.definition = {
   function shiftOut() 
   {
     this._gl = 1;
-    this._gr = 2;
   },
 
   "[subscribe('event/shift-in'), enabled]": 
   function shiftIn() 
   {
     this._gl = 0;
-    this._gr = 1;
   },
 
   "[subscribe('sequence/g0'), enabled]": 
@@ -605,8 +601,8 @@ DRCSConverter.definition = {
     context.g1 = this._g[1];
     context.g2 = this._g[2];
     context.g3 = this._g[3];
-    context.gl = 0;
-    context.gr = 0;
+    context.gl = this._gl;
+    context.gr = this._gr;
   },
 
   "[subscribe('command/restore-cursor'), enabled]": 
@@ -624,39 +620,28 @@ DRCSConverter.definition = {
   function reset(context) 
   {
     this._g[0] = USASCII;
-    this._g[1] = USASCII;
-    this._g[2] = USASCII;
-    this._g[3] = USASCII;
+    this._g[1] = ISO_8859_Latin1;
+    this._g[2] = ISO_8859_Latin1;
+    this._g[3] = ISO_8859_Latin1;
     this._gl = 0;
-    this._gr = 0;
+    this._gr = 1;
   },
 
   convert: function convert(codes) 
   {
-    let result = [];
-    let gl = this._g[this._gl] || USASCII;
-    let gr = this._g[this._gr] || ISO_8859_Latin1;
-    let i;
+    var result, gl, gr, i, c;
+
+    gl = this._g[this._gl] || USASCII;
+    gr = this._g[this._gr] || ISO_8859_Latin1;
+
+    result = [];
     for (i = 0; i < codes.length; ++i ) {
-      let c = codes[i];
-      //if ("object" === typeof c) {
-      //  let str = String.fromCharCode.apply(String, c);
-      //  let normalized_str = coUtils.Text.normalize(str);
-      //  if (1 === normalized_str.length) {
-      //    c = normalized_str.charCodeAt(0);
-      //  } else {
-      //    c = normalized_str.split("").map(function(ch) ch.charCodeAt(0));
-      //  }
-      //  result.push(c);
-      //} else {
-        if (c < 0x80) { // GL
-          result.push(gl[c]);
-        //} else if (c < 0x100) { // GR
-        //  yield g1[c];
-        } else {
-          result.push(c);
-        }
-      //}
+      c = codes[i];
+      if (c < 0x80) { // GL
+        result.push(gl[c]);
+      } else {
+        result.push(c);
+      }
     }
     return result;
   },

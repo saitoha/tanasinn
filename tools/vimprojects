@@ -96,6 +96,7 @@
    encoder.js
    focus.js
    window.js
+   drcsconverter.js
 
    plugin=.{
 
@@ -115,12 +116,14 @@
     windowmanipulation.js
     scrollregion.js
     softreset.js
+    hardreset.js
     sgrhandler.js
     irm.js
     lnm.js
     kam.js
     macro.js
     dsr.js
+    charset.js
 
     focusevent.js
     declocatormouse.js
