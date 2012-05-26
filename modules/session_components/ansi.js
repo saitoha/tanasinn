@@ -89,10 +89,6 @@ AnsiSpecifiedMode.definition = {
   {
     switch (id) {
 
-      case ANSI_KAM:
-        this.KAM = flag;
-        break;
-
       case ANSI_CRM:
         this.CRM = flag 
         break;
