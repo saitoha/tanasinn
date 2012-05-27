@@ -958,62 +958,6 @@ DecModeSequenceHandler.definition = {
     this.sendMessage("event/locator-reporting-requested"); 
   },
 
-  /**
-   * Window manipulation.
-   *
-   * Ps1 =  1    De-iconify window.
-   *     =  2    Minimize window.
-   *     =  3    Move window to [Ps2, Ps3].
-   *     =  4    Resize window to height Ps2 pixels and width Ps3 pixels.
-   *     =  5    Raise the window to the top of the stacking order.
-   *     =  6    Lower the window to the bottom of the stacking order.
-   *     =  7    Refresh window.
-   *     =  8    Resize window to Ps2 lines and Ps3 columns.
-   *     =  9    Change maximize state of window.
-   *             Ps2 = 0    Restore maximized window.
-   *                 = 1    Maximize window.
-   * 
-   *     = 11    Reports window state.
-   *             Response: CSI s t
-   *               s = 1    Normal. (non-iconified)
-   *                 = 2    Iconified.
-   * 
-   *     = 13    Reports window position.
-   *             Response: CSI 3 ; x ; y t
-   *               x    X position of window.
-   *               y    Y position of window.
-   * 
-   *     = 14    Reports window size in pixels.
-   *             Response: CSI 4 ; y ; x t
-   *               y    Window height in pixels.
-   *               x    Window width in pixels.
-   * 
-   *     = 18    Reports terminal size in characters.
-   *             Response: CSI 8 ; y ; x t
-   *               y    Terminal height in characters. (Lines)
-   *               x    Terminal width in characters. (Columns)
-   * 
-   *     = 19    Reports root window size in characters.
-   *             Response: CSI 9 ; y ; x t
-   *               y    Root window height in characters.
-   *               x    Root window width in characters.
-   * 
-   *     = 20    Reports icon label.
-   *             Response: OSC L title ST
-   *               title    icon label. (window title)
-   * 
-   *     = 21    Reports window title.
-   *             Response: OSC l title ST
-   *               title    Window title.
-   * 
-   */
-  "[profile('vt100'), sequence('CSI %dt')]":
-  function DECSLPP(n1, n2, n3) 
-  {
-    this.sendMessage(
-      "command/manipulate-window", 
-      Array.slice(arguments)); 
-  },
 
   "[profile('vt100'), sequence('CSI %d\\ ~')]":
   function DECTME(n) 

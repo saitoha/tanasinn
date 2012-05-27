@@ -1470,36 +1470,67 @@ Viewable.definition = {
     }
   },
 
+  _getTextInRectangle: 
+  function _getTextInRectangle(lines, start_column, end_column)
+  {
+    var max_column, min_column, line, text, i, buffer;
+
+    buffer = [];
+
+    // Rectangle selection mode.
+    if (start_column < end_column) {
+      max_column = end_column;
+      min_column = start_column;
+    } else {
+      max_column = start_column;
+      min_column = end_column;
+    }
+    for (i = 0; i < lines.length; ++i) {
+      line = lines[i];
+      text = line.getTextInRange(min_column, max_column);
+      buffer.push(text.replace(/ +$/, ""));
+    }
+    return buffer.join("\n"); 
+  },
+
+  _getTextInRangeImpl: 
+  function _getTextInRangeImpl(lines, start_column, end_column)
+  {
+    var buffer, i, line, width, start, end, text;
+
+    buffer = [];
+    width = this.width;
+
+    // Line selection mode.
+    for (i = 0; i < lines.length; ++i) {
+      line = lines[i];
+      start = 0 == i ? start_column: 0;
+      end = lines.length - 1 == i ? end_column: width;
+      text = line.getTextInRange(start, end);
+      buffer.push(text.replace(/ +$/, ""));
+    }
+    return buffer.join("\n"); 
+  },
+
   /** get text in specified range. 
    */
   getTextInRange: function getTextInRange(start, end, is_rectangle) 
   {
-    let width = this.width;
-    let start_row = Math.floor(start / width);
-    let start_column = start % width;
-    let end_row = Math.floor(end / width) + 1;
-    let end_column = end % width;
-    let buffer = [];
-    let lines = this._getCurrentViewLines().slice(start_row, end_row);
+    var start_row, start_column, end_row, end_column, lines, width;
+
+    width = this.width;
+    start_column = start % width;
+    end_column = end % width;
+    start_row = Math.floor(start / width);
+    end_row = Math.floor(end / width) + 1;
+    lines = this._getCurrentViewLines().slice(start_row, end_row);
 
     if (is_rectangle) {
-      // Rectangle selection mode.
-      let max_column = Math.max(start_column, end_column);
-      let min_column = Math.min(start_column, end_column);
-      for (let [index, line] in Iterator(lines)) {
-        let text = line.getTextInRange(min_column, max_column);
-        buffer.push(text.replace(/ +$/, ""));
-      }
+      return this._getTextInRectangle(lines, start_column, end_column);
     } else {
-      // Line selection mode.
-      for (let [index, line] in Iterator(lines)) {
-        let start = 0 == index ? start_column: 0;
-        let end = lines.length - 1 == index ? end_column: width;
-        let text = line.getTextInRange(start, end);
-        buffer.push(text.replace(/ +$/, ""));
-      }
+      return this._getTextInRangeImpl(lines, start_column, end_column);
     }
-    return buffer.join("\n"); 
+
   },
 
 }; // Viewable

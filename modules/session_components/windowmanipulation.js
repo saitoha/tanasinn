@@ -26,7 +26,9 @@
  * @class WindowManipulator
  */
 var WindowManipulator = new Class().extends(Plugin)
-                                   .depends("screen");
+                                   .depends("screen")
+                                   .depends("renderer")
+                                   ;
 WindowManipulator.definition = {
 
   get id()
@@ -43,6 +45,64 @@ WindowManipulator.definition = {
 
   "[persistable] enabled_when_startup": true,
 
+  /**
+   *
+   * DECSLPP - Window manipulation.
+   *
+   * Ps1 =  1    De-iconify window.
+   *     =  2    Minimize window.
+   *     =  3    Move window to [Ps2, Ps3].
+   *     =  4    Resize window to height Ps2 pixels and width Ps3 pixels.
+   *     =  5    Raise the window to the top of the stacking order.
+   *     =  6    Lower the window to the bottom of the stacking order.
+   *     =  7    Refresh window.
+   *     =  8    Resize window to Ps2 lines and Ps3 columns.
+   *     =  9    Change maximize state of window.
+   *             Ps2 = 0    Restore maximized window.
+   *                 = 1    Maximize window.
+   * 
+   *     = 11    Reports window state.
+   *             Response: CSI s t
+   *               s = 1    Normal. (non-iconified)
+   *                 = 2    Iconified.
+   * 
+   *     = 13    Reports window position.
+   *             Response: CSI 3 ; x ; y t
+   *               x    X position of window.
+   *               y    Y position of window.
+   * 
+   *     = 14    Reports window size in pixels.
+   *             Response: CSI 4 ; y ; x t
+   *               y    Window height in pixels.
+   *               x    Window width in pixels.
+   * 
+   *     = 18    Reports terminal size in characters.
+   *             Response: CSI 8 ; y ; x t
+   *               y    Terminal height in characters. (Lines)
+   *               x    Terminal width in characters. (Columns)
+   * 
+   *     = 19    Reports root window size in characters.
+   *             Response: CSI 9 ; y ; x t
+   *               y    Root window height in characters.
+   *               x    Root window width in characters.
+   * 
+   *     = 20    Reports icon label.
+   *             Response: OSC L title ST
+   *               title    icon label. (window title)
+   * 
+   *     = 21    Reports window title.
+   *             Response: OSC l title ST
+   *               title    Window title.
+   * 
+   */
+  "[profile('vt100'), sequence('CSI %dt')]":
+  function DECSLPP(n1, n2, n3) 
+  {
+    this.sendMessage(
+      "command/manipulate-window", 
+      Array.slice(arguments)); 
+  },
+
   "[subscribe('command/manipulate-window'), pnp]":
   function manipulate(args) 
   { 
@@ -50,58 +110,80 @@ WindowManipulator.definition = {
 
       case 1:
         // TODO: De-iconify window.
-        coUtils.Debug.reportWarging(
+        coUtils.Debug.reportWarning(
           _("DECSLPP 1: De-iconify window, is not supported."));
         break;
 
       case 2:
         // TODO: minimize window.
-        coUtils.Debug.reportWarging(
+        coUtils.Debug.reportWarning(
           _("DECSLPP 2: Minimize window, is not supported."));
         break;
 
       case 3:
-        // TODO: Move window to [Ps2, Ps3].
-        coUtils.Debug.reportWarging(
-          _("DECSLPP 3: Move window, is not supported."));
+        {
+          var x, y;
+          // Move window to [Ps2, Ps3].
+          y = args[0] || 0;
+          x = args[1] || 0;
+          this.sendMessage("command/move-to", [x, y]);
+        }
         break;
 
       case 4:
-        // TODO: Resize window to height Ps2 pixels and width Ps3 pixels.
-        coUtils.Debug.reportWarging(
-          _("DECSLPP 4: Resize window, is not supported."));
+        // Resize window to height Ps2 pixels and width Ps3 pixels.
+        {
+          var x, y, renderer, column, row;
+          y = args[0] || 100;
+          x = args[1] || 100;
+          renderer = this.dependency["renderer"];
+          column = Math.ceil(x / renderer.char_width);
+          row = Math.ceil(y / renderer.line_height);
+          this.sendMessage("command/resize-screen", {
+            column: column, 
+            row: row,
+          });
+        }
         break;
 
       case 5:
         // TODO: Raise the window to the top of the stacking order.
-        coUtils.Debug.reportWarging(
+        coUtils.Debug.reportWarning(
           _("DECSLPP 5: Raise the window to the top of the stacking order, ",
             "is not supported."));
         break;
 
       case 6:
         // TODO: Lower the window to the bottom of the stacking order.
-        coUtils.Debug.reportWarging(
+        coUtils.Debug.reportWarning(
           _("DECSLPP 6: Lower the window to the bottom of the stacking order, ",
             "is not supported."));
         break;
 
       case 7:
         // TODO: Refresh window.
-        coUtils.Debug.reportWarging(_("DECSLPP 7: Refresh window."));
+        coUtils.Debug.reportWarning(_("DECSLPP 7: Refresh window."));
         break;
 
       case 8:
-        // TODO: Resize window to Ps2 lines and Ps3 columns.
-        coUtils.Debug.reportWarging(
-          _("DECSLPP 8: Resize window to Ps2 lines and Ps3 columns."));
+        // Resize window to Ps2 lines and Ps3 columns.
+        {
+          var x, y, renderer, column, row;
+
+          y = (args[0] || 1) - 1;
+          x = (args[1] || 1) - 1;
+          this.sendMessage("command/resize-screen", {
+            column: x, 
+            row: y,
+          });
+        }
         break;
 
       case 9:
         // TODO: Change maximize state of window.
         //       Ps2 = 0    Restore maximized window.
         //           = 1    Maximize window.
-        coUtils.Debug.reportWarging(
+        coUtils.Debug.reportWarning(
           _("DECSLPP 9: Change maximize state of window."));
         break;
 
@@ -110,7 +192,7 @@ WindowManipulator.definition = {
         //       Response: CSI s t
         //         s = 1    Normal. (non-iconified)
         //           = 2    Iconified.
-        coUtils.Debug.reportWarging(
+        coUtils.Debug.reportWarning(
           _("DECSLPP 11: Reports window state."));
         break;
 
@@ -119,7 +201,7 @@ WindowManipulator.definition = {
         //       Response: CSI 3 ; x ; y t
         //         x    X position of window.
         //         y    Y position of window.
-        coUtils.Debug.reportWarging(
+        coUtils.Debug.reportWarning(
           _("DECSLPP 13: Reports window position."));
         break;
 
@@ -160,7 +242,7 @@ WindowManipulator.definition = {
         //       Response: CSI 9 ; y ; x t
         //         y    Root window height in characters.
         //         x    Root window width in characters.
-        coUtils.Debug.reportWarging(
+        coUtils.Debug.reportWarning(
           _("DECSLPP 19: Reports root window size in characters."));
         break;
 
@@ -168,7 +250,7 @@ WindowManipulator.definition = {
         // TODO: Reports icon label.
         //       Response: OSC L title ST
         //         title    icon label. (window title)
-        coUtils.Debug.reportWarging(
+        coUtils.Debug.reportWarning(
           _("DECSLPP 20: Reports icon label."));
         break;
 
@@ -176,7 +258,7 @@ WindowManipulator.definition = {
         // TODO: Reports window title.
         //       Response: OSC l title ST
         //         title    Window title.
-        coUtils.Debug.reportWarging(
+        coUtils.Debug.reportWarning(
           _("DECSLPP 21: Reports window title."));
         break;
 

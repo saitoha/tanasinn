@@ -34,7 +34,7 @@ let ResizeShortcut = new Trait();
 ResizeShortcut.definition = {
 
   /** Make the screen narrower by 1 column. */ 
-  "[command('narrower'), nmap('<M-,>', '<C-S-,>'), _('Make the screen narrower.')]":
+  "[command('narrower'), nmap('<M-,>', '<C-S-,>'), _('Make the screen narrower.'), pnp]":
   function makeNarrower() 
   {
     this.shrinkColumn(1);
@@ -42,7 +42,7 @@ ResizeShortcut.definition = {
   },
 
   /** Make the screen wider by 1 column. */ 
-  "[command('wider'), nmap('<M-.>', '<C-S-.>'), _('Make the screen wider.')]":
+  "[command('wider'), nmap('<M-.>', '<C-S-.>'), _('Make the screen wider.'), pnp]":
   function makeWider() 
   {
     this.expandColumn(1);
@@ -50,7 +50,7 @@ ResizeShortcut.definition = {
   },
 
   /** Make the screen shorter by 1 row. */ 
-  "[command('shorter'), nmap('<M-S-(>', '<C-S-8>'), _('Make the screen shorter.')]":
+  "[command('shorter'), nmap('<M-S-(>', '<C-S-8>'), _('Make the screen shorter.'), pnp]":
   function makeShorter() 
   {
     this.shrinkRow(1);
@@ -58,7 +58,7 @@ ResizeShortcut.definition = {
   },
 
   /** Make the screen taller by 1 row. */ 
-  "[command('taller'), nmap('<M-S-)>', '<C-S-9>'), _('Make the screen taller.')]":
+  "[command('taller'), nmap('<M-S-)>', '<C-S-9>'), _('Make the screen taller.'), pnp]":
   function makeTaller() 
   {
     this.expandRow(1);
@@ -90,69 +90,45 @@ Resize.definition = {
 
   "[persistable] enabled_when_startup": true,
 
-  "[persistable] min_column": 48,
-  "[persistable] min_row": 20,
-
-  /** Installs itself. */
-  "[install]":
-  function install(session) 
-  {
-    this.makeNarrower.enabled = true;
-    this.makeWider.enabled = true;
-    this.makeShorter.enabled = true;
-    this.makeTaller.enabled = true;
-    this.shrinkColumn.enabled = true;
-    this.expandColumn.enabled = true;
-    this.shrinkRow.enabled = true;
-    this.expandRow.enabled = true;
-    this.update.enabled = true;
-    this.resize.enabled = true;
-    session.notify("initialized/resizemanager", this);
-  },
-
-  /** Unnstalls itself. */
-  "[uninstall]":
-  function uninstall(session)
-  {
-    this.makeNarrower.enabled = false;
-    this.makeWider.enabled = false;
-    this.makeShorter.enabled = false;
-    this.makeTaller.enabled = false;
-    this.shrinkColumn.enabled = false;
-    this.expandColumn.enabled = false;
-    this.shrinkRow.enabled = false;
-    this.expandRow.enabled = false;
-    this.update.enabled = false;
-    this.resize.enabled = false;
-  },
+  "[persistable] min_column": 24,
+  "[persistable] min_row": 12,
 
   /** Resize screen. 
    * @param {Object} A pair of {column, row} for new size.
    */ 
-  "[subscribe('command/resize-screen')]":
+  "[subscribe('command/resize-screen'), pnp]":
   function resize(size) 
   {
-    let {column, row} = size;
-    let screen = this.dependency["screen"];
+    var column, row, screen, min_column, min_row;
+
+    column = size.column;
+    row = size.row;
+
+    screen = this.dependency["screen"];
     // Minimam size: 48 x 12 
-    let {min_column, min_row} = this;
-    if (column < min_column) column = min_column;
-    if (row < min_row) row = min_row;
+    min_column = this.min_column;
+    min_row = this.min_row;
+    if (column < min_column) {
+      column = min_column;
+    }
+    if (row < min_row) {
+      row = min_row;
+    }
     screen.width = column;
     screen.height = row;
-//    this.update();
   },
 
   /** notify "event/screen-size-changed" event. 
    */ 
-  "[subscribe('event/resize-session-closed')]":
+  "[subscribe('event/resize-session-closed'), pnp]":
   function update() 
   {
-    let screen = this.dependency["screen"];
+    var screen;
+
+    screen = this.dependency["screen"];
     screen.dirty = true;
 
-    let session = this._broker;
-    session.notify("event/screen-size-changed", { 
+    this.sendMessage("event/screen-size-changed", { 
       column: screen.width, 
       row: screen.height 
     });
@@ -161,10 +137,12 @@ Resize.definition = {
   /** Make the screen narrower by n columns. 
    * @param {Number} n count of columns to shrink. 
    */ 
-  "[subscribe('command/shrink-column')]":
+  "[subscribe('command/shrink-column'), pnp]":
   function shrinkColumn(n) 
   {
-    let screen = this.dependency["screen"];
+    var screen;
+
+    screen = this.dependency["screen"];
     this.resize({column: screen.width - n, row: screen.height});
     this.update();
   },
@@ -172,10 +150,12 @@ Resize.definition = {
   /** Make the screen wider by n columns.
    * @param {Number} n count of columns to expand.
    */ 
-  "[subscribe('command/expand-column')]":
+  "[subscribe('command/expand-column'), pnp]":
   function expandColumn(n) 
   {
-    let screen = this.dependency["screen"];
+    var screen;
+
+    screen = this.dependency["screen"];
     this.resize({column: screen.width + n, row: screen.height});
     this.update();
   },
@@ -183,10 +163,12 @@ Resize.definition = {
   /** Make the screen shorter by n rows.
    * @param {Number} n count of rows to shrink.
    */
-  "[subscribe('command/shrink-row')]":
+  "[subscribe('command/shrink-row'), pnp]":
   function shrinkRow(n)
   {
-    let screen = this.dependency["screen"];
+    var screen;
+
+    screen = this.dependency["screen"];
     this.resize({column: screen.width, row: screen.height - n});
     this.update();
   },
@@ -194,10 +176,12 @@ Resize.definition = {
   /** Make the screen taller by n rows. 
    * @param {Number} n count of rows to expand.
    */ 
-  "[subscribe('command/expand-row')]":
+  "[subscribe('command/expand-row'), pnp]":
   function expandRow(n) 
   {
-    let screen = this.dependency["screen"];
+    var screen;
+
+    screen = this.dependency["screen"];
     this.resize({column: screen.width, row: screen.height + n});
     this.update();
   },
