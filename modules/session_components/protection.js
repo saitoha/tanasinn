@@ -103,17 +103,17 @@ Protection.definition = {
 
       // (default)  DECSED and DECSEL can erase characters.
       case 0:
-        attr.protected = true;
+        attr.protected = false;
         break;
 
       // DECSED and DECSEL cannot erase characters.
       case 1:
-        attr.protected = false;
+        attr.protected = true;
         break;
 
       // Same as 0.
       case 2:
-        attr.protected = true;
+        attr.protected = false;
         break;
 
       default:
