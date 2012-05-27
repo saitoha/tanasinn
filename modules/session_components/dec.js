@@ -1015,21 +1015,6 @@ DecModeSequenceHandler.definition = {
       Array.slice(arguments)); 
   },
 
-
-  DECSED: function DECSED(n) 
-  { // TODO: DEC Selectively Erase in Display
-    coUtils.Debug.reportWarning(
-      _("%s sequence [%s] was ignored."),
-      arguments.callee.name, Array.slice(arguments));
-  },
-
-  DECSEL: function DECSEL(n) 
-  { // DEC Selectively Elase in Line
-    coUtils.Debug.reportWarning(
-      _("%s sequence [%s] was ignored."),
-      arguments.callee.name, Array.slice(arguments));
-  },
-
   "[profile('vt100'), sequence('CSI %d\\ ~')]":
   function DECTME(n) 
   { // DEC Selectively Elase in Line

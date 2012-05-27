@@ -2363,7 +2363,7 @@ Screen.definition = {
     }
   },
 
-  /** Erase every cells in screen. */
+  /** Erase every cells marked as "erasable" in screen. */
   "[type('Undefined')] selectiveEraseScreenAll":
   function selectiveEraseScreenAll() 
   {
@@ -2378,6 +2378,24 @@ Screen.definition = {
     for (i = 0; i < length; ++i) {
       line = lines[i];
       line.selectiveErase(0, width, attr);
+      line.type = coUtils.Constant.LINETYPE_NORMAL;
+    }
+  },
+
+  /** Erase every cells marked as "erasable" in rectanglar area. */
+  "[type('Undefined')] selectiveEraseRectangle":
+  function selectiveEraseRectangle(top, left, bottom, right) 
+  {
+    var cursor, lines, attr, length, i, line;
+
+    cursor = this.cursor;
+    lines = this._lines;
+    attr = cursor.attr;
+    length = lines.length;
+
+    for (i = top; i < bottom; ++i) {
+      line = lines[i];
+      line.selectiveErase(left, right, attr);
       line.type = coUtils.Constant.LINETYPE_NORMAL;
     }
   },

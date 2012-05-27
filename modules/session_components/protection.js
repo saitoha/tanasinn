@@ -234,6 +234,81 @@ Protection.definition = {
 
   },
 
+  /**
+   * DECSERA — Selective Erase Rectangular Area
+   *
+   * This control function erases all erasable characters from a specified 
+   * rectangular area in page memory. The select character protection 
+   * attribute (DECSCA) control function defines whether or not DECSERA can 
+   * erase characters.
+   *
+   * When an area is erased, DECSERA replaces character positions with the 
+   * space character (2/0). DECSERA does not change:
+   *
+   * - Visual attributes set by the select graphic rendition (SGR) function
+   * - Protection attributes set by DECSCA
+   * - Line attributes
+   *
+   * Available in: VT Level 4 mode only
+   *
+   * Format
+   *
+   * CSI    Pt   ;      Pl   ;      Pb   ;      Pr   $    {
+   * 9/11   3/n  3/11   3/n  3/11   3/n  3/11   3/n  2/4  7/11
+   *
+   *
+   * Parameters
+   *
+   * Pt, Pl, Pb, and Pr
+   * define the rectangular area to be selectively erased:
+   *
+   * Pt is the top-line border. Pt must be less than or equal to Pb.
+   * Default: Pt = 1.
+   *
+   * Pl is the left-column border. Pl must be less than or equal to Pr.
+   * Default: Pl = 1.
+   *
+   * Pb is the bottom-line border.
+   * Default: Pb = the last line of the active page.
+   *
+   * Pr is the right-column border.
+   * Default: Pr = the last column of the active page.
+   *
+   *
+   * Notes on DECSERA
+   *
+   * The coordinates of the rectangular area are affected by the setting of
+   * origin mode (DECOM).
+   * DECSERA is not affected by the page margins.
+   * If the value of Pt, Pl, Pb, or Pr exceeds the width or height of the 
+   * active page, then the value is treated as the width or height of that page.
+   * DECSERA does not change the active cursor position.
+   *
+   */
+  "[profile('vt100'), sequence('CSI %d${')]":
+  function DECSERA(n1, n2, n3, n4) 
+  { // Selective Erase Rectangle Area
+    var screen, top, left, bottom, right;
+
+    screen = this._screen;
+
+    top = (n1 || 1) - 1;
+    left = (n2 || 1) - 1;
+    bottom = (n3 || 1) - 1;
+    right = (n4 || 1) - 1;
+
+    if (top >= bottom || left >= right) {
+      throw coUtils.Debug.Exception(
+        _("Invalid arguments detected in %s [%s]."),
+        arguments.callee.name, Array.slice(arguments));
+    }
+
+    bottom = Math.min(bottom, screen.height);
+    right = Math.min(right, screen.width);
+
+    screen.selectiveEraseRectangle(top, left, bottom, right);
+  },
+
 }; // class Protection
 
 /**
