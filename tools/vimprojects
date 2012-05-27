@@ -126,6 +126,7 @@
     dsr.js
     charset.js
     protection.js
+    reportparams.js
 
     focusevent.js
     declocatormouse.js
