@@ -26,38 +26,9 @@
 /**
  * @class Protection
  *
- * DECSCA — Select Character Protection Attribute
- *
- * DECSCA defines the characters that come after it as erasable or not 
- * erasable from the screen. The selective erase control functions (DECSED
- * and DECSEL) can only erase characters defined as erasable.
- *
- * Available in: VT Level 4 mode only
- *
- * Format
- *
- * CSI    Ps   "    q
- * 9/11   3/n  2/2  7/1
- *
- * Parameters
- *
- * Ps
- * defines all characters that follow the DECSCA function as erasable or not 
- * erasable.
- *
- * Ps   Meaning
- * 0    (default)  DECSED and DECSEL can erase characters.
- * 1    DECSED and DECSEL cannot erase characters.
- * 2    Same as 0.
- *
- * Note on DECSCA
- *
- * DECSCA does not effect visual character attributes set by the select 
- * graphic rendition (SGR) function.
- *
  */
 var Protection = new Class().extends(Plugin)
-                            .depends("cursorstate");
+                            .depends("screen");
 Protection.definition = {
 
   get id()
@@ -77,16 +48,49 @@ Protection.definition = {
   "[install]":
   function install()
   {
-    this._attr = this.dependency["cursorstate"].attr;
+    this._screen = this.dependency["screen"];
+    this._attr = this._screen.cursor.attr;
   },
 
   "[uninstall]":
   function uninstall()
   {
+    this._screen = null;
     this._attr = null;
   },
 
-
+  /**
+   *
+   * DECSCA — Select Character Protection Attribute
+   *
+   * DECSCA defines the characters that come after it as erasable or not 
+   * erasable from the screen. The selective erase control functions (DECSED
+   * and DECSEL) can only erase characters defined as erasable.
+   *
+   * Available in: VT Level 4 mode only
+   *
+   * Format
+   *
+   * CSI    Ps   "    q
+   * 9/11   3/n  2/2  7/1
+   *
+   * Parameters
+   *
+   * Ps
+   * defines all characters that follow the DECSCA function as erasable or not 
+   * erasable.
+   *
+   * Ps   Meaning
+   * 0    (default)  DECSED and DECSEL can erase characters.
+   * 1    DECSED and DECSEL cannot erase characters.
+   * 2    Same as 0.
+   *
+   * Note on DECSCA
+   *
+   * DECSCA does not effect visual character attributes set by the select 
+   * graphic rendition (SGR) function.
+   *
+   */
   "[profile('vt100'), sequence('CSI %d\"q')]":
   function DECSCA(n) 
   { // Device Status Report
@@ -117,6 +121,117 @@ Protection.definition = {
           _("%s sequence [%s] was ignored."),
           arguments.callee.name, Array.slice(arguments));
     }
+  },
+
+  /**
+   *
+   * DECSEL — Selective Erase in Line
+   *
+   * This control function erases some or all of the erasable characters in
+   * a single line of text. DECSEL erases only those characters defined as 
+   * erasable by the DECSCA control function. DECSEL works inside or outside 
+   * the scrolling margins.
+   *
+   * Available in: VT Level 4 mode only
+   *
+   * Format
+   *
+   * CSI    ?      Ps   K
+   * 9/11   3/15   3/n  4/11
+   *
+   * Parameters
+   *
+   * Ps
+   * represents the section of the line to erase, as follows:
+   *
+   * Ps   Section Erased
+   * 0    (default)  From the cursor through the end of the line
+   * 1    From the beginning of the line through the cursor
+   * 2    The complete line
+   *
+   */
+  "[profile('vt100'), sequence('CSI ?%dK')]":
+  function DECSEL(n) 
+  { // Selective Erase Line
+    var screen
+     
+    screen = this._screen;
+   
+    switch (n || 0) {
+
+      case 0: // erase to right
+        screen.selectiveEraseLineToRight();
+        break;
+
+      case 1: // erase to left
+        screen.selectiveEraseLineToLeft();
+        break;
+
+      case 2: // erase all
+        screen.selectiveEraseLine();
+        break;
+
+      default:
+        coUtils.Debug.reportWarning(
+          _("%s sequence [%s] was ignored."),
+          arguments.callee.name, Array.slice(arguments));
+    }
+  },
+
+  /**
+   *
+   * DECSED — Selective Erase in Display
+   *
+   * This control function erases some or all of the erasable characters in 
+   * the display. DECSED can only erase characters defined as erasable by the 
+   * DECSCA control function. DECSED works inside or outside the scrolling 
+   * margins.
+   *
+   * Available in: VT Level 4 mode only
+   *
+   * Format
+   *
+   * CSI    ?      Ps   J
+   * 9/11   3/15   3/n  4/10
+   *
+   * Parameters
+   *
+   * Ps
+   * represents the area of the display to erase, as follows:
+   *
+   * Ps   Area Erased
+   * 0    (default)  From the cursor through the end of the display
+   * 1    From the beginning of the display through the cursor
+   * 2    The complete display
+   *
+   */
+  "[profile('vt100'), sequence('CSI ?%dJ')]":
+  function DECSED(n) 
+  { // Selective Erase Display
+    var screen
+     
+    screen = this._screen;
+   
+    switch (n || 0) {
+
+      case 0:   // erase below
+        screen.selectiveEraseScreenBelow();
+        break;
+
+      case 1:   // erase above
+        screen.selectiveEraseScreenAbove();
+        break;
+
+      case 2: // erase all
+        screen.selectiveEraseScreenAll();
+        break;
+      
+      default:
+        coUtils.Debug.reportWarning(
+          _("%s sequence [%s] was ignored."),
+          arguments.callee.name, Array.slice(arguments));
+    }
+
   },
 
 }; // class Protection

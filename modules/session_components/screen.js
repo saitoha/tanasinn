@@ -540,7 +540,7 @@ ScreenSequenceHandler.definition = {
   function ED(n) 
   { // Erase Display
    
-    switch (n) {
+    switch (n || 0) {
 
       case 0:   // erase below
         this.eraseScreenBelow();
@@ -593,7 +593,7 @@ ScreenSequenceHandler.definition = {
   function EL(n) 
   { // Erase Line
    
-    switch (n) {
+    switch (n || 0) {
 
       case 0: // erase to right
         this.eraseLineToRight();
@@ -2228,6 +2228,48 @@ Screen.definition = {
     line.erase(0, width, cursor.attr);
   },
 
+  /** Erase cells marked as "erasable" from current position to end 
+   *  of line. */
+  "[type('Undefined')] selectiveEraseLineToRight":
+  function selectiveEraseLineToRight() 
+  {
+    var cursor, line, width;
+
+    line = this._getCurrentLine();
+    if (line) {
+      cursor = this.cursor;
+      width = this._width;
+      line.selectiveErase(cursor.positionX, width, cursor.attr);
+    } else {
+      coUtils.Debug.reportWarning(
+        _("selectiveEraseLineToRight: Current line is null."));
+    }
+  },
+
+  /** Erase cells marked as "erasable" from specified position to head 
+   *  of line. */
+  "[type('Undefined')] selectiveEraseLineToLeft":
+  function selectiveEraseLineToLeft() 
+  {
+    var cursor, line;
+
+    cursor = this.cursor;
+    line = this._getCurrentLine();
+    line.selectiveErase(0, cursor.positionX + 1, cursor.attr);
+  },
+
+  /** Erase cells marked as "erasable" from line */
+  "[type('Undefined')] selectiveEraseLine":
+  function selectiveEraseLine() 
+  {
+    var cursor, line, width;
+
+    cursor = this.cursor;
+    line = this._getCurrentLine();
+    width = this._width;
+    line.selectiveErase(0, width, cursor.attr);
+  },
+
   /** Erase cells from current position to head of buffer. */
   "[type('Undefined')] eraseScreenAbove":
   function eraseScreenAbove() 
@@ -2280,6 +2322,62 @@ Screen.definition = {
     for (i = 0; i < length; ++i) {
       line = lines[i];
       line.erase(0, width, attr);
+      line.type = coUtils.Constant.LINETYPE_NORMAL;
+    }
+  },
+
+  /** Erase cells from current position to head of buffer. */
+  "[type('Undefined')] selectiveEraseScreenAbove":
+  function selectiveEraseScreenAbove() 
+  {
+    var cursor, width, lines, attr, i, positionY;
+
+    cursor = this.cursor;
+    width = this._width;
+    lines = this._lines;
+    attr = cursor.attr;
+    
+    positionY = cursor.positionY;
+    lines[positionY].selectiveErase(0, cursor.positionX + 1, attr);
+    for (i = 0; i < positionY; ++i) {
+      lines[i].selectiveErase(0, width, attr);
+    }
+  },
+
+  /** Erase cells from current position to end of buffer. */
+  "[type('Undefined')] selectiveEraseScreenBelow":
+  function selectiveEraseScreenBelow() 
+  {
+    var cursor, width, attr, lines, positionY, height, i;
+
+    cursor = this.cursor;
+    width = this._width;
+    attr = cursor.attr;
+    lines = this._lines;
+    positionY = cursor.positionY;
+    height = this._height;
+   
+    lines[positionY].selectiveErase(cursor.positionX, width, attr);
+    for (i = positionY + 1; i < height; ++i) {
+      lines[i].selectiveErase(0, width, attr);
+    }
+  },
+
+  /** Erase every cells in screen. */
+  "[type('Undefined')] selectiveEraseScreenAll":
+  function selectiveEraseScreenAll() 
+  {
+    var width, cursor, lines, attr, length, i, line;
+
+    width = this._width;
+    cursor = this.cursor;
+    lines = this._lines;
+    attr = cursor.attr;
+    length = lines.length;
+
+    for (i = 0; i < length; ++i) {
+      line = lines[i];
+      line.selectiveErase(0, width, attr);
       line.type = coUtils.Constant.LINETYPE_NORMAL;
     }
   },

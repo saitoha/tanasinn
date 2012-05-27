@@ -431,7 +431,6 @@ DecModeSequenceHandler.definition = {
 
         default:
           try {
-            alert(n)
             this.request("sequence/decset/" + n);
           } catch (e) {
             coUtils.Debug.reportWarning(

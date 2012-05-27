@@ -468,6 +468,14 @@ Cell.definition = {
 
   }, // erase
 
+  /** Erase if the cell id marked as "erasable". */
+  selectiveErase: function selectiveErase(attr) 
+  {
+    if (!this.protected) {
+      this.erase(attr);
+    }
+  }, // erase
+
 // Serialize or deserialize into/from "context" stream.
 
   serialize: function serialize(context)
@@ -958,11 +966,33 @@ Line.definition = {
   },
 
   /** 
+   * erace cells marked as "erasable" at specified range. 
+   *
+   */
+  selectiveErase: function selectiveErase(start, end, attr) 
+  {
+    var i, cell, cells;
+    
+    this.addRange(start, end);
+//    this.cells
+//      .slice(start, end)
+//      .forEach(function(cell) cell.erase(attr));
+
+    cells = this.cells;
+    end = Math.min(end, cells.length);
+    for (i = start; i < end; ++i) {
+      cell = cells[i];
+      cell.selectiveErase(attr);
+    }
+  },
+
+  /** 
    * erace cells with test pattern. 
    *
    * [ a b c d e f g h ] -> [ E E E E E E E E ]
    */
-  eraseWithTestPattern: function eraseWithTestPattern(start, end, attr)
+  eraseWithTestPattern: 
+  function eraseWithTestPattern(start, end, attr)
   {
     var i, cell, cells;
 
