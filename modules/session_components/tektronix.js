@@ -49,15 +49,6 @@ Tektronix.definition = {
   "[persistable] default_text_color": "white",
   "[persistable] default_text_style": "26px monospace",
 
-  /** post constructor. 
-   *  @param {Broker} broker A Broker object.
-   */
-  "[subscribe('initialized/screen'), enabled]":
-  function onLoad(screen)
-  {
-    this._screen = screen;
-  },
-
   "[install]":
   function install(broker) 
   {

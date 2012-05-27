@@ -176,7 +176,6 @@
     tabbox.js
     commandline.js
     batch.js
-    shellrpc.js
     publish.js
     screenshot.js
 
