@@ -802,27 +802,6 @@ DecModeSequenceHandler.definition = {
 
   },
 
-  set_DECSCL: function set_DECSCL()
-  { // TODO: set conformance level DECSCL
-    coUtils.Debug.reportWarning(
-      _("%s sequence [%s] was ignored."),
-      arguments.callee.name, Array.slice(arguments));
-  },
-
-  set_DECSCA: function set_DECSCA() 
-  { //TODO: set character protection attribute DECSCA
-    coUtils.Debug.reportWarning(
-      _("%s sequence [%s] was ignored."),
-      arguments.callee.name, Array.slice(arguments));
-  },
-
-  DECEFR: function DECEFR() 
-  { // TODO: Enable Filter Rectangle
-    coUtils.Debug.reportWarning(
-      _("%s sequence [%s] was ignored."),
-      arguments.callee.name, Array.slice(arguments));
-  },
-
   /**
    *
    * DECREQTPARM – Request Terminal Parameters
