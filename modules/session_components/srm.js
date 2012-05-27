@@ -83,7 +83,7 @@ SendReceiveMode.definition = {
   function activate() 
   { 
     // enable insert mode.
-    this.sendMessage("set/local-echo-mode", true);
+    this.sendMessage("set/local-echo-mode", false);
   },
 
   /** set line feed.
@@ -92,7 +92,7 @@ SendReceiveMode.definition = {
   function deactivate() 
   {
     // disable insert mode.
-    this.sendMessage("set/local-echo-mode", false);
+    this.sendMessage("set/local-echo-mode", true);
   },
 
 }; // class SendReceiveMode
