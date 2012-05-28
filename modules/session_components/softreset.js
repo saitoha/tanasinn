@@ -83,8 +83,6 @@ SoftReset.definition = {
   "[profile('vt100'), sequence('CSI !p')]": 
   function DECSTR() 
   { // TODO: DEC specific - Soft Terminal Reset
-    this.DECSET(25); // DECTCEM
-
     // notify soft terminal reset event.
     this.sendMessage("command/soft-terminal-reset");
 

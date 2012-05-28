@@ -2656,7 +2656,7 @@ Screen.definition = {
       this._screen_choice = CO_SCREEN_MAIN;
     } else {
       coUtils.Debug.reportWarning(
-        _("Main screen has been already serected."));
+        _("Main screen has been already selected."));
     }
   },
 

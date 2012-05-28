@@ -943,9 +943,11 @@ Parser.definition = {
  
         codes = this._decode(scanner);;
         if (codes.length) {
-          yield function () 
+          yield let (codes = codes) function () 
           {
-            var converted_codes = drcs_converter.convert(codes);
+            var converted_codes;
+
+            converted_codes = drcs_converter.convert(codes);
             screen.write(converted_codes);
           };
         } else {

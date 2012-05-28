@@ -55,8 +55,8 @@ Tracer.definition = {
   function enable() 
   {
     this.onBeforeInput.enabled = true;
-    let broker = this._broker;
-    let sequences = broker.notify("get/sequences/" + this._mode);
+
+    let sequences = this.sendMessage("get/sequences/" + this._mode);
     this._backup_sequences = sequences;
 
     for (let i = 0; i < sequences.length; ++i) {
@@ -73,7 +73,7 @@ Tracer.definition = {
           };
           return info;
         };
-        broker.notify("command/add-sequence", {
+        this.sendMessage("command/add-sequence", {
           expression: expression, 
           handler: delegate, 
           context: context,
@@ -87,12 +87,14 @@ Tracer.definition = {
   "[subscribe('command/debugger-trace-off'), enabled]":
   function disable() 
   {
+    var i, sequences, information;
+
     this.onBeforeInput.enabled = false;
-    let broker = this._broker;
-    let sequences = broker.notify("get/sequences/" + this._mode);
-    for (let i = 0; i < sequences.length; ++i) {
-      let information = sequences[i];
-      broker.notify("command/add-sequence", information);
+
+    sequences = this.sendMessage("get/sequences/" + this._mode);
+    for (i = 0; i < sequences.length; ++i) {
+      information = sequences[i];
+      this.sendMessage("command/add-sequence", information);
     }
   },
 
@@ -104,8 +106,9 @@ Tracer.definition = {
       name: undefined,
       value: [message],
     };
-    let broker = this._broker;
-    broker.notify("command/debugger-trace-sequence", [info, undefined]); 
+    this.sendMessage(
+      "command/debugger-trace-sequence", 
+      [info, undefined]); 
   },
 
 }; // class Tracer
@@ -145,14 +148,13 @@ Hooker.definition = {
     this._step_mode = false;
     let buffer = this._buffer;
     // drain queued actions.
-    let broker = this._broker;
     while (buffer.length) {
       let action = buffer.shift();
       let result = action();
-      broker.notify("command/debugger-trace-sequence", result);
+      this.sendMessage("command/debugger-trace-sequence", result);
     }
-    broker.notify("command/flow-control", true);
-    broker.notify("command/draw"); // redraw
+    this.sendMessage("command/flow-control", true);
+    this.sendMessage("command/draw"); // redraw
   },
 
   /** Execute 1 command. */
@@ -160,15 +162,14 @@ Hooker.definition = {
   function step()
   {
     if (this._hooked) {
-      let broker = this._broker;
       let buffer = this._buffer;
       let action = buffer.shift();
       if (action) {
         let result = action();
-        broker.notify("command/debugger-trace-sequence", result);
-        broker.notify("command/draw"); // redraw
+        this.sendMessage("command/debugger-trace-sequence", result);
+        this.sendMessage("command/draw"); // redraw
       } else {
-        broker.notify("command/flow-control", true);
+        this.sendMessage("command/flow-control", true);
       }
     }
   },
@@ -180,12 +181,11 @@ Hooker.definition = {
       let parser = this.dependency["parser"];
       let buffer = this._buffer;
       let self = this;
-      let broker = this._broker;
       this._hooked = true;
       parser.parse = function(data) 
       {
         if (self._step_mode) {
-          broker.notify("command/flow-control", false);
+          this.sendMessage("command/flow-control", false);
         }
         for (let action in parser.__proto__.parse.call(parser, data)) {
           let sequence = parser._scanner.getCurrentToken();
@@ -195,7 +195,7 @@ Hooker.definition = {
           while (buffer.length) {
             let action = buffer.shift();
             let result = action();
-            broker.notify("command/debugger-trace-sequence", result);
+            this.sendMessage("command/debugger-trace-sequence", result);
           }
         }
       };
@@ -345,7 +345,7 @@ Debugger.definition = {
     }
     this._timer = null;
     this._queue = null;
-    broker.notify("command/remove-panel", this.id);
+    this.sendMessage("command/remove-panel", this.id);
   },
 
   "[subscribe('@get/panel-items')]": 
@@ -354,14 +354,13 @@ Debugger.definition = {
     let template = this.template;
     let item = panel.alloc(this.id, _("Debugger"));
     template.parentNode = item;
-    let broker = this._broker;
     let {
       tanasinn_trace,
       tanasinn_debugger_attach,
       tanasinn_debugger_break,
       tanasinn_debugger_resume,
       tanasinn_debugger_step,
-    } = broker.uniget("command/construct-chrome", template);
+    } = this.request("command/construct-chrome", template);
     this._trace_box = tanasinn_trace;
     this._checkbox_attach = tanasinn_debugger_attach;
     this._checkbox_break = tanasinn_debugger_break;
@@ -394,9 +393,8 @@ Debugger.definition = {
     this.disableDebugger.enabled = true;
     this.doBreak.enabled = true;
     this._checkbox_attach.checked = true;
-    let broker = this._broker;
     this._checkbox_break.setAttribute("disabled", !this._checkbox_attach.checked);
-    broker.notify("command/debugger-trace-on");
+    this.sendMessage("command/debugger-trace-on");
     if (this._timer) {
       this._timer.cancel();
     }
@@ -428,7 +426,6 @@ Debugger.definition = {
     this.doResume.enabled = false;
     this.doStep.enabled = false;
     this._checkbox_attach.checked = false;
-    let broker = this._broker;
     this._checkbox_break.setAttribute("disabled", !this._checkbox_attach.checked);
     this._checkbox_break.setAttribute("disabled", true);
     this._checkbox_resume.setAttribute("disabled", true);
@@ -437,8 +434,8 @@ Debugger.definition = {
       this._timer.cancel();
     }
     this._timer = null;
-    broker.notify("command/debugger-trace-off");
-    broker.notify("command/debugger-resume");
+    this.sendMessage("command/debugger-trace-off");
+    this.sendMessage("command/debugger-resume");
   },
 
   "[command('breakdebugger'), _('Break debugger.')]": 
@@ -453,11 +450,10 @@ Debugger.definition = {
     this.doBreak.enabled = false;
     this.doResume.enabled = true;
     this.doStep.enabled = true;
-    let broker = this._broker;
     this._checkbox_break.setAttribute("disabled", true);
     this._checkbox_resume.setAttribute("disabled", false);
     this._checkbox_step.setAttribute("disabled", false);
-    broker.notify("command/debugger-pause");
+    this.sendMessage("command/debugger-pause");
   },
 
   "[command('resumedebugger'), _('Resume terminal.')]": 
@@ -469,11 +465,10 @@ Debugger.definition = {
     this.doBreak.enabled = true;
     this.doResume.enabled = false;
     this.doStep.enabled = false;
-    let broker = this._broker;
     this._checkbox_resume.setAttribute("disabled", true);
     this._checkbox_step.setAttribute("disabled", true);
     this._checkbox_break.setAttribute("disabled", false);
-    broker.notify("command/debugger-resume");
+    this.sendMessage("command/debugger-resume");
   },
 
   "[command('step'), _('Do step over.')]":
@@ -482,8 +477,7 @@ Debugger.definition = {
     if (!this._trace_box) {
       this.select();
     }
-    let broker = this._broker;
-    broker.notify("command/debugger-step");
+    this.sendMessage("command/debugger-step");
   },
 
   "[command('breakpoint/bp')]": 
@@ -532,8 +526,7 @@ Debugger.definition = {
       name: undefined,
       value: [sequence],
     };
-    let broker = this._broker;
-    broker.uniget("command/construct-chrome", {
+    this.request("command/construct-chrome", {
       parentNode: "#tanasinn_trace",
       tagName: "hbox",
       style: <> 
@@ -649,8 +642,7 @@ Debugger.definition = {
   "[command('debugger'), nmap('<M-d>', '<C-S-d>'), _('Open debugger.')]":
   function select() 
   {
-    let broker = this._broker;
-    broker.notify("command/select-panel", this.id);
+    this.sendMessage("command/select-panel", this.id);
     return true;
   },
 };
