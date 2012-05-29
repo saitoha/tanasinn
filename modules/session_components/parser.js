@@ -907,12 +907,11 @@ Parser.definition = {
    */
   parse: function parse(scanner)
   {
-    var action;
-    var codes;
-    var grammar = this._grammar;
-    var screen = this._screen;
-    var drcs_converter = this._drcs_converter;
-    var result, next;
+    var action, codes, grammar, screen, drcs_converter, result, next;
+    
+    grammar = this._grammar;
+    screen = this._screen;
+    drcs_converter = this._drcs_converter;
 
     if (scanner.generator) {
       result = scanner.generator(scanner);

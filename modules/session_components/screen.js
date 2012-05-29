@@ -1985,15 +1985,22 @@ Screen.definition = {
     it = 0;
     line = this._getCurrentLine();
 
-    if (cursor.positionX >= width) {
-      if (this._wraparound_mode) {
-        cursor.positionX = 0;
-        this.lineFeed();
-      } else {
-        cursor.positionX = width - 1;
+    positionX = cursor.positionX;
+
+    if (0 === codes[0]) {
+      if (positionX >= width) {
+        line.erase(positionX - 1, positionX, cursor.attr);
+      }
+    } else {
+      if (positionX >= width) {
+        if (this._wraparound_mode) {
+          cursor.positionX = 0;
+          this.lineFeed();
+        } else {
+          cursor.positionX = width - 1;
+        }
       }
     }
-
 
     do {
       if (line) {
@@ -2013,10 +2020,11 @@ Screen.definition = {
         run = codes.slice(it, it + length);
         cursor.positionX += run.length;
         length = run.length;
-        //if (0 == run[length - 1]) {
-        //  run.pop();
-        //}
-        it += run.length;
+        if (0 === run[length - 1]) {
+          it += run.length - 1;
+        } else {
+          it += run.length;
+        }
         line.write(positionX, run, cursor.attr, insert_mode);
       }
     } while (it < codes.length);

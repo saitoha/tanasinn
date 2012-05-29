@@ -80,7 +80,8 @@ Selection.definition = {
   "[subscribe('event/mouse-tracking-mode-changed'), enabled]": 
   function onMouseTrackingModeChanged(data) 
   {
-    if (coUtils.Constant.TRACKING_NONE == data || coUtils.Constant.TRACKING_HIGHLIGHT == data) {
+    if (coUtils.Constant.TRACKING_NONE == data 
+     || coUtils.Constant.TRACKING_HIGHLIGHT == data) {
       this.ondblclick.enabled = true;
     } else {
       this.ondblclick.enabled = false;

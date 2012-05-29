@@ -216,7 +216,7 @@ Mouse.definition = {
         message = coUtils.Text.format(
           "\x1b[%d;%d;%dM", 
           code, column, row);
-        coUtils.Debug.reportError(message)
+//        coUtils.Debug.reportError(message)
         break;
 
       // sgr-style 
@@ -234,7 +234,7 @@ Mouse.definition = {
         message = coUtils.Text.format(
           "\x1b[<%d;%d;%d%s", 
           code, column, row, action);
-        //coUtils.Debug.reportError(message)
+//        coUtils.Debug.reportError(message)
         break;
 
       case "utf8":
@@ -264,7 +264,7 @@ Mouse.definition = {
         }
         putChar(column);
         putChar(row);
-        message = String.fromCharCode.apply(String, buffer);
+//        message = String.fromCharCode.apply(String, buffer);
         break;
 
       default:
@@ -282,6 +282,7 @@ Mouse.definition = {
         // send escape sequence. 
         //                            ESC    [     M          
         message = String.fromCharCode(0x1b, 0x5b, 0x4d, code, column, row);
+//        coUtils.Debug.reportMessage(message)
 
     } // switch (this._tracking_type)
 
