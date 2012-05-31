@@ -45,7 +45,7 @@ ScreenshotCommand.definition = {
     let [, name] = match;
 
     let broker = this._broker;
-    let path = broker.runtime_path + "/screenshot/" + name + ".png");
+    let path = broker.runtime_path + "/screenshot/" + name + ".png";
     let file = coUtils.File
       .getFileLeafFromVirtualPath(path)
       .QueryInterface(Components.interfaces.nsILocalFile);
