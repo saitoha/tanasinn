@@ -26,7 +26,7 @@
 /**
  *  @class Gesture
  */
-let Gesture = new Class().extends(Plugin);
+var Gesture = new Class().extends(Plugin);
 Gesture.definition = {
 
   get id()

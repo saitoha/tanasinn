@@ -83,7 +83,7 @@ CompleterAttribute.definition = {
             }
             if (oldval != newval) {
               if (newval) {
-                broker.subscribe(<>command/query-completion/{completer_name}</>, delegate);
+                broker.subscribe("command/query-completion/" + completer_name, delegate);
               } else {
                 broker.unsubscribe(delegate.id);
               }
@@ -133,7 +133,7 @@ TypeAttribute.definition = {
             }
             if (oldval != newval) {
               if (newval) {
-                broker.subscribe(<>command/query-completion/{completer_name}</>, delegate);
+                broker.subscribe("command/query-completion/" + completer_name, delegate);
               } else {
                 broker.unsubscribe(delegate.id);
               }

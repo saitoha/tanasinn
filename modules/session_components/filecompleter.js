@@ -73,7 +73,7 @@ CGICompleter.definition = {
       let next_completer_info = completers.shift();
       if (next_completer_info) {
         let [next_completer, option] = next_completer_info.split("/");
-        broker.notify(<>command/query-completion/{next_completer}</>, {
+        broker.notify("command/query-completion/" + next_completer, {
           source: source.substr(all.length),
           option: option,
           completers: completers,
@@ -144,7 +144,7 @@ BatchCompleter.definition = {
       let next_completer_info = completers.shift();
       if (next_completer_info) {
         let [next_completer, option] = next_completer_info.split("/");
-        broker.notify(<>command/query-completion/{next_completer}</>, {
+        broker.notify("command/query-completion/" + next_completer, {
           source: source.substr(all.length),
           option: option,
           completers: completers,
@@ -222,7 +222,7 @@ ProfileCompleter.definition = {
       let next_completer_info = completers.shift();
       if (next_completer_info) {
         let [next_completer, option] = next_completer_info.split("/");
-        broker.notify(<>command/query-completion/{next_completer}</>, {
+        broker.notify("command/query-completion/" + next_completer, {
           source: source.substr(all.length),
           option: option,
           completers: completers,

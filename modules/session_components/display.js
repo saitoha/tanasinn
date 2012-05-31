@@ -35,7 +35,7 @@ CompletionDisplayDriverBase.definition = {
     session.subscribe(
       <>get/completion-display-driver/{this.type}</>, 
       let (self = this) function() self);
-    session.notify(<>initialized/{this.id}</>, this);
+    session.notify("initialized/" + this.id, this);
   },
 
 };

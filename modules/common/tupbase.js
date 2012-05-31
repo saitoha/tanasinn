@@ -589,7 +589,6 @@ Component.definition = {
   initialize: function initialize(broker) 
   {
     var install_trigger;
-    var uninstall_trigger;
 
     if (this.__dependency) {
       this.dependency = {};
@@ -603,6 +602,7 @@ Component.definition = {
         function onLoad() 
         {
           var args = arguments;
+
           this.__dependency.forEach(function(key, index) {
             this.dependency[key] = args[index];
           }, this);
@@ -682,10 +682,17 @@ Plugin.definition = {
   {
     broker.subscribe(
       "command/set-enabled/" + this.id, 
-      function(value) this.enabled = value, this);
+      function(value) 
+      {
+        this.enabled = value;
+      }, this);
+
     broker.subscribe(
       "@event/broker-stopping", 
-      function() this.enabled = false, 
+      function() 
+      {
+        this.enabled = false;
+      },
       this);
   },
 
@@ -700,20 +707,25 @@ Plugin.definition = {
 
   set enabled(value) 
   {
-    var broker;
+    var broker, id;
+
+    id = this.id;
     value = Boolean(value);
     if (value != this.__enabled) {
       broker = this._broker;
       if (value) {
         try {
-          broker.notify("install/" + this.id, broker);
+          broker.notify("install/" + id, broker);
         } catch (e) {
           coUtils.Debug.reportError(e);
-          coUtils.Debug.reportError(_("Failed to enable plugin: %s"), this.id);
+          coUtils.Debug.reportError(
+            _("Failed to enable plugin: %s"), 
+            this.id);
           throw e;
         }
       } else {
-        broker.notify("uninstall/" + this.id, broker);
+        broker.notify("uninstall/" + id, broker);
+        broker.notify("uninstall/" + id, broker);
       }
       this.__enabled = value;
       this.enabled_when_startup = value;
@@ -723,8 +735,9 @@ Plugin.definition = {
   /** Overrids toString */
   toString: function toString() 
   {
-    return String("[Plugin " + this.id + "]");
+    return "[Plugin " + this.id + "]";
   },
+
 };   // class Plugin
 
 /** 

@@ -53,7 +53,7 @@ CharsetCompleter.definition = {
       let next_completer_info = completers.shift();
       if (next_completer_info) {
         let [next_completer, option] = next_completer_info.split("/");
-        broker.notify(<>command/query-completion/{next_completer}</>, {
+        broker.notify("command/query-completion/" + next_completer, {
           source: source.substr(all.length),
           option: option,
           completers: completers,
@@ -63,7 +63,7 @@ CharsetCompleter.definition = {
       }
       return;
     }
-    let components = broker.notify(<>get/{option}</>);
+    let components = broker.notify("get/" + option);
     let lower_source = source.toLowerCase();
     let candidates = [
       {

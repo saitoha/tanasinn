@@ -48,7 +48,7 @@ OverlayImage.definition = {
       id: "tanasinn_image_canvas",
     }),
 
-  "[persistable] enabled_when_startup": true,
+  "[persistable] enabled_when_startup": false,
   "[persistable] open_delay": 20,
 
   _canvas: null,

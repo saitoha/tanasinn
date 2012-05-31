@@ -60,11 +60,13 @@ InstallAttribute.definition = {
    */
   initialize: function initialize(broker)
   {
-    let attributes = this.__attributes;
-    let key;
+    var attributes, key;
+
+    attributes = this.__attributes;
+
     for (key in attributes) {
-      let watchable_attribute = attributes[key]["install"];
-      if (!watchable_attribute || !watchable_attribute.shift()) {
+      let install_attribute = attributes[key]["install"];
+      if (!install_attribute || !install_attribute.shift()) {
         continue;
       }
       let handler = this[key];
@@ -91,7 +93,7 @@ InstallAttribute.definition = {
 
   }, // initialize
 
-}; // attribute WatchableAttribute
+}; // attribute InstallAttribute
 
 
 /**
@@ -131,11 +133,13 @@ UninstallAttribute.definition = {
    */
   initialize: function initialize(broker)
   {
-    let attributes = this.__attributes;
-    let key;
+    var attributes, key;
+
+    attributes = this.__attributes;
+
     for (key in attributes) {
-      let watchable_attribute = attributes[key]["uninstall"];
-      if (!watchable_attribute || !watchable_attribute.shift()) {
+      let uninstall_attribute = attributes[key]["uninstall"];
+      if (!uninstall_attribute || !uninstall_attribute.shift()) {
         continue;
       }
       let handler = this[key];
@@ -155,14 +159,18 @@ UninstallAttribute.definition = {
       }
       let topic = "uninstall/" + this.id;
       broker.subscribe(topic, wrapped_handler, undefined, id);
-      broker.subscribe("event/broker-stopped", function() {
-        broker.unsubscribe(id);
-      }, this, id);
+      /*
+      broker.subscribe("event/broker-stopped", 
+        function() 
+        {
+          broker.unsubscribe(id);
+        }, this, id);
+        */
     } // for (key in attributes)
 
   }, // initialize
 
-}; // attribute WatchableAttribute
+}; // attribute UninstallAttribute
 
 
 /**

@@ -82,7 +82,7 @@ BottomPanel.definition = {
                 tab.style.weight = "bold";
                 if (panel) {
 //                  session.notify("command/report-overlay-message", panel.id);
-                  session.notify(<>panel-selected/{panel.id}</>, panel);
+                  session.notify("panel-selected/" + panel.id, panel);
                 }
               },
             },
@@ -144,7 +144,7 @@ BottomPanel.definition = {
     this.remove.enabled = true;
     this.open.enabled = true;
     this.close.enabled = true;
-    session.notify(<>initialized/{this.id}</>, this);
+    session.notify("initialized/" + this.id, this);
   },
 
   /** Uninstalls itself 

@@ -234,15 +234,17 @@ EventBrokerBase.prototype = {
    */
   multicast: function multicast(topic, data) 
   {
-    var events = this._delegate_map[topic];
-    var stack;
+    var events, stack;
+
+    events = this._delegate_map[topic];
+
     if (events) {
       return events.map(function(delegate) 
       { 
         try {
           return delegate.action(data);
         } catch (e) {
-          stack = Components.stack .caller.caller.caller;
+          stack = Components.stack.caller.caller.caller;
           coUtils.Debug.reportError(e);
           coUtils.Debug.reportError(
             _("called at: '%s'.\n", 

@@ -201,7 +201,7 @@ SlowBlinkTrait.definition = {
     var broker;
 
     broker = this._broker;
-    layer = new Layer(broker);
+    layer = new Layer(broker, "slowblink_canvas");
     layer.canvas.width = this._main_layer.canvas.width;
     layer.canvas.height = this._main_layer.canvas.height;
     this._slow_blink_layer = layer;
@@ -231,7 +231,7 @@ RapidBlinkTrait.definition = {
     var broker;
 
     broker = this._broker;
-    this._rapid_blink_layer = new Layer(broker);
+    this._rapid_blink_layer = new Layer(broker, "rapidblink_canvas");
     this._rapid_blink_layer.canvas.width = this._main_layer.canvas.width;
     this._rapid_blink_layer.canvas.height = this._main_layer.canvas.height;
 
@@ -385,16 +385,18 @@ Layer.definition = {
   },
 
   /** Constructor */
-  initialize: function initialize(broker) 
+  initialize: function initialize(broker, id) 
   {
-    var { canvas } = broker.uniget(
+    var canvas;
+
+    canvas = broker.uniget(
       "command/construct-chrome", 
       {
         parentNode: "#tanasinn_center_area",
         tagName: "html:canvas",
-        id: "canvas",
+        id: id,
         dir: "ltr",
-      });
+      })[id];
 
     this.canvas = canvas;
     this.context = canvas.getContext("2d");
@@ -484,7 +486,7 @@ Renderer.definition = {
   {
     var outerchrome;
 
-    this._main_layer = new Layer(broker);
+    this._main_layer = new Layer(broker, "foreground_canvas");
 
     // set smoothing configuration
     this._main_layer.smoothing = this.smoothing;
