@@ -27,6 +27,19 @@ link:./usermanual.html[English/英語]
 #if __EN__
 == News
 
+=== 2012/05/31 
+    Version 0.2.2.1
+    DECSET 8840 / Ambiguous width switching.
+    DECSET 7700 / Ambiguous width reporting.
+    Implement LNM.
+    Implement REP.
+    Implement Keyboard Action Mode (KAM).
+    Implement Send/Receive Mode, local echo mode (SRM). 
+    implement DECSCA (Protection Attribute).
+    implement DECSED/DECSEL (Selective erase feature).
+    implement DECSERA (Selective Erase Rectangle Area).
+    More precise emulation.
+
 === 2012/05/23 
     Version 0.2.2.0
     Supports OSC 52 base64 copy.
@@ -73,7 +86,20 @@ process.python_path = "/usr/bin/python"
 
 #elif __JP__
 == News 
-   
+ 
+=== 2012/05/31 
+    Version 0.2.2.1
+    DECSET 8840 / Ambiguous width switching.
+    DECSET 7700 / Ambiguous width reporting.
+    Implement LNM.
+    Implement REP.
+    Implement Keyboard Action Mode (KAM).
+    Implement Send/Receive Mode, local echo mode (SRM). 
+    implement DECSCA (Protection Attribute).
+    implement DECSED/DECSEL (Selective erase feature).
+    implement DECSERA (Selective Erase Rectangle Area).
+    More precise emulation.
+
 === 2012/05/23 
     Version 0.2.2.0
     Supports OSC 52 base64 copy.
