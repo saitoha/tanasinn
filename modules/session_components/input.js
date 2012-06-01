@@ -673,7 +673,10 @@ InputManager.definition = {
   function uninstall(broker)
   {
     this._key_map = null; 
-    this._textbox.parentNode.removeChild(this._textbox);
+    if (null !== this._textbox) {
+      this._textbox.parentNode.removeChild(this._textbox);
+      this._textbox = null;
+    }
     this.sendMessage("event/collection-changed/modes");
   },
 

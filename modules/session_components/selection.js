@@ -28,14 +28,14 @@
 let Suitable = new Trait();
 Suitable.definition = {
 
-  "[subscribe('event/screen-width-changed')]":
+  "[subscribe('event/screen-width-changed'), pnp]":
   function onWidthChanged(width) 
   {
     let canvas = this._canvas;
     canvas.width = width;
   },
 
-  "[subscribe('event/screen-height-changed')]": 
+  "[subscribe('event/screen-height-changed'), pnp]": 
   function onHeightChanged(height) 
   {
     let canvas = this._canvas;
@@ -127,17 +127,6 @@ Selection.definition = {
     
     this._canvas = selection_canvas;
     this._context = selection_canvas.getContext("2d");
-
-    this.onWidthChanged.enabled = true;
-    this.onHeightChanged.enabled = true;
-    this.getRange.enabled = true;
-    this.onFirstFocus.enabled = true;
-
-    // register dom listeners.
-    this.ondragstart.enabled = true;
-    this.ondblclick.enabled = true;
-
-    broker.notify("initialized/selection", this);
   },
 
   /** Uninstalls itself 
@@ -146,24 +135,18 @@ Selection.definition = {
   "[uninstall]":
   function uninstall(broker) 
   {
-    this.clear();
-    this.onWidthChanged.enabled = false;
-    this.onHeightChanged.enabled = false;
-    this.getRange.enabled = false;
-    this.onFirstFocus.enabled = false;
-
-    this.ondragstart.enabled = false;
-    this.ondblclick.enabled = false;
-
     if (null !== this._canvas) {
       this._canvas.parentNode.removeChild(this._canvas);
       this._canvas = null;
     }
-    this._context = null;
+    if (null !== this._context) {
+      this.clear();
+      this._context = null;
+    }
 
   },
 
-  "[subscribe('@command/focus')]":
+  "[subscribe('@command/focus'), pnp]":
   function onFirstFocus() 
   {
     let canvas = this._canvas;
@@ -172,7 +155,7 @@ Selection.definition = {
   },
 
   /** Doubleclick handler. It selects word under the mouse pointer. */
-  "[listen('dblclick', '#tanasinn_content')]":
+  "[listen('dblclick', '#tanasinn_content'), pnp]":
   function ondblclick(event) 
   {
     let [column, row] = this.convertPixelToScreen(event);
@@ -295,7 +278,7 @@ Selection.definition = {
   },
 
   /** Dragstart handler. It starts a session of dragging selection. */
-  "[listen('dragstart', '#tanasinn_content')]":
+  "[listen('dragstart', '#tanasinn_content'), pnp]":
   function ondragstart(event) 
   {
     let broker = this._broker;
@@ -474,7 +457,7 @@ Selection.definition = {
     this._reportRange();
   },
 
-  "[subscribe('get/selection-info')]": 
+  "[subscribe('get/selection-info'), pnp]": 
   function getRange() 
   {
     if (null === this._range) {

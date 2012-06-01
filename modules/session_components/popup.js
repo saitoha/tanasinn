@@ -136,7 +136,7 @@ ZshCompletion.definition = {
     */
   },
 
-  "[subscribe('sequence/osc/202')]":
+  "[subscribe('sequence/osc/202'), pnp]":
   function onZshCompletion(data) 
   {
     let session = this._broker;
@@ -204,9 +204,6 @@ PopupMenu.definition = {
   "[install]":
   function install(session) 
   {
-    this.onDisplay.enabled = true;
-    this.onUndisplay.enabled = true;
-    this.onZshCompletion.enabled = true;
     let {
       tanasinn_app_popup_datum,
       tanasinn_app_popup,
@@ -268,9 +265,6 @@ PopupMenu.definition = {
           },
         },
       ]);
-    this.onmousedown.enabled = true;
-    this.onmousemove.enabled = true;
-    this.onmouseup.enabled = true;
     this._datum = tanasinn_app_popup_datum;
     this._popup = tanasinn_app_popup;
     this._scrollbox = tanasinn_app_popup_scrollbox;
@@ -283,19 +277,17 @@ PopupMenu.definition = {
   "[uninstall]":
   function uninstall(session) 
   {
-    this.onmousedown.enabled = false;
-    this.onmousemove.enabled = false;
-    this.onmouseup.enabled = false;
-    this.onDisplay.enabled = false;
-    this.onUndisplay.enabled = false;
-    this.onZshCompletion.enabled = false;
-    this._datum.parentNode.removeChild(this._datum);
-    this._popup.parentNode.removeChild(this._popup);
-    this._datum = null;
-    this._popup = null;
+    if (null !== this._datum) {
+      this._datum.parentNode.removeChild(this._datum);
+      this._datum = null;
+    }
+    if (null !== this._popup) {
+      this._popup.parentNode.removeChild(this._popup);
+      this._popup = null;
+    }
   },
 
-  "[listen('mousedown', '#tanasinn_app_popup', true)]":
+  "[listen('mousedown', '#tanasinn_app_popup', true), pnp]":
   function onmousedown(event) 
   {
     let target = event.explicitOriginalTarget;
@@ -328,7 +320,7 @@ PopupMenu.definition = {
     session.notify("command/input-with-no-remapping", packed_code);
   },
 
-  "[listen('mousemove', '#tanasinn_app_popup', true)]":
+  "[listen('mousemove', '#tanasinn_app_popup', true), pnp]":
   function onmousemove(event) 
   {
     let target = event.explicitOriginalTarget;
@@ -343,14 +335,14 @@ PopupMenu.definition = {
     target.style.backgroundColor = "#ccc"; 
   },
 
-  "[listen('mouseup', '#tanasinn_app_popup', true)]":
+  "[listen('mouseup', '#tanasinn_app_popup', true), pnp]":
   function onmouseup(event) 
   {
     event.stopPropagation();
     event.preventDefault();
   },
 
-  "[subscribe('sequence/osc/200')]":
+  "[subscribe('sequence/osc/200'), pnp]":
   function onDisplay(data) 
   {
     while (this._container.firstChild) {
@@ -451,7 +443,7 @@ PopupMenu.definition = {
 //    box_object.scrollTo(0, selected * rows.firstChild.boxObject.height);
   },
 
-  "[subscribe('sequence/osc/201')]":
+  "[subscribe('sequence/osc/201'), pnp]":
   function onUndisplay() 
   {
     this._is_showing = false;

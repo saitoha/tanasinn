@@ -62,16 +62,16 @@ DragCopy.definition = {
         hidden: true,
       });
     this._feedback_canvas  = feedback_canvas;
-    this.ondragstart.enabled = true;
   },
 
   /** Uninstalls itself. */
   "[uninstall]":
   function uninstall(session)
   {
-    this.ondragstart.enabled = false;
-    this._feedback_canvas.parentNode.removeChild(this._feedback_canvas);
-    this._feedback_canvas = null;
+    if (null !== this._feedback_canvas) {
+      this._feedback_canvas.parentNode.removeChild(this._feedback_canvas);
+      this._feedback_canvas = null;
+    }
   },
   
   "[subscribe('event/mouse-tracking-mode-changed'), enabled]": 
@@ -138,7 +138,7 @@ DragCopy.definition = {
     return [left, top];
   },
 
-  "[listen('dragstart', '#tanasinn_content')]":
+  "[listen('dragstart', '#tanasinn_content'), pnp]":
   function ondragstart(event)
   {
     if (null !== this._mouse_mode)

@@ -55,10 +55,6 @@ CommandlineHistory.definition = {
   "[install]":
   function install(session) 
   {
-    this.clearHistory.enabled = true;
-    this.nextHistory.enabled = true;
-    this.previousHistory.enabled = true;
-    this.onCommand.enabled = true;
     this.loadHistory();
   },
 
@@ -68,14 +64,12 @@ CommandlineHistory.definition = {
   "[uninstall]":
   function uninstall(session) 
   {
-    this.clearHistory.enabled = false;
-    this.nextHistory.enabled = false;
-    this.previousHistory.enabled = false;
-    this.onCommand.enabled = false;
+    if (null !== this._converter) {
+      this._converter.flush();
+      this._converter.close();
+      this._converter = null;
+    }
 
-    this._converter.flush();
-    this._converter.close();
-    this._converter = null;
     this._file = null;
     coUtils.Debug.reportMessage(
       _("Resources in CommandlineHistory have been cleared."));
@@ -158,7 +152,7 @@ CommandlineHistory.definition = {
     }
   },
 
-  "[command('clearhistory/chistory'), _('clear command line history.')]":
+  "[command('clearhistory/chistory'), _('clear command line history.'), pnp]":
   function clearHistory()
   {
     this.closeHistory();
@@ -177,7 +171,7 @@ CommandlineHistory.definition = {
     };
   },
 
-  "[subscribe('command/select-next-history')]":
+  "[subscribe('command/select-next-history'), pnp]":
   function nextHistory(info)
   {
     let history_list = Object.keys(this._history);
@@ -189,7 +183,7 @@ CommandlineHistory.definition = {
     info.textbox.value = value;
   },
 
-  "[subscribe('command/select-previous-history')]":
+  "[subscribe('command/select-previous-history'), pnp]":
   function previousHistory(info)
   {
     let history_list = Object.keys(this._history);
@@ -201,7 +195,7 @@ CommandlineHistory.definition = {
     info.textbox.value = value;
   },
 
-  "[subscribe('command/eval-commandline')]":
+  "[subscribe('command/eval-commandline'), pnp]":
   function onCommand(command)
   {
     this._history[command] = true;

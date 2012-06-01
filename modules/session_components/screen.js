@@ -1655,6 +1655,12 @@ TabController.definition = {
     }
   },
 
+  setTab: function setTab() 
+  {
+    this._tab_stops.push(this.cursor.positionX);
+    this._tab_stops.sort(function(lhs, rhs) lhs > rhs);
+  },
+
   /**
    *
    * TBC—Tab Clear

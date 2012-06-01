@@ -140,10 +140,6 @@ BottomPanel.definition = {
     this._bottom_panel = tanasinn_bottompanel;
     this._tabbox = tanasinn_tabbox;
     this._scrollbox = tanasinn_arrowscrollbox;
-    this.select.enabled = true;
-    this.remove.enabled = true;
-    this.open.enabled = true;
-    this.close.enabled = true;
     session.notify("initialized/" + this.id, this);
   },
 
@@ -153,12 +149,12 @@ BottomPanel.definition = {
   "[uninstall]":
   function uninstall(session) 
   {
-    this.select.enabled = false;
-    this.remove.enabled = false;
-    this.open.enabled = false;
-    this.close.enabled = false;
-    let target = this._bottom_panel;
-    target.parentNode.removeChild(target);
+    if (null !== this._bottom_panel) {
+      this._bottom_panel.parentNode.removeChild(this._bottom_panel);
+      this._bottom_panel = null;
+    }
+    this._scrollbox = null;
+    this._tabbox = null;
   },
 
   getElement: function getElement() 
@@ -191,7 +187,7 @@ BottomPanel.definition = {
    *   |               |             | bottom panel  |     is not
    *   +---------------+             +---------------+ <-- changed.
    */
-  "[command('openpanel'), _('Open bottom panel.')]":
+  "[command('openpanel'), _('Open bottom panel.'), pnp]":
   function open() 
   {
     let bottomPanel = this._bottom_panel;
@@ -234,7 +230,7 @@ BottomPanel.definition = {
    *   | bottom panel  | height is   |               |     is not
    *   +---------------+ expanded.-> +---------------+ <-- changed.
    */
-  "[command('closepanel'), _('Close bottom panel')]":
+  "[command('closepanel'), _('Close bottom panel'), pnp]":
   function close() 
   {
     let bottom_panel = this._bottom_panel;
@@ -330,7 +326,7 @@ BottomPanel.definition = {
   /** Select specified panel.
    * @param {String} id A panel id.
    */ 
-  "[subscribe('command/select-panel')]":
+  "[subscribe('command/select-panel'), pnp]":
   function select(id) 
   {
     id = id.id || id;
@@ -367,7 +363,7 @@ BottomPanel.definition = {
    * @param {String} id A panel id.
    * TODO: when it is removed, selected position is tilted.
    */ 
-  "[subscribe('command/remove-panel')]":
+  "[subscribe('command/remove-panel'), pnp]":
   function remove(id) 
   {
     id = id.id || id;

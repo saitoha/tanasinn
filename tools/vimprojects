@@ -178,6 +178,7 @@
     batch.js
     publish.js
     screenshot.js
+    history.js
 
     charsetcompleter.js
     colorcompleter.js

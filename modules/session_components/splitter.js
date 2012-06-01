@@ -88,7 +88,10 @@ Splitter.definition = {
   function uninstall(session) 
   {
     // remove splitter element
-    this._splitter.parentNode.removeChild(this._splitter);
+    if (null !== this._splitter) {
+      this._splitter.parentNode.removeChild(this._splitter);
+      this._splitter = null;
+    }
   },
 
   /** Makes splitter bar behave as vertical resizebar.

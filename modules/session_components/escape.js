@@ -151,8 +151,7 @@ Escape.definition = {
     var screen;
 
     screen = this._screen;
-    screen.tab_stops.push(screen.cursor.positionX);
-    screen.tab_stops.sort(function(lhs, rhs) lhs > rhs);
+    screen.setTab();
   },
 
   /**
