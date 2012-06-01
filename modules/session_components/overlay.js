@@ -25,7 +25,7 @@
 /** 
  * @class ForwardInputIterator
  */ 
-let ForwardInputIterator = new Class();
+var ForwardInputIterator = new Class();
 ForwardInputIterator.definition = {
 
   _value: null,
@@ -60,7 +60,7 @@ ForwardInputIterator.definition = {
 /**
  *  @class OverlayIndicator
  */
-let OverlayIndicator = new Class().extends(Plugin)
+var OverlayIndicator = new Class().extends(Plugin)
                                   .depends("decoder");
 OverlayIndicator.definition = {
 
@@ -117,6 +117,7 @@ OverlayIndicator.definition = {
   "[persistable, watchable] background": "-moz-linear-gradient(top, #777, #000)",
 
   _element: null,
+  _content: null,
   _timer: null,
  
   /** installs itself. 
@@ -125,15 +126,11 @@ OverlayIndicator.definition = {
   "[install]":
   function install(session) 
   {
-    let {tanasinn_overlay_indicator, tanasinn_overlay_indicator_content}
-      = session.uniget("command/construct-chrome", this.template);
+    var {tanasinn_overlay_indicator, tanasinn_overlay_indicator_content}
+      = this.request("command/construct-chrome", this.template);
+
     this._element = tanasinn_overlay_indicator;
     this._content = tanasinn_overlay_indicator_content;
-    this.report.enabled = true;
-    this.onScreenSizeChanged.enabled = true;
-    this.onFontSizeChanged.enabled = true;
-    this.onCommandReceived.enabled = true;
-    this.onStyleChanged.enabled = true;
   },
 
   /** Uninstalls itself.
@@ -149,24 +146,22 @@ OverlayIndicator.definition = {
     if (null !== this._content) {
       this._content = null;
     }
-    this.report.enabled = false;
-    this.onScreenSizeChanged.enabled = false;
-    this.onFontSizeChanged.enabled = false;
-    this.onCommandReceived.enabled = false;
-    this.onStyleChanged.enabled = false;
+    if (null !== this._timer) {
+      this._timer = null;
+    }
   },
 
-  "[subscribe('command/report-overlay-message')]":
+  "[subscribe('command/report-overlay-message'), pnp]":
   function report(message) 
   {
     this.print(message);
     this.show(2000);
   },
 
-  "[subscribe('variable-changed/overlayindicator.{background | color | fontSize | padding | borderRadius | border}')]":
+  "[subscribe('variable-changed/overlayindicator.{background | color | fontSize | padding | borderRadius | border}'), pnp]":
   function onStyleChanged(chrome, decoder) 
   {
-    if (this._content) {
+    if (null !== this._content) {
       this._content.style.cssText = <> 
         background: {this.background};
         color: {this.color};
@@ -180,30 +175,34 @@ OverlayIndicator.definition = {
 
   show: function show(timeout) 
   {
-    if (this._timer) {
+    if (null !== this._timer) {
       this._timer.cancel();
     }
     this._element.style.visibility = "visible";
     this._element.style.MozTransitionDuration = "0ms";
     this._element.style.opacity = this.opacity;
     if (timeout) {
-      this._timer = coUtils.Timer.setTimeout(function() {
-        this._timer = null;
-        this.hide();
-      }, timeout, this);
+      this._timer = coUtils.Timer.setTimeout(
+        function() 
+        {
+          this._timer = null;
+          this.hide();
+        }, timeout, this);
     }
   },
 
   hide: function hide() 
   {
-    if (this._element) {
+    if (null !== this._element) {
       this._element.style.MozTransitionDuration = this.fadeout_duration + "ms";
       this._element.style.opacity = 0.0; 
-      coUtils.Timer.setTimeout(function() {
-        if (this._element) {
-          this._element.style.visibility = "hidden";
-        }
-      }, this.fadeout_duration, this);
+      coUtils.Timer.setTimeout(
+        function() 
+        {
+          if (this._element) {
+            this._element.style.visibility = "hidden";
+          }
+        }, this.fadeout_duration, this);
     }
   },
 
@@ -212,30 +211,36 @@ OverlayIndicator.definition = {
     this._content.setAttribute("value", String(message));
   },
 
-  "[subscribe('command/resize-screen')]":
+  "[subscribe('command/resize-screen'), pnp]":
   function onScreenSizeChanged(size)
   {
-    let {column, row} = size;
-    let message = column + " x " + row;
+    var message;
+
+    message = size.column + " x " + size.row;
     this.print(message);
     this.show(2000);
   },
 
-  "[subscribe('event/font-size-changed')]":
+  "[subscribe('event/font-size-changed'), pnp]":
   function onFontSizeChanged(size)
   {
-    let message = <>{size}px</>.toString();
+    var message;
+
+    message = size + "px";
     this.print(message);
     this.show(2000);
   },
 
-  "[subscribe('sequence/osc/2')]":
+  "[subscribe('sequence/osc/{0 | 2}'), pnp]":
   function onCommandReceived(data) 
   { // process OSC command.
-    let scanner = new ForwardInputIterator(data);
-    let decoder = this.dependency["decoder"];
-    let sequence = [c for (c in decoder.decode(scanner))];
-    let text = String.fromCharCode.apply(String, sequence);
+    var scanner, decoder, sequence, text;
+
+    scanner = new ForwardInputIterator(data);
+    decoder = this.dependency["decoder"];
+    sequence = [c for (c in decoder.decode(scanner))];
+    text = String.fromCharCode.apply(String, sequence);
+
     this.print(text);
     this.show(400);
   },

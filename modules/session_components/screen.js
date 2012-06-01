@@ -996,104 +996,6 @@ ScreenSequenceHandler.definition = {
   },
 
   /**
-   *
-   * CHT — Cursor Horizontal Forward Tabulation
-   *
-   * Move the active position n tabs forward.
-   *
-   * Default: 1.
-   *
-   * Format
-   *
-   * CSI    Pn   I
-   * 9/11   3/n  4/9
-   *
-   * Parameters
-   *
-   * Pn is the number of active position tabs to move forward.
-   * Description
-   *
-   * The active position is moved to the character position corresponding to
-   * the following n-th horizontal tabulation stop.
-   *
-   */
-  "[profile('vt100'), sequence('CSI %dI')]":
-  function CHT(n) 
-  { // Cursor Horaizontal Tabulation
-    var tab_stops, cursor, width, positionX, i, stop, index;
-
-    n = (n || 1) - 1;
-
-    tab_stops = this.tab_stops;
-    cursor = this.cursor;
-    width = this._width;
-    positionX = cursor.positionX;;
- 
-    if (positionX > width - 1) {
-      if (this._wraparound_mode) {
-        cursor.positionX = 0;
-        this.lineFeed();
-        return;
-      }
-    }
-   
-    for (i = 0; i < tab_stops.length; ++i) {
-      stop = tab_stops[i];
-      if (stop > positionX) {
-        index = i + n;
-        cursor.positionX = tab_stops[index % tab_stops.length];
-        return;
-      }
-    }
-  },
-
-  /**
-   *
-   * CBT — Cursor Backward Tabulation
-   *
-   * Move the active position n tabs backward.
-   *
-   * Default: 1.
-   *
-   * Format
-   *
-   * CSI    Pn   Z
-   * 9/11   3/n  5/10
-   *
-   * Parameters
-   *
-   * Pn is the number of active position tabs to move backward.
-   *
-   * Description
-   *
-   * The active position is moved to the character position corresponding to
-   * the n-th preceding horizontal tabulation stop. If an attempt is made to 
-   * move the active position past the first character position on the line, 
-   * then the active position stays at column one.
-   *
-   */
-  "[profile('vt100'), sequence('CSI %dZ')]":
-  function CBT(n) 
-  { // Cursor Backward Tabulation
-    var tab_stops, cursor, positionX, i, stop, index;
-
-    n = (n || 1) - 1;
-
-    tab_stops = this.tab_stops;
-    cursor = this.cursor;
-    positionX = cursor.positionX;;
-
-    for (i = tab_stops.length - 1; i >= 0; --i) {
-      stop = tab_stops[i];
-      if (stop < positionX) {
-        index = Math.max(0, i - n);
-        cursor.positionX = tab_stops[index];
-        break;
-      }
-    }
-  },
-
-  /**
    * HPA — Horizontal Position Absolute
    * 
    * Inquire as to the amount of free memory for programmable key operations.
@@ -1170,59 +1072,6 @@ ScreenSequenceHandler.definition = {
     this.setPositionY((n1 || 1) - 1 + this.cursor.originY);
     this.setPositionX((n2 || 1) - 1 + this.cursor.originX);
   },
-
-  /**
-   *
-   * TBC—Tab Clear
-   *
-   * This control function clears tab stops.
-   *
-   * Format
-   *
-   * CSI    Ps    g
-   * 9/11   3/n   6/7
-   *
-   * Parameters
-   *
-   * Ps
-   * indicates the tab stops to clear. There are only two values for Ps, 0 and 3.
-   * 0 or none (default) - The terminal only clears the tab stop at the cursor.
-   * 3                   - The terminal clears all tab stops.
-   *
-   */
-  "[profile('vt100'), sequence('CSI %dg')]":
-  function TBC(n) 
-  { // TaB Clear
-
-    var tab_stops, pisitionX, i, stop;
-
-    switch (n || 0) {
-
-      case 0:
-        tab_stops = this.tab_stops;
-        positionX = this.cursor.positionX;;
-        for (i = 0; i < tab_stops.length; ++i) {
-          stop = tab_stops[i];
-          if (stop == positionX) {
-            tab_stops.splice(i, 1); // remove current tabstop.
-          } else if (stop > positionX) {
-            break;
-          }
-        }
-        break;
-
-      case 3:
-        this.tab_stops = [];
-        break;
-
-      defalut:
-        coUtils.Debug.reportWarning(
-          _("%s sequence [%s] was ignored."),
-          arguments.callee.name, Array.slice(arguments));
-
-    }
-  },
-
 
   /**
    *
@@ -1740,25 +1589,258 @@ Resizable.definition = {
 
  
 /**
+ * @trait TabController
+ */
+var TabController = new Trait("TabController");
+TabController.definition = {
+  
+  _tab_stops: null,
+
+  "[install]":
+  function install_tabcontroller(broker)
+  {
+  },
+
+  /** horizontalTab (HT). */
+  "[type('Undefined')] horizontalTab":
+  function horizontalTab() 
+  {
+    var cursor, tab_stops, line, width, max, positionX, i, stop;
+
+    cursor = this.cursor;
+    tab_stops = this._tab_stops;
+    line = this._getCurrentLine();
+    width = this._width;
+
+    if (coUtils.Constant.LINETYPE_NORMAL == line.type) {
+      max = width - 1;
+    } else {
+      max = width / 2 - 1 | 0;
+    }
+
+    positionX = cursor.positionX;
+    if (positionX > max) {
+      if (this._wraparound_mode) {
+        cursor.positionX = 0;
+        this.lineFeed();
+        return;
+      }
+    }
+
+    for (i = 0; i < tab_stops.length; ++i) {
+      stop = tab_stops[i];
+      if (stop > positionX) {
+        cursor.positionX = stop;
+        if (cursor.positionX >= max) {
+          break;
+        }
+        return;
+      }
+    }
+    cursor.positionX = max;
+  },
+
+  _resetTabStop: function _resetTabStop()
+  {
+    var i, width;
+
+    // update tab stops
+    width = this._width;
+    this._tab_stops = [];
+    for (i = 0; i < width; i += 8) {
+      this._tab_stops.push(i);
+    }
+    if (i != width - 1) {
+      this._tab_stops.push(width - 1);
+    }
+  },
+
+  /**
+   *
+   * TBC—Tab Clear
+   *
+   * This control function clears tab stops.
+   *
+   * Format
+   *
+   * CSI    Ps    g
+   * 9/11   3/n   6/7
+   *
+   * Parameters
+   *
+   * Ps
+   * indicates the tab stops to clear. There are only two values for Ps, 0 and 3.
+   * 0 or none (default) - The terminal only clears the tab stop at the cursor.
+   * 3                   - The terminal clears all tab stops.
+   *
+   */
+  "[profile('vt100'), sequence('CSI %dg')]":
+  function TBC(n) 
+  { // TaB Clear
+
+    var tab_stops, pisitionX, i, stop;
+
+    switch (n || 0) {
+
+      case 0:
+        tab_stops = this._tab_stops;
+        positionX = this.cursor.positionX;;
+        for (i = 0; i < tab_stops.length; ++i) {
+          stop = tab_stops[i];
+          if (stop == positionX) {
+            tab_stops.splice(i, 1); // remove current tabstop.
+          } else if (stop > positionX) {
+            break;
+          }
+        }
+        break;
+
+      case 3:
+        this._tab_stops = [];
+        break;
+
+      defalut:
+        coUtils.Debug.reportWarning(
+          _("%s sequence [%s] was ignored."),
+          arguments.callee.name, Array.slice(arguments));
+
+    }
+  },
+
+  /**
+   *
+   * CHT — Cursor Horizontal Forward Tabulation
+   *
+   * Move the active position n tabs forward.
+   *
+   * Default: 1.
+   *
+   * Format
+   *
+   * CSI    Pn   I
+   * 9/11   3/n  4/9
+   *
+   * Parameters
+   *
+   * Pn is the number of active position tabs to move forward.
+   * Description
+   *
+   * The active position is moved to the character position corresponding to
+   * the following n-th horizontal tabulation stop.
+   *
+   */
+  "[profile('vt100'), sequence('CSI %dI')]":
+  function CHT(n) 
+  { // Cursor Horaizontal Tabulation
+    var tab_stops, cursor, width, positionX, i, stop, index;
+
+    n = (n || 1) - 1;
+
+    tab_stops = this._tab_stops;
+    cursor = this.cursor;
+    width = this._width;
+    positionX = cursor.positionX;;
+ 
+    if (positionX > width - 1) {
+      if (this._wraparound_mode) {
+        cursor.positionX = 0;
+        this.lineFeed();
+        return;
+      }
+    }
+   
+    for (i = 0; i < tab_stops.length; ++i) {
+      stop = tab_stops[i];
+      if (stop > positionX) {
+        index = i + n;
+        cursor.positionX = tab_stops[index % tab_stops.length];
+        return;
+      }
+    }
+  },
+
+  /**
+   *
+   * CBT — Cursor Backward Tabulation
+   *
+   * Move the active position n tabs backward.
+   *
+   * Default: 1.
+   *
+   * Format
+   *
+   * CSI    Pn   Z
+   * 9/11   3/n  5/10
+   *
+   * Parameters
+   *
+   * Pn is the number of active position tabs to move backward.
+   *
+   * Description
+   *
+   * The active position is moved to the character position corresponding to
+   * the n-th preceding horizontal tabulation stop. If an attempt is made to 
+   * move the active position past the first character position on the line, 
+   * then the active position stays at column one.
+   *
+   */
+  "[profile('vt100'), sequence('CSI %dZ')]":
+  function CBT(n) 
+  { // Cursor Backward Tabulation
+    var tab_stops, cursor, positionX, i, stop, index;
+
+    n = (n || 1) - 1;
+
+    tab_stops = this._tab_stops;
+    cursor = this.cursor;
+    positionX = cursor.positionX;;
+
+    for (i = tab_stops.length - 1; i >= 0; --i) {
+      stop = tab_stops[i];
+      if (stop < positionX) {
+        index = Math.max(0, i - n);
+        cursor.positionX = tab_stops[index];
+        break;
+      }
+    }
+  },
+
+};
+
+/**
  * @class Screen
  * @brief The Screen class, manages Line objects and provides some functions,
  *        scroll, line operation, buffer-switching,...etc.
  */
-var Screen = new Class().extends(Component)
+var Screen = new Class().extends(Plugin)
                         .mix(Viewable)
                         .mix(Scrollable)
                         .mix(Resizable)
                         .mix(ScreenSequenceHandler)
+                        .mix(TabController)
                         .requires("ScreenSwitch")
                         .requires("ScreenBackup")
                         .requires("ScreenCursorOperations")
                         .requires("ScreenEdit")
+                        .depends("cursorstate")
+                        .depends("linegenerator")
                         ;
 Screen.definition = {
 
   /** Component ID */
   get id()
     "screen",
+
+  get info()
+    <plugin>
+        <name>{_("Screen")}</name>
+        <description>{
+          _("Provides terminal screen buffer and some functions for operating it.")
+        }</description>
+        <version>0.1.0</version>
+    </plugin>,
+
+  "[persistable] enabled_when_startup": true,
 
   /**
    * @property cursor
@@ -1779,26 +1861,31 @@ Screen.definition = {
   _insert_mode: false,
   _reverse_wraparound_mode: false,
 
-  tab_stops: null,
-
   // geometry (in cell count)
   "[persistable] initial_column": 80,
   "[persistable] initial_row": 24,
 
-  /** post-constructor */
-  "[subscribe('initialized/{cursorstate & linegenerator}'), enabled]":
-  function onLoad(cursor_state, line_generator) 
+  "[install]":
+  function install(broker)
   {
-    //this._width = this.initial_column;
-    //this._height = this.initial_row;
+    var line_generator, cursor_state;
+
+    line_generator = this.dependency["linegenerator"];
+    cursor_state = this.dependency["cursorstate"];
+
     this._buffer = line_generator.allocate(this._width, this._height * 2);
     this._switchScreen();
     this.cursor = cursor_state;
     this._line_generator = line_generator;
 
     this._resetTabStop();
+  },
 
-    this.sendMessage("initialized/screen", this);
+  "[uninstall]":
+  function uninstall(broker)
+  {
+    this._buffer = null;
+    this._line_generator = null;
   },
 
   /** 
@@ -1894,21 +1981,6 @@ Screen.definition = {
   get bufferTop()
   {
     return this._buffer_top;
-  },
-
-  _resetTabStop: function _resetTabStop()
-  {
-    var i, width;
-
-    // update tab stops
-    width = this._width;
-    this.tab_stops = [];
-    for (i = 0; i < width; i += 8) {
-      this.tab_stops.push(i);
-    }
-    if (i != width - 1) {
-      this.tab_stops.push(width - 1);
-    }
   },
 
   getLines: function getLines(start, end) 
@@ -2185,45 +2257,6 @@ Screen.definition = {
   function carriageReturn() 
   {
     this.cursor.positionX = 0;
-  },
-  
-  /** horizontalTab (HT). */
-  "[type('Undefined')] horizontalTab":
-  function horizontalTab() 
-  {
-    var cursor, tab_stops, line, width, max, positionX, i, stop;
-
-    cursor = this.cursor;
-    tab_stops = this.tab_stops;
-    line = this._getCurrentLine();
-    width = this._width;
-
-    if (coUtils.Constant.LINETYPE_NORMAL == line.type) {
-      max = width - 1;
-    } else {
-      max = width / 2 - 1 | 0;
-    }
-
-    positionX = cursor.positionX;
-    if (positionX > max) {
-      if (this._wraparound_mode) {
-        cursor.positionX = 0;
-        this.lineFeed();
-        return;
-      }
-    }
-
-    for (i = 0; i < tab_stops.length; ++i) {
-      stop = tab_stops[i];
-      if (stop > positionX) {
-        cursor.positionX = stop;
-        if (cursor.positionX >= max) {
-          break;
-        }
-        return;
-      }
-    }
-    cursor.positionX = max;
   },
 
 // ScreenEditConcept implementation
