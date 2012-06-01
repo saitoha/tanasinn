@@ -2121,9 +2121,15 @@ Screen.definition = {
   /** REPeat the preceding graphic character */
   repeat: function repeat(n)
   {
-    var codes, i, last_char;
+    var codes, i, last_char, width, full_count;
 
+    width = this._width;
     last_char = this._last_char;
+    full_count = (this.scrollback_limit + this._height) * width;
+    if (n > full_count) {
+      surplus = n % this._width;
+      n = full_count + n % width;
+    }
     codes = [];
     for (i = 0; i < n; ++i) {
       codes.push(last_char);
