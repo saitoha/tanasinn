@@ -1441,7 +1441,7 @@ Scrollable.definition = {
   /** Scroll down the buffer by n lines. */
   _scrollUp: function _scrollUp(top, bottom, n) 
   {
-    var lines, offset, width, height, attr, i, range, line;
+    var lines, offset, width, height, attr, i, range, line, rest;
 
     lines = this._buffer;
     offset = this._buffer_top;
@@ -1456,6 +1456,7 @@ Scrollable.definition = {
     }
 
     // rotate lines.
+    rest = this.scrollback_limit - offset;
     if (top > 0) {
       range = lines.splice(offset + top, n);
       for (i = 0; i < range.length; ++i) {
@@ -1463,7 +1464,12 @@ Scrollable.definition = {
         line.erase(0, width, attr);
         line.type = coUtils.Constant.LINETYPE_NORMAL;
       }
-    } else if (offset < this.scrollback_limit) {
+    } else if (rest > 0) {
+      if (n > rest) {
+        this._scrollUp(rest);
+        this._scrollUp(n - rest)
+        return;
+      }
       range = this._createLines(n, attr);
       offset = this._buffer_top += n;
       for (i = 0; i < range.length; ++i) {
