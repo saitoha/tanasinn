@@ -23,10 +23,10 @@
  * ***** END LICENSE BLOCK ***** */
 
 /** 
- * @class ForwardInputIterator
+ * @class SixelForwardInputIterator
  */ 
-var ForwardInputIterator = new Class();
-ForwardInputIterator.definition = {
+var SixelForwardInputIterator = new Class();
+SixelForwardInputIterator.definition = {
 
   _value: null,
   _position: 0,
@@ -202,6 +202,17 @@ Sixel.definition = {
     let renderer = this.dependency["renderer"];
     let screen = this.dependency["screen"];
 
+    let pattern = /^([0-9]);([01]);([0-9]+);?q((?:.|[\n\r])+)/;
+    let match = data.match(pattern);
+    if (null === match) {
+      return;
+    }
+
+    let [, P1, P2, P3, sixel] = match;
+    if (!sixel) {
+      return;
+    }
+
     let {sixel_canvas} = this.request(
       "command/construct-chrome", this.template);
     let dom = { 
@@ -210,13 +221,7 @@ Sixel.definition = {
     };
     this._buffers.push(dom);
 
-    let pattern = /^([0-9]);([01]);([0-9]+);?q((?:.|[\n\r])+)/;
-    let match = data.match(pattern);
-    if (null === match) {
-      return;
-    }
-    let [, P1, P2, P3, sixel] = match;
-    let scanner = new ForwardInputIterator(sixel);
+    let scanner = new SixelForwardInputIterator(sixel);
     let imagedata = dom.context
       .getImageData(0, 0, dom.canvas.width, dom.canvas.height * 2);
     let x = 0;

@@ -184,10 +184,10 @@ ScreenEditConcept.definition = {
   "deleteLine :: Uint16 -> Undefined":
   _("Deletes n lines from the specified position."),
 
-  "scrollUpLine :: Uint16 -> Undefined":
+  "scrollDownLine :: Uint16 -> Undefined":
   _("Scrolls up n lines."),
 
-  "scrollDownLine :: Uint16 -> Undefined":
+  "scrollUpLine :: Uint16 -> Undefined":
   _("Scrolls down n lines."),
 
   "eraseCharacters :: Uint16 -> Undefined":
@@ -765,7 +765,7 @@ ScreenSequenceHandler.definition = {
   "[profile('vt100'), sequence('CSI %dS')]":
   function SU(n) 
   { // Scroll Up line
-    this.scrollDownLine(n || 1);
+    this.scrollUpLine(n || 1);
   },
 
   /**
@@ -792,11 +792,11 @@ ScreenSequenceHandler.definition = {
     switch (argc) {
 
       case 0:
-        this.scrollUpLine(1);
+        this.scrollDownLine(1);
         break;
 
       case 1:
-        this.scrollUpLine(n);
+        this.scrollDownLine(n);
         break;
 
       case 6:
@@ -1405,7 +1405,7 @@ Scrollable.definition = {
   },
 
   /** Scroll up the buffer by n lines. */
-  _scrollUp: function _scrollUp(top, bottom, n) 
+  _scrollDown: function _scrollDown(top, bottom, n) 
   {
     var lines, offset, width, height, attr, i, line, range;
 
@@ -1439,7 +1439,7 @@ Scrollable.definition = {
   },
 
   /** Scroll down the buffer by n lines. */
-  _scrollDown: function _scrollDown(top, bottom, n) 
+  _scrollUp: function _scrollUp(top, bottom, n) 
   {
     var lines, offset, width, height, attr, i, range, line;
 
@@ -2545,7 +2545,7 @@ Screen.definition = {
     positionY = cursor_state.positionY;
 
     if (positionY <= top) {
-      this._scrollUp(top, bottom, 1);
+      this._scrollDown(top, bottom, 1);
     } else {
       --cursor_state.positionY;
     }
@@ -2563,7 +2563,7 @@ Screen.definition = {
     positionY = cursor.positionY;
 
     if (positionY == bottom - 1) {
-      this._scrollDown(top, bottom, 1);
+      this._scrollUp(top, bottom, 1);
     } else if (positionY > bottom - 1) {
       cursor.positionY = bottom - 1;
     } else {
@@ -2579,7 +2579,7 @@ Screen.definition = {
     positionY = this.cursor.positionY;
     bottom = this._scroll_bottom;
     delta = Math.min(n, bottom - positionY);
-    this._scrollUp(positionY, bottom, delta);
+    this._scrollDown(positionY, bottom, delta);
   },
 
   "[type('Uint16 -> Undefined')] deleteLine":
@@ -2590,7 +2590,7 @@ Screen.definition = {
     positionY = this.cursor.positionY;
     bottom = this._scroll_bottom;
     delta = Math.min(n, bottom - positionY);
-    this._scrollDown(positionY, bottom, delta);
+    this._scrollUp(positionY, bottom, delta);
   },
 
   "[type('Uint16 -> Undefined')] scrollLeft":
@@ -2620,24 +2620,24 @@ Screen.definition = {
     }
   },
 
-  "[type('Uint16 -> Undefined')] scrollUpLine":
-  function scrollUpLine(n) 
+  "[type('Uint16 -> Undefined')] scrollDownLine":
+  function scrollDownLine(n) 
   { // Scroll Up line
     var top, bottom;
 
     top = this._scroll_top;
     bottom = this._scroll_bottom;
-    this._scrollUp(top, bottom, n);
+    this._scrollDown(top, bottom, n);
   },
 
-  "[type('Uint16 -> Undefined')] scrollDownLine":
-  function scrollDownLine(n) 
+  "[type('Uint16 -> Undefined')] scrollUpLine":
+  function scrollUpLine(n) 
   { // Scroll Down line
     var top, bottom;
 
     top = this._scroll_top;
     bottom = this._scroll_bottom;
-    this._scrollDown(top, bottom, n);
+    this._scrollUp(top, bottom, n);
   },
 
   "[type('Uint16 -> Undefined')] eraseCharacters":

@@ -232,10 +232,11 @@ OverlayIndicator.definition = {
   },
 
   "[subscribe('sequence/osc/{0 | 2}'), pnp]":
-  function onCommandReceived(data) 
+  function onCommandReceived(data0, data2) 
   { // process OSC command.
-    var scanner, decoder, sequence, text;
+    var scanner, decoder, sequence, text, data;
 
+    data = data0 || data2;
     scanner = new ForwardInputIterator(data);
     decoder = this.dependency["decoder"];
     sequence = [c for (c in decoder.decode(scanner))];
