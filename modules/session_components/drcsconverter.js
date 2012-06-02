@@ -533,6 +533,7 @@ DRCSConverter.definition = {
 
   _gl: 0,
   _gr: 0,
+  _next: 0,
 
   _charset_table: {
     "0": DEC_Special_Graphics_Character_Set,
@@ -558,16 +559,28 @@ DRCSConverter.definition = {
     this._g = [];
   },
 
+  "[subscribe('event/shift-in'), enabled]": 
+  function shiftIn() 
+  {
+    this._gl = 0;
+  },
+
   "[subscribe('event/shift-out'), enabled]": 
   function shiftOut() 
   {
     this._gl = 1;
   },
 
-  "[subscribe('event/shift-in'), enabled]": 
-  function shiftIn() 
+  "[subscribe('sequence/ss2'), enabled]": 
+  function ss2() 
   {
-    this._gl = 0;
+    this._next = 2;
+  },
+
+  "[subscribe('sequence/ss3'), enabled]": 
+  function ss3() 
+  {
+    this._next = 3;
   },
 
   "[subscribe('sequence/g0'), enabled]": 
@@ -629,16 +642,16 @@ DRCSConverter.definition = {
 
   convert: function convert(codes) 
   {
-    var result, gl, gr, i, c;
+    var result, main, i, c;
 
-    gl = this._g[this._gl] || USASCII;
-    gr = this._g[this._gr] || ISO_8859_Latin1;
+    main = this._g[this._next || this._gl] || USASCII;
+    this._next = 0;
 
     result = [];
     for (i = 0; i < codes.length; ++i ) {
       c = codes[i];
       if (c < 0x80) { // GL
-        result.push(gl[c]);
+        result.push(main[c]);
       } else {
         result.push(c);
       }
