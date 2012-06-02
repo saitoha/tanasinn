@@ -600,6 +600,11 @@ VT100Grammar.definition = {
       context: this,
     });
     this.sendMessage("command/add-sequence", {
+      expression: "0x9C", 
+      handler: this.CSI,
+      context: this,
+    });
+    this.sendMessage("command/add-sequence", {
       expression: "ESC [", 
       handler: this.CSI,
       context: this,

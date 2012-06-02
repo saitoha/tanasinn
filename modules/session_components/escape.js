@@ -207,7 +207,7 @@ Escape.definition = {
     }
   },
 
-  "[profile('vt100'), sequence('ESC X%s')]": 
+  "[profile('vt100'), sequence('0x98%s', 'ESC X%s')]": 
   function SOS() 
   {
     var message;
@@ -216,7 +216,7 @@ Escape.definition = {
     this.sendMessage("sequence/sos", message);
   },
 
-  "[profile('vt100'), sequence('ESC _%s')]": 
+  "[profile('vt100'), sequence('0x9f', 'ESC _%s')]": 
   function APC() 
   {
     var message;
@@ -225,7 +225,7 @@ Escape.definition = {
     this.sendMessage("sequence/apc", message);
   },
   
-  "[profile('vt100'), sequence('ESC ]%s')]": 
+  "[profile('vt100'), sequence('0x9d', 'ESC ]%s')]": 
   function OSC(message) 
   {
     var delimiter_position, num, command;
@@ -237,7 +237,7 @@ Escape.definition = {
   },
   
   /** private message */
-  "[profile('vt100'), sequence('ESC ^%s')]": 
+  "[profile('vt100'), sequence('0x9e', 'ESC ^%s')]": 
   function PM(message) 
   {
     this.sendMessage("sequence/pm", message);
