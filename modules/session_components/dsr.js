@@ -101,7 +101,7 @@ DeviceStatusReport.definition = {
   },
 
 
-  "[profile('vt100'), sequence('CSI %dn', 'CSI ?%dn')]":
+  "[profile('vt100'), sequence('CSI %dn')]":
   function DSR(n) 
   { // Device Status Report
 
