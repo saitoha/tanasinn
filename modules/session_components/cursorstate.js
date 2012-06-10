@@ -26,7 +26,8 @@
  * @class CursorState
  * @brief Manages cursor position.
  */
-var CursorState = new Class().extends(Component);
+var CursorState = new Class().extends(Plugin)
+                             .depends("linegenerator");
 CursorState.definition = {
 
   get id()
@@ -94,12 +95,17 @@ CursorState.definition = {
 
   _drcs_state: null, 
 
+  "[persistable] enabled_when_startup": true,
+
   /** constructor */
-  "[subscribe('@initialized/linegenerator'), enabled]":
-  function onLoad(line_generator) 
+  "[install]":
+  function install(broker) 
   {
-    this.attr = line_generator.allocate(1, 1).shift().cells.shift();
-    this.sendMessage("initialized/" + this.id, this);
+    this.attr = this.dependency["linegenerator"]
+      .allocate(1, 1)
+      .shift()
+      .cells
+      .shift();
   },
 
   /** reset cursor state. */

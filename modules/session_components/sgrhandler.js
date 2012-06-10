@@ -196,8 +196,6 @@ SGRHandler.definition = {
     //  sgr=%?%p9%t\E(0%e\E(B%;\E[0%?%p6%t;1%;%?%p2%t;4%;%?%p1%p3%|%t;7%;%?%p4%t;5%;%?%p7%t;8%;m,
     //
     attr = this._attr;
-
-    attr = this.dependency["cursorstate"].attr;
     if (0 == arguments.length) {
       attr.clear()
     } else {
