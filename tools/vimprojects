@@ -127,6 +127,7 @@
     charset.js
     protection.js
     reportparams.js
+    terminfo.js
 
     focusevent.js
     declocatormouse.js
