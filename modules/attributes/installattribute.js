@@ -22,6 +22,14 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+var Delegate = function () this.initialize.apply(this, arguments); 
+Delegate.prototype = {
+
+  initialize: function initialize(id)
+  {
+  },
+
+};
 
 /**
  * @Attribute InstallAttribute
@@ -75,20 +83,20 @@ InstallAttribute.definition = {
       if (handler.id) {
         wrapped_handler = handler;
       } else {
-        let self = this;
-        wrapped_handler = function() 
-        {
-          return handler.apply(self, arguments);
-        };
+        wrapped_handler = let (self = this) function() 
+          {
+            return handler.apply(self, arguments);
+          };
         wrapped_handler.id = id;
         wrapped_handler.topic = topic;
         this[key] = wrapped_handler;
       }
       let topic = "install/" + this.id;
       broker.subscribe(topic, wrapped_handler, undefined, id);
-      broker.subscribe("event/broker-stopped", function() {
-        broker.unsubscribe(id);
-      }, this, id);
+      broker.subscribe("event/broker-stopped", function() 
+        {
+          broker.unsubscribe(id);
+        }, this, id);
     } // for (key in attributes)
 
   }, // initialize
@@ -148,24 +156,21 @@ UninstallAttribute.definition = {
       if (handler.id) {
         wrapped_handler = handler;
       } else {
-        let self = this;
-        wrapped_handler = function() 
-        {
-          return handler.apply(self, arguments);
-        };
+        wrapped_handler = let (self = this) function() 
+          {
+            return handler.apply(self, arguments);
+          };
         wrapped_handler.id = id;
         wrapped_handler.topic = topic;
         this[key] = wrapped_handler;
       }
       let topic = "uninstall/" + this.id;
       broker.subscribe(topic, wrapped_handler, undefined, id);
-      /*
       broker.subscribe("event/broker-stopped", 
         function() 
         {
           broker.unsubscribe(id);
         }, this, id);
-        */
     } // for (key in attributes)
 
   }, // initialize

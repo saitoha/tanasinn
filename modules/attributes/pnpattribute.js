@@ -75,8 +75,7 @@ PnPAttribute.definition = {
       if (handler.id) {
         wrapped_handler = handler;
       } else {
-        let self = this;
-        wrapped_handler = function() 
+        wrapped_handler = let (self = this) function() 
           {
             handler.apply(self, arguments);
           };
