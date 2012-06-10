@@ -1466,17 +1466,28 @@ Scrollable.definition = {
       }
     } else if (rest > 0) {
       if (n > rest) {
-        this._scrollUp(rest);
+        range = this._createLines(rest, attr);
+        offset = this._buffer_top += rest;
+        for (i = 0; i < range.length; ++i) {
+          line = range[i];
+          line.invalidate();
+        }
+        // line.splice(offset + bottom -m, 0, ....);
+        range.unshift(offset + bottom - rest, 0);
+        Array.prototype.splice.apply(lines, range);
+        this._lines = lines.slice(offset, offset + height);
+
         this._scrollUp(n - rest)
         return;
+      } else {
+        range = this._createLines(n, attr);
+        offset = this._buffer_top += n;
+        for (i = 0; i < range.length; ++i) {
+          line = range[i];
+          line.invalidate();
+        }
       }
-      range = this._createLines(n, attr);
-      offset = this._buffer_top += n;
-      for (i = 0; i < range.length; ++i) {
-        line = range[i];
-        line.invalidate();
-      }
-    } else { // 0 == top && offset == this.scrollback_limit
+    } else { // 0 == top && rest == 0
       range = lines.splice(0, n);
       for (i = 0; i < range.length; ++i) {
         line = range[i];
