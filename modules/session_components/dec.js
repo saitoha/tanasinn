@@ -286,7 +286,7 @@ DecModeSequenceHandler.definition = {
         case 1002:
           this.sendMessage(
             "event/mouse-tracking-mode-changed", 
-            coUtils.Constant.BUTTON);
+            coUtils.Constant.TRACKING_BUTTON);
           coUtils.Debug.reportMessage(
             _("DECSET 1002 - xterm cell motion mouse tracking mode was set."));
           break;
@@ -295,7 +295,7 @@ DecModeSequenceHandler.definition = {
         case 1003:
           this.sendMessage(
             "event/mouse-tracking-mode-changed", 
-            coUtils.Constant.ANY);
+            coUtils.Constant.TRACKING_ANY);
           coUtils.Debug.reportMessage(
             _("DECSET 1003 - xterm all motion mouse tracking mode was set."));
           break;

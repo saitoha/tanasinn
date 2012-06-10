@@ -391,13 +391,6 @@ Mouse.definition = {
 
     switch (tracking_mode) {
 
-      case coUtils.Constant.TRACKING_NORMAL:
-        if (this._pressed) {
-          button = 32 + MOUSE_RELEASE;
-          this._sendMouseEvent(event, button); 
-        }
-        break;
-
       case coUtils.Constant.TRACKING_BUTTON:
         if (this._pressed) {
           button = 32 + event.button;//MOUSE_RELEASE;//event.button;
@@ -405,17 +398,18 @@ Mouse.definition = {
         }
         break;
 
-      case coUtils.Constant.TRACING_ANY:
+      case coUtils.Constant.TRACKING_ANY:
       // Send motion event.
         let button;
         if (this._pressed) {
           button = 32 + event.button;
-          this._sendMouseEvent(event, button); 
         } else {
-          button = MOUSE_RELEASE;
+          button = 32 + MOUSE_RELEASE;
         }
+        this._sendMouseEvent(event, button); 
         break;
 
+      case coUtils.Constant.TRACKING_NORMAL:
       case coUtils.Constant.TRACKING_NONE:
       case coUtils.Constant.TRACKING_X10:
       case coUtils.Constant.TRACKING_HIGHLIGHT:
@@ -429,6 +423,7 @@ Mouse.definition = {
   function onmouseup(event) 
   {
     this._pressed = false;
+
     let tracking_mode = this._tracking_mode;
     if (coUtils.Constant.TRACKING_NONE === tracking_mode) {
       return;
