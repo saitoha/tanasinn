@@ -84,8 +84,8 @@ AutoWrap.definition = {
   function activate() 
   { 
     this.sendMessage("command/enable-wraparound");
-    coUtils.Debug.reportMessage(
-      _("DECSET - DECAWM (Auto-wrap Mode) was set."));
+//    coUtils.Debug.reportMessage(
+//      _("DECSET - DECAWM (Auto-wrap Mode) was set."));
   },
 
   /** Deactivate auto-wrap feature(DECAWM).
@@ -94,8 +94,8 @@ AutoWrap.definition = {
   function deactivate() 
   {
     this.sendMessage("command/disable-wraparound");
-    coUtils.Debug.reportMessage(
-      _("DECRST - DECAWM (Auto-wrap Mode) was reset."));
+//    coUtils.Debug.reportMessage(
+//      _("DECRST - DECAWM (Auto-wrap Mode) was reset."));
   },
 
   /** handle terminal reset event.
