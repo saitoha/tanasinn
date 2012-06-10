@@ -461,7 +461,8 @@ SequenceParser.definition = {
           this[code][accept_char] = action;
         } else if (2 === char_with_param.length) {
           let next_char = char_with_param.charCodeAt(1);
-          this[code][accept_char] = this[code][accept_char] || new SequenceParser();
+          this[code][accept_char] = this[code][accept_char] 
+                                 || new SequenceParser();
           this[code][accept_char][next_char] = action;
         } else {
           throw coUtile.Exception(_("Cannot add handler: %s."), key);
@@ -471,7 +472,8 @@ SequenceParser.definition = {
       let j;
       for (j = 0; j < char_with_param.length - 1; ++j) {
         let accept_char = char_with_param.charCodeAt(j);
-        parser = parser[accept_char] = new SequenceParser();
+        parser = parser[accept_char] 
+               = parser[accept_char] || new SequenceParser();
       }
       code = char_with_param.charCodeAt(char_with_param.length - 1);
       parser[code] = parser[code] || function() 
@@ -520,15 +522,17 @@ SequenceParser.definition = {
       this[0x20] = this[0x20] || new SequenceParser();
       for (let code = 0x21; code < 0x7f; ++code) {
         let c = String.fromCharCode(code);
-        this[0x20][code] = this[code] = function() value.call(context, c)
+        this[0x20][code] = this[code] = this[code] 
+                        || function() value.call(context, c)
       }
     } else if (char_position) { // 
       for (let code1 = 0x21; code1 < 0x7f; ++code1) {
         let c1 = String.fromCharCode(code1);
         for (let code2 = 0x21; code2 < 0x7f; ++code2) {
           let c2 = String.fromCharCode(code2);
-          this[code1] = new SequenceParser();
-          this[code1][code2] = function() value.apply(context, [code1, code2])
+          this[code1] = this[code1] || new SequenceParser();
+          this[code1][code2] = this[code1][code2] 
+                            || function() value.apply(context, [code1, code2])
         }
       }
     } else if (normal_char) {
@@ -536,13 +540,13 @@ SequenceParser.definition = {
       if ("parse" in value) {
         this[code] = value;
       } else {
-        this[code] = function() value.apply(context);
+        this[code] = this[code] || function() value.apply(context);
       }
     } else {
       let code = first.charCodeAt(0);
       let next = this[code] = this[code] || new SequenceParser;
       if (!next.append) {
-        next = this[code] = new SequenceParser;
+        next = this[code] = this[code] || new SequenceParser;
       }
       next.append(next_chars, value, context);
     }
