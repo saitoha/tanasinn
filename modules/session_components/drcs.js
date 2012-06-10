@@ -68,6 +68,7 @@ DRCSBuffer.definition = {
   function onSCSG0(mode) 
   {
     this._g0 = mode;
+    this._map = this._map || {};
     if (this._map[mode]) {
       this.sendMessage("event/drcs-state-changed/g0", this._map[mode]);
     } else {
@@ -79,6 +80,7 @@ DRCSBuffer.definition = {
   function onSCSG1(mode) 
   {
     this._g1 = mode;
+    this._map = this._map || {};
     if (this._map[mode]) {
       this.sendMessage("event/drcs-state-changed/g1", this._map[mode]);
     } else {
