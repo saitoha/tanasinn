@@ -95,7 +95,7 @@ Bell.definition = {
       if (this.sound_bell) {
         this.beep();
       }
-    }, 10);
+    }, 10, this);
   },
 
   /** Plays visual bell effect. */
