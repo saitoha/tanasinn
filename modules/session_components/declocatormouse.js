@@ -104,7 +104,7 @@ WheelScroll.definition = {
 
       let broker = this._broker;
 
-//      if (this._in_scroll_session) {
+      if (this._in_scroll_session) {
         if (count > 0) {
           broker.notify("command/scroll-down-view", count);
           broker.notify("command/draw");
@@ -115,7 +115,7 @@ WheelScroll.definition = {
           return;
         }
       }
-//    }
+    }
   },
 
 }; // class WheelScroll
@@ -216,6 +216,7 @@ DECLocatorMouse.definition = {
   function onMouseTrackingModeChanged(data) 
   {
     this._locator_reporting_mode = null;
+    this.onmousescroll.enabled = false;
   },
 
   /** Fired at the locator reporting mode is changed. */
