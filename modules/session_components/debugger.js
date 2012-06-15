@@ -398,19 +398,24 @@ Debugger.definition = {
     if (this._timer) {
       this._timer.cancel();
     }
-    this._timer = coUtils.Timer.setInterval(function() {
-      let updated;
-      if (!this._queue && this._timer) {
+    this._timer = coUtils.Timer.setInterval(function() 
+    {
+      var updated, queue, trace_box;
+
+      updated = false;
+      queue = this._queue;
+
+      if (!queue && this._timer) {
         this._timer.cancel();
         this._timer = null;
         return;
       }
-      while (this._queue.length) {
-        this.update(this._queue.shift());
-        updated = true;
+      update = 0 !== queue.length;
+      while (0 !== queue.length) {
+        this.update(queue.shift());
       }
       if (updated && this.auto_scroll) {
-        let trace_box = this._trace_box;
+        trace_box = this._trace_box;
         trace_box.scrollTop = trace_box.scrollHeight;
       }
     }, this.update_interval, this);
@@ -520,120 +525,127 @@ Debugger.definition = {
 
   update: function update(trace_info) 
   {
-    let [info, sequence] = trace_info;
-    let {type, name, value} = info || {
+    var [info, sequence] = trace_info;
+    var {type, name, value} = info || {
       type: CO_TRACE_OUTPUT,
       name: undefined,
       value: [sequence],
     };
-    this.request("command/construct-chrome", {
-      parentNode: "#tanasinn_trace",
-      tagName: "hbox",
-      style: <> 
-        width: 400px; 
-        max-width: 400px; 
-        font-weight: bold;
-        text-shadow: 0px 0px 2px black;
-        font-size: 20px;
-      </>,
-      childNodes: CO_TRACE_CONTROL == type ? [
-        {
-          tagName: "label",
-          value: ">",
-          style: <>
-            padding: 3px;
-            color: darkred;
-          </>,
-        },
-        {
-          tagName: "box",
-          width: 120,
-          childNodes:
+    var child;
+    switch (type) {
+      case CO_TRACE_CONTROL: 
+        child = [
           {
             tagName: "label",
-            value: this._escape(sequence),
+            value: ">",
             style: <>
-              color: red;
-              background: lightblue; 
+              padding: 3px;
+              color: darkred;
+            </>,
+          },
+          {
+            tagName: "box",
+            width: 120,
+            childNodes:
+            {
+              tagName: "label",
+              value: this._escape(sequence),
+              style: <>
+                color: red;
+                background: lightblue; 
+                border-radius: 6px;
+                padding: 3px;
+              </>,
+            },
+          },
+          {
+            tagName: "label",
+            value: "-",
+            style: <>
+              color: black;
+              padding: 3px;
+            </>,
+          },
+          {
+            tagName: "box",
+            style: <> 
+              background: lightyellow;
+              border-radius: 6px;
+              margin: 2px;
+              padding: 0px;
+            </>,
+            childNodes: [
+              {
+                tagName: "label",
+                value: name,
+                style: <>
+                  color: blue;
+                  padding: 1px;
+                </>,
+              },
+              {
+                tagName: "label",
+                value: this._escape(value.toString()),
+                style: <>
+                  color: green;
+                  padding: 1px;
+                </>,
+              }
+            ],
+          },
+        ]
+        break;
+
+      case CO_TRACE_OUTPUT: 
+        child = [
+          {
+            tagName: "label",
+            value: ">",
+            style: <>
+              padding: 3px;
+              color: darkred;
+            </>,
+          },
+          {
+            tagName: "label",
+            value: this._escape(value.shift()),
+            style: <>
+              color: darkcyan;
+              background: lightgray;
               border-radius: 6px;
               padding: 3px;
             </>,
           },
-        },
-        {
-          tagName: "label",
-          value: "-",
-          style: <>
-            color: black;
-            padding: 3px;
-          </>,
-        },
-        {
-          tagName: "box",
-          style: <> 
-            background: lightyellow;
-            border-radius: 6px;
-            margin: 2px;
-            padding: 0px;
-          </>,
-          childNodes: [
-            {
-              tagName: "label",
-              value: name,
-              style: <>
-                color: blue;
-                padding: 1px;
-              </>,
-            },
-            {
-              tagName: "label",
-              value: this._escape(value.toString()),
-              style: <>
-                color: green;
-                padding: 1px;
-              </>,
-            }
-          ],
-        },
-      ]: CO_TRACE_OUTPUT == type ? [
-        {
-          tagName: "label",
-          value: ">",
-          style: <>
-            padding: 3px;
-            color: darkred;
-          </>,
-        },
-        {
-          tagName: "label",
-          value: escape(value.shift()),
-          style: <>
-            color: darkcyan;
-            background: lightgray;
-            border-radius: 6px;
-            padding: 3px;
-          </>,
-        },
-      ]: [
-        {
-          tagName: "label",
-          value: "<",
-          style: <> 
-            padding: 3px; 
-            color: darkblue;
-          </>,
-        },
-        {
-          tagName: "label",
-          value: escape(value.shift()),
-          style: <>
-            color: darkcyan;
-            background: lightpink;
-            border-radius: 6px;
-            padding: 3px;
-          </>,
-        },
-      ],
+        ]
+        break;
+
+      default:
+        child = [
+          {
+            tagName: "label",
+            value: "<",
+            style: <> 
+              padding: 3px; 
+              color: darkblue;
+            </>,
+          },
+          {
+            tagName: "label",
+            value: this._escape(value.shift()),
+            style: <>
+              color: darkcyan;
+              background: lightpink;
+              border-radius: 6px;
+              padding: 3px;
+            </>,
+          },
+        ]
+    }
+    this.request("command/construct-chrome", {
+      parentNode: "#tanasinn_trace",
+      tagName: "hbox",
+      style: "width: 400px; max-width: 400px; font-weight: bold; text-shadow: 0px 0px 2px black; font-size: 20px; ",
+      childNodes: child,
     });
   },
 
