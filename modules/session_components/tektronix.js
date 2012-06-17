@@ -257,7 +257,7 @@ Tektronix.definition = {
   "[type('Scanner -> Action')] parse":
   function parse(scanner) 
   {
-    var dom;
+    var dom, c, buffer, text;
 
     dom = this._dom;
     dom.context.fillStyle = this.default_text_color;
@@ -273,7 +273,7 @@ Tektronix.definition = {
 scan:
     while (!scanner.isEnd) {
 
-      let c = scanner.current();
+      c = scanner.current();
 
       if (0x07 == c) {
         scanner.moveNext();
@@ -291,7 +291,6 @@ scan:
         c = scanner.current();
         if (0x03 == c) {
           scanner.moveNext();
-          //let value = scanner.drain();
           this.sendMessage("command/change-mode", "vt100");
           coUtils.Debug.reportWarning(
             _("DECSET 38 - Leave Tektronix mode (DECTEK)."));
@@ -400,8 +399,7 @@ scan:
       } else if (this._mode == MODE_GRAPHICS) {
         this._parseGraphics(scanner);
       } else if (this._mode == MODE_ALPHA) {
-        let c;
-        let buffer = [];
+        buffer = [];
         while (true) {
           if (scanner.isEnd) {
             break;
@@ -413,7 +411,7 @@ scan:
           buffer.push(c);
           scanner.moveNext();
         }
-        let text = String.fromCharCode.apply(String, buffer);
+        text = String.fromCharCode.apply(String, buffer);
         dom.context.fillText(text, this._x, this._y);
 //        coUtils.Debug.reportError(
 //          "text: " + text + "[" + this._x + "," + this._y + "]" + "[" + buffer + "]");

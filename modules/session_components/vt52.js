@@ -775,7 +775,7 @@ VT52.definition = {
   },
 
   /** Exit VT52 mode. 
-   * TODO exit VT52 mode
+   * exit VT52 mode
    */
   "[profile('vt52'), sequence('ESC <')]": 
   function V5EX() 
