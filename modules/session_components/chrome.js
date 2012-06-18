@@ -32,7 +32,7 @@
 /**
  * @concept MovableConcept
  */
-let MovableConcept = new Concept();
+var MovableConcept = new Concept();
 MovableConcept.definition = {
 
   get id()
@@ -53,7 +53,7 @@ MovableConcept.definition = {
  * @trait Movable
  *
  */
-let Movable = new Trait();
+var Movable = new Trait();
 Movable.definition = {
 
   "[persistable] move_transition": false,
@@ -66,9 +66,11 @@ Movable.definition = {
   "[subscribe('command/move-to'), type('Array -> Undefined'), enabled]":
   function moveTo(coordinate) 
   {
-    let [x, y] = coordinate;
-    let broker = this._broker;
-    let target_element = broker.root_element;
+    var x, y, broker, target_element;
+
+    [x, y] = coordinate;
+    broker = this._broker;
+    target_element = broker.root_element;
     if (x < -target_element.boxObject.width) x = 0;
     if (y < -target_element.boxObject.height) y = 0;
     target_element.style.left = x + "px";
@@ -82,10 +84,12 @@ Movable.definition = {
   "[subscribe('command/move-by'), type('Array -> Undefined'), enabled]":
   function moveBy(offset) 
   {
-    let [x, y] = offset;
-    let broker = this._broker;
-    let static_scope = arguments.callee;
-    let timer = static_scope.timer;
+    var x, y, broker, static_scope, timer, left, top;
+
+    [x, y] = offset;
+    broker = this._broker;
+    static_scope = arguments.callee;
+    timer = static_scope.timer;
     if (timer) {
       timer.cancel();
     }
@@ -98,8 +102,8 @@ Movable.definition = {
         broker.root_element.style.MozTransitionDuration = "0ms";
       }, this.move_duration);
     }
-    let left = parseInt(broker.root_element.style.left) + x;
-    let top = parseInt(broker.root_element.style.top) + y;
+    left = parseInt(broker.root_element.style.left) + x;
+    top = parseInt(broker.root_element.style.top) + y;
     this.moveTo([left, top]);
   },
 
@@ -195,16 +199,17 @@ OuterChrome.definition = {
    * and styles. 
    */
   get template()
-    let (broker = this._broker)
-    {
-      parentNode: broker.root_element, 
+    ({
+      parentNode: this._broker.root_element, 
       id: "tanasinn_outer_chrome",
       tagName: "stack",
       hidden: true,
       listener: {
         type: "click",
-        handler: function() {
-          broker.notify("command/focus");
+        context: this,
+        handler: function() 
+        {
+          this.sendMessage("command/focus");
         },
       },
       childNodes: [
@@ -249,7 +254,7 @@ OuterChrome.definition = {
         },
 
       ],
-    },
+    }),
 
   board: null,
 
@@ -259,10 +264,10 @@ OuterChrome.definition = {
   function install(broker) 
   {
     // construct chrome elements. 
-    let {
+    var {
       tanasinn_outer_chrome,
       tanasinn_background_frame,  
-    } = broker.uniget("command/construct-chrome", this.template);
+    } = this.request("command/construct-chrome", this.template);
     this._element = tanasinn_outer_chrome;
     this._frame = tanasinn_background_frame;
 
@@ -435,10 +440,10 @@ Chrome.definition = {
   _element: null,
 
   "[install]": 
-  function install(session) 
+  function install(broker) 
   {
-    let {tanasinn_content, tanasinn_center_area} 
-      = session.uniget("command/construct-chrome", this.template);
+    var {tanasinn_content, tanasinn_center_area} 
+      = broker.uniget("command/construct-chrome", this.template);
     this._element = tanasinn_content;
     this._center = tanasinn_center_area;
     this.onGotFocus.enabled = true;
@@ -447,7 +452,7 @@ Chrome.definition = {
   },
 
   "[uninstall]":
-  function uninstall(session) 
+  function uninstall(broker) 
   {
     this.onGotFocus.enabled = false;
     this.onLostFocus.enabled = false;
@@ -468,8 +473,7 @@ Chrome.definition = {
   "[subscribe('@event/broker-stopping'), enabled]": 
   function onSessionStoping() 
   {
-    let session = this._broker;
-    session.notify("command/blur");
+    this.sendMessage("command/blur");
     let target = this._element;
     if (target.parentNode) {
       target.parentNode.removeChild(target);
@@ -479,24 +483,24 @@ Chrome.definition = {
   "[subscribe('command/query-selector'), enabled]":
   function querySelector(selector) 
   {
-    let session = this._broker;
-    return session.root_element.querySelector(selector);
+    var broker;
+
+    broker = this._broker;
+    return broker.root_element.querySelector(selector);
   },
 
   /** Fired when a resize session started. */
   "[subscribe('event/resize-session-started'), enabled]": 
   function onResizeSessionStarted(subject) 
   {
-    let session = this._broker;
-    session.notify("command/set-opacity", this.resize_opacity);
+    this.sendMessage("command/set-opacity", this.resize_opacity);
   },
 
   /** Fired when a resize session closed. */
   "[subscribe('event/resize-session-closed'), enabled]":
   function onResizeSessionClosed()
   {
-    let session = this._broker;
-    session.notify("command/set-opacity", 1.00);
+    this.sendMessage("command/set-opacity", 1.00);
   },
 
   /** An event handler which is fired when the keyboard focus is got. 
@@ -505,8 +509,7 @@ Chrome.definition = {
   function onGotFocus()
   {
     this.onmousedown.enabled = true;
-    let session = this._broker;
-    session.notify("command/set-opacity", 1.00);
+    this.sendMessage("command/set-opacity", 1.00);
   },
 
   /** An event handler which is fired when the keyboard focus is lost. 
@@ -516,15 +519,13 @@ Chrome.definition = {
   function onLostFocus()
   {
     this.onmousedown.enabled = true;
-    let session = this._broker;
-    session.notify("command/set-opacity", this.inactive_opacity);
+    this.sendMessage("command/set-opacity", this.inactive_opacity);
   },
 
   "[listen('mousedown', '#tanasinn_content')]":
   function onmousedown()
   {
-    let session = this._broker;
-    session.notify("command/focus");
+    this.sendMessage("command/focus");
   },
 
 };

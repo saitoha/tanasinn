@@ -25,7 +25,7 @@
 /**
  * @class Move
  */
-let MoveShortcut = new Class().extends(Plugin);
+var MoveShortcut = new Class().extends(Plugin);
 MoveShortcut.definition = {
 
   get id()
@@ -74,8 +74,7 @@ MoveShortcut.definition = {
   "[command('left'), nmap('<M-h>', '<C-S-h>'), _('Move window to left')]":
   function left(info)
   {
-    let broker = this._broker;
-    broker.notify("command/move-by", [-this.step, 0]);
+    this.sendMessage("command/move-by", [-this.step, 0]);
     return true;
   },
 
@@ -85,8 +84,7 @@ MoveShortcut.definition = {
   "[command('down'), nmap('<M-j>', '<C-S-j>'), _('Move window down')]":
   function down(info)
   {
-    let broker = this._broker;
-    broker.notify("command/move-by", [0, this.step]);
+    this.sendMessage("command/move-by", [0, this.step]);
     return true;
   },
 
@@ -96,8 +94,7 @@ MoveShortcut.definition = {
   "[command('up'), nmap('<M-k>', '<C-S-k>'), _('Move window up')]":
   function up(info)
   {
-    let broker = this._broker;
-    broker.notify("command/move-by", [0, -this.step]);
+    this.sendMessage("command/move-by", [0, -this.step]);
     return true;
   },
 
@@ -107,15 +104,16 @@ MoveShortcut.definition = {
   "[command('right'), nmap('<M-l>', '<C-S-l>'), _('Move window to right')]":
   function right(info)
   {
-    let broker = this._broker;
-    broker.notify("command/move-by", [this.step, 0]);
+    this.sendMessage("command/move-by", [this.step, 0]);
     return true;
   },
 
   "[subscribe('command/test')]":
   function onTest()
   { 
-    let enabled = this.enabled;
+    var enabled;
+
+    enabled = this.enabled;
     return {
       context: this,
       action: [

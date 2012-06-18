@@ -27,7 +27,7 @@
  * @fn Enable Drag-and-Drop operation.
  */
 
-let DragMove = new Class().extends(Plugin);
+var DragMove = new Class().extends(Plugin);
 DragMove.definition = {
 
   get id()
@@ -61,30 +61,34 @@ DragMove.definition = {
   "[listen('dragstart', '#tanasinn_content', true)]":
   function ondragstart(dom_event) 
   {
-    let session = this._broker;
-    let offsetY = dom_event.screenY - session.root_element.boxObject.y;
+    var broker, offsetY, offsetX, dom_document;
+
+    broker = this._broker;
+    offsetY = dom_event.screenY - broker.root_element.boxObject.y;
     if (!dom_event.shiftKey && offsetY > 60) {
       return;
     }
-    let offsetX = dom_event.screenX - session.root_element.boxObject.x; 
+    offsetX = dom_event.screenX - broker.root_element.boxObject.x; 
     dom_event.stopPropagation();
     // get relative coodinates on target element.
-    session.notify("command/set-opacity", 0.30);
+    this.sendMessage("command/set-opacity", 0.30);
     // define mousemove hanler.
-    let dom_document = dom_event.target.ownerDocument; // managed by DOM
-    session.notify("command/add-domlistener", {
+    dom_document = dom_event.target.ownerDocument; // managed by DOM
+    this.sendMessage("command/add-domlistener", {
       target: dom_document, 
       type: "mousemove", 
       id: "_DRAGGING", 
       context: this,
       handler: function onmouseup(event) 
       {
-        let left = event.screenX - offsetX;
-        let top = event.screenY - offsetY;
-        session.notify("command/move-to", [left, top]);
+        var left, top;
+
+        left = event.screenX - offsetX;
+        top = event.screenY - offsetY;
+        this.sendMessage("command/move-to", [left, top]);
       }
     });
-    session.notify("command/add-domlistener", {
+    this.sendMessage("command/add-domlistener", {
       target: dom_document, 
       type: "mouseup", 
       id: "_DRAGGING",
@@ -92,11 +96,11 @@ DragMove.definition = {
       handler: function onmouseup(event) 
       {
         // uninstall listeners.
-        session.notify("command/remove-domlistener", "_DRAGGING");
-        session.notify("command/set-opacity", 1.00);
+        this.sendMessage("command/remove-domlistener", "_DRAGGING");
+        this.sendMessage("command/set-opacity", 1.00);
       }, 
     });
-    session.notify("command/add-domlistener", {
+    this.sendMessage("command/add-domlistener", {
       target: dom_document, 
       type: "keyup", 
       id: "_DRAGGING",
@@ -105,8 +109,8 @@ DragMove.definition = {
       {
         if (!event.shiftKey) {
           // uninstall listeners.
-          session.notify("command/remove-domlistener", "_DRAGGING");
-          session.notify("command/set-opacity", 1.00);
+          this.sendMessage("command/remove-domlistener", "_DRAGGING");
+          this.sendMessage("command/set-opacity", 1.00);
         }
       }, 
     });

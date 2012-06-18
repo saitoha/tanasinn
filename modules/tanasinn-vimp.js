@@ -50,50 +50,56 @@ try {
 
   void function() {
   
-    let liberator = window.liberator;
-    let commands = liberator.modules.commands;
-    let completion = liberator.modules.completion;
-    let mappings = liberator.modules.mappings;
-    let modes = liberator.modules.modes;
-    let editor = liberator.modules.editor;
+    var liberator, commands, completion, mappings, modes, editor, process;
+
+    liberator = window.liberator;
+    commands = liberator.modules.commands;
+    completion = liberator.modules.completion;
+    mappings = liberator.modules.mappings;
+    modes = liberator.modules.modes;
+    editor = liberator.modules.editor;
     
     /**
      * @fn getTanasinnProcess
      */
     function getTanasinnProcess() 
     {
-      let contractID = "@zuse.jp/tanasinn/process;1";
-      let process_class = Components
+      var contractID, process_class, current_file, file, process;
+
+      contractID = "@zuse.jp/tanasinn/process;1";
+      process_class = Components
         .classes[contractID]
       if (!process_class) {
-        let current_file = Components.stack
+        current_file = Components.stack
           .filename
           .split(" -> ").pop()
           .split("?").shift();
-        let file = current_file + "/../../tanasinn/modules/common/process.js?" + new Date().getTime();
+        file = current_file + "/../../tanasinn/modules/common/process.js?" + new Date().getTime();
         Components
           .classes["@mozilla.org/moz/jssubscript-loader;1"]
           .getService(Components.interfaces.mozIJSSubScriptLoader)
           .loadSubScript(file);
         process_class = Components.classes[contractID]
       }
-      let process = process_class
+      process = process_class
         .getService(Components.interfaces.nsISupports)
         .wrappedJSObject;
       return process;
     }
-    let process = getTanasinnProcess();
+    process = getTanasinnProcess();
     
     function getDesktop() 
     {
-      let desktops = process.notify("get/desktop-from-window", window);
+      var desktops, desktop;
+
+      desktops = process.notify("get/desktop-from-window", window);
       if (desktops) {
-        let [desktop] = desktops.filter(function(desktop) desktop);
+        desktop = desktops.filter(function(desktop) desktop)[0];
         if (desktop) {
           return desktop;
         }
       }
-      let desktop = process.uniget("event/new-window-detected", window);
+      desktop = process.uniget("event/new-window-detected", window);
       return desktop;
     }
     getDesktop();
@@ -164,9 +170,11 @@ try {
      */
     editor.editFileExternally = let (default_func = editor.editFileExternally) function (path) 
     {
-      let editor_command = liberator.globalVariables.tanasinneditorcommand;
-      let viewsource_command = liberator.globalVariables.tanasinnviewsourcecommand;
-      let desktop = getDesktop();
+      var editor_command, viewsource_command, desktop, complete, command, thread;
+
+      editor_command = liberator.globalVariables.tanasinneditorcommand;
+      viewsource_command = liberator.globalVariables.tanasinnviewsourcecommand;
+      desktop = getDesktop();
       if (/^[a-z]+:\/\//.test(path)) { // when path is url spec. (path is expected to be escaped.)
         if (!viewsource_command) {
           default_func.apply(liberator.modules.editor, arguments);
@@ -179,15 +187,15 @@ try {
         if (!editor_command) {
           default_func.apply(liberator.modules.editor, arguments);
         } else {
-          let complete = false;
+          complete = false;
           desktop.subscribe("@initialized/session", function(session) {
             session.subscribe("@event/broker-stopping", function(session) {
               complete = true;
             }, this);
           }, this);
-          let command = editor_command.replace(/%/g, path);
+          command = editor_command.replace(/%/g, path);
           desktop.notify("command/start-session", command);
-          let thread = Components.classes["@mozilla.org/thread-manager;1"]
+          thread = Components.classes["@mozilla.org/thread-manager;1"]
             .getService(Components.interfaces.nsIThreadManager)
             .currentThread;
           while (!complete) {
@@ -200,7 +208,9 @@ try {
   } ();
 
 } catch (e) {
-  let message = "Error at " + e.fileName + ":" + e.lineNumber + " " + String(e);
+  var message;
+
+  message = "Error at " + e.fileName + ":" + e.lineNumber + " " + String(e);
   liberator.log(message);
   liberator.echoerr(message);
 }

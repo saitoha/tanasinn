@@ -25,7 +25,7 @@
 /** 
  * @class Splitter
  */
-let Splitter = new Class().extends(Plugin)
+var Splitter = new Class().extends(Plugin)
                           .depends("screen")
                           .depends("renderer")
                           .depends("bottompanel")
@@ -70,12 +70,13 @@ Splitter.definition = {
   "[install]":
   function install(session) 
   {
-    let bottompanel = this.dependency["bottompanel"];
+    var bottompanel, tabbox_element;
+    bottompanel = this.dependency["bottompanel"];
 
     // create splitter element.
-    let {tanasinn_splitter}
+    var {tanasinn_splitter}
       = session.uniget("command/construct-chrome", this.template);
-    let tabbox_element = bottompanel.getElement();
+    tabbox_element = bottompanel.getElement();
     tabbox_element.parentNode.insertBefore(tanasinn_splitter, tabbox_element);
 
     this._splitter = tanasinn_splitter;
@@ -109,27 +110,30 @@ Splitter.definition = {
    */
   ondragstart: function ondragstart(event) 
   {
-    let session = this._broker;
-    let renderer = this.dependency["renderer"];
-    let screen = this.dependency["screen"];
-    let bottompanel = this.dependency["bottompanel"];
-    let document = session.window.document;
-    let initial_height = bottompanel.panelHeight;
-    let initial_row = screen.height;
-    let line_height = renderer.line_height;
-    document.documentElement.style.cursor = "row-resize";
-    let y = event.screenY;
+    var broker, renderer, screen, bottompanel, document, 
+        initial_height, initial_row, line_height, y;
+    broker = this._broker;
+    renderer = this.dependency["renderer"];
+    screen = this.dependency["screen"];
+    bottompanel = this.dependency["bottompanel"];
+    initial_height = bottompanel.panelHeight;
+    initial_row = screen.height;
+    line_height = renderer.line_height;
+    broker.window.document.documentElement.style.cursor = "row-resize";
+    y = event.screenY;
 
-    session.notify("event/resize-session-started");
-    session.notify("command/add-domlistener", {
-      target: document,
+    this.sendMessage("event/resize-session-started");
+    this.sendMessage("command/add-domlistener", {
+      target: broker.window.document,
       type: "mousemove",
       id: "_DRAGGING",
       context: this,
       handler: function onmousemove(event) 
       {
-        let diff = event.screenY - y;
-        let row = initial_row + Math.round(diff / line_height);
+        var diff, row;
+
+        diff = event.screenY - y;
+        row = initial_row + Math.round(diff / line_height);
         screen.height = row;
         diff = (row - initial_row) * line_height;
         if (initial_height - diff < 0) {
@@ -140,18 +144,18 @@ Splitter.definition = {
         }
       },
     });
-    session.notify("command/add-domlistener", {
-      target: document,
+    this.sendMessage("command/add-domlistener", {
+      target: broker.window.document,
       type: "mouseup", 
       id: "_DRAGGING",
       context: this,
       handler: function onmouseup() 
       {
-        document.documentElement.style.cursor = "",
-        session.notify("command/remove-domlistener", "_DRAGGING");
+        broker.window.document.documentElement.style.cursor = "",
+        this.sendMessage("command/remove-domlistener", "_DRAGGING");
         if (screen.height == initial_row)
           return;
-        session.notify("event/resize-session-closed");
+        this.sendMessage("event/resize-session-closed");
       }
     });
   }

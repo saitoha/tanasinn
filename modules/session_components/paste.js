@@ -25,7 +25,7 @@
 /**
  *  @class Paste
  */
-let Paste = new Class().extends(Plugin);
+var Paste = new Class().extends(Plugin);
 Paste.definition = {
 
   get id()
@@ -81,19 +81,21 @@ Paste.definition = {
   "[command('paste'), nmap('<M-v>', '<C-S-V>'), _('Paste from clipboard.')]": 
   function paste() 
   {
-    let clipboard = Components
+    var clipboard, trans, str, str_length, text;
+
+    clipboard = Components
       .classes["@mozilla.org/widget/clipboard;1"]
       .getService(Components.interfaces.nsIClipboard)
-    let trans = Components
+    trans = Components
       .classes["@mozilla.org/widget/transferable;1"]
       .createInstance(Components.interfaces.nsITransferable);
     trans.addDataFlavor("text/unicode");
     clipboard.getData(trans, clipboard.kGlobalClipboard);
-	  let str = {};
-	  let str_length = {};
+	  str = {};
+	  str_length = {};
 	  trans.getTransferData("text/unicode", str, str_length);
     if (str.value && str_length.value) {
-      let text = str.value
+      text = str.value
         .QueryInterface(Components.interfaces.nsISupportsString)
         .data
         .substring(0, str_length.value / 2);
@@ -107,9 +109,8 @@ Paste.definition = {
       }
 
       // Encodes the text message and send it to the tty device.
-      let broker = this._broker;
       //broker.notify("command/flow-control", false);
-      broker.notify("command/input-text", text);
+      this.sendMessage("command/input-text", text);
       //broker.notify("command/flow-control", true);
     }
     return true; /* prevent default action */
