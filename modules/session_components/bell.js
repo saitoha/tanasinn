@@ -25,7 +25,7 @@
 /**
  *  @class Bell
  */
-let Bell = new Class().extends(Plugin);
+var Bell = new Class().extends(Plugin);
 Bell.definition = {
 
   get id()
@@ -66,8 +66,8 @@ Bell.definition = {
   "[install]":
   function install(broker) 
   {
-    let { tanasinn_visual_bell }
-      = broker.uniget("command/construct-chrome", this.template);
+    var { tanasinn_visual_bell }
+      = this.request("command/construct-chrome", this.template);
     this._cover = tanasinn_visual_bell;
     this.onBell.enabled = true;
   },
@@ -113,7 +113,10 @@ Bell.definition = {
   /** Plays 'beep' sound asynchronously. */
   beep: function beep() 
   {
-    let sound = Components.classes["@mozilla.org/sound;1"]
+    var sound;
+
+    sound = Components
+      .classes["@mozilla.org/sound;1"]
       .getService(Components.interfaces.nsISound)
     sound.beep();
     //sound.playSystemSound("Blow");

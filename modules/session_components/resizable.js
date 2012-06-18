@@ -30,7 +30,7 @@
 /**
  * @trait ResizeShortcut
  */
-let ResizeShortcut = new Trait();
+var ResizeShortcut = new Trait();
 ResizeShortcut.definition = {
 
   /** Make the screen narrower by 1 column. */ 
@@ -71,7 +71,7 @@ ResizeShortcut.definition = {
  * @class Resize
  * @fn Enable resizable operation.
  */
-let Resize = new Class().extends(Plugin)
+var Resize = new Class().extends(Plugin)
                         .mix(ResizeShortcut)
                         .depends("screen");
 Resize.definition = {

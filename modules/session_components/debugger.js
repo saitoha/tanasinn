@@ -31,7 +31,7 @@ const CO_TRACE_CONTROL = 3;
  * @class Tracer
  *
  */
-let Tracer = new Class().extends(Component);
+var Tracer = new Class().extends(Component);
 Tracer.definition = {
 
   get id()
@@ -54,9 +54,11 @@ Tracer.definition = {
   "[subscribe('command/debugger-trace-on'), enabled]":
   function enable() 
   {
+    var sequences;
+
     this.onBeforeInput.enabled = true;
 
-    let sequences = this.sendMessage("get/sequences/" + this._mode);
+    sequences = this.sendMessage("get/sequences/" + this._mode);
     this._backup_sequences = sequences;
 
     for (let i = 0; i < sequences.length; ++i) {
@@ -101,7 +103,9 @@ Tracer.definition = {
   "[subscribe('command/send-to-tty')]":
   function onBeforeInput(message) 
   {
-    let info = {
+    var info;
+
+    info = {
       type: CO_TRACE_INPUT, 
       name: undefined,
       value: [message],
@@ -118,7 +122,7 @@ Tracer.definition = {
  * @class Hooker
  *
  */
-let Hooker = new Class().extends(Component).depends("parser");
+var Hooker = new Class().extends(Component).depends("parser");
 Hooker.definition = {
 
   get id()
@@ -145,12 +149,15 @@ Hooker.definition = {
   "[subscribe('command/debugger-resume'), enabled]":
   function resume()  
   {
+    var buffer, action, result;
+
     this._step_mode = false;
-    let buffer = this._buffer;
+    buffer = this._buffer;
+
     // drain queued actions.
     while (buffer.length) {
-      let action = buffer.shift();
-      let result = action();
+      action = buffer.shift();
+      result = action();
       this.sendMessage("command/debugger-trace-sequence", result);
     }
     this.sendMessage("command/flow-control", true);
@@ -161,11 +168,13 @@ Hooker.definition = {
   "[subscribe('command/debugger-step'), enabled]":
   function step()
   {
+    var buffer, action, result;
+
     if (this._hooked) {
-      let buffer = this._buffer;
-      let action = buffer.shift();
+      buffer = this._buffer;
+      action = buffer.shift();
       if (action) {
-        let result = action();
+        result = action();
         this.sendMessage("command/debugger-trace-sequence", result);
         this.sendMessage("command/draw"); // redraw
       } else {
@@ -177,10 +186,12 @@ Hooker.definition = {
   "[subscribe('command/debugger-trace-on'), enabled]":
   function set() 
   {
+    var parser, buffer, self;
+
     if (!this._hooked) {
-      let parser = this.dependency["parser"];
-      let buffer = this._buffer;
-      let self = this;
+      parser = this.dependency["parser"];
+      buffer = this._buffer;
+      self = this;
       this._hooked = true;
       parser.parse = function(data) 
       {

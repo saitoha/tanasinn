@@ -32,7 +32,7 @@
  *  object. and shows a line on editing as an watermark/overlay object. 
  *
  */ 
-let Ime = new Class().extends(Plugin)
+var Ime = new Class().extends(Plugin)
                      .depends("renderer")
                      .depends("cursorstate")
                      .depends("inputmanager");
@@ -57,13 +57,15 @@ Ime.definition = {
   _ime_input_flag: false,
 
   /** Installs plugin 
-   *  @param {Session} session A session object.
+   *  @param {Broker} broker A Broker object.
    */ 
   "[install]":
-  function install(session) 
+  function install(broker) 
   {
-    let textbox = this.dependency["inputmanager"].getInputField();
-    let renderer = this.dependency["renderer"];
+    var textbox, renderer, version_comparator, focused_element;
+
+    textbox = this.dependency["inputmanager"].getInputField();
+    renderer = this.dependency["renderer"];
     textbox.style.width = "0%";
     textbox.style.imeMode = "inactive"; // disabled -> inactive
     textbox.style.border = "none"; // hide border
@@ -74,7 +76,7 @@ Ime.definition = {
       renderer.font_family);
 
     // enables session event handlers.
-    let version_comparator = Components
+    version_comparator = Components
       .classes["@mozilla.org/xpcom/version-comparator;1"]
       .getService(Components.interfaces.nsIVersionComparator);
     if (version_comparator.compare(coUtils.Runtime.version, "10.0") <= 0)
@@ -85,22 +87,23 @@ Ime.definition = {
     this.oninput.enabled = true;
     this.oncompositionupdate.enabled = true;
 
-    let document = session.window.document;
-    let focusedElement = document.commandDispatcher.focusedElement;
-    if (focusedElement && focusedElement.isEqualNode(textbox)) {
+    focused_element = broker.window.document.commandDispatcher.focusedElement;
+    if (focused_element && focused_element.isEqualNode(textbox)) {
       this.startPolling();
     }
       
   }, // install
 
   /** Uninstall plugin 
-   *  @param {Session} session A session object.
+   *  @param {Broker} broker A Broker object.
    */
   "[uninstall]":
-  function uninstall(session) 
+  function uninstall(broker) 
   {
+    var textbox;
+
     this.endPolling(); // stops polling timer. 
-    let textbox = this.dependency["inputmanager"].getInputField();
+    textbox = this.dependency["inputmanager"].getInputField();
     textbox.style.width = "";
     textbox.style.imeMode = "disabled";
     textbox.style.border = "";  
@@ -155,7 +158,9 @@ Ime.definition = {
    */  
   onpoll: function onpoll() 
   {
-    let text = this.dependency["inputmanager"].getInputField().value;
+    var text;
+
+    text = this.dependency["inputmanager"].getInputField().value;
     if (text) { // if textbox contains some text data.
       if (!this._ime_input_flag) {
         this._enableImeMode(); // makes the IME mode enabled.
@@ -170,17 +175,20 @@ Ime.definition = {
   /** Shows textbox element. */
   _enableImeMode: function _enableImeMode() 
   {
-    let textbox = this.dependency["inputmanager"].getInputField();
-    let renderer = this.dependency["renderer"];
-    let cursor = this.dependency["cursorstate"];
-    let line_height = renderer.line_height;
-    let char_width = renderer.char_width;
-    let char_height = renderer.char_height;
-    let char_offset = renderer.char_offset;
-    let normal_color = renderer.color;
-    let font_size = renderer.font_size;
-    let top = cursor.positionY * line_height + -4;
-    let left = cursor.positionX * char_width + -2;
+    var textbox, renderer, cursor, line_height, char_width, char_height,
+        char_offset, normal_color, font_size, top, left;;
+
+    textbox = this.dependency["inputmanager"].getInputField();
+    renderer = this.dependency["renderer"];
+    cursor = this.dependency["cursorstate"];
+    line_height = renderer.line_height;
+    char_width = renderer.char_width;
+    char_height = renderer.char_height;
+    char_offset = renderer.char_offset;
+    normal_color = renderer.color;
+    font_size = renderer.font_size;
+    top = cursor.positionY * line_height + -4;
+    left = cursor.positionX * char_width + -2;
     textbox.setAttribute("top", top);
     textbox.setAttribute("left", left);
     textbox.style.opacity = 1.0;
@@ -189,16 +197,14 @@ Ime.definition = {
     textbox.style.fontSize = font_size + "px";
     textbox.style.width = "100%";
     this._ime_input_flag = true;
-    let session = this._broker;
-    session.notify("command/ime-mode-on", this);
+    this.sendMessage("command/ime-mode-on", this);
   },
 
   _disableImeMode: function _disableImeMode() 
   {
     this.dependency["inputmanager"].getInputField().style.opacity = 0.0;
     this._ime_input_flag = false;
-    let session = this._broker;
-    session.notify("command/ime-mode-off", this);
+    this.sendMessage("command/ime-mode-off", this);
   }
 };
 

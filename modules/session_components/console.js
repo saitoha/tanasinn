@@ -26,7 +26,7 @@
 /**
  * @class AlertService
  */
-let AlertService = new Class().extends(Plugin);
+var AlertService = new Class().extends(Plugin);
 AlertService.definition = {
 
   get id()
@@ -63,7 +63,9 @@ AlertService.definition = {
   "[subscribe('command/show-popup-alert')]":
   function show(data)
   {
-    let broker = this._broker;
+    var self;
+
+    self = this;
     try {
       Components.classes["@mozilla.org/alerts-service;1"]
         .getService(Components.interfaces.nsIAlertsService)
@@ -77,7 +79,7 @@ AlertService.definition = {
             observe: function observe(subject, topic, data) 
             {
               if ("alertclickcallback" == topic) {
-                broker.notify("command/select-panel", "!console.panel");
+                self.sendMessage("command/select-panel", "!console.panel");
               }
             }
           },   // listener
@@ -122,8 +124,7 @@ MessageFilter.definition = {
   "[install]":
   function install(broker) 
   {
-    this.onMessageFiltersRequired.enabled = true;
-    broker.notify("event/console-filter-collection-changed");
+    this.sendMessage("event/console-filter-collection-changed");
   },
 
   /** Uninstalls itself. 
@@ -132,11 +133,10 @@ MessageFilter.definition = {
   "[uninstall]":
   function uninstall(broker) 
   {
-    this.onMessageFiltersRequired.enabled = false;
-    broker.notify("event/console-filter-collection-changed");
+    this.sendMessage("event/console-filter-collection-changed");
   },
 
-  "[subscribe('get/message-filters')]": 
+  "[subscribe('get/message-filters'), pnp]": 
   function onMessageFiltersRequired(filters) 
   {
     return this;
@@ -158,10 +158,9 @@ MessageFilter.definition = {
     let class_string = this._getClassString(category);
     file = file.split("/").pop().split("?").shift();
     if ("tanasinn-console-error" == class_string) {
-      let broker = this._broker;
       let title = category;
       let text = file + ":" + line + " " + message;
-      broker.notify("command/show-popup-alert", {title: title, text: text});
+      this.sendMessage("command/show-popup-alert", {title: title, text: text});
     }
     return {
       parentNode: "#console_output_box",

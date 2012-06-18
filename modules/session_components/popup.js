@@ -20,7 +20,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-let ZshCompletion = new Trait();
+var ZshCompletion = new Trait();
 ZshCompletion.definition = {
 
   _clearGrid: function _clearGrid() 
@@ -33,18 +33,18 @@ ZshCompletion.definition = {
   "[subscribe('event/data-arrived')]": 
   function onDataArrived(data)
   {
-    //let lines = data//.replace(/\x1b\[J|\n|<space>\s+<end><item>/g, "")
-    //  .split(/<item>/)
-      //.map(function(line) line.split(/<end>/).shift());
-    let lines = data.match(/<item>(.*?)<end>/gm).map(function(s) s.slice(6, -5)).filter(function(s) !s.match(/<space>/));  
+    var lines, match, prompt;
+
+    lines = data.match(/<item>(.*?)<end>/gm)
+      .map(function(s) s.slice(6, -5))
+      .filter(function(s) !s.match(/<space>/));  
     Array.prototype.push.apply(this.lines, lines);
-    let match = data.match(/\x1b.*$/);
+    match = data.match(/\x1b.*$/);
     if (null !== match) {
-      let [prompt] = match;
+      [prompt] = match;
       this.onDataArrived.enabled = false;
-      let session = this._broker;
-      session.notify("command/enable-default-parser");
-      session.notify("event/data-arrived", "\r" + prompt);
+      this.sendMessage("command/enable-default-parser");
+      this.sendMessage("event/data-arrived", "\r" + prompt);
       this._clearGrid();
       this.display();
     }
@@ -52,13 +52,15 @@ ZshCompletion.definition = {
 
   display: function() 
   {
-    let lines = this.lines;
+    var lines, colormap, session, renderer, selected;
+
+    lines = this.lines;
     this.onDataArrived.enabled = false;
-    let colormap = [ "", "#cdffcf", "#cdd", "#dfffdd" ];
-    let session = this._broker;
-    let renderer = this.dependency["renderer"];
-    let selected = -1;
-    let {} = session.uniget(
+    colormap = [ "", "#cdffcf", "#cdd", "#dfffdd" ];
+    session = this._broker;
+    renderer = this.dependency["renderer"];
+    selected = -1;
+    this.request(
       "command/construct-chrome", 
       {
         parentNode: "#tanasinn_app_popup_container",
@@ -74,9 +76,7 @@ ZshCompletion.definition = {
         childNodes: [
           {
             tagName: "row",
-            style: <>
-              padding: 0px 10px;
-            </> + (index == selected && <>
+            style: "padding: 0px 10px; " + (index == selected && <>
               background-image: -moz-linear-gradient(top, #ddd, #eee); 
               -moz-box-shadow: 1px 1px 5px black;
               box-shadow: 1px 1px 5px black;
@@ -94,46 +94,17 @@ ZshCompletion.definition = {
                     return cell;
                   }
                 }(),
-                style: <>
-                  padding: 0px 5px;
-                  color: {colormap[index]};
-                </>,
+                style: "padding: 0px 5px; color: {colormap[index]};",
               } for ([index, cell] in Iterator(line.split(",")))
             ]
           } for ([index, line] in Iterator(lines))
         ],
       });
     this._datum.style.height = renderer.line_height + "px";
-//    this._datum.style.top = y + "px";
     this._is_showing = true;
     this._popup.openPopup(
       this._datum, 
       "after_start", 0, 0, true, true);
-//    session.notify("command/focus");
-    /*
-    if (-1 != selected) {
-      let scrollbox = this._scrollbox;
-      let rows = scrollbox.querySelector("rows");
-      let box_object = scrollbox.boxObject
-        .QueryInterface(Components.interfaces.nsIScrollBoxObject)
-      if (box_object) {
-        let row = rows.childNodes[selected];
-        let scrollY = {};
-        box_object.getPosition({}, scrollY);
-        let first_position = row.boxObject.y 
-          - scrollbox.boxObject.y;
-        let last_position = first_position 
-          - scrollbox.boxObject.height 
-          + row.boxObject.height;
-        if (first_position < scrollY.value) {
-          box_object.scrollTo(0, first_position);
-        } else if (last_position > scrollY.value) {
-          box_object.scrollTo(0, last_position);
-        }
-      }
-      scrollbox.setAttribute("orient", "vertical");
-    }
-    */
   },
 
   "[subscribe('sequence/osc/202'), pnp]":
@@ -143,15 +114,11 @@ ZshCompletion.definition = {
     session.notify("command/disable-default-parser");
     this.onDataArrived.enabled = true;
     this.lines = [];
-//    coUtils.Timer.setTimeout(function() {
-//      this.display();
-//    }, 100, this);
   },
 
   "[subscribe('sequence/osc/203'), enabled]":
   function onZshCompletionCategory(data) 
   {
-    //this.onDataArrived.enabled = true;
     this.lines.push("-----" + data);
   },
 
@@ -204,7 +171,7 @@ PopupMenu.definition = {
   "[install]":
   function install(session) 
   {
-    let {
+    var {
       tanasinn_app_popup_datum,
       tanasinn_app_popup,
       tanasinn_app_popup_scrollbox,
@@ -290,30 +257,31 @@ PopupMenu.definition = {
   "[listen('mousedown', '#tanasinn_app_popup', true), pnp]":
   function onmousedown(event) 
   {
-    let target = event.explicitOriginalTarget;
+    var target, diff, session, packed_code, i;
+
+    target = event.explicitOriginalTarget;
     if (!target) {
       return;
     }
     while ("row" != target.tagName) {
       target = target.parentNode;
     }
-    let diff = - this._selected;
+    diff = - this._selected;
     while ((target = target.previousSibling)) {
       ++diff;
     }
 
-    let session = this._broker;
+    session = this._broker;
     this.onDisplay.enabled = false;
     this._popup.hidePopup();
     session.notify("command/focus");
 
-    let packed_code;
     if (diff < 0) {
       packed_code = coUtils.Keyboard.parseKeymapExpression("<C-p>");
     } else {
       packed_code = coUtils.Keyboard.parseKeymapExpression("<C-n>");
     }
-    for (let i = 0; i < Math.abs(diff); ++i) {
+    for (i = 0; i < Math.abs(diff); ++i) {
       session.notify("command/input-with-no-remapping", packed_code);
     }
     packed_code = coUtils.Keyboard.parseKeymapExpression("<Escape>");
@@ -323,7 +291,9 @@ PopupMenu.definition = {
   "[listen('mousemove', '#tanasinn_app_popup', true), pnp]":
   function onmousemove(event) 
   {
-    let target = event.explicitOriginalTarget;
+    var target;
+
+    target = event.explicitOriginalTarget;
     while ("row" != target.tagName) {
       target = target.parentNode;
     }
@@ -345,11 +315,14 @@ PopupMenu.definition = {
   "[subscribe('sequence/osc/200'), pnp]":
   function onDisplay(data) 
   {
+    var liens, row, column, selected;
+
     while (this._container.firstChild) {
       this._container.removeChild(this._container.firstChild);
     }
-    let lines = data.split("-");
-    let [row, column, selected] = lines.shift()
+    lines = data.split("-");
+
+    [row, column, selected] = lines.shift()
       .split(",")
       .map(function(str) Number(str));
     this._selected = selected;

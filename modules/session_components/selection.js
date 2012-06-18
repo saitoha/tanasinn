@@ -25,20 +25,24 @@
 /**
  * @trait Suitable
  */
-let Suitable = new Trait();
+var Suitable = new Trait();
 Suitable.definition = {
 
   "[subscribe('event/screen-width-changed'), pnp]":
   function onWidthChanged(width) 
   {
-    let canvas = this._canvas;
+    var canvas;
+
+    canvas = this._canvas;
     canvas.width = width;
   },
 
   "[subscribe('event/screen-height-changed'), pnp]": 
   function onHeightChanged(height) 
   {
-    let canvas = this._canvas;
+    var canvas;
+
+    canvas = this._canvas;
     canvas.height = height;
   },
 
@@ -47,7 +51,7 @@ Suitable.definition = {
 /**
  * @class Selection
  */
-let Selection = new Class().extends(Plugin)
+var Selection = new Class().extends(Plugin)
                            .mix(Suitable)
                            .depends("renderer")
                            .depends("screen");
@@ -115,8 +119,10 @@ Selection.definition = {
   "[install]":
   function install(broker) 
   {
-    let renderer = this._renderer;
-    let {selection_canvas} = broker.uniget(
+    var renderer;
+
+    renderer = this._renderer;
+    var {selection_canvas} = broker.uniget(
       "command/construct-chrome", 
       {
         parentNode: "#tanasinn_center_area",
@@ -149,7 +155,9 @@ Selection.definition = {
   "[subscribe('@command/focus'), pnp]":
   function onFirstFocus() 
   {
-    let canvas = this._canvas;
+    var canvas;
+
+    canvas = this._canvas;
     canvas.width = canvas.parentNode.boxObject.width;
     canvas.height = canvas.parentNode.boxObject.height;
   },
@@ -158,7 +166,7 @@ Selection.definition = {
   "[listen('dblclick', '#tanasinn_content'), pnp]":
   function ondblclick(event) 
   {
-    let [column, row] = this.convertPixelToScreen(event);
+    var [column, row] = this.convertPixelToScreen(event);
     this.selectSurroundChars(column, row);
 
     this._setClearAction();
@@ -197,13 +205,14 @@ Selection.definition = {
   "[subscribe('event/start-highlight-mouse'), enabled]":
   function onStartHighlightMouse(args)
   {
-    let func = args[0];
+    var func;
+
+    func = args[0];
     if (0 == func) {
       this.clear();
       return;
     }
 
-    let broker = this._broker;
     let screen = this.dependency["screen"];
     let column = screen.width;
     let row = screen.height;
@@ -222,7 +231,7 @@ Selection.definition = {
     this._color = this.highlight_selection_color;
     this._context.fillStyle = this._color;
 
-    broker.notify(
+    this.sendMessage(
       "command/add-domlistener", 
       {
         target: this._canvas.ownerDocument, 
@@ -231,7 +240,7 @@ Selection.definition = {
         context: this,
         handler: function selection_dragstart(event) 
         {
-          broker.notify(
+          this.sendMessage(
             "command/add-domlistener", 
             {
               target: this._canvas.ownerDocument, 
@@ -257,7 +266,7 @@ Selection.definition = {
               }
             });
 
-          broker.notify(
+          this.sendMessage(
             "command/add-domlistener", 
             {
               target: this._canvas.ownerDocument,
@@ -266,7 +275,7 @@ Selection.definition = {
               context: this,
               handler: function selection_mouseup(event) 
               {
-                broker.notify("command/remove-domlistener", "_DRAGGING"); 
+                this.sendMessage("command/remove-domlistener", "_DRAGGING"); 
                 if (this._range) {
                   this._setClearAction();
                   this._reportRange();
@@ -281,7 +290,6 @@ Selection.definition = {
   "[listen('dragstart', '#tanasinn_content'), pnp]":
   function ondragstart(event) 
   {
-    let broker = this._broker;
     let screen = this.dependency["screen"];
     let column = screen.width;
     let row = screen.height;
@@ -297,7 +305,7 @@ Selection.definition = {
     this._color = this.normal_selection_color;
     this._context.fillStyle = this._color;
 
-    broker.notify(
+    this.sendMessage(
       "command/add-domlistener", 
       {
         target: this._canvas.ownerDocument, 
@@ -317,7 +325,7 @@ Selection.definition = {
         }
       });
 
-    broker.notify(
+    this.sendMessage(
       "command/add-domlistener", 
       {
         target: this._canvas.ownerDocument,
@@ -326,7 +334,7 @@ Selection.definition = {
         context: this,
         handler: function selection_mouseup(event) 
         {
-          broker.notify("command/remove-domlistener", "_DRAGGING"); 
+          this.sendMessage("command/remove-domlistener", "_DRAGGING"); 
           if (this._range) {
             this._setClearAction();
             this._reportRange();
@@ -342,8 +350,7 @@ Selection.definition = {
   _setClearAction: function _setClearAction() 
   {
     let id = "selection.clear";
-    let broker = this._broker;
-    broker.notify("command/add-domlistener", {
+    this.sendMessage("command/add-domlistener", {
       target: "#tanasinn_content",
       type: "mouseup",
       id: id,
@@ -353,18 +360,18 @@ Selection.definition = {
         if (2 == event.button) { // right click
           return;
         }
-        broker.notify("command/remove-domlistener", id); 
+        this.sendMessage("command/remove-domlistener", id); 
         this.clear();
       },
     });
-    broker.notify("command/add-domlistener", {
+    this.sendMessage("command/add-domlistener", {
       target: "#tanasinn_content",
       type: "DOMMouseScroll", 
       id: id,
       context: this,
       handler: function handler(event) 
       {
-        broker.notify("command/remove-domlistener", id); 
+        this.sendMessage("command/remove-domlistener", id); 
         this.clear();
       },
     });
@@ -488,8 +495,7 @@ Selection.definition = {
   {
     let [column, row] = this._range;
     let message = coUtils.Text.format(_("selected: [%d, %d]"), column, row);
-    let broker = this._broker;
-    broker.notify("command/report-status-message", message);
+    this.sendMessage("command/report-status-message", message);
   },
 
   /** Clear selection canvas and range information. */
@@ -504,7 +510,7 @@ Selection.definition = {
   convertPixelToScreen: function convertPixelToScreen(event) 
   {
     let broker = this._broker;
-    let target_element = broker.uniget("command/query-selector", "#tanasinn_center_area");
+    let target_element = this.request("command/query-selector", "#tanasinn_center_area");
     let root_element = broker.root_element;
     let box = target_element.boxObject;
     let offsetX = box.screenX - root_element.boxObject.screenX;

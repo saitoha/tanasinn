@@ -25,7 +25,7 @@
 /**
  * @class CommandProvider
  */
-let CommandProvider = new Class().extends(Component);
+var CommandProvider = new Class().extends(Component);
 CommandProvider.definition = {
 
   get id()
@@ -40,17 +40,21 @@ CommandProvider.definition = {
 
   _getCommand: function _getCommand(command_name)
   {
-    let broker = this._broker;
-    let commands = broker.notify("get/commands");
-    let filtered_command = commands.filter(function(command) {
-      return 0 == command.name.replace(/[\[\]]/g, "")
-        .indexOf(command_name);
-    });
+    var commands, filtered_command, tophit;
+
+    commands = this.sendMessage("get/commands");
+    filtered_command = commands.filter(
+      function(command) 
+      {
+        return 0 == command.name.replace(/[\[\]]/g, "")
+          .indexOf(command_name);
+      });
+
     if (filtered_command.length == 0) {
       return null;
     }
     if (filtered_command.length > 1) {
-      let tophit = filtered_command.shift();
+      tophit = filtered_command.shift();
       if (tophit.name.length == command_name.length) {
         return tophit;
       }
@@ -64,38 +68,42 @@ CommandProvider.definition = {
   "[subscribe('command/complete-commandline')]":
   function complete(completion_info) 
   {
-    let {source} = completion_info;
-    let pattern = /^\s*([0-9]*)(\w*)(\s*)/y;
-    let match = pattern.exec(source);
-    let [, repeat, command_name, blank] = match;
+    var pattern, match, repeat, commnad_name, blank, command, text;
+
+    var {source} = completion_info;
+
+    pattern = /^\s*([0-9]*)(\w*)(\s*)/y;
+    match = pattern.exec(source);
+    [, repeat, command_name, blank] = match;
+
     if (blank) {
-      let command = this._getCommand(command_name);
+      command = this._getCommand(command_name);
       if (command) {
-        let text = source.substr(pattern.lastIndex);
+        text = source.substr(pattern.lastIndex);
         command.complete(text);
       }
     } else {
-      let broker = this._broker;
-      broker.notify("command/query-completion/command", completion_info);
+      this.sendMessage("command/query-completion/command", completion_info);
     }
   },
   
   "[subscribe('command/eval-commandline')]":
   function evaluate(source) 
   {
-    let broker = this._broker;
-    let pattern = /^\s*([0-9]*)(\w+)(\s*)/y;
-    let match = pattern.exec(source);
+    var pattern, match, repeat, command_name, command, text, i, result;
+
+    pattern = /^\s*([0-9]*)(\w+)(\s*)/y;
+    match = pattern.exec(source);
     if (null === match) {
-      broker.notify(
+      this.sendMessage(
         "command/report-status-message", 
         _("Failed to parse given commandline code."));
       return;
     }
-    let [, repeat, command_name, /* blank */] = match;
-    let command = this._getCommand(command_name);
+    [, repeat, command_name, /* blank */] = match;
+    command = this._getCommand(command_name);
     if (!command) {
-      broker.notify(
+      this.sendMessage(
         "command/report-status-message", 
         coUtils.Text.format(
           _("Command '%s' is not found."), command_name));
@@ -103,17 +111,17 @@ CommandProvider.definition = {
     }
 
     try {
-      let text = source.substr(pattern.lastIndex);
+      text = source.substr(pattern.lastIndex);
       repeat = Number(repeat) || 1;
-      for (let i = 0; i < repeat; ++i) {
-        let result = command.evaluate(text);
+      for (i = 0; i < repeat; ++i) {
+        result = command.evaluate(text);
         if (result) {
-          broker.notify(
+          this.sendMessage(
             "command/report-status-message", result.message);
         }
       }
     } catch (e) {
-      broker.notify(
+      this.sendMessage(
         "command/report-status-message", 
         coUtils.Text.format(
           _("Failed to evaluate given commandline code: %s"), e));
@@ -125,7 +133,7 @@ CommandProvider.definition = {
 /**
  * @class JsCommand
  */
-let JsCommand = new Class().extends(Component);
+var JsCommand = new Class().extends(Component);
 JsCommand.definition = {
 
   get id()
@@ -134,13 +142,14 @@ JsCommand.definition = {
   "[command('javascript/js', ['js']), _('Run a javascript code.'), enabled]":
   function evaluate(arguments_string)
   {
-    let broker = this._broker;
+    var result;
+
     try {
-      let result = new Function(
+      result = new Function(
         "with (arguments[0]) { return (" + arguments_string + ");}"
-      ) (broker.window);
+      ) (this._broker.window);
     } catch (e) {
-      broker.notify("command/report-status-message", e);
+      this.sendMessage("command/report-status-message", e);
     }
   },
 };
@@ -148,7 +157,7 @@ JsCommand.definition = {
 /**
  * @class SetCommand
  */
-let SetCommand = new Class().extends(Component);
+var SetCommand = new Class().extends(Component);
 SetCommand.definition = {
 
   get id()
@@ -157,11 +166,14 @@ SetCommand.definition = {
   "[command('set', ['option']), _('Set an option.'), enabled]":
   function evaluate(arguments_string)
   {
-    let broker = this._broker;
-    let modules = broker.notify("get/components");
+    var modules, pattern, match, all, component_name, property, equal, candidates,
+        module, code, result, broker;
+
+    broker = this._broker;
+    modules = this.sendMessage("get/components");
     modules.push(broker);
-    let pattern = /^\s*([$_a-zA-Z\.\-]+)\.([$_a-zA-Z]+)\s*(=?)\s*/;
-    let match = arguments_string.match(pattern);
+    pattern = /^\s*([$_a-zA-Z\.\-]+)\.([$_a-zA-Z]+)\s*(=?)\s*/;
+    match = arguments_string.match(pattern);
     if (null === match) {
       return {
         success: false,
@@ -169,7 +181,9 @@ SetCommand.definition = {
                    "valid format is such as '<component name>.<property name>'."),
       }
     }
-    let [all, component_name, property, equal] = match;
+
+    [all, component_name, property, equal] = match;
+
     if (!component_name || !property) {
       return {
         success: false,
@@ -177,12 +191,15 @@ SetCommand.definition = {
                    "valid format is such as '<component name>.<property name>'."),
       };
     }
-    let candidates = modules.filter(function(module) {
-      if ("id" in module) {
-        return module.id == component_name;
-      }
-      return false;
-    });
+
+    candidates = modules.filter(
+      function(module) 
+      {
+        if ("id" in module) {
+          return module.id == component_name;
+        }
+        return false;
+      });
     if (0 == candidates.length) {
       return {
         success: false,
@@ -191,17 +208,17 @@ SetCommand.definition = {
           component_name),
       };
     } 
-    let module = candidates.shift();
+    module = candidates.shift();
     if (!equal) {
       return {
         success: true,
         message: module[property].toSource(),
       };
     }
-    let code = arguments_string.substr(all.length); 
-    let result = new Function(
+    code = arguments_string.substr(all.length); 
+    result = new Function(
       "with (arguments[0]) { return (" + code + ");}"
-    ) (broker.window);
+    ) (this._broker.window);
     module[property] = result; 
     return {
       success: true,
@@ -217,7 +234,7 @@ SetCommand.definition = {
  * @class SetGlobalCommand
  *
  */
-let SetGlobalCommand = new Class().extends(Component);
+var SetGlobalCommand = new Class().extends(Component);
 SetGlobalCommand.definition = {
 
   get id()
@@ -226,11 +243,13 @@ SetGlobalCommand.definition = {
   "[command('setglobal', ['option/global']), _('Set a global option.'), enabled]":
   function evaluate(arguments_string)
   {
-    let broker = this._broker;
-    let desktop = broker._broker;
-    let modules = desktop.notify("get/components");
-    let pattern = /^\s*([$_a-zA-Z\.\-]+)\.([$_a-zA-Z]+)(=?)/y;
-    let match = arguments_string.match(pattern);
+    var broker, desktop, modules, pattern, match, result, code;
+
+    broker = this._broker;
+    desktop = broker._broker;
+    modules = desktop.notify("get/components");
+    pattern = /^\s*([$_a-zA-Z\.\-]+)\.([$_a-zA-Z]+)(=?)/y;
+    match = arguments_string.match(pattern);
     if (null === match) {
       return {
         success: false,
@@ -238,7 +257,7 @@ SetGlobalCommand.definition = {
                    "valid format is such as '<component name>.<property name>'."),
       };
     }
-    let [all, component_name, property, equal] = match;
+    var [all, component_name, property, equal] = match;
     if (!component_name || !property) {
       return {
         success: false,
@@ -246,27 +265,28 @@ SetGlobalCommand.definition = {
                    "valid format is such as '<component name>.<property name>'."),
       };
     }
-    let [module] = modules.filter(function(module) {
-      return module.id == component_name;
-    });
+    var [module] = modules.filter(
+      function(module) 
+      {
+        return module.id == component_name;
+      });
     if (!module) {
       return {
         success: false,
         message: coUtils.Text.format(_("Module %s is not found."), component_name),
       };
     }  
-    let result;
     if (!equal) {
       return {
         success: true,
         message: module[property].toSource(),
       };
     } else {
-      let code = arguments_string.substr(all.length); 
+      code = arguments_string.substr(all.length); 
       try {
         result = new Function(
           "with (arguments[0]) { return (" + code + ");}"
-        ) (broker.window);
+        ) (this._broker.window);
         module[property] = result; 
       } catch (e) {
         return {
@@ -287,7 +307,7 @@ SetGlobalCommand.definition = {
 /**
  * @class FontCommands
  */
-let FontCommands = new Class().extends(Component);
+var FontCommands = new Class().extends(Component);
 FontCommands.definition = {
 
   get id()
@@ -296,9 +316,10 @@ FontCommands.definition = {
   "[command('fontsize/fsize', ['fontsize']), _('Change terminal font size.'), enabled]":
   function fontsize(arguments_string)
   {
-    let broker = this._broker;
-    let pattern = /^\s*([0-9]+)\s*$/;
-    let match = arguments_string.match(pattern);
+    var pattern, match, font_size;
+
+    pattern = /^\s*([0-9]+)\s*$/;
+    match = arguments_string.match(pattern);
     if (null === match) {
       return {
         success: false,
@@ -307,9 +328,11 @@ FontCommands.definition = {
           arguments_string),
       };
     }
-    let [, font_size] = match;
-    broker.notify("set/font-size", font_size);
-    broker.notify("command/draw", true);
+
+    [, font_size] = match;
+
+    this.sendMessage("set/font-size", font_size);
+    this.sendMessage("command/draw", true);
     return {
       success: true,
       message: _("Font size was changed."),
@@ -319,9 +342,11 @@ FontCommands.definition = {
   "[command('fontfamily/ff', ['font-family']), _('Select terminal font family.'), enabled]":
   function fontfamily(arguments_string)
   {
-    let broker = this._broker;
-    let pattern = /^\s*(.+)\s*$/;
-    let match = arguments_string.match(pattern);
+    var pattern, match, font_size;
+
+    pattern = /^\s*(.+)\s*$/;
+    match = arguments_string.match(pattern);
+    
     if (null === match) {
       return {
         success: false,
@@ -330,9 +355,12 @@ FontCommands.definition = {
           arguments_string),
       };
     }
-    let [, font_family] = match;
-    broker.notify("set/font-family", font_family);
-    broker.notify("command/draw", true);
+
+    [, font_family] = match;
+
+    this.sendMessage("set/font-family", font_family);
+    this.sendMessage("command/draw", true);
+
     return {
       success: true,
       message: _("Font family was changed."),
@@ -343,9 +371,9 @@ FontCommands.definition = {
   "[command('decrease'), _('Make font size smaller.'), enabled]":
   function decrease()
   {
-    let broker = this._broker;
-    broker.notify("command/change-fontsize-by-offset", -1);
-    broker.notify("command/draw");
+    this.sendMessage("command/change-fontsize-by-offset", -1);
+    this.sendMessage("command/draw");
+
     return {
       success: true,
       message: _("Font size was changed."),
@@ -356,9 +384,9 @@ FontCommands.definition = {
   "[command('increase'), _('Make font size bigger.'), enabled]":
   function increase()
   {
-    let broker = this._broker;
-    broker.notify("command/change-fontsize-by-offset", +1);
-    broker.notify("command/draw");
+    this.sendMessge("command/change-fontsize-by-offset", +1);
+    this.sendMessge("command/draw");
+
     return {
       success: true,
       message: _("Font size was changed."),
@@ -370,7 +398,7 @@ FontCommands.definition = {
 /**
  * @class ColorCommands
  */
-let ColorCommands = new Class().extends(Component);
+var ColorCommands = new Class().extends(Component);
 ColorCommands.definition = {
 
   get id()
@@ -387,9 +415,11 @@ ColorCommands.definition = {
   "[command('changepallet', ['color-number/fg']), _('Change pallet.'), enabled]":
   function changepallet(arguments_string)
   {
-    let broker = this._broker;
-    let pattern = /\s*([0-9]+)\s+([a-zA-Z]+|#[0-9a-fA-F]+)/;
-    let match = arguments_string.match(pattern);
+    var pattern, match, number, color, renderer;
+
+    pattern = /\s*([0-9]+)\s+([a-zA-Z]+|#[0-9a-fA-F]+)/;
+    match = arguments_string.match(pattern);
+
     if (null === match) {
       return {
         success: false,
@@ -398,10 +428,14 @@ ColorCommands.definition = {
           arguments_string),
       };
     }
-    let [, number, color] = match;
-    let renderer = this._renderer;
+
+    [, number, color] = match;
+
+    renderer = this._renderer;
     renderer.color[number] = color;
-    broker.notify("command/draw", /* redraw */true);
+
+    this.sendMessage("command/draw", /* redraw */true);
+
     return {
       success: true,
       message: _("Foreground color was changed."),
@@ -413,7 +447,7 @@ ColorCommands.definition = {
 /**
  * @class GlobalPersistCommand
  */
-let GlobalPersistCommand = new Class().extends(Component);
+var GlobalPersistCommand = new Class().extends(Component);
 GlobalPersistCommand.definition = {
 
   get id()
@@ -422,17 +456,21 @@ GlobalPersistCommand.definition = {
   "[command('globalsave/gs', ['profile/global']), _('Persist current global settings.'), enabled]":
   function persist(arguments_string)
   {
-    let broker = this._broker;
-    let desktop = broker._broker;
+    var broker, desktop, match, profile;
 
-    let match = arguments_string.match(/^\s*([$_\-@a-zA-Z\.]*)\s*$/);
+    broker = this._broker;
+    desktop = broker._broker;
+
+    match = arguments_string.match(/^\s*([$_\-@a-zA-Z\.]*)\s*$/);
     if (null === match) {
       return {
         success: false,
         message: _("Failed to parse commandline argument."),
       };
     }
-    let [, profile] = match;
+
+    [, profile] = match;
+
     desktop.notify("command/save-settings",  profile);
     return {
       success: true,
@@ -443,17 +481,19 @@ GlobalPersistCommand.definition = {
   "[command('globalload/gl', ['profile/global']), _('Load a global settings.'), enabled]":
   function load(arguments_string)
   {
-    let broker = this._broker;
-    let desktop = broker._broker;
+    var broker, desktop, match, profile;
 
-    let match = arguments_string.match(/^\s*([$_\-@a-zA-Z\.]*)\s*$/);
+    broker = this._broker;
+    desktop = broker._broker;
+
+    match = arguments_string.match(/^\s*([$_\-@a-zA-Z\.]*)\s*$/);
     if (null === match) {
       return {
         success: false,
         message: _("Failed to parse commandline argument."),
       };
     }
-    let [, profile] = match;
+    [, profile] = match;
 
     desktop.notify("command/load-settings", profile || undefined);
     desktop.notify("command/draw", true);
@@ -466,17 +506,19 @@ GlobalPersistCommand.definition = {
   "[command('globaldelete/gd', ['profile/global']), _('Delete a global settings.'), enabled]":
   function deleteprofile(arguments_string)
   {
-    let broker = this._broker;
-    let desktop = broker._broker;
+    var broker, desktop, match, profile;
 
-    let match = arguments_string.match(/^\s*([$_\-@a-zA-Z\.]*)\s*$/);
+    broker = this._broker;
+    desktop = broker._broker;
+
+    match = arguments_string.match(/^\s*([$_\-@a-zA-Z\.]*)\s*$/);
     if (null === match) {
       return {
         success: false,
         message: _("Failed to parse commandline argument."),
       };
     }
-    let [, profile] = match;
+    [, profile] = match;
 
     desktop.notify("command/delete-settings", profile || undefined);
     return {
@@ -490,7 +532,7 @@ GlobalPersistCommand.definition = {
 /**
  * @class PersistCommand
  */
-let PersistCommand = new Class().extends(Component);
+var PersistCommand = new Class().extends(Component);
 PersistCommand.definition = {
 
   get id()
@@ -499,16 +541,19 @@ PersistCommand.definition = {
   "[command('saveprofile/sp', ['profile']), _('Persist current settings.'), enabled]":
   function persist(arguments_string)
   {
-    let broker = this._broker;
-    let match = arguments_string.match(/^\s*([$_\-@a-zA-Z\.]*)\s*$/);
+    var match, profile;
+
+    match = arguments_string.match(/^\s*([$_\-@a-zA-Z\.]*)\s*$/);
     if (null === match) {
       return {
         success: false,
         message: _("Failed to parse commandline argument."),
       };
     }
-    let [, profile] = match;
-    broker.notify("command/save-settings", profile);
+
+    [, profile] = match;
+
+    this.sendMessage("command/save-settings", profile);
     return {
       success: true,
       message: _("Succeeded."),
@@ -518,19 +563,20 @@ PersistCommand.definition = {
   "[command('loadprofile/lp', ['profile']), _('Load a profile.'), enabled]":
   function load(arguments_string)
   {
-    let broker = this._broker;
+    var match, profile;
 
-    let match = arguments_string.match(/^\s*([$_\-@a-zA-Z\.]*)\s*$/);
+    match = arguments_string.match(/^\s*([$_\-@a-zA-Z\.]*)\s*$/);
     if (null === match) {
       return {
         success: false,
         message: _("Failed to parse commandline argument."),
       };
     }
-    let [, profile] = match;
+    [, profile] = match;
 
-    broker.notify("command/load-settings", profile || undefined);
-    broker.notify("command/draw", true);
+    this.sendMessage("command/load-settings", profile || undefined);
+    this.sendMessage("command/draw", true);
+
     return {
       success: true,
       message: _("Succeeded."),
@@ -540,18 +586,20 @@ PersistCommand.definition = {
   "[command('deleteprofile/dp', ['profile']), _('Delete a profile.'), enabled]":
   function deleteprofile(arguments_string)
   {
-    let broker = this._broker;
+    var match, profile;
 
-    let match = arguments_string.match(/^\s*([$_\-@a-zA-Z\.]*)\s*$/);
+    match = arguments_string.match(/^\s*([$_\-@a-zA-Z\.]*)\s*$/);
     if (null === match) {
       return {
         success: false,
         message: _("Failed to parse commandline argument."),
       };
     }
-    let [, profile] = match;
 
-    broker.notify("command/delete-settings", profile || undefined);
+    [, profile] = match;
+
+    this.sendMessage("command/delete-settings", profile || undefined);
+
     return {
       success: true,
       message: _("Succeeded."),
@@ -563,7 +611,7 @@ PersistCommand.definition = {
 /**
  * @class LocalizeCommand
  */
-let LocalizeCommand = new Class().extends(Component);
+var LocalizeCommand = new Class().extends(Component);
 LocalizeCommand.definition = {
 
   get id()
@@ -572,20 +620,27 @@ LocalizeCommand.definition = {
   "[command('localize', ['localize']), _('Edit localization resource.'), enabled]":
   function evaluate(arguments_string)
   {
-    let broker = this._broker;
-    let desktop = broker.parent;
-    let pattern = /^\s*([a-zA-Z-]+)\s+"((?:[^"])*)"\s+"(.+)"\s*$/;
-    let match = arguments_string.match(pattern);
+    var broker, desktop, pattern, match, language, key, value, dict;
+
+    broker = this._broker;
+    desktop = broker.parent;
+    pattern = /^\s*([a-zA-Z-]+)\s+"((?:[^"])*)"\s+"(.+)"\s*$/;
+    match = arguments_string.match(pattern);
+
     if (!match) {
       return {
         success: true,
         message: _("Failed to parse given commandline code."),
       };
     }
-    let [, language, key, value] = match;
+
+    [, language, key, value] = match;
+
     key = key.replace(/\\(?!\\)/g, "\\");
     value = value.replace(/\\(?!\\)/g, "\\");
-    let dict = coUtils.Localize.getDictionary(language);
+
+    dict = coUtils.Localize.getDictionary(language);
+
     dict[key] = value;
     coUtils.Localize.setDictionary(language, dict);
     return {
@@ -598,7 +653,7 @@ LocalizeCommand.definition = {
 /**
  * @class CharsetCommands
  */
-let CharsetCommands = new Class().extends(Component);
+var CharsetCommands = new Class().extends(Component);
 CharsetCommands.definition = {
 
   get id()
@@ -606,20 +661,24 @@ CharsetCommands.definition = {
 
   _impl: function _impl(arguments_string, is_encoder) 
   {
-    let broker = this._broker;
-    let modules = broker.notify(
-      is_encoder ? "get/encoders": "get/decoders");
-    let name = arguments_string.replace(/^\s+|\s+$/g, "");
+    var modules, name;
+
+    modules = this.sendMessage(is_encoder ? "get/encoders": "get/decoders");
+
+    name = arguments_string.replace(/^\s+|\s+$/g, "");
     modules = modules.filter(function(module) module.charset == name);
+
     if (1 != modules.length) {
       return {
         success: false,
         message: _("Cannot enabled the module specified by given argument."),
       };
     }
-    broker.notify(
+
+    this.sendMessage(
       is_encoder ? "change/encoder": "change/decoder", 
       name)
+
     return {
       success: true,
       message: _("Succeeded."),
@@ -643,7 +702,7 @@ CharsetCommands.definition = {
 /**
  * @class LscomponentCommand
  */
-let LscomponentCommand = new Class().extends(Component);
+var LscomponentCommand = new Class().extends(Component);
 LscomponentCommand.definition = {
 
   get id()
@@ -660,7 +719,7 @@ LscomponentCommand.definition = {
 /**
  * @class EchoCommand
  */
-let EchoCommand = new Class().extends(Component);
+var EchoCommand = new Class().extends(Component);
 EchoCommand.definition = {
 
   get id()
@@ -680,7 +739,7 @@ EchoCommand.definition = {
 /**
  * @class OverlayEchoCommand
  */
-let OverlayEchoCommand = new Class().extends(Component);
+var OverlayEchoCommand = new Class().extends(Component);
 OverlayEchoCommand.definition = {
 
   get id()
@@ -689,8 +748,7 @@ OverlayEchoCommand.definition = {
   "[command('overlayecho/oe'), _('echo message at overlay indicator.'), enabled]":
   function evaluate(arguments_string)
   {
-    let broker = this._broker;
-    broker.notify("command/report-overlay-message", arguments_string);
+    this.sendMessage("command/report-overlay-message", arguments_string);
     return {
       success: true,
       message: _("Succeeded."),

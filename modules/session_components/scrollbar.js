@@ -26,7 +26,7 @@
  * @class Scrollbar
  * @brief Shows scrollbar interface.
  */
-let Scrollbar = new Class().extends(Plugin);
+var Scrollbar = new Class().extends(Plugin);
 Scrollbar.definition = {
 
   get id()
@@ -118,7 +118,7 @@ Scrollbar.definition = {
   "[install]":
   function install(session) 
   {
-    let {
+    var {
       tanasinn_scrollbar_overlay,
       tanasinn_scrollbar,
       tanasinn_scrollbar_before,
@@ -179,25 +179,28 @@ Scrollbar.definition = {
 
   changePosition: function changePosition(position) 
   {
-    let min_position = 0;
-    let max_position = parseInt(this._before.flex) 
+    var min_position, max_position;
+
+    min_position = 0;
+    max_position = parseInt(this._before.flex) 
                      + parseInt(this._after.flex);
     position = Math.max(position, min_position);
     position = Math.min(position, max_position);
     if (position != this._before.flex) {
-      let session = this._broker;
-      session.notify("command/set-scroll-position", position);
-      session.notify("command/draw");
+      this.sendMessage("command/set-scroll-position", position);
+      this.sendMessage("command/draw");
     }
   },
 
   "[subscribe('event/scroll-position-changed'), enabled]":
   function onScrollPositionChanged(scroll_info) 
   {
-    let scrollbar = this._scrollbar;
-    let before = this._before;
-    let current = this._current;
-    let after = this._after;
+    var scrollbar, before, current, after;
+
+    scrollbar = this._scrollbar;
+    before = this._before;
+    current = this._current;
+    after = this._after;
     if (0 == scrollbar.style.opacity) {
       scrollbar.style.opacity = this.active_opacity;
     }
@@ -226,10 +229,11 @@ Scrollbar.definition = {
   "[listen('mouseover', '#tanasinn_scrollbar')]":
   function onmouseover(event) 
   {
-    let scrollbar = this._scrollbar;
+    var scrollbar;
+
+    scrollbar = this._scrollbar;
     if (0 == this._after.flex && 0 == scrollbar.style.opacity) {
-      let session = this._broker;
-      session.notify("command/update-scroll-information");
+      this.sendMessage("command/update-scroll-information");
       scrollbar.style.opacity = this.active_opacity;
     }
   },
@@ -237,7 +241,9 @@ Scrollbar.definition = {
   "[listen('mouseout', '#tanasinn_scrollbar')]":
   function onmouseout(event) 
   {
-    let scrollbar = this._scrollbar;
+    var scrollbar;
+
+    scrollbar = this._scrollbar;
     if (0 == this._after.flex && 
         !this._dragging && 
         0.00 != scrollbar.style.opacity) {
@@ -273,8 +279,10 @@ Scrollbar.definition = {
         context: this,
         handler: function onmousemove(event) 
         {
-          let delta = event.screenY - initial_y;
-          let position = Math.round(initial_view_top + flex * delta / height);
+          var delta, position;
+
+          delta = event.screenY - initial_y;
+          position = Math.round(initial_view_top + flex * delta / height);
           this.changePosition(position);
         },
       });

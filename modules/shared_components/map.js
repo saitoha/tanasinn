@@ -26,7 +26,7 @@
  * @class MappingManagerBase
  * @brief Manage mappings.
  */
-let MappingManagerBase = new Abstruct().extends(Plugin);
+var MappingManagerBase = new Abstruct().extends(Plugin);
 MappingManagerBase.definition = {
 
   _map: null,
@@ -37,15 +37,20 @@ MappingManagerBase.definition = {
    * */
   installImpl: function installImpl(type)
   {
+    var mappings;
+
     this._state = this._map = {};
-    let broker = this._broker;
-    let mappings = broker.notify("get/" + type);
+    mappings = this.sendMessage("get/" + type);
     if (mappings) {
-      mappings.forEach(function(delegate) {
-        delegate.expressions.forEach(function(expression) {
-          this.register(expression, delegate);
+      mappings.forEach(
+        function(delegate) 
+        {
+          delegate.expressions.forEach(
+            function(expression) 
+            {
+              this.register(expression, delegate);
+            }, this);
         }, this);
-      }, this);
     }
   },
 
@@ -60,23 +65,33 @@ MappingManagerBase.definition = {
   /** Registers a mapping specified by given expression. */
   register: function register(expression, delegate) 
   {
-    let packed_code_array 
+    var packed_code_array, context;
+
+    packed_code_array 
       = coUtils.Keyboard.parseKeymapExpression(expression);
-    let context = this._map;
-    packed_code_array.forEach(function(key_code) {
-      context = context[key_code] = context[key_code] || {};
-    }, this);
+    context = this._map;
+    packed_code_array.forEach(
+      function(key_code) 
+      {
+        context = context[key_code] = context[key_code] || {};
+      }, this);
     context.value = delegate;
   },
 
   /** Unregisters a mapping. */
   unregister: function unregister(expression) 
   {
-    let packed_code_array 
+    var packed_code_array;
+
+    packed_code_array 
       = coUtils.Keyboard.parseKeymapExpression(expression);
-    void function(context) {
-      let code = packed_code_array.shift();
-      let new_context = context[code];
+
+    void function(context) 
+    {
+      var code, new_context;
+
+      code = packed_code_array.shift();
+      new_context = context[code];
       if (new_context.value) {
         delete new_context.value;
       } else {
@@ -90,8 +105,9 @@ MappingManagerBase.definition = {
 
   dispatch: function dispatch(map, info)
   {
-    let broker = this._broker;
-    let code = info.code;
+    var code, result;
+
+    code = info.code;
 
     // swap mapleader as <Leader>
     if (this._state[coUtils.Keyboard.KEYNAME_PACKEDCODE_MAP.leader]) {
@@ -100,18 +116,18 @@ MappingManagerBase.definition = {
       }
     }
 
-    let result = this._state = this._state[code];
+    result = this._state = this._state[code];
     if (result && result.value) {
-      broker.notify("event/input-state-reset");
+      this.sendMessage("event/input-state-reset");
       this._state = map;
       return result.value(info);
     } else if (!result) {
       if (map !== this._state) {
-        broker.notify("event/input-state-reset");
+        this.sendMessage("event/input-state-reset");
       }
       this._state = map;
     } else {
-      broker.notify("event/input-state-changed", code);
+      this.sendMessage("event/input-state-changed", code);
       return true;
     }
     return undefined;
@@ -119,13 +135,20 @@ MappingManagerBase.definition = {
 
   expand: function expand()
   {
-    let result = {};
-    let context = this._map;
-    let mapleader = this.mapleader;
-    void function walk(context, previous) {
-      Object.getOwnPropertyNames(context).forEach(function(name) {
+    var result, context, mapleader;
+
+    result = {};
+    context = this._map;
+    mapleader = this.mapleader;
+
+    void function walk(context, previous) 
+    {
+      Object.getOwnPropertyNames(context).forEach(function(name) 
+      {
+        var expression;
+
         if ("value" == name) {
-          let expression = coUtils.Keyboard
+          expression = coUtils.Keyboard
             .convertCodeToExpression(previous, mapleader);
           result[expression] = context[name].description || context[name];
         } else {
@@ -142,7 +165,7 @@ MappingManagerBase.definition = {
  * @class NormalMappingManager
  * @brief Manage mappings.
  */
-let NormalMappingManager = new Class().extends(MappingManagerBase);
+var NormalMappingManager = new Class().extends(MappingManagerBase);
 NormalMappingManager.definition = {
 
   get id()
@@ -189,9 +212,11 @@ NormalMappingManager.definition = {
   "[subscribe('command/register-nmap'), enabled]":
   function registerNmap(info)
   {
-    let broker = this._broker;
-    let delegate = function() {
-      broker.notify(
+    var delegate;
+
+    delegate = function() 
+    {
+      this.sendMessage(
         "command/input-expression-with-remapping", 
         info.destination);
       return true;
@@ -204,9 +229,11 @@ NormalMappingManager.definition = {
   "[subscribe('command/register-nnoremap'), enabled]":
   function registerNnoremap(info)
   {
-    let broker = this._broker;
-    let delegate = function() {
-      broker.notify(
+    var delegate;
+
+    delegate = function()
+    {
+      this.sendMessage(
         "command/input-expression-with-no-remapping", 
         info.destination);
       return true;
@@ -227,7 +254,7 @@ NormalMappingManager.definition = {
  * @class CommandlineMappingManager
  * @brief Manage mappings.
  */
-let CommandlineMappingManager = new Class().extends(MappingManagerBase);
+var CommandlineMappingManager = new Class().extends(MappingManagerBase);
 CommandlineMappingManager.definition = {
 
   get id()
@@ -274,9 +301,11 @@ CommandlineMappingManager.definition = {
   "[subscribe('command/register-cmap'), enabled]":
   function registerCmap(info)
   {
-    let broker = this._broker;
-    let delegate = function() {
-      broker.notify(
+    var delegate;
+
+    delegate = function() 
+    {
+      this.sendMessage(
         "command/input-expression-with-remapping", 
         info.destination);
       return true;
@@ -289,10 +318,11 @@ CommandlineMappingManager.definition = {
   "[subscribe('command/register-cnoremap'), enabled]":
   function registerCnoremap(info)
   {
-    let broker = this._broker;
-    let delegate = function() 
+    var delegate;
+
+    delegate = function() 
     {
-      broker.notify(
+      this.sendMessage(
         "command/input-expression-with-no-remapping", 
         info.destination);
       return true;
@@ -312,7 +342,7 @@ CommandlineMappingManager.definition = {
  * @class CommandlineKeyHandler
  * @brief Provides emacs-like keybinds for command line input field.
  */
-let CommandlineKeyHandler = new Class().extends(Component);
+var CommandlineKeyHandler = new Class().extends(Component);
 CommandlineKeyHandler.definition = {
 
   get id()
@@ -323,19 +353,22 @@ CommandlineKeyHandler.definition = {
   "[cmap('<Esc>', '<C-]>', '<C-2>', '<C-g>', '<2-shift>', '<nmode>'), _('cancel to input.'), enabled]":
   function key_escape(info) 
   {
-    let session = this._broker;
-    session.notify("command/focus");
+    this.sendMessage("command/focus");
     this._mark = -1;
+
     return true;
   },
 
   "[cmap('<left>', '<C-b>'), _('move cursor backward.'), enabled]":
   function key_back(info) 
   {
-    let textbox = info.textbox;
-    let start = textbox.selectionStart;
-    let end = textbox.selectionEnd;
-    if (-1 != this._mark) {
+    var textbox, start, end;
+
+    textbox = info.textbox;
+    start = textbox.selectionStart;
+    end = textbox.selectionEnd;
+
+    if (-1 !== this._mark) {
       textbox.selectionStart = start - 1;
     } else if (start == end) {
       textbox.selectionStart = start - 1;
@@ -343,15 +376,19 @@ CommandlineKeyHandler.definition = {
     } else {
       textbox.selectionEnd = start;
     }
+
     return true;
   },
 
   "[cmap('<right>', '<C-f>'), _('move cursor forward.'), enabled]":
   function key_forward(info)
   {
-    let textbox = info.textbox;
-    let start = textbox.selectionStart;
-    let end = textbox.selectionEnd;
+    var textbox, start, end;
+
+    textbox = info.textbox;
+    start = textbox.selectionStart;
+    end = textbox.selectionEnd;
+
     if (start == end) {
       textbox.selectionStart = start + 1;
       textbox.selectionEnd = start + 1;
@@ -364,10 +401,13 @@ CommandlineKeyHandler.definition = {
   "[cmap('<C-k>'), _('delete chars after cursor position.'), enabled]":
   function key_truncate(info) 
   {
-    let textbox = info.textbox;
-    let value = textbox.value;
-    let start = textbox.selectionStart;
-    let end = textbox.selectionEnd;
+    var textbox, value, start, end;
+
+    textbox = info.textbox;
+    value = textbox.value;
+    start = textbox.selectionStart;
+    end = textbox.selectionEnd;
+
     if (start == end) {
       textbox.value 
         = value.substr(0, textbox.selectionStart);
@@ -378,18 +418,22 @@ CommandlineKeyHandler.definition = {
       textbox.selectionStart = start;
       textbox.selectionEnd = start;
     }
-    let broker = this._broker;
-    broker.notify("command/set-completion-trigger", info);
+
+    this.sendMessage("command/set-completion-trigger", info);
+
     return true;
   },
 
   "[cmap('<C-d>', '<Del>'), _('delete forward char.'), enabled]":
   function key_delete(info) 
   {
-    let textbox = info.textbox;
-    let value = textbox.value;
-    let start = textbox.selectionStart;
-    let end = textbox.selectionEnd;
+    var textbox, value, start, end;
+
+    textbox = info.textbox;
+    value = textbox.value;
+    start = textbox.selectionStart;
+    end = textbox.selectionEnd;
+
     if (start == end) {
       if (0 == start) {
         return true;
@@ -406,18 +450,22 @@ CommandlineKeyHandler.definition = {
       textbox.selectionStart = start;
       textbox.selectionEnd = start;
     }
-    let broker = this._broker;
-    broker.notify("command/set-completion-trigger", info);
+
+    this.sendMessage("command/set-completion-trigger", info);
+
     return true;
   },
 
   "[cmap('<C-h>', '<BS>'), _('delete backward char.'), enabled]":
   function key_backspace(info) 
   {
-    let textbox = info.textbox;
-    let value = textbox.value;
-    let start = textbox.selectionStart;
-    let end = textbox.selectionEnd;
+    var textbox, value, start, end;
+
+    textbox = info.textbox;
+    value = textbox.value;
+    start = textbox.selectionStart;
+    end = textbox.selectionEnd;
+
     if (start == end) {
       if (0 == start) {
         return true;
@@ -434,15 +482,18 @@ CommandlineKeyHandler.definition = {
       textbox.selectionStart = start;
       textbox.selectionEnd = start;
     }
-    let broker = this._broker;
-    broker.notify("command/set-completion-trigger", info);
+
+    this.sendMessage("command/set-completion-trigger", info);
+
     return true;
   },
  
   "[cmap('<Home>', '<C-a>'), _('move cursor to head of line.'), enabled]":
   function key_first(info) 
   {
-    let textbox = info.textbox;
+    var textbox;
+
+    textbox = info.textbox;
     textbox.selectionStart = 0;
     textbox.selectionEnd = 0;
     return true;
@@ -451,50 +502,48 @@ CommandlineKeyHandler.definition = {
   "[cmap('<End>', '<C-e>'), _('move cursor to end of line.'), enabled]":
   function key_end(info) 
   {
-    let textbox = info.textbox;
-    let length = textbox.value.length;
+    var textbox, length;
+    
+    textbox = info.textbox;
+    length = textbox.value.length;
     textbox.selectionStart = length;
     textbox.selectionEnd = length;
+
     return true;
   },
 
   "[cmap('<C-j>', '<CR>'), _('submit commandlne text.'), enabled]":
   function key_enter(info) 
   {
-    let broker = this._broker;
-    broker.notify("command/select-current-candidate", info);
+    this.sendMessage("command/select-current-candidate", info);
     return true;
   },
 
   "[cmap('<C-p>', '<Up>', '<S-Tab>'), _('select previous candidate.'), enabled]":
   function key_prev(info) 
   {
-    let broker = this._broker;
-    broker.notify("command/select-previous-candidate", info);
+    this.sendMessage("command/select-previous-candidate", info);
     return true;
   },
 
   "[cmap('<C-n>', '<Down>', '<Tab>'), _('select next candidate.'), enabled]":
   function key_next(info) 
   {
-    let broker = this._broker;
-    broker.notify("command/select-next-candidate", info);
+    this.sendMessage("command/select-next-candidate", info);
     return true;
   },
 
   "[cmap('<C-S-p>'), _('select previous history.'), enabled]":
   function key_history_prev(info) 
   {
-    let broker = this._broker;
-    broker.notify("command/select-previous-history", info);
+    this.sendMessage("command/select-previous-history", info);
     return true;
   },
 
   "[cmap('<C-S-n>'), _('select next history.'), enabled]":
   function key_history_next(info) 
   {
-    let broker = this._broker;
-    broker.notify("command/select-next-history", info);
+    this.sendMessage("command/select-next-history", info);
     this._mark = -1;
     return true;
   },
@@ -502,27 +551,33 @@ CommandlineKeyHandler.definition = {
   "[cmap('<C-w>'), _('delete backward word.'), enabled]":
   function key_deleteword(info) 
   {
-    let textbox = info.textbox;
-    let value = textbox.value;
-    let position = textbox.selectionEnd;
+    var textbox, value, position;
+
+    textbox = info.textbox;
+    value = textbox.value;
+    position = textbox.selectionEnd;
+
     textbox.value
       = value.substr(0, position).replace(/\w+$|\W+$/, "") 
       + value.substr(position);
     this._mark = -1;
-    let broker = this._broker;
-    broker.notify("command/set-completion-trigger", info);
+
+    this.sendMessage("command/set-completion-trigger", info);
     return true;
   },
 
   "[cmap('<C-Space>', '<C-@>', '<C-2>'), _('set mark.'), enabled]":
   function set_mark(info) 
   {
-    let textbox = info.textbox;
-    let value = textbox.value;
-    let position = textbox.selectionEnd;
+    var textbox, value, position;
+
+    textbox = info.textbox;
+    value = textbox.value;
+    position = textbox.selectionEnd;
     this._mark = position;
-    let broker = this._broker;
-    broker.notify("command/set-completion-trigger", info);
+
+    this.sendMessage("command/set-completion-trigger", info);
+
     return true;
   },
 
@@ -532,7 +587,7 @@ CommandlineKeyHandler.definition = {
 /**
  * @class NMapCommands
  */
-let NMapCommands = new Class().extends(Component);
+var NMapCommands = new Class().extends(Component);
 NMapCommands.definition = {
 
   get id()
@@ -541,21 +596,25 @@ NMapCommands.definition = {
   "[command('nmap', ['nmap', 'nmap']), _('Add a normal mapping.'), enabled]":
   function nmap(arguments_string)
   {
-    let session = this._broker;
-    let pattern = /^\s*(\S+)\s+(.+)\s*$/;
-    let match = arguments_string.match(pattern);
+    var pattern, match, source_mapping, destination_mapping, mapping_info;
+
+    pattern = /^\s*(\S+)\s+(.+)\s*$/;
+    match = arguments_string.match(pattern);
+
     if (!match) {
       return {
         success: false,
         message: _("Failed to parse given commandline code."),
       };
     }
-    let [, source_mapping, destination_mapping] = match;
-    let mapping_info = {
+
+    [, source_mapping, destination_mapping] = match;
+
+    mapping_info = {
       source: source_mapping,
       destination: destination_mapping,
     };
-    session.notify("command/register-nmap", mapping_info);
+    this.sendMessage("command/register-nmap", mapping_info);
     return {
       success: true,
       message: coUtils.Text.format(
@@ -568,21 +627,25 @@ NMapCommands.definition = {
   "[command('nnoremap', ['nmap', 'nmap']), _('Add a normal mapping (without re-mapping).'), enabled]":
   function nnoremap(arguments_string)
   {
-    let session = this._broker;
-    let pattern = /^\s*(\S+)\s+(.+)\s*$/;
-    let match = arguments_string.match(pattern);
+    var pattern, match, source_mapping, destination_mapping, mapping_info;
+
+    pattern = /^\s*(\S+)\s+(.+)\s*$/;
+    match = arguments_string.match(pattern);
+
     if (!match) {
       return {
         success: false,
         message: _("Failed to parse given commandline code."),
       };
     }
-    let [, source_mapping, destination_mapping] = match;
-    let mapping_info = {
+
+    [, source_mapping, destination_mapping] = match;
+
+    mapping_info = {
       source: source_mapping,
       destination: destination_mapping,
     };
-    session.notify("command/register-nnoremap", mapping_info);
+    this.sendMessage("command/register-nnoremap", mapping_info);
     return {
       success: true,
       message: coUtils.Text.format(
@@ -595,17 +658,21 @@ NMapCommands.definition = {
   "[command('nunmap', ['nmap']), _('Delete a normal mapping.'), enabled]":
   function nunmap(arguments_string)
   {
-    let session = this._broker;
-    let pattern = /^\s*(\S+)\s*$/;
-    let match = arguments_string.match(pattern);
+    var pattern, match, expression;
+
+    pattern = /^\s*(\S+)\s*$/;
+    match = arguments_string.match(pattern);
+
     if (!match) {
       return {
         success: false,
         message: _("Failed to parse given commandline code."),
       };
     }
-    let [, expression] = match;
-    session.notify("command/unregister-nmap", expression);
+
+    [, expression] = match;
+
+    this.sendMessage("command/unregister-nmap", expression);
     return {
       success: true,
       message: coUtils.Text.format(_("Map was removed: '%s'."), expression),
@@ -616,7 +683,7 @@ NMapCommands.definition = {
 /**
  * @class CMapCommands
  */
-let CMapCommands = new Class().extends(Component);
+var CMapCommands = new Class().extends(Component);
 CMapCommands.definition = {
 
   get id()
@@ -625,21 +692,25 @@ CMapCommands.definition = {
   "[command('cmap', ['cmap', 'cmap']), _('Add a command line mapping.'), enabled]":
   function cmap(arguments_string)
   {
-    let session = this._broker;
-    let pattern = /^\s*(\S+)\s+(.+)\s*$/;
-    let match = arguments_string.match(pattern);
+    var pattern, match, source_mapping, destination_mapping, mapping_info;
+
+    pattern = /^\s*(\S+)\s+(.+)\s*$/;
+    match = arguments_string.match(pattern);
+
     if (!match) {
       return {
         success: false,
         message: _("Failed to parse given commandline code."),
       };
     }
-    let [, source_mapping, destination_mapping] = match;
-    let mapping_info = {
+
+    [, source_mapping, destination_mapping] = match;
+    
+    mapping_info = {
       source: source_mapping,
       destination: destination_mapping,
     };
-    session.notify("command/register-cmap", mapping_info);
+    this.sendMessage("command/register-cmap", mapping_info);
     return {
       success: true,
       message: coUtils.Text.format(
@@ -652,21 +723,25 @@ CMapCommands.definition = {
   "[command('cnoremap', ['cmap', 'cmap']), _('Add a command line mapping (without re-mapping).'), enabled]":
   function cnoremap(arguments_string)
   {
-    let session = this._broker;
-    let pattern = /^\s*(\S+)\s+(.+)\s*$/;
-    let match = arguments_string.match(pattern);
+    var pattern, match, source_mapping, destination_mapping, mapping_info;
+
+    pattern = /^\s*(\S+)\s+(.+)\s*$/;
+    match = arguments_string.match(pattern);
+
     if (!match) {
       return {
         success: false,
         message: _("Failed to parse given commandline code."),
       };
     }
-    let [, source_mapping, destination_mapping] = match;
-    let mapping_info = {
+
+    [, source_mapping, destination_mapping] = match;
+
+    mapping_info = {
       source: source_mapping,
       destination: destination_mapping,
     };
-    session.notify("command/register-cnoremap", mapping_info);
+    this.sendMessage("command/register-cnoremap", mapping_info);
     return {
       success: true,
       message: coUtils.Text.format(
@@ -679,17 +754,21 @@ CMapCommands.definition = {
   "[command('cunmap', ['cmap']), _('Delete a normal mapping.'), enabled]":
   function cunmap(arguments_string)
   {
-    let session = this._broker;
-    let pattern = /^\s*(\S+)\s*$/;
-    let match = arguments_string.match(pattern);
+    var pattern, match, source_mapping, expression;
+
+    pattern = /^\s*(\S+)\s*$/;
+    match = arguments_string.match(pattern);
+
     if (!match) {
       return {
         success: false,
         message: _("Failed to parse given commandline code."),
       };
     }
-    let [, expression] = match;
-    session.notify("command/unregister-cmap", expression);
+
+    [, expression] = match;
+
+    this.sendMessage("command/unregister-cmap", expression);
     return {
       success: true,
       message: coUtils.Text.format(_("Map was removed: '%s'."), expression),

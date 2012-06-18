@@ -26,7 +26,7 @@
  *  @class Copy
  *  @brief Makes it enable to copy selected region by pressing short cut key.
  */
-let Copy = new Class().extends(Plugin)
+var Copy = new Class().extends(Plugin)
                       .depends("selection")
                       .depends("screen");
 Copy.definition = {
@@ -64,7 +64,9 @@ Copy.definition = {
   "[subscribe('get/contextmenu-entries')]":
   function onContextMenuEntriesRequested() 
   {
-    let range = this.dependency["selection"].getRange();
+    var range;
+
+    range = this.dependency["selection"].getRange();
     return range && {
         tagName: "menuitem",
         label: _("Copy Selected Text"), 
@@ -80,8 +82,10 @@ Copy.definition = {
   "[command('copy'), nmap('<M-c>', '<C-S-c>'), _('Copy selected text.')]": 
   function copy(info) 
   {
+    var range;
+
     // get selection range from "selection plugin"
-    let range = this.dependency["selection"].getRange();
+    range = this.dependency["selection"].getRange();
     if (range) {
       this.copyImpl(range);
     }
@@ -90,18 +94,18 @@ Copy.definition = {
 
   copyImpl: function copyImpl(range) 
   {
+    var text, status_message;
     // and pass it to "screen". "screen" returns selected text.
-    let {start, end, is_rectangle} = range;
-    let text = this.dependency["screen"].getTextInRange(start, end, is_rectangle);
+    var {start, end, is_rectangle} = range;
+    text = this.dependency["screen"].getTextInRange(start, end, is_rectangle);
     const clipboardHelper = Components
       .classes["@mozilla.org/widget/clipboardhelper;1"]
       .getService(Components.interfaces.nsIClipboardHelper);
     clipboardHelper.copyString(text);
-    let statusMessage = coUtils.Text.format(
+    status_message = coUtils.Text.format(
       _("Copied text to clipboard: %s"), text);
 
-    let session = this._broker;
-    session.notify("command/report-status-message", statusMessage);
+    this.sendMessage("command/report-status-message", status_message);
   },
 
 };
