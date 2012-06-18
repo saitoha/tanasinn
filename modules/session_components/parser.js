@@ -164,7 +164,7 @@ function null_function()
  * handle control characters in C0 area.
  *
  */
-let C0Parser = {
+var C0Parser = {
 
   _map: [],
 

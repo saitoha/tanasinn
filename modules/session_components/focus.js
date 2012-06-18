@@ -25,7 +25,7 @@
 /**
  * @class FocusTracker
  */
-let FocusTracker = new Class().extends(Plugin);
+var FocusTracker = new Class().extends(Plugin);
 FocusTracker.definition = {
 
   get id()
@@ -74,19 +74,20 @@ FocusTracker.definition = {
    */
   onfocus: function onfocus(event)
   {
-    let broker = this._broker;
-    let command_dispatcher = broker.document.commandDispatcher;
-    let root_element = broker.root_element;
-    let target = event.explicitOriginalTarget;
-    if (null !== target && 
-        (!("nodeType" in target) || target.nodeType != target.NODE_DOCUMENT)) {
+    var broker, command_dispatcher, root_element, target, focused_element, relation;
+
+    broker = this._broker;
+    command_dispatcher = broker.document.commandDispatcher;
+    root_element = broker.root_element;
+    target = event.explicitOriginalTarget;
+
+    if (null !== target 
+        && (!("nodeType" in target) || target.nodeType != target.NODE_DOCUMENT)) {
       target = target.parentNode;
       if (null !== target && undefined !== target
           && target.nodeType != target.NODE_DOCUMENT) {
-        let relation = root_element.compareDocumentPosition(target);
-//        coUtils.Debug.reportMessage("focus-relation: " + relation);
+        relation = root_element.compareDocumentPosition(target);
         if ((relation & root_element.DOCUMENT_POSITION_CONTAINED_BY)) {
-//         || (relation & root_element.DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC)) {
           if (!this.disabled) {
             this.disabled = true;
             if (!/tanasinn/.test(coUtils.Runtime.app_name)) {
@@ -97,7 +98,7 @@ FocusTracker.definition = {
             }, 0, this);
             return;
           }
-          let focused_element = command_dispatcher.focusedElement;
+          focused_element = command_dispatcher.focusedElement;
           broker.notify("event/got-focus");
           broker.notify("event/focus-changed", focused_element);
         }

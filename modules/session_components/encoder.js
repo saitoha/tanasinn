@@ -22,10 +22,28 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+var EncoderInfo = new Class();
+EncoderInfo.definition = {
+
+  initialize: function(broker, converter, charset, title)
+  {
+    broker.subscribe(
+      "get/encoders", 
+      function getEncoders() 
+      {
+        return {
+          charset: charset,
+          converter: converter,
+          title: title,
+        };
+      });
+  },
+};
+
 /**
  * @class MultiEncoder
  */
-let MultiEncoder = new Class().extends(Component);
+var MultiEncoder = new Class().extends(Component);
 MultiEncoder.definition = {
 
   get id()
@@ -35,41 +53,29 @@ MultiEncoder.definition = {
   _converter: null,
 
   /** constructor */
-  initialize: function initialize(session) 
+  initialize: function initialize(broker) 
   {
+    var converter_manager, encoder_list, charset, title, info;
+
     this._converter = Components
       .classes["@mozilla.org/intl/scriptableunicodeconverter"]
       .createInstance(Components.interfaces.nsIScriptableUnicodeConverter);
-    let converter_manager = Components
+    converter_manager = Components
       .classes["@mozilla.org/charset-converter-manager;1"]
       .getService(Components.interfaces.nsICharsetConverterManager);
 
-    let encoder_list = converter_manager.getEncoderList();
+    encoder_list = converter_manager.getEncoderList();
 
     // enumerate charcter sets.
     while (encoder_list.hasMore()) {
-      let charset = encoder_list.getNext();
+      charset = encoder_list.getNext();
       try {
-//        let alias = converter_manager.getCharsetAlias(charset);
-        let title;
         try {
           title = converter_manager.getCharsetTitle(charset);
-        } catch (e) {
+        } catch (e) { // fallback
           title = charset;
         }
-        //let group = converter_manager.getCharsetLangGroup(charset);
-        session.subscribe(
-          "get/encoders", 
-          function getEncoders() 
-          {
-            return {
-              charset: charset,
-              converter: this,
-              title: title,
-//              group: group,
-//              alias: alias,
-            };
-          }, this);
+        new EncoderInfo(broker, this, charset, title);
       } catch (e) {
         coUtils.Debug.reportError(e);
       }
@@ -93,7 +99,7 @@ MultiEncoder.definition = {
  * @class Encoder
  *
  */
-let Encoder = new Class().extends(Component);
+var Encoder = new Class().extends(Component);
 Encoder.definition = {
 
   get id()
@@ -112,9 +118,11 @@ Encoder.definition = {
   /** Sets character encoding scheme */
   set scheme(value) 
   {
-    let scheme = value;//.toLowerCase();
+    var scheme, encoder, message;
 
-    let encoder = this._encoder_map[scheme].converter;
+    scheme = value;//.toLowerCase();
+
+    encoder = this._encoder_map[scheme].converter;
 
     if (!encoder) {
       throw coUtils.Debug.Exception(
@@ -127,14 +135,13 @@ Encoder.definition = {
     this._encoder = encoder;
     this.initial_scheme = scheme;
 
-    let message = coUtils
+    message = coUtils
       .format(_("Input character encoding changed: [%s]."), scheme);
-    let broker = this._broker;
-    broker.notify("command/report-status-message", message); 
+    this.sendMessage("command/report-status-message", message); 
   },
 
   "[subscribe('@event/broker-started'), enabled]": 
-  function onLoad(session) 
+  function onLoad(broker) 
   {
     this._cache = {};
     this._encoder_map = this.sendMessage("get/encoders")
@@ -144,7 +151,7 @@ Encoder.definition = {
         return map;
       });
     this.scheme = this.initial_scheme;
-    session.subscribe("change/encoder", 
+    broker.subscribe("change/encoder", 
       function(scheme) 
       {
         this.scheme = scheme;

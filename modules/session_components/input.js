@@ -66,28 +66,28 @@ var KEY_ANSI = {
 };
 
 
-let KEY_NORMAL_CURSOR = {
+var KEY_NORMAL_CURSOR = {
   "Left"   : "\x1b[D",  // kl / kcub1
   "Up"     : "\x1b[A",  // ku / kcuu1
   "Right"  : "\x1b[C",  // kr / kcuf1
   "Down"   : "\x1b[B",  // kd / kcud1
 };
 
-let KEY_APPLICATION_CURSOR = {
+var KEY_APPLICATION_CURSOR = {
   "Left"   : "\x1bOD",  // kl / kcub1
   "Up"     : "\x1bOA",  // ku / kcuu1
   "Right"  : "\x1bOC",  // kr / kcuf1
   "Down"   : "\x1bOB",  // kd / kcud1
 };
 
-let KEY_VT52_CURSOR = {
+var KEY_VT52_CURSOR = {
   "Left"   : "\x1bD",  // kl / kcub1
   "Up"     : "\x1bA",  // ku / kcuu1
   "Right"  : "\x1bC",  // kr / kcuf1
   "Down"   : "\x1bB",  // kd / kcud1
 };
 
-let KEY_NORMAL_KEYPAD = {
+var KEY_NORMAL_KEYPAD = {
 
   "PgUp"   : "\x1b[5~", // kP / kpp 
   "PgDn"   : "\x1b[6~", // kN / knp
@@ -301,26 +301,38 @@ var KEY_MAC_ALT_AS_META = {
 
 function coCreateKeyMap(expression_map, destination_map) 
 {
-  let map = destination_map || {};
-  for (let [key, value] in Iterator(expression_map)) 
+  var map, key, value, tokens, code;;
+
+  map = destination_map || {};
+  for ([key, value] in Iterator(expression_map)) 
   {
-    let tokens = key.split(/[\s\t]+/);
-    let code = tokens.pop();
-    code = coUtils.Keyboard.KEYNAME_PACKEDCODE_MAP[code.toLowerCase()] 
-      || code.replace(/\\x([0-9a-fA-F]+)/g, function() 
-      let (code = parseInt(arguments[1], 16))
-        String.fromCharCode(code)
-    ).charCodeAt(0);
-    code = tokens.reduce(function(code, token) code | 0x1 << { 
-      ctrl: coUtils.Keyboard.KEY_CTRL,// | coUtils.Keyboard.KEY_NOCHAR, 
-      alt: coUtils.Keyboard.KEY_ALT, 
-      shift: coUtils.Keyboard.KEY_SHIFT, 
-      meta: coUtils.Keyboard.KEY_META,// | coUtils.Keyboard.KEY_NOCHAR, 
-    } [token.toLowerCase()], code);
-    map[code] = value
-     .replace(/\\x([0-9a-fA-F]{1,2})/g, function() 
-       let (code = parseInt(arguments[1], 16)) String.fromCharCode(code))
-     .replace(/\\[eE]/g, '\x1b');
+    tokens = key.split(/[\s\t]+/);
+    code = tokens.pop();
+    code = coUtils.Keyboard.KEYNAME_PACKEDCODE_MAP[code.toLowerCase()]
+         || code.replace(/\\x([0-9a-fA-F]+)/g, 
+              function(key) 
+              {
+                var code;
+                code = parseInt(key, 16);
+                return String.fromCharCode(code);
+              }).charCodeAt(0);
+    code = tokens.reduce(
+        function(code, token) 
+        {
+          return code | 0x1 << { 
+              ctrl: coUtils.Keyboard.KEY_CTRL,// | coUtils.Keyboard.KEY_NOCHAR, 
+              alt: coUtils.Keyboard.KEY_ALT, 
+              shift: coUtils.Keyboard.KEY_SHIFT, 
+              meta: coUtils.Keyboard.KEY_META,// | coUtils.Keyboard.KEY_NOCHAR, 
+            } [token.toLowerCase()];
+        }, code);
+    map[code] = value.replace(/\\x([0-9a-fA-F]{1,2})/g, 
+        function() 
+        {
+          var code;
+          code = parseInt(arguments[1], 16);
+          return String.fromCharCode(code);
+        }).replace(/\\[eE]/g, '\x1b');
   }
   return map;
 }
@@ -328,7 +340,7 @@ function coCreateKeyMap(expression_map, destination_map)
 /**
  * @class DefaultKeyMappings
  */
-let DefaultKeyMappings = new Class().extends(Component);
+var DefaultKeyMappings = new Class().extends(Component);
 DefaultKeyMappings.definition = {
 
   get id()
