@@ -323,8 +323,7 @@ PalletManagerTrait.definition = {
   "[subscribe('sequence/osc/4'), enabled]": 
   function changeColor(value) 
   {
-    var broker = this._broker;
-    var message;
+    var message, color;
     var [number, spec] = value.split(";");
 
     // range check.
@@ -335,11 +334,59 @@ PalletManagerTrait.definition = {
 
     // parse arguments.
     if ("?" == spec) {
-      message = "4;" + number + ";" + this.color[number];
-      broker.notify("command/send-to-tty", message);
+      color = this.color[number];
+      color = "rgb:" + color.substr(1, 2) 
+            + "/" + color.substr(3, 2) 
+            + "/" + color.substr(5, 2)
+      message = "4;" + number + ";" + color;
+      this.sendMessage("command/send-to-tty", message);
     } 
 
     this.color[number] = coUtils.Color.parseX11ColorSpec(spec);
+  },
+
+  "[subscribe('sequence/osc/10'), pnp]": 
+  function osc10(info) 
+  {
+    var outerchrome, color, message;
+
+    outerchrome = this.dependency["outerchrome"];
+
+    if ("?" === info) {
+      color = outerchrome.foreground_color;
+      color = "rgb:" + color.substr(1, 2) 
+            + "/" + color.substr(3, 2) 
+            + "/" + color.substr(5, 2)
+      message = "10;" + color;
+      this.sendMessage("command/send-to-tty", message);
+    } else { 
+      color = coUtils.Color.parseX11ColorSpec(value);
+      outerchrome.foreground_color = color;
+      this.foreground_color = color;
+      this.draw(true);
+    }
+  },
+
+  "[subscribe('sequence/osc/11'), pnp]": 
+  function osc11(info) 
+  {
+    var outerchrome, color, message;
+
+    outerchrome = this.dependency["outerchrome"];
+
+    if ("?" === info) {
+      color = outerchrome.background_color;
+      color = "rgb:" + color.substr(1, 2) 
+            + "/" + color.substr(3, 2) 
+            + "/" + color.substr(5, 2)
+      message = "11;" + color;
+      this.sendMessage("command/send-to-tty", message);
+    } else {
+      color = coUtils.Color.parseX11ColorSpec(value);
+      outerchrome.background_color = color;
+      this.background_color = color;
+      this.draw(true);
+    }
   },
 
 }; // PalletManagerTrait
@@ -518,28 +565,6 @@ Renderer.definition = {
       this._rapid_blink_layer.destroy();
       this._rapid_blink_layer = null;
     }
-  },
-
-  "[subscribe('sequence/osc/10'), pnp]": 
-  function osc10(info) 
-  {
-    var outerchrome;
-
-    outerchrome = this.dependency["outerchrome"];
-    this.foreground_color = outerchrome.foreground_color;
-    this.background_color = outerchrome.background_color;
-    this.draw(true);
-  },
-
-  "[subscribe('sequence/osc/11'), pnp]": 
-  function osc11(info) 
-  {
-    var outerchrome;
-
-    outerchrome = this.dependency["outerchrome"];
-    this.foreground_color = outerchrome.foreground_color;
-    this.background_color = outerchrome.background_color;
-    this.draw(true);
   },
 
   /** Take screen capture and save it in png format. */

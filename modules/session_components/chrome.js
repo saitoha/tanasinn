@@ -109,7 +109,7 @@ Movable.definition = {
  * @class OuterChrome
  * @brief Manage a terminal UI and a session.
  */
-let OuterChrome = new Class().extends(Plugin)
+var OuterChrome = new Class().extends(Plugin)
                              .mix(Movable)
                              .requires("Movable");
 OuterChrome.definition = {
@@ -146,9 +146,11 @@ OuterChrome.definition = {
 
   get blend_color()
   {
-    let f = parseInt(this.foreground_color.substr(1), 16);
-    let b = parseInt(this.background_color.substr(1), 16);
-    let color = (((((f >>> 16 & 0xff) + (b >>> 16 & 0xff) * 2) / 3) | 0) << 16)
+    var f, b, color;
+
+    f = parseInt(this.foreground_color.substr(1), 16);
+    b = parseInt(this.background_color.substr(1), 16);
+    color = (((((f >>> 16 & 0xff) + (b >>> 16 & 0xff) * 2) / 3) | 0) << 16)
               | (((((f >>> 8  & 0xff) + (b >>>  8 & 0xff) * 2) / 3) | 0) <<  8) 
               | (((((f        & 0xff) + (b        & 0xff) * 2) / 3) | 0) <<  0);
     return (color + 0x1000000)
@@ -166,8 +168,10 @@ OuterChrome.definition = {
   "[subscribe('command/reverse-video'), enabled]": 
   function reverseVideo(value) 
   {
+    var reverse_color;
+
     if (value) {
-      let reverse_color = (parseInt(this.background_color.substr(1), 16) ^ 0x1ffffff)
+      reverse_color = (parseInt(this.background_color.substr(1), 16) ^ 0x1ffffff)
           .toString(16)
           .replace(/^1/, "#");
       this._frame.style.background 
@@ -179,17 +183,10 @@ OuterChrome.definition = {
     }
   },
 
-  "[subscribe('sequence/osc/10'), enabled]": 
+  "[subscribe('event/special-color-changed'), enabled]": 
   function changeForegroundColor(value) 
   {
     this.foreground_color = coUtils.Color.parseX11ColorSpec(value);
-    this._frame.style.cssText = this.frame_style;
-  },
-
-  "[subscribe('sequence/osc/11'), enabled]": 
-  function changeBackgroundColor(value) 
-  {
-    this.background_color = coUtils.Color.parseX11ColorSpec(value);
     this._frame.style.cssText = this.frame_style;
   },
 
@@ -259,17 +256,15 @@ OuterChrome.definition = {
 // constructor
   /** post initializer. */
   "[install]": 
-  function install(session) 
+  function install(broker) 
   {
     // construct chrome elements. 
     let {
       tanasinn_outer_chrome,
       tanasinn_background_frame,  
-    } = session.uniget("command/construct-chrome", this.template);
+    } = broker.uniget("command/construct-chrome", this.template);
     this._element = tanasinn_outer_chrome;
     this._frame = tanasinn_background_frame;
-    this.updateStyle.enabled = true;
-    this.updateColor.enabled = true;
 
     if (coUtils.Runtime.app_name.match(/tanasinn/)) {
       this._element.firstChild.style.borderRadius = "0px";
@@ -278,10 +273,8 @@ OuterChrome.definition = {
   },
 
   "[uninstall]":
-  function uninstall(session) 
+  function uninstall(broker) 
   {
-    this.updateStyle.enabled = false;
-    this.updateColor.enabled = false;
     // destruct chrome elements. 
     if (this._element && this._element.parentNode) {
       this._element.parentNode.removeChild(this._element);
@@ -289,19 +282,19 @@ OuterChrome.definition = {
     }
   },
 
-  "[subscribe('@command/focus'), enabled]":
+  "[subscribe('@command/focus'), pnp]":
   function onFirstFocus() 
   {
     this._element.hidden = false;
   },
 
-  "[subscribe('variable-changed/outerchrome.{background_color | foreground_color | gradation}')]": 
+  "[subscribe('variable-changed/outerchrome.{background_color | foreground_color | gradation}'), pnp]": 
   function updateColor() 
   {
     this._frame.style.cssText = this.frame_style;
   },
 
-  "[subscribe('variable-changed/outerchrome.{background_opacity | border_radius | box_shadow}')]": 
+  "[subscribe('variable-changed/outerchrome.{background_opacity | border_radius | box_shadow}'), pnp]": 
   function updateStyle() 
   {
     this._frame.style.cssText = this.frame_style;
@@ -310,28 +303,36 @@ OuterChrome.definition = {
   "[subscribe('event/shift-key-down'), enabled]": 
   function onShiftKeyDown() 
   {
-    let target = this._element.querySelector("#tanasinn_chrome");
+    var target;
+    
+    target = this._element.querySelector("#tanasinn_chrome");
     target.style.cursor = "move";
   },
 
   "[subscribe('event/shift-key-up'), enabled]": 
   function onShiftKeyUp() 
   {
-    let target = this._element.querySelector("#tanasinn_chrome");
+    var target;
+
+    target = this._element.querySelector("#tanasinn_chrome");
     target.style.cursor = "";
   },
 
   "[subscribe('event/alt-key-down'), enabled]": 
   function onAltKeyDown() 
   {
-    let target = this._element.querySelector("#tanasinn_chrome");
+    var target;
+
+    target = this._element.querySelector("#tanasinn_chrome");
     target.style.cursor = "crosshair";
   },
 
   "[subscribe('event/alt-key-up'), enabled]": 
   function onAltKeyUp() 
   {
-    let target = this._element.querySelector("#tanasinn_chrome");
+    var target;
+
+    target = this._element.querySelector("#tanasinn_chrome");
     target.style.cursor = "";
   },
 
@@ -339,7 +340,9 @@ OuterChrome.definition = {
   "[subscribe('@event/broker-stopping'), enabled]": 
   function onSessionStoping() 
   {
-    let target = this._element;
+    var target;
+
+    target = this._element;
     if (target.parentNode) {
       target.parentNode.removeChild(target);
     }
@@ -348,7 +351,9 @@ OuterChrome.definition = {
   "[subscribe('command/set-opacity'), enabled]": 
   function setOpacity(opacity, duration) 
   {
-    let target = this._element;
+    var target;
+
+    target = this._element;
     if (target.style.opacity <= opacity) {
       duration = 0; 
     }
@@ -370,7 +375,7 @@ OuterChrome.definition = {
  * @class Chrome
  * @brief Manage a terminal UI and a session.
  */
-let Chrome = new Class().extends(Plugin).depends("outerchrome");
+var Chrome = new Class().extends(Plugin).depends("outerchrome");
 Chrome.definition = {
 
   get id()
