@@ -26,7 +26,7 @@
 /**
  *  @class BatchLoader
  */
-let BatchLoader = new Class().extends(Plugin);
+var BatchLoader = new Class().extends(Plugin);
 BatchLoader.definition = {
 
   get id()
@@ -68,10 +68,14 @@ BatchLoader.definition = {
   "[command('import', ['batch']), _('load batch file from search path.')]":
   function loadBatchCommand(name) 
   {
-    let session = this._broker;
-    let file = coUtils.File.getFileLeafFromVirtualPath(
-      session.runtime_path + "/" + session.batch_directory);
+    var broker, file;
+
+    broker = this._broker;
+    file = coUtils.File.getFileLeafFromVirtualPath(
+      broker.runtime_path + "/" + broker.batch_directory);
+
     file.append(name);
+
     if (!file.exists()) {
       return {
         success: false,
@@ -85,23 +89,29 @@ BatchLoader.definition = {
   "[subscribe('command/source'), command('source', ['file']), _('load and evaluate batch file.')]":
   function sourceCommand(arguments_string)
   {
-    let path = arguments_string.replace(/^\s*|\s*$/g, "");
+    var path, broker, cygwin_root, home, file, content;
+
+    path = arguments_string.replace(/^\s*|\s*$/g, "");
+
     if ("$" != path.charAt(0) && !coUtils.File.isAbsolutePath(path)) {
       if ("WINNT" == coUtils.Runtime.os) {
-        let broker = this._broker;
-        let cygwin_root = broker.cygwin_root;
+        broker = this._broker;
+        cygwin_root = broker.cygwin_root;
         path = cygwin_root + coUtils.File.getPathDelimiter() + path.replace(/\//g, "\\");
       } else {
-        let home = coUtils.File.getFileLeafFromVirtualPath("$Home");
+        home = coUtils.File.getFileLeafFromVirtualPath("$Home");
         path = home.path + coUtils.File.getPathDelimiter() + path;
       }
     }
-    let file = coUtils.File.getFileLeafFromVirtualPath(path);
+
+    file = coUtils.File.getFileLeafFromVirtualPath(path);
     if (file && file.exists()) {
       try {
-        let broker = this._broker;
-        let content = coUtils.IO.readFromFile(path, "utf-8");
-        broker.notify("command/eval-source", content);
+        broker = this._broker;
+        content = coUtils.IO.readFromFile(path, "utf-8");
+
+        this.sendMessage("command/eval-source", content);
+
       } catch (e) {
         coUtils.Debug.reportError(e);
       }
@@ -115,46 +125,54 @@ BatchLoader.definition = {
   "[subscribe('command/eval-source'), enabled]":
   function evalSource(source) 
   {
-    let broker = this._broker;
-    source.split(/[\n\r]+/).forEach(function(command) {
-      if (!/^\s*$|^s*#/.test(command)) {
-        broker.notify("command/eval-commandline", command);
-      }
-    });
+    source.split(/[\n\r]+/).forEach(
+      function(command) 
+      {
+        if (!/^\s*$|^s*#/.test(command)) {
+          this.sendMessage("command/eval-commandline", command);
+        }
+      }, this);
   },
 
   "[subscribe('@command/focus'), enabled]":
   function onFirstFocus() 
   {
+    var broker, path;
+
     // load rc file.
-    let broker = this._broker;
-    let path = broker.runtime_path + "/" + broker.rcfile;
+    broker = this._broker;
+    path = broker.runtime_path + "/" + broker.rcfile;
     broker.notify("command/source", path);
   },
 
   "[command('execcgi', ['cgi']), subscribe('command/execute-cgi'), enabled]":
   function execCGI(arguments_string) 
   {
-    let session = this._broker;
-    let path = session.runtime_path + "/cgi-bin/" + arguments_string.replace(/^\s+|\s+$/, "");
-    let executable_path;
-    let os = coUtils.Runtime.os;
+    var session, path, cygwin_root, executable_path, os, runtime, external_process;
+
+    session = this._broker;
+    path = session.runtime_path + "/cgi-bin/" + arguments_string.replace(/^\s+|\s+$/, "");
+    executable_path;
+    os = coUtils.Runtime.os;
+
     if ("WINNT" == os) {
-      let cygwin_root = session.cygwin_root;
+      cygwin_root = session.cygwin_root;
       executable_path = cygwin_root + "\\bin\\run.exe";
     } else {
       executable_path = "/bin/sh";
     }
+
     // create new localfile object.
-    let runtime = Components
+    runtime = Components
       .classes["@mozilla.org/file/local;1"]
       .createInstance(Components.interfaces.nsILocalFile);
     runtime.initWithPath(executable_path);
     if (!runtime.exists() || !runtime.isExecutable()) {
       return false;
     }
+
     // create new process object.
-    let external_process = Components
+    external_process = Components
       .classes["@mozilla.org/process/util;1"]
       .createInstance(Components.interfaces.nsIProcess);
     external_process.init(runtime);

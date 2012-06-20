@@ -384,8 +384,8 @@ FontCommands.definition = {
   "[command('increase'), _('Make font size bigger.'), enabled]":
   function increase()
   {
-    this.sendMessge("command/change-fontsize-by-offset", +1);
-    this.sendMessge("command/draw");
+    this.sendMessage("command/change-fontsize-by-offset", +1);
+    this.sendMessage("command/draw");
 
     return {
       success: true,

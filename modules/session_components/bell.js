@@ -69,7 +69,6 @@ Bell.definition = {
     var { tanasinn_visual_bell }
       = this.request("command/construct-chrome", this.template);
     this._cover = tanasinn_visual_bell;
-    this.onBell.enabled = true;
   },
 
   /** Uninstalls itself.
@@ -82,10 +81,9 @@ Bell.definition = {
       this._cover.parentNode.removeChild(this._cover);
       this._cover = null;
     }
-    this.onBell.enabled = false;
   },
 
-  "[subscribe('sequence/bel')]":
+  "[subscribe('sequence/bel'), pnp]":
   function onBell() 
   {
     coUtils.Timer.setTimeout(function() {

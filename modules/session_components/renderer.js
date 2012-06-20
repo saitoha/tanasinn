@@ -716,7 +716,7 @@ Renderer.definition = {
     var left, top, width, height;
 
     left = char_width * 2 * column;
-    top = line_height * (row + 1);
+    top = line_height * (row + 1) + 6;
     width = char_width * 2 * (end - column);
     height = line_height;
 
@@ -766,7 +766,7 @@ Renderer.definition = {
     var left, top, width, height;
 
     left = char_width * 2 * column;
-    top = line_height * row;
+    top = line_height * row + 6;
     width = char_width * 2 * (end - column);
     height = line_height;
 

@@ -181,6 +181,7 @@ DRCSBuffer.definition = {
     : 1 == pcss ? Number(pcn) + 0x20 // 96 character set.
     : Number(pcn) + 0x20; // unicode character set.
 
+    this._map = this._map || {};
     if (this._map[dscs]) {
       canvas = this._map[dscs].drcs_canvas;
     } else {
