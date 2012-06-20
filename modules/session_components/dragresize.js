@@ -173,21 +173,17 @@ Resizer.definition = {
 
   ondragstart: function ondragstart(event)
   {
-    var resizer, document, renderer, screeen, initial_column, initial_row,
-        originX, originY;
-    resizer = this._resizer;    
-    document = this._broker.document;
-    renderer = this._renderer;
-    screen = this._screen;
+    let resizer = this._resizer;    
+    let document = this._broker.document;
+    let renderer = this._renderer;
+    let screen = this._screen;
     //this._capture_margin.hidden = true;
     event.stopPropagation(); // cancel defaut behavior
-
     this.sendMessage("event/resize-session-started", this);
-    initial_column = screen.width;
-    initial_row = screen.height;
-    originX = event.screenX;
-    originY = event.screenY;
-
+    let initial_column = screen.width;
+    let initial_row = screen.height;
+    let originX = event.screenX;
+    let originY = event.screenY;
     this.sendMessage("command/add-domlistener", {
       target: document,
       type: "mousemove",
@@ -195,22 +191,17 @@ Resizer.definition = {
       context: this,
       handler: function onmousemove(event) 
       {
-        var char_width, line_height, diffX, diffY, column, row,
-            screen_width_cache, screen_height_cache, moveX, moveY;
-
-        char_width = renderer.char_width;
-        line_height = renderer.line_height;
-        diffX = Math.round((event.screenX - originX) / char_width);
-        diffY = Math.round((event.screenY - originY) / line_height);
-        column = initial_column + ({ e: diffX, w: -diffX }[this.type.slice(-1)] || 0);
-        row = initial_row + ({ s: diffY, n: -diffY }[this.type[0]] || 0);
-
-        screen_width_cache = screen.width;
-        screen_height_cache = screen.height;
+        let char_width = renderer.char_width;
+        let line_height = renderer.line_height;
+        let diffX = Math.round((event.screenX - originX) / char_width);
+        let diffY = Math.round((event.screenY - originY) / line_height);
+        let column = initial_column + ({ e: diffX, w: -diffX }[this.type.slice(-1)] || 0);
+        let row = initial_row + ({ s: diffY, n: -diffY }[this.type[0]] || 0);
+        let screen_width_cache = screen.width;
+        let screen_height_cache = screen.height;
         this.sendMessage("command/resize-screen", {column: column, row: row});
-
-        moveX = this.type.slice(-1) == "w" ? screen_width_cache - screen.width: 0;
-        moveY = this.type[0] == "n" ? screen_height_cache - screen.height: 0;
+        let moveX = this.type.slice(-1) == "w" ? screen_width_cache - screen.width: 0;
+        let moveY = this.type[0] == "n" ? screen_height_cache - screen.height: 0;
         if (moveX != 0 || moveY != 0) {
           this.sendMessage("command/move-by", [moveX * char_width, moveY * line_height]);
         }
@@ -234,7 +225,7 @@ Resizer.definition = {
 
 };
 
-var TopLeftResizer = new Class().extends(Resizer);
+let TopLeftResizer = new Class().extends(Resizer);
 TopLeftResizer.definition = {
 
   get id()
@@ -247,7 +238,7 @@ TopLeftResizer.definition = {
     "nw",
 };
 
-var TopRightResizer = new Class().extends(Resizer);
+let TopRightResizer = new Class().extends(Resizer);
 TopRightResizer.definition = {
 
   get id()
@@ -260,7 +251,7 @@ TopRightResizer.definition = {
     "ne",
 };
 
-var BottomLeftResizer = new Class().extends(Resizer);
+let BottomLeftResizer = new Class().extends(Resizer);
 BottomLeftResizer.definition = {
 
   get id()
@@ -273,7 +264,7 @@ BottomLeftResizer.definition = {
     "sw",
 };
 
-var BottomRightResizer = new Class().extends(Resizer);
+let BottomRightResizer = new Class().extends(Resizer);
 BottomRightResizer.definition = {
 
   get id()
@@ -286,7 +277,7 @@ BottomRightResizer.definition = {
     "se",
 };
 
-var LeftResizer = new Class().extends(Resizer);
+let LeftResizer = new Class().extends(Resizer);
 LeftResizer.definition = {
 
   get id()
@@ -299,7 +290,7 @@ LeftResizer.definition = {
     "w",
 };
 
-var RightResizer = new Class().extends(Resizer);
+let RightResizer = new Class().extends(Resizer);
 RightResizer.definition = {
 
   get id()
@@ -312,7 +303,7 @@ RightResizer.definition = {
     "e",
 };
 
-var TopResizer = new Class().extends(Resizer);
+let TopResizer = new Class().extends(Resizer);
 TopResizer.definition = {
 
   get id()
@@ -325,7 +316,7 @@ TopResizer.definition = {
     "n",
 };
 
-var BottomResizer = new Class().extends(Resizer);
+let BottomResizer = new Class().extends(Resizer);
 BottomResizer.definition = {
 
   get id()
