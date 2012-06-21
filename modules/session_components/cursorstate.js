@@ -89,13 +89,26 @@ CursorState.definition = {
   // Using this flag insted of emurator._decMode.TCEM.
   visibility: true,
 
-  blink: false,
+  _blink: false,
 
   _backup_instance: null,
 
   _drcs_state: null, 
 
   "[persistable] enabled_when_startup": true,
+
+  get blink()
+  {
+    return this._blink;
+  },
+
+  set blink(value)
+  {
+    if (this._blink !== value) {
+      this.sendMessage("command/terminal-cursor-blinking-mode-change", value); 
+    }
+    this._blink = value;;
+  },
 
   /** constructor */
   "[install]":
