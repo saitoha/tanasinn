@@ -111,6 +111,34 @@ Cursor.definition = {
     this._context = null;
   },
 
+  "[subscribe('sequence/sm/33'), pnp]":
+  function WYSTCURM_ON()
+  {
+    var screen = this.dependency["screen"];
+
+    screen.cursor.blink = true;
+  },
+
+  "[subscribe('sequence/rm/33'), pnp]":
+  function WYSTCURM_OFF()
+  {
+    var screen = this.dependency["screen"];
+
+    screen.cursor.blink = false;
+  },
+
+  "[subscribe('sequence/sm/34'), pnp]":
+  function WYULCURM_ON()
+  {
+    this._style = CURSOR_STYLE_UNDERLINE;
+  },
+
+  "[subscribe('sequence/rm/34'), pnp]":
+  function WYULCURM_OFF()
+  {
+    this._style = CURSOR_STYLE_BLOCK;
+  },
+
   /**
    *
    * DECSCUSR — Set Cursor Style
