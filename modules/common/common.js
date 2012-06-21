@@ -2631,8 +2631,10 @@ coUtils.Timer = {
     timer.initWithCallback({ notify: timer_callback_func }, interval, type);
     return {
       cancel: function cancel() {
-        timer.cancel();
-        timer = null;
+        if (null !== timer) {
+          timer.cancel();
+          timer = null;
+        }
       },
     };
   },

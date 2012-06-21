@@ -22,6 +22,10 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+var CURSOR_STYLE_BLOCK = 0;
+var CURSOR_STYLE_UNDERLINE = 1;
+var CURSOR_STYLE_BEAM = 2;
+
 /**
  *  @class Cursor
  */ 
@@ -62,13 +66,16 @@ Cursor.definition = {
 
   "[persistable] enabled_when_startup": true,
 
-  _cursorVisibility: true,
-  _blinkVisibility: false,
-  _blink: true,
+  _cursor_visibility: true,
+  _cursor_visibility_backup: null,
+
   _timer: null,
 
+  _blink: true,
+  _style: CURSOR_STYLE_BLOCK,
+
   "[persistable, watchable] color": "#77ff77",
-  "[persistable, watchable] opacity": 0.3,
+  "[persistable, watchable] opacity": 0.8,
  
   /** Installs itself. */
   "[install]": 
@@ -80,6 +87,7 @@ Cursor.definition = {
 
     this._canvas = cursor_canvas;
     this._context = this._canvas.getContext("2d");
+    this._cursor_visibility_backup = [];
 
     //
     // subscribe some events.
@@ -134,18 +142,44 @@ Cursor.definition = {
    *
    */
   "[profile('vt100'), sequence('CSI %d q')]":
-  function SECSCUSR(n) 
+  function DECSCUSR(n) 
   {
     switch (n) {
+
+      case 0:
       case 1:
+        this._style = CURSOR_STYLE_BLOCK;
+        this.onBlinkingModeChanged(true);
+        break;
+
       case 2:
+        this._style = CURSOR_STYLE_BLOCK;
+        this.onBlinkingModeChanged(false);
+        break;
+
       case 3:
+        this._style = CURSOR_STYLE_UNDERLINE;
+        this.onBlinkingModeChanged(true);
+        break;
+
       case 4:
+        this._style = CURSOR_STYLE_UNDERLINE;
+        this.onBlinkingModeChanged(false);
+        break;
+
       case 5:
+        this._style = CURSOR_STYLE_BEAM;
+        this.onBlinkingModeChanged(true);
+        break;
+
       case 6:
+        this._style = CURSOR_STYLE_BEAM;
+        this.onBlinkingModeChanged(false);
         break;
 
       default:
+        coUtils.Debug.reportError(
+          _("DECSCUSR: Unknkown cursor style: %d."));
         break;
     }
   },
@@ -178,7 +212,7 @@ Cursor.definition = {
     if (blink) {
       this._prepareBlink();
     } else {
-      this._setVisibility(true);
+      this._timer.cancel();
     }
   },
 
@@ -230,60 +264,90 @@ Cursor.definition = {
   "[subscribe('event/scroll-session-started'), pnp]":
   function onScrollSessionStarted() 
   {
-    this._cursorVisibility = false;
+    this._cursor_visibility_backup.push(this._cursor_visibility);
+    this._cursor_visibility = false;
     this.update();
   },
     
   "[subscribe('event/scroll-session-closed'), pnp]":
   function onScrollSessionClosed() 
   {
-    this._cursorVisibility = true;
+    if (0 !== this._cursor_visibility_backup.length) {
+      this._cursor_visibility = this._cursor_visibility_backup.pop();
+    }
     this.update();
   },
 
   "[subscribe('command/ime-mode-on'), pnp]": 
   function onImeModeOn(ime) 
   {
-    this._cursorVisibility = false;
+    this._cursor_visibility_backup.push(this._cursor_visibility);
+    this._cursor_visibility = false;
   },
 
   "[subscribe('command/ime-mode-off'), pnp]": 
   function onImeModeOff(ime) 
   {
-    this._cursorVisibility = true;
+    if (0 !== this._cursor_visibility_backup.length) {
+      this._cursor_visibility = this._cursor_visibility_backup.pop();
+    }
   },
 
   /** Render cursor. */
   _render: function _render(row, column, is_wide) 
   {
-    var cursor_state, context, canvas;
+    var context = this._context,
+        canvas = this._canvas;
 
-    cursor_state = this.dependency["cursorstate"];
-    context = this._context;
-    canvas = this._canvas;
     context.clearRect(0, 0, canvas.width, canvas.height);
 
-    if (this._cursorVisibility && cursor_state.visibility) {
+    if (this._cursor_visibility) {
       this._renderImpl(context, row, column, is_wide);
     }
   },
 
   _renderImpl: function _renderImpl(context, row, column, is_wide)
   {
-    var renderer, y, x, width, height, line_height, char_width;
 
-    renderer = this.dependency["renderer"];
-    line_height = renderer.line_height;
-    char_width = renderer.char_width;
+    var renderer = this.dependency["renderer"],
+        line_height = renderer.line_height,
+        char_width = renderer.char_width;
+
+    var y, x, width, height, line_height;
 
     // set cursor color
     context.fillStyle = this.color;
 
-    // calculate cursor position
-    y = row * line_height;
-    x = column * char_width;
-    width = char_width * (is_wide ? 2: 1);
-    height = line_height;
+    // calculate cursor position, size
+    switch (this._style) {
+
+      case CURSOR_STYLE_BLOCK:
+        y = row * line_height;
+        x = column * char_width;
+        width = char_width * (is_wide ? 2: 1);
+        height = line_height;
+        break;
+
+      case CURSOR_STYLE_UNDERLINE:
+        y = row * line_height + (line_height - 2);
+        x = column * char_width;
+        width = char_width * (is_wide ? 2: 1);
+        height = 2;
+        break;
+
+      case CURSOR_STYLE_BEAM:
+        y = row * line_height;
+        x = column * char_width;
+        width = 2;
+        height = line_height;
+        break;
+
+      default:
+        coUtils.Debug.reportError(
+          _("Unknown cursor style: %d."), this._style);
+        return;
+
+    }
 
     // draw cursor
     context.fillRect(x, y, width, height);
@@ -296,14 +360,16 @@ Cursor.definition = {
       this._timer.cancel();
     } 
     var i = 0;
-    this._timer = coUtils.Timer.setInterval(function()
-    {
-      if (this._blink && i++ % 2) {
-        this._canvas.style.opacity = 0.00;
-      } else {
-        this._canvas.style.opacity = this.opacity;
-      }
-    }, 500, this);
+
+    this._timer = coUtils.Timer.setInterval(
+      function()
+      {
+        if (this._blink && i++ % 2) {
+          this._canvas.style.opacity = 0.00;
+        } else {
+          this._canvas.style.opacity = this.opacity;
+        }
+      }, 500, this);
   },
 
   /** Set cursor visibility. */
