@@ -25,7 +25,7 @@
 /**
  * @class PersistManager
  */ 
-let PersistManager = new Class().extends(Component);
+var PersistManager = new Class().extends(Component);
 PersistManager.definition = {
 
   get id()

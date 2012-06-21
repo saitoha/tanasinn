@@ -340,9 +340,9 @@ PalletManagerTrait.definition = {
             + "/" + color.substr(5, 2)
       message = "4;" + number + ";" + color;
       this.sendMessage("command/send-to-tty", message);
-    } 
-
-    this.color[number] = coUtils.Color.parseX11ColorSpec(spec);
+    } else {
+      this.color[number] = coUtils.Color.parseX11ColorSpec(spec);
+    }
   },
 
   "[subscribe('sequence/osc/10'), pnp]": 

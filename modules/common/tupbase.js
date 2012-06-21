@@ -725,7 +725,7 @@ Plugin.definition = {
         }
       } else {
         broker.notify("uninstall/" + id, broker);
-        broker.notify("uninstall/" + id, broker);
+//        broker.notify("uninstall/" + id, broker);
       }
       this.__enabled = value;
       this.enabled_when_startup = value;

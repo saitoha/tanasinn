@@ -74,8 +74,10 @@ Cursor.definition = {
   _blink: true,
   _style: CURSOR_STYLE_BLOCK,
 
+  _initial_color: null,
+
   "[persistable, watchable] color": "#77ff77",
-  "[persistable, watchable] opacity": 0.8,
+  "[persistable, watchable] opacity": 0.5,
  
   /** Installs itself. */
   "[install]": 
@@ -88,11 +90,13 @@ Cursor.definition = {
     this._canvas = cursor_canvas;
     this._context = this._canvas.getContext("2d");
     this._cursor_visibility_backup = [];
+    this._initial_color = this._color;
 
     //
     // subscribe some events.
     //
     // initial update
+    this.onBlinkingModeChanged(this._blink);
     this.update();
   },
 
@@ -109,6 +113,7 @@ Cursor.definition = {
       this._canvas = null;
     }
     this._context = null;
+    this._initial_color = null;
   },
 
   "[subscribe('sequence/sm/33'), pnp]":
@@ -137,6 +142,33 @@ Cursor.definition = {
   function WYULCURM_OFF()
   {
     this._style = CURSOR_STYLE_BLOCK;
+  },
+
+  "[subscribe('sequence/osc/12'), pnp]":
+  function OSC12(value)
+  {
+    var message, color;
+
+    // parse arguments.
+    if ("?" == value) {
+      color = this.color;
+      color = "rgb:" + color.substr(1, 2) 
+            + "/" + color.substr(3, 2) 
+            + "/" + color.substr(5, 2)
+      message = "12;" + color;
+      this.sendMessage("command/send-to-tty", message);
+    } else {
+      this.color = coUtils.Color.parseX11ColorSpec(value);
+    }
+  },
+
+  "[subscribe('sequence/osc/112'), pnp]":
+  function OSC112()
+  {
+    var scope = {};
+    this.sendMessage("command/load-persistable-data", scope);
+
+    this.color = scope[this.id + ".color"] || this.__proto__.color;
   },
 
   /**
