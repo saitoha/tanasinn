@@ -47,19 +47,10 @@ Mascot.definition = {
       parentNode: "#tanasinn_resizer_topright",
       //parentNode: "#tanasinn_outer_chrome",
       tagName: "box",
-      id: "tanasinn_mascot_layer",
-      style: "position: fixed;",
-      childNodes: [
-        {
-          tagName: "image",
-          src: this.getMascotImagePath(), 
-          style: <>
-            position: absolute;
-            margin-top: -62px;
-            margin-left: -80px;
-          </>,
-        },
-      ],
+      id: "tanasinn_cover_layer",
+      style: <>
+        background: url('{this.getMascotImagePath()}'); 
+      </>,
     }),
 
   "[persistable] enabled_when_startup": false,
@@ -108,6 +99,84 @@ Mascot.definition = {
 } // class Mascot
 
 /**
+ *  @class Cover
+ */
+var Cover = new Class().extends(Plugin);
+Cover.definition = {
+
+  get id()
+    "cover",
+
+  get info()
+    <module>
+        <name>{_("Cover")}</name>
+        <description>{
+          _("Apply glass effect.")
+        }</description>
+        <version>0.1</version>
+    </module>,
+
+  get template()
+    ({
+      parentNode: "#tanasinn_background_frame",
+      tagName: "box",
+      id: "tanasinn_cover_layer",
+      style: "opacity: 0.5;",
+      childNodes: [
+        {
+          tagName: "image",
+          src: this.getMascotImagePath(), 
+        },
+      ],
+    }),
+
+  "[persistable] enabled_when_startup": false,
+
+  "[persistable] mascot_image_file": "images/cover.png",
+
+  _element: null,
+
+  /** installs itself. 
+   *  @param {Broker} broker A broker object.
+   */
+  "[install]":
+  function install(broker) 
+  {
+    var {tanasinn_mascot_layer}
+      = this.request("command/construct-chrome", this.template);
+    this._element = tanasinn_mascot_layer;
+  },
+
+  /** Uninstalls itself.
+   *  @param {Broker} broker A broker object.
+   */
+  "[uninstall]":
+  function uninstall(broker) 
+  {
+    if (null !== this._element) {
+      this._element.parentNode.removeChild(this._element);
+      this._element = null;
+    }
+  },
+
+  getMascotImagePath: function getMascotImagePath()
+  {
+    var broker, path, file;
+
+    broker = this._broker;
+    path = broker.runtime_path + "/" + this.mascot_image_file;
+    file = coUtils.File.getFileLeafFromVirtualPath(path);
+    if (!file.exists()) {
+        path = this.mascot_image_file;
+        file = coUtils.File.getFileLeafFromVirtualPath(path);
+    }
+    return coUtils.File.getURLSpec(file);
+  },
+
+} // class Mascot
+
+
+/**
  * @fn main
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
@@ -115,6 +184,7 @@ Mascot.definition = {
 function main(broker) 
 {
   new Mascot(broker);
+  new Cover(broker);
 }
 
 

@@ -547,6 +547,7 @@ Renderer.definition = {
 
   _offset: 0,
 
+  _main_layer: null,
   _slow_blink_layer: null,
   _rapid_blink_layer: null,
 
@@ -598,15 +599,17 @@ Renderer.definition = {
   "[uninstall]":
   function uninstall(broker) 
   {
-    this._main_layer.destroy();
-    this._main_layer = null;
+    if (null !== this._main_layer) {
+      this._main_layer.destroy();
+      this._main_layer = null;
+    }
 
-    if (this._slow_blink_layer) {
+    if (null !== this._slow_blink_layer) {
       this._slow_blink_layer.destroy();
       this._slow_blink_layer = null;
     }
 
-    if (this._rapid_blink_layer) {
+    if (null !== this._rapid_blink_layer) {
       this._rapid_blink_layer.destroy();
       this._rapid_blink_layer = null;
     }

@@ -104,7 +104,8 @@ Bell.definition = {
       this._cover.style.opacity = this.opacity;
       this._cover.style.MozTransitionDuration = this.duration + "ms";
       coUtils.Timer.setTimeout(
-        function() {
+        function() 
+        {
           this._cover.style.opacity = 0.0;
         }, this.duration, this);
     }

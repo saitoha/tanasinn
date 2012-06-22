@@ -131,7 +131,7 @@ OuterChrome.definition = {
     </plugin>,
 
   "[persistable] enabled_when_startup": true,
-  "[persistable, watchable] background_opacity": 0.87,
+  "[persistable, watchable] background_opacity": 0.85,
   "[persistable, watchable] background_color": "#000000",
   "[persistable, watchable] foreground_color": "#ffffff",
   "[persistable, watchable] gradation": true,
@@ -144,6 +144,7 @@ OuterChrome.definition = {
       box-shadow: {this.box_shadow};
       border-radius: {this.border_radius}px;
       background-image: {this.background}; 
+      background-size: 100% 100%; 
       opacity: {this.background_opacity};
       cursor: text;
     </>.toString(),
@@ -154,9 +155,9 @@ OuterChrome.definition = {
 
     f = parseInt(this.foreground_color.substr(1), 16);
     b = parseInt(this.background_color.substr(1), 16);
-    color = (((((f >>> 16 & 0xff) + (b >>> 16 & 0xff) * 2) / 3) | 0) << 16)
-              | (((((f >>> 8  & 0xff) + (b >>>  8 & 0xff) * 2) / 3) | 0) <<  8) 
-              | (((((f        & 0xff) + (b        & 0xff) * 2) / 3) | 0) <<  0);
+    color = (((((f >>> 16 & 0xff) + (b >>> 16 & 0xff) * 2) / 2.0) | 0) << 16)
+              | (((((f >>> 8  & 0xff) + (b >>>  8 & 0xff) * 2) / 2.0) | 0) <<  8) 
+              | (((((f        & 0xff) + (b        & 0xff) * 2) / 2.0) | 0) <<  0);
     return (color + 0x1000000)
         .toString(16)
         .replace(/^1/, "#");
@@ -167,6 +168,21 @@ OuterChrome.definition = {
     return coUtils.Text.format(
       "-moz-linear-gradient(top,%s,%s)", 
       this.blend_color, this.background_color);
+//    return "url('" + this.getImagePath() + "')";
+  },
+
+  getImagePath: function getImagePath()
+  {
+    var broker, path, file;
+
+    broker = this._broker;
+    path = broker.runtime_path + "/" + "images/cover.png";
+    file = coUtils.File.getFileLeafFromVirtualPath(path);
+    if (!file.exists()) {
+        path = "images/cover.png";
+        file = coUtils.File.getFileLeafFromVirtualPath(path);
+    }
+    return coUtils.File.getURLSpec(file);
   },
 
   "[subscribe('command/reverse-video'), enabled]": 

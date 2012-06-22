@@ -60,6 +60,7 @@ Cursor.definition = {
       parentNode: "#tanasinn_center_area",
       tagName: "html:canvas",
       id: "cursor_canvas",
+      MozTransitionProperty: "opacity",
       width: renderer.char_width * screen.width,
       height: renderer.line_height * screen.height,
     }),
@@ -78,6 +79,10 @@ Cursor.definition = {
 
   "[persistable, watchable] color": "#77ff77",
   "[persistable, watchable] opacity": 0.5,
+  "[persistable] blink_duration": 500, /* in msec */
+  "[persistable] blink_transition_duration": 400, /* in msec */
+  "[persistable] timing_function": "ease-in-out",
+  "[persistable] initial_blink": false,
  
   /** Installs itself. */
   "[install]": 
@@ -96,7 +101,7 @@ Cursor.definition = {
     // subscribe some events.
     //
     // initial update
-    this.onBlinkingModeChanged(this._blink);
+    this.onBlinkingModeChanged(this.initial_blink);
     this.update();
   },
 
@@ -429,17 +434,19 @@ Cursor.definition = {
         } else {
           this._canvas.style.opacity = this.opacity;
         }
-      }, 500, this);
+      }, this.blink_duration, this);
   },
 
   /** Set cursor visibility. */
   _setVisibility: function _setVisibility(visibility) 
   {
     if (this._canvas) {
+      this._canvas.style.MozTransitionDuration = this.blink_transition_duration + "ms";
+      this._canvas.style.transitionTimingFunction = this.transition_function;
       if (visibility) {
         this._canvas.style.opacity = this.opacity;
       } else {
-        this._canvas.style.opacity = 0.00;
+        this._canvas.style.opacity = this.opacity;
       }
     }
   }
