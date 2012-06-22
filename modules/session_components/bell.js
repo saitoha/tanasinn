@@ -103,10 +103,10 @@ Bell.definition = {
       this._cover.style.backgroundColor = this.color;
       this._cover.style.opacity = this.opacity;
       this._cover.style.MozTransitionDuration = this.duration + "ms";
-      coUtils.Timer.setTimeout(function() {
-        this._cover.style.opacity = 0.0;
-        this._cover = null; // prevent leak.
-      }, this.duration, this);
+      coUtils.Timer.setTimeout(
+        function() {
+          this._cover.style.opacity = 0.0;
+        }, this.duration, this);
     }
   },
 

@@ -110,7 +110,7 @@ var CO_XTERM_256_COLOR_PROFILE = [
  * @Concept PersistentConcept
  *
  */
-let PersistentConcept = new Concept();
+var PersistentConcept = new Concept();
 PersistentConcept.definition = {
 
   get id()
@@ -127,7 +127,7 @@ PersistentConcept.definition = {
 /**
  * @trait PersistentTrait
  */
-let PersistentTrait = new Trait();
+var PersistentTrait = new Trait();
 PersistentTrait.definition = {
 
   /**
@@ -190,7 +190,7 @@ PersistentTrait.definition = {
 /**
  * @trait SlowBlinkTrait
  */
-let SlowBlinkTrait = new Trait();
+var SlowBlinkTrait = new Trait();
 SlowBlinkTrait.definition = {
 
   /**
@@ -220,7 +220,7 @@ SlowBlinkTrait.definition = {
 /**
  * @trait RapidBlinkTrait
  */
-let RapidBlinkTrait = new Trait();
+var RapidBlinkTrait = new Trait();
 RapidBlinkTrait.definition = {
 
   /**
@@ -251,7 +251,7 @@ RapidBlinkTrait.definition = {
 /**
  * @trait ReverseVideoTrait
  */
-let ReverseVideoTrait = new Trait();
+var ReverseVideoTrait = new Trait();
 ReverseVideoTrait.definition = {
 
   _reverse: false,
@@ -327,7 +327,7 @@ PalletManagerTrait.definition = {
     var [number, spec] = value.split(";");
 
     // range check.
-    if (0 > number && number > 254) {
+    if (0 > number && number > 255) {
       throw coUtils.Debug.Exception(
         _("Specified number is out of range: %d."), number);
     }
@@ -343,6 +343,25 @@ PalletManagerTrait.definition = {
     } else {
       this.color[number] = coUtils.Color.parseX11ColorSpec(spec);
     }
+  },
+
+  "[subscribe('sequence/osc/104'), pnp]":
+  function osc104(value)
+  {
+    var color,
+        [number] = value.split(";"),
+        scope = {};
+
+    // range check.
+    if (0 > number && number > 255) {
+      throw coUtils.Debug.Exception(
+        _("Specified number is out of range: %d."), number);
+    }
+
+    this.sendMessage("command/load-persistable-data", scope);
+
+    color = scope["renderer.color"] || this.__proto__.color;
+    this.color[number] = color[number];
   },
 
   "[subscribe('sequence/osc/10'), pnp]": 
@@ -367,6 +386,19 @@ PalletManagerTrait.definition = {
     }
   },
 
+  "[subscribe('sequence/osc/110'), pnp]":
+  function osc110()
+  {
+    var outerchrome = this.dependency["outerchrome"],
+        scope = {};
+
+    this.sendMessage("command/load-persistable-data", scope);
+
+    outerchrome.foreground_color 
+      = scope["outerchrome.foreground_color"] 
+      || outerchrome.__proto__.foreground_color;
+  },
+
   "[subscribe('sequence/osc/11'), pnp]": 
   function osc11(info) 
   {
@@ -387,6 +419,19 @@ PalletManagerTrait.definition = {
       this.background_color = color;
       this.draw(true);
     }
+  },
+
+  "[subscribe('sequence/osc/111'), pnp]":
+  function osc111()
+  {
+    var outerchrome = this.dependency["outerchrome"],
+        scope = {};
+
+    this.sendMessage("command/load-persistable-data", scope);
+
+    outerchrome.background_color 
+      = scope["outerchrome.background_color"] 
+      || outerchrome.__proto__.background_color;
   },
 
 }; // PalletManagerTrait

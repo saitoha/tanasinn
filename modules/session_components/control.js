@@ -111,7 +111,7 @@ Control.definition = {
    
   /** Bell.
    */
-  "[profile('vt100'), sequence('0x07', 'ESC \\\\')]":
+  "[profile('vt100'), sequence('0x07', 'ESC g')]":
   function BEL() 
   {
     this.sendMessage("sequence/bel");
