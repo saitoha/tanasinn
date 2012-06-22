@@ -164,7 +164,7 @@ DecModeSequenceHandler.definition = {
 
         // cursor blink mode
         case 12:
-          this._screen.cursor.blink = true;
+          this._screen.cursor.blink = false;
           break;
 
         // Print from feed (DECPFF)
@@ -520,7 +520,7 @@ DecModeSequenceHandler.definition = {
 
         // cursor blink mode
         case 12:
-          this._screen.cursor.blink = false;
+          this._screen.cursor.blink = true;
           break;
 
         // Print from feed (DECPFF)

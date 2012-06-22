@@ -321,7 +321,7 @@ PalletManagerTrait.definition = {
   _reverse: false,
 
   "[subscribe('sequence/osc/4'), enabled]": 
-  function changeColor(value) 
+  function osc4(value) 
   {
     var message, color;
     var [number, spec] = value.split(";");
