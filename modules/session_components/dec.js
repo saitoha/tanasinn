@@ -1004,10 +1004,9 @@ PersistOptionsTrait.definition = {
   "[profile('vt100'), sequence('CSI ?%ds')]":
   function XTSAVE() 
   {  // DEC Private Mode Save
-    var save_buffer, alternate_buffer, i, key;
-
-    save_buffer = this._dec_save_buffer;
-    alternate_buffer = this._dec_alternate_buffer;
+    var save_buffer = this._dec_save_buffer,
+        alternate_buffer = this._dec_alternate_buffer,
+        i, key;
 
     for (i = 0; i < arguments.length; ++i) {
       key = arguments[i];

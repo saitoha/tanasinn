@@ -52,6 +52,7 @@ EastAsianWidth.definition = {
   { // Treat ambiguous characters as double
     var parser = this.dependency["parser"];
     parser.ambiguous_as_wide = true;
+    coUtils.Debug.reportMessage("DECAMB: double");
   },
 
   /** Treat ambiguous width characters as single-width.
@@ -61,6 +62,7 @@ EastAsianWidth.definition = {
   { // Treat ambiguous characters as single
     var parser = this.dependency["parser"];
     parser.ambiguous_as_wide = false;
+    coUtils.Debug.reportMessage("DECAMB: single");
   },
 
 }; // class EastAsianWidth

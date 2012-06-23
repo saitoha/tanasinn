@@ -79,10 +79,10 @@ DeviceStatusReport.definition = {
 
   get info()
     <module>
-        <name>{_("Device Status Report")}</name>
+        <name>{_("Device Status Report / ANSI")}</name>
         <version>0.1</version>
         <description>{
-          _("Send Device Status Report.")
+          _("Send Device Status Report, ANSI format.")
         }</description>
     </module>,
 
@@ -132,13 +132,61 @@ DeviceStatusReport.definition = {
           arguments.callee.name, Array.slice(arguments));
     }
   },
+};
+
+var DeviceStatusReportEx = new Class().extends(Plugin)
+                                      .depends("parser");
+DeviceStatusReportEx.definition = {
+
+  get id()
+    "device_status_report_dec",
+
+  get info()
+    <module>
+        <name>{_("Device Status Report / DEC")}</name>
+        <version>0.1</version>
+        <description>{
+          _("Send Device Status Report, DEC specific.")
+        }</description>
+    </module>,
+
+  "[persistable] enabled_when_startup": true,
+
+  _parser: null,
+
+  "[install]":
+  function install()
+  {
+    this._parser = this.dependency["parser"];
+  },
+
+  "[uninstall]":
+  function uninstall()
+  {
+    this._parser = null;
+  },
 
   "[profile('vt100'), sequence('CSI ?%dn')]":
-  function DECDSR() 
-  { // TODO: Device Status Report
-    coUtils.Debug.reportWarning(
-      _("%s sequence [%s] was ignored."),
-      arguments.callee.name, Array.slice(arguments));
+  function DECDSR(n) 
+  { // Device Status Report, DEC specific
+    
+    switch (n) {
+
+      // report ambiguous width status (TNREPTAMB)
+      case 8840:
+        if (this._parser.ambiguous_as_wide) {
+          message = "\x1b[?8842n";
+        } else {
+          message = "\x1b[?8841n";
+        }
+        this.sendMessage("command/send-to-tty", message);
+        break;
+
+      default:
+        coUtils.Debug.reportWarning(
+          _("%s sequence [%s] was ignored."),
+          arguments.callee.name, Array.slice(arguments));
+    }
   },
 
 };
@@ -151,6 +199,7 @@ DeviceStatusReport.definition = {
 function main(broker) 
 {
   new DeviceStatusReport(broker);
+  new DeviceStatusReportEx(broker);
 }
 
 

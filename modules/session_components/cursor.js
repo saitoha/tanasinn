@@ -277,7 +277,10 @@ Cursor.definition = {
     if (blink) {
       this._prepareBlink();
     } else {
-      this._timer.cancel();
+      if (null !== this._timer) {
+        this._timer.cancel();
+        this._timer = null;
+      }
     }
   },
 
