@@ -26,7 +26,7 @@
  * @class CommandCompleter
  *
  */
-let CommandCompleter = new Class().extends(Component).requires("Completer");
+var CommandCompleter = new Class().extends(Component).requires("Completer");
 CommandCompleter.definition = {
 
   get id()
@@ -40,14 +40,17 @@ CommandCompleter.definition = {
   "[subscribe('command/query-completion/command'), type('CompletionContext -> Undefined'), enabled]":
   function startSearch(context)
   {
-    let broker = this._broker;
-    let lower_command_name = context.source.split(/\s+/).pop().toLowerCase();
-    let commands = broker.notify("get/commands")
+    var broker, lower_command_name, commands;
+
+    broker = this._broker;
+    lower_command_name = context.source.split(/\s+/).pop().toLowerCase();
+    commands = this.sendMessage("get/commands")
       .filter(function(command) {
         return 0 == command.name
           .replace(/[\[\]]+/g, "")
           .indexOf(lower_command_name);
       }).sort(function(lhs, rhs) lhs.name.localeCompare(rhs.name));
+
     if (0 == commands.length) {
       broker.notify("event/answer-completion", null);
     } else {
@@ -67,7 +70,7 @@ CommandCompleter.definition = {
 /**
  * @class HistoryCompleter
  */
-let HistoryCompleter = new Class().extends(Component);
+var HistoryCompleter = new Class().extends(Component);
 HistoryCompleter.definition = {
 
   get id()
@@ -87,7 +90,8 @@ HistoryCompleter.definition = {
   "[completer('history'), enabled]":
   function complete(context)
   {
-    let { source, option, completers } = context;
+    var { source, option, completers } = context;
+
     this._completion_component.startSearch(source, "", null, {
         onSearchResult: function onSearchResult(search, result) 
         { 

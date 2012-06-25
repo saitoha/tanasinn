@@ -27,7 +27,7 @@
  * @Attribute SequenceAttribute
  *
  */
-let SequenceAttribute = new Attribute("sequence");
+var SequenceAttribute = new Attribute("sequence");
 SequenceAttribute.definition = {
 
   get __id()

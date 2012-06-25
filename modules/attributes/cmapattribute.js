@@ -33,7 +33,7 @@
  * @Attribute CmapAttribute
  *
  */
-let CmapAttribute = new Attribute("cmap");
+var CmapAttribute = new Attribute("cmap");
 CmapAttribute.definition = {
 
   get __id()

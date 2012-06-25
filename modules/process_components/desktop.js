@@ -27,7 +27,7 @@
  * @Trait Environment
  *
  */
-let Environment = new Trait();
+var Environment = new Trait();
 Environment.definition = {
 
 // public properties
@@ -35,13 +35,17 @@ Environment.definition = {
   /** @property bin_path */
   get bin_path()
   {
-    let broker = this._broker;
+    var broker;
+
+    broker = this._broker;
     return broker.bin_path;
   },
 
   set bin_path(value)
   {
-    let broker = this._broker;
+    var broker;
+
+    broker = this._broker;
     broker.bin_path = value;
   },
 
@@ -49,13 +53,17 @@ Environment.definition = {
   /** @property runtime_path */
   get runtime_path()
   {
-    let broker = this._broker;
+    var broker;
+    
+    broker = this._broker;
     return broker.runtime_path;
   },
 
   set runtime_path(value)
   {
-    let broker = this._broker;
+    var broker;
+
+    broker = this._broker;
     broker.runtime_path = value;
   },
 
@@ -86,7 +94,7 @@ Environment.definition = {
 /** 
  * @class Desktop
  */
-let Desktop = new Class().extends(Plugin)
+var Desktop = new Class().extends(Plugin)
                          .mix(Environment)
                          .mix(EventBroker);
 Desktop.definition = {
@@ -123,13 +131,26 @@ Desktop.definition = {
   initializeWithWindow: 
   function initializeWithWindow(window)
   {
+    var broker = this._broker;
+
     this._window = window;
 
     // register getter topic.
-    let broker = this._broker;
-    this.subscribe("get/bin-path", function() broker.bin_path);
-    this.subscribe("get/python-path", function() broker.python_path);
-    broker.notify("install/desktop", broker);
+    broker = this._broker;
+
+    this.subscribe("get/bin-path",
+      function()
+      {
+        return broker.bin_path;
+      });
+
+    this.subscribe("get/python-path", 
+      function()
+      {
+        return broker.python_path;
+      });
+
+    this.sendMessage("install/desktop", broker);
   },
 
   "[install]":
@@ -188,15 +209,14 @@ Desktop.definition = {
    */
   start: function start(parent, command, term, size, search_path, callback) 
   {
-    let broker = this._broker;
     // create request object;
     command = command 
       || this["default_command@" + coUtils.Runtime.os] 
       || this.default_command;
 
-    let [width, height] = size || [this.width, this.height];
+    var [width, height] = size || [this.width, this.height];
 
-    let request = { 
+    var request = { 
       parent: parent, 
       command: command, 
       term: term, 
@@ -204,7 +224,8 @@ Desktop.definition = {
       height: height,
     };
 
-    let session = this.uniget("event/session-requested", request);
+    this.uniget("event/session-requested", request);
+
     return parent;
   },
 
@@ -221,8 +242,8 @@ function main(process)
     "event/new-window-detected",
     function onDesktopRequested(window) 
     {
-      let desktop = new Desktop(process).initializeWithWindow(window);
-      return desktop;
+      return new Desktop(process).initializeWithWindow(window);
     });
 }
 
+// EOF

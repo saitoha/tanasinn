@@ -28,7 +28,7 @@
  * @Attribute NmapAttribute
  *
  */
-let NmapAttribute = new Attribute("nmap");
+var NmapAttribute = new Attribute("nmap");
 NmapAttribute.definition = {
 
   get __id()

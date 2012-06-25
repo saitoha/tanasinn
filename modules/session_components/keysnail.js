@@ -26,7 +26,7 @@
  *  @class KeySnail
  *  @brief apply some fixes for KeySnail-installed environment. 
  */
-let KeySnail = new Class().extends(Plugin);
+var KeySnail = new Class().extends(Plugin);
 KeySnail.definition = {
 
   get id()
@@ -70,7 +70,9 @@ KeySnail.definition = {
   "[subscribe('event/got-focus | command/focus')]":
   function onGotFocus() 
   {
-    let key = this._getKeyModule();
+    var key;
+
+    key = this._getKeyModule();
     if (!key) {
       return;
     }
@@ -83,7 +85,9 @@ KeySnail.definition = {
   "[subscribe('event/lost-focus | command/blur')]":
   function onLostFocus() 
   {
-    let key = this._getKeyModule();
+    var key;
+
+    key = this._getKeyModule();
     if (!key) {
       return;
     }
@@ -102,19 +106,21 @@ KeySnail.definition = {
   /** get "KeySnail.modules" */
   _getKeyModule: function _getKeyModule()
   {
-    let session = this._broker;
-    let window = session.window;
-    let keysnail = window.KeySnail;
+    var broker, window, keysnail, modules, key;
+
+    broker = this._broker;
+    window = broker.window;
+    keysnail = window.KeySnail;
     if (!keysnail) {
       return null;
     }
 
-    let modules = keysnail.modules;
+    modules = keysnail.modules;
     if (!modules) {
       return null;
     }
     
-    let key = modules.key;
+    key = modules.key;
     if (!key) {
       return null;
     }

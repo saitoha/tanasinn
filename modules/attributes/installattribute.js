@@ -35,7 +35,7 @@ Delegate.prototype = {
  * @Attribute InstallAttribute
  *
  */
-let InstallAttribute = new Attribute("install");
+var InstallAttribute = new Attribute("install");
 InstallAttribute.definition = {
 
   get __id()
@@ -108,7 +108,7 @@ InstallAttribute.definition = {
  * @Attribute UninstallAttribute
  *
  */
-let UninstallAttribute = new Attribute("uninstall");
+var UninstallAttribute = new Attribute("uninstall");
 UninstallAttribute.definition = {
 
   get __id()

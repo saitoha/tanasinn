@@ -26,7 +26,7 @@
 /**
  * @trait PersistableAttribute
  */
-let PersistableAttribute = new Attribute("persistable");
+var PersistableAttribute = new Attribute("persistable");
 PersistableAttribute.definition = {
 
   get __id()

@@ -25,7 +25,7 @@
 /**
  *  @class Agent
  */
-let Agent = new Class().extends(Plugin)
+var Agent = new Class().extends(Plugin)
                        .depends("cursorstate");
 Agent.definition = {
 
@@ -163,7 +163,7 @@ Agent.definition = {
   "[install]":
   function install(session) 
   {
-    let {tanasinn_agent_layer, tanasinn_agent_message}
+    var {tanasinn_agent_layer, tanasinn_agent_message}
       = session.uniget("command/construct-chrome", this.template);
     this._element = tanasinn_agent_layer;
     this._message = tanasinn_agent_message;
@@ -199,17 +199,23 @@ Agent.definition = {
 
   getAgentImagePath: function getAgentImagePath()
   {
-    let broker = this._broker;
-    let path = broker.runtime_path + "/" + this.agent_image_file;
-    let file = coUtils.File.getFileLeafFromVirtualPath(path);
+    var broker, path, file;
+
+    broker = this._broker;
+    path = broker.runtime_path + "/" + this.agent_image_file;
+    file = coUtils.File.getFileLeafFromVirtualPath(path);
+
     return coUtils.File.getURLSpec(file);
   },
 
   getBalloonImagePath: function getBalloonImagePath()
   {
-    let broker = this._broker;
-    let path = broker.runtime_path + "/" + this.balloon_image_file;
-    let file = coUtils.File.getFileLeafFromVirtualPath(path);
+    var broker, path, file;
+
+    broker = this._broker;
+    path = broker.runtime_path + "/" + this.balloon_image_file;
+    file = coUtils.File.getFileLeafFromVirtualPath(path);
+
     return coUtils.File.getURLSpec(file);
   },
 

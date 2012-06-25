@@ -26,7 +26,7 @@
  * @trait CompleterAttribute
  *
  */
-let CompleterAttribute = new Attribute("completer");
+var CompleterAttribute = new Attribute("completer");
 CompleterAttribute.definition = {
 
   get __id()

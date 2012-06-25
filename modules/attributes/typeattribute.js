@@ -27,7 +27,7 @@
  * @trait TypeAttribute
  *
  */
-let TypeAttribute = new Attribute("type");
+var TypeAttribute = new Attribute("type");
 TypeAttribute.definition = {
 
   get __id()
@@ -84,7 +84,9 @@ TypeAttribute.definition = {
         let handler = this[key];
         let delegate = this[key] = let (self = this) function() 
         {
-          let args = Array.slice(arguments);
+          var args, result;
+
+          args = Array.slice(arguments);
           if (args.length != types.length - 1) {
             coUtils.Debug.reportError(
               _("Invalid argument length detected. %s.%s (%s), args.length == %d."), 
@@ -97,7 +99,8 @@ TypeAttribute.definition = {
                 self.id, key, index, type_signature, arg);
             } 
           })
-          let result = handler.apply(self, arguments);
+
+          result = handler.apply(self, arguments);
           if (types[args.length] && !types[args.length](result)) {
             coUtils.Debug.reportError(
               _("Ill-typed result value detected. %s.%s (%s) - %s."), 

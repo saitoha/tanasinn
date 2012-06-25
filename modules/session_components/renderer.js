@@ -710,6 +710,23 @@ Renderer.definition = {
     broker.notify("event/screen-height-changed", canvas_height);
   },
 
+  /** Draw to canvas */
+  "[subscribe('command/draw'), enabled]": 
+  function draw(redraw_flag)
+  {
+    var info, 
+        screen = this.dependency["screen"];
+
+    if (redraw_flag) {
+      screen.dirty = true;
+    }
+
+    for (info in screen.getDirtyWords()) {
+      this._drawLine(info);
+    }
+
+  }, // draw
+
   _drawNormalText: 
   function _drawNormalText(codes, row, column, end, attr, type)
   {
@@ -902,66 +919,59 @@ Renderer.definition = {
 
   },
 
-  /** Draw to canvas */
-  "[subscribe('command/draw'), enabled]": 
-  function draw(redraw_flag)
+  _drawLine: function _drawLine(info) 
   {
-    var screen = this.dependency["screen"];
-    var type;
-    var info;
+    var { codes, row, column, end, attr, line } = info,
+        type;
 
-    if (redraw_flag) {
-      screen.dirty = true;
+    if (end === column) {
+      return;
     }
 
-    for (info in screen.getDirtyWords()) {
+    type = line.type;
+    switch (type) {
 
-      let { codes, row, column, end, attr, line } = info;
-      if (end == column) {
-        continue;
-      }
+      case coUtils.Constant.LINETYPE_NORMAL:
+        this._drawNormalText(codes, row, column, end, attr, type);
+        break;
 
-      type = line.type;
-      switch (type) {
+      case coUtils.Constant.LINETYPE_TOP:
+        this._drawDoubleHeightTextTop(codes, row, column, end, attr, type);
+        break;
 
-        case coUtils.Constant.LINETYPE_NORMAL:
-          this._drawNormalText(codes, row, column, end, attr, type);
-          break;
+      case coUtils.Constant.LINETYPE_BOTTOM:
+        this._drawDoubleHeightTextBottom(codes, row, column, end, attr, type);
+        break;
 
-        case coUtils.Constant.LINETYPE_TOP:
-          this._drawDoubleHeightTextTop(codes, row, column, end, attr, type);
-          break;
+      case coUtils.Constant.LINETYPE_DOUBLEWIDTH:
+        this._drawDoubleWidthText(codes, row, column, end, attr, type);
+        break;
 
-        case coUtils.Constant.LINETYPE_BOTTOM:
-          this._drawDoubleHeightTextBottom(codes, row, column, end, attr, type);
-          break;
+      case coUtils.Constant.LINETYPE_SIXEL:
+        this._drawSixel(line, row);
+        break;
 
-        case coUtils.Constant.LINETYPE_DOUBLEWIDTH:
-          this._drawDoubleWidthText(codes, row, column, end, attr, type);
-          break;
-
-        case coUtils.Constant.LINETYPE_SIXEL:
-          this._drawSixel(line, row);
-          break;
-
-        default:
-          throw coUtils.Debug.Exception(
-            _("Invalid double height mode was detected: %d."), 
-            type);
-      }
+      default:
+        throw coUtils.Debug.Exception(
+          _("Invalid double height mode was detected: %d."), 
+          type);
     }
-  }, // draw
+  },
 
   _drawSixel: 
   function _drawSixel(line, row)
   {
-    let context = this._main_layer.context;
-    let sixel_info = line.sixel_info;
-    let canvas = sixel_info.buffer;
-    let position = sixel_info.position;
-    let line_height = this.line_height;
-    let width = canvas.width;
+    var context, sixel_info, canvas, position, line_height, width;
+
+    context = this._main_layer.context;
+    sixel_info = line.sixel_info;
+    canvas = sixel_info.buffer;
+    position = sixel_info.position;
+    line_height = this.line_height;
+    width = canvas.width;
+
     context.clearRect(0, line_height * row, width, line_height);
+
     context.drawImage(
       canvas, 
       0, line_height * position, width, line_height,
@@ -1001,12 +1011,14 @@ Renderer.definition = {
   _drawBackgroundImpl: 
   function _drawBackgroundImpl(context, x, y, width, height, attr) 
   {
+    var back_color;
+
     //if (!this._reverse && !attr.bgcolor) {
     //  context.clearRect(x, y, width, height);
     //} else {
+    
     /* Get hexadecimal formatted background color (#xxxxxx) 
      * form given attribute structure. */
-    let back_color;
     if (attr.bgcolor) {
       if (attr.inverse) {
         back_color = this.color[attr.fg];
@@ -1048,6 +1060,8 @@ Renderer.definition = {
                      height, 
                      attr, type)
   {
+    var fore_color, fore_color_map, text, drcs_state, index, code;
+
     if (attr.blink) {
       if (null === this._slow_blink_layer) {
         this.createSlowBlinkLayer(this.slow_blink_interval);
@@ -1074,8 +1088,8 @@ Renderer.definition = {
 
     // Get hexadecimal formatted text color (#xxxxxx) 
     // form given attribute structure. 
-    let fore_color_map = this.color;
-    let fore_color;
+    fore_color_map = this.color;
+
     if (attr.fgcolor) {
       if (attr.inverse) {
         fore_color = fore_color_map[attr.bg];
@@ -1103,7 +1117,7 @@ Renderer.definition = {
     }
 
     if (null === this._drcs_state || !attr.drcs) {
-      let text = String.fromCharCode.apply(String, codes);
+      text = String.fromCharCode.apply(String, codes);
       //if (this.enable_render_bold_as_textshadow && attr.bold) {
       //  context.shadowColor = this.shadow_color;
       //  context.shadowOffsetX = this.shadow_offset_x;
@@ -1118,9 +1132,9 @@ Renderer.definition = {
         context.fillText(text, x + 1, y, char_width * length - 1);
       }
     } else {
-      let drcs_state = this._drcs_state;
-      for (let index = 0; index < codes.length; ++index) {
-        let code = codes[index] - this._offset;
+      drcs_state = this._drcs_state;
+      for (index = 0; index < codes.length; ++index) {
+        code = codes[index] - this._offset;
         if (drcs_state.start_code <= code && code <= drcs_state.end_code) {
           //let glyph = drcs_state.glyphs[code - drcs_state.start_code];
           //context.putImageData(glyph, 0, 0)
@@ -1218,10 +1232,14 @@ Renderer.definition = {
    */
   _calculateGlyphSize: function _calculateGlyphSize() 
   {
-    let font_size = this.font_size;
-    let font_family = this.font_family;
-    let [char_width, char_height, char_offset] 
+    var font_size, font_family, char_width, char_height, char_offset;
+
+    font_size = this.font_size;
+    font_family = this.font_family;
+
+    [char_width, char_height, char_offset] 
       = coUtils.Font.getAverageGlyphSize(font_size, font_family);
+
     // store result
     this.char_width = char_width;
     this.char_offset = char_offset;

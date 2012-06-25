@@ -27,7 +27,7 @@
  * @trait CommandAttribute
  *
  */
-let CommandAttribute = new Attribute("command");
+var CommandAttribute = new Attribute("command");
 CommandAttribute.definition = {
 
   get __id()

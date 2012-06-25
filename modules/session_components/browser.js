@@ -25,7 +25,7 @@
 /**
  *  @class OverlayBrowser
  */
-let OverlayBrowser = new Class().extends(Plugin)
+var OverlayBrowser = new Class().extends(Plugin)
                                 .depends("cursorstate")
                                 .depends("renderer");
 OverlayBrowser.definition = {
@@ -79,29 +79,38 @@ OverlayBrowser.definition = {
   "[subscribe('sequence/osc/210')]":
   function handleSequence(data) 
   {
-    coUtils.Timer.setTimeout(function() {
-      let cursorstate = this.dependency["cursorstate"];
-      let [col, line, width, height, url] = data.split(" ");
-      this.open(
-        cursorstate.positionX - Number(col) + 1, 
-        cursorstate.positionY - Number(line) + 1,
-        Number(width), 
-        Number(height), 
-        url);
-    }, this.open_delay, this);
+    coUtils.Timer.setTimeout(
+      function timerproc() 
+      {
+        var [col, line, width, height, url] = data.split(" "),
+            cursorstate;
+
+        cursorstate = this.dependency["cursorstate"];
+
+        this.open(
+          cursorstate.positionX - Number(col) + 1, 
+          cursorstate.positionY - Number(line) + 1,
+          Number(width), 
+          Number(height), 
+          url);
+
+      }, this.open_delay, this);
   },
 
   "[subscribe('command/open-overlay-browser')]":
   function open(left, top, width, height, url) 
   {
-    let session = this._broker;
-    let renderer = this.dependency["renderer"];
+    var renderer;
+
+    // get renderer object
+    renderer = this.dependency["renderer"];
 
     this.close();
 
-    let {
+    // create UI part
+    var {
       tanasinn_browser_layer,
-    } = session.uniget("command/construct-chrome", {
+    } = this.request("command/construct-chrome", {
       parentNode: "#tanasinn_center_area",
       tagName: "bulletinboard",
       id: "tanasinn_browser_layer",
@@ -123,7 +132,10 @@ OverlayBrowser.definition = {
   "[subscribe('sequence/osc/211 | command/close-overlay-browser')]":
   function close(data) 
   {
-    let element = this._element;
+    var element;
+
+    element = this._element;
+
     if (null !== element) {
       element.parentNode.removeChild(element);
       this._element = null;

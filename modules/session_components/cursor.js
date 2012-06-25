@@ -22,9 +22,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-var CURSOR_STYLE_BLOCK = 0;
-var CURSOR_STYLE_UNDERLINE = 1;
-var CURSOR_STYLE_BEAM = 2;
 
 /**
  *  @class Cursor
@@ -73,14 +70,14 @@ Cursor.definition = {
   _timer: null,
 
   _blink: true,
-  _style: CURSOR_STYLE_BLOCK,
+  _style: coUtils.Constant.CURSOR_STYLE_BLOCK,
 
   _initial_color: null,
 
   "[persistable, watchable] color": "#77ff77",
   "[persistable, watchable] opacity": 0.5,
-  "[persistable] blink_duration": 500, /* in msec */
-  "[persistable] blink_transition_duration": 400, /* in msec */
+  "[persistable] blink_duration": 800, /* in msec */
+  "[persistable] blink_transition_duration": 600, /* in msec */
   "[persistable] timing_function": "ease-in-out",
   "[persistable] initial_blink": false,
  
@@ -140,13 +137,13 @@ Cursor.definition = {
   "[subscribe('sequence/sm/34'), pnp]":
   function WYULCURM_ON()
   {
-    this._style = CURSOR_STYLE_UNDERLINE;
+    this._style = coUtils.Constant.CURSOR_STYLE_UNDERLINE;
   },
 
   "[subscribe('sequence/rm/34'), pnp]":
   function WYULCURM_OFF()
   {
-    this._style = CURSOR_STYLE_BLOCK;
+    this._style = coUtils.Constant.CURSOR_STYLE_BLOCK;
   },
 
   "[subscribe('sequence/osc/12'), pnp]":
@@ -213,32 +210,32 @@ Cursor.definition = {
 
       case 0:
       case 1:
-        this._style = CURSOR_STYLE_BLOCK;
+        this._style = coUtils.Constant.CURSOR_STYLE_BLOCK;
         this.onBlinkingModeChanged(true);
         break;
 
       case 2:
-        this._style = CURSOR_STYLE_BLOCK;
+        this._style = coUtils.Constant.CURSOR_STYLE_BLOCK;
         this.onBlinkingModeChanged(false);
         break;
 
       case 3:
-        this._style = CURSOR_STYLE_UNDERLINE;
+        this._style = coUtils.Constant.CURSOR_STYLE_UNDERLINE;
         this.onBlinkingModeChanged(true);
         break;
 
       case 4:
-        this._style = CURSOR_STYLE_UNDERLINE;
+        this._style = coUtils.Constant.CURSOR_STYLE_UNDERLINE;
         this.onBlinkingModeChanged(false);
         break;
 
       case 5:
-        this._style = CURSOR_STYLE_BEAM;
+        this._style = coUtils.Constant.CURSOR_STYLE_BEAM;
         this.onBlinkingModeChanged(true);
         break;
 
       case 6:
-        this._style = CURSOR_STYLE_BEAM;
+        this._style = coUtils.Constant.CURSOR_STYLE_BEAM;
         this.onBlinkingModeChanged(false);
         break;
 
@@ -389,21 +386,21 @@ Cursor.definition = {
     // calculate cursor position, size
     switch (this._style) {
 
-      case CURSOR_STYLE_BLOCK:
+      case coUtils.Constant.CURSOR_STYLE_BLOCK:
         y = row * line_height;
         x = column * char_width;
         width = char_width * (is_wide ? 2: 1);
         height = line_height;
         break;
 
-      case CURSOR_STYLE_UNDERLINE:
+      case coUtils.Constant.CURSOR_STYLE_UNDERLINE:
         y = row * line_height + (line_height - 2);
         x = column * char_width;
         width = char_width * (is_wide ? 2: 1);
         height = 2;
         break;
 
-      case CURSOR_STYLE_BEAM:
+      case coUtils.Constant.CURSOR_STYLE_BEAM:
         y = row * line_height;
         x = column * char_width;
         width = 2;

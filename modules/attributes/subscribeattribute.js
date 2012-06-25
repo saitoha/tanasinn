@@ -26,7 +26,7 @@
 /**
  * @Attribute SubscribeAttribute
  */
-let SubscribeAttribute = new Attribute("subscribe");
+var SubscribeAttribute = new Attribute("subscribe");
 SubscribeAttribute.definition = {
 
   get __id()

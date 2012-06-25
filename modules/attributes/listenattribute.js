@@ -27,7 +27,7 @@
 /**
  * @trait ListenAttribute
  */
-let ListenAttribute = new Attribute("listen");
+var ListenAttribute = new Attribute("listen");
 ListenAttribute.definition = {
 
   get __id()

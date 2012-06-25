@@ -1145,7 +1145,7 @@ Viewable.definition = {
   "[subscribe('command/scroll-down-view'), enabled]":
   function scrollDownView(n)
   {
-    if (0 == n || 0 == this._scrollback_amount) {
+    if (0 === n || 0 === this._scrollback_amount) {
       return;
     }
     // move view position.
@@ -1165,10 +1165,10 @@ Viewable.definition = {
     var buffer_top;
     
     buffer_top = this.bufferTop;
-    if (0 == n || buffer_top == this._scrollback_amount) {
+    if (0 === n || buffer_top === this._scrollback_amount) {
       return;
     }
-    if (0 == this._scrollback_amount) {
+    if (0 === this._scrollback_amount) {
       // starts scrolling session.
       this.sendMessage("event/scroll-session-started");
     }
@@ -1187,8 +1187,8 @@ Viewable.definition = {
     var buffer_top;
 
     buffer_top = this.bufferTop;
-    if (0 == this._scrollback_amount) {
-      if (position != buffer_top - this._scrollback_amount) {
+    if (0 === this._scrollback_amount) {
+      if (position !== buffer_top - this._scrollback_amount) {
         // starts scrolling session.
         this.sendMessage("event/scroll-session-started");
       }
@@ -1353,8 +1353,8 @@ Viewable.definition = {
     // Line selection mode.
     for (i = 0; i < lines.length; ++i) {
       line = lines[i];
-      start = 0 == i ? start_column: 0;
-      end = lines.length - 1 == i ? end_column: width;
+      start = 0 === i ? start_column: 0;
+      end = lines.length - 1 === i ? end_column: width;
       text = line.getTextInRange(start, end);
       buffer.push(text.replace(/ +$/, ""));
     }
@@ -1487,7 +1487,7 @@ Scrollable.definition = {
           line.invalidate();
         }
       }
-    } else { // 0 == top && rest == 0
+    } else { // 0 === top && rest == 0
       range = lines.splice(0, n);
       for (i = 0; i < range.length; ++i) {
         line = range[i];
@@ -1629,7 +1629,7 @@ TabController.definition = {
     line = this._getCurrentLine();
     width = this._width;
 
-    if (coUtils.Constant.LINETYPE_NORMAL == line.type) {
+    if (coUtils.Constant.LINETYPE_NORMAL === line.type) {
       max = width - 1;
     } else {
       max = width / 2 - 1 | 0;
@@ -1710,7 +1710,7 @@ TabController.definition = {
         positionX = this.cursor.positionX;;
         for (i = 0; i < tab_stops.length; ++i) {
           stop = tab_stops[i];
-          if (stop == positionX) {
+          if (stop === positionX) {
             tab_stops.splice(i, 1); // remove current tabstop.
           } else if (stop > positionX) {
             break;
@@ -1945,7 +1945,7 @@ Screen.definition = {
 
     if (this._buffer) {
       width = this._width;
-      if (value == width) {
+      if (value === width) {
         return;
       } else if (width < value) {
         this._pushColumns(value - width);
@@ -1981,7 +1981,7 @@ Screen.definition = {
     var cursor;
     
     if (this._buffer) {
-      if (value == this._height) {
+      if (value === this._height) {
         return;
       } else if (this._height < value) {
         this._pushLines(value - this._height);
@@ -2068,7 +2068,7 @@ Screen.definition = {
     insert_mode = this._insert_mode;
 /*    
 //    if (this._smooth_scrolling) {
-        if ((this.flag = (this.flag + 1) % 10) == 0) {
+        if ((this.flag = (this.flag + 1) % 10) === 0) {
           this.sendMessage("command/draw");
           wait(0);
         }
@@ -2591,7 +2591,7 @@ Screen.definition = {
     bottom = this._scroll_bottom;
     positionY = cursor.positionY;
 
-    if (positionY == bottom - 1) {
+    if (positionY === bottom - 1) {
       this._scrollUp(top, bottom, 1);
     } else if (positionY > bottom - 1) {
       cursor.positionY = bottom - 1;
@@ -2704,7 +2704,7 @@ Screen.definition = {
   function switchToAlternateScreen() 
   {
     // select alternate lines.
-    if (CO_SCREEN_MAIN == this._screen_choice) {
+    if (CO_SCREEN_MAIN === this._screen_choice) {
       this._switchScreen();
       this._screen_choice = CO_SCREEN_ALTERNATE;
     } else {
@@ -2721,7 +2721,7 @@ Screen.definition = {
   function switchToMainScreen() 
   {
     // select main lines.
-    if (CO_SCREEN_ALTERNATE == this._screen_choice) {
+    if (CO_SCREEN_ALTERNATE === this._screen_choice) {
       this._switchScreen();
       this._screen_choice = CO_SCREEN_MAIN;
     } else {
@@ -2814,7 +2814,7 @@ Screen.definition = {
     this.cursor.deserialize(context);
     this._lines = this._buffer
       .slice(this._buffer_top, this._buffer_top + this._height);
-    if (CO_SCREEN_ALTERNATE == this._screen_choice) {
+    if (CO_SCREEN_ALTERNATE === this._screen_choice) {
       this.switchToAlternateScreen();
     } else {
       this.switchToMainScreen();

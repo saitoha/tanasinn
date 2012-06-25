@@ -33,7 +33,7 @@
  *    we need not memorize "this".
  *  - Auto error handling and reporting.
  */
-let DOMEventManager = new Class().extends(Component);
+var DOMEventManager = new Class().extends(Component);
 DOMEventManager.definition = {
 
   get id()
@@ -69,12 +69,16 @@ DOMEventManager.definition = {
   "[subscribe('command/add-domlistener'), enabled]":
   function add(listener) 
   {
-    let broker = this._broker;
-    let dom = {};
+    var broker, dom, id;
+
+    broker = this._broker;
+    dom = {};
+
     if (!listener.target) {
       this._addImpl(listener, broker.window.target);
-    } else if ("string" == typeof listener.target) {
-      let id = listener.target.substr(1);
+    } else if ("string" === typeof listener.target) {
+
+      id = listener.target.substr(1);
       try {
         dom.target = broker.uniget("get/element", id);
       } catch(e) {
@@ -115,18 +119,21 @@ DOMEventManager.definition = {
 
   _addImpl: function _addImpl(listener, target)
   {
-    let broker = this._broker;
-    let type = listener.type;
-    let capture = ("capture" in listener) ? Boolean(listener.capture): false;
-    let context = listener.context || target;
-    let handler = listener.handler;
+    var type, capture, context, handler, delegate,
+        id, list;
+
+    type = listener.type;
+    capture = ("capture" in listener) ? Boolean(listener.capture): false;
+    context = listener.context || target;
+    handler = listener.handler;
+
     if (target && type && handler) { // validate listener object.
-      let delegate = this.createDelegate(handler, context);
+      delegate = this.createDelegate(handler, context);
       target.addEventListener(type, delegate, capture); 
-      let id = listener.id;
+      id = listener.id;
       if (id) {
         this._listener_list_map = this._listener_list_map || {};
-        let list = this._listener_list_map[id];
+        list = this._listener_list_map[id];
         if (!list) {
           list = this._listener_list_map[id] = [];
         }
@@ -134,7 +141,6 @@ DOMEventManager.definition = {
 //        coUtils.Debug.reportMessage(_("Registered DOM listener '%s'"), id);
       }
       listener = null;
-      broker = null;
     } else {
       throw coUtils.Debug.Exception(
         _("Invalid argument was given. id: [%s], type: [%s]."), 
@@ -148,13 +154,18 @@ DOMEventManager.definition = {
   "[subscribe('command/remove-domlistener'), enabled]":
   function remove(id)
   {
+    var list;
+
     this._listener_list_map = this._listener_list_map || {};
-    let list = this._listener_list_map[id];
+
+    list = this._listener_list_map[id];
     if (list) {
-      list.forEach(function(info) {
-        let [target, type, delegate, capture] = info;
-        target.removeEventListener(type, delegate, capture);
-      });
+      list.forEach(
+        function(info)
+        {
+          var [target, type, delegate, capture] = info;
+          target.removeEventListener(type, delegate, capture);
+        });
       delete this._listener_list_map[id];
     } else {
       coUtils.Debug.reportWarning(

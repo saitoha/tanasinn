@@ -26,7 +26,7 @@
 /**
  * @Attribute PnPAttribute
  */
-let PnPAttribute = new Attribute("pnp");
+var PnPAttribute = new Attribute("pnp");
 PnPAttribute.definition = {
 
   get __id()

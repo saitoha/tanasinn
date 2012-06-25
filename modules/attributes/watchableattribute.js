@@ -26,7 +26,7 @@
  * @Attribute WatchableAttribute
  *
  */
-let WatchableAttribute = new Attribute("watchable");
+var WatchableAttribute = new Attribute("watchable");
 WatchableAttribute.definition = {
 
   get __id()

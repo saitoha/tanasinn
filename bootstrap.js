@@ -25,14 +25,20 @@
 
 function startup(data, reason) 
 {
-  let io_service = Components
+  var io_service, uri, tanasinn_class,
+      file_handler, process, process_url, message;
+
+  io_service = Components
     .classes["@mozilla.org/network/io-service;1"]
     .getService(Components.interfaces.nsIIOService);
-  let uri = io_service.newFileURI(data.installPath.clone());
+
+  uri = io_service.newFileURI(data.installPath.clone());
+
   io_service.getProtocolHandler("resource")
     .QueryInterface(Components.interfaces.nsIResProtocolHandler)
     .setSubstitution("tanasinn", uri)
-  let tanasinn_class = Components
+
+  tanasinn_class = Components
     .classes["@zuse.jp/tanasinn/process;1"];
   if (tanasinn_class) {
     Components.classes['@zuse.jp/tanasinn/process;1']
@@ -41,19 +47,22 @@ function startup(data, reason)
       .notify("event/enabled");
   } else {
     try {
-      let file_handler = io_service.getProtocolHandler("file")
+
+      file_handler = io_service.getProtocolHandler("file")
         .QueryInterface(Components.interfaces.nsIFileProtocolHandler);
-      let process = data.installPath.clone();
+
+      process = data.installPath.clone();
       process.append("modules");
       process.append("common");
       process.append("process.js");
-      let process_url = file_handler.getURLSpecFromFile(process);
+
+      process_url = file_handler.getURLSpecFromFile(process);
       Components
         .classes["@mozilla.org/moz/jssubscript-loader;1"]
         .getService(Components.interfaces.mozIJSSubScriptLoader)
         .loadSubScript(process_url);
     } catch(e) {
-      let message = <>{e.fileName}({e.lineNumber}):{e.toString()}</>.toString();
+      message = <>{e.fileName}({e.lineNumber}):{e.toString()}</>.toString();
       Components.reportError(message);
       return false;
     }
@@ -63,18 +72,23 @@ function startup(data, reason)
 
 function shutdown(data, reason) 
 {
-  let process = Components.classes['@zuse.jp/tanasinn/process;1']
+  var process, io_service;
+
+  process = Components.classes['@zuse.jp/tanasinn/process;1']
     .getService(Components.interfaces.nsISupports)
     .wrappedJSObject;
   process.notify("event/disabled");
   process.uninitialize();
-  let io_service = Components
+
+  io_service = Components
     .classes["@mozilla.org/network/io-service;1"]
     .getService(Components.interfaces.nsIIOService);
   io_service.getProtocolHandler("resource")
     .QueryInterface(Components.interfaces.nsIResProtocolHandler)
     .setSubstitution("tanasinn", null);
+
   process.notify("event/shutdown");
+
   process.destroy();
   process.clear();
   return true;
@@ -90,3 +104,4 @@ function uninstall(data, reason)
   return true;
 }
 
+// EOF

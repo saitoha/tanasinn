@@ -88,6 +88,13 @@ coUtils.Constant = {
   LINETYPE_SIXEL:             0x4,
 
   //
+  // Cursor Style
+  //
+  CURSOR_STYLE_BLOCK:         0x0,
+  CURSOR_STYLE_UNDERLINE:     0x1,
+  CURSOR_STYLE_BEAM:          0x2,
+
+  //
   // X11 color name definition
   //
   X11_COLOR_MAP: {

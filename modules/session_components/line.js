@@ -162,7 +162,7 @@ LineGeneratorConcept.definition = {
 //  /** Compare every bit and detect equality of both objects. */
 //  equals: function equals(other)
 //  {
-//    return this.value >>> 21 == other.value >>> 21;
+//    return this.value >>> 21 === other.value >>> 21;
 //  },
 //
 //  /** Clear all properties and make it default state. */
@@ -435,7 +435,7 @@ Cell.definition = {
   equals: function equals(other)
   {
     //return this.value << 7 == other.value << 7;
-    return this.value == other.value;
+    return this.value === other.value;
   },
 
   /** Clear all properties and make it default state. */
@@ -538,7 +538,7 @@ DirtyRange.definition = {
   /** makes a union of ranges and store it. */
   addRange: function addRange(first, last) 
   {
-    if (this.first == this.last) {
+    if (this.first === this.last) {
       this.first = first;
       this.last = last;
     } else {
@@ -684,14 +684,14 @@ Line.definition = {
     if (!cell) {
       return false;
     }
-    if (0 == cell.c) {
+    if (0 === cell.c) {
       return true;
     }
     cell = cells[position - 1];
     if (!cell) {
       return false;
     }
-    return 0 == cell.c;
+    return 0 === cell.c;
   },
 
   /** Gets the range of surround characters. 
@@ -712,7 +712,7 @@ Line.definition = {
 
     cells = this.cells;
     current_char;
-    if (0 == current_char) {
+    if (0 === current_char) {
       current_char = cells[column + 1].c;
     } else {
       current_char = cells[column].c;
@@ -741,9 +741,9 @@ Line.definition = {
 
       result = column + 1;
       for ([index, cell] in Iterator(forward_chars)) {
-        if (0 == cell.c) {
+        if (0 === cell.c) {
           continue;
-        } if (category == getCharacterCategory(cell.c)) {
+        } if (category === getCharacterCategory(cell.c)) {
           result = column + 1 + index + 1;
           continue;
         }
@@ -759,10 +759,10 @@ Line.definition = {
 
       result = column;
       for ([index, cell] in Iterator(backward_chars.reverse())) {
-        if (0 == cell.c) {
+        if (0 === cell.c) {
           result = backward_chars.length - index - 1;
           continue;
-        } else if (category == getCharacterCategory(cell.c)) {
+        } else if (category === getCharacterCategory(cell.c)) {
           result = backward_chars.length - index - 1;
           continue;
         }
@@ -813,7 +813,7 @@ Line.definition = {
     if (this.dirty) {
       let attr, start, current, cell;
       let cells = this.cells;
-      let max = coUtils.Constant.LINETYPE_NORMAL == this.type ? 
+      let max = coUtils.Constant.LINETYPE_NORMAL === this.type ? 
         this.last: 
         Math.min(this.last, Math.floor(this.length / 2));
       for (current = this.first; current < max; ++current) {

@@ -25,15 +25,20 @@
 /**
  * @abstruct CompleterBase
  */
-let CompleterBase = new Abstruct().extends(Component);
+var CompleterBase = new Abstruct().extends(Component);
 CompleterBase.definition = {
 
   "[subscribe('@event/broker-started'), enabled]":
   function onLoad(broker)
   {
+    var self = this;
+
     broker.subscribe(
       "get/completer/" + this.type, 
-      let (self = this) function() self);
+      function() 
+      {
+        return self;
+      });
   },
 
 }; // CompleterBase
@@ -41,20 +46,25 @@ CompleterBase.definition = {
 /**
  * @abstruct ComletionDisplayDriverBase
  */
-let CompletionDisplayDriverBase = new Abstruct().extends(Component);
+var CompletionDisplayDriverBase = new Abstruct().extends(Component);
 CompletionDisplayDriverBase.definition = {
 
   "[subscribe('@event/broker-started'), enabled]":
   function onLoad(broker)
   {
+    var self = this;
+
     broker.subscribe(
       "get/completion-display-driver/" + this.type, 
-      let (self = this) function() self);
-    broker.notify("initialized/" + this.id, this);
+      function()
+      {
+        return self;
+      });
+
+    this.sendMessage("initialized/" + this.id, this);
   },
 
 }; // CompletionDisplayDriverBase
-
 
 function generateEntries(paths) 
 {
@@ -69,7 +79,7 @@ function generateEntries(paths)
         while (entries.hasMoreElements()) {
           let file = entries.getNext()
             .QueryInterface(Components.interfaces.nsIFile);
-          if ("WINNT" == coUtils.Runtime.os 
+          if ("WINNT" === coUtils.Runtime.os 
               && file.isFile()
               && !file.path.match(/\.(dll|manifest)$/)) {
             yield file;
@@ -89,7 +99,7 @@ function generateEntries(paths)
 /** 
  * @class ProgramCompleter
  */
-let ProgramCompleter = new Class().extends(CompleterBase);
+var ProgramCompleter = new Class().extends(CompleterBase);
 ProgramCompleter.definition = {
 
   get id()
@@ -100,12 +110,21 @@ ProgramCompleter.definition = {
 
   _getSearchPath: function _getSearchPath()
   {
-    let environment = Components
+    var environment, path, delimiter, paths;
+
+    // get environment object
+    environment = Components
       .classes["@mozilla.org/process/environment;1"].
       getService(Components.interfaces.nsIEnvironment);
-    let path = environment.get("PATH");
-    let delimiter = ("WINNT" == coUtils.Runtime.os) ? ";": ":"
-    let paths = path.split(delimiter)
+
+    // get PATH variable from environment
+    path = environment.get("PATH");
+
+    // detect delimiter for PATH string
+    delimiter = ("WINNT" == coUtils.Runtime.os) ? ";": ":"
+
+    // split PATH string by delimiter and get existing paths
+    paths = path.split(delimiter)
       .filter(function(path) {
         if (!path)
           return false;
@@ -128,12 +147,16 @@ ProgramCompleter.definition = {
    */
   startSearch: function startSearch(source, listener)
   {
-    let broker = this._broker;
-    let lower_source = source.toLowerCase();
-    let search_path;
-    if ("WINNT" == coUtils.Runtime.os) {
-      let cygwin_root = broker.cygwin_root;
-      let map = (broker.bin_path || "/bin:/usr/local/bin")
+    var broker, lower_source, search_paths, files, 
+        data, autocomplete_result,
+        search_path, cygwin_root, map;
+
+    broker = this._broker;
+    lower_source = source.toLowerCase();
+
+    if ("WINNT" === coUtils.Runtime.os) {
+      cygwin_root = broker.cygwin_root;
+      map = (broker.bin_path || "/bin:/usr/local/bin")
         .split(":")
         .map(function(posix_path) 
         {
@@ -141,7 +164,9 @@ ProgramCompleter.definition = {
         })
         .reduce(function(map, path) 
         {
-          let key = path.replace(/\\$/, "");
+          var key;
+
+          key = path.replace(/\\$/, "");
           map[key] = undefined;
           return map; 
         }, {});
@@ -149,11 +174,15 @@ ProgramCompleter.definition = {
     } else {
       search_path = this._getSearchPath();
     }
-    let files = [file for (file in generateEntries(search_path))];
-    let data = files.map(function(file) 
+
+    files = [file for (file in generateEntries(search_path))];
+    data = files.map(
+      function(file) 
       {
-        let path = file.path;
-        if ("WINNT" == coUtils.Runtime.os) {
+        var path;
+
+        path = file.path;
+        if ("WINNT" === coUtils.Runtime.os) {
           path = path
             .replace(/\\/g, "/")
             .replace(/.exe$/ig, "")
@@ -165,23 +194,35 @@ ProgramCompleter.definition = {
           name: path,
           value: path,
         };
-      })
-      .filter(function(data) {
-        return -1 != data.name
-          .toLowerCase()
-          .indexOf(lower_source);
-      });
-    if (0 == data.length) {
+      }).filter(
+        function(data)
+        {
+          return -1 != data.name
+            .toLowerCase()
+            .indexOf(lower_source);
+        });
+
+    if (0 === data.length) {
       listener.doCompletion(null);
       return -1;
     }
-    let autocomplete_result = {
+
+    autocomplete_result = {
       type: "text",
       query: source, 
-      labels: data.map(function(data) data.name.split("/").pop()),
-      comments: data.map(function(data) data.value),
+      labels: data.map(
+        function(data) 
+        {
+          return data.name.split("/").pop();
+        }),
+      comments: data.map(
+        function(data)
+        {
+          return data.value;
+        }),
       data: data,
     };
+
     listener.doCompletion(autocomplete_result);
     return 0;
   },
@@ -199,14 +240,20 @@ coUtils.Sessions = {
   {
     delete this._records[request_id];
     this._dirty = true;
-    coUtils.Timer.setTimeout(function() {
-      let backup_data_path = broker.runtime_path + "/persist/" + request_id + ".txt";
-      let file = coUtils.File.getFileLeafFromVirtualPath(backup_data_path);
+    coUtils.Timer.setTimeout(function timerproc()
+    {
+      var backup_data_path, file;
+
+      backup_data_path = broker.runtime_path + "/persist/" + request_id + ".txt";
+      file = coUtils.File.getFileLeafFromVirtualPath(backup_data_path);
+
       if (file.exists()) {
         file.remove(true);
       }
+
       backup_data_path = broker.runtime_path + "/persist/" + request_id + ".png";
       file = coUtils.File.getFileLeafFromVirtualPath(backup_data_path);
+
       if (file.exists()) {
         file.remove(true);
       }
@@ -223,14 +270,20 @@ coUtils.Sessions = {
 
   load: function load() 
   {
+    var sessions, lines;
+
     this._records = {};
     if (coUtils.File.exists(this.session_data_path)) {
-      let sessions = coUtils.IO.readFromFile(this.session_data_path);
-      let lines = sessions.split(/[\r\n]+/);
+      sessions = coUtils.IO.readFromFile(this.session_data_path);
+      lines = sessions.split(/[\r\n]+/);
+
       lines.forEach(function(line) {
-        let sequence = line.split(",");
+        var request_id, command, control_port, pid, ttyname,
+            sequence;
+
+        sequence = line.split(",");
         if (sequence.length > 4) {
-          let [request_id, command, control_port, pid, ttyname] = sequence;
+          [request_id, command, control_port, pid, ttyname] = sequence;
           this._records[request_id] = {
             request_id: request_id,
             command: command && coUtils.Text.base64decode(command),
@@ -246,7 +299,9 @@ coUtils.Sessions = {
 
   update: function update()
   {
-    let lines = [""];
+    var lines, content;
+
+    lines = [""];
     for (let [request_id, record] in Iterator(this._records)) {
       let line = [
         request_id,
@@ -257,7 +312,8 @@ coUtils.Sessions = {
       ].join(",");
       lines.unshift(line);
     }
-    let content = lines.join("\n");
+
+    content = lines.join("\n");
     coUtils.IO.writeToFile(this.session_data_path, content);
     this._dirty = false;
   },
@@ -276,7 +332,7 @@ coUtils.Sessions = {
  * @class ProcessManager
  *
  */
-let ProcessManager = new Class().extends(Component);
+var ProcessManager = new Class().extends(Component);
 ProcessManager.definition = {
 
   get id()
@@ -297,19 +353,21 @@ ProcessManager.definition = {
    */
   processIsAvailable: function processIsAvailable(pid) 
   {
-    let exit_code = this.sendSignal(0, pid);
+    var exit_code, runtime_path, args, 
+        broker, cygwin_root, runtime, process;
+
+    exit_code = this.sendSignal(0, pid);
     return 0 == this.sendSignal(0, pid);
     
-    if ("number" != typeof pid) {
+    if ("number" !== typeof pid) {
       throw coUtils.Debug.Exception(
         _("sendSignal: Invalid argument is detected. [%s]"), 
         pid);
     }
-    let runtime_path;
-    let args;
-    if ("WINNT" == coUtils.Runtime.os) {
-      let broker = this._broker;
-      let cygwin_root = broker.cygwin_root;
+
+    if ("WINNT" === coUtils.Runtime.os) {
+      broker = this._broker;
+      cygwin_root = broker.cygwin_root;
       runtime_path = cygwin_root + "\\bin\\run.exe";
       args = [ "/bin/ps", "-p", String(pid) ];
     } else { // Darwin, Linux or FreeBSD
@@ -318,13 +376,13 @@ ProcessManager.definition = {
     }
 
     // create new localfile object.
-    let runtime = Components
+    runtime = Components
       .classes["@mozilla.org/file/local;1"]
       .createInstance(Components.interfaces.nsILocalFile);
     runtime.initWithPath(runtime_path);
 
     // create new process object.
-    let process = Components
+    process = Components
       .classes["@mozilla.org/process/util;1"]
       .createInstance(Components.interfaces.nsIProcess);
     process.init(runtime);
@@ -337,7 +395,7 @@ ProcessManager.definition = {
         args.join(" "));
       return false;
     }
-    return 0 == process.exitValue;
+    return 0 === process.exitValue;
   },
 
   /** Sends a signal to specified process. it runs "kill" command.
@@ -347,16 +405,18 @@ ProcessManager.definition = {
    */
   sendSignal: function sendSignal(signal, pid) 
   {
-    if ("number" != typeof signal || "number" != typeof pid) {
+    var runtime_path, args, broker, cygwin_root,
+        runtime, process;
+
+    if ("number" !== typeof signal || "number" !== typeof pid) {
       throw coUtils.Debug.Exception(
         _("sendSignal: Invalid arguments are detected. [%s, %s]"), 
         signal, pid);
     }
-    let runtime_path;
-    let args;
-    if ("WINNT" == coUtils.Runtime.os) {
-      let broker = this._broker;
-      let cygwin_root = broker.cygwin_root;
+
+    if ("WINNT" === coUtils.Runtime.os) {
+      broker = this._broker;
+      cygwin_root = broker.cygwin_root;
       runtime_path = cygwin_root + "\\bin\\run.exe";
       args = [ "kill", "-wait", "-" + signal, String(pid) ];
     } else { // Darwin, Linux or FreeBSD
@@ -365,13 +425,13 @@ ProcessManager.definition = {
     }
 
     // create new localfile object.
-    let runtime = Components
+    runtime = Components
       .classes["@mozilla.org/file/local;1"]
       .createInstance(Components.interfaces.nsILocalFile);
     runtime.initWithPath(runtime_path);
 
     // create new process object.
-    let process = Components
+    process = Components
       .classes["@mozilla.org/process/util;1"]
       .createInstance(Components.interfaces.nsIProcess);
     process.init(runtime);
@@ -384,6 +444,7 @@ ProcessManager.definition = {
         args.join(" "));
       return false;
     }
+
     return process.exitValue;
   },
 };
@@ -391,7 +452,7 @@ ProcessManager.definition = {
 /** 
  * @class SessionsCompleter
  */
-let SessionsCompleter = new Class().extends(CompleterBase)
+var SessionsCompleter = new Class().extends(CompleterBase)
                                    .depends("process_manager");
 SessionsCompleter.definition = {
 
@@ -403,8 +464,11 @@ SessionsCompleter.definition = {
 
   _generateAvailableSession: function _generateAvailableSession()
   {
+    var records;
+
     coUtils.Sessions.load();
-    let records = coUtils.Sessions.getRecords();
+    records = coUtils.Sessions.getRecords();
+
     for (let [request_id, record] in Iterator(records)) {
       try {
         if (this.dependency["process_manager"].processIsAvailable(record.pid)) {
@@ -431,16 +495,20 @@ SessionsCompleter.definition = {
    */
   startSearch: function startSearch(source, listener)
   {
-    let candidates = [candidate for (candidate in this._generateAvailableSession())];
-    let lower_source = source.toLowerCase();
-    let data = candidates.filter(function(data) {
+    var candidates, lower_source, data, autocomplete_result;
+
+    candidates = [candidate for (candidate in this._generateAvailableSession())];
+    lower_source = source.toLowerCase();
+
+    data = candidates.filter(function(data) {
       return -1 != data.name.toLowerCase().indexOf(lower_source);
     });
     if (0 == data.length) {
       listener.doCompletion(null);
       return -1;
     }
-    let autocomplete_result = {
+
+    autocomplete_result = {
       type: "sessions",
       query: source, 
       labels: data.map(function(data) data.name),
@@ -457,7 +525,7 @@ SessionsCompleter.definition = {
  * @class TextCompletionDisplayDriver
  *
  */
-let TextCompletionDisplayDriver = new Class().extends(CompletionDisplayDriverBase);
+var TextCompletionDisplayDriver = new Class().extends(CompletionDisplayDriverBase);
 TextCompletionDisplayDriver.definition = {
 
   get id()
@@ -468,10 +536,12 @@ TextCompletionDisplayDriver.definition = {
 
   drive: function drive(grid, result, current_index) 
   {
-    let document = grid.ownerDocument;
-    let broker = this._broker;
-    let rows = grid.appendChild(document.createElement("rows"))
-    for (let i = 0; i < result.labels.length; ++i) {
+    var document, rows, i;
+
+    document = grid.ownerDocument;
+    rows = grid.appendChild(document.createElement("rows"))
+
+    for (i = 0; i < result.labels.length; ++i) {
       let search_string = result.query.toLowerCase();
       let completion_text = result.labels[i];
       if ("quoted" == result.option) {
@@ -483,7 +553,7 @@ TextCompletionDisplayDriver.definition = {
       let match_position = completion_text
         .toLowerCase()
         .indexOf(search_string);
-      broker.uniget(
+      this.request(
         "command/construct-chrome", 
         {
           parentNode: rows,
@@ -535,7 +605,7 @@ TextCompletionDisplayDriver.definition = {
  * @class SessionsCompletionDisplayDriver
  *
  */
-let SessionsCompletionDisplayDriver = new Class().extends(CompletionDisplayDriverBase);
+var SessionsCompletionDisplayDriver = new Class().extends(CompletionDisplayDriverBase);
 SessionsCompletionDisplayDriver.definition = {
 
   get id()
@@ -546,26 +616,35 @@ SessionsCompletionDisplayDriver.definition = {
 
   getImageSource: function getImageSource(request_id)
   {
+    var broker, image_path, image_file, image_url;
+
     try {
-      let broker = this._broker;
-      let image_path = broker.runtime_path + "/persist/" + request_id + ".png";
-      let image_file = coUtils.File.getFileLeafFromVirtualPath(image_path);
-      let image_url = coUtils.File.getURLSpec(image_file);
+      broker = this._broker;
+      image_path = broker.runtime_path + "/persist/" + request_id + ".png";
+      image_file = coUtils.File.getFileLeafFromVirtualPath(image_path);
+      image_url = coUtils.File.getURLSpec(image_file);
+
       return image_url;
     } catch (e) {
       coUtils.Debug.reportError(e);
     }
+
     return ""; // TODO: return url for "no image".
   },
 
   drive: function drive(grid, result, current_index) 
   {
-    let document = grid.ownerDocument;
-    let broker = this._broker;
-    let rows = grid.appendChild(document.createElement("rows"))
-    for (let i = 0; i < result.labels.length; ++i) {
-      let search_string = result.query.toLowerCase().substr(1);
-      let completion_text = result.comments[i].command;
+    var document, broker, rows, i, search_string, completion_text;
+
+    document = grid.ownerDocument;
+    broker = this._broker;
+    rows = grid.appendChild(document.createElement("rows"))
+
+    for (i = 0; i < result.labels.length; ++i) {
+
+      search_string = result.query.toLowerCase().substr(1);
+      completion_text = result.comments[i].command;
+
       if (completion_text.length > 20 && i != current_index) {
         completion_text = completion_text.substr(0, 20) + "...";
       }
@@ -631,7 +710,7 @@ SessionsCompletionDisplayDriver.definition = {
 /** 
  * @class LauncherCompletionProvider
  */
-let LauncherCompletionProvider = new Class().extends(Component);
+var LauncherCompletionProvider = new Class().extends(Component);
 LauncherCompletionProvider.definition = {
 
   get id()
@@ -640,18 +719,21 @@ LauncherCompletionProvider.definition = {
   "[subscribe('command/complete'), enabled]": 
   function complete(request)
   {
-    let {source, listener} = request;
-    let broker = this._broker;
-    if (0 == source.length || 0 == source.indexOf("&")) {
-      let program_completer = broker.uniget("get/completer/sessions");
-      let position = program_completer.startSearch(source.substr(1), listener);
-      if (0 != position) {
-        let program_completer = broker.uniget("get/completer/program");
-        let position = program_completer.startSearch(source, listener);
+    var {source, listener} = request, 
+        position;
+
+    if (0 === source.length || 0 === source.indexOf("&")) {
+
+      position = this.request("get/completer/sessions")
+        .startSearch(source.substr(1), listener);
+
+      if (0 !== position) {
+        this.request("get/completer/program")
+          .startSearch(source, listener);
       }
     } else {
-      let program_completer = broker.uniget("get/completer/program");
-      let position = program_completer.startSearch(source, listener);
+      this.request("get/completer/program")
+        .startSearch(source, listener);
     }
   },
 };
@@ -660,7 +742,7 @@ LauncherCompletionProvider.definition = {
 /** 
  * @class Launcher
  */
-let Launcher = new Class().extends(Component);
+var Launcher = new Class().extends(Component);
 Launcher.definition = {
 
   get id()
@@ -712,8 +794,7 @@ Launcher.definition = {
   "[subscribe('event/broker-started'), enabled]":
   function onLoad(desktop)
   {
-    let broker = this._broker;
-    let {
+    var {
       tanasinn_window_layer,
       tanasinn_launcher_layer,
       tanasinn_launcher_textbox,
@@ -828,7 +909,8 @@ Launcher.definition = {
   "[subscribe('command/move-to'), enabled]":
   function moveTo(info)
   {
-    let [left, top] = info;
+    var [left, top] = info;
+
     this._element.style.left = left + "px";
     this._element.style.top = top + "px";
     this._popup.hidePopup();
@@ -845,19 +927,24 @@ Launcher.definition = {
   "[subscribe('event/enabled'), enabled]":
   function onEnabled()
   {
+    var broker, keydown_handler, keyup_handler;
+
     this.onkeypress.enabled = true;
     this.onfocus.enabled = true;
     this.onblur.enabled = true;
     this.oninput.enabled = true;
     this.startSession.enabled = true;
-    let broker = this._broker;
-    let keydown_handler = let (self = this) 
+
+    broker = this._broker;
+
+    keydown_handler = let (self = this) 
       function() self.onkeydown.apply(self, arguments);
     broker.window.addEventListener("keydown", keydown_handler, /* capture */ true);
     broker.subscribe(
       "event/disabled", 
       function() broker.window.removeEventListener("keydown", keydown_handler, true));
-    let keyup_handler = let (self = this) 
+
+    keyup_handler = let (self = this) 
       function() self.onkeyup.apply(self, arguments);
     broker.window.addEventListener("keyup", keyup_handler, /* capture */ true);
     broker.subscribe(
@@ -888,12 +975,17 @@ Launcher.definition = {
 
   select: function select(index)
   {
-    if (index < -1)
+    var completion_root, row;
+
+    if (index < -1) {
       index = -1;
-    if (index > this.rowCount)
+    }
+    if (index > this.rowCount) {
       index = this.rowCount - 1;
-    let completion_root = this._completion_root;
-    let row;
+    }
+
+    completion_root = this._completion_root;
+
     if (this._index > -1) {
       row = completion_root.querySelector("rows").childNodes[this._index];
       if (!row) {
@@ -934,16 +1026,20 @@ Launcher.definition = {
 
   doCompletion: function doCompletion(result) 
   {
+    var completion_root, type, driver;
+
     this._result = result;
     delete this._timer;
-    let completion_root = this._completion_root;
+
+    completion_root = this._completion_root;
     while (completion_root.firstChild) {
       completion_root.removeChild(completion_root.firstChild);
     }
     if (result) {
-      let type = result.type || "text";
-      let broker = this._broker;
-      let driver = broker.uniget("get/completion-display-driver/" + type); 
+
+      type = result.type || "text";
+      driver = this.request("get/completion-display-driver/" + type); 
+
       if (driver) {
         driver.drive(completion_root, result, this.currentIndex);
         this.invalidate(result);
@@ -989,7 +1085,9 @@ Launcher.definition = {
 
   down: function down()
   {
-    let index = Math.min(this.currentIndex + 1, this.rowCount - 1);
+    var index;
+
+    index = Math.min(this.currentIndex + 1, this.rowCount - 1);
     if (index >= 0) {
       this.select(index);
     }
@@ -999,7 +1097,9 @@ Launcher.definition = {
 
   up: function up()
   {
-    let index = Math.max(this.currentIndex - 1, -1);
+    var index;
+
+    index = Math.max(this.currentIndex - 1, -1);
     if (index >= 0) {
       this.select(index);
     }
@@ -1009,14 +1109,20 @@ Launcher.definition = {
 
   fill: function fill()
   {
-    let index = Math.max(0, this.currentIndex);
-    let result = this._result;
+    var index, result, textbox, completion_text, 
+        settled_length, settled_text;
+
+    index = Math.max(0, this.currentIndex);
+    result = this._result;
+
     if (this._result) {
-      let textbox = this._textbox;
-      let completion_text = result.labels[index];
-      let settled_length = 
+      textbox = this._textbox;
+      completion_text = result.labels[index];
+
+      settled_length = 
         this._stem_text.length - result.query.length;
-      let settled_text = textbox.value.substr(0, settled_length);
+      settled_text = textbox.value.substr(0, settled_length);
+
       textbox.inputField.value = settled_text + completion_text;
 //      this._completion.inputField.value = "";
     }
@@ -1024,26 +1130,30 @@ Launcher.definition = {
 
   setCompletionTrigger: function setCompletionTrigger() 
   {
+    var current_text;
+
     if (this._timer) {
       this._timer.cancel();
       delete this._timer;
     }
     this._timer = coUtils.Timer.setTimeout(function() {
       delete this._timer;
-      let current_text = this._textbox.value;
+
+      current_text = this._textbox.value;
       // if current text does not match completion text, hide it immediatly.
 //      if (0 != this._completion.value.indexOf(current_text)) {
 //        this._completion.inputField.value = "";
 //      }
       this._stem_text = current_text;
       this.select(-1);
-      let broker = this._broker;
-      broker.notify(
+
+      this.sendMessage(
         "command/complete", 
         {
           source: current_text, 
           listener: this,
         });
+
     }, this.completion_delay, this);
   },
 
@@ -1062,7 +1172,10 @@ Launcher.definition = {
   "[subscribe('event/hotkey-double-{ctrl | alt}'), enabled]":
   function onDoubleCtrl() 
   {
-    let box = this._element;
+    var box;
+
+    box = this._element;
+
     if (box.hidden) {
       this.show();
     } else {
@@ -1073,7 +1186,9 @@ Launcher.definition = {
   "[subscribe('command/show-launcher'), enabled]":
   function show()
   {
-    let box = this._element;
+    var box;
+
+    box = this._element;
     box.parentNode.appendChild(box);
     box.hidden = false;
     coUtils.Timer.setTimeout(function() {
@@ -1085,9 +1200,12 @@ Launcher.definition = {
   "[subscribe('command/hide-launcher'), enabled]":
   function hide()
   {
-    let box = this._element;
-    let textbox = this._textbox;
-    let popup = this._popup;
+    var box, textbox, popup;
+
+    box = this._element;
+    textbox = this._textbox;
+    popup = this._popup;
+
     if (popup.hidePopup) {
       popup.hidePopup();
     }
@@ -1097,19 +1215,25 @@ Launcher.definition = {
 
   enter: function enter() 
   {
-    let command = this._textbox.value;
-    let broker = this._broker;
-    broker.notify("command/start-session", command);
+    var command;
+
+    command = this._textbox.value;
+    this.sendMessage("command/start-session", command);
   },
 
   "[subscribe('command/start-session')]":
   function startSession(command) 
   {
-    let desktop = this._broker; 
-    let document = this._element.ownerDocument;
+    var desktop, document, box;
+
+    desktop = this._broker; 
+    document = this._element.ownerDocument;
+
     command = command || "";
     command = command.replace(/^\s+|\s+$/g, "");
-    let box = document.createElement("box");
+
+    box = document.createElement("box");
+
     if (!/tanasinn/.test(coUtils.Runtime.app_name)) {
       box.style.cssText = "position: fixed; top: 0px; left: 0px";
     }
@@ -1129,57 +1253,63 @@ Launcher.definition = {
   "[listen('keypress', '#tanasinn_launcher_textbox')]":
   function onkeypress(event) 
   { // nothrow
-    let code = event.keyCode || event.which;
+    var code, is_char, textbox, length, start, end, 
+        value, position;
+
+    code = event.keyCode || event.which;
     /*
     this._broker.notify(
       "command/report-overlay-message", 
       [event.keyCode,event.which,event.isChar].join("/"));
       */
-    let is_char = 0 == event.keyCode;
+    is_char = 0 === event.keyCode;
 
     if (event.ctrlKey) { // ^
       event.stopPropagation();
       event.preventDefault();
     }
-    if ("a".charCodeAt(0) == code && event.ctrlKey) { // ^a
-      let textbox = this._textbox;
+    if ("a".charCodeAt(0) === code && event.ctrlKey) { // ^a
+      textbox = this._textbox;
       textbox.selectionStart = 0;
       textbox.selectionEnd = 0;
     }
-    if ("e".charCodeAt(0) == code && event.ctrlKey) { // ^e
-      let textbox = this._textbox;
-      let length = this._textbox.value.length;
+    if ("e".charCodeAt(0) === code && event.ctrlKey) { // ^e
+      textbox = this._textbox;
+      length = this._textbox.value.length;
       textbox.selectionStart = length;
       textbox.selectionEnd = length;
     }
-    if ("b".charCodeAt(0) == code && event.ctrlKey) { // ^b
-      let textbox = this._textbox;
-      let start = textbox.selectionStart;
-      let end = textbox.selectionEnd;
-      if (start == end) {
+    if ("b".charCodeAt(0) === code && event.ctrlKey) { // ^b
+      textbox = this._textbox;
+      start = textbox.selectionStart;
+      end = textbox.selectionEnd;
+
+      if (start === end) {
         textbox.selectionStart = start - 1;
         textbox.selectionEnd = start - 1;
       } else {
         textbox.selectionEnd = start;
       }
     }
-    if ("f".charCodeAt(0) == code && event.ctrlKey) { // ^f
-      let textbox = this._textbox;
-      let start = textbox.selectionStart;
-      let end = textbox.selectionEnd;
-      if (start == end) {
+    if ("f".charCodeAt(0) === code && event.ctrlKey) { // ^f
+      textbox = this._textbox;
+      start = textbox.selectionStart;
+      end = textbox.selectionEnd;
+
+      if (start === end) {
         textbox.selectionStart = start + 1;
         textbox.selectionEnd = start + 1;
       } else {
         textbox.selectionStart = end;
       }
     }
-    if ("k".charCodeAt(0) == code && event.ctrlKey) { // ^k
-      let textbox = this._textbox;
-      let value = textbox.value;
-      let start = textbox.selectionStart;
-      let end = textbox.selectionEnd;
-      if (start == end) {
+    if ("k".charCodeAt(0) === code && event.ctrlKey) { // ^k
+      textbox = this._textbox;
+      value = textbox.value;
+      start = textbox.selectionStart;
+      end = textbox.selectionEnd;
+
+      if (start === end) {
         this._textbox.inputField.value 
           = value.substr(0, textbox.selectionStart);
       } else {
@@ -1191,114 +1321,122 @@ Launcher.definition = {
       }
       this.setCompletionTrigger();
     }
-    if ("p".charCodeAt(0) == code && event.ctrlKey) { // ^p
+    if ("p".charCodeAt(0) === code && event.ctrlKey) { // ^p
       this.up();
     }
-    if ("n".charCodeAt(0) == code && event.ctrlKey) { // ^n
+    if ("n".charCodeAt(0) === code && event.ctrlKey) { // ^n
       this.down();
     }
-    if ("j".charCodeAt(0) == code && event.ctrlKey) { // ^j
+    if ("j".charCodeAt(0) === code && event.ctrlKey) { // ^j
       this.enter()
     }
-    if ("h".charCodeAt(0) == code && event.ctrlKey) { // ^h
-      let value = this._textbox.value;
-      let position = this._textbox.selectionEnd;
+    if ("h".charCodeAt(0) === code && event.ctrlKey) { // ^h
+      value = this._textbox.value;
+      position = this._textbox.selectionEnd;
+
       if (position > 0) {
         this._textbox.inputField.value 
           = value.substr(0, position - 1) + value.substr(position);
         this.setCompletionTrigger();
       }
     }
-    if ("w".charCodeAt(0) == code && event.ctrlKey) { // ^w
-      let value = this._textbox.value;
-      let position = this._textbox.selectionEnd;
+    if ("w".charCodeAt(0) === code && event.ctrlKey) { // ^w
+      value = this._textbox.value;
+      position = this._textbox.selectionEnd;
+
       this._textbox.inputField.value
         = value.substr(0, position).replace(/\w+$|\W+$/, "") 
         + value.substr(position);
       this.setCompletionTrigger();
     }
-    if ("f".charCodeAt(0) == code && event.ctrlKey) { // ^h
+    if ("f".charCodeAt(0) === code && event.ctrlKey) { // ^h
       this._textbox.selectionStart += 1;
     }
-    if ("b".charCodeAt(0) == code && event.ctrlKey) { // ^h
+    if ("b".charCodeAt(0) === code && event.ctrlKey) { // ^h
       this._textbox.selectionEnd -= 1;
     }
-    if (0x09 == code) { // tab
+    if (0x09 === code) { // tab
       event.stopPropagation();
       event.preventDefault();
     }
-    if (0x09 == code && event.shiftKey) // shift + tab
+    if (0x09 === code && event.shiftKey) // shift + tab
       code = 0x26;
-    if (0x09 == code && !event.shiftKey) // tab
+    if (0x09 === code && !event.shiftKey) // tab
       code = 0x28;
-    if (0x26 == code && !is_char) { // up 
+    if (0x26 === code && !is_char) { // up 
       this.up();
-    } else if (0x28 == code && !is_char) { // down
+    } else if (0x28 === code && !is_char) { // down
       this.down();
-    } else if (0x0d == code && !is_char) {
+    } else if (0x0d === code && !is_char) {
       this.enter();
     } 
   },
 
-
   onkeyup: function onkeyup(event) 
   { // nothrow
-    let broker = this._broker;
-    let diff_min = 30;
-    let diff_max = 400;
-    if (16 == event.keyCode && 16 == event.which 
+    var now, diff
+        diff_min = 30,
+        diff_max = 400;
+
+    if (16 === event.keyCode && 16 === event.which 
         && !event.ctrlKey && !event.altKey && !event.isChar) {
-      let now = parseInt(new Date().getTime());
-      let diff = now - this._last_shiftup_time;
+
+      now = parseInt(new Date().getTime());
+      diff = now - this._last_shiftup_time;
+
       if (diff_min < diff && diff < diff_max) {
-        broker.notify("event/hotkey-double-shift");
+        this.sendMessage("event/hotkey-double-shift");
         this._last_shiftup_time = 0;
       } else {
         this._last_shiftup_time = now;
       }
-      broker.notify("event/shift-key-up");
-    } else if (17 == event.keyCode && 17 == event.which 
+      this.sendMessage("event/shift-key-up");
+    } else if (17 === event.keyCode && 17 === event.which 
         && !event.altKey && !event.shiftKey && !event.isChar) {
-      let now = parseInt(new Date().getTime());
-      let diff = now - this._last_ctrlup_time;
+
+      now = parseInt(new Date().getTime());
+      diff = now - this._last_ctrlup_time;
+
       if (diff_min < diff && diff < diff_max) {
-        broker.notify("event/hotkey-double-ctrl");
+        this.sendMessage("event/hotkey-double-ctrl");
         this._last_ctrlup_time = 0;
       } else {
         this._last_ctrlup_time = now;
       }
-      broker.notify("event/ctrl-key-up");
-    } else if (18 == event.keyCode && 18 == event.which 
+      this.sendMessage("event/ctrl-key-up");
+    } else if (18 === event.keyCode && 18 === event.which 
         && !event.ctrlKey && !event.shiftKey && !event.isChar) {
-      let now = parseInt(new Date().getTime());
-      let diff = now - this._last_altup_time;
+
+      now = parseInt(new Date().getTime());
+      diff = now - this._last_altup_time;
+
       if (diff_min < diff && diff < diff_max) {
-        broker.notify("event/hotkey-double-alt");
+        this.sendMessage("event/hotkey-double-alt");
         this._last_altup_time = 0;
       } else {
         this._last_altup_time = now;
       }
-      broker.notify("event/alt-key-up");
+      this.sendMessage("event/alt-key-up");
     }
   },
 
   onkeydown: function onkeydown(event) 
   { // nothrow
-    if (16 == event.keyCode && 16 == event.which 
+    if (16 === event.keyCode && 16 === event.which 
         && !event.ctrlKey && !event.altKey 
         && event.shiftKey && !event.isChar) {
-      let broker = this._broker;
-      broker.notify("event/shift-key-down");
-    } else if (17 == event.keyCode && 17 == event.which 
+
+      this.sendMessage("event/shift-key-down");
+    } else if (17 === event.keyCode && 17 === event.which 
         && !event.ctrlKey && !event.altKey 
         && event.shiftKey && !event.isChar) {
-      let broker = this._broker;
-      broker.notify("event/ctrl-key-down");
-    } else if (18 == event.keyCode && 18 == event.which 
+          
+      this.sendMessage("event/ctrl-key-down");
+    } else if (18 === event.keyCode && 18 === event.which 
         && !event.ctrlKey && event.altKey 
         && !event.shiftKey && !event.isChar) {
-      let broker = this._broker;
-      broker.notify("event/alt-key-down");
+
+      this.sendMessage("event/alt-key-down");
     }
   },
 };
@@ -1308,7 +1446,7 @@ Launcher.definition = {
  * @class DragMove
  * @fn Enable Drag-and-Drop operation.
  */
-let DragMove = new Class().extends(Plugin);
+var DragMove = new Class().extends(Plugin);
 DragMove.definition = {
 
   get id()
@@ -1321,7 +1459,7 @@ DragMove.definition = {
   function install(broker) 
   {
     this.ondragstart.enabled = true;
-    let {tanasinn_drag_cover}
+    var {tanasinn_drag_cover}
       = broker.uniget(
         "command/construct-chrome",
         {
@@ -1350,11 +1488,15 @@ DragMove.definition = {
   "[listen('dragstart', '#tanasinn_launcher_layer', true)]":
   function ondragstart(dom_event) 
   {
+    var session, offsetX, offsetY, dom_document;
+
     dom_event.stopPropagation();
-    let session = this._broker;
+    session = this._broker;
+
     // get relative coodinates on target element.
-    let offsetX = dom_event.clientX - dom_event.target.boxObject.x; 
-    let offsetY = dom_event.clientY - dom_event.target.boxObject.y;
+    offsetX = dom_event.clientX - dom_event.target.boxObject.x; 
+    offsetY = dom_event.clientY - dom_event.target.boxObject.y;
+
     this._drag_cover.hidden = false;
     this._drag_cover.style.left = dom_event.clientX - this._drag_cover.boxObject.width / 2 + "px";
     this._drag_cover.style.top = dom_event.clientY - this._drag_cover.boxObject.height / 2 + "px";
@@ -1363,7 +1505,8 @@ DragMove.definition = {
     }, 1000, this);
     session.notify("command/set-opacity", 0.30);
     // define mousemove hanler.
-    let dom_document = dom_event.target.ownerDocument; // managed by DOM
+    
+    dom_document = dom_event.target.ownerDocument; // managed by DOM
     session.notify("command/add-domlistener", {
       target: dom_document, 
       type: "mousemove", 
@@ -1371,9 +1514,12 @@ DragMove.definition = {
       context: this,
       handler: function onmouseup(event) 
       {
-        let left = event.clientX - offsetX;
-        let top = event.clientY - offsetY;
-        session.notify("command/move-to", [left, top]);
+        var left, top;
+
+        left = event.clientX - offsetX;
+        top = event.clientY - offsetY;
+
+        this.sendMessage("command/move-to", [left, top]);
       }
     });
     session.notify("command/add-domlistener", {

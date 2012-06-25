@@ -26,7 +26,7 @@
  *  @class Vimperator
  *  @brief apply some fixes for Vimperator-installed environment. 
  */
-let Vimperator = new Class().extends(Plugin);
+var Vimperator = new Class().extends(Plugin);
 Vimperator.definition = {
 
   get id()
@@ -49,7 +49,10 @@ Vimperator.definition = {
   "[install]":
   function install(session)
   {
-    let modules = this._getModules();
+    var modules;
+
+    modules = this._getModules();
+
     if (modules) {
       this.onGotFocus();
       this.onGotFocus.enabled = true;  
@@ -64,7 +67,10 @@ Vimperator.definition = {
   "[uninstall]":
   function uninstall(session) 
   {
-    let modules = this._getModules();
+    var modules;
+
+    modules = this._getModules();
+
     if (modules) {
       this.onLostFocus();
       this.onGotFocus.enabled = false;  
@@ -77,9 +83,13 @@ Vimperator.definition = {
   "[subscribe('event/got-focus | command/focus')]":
   function onGotFocus() 
   {
-    let modules = this._getModules();
-    if (!modules)
+    var modules;
+
+    modules = this._getModules();
+
+    if (!modules) {
       return;
+    }
     modules.modes.isMenuShown = true;
   },
 
@@ -87,9 +97,13 @@ Vimperator.definition = {
   "[subscribe('event/lost-focus | command/blur')]":
   function onLostFocus() 
   {
-    let modules = this._getModules();
-    if (!modules)
+    var modules;
+
+    modules = this._getModules();
+
+    if (!modules) {
       return;
+    }
     modules.modes.isMenuShown = false;
   },
 
@@ -97,7 +111,9 @@ Vimperator.definition = {
   "[subscribe('@event/broker-stopping'), enabled]":
   function onSessionStopping() 
   {
-    let modules = this._getModules();
+    var modules;
+
+    modules = this._getModules();
     if (!modules) {
       return;
     }
@@ -110,40 +126,54 @@ Vimperator.definition = {
   "[command('vimperator')]":
   function vimperatorCommand(arguments_string) 
   {
-    let liberator = this._getLiberator();
-    if (!liberator)
+    var liberator;
+
+    liberator = this._getLiberator();
+
+    if (!liberator) {
       return false;
+    }
     liberator.execute(arguments_string);
+
     return true;
   },
 
   /** get "liberator" */
   _getLiberator: function _getLiberator()
   {
-    let session = this._broker;
-    let window = session.window;
-    let liberator = window.liberator;
-    if (!liberator)
+    var broker;
+
+    broker = this._broker;
+    window = broker.window;
+    liberator = window.liberator;
+
+    if (!liberator) {
       return null;
+    }
     return liberator;
   },
     
   /** get "liberator.modules" */
   _getModules: function _getModules()
   {
-    let liberator = this._getLiberator();
-    if (!liberator)
-      return null;
+    var liberator, modules, events, modes;
 
-    let modules = liberator.modules;
-    if (!modules)
+    liberator = this._getLiberator();
+    if (!liberator) {
       return null;
+    }
+
+    modules = liberator.modules;
+    if (!modules) {
+      return null;
+    }
     
-    let events = modules.events;
-    if (!events)
+    events = modules.events;
+    if (!events) {
       return null;
+    }
 
-    let modes = modules.modes;
+    modes = modules.modes;
     if (!modes)
       return null;
 
