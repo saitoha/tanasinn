@@ -199,6 +199,7 @@ TabController.definition = {
 
   },
 
+  /** reset tab stop on screen width changed */
   "[subscribe('variable-changed/screen.width'), pnp]":
   function onScreenWidthChanged()
   {
@@ -403,7 +404,6 @@ TabController.definition = {
   },
 
 }; // TabController
-
 
 
 /**
