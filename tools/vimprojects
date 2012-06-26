@@ -81,6 +81,7 @@
 
    line.js
    cursorstate.js
+   tabcontroller.js
    screen.js
 
    control.js

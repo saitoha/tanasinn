@@ -127,17 +127,6 @@ Control.definition = {
     screen = this._screen;
     screen.backSpace();
   },
-   
-  /** Horizontal tabulation.
-   */
-  "[profile('vt100'), sequence('0x09')]":
-  function HT() 
-  { // Horizontal Tab
-    var screen;
-
-    screen = this._screen;
-    screen.horizontalTab();
-  },
   
   /** Linefeed.
    */

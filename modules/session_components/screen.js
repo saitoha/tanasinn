@@ -22,6 +22,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+
 var thread_manager = Components
   .classes["@mozilla.org/thread-manager;1"]
   .getService();
@@ -129,9 +130,6 @@ ScreenCursorOperationsConcept.definition = {
  
   "carriageReturn :: Undefined":
   _("CarriageReturn (CR)."),
-  
-  "horizontalTab :: Undefined":
-  _("horizontalTab (HT)."),
 
 }; // ScreenCursorOperations
 
@@ -432,7 +430,7 @@ ScreenSequenceHandler.definition = {
   {
     var line;
 
-    line = this._getCurrentLine();
+    line = this.getCurrentLine();
     line.type = coUtils.Constant.LINETYPE_TOP;
     line.dirty = 1;
   },
@@ -443,18 +441,31 @@ ScreenSequenceHandler.definition = {
   {
     var line;
 
-    line = this._getCurrentLine();
+    line = this.getCurrentLine();
     line.type = coUtils.Constant.LINETYPE_BOTTOM;
     line.dirty = 1;
   },
 
-  /** DEC single-height line. */
+  /** 
+   *
+   * DECSWL — Single-Width, Single-Height Line
+   *
+   * DECSWL makes the line with the cursor a single-width, single-height 
+   * line. This line attribute is the standard for all new lines on the 
+   * screen.
+   *
+   * Format
+   *
+   * ESC   #     5
+   * 1/11  2/3   3/5
+   *
+   */ 
   "[profile('vt100'), sequence('ESC #5')]": 
   function DECSWL() 
   {
     var line;
 
-    line = this._getCurrentLine();
+    line = this.getCurrentLine();
     line.type = coUtils.Constant.LINETYPE_NORMAL;
     line.dirty = 1;
   },
@@ -478,7 +489,7 @@ ScreenSequenceHandler.definition = {
   {
     var line;
    
-    line = this._getCurrentLine();
+    line = this.getCurrentLine();
     line.type = coUtils.Constant.LINETYPE_DOUBLEWIDTH;
     line.dirty = 1;
   },
@@ -1073,36 +1084,6 @@ ScreenSequenceHandler.definition = {
     this.setPositionX((n2 || 1) - 1 + this.cursor.originX);
   },
 
-  /**
-   *
-   * DECST8C — Set Tab at Every 8 Columns
-   *
-   * Set a tab stop at every eight columns starting with column 9.
-   *
-   * Format
-   *
-   * CSI    ?      5     W
-   * 9/11   3/15   3/5   5/7
-   *
-   * Description
-   *
-   * Any tab stop setting before this command is executed is cleared 
-   * automatically. Control function TBC clears the tab stops on the display;
-   * HTS sets a horizontal tab stop at the active column.
-   */
-  "[profile('vt100'), sequence('CSI ?%dW')]":
-  function DECST8C(n) 
-  { 
-    if (5 === n) {
-      // Set Tab at Every 8 Columns
-      this._resetTabStop();
-    } else {
-      coUtils.Debug.reportWarning(
-        _("%s sequence [%s] was ignored."),
-        arguments.callee.name, Array.slice(arguments));
-    }
-  },
-
   "[profile('vt100'), sequence('CSI %di')]":
   function MC(n) 
   { // TODO: Media Copy
@@ -1241,7 +1222,7 @@ Viewable.definition = {
   {
     var line;
     
-    line = this._getCurrentLine();
+    line = this.getCurrentLine();
     line.type = coUtils.Constant.LINETYPE_SIXEL;
     line.dirty = true;
     line.sixel_info = {
@@ -1604,231 +1585,6 @@ Resizable.definition = {
 
 }; // Resize
 
- 
-/**
- * @trait TabController
- */
-var TabController = new Trait("TabController");
-TabController.definition = {
-  
-  _tab_stops: null,
-
-  "[install]":
-  function install_tabcontroller(broker)
-  {
-  },
-
-  /** horizontalTab (HT). */
-  "[type('Undefined')] horizontalTab":
-  function horizontalTab() 
-  {
-    var cursor, tab_stops, line, width, max, positionX, i, stop;
-
-    cursor = this.cursor;
-    tab_stops = this._tab_stops;
-    line = this._getCurrentLine();
-    width = this._width;
-
-    if (coUtils.Constant.LINETYPE_NORMAL === line.type) {
-      max = width - 1;
-    } else {
-      max = width / 2 - 1 | 0;
-    }
-
-    positionX = cursor.positionX;
-    if (positionX > max) {
-      if (this._wraparound_mode) {
-        cursor.positionX = 0;
-        this.lineFeed();
-        return;
-      }
-    }
-
-    for (i = 0; i < tab_stops.length; ++i) {
-      stop = tab_stops[i];
-      if (stop > positionX) {
-        cursor.positionX = stop;
-        if (cursor.positionX >= max) {
-          break;
-        }
-        return;
-      }
-    }
-    cursor.positionX = max;
-  },
-
-  _resetTabStop: function _resetTabStop()
-  {
-    var i, width;
-
-    // update tab stops
-    width = this._width;
-    this._tab_stops = [];
-    for (i = 0; i < width; i += 8) {
-      this._tab_stops.push(i);
-    }
-    if (i != width - 1) {
-      this._tab_stops.push(width - 1);
-    }
-  },
-
-  setTab: function setTab() 
-  {
-    this._tab_stops.push(this.cursor.positionX);
-    this._tab_stops.sort(function(lhs, rhs) lhs > rhs);
-  },
-
-  /**
-   *
-   * TBC—Tab Clear
-   *
-   * This control function clears tab stops.
-   *
-   * Format
-   *
-   * CSI    Ps    g
-   * 9/11   3/n   6/7
-   *
-   * Parameters
-   *
-   * Ps
-   * indicates the tab stops to clear. There are only two values for Ps, 0 and 3.
-   * 0 or none (default) - The terminal only clears the tab stop at the cursor.
-   * 3                   - The terminal clears all tab stops.
-   *
-   */
-  "[profile('vt100'), sequence('CSI %dg')]":
-  function TBC(n) 
-  { // TaB Clear
-
-    var tab_stops, pisitionX, i, stop;
-
-    switch (n || 0) {
-
-      case 0:
-        tab_stops = this._tab_stops;
-        positionX = this.cursor.positionX;;
-        for (i = 0; i < tab_stops.length; ++i) {
-          stop = tab_stops[i];
-          if (stop === positionX) {
-            tab_stops.splice(i, 1); // remove current tabstop.
-          } else if (stop > positionX) {
-            break;
-          }
-        }
-        break;
-
-      case 3:
-        this._tab_stops = [];
-        break;
-
-      defalut:
-        coUtils.Debug.reportWarning(
-          _("%s sequence [%s] was ignored."),
-          arguments.callee.name, Array.slice(arguments));
-
-    }
-  },
-
-  /**
-   *
-   * CHT — Cursor Horizontal Forward Tabulation
-   *
-   * Move the active position n tabs forward.
-   *
-   * Default: 1.
-   *
-   * Format
-   *
-   * CSI    Pn   I
-   * 9/11   3/n  4/9
-   *
-   * Parameters
-   *
-   * Pn is the number of active position tabs to move forward.
-   * Description
-   *
-   * The active position is moved to the character position corresponding to
-   * the following n-th horizontal tabulation stop.
-   *
-   */
-  "[profile('vt100'), sequence('CSI %dI')]":
-  function CHT(n) 
-  { // Cursor Horaizontal Tabulation
-    var tab_stops, cursor, width, positionX, i, stop, index;
-
-    n = (n || 1) - 1;
-
-    tab_stops = this._tab_stops;
-    cursor = this.cursor;
-    width = this._width;
-    positionX = cursor.positionX;;
- 
-    if (positionX > width - 1) {
-      if (this._wraparound_mode) {
-        cursor.positionX = 0;
-        this.lineFeed();
-        return;
-      }
-    }
-   
-    for (i = 0; i < tab_stops.length; ++i) {
-      stop = tab_stops[i];
-      if (stop > positionX) {
-        index = i + n;
-        cursor.positionX = tab_stops[index % tab_stops.length];
-        return;
-      }
-    }
-  },
-
-  /**
-   *
-   * CBT — Cursor Backward Tabulation
-   *
-   * Move the active position n tabs backward.
-   *
-   * Default: 1.
-   *
-   * Format
-   *
-   * CSI    Pn   Z
-   * 9/11   3/n  5/10
-   *
-   * Parameters
-   *
-   * Pn is the number of active position tabs to move backward.
-   *
-   * Description
-   *
-   * The active position is moved to the character position corresponding to
-   * the n-th preceding horizontal tabulation stop. If an attempt is made to 
-   * move the active position past the first character position on the line, 
-   * then the active position stays at column one.
-   *
-   */
-  "[profile('vt100'), sequence('CSI %dZ')]":
-  function CBT(n) 
-  { // Cursor Backward Tabulation
-    var tab_stops, cursor, positionX, i, stop, index;
-
-    n = (n || 1) - 1;
-
-    tab_stops = this._tab_stops;
-    cursor = this.cursor;
-    positionX = cursor.positionX;;
-
-    for (i = tab_stops.length - 1; i >= 0; --i) {
-      stop = tab_stops[i];
-      if (stop < positionX) {
-        index = Math.max(0, i - n);
-        cursor.positionX = tab_stops[index];
-        break;
-      }
-    }
-  },
-
-};
 
 /**
  * @class Screen
@@ -1840,7 +1596,6 @@ var Screen = new Class().extends(Plugin)
                         .mix(Scrollable)
                         .mix(Resizable)
                         .mix(ScreenSequenceHandler)
-                        .mix(TabController)
                         .requires("ScreenSwitch")
                         .requires("ScreenBackup")
                         .requires("ScreenCursorOperations")
@@ -1900,8 +1655,6 @@ Screen.definition = {
     this._switchScreen();
     this.cursor = cursor_state;
     this._line_generator = line_generator;
-
-    this._resetTabStop();
   },
 
   "[uninstall]":
@@ -1958,9 +1711,6 @@ Screen.definition = {
         cursor.positionX = this._width - 1;
       }
 
-      // update tab stops
-      this._resetTabStop();
-
       this.sendMessage("variable-changed/screen.width", this.width);
     } else {
       this._width = value;
@@ -2016,7 +1766,7 @@ Screen.definition = {
    */
   get currentCharacterIsWide() 
   {
-    var line = this._getCurrentLine();
+    var line = this.getCurrentLine();
     if (!line) {
       return false;
     }
@@ -2078,7 +1828,7 @@ Screen.definition = {
     width = this._width;
     cursor = this.cursor;
     it = 0;
-    line = this._getCurrentLine();
+    line = this.getCurrentLine();
 
     positionX = cursor.positionX;
 
@@ -2104,7 +1854,7 @@ Screen.definition = {
             cursor.positionX = 0;
             //this.carriageReturn();
             this.lineFeed();
-            line = this._getCurrentLine();
+            line = this.getCurrentLine();
           } else {
             cursor.positionX = width - 1;
             break;
@@ -2295,7 +2045,7 @@ Screen.definition = {
   {
     var cursor, line, width;
 
-    line = this._getCurrentLine();
+    line = this.getCurrentLine();
     if (line) {
       cursor = this.cursor;
       width = this._width;
@@ -2313,7 +2063,7 @@ Screen.definition = {
     var cursor, line;
 
     cursor = this.cursor;
-    line = this._getCurrentLine();
+    line = this.getCurrentLine();
     line.erase(0, cursor.positionX + 1, cursor.attr);
   },
 
@@ -2324,7 +2074,7 @@ Screen.definition = {
     var cursor, line, width;
 
     cursor = this.cursor;
-    line = this._getCurrentLine();
+    line = this.getCurrentLine();
     width = this._width;
     line.erase(0, width, cursor.attr);
   },
@@ -2336,7 +2086,7 @@ Screen.definition = {
   {
     var cursor, line, width;
 
-    line = this._getCurrentLine();
+    line = this.getCurrentLine();
     if (line) {
       cursor = this.cursor;
       width = this._width;
@@ -2355,7 +2105,7 @@ Screen.definition = {
     var cursor, line;
 
     cursor = this.cursor;
-    line = this._getCurrentLine();
+    line = this.getCurrentLine();
     line.selectiveErase(0, cursor.positionX + 1, cursor.attr);
   },
 
@@ -2366,7 +2116,7 @@ Screen.definition = {
     var cursor, line, width;
 
     cursor = this.cursor;
-    line = this._getCurrentLine();
+    line = this.getCurrentLine();
     width = this._width;
     line.selectiveErase(0, width, cursor.attr);
   },
@@ -2523,7 +2273,7 @@ Screen.definition = {
   {
     var line, cursor, attr;
 
-    line = this._getCurrentLine();
+    line = this.getCurrentLine();
     cursor = this.cursor;
     attr = cursor.attr;
     line.insertBlanks(cursor.positionX, n, attr);
@@ -2568,7 +2318,7 @@ Screen.definition = {
     var cursor_state, line, top, bottom, positionY;
 
     cursor_state = this.cursor;
-    line = this._getCurrentLine();
+    line = this.getCurrentLine();
     top = this._scroll_top;
     bottom = this._scroll_bottom;
     positionY = cursor_state.positionY;
@@ -2674,7 +2424,7 @@ Screen.definition = {
   { // Erase CHaracters
     var line, start, end, cursor;
 
-    line = this._getCurrentLine();
+    line = this.getCurrentLine();
     attr = this.cursor.attr;
     start = this.cursor.positionX;
     end = start + n;
@@ -2689,7 +2439,7 @@ Screen.definition = {
   { // Delete CHaracters
     var line, attr;
 
-    line = this._getCurrentLine();
+    line = this.getCurrentLine();
     attr = this.cursor.attr;
     line.deleteCells(this.cursor.positionX, n, attr);
   },
@@ -2824,7 +2574,7 @@ Screen.definition = {
 
 // private methods
   /** Returns the line object which is on current cursor position. */
-  _getCurrentLine: function _getCurrentLine() 
+  getCurrentLine: function getCurrentLine() 
   {
     return this._lines[this.cursor.positionY]
   },
@@ -2871,4 +2621,4 @@ function main(broker)
   new Screen(broker);
 }
 
-
+// EOF

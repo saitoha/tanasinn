@@ -177,6 +177,8 @@ Cursor.definition = {
   /**
    *
    * DECSCUSR — Set Cursor Style
+   *
+   * ref: http://www.vt100.net/docs/vt510-rm/DECSCUSR
    * 
    * Select the style of the cursor on the screen.
    *
@@ -195,6 +197,8 @@ Cursor.definition = {
    * 2              Steady Block
    * 3              Blink Underline
    * 4              Steady Underline
+   * 5              Blink IBEAM (TeraTerm, mintty)
+   * 6              Steady IBEAM (TeraTerm, mintty)
    * 
    * This sequence causes the cursor to be displayed in a different style when
    * the cursor is enabled.

@@ -131,31 +131,6 @@ Escape.definition = {
   },
 
   /**
-   * HTS — Horizontal Tab Set
-   *
-   * HTS sets a horizontal tab stop at the column position indicated by the 
-   * value of the active column when the terminal receives an HTS.
-   *
-   * You can use either one of the following formats:
-   *
-   * Format
-   * HTS  or  ESC    H
-   * 8/8  or  1/11   4/8
-   *
-   * Description
-   * Executing an HTS does not effect the other horizontal tab stop settings.
-   *
-   */
-  "[profile('vt100'), sequence('0x88', 'ESC H'), _('Tab set.')]": 
-  function HTS() 
-  {
-    var screen;
-
-    screen = this._screen;
-    screen.setTab();
-  },
-
-  /**
    *
    * RI – Reverse Index
    * ESC M   

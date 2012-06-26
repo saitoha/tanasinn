@@ -261,22 +261,41 @@ VT52SequenceParser.definition = {
 /**
  * @class VT52
  */
-var VT52 = new Class().extends(Component);
+var VT52 = new Class().extends(Plugin)
+                      .depends("tab_controller")
+                      .depends("screen")
+                      .depends("cursorstate")
+                      ;
 VT52.definition = {
 
+  /** Component ID */
   get id()
     "vt52",
 
-  /** post constructor. 
-   *  @param {Broker} broker A Broker object.
-   */
-  "[subscribe('initialized/{screen & cursorstate}'), enabled]":
-  function onLoad(screen, cursor_state)
+  get info()
+    <plugin>
+        <name>{_("VT-52 mode")}</name>
+        <description>{
+          _("Emurate DEC VT-52 terminal.")
+        }</description>
+        <version>0.1.0</version>
+    </plugin>,
+
+  "[persistable] enabled_when_startup": true,
+
+
+  _tab_controller: null,
+  _screen: null,
+  _cursor_state: null,
+
+  "[install]":
+  function install(broker)
   {
     var sequences, i;
 
-    this._screen = screen;
-    this._cursor_state = cursor_state;
+    this._tab_controller = this.dependency["tab_controller"];
+    this._screen = this.dependency["screen"];
+    this._cursor_state = this.dependency["cursorstate"];
 
     this.sendMessage("initialized/vt52", this);
 
@@ -288,13 +307,24 @@ VT52.definition = {
       handler: this.ESC,
       context: this,
     });
+
     sequences = this.sendMessage("get/sequences/vt52");
+
     for (i = 0; i < sequences.length; ++i) {
       this.sendMessage("command/add-sequence/vt52", sequences[i]);
     }
+
   },
 
-  "[subscribe('get/grammars'), enabled]":
+  "[uninstall]":
+  function uninstall(broker)
+  {
+    this._tab_controller = null;
+    this._screen = null;
+    this._cursor_state = null;
+  },
+
+  "[subscribe('get/grammars'), pnp]":
   function onGrammarsRequested()
   {
     return this;
@@ -321,7 +351,7 @@ VT52.definition = {
    *
    *  @implements Grammar.<command/add-sequence/vt52> :: SequenceInfo -> Undefined
    */
-  "[subscribe('command/add-sequence/vt52'), type('SequenceInfo -> Undefined'), enabled]":
+  "[subscribe('command/add-sequence/vt52'), type('SequenceInfo -> Undefined'), pnp]":
   function append(information) 
   {
     var match, key, prefix;
