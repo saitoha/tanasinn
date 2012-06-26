@@ -83,6 +83,7 @@
    cursorstate.js
    tabcontroller.js
    screen.js
+   psreport.js
 
    control.js
    escape.js
