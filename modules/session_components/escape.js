@@ -292,52 +292,6 @@ Escape.definition = {
     this.sendMessage("change/encoder", "UTF-8");
   },
 
-  _conformance_level: 4,
-  _s8bit: false,
-
-  /**
-   *
-   * DECSCL — Select Conformance Level
-   *
-   * ref: http://www.vt100.net/docs/vt510-rm/DECSCL
-   *
-   * You select the terminal's operating level by using the following select 
-   * conformance level (DECSCL) control sequences. The factory default is level 
-   * 4 (VT Level 4 mode, 7-bit controls).
-   *
-   * Note
-   *
-   * When you change the conformance level, the terminal performs a hard reset (RIS).
-   *
-   */
-  "[profile('vt100'), sequence('CSI %d\"p')]": 
-  function DECSCL(n1, n2) 
-  {
-    var level = n1,
-        submode = n2;
-
-    if (61 === level) {
-      level = 1;
-      this._s8bit = true;
-    } else if (62 <= level && level <= 69) {
-      if (0 === submode || 2 === submode) {
-        this._s8bit = true;
-      } else if (1 === submode) {
-        this._s8bit = false;
-      } else {
-        coUtils.Debug.reportWarning(
-          "%s sequence [%s] was ignored.",
-          arguments.callee.name, [].slice.apply(arguments));
-        return;
-      }
-      level = 4;
-    }
-    if (level !== this._conformance_level) {
-      this._conformance_level = level;
-      this.sendMessage("command/hard-terminal-reset");
-    }
-  },
-
   /**
    * DECTST — Invoke Confidence Test
    *

@@ -147,6 +147,18 @@ TabController.definition = {
     }
   },
 
+  "[subscribe('command/report-tabstop-information'), pnp]":
+  function DECTABSR()
+  {
+    var message;
+
+    message = "\x1bP$u" 
+            + this._tab_stops.join("/") 
+            + "\e\\";
+
+    this.sendMessage("command/send-to-tty", message);
+  },
+
   "[subscribe('variable-changed/screen.width'), pnp]":
   function onScreenWidthChanged()
   {

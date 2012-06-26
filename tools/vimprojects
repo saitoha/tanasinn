@@ -84,6 +84,7 @@
    tabcontroller.js
    screen.js
    psreport.js
+   conformance.js
 
    control.js
    escape.js
