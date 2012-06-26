@@ -26,6 +26,38 @@
 /**
  * @class ReverseVideo
  *
+ * DECSCNM — Screen Mode: Light or Dark Screen
+ *
+ * ref: http://www.vt100.net/docs/vt510-rm/DECSCNM
+ *
+ * This control function selects a dark or light background on the screen.
+ *
+ * Default: Dark background.
+ *
+ * Format
+ *
+ * CSI   ?     5     h
+ * 9/11  3/15  3/5   h
+ *
+ * 6/8   Set: reverse video.
+ *
+ * CSI   ?     5     l
+ * 9/11  3/15  3/5   6/12
+ *
+ * Reset: normal display.
+ *
+ * Description
+ *
+ * When DECSCNM is set, the screen displays dark characters on a light
+ * background.
+ * When DECSCNM is reset, the screen displays light characters on a dark
+ * background.
+ *
+ * Note on DECSCNM
+ *
+ * Screen mode only effects how the data appears on the screen. DECSCNM does 
+ * not change the data in page memory.
+ *
  */
 var ReverseVideo = new Class().extends(Plugin);
 ReverseVideo.definition = {
@@ -99,4 +131,4 @@ function main(broker)
   new ReverseVideo(broker);
 }
 
-
+// EOF

@@ -58,7 +58,8 @@ KeypadModeHandler.definition = {
    * The setting is not saved in NVM. When you turn on or reset the terminal, 
    * it automatically selects numeric keypad mode.
    */ 
-  "[profile('vt100'), sequence('ESC >')]": function DECPNM() 
+  "[profile('vt100'), sequence('ESC >')]":
+  function DECPNM() 
   {
     this.sendMessage(
       "event/keypad-mode-changed", 
@@ -207,6 +208,19 @@ Escape.definition = {
     }
   },
 
+  /**
+   *
+   * SOS - START OF STRING
+   *
+   * Notation: (C1)
+   * Representation: 09/08 or ESC 05/08
+   * SOS is used as the opening delimiter of a control string. The character 
+   * string following may consist of any bit combination, except those 
+   * representing SOS or STRING TERMINATOR (ST). The control string is closed 
+   * by the terminating delimiter STRING TERMINATOR (ST). The interpretation 
+   * of the character string depends on the application.
+   *
+   */
   "[profile('vt100'), sequence('0x98%s', 'ESC X%s')]": 
   function SOS() 
   {
@@ -216,6 +230,20 @@ Escape.definition = {
     this.sendMessage("sequence/sos", message);
   },
 
+  /**
+   *
+   * APC - APPLICATION PROGRAM COMMAND
+   *
+   * Notation: (C1)
+   * Representation: 09/15 or ESC 05/15
+   * APC is used as the opening delimiter of a control string for application
+   * program use. The command string following may consist of bit combinations
+   * in the range 00/08 to 00/13 and 02/00 to 07/14. The control string is 
+   * closed by the terminating delimiter STRING TERMINATOR (ST). The 
+   * interpretation of the command string depends on the relevant application 
+   * program.
+   *
+   */
   "[profile('vt100'), sequence('0x9f', 'ESC _%s')]": 
   function APC() 
   {
@@ -225,6 +253,22 @@ Escape.definition = {
     this.sendMessage("sequence/apc", message);
   },
   
+  /**
+   *
+   * OSC - OPERATING SYSTEM COMMAND
+   *
+   * Notation: (C1)
+   *
+   * Representation: 09/13 or ESC 05/13
+   *
+   * OSC is used as the opening delimiter of a control string for operating 
+   * system use. The command string following may consist of a sequence of 
+   * bit combinations in the range 00/08 to 00/13 and 02/00 to 07/14. The 
+   * control string is closed by the terminating delimiter STRING TERMINATOR 
+   * (ST). The interpretation of the command string depends on the relevant 
+   * operating system.
+   *
+   */
   "[profile('vt100'), sequence('0x9d', 'ESC ]%s')]": 
   function OSC(message) 
   {
@@ -236,6 +280,20 @@ Escape.definition = {
     this.sendMessage("sequence/osc/" + num, command);
   },
   
+  /**
+   *
+   * PM - PRIVACY MESSAGE
+   *
+   * Notation: (C1)
+   * Representation: 09/14 or ESC 05/14
+   * PM is used as the opening delimiter of a control string for privacy 
+   * message use. The command string following may consist of a sequence of
+   * bit combinations in the range 00/08 to 00/13 and 02/00 to 07/14. The 
+   * control string is closed by the terminating delimiter STRING TERMINATOR 
+   * (ST). The interpretation of the command string depends on the relevant 
+   * privacy discipline.
+   *
+   */
   /** private message */
   "[profile('vt100'), sequence('0x9e', 'ESC ^%s')]": 
   function PM(message) 
@@ -259,22 +317,50 @@ Escape.definition = {
     this.sendMessage("change/encoder", "UTF-8");
   },
 
-  /** Selective Erace Rectangle Area. */
-  "[profile('vt100'), sequence('CSI %d${')]": 
-  function DECSERA(n1, n2, n3, n4) 
-  {
-    coUtils.Debug.reportWarning(
-      "%s sequence [%s] was ignored.",
-      arguments.callee.name, [].slice.apply(arguments));
-  },
+  _conformance_level: 4,
+  _s8bit: false,
 
-  /** Soft Terminal reset. */
+  /**
+   *
+   * DECSCL — Select Conformance Level
+   *
+   * ref: http://www.vt100.net/docs/vt510-rm/DECSCL
+   *
+   * You select the terminal's operating level by using the following select 
+   * conformance level (DECSCL) control sequences. The factory default is level 
+   * 4 (VT Level 4 mode, 7-bit controls).
+   *
+   * Note
+   *
+   * When you change the conformance level, the terminal performs a hard reset (RIS).
+   *
+   */
   "[profile('vt100'), sequence('CSI %d\"p')]": 
-  function DECSCL() 
+  function DECSCL(n1, n2) 
   {
-    coUtils.Debug.reportWarning(
-      "%s sequence [%s] was ignored.",
-      arguments.callee.name, [].slice.apply(arguments));
+    var level = n1,
+        submode = n2;
+
+    if (61 === level) {
+      level = 1;
+      this._s8bit = true;
+    } else if (62 <= level && level <= 69) {
+      if (0 === submode || 2 === submode) {
+        this._s8bit = true;
+      } else if (1 === submode) {
+        this._s8bit = false;
+      } else {
+        coUtils.Debug.reportWarning(
+          "%s sequence [%s] was ignored.",
+          arguments.callee.name, [].slice.apply(arguments));
+        return;
+      }
+      level = 4;
+    }
+    if (level !== this._conformance_level) {
+      this._conformance_level = level;
+      this.sendMessage("command/hard-terminal-reset");
+    }
   },
 
   /**
@@ -404,6 +490,7 @@ Escape.definition = {
   {
     this._screen = screen;
   },
+
 };
 
 /**

@@ -75,11 +75,12 @@ Cursor.definition = {
   _initial_color: null,
 
   "[persistable, watchable] color": "#77ff77",
-  "[persistable, watchable] opacity": 0.5,
-  "[persistable] blink_duration": 800, /* in msec */
+  "[persistable, watchable] opacity": 0.7,
+  "[persistable, watchable] opacity2": 0.1,
+  "[persistable] blink_duration": 700, /* in msec */
   "[persistable] blink_transition_duration": 600, /* in msec */
   "[persistable] timing_function": "ease-in-out",
-  "[persistable] initial_blink": false,
+  "[persistable] initial_blink": true,
  
   /** Installs itself. */
   "[install]": 
@@ -98,8 +99,8 @@ Cursor.definition = {
     // subscribe some events.
     //
     // initial update
-    this.onBlinkingModeChanged(this.initial_blink);
     this.update();
+    this._prepareBlink();
   },
 
   /** Uninstalls itself. */
@@ -206,37 +207,41 @@ Cursor.definition = {
   "[profile('vt100'), sequence('CSI %d q')]":
   function DECSCUSR(n) 
   {
+    var cursor_state;
+
+    cursor_state = this.dependency["cursorstate"];
+
     switch (n) {
 
       case 0:
       case 1:
         this._style = coUtils.Constant.CURSOR_STYLE_BLOCK;
-        this.onBlinkingModeChanged(true);
+        cursor_state.blink = true;
         break;
 
       case 2:
         this._style = coUtils.Constant.CURSOR_STYLE_BLOCK;
-        this.onBlinkingModeChanged(false);
+        cursor_state.blink = false;
         break;
 
       case 3:
         this._style = coUtils.Constant.CURSOR_STYLE_UNDERLINE;
-        this.onBlinkingModeChanged(true);
+        cursor_state.blink = true;
         break;
 
       case 4:
         this._style = coUtils.Constant.CURSOR_STYLE_UNDERLINE;
-        this.onBlinkingModeChanged(false);
+        cursor_state.blink = false;
         break;
 
       case 5:
         this._style = coUtils.Constant.CURSOR_STYLE_BEAM;
-        this.onBlinkingModeChanged(true);
+        cursor_state.blink = true;
         break;
 
       case 6:
         this._style = coUtils.Constant.CURSOR_STYLE_BEAM;
-        this.onBlinkingModeChanged(false);
+        cursor_state.blink = false;
         break;
 
       default:
@@ -382,7 +387,7 @@ Cursor.definition = {
 
     // set cursor color
     context.fillStyle = this.color;
-
+  
     // calculate cursor position, size
     switch (this._style) {
 
@@ -421,18 +426,20 @@ Cursor.definition = {
   /** Set blink timer. */
   _prepareBlink: function _prepareBlink() 
   {
+    var i;
+
     if (null !== this._timer) {
       this._timer.cancel();
     } 
-    var i = 0;
 
+    i = 0;
     this._timer = coUtils.Timer.setInterval(
       function()
       {
         if (this._blink && i++ % 2) {
-          this._canvas.style.opacity = 0.00;
+          this._setVisibility(false);
         } else {
-          this._canvas.style.opacity = this.opacity;
+          this._setVisibility(true);
         }
       }, this.blink_duration, this);
   },
@@ -446,7 +453,7 @@ Cursor.definition = {
       if (visibility) {
         this._canvas.style.opacity = this.opacity;
       } else {
-        this._canvas.style.opacity = this.opacity;
+        this._canvas.style.opacity = this.opacity2;
       }
     }
   }
