@@ -68,16 +68,9 @@ TabController.definition = {
    
   /** Horizontal tabulation.
    */
-  "[profile('vt100'), sequence('0x09')]":
+  "[profile('vt100'), sequence('0x09'), type('Undefined')]":
   function HT() 
   { // Horizontal Tab
-    this.horizontalTab();
-  },
-
-  /** horizontalTab (HT). */
-  "[type('Undefined')] horizontalTab":
-  function horizontalTab() 
-  {
     var cursor, tab_stops, line, width, max, positionX,
         i, stop, screen;
 
@@ -88,18 +81,18 @@ TabController.definition = {
     width = screen.width;
 
     if (coUtils.Constant.LINETYPE_NORMAL === line.type) {
-      max = width - 1;
+      max = 0 === tab_stops.length ? 0: tab_stops[tab_stops.length - 1];
     } else {
       max = width / 2 - 1 | 0;
     }
 
     positionX = cursor.positionX;
     if (positionX > max) {
-      if (this._wraparound_mode) {
+      //if (this._wraparound_mode) {
         cursor.positionX = 0;
-        this.lineFeed();
+        this._screen.lineFeed();
         return;
-      }
+      //}
     }
 
     for (i = 0; i < tab_stops.length; ++i) {
@@ -147,16 +140,63 @@ TabController.definition = {
     }
   },
 
+  /**
+   *
+   * DECTABSR — Tab Stop Report
+   * 
+   * The terminal sends this sequence to the host in response to a request 
+   * presentation state report (DECRQPSR) sequence. DECTABSR informs the host 
+   * of the terminal's current tab settings.
+   * 
+   * Programming Tip
+   *
+   * Applications can use information in the tab stop report to save the 
+   * current tab stops. Later, the application can restore the saved tab stops.
+   * 
+   * This operation is useful for applications that need to temporarily change
+   * the terminal's tab stops. When the application is finished, it can restore
+   * the tab stops that were in effect before the application changed them. You
+   * use the restore presentation state (DECRSPS) function to restore tab 
+   * stops. Refer to DECRSPS—Restore Presentation State for additional information.
+   *
+   * Format
+   *
+   * DCS   2     $     u     D ... D  ST
+   * 9/0   3/2   2/4   7/5   ...      9/12
+   * 
+   * Parameters
+   * 
+   * D...D
+   * is a data string indicating the column number location of each tab stop.
+   *
+   * Example
+   * 
+   * The following is an example of a DECTABSR sequence:
+   * 
+   * DCS 2 $ u 9/ 17/ 25/ 33/ 41/ 49/ 57/ 65/ 73 ST
+   * 
+   * 9, 17, 25, 33, 41, 49, 57, 65, and 73 are the column numbers for tab stops.
+   *
+   */
   "[subscribe('command/report-tabstop-information'), pnp]":
   function DECTABSR()
   {
-    var message;
+    var message,
+        tab_stops = this._tab_stops,
+        result = [],
+        i;
 
-    message = "\x1bP$u" 
-            + this._tab_stops.join("/") 
-            + "\e\\";
+    for (i = 0; i < tab_stops.length; ++i) {
+      result.push(tab_stops[i] + 1);
+    }
+    result.pop();
 
+    message = result.join("/");
+
+    this.sendMessage("command/send-sequence/dcs");
     this.sendMessage("command/send-to-tty", message);
+    this.sendMessage("command/send-sequence/st");
+
   },
 
   "[subscribe('variable-changed/screen.width'), pnp]":
@@ -175,7 +215,7 @@ TabController.definition = {
 
     this._tab_stops = [];
 
-    for (i = 0; i < width; i += 8) {
+    for (i = 8; i < width; i += 8) {
       this._tab_stops.push(i);
     }
     if (i != width - 1) {
@@ -299,11 +339,11 @@ TabController.definition = {
     positionX = cursor.positionX;;
  
     if (positionX > width - 1) {
-      if (this._wraparound_mode) {
+      //if (this._wraparound_mode) {
         cursor.positionX = 0;
-        this.lineFeed();
+        this._screen.lineFeed();
         return;
-      }
+      //}
     }
    
     for (i = 0; i < tab_stops.length; ++i) {

@@ -255,9 +255,10 @@ DECLocatorMouse.definition = {
   "[subscribe('event/locator-reporting-requested'), enabled]": 
   function reportDECTermStyleLocatorInfo()
   {
-    let code;
-    let event = this._locator_event;
-    let locator_reporting_mode = this._locator_reporting_mode;
+    var code,
+        event = this._locator_event,
+        locator_reporting_mode = this._locator_reporting_mode;
+
     if (null === locator_reporting_mode) {
       return;
     }
@@ -279,8 +280,7 @@ DECLocatorMouse.definition = {
       "\x1b[%d;%d;%d;%d;1&w", 
       code, this._locator_state, row, column);
 
-    let broker = this._broker;
-    broker.notify("command/send-to-tty", message);
+    this.sendMessage("command/send-to-tty", message);
 
   },
 
@@ -288,8 +288,11 @@ DECLocatorMouse.definition = {
   "[listen('DOMMouseScroll', '#tanasinn_content')]": 
   function onmousescroll(event) 
   {
-    let renderer = this.dependency["renderer"];
-    if(event.axis === event.VERTICAL_AXIS) {
+    var renderer;
+
+    renderer = this.dependency["renderer"];
+
+    if (event.axis === event.VERTICAL_AXIS) {
 
       let count = event.detail;
       if (event.hasPixels) {
@@ -302,17 +305,16 @@ DECLocatorMouse.definition = {
         return;
       }
 
-      let broker = this._broker;
       let locator_reporting_mode = this._locator_reporting_mode;
 
       if (this._in_scroll_session 
           || null === locator_reporting_mode) {
         if (count > 0) {
-          broker.notify("command/scroll-down-view", count);
-          broker.notify("command/draw");
+          this.sendMessage("command/scroll-down-view", count);
+          this.sendMessage("command/draw");
         } else if (count < 0) {
-          broker.notify("command/scroll-up-view", -count);
-          broker.notify("command/draw");
+          this.sendMessage("command/scroll-up-view", -count);
+          this.sendMessage("command/draw");
         } else { // count == 1
           return;
         }
@@ -331,7 +333,8 @@ DECLocatorMouse.definition = {
           return; 
         }
         let message = sequences.join("");
-        broker.notify("command/send-to-tty", message);
+
+        this.sendMessage("command/send-to-tty", message);
 
       }
     }
@@ -394,8 +397,7 @@ DECLocatorMouse.definition = {
       "\x1b[%d;%d;%d;%d;1&w", 
       code, this._locator_state, row, column);
 
-    let broker = this._broker;
-    broker.notify("command/send-to-tty", message);
+    this.sendMessage("command/send-to-tty", message);
   },
 
   /** Mouse move evnet listener */
@@ -454,8 +456,7 @@ DECLocatorMouse.definition = {
       "\x1b[%d;%d;%d;%d;1&w", 
       code, this._locator_state, row, column);
 
-    let broker = this._broker;
-    broker.notify("command/send-to-tty", message);
+    this.sendMessage("command/send-to-tty", message);
 
   },
   

@@ -95,27 +95,31 @@ FocusEvent.definition = {
   "[subscribe('event/got-focus')]":
   function onGotFocus()
   {
+    var message;
+
     this.onLostFocus.enabled = true;
     this.onGotFocus.enabled = false;
     if (!this._focus_mode) {
       return;
     }
-    let broker = this._broker;
-    let message = "\x1b[I"; // focus in
-    broker.notify("command/send-to-tty", message);
+
+    message = "\x1b[I"; // focus in
+    this.sendMessage("command/send-to-tty", message);
   },
 
   "[subscribe('event/lost-focus')]":
   function onLostFocus()
   {
+    var message;
+
     this.onLostFocus.enabled = false;
     this.onGotFocus.enabled = true;
     if (!this._focus_mode) {
       return;
     }
-    let broker = this._broker;
-    let message = "\x1b[O"; // focus out
-    broker.notify("command/send-to-tty", message);
+
+    message = "\x1b[O"; // focus out
+    this.sendMessage("command/send-to-tty", message);
   },
 
 }; // class FocusEvent

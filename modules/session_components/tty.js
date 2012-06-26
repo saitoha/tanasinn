@@ -399,7 +399,8 @@ Controller.definition = {
 /**
  * @class IOManager
  */
-var IOManager = new Class().extends(Component).requires("IOManager");
+var IOManager = new Class().extends(Component)
+                           .requires("IOManager");
 IOManager.definition = {
 
   get id()
@@ -430,7 +431,8 @@ IOManager.definition = {
     this._socket = socket;
     this._port = socket.port;
     this.send.enabled = true;
-    broker.notify("event/io-socket-ready", socket.port);
+
+    this.sendMessage("event/io-socket-ready", socket.port);
   },
 
   /**
@@ -588,14 +590,10 @@ IOManager.definition = {
    */
   onStopRequest: function onStopRequest(request, context, status)
   {
-    var broker;
-
-    broker = this._broker;
-
     coUtils.Debug.reportMessage(
       _("onStopRequest called. status: %s"), status);
     try {
-      broker.stop();
+      this._broker.stop();
     } catch (e) { 
       coUtils.Debug.reportError(e)
     }

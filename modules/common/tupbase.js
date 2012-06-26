@@ -627,7 +627,7 @@ Component.definition = {
     return broker.notify(topic, data);
   },
 
-  postMessage: function sendMessage(topic, data)
+  postMessage: function postMessage(topic, data)
   {
     var broker;
     
@@ -645,6 +645,25 @@ Component.definition = {
     
     broker = this._broker;
     return broker.uniget(topic, data);
+  },
+
+  getVariable: function getVariable(topic)
+  {
+    var broker, result, length;
+    
+    broker = this._broker;
+    result = broker.notify(topic);
+    length = result.length;
+    if (0 === length) {
+      return null;
+    } else {
+      if (1 !== length) {
+        coUtils.Debug.reportWarning(
+          _("Too many subscriber is found: %s"),
+          topic);
+        return result[0];
+      }
+    }
   },
 
   /** This method is expected to run test methods.

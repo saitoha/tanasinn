@@ -391,7 +391,7 @@ SequenceParser.definition = {
   append: function append(key, value, context) 
   {
     let match = key
-      .match(/^(0x[0-9a-zA-Z]+)(%s)?$|^%d([\x20-\x7f]+)$|^%<Ps>([\x20-\x7f]+)$|^(.)%s$|^(%p)$|^(%c)$|^(.)$|^(.)(.+)$/);
+      .match(/^(0x[0-9a-zA-Z]{2})(.*)$|^%d([\x20-\x7f]+)$|^%<Ps>([\x20-\x7f]+)$|^(.)%s$|^(%p)$|^(%c)$|^(.)$|^(.)(.+)$/);
     let [, 
       number, number2,
       char_with_param, 
@@ -403,7 +403,7 @@ SequenceParser.definition = {
     ] = match;
     if (number) { // parse number
       let code = parseInt(number, 16);
-      if (number2) {
+      if ("%s" === number2) {
 
         let action = function(params) 
         {
@@ -416,7 +416,14 @@ SequenceParser.definition = {
 
         C0Parser.append(code, new StringParser(action));
 
+      } else if (number2) {
+
+        let code = parseInt(number, 16);
+        let next = this[code] = this[code] || new SequenceParser;
+        next.append(number2, value, context);
+
       } else {
+
         if ("parse" in value) {
           C0Parser.append(code, value);
         } else {
@@ -649,7 +656,6 @@ VT100Grammar.definition = {
   function append(information) 
   {
     var {expression, handler, context} = information;
-    var match = expression.split(/\s+/);
     var pos = expression.indexOf(" ");
     var key = expression.substr(pos + 1)
     var prefix;

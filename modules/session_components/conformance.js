@@ -147,9 +147,39 @@ ConformanceLevel.definition = {
    *
    */
   "[profile('vt100'), sequence('ESC 0x20G')]":
-  function S8C1T(n) 
+  function S8C1T() 
   {
     this._8bit_mode = true;
+  },
+
+  /** return 8bit mode state */
+  "[subscribe('command/send-sequence/dcs'), pnp]":
+  function send_DCS() 
+  {
+    var message;
+
+    if (this._8bit_mode) {
+      message = "\x90";
+    } else {
+      message = "\x1bP";
+    }
+
+    this.sendMessage("command/send-to-tty", message);
+  },
+
+  /** return 8bit mode state */
+  "[subscribe('command/send-sequence/st'), pnp]":
+  function send_ST() 
+  {
+    var message;
+
+    if (this._8bit_mode) {
+      message = "\x07";
+    } else {
+      message = "\x1b\\";
+    }
+
+    this.sendMessage("command/send-to-tty", message);
   },
 
   /** return 8bit mode state */

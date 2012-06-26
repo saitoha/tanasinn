@@ -172,11 +172,11 @@ DecoderMenu.definition = {
   _onChange: function(scheme) 
   {
     this._scheme = scheme;
-    let broker = this._broker;
-    broker.notify("change/decoder", scheme)
+    this.sendMessage("change/decoder", scheme)
+
     // send control + l 
     if (this.send_ff_when_encoding_changed) {
-      broker.notify("command/send-to-tty", String.fromCharCode(0x0c)); 
+      this.sendMessage("command/send-to-tty", String.fromCharCode(0x0c)); 
     }
   }
 };
