@@ -522,6 +522,11 @@ CursorState.definition = {
   "[subscribe('command/report-cursor-information'), pnp]":
   function DECCIR()
   {
+    var pr, pc, pp, srend, satt, sflag, pgl, pgr, css, sdesig;
+
+    pr = positionY + 1;
+    pc = positionX + 1;
+
 //    this.sendMessage("command/send-sequence/dcs");
 //    this.sendMessage("command/send-to-tty", message);
 //    this.sendMessage("command/send-sequence/st");
