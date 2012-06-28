@@ -65,7 +65,7 @@ CGICompleter.definition = {
     let { source, option, completers } = context;
     let match = source.match(/^(\s*)([$_\-@a-zA-Z\.]*)(\s?)/);
     if (null === match) {
-      broker.notify("event/answer-completion", null);
+      this.sendMessage("event/answer-completion", null);
       return;
     }
     let [all, space, name, next] = match;
@@ -73,13 +73,13 @@ CGICompleter.definition = {
       let next_completer_info = completers.shift();
       if (next_completer_info) {
         let [next_completer, option] = next_completer_info.split("/");
-        broker.notify("command/query-completion/" + next_completer, {
+        this.sendMessage("command/query-completion/" + next_completer, {
           source: source.substr(all.length),
           option: option,
           completers: completers,
         });
       } else {
-        broker.notify("event/answer-completion", null);
+        this.sendMessage("event/answer-completion", null);
       }
       return;
     }
@@ -96,11 +96,11 @@ CGICompleter.definition = {
       } for (file in entries) 
         if (file.isExecutable() && -1 != file.leafName.toLowerCase().indexOf(lower_name))
     ];
-    if (0 == candidates.length) {
-      broker.notify("event/answer-completion", null);
+    if (0 === candidates.length) {
+      this.sendMessage("event/answer-completion", null);
       return;
     }
-    broker.notify("event/answer-completion", {
+    this.sendMessage("event/answer-completion", {
       type: "text",
       query: source, 
       data: candidates.map(function(candidate) ({
@@ -136,7 +136,7 @@ BatchCompleter.definition = {
     let { source, option, completers } = context;
     let match = source.match(/^(\s*)([$_\-@a-zA-Z\.]*)(\s?)/);
     if (null === match) {
-      broker.notify("event/answer-completion", null);
+      this.sendMessage("event/answer-completion", null);
       return;
     }
     let [all, space, name, next] = match;
@@ -144,13 +144,13 @@ BatchCompleter.definition = {
       let next_completer_info = completers.shift();
       if (next_completer_info) {
         let [next_completer, option] = next_completer_info.split("/");
-        broker.notify("command/query-completion/" + next_completer, {
+        this.sendMessage("command/query-completion/" + next_completer, {
           source: source.substr(all.length),
           option: option,
           completers: completers,
         });
       } else {
-        broker.notify("event/answer-completion", null);
+        this.sendMessage("event/answer-completion", null);
       }
       return;
     }
@@ -172,11 +172,11 @@ BatchCompleter.definition = {
         if (-1 != file.leafName.toLowerCase().indexOf(lower_name))
     ];
 
-    if (0 == candidates.length) {
-      broker.notify("event/answer-completion", null);
+    if (0 === candidates.length) {
+      this.sendMessage("event/answer-completion", null);
       return;
     }
-    broker.notify("event/answer-completion", {
+    this.sendMessage("event/answer-completion", {
       type: "text",
       query: source, 
       data: candidates.map(function(candidate) ({
@@ -214,7 +214,7 @@ ProfileCompleter.definition = {
     let { source, option, completers } = context;
     let match = source.match(/^(\s*)([$_\-@a-zA-Z\.]*)(\s?)/);
     if (null === match) {
-      broker.notify("event/answer-completion", null);
+      this.sendMessage("event/answer-completion", null);
       return;
     }
     let [all, space, name, next] = match;
@@ -222,18 +222,18 @@ ProfileCompleter.definition = {
       let next_completer_info = completers.shift();
       if (next_completer_info) {
         let [next_completer, option] = next_completer_info.split("/");
-        broker.notify("command/query-completion/" + next_completer, {
+        this.sendMessage("command/query-completion/" + next_completer, {
           source: source.substr(all.length),
           option: option,
           completers: completers,
         });
       } else {
-        broker.notify("event/answer-completion", null);
+        this.sendMessage("event/answer-completion", null);
       }
       return;
     }
 
-    if ("global" == option) {
+    if ("global" === option) {
       broker = broker._broker;
     }
 
@@ -246,10 +246,10 @@ ProfileCompleter.definition = {
         key: file.leafName.replace(/\.js$/, ""), 
         value: file.path,
       } for (file in entries) 
-        if (-1 != file.leafName.toLowerCase().indexOf(lower_name))
+        if (-1 !== file.leafName.toLowerCase().indexOf(lower_name))
     ];
-    if (0 == candidates.length) {
-      broker.notify("event/answer-completion", null);
+    if (0 === candidates.length) {
+      this.sendMessage("event/answer-completion", null);
       return;
     }
     let autocomplete_result = {
@@ -260,7 +260,7 @@ ProfileCompleter.definition = {
         value: String(candidate.value),
       })),
     };
-    broker.notify("event/answer-completion", autocomplete_result);
+    this.sendMessage("event/answer-completion", autocomplete_result);
     return;
   },
 
@@ -315,8 +315,8 @@ FileCompleter.definition = {
     candidates = candidates
       .map(function(file) file.path.substr(stem_length))
       .filter(function(path) path.toLowerCase().match(lower_leaf))
-    if (0 == candidates.length) {
-      broker.notify("event/answer-completion", autocomplete_result);
+    if (0 === candidates.length) {
+      this.sendMessage("event/answer-completion", autocomplete_result);
       return;
     }
     let autocomplete_result = {
@@ -327,7 +327,7 @@ FileCompleter.definition = {
         value: path,
       })),
     };
-    broker.notify("event/answer-completion", autocomplete_result);
+    this.sendMessage("event/answer-completion", autocomplete_result);
   },
 
 };

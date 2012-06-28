@@ -27,7 +27,7 @@
  * @class TextboxWidget
  *
  */
-let TextboxWidget = new Class();
+var TextboxWidget = new Class();
 TextboxWidget.definition = {
 
   "[persistable, watchable] font_color": "white",
@@ -56,7 +56,10 @@ TextboxWidget.definition = {
 
   dispose: function dispose(broker) 
   {
-    let dom = this._dom;
+    var dom;
+
+    dom = this._dom;
+
     if (dom.canvas) {
       dom.canvas.parentNode.removeChild(dom.canvas);
       dom.canvas = null;
@@ -117,7 +120,10 @@ TextboxWidget.definition = {
 
   commit: function commit()
   {
-    let dom = this._dom;
+    var dom;
+
+    dom = this._dom;
+
     this.value = this.value.substr(0, this.selectionStart) 
       + dom.textbox.value
       + this.value.substr(this.selectionEnd);
@@ -126,7 +132,10 @@ TextboxWidget.definition = {
 
   _clear: function _clear()
   {
-    let dom = this._dom;
+    var dom;
+
+    dom = this._dom;
+
     dom.context.clearRect(
       0, 0, 
       dom.canvas.width, dom.canvas.height);
@@ -134,26 +143,32 @@ TextboxWidget.definition = {
 
   _draw: function _draw()
   {
+    var dom, height, left, cursor_left, font, width;
+
     this._clear();
-    let dom = this._dom;
+
+    dom = this._dom;
     dom.context.fillStyle = this.font_color;
     dom.context.font = this.font_size + "px " + this.font_family + " " + this.font_weight;
-    let height = this._glyph_height;
+
+    height = this._glyph_height;
 
     if ("command" == this._mode) {
       if (this._main_buffer) {
         dom.context.fillText(this._main_buffer, 0, height + 2);
       }
       dom.context.globalAlpha = 0.5;
-      let left = dom.context.measureText(this._main_buffer).width;
+
+      left = dom.context.measureText(this._main_buffer).width;
       dom.context.fillText(
         this._completion_buffer.substr(this._main_buffer.length), left, height + 2);
 
       dom.context.globalAlpha = 0.5;
 
-      let cursor_left = this._main_buffer.substr(0, this._start);
+      cursor_left = this._main_buffer.substr(0, this._start);
       left = dom.context.measureText(cursor_left).width;
-      let font = dom.context.font;
+
+      font = dom.context.font;
       dom.context.font = "yellow";
       dom.context.fillRect(left, 0, 10, height);
       dom.context.font = font;
@@ -166,7 +181,7 @@ TextboxWidget.definition = {
       }
     }
     if (this._keystate_buffer) {
-      let width = dom.context.measureText(this._keystate_buffer).width;
+      width = dom.context.measureText(this._keystate_buffer).width;
       dom.context.clearRect(dom.canvas.width - width, 0, width, height);
       dom.context.fillText(this._keystate_buffer, dom.canvas.width - width, height + 2);
     }
@@ -191,7 +206,9 @@ TextboxWidget.definition = {
 
   set selectionEnd(position) 
   {
-    let dom = this._dom;
+    var dom;
+
+    dom = this._dom;
     this._end = position;
     dom.textbox.selectionEnd = position;
     this._draw();
@@ -354,23 +371,25 @@ CompletionView.definition = {
   "[subscribe('command/select-next-candidate'), enabled]":
   function down()
   {
-    let index = Math.min(this.currentIndex + 1, this.rowCount - 1);
+    var index;
+
+    index = Math.min(this.currentIndex + 1, this.rowCount - 1);
     if (index >= 0) {
       this.select(index);
     }
-    let broker = this._broker;
-    broker.notify("command/fill");
+    this.sendMessage("command/fill");
   },
 
   "[subscribe('command/select-previous-candidate'), enabled]":
   function up()
   {
-    let index = Math.max(this.currentIndex - 1, -1);
+    var index;
+
+    index = Math.max(this.currentIndex - 1, -1);
     if (index >= 0) {
       this.select(index);
     }
-    let broker = this._broker;
-    broker.notify("command/fill");
+    this.sendMessage("command/fill");
   },
 
 }; // CompletionView
@@ -507,7 +526,7 @@ Commandline.definition = {
       tanasinn_completion_popup, 
       tanasinn_completion_scroll, 
       tanasinn_completion_root,
-    } = broker.uniget("command/construct-chrome", this.template);
+    } = this.request("command/construct-chrome", this.template);
 
     this._canvas = tanasinn_commandline_canvas;
 
@@ -633,8 +652,7 @@ Commandline.definition = {
     this._textbox.focus();
     this._textbox.focus();
 
-    let broker = this._broker;
-    broker.notify("event/mode-changed", "commandline");
+    this.sendMessage("event/mode-changed", "commandline");
   },
 
   "[subscribe('event/input-state-changed'), enabled]":
@@ -699,8 +717,7 @@ Commandline.definition = {
     }
     if (result) {
       let type = result.type || "text";
-      let broker = this._broker;
-      let driver = broker.uniget("get/completion-display-driver/" + type); 
+      let driver = this.request("get/completion-display-driver/" + type); 
       if (driver) {
         driver.drive(grid, result, this.currentIndex);
         this.invalidate(result);
@@ -786,7 +803,7 @@ Commandline.definition = {
         this._stem_text = current_text;
         this.select(-1);
         let broker = this._broker;
-        broker.notify(
+        this.sendMessage(
           "command/complete-commandline", 
           {
             source: current_text, 
@@ -805,8 +822,7 @@ Commandline.definition = {
   "[subscribe('event/keypress-commandline-with-remapping'), enabled]":
   function onKeypressCommandlineWithMapping(code) 
   {
-    let broker = this._broker;
-    let result = broker.uniget(
+    let result = this.request(
       "event/commandline-input", 
       {
         textbox: this._textbox, 
@@ -853,7 +869,7 @@ Commandline.definition = {
     }
   },
 
-  "[listen('contextmenu', '#tanasinn_commandline', true), enabled]":
+  "[listen('contextmenu', '#tanasinn_commandline', true), pnp]":
   function oncontextmenu(event) 
   {
     event.preventDefault();
@@ -862,9 +878,10 @@ Commandline.definition = {
   "[listen('keypress', '#tanasinn_commandline', true)]":
   function onkeypress(event) 
   {
-    let code = coUtils.Keyboard.getPackedKeycodeFromEvent(event);
-    let broker = this._broker;
-    broker.notify("event/scan-keycode", {
+    var code;
+    code = coUtils.Keyboard.getPackedKeycodeFromEvent(event);
+
+    this.sendMessage("event/scan-keycode", {
       mode: "commandline", 
       code: code,
       event: event,
@@ -879,15 +896,16 @@ Commandline.definition = {
 
   onsubmit: function onsubmit() 
   {
-    let broker = this._broker;
-    let command = this._textbox.value;
+    var command;
+
+    command = this._textbox.value;
 
     this._textbox.value = "";
     this._textbox.completion = "";
-    broker.notify("command/eval-commandline", command);
-//    this._textbox.blur();
-    let broker = this._broker;
-    broker.notify("command/focus");
+
+    this.sendMessage("command/eval-commandline", command);
+    
+    this.sendMessage("command/focus");
   },
 
   "[listen('popupshown', '#tanasinn_commandline', false)]":
@@ -905,10 +923,11 @@ Commandline.definition = {
   "[listen('click', '#tanasinn_commandline_canvas', false)]":
   function onclick(event) 
   {
-    let broker = this._broker;
-    coUtils.Timer.setTimeout(function() {
-      broker.notify("command/enable-commandline");
-    }, 0);
+    coUtils.Timer.setTimeout(
+      function() 
+      {
+        this.sendMessage("command/enable-commandline");
+      }, 0, this);
   },
 
   "[listen('change', '#tanasinn_commandline', true)]":

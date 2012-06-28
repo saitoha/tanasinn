@@ -79,7 +79,7 @@ DECLocatorMouse.definition = {
   function restore(context) 
   {
     if (context.decmouse) {
-      let {locator_reporting_mode} = context.decmouse;
+      var {locator_reporting_mode} = context.decmouse;
       this._locator_reporting_mode = locator_reporting_mode;
     }
   },
@@ -178,15 +178,15 @@ DECLocatorMouse.definition = {
   "[listen('DOMMouseScroll', '#tanasinn_content')]": 
   function onmousescroll(event) 
   {
-    var renderer;
+    var renderer, count, line_height, locator_reporting_mode, sequences;
 
     renderer = this.dependency["renderer"];
 
     if (event.axis === event.VERTICAL_AXIS) {
 
-      let count = event.detail;
+      count = event.detail;
       if (event.hasPixels) {
-        let line_height = renderer.line_height;
+        line_height = renderer.line_height;
         count = Math.round(count / line_height + 0.5);
       } else {
         count = Math.round(count / 2);
@@ -195,7 +195,7 @@ DECLocatorMouse.definition = {
         return;
       }
 
-      let locator_reporting_mode = this._locator_reporting_mode;
+      locator_reporting_mode = this._locator_reporting_mode;
 
       if (this._in_scroll_session 
           || null === locator_reporting_mode) {
@@ -211,7 +211,7 @@ DECLocatorMouse.definition = {
 
       } else {
 
-        let sequences = [];
+        sequences = [];
         if (count > 0) {
           while (count--)
             sequences.push("\x1bOB")
@@ -222,9 +222,7 @@ DECLocatorMouse.definition = {
         } else {
           return; 
         }
-        let message = sequences.join("");
-
-        this.sendMessage("command/send-to-tty", message);
+        this.sendMessage("command/send-to-tty", sequences.join(""));
 
       }
     }
@@ -234,13 +232,14 @@ DECLocatorMouse.definition = {
   "[listen('mousedown', '#tanasinn_content'), pnp]": 
   function onmousedown(event) 
   {
-    var column, row, message;
+    var column, row, message, locator_reporting_mode;
 
     if (null === this._locator_reporting_mode) {
       return;
     }
 
-    let locator_reporting_mode = this._locator_reporting_mode;
+    locator_reporting_mode = this._locator_reporting_mode;
+
     if (null === locator_reporting_mode) {
       return;
     }

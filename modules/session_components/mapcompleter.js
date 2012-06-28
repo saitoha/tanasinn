@@ -26,7 +26,7 @@
  * @class NMapCompleter
  *
  */
-let NMapCompleter = new Class().extends(Component);
+var NMapCompleter = new Class().extends(Component);
 NMapCompleter.definition = {
 
   get id()
@@ -45,7 +45,7 @@ NMapCompleter.definition = {
     let { source, option, completers } = context;
     let match = source.match(/^\s*(\S*)(\s*)/);
     if (null === match) {
-      broker.notify("event/answer-completion", null);
+      this.sendMessage("event/answer-completion", null);
       return;
     }
     let [all, name, next] = match;
@@ -53,18 +53,18 @@ NMapCompleter.definition = {
       let next_completer_info = completers.shift();
       if (next_completer_info) {
         let [next_completer, option] = next_completer_info.split("/");
-        broker.notify("command/query-completion/" + next_completer, {
+        this.sendMessage("command/query-completion/" + next_completer, {
           source: source.substr(all.length),
           option: option,
           completers: completers,
         });
       } else {
-        broker.notify("event/answer-completion", null);
+        this.sendMessage("event/answer-completion", null);
       }
       return;
     }
 
-    let expressions = broker.uniget("get/registered-nmap");
+    let expressions = this.request("get/registered-nmap");
     let lower_name = name.toLowerCase();
     let candidates = Object.getOwnPropertyNames(expressions)
       .filter(function(expression) {
@@ -77,7 +77,7 @@ NMapCompleter.definition = {
         };
       });
     if (0 == candidates.length) {
-      broker.notify("event/answer-completion", null);
+      this.sendMessage("event/answer-completion", null);
       return;
     }
     let autocomplete_result = {
@@ -88,7 +88,7 @@ NMapCompleter.definition = {
         value: String(candidate.value),
       })),
     };
-    broker.notify("event/answer-completion", autocomplete_result);
+    this.sendMessage("event/answer-completion", autocomplete_result);
   },
 
 };
@@ -117,7 +117,7 @@ CMapCompleter.definition = {
     let { source, option, completers } = context;
     let match = source.match(/^\s*(\S*)(\s*)/);
     if (null === match) {
-      broker.notify("event/answer-completion", null);
+      this.sendMessage("event/answer-completion", null);
       return;
     }
     let [all, name, next] = match;
@@ -125,18 +125,18 @@ CMapCompleter.definition = {
       let next_completer_info = completers.shift();
       if (next_completer_info) {
         let [next_completer, option] = next_completer_info.split("/");
-        broker.notify("command/query-completion/" + next_completer, {
+        this.sendMessage("command/query-completion/" + next_completer, {
           source: source.substr(all.length),
           option: option,
           completers: completers,
         });
       } else {
-        broker.notify("event/answer-completion", null);
+        this.sendMessage("event/answer-completion", null);
       }
       return;
     }
 
-    let expressions = broker.uniget("get/registered-cmap");
+    let expressions = this.request("get/registered-cmap");
     let lower_name = name.toLowerCase();
     let candidates = Object.getOwnPropertyNames(expressions)
       .filter(function(expression) {
@@ -149,7 +149,7 @@ CMapCompleter.definition = {
         };
       });
     if (0 == candidates.length) {
-      broker.notify("event/answer-completion", null);
+      this.sendMessage("event/answer-completion", null);
       return;
     }
     let autocomplete_result = {
@@ -160,7 +160,7 @@ CMapCompleter.definition = {
         value: String(candidate.value),
       })),
     };
-    broker.notify("event/answer-completion", autocomplete_result);
+    this.sendMessage("event/answer-completion", autocomplete_result);
     return;
   },
 

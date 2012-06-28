@@ -27,7 +27,7 @@
  * @class EventCompleter
  *
  */
-let EventCompleter = new Class().extends(Component);
+var EventCompleter = new Class().extends(Component);
 EventCompleter.definition = {
 
   get id()
@@ -51,13 +51,13 @@ EventCompleter.definition = {
       let next_completer_info = completers.shift();
       if (next_completer_info) {
         let [next_completer, option] = next_completer_info.split("/");
-        broker.notify("command/query-completion/" + next_completer, {
+        this.sendMessage("command/query-completion/" + next_completer, {
           source: source.substr(all.length),
           option: option,
           completers: completers,
         });
       } else {
-        broker.notify("event/answer-completion", null);
+        this.sendMessage("event/answer-completion", null);
       }
       return;
     }
@@ -73,7 +73,8 @@ EventCompleter.definition = {
         value: candidate,
       })),
     };
-    broker.notify("event/answer-completion", autocomplete_result);
+
+    this.sendMessage("event/answer-completion", autocomplete_result);
   },
 
 };

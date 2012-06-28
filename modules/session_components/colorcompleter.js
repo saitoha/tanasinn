@@ -28,7 +28,7 @@
  * @class ColorNumberCompleter
  *
  */
-let ColorNumberCompleter = new Class().extends(Component)
+var ColorNumberCompleter = new Class().extends(Component)
                                       .depends("renderer");
 ColorNumberCompleter.definition = {
 
@@ -44,33 +44,39 @@ ColorNumberCompleter.definition = {
   "[completer('color-number'), enabled]":
   function complete(context)
   {
-    let broker = this._broker;
-    let { source, option, completers } = context;
-    let renderer = this.dependency["renderer"];
-    let color_map = "fg" == option ? renderer.color: 
-                    "bg" == option ? renderer.color:
-                    null;
-    if (null == color_map) {
+    var broker, renderer, color_map, pattern, match;
+
+    broker = this._broker;
+
+    var { source, option, completers } = context;
+    renderer = this.dependency["renderer"];
+    color_map = "fg" == option ? renderer.color: 
+                "bg" == option ? renderer.color:
+                null;
+
+    if (null === color_map) {
       coUtils.Debug.reportError(
         _("Unknown option is detected: '%s'."),
         option);
-      broker.notify("event/answer-completion", null);
+      this.sendMessage("event/answer-completion", null);
       return;
     }
-    let pattern = /^\s*([0-9]*)(\s*)(.*)(\s?)/;
-    let match = source.match(pattern);
+
+    pattern = /^\s*([0-9]*)(\s*)(.*)(\s?)/;
+    match = source.match(pattern);
+
     let [all, number, space, name, next] = match;
     if (next) {
       let next_completer_info = completers.shift();
       if (next_completer_info) {
         let [next_completer, option] = next_completer_info.split("/");
-        broker.notify("command/query-completion/" + next_completer, {
+        this.sendMessage("command/query-completion/" + next_completer, {
           source: source.substr(all.length),
           option: option,
           completers: completers,
         });
       } else {
-        broker.notify("event/answer-completion", null);
+        this.sendMessage("event/answer-completion", null);
       }
       return;
     } else if (!space) {
@@ -78,7 +84,7 @@ ColorNumberCompleter.definition = {
         .map(function(number) number.toString())
         .filter(function(number_as_string) -1 != number_as_string.indexOf(number));
       if (0 == numbers.length) {
-        broker.notify("event/answer-completion", autocomplete_result);
+        this.sendMessage("event/answer-completion", autocomplete_result);
         return;
       }
       let autocomplete_result = {
@@ -89,7 +95,7 @@ ColorNumberCompleter.definition = {
           value: color_map[number],
         })),
       };
-      broker.notify("event/answer-completion", autocomplete_result);
+      this.sendMessage("event/answer-completion", autocomplete_result);
       return;
     }
     let lower_name = name.toLowerCase();
@@ -100,16 +106,16 @@ ColorNumberCompleter.definition = {
       } for ([key, value] in Iterator(coUtils.Constant.WEB140_COLOR_MAP))
     ].filter(function(pair) 
     {
-      if (-1 != pair.name.toLowerCase().indexOf(lower_name)) {
+      if (-1 !== pair.name.toLowerCase().indexOf(lower_name)) {
         return true;
       }
-      if (0 == pair.value.toLowerCase().indexOf(lower_name)) {
+      if (0 === pair.value.toLowerCase().indexOf(lower_name)) {
         return true;
       }
       return false;
     });
-    if (0 == data.length) {
-      broker.notify("event/answer-completion", null);
+    if (0 === data.length) {
+      this.sendMessage("event/answer-completion", null);
       return;
     }
     let autocomplete_result = {
@@ -118,7 +124,7 @@ ColorNumberCompleter.definition = {
       option: color_map[number],
       data: data,
     };
-    broker.notify("event/answer-completion", autocomplete_result);
+    this.sendMessage("event/answer-completion", autocomplete_result);
   },
 
 };

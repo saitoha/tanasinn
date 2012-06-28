@@ -34,8 +34,11 @@ ScreenshotCommand.definition = {
   "[command('screenshot'), _('Convert screen to a image file.'), enabled]":
   function screenshot(arguments_string) 
   {
-    let pattern = /^(\S+)s*$/;
-    let match = arguments_string.match(pattern);
+    var pattern, match, path, file;
+    
+    pattern = /^(\S+)s*$/;
+    match = arguments_string.match(pattern);
+
     if (null === match) {
       return {
         success: false,
@@ -44,22 +47,28 @@ ScreenshotCommand.definition = {
     }
     let [, name] = match;
 
-    let broker = this._broker;
-    let path = broker.runtime_path + "/screenshot/" + name + ".png";
-    let file = coUtils.File
+    path = this._broker.runtime_path + "/screenshot/" + name + ".png";
+    file = coUtils.File
       .getFileLeafFromVirtualPath(path)
       .QueryInterface(Components.interfaces.nsILocalFile);
+
     // create base directories recursively (= mkdir -p).
     void function make_directory(current) 
     {
-      let parent = current.parent;
+      var parent;
+
+      parent = current.parent;
+
       if (!parent.exists()) {
         make_directory(parent);
         parent.create(Components.interfaces.nsIFile.DIRECTORY_TYPE, -1);
       }
     } (file);
 
-    broker.notify("command/capture-screen", {file: file, thumbnail: false});
+    this.sendMessage("command/capture-screen", {
+      file: file,
+      thumbnail: false
+    });
     return {
       success: true,
       message: _("Succeeded."),

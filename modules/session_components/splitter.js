@@ -113,7 +113,7 @@ Splitter.definition = {
     var dom, renderer, screen, bottompanel, document, 
         initial_height, initial_row, line_height, y;
     dom = {
-      document: this.request("get/root-element").ownerDocument;
+      document: this.request("get/root-element").ownerDocument,
     }
     renderer = this.dependency["renderer"];
     screen = this.dependency["screen"];

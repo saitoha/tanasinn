@@ -261,8 +261,6 @@ ReverseVideoTrait.definition = {
   {
     var map, i, broker, value;
 
-    broker = this._broker;
-
     if (this._reverse != value) {
       this._reverse = value;
       map = this.color;
@@ -272,7 +270,7 @@ ReverseVideoTrait.definition = {
           .replace(/^1/, "#");
         map[i] = value;
       }
-      broker.notify("command/draw", true);
+      this.sendMessage("command/draw", true);
     }
 
   },
@@ -481,7 +479,7 @@ Layer.definition = {
   {
     var canvas;
 
-    canvas = broker.uniget(
+    canvas = this.request(
       "command/construct-chrome", 
       {
         parentNode: "#tanasinn_center_area",
@@ -642,11 +640,10 @@ Renderer.definition = {
   "[subscribe('set/font-size'), pnp]": 
   function setFontSize(font_size) 
   {
-    var broker = this._broker;
-
     this.line_height += font_size - this.font_size;
     this.font_size = font_size;
-    broker.notify("event/font-size-changed", this.font_size);
+
+    this.sendMessage("event/font-size-changed", this.font_size);
   },
 
   "[subscribe('set/font-family'), pnp]": 
@@ -665,49 +662,52 @@ Renderer.definition = {
   "[subscribe('command/change-fontsize-by-offset'), pnp]":
   function changeFontSizeByOffset(offset) 
   {
-    var broker = this._broker;
-
     this.font_size = Number(this.font_size) + offset;
     this.line_height = Number(this.line_height) + offset;
-    broker.notify("event/font-size-changed", this.font_size);
+
+    this.sendMessage("event/font-size-changed", this.font_size);
   },
 
   "[subscribe('variable-changed/{screen.width | renderer.char_width}'), pnp]":
   function onWidthChanged(width, char_width) 
   {
     var canvas_width;
-    var broker = this._broker;
 
     width = width || this.dependency["screen"].width;
     char_width = char_width || this.char_width;
     canvas_width = 0 | (width * char_width);
+
     this._main_layer.canvas.width = canvas_width;
+
     if (this._slow_blink_layer) {
       this._slow_blink_layer.width = canvas_width;
     }
     if (this._rapid_blink_layer) {
       this._rapid_blink_layer.width = canvas_width;
     }
-    broker.notify("event/screen-width-changed", canvas_width);
+
+    this.sendMessage("event/screen-width-changed", canvas_width);
   },
 
   "[subscribe('variable-changed/{screen.height | renderer.line_height}'), pnp]":
   function onHeightChanged(height, line_height)
   {
     var canvas_height;
-    var broker = this._broker;
 
     height = height || this.dependency["screen"].height;
     line_height = line_height || this.line_height;
     canvas_height = 0 | (height * line_height);
+
     this._main_layer.canvas.height = canvas_height;
+
     if (this._slow_blink_layer) {
       this._slow_blink_layer.canvas.height = canvas_height;
     }
     if (this._rapid_blink_layer) {
       this._rapid_blink_layer.canvas.height = canvas_height;
     }
-    broker.notify("event/screen-height-changed", canvas_height);
+
+    this.sendMessage("event/screen-height-changed", canvas_height);
   },
 
   /** Draw to canvas */

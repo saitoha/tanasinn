@@ -33,7 +33,7 @@
  *  object. and shows a line on editing as an watermark/overlay object. 
  *
  */ 
-let CommandlineIme = new Class().extends(Plugin)
+var CommandlineIme = new Class().extends(Plugin)
                                 .depends("commandline");
 CommandlineIme.definition = {
 
@@ -159,32 +159,35 @@ CommandlineIme.definition = {
   /** compositionstart event handler. 
    *  @{Event} event A event object.
    */
-  "[listen('compositionstart', '#tanasinn_commandline'), enabled]":
+  "[listen('compositionstart', '#tanasinn_commandline'), pnp]":
   function oncompositionstart(event) 
   {
-      let version_comparator = Components
-        .classes["@mozilla.org/xpcom/version-comparator;1"]
-        .getService(Components.interfaces.nsIVersionComparator);
-      if (version_comparator.compare(coUtils.Runtime.version, "10.0") >= 0)
-      {
-        this.oninput.enabled = false;
-      }
+    var version_comparator;;
+
+    version_comparator = Components
+      .classes["@mozilla.org/xpcom/version-comparator;1"]
+      .getService(Components.interfaces.nsIVersionComparator);
+    if (version_comparator.compare(coUtils.Runtime.version, "10.0") >= 0) {
+      this.oninput.enabled = false;
+    }
   },
   
   /** compositionend event handler. 
    *  @{Event} event A event object.
    */
-  "[listen('compositionend', '#tanasinn_commandline'), enabled]":
+  "[listen('compositionend', '#tanasinn_commandline'), pnp]":
   function oncompositionend(event) 
   {
-      let version_comparator = Components
-        .classes["@mozilla.org/xpcom/version-comparator;1"]
-        .getService(Components.interfaces.nsIVersionComparator);
-      if (version_comparator.compare(coUtils.Runtime.version, "10.0") >= 0)
-      {
-        this.oninput.enabled = true;
-        this.oninput(event);
-      }
+    var version_comparator;;
+
+    version_comparator = Components
+      .classes["@mozilla.org/xpcom/version-comparator;1"]
+      .getService(Components.interfaces.nsIVersionComparator);
+
+    if (version_comparator.compare(coUtils.Runtime.version, "10.0") >= 0) {
+      this.oninput.enabled = true;
+      this.oninput(event);
+    }
   },
 
   /** A interval timer handler function that observes the textbox content
@@ -192,7 +195,10 @@ CommandlineIme.definition = {
    */  
   onpoll: function onpoll() 
   {
-    let text = this.dependency["commandline"].getInputField().value;
+    var text;
+
+    text = this.dependency["commandline"].getInputField().value;
+
     if (text) { // if textbox contains some text data.
       if (!this._ime_input_flag) {
         this._enableImeMode(); // makes the IME mode enabled.
@@ -207,24 +213,30 @@ CommandlineIme.definition = {
   /** Shows textbox element. */
   _enableImeMode: function _enableImeMode() 
   {
-    let commandline = this.dependency["commandline"];
-    let textbox = this.dependency["commandline"].getInputField();
-    let top = 0; // cursor.positionY * line_height + -4;
-    let left = commandline.getCaretPosition(); // cursor.positionX * char_width + -2;
+    var commandline, textbox, top, left;
+
+    commandline = this.dependency["commandline"];
+    textbox = this.dependency["commandline"].getInputField();
+    top = 0; // cursor.positionY * line_height + -4;
+    left = commandline.getCaretPosition(); // cursor.positionX * char_width + -2;
+
     textbox.style.opacity = 1.0;
     this._ime_input_flag = true;
-    let session = this._broker;
-    session.notify("command/ime-mode-on", this);
+
+    this.sendMessage("command/ime-mode-on", this);
   },
 
   _disableImeMode: function _disableImeMode() 
   {
-    let commandline = this.dependency["commandline"];
-    let textbox = this.dependency["commandline"].getInputField();
+    var commandline, textbox;
+
+    commandline = this.dependency["commandline"];
+    textbox = this.dependency["commandline"].getInputField();
+
     textbox.style.opacity = 0.0;
     this._ime_input_flag = false;
-    let session = this._broker;
-    session.notify("command/ime-mode-off", this);
+
+    this.sendMessage("command/ime-mode-off", this);
   }
 };
 

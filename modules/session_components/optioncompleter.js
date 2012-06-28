@@ -26,7 +26,7 @@
 /**
  * @class OptionCompleter
  */
-let OptionCompleter = new Class().extends(Component);
+var OptionCompleter = new Class().extends(Component);
 OptionCompleter.definition = {
 
   get id()
@@ -41,17 +41,21 @@ OptionCompleter.definition = {
   "[completer('option'), enabled]":
   function complete(context)
   {
-    let broker = this._broker;
-    let { source, completers } = context;
-    let match = source.match(/^(\s*)([$_\-@a-zA-Z\.]*)\s*(=?)\s*(.*)/);
+    var broker, match;
+
+    broker = this._broker;
+
+    var { source, completers } = context;
+    match = source.match(/^(\s*)([$_\-@a-zA-Z\.]*)\s*(=?)\s*(.*)/);
+
     if (null === match) {
-      broker.notify("event/answer-completion", null);
+      this.sendMessage("event/answer-completion", null);
       return;
     }
 
     let [, space, name, operator_equal, next] = match;
     if (!operator_equal && next) {
-      broker.notify("event/answer-completion", null);
+      this.sendMessage("event/answer-completion", null);
       return;
     }
     let target_broker = "global" ==  context.option ? broker._broker: broker;
@@ -67,7 +71,7 @@ OptionCompleter.definition = {
           if (-1 != key.toLowerCase().indexOf(lower_name))
       ];
       if (0 == options.length) {
-        broker.notify("event/answer-completion", null);
+        this.sendMessage("event/answer-completion", null);
         return;
       }
       let autocomplete_result = {
@@ -78,7 +82,7 @@ OptionCompleter.definition = {
           value: String(option.value),
         })),
       };
-      broker.notify("event/answer-completion", autocomplete_result);
+      this.sendMessage("event/answer-completion", autocomplete_result);
       return;
     }
 
@@ -86,10 +90,10 @@ OptionCompleter.definition = {
       let completion_context = {
         source: next,
       };
-      broker.notify("command/query-completion/js", completion_context);
+      this.sendMessage("command/query-completion/js", completion_context);
       return;
     }
-    broker.notify("event/answer-completion", null);
+    this.sendMessage("event/answer-completion", null);
     return;
   },
 

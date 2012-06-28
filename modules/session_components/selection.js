@@ -70,16 +70,15 @@ Selection.definition = {
     </module>,
 
   "[persistable] enabled_when_startup": true,
+  "[persistable] normal_selection_color": "white",
+  "[persistable] highlight_selection_color": "yellow",
 
+  _color: "white",
   _canvas: null,
   _context: null,
   _range: null,
   _highlight_region: null,
 
-  "[persistable] normal_selection_color": "white",
-  "[persistable] highlight_selection_color": "yellow",
-
-  _color: "white",
 
   "[subscribe('event/mouse-tracking-mode-changed'), enabled]": 
   function onMouseTrackingModeChanged(data) 
@@ -122,7 +121,8 @@ Selection.definition = {
     var renderer;
 
     renderer = this._renderer;
-    var {selection_canvas} = broker.uniget(
+
+    var {selection_canvas} = this.request(
       "command/construct-chrome", 
       {
         parentNode: "#tanasinn_center_area",
@@ -501,32 +501,47 @@ Selection.definition = {
   /** Clear selection canvas and range information. */
   clear: function clear() 
   {
-    let context = this._context;
-    let canvas = this._canvas;
+    var context, canvas;
+
+    context = this._context;
+    canvas = this._canvas;
+
     context.clearRect(0, 0, canvas.width, canvas.height);
     this._range = null; // clear range.
   },
 
   convertPixelToScreen: function convertPixelToScreen(event) 
   {
-    let broker = this._broker;
-    let target_element = this.request("command/query-selector", "#tanasinn_center_area");
-    let root_element = broker.root_element;
-    let box = target_element.boxObject;
-    let offsetX = box.screenX - root_element.boxObject.screenX;
-    let offsetY = box.screenY - root_element.boxObject.screenY;
-    let left = event.layerX - offsetX; 
-    let top = event.layerY - offsetY;
-    let renderer = this.dependency["renderer"];
-    let screen = this.dependency["screen"];
-    let char_width = renderer.char_width;
-    let line_height = renderer.line_height;
-    let column = Math.floor(left / char_width + 1.0);
-    let row = Math.floor(top / line_height + 1.0);
-    let max_column = screen.width;
-    let max_row = screen.height;
+    var target_element, root_element, box, offsetX, offsetY,
+        left, top, renderer, screen, char_width, column, row,
+        max_column, max_row;
+
+    target_element = this.request("command/query-selector", "#tanasinn_center_area");
+    root_element = this.request("get/root-element");
+
+    box = target_element.boxObject;
+
+    offsetX = box.screenX - root_element.boxObject.screenX;
+    offsetY = box.screenY - root_element.boxObject.screenY;
+
+    left = event.layerX - offsetX; 
+    top = event.layerY - offsetY;
+
+    renderer = this.dependency["renderer"];
+    screen = this.dependency["screen"];
+
+    char_width = renderer.char_width;
+    line_height = renderer.line_height;
+
+    column = Math.floor(left / char_width + 1.0);
+    row = Math.floor(top / line_height + 1.0);
+
+    max_column = screen.width;
+    max_row = screen.height;
+
     column = column > max_column ? max_column: column;
     row = row > max_row ? max_row: row;
+
     return [column - 1, row - 1];
   },
 
@@ -543,4 +558,4 @@ function main(broker)
   new Selection(broker);
 }
 
-
+// EOF

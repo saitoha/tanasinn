@@ -102,8 +102,8 @@ ReverseVideo.definition = {
   "[subscribe('sequence/decset/5')]":
   function activate() 
   { 
-    var broker = this._broker;
-    broker.notify("command/reverse-video", true);
+    this.sendMessage("command/reverse-video", true);
+
     coUtils.Debug.reportMessage(
       _("DECSET - DECSCNM (Reverse video) was called."));
   },
@@ -113,8 +113,8 @@ ReverseVideo.definition = {
   "[subscribe('sequence/decrst/5')]":
   function deactivate() 
   {
-    var broker = this._broker;
-    broker.notify("command/reverse-video", false);
+    this.sendMessage("command/reverse-video", false);
+
     coUtils.Debug.reportMessage(
       _("DECRST - DECSCNM (Reverse video) was called."));
   },

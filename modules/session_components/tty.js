@@ -710,7 +710,7 @@ ExternalDriver.definition = {
       cygwin_root = broker.cygwin_root;
       executable_path = cygwin_root + "\\bin\\run.exe";
     } else {
-      executable_path = broker.uniget("get/python-path");
+      executable_path = this.request("get/python-path");
     }
     // create new localfile object.
     runtime = Components
@@ -751,16 +751,13 @@ ExternalDriver.definition = {
     coUtils.Debug.reportMessage(
       _("TTY Server started. arguments: [%s]."), args.join(", "));
 
-    broker.notify("initialized/externaldriver", this);
+    this.sendMessage("initialized/externaldriver", this);
 
   },
 
   observe: function observe(subject, topic, data)
   {
-    var broker;
-
-    broker = this._broker;
-    broker.stop();
+    this._broker.stop();
   },
 
   /** Kills handling process if it was alive. */
@@ -819,7 +816,9 @@ SocketTeletypeService.definition = {
     if (0 === broker.command.indexOf("&")) {
       request_id = broker.command.substr(1);
       record = coUtils.Sessions.get(request_id);
-      broker.notify("event/control-socket-ready", Number(record.control_port));
+
+      this.sendMessage("event/control-socket-ready", Number(record.control_port));
+
       this._pid = Number(record.pid);
 
       coUtils.Sessions.remove(broker, request_id);
@@ -828,13 +827,15 @@ SocketTeletypeService.definition = {
       backup_data_path = broker.runtime_path + "/persist/" + request_id + ".txt";
       if (coUtils.File.exists(backup_data_path)) {
         context = JSON.parse(coUtils.IO.readFromFile(backup_data_path, "utf-8"));
-        broker.notify("command/restore", context);
+
+        this.sendMessage("command/restore", context);
 
         file = coUtils.File.getFileLeafFromVirtualPath(backup_data_path);
         if (file.exists()) {
           file.remove(false)
         }
-        broker.notify("command/draw", true);
+
+        this.sendMessage("command/draw", true);
       }
     } else {
       socket = Components
@@ -847,7 +848,7 @@ SocketTeletypeService.definition = {
       this._socket = socket;
   
       // nsIProcess::runAsync.
-      broker.notify("command/start-ttydriver-process", socket.port); 
+      this.sendMessage("command/start-ttydriver-process", socket.port); 
     }
     this.detach.enabled = true;
   },

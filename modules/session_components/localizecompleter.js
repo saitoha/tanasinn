@@ -28,7 +28,7 @@
  * @class LocalizeCompleter
  *
  */
-let LocalizeCompleter = new Class().extends(Component);
+var LocalizeCompleter = new Class().extends(Component);
 LocalizeCompleter.definition = {
 
   get id()
@@ -56,7 +56,7 @@ LocalizeCompleter.definition = {
               .indexOf(language.toLowerCase()); 
           });
       if (0 == languages.length) {
-        broker.notify("event/answer-completion", autocomplete_result);
+        this.sendMessage("event/answer-completion", autocomplete_result);
         return;
       }
       let autocomplete_result = {
@@ -67,7 +67,7 @@ LocalizeCompleter.definition = {
           value: coUtils.Constant.LOCALE_ID_MAP[language],
         })),
       };
-      broker.notify("event/answer-completion", autocomplete_result);
+      this.sendMessage("event/answer-completion", autocomplete_result);
       return;
     }
     let lower_message_id = message_id.toLowerCase();
@@ -88,8 +88,8 @@ LocalizeCompleter.definition = {
       }
       return false;
     });
-    if (0 == data.length) {
-      broker.notify("event/answer-completion", null);
+    if (0 === data.length) {
+      this.sendMessage("event/answer-completion", null);
       return;
     }
     if (!space2) {
@@ -99,7 +99,7 @@ LocalizeCompleter.definition = {
         query: message_id, 
         data: data,
       };
-      broker.notify("event/answer-completion", autocomplete_result);
+      this.sendMessage("event/answer-completion", autocomplete_result);
       return;
     }
     let autocomplete_result = {
@@ -108,7 +108,7 @@ LocalizeCompleter.definition = {
       query: next, 
       data: data,
     };
-    broker.notify("event/answer-completion", autocomplete_result);
+    this.sendMessage("event/answer-completion", autocomplete_result);
   },
 
 };

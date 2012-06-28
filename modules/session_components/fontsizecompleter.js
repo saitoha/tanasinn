@@ -28,7 +28,7 @@
  * @class FontsizeCompleter
  *
  */
-let FontsizeCompleter = new Class().extends(Component);
+var FontsizeCompleter = new Class().extends(Component);
 FontsizeCompleter.definition = {
 
   get id()
@@ -52,13 +52,13 @@ FontsizeCompleter.definition = {
       let next_completer_info = completers.shift();
       if (next_completer_info) {
         let [next_completer, option] = next_completer_info.split("/");
-        broker.notify("command/query-completion/" + next_completer, {
+        this.sendMessage("command/query-completion/" + next_completer, {
           source: source.substr(all.length),
           option: option,
           completers: completers,
         });
       } else {
-        broker.notify("event/answer-completion", null);
+        this.sendMessage("event/answer-completion", null);
       }
       return;
     }
@@ -80,7 +80,7 @@ FontsizeCompleter.definition = {
         value: size,
       })),
     };
-    broker.notify("event/answer-completion", autocomplete_result);
+    this.sendMessage("event/answer-completion", autocomplete_result);
   },
 
 };

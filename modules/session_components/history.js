@@ -28,7 +28,7 @@
  * @class CommandlineHistory
  *
  */
-let CommandlineHistory = new Class().extends(Plugin);
+var CommandlineHistory = new Class().extends(Plugin);
 CommandlineHistory.definition = {
 
   get id()
@@ -80,18 +80,23 @@ CommandlineHistory.definition = {
    */
   loadHistory: function loadHistory() 
   {
+    var broker, path, file, content, converter, ostream;
+
     // create nsIFile object.
-    let broker = this._broker;
-    let path = coUtils.File
+    broker = this._broker;
+    path = coUtils.File
       .getFileLeafFromVirtualPath(broker.runtime_path + "/" + this.history_file_path)
       .path;
-    let file = Components
+
+    file = Components
       .classes["@mozilla.org/file/local;1"]
       .createInstance(Components.interfaces.nsILocalFile);
+
     file.initWithPath(path);
     this._file = file;
+
     if (file.exists() && file.isReadable) {
-      let content = coUtils.IO.readFromFile(path, "UTF-8");
+      content = coUtils.IO.readFromFile(path, "UTF-8");
       this._history = content.split(/[\r\n]+/)
         .reduce(function(prev, current) {
           prev[current] = true;
@@ -117,7 +122,10 @@ CommandlineHistory.definition = {
       // create base directories recursively (= mkdir -p).
       void function make_directory(current) 
       {
-        let parent = current.parent;
+        var parent;
+
+        parent = current.parent;
+
         if (!parent.exists()) {
           make_directory(parent);
           parent.create(Components.interfaces.nsIFile.DIRECTORY_TYPE, -1);
@@ -126,7 +134,7 @@ CommandlineHistory.definition = {
     }
    
     // create output stream.
-    let ostream = Components
+    ostream = Components
       .classes["@mozilla.org/network/file-output-stream;1"]
       .createInstance(Components.interfaces.nsIFileOutputStream);  
       
@@ -137,7 +145,7 @@ CommandlineHistory.definition = {
     const PR_TRUNCATE = 0x20;
     ostream.init(file, PR_WRONLY| PR_CREATE_FILE| PR_APPEND, -1, 0);   
     
-    let converter = Components
+    converter = Components
       .classes["@mozilla.org/intl/converter-output-stream;1"].  
       createInstance(Components.interfaces.nsIConverterOutputStream);  
     converter.init(ostream, "UTF-8", 0, 0);  
@@ -155,10 +163,12 @@ CommandlineHistory.definition = {
   "[command('clearhistory/chistory'), _('clear command line history.'), pnp]":
   function clearHistory()
   {
+    var broker;
+
     this.closeHistory();
 
     // remove history file.
-    let broker = this._broker;
+    broker = this._broker;
     coUtils.File
       .getFileLeafFromVirtualPath(broker.runtime_path + "/" + this.history_file_path)
       .remove(false);
@@ -174,24 +184,32 @@ CommandlineHistory.definition = {
   "[subscribe('command/select-next-history'), pnp]":
   function nextHistory(info)
   {
-    let history_list = Object.keys(this._history);
-    let index = ++this._history_index % history_list.length
+    var history_list, index, value;
+
+    history_list = Object.keys(this._history);
+    index = ++this._history_index % history_list.length
+
     if (index < 0) {
       index += history_list.length;
     }
-    let value = history_list[index];
+
+    value = history_list[index];
     info.textbox.value = value;
   },
 
   "[subscribe('command/select-previous-history'), pnp]":
   function previousHistory(info)
   {
-    let history_list = Object.keys(this._history);
-    let index = --this._history_index % history_list.length
+    var history_list, index, value;
+
+    history_list = Object.keys(this._history);
+    index = --this._history_index % history_list.length
+
     if (index < 0) {
       index += history_list.length;
     }
-    let value = history_list[index];
+
+    value = history_list[index];
     info.textbox.value = value;
   },
 

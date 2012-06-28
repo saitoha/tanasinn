@@ -624,6 +624,9 @@ Component.definition = {
     var broker;
     
     broker = this._broker;
+    if (!broker) {
+      coUtils.Debug.reportError(topic + " " + data.toSource());
+    }
     return broker.notify(topic, data);
   },
 

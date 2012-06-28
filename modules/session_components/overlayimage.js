@@ -25,7 +25,7 @@
 /**
  *  @class OverlayImage
  */
-let OverlayImage = new Class().extends(Plugin)
+var OverlayImage = new Class().extends(Plugin)
                               .depends("renderer");
 OverlayImage.definition = {
 
@@ -54,12 +54,12 @@ OverlayImage.definition = {
   _canvas: null,
  
   /** installs itself. 
-   *  @param {Session} session A session object.
+   *  @param {Broker} broker A broker object.
    */
   "[install]":
-  function install(session) 
+  function install(broker) 
   {
-    let {tanasinn_image_canvas} = session.uniget(
+    var {tanasinn_image_canvas} = this.request(
       "command/construct-chrome", this.template);
     this._canvas = tanasinn_image_canvas;
     this.draw.enabled = true;
@@ -92,12 +92,15 @@ OverlayImage.definition = {
   "[subscribe('event/keypad-mode-changed')]": 
   function onKeypadModeChanged(mode) 
   {
-    let canvas = this._canvas;  
+    var canvas, context;
+
+    canvas = this._canvas;  
     if (canvas) {
       canvas.width = canvas.parentNode.boxObject.width;
       canvas.height = canvas.parentNode.boxObject.height;
     }
-    let context = canvas.getContext("2d");
+
+    context = canvas.getContext("2d");
     if (canvas && context) {
       context.clearRect(0, 0, canvas.width, canvas.height);
     }
@@ -157,7 +160,7 @@ OverlayImage.definition = {
       image.src = filename;
     }
 
-    //broker.notify("command/report-overlay-message", data);
+    //this.sendMessage("command/report-overlay-message", data);
   },
 
   "[subscribe('sequence/osc/213')]":

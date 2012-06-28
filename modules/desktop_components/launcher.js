@@ -341,7 +341,7 @@ ProcessManager.definition = {
   "[subscribe('@event/broker-started'), enabled]":
   function onLoad(broker)
   {
-    broker.notify("initialized/" + this.id, this);
+    this.sendMessage("initialized/" + this.id, this);
   },
 
   /** Checks if the process is running. 
@@ -634,10 +634,9 @@ SessionsCompletionDisplayDriver.definition = {
 
   drive: function drive(grid, result, current_index) 
   {
-    var document, broker, rows, i, search_string, completion_text;
+    var document, rows, i, search_string, completion_text;
 
     document = grid.ownerDocument;
-    broker = this._broker;
     rows = grid.appendChild(document.createElement("rows"))
 
     for (i = 0; i < result.labels.length; ++i) {
@@ -649,7 +648,7 @@ SessionsCompletionDisplayDriver.definition = {
         completion_text = completion_text.substr(0, 20) + "...";
       }
 
-      broker.uniget(
+      this.request(
         "command/construct-chrome", 
         {
           parentNode: rows,
@@ -1258,7 +1257,7 @@ Launcher.definition = {
 
     code = event.keyCode || event.which;
     /*
-    this._broker.notify(
+    this._this.sendMessage(
       "command/report-overlay-message", 
       [event.keyCode,event.which,event.isChar].join("/"));
       */
@@ -1458,9 +1457,8 @@ DragMove.definition = {
   "[install]":
   function install(broker) 
   {
-    this.ondragstart.enabled = true;
     var {tanasinn_drag_cover}
-      = broker.uniget(
+      = this.request(
         "command/construct-chrome",
         {
           parentNode: "#tanasinn_launcher_layer",
@@ -1481,11 +1479,10 @@ DragMove.definition = {
   "[uninstall]":
   function uninstall(broker) 
   {
-    this.ondragstart.enabled = false;
     this._drag_cover.parentNode.removeChild(this._drag_cover);
   },
 
-  "[listen('dragstart', '#tanasinn_launcher_layer', true)]":
+  "[listen('dragstart', '#tanasinn_launcher_layer', true), pnp]":
   function ondragstart(dom_event) 
   {
     var session, offsetX, offsetY, dom_document;
@@ -1498,15 +1495,23 @@ DragMove.definition = {
     offsetY = dom_event.clientY - dom_event.target.boxObject.y;
 
     this._drag_cover.hidden = false;
-    this._drag_cover.style.left = dom_event.clientX - this._drag_cover.boxObject.width / 2 + "px";
-    this._drag_cover.style.top = dom_event.clientY - this._drag_cover.boxObject.height / 2 + "px";
-    coUtils.Timer.setTimeout(function() {
-      this._drag_cover.hidden = true;
-    }, 1000, this);
+
+    this._drag_cover.style.left 
+      = dom_event.clientX - this._drag_cover.boxObject.width / 2 + "px";
+    this._drag_cover.style.top 
+      = dom_event.clientY - this._drag_cover.boxObject.height / 2 + "px";
+
+    coUtils.Timer.setTimeout(
+      function() {
+        this._drag_cover.hidden = true;
+      }, 1000, this);
+
     session.notify("command/set-opacity", 0.30);
+
     // define mousemove hanler.
     
     dom_document = dom_event.target.ownerDocument; // managed by DOM
+
     session.notify("command/add-domlistener", {
       target: dom_document, 
       type: "mousemove", 
@@ -1522,6 +1527,7 @@ DragMove.definition = {
         this.sendMessage("command/move-to", [left, top]);
       }
     });
+
     session.notify("command/add-domlistener", {
       target: dom_document, 
       type: "mouseup", 
@@ -1535,6 +1541,7 @@ DragMove.definition = {
         this._drag_cover.hidden = true;
       }, 
     });
+
     session.notify("command/add-domlistener", {
       target: dom_document, 
       type: "keyup", 

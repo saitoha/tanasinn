@@ -50,7 +50,7 @@ FocusTracker.definition = {
   "[install]": 
   function install(broker)
   {
-    broker.notify("command/add-domlistener", {
+    this.sendMessage("command/add-domlistener", {
       target: broker.window.document,
       type: "focus",
       context: this,
@@ -66,7 +66,7 @@ FocusTracker.definition = {
   "[uninstall]":
   function uninstall(broker)
   {
-    broker.notify("command/remove-domlistener", this.id)
+    this.sendMessage("command/remove-domlistener", this.id)
   },
 
   /** Fires when a focus event occured. 
@@ -93,17 +93,18 @@ FocusTracker.definition = {
             if (!/tanasinn/.test(coUtils.Runtime.app_name)) {
               broker.root_element.parentNode.appendChild(broker.root_element);
             }
-            coUtils.Timer.setTimeout(function() {
-              this.disabled = false;
-            }, 0, this);
+            coUtils.Timer.setTimeout(function()
+              {
+                this.disabled = false;
+              }, 0, this);
             return;
           }
           focused_element = command_dispatcher.focusedElement;
-          broker.notify("event/got-focus");
-          broker.notify("event/focus-changed", focused_element);
+          this.sendMessage("event/got-focus");
+          this.sendMessage("event/focus-changed", focused_element);
         }
         else {
-          broker.notify("event/lost-focus");
+          this.sendMessage("event/lost-focus");
         }
       }
     }

@@ -25,7 +25,7 @@
 /**
  *  @class MouseGesture
  */
-let MouseGesture = new Class().extends(Plugin);
+var MouseGesture = new Class().extends(Plugin);
 MouseGesture.definition = {
 
   get id()
@@ -67,24 +67,22 @@ MouseGesture.definition = {
   "[subscribe('event/swipe-gesture')]": 
   function onSwipeGesture(direction) 
   {
-    let broker = this._broker
-
     switch (direction) {
 
       case coUtils.Constant.DIRECTION_LEFT:
-        broker.notify("command/input-expression-with-remapping", "<SwipeLeft>");
+        this.sendMessage("command/input-expression-with-remapping", "<SwipeLeft>");
         break;
 
       case coUtils.Constant.DIRECTION_RIGHT:
-        broker.notify("command/input-expression-with-remapping", "<SwipeRight>");
+        this.sendMessage("command/input-expression-with-remapping", "<SwipeRight>");
         break;
 
       case coUtils.Constant.DIRECTION_UP:
-        broker.notify("command/input-expression-with-remapping", "<SwipeUp>");
+        this.sendMessage("command/input-expression-with-remapping", "<SwipeUp>");
         break;
 
       case coUtils.Constant.DIRECTION_DOWN:
-        broker.notify("command/input-expression-with-remapping", "<SwipeDown>");
+        this.sendMessage("command/input-expression-with-remapping", "<SwipeDown>");
         break;
 
       default:
@@ -98,16 +96,14 @@ MouseGesture.definition = {
   "[subscribe('event/rotate-gesture')]": 
   function onRotateGesture(direction) 
   {
-    let broker = this._broker
-
     switch (direction) {
 
       case coUtils.Constant.ROTATION_CLOCKWISE:
-        broker.notify("command/input-expression-with-remapping", "<RotateRight>");
+        this.sendMessage("command/input-expression-with-remapping", "<RotateRight>");
         break;
 
       case coUtils.Constant.ROTATION_COUNTERCLOCKWISE:
-        broker.notify("command/input-expression-with-remapping", "<RotateLeft>");
+        this.sendMessage("command/input-expression-with-remapping", "<RotateLeft>");
         break;
 
       default:
@@ -121,21 +117,21 @@ MouseGesture.definition = {
   "[subscribe('event/magnify-gesture')]": 
   function onMagnifyGesture(delta) 
   {
-    let broker = this._broker
-    let i;
-    let magnify_delta = this.magnify_delta_per_fontsize;
+    var i, count,
+        magnify_delta = this.magnify_delta_per_fontsize;
+
     if (delta > 0) {
-      let count = Math.ceil(delta / magnify_delta);
+      count = Math.ceil(delta / magnify_delta);
       for (i = 0; i < count; ++i) {
-        broker.notify("command/input-expression-with-remapping", "<PinchOpen>");
+        this.sendMessage("command/input-expression-with-remapping", "<PinchOpen>");
       }
     } else if (delta < 0) {
-      let count = Math.floor(- delta / magnify_delta);
+      count = Math.floor(- delta / magnify_delta);
       for (i = 0; i < count; ++i) {
-        broker.notify("command/input-expression-with-remapping", "<PinchClose>");
+        this.sendMessage("command/input-expression-with-remapping", "<PinchClose>");
       }
     }
-    broker.notify("command/draw");
+    this.sendMessage("command/draw");
   },
 
 }; // class MouseGesture

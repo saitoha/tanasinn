@@ -28,7 +28,7 @@
  * @class FontFamilyCompleter
  *
  */
-let FontFamilyCompleter = new Class().extends(Component);
+var FontFamilyCompleter = new Class().extends(Component);
 FontFamilyCompleter.definition = {
 
   get id()
@@ -52,13 +52,13 @@ FontFamilyCompleter.definition = {
       let next_completer_info = completers.shift();
       if (next_completer_info) {
         let [next_completer, option] = next_completer_info.split("/");
-        broker.notify("command/query-completion/" + next_completer, {
+        this.sendMessage("command/query-completion/" + next_completer, {
           source: source.substr(all.length),
           option: option,
           completers: completers,
         });
       } else {
-        broker.notify("event/answer-completion", null);
+        this.sendMessage("event/answer-completion", null);
       }
       return;
     }
@@ -77,7 +77,7 @@ FontFamilyCompleter.definition = {
         value: font,
       })),
     };
-    broker.notify("event/answer-completion", autocomplete_result);
+    this.sendMessage("event/answer-completion", autocomplete_result);
     return;
   },
 

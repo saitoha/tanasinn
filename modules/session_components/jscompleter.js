@@ -26,7 +26,7 @@
 /**
  * @class JsCompleter
  */
-let JsCompleter = new Class().extends(Component);
+var JsCompleter = new Class().extends(Component);
 JsCompleter.definition = {
 
   get id()
@@ -54,11 +54,11 @@ JsCompleter.definition = {
           let code = "with (arguments[0]) { return (" + settled + ");}";
           context = new Function(code) (context);
           if (!context) {
-            broker.notify("event/answer-completion", null);
+            this.sendMessage("event/answer-completion", null);
             return;
           }
         } catch (e) { 
-          broker.notify("event/answer-completion", null);
+          this.sendMessage("event/answer-completion", null);
           return;
         }
       } else {
@@ -99,8 +99,8 @@ JsCompleter.definition = {
       {
         return String(lhs).toLowerCase().indexOf(current) ? 1: -1;
       });
-      if (0 == properties.lenth) {
-        broker.notify("event/answer-completion", null);
+      if (0 === properties.lenth) {
+        this.sendMessage("event/answer-completion", null);
         return;
       }
       autocomplete_result = {
@@ -135,7 +135,7 @@ JsCompleter.definition = {
         }),
       };
     }
-    broker.notify("event/answer-completion", autocomplete_result);
+    this.sendMessage("event/answer-completion", autocomplete_result);
   },
 
 };

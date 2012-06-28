@@ -51,10 +51,10 @@ CommandCompleter.definition = {
           .indexOf(lower_command_name);
       }).sort(function(lhs, rhs) lhs.name.localeCompare(rhs.name));
 
-    if (0 == commands.length) {
-      broker.notify("event/answer-completion", null);
+    if (0 === commands.length) {
+      this.sendMessage("event/answer-completion", null);
     } else {
-      broker.notify("event/answer-completion", {
+      this.sendMessage("event/answer-completion", {
         type: "text",
         query: context.source, 
         data: commands.map(function(command) ({
@@ -99,7 +99,7 @@ HistoryCompleter.definition = {
             const RESULT_SUCCESS = Components
               .interfaces.nsIAutoCompleteResult.RESULT_SUCCESS;
             if (result.searchResult == RESULT_SUCCESS) {
-              broker.notify("event/answer-completion", result);
+              this.sendMessage("event/answer-completion", result);
             } else {
               coUtils.Debug.reportWarning(
                 _("Search component returns following result: %d"), 

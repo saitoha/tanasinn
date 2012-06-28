@@ -41,7 +41,7 @@ ComponentsCompleter.definition = {
   "[completer('components'), enabled]":
   function complete(context)
   {
-    let { source, option, completers } = context;
+    var { source, option, completers } = context;
     let match = source.match(/^(\s*)([$_\-@a-zA-Z\.]*)(\s?)/);
     if (null === match) {
       this.sendMessage("event/answer-completion", null);

@@ -173,6 +173,7 @@
     keysnail.js
 
     overlay.js
+    overlayimage.js
     browser.js
     agent.js
     completer.js

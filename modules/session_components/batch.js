@@ -51,8 +51,6 @@ BatchLoader.definition = {
   "[install]":
   function install(session) 
   {
-    this.loadBatchCommand.enabled = true;
-    this.sourceCommand.enabled = true;
   },
 
   /** Uninstalls itself.
@@ -61,18 +59,18 @@ BatchLoader.definition = {
   "[uninstall]":
   function uninstall(session) 
   {
-    this.loadBatchCommand.enabled = false;
-    this.sourceCommand.enabled = false;
   },
 
-  "[command('import', ['batch']), _('load batch file from search path.')]":
+  "[command('import', ['batch']), _('load batch file from search path.'), pnp]":
   function loadBatchCommand(name) 
   {
     var broker, file;
 
     broker = this._broker;
     file = coUtils.File.getFileLeafFromVirtualPath(
-      broker.runtime_path + "/" + broker.batch_directory);
+      broker.runtime_path + 
+      "/" + 
+      broker.batch_directory);
 
     file.append(name);
 
@@ -86,7 +84,7 @@ BatchLoader.definition = {
     return this.sourceCommand(file.path);
   },
 
-  "[subscribe('command/source'), command('source', ['file']), _('load and evaluate batch file.')]":
+  "[subscribe('command/source'), command('source', ['file']), _('load and evaluate batch file.'), pnp]":
   function sourceCommand(arguments_string)
   {
     var path, broker, cygwin_root, home, file, content;
@@ -107,7 +105,6 @@ BatchLoader.definition = {
     file = coUtils.File.getFileLeafFromVirtualPath(path);
     if (file && file.exists()) {
       try {
-        broker = this._broker;
         content = coUtils.IO.readFromFile(path, "utf-8");
 
         this.sendMessage("command/eval-source", content);
@@ -142,21 +139,22 @@ BatchLoader.definition = {
     // load rc file.
     broker = this._broker;
     path = broker.runtime_path + "/" + broker.rcfile;
-    broker.notify("command/source", path);
+
+    this.sendMessage("command/source", path);
   },
 
   "[command('execcgi', ['cgi']), subscribe('command/execute-cgi'), enabled]":
   function execCGI(arguments_string) 
   {
-    var session, path, cygwin_root, executable_path, os, runtime, external_process;
+    var broker, path, cygwin_root, executable_path, os, runtime, external_process;
 
-    session = this._broker;
-    path = session.runtime_path + "/cgi-bin/" + arguments_string.replace(/^\s+|\s+$/, "");
+    broker = this._broker;
+    path = broker.runtime_path + "/cgi-bin/" + arguments_string.replace(/^\s+|\s+$/, "");
     executable_path;
     os = coUtils.Runtime.os;
 
     if ("WINNT" == os) {
-      cygwin_root = session.cygwin_root;
+      cygwin_root = broker.cygwin_root;
       executable_path = cygwin_root + "\\bin\\run.exe";
     } else {
       executable_path = "/bin/sh";
@@ -190,7 +188,8 @@ BatchLoader.definition = {
       ];
     }
     external_process.run(true, args, args.length);
-    session.notify("command/source", "/tmp/tanasinn_tmp");
+
+    this.sendMessage("command/source", "/tmp/tanasinn_tmp");
 
     return true;
   },
