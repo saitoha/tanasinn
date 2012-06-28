@@ -152,7 +152,79 @@ ConformanceLevel.definition = {
     this._8bit_mode = true;
   },
 
-  /** return 8bit mode state */
+  "[subscribe('command/send-sequence/sos'), pnp]":
+  function send_PM() 
+  {
+    var message;
+
+    if (this._8bit_mode) {
+      message = "\x98";
+    } else {
+      message = "\x1bX";
+    }
+
+    this.sendMessage("command/send-to-tty", message);
+  },
+
+
+  "[subscribe('command/send-sequence/apc'), pnp]":
+  function send_PM() 
+  {
+    var message;
+
+    if (this._8bit_mode) {
+      message = "\x9f";
+    } else {
+      message = "\x1b_";
+    }
+
+    this.sendMessage("command/send-to-tty", message);
+  },
+
+
+  "[subscribe('command/send-sequence/pm'), pnp]":
+  function send_PM() 
+  {
+    var message;
+
+    if (this._8bit_mode) {
+      message = "\x9e";
+    } else {
+      message = "\x1b^";
+    }
+
+    this.sendMessage("command/send-to-tty", message);
+  },
+
+
+  "[subscribe('command/send-sequence/osc'), pnp]":
+  function send_OSC() 
+  {
+    var message;
+
+    if (this._8bit_mode) {
+      message = "\x9d";
+    } else {
+      message = "\x1b]";
+    }
+
+    this.sendMessage("command/send-to-tty", message);
+  },
+
+  "[subscribe('command/send-sequence/csi'), pnp]":
+  function send_CSI() 
+  {
+    var message;
+
+    if (this._8bit_mode) {
+      message = "\x9b";
+    } else {
+      message = "\x1b[";
+    }
+
+    this.sendMessage("command/send-to-tty", message);
+  },
+
   "[subscribe('command/send-sequence/dcs'), pnp]":
   function send_DCS() 
   {
@@ -167,7 +239,6 @@ ConformanceLevel.definition = {
     this.sendMessage("command/send-to-tty", message);
   },
 
-  /** return 8bit mode state */
   "[subscribe('command/send-sequence/st'), pnp]":
   function send_ST() 
   {

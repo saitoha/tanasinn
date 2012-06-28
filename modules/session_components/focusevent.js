@@ -49,27 +49,15 @@ FocusEvent.definition = {
   "[install]":
   function install(broker) 
   {
-    /** Start to listen mouse event. */
-    this.backup.enabled = true;
-    this.restore.enabled = true;
-    this.onGotFocus.enabled = true;
-    this.onLostFocus.enabled = true;
-    this.onFocusReportingModeChanged.enabled = true;
   },
 
   /** Uninstalls itself. */
   "[uninstall]":
   function uninstall(broker) 
   {
-    // unregister mouse event DOM listeners.
-    this.backup.enabled = false;
-    this.restore.enabled = false;
-    this.onGotFocus.enabled = false;
-    this.onLostFocus.enabled = false;
-    this.onFocusReportingModeChanged.enabled = false;
   },
 
-  "[subscribe('command/backup')]": 
+  "[subscribe('command/backup'), pnp]": 
   function backup(context) 
   {
     context.focus_event = {
@@ -77,7 +65,7 @@ FocusEvent.definition = {
     }; 
   },
 
-  "[subscribe('command/restore')]": 
+  "[subscribe('command/restore'), pnp]": 
   function restore(context) 
   {
     if (context.mouse) {
@@ -86,40 +74,34 @@ FocusEvent.definition = {
   },
   
   /** Fired at the focus reporting mode is changed. */
-  "[subscribe('event/focus-reporting-mode-changed')]": 
+  "[subscribe('event/focus-reporting-mode-changed'), pnp]": 
   function onFocusReportingModeChanged(mode) 
   {
     this._focus_mode = mode;
   },
 
-  "[subscribe('event/got-focus')]":
+  "[subscribe('event/got-focus'), pnp]":
   function onGotFocus()
   {
-    var message;
-
     this.onLostFocus.enabled = true;
     this.onGotFocus.enabled = false;
-    if (!this._focus_mode) {
-      return;
-    }
 
-    message = "\x1b[I"; // focus in
-    this.sendMessage("command/send-to-tty", message);
+    if (this._focus_mode) {
+      this.sendMessage("command/send-sequence/csi");
+      this.sendMessage("command/send-to-tty", "I"); // focus in
+    }
   },
 
-  "[subscribe('event/lost-focus')]":
+  "[subscribe('event/lost-focus'), pnp]":
   function onLostFocus()
   {
-    var message;
-
     this.onLostFocus.enabled = false;
     this.onGotFocus.enabled = true;
-    if (!this._focus_mode) {
-      return;
-    }
 
-    message = "\x1b[O"; // focus out
-    this.sendMessage("command/send-to-tty", message);
+    if (this._focus_mode) {
+      this.sendMessage("command/send-sequence/csi");
+      this.sendMessage("command/send-to-tty", "O"); // focus out
+    }
   },
 
 }; // class FocusEvent
@@ -135,3 +117,4 @@ function main(broker)
   new FocusEvent(broker);
 }
 
+// EOF

@@ -222,20 +222,28 @@ Session.definition = {
   /** Create terminal UI and start tty session. */ 
   initializeWithRequest: function initializeWithRequest(request) 
   {
+    var id = coUtils.Uuid.generate().toString();
+
     // register getter topic.
     this.subscribe("get/bin-path", 
       function()
       {
         return this.request("get/bin-path");
-      }, this);
+      }, this, id);
+
     this.subscribe("get/python-path", 
       function()
       { 
         return this.request("get/python-path");
-      }, this);
+      }, this, id);
 
-    this._request_id = coUtils.Uuid.generate().toString();
+    this.subscribe("get/root-element", 
+      function()
+      { 
+        return request.parent;
+      }, this, id);
 
+    this._request_id = id;
     this._window = request.parent.ownerDocument.defaultView;
     this._root_element = request.parent;
     this._command = request.command;
@@ -260,6 +268,7 @@ Session.definition = {
     if (this._stopped) {
       return;
     }
+    this.unsubscribe(this._request_id);
     this._stopped = true
     this.stop.enabled = false;
     this.notify("event/broker-stopping", this);

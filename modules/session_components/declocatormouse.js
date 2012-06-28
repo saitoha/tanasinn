@@ -22,109 +22,12 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/**
- *
- * @class WheelScroll
- *
- *
- */
-let WheelScroll = new Class().extends(Plugin);
-WheelScroll.definition = {
-
-  get id()
-    "wheel_scroll",
-
-  get info()
-    <plugin>
-        <name>{_("Wheel Scroll")}</name>
-        <description>{
-          _("Handle Wheel/Touch scroll event.")
-        }</description>
-        <version>0.1</version>
-    </plugin>,
-
-  "[persistable] enabled_when_startup": true,
-
-  /** Installs itself. */
-  "[install]":
-  function install(broker) 
-  {
-    /** Start to listen mouse event. */
-    this.onMouseTrackingTypeChanged.enabled = true;
-    this.onMouseTrackingModeChanged.enabled = true;
-
-    this.onmousescroll.enabled = true;
-  },
-
-  /** Uninstalls itself. */
-  "[uninstall]":
-  function uninstall(broker) 
-  {
-    // unregister mouse event DOM listeners.
-    this.onMouseTrackingTypeChanged.enabled = false;
-    this.onMouseTrackingModeChanged.enabled = false;
-
-    this.onmousescroll.enabled = false;
-  },
-
-  /** Fired at the mouse tracking mode is changed. */
-  "[subscribe('event/mouse-tracking-mode-changed')]":
-  function onMouseTrackingModeChanged(data) 
-  {
-  },
-
-  /** Fired at the mouse tracking type is changed. */
-  "[subscribe('event/mouse-tracking-type-changed')]":
-  function onMouseTrackingTypeChanged(data) 
-  {
-  },
-
-  /** Fired at the locator reporting mode is changed. */
-  "[subscribe('command/change-locator-reporting-mode'), enabled]": 
-  function onChangeLocatorReportingMode(mode) 
-  {
-  },
-
-  /** Mouse down evnet listener */
-  "[listen('DOMMouseScroll', '#tanasinn_content')]": 
-  function onmousescroll(event) 
-  {
-    if(event.axis === event.VERTICAL_AXIS) {
-
-      let count = event.detail;
-      if (event.hasPixels) {
-        let line_height = renderer.line_height;
-        count = Math.round(count / line_height + 0.5);
-      } else {
-        count = Math.round(count / 2);
-      }
-      if (0 == count) {
-        return;
-      }
-
-      let broker = this._broker;
-
-      if (this._in_scroll_session) {
-        if (count > 0) {
-          broker.notify("command/scroll-down-view", count);
-          broker.notify("command/draw");
-        } else if (count < 0) {
-          broker.notify("command/scroll-up-view", -count);
-          broker.notify("command/draw");
-        } else { // count == 1
-          return;
-        }
-      }
-    }
-  },
-
-}; // class WheelScroll
 
 /**
  * @class DECLocatorMouse
  *
  */
-let DECLocatorMouse = new Class().extends(Plugin).depends("renderer");
+var DECLocatorMouse = new Class().extends(Plugin).depends("renderer");
 DECLocatorMouse.definition = {
 
   get id()
@@ -153,14 +56,6 @@ DECLocatorMouse.definition = {
   "[install]":
   function install(broker) 
   {
-    /** Start to listen mouse event. */
-    this.onmousedown.enabled = true;
-    this.onmousemove.enabled = true;
-    this.onmouseup.enabled = true;
-    this.onMouseTrackingTypeChanged.enabled = true;
-    this.onMouseTrackingModeChanged.enabled = true;
-    this.backup.enabled = true;
-    this.restore.enabled = true;
   },
 
   /** Uninstalls itself. */
@@ -168,19 +63,11 @@ DECLocatorMouse.definition = {
   function uninstall(broker) 
   {
     // unregister mouse event DOM listeners.
-    this.onmousedown.enabled = false;
-    this.onmousemove.enabled = false;
-    this.onmouseup.enabled = false;
-    this.onMouseTrackingTypeChanged.enabled = false;
-    this.onMouseTrackingModeChanged.enabled = false;
-    this.backup.enabled = false;
-    this.restore.enabled = false;
     this._locator_event = null;
-
     this.onmousescroll.enabled = false;
   },
 
-  "[subscribe('command/backup')]": 
+  "[subscribe('command/backup'), pnp]": 
   function backup(context) 
   {
     context.decmouse = {
@@ -188,7 +75,7 @@ DECLocatorMouse.definition = {
     }; 
   },
 
-  "[subscribe('command/restore')]": 
+  "[subscribe('command/restore'), pnp]": 
   function restore(context) 
   {
     if (context.decmouse) {
@@ -212,7 +99,7 @@ DECLocatorMouse.definition = {
   },
 
   /** Fired at the mouse tracking mode is changed. */
-  "[subscribe('event/mouse-tracking-mode-changed')]":
+  "[subscribe('event/mouse-tracking-mode-changed'), pnp]":
   function onMouseTrackingModeChanged(data) 
   {
     this._locator_reporting_mode = null;
@@ -246,7 +133,7 @@ DECLocatorMouse.definition = {
   },
 
   /** Fired at the mouse tracking type is changed. */
-  "[subscribe('event/mouse-tracking-type-changed')]":
+  "[subscribe('event/mouse-tracking-type-changed'), pnp]":
   function onMouseTrackingTypeChanged(data) 
   {
     this._locator_reporting_mode = null;
@@ -257,7 +144,10 @@ DECLocatorMouse.definition = {
   {
     var code,
         event = this._locator_event,
-        locator_reporting_mode = this._locator_reporting_mode;
+        locator_reporting_mode = this._locator_reporting_mode,
+        message,
+        column,
+        row;
 
     if (null === locator_reporting_mode) {
       return;
@@ -269,17 +159,17 @@ DECLocatorMouse.definition = {
       code = 1;
     }
 
-    let column, row;
     if (locator_reporting_mode.pixel) {
       [column, row] = this._getCurrentPositionInPixel(event);
     } else {
       [column, row] = this._getCurrentPosition(event);
     }
 
-    let message = coUtils.Text.format(
-      "\x1b[%d;%d;%d;%d;1&w", 
+    message = coUtils.Text.format(
+      "%d;%d;%d;%d;1&w", 
       code, this._locator_state, row, column);
 
+    this.sendMessage("command/send-sequence/csi");
     this.sendMessage("command/send-to-tty", message);
 
   },
@@ -341,9 +231,10 @@ DECLocatorMouse.definition = {
   },
 
   /** Mouse down evnet listener */
-  "[listen('mousedown', '#tanasinn_content')]": 
+  "[listen('mousedown', '#tanasinn_content'), pnp]": 
   function onmousedown(event) 
   {
+    var column, row, message;
 
     if (null === this._locator_reporting_mode) {
       return;
@@ -387,30 +278,33 @@ DECLocatorMouse.definition = {
     if (locator_reporting_mode.oneshot) {
       this._locator_reporting_mode = null;
     }
-    let column, row 
     if (locator_reporting_mode.pixel) {
       [column, row] = this._getCurrentPositionInPixel(event);
     } else {
       [column, row] = this._getCurrentPosition(event);
     }
-    let message = coUtils.Text.format(
-      "\x1b[%d;%d;%d;%d;1&w", 
+
+    message = coUtils.Text.format(
+      "%d;%d;%d;%d;1&w", 
       code, this._locator_state, row, column);
 
+    this.sendMessage("command/send-sequence/csi");
     this.sendMessage("command/send-to-tty", message);
   },
 
   /** Mouse move evnet listener */
-  "[listen('mousemove', '#tanasinn_content')]": 
+  "[listen('mousemove', '#tanasinn_content'), pnp]": 
   function onmousemove(event) 
   {
     this._locator_event = event;
   },
 
   /** Mouse up evnet listener */
-  "[listen('mouseup', '#tanasinn_content')]": 
+  "[listen('mouseup', '#tanasinn_content'), pnp]": 
   function onmouseup(event) 
   {
+    var column, row, message;
+
     if (null === this._locator_reporting_mode) {
       return;
     }
@@ -446,16 +340,18 @@ DECLocatorMouse.definition = {
     if (locator_reporting_mode.oneshot) {
       this._locator_reporting_mode = null;
     }
-    let column, row 
+
     if (locator_reporting_mode.pixel) {
       [column, row] = this._getCurrentPositionInPixel(event);
     } else {
       [column, row] = this._getCurrentPosition(event);
     }
-    let message = coUtils.Text.format(
-      "\x1b[%d;%d;%d;%d;1&w", 
+
+    message = coUtils.Text.format(
+      "%d;%d;%d;%d;1&w", 
       code, this._locator_state, row, column);
 
+    this.sendMessage("command/send-sequence/csi");
     this.sendMessage("command/send-to-tty", message);
 
   },
@@ -463,35 +359,52 @@ DECLocatorMouse.definition = {
   // Helper: get current position from mouse event object.
   _getCurrentPosition: function _getCurrentPosition(event) 
   {
-    let broker = this._broker;
-    let target_element = broker.uniget(
+    var root_element, target_element, box, offsetX, offsetY,
+        left, top, renderer, column, row;
+
+    root_element = this.request("get/root-element");
+
+    target_element = this.request(
       "command/query-selector", 
       "#tanasinn_center_area");
-    let box = target_element.boxObject;
-    let offsetX = box.screenX - broker.root_element.boxObject.screenX;
-    let offsetY = box.screenY - broker.root_element.boxObject.screenY;
-    let left = event.layerX - offsetX; // left position in pixel.
-    let top = event.layerY - offsetY;  // top position in pixel.
+
+    box = target_element.boxObject;
+
+    offsetX = box.screenX - root_element.boxObject.screenX;
+    offsetY = box.screenY - root_element.boxObject.screenY;
+
+    left = event.layerX - offsetX; // left position in pixel.
+    top = event.layerY - offsetY;  // top position in pixel.
 
     // converts pixel coordinate to [column, row] style.
-    let renderer = this.dependency["renderer"];
-    let column = Math.round(left / renderer.char_width);
-    let row = Math.round(top / renderer.line_height);
+    renderer = this.dependency["renderer"];
+
+    column = Math.round(left / renderer.char_width);
+    row = Math.round(top / renderer.line_height);
+
     return [column, row];
   },
 
   // Helper: get current position from mouse event object in pixel.
   _getCurrentPositionInPixel: function _getCurrentPositionInPixel(event) 
   {
-    let broker = this._broker;
-    let target_element = broker.uniget(
+    var root_element, target_element, box, offsetX, offsetY,
+        left, top;
+
+    root_element = this.request("get/root-element");
+
+    target_element = this.request(
       "command/query-selector", 
       "#tanasinn_center_area");
-    let box = target_element.boxObject;
-    let offsetX = box.screenX - broker.root_element.boxObject.screenX;
-    let offsetY = box.screenY - broker.root_element.boxObject.screenY;
-    let left = event.layerX - offsetX; // left position in pixel.
-    let top = event.layerY - offsetY;  // top position in pixel.
+
+    box = target_element.boxObject;
+
+    offsetX = box.screenX - root_element.boxObject.screenX;
+    offsetY = box.screenY - root_element.boxObject.screenY;
+
+    left = event.layerX - offsetX; // left position in pixel.
+    top = event.layerY - offsetY;  // top position in pixel.
+
     return [left, top];
   },
 
@@ -504,7 +417,7 @@ DECLocatorMouse.definition = {
  */
 function main(broker) 
 {
-  new WheelScroll(broker);
   new DECLocatorMouse(broker);
 }
 
+// EOF

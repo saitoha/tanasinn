@@ -69,18 +69,20 @@ DOMEventManager.definition = {
   "[subscribe('command/add-domlistener'), enabled]":
   function add(listener) 
   {
-    var broker, dom, id;
+    var dom, id;
 
-    broker = this._broker;
     dom = {};
 
     if (!listener.target) {
-      this._addImpl(listener, broker.window.target);
+      this._addImpl(listener, this.request("get/root-element")
+          .ownerDocument
+          .defaultView
+          .target);
     } else if ("string" === typeof listener.target) {
 
       id = listener.target.substr(1);
       try {
-        dom.target = broker.uniget("get/element", id);
+        dom.target = this.request("get/element", id);
       } catch(e) {
         dom.target = null;
       }
@@ -88,7 +90,7 @@ DOMEventManager.definition = {
         this._addImpl(listener, dom.target);
       } else {
         if ("#" == listener.target.charAt(0)) {
-          broker.subscribe(
+          this._broker.subscribe(
             "@event/domnode-created/" + id, 
             function onNodeCreated(target_element) 
             {
@@ -176,9 +178,10 @@ DOMEventManager.definition = {
   "[subscribe('event/broker-stopping'), enabled]":
   function onSessionStopping(id)
   {
-    if (this._listener_list_map) {
+    if (null !== this._listener_list_map) {
       Object.keys(this._listener_list_map)
         .forEach(function(id) this.remove(id), this);
+      this._listener_list_map = null;
       this.remove.enabled = false;
     }
   },
@@ -196,4 +199,4 @@ function main(broker)
   new DOMEventManager(broker);
 }
 
-
+// EOF

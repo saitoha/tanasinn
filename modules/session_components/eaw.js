@@ -50,7 +50,9 @@ EastAsianWidth.definition = {
   "[subscribe('sequence/decset/8840'), pnp]":
   function activate() 
   { // Treat ambiguous characters as double
-    var parser = this.dependency["parser"];
+    var parser;
+
+    parser = this.dependency["parser"];
     parser.ambiguous_as_wide = true;
     coUtils.Debug.reportMessage("DECAMB: double");
   },
@@ -60,7 +62,9 @@ EastAsianWidth.definition = {
   "[subscribe('sequence/decrst/8840'), pnp]":
   function deactivate() 
   { // Treat ambiguous characters as single
-    var parser = this.dependency["parser"];
+    var parser;
+
+    parser = this.dependency["parser"];
     parser.ambiguous_as_wide = false;
     coUtils.Debug.reportMessage("DECAMB: single");
   },
@@ -106,7 +110,6 @@ AmbiguousWidthReporting.definition = {
   "[subscribe('sequence/decset/7700'), pnp]":
   function activate() 
   { // Enable ambiguous width reporting
-    this.onAmbiguousWidthChanged.enabled = true;
   },
 
   /** Disable ambiguous width reporting.
@@ -114,21 +117,21 @@ AmbiguousWidthReporting.definition = {
   "[subscribe('sequence/decrst/7700'), pnp]":
   function deactivate() 
   { // Disable ambigous width reporting
-    this.onAmbiguousWidthChanged.enabled = false;
   },
 
   /** Disable ambiguous width reporting.
    */
-  "[subscribe('variable-changed/parser.ambiguous_as_wide')]":
+  "[subscribe('variable-changed/parser.ambiguous_as_wide'), pnp]":
   function onAmbiguousWidthChanged(value) 
   { // Disable ambigous width reporting
     var message;
 
     if (value) {
-      message = "\x1b[1W";
+      message = "1W";
     } else {
-      message = "\x1b[2W";
+      message = "2W";
     }
+    this.sendMessage("command/send-sequence/csi", message);
     this.sendMessage("command/send-to-tty", message);
   },
 

@@ -212,12 +212,13 @@ WindowManipulator.definition = {
         //   x    Window width in pixels.
         //
         {
-          var broker = this._broker;
-          var target_element = broker.root_element;
+          var target_element = this.request("get/root-element");
           var width = target_element.boxObject.width;
           var height = target_element.boxObject.height;
-          var message = coUtils.Text.format("\x1b[4;%d;%dt", height, width);
-          broker.notify("command/send-to-tty", message); 
+          var message = coUtils.Text.format("4;%d;%dt", height, width);
+
+          this.sendMessage("command/send-sequence/csi"); 
+          this.sendMessage("command/send-to-tty", message); 
         }
         break;
 
@@ -227,13 +228,14 @@ WindowManipulator.definition = {
         //         y    Terminal height in characters. (Lines)
         //         x    Terminal width in characters. (Columns)
         {
-          var broker = this._broker;
-          var target_element = broker.root_element;
+          var target_element = this.request("get/root-element");
           var screen = this.dependency["screen"];
           var width = screen.width;
           var height = screen.height;
-          var message = coUtils.Text.format("\x1b[8;%d;%dt", height, width);
-          broker.notify("command/send-to-tty", message); 
+          var message = coUtils.Text.format("8;%d;%dt", height, width);
+
+          this.sendMessage("command/send-sequence/csi"); 
+          this.sendMessage("command/send-to-tty", message); 
         }
         break;
 

@@ -95,9 +95,9 @@ ListenAttribute.definition = {
                 listener_info.context = this;
                 listener_info.handler = wrapped_handler;
                 listener_info.id = listener_info.id || id;
-                broker.notify("command/add-domlistener", listener_info);
+                self.sendMessage("command/add-domlistener", listener_info);
               } else {
-                broker.notify("command/remove-domlistener", listener_info.id);
+                self.sendMessage("command/remove-domlistener", listener_info.id);
               }
             }
             return newval;

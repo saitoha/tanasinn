@@ -113,16 +113,17 @@ DeviceStatusReport.definition = {
 
       // report terminal status
       case 5:
-        message = "\x1b[0n";
-        this.sendMessage("command/send-to-tty", message);
+        this.sendMessage("command/send-sequence/csi");
+        this.sendMessage("command/send-to-tty", "0n");
         break;
 
       // report cursor position
       case 6:
         message = coUtils.Text.format(
-          "\x1b[%d;%dR", 
+          "%d;%dR", 
           cursor.positionY + 1, 
           cursor.positionX + 1);
+        this.sendMessage("command/send-sequence/csi");
         this.sendMessage("command/send-to-tty", message);
         break;
 
@@ -175,10 +176,11 @@ DeviceStatusReportEx.definition = {
       // report ambiguous width status (TNREPTAMB)
       case 8840:
         if (this._parser.ambiguous_as_wide) {
-          message = "\x1b[?8842n";
+          message = "?8842n";
         } else {
-          message = "\x1b[?8841n";
+          message = "?8841n";
         }
+        this.sendMessage("command/send-sequence/csi");
         this.sendMessage("command/send-to-tty", message);
         break;
 

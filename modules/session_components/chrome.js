@@ -66,11 +66,11 @@ Movable.definition = {
   "[subscribe('command/move-to'), type('Array -> Undefined'), enabled]":
   function moveTo(coordinate) 
   {
-    var x, y, broker, target_element;
+    var x, y, target_element;
 
     [x, y] = coordinate;
-    broker = this._broker;
-    target_element = broker.root_element;
+
+    target_element = this.request("get/root-element");
     if (x < -target_element.boxObject.width) x = 0;
     if (y < -target_element.boxObject.height) y = 0;
     target_element.style.left = x + "px";
@@ -84,26 +84,36 @@ Movable.definition = {
   "[subscribe('command/move-by'), type('Array -> Undefined'), enabled]":
   function moveBy(offset) 
   {
-    var x, y, broker, static_scope, timer, left, top;
+    var x, y, dom, static_scope, timer,
+        left, top, root_element;
 
     [x, y] = offset;
-    broker = this._broker;
+
     static_scope = arguments.callee;
     timer = static_scope.timer;
+
     if (timer) {
       timer.cancel();
     }
+
+    dom = {
+      root_element: this.request("get/root-element"),
+    };
+
     if (this.move_transition) {
-      broker.root_element.style.MozTransitionProperty = "left, top";
-      broker.root_element.style.MozTransitionDuration = this.move_duration + "ms";
-      static_scope.timer = coUtils.Timer.setTimeout(function() 
-      {
-        broker.root_element.style.MozTransitionProperty = "";
-        broker.root_element.style.MozTransitionDuration = "0ms";
-      }, this.move_duration);
+      dom.root_element.style.MozTransitionProperty = "left, top";
+      dom.root_element.style.MozTransitionDuration = this.move_duration + "ms";
+      static_scope.timer = coUtils.Timer.setTimeout(
+        function() 
+        {
+          dom.root_element.style.MozTransitionProperty = "";
+          dom.root_element.style.MozTransitionDuration = "0ms";
+        }, this.move_duration);
     }
-    left = parseInt(broker.root_element.style.left) + x;
-    top = parseInt(broker.root_element.style.top) + y;
+
+    left = parseInt(dom.root_element.style.left) + x;
+    top = parseInt(dom.root_element.style.top) + y;
+
     this.moveTo([left, top]);
   },
 
@@ -173,10 +183,10 @@ OuterChrome.definition = {
 
   getImagePath: function getImagePath()
   {
-    var broker, path, file;
+    var path, file;
 
-    broker = this._broker;
-    path = broker.runtime_path + "/" + "images/cover.png";
+    path = this._broker.runtime_path + "/" + "images/cover.png";
+
     file = coUtils.File.getFileLeafFromVirtualPath(path);
     if (!file.exists()) {
         path = "images/cover.png";
@@ -216,7 +226,7 @@ OuterChrome.definition = {
    */
   get template()
     ({
-      parentNode: this._broker.root_element, 
+      parentNode: this.request("get/root-element"), 
       id: "tanasinn_outer_chrome",
       tagName: "stack",
       hidden: true,
@@ -459,7 +469,7 @@ Chrome.definition = {
   function install(broker) 
   {
     var {tanasinn_content, tanasinn_center_area} 
-      = broker.uniget("command/construct-chrome", this.template);
+      = this.request("command/construct-chrome", this.template);
     this._element = tanasinn_content;
     this._center = tanasinn_center_area;
     this.onGotFocus.enabled = true;
@@ -499,10 +509,7 @@ Chrome.definition = {
   "[subscribe('command/query-selector'), enabled]":
   function querySelector(selector) 
   {
-    var broker;
-
-    broker = this._broker;
-    return broker.root_element.querySelector(selector);
+    return this.request("get/root-element").querySelector(selector);
   },
 
   /** Fired when a resize session started. */

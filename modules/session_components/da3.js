@@ -94,7 +94,6 @@ TirtiaryDA.definition = {
   "[install]":
   function install(broker) 
   {
-    this.reply.enabled = true;
   },
 
   /** Uninstalls itself.
@@ -103,42 +102,42 @@ TirtiaryDA.definition = {
   "[uninstall]":
   function uninstall(broker) 
   {
-    this.reply.enabled = false;
   },
 
   /** handle DA3 request. */
   "[profile('vt100'), sequence('CSI =%dc')]":
   function DA3(n) 
   { // Tirtiary DA (Device Attributes)
-    var broker;
-
     if (n !== undefined && n !== 0) {
       coUtils.Debug.reportWarning(
         _("%s sequence [%s] was ignored."),
         arguments.callee.name, Array.slice(arguments));
     } else { //
-      broker = this._broker;
-      broker.notify("sequence/DA3");
+      this.sendMessage("sequence/DA3");
     }
   },
 
   /** retuns Device Attribute message */
-  "[subscribe('sequence/DA3')]":
+  "[subscribe('sequence/DA3'), pnp]":
   function reply()
   {
-    var reply, message, broker;
+    var reply, message;
    
-    reply = ["\x1bP!|"]; // DCS ! |
+    reply = ["!|"]; // ! |
     reply.push("FF");
     reply.push("FF");
     reply.push("FF");
     reply.push("FF");
-    reply.push("\x1b\\");
+    reply.push("\\");
     message = reply.join("");
-    broker = this._broker;
-    broker.notify("command/send-to-tty", message);
+
+    this.sendMessage("command/send-sequence/dcs", message);
+    this.sendMessage("command/send-to-tty", message);
+    this.sendMessage("command/send-sequence/st", message);
+
     coUtils.Debug.reportMessage(
-      _("Tirtiary Device Attributes is requested. reply: '%s'."), message);
+      _("Tirtiary Device Attributes is requested. reply: '%s'."),
+      message);
 
   },
 

@@ -102,10 +102,8 @@ AutoRepeat.definition = {
   function activate() 
   { 
     // Auto-repeat Keys (DECARM)
-    var broker = this._broker;
-
     // enable auto repeat.
-    broker.notify("command/change-auto-repeat-mode", true);
+    this.sendMessage("command/change-auto-repeat-mode", true);
     coUtils.Debug.reportMessage(
       _("DECSET - DECARM (Auto-repeat Keys) is set."));
   },
@@ -116,10 +114,8 @@ AutoRepeat.definition = {
   function deactivate() 
   {
     // Auto-repeat Keys (DECARM)
-    var broker = this._broker;
-
     // enable auto repeat.
-    broker.notify("command/change-auto-repeat-mode", false);
+    this.sendMessage("command/change-auto-repeat-mode", false);
     coUtils.Debug.reportMessage(
       _("DECRST - DECARM (Auto-repeat Keys) is reset."));
   },

@@ -96,8 +96,8 @@ CommandAttribute.definition = {
                 option: option,
                 completers: completers,
               };
-              broker.notify(
-                <>command/query-completion/{name}</>, 
+              self.sendMessage(
+                "command/query-completion/" + name, 
                 completion_context);
             };
           },

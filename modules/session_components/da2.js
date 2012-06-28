@@ -103,7 +103,6 @@ SecondaryDA.definition = {
   "[install]":
   function install(broker) 
   {
-    this.reply.enabled = true;
   },
 
   /** Uninstalls itself.
@@ -112,30 +111,26 @@ SecondaryDA.definition = {
   "[uninstall]":
   function uninstall(broker) 
   {
-    this.reply.enabled = false;
   },
 
   /** handle DA2 request. */
-  "[profile('vt100'), sequence('CSI >%dc')]":
+  "[profile('vt100'), sequence('CSI >%dc'), pnp]":
   function DA2(n) 
   { // Secondary DA (Device Attributes)
-    var broker;
-
     if (n !== undefined && n !== 0) {
       coUtils.Debug.reportWarning(
         _("%s sequence [%s] was ignored."),
         arguments.callee.name, Array.slice(arguments));
     } else { //
-      broker = this._broker;
-      broker.notify("sequence/DA2");
+      this.sendMessage("sequence/DA2");
     }
   },
 
   /** retuns Device Attribute message */
-  "[subscribe('sequence/DA2')]":
+  "[subscribe('sequence/DA2'), pnp]":
   function reply()
   {
-    var reply, message, broker;
+    var reply, message;
    
     reply = [];
     reply.push(32);
@@ -143,12 +138,14 @@ SecondaryDA.definition = {
                      // number, starting with 95). 
     reply.push(2);   // DEC Terminal"s ROM cartridge registration number, 
                      // always zero.
-    message = "\x1b[>" + reply.join(";") + "c";
-    broker = this._broker;
-    broker.notify("command/send-to-tty", message);
+    message = ">" + reply.join(";") + "c";
+
+    this.sendMessage("command/send-sequence/csi");
+    this.sendMessage("command/send-to-tty", message);
+
     coUtils.Debug.reportMessage(
       _("Secondary Device Attributes is requested. reply: '%s'."), 
-      message.replace("\x1b", "\\e"));
+      "\\e" + message);
   },
 
 };

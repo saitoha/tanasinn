@@ -87,7 +87,10 @@ Ime.definition = {
     this.oninput.enabled = true;
     this.oncompositionupdate.enabled = true;
 
-    focused_element = broker.window.document.commandDispatcher.focusedElement;
+    focused_element = this.request("get/root-element")
+      .ownerDocument
+      .commandDispatcher
+      .focusedElement;
     if (focused_element && focused_element.isEqualNode(textbox)) {
       this.startPolling();
     }

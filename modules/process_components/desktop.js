@@ -156,13 +156,24 @@ Desktop.definition = {
   "[install]":
   function install(broker)
   {
+    var id, root_element;
+
     this.onShutdown.enabled = true;
     this.getDesktopFromWindow.enabled = true;
-    this._root_element = this.window.document
+    root_element = this.window.document
       .documentElement
       .appendChild(this.window.document.createElement("box"));
     
-    this._root_element.id = "tanasinn_desktop";
+    id = root_element.id = "tanasinn_desktop";
+
+    this._root_element = root_element;
+
+    this.subscribe("get/root-element",
+      function()
+      {
+        return root_element;
+      }, this, id);
+
     this.notify("command/load-settings", this.profile);
 
     this.notify("event/broker-started", this);

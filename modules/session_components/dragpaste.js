@@ -113,13 +113,17 @@ DragPaste.definition = {
       // sanitize text.
       text = text.replace(/[\x00-\x08\x0a-\x0c\x0e-\x1f]/g, "");
 
-      if (true === this._bracketed_paste_mode) {
-        // add bracket sequences.
-        text = "\x1b[200~" + text + "\x1b[201~";
-      }
-
       // Encodes the text message and send it to the tty device.
-      this.sendMessage("command/input-text", text);
+      if (this._bracketed_paste_mode) {
+        // add bracket sequences.
+        this.sendMessage("command/send-sequence/csi");
+        this.sendMessage("command/send-to-tty", "200~");
+        this.sendMessage("command/input-text", text);
+        this.sendMessage("command/send-sequence/csi");
+        this.sendMessage("command/send-to-tty", "201~");
+      } else {
+        this.sendMessage("command/input-text", text);
+      }
     }
   },
 

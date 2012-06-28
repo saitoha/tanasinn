@@ -110,21 +110,25 @@ Splitter.definition = {
    */
   ondragstart: function ondragstart(event) 
   {
-    var broker, renderer, screen, bottompanel, document, 
+    var dom, renderer, screen, bottompanel, document, 
         initial_height, initial_row, line_height, y;
-    broker = this._broker;
+    dom = {
+      document: this.request("get/root-element").ownerDocument;
+    }
     renderer = this.dependency["renderer"];
     screen = this.dependency["screen"];
     bottompanel = this.dependency["bottompanel"];
     initial_height = bottompanel.panelHeight;
     initial_row = screen.height;
     line_height = renderer.line_height;
-    broker.window.document.documentElement.style.cursor = "row-resize";
+
+    dom.document.documentElement.style.cursor = "row-resize";
+
     y = event.screenY;
 
     this.sendMessage("event/resize-session-started");
     this.sendMessage("command/add-domlistener", {
-      target: broker.window.document,
+      target: dom.document,
       type: "mousemove",
       id: "_DRAGGING",
       context: this,
@@ -145,13 +149,13 @@ Splitter.definition = {
       },
     });
     this.sendMessage("command/add-domlistener", {
-      target: broker.window.document,
+      target: dom.document,
       type: "mouseup", 
       id: "_DRAGGING",
       context: this,
       handler: function onmouseup() 
       {
-        broker.window.document.documentElement.style.cursor = "",
+        dom.document.documentElement.style.cursor = "",
         this.sendMessage("command/remove-domlistener", "_DRAGGING");
         if (screen.height == initial_row)
           return;

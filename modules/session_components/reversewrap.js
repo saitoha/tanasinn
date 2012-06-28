@@ -50,10 +50,8 @@ ReverseWrap.definition = {
   "[subscribe('sequence/decset/45'), pnp]":
   function activate() 
   { 
-    var broker = this._broker;
-
     // Reverse-wraparound Mode
-    broker.notify("command/enable-reverse-wraparound");
+    this.sendMessage("command/enable-reverse-wraparound");
     coUtils.Debug.reportMessage(
       _("DECSET 45 - Reverse-wraparound Mode was set."));
   },
@@ -63,10 +61,8 @@ ReverseWrap.definition = {
   "[subscribe('sequence/decrst/45'), pnp]":
   function deactivate() 
   {
-    var broker = this._broker;
-
     // No Reverse-wraparound Mode
-    broker.notify("command/disable-reverse-wraparound");
+    this.sendMessage("command/disable-reverse-wraparound");
     coUtils.Debug.reportMessage(
       _("DECRST 45 - Reverse-wraparound Mode was reset."));
   },

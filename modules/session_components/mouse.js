@@ -180,7 +180,7 @@ Mouse.definition = {
         //column += 32;
         //row += 32;
         message = coUtils.Text.format(
-          "\x1b[%d;%d;%dM", 
+          "%d;%d;%dM", 
           code, column, row);
 //        coUtils.Debug.reportError(message)
         break;
@@ -198,7 +198,7 @@ Mouse.definition = {
           action = "M";
         }
         message = coUtils.Text.format(
-          "\x1b[<%d;%d;%d%s", 
+          "<%d;%d;%d%s", 
           code, column, row, action);
 //        coUtils.Debug.reportError(message)
         break;
@@ -215,7 +215,8 @@ Mouse.definition = {
         code += 32;
         column += 32;
         row += 32;
-        buffer = [0x1b, 0x5b, 0x4d, code];
+        buffer = [0x4d, code];
+
         function putChar(c) {
           if (c >= 0x80) {
             // 110xxxxx 10xxxxxx
@@ -230,7 +231,7 @@ Mouse.definition = {
         }
         putChar(column);
         putChar(row);
-//        message = String.fromCharCode.apply(String, buffer);
+        message = String.fromCharCode.apply(String, buffer);
         break;
 
       default:
@@ -246,12 +247,13 @@ Mouse.definition = {
         column += 32;
         row += 32;
         // send escape sequence. 
-        //                            ESC    [     M          
-        message = String.fromCharCode(0x1b, 0x5b, 0x4d, code, column, row);
+        //                            M          
+        message = String.fromCharCode(0x4d, code, column, row);
 //        coUtils.Debug.reportMessage(message)
 
     } // switch (this._tracking_type)
 
+    this.sendMessage("command/send-sequence/csi", message);
     this.sendMessage("command/send-to-tty", message);
 
   },
@@ -403,16 +405,17 @@ Mouse.definition = {
   // Helper: get current position from mouse event object.
   _getCurrentPosition: function _getCurrentPosition(event) 
   {
-    var broker, target_element, box, offsetX, offsetY, 
-        left, top, renderer, column, row;
+    var target_element, box, offsetX, offsetY, 
+        left, top, renderer, column, row, root_element;
 
     target_element = this.request(
       "command/query-selector", 
       "#tanasinn_center_area");
     box = target_element.boxObject;
-    broker = this._broker;
-    offsetX = box.screenX - broker.root_element.boxObject.screenX;
-    offsetY = box.screenY - broker.root_element.boxObject.screenY;
+
+    root_element = this.request("get/root-element");
+    offsetX = box.screenX - root_element.boxObject.screenX;
+    offsetY = box.screenY - root_element.boxObject.screenY;
     left = event.layerX - offsetX; // left position in pixel.
     top = event.layerY - offsetY;  // top position in pixel.
 

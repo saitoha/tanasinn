@@ -131,6 +131,7 @@
     protection.js
     reportparams.js
     terminfo.js
+    wheelscroll.js
 
     focusevent.js
     declocatormouse.js

@@ -55,8 +55,10 @@ WatchableAttribute.definition = {
    */
   initialize: function initialize(broker)
   {
-    let attributes = this.__attributes;
-    let key;
+    var attributes, key;
+
+    attributes = this.__attributes;
+
     for (key in attributes) {
       let watchable_attribute = attributes[key]["watchable"];
       if (!watchable_attribute || !watchable_attribute.shift()) {
@@ -72,7 +74,7 @@ WatchableAttribute.definition = {
         this.__defineSetter__(key, function(value) {
           if (body != value) {
             body = value;
-            broker.notify("variable-changed/" + path, value);
+            this.sendMessage("variable-changed/" + path, value);
           }
         });
       }

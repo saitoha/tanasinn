@@ -48,22 +48,16 @@ Paste.definition = {
   "[install]":
   function install(broker) 
   {
-    this.paste.enabled = true;
-    this.onContextMenu.enabled = true;
-    this.onBracketedPasteModeChanged.enabled = true;
   },
 
   /** Uninstall itself. */
   "[uninstall]":
   function uninstall(broker) 
   {
-    this.paste.enabled = false;
-    this.onContextMenu.enabled = false;
-    this.onBracketedPasteModeChanged.enabled = false;
   },
   
   /** Context menu handler. */
-  "[subscribe('get/contextmenu-entries')]": 
+  "[subscribe('get/contextmenu-entries'), pnp]": 
   function onContextMenu() 
   {
     return {
@@ -78,7 +72,7 @@ Paste.definition = {
   },
 
   /** */
-  "[command('paste'), nmap('<M-v>', '<C-S-V>'), _('Paste from clipboard.')]": 
+  "[command('paste'), nmap('<M-v>', '<C-S-V>'), _('Paste from clipboard.'), pnp]": 
   function paste() 
   {
     var clipboard, trans, str, str_length, text;
@@ -103,21 +97,23 @@ Paste.definition = {
       // sanitize text.
       text = text.replace(/[\x00-\x08\x0a-\x0c\x0e-\x1f]/g, "");
 
+      // Encodes the text message and send it to the tty device.
       if (true === this._bracketed_paste_mode) {
         // add bracket sequences.
-        text = "\x1b[200~" + text + "\x1b[201~";
+        this.sendMessage("command/send-sequence/csi");
+        this.sendMessage("command/send-to-tty", "200~");
+        this.sendMessage("command/input-text", text);
+        this.sendMessage("command/send-sequence/csi");
+        this.sendMessage("command/send-to-tty", "201~");
+      } else {
+        this.sendMessage("command/input-text", text);
       }
-
-      // Encodes the text message and send it to the tty device.
-      //broker.notify("command/flow-control", false);
-      this.sendMessage("command/input-text", text);
-      //broker.notify("command/flow-control", true);
     }
     return true; /* prevent default action */
   },
 
   /** Set/Reset bracketed paste mode. */
-  "[subscribe('command/change-bracketed-paste-mode')]":
+  "[subscribe('command/change-bracketed-paste-mode'), pnp]":
   function onBracketedPasteModeChanged(mode) 
   {
     this._bracketed_paste_mode = mode;

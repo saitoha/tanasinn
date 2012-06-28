@@ -891,6 +891,7 @@ DecModeSequenceHandler.definition = {
   "[profile('vt100'), sequence('CSI %d\\'{')]":
   function DECSLE(n) 
   { // TODO: Select Locator Events
+    
     switch (n) {
 
       case 0:

@@ -171,10 +171,7 @@ TemplateBuilder.definition = {
   buildChrome: 
   function buildChrome(template, results) 
   {
-    var broker, root_element, element, key, value;
-
-    broker = this._broker;
-    root_element = broker.root_element;
+    var element, key, value;
 
     if (Array.isArray(template)) {
       return template.map(
@@ -189,7 +186,9 @@ TemplateBuilder.definition = {
           _("tagName property not found: %s."),
           template.toSource());
       }
-      return root_element.ownerDocument.createTextNode(template.text);
+      return this.request("get/root-element")
+        .ownerDocument
+        .createTextNode(template.text);
     }
 
     element = this._createElement(template.tagName);
@@ -227,14 +226,11 @@ TemplateBuilder.definition = {
   _createElement: 
   function _createElement(tagName) 
   {
-    var broker, root_element, touple, document, namespace;
-
-    broker = this._broker;
-
-    root_element = broker.root_element;
+    var touple, namespace;
 
     touple = tagName.split(":"); // (tagName) or (namespace, tagName).
-    document = root_element.ownerDocument;
+    document = this.request("get/root-element")
+      .ownerDocument;
 
     if (1 === touple.length) {
       return document.createElement(tagName);
@@ -275,11 +271,11 @@ TemplateBuilder.definition = {
   _processInnerText: 
   function _processInnerText(element, value) 
   {
-    var broker, root_element, text_node;
+    var text_node;
 
-    broker = this._broker;
-    root_element = broker.root_element;
-    text_node = root_element.ownerDocument.createTextNode(value);
+    text_node = this.request("get/root-element")
+      .ownerDocument
+      .createTextNode(value);
 
     element.appendChild(text_node);
   },
@@ -288,20 +284,20 @@ TemplateBuilder.definition = {
   _processParentNode: 
   function _processParentNode(element, value) 
   {
-    var broker, target_element, type;
+    var target_element, type;
 
     type = typeof value;
 
     if ("string" === type || "xml" === type) {
 
-      broker = this._broker;
-      target_element = broker.root_element.querySelector(String(value));
+      target_element = this.request("get/root-element")
+        .querySelector(String(value));
 
       if (target_element) {
         target_element.appendChild(element.value);
       } else {
         if ("#" == value.charAt(0)) {
-          broker.subscribe(
+          this._broker.subscribe(
             "@event/domnode-created/" + value.substr(1), 
             function(target_element)
             {
@@ -396,7 +392,7 @@ ChromeBuilder.definition = {
   initialize: function initialize(broker)
   {
     this._map = {};
-    broker.notify("initialized" + this.id, this);
+    this.sendMessage("initialized" + this.id, this);
   },
 
 // public
@@ -446,4 +442,4 @@ function main(broker)
 }
 
 
-
+// EOF
