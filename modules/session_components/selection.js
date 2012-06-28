@@ -72,13 +72,13 @@ Selection.definition = {
   "[persistable] enabled_when_startup": true,
   "[persistable] normal_selection_color": "white",
   "[persistable] highlight_selection_color": "yellow",
+  "[persistable] smart_selection": true,
 
   _color: "white",
   _canvas: null,
   _context: null,
   _range: null,
   _highlight_region: null,
-
 
   "[subscribe('event/mouse-tracking-mode-changed'), enabled]": 
   function onMouseTrackingModeChanged(data) 
@@ -401,11 +401,17 @@ Selection.definition = {
    */
   drawSelectionRange: function drawSelectionRange(first, last) 
   {
+    var text, context, screen, renderer, column,
+        char_width, line_height, start_row, end_row,
+        start_column, end_column,
+        x, y, width, height, lines, i,
+        match, right_blank_length;
+
     this.clear();
 
     // checking precondition
-    if ("number" != typeof(first) 
-     || "number" != typeof(last)) {
+    if ("number" !== typeof(first) 
+     || "number" !== typeof(last)) {
       throw coUtils.Debug.Exception(
         _("Ill-typed arguments was given: [%d, %d]"), 
         first, last);
@@ -415,34 +421,42 @@ Selection.definition = {
     if (first > last)
       [first, last] = arguments;
 
-    let context = this._context;
-    let screen = this.dependency["screen"];
-    let renderer = this.dependency["renderer"];
-    let column = screen.width;
-    let char_width = renderer.char_width;
-    let line_height = renderer.line_height;
-    let start_row = Math.floor(first / column);
-    let end_row = Math.floor(last / column + 1.0);
-    let start_column = first % column;
-    let end_column = last % column;
+    context = this._context;
+
+    screen = this.dependency["screen"];
+    renderer = this.dependency["renderer"];
+
+    column = screen.width;
+    char_width = renderer.char_width;
+    line_height = renderer.line_height;
+    start_row = Math.floor(first / column);
+    end_row = Math.floor(last / column + 1.0);
+    start_column = first % column;
+    end_column = last % column;
 
     if (this._rectangle_selection_flag) {
 
       // draw outer region
-      let x = start_column * char_width;
-      let y = start_row * line_height;
-      let width = (end_column - start_column) * char_width;
-      let height = (end_row - start_row) * line_height;
+      x = start_column * char_width;
+      y = start_row * line_height;
+
+      width = (end_column - start_column) * char_width;
+      height = (end_row - start_row) * line_height;
+
       context.fillStyle = this._color;
       context.fillRect(x, y, width, height);
 
     } else {
-      // draw outer region
-      let x = 0;
-      let y = start_row * line_height;
-      let width = column * char_width;
-      let height = (end_row - start_row) * line_height;
+
       context.fillStyle = this._color;
+
+      // draw outer region
+      x = 0;
+      y = start_row * line_height;
+
+      width = column * char_width;
+      height = (end_row - start_row) * line_height;
+
       context.fillRect(x, y, width, height);
 
       // clear pre-start region
@@ -451,6 +465,20 @@ Selection.definition = {
       // clear post-end region
       context.clearRect(end_column * char_width, y + height - line_height, 
                         width - end_column * char_width, line_height);
+
+      if (this.smart_selection) {
+        text = screen.getTextInRange(first, last);
+        lines = text.split("\n");
+
+        for (i = start_row; i < end_row; ++i) {
+          right_blank_length = column - lines[i - start_row].length;
+          // clear post-end region
+          context.clearRect(width - right_blank_length * char_width, 
+                            i * line_height,
+                            right_blank_length * char_width,
+                            line_height);
+        }
+      }
     }
   },
 

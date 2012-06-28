@@ -479,7 +479,7 @@ Layer.definition = {
   {
     var canvas;
 
-    canvas = this.request(
+    canvas = broker.uniget(
       "command/construct-chrome", 
       {
         parentNode: "#tanasinn_center_area",
@@ -693,21 +693,19 @@ Renderer.definition = {
   function onHeightChanged(height, line_height)
   {
     var canvas_height;
+    var broker = this._broker;
 
     height = height || this.dependency["screen"].height;
     line_height = line_height || this.line_height;
     canvas_height = 0 | (height * line_height);
-
     this._main_layer.canvas.height = canvas_height;
-
     if (this._slow_blink_layer) {
       this._slow_blink_layer.canvas.height = canvas_height;
     }
     if (this._rapid_blink_layer) {
       this._rapid_blink_layer.canvas.height = canvas_height;
     }
-
-    this.sendMessage("event/screen-height-changed", canvas_height);
+    broker.notify("event/screen-height-changed", canvas_height);
   },
 
   /** Draw to canvas */
