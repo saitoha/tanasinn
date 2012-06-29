@@ -58,7 +58,7 @@ OptionCompleter.definition = {
       this.sendMessage("event/answer-completion", null);
       return;
     }
-    let target_broker = "global" ==  context.option ? broker._broker: broker;
+    let target_broker = "global" === context.option ? broker._broker: broker;
 
     let lower_name = name.toLowerCase();
     let scope = target_broker.uniget("command/get-settings");
@@ -68,9 +68,9 @@ OptionCompleter.definition = {
           key: key, 
           value: value
         } for ([key, value] in Iterator(scope)) 
-          if (-1 != key.toLowerCase().indexOf(lower_name))
+          if (-1 !== key.toLowerCase().indexOf(lower_name))
       ];
-      if (0 == options.length) {
+      if (0 === options.length) {
         this.sendMessage("event/answer-completion", null);
         return;
       }

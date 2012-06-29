@@ -42,15 +42,21 @@ EventCompleter.definition = {
   "[completer('event'), enabled]":
   function complete(context)
   {
-    let broker = this._broker;
-    let { source, option, completers } = context;
-    let pattern = /^\s*(\S*)(\s*)/;
-    let match = source.match(pattern);
-    let [all, name, space] = match;
+    var broker, pattern, match, all, name, space,
+        next_completer_info, next_completer, option,
+        lower_name, candidates;;
+
+    broker = this._broker;
+
+    var { source, option, completers } = context;
+    pattern = /^\s*(\S*)(\s*)/;
+    match = source.match(pattern);
+    [all, name, space] = match;
+
     if (space) {
-      let next_completer_info = completers.shift();
+      next_completer_info = completers.shift();
       if (next_completer_info) {
-        let [next_completer, option] = next_completer_info.split("/");
+        [next_completer, option] = next_completer_info.split("/");
         this.sendMessage("command/query-completion/" + next_completer, {
           source: source.substr(all.length),
           option: option,
@@ -61,20 +67,28 @@ EventCompleter.definition = {
       }
       return;
     }
-    let lower_name = name.toLowerCase();
-    let candidates = broker.keys.filter(function(candidate) {
-      return -1 != candidate.toLowerCase().indexOf(lower_name);
-    });
-    let autocomplete_result = {
-      type: "text",
-      query: source, 
-      data: candidates.map(function(candidate) ({
-        name: candidate, 
-        value: candidate,
-      })),
-    };
 
-    this.sendMessage("event/answer-completion", autocomplete_result);
+    lower_name = name.toLowerCase();
+    candidates = broker.keys.filter(
+      function(candidate) 
+      {
+        return -1 !== candidate.toLowerCase().indexOf(lower_name);
+      });
+
+    this.sendMessage(
+      "event/answer-completion",
+      {
+        type: "text",
+        query: source, 
+        data: candidates.map(
+          function(candidate)
+          {
+            return {
+              name: candidate, 
+              value: candidate,
+            };
+          });
+      });
   },
 
 };
@@ -89,4 +103,4 @@ function main(broker)
   new EventCompleter(broker);
 }
 
-
+// EOF

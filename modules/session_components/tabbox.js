@@ -28,7 +28,7 @@
  * messages:
  *
  */
-let BottomPanel = new Class().extends(Plugin)
+var BottomPanel = new Class().extends(Plugin)
                              .depends("renderer")
                              .depends("screen");
 BottomPanel.definition = {
@@ -132,7 +132,7 @@ BottomPanel.definition = {
   "[install]":
   function install(session) 
   {
-    let {
+    var {
       tanasinn_bottompanel, 
       tanasinn_tabbox, 
       tanasinn_arrowscrollbox,
@@ -190,7 +190,7 @@ BottomPanel.definition = {
   "[command('openpanel'), _('Open bottom panel.'), pnp]":
   function open() 
   {
-    let bottomPanel = this._bottom_panel;
+    let bottom_panel = this._bottom_panel;
     let renderer = this.dependency["renderer"];
     let screen = this.dependency["screen"];
 
@@ -208,10 +208,10 @@ BottomPanel.definition = {
     }
 
     // open.
-    bottomPanel.setAttribute("collapsed", false);
+    bottom_panel.setAttribute("collapsed", false);
 
     // shrink screen's row.
-    let diff = Math.round(bottomPanel.boxObject.height / line_height);
+    let diff = Math.round(bottom_panel.boxObject.height / line_height);
     if (0 != diff) {
       session.notify("command/shrink-row", diff);
     }
@@ -390,4 +390,4 @@ function main(broker)
 }
 
 
-
+// EOF

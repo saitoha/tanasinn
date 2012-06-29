@@ -470,7 +470,12 @@ Selection.definition = {
         text = screen.getTextInRange(first, last);
         lines = text.split("\n");
 
-        for (i = start_row; i < end_row; ++i) {
+        right_blank_length = column - lines[0].length - start_column;
+        context.clearRect(width - right_blank_length * char_width, 
+                          start_row * line_height,
+                          right_blank_length * char_width,
+                          line_height);
+        for (i = start_row + 1; i < end_row; ++i) {
           right_blank_length = column - lines[i - start_row].length;
           // clear post-end region
           context.clearRect(width - right_blank_length * char_width, 

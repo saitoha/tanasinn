@@ -25,7 +25,7 @@
 /**
  *  @class ScreenshotCommand
  */
-let ScreenshotCommand = new Class().extends(Component);
+var ScreenshotCommand = new Class().extends(Component);
 ScreenshotCommand.definition = {
 
   get id()
@@ -87,4 +87,4 @@ function main(broker)
   new ScreenshotCommand(broker);
 }
 
-
+// EOF

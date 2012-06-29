@@ -41,7 +41,6 @@ NMapCompleter.definition = {
   "[completer('nmap'), enabled]":
   function complete(context)
   {
-    let broker = this._broker;
     let { source, option, completers } = context;
     let match = source.match(/^\s*(\S*)(\s*)/);
     if (null === match) {
@@ -98,7 +97,7 @@ NMapCompleter.definition = {
  * @class CMapCompleter
  *
  */
-let CMapCompleter = new Class().extends(Component);
+var CMapCompleter = new Class().extends(Component);
 CMapCompleter.definition = {
 
   get id()
@@ -113,14 +112,18 @@ CMapCompleter.definition = {
   "[completer('cmap'), enabled]":
   function complete(context)
   {
-    let broker = this._broker;
-    let { source, option, completers } = context;
-    let match = source.match(/^\s*(\S*)(\s*)/);
+    var match, all, name, next;
+
+    var { source, option, completers } = context;
+    match = source.match(/^\s*(\S*)(\s*)/);
+
     if (null === match) {
       this.sendMessage("event/answer-completion", null);
       return;
     }
-    let [all, name, next] = match;
+
+    [all, name, next] = match;
+
     if (next) {
       let next_completer_info = completers.shift();
       if (next_completer_info) {
@@ -140,7 +143,7 @@ CMapCompleter.definition = {
     let lower_name = name.toLowerCase();
     let candidates = Object.getOwnPropertyNames(expressions)
       .filter(function(expression) {
-        return -1 != expression.toLowerCase().indexOf(lower_name); 
+        return -1 !== expression.toLowerCase().indexOf(lower_name); 
       })
       .map(function(key) {
         return { 
@@ -148,7 +151,7 @@ CMapCompleter.definition = {
           value: expressions[key],
         };
       });
-    if (0 == candidates.length) {
+    if (0 === candidates.length) {
       this.sendMessage("event/answer-completion", null);
       return;
     }

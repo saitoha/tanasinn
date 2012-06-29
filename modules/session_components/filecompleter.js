@@ -25,15 +25,17 @@
 
 function generateFileEntries(path) 
 {
-  let directory = Components
+  var directory, entries, file;
+
+  directory = Components
     .classes["@mozilla.org/file/local;1"]
     .createInstance(Components.interfaces.nsILocalFile);
   try {
     directory.initWithPath(path);
     if (directory.exists() && directory.isDirectory()) {
-      let entries = directory.directoryEntries;
+      entries = directory.directoryEntries;
       while (entries.hasMoreElements()) {
-        let file = entries.getNext();
+        file = entries.getNext();
         yield file.QueryInterface(Components.interfaces.nsIFile);
       }
     }
@@ -46,7 +48,7 @@ function generateFileEntries(path)
  * @class CGICompleter
  *
  */
-let CGICompleter = new Class().extends(Component);
+var CGICompleter = new Class().extends(Component);
 CGICompleter.definition = {
 
   get id()
@@ -61,14 +63,20 @@ CGICompleter.definition = {
   "[completer('cgi'), enabled]":
   function complete(context)
   {
-    let broker = this._broker;
-    let { source, option, completers } = context;
-    let match = source.match(/^(\s*)([$_\-@a-zA-Z\.]*)(\s?)/);
+    var broker, match, all, space, name, next;
+
+    broker = this._broker;
+    var { source, option, completers } = context;
+
+    match = source.match(/^(\s*)([$_\-@a-zA-Z\.]*)(\s?)/);
+
     if (null === match) {
       this.sendMessage("event/answer-completion", null);
       return;
     }
-    let [all, space, name, next] = match;
+
+    [all, space, name, next] = match;
+
     if (next) {
       let next_completer_info = completers.shift();
       if (next_completer_info) {
@@ -117,7 +125,7 @@ CGICompleter.definition = {
  * @class BatchCompleter
  *
  */
-let BatchCompleter = new Class().extends(Component);
+var BatchCompleter = new Class().extends(Component);
 BatchCompleter.definition = {
 
   get id()
@@ -194,7 +202,7 @@ BatchCompleter.definition = {
  * @class ProfileCompleter
  *
  */
-let ProfileCompleter = new Class().extends(Component);
+var ProfileCompleter = new Class().extends(Component);
 ProfileCompleter.definition = {
 
   get id()
@@ -210,14 +218,17 @@ ProfileCompleter.definition = {
   "[completer('profile'), enabled]":
   function complete(context)
   {
-    let broker = this._broker;
-    let { source, option, completers } = context;
-    let match = source.match(/^(\s*)([$_\-@a-zA-Z\.]*)(\s?)/);
+    var broker, match, all, space, name, next;
+
+    broker = this._broker;
+    var { source, option, completers } = context;
+    match = source.match(/^(\s*)([$_\-@a-zA-Z\.]*)(\s?)/);
     if (null === match) {
       this.sendMessage("event/answer-completion", null);
       return;
     }
-    let [all, space, name, next] = match;
+    [all, space, name, next] = match;
+
     if (next) {
       let next_completer_info = completers.shift();
       if (next_completer_info) {
@@ -271,7 +282,7 @@ ProfileCompleter.definition = {
  * @class FileCompleter
  *
  */
-let FileCompleter = new Class().extends(Component);
+var FileCompleter = new Class().extends(Component);
 FileCompleter.definition = {
 
   get id()
@@ -287,7 +298,9 @@ FileCompleter.definition = {
   "[completer('file'), enabled]":
   function complete(context)
   {
-    let broker = this._broker;
+    var broker;
+
+    broker = this._broker;
     let { source, option, completers } = context;
     let pattern = /^\s*(?:(.*\/))?(.*)?/;
     let match = source.match(pattern);

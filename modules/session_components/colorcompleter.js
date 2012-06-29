@@ -44,88 +44,121 @@ ColorNumberCompleter.definition = {
   "[completer('color-number'), enabled]":
   function complete(context)
   {
-    var broker, renderer, color_map, pattern, match;
+    var renderer, color_map, pattern, match,
+        all, number, space, name, next, numbers,
+        lower_name, data;
 
-    broker = this._broker;
-
-    var { source, option, completers } = context;
-    renderer = this.dependency["renderer"];
-    color_map = "fg" == option ? renderer.color: 
-                "bg" == option ? renderer.color:
-                null;
+    color_map = this._getColorMap(context.option);
 
     if (null === color_map) {
       coUtils.Debug.reportError(
         _("Unknown option is detected: '%s'."),
-        option);
+        context.option);
       this.sendMessage("event/answer-completion", null);
       return;
     }
 
     pattern = /^\s*([0-9]*)(\s*)(.*)(\s?)/;
-    match = source.match(pattern);
+    match = context.source.match(pattern);
 
-    let [all, number, space, name, next] = match;
+    [all, number, space, name, next] = match;
+
     if (next) {
-      let next_completer_info = completers.shift();
-      if (next_completer_info) {
-        let [next_completer, option] = next_completer_info.split("/");
-        this.sendMessage("command/query-completion/" + next_completer, {
-          source: source.substr(all.length),
-          option: option,
-          completers: completers,
-        });
-      } else {
-        this.sendMessage("event/answer-completion", null);
-      }
-      return;
+      this._doNextCompletion(context.completers, context.source, all.length);
     } else if (!space) {
-      let numbers = [i for (i in function() { for (let i = 0; i < 256; ++i) yield i; }())]
+      numbers = [i for (i in function() { for (var i = 0; i < 256; ++i) yield i; }())]
         .map(function(number) number.toString())
         .filter(function(number_as_string) -1 != number_as_string.indexOf(number));
       if (0 == numbers.length) {
         this.sendMessage("event/answer-completion", autocomplete_result);
-        return;
+      } else {
+        this.sendMessage(
+          "event/answer-completion",
+          {
+            type: "color-number",
+            query: context.source, 
+            data: numbers.map(
+              function(number) 
+              {
+                return {
+                  name: number, 
+                  value: color_map[number],
+                };
+              }),
+          });
       }
-      let autocomplete_result = {
-        type: "color-number",
-        query: source, 
-        data: numbers.map(function(number) ({
-          name: number, 
-          value: color_map[number],
-        })),
-      };
-      this.sendMessage("event/answer-completion", autocomplete_result);
-      return;
-    }
-    let lower_name = name.toLowerCase();
-    let data = [
+    } else {
+      lower_name = name.toLowerCase();
+      data = [
+        {
+          name: key,
+          value: value,
+        } for ([key, value] in Iterator(coUtils.Constant.WEB140_COLOR_MAP))
+      ].filter(function(pair) 
       {
-        name: key,
-        value: value,
-      } for ([key, value] in Iterator(coUtils.Constant.WEB140_COLOR_MAP))
-    ].filter(function(pair) 
-    {
-      if (-1 !== pair.name.toLowerCase().indexOf(lower_name)) {
-        return true;
+        if (-1 !== pair.name.toLowerCase().indexOf(lower_name)) {
+          return true;
+        }
+        if (0 === pair.value.toLowerCase().indexOf(lower_name)) {
+          return true;
+        }
+        return false;
+      });
+
+      if (0 === data.length) {
+        this.sendMessage("event/answer-completion", null);
+      } else {
+        this.sendMessage(
+          "event/answer-completion",
+          {
+            type: "color",
+            query: name, 
+            option: color_map[number],
+            data: data,
+          });
       }
-      if (0 === pair.value.toLowerCase().indexOf(lower_name)) {
-        return true;
-      }
-      return false;
-    });
-    if (0 === data.length) {
-      this.sendMessage("event/answer-completion", null);
-      return;
     }
-    let autocomplete_result = {
-      type: "color",
-      query: name, 
-      option: color_map[number],
-      data: data,
-    };
-    this.sendMessage("event/answer-completion", autocomplete_result);
   },
+
+  _getColorMap: function _getColorMap(option)
+  {
+    var renderre;
+
+    renderer = this.dependency["renderer"];
+
+    switch (option) {
+
+      case "fg":
+        return renderer.color;
+        break;
+
+      case "bg":
+        return renderer.color;
+
+      default:
+        return null;
+    }
+  },
+
+  _doNextCompletion: function _doNextCompletion(completers, source, all_length)
+  {
+    var next_completer_info, next_completer, option;
+
+    next_completer_info = completers.shift();
+    
+    if (next_completer_info) {
+      [next_completer, option] = next_completer_info.split("/");
+      this.sendMessage("command/query-completion/" + next_completer, 
+        {
+          source: source.substr(all_length),
+          option: option,
+          completers: completers,
+        });
+    } else {
+      this.sendMessage("event/answer-completion", null);
+    }
+  },
+
 
 };
 

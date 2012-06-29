@@ -95,13 +95,15 @@ Copy.definition = {
   copyImpl: function copyImpl(range) 
   {
     var text, status_message;
+
     // and pass it to "screen". "screen" returns selected text.
-    var {start, end, is_rectangle} = range;
-    text = this.dependency["screen"].getTextInRange(start, end, is_rectangle);
+    text = this.dependency["screen"]
+      .getTextInRange(range.start, range.end, range.is_rectangle);
     const clipboardHelper = Components
       .classes["@mozilla.org/widget/clipboardhelper;1"]
       .getService(Components.interfaces.nsIClipboardHelper);
     clipboardHelper.copyString(text);
+
     status_message = coUtils.Text.format(
       _("Copied text to clipboard: %s"), text);
 

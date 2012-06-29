@@ -41,7 +41,9 @@ CharsetCompleter.definition = {
   "[completer('charset'), enabled]":
   function complete(context)
   {
-    var broker, match;
+    var broker, match, all, space, name, next,
+        next_completer_info, next_completer, option,
+        components, lower_source, candidates;
 
     broker = this._broker;
     var { source, option, completers } = context;
@@ -52,11 +54,11 @@ CharsetCompleter.definition = {
       this.sendMessage("event/answer-completion", null);
       return;
     }
-    let [all, space, name, next] = match;
+    [all, space, name, next] = match;
     if (next) {
-      let next_completer_info = completers.shift();
+      next_completer_info = completers.shift();
       if (next_completer_info) {
-        let [next_completer, option] = next_completer_info.split("/");
+        [next_completer, option] = next_completer_info.split("/");
         this.sendMessage("command/query-completion/" + next_completer, {
           source: source.substr(all.length),
           option: option,
@@ -67,36 +69,36 @@ CharsetCompleter.definition = {
       }
       return;
     }
-    let components = this.sendMessage("get/" + option);
+    components = this.sendMessage("get/" + option);
 
-    let lower_source = source.toLowerCase();
-    let candidates = [
+    lower_source = source.toLowerCase();
+
+    candidates = [
       {
         key: component.charset, 
         value: component.title
       } for ([, component] in Iterator(components)) 
         if (-1 !== component.charset.toLowerCase().indexOf(lower_source))
     ];
+
     if (0 === candidates.length) {
       this.sendMessage("event/answer-completion", null);
-      return;
-    }
-    let autocomplete_result = {
-      type: "text",
-      query: source, 
-      data: candidates.map(
-        function(candidate) 
+    } else {
+      this.sendMessage(
+        "event/answer-completion",
         {
-          return {
-            name: candidate.key,
-            value: String(candidate.value),
-          };
-        }),
-    };
-
-    this.sendMessage("event/answer-completion", autocomplete_result);
-
-    return;
+          type: "text",
+          query: source, 
+          data: candidates.map(
+            function(candidate) 
+            {
+              return {
+                name: candidate.key,
+                value: String(candidate.value),
+              };
+            }),
+        });
+      }
   },
 
 };
