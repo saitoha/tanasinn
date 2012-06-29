@@ -192,15 +192,20 @@ VT52SequenceParser.definition = {
   /** Construct child parsers from definition and make parser-chain. */
   append: function append(key, value, context) 
   {
-    let match = key
+    var match, number, char_position, normal_char,
+        first, next_chars, code, next,
+        code1, code2, c1;
+
+    match = key
       .match(/^(0x[0-9a-zA-Z]+)|^(%p)|^(.)$|^(.)(.+)$/);
 
-    let [, 
+    [, 
       number, char_position,
       normal_char, first, next_chars
     ] = match;
     if (number) { // parse number
-      let code = parseInt(number);
+
+      code = parseInt(number);
       if ("parse" in value) {
         vt52C0Parser.append(code, value);
         this[code] = value;
@@ -209,24 +214,24 @@ VT52SequenceParser.definition = {
         this[code] = function() value.apply(context);
       }
     } else if (char_position) { // 
-      for (let code1 = 0x20; code1 < 0x7f; ++code1) {
-        let c1 = String.fromCharCode(code1);
+      for (code1 = 0x20; code1 < 0x7f; ++code1) {
+        c1 = String.fromCharCode(code1);
         this[code1] = new VT52SequenceParser();
-        for (let code2 = 0x20; code2 < 0x7f; ++code2) {
+        for (code2 = 0x20; code2 < 0x7f; ++code2) {
           this[code1][code2] = let (y = code1, x = code2)
             function() value.call(context, y, x);
         }
       }
     } else if (normal_char) {
-      let code = normal_char.charCodeAt(0);
+      code = normal_char.charCodeAt(0);
       if ("parse" in value) {
         this[code] = value;
       } else {
         this[code] = function() value.apply(context);
       }
     } else {
-      let code = first.charCodeAt(0);
-      let next = this[code] = this[code] || new VT52SequenceParser;
+      code = first.charCodeAt(0);
+      next = this[code] = this[code] || new VT52SequenceParser;
       if (!next.append) {
         next = this[code] = new VT52SequenceParser;
       }

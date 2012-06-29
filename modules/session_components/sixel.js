@@ -207,7 +207,10 @@ Sixel.definition = {
   function onDCS(data) 
   {
     var renderer, screen, pattern, match,
-        P1, P2, P3, sixel, dom;
+        P1, P2, P3, sixel, dom,
+        scanner, imagedata, x, y, color_no,
+        r, g, b, count, i, line_count,
+        space_type, c;
 
     pattern = /^([0-9]);([01]);([0-9]+);?q((?:.|[\n\r])+)/;
     match = data.match(pattern);
@@ -233,15 +236,16 @@ Sixel.definition = {
     };
     this._buffers.push(dom);
 
-    let scanner = new SixelForwardInputIterator(sixel);
-    let imagedata = dom.context
+    scanner = new SixelForwardInputIterator(sixel);
+    imagedata = dom.context
       .getImageData(0, 0, dom.canvas.width, dom.canvas.height * 2);
-    let x = 0;
-    let y = 0;
-    let color_no, r, g, b;
-    let count = 1;
+
+    x = 0;
+    y = 0;
+    count = 1;
+
     do {
-      let c = scanner.current();
+      c = scanner.current();
       switch (c) {
 
         case 0x0d:
@@ -286,7 +290,9 @@ Sixel.definition = {
           if (0x3b == c) { // ;
             scanner.moveNext();
             c = scanner.parseUint();
-            let space_type = "";
+
+            space_type = "";
+
             if (1 == c) { // HSL
               space_type = "HSL"; 
             } else if (2 == c) {
@@ -408,7 +414,7 @@ Sixel.definition = {
         case 0x7c:
         case 0x7d:
         case 0x7e:
-          for (let i = 0; i < count; ++i) {
+          for (i = 0; i < count; ++i) {
             this._setSixel(imagedata, x, y, c);
             ++x;
           }
@@ -428,8 +434,8 @@ Sixel.definition = {
     } while (!scanner.isEnd);
 
     dom.context.putImageData(imagedata, 0, 0);
-    let line_count = Math.ceil(y / renderer.line_height);
-    let i;
+    line_count = Math.ceil(y / renderer.line_height);
+
     for (i = 0; i < line_count; ++i) {
       screen.lineFeed();
       screen.markAsSixelLine(dom.canvas, i);

@@ -52,12 +52,12 @@ ZshCompletion.definition = {
 
   display: function() 
   {
-    var lines, colormap, session, renderer, selected;
+    var lines, colormap, renderer, selected;
 
     lines = this.lines;
     this.onDataArrived.enabled = false;
     colormap = [ "", "#cdffcf", "#cdd", "#dfffdd" ];
-    session = this._broker;
+
     renderer = this.dependency["renderer"];
     selected = -1;
     this.request(
@@ -110,8 +110,7 @@ ZshCompletion.definition = {
   "[subscribe('sequence/osc/202'), pnp]":
   function onZshCompletion(data) 
   {
-    let session = this._broker;
-    session.notify("command/disable-default-parser");
+    this.sendMessage("command/disable-default-parser");
     this.onDataArrived.enabled = true;
     this.lines = [];
   },
@@ -125,8 +124,11 @@ ZshCompletion.definition = {
   "[subscribe('sequence/osc/204'), enabled]":
   function onThingy(data) 
   {
-    let [kind, str] = data.split("|");
-    if (3 != kind) {
+    var kind, str;
+
+    [kind, str] = data.split("|");
+
+    if (3 !== kind) {
       this.lines.push(str);
     }
   },
@@ -136,7 +138,7 @@ ZshCompletion.definition = {
 /**
  *  @class PopupMenu
  */
-let PopupMenu = new Class().extends(Plugin)
+var PopupMenu = new Class().extends(Plugin)
                            .mix(ZshCompletion)
                            .depends("renderer")
                            .depends("cursorstate")
@@ -166,26 +168,24 @@ PopupMenu.definition = {
   _is_showing: false,
  
   /** installs itself. 
-   *  @param {Session} session A session object.
+   *  @param {Broker} broker A broker object.
    */
   "[install]":
-  function install(session) 
+  function install(broker) 
   {
     var {
       tanasinn_app_popup_datum,
       tanasinn_app_popup,
       tanasinn_app_popup_scrollbox,
       tanasinn_app_popup_container,
-    } = session.uniget(
+    } = this.request(
       "command/construct-chrome", 
       [
         {
           parentNode: "#tanasinn_center_area",
           tagName: "box",
           id: "tanasinn_app_popup_datum",
-          style: <>
-            position: absolute;
-          </>,
+          style: "position: absolute;",
         },
         {
           parentNode: "#tanasinn_background_frame",
@@ -219,10 +219,7 @@ PopupMenu.definition = {
                 orient: "vertical",
                 flex: 1,
                 maxHeight: this.max_height,
-                style: <>
-                  margin: 9px;
-                  overflow-y: auto;
-                </>,
+                style: "margin: 9px; overflow-y: auto;",
                 childNodes: {
                   tagName: "grid",
                   id: "tanasinn_app_popup_container",
@@ -239,10 +236,10 @@ PopupMenu.definition = {
   },
 
   /** Uninstalls itself.
-   *  @param {Session} session A session object.
+   *  @param {Broker} broker A Broker object.
    */
   "[uninstall]":
-  function uninstall(session) 
+  function uninstall(broekr) 
   {
     if (null !== this._datum) {
       this._datum.parentNode.removeChild(this._datum);
@@ -257,24 +254,26 @@ PopupMenu.definition = {
   "[listen('mousedown', '#tanasinn_app_popup', true), pnp]":
   function onmousedown(event) 
   {
-    var target, diff, session, packed_code, i;
+    var target, diff, packed_code, i;
 
     target = event.explicitOriginalTarget;
     if (!target) {
       return;
     }
-    while ("row" != target.tagName) {
+    while ("row" !== target.tagName) {
       target = target.parentNode;
     }
+
     diff = - this._selected;
+
     while ((target = target.previousSibling)) {
       ++diff;
     }
 
-    session = this._broker;
     this.onDisplay.enabled = false;
     this._popup.hidePopup();
-    session.notify("command/focus");
+
+    this.sendMessage("command/focus");
 
     if (diff < 0) {
       packed_code = coUtils.Keyboard.parseKeymapExpression("<C-p>");
@@ -282,10 +281,11 @@ PopupMenu.definition = {
       packed_code = coUtils.Keyboard.parseKeymapExpression("<C-n>");
     }
     for (i = 0; i < Math.abs(diff); ++i) {
-      session.notify("command/input-with-no-remapping", packed_code);
+      this.sendMessage("command/input-with-no-remapping", packed_code);
     }
     packed_code = coUtils.Keyboard.parseKeymapExpression("<Escape>");
-    session.notify("command/input-with-no-remapping", packed_code);
+
+    this.sendMessage("command/input-with-no-remapping", packed_code);
   },
 
   "[listen('mousemove', '#tanasinn_app_popup', true), pnp]":
@@ -315,7 +315,10 @@ PopupMenu.definition = {
   "[subscribe('sequence/osc/200'), pnp]":
   function onDisplay(data) 
   {
-    var liens, row, column, selected;
+    var liens, row, column, selected, cursor_state,
+        renderer, line_height, char_width, x, y,
+        colormap, scrollbox, rows, box_object, row, 
+        scrollY, first_position, last_position;
 
     while (this._container.firstChild) {
       this._container.removeChild(this._container.firstChild);
@@ -326,17 +329,20 @@ PopupMenu.definition = {
       .split(",")
       .map(function(str) Number(str));
     this._selected = selected;
-    let cursor_state = this.dependency["cursorstate"];
-    row = row || cursor_state.positionY + 1;
-    let renderer = this.dependency["renderer"];
-    let line_height = renderer.line_height;
-    let char_width = renderer.char_width;
-    let x = column * char_width - 10;
-    let y = row * line_height;
 
-    let colormap = [ "", "#cdffcf", "#cdd", "#dfffdd" ];
-    let session = this._broker;
-    let {} = session.uniget(
+    cursor_state = this.dependency["cursorstate"];
+    row = row || cursor_state.positionY + 1;
+
+    renderer = this.dependency["renderer"];
+    line_height = renderer.line_height;
+    char_width = renderer.char_width;
+
+    x = column * char_width - 10;
+    y = row * line_height;
+
+    colormap = [ "", "#cdffcf", "#cdd", "#dfffdd" ];
+
+    this.request(
       "command/construct-chrome", 
       {
         parentNode: "#tanasinn_app_popup_container",
@@ -390,19 +396,21 @@ PopupMenu.definition = {
         this._datum, 
         "after_start", x, 0, true, true);
     //}
-    session.notify("command/focus");
-    if (-1 != selected) {
-      let scrollbox = this._scrollbox;
-      let rows = scrollbox.querySelector("rows");
-      let box_object = scrollbox.boxObject
+    //
+    this.sendMessage("command/focus");
+
+    if (-1 !== selected) {
+      scrollbox = this._scrollbox;
+      rows = scrollbox.querySelector("rows");
+      box_object = scrollbox.boxObject
         .QueryInterface(Components.interfaces.nsIScrollBoxObject)
       if (box_object) {
-        let row = rows.childNodes[selected];
-        let scrollY = {};
+        row = rows.childNodes[selected];
+        scrollY = {};
         box_object.getPosition({}, scrollY);
-        let first_position = row.boxObject.y 
+        first_position = row.boxObject.y 
           - scrollbox.boxObject.y;
-        let last_position = first_position 
+        last_position = first_position 
           - scrollbox.boxObject.height 
           + row.boxObject.height;
         if (first_position < scrollY.value) {
@@ -420,32 +428,39 @@ PopupMenu.definition = {
   function onUndisplay() 
   {
     this._is_showing = false;
-    coUtils.Timer.setTimeout(function() {
-      if (false === this._is_showing) {
-        this._popup.hidePopup();
-        let session = this._broker;
-        session.notify("command/focus");
-      }
-    }, 30, this);
+    coUtils.Timer.setTimeout(
+      function() 
+      {
+        if (false === this._is_showing) {
+          this._popup.hidePopup();
+          this.sendMessage("command/focus");
+        }
+      }, 30, this);
     this.onDisplay.enabled = true;
   },
 
   _selectRow: function _selectRow(row)
   {
+    var completion_root, scroll_box, box_object, scrollY, 
+        first_position, last_position;
+
     row.style.borderRadius = "6px";
     row.style.backgroundImage 
       = "-moz-linear-gradient(top, #777, #666)";
     row.style.color = "white";
-    let completion_root = this._completion_root;
-    let scroll_box = completion_root.parentNode;
-    let box_object = scroll_box.boxObject
+
+    completion_root = this._completion_root;
+    scroll_box = completion_root.parentNode;
+    box_object = scroll_box.boxObject
       .QueryInterface(Components.interfaces.nsIScrollBoxObject)
     if (box_object) {
-      let scrollY = {};
+      scrollY = {};
+
       box_object.getPosition({}, scrollY);
-      let first_position = row.boxObject.y 
+
+      first_position = row.boxObject.y 
         - scroll_box.boxObject.y;
-      let last_position = first_position 
+      last_position = first_position 
         - scroll_box.boxObject.height 
         + row.boxObject.height;
       if (first_position < scrollY.value) {
@@ -469,4 +484,4 @@ function main(broker)
   new PopupMenu(broker);
 }
 
-
+// EOF

@@ -113,10 +113,10 @@ Scrollbar.definition = {
     }),
 
   /** Installs itself.
-   * @param {Session} session A session object.
+   * @param {Broker} broker A Broker object.
    */
   "[install]":
-  function install(session) 
+  function install(broker) 
   {
     var {
       tanasinn_scrollbar_overlay,
@@ -124,7 +124,7 @@ Scrollbar.definition = {
       tanasinn_scrollbar_before,
       tanasinn_scrollbar_current,
       tanasinn_scrollbar_after,
-    } = session.uniget("command/construct-chrome", this.template);
+    } = this.request("command/construct-chrome", this.template);
 
     this._scrollbar_overlay = tanasinn_scrollbar_overlay;
     this._scrollbar = tanasinn_scrollbar;
@@ -142,10 +142,10 @@ Scrollbar.definition = {
   },
 
   /** Unnstalls itself. 
-   * @param {Session} session A session object.
+   * @param {Broker} broker A Broker object.
    */
   "[uninstall]":
-  function uninstall(session) 
+  function uninstall(broker) 
   {
     this.onScrollPositionChanged.enabled = false;
     this.ondblclick.enabled = false;
@@ -254,23 +254,31 @@ Scrollbar.definition = {
   "[listen('dragstart', '#tanasinn_scrollbar_current')]":
   function ondragstart(dom_event) 
   {
-    let session = this._broker;
+    var initial_y, dom_document, radius, height, before_flex,
+        current_flex, after_flex, flex, flex_per_height,
+        initial_view_top;
+
     this._dragging = true;
     dom_event.stopPropagation();
     //dom_event.preventDefault();
-    let initial_y = dom_event.screenY;
-    let dom_document = session.document; // managed by DOM
-    let radius = this.inner_width + this.border_width;
-    let height = this._scrollbar.boxObject.height - radius * 2;
-    let before_flex = parseInt(this._before.flex);
-    let current_flex = parseInt(this._current.flex);
-    let after_flex = parseInt(this._after.flex);
-    let flex = before_flex + current_flex + after_flex;
-    let flex_per_height = flex / height;
-    let initial_view_top = before_flex;
+
+    initial_y = dom_event.screenY;
+    dom_document = this.request("get/root-element").ownerDocument; // managed by DOM
+
+    radius = this.inner_width + this.border_width;
+    height = this._scrollbar.boxObject.height - radius * 2;
+
+    before_flex = parseInt(this._before.flex);
+    current_flex = parseInt(this._current.flex);
+
+    after_flex = parseInt(this._after.flex);
+
+    flex = before_flex + current_flex + after_flex;
+    flex_per_height = flex / height;
+    initial_view_top = before_flex;
 
     // register mousemove listener.
-    session.notify(
+    this.sendMessage(
       "command/add-domlistener", 
       {
         type: "mousemove",
@@ -288,7 +296,7 @@ Scrollbar.definition = {
       });
 
     // register mouseup listener.
-    session.notify(
+    this.sendMessage(
       "command/add-domlistener", 
       {
         type: "mouseup",
@@ -299,8 +307,8 @@ Scrollbar.definition = {
         handler: function onmouseup(event) 
         {
           this._dragging = false;
-          session.notify("command/remove-domlistener", "_DRAGGING");
-          if (0 == this._after.flex) {
+          this.sendMessage("command/remove-domlistener", "_DRAGGING");
+          if (0 === this._after.flex) {
             this._scrollbar.style.opacity = 0.00;
           }
         },

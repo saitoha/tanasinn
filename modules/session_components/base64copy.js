@@ -25,7 +25,7 @@
 /** 
  * @class ForwardInputIterator
  */ 
-let ForwardInputIterator = new Class();
+var ForwardInputIterator = new Class();
 ForwardInputIterator.definition = {
 
   _value: null,
@@ -62,7 +62,7 @@ ForwardInputIterator.definition = {
  *  @class Base64Copy
  *  @brief Makes it enable to copy selected region by pressing short cut key.
  */
-let Base64Copy = new Class().extends(Plugin)
+var Base64Copy = new Class().extends(Plugin)
                             .depends("decoder");
 Base64Copy.definition = {
 

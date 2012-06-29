@@ -205,7 +205,9 @@ Selection.definition = {
   "[subscribe('event/start-highlight-mouse'), enabled]":
   function onStartHighlightMouse(args)
   {
-    var func;
+    var func, screen, column, row, x, y,
+        min_row, max_row, initial_position,
+        start, end;
 
     func = args[0];
     if (0 == func) {
@@ -213,16 +215,20 @@ Selection.definition = {
       return;
     }
 
-    let screen = this.dependency["screen"];
-    let column = screen.width;
-    let row = screen.height;
-    let x = args[1] - 1;
-    let y = args[2] - 1;;
-    let min_row = args[3] - 1;
-    let max_row = args[4] - 1;
-    let initial_position = y * column + x;
+    screen = this.dependency["screen"];
+    column = screen.width;
+
+    row = screen.height;
+    x = args[1] - 1;
+    y = args[2] - 1;;
+
+    min_row = args[3] - 1;
+    max_row = args[4] - 1;
+
+    initial_position = y * column + x;
+
     if (this._range) {
-      let [start, end] = this._range;
+      [start, end] = this._range;
       if (start <= initial_position && initial_position < end) {
         return; // drag copy
       }
@@ -249,16 +255,22 @@ Selection.definition = {
               context: this,
               handler: function selection_mousemove(event) 
               {
-                let [x, y] = this.convertPixelToScreen(event);
+                var x, y, current_position, start_position, end_position;
+
+                [x, y] = this.convertPixelToScreen(event);
+
                 if (y < min_row) {
                   y = min_row;
                 }
                 if (y > max_row - 1) {
                   y = max_row - 1;
                 }
-                let current_position = y * column + x;
-                let start_position = Math.min(initial_position, current_position);
-                let end_position = Math.max(initial_position, current_position) 
+
+                current_position = y * column + x;
+                
+                start_position = Math.min(initial_position, current_position);
+                end_position = Math.max(initial_position, current_position) 
+
                 start_position = Math.max(0, start_position);
                 end_position = Math.min(row * column, end_position);
                 this.drawSelectionRange(start_position, end_position);
@@ -290,13 +302,18 @@ Selection.definition = {
   "[listen('dragstart', '#tanasinn_content'), pnp]":
   function ondragstart(event) 
   {
-    let screen = this.dependency["screen"];
-    let column = screen.width;
-    let row = screen.height;
-    let [x, y] = this.convertPixelToScreen(event);
-    let initial_position = y * column + x;
+    var screen, column, row, x, y,
+        initial_position, start, end;
+
+    screen = this.dependency["screen"];
+    column = screen.width;
+
+    row = screen.height;
+    [x, y] = this.convertPixelToScreen(event);
+
+    initial_position = y * column + x;
     if (this._range) {
-      let [start, end] = this._range;
+      [start, end] = this._range;
       if (start <= initial_position && initial_position < end) {
         return; // drag copy
       }
@@ -314,10 +331,14 @@ Selection.definition = {
         context: this,
         handler: function selection_mousemove(event) 
         {
-          let [x, y] = this.convertPixelToScreen(event);
-          let current_position = y * column + x;
-          let start_position = Math.min(initial_position, current_position);
-          let end_position = Math.max(initial_position, current_position) 
+          var x, y, current_position, start_position, end_position;
+
+          [x, y] = this.convertPixelToScreen(event);
+
+          current_position = y * column + x;
+          start_position = Math.min(initial_position, current_position);
+          end_position = Math.max(initial_position, current_position) 
+
           start_position = Math.max(0, start_position);
           end_position = Math.min(row * column, end_position);
           this.drawSelectionRange(start_position, end_position);
@@ -349,7 +370,9 @@ Selection.definition = {
    */
   _setClearAction: function _setClearAction() 
   {
-    let id = "selection.clear";
+    var id;
+    
+    id = "selection.clear";
     this.sendMessage("command/add-domlistener", {
       target: "#tanasinn_content",
       type: "mouseup",
@@ -489,9 +512,12 @@ Selection.definition = {
 
   selectSurroundChars: function selectSurroundChars(column, row) 
   {
-    let context = this._context;
-    let screen = this.dependency["screen"];
-    let [start, end] = screen.getWordRangeFromPoint(column, row);
+    var context, screen, start, end;
+
+    context = this._context;
+    screen = this.dependency["screen"];
+    [start, end] = screen.getWordRangeFromPoint(column, row);
+
     this.drawSelectionRange(start, end);
     this.setRange(start, end);
     this._reportRange();
@@ -500,10 +526,14 @@ Selection.definition = {
   "[subscribe('get/selection-info'), pnp]": 
   function getRange() 
   {
+    var start, end;
+
     if (null === this._range) {
       return null;
     }
-    let [start, end] = this._range;
+
+    [start, end] = this._range;
+
     return {
       start: start, 
       end: end, 
@@ -526,8 +556,11 @@ Selection.definition = {
 
   _reportRange: function _reportRange()
   {
-    let [column, row] = this._range;
-    let message = coUtils.Text.format(_("selected: [%d, %d]"), column, row);
+    var column, row, message;
+
+    [column, row] = this._range;
+    message = coUtils.Text.format(_("selected: [%d, %d]"), column, row);
+
     this.sendMessage("command/report-status-message", message);
   },
 
