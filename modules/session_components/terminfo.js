@@ -541,6 +541,22 @@ var db = {
   // key_sright: right-arrow key
   "kRIT":   "\x1b[1;2C",
   "%i":     "\x1b[1;2C",
+
+  // key_npage: knp kN next-page key
+  "knp":    "\x1b[6~",
+  "kN":     "\x1b[6~",
+
+  // key_ppage: kpp kP previous-page key
+  "kpp":    "\x1b[5~",
+  "kP":     "\x1b[5~",
+
+  // enter_blink_mode: turn on blinking
+  "blink":  "\x1b[5m",
+  "mb":     "\x1b[5m",
+
+  // enter_bold_mode: turn on bold (extra bright) mode
+  "bold":   "\x1b[1m",
+  "md":     "\x1b[1m",
 };
 
 /**

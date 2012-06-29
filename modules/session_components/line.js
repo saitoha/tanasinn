@@ -810,20 +810,24 @@ Line.definition = {
   /** returns a generator which iterates dirty words. */
   getDirtyWords: function getDirtyWords() 
   {
+    var attr, start, current, cell,
+        cells, max, cell, is_normal, range,
+        codes;
+
     if (this.dirty) {
-      let attr, start, current, cell;
-      let cells = this.cells;
-      let max = coUtils.Constant.LINETYPE_NORMAL === this.type ? 
+      cells = this.cells;
+      max = coUtils.Constant.LINETYPE_NORMAL === this.type ? 
         this.last: 
         Math.min(this.last, Math.floor(this.length / 2));
+
       for (current = this.first; current < max; ++current) {
-        let cell = cells[current];
-        let is_normal = cell.c > 1 && cell.c < 256;
+        cell = cells[current];
+        is_normal = cell.c > 1 && cell.c < 256;
         if (attr) {
           if (attr.equals(cell) && is_normal) {
             continue;
           } else {
-            let range = cells.slice(start, current);
+            range = cells.slice(start, current);
             yield { 
               codes: this._getCodePointsFromCells(range), 
               column: start, 
@@ -834,7 +838,7 @@ Line.definition = {
         }
         if (!is_normal) {
           if (0 === cell.c) {
-            let cell = cells[current + 1]; // MUST not null
+            cell = cells[current + 1]; // MUST not null
             if (cell) {
               yield { 
                 codes: this._getCodePointsFromCells([ cell ]), 
@@ -860,7 +864,7 @@ Line.definition = {
         attr = cells[current];
       }
       if (start < current && attr) {
-        let codes = cells.slice(start, current)
+        codes = cells.slice(start, current)
         yield { 
           codes: this._getCodePointsFromCells(codes), 
           column: start, 

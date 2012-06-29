@@ -43,42 +43,53 @@ FontFamilyCompleter.definition = {
   "[completer('font-family'), enabled]":
   function complete(context)
   {
-    let broker = this._broker;
-    let { source, option, completers } = context;
-    let pattern = /^\s*(.*)(\s?)/;
-    let match = source.match(pattern);
-    let [all, name, space] = match;
+    var broker, pattern, match, all, name, space,
+        next_completer_info, next_completer, option,
+        font_list;
+
+    broker = this._broker;
+
+    pattern = /^\s*(.*)(\s?)/;
+    match = context.source.match(pattern);
+    [all, name, space] = match;
+
     if (space) {
-      let next_completer_info = completers.shift();
+      next_completer_info = context.completers.shift();
       if (next_completer_info) {
-        let [next_completer, option] = next_completer_info.split("/");
+        [next_completer, option] = next_completer_info.split("/");
         this.sendMessage("command/query-completion/" + next_completer, {
-          source: source.substr(all.length),
+          source: context.source.substr(all.length),
           option: option,
-          completers: completers,
+          completers: context.completers,
         });
       } else {
         this.sendMessage("event/answer-completion", null);
       }
-      return;
+    } else {
+
+      font_list = Components
+        .classes["@mozilla.org/gfx/fontenumerator;1"]
+        .getService(Components.interfaces.nsIFontEnumerator)
+//        .EnumerateAllFonts({})
+        .EnumerateFonts("x-western", "monospace", {})
+        .filter(function(font_family) 
+          -1 != font_family.toLowerCase().indexOf(name.toLowerCase()));
+
+      this.sendMessage(
+        "event/answer-completion",
+        {
+          type: "font-family",
+          query: context.source, 
+          data: font_list.map(
+            function(font)
+            {
+              return {
+                name: font, 
+                value: font,
+              };
+            }),
+        });
     }
-    let font_list = Components
-      .classes["@mozilla.org/gfx/fontenumerator;1"]
-      .getService(Components.interfaces.nsIFontEnumerator)
-//      .EnumerateAllFonts({})
-      .EnumerateFonts("x-western", "monospace", {})
-      .filter(function(font_family) 
-        -1 != font_family.toLowerCase().indexOf(name.toLowerCase()));
-    let autocomplete_result = {
-      type: "font-family",
-      query: source, 
-      data: font_list.map(function(font) ({
-        name: font, 
-        value: font,
-      })),
-    };
-    this.sendMessage("event/answer-completion", autocomplete_result);
-    return;
   },
 
 };
@@ -94,4 +105,4 @@ function main(broker)
   new FontFamilyCompleter(broker);
 }
 
-
+// EOF

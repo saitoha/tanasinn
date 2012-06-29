@@ -238,35 +238,46 @@ TextboxWidget.definition = {
 
   blur: function blur() 
   {
-    let dom = this._dom;
+    var dom;
+    
+    dom = this._dom;
     dom.canvas.style.opacity = 0.7;
   },
 
   focus: function focus() 
   {
-    let dom = this._dom;
+    var dom;
+
+    dom = this._dom;
     dom.textbox.focus();
   },
 
   getCaretPosition: function getCaretPosition()
   {
-    let dom = this._dom;
-    let text = this.value.substr(0, this.selectionStart);
-    let position = dom.context.measureText(text).width;
+    var dom, text, position;
+
+    dom = this._dom;
+    text = this.value.substr(0, this.selectionStart);
+    position = dom.context.measureText(text).width;
+
     dom.textbox.style.fontFamily = this.font_family;
     dom.textbox.style.fontSize = (this.font_size - 2) + "px";
     dom.textbox.style.color = this.font_color;
     dom.textbox.parentNode.previousSibling.width = position;
+
     return position;
   },
 
   calculateSize: function calculateSize() 
   {
-    let dom = this._dom;
-    let fill_style = dom.context.fillStyle;
-    let font = dom.context.font;
-    let [width, height, top] = coUtils.Font
+    var dom, fill_style, font, width, height, top;
+
+    dom = this._dom;
+    fill_style = dom.context.fillStyle;
+    font = dom.context.font;
+    [width, height, top] = coUtils.Font
       .getAverageGlyphSize(this.font_size, this.font_family);
+
     dom.canvas.width = dom.canvas.parentNode.boxObject.width;
     this._glyph_height = height;
     dom.canvas.height = height + top;
@@ -276,7 +287,9 @@ TextboxWidget.definition = {
 
   getInputField: function getInputField()
   {
-    let dom = this._dom;
+    var dom;
+
+    dom = this._dom;
     return dom.textbox;
   },
 
@@ -285,7 +298,7 @@ TextboxWidget.definition = {
 /**
  * @trait CompletionView
  */
-let CompletionView = new Trait();
+var CompletionView = new Trait();
 CompletionView.definition = {
 
   _index: -1,
@@ -312,20 +325,27 @@ CompletionView.definition = {
 
   _selectRow: function _selectRow(row)
   {
+    var completion_root, scroll_box, box_object,
+        scrollY, first_position, last_position;
+
     row.style.borderRadius = "6px";
     row.style.backgroundImage = "-moz-linear-gradient(top, #777, #555)";
     row.style.color = "white";
-    let completion_root = this._completion_root;
-    let scroll_box = completion_root.parentNode;
-    let box_object = scroll_box.boxObject
+
+    completion_root = this._completion_root;
+    scroll_box = completion_root.parentNode;
+    box_object = scroll_box.boxObject
       .QueryInterface(Components.interfaces.nsIScrollBoxObject)
+
     if (box_object) {
-      let scrollY = {};
+      scrollY = {};
       box_object.getPosition({}, scrollY);
-      let first_position = row.boxObject.y - scroll_box.boxObject.y;
-      let last_position = first_position 
+
+      first_position = row.boxObject.y - scroll_box.boxObject.y;
+      last_position = first_position 
         - scroll_box.boxObject.height 
         + row.boxObject.height;
+
       if (first_position < scrollY.value) {
         box_object.scrollTo(0, first_position);
       } else if (last_position > scrollY.value) {
@@ -336,6 +356,8 @@ CompletionView.definition = {
 
   select: function select(index)
   {
+    var rows, row;
+
     // restrict range of index.
     if (index < -1) {
       index = -1;
@@ -344,16 +366,18 @@ CompletionView.definition = {
       index = this.rowCount - 1;
     }
 
-    if (index != this.currentIndex) {
-      let rows = this._completion_root.querySelector("rows")
-      if (-1 != this.currentIndex) {
-        let row = rows.childNodes[this.currentIndex];
+    if (index !== this.currentIndex) {
+
+      rows = this._completion_root.querySelector("rows")
+      if (-1 !== this.currentIndex) {
+        row = rows.childNodes[this.currentIndex];
         if (row) {
           this._unselectRow(row);
         }
       }
-      if (-1 != index) {
-        let row = rows.childNodes[index];
+
+      if (-1 !== index) {
+        row = rows.childNodes[index];
         if (row) {
           this._selectRow(row);
         }
@@ -398,7 +422,7 @@ CompletionView.definition = {
  * @class Commandline
  *
  */
-let Commandline = new Class().extends(Plugin)
+var Commandline = new Class().extends(Plugin)
                              .mix(CompletionView);
 Commandline.definition = {
 
@@ -520,7 +544,7 @@ Commandline.definition = {
   "[install]":
   function install(broker) 
   {
-    let {
+    var {
       tanasinn_commandline_canvas, 
       tanasinn_commandline, 
       tanasinn_completion_popup, 
@@ -685,7 +709,6 @@ Commandline.definition = {
   "[listen('focus', '#tanasinn_commandline', true)]":
   function onfocus(event) 
   {
-    let session = this._broker;
     this._textbox.hidden = false;
     this._textbox.mode = "command";
     this.setCompletionTrigger();
@@ -709,15 +732,20 @@ Commandline.definition = {
   "[subscribe('event/answer-completion')]":
   function doCompletion(result) 
   {
+    var grid, type, driver;
+
     this._result = result;
     delete this._timer;
-    let grid = this._completion_root;
+
+    grid = this._completion_root;
+
     while (grid.firstChild) {
       grid.removeChild(grid.firstChild);
     }
     if (result) {
-      let type = result.type || "text";
-      let driver = this.request("get/completion-display-driver/" + type); 
+      type = result.type || "text";
+      driver = this.request("get/completion-display-driver/" + type); 
+
       if (driver) {
         driver.drive(grid, result, this.currentIndex);
         this.invalidate(result);
@@ -736,24 +764,28 @@ Commandline.definition = {
   "[subscribe('command/invalidate')]":
   function invalidate(result) 
   {
-    let textbox = this._textbox;
+    var textbox, document, index, completion_text,
+        settled_length, settled_text, text;;
+
+    textbox = this._textbox;
+
     if (result.data.length > 0) {
       this._popup.style.opacity = this.completion_popup_opacity;
-      if ("closed" == this._popup.state || "hiding" == this._popup.state) {
-        let broker = this._broker;
-        let document = broker.window.document;
+      if ("closed" === this._popup.state || "hiding" === this._popup.state) {
+        document = this.request("get/root-element").ownerDocument;
         if (document) {
           this._popup.width = this._canvas.width;
           this._popup.openPopup(this._canvas, "after_start", 0, 0, true, true);
         }
       }
-      let index = Math.max(0, this.currentIndex);
-      let completion_text = result.data[index].name;
-      if (0 == completion_text.indexOf(result.query)) {
-        let settled_length = 
-          this._stem_text.length - result.query.length;
-        let settled_text = textbox.value.substr(0, settled_length);
-        let text = settled_text + completion_text;
+
+      index = Math.max(0, this.currentIndex);
+      completion_text = result.data[index].name;
+      
+      if (0 === completion_text.indexOf(result.query)) {
+        settled_length = this._stem_text.length - result.query.length;
+        settled_text = textbox.value.substr(0, settled_length);
+        text = settled_text + completion_text;
         this._textbox.completion = text;
       } else {
         this._textbox.completion = "";
@@ -767,17 +799,20 @@ Commandline.definition = {
   "[subscribe('command/fill')]":
   function fill()
   {
-    let index = Math.max(0, this.currentIndex);
-    let result = this._result;
+    var index, result, textbox, completion_text,
+        settled_length, settled_text, text;
+
+    index = Math.max(0, this.currentIndex);
+    result = this._result;
+
     if (result) {
-      let textbox = this._textbox;
-      let completion_text = result.data[index].name;
-      let settled_length = 
-        this._stem_text.length - result.query.length;
-      let settled_text = textbox.value.substr(0, settled_length);
+      textbox = this._textbox;
+      completion_text = result.data[index].name;
+      settled_length = this._stem_text.length - result.query.length;
+      settled_text = textbox.value.substr(0, settled_length);
 
       textbox.value = settled_text + completion_text;
-      let text = settled_text + completion_text;
+      text = settled_text + completion_text;
 
       this._textbox.completion = "";
     }
@@ -786,15 +821,19 @@ Commandline.definition = {
   "[subscribe('command/set-completion-trigger')]":
   function setCompletionTrigger() 
   {
+    var textbox, current_text;
+
     if (this._timer) {
       this._timer.cancel();
       delete this._timer;
     }
+
     this._timer = coUtils.Timer.setTimeout(function() {
       delete this._timer;
-      let textbox = this._textbox;
+      textbox = this._textbox;
+
       if (textbox) {
-        let current_text = this._textbox.value;
+        current_text = this._textbox.value;
         // if current text does not match completion text, hide it immediatly.
         if (!this._textbox.completion 
           || 0 != this._textbox.completion.indexOf(current_text)) {
@@ -802,7 +841,7 @@ Commandline.definition = {
         }
         this._stem_text = current_text;
         this.select(-1);
-        let broker = this._broker;
+
         this.sendMessage(
           "command/complete-commandline", 
           {
@@ -822,21 +861,26 @@ Commandline.definition = {
   "[subscribe('event/keypress-commandline-with-remapping'), enabled]":
   function onKeypressCommandlineWithMapping(code) 
   {
-    let result = this.request(
+    var result, with_ctrl, with_nochar, textbox, value,
+        start, end, text;
+
+    result = this.request(
       "event/commandline-input", 
       {
         textbox: this._textbox, 
         code: code,
       });
     if (!result) {
-      let with_ctrl = code & 1 << coUtils.Keyboard.KEY_CTRL;
-      let with_nochar = code & 1 << coUtils.Keyboard.KEY_NOCHAR;
+
+      with_ctrl = code & 1 << coUtils.Keyboard.KEY_CTRL;
+      with_nochar = code & 1 << coUtils.Keyboard.KEY_NOCHAR;
+
       if (!with_nochar && !with_ctrl) {
-        let textbox = this._textbox;
-        let value = textbox.value;
-        let start = textbox.selectionStart;
-        let end = textbox.selectionEnd;
-        let text = value.substr(0, textbox.selectionStart) 
+        textbox = this._textbox;
+        value = textbox.value;
+        start = textbox.selectionStart;
+        end = textbox.selectionEnd;
+        text = value.substr(0, textbox.selectionStart) 
           + String.fromCharCode(code & 0xfffff)
           + value.substr(textbox.selectionEnd);
 
@@ -852,13 +896,18 @@ Commandline.definition = {
   "[subscribe('event/keypress-commandline-with-no-remapping'), enabled]":
   function onKeypressCommandlineWithNoMapping(code) 
   {
-    let with_ctrl = code & 1 << coUtils.Keyboard.KEY_CTRL;
-    let with_nochar = code & 1 << coUtils.Keyboard.KEY_NOCHAR;
+    var with_ctrl, with_nochar, textbox,
+        value, start, end;
+
+    with_ctrl = code & 1 << coUtils.Keyboard.KEY_CTRL;
+    with_nochar = code & 1 << coUtils.Keyboard.KEY_NOCHAR;
+
     if (!with_nochar && !with_ctrl) {
-      let textbox = this._textbox;
-      let value = textbox.value;
-      let start = textbox.selectionStart;
-      let end = textbox.selectionEnd;
+      textbox = this._textbox;
+      value = textbox.value;
+      start = textbox.selectionStart;
+      end = textbox.selectionEnd;
+
       textbox.value 
         = value.substr(0, textbox.selectionStart) 
         + String.fromCharCode(code & 0xfffff)

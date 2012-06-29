@@ -41,60 +41,67 @@ OptionCompleter.definition = {
   "[completer('option'), enabled]":
   function complete(context)
   {
-    var broker, match;
+    var broker, match, space, name, operator_equal, next,
+        target_broker, lower_name, scope, options;
 
     broker = this._broker;
 
-    var { source, completers } = context;
-    match = source.match(/^(\s*)([$_\-@a-zA-Z\.]*)\s*(=?)\s*(.*)/);
+    match = context.source.match(/^(\s*)([$_\-@a-zA-Z\.]*)\s*(=?)\s*(.*)/);
 
     if (null === match) {
       this.sendMessage("event/answer-completion", null);
       return;
     }
 
-    let [, space, name, operator_equal, next] = match;
+    [, space, name, operator_equal, next] = match;
     if (!operator_equal && next) {
       this.sendMessage("event/answer-completion", null);
       return;
     }
-    let target_broker = "global" === context.option ? broker._broker: broker;
+    target_broker = "global" === context.option ? broker._broker: broker;
 
-    let lower_name = name.toLowerCase();
-    let scope = target_broker.uniget("command/get-settings");
+    lower_name = name.toLowerCase();
+    scope = target_broker.uniget("command/get-settings");
+
     if (!operator_equal) {
-      let options = [
+      options = [
         {
           key: key, 
           value: value
         } for ([key, value] in Iterator(scope)) 
           if (-1 !== key.toLowerCase().indexOf(lower_name))
       ];
+
       if (0 === options.length) {
         this.sendMessage("event/answer-completion", null);
-        return;
+      } else {
+        this.sendMessage(
+          "event/answer-completion",
+          {
+            type: "text",
+            query: context.source, 
+            data: options.map(
+              function(option)
+              {
+                return {
+                  name: option.key,
+                  value: String(option.value),
+                }
+              }),
+          });
       }
-      let autocomplete_result = {
-        type: "text",
-        query: source, 
-        data: options.map(function(option) ({
-          name: option.key,
-          value: String(option.value),
-        })),
-      };
-      this.sendMessage("event/answer-completion", autocomplete_result);
-      return;
-    }
+    } else {
 
-    if (scope.hasOwnProperty(name)) {
-      let completion_context = {
-        source: next,
-      };
-      this.sendMessage("command/query-completion/js", completion_context);
-      return;
+      if (scope.hasOwnProperty(name)) {
+        this.sendMessage(
+          "command/query-completion/js",
+          {
+            source: next,
+          });
+      } else {
+        this.sendMessage("event/answer-completion", null);
+      }
     }
-    this.sendMessage("event/answer-completion", null);
-    return;
   },
 
 };
@@ -109,4 +116,4 @@ function main(broker)
   new OptionCompleter(broker);
 }
 
-
+// EOF

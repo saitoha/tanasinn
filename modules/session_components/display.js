@@ -32,9 +32,13 @@ CompletionDisplayDriverBase.definition = {
   "[subscribe('@event/broker-started'), enabled]":
   function onLoad(broker)
   {
+    var self;
+
+    self = this;
+
     broker.subscribe(
       "get/completion-display-driver/" + this.type, 
-      let (self = this) function()
+      function()
       {
         return self;
       });
@@ -268,15 +272,16 @@ FontsizeCompletionDisplayDriver.definition = {
 
   drive: function drive(grid, result, current_index) 
   {
-    var document, rows, i;
+    var document, rows, i, search_string, completion_text,
+        match_position;
 
     document = grid.ownerDocument;
     rows = grid.appendChild(document.createElement("rows"))
 
     for (i = 0; i < result.data.length; ++i) {
-      let search_string = result.query.toLowerCase();
-      let completion_text = result.data[i].name;
-      let match_position = completion_text
+      search_string = result.query.toLowerCase();
+      completion_text = result.data[i].name;
+      match_position = completion_text
         .toLowerCase()
         .indexOf(search_string);
 
@@ -331,7 +336,7 @@ FontsizeCompletionDisplayDriver.definition = {
  * @class FontFamilyCompletionDisplayDriver
  *
  */
-let FontFamilyCompletionDisplayDriver = new Class().extends(CompletionDisplayDriverBase);
+var FontFamilyCompletionDisplayDriver = new Class().extends(CompletionDisplayDriverBase);
 FontFamilyCompletionDisplayDriver.definition = {
 
   get id()
@@ -342,12 +347,16 @@ FontFamilyCompletionDisplayDriver.definition = {
 
   drive: function drive(grid, result, current_index) 
   {
-    let document = grid.ownerDocument;
-    let rows = grid.appendChild(document.createElement("rows"))
-    for (let i = 0; i < result.data.length; ++i) {
-      let search_string = result.query.toLowerCase();
-      let completion_text = result.data[i].name;
-      let match_position = completion_text
+    var document, rows, i, search_string, completion_text, 
+        match_position;
+
+    document = grid.ownerDocument;
+    rows = grid.appendChild(document.createElement("rows"))
+
+    for (i = 0; i < result.data.length; ++i) {
+      search_string = result.query.toLowerCase();
+      completion_text = result.data[i].name;
+      match_position = completion_text
         .toLowerCase()
         .indexOf(search_string);
       this.request(
@@ -396,7 +405,7 @@ FontFamilyCompletionDisplayDriver.definition = {
  * @class TextCompletionDisplayDriver
  *
  */
-let TextCompletionDisplayDriver = new Class().extends(CompletionDisplayDriverBase);
+var TextCompletionDisplayDriver = new Class().extends(CompletionDisplayDriverBase);
 TextCompletionDisplayDriver.definition = {
 
   get id()
@@ -407,21 +416,28 @@ TextCompletionDisplayDriver.definition = {
 
   drive: function drive(grid, result, current_index) 
   {
-    let document = grid.ownerDocument;
-    let rows = grid.appendChild(document.createElement("rows"))
-    for (let i = 0; i < result.data.length; ++i) {
-      let data = result.data[i];
-      let search_string = result.query.toLowerCase();
-      let completion_text = data.name;
-      if ("quoted" == result.option) {
+    var document, rows, i, data, search_string, completion_text,
+        match_position;
+
+    document = grid.ownerDocument;
+    rows = grid.appendChild(document.createElement("rows"))
+
+    for (i = 0; i < result.data.length; ++i) {
+      data = result.data[i];
+      search_string = result.query.toLowerCase();
+      completion_text = data.name;
+
+      if ("quoted" === result.option) {
         completion_text = completion_text.slice(1, -1);
       }
       if (completion_text.length > 32 && i != current_index) {
         completion_text = completion_text.substr(0, 32) + "...";
       }
-      let match_position = completion_text
+
+      match_position = completion_text
         .toLowerCase()
         .indexOf(search_string);
+
       this.request(
         "command/construct-chrome", 
         {
@@ -491,4 +507,4 @@ function main(broker)
   new TextCompletionDisplayDriver(broker);
 }
 
-
+// EOF

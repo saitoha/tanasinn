@@ -133,6 +133,8 @@ Mouse.definition = {
   /** Make packed mouse event data and send it to tty device. */
   _sendMouseEvent: function _sendMouseEvent(event, button) 
   {
+    var message, buffer, code, action, column, row,
+        tracking_type;
 
     // 0: button1, 1: button2, 2: button3, 3: release
     //
@@ -158,12 +160,10 @@ Mouse.definition = {
     //
     //             | 1              << 5
 
-    let message;
-    let buffer;
-    let code, action;
-    let [column, row] = this._getCurrentPosition(event);
+    [column, row] = this._getCurrentPosition(event);
 
-    let tracking_type = this._tracking_type;
+    tracking_type = this._tracking_type;
+
     switch (tracking_type) {
 
       // urxvt-style 
@@ -217,14 +217,16 @@ Mouse.definition = {
         row += 32;
         buffer = [0x4d, code];
 
-        function putChar(c) {
+        function putChar(c) 
+        {
+          var c1, c2;
+
           if (c >= 0x80) {
             // 110xxxxx 10xxxxxx
             // (0x00000080 - 0x000007ff) // 11bit
-            let c1 = c >> 6 & 0x1f | 0xc0;
-            let c2 = c & 0x3f | 0x80;
-            buffer.push(c1); 
-            buffer.push(c2); 
+            c1 = c >> 6 & 0x1f | 0xc0;
+            c2 = c & 0x3f | 0x80;
+            buffer.push(c1, c2); 
           } else {
             buffer.push(c);
           }
@@ -272,7 +274,9 @@ Mouse.definition = {
     var renderer, tracking_mode, count, line_height, i;
     
     renderer = this.dependency["renderer"];
-    if(event.axis === event.VERTICAL_AXIS) {
+
+    if (event.axis === event.VERTICAL_AXIS) {
+
       count = event.detail;
       if (event.hasPixels) {
         line_height = renderer.line_height;
@@ -438,3 +442,4 @@ function main(broker)
   new Mouse(broker);
 }
 
+// EOF

@@ -79,20 +79,20 @@ WheelScroll.definition = {
   "[listen('DOMMouseScroll', '#tanasinn_content'), pnp]": 
   function onmousescroll(event) 
   {
-    var count;
+    var count, line_height;
 
     if(event.axis === event.VERTICAL_AXIS) {
 
       count = event.detail;
 
       if (event.hasPixels) {
-        let line_height = renderer.line_height;
+        line_height = renderer.line_height;
         count = Math.round(count / line_height + 0.5);
       } else {
         count = Math.round(count / 2);
       }
 
-      if (0 == count) {
+      if (0 === count) {
         return;
       }
 

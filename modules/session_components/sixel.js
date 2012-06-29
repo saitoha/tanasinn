@@ -69,10 +69,11 @@ SixelForwardInputIterator.definition = {
   
   parseUint: function parseUint() 
   {
-    let n = 0;
-    let c;
+    var n, c;
 
+    n = 0;
     c = this.current();
+
     if (0x30 <= c && c <= 0x39) {
       n = c - 0x30;
       while (true) {
@@ -166,13 +167,17 @@ Sixel.definition = {
 
   _setSixel: function _setSixel(imagedata, x, y, c) 
   {
-    let [r, g, b] = this._color_table[this._color];
-    let data = imagedata.data;
+    var r, g, b, data, i, position;
+
+    [r, g, b] = this._color_table[this._color];
+
+    data = imagedata.data;
+
     c -= 0x3f;
-    let i;
+
     for (i = 5; i >= 0; --i) {
       if (c & 1 << i) {
-        let position = ((y + i) * imagedata.width * 1 + x) * 4;
+        position = ((y + i) * imagedata.width * 1 + x) * 4;
         data[position] = r;
         data[position + 1] = g; 
         data[position + 2] = b;
@@ -183,7 +188,9 @@ Sixel.definition = {
 
   _setColor: function _setColor(color_no, r, g, b) 
   {
-    let rgb_value = [
+    var rgb_value;
+
+    rgb_value = [
       Math.floor(r / 101 * 255), 
       Math.floor(g / 101 * 255), 
       Math.floor(b / 101 * 255)
@@ -199,23 +206,28 @@ Sixel.definition = {
   "[subscribe('sequence/dcs'), pnp]":
   function onDCS(data) 
   {
-    let renderer = this.dependency["renderer"];
-    let screen = this.dependency["screen"];
+    var renderer, screen, pattern, match,
+        P1, P2, P3, sixel, dom;
 
-    let pattern = /^([0-9]);([01]);([0-9]+);?q((?:.|[\n\r])+)/;
-    let match = data.match(pattern);
+    pattern = /^([0-9]);([01]);([0-9]+);?q((?:.|[\n\r])+)/;
+    match = data.match(pattern);
     if (null === match) {
       return;
     }
 
-    let [, P1, P2, P3, sixel] = match;
+    renderer = this.dependency["renderer"];
+    screen = this.dependency["screen"];
+
+    [, P1, P2, P3, sixel] = match;
+
     if (!sixel) {
       return;
     }
 
-    let {sixel_canvas} = this.request(
+    var {sixel_canvas} = this.request(
       "command/construct-chrome", this.template);
-    let dom = { 
+
+    dom = { 
       canvas: sixel_canvas,
       context: sixel_canvas.getContext("2d"),
     };

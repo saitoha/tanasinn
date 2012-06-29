@@ -142,3 +142,4 @@ function main(broker)
   new MoveShortcut(broker);
 }
 
+// EOF

@@ -41,53 +41,66 @@ NMapCompleter.definition = {
   "[completer('nmap'), enabled]":
   function complete(context)
   {
-    let { source, option, completers } = context;
-    let match = source.match(/^\s*(\S*)(\s*)/);
+    var match, all, name, next,
+        next_completer_info, next_completer, option,
+        expressions, lower_name, candidates;
+
+    match = context.source.match(/^\s*(\S*)(\s*)/);
+
     if (null === match) {
       this.sendMessage("event/answer-completion", null);
       return;
     }
-    let [all, name, next] = match;
+
+    [all, name, next] = match;
+
     if (next) {
-      let next_completer_info = completers.shift();
+      next_completer_info = context.completers.shift();
       if (next_completer_info) {
-        let [next_completer, option] = next_completer_info.split("/");
+        [next_completer, option] = next_completer_info.split("/");
         this.sendMessage("command/query-completion/" + next_completer, {
-          source: source.substr(all.length),
+          source: context.source.substr(all.length),
           option: option,
-          completers: completers,
+          completers: context.completers,
         });
       } else {
         this.sendMessage("event/answer-completion", null);
       }
-      return;
-    }
 
-    let expressions = this.request("get/registered-nmap");
-    let lower_name = name.toLowerCase();
-    let candidates = Object.getOwnPropertyNames(expressions)
-      .filter(function(expression) {
-        return -1 != expression.toLowerCase().indexOf(lower_name); 
-      })
-      .map(function(key) {
-        return { 
-          key: key, 
-          value: expressions[key],
-        };
-      });
-    if (0 == candidates.length) {
-      this.sendMessage("event/answer-completion", null);
-      return;
+    } else {
+
+      expressions = this.request("get/registered-nmap");
+      lower_name = name.toLowerCase();
+      candidates = Object.getOwnPropertyNames(expressions)
+        .filter(function(expression) {
+          return -1 != expression.toLowerCase().indexOf(lower_name); 
+        })
+        .map(function(key) {
+          return { 
+            key: key, 
+            value: expressions[key],
+          };
+        });
+
+      if (0 === candidates.length) {
+        this.sendMessage("event/answer-completion", null);
+      } else {
+        this.sendMessage(
+          "event/answer-completion",
+          {
+            type: "text",
+            query: context.source, 
+            data: candidates.map(
+              function(candidate)
+              {
+                return {
+                  name: candidate.key,
+                  value: String(candidate.value),
+                }
+              }),
+          });
+      }
     }
-    let autocomplete_result = {
-      type: "text",
-      query: source, 
-      data: candidates.map(function(candidate) ({
-        name: candidate.key,
-        value: String(candidate.value),
-      })),
-    };
-    this.sendMessage("event/answer-completion", autocomplete_result);
   },
 
 };
@@ -112,10 +125,11 @@ CMapCompleter.definition = {
   "[completer('cmap'), enabled]":
   function complete(context)
   {
-    var match, all, name, next;
+    var match, all, name, next,
+        next_completer_info, next_completer, option,
+        expressions, lower_name, candidates;
 
-    var { source, option, completers } = context;
-    match = source.match(/^\s*(\S*)(\s*)/);
+    match = context.source.match(/^\s*(\S*)(\s*)/);
 
     if (null === match) {
       this.sendMessage("event/answer-completion", null);
@@ -125,13 +139,13 @@ CMapCompleter.definition = {
     [all, name, next] = match;
 
     if (next) {
-      let next_completer_info = completers.shift();
+      next_completer_info = context.completers.shift();
       if (next_completer_info) {
-        let [next_completer, option] = next_completer_info.split("/");
+        [next_completer, option] = next_completer_info.split("/");
         this.sendMessage("command/query-completion/" + next_completer, {
-          source: source.substr(all.length),
+          source: context.source.substr(all.length),
           option: option,
-          completers: completers,
+          completers: context.completers,
         });
       } else {
         this.sendMessage("event/answer-completion", null);
@@ -139,9 +153,9 @@ CMapCompleter.definition = {
       return;
     }
 
-    let expressions = this.request("get/registered-cmap");
-    let lower_name = name.toLowerCase();
-    let candidates = Object.getOwnPropertyNames(expressions)
+    expressions = this.request("get/registered-cmap");
+    lower_name = name.toLowerCase();
+    candidates = Object.getOwnPropertyNames(expressions)
       .filter(function(expression) {
         return -1 !== expression.toLowerCase().indexOf(lower_name); 
       })
@@ -151,20 +165,25 @@ CMapCompleter.definition = {
           value: expressions[key],
         };
       });
+
     if (0 === candidates.length) {
       this.sendMessage("event/answer-completion", null);
-      return;
+    } else {
+      this.sendMessage(
+        "event/answer-completion",
+        {
+          type: "text",
+          query: context.source, 
+          data: candidates.map(
+            function(candidate)
+            {
+              return {
+                name: candidate.key,
+                value: String(candidate.value),
+              }
+            }),
+        });
     }
-    let autocomplete_result = {
-      type: "text",
-      query: source, 
-      data: candidates.map(function(candidate) ({
-        name: candidate.key,
-        value: String(candidate.value),
-      })),
-    };
-    this.sendMessage("event/answer-completion", autocomplete_result);
-    return;
   },
 
 }; // CMapCompleter
@@ -180,4 +199,4 @@ function main(broker)
   new CMapCompleter(broker);
 }
 
-
+// EOF

@@ -1058,7 +1058,9 @@ Renderer.definition = {
                      height, 
                      attr, type)
   {
-    var fore_color, fore_color_map, text, drcs_state, index, code;
+    var fore_color, fore_color_map, text, drcs_state, index, code,
+        glyph_index, source_top, source_left, source_width, source_height,
+        destination_top, destination_left, destination_width, destination_height;
 
     if (attr.blink) {
       if (null === this._slow_blink_layer) {
@@ -1131,14 +1133,15 @@ Renderer.definition = {
       }
     } else {
       drcs_state = this._drcs_state;
+
       for (index = 0; index < codes.length; ++index) {
         code = codes[index] - this._offset;
         if (drcs_state.start_code <= code && code <= drcs_state.end_code) {
-          //let glyph = drcs_state.glyphs[code - drcs_state.start_code];
+          //var glyph = drcs_state.glyphs[code - drcs_state.start_code];
           //context.putImageData(glyph, 0, 0)
-          let glyph_index = code - drcs_state.start_code;
-          let source_top, source_left, source_width, source_height;
-          let destination_top, destination_left, destination_width, destination_height;
+
+          glyph_index = code - drcs_state.start_code;
+
           switch (type) {
 
             case 0:
@@ -1257,3 +1260,4 @@ function main(broker)
   new Renderer(broker);
 }
 
+// EOF

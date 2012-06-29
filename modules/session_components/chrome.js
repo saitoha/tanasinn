@@ -499,8 +499,12 @@ Chrome.definition = {
   "[subscribe('@event/broker-stopping'), enabled]": 
   function onSessionStoping() 
   {
+    var target;
+
     this.sendMessage("command/blur");
-    let target = this._element;
+
+    target = this._element;
+
     if (target.parentNode) {
       target.parentNode.removeChild(target);
     }
@@ -565,4 +569,4 @@ function main(broker)
 }
 
 
-
+// EOF

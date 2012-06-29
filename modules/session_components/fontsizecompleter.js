@@ -43,44 +43,58 @@ FontsizeCompleter.definition = {
   "[completer('fontsize'), enabled]":
   function complete(context)
   {
-    let broker = this._broker;
-    let { source, option, completers } = context;
-    let pattern = /^\s*(.*)(\s?)/;
-    let match = source.match(pattern);
-    let [all, size, space] = match;
+    var broker, pattern, match, all, size, space,
+        next_completer_info, next_completer, option,
+        generator;
+
+    broker = this._broker;
+
+    pattern = /^\s*(.*)(\s?)/;
+    match = context.source.match(pattern);
+    [all, size, space] = match;
+
     if (space) {
-      let next_completer_info = completers.shift();
+      next_completer_info = context.completers.shift();
+
       if (next_completer_info) {
-        let [next_completer, option] = next_completer_info.split("/");
+        [next_completer, option] = next_completer_info.split("/");
         this.sendMessage("command/query-completion/" + next_completer, {
-          source: source.substr(all.length),
+          source: context.source.substr(all.length),
           option: option,
-          completers: completers,
+          completers: context.completers,
         });
       } else {
         this.sendMessage("event/answer-completion", null);
       }
-      return;
-    }
-    let generator = function() 
-    { 
-      for (let i = 8; i < 100; ++i) {
-        let str = i.toString(); 
-        if (-1 != str.indexOf(source)) {
-          yield str;
+    } else {
+
+      generator = function() 
+      { 
+        var i, str;
+
+        for (i = 8; i < 100; ++i) {
+          str = i.toString(); 
+          if (-1 !== str.indexOf(context.source)) {
+            yield str;
+          }
         }
-      }
-    } ();
-    let size_list = [ i for (i in generator) ];
-    let autocomplete_result = {
-      type: "fontsize",
-      query: source, 
-      data: size_list.map(function(size) ({
-        name: size, 
-        value: size,
-      })),
-    };
-    this.sendMessage("event/answer-completion", autocomplete_result);
+      } ();
+
+      this.sendMessage(
+        "event/answer-completion",
+        {
+          type: "fontsize",
+          query: context.source, 
+          data: [ i for (i in generator) ].map(
+            function(size)
+            {
+              return {
+                name: size, 
+                value: size,
+              };
+            }),
+        });
+    }
   },
 
 };
@@ -96,4 +110,4 @@ function main(broker)
   new FontsizeCompleter(broker);
 }
 
-
+// EOF

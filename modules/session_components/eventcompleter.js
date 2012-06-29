@@ -87,7 +87,7 @@ EventCompleter.definition = {
               name: candidate, 
               value: candidate,
             };
-          });
+          }),
       });
   },
 

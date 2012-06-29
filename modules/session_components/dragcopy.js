@@ -85,18 +85,29 @@ DragCopy.definition = {
    */
   _dragCopy: function _dragCopy(event, start, end, is_rectangle) 
   {
-    let canvas = this._canvas;
-    let screen = this.dependency["screen"];
-    let feedback_canvas = this._feedback_canvas;
+    var canvas, screen, feedback_canvas, foreground_canvas,
+        width, height, text, feedback_context, selection_canvas,
+        left, top;
+
+    canvas = this._canvas;
+    screen = this.dependency["screen"];
+
+    feedback_canvas = this._feedback_canvas;
     feedback_canvas.hidden = false;
-    let foreground_canvas = this.request("command/query-selector", "#foreground_canvas");
-    let width = feedback_canvas.width = foreground_canvas.width;
-    let height = feedback_canvas.height = foreground_canvas.height;
-    let text = screen.getTextInRange(start, end, is_rectangle);
+
+    foreground_canvas = this.request("command/query-selector", "#foreground_canvas");
+
+    width = feedback_canvas.width = foreground_canvas.width;
+    height = feedback_canvas.height = foreground_canvas.height;
+
+    text = screen.getTextInRange(start, end, is_rectangle);
     event.dataTransfer.setData("text/plain", text);
-    let feedback_context = feedback_canvas.getContext("2d");
-    let selection_canvas = this.request("command/query-selector", "#selection_canvas");
-    let [left, top] = this._getPixelMetricsFromEvent(event);
+
+    feedback_context = feedback_canvas.getContext("2d");
+    selection_canvas = this.request("command/query-selector", "#selection_canvas");
+
+    [left, top] = this._getPixelMetricsFromEvent(event);
+
     feedback_context.globalCompositeOperation = "source-over";
     feedback_context.drawImage(selection_canvas, 0, 0);
     feedback_context.globalCompositeOperation = "source-in";
@@ -125,28 +136,40 @@ DragCopy.definition = {
   _getPixelMetricsFromEvent: 
   function _getPixelMetricsFromEvent(event) 
   {
-    let target_element 
-      = session.uniget("command/query-selector", "#tanasinn_content");
-    let root_element = target_element.parentNode;
-    let box = target_element.boxObject;
-    let offsetX = box.screenX - root_element.boxObject.screenX;
-    let offsetY = box.screenY - root_element.boxObject.screenY;
-    let left = event.layerX - offsetX; 
-    let top = event.layerY - offsetY;
+    var target_element, root_element, box, offsetX, offsetY,
+        left, top;
+
+    target_element = session.uniget("command/query-selector", "#tanasinn_content");
+
+    root_element = target_element.parentNode;
+    box = target_element.boxObject;
+
+    offsetX = box.screenX - root_element.boxObject.screenX;
+    offsetY = box.screenY - root_element.boxObject.screenY;
+
+    left = event.layerX - offsetX; 
+    top = event.layerY - offsetY;
+
     return [left, top];
   },
 
   "[listen('dragstart', '#tanasinn_content'), pnp]":
   function ondragstart(event)
   {
-    if (null !== this._mouse_mode)
+    var screen, column, x, y, position, result;
+
+    if (null !== this._mouse_mode) {
       return;
-    let session = this._broker;
-    let screen = this.dependency["screen"];
-    let column = screen.width;
-    let [x, y] = this.convertPixelToScreen(event);
-    let position = y * column + x;
-    let result = session.uniget("get/selection-info");
+    }
+
+    screen = this.dependency["screen"];
+    column = screen.width;
+
+    [x, y] = this.convertPixelToScreen(event);
+
+    position = y * column + x;
+    result = this.request("get/selection-info");
+
     if (result) {
       let {start, end, is_rectangle} = result;
       if (start <= position && position < end) {
@@ -167,25 +190,35 @@ DragCopy.definition = {
 
   convertPixelToScreen: function convertPixelToScreen(event) 
   {
-    let session = this._broker;
-    let target_element
-      = session.uniget("command/query-selector", "#tanasinn_content");
-    let root_element = session.root_element;
-    let box = target_element.boxObject;
-    let offsetX = box.screenX - root_element.boxObject.screenX;
-    let offsetY = box.screenY - root_element.boxObject.screenY;
-    let left = event.layerX - offsetX; 
-    let top = event.layerY - offsetY;
-    let renderer = this.dependency["renderer"];
-    let screen = this.dependency["screen"];
-    let char_width = renderer.char_width;
-    let line_height = renderer.line_height;
-    let column = Math.round(left / char_width);
-    let row = Math.round(top / line_height);
-    let maxColumn = screen.width;
-    let maxRow = screen.height;
-    column = column > maxColumn ? maxColumn: column;
-    row = row > maxRow ? maxRow: row;
+    var target_element, root_element, box, offsetX, offsetY,
+        left, top, renderer, screen, char_width, line_height,
+        column, row, max_column, max_row;
+
+    target_element = this.request("command/query-selector", "#tanasinn_content");
+    root_element = this.request("get/root-element");
+    box = target_element.boxObject;
+
+    offsetX = box.screenX - root_element.boxObject.screenX;
+    offsetY = box.screenY - root_element.boxObject.screenY;
+
+    left = event.layerX - offsetX; 
+    top = event.layerY - offsetY;
+
+    renderer = this.dependency["renderer"];
+    screen = this.dependency["screen"];
+
+    char_width = renderer.char_width;
+    line_height = renderer.line_height;
+
+    column = Math.round(left / char_width);
+    row = Math.round(top / line_height);
+
+    max_column = screen.width;
+    max_row = screen.height;
+
+    column = column > max_column ? max_column: column;
+    row = row > max_row ? max_row: row;
+
     return [column - 1, row - 1];
   },
 
@@ -201,3 +234,4 @@ function main(broker)
   new DragCopy(broker);
 }
 
+// EOF

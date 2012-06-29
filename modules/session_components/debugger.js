@@ -54,14 +54,15 @@ Tracer.definition = {
   "[subscribe('command/debugger-trace-on'), enabled]":
   function enable() 
   {
-    var sequences;
+    var sequences, i;
 
     this.onBeforeInput.enabled = true;
 
     sequences = this.sendMessage("get/sequences/" + this._mode);
     this._backup_sequences = sequences;
 
-    for (let i = 0; i < sequences.length; ++i) {
+    for (i = 0; i < sequences.length; ++i) {
+
       let information = sequences[i];
       try {
         let {expression, handler, context} = information;
@@ -186,7 +187,7 @@ Hooker.definition = {
   "[subscribe('command/debugger-trace-on'), enabled]":
   function set() 
   {
-    var parser, buffer, self;
+    var parser, buffer, self, action, result;
 
     if (!this._hooked) {
       parser = this.dependency["parser"];
@@ -198,14 +199,14 @@ Hooker.definition = {
         if (self._step_mode) {
           this.sendMessage("command/flow-control", false);
         }
-        for (let action in parser.__proto__.parse.call(parser, data)) {
+        for (action in parser.__proto__.parse.call(parser, data)) {
           let sequence = parser._scanner.getCurrentToken();
           buffer.push(let (action = action) function() [action(), sequence]);
         }
         if (!self._step_mode) {
           while (buffer.length) {
-            let action = buffer.shift();
-            let result = action();
+            action = buffer.shift();
+            result = action();
             this.sendMessage("command/debugger-trace-sequence", result);
           }
         }
@@ -216,8 +217,10 @@ Hooker.definition = {
   "[subscribe('command/debugger-trace-off'), enabled]":
   function unset() 
   {
+    var parser;
+
     if (this._hooked) {
-      let parser = this.dependency["parser"];
+      parser = this.dependency["parser"];
       delete parser.parse; // uninstall hook
       this._hooked = false;
     }
@@ -227,7 +230,7 @@ Hooker.definition = {
 /**
  * @class Debugger
  */
-let Debugger = new Class().extends(Plugin);
+var Debugger = new Class().extends(Plugin);
 Debugger.definition = {
 
   get id()
@@ -362,9 +365,13 @@ Debugger.definition = {
   "[subscribe('@get/panel-items')]": 
   function onPanelItemRequested(panel) 
   {
-    let template = this.template;
-    let item = panel.alloc(this.id, _("Debugger"));
+    var template, item;
+
+    template = this.template;
+    item = panel.alloc(this.id, _("Debugger"));
+
     template.parentNode = item;
+
     let {
       tanasinn_trace,
       tanasinn_debugger_attach,
@@ -372,12 +379,14 @@ Debugger.definition = {
       tanasinn_debugger_resume,
       tanasinn_debugger_step,
     } = this.request("command/construct-chrome", template);
+
     this._trace_box = tanasinn_trace;
     this._checkbox_attach = tanasinn_debugger_attach;
     this._checkbox_break = tanasinn_debugger_break;
     this._checkbox_resume = tanasinn_debugger_resume;
     this._checkbox_step = tanasinn_debugger_step;
     this.trace.enabled = true;
+
     return item;
   },
 
@@ -511,9 +520,8 @@ Debugger.definition = {
   "[subscribe('command/debugger-trace-sequence')] watchSequence": 
   function watchSequence(trace_info) 
   {
-    let [info, sequence] = trace_info;
-    if (this._pattern.test(sequence)) {
-      this.watchSequence.enabled = false;
+    if (this._pattern.test(trace_info.sequence)) {
+      this.watchSequence.eniabled = false;
       this.doBreak();
     }
   },
@@ -682,3 +690,4 @@ function main(broker)
   new Tracer(broker);
 }
 
+// EOF

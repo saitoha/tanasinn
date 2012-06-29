@@ -26,7 +26,7 @@
 /**
  *  @class FocusEvent
  */
-let FocusEvent = new Class().extends(Plugin);
+var FocusEvent = new Class().extends(Plugin);
 FocusEvent.definition = {
 
   get id()

@@ -198,3 +198,4 @@ function main(broker)
   new Resize(broker);
 }
 
+// EOF

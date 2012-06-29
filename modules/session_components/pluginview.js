@@ -278,3 +278,4 @@ function main(broker)
   new PluginViewer(broker);
 }
 
+// EOF

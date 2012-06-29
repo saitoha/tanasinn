@@ -98,7 +98,7 @@ AlertService.definition = {
 /**
  * @class MessageFilter
  */
-let MessageFilter = new Class().extends(Plugin);
+var MessageFilter = new Class().extends(Plugin);
 MessageFilter.definition = {
 
   get id()
@@ -151,16 +151,27 @@ MessageFilter.definition = {
 
   action: function action() 
   {
-    let broker = this._broker;
-    let logtext = this.logtext;
-    let match = this.match;
-    let [, category, , message, file, line] = match;
-    let class_string = this._getClassString(category);
+    var logtext, match, category, message, file, line,
+        class_string, title, text;
+
+    logtext = this.logtext;
+    match = this.match;
+    [, category, , message, file, line] = match;
+
+    class_string = this._getClassString(category);
+
     file = file.split("/").pop().split("?").shift();
-    if ("tanasinn-console-error" == class_string) {
-      let title = category;
-      let text = file + ":" + line + " " + message;
-      this.sendMessage("command/show-popup-alert", {title: title, text: text});
+
+    if ("tanasinn-console-error" === class_string) {
+      title = category;
+      text = file + ":" + line + " " + message;
+
+      this.sendMessage(
+        "command/show-popup-alert", 
+        {
+          title: title,
+          text: text,
+        });
     }
     return {
       parentNode: "#console_output_box",
@@ -204,7 +215,9 @@ MessageFilter.definition = {
    */
   _getClassString: function(category) 
   {
-    let result = {
+    var result;
+
+    result = {
       "JavaScript Error"  : "tanasinn-console-error",
       "JavaScript Warning": "tanasinn-console-warning",
       "JavaScript Message": "tanasinn-console-message",
@@ -219,7 +232,7 @@ MessageFilter.definition = {
  * @class DisplayManager
  * @brief Manages sisplay state for messages.
  */
-let DisplayManager = new Class().extends(Component);
+var DisplayManager = new Class().extends(Component);
 DisplayManager.definition = {
 
   get id()
@@ -236,17 +249,17 @@ DisplayManager.definition = {
   function onLoad(console) 
   {
     this._console = console;
-    let session = this._broker;
+
     this.onConsoleFilterCollectionChanged.enabled = true;
     this.onConsoleFilterCollectionChanged();
-    session.notify("initialized/displaymanager", this);
+
+    this.sendMessage("initialized/displaymanager", this);
   },
 
   "[subscribe('event/console-filter-collection-changed')]":
   function onConsoleFilterCollectionChanged() 
   {
-    let session = this._broker;
-    this._filters = session.notify("get/message-filters");
+    this._filters = this.sendMessage("get/message-filters");
   },
 
   /** Appends a message line to output container. 
@@ -254,9 +267,12 @@ DisplayManager.definition = {
    */
   append: function append(message) 
   {
-    let session = this._broker;
-    let template = this.applyFilters(message);
-    session.uniget("command/construct-chrome", template);
+    var template;
+
+    template = this.applyFilters(message);
+
+    this.request("command/construct-chrome", template);
+
     // makes scrollbar follow page's height.
     if (this.auto_scroll && this._console) {
       this._console.scrollToBottom();
@@ -268,13 +284,16 @@ DisplayManager.definition = {
    */
   applyFilters: function applyFilters(message) 
   {
+    var filter;
+
     if (this._filters) {
-      for (let [, filter] in Iterator(this._filters)) {
+      for ([, filter] in Iterator(this._filters)) {
         if (filter.test(message)) {
           return filter.action();
         }
       };
     }
+
     // returns fallback template.
     return {
       parentNode: "#console_output_box",
@@ -295,7 +314,7 @@ DisplayManager.definition = {
  * @class ConsoleListener
  * Listen console messages and pass them to display manager.
  */ 
-let ConsoleListener = new Class().extends(Component);
+var ConsoleListener = new Class().extends(Component);
 ConsoleListener.definition = {
 
   get id()
@@ -346,8 +365,11 @@ ConsoleListener.definition = {
    */
   observe: function observe(console_message)
   {
+    var message;
+
     try {
-      let message = console_message.message;
+      message = console_message.message;
+
       if (/tanasinn/i.test(message)) {
         this._display_manager.append(message);
       }
@@ -385,18 +407,22 @@ ConsoleListener.definition = {
   /** Get recent console messages from buffer of console services. */
   _getMessageArray: function _getMessageArray()
   {
+    var message_array;
+    
     // get latest 250 messages.
-    let message_array = {};
+    message_array = {};
     this._console_service.getMessageArray(message_array, {});
     return message_array;
   },
 
   _trackHistricalMessages: function _trackHistricalMessages()
   {
+    var message_array;
+
     // in case messages are not found, consoleService returns null.
-    let message_array = this._getMessageArray();
+    message_array = this._getMessageArray();
     if (null !== message_array) {
-      //for (let [index, message] in Iterator(message_array.value.reverse())) {
+      //for (var [index, message] in Iterator(message_array.value.reverse())) {
       //  if (/tanasinn_initialize/.test(message.message)) {
           message_array.value
       //      .slice(0, index + 1)
@@ -413,7 +439,7 @@ ConsoleListener.definition = {
  * @class Console
  * @brief Shows formmated console messages.
  */
-let Console = new Class().extends(Plugin);
+var Console = new Class().extends(Plugin);
 Console.definition = {
 
   get id()
@@ -560,7 +586,7 @@ Console.definition = {
 
   /** Installs itself */
   "[install]":
-  function install(session) 
+  function install(broker) 
   {
     this.select.enabled = true;
     this.onPanelItemRequested.enabled = true;
@@ -568,24 +594,28 @@ Console.definition = {
 
   /** Uninstalls itself. */
   "[uninstall]":
-  function uninstall(session) 
+  function uninstall(broker) 
   {
     this.select.enabled = false;
     this.onPanelItemRequested.enabled = false;
-    session.notify("command/remove-panel", "console.panel");
+
+    this.sendMessage("command/remove-panel", "console.panel");
   },
 
   "[subscribe('@get/panel-items')]": 
   function onPanelItemRequested(panel) 
   {
-    let session = this._broker;
-    let template = this.template;
-    let panel_item = panel.alloc("console.panel", _("Console"))
+    var template, panel_item;
+
+    template = this.template;
+    panel_item = panel.alloc("console.panel", _("Console"))
+
     template.parentNode = panel_item;
-    let {
+
+    var {
       tanasinn_console_panel, 
       console_output_box,
-    } = session.uniget("command/construct-chrome", template);
+    } = this.request("command/construct-chrome", template);
     this._console_box = tanasinn_console_panel;
     this._output_box = console_output_box;
     return panel_item;
@@ -594,8 +624,7 @@ Console.definition = {
   "[command('console'), nmap('<C-S-a>', '<M-a>'), _('Open console.')]":
   function select(info) 
   {
-    let session = this._broker;
-    session.notify("command/select-panel", "console.panel");
+    this.sendMessage("command/select-panel", "console.panel");
     return true;
   },
   
@@ -612,11 +641,15 @@ Console.definition = {
   /** tracks growing scroll region. */
   scrollToBottom: function scrollToBottom() 
   {
-    let output_element = this._output_box;
+    var output_element, frame_element, current_scroll_position;
+
+    output_element = this._output_box;
+
     if (this._output_box) {
-      let frame_element = output_element.parentNode;
+      frame_element = output_element.parentNode;
+
       if (frame_element && frame_element.scrollHeight && frame_element.boxObject) {
-        let current_scroll_position 
+        current_scroll_position 
           = frame_element.scrollTop + frame_element.boxObject.height;
         if (current_scroll_position + 50 > frame_element.scrollHeight) {
           //coUtils.Timer.setTimeout(function() {
@@ -643,3 +676,4 @@ function main(broker)
   new ConsoleListener(broker);
 }
 
+// EOF
