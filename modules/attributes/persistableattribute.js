@@ -57,9 +57,12 @@ PersistableAttribute.definition = {
    */
   initialize: function initialize(broker) 
   {
+    var attributes, keys;
+
     if ("__attributes" in this) { 
-      let attributes = this.__attributes;
-      let keys = Object.getOwnPropertyNames(attributes)
+
+      attributes = this.__attributes;
+      keys = Object.getOwnPropertyNames(attributes)
         .filter(function(key) {
           if (key in attributes) {
             let attribute = attributes[key];
@@ -97,8 +100,10 @@ PersistableAttribute.definition = {
   /** Load persistable parameter value from context object. */
   __load: function __load(context, keys) 
   {
+    var attributes;
+
     if ("__attributes" in this) { 
-      let attributes = this.__attributes;
+      attributes = this.__attributes;
       keys = keys || Object.getOwnPropertyNames(attributes)
         .filter(function(key) {
           if (key in attributes) {
@@ -131,8 +136,10 @@ PersistableAttribute.definition = {
   /** Sets persistable parameter value to context object. */
   __persist: function __persist(context, keys) 
   {
+    var attributes;
+
     if ("__attributes" in this) { 
-      let attributes = this.__attributes;
+      attributes = this.__attributes;
       if (!keys) {
         keys = Object.getOwnPropertyNames(attributes)
           .filter(function(key) {
@@ -149,7 +156,7 @@ PersistableAttribute.definition = {
       keys.forEach(function(key)
       {
         try {
-          if (this[key] != this.__proto__[key] || Array.isArray(this[key])) {
+          if (this[key] !== this.__proto__[key] || Array.isArray(this[key])) {
             let path = [this.id, key].join(".");
             context[path] = this[key];
             context[path + ".default"] = this.__proto__[key];
@@ -169,8 +176,10 @@ PersistableAttribute.definition = {
    */
   __get: function __get(context, keys) 
   {
+    var attributes;
+    
     if ("__attributes" in this) { 
-      let attributes = this.__attributes;
+      attributes = this.__attributes;
       if (!keys) {
         keys = Object.getOwnPropertyNames(attributes)
           .filter(function(key) {

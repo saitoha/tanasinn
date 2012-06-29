@@ -67,47 +67,51 @@ CmapAttribute.definition = {
    */
   initialize: function initialize(broker) 
   {
-    let attributes = this.__attributes;
-    let key;
+    var attributes, key;
+
+    attributes = this.__attributes;
+    key;
+
     for (key in attributes) {
       let attribute = attributes[key];
       let expressions = attribute["cmap"];
-      if (!expressions)
+      if (!expressions) {
         continue;
-        let handler = this[key];
-        let delegate = this[key] = handler.id ? 
-          this[key]
-        : let (self = this) function() handler.apply(self, arguments);
-        delegate.id = delegate.id || [this.id, key].join(".");
-        delegate.description = attribute.description;
-        delegate.expressions = expressions;
+      }
+      let handler = this[key];
+      let delegate = this[key] = handler.id ? 
+        this[key]
+      : let (self = this) function() handler.apply(self, arguments);
+      delegate.id = delegate.id || [this.id, key].join(".");
+      delegate.description = attribute.description;
+      delegate.expressions = expressions;
 
-        broker.subscribe("get/cmap", function() delegate);
+      broker.subscribe("get/cmap", function() delegate);
 
-        // Register load handler.
-        broker.subscribe(
-          "command/load-persistable-data", 
-          function load(context) // Restores settings from context object.
-          {
-            let expressions = context[delegate.id + ".cmap"];
-            if (expressions) {
-              delegate.expressions = expressions;
-              if (delegate.enabled) {
-                delegate.enabled = false;
-                delegate.enabled = true;
-              }
+      // Register load handler.
+      broker.subscribe(
+        "command/load-persistable-data", 
+        function load(context) // Restores settings from context object.
+        {
+          let expressions = context[delegate.id + ".cmap"];
+          if (expressions) {
+            delegate.expressions = expressions;
+            if (delegate.enabled) {
+              delegate.enabled = false;
+              delegate.enabled = true;
             }
-          }, this);
+          }
+        }, this);
 
-        // Register persist handler.
-        broker.subscribe(
-          "command/save-persistable-data", 
-          function persist(context) // Save settings to persistent context.
-          {
-            if (expressions.join("") != delegate.expressions.join("")) {
-              context[delegate.id + ".cmap"] = delegate.expressions;
-            }
-          }, this);
+      // Register persist handler.
+      broker.subscribe(
+        "command/save-persistable-data", 
+        function persist(context) // Save settings to persistent context.
+        {
+          if (expressions.join("") != delegate.expressions.join("")) {
+            context[delegate.id + ".cmap"] = delegate.expressions;
+          }
+        }, this);
     }
   },
 };

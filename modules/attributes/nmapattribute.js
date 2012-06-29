@@ -63,8 +63,10 @@ NmapAttribute.definition = {
    */
   initialize: function initialize(broker) 
   {
-    let attributes = this.__attributes;
-    let key;
+    var attributes, key;
+
+    attributes = this.__attributes;
+
     for (key in attributes) {
       let attribute = attributes[key];
       let expressions = attribute["nmap"];

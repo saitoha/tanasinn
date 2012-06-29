@@ -43,72 +43,80 @@ LocalizeCompleter.definition = {
   "[completer('localize'), enabled]":
   function complete(context)
   {
-    let broker = this._broker;
-    let { source, option, completers } = context;
-    let pattern = /^\s*([a-zA-Z-]*)(\s*)("?)((?:[^"])*)("?)(\s*)(.*)/;
-    let match = source.match(pattern);
-    let [all, language, space, quote_start, message_id, quote_end, space2, next] = match;
+    var pattern, match, all, language, space,
+        quote_start, message_id, quote_end, space2, next,
+        languages, lower_message_id, dict, data;
+
+    pattern = /^\s*([a-zA-Z-]*)(\s*)("?)((?:[^"])*)("?)(\s*)(.*)/;
+    match = context.source.match(pattern);
+
+    [all, language, space, quote_start, message_id, quote_end, space2, next] = match;
+
     if (!space) {
-      let languages = [key for ([key, ] in Iterator(coUtils.Constant.LOCALE_ID_MAP))]
+      languages = [key for ([key, ] in Iterator(coUtils.Constant.LOCALE_ID_MAP))]
         .filter(function(iso639_language) 
           { 
             return -1 != iso639_language.toLowerCase()
               .indexOf(language.toLowerCase()); 
           });
-      if (0 == languages.length) {
+      if (0 === languages.length) {
         this.sendMessage("event/answer-completion", autocomplete_result);
-        return;
+      } else {
+        this.sendMessage(
+          "event/answer-completion",
+          {
+            type: "text",
+            query: context.source, 
+            data: languages.map(function(language) ({
+              name: language, 
+              value: coUtils.Constant.LOCALE_ID_MAP[language],
+            })),
+          });
       }
-      let autocomplete_result = {
-        type: "text",
-        query: source, 
-        data: languages.map(function(language) ({
-          name: language, 
-          value: coUtils.Constant.LOCALE_ID_MAP[language],
-        })),
-      };
-      this.sendMessage("event/answer-completion", autocomplete_result);
-      return;
-    }
-    let lower_message_id = message_id.toLowerCase();
+    } else {
+      lower_message_id = message_id.toLowerCase();
 
-    if (!this._keys) {
-      this._keys = [id for (id in coUtils.Localize.generateMessages())];
-    }
-    let dict = coUtils.Localize.getDictionary(language);
-    let data = [
-      {
-        name: key,
-        value: dict[key] || "",
-      } for ([, key] in Iterator(this._keys))
-    ].filter(function(pair) 
-    {
-      if (-1 != pair.name.toLowerCase().indexOf(lower_message_id)) {
-        return true;
+      if (!this._keys) {
+        this._keys = [id for (id in coUtils.Localize.generateMessages())];
       }
-      return false;
-    });
-    if (0 === data.length) {
-      this.sendMessage("event/answer-completion", null);
-      return;
+
+      dict = coUtils.Localize.getDictionary(language);
+      data = [
+        {
+          name: '"' + key + '"',
+          value: dict[key] || "",
+        } for ([, key] in Iterator(this._keys))
+      ].filter(function(pair) 
+      {
+        if (-1 !== pair.name.toLowerCase().indexOf(lower_message_id)) {
+          return true;
+        }
+        return false;
+      });
+      if (0 === data.length) {
+        this.sendMessage("event/answer-completion", null);
+      } else {
+        if (!space2) {
+          this.sendMessage(
+            "event/answer-completion", 
+            {
+              type: "text",
+              option: "quoted",
+              query: message_id, 
+              data: data,
+            });
+        } else {
+          this.sendMessage(
+            "event/answer-completion",
+            {
+              type: "text",
+              option: "quoted",
+              query: next, 
+              data: data,
+            });
+        }
+      }
     }
-    if (!space2) {
-      let autocomplete_result = {
-        type: "text",
-        option: "quoted",
-        query: message_id, 
-        data: data,
-      };
-      this.sendMessage("event/answer-completion", autocomplete_result);
-      return;
-    }
-    let autocomplete_result = {
-      type: "text",
-      option: "quoted",
-      query: next, 
-      data: data,
-    };
-    this.sendMessage("event/answer-completion", autocomplete_result);
   },
 
 };

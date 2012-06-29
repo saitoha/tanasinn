@@ -41,50 +41,63 @@ ComponentsCompleter.definition = {
   "[completer('components'), enabled]":
   function complete(context)
   {
-    var { source, option, completers } = context;
-    let match = source.match(/^(\s*)([$_\-@a-zA-Z\.]*)(\s?)/);
+    var match, all, space, name, next,
+        next_completer_info, next_completer,
+        option, modules, candidates;
+
+    match = context.source.match(/^(\s*)([$_\-@a-zA-Z\.]*)(\s?)/);
+
     if (null === match) {
       this.sendMessage("event/answer-completion", null);
       return;
     }
-    let [all, space, name, next] = match;
+
+    [all, space, name, next] = match;
+
     if (next) {
-      let next_completer_info = completers.shift();
+      next_completer_info = context.completers.shift();
       if (next_completer_info) {
-        let [next_completer, option] = next_completer_info.split("/");
+        [next_completer, option] = next_completer_info.split("/");
         this.sendMessage("command/query-completion/" + next_completer, {
-          source: source.substr(all.length),
+          source: context.source.substr(all.length),
           option: option,
-          completers: completers,
+          completers: context.completers,
         });
       } else {
         this.sendMessage("event/answer-completion", null);
       }
       return;
     }
-    let modules = this.sendMessage("get/components");
-    let candidates = [
+
+    modules = this.sendMessage("get/components");
+    candidates = [
       {
         key: module.id, 
         value: module.info ? 
           "[" + module.info..name + "] " + module.info..description: 
           module.toString()
       } for ([, module] in Iterator(modules)) 
-        if (module.id && module.id.match(source))
+        if (module.id && module.id.match(context.source))
     ];
     if (0 == candidates.length) {
       this.sendMessage("event/answer-completion", null);
       return;
     }
-    let autocomplete_result = {
-      type: "text",
-      query: source, 
-      data: candidates.map(function(candidate) ({
-        name: candidate.key,
-        value: String(candidate.value),
-      })),
-    };
-    this.sendMessage("event/answer-completion", autocomplete_result);
+
+    this.sendMessage(
+      "event/answer-completion",
+      {
+        type: "text",
+        query: context.source, 
+        data: candidates.map(
+          function(candidate)
+          {
+            return {
+              name: candidate.key,
+              value: String(candidate.value),
+            }
+          }),
+      });
   },
 
 };
@@ -108,50 +121,62 @@ PluginsCompleter.definition = {
   "[completer('plugin'), enabled]":
   function complete(context)
   {
-    let { source, option, completers } = context;
-    let match = source.match(/^(\s*)([$_\-@a-zA-Z\.]*)(\s?)/);
+    var match, all, space, name, next,
+        next_completer_info, next_completer, option,
+        modules, candidates;
+
+    match = context.source.match(/^(\s*)([$_\-@a-zA-Z\.]*)(\s?)/);
+
     if (null === match) {
       this.sendMessage("event/answer-completion", null);
       return;
     }
-    let [all, space, name, next] = match;
+
+    [all, space, name, next] = match;
+
     if (next) {
-      let next_completer_info = completers.shift();
+      next_completer_info = context.completers.shift();
       if (next_completer_info) {
-        let [next_completer, option] = next_completer_info.split("/");
+        [next_completer, option] = next_completer_info.split("/");
         this.sendMessage("command/query-completion/" + next_completer, {
-          source: source.substr(all.length),
+          source: context.source.substr(all.length),
           option: option,
-          completers: completers,
+          completers: context.completers,
         });
       } else {
         this.sendMessage("event/answer-completion", null);
       }
       return;
     }
-    let modules = this.sendMessage("get/components");
-    let candidates = [
+
+    modules = this.sendMessage("get/components");
+    candidates = [
       {
         key: module.id, 
         value: module
       } for ([, module] in Iterator(modules)) 
-        if (module.id && module.id.match(source) 
-            && module.enabled == (option == "enabled"))
+        if (module.id && module.id.match(context.source) 
+            && module.enabled == ("enabled" === context.option))
     ];
     if (0 == candidates.length) {
       this.sendMessage("event/answer-completion", null);
       return;
     }
-    let autocomplete_result = {
-      type: "text",
-      query: source, 
-      data: candidates.map(function(candidate) ({
-        name: candidate.key,
-        value: String(candidate.value),
-      })),
-    };
-    this.sendMessage("event/answer-completion", autocomplete_result);
-    return;
+
+    this.sendMessage(
+      "event/answer-completion",
+      {
+        type: "text",
+        query: context.source, 
+        data: candidates.map(
+          function(candidate)
+          {
+            return {
+             name: candidate.key,
+             value: String(candidate.value),
+            }
+          }),
+      });
   },
 
 };
