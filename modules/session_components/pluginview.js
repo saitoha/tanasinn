@@ -46,9 +46,7 @@ PluginViewer.definition = {
     ({
       parentNode: this._panel,
       tagName: "grid", flex: 1,
-      style: <> 
-        overflow-y: auto;
-      </>,
+      style: "overflow-y: auto;",
       childNodes: {
         tagName: "rows",
         childNodes: [
@@ -59,16 +57,33 @@ PluginViewer.definition = {
               let (info = ("info" in module) && module.info) 
               let (depends = this._depends_map[module.id])
               let (depended = this._depended_map[module.id])
-              let (depends_on = Object.keys(depends).map(function(key) depends[key], this))
-              let (depended_by = Object.keys(depended).map(function(key) depended[key], this))
+              let (depends_on = Object.keys(depends).map(function(key) depends[key]))
+              let (depended_by = Object.keys(depended).map(function(key) depended[key]))
               [
                 {
                   tagName: "checkbox",
                   align: "top",
                   style: "font-size: 1.4em;",
-                  onconstruct: function()
+                  onconstruct: let (self = this) function()
                     {
                       this.setAttribute("checked", module.enabled);
+                      self._broker.subscribe("event/dependencies-updated",
+                        function() 
+                        {
+                          var depends, depended, depends_on, depends_by, disabled;
+                          this.setAttribute("checked", module.enabled);
+
+                          depends = self._depends_map[module.id];
+                          depended = self._depended_map[module.id];
+                          depends_on = Object.keys(depends).map(function(key) depends[key]);
+                          depended_by = Object.keys(depended).map(function(key) depended[key]);
+
+                          disabled = module.enabled ? 
+                            depended_by.some(function(module) module.enabled):
+                            depends_on.some(function(module) !module.enabled);
+
+                          this.setAttribute("disabled", disabled);
+                        }, this, this.id);
                     },
                   disabled: module.enabled ? 
                     depended_by.some(function(module) module.enabled):
@@ -82,10 +97,7 @@ PluginViewer.definition = {
                 { 
                   tagName: "label", 
                   //className: "text-link",
-                  style: <>
-                    font-size: 1.4em;
-                    font-weight: bold;
-                  </>,
+                  style: "font-size: 1.4em; font-weight: bold;",
                   value: info..name.toString(),
                 },
                 { 
@@ -145,7 +157,7 @@ PluginViewer.definition = {
     modules = this.sendMessage("get/components");
     this._modules = modules.filter(function(module) module.info)
       .sort(function(lhs, rhs) lhs.info..name > rhs.info..name ? 1: -1);
-    this.update();
+    this.firstUpdate();
   },
 
   "[command('pluginviewer/pv'), nmap('<M-m>', '<C-S-m>'), _('Open module viewer.'), pnp]":
@@ -155,7 +167,7 @@ PluginViewer.definition = {
     return true;
   },
 
-  update: function update()    
+  firstUpdate: function firstUpdate()    
   {
     var depends_on, depends_by;
 
@@ -183,6 +195,30 @@ PluginViewer.definition = {
     this.request("command/construct-chrome", this.template);
   },
 
+  update: function update()    
+  {
+    var depends_on, depends_by;
+
+    depends_on = {};
+    depended_by = {};
+    this._modules.forEach(function(module) 
+    {
+      depends_on[module.id] = depends_on[module.id] || {};
+      depended_by[module.id] = depended_by[module.id] || {};
+      Object.keys(module.dependency)
+        .map(function(key) module.dependency[key])
+        .filter(function(dependency) ("info" in dependency) && dependency.info)
+        .forEach(function(dependency) 
+        {
+          depends_on[module.id][dependency.id] = dependency;
+          depended_by[dependency.id] = depended_by[dependency.id] || {};
+          depended_by[dependency.id][module.id] = module;
+        });
+    }, this);
+    this._depends_map = depends_on;
+    this._depended_map = depended_by;
+  },
+
   /** Fired when checkbox state is changed. */
   _setState: function _setState(plugin, checkbox) 
   {
@@ -197,6 +233,8 @@ PluginViewer.definition = {
         plugin.enabled ? _("install"): _("uninstall"), 
         plugin.info..name);
       this.update();
+
+      this.sendMessage("event/dependencies-updated");
       this.sendMessage("command/report-status-message", message);
     } catch (e) {
       checkbox.checked = !enabled;
@@ -211,13 +249,13 @@ PluginViewer.definition = {
 };
 
 /**
- * @class PluginManager
+ * @class PluginManagementCommands
  */
-var PluginManager = new Class().extends(Component);
-PluginManager.definition = {
+var PluginManagementCommands = new Class().extends(Component);
+PluginManagementCommands.definition = {
 
   get id()
-    "plugin_manager",
+    "plugin_management_commands",
 
   "[command('disable', ['plugin/enabled']), _('Disable a plugin.'), enabled]":
   function disable(arguments_string)
@@ -274,7 +312,7 @@ PluginManager.definition = {
  */
 function main(broker)
 {
-  new PluginManager(broker);
+  new PluginManagementCommands(broker);
   new PluginViewer(broker);
 }
 

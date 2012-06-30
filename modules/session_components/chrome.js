@@ -71,8 +71,12 @@ Movable.definition = {
     [x, y] = coordinate;
 
     target_element = this.request("get/root-element");
-    if (x < -target_element.boxObject.width) x = 0;
-    if (y < -target_element.boxObject.height) y = 0;
+    if (x < -target_element.boxObject.width) {
+      x = 0;
+    }
+    if (y < -target_element.boxObject.height) {
+      y = 0;
+    }
     target_element.style.left = x + "px";
     target_element.style.top = y + "px";
   },
@@ -178,7 +182,6 @@ OuterChrome.definition = {
     return coUtils.Text.format(
       "-moz-linear-gradient(top,%s,%s)", 
       this.blend_color, this.background_color);
-//    return "url('" + this.getImagePath() + "')";
   },
 
   getImagePath: function getImagePath()
@@ -472,24 +475,19 @@ Chrome.definition = {
       = this.request("command/construct-chrome", this.template);
     this._element = tanasinn_content;
     this._center = tanasinn_center_area;
-    this.onGotFocus.enabled = true;
-    this.onLostFocus.enabled = true;
-    this.updateStyle.enabled = true;
   },
 
   "[uninstall]":
   function uninstall(broker) 
   {
-    this.onGotFocus.enabled = false;
-    this.onLostFocus.enabled = false;
-    this.updateStyle.enabled = false;
     if (this._element && this._element.parentNode) {
       this._element.parentNode.removeChild(this._element);
       this._element = null;
     }
+    this._center = null;
   },
 
-  "[subscribe('variable-changed/chrome.{margin | background}'), enabled]": 
+  "[subscribe('variable-changed/chrome.{margin | background}'), pnp]": 
   function updateStyle()
   {
     this._center.style.cssText = this.style;
@@ -532,7 +530,7 @@ Chrome.definition = {
 
   /** An event handler which is fired when the keyboard focus is got. 
    */
-  "[subscribe('event/got-focus')]":
+  "[subscribe('event/got-focus'), pnp]":
   function onGotFocus()
   {
     this.onmousedown.enabled = true;
@@ -540,9 +538,8 @@ Chrome.definition = {
   },
 
   /** An event handler which is fired when the keyboard focus is lost. 
-   *  @notify command/focus
    */
-  "[subscribe('event/lost-focus')]":
+  "[subscribe('event/lost-focus'), pnp]":
   function onLostFocus()
   {
     this.onmousedown.enabled = true;

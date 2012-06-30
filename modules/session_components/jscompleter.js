@@ -41,17 +41,25 @@ JsCompleter.definition = {
   "[completer('js'), enabled]":
   function complete(context)
   {
-    let broker = this._broker;
-    let { source, option, completers } = context;
-    let autocomplete_result = null; 
-    let pattern = /(.*?)(?:(\.|\[|\['|\[")(\w*))?$/;
-    let match = pattern.exec(source);
+    var autocomplete_result, pattern, match,
+        settled, notation, current, context, 
+        code, properties;
+
+    autocomplete_result = null; 
+    pattern = /(.*?)(?:(\.|\[|\['|\[")(\w*))?$/;
+    match = pattern.exec(context.source);
+
     if (match) {
-      let [, settled, notation, current] = match;
-      let context = new function() void (this.__proto__ = broker.window);
+      [, settled, notation, current] = match;
+      dom = {
+        window: this.request.get("get/root-element").ownerDocument.defaultView,
+      };
+
+      context = new function() void (this.__proto__ = dom.window);
+
       if (notation) {
         try {
-          let code = "with (arguments[0]) { return (" + settled + ");}";
+          code = "with (arguments[0]) { return (" + settled + ");}";
           context = new Function(code) (context);
           if (!context) {
             this.sendMessage("event/answer-completion", null);
@@ -66,7 +74,7 @@ JsCompleter.definition = {
       }
 
       // enumerate and gather properties.
-      let properties = [ key for (key in context) ];
+      properties = [ key for (key in context) ];
 
       if (true) {
         // add own property names.
@@ -106,8 +114,10 @@ JsCompleter.definition = {
       autocomplete_result = {
         type: "text",
         query: current, 
-        data: properties.map(function(key) {
-          let value;
+        data: properties.map(function(key)
+        {
+          var value;
+
           try {
             value = context[key];
           } catch (e) { }
@@ -151,4 +161,4 @@ function main(broker)
   new JsCompleter(broker);
 }
 
-
+// EOF

@@ -143,6 +143,7 @@
 
     cursor.js
     splitter.js
+    gesture.js
 
     ime.js
     copy.js

@@ -57,7 +57,12 @@ SnapResize.definition = {
       row = Math.floor((window.innerHeight - vertical_margin) / line_height - 1);
 
       //coUtils.Debug.reportError(window.innerHeight + " " + vertical_margin + " " + row)
-      this.sendMessage("command/resize-screen", {column: column, row: row});
+      this.sendMessage(
+        "command/resize-screen",
+        {
+          column: column,
+          row: row,
+        });
       this.sendMessage("command/draw", true);
     } catch (e) {
       coUtils.Debug.reportError(e)
@@ -133,10 +138,10 @@ Resizer.definition = {
     ({
       parentNode: this.parent,
       tagName: "box",
-      id: <>tanasinn_{this.type}_resize</>,
+      id: "tanasinn_" + this.type + "_resize",
       width: 10,
       height: 10,
-      style: { cursor: <>{this.type}-resize</> },
+      style: "cursor: " + this.type + "-resize;",
       listener: [
         {
           type: "mousedown",

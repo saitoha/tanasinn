@@ -26,7 +26,7 @@
  *  @class EncoderMenu
  *  @brief Makes it enable to switch terminal encoding by context menu.
  */
-let EncoderMenu = new Class().extends(Plugin).depends("encoder");
+var EncoderMenu = new Class().extends(Plugin).depends("encoder");
 EncoderMenu.definition = {
 
   get id()
@@ -45,14 +45,14 @@ EncoderMenu.definition = {
 
   /** Installs itself. */
   "[install]":
-  function install(session) 
+  function install(broker) 
   {
     this.onContextMenu.enabled = true;
   },
 
   /** Uninstalls itself. */
   "[uninstall]":
-  function uninstall(session) 
+  function uninstall(broker) 
   {
     this.onContextMenu.enabled = false;
   },
@@ -60,15 +60,17 @@ EncoderMenu.definition = {
   "[subscribe('get/contextmenu-entries')]": 
   function onContextMenu() 
   {
-    let encoder = this.dependency["encoder"];
-    let encoder_scheme = encoder.scheme;
-    let session = this._broker;
+    var encoder, encoder_scheme;
+
+    encoder = this.dependency["encoder"];
+    encoder_scheme = encoder.scheme;
+
     return {
         tagName: "menu",
         label: _("Encoder"),
         childNodes: {
           tagName: "menupopup",
-          childNodes: session.notify("get/encoders").map(
+          childNodes: this.sendMessage("get/encoders").map(
             function getEncoders(information) 
             {
               return {
@@ -94,8 +96,7 @@ EncoderMenu.definition = {
   _onChange: function(scheme) 
   {
     this._scheme = scheme;
-    let session = this._broker;
-    session.notify("change/encoder", scheme)
+    this.sendMessage("change/encoder", scheme)
   },
 };
 
@@ -103,7 +104,7 @@ EncoderMenu.definition = {
  *  @class DecoderMenu
  *  @brief Makes it enable to switch terminal decoder by context menu.
  */
-let DecoderMenu = new Class().extends(Plugin).depends("decoder");
+var DecoderMenu = new Class().extends(Plugin).depends("decoder");
 DecoderMenu.definition = {
 
   get id()
@@ -123,14 +124,14 @@ DecoderMenu.definition = {
 
   /** Installs itself. */
   "[install]":
-  function install(session) 
+  function install(broker) 
   {
     this.onContextMenu.enabled = true;
   },
 
   /** Uninstalls itself. */
   "[uninstall]":
-  function uninstall(session) 
+  function uninstall(broker) 
   {
     this.onContextMenu.enabled = false;
   },
@@ -138,10 +139,12 @@ DecoderMenu.definition = {
   "[subscribe('get/contextmenu-entries')]":
   function onContextMenu() 
   {
-    let session = this._broker;
-    let decoder = this.dependency["decoder"];
-    let decoders = session.notify("get/decoders");
-    let decoder_scheme = decoder.scheme;
+    var decoder, decoders, decoder_scheme;
+
+    decoder = this.dependency["decoder"];
+    decoders = this.sendMessage("get/decoders");
+    decoder_scheme = decoder.scheme;
+
     return {
       tagName: "menu",
       label: _("Decoder"),
@@ -193,4 +196,4 @@ function main(broker)
   new DecoderMenu(broker)
 }
 
-
+// EOF

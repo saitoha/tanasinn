@@ -82,7 +82,7 @@ FocusTracker.definition = {
     target = event.explicitOriginalTarget;
 
     if (null !== target 
-        && (!("nodeType" in target) || target.nodeType != target.NODE_DOCUMENT)) {
+        && (!("nodeType" in target) || target.NODE_DOCUMENT !== target.nodeType)) {
       target = target.parentNode;
       if (null !== target && undefined !== target
           && target.nodeType != target.NODE_DOCUMENT) {

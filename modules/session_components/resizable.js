@@ -90,8 +90,8 @@ Resize.definition = {
 
   "[persistable] enabled_when_startup": true,
 
-  "[persistable] min_column": 24,
-  "[persistable] min_row": 12,
+  "[persistable] min_column": 12,
+  "[persistable] min_row": 6,
 
   /** Resize screen. 
    * @param {Object} A pair of {column, row} for new size.
@@ -105,7 +105,7 @@ Resize.definition = {
     row = size.row;
 
     screen = this.dependency["screen"];
-    // Minimam size: 48 x 12 
+    // Minimam size: 12 x 6 
     min_column = this.min_column;
     min_row = this.min_row;
     if (column < min_column) {
@@ -114,6 +114,7 @@ Resize.definition = {
     if (row < min_row) {
       row = min_row;
     }
+
     screen.width = column;
     screen.height = row;
   },
