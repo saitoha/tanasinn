@@ -40,36 +40,36 @@ var matrix = <>
  -1.0000, +0.0000, +1.0000, -0.0000, 
  +0.0000, +0.0000, +0.0000, +2.5000);
 </>;
+//
+//var matrix = <>
+//  -moz-transform: matrix3d(
+// +0.0001, -1.0000, +0.0000, -0.0000, 
+// +1.0000, +0.0001, +0.0000, -0.0000, 
+// -0.0000, +0.0000, +0.0001, -1.0000, 
+// +0.0000, +0.0000, +1.0000, +1.0000);
+//</>;
+//
+//var matrix = <>
+//  -moz-transform: matrix3d(
+// +0.0001, -0.0000, -1.0000, -0.0000, 
+// +0.0000, +0.0001, +0.0000, +1.0000, 
+// +1.0000, +0.0000, +0.0001, -0.0000, 
+// +0.0000, -1.0000, +1.0000, +1.0000);
+//</>;
+//
+//
+//var matrix = <>
+//  -moz-transform: matrix3d(
+// +1.0000, -0.0000, -0.0000, +0.0000, 
+// +0.0000, +1.0000, -0.0000, -0.0040, 
+// +0.0000, +0.0000, +1.0000, -0.0000, 
+// +0.0000, -0.0000, +0.0000, +1.0000);
+//</>;
 
-var matrix = <>
-  -moz-transform: matrix3d(
- +0.0001, -1.0000, +0.0000, -0.0000, 
- +1.0000, +0.0001, +0.0000, -0.0000, 
- -0.0000, +0.0000, +0.0001, -1.0000, 
- +0.0000, +0.0000, +1.0000, +1.0000);
-</>;
-
-var matrix = <>
-  -moz-transform: matrix3d(
- +0.0001, -0.0000, -1.0000, -0.0000, 
- +0.0000, +0.0001, +0.0000, +1.0000, 
- +1.0000, +0.0000, +0.0001, -0.0000, 
- +0.0000, -1.0000, +1.0000, +1.0000);
-</>;
-
-
-var matrix = <>
-  -moz-transform: matrix3d(
- +1.0000, -0.0000, -0.0000, +0.0000, 
- +0.0000, +1.0000, -0.0000, -0.0040, 
- +0.0000, +0.0000, +1.0000, -0.0000, 
- +0.0000, -0.0000, +0.0000, +1.0000);
-</>;
-
-var matrix = <>
-  -moz-transform: perspective(800px);
-  -moz-perspective-origin: 50% 200px;
-</>;
+//var matrix = <>
+//  -moz-transform: perspective(800px);
+//  -moz-perspective-origin: 50% 200px;
+//</>;
 
 //var matrix = <>
 //  -moz-transform: matrix3d(
@@ -81,8 +81,8 @@ var matrix = <>
 
 //var matrix = <>
 //  -moz-transform: matrix3d(
-// +1.0000, -0.0000, +1.0000, -0.0000, 
-// +0.0000, +1.0000, +1.0000, -0.0000, 
+// +1.0000, -0.0000, +0.0000, -0.0000, 
+// +0.0000, +1.0000, +0.0000, -0.0040, 
 // -0.0000, +0.0000, +1.0000, -0.0000, 
 // +0.0000, +0.0000, +0.0000, +1.0000);
 //</>;
@@ -209,6 +209,14 @@ OuterChrome.definition = {
   "[persistable, watchable] gradation": true,
   "[persistable, watchable] border_radius": 8,
   "[persistable, watchable] box_shadow": "5px 4px 29px black",
+  "[persistable, watchable] use_matrix": false,
+  "[persistable, watchable] matrix": <>
+    -moz-transform: matrix3d(
+      +1.8000, -1.0000, +1.0000, -0.0003, 
+      +1.0000, +1.0000, +1.0000, -0.0016, 
+      -1.0000, +0.0000, +1.0000, -0.0000, 
+      +0.0000, +0.0000, +0.0000, +2.0000);
+  </>.toString(),
 
   get frame_style()
     <>
@@ -291,7 +299,6 @@ OuterChrome.definition = {
       id: "tanasinn_outer_chrome",
       tagName: "stack",
       hidden: true,
-      style: matrix,
       listener: {
         type: "click",
         context: this,
@@ -359,6 +366,10 @@ OuterChrome.definition = {
     this._element = tanasinn_outer_chrome;
     this._frame = tanasinn_background_frame;
 
+    if (this.use_matrix) {
+      this.updateTransform();
+    }
+
     if (coUtils.Runtime.app_name.match(/tanasinn/)) {
       this._element.firstChild.style.borderRadius = "0px";
       this._element.firstChild.style.margin = "0px";
@@ -379,6 +390,16 @@ OuterChrome.definition = {
   function onFirstFocus() 
   {
     this._element.hidden = false;
+  },
+
+  "[subscribe('variable-changed/outerchrome.{use_matrix | matrix}'), pnp]": 
+  function updateTransform() 
+  {
+    if (this.use_matrix) {
+      this._element.style.cssText = this.matrix;
+    } else {
+      this._element.style.cssText = "";
+    }
   },
 
   "[subscribe('variable-changed/outerchrome.{background_color | foreground_color | gradation}'), pnp]": 

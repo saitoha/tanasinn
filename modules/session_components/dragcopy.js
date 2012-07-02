@@ -198,6 +198,7 @@ DragCopy.definition = {
 
     target_element = this.request("command/query-selector", "#tanasinn_content");
     root_element = this.request("get/root-element");
+
     box = target_element.boxObject;
 
     offsetX = box.screenX - root_element.boxObject.screenX;
