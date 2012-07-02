@@ -177,12 +177,12 @@ MessageFilter.definition = {
       parentNode: "#console_output_box",
       tagName: "row",
       className: "tanasinn-console-line " + class_string,
-      style: let (color_map = {
-        "JavaScript Error"  : "lightpink",
-        "JavaScript Warning": "lightyellow",
-        "JavaScript Message": "lightblue",
-      }) <>
-        background-color: { color_map[category] || "" };
+      style: <>
+        background-color: { {
+          "JavaScript Error"  : "lightpink",
+          "JavaScript Warning": "lightyellow",
+          "JavaScript Message": "lightblue",
+        }[category] || "" };
         border-bottom: 1px solid green;
       </>,
       childNodes: [
@@ -191,10 +191,7 @@ MessageFilter.definition = {
           crop: "start",
           width: 100,
           value: file + " ", 
-          style: <>
-            color: red;
-            width: 4em;
-          </>,
+          style: "color: red; width: 4em;",
         },
         { 
           tagName: "box", 
@@ -338,13 +335,14 @@ ConsoleListener.definition = {
     //this.onQuitApplication.enabled = true;
     this.onSessionStopping.enabled = true;
     
-    coUtils.Timer.setTimeout(function() {
-      // register object which implements nsIConsoleListener.
-      this.register();
+    coUtils.Timer.setTimeout(function()
+      {
+        // register object which implements nsIConsoleListener.
+        this.register();
 
-      // get histrical console messages and show them.
-      this._trackHistricalMessages(this);
-    }, this.register_delay, this);
+        // get histrical console messages and show them.
+        this._trackHistricalMessages(this);
+      }, this.register_delay, this);
   },
 
   "[subscribe('@command/detach')]": 
@@ -455,18 +453,15 @@ Console.definition = {
     </plugin>,
 
   get template()
-    let (session = this._broker) 
-    { 
+    ({ 
       tagName: "vbox",
       id: "tanasinn_console_panel",
       className: "tanasinn-console",
       flex: 1,
-      style: { 
-        margin: "0px",
-      },
+      style: "margin: 0px;",
       childNodes: [
         {  // output box
-          tagName: "grid",
+          tagName: "vbox",
           flex: 1,
           style: {
             MozAppearance: "tabpanels",
@@ -529,8 +524,8 @@ Console.definition = {
                       type: "command",
                       handler: function(event) 
                       { 
-                        let id = "#console_output_box";
-                        let output_box = tab_panel.querySelector(id);
+                        var id = "#console_output_box";
+                        var output_box = tab_panel.querySelector(id);
                         output_box.className = this.value;
                       },
                     },
@@ -572,7 +567,7 @@ Console.definition = {
                 listener: {
                   type: "command",
                   context: this,
-                  handler: function() session.notify("command/clear-messages"),
+                  handler: function() this.sendMessage("command/clear-messages"),
                 }
               }
             ]
@@ -580,7 +575,7 @@ Console.definition = {
         },
       */
       ]
-     },
+     }),
 
   "[persistable] enabled_when_startup": false,
 
@@ -588,21 +583,16 @@ Console.definition = {
   "[install]":
   function install(broker) 
   {
-    this.select.enabled = true;
-    this.onPanelItemRequested.enabled = true;
   }, 
 
   /** Uninstalls itself. */
   "[uninstall]":
   function uninstall(broker) 
   {
-    this.select.enabled = false;
-    this.onPanelItemRequested.enabled = false;
-
     this.sendMessage("command/remove-panel", "console.panel");
   },
 
-  "[subscribe('@get/panel-items')]": 
+  "[subscribe('@get/panel-items'), pnp]": 
   function onPanelItemRequested(panel) 
   {
     var template, panel_item;
@@ -621,7 +611,7 @@ Console.definition = {
     return panel_item;
   },
 
-  "[command('console'), nmap('<C-S-a>', '<M-a>'), _('Open console.')]":
+  "[command('console'), nmap('<C-S-a>', '<M-a>'), _('Open console.'), pnp]":
   function select(info) 
   {
     this.sendMessage("command/select-panel", "console.panel");

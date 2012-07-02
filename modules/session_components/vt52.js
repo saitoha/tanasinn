@@ -196,6 +196,11 @@ VT52SequenceParser.definition = {
         first, next_chars, code, next,
         code1, code2, c1;
 
+    function make_handler(value, context, y, x)
+    {
+      return function() value.call(context, y, x);
+    }
+
     match = key
       .match(/^(0x[0-9a-zA-Z]+)|^(%p)|^(.)$|^(.)(.+)$/);
 
@@ -218,8 +223,7 @@ VT52SequenceParser.definition = {
         c1 = String.fromCharCode(code1);
         this[code1] = new VT52SequenceParser();
         for (code2 = 0x20; code2 < 0x7f; ++code2) {
-          this[code1][code2] = let (y = code1, x = code2)
-            function() value.call(context, y, x);
+          this[code1][code2] = make_handler(value, context, code1, code2);
         }
       }
     } else if (normal_char) {

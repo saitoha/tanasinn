@@ -121,14 +121,10 @@ Sixel.definition = {
 
   /** UI template */
   get template() 
-    let (renderer = this.dependency["renderer"])
-    let (screen = this.dependency["screen"])
     ({
 //      parentNode: "#tanasinn_center_area",
       tagName: "html:canvas",
       id: "sixel_canvas",
-      width: renderer.char_width * screen.width,
-      height: renderer.line_height * screen.height * 2,
     }),
 
   _color: null,
@@ -229,6 +225,9 @@ Sixel.definition = {
 
     var {sixel_canvas} = this.request(
       "command/construct-chrome", this.template);
+
+    sixel_canvas.width = renderer.char_width * screen.width;
+    sixel_canvas.height = renderer.line_height * screen.height * 2;
 
     dom = { 
       canvas: sixel_canvas,

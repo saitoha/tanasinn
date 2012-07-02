@@ -182,6 +182,7 @@
     command.js
     tabbox.js
     commandline.js
+    commandlineime.js
     batch.js
     publish.js
     screenshot.js

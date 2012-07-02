@@ -23,6 +23,114 @@
  * ***** END LICENSE BLOCK ***** */
 
 
+function make_managed_handler(self, handler)
+{
+  var wrapped_handler;
+
+  wrapped_handler = function() 
+  {
+    return handler.apply(self, arguments);
+  };
+
+  return wrapped_handler;
+}
+
+function apply_attribute(self, broker, key, command_arguments, attribute)
+{
+  var handler, wrapped_handler, name, args, old_onchange, commands;
+
+  handler = self[key];
+  id = self.id + "." + key;
+
+  if (handler.id) {
+    wrapped_handler = handler;
+  } else {
+    wrapped_handler = make_managed_handler(self, handler);
+    wrapped_handler.id = id;
+    self[key] = wrapped_handler;
+  }
+  wrapped_handler.description = attribute.description;
+
+  name = command_arguments[0];
+  args = command_arguments.length > 1 && command_arguments[1];
+
+  commands = name
+    .split("/")
+    .map(function(name)
+      {
+        return {
+          name: name,
+          description: attribute.description,
+          args: args && args.slice(),
+
+          complete: function complete(source) 
+          {
+            var completers, name, option, completion_context;
+
+            args = this.args;
+            if (args && args.length) {
+              completers = args.slice(0);
+              [name, option] = completers.shift().split("/");
+              completion_context = {
+                source: source,
+                option: option,
+                completers: completers,
+              };
+              self.sendMessage(
+                "command/query-completion/" + name, 
+                completion_context);
+            };
+          },
+
+          evaluate: function evaluate() 
+          {
+            return handler.apply(self, arguments);
+          },
+
+          register: function register(id)
+          {
+            broker.subscribe(
+              "get/commands", 
+              function() 
+              {
+                return this;
+              }, this, id);
+          },
+
+        };
+
+      }, self);
+
+  old_onchange = wrapped_handler.onChange;
+  wrapped_handler.onChange = function(name, oldval, newval) 
+    {
+      var i;
+
+      if (old_onchange) {
+        old_onchange.apply(wrapped_handler, arguments);
+      }
+
+      if (oldval != newval) {
+        if (newval) {
+          for (i = 0; i < commands.length; ++i) {
+            commands[i].register(wrapped_handler.id);
+          };
+        } else {
+          broker.unsubscribe(wrapped_handler.id);
+        }
+      }
+      return newval;
+    };
+
+  wrapped_handler.watch("enabled", wrapped_handler.onChange);
+
+  if (attribute["enabled"]) {
+    wrapped_handler.enabled = true;
+  };
+
+}
+
+
 /**
  * @trait CommandAttribute
  *
@@ -61,83 +169,20 @@ CommandAttribute.definition = {
    */
   initialize: function initialize(broker) 
   {
-    var attributes, key;
+    var attributes, key, attribute, command_arguments;
 
     attributes = this.__attributes;
 
     for (key in attributes) {
-      let attribute = attributes[key];
-      if (!attribute["command"]) {
+
+      attribute = attributes[key];
+      command_arguments = attribute["command"];
+
+      if (undefined === command_arguments) {
         continue;
       }
-      let command_arguments = attribute["command"];
-      let name = command_arguments[0];
-      let args = command_arguments.length > 1 && command_arguments[1];
-      let handler = this[key];
-      let delegate = this[key] = handler.id ? 
-          this[key]
-        : let (self = this) function() handler.apply(self, arguments);
-      delegate.id = delegate.id || [this.id, key].join(".");
-      delegate.description = attribute.description;
 
-      let commands = name
-        .split("/")
-        .map(function(name) let (self = this) {
-          name: name,
-          description: attribute.description,
-          args: args && args.slice(),
-
-          complete: function complete(source) 
-          {
-            let args = this.args;
-            if (args && args.length) {
-              let completers = args.slice(0);
-              let [name, option] = completers.shift().split("/");
-              let completion_context = {
-                source: source,
-                option: option,
-                completers: completers,
-              };
-              self.sendMessage(
-                "command/query-completion/" + name, 
-                completion_context);
-            };
-          },
-
-          evaluate: function evaluate() 
-          {
-            return handler.apply(self, arguments);
-          },
-
-        }, this);
-
-      delegate.watch("enabled", 
-        delegate.onChange = let (self = this, old_onchange = delegate.onChange) 
-          function(name, oldval, newval) 
-          {
-            if (old_onchange) {
-              old_onchange.apply(delegate, arguments);
-            }
-            if (oldval != newval) {
-              if (newval) {
-                for (let i = 0; i < commands.length; ++i) {
-                  let command = commands[i];
-                  broker.subscribe(
-                    "get/commands", 
-                    function() 
-                    {
-                      return command;
-                    }, undefined, delegate.id);
-                };
-              } else {
-                broker.unsubscribe(delegate.id);
-              }
-            }
-            return newval;
-          });
-      if (attribute["enabled"]) {
-        delegate.enabled = true;
-      };
+      apply_attribute(this, broker, key, command_arguments, attribute);
     }
   },
 }; // CommandAttribute

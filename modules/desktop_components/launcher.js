@@ -68,16 +68,18 @@ CompletionDisplayDriverBase.definition = {
 
 function generateEntries(paths) 
 {
-  for (let [, path] in Iterator(paths)) {
-    let directory = Components
+  var file, directory, path, entries;
+
+  for ([, path] in Iterator(paths)) {
+    directory = Components
       .classes["@mozilla.org/file/local;1"]
       .createInstance(Components.interfaces.nsILocalFile);
     try {
       directory.initWithPath(path);
       if (directory.exists() && directory.isDirectory()) {
-        let entries = directory.directoryEntries;
+        entries = directory.directoryEntries;
         while (entries.hasMoreElements()) {
-          let file = entries.getNext()
+          file = entries.getNext()
             .QueryInterface(Components.interfaces.nsIFile);
           if ("WINNT" === coUtils.Runtime.os 
               && file.isFile()
@@ -299,11 +301,11 @@ coUtils.Sessions = {
 
   update: function update()
   {
-    var lines, content;
+    var lines, content, request_id, record, line;
 
     lines = [""];
-    for (let [request_id, record] in Iterator(this._records)) {
-      let line = [
+    for ([request_id, record] in Iterator(this._records)) {
+      line = [
         request_id,
         coUtils.Text.base64encode(record.command),
         record.control_port,
@@ -464,12 +466,12 @@ SessionsCompleter.definition = {
 
   _generateAvailableSession: function _generateAvailableSession()
   {
-    var records;
+    var records, request_id, record;
 
     coUtils.Sessions.load();
     records = coUtils.Sessions.getRecords();
 
-    for (let [request_id, record] in Iterator(records)) {
+    for ([request_id, record] in Iterator(records)) {
       try {
         if (this.dependency["process_manager"].processIsAvailable(record.pid)) {
           yield {
@@ -536,21 +538,24 @@ TextCompletionDisplayDriver.definition = {
 
   drive: function drive(grid, result, current_index) 
   {
-    var document, rows, i;
+    var document, rows, i, search_string,
+        completion_text, match_position;
 
     document = grid.ownerDocument;
     rows = grid.appendChild(document.createElement("rows"))
 
     for (i = 0; i < result.labels.length; ++i) {
-      let search_string = result.query.toLowerCase();
-      let completion_text = result.labels[i];
-      if ("quoted" == result.option) {
+      search_string = result.query.toLowerCase();
+      completion_text = result.labels[i];
+
+      if ("quoted" === result.option) {
         completion_text = completion_text.slice(1, -1);
       }
       if (completion_text.length > 20 && i != current_index) {
         completion_text = completion_text.substr(0, 20) + "...";
       }
-      let match_position = completion_text
+
+      match_position = completion_text
         .toLowerCase()
         .indexOf(search_string);
       this.request(
@@ -926,7 +931,9 @@ Launcher.definition = {
   "[subscribe('event/enabled'), enabled]":
   function onEnabled()
   {
-    var broker, keydown_handler, keyup_handler;
+    var broker, keydown_handler, keyup_handler, self;
+
+    self = this;
 
     this.onkeypress.enabled = true;
     this.onfocus.enabled = true;
@@ -936,15 +943,13 @@ Launcher.definition = {
 
     broker = this._broker;
 
-    keydown_handler = let (self = this) 
-      function() self.onkeydown.apply(self, arguments);
+    keydown_handler = function() self.onkeydown.apply(self, arguments);
     broker.window.addEventListener("keydown", keydown_handler, /* capture */ true);
     broker.subscribe(
       "event/disabled", 
       function() broker.window.removeEventListener("keydown", keydown_handler, true));
 
-    keyup_handler = let (self = this) 
-      function() self.onkeyup.apply(self, arguments);
+    keyup_handler = function() self.onkeyup.apply(self, arguments);
     broker.window.addEventListener("keyup", keyup_handler, /* capture */ true);
     broker.subscribe(
       "event/disabled", 
@@ -974,7 +979,8 @@ Launcher.definition = {
 
   select: function select(index)
   {
-    var completion_root, row;
+    var completion_root, row, scroll_box, box_object, scrollY,
+        first_position, last_position;
 
     if (index < -1) {
       index = -1;
@@ -1000,15 +1006,19 @@ Launcher.definition = {
         background: -moz-linear-gradient(top, #ddd, #eee);
         border-radius: 4px;
       </>.toString();
+
       try {
-        let scroll_box = completion_root.parentNode;
-        let box_object = scroll_box.boxObject
+        scroll_box = completion_root.parentNode;
+        box_object = scroll_box.boxObject
           .QueryInterface(Components.interfaces.nsIScrollBoxObject)
+
         if (box_object) {
-          let scrollY = {};
+          scrollY = {};
           box_object.getPosition({}, scrollY);
-          let first_position = row.boxObject.y - completion_root.boxObject.y;
-          let last_position = first_position - scroll_box.boxObject.height + row.boxObject.height;
+
+          first_position = row.boxObject.y - completion_root.boxObject.y;
+          last_position = first_position - scroll_box.boxObject.height + row.boxObject.height;
+
           if (first_position < scrollY.value) {
             box_object.scrollTo(0, first_position);
           } else if (last_position > scrollY.value) {
@@ -1052,25 +1062,37 @@ Launcher.definition = {
 
   invalidate: function invalidate(result) 
   {
-    let textbox = this._textbox;
+    var textbox, popup, focused_element, completion_root,
+        index, completion_text,
+        settled_length, settled_text;
+
+    textbox = this._textbox;
+
     if (textbox.boxObject.scrollLeft > 0) {
 //      this._completion.inputField.value = "";
     } else if (result.labels.length > 0) {
-      let popup = this._popup;
-      if ("closed" == popup.state || "hiding" == this._popup.state) {
-        let focused_element = popup.ownerDocument.commandDispatcher.focusedElement;
+
+      popup = this._popup;
+
+      if ("closed" === popup.state || "hiding" === this._popup.state) {
+
+        focused_element = popup.ownerDocument.commandDispatcher.focusedElement;
+
         if (focused_element && focused_element.isEqualNode(textbox.inputField)) {
-          let completion_root = this._completion_root;
+          completion_root = this._completion_root;
           popup.width = textbox.boxObject.width;
           completion_root.height = 500;
           popup.openPopup(textbox, "after_start", 0, 0, true, true);
         }
       }
-      let index = Math.max(0, this.currentIndex);
-      let completion_text = result.labels[index];
-      if (completion_text && 0 == completion_text.indexOf(result.query)) {
-        let settled_length = this._stem_text.length - result.query.length;
-        let settled_text = textbox.value.substr(0, settled_length);
+
+      index = Math.max(0, this.currentIndex);
+      completion_text = result.labels[index];
+
+      if (completion_text && 0 === completion_text.indexOf(result.query)) {
+
+        settled_length = this._stem_text.length - result.query.length;
+        settled_text = textbox.value.substr(0, settled_length);
 //        this._completion.inputField.value 
 //          = settled_text + completion_text;
       } else {

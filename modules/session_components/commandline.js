@@ -872,8 +872,8 @@ Commandline.definition = {
       });
     if (!result) {
 
-      with_ctrl = code & 1 << coUtils.Keyboard.KEY_CTRL;
-      with_nochar = code & 1 << coUtils.Keyboard.KEY_NOCHAR;
+      with_ctrl = code & 1 << coUtils.Constant.KEY_CTRL;
+      with_nochar = code & 1 << coUtils.Constant.KEY_NOCHAR;
 
       if (!with_nochar && !with_ctrl) {
         textbox = this._textbox;
@@ -899,8 +899,8 @@ Commandline.definition = {
     var with_ctrl, with_nochar, textbox,
         value, start, end;
 
-    with_ctrl = code & 1 << coUtils.Keyboard.KEY_CTRL;
-    with_nochar = code & 1 << coUtils.Keyboard.KEY_NOCHAR;
+    with_ctrl = code & 1 << coUtils.Constant.KEY_CTRL;
+    with_nochar = code & 1 << coUtils.Constant.KEY_NOCHAR;
 
     if (!with_nochar && !with_ctrl) {
       textbox = this._textbox;

@@ -320,10 +320,10 @@ function coCreateKeyMap(expression_map, destination_map)
         function(code, token) 
         {
           return code | 0x1 << { 
-              ctrl: coUtils.Keyboard.KEY_CTRL,// | coUtils.Keyboard.KEY_NOCHAR, 
-              alt: coUtils.Keyboard.KEY_ALT, 
-              shift: coUtils.Keyboard.KEY_SHIFT, 
-              meta: coUtils.Keyboard.KEY_META,// | coUtils.Keyboard.KEY_NOCHAR, 
+              ctrl: coUtils.Constant.KEY_CTRL,// | coUtils.Constant.KEY_NOCHAR, 
+              alt: coUtils.Constant.KEY_ALT, 
+              shift: coUtils.Constant.KEY_SHIFT, 
+              meta: coUtils.Constant.KEY_META,// | coUtils.Constant.KEY_NOCHAR, 
             } [token.toLowerCase()];
         }, code);
     map[code] = value.replace(/\\x([0-9a-fA-F]{1,2})/g, 
@@ -854,6 +854,7 @@ char:{event.isChar?"t":"f"}
 
     packed_code = coUtils.Keyboard
       .getPackedKeycodeFromEvent(info.event, this._alt_key);
+
     this.sendMessage("event/scan-keycode", {
       mode: info.mode, 
       code: packed_code,
@@ -869,7 +870,8 @@ char:{event.isChar?"t":"f"}
       textbox: this._textbox, 
       code: info.code,
     });
-    if (!result && !(info.code & 1 << coUtils.Keyboard.KEY_MODE)) {
+
+    if (!result && !(info.code & (1 << coUtils.Constant.KEY_MODE))) {
       this.sendMessage("command/input-with-no-remapping", info.code);
     }
   },
@@ -882,8 +884,8 @@ char:{event.isChar?"t":"f"}
     c = packed_code & 0xffffff;// event.which;
     message = this._key_map[packed_code];
     if (!message) {
-      if (packed_code & (1 << coUtils.Keyboard.KEY_CTRL | 
-                         1 << coUtils.Keyboard.KEY_ALT)) {
+      if (packed_code & (1 << coUtils.Constant.KEY_CTRL | 
+                         1 << coUtils.Constant.KEY_ALT)) {
         if (0x20 <= c && c < 0x7f) {
           return; 
         }

@@ -43,7 +43,8 @@ PluginViewer.definition = {
     </plugin>,
 
   get template()
-    ({
+  {
+    return {
       parentNode: this._panel,
       tagName: "grid", flex: 1,
       style: "overflow-y: auto;",
@@ -52,81 +53,87 @@ PluginViewer.definition = {
         childNodes: [
           {
             tagName: "row",
-            childNodes: 
-              let (module = module) // memorize "module".
-              let (info = ("info" in module) && module.info) 
-              let (depends = this._depends_map[module.id])
-              let (depended = this._depended_map[module.id])
-              let (depends_on = Object.keys(depends).map(function(key) depends[key]))
-              let (depended_by = Object.keys(depended).map(function(key) depended[key]))
-              [
-                {
-                  tagName: "checkbox",
-                  align: "top",
-                  style: "font-size: 1.4em;",
-                  onconstruct: let (self = this) function()
-                    {
-                      this.setAttribute("checked", module.enabled);
-                      self._broker.subscribe("event/dependencies-updated",
-                        function() 
-                        {
-                          var depends, depended, depends_on, depends_by, disabled;
-                          this.setAttribute("checked", module.enabled);
-
-                          depends = self._depends_map[module.id];
-                          depended = self._depended_map[module.id];
-                          depends_on = Object.keys(depends).map(function(key) depends[key]);
-                          depended_by = Object.keys(depended).map(function(key) depended[key]);
-
-                          disabled = module.enabled ? 
-                            depended_by.some(function(module) module.enabled):
-                            depends_on.some(function(module) !module.enabled);
-
-                          this.setAttribute("disabled", disabled);
-                        }, this, this.id);
-                    },
-                  disabled: module.enabled ? 
-                    depended_by.some(function(module) module.enabled):
-                    depends_on.some(function(module) !module.enabled),
-                  listener: {
-                    type: "command",
-                    handler: let (self = this) 
-                      function(event) self._setState(module, this)
-                  }
-                },
-                { 
-                  tagName: "label", 
-                  //className: "text-link",
-                  style: "font-size: 1.4em; font-weight: bold;",
-                  value: info..name.toString(),
-                },
-                { 
-                  tagName: "label", 
-                  style: "font-size: 1.4em; font-weight: bold;",
-                  value: info..version.toString() 
-                },
-                { 
-                  tagName: "vbox", 
-                  childNodes: [
-                    {
-                      tagName: "label",
-                      value: info..description.toString(),
-                    },
-                    {
-                      tagName: "label",
-                      value: _("depends on: ") + depends_on.map(function(module) module.info..name, this).join("/"),
-                    },
-                    {
-                      tagName: "label",
-                      value: _("depended by: ") + depended_by.map(function(module) module.info..name, this).join("/"),
-                    },
-                  ]
-                },
-              ],
-          } for each (module in this._modules)
+            childNodes: this._getRowTemplateFromModule(module),
+          } for ([, module] in Iterator(this._modules))
         ]
       }
-    }),
+    }
+  },
+
+  _getRowTemplateFromModule: function _getRowTemplateFromModule(module)
+  {
+    var info = ("info" in module) && module.info,
+        depends = this._depends_map[module.id],
+        depended = this._depended_map[module.id],
+        depends_on = Object.keys(depends).map(function(key) depends[key]),
+        depended_by = Object.keys(depended).map(function(key) depended[key])
+        self = this;
+
+    return [
+      {
+        tagName: "checkbox",
+        align: "top",
+        style: "font-size: 1.4em;",
+
+        onconstruct: function()
+          {
+            this.setAttribute("checked", module.enabled);
+            self._broker.subscribe("event/dependencies-updated",
+              function() 
+              {
+                var depends, depended, depends_on, depends_by, disabled;
+                this.setAttribute("checked", module.enabled);
+
+                depends = self._depends_map[module.id];
+                depended = self._depended_map[module.id];
+                depends_on = Object.keys(depends).map(function(key) depends[key]);
+                depended_by = Object.keys(depended).map(function(key) depended[key]);
+
+                disabled = module.enabled ? 
+                  depended_by.some(function(module) module.enabled):
+                  depends_on.some(function(module) !module.enabled);
+
+                this.setAttribute("disabled", disabled);
+              }, this, this.id);
+          },
+        disabled: module.enabled ? 
+          depended_by.some(function(module) module.enabled):
+          depends_on.some(function(module) !module.enabled),
+        listener: {
+          type: "command",
+          handler: function(event) self._setState(module, this)
+        }
+      },
+      { 
+        tagName: "label", 
+        //className: "text-link",
+        style: "font-size: 1.4em; font-weight: bold;",
+        value: info..name.toString(),
+      },
+      { 
+        tagName: "label", 
+        style: "font-size: 1.4em; font-weight: bold;",
+        value: info..version.toString() 
+      },
+      { 
+        tagName: "vbox", 
+        childNodes: [
+          {
+            tagName: "label",
+            value: info..description.toString(),
+          },
+          {
+            tagName: "label",
+            value: _("depends on: ") + depends_on.map(function(module) module.info..name, this).join("/"),
+          },
+          {
+            tagName: "label",
+            value: _("depended by: ") + depended_by.map(function(module) module.info..name, this).join("/"),
+          },
+        ]
+      },
+    ];
+  },
 
   "[persistable] enabled_when_startup": true,
 

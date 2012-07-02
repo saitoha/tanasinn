@@ -160,6 +160,7 @@ Desktop.definition = {
 
     this.onShutdown.enabled = true;
     this.getDesktopFromWindow.enabled = true;
+
     root_element = this.window.document
       .documentElement
       .appendChild(this.window.document.createElement("box"));

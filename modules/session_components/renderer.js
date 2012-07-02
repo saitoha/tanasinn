@@ -484,6 +484,7 @@ Layer.definition = {
       {
         parentNode: "#tanasinn_center_area",
         tagName: "html:canvas",
+        style: "position: absolute",
         id: id,
         dir: "ltr",
       })[id];

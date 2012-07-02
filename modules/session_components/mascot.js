@@ -47,13 +47,22 @@ Mascot.definition = {
       parentNode: "#tanasinn_resizer_topright",
       //parentNode: "#tanasinn_outer_chrome",
       tagName: "box",
-      id: "tanasinn_cover_layer",
-      style: <>
-        background: url('{this.getMascotImagePath()}'); 
-      </>,
+      id: "tanasinn_mascot_layer",
+      style: "position: fixed;",
+      childNodes: [
+        {
+          tagName: "image",
+          src: this.getMascotImagePath(), 
+          style: <>
+            position: absolute;
+            margin-top: -62px;
+            margin-left: -80px;
+          </>,
+        },
+      ],
     }),
 
-  "[persistable] enabled_when_startup": false,
+  "[persistable] enabled_when_startup": true,
 
   "[persistable] mascot_image_file": "images/mascot.svg",
 
@@ -173,7 +182,7 @@ Cover.definition = {
     return coUtils.File.getURLSpec(file);
   },
 
-} // class Mascot
+} // class Cover
 
 
 /**

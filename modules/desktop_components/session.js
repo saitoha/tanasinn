@@ -46,7 +46,7 @@
  * @Trait Environment
  *
  */
-let Environment = new Trait();
+var Environment = new Trait();
 Environment.definition = {
 
 // public properties
@@ -54,33 +54,43 @@ Environment.definition = {
   /** @property bin_path */
   get bin_path()
   {
-    let broker = this._broker;
+    var broker;
+
+    broker = this._broker;
     return broker.bin_path;
   },
 
   set bin_path(value)
   {
-    let broker = this._broker;
+    var broker;
+
+    broker = this._broker;
     broker.bin_path = value;
   },
 
   /** @property runtime_path */
   get runtime_path()
   {
-    let broker = this._broker;
+    var broker;
+
+    broker = this._broker;
     return broker.runtime_path;
   },
 
   set runtime_path(value)
   {
-    let broker = this._broker;
+    var broker;
+
+    broker = this._broker;
     broker.runtime_path = value;
   },
 
   /** @property search_path */
   get search_path()
   {
-    let broker = this._broker;
+    var broker;
+
+    broker = this._broker;
     return this._search_path || [ 
       "modules/shared_components",
       "modules/session_components",
@@ -105,7 +115,7 @@ Environment.definition = {
 /**
  * @trait RouteKeyEvents
  */
-let RouteKeyEvents = new Trait()
+var RouteKeyEvents = new Trait()
 RouteKeyEvents.definition = {
 
   "[subscribe('event/hotkey-double-shift'), enabled]":
@@ -280,7 +290,7 @@ Session.definition = {
     if (coUtils.Runtime.app_name.match(/tanasinn/)) {
       this.window.close(); // close window
 
-      let application = Components
+      var application = Components
         .classes["@mozilla.org/fuel/application;1"]
         .getService(Components.interfaces.fuelIApplication);
       application.quit();

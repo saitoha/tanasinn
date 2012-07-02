@@ -69,21 +69,26 @@ BottomPanel.definition = {
             width: 0,
             listener: {
               type: "select",
-              handler: let (self = this) function(event) 
+              context: this,
+              handler: function(event) 
               {
-                var panel, tab, node;
+                var panel, tab, node, target;
 
-                panel = event.target.selectedPanel;
-                tab = this.selectedTab;
+                target = event.target;
 
-                for ([, node] in Iterator(this.tabs.childNodes)) {
+                panel = target.selectedPanel;
+                tab = target.parentNode.selectedTab;
+
+                for ([, node] in Iterator(target.parentNode.tabs.childNodes)) {
                   node.style.color = "#777";
                   node.style.weight = "normal";
                 }
+
                 tab.style.color = "black";
                 tab.style.weight = "bold";
+
                 if (panel) {
-                  self.sendMessage("panel-selected/" + panel.id, panel);
+                  this.sendMessage("panel-selected/" + panel.id, panel);
                 }
               },
             },

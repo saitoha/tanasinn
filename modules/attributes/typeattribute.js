@@ -22,6 +22,49 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+function apply_attribute(self, attribute, key)
+{
+  var type_signature, types, handler, delegate;
+
+  [type_signature] = attribute["type"];
+
+  types = type_signature
+    .split(" -> ")
+    .map(function(type_name) ConceptContext[type_name]);
+
+  handler = self[key];
+
+  delegate = self[key] = function() 
+  {
+    var args, result;
+
+    args = Array.slice(arguments);
+    if (args.length !== types.length - 1) {
+      coUtils.Debug.reportError(
+        _("Invalid argument length detected. %s.%s (%s), args.length == %d."), 
+        self.id, key, type_signature, args.length);
+    }
+    args.forEach(function(arg, index)
+      {
+        if (types[index] && !types[index](arg)) {
+          coUtils.Debug.reportError(
+            _("Ill-typed argument detected. %s.%s (%d of %s) - %s."), 
+            self.id, key, index, type_signature, arg);
+        } 
+      });
+
+    result = handler.apply(self, arguments);
+    if (types[args.length] && !types[args.length](result)) {
+      coUtils.Debug.reportError(
+        _("Ill-typed result value detected. %s.%s (%s) - %s."), 
+        self.id, key, type_signature, result);
+    } 
+    return result;
+  };
+
+  delegate.id = handler.id || [self.id, key].join(".");
+  delegate.description = handler.description || attribute.description;
+}
 
 /**
  * @trait TypeAttribute
@@ -66,50 +109,21 @@ TypeAttribute.definition = {
   initialize: function initialize(broker) 
   {
     broker.subscribe("@event/broker-started", function(broker) {
+
+      var attributes, key, attribute;
+
       if (!broker.debug_flag) {
         return;
       }
-      let attributes = this.__attributes;
-      let key;
+
+      attributes = this.__attributes;
+
       for (key in attributes) {
-        let attribute = attributes[key];
+        attribute = attributes[key];
         if (!attribute["type"]) {
           continue;
         }
-        let [type_signature] = attribute["type"];
-        let types = type_signature
-          .split(" -> ")
-          .map(function(type_name) ConceptContext[type_name]);
-
-        let handler = this[key];
-        let delegate = this[key] = let (self = this) function() 
-        {
-          var args, result;
-
-          args = Array.slice(arguments);
-          if (args.length != types.length - 1) {
-            coUtils.Debug.reportError(
-              _("Invalid argument length detected. %s.%s (%s), args.length == %d."), 
-              self.id, key, type_signature, args.length);
-          }
-          args.forEach(function(arg, index) {
-            if (types[index] && !types[index](arg)) {
-              coUtils.Debug.reportError(
-                _("Ill-typed argument detected. %s.%s (%d of %s) - %s."), 
-                self.id, key, index, type_signature, arg);
-            } 
-          })
-
-          result = handler.apply(self, arguments);
-          if (types[args.length] && !types[args.length](result)) {
-            coUtils.Debug.reportError(
-              _("Ill-typed result value detected. %s.%s (%s) - %s."), 
-              self.id, key, type_signature, result);
-          } 
-          return result;
-        };
-        delegate.id = handler.id || [this.id, key].join(".");
-        delegate.description = handler.description || attribute.description;
+        apply_attribute(this, attribute, key);
       }
     }, this);
   }, // initialize

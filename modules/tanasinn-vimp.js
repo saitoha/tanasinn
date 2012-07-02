@@ -168,7 +168,9 @@ try {
      * Hooks "<C-i>" and "gF" key mappings and runs "g:tanasinneditorcommand" 
      * or "g:tanasinnviewsourcecommand", instead of default "editor" option.
      */
-    editor.editFileExternally = let (default_func = editor.editFileExternally) function (path) 
+    var default_func = editor.editFileExternally;
+
+    editor.editFileExternally = function (path) 
     {
       var editor_command, viewsource_command, desktop, complete, command, thread;
 

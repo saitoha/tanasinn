@@ -156,7 +156,8 @@ DragCopy.definition = {
   "[listen('dragstart', '#tanasinn_content'), pnp]":
   function ondragstart(event)
   {
-    var screen, column, x, y, position, result;
+    var screen, column, x, y, position, result,
+        start_column, end_column;
 
     if (null !== this._mouse_mode) {
       return;
@@ -171,17 +172,18 @@ DragCopy.definition = {
     result = this.request("get/selection-info");
 
     if (result) {
-      let {start, end, is_rectangle} = result;
       if (start <= position && position < end) {
-        if (is_rectangle) {
-          let start_column = start % column;
-          let end_column = end % column;
+        if (result.is_rectangle) {
+
+          start_column = result.start % column;
+          end_column = result.end % column;
+
           if ((start_column <= x && x <= end_column) 
            || (start_column >= x && x >= end_column)) {
-            this._dragCopy(event, start, end, is_rectangle);
+            this._dragCopy(event, result.start, result.end, result.is_rectangle);
           }
         } else {
-          this._dragCopy(event, start, end, is_rectangle);
+          this._dragCopy(event, result.start, result.end, result.is_rectangle);
         }
       }
     }

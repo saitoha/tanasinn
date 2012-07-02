@@ -39,8 +39,14 @@ WindowWatcher.definition = {
   "[subscribe('@event/broker-started'), enabled]": 
   function onSessionStarted(broker) 
   {
+    var dom;
+
+    dom = {
+      window: this.request("get/root-element").ownerDocument.defaultView,
+    };
+
     this.sendMessage("command/add-domlistener", {
-      target: broker.window,
+      target: dom.window,
       type: "resize",
       context: this,
       handler: this.onresize,
@@ -48,7 +54,7 @@ WindowWatcher.definition = {
     });
 
     this.sendMessage("command/add-domlistener", {
-      target: broker.window,
+      target: dom.window,
       type: "close",
       context: this,
       handler: this.onclose,
@@ -56,7 +62,7 @@ WindowWatcher.definition = {
     });
 
     this.sendMessage("command/add-domlistener", {
-      target: broker.window,
+      target: dom.window,
       type: "MozMagnifyGesture",
       context: this,
       handler: this.onMagnifyGesture,
@@ -65,7 +71,7 @@ WindowWatcher.definition = {
     });
 
     this.sendMessage("command/add-domlistener", {
-      target: broker.window,
+      target: dom.window,
       type: "MozSwipeGesture",
       context: this,
       handler: this.onSwipeGesture,
@@ -74,7 +80,7 @@ WindowWatcher.definition = {
     });
 
     this.sendMessage("command/add-domlistener", {
-      target: broker.window,
+      target: dom.window,
       type: "MozRotateGesture",
       context: this,
       handler: this.onRotateGesture,
@@ -90,13 +96,13 @@ WindowWatcher.definition = {
     this.sendMessage("command/remove-domlistener", this.id);
   },
 
-  onRotateGesture: function onSwipeGesture(event) 
+  onRotateGesture: function onRotateGesture(event) 
   {
-    var origninal_target, relation, broker;
+    var origninal_target, relation;
 
-    broker = this._broker;
     original_target = event.explicitOriginalTarget;
-    relation = broker.root_element.compareDocumentPosition(original_target);
+    relation = this.request("get/root-element")
+      .compareDocumentPosition(original_target);
     if ((relation & original_target.DOCUMENT_POSITION_CONTAINED_BY)) {
       event.preventDefault();
       event.stopPropagation();
@@ -107,13 +113,13 @@ WindowWatcher.definition = {
 
   onSwipeGesture: function onSwipeGesture(event) 
   {
-    var origninal_target, relation, broker;
+    var origninal_target, relation;
 
-    broker = this._broker;
     event.preventDefault();
     event.stopPropagation();
     original_target = event.explicitOriginalTarget;
-    relation = broker.root_element.compareDocumentPosition(original_target);
+    relation = this.request("get/root-element")
+      .compareDocumentPosition(original_target);
     if ((relation & original_target.DOCUMENT_POSITION_CONTAINED_BY)) {
       this.sendMessage("event/swipe-gesture", event.direction);
     }
@@ -122,11 +128,11 @@ WindowWatcher.definition = {
 
   onMagnifyGesture: function onMagnifyGesture(event) 
   {
-    var origninal_target, relation, broker;
+    var origninal_target, relation;
 
-    this._broker;
     original_target = event.explicitOriginalTarget;
-    relation = broker.root_element.compareDocumentPosition(original_target);
+    relation = this.request("get/root-element")
+      .compareDocumentPosition(original_target);
     if ((relation & original_target.DOCUMENT_POSITION_CONTAINED_BY)) {
       this.sendMessage("event/magnify-gesture", event.delta);
       event.preventDefault();

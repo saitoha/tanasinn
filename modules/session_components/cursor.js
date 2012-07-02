@@ -51,15 +51,12 @@ Cursor.definition = {
 
   /** UI template */
   get template() 
-    let (renderer = this.dependency["renderer"])
-    let (screen = this.dependency["screen"])
     ({
       parentNode: "#tanasinn_center_area",
       tagName: "html:canvas",
       id: "cursor_canvas",
       MozTransitionProperty: "opacity",
-      width: renderer.char_width * screen.width,
-      height: renderer.line_height * screen.height,
+      style: "position: absolute;",
     }),
 
   "[persistable] enabled_when_startup": true,
@@ -84,11 +81,11 @@ Cursor.definition = {
  
   /** Installs itself. */
   "[install]": 
-  function install(session) 
+  function install(broker) 
   {
     /** Create cursor element. */
     var {cursor_canvas} 
-      = session.uniget("command/construct-chrome", this.template);
+      = this.request("command/construct-chrome", this.template);
 
     this._canvas = cursor_canvas;
     this._context = this._canvas.getContext("2d");
@@ -99,13 +96,14 @@ Cursor.definition = {
     // subscribe some events.
     //
     // initial update
+    this.onFirstFocus();
     this.update();
     this._prepareBlink();
   },
 
   /** Uninstalls itself. */
-  "[uninstall]":
-  function uninstall(session) 
+  "[subscribe('uninstall/cursor'), enabled]":
+  function uninstall(broker) 
   {
     if (null !== this._timer) {
       this._timer.cancel();
@@ -117,6 +115,18 @@ Cursor.definition = {
     }
     this._context = null;
     this._initial_color = null;
+  },
+
+  "[subscribe('@command/focus'), pnp]":
+  function onFirstFocus()
+  {
+    var renderer, screen;
+
+    renderer = this.dependency["renderer"];
+    screen = this.dependency["screen"];
+
+    this._canvas.width = renderer.char_width * screen.width;
+    this._canvas.height = renderer.line_height * screen.height;
   },
 
   "[subscribe('sequence/sm/33'), pnp]":
@@ -153,7 +163,7 @@ Cursor.definition = {
     var message, color;
 
     // parse arguments.
-    if ("?" == value) {
+    if ("?" === value) {
       color = this.color;
       color = "rgb:" + color.substr(1, 2) 
             + "/" + color.substr(3, 2) 
@@ -280,6 +290,7 @@ Cursor.definition = {
   function onBlinkingModeChanged(blink) 
   {
     this._blink = blink;
+
     if (blink) {
       this._prepareBlink();
     } else {
@@ -328,6 +339,7 @@ Cursor.definition = {
 
     screen = this.dependency["screen"];
     cursor_state = this.dependency["cursorstate"];
+
     is_wide = screen.currentCharacterIsWide; // take care, it may be NULL!
 
     this._setVisibility(true);

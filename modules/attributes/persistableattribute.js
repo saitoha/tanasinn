@@ -63,15 +63,20 @@ PersistableAttribute.definition = {
 
       attributes = this.__attributes;
       keys = Object.getOwnPropertyNames(attributes)
-        .filter(function(key) {
-          if (key in attributes) {
-            let attribute = attributes[key];
-            if ("persistable" in attribute) {
-              return attribute["persistable"];
+        .filter(function(key) 
+          {
+            var attribute;
+
+            if (key in attributes) {
+
+              attribute = attributes[key];
+
+              if ("persistable" in attribute) {
+                return attribute["persistable"];
+              }
             }
-          }
-          return undefined;
-        });
+            return undefined;
+          });
 
       broker.subscribe(
         "command/load-persistable-data", 
@@ -105,9 +110,12 @@ PersistableAttribute.definition = {
     if ("__attributes" in this) { 
       attributes = this.__attributes;
       keys = keys || Object.getOwnPropertyNames(attributes)
-        .filter(function(key) {
+        .filter(function(key)
+        {
+          var attribute;
+
           if (key in attributes) {
-            let attribute = attributes[key];
+            attribute = attributes[key];
             if ("persistable" in attribute) {
               return attribute["persistable"];
             }
@@ -117,9 +125,13 @@ PersistableAttribute.definition = {
 
       keys.forEach(function(key)
       {
-        let path = [this.id, key].join(".");
+        var path, value;
+
+        path = [this.id, key].join(".");
+
         try {
-          let value = context[path];
+
+          value = context[path];
           if (undefined !== value) {
             this[key] = value;
           }
@@ -142,9 +154,14 @@ PersistableAttribute.definition = {
       attributes = this.__attributes;
       if (!keys) {
         keys = Object.getOwnPropertyNames(attributes)
-          .filter(function(key) {
+          .filter(function(key)
+          {
+            var attribute;
+
             if (key in attributes) {
-              let attribute = attributes[key];
+
+              attribute = attributes[key];
+
               if ("persistable" in attribute) {
                 return attribute["persistable"];
               }
@@ -155,9 +172,11 @@ PersistableAttribute.definition = {
 
       keys.forEach(function(key)
       {
+        var path;
+
         try {
           if (this[key] !== this.__proto__[key] || Array.isArray(this[key])) {
-            let path = [this.id, key].join(".");
+            path = [this.id, key].join(".");
             context[path] = this[key];
             context[path + ".default"] = this.__proto__[key];
           }
@@ -182,9 +201,12 @@ PersistableAttribute.definition = {
       attributes = this.__attributes;
       if (!keys) {
         keys = Object.getOwnPropertyNames(attributes)
-          .filter(function(key) {
+          .filter(function(key)
+          {
+            var attribute;
+
             if (key in attributes) {
-              let attribute = attributes[key];
+              attribute = attributes[key];
               if ("persistable" in attribute) {
                 return attribute["persistable"];
               }
@@ -195,14 +217,21 @@ PersistableAttribute.definition = {
 
       keys.forEach(function(key)
       {
-        let path = [this.id, key].join(".");
+        var path, self;
+
+        self = this;
+
+        path = [this.id, key].join(".");
+
         try {
-          context.__defineGetter__(path, let (self = this) function() {
-            return self[key];
-          });
-          context.__defineSetter__(path, let (self = this) function(value) {
-            self[key] = value;
-          });
+          context.__defineGetter__(path, function()
+            {
+              return self[key];
+            });
+          context.__defineSetter__(path, function(value)
+            {
+              self[key] = value;
+            });
         } catch (e) {
           coUtils.Debug.reportError(e);
           coUtils.Debug.reportError(
@@ -226,3 +255,4 @@ function main(target_class)
   target_class.mix(PersistableAttribute);
 }
 
+// EOF

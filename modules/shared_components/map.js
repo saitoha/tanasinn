@@ -601,7 +601,7 @@ NMapCommands.definition = {
     pattern = /^\s*(\S+)\s+(.+)\s*$/;
     match = arguments_string.match(pattern);
 
-    if (!match) {
+    if (null === match) {
       return {
         success: false,
         message: _("Failed to parse given commandline code."),
@@ -632,7 +632,7 @@ NMapCommands.definition = {
     pattern = /^\s*(\S+)\s+(.+)\s*$/;
     match = arguments_string.match(pattern);
 
-    if (!match) {
+    if (null === match) {
       return {
         success: false,
         message: _("Failed to parse given commandline code."),
@@ -663,7 +663,7 @@ NMapCommands.definition = {
     pattern = /^\s*(\S+)\s*$/;
     match = arguments_string.match(pattern);
 
-    if (!match) {
+    if (null === match) {
       return {
         success: false,
         message: _("Failed to parse given commandline code."),
@@ -697,7 +697,7 @@ CMapCommands.definition = {
     pattern = /^\s*(\S+)\s+(.+)\s*$/;
     match = arguments_string.match(pattern);
 
-    if (!match) {
+    if (null === match) {
       return {
         success: false,
         message: _("Failed to parse given commandline code."),
@@ -728,7 +728,7 @@ CMapCommands.definition = {
     pattern = /^\s*(\S+)\s+(.+)\s*$/;
     match = arguments_string.match(pattern);
 
-    if (!match) {
+    if (null === match) {
       return {
         success: false,
         message: _("Failed to parse given commandline code."),
@@ -759,7 +759,7 @@ CMapCommands.definition = {
     pattern = /^\s*(\S+)\s*$/;
     match = arguments_string.match(pattern);
 
-    if (!match) {
+    if (null === match) {
       return {
         success: false,
         message: _("Failed to parse given commandline code."),

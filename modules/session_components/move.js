@@ -50,10 +50,6 @@ MoveShortcut.definition = {
   "[install]":
   function install(session) 
   {
-    this.left.enabled = true;
-    this.down.enabled = true;
-    this.up.enabled = true;
-    this.right.enabled = true;
   },
   
   /** Uninstalls itself.
@@ -62,16 +58,12 @@ MoveShortcut.definition = {
   "[uninstall]":
   function uninstall(session) 
   {
-    this.left.enabled = false;
-    this.down.enabled = false;
-    this.up.enabled = false;
-    this.right.enabled = false;
   },
 
   /** Moves window to right. 
    *  @param {Object} A shortcut information object.
    */
-  "[command('left'), nmap('<M-h>', '<C-S-h>'), _('Move window to left')]":
+  "[command('left'), nmap('<M-h>', '<C-S-h>'), _('Move window to left'), pnp]":
   function left(info)
   {
     this.sendMessage("command/move-by", [-this.step, 0]);
@@ -81,7 +73,7 @@ MoveShortcut.definition = {
   /** Moves window down. 
    *  @param {Object} A shortcut information object.
    */
-  "[command('down'), nmap('<M-j>', '<C-S-j>'), _('Move window down')]":
+  "[command('down'), nmap('<M-j>', '<C-S-j>'), _('Move window down'), pnp]":
   function down(info)
   {
     this.sendMessage("command/move-by", [0, this.step]);
@@ -91,7 +83,7 @@ MoveShortcut.definition = {
   /** Moves window up. 
    *  @param {Object} A shortcut information object.
    */
-  "[command('up'), nmap('<M-k>', '<C-S-k>'), _('Move window up')]":
+  "[command('up'), nmap('<M-k>', '<C-S-k>'), _('Move window up'), pnp]":
   function up(info)
   {
     this.sendMessage("command/move-by", [0, -this.step]);
@@ -101,7 +93,7 @@ MoveShortcut.definition = {
   /** Moves window to right. 
    *  @param {Object} A shortcut information object.
    */
-  "[command('right'), nmap('<M-l>', '<C-S-l>'), _('Move window to right')]":
+  "[command('right'), nmap('<M-l>', '<C-S-l>'), _('Move window to right'), pnp]":
   function right(info)
   {
     this.sendMessage("command/move-by", [this.step, 0]);

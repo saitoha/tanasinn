@@ -73,17 +73,18 @@ EncoderMenu.definition = {
           childNodes: this.sendMessage("get/encoders").map(
             function getEncoders(information) 
             {
+              var charset = information.charset;
+
               return {
                 tagName: "menuitem",
                 type: "radio",
                 label: information.title,
                 name: "encoding",
-                checked: encoder_scheme == information.charset,
+                checked: encoder_scheme === information.charset,
                 listener: {
                   type: "command", 
                   context: this,
-                  handler: let (encoding = information.charset)
-                    function() this._onChange(encoding),
+                  handler: function() this._onChange(charset),
                 }
               };
             }, this),
@@ -152,6 +153,8 @@ DecoderMenu.definition = {
         tagName: "menupopup",
         childNodes: decoders.map(function(information) 
         { 
+          var charset = information.charset;
+
           return {
             tagName: "menuitem",
             type: "radio",
@@ -161,8 +164,7 @@ DecoderMenu.definition = {
             listener: {
               type: "command", 
               context: this,
-              handler: let (encoding = information.charset)
-                function() this._onChange(encoding),
+              handler: function() this._onChange(encoding),
             }
           }
         }, this),

@@ -22,9 +22,9 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-const CO_TRACE_INPUT = 1;
-const CO_TRACE_OUTPUT = 2;
-const CO_TRACE_CONTROL = 3;
+var CO_TRACE_INPUT = 1;
+var CO_TRACE_OUTPUT = 2;
+var CO_TRACE_CONTROL = 3;
 
 /**
  *
@@ -54,36 +54,21 @@ Tracer.definition = {
   "[subscribe('command/debugger-trace-on'), enabled]":
   function enable() 
   {
-    var sequences, i;
+    var sequences, i, information;
 
     this.onBeforeInput.enabled = true;
 
+    // get sequence handlers
     sequences = this.sendMessage("get/sequences/" + this._mode);
+
+    // backup them
     this._backup_sequences = sequences;
 
     for (i = 0; i < sequences.length; ++i) {
 
-      let information = sequences[i];
-      try {
-        let {expression, handler, context} = information;
-        let delegate = function()
-        {
-          handler.apply(this, arguments);
-          let info = {
-            type: CO_TRACE_CONTROL,
-            name: handler.name, 
-            value: Array.slice(arguments),
-          };
-          return info;
-        };
-        this.sendMessage("command/add-sequence", {
-          expression: expression, 
-          handler: delegate, 
-          context: context,
-        });
-      } catch (e) {
-        coUtils.Debug.reportError(e);
-      }
+      information = sequences[i];
+
+      this._registerControlHandler(information);
     }
   },
 
@@ -114,6 +99,36 @@ Tracer.definition = {
     this.sendMessage(
       "command/debugger-trace-sequence", 
       [info, undefined]); 
+  },
+
+  _registerControlHandler: function _registerControlHandler(information)
+  {
+    var handler, delegate;
+
+    handler = information.handler;
+
+    try {
+
+      delegate = function()
+      {
+        handler.apply(this, arguments);
+
+        return {
+          type: CO_TRACE_CONTROL,
+          name: handler.name, 
+          value: Array.slice(arguments),
+        };
+      };
+
+      this.sendMessage("command/add-sequence", {
+        expression: information.expression, 
+        handler: delegate, 
+        context: information.context,
+      });
+
+    } catch (e) {
+      coUtils.Debug.reportError(e);
+    }
   },
 
 }; // class Tracer
@@ -156,7 +171,7 @@ Hooker.definition = {
     buffer = this._buffer;
 
     // drain queued actions.
-    while (buffer.length) {
+    while (0 !== buffer.length) {
       action = buffer.shift();
       result = action();
       this.sendMessage("command/debugger-trace-sequence", result);
@@ -187,7 +202,12 @@ Hooker.definition = {
   "[subscribe('command/debugger-trace-on'), enabled]":
   function set() 
   {
-    var parser, buffer, self, action, result;
+    var parser, buffer, self, action, result, sequence;
+
+    function make_action(sequence, action)
+    {
+      buffer.push(function() [action(), sequence]);
+    }
 
     if (!this._hooked) {
       parser = this.dependency["parser"];
@@ -200,8 +220,8 @@ Hooker.definition = {
           this.sendMessage("command/flow-control", false);
         }
         for (action in parser.__proto__.parse.call(parser, data)) {
-          let sequence = parser._scanner.getCurrentToken();
-          buffer.push(let (action = action) function() [action(), sequence]);
+          sequence = parser._scanner.getCurrentToken();
+          make_action(sequence, action);
         }
         if (!self._step_mode) {
           while (buffer.length) {
@@ -372,7 +392,7 @@ Debugger.definition = {
 
     template.parentNode = item;
 
-    let {
+    var {
       tanasinn_trace,
       tanasinn_debugger_attach,
       tanasinn_debugger_break,
@@ -420,17 +440,19 @@ Debugger.definition = {
     }
     this._timer = coUtils.Timer.setInterval(function() 
     {
-      var updated, queue, trace_box;
-
-      updated = false;
-      queue = this._queue;
+      var updated = false,      // update flag
+          queue = this._queue,  // queue object
+          trace_box;            // trace box UI eleemnt
 
       if (!queue && this._timer) {
         this._timer.cancel();
         this._timer = null;
         return;
       }
-      update = 0 !== queue.length;
+
+      // detect changes
+      updated = 0 !== queue.length;
+
       while (0 !== queue.length) {
         this.update(queue.shift());
       }

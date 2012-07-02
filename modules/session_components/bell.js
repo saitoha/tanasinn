@@ -25,7 +25,10 @@
 /**
  *  @class Bell
  */
-var Bell = new Class().extends(Plugin);
+var Bell = new Class().extends(Plugin)
+                      .depends("renderer")
+                      .depends("screen")
+                      ;
 Bell.definition = {
 
   get id()
@@ -45,6 +48,7 @@ Bell.definition = {
       parentNode: "#tanasinn_center_area",
       tagName: "html:canvas",
       id: "tanasinn_visual_bell",
+      style: "position: absolute",
       opacity: 0.0,
       margin: "-20px",
       MozTransitionProperty: "opacity",
@@ -69,6 +73,7 @@ Bell.definition = {
     var { tanasinn_visual_bell }
       = this.request("command/construct-chrome", this.template);
     this._cover = tanasinn_visual_bell;
+    this.onFirstFocus();
   },
 
   /** Uninstalls itself.
@@ -81,6 +86,18 @@ Bell.definition = {
       this._cover.parentNode.removeChild(this._cover);
       this._cover = null;
     }
+  },
+
+  "[subscribe('command/focus'), pnp]":
+  function onFirstFocus()
+  {
+    var renderer, screen;
+
+    renderer = this.dependency["renderer"];
+    screen = this.dependency["screen"];
+
+    this._cover.width = renderer.char_width * screen.width;
+    this._cover.height = renderer.line_height * screen.height;
   },
 
   "[subscribe('sequence/bel'), pnp]":
@@ -137,3 +154,4 @@ function main(broker)
 }
 
 
+// EOF

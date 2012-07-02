@@ -1255,17 +1255,17 @@ Viewable.definition = {
 
   getDirtyWords: function getDirtyWords() 
   {
-    var liens;
+    var liens, row, lines, info;
 
     lines = this._getCurrentViewLines();
-    for (let [row, line] in Iterator(lines)) { //this._interracedScan(lines)) {
-      for (let { codes, column, end, attr } in line.getDirtyWords()) {
+    for ([row, line] in Iterator(lines)) { //this._interracedScan(lines)) {
+      for (info in line.getDirtyWords()) {
         yield { 
-          codes: codes, 
+          codes: info.codes, 
           row: row, 
-          column: column, 
-          end: end,
-          attr: attr, 
+          column: info.column, 
+          end: info.end,
+          attr: info.attr, 
           line: line,
         };
       }

@@ -131,3 +131,4 @@ function main(broker)
   new DragMove(broker);
 }
 
+// EOF

@@ -112,7 +112,7 @@ DOMEventManager.definition = {
   {
     return function() {
       try {
-        handler.apply(context, arguments);
+        return handler.apply(context, arguments);
       } catch (e) {
         coUtils.Debug.reportError(e);
       }

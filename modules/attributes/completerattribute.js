@@ -22,6 +22,60 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+function make_managed_handler(self, handler, topic)
+{
+  var wrapped_handler;
+
+  wrapped_handler = function() 
+  {
+    return handler.apply(self, arguments);
+  };
+
+  return wrapped_handler;
+}
+
+function apply_attribute(self, broker, key, completer_name, attribute)
+{
+  var handler, wrapped_handler, id, old_onchange;
+
+  handler = self[key];
+  id = self.id + "." + key;
+
+  if (handler.id) {
+    wrapped_handler = handler;
+  } else {
+    wrapped_handler = make_managed_handler(self, handler);
+    wrapped_handler.id = id;
+    self[key] = wrapped_handler;
+  }
+  wrapped_handler.description = attribute.description;
+
+  old_onchange = wrapped_handler.onChange;
+
+  wrapped_handler.onChange = function(name, oldval, newval) 
+    {
+      if (old_onchange) {
+        old_onchange.apply(wrapped_handler, arguments);
+      }
+      if (oldval !== newval) {
+        if (newval) {
+          broker.subscribe("command/query-completion/" + completer_name, wrapped_handler);
+        } else {
+          broker.unsubscribe(wrapped_handler.id);
+        }
+      }
+      return newval;
+    }
+
+  wrapped_handler.watch("enabled", wrapped_handler.onChange);
+
+  if (attribute["enabled"]) {
+    wrapped_handler.enabled = true;
+  };
+
+}
+
+
 /**
  * @trait CompleterAttribute
  *
@@ -60,94 +114,25 @@ CompleterAttribute.definition = {
    */
   initialize: function initialize(broker) 
   {
-    var attributes, key;
+    var attributes, key, attribute, info;
 
     attributes = this.__attributes;
 
     for (key in attributes) {
-      let attribute = attributes[key];
-      if (!attribute["completer"]) {
+
+      attribute = attributes[key];
+
+      info = attribute["completer"];
+
+      if (undefined === info) {
         continue;
       }
-      let [completer_name] = attribute["completer"];
-      let handler = this[key];
-      let delegate = this[key] = handler.id ? 
-          this[key]
-        : let (self = this) function() handler.apply(self, arguments);
-      delegate.id = delegate.id || [this.id, key].join(".");
-      delegate.description = attribute.description;
-      delegate.watch("enabled", 
-        delegate.onChange = let (self = this, old_onchange = delegate.onChange) 
-          function(name, oldval, newval) 
-          {
-            if (old_onchange) {
-              old_onchange.apply(delegate, arguments);
-            }
-            if (oldval != newval) {
-              if (newval) {
-                broker.subscribe("command/query-completion/" + completer_name, delegate);
-              } else {
-                broker.unsubscribe(delegate.id);
-              }
-            }
-            return newval;
-          });
-      if (attribute["enabled"]) {
-        delegate.enabled = true;
-      };
+
+      apply_attribute(this, broker, key, info[0], attribute);
     }
   },
 };
 
-
-/**
- * @trait TypeAttribute
- *
- */
-let TypeAttribute = new Attribute("type");
-TypeAttribute.definition = {
-
-  /** constructor 
-   *  @param {EventBroker} broker Parent broker object.
-   */
-  initialize: function initialize(broker) 
-  {
-    let attributes = this.__attributes;
-    let key;
-    for (key in attributes) {
-      let attribute = attributes[key];
-      if (!attribute["type"]) {
-        continue;
-      }
-      let [completer_name] = attribute["type"];
-      let handler = this[key];
-      let delegate = this[key] = handler.id ? 
-          this[key]
-        : let (self = this) function() handler.apply(self, arguments);
-      delegate.id = delegate.id || [this.id, key].join(".");
-      delegate.description = attribute.description;
-      delegate.watch("enabled", 
-        delegate.onChange = let (self = this, old_onchange = delegate.onChange) 
-          function(name, oldval, newval) 
-          {
-            if (old_onchange) {
-              old_onchange.apply(delegate, arguments);
-            }
-            if (oldval != newval) {
-              if (newval) {
-                broker.subscribe("command/query-completion/" + completer_name, delegate);
-              } else {
-                broker.unsubscribe(delegate.id);
-              }
-            }
-            return newval;
-          });
-      if (attribute["enabled"]) {
-        delegate.enabled = true;
-      };
-    }
-  },
-};
 
 /**
  * @fn main
@@ -159,3 +144,4 @@ function main(target_class)
   target_class.mix(CompleterAttribute);
 }
 
+// EOF

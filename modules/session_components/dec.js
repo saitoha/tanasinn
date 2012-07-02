@@ -85,7 +85,7 @@ DecModeSequenceHandler.definition = {
   "[profile('vt100'), sequence('CSI ?%dh')]":
   function DECSET() 
   { // DEC Private Mode Set
-    var i, n;
+    var i, n, screen;
 
     if (0 == arguments.length) {
       coUtils.Debug.reportWarning(_("DECSET: Length of Arguments is zero. "));
@@ -124,15 +124,13 @@ DecModeSequenceHandler.definition = {
               row: this._screen.height,
             });
             
-            let (screen = this._screen) {
-              //this._screen.width = 132; // 132 column mode
-              screen.eraseScreenAll();
+            screen = this._screen;
+            screen.eraseScreenAll();
 
-              this.sendMessage("event/screen-size-changed", { 
-                column: screen.width, 
-                row: screen.height 
-              });
-            }
+            this.sendMessage("event/screen-size-changed", { 
+              column: screen.width, 
+              row: screen.height 
+            });
 
           }
           break;
@@ -445,7 +443,7 @@ DecModeSequenceHandler.definition = {
   "[profile('vt100'), sequence('CSI ?%dl')]":
   function DECRST() 
   { // DEC-Private Mode Reset
-    var i, n;
+    var i, n, screen;
 
     if (arguments.length == 0) {
       coUtils.Debug.reportWarning(_("DECRST: Length of Arguments is zero. "));
@@ -480,15 +478,13 @@ DecModeSequenceHandler.definition = {
               row: this._screen.height,
             });
             
-            let (screen = this._screen) {
-              //this._screen.width = 80; // 80 column mode
-              screen.eraseScreenAll();
+            screen = this._screen;
+            screen.eraseScreenAll();
 
-              this.sendMessage("event/screen-size-changed", { 
-                column: screen.width, 
-                row: screen.height 
-              });
-            }
+            this.sendMessage("event/screen-size-changed", { 
+              column: screen.width, 
+              row: screen.height 
+            });
 
           }
           break;

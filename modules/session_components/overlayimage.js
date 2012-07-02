@@ -132,7 +132,7 @@ OverlayImage.definition = {
   function draw(data) 
   {
     var canvas, renderer, x, y, w, h, filename,
-        pixel_x, pixel_y, pixel_w, pixe._h,
+        pixel_x, pixel_y, pixel_w, pixel_h,
         cache, image, cache_holder,
         NS_XHTML = "http://www.w3.org/1999/xhtml";
 

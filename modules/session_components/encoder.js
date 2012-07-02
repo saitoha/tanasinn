@@ -50,6 +50,7 @@ MultiEncoder.definition = {
     "multiencoder",
 
   _current_scheme: "UTF-8",
+
   _converter: null,
 
   /** constructor */
@@ -60,6 +61,7 @@ MultiEncoder.definition = {
     this._converter = Components
       .classes["@mozilla.org/intl/scriptableunicodeconverter"]
       .createInstance(Components.interfaces.nsIScriptableUnicodeConverter);
+
     converter_manager = Components
       .classes["@mozilla.org/charset-converter-manager;1"]
       .getService(Components.interfaces.nsICharsetConverterManager);
@@ -68,7 +70,9 @@ MultiEncoder.definition = {
 
     // enumerate charcter sets.
     while (encoder_list.hasMore()) {
+
       charset = encoder_list.getNext();
+
       try {
         try {
           title = converter_manager.getCharsetTitle(charset);
@@ -138,12 +142,14 @@ Encoder.definition = {
     message = coUtils
       .format(_("Input character encoding changed: [%s]."), scheme);
     this.sendMessage("command/report-status-message", message); 
+
   },
 
   "[subscribe('@event/broker-started'), enabled]": 
   function onLoad(broker) 
   {
     this._cache = {};
+
     this._encoder_map = this.sendMessage("get/encoders")
       .reduce(function(map, information) 
       {
@@ -151,11 +157,13 @@ Encoder.definition = {
         return map;
       });
     this.scheme = this.initial_scheme;
+
     broker.subscribe("change/encoder", 
       function(scheme) 
       {
         this.scheme = scheme;
       }, this)
+
     this.sendMessage("initialized/encoder", this);
   },
 
@@ -183,4 +191,4 @@ function main(broker)
 }
 
 
-
+// EOF

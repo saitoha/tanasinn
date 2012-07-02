@@ -84,8 +84,6 @@ Ime.definition = {
       this.startPolling.enabled = true;
       this.endPolling.enabled = true;
     }
-    this.oninput.enabled = true;
-    this.oncompositionupdate.enabled = true;
 
     focused_element = this.request("get/root-element")
       .ownerDocument
@@ -115,11 +113,9 @@ Ime.definition = {
     // disables session event handlers.
     this.startPolling.enabled = false;
     this.endPolling.enabled = false;
-    this.oninput.enabled = false;
-    this.oncompositionupdate.enabled = false;
   },
 
-  "[subscribe('command/input-text')]": 
+  "[subscribe('command/input-text'), pnp]": 
   function oninput(value) 
   {
     this._disableImeMode(); // closes IME input session.
@@ -150,7 +146,7 @@ Ime.definition = {
   /** compositionend event handler. 
    *  @{Event} event A event object.
    */
-  "[listen('compositionupdate', '#tanasinn_default_input')]":
+  "[listen('compositionupdate', '#tanasinn_default_input'), pnp]":
   function oncompositionupdate(event) 
   {
     this.onpoll();

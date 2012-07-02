@@ -23,6 +23,24 @@
  * ***** END LICENSE BLOCK ***** */
 
 
+function apply_attribute(self, broker, key, name, handler, expressions)
+{
+  expressions.forEach(
+    function(expression) 
+    {
+      broker.subscribe(
+        "get/sequences/" + name, 
+        function getSequences() 
+        {
+          return {
+            expression: expression,
+            handler: handler,
+            context: self,
+          };
+        }, self, id);
+    }, self);
+}
+
 /**
  * @Attribute SequenceAttribute
  *
@@ -62,34 +80,29 @@ SequenceAttribute.definition = {
    */
   initialize: function initialize(broker)
   {
-    let attributes = this.__attributes;
-    let id = this.id + "." + "__sequence";
-    let key;
+    var attributes, id, key, expressions, name, handler;
+
+    attributes = this.__attributes;
+    id = this.id + "." + "__sequence";
+
     for (key in attributes) {
-      let expressions = attributes[key]["sequence"];
+
+      expressions = attributes[key]["sequence"];
+
       if (expressions) {
-        let [name] = attributes[key]["profile"];
-        let handler = this[key];
-        expressions.forEach(
-          function(expression) 
-          {
-            broker.subscribe(
-              "get/sequences/" + name, 
-              function getSequences() 
-              {
-                return {
-                  expression: expression,
-                  handler: handler,
-                  context: this,
-                };
-              }, this, id);
-          }, this);
+
+        [name] = attributes[key]["profile"];
+        handler = this[key];
+
+        apply_attribute(this, broker, key, name, handler, expressions);
       }
     }
 
-    broker.subscribe("event/broker-stopped", function() {
-      broker.unsubscribe(id);
-    }, this, id);
+    broker.subscribe("event/broker-stopped",
+      function()
+      {
+        broker.unsubscribe(id);
+      }, this, id);
 
   },
 
@@ -99,7 +112,7 @@ SequenceAttribute.definition = {
  * @Attribute ProfileAttribute
  *
  */
-let ProfileAttribute = new Attribute("profile");
+var ProfileAttribute = new Attribute("profile");
 ProfileAttribute.definition = {
 
   get __id()
@@ -150,4 +163,4 @@ function main(target_class)
 }
 
 
-
+// EOF

@@ -390,9 +390,13 @@ SequenceParser.definition = {
   /** Construct child parsers from definition and make parser-chain. */
   append: function append(key, value, context) 
   {
-    let match = key
+    var match, code, next, accept_char, codes,
+        i, j, next_char, parser, action, index,
+        code1, code2, c;
+
+    match = key
       .match(/^(0x[0-9a-zA-Z]{2})(.*)$|^%d([\x20-\x7f]+)$|^%<Ps>([\x20-\x7f]+)$|^(.)%s$|^(%p)$|^(%c)$|^(.)$|^(.)(.+)$/);
-    let [, 
+    var [, 
       number, number2,
       char_with_param, 
       char_with_single_param,
@@ -402,10 +406,10 @@ SequenceParser.definition = {
       normal_char, first, next_chars
     ] = match;
     if (number) { // parse number
-      let code = parseInt(number, 16);
+      code = parseInt(number, 16);
       if ("%s" === number2) {
 
-        let action = function(params) 
+        function action(params) 
         {
           var data = coUtils.Text.safeConvertFromArray(params);
           return function() 
@@ -418,8 +422,8 @@ SequenceParser.definition = {
 
       } else if (number2) {
 
-        let code = parseInt(number, 16);
-        let next = this[code] = this[code] || new SequenceParser;
+        code = parseInt(number, 16);
+        next = this[code] = this[code] || new SequenceParser;
         next.append(number2, value, context);
 
       } else {
@@ -435,25 +439,26 @@ SequenceParser.definition = {
       }
     } else if (char_with_param) {
 
-      let action = function(params) 
+      function action(params) 
       {
         return function() 
         {
           return value.apply(context, params);
         };
       };
-      let accept_char = char_with_param.charCodeAt(0);
+      accept_char = char_with_param.charCodeAt(0);
 
-      let codes = [
+      codes = [
         0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 
         0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f,
         0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39,
         0x7f,
         0x3b
       ];
-      let i;
+
       for (i = 0; i < codes.length; ++i) {
-        let code = codes[i];
+
+        code = codes[i];
         if (0x30 <= code && code < 0x3a) {
           this[code] = this[code] 
                      || new ParameterParser(code - 0x30);
@@ -467,7 +472,7 @@ SequenceParser.definition = {
         if (1 === char_with_param.length) {
           this[code][accept_char] = action;
         } else if (2 === char_with_param.length) {
-          let next_char = char_with_param.charCodeAt(1);
+          next_char = char_with_param.charCodeAt(1);
           this[code][accept_char] = this[code][accept_char] 
                                  || new SequenceParser();
           this[code][accept_char][next_char] = action;
@@ -475,10 +480,11 @@ SequenceParser.definition = {
           throw coUtile.Exception(_("Cannot add handler: %s."), key);
         }
       }
-      let parser = this;
-      let j;
+
+      parser = this;
+
       for (j = 0; j < char_with_param.length - 1; ++j) {
-        let accept_char = char_with_param.charCodeAt(j);
+        accept_char = char_with_param.charCodeAt(j);
         parser = parser[accept_char] 
                = parser[accept_char] || new SequenceParser();
       }
@@ -490,27 +496,29 @@ SequenceParser.definition = {
 
     } else if (char_with_single_param) {
 
-      let action = function(params)
+      action = function(params)
       {
         return function() 
         {
           return value.apply(context, params);
         };
       };
-      for (let i = 0; i < 10; ++i) {
-        let code = 0x30 + i;
+      for (i = 0; i < 10; ++i) {
+        code = 0x30 + i;
         this[code] = this[code] || new SequenceParser(0, code);
-        let parser = this[code];
-        for (let j = 0; j < char_with_single_param.length - 1; ++j) {
-          let accept_char = char_with_single_param.charCodeAt(j);
+        parser = this[code];
+        for (j = 0; j < char_with_single_param.length - 1; ++j) {
+          accept_char = char_with_single_param.charCodeAt(j);
           parser = parser[accept_char] = new SequenceParser();
         }
         code = char_with_single_param.charCodeAt(char_with_single_param.length - 1);
         parser[code] = action;
       }
-      let parser = this;
-      for (let j = 0; j < char_with_single_param.length - 1; ++j) {
-        let accept_char = char_with_single_param.charCodeAt(j);
+
+      parser = this;
+
+      for (j = 0; j < char_with_single_param.length - 1; ++j) {
+        accept_char = char_with_single_param.charCodeAt(j);
         parser = parser[accept_char] = parser[accept_char] || new SequenceParser();
       }
       code = char_with_single_param.charCodeAt(char_with_single_param.length - 1);
@@ -518,40 +526,45 @@ SequenceParser.definition = {
 
     } else if (char_with_string) {
       // define action
-      let action = function(params) 
+      action = function(params) 
       {
-        let data = String.fromCharCode.apply(String, params);
+        var data;
+
+        data = String.fromCharCode.apply(String, params);
         return function() value.call(context, data);
       };
-      let index = char_with_string.charCodeAt(0);
+
+      index = char_with_string.charCodeAt(0);
       this[index] = new StringParser(action) // chain to string parser.
     } else if (single_char) { // parse a char.
       this[0x20] = this[0x20] || new SequenceParser();
-      for (let code = 0x21; code < 0x7f; ++code) {
-        let c = String.fromCharCode(code);
+
+      for (code = 0x21; code < 0x7f; ++code) {
+        c = String.fromCharCode(code);
         this[0x20][code] = this[code] = this[code] 
                         || function() value.call(context, c)
       }
     } else if (char_position) { // 
-      for (let code1 = 0x21; code1 < 0x7f; ++code1) {
-        let c1 = String.fromCharCode(code1);
-        for (let code2 = 0x21; code2 < 0x7f; ++code2) {
-          let c2 = String.fromCharCode(code2);
+      for (code1 = 0x21; code1 < 0x7f; ++code1) {
+        for (code2 = 0x21; code2 < 0x7f; ++code2) {
           this[code1] = this[code1] || new SequenceParser();
           this[code1][code2] = this[code1][code2] 
                             || function() value.apply(context, [code1, code2])
         }
       }
     } else if (normal_char) {
-      let code = normal_char.charCodeAt(0);
+
+      code = normal_char.charCodeAt(0);
       if ("parse" in value) {
         this[code] = value;
       } else {
         this[code] = this[code] || function() value.apply(context);
       }
     } else {
-      let code = first.charCodeAt(0);
-      let next = this[code] = this[code] || new SequenceParser;
+
+      code = first.charCodeAt(0);
+      next = this[code] = this[code] || new SequenceParser;
+
       if (!next.append) {
         next = this[code] = this[code] || new SequenceParser;
       }
@@ -941,6 +954,18 @@ Parser.definition = {
         }
       }
     }
+
+    function make_handler(codes)
+    {
+      return function()
+      {
+        var converted_codes;
+
+        converted_codes = drcs_converter.convert(codes);
+        screen.write(converted_codes);
+      };
+    }
+
     while (!scanner.isEnd) {
 
       scanner.setAnchor(); // memorize current position.
@@ -957,13 +982,7 @@ Parser.definition = {
  
         codes = this._decode(scanner);;
         if (codes.length) {
-          yield let (codes = codes) function () 
-          {
-            var converted_codes;
-
-            converted_codes = drcs_converter.convert(codes);
-            screen.write(converted_codes);
-          };
+          yield make_handler(codes);
         } else {
           if (scanner.isEnd) {
             break;

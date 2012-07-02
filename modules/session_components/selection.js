@@ -572,8 +572,10 @@ Selection.definition = {
     context = this._context;
     canvas = this._canvas;
 
-    context.clearRect(0, 0, canvas.width, canvas.height);
-    this._range = null; // clear range.
+    if (canvas && context) {
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      this._range = null; // clear range.
+    }
   },
 
   convertPixelToScreen: function convertPixelToScreen(event) 

@@ -57,17 +57,20 @@ CommandlineIme.definition = {
   _ime_input_flag: false,
 
   /** Installs plugin 
-   *  @param {Session} session A session object.
+   *  @param {Broker} broker A Broker object.
    */ 
   "[install]":
-  function install(session) 
+  function install(broker) 
   {
-    let textbox = this.dependency["commandline"].getInputField();
+    var textbox, version_comparator, focused_element;
+
+    textbox = this.dependency["commandline"].getInputField();
     textbox.style.width = "0%";
     textbox.style.imeMode = "inactive"; // disabled -> inactive
     textbox.style.border = "none"; // hide border
+
     // enables session event handlers.
-    let version_comparator = Components
+    version_comparator = Components
       .classes["@mozilla.org/xpcom/version-comparator;1"]
       .getService(Components.interfaces.nsIVersionComparator);
     if (version_comparator.compare(coUtils.Runtime.version, "10.0") <= 0)
@@ -75,12 +78,11 @@ CommandlineIme.definition = {
       this.startPolling.enabled = true;
       this.endPolling.enabled = true;
     }
-    this.oninput.enabled = true;
-    this.oncompositionupdate.enabled = true;
 
-    let document = session.window.document;
-    let focusedElement = document.commandDispatcher.focusedElement;
-    if (focusedElement && focusedElement.isEqualNode(textbox)) {
+    focused_element = this.request("get/root-element")
+      .ownerDocument.commandDispatcher.focusedElement;
+
+    if (focused_element && focused_element.isEqualNode(textbox)) {
       this.startPolling();
     }
       
@@ -92,8 +94,12 @@ CommandlineIme.definition = {
   "[uninstall]":
   function uninstall(session) 
   {
+    var textbox;
+
     this.endPolling(); // stops polling timer. 
-    let textbox = this.dependency["commandline"].getInputField();
+
+    textbox = this.dependency["commandline"].getInputField();
+
     if (null !== textbox) {
       textbox.style.width = "";
       textbox.style.imeMode = "disabled";
@@ -104,11 +110,9 @@ CommandlineIme.definition = {
     // disables session event handlers.
     this.startPolling.enabled = false;
     this.endPolling.enabled = false;
-    this.oninput.enabled = false;
-    this.oncompositionupdate.enabled = false;
   },
 
-  "[subscribe('command/input-text')]": 
+  "[subscribe('command/input-text'), pnp]": 
   function oninput(value) 
   {
     this._disableImeMode(); // closes IME input session.
@@ -150,7 +154,7 @@ CommandlineIme.definition = {
   /** compositionend event handler. 
    *  @{Event} event A event object.
    */
-  "[listen('compositionupdate', '#tanasinn_commandline')]":
+  "[listen('compositionupdate', '#tanasinn_commandline'), pnp]":
   function oncompositionupdate(event) 
   {
     this.onpoll();

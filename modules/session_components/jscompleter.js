@@ -43,7 +43,7 @@ JsCompleter.definition = {
   {
     var autocomplete_result, pattern, match,
         settled, notation, current, context, 
-        code, properties;
+        code, properties, lower_current;
 
     autocomplete_result = null; 
     pattern = /(.*?)(?:(\.|\[|\['|\[")(\w*))?$/;
@@ -52,7 +52,7 @@ JsCompleter.definition = {
     if (match) {
       [, settled, notation, current] = match;
       dom = {
-        window: this.request.get("get/root-element").ownerDocument.defaultView,
+        window: this.request("get/root-element").ownerDocument.defaultView,
       };
 
       context = new function() void (this.__proto__ = dom.window);
@@ -78,7 +78,7 @@ JsCompleter.definition = {
 
       if (true) {
         // add own property names.
-        if (null !== context && typeof context != "undefined") {
+        if (null !== context && typeof context !== "undefined") {
           Array.prototype.push.apply(
             properties, 
             Object.getOwnPropertyNames(context.__proto__)
@@ -86,10 +86,12 @@ JsCompleter.definition = {
         }
       }
 
-      properties = let (lower_current = current.toLowerCase()) 
-        properties.filter(function(key) {
-        if ("." == notation ) {
-          if ("number" == typeof key) {
+      lower_current = current.toLowerCase();
+
+      properties = properties.filter(function(key)
+      {
+        if ("." === notation ) {
+          if ("number" === typeof key) {
             // Number property after dot notation. 
             // etc. abc.13, abc.3
             return false; 
@@ -100,7 +102,7 @@ JsCompleter.definition = {
             return false; 
           }
         }
-        return -1 != String(key)
+        return -1 !== String(key)
           .toLowerCase()
           .indexOf(lower_current);
       }).sort(function(lhs, rhs) 
@@ -116,35 +118,36 @@ JsCompleter.definition = {
         query: current, 
         data: properties.map(function(key)
         {
-          var value;
+          var value, type;
 
           try {
             value = context[key];
+            type = typeof value;
           } catch (e) { }
           return {
             name: context && notation ?
-              ("string" == typeof key) ?
+              ("string" === typeof key) ?
                 (/^\["?$/.test(notation)) ?
                   <>{key.replace('"', '\\"')}"]</>
-                : ("[\'" == notation) ?
+                : ("[\'" === notation) ?
                   <>{key.replace("'", "\\'")}']</>
                 : key
               : key
             : key,
-            value: let (type = typeof value)
-                ("function" == type) ?
+            value: ("function" === type) ?
                   "[Function " + value.name + "] "
-                : ("object" == type) ? // may be null
-                  String(value)
-                : ("undefined" == type) ?
-                  "undefined"
-                : ("string" == type) ?
-                  <>"{value.replace('"', '\\"')}"</>.toString() 
-                : String(value)
+                 : ("object" === type) ? // may be null
+                   String(value)
+                 : ("undefined" === type) ?
+                   "undefined"
+                 : ("string" === type) ?
+                   <>"{value.replace('"', '\\"')}"</>.toString() 
+                 : String(value)
           };
         }),
       };
     }
+
     this.sendMessage("event/answer-completion", autocomplete_result);
   },
 

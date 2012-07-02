@@ -94,6 +94,16 @@ coUtils.Constant = {
   CURSOR_STYLE_UNDERLINE:     0x1,
   CURSOR_STYLE_BEAM:          0x2,
 
+  // 
+  // KeyCode Modifiers
+  //
+  KEY_CTRL                   : 22,
+  KEY_ALT                    : 23,
+  KEY_SHIFT                  : 24,
+  KEY_NOCHAR                 : 25,
+  KEY_META                   : 26,
+  KEY_MODE                   : 27,
+
   //
   // X11 color name definition
   //
@@ -2135,7 +2145,7 @@ coUtils.Keyboard = {
   KEY_META   : 26,
   KEY_MODE   : 27,
 
-  KEYNAME_PACKEDCODE_MAP: let (KEY_NOCHAR = 25) {
+  KEYNAME_PACKEDCODE_MAP: {
     leader      : 0x08000001,
     nmode       : 0x18000001,
     cmode       : 0x28000001,
@@ -2150,49 +2160,49 @@ coUtils.Keyboard = {
     swipedown   : 0xd0000001,
     rotateleft  : 0xe0000001,
     rotateright : 0xf0000001,
-    space       : ("Darwin" == coUtils.Runtime.os) << KEY_NOCHAR | 0x0020,
-    sp          : ("Darwin" == coUtils.Runtime.os) << KEY_NOCHAR | 0x0020,
-    bs          : 0x1 << KEY_NOCHAR | 0x0008, 
-    backspace   : 0x1 << KEY_NOCHAR | 0x0008, 
-    tab         : 0x1 << KEY_NOCHAR | 0x0009, 
-    enter       : 0x1 << KEY_NOCHAR | 0x000d,
-    return      : 0x1 << KEY_NOCHAR | 0x000d,
-    cr          : 0x1 << KEY_NOCHAR | 0x000d,
-    lf          : 0x1 << KEY_NOCHAR | 0x000a,
-    escape      : 0x1 << KEY_NOCHAR | 0x001b,
-    esc         : 0x1 << KEY_NOCHAR | 0x001b,
-    pgup        : 0x1 << KEY_NOCHAR | 0x0021,
-    pgdn        : 0x1 << KEY_NOCHAR | 0x0022,
-    end         : 0x1 << KEY_NOCHAR | 0x0023,
-    home        : 0x1 << KEY_NOCHAR | 0x0024,
-    left        : 0x1 << KEY_NOCHAR | 0x0025,
-    up          : 0x1 << KEY_NOCHAR | 0x0026,
-    right       : 0x1 << KEY_NOCHAR | 0x0027,
-    down        : 0x1 << KEY_NOCHAR | 0x0028,
-    ins         : 0x1 << KEY_NOCHAR | 0x002d,
-    insert      : 0x1 << KEY_NOCHAR | 0x002d,
-    del         : 0x1 << KEY_NOCHAR | 0x002e,
-    delete      : 0x1 << KEY_NOCHAR | 0x002e,
-    clear       : 0x1 << KEY_NOCHAR | 0x000c,
-    f1          : 0x1 << KEY_NOCHAR | 0x0070,
-    f2          : 0x1 << KEY_NOCHAR | 0x0071,
-    f3          : 0x1 << KEY_NOCHAR | 0x0072,
-    f4          : 0x1 << KEY_NOCHAR | 0x0073,
-    f5          : 0x1 << KEY_NOCHAR | 0x0074,
-    f6          : 0x1 << KEY_NOCHAR | 0x0075,
-    f7          : 0x1 << KEY_NOCHAR | 0x0076,
-    f8          : 0x1 << KEY_NOCHAR | 0x0077,
-    f9          : 0x1 << KEY_NOCHAR | 0x0078,
-    f10         : 0x1 << KEY_NOCHAR | 0x0079,
-    f11         : 0x1 << KEY_NOCHAR | 0x007a,
-    f12         : 0x1 << KEY_NOCHAR | 0x007b,
-    f13         : 0x1 << KEY_NOCHAR | 0x002c,
-    f14         : 0x1 << KEY_NOCHAR | 0x0091,
-    f15         : 0x1 << KEY_NOCHAR | 0x0013,
-    f16         : 0x1 << KEY_NOCHAR | 0xf713,
-    f17         : 0x1 << KEY_NOCHAR | 0xf714,
-    f18         : 0x1 << KEY_NOCHAR | 0xf715,
-    f19         : 0x1 << KEY_NOCHAR | 0xf716,
+    space       : ("Darwin" === coUtils.Runtime.os) << coUtils.Constant.KEY_NOCHAR | 0x0020,
+    sp          : ("Darwin" === coUtils.Runtime.os) << coUtils.Constant.KEY_NOCHAR | 0x0020,
+    bs          : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x0008, 
+    backspace   : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x0008, 
+    tab         : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x0009, 
+    enter       : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x000d,
+    return      : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x000d,
+    cr          : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x000d,
+    lf          : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x000a,
+    escape      : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x001b,
+    esc         : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x001b,
+    pgup        : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x0021,
+    pgdn        : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x0022,
+    end         : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x0023,
+    home        : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x0024,
+    left        : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x0025,
+    up          : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x0026,
+    right       : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x0027,
+    down        : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x0028,
+    ins         : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x002d,
+    insert      : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x002d,
+    del         : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x002e,
+    delete      : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x002e,
+    clear       : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x000c,
+    f1          : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x0070,
+    f2          : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x0071,
+    f3          : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x0072,
+    f4          : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x0073,
+    f5          : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x0074,
+    f6          : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x0075,
+    f7          : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x0076,
+    f8          : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x0077,
+    f9          : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x0078,
+    f10         : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x0079,
+    f11         : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x007a,
+    f12         : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x007b,
+    f13         : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x002c,
+    f14         : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x0091,
+    f15         : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x0013,
+    f16         : 0x1 << coUtils.Constant.KEY_NOCHAR | 0xf713,
+    f17         : 0x1 << coUtils.Constant.KEY_NOCHAR | 0xf714,
+    f18         : 0x1 << coUtils.Constant.KEY_NOCHAR | 0xf715,
+    f19         : 0x1 << coUtils.Constant.KEY_NOCHAR | 0xf716,
   },
 
   getCodeToNameMap: function getCodeToNameMap() 
@@ -2215,20 +2225,25 @@ coUtils.Keyboard = {
     var buffer = [];
     var map;
 
-    if (packed_code & (1 << coUtils.Keyboard.KEY_CTRL)) {
+    if (packed_code & (1 << coUtils.Constant.KEY_CTRL)) {
       buffer.push("C");
     }
-    if (packed_code & (1 << coUtils.Keyboard.KEY_ALT)) {
+
+    if (packed_code & (1 << coUtils.Constant.KEY_ALT)) {
       buffer.push("A");
     }
-    if (packed_code & (1 << coUtils.Keyboard.KEY_SHIFT)) {
+
+    if (packed_code & (1 << coUtils.Constant.KEY_SHIFT)) {
       buffer.push("S");
     }
-    if (packed_code & (1 << coUtils.Keyboard.KEY_META)) {
+
+    if (packed_code & (1 << coUtils.Constant.KEY_META)) {
       buffer.push("M");
     }
+
     char = String.fromCharCode(0xffffff & packed_code);
-    if (packed_code & (1 << coUtils.Keyboard.KEY_NOCHAR)) {
+
+    if (packed_code & (1 << coUtils.Constant.KEY_NOCHAR)) {
       map = this.getCodeToNameMap();
       char = map[char] || char;
     } else {
@@ -2275,16 +2290,16 @@ coUtils.Keyboard = {
 
     // make packed code
     packed_code = code 
-      | Boolean(event.ctrlKey)   << coUtils.Keyboard.KEY_CTRL 
-      | (Boolean(event.altKey) || alt) << coUtils.Keyboard.KEY_ALT 
-      | Boolean(event.shiftKey)  << coUtils.Keyboard.KEY_SHIFT 
-      | Boolean(event.keyCode)   << coUtils.Keyboard.KEY_NOCHAR
-      | Boolean(event.metaKey)   << coUtils.Keyboard.KEY_META
+      | Boolean(event.ctrlKey)   << coUtils.Constant.KEY_CTRL 
+      | (Boolean(event.altKey) || alt) << coUtils.Constant.KEY_ALT 
+      | Boolean(event.shiftKey)  << coUtils.Constant.KEY_SHIFT 
+      | Boolean(event.keyCode)   << coUtils.Constant.KEY_NOCHAR
+      | Boolean(event.metaKey)   << coUtils.Constant.KEY_META
       ;
 
     // fix for Space key with modifier.
     if (0x20 == code && (event.shiftKey || event.ctrlKey || event.altKey)) {
-      packed_code |= 1 << coUtils.Keyboard.KEY_NOCHAR;
+      packed_code |= 1 << coUtils.Constant.KEY_NOCHAR;
     }
     return packed_code;
   },

@@ -147,3 +147,4 @@ function main(broker)
   new DragPaste(broker);
 }
 
+// EOF

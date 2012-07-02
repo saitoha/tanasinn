@@ -47,24 +47,16 @@ MouseGesture.definition = {
   "[install]":
   function install(broker) 
   {
-    /** Start to listen gesture event. */
-    this.onMagnifyGesture.enabled = true;
-    this.onSwipeGesture.enabled = true;
-    this.onRotateGesture.enabled = true;
   },
 
   /** Uninstalls itself. */
   "[uninstall]":
   function uninstall(broker) 
   {
-    // unregister gesture event DOM listeners.
-    this.onMagnifyGesture.enabled = false;
-    this.onSwipeGesture.enabled = false;
-    this.onRotateGesture.enabled = false;
   },
 
   /** Swipe down evnet listener */
-  "[subscribe('event/swipe-gesture')]": 
+  "[subscribe('event/swipe-gesture'), pnp]": 
   function onSwipeGesture(direction) 
   {
     switch (direction) {
@@ -93,7 +85,7 @@ MouseGesture.definition = {
   },
 
    /** Swipe down evnet listener */
-  "[subscribe('event/rotate-gesture')]": 
+  "[subscribe('event/rotate-gesture'), pnp]": 
   function onRotateGesture(direction) 
   {
     switch (direction) {
@@ -114,7 +106,7 @@ MouseGesture.definition = {
   },
  
   /** handles magnify-gesture evnet. */
-  "[subscribe('event/magnify-gesture')]": 
+  "[subscribe('event/magnify-gesture'), pnp]": 
   function onMagnifyGesture(delta) 
   {
     var i, count,

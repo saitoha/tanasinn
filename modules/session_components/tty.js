@@ -464,7 +464,7 @@ IOManager.definition = {
     
     if (this._output) {
       this._output.write(data, data.length);
-      this._output.flush();
+      //this._output.flush();
     }
     
   },

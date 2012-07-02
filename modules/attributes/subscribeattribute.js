@@ -23,6 +23,73 @@
  * ***** END LICENSE BLOCK ***** */
 
 
+function make_managed_handler(self, handler, topic)
+{
+  var wrapped_handler;
+
+  wrapped_handler = function() 
+  {
+    return handler.apply(self, arguments);
+  };
+
+  return wrapped_handler;
+}
+
+function apply_attribute(self, broker, key, attribute, topic)
+{
+  var handler, wrapped_handler, id, old_onchange;
+
+  handler = self[key];
+  id = self.id + "." + key;
+
+  if (handler.id) {
+    wrapped_handler = handler;
+  } else {
+    wrapped_handler = make_managed_handler(self, handler);
+    wrapped_handler.id = id;
+    self[key] = wrapped_handler;
+  }
+  wrapped_handler.topic = attribute.topic;
+
+  old_onchange = wrapped_handler.onChange;
+
+  wrapped_handler.onChange = function(name, oldval, newval) 
+    {
+      if (old_onchange) {
+        old_onchange.apply(wrapped_handler, arguments);
+      }
+      if (oldval != newval) {
+        if (newval) {
+          broker.subscribe(topic, wrapped_handler, undefined, id);
+        } else {
+          broker.unsubscribe(id);
+        }
+      }
+      return newval;
+    };
+
+  wrapped_handler.watch("enabled", wrapped_handler.onChange);
+
+  if (attribute["enabled"]) {
+    wrapped_handler.enabled = true;
+  };
+
+//  broker.subscribe(
+//    "event/broker-stopped", 
+//    function()
+//    {
+//      broker.unsubscribe(id);
+//    }, undefined, id);
+
+  broker.subscribe("get/subscribers", 
+    function(subscribers)
+    {
+      subscribers[id] = handler;
+    }, undefined, id);
+
+}
+
+
 /**
  * @Attribute SubscribeAttribute
  */
@@ -59,57 +126,25 @@ SubscribeAttribute.definition = {
    */
   initialize: function initialize(broker) 
   {
-    let attributes = this.__attributes;
-    let key;
+    var attributes, key, attribute, topic;
+
+    attributes = this.__attributes;
+
     for (key in attributes) {
-      let attribute = attributes[key];
+
+      attribute = attributes[key];
+
       if (!attribute["subscribe"]) {
         continue;
       }
-      let topic = attribute["subscribe"][0];
+
+      topic = attribute["subscribe"][0];
+
       if (!topic) {
         throw coUtils.Debug.Exception(_("topic is not specified."));
       }
-      let handler = this[key];
-      let wrapped_handler;
-      let id = this.id + "." + key;
-      if (handler.id) {
-        wrapped_handler = handler;
-      } else {
-        let self = this;
-        wrapped_handler = function() handler.apply(self, arguments);
-        wrapped_handler.id = id;
-        wrapped_handler.topic = topic;
-        this[key] = wrapped_handler;
-      }
-      wrapped_handler.watch("enabled", 
-        wrapped_handler.onChange = let (self = this, old_onchange = wrapped_handler.onChange) 
-          function(name, oldval, newval) 
-          {
-            if (old_onchange) {
-              old_onchange.apply(wrapped_handler, arguments);
-            }
-            if (oldval != newval) {
-              if (newval) {
-                broker.subscribe(topic, wrapped_handler, undefined, id);
-              } else {
-                broker.unsubscribe(wrapped_handler.id);
-              }
-            }
-            return newval;
-          });
-      if (attribute["enabled"]) {
-        wrapped_handler.enabled = true;
-      };
 
-      broker.subscribe("event/broker-stopped", function() {
-        broker.unsubscribe(id);
-      }, this, id);
-
-      broker.subscribe("get/subscribers", 
-        function(subscribers) {
-          subscribers[id] = handler;
-        });
+      apply_attribute(this, broker, key, attribute, topic);
     } // key for (key in attributes) 
   },
 
@@ -126,3 +161,4 @@ function main(target_class)
   target_class.mix(SubscribeAttribute);
 }
 
+// EOF

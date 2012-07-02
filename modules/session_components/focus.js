@@ -51,7 +51,7 @@ FocusTracker.definition = {
   function install(broker)
   {
     this.sendMessage("command/add-domlistener", {
-      target: broker.window.document,
+      target: this.request("get/root-element").ownerDocument,
       type: "focus",
       context: this,
       handler: this.onfocus,
@@ -74,32 +74,37 @@ FocusTracker.definition = {
    */
   onfocus: function onfocus(event)
   {
-    var broker, command_dispatcher, root_element, target, focused_element, relation;
+    var domr, target, focused_element, relation;
 
-    broker = this._broker;
-    command_dispatcher = broker.document.commandDispatcher;
-    root_element = broker.root_element;
+    dom = {
+      root_element: this.request("get/root-element"),
+    };
+
     target = event.explicitOriginalTarget;
 
-    if (null !== target 
-        && (!("nodeType" in target) || target.NODE_DOCUMENT !== target.nodeType)) {
+    if (null === target) {
+      return;
+    }
+
+    if (!("nodeType" in target) || target.NODE_DOCUMENT !== target.nodeType) {
       target = target.parentNode;
       if (null !== target && undefined !== target
           && target.nodeType != target.NODE_DOCUMENT) {
-        relation = root_element.compareDocumentPosition(target);
-        if ((relation & root_element.DOCUMENT_POSITION_CONTAINED_BY)) {
+        relation = dom.root_element.compareDocumentPosition(target);
+        if ((relation & dom.root_element.DOCUMENT_POSITION_CONTAINED_BY)) {
           if (!this.disabled) {
             this.disabled = true;
             if (!/tanasinn/.test(coUtils.Runtime.app_name)) {
-              broker.root_element.parentNode.appendChild(broker.root_element);
+              dom.root_element.parentNode.appendChild(dom.root_element);
             }
-            coUtils.Timer.setTimeout(function()
+            coUtils.Timer.setTimeout(
+              function timerProc()
               {
                 this.disabled = false;
               }, 0, this);
             return;
           }
-          focused_element = command_dispatcher.focusedElement;
+          focused_element = dom.root_element.ownerDocument.commandDispatcher.focusedElement;
           this.sendMessage("event/got-focus");
           this.sendMessage("event/focus-changed", focused_element);
         }
@@ -121,3 +126,4 @@ function main(broker)
   new FocusTracker(broker);
 }
 
+// EOF

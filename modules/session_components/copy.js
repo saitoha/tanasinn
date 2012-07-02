@@ -49,19 +49,15 @@ Copy.definition = {
   "[install]": 
   function install(session) 
   {
-    this.copy.enabled = true;
-    this.onContextMenuEntriesRequested.enabled = true;
   },
 
   /** Uninstalls itself. */
   "[uninstall]":
   function uninstall(session) 
   {
-    this.copy.enabled = false;
-    this.onContextMenuEntriesRequested.enabled = false;
   },
 
-  "[subscribe('get/contextmenu-entries')]":
+  "[subscribe('get/contextmenu-entries'), pnp]":
   function onContextMenuEntriesRequested() 
   {
     var range;
@@ -79,7 +75,7 @@ Copy.definition = {
   },
 
   /** Get selected text and put it to clipboard.  */
-  "[command('copy'), nmap('<M-c>', '<C-S-c>'), _('Copy selected text.')]": 
+  "[command('copy'), nmap('<M-c>', '<C-S-c>'), _('Copy selected text.'), pnp]": 
   function copy(info) 
   {
     var range;

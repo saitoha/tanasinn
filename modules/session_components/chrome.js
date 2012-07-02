@@ -29,6 +29,64 @@
  * - Chrome
  */
 
+var Quatanion = new Class();
+Quatanion.definition = {
+};
+
+var matrix = <>
+  -moz-transform: matrix3d(
+ +1.8000, -1.0000, +1.0000, -0.0003, 
+ +1.0000, +1.0000, +1.0000, -0.0016, 
+ -1.0000, +0.0000, +1.0000, -0.0000, 
+ +0.0000, +0.0000, +0.0000, +2.5000);
+</>;
+
+var matrix = <>
+  -moz-transform: matrix3d(
+ +0.0001, -1.0000, +0.0000, -0.0000, 
+ +1.0000, +0.0001, +0.0000, -0.0000, 
+ -0.0000, +0.0000, +0.0001, -1.0000, 
+ +0.0000, +0.0000, +1.0000, +1.0000);
+</>;
+
+var matrix = <>
+  -moz-transform: matrix3d(
+ +0.0001, -0.0000, -1.0000, -0.0000, 
+ +0.0000, +0.0001, +0.0000, +1.0000, 
+ +1.0000, +0.0000, +0.0001, -0.0000, 
+ +0.0000, -1.0000, +1.0000, +1.0000);
+</>;
+
+
+var matrix = <>
+  -moz-transform: matrix3d(
+ +1.0000, -0.0000, -0.0000, +0.0000, 
+ +0.0000, +1.0000, -0.0000, -0.0040, 
+ +0.0000, +0.0000, +1.0000, -0.0000, 
+ +0.0000, -0.0000, +0.0000, +1.0000);
+</>;
+
+var matrix = <>
+  -moz-transform: perspective(800px);
+  -moz-perspective-origin: 50% 200px;
+</>;
+
+//var matrix = <>
+//  -moz-transform: matrix3d(
+// +4.0010, -1.0000, +1.0000, -0.0003, 
+// +1.0000, +4.0000, +1.0000, -0.0016, 
+// -1.0000, +0.0000, +1.0000, -0.0000, 
+// +0.0000, +0.0000, +0.0000, +4.5000);
+//</>;
+
+//var matrix = <>
+//  -moz-transform: matrix3d(
+// +1.0000, -0.0000, +1.0000, -0.0000, 
+// +0.0000, +1.0000, +1.0000, -0.0000, 
+// -0.0000, +0.0000, +1.0000, -0.0000, 
+// +0.0000, +0.0000, +0.0000, +1.0000);
+//</>;
+
 /**
  * @concept MovableConcept
  */
@@ -145,7 +203,7 @@ OuterChrome.definition = {
     </plugin>,
 
   "[persistable] enabled_when_startup": true,
-  "[persistable, watchable] background_opacity": 0.85,
+  "[persistable, watchable] background_opacity": 0.92,
   "[persistable, watchable] background_color": "#000000",
   "[persistable, watchable] foreground_color": "#ffffff",
   "[persistable, watchable] gradation": true,
@@ -169,9 +227,9 @@ OuterChrome.definition = {
 
     f = parseInt(this.foreground_color.substr(1), 16);
     b = parseInt(this.background_color.substr(1), 16);
-    color = (((((f >>> 16 & 0xff) + (b >>> 16 & 0xff) * 2) / 2.0) | 0) << 16)
-              | (((((f >>> 8  & 0xff) + (b >>>  8 & 0xff) * 2) / 2.0) | 0) <<  8) 
-              | (((((f        & 0xff) + (b        & 0xff) * 2) / 2.0) | 0) <<  0);
+    color = (((((f >>> 16 & 0xff) + (b >>> 16 & 0xff) * 2) / 1.5) | 0) << 16)
+              | (((((f >>> 8  & 0xff) + (b >>>  8 & 0xff) * 2) / 1.5) | 0) <<  8) 
+              | (((((f        & 0xff) + (b        & 0xff) * 2) / 1.5) | 0) <<  0);
     return (color + 0x1000000)
         .toString(16)
         .replace(/^1/, "#");
@@ -180,7 +238,7 @@ OuterChrome.definition = {
   get background() 
   {
     return coUtils.Text.format(
-      "-moz-linear-gradient(top,%s,%s)", 
+      "-moz-radial-gradient(top,%s,%s)", 
       this.blend_color, this.background_color);
   },
 
@@ -233,6 +291,7 @@ OuterChrome.definition = {
       id: "tanasinn_outer_chrome",
       tagName: "stack",
       hidden: true,
+      style: matrix,
       listener: {
         type: "click",
         context: this,

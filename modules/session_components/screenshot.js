@@ -34,7 +34,7 @@ ScreenshotCommand.definition = {
   "[command('screenshot'), _('Convert screen to a image file.'), enabled]":
   function screenshot(arguments_string) 
   {
-    var pattern, match, path, file;
+    var pattern, match, path, file, name;
     
     pattern = /^(\S+)s*$/;
     match = arguments_string.match(pattern);
@@ -45,7 +45,7 @@ ScreenshotCommand.definition = {
         message: _("Ill-formed message."),
       };
     }
-    let [, name] = match;
+    [, name] = match;
 
     path = this._broker.runtime_path + "/screenshot/" + name + ".png";
     file = coUtils.File

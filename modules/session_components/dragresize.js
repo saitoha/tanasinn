@@ -84,29 +84,39 @@ SnapResize.definition = {
  * @class CaptureBox
  *
  */
-var CaptureBox = new Class().extends(Component);
+var CaptureBox = new Class().extends(Plugin);
 CaptureBox.definition = {
 
   get id()
     "capturebox",
 
+  get info()
+    <plugin>
+        <name>{_("Capture Box")}</name>
+        <description>{
+          _("Makes easy to drag window margin.")
+        }</description>
+        <version>0.1</version>
+    </plugin>,
+
+
   get template()
-    let (capture_box_size = 200)
-    {
+    ({
       parentNode: "#tanasinn_chrome",
       tagName: "box",
       id: "tanasinn_capture_box",
       hidden: true,
       style: {
-      position: "fixed",
-        width: capture_box_size + "px", 
-        height: capture_box_size + "px", 
-//        border: "solid 1px blue",
-//        background: "red",
-        marginLeft: -capture_box_size / 2 + "px",
-        marginTop: -capture_box_size / 2 + "px"
+        position: "fixed",
+        width: this.capture_box_size + "px", 
+        height: this.capture_box_size + "px", 
+        marginLeft: -this.capture_box_size / 2 + "px",
+        marginTop: -this.capture_box_size / 2 + "px"
       }
-    },
+    }),
+
+  "[persistable] enabled_when_startup": true,
+  "[persistable] capture_box_size": 200,
 
   /** post-constructor */
   "[subscribe('@initialized/chrome'), enabled]":
@@ -120,13 +130,14 @@ CaptureBox.definition = {
   "[subscribe('command/show-capture-box'), enabled]":
   function box(position) 
   {
-    var box;
+    var x = position.x,
+        y = position.y, 
+        box = this._box;
 
-    var {x, y} = position;
-    box = this._box;
     box.style.left = x + "px";
     box.style.top = y + "px";
     box.hidden = false;
+
     coUtils.Timer.setTimeout(function() box.hidden = true, 500, this);
   }
 };

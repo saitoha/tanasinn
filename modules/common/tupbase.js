@@ -520,17 +520,17 @@ Class.prototype = {
    */
   loadAttributes: function loadAttributes(search_path, scope) 
   {
-    var paths = coUtils.File.getFileEntriesFromSerchPath(search_path);
-    var entry;
-    var url;
+    var paths = coUtils.File.getFileEntriesFromSerchPath(search_path),
+        entry, url, module_scope;
 
     for (entry in paths) {
+      module_scope = new function() { this.__proto__ = scope; };
       try {
         // make URI string such as "file://....".
         url = coUtils.File.getURLSpec(entry); 
-        coUtils.Runtime.loadScript(url, scope);
-        if (scope.main) {
-          scope.main(this);
+        coUtils.Runtime.loadScript(url, module_scope);
+        if (module_scope.main) {
+          module_scope.main(this);
         } else {
           throw coUtils.Debug.Exception(
             _("Component scope symbol 'main' ",
@@ -590,6 +590,8 @@ Component.definition = {
   {
     var install_trigger;
 
+    this._broker = broker;
+
     if (this.__dependency) {
       this.dependency = {};
       if (this.__dependency.length > 0) {
@@ -611,7 +613,6 @@ Component.definition = {
         }, 
         this);
     }
-    this._broker = broker;
     broker.subscribe("get/components", 
       function(instances)
       {
@@ -733,8 +734,9 @@ Plugin.definition = {
 
     id = this.id;
     value = Boolean(value);
+    broker = this._broker;
+
     if (value != this.__enabled) {
-      broker = this._broker;
       if (value) {
         try {
           broker.notify("install/" + id, broker);
@@ -747,7 +749,6 @@ Plugin.definition = {
         }
       } else {
         broker.notify("uninstall/" + id, broker);
-//        broker.notify("uninstall/" + id, broker);
       }
       this.__enabled = value;
       this.enabled_when_startup = value;
