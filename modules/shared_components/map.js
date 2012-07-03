@@ -67,8 +67,7 @@ MappingManagerBase.definition = {
   {
     var packed_code_array, context;
 
-    packed_code_array 
-      = coUtils.Keyboard.parseKeymapExpression(expression);
+    packed_code_array = coUtils.Keyboard.parseKeymapExpression(expression);
     context = this._map;
     packed_code_array.forEach(
       function(key_code) 
@@ -83,8 +82,7 @@ MappingManagerBase.definition = {
   {
     var packed_code_array;
 
-    packed_code_array 
-      = coUtils.Keyboard.parseKeymapExpression(expression);
+    packed_code_array = coUtils.Keyboard.parseKeymapExpression(expression);
 
     void function(context) 
     {
@@ -212,11 +210,12 @@ NormalMappingManager.definition = {
   "[subscribe('command/register-nmap'), enabled]":
   function registerNmap(info)
   {
-    var delegate;
+    var delegate,
+        self = this;
 
     delegate = function() 
     {
-      this.sendMessage(
+      self.sendMessage(
         "command/input-expression-with-remapping", 
         info.destination);
       return true;
@@ -229,11 +228,12 @@ NormalMappingManager.definition = {
   "[subscribe('command/register-nnoremap'), enabled]":
   function registerNnoremap(info)
   {
-    var delegate;
+    var delegate,
+        self = this;
 
     delegate = function()
     {
-      this.sendMessage(
+      self.sendMessage(
         "command/input-expression-with-no-remapping", 
         info.destination);
       return true;
@@ -301,11 +301,12 @@ CommandlineMappingManager.definition = {
   "[subscribe('command/register-cmap'), enabled]":
   function registerCmap(info)
   {
-    var delegate;
+    var delegate,
+        self = this;
 
     delegate = function() 
     {
-      this.sendMessage(
+      self.sendMessage(
         "command/input-expression-with-remapping", 
         info.destination);
       return true;
@@ -318,11 +319,12 @@ CommandlineMappingManager.definition = {
   "[subscribe('command/register-cnoremap'), enabled]":
   function registerCnoremap(info)
   {
-    var delegate;
+    var delegate,
+        self = this;
 
     delegate = function() 
     {
-      this.sendMessage(
+      self.sendMessage(
         "command/input-expression-with-no-remapping", 
         info.destination);
       return true;

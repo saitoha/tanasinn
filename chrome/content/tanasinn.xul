@@ -1,13 +1,13 @@
 <?xml version="1.0"?>
 <window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
-    top="200"
-    left="400"
-        width="1200" 
-        height="800" 
-        hidechrome="false" 
+    top="000"
+    left="000"
+        width="1800" 
+        height="1000" 
+        hidechrome="true" 
         windowtype="chrome,titlebar" 
-        title="tanasinn 0.1.5.5">
-    <script xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" type="application/x-javascript" src="testsuite.js">
+        title="tanasinn 0.2.2.2">
+        <script type="application/x-javascript" src="testsuite.js">
     </script>
 </window>
 

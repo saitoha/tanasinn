@@ -153,7 +153,7 @@ TextboxWidget.definition = {
 
     height = this._glyph_height;
 
-    if ("command" == this._mode) {
+    if ("command" === this._mode) {
       if (this._main_buffer) {
         dom.context.fillText(this._main_buffer, 0, height + 2);
       }
@@ -281,6 +281,9 @@ TextboxWidget.definition = {
     dom.canvas.width = dom.canvas.parentNode.boxObject.width;
     this._glyph_height = height;
     dom.canvas.height = height + top;
+    dom.textbox.height = height + top;
+    dom.canvas.height = (this.font_size - 2);
+    dom.canvas.parentNode.height = dom.canvas.height;
     dom.context.fillStyle = fill_style;
     dom.context.font = font;
   },
@@ -441,17 +444,17 @@ Commandline.definition = {
   "[persistable] enabled_when_startup": true,
 
   "[persistable] completion_delay": 180,
-  "[persistable] completion_popup_opacity": 1.00,
+  "[persistable] completion_popup_opacity": 0.70,
   "[persistable] completion_popup_max_height": 300,
+  "[persistable] completion_popup_background": "-moz-linear-gradient(top, #bbb, #777)",
+  "[persistable] completion_popup_background_opacity": 0.8,
 
   get template()
   [
     {
       parentNode: "#tanasinn_commandline_area",
-      tagName: "box",
-      style: <>
-        position: absolute;
-      </>,
+      tagName: "html:div",
+      style: "position: absolute;",
       childNodes: [
         {
           tagName: "box",
@@ -478,16 +481,13 @@ Commandline.definition = {
       tagName: "html:canvas",
       dir: "ltr",
       height: this.font_size,
-      style: <>
-        opacity: 0.7;
-      </>,
+      style: "opacity: 0.7; position: absolute",
     },
     {
       parentNode: "#tanasinn_chrome",
       tagName: "panel",
       id: "tanasinn_completion_popup",
       style: <> 
-        -moz-appearance: none;
         -moz-user-focus: ignore;
         background: transparent;
         border: none;
@@ -505,8 +505,8 @@ Commandline.definition = {
             flex: 1,
             style: <>
               border-radius: 7px;
-              background: -moz-linear-gradient(top, #bbb, #888);
-              opacity: 0.8;
+              background: {this.completion_popup_background};
+              opacity: {this.completion_popup_background_opacity};
             </>,
           },
           {
@@ -514,10 +514,7 @@ Commandline.definition = {
             id: "tanasinn_completion_scroll",
             orient: "vertical", // box-packing
             flex: 1,
-            style: <>
-              margin: 8px;
-              overflow-y: auto;
-            </>,
+            style: "margin: 8px; overflow-y: auto;",
             childNodes: {
               tagName: "grid",
               id: "tanasinn_completion_root",
@@ -558,27 +555,6 @@ Commandline.definition = {
     this._popup = tanasinn_completion_popup;
     this._scroll = tanasinn_completion_scroll;
     this._completion_root = tanasinn_completion_root;
-
-    this.show.enabled = true;
-    this.fill.enabled = true;
-    this.invalidate.enabled = true;
-    this.onStatusMessage.enabled = true;
-    this.onfocus.enabled = true;
-    this.onblur.enabled = true;
-    this.onkeydown.enabled = true;
-    this.onkeypress.enabled = true;
-    this.onpopupshowing.enabled = true;
-    this.onpopupshown.enabled = true;
-    this.onclick.enabled = true;
-    this.onchange.enabled = true;
-    this.enableCommandline.enabled = true;
-//    this.onFirstFocus.enabled = true;
-    this.setCompletionTrigger.enabled = true;
-    this.onStyleChanged.enabled = true;
-    this.onWidthChanged.enabled = true;
-    this.doCompletion.enabled = true;
-
-    this.onmousedown.enabled = true;
   },
   
   /** Uninstalls itself.
@@ -587,26 +563,6 @@ Commandline.definition = {
   "[uninstall]":
   function uninstall(broker) 
   {
-    this.show.enabled = false;
-    this.fill.enabled = false;
-    this.invalidate.enabled = false;
-    this.onStatusMessage.enabled = false;
-    this.onfocus.enabled = false;
-    this.onblur.enabled = false;
-    this.onkeydown.enabled = false;
-    this.onkeypress.enabled = false;
-    this.onpopupshowing.enabled = false;
-    this.onpopupshown.enabled = false;
-    this.onclick.enabled = false;
-    this.onchange.enabled = false;
-    this.enableCommandline.enabled = false;
-    this.setCompletionTrigger.enabled = false;
-//    this.onFirstFocus.enabled = false;
-    this.onStyleChanged.enabled = false;
-    this.onWidthChanged.enabled = false;
-    this.doCompletion.enabled = false;
-
-    this.onmousedown.enabled = false;
     if (this._popup) {
       if (undefined !== this._popup.hidePopup) {
         this._popup.hidePopup();
@@ -626,7 +582,7 @@ Commandline.definition = {
     }
   },
 
-  "[subscribe('variable-changed/commandline.{font_weight | font_size | default_text_shadow | font_family}')]":
+  "[subscribe('variable-changed/commandline.{font_weight | font_size | default_text_shadow | font_family}'), pnp]":
   function onStyleChanged() 
   {
   },
@@ -649,24 +605,26 @@ Commandline.definition = {
     return this._textbox.getInputField();
   },
 
-  "[subscribe('event/screen-width-changed')]": 
+  "[subscribe('event/screen-width-changed'), pnp]": 
   function onWidthChanged(width) 
   {
     this._canvas.width = width;
   },
 
-  "[subscribe('command/report-status-message')]":
+  "[subscribe('command/report-status-message'), pnp]":
   function onStatusMessage(message) 
   {
     if (this._textbox) {
       this._textbox.mode = "status";
-      coUtils.Timer.setTimeout(function() {
-        this._textbox.status = message;
-      }, 0, this);
+      coUtils.Timer.setTimeout(
+        function()
+        {
+          this._textbox.status = message;
+        }, 0, this);
     }
   },
 
-  "[subscribe('command/enable-commandline')]":
+  "[subscribe('command/enable-commandline'), pnp]":
   function enableCommandline() 
   {
     this._textbox.calculateSize();
@@ -694,7 +652,7 @@ Commandline.definition = {
   /** Shows commandline interface. 
    *  @param {Object} A shortcut information object.
    */
-  "[nmap('<M-:>'), _('Show commandline interface.')]":
+  "[nmap('<M-:>'), _('Show commandline interface.'), pnp]":
   function show(info)
   {
     this._textbox.hidden = false;
@@ -706,7 +664,7 @@ Commandline.definition = {
     return true;
   },
 
-  "[listen('focus', '#tanasinn_commandline', true)]":
+  "[listen('focus', '#tanasinn_commandline', true), pnp]":
   function onfocus(event) 
   {
     this._textbox.hidden = false;
@@ -714,7 +672,7 @@ Commandline.definition = {
     this.setCompletionTrigger();
   },
 
-  "[listen('blur', '#tanasinn_commandline', true)]":
+  "[listen('blur', '#tanasinn_commandline', true), pnp]":
   function onblur(event) 
   {
     this._textbox.blur();
@@ -729,7 +687,7 @@ Commandline.definition = {
     }
   },
 
-  "[subscribe('event/answer-completion')]":
+  "[subscribe('event/answer-completion'), pnp]":
   function doCompletion(result) 
   {
     var grid, type, driver;
@@ -761,7 +719,7 @@ Commandline.definition = {
     }
   },
 
-  "[subscribe('command/invalidate')]":
+  "[subscribe('command/invalidate'), pnp]":
   function invalidate(result) 
   {
     var textbox, document, index, completion_text,
@@ -796,7 +754,7 @@ Commandline.definition = {
     }
   },
 
-  "[subscribe('command/fill')]":
+  "[subscribe('command/fill'), pnp]":
   function fill()
   {
     var index, result, textbox, completion_text,
@@ -818,7 +776,7 @@ Commandline.definition = {
     }
   },
 
-  "[subscribe('command/set-completion-trigger')]":
+  "[subscribe('command/set-completion-trigger'), pnp]":
   function setCompletionTrigger() 
   {
     var textbox, current_text;
@@ -851,7 +809,7 @@ Commandline.definition = {
     }, this.completion_delay, this);
   },
 
-  "[listen('keydown', '#tanasinn_commandline', true)]":
+  "[listen('keydown', '#tanasinn_commandline', true), pnp]":
   function onkeydown(event) 
   {
     event.stopPropagation();
@@ -924,10 +882,11 @@ Commandline.definition = {
     event.preventDefault();
   },
 
-  "[listen('keypress', '#tanasinn_commandline', true)]":
+  "[listen('keypress', '#tanasinn_commandline', true), pnp]":
   function onkeypress(event) 
   {
     var code;
+
     code = coUtils.Keyboard.getPackedKeycodeFromEvent(event);
 
     this.sendMessage("event/scan-keycode", {
@@ -937,7 +896,7 @@ Commandline.definition = {
     });
   },
 
-  "[listen('mousedown', '#tanasinn_completion_popup', true)]":
+  "[listen('mousedown', '#tanasinn_completion_popup', true), pnp]":
   function onmousedown(event) 
   {
     event.stopPropagation();
@@ -949,6 +908,14 @@ Commandline.definition = {
 
     command = this._textbox.value;
 
+    // hide completion popup
+    if (this._popup) {
+      if (this._popup.hidePopup) {
+        this._popup.hidePopup();
+      }
+    }
+
+    // clear textbox
     this._textbox.value = "";
     this._textbox.completion = "";
 
@@ -957,19 +924,19 @@ Commandline.definition = {
     this.sendMessage("command/focus");
   },
 
-  "[listen('popupshown', '#tanasinn_commandline', false)]":
+  "[listen('popupshown', '#tanasinn_commandline', false), pnp]":
   function onpopupshown(event) 
   {
     this._textbox.focus();
     this._textbox.focus();
   },
 
-  "[listen('popupshowing', '#tanasinn_commandline', false)]":
+  "[listen('popupshowing', '#tanasinn_commandline', false), pnp]":
   function onpopupshowing(event) 
   {
   },
 
-  "[listen('click', '#tanasinn_commandline_canvas', false)]":
+  "[listen('click', '#tanasinn_commandline_canvas', false), pnp]":
   function onclick(event) 
   {
     coUtils.Timer.setTimeout(
@@ -977,11 +944,6 @@ Commandline.definition = {
       {
         this.sendMessage("command/enable-commandline");
       }, 0, this);
-  },
-
-  "[listen('change', '#tanasinn_commandline', true)]":
-  function onchange(event) 
-  {
   },
 
 };

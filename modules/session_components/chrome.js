@@ -29,8 +29,38 @@
  * - Chrome
  */
 
+var Vector3D = new Class();
+Vector3D.definitian = {
+
+  x: 0,
+  y: 0,
+  z: 0,
+
+  initialize: function initialize(x, y, z)
+  {
+    this.x = x;
+    this.y = y;
+    this.z = z;
+  },
+
+};
+
 var Quatanion = new Class();
 Quatanion.definition = {
+
+  x: 0,
+  y: 0,
+  z: 0,
+  w: 0,
+
+  initialize: function initialize(x, y, z, w)
+  {
+    this.x = x;
+    this.y = y;
+    this.z = z;
+    this.w = w;
+  },
+
 };
 
 var matrix = <>
@@ -210,12 +240,21 @@ OuterChrome.definition = {
   "[persistable, watchable] border_radius": 8,
   "[persistable, watchable] box_shadow": "5px 4px 29px black",
   "[persistable, watchable] use_matrix": false,
-  "[persistable, watchable] matrix": <>
-    -moz-transform: matrix3d(
+  "[persistable, watchable] matrix": 
+//  <>
+//    matrix3d(
+//      +1.0000, -0.0000, +1.0000, -0.0029, 
+//      +0.0000, +1.0000, +1.0000, -0.0000, 
+//      -1.0000, +0.0000, +1.0000, -0.0000, 
+//      +0.0000, +0.0000, +0.0000, +1.6000)
+//  </>.toString(),
+
+  <>
+    matrix3d(
       +1.8000, -1.0000, +1.0000, -0.0003, 
-      +1.0000, +1.0000, +1.0000, -0.0016, 
+      +1.0000, +1.0000, +1.0000, -0.0025, 
       -1.0000, +0.0000, +1.0000, -0.0000, 
-      +0.0000, +0.0000, +0.0000, +2.0000);
+      +0.0000, +0.0000, +0.0000, +2.0000) 
   </>.toString(),
 
   get frame_style()
@@ -270,13 +309,16 @@ OuterChrome.definition = {
     var reverse_color;
 
     if (value) {
+
       reverse_color = (parseInt(this.background_color.substr(1), 16) ^ 0x1ffffff)
           .toString(16)
           .replace(/^1/, "#");
+
       this._frame.style.background 
         = coUtils.Text.format(
           "-moz-linear-gradient(top, %s, %s)", 
           reverse_color, this.blend_color);
+
     } else {
       this._frame.style.background = this.background;
     }
@@ -299,14 +341,6 @@ OuterChrome.definition = {
       id: "tanasinn_outer_chrome",
       tagName: "stack",
       hidden: true,
-      listener: {
-        type: "click",
-        context: this,
-        handler: function() 
-        {
-          this.sendMessage("command/focus");
-        },
-      },
       childNodes: [
         {
           tagName: "box",
@@ -351,6 +385,8 @@ OuterChrome.definition = {
       ],
     }),
 
+  _element: null,
+  _frame: null,
   board: null,
 
 // constructor
@@ -363,6 +399,7 @@ OuterChrome.definition = {
       tanasinn_outer_chrome,
       tanasinn_background_frame,  
     } = this.request("command/construct-chrome", this.template);
+
     this._element = tanasinn_outer_chrome;
     this._frame = tanasinn_background_frame;
 
@@ -392,13 +429,19 @@ OuterChrome.definition = {
     this._element.hidden = false;
   },
 
+  "[listen('click', '#tanasinn_outer_chrome'), pnp]":
+  function onclick()
+  {
+    this.sendMessage("command/focus");
+  },
+
   "[subscribe('variable-changed/outerchrome.{use_matrix | matrix}'), pnp]": 
   function updateTransform() 
   {
     if (this.use_matrix) {
-      this._element.style.cssText = this.matrix;
+      this._element.style.MozTransform = this.matrix;
     } else {
-      this._element.style.cssText = "";
+      this._element.style.MozTransform = "";
     }
   },
 
@@ -454,11 +497,12 @@ OuterChrome.definition = {
   "[subscribe('@event/broker-stopping'), enabled]": 
   function onSessionStoping() 
   {
-    var target;
-
-    target = this._element;
-    if (target.parentNode) {
-      target.parentNode.removeChild(target);
+    // clear the memnber "_element"
+    if (null !== this._element) {
+      if (this._element.parentNode) {
+        this._element.parentNode.removeChild(this._element);
+      }
+      this._element = null;
     }
   }, 
 
@@ -467,20 +511,30 @@ OuterChrome.definition = {
   {
     var target;
 
+    // get target element
     target = this._element;
+
     if (target.style.opacity <= opacity) {
       duration = 0; 
     }
+
+    // transition duration
     duration = duration || 160;
+
     if (duration) {
       target.style.MozTransitionProperty = "opacity";
       target.style.MozTransitionDuration = duration + "ms";
     }
+
+    // set opacity
     target.style.opacity = opacity;
-    coUtils.Timer.setTimeout(function() {
-      target.style.MozTransitionProperty = "";
-      target.style.MozTransitionDuration = "0ms";
-    }, duration);
+
+    coUtils.Timer.setTimeout(
+      function clearTransitionParameters() 
+      {
+        target.style.MozTransitionProperty = "";
+        target.style.MozTransitionDuration = "0ms";
+      }, duration);
   },
 
 };

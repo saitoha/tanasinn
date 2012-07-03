@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
-    width="100" height="200" title="tanasinn 0.1.4.2">
+    width="100" height="200" title="tanasinn 0.2.2.2">
     <script type="application/x-javascript" src="testsuite.js">
     </script>
 </window>

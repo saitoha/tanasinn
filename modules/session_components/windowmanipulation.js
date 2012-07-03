@@ -22,6 +22,21 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+
+var thread_manager = Components
+  .classes["@mozilla.org/thread-manager;1"]
+  .getService();
+
+function wait(span) 
+{
+  var end_time = Date.now() + span;
+  var current_thread = thread_manager.currentThread;
+  do {
+    current_thread.processNextEvent(true);
+  } while ((current_thread.hasPendingEvents()) || Date.now() < end_time);
+};
+
+
 /**
  * @class WindowManipulator
  */
@@ -148,6 +163,7 @@ WindowManipulator.definition = {
         renderer = this.dependency["renderer"];
         column = Math.ceil(x / renderer.char_width);
         row = Math.ceil(y / renderer.line_height);
+
         this.sendMessage("command/resize-screen", {
           column: column, 
           row: row,
@@ -175,18 +191,15 @@ WindowManipulator.definition = {
 
       case 8:
         // Resize window to Ps2 lines and Ps3 columns.
-        {
-          var x, y, renderer, column, row;
-
-          y = (args[0] || 1) - 1;
-          x = (args[1] || 1) - 1;
-          this.sendMessage(
-            "command/resize-screen",
-            {
-              column: x, 
-              row: y,
-            });
-        }
+        y = args[0] || 24;
+        x = args[1] || 80;
+        this.sendMessage(
+          "command/resize-screen",
+          {
+            column: x, 
+            row: y,
+          });
+        
         break;
 
       case 9:
@@ -272,6 +285,8 @@ WindowManipulator.definition = {
         //         title    icon label. (window title)
         coUtils.Debug.reportWarning(
           _("DECSLPP 20: Reports icon label."));
+        this.sendMessage("command/send-sequence/csi"); 
+        this.sendMessage("command/send-to-tty", "10;abct"); 
         break;
 
       case 21:
@@ -280,12 +295,15 @@ WindowManipulator.definition = {
         //         title    Window title.
         coUtils.Debug.reportWarning(
           _("DECSLPP 21: Reports window title."));
+        this.sendMessage("command/send-sequence/csi"); 
+        this.sendMessage("command/send-to-tty", "10;cdet"); 
         break;
 
       default:
-        break;
+        return;
 
     }
+    wait(0);
   },
 }; // class WindowManipulator
 

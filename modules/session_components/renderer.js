@@ -321,8 +321,9 @@ PalletManagerTrait.definition = {
   "[subscribe('sequence/osc/4'), enabled]": 
   function osc4(value) 
   {
-    var message, color;
-    var [number, spec] = value.split(";");
+    var message,
+        color,
+        [number, spec] = value.split(";");
 
     // range check.
     if (0 > number && number > 255) {
@@ -331,14 +332,14 @@ PalletManagerTrait.definition = {
     }
 
     // parse arguments.
-    if ("?" == spec) {
+    if ("?" === spec) { // get specified color value
       color = this.color[number];
       color = "rgb:" + color.substr(1, 2) 
             + "/" + color.substr(3, 2) 
             + "/" + color.substr(5, 2)
       message = "4;" + number + ";" + color;
       this.sendMessage("command/send-to-tty", message);
-    } else {
+    } else { // set color
       this.color[number] = coUtils.Color.parseX11ColorSpec(spec);
     }
   },
@@ -562,11 +563,11 @@ Renderer.definition = {
   "[persistable] bold_alpha": 1.00,
   "[persistable] bold_as_blur": false,
 //  "[persistable] enable_text_shadow": false,
-//  "[persistable] enable_render_bold_as_textshadow": false,
+//  "[persistable] enable_render_bold_as_textshadow": true,
   "[persistable] shadow_color": "white",
-  "[persistable] shadow_offset_x": 0.50,
+  "[persistable] shadow_offset_x": 0.00,
   "[persistable] shadow_offset_y": 0.00,
-  "[persistable] shadow_blur": 0.50,
+  "[persistable] shadow_blur": 2.00,
   "[persistable] transparent_color": 0,
   "[persistable, watchable] smoothing": true,
 
@@ -1119,7 +1120,8 @@ Renderer.definition = {
 
     if (null === this._drcs_state || !attr.drcs) {
       text = String.fromCharCode.apply(String, codes);
-      //if (this.enable_render_bold_as_textshadow && attr.bold) {
+
+      //if (this.enable_text_shadow) {
       //  context.shadowColor = this.shadow_color;
       //  context.shadowOffsetX = this.shadow_offset_x;
       //  context.shadowOffsetY = this.shadow_offset_y;
@@ -1128,6 +1130,7 @@ Renderer.definition = {
       //  context.shadowOffsetX = 0;
       //  context.shadowBlur = 0;
       //}
+
       context.fillText(text, x, y, char_width * length);
       if (attr.bold && this.bold_as_blur) {
         context.fillText(text, x + 1, y, char_width * length - 1);

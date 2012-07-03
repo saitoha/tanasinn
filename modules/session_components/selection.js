@@ -441,8 +441,9 @@ Selection.definition = {
     }
 
     // if first argument was less then second argument, swaps them.
-    if (first > last)
+    if (first > last) {
       [first, last] = arguments;
+    }
 
     context = this._context;
 

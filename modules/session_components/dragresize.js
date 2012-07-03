@@ -209,53 +209,72 @@ Resizer.definition = {
     originX = event.screenX;
     originY = event.screenY;
 
-    this.sendMessage("command/add-domlistener", {
-      target: document,
-      type: "mousemove",
-      id: "_DRAGGING",
-      context: this,
-      handler: function onmousemove(event) 
+    this.sendMessage(
+      "command/add-domlistener",
       {
-        var char_width, line_height, diffX, diffY,
-            column, row, screen_width_cache, screen_height_cache,
-            moveX, moveY;
+        target: document,
+        type: "mousemove",
+        id: "_DRAGGING",
+        context: this,
 
-        char_width = renderer.char_width;
-        line_height = renderer.line_height;
+        handler: function onmousemove(event) 
+        {
+          var char_width, line_height, diffX, diffY,
+              column, row, screen_width_cache, screen_height_cache,
+              moveX, moveY;
 
-        diffX = Math.round((event.screenX - originX) / char_width);
-        diffY = Math.round((event.screenY - originY) / line_height);
+          char_width = renderer.char_width;
+          line_height = renderer.line_height;
 
-        column = initial_column + ({ e: diffX, w: -diffX }[this.type.slice(-1)] || 0);
-        row = initial_row + ({ s: diffY, n: -diffY }[this.type[0]] || 0);
+          diffX = Math.round((event.screenX - originX) / char_width);
+          diffY = Math.round((event.screenY - originY) / line_height);
 
-        screen_width_cache = screen.width;
-        screen_height_cache = screen.height;
+          column = initial_column + ({ e: diffX, w: -diffX }[this.type.slice(-1)] || 0);
+          row = initial_row + ({ s: diffY, n: -diffY }[this.type[0]] || 0);
 
-        this.sendMessage("command/resize-screen", {column: column, row: row});
+          if (column < 1) {
+            column = 1;
+          }
 
-        moveX = this.type.slice(-1) == "w" ? screen_width_cache - screen.width: 0;
-        moveY = this.type[0] == "n" ? screen_height_cache - screen.height: 0;
+          if (row < 1) {
+            row = 1;
+          }
 
-        if (0 !== moveX || 0 !== moveY) {
-          this.sendMessage("command/move-by", [moveX * char_width, moveY * line_height]);
+          screen_width_cache = screen.width;
+          screen_height_cache = screen.height;
+
+          this.sendMessage(
+            "command/resize-screen", 
+            {
+              column: column, 
+              row: row,
+            });
+
+          moveX = this.type.slice(-1) == "w" ? screen_width_cache - screen.width: 0;
+          moveY = this.type[0] == "n" ? screen_height_cache - screen.height: 0;
+
+          if (0 !== moveX || 0 !== moveY) {
+            this.sendMessage("command/move-by", [moveX * char_width, moveY * line_height]);
+          }
+          this.sendMessage("command/draw", true);
         }
-        this.sendMessage("command/draw", true);
-      }
-    });
-    this.sendMessage("command/add-domlistener", {
-      target: document,
-      type: "mouseup",
-      id: "_DRAGGING",
-      context: this,
-      handler: function onmouseup(event) 
+      });
+
+    this.sendMessage(
+      "command/add-domlistener", 
       {
-        // uninstall listeners.
-        this.sendMessage("command/remove-domlistener", "_DRAGGING");
-        this.sendMessage("event/resize-session-closed", this);
-        this.sendMessage("command/draw", true);
-      },
-    });
+        target: document,
+        type: "mouseup",
+        id: "_DRAGGING",
+        context: this,
+        handler: function onmouseup(event) 
+        {
+          // uninstall listeners.
+          this.sendMessage("command/remove-domlistener", "_DRAGGING");
+          this.sendMessage("event/resize-session-closed", this);
+          this.sendMessage("command/draw", true);
+        },
+      });
   },
 
 };

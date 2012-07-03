@@ -1588,14 +1588,14 @@ coUtils.Font = {
   getAverageGlyphSize: 
   function getAverageGlyphSize(font_size, font_family, test_string)
   {
-    var NS_XHTML = "http://www.w3.org/1999/xhtml";
-    var canvas = coUtils.getWindow()
-      .document
-      .createElementNS(NS_XHTML , "html:canvas");
-    var context = canvas.getContext("2d");
-    var unit = test_string || "Mbc123-XYM";
-    var text = "";
-    var i;
+    var NS_XHTML = "http://www.w3.org/1999/xhtml",
+        canvas = coUtils.getWindow()
+          .document
+          .createElementNS(NS_XHTML , "html:canvas"),
+        context = canvas.getContext("2d"),
+        unit = test_string || "Mbc123-XYM",
+        text = "",
+        i;
 
     for (i = 0; i < 10; ++i) {
       text += unit;

@@ -123,13 +123,15 @@ ProgramCompleter.definition = {
     path = environment.get("PATH");
 
     // detect delimiter for PATH string
-    delimiter = ("WINNT" == coUtils.Runtime.os) ? ";": ":"
+    delimiter = ("WINNT" === coUtils.Runtime.os) ? ";": ":"
 
     // split PATH string by delimiter and get existing paths
     paths = path.split(delimiter)
-      .filter(function(path) {
-        if (!path)
+      .filter(function(path) 
+      {
+        if (!path) {
           return false;
+        }
         try {
           coUtils.File.exists(path);
         } catch (e) {
