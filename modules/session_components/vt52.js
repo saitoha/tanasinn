@@ -215,8 +215,16 @@ VT52SequenceParser.definition = {
         vt52C0Parser.append(code, value);
         this[code] = value;
       } else {
-        vt52C0Parser.append(code, function() value.apply(context));
-        this[code] = function() value.apply(context);
+        vt52C0Parser.append(
+          code, 
+          function()
+          {
+            return value.apply(context);
+          });
+        this[code] = function()
+        {
+          return value.apply(context);
+        };
       }
     } else if (char_position) { // 
       for (code1 = 0x20; code1 < 0x7f; ++code1) {

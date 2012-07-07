@@ -76,12 +76,35 @@ SendReceiveMode.definition = {
 
 
   "[persistable] enabled_when_startup": true,
+  "[persistable] default_value": false,
+
+  _mode: false,
+
+  /** installs itself. 
+   *  @param {Broker} broker A Broker object.
+   */
+  "[install]":
+  function install(broker) 
+  {
+    this._mode = this.default_value;
+  },
+
+  /** Uninstalls itself.
+   *  @param {Broker} broker A broker object.
+   */
+  "[uninstall]":
+  function uninstall(broker) 
+  {
+    this._mode = null;
+  },
 
   /** set new line.
    */
   "[subscribe('sequence/sm/12'), pnp]":
   function activate() 
   { 
+    this._mode = true;
+
     // enable insert mode.
     this.sendMessage("set/local-echo-mode", false);
   },
@@ -91,9 +114,49 @@ SendReceiveMode.definition = {
   "[subscribe('sequence/rm/12'), pnp]":
   function deactivate() 
   {
+    this._mode = false;
+
     // disable insert mode.
     this.sendMessage("set/local-echo-mode", true);
   },
+
+  /** on hard / soft reset
+   */
+  "[subscribe('command/{soft | hard}-terminal-reset'), pnp]":
+  function reset(broker) 
+  {
+    this.deactivate();
+  },
+
+  /**
+   * Serialize snd persist current state.
+   */
+  "[subscribe('@command/backup'), type('Object -> Undefined'), pnp]": 
+  function backup(context) 
+  {
+    // serialize this plugin object.
+    context[this.id] = {
+      mode: this._mode,
+    };
+  },
+
+  /**
+   * Deserialize snd restore stored state.
+   */
+  "[subscribe('@command/restore'), type('Object -> Undefined'), pnp]": 
+  function restore(context) 
+  {
+    var data;
+
+    data = context[this.id];
+    if (data) {
+      this._mode = data.mode;
+    } else {
+      coUtils.Debug.reportWarning(
+        _("Cannot restore last state of renderer: data not found."));
+    }
+  },
+
 
 }; // class SendReceiveMode
 

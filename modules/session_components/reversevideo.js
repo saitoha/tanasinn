@@ -83,8 +83,6 @@ ReverseVideo.definition = {
   "[install]":
   function install(broker) 
   {
-    this.activate.enabled = true;
-    this.deactivate.enabled = true;
   },
 
   /** Uninstalls itself.
@@ -93,13 +91,11 @@ ReverseVideo.definition = {
   "[uninstall]":
   function uninstall(broker) 
   {
-    this.activate.enabled = false;
-    this.deactivate.enabled = false;
   },
 
   /** Activate reverse video feature.
    */
-  "[subscribe('sequence/decset/5')]":
+  "[subscribe('sequence/decset/5'), pnp]":
   function activate() 
   { 
     this.sendMessage("command/reverse-video", true);
@@ -110,7 +106,7 @@ ReverseVideo.definition = {
 
   /** Deactivate reverse video feature
    */
-  "[subscribe('sequence/decrst/5')]":
+  "[subscribe('sequence/decrst/5'), pnp]":
   function deactivate() 
   {
     this.sendMessage("command/reverse-video", false);

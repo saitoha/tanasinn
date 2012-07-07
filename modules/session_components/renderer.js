@@ -22,6 +22,19 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+var thread_manager = Components
+  .classes["@mozilla.org/thread-manager;1"]
+  .getService();
+
+function wait(span) 
+{
+  var end_time = Date.now() + span;
+  var current_thread = thread_manager.currentThread;
+  do {
+    current_thread.processNextEvent(true);
+  } while ((current_thread.hasPendingEvents()) || Date.now() < end_time);
+};
+
 var CO_XTERM_256_COLOR_PROFILE = [
   /* 0       */ "#000000", // black
   /* 1       */ "#cd9988", // red
@@ -283,7 +296,9 @@ ReverseVideoTrait.definition = {
 
       coUtils.Debug.reportMessage("reverse video: " + String(value));
 
-      this.sendMessage("command/draw", true);
+      this.dependency["screen"].dirty = true;
+      //this.sendMessage("command/draw", true);
+      //wait(200);
     }
 
   },
