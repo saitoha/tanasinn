@@ -116,4 +116,4 @@ function main(broker)
   new NewLineMode(broker);
 }
 
-
+// EOF

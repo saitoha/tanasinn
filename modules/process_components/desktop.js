@@ -158,15 +158,12 @@ Desktop.definition = {
   {
     var id, root_element;
 
-    this.onShutdown.enabled = true;
-    this.getDesktopFromWindow.enabled = true;
-
     root_element = this.window.document
       .documentElement
       .appendChild(this.window.document.createElement("box"));
     
-    id = root_element.id = "tanasinn_desktop";
-
+    id = root_element.id = coUtils.Uuid.generate().toString();
+  
     this._root_element = root_element;
 
     this.subscribe("get/root-element",
@@ -183,10 +180,11 @@ Desktop.definition = {
   "[uninstall]":
   function uninstall(broker)
   {
-    this.onShutdown.enabled = false;
-    this.getDesktopFromWindow.enabled = false;
+    this._unsubscribe(this._root_element.id);
     this.clear();
+
     this._root_element.parentNode.removeChild(this._root_element);
+    this._root_element = null;
   },
   
   "[subscribe('event/enabled'), enabled]":
@@ -201,14 +199,14 @@ Desktop.definition = {
     this.notify("event/disabled");
   },
 
-  "[subscribe('event/shutdown')]":
+  "[subscribe('event/shutdown'), pnp]":
   function onShutdown()
   {
     this.notify("event/shutdown");
     this.uninstall(this._broker);
   },
   
-  "[subscribe('get/desktop-from-window')]":
+  "[subscribe('get/desktop-from-window'), pnp]":
   function getDesktopFromWindow(window)
   {
     return window.document

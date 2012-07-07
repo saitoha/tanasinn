@@ -73,7 +73,7 @@ NMapCompleter.definition = {
       lower_name = name.toLowerCase();
       candidates = Object.getOwnPropertyNames(expressions)
         .filter(function(expression) {
-          return -1 != expression.toLowerCase().indexOf(lower_name); 
+          return -1 !== expression.toLowerCase().indexOf(lower_name); 
         })
         .map(function(key) {
           return { 

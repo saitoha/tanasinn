@@ -49,10 +49,89 @@ Suitable.definition = {
 };
 
 /**
+ * @trait DragSelect
+ */
+var DragSelect = new Trait();
+DragSelect.definition = {
+
+  _initial_position: null,
+
+  /** Dragstart handler. It starts a session of dragging selection. */
+  "[listen('dragstart', '#tanasinn_content'), pnp]":
+  function ondragstart(event) 
+  {
+    var initial_position, start, end;
+
+    if (event.ctrlKey) {
+      return;
+    }
+
+    if (event.shiftKey) {
+      return;
+    }
+
+    initial_position = this._convertPixelToPosition(event);
+
+    if (this._range) {
+
+      start = this._range[0];
+      end = this._range[1];
+
+      if (start <= initial_position && initial_position < end) {
+        return; // drag copy
+      }
+    }
+
+    this._initial_position = initial_position; // store initial_position
+
+    this._rectangle_selection_flag = event.altKey;
+    this._color = this.normal_selection_color;
+    this._context.fillStyle = this._color;
+
+    this.ondragmove.enabled = true;
+    this.ondragend.enabled = true;
+  },
+
+  /** Dragmove handler */
+  "[listen('mousemove')]":
+  function ondragmove(event) 
+  {
+    var initial_position, current_position, start_position, end_position;
+
+    initial_position = this._initial_position;
+    current_position = this._convertPixelToPosition(event);
+
+    start_position = Math.min(initial_position, current_position);
+    end_position = Math.max(initial_position, current_position) 
+
+    this.drawSelectionRange(start_position, end_position);
+    this.setRange(start_position, end_position);
+  },
+
+  /** Dragend handler */
+  "[listen('mouseup')]":
+  function ondragend(event) 
+  {
+    this.ondragmove.enabled = false;
+    this.ondragend.enabled = false;
+
+    this._initial_position = null;
+
+    if (this._range) {
+      this._setClearAction();
+      this._reportRange();
+    }
+  },
+
+}; // DragSelect
+
+
+/**
  * @class Selection
  */
 var Selection = new Class().extends(Plugin)
                            .mix(Suitable)
+                           .mix(DragSelect)
                            .depends("renderer")
                            .depends("screen");
 Selection.definition = {
@@ -298,71 +377,6 @@ Selection.definition = {
         });
   },
 
-  /** Dragstart handler. It starts a session of dragging selection. */
-  "[listen('dragstart', '#tanasinn_content'), pnp]":
-  function ondragstart(event) 
-  {
-    var screen, column, row, x, y,
-        initial_position, start, end;
-
-    screen = this.dependency["screen"];
-    column = screen.width;
-
-    row = screen.height;
-    [x, y] = this.convertPixelToScreen(event);
-
-    initial_position = y * column + x;
-    if (this._range) {
-      [start, end] = this._range;
-      if (start <= initial_position && initial_position < end) {
-        return; // drag copy
-      }
-    }
-    this._rectangle_selection_flag = event.altKey;
-    this._color = this.normal_selection_color;
-    this._context.fillStyle = this._color;
-
-    this.sendMessage(
-      "command/add-domlistener", 
-      {
-        target: this._canvas.ownerDocument, 
-        type: "mousemove", 
-        id: "_DRAGGING",
-        context: this,
-        handler: function selection_mousemove(event) 
-        {
-          var x, y, current_position, start_position, end_position;
-
-          [x, y] = this.convertPixelToScreen(event);
-
-          current_position = y * column + x;
-          start_position = Math.min(initial_position, current_position);
-          end_position = Math.max(initial_position, current_position) 
-
-          start_position = Math.max(0, start_position);
-          end_position = Math.min(row * column, end_position);
-          this.drawSelectionRange(start_position, end_position);
-          this.setRange(start_position, end_position);
-        }
-      });
-
-    this.sendMessage(
-      "command/add-domlistener", 
-      {
-        target: this._canvas.ownerDocument,
-        type: "mouseup", 
-        id: "_DRAGGING",
-        context: this,
-        handler: function selection_mouseup(event) 
-        {
-          this.sendMessage("command/remove-domlistener", "_DRAGGING"); 
-          if (this._range) {
-            this._setClearAction();
-            this._reportRange();
-          }
-        }
-      });
-  },
 
   /** This method called after selection range settled. It registers 3 DOM 
    *  listeners which wait for mouseup / dragstart / DOMMouseScroll event 
@@ -373,6 +387,7 @@ Selection.definition = {
     var id;
     
     id = "selection.clear";
+
     this.sendMessage("command/add-domlistener", {
       target: "#tanasinn_content",
       type: "mouseup",
@@ -380,13 +395,14 @@ Selection.definition = {
       context: this,
       handler: function(event) 
       {
-        if (2 == event.button) { // right click
+        if (2 === event.button) { // right click
           return;
         }
         this.sendMessage("command/remove-domlistener", id); 
         this.clear();
       },
     });
+
     this.sendMessage("command/add-domlistener", {
       target: "#tanasinn_content",
       type: "DOMMouseScroll", 
@@ -398,6 +414,7 @@ Selection.definition = {
         this.clear();
       },
     });
+
   },
 
   /** Draw selection overlay to the canvas.
@@ -577,6 +594,16 @@ Selection.definition = {
       context.clearRect(0, 0, canvas.width, canvas.height);
       this._range = null; // clear range.
     }
+  },
+
+  _convertPixelToPosition: function convertPixelToScreen(event) 
+  {
+    var result, screen;
+
+    screen = this.dependency["screen"];
+    result = this.convertPixelToScreen(event);
+
+    return screen.width * result[1] + result[0];
   },
 
   convertPixelToScreen: function convertPixelToScreen(event) 

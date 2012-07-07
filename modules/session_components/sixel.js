@@ -454,4 +454,4 @@ function main(broker)
   new Sixel(broker);
 }
 
-
+// EOF

@@ -224,11 +224,13 @@ PersistableAttribute.definition = {
         path = [this.id, key].join(".");
 
         try {
-          context.__defineGetter__(path, function()
+          context.__defineGetter__(path,
+            function()
             {
               return self[key];
             });
-          context.__defineSetter__(path, function(value)
+          context.__defineSetter__(path,
+            function(value)
             {
               self[key] = value;
             });

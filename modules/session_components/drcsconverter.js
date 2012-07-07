@@ -586,25 +586,53 @@ DRCSConverter.definition = {
   "[subscribe('sequence/g0'), enabled]": 
   function scsg0(dscs) 
   {
-    this._g[0] = this._charset_table[dscs];
+    //coUtils.Debug.reportMessage("g0 = " + dscs);
+
+    var new_charset;
+
+    new_charset = this._charset_table[dscs];
+
+    if (undefined !== new_charset) {
+      this._g[0] = new_charset;
+    }
   },
 
   "[subscribe('sequence/g1'), enabled]": 
   function scsg1(dscs) 
   {
-    this._g[1] = this._charset_table[dscs];
+    //coUtils.Debug.reportMessage("g1 = " + dscs);
+    var new_charset;
+
+    new_charset = this._charset_table[dscs];
+
+    if (undefined !== new_charset) {
+      this._g[1] = new_charset;
+    }
   },
 
   "[subscribe('sequence/g2'), enabled]": 
   function scsg2(dscs) 
   {
-    this._g[2] = this._charset_table[dscs];
+    //coUtils.Debug.reportMessage("g2 = " + dscs);
+    var new_charset;
+
+    new_charset = this._charset_table[dscs];
+
+    if (undefined !== new_charset) {
+      this._g[2] = new_charset;
+    }
   },
 
   "[subscribe('sequence/g3'), enabled]": 
   function scsg3(dscs) 
   {
-    this._g[3] = this._charset_table[dscs];
+    var new_charset;
+
+    new_charset = this._charset_table[dscs];
+
+    if (undefined !== new_charset) {
+      this._g[3] = new_charset;
+    }
   },
 
   "[subscribe('command/save-cursor'), enabled]": 
@@ -672,4 +700,4 @@ function main(broker)
 }
 
 
-
+// EOF

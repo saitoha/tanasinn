@@ -141,3 +141,4 @@ function main(target_class)
   target_class.mix(TypeAttribute);
 }
 
+// EOF

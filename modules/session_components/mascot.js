@@ -196,4 +196,4 @@ function main(broker)
   new Cover(broker);
 }
 
-
+// EOF

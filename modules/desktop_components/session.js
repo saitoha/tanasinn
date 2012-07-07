@@ -118,30 +118,35 @@ Environment.definition = {
 var RouteKeyEvents = new Trait()
 RouteKeyEvents.definition = {
 
+  /** route double shift hotkey evnet */
   "[subscribe('event/hotkey-double-shift'), enabled]":
   function onDoubleShift() 
   {
     this.notify("event/hotkey-double-shift", this);
   },
 
+  /** route alt key down evnet */
   "[subscribe('event/alt-key-down'), enabled]":
   function onAltKeyDown() 
   {
     this.notify("event/alt-key-down", this);
   },
 
+  /** route alt key up evnet */
   "[subscribe('event/alt-key-up'), enabled]":
   function onAltKeyUp() 
   {
     this.notify("event/alt-key-up", this);
   },
 
+  /** route shift key down evnet */
   "[subscribe('event/shift-key-down'), enabled]":
   function onShiftKeyDown() 
   {
     this.notify("event/shift-key-down", this);
   },
 
+  /** route shift key up evnet */
   "[subscribe('event/shift-key-up'), enabled]":
   function onShiftKeyUp() 
   {
@@ -197,11 +202,6 @@ Session.definition = {
   "[persistable] default_term": "xterm",
   "[persistable] debug_flag": false,
 
-  get python_path()
-  {
-    return this.request("get/python-path");
-  },
-
   _stopped: false,
   _request_id: null,
 
@@ -232,7 +232,9 @@ Session.definition = {
   /** Create terminal UI and start tty session. */ 
   initializeWithRequest: function initializeWithRequest(request) 
   {
-    var id = coUtils.Uuid.generate().toString();
+    var id;
+
+    id = coUtils.Uuid.generate().toString();
 
     // register getter topic.
     this.subscribe("get/bin-path", 
@@ -316,4 +318,4 @@ function main(desktop)
     });
 }
 
-
+// EOF

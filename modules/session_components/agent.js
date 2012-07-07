@@ -47,9 +47,7 @@ Agent.definition = {
       tagName: "box",
       id: "tanasinn_agent_layer",
       //hidden: true,
-      style: <>
-        position: absolute;
-      </>,
+      style: "position: absolute;",
       childNodes: [
         {
           tagName: "image",

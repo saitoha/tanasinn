@@ -317,4 +317,4 @@ function main(broker)
   new WindowManipulator(broker);
 }
 
-
+// EOF

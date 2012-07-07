@@ -29,94 +29,6 @@
  * - Chrome
  */
 
-var Vector3D = new Class();
-Vector3D.definitian = {
-
-  x: 0,
-  y: 0,
-  z: 0,
-
-  initialize: function initialize(x, y, z)
-  {
-    this.x = x;
-    this.y = y;
-    this.z = z;
-  },
-
-};
-
-var Quatanion = new Class();
-Quatanion.definition = {
-
-  x: 0,
-  y: 0,
-  z: 0,
-  w: 0,
-
-  initialize: function initialize(x, y, z, w)
-  {
-    this.x = x;
-    this.y = y;
-    this.z = z;
-    this.w = w;
-  },
-
-};
-
-var matrix = <>
-  -moz-transform: matrix3d(
- +1.8000, -1.0000, +1.0000, -0.0003, 
- +1.0000, +1.0000, +1.0000, -0.0016, 
- -1.0000, +0.0000, +1.0000, -0.0000, 
- +0.0000, +0.0000, +0.0000, +2.5000);
-</>;
-//
-//var matrix = <>
-//  -moz-transform: matrix3d(
-// +0.0001, -1.0000, +0.0000, -0.0000, 
-// +1.0000, +0.0001, +0.0000, -0.0000, 
-// -0.0000, +0.0000, +0.0001, -1.0000, 
-// +0.0000, +0.0000, +1.0000, +1.0000);
-//</>;
-//
-//var matrix = <>
-//  -moz-transform: matrix3d(
-// +0.0001, -0.0000, -1.0000, -0.0000, 
-// +0.0000, +0.0001, +0.0000, +1.0000, 
-// +1.0000, +0.0000, +0.0001, -0.0000, 
-// +0.0000, -1.0000, +1.0000, +1.0000);
-//</>;
-//
-//
-//var matrix = <>
-//  -moz-transform: matrix3d(
-// +1.0000, -0.0000, -0.0000, +0.0000, 
-// +0.0000, +1.0000, -0.0000, -0.0040, 
-// +0.0000, +0.0000, +1.0000, -0.0000, 
-// +0.0000, -0.0000, +0.0000, +1.0000);
-//</>;
-
-//var matrix = <>
-//  -moz-transform: perspective(800px);
-//  -moz-perspective-origin: 50% 200px;
-//</>;
-
-//var matrix = <>
-//  -moz-transform: matrix3d(
-// +4.0010, -1.0000, +1.0000, -0.0003, 
-// +1.0000, +4.0000, +1.0000, -0.0016, 
-// -1.0000, +0.0000, +1.0000, -0.0000, 
-// +0.0000, +0.0000, +0.0000, +4.5000);
-//</>;
-
-//var matrix = <>
-//  -moz-transform: matrix3d(
-// +1.0000, -0.0000, +0.0000, -0.0000, 
-// +0.0000, +1.0000, +0.0000, -0.0040, 
-// -0.0000, +0.0000, +1.0000, -0.0000, 
-// +0.0000, +0.0000, +0.0000, +1.0000);
-//</>;
-
 /**
  * @concept MovableConcept
  */
@@ -159,12 +71,15 @@ Movable.definition = {
     [x, y] = coordinate;
 
     target_element = this.request("get/root-element");
+
     if (x < -target_element.boxObject.width) {
       x = 0;
     }
+
     if (y < -target_element.boxObject.height) {
       y = 0;
     }
+
     target_element.style.left = x + "px";
     target_element.style.top = y + "px";
   },
@@ -196,7 +111,7 @@ Movable.definition = {
       dom.root_element.style.MozTransitionProperty = "left, top";
       dom.root_element.style.MozTransitionDuration = this.move_duration + "ms";
       static_scope.timer = coUtils.Timer.setTimeout(
-        function() 
+        function timerProc() 
         {
           dom.root_element.style.MozTransitionProperty = "";
           dom.root_element.style.MozTransitionDuration = "0ms";
@@ -239,23 +154,6 @@ OuterChrome.definition = {
   "[persistable, watchable] gradation": true,
   "[persistable, watchable] border_radius": 8,
   "[persistable, watchable] box_shadow": "5px 4px 29px black",
-  "[persistable, watchable] use_matrix": false,
-  "[persistable, watchable] matrix": 
-//  <>
-//    matrix3d(
-//      +1.0000, -0.0000, +1.0000, -0.0029, 
-//      +0.0000, +1.0000, +1.0000, -0.0000, 
-//      -1.0000, +0.0000, +1.0000, -0.0000, 
-//      +0.0000, +0.0000, +0.0000, +1.6000)
-//  </>.toString(),
-
-  <>
-    matrix3d(
-      +1.8000, -1.0000, +1.0000, -0.0003, 
-      +1.0000, +1.0000, +1.0000, -0.0025, 
-      -1.0000, +0.0000, +1.0000, -0.0000, 
-      +0.0000, +0.0000, +0.0000, +2.0000) 
-  </>.toString(),
 
   get frame_style()
     <>
@@ -274,9 +172,9 @@ OuterChrome.definition = {
 
     f = parseInt(this.foreground_color.substr(1), 16);
     b = parseInt(this.background_color.substr(1), 16);
-    color = (((((f >>> 16 & 0xff) + (b >>> 16 & 0xff) * 2) / 1.5) | 0) << 16)
-              | (((((f >>> 8  & 0xff) + (b >>>  8 & 0xff) * 2) / 1.5) | 0) <<  8) 
-              | (((((f        & 0xff) + (b        & 0xff) * 2) / 1.5) | 0) <<  0);
+    color = (((((f >>> 16 & 0xff) + (b >>> 16 & 0xff) * 2) / 2.0) | 0) << 16)
+              | (((((f >>> 8  & 0xff) + (b >>>  8 & 0xff) * 2) / 2.0) | 0) <<  8) 
+              | (((((f        & 0xff) + (b        & 0xff) * 2) / 2.0) | 0) <<  0);
     return (color + 0x1000000)
         .toString(16)
         .replace(/^1/, "#");
@@ -338,74 +236,73 @@ OuterChrome.definition = {
   get template()
     ({
       parentNode: this.request("get/root-element"), 
-      id: "tanasinn_outer_chrome",
-      tagName: "stack",
-      hidden: true,
-      childNodes: [
-        {
-          tagName: "box",
-          id: "tanasinn_background_frame",
-          style: this.frame_style,
-        },
-        {
-          tagName: "grid",
-          className: "tanasinn",
-          dir: "ltr",
-          childNodes: {
-            tagName: "rows",
-            childNodes: [
-              {
-                tagName: "row",
-                childNodes: [
-                  { tagName: "box", id: "tanasinn_resizer_topleft", },
-                  { tagName: "vbox", id: "tanasinn_resizer_top", },
-                  { tagName: "box", id: "tanasinn_resizer_topright", },
-                ],
-              },
-              {
-                tagName: "row",
-                childNodes: [
-                  { tagName: "hbox", id: "tanasinn_resizer_left", },
-                  { tagName: "vbox", id: "tanasinn_chrome", },
-                  { tagName: "hbox", id: "tanasinn_resizer_right", },
-                ]
-              },
-              { 
-                tagName: "row",
-                childNodes: [
-                  { tagName: "box", id: "tanasinn_resizer_bottomleft", },
-                  { tagName: "vbox", id: "tanasinn_resizer_bottom", },
-                  { tagName: "box", id: "tanasinn_resizer_bottomright", },
-                ],
-              },
-            ],
+      tagName: "box",
+      id: "tanasinn_chrome_root",
+      childNodes: {
+        id: "tanasinn_outer_chrome",
+        tagName: "stack",
+        hidden: true,
+        childNodes: [
+          {
+            tagName: "box",
+            id: "tanasinn_background_frame",
+            style: this.frame_style,
           },
-        },
-
-      ],
+          {
+            tagName: "grid",
+            className: "tanasinn",
+            dir: "ltr",
+            childNodes: {
+              tagName: "rows",
+              childNodes: [
+                {
+                  tagName: "row",
+                  childNodes: [
+                    { tagName: "box", id: "tanasinn_resizer_topleft", },
+                    { tagName: "vbox", id: "tanasinn_resizer_top", },
+                    { tagName: "box", id: "tanasinn_resizer_topright", },
+                  ],
+                },
+                {
+                  tagName: "row",
+                  childNodes: [
+                    { tagName: "hbox", id: "tanasinn_resizer_left", },
+                    { tagName: "vbox", id: "tanasinn_chrome", },
+                    { tagName: "hbox", id: "tanasinn_resizer_right", },
+                  ]
+                },
+                { 
+                  tagName: "row",
+                  childNodes: [
+                    { tagName: "box", id: "tanasinn_resizer_bottomleft", },
+                    { tagName: "vbox", id: "tanasinn_resizer_bottom", },
+                    { tagName: "box", id: "tanasinn_resizer_bottomright", },
+                  ],
+                },
+              ],
+            },
+          },
+        ],
+      },
     }),
 
   _element: null,
   _frame: null,
   board: null,
 
-// constructor
-  /** post initializer. */
+  /** Installs itself. 
+   *  @param {Broker} broker A Broker object.
+   */
   "[install]": 
   function install(broker) 
   {
+    var result;
+
     // construct chrome elements. 
-    var {
-      tanasinn_outer_chrome,
-      tanasinn_background_frame,  
-    } = this.request("command/construct-chrome", this.template);
+    result = this.request("command/construct-chrome", this.template);
 
-    this._element = tanasinn_outer_chrome;
-    this._frame = tanasinn_background_frame;
-
-    if (this.use_matrix) {
-      this.updateTransform();
-    }
+    this._element = result.tanasinn_outer_chrome;
+    this._frame = result.tanasinn_background_frame;
 
     if (coUtils.Runtime.app_name.match(/tanasinn/)) {
       this._element.firstChild.style.borderRadius = "0px";
@@ -413,12 +310,19 @@ OuterChrome.definition = {
     }
   },
 
+  /** Uninstalls itself. 
+   *  @param {Broker} broker A Broker object.
+   */
   "[uninstall]":
   function uninstall(broker) 
   {
     // destruct chrome elements. 
-    if (this._element && this._element.parentNode) {
-      this._element.parentNode.removeChild(this._element);
+    if (null !== this._element) {
+      if (this._element.parentNode) {
+        if (this._element.parentNode.parentNode) {
+          this._element.parentNode.parentNode.removeChild(this._element.parentNode);
+        }
+      }
       this._element = null;
     }
   },
@@ -433,16 +337,6 @@ OuterChrome.definition = {
   function onclick()
   {
     this.sendMessage("command/focus");
-  },
-
-  "[subscribe('variable-changed/outerchrome.{use_matrix | matrix}'), pnp]": 
-  function updateTransform() 
-  {
-    if (this.use_matrix) {
-      this._element.style.MozTransform = this.matrix;
-    } else {
-      this._element.style.MozTransform = "";
-    }
   },
 
   "[subscribe('variable-changed/outerchrome.{background_color | foreground_color | gradation}'), pnp]": 
@@ -492,19 +386,6 @@ OuterChrome.definition = {
     target = this._element.querySelector("#tanasinn_chrome");
     target.style.cursor = "";
   },
-
-  /** Fired when The session is stopping. */
-  "[subscribe('@event/broker-stopping'), enabled]": 
-  function onSessionStoping() 
-  {
-    // clear the memnber "_element"
-    if (null !== this._element) {
-      if (this._element.parentNode) {
-        this._element.parentNode.removeChild(this._element);
-      }
-      this._element = null;
-    }
-  }, 
 
   "[subscribe('command/set-opacity'), enabled]": 
   function setOpacity(opacity, duration) 

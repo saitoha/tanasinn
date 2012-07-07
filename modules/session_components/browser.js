@@ -53,9 +53,6 @@ OverlayBrowser.definition = {
   "[install]":
   function install(session) 
   {
-    this.open.enabled = true;
-    this.close.enabled = true;
-    this.handleSequence.enabled = true;
   },
 
   /** Uninstalls itself.
@@ -64,26 +61,30 @@ OverlayBrowser.definition = {
   "[uninstall]":
   function uninstall(session) 
   {
-    if (this._element) {
+    if (null !== this._element) {
       this._element.parentNode.removeChild(this._element);
     }
 
     this._element = null;
     this._overlay = null;
-
-    this.open.enabled = false;
-    this.close.enabled = false;
-    this.handleSequence.enabled = false;
   },
 
-  "[subscribe('sequence/osc/210')]":
+  "[subscribe('sequence/osc/210'), pnp]":
   function handleSequence(data) 
   {
     coUtils.Timer.setTimeout(
       function timerproc() 
       {
-        var [col, line, width, height, url] = data.split(" "),
+        var result, col, line, width, height, url,
             cursorstate;
+
+        result = data.split(/\s+/);
+
+        col = result[0];
+        line = result[1];
+        width = result[2];
+        height = result[3];
+        url = result[4];
 
         cursorstate = this.dependency["cursorstate"];
 
@@ -97,7 +98,7 @@ OverlayBrowser.definition = {
       }, this.open_delay, this);
   },
 
-  "[subscribe('command/open-overlay-browser')]":
+  "[subscribe('command/open-overlay-browser'), pnp]":
   function open(left, top, width, height, url) 
   {
     var renderer;
@@ -129,7 +130,7 @@ OverlayBrowser.definition = {
 
   },
 
-  "[subscribe('sequence/osc/211 | command/close-overlay-browser')]":
+  "[subscribe('sequence/osc/211 | command/close-overlay-browser'), pnp]":
   function close(data) 
   {
     var element;
@@ -154,4 +155,4 @@ function main(broker)
   new OverlayBrowser(broker);
 }
 
-
+// EOF

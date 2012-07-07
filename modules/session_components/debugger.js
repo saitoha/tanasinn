@@ -355,12 +355,6 @@ Debugger.definition = {
   function install(broker) 
   {
     this._queue = [];
-    this.select.enabled = true;
-    this.breakpoint.enabled = true;
-    this.enableDebugger.enabled = true;
-    this.disableDebugger.enabled = true;
-    this.doBreak.enabled = true;
-    this.onPanelItemRequested.enabled = true;
   },
 
   /** Uninstalls itself 
@@ -369,42 +363,34 @@ Debugger.definition = {
   "[uninstall]":
   function uninstall(broker)
   {
-    this.select.enabled = false;
-    this.breakpoint.enabled = false;
-    this.enableDebugger.enabled = false;
     this.trace.enabled = false;
-    this.onPanelItemRequested.enabled = false;
+
     if (this._timer) {
       this._timer.cancel();
     }
+
     this._timer = null;
     this._queue = null;
     this.sendMessage("command/remove-panel", this.id);
   },
 
-  "[subscribe('@get/panel-items')]": 
+  "[subscribe('@get/panel-items'), pnp]": 
   function onPanelItemRequested(panel) 
   {
-    var template, item;
+    var template, item, result;
 
     template = this.template;
     item = panel.alloc(this.id, _("Debugger"));
 
     template.parentNode = item;
 
-    var {
-      tanasinn_trace,
-      tanasinn_debugger_attach,
-      tanasinn_debugger_break,
-      tanasinn_debugger_resume,
-      tanasinn_debugger_step,
-    } = this.request("command/construct-chrome", template);
+    result = this.request("command/construct-chrome", template);
 
-    this._trace_box = tanasinn_trace;
-    this._checkbox_attach = tanasinn_debugger_attach;
-    this._checkbox_break = tanasinn_debugger_break;
-    this._checkbox_resume = tanasinn_debugger_resume;
-    this._checkbox_step = tanasinn_debugger_step;
+    this._trace_box = result.tanasinn_trace;
+    this._checkbox_attach = result.tanasinn_debugger_attach;
+    this._checkbox_break = result.tanasinn_debugger_break;
+    this._checkbox_resume = result.tanasinn_debugger_resume;
+    this._checkbox_step = result.tanasinn_debugger_step;
     this.trace.enabled = true;
 
     return item;
@@ -423,7 +409,7 @@ Debugger.definition = {
     }
   },
 
-  "[command('enabledebugger/eg'), _('Attach the debugger and trace incoming sequences.')]": 
+  "[command('enabledebugger/eg'), _('Attach the debugger and trace incoming sequences.'), pnp]": 
   function enableDebugger()
   {
     if (!this._trace_box) {
@@ -463,7 +449,7 @@ Debugger.definition = {
     }, this.update_interval, this);
   },
  
-  "[command('disabledebugger'), _('Detach the debugger.')]": 
+  "[command('disabledebugger'), _('Detach the debugger.'), pnp]": 
   function disableDebugger()
   {
     if (!this._trace_box) {
@@ -485,7 +471,7 @@ Debugger.definition = {
     this.sendMessage("command/debugger-resume");
   },
 
-  "[command('breakdebugger'), _('Break debugger.')]": 
+  "[command('breakdebugger'), _('Break debugger.'), pnp]": 
   function doBreak() 
   {
     if (!this._trace_box) {
@@ -527,7 +513,7 @@ Debugger.definition = {
     this.sendMessage("command/debugger-step");
   },
 
-  "[command('breakpoint/bp')]": 
+  "[command('breakpoint/bp'), pnp]": 
   function breakpoint(arguments_string) 
   {
     if (!this._trace_box) {
@@ -692,7 +678,7 @@ Debugger.definition = {
 
 
   /** select this panel */
-  "[command('debugger'), nmap('<M-d>', '<C-S-d>'), _('Open debugger.')]":
+  "[command('debugger'), nmap('<M-d>', '<C-S-d>'), _('Open debugger.'), pnp]":
   function select() 
   {
     this.sendMessage("command/select-panel", this.id);

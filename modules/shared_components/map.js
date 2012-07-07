@@ -109,7 +109,7 @@ MappingManagerBase.definition = {
 
     // swap mapleader as <Leader>
     if (this._state[coUtils.Keyboard.KEYNAME_PACKEDCODE_MAP.leader]) {
-      if (code == coUtils.Keyboard.parseKeymapExpression(this.mapleader)) {
+      if (code === coUtils.Keyboard.parseKeymapExpression(this.mapleader)) {
         code = coUtils.Keyboard.KEYNAME_PACKEDCODE_MAP.leader;
       }
     }
@@ -145,7 +145,7 @@ MappingManagerBase.definition = {
       {
         var expression;
 
-        if ("value" == name) {
+        if ("value" === name) {
           expression = coUtils.Keyboard
             .convertCodeToExpression(previous, mapleader);
           result[expression] = context[name].description || context[name];
@@ -372,7 +372,7 @@ CommandlineKeyHandler.definition = {
 
     if (-1 !== this._mark) {
       textbox.selectionStart = start - 1;
-    } else if (start == end) {
+    } else if (start === end) {
       textbox.selectionStart = start - 1;
       textbox.selectionEnd = start - 1;
     } else {
@@ -391,7 +391,7 @@ CommandlineKeyHandler.definition = {
     start = textbox.selectionStart;
     end = textbox.selectionEnd;
 
-    if (start == end) {
+    if (start === end) {
       textbox.selectionStart = start + 1;
       textbox.selectionEnd = start + 1;
     } else {
@@ -410,7 +410,7 @@ CommandlineKeyHandler.definition = {
     start = textbox.selectionStart;
     end = textbox.selectionEnd;
 
-    if (start == end) {
+    if (start === end) {
       textbox.value 
         = value.substr(0, textbox.selectionStart);
     } else {
@@ -436,8 +436,8 @@ CommandlineKeyHandler.definition = {
     start = textbox.selectionStart;
     end = textbox.selectionEnd;
 
-    if (start == end) {
-      if (0 == start) {
+    if (start === end) {
+      if (0 === start) {
         return true;
       }
       textbox.value 
@@ -468,8 +468,8 @@ CommandlineKeyHandler.definition = {
     start = textbox.selectionStart;
     end = textbox.selectionEnd;
 
-    if (start == end) {
-      if (0 == start) {
+    if (start === end) {
+      if (0 === start) {
         return true;
       }
       textbox.value 

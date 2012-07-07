@@ -79,7 +79,7 @@ ComponentsCompleter.definition = {
       } for ([, module] in Iterator(modules)) 
         if (module.id && module.id.match(context.source))
     ];
-    if (0 == candidates.length) {
+    if (0 === candidates.length) {
       this.sendMessage("event/answer-completion", null);
       return;
     }
@@ -156,9 +156,9 @@ PluginsCompleter.definition = {
         value: module
       } for ([, module] in Iterator(modules)) 
         if (module.id && module.id.match(context.source) 
-            && module.enabled == ("enabled" === context.option))
+            && module.enabled === ("enabled" === context.option))
     ];
-    if (0 == candidates.length) {
+    if (0 === candidates.length) {
       this.sendMessage("event/answer-completion", null);
       return;
     }

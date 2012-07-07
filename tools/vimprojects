@@ -63,7 +63,6 @@
   }
   process_components=process_components {
    desktop.js
-   trace.js
   }
   desktop_components=desktop_components {
    .
@@ -103,6 +102,7 @@
 
    plugin=.{
 
+    transform.js
     drcs.js
     sixel.js
     mascot.js
@@ -175,6 +175,7 @@
 
     overlay.js
     overlayimage.js
+    video.js
     browser.js
     agent.js
     completer.js

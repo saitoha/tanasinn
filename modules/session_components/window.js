@@ -30,125 +30,131 @@
  * @class WindowWatcher
  *
  */
-var WindowWatcher = new Class().extends(Component);
+var WindowWatcher = new Class().extends(Plugin);
 WindowWatcher.definition = {
 
   get id()
     "windowwatcher",
 
-  "[subscribe('@event/broker-started'), enabled]": 
-  function onSessionStarted(broker) 
+  get info()
+    <module>
+        <name>{_("Window watcher")}</name>
+        <version>0.1</version>
+        <description>{
+          _("Handler window events.")
+        }</description>
+    </module>,
+
+  "[persistable] enabled_when_startup": true,
+
+  /** Installs itself. 
+   *  @param {Broker} a broker object.
+   */
+  "[install]":
+  function install(broker)
   {
-    var dom;
-
-    dom = {
-      window: this.request("get/root-element").ownerDocument.defaultView,
-    };
-
-    this.sendMessage("command/add-domlistener", {
-      target: dom.window,
-      type: "resize",
-      context: this,
-      handler: this.onresize,
-      id: this.id,
-    });
-
-    this.sendMessage("command/add-domlistener", {
-      target: dom.window,
-      type: "close",
-      context: this,
-      handler: this.onclose,
-      id: this.id,
-    });
-
-    this.sendMessage("command/add-domlistener", {
-      target: dom.window,
-      type: "MozMagnifyGesture",
-      context: this,
-      handler: this.onMagnifyGesture,
-      capture: true,
-      id: this.id,
-    });
-
-    this.sendMessage("command/add-domlistener", {
-      target: dom.window,
-      type: "MozSwipeGesture",
-      context: this,
-      handler: this.onSwipeGesture,
-      capture: true,
-      id: this.id,
-    });
-
-    this.sendMessage("command/add-domlistener", {
-      target: dom.window,
-      type: "MozRotateGesture",
-      context: this,
-      handler: this.onRotateGesture,
-      capture: true,
-      id: this.id,
-    });
-
-  }, // onSessionStarted
-
-  "[subscribe('@event/broker-stopping'), enabled]": 
-  function onSessionStopping(broker) 
-  {
-    this.sendMessage("command/remove-domlistener", this.id);
   },
 
-  onRotateGesture: function onRotateGesture(event) 
+  /** Uninstalls itself. 
+   *  @param {Broker} a broker object.
+   */
+  "[uninstall]":
+  function uninstall(broker)
+  {
+  },
+
+  /** publish ratate gesture event message 
+   *
+   * @param event {Event} An gesture event object.
+   *
+   */
+  "[listen('MozRotateGesture', undefined, true), pnp]":
+  function onRotateGesture(event) 
   {
     var origninal_target, relation;
 
     original_target = event.explicitOriginalTarget;
+
     relation = this.request("get/root-element")
       .compareDocumentPosition(original_target);
+
     if ((relation & original_target.DOCUMENT_POSITION_CONTAINED_BY)) {
       event.preventDefault();
       event.stopPropagation();
+
       this.sendMessage("event/rotate-gesture", event.direction);
+
       event.direction = 0;
     }
   },
 
-  onSwipeGesture: function onSwipeGesture(event) 
+  /** publish swipe gesture event message 
+   *
+   * @param event {Event} An gesture event object.
+   *
+   */
+  "[listen('MozSwipeGesture', undefined, true), pnp]":
+  function onSwipeGesture(event) 
   {
     var origninal_target, relation;
 
     event.preventDefault();
     event.stopPropagation();
+
     original_target = event.explicitOriginalTarget;
+
     relation = this.request("get/root-element")
       .compareDocumentPosition(original_target);
+
     if ((relation & original_target.DOCUMENT_POSITION_CONTAINED_BY)) {
       this.sendMessage("event/swipe-gesture", event.direction);
     }
     event.direction = 0;
   },
 
-  onMagnifyGesture: function onMagnifyGesture(event) 
+  /** publish magnify gesture event message 
+   *
+   * @param event {Event} An gesture event object.
+   *
+   */
+  "[listen('MozMagnifyGesture', undefined, true), pnp]":
+  function onMagnifyGesture(event) 
   {
     var origninal_target, relation;
 
     original_target = event.explicitOriginalTarget;
+
     relation = this.request("get/root-element")
       .compareDocumentPosition(original_target);
+
     if ((relation & original_target.DOCUMENT_POSITION_CONTAINED_BY)) {
+
       this.sendMessage("event/magnify-gesture", event.delta);
+
       event.preventDefault();
       event.stopPropagation();
       event.direction = 0;
     }
   },
   
-  /** Handles window resize event. */
-  onresize: function onresize(event) 
+  /** Handles window resize event. 
+   *
+   * @param event {Event} An resize event object.
+   *
+   */
+  "[listen('resize', undefined, true), pnp]":
+  function onresize(event) 
   {
     this.sendMessage("event/window-resized", event);
   },
 
-  /** Handles window close event. */
-  onclose: function onclose(event) 
+  /** Handles window close event. 
+   *
+   * @param event {Event} An resize event object.
+   *
+   */
+  "[listen('close'), pnp]":
+  function onclose(event) 
   {
     this.sendMessage("event/window-closing", event);
   }
@@ -165,5 +171,4 @@ function main(broker)
   new WindowWatcher(broker);
 }
 
-
-
+// EOF

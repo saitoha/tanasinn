@@ -201,17 +201,22 @@ SlowBlinkTrait.definition = {
     var broker;
 
     broker = this._broker;
+
     layer = new Layer(broker, "slowblink_canvas");
     layer.canvas.width = this._main_layer.canvas.width;
     layer.canvas.height = this._main_layer.canvas.height;
+
     this._slow_blink_layer = layer;
-    coUtils.Timer.setTimeout(function() {
-      this._slow_blink_layer.canvas.style.opacity 
-        = 1 - this._slow_blink_layer.canvas.style.opacity;
-      if (this._slow_blink_layer) {
-        coUtils.Timer.setTimeout(arguments.callee, this.slow_blink_interval, this);
-      }
-    }, this.slow_blink_interval, this);
+
+    coUtils.Timer.setTimeout(
+      function()
+      {
+        if (null !== this._slow_blink_layer) {
+          this._slow_blink_layer.canvas.style.opacity 
+            = 1 - this._slow_blink_layer.canvas.style.opacity;
+          coUtils.Timer.setTimeout(arguments.callee, this.slow_blink_interval, this);
+        }
+      }, this.slow_blink_interval, this);
 
   }, // createSlowBlinkLayer
 
@@ -235,13 +240,15 @@ RapidBlinkTrait.definition = {
     this._rapid_blink_layer.canvas.width = this._main_layer.canvas.width;
     this._rapid_blink_layer.canvas.height = this._main_layer.canvas.height;
 
-    coUtils.Timer.setTimeout(function() {
-      this._rapid_blink_layer.canvas.style.opacity 
-        = 1 - this._rapid_blink_layer.canvas.style.opacity;
-      if (this._rapid_blink_layer) {
-        coUtils.Timer.setTimeout(arguments.callee, this.rapid_blink_interval, this);
-      }
-    }, this.rapid_blink_interval, this);
+    coUtils.Timer.setTimeout(
+      function() 
+      {
+        if (null !== this._rapid_blink_layer) {
+          this._rapid_blink_layer.canvas.style.opacity 
+            = 1 - this._rapid_blink_layer.canvas.style.opacity;
+          coUtils.Timer.setTimeout(arguments.callee, this.rapid_blink_interval, this);
+        }
+      }, this.rapid_blink_interval, this);
 
   }, // createRapidBlinkLayer
 
@@ -259,17 +266,23 @@ ReverseVideoTrait.definition = {
   "[subscribe('command/reverse-video'), enabled]": 
   function reverseVideo(value) 
   {
-    var map, i, broker, value;
+    var map, i, value;
 
-    if (this._reverse != value) {
+    if (this._reverse !== value) {
+
       this._reverse = value;
+
       map = this.color;
+
       for (i = 0; i < map.length; ++i) {
         value = (parseInt(map[i].substr(1), 16) ^ 0x1ffffff)
           .toString(16)
           .replace(/^1/, "#");
         map[i] = value;
       }
+
+      coUtils.Debug.reportMessage("reverse video: " + String(value));
+
       this.sendMessage("command/draw", true);
     }
 

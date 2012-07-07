@@ -79,7 +79,9 @@ Cursor.definition = {
   "[persistable] timing_function": "ease-in-out",
   "[persistable] initial_blink": true,
  
-  /** Installs itself. */
+  /** Installs itself. 
+   *  @param {Broker} broker A Broker object.
+   */
   "[install]": 
   function install(broker) 
   {
@@ -101,7 +103,9 @@ Cursor.definition = {
     this._prepareBlink();
   },
 
-  /** Uninstalls itself. */
+  /** Uninstalls itself. 
+   *  @param {Broker} broker A Broker object.
+   */
   "[subscribe('uninstall/cursor'), enabled]":
   function uninstall(broker) 
   {

@@ -62,11 +62,6 @@ OverlayImage.definition = {
     var {tanasinn_image_canvas} = this.request(
       "command/construct-chrome", this.template);
     this._canvas = tanasinn_image_canvas;
-    this.draw.enabled = true;
-    this.clear.enabled = true;
-    this.onWidthChanged.enabled = true;
-    this.onHeightChanged.enabled = true;
-    this.onKeypadModeChanged.enabled = true;
   },
 
   /** Uninstalls itself.
@@ -80,16 +75,10 @@ OverlayImage.definition = {
     }
 
     this._canvas = null;
-
-    this.draw.enabled = false;
-    this.clear.enabled = false;
-    this.onWidthChanged.enabled = false;
-    this.onHeightChanged.enabled = false;
-    this.onKeypadModeChanged.enabled = false;
   },
     
   /** Fired at the keypad mode is changed. */
-  "[subscribe('event/keypad-mode-changed')]": 
+  "[subscribe('event/keypad-mode-changed'), pnp]": 
   function onKeypadModeChanged(mode) 
   {
     var canvas, context;
@@ -107,13 +96,13 @@ OverlayImage.definition = {
   },
 
 
-  "[subscribe('event/screen-width-changed')]": 
+  "[subscribe('event/screen-width-changed'), pnp]": 
   function onWidthChanged(width) 
   {
     this._canvas.width = width;
   },
 
-  "[subscribe('event/screen-height-changed')]": 
+  "[subscribe('event/screen-height-changed'), pnp]": 
   function onHeightChanged(height) 
   {
     this._canvas.height = height;
@@ -128,7 +117,7 @@ OverlayImage.definition = {
     }
   },
 
-  "[subscribe('sequence/osc/212')]":
+  "[subscribe('sequence/osc/212'), pnp]":
   function draw(data) 
   {
     var canvas, renderer, x, y, w, h, filename,
@@ -172,7 +161,7 @@ OverlayImage.definition = {
     //this.sendMessage("command/report-overlay-message", data);
   },
 
-  "[subscribe('sequence/osc/213')]":
+  "[subscribe('sequence/osc/213'), pnp]":
   function clear(data) 
   {
     var context, renderer, x, y, w, h,

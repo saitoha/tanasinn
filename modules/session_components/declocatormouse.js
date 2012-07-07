@@ -52,13 +52,17 @@ DECLocatorMouse.definition = {
   _in_scroll_session: false,
 
 
-  /** Installs itself. */
+  /** Installs itself. 
+   *  @param {Broker} broker A Broker object.
+   */
   "[install]":
   function install(broker) 
   {
   },
 
-  /** Uninstalls itself. */
+  /** Uninstalls itself. 
+   *  @param {Broker} broker A Broker object.
+   */
   "[uninstall]":
   function uninstall(broker) 
   {

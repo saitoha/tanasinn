@@ -44,13 +44,17 @@ Paste.definition = {
 
   _bracketed_paste_mode: false,
 
-  /** Install itself. */
+  /** Installs itself. 
+   *  @param {Broker} broker A Broker object.
+   */
   "[install]":
   function install(broker) 
   {
   },
 
-  /** Uninstall itself. */
+  /** Uninstalls itself. 
+   *  @param {Broker} broker A Broker object.
+   */
   "[uninstall]":
   function uninstall(broker) 
   {
@@ -71,7 +75,7 @@ Paste.definition = {
     };
   },
 
-  /** */
+  /** paste the text from clipboard. */
   "[command('paste'), nmap('<M-v>', '<C-S-V>'), _('Paste from clipboard.'), pnp]": 
   function paste() 
   {
@@ -80,14 +84,18 @@ Paste.definition = {
     clipboard = Components
       .classes["@mozilla.org/widget/clipboard;1"]
       .getService(Components.interfaces.nsIClipboard)
+
     trans = Components
       .classes["@mozilla.org/widget/transferable;1"]
       .createInstance(Components.interfaces.nsITransferable);
+
     trans.addDataFlavor("text/unicode");
+
     clipboard.getData(trans, clipboard.kGlobalClipboard);
 	  str = {};
 	  str_length = {};
 	  trans.getTransferData("text/unicode", str, str_length);
+
     if (str.value && str_length.value) {
       text = str.value
         .QueryInterface(Components.interfaces.nsISupportsString)

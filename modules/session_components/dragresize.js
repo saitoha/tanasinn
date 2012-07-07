@@ -390,7 +390,7 @@ BottomResizer.definition = {
  */
 function main(broker) 
 {
-  if (!coUtils.Runtime.app_name.match(/tanasinn/)) {
+  //if (!coUtils.Runtime.app_name.match(/tanasinn/)) {
     new CaptureBox(broker);
     new TopLeftResizer(broker);
     new TopRightResizer(broker);
@@ -400,9 +400,9 @@ function main(broker)
     new RightResizer(broker);
     new TopResizer(broker);
     new BottomResizer(broker);
-  } else {
-    new SnapResize(broker);
-  }
+  //} else {
+  //  new SnapResize(broker);
+  //}
 }
 
 // EOF

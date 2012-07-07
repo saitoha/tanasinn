@@ -539,17 +539,34 @@ SequenceParser.definition = {
     } else if (single_char) { // parse a char.
       this[0x20] = this[0x20] || new SequenceParser();
 
+      function make_handler(c)
+      {
+        return function()
+        {
+          return value.call(context, c)
+        };
+      }
+
       for (code = 0x21; code < 0x7f; ++code) {
         c = String.fromCharCode(code);
         this[0x20][code] = this[code] = this[code] 
-                        || function() value.call(context, c)
+                         || make_handler(c);
       }
     } else if (char_position) { // 
+
+      function make_handler(code1, code2)
+      {
+        return function()
+        {
+          return value.apply(context, [code1, code2]);
+        };
+      }
+
       for (code1 = 0x21; code1 < 0x7f; ++code1) {
         for (code2 = 0x21; code2 < 0x7f; ++code2) {
           this[code1] = this[code1] || new SequenceParser();
           this[code1][code2] = this[code1][code2] 
-                            || function() value.apply(context, [code1, code2])
+                            || make_handler(code1, code2)
         }
       }
     } else if (normal_char) {
@@ -1069,3 +1086,4 @@ function main(broker)
   new VT100Grammar(broker);
 }
 
+// EOF

@@ -168,10 +168,12 @@ Controller.definition = {
     this._input.close();
     this._output.close();
     this._pump.cancel(0);
+
     this._input = null;
     this._output = null;
     this._pump = null;
     this._screen = null;
+
     coUtils.Debug.reportMessage(
       _("Resources in Controller have been cleared."));
   },
@@ -184,9 +186,8 @@ Controller.definition = {
   "[subscribe('event/screen-size-changed')]": 
   function resize(size) 
   {
-    var {column, row} = size,
-        width = coUtils.Text.base64encode(column),
-        height = coUtils.Text.base64encode(row),
+    var width = coUtils.Text.base64encode(size.column),
+        height = coUtils.Text.base64encode(size.row),
         command = coUtils.Text.format("resize %s %s\n", width, height);
 
     this.post(command);
@@ -1012,4 +1013,4 @@ function main(broker)
   new SocketTeletypeService(broker);
 }
 
-
+// EOF

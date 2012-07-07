@@ -45,13 +45,17 @@ Copy.definition = {
 
   "[persistable] enabled_when_startup": true,
 
-  /** Installs itself. */
+  /** Installs itself. 
+   *  @param {Broker} broker A Broker object.
+   */
   "[install]": 
   function install(session) 
   {
   },
 
-  /** Uninstalls itself. */
+  /** Uninstalls itself. 
+   *  @param {Broker} broker A Broker object.
+   */
   "[uninstall]":
   function uninstall(session) 
   {

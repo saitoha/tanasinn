@@ -1257,9 +1257,9 @@ Launcher.definition = {
 
     box = document.createElement("box");
 
-    if (!/tanasinn/.test(coUtils.Runtime.app_name)) {
+    //if (!/tanasinn/.test(coUtils.Runtime.app_name)) {
       box.style.cssText = "position: fixed; top: 0px; left: 0px";
-    }
+    //}
     this._window_layer.appendChild(box);
     desktop.start(box, command);  // command
     box.style.left = (this.left = (this.left + Math.random() * 1000) % 140 + 20) + "px";
@@ -1603,4 +1603,4 @@ function main(desktop)
   new DragMove(desktop);
 }
 
-
+// EOF

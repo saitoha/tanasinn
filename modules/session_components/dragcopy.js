@@ -80,7 +80,20 @@ DragCopy.definition = {
   {
     this._mouse_mode = data;
   },
+ 
+  "[subscribe('event/screen-width-changed'), pnp]": 
+  function onWidthChanged(width) 
+  {
+    this._feedback_canvas.width = width;
+  },
 
+  "[subscribe('event/screen-height-changed'), pnp]": 
+  function onHeightChanged(height) 
+  {
+    this._feedback_canvas.height = height;
+  },
+
+  
   /** Set selected text data and feedback image to data transfer object. 
    *  @param {Event} A DOM mouse event object.
    */
@@ -140,7 +153,7 @@ DragCopy.definition = {
     var target_element, root_element, box, offsetX, offsetY,
         left, top;
 
-    target_element = session.uniget("command/query-selector", "#tanasinn_content");
+    target_element = this.request("command/query-selector", "#tanasinn_content");
 
     root_element = target_element.parentNode;
     box = target_element.boxObject;
@@ -173,7 +186,7 @@ DragCopy.definition = {
     result = this.request("get/selection-info");
 
     if (result) {
-      if (start <= position && position < end) {
+      if (result.start <= position && position < result.end) {
         if (result.is_rectangle) {
 
           start_column = result.start % column;

@@ -61,15 +61,28 @@ DragMove.definition = {
   "[listen('dragstart', '#tanasinn_content', true)]":
   function ondragstart(dom_event) 
   {
-    var broker, offsetY, offsetX, dom_document;
+    var root_element, offsetY, offsetX, dom_document;
 
-    broker = this._broker;
-    offsetY = dom_event.screenY - broker.root_element.boxObject.y;
+    if (dom_event.ctrlKey) {
+      return;
+    }
+
+    if (dom_event.altKey) {
+      return;
+    }
+
+    root_element = this.request("get/root-element");
+
+    offsetY = dom_event.screenY - root_element.boxObject.y;
+
     if (!dom_event.shiftKey && offsetY > 60) {
       return;
     }
-    offsetX = dom_event.screenX - broker.root_element.boxObject.x; 
+
+    offsetX = dom_event.screenX - root_element.boxObject.x; 
+
     dom_event.stopPropagation();
+
     // get relative coodinates on target element.
     this.sendMessage("command/set-opacity", 0.30);
     // define mousemove hanler.

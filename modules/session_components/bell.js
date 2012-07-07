@@ -88,7 +88,7 @@ Bell.definition = {
     }
   },
 
-  "[subscribe('command/focus'), pnp]":
+  "[subscribe('@command/focus'), pnp]":
   function onFirstFocus()
   {
     var renderer, screen;
@@ -99,6 +99,19 @@ Bell.definition = {
     this._cover.width = renderer.char_width * screen.width;
     this._cover.height = renderer.line_height * screen.height;
   },
+
+  "[subscribe('event/screen-width-changed'), pnp]": 
+  function onWidthChanged(width) 
+  {
+    this._cover.width = width;
+  },
+
+  "[subscribe('event/screen-height-changed'), pnp]": 
+  function onHeightChanged(height) 
+  {
+    this._cover.height = height;
+  },
+
 
   "[subscribe('sequence/bel'), pnp]":
   function onBell() 

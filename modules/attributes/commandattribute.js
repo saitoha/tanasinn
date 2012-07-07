@@ -197,3 +197,4 @@ function main(target_class)
   target_class.mix(CommandAttribute);
 }
 
+// EOF
