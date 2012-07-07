@@ -87,7 +87,7 @@ NewLineMode.definition = {
   "[persistable] enabled_when_startup": true,
   "[persistable] default_value": false,
 
-  _mode: false
+  _mode: false,
 
   /** installs itself. 
    *  @param {Broker} broker A Broker object.
