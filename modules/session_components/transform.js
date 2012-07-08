@@ -22,6 +22,10 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+/**
+ * @class Vector3d
+ *
+ */
 var Vector3d = new Class();
 Vector3d.prototype = {
 
@@ -72,24 +76,12 @@ Vector3d.prototype = {
 
 };
 
-var Quatanion = new Class();
-Quatanion.prototype = {
 
-  x: 0,
-  y: 0,
-  z: 0,
-  w: 0,
-
-  initialize: function initialize(x, y, z, w)
-  {
-    this.x = x;
-    this.y = y;
-    this.z = z;
-    this.w = w;
-  },
-
-};
-
+/**
+ *
+ * @class TransformMatrix
+ *
+ */
 var TransformMatrix = new Class()
 TransformMatrix.prototype = {
 
@@ -203,10 +195,10 @@ DragTransform.definition = {
   _last_matrix: null,
 
   /** Dragstart handler. It starts a session of dragging selection. */
-  "[listen('dragstart', '#tanasinn_outer_chrome'), pnp]":
+  "[listen('dragstart', '#tanasinn_capture_cover'), pnp]":
   function ondragstart(event) 
   {
-    var coordinate, x, y, z, w, h, r2,
+    var root_element, coordinate, x, y, z, w, h, r2,
         initial_position;
 
     if (!event.altKey) {
@@ -216,11 +208,6 @@ DragTransform.definition = {
     if (!event.shiftKey) {
       return;
     }
-    //event.stopPropagation();
-    //event.preventDefault();
-
-//    this._last_matrix = this.matrix.apply(matrix);
-//    this._element.style.MozTransform = this._last_matrix.toString();
 
     coordinate = this.get2DCoordinate(event);
 
@@ -231,11 +218,13 @@ DragTransform.definition = {
     r2 = w * w + h * h * 1;
     z = Math.sqrt(r2 - (x * x + y * y));
 
+    root_element = this.request("get/root-element");
+    root_element.firstChild.style.MozPerspective = Math.floor(Math.sqrt(r2) * 1.2) + "px";
+
     this._begin_point = new Vector3d(x, y, z);
 
     this.onMouseMove.enabled = true;
     this.onMouseUp.enabled = true;
-    this.onModifierKeyUp.enabled = true;
 
   },
 
@@ -254,24 +243,14 @@ DragTransform.definition = {
         r2 = w * w + h * h * 1,
         z = Math.sqrt(r2 - (x * x + y * y));
 
-    //if (x * x > (this._width / 2 - 100) * (this._width / 2 - 100)) {
-    //  return;
-    //}
-
-    //if (y * y > (this._height / 2 - 100) * (this._height / 2 - 100)) {
-    //  return;
-    //}
-
     if (isNaN(z)) {
       return;
     }
 
-    //this.sendMessage("command/report-overlay-message",  " [" + [x * x, y * y] + "] " + [(this._width - 100) * (this._width - 100) / 4, this.height * this._height / 4])
-
-    var a = this._begin_point,
-        b = new Vector3d(x, y, z),
-        cos_angle = b.norm().dot(a.norm()),
-        sin_angle = Math.sqrt(1.0 - cos_angle * cos_angle),
+    var a = this._begin_point.norm(),
+        b = new Vector3d(x, y, z).norm(),
+        cos_angle = b.dot(a),
+        sin_angle = b.cross(a).abs(),
         cross = b.cross(a).norm();
         x = cross.x,
         y = cross.y,
@@ -291,30 +270,20 @@ DragTransform.definition = {
           0,
           0, 0, 0, 1);
 
-    this._last_matrix = this.matrix.apply(matrix);
+    this._last_matrix = this._matrix.apply(matrix);
     this._element.style.MozTransform = this._last_matrix.toString();
   },
 
   "[subscribe('event/{alt & shift}-key-down'), pnp]":
   function onModifierKeysDown() 
   {
-    this._cover = this.request(
-      "command/construct-chrome",
-      {
-        parentNode: "#tanasinn_window_layer",
-        tagName: "box",
-        id: "capture_cover",
-        style: "position: fixed; border: 20px solid blue",
-      })["capture_cover"];
-
-    this._cover.style.width = this._element.ownerDocument.documentElement.boxObject.width + "px"; 
-    this._cover.style.height = this._element.ownerDocument.documentElement.boxObject.height + "px"; 
-
+    this._cover.hidden = false;
   },
 
-  "[subscribe('event/{alt | shift}-key-up')]":
+  "[subscribe('event/{alt | shift}-key-up'), pnp]":
   function onModifierKeyUp() 
   {
+    this._cover.hidden = true;
     this.onDragEnd();
   },
 
@@ -331,20 +300,14 @@ DragTransform.definition = {
   {
     this.onMouseMove.enabled = false;
     this.onMouseUp.enabled = false;
-    this.onModifierKeyUp.enabled = false;
-
-//    if (this._element) {
-//      this._element.parentNode(this._element);
-//      this._element = null;
-//    }
 
     //this.onAltKeyUp.enabled = false;
 
     if (null !== this._last_matrix) {
-      this.matrix = this._last_matrix;
+      this._matrix = this._last_matrix;
     }
 
-    this.sendMessage("command/focus");
+//    this.sendMessage("command/focus");
   },
 
   get2DCoordinate: function get2DCoordinate(event) 
@@ -381,10 +344,10 @@ Transform.definition = {
     </plugin>,
 
   "[persistable] enabled_when_startup": true,
-  "[persistable, watchable] use_matrix": true,
-  "[persistable, watchable] matrix": null,
 
+  _matrix: null,
   _element: null,
+  _cover: null,
   _width: 0,
   _height: 0,
 
@@ -394,19 +357,35 @@ Transform.definition = {
   "[install]":
   function install(broker)
   {
-    var root_element;
+    var root_element, document_element;
 
-    this.matrix = new TransformMatrix();
-    this.matrix.reset();
+    this._matrix = new TransformMatrix();
+    this._matrix.reset();
 
     root_element = this.request("get/root-element");
-    root_element.firstChild.style.MozPerspective = "2000px";
 
     this._element = root_element.querySelector("#tanasinn_outer_chrome");
     this._element.style.MozTransformStyle = "preserve-3d";
 //    this._eleemnt.style.MozTransform = "translateZ(10px)";
 //    this._element.style.MozTransform = "rotate3d(0, 0, 1, -45deg) rotate3d(0, 1, 0, -45deg)";
-    //this.updateTransform();
+
+    this._cover = this.request(
+      "command/construct-chrome",
+      {
+        tagName: "box",
+        id: "tanasinn_capture_cover",
+        style: "position: fixed; top: 0px; left: 0px;",
+        hidden: true,
+      })["tanasinn_capture_cover"];
+
+    document_element = this._element.ownerDocument.documentElement;
+    document_element.appendChild(this._cover);
+
+    this._cover.style.width = document_element.boxObject.width + "px";
+    this._cover.style.height = document_element.boxObject.height + "px"; 
+
+    coUtils.Debug.reportError(this._cover.style.cssText);
+
   },
 
   /** Uninstalls itself.
@@ -416,6 +395,12 @@ Transform.definition = {
   function uninstall(broker)
   {
     this._element = null;
+
+    if (this._cover) {
+      this._cover.parentNode.removeChild(this._cover);
+      this._cover = null;
+    }
+
   },
 
   "[subscribe('event/screen-width-changed'), pnp]": 
@@ -428,16 +413,6 @@ Transform.definition = {
   function onHeightChanged(height) 
   {
     this._height = height;
-  },
-
-  "[subscribe('variable-changed/outerchrome.{use_matrix | matrix}'), pnp]": 
-  function updateTransform() 
-  {
-    if (this.use_matrix) {
-      this._element.style.MozTransform = this.matrix;
-    } else {
-      this._element.style.MozTransform = "";
-    }
   },
 };
 
@@ -452,4 +427,4 @@ function main(broker)
   new Transform(broker);
 }
 
-
+// EOF

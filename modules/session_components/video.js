@@ -82,7 +82,13 @@ Video.definition = {
     
   /** Fired at the keypad mode is changed. */
   "[subscribe('variable-changed/video.opacity'), pnp]": 
-  function onKeypadModeChanged() 
+  function onOpacityChanged() 
+  {
+    this._element.style.opacity = this.opacity;
+  },
+
+  "[subscribe('event/keypad-mode-changed'), pnp]": 
+  function onKeypadModeChanged(mode) 
   {
     this.close();
   },
@@ -146,7 +152,6 @@ Video.definition = {
     renderer = this.dependency["renderer"];
 
     //this.close();
-
     // create UI part
     var {
       tanasinn_video,
@@ -166,7 +171,7 @@ Video.definition = {
           width: width * renderer.char_width + "px",
           height: height * renderer.line_height + "px",
         },
-        src: "http://www.youtube.com/embed/KtmCIvnpn3s?autoplay=1&enablejsapi=1",
+        src: "http://www.youtube.com/embed/" + id + "?autoplay=1&enablejsapi=1",
         frameborder: "0",
       });
 

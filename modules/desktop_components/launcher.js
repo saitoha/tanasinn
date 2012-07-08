@@ -816,11 +816,6 @@ Launcher.definition = {
       {
         parentNode: desktop.root_element,
         tagName: "box",
-        id: "tanasinn_drag_cover",
-      },
-      {
-        parentNode: desktop.root_element,
-        tagName: "box",
         id: "tanasinn_launcher_layer",
         hidden: true,
         style: <>
