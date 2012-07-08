@@ -854,6 +854,7 @@ char:{event.isChar?"t":"f"}
 
     packed_code = coUtils.Keyboard
       .getPackedKeycodeFromEvent(info.event, this._alt_key);
+      //.getPackedKeycodeFromEvent(info.event, this._alt_key);
 
     this.sendMessage("event/scan-keycode", {
       mode: info.mode, 

@@ -444,7 +444,7 @@ Selection.definition = {
     var text, context, screen, renderer, column,
         char_width, line_height, start_row, end_row,
         start_column, end_column,
-        x, y, width, height, lines, i,
+        x, y, width, height, lines, i, line,
         match, right_blank_length;
 
     this.clear();
@@ -517,12 +517,15 @@ Selection.definition = {
                           right_blank_length * char_width,
                           line_height);
         for (i = start_row + 1; i < end_row; ++i) {
-          right_blank_length = column - lines[i - start_row].length;
-          // clear post-end region
-          context.clearRect(width - right_blank_length * char_width, 
-                            i * line_height,
-                            right_blank_length * char_width,
-                            line_height);
+          line = lines[i - start_row];
+          if (line) {
+            right_blank_length = column - line.length;
+            // clear post-end region
+            context.clearRect(width - right_blank_length * char_width, 
+                              i * line_height,
+                              right_blank_length * char_width,
+                              line_height);
+          }
         }
       }
     }

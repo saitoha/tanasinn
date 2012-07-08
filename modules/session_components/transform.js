@@ -22,12 +22,46 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-var Vector3D = new Class();
-Vector3D.definitian = {
+var Vector3d = new Class();
+Vector3d.prototype = {
 
   x: 0,
   y: 0,
   z: 0,
+
+  abs2: function abs2()
+  {
+    return this.x * this.x + this.y * this.y + this.z * this.z;
+  },
+
+  abs: function abs2()
+  {
+    return Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
+  },
+
+  norm: function nrom()
+  {
+    var abs;
+
+    abs = this.abs();
+
+    return new Vector3d(this.x / abs, 
+                        this.y / abs,
+                        this.z / abs);
+  },
+
+  dot: function dot(/* Vector3d */ other)
+  {
+    return this.x * other.x + this.y * other.y + this.z * other.z;
+  },
+
+  cross: function cross(/* Vector3d */ other)
+  {
+    return new Vector3d(
+      this.y * other.z - this.z * other.y, 
+      this.z * other.x - this.x * other.z, 
+      this.x * other.y - this.y * other.x);
+  },
 
   initialize: function initialize(x, y, z)
   {
@@ -39,7 +73,7 @@ Vector3D.definitian = {
 };
 
 var Quatanion = new Class();
-Quatanion.definition = {
+Quatanion.prototype = {
 
   x: 0,
   y: 0,
@@ -57,26 +91,19 @@ Quatanion.definition = {
 };
 
 var TransformMatrix = new Class()
-TransformMatrix.definition = {
+TransformMatrix.prototype = {
 
-  scaling_center: null,   // Vector3
-  scaling_rotation: null, // Quotanion
-  scaling: null,          // Vector3
-  rotation_center: null,  // Vector3
-  rotation: null,         // Quotanion
-  translation: null,      // Vector3
-
-  _m00: 1.8,
-  _m01: -1,
-  _m02: 1,
+  _m00: 1,
+  _m01: 0,
+  _m02: 0,
   _m03: 0,
 
-  _m10: 1,
+  _m10: 0,
   _m11: 1,
-  _m12: 1,
-  _m13: -0.0016,
+  _m12: 0,
+  _m13: 0,
 
-  _m20: 1,
+  _m20: 0,
   _m21: 0,
   _m22: 1,
   _m23: 0,
@@ -84,7 +111,7 @@ TransformMatrix.definition = {
   _m30: 0,
   _m31: 0,
   _m32: 0,
-  _m33: 2.5,
+  _m33: 1,
 
   reset: function reset()
   {
@@ -106,10 +133,10 @@ TransformMatrix.definition = {
     this._m33 = 1;
   },
 
-  set: function set(m00, m01, m02, m03, 
-                    m10, m11, m12, m13, 
-                    m20, m21, m22, m23, 
-                    m30, m31, m32, m33)
+  initialize: function initialize(m00, m01, m02, m03, 
+                                  m10, m11, m12, m13, 
+                                  m20, m21, m22, m23, 
+                                  m30, m31, m32, m33)
   {
     this._m00 = m00;
     this._m01 = m01;
@@ -129,8 +156,28 @@ TransformMatrix.definition = {
     this._m33 = m33;
   },
 
-  normalize: function reset()
+  apply: function apply(other)
   {
+    var a = this,
+        b = other;
+
+    return new TransformMatrix(
+      a._m00 * b._m00 + a._m01 * b._m10 + a._m02 * b._m20 + a._m03 * b._m30,
+      a._m00 * b._m01 + a._m01 * b._m11 + a._m02 * b._m21 + a._m03 * b._m31,
+      a._m00 * b._m02 + a._m01 * b._m12 + a._m02 * b._m22 + a._m03 * b._m32,
+      a._m00 * b._m03 + a._m01 * b._m13 + a._m02 * b._m23 + a._m03 * b._m33,
+      a._m10 * b._m00 + a._m11 * b._m10 + a._m12 * b._m20 + a._m13 * b._m30,
+      a._m10 * b._m01 + a._m11 * b._m11 + a._m12 * b._m21 + a._m13 * b._m31,
+      a._m10 * b._m02 + a._m11 * b._m12 + a._m12 * b._m22 + a._m13 * b._m32,
+      a._m10 * b._m03 + a._m11 * b._m13 + a._m12 * b._m23 + a._m13 * b._m33,
+      a._m20 * b._m00 + a._m21 * b._m10 + a._m22 * b._m20 + a._m23 * b._m30,
+      a._m20 * b._m01 + a._m21 * b._m11 + a._m22 * b._m21 + a._m23 * b._m31,
+      a._m20 * b._m02 + a._m21 * b._m12 + a._m22 * b._m22 + a._m23 * b._m32,
+      a._m20 * b._m03 + a._m21 * b._m13 + a._m22 * b._m23 + a._m23 * b._m33,
+      a._m30 * b._m00 + a._m31 * b._m10 + a._m32 * b._m20 + a._m33 * b._m30,
+      a._m30 * b._m01 + a._m31 * b._m11 + a._m32 * b._m21 + a._m33 * b._m31,
+      a._m30 * b._m02 + a._m31 * b._m12 + a._m32 * b._m22 + a._m33 * b._m32,
+      a._m30 * b._m03 + a._m31 * b._m13 + a._m32 * b._m23 + a._m33 * b._m33);
   },
 
   toString: function toString()
@@ -147,24 +194,16 @@ TransformMatrix.definition = {
 
 };
 
-var matrix = <>
-  -moz-transform: matrix3d(
- +1.8000, -1.0000, +1.0000, -0.0003, 
- +1.0000, +1.0000, +1.0000, -0.0016, 
- -1.0000, +0.0000, +1.0000, -0.0000, 
- +0.0000, +0.0000, +0.0000, +2.5000);
-</>;
-
 /**
  * @trait DragTransform
  */
 var DragTransform = new Trait();
 DragTransform.definition = {
 
-  _initial_position: null,
+  _last_matrix: null,
 
   /** Dragstart handler. It starts a session of dragging selection. */
-  "[listen('dragstart', '#tanasinn_outer_chrome'), pnp]":
+  "[listen('dragstart', '#tanasinn_outer_chrome', true), pnp]":
   function ondragstart(event) 
   {
     var coordinate, x, y, z, w, h, r2,
@@ -177,6 +216,11 @@ DragTransform.definition = {
     if (!event.shiftKey) {
       return;
     }
+    event.stopPropagation();
+    event.preventDefault();
+
+//    this._last_matrix = this.matrix.apply(matrix);
+//    this._element.style.MozTransform = this._last_matrix.toString();
 
     coordinate = this.get2DCoordinate(event);
 
@@ -187,117 +231,128 @@ DragTransform.definition = {
     r2 = w * w + h * h * 1;
     z = Math.sqrt(r2 - (x * x + y * y));
 
-    this._v0 = [x, y, z];
-    this.sendMessage("command/report-overlay-message",  " [" + [x, y, z] + "]")
+    this._begin_point = new Vector3d(x, y, z);
 
-    this.ondragmove.enabled = true;
-    this.ondragend.enabled = true;
+    this.onMouseMove.enabled = true;
+    this.onMouseUp.enabled = true;
+    this.onAltKeyUp.enabled = true;
   },
 
   /** Dragmove handler */
-  "[listen('mousemove', '#tanasinn_outer_chrome')]":
-  function ondragmove(event) 
+  "[listen('mousemove')]":
+  function onMouseMove(event) 
   {
-    var coordinate, x, y, z, w, h, r2;
+    event.stopPropagation();
+    event.preventDefault();
 
-    coordinate = this.get2DCoordinate(event);
-    x = coordinate[0];
-    y = coordinate[1];
-    w = this._width / 2.0;
-    h = this._height / 2.0;
-    r2 = w * w + h * h * 1;
-    z = Math.sqrt(r2 - (x * x + y * y));
+    var coordinate = this.get2DCoordinate(event),
+        x = coordinate[0],
+        y = coordinate[1],
+        w = this._width / 2.0,
+        h = this._height / 2.0,
+        r2 = w * w + h * h * 1,
+        z = Math.sqrt(r2 - (x * x + y * y));
+
+    //if (x * x > (this._width / 2 - 100) * (this._width / 2 - 100)) {
+    //  return;
+    //}
+
+    //if (y * y > (this._height / 2 - 100) * (this._height / 2 - 100)) {
+    //  return;
+    //}
 
     if (isNaN(z)) {
       return;
     }
 
-    var a = this._v0;
-    var b = [x, y, z];
+    //this.sendMessage("command/report-overlay-message",  " [" + [x * x, y * y] + "] " + [(this._width - 100) * (this._width - 100) / 4, this.height * this._height / 4])
 
-    var rot = this._getRotation(a, b);
-    //rot = Math.sqrt((a[0] - b[0]) * (a[0] - b[0]) + (a[1] - b[1]) * (a[1] - b[1])) / 20;
+    var a = this._begin_point,
+        b = new Vector3d(x, y, z),
+        cos_angle = b.norm().dot(a.norm()),
+        sin_angle = Math.sqrt(1.0 - cos_angle * cos_angle),
+        cross = b.cross(a).norm();
+        x = cross.x,
+        y = cross.y,
+        z = cross.z,
+        matrix = new TransformMatrix(
+          1 + (1 - cos_angle) * (x * x - 1),
+          -z * sin_angle + (1 - cos_angle) * x * y,
+           y * sin_angle + (1 - cos_angle) * x * z,
+           0,
+          z * sin_angle + (1 - cos_angle) * x * y,
+          1 + (1 - cos_angle) * (y * y - 1),
+          -x * sin_angle + (1 - cos_angle) * y * z,
+          0,
+          -y * sin_angle + (1- cos_angle) * x * z,
+          x * sin_angle + (1 - cos_angle) * y * z,
+          1 + (1 - cos_angle) * (z * z - 1),
+          0,
+          0, 0, 0, 1);
 
-    if (isNaN(rot)) {
-      return;
-    }
-
-    if (45 < rot ||rot < -45) {
-      return;
-    }
-    if (z * z < 500) {
-      return;
-    }
-
-    var cross = this._getCross(a, b);
-
-    this.sendMessage("command/report-overlay-message",  " [" + [x, y, z] + "]")
-    //this.sendMessage("command/report-overlay-message",  " [" + cross.map(function(r) Math.round(r)) + "," +Math.round(rot) + "]")
-//    this._eleemnt.style.MozTransform = "traslateX(100px) translateZ(10px)";
-    this._element.style.MozTransform 
-      = "translate3d(100px, 100px, 20px) rotate3d(" 
-      + cross[0] + ","
-      + cross[1] + ","
-      + cross[2] + ","
-      + rot + "deg"
-      + ")"
-      ;
+    this._last_matrix = this.matrix.apply(matrix);
+    this._element.style.MozTransform = this._last_matrix.toString();
   },
 
-  _getCross: function _getCross(a, b)
-  {
-    var cross;
+//  "[subscribe('event/{alt & shift}-key-down'), pnp]":
+//  function onModifierKeysDown() 
+//  {
+//    this._element = this.request(
+//      "command/construct-chrome",
+//      {
+//        parentNode: "#tanasinn_window_layer",
+//        tagName: "box",
+//        id: "capture_cover",
+//        style: "position: fixed; border: 20px solid blue",
+//      })["capture_cover"];
+//
+//    this._element.style.width = this._element.ownerDocument.documentElement.boxObject.width + "px"; 
+//    this._element.style.height = this._element.ownerDocument.documentElement.boxObject.height + "px"; 
+//
+//  },
 
-    cross = [
-      a[1] * b[2] - a[2] * b[1], 
-      a[2] * b[0] - a[0] * b[2], 
-      a[0] * b[1] - a[1] * b[0]
-    ];
-    
-    return cross;
+  "[subscribe('event/{alt | shift}-key-up'), pnp]":
+  function onAltKeyUp() 
+  {
+    this.onDragEnd();
   },
 
-  _getRotation: function _getRotation(a, b)
+  "[listen('mouseup')]":
+  function onMouseUp(event) 
   {
-    var dot_ab, abs_a, abs_b, rot;
-
-    dot_ab = a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
-    abs_a = Math.sqrt(a[0] * a[0] + a[1] * a[1] + a[2] * a[2]);
-    abs_b = Math.sqrt(b[0] * b[0] + b[1] * b[1] + b[2] * b[2]);
-    rot = Math.acos(dot_ab / (abs_a * abs_b)) * 180.0 / Math.PI;
-    
-    return rot;
+    //event.stopPropagation();
+    //event.preventDefault();
+    this.onDragEnd();
   },
 
   /** Dragend handler */
-  "[listen('mouseup')]":
-  function ondragend(event) 
+  onDragEnd: function onDragEnd(event) 
   {
-    this.ondragmove.enabled = false;
-    this.ondragend.enabled = false;
+    this.onMouseMove.enabled = false;
+    this.onMouseUp.enabled = false;
 
-    this._initial_position = null;
+//    if (this._element) {
+//      this._element.parentNode(this._element);
+//      this._element = null;
+//    }
 
-    if (this._range) {
-      this._setClearAction();
-      this._reportRange();
+    //this.onAltKeyUp.enabled = false;
+
+    if (null !== this._last_matrix) {
+      this.matrix = this._last_matrix;
     }
+
+    this.sendMessage("command/focus");
   },
 
   get2DCoordinate: function get2DCoordinate(event) 
   {
-    var target_element, root_element,
-        offsetX, offsetY,
-        left, top;
-
-    target_element = this.request("command/query-selector", "#tanasinn_outer_chrome");
-    root_element = this.request("get/root-element");
-
-    offsetX = target_element.boxObject.screenX - root_element.boxObject.screenX;
-    offsetY = target_element.boxObject.screenY - root_element.boxObject.screenY;
-
-    left = event.layerX - target_element.boxObject.width / 2; 
-    top = event.layerY - target_element.boxObject.height / 2;
+    var target_element = this.request("command/query-selector", "#tanasinn_outer_chrome"),
+        root_element = this.request("get/root-element"),
+        offsetX = target_element.boxObject.screenX - root_element.boxObject.screenX,
+        offsetY = target_element.boxObject.screenY - root_element.boxObject.screenY,
+        left = event.layerX - target_element.boxObject.width / 2,
+        top = event.layerY - target_element.boxObject.height / 2;
 
     return [left, top];
   },
@@ -343,7 +398,7 @@ Transform.definition = {
     this.matrix.reset();
 
     root_element = this.request("get/root-element");
-    root_element.firstChild.style.MozPerspective = "300px";
+    root_element.firstChild.style.MozPerspective = "2000px";
 
     this._element = root_element.querySelector("#tanasinn_outer_chrome");
     this._element.style.MozTransformStyle = "preserve-3d";

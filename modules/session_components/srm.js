@@ -76,7 +76,7 @@ SendReceiveMode.definition = {
 
 
   "[persistable] enabled_when_startup": true,
-  "[persistable] default_value": false,
+  "[persistable] default_value": true,
 
   _mode: false,
 
@@ -125,7 +125,7 @@ SendReceiveMode.definition = {
   "[subscribe('command/{soft | hard}-terminal-reset'), pnp]":
   function reset(broker) 
   {
-    this.deactivate();
+    this.activate();
   },
 
   /**

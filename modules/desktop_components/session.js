@@ -125,6 +125,20 @@ RouteKeyEvents.definition = {
     this.notify("event/hotkey-double-shift", this);
   },
 
+  /** route ctrl key down evnet */
+  "[subscribe('event/ctrl-key-down'), enabled]":
+  function onCtrlKeyDown() 
+  {
+    this.notify("event/ctrl-key-down", this);
+  },
+
+  /** route ctrl key up evnet */
+  "[subscribe('event/ctrl-key-up'), enabled]":
+  function onCtrlKeyUp() 
+  {
+    this.notify("event/ctrl-key-up", this);
+  },
+
   /** route alt key down evnet */
   "[subscribe('event/alt-key-down'), enabled]":
   function onAltKeyDown() 

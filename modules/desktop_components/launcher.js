@@ -1401,8 +1401,7 @@ Launcher.definition = {
         diff_min = 30,
         diff_max = 400;
 
-    if (16 === event.keyCode && 16 === event.which 
-        && !event.ctrlKey && !event.altKey && !event.isChar) {
+    if (16 === event.keyCode && 16 === event.which && !event.isChar) {
 
       now = parseInt(new Date().getTime());
       diff = now - this._last_shiftup_time;
@@ -1414,8 +1413,7 @@ Launcher.definition = {
         this._last_shiftup_time = now;
       }
       this.sendMessage("event/shift-key-up");
-    } else if (17 === event.keyCode && 17 === event.which 
-        && !event.altKey && !event.shiftKey && !event.isChar) {
+    } else if (17 === event.keyCode && 17 === event.which && !event.isChar) {
 
       now = parseInt(new Date().getTime());
       diff = now - this._last_ctrlup_time;
@@ -1427,8 +1425,7 @@ Launcher.definition = {
         this._last_ctrlup_time = now;
       }
       this.sendMessage("event/ctrl-key-up");
-    } else if (18 === event.keyCode && 18 === event.which 
-        && !event.ctrlKey && !event.shiftKey && !event.isChar) {
+    } else if (18 === event.keyCode && 18 === event.which && !event.isChar) {
 
       now = parseInt(new Date().getTime());
       diff = now - this._last_altup_time;
@@ -1440,24 +1437,17 @@ Launcher.definition = {
         this._last_altup_time = now;
       }
       this.sendMessage("event/alt-key-up");
+      coUtils.Debug.reportError([event.keyCode, event.which]);
     }
   },
 
   onkeydown: function onkeydown(event) 
   { // nothrow
-    if (16 === event.keyCode && 16 === event.which 
-        && !event.ctrlKey && !event.altKey 
-        && event.shiftKey && !event.isChar) {
-
+    if (16 === event.keyCode && 16 === event.which && !event.isChar) {
       this.sendMessage("event/shift-key-down");
-    } else if (17 === event.keyCode && 17 === event.which 
-        && !event.ctrlKey && !event.altKey 
-        && event.shiftKey && !event.isChar) {
-          
+    } else if (17 === event.keyCode && 17 === event.which && !event.isChar) {
       this.sendMessage("event/ctrl-key-down");
-    } else if (18 === event.keyCode && 18 === event.which 
-        && !event.ctrlKey && event.altKey 
-        && !event.shiftKey && !event.isChar) {
+    } else if (18 === event.keyCode && 18 === event.which && !event.isChar) {
 
       this.sendMessage("event/alt-key-down");
     }
