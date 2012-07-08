@@ -1437,7 +1437,6 @@ Launcher.definition = {
         this._last_altup_time = now;
       }
       this.sendMessage("event/alt-key-up");
-      coUtils.Debug.reportError([event.keyCode, event.which]);
     }
   },
 
@@ -1448,7 +1447,6 @@ Launcher.definition = {
     } else if (17 === event.keyCode && 17 === event.which && !event.isChar) {
       this.sendMessage("event/ctrl-key-down");
     } else if (18 === event.keyCode && 18 === event.which && !event.isChar) {
-
       this.sendMessage("event/alt-key-down");
     }
   },

@@ -203,7 +203,7 @@ DragTransform.definition = {
   _last_matrix: null,
 
   /** Dragstart handler. It starts a session of dragging selection. */
-  "[listen('dragstart', '#tanasinn_outer_chrome', true), pnp]":
+  "[listen('dragstart', '#tanasinn_outer_chrome'), pnp]":
   function ondragstart(event) 
   {
     var coordinate, x, y, z, w, h, r2,
@@ -216,8 +216,8 @@ DragTransform.definition = {
     if (!event.shiftKey) {
       return;
     }
-    event.stopPropagation();
-    event.preventDefault();
+    //event.stopPropagation();
+    //event.preventDefault();
 
 //    this._last_matrix = this.matrix.apply(matrix);
 //    this._element.style.MozTransform = this._last_matrix.toString();
@@ -235,15 +235,16 @@ DragTransform.definition = {
 
     this.onMouseMove.enabled = true;
     this.onMouseUp.enabled = true;
-    this.onAltKeyUp.enabled = true;
+    this.onModifierKeyUp.enabled = true;
+
   },
 
   /** Dragmove handler */
   "[listen('mousemove')]":
   function onMouseMove(event) 
   {
-    event.stopPropagation();
-    event.preventDefault();
+    //event.stopPropagation();
+    //event.preventDefault();
 
     var coordinate = this.get2DCoordinate(event),
         x = coordinate[0],
@@ -294,25 +295,25 @@ DragTransform.definition = {
     this._element.style.MozTransform = this._last_matrix.toString();
   },
 
-//  "[subscribe('event/{alt & shift}-key-down'), pnp]":
-//  function onModifierKeysDown() 
-//  {
-//    this._element = this.request(
-//      "command/construct-chrome",
-//      {
-//        parentNode: "#tanasinn_window_layer",
-//        tagName: "box",
-//        id: "capture_cover",
-//        style: "position: fixed; border: 20px solid blue",
-//      })["capture_cover"];
-//
-//    this._element.style.width = this._element.ownerDocument.documentElement.boxObject.width + "px"; 
-//    this._element.style.height = this._element.ownerDocument.documentElement.boxObject.height + "px"; 
-//
-//  },
+  "[subscribe('event/{alt & shift}-key-down'), pnp]":
+  function onModifierKeysDown() 
+  {
+    this._cover = this.request(
+      "command/construct-chrome",
+      {
+        parentNode: "#tanasinn_window_layer",
+        tagName: "box",
+        id: "capture_cover",
+        style: "position: fixed; border: 20px solid blue",
+      })["capture_cover"];
 
-  "[subscribe('event/{alt | shift}-key-up'), pnp]":
-  function onAltKeyUp() 
+    this._cover.style.width = this._element.ownerDocument.documentElement.boxObject.width + "px"; 
+    this._cover.style.height = this._element.ownerDocument.documentElement.boxObject.height + "px"; 
+
+  },
+
+  "[subscribe('event/{alt | shift}-key-up')]":
+  function onModifierKeyUp() 
   {
     this.onDragEnd();
   },
@@ -330,6 +331,7 @@ DragTransform.definition = {
   {
     this.onMouseMove.enabled = false;
     this.onMouseUp.enabled = false;
+    this.onModifierKeyUp.enabled = false;
 
 //    if (this._element) {
 //      this._element.parentNode(this._element);
