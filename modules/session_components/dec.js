@@ -138,13 +138,6 @@ DecModeSequenceHandler.definition = {
             _("DECSET - DECPEX (Set print extent to full screen) was ignored."));
           break;
 
-        // Show Scrollbar (rxvt)
-        case 30:
-          this.sendMessage("command/scrollbar-show");
-          coUtils.Debug.reportMessage(
-            _("DECSET 30 - Show scrollbar feature (rxvt) is set."));
-          break;
-
         // Enable shifted key-functions (rxvt)
         case 35:
           this.sendMessage("command/enable-shifted-key-functions");
@@ -423,13 +416,6 @@ DecModeSequenceHandler.definition = {
           // TODO: print from feed.
           coUtils.Debug.reportWarning(
             _("DECRST - DECPEX (Set print extent to full screen) was ignored."));
-          break;
-
-        // Show Scrollbar (rxvt)
-        case 30:
-          this.sendMessage("command/scrollbar-hide");
-          coUtils.Debug.reportMessage(
-            _("DECRST 30 - Show-scrollbar feature (rxvt) is reset."));
           break;
 
         // Enable shifted key-functions (rxvt)
