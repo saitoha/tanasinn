@@ -24,54 +24,22 @@
 
 
 /**
- * @class ReverseVideo
- *
- * DECSCNM — Screen Mode: Light or Dark Screen
- *
- * ref: http://www.vt100.net/docs/vt510-rm/DECSCNM
- *
- * This control function selects a dark or light background on the screen.
- *
- * Default: Dark background.
- *
- * Format
- *
- * CSI   ?     5     h
- * 9/11  3/15  3/5   h
- *
- * 6/8   Set: reverse video.
- *
- * CSI   ?     5     l
- * 9/11  3/15  3/5   6/12
- *
- * Reset: normal display.
- *
- * Description
- *
- * When DECSCNM is set, the screen displays dark characters on a light
- * background.
- * When DECSCNM is reset, the screen displays light characters on a dark
- * background.
- *
- * Note on DECSCNM
- *
- * Screen mode only effects how the data appears on the screen. DECSCNM does 
- * not change the data in page memory.
+ * @class CursorBlink
  *
  */
-var ReverseVideo = new Class().extends(Plugin);
-ReverseVideo.definition = {
+var CursorBlink = new Class().extends(Plugin)
+                             .depends("cursorstate");
+CursorBlink.definition = {
 
   get id()
-    "reverse_video",
+    "cursor_blink",
 
   get info()
     <module>
-        <name>{_("Reverse Video")}</name>
+        <name>{_("Cursor Blink")}</name>
         <version>0.1</version>
         <description>{
-          _("Enable/disable Reverse video feature(DECSCNM)",
-            " with escape seqnence.")
+          _("Controls cursor blink switching.")
         }</description>
     </module>,
 
@@ -79,6 +47,7 @@ ReverseVideo.definition = {
   "[persistable] default_value": false,
 
   _mode: null,
+  _cursor: null,
 
   /** installs itself. 
    *  @param {Broker} broker A Broker object.
@@ -87,6 +56,7 @@ ReverseVideo.definition = {
   function install(broker) 
   {
     this._mode = this.default_value;
+    this._cursor = this.dependency["cursorstate"];
     this.reset();
   },
 
@@ -97,32 +67,37 @@ ReverseVideo.definition = {
   function uninstall(broker) 
   {
     this._mode = null;
+    this._cursor = null;
   },
 
-  /** Activate reverse video feature.
+  /** Start Blinking Cursor (att610).
    */
-  "[subscribe('sequence/decset/5'), pnp]":
+  "[subscribe('sequence/decset/12'), pnp]":
   function activate() 
   { 
+    var cursor = this._cursor;
+
     this._mode = true;
 
-    this.sendMessage("command/reverse-video", true);
+    cursor.blink = true;
 
     coUtils.Debug.reportMessage(
-      _("DECSET - DECSCNM (Reverse video) was called."));
+      _("DECSET - 12 (enable cursor blink) was called."));
   },
 
-  /** Deactivate reverse video feature
+  /** Stop Blinking Cursor (att610).
    */
-  "[subscribe('sequence/decrst/5'), pnp]":
+  "[subscribe('sequence/decrst/47'), pnp]":
   function deactivate() 
   {
+    var cursor = this._cursor;
+
     this._mode = false;
 
-    this.sendMessage("command/reverse-video", false);
+    cursor.blink = false;
 
     coUtils.Debug.reportMessage(
-      _("DECRST - DECSCNM (Reverse video) was called."));
+      _("DECSET - 12 (disable cursor blink) was called."));
   },
 
   /** handle terminal reset event.
@@ -176,7 +151,7 @@ ReverseVideo.definition = {
  */
 function main(broker) 
 {
-  new ReverseVideo(broker);
+  new CursorBlink(broker);
 }
 
 // EOF

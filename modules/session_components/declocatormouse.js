@@ -95,6 +95,173 @@ DECLocatorMouse.definition = {
     this._in_scroll_session = true;
   },
 
+  /**
+   *
+   * Enable Locator Reporting (DECELR)
+   *  
+   * CSI Ps ; Pu ' z
+   *
+   * Valid values for the first parameter:
+   * Ps = 0 → Locator disabled (default)
+   * Ps = 1 → Locator enabled
+   * Ps = 2 → Locator enabled for one report, then disabled
+   *
+   * The second parameter specifies the coordinate unit for locator reports.
+   *
+   * Valid values for the second parameter:
+   * Pu = 0 or omitted → default to character cells
+   * Pu = 1 → device physical pixels
+   * Pu = 2 → character cells
+   *
+   */
+  "[profile('vt100'), sequence('CSI %d\\'z')]":
+  function DECELR(n1, n2) 
+  { // Enable Locator Reporting
+
+    var oneshot, pixel;
+
+    switch (n1 || 0) {
+
+      case 0:
+        // Locator disabled (default)
+        this.sendMessage(
+          "command/change-locator-reporting-mode", 
+          null); 
+        return;
+
+      case 1:
+        // Locator enabled
+        oneshot = false;
+        break;
+
+      case 2:
+        // Locator enabled
+        oneshot = true;
+        break;
+
+      default:
+        throw coUtils.Debug.Error(
+          _("Invalid locator mode was specified: %d."), n1);
+
+    }
+
+    switch (n2 || 0) {
+
+      case 0:
+      case 2:
+        // character cells
+        pixel = false;
+        break;
+
+      case 1:
+        // device physical pixels
+        pixel = true;
+        break;
+
+      default:
+        throw coUtils.Debug.Error(
+          _("Invalid locator unit was specified: %d."), n1);
+
+    }
+
+    this.sendMessage(
+      "command/change-locator-reporting-mode", {
+        oneshot: oneshot, 
+        pixel: pixel,
+      }); 
+
+  },
+
+  /**
+   * Select the locator event.
+   *
+   * Pm = 0      Disables button up/down events, Disables filter rectangle.
+   *    = 1      Enables button down event.
+   *    = 2      Disables button down event.
+   *    = 3      Enables button up event.
+   *    = 4      Disables button up event.
+   */
+  "[profile('vt100'), sequence('CSI %d\\'{')]":
+  function DECSLE(n) 
+  { // TODO: Select Locator Events
+    
+    switch (n) {
+
+      case 0:
+        this.sendMessage("command/change-decterm-buttonup-event-mode", false);
+        this.sendMessage("command/change-decterm-buttondown-event-mode", false);
+        break;
+
+      case 1:
+        this.sendMessage("command/change-decterm-buttondown-event-mode", true);
+        break;
+
+      case 2:
+        this.sendMessage("command/change-decterm-buttondown-event-mode", false);
+        break;
+
+      case 3:
+        this.sendMessage("command/change-decterm-buttonup-event-mode", true);
+        break;
+
+      case 3:
+        this.sendMessage("command/change-decterm-buttonup-event-mode", false);
+        break;
+
+      default:
+        throw coUtils.Debug.Error(
+          _("Invalid locator event mode was specified: %d."), n);
+    }
+  },
+
+  /**
+   * Requests Locator Report.
+   * 
+   * Response: CSI Pe ; Pb ; Pr ; Pc ; Pp & w
+   * Pe: Event code.
+   * Pe =  0    Received a locator report request (DECRQLP), but the locator is unavailable.
+   *    =  1    Received a locator report request (DECRQLP).
+   *    =  2    Left button down.
+   *    =  3    Left button up.
+   *    =  4    Middle button down.
+   *    =  5    Middle button up.
+   *    =  6    Right button down.
+   *    =  7    Right button up.
+   *    =  8    Button 4 down. (not supported)
+   *    =  9    Button 4 up. (not supported)
+   *    = 10    Locator outside filter rectangle.
+   * 
+   * Pb: Button code, ASCII decimal 0-15 indicating which buttons are down if any.
+   *     The state of the four buttons on the locator correspond to the low four
+   *     bits of the decimal value, "1" means button depressed.
+   *   1    Right button.
+   *   2    Middle button.
+   *   4    Left button.
+   *   8    Button 4. (not supported)
+   * 
+   * Pr: Row coordinate.
+   * 
+   * Pc: Column coordinate.
+   * 
+   * Pp: Page. Always 1.
+   *
+   */
+  "[profile('vt100'), sequence('CSI %d\\'|')]":
+  function DECRQLP(n) 
+  { // Request Locator Position
+    this.sendMessage("event/locator-reporting-requested"); 
+  },
+
+
+  "[profile('vt100'), sequence('CSI %d\\ ~')]":
+  function DECTME(n) 
+  { // DEC Selectively Elase in Line
+    coUtils.Debug.reportWarning(
+      _("%s sequence [%s] was ignored."),
+      arguments.callee.name, Array.slice(arguments));
+  },
+
+
   /** Fired at scroll session is closed. */
   "[subscribe('event/scroll-session-closed'), enabled]":
   function onScrolSessionClosed() 
@@ -182,9 +349,8 @@ DECLocatorMouse.definition = {
   "[listen('DOMMouseScroll', '#tanasinn_content')]": 
   function onmousescroll(event) 
   {
-    var renderer, count, line_height, locator_reporting_mode, sequences;
-
-    renderer = this.dependency["renderer"];
+    var renderer = this.dependency["renderer"],
+        count, line_height, locator_reporting_mode, sequences;
 
     if (event.axis === event.VERTICAL_AXIS) {
 
@@ -362,28 +528,21 @@ DECLocatorMouse.definition = {
   // Helper: get current position from mouse event object.
   _getCurrentPosition: function _getCurrentPosition(event) 
   {
-    var root_element, target_element, box, offsetX, offsetY,
-        left, top, renderer, column, row;
+    var root_element = this.request("get/root-element"),
+        target_element = this.request(
+          "command/query-selector", 
+          "#tanasinn_center_area"),
+        box = target_element.boxObject,
+        offsetX = box.screenX - root_element.boxObject.screenX,
+        offsetY = box.screenY - root_element.boxObject.screenY,
+        left = event.layerX - offsetX, // left position in pixel.
+        top = event.layerY - offsetY,  // top position in pixel.
 
-    root_element = this.request("get/root-element");
+        // converts pixel coordinate to [column, row] style.
+        renderer = this.dependency["renderer"],
 
-    target_element = this.request(
-      "command/query-selector", 
-      "#tanasinn_center_area");
-
-    box = target_element.boxObject;
-
-    offsetX = box.screenX - root_element.boxObject.screenX;
-    offsetY = box.screenY - root_element.boxObject.screenY;
-
-    left = event.layerX - offsetX; // left position in pixel.
-    top = event.layerY - offsetY;  // top position in pixel.
-
-    // converts pixel coordinate to [column, row] style.
-    renderer = this.dependency["renderer"];
-
-    column = Math.round(left / renderer.char_width);
-    row = Math.round(top / renderer.line_height);
+        column = Math.round(left / renderer.char_width),
+        row = Math.round(top / renderer.line_height);
 
     return [column, row];
   },
@@ -391,22 +550,15 @@ DECLocatorMouse.definition = {
   // Helper: get current position from mouse event object in pixel.
   _getCurrentPositionInPixel: function _getCurrentPositionInPixel(event) 
   {
-    var root_element, target_element, box, offsetX, offsetY,
-        left, top;
-
-    root_element = this.request("get/root-element");
-
-    target_element = this.request(
-      "command/query-selector", 
-      "#tanasinn_center_area");
-
-    box = target_element.boxObject;
-
-    offsetX = box.screenX - root_element.boxObject.screenX;
-    offsetY = box.screenY - root_element.boxObject.screenY;
-
-    left = event.layerX - offsetX; // left position in pixel.
-    top = event.layerY - offsetY;  // top position in pixel.
+    var root_element = this.request("get/root-element"),
+        target_element = this.request(
+          "command/query-selector", 
+          "#tanasinn_center_area"),
+        box = target_element.boxObject,
+        offsetX = box.screenX - root_element.boxObject.screenX,
+        offsetY = box.screenY - root_element.boxObject.screenY,
+        left = event.layerX - offsetX, // left position in pixel.
+        top = event.layerY - offsetY;  // top position in pixel.
 
     return [left, top];
   },

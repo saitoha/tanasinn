@@ -173,6 +173,8 @@ SGRHandler.definition = {
 
   "[persistable] enabled_when_startup": true,
 
+  _attr: null, // current cursor attribute
+
   "[install]":
   function install()
   {

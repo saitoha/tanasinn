@@ -77,12 +77,36 @@ AutoWrap.definition = {
     </module>,
 
   "[persistable] enabled_when_startup": true,
+  "[persistable] default_value": true,
+
+  _mode: null,
+
+  /** installs itself. 
+   *  @param {Broker} broker A Broker object.
+   */
+  "[install]":
+  function install(broker) 
+  {
+    this._mode = this.default_value;
+    this.reset();
+  },
+
+  /** Uninstalls itself.
+   *  @param {Broker} broker A broker object.
+   */
+  "[uninstall]":
+  function uninstall(broker) 
+  {
+    this._mode = null;
+  },
 
   /** Activate auto-wrap feature(DECAWM).
    */
   "[subscribe('sequence/decset/7'), pnp]":
   function activate() 
   { 
+    this._mode = true;
+
     this.sendMessage("command/enable-wraparound");
 //    coUtils.Debug.reportMessage(
 //      _("DECSET - DECAWM (Auto-wrap Mode) was set."));
@@ -93,6 +117,8 @@ AutoWrap.definition = {
   "[subscribe('sequence/decrst/7'), pnp]":
   function deactivate() 
   {
+    this._mode = false;
+
     this.sendMessage("command/disable-wraparound");
 //    coUtils.Debug.reportMessage(
 //      _("DECRST - DECAWM (Auto-wrap Mode) was reset."));
@@ -103,8 +129,42 @@ AutoWrap.definition = {
   "[subscribe('command/{soft | hard}-terminal-reset'), pnp]":
   function reset() 
   {
-    this.activate();
+    if (this.default_value) {
+      this.activate();
+    } else {
+      this.deactivate();
+    }
   },
+
+  /**
+   * Serialize snd persist current state.
+   */
+  "[subscribe('@command/backup'), type('Object -> Undefined'), pnp]": 
+  function backup(context) 
+  {
+    // serialize this plugin object.
+    context[this.id] = {
+      mode: this._mode,
+    };
+  },
+
+  /**
+   * Deserialize snd restore stored state.
+   */
+  "[subscribe('@command/restore'), type('Object -> Undefined'), pnp]": 
+  function restore(context) 
+  {
+    var data;
+
+    data = context[this.id];
+    if (data) {
+      this._mode = data.mode;
+    } else {
+      coUtils.Debug.reportWarning(
+        _("Cannot restore last state of renderer: data not found."));
+    }
+  },
+
 
 }; // class AutoWrap
 

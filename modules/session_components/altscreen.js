@@ -24,54 +24,22 @@
 
 
 /**
- * @class ReverseVideo
- *
- * DECSCNM — Screen Mode: Light or Dark Screen
- *
- * ref: http://www.vt100.net/docs/vt510-rm/DECSCNM
- *
- * This control function selects a dark or light background on the screen.
- *
- * Default: Dark background.
- *
- * Format
- *
- * CSI   ?     5     h
- * 9/11  3/15  3/5   h
- *
- * 6/8   Set: reverse video.
- *
- * CSI   ?     5     l
- * 9/11  3/15  3/5   6/12
- *
- * Reset: normal display.
- *
- * Description
- *
- * When DECSCNM is set, the screen displays dark characters on a light
- * background.
- * When DECSCNM is reset, the screen displays light characters on a dark
- * background.
- *
- * Note on DECSCNM
- *
- * Screen mode only effects how the data appears on the screen. DECSCNM does 
- * not change the data in page memory.
+ * @class AlternateScreen
  *
  */
-var ReverseVideo = new Class().extends(Plugin);
-ReverseVideo.definition = {
+var AlternateScreen = new Class().extends(Plugin)
+                                 .depends("screen");
+AlternateScreen.definition = {
 
   get id()
-    "reverse_video",
+    "alternate_screen",
 
   get info()
     <module>
-        <name>{_("Reverse Video")}</name>
+        <name>{_("Alternate Screen")}</name>
         <version>0.1</version>
         <description>{
-          _("Enable/disable Reverse video feature(DECSCNM)",
-            " with escape seqnence.")
+          _("Switches between Main Alternate screens.")
         }</description>
     </module>,
 
@@ -79,6 +47,7 @@ ReverseVideo.definition = {
   "[persistable] default_value": false,
 
   _mode: null,
+  _screen: null,
 
   /** installs itself. 
    *  @param {Broker} broker A Broker object.
@@ -87,6 +56,7 @@ ReverseVideo.definition = {
   function install(broker) 
   {
     this._mode = this.default_value;
+    this._screen = this.dependency["screen"];
     this.reset();
   },
 
@@ -97,32 +67,105 @@ ReverseVideo.definition = {
   function uninstall(broker) 
   {
     this._mode = null;
+    this._screen = null;
   },
 
-  /** Activate reverse video feature.
+  /** Use Alternate Screen Buffer 
+   * (unless disabled by the titleInhibit resource)
    */
-  "[subscribe('sequence/decset/5'), pnp]":
+  "[subscribe('sequence/decset/47'), pnp]":
   function activate() 
   { 
+    var screen = this._screen;
+
     this._mode = true;
 
-    this.sendMessage("command/reverse-video", true);
+    screen.switchToAlternateScreen();
 
     coUtils.Debug.reportMessage(
-      _("DECSET - DECSCNM (Reverse video) was called."));
+      _("DECSET - 47 (switch to alternate screen) was called."));
   },
 
-  /** Deactivate reverse video feature
+  /** Use Normal Screen Buffer 
+   * (unless disabled by the titleInhibit resource)
    */
-  "[subscribe('sequence/decrst/5'), pnp]":
+  "[subscribe('sequence/decrst/47'), pnp]":
   function deactivate() 
   {
+    var screen = this._screen;
+
     this._mode = false;
 
-    this.sendMessage("command/reverse-video", false);
+    screen.switchToMainScreen();
 
     coUtils.Debug.reportMessage(
-      _("DECRST - DECSCNM (Reverse video) was called."));
+      _("DECRST - 47 (switch to main screen) was called."));
+  },
+
+  /** Use Alternate Screen Buffer 
+   * (unless disabled by the titleInhibit resource)
+   */
+  "[subscribe('sequence/decset/1047'), pnp]":
+  function activate1047() 
+  { 
+    var screen = this._screen;
+
+    this._mode = true;
+
+    screen.switchToAlternateScreen();
+
+    coUtils.Debug.reportMessage(
+      _("DECSET - 1047 (switch to alternate screen) was called."));
+  },
+
+  /** Use Normal Screen Buffer, clearing screen first if in the 
+   * Alternate Screen (unless disabled by the titleinhibit resource)
+   */
+  "[subscribe('sequence/decrst/1047'), pnp]":
+  function deactivate1047() 
+  {
+    var screen = this._screen;
+
+    this._mode = false;
+
+    screen.eraseScreenAll();
+    screen.switchToMainScreen();
+
+    coUtils.Debug.reportMessage(
+      _("DECRST - 1047 (switch to main screen) was called."));
+  },
+
+  /** Save cursor as in DECSC and use Alternate Screen Buffer, 
+   * clearing it first (unless disabled by the titleinhibit resource)
+   */
+  "[subscribe('sequence/decset/1049'), pnp]":
+  function activate1049() 
+  { 
+    var screen = this._screen;
+
+    this._mode = true;
+
+    screen.selectAlternateScreen();
+
+    coUtils.Debug.reportMessage(
+      _("DECSET - 1049 (switch to alternate screen) was called."));
+  },
+
+  /** Use Normal Screen Buffer and restore cursor as in DECRC 
+   * (unless disabled by the titleinhibit resource)
+   */
+  "[subscribe('sequence/decrst/1049'), pnp]":
+  function deactivate1049() 
+  {
+    var screen = this._screen;
+
+    this._mode = false;
+
+    //screen.eraseScreenAll();
+    screen.selectMainScreen();
+
+    coUtils.Debug.reportMessage(
+      _("DECRST - 1049 (switch to main screen) was called."));
   },
 
   /** handle terminal reset event.
@@ -176,7 +219,7 @@ ReverseVideo.definition = {
  */
 function main(broker) 
 {
-  new ReverseVideo(broker);
+  new AlternateScreen(broker);
 }
 
 // EOF

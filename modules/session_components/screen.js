@@ -2294,12 +2294,11 @@ Screen.definition = {
 
   },
 
-  "[subscribe('command/{soft | hard}-terminal-reset'), enabled]": 
-  function reset()
+  "[subscribe('command/soft-terminal-reset'), enabled]": 
+  function softReset()
   {
     var lines, i, line;
 
-    this.eraseScreenAll();
     this.switchToMainScreen();
     this.resetScrollRegion();
 
@@ -2309,6 +2308,13 @@ Screen.definition = {
       line = lines[i];
       line.type = coUtils.Constant.LINETYPE_NORMAL;
     }
+  },
+
+  "[subscribe('command/hard-terminal-reset'), enabled]": 
+  function reset()
+  {
+//    this.eraseScreenAll();
+    this.softReset();
   },
 
   /** Reverse Index (RI) */
@@ -2350,6 +2356,7 @@ Screen.definition = {
     }
   },
 
+  /** insert n lines */
   "[type('Uint16 -> Undefined')] insertLine":
   function insertLine(n) 
   { // Insert Line
@@ -2361,6 +2368,7 @@ Screen.definition = {
     this._scrollDown(positionY, bottom, delta);
   },
 
+  /** delete n lines */
   "[type('Uint16 -> Undefined')] deleteLine":
   function deleteLine(n) 
   { // Delete Line.
@@ -2372,6 +2380,7 @@ Screen.definition = {
     this._scrollUp(positionY, bottom, delta);
   },
 
+  /** scroll left n columns */
   "[type('Uint16 -> Undefined')] scrollLeft":
   function scrollLeft(n) 
   { // Scroll Left
@@ -2386,6 +2395,7 @@ Screen.definition = {
     }
   },
 
+  /** scroll right n columns */
   "[type('Uint16 -> Undefined')] scrollRight":
   function scrollRight(n) 
   { // Scroll Right
@@ -2399,6 +2409,7 @@ Screen.definition = {
     }
   },
 
+  /** scroll down n lines */
   "[type('Uint16 -> Undefined')] scrollDownLine":
   function scrollDownLine(n) 
   { // Scroll Up line
@@ -2409,6 +2420,7 @@ Screen.definition = {
     this._scrollDown(top, bottom, n);
   },
 
+  /** scroll up n lines */
   "[type('Uint16 -> Undefined')] scrollUpLine":
   function scrollUpLine(n) 
   { // Scroll Down line
@@ -2419,6 +2431,7 @@ Screen.definition = {
     this._scrollUp(top, bottom, n);
   },
 
+  /** erase n characters at current line. */
   "[type('Uint16 -> Undefined')] eraseCharacters":
   function eraseCharacters(n) 
   { // Erase CHaracters
@@ -2434,6 +2447,7 @@ Screen.definition = {
     line.erase(start, end, attr);
   },
 
+  /** delete n characters at current line. */
   "[type('Uint16 -> Undefined')] deleteCharacters":
   function deleteCharacters(n) 
   { // Delete CHaracters
@@ -2544,9 +2558,8 @@ Screen.definition = {
   "[subscribe('command/restore'), type('Object -> Undefined'), enabled]": 
   function restore(data) 
   {
-    var context, i, buffer_length, lines;
-
-    context = data[this.id];
+    var context = data[this.id],
+        i, buffer_length, lines;
 
     this.width = context.shift();
     this.height = context.shift();

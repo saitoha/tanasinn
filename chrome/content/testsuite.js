@@ -5,7 +5,7 @@ try {
   Components
     .classes["@mozilla.org/moz/jssubscript-loader;1"]
     .getService(Components.interfaces.mozIJSSubScriptLoader)
-    .loadSubScript("resource://tanasinn/common/process.js");
+    .loadSubScript("resource://tanasinn/common/process.js" + "?" + new Date());
 
   process = Components.classes['@zuse.jp/tanasinn/process;1']
     .getService(Components.interfaces.nsISupports)
@@ -16,6 +16,7 @@ try {
   desktop = process.uniget("get/desktop-from-window", window);
 
   desktop.start(window.document.documentElement);
+
 } catch (e) {
   alert(e);
 }

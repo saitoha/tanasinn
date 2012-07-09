@@ -1253,7 +1253,7 @@ Launcher.definition = {
     box = document.createElement("box");
 
     //if (!/tanasinn/.test(coUtils.Runtime.app_name)) {
-      box.style.cssText = "position: fixed; top: 0px; left: 0px";
+    box.style.cssText = "position: fixed; top: 0px; left: 0px";
     //}
     this._window_layer.appendChild(box);
     desktop.start(box, command);  // command

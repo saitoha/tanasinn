@@ -87,7 +87,7 @@ DecModeSequenceHandler.definition = {
   { // DEC Private Mode Set
     var i, n, screen;
 
-    if (0 == arguments.length) {
+    if (0 === arguments.length) {
       coUtils.Debug.reportWarning(_("DECSET: Length of Arguments is zero. "));
     }
 
@@ -98,11 +98,6 @@ DecModeSequenceHandler.definition = {
       this._dec_save_buffer[i] = true;
 
       switch (n) {
-
-        // Application Cursor Keys (DECCKM)
-        case 1:
-          this.DECCKM = true; // application cursor
-          break;
 
         // Designate USASCII for character sets G0-G3 (DECANM), and set VT100 mode.
         case 2:
@@ -143,7 +138,7 @@ DecModeSequenceHandler.definition = {
 
         // Origin Mode (DECOM)
         case 6:
-          // TODO: origin mode.
+          // origin mode.
           this._screen.cursor.DECOM = true;
           coUtils.Debug.reportMessage(
             _("DECSET - DECOM (Origin mode) was set: (%d, %d)."),
@@ -158,11 +153,6 @@ DecModeSequenceHandler.definition = {
             coUtils.Constant.TRACKING_X10);
           coUtils.Debug.reportMessage(
             _("DECSET 9 - X10 mouse tracking mode was set."));
-          break;
-
-        // cursor blink mode
-        case 12:
-          this._screen.cursor.blink = false;
           break;
 
         // Print from feed (DECPFF)
@@ -239,12 +229,6 @@ DecModeSequenceHandler.definition = {
           coUtils.Debug.reportWarning(
             _("DECSET 46 - Start Logging, ", 
               "was not implemented."));
-          break;
-
-        // Use Alternate Screen Buffer 
-        // (unless disabled by the titleInhibit resource)
-        case 47:
-          this._screen.switchToAlternateScreen();
           break;
 
         // Application keypad (DECNKM)
@@ -374,22 +358,10 @@ DecModeSequenceHandler.definition = {
               "was not implemented."));
           break;
 
-        // Use Alternate Screen Buffer 
-        // (unless disabled by the titleInhibit resource)
-        case 1047:
-          this._screen.switchToAlternateScreen();
-          break;
-
         // Save cursor as in DECSC 
         // (unless disabled by the titleinhibit resource)
         case 1048:
           this._screen.saveCursor();
-          break;
-
-        // Save cursor as in DECSC and use Alternate Screen Buffer, 
-        // clearing it first (unless disabled by the titleinhibit resource)
-        case 1049:
-          this._screen.selectAlternateScreen();
           break;
 
         // TODO: Set Sun function-key mode. 
@@ -445,7 +417,7 @@ DecModeSequenceHandler.definition = {
   { // DEC-Private Mode Reset
     var i, n, screen;
 
-    if (arguments.length == 0) {
+    if (0 === arguments.length) {
       coUtils.Debug.reportWarning(_("DECRST: Length of Arguments is zero. "));
     }
 
@@ -456,11 +428,6 @@ DecModeSequenceHandler.definition = {
       n = arguments[i];
 
       switch (n) {
-
-        // Normal Cursor Keys (DECCKM)
-        case 1:
-          this.DECCKM = false; // normal cursor
-          break;
 
         // Designate VT52 mode.
         case 2:
@@ -514,11 +481,6 @@ DecModeSequenceHandler.definition = {
             _("DECRST 9 - X10 mouse tracking mode was reset."));
           break;
 
-        // cursor blink mode
-        case 12:
-          this._screen.cursor.blink = true;
-          break;
-
         // Print from feed (DECPFF)
         case 18:
           // TODO: print from feed.
@@ -538,7 +500,7 @@ DecModeSequenceHandler.definition = {
           this.TCEM = false;
           break;
 
-        // TODO: Show Scrollbar (rxvt)
+        // Show Scrollbar (rxvt)
         case 30:
           this.sendMessage("command/scrollbar-hide");
           coUtils.Debug.reportMessage(
@@ -586,12 +548,6 @@ DecModeSequenceHandler.definition = {
           coUtils.Debug.reportWarning(
             _("DECRST 46 - Stop Logging, ", 
               "was not implemented."));
-          break;
-
-        // Use Normal Screen Buffer 
-        // (unless disabled by the titleInhibit resource)
-        case 47:
-          this._screen.switchToMainScreen();
           break;
 
         // Numeric keypad (DECNKM)
@@ -686,7 +642,7 @@ DecModeSequenceHandler.definition = {
               "was not implemented."));
           break;
            
-        // TODO:Disable urxvt-style mouse reporting.
+        // Disable urxvt-style mouse reporting.
         case 1015:
           this.sendMessage(
             "event/mouse-tracking-type-changed", 
@@ -727,22 +683,10 @@ DecModeSequenceHandler.definition = {
               "was not implemented."));
           break;
 
-        // Use Normal Screen Buffer, clearing screen first if in the 
-        // Alternate Screen (unless disabled by the titleinhibit resource)
-        case 1047:
-          this._screen.switchToMainScreen();
-          break;
-
         // Restore cursor as in DECRC 
         // (unless disabled by the titleinhibit resource)
         case 1048:
           this._screen.restoreCursor();
-          break;
-
-        // Use Normal Screen Buffer and restore cursor as in DECRC 
-        // (unless disabled by the titleinhibit resource)
-        case 1049:
-          this._screen.selectMainScreen();
           break;
 
         // Reset Sun function-key mode. 
@@ -795,173 +739,6 @@ DecModeSequenceHandler.definition = {
 
     } // end for
 
-  },
-
-
-  /**
-   *
-   * Enable Locator Reporting (DECELR)
-   *  
-   * CSI Ps ; Pu ' z
-   *
-   * Valid values for the first parameter:
-   * Ps = 0 → Locator disabled (default)
-   * Ps = 1 → Locator enabled
-   * Ps = 2 → Locator enabled for one report, then disabled
-   *
-   * The second parameter specifies the coordinate unit for locator reports.
-   *
-   * Valid values for the second parameter:
-   * Pu = 0 or omitted → default to character cells
-   * Pu = 1 → device physical pixels
-   * Pu = 2 → character cells
-   *
-   */
-  "[profile('vt100'), sequence('CSI %d\\'z')]":
-  function DECELR(n1, n2) 
-  { // Enable Locator Reporting
-
-    var oneshot, pixel;
-
-    switch (n1 || 0) {
-
-      case 0:
-        // Locator disabled (default)
-        this.sendMessage(
-          "command/change-locator-reporting-mode", 
-          null); 
-        return;
-
-      case 1:
-        // Locator enabled
-        oneshot = false;
-        break;
-
-      case 2:
-        // Locator enabled
-        oneshot = true;
-        break;
-
-      default:
-        throw coUtils.Debug.Error(
-          _("Invalid locator mode was specified: %d."), n1);
-
-    }
-
-    switch (n2 || 0) {
-
-      case 0:
-      case 2:
-        // character cells
-        pixel = false;
-        break;
-
-      case 1:
-        // device physical pixels
-        pixel = true;
-        break;
-
-      default:
-        throw coUtils.Debug.Error(
-          _("Invalid locator unit was specified: %d."), n1);
-
-    }
-
-    this.sendMessage(
-      "command/change-locator-reporting-mode", {
-        oneshot: oneshot, 
-        pixel: pixel,
-      }); 
-
-  },
-
-  /**
-   * Select the locator event.
-   *
-   * Pm = 0      Disables button up/down events, Disables filter rectangle.
-   *    = 1      Enables button down event.
-   *    = 2      Disables button down event.
-   *    = 3      Enables button up event.
-   *    = 4      Disables button up event.
-   */
-  "[profile('vt100'), sequence('CSI %d\\'{')]":
-  function DECSLE(n) 
-  { // TODO: Select Locator Events
-    
-    switch (n) {
-
-      case 0:
-        this.sendMessage("command/change-decterm-buttonup-event-mode", false);
-        this.sendMessage("command/change-decterm-buttondown-event-mode", false);
-        break;
-
-      case 1:
-        this.sendMessage("command/change-decterm-buttondown-event-mode", true);
-        break;
-
-      case 2:
-        this.sendMessage("command/change-decterm-buttondown-event-mode", false);
-        break;
-
-      case 3:
-        this.sendMessage("command/change-decterm-buttonup-event-mode", true);
-        break;
-
-      case 3:
-        this.sendMessage("command/change-decterm-buttonup-event-mode", false);
-        break;
-
-      default:
-        throw coUtils.Debug.Error(
-          _("Invalid locator event mode was specified: %d."), n);
-    }
-  },
-
-  /**
-   * Requests Locator Report.
-   * 
-   * Response: CSI Pe ; Pb ; Pr ; Pc ; Pp & w
-   * Pe: Event code.
-   * Pe =  0    Received a locator report request (DECRQLP), but the locator is unavailable.
-   *    =  1    Received a locator report request (DECRQLP).
-   *    =  2    Left button down.
-   *    =  3    Left button up.
-   *    =  4    Middle button down.
-   *    =  5    Middle button up.
-   *    =  6    Right button down.
-   *    =  7    Right button up.
-   *    =  8    Button 4 down. (not supported)
-   *    =  9    Button 4 up. (not supported)
-   *    = 10    Locator outside filter rectangle.
-   * 
-   * Pb: Button code, ASCII decimal 0-15 indicating which buttons are down if any.
-   *     The state of the four buttons on the locator correspond to the low four
-   *     bits of the decimal value, "1" means button depressed.
-   *   1    Right button.
-   *   2    Middle button.
-   *   4    Left button.
-   *   8    Button 4. (not supported)
-   * 
-   * Pr: Row coordinate.
-   * 
-   * Pc: Column coordinate.
-   * 
-   * Pp: Page. Always 1.
-   *
-   */
-  "[profile('vt100'), sequence('CSI %d\\'|')]":
-  function DECRQLP(n) 
-  { // Request Locator Position
-    this.sendMessage("event/locator-reporting-requested"); 
-  },
-
-
-  "[profile('vt100'), sequence('CSI %d\\ ~')]":
-  function DECTME(n) 
-  { // DEC Selectively Elase in Line
-    coUtils.Debug.reportWarning(
-      _("%s sequence [%s] was ignored."),
-      arguments.callee.name, Array.slice(arguments));
   },
 
 
@@ -1033,27 +810,6 @@ DecPrivateMode.definition = {
   },
   
   // Reverse Autowrap Mode (true: autowrap, false: no autowrap)
-
-  /* 
-   * @Property DECCKM
-   */
-  get DECCKM() 
-  {
-    return this._ckm;
-  },
-
-  set DECCKM(value) 
-  {
-    var mode;
-
-    if (value) {
-      mode = "normal";
-    } else {
-      mode = "application";
-    }
-    this.sendMessage("command/change-cursor-mode", mode);
-    this._ckm = value;
-  },
 
   /* 
    * @Property TCEM

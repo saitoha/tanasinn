@@ -24,54 +24,22 @@
 
 
 /**
- * @class ReverseVideo
+ * @class ApplicationCursorMode
  *
- * DECSCNM — Screen Mode: Light or Dark Screen
- *
- * ref: http://www.vt100.net/docs/vt510-rm/DECSCNM
- *
- * This control function selects a dark or light background on the screen.
- *
- * Default: Dark background.
- *
- * Format
- *
- * CSI   ?     5     h
- * 9/11  3/15  3/5   h
- *
- * 6/8   Set: reverse video.
- *
- * CSI   ?     5     l
- * 9/11  3/15  3/5   6/12
- *
- * Reset: normal display.
- *
- * Description
- *
- * When DECSCNM is set, the screen displays dark characters on a light
- * background.
- * When DECSCNM is reset, the screen displays light characters on a dark
- * background.
- *
- * Note on DECSCNM
- *
- * Screen mode only effects how the data appears on the screen. DECSCNM does 
- * not change the data in page memory.
  *
  */
-var ReverseVideo = new Class().extends(Plugin);
-ReverseVideo.definition = {
+var ApplicationCursorMode = new Class().extends(Plugin);
+ApplicationCursorMode.definition = {
 
   get id()
-    "reverse_video",
+    "application_cursor",
 
   get info()
     <module>
-        <name>{_("Reverse Video")}</name>
+        <name>{_("Application Cursor Mode")}</name>
         <version>0.1</version>
         <description>{
-          _("Enable/disable Reverse video feature(DECSCNM)",
-            " with escape seqnence.")
+          _("Switch between Normal mode/Application Cursor mode.")
         }</description>
     </module>,
 
@@ -87,7 +55,6 @@ ReverseVideo.definition = {
   function install(broker) 
   {
     this._mode = this.default_value;
-    this.reset();
   },
 
   /** Uninstalls itself.
@@ -99,36 +66,33 @@ ReverseVideo.definition = {
     this._mode = null;
   },
 
-  /** Activate reverse video feature.
+
+  /** Activate auto-repeat feature.
    */
-  "[subscribe('sequence/decset/5'), pnp]":
+  "[subscribe('sequence/decset/1'), pnp]":
   function activate() 
   { 
     this._mode = true;
 
-    this.sendMessage("command/reverse-video", true);
-
-    coUtils.Debug.reportMessage(
-      _("DECSET - DECSCNM (Reverse video) was called."));
+    // enable application cursor mode.
+    this.sendMessage("command/change-cursor-mode", "normal");
   },
 
-  /** Deactivate reverse video feature
+  /** Deactivate auto-repeat feature
    */
-  "[subscribe('sequence/decrst/5'), pnp]":
+  "[subscribe('sequence/decrst/1'), pnp]":
   function deactivate() 
   {
     this._mode = false;
 
-    this.sendMessage("command/reverse-video", false);
-
-    coUtils.Debug.reportMessage(
-      _("DECRST - DECSCNM (Reverse video) was called."));
+    // disable application cursor mode.
+    this.sendMessage("command/change-cursor-mode", "application");
   },
 
-  /** handle terminal reset event.
+  /** on hard / soft reset
    */
   "[subscribe('command/{soft | hard}-terminal-reset'), pnp]":
-  function reset() 
+  function reset(broker) 
   {
     if (this.default_value) {
       this.activate();
@@ -166,8 +130,7 @@ ReverseVideo.definition = {
     }
   },
 
-
-}; // class ReverseVideo
+}; // class ApplicationCursorMode
 
 /**
  * @fn main
@@ -176,7 +139,7 @@ ReverseVideo.definition = {
  */
 function main(broker) 
 {
-  new ReverseVideo(broker);
+  new ApplicationCursorMode(broker);
 }
 
 // EOF

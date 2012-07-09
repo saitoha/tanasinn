@@ -217,15 +217,17 @@ Controller.definition = {
 
     this._start(control_port);
 
-    timer = coUtils.Timer.setInterval(function() {
-      if (self.post) {
-        self.post("beacon\n");
-      } else {
-        timer.cancel();
-        self = null;
-        timer = null;
-      }
-    }, self.beacon_interval);
+    timer = coUtils.Timer.setInterval(
+      function timerProc()
+      {
+        if (self.post) {
+          self.post("beacon\n");
+        } else {
+          timer.cancel();
+          self = null;
+          timer = null;
+        }
+      }, self.beacon_interval);
 
     this._send_initial_data(io_port);
     this.sendMessage("initialized/tty", this);
@@ -628,9 +630,12 @@ IOManager.definition = {
     var data;
 
     data = context.readBytes(count);
-  //  coUtils.Timer.setTimeout(function() {
-    this.sendMessage("event/data-arrived", data);
-  //  }, 30);
+
+    coUtils.Timer.setTimeout(
+      function timerProc()
+      {
+        this.sendMessage("event/data-arrived", data);
+      }, 30, this);
   },
 }
 
@@ -814,7 +819,9 @@ SocketTeletypeService.definition = {
     var request_id, record, backup_data_path, context, file, socket;
 
     this.osc97.enabled = true;
+
     if (0 === broker.command.indexOf("&")) {
+
       request_id = broker.command.substr(1);
       record = coUtils.Sessions.get(request_id);
 
@@ -826,19 +833,27 @@ SocketTeletypeService.definition = {
       coUtils.Sessions.update();
 
       backup_data_path = broker.runtime_path + "/persist/" + request_id + ".txt";
+
       if (coUtils.File.exists(backup_data_path)) {
+
         context = JSON.parse(coUtils.IO.readFromFile(backup_data_path, "utf-8"));
 
         this.sendMessage("command/restore", context);
 
         file = coUtils.File.getFileLeafFromVirtualPath(backup_data_path);
+
         if (file.exists()) {
           file.remove(false)
         }
 
-        this.sendMessage("command/draw", true);
+        coUtils.Timer.setTimeout(
+          function timerProc()
+          {
+            this.sendMessage("command/draw", true);
+          }, 50, this);
       }
     } else {
+
       socket = Components
         .classes["@mozilla.org/network/server-socket;1"]
         .createInstance(Components.interfaces.nsIServerSocket);
@@ -895,17 +910,14 @@ SocketTeletypeService.definition = {
 
   onSocketAccepted: function onSocketAccepted(serv, transport) 
   {
-    var broker, istream, ostream, message,
-        scriptable_input_stream, pump;
-
-    broker = this._broker;
-
-    istream = transport.openInputStream(0, 1024, 1);
-    ostream = transport.openOutputStream(0, 1024, 1);
-
-    message = [broker.command, broker.term]
-      .map(function(value) coUtils.Text.base64encode(value))
-      .join(" ")
+    var broker = this._broker,
+        istream = transport.openInputStream(0, 1024, 1),
+        ostream = transport.openOutputStream(0, 1024, 1),
+        message = [broker.command, broker.term]
+          .map(function(value) coUtils.Text.base64encode(value))
+          .join(" "),
+        scriptable_input_stream, // nsIScriptableInputStream
+        pump;                    // nsIInputStreamPump
 
     ostream.write(message, message.length);
 
@@ -919,6 +931,7 @@ SocketTeletypeService.definition = {
       .createInstance(Components.interfaces.nsIInputStreamPump);
     pump.init(istream, -1, -1, 0, 0, false);
     pump.asyncRead(this, null);
+
     this._pump = pump;
     this._input = scriptable_input_stream;
   },

@@ -279,11 +279,13 @@ Session.definition = {
 
     this.notify("command/load-settings", this.profile);
     this.notify("event/broker-started", this);
+
     coUtils.Timer.setTimeout(function() {
       this.notify("command/focus");
       this.notify("command/focus");
       this.notify("command/focus");
     }, this.initial_focus_delay, this);
+
     return this;
   },
 
@@ -302,16 +304,15 @@ Session.definition = {
     this.clear();
     this._root_element = null;
     this._window = null;
-    /*
-    if (coUtils.Runtime.app_name.match(/tanasinn/)) {
-      this.window.close(); // close window
 
-      var application = Components
-        .classes["@mozilla.org/fuel/application;1"]
-        .getService(Components.interfaces.fuelIApplication);
-      application.quit();
-    }
-    */
+    //if (coUtils.Runtime.app_name.match(/tanasinn/)) {
+    //  this.window.close(); // close window
+
+    //  var application = Components
+    //    .classes["@mozilla.org/fuel/application;1"]
+    //    .getService(Components.interfaces.fuelIApplication);
+    //  application.quit();
+    //}
   },
 
 }; // class Session

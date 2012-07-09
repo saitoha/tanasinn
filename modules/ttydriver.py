@@ -540,8 +540,6 @@ if __name__ == "__main__":
                 io_port = int(io_port_str)
                 sessiondb_path = base64.b64decode(sessiondb_path)
 
-                del_record(request_id)
-
                 os.system("test -e ~/.tanasinn/sessions.txt && sed -i -e '/^%s,/d' ~/.tanasinn/sessions.txt" % request_id)
 
     except socket.error:

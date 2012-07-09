@@ -643,6 +643,13 @@ Renderer.definition = {
     }
   },
 
+  "[subscribe('@command/focus'), pnp]":
+  function onFirstFocus()
+  {
+    this.onWidthChanged();
+    this.onHeightChanged();
+  },
+
   /** Take screen capture and save it in png format. */
   "[subscribe('command/capture-screen'), pnp]": 
   function captureScreen(info) 

@@ -110,7 +110,7 @@ IRMSwitch.definition = {
   "[subscribe('sequence/rm/4'), pnp]":
   function deactivate() 
   {
-    this._mode = true;
+    this._mode = false;
 
     // disable insert mode.
     this.sendMessage("command/disable-insert-mode");
@@ -121,7 +121,11 @@ IRMSwitch.definition = {
   "[subscribe('command/{soft | hard}-terminal-reset'), pnp]":
   function reset(broker) 
   {
-    this.deactivate();
+    if (this.default_value) {
+      this.activate();
+    } else {
+      this.deactivate();
+    }
   },
 
   /**

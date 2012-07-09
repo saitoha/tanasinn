@@ -24,7 +24,6 @@
 
 /**
  * @class Vector3d
- *
  */
 var Vector3d = new Class();
 Vector3d.prototype = {
@@ -33,21 +32,26 @@ Vector3d.prototype = {
   y: 0,
   z: 0,
 
-  abs2: function abs2()
+  // constructor
+  initialize: function initialize(x, y, z)
   {
-    return this.x * this.x + this.y * this.y + this.z * this.z;
+    this.x = x;
+    this.y = y;
+    this.z = z;
   },
 
-  abs: function abs2()
+
+  abs: function abs()
   {
-    return Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
+    // (x^2 + y^2 + z^2) ^ (1/2)
+    return Math.sqrt(this.x * this.x 
+                   + this.y * this.y 
+                   + this.z * this.z);
   },
 
   norm: function nrom()
   {
-    var abs;
-
-    abs = this.abs();
+    var abs = this.abs();
 
     return new Vector3d(this.x / abs, 
                         this.y / abs,
@@ -65,13 +69,6 @@ Vector3d.prototype = {
       this.y * other.z - this.z * other.y, 
       this.z * other.x - this.x * other.z, 
       this.x * other.y - this.y * other.x);
-  },
-
-  initialize: function initialize(x, y, z)
-  {
-    this.x = x;
-    this.y = y;
-    this.z = z;
   },
 
 };
@@ -104,26 +101,6 @@ TransformMatrix.prototype = {
   _m31: 0,
   _m32: 0,
   _m33: 1,
-
-  reset: function reset()
-  {
-    this._m00 = 1;
-    this._m01 = 0;
-    this._m02 = 0;
-    this._m03 = 0;
-    this._m10 = 0;
-    this._m11 = 1;
-    this._m12 = 0;
-    this._m13 = 0;
-    this._m20 = 0;
-    this._m21 = 0;
-    this._m22 = 1;
-    this._m23 = 0;
-    this._m30 = 0;
-    this._m31 = 0;
-    this._m32 = 0;
-    this._m33 = 1;
-  },
 
   initialize: function initialize(m00, m01, m02, m03, 
                                   m10, m11, m12, m13, 
@@ -186,6 +163,32 @@ TransformMatrix.prototype = {
 
 };
 
+function getMatrixFrom2Vectors(a, b)
+{
+  var cos_angle = b.dot(a),
+      sin_angle = b.cross(a).abs(),
+      cross = b.cross(a).norm();
+      x = cross.x,
+      y = cross.y,
+      z = cross.z,
+      matrix = new TransformMatrix(
+        1 + (1 - cos_angle) * (x * x - 1),
+        -z * sin_angle + (1 - cos_angle) * x * y,
+         y * sin_angle + (1 - cos_angle) * x * z,
+         0,
+        z * sin_angle + (1 - cos_angle) * x * y,
+        1 + (1 - cos_angle) * (y * y - 1),
+        -x * sin_angle + (1 - cos_angle) * y * z,
+        0,
+        -y * sin_angle + (1- cos_angle) * x * z,
+        x * sin_angle + (1 - cos_angle) * y * z,
+        1 + (1 - cos_angle) * (z * z - 1),
+        0,
+        0, 0, 0, 1);
+
+  return matrix;
+};
+
 /**
  * @trait DragTransform
  */
@@ -209,6 +212,10 @@ DragTransform.definition = {
       return;
     }
 
+    if (event.ctrlKey) {
+      return;
+    }
+
     coordinate = this.get2DCoordinate(event);
 
     x = coordinate[0];
@@ -216,10 +223,10 @@ DragTransform.definition = {
     w = this._width / 2.0;
     h = this._height / 2.0;
     r2 = w * w + h * h * 1;
-    z = Math.sqrt(r2 - (x * x + y * y));
+    z = Math.sqrt(r2);// - (x * x + y * y));
 
     root_element = this.request("get/root-element");
-    root_element.firstChild.style.MozPerspective = Math.floor(Math.sqrt(r2) * 1.2) + "px";
+    root_element.firstChild.style.MozPerspective = Math.floor(Math.sqrt(r2 * 3)) + "px";
 
     this._begin_point = new Vector3d(x, y, z);
 
@@ -241,7 +248,7 @@ DragTransform.definition = {
         w = this._width / 2.0,
         h = this._height / 2.0,
         r2 = w * w + h * h * 1,
-        z = Math.sqrt(r2 - (x * x + y * y));
+        z = Math.sqrt(r2);// - (x * x + y * y));
 
     if (isNaN(z)) {
       return;
@@ -249,26 +256,7 @@ DragTransform.definition = {
 
     var a = this._begin_point.norm(),
         b = new Vector3d(x, y, z).norm(),
-        cos_angle = b.dot(a),
-        sin_angle = b.cross(a).abs(),
-        cross = b.cross(a).norm();
-        x = cross.x,
-        y = cross.y,
-        z = cross.z,
-        matrix = new TransformMatrix(
-          1 + (1 - cos_angle) * (x * x - 1),
-          -z * sin_angle + (1 - cos_angle) * x * y,
-           y * sin_angle + (1 - cos_angle) * x * z,
-           0,
-          z * sin_angle + (1 - cos_angle) * x * y,
-          1 + (1 - cos_angle) * (y * y - 1),
-          -x * sin_angle + (1 - cos_angle) * y * z,
-          0,
-          -y * sin_angle + (1- cos_angle) * x * z,
-          x * sin_angle + (1 - cos_angle) * y * z,
-          1 + (1 - cos_angle) * (z * z - 1),
-          0,
-          0, 0, 0, 1);
+        matrix = getMatrixFrom2Vectors(a, b);
 
     this._last_matrix = this._matrix.apply(matrix);
     this._element.style.MozTransform = this._last_matrix.toString();
@@ -277,13 +265,13 @@ DragTransform.definition = {
   "[subscribe('event/{alt & shift}-key-down'), pnp]":
   function onModifierKeysDown() 
   {
-    this._cover.hidden = false;
+    this.sendMessage("command/enable-drag-cover");
   },
 
   "[subscribe('event/{alt | shift}-key-up'), pnp]":
   function onModifierKeyUp() 
   {
-    this._cover.hidden = true;
+    this.sendMessage("command/disable-drag-cover");
     this.onDragEnd();
   },
 
@@ -325,9 +313,87 @@ DragTransform.definition = {
 
 }; // DragSelect
 
+/**
+ * @class DragCover
+ *
+ */
+var DragCover = new Class().extends(Plugin)
+DragCover.definition = {
 
+  get id()
+    "dragcover",
+
+  get info()
+    <plugin>
+        <name>{_("DragCover")}</name>
+        <description>{
+          _("A Helper Object for gathering mouse dragging event's coordinate data.")
+        }</description>
+        <version>0.1.0</version>
+    </plugin>,
+
+  "[persistable] enabled_when_startup": true,
+
+  /** Installs itself.
+   *  @param broker {Broker} A broker object.
+   */
+  "[install]":
+  function install(broker)
+  {
+    var root_element = this.request("get/root-element"),
+        document_element = root_element.ownerDocument.documentElement;
+
+    this._cover = this.request(
+      "command/construct-chrome",
+      {
+        tagName: "box",
+        id: "tanasinn_capture_cover",
+        style: "position: fixed; top: 0px; left: 0px;",
+        hidden: true,
+      })["tanasinn_capture_cover"];
+
+    document_element.appendChild(this._cover);
+
+    this._cover.style.width = document_element.boxObject.width + "px";
+    this._cover.style.height = document_element.boxObject.height + "px"; 
+
+  },
+
+  /** Uninstalls itself.
+   *  @param broker {Broker} A Broker object.
+   */
+  "[uninstall]":
+  function uninstall(broker)
+  {
+    if (this._cover) {
+      this._cover.parentNode.removeChild(this._cover);
+      this._cover = null;
+    }
+
+  },
+
+
+  "[subscribe('command/enable-drag-cover'), pnp]":
+  function enableDragCover() 
+  {
+    this._cover.hidden = false;
+  },
+
+  "[subscribe('command/disable-drag-cover'), pnp]":
+  function disableDragCover() 
+  {
+    this._cover.hidden = true;
+  },
+
+};
+
+/**
+ * @class Transform
+ *
+ */
 var Transform = new Class().extends(Plugin)
                            .mix(DragTransform)
+                           .depends("dragcover")
                            .depends("outerchrome");
 Transform.definition = {
 
@@ -347,7 +413,7 @@ Transform.definition = {
 
   _matrix: null,
   _element: null,
-  _cover: null,
+
   _width: 0,
   _height: 0,
 
@@ -357,35 +423,17 @@ Transform.definition = {
   "[install]":
   function install(broker)
   {
-    var root_element, document_element;
+    var root_element = this.request("get/root-element"),
+        document_element = root_element.ownerDocument.documentElement;
 
-    this._matrix = new TransformMatrix();
-    this._matrix.reset();
-
-    root_element = this.request("get/root-element");
+    this._matrix = new TransformMatrix(
+      1, 0, 0, 0,
+      0, 1, 0, 0,
+      0, 0, 1, 0,
+      0, 0, 0, 1);
 
     this._element = root_element.querySelector("#tanasinn_outer_chrome");
     this._element.style.MozTransformStyle = "preserve-3d";
-//    this._eleemnt.style.MozTransform = "translateZ(10px)";
-//    this._element.style.MozTransform = "rotate3d(0, 0, 1, -45deg) rotate3d(0, 1, 0, -45deg)";
-
-    this._cover = this.request(
-      "command/construct-chrome",
-      {
-        tagName: "box",
-        id: "tanasinn_capture_cover",
-        style: "position: fixed; top: 0px; left: 0px;",
-        hidden: true,
-      })["tanasinn_capture_cover"];
-
-    document_element = this._element.ownerDocument.documentElement;
-    document_element.appendChild(this._cover);
-
-    this._cover.style.width = document_element.boxObject.width + "px";
-    this._cover.style.height = document_element.boxObject.height + "px"; 
-
-    coUtils.Debug.reportError(this._cover.style.cssText);
-
   },
 
   /** Uninstalls itself.
@@ -395,12 +443,6 @@ Transform.definition = {
   function uninstall(broker)
   {
     this._element = null;
-
-    if (this._cover) {
-      this._cover.parentNode.removeChild(this._cover);
-      this._cover = null;
-    }
-
   },
 
   "[subscribe('event/screen-width-changed'), pnp]": 
@@ -425,6 +467,7 @@ Transform.definition = {
 function main(broker) 
 {
   new Transform(broker);
+  new DragCover(broker);
 }
 
 // EOF

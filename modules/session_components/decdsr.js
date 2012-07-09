@@ -24,7 +24,7 @@
 
 
 /**
- * @class DeviceStatusReport
+ * @class DECDeviceStatusReport
  *
  * DSR — Device Status Reports
  *
@@ -70,58 +70,51 @@
  * can respond through the bidirectional printer port.
  *
  */
-var ANSIDeviceStatusReport = new Class().extends(Plugin)
-                                        .depends("cursorstate");
-ANSIDeviceStatusReport.definition = {
+var DECDeviceStatusReport = new Class().extends(Plugin)
+                                       .depends("parser");
+DECDeviceStatusReport.definition = {
 
   get id()
-    "device_status_report",
+    "device_status_report_dec",
 
   get info()
     <module>
-        <name>{_("Device Status Report / ANSI")}</name>
+        <name>{_("Device Status Report / DEC")}</name>
         <version>0.1</version>
         <description>{
-          _("Send Device Status Report, ANSI format.")
+          _("Send Device Status Report, DEC specific.")
         }</description>
     </module>,
 
   "[persistable] enabled_when_startup": true,
 
+  _parser: null,
+
   "[install]":
   function install()
   {
-    this._cursor = this.dependency["cursorstate"];
+    this._parser = this.dependency["parser"];
   },
 
   "[uninstall]":
   function uninstall()
   {
-    this._cursor = null;
+    this._parser = null;
   },
 
-
-  "[profile('vt100'), sequence('CSI %dn')]":
-  function DSR(n) 
-  { // Device Status Report
-
-    var cursor = this._cursor,
-        message;
-
+  "[profile('vt100'), sequence('CSI ?%dn')]":
+  function DECDSR(n) 
+  { // Device Status Report, DEC specific
+    
     switch (n) {
 
-      // report terminal status
-      case 5:
-        this.sendMessage("command/send-sequence/csi");
-        this.sendMessage("command/send-to-tty", "0n");
-        break;
-
-      // report cursor position
-      case 6:
-        message = coUtils.Text.format(
-          "%d;%dR", 
-          cursor.positionY + 1, 
-          cursor.positionX + 1);
+      // report ambiguous width status (TNREPTAMB)
+      case 8840:
+        if (this._parser.ambiguous_as_wide) {
+          message = "?8842n";
+        } else {
+          message = "?8841n";
+        }
         this.sendMessage("command/send-sequence/csi");
         this.sendMessage("command/send-to-tty", message);
         break;
@@ -132,6 +125,7 @@ ANSIDeviceStatusReport.definition = {
           arguments.callee.name, Array.slice(arguments));
     }
   },
+
 };
 
 /**
@@ -141,7 +135,7 @@ ANSIDeviceStatusReport.definition = {
  */
 function main(broker) 
 {
-  new ANSIDeviceStatusReport(broker);
+  new DECDeviceStatusReport(broker);
 }
 
 // EOF

@@ -76,6 +76,7 @@
    map.js
   }
   session_components=session_components {
+
    parser.js
 
    line.js
@@ -103,6 +104,8 @@
    plugin=.{
 
     transform.js
+    altscreen.js
+    blink.js
     drcs.js
     sixel.js
     mascot.js
@@ -121,12 +124,14 @@
     softreset.js
     hardreset.js
     sgrhandler.js
+    ckm.js
     irm.js
     lnm.js
     kam.js
     srm.js
     macro.js
     dsr.js
+    decdsr.js
     charset.js
     protection.js
     reportparams.js

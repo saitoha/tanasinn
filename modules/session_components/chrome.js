@@ -66,11 +66,9 @@ Movable.definition = {
   "[subscribe('command/move-to'), type('Array -> Undefined'), enabled]":
   function moveTo(coordinate) 
   {
-    var x, y, target_element;
-
-    [x, y] = coordinate;
-
-    target_element = this.request("get/root-element");
+    var x = coordinate[0],
+        y = coordinate[1],
+        target_element = this.request("get/root-element");
 
     if (x < -target_element.boxObject.width) {
       x = 0;
@@ -91,21 +89,20 @@ Movable.definition = {
   "[subscribe('command/move-by'), type('Array -> Undefined'), enabled]":
   function moveBy(offset) 
   {
-    var x, y, dom, static_scope, timer,
-        left, top, root_element;
-
-    [x, y] = offset;
-
-    static_scope = arguments.callee;
-    timer = static_scope.timer;
+    var x = offset[0],
+        y = offset[1],
+        static_scope = arguments.callee,
+        timer = static_scope.timer,
+        dom = {
+          root_element: this.request("get/root-element"),
+        };
+        left,
+        top,
+        root_element;
 
     if (timer) {
       timer.cancel();
     }
-
-    dom = {
-      root_element: this.request("get/root-element"),
-    };
 
     if (this.move_transition) {
       dom.root_element.style.MozTransitionProperty = "left, top";
@@ -168,13 +165,12 @@ OuterChrome.definition = {
 
   get blend_color()
   {
-    var f, b, color;
-
-    f = parseInt(this.foreground_color.substr(1), 16);
-    b = parseInt(this.background_color.substr(1), 16);
-    color = (((((f >>> 16 & 0xff) + (b >>> 16 & 0xff) * 2) / 2.0) | 0) << 16)
+    var f = parseInt(this.foreground_color.substr(1), 16),
+        b = parseInt(this.background_color.substr(1), 16),
+        color = (((((f >>> 16 & 0xff) + (b >>> 16 & 0xff) * 2) / 2.0) | 0) << 16)
               | (((((f >>> 8  & 0xff) + (b >>>  8 & 0xff) * 2) / 2.0) | 0) <<  8) 
               | (((((f        & 0xff) + (b        & 0xff) * 2) / 2.0) | 0) <<  0);
+
     return (color + 0x1000000)
         .toString(16)
         .replace(/^1/, "#");
@@ -189,15 +185,14 @@ OuterChrome.definition = {
 
   getImagePath: function getImagePath()
   {
-    var path, file;
+    var path = this._broker.runtime_path + "/" + "images/cover.png",
+        file = coUtils.File.getFileLeafFromVirtualPath(path);
 
-    path = this._broker.runtime_path + "/" + "images/cover.png";
-
-    file = coUtils.File.getFileLeafFromVirtualPath(path);
     if (!file.exists()) {
         path = "images/cover.png";
         file = coUtils.File.getFileLeafFromVirtualPath(path);
     }
+
     return coUtils.File.getURLSpec(file);
   },
 
@@ -296,18 +291,16 @@ OuterChrome.definition = {
   "[install]": 
   function install(broker) 
   {
-    var result;
-
     // construct chrome elements. 
-    result = this.request("command/construct-chrome", this.template);
+    var result = this.request("command/construct-chrome", this.template);
 
     this._element = result.tanasinn_outer_chrome;
     this._frame = result.tanasinn_background_frame;
 
-    if (coUtils.Runtime.app_name.match(/tanasinn/)) {
-      this._element.firstChild.style.borderRadius = "0px";
-      this._element.firstChild.style.margin = "0px";
-    }
+    //if (coUtils.Runtime.app_name.match(/tanasinn/)) {
+    //  this._element.firstChild.style.borderRadius = "0px";
+    //  this._element.firstChild.style.margin = "0px";
+    //}
   },
 
   /** Uninstalls itself. 
@@ -354,46 +347,36 @@ OuterChrome.definition = {
   "[subscribe('event/shift-key-down'), enabled]": 
   function onShiftKeyDown() 
   {
-    var target;
-    
-    target = this._element.querySelector("#tanasinn_chrome");
+    var target = this._element.querySelector("#tanasinn_chrome");
     target.style.cursor = "move";
   },
 
   "[subscribe('event/shift-key-up'), enabled]": 
   function onShiftKeyUp() 
   {
-    var target;
-
-    target = this._element.querySelector("#tanasinn_chrome");
+    var target = this._element.querySelector("#tanasinn_chrome");
     target.style.cursor = "";
   },
 
   "[subscribe('event/alt-key-down'), enabled]": 
   function onAltKeyDown() 
   {
-    var target;
-
-    target = this._element.querySelector("#tanasinn_chrome");
+    var target = this._element.querySelector("#tanasinn_chrome");
     target.style.cursor = "crosshair";
   },
 
   "[subscribe('event/alt-key-up'), enabled]": 
   function onAltKeyUp() 
   {
-    var target;
-
-    target = this._element.querySelector("#tanasinn_chrome");
+    var target = this._element.querySelector("#tanasinn_chrome");
     target.style.cursor = "";
   },
 
   "[subscribe('command/set-opacity'), enabled]": 
   function setOpacity(opacity, duration) 
   {
-    var target;
-
     // get target element
-    target = this._element;
+    var target = this._element;
 
     if (target.style.opacity <= opacity) {
       duration = 0; 
@@ -486,10 +469,10 @@ Chrome.definition = {
   "[install]": 
   function install(broker) 
   {
-    var {tanasinn_content, tanasinn_center_area} 
-      = this.request("command/construct-chrome", this.template);
-    this._element = tanasinn_content;
-    this._center = tanasinn_center_area;
+    var result = this.request("command/construct-chrome", this.template);
+
+    this._element = result.tanasinn_content;
+    this._center = result.tanasinn_center_area;
   },
 
   "[uninstall]":
@@ -512,11 +495,9 @@ Chrome.definition = {
   "[subscribe('@event/broker-stopping'), enabled]": 
   function onSessionStoping() 
   {
-    var target;
+    var target = this._element;
 
     this.sendMessage("command/blur");
-
-    target = this._element;
 
     if (target.parentNode) {
       target.parentNode.removeChild(target);
@@ -526,7 +507,8 @@ Chrome.definition = {
   "[subscribe('command/query-selector'), enabled]":
   function querySelector(selector) 
   {
-    return this.request("get/root-element").querySelector(selector);
+    var root_element = this.request("get/root-element");
+    return root_element.querySelector(selector);
   },
 
   /** Fired when a resize session started. */
@@ -579,6 +561,5 @@ function main(broker)
   new OuterChrome(broker);
   new Chrome(broker);
 }
-
 
 // EOF
