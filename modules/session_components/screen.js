@@ -1422,13 +1422,15 @@ Scrollable.definition = {
   /** Scroll down the buffer by n lines. */
   _scrollUp: function _scrollUp(top, bottom, n) 
   {
-    var lines, offset, width, height, attr, i, range, line, rest;
-
-    lines = this._buffer;
-    offset = this._buffer_top;
-    width = this._width;
-    height = this._height;
-    attr = this.cursor.attr;
+    var lines = this._buffer,
+        offset = this._buffer_top,
+        width = this._width,
+        height = this._height,
+        attr = this.cursor.attr,
+        i, 
+        range,  // rotation range
+        line, 
+        rest;
 
     // set dirty flag.
     for (i = n; i < this._lines.length; ++i) {
@@ -1526,21 +1528,19 @@ Resizable.definition = {
   /** Create new lines and Push after last line. */
   _pushLines: function _pushLines(n) 
   {
-    var buffer, new_lines, offset;
-
-    buffer = this._buffer;
+    var buffer = this._buffer;
+        new_lines = this._createLines(n),
+        offset = this._buffer_top;
 
     // increase height.
     this._height += n;
 
-    new_lines = this._createLines(n);
     Array.prototype.push.apply(buffer, new_lines);
 
     new_lines = this._createLines(n);
     new_lines.unshift(-this._height, 0); // make arguments
     Array.prototype.splice.apply(buffer, new_lines);
 
-    offset = this._buffer_top;
     this._lines = buffer.slice(offset, offset + this._height);
 
     // expand scroll region.
@@ -1950,14 +1950,12 @@ Screen.definition = {
   "[type('Uint16 -> Undefined')] cursorDown":
   function cursorDown(n) 
   {
-    var cursor, positionY, max;
-
-    cursor = this.cursor;
-    positionY = cursor.positionY + n;
+    var cursor = this.cursor,
+        positionY = cursor.positionY + n,
+        max = this._scroll_bottom - 1;
 
     // If an attempt is made to move the active position below the last line, 
     // the active position stops at the last line.
-    max = this._scroll_bottom - 1;
     cursor.positionY = positionY > max ? max: positionY;
   },
 
@@ -1965,11 +1963,10 @@ Screen.definition = {
   "[type('Uint16 -> Undefined')] cursorUpAbsolutely":
   function cursorUpAbsolutely(n) 
   { 
-    var cursor, positionY, min;
+    var cursor = this.cursor,
+        positionY = cursor.positionY - n,
+        min = 0;
 
-    cursor = this.cursor;
-    positionY = cursor.positionY - n;
-    min = 0;
     cursor.positionY = positionY > min ? positionY: min;
   },
   
@@ -1977,14 +1974,12 @@ Screen.definition = {
   "[type('Uint16 -> Undefined')] cursorDownAbsolutely":
   function cursorDownAbsolutely(n) 
   {
-    var cursor, positionY, max;
-
-    cursor = this.cursor;
-    positionY = cursor.positionY + n;
+    var cursor = this.cursor,
+        positionY = cursor.positionY + n,
+        max = this._height - 1;
 
     // If an attempt is made to move the active position below the last line, 
     // the active position stops at the last line.
-    max = this._height - 1;
     cursor.positionY = positionY > max ? max: positionY;
   },
 
@@ -1992,9 +1987,8 @@ Screen.definition = {
   "[type('Uint16 -> Undefined')] setPositionX":
   function setPositionX(n) 
   {
-    var max;
+    var max = this._width - 1;
 
-    max = this._width - 1;
     this.cursor.positionX = n > max ? max: n;
   },
 
@@ -2002,9 +1996,8 @@ Screen.definition = {
   "[type('Uint16 -> Undefined')] setPositionY":
   function setPositionY(n) 
   {
-    var max;
+    var max = this._height - 1;
 
-    max = this._height - 1;
     this.cursor.positionY = n > max ? max: n; // max(height - 1, n)
   },
 
@@ -2012,12 +2005,10 @@ Screen.definition = {
   "[type('Undefined')] backSpace":
   function backSpace() 
   {
-    var cursor, width, positionX;
+    var cursor = this.cursor,
+        width = this._width,
+        positionX = cursor.positionX;
 
-    cursor = this.cursor;
-    width = this._width;
-
-    positionX = cursor.positionX;;
     if (positionX >= width) {
       positionX = width - 1;
     }
@@ -2060,10 +2051,9 @@ Screen.definition = {
   "[type('Undefined')] eraseLineToLeft":
   function eraseLineToLeft() 
   {
-    var cursor, line;
+    var cursor = this.cursor,
+        line = this.getCurrentLine();
 
-    cursor = this.cursor;
-    line = this.getCurrentLine();
     line.erase(0, cursor.positionX + 1, cursor.attr);
   },
 
@@ -2071,11 +2061,10 @@ Screen.definition = {
   "[type('Undefined')] eraseLine":
   function eraseLine() 
   {
-    var cursor, line, width;
+    var cursor = this.cursor,
+        line = this.getCurrentLine(),
+        width = this._width;
 
-    cursor = this.cursor;
-    line = this.getCurrentLine();
-    width = this._width;
     line.erase(0, width, cursor.attr);
   },
 
@@ -2084,9 +2073,10 @@ Screen.definition = {
   "[type('Undefined')] selectiveEraseLineToRight":
   function selectiveEraseLineToRight() 
   {
-    var cursor, line, width;
+    var line = this.getCurrentLine();
+        cursor,
+        width;
 
-    line = this.getCurrentLine();
     if (line) {
       cursor = this.cursor;
       width = this._width;
@@ -2102,10 +2092,9 @@ Screen.definition = {
   "[type('Undefined')] selectiveEraseLineToLeft":
   function selectiveEraseLineToLeft() 
   {
-    var cursor, line;
+    var cursor = this.cursor,
+        line = this.getCurrentLine();
 
-    cursor = this.cursor;
-    line = this.getCurrentLine();
     line.selectiveErase(0, cursor.positionX + 1, cursor.attr);
   },
 
@@ -2113,11 +2102,10 @@ Screen.definition = {
   "[type('Undefined')] selectiveEraseLine":
   function selectiveEraseLine() 
   {
-    var cursor, line, width;
+    var cursor = this.cursor,
+        line = this.getCurrentLine(),
+        width = this._width;
 
-    cursor = this.cursor;
-    line = this.getCurrentLine();
-    width = this._width;
     line.selectiveErase(0, width, cursor.attr);
   },
 
@@ -2125,15 +2113,15 @@ Screen.definition = {
   "[type('Undefined')] eraseScreenAbove":
   function eraseScreenAbove() 
   {
-    var cursor, width, lines, attr, i, positionY;
-
-    cursor = this.cursor;
-    width = this._width;
-    lines = this._lines;
-    attr = cursor.attr;
+    var cursor = this.cursor,
+        width = this._width,
+        lines = this._lines,
+        attr = cursor.attr,
+        positionY = cursor.positionY,
+        i;
     
-    positionY = cursor.positionY;
     lines[positionY].erase(0, cursor.positionX + 1, attr);
+
     for (i = 0; i < positionY; ++i) {
       lines[i].erase(0, width, attr);
     }
@@ -2143,16 +2131,16 @@ Screen.definition = {
   "[type('Undefined')] eraseScreenBelow":
   function eraseScreenBelow() 
   {
-    var cursor, width, attr, lines, positionY, height, i;
-
-    cursor = this.cursor;
-    width = this._width;
-    attr = cursor.attr;
-    lines = this._lines;
-    positionY = cursor.positionY;
-    height = this._height;
+    var cursor = this.cursor,
+        width = this._width,
+        attr = cursor.attr,
+        lines = this._lines,
+        positionY = cursor.positionY,
+        height = this._height,
+        i;
    
     lines[positionY].erase(cursor.positionX, width, attr);
+
     for (i = positionY + 1; i < height; ++i) {
       lines[i].erase(0, width, attr);
     }

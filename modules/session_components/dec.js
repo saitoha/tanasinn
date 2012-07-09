@@ -99,37 +99,6 @@ DecModeSequenceHandler.definition = {
 
       switch (n) {
 
-        // Designate USASCII for character sets G0-G3 (DECANM), and set VT100 mode.
-        case 2:
-          this.sendMessage("sequence/g0", "B");
-          this.sendMessage("sequence/g1", "B");
-          this.sendMessage("sequence/g2", "B");
-          this.sendMessage("sequence/g3", "B");
-          this.sendMessage("command/change-mode", "vt100"); // TODO: write subscriber
-          coUtils.Debug.reportWarning(
-            _("DECSET - DECANM was not implemented completely."));
-          break;
-
-        // 132 column mode (DECCOLM)
-        case 3:
-          if (this._allow_switching_80_and_132_mode) {
-            this.COLM = true;
-            this.sendMessage("command/resize-screen", {
-              column: 132,
-              row: this._screen.height,
-            });
-            
-            screen = this._screen;
-            screen.eraseScreenAll();
-
-            this.sendMessage("event/screen-size-changed", { 
-              column: screen.width, 
-              row: screen.height 
-            });
-
-          }
-          break;
-
         // Smooth (Slow) Scloll (DECSCLM)
         case 4:
           // smooth scroll.
@@ -169,11 +138,6 @@ DecModeSequenceHandler.definition = {
             _("DECSET - DECPEX (Set print extent to full screen) was ignored."));
           break;
 
-        // Show Cursor (DECTCEM)
-        case 25:
-          this.TCEM = true;
-          break;
-
         // Show Scrollbar (rxvt)
         case 30:
           this.sendMessage("command/scrollbar-show");
@@ -194,13 +158,6 @@ DecModeSequenceHandler.definition = {
           coUtils.Debug.reportWarning(
             _("DECSET 38 - Enter Tektronix mode (DECTEK)."));
           this.sendMessage("command/change-mode", "tektronix");
-          break;
-
-        // Allow 80 <--> 132 mode
-        case 40:
-          this._allow_switching_80_and_132_mode = true;
-          coUtils.Debug.reportMessage(
-            _("DECSET 40 - (Allow 80 <--> 132 mode) was called."));
           break;
 
         // more(1) fix.
@@ -429,33 +386,6 @@ DecModeSequenceHandler.definition = {
 
       switch (n) {
 
-        // Designate VT52 mode.
-        case 2:
-          this.sendMessage("command/change-mode", "vt52"); // TODO: write subscriber
-          coUtils.Debug.reportWarning(
-            _("DECRST - DECANM was not implemented completely."));
-          break;
-
-        // 80 column mode (DECCOLM)
-        case 3:
-          if (this._allow_switching_80_and_132_mode) {
-            this.COLM = false;
-            this.sendMessage("command/resize-screen", {
-              column: 80,
-              row: this._screen.height,
-            });
-            
-            screen = this._screen;
-            screen.eraseScreenAll();
-
-            this.sendMessage("event/screen-size-changed", { 
-              column: screen.width, 
-              row: screen.height 
-            });
-
-          }
-          break;
-
         // Smooth (Slow) Scloll (DECSCLM)
         case 4:
           // smooth scroll.
@@ -495,11 +425,6 @@ DecModeSequenceHandler.definition = {
             _("DECRST - DECPEX (Set print extent to full screen) was ignored."));
           break;
 
-        // Show Cursor (DECTCEM)
-        case 25:
-          this.TCEM = false;
-          break;
-
         // Show Scrollbar (rxvt)
         case 30:
           this.sendMessage("command/scrollbar-hide");
@@ -513,13 +438,6 @@ DecModeSequenceHandler.definition = {
           coUtils.Debug.reportWarning(
             _("DECRST - Enable-Shifted-Key-Function feature (rxvt) was not ", 
               "implemented completely."));
-          break;
-
-        // Disallow 80 <--> 132 mode
-        case 40:
-          this._allow_switching_80_and_132_mode = false;
-          coUtils.Debug.reportMessage(
-            _("DECRST 40 - (Disallow 80 <--> 132 mode) was called."));
           break;
 
         // No more(1) fix.

@@ -2499,11 +2499,14 @@ coUtils.Logger.prototype = {
     converter = Components
       .classes["@mozilla.org/intl/converter-output-stream;1"].  
       createInstance(Components.interfaces.nsIConverterOutputStream);  
+
     converter.init(ostream, "UTF-8", 0, 0);  
+
     this.logMessage("");  
     this.logMessage("---------------------------------------");  
     this.logMessage("-----" + new Date().toString() + "-----");  
     this.logMessage("---------------------------------------");  
+
     this._converter = converter;
   },
 
@@ -2933,26 +2936,28 @@ coUtils.Localize = new function()
      */
     generateMessages: function generateLocalizableMessages() 
     {
-      var pattern = /_\(("(.+?)("[\n\r\s]*,[\n\r\s]*".+?)*"|'(.+?)')\)/g;
-      var sources = this.generateSources([ "modules/" ]);
-      var source;
-      var match;
-      var quoted_source;
-      var quote_char;
-      var escaped_quote_char;
-      var message;
+      var pattern = /_\(("(.+?)("[\n\r\s]*,[\n\r\s]*".+?)*"|'(.+?)')\)/g,
+          sources = this.generateSources([ "modules/" ]),
+          source,
+          match,
+          quoted_source,
+          quote_char,
+          escaped_quote_char,
+          message;
 
       for (source in sources) {
         match = source.match(pattern)
         if (match) {
-          match = match.map(function(text) {
-            quoted_source = text.slice(3, -2);
-            quote_char = text[0];
-            escaped_quote_char = "\\" + quote_char;
-            return quoted_source
-              .replace(/"[\s\n\r]*,[\s\n\r]*"/g, "")
-              .replace(new RegExp(escaped_quote_char, "g"), quote_char);
-          })
+          match = match.map(
+            function mapFunc(text)
+            {
+              quoted_source = text.slice(3, -2);
+              quote_char = text[0];
+              escaped_quote_char = "\\" + quote_char;
+              return quoted_source
+                .replace(/"[\s\n\r]*,[\s\n\r]*"/g, "")
+                .replace(new RegExp(escaped_quote_char, "g"), quote_char);
+            });
           for ([, message] in Iterator(match)) {
             yield message;
           }
@@ -2962,11 +2967,11 @@ coUtils.Localize = new function()
 
     getDictionary: function getLocalizeDictionary(language)
     {
-      var location = "modules/locale/" + language + ".json";
-      var file = coUtils.File.getFileLeafFromVirtualPath(location);
-      var dict = null;
-      var content;
-      var db;
+      var location = "modules/locale/" + language + ".json",
+          file = coUtils.File.getFileLeafFromVirtualPath(location),
+          dict = null,
+          content,
+          db;
 
       if (file.exists()) {
         content = coUtils.IO.readFromFile(location, "utf-8");
@@ -2979,11 +2984,12 @@ coUtils.Localize = new function()
 
     setDictionary: function getLocalizeDictionary(language, dictionary)
     {
-      var location = "modules/locale/" + language + ".json";
-      var db = {
-        lang: language,
-        dict: dictionary,
-      };
+      var location = "modules/locale/" + language + ".json",
+          db = {
+            lang: language,
+            dict: dictionary,
+          };
+
       coUtils.IO.writeToFile(location, JSON.stringify(db));
       this._dictionaries_store[db.lang] = db.dict;
     },
@@ -2998,8 +3004,8 @@ coUtils.Localize = new function()
  */
 function _() 
 {
-  var lines = [].slice.apply(arguments);
-  var result;
+  var lines = [].slice.apply(arguments),
+      result;
 
   if (coUtils.Localize) {
     result =  coUtils.Localize.get(lines.join(""));
@@ -3009,4 +3015,4 @@ function _()
   }
 }
 
-
+// EOF

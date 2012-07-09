@@ -117,6 +117,7 @@
     eaw.js
     reversevideo.js
     autorepeat.js
+    tcem.js
     autowrap.js
     reversewrap.js
     windowmanipulation.js
@@ -124,7 +125,9 @@
     softreset.js
     hardreset.js
     sgrhandler.js
+    anm.js
     ckm.js
+    colm.js
     irm.js
     lnm.js
     kam.js

@@ -268,7 +268,13 @@ Cursor.definition = {
         break;
     }
   },
- 
+  
+  "[subscribe('event/cursor-visibility-changed'), pnp]": 
+  function onCursorVisibilityChanged(value) 
+  {
+    this._cursor_visibility = value;
+  },
+
   "[subscribe('command/backup'), pnp]": 
   function backup(context) 
   {
@@ -453,6 +459,7 @@ Cursor.definition = {
     } 
 
     i = 0;
+
     this._timer = coUtils.Timer.setInterval(
       function()
       {

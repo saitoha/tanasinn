@@ -24,54 +24,64 @@
 
 
 /**
- * @class ApplicationCursorMode
+ * @class ANMSwitch
  *
- * DECCKM — Cursor Keys Mode
- * 
- * This control function selects the sequences the arrow keys send. You can
- * use the four arrow keys to move the cursor through the current page or to
- * send special application commands.
- * 
- * Default: Cursor
+ * DECANM — ANSI Mode
+ *
+ * DECANM changes the terminal to the VT52 mode of operation. In VT52 mode, 
+ * the terminal acts like a VT52 terminal. This mode lets you use applications
+ * designed for the VT52 terminal.
  *
  * Format
  *
- * CSI   ?     1     h
- * 9/11  3/15  3/1   6/8
- *
- * Set: application sequences.
- *
- *
- * CSI   ?     1     l
- * 9/11  3/15  3/1   6/12
- *
- * Reset: cursor sequences.
+ * CSI   ?     2     l
+ * 9/11  3/15  3/2   6/12
  *
  * Description
- * 
- * If the DECCKM function is set, then the arrow keys send application 
- * sequences to the host.
- * 
- * If the DECCKM function is reset, then the arrow keys send ANSI cursor 
- * sequences to the host.
+ *
+ * Table 5–1 VT52 Escape Sequences Sequence  Action
+ *
+ * ESC A   Cursor up.
+ * ESC B   Cursor down.
+ * ESC C   Cursor right.
+ * ESC D   Cursor left.
+ * ESC F   Enter graphics mode.
+ * ESC G   Exit graphics mode.
+ * ESC H   Cursor to home position.
+ * ESC I   Reverse line feed.
+ * ESC J   Erase from cursor to end of screen.
+ * ESC K   Erase from cursor to end of line.
+ * ESC Y Pn  Move cursor to column Pn.
+ * ESC Z   Identify (host to terminal).
+ * ESC /Z  Report (terminal to host).
+ * ESC =   Enter alternate keypad mode.
+ * ESC >   Exit alternate keypad mode.
+ * ESC <   Exit VT52 mode. Enter VT100 mode.
+ * ESC ^   Enter autoprint mode.
+ * ESC _   Exit autoprint mode.
+ * ESC W   Enter printer controller mode.
+ * ESC X   Exit printer controller mode.
+ * ESC ]   Print screen.
+ * ESC V   Print the line with the cursor.
+ *
  */
-var ApplicationCursorMode = new Class().extends(Plugin);
-ApplicationCursorMode.definition = {
+var ANMSwitch = new Class().extends(Plugin);
+ANMSwitch.definition = {
 
   get id()
-    "application_cursor",
+    "anm_switch",
 
   get info()
     <module>
-        <name>{_("Application Cursor Mode")}</name>
+        <name>{_("VT52 Switching Mode")}</name>
         <version>0.1</version>
         <description>{
-          _("Switch between Normal mode/Application Cursor mode.")
+          _("Switch between VT100/VT52 mode.")
         }</description>
     </module>,
 
   "[persistable] enabled_when_startup": true,
-  "[persistable] default_value": false,
+  "[persistable] default_value": true,
 
   _mode: null,
 
@@ -94,26 +104,35 @@ ApplicationCursorMode.definition = {
   },
 
 
-  /** Activate auto-repeat feature.
+  /** Designate USASCII for character sets G0-G3 (DECANM), and set VT100 mode.
    */
-  "[subscribe('sequence/decset/1'), pnp]":
+  "[subscribe('sequence/decset/2'), pnp]":
   function activate() 
   { 
     this._mode = true;
 
-    // enable application cursor mode.
-    this.sendMessage("command/change-cursor-mode", "normal");
+    this.sendMessage("sequence/g0", "B");
+    this.sendMessage("sequence/g1", "B");
+    this.sendMessage("sequence/g2", "B");
+    this.sendMessage("sequence/g3", "B");
+    this.sendMessage("command/change-mode", "vt100");
+
+    coUtils.Debug.reportWarning(
+      _("DECSET - DECANM was not implemented completely."));
   },
 
   /** Deactivate auto-repeat feature
    */
-  "[subscribe('sequence/decrst/1'), pnp]":
+  "[subscribe('sequence/decrst/2'), pnp]":
   function deactivate() 
   {
     this._mode = false;
 
-    // disable application cursor mode.
-    this.sendMessage("command/change-cursor-mode", "application");
+    // Designate VT52 mode.
+    this.sendMessage("command/change-mode", "vt52");
+
+    coUtils.Debug.reportWarning(
+      _("DECRST - DECANM was not implemented completely."));
   },
 
   /** on hard / soft reset
@@ -146,9 +165,8 @@ ApplicationCursorMode.definition = {
   "[subscribe('@command/restore'), type('Object -> Undefined'), pnp]": 
   function restore(context) 
   {
-    var data;
+    var data = context[this.id];
 
-    data = context[this.id];
     if (data) {
       this._mode = data.mode;
     } else {
@@ -157,7 +175,7 @@ ApplicationCursorMode.definition = {
     }
   },
 
-}; // class ApplicationCursorMode
+}; // class ANMSwitch
 
 /**
  * @fn main
@@ -166,7 +184,7 @@ ApplicationCursorMode.definition = {
  */
 function main(broker) 
 {
-  new ApplicationCursorMode(broker);
+  new ANMSwitch(broker);
 }
 
 // EOF

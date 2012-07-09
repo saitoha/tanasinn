@@ -24,54 +24,45 @@
 
 
 /**
- * @class ApplicationCursorMode
+ * @class TextCursorEnableMode
  *
- * DECCKM — Cursor Keys Mode
- * 
- * This control function selects the sequences the arrow keys send. You can
- * use the four arrow keys to move the cursor through the current page or to
- * send special application commands.
- * 
- * Default: Cursor
+ * DECTCEM—Text Cursor Enable Mode
+ *
+ * This control function makes the cursor visible or invisible.
+ *
+ * Default: Visible
  *
  * Format
  *
- * CSI   ?     1     h
- * 9/11  3/15  3/1   6/8
+ * CSI   ?     2     5     h
+ * 9/11  3/15  3/2   3/5   6/8
  *
- * Set: application sequences.
+ * Set: makes the cursor visible.
  *
  *
- * CSI   ?     1     l
- * 9/11  3/15  3/1   6/12
+ * CSI   ?     2     5     l
+ * 9/11  3/15  3/2   3/5   6/12
  *
- * Reset: cursor sequences.
- *
- * Description
- * 
- * If the DECCKM function is set, then the arrow keys send application 
- * sequences to the host.
- * 
- * If the DECCKM function is reset, then the arrow keys send ANSI cursor 
- * sequences to the host.
+ * Reset: makes the cursor invisible.
  */
-var ApplicationCursorMode = new Class().extends(Plugin);
-ApplicationCursorMode.definition = {
+var TextCursorEnableMode = new Class().extends(Plugin)
+                                  .depends("cursorstate");
+TextCursorEnableMode.definition = {
 
   get id()
-    "application_cursor",
+    "text_cursor_enable_mode",
 
   get info()
     <module>
-        <name>{_("Application Cursor Mode")}</name>
+        <name>{_("Text Cursor Enable Mode (TCEM)")}</name>
         <version>0.1</version>
         <description>{
-          _("Switch between Normal mode/Application Cursor mode.")
+          _("Switch the cursor's show/hide status.")
         }</description>
     </module>,
 
   "[persistable] enabled_when_startup": true,
-  "[persistable] default_value": false,
+  "[persistable] default_value": true,
 
   _mode: null,
 
@@ -82,6 +73,7 @@ ApplicationCursorMode.definition = {
   function install(broker) 
   {
     this._mode = this.default_value;
+    this._cursor = this.dependency["cursorstate"];
   },
 
   /** Uninstalls itself.
@@ -93,27 +85,28 @@ ApplicationCursorMode.definition = {
     this._mode = null;
   },
 
-
-  /** Activate auto-repeat feature.
+  /** Show Cursor (DECTCEM)
    */
-  "[subscribe('sequence/decset/1'), pnp]":
+  "[subscribe('sequence/decset/25'), pnp]":
   function activate() 
   { 
+    var cursor = this._cursor;
+
     this._mode = true;
 
-    // enable application cursor mode.
-    this.sendMessage("command/change-cursor-mode", "normal");
+    this.sendMessage("event/cursor-visibility-changed", true);
   },
 
-  /** Deactivate auto-repeat feature
+  /** Hide Cursor (DECTCEM)
    */
-  "[subscribe('sequence/decrst/1'), pnp]":
+  "[subscribe('sequence/decrst/25'), pnp]":
   function deactivate() 
   {
+    var cursor = this._cursor;
+
     this._mode = false;
 
-    // disable application cursor mode.
-    this.sendMessage("command/change-cursor-mode", "application");
+    this.sendMessage("event/cursor-visibility-changed", false);
   },
 
   /** on hard / soft reset
@@ -146,9 +139,8 @@ ApplicationCursorMode.definition = {
   "[subscribe('@command/restore'), type('Object -> Undefined'), pnp]": 
   function restore(context) 
   {
-    var data;
+    var data = context[this.id];
 
-    data = context[this.id];
     if (data) {
       this._mode = data.mode;
     } else {
@@ -157,7 +149,7 @@ ApplicationCursorMode.definition = {
     }
   },
 
-}; // class ApplicationCursorMode
+}; // class TextCursorEnableMode
 
 /**
  * @fn main
@@ -166,7 +158,7 @@ ApplicationCursorMode.definition = {
  */
 function main(broker) 
 {
-  new ApplicationCursorMode(broker);
+  new TextCursorEnableMode(broker);
 }
 
 // EOF

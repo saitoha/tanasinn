@@ -87,7 +87,6 @@ CursorState.definition = {
   },
 
   // Using this flag insted of emurator._decMode.TCEM.
-  visibility: true,
 
   _blink: true,
 
@@ -147,7 +146,6 @@ CursorState.definition = {
     context.positionY = this.positionY;
     context.originX = this.originX;
     context.originY = this.originY;
-    context.visibility = this.visibility;
     context.blink = this.blink;
     context.attr_value = this.attr.value;
   },
@@ -169,7 +167,6 @@ CursorState.definition = {
     this.positionY = context.positionY;
     this.originX = context.originX;
     this.originY = context.originY;
-    this.visibility = context.visibility;
     this.blink = context.blink;
     this.attr.value = context.attr_value;
   },
@@ -182,7 +179,6 @@ CursorState.definition = {
     context.push(this.positionY);
     context.push(this.originX);
     context.push(this.originY);
-    context.push(this.visibility);
     context.push(this.blink);
     context.push(this.attr.value);
     context.push(null !== this._backup_instance);
@@ -192,7 +188,6 @@ CursorState.definition = {
       context.push(backup.positionY);
       context.push(backup.originX);
       context.push(backup.originY);
-      context.push(backup.visibility);
       context.push(backup.blink);
       context.push(backup.attr_value);
     }
@@ -206,7 +201,6 @@ CursorState.definition = {
     this.positionY = context.shift();
     this.originX = context.shift();
     this.originY = context.shift();
-    this.visibility = context.shift();
     this.blink = context.shift();
     this.attr.value = context.shift();
     backup_exists = context.shift();
@@ -216,7 +210,6 @@ CursorState.definition = {
       backup.positionY = context.shift();
       backup.originX = context.shift();
       backup.originY = context.shift();
-      backup.visibility = context.shift();
       backup.blink = context.shift();
       backup.attr_value = context.shift();
     }
