@@ -32,7 +32,7 @@ Vector3d.prototype = {
   y: 0,
   z: 0,
 
-  // constructor
+  /** constructor */
   initialize: function initialize(x, y, z)
   {
     this.x = x;
@@ -40,7 +40,7 @@ Vector3d.prototype = {
     this.z = z;
   },
 
-
+  /** get absolute value */
   abs: function abs()
   {
     // (x^2 + y^2 + z^2) ^ (1/2)
@@ -49,6 +49,7 @@ Vector3d.prototype = {
                    + this.z * this.z);
   },
 
+  /** get normalized vector */
   norm: function nrom()
   {
     var abs = this.abs();
@@ -58,11 +59,13 @@ Vector3d.prototype = {
                         this.z / abs);
   },
 
+  /** get dot product for this and other */
   dot: function dot(/* Vector3d */ other)
   {
     return this.x * other.x + this.y * other.y + this.z * other.z;
   },
 
+  /** get cross product for this and other */
   cross: function cross(/* Vector3d */ other)
   {
     return new Vector3d(
@@ -102,6 +105,7 @@ TransformMatrix.prototype = {
   _m32: 0,
   _m33: 1,
 
+  /** constructor */
   initialize: function initialize(m00, m01, m02, m03, 
                                   m10, m11, m12, m13, 
                                   m20, m21, m22, m23, 
@@ -167,7 +171,7 @@ function getMatrixFrom2Vectors(a, b)
 {
   var cos_angle = b.dot(a),
       sin_angle = b.cross(a).abs(),
-      cross = b.cross(a).norm();
+      cross = b.cross(a).norm(),
       x = cross.x,
       y = cross.y,
       z = cross.z,
@@ -223,10 +227,10 @@ DragTransform.definition = {
     w = this._width / 2.0;
     h = this._height / 2.0;
     r2 = w * w + h * h * 1;
-    z = Math.sqrt(r2);// - (x * x + y * y));
+    z = Math.sqrt(r2 - x * x + y * y);
 
     root_element = this.request("get/root-element");
-    root_element.firstChild.style.MozPerspective = Math.floor(Math.sqrt(r2 * 3)) + "px";
+    root_element.firstChild.style.MozPerspective = Math.floor(Math.sqrt(r2 * 2)) + "px";
 
     this._begin_point = new Vector3d(x, y, z);
 
@@ -248,7 +252,7 @@ DragTransform.definition = {
         w = this._width / 2.0,
         h = this._height / 2.0,
         r2 = w * w + h * h * 1,
-        z = Math.sqrt(r2);// - (x * x + y * y));
+        z = Math.sqrt(r2 - x * x + y * y);
 
     if (isNaN(z)) {
       return;
@@ -312,80 +316,6 @@ DragTransform.definition = {
 
 
 }; // DragSelect
-
-/**
- * @class DragCover
- *
- */
-var DragCover = new Class().extends(Plugin)
-DragCover.definition = {
-
-  get id()
-    "dragcover",
-
-  get info()
-    <plugin>
-        <name>{_("DragCover")}</name>
-        <description>{
-          _("A Helper Object for gathering mouse dragging event's coordinate data.")
-        }</description>
-        <version>0.1.0</version>
-    </plugin>,
-
-  "[persistable] enabled_when_startup": true,
-
-  /** Installs itself.
-   *  @param broker {Broker} A broker object.
-   */
-  "[install]":
-  function install(broker)
-  {
-    var root_element = this.request("get/root-element"),
-        document_element = root_element.ownerDocument.documentElement;
-
-    this._cover = this.request(
-      "command/construct-chrome",
-      {
-        tagName: "box",
-        id: "tanasinn_capture_cover",
-        style: "position: fixed; top: 0px; left: 0px;",
-        hidden: true,
-      })["tanasinn_capture_cover"];
-
-    document_element.appendChild(this._cover);
-
-    this._cover.style.width = document_element.boxObject.width + "px";
-    this._cover.style.height = document_element.boxObject.height + "px"; 
-
-  },
-
-  /** Uninstalls itself.
-   *  @param broker {Broker} A Broker object.
-   */
-  "[uninstall]":
-  function uninstall(broker)
-  {
-    if (this._cover) {
-      this._cover.parentNode.removeChild(this._cover);
-      this._cover = null;
-    }
-
-  },
-
-
-  "[subscribe('command/enable-drag-cover'), pnp]":
-  function enableDragCover() 
-  {
-    this._cover.hidden = false;
-  },
-
-  "[subscribe('command/disable-drag-cover'), pnp]":
-  function disableDragCover() 
-  {
-    this._cover.hidden = true;
-  },
-
-};
 
 /**
  * @class Transform
@@ -456,7 +386,80 @@ Transform.definition = {
   {
     this._height = height;
   },
-};
+}; // Transform
+
+
+/**
+ * @class DragCover
+ *
+ */
+var DragCover = new Class().extends(Plugin)
+DragCover.definition = {
+
+  get id()
+    "dragcover",
+
+  get info()
+    <plugin>
+        <name>{_("DragCover")}</name>
+        <description>{
+          _("A Helper Object for gathering mouse dragging event's coordinate data.")
+        }</description>
+        <version>0.1.0</version>
+    </plugin>,
+
+  "[persistable] enabled_when_startup": true,
+
+  /** Installs itself.
+   *  @param broker {Broker} A broker object.
+   */
+  "[install]":
+  function install(broker)
+  {
+    var root_element = this.request("get/root-element"),
+        document_element = root_element.ownerDocument.documentElement;
+
+    this._cover = this.request(
+      "command/construct-chrome",
+      {
+        tagName: "box",
+        id: "tanasinn_capture_cover",
+        style: "border: 6px red solid; position: fixed; top: 0px; left: 0px;",
+        hidden: true,
+      })["tanasinn_capture_cover"];
+
+    document_element.appendChild(this._cover);
+
+    this._cover.style.width = document_element.boxObject.width + "px";
+    this._cover.style.height = document_element.boxObject.height + "px"; 
+
+  },
+
+  /** Uninstalls itself.
+   *  @param broker {Broker} A Broker object.
+   */
+  "[uninstall]":
+  function uninstall(broker)
+  {
+    if (this._cover) {
+      this._cover.parentNode.removeChild(this._cover);
+      this._cover = null;
+    }
+  },
+
+  "[subscribe('command/enable-drag-cover'), pnp]":
+  function enableDragCover() 
+  {
+    this._cover.hidden = false;
+  },
+
+  "[subscribe('command/disable-drag-cover'), pnp]":
+  function disableDragCover() 
+  {
+    this._cover.hidden = true;
+  },
+
+}; // DragCover
 
 
 /**

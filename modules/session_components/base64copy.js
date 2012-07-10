@@ -146,9 +146,8 @@ Base64Copy.definition = {
   /** decode and sanitize encoded byte stream.  */
   _decode: function _decode(scanner)
   {
-    var c, decoder;
-
-    decoder = this.dependency["decoder"];
+    var decoder = this.dependency["decoder"],
+        c;
 
     while (true) {
 

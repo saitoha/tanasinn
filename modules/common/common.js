@@ -88,6 +88,12 @@ coUtils.Constant = {
   LINETYPE_SIXEL:             0x4,
 
   //
+  // Screens
+  //
+  SCREEN_MAIN:                0x0,
+  SCREEN_ALTERNATE:           0x1,
+
+  //
   // Cursor Style
   //
   CURSOR_STYLE_BLOCK:         0x0,
@@ -1991,16 +1997,11 @@ coUtils.File = new function() {
   getFileLeafFromVirtualPath: 
   function getFileLeafFromVirtualPath(virtual_path) 
   {
-    var target_leaf;
-    var split_path;
-    var root_entry;
-    var match;
-    var file_name;
-
-    virtual_path = String(virtual_path);
-    split_path = virtual_path.split(/[\/\\]/);
-    root_entry = split_path.shift();
-    match = root_entry.match(/^\$([^/]+)$/);
+    var virtual_path = String(virtual_path),
+        split_path = virtual_path.split(/[\/\\]/),
+        root_entry = split_path.shift(),
+        match = root_entry.match(/^\$([^/]+)$/),
+        file_name;
 
     if (match) {
       target_leaf = this.getSpecialDirectoryName(match.pop());
@@ -2444,33 +2445,34 @@ coUtils.Logger.prototype = {
   _converter: null,
 
   log_file_path: "$Home/.tanasinn/log/tanasinn-js.log",
+  max_log_size: 100000,
 
   /** constructor */
   initialize: function initialize()
   {
     // create nsIFile object.
     var path = coUtils.File
-      .getFileLeafFromVirtualPath(this.log_file_path)
-      .path;
-    var file = Components
-      .classes["@mozilla.org/file/local;1"]
-      .createInstance(Components.interfaces.nsILocalFile);
-    var ostream;
-    var converter;
+          .getFileLeafFromVirtualPath(this.log_file_path)
+          .path,
+        file = Components
+          .classes["@mozilla.org/file/local;1"]
+          .createInstance(Components.interfaces.nsILocalFile),
+        ostream,
+        converter;
     
     file.initWithPath(path);
 
     // check if target log file exists.
     if (file.exists()) {
-      // check if target is file node.
-      if (!file.isFile) {
+      if (!file.isFile) { // check if target is file node.
         throw coUtils.Debug.Exception(
           _("Specified file '%s' is not a file node."), path);
-      }
-      // check if target is writable.
-      if (!file.isWritable) {
+      } else if (!file.isWritable) { // check if target is writable.
         throw coUtils.Debug.Exception(
           _("Specified file '%s' is not a writable file node."), path);
+      } else if (file.fileSize > this.max_log_size) {
+        file.remove(false);
+        return this.initialize();
       }
     } else { // if target is not exists.
       // create base directories recursively (= mkdir -p).
@@ -2862,6 +2864,7 @@ coUtils.Localize = new function()
       this._locale = value;
     },
 
+    /** switch UI locale */
     switchLocale: function switchLocale(locale)
     {
       this.locale = locale;
@@ -2911,10 +2914,10 @@ coUtils.Localize = new function()
     generateSources: function generateSources(search_path) 
     {
       var entries = coUtils.File
-        .getFileEntriesFromSerchPath(search_path);
-      var entry;
-      var url;
-      var content;
+            .getFileEntriesFromSerchPath(search_path),
+          entry,
+          url,
+          content;
 
       for (entry in entries) {
         // make URI string such as "file://....".

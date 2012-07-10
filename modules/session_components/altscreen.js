@@ -57,7 +57,6 @@ AlternateScreen.definition = {
   {
     this._mode = this.default_value;
     this._screen = this.dependency["screen"];
-    this.reset();
   },
 
   /** Uninstalls itself.

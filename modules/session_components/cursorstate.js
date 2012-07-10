@@ -204,6 +204,7 @@ CursorState.definition = {
     this.blink = context.shift();
     this.attr.value = context.shift();
     backup_exists = context.shift();
+
     if (backup_exists) {
       backup = this._backup_instance = {};
       backup.positionX = context.shift();

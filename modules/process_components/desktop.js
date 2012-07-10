@@ -138,16 +138,25 @@ Desktop.definition = {
     // register getter topic.
     broker = this._broker;
 
-    this.subscribe("get/bin-path",
+    this.subscribe(
+      "get/bin-path",
       function()
       {
         return broker.bin_path;
       });
 
-    this.subscribe("get/python-path", 
+    this.subscribe(
+      "get/python-path", 
       function()
       {
         return broker.python_path;
+      });
+
+    this.subscribe(
+      "get/runtime-path", 
+      function()
+      {
+        return broker.runtime_path;
       });
 
     this.sendMessage("install/desktop", broker);

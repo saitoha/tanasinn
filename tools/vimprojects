@@ -104,7 +104,6 @@
    plugin=.{
 
     transform.js
-    altscreen.js
     blink.js
     drcs.js
     sixel.js
@@ -115,16 +114,12 @@
     da2.js
     da3.js
     eaw.js
-    reversevideo.js
-    autorepeat.js
-    tcem.js
-    autowrap.js
-    reversewrap.js
     windowmanipulation.js
     scrollregion.js
     softreset.js
     hardreset.js
     sgrhandler.js
+
     anm.js
     ckm.js
     colm.js
@@ -132,6 +127,14 @@
     lnm.js
     kam.js
     srm.js
+    altscreen.js
+    reversevideo.js
+    autorepeat.js
+    tcem.js
+    originmode.js
+    autowrap.js
+
+    reversewrap.js
     macro.js
     dsr.js
     decdsr.js

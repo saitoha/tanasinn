@@ -623,6 +623,7 @@ Line.definition = {
     this.cells = cells;
   },
 
+  /** back up to context */
   serialize: function serialize(context)
   {
     var cells, i, cell;
@@ -637,6 +638,7 @@ Line.definition = {
     }
   },
 
+  /** restore from to context */
   deserialize: function deserialize(context)
   {
     var cells, i, cell;

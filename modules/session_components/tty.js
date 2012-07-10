@@ -631,11 +631,11 @@ IOManager.definition = {
 
     data = context.readBytes(count);
 
-    coUtils.Timer.setTimeout(
-      function timerProc()
-      {
-        this.sendMessage("event/data-arrived", data);
-      }, 30, this);
+    //coUtils.Timer.setTimeout(
+    //  function timerProc()
+    //  {
+    this.sendMessage("event/data-arrived", data);
+    //  }, 30, this);
   },
 }
 
@@ -846,11 +846,11 @@ SocketTeletypeService.definition = {
           file.remove(false)
         }
 
-        coUtils.Timer.setTimeout(
-          function timerProc()
-          {
-            this.sendMessage("command/draw", true);
-          }, 50, this);
+        //coUtils.Timer.setTimeout(
+        //  function timerProc()
+        //  {
+        this.sendMessage("command/draw", true);
+        //  }, 50, this);
       }
     } else {
 

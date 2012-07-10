@@ -95,7 +95,7 @@ Movable.definition = {
         timer = static_scope.timer,
         dom = {
           root_element: this.request("get/root-element"),
-        };
+        },
         left,
         top,
         root_element;
@@ -145,7 +145,7 @@ OuterChrome.definition = {
     </plugin>,
 
   "[persistable] enabled_when_startup": true,
-  "[persistable, watchable] background_opacity": 0.92,
+  "[persistable, watchable] background_opacity": 0.91,
   "[persistable, watchable] background_color": "#000000",
   "[persistable, watchable] foreground_color": "#ffffff",
   "[persistable, watchable] gradation": true,
@@ -168,7 +168,7 @@ OuterChrome.definition = {
     var f = parseInt(this.foreground_color.substr(1), 16),
         b = parseInt(this.background_color.substr(1), 16),
         color = (((((f >>> 16 & 0xff) + (b >>> 16 & 0xff) * 2) / 2.0) | 0) << 16)
-              | (((((f >>> 8  & 0xff) + (b >>>  8 & 0xff) * 2) / 2.0) | 0) <<  8) 
+              | (((((f >>>  8 & 0xff) + (b >>>  8 & 0xff) * 2) / 2.0) | 0) <<  8) 
               | (((((f        & 0xff) + (b        & 0xff) * 2) / 2.0) | 0) <<  0);
 
     return (color + 0x1000000)
@@ -196,14 +196,16 @@ OuterChrome.definition = {
     return coUtils.File.getURLSpec(file);
   },
 
-  "[subscribe('command/reverse-video'), enabled]": 
+  "[subscribe('command/reverse-video'), pnp]": 
   function reverseVideo(value) 
   {
-    var reverse_color;
+    var reverse_color,
+        color3byte;
 
     if (value) {
 
-      reverse_color = (parseInt(this.background_color.substr(1), 16) ^ 0x1ffffff)
+      color3byte = parseInt(this.background_color.substr(1), 16);
+      reverse_color = (color3byte ^ 0x1ffffff)
           .toString(16)
           .replace(/^1/, "#");
 

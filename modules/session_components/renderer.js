@@ -294,11 +294,7 @@ ReverseVideoTrait.definition = {
         map[i] = value;
       }
 
-      coUtils.Debug.reportMessage("reverse video: " + String(value));
-
       this.dependency["screen"].dirty = true;
-      //this.sendMessage("command/draw", true);
-      //wait(200);
     }
 
   },

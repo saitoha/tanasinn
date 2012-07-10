@@ -27,42 +27,44 @@
 //
 
 var KEY_ANSI = {
-  "Ctrl Space" : "\x00", //  NUL
-  "Ctrl `"     : "\x00", //  NUL
-  "Ctrl 2"     : "\x00", //  NUL
-  "Ctrl a"     : "\x01", //  SOH
-  "Ctrl b"     : "\x02", //  STX
-  "Ctrl c"     : "\x03", //  ETX
-  "Ctrl d"     : "\x04", //  EOT
-  "Ctrl e"     : "\x05", //  ENQ
-  "Ctrl f"     : "\x06", //  ACK
-  "Ctrl g"     : "\x07", //  BEL
-  "Ctrl h"     : "\x08", //  BS
-  "Ctrl i"     : "\x09", //  HT
-  "Ctrl j"     : "\x0a", //  LF
-  "Ctrl k"     : "\x0b", //  VT
-  "Ctrl l"     : "\x0c", //  FF
-  "Ctrl m"     : "\x0d", //  CR
-  "Ctrl n"     : "\x0e", //  SO
-  "Ctrl o"     : "\x0f", //  SI
-  "Ctrl p"     : "\x10", //  DLE
-  "Ctrl q"     : "\x11", //  DC1
-  "Ctrl r"     : "\x12", //  DC2
-  "Ctrl s"     : "\x13", //  DC3
-  "Ctrl t"     : "\x14", //  DC4
-  "Ctrl u"     : "\x15", //  NAK
-  "Ctrl v"     : "\x16", //  SYN
-  "Ctrl w"     : "\x17", //  ETB
-  "Ctrl x"     : "\x18", //  CAN
-  "Ctrl y"     : "\x19", //  EM
-  "Ctrl z"     : "\x1a", //  SUB
-  "Ctrl ["     : "\x1b", //  ESC
-  "Ctrl 3"     : "\x1b", //  ESC
-  "Ctrl \\"    : "\x1c", //  FS
-  "Ctrl ]"     : "\x1d", //  GS
-  "Ctrl ^"     : "\x1e", //  RS
-  "Ctrl /"     : "\x1f", //  US
-  "Ctrl _"     : "\x1f", //  US
+  "Ctrl Space"    : "\x00", //  NUL
+  "Ctrl `"        : "\x00", //  NUL
+  "Ctrl 2"        : "\x00", //  NUL
+  "Ctrl a"        : "\x01", //  SOH
+  "Ctrl b"        : "\x02", //  STX
+  "Ctrl c"        : "\x03", //  ETX
+  "Ctrl d"        : "\x04", //  EOT
+  "Ctrl e"        : "\x05", //  ENQ
+  "Ctrl f"        : "\x06", //  ACK
+  "Ctrl g"        : "\x07", //  BEL
+  "Ctrl h"        : "\x08", //  BS
+  "Ctrl i"        : "\x09", //  HT
+  "Ctrl j"        : "\x0a", //  LF
+  "Ctrl k"        : "\x0b", //  VT
+  "Ctrl l"        : "\x0c", //  FF
+  "Ctrl m"        : "\x0d", //  CR
+  "Ctrl n"        : "\x0e", //  SO
+  "Ctrl o"        : "\x0f", //  SI
+  "Ctrl p"        : "\x10", //  DLE
+  "Ctrl q"        : "\x11", //  DC1
+  "Ctrl r"        : "\x12", //  DC2
+  "Ctrl s"        : "\x13", //  DC3
+  "Ctrl t"        : "\x14", //  DC4
+  "Ctrl u"        : "\x15", //  NAK
+  "Ctrl v"        : "\x16", //  SYN
+  "Ctrl w"        : "\x17", //  ETB
+  "Ctrl x"        : "\x18", //  CAN
+  "Ctrl y"        : "\x19", //  EM
+  "Ctrl z"        : "\x1a", //  SUB
+  "Ctrl ["        : "\x1b", //  ESC
+  "Ctrl 3"        : "\x1b", //  ESC
+  "Ctrl \\"       : "\x1c", //  FS
+  "Ctrl |"        : "\x1c", //  FS
+  "Ctrl ]"        : "\x1d", //  GS
+  "Ctrl ^"        : "\x1e", //  RS
+  "Ctrl /"        : "\x1f", //  US
+  "Ctrl Shift ?"  : "\x1f", //  US
+  "Ctrl _"        : "\x1f", //  US
 };
 
 
@@ -349,7 +351,7 @@ DefaultKeyMappings.definition = {
   "[persistable] yen_as_5c": true,
   "[persistable] won_as_5c": true,
   "[persistable] mac_alt_as_meta": true,
-  "[persistable] backspace_as_delete": true,
+  "[persistable] backspace_as_delete": false,
   "[persistable] delete_as_function": true,
 
   cursor_mode: "normal",

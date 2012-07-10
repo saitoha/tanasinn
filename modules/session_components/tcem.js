@@ -26,7 +26,7 @@
 /**
  * @class TextCursorEnableMode
  *
- * DECTCEM—Text Cursor Enable Mode
+ * DECTCEM — Text Cursor Enable Mode
  *
  * This control function makes the cursor visible or invisible.
  *
@@ -54,7 +54,7 @@ TextCursorEnableMode.definition = {
 
   get info()
     <module>
-        <name>{_("Text Cursor Enable Mode (TCEM)")}</name>
+        <name>{_("Text Cursor Enable Mode (DECTCEM)")}</name>
         <version>0.1</version>
         <description>{
           _("Switch the cursor's show/hide status.")

@@ -251,19 +251,29 @@ Session.definition = {
     id = coUtils.Uuid.generate().toString();
 
     // register getter topic.
-    this.subscribe("get/bin-path", 
+    this.subscribe(
+      "get/bin-path", 
       function()
       {
         return this.request("get/bin-path");
       }, this, id);
 
-    this.subscribe("get/python-path", 
+    this.subscribe(
+      "get/python-path", 
       function()
       { 
         return this.request("get/python-path");
       }, this, id);
 
-    this.subscribe("get/root-element", 
+    this.subscribe(
+      "get/root-element", 
+      function()
+      { 
+        return request.parent;
+      }, this, id);
+
+    this.subscribe(
+      "get/runtime-path", 
       function()
       { 
         return request.parent;
@@ -279,12 +289,14 @@ Session.definition = {
 
     this.notify("command/load-settings", this.profile);
     this.notify("event/broker-started", this);
-
-    coUtils.Timer.setTimeout(function() {
-      this.notify("command/focus");
-      this.notify("command/focus");
-      this.notify("command/focus");
-    }, this.initial_focus_delay, this);
+    
+    coUtils.Timer.setTimeout(
+      function timerProc()
+      {
+        this.notify("command/focus");
+        this.notify("command/focus");
+        this.notify("command/focus");
+      }, this.initial_focus_delay, this);
 
     return this;
   },

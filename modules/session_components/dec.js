@@ -105,16 +105,6 @@ DecModeSequenceHandler.definition = {
           this.sendMessage("command/change-scrolling-mode", true);
           break;
 
-        // Origin Mode (DECOM)
-        case 6:
-          // origin mode.
-          this._screen.cursor.DECOM = true;
-          coUtils.Debug.reportMessage(
-            _("DECSET - DECOM (Origin mode) was set: (%d, %d)."),
-            this._screen.cursor.originX,
-            this._screen.cursor.originY);
-          break;
-
         // X10_MOUSE mode
         case 9:
           this.sendMessage(
@@ -385,16 +375,6 @@ DecModeSequenceHandler.definition = {
           this.sendMessage("command/change-scrolling-mode", false);
           break;
 
-        // Reset Origin Mode (DECOM)
-        case 6:
-          // TODO: reset origin mode.
-          this._screen.cursor.DECOM = false;
-          coUtils.Debug.reportMessage(
-            _("DECSET - DECOM (Origin mode) was reset: (%d, %d)."),
-            this._screen.cursor.positionX,
-            this._screen.cursor.positionY);
-          break;
-
         // X10_MOUSE mode
         case 9:
           this.sendMessage(
@@ -660,10 +640,12 @@ PersistOptionsTrait.definition = {
   "[profile('vt100'), sequence('CSI ?%dr')]":
   function XTREST(n) 
   { // DEC Private Mode Restore
-    var save_buffer, alternate_buffer, i, key, value;
 
-    save_buffer = this._dec_save_buffer;
-    alternate_buffer = this._dec_alternate_buffer;
+    var save_buffer = this._dec_save_buffer,
+        alternate_buffer = this._dec_alternate_buffer;
+        i,
+        key,
+        value;
 
     for (i = 0; i < arguments.length; ++i) {
       key = arguments[i];
@@ -684,7 +666,8 @@ PersistOptionsTrait.definition = {
   {  // DEC Private Mode Save
     var save_buffer = this._dec_save_buffer,
         alternate_buffer = this._dec_alternate_buffer,
-        i, key;
+        i,
+        key;
 
     for (i = 0; i < arguments.length; ++i) {
       key = arguments[i];
@@ -784,7 +767,7 @@ DecPrivateMode.definition = {
   BBSM:  false,   // Bold and Blink Style Mode (true: foreground and background, false: foreground only)
   ECM:   false,   // Erase Color Mode (true: erase to screen background [VT], false: erase to text background [PC]
 
-}
+};
 
 /**
  * @fn main
