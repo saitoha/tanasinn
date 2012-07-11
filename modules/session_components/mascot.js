@@ -74,9 +74,10 @@ Mascot.definition = {
   "[install]":
   function install(broker) 
   {
-    var {tanasinn_mascot_layer}
-      = this.request("command/construct-chrome", this.template);
-    this._element = tanasinn_mascot_layer;
+   this._element = this.request(
+     "command/construct-chrome", 
+     this.template
+   )["tanasinn_mascot_layer"];
   },
 
   /** Uninstalls itself.
@@ -93,11 +94,10 @@ Mascot.definition = {
 
   getMascotImagePath: function getMascotImagePath()
   {
-    var broker, path, file;
+    var broker = this._broker,
+        path = broker.runtime_path + "/" + this.mascot_image_file,
+        file = coUtils.File.getFileLeafFromVirtualPath(path);
 
-    broker = this._broker;
-    path = broker.runtime_path + "/" + this.mascot_image_file;
-    file = coUtils.File.getFileLeafFromVirtualPath(path);
     if (!file.exists()) {
         path = this.mascot_image_file;
         file = coUtils.File.getFileLeafFromVirtualPath(path);
@@ -130,11 +130,16 @@ Cover.definition = {
       parentNode: "#tanasinn_background_frame",
       tagName: "box",
       id: "tanasinn_cover_layer",
-      style: "opacity: 0.5;",
+      style: "opacity: 0.2;",
+      flex: 1,
       childNodes: [
         {
-          tagName: "image",
-          src: this.getMascotImagePath(), 
+          tagName: "vbox",
+          flex: 1,
+          style: {
+            backgroundSize: "100% 100%",
+            backgroundImage: "url(" + this.getMascotImagePath() + ")", 
+          },
         },
       ],
     }),
@@ -151,9 +156,10 @@ Cover.definition = {
   "[install]":
   function install(broker) 
   {
-    var {tanasinn_mascot_layer}
-      = this.request("command/construct-chrome", this.template);
-    this._element = tanasinn_mascot_layer;
+    this._element = this.request(
+      "command/construct-chrome", 
+      this.template
+    )["tanasinn_cover_layer"];
   },
 
   /** Uninstalls itself.

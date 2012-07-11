@@ -58,11 +58,13 @@ NMapCompleter.definition = {
       next_completer_info = context.completers.shift();
       if (next_completer_info) {
         [next_completer, option] = next_completer_info.split("/");
-        this.sendMessage("command/query-completion/" + next_completer, {
-          source: context.source.substr(all.length),
-          option: option,
-          completers: context.completers,
-        });
+        this.sendMessage(
+          "command/query-completion/" + next_completer,
+          {
+            source: context.source.substr(all.length),
+            option: option,
+            completers: context.completers,
+          });
       } else {
         this.sendMessage("event/answer-completion", null);
       }
@@ -72,15 +74,19 @@ NMapCompleter.definition = {
       expressions = this.request("get/registered-nmap");
       lower_name = name.toLowerCase();
       candidates = Object.getOwnPropertyNames(expressions)
-        .filter(function(expression) {
-          return -1 !== expression.toLowerCase().indexOf(lower_name); 
-        })
-        .map(function(key) {
-          return { 
-            key: key, 
-            value: expressions[key],
-          };
-        });
+        .filter(
+          function filterFunc(expression)
+          {
+            return -1 !== expression.toLowerCase().indexOf(lower_name); 
+          })
+        .map(
+          function mapFunc(key)
+          {
+            return { 
+              key: key, 
+              value: expressions[key],
+            };
+          });
 
       if (0 === candidates.length) {
         this.sendMessage("event/answer-completion", null);
@@ -91,7 +97,7 @@ NMapCompleter.definition = {
             type: "text",
             query: context.source, 
             data: candidates.map(
-              function(candidate)
+              function mapFunc(candidate)
               {
                 return {
                   name: candidate.key,
@@ -142,11 +148,13 @@ CMapCompleter.definition = {
       next_completer_info = context.completers.shift();
       if (next_completer_info) {
         [next_completer, option] = next_completer_info.split("/");
-        this.sendMessage("command/query-completion/" + next_completer, {
-          source: context.source.substr(all.length),
-          option: option,
-          completers: context.completers,
-        });
+        this.sendMessage(
+          "command/query-completion/" + next_completer,
+          {
+            source: context.source.substr(all.length),
+            option: option,
+            completers: context.completers,
+          });
       } else {
         this.sendMessage("event/answer-completion", null);
       }
@@ -156,15 +164,19 @@ CMapCompleter.definition = {
     expressions = this.request("get/registered-cmap");
     lower_name = name.toLowerCase();
     candidates = Object.getOwnPropertyNames(expressions)
-      .filter(function(expression) {
-        return -1 !== expression.toLowerCase().indexOf(lower_name); 
-      })
-      .map(function(key) {
-        return { 
-          key: key,
-          value: expressions[key],
-        };
-      });
+      .filter(
+        function filterFunc(expression)
+        {
+          return -1 !== expression.toLowerCase().indexOf(lower_name); 
+        })
+      .map(
+        function mapFunc(key)
+        {
+          return { 
+            key: key,
+            value: expressions[key],
+          };
+        });
 
     if (0 === candidates.length) {
       this.sendMessage("event/answer-completion", null);

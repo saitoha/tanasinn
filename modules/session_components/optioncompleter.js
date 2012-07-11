@@ -81,7 +81,7 @@ OptionCompleter.definition = {
             type: "text",
             query: context.source, 
             data: options.map(
-              function(option)
+              function mapFunc(option)
               {
                 return {
                   name: option.key,

@@ -57,6 +57,7 @@ AlternateScreen.definition = {
   {
     this._mode = this.default_value;
     this._screen = this.dependency["screen"];
+    //this.reset();
   },
 
   /** Uninstalls itself.
@@ -160,7 +161,7 @@ AlternateScreen.definition = {
 
     this._mode = false;
 
-    //screen.eraseScreenAll();
+    screen.eraseScreenAll();
     screen.selectMainScreen();
 
     coUtils.Debug.reportMessage(

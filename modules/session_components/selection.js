@@ -96,13 +96,10 @@ DragSelect.definition = {
   "[listen('mousemove')]":
   function ondragmove(event) 
   {
-    var initial_position, current_position, start_position, end_position;
-
-    initial_position = this._initial_position;
-    current_position = this._convertPixelToPosition(event);
-
-    start_position = Math.min(initial_position, current_position);
-    end_position = Math.max(initial_position, current_position) 
+    var initial_position = this._initial_position,
+        current_position = this._convertPixelToPosition(event),
+        start_position = Math.min(initial_position, current_position),
+        end_position = Math.max(initial_position, current_position) 
 
     this.drawSelectionRange(start_position, end_position);
     this.setRange(start_position, end_position);
@@ -376,45 +373,32 @@ Selection.definition = {
           }
         });
   },
-
-
+ 
   /** This method called after selection range settled. It registers 3 DOM 
    *  listeners which wait for mouseup / dragstart / DOMMouseScroll event 
    *  and clears the selection once.
    */
   _setClearAction: function _setClearAction() 
   {
-    var id;
-    
-    id = "selection.clear";
+    this.onClickAfterSelect.enabled = true;
+    this.onScrollAfterSelect.enabled = true;
+  },
 
-    this.sendMessage("command/add-domlistener", {
-      target: "#tanasinn_content",
-      type: "mouseup",
-      id: id,
-      context: this,
-      handler: function(event) 
-      {
-        if (2 === event.button) { // right click
-          return;
-        }
-        this.sendMessage("command/remove-domlistener", id); 
-        this.clear();
-      },
-    });
+  "[listen('mouseup', '#tanasinn_content')]":
+  function onClickAfterSelect(event) 
+  {
+    if (2 === event.button) { // right click
+      return;
+    }
+    this.onClickAfterSelect.enabled = false;
+    this.clear();
+  },
 
-    this.sendMessage("command/add-domlistener", {
-      target: "#tanasinn_content",
-      type: "DOMMouseScroll", 
-      id: id,
-      context: this,
-      handler: function handler(event) 
-      {
-        this.sendMessage("command/remove-domlistener", id); 
-        this.clear();
-      },
-    });
-
+  "[listen('DOMMouseScroll', '#tanasinn_content')]":
+  function onScrollAfterSelect(event) 
+  {
+    this.onScrollAfterSelect.enabled = false;
+    this.clear();
   },
 
   /** Draw selection overlay to the canvas.
@@ -553,7 +537,8 @@ Selection.definition = {
       return null;
     }
 
-    [start, end] = this._range;
+    start = this._range[0];
+    end = this._range[1];
 
     return {
       start: start, 
@@ -577,10 +562,9 @@ Selection.definition = {
 
   _reportRange: function _reportRange()
   {
-    var column, row, message;
-
-    [column, row] = this._range;
-    message = coUtils.Text.format(_("selected: [%d, %d]"), column, row);
+    var column = this._range[0],
+        row = this._range[1],
+        message = coUtils.Text.format(_("selected: [%d, %d]"), column, row);
 
     this.sendMessage("command/report-status-message", message);
   },
@@ -588,10 +572,8 @@ Selection.definition = {
   /** Clear selection canvas and range information. */
   clear: function clear() 
   {
-    var context, canvas;
-
-    context = this._context;
-    canvas = this._canvas;
+    var context = this._context,
+        canvas = this._canvas;
 
     if (canvas && context) {
       context.clearRect(0, 0, canvas.width, canvas.height);
@@ -601,45 +583,33 @@ Selection.definition = {
 
   _convertPixelToPosition: function convertPixelToScreen(event) 
   {
-    var result, screen;
-
-    screen = this.dependency["screen"];
-    result = this.convertPixelToScreen(event);
+    var screen = this.dependency["screen"],
+        result = this.convertPixelToScreen(event);
 
     return screen.width * result[1] + result[0];
   },
 
   convertPixelToScreen: function convertPixelToScreen(event) 
   {
-    var target_element, root_element, box, offsetX, offsetY,
-        left, top, renderer, screen, char_width, column, row,
-        max_column, max_row;
-
-    target_element = this.request("command/query-selector", "#tanasinn_center_area");
-    root_element = this.request("get/root-element");
-
-    box = target_element.boxObject;
-
-    offsetX = box.screenX - root_element.boxObject.screenX;
-    offsetY = box.screenY - root_element.boxObject.screenY;
-
-    left = event.layerX - offsetX; 
-    top = event.layerY - offsetY;
-
-    renderer = this.dependency["renderer"];
-    screen = this.dependency["screen"];
-
-    char_width = renderer.char_width;
-    line_height = renderer.line_height;
-
-    column = Math.floor(left / char_width + 1.0);
-    row = Math.floor(top / line_height + 1.0);
-
-    max_column = screen.width;
-    max_row = screen.height;
-
-    column = column > max_column ? max_column: column;
-    row = row > max_row ? max_row: row;
+    var target_element = this.request(
+          "command/query-selector", 
+          "#tanasinn_center_area"),
+        root_element = this.request("get/root-element"),
+        box = target_element.boxObject,
+        offsetX = box.screenX - root_element.boxObject.screenX,
+        offsetY = box.screenY - root_element.boxObject.screenY,
+        left = event.layerX - offsetX,
+        top = event.layerY - offsetY,
+        renderer = this.dependency["renderer"],
+        screen = this.dependency["screen"],
+        char_width = renderer.char_width,
+        line_height = renderer.line_height,
+        column = Math.floor(left / char_width + 1.0),
+        row = Math.floor(top / line_height + 1.0),
+        max_column = screen.width,
+        max_row = screen.height,
+        column = column > max_column ? max_column: column,
+        row = row > max_row ? max_row: row;
 
     return [column - 1, row - 1];
   },

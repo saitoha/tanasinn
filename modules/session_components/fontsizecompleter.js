@@ -23,6 +23,14 @@
  * ***** END LICENSE BLOCK ***** */
 
 
+/**
+ * @class FontsizeSet
+ *
+ */
+var FontsizeSet = new Class().extends(Component);
+FontsizeSet.definition = {
+};
+
 
 /**
  * @class FontsizeCompleter
@@ -58,34 +66,36 @@ FontsizeCompleter.definition = {
 
       if (next_completer_info) {
         [next_completer, option] = next_completer_info.split("/");
-        this.sendMessage("command/query-completion/" + next_completer, {
-          source: context.source.substr(all.length),
-          option: option,
-          completers: context.completers,
-        });
+        this.sendMessage(
+          "command/query-completion/" + next_completer,
+          {
+            source: context.source.substr(all.length),
+            option: option,
+            completers: context.completers,
+          });
       } else {
         this.sendMessage("event/answer-completion", null);
       }
     } else {
 
       generator = function() 
-      { 
-        var i, str;
+        { 
+          var i, str;
 
-        for (i = 8; i < 100; ++i) {
-          str = i.toString(); 
-          if (-1 !== str.indexOf(context.source)) {
-            yield str;
+          for (i = 8; i < 100; ++i) {
+            str = i.toString(); 
+            if (-1 !== str.indexOf(context.source)) {
+              yield str;
+            }
           }
-        }
-      } ();
+        } ();
 
       this.sendMessage(
         "event/answer-completion",
         {
           type: "fontsize",
           query: context.source, 
-          data: [ i for (i in generator) ].map(
+          data: [i for (i in generator)].map(
             function(size)
             {
               return {
@@ -107,6 +117,7 @@ FontsizeCompleter.definition = {
  */
 function main(broker)
 {
+  new FontsizeSet(broker);
   new FontsizeCompleter(broker);
 }
 

@@ -777,6 +777,7 @@ Scanner.definition = {
   function setSurplus() 
   {
     this._nextvalue = this._value.substr(this._anchor);
+    alert(this._nextvalue)
   },
 
   "[type('String')] getCurrentToken":
@@ -845,9 +846,9 @@ Parser.definition = {
    */
   install: function install(broker)
   {
-    var grammars;
-    var grammar;
-    var i;
+    var grammars,
+        grammar,
+        i;
 
     this.drive.enabled = true;
     this.onDataArrivedRecursively.enabled = true;
@@ -922,11 +923,12 @@ Parser.definition = {
   "[subscribe('event/data-arrived')]": 
   function drive(data)
   {
-    var scanner = this._scanner;
-    var action;
+    var scanner = this._scanner,
+         action;
 
 //    coUtils.Timer.setTimeout(function(){
     scanner.assign(data);
+
     for (action in this.parse(scanner, data)) {
       action();
     }
@@ -940,11 +942,11 @@ Parser.definition = {
   "[subscribe('event/data-arrived-recursively')]": 
   function onDataArrivedRecursively(data)
   {
-    var scanner, action;
-
-    scanner = new Scanner(broker);
+    var scanner = new Scanner(broker),
+        action;
 
     scanner.assign(data);
+
     for (action in this.parse(scanner)) {
       action();
     }

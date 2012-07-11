@@ -776,6 +776,7 @@ VT52.definition = {
   function VTS()
   {
     var screen = this._screen;
+
     screen.eraseScreenBelow();
   },
 
@@ -783,6 +784,7 @@ VT52.definition = {
   function PLD()
   {
     var screen = this._screen;
+
     screen.eraseLineToRight();
   },
 

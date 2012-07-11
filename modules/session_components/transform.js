@@ -169,12 +169,14 @@ TransformMatrix.prototype = {
 
 function getMatrixFrom2Vectors(a, b)
 {
-  var cos_angle = b.dot(a),
-      sin_angle = b.cross(a).abs(),
-      cross = b.cross(a).norm(),
-      x = cross.x,
-      y = cross.y,
-      z = cross.z,
+  var cross = b.cross(a),
+      cos_angle = b.dot(a),
+      sin_angle = cross.abs(),
+      normalized_axis = cross.norm(),
+      x = normalized_axis.x,
+      y = normalized_axis.y,
+      z = normalized_axis.z,
+
       matrix = new TransformMatrix(
         1 + (1 - cos_angle) * (x * x - 1),
         -z * sin_angle + (1 - cos_angle) * x * y,
@@ -205,8 +207,7 @@ DragTransform.definition = {
   "[listen('dragstart', '#tanasinn_capture_cover'), pnp]":
   function ondragstart(event) 
   {
-    var root_element, coordinate, x, y, z, w, h, r2,
-        initial_position;
+    var root_element;
 
     if (!event.altKey) {
       return;
@@ -220,19 +221,12 @@ DragTransform.definition = {
       return;
     }
 
-    coordinate = this.get2DCoordinate(event);
-
-    x = coordinate[0];
-    y = coordinate[1];
-    w = this._width / 2.0;
-    h = this._height / 2.0;
-    r2 = w * w + h * h * 1;
-    z = Math.sqrt(r2 - x * x + y * y);
+    this._begin_point = this.get2DCoordinate(event);
 
     root_element = this.request("get/root-element");
-    root_element.firstChild.style.MozPerspective = Math.floor(Math.sqrt(r2 * 2)) + "px";
+    root_element.firstChild.style.MozPerspective 
+      = Math.floor(this._begin_point.abs() * 1.5) + "px";
 
-    this._begin_point = new Vector3d(x, y, z);
 
     this.onMouseMove.enabled = true;
     this.onMouseUp.enabled = true;
@@ -245,21 +239,8 @@ DragTransform.definition = {
   {
     //event.stopPropagation();
     //event.preventDefault();
-
-    var coordinate = this.get2DCoordinate(event),
-        x = coordinate[0],
-        y = coordinate[1],
-        w = this._width / 2.0,
-        h = this._height / 2.0,
-        r2 = w * w + h * h * 1,
-        z = Math.sqrt(r2 - x * x + y * y);
-
-    if (isNaN(z)) {
-      return;
-    }
-
     var a = this._begin_point.norm(),
-        b = new Vector3d(x, y, z).norm(),
+        b = this.get2DCoordinate(event).norm(),
         matrix = getMatrixFrom2Vectors(a, b);
 
     this._last_matrix = this._matrix.apply(matrix);
@@ -304,14 +285,22 @@ DragTransform.definition = {
 
   get2DCoordinate: function get2DCoordinate(event) 
   {
-    var target_element = this.request("command/query-selector", "#tanasinn_outer_chrome"),
-        root_element = this.request("get/root-element"),
+    var target_element = this.request(
+          "command/query-selector", 
+          "#tanasinn_background_frame"),
+        root_element = this.request("get/root-element").ownerDocument.documentElement,
         offsetX = target_element.boxObject.screenX - root_element.boxObject.screenX,
         offsetY = target_element.boxObject.screenY - root_element.boxObject.screenY,
-        left = event.layerX - target_element.boxObject.width / 2,
-        top = event.layerY - target_element.boxObject.height / 2;
+        x = (event.layerX - offsetX - target_element.boxObject.width / 2) * 1,
+        y = (event.layerY - offsetY - target_element.boxObject.height / 2) * 1,
+        w = this._width / 2.0,
+        h = this._height / 2.0,
+        r2 = w * w + h * h * 1,
+        d2 = r2 - x * x - y * y,
+        z = d2 > 0 ? Math.sqrt(d2): -Math.sqrt(-d2);
+//        this.sendMessage("command/report-overlay-message", [x, y]);
 
-    return [left, top];
+    return new Vector3d(x, y, z);
   },
 
 
@@ -410,6 +399,8 @@ DragCover.definition = {
 
   "[persistable] enabled_when_startup": true,
 
+  _cover: null,
+
   /** Installs itself.
    *  @param broker {Broker} A broker object.
    */
@@ -424,7 +415,7 @@ DragCover.definition = {
       {
         tagName: "box",
         id: "tanasinn_capture_cover",
-        style: "border: 6px red solid; position: fixed; top: 0px; left: 0px;",
+        style: "position: fixed; top: 0px; left: 0px;",
         hidden: true,
       })["tanasinn_capture_cover"];
 
@@ -441,7 +432,7 @@ DragCover.definition = {
   "[uninstall]":
   function uninstall(broker)
   {
-    if (this._cover) {
+    if (null !== this._cover) {
       this._cover.parentNode.removeChild(this._cover);
       this._cover = null;
     }
@@ -456,7 +447,10 @@ DragCover.definition = {
   "[subscribe('command/disable-drag-cover'), pnp]":
   function disableDragCover() 
   {
-    this._cover.hidden = true;
+    var cover = this._cover;
+
+    cover.parentNode.appendChild(cover);
+    cover.hidden = true;
   },
 
 }; // DragCover

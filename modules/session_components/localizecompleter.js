@@ -43,34 +43,38 @@ LocalizeCompleter.definition = {
   "[completer('localize'), enabled]":
   function complete(context)
   {
-    var pattern, match, all, language, space,
+    var pattern = /^\s*([a-zA-Z-]*)(\s*)("?)((?:[^"])*)("?)(\s*)(.*)/,
+        match = context.source.match(pattern),
+        all, language, space,
         quote_start, message_id, quote_end, space2, next,
         languages, lower_message_id, dict, data;
-
-    pattern = /^\s*([a-zA-Z-]*)(\s*)("?)((?:[^"])*)("?)(\s*)(.*)/;
-    match = context.source.match(pattern);
 
     [all, language, space, quote_start, message_id, quote_end, space2, next] = match;
 
     if (!space) {
       languages = [key for ([key, ] in Iterator(coUtils.Constant.LOCALE_ID_MAP))]
-        .filter(function(iso639_language) 
+        .filter(
+          function filterFunc(iso639_language) 
           { 
-            return -1 != iso639_language.toLowerCase()
+            return -1 !== iso639_language.toLowerCase()
               .indexOf(language.toLowerCase()); 
           });
       if (0 === languages.length) {
-        this.sendMessage("event/answer-completion", autocomplete_result);
+        this.sendMessage("event/answer-completion", null);
       } else {
         this.sendMessage(
           "event/answer-completion",
           {
             type: "text",
             query: context.source, 
-            data: languages.map(function(language) ({
-              name: language, 
-              value: coUtils.Constant.LOCALE_ID_MAP[language],
-            })),
+            data: languages.map(
+              function mapFunc(language) 
+              {
+                return {
+                  name: language, 
+                  value: coUtils.Constant.LOCALE_ID_MAP[language],
+                };
+              }),
           });
       }
     } else {
@@ -86,13 +90,15 @@ LocalizeCompleter.definition = {
           name: '"' + key + '"',
           value: dict[key] || "",
         } for ([, key] in Iterator(this._keys))
-      ].filter(function(pair) 
-      {
-        if (-1 !== pair.name.toLowerCase().indexOf(lower_message_id)) {
-          return true;
-        }
-        return false;
-      });
+      ].filter(
+        function filterFunc(pair) 
+        {
+          if (-1 !== pair.name.toLowerCase().indexOf(lower_message_id)) {
+            return true;
+          }
+          return false;
+        });
+
       if (0 === data.length) {
         this.sendMessage("event/answer-completion", null);
       } else {
@@ -132,4 +138,4 @@ function main(broker)
   new LocalizeCompleter(broker);
 }
 
-
+// EOF

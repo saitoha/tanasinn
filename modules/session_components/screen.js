@@ -1330,7 +1330,7 @@ Viewable.definition = {
   function _getTextInRangeImpl(lines, start_column, end_column)
   {
     var buffer = [],
-        width = this.width;
+        width = this.width,
         i,
         line,
         start,
