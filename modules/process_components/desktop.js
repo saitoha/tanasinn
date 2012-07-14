@@ -131,13 +131,17 @@ Desktop.definition = {
   initializeWithWindow: 
   function initializeWithWindow(window)
   {
-    var broker = this._broker;
-
     this._window = window;
+    this.install(this._broker);
+  },
+
+  "[install]":
+  function install(broker)
+  {
+    var id, 
+        root_element;
 
     // register getter topic.
-    broker = this._broker;
-
     this.subscribe(
       "get/bin-path",
       function()
@@ -159,14 +163,6 @@ Desktop.definition = {
         return broker.runtime_path;
       });
 
-    this.sendMessage("install/desktop", broker);
-  },
-
-  "[install]":
-  function install(broker)
-  {
-    var id, root_element;
-
     root_element = this.window.document
       .documentElement
       .appendChild(this.window.document.createElement("box"));
@@ -175,7 +171,8 @@ Desktop.definition = {
   
     this._root_element = root_element;
 
-    this.subscribe("get/root-element",
+    this.subscribe(
+      "get/root-element",
       function()
       {
         return root_element;
@@ -189,11 +186,13 @@ Desktop.definition = {
   "[uninstall]":
   function uninstall(broker)
   {
-    this._unsubscribe(this._root_element.id);
+    this.unsubscribe(this._root_element.id);
     this.clear();
 
-    this._root_element.parentNode.removeChild(this._root_element);
-    this._root_element = null;
+    if (this._root_element) {
+      this._root_element.parentNode.removeChild(this._root_element);
+      this._root_element = null;
+    }
   },
   
   "[subscribe('event/enabled'), enabled]":

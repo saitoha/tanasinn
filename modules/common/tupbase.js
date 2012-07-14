@@ -97,7 +97,7 @@ AttributeContext.prototype = {
     this._target["enabled"] = true;
   },
 
-  _: function(description) 
+  _: function __underscore(description) 
   {
     this._target["description"] = _(description);
   },
@@ -126,11 +126,13 @@ AttributeContext.prototype = {
     this._attributes_map[id] = attribute;
 
     // define id in attribute context.
-    this.__defineGetter__(id, function() 
-    {
-      this._target[id] = [true];
-      return function() this._target[id] = Array.slice(arguments);
-    });
+    this.__defineGetter__(
+      id,
+      function getter() 
+      {
+        this._target[id] = [true];
+        return function() this._target[id] = Array.slice(arguments);
+      });
   },
 
   /** Returns this object's info */
@@ -209,15 +211,17 @@ function Prototype(definition, base_class, dependency_list)
   /** Parses decorated key and sets attributes. */
   function intercept(key) 
   {
-    var match = key.match(/^([\w-@]+)$|^\[(.+)\]\s*(.*)\s*$/);
-    var annotation, name;
-    var attributes;
-    var target_attribute;
+    var match = key.match(/^([\w-@]+)$|^\[(.+)\]\s*(.*)\s*$/),
+        annotation,
+        name,
+        attributes,
+        target_attribute;
 
     if (!match) {
       throw coUtils.Debug.Exception(
         _("Ill-formed property name: '%s'."), key)
     }
+
     [, , annotation, name] = match;
     if (annotation) {
       if (!name)
@@ -238,9 +242,10 @@ function Prototype(definition, base_class, dependency_list)
 
   function copy(definition, decorated_key, base_class) 
   {
-    var getter = definition.__lookupGetter__(decorated_key);
-    var setter = definition.__lookupSetter__(decorated_key);
-    var key, value;
+    var getter = definition.__lookupGetter__(decorated_key),
+        setter = definition.__lookupSetter__(decorated_key),
+        key,
+        value;
 
     try {
       key = intercept.call(this, decorated_key);
@@ -490,7 +495,7 @@ Class.prototype = {
       }
       // if key is a generic property or method...
       if (!getter && !setter) {
-        if ("initialize" == key && trait.initialize) {
+        if ("initialize" === key && trait.initialize) {
           value = prototype.initialize;
 
           // makes constructor chain.
@@ -927,6 +932,7 @@ CoClass.prototype = {
   applyDefinition: function applyDefinition(definition) 
   {
     var prototype = Class.prototype.applyDefinition.apply(this, arguments);
+
     if (!Components.classes[prototype.contractID]) {
       this.factory = new XPCOMFactory(
         this, 
@@ -934,6 +940,7 @@ CoClass.prototype = {
         prototype.description,
         prototype.contractID
       );
+
       this.factory.registerSelf();
     }
     return prototype;
@@ -942,7 +949,7 @@ CoClass.prototype = {
   /** Unregister itself from XPCOM component management list. */
   destroy: function destroy()
   {
-    if (this.factory) {
+    if (null !== this.factory) {
       this.factory.unregisterSelf();
       this.factory = null;
     }

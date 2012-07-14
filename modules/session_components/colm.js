@@ -187,11 +187,11 @@ FixedColumnMode.definition = {
   "[subscribe('command/{soft | hard}-terminal-reset'), pnp]":
   function reset(broker) 
   {
-    if (this.default_value) {
-      this.activate();
-    } else {
-      this.deactivate();
-    }
+    //if (this.default_value) {
+    //  this.activate();
+    //} else {
+    //  this.deactivate();
+    //}
   },
 
   /**

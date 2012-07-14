@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
 <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8" />
-<meta name="generator" content="AsciiDoc 8.6.6" />
+<meta name="generator" content="AsciiDoc 8.6.7" />
 <title>tanasinn terminal emulator</title>
 <style type="text/css">
 /* Shared CSS for AsciiDoc xhtml11 and html5 backends */
@@ -681,7 +681,7 @@ toc: function (toclevels) {
 
   function tocEntries(el, toclevels) {
     var result = new Array;
-    var re = new RegExp('[hH]([2-'+(toclevels+1)+'])');
+    var re = new RegExp('[hH]([1-'+(toclevels+1)+'])');
     // Function that scans the DOM tree for header elements (the DOM2
     // nodeIterator API would be a better technique but not supported by all
     // browsers).
@@ -710,7 +710,7 @@ toc: function (toclevels) {
   var i;
   for (i = 0; i < toc.childNodes.length; i++) {
     var entry = toc.childNodes[i];
-    if (entry.nodeName == 'div'
+    if (entry.nodeName.toLowerCase() == 'div'
      && entry.getAttribute("class")
      && entry.getAttribute("class").match(/^toclevel/))
       tocEntriesToRemove.push(entry);
@@ -756,7 +756,7 @@ footnotes: function () {
   var entriesToRemove = [];
   for (i = 0; i < noteholder.childNodes.length; i++) {
     var entry = noteholder.childNodes[i];
-    if (entry.nodeName == 'div' && entry.getAttribute("class") == "footnote")
+    if (entry.nodeName.toLowerCase() == 'div' && entry.getAttribute("class") == "footnote")
       entriesToRemove.push(entry);
   }
   for (i = 0; i < entriesToRemove.length; i++) {
@@ -860,56 +860,52 @@ It Supports Windows(XP/Vista/7) + Cygwin / Mac / Linux / FreeBSD.</tt></pre>
 <div class="sect1">
 <h2 id="_news">2. News</h2>
 <div class="sectionbody">
-<div class="sect2">
-<h3 id="_2012_05_23">2.1. 2012/05/23</h3>
-<div class="literalblock">
-<div class="content">
-<pre><tt>Version 0.2.2.0
-Supports OSC 52 base64 copy.
-Supports DEC Locator Event Mode(without filter rectangle feature).
-Supports character combining, more precise character rendering.
-Implement LNM.
-Implement Device Status Report(DSR).
-Implement Tertiary Device Attributes (DA3).
-Implement DECREQTPARM.
-More precise emulation, Now it passes vttest Menu 1, 2, 3, 4, 6, 7, and 8.
-Disable ShellRPC plugin.</tt></pre>
-</div></div>
-</div>
-<div class="sect2">
-<h3 id="_2012_05_05">2.2. 2012/05/05</h3>
-<div class="literalblock">
-<div class="content">
-<pre><tt>Version 0.2.1.1
-Supports UTF8/urxvt/SGR style mouse reporting.
-Improve performance.</tt></pre>
-</div></div>
-</div>
-<div class="sect2">
-<h3 id="_2012_04_18">2.3. 2012/04/18</h3>
-<div class="literalblock">
-<div class="content">
-<pre><tt>Version 0.2.0.0
-More precise emulation.
-Now it passes vttest 1, 2, 3, 4, 7, and 8.
-Improve performance.</tt></pre>
-</div></div>
-</div>
-<div class="sect2">
-<h3 id="_2012_04_15">2.4. 2012/04/15</h3>
-<div class="literalblock">
-<div class="content">
-<pre><tt>Version 0.1.7.2
-Important bug fix, Now it works en_US locale, sorry!</tt></pre>
-</div></div>
-</div>
-<div class="sect2">
-<h3 id="_2012_04_08">2.5. 2012/04/08</h3>
-<div class="literalblock">
-<div class="content">
-<pre><tt>Now version 0.1.7.1 available.</tt></pre>
-</div></div>
 <div class="ulist"><ul>
+<li>
+<p>
+2012/05/23
+    Version 0.2.2.0
+    Supports OSC 52 base64 copy.
+    Supports DEC Locator Event Mode(without filter rectangle feature).
+    Supports character combining, more precise character rendering.
+    Implement LNM.
+    Implement Device Status Report(DSR).
+    Implement Tertiary Device Attributes (DA3).
+    Implement DECREQTPARM.
+    More precise emulation, Now it passes vttest Menu 1, 2, 3, 4, 6, 7, and 8.
+    Disable ShellRPC plugin.
+</p>
+</li>
+<li>
+<p>
+2012/05/05
+    Version 0.2.1.1
+    Supports UTF8/urxvt/SGR style mouse reporting.
+    Improve performance.
+</p>
+</li>
+<li>
+<p>
+2012/04/18
+    Version 0.2.0.0
+    More precise emulation.
+    Now it passes vttest 1, 2, 3, 4, 7, and 8.
+    Improve performance.
+</p>
+</li>
+<li>
+<p>
+2012/04/15
+    Version 0.1.7.2
+    Important bug fix, Now it works en_US locale, sorry!
+</p>
+</li>
+<li>
+<p>
+2012/04/08
+    Now version 0.1.7.1 available.
+</p>
+</li>
 <li>
 <p>
 Implement SGR blink feature.
@@ -939,7 +935,6 @@ Implement SGR halfbright feature.
 process.bin_path = "/bin:/usr/bin:/usr/local/bin:/opt/local/bin";
 process.python_path = "/usr/bin/python"</tt></pre>
 </div></div>
-</div>
 </div>
 </div>
 <div class="sect1">
@@ -1216,7 +1211,7 @@ Supports mapping trackpad gestures, such as pinch, swipe, rotate.
 <div class="content">
 <img src="images/roflbalt.png" alt="images/roflbalt.png" width="780" />
 </div>
-<div class="title">Figure 18. https:</div>
+<div class="title">Figure 18. <a href="https://github.com/pda/roflbalt">roflbalt</a>. A game written in Ruby.</div>
 </div>
 <div class="imageblock">
 <div class="content">
@@ -1860,39 +1855,39 @@ is not proper one.</tt></pre>
 <div class="content">
 <pre><tt>~/ or %USERPROFILE%/
    |
-   +-- .tanasinn.js &lt;-------------------------------- (1)
+   +-- .tanasinn.js    &lt;-------------------------------- (1)
    |
-   +-- .tanasinn/ &lt;-------------------------------- (2)
+   +-- .tanasinn/      &lt;-------------------------------- (2)
          |
-         +-- tanasinnrc &lt;---------------------- (3)
+         +-- tanasinnrc          &lt;---------------------- (3)
          |
-         +-- sessions.txt &lt;---------------------- (4)
+         +-- sessions.txt        &lt;---------------------- (4)
          |
-         +-- desktop_profile/ &lt;---------------------- (5)
+         +-- desktop_profile/    &lt;---------------------- (5)
          |
-         +-- session_profile/ &lt;---------------------- (6)
+         +-- session_profile/    &lt;---------------------- (6)
          |
-         +-- persist/ &lt;---------------------- (7)
+         +-- persist/            &lt;---------------------- (7)
          |
-         +-- history/ &lt;---------------------- (8)
+         +-- history/            &lt;---------------------- (8)
          |
-         +-- batches/ &lt;---------------------- (9)
+         +-- batches/            &lt;---------------------- (9)
          |
-         +-- cgi-bin/ &lt;---------------------- (10)
+         +-- cgi-bin/            &lt;---------------------- (10)
          |
-         +-- screenshot/ &lt;------------------- (11)
+         +-- screenshot/            &lt;------------------- (11)
          |
-         +-- log/ &lt;---------------------- (12)
+         +-- log/                &lt;---------------------- (12)
          |
-         +-- modules/ &lt;---------------------- (13)
+         +-- modules/            &lt;---------------------- (13)
                 |
-                +-- process_components/ &lt;------ (14)
+                +-- process_components/          &lt;------ (14)
                 |
-                +-- desktop_components/ &lt;------ (15)
+                +-- desktop_components/          &lt;------ (15)
                 |
-                +-- session_components/ &lt;------ (16)
+                +-- session_components/          &lt;------ (16)
                 |
-                +-- shared_components/ &lt;------ (17)</tt></pre>
+                +-- shared_components/           &lt;------ (17)</tt></pre>
 </div></div>
 <div class="sect3">
 <h4 id="_tanasinn_js">9.4.1. .tanasinn.js</h4>
@@ -2432,11 +2427,11 @@ by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
 <pre><tt>
-   <span style="color: #990000">(</span><span style="color: #FF0000">{</span>
-     tagName<span style="color: #990000">:</span> <span style="color: #FF0000">"box"</span><span style="color: #990000">,</span>
+   <span style="color: #990000">(</span><span style="color: #FF0000">{</span>                          <span style="font-style: italic"><span style="color: #9A1900">// &lt;--- (1)</span></span>
+     tagName<span style="color: #990000">:</span> <span style="color: #FF0000">"box"</span><span style="color: #990000">,</span>           <span style="font-style: italic"><span style="color: #9A1900">// &lt;--- (2)</span></span>
      flex<span style="color: #990000">:</span> <span style="color: #993399">1</span><span style="color: #990000">,</span>
-     style<span style="color: #990000">:</span> <span style="color: #FF0000">{</span>
-       backgroundColor<span style="color: #990000">:</span> <span style="color: #FF0000">"red"</span>
+     style<span style="color: #990000">:</span> <span style="color: #FF0000">{</span>                  <span style="font-style: italic"><span style="color: #9A1900">// &lt;--- (3)</span></span>
+       backgroundColor<span style="color: #990000">:</span> <span style="color: #FF0000">"red"</span>  <span style="font-style: italic"><span style="color: #9A1900">// &lt;--- (4)</span></span>
      <span style="color: #FF0000">}</span>
    <span style="color: #FF0000">}</span><span style="color: #990000">)</span>
 </tt></pre></div></div>
@@ -2467,19 +2462,19 @@ http://www.gnu.org/software/src-highlite -->
 <pre><tt>
    <span style="color: #990000">(</span><span style="color: #FF0000">{</span>
      tagName<span style="color: #990000">:</span> <span style="color: #FF0000">"html:div"</span><span style="color: #990000">,</span>
-     parentNode<span style="color: #990000">:</span> <span style="color: #FF0000">"id-of-parent"</span><span style="color: #990000">,</span>
+     parentNode<span style="color: #990000">:</span> <span style="color: #FF0000">"id-of-parent"</span><span style="color: #990000">,</span> <span style="font-style: italic"><span style="color: #9A1900">// &lt;--- (5)</span></span>
      style<span style="color: #990000">:</span> <span style="color: #FF0000">{</span>
        textAlign<span style="color: #990000">:</span> <span style="color: #FF0000">"center"</span>
      <span style="color: #FF0000">}</span>
-     childNodes<span style="color: #990000">:</span> <span style="color: #FF0000">{</span>
+     childNodes<span style="color: #990000">:</span> <span style="color: #FF0000">{</span>               <span style="font-style: italic"><span style="color: #9A1900">// &lt;--- (6)</span></span>
        tagName<span style="color: #990000">:</span> <span style="color: #FF0000">"html:div"</span><span style="color: #990000">,</span>
        style<span style="color: #990000">:</span> <span style="color: #FF0000">{</span>
          fontSize<span style="color: #990000">:</span> <span style="color: #FF0000">"1.5em"</span>
        <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
-       childNodes<span style="color: #990000">:</span> <span style="color: #990000">[</span>
+       childNodes<span style="color: #990000">:</span> <span style="color: #990000">[</span>             <span style="font-style: italic"><span style="color: #9A1900">// &lt;--- (7)</span></span>
          <span style="color: #FF0000">{</span>
            tagName<span style="color: #990000">:</span> <span style="color: #FF0000">"html:span"</span><span style="color: #990000">,</span>
-           innerText<span style="color: #990000">:</span> <span style="color: #FF0000">"abcde"</span>
+           innerText<span style="color: #990000">:</span> <span style="color: #FF0000">"abcde"</span>    <span style="font-style: italic"><span style="color: #9A1900">// &lt;--- (8)</span></span>
          <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
          <span style="color: #FF0000">{</span>
            tagName<span style="color: #990000">:</span> <span style="color: #FF0000">"html:div"</span><span style="color: #990000">,</span>
@@ -2529,7 +2524,7 @@ http://www.gnu.org/software/src-highlite -->
      tagName<span style="color: #990000">:</span> <span style="color: #FF0000">"hbox"</span><span style="color: #990000">,</span>
      id<span style="color: #990000">:</span> <span style="color: #FF0000">"parent"</span><span style="color: #990000">,</span>
      flex<span style="color: #990000">:</span> <span style="color: #993399">1</span><span style="color: #990000">,</span>
-     onconstruct<span style="color: #990000">:</span> <span style="color: #FF0000">{</span>
+     onconstruct<span style="color: #990000">:</span> <span style="color: #FF0000">{</span>              <span style="font-style: italic"><span style="color: #9A1900">// &lt;--- (9)</span></span>
        handler<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span> window<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">alert</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>id<span style="color: #990000">);</span> <span style="color: #FF0000">}</span>
      <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
      childNodes<span style="color: #990000">:</span> <span style="color: #990000">[</span>
@@ -2537,7 +2532,7 @@ http://www.gnu.org/software/src-highlite -->
          tagName<span style="color: #990000">:</span> <span style="color: #FF0000">"vbox"</span><span style="color: #990000">,</span>
          id<span style="color: #990000">:</span> <span style="color: #FF0000">"left"</span><span style="color: #990000">,</span>
          flex<span style="color: #990000">:</span> <span style="color: #993399">1</span><span style="color: #990000">,</span>
-         listener<span style="color: #990000">:</span> <span style="color: #FF0000">{</span>
+         listener<span style="color: #990000">:</span> <span style="color: #FF0000">{</span>             <span style="font-style: italic"><span style="color: #9A1900">// &lt;--- (10)</span></span>
            type<span style="color: #990000">:</span> <span style="color: #FF0000">"mouseover"</span><span style="color: #990000">,</span>
            context<span style="color: #990000">:</span> window<span style="color: #990000">,</span>
            handler<span style="color: #990000">:</span> onMouseOver
@@ -2611,7 +2606,7 @@ or tweet me (<a href="http://twitter.com/kefir_">http://twitter.com/kefir_</a>).
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2012-06-10 19:19:09 JST
+Last updated 2012-07-14 22:13:05 JST
 </div>
 </div>
 </body>

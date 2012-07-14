@@ -14,6 +14,7 @@
  chrome.manifest.in
  chrome.manifest
  bootstrap.js
+
  content=content {
   tanasinn.svg
  }

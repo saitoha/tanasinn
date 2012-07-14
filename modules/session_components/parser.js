@@ -777,7 +777,6 @@ Scanner.definition = {
   function setSurplus() 
   {
     this._nextvalue = this._value.substr(this._anchor);
-    alert(this._nextvalue)
   },
 
   "[type('String')] getCurrentToken":

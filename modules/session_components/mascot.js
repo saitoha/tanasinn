@@ -74,10 +74,11 @@ Mascot.definition = {
   "[install]":
   function install(broker) 
   {
-   this._element = this.request(
-     "command/construct-chrome", 
-     this.template
-   )["tanasinn_mascot_layer"];
+    // lazy initialization for using with css 3D Transform
+    coUtils.Timer.setTimeout(
+      function timerProc()
+      {
+      }, 100, this);
   },
 
   /** Uninstalls itself.
@@ -90,6 +91,15 @@ Mascot.definition = {
       this._element.parentNode.removeChild(this._element);
       this._element = null;
     }
+  },
+
+  "[subscribe('@command/focus'), pnp]":
+  function onFirstFocus(broker) 
+  {
+    this._element = this.request(
+      "command/construct-chrome", 
+      this.template
+    )["tanasinn_mascot_layer"];
   },
 
   getMascotImagePath: function getMascotImagePath()

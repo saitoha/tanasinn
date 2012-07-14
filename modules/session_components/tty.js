@@ -260,12 +260,10 @@ Controller.definition = {
    */
   onStopRequest: function onStopRequest(request, context, status)
   {
-    var broker = this._broker;
-
     coUtils.Debug.reportMessage(
       _("Controller::onStopRequest called. status: %s."), status);
     try {
-      broker.stop();
+      this._broker.stop();
     } catch (e) { 
       coUtils.Debug.reportError(e)
     }
@@ -818,8 +816,6 @@ SocketTeletypeService.definition = {
   {
     var request_id, record, backup_data_path, context, file, socket;
 
-    this.osc97.enabled = true;
-
     if (0 === broker.command.indexOf("&")) {
 
       request_id = broker.command.substr(1);
@@ -845,12 +841,7 @@ SocketTeletypeService.definition = {
         if (file.exists()) {
           file.remove(false)
         }
-
-        //coUtils.Timer.setTimeout(
-        //  function timerProc()
-        //  {
-        this.sendMessage("command/draw", true);
-        //  }, 50, this);
+        this.onFirstFocus.enabled = true;
       }
     } else {
 
@@ -866,15 +857,11 @@ SocketTeletypeService.definition = {
       // nsIProcess::runAsync.
       this.sendMessage("command/start-ttydriver-process", socket.port); 
     }
-    this.detach.enabled = true;
   },
 
   "[uninstall]":
   function uninstall(broker)
   {
-    this.detach.enabled = false;
-    this.osc97.enabled = false;
-
     if (this._socket) {
       this._socket.close();
     }
@@ -887,22 +874,27 @@ SocketTeletypeService.definition = {
 
   },
 
-  "[subscribe('@command/detach')]": 
-  function detach()
+  "[subscribe('@command/focus')]": 
+  function onFirstFocus()
   {
-    var context, broker, path, data;
-
-    context = {};
-    broker = this._broker;
-
-    this.sendMessage("command/backup", context);
-
-    path = broker.runtime_path + "/persist/" + broker.request_id + ".txt";
-    data = JSON.stringify(context);
-    coUtils.IO.writeToFile(path, data);
+    this.sendMessage("command/draw", true);
   },
 
-  "[subscribe('sequence/osc/97')]":
+  "[subscribe('@command/detach'), pnp]": 
+  function detach()
+  {
+    var context = {},
+        path = this._broker.runtime_path + "/persist/" + this._broker.request_id + ".txt",
+        data;
+
+    this.sendMessage("command/backup", context);
+    data = JSON.stringify(context);
+
+    coUtils.IO.writeToFile(path, data);
+    this._broker.stop();
+  },
+
+  "[subscribe('sequence/osc/97'), pnp]":
   function osc97(ttyname) 
   {
     this._ttyname = ttyname;

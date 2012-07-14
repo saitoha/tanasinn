@@ -191,7 +191,7 @@ PersistentTrait.definition = {
       this.font_size = data.font_size;
       this._reverse = data.reverse;
       this.color = data.color;
-      this.sendMessage("command/draw");
+//      this.sendMessage("command/draw");
     } else {
       coUtils.Debug.reportWarning(
         _("Cannot restore last state of renderer: data not found."));

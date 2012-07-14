@@ -922,7 +922,9 @@ Launcher.definition = {
   {
     this.enabled = false;
     this.onDisabled();
-    this._element.removeChild(this._element);
+    if (this._element) {
+      this._element.removeChild(this._element);
+    }
   },
   
   "[subscribe('event/enabled'), enabled]":

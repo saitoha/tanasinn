@@ -25,7 +25,10 @@
 /**
  * @class Vector3d
  */
-var Vector3d = new Class();
+function Vector3d() 
+{ 
+  return this.initialize.apply(this, arguments);
+};
 Vector3d.prototype = {
 
   x: 0,
@@ -82,7 +85,10 @@ Vector3d.prototype = {
  * @class TransformMatrix
  *
  */
-var TransformMatrix = new Class()
+function TransformMatrix() 
+{ 
+  return this.initialize.apply(this, arguments);
+};
 TransformMatrix.prototype = {
 
   _m00: 1,
@@ -247,12 +253,14 @@ DragTransform.definition = {
     this._element.style.MozTransform = this._last_matrix.toString();
   },
 
+  /** alt/shift keydown event handler, enables the dragging helper object */
   "[subscribe('event/{alt & shift}-key-down'), pnp]":
   function onModifierKeysDown() 
   {
     this.sendMessage("command/enable-drag-cover");
   },
 
+  /** alt/shift keyup event handler, detects the timing for drag end */
   "[subscribe('event/{alt | shift}-key-up'), pnp]":
   function onModifierKeyUp() 
   {
@@ -260,6 +268,7 @@ DragTransform.definition = {
     this.onDragEnd();
   },
 
+  /** "mouseup" event handler, detects the timing for dragend */
   "[listen('mouseup')]":
   function onMouseUp(event) 
   {

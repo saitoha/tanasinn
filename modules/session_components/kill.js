@@ -93,9 +93,6 @@ Kill.definition = {
 
     // stops TTY device.
     this.sendMessage("command/detach"); 
-
-    broker = this._broker;
-    broker.stop();
   },
 
   /** kill process and stop tty */

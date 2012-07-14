@@ -47,17 +47,15 @@ EncoderMenu.definition = {
   "[install]":
   function install(broker) 
   {
-    this.onContextMenu.enabled = true;
   },
 
   /** Uninstalls itself. */
   "[uninstall]":
   function uninstall(broker) 
   {
-    this.onContextMenu.enabled = false;
   },
 
-  "[subscribe('get/contextmenu-entries')]": 
+  "[subscribe('get/contextmenu-entries'), pnp]": 
   function onContextMenu() 
   {
     var encoder, encoder_scheme;
@@ -127,17 +125,15 @@ DecoderMenu.definition = {
   "[install]":
   function install(broker) 
   {
-    this.onContextMenu.enabled = true;
   },
 
   /** Uninstalls itself. */
   "[uninstall]":
   function uninstall(broker) 
   {
-    this.onContextMenu.enabled = false;
   },
 
-  "[subscribe('get/contextmenu-entries')]":
+  "[subscribe('get/contextmenu-entries'), pnp]":
   function onContextMenu() 
   {
     var decoder, decoders, decoder_scheme;
@@ -151,23 +147,27 @@ DecoderMenu.definition = {
       label: _("Decoder"),
       childNodes: {
         tagName: "menupopup",
-        childNodes: decoders.map(function(information) 
-        { 
-          var charset = information.charset;
+        childNodes: decoders.map(
+          function mapFunc(information) 
+          { 
+            var charset = information.charset;
 
-          return {
-            tagName: "menuitem",
-            type: "radio",
-            label: information.title,
-            name: "encoding",
-            checked: decoder_scheme == information.charset,
-            listener: {
-              type: "command", 
-              context: this,
-              handler: function() this._onChange(encoding),
+            return {
+              tagName: "menuitem",
+              type: "radio",
+              label: information.title,
+              name: "encoding",
+              checked: decoder_scheme === charset,
+              listener: {
+                type: "command", 
+                context: this,
+                handler: function onEncodingChanged() 
+                {
+                  return this._onChange(charset);
+                },
+              }
             }
-          }
-        }, this),
+          }, this),
       }
     };
   },

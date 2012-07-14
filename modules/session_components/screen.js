@@ -1717,7 +1717,8 @@ Screen.definition = {
 
   set "[persistable] width"(value) 
   {
-    var width, cursor;
+    var width,
+        cursor;
 
     if (this._buffer) {
 
@@ -1793,6 +1794,7 @@ Screen.definition = {
   get currentCharacterIsWide() 
   {
     var line = this.getCurrentLine();
+
     if (!line) {
       return false;
     }
@@ -2088,9 +2090,10 @@ Screen.definition = {
   "[type('Undefined')] eraseLineToRight":
   function eraseLineToRight() 
   {
-    var cursor, line, width;
+    var line = this.getCurrentLine(),
+        cursor,
+        width;
 
-    line = this.getCurrentLine();
     if (line) {
       cursor = this.cursor;
       width = this._width;
@@ -2236,7 +2239,9 @@ Screen.definition = {
         i,
         line;
 
-    lines[positionY].selectiveErase(0, cursor.positionX + 1, attr);
+    line = lines[positionY];
+    line.selectiveErase(0, cursor.positionX + 1, attr);
+
     for (i = 0; i < positionY; ++i) {
       line = lines[i];
       line.selectiveErase(0, width, attr);
@@ -2256,7 +2261,9 @@ Screen.definition = {
         i,
         line;
    
-    lines[positionY].selectiveErase(cursor.positionX, width, attr);
+    line = lines[positionY];
+    line.selectiveErase(cursor.positionX, width, attr);
+
     for (i = positionY + 1; i < height; ++i) {
       line = lines[i];
       line.selectiveErase(0, width, attr);
@@ -2618,7 +2625,7 @@ Screen.definition = {
       line = lines[i];
       line.deserialize(context);
     }
-    this.sendMessage("command/draw", true);
+    //this.sendMessage("command/draw", true);
 
     this._screen_choice = context.shift();
     this.cursor.deserialize(context);

@@ -24,10 +24,9 @@ link:./usermanual.html[English/英語]
 
 #endif
 
-#if __EN__
 == News
 
-=== 2012/05/23 
+  - 2012/05/23 
     Version 0.2.2.0
     Supports OSC 52 base64 copy.
     Supports DEC Locator Event Mode(without filter rectangle feature).
@@ -39,28 +38,30 @@ link:./usermanual.html[English/英語]
     More precise emulation, Now it passes vttest Menu 1, 2, 3, 4, 6, 7, and 8.
     Disable ShellRPC plugin.
 
-=== 2012/05/05 
+  - 2012/05/05 
     Version 0.2.1.1
     Supports UTF8/urxvt/SGR style mouse reporting.
     Improve performance.
 
-=== 2012/04/18 
+  - 2012/04/18 
     Version 0.2.0.0
     More precise emulation. 
     Now it passes vttest 1, 2, 3, 4, 7, and 8.
     Improve performance.
 
-=== 2012/04/15 
+  - 2012/04/15 
     Version 0.1.7.2
     Important bug fix, Now it works en_US locale, sorry!
 
-=== 2012/04/08 
+  - 2012/04/08 
     Now version 0.1.7.1 available.
 
     - Implement SGR blink feature. 
     - Implement SGR rapid blink feature(from DOS's ANSI.SYS).
     - Implement SGR italic feature. 
     - Implement SGR halfbright feature. 
+
+#if __EN__
 
 If tanasinn does not work, try creating tanasinn.js at your home directory, as follows:
 
@@ -72,43 +73,6 @@ process.python_path = "/usr/bin/python"
 ----
 
 #elif __JP__
-== News 
-   
-=== 2012/05/23 
-    Version 0.2.2.0
-    Supports OSC 52 base64 copy.
-    Supports DEC Locator Event Mode(without filter rectangle feature).
-    Supports character combining, more precise character rendering.
-    Implement LNM.
-    Implement Device Status Report(DSR).
-    Implement Tertiary Device Attributes (DA3).
-    Implement DECREQTPARM. 
-    More precise emulation, Now it passes vttest Menu 1, 2, 3, 4, 6, 7, and 8.
-    Disable ShellRPC plugin.
-
-=== 2012/05/05 
-    Version 0.2.1.1
-    Supports inline Sixel Graphics.
-    Supports UTF8/urxvt/SGR style mouse reporting.
-    Improve performance.
-
-=== 2012/04/18 
-    Version 0.2.0.0
-    More precise emulation. 
-    Now it passes vttest 1, 2, 3, 4, 7, and 8.
-    Improve performance.
-
-=== 2012/04/15 
-    Version 0.1.7.2
-    Important bug fix, Now it works en_US locale, sorry!
-
-=== 2012/04/08 
-    Now version 0.1.7.1 available.
-
-    - Implement SGR blink feature. 
-    - Implement SGR rapid blink feature(from DOS's ANSI.SYS).
-    - Implement SGR italic feature. 
-    - Implement SGR halfbright feature. 
 
   重要：0.1.5.0 / 0.1.5.1はビルド時のバグのため「動きません」。
           0.1.5.2は一部のプラットフォームで動きません。  

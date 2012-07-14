@@ -60,7 +60,7 @@ FocusEvent.definition = {
   "[subscribe('command/backup'), pnp]": 
   function backup(context) 
   {
-    context.focus_event = {
+    context[this.id] = {
       focus_mode: this._focus_mode,
     }; 
   },
@@ -68,8 +68,10 @@ FocusEvent.definition = {
   "[subscribe('command/restore'), pnp]": 
   function restore(context) 
   {
-    if (context.mouse) {
-      this._focus_mode = context.focus_event.focus_mode;
+    var data = context[this.id];
+
+    if (data) {
+      this._focus_mode = data.focus_mode;
     }
   },
   

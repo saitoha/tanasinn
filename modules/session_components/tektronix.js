@@ -165,7 +165,6 @@ Tektronix.definition = {
       if (3 != c >> 5) {
         dom.context.stroke();
         path_open = false;
-//        alert("2 " + c);
         return;
       }
       low_y  = c & 0x1f; // 011xxxxx
@@ -188,19 +187,16 @@ Tektronix.definition = {
           if (scanner.isEnd) {
             dom.context.stroke();
             path_open = false;
-            //alert("8" + c);
             return;
           }
           if (1 != c >> 5) {
             dom.context.stroke();
             path_open = false;
-            //alert("7" + c);
             return;
           }
         } else {
           dom.context.stroke();
           path_open = false;
-          //alert("4" + c);
           return;
         }
       }
@@ -226,7 +222,6 @@ Tektronix.definition = {
       this._y = (this._height / this._scale) - (high_y << 5 | low_y) - 40;
       this._x = high_x << 5 | low_x;
 
-      //alert([path_open, this._x, this._y]);
       if (path_open) {
         dom.context.lineTo(this._x, this._y);
       } else {
@@ -297,7 +292,6 @@ scan:
           return null;
         } else if (0x05 == c) {
           scanner.moveNext();
-          //alert("esc enq");
         } else if (0x0c == c) {
           scanner.moveNext();
           this._mode = MODE_ALPHA;
@@ -307,10 +301,8 @@ scan:
             this._height / this._scale);
         } else if (0x0e == c) {
           scanner.moveNext();
-          //alert("esc so");
         } else if (0x0f == c) {
           scanner.moveNext();
-          //alert("esc si");
         } else if (0x5b == c) {     // [
           scanner.moveNext();
           c = scanner.current();
@@ -324,7 +316,6 @@ scan:
                 scanner.moveNext();
                 c = scanner.current();
                 if (0x68 == c) {           // h
-                  //alert(c);
                 } else if (0x6c == c) {    // l
                   this.sendMessage("command/change-mode", "vt100");
                   coUtils.Debug.reportWarning(
@@ -379,7 +370,6 @@ scan:
           coUtils.Debug.reportWarning(_("esc t"));
           scanner.moveNext();
         } else {
-          //alert(c)
           scanner.moveNext();
         }
       } else if (0x0c == c) {

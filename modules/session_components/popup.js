@@ -50,16 +50,15 @@ ZshCompletion.definition = {
     }
   },
 
-  display: function() 
+  display: function display() 
   {
-    var lines, colormap, renderer, selected;
+    var lines = this.lines,
+        colormap = [ "", "#cdffcf", "#cdd", "#dfffdd" ],
+        renderer = this.dependency["renderer"],
+        selected = -1;
 
-    lines = this.lines;
     this.onDataArrived.enabled = false;
-    colormap = [ "", "#cdffcf", "#cdd", "#dfffdd" ];
 
-    renderer = this.dependency["renderer"];
-    selected = -1;
     this.request(
       "command/construct-chrome", 
       {
@@ -254,12 +253,15 @@ PopupMenu.definition = {
   "[listen('mousedown', '#tanasinn_app_popup', true), pnp]":
   function onmousedown(event) 
   {
-    var target, diff, packed_code, i;
+    var target = event.explicitOriginalTarget;
+        diff,
+        packed_code,
+        i;
 
-    target = event.explicitOriginalTarget;
     if (!target) {
       return;
     }
+
     while ("row" !== target.tagName) {
       target = target.parentNode;
     }
@@ -291,16 +293,17 @@ PopupMenu.definition = {
   "[listen('mousemove', '#tanasinn_app_popup', true), pnp]":
   function onmousemove(event) 
   {
-    var target;
+    var target = event.explicitOriginalTarget;
 
-    target = event.explicitOriginalTarget;
-    while ("row" != target.tagName) {
+    while ("row" !== target.tagName) {
       target = target.parentNode;
     }
+
     if (this._mouseover) {
       this._mouseover.style.backgroundColor = ""; 
       this._mouseover.style.borderRadius = "5px";
     }
+
     this._mouseover = target;
     target.style.backgroundColor = "#ccc"; 
   },

@@ -66,14 +66,27 @@
  *
  */
 
-//void function() {
+void function() {
 
-  var tanasinn_scope = {}; // create scope.
-  var id, current_file;
-  var loader;
+  var tanasinn_scope = {}, // create scope.
+      id, current_file,
+      loader;
   
   with (tanasinn_scope) {
-  
+
+    var g_process;
+
+    function getProcess()
+    {
+      if (!g_process) {
+        //g_process = Components.classes['@zuse.jp/tanasinn/process;1']
+        //  .getService(Components.interfaces.nsISupports)
+        //  .wrappedJSObject
+        g_process = new Process();
+      }
+      return g_process;
+    }
+
     id = new Date().getTime();
     current_file = Components
       .stack.filename.split(" -> ").pop()
@@ -89,28 +102,28 @@
     coUtils.Runtime.loadScript("modules/common/tupbase.js", tanasinn_scope);
   
     loader = {
+
+      windows: [],
     
       initialize: function initialize()
       {
         var window_mediator = Components
-          .classes["@mozilla.org/appshell/window-mediator;1"]
-          .getService(Components.interfaces.nsIWindowMediator);
-        var window_types = ["navigator:browser", "mail:3pane"];
-        var window_type;
-        var browser_windows;
-        var dom;
-        var self = this;
-        var i;
+              .classes["@mozilla.org/appshell/window-mediator;1"]
+              .getService(Components.interfaces.nsIWindowMediator),
+            window_types = ["navigator:browser", "mail:3pane"],
+            window_type,
+            self = this,
+            i;
   
         coUtils.Services.windowWatcher.registerNotification(this);
   
         for (i = 0; i < window_types.length; ++i) {
           window_type = window_types[i];
           // add functionality to existing windows
-          browser_windows = window_mediator.getEnumerator(window_type);
+          let browser_windows = window_mediator.getEnumerator(window_type);
           while (browser_windows.hasMoreElements()) { // enumerate existing windows.
             // only run the "start" immediately if the browser is completely loaded
-            dom = {
+            let dom = {
               window: browser_windows.getNext()
             };
             if ("complete" === dom.window.document.readyState) {
@@ -133,35 +146,46 @@
       uninitialize: function uninitialize()
       {
         var window_watcher = coUtils.Services.windowWatcher;
+
         window_watcher.unregisterNotification(this);
       },
     
       dispatchWindowEvent: function dispatchWindowEvent(window) 
       {
+        if (this.windows.some(function(w) w === window)) {
+          return;
+        }
+
+        this.windows.push(window);
+        /*
         Components.classes['@zuse.jp/tanasinn/process;1']
           .getService(Components.interfaces.nsISupports)
           .wrappedJSObject
-          .notify("event/new-window-detected", window);
+          */
+        getProcess().notify("event/new-window-detected", window);
       },
     
       // Handles opening new navigator window.
       observe: function observe(subject, topic, data) 
       {
-        var dom = {
-          window: subject.QueryInterface(Components.interfaces.nsIDOMWindow)
-        };
-        var self = this;
+        var self = this,
+            dom = {
+              window: subject.QueryInterface(Components.interfaces.nsIDOMWindow)
+            };
         if ("domwindowopened" === topic) {
-          dom.window.addEventListener("load", function onLoad() 
-          {
-            var document = dom.window.document;
-            var window_type = document.documentElement.getAttribute("windowtype");
-            // ensure that "window" is a navigator window.
-            if (/^(navigator:browser|mail:3pane)$/.test(window_type)) {
-              dom.window.removeEventListener("load", arguments.callee, false);
-              self.dispatchWindowEvent(dom.window);
-            }
-          }, false);
+          dom.window.addEventListener(
+            "load",
+            function onLoad() 
+            {
+              var document = dom.window.document,
+                  window_type = document.documentElement.getAttribute("windowtype");
+
+              // ensure that "window" is a navigator window.
+              if (/^(navigator:browser|mail:3pane)$/.test(window_type)) {
+                dom.window.removeEventListener("load", arguments.callee, false);
+                self.dispatchWindowEvent(dom.window);
+              }
+            }, false);
         }
       },
     }
@@ -218,12 +242,14 @@
   
       _guessCygwinRoot: function _guessCygwinRoot() 
       {
-        var path;
-        var directory;
-        var search_paths = "CDEFGHIJKLMNOPQRSTUVWXYZ"
-          .split("")
-          .map(function(letter) letter + ":\\cygwin");
+        var path,
+            directory,
+            search_paths = "CDEFGHIJKLMNOPQRSTUVWXYZ"
+              .split("")
+              .map(function(letter) letter + ":\\cygwin");
+
         search_paths.push("D:\\User\\Program\\cygwin");
+
         for ([, path] in Iterator(search_paths)) {
           directory = Components
             .classes["@mozilla.org/file/local;1"]
@@ -265,6 +291,7 @@
               native_path = path;
             }
             directory.initWithPath(native_path);
+
             return {
               directory: directory,
               path: path,
@@ -300,10 +327,14 @@
       subscribeGlobalEvent: 
       function subscribeGlobalEvent(topic, handler, context)
       {
-        var delegate;
-        var observer;
+        var delegate,
+            observer;
+
         if (context) {
-          delegate = function() handler.apply(context, arguments);
+          delegate = function delegate()
+          {
+            return handler.apply(context, arguments);
+          };
         } else {
           delegate = handler;
         }
@@ -321,17 +352,19 @@
       removeGlobalEvent: function removeGlobalEvent(topic)
       {
         var observers;
+
         if (this.observerService && this._observers) {
           observers = this._observers[topic];
           if (observers) {
-            observers.forEach(function(observer) 
-            {
-              try {
-                this.observerService.removeObserver(observer, topic);
-              } catch(e) {
-                coUtils.Debug.reportWarning(e);
-              }
-            }, this);
+            observers.forEach(
+              function(observer) 
+              {
+                try {
+                  this.observerService.removeObserver(observer, topic);
+                } catch(e) {
+                  coUtils.Debug.reportWarning(e);
+                }
+              }, this);
             this._observers = null;
           }
         }
@@ -358,11 +391,26 @@
         "@zuse.jp/tanasinn/process;1",
      
       get default_scope()
-        function() { this.__proto__ = tanasinn_scope; },
+        function() 
+        { 
+          this.__proto__ = tanasinn_scope;
+        },
   
+    // nsIObserver implementation
+      /**
+       * Provides runtime type discovery.
+       * @param aIID the IID of the requested interface.
+       * @return the resulting interface pointer.
+       */
       QueryInterface: function QueryInterface(a_IID)
-        this,
-    
+      {
+        if (!a_IID.equals(Components.interafaces.nsIObserver) 
+         && !a_IID.equals(Components.interafaces.nsISupports)) {
+          throw Components.results.NS_ERROR_NOT_IMPLEMENTED;
+        }
+        return this;
+      },
+
       get wrappedJSObject()
         this,
   
@@ -387,42 +435,77 @@
         }
         this.load(this, ["modules/process_components"], new this.default_scope);
         this._observers = {};
+
         this.subscribeGlobalEvent(
           "quit-application", 
           function onQuitApplication() 
           {
             this.notify("event/disabled", this);
           }, this);
+
+        Components
+          .classes["@mozilla.org/observer-service;1"]
+          .getService(Components.interfaces.nsIObserverService)
+          .addObserver(this, "command/terminate-tanasinn", false);
       },
   
       uninitialize: function uninitialize()
       {
-        loader.uninitialize();
+        loader.uninitialize();  // unregister window watcher handler
+        Process.destroy();      // unregister XPCOM object
       },
     
       getDesktopFromWindow: function getDesktopFromWindow(window) 
       {
         var desktops = this.notify("get/desktop-from-window", window);
+
         if (!desktops) {
           this.notify("event/new-window-detected", window);
           desktops = this.notify("get/desktop-from-window", window);
         }
         return desktops.shift();
       },
-  
+ 
+      observe: function observe(subject, topic, data)
+      {
+        try {
+          Components
+            .classes["@mozilla.org/observer-service;1"]
+            .getService(Components.interfaces.nsIObserverService)
+            .removeObserver(topic, this);
+        } catch (e) {
+          // do nothing
+        }
+        var io_service = Components
+          .classes["@mozilla.org/network/io-service;1"]
+          .getService(Components.interfaces.nsIIOService);
+      
+        var process = this.wrappedJSObject;
+
+        process.notify("event/disabled");
+        process.uninitialize();
+      
+        io_service
+          .getProtocolHandler("resource")
+          .QueryInterface(Components.interfaces.nsIResProtocolHandler)
+          .setSubstitution("tanasinn", null);
+      
+        process.notify("event/shutdown");
+        process.clear();
+      },
+ 
       /* override */
       toString: function toString()
       {
         return "[Object Process]";
-      }
+      },
     
     }; // Process
   
     loader.initialize();
-  
+ 
   } // with tanasinn_scope
 
-//} ();
-
+} ();
 
 // EOF

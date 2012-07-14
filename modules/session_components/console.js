@@ -333,6 +333,7 @@ ConsoleListener.definition = {
 
     // set unregistration listener.
     //this.onQuitApplication.enabled = true;
+    this.detach.enabled = true;
     this.onSessionStopping.enabled = true;
     
     coUtils.Timer.setTimeout(function()

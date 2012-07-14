@@ -22,16 +22,25 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-function start_tanasinn(tanasinn_class, data)
+function alert(message)
+{
+  Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
+    .getService(Components.interfaces.nsIPromptService)
+    .alert(null, "test", String(message));
+}
+
+function start_tanasinn(data)
 {
   var io_service = Components
         .classes["@mozilla.org/network/io-service;1"]
         .getService(Components.interfaces.nsIIOService),
       uri = io_service.newFileURI(data.installPath.clone()),
       file_handler, // nsIFileProtocolHandler
-      process,      // tanasinn's Process object
+      process_file, // tanasinn's Process file
       process_url,  // the location of process.js
       message;      // error message
+
+  terminate_tanasinn();
 
   // reserve 'resource://tanasinn'
   io_service.getProtocolHandler("resource")
@@ -42,18 +51,18 @@ function start_tanasinn(tanasinn_class, data)
     file_handler = io_service.getProtocolHandler("file")
       .QueryInterface(Components.interfaces.nsIFileProtocolHandler);
 
-    process = data.installPath.clone();
-    process.append("modules");
-    process.append("common");
-    process.append("process.js");
+    process_file = data.installPath.clone();
+    process_file.append("modules");
+    process_file.append("common");
+    process_file.append("process.js");
 
-    process_url = file_handler.getURLSpecFromFile(process);
+    process_url = file_handler.getURLSpecFromFile(process_file);
 
+    var scope = {};
     Components
       .classes["@mozilla.org/moz/jssubscript-loader;1"]
       .getService(Components.interfaces.mozIJSSubScriptLoader)
-      .loadSubScript(process_url);
-
+      .loadSubScript(process_url + "?" + new Date().getTime(), scope);
   } catch(e) {
     message = e.fileName + ":" + e.lineNumber + " " + e.toString();
     Components.reportError(message);
@@ -62,64 +71,59 @@ function start_tanasinn(tanasinn_class, data)
   return true;
 }
 
-function resume_tanasinn(tanasinn_class, data)
+function terminate_tanasinn()
 {
-  var io_service = Components
-        .classes["@mozilla.org/network/io-service;1"]
-        .getService(Components.interfaces.nsIIOService);
-
-  // reserve 'resource://tanasinn'
-  io_service.getProtocolHandler("resource")
-    .QueryInterface(Components.interfaces.nsIResProtocolHandler)
-    .setSubstitution("tanasinn", uri)
-
-  tanasinn_class.getService(Components.interfaces.nsISupports)
-    .wrappedJSObject
-    .notify("event/enabled");
+  Components
+    .classes["@mozilla.org/observer-service;1"]
+    .getService(Components.interfaces.nsIObserverService)
+    .notifyObservers(null, "command/terminate-tanasinn", null);
 }
 
 function startup(data, reason) 
 {
-  var tanasinn_class = Components
-    .classes["@zuse.jp/tanasinn/process;1"];
-
-  if (tanasinn_class) {
-    return resume_tanasinn(tanasinn_class, data);
+  try {
+    return start_tanasinn(data);
+  } catch (e) {
+    message = e.fileName + ":" + e.lineNumber + " " + e.toString();
+    Components.reportError(message);
+    return false;
   }
-  return start_tanasinn(tanasinn_class, data);
 }
 
 function shutdown(data, reason) 
 {
-  var process = Components.classes['@zuse.jp/tanasinn/process;1']
-        .getService(Components.interfaces.nsISupports)
-        .wrappedJSObject,
-      io_service = Components
-        .classes["@mozilla.org/network/io-service;1"]
-        .getService(Components.interfaces.nsIIOService);
+  var io_service;
 
-  process.notify("event/disabled");
-  process.uninitialize();
-
-  io_service.getProtocolHandler("resource")
-    .QueryInterface(Components.interfaces.nsIResProtocolHandler)
-    .setSubstitution("tanasinn", null);
-
-  process.notify("event/shutdown");
-
-  process.destroy();
-  process.clear();
-
+  try {
+    terminate_tanasinn();
+  } catch (e) {
+    message = e.fileName + ":" + e.lineNumber + " " + e.toString();
+    Components.reportError(message);
+    return false;
+  }
   return true;
 }
 
 function install(data, reason) 
 {
+  try {
+  } catch (e) {
+    message = e.fileName + ":" + e.lineNumber + " " + e.toString();
+    Components.reportError(message);
+    return false;
+  }
   return true;
 }
 
 function uninstall(data, reason) 
 {
+  try {
+    terminate_tanasinn();
+  } catch (e) {
+    message = e.fileName + ":" + e.lineNumber + " " + e.toString();
+    Components.reportError(message);
+    return false;
+  }
   return true;
 }
 

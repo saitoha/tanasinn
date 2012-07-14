@@ -64,27 +64,20 @@ try {
      */
     function getTanasinnProcess() 
     {
-      var contractID, process_class, current_file, file, process;
+      var current_file,
+          file,
+          scope = {};
 
-      contractID = "@zuse.jp/tanasinn/process;1";
-      process_class = Components
-        .classes[contractID]
-      if (!process_class) {
-        current_file = Components.stack
-          .filename
-          .split(" -> ").pop()
-          .split("?").shift();
-        file = current_file + "/../../tanasinn/modules/common/process.js?" + new Date().getTime();
-        Components
-          .classes["@mozilla.org/moz/jssubscript-loader;1"]
-          .getService(Components.interfaces.mozIJSSubScriptLoader)
-          .loadSubScript(file);
-        process_class = Components.classes[contractID]
-      }
-      process = process_class
-        .getService(Components.interfaces.nsISupports)
-        .wrappedJSObject;
-      return process;
+      current_file = Components.stack
+        .filename
+        .split(" -> ").pop()
+        .split("?").shift();
+      file = current_file + "/../../tanasinn/modules/common/process.js?" + new Date().getTime();
+      Components
+        .classes["@mozilla.org/moz/jssubscript-loader;1"]
+        .getService(Components.interfaces.mozIJSSubScriptLoader)
+        .loadSubScript(file, scope);
+      return scope.g_process;
     }
     process = getTanasinnProcess();
     
@@ -94,7 +87,11 @@ try {
 
       desktops = process.notify("get/desktop-from-window", window);
       if (desktops) {
-        desktop = desktops.filter(function(desktop) desktop)[0];
+        desktop = desktops.filter(
+          function(desktop)
+          {
+            return desktop;
+          })[0];
         if (desktop) {
           return desktop;
         }
@@ -109,7 +106,7 @@ try {
      */
     commands.addUserCommand(["tanasinnlaunch", "tla[unch]"], 
       "Show tanasinn's Launcher.", 
-      function (args) 
+      function tanasinnLaunch(args) 
       { 
         getDesktop().notify("command/show-launcher");
       }
@@ -120,7 +117,7 @@ try {
      */
     commands.addUserCommand(["tanasinnstart", "tstart"], 
       "Run a operating system command on tanasinn.", 
-      function (args) 
+      function tanasinnStart(args) 
       { 
         getDesktop().notify("command/start-session", args.string);
       },
@@ -137,7 +134,7 @@ try {
      */
     commands.addUserCommand(["tanasinncommand", "tcommand"], 
       "Run a tanasinn command on active tanasinn sessions.", 
-      function (args) 
+      function sendCommand(args) 
       { 
         getDesktop().notify("command/send-command", args.string);
       },
@@ -153,7 +150,7 @@ try {
      */
     commands.addUserCommand(["tanasinnsendkeys", "tsend"], 
       "Send keys to tanasinn.", 
-      function (args) 
+      function send_keys(args) 
       { 
         getDesktop().notify("command/send-keys", args.string);
       },
@@ -170,7 +167,7 @@ try {
      */
     var default_func = editor.editFileExternally;
 
-    editor.editFileExternally = function (path) 
+    editor.editFileExternally = function editFileExternally(path) 
     {
       var editor_command, viewsource_command, desktop, complete, command, thread;
 
@@ -217,3 +214,4 @@ try {
   liberator.echoerr(message);
 }
 
+// EOF

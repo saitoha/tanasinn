@@ -50,15 +50,7 @@ Contextmenu.definition = {
       listener: {
         type: "popuphidden", 
         context: this,
-        handler: function onpopuphidden(event) 
-        {
-          var target = event.explicitOriginalTarget;
-
-          if ("tanasinn_contextmenu" === target.id) {
-            this.sendMessage("command/focus");
-            target.parentNode.removeChild(target);
-          }
-        },
+        handler: this.onpopuphidden,
       } ,
     }),
 
@@ -85,50 +77,73 @@ Contextmenu.definition = {
   function uninstall(broker) 
   {
     // unregister DOM listener.
-    this.onrightbuttondown.enabled = false;
+    this.onRightClick.enabled = false;
   },
 
   "[subscribe('variable-changed/contextmenu.handle_right_click_insted_of_oncontextmenu'), pnp]":
   function onFlagChanged(value) 
   {
-    this.onrightbuttondown.enabled = value;
+    this.onRightClick.enabled = value;
   },
 
-  "[listen('click', '#tanasinn_content')]":
-  function onrightbuttondown(event) 
+  /** detect right click */
+  "[listen('mouseup', '#tanasinn_content')]":
+  function onRightClick(event) 
   {
-    if (2 === event.button) {
+    if (2 === event.button) { // right click
       this.show(event);
     }
   },
 
+  /** "popuphidden" event handler */
+  onpopuphidden: function onpopuphidden(event) 
+  {
+    var target = event.explicitOriginalTarget;
+
+    if ("tanasinn_contextmenu" === target.id) {
+      this.sendMessage("command/focus");
+      target.parentNode.removeChild(target);
+    }
+  },
+
+  /** "contextmenu" (right click or ctrl + click) event handler */
   "[listen('contextmenu', '#tanasinn_content'), pnp]":
   function oncontextmenu(event) 
   {
+    // suppress default action (hide default contextmenu)
     event.stopPropagation();
     event.preventDefault();
+
     if (!this.handle_right_click_insted_of_oncontextmenu) {
       this.show(event);
     }
   },
 
+  /** show contextmenu */
   show: function show(event) 
   {
-    var entries;
-
-    entries = this.sendMessage("get/contextmenu-entries")
-      .filter(function(entry) entry);
+    // get contextmenu entries
+    var entries = this.sendMessage("get/contextmenu-entries")
+      .filter(
+        function filterFunc(entry)
+        {
+          return entry;
+        }),
+        template;
 
     if (0 === entries.length) {
       return;
     }
 
-    this._entries = entries;
-    var {tanasinn_contextmenu} 
-      = this.request("command/construct-chrome", this.template);
-    tanasinn_contextmenu.openPopupAtScreen(event.screenX, event.screenY, true);
+    template = this.template;
+    template.childNodes = entries; // appendChild
+
+    // construct them
+    this.request("command/construct-chrome", template)
+      .tanasinn_contextmenu
+      .openPopupAtScreen(event.screenX, event.screenY, true);
   },
-};
+}; // Contextmenu
 
 /**
  * @fn main
@@ -139,6 +154,5 @@ function main(broker)
 {
   new Contextmenu(broker);
 }
-
 
 // EOF
