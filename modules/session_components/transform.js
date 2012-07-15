@@ -337,7 +337,7 @@ Transform.definition = {
         <version>0.1.0</version>
     </plugin>,
 
-  "[persistable] enabled_when_startup": true,
+  "[persistable] enabled_when_startup": false,
 
   _matrix: null,
   _element: null,
