@@ -44,40 +44,98 @@ ReverseWrap.definition = {
     </module>,
 
   "[persistable] enabled_when_startup": true,
+  "[persistable] default_value": false,
 
-  /** Activate auto-wrap feature.
+  _mode: null,
+
+  /** installs itself. 
+   *  @param {Broker} broker A Broker object.
+   */
+  "[install]":
+  function install(broker) 
+  {
+    this._mode = this.default_value;
+    this.reset();
+  },
+
+  /** Uninstalls itself.
+   *  @param {Broker} broker A broker object.
+   */
+  "[uninstall]":
+  function uninstall(broker) 
+  {
+    this._mode = null;
+  },
+
+  /** Activate reverse-auto-wrap feature.
    */
   "[subscribe('sequence/decset/45'), pnp]":
   function activate() 
   { 
-    var broker = this._broker;
+    this._mode = false;
 
     // Reverse-wraparound Mode
-    broker.notify("command/enable-reverse-wraparound");
+    this.sendMessage("command/enable-reverse-wraparound");
+
     coUtils.Debug.reportMessage(
       _("DECSET 45 - Reverse-wraparound Mode was set."));
   },
 
-  /** Deactivate reverse auto-wrap feature.
+  /** Deactivate reverse reverse-auto-wrap feature.
    */
   "[subscribe('sequence/decrst/45'), pnp]":
   function deactivate() 
   {
-    var broker = this._broker;
+    this._mode = false;
 
     // No Reverse-wraparound Mode
-    broker.notify("command/disable-reverse-wraparound");
+    this.sendMessage("command/disable-reverse-wraparound");
+
     coUtils.Debug.reportMessage(
       _("DECRST 45 - Reverse-wraparound Mode was reset."));
   },
 
-  /** Deactivate reverse auto-wrap feature.
+  /** handle terminal reset event.
    */
   "[subscribe('command/{soft | hard}-terminal-reset'), pnp]":
   function reset() 
   {
-    this.deactivate();
+    if (this.default_value) {
+      this.activate();
+    } else {
+      this.deactivate();
+    }
   },
+
+  /**
+   * Serialize snd persist current state.
+   */
+  "[subscribe('@command/backup'), type('Object -> Undefined'), pnp]": 
+  function backup(context) 
+  {
+    // serialize this plugin object.
+    context[this.id] = {
+      mode: this._mode,
+    };
+  },
+
+  /**
+   * Deserialize snd restore stored state.
+   */
+  "[subscribe('@command/restore'), type('Object -> Undefined'), pnp]": 
+  function restore(context) 
+  {
+    var data;
+
+    data = context[this.id];
+    if (data) {
+      this._mode = data.mode;
+    } else {
+      coUtils.Debug.reportWarning(
+        _("Cannot restore last state of renderer: data not found."));
+    }
+  },
+
 
 }; // class ReverseWrap
 
@@ -91,4 +149,4 @@ function main(broker)
   new ReverseWrap(broker);
 }
 
-
+// EOF

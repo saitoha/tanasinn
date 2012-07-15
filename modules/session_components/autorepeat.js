@@ -95,17 +95,39 @@ AutoRepeat.definition = {
 
 
   "[persistable] enabled_when_startup": true,
+  "[persistable] default_value": true,
+
+  _mode: null,
+
+  /** installs itself. 
+   *  @param {Broker} broker A Broker object.
+   */
+  "[install]":
+  function install(broker) 
+  {
+    this._mode = this.default_value;
+    this.reset();
+  },
+
+  /** Uninstalls itself.
+   *  @param {Broker} broker A broker object.
+   */
+  "[uninstall]":
+  function uninstall(broker) 
+  {
+    this._mode = null;
+  },
 
   /** Activate auto-repeat feature.
    */
   "[subscribe('sequence/decset/8'), pnp]":
   function activate() 
   { 
-    // Auto-repeat Keys (DECARM)
-    var broker = this._broker;
+    this._mode = true;
 
+    // Auto-repeat Keys (DECARM)
     // enable auto repeat.
-    broker.notify("command/change-auto-repeat-mode", true);
+    this.sendMessage("command/change-auto-repeat-mode", true);
     coUtils.Debug.reportMessage(
       _("DECSET - DECARM (Auto-repeat Keys) is set."));
   },
@@ -115,14 +137,56 @@ AutoRepeat.definition = {
   "[subscribe('sequence/decrst/8'), pnp]":
   function deactivate() 
   {
-    // Auto-repeat Keys (DECARM)
-    var broker = this._broker;
+    this._mode = false;
 
+    // Auto-repeat Keys (DECARM)
     // enable auto repeat.
-    broker.notify("command/change-auto-repeat-mode", false);
+    this.sendMessage("command/change-auto-repeat-mode", false);
     coUtils.Debug.reportMessage(
       _("DECRST - DECARM (Auto-repeat Keys) is reset."));
   },
+
+  /** handle terminal reset event.
+   */
+  "[subscribe('command/{soft | hard}-terminal-reset'), pnp]":
+  function reset() 
+  {
+    if (this.default_value) {
+      this.activate();
+    } else {
+      this.deactivate();
+    }
+  },
+
+  /**
+   * Serialize snd persist current state.
+   */
+  "[subscribe('@command/backup'), type('Object -> Undefined'), pnp]": 
+  function backup(context) 
+  {
+    // serialize this plugin object.
+    context[this.id] = {
+      mode: this._mode,
+    };
+  },
+
+  /**
+   * Deserialize snd restore stored state.
+   */
+  "[subscribe('@command/restore'), type('Object -> Undefined'), pnp]": 
+  function restore(context) 
+  {
+    var data;
+
+    data = context[this.id];
+    if (data) {
+      this._mode = data.mode;
+    } else {
+      coUtils.Debug.reportWarning(
+        _("Cannot restore last state of renderer: data not found."));
+    }
+  },
+
 
 }; // class AutoRepeat
 
@@ -136,4 +200,4 @@ function main(broker)
   new AutoRepeat(broker);
 }
 
-
+// EOF

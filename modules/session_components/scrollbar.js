@@ -22,11 +22,135 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+/**
+ * @class ScrollbarMode
+ */
+var ScrollbarMode = new Class().extends(Plugin);
+ScrollbarMode.definition = {
+
+  get id()
+    "scrollbar_mode",
+
+  get info()
+    <module>
+        <name>{_("Scrollbar Mode")}</name>
+        <version>0.1</version>
+        <description>{
+          _("Switch show/hide scrollbar.")
+        }</description>
+    </module>,
+
+  "[persistable] enabled_when_startup": true,
+  "[persistable] default_value": true,
+
+  _mode: null,
+
+  /** installs itself. 
+   *  @param {Broker} broker A Broker object.
+   */
+  "[install]":
+  function install(broker) 
+  {
+    this._mode = this.default_value;
+  },
+
+  /** Uninstalls itself.
+   *  @param {Broker} broker A broker object.
+   */
+  "[uninstall]":
+  function uninstall(broker) 
+  {
+    this._mode = null;
+  },
+
+
+  /** Show Scrollbar (rxvt)
+   */
+  "[subscribe('sequence/decset/30'), pnp]":
+  function activate() 
+  { 
+    this._mode = true;
+
+    // Show Scrollbar (rxvt)
+    this.sendMessage("command/scrollbar-show");
+
+    coUtils.Debug.reportMessage(
+      _("DECSET 30 - Show scrollbar feature (rxvt) is set."));
+
+  },
+
+  /** Deactivate auto-repeat feature
+   */
+  "[subscribe('sequence/decrst/30'), pnp]":
+  function deactivate() 
+  {
+    this._mode = false;
+
+    this.sendMessage("command/scrollbar-hide");
+
+    coUtils.Debug.reportMessage(
+      _("DECRST 30 - Show-scrollbar feature (rxvt) is reset."));
+
+  },
+
+  /** on hard / soft reset
+   */
+  "[subscribe('command/{soft | hard}-terminal-reset'), pnp]":
+  function reset(broker) 
+  {
+    if (this.default_value) {
+      this.activate();
+    } else {
+      this.deactivate();
+    }
+  },
+
+  /**
+   * Serialize snd persist current state.
+   */
+  "[subscribe('@command/backup'), type('Object -> Undefined'), pnp]": 
+  function backup(context) 
+  {
+    // serialize this plugin object.
+    context[this.id] = {
+      mode: this._mode,
+    };
+  },
+
+  /**
+   * Deserialize snd restore stored state.
+   */
+  "[subscribe('@command/restore'), type('Object -> Undefined'), pnp]": 
+  function restore(context) 
+  {
+    var data = context[this.id];
+
+    if (data) {
+      this._mode = data.mode;
+    } else {
+      coUtils.Debug.reportWarning(
+        _("Cannot restore last state of renderer: data not found."));
+    }
+  },
+
+}; // class ScrollbarMode
+
+/**
+ * @fn main
+ * @brief Module entry point.
+ * @param {Broker} broker The Broker object.
+ */
+function main(broker) 
+{
+  new ANMSwitch(broker);
+}
+
+// EOF
 /** 
  * @class Scrollbar
  * @brief Shows scrollbar interface.
  */
-let Scrollbar = new Class().extends(Plugin);
+var Scrollbar = new Class().extends(Plugin);
 Scrollbar.definition = {
 
   get id()
@@ -113,18 +237,18 @@ Scrollbar.definition = {
     }),
 
   /** Installs itself.
-   * @param {Session} session A session object.
+   * @param {Broker} broker A Broker object.
    */
   "[install]":
-  function install(session) 
+  function install(broker) 
   {
-    let {
+    var {
       tanasinn_scrollbar_overlay,
       tanasinn_scrollbar,
       tanasinn_scrollbar_before,
       tanasinn_scrollbar_current,
       tanasinn_scrollbar_after,
-    } = session.uniget("command/construct-chrome", this.template);
+    } = this.request("command/construct-chrome", this.template);
 
     this._scrollbar_overlay = tanasinn_scrollbar_overlay;
     this._scrollbar = tanasinn_scrollbar;
@@ -142,10 +266,10 @@ Scrollbar.definition = {
   },
 
   /** Unnstalls itself. 
-   * @param {Session} session A session object.
+   * @param {Broker} broker A Broker object.
    */
   "[uninstall]":
-  function uninstall(session) 
+  function uninstall(broker) 
   {
     this.onScrollPositionChanged.enabled = false;
     this.ondblclick.enabled = false;
@@ -179,25 +303,28 @@ Scrollbar.definition = {
 
   changePosition: function changePosition(position) 
   {
-    let min_position = 0;
-    let max_position = parseInt(this._before.flex) 
+    var min_position, max_position;
+
+    min_position = 0;
+    max_position = parseInt(this._before.flex) 
                      + parseInt(this._after.flex);
     position = Math.max(position, min_position);
     position = Math.min(position, max_position);
     if (position != this._before.flex) {
-      let session = this._broker;
-      session.notify("command/set-scroll-position", position);
-      session.notify("command/draw");
+      this.sendMessage("command/set-scroll-position", position);
+      this.sendMessage("command/draw");
     }
   },
 
   "[subscribe('event/scroll-position-changed'), enabled]":
   function onScrollPositionChanged(scroll_info) 
   {
-    let scrollbar = this._scrollbar;
-    let before = this._before;
-    let current = this._current;
-    let after = this._after;
+    var scrollbar, before, current, after;
+
+    scrollbar = this._scrollbar;
+    before = this._before;
+    current = this._current;
+    after = this._after;
     if (0 == scrollbar.style.opacity) {
       scrollbar.style.opacity = this.active_opacity;
     }
@@ -226,10 +353,11 @@ Scrollbar.definition = {
   "[listen('mouseover', '#tanasinn_scrollbar')]":
   function onmouseover(event) 
   {
-    let scrollbar = this._scrollbar;
+    var scrollbar;
+
+    scrollbar = this._scrollbar;
     if (0 == this._after.flex && 0 == scrollbar.style.opacity) {
-      let session = this._broker;
-      session.notify("command/update-scroll-information");
+      this.sendMessage("command/update-scroll-information");
       scrollbar.style.opacity = this.active_opacity;
     }
   },
@@ -237,7 +365,9 @@ Scrollbar.definition = {
   "[listen('mouseout', '#tanasinn_scrollbar')]":
   function onmouseout(event) 
   {
-    let scrollbar = this._scrollbar;
+    var scrollbar;
+
+    scrollbar = this._scrollbar;
     if (0 == this._after.flex && 
         !this._dragging && 
         0.00 != scrollbar.style.opacity) {
@@ -248,23 +378,31 @@ Scrollbar.definition = {
   "[listen('dragstart', '#tanasinn_scrollbar_current')]":
   function ondragstart(dom_event) 
   {
-    let session = this._broker;
+    var initial_y, dom_document, radius, height, before_flex,
+        current_flex, after_flex, flex, flex_per_height,
+        initial_view_top;
+
     this._dragging = true;
     dom_event.stopPropagation();
     //dom_event.preventDefault();
-    let initial_y = dom_event.screenY;
-    let dom_document = session.document; // managed by DOM
-    let radius = this.inner_width + this.border_width;
-    let height = this._scrollbar.boxObject.height - radius * 2;
-    let before_flex = parseInt(this._before.flex);
-    let current_flex = parseInt(this._current.flex);
-    let after_flex = parseInt(this._after.flex);
-    let flex = before_flex + current_flex + after_flex;
-    let flex_per_height = flex / height;
-    let initial_view_top = before_flex;
+
+    initial_y = dom_event.screenY;
+    dom_document = this.request("get/root-element").ownerDocument; // managed by DOM
+
+    radius = this.inner_width + this.border_width;
+    height = this._scrollbar.boxObject.height - radius * 2;
+
+    before_flex = parseInt(this._before.flex);
+    current_flex = parseInt(this._current.flex);
+
+    after_flex = parseInt(this._after.flex);
+
+    flex = before_flex + current_flex + after_flex;
+    flex_per_height = flex / height;
+    initial_view_top = before_flex;
 
     // register mousemove listener.
-    session.notify(
+    this.sendMessage(
       "command/add-domlistener", 
       {
         type: "mousemove",
@@ -273,14 +411,16 @@ Scrollbar.definition = {
         context: this,
         handler: function onmousemove(event) 
         {
-          let delta = event.screenY - initial_y;
-          let position = Math.round(initial_view_top + flex * delta / height);
+          var delta, position;
+
+          delta = event.screenY - initial_y;
+          position = Math.round(initial_view_top + flex * delta / height);
           this.changePosition(position);
         },
       });
 
     // register mouseup listener.
-    session.notify(
+    this.sendMessage(
       "command/add-domlistener", 
       {
         type: "mouseup",
@@ -291,8 +431,8 @@ Scrollbar.definition = {
         handler: function onmouseup(event) 
         {
           this._dragging = false;
-          session.notify("command/remove-domlistener", "_DRAGGING");
-          if (0 == this._after.flex) {
+          this.sendMessage("command/remove-domlistener", "_DRAGGING");
+          if (0 === this._after.flex) {
             this._scrollbar.style.opacity = 0.00;
           }
         },
@@ -313,5 +453,7 @@ Scrollbar.definition = {
 function main(broker) 
 {
   new Scrollbar(broker);
+  new ScrollbarMode(broker);
 }
 
+// EOF 

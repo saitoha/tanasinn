@@ -26,7 +26,7 @@
 /**
  * @class CharsetCompleter
  */
-let CharsetCompleter = new Class().extends(Component);
+var CharsetCompleter = new Class().extends(Component);
 CharsetCompleter.definition = {
 
   get id()
@@ -41,51 +41,64 @@ CharsetCompleter.definition = {
   "[completer('charset'), enabled]":
   function complete(context)
   {
-    let broker = this._broker;
-    let { source, option, completers } = context;
-    let match = source.match(/^(\s*)([$_\-@a-zA-Z\.]*)(\s?)/);
+    var broker, match, all, space, name, next,
+        next_completer_info, next_completer, option,
+        components, lower_source, candidates;
+
+    broker = this._broker;
+    var { source, option, completers } = context;
+
+    match = source.match(/^(\s*)([$_\-@a-zA-Z\.]*)(\s?)/);
+
     if (null === match) {
-      broker.notify("event/answer-completion", null);
+      this.sendMessage("event/answer-completion", null);
       return;
     }
-    let [all, space, name, next] = match;
+    [all, space, name, next] = match;
     if (next) {
-      let next_completer_info = completers.shift();
+      next_completer_info = completers.shift();
       if (next_completer_info) {
-        let [next_completer, option] = next_completer_info.split("/");
-        broker.notify("command/query-completion/" + next_completer, {
+        [next_completer, option] = next_completer_info.split("/");
+        this.sendMessage("command/query-completion/" + next_completer, {
           source: source.substr(all.length),
           option: option,
           completers: completers,
         });
       } else {
-        broker.notify("event/answer-completion", null);
+        this.sendMessage("event/answer-completion", null);
       }
       return;
     }
-    let components = broker.notify("get/" + option);
-    let lower_source = source.toLowerCase();
-    let candidates = [
+    components = this.sendMessage("get/" + option);
+
+    lower_source = source.toLowerCase();
+
+    candidates = [
       {
         key: component.charset, 
         value: component.title
       } for ([, component] in Iterator(components)) 
-        if (-1 != component.charset.toLowerCase().indexOf(lower_source))
+        if (-1 !== component.charset.toLowerCase().indexOf(lower_source))
     ];
-    if (0 == candidates.length) {
-      broker.notify("event/answer-completion", null);
-      return;
-    }
-    let autocomplete_result = {
-      type: "text",
-      query: source, 
-      data: candidates.map(function(candidate) ({
-        name: candidate.key,
-        value: String(candidate.value),
-      })),
-    };
-    broker.notify("event/answer-completion", autocomplete_result);
-    return;
+
+    if (0 === candidates.length) {
+      this.sendMessage("event/answer-completion", null);
+    } else {
+      this.sendMessage(
+        "event/answer-completion",
+        {
+          type: "text",
+          query: source, 
+          data: candidates.map(
+            function(candidate) 
+            {
+              return {
+                name: candidate.key,
+                value: String(candidate.value),
+              };
+            }),
+        });
+      }
   },
 
 };

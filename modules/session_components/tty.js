@@ -89,7 +89,7 @@
 /**
  * @concept ControllerConcept
  */
-let ControllerConcept = new Concept();
+var ControllerConcept = new Concept();
 ControllerConcept.definition = {
 
   get id()
@@ -109,7 +109,7 @@ ControllerConcept.definition = {
 /**
  * @concept IOManagerConcept
  */
-let IOManagerConcept = new Concept();
+var IOManagerConcept = new Concept();
 IOManagerConcept.definition = {
 
   get id()
@@ -129,7 +129,7 @@ IOManagerConcept.definition = {
 /**
  * @class Controller
  */
-let Controller = new Class().extends(Component).requires("Controller");
+var Controller = new Class().extends(Component).requires("Controller");
 Controller.definition = {
 
   get id()
@@ -168,10 +168,12 @@ Controller.definition = {
     this._input.close();
     this._output.close();
     this._pump.cancel(0);
+
     this._input = null;
     this._output = null;
     this._pump = null;
     this._screen = null;
+
     coUtils.Debug.reportMessage(
       _("Resources in Controller have been cleared."));
   },
@@ -184,10 +186,10 @@ Controller.definition = {
   "[subscribe('event/screen-size-changed')]": 
   function resize(size) 
   {
-    let {column, row} = size; 
-    let width = coUtils.Text.base64encode(column);
-    let height = coUtils.Text.base64encode(row);
-    let command = coUtils.Text.format("resize %s %s\n", width, height);
+    var width = coUtils.Text.base64encode(size.column),
+        height = coUtils.Text.base64encode(size.row),
+        command = coUtils.Text.format("resize %s %s\n", width, height);
+
     this.post(command);
   },
 
@@ -210,22 +212,25 @@ Controller.definition = {
   "[subscribe('event/{control & io}-socket-ready'), enabled]":
   function connect(control_port, io_port) 
   {
-    let broker = this._broker;
+    var self = this,
+        timer;
+
     this._start(control_port);
 
-    let self = this;
-    let timer = coUtils.Timer.setInterval(function() {
-      if (self.post) {
-        self.post("beacon\n");
-      } else {
-        timer.cancel();
-        self = null;
-        timer = null;
-      }
-    }, self.beacon_interval);
+    timer = coUtils.Timer.setInterval(
+      function timerProc()
+      {
+        if (self.post) {
+          self.post("beacon\n");
+        } else {
+          timer.cancel();
+          self = null;
+          timer = null;
+        }
+      }, self.beacon_interval);
 
     this._send_initial_data(io_port);
-    broker.notify("initialized/tty", this);
+    this.sendMessage("initialized/tty", this);
   },
 
 // nsIRequestObserver implementation.
@@ -255,11 +260,10 @@ Controller.definition = {
    */
   onStopRequest: function onStopRequest(request, context, status)
   {
-    let broker = this._broker;
     coUtils.Debug.reportMessage(
       _("Controller::onStopRequest called. status: %s."), status);
     try {
-      broker.stop();
+      this._broker.stop();
     } catch (e) { 
       coUtils.Debug.reportError(e)
     }
@@ -290,25 +294,29 @@ Controller.definition = {
   onDataAvailable: 
   function onDataAvailable(request, context, input, offset, count) 
   {
-    let data = context.readBytes(count);
-    let command_list = data.split(/[\n\r]/);
+    var data, command_list, command, argv, operation, 
+        arg, screen, output, answer, reply;
+
+    data = context.readBytes(count);
+    command_list = data.split(/[\n\r]/);
+
     command_list.pop();
     try {
       do {
-        let command = command_list.shift();
-        let argv = command.split(" ");
-        let operation = argv.shift();
-        if ("request" == operation) {
-          let arg = coUtils.Text.base64decode(argv.shift());
-          let screen = this._screen;
-          let output = this._output;
-          if ("column" == arg) {
-            let answer = coUtils.Text.base64encode(screen.width)
-            let reply = coUtils.Text.format("answer %s\n", answer);
+        command = command_list.shift();
+        argv = command.split(" ");
+        operation = argv.shift();
+        if ("request" === operation) {
+          arg = coUtils.Text.base64decode(argv.shift());
+          screen = this._screen;
+          output = this._output;
+          if ("column" === arg) {
+            answer = coUtils.Text.base64encode(screen.width)
+            reply = coUtils.Text.format("answer %s\n", answer);
             output.write(reply, reply.length);
-          } else if ("rows" == arg) {
-            let answer = coUtils.Text.base64encode(screen.height)
-            let reply = coUtils.Text.format("answer %s\n", answer);
+          } else if ("rows" === arg) {
+            answer = coUtils.Text.base64encode(screen.height)
+            reply = coUtils.Text.format("answer %s\n", answer);
             output.write(reply, reply.length);
           }
         } else {
@@ -323,11 +331,14 @@ Controller.definition = {
 // private
   _send_initial_data: function _send_initial_data(io_port)
   {
-    let broker = this._broker;
-    let sessiondb_path = coUtils.File
+    var broker = this._broker,
+        sessiondb_path, 
+        message;
+
+    sessiondb_path = coUtils.File
       .getFileLeafFromVirtualPath(broker.runtime_path + "/sessions.txt").path;
-    let os = coUtils.Runtime.os;
-    if ("WINNT" == os) {
+
+    if ("WINNT" === coUtils.Runtime.os) {
       sessiondb_path 
         = sessiondb_path
           .replace(/\\/g, "/")
@@ -336,11 +347,13 @@ Controller.definition = {
             function() "/cygdrive/" + arguments[1].toLowerCase())
           ;
     }
-    let message = [
+
+    message = [
       io_port, 
       broker.request_id,
       coUtils.Text.base64encode(sessiondb_path),
     ].join(" ");
+
     this.post(message);
 
     this.flowControl.enabled = true;
@@ -354,13 +367,18 @@ Controller.definition = {
    */
   _start: function _start(control_port) 
   {
-    let transport = Components
+    var transport, istream, ostream, scriptable_input_stream, pump;
+
+    transport = Components
       .classes["@mozilla.org/network/socket-transport-service;1"]
       .getService(Components.interfaces.nsISocketTransportService)
-      .createTransport(null, 0, "127.0.0.1", control_port, null);
-    let istream = transport.openInputStream(0, 128, 1);
-    let ostream = transport.openOutputStream(0, 128, 1);
-    let scriptable_input_stream = Components
+      .createTransport(null, 0, "127.0.0.1", control_port, null),
+
+    istream = transport.openInputStream(0, 128, 1);
+
+    ostream = transport.openOutputStream(0, 128, 1);
+
+    scriptable_input_stream = Components
       .classes["@mozilla.org/scriptableinputstream;1"]
       .createInstance(Components.interfaces.nsIScriptableInputStream);
     scriptable_input_stream.init(istream);
@@ -368,7 +386,7 @@ Controller.definition = {
     this._input = scriptable_input_stream;
     this._output = ostream;
 
-    let pump = Components
+    pump = Components
       .classes["@mozilla.org/network/input-stream-pump;1"]
       .createInstance(Components.interfaces.nsIInputStreamPump);
     pump.init(istream, -1, -1, 0, 0, false);
@@ -382,7 +400,8 @@ Controller.definition = {
 /**
  * @class IOManager
  */
-let IOManager = new Class().extends(Component).requires("IOManager");
+var IOManager = new Class().extends(Component)
+                           .requires("IOManager");
 IOManager.definition = {
 
   get id()
@@ -402,15 +421,19 @@ IOManager.definition = {
   "[subscribe('@event/broker-started'), enabled]":
   function onLoad(broker) 
   {
-    let socket = Components
+    var socket;
+
+    socket = Components
       .classes["@mozilla.org/network/server-socket;1"]
       .createInstance(Components.interfaces.nsIServerSocket);
+
     socket.init(/* port */ -1, /* loop back */ true, /* connection count */ 1);
     socket.asyncListen(this);
     this._socket = socket;
     this._port = socket.port;
     this.send.enabled = true;
-    broker.notify("event/io-socket-ready", socket.port);
+
+    this.sendMessage("event/io-socket-ready", socket.port);
   },
 
   /**
@@ -442,7 +465,7 @@ IOManager.definition = {
     
     if (this._output) {
       this._output.write(data, data.length);
-      this._output.flush();
+      //this._output.flush();
     }
     
   },
@@ -490,23 +513,25 @@ IOManager.definition = {
   onSocketAccepted: 
   function onSocketAccepted(serv, transport) 
   {
+    var ostream, istream, binary_stream, stream_pump;
+
     try {
       coUtils.Debug.reportMessage(
         _("Connected to ttydriver. port: %d"), 
         serv.port);
-      let ostream = transport.openOutputStream(0, this.incoming_buffer_size, 1);
-      let istream = transport.openInputStream(0, this.outgoing_buffer_size, 1);
+      ostream = transport.openOutputStream(0, this.incoming_buffer_size, 1);
+      istream = transport.openInputStream(0, this.outgoing_buffer_size, 1);
       coUtils.Debug.reportMessage(_("Started to observe incoming data."));
 
       // handle given stream as binary stream (null characters are allowed).
-      let binary_stream = Components
+      binary_stream = Components
         .classes["@mozilla.org/binaryinputstream;1"]
         .createInstance(Components.interfaces.nsIBinaryInputStream);
       binary_stream.setInputStream(istream);
       this._binary_stream = binary_stream;
 
       // make "stream pump" object and listen it.
-      let stream_pump = Components
+      stream_pump = Components
         . classes["@mozilla.org/network/input-stream-pump;1"]
         .createInstance(Components.interfaces.nsIInputStreamPump);
       stream_pump.init(istream, -1, -1, 0, 0, false);
@@ -566,11 +591,10 @@ IOManager.definition = {
    */
   onStopRequest: function onStopRequest(request, context, status)
   {
-    let broker = this._broker;
     coUtils.Debug.reportMessage(
       _("onStopRequest called. status: %s"), status);
     try {
-      broker.stop();
+      this._broker.stop();
     } catch (e) { 
       coUtils.Debug.reportError(e)
     }
@@ -601,18 +625,22 @@ IOManager.definition = {
   onDataAvailable: 
   function onDataAvailable(request, context, input, offset, count)
   {
-    let data = context.readBytes(count);
-    let broker = this._broker;
-  //  coUtils.Timer.setTimeout(function() {
-    broker.notify("event/data-arrived", data);
-  //  }, 30);
+    var data;
+
+    data = context.readBytes(count);
+
+    //coUtils.Timer.setTimeout(
+    //  function timerProc()
+    //  {
+    this.sendMessage("event/data-arrived", data);
+    //  }, 30, this);
   },
 }
 
 /**
  * @class ExternalDriver
  */
-let ExternalDriver = new Class().extends(Component);
+var ExternalDriver = new Class().extends(Component);
 ExternalDriver.definition = {
 
   get id()
@@ -629,28 +657,29 @@ ExternalDriver.definition = {
   /** Kill target process. */
   kill: function kill(pid) 
   {
-    let kill_path;
-    let args;
-    if ("WINNT" == coUtils.Runtime.os) {
-      let broker = this._broker;
-      let cygwin_root = broker.cygwin_root;
+    var kill_path, args, broker, cygwin_root, external_process, 
+        runtime, process;
+
+    if ("WINNT" === coUtils.Runtime.os) {
+      broker = this._broker;
+      cygwin_root = broker.cygwin_root;
       kill_path = broker.cygwin_root + "\\bin\\run.exe";
       args = [ "/bin/kill", "-9", String(pid) ];
     } else { // Darwin, Linux or FreeBSD
-      let external_process = this._external_process;
+      external_process = this._external_process;
       //if (external_process.isRunning)
       //  external_process.kill();
       kill_path = "/bin/kill";
       args = [ "-9", String(pid) ];
     }
     // create new localfile object.
-    let runtime = Components
+    runtime = Components
       .classes["@mozilla.org/file/local;1"]
       .createInstance(Components.interfaces.nsILocalFile);
     runtime.initWithPath(kill_path);
 
     // create new process object.
-    let process = Components
+    process = Components
       .classes["@mozilla.org/process/util;1"]
       .createInstance(Components.interfaces.nsIProcess);
     process.init(runtime);
@@ -663,7 +692,7 @@ ExternalDriver.definition = {
         args.join(" "));
       return false;
     }
-    return 0 == process.exitValue;
+    return 0 === process.exitValue;
   },
 
   /**
@@ -676,17 +705,19 @@ ExternalDriver.definition = {
   "[subscribe('command/start-ttydriver-process'), enabled]": 
   function start(connection_port) 
   {
-    let broker = this._broker;
-    let executable_path;
-    let os = coUtils.Runtime.os;
-    if ("WINNT" == os) {
-      let cygwin_root = broker.cygwin_root;
+    var broker, executable_path, cygwin_root, runtime, 
+        external_process, script_absolute_path, args, python_path;
+
+    broker = this._broker;
+
+    if ("WINNT" === coUtils.Runtime.os) {
+      cygwin_root = broker.cygwin_root;
       executable_path = cygwin_root + "\\bin\\run.exe";
     } else {
-      executable_path = broker.uniget("get/python-path");
+      executable_path = this.request("get/python-path");
     }
     // create new localfile object.
-    let runtime = Components
+    runtime = Components
       .classes["@mozilla.org/file/local;1"]
       .createInstance(Components.interfaces.nsILocalFile);
     runtime.initWithPath(executable_path);
@@ -694,21 +725,20 @@ ExternalDriver.definition = {
       throw coUtils.Debug.Exeption(_("Could not launch python: file not found."));
     }
     // create new process object.
-    let external_process = Components
+    external_process = Components
       .classes["@mozilla.org/process/util;1"]
       .createInstance(Components.interfaces.nsIProcess);
     external_process.init(runtime);
     this._external_process = external_process;
 
     // get script absolute path from abstract path.
-    let script_absolute_path
-      = coUtils.File
-        .getFileLeafFromVirtualPath(this.script_path)
-        .path;
+    script_absolute_path = coUtils.File
+      .getFileLeafFromVirtualPath(this.script_path)
+      .path;
 
-    let args;
-    let python_path = broker.uniget("get/python-path");
-    if ("WINNT" == coUtils.Runtime.os) { // Windows
+    python_path = this.request("get/python-path");
+
+    if ("WINNT" === coUtils.Runtime.os) { // Windows
       args = [
         "/bin/sh", "-wait", "-l", "-c",
         coUtils.Text.format(
@@ -725,22 +755,23 @@ ExternalDriver.definition = {
     coUtils.Debug.reportMessage(
       _("TTY Server started. arguments: [%s]."), args.join(", "));
 
-    broker.notify("initialized/externaldriver", this);
+    this.sendMessage("initialized/externaldriver", this);
 
   },
 
   observe: function observe(subject, topic, data)
   {
-    let broker = this._broker;
-    broker.stop();
+    this._broker.stop();
   },
 
   /** Kills handling process if it was alive. */
   "[subscribe('@event/broker-stopping'), enabled]":
   function stop() 
   {
+    var external_process;
+
     try {
-      let external_process = this._external_process;
+      external_process = this._external_process;
       //if (external_process.isRunning)
       //  external_process.kill();
     } catch (e) {
@@ -761,7 +792,7 @@ ExternalDriver.definition = {
  *  @class SocketTeletypeService
  *  @brief Listen mouse input events and send them to TTY device.
  */
-let SocketTeletypeService = new Class().extends(Plugin);
+var SocketTeletypeService = new Class().extends(Plugin);
 SocketTeletypeService.definition = {
 
   get id()
@@ -783,26 +814,38 @@ SocketTeletypeService.definition = {
   "[install]":
   function install(broker) 
   {
-    this.osc97.enabled = true;
-    if (0 == broker.command.indexOf("&")) {
-      let request_id = broker.command.substr(1);
-      let record = coUtils.Sessions.get(request_id);
-      broker.notify("event/control-socket-ready", Number(record.control_port));
+    var request_id, record, backup_data_path, context, file, socket;
+
+    if (0 === broker.command.indexOf("&")) {
+
+      request_id = broker.command.substr(1);
+      record = coUtils.Sessions.get(request_id);
+
+      this.sendMessage("event/control-socket-ready", Number(record.control_port));
+
       this._pid = Number(record.pid);
+
       coUtils.Sessions.remove(broker, request_id);
       coUtils.Sessions.update();
-      let backup_data_path = broker.runtime_path + "/persist/" + request_id + ".txt";
+
+      backup_data_path = broker.runtime_path + "/persist/" + request_id + ".txt";
+
       if (coUtils.File.exists(backup_data_path)) {
-        let context = JSON.parse(coUtils.IO.readFromFile(backup_data_path, "utf-8"));
-        broker.notify("command/restore", context);
-        let file = coUtils.File.getFileLeafFromVirtualPath(backup_data_path);
+
+        context = JSON.parse(coUtils.IO.readFromFile(backup_data_path, "utf-8"));
+
+        this.sendMessage("command/restore", context);
+
+        file = coUtils.File.getFileLeafFromVirtualPath(backup_data_path);
+
         if (file.exists()) {
           file.remove(false)
         }
-        broker.notify("command/draw", true);
+        this.onFirstFocus.enabled = true;
       }
     } else {
-      let socket = Components
+
+      socket = Components
         .classes["@mozilla.org/network/server-socket;1"]
         .createInstance(Components.interfaces.nsIServerSocket);
   
@@ -812,17 +855,13 @@ SocketTeletypeService.definition = {
       this._socket = socket;
   
       // nsIProcess::runAsync.
-      broker.notify("command/start-ttydriver-process", socket.port); 
+      this.sendMessage("command/start-ttydriver-process", socket.port); 
     }
-    this.detach.enabled = true;
   },
 
   "[uninstall]":
   function uninstall(broker)
   {
-    this.detach.enabled = false;
-    this.osc97.enabled = false;
-
     if (this._socket) {
       this._socket.close();
     }
@@ -835,18 +874,27 @@ SocketTeletypeService.definition = {
 
   },
 
-  "[subscribe('@command/detach')]": 
-  function detach()
+  "[subscribe('@command/focus')]": 
+  function onFirstFocus()
   {
-    let context = {};
-    let broker = this._broker;
-    broker.notify("command/backup", context);
-    let path = broker.runtime_path + "/persist/" + broker.request_id + ".txt";
-    let data = JSON.stringify(context);
-    coUtils.IO.writeToFile(path, data);
+    this.sendMessage("command/draw", true);
   },
 
-  "[subscribe('sequence/osc/97')]":
+  "[subscribe('@command/detach'), pnp]": 
+  function detach()
+  {
+    var context = {},
+        path = this._broker.runtime_path + "/persist/" + this._broker.request_id + ".txt",
+        data;
+
+    this.sendMessage("command/backup", context);
+    data = JSON.stringify(context);
+
+    coUtils.IO.writeToFile(path, data);
+    this._broker.stop();
+  },
+
+  "[subscribe('sequence/osc/97'), pnp]":
   function osc97(ttyname) 
   {
     this._ttyname = ttyname;
@@ -854,22 +902,28 @@ SocketTeletypeService.definition = {
 
   onSocketAccepted: function onSocketAccepted(serv, transport) 
   {
-    let broker = this._broker;
-    let istream = transport.openInputStream(0, 1024, 1);
-    let ostream = transport.openOutputStream(0, 1024, 1);
-    let message = [broker.command, broker.term]
-      .map(function(value) coUtils.Text.base64encode(value))
-      .join(" ")
+    var broker = this._broker,
+        istream = transport.openInputStream(0, 1024, 1),
+        ostream = transport.openOutputStream(0, 1024, 1),
+        message = [broker.command, broker.term]
+          .map(function(value) coUtils.Text.base64encode(value))
+          .join(" "),
+        scriptable_input_stream, // nsIScriptableInputStream
+        pump;                    // nsIInputStreamPump
+
     ostream.write(message, message.length);
-    let scriptable_input_stream = Components
+
+    scriptable_input_stream = Components
       .classes["@mozilla.org/scriptableinputstream;1"]
       .createInstance(Components.interfaces.nsIScriptableInputStream);
     scriptable_input_stream.init(istream);
-    let pump = Components
+
+    pump = Components
       .classes["@mozilla.org/network/input-stream-pump;1"]
       .createInstance(Components.interfaces.nsIInputStreamPump);
     pump.init(istream, -1, -1, 0, 0, false);
     pump.asyncRead(this, null);
+
     this._pump = pump;
     this._input = scriptable_input_stream;
   },
@@ -922,15 +976,16 @@ SocketTeletypeService.definition = {
   onDataAvailable: 
   function onDataAvailable(request, context, input, offset, count) 
   {
-    let broker = this._broker;
-    let data = this._input.readBytes(count);
+    var data;
+
+    data = this._input.readBytes(count);
     this._input.close();
     this._input = null;
-    let [control_port, pid, ttyname, termattr] = data.split(":");
-    broker.notify("event/termattr-changed", termattr);
+    var [control_port, pid, ttyname, termattr] = data.split(":");
+    this.sendMessage("event/termattr-changed", termattr);
     this._pid = Number(pid);
     if (control_port) {
-      broker.notify("event/control-socket-ready", Number(control_port));
+      this.sendMessage("event/control-socket-ready", Number(control_port));
     } else {
       coUtils.Debug.reportError(_("Failed to connect to ttydriver."));
     }
@@ -963,4 +1018,4 @@ function main(broker)
   new SocketTeletypeService(broker);
 }
 
-
+// EOF

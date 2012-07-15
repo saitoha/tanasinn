@@ -46,7 +46,7 @@
  * @Trait Environment
  *
  */
-let Environment = new Trait();
+var Environment = new Trait();
 Environment.definition = {
 
 // public properties
@@ -54,33 +54,43 @@ Environment.definition = {
   /** @property bin_path */
   get bin_path()
   {
-    let broker = this._broker;
+    var broker;
+
+    broker = this._broker;
     return broker.bin_path;
   },
 
   set bin_path(value)
   {
-    let broker = this._broker;
+    var broker;
+
+    broker = this._broker;
     broker.bin_path = value;
   },
 
   /** @property runtime_path */
   get runtime_path()
   {
-    let broker = this._broker;
+    var broker;
+
+    broker = this._broker;
     return broker.runtime_path;
   },
 
   set runtime_path(value)
   {
-    let broker = this._broker;
+    var broker;
+
+    broker = this._broker;
     broker.runtime_path = value;
   },
 
   /** @property search_path */
   get search_path()
   {
-    let broker = this._broker;
+    var broker;
+
+    broker = this._broker;
     return this._search_path || [ 
       "modules/shared_components",
       "modules/session_components",
@@ -105,33 +115,52 @@ Environment.definition = {
 /**
  * @trait RouteKeyEvents
  */
-let RouteKeyEvents = new Trait()
+var RouteKeyEvents = new Trait()
 RouteKeyEvents.definition = {
 
+  /** route double shift hotkey evnet */
   "[subscribe('event/hotkey-double-shift'), enabled]":
   function onDoubleShift() 
   {
     this.notify("event/hotkey-double-shift", this);
   },
 
+  /** route ctrl key down evnet */
+  "[subscribe('event/ctrl-key-down'), enabled]":
+  function onCtrlKeyDown() 
+  {
+    this.notify("event/ctrl-key-down", this);
+  },
+
+  /** route ctrl key up evnet */
+  "[subscribe('event/ctrl-key-up'), enabled]":
+  function onCtrlKeyUp() 
+  {
+    this.notify("event/ctrl-key-up", this);
+  },
+
+  /** route alt key down evnet */
   "[subscribe('event/alt-key-down'), enabled]":
   function onAltKeyDown() 
   {
     this.notify("event/alt-key-down", this);
   },
 
+  /** route alt key up evnet */
   "[subscribe('event/alt-key-up'), enabled]":
   function onAltKeyUp() 
   {
     this.notify("event/alt-key-up", this);
   },
 
+  /** route shift key down evnet */
   "[subscribe('event/shift-key-down'), enabled]":
   function onShiftKeyDown() 
   {
     this.notify("event/shift-key-down", this);
   },
 
+  /** route shift key up evnet */
   "[subscribe('event/shift-key-up'), enabled]":
   function onShiftKeyUp() 
   {
@@ -187,11 +216,6 @@ Session.definition = {
   "[persistable] default_term": "xterm",
   "[persistable] debug_flag": false,
 
-  get python_path()
-  {
-    return this.request("get/python-path");
-  },
-
   _stopped: false,
   _request_id: null,
 
@@ -222,20 +246,40 @@ Session.definition = {
   /** Create terminal UI and start tty session. */ 
   initializeWithRequest: function initializeWithRequest(request) 
   {
+    var id;
+
+    id = coUtils.Uuid.generate().toString();
+
     // register getter topic.
-    this.subscribe("get/bin-path", 
+    this.subscribe(
+      "get/bin-path", 
       function()
       {
         return this.request("get/bin-path");
-      }, this);
-    this.subscribe("get/python-path", 
+      }, this, id);
+
+    this.subscribe(
+      "get/python-path", 
       function()
       { 
         return this.request("get/python-path");
-      }, this);
+      }, this, id);
 
-    this._request_id = coUtils.Uuid.generate().toString();
+    this.subscribe(
+      "get/root-element", 
+      function()
+      { 
+        return request.parent;
+      }, this, id);
 
+    this.subscribe(
+      "get/runtime-path", 
+      function()
+      { 
+        return request.parent;
+      }, this, id);
+
+    this._request_id = id;
     this._window = request.parent.ownerDocument.defaultView;
     this._root_element = request.parent;
     this._command = request.command;
@@ -245,11 +289,15 @@ Session.definition = {
 
     this.notify("command/load-settings", this.profile);
     this.notify("event/broker-started", this);
-    coUtils.Timer.setTimeout(function() {
-      this.notify("command/focus");
-      this.notify("command/focus");
-      this.notify("command/focus");
-    }, this.initial_focus_delay, this);
+    
+    coUtils.Timer.setTimeout(
+      function timerProc()
+      {
+        this.notify("command/focus");
+        this.notify("command/focus");
+        this.notify("command/focus");
+      }, this.initial_focus_delay, this);
+
     return this;
   },
 
@@ -260,6 +308,7 @@ Session.definition = {
     if (this._stopped) {
       return;
     }
+    this.unsubscribe(this._request_id);
     this._stopped = true
     this.stop.enabled = false;
     this.notify("event/broker-stopping", this);
@@ -267,16 +316,15 @@ Session.definition = {
     this.clear();
     this._root_element = null;
     this._window = null;
-    /*
-    if (coUtils.Runtime.app_name.match(/tanasinn/)) {
-      this.window.close(); // close window
 
-      let application = Components
-        .classes["@mozilla.org/fuel/application;1"]
-        .getService(Components.interfaces.fuelIApplication);
-      application.quit();
-    }
-    */
+    //if (coUtils.Runtime.app_name.match(/tanasinn/)) {
+    //  this.window.close(); // close window
+
+    //  var application = Components
+    //    .classes["@mozilla.org/fuel/application;1"]
+    //    .getService(Components.interfaces.fuelIApplication);
+    //  application.quit();
+    //}
   },
 
 }; // class Session
@@ -297,4 +345,4 @@ function main(desktop)
     });
 }
 
-
+// EOF

@@ -26,7 +26,7 @@
  *  @class EncoderMenu
  *  @brief Makes it enable to switch terminal encoding by context menu.
  */
-let EncoderMenu = new Class().extends(Plugin).depends("encoder");
+var EncoderMenu = new Class().extends(Plugin).depends("encoder");
 EncoderMenu.definition = {
 
   get id()
@@ -45,43 +45,44 @@ EncoderMenu.definition = {
 
   /** Installs itself. */
   "[install]":
-  function install(session) 
+  function install(broker) 
   {
-    this.onContextMenu.enabled = true;
   },
 
   /** Uninstalls itself. */
   "[uninstall]":
-  function uninstall(session) 
+  function uninstall(broker) 
   {
-    this.onContextMenu.enabled = false;
   },
 
-  "[subscribe('get/contextmenu-entries')]": 
+  "[subscribe('get/contextmenu-entries'), pnp]": 
   function onContextMenu() 
   {
-    let encoder = this.dependency["encoder"];
-    let encoder_scheme = encoder.scheme;
-    let session = this._broker;
+    var encoder, encoder_scheme;
+
+    encoder = this.dependency["encoder"];
+    encoder_scheme = encoder.scheme;
+
     return {
         tagName: "menu",
         label: _("Encoder"),
         childNodes: {
           tagName: "menupopup",
-          childNodes: session.notify("get/encoders").map(
+          childNodes: this.sendMessage("get/encoders").map(
             function getEncoders(information) 
             {
+              var charset = information.charset;
+
               return {
                 tagName: "menuitem",
                 type: "radio",
                 label: information.title,
                 name: "encoding",
-                checked: encoder_scheme == information.charset,
+                checked: encoder_scheme === information.charset,
                 listener: {
                   type: "command", 
                   context: this,
-                  handler: let (encoding = information.charset)
-                    function() this._onChange(encoding),
+                  handler: function() this._onChange(charset),
                 }
               };
             }, this),
@@ -94,8 +95,7 @@ EncoderMenu.definition = {
   _onChange: function(scheme) 
   {
     this._scheme = scheme;
-    let session = this._broker;
-    session.notify("change/encoder", scheme)
+    this.sendMessage("change/encoder", scheme)
   },
 };
 
@@ -103,7 +103,7 @@ EncoderMenu.definition = {
  *  @class DecoderMenu
  *  @brief Makes it enable to switch terminal decoder by context menu.
  */
-let DecoderMenu = new Class().extends(Plugin).depends("decoder");
+var DecoderMenu = new Class().extends(Plugin).depends("decoder");
 DecoderMenu.definition = {
 
   get id()
@@ -123,46 +123,51 @@ DecoderMenu.definition = {
 
   /** Installs itself. */
   "[install]":
-  function install(session) 
+  function install(broker) 
   {
-    this.onContextMenu.enabled = true;
   },
 
   /** Uninstalls itself. */
   "[uninstall]":
-  function uninstall(session) 
+  function uninstall(broker) 
   {
-    this.onContextMenu.enabled = false;
   },
 
-  "[subscribe('get/contextmenu-entries')]":
+  "[subscribe('get/contextmenu-entries'), pnp]":
   function onContextMenu() 
   {
-    let session = this._broker;
-    let decoder = this.dependency["decoder"];
-    let decoders = session.notify("get/decoders");
-    let decoder_scheme = decoder.scheme;
+    var decoder, decoders, decoder_scheme;
+
+    decoder = this.dependency["decoder"];
+    decoders = this.sendMessage("get/decoders");
+    decoder_scheme = decoder.scheme;
+
     return {
       tagName: "menu",
       label: _("Decoder"),
       childNodes: {
         tagName: "menupopup",
-        childNodes: decoders.map(function(information) 
-        { 
-          return {
-            tagName: "menuitem",
-            type: "radio",
-            label: information.title,
-            name: "encoding",
-            checked: decoder_scheme == information.charset,
-            listener: {
-              type: "command", 
-              context: this,
-              handler: let (encoding = information.charset)
-                function() this._onChange(encoding),
+        childNodes: decoders.map(
+          function mapFunc(information) 
+          { 
+            var charset = information.charset;
+
+            return {
+              tagName: "menuitem",
+              type: "radio",
+              label: information.title,
+              name: "encoding",
+              checked: decoder_scheme === charset,
+              listener: {
+                type: "command", 
+                context: this,
+                handler: function onEncodingChanged() 
+                {
+                  return this._onChange(charset);
+                },
+              }
             }
-          }
-        }, this),
+          }, this),
       }
     };
   },
@@ -172,11 +177,11 @@ DecoderMenu.definition = {
   _onChange: function(scheme) 
   {
     this._scheme = scheme;
-    let broker = this._broker;
-    broker.notify("change/decoder", scheme)
+    this.sendMessage("change/decoder", scheme)
+
     // send control + l 
     if (this.send_ff_when_encoding_changed) {
-      broker.notify("command/send-to-tty", String.fromCharCode(0x0c)); 
+      this.sendMessage("command/send-to-tty", String.fromCharCode(0x0c)); 
     }
   }
 };
@@ -193,4 +198,4 @@ function main(broker)
   new DecoderMenu(broker)
 }
 
-
+// EOF

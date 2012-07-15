@@ -45,18 +45,18 @@ Protection.definition = {
 
   "[persistable] enabled_when_startup": true,
 
+  _screen: null, // reference of screen object
+
   "[install]":
   function install()
   {
     this._screen = this.dependency["screen"];
-    this._attr = this._screen.cursor.attr;
   },
 
   "[uninstall]":
   function uninstall()
   {
     this._screen = null;
-    this._attr = null;
   },
 
   /**
@@ -95,9 +95,7 @@ Protection.definition = {
   function DECSCA(n) 
   { // Device Status Report
 
-    var attr;
-
-    attr = this._attr;;
+    var attr = this._screen.cursor.attr;
 
     switch (n || 0) {
 
@@ -321,4 +319,4 @@ function main(broker)
   new Protection(broker);
 }
 
-
+// EOF

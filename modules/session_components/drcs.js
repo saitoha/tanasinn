@@ -68,6 +68,7 @@ DRCSBuffer.definition = {
   function onSCSG0(mode) 
   {
     this._g0 = mode;
+    this._map = this._map || {};
     if (this._map[mode]) {
       this.sendMessage("event/drcs-state-changed/g0", this._map[mode]);
     } else {
@@ -79,6 +80,7 @@ DRCSBuffer.definition = {
   function onSCSG1(mode) 
   {
     this._g1 = mode;
+    this._map = this._map || {};
     if (this._map[mode]) {
       this.sendMessage("event/drcs-state-changed/g1", this._map[mode]);
     } else {
@@ -88,8 +90,10 @@ DRCSBuffer.definition = {
 
   getDRCSInfo: function getDRCSInfo(code) 
   {
+    var drcs_info;
+
     if (this._map) {
-      let drcs_info = this._map[this._g0];
+      drcs_info = this._map[this._g0];
       if (drcs_info) {
         if (drcs_info.start_code <= code && code < drcs_info.end_code) {
           return drcs_info;
@@ -102,13 +106,15 @@ DRCSBuffer.definition = {
   "[subscribe('sequence/dcs'), pnp]":
   function onDCS(data) 
   {
-    //               Pfn    Pcn      Pe      Pcmw     Pw      Pt      Pcmh     Pcss    Dscs
-    let pattern = /^([01]);([0-9]+);([012]);([0-9]+);([012]);([012]);([0-9]+);([01])\{\s*([0-~])([\?-~\/;\n\r]+)$/;
-    let match = data.match(pattern);
+    var pattern, match, canvas;
+
+    //           Pfn    Pcn      Pe      Pcmw     Pw      Pt      Pcmh     Pcss    Dscs
+    pattern = /^([01]);([0-9]+);([012]);([0-9]+);([012]);([012]);([0-9]+);([01])\{\s*([0-~])([\?-~\/;\n\r]+)$/;
+    match = data.match(pattern);
     if (null === match) {
       return;
     }
-    let [
+    var [
       all,
       pfn,   // Pfn Font number
       pcn,   // Starting Character
@@ -156,26 +162,26 @@ DRCSBuffer.definition = {
       value //
     ] = match;
 
-    let char_width = {
+    var char_width = {
       0: 2 == pw ? 9: 15,
       2: 5,
       3: 6,
       4: 7,
     } [pcmw] || Number(pcmw);
-    let char_height = {
+    var char_height = {
       2: 10,
       3: 10,
       4: 10,
     } [pcmw] || Number(pcmh) || 12;
-    let charset_size = 0 == pcss ? 94: 96;
-    let full_cell = pt == 2;
-    let start_code = 0 == pcss ? ({ // 94 character set.
+    var charset_size = 0 == pcss ? 94: 96;
+    var full_cell = pt == 2;
+    var start_code = 0 == pcss ? ({ // 94 character set.
       0: 0x21,
     }  [pcn] || Number(pcn) + 0x21) 
     : 1 == pcss ? Number(pcn) + 0x20 // 96 character set.
     : Number(pcn) + 0x20; // unicode character set.
 
-    let canvas;
+    this._map = this._map || {};
     if (this._map[dscs]) {
       canvas = this._map[dscs].drcs_canvas;
     } else {
@@ -189,23 +195,23 @@ DRCSBuffer.definition = {
 
     canvas.width = char_width * 96;
     canvas.height = char_height * 1;
-    let pointer_x = start_code * char_width;
+    var pointer_x = start_code * char_width;
 
     function char2sixelbits(c) {
       return ("0000000" + (c.charCodeAt(0) - "?".charCodeAt(0)).toString(2))
         .substr(-6).split("").reverse();
     }
 
-    let imagedata = canvas
+    var imagedata = canvas
       .getContext("2d")
       .getImageData(0, 0, canvas.width, canvas.height);
-    let sixels = value.split(";");
-    for (let [n, glyph] in Iterator(sixels)) {
-      for (let [h, line] in Iterator(glyph.split("/"))) {
-        for (let [x, c] in Iterator(line.replace(/[^\?-~]/g, "").split(""))) {
-          let bits = char2sixelbits(c); 
-          for (let [y, bit] in Iterator(bits)) {
-            let position = (((y + h * 6) * 96 + n) * char_width + x) * 4;
+    var sixels = value.split(";");
+    for (var [n, glyph] in Iterator(sixels)) {
+      for (var [h, line] in Iterator(glyph.split("/"))) {
+        for (var [x, c] in Iterator(line.replace(/[^\?-~]/g, "").split(""))) {
+          var bits = char2sixelbits(c); 
+          for (var [y, bit] in Iterator(bits)) {
+            var position = (((y + h * 6) * 96 + n) * char_width + x) * 4;
             if ("1" == bit) {
               imagedata.data[position + 0] = 255;
               imagedata.data[position + 1] = 255;
@@ -243,3 +249,4 @@ function main(broker)
   new DRCSBuffer(broker);
 }
 
+// EOF

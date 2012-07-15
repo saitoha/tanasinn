@@ -25,7 +25,7 @@
 /**
  *  @class Paste
  */
-let Paste = new Class().extends(Plugin);
+var Paste = new Class().extends(Plugin);
 Paste.definition = {
 
   get id()
@@ -44,26 +44,24 @@ Paste.definition = {
 
   _bracketed_paste_mode: false,
 
-  /** Install itself. */
+  /** Installs itself. 
+   *  @param {Broker} broker A Broker object.
+   */
   "[install]":
   function install(broker) 
   {
-    this.paste.enabled = true;
-    this.onContextMenu.enabled = true;
-    this.onBracketedPasteModeChanged.enabled = true;
   },
 
-  /** Uninstall itself. */
+  /** Uninstalls itself. 
+   *  @param {Broker} broker A Broker object.
+   */
   "[uninstall]":
   function uninstall(broker) 
   {
-    this.paste.enabled = false;
-    this.onContextMenu.enabled = false;
-    this.onBracketedPasteModeChanged.enabled = false;
   },
   
   /** Context menu handler. */
-  "[subscribe('get/contextmenu-entries')]": 
+  "[subscribe('get/contextmenu-entries'), pnp]": 
   function onContextMenu() 
   {
     return {
@@ -77,23 +75,29 @@ Paste.definition = {
     };
   },
 
-  /** */
-  "[command('paste'), nmap('<M-v>', '<C-S-V>'), _('Paste from clipboard.')]": 
+  /** paste the text from clipboard. */
+  "[command('paste'), nmap('<M-v>', '<C-S-V>'), _('Paste from clipboard.'), pnp]": 
   function paste() 
   {
-    let clipboard = Components
+    var clipboard, trans, str, str_length, text;
+
+    clipboard = Components
       .classes["@mozilla.org/widget/clipboard;1"]
       .getService(Components.interfaces.nsIClipboard)
-    let trans = Components
+
+    trans = Components
       .classes["@mozilla.org/widget/transferable;1"]
       .createInstance(Components.interfaces.nsITransferable);
+
     trans.addDataFlavor("text/unicode");
+
     clipboard.getData(trans, clipboard.kGlobalClipboard);
-	  let str = {};
-	  let str_length = {};
+	  str = {};
+	  str_length = {};
 	  trans.getTransferData("text/unicode", str, str_length);
+
     if (str.value && str_length.value) {
-      let text = str.value
+      text = str.value
         .QueryInterface(Components.interfaces.nsISupportsString)
         .data
         .substring(0, str_length.value / 2);
@@ -101,22 +105,23 @@ Paste.definition = {
       // sanitize text.
       text = text.replace(/[\x00-\x08\x0a-\x0c\x0e-\x1f]/g, "");
 
+      // Encodes the text message and send it to the tty device.
       if (true === this._bracketed_paste_mode) {
         // add bracket sequences.
-        text = "\x1b[200~" + text + "\x1b[201~";
+        this.sendMessage("command/send-sequence/csi");
+        this.sendMessage("command/send-to-tty", "200~");
+        this.sendMessage("command/input-text", text);
+        this.sendMessage("command/send-sequence/csi");
+        this.sendMessage("command/send-to-tty", "201~");
+      } else {
+        this.sendMessage("command/input-text", text);
       }
-
-      // Encodes the text message and send it to the tty device.
-      let broker = this._broker;
-      //broker.notify("command/flow-control", false);
-      broker.notify("command/input-text", text);
-      //broker.notify("command/flow-control", true);
     }
     return true; /* prevent default action */
   },
 
   /** Set/Reset bracketed paste mode. */
-  "[subscribe('command/change-bracketed-paste-mode')]":
+  "[subscribe('command/change-bracketed-paste-mode'), pnp]":
   function onBracketedPasteModeChanged(mode) 
   {
     this._bracketed_paste_mode = mode;
@@ -134,3 +139,4 @@ function main(broker)
   new Paste(broker);
 }
 
+// EOF

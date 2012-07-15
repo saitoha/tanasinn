@@ -28,7 +28,7 @@
  * messages:
  *
  */
-let BottomPanel = new Class().extends(Plugin)
+var BottomPanel = new Class().extends(Plugin)
                              .depends("renderer")
                              .depends("screen");
 BottomPanel.definition = {
@@ -47,8 +47,7 @@ BottomPanel.definition = {
     </plugin>,
 
   get template()
-    let (session = this._broker)
-    {
+    ({
       tagName: "stack",
       parentNode: "#tanasinn_panel_area",
       flex: 1,
@@ -70,28 +69,30 @@ BottomPanel.definition = {
             width: 0,
             listener: {
               type: "select",
-              handler: let (self = this) function(event) 
+              context: this,
+              handler: function(event) 
               {
-                let panel = event.target.selectedPanel;
-                let tab = this.selectedTab;
-                for (let [, tab] in Iterator(this.tabs.childNodes)) {
-                  tab.style.color = "#777";
-                  tab.style.weight = "normal";
+                var panel, tab, node, target;
+
+                target = event.target;
+
+                panel = target.selectedPanel;
+                tab = target.parentNode.selectedTab;
+
+                for ([, node] in Iterator(target.parentNode.tabs.childNodes)) {
+                  node.style.color = "#777";
+                  node.style.weight = "normal";
                 }
+
                 tab.style.color = "black";
                 tab.style.weight = "bold";
+
                 if (panel) {
-//                  session.notify("command/report-overlay-message", panel.id);
-                  session.notify("panel-selected/" + panel.id, panel);
+                  this.sendMessage("panel-selected/" + panel.id, panel);
                 }
               },
             },
-            style: <>
-              -moz-appearance: none;
-              overflow-x: hidden;
-              overflow-y: hidden;
-              border: 0px;
-            </>,
+            style: "-moz-appearance: none; overflow-x: hidden; overflow-y: hidden; border: 0px;",
             childNodes: [
               { 
                 tagName: "arrowscrollbox",
@@ -117,7 +118,7 @@ BottomPanel.definition = {
           }
         },
       ],
-    },
+    }),
 
   "[persistable] enabled_when_startup": true,
 
@@ -127,38 +128,34 @@ BottomPanel.definition = {
   _scrollbox: null,
 
   /** Installs itself 
-   *  @param {Session} session A session object.
+   *  @param {Broker} broker A Broker object.
    */
   "[install]":
-  function install(session) 
+  function install(broker) 
   {
-    let {
+    var {
       tanasinn_bottompanel, 
       tanasinn_tabbox, 
       tanasinn_arrowscrollbox,
-    } = session.uniget("command/construct-chrome", this.template);
+    } = this.request("command/construct-chrome", this.template);
+
     this._bottom_panel = tanasinn_bottompanel;
     this._tabbox = tanasinn_tabbox;
     this._scrollbox = tanasinn_arrowscrollbox;
-    this.select.enabled = true;
-    this.remove.enabled = true;
-    this.open.enabled = true;
-    this.close.enabled = true;
-    session.notify("initialized/" + this.id, this);
   },
 
   /** Uninstalls itself 
-   *  @param {Session} session A session object.
+   *  @param {Broker} broker A Broker object.
    */
   "[uninstall]":
-  function uninstall(session) 
+  function uninstall(broker) 
   {
-    this.select.enabled = false;
-    this.remove.enabled = false;
-    this.open.enabled = false;
-    this.close.enabled = false;
-    let target = this._bottom_panel;
-    target.parentNode.removeChild(target);
+    if (null !== this._bottom_panel) {
+      this._bottom_panel.parentNode.removeChild(this._bottom_panel);
+      this._bottom_panel = null;
+    }
+    this._scrollbox = null;
+    this._tabbox = null;
   },
 
   getElement: function getElement() 
@@ -191,33 +188,37 @@ BottomPanel.definition = {
    *   |               |             | bottom panel  |     is not
    *   +---------------+             +---------------+ <-- changed.
    */
-  "[command('openpanel'), _('Open bottom panel.')]":
+  "[command('openpanel'), _('Open bottom panel.'), pnp]":
   function open() 
   {
-    let bottomPanel = this._bottom_panel;
-    let renderer = this.dependency["renderer"];
-    let screen = this.dependency["screen"];
+    var bottom_panel, renderer, screen, line_height, 
+        row, max_screen_height, panel, diff;
 
-    let session = this._broker;
-    session.notify("get/panel-items", this);
+    bottom_panel = this._bottom_panel;
+    renderer = this.dependency["renderer"];
+    screen = this.dependency["screen"];
+
+    this.sendMessage("get/panel-items", this);
 
     // restricts bottom panel's height.
-    let line_height = renderer.line_height;
-    let row = screen.height;
-    let max_screen_height = Math.floor(line_height * row / 2);
-    for (let [, panel] in Iterator(this._tabbox.tabpanels.childNodes)) {
+    line_height = renderer.line_height;
+    row = screen.height;
+    max_screen_height = Math.floor(line_height * row / 2);
+
+    for ([, panel] in Iterator(this._tabbox.tabpanels.childNodes)) {
       if (panel.height > max_screen_height) {
         panel.height = max_screen_height;
       }
     }
 
     // open.
-    bottomPanel.setAttribute("collapsed", false);
+    bottom_panel.setAttribute("collapsed", false);
 
     // shrink screen's row.
-    let diff = Math.round(bottomPanel.boxObject.height / line_height);
-    if (0 != diff) {
-      session.notify("command/shrink-row", diff);
+    diff = Math.round(bottom_panel.boxObject.height / line_height);
+
+    if (0 !== diff) {
+      this.sendMessage("command/shrink-row", diff);
     }
   },
 
@@ -234,17 +235,20 @@ BottomPanel.definition = {
    *   | bottom panel  | height is   |               |     is not
    *   +---------------+ expanded.-> +---------------+ <-- changed.
    */
-  "[command('closepanel'), _('Close bottom panel')]":
+  "[command('closepanel'), _('Close bottom panel'), pnp]":
   function close() 
   {
-    let bottom_panel = this._bottom_panel;
-    let renderer = this.dependency["renderer"];
-    let line_height = renderer.line_height;
-    let diff = Math.floor(bottom_panel.boxObject.height / line_height);
+    var bottom_panel, renderer, line_height, diff;
+
+    bottom_panel = this._bottom_panel;
+    renderer = this.dependency["renderer"];
+    line_height = renderer.line_height;
+    diff = Math.floor(bottom_panel.boxObject.height / line_height);
+
     bottom_panel.setAttribute("collapsed", true);
-    if (0 != diff) {
-      let session = this._broker;
-      session.notify("command/expand-row", diff);
+
+    if (0 !== diff) {
+      this.sendMessage("command/expand-row", diff);
     }
   },
 
@@ -253,13 +257,18 @@ BottomPanel.definition = {
    */
   get panelHeight() 
   {
-    let samplePanel = this._tabbox.tabpanels.firstChild;
-    let result = samplePanel ? samplePanel.boxObject.height: 0;
+    var sample_panel, result;
+
+    sample_panel = this._tabbox.tabpanels.firstChild;
+    result = sample_panel ? sample_panel.boxObject.height: 0;
+
     return result;
   },
 
   set panelHeight(value) 
   {
+    var panel;
+
     for ([, panel] in Iterator(this._tabbox.tabpanels.childNodes)) {
       panel.height = value;
     }
@@ -271,6 +280,8 @@ BottomPanel.definition = {
    */
   alloc: function alloc(id, name) 
   {
+    var tanasinn_tab, tab_panel;
+
     // check duplicated allocation.
     this._panel_map = this._panel_map || {};
     if (this._panel_map[id]) {
@@ -278,8 +289,7 @@ BottomPanel.definition = {
         _("Specified id '%s' already exists."), id);
     }
 
-    let session = this._broker;
-    let tanasinn_tab = session.uniget(
+    tanasinn_tab = this.request(
       "command/construct-chrome", 
       {
         parentNode: "#tanasinn_tabbox_tabs",
@@ -301,7 +311,8 @@ BottomPanel.definition = {
           margin-right: -4px;
         </>,
       })[id];
-    let tab_panel = session.uniget(
+
+    tab_panel = this.request(
       "command/construct-chrome", 
       {
         parentNode: "#tanasinn_tabbox_tabpanels",
@@ -309,19 +320,22 @@ BottomPanel.definition = {
         id: id,
         orient: "vertical",
         height: 180,
-        style: <>
-            -moz-appearance: none;
-            background: transparent;
-        </>,
+        style: "-moz-appearance: none; background: transparent;",
       })[id];
+
     this._panel_map[id] = [tanasinn_tab, tab_panel];
+
     return tab_panel;
   },
 
   _selectTab: function _selectTab(tab) 
   {
+    var box_object;
+
     this._tabbox.selectedTab = tab; 
-    let box_object = this._scrollbox;
+
+    box_object = this._scrollbox;
+
     if (box_object.ensureElementIsVisible) {
       box_object.ensureElementIsVisible(tab);
     }
@@ -330,21 +344,26 @@ BottomPanel.definition = {
   /** Select specified panel.
    * @param {String} id A panel id.
    */ 
-  "[subscribe('command/select-panel')]":
+  "[subscribe('command/select-panel'), pnp]":
   function select(id) 
   {
+    var toggle, panel_map, tab;
+
     id = id.id || id;
-    let toggle = true;
+
+    toggle = true;
     if (id.match(/^\!/)) {
       toggle = false;
       id = id.substr(1);
     }
-    let session = this._broker;
-    session.notify("get/panel-items", this);
+
+    this.sendMessage("get/panel-items", this);
+
     this._panel_map = this._panel_map || {};
-    let panel_map = this._panel_map;
+    panel_map = this._panel_map;
+
     if (id in panel_map) { // Check if specified id was registered.
-      let [tab, ] = this._panel_map[id];
+      [tab, ] = this._panel_map[id];
       // toggle open/close state.
       if (true == this._bottom_panel.collapsed) {
         // Select specified tab and open the panel.
@@ -367,14 +386,18 @@ BottomPanel.definition = {
    * @param {String} id A panel id.
    * TODO: when it is removed, selected position is tilted.
    */ 
-  "[subscribe('command/remove-panel')]":
+  "[subscribe('command/remove-panel'), pnp]":
   function remove(id) 
   {
+    var panel_map, tab, tab_panel;
+
     id = id.id || id;
     this._panel_map = this._panel_map || {};
-    let panel_map = this._panel_map;
+
+    panel_map = this._panel_map;
+
     if (panel_map[id]) {
-      let [tab, tab_panel] = panel_map[id];
+      [tab, tab_panel] = panel_map[id];
       tab.parentNode.removeChild(tab);
       tab_panel.parentNode.removeChild(tab_panel);
       delete panel_map[id];
@@ -394,4 +417,4 @@ function main(broker)
 }
 
 
-
+// EOF

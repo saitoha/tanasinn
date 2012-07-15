@@ -25,7 +25,7 @@
 /**
  * @class Contextmenu
  */
-let Contextmenu = new Class().extends(Plugin);
+var Contextmenu = new Class().extends(Plugin);
 Contextmenu.definition = {
 
   get id()
@@ -42,23 +42,17 @@ Contextmenu.definition = {
     </plugin>,
 
   get template() 
-    let (entries = this._entries)
-    {
+    ({
       tagName: "menupopup",
       parentNode: "#tanasinn_center_area",
       id: "tanasinn_contextmenu",
-      childNodes: entries,
+      childNodes: this._entries,
       listener: {
         type: "popuphidden", 
-        handler: let (session = this._broker) function onpopuphidden(event) 
-        {
-          if (this.isEqualNode(event.target)) {
-            session.notify("command/focus");
-            this.parentNode.removeChild(this);
-          }
-        },
+        context: this,
+        handler: this.onpopuphidden,
       } ,
-    },
+    }),
 
   "[persistable] enabled_when_startup": true,
 
@@ -67,73 +61,89 @@ Contextmenu.definition = {
   _entries: null,
 
   /** Installs itself.
-   *  @param {Session} session A Session object.
+   *  @param {Broker} broker A Broker object.
    */
   "[install]": 
-  function install(session) 
+  function install(broker) 
   {
     // register DOM listener.
-    this.show.enabled = true;
     this.onFlagChanged(this.handle_right_click_insted_of_oncontextmenu);
-    this.onFlagChanged.enabled = true;
-    this.oncontextmenu.enabled = true;
   },
 
   /** Uninstalls itself.
-   *  @param {Session} session A Session object.
+   *  @param {Broker} broker A Broker object.
    */
   "[uninstall]":
-  function uninstall(session) 
+  function uninstall(broker) 
   {
     // unregister DOM listener.
-    this.show.enabled = false;
-    this.onFlagChanged.enabled = false;
-    this.onrightbuttondown.enabled = false;
-    this.oncontextmenu.enabled = false;
+    this.onRightClick.enabled = false;
   },
 
-  "[subscribe('variable-changed/contextmenu.handle_right_click_insted_of_oncontextmenu')]":
+  "[subscribe('variable-changed/contextmenu.handle_right_click_insted_of_oncontextmenu'), pnp]":
   function onFlagChanged(value) 
   {
-    this.onrightbuttondown.enabled = value;
-//    this.oncontextmenu.enabled = !value;
-//    this.disablecontextmenu.enabled = value;
+    this.onRightClick.enabled = value;
   },
 
-  "[listen('click', '#tanasinn_content')]":
-  function onrightbuttondown(event) 
+  /** detect right click */
+  "[listen('mouseup', '#tanasinn_content')]":
+  function onRightClick(event) 
   {
-    if (2 == event.button) {
+    if (2 === event.button) { // right click
       this.show(event);
     }
   },
 
-  "[listen('contextmenu', '#tanasinn_content')]":
+  /** "popuphidden" event handler */
+  onpopuphidden: function onpopuphidden(event) 
+  {
+    var target = event.explicitOriginalTarget;
+
+    if ("tanasinn_contextmenu" === target.id) {
+      this.sendMessage("command/focus");
+      target.parentNode.removeChild(target);
+    }
+  },
+
+  /** "contextmenu" (right click or ctrl + click) event handler */
+  "[listen('contextmenu', '#tanasinn_content'), pnp]":
   function oncontextmenu(event) 
   {
+    // suppress default action (hide default contextmenu)
     event.stopPropagation();
     event.preventDefault();
+
     if (!this.handle_right_click_insted_of_oncontextmenu) {
       this.show(event);
     }
   },
 
+  /** show contextmenu */
   show: function show(event) 
   {
-    let {screenX, screenY} = event;
-    let session = this._broker;
-    let entries = session
-      .notify("get/contextmenu-entries")
-      .filter(function(entry) entry);
-    if (0 == entries.length) {
+    // get contextmenu entries
+    var entries = this.sendMessage("get/contextmenu-entries")
+      .filter(
+        function filterFunc(entry)
+        {
+          return entry;
+        }),
+        template;
+
+    if (0 === entries.length) {
       return;
     }
-    this._entries = entries;
-    let {tanasinn_contextmenu} 
-      = session.uniget("command/construct-chrome", this.template);
-    tanasinn_contextmenu.openPopupAtScreen(screenX, screenY, true);
+
+    template = this.template;
+    template.childNodes = entries; // appendChild
+
+    // construct them
+    this.request("command/construct-chrome", template)
+      .tanasinn_contextmenu
+      .openPopupAtScreen(event.screenX, event.screenY, true);
   },
-};
+}; // Contextmenu
 
 /**
  * @fn main
@@ -145,5 +155,4 @@ function main(broker)
   new Contextmenu(broker);
 }
 
-
-
+// EOF

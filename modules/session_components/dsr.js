@@ -70,19 +70,19 @@
  * can respond through the bidirectional printer port.
  *
  */
-var DeviceStatusReport = new Class().extends(Plugin)
-                            .depends("cursorstate");
-DeviceStatusReport.definition = {
+var ANSIDeviceStatusReport = new Class().extends(Plugin)
+                                        .depends("cursorstate");
+ANSIDeviceStatusReport.definition = {
 
   get id()
     "device_status_report",
 
   get info()
     <module>
-        <name>{_("Device Status Report")}</name>
+        <name>{_("Device Status Report / ANSI")}</name>
         <version>0.1</version>
         <description>{
-          _("Send Device Status Report.")
+          _("Send Device Status Report, ANSI format.")
         }</description>
     </module>,
 
@@ -101,28 +101,28 @@ DeviceStatusReport.definition = {
   },
 
 
-  "[profile('vt100'), sequence('CSI %dn', 'CSI ?%dn')]":
+  "[profile('vt100'), sequence('CSI %dn')]":
   function DSR(n) 
   { // Device Status Report
 
-    var cursor, message;
-
-    cursor = this._cursor;;
+    var cursor = this._cursor,
+        message;
 
     switch (n) {
 
       // report terminal status
       case 5:
-        message = "\x1b[0n";
-        this.sendMessage("command/send-to-tty", message);
+        this.sendMessage("command/send-sequence/csi");
+        this.sendMessage("command/send-to-tty", "0n");
         break;
 
       // report cursor position
       case 6:
         message = coUtils.Text.format(
-          "\x1b[%d;%dR", 
+          "%d;%dR", 
           cursor.positionY + 1, 
           cursor.positionX + 1);
+        this.sendMessage("command/send-sequence/csi");
         this.sendMessage("command/send-to-tty", message);
         break;
 
@@ -132,15 +132,6 @@ DeviceStatusReport.definition = {
           arguments.callee.name, Array.slice(arguments));
     }
   },
-
-  "[profile('vt100'), sequence('CSI ?%dn')]":
-  function DECDSR() 
-  { // TODO: Device Status Report
-    coUtils.Debug.reportWarning(
-      _("%s sequence [%s] was ignored."),
-      arguments.callee.name, Array.slice(arguments));
-  },
-
 };
 
 /**
@@ -150,7 +141,7 @@ DeviceStatusReport.definition = {
  */
 function main(broker) 
 {
-  new DeviceStatusReport(broker);
+  new ANSIDeviceStatusReport(broker);
 }
 
-
+// EOF

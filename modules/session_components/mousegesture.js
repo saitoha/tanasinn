@@ -25,7 +25,7 @@
 /**
  *  @class MouseGesture
  */
-let MouseGesture = new Class().extends(Plugin);
+var MouseGesture = new Class().extends(Plugin);
 MouseGesture.definition = {
 
   get id()
@@ -43,48 +43,42 @@ MouseGesture.definition = {
   "[persistable] enabled_when_startup": true,
   "[persistable] magnify_delta_per_fontsize": 100,
 
-  /** Installs itself. */
+  /** Installs itself. 
+   *  @param {Broker} broker A Broker object.
+   */
   "[install]":
   function install(broker) 
   {
-    /** Start to listen gesture event. */
-    this.onMagnifyGesture.enabled = true;
-    this.onSwipeGesture.enabled = true;
-    this.onRotateGesture.enabled = true;
   },
 
-  /** Uninstalls itself. */
+  /** Uninstalls itself. 
+   *  @param {Broker} broker A Broker object.
+   */
   "[uninstall]":
   function uninstall(broker) 
   {
-    // unregister gesture event DOM listeners.
-    this.onMagnifyGesture.enabled = false;
-    this.onSwipeGesture.enabled = false;
-    this.onRotateGesture.enabled = false;
   },
 
   /** Swipe down evnet listener */
-  "[subscribe('event/swipe-gesture')]": 
+  "[subscribe('event/swipe-gesture'), pnp]": 
   function onSwipeGesture(direction) 
   {
-    let broker = this._broker
-
     switch (direction) {
 
       case coUtils.Constant.DIRECTION_LEFT:
-        broker.notify("command/input-expression-with-remapping", "<SwipeLeft>");
+        this.sendMessage("command/input-expression-with-remapping", "<SwipeLeft>");
         break;
 
       case coUtils.Constant.DIRECTION_RIGHT:
-        broker.notify("command/input-expression-with-remapping", "<SwipeRight>");
+        this.sendMessage("command/input-expression-with-remapping", "<SwipeRight>");
         break;
 
       case coUtils.Constant.DIRECTION_UP:
-        broker.notify("command/input-expression-with-remapping", "<SwipeUp>");
+        this.sendMessage("command/input-expression-with-remapping", "<SwipeUp>");
         break;
 
       case coUtils.Constant.DIRECTION_DOWN:
-        broker.notify("command/input-expression-with-remapping", "<SwipeDown>");
+        this.sendMessage("command/input-expression-with-remapping", "<SwipeDown>");
         break;
 
       default:
@@ -95,19 +89,17 @@ MouseGesture.definition = {
   },
 
    /** Swipe down evnet listener */
-  "[subscribe('event/rotate-gesture')]": 
+  "[subscribe('event/rotate-gesture'), pnp]": 
   function onRotateGesture(direction) 
   {
-    let broker = this._broker
-
     switch (direction) {
 
       case coUtils.Constant.ROTATION_CLOCKWISE:
-        broker.notify("command/input-expression-with-remapping", "<RotateRight>");
+        this.sendMessage("command/input-expression-with-remapping", "<RotateRight>");
         break;
 
       case coUtils.Constant.ROTATION_COUNTERCLOCKWISE:
-        broker.notify("command/input-expression-with-remapping", "<RotateLeft>");
+        this.sendMessage("command/input-expression-with-remapping", "<RotateLeft>");
         break;
 
       default:
@@ -118,24 +110,24 @@ MouseGesture.definition = {
   },
  
   /** handles magnify-gesture evnet. */
-  "[subscribe('event/magnify-gesture')]": 
+  "[subscribe('event/magnify-gesture'), pnp]": 
   function onMagnifyGesture(delta) 
   {
-    let broker = this._broker
-    let i;
-    let magnify_delta = this.magnify_delta_per_fontsize;
+    var i, count,
+        magnify_delta = this.magnify_delta_per_fontsize;
+
     if (delta > 0) {
-      let count = Math.ceil(delta / magnify_delta);
+      count = Math.ceil(delta / magnify_delta);
       for (i = 0; i < count; ++i) {
-        broker.notify("command/input-expression-with-remapping", "<PinchOpen>");
+        this.sendMessage("command/input-expression-with-remapping", "<PinchOpen>");
       }
     } else if (delta < 0) {
-      let count = Math.floor(- delta / magnify_delta);
+      count = Math.floor(- delta / magnify_delta);
       for (i = 0; i < count; ++i) {
-        broker.notify("command/input-expression-with-remapping", "<PinchClose>");
+        this.sendMessage("command/input-expression-with-remapping", "<PinchClose>");
       }
     }
-    broker.notify("command/draw");
+    this.sendMessage("command/draw");
   },
 
 }; // class MouseGesture
@@ -150,3 +142,4 @@ function main(broker)
   new MouseGesture(broker);
 }
 
+// EOF

@@ -22,11 +22,38 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+
+function apply_attribute(self, key)
+{
+  var getter, setter, path, body;
+
+  getter = self.__lookupGetter__(key);
+  setter = self.__lookupSetter__(key);
+
+  path = self.id + "." + key;
+
+  if (!getter && !setter) {
+
+    body = self[key];
+    delete self[key];
+
+    self.__defineGetter__(key, function() body);
+    self.__defineSetter__(key, function(value)
+      {
+        if (body != value) {
+          body = value;
+          self.sendMessage("variable-changed/" + path, value);
+        }
+      });
+  }
+
+}
+
 /**
  * @Attribute WatchableAttribute
  *
  */
-let WatchableAttribute = new Attribute("watchable");
+var WatchableAttribute = new Attribute("watchable");
 WatchableAttribute.definition = {
 
   get __id()
@@ -55,27 +82,19 @@ WatchableAttribute.definition = {
    */
   initialize: function initialize(broker)
   {
-    let attributes = this.__attributes;
-    let key;
+    var attributes, key, attribute;
+
+    attributes = this.__attributes;
+
     for (key in attributes) {
-      let watchable_attribute = attributes[key]["watchable"];
-      if (!watchable_attribute || !watchable_attribute.shift()) {
+
+      attribute = attributes[key]["watchable"];
+      if (!attribute || !attribute.shift()) {
         continue;
       }
-      let getter = this.__lookupGetter__(key);
-      let setter = this.__lookupSetter__(key);
-      let path = this.id + "." + key;
-      if (!getter && !setter) {
-        let body = this[key];
-        delete this[key];
-        this.__defineGetter__(key, function() body);
-        this.__defineSetter__(key, function(value) {
-          if (body != value) {
-            body = value;
-            broker.notify("variable-changed/" + path, value);
-          }
-        });
-      }
+
+      apply_attribute(this, key);
+
     } // for (key in attributes)
   }, // initialize
 
@@ -92,3 +111,4 @@ function main(target_class)
   target_class.mix(WatchableAttribute);
 }
 
+// EOF

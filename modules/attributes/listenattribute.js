@@ -23,11 +23,73 @@
  * ***** END LICENSE BLOCK ***** */
 
 
+function make_managed_handler(self, handler, topic)
+{
+  var wrapped_handler;
+
+  wrapped_handler = function() 
+  {
+    return handler.apply(self, arguments);
+  };
+
+  return wrapped_handler;
+}
+
+function apply_attribute(self, broker, key, info, attribute)
+{
+  var handler, wrapped_handler, id, listener_info, old_onchange;
+
+  handler = self[key];
+  id = self.id + "." + key;
+
+  if (handler.id) {
+    wrapped_handler = handler;
+  } else {
+    wrapped_handler = make_managed_handler(self, handler);
+    wrapped_handler.id = id;
+    self[key] = wrapped_handler;
+  }
+
+  listener_info = {
+    type: info[0],
+    target: info[1],
+    capture: info[2] || false,
+  };
+
+  old_onchange = wrapped_handler.onChange;
+
+  wrapped_handler.onChange = function(name, oldval, newval) 
+    {
+      if (old_onchange) {
+        old_onchange.apply(wrapped_handler, arguments);
+      }
+      if (oldval !== newval) {
+        if (newval) {
+          listener_info.context = self;
+          listener_info.handler = wrapped_handler;
+          listener_info.id = listener_info.id || id;
+          self.sendMessage("command/add-domlistener", listener_info);
+        } else {
+          self.sendMessage("command/remove-domlistener", listener_info.id);
+        }
+      }
+      return newval;
+    };
+
+  wrapped_handler.watch("enabled", wrapped_handler.onChange);
+
+  if (attribute["enabled"]) {
+    wrapped_handler.enabled = true;
+  };
+
+}
+
+
 
 /**
  * @trait ListenAttribute
  */
-let ListenAttribute = new Attribute("listen");
+var ListenAttribute = new Attribute("listen");
 ListenAttribute.definition = {
 
   get __id()
@@ -58,53 +120,21 @@ ListenAttribute.definition = {
 
   initialize: function initialize(broker) 
   {
-    let attributes = this.__attributes;
-    let key;
+    var attributes, key, info, attribute;
+
+    attributes = this.__attributes;
+
     for (key in attributes) {
-      let attribute = attributes[key];
-      if (!attribute["listen"]) {
+
+      attribute = attributes[key];
+
+      info = attribute["listen"];
+
+      if (undefined === info) {
         continue;
       }
-      let handler = this[key];
-      let wrapped_handler;
-      let id = [this.id, key].join(".");
-      if (handler.id) {
-        wrapped_handler = handler;
-      } else {
-        let self = this;
-        wrapped_handler = function() handler.apply(self, arguments);
-        wrapped_handler.id = id;
-        this[key] = wrapped_handler;
-      }
-      let [type, target, capture] = attribute["listen"];
-      let listener_info = attribute["listen"] = {
-        type: type,
-        target: target,
-        capture: capture || false,
-      };
 
-      wrapped_handler.watch("enabled", 
-        wrapped_handler.onChange = let (self = this, old_onchange = wrapped_handler.onChange) 
-          function(name, oldval, newval) 
-          {
-            if (old_onchange) {
-              old_onchange.apply(wrapped_handler, arguments);
-            }
-            if (oldval != newval) {
-              if (newval) {
-                listener_info.context = this;
-                listener_info.handler = wrapped_handler;
-                listener_info.id = listener_info.id || id;
-                broker.notify("command/add-domlistener", listener_info);
-              } else {
-                broker.notify("command/remove-domlistener", listener_info.id);
-              }
-            }
-            return newval;
-          });
-      if (attribute["enabled"]) {
-        wrapped_handler.enabled = true;
-      };
+      apply_attribute(this, broker, key, info, attribute);
     } // key for (key in attributes) 
   },
 
@@ -120,4 +150,4 @@ function main(target_class)
   target_class.mix(ListenAttribute);
 }
 
-
+// EOF

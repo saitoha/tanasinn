@@ -25,7 +25,7 @@
 /**
  *  @class DragPaste
  */
-let DragPaste = new Class().extends(Plugin);
+var DragPaste = new Class().extends(Plugin);
 DragPaste.definition = {
 
   get id()
@@ -74,7 +74,9 @@ DragPaste.definition = {
   "[listen('dragover', '#tanasinn_content', true)]":
   function ondragover(event) 
   {
-    let data_transfer = event.dataTransfer;
+    var data_transfer;
+
+    data_transfer = event.dataTransfer;
     if (data_transfer.types.contains("text/plain")) {
       event.preventDefault();
     }
@@ -90,8 +92,7 @@ DragPaste.definition = {
   function ondragenter(event) 
   {
     if (event.dataTransfer.types.contains("text/plain")) {
-      let broker = this._broker;
-      broker.notify("command/focus");
+      this.sendMessage("command/focus");
     } else {
       event.preventDefault();
     }
@@ -103,21 +104,26 @@ DragPaste.definition = {
   "[listen('drop', '#tanasinn_content', true)]":
   function ondrop(event) 
   {
-    let data_transfer = event.dataTransfer;
+    var data_transfer, text;
+
+    data_transfer = event.dataTransfer;
     if (data_transfer.types.contains("text/plain")) {
-	    let text = data_transfer.getData("text/plain");
+	    text = data_transfer.getData("text/plain");
 
       // sanitize text.
       text = text.replace(/[\x00-\x08\x0a-\x0c\x0e-\x1f]/g, "");
 
-      if (true === this._bracketed_paste_mode) {
-        // add bracket sequences.
-        text = "\x1b[200~" + text + "\x1b[201~";
-      }
-
       // Encodes the text message and send it to the tty device.
-      let broker = this._broker;
-      broker.notify("command/input-text", text);
+      if (this._bracketed_paste_mode) {
+        // add bracket sequences.
+        this.sendMessage("command/send-sequence/csi");
+        this.sendMessage("command/send-to-tty", "200~");
+        this.sendMessage("command/input-text", text);
+        this.sendMessage("command/send-sequence/csi");
+        this.sendMessage("command/send-to-tty", "201~");
+      } else {
+        this.sendMessage("command/input-text", text);
+      }
     }
   },
 
@@ -141,3 +147,4 @@ function main(broker)
   new DragPaste(broker);
 }
 
+// EOF

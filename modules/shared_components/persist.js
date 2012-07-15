@@ -25,7 +25,7 @@
 /**
  * @class PersistManager
  */ 
-let PersistManager = new Class().extends(Component);
+var PersistManager = new Class().extends(Component);
 PersistManager.definition = {
 
   get id()
@@ -70,6 +70,7 @@ PersistManager.definition = {
     }
     this.sendMessage("command/before-save-persistable-data", data);
     this.sendMessage("command/save-persistable-data", data);
+
     filename = (name || broker.profile) + ".js";
     profile_path = broker.runtime_path 
       + "/" + broker.profile_directory 
@@ -121,4 +122,4 @@ function main(broker)
 }
 
 
-
+// EOF

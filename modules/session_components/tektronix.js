@@ -165,7 +165,6 @@ Tektronix.definition = {
       if (3 != c >> 5) {
         dom.context.stroke();
         path_open = false;
-//        alert("2 " + c);
         return;
       }
       low_y  = c & 0x1f; // 011xxxxx
@@ -188,19 +187,16 @@ Tektronix.definition = {
           if (scanner.isEnd) {
             dom.context.stroke();
             path_open = false;
-            //alert("8" + c);
             return;
           }
           if (1 != c >> 5) {
             dom.context.stroke();
             path_open = false;
-            //alert("7" + c);
             return;
           }
         } else {
           dom.context.stroke();
           path_open = false;
-          //alert("4" + c);
           return;
         }
       }
@@ -226,7 +222,6 @@ Tektronix.definition = {
       this._y = (this._height / this._scale) - (high_y << 5 | low_y) - 40;
       this._x = high_x << 5 | low_x;
 
-      //alert([path_open, this._x, this._y]);
       if (path_open) {
         dom.context.lineTo(this._x, this._y);
       } else {
@@ -257,7 +252,7 @@ Tektronix.definition = {
   "[type('Scanner -> Action')] parse":
   function parse(scanner) 
   {
-    var dom;
+    var dom, c, buffer, text;
 
     dom = this._dom;
     dom.context.fillStyle = this.default_text_color;
@@ -273,7 +268,7 @@ Tektronix.definition = {
 scan:
     while (!scanner.isEnd) {
 
-      let c = scanner.current();
+      c = scanner.current();
 
       if (0x07 == c) {
         scanner.moveNext();
@@ -291,14 +286,12 @@ scan:
         c = scanner.current();
         if (0x03 == c) {
           scanner.moveNext();
-          //let value = scanner.drain();
           this.sendMessage("command/change-mode", "vt100");
           coUtils.Debug.reportWarning(
             _("DECSET 38 - Leave Tektronix mode (DECTEK)."));
           return null;
         } else if (0x05 == c) {
           scanner.moveNext();
-          //alert("esc enq");
         } else if (0x0c == c) {
           scanner.moveNext();
           this._mode = MODE_ALPHA;
@@ -308,10 +301,8 @@ scan:
             this._height / this._scale);
         } else if (0x0e == c) {
           scanner.moveNext();
-          //alert("esc so");
         } else if (0x0f == c) {
           scanner.moveNext();
-          //alert("esc si");
         } else if (0x5b == c) {     // [
           scanner.moveNext();
           c = scanner.current();
@@ -325,7 +316,6 @@ scan:
                 scanner.moveNext();
                 c = scanner.current();
                 if (0x68 == c) {           // h
-                  //alert(c);
                 } else if (0x6c == c) {    // l
                   this.sendMessage("command/change-mode", "vt100");
                   coUtils.Debug.reportWarning(
@@ -380,7 +370,6 @@ scan:
           coUtils.Debug.reportWarning(_("esc t"));
           scanner.moveNext();
         } else {
-          //alert(c)
           scanner.moveNext();
         }
       } else if (0x0c == c) {
@@ -400,8 +389,7 @@ scan:
       } else if (this._mode == MODE_GRAPHICS) {
         this._parseGraphics(scanner);
       } else if (this._mode == MODE_ALPHA) {
-        let c;
-        let buffer = [];
+        buffer = [];
         while (true) {
           if (scanner.isEnd) {
             break;
@@ -413,7 +401,7 @@ scan:
           buffer.push(c);
           scanner.moveNext();
         }
-        let text = String.fromCharCode.apply(String, buffer);
+        text = String.fromCharCode.apply(String, buffer);
         dom.context.fillText(text, this._x, this._y);
 //        coUtils.Debug.reportError(
 //          "text: " + text + "[" + this._x + "," + this._y + "]" + "[" + buffer + "]");
@@ -443,4 +431,4 @@ function main(broker)
   new Tektronix(broker);
 }
 
-
+// EOF

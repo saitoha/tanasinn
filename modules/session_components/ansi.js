@@ -47,7 +47,7 @@ var AnsiSpecifiedMode = new Class().extends(Component);
 AnsiSpecifiedMode.definition = {
 
   get id()
-    "module.ansimode",
+    "ansimode",
 
   _mode: null,
 
@@ -67,8 +67,6 @@ AnsiSpecifiedMode.definition = {
   SATM: false, 
   TSM: false, 
   EBM: false, 
-
-
   LNM: false, 
 
   /** constructor */
@@ -76,13 +74,6 @@ AnsiSpecifiedMode.definition = {
   function onLoad(broker) 
   {
     this._mode = [];
-    this.sendMessage("initialized/ansimode", this);
-  },
-
-  "[subscribe('command/{soft | hard}-terminal-reset'), enabled]":
-  function reset(broker) 
-  {
-    this.set(ANSI_IRM, false);
   },
 
   set: function set(id, flag) 
@@ -109,22 +100,6 @@ AnsiSpecifiedMode.definition = {
 
   reset: function reset() 
   {
-    this.GATM = false; 
-    this.KAM = false; 
-    this.CRM = false; 
-    this.IRM = false; 
-    this.SRTM = false; 
-    this.VEM = false; 
-    this.HEM = false; 
-    this.PUM = false; 
-    this.SRM = false; 
-    this.FEAM = false; 
-    this.FETM = false; 
-    this.MATM = false; 
-    this.TTM = false; 
-    this.SATM = false; 
-    this.TSM = false; 
-    this.EBM = false; 
   },
 
   "[profile('vt100'), sequence('CSI %dh')]":
@@ -152,4 +127,4 @@ function main(broker)
   new AnsiSpecifiedMode(broker);
 }
 
-
+// EOF

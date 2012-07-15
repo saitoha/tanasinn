@@ -33,7 +33,7 @@
  *  object. and shows a line on editing as an watermark/overlay object. 
  *
  */ 
-let CommandlineIme = new Class().extends(Plugin)
+var CommandlineIme = new Class().extends(Plugin)
                                 .depends("commandline");
 CommandlineIme.definition = {
 
@@ -57,17 +57,20 @@ CommandlineIme.definition = {
   _ime_input_flag: false,
 
   /** Installs plugin 
-   *  @param {Session} session A session object.
+   *  @param {Broker} broker A Broker object.
    */ 
   "[install]":
-  function install(session) 
+  function install(broker) 
   {
-    let textbox = this.dependency["commandline"].getInputField();
+    var textbox, version_comparator, focused_element;
+
+    textbox = this.dependency["commandline"].getInputField();
     textbox.style.width = "0%";
     textbox.style.imeMode = "inactive"; // disabled -> inactive
     textbox.style.border = "none"; // hide border
+
     // enables session event handlers.
-    let version_comparator = Components
+    version_comparator = Components
       .classes["@mozilla.org/xpcom/version-comparator;1"]
       .getService(Components.interfaces.nsIVersionComparator);
     if (version_comparator.compare(coUtils.Runtime.version, "10.0") <= 0)
@@ -75,12 +78,11 @@ CommandlineIme.definition = {
       this.startPolling.enabled = true;
       this.endPolling.enabled = true;
     }
-    this.oninput.enabled = true;
-    this.oncompositionupdate.enabled = true;
 
-    let document = session.window.document;
-    let focusedElement = document.commandDispatcher.focusedElement;
-    if (focusedElement && focusedElement.isEqualNode(textbox)) {
+    focused_element = this.request("get/root-element")
+      .ownerDocument.commandDispatcher.focusedElement;
+
+    if (focused_element && focused_element.isEqualNode(textbox)) {
       this.startPolling();
     }
       
@@ -92,8 +94,12 @@ CommandlineIme.definition = {
   "[uninstall]":
   function uninstall(session) 
   {
+    var textbox;
+
     this.endPolling(); // stops polling timer. 
-    let textbox = this.dependency["commandline"].getInputField();
+
+    textbox = this.dependency["commandline"].getInputField();
+
     if (null !== textbox) {
       textbox.style.width = "";
       textbox.style.imeMode = "disabled";
@@ -104,11 +110,9 @@ CommandlineIme.definition = {
     // disables session event handlers.
     this.startPolling.enabled = false;
     this.endPolling.enabled = false;
-    this.oninput.enabled = false;
-    this.oncompositionupdate.enabled = false;
   },
 
-  "[subscribe('command/input-text')]": 
+  "[subscribe('command/input-text'), pnp]": 
   function oninput(value) 
   {
     this._disableImeMode(); // closes IME input session.
@@ -150,7 +154,7 @@ CommandlineIme.definition = {
   /** compositionend event handler. 
    *  @{Event} event A event object.
    */
-  "[listen('compositionupdate', '#tanasinn_commandline')]":
+  "[listen('compositionupdate', '#tanasinn_commandline'), pnp]":
   function oncompositionupdate(event) 
   {
     this.onpoll();
@@ -159,32 +163,35 @@ CommandlineIme.definition = {
   /** compositionstart event handler. 
    *  @{Event} event A event object.
    */
-  "[listen('compositionstart', '#tanasinn_commandline'), enabled]":
+  "[listen('compositionstart', '#tanasinn_commandline'), pnp]":
   function oncompositionstart(event) 
   {
-      let version_comparator = Components
-        .classes["@mozilla.org/xpcom/version-comparator;1"]
-        .getService(Components.interfaces.nsIVersionComparator);
-      if (version_comparator.compare(coUtils.Runtime.version, "10.0") >= 0)
-      {
-        this.oninput.enabled = false;
-      }
+    var version_comparator;;
+
+    version_comparator = Components
+      .classes["@mozilla.org/xpcom/version-comparator;1"]
+      .getService(Components.interfaces.nsIVersionComparator);
+    if (version_comparator.compare(coUtils.Runtime.version, "10.0") >= 0) {
+      this.oninput.enabled = false;
+    }
   },
   
   /** compositionend event handler. 
    *  @{Event} event A event object.
    */
-  "[listen('compositionend', '#tanasinn_commandline'), enabled]":
+  "[listen('compositionend', '#tanasinn_commandline'), pnp]":
   function oncompositionend(event) 
   {
-      let version_comparator = Components
-        .classes["@mozilla.org/xpcom/version-comparator;1"]
-        .getService(Components.interfaces.nsIVersionComparator);
-      if (version_comparator.compare(coUtils.Runtime.version, "10.0") >= 0)
-      {
-        this.oninput.enabled = true;
-        this.oninput(event);
-      }
+    var version_comparator;;
+
+    version_comparator = Components
+      .classes["@mozilla.org/xpcom/version-comparator;1"]
+      .getService(Components.interfaces.nsIVersionComparator);
+
+    if (version_comparator.compare(coUtils.Runtime.version, "10.0") >= 0) {
+      this.oninput.enabled = true;
+      this.oninput(event);
+    }
   },
 
   /** A interval timer handler function that observes the textbox content
@@ -192,7 +199,10 @@ CommandlineIme.definition = {
    */  
   onpoll: function onpoll() 
   {
-    let text = this.dependency["commandline"].getInputField().value;
+    var text;
+
+    text = this.dependency["commandline"].getInputField().value;
+
     if (text) { // if textbox contains some text data.
       if (!this._ime_input_flag) {
         this._enableImeMode(); // makes the IME mode enabled.
@@ -207,24 +217,30 @@ CommandlineIme.definition = {
   /** Shows textbox element. */
   _enableImeMode: function _enableImeMode() 
   {
-    let commandline = this.dependency["commandline"];
-    let textbox = this.dependency["commandline"].getInputField();
-    let top = 0; // cursor.positionY * line_height + -4;
-    let left = commandline.getCaretPosition(); // cursor.positionX * char_width + -2;
+    var commandline, textbox, top, left;
+
+    commandline = this.dependency["commandline"];
+    textbox = this.dependency["commandline"].getInputField();
+    top = 0; // cursor.positionY * line_height + -4;
+    left = commandline.getCaretPosition(); // cursor.positionX * char_width + -2;
+
     textbox.style.opacity = 1.0;
     this._ime_input_flag = true;
-    let session = this._broker;
-    session.notify("command/ime-mode-on", this);
+
+    this.sendMessage("command/ime-mode-on", this);
   },
 
   _disableImeMode: function _disableImeMode() 
   {
-    let commandline = this.dependency["commandline"];
-    let textbox = this.dependency["commandline"].getInputField();
+    var commandline, textbox;
+
+    commandline = this.dependency["commandline"];
+    textbox = this.dependency["commandline"].getInputField();
+
     textbox.style.opacity = 0.0;
     this._ime_input_flag = false;
-    let session = this._broker;
-    session.notify("command/ime-mode-off", this);
+
+    this.sendMessage("command/ime-mode-off", this);
   }
 };
 

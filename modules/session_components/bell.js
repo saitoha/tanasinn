@@ -25,7 +25,10 @@
 /**
  *  @class Bell
  */
-let Bell = new Class().extends(Plugin);
+var Bell = new Class().extends(Plugin)
+                      .depends("renderer")
+                      .depends("screen")
+                      ;
 Bell.definition = {
 
   get id()
@@ -45,6 +48,7 @@ Bell.definition = {
       parentNode: "#tanasinn_center_area",
       tagName: "html:canvas",
       id: "tanasinn_visual_bell",
+      style: "position: absolute",
       opacity: 0.0,
       margin: "-20px",
       MozTransitionProperty: "opacity",
@@ -66,10 +70,10 @@ Bell.definition = {
   "[install]":
   function install(broker) 
   {
-    let { tanasinn_visual_bell }
-      = broker.uniget("command/construct-chrome", this.template);
+    var { tanasinn_visual_bell }
+      = this.request("command/construct-chrome", this.template);
     this._cover = tanasinn_visual_bell;
-    this.onBell.enabled = true;
+    this.onFirstFocus();
   },
 
   /** Uninstalls itself.
@@ -82,10 +86,34 @@ Bell.definition = {
       this._cover.parentNode.removeChild(this._cover);
       this._cover = null;
     }
-    this.onBell.enabled = false;
   },
 
-  "[subscribe('sequence/bel')]":
+  "[subscribe('@command/focus'), pnp]":
+  function onFirstFocus()
+  {
+    var renderer, screen;
+
+    renderer = this.dependency["renderer"];
+    screen = this.dependency["screen"];
+
+    this._cover.width = renderer.char_width * screen.width;
+    this._cover.height = renderer.line_height * screen.height;
+  },
+
+  "[subscribe('event/screen-width-changed'), pnp]": 
+  function onWidthChanged(width) 
+  {
+    this._cover.width = width;
+  },
+
+  "[subscribe('event/screen-height-changed'), pnp]": 
+  function onHeightChanged(height) 
+  {
+    this._cover.height = height;
+  },
+
+
+  "[subscribe('sequence/bel'), pnp]":
   function onBell() 
   {
     coUtils.Timer.setTimeout(function() {
@@ -95,25 +123,31 @@ Bell.definition = {
       if (this.sound_bell) {
         this.beep();
       }
-    }, 10);
+    }, 10, this);
   },
 
   /** Plays visual bell effect. */
   visualBell: function visualBell() 
   {
-    this._cover.style.backgroundColor = this.color;
-    this._cover.style.opacity = this.opacity;
-    this._cover.style.MozTransitionDuration = this.duration + "ms";
-    coUtils.Timer.setTimeout(function() {
-      this._cover.style.opacity = 0.0;
-      this._cover = null; // prevent leak.
-    }, this.duration, this);
+    if (this._cover) {
+      this._cover.style.backgroundColor = this.color;
+      this._cover.style.opacity = this.opacity;
+      this._cover.style.MozTransitionDuration = this.duration + "ms";
+      coUtils.Timer.setTimeout(
+        function() 
+        {
+          this._cover.style.opacity = 0.0;
+        }, this.duration, this);
+    }
   },
 
   /** Plays 'beep' sound asynchronously. */
   beep: function beep() 
   {
-    let sound = Components.classes["@mozilla.org/sound;1"]
+    var sound;
+
+    sound = Components
+      .classes["@mozilla.org/sound;1"]
       .getService(Components.interfaces.nsISound)
     sound.beep();
     //sound.playSystemSound("Blow");
@@ -133,3 +167,4 @@ function main(broker)
 }
 
 
+// EOF

@@ -69,58 +69,56 @@ Gesture.definition = {
   _timer: null,
  
   /** installs itself. 
-   *  @param {Session} session A session object.
+   *  @param {Broker} broker A Broker object.
    */
   "[install]":
-  function install(session) 
+  function install(broker) 
   {
-    let {tanasinn_gesture_frame, tanasinn_gesture_canvas}
-      = session.uniget("command/construct-chrome", this.template);
+    var {tanasinn_gesture_frame, tanasinn_gesture_canvas}
+      = this.request("command/construct-chrome", this.template);
     this._frame = tanasinn_gesture_frame;
     this._canvas = tanasinn_gesture_canvas;
-    this.onWidthChanged.enabled = true;
-    this.onHeightChanged.enabled = true;
-    this.ondragstart.enabled = true;
   },
 
   /** Uninstalls itself.
-   *  @param {Session} session A session object.
+   *  @param {Broker} broker A Broker object.
    */
   "[uninstall]":
-  function uninstall(session) 
+  function uninstall(broker) 
   {
     if (this._frame) {
       this._frame.parentNode.removeChild(this._element);
       this._frame = null;
     }
     this._canvas = null;
-    this.onWidthChanged.enabled = false;
-    this.onHeightChanged.enabled = false;
-    this.ondragstart.enabled = false;
     this.ondragend.enabled = false;
   },
 
-  "[subscribe('event/screen-width-changed')]": 
+  "[subscribe('event/screen-width-changed'), pnp]": 
   function onWidthChanged(width) 
   {
     this._canvas.width = width;
   },
 
-  "[subscribe('event/screen-height-changed')]": 
+  "[subscribe('event/screen-height-changed'), pnp]": 
   function onHeightChanged(height) 
   {
     this._canvas.height = height;
   },
 
-  "[listen('mousedown', '#tanasinn_outer_chrome')]":
+  "[listen('mousedown', '#tanasinn_outer_chrome'), pnp]":
   function ondragstart(event) 
   {
+    var x, y;
+
     if (event.ctrlKey && !event.altKey && !event.shiftKey) {
       this.onmousemove.enabled = true;
       this.ondragend.enabled = true;
       this._frame.hidden = false;
-      let x = event.screenX - this._frame.boxObject.screenX;
-      let y = event.screenY - this._frame.boxObject.screenY;
+
+      x = event.screenX - this._frame.boxObject.screenX;
+      y = event.screenY - this._frame.boxObject.screenY;
+
       this._position = [x, y];
     }
   },
@@ -140,13 +138,16 @@ Gesture.definition = {
   "[listen('mousemove', '#tanasinn_outer_chrome')]":
   function onmousemove(event) 
   {
-    let canvas = this._canvas;
-    let context = canvas.getContext("2d");
-    let broker = this._broker;
-    let x = event.screenX - this._frame.boxObject.screenX;
-    let y = event.screenY - this._frame.boxObject.screenY;
+    var canvas, context, x, y, previousX, previousY;
+
+    canvas = this._canvas;
+    context = canvas.getContext("2d");
+
+    x = event.screenX - this._frame.boxObject.screenX;
+    y = event.screenY - this._frame.boxObject.screenY;
+
     if (this._position) {
-      let [previousX, previousY] = this._position;
+      [previousX, previousY] = this._position;
       context.strokeStyle = "white";
       context.fillStyle = "rgb(200, 0, 0)";
       context.beginPath();
@@ -170,4 +171,4 @@ function main(broker)
   new Gesture(broker);
 }
 
-
+// EOF

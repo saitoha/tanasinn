@@ -88,6 +88,29 @@ coUtils.Constant = {
   LINETYPE_SIXEL:             0x4,
 
   //
+  // Screens
+  //
+  SCREEN_MAIN:                0x0,
+  SCREEN_ALTERNATE:           0x1,
+
+  //
+  // Cursor Style
+  //
+  CURSOR_STYLE_BLOCK:         0x0,
+  CURSOR_STYLE_UNDERLINE:     0x1,
+  CURSOR_STYLE_BEAM:          0x2,
+
+  // 
+  // KeyCode Modifiers
+  //
+  KEY_CTRL                   : 22,
+  KEY_ALT                    : 23,
+  KEY_SHIFT                  : 24,
+  KEY_NOCHAR                 : 25,
+  KEY_META                   : 26,
+  KEY_MODE                   : 27,
+
+  //
   // X11 color name definition
   //
   X11_COLOR_MAP: {
@@ -1571,14 +1594,14 @@ coUtils.Font = {
   getAverageGlyphSize: 
   function getAverageGlyphSize(font_size, font_family, test_string)
   {
-    var NS_XHTML = "http://www.w3.org/1999/xhtml";
-    var canvas = coUtils.getWindow()
-      .document
-      .createElementNS(NS_XHTML , "html:canvas");
-    var context = canvas.getContext("2d");
-    var unit = test_string || "Mbc123-XYM";
-    var text = "";
-    var i;
+    var NS_XHTML = "http://www.w3.org/1999/xhtml",
+        canvas = coUtils.getWindow()
+          .document
+          .createElementNS(NS_XHTML , "html:canvas"),
+        context = canvas.getContext("2d"),
+        unit = test_string || "Mbc123-XYM",
+        text = "",
+        i;
 
     for (i = 0; i < 10; ++i) {
       text += unit;
@@ -1974,16 +1997,11 @@ coUtils.File = new function() {
   getFileLeafFromVirtualPath: 
   function getFileLeafFromVirtualPath(virtual_path) 
   {
-    var target_leaf;
-    var split_path;
-    var root_entry;
-    var match;
-    var file_name;
-
-    virtual_path = String(virtual_path);
-    split_path = virtual_path.split(/[\/\\]/);
-    root_entry = split_path.shift();
-    match = root_entry.match(/^\$([^/]+)$/);
+    var virtual_path = String(virtual_path),
+        split_path = virtual_path.split(/[\/\\]/),
+        root_entry = split_path.shift(),
+        match = root_entry.match(/^\$([^/]+)$/),
+        file_name;
 
     if (match) {
       target_leaf = this.getSpecialDirectoryName(match.pop());
@@ -2128,7 +2146,7 @@ coUtils.Keyboard = {
   KEY_META   : 26,
   KEY_MODE   : 27,
 
-  KEYNAME_PACKEDCODE_MAP: let (KEY_NOCHAR = 25) {
+  KEYNAME_PACKEDCODE_MAP: {
     leader      : 0x08000001,
     nmode       : 0x18000001,
     cmode       : 0x28000001,
@@ -2143,49 +2161,49 @@ coUtils.Keyboard = {
     swipedown   : 0xd0000001,
     rotateleft  : 0xe0000001,
     rotateright : 0xf0000001,
-    space       : ("Darwin" == coUtils.Runtime.os) << KEY_NOCHAR | 0x0020,
-    sp          : ("Darwin" == coUtils.Runtime.os) << KEY_NOCHAR | 0x0020,
-    bs          : 0x1 << KEY_NOCHAR | 0x0008, 
-    backspace   : 0x1 << KEY_NOCHAR | 0x0008, 
-    tab         : 0x1 << KEY_NOCHAR | 0x0009, 
-    enter       : 0x1 << KEY_NOCHAR | 0x000d,
-    return      : 0x1 << KEY_NOCHAR | 0x000d,
-    cr          : 0x1 << KEY_NOCHAR | 0x000d,
-    lf          : 0x1 << KEY_NOCHAR | 0x000a,
-    escape      : 0x1 << KEY_NOCHAR | 0x001b,
-    esc         : 0x1 << KEY_NOCHAR | 0x001b,
-    pgup        : 0x1 << KEY_NOCHAR | 0x0021,
-    pgdn        : 0x1 << KEY_NOCHAR | 0x0022,
-    end         : 0x1 << KEY_NOCHAR | 0x0023,
-    home        : 0x1 << KEY_NOCHAR | 0x0024,
-    left        : 0x1 << KEY_NOCHAR | 0x0025,
-    up          : 0x1 << KEY_NOCHAR | 0x0026,
-    right       : 0x1 << KEY_NOCHAR | 0x0027,
-    down        : 0x1 << KEY_NOCHAR | 0x0028,
-    ins         : 0x1 << KEY_NOCHAR | 0x002d,
-    insert      : 0x1 << KEY_NOCHAR | 0x002d,
-    del         : 0x1 << KEY_NOCHAR | 0x002e,
-    delete      : 0x1 << KEY_NOCHAR | 0x002e,
-    clear       : 0x1 << KEY_NOCHAR | 0x000c,
-    f1          : 0x1 << KEY_NOCHAR | 0x0070,
-    f2          : 0x1 << KEY_NOCHAR | 0x0071,
-    f3          : 0x1 << KEY_NOCHAR | 0x0072,
-    f4          : 0x1 << KEY_NOCHAR | 0x0073,
-    f5          : 0x1 << KEY_NOCHAR | 0x0074,
-    f6          : 0x1 << KEY_NOCHAR | 0x0075,
-    f7          : 0x1 << KEY_NOCHAR | 0x0076,
-    f8          : 0x1 << KEY_NOCHAR | 0x0077,
-    f9          : 0x1 << KEY_NOCHAR | 0x0078,
-    f10         : 0x1 << KEY_NOCHAR | 0x0079,
-    f11         : 0x1 << KEY_NOCHAR | 0x007a,
-    f12         : 0x1 << KEY_NOCHAR | 0x007b,
-    f13         : 0x1 << KEY_NOCHAR | 0x002c,
-    f14         : 0x1 << KEY_NOCHAR | 0x0091,
-    f15         : 0x1 << KEY_NOCHAR | 0x0013,
-    f16         : 0x1 << KEY_NOCHAR | 0xf713,
-    f17         : 0x1 << KEY_NOCHAR | 0xf714,
-    f18         : 0x1 << KEY_NOCHAR | 0xf715,
-    f19         : 0x1 << KEY_NOCHAR | 0xf716,
+    space       : ("Darwin" === coUtils.Runtime.os) << coUtils.Constant.KEY_NOCHAR | 0x0020,
+    sp          : ("Darwin" === coUtils.Runtime.os) << coUtils.Constant.KEY_NOCHAR | 0x0020,
+    bs          : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x0008, 
+    backspace   : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x0008, 
+    tab         : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x0009, 
+    enter       : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x000d,
+    return      : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x000d,
+    cr          : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x000d,
+    lf          : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x000a,
+    escape      : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x001b,
+    esc         : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x001b,
+    pgup        : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x0021,
+    pgdn        : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x0022,
+    end         : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x0023,
+    home        : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x0024,
+    left        : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x0025,
+    up          : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x0026,
+    right       : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x0027,
+    down        : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x0028,
+    ins         : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x002d,
+    insert      : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x002d,
+    del         : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x002e,
+    delete      : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x002e,
+    clear       : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x000c,
+    f1          : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x0070,
+    f2          : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x0071,
+    f3          : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x0072,
+    f4          : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x0073,
+    f5          : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x0074,
+    f6          : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x0075,
+    f7          : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x0076,
+    f8          : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x0077,
+    f9          : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x0078,
+    f10         : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x0079,
+    f11         : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x007a,
+    f12         : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x007b,
+    f13         : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x002c,
+    f14         : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x0091,
+    f15         : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x0013,
+    f16         : 0x1 << coUtils.Constant.KEY_NOCHAR | 0xf713,
+    f17         : 0x1 << coUtils.Constant.KEY_NOCHAR | 0xf714,
+    f18         : 0x1 << coUtils.Constant.KEY_NOCHAR | 0xf715,
+    f19         : 0x1 << coUtils.Constant.KEY_NOCHAR | 0xf716,
   },
 
   getCodeToNameMap: function getCodeToNameMap() 
@@ -2208,20 +2226,25 @@ coUtils.Keyboard = {
     var buffer = [];
     var map;
 
-    if (packed_code & (1 << coUtils.Keyboard.KEY_CTRL)) {
+    if (packed_code & (1 << coUtils.Constant.KEY_CTRL)) {
       buffer.push("C");
     }
-    if (packed_code & (1 << coUtils.Keyboard.KEY_ALT)) {
+
+    if (packed_code & (1 << coUtils.Constant.KEY_ALT)) {
       buffer.push("A");
     }
-    if (packed_code & (1 << coUtils.Keyboard.KEY_SHIFT)) {
+
+    if (packed_code & (1 << coUtils.Constant.KEY_SHIFT)) {
       buffer.push("S");
     }
-    if (packed_code & (1 << coUtils.Keyboard.KEY_META)) {
+
+    if (packed_code & (1 << coUtils.Constant.KEY_META)) {
       buffer.push("M");
     }
+
     char = String.fromCharCode(0xffffff & packed_code);
-    if (packed_code & (1 << coUtils.Keyboard.KEY_NOCHAR)) {
+
+    if (packed_code & (1 << coUtils.Constant.KEY_NOCHAR)) {
       map = this.getCodeToNameMap();
       char = map[char] || char;
     } else {
@@ -2268,16 +2291,16 @@ coUtils.Keyboard = {
 
     // make packed code
     packed_code = code 
-      | Boolean(event.ctrlKey)   << coUtils.Keyboard.KEY_CTRL 
-      | (Boolean(event.altKey) || alt) << coUtils.Keyboard.KEY_ALT 
-      | Boolean(event.shiftKey)  << coUtils.Keyboard.KEY_SHIFT 
-      | Boolean(event.keyCode)   << coUtils.Keyboard.KEY_NOCHAR
-      | Boolean(event.metaKey)   << coUtils.Keyboard.KEY_META
+      | Boolean(event.ctrlKey)   << coUtils.Constant.KEY_CTRL 
+      | (Boolean(event.altKey) || alt) << coUtils.Constant.KEY_ALT 
+      | Boolean(event.shiftKey)  << coUtils.Constant.KEY_SHIFT 
+      | Boolean(event.keyCode)   << coUtils.Constant.KEY_NOCHAR
+      | Boolean(event.metaKey)   << coUtils.Constant.KEY_META
       ;
 
     // fix for Space key with modifier.
     if (0x20 == code && (event.shiftKey || event.ctrlKey || event.altKey)) {
-      packed_code |= 1 << coUtils.Keyboard.KEY_NOCHAR;
+      packed_code |= 1 << coUtils.Constant.KEY_NOCHAR;
     }
     return packed_code;
   },
@@ -2422,33 +2445,34 @@ coUtils.Logger.prototype = {
   _converter: null,
 
   log_file_path: "$Home/.tanasinn/log/tanasinn-js.log",
+  max_log_size: 100000,
 
   /** constructor */
   initialize: function initialize()
   {
     // create nsIFile object.
     var path = coUtils.File
-      .getFileLeafFromVirtualPath(this.log_file_path)
-      .path;
-    var file = Components
-      .classes["@mozilla.org/file/local;1"]
-      .createInstance(Components.interfaces.nsILocalFile);
-    var ostream;
-    var converter;
+          .getFileLeafFromVirtualPath(this.log_file_path)
+          .path,
+        file = Components
+          .classes["@mozilla.org/file/local;1"]
+          .createInstance(Components.interfaces.nsILocalFile),
+        ostream,
+        converter;
     
     file.initWithPath(path);
 
     // check if target log file exists.
     if (file.exists()) {
-      // check if target is file node.
-      if (!file.isFile) {
+      if (!file.isFile) { // check if target is file node.
         throw coUtils.Debug.Exception(
           _("Specified file '%s' is not a file node."), path);
-      }
-      // check if target is writable.
-      if (!file.isWritable) {
+      } else if (!file.isWritable) { // check if target is writable.
         throw coUtils.Debug.Exception(
           _("Specified file '%s' is not a writable file node."), path);
+      } else if (file.fileSize > this.max_log_size) {
+        file.remove(false);
+        return this.initialize();
       }
     } else { // if target is not exists.
       // create base directories recursively (= mkdir -p).
@@ -2477,11 +2501,14 @@ coUtils.Logger.prototype = {
     converter = Components
       .classes["@mozilla.org/intl/converter-output-stream;1"].  
       createInstance(Components.interfaces.nsIConverterOutputStream);  
+
     converter.init(ostream, "UTF-8", 0, 0);  
+
     this.logMessage("");  
     this.logMessage("---------------------------------------");  
     this.logMessage("-----" + new Date().toString() + "-----");  
     this.logMessage("---------------------------------------");  
+
     this._converter = converter;
   },
 
@@ -2631,8 +2658,10 @@ coUtils.Timer = {
     timer.initWithCallback({ notify: timer_callback_func }, interval, type);
     return {
       cancel: function cancel() {
-        timer.cancel();
-        timer = null;
+        if (null !== timer) {
+          timer.cancel();
+          timer = null;
+        }
       },
     };
   },
@@ -2835,6 +2864,7 @@ coUtils.Localize = new function()
       this._locale = value;
     },
 
+    /** switch UI locale */
     switchLocale: function switchLocale(locale)
     {
       this.locale = locale;
@@ -2884,10 +2914,10 @@ coUtils.Localize = new function()
     generateSources: function generateSources(search_path) 
     {
       var entries = coUtils.File
-        .getFileEntriesFromSerchPath(search_path);
-      var entry;
-      var url;
-      var content;
+            .getFileEntriesFromSerchPath(search_path),
+          entry,
+          url,
+          content;
 
       for (entry in entries) {
         // make URI string such as "file://....".
@@ -2909,26 +2939,28 @@ coUtils.Localize = new function()
      */
     generateMessages: function generateLocalizableMessages() 
     {
-      var pattern = /_\(("(.+?)("[\n\r\s]*,[\n\r\s]*".+?)*"|'(.+?)')\)/g;
-      var sources = this.generateSources([ "modules/" ]);
-      var source;
-      var match;
-      var quoted_source;
-      var quote_char;
-      var escaped_quote_char;
-      var message;
+      var pattern = /_\(("(.+?)("[\n\r\s]*,[\n\r\s]*".+?)*"|'(.+?)')\)/g,
+          sources = this.generateSources([ "modules/" ]),
+          source,
+          match,
+          quoted_source,
+          quote_char,
+          escaped_quote_char,
+          message;
 
       for (source in sources) {
         match = source.match(pattern)
         if (match) {
-          match = match.map(function(text) {
-            quoted_source = text.slice(3, -2);
-            quote_char = text[0];
-            escaped_quote_char = "\\" + quote_char;
-            return quoted_source
-              .replace(/"[\s\n\r]*,[\s\n\r]*"/g, "")
-              .replace(new RegExp(escaped_quote_char, "g"), quote_char);
-          })
+          match = match.map(
+            function mapFunc(text)
+            {
+              quoted_source = text.slice(3, -2);
+              quote_char = text[0];
+              escaped_quote_char = "\\" + quote_char;
+              return quoted_source
+                .replace(/"[\s\n\r]*,[\s\n\r]*"/g, "")
+                .replace(new RegExp(escaped_quote_char, "g"), quote_char);
+            });
           for ([, message] in Iterator(match)) {
             yield message;
           }
@@ -2938,11 +2970,11 @@ coUtils.Localize = new function()
 
     getDictionary: function getLocalizeDictionary(language)
     {
-      var location = "modules/locale/" + language + ".json";
-      var file = coUtils.File.getFileLeafFromVirtualPath(location);
-      var dict = null;
-      var content;
-      var db;
+      var location = "modules/locale/" + language + ".json",
+          file = coUtils.File.getFileLeafFromVirtualPath(location),
+          dict = null,
+          content,
+          db;
 
       if (file.exists()) {
         content = coUtils.IO.readFromFile(location, "utf-8");
@@ -2955,11 +2987,12 @@ coUtils.Localize = new function()
 
     setDictionary: function getLocalizeDictionary(language, dictionary)
     {
-      var location = "modules/locale/" + language + ".json";
-      var db = {
-        lang: language,
-        dict: dictionary,
-      };
+      var location = "modules/locale/" + language + ".json",
+          db = {
+            lang: language,
+            dict: dictionary,
+          };
+
       coUtils.IO.writeToFile(location, JSON.stringify(db));
       this._dictionaries_store[db.lang] = db.dict;
     },
@@ -2974,8 +3007,8 @@ coUtils.Localize = new function()
  */
 function _() 
 {
-  var lines = [].slice.apply(arguments);
-  var result;
+  var lines = [].slice.apply(arguments),
+      result;
 
   if (coUtils.Localize) {
     result =  coUtils.Localize.get(lines.join(""));
@@ -2985,4 +3018,4 @@ function _()
   }
 }
 
-
+// EOF

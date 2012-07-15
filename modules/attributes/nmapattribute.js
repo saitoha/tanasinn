@@ -23,12 +23,74 @@
  * ***** END LICENSE BLOCK ***** */
 
 
+function make_managed_handler(self, handler)
+{
+  var wrapped_handler;
+
+  wrapped_handler = function() 
+  {
+    return handler.apply(self, arguments);
+  };
+
+  return wrapped_handler;
+}
+
+function apply_attribute(self, broker, key, expressions, attribute)
+{
+  var handler, wrapped_handler, id;
+
+  handler = self[key];
+  id = self.id + "." + key;
+
+  if (handler.id) {
+    wrapped_handler = handler;
+  } else {
+    wrapped_handler = make_managed_handler(self, handler);
+    wrapped_handler.id = id;
+    self[key] = wrapped_handler;
+  }
+  wrapped_handler.description = attribute.description;
+  wrapped_handler.expressions = expressions;
+
+  broker.subscribe("get/nmap", function() wrapped_handler);
+
+  // Register load handler.
+  broker.subscribe(
+    "command/load-persistable-data", 
+    function load(context) // Restores settings from context object.
+    {
+      var expressions;
+
+      expressions = context[wrapped_handler.id + ".nmap"];
+
+      if (undefined !== expressions) {
+        wrapped_handler.expressions = expressions;
+        if (wrapped_handler.enabled) {
+          wrapped_handler.enabled = false;
+          wrapped_handler.enabled = true;
+        }
+      }
+    }, self);
+
+  // Register persist handler.
+  broker.subscribe(
+    "command/save-persistable-data", 
+    function persist(context) // Save settings to persistent context.
+    {
+      if (expressions.join("") !== wrapped_handler.expressions.join("")) {
+        context[wrapped_handler.id + ".nmap"] = wrapped_handler.expressions;
+      }
+    }, self);
+
+}
+
+
 
 /**
  * @Attribute NmapAttribute
  *
  */
-let NmapAttribute = new Attribute("nmap");
+var NmapAttribute = new Attribute("nmap");
 NmapAttribute.definition = {
 
   get __id()
@@ -63,46 +125,19 @@ NmapAttribute.definition = {
    */
   initialize: function initialize(broker) 
   {
-    let attributes = this.__attributes;
-    let key;
+    var attributes, key, attribute, expressions;
+
+    attributes = this.__attributes;
+
     for (key in attributes) {
-      let attribute = attributes[key];
-      let expressions = attribute["nmap"];
-      if (!expressions)
+      attribute = attributes[key];
+      expressions = attribute["nmap"];
+
+      if (!expressions) {
         continue;
-      let handler = this[key];
-      let delegate = this[key] = handler.id ? 
-        this[key]
-      : let (self = this) function() handler.apply(self, arguments);
-      delegate.id = delegate.id || [this.id, key].join(".");
-      delegate.description = attribute.description;
-      delegate.expressions = expressions;
-      broker.subscribe("get/nmap", function() delegate);
+      }
 
-      // Register load handler.
-      broker.subscribe(
-        "command/load-persistable-data", 
-        function load(context) // Restores settings from context object.
-        {
-          let expressions = context[delegate.id + ".nmap"];
-          if (expressions) {
-            delegate.expressions = expressions;
-            if (delegate.enabled) {
-              delegate.enabled = false;
-              delegate.enabled = true;
-            }
-          }
-        }, this);
-
-      // Register persist handler.
-      broker.subscribe(
-        "command/save-persistable-data", 
-        function persist(context) // Save settings to persistent context.
-        {
-          if (expressions.join("") != delegate.expressions.join("")) {
-            context[delegate.id + ".nmap"] = delegate.expressions;
-          }
-        }, this);
+      apply_attribute(this, broker, key, expressions, attribute);
     }
   },
 };
@@ -118,4 +153,4 @@ function main(target_class)
 }
 
 
-
+// EOF

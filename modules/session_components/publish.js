@@ -25,7 +25,7 @@
 /**
  *  @class PublishCommand
  */
-let PublishCommand = new Class().extends(Component);
+var PublishCommand = new Class().extends(Component);
 PublishCommand.definition = {
 
   get id()
@@ -34,17 +34,22 @@ PublishCommand.definition = {
   "[command('publish', ['event', 'js']), _('Publish a message'), enabled]":
   function publish(arguments_string) 
   {
-    let pattern = /^(\S+)\s*(.*)$/;
-    let match = arguments_string.match(pattern);
+    var pattern, match, topic, message;
+
+    pattern = /^(\S+)\s*(.*)$/;
+    match = arguments_string.match(pattern);
+
     if (null === match) {
       return {
         success: false,
         message: _("Ill-formed message."),
       };
     }
-    let [, topic, message] = match;
-    let broker = this._broker;
-    broker.notify(topic, new Function("return (" + message + ");")())
+
+    [, topic, message] = match;
+
+    this.sendMessage(topic, new Function("return (" + message + ");")())
+
     return {
       success: true,
       message: _("Succeeded."),

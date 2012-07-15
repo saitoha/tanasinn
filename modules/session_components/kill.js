@@ -25,7 +25,7 @@
 /**
  * @class Kill
  */
-let Kill = new Class().extends(Plugin);
+var Kill = new Class().extends(Plugin);
 Kill.definition = {
 
   get id()
@@ -89,10 +89,10 @@ Kill.definition = {
   "[command('detach'), _('detach from process.')]":
   function detach() 
   {
+    var broker;
+
     // stops TTY device.
-    let session = this._broker;
-    session.notify("command/detach"); 
-    session.stop();
+    this.sendMessage("command/detach"); 
   },
 
   /** kill process and stop tty */
@@ -100,10 +100,11 @@ Kill.definition = {
   function kill() 
   {
     // stops TTY device.
-    let session = this._broker;
-    session.notify("command/kill"); 
+    this.sendMessage("command/kill"); 
+
+    broker = this._broker;
     coUtils.Timer.setTimeout(function() {
-      session.stop(); 
+      broker.stop(); 
     }, 1500);
   },
 }

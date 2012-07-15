@@ -25,7 +25,7 @@
 /** 
  * @class ForwardInputIterator
  */ 
-let ForwardInputIterator = new Class();
+var ForwardInputIterator = new Class();
 ForwardInputIterator.definition = {
 
   _value: null,
@@ -62,7 +62,7 @@ ForwardInputIterator.definition = {
  *  @class Base64Copy
  *  @brief Makes it enable to copy selected region by pressing short cut key.
  */
-let Base64Copy = new Class().extends(Plugin)
+var Base64Copy = new Class().extends(Plugin)
                             .depends("decoder");
 Base64Copy.definition = {
 
@@ -146,9 +146,8 @@ Base64Copy.definition = {
   /** decode and sanitize encoded byte stream.  */
   _decode: function _decode(scanner)
   {
-    var c, decoder;
-
-    decoder = this.dependency["decoder"];
+    var decoder = this.dependency["decoder"],
+        c;
 
     while (true) {
 
@@ -210,4 +209,4 @@ function main(broker)
   new Base64Copy(broker);
 }
 
-
+// EOF

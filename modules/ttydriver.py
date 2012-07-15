@@ -393,6 +393,29 @@ def add_record(request_id, command, control_port, pid, ttyname):
     finally:
         lockfile.close()
 
+
+def del_record(request_id):
+    lockfile = open(sys.argv[0], "r")
+    try:
+        fcntl.flock(lockfile.fileno(), fcntl.LOCK_EX)
+        f = open(sessiondb_path, "rw")
+        lines = [];
+        try:
+            for line in f:
+                lines.append(line)
+
+            f.seek()
+
+            for line in lines:
+                f.write(line)
+
+            f.flush()
+            f.truncate()
+        finally:
+            f.close()
+    finally:
+        lockfile.close()
+
 if __name__ == "__main__":    
     if len(sys.argv) < 1:
         sys.exit("usage %s [connection_channel_port]" % sys.argv[0])
@@ -500,7 +523,9 @@ if __name__ == "__main__":
                 io_socket, 
                 control_connection)
             driver.drive_tty()
+
             time.sleep(1)
+
             if not driver.isalive():
                 trace("closed.")
                 break

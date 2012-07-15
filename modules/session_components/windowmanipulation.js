@@ -22,6 +22,21 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+
+var thread_manager = Components
+  .classes["@mozilla.org/thread-manager;1"]
+  .getService();
+
+function wait(span) 
+{
+  var end_time = Date.now() + span;
+  var current_thread = thread_manager.currentThread;
+  do {
+    current_thread.processNextEvent(true);
+  } while ((current_thread.hasPendingEvents()) || Date.now() < end_time);
+};
+
+
 /**
  * @class WindowManipulator
  */
@@ -106,7 +121,21 @@ WindowManipulator.definition = {
   "[subscribe('command/manipulate-window'), pnp]":
   function manipulate(args) 
   { 
-    switch (args.shift()) {
+     var x, y,
+         screen, renderer,
+         column, row,
+         target_element,
+         width, height,
+         x, y,
+         message,
+         n1 = args.shift();
+
+    switch (n1) {
+
+      case 0:
+        coUtils.Debug.reportWarning(
+          _("DECSLPP 0: Unrecognized operation, not supported."));
+        return;
 
       case 1:
         // TODO: De-iconify window.
@@ -121,29 +150,24 @@ WindowManipulator.definition = {
         break;
 
       case 3:
-        {
-          var x, y;
-          // Move window to [Ps2, Ps3].
-          y = args[0] || 0;
-          x = args[1] || 0;
-          this.sendMessage("command/move-to", [x, y]);
-        }
+        // Move window to [Ps2, Ps3].
+        y = args[0] || 0;
+        x = args[1] || 0;
+        this.sendMessage("command/move-to", [x, y]);
         break;
 
       case 4:
         // Resize window to height Ps2 pixels and width Ps3 pixels.
-        {
-          var x, y, renderer, column, row;
-          y = args[0] || 100;
-          x = args[1] || 100;
-          renderer = this.dependency["renderer"];
-          column = Math.ceil(x / renderer.char_width);
-          row = Math.ceil(y / renderer.line_height);
-          this.sendMessage("command/resize-screen", {
-            column: column, 
-            row: row,
-          });
-        }
+        y = args[0] || 100;
+        x = args[1] || 100;
+        renderer = this.dependency["renderer"];
+        column = Math.ceil(x / renderer.char_width);
+        row = Math.ceil(y / renderer.line_height);
+
+        this.sendMessage("command/resize-screen", {
+          column: column, 
+          row: row,
+        });
         break;
 
       case 5:
@@ -161,22 +185,21 @@ WindowManipulator.definition = {
         break;
 
       case 7:
-        // TODO: Refresh window.
-        coUtils.Debug.reportWarning(_("DECSLPP 7: Refresh window."));
+        // Refresh window.
+        this.sendMessage("command/draw", true);
         break;
 
       case 8:
         // Resize window to Ps2 lines and Ps3 columns.
-        {
-          var x, y, renderer, column, row;
-
-          y = (args[0] || 1) - 1;
-          x = (args[1] || 1) - 1;
-          this.sendMessage("command/resize-screen", {
+        y = args[0] || 24;
+        x = args[1] || 80;
+        this.sendMessage(
+          "command/resize-screen",
+          {
             column: x, 
             row: y,
           });
-        }
+        
         break;
 
       case 9:
@@ -188,21 +211,26 @@ WindowManipulator.definition = {
         break;
 
       case 11:
-        // TODO: Reports window state.
+        // Reports window state.
         //       Response: CSI s t
         //         s = 1    Normal. (non-iconified)
         //           = 2    Iconified.
-        coUtils.Debug.reportWarning(
-          _("DECSLPP 11: Reports window state."));
+        this.sendMessage("command/send-sequences/csi");
+        this.sendMessage("command/send-to-tty/", "1t");
         break;
 
       case 13:
-        // TODO: Reports window position.
+        // Reports window position.
         //       Response: CSI 3 ; x ; y t
         //         x    X position of window.
         //         y    Y position of window.
-        coUtils.Debug.reportWarning(
-          _("DECSLPP 13: Reports window position."));
+        target_element = this.request("get/root-element");
+        x = target_element.boxObject.x;
+        y = target_element.boxObject.y;
+        message = coUtils.Text.format("3;%d;%dt", x, y);
+
+        this.sendMessage("command/send-sequence/csi"); 
+        this.sendMessage("command/send-to-tty", message); 
         break;
 
       case 14:
@@ -211,14 +239,13 @@ WindowManipulator.definition = {
         //   y    Window height in pixels.
         //   x    Window width in pixels.
         //
-        {
-          var broker = this._broker;
-          var target_element = broker.root_element;
-          var width = target_element.boxObject.width;
-          var height = target_element.boxObject.height;
-          var message = coUtils.Text.format("\x1b[4;%d;%dt", height, width);
-          broker.notify("command/send-to-tty", message); 
-        }
+        target_element = this.request("get/root-element");
+        width = target_element.boxObject.width;
+        height = target_element.boxObject.height;
+        message = coUtils.Text.format("4;%d;%dt", height, width);
+
+        this.sendMessage("command/send-sequence/csi"); 
+        this.sendMessage("command/send-to-tty", message); 
         break;
 
       case 18:
@@ -226,24 +253,30 @@ WindowManipulator.definition = {
         //       Response: CSI 8 ; y ; x t
         //         y    Terminal height in characters. (Lines)
         //         x    Terminal width in characters. (Columns)
-        {
-          var broker = this._broker;
-          var target_element = broker.root_element;
-          var screen = this.dependency["screen"];
-          var width = screen.width;
-          var height = screen.height;
-          var message = coUtils.Text.format("\x1b[8;%d;%dt", height, width);
-          broker.notify("command/send-to-tty", message); 
-        }
+        screen = this.dependency["screen"];
+        width = screen.width;
+        height = screen.height;
+        message = coUtils.Text.format("8;%d;%dt", height, width);
+
+        this.sendMessage("command/send-sequence/csi"); 
+        this.sendMessage("command/send-to-tty", message); 
         break;
 
       case 19:
-        // TODO: Reports root window size in characters.
+        // Reports root window size in characters.
         //       Response: CSI 9 ; y ; x t
         //         y    Root window height in characters.
         //         x    Root window width in characters.
-        coUtils.Debug.reportWarning(
-          _("DECSLPP 19: Reports root window size in characters."));
+        target_element = this.request("get/root-element").ownerDocument.documentElement;
+        width = target_element.boxObject.width;
+        height = target_element.boxObject.height;
+        renderer = this.dependency["renderer"];
+        column = Math.floor(width / renderer.char_width);
+        row = Math.floor(height / renderer.line_height);
+        message = coUtils.Text.format("9;%d;%dt", row, column);
+
+        this.sendMessage("command/send-sequence/csi"); 
+        this.sendMessage("command/send-to-tty", message); 
         break;
 
       case 20:
@@ -252,6 +285,8 @@ WindowManipulator.definition = {
         //         title    icon label. (window title)
         coUtils.Debug.reportWarning(
           _("DECSLPP 20: Reports icon label."));
+        this.sendMessage("command/send-sequence/csi"); 
+        this.sendMessage("command/send-to-tty", "10;abct"); 
         break;
 
       case 21:
@@ -260,12 +295,15 @@ WindowManipulator.definition = {
         //         title    Window title.
         coUtils.Debug.reportWarning(
           _("DECSLPP 21: Reports window title."));
+        this.sendMessage("command/send-sequence/csi"); 
+        this.sendMessage("command/send-to-tty", "10;cdet"); 
         break;
 
       default:
-        break;
+        return;
 
     }
+    wait(0);
   },
 }; // class WindowManipulator
 
@@ -279,4 +317,4 @@ function main(broker)
   new WindowManipulator(broker);
 }
 
-
+// EOF

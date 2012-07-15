@@ -20,7 +20,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-let ZshCompletion = new Trait();
+var ZshCompletion = new Trait();
 ZshCompletion.definition = {
 
   _clearGrid: function _clearGrid() 
@@ -33,32 +33,33 @@ ZshCompletion.definition = {
   "[subscribe('event/data-arrived')]": 
   function onDataArrived(data)
   {
-    //let lines = data//.replace(/\x1b\[J|\n|<space>\s+<end><item>/g, "")
-    //  .split(/<item>/)
-      //.map(function(line) line.split(/<end>/).shift());
-    let lines = data.match(/<item>(.*?)<end>/gm).map(function(s) s.slice(6, -5)).filter(function(s) !s.match(/<space>/));  
+    var lines, match, prompt;
+
+    lines = data.match(/<item>(.*?)<end>/gm)
+      .map(function(s) s.slice(6, -5))
+      .filter(function(s) !s.match(/<space>/));  
     Array.prototype.push.apply(this.lines, lines);
-    let match = data.match(/\x1b.*$/);
+    match = data.match(/\x1b.*$/);
     if (null !== match) {
-      let [prompt] = match;
+      [prompt] = match;
       this.onDataArrived.enabled = false;
-      let session = this._broker;
-      session.notify("command/enable-default-parser");
-      session.notify("event/data-arrived", "\r" + prompt);
+      this.sendMessage("command/enable-default-parser");
+      this.sendMessage("event/data-arrived", "\r" + prompt);
       this._clearGrid();
       this.display();
     }
   },
 
-  display: function() 
+  display: function display() 
   {
-    let lines = this.lines;
+    var lines = this.lines,
+        colormap = [ "", "#cdffcf", "#cdd", "#dfffdd" ],
+        renderer = this.dependency["renderer"],
+        selected = -1;
+
     this.onDataArrived.enabled = false;
-    let colormap = [ "", "#cdffcf", "#cdd", "#dfffdd" ];
-    let session = this._broker;
-    let renderer = this.dependency["renderer"];
-    let selected = -1;
-    let {} = session.uniget(
+
+    this.request(
       "command/construct-chrome", 
       {
         parentNode: "#tanasinn_app_popup_container",
@@ -74,9 +75,7 @@ ZshCompletion.definition = {
         childNodes: [
           {
             tagName: "row",
-            style: <>
-              padding: 0px 10px;
-            </> + (index == selected && <>
+            style: "padding: 0px 10px; " + (index == selected && <>
               background-image: -moz-linear-gradient(top, #ddd, #eee); 
               -moz-box-shadow: 1px 1px 5px black;
               box-shadow: 1px 1px 5px black;
@@ -94,72 +93,41 @@ ZshCompletion.definition = {
                     return cell;
                   }
                 }(),
-                style: <>
-                  padding: 0px 5px;
-                  color: {colormap[index]};
-                </>,
+                style: "padding: 0px 5px; color: {colormap[index]};",
               } for ([index, cell] in Iterator(line.split(",")))
             ]
           } for ([index, line] in Iterator(lines))
         ],
       });
     this._datum.style.height = renderer.line_height + "px";
-//    this._datum.style.top = y + "px";
     this._is_showing = true;
     this._popup.openPopup(
       this._datum, 
       "after_start", 0, 0, true, true);
-//    session.notify("command/focus");
-    /*
-    if (-1 != selected) {
-      let scrollbox = this._scrollbox;
-      let rows = scrollbox.querySelector("rows");
-      let box_object = scrollbox.boxObject
-        .QueryInterface(Components.interfaces.nsIScrollBoxObject)
-      if (box_object) {
-        let row = rows.childNodes[selected];
-        let scrollY = {};
-        box_object.getPosition({}, scrollY);
-        let first_position = row.boxObject.y 
-          - scrollbox.boxObject.y;
-        let last_position = first_position 
-          - scrollbox.boxObject.height 
-          + row.boxObject.height;
-        if (first_position < scrollY.value) {
-          box_object.scrollTo(0, first_position);
-        } else if (last_position > scrollY.value) {
-          box_object.scrollTo(0, last_position);
-        }
-      }
-      scrollbox.setAttribute("orient", "vertical");
-    }
-    */
   },
 
-  "[subscribe('sequence/osc/202')]":
+  "[subscribe('sequence/osc/202'), pnp]":
   function onZshCompletion(data) 
   {
-    let session = this._broker;
-    session.notify("command/disable-default-parser");
+    this.sendMessage("command/disable-default-parser");
     this.onDataArrived.enabled = true;
     this.lines = [];
-//    coUtils.Timer.setTimeout(function() {
-//      this.display();
-//    }, 100, this);
   },
 
   "[subscribe('sequence/osc/203'), enabled]":
   function onZshCompletionCategory(data) 
   {
-    //this.onDataArrived.enabled = true;
     this.lines.push("-----" + data);
   },
 
   "[subscribe('sequence/osc/204'), enabled]":
   function onThingy(data) 
   {
-    let [kind, str] = data.split("|");
-    if (3 != kind) {
+    var kind, str;
+
+    [kind, str] = data.split("|");
+
+    if (3 !== kind) {
       this.lines.push(str);
     }
   },
@@ -169,7 +137,7 @@ ZshCompletion.definition = {
 /**
  *  @class PopupMenu
  */
-let PopupMenu = new Class().extends(Plugin)
+var PopupMenu = new Class().extends(Plugin)
                            .mix(ZshCompletion)
                            .depends("renderer")
                            .depends("cursorstate")
@@ -199,29 +167,24 @@ PopupMenu.definition = {
   _is_showing: false,
  
   /** installs itself. 
-   *  @param {Session} session A session object.
+   *  @param {Broker} broker A broker object.
    */
   "[install]":
-  function install(session) 
+  function install(broker) 
   {
-    this.onDisplay.enabled = true;
-    this.onUndisplay.enabled = true;
-    this.onZshCompletion.enabled = true;
-    let {
+    var {
       tanasinn_app_popup_datum,
       tanasinn_app_popup,
       tanasinn_app_popup_scrollbox,
       tanasinn_app_popup_container,
-    } = session.uniget(
+    } = this.request(
       "command/construct-chrome", 
       [
         {
           parentNode: "#tanasinn_center_area",
           tagName: "box",
           id: "tanasinn_app_popup_datum",
-          style: <>
-            position: absolute;
-          </>,
+          style: "position: absolute;",
         },
         {
           parentNode: "#tanasinn_background_frame",
@@ -255,10 +218,7 @@ PopupMenu.definition = {
                 orient: "vertical",
                 flex: 1,
                 maxHeight: this.max_height,
-                style: <>
-                  margin: 9px;
-                  overflow-y: auto;
-                </>,
+                style: "margin: 9px; overflow-y: auto;",
                 childNodes: {
                   tagName: "grid",
                   id: "tanasinn_app_popup_container",
@@ -268,9 +228,6 @@ PopupMenu.definition = {
           },
         },
       ]);
-    this.onmousedown.enabled = true;
-    this.onmousemove.enabled = true;
-    this.onmouseup.enabled = true;
     this._datum = tanasinn_app_popup_datum;
     this._popup = tanasinn_app_popup;
     this._scrollbox = tanasinn_app_popup_scrollbox;
@@ -278,100 +235,117 @@ PopupMenu.definition = {
   },
 
   /** Uninstalls itself.
-   *  @param {Session} session A session object.
+   *  @param {Broker} broker A Broker object.
    */
   "[uninstall]":
-  function uninstall(session) 
+  function uninstall(broekr) 
   {
-    this.onmousedown.enabled = false;
-    this.onmousemove.enabled = false;
-    this.onmouseup.enabled = false;
-    this.onDisplay.enabled = false;
-    this.onUndisplay.enabled = false;
-    this.onZshCompletion.enabled = false;
-    this._datum.parentNode.removeChild(this._datum);
-    this._popup.parentNode.removeChild(this._popup);
-    this._datum = null;
-    this._popup = null;
+    if (null !== this._datum) {
+      this._datum.parentNode.removeChild(this._datum);
+      this._datum = null;
+    }
+    if (null !== this._popup) {
+      this._popup.parentNode.removeChild(this._popup);
+      this._popup = null;
+    }
   },
 
-  "[listen('mousedown', '#tanasinn_app_popup', true)]":
+  "[listen('mousedown', '#tanasinn_app_popup', true), pnp]":
   function onmousedown(event) 
   {
-    let target = event.explicitOriginalTarget;
+    var target = event.explicitOriginalTarget;
+        diff,
+        packed_code,
+        i;
+
     if (!target) {
       return;
     }
-    while ("row" != target.tagName) {
+
+    while ("row" !== target.tagName) {
       target = target.parentNode;
     }
-    let diff = - this._selected;
+
+    diff = - this._selected;
+
     while ((target = target.previousSibling)) {
       ++diff;
     }
 
-    let session = this._broker;
     this.onDisplay.enabled = false;
     this._popup.hidePopup();
-    session.notify("command/focus");
 
-    let packed_code;
+    this.sendMessage("command/focus");
+
     if (diff < 0) {
       packed_code = coUtils.Keyboard.parseKeymapExpression("<C-p>");
     } else {
       packed_code = coUtils.Keyboard.parseKeymapExpression("<C-n>");
     }
-    for (let i = 0; i < Math.abs(diff); ++i) {
-      session.notify("command/input-with-no-remapping", packed_code);
+    for (i = 0; i < Math.abs(diff); ++i) {
+      this.sendMessage("command/input-with-no-remapping", packed_code);
     }
     packed_code = coUtils.Keyboard.parseKeymapExpression("<Escape>");
-    session.notify("command/input-with-no-remapping", packed_code);
+
+    this.sendMessage("command/input-with-no-remapping", packed_code);
   },
 
-  "[listen('mousemove', '#tanasinn_app_popup', true)]":
+  "[listen('mousemove', '#tanasinn_app_popup', true), pnp]":
   function onmousemove(event) 
   {
-    let target = event.explicitOriginalTarget;
-    while ("row" != target.tagName) {
+    var target = event.explicitOriginalTarget;
+
+    while ("row" !== target.tagName) {
       target = target.parentNode;
     }
+
     if (this._mouseover) {
       this._mouseover.style.backgroundColor = ""; 
       this._mouseover.style.borderRadius = "5px";
     }
+
     this._mouseover = target;
     target.style.backgroundColor = "#ccc"; 
   },
 
-  "[listen('mouseup', '#tanasinn_app_popup', true)]":
+  "[listen('mouseup', '#tanasinn_app_popup', true), pnp]":
   function onmouseup(event) 
   {
     event.stopPropagation();
     event.preventDefault();
   },
 
-  "[subscribe('sequence/osc/200')]":
+  "[subscribe('sequence/osc/200'), pnp]":
   function onDisplay(data) 
   {
+    var liens, row, column, selected, cursor_state,
+        renderer, line_height, char_width, x, y,
+        colormap, scrollbox, rows, box_object, row, 
+        scrollY, first_position, last_position;
+
     while (this._container.firstChild) {
       this._container.removeChild(this._container.firstChild);
     }
-    let lines = data.split("-");
-    let [row, column, selected] = lines.shift()
+    lines = data.split("-");
+
+    [row, column, selected] = lines.shift()
       .split(",")
       .map(function(str) Number(str));
     this._selected = selected;
-    let cursor_state = this.dependency["cursorstate"];
-    row = row || cursor_state.positionY + 1;
-    let renderer = this.dependency["renderer"];
-    let line_height = renderer.line_height;
-    let char_width = renderer.char_width;
-    let x = column * char_width - 10;
-    let y = row * line_height;
 
-    let colormap = [ "", "#cdffcf", "#cdd", "#dfffdd" ];
-    let session = this._broker;
-    let {} = session.uniget(
+    cursor_state = this.dependency["cursorstate"];
+    row = row || cursor_state.positionY + 1;
+
+    renderer = this.dependency["renderer"];
+    line_height = renderer.line_height;
+    char_width = renderer.char_width;
+
+    x = column * char_width - 10;
+    y = row * line_height;
+
+    colormap = [ "", "#cdffcf", "#cdd", "#dfffdd" ];
+
+    this.request(
       "command/construct-chrome", 
       {
         parentNode: "#tanasinn_app_popup_container",
@@ -425,19 +399,21 @@ PopupMenu.definition = {
         this._datum, 
         "after_start", x, 0, true, true);
     //}
-    session.notify("command/focus");
-    if (-1 != selected) {
-      let scrollbox = this._scrollbox;
-      let rows = scrollbox.querySelector("rows");
-      let box_object = scrollbox.boxObject
+    //
+    this.sendMessage("command/focus");
+
+    if (-1 !== selected) {
+      scrollbox = this._scrollbox;
+      rows = scrollbox.querySelector("rows");
+      box_object = scrollbox.boxObject
         .QueryInterface(Components.interfaces.nsIScrollBoxObject)
       if (box_object) {
-        let row = rows.childNodes[selected];
-        let scrollY = {};
+        row = rows.childNodes[selected];
+        scrollY = {};
         box_object.getPosition({}, scrollY);
-        let first_position = row.boxObject.y 
+        first_position = row.boxObject.y 
           - scrollbox.boxObject.y;
-        let last_position = first_position 
+        last_position = first_position 
           - scrollbox.boxObject.height 
           + row.boxObject.height;
         if (first_position < scrollY.value) {
@@ -451,36 +427,43 @@ PopupMenu.definition = {
 //    box_object.scrollTo(0, selected * rows.firstChild.boxObject.height);
   },
 
-  "[subscribe('sequence/osc/201')]":
+  "[subscribe('sequence/osc/201'), pnp]":
   function onUndisplay() 
   {
     this._is_showing = false;
-    coUtils.Timer.setTimeout(function() {
-      if (false === this._is_showing) {
-        this._popup.hidePopup();
-        let session = this._broker;
-        session.notify("command/focus");
-      }
-    }, 30, this);
+    coUtils.Timer.setTimeout(
+      function() 
+      {
+        if (false === this._is_showing) {
+          this._popup.hidePopup();
+          this.sendMessage("command/focus");
+        }
+      }, 30, this);
     this.onDisplay.enabled = true;
   },
 
   _selectRow: function _selectRow(row)
   {
+    var completion_root, scroll_box, box_object, scrollY, 
+        first_position, last_position;
+
     row.style.borderRadius = "6px";
     row.style.backgroundImage 
       = "-moz-linear-gradient(top, #777, #666)";
     row.style.color = "white";
-    let completion_root = this._completion_root;
-    let scroll_box = completion_root.parentNode;
-    let box_object = scroll_box.boxObject
+
+    completion_root = this._completion_root;
+    scroll_box = completion_root.parentNode;
+    box_object = scroll_box.boxObject
       .QueryInterface(Components.interfaces.nsIScrollBoxObject)
     if (box_object) {
-      let scrollY = {};
+      scrollY = {};
+
       box_object.getPosition({}, scrollY);
-      let first_position = row.boxObject.y 
+
+      first_position = row.boxObject.y 
         - scroll_box.boxObject.y;
-      let last_position = first_position 
+      last_position = first_position 
         - scroll_box.boxObject.height 
         + row.boxObject.height;
       if (first_position < scrollY.value) {
@@ -504,4 +487,4 @@ function main(broker)
   new PopupMenu(broker);
 }
 
-
+// EOF

@@ -23,10 +23,10 @@
  * ***** END LICENSE BLOCK ***** */
 
 /** 
- * @class ForwardInputIterator
+ * @class SixelForwardInputIterator
  */ 
-var ForwardInputIterator = new Class();
-ForwardInputIterator.definition = {
+var SixelForwardInputIterator = new Class();
+SixelForwardInputIterator.definition = {
 
   _value: null,
   _position: 0,
@@ -69,10 +69,11 @@ ForwardInputIterator.definition = {
   
   parseUint: function parseUint() 
   {
-    let n = 0;
-    let c;
+    var n, c;
 
+    n = 0;
     c = this.current();
+
     if (0x30 <= c && c <= 0x39) {
       n = c - 0x30;
       while (true) {
@@ -120,14 +121,10 @@ Sixel.definition = {
 
   /** UI template */
   get template() 
-    let (renderer = this.dependency["renderer"])
-    let (screen = this.dependency["screen"])
     ({
 //      parentNode: "#tanasinn_center_area",
       tagName: "html:canvas",
       id: "sixel_canvas",
-      width: renderer.char_width * screen.width,
-      height: renderer.line_height * screen.height * 2,
     }),
 
   _color: null,
@@ -166,13 +163,17 @@ Sixel.definition = {
 
   _setSixel: function _setSixel(imagedata, x, y, c) 
   {
-    let [r, g, b] = this._color_table[this._color];
-    let data = imagedata.data;
+    var r, g, b, data, i, position;
+
+    [r, g, b] = this._color_table[this._color];
+
+    data = imagedata.data;
+
     c -= 0x3f;
-    let i;
+
     for (i = 5; i >= 0; --i) {
       if (c & 1 << i) {
-        let position = ((y + i) * imagedata.width * 1 + x) * 4;
+        position = ((y + i) * imagedata.width * 1 + x) * 4;
         data[position] = r;
         data[position + 1] = g; 
         data[position + 2] = b;
@@ -183,7 +184,9 @@ Sixel.definition = {
 
   _setColor: function _setColor(color_no, r, g, b) 
   {
-    let rgb_value = [
+    var rgb_value;
+
+    rgb_value = [
       Math.floor(r / 101 * 255), 
       Math.floor(g / 101 * 255), 
       Math.floor(b / 101 * 255)
@@ -199,32 +202,49 @@ Sixel.definition = {
   "[subscribe('sequence/dcs'), pnp]":
   function onDCS(data) 
   {
-    let renderer = this.dependency["renderer"];
-    let screen = this.dependency["screen"];
+    var renderer, screen, pattern, match,
+        P1, P2, P3, sixel, dom,
+        scanner, imagedata, x, y, color_no,
+        r, g, b, count, i, line_count,
+        space_type, c;
 
-    let {sixel_canvas} = this.request(
+    pattern = /^([0-9]);([01]);([0-9]+);?q((?:.|[\n\r])+)/;
+    match = data.match(pattern);
+    if (null === match) {
+      return;
+    }
+
+    renderer = this.dependency["renderer"];
+    screen = this.dependency["screen"];
+
+    [, P1, P2, P3, sixel] = match;
+
+    if (!sixel) {
+      return;
+    }
+
+    var {sixel_canvas} = this.request(
       "command/construct-chrome", this.template);
-    let dom = { 
+
+    sixel_canvas.width = renderer.char_width * screen.width;
+    sixel_canvas.height = renderer.line_height * screen.height * 2;
+
+    dom = { 
       canvas: sixel_canvas,
       context: sixel_canvas.getContext("2d"),
     };
     this._buffers.push(dom);
 
-    let pattern = /^([0-9]);([01]);([0-9]+);?q((?:.|[\n\r])+)/;
-    let match = data.match(pattern);
-    if (null === match) {
-      return;
-    }
-    let [, P1, P2, P3, sixel] = match;
-    let scanner = new ForwardInputIterator(sixel);
-    let imagedata = dom.context
+    scanner = new SixelForwardInputIterator(sixel);
+    imagedata = dom.context
       .getImageData(0, 0, dom.canvas.width, dom.canvas.height * 2);
-    let x = 0;
-    let y = 0;
-    let color_no, r, g, b;
-    let count = 1;
+
+    x = 0;
+    y = 0;
+    count = 1;
+
     do {
-      let c = scanner.current();
+      c = scanner.current();
       switch (c) {
 
         case 0x0d:
@@ -269,7 +289,9 @@ Sixel.definition = {
           if (0x3b == c) { // ;
             scanner.moveNext();
             c = scanner.parseUint();
-            let space_type = "";
+
+            space_type = "";
+
             if (1 == c) { // HSL
               space_type = "HSL"; 
             } else if (2 == c) {
@@ -391,7 +413,7 @@ Sixel.definition = {
         case 0x7c:
         case 0x7d:
         case 0x7e:
-          for (let i = 0; i < count; ++i) {
+          for (i = 0; i < count; ++i) {
             this._setSixel(imagedata, x, y, c);
             ++x;
           }
@@ -411,8 +433,8 @@ Sixel.definition = {
     } while (!scanner.isEnd);
 
     dom.context.putImageData(imagedata, 0, 0);
-    let line_count = Math.ceil(y / renderer.line_height);
-    let i;
+    line_count = Math.ceil(y / renderer.line_height);
+
     for (i = 0; i < line_count; ++i) {
       screen.lineFeed();
       screen.markAsSixelLine(dom.canvas, i);
@@ -432,4 +454,4 @@ function main(broker)
   new Sixel(broker);
 }
 
-
+// EOF

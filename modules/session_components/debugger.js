@@ -22,16 +22,16 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-const CO_TRACE_INPUT = 1;
-const CO_TRACE_OUTPUT = 2;
-const CO_TRACE_CONTROL = 3;
+var CO_TRACE_INPUT = 1;
+var CO_TRACE_OUTPUT = 2;
+var CO_TRACE_CONTROL = 3;
 
 /**
  *
  * @class Tracer
  *
  */
-let Tracer = new Class().extends(Component);
+var Tracer = new Class().extends(Component);
 Tracer.definition = {
 
   get id()
@@ -54,33 +54,21 @@ Tracer.definition = {
   "[subscribe('command/debugger-trace-on'), enabled]":
   function enable() 
   {
+    var sequences, i, information;
+
     this.onBeforeInput.enabled = true;
 
-    let sequences = this.sendMessage("get/sequences/" + this._mode);
+    // get sequence handlers
+    sequences = this.sendMessage("get/sequences/" + this._mode);
+
+    // backup them
     this._backup_sequences = sequences;
 
-    for (let i = 0; i < sequences.length; ++i) {
-      let information = sequences[i];
-      try {
-        let {expression, handler, context} = information;
-        let delegate = function()
-        {
-          handler.apply(this, arguments);
-          let info = {
-            type: CO_TRACE_CONTROL,
-            name: handler.name, 
-            value: Array.slice(arguments),
-          };
-          return info;
-        };
-        this.sendMessage("command/add-sequence", {
-          expression: expression, 
-          handler: delegate, 
-          context: context,
-        });
-      } catch (e) {
-        coUtils.Debug.reportError(e);
-      }
+    for (i = 0; i < sequences.length; ++i) {
+
+      information = sequences[i];
+
+      this._registerControlHandler(information);
     }
   },
 
@@ -101,7 +89,9 @@ Tracer.definition = {
   "[subscribe('command/send-to-tty')]":
   function onBeforeInput(message) 
   {
-    let info = {
+    var info;
+
+    info = {
       type: CO_TRACE_INPUT, 
       name: undefined,
       value: [message],
@@ -111,6 +101,36 @@ Tracer.definition = {
       [info, undefined]); 
   },
 
+  _registerControlHandler: function _registerControlHandler(information)
+  {
+    var handler, delegate;
+
+    handler = information.handler;
+
+    try {
+
+      delegate = function()
+      {
+        handler.apply(this, arguments);
+
+        return {
+          type: CO_TRACE_CONTROL,
+          name: handler.name, 
+          value: Array.slice(arguments),
+        };
+      };
+
+      this.sendMessage("command/add-sequence", {
+        expression: information.expression, 
+        handler: delegate, 
+        context: information.context,
+      });
+
+    } catch (e) {
+      coUtils.Debug.reportError(e);
+    }
+  },
+
 }; // class Tracer
 
 /**
@@ -118,7 +138,7 @@ Tracer.definition = {
  * @class Hooker
  *
  */
-let Hooker = new Class().extends(Component).depends("parser");
+var Hooker = new Class().extends(Component).depends("parser");
 Hooker.definition = {
 
   get id()
@@ -145,12 +165,15 @@ Hooker.definition = {
   "[subscribe('command/debugger-resume'), enabled]":
   function resume()  
   {
+    var buffer, action, result;
+
     this._step_mode = false;
-    let buffer = this._buffer;
+    buffer = this._buffer;
+
     // drain queued actions.
-    while (buffer.length) {
-      let action = buffer.shift();
-      let result = action();
+    while (0 !== buffer.length) {
+      action = buffer.shift();
+      result = action();
       this.sendMessage("command/debugger-trace-sequence", result);
     }
     this.sendMessage("command/flow-control", true);
@@ -161,11 +184,13 @@ Hooker.definition = {
   "[subscribe('command/debugger-step'), enabled]":
   function step()
   {
+    var buffer, action, result;
+
     if (this._hooked) {
-      let buffer = this._buffer;
-      let action = buffer.shift();
+      buffer = this._buffer;
+      action = buffer.shift();
       if (action) {
-        let result = action();
+        result = action();
         this.sendMessage("command/debugger-trace-sequence", result);
         this.sendMessage("command/draw"); // redraw
       } else {
@@ -177,24 +202,31 @@ Hooker.definition = {
   "[subscribe('command/debugger-trace-on'), enabled]":
   function set() 
   {
+    var parser, buffer, self, action, result, sequence;
+
+    function make_action(sequence, action)
+    {
+      buffer.push(function() [action(), sequence]);
+    }
+
     if (!this._hooked) {
-      let parser = this.dependency["parser"];
-      let buffer = this._buffer;
-      let self = this;
+      parser = this.dependency["parser"];
+      buffer = this._buffer;
+      self = this;
       this._hooked = true;
       parser.parse = function(data) 
       {
         if (self._step_mode) {
           this.sendMessage("command/flow-control", false);
         }
-        for (let action in parser.__proto__.parse.call(parser, data)) {
-          let sequence = parser._scanner.getCurrentToken();
-          buffer.push(let (action = action) function() [action(), sequence]);
+        for (action in parser.__proto__.parse.call(parser, data)) {
+          sequence = parser._scanner.getCurrentToken();
+          make_action(sequence, action);
         }
         if (!self._step_mode) {
           while (buffer.length) {
-            let action = buffer.shift();
-            let result = action();
+            action = buffer.shift();
+            result = action();
             this.sendMessage("command/debugger-trace-sequence", result);
           }
         }
@@ -205,8 +237,10 @@ Hooker.definition = {
   "[subscribe('command/debugger-trace-off'), enabled]":
   function unset() 
   {
+    var parser;
+
     if (this._hooked) {
-      let parser = this.dependency["parser"];
+      parser = this.dependency["parser"];
       delete parser.parse; // uninstall hook
       this._hooked = false;
     }
@@ -216,7 +250,7 @@ Hooker.definition = {
 /**
  * @class Debugger
  */
-let Debugger = new Class().extends(Plugin);
+var Debugger = new Class().extends(Plugin);
 Debugger.definition = {
 
   get id()
@@ -321,12 +355,6 @@ Debugger.definition = {
   function install(broker) 
   {
     this._queue = [];
-    this.select.enabled = true;
-    this.breakpoint.enabled = true;
-    this.enableDebugger.enabled = true;
-    this.disableDebugger.enabled = true;
-    this.doBreak.enabled = true;
-    this.onPanelItemRequested.enabled = true;
   },
 
   /** Uninstalls itself 
@@ -335,38 +363,36 @@ Debugger.definition = {
   "[uninstall]":
   function uninstall(broker)
   {
-    this.select.enabled = false;
-    this.breakpoint.enabled = false;
-    this.enableDebugger.enabled = false;
     this.trace.enabled = false;
-    this.onPanelItemRequested.enabled = false;
+
     if (this._timer) {
       this._timer.cancel();
     }
+
     this._timer = null;
     this._queue = null;
     this.sendMessage("command/remove-panel", this.id);
   },
 
-  "[subscribe('@get/panel-items')]": 
+  "[subscribe('@get/panel-items'), pnp]": 
   function onPanelItemRequested(panel) 
   {
-    let template = this.template;
-    let item = panel.alloc(this.id, _("Debugger"));
+    var template, item, result;
+
+    template = this.template;
+    item = panel.alloc(this.id, _("Debugger"));
+
     template.parentNode = item;
-    let {
-      tanasinn_trace,
-      tanasinn_debugger_attach,
-      tanasinn_debugger_break,
-      tanasinn_debugger_resume,
-      tanasinn_debugger_step,
-    } = this.request("command/construct-chrome", template);
-    this._trace_box = tanasinn_trace;
-    this._checkbox_attach = tanasinn_debugger_attach;
-    this._checkbox_break = tanasinn_debugger_break;
-    this._checkbox_resume = tanasinn_debugger_resume;
-    this._checkbox_step = tanasinn_debugger_step;
+
+    result = this.request("command/construct-chrome", template);
+
+    this._trace_box = result.tanasinn_trace;
+    this._checkbox_attach = result.tanasinn_debugger_attach;
+    this._checkbox_break = result.tanasinn_debugger_break;
+    this._checkbox_resume = result.tanasinn_debugger_resume;
+    this._checkbox_step = result.tanasinn_debugger_step;
     this.trace.enabled = true;
+
     return item;
   },
 
@@ -383,7 +409,7 @@ Debugger.definition = {
     }
   },
 
-  "[command('enabledebugger/eg'), _('Attach the debugger and trace incoming sequences.')]": 
+  "[command('enabledebugger/eg'), _('Attach the debugger and trace incoming sequences.'), pnp]": 
   function enableDebugger()
   {
     if (!this._trace_box) {
@@ -398,25 +424,32 @@ Debugger.definition = {
     if (this._timer) {
       this._timer.cancel();
     }
-    this._timer = coUtils.Timer.setInterval(function() {
-      let updated;
-      if (!this._queue && this._timer) {
+    this._timer = coUtils.Timer.setInterval(function() 
+    {
+      var updated = false,      // update flag
+          queue = this._queue,  // queue object
+          trace_box;            // trace box UI eleemnt
+
+      if (!queue && this._timer) {
         this._timer.cancel();
         this._timer = null;
         return;
       }
-      while (this._queue.length) {
-        this.update(this._queue.shift());
-        updated = true;
+
+      // detect changes
+      updated = 0 !== queue.length;
+
+      while (0 !== queue.length) {
+        this.update(queue.shift());
       }
       if (updated && this.auto_scroll) {
-        let trace_box = this._trace_box;
+        trace_box = this._trace_box;
         trace_box.scrollTop = trace_box.scrollHeight;
       }
     }, this.update_interval, this);
   },
  
-  "[command('disabledebugger'), _('Detach the debugger.')]": 
+  "[command('disabledebugger'), _('Detach the debugger.'), pnp]": 
   function disableDebugger()
   {
     if (!this._trace_box) {
@@ -438,7 +471,7 @@ Debugger.definition = {
     this.sendMessage("command/debugger-resume");
   },
 
-  "[command('breakdebugger'), _('Break debugger.')]": 
+  "[command('breakdebugger'), _('Break debugger.'), pnp]": 
   function doBreak() 
   {
     if (!this._trace_box) {
@@ -480,7 +513,7 @@ Debugger.definition = {
     this.sendMessage("command/debugger-step");
   },
 
-  "[command('breakpoint/bp')]": 
+  "[command('breakpoint/bp'), pnp]": 
   function breakpoint(arguments_string) 
   {
     if (!this._trace_box) {
@@ -495,9 +528,8 @@ Debugger.definition = {
   "[subscribe('command/debugger-trace-sequence')] watchSequence": 
   function watchSequence(trace_info) 
   {
-    let [info, sequence] = trace_info;
-    if (this._pattern.test(sequence)) {
-      this.watchSequence.enabled = false;
+    if (this._pattern.test(trace_info.sequence)) {
+      this.watchSequence.eniabled = false;
       this.doBreak();
     }
   },
@@ -520,126 +552,133 @@ Debugger.definition = {
 
   update: function update(trace_info) 
   {
-    let [info, sequence] = trace_info;
-    let {type, name, value} = info || {
+    var [info, sequence] = trace_info;
+    var {type, name, value} = info || {
       type: CO_TRACE_OUTPUT,
       name: undefined,
       value: [sequence],
     };
-    this.request("command/construct-chrome", {
-      parentNode: "#tanasinn_trace",
-      tagName: "hbox",
-      style: <> 
-        width: 400px; 
-        max-width: 400px; 
-        font-weight: bold;
-        text-shadow: 0px 0px 2px black;
-        font-size: 20px;
-      </>,
-      childNodes: CO_TRACE_CONTROL == type ? [
-        {
-          tagName: "label",
-          value: ">",
-          style: <>
-            padding: 3px;
-            color: darkred;
-          </>,
-        },
-        {
-          tagName: "box",
-          width: 120,
-          childNodes:
+    var child;
+    switch (type) {
+      case CO_TRACE_CONTROL: 
+        child = [
           {
             tagName: "label",
-            value: this._escape(sequence),
+            value: ">",
             style: <>
-              color: red;
-              background: lightblue; 
+              padding: 3px;
+              color: darkred;
+            </>,
+          },
+          {
+            tagName: "box",
+            width: 120,
+            childNodes:
+            {
+              tagName: "label",
+              value: this._escape(sequence),
+              style: <>
+                color: red;
+                background: lightblue; 
+                border-radius: 6px;
+                padding: 3px;
+              </>,
+            },
+          },
+          {
+            tagName: "label",
+            value: "-",
+            style: <>
+              color: black;
+              padding: 3px;
+            </>,
+          },
+          {
+            tagName: "box",
+            style: <> 
+              background: lightyellow;
+              border-radius: 6px;
+              margin: 2px;
+              padding: 0px;
+            </>,
+            childNodes: [
+              {
+                tagName: "label",
+                value: name,
+                style: <>
+                  color: blue;
+                  padding: 1px;
+                </>,
+              },
+              {
+                tagName: "label",
+                value: this._escape(value.toString()),
+                style: <>
+                  color: green;
+                  padding: 1px;
+                </>,
+              }
+            ],
+          },
+        ]
+        break;
+
+      case CO_TRACE_OUTPUT: 
+        child = [
+          {
+            tagName: "label",
+            value: ">",
+            style: <>
+              padding: 3px;
+              color: darkred;
+            </>,
+          },
+          {
+            tagName: "label",
+            value: this._escape(value.shift()),
+            style: <>
+              color: darkcyan;
+              background: lightgray;
               border-radius: 6px;
               padding: 3px;
             </>,
           },
-        },
-        {
-          tagName: "label",
-          value: "-",
-          style: <>
-            color: black;
-            padding: 3px;
-          </>,
-        },
-        {
-          tagName: "box",
-          style: <> 
-            background: lightyellow;
-            border-radius: 6px;
-            margin: 2px;
-            padding: 0px;
-          </>,
-          childNodes: [
-            {
-              tagName: "label",
-              value: name,
-              style: <>
-                color: blue;
-                padding: 1px;
-              </>,
-            },
-            {
-              tagName: "label",
-              value: this._escape(value.toString()),
-              style: <>
-                color: green;
-                padding: 1px;
-              </>,
-            }
-          ],
-        },
-      ]: CO_TRACE_OUTPUT == type ? [
-        {
-          tagName: "label",
-          value: ">",
-          style: <>
-            padding: 3px;
-            color: darkred;
-          </>,
-        },
-        {
-          tagName: "label",
-          value: escape(value.shift()),
-          style: <>
-            color: darkcyan;
-            background: lightgray;
-            border-radius: 6px;
-            padding: 3px;
-          </>,
-        },
-      ]: [
-        {
-          tagName: "label",
-          value: "<",
-          style: <> 
-            padding: 3px; 
-            color: darkblue;
-          </>,
-        },
-        {
-          tagName: "label",
-          value: escape(value.shift()),
-          style: <>
-            color: darkcyan;
-            background: lightpink;
-            border-radius: 6px;
-            padding: 3px;
-          </>,
-        },
-      ],
+        ]
+        break;
+
+      default:
+        child = [
+          {
+            tagName: "label",
+            value: "<",
+            style: <> 
+              padding: 3px; 
+              color: darkblue;
+            </>,
+          },
+          {
+            tagName: "label",
+            value: this._escape(value.shift()),
+            style: <>
+              color: darkcyan;
+              background: lightpink;
+              border-radius: 6px;
+              padding: 3px;
+            </>,
+          },
+        ]
+    }
+    this.request("command/construct-chrome", {
+      parentNode: "#tanasinn_trace",
+      tagName: "hbox",
+      style: "width: 400px; max-width: 400px; font-weight: bold; text-shadow: 0px 0px 2px black; font-size: 20px; ",
+      childNodes: child,
     });
   },
 
 
   /** select this panel */
-  "[command('debugger'), nmap('<M-d>', '<C-S-d>'), _('Open debugger.')]":
+  "[command('debugger'), nmap('<M-d>', '<C-S-d>'), _('Open debugger.'), pnp]":
   function select() 
   {
     this.sendMessage("command/select-panel", this.id);
@@ -659,3 +698,4 @@ function main(broker)
   new Tracer(broker);
 }
 
+// EOF

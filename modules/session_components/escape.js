@@ -58,7 +58,8 @@ KeypadModeHandler.definition = {
    * The setting is not saved in NVM. When you turn on or reset the terminal, 
    * it automatically selects numeric keypad mode.
    */ 
-  "[profile('vt100'), sequence('ESC >')]": function DECPNM() 
+  "[profile('vt100'), sequence('ESC >')]":
+  function DECPNM() 
   {
     this.sendMessage(
       "event/keypad-mode-changed", 
@@ -130,32 +131,6 @@ Escape.definition = {
   },
 
   /**
-   * HTS — Horizontal Tab Set
-   *
-   * HTS sets a horizontal tab stop at the column position indicated by the 
-   * value of the active column when the terminal receives an HTS.
-   *
-   * You can use either one of the following formats:
-   *
-   * Format
-   * HTS  or  ESC    H
-   * 8/8  or  1/11   4/8
-   *
-   * Description
-   * Executing an HTS does not effect the other horizontal tab stop settings.
-   *
-   */
-  "[profile('vt100'), sequence('0x88', 'ESC H'), _('Tab set.')]": 
-  function HTS() 
-  {
-    var screen;
-
-    screen = this._screen;
-    screen.tab_stops.push(screen.cursor.positionX);
-    screen.tab_stops.sort(function(lhs, rhs) lhs > rhs);
-  },
-
-  /**
    *
    * RI – Reverse Index
    * ESC M   
@@ -208,7 +183,20 @@ Escape.definition = {
     }
   },
 
-  "[profile('vt100'), sequence('ESC X%s')]": 
+  /**
+   *
+   * SOS - START OF STRING
+   *
+   * Notation: (C1)
+   * Representation: 09/08 or ESC 05/08
+   * SOS is used as the opening delimiter of a control string. The character 
+   * string following may consist of any bit combination, except those 
+   * representing SOS or STRING TERMINATOR (ST). The control string is closed 
+   * by the terminating delimiter STRING TERMINATOR (ST). The interpretation 
+   * of the character string depends on the application.
+   *
+   */
+  "[profile('vt100'), sequence('0x98%s', 'ESC X%s')]": 
   function SOS() 
   {
     var message;
@@ -217,7 +205,21 @@ Escape.definition = {
     this.sendMessage("sequence/sos", message);
   },
 
-  "[profile('vt100'), sequence('ESC _%s')]": 
+  /**
+   *
+   * APC - APPLICATION PROGRAM COMMAND
+   *
+   * Notation: (C1)
+   * Representation: 09/15 or ESC 05/15
+   * APC is used as the opening delimiter of a control string for application
+   * program use. The command string following may consist of bit combinations
+   * in the range 00/08 to 00/13 and 02/00 to 07/14. The control string is 
+   * closed by the terminating delimiter STRING TERMINATOR (ST). The 
+   * interpretation of the command string depends on the relevant application 
+   * program.
+   *
+   */
+  "[profile('vt100'), sequence('0x9f', 'ESC _%s')]": 
   function APC() 
   {
     var message;
@@ -226,7 +228,23 @@ Escape.definition = {
     this.sendMessage("sequence/apc", message);
   },
   
-  "[profile('vt100'), sequence('ESC ]%s')]": 
+  /**
+   *
+   * OSC - OPERATING SYSTEM COMMAND
+   *
+   * Notation: (C1)
+   *
+   * Representation: 09/13 or ESC 05/13
+   *
+   * OSC is used as the opening delimiter of a control string for operating 
+   * system use. The command string following may consist of a sequence of 
+   * bit combinations in the range 00/08 to 00/13 and 02/00 to 07/14. The 
+   * control string is closed by the terminating delimiter STRING TERMINATOR 
+   * (ST). The interpretation of the command string depends on the relevant 
+   * operating system.
+   *
+   */
+  "[profile('vt100'), sequence('0x9d', 'ESC ]%s')]": 
   function OSC(message) 
   {
     var delimiter_position, num, command;
@@ -237,8 +255,22 @@ Escape.definition = {
     this.sendMessage("sequence/osc/" + num, command);
   },
   
+  /**
+   *
+   * PM - PRIVACY MESSAGE
+   *
+   * Notation: (C1)
+   * Representation: 09/14 or ESC 05/14
+   * PM is used as the opening delimiter of a control string for privacy 
+   * message use. The command string following may consist of a sequence of
+   * bit combinations in the range 00/08 to 00/13 and 02/00 to 07/14. The 
+   * control string is closed by the terminating delimiter STRING TERMINATOR 
+   * (ST). The interpretation of the command string depends on the relevant 
+   * privacy discipline.
+   *
+   */
   /** private message */
-  "[profile('vt100'), sequence('ESC ^%s')]": 
+  "[profile('vt100'), sequence('0x9e', 'ESC ^%s')]": 
   function PM(message) 
   {
     this.sendMessage("sequence/pm", message);
@@ -258,24 +290,6 @@ Escape.definition = {
   {
     this.sendMessage("change/decoder", "UTF-8");
     this.sendMessage("change/encoder", "UTF-8");
-  },
-
-  /** Selective Erace Rectangle Area. */
-  "[profile('vt100'), sequence('CSI %d${')]": 
-  function DECSERA(n1, n2, n3, n4) 
-  {
-    coUtils.Debug.reportWarning(
-      "%s sequence [%s] was ignored.",
-      arguments.callee.name, [].slice.apply(arguments));
-  },
-
-  /** Soft Terminal reset. */
-  "[profile('vt100'), sequence('CSI %d\"p')]": 
-  function DECSCL() 
-  {
-    coUtils.Debug.reportWarning(
-      "%s sequence [%s] was ignored.",
-      arguments.callee.name, [].slice.apply(arguments));
   },
 
   /**
@@ -405,6 +419,7 @@ Escape.definition = {
   {
     this._screen = screen;
   },
+
 };
 
 /**
@@ -418,4 +433,4 @@ function main(broker)
   new KeypadModeHandler(broker);
 }
 
-
+// EOF

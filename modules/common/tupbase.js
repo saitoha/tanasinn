@@ -97,7 +97,7 @@ AttributeContext.prototype = {
     this._target["enabled"] = true;
   },
 
-  _: function(description) 
+  _: function __underscore(description) 
   {
     this._target["description"] = _(description);
   },
@@ -126,11 +126,13 @@ AttributeContext.prototype = {
     this._attributes_map[id] = attribute;
 
     // define id in attribute context.
-    this.__defineGetter__(id, function() 
-    {
-      this._target[id] = [true];
-      return function() this._target[id] = Array.slice(arguments);
-    });
+    this.__defineGetter__(
+      id,
+      function getter() 
+      {
+        this._target[id] = [true];
+        return function() this._target[id] = Array.slice(arguments);
+      });
   },
 
   /** Returns this object's info */
@@ -209,15 +211,17 @@ function Prototype(definition, base_class, dependency_list)
   /** Parses decorated key and sets attributes. */
   function intercept(key) 
   {
-    var match = key.match(/^([\w-@]+)$|^\[(.+)\]\s*(.*)\s*$/);
-    var annotation, name;
-    var attributes;
-    var target_attribute;
+    var match = key.match(/^([\w-@]+)$|^\[(.+)\]\s*(.*)\s*$/),
+        annotation,
+        name,
+        attributes,
+        target_attribute;
 
     if (!match) {
       throw coUtils.Debug.Exception(
         _("Ill-formed property name: '%s'."), key)
     }
+
     [, , annotation, name] = match;
     if (annotation) {
       if (!name)
@@ -238,9 +242,10 @@ function Prototype(definition, base_class, dependency_list)
 
   function copy(definition, decorated_key, base_class) 
   {
-    var getter = definition.__lookupGetter__(decorated_key);
-    var setter = definition.__lookupSetter__(decorated_key);
-    var key, value;
+    var getter = definition.__lookupGetter__(decorated_key),
+        setter = definition.__lookupSetter__(decorated_key),
+        key,
+        value;
 
     try {
       key = intercept.call(this, decorated_key);
@@ -490,7 +495,7 @@ Class.prototype = {
       }
       // if key is a generic property or method...
       if (!getter && !setter) {
-        if ("initialize" == key && trait.initialize) {
+        if ("initialize" === key && trait.initialize) {
           value = prototype.initialize;
 
           // makes constructor chain.
@@ -520,17 +525,17 @@ Class.prototype = {
    */
   loadAttributes: function loadAttributes(search_path, scope) 
   {
-    var paths = coUtils.File.getFileEntriesFromSerchPath(search_path);
-    var entry;
-    var url;
+    var paths = coUtils.File.getFileEntriesFromSerchPath(search_path),
+        entry, url, module_scope;
 
     for (entry in paths) {
+      module_scope = new function() { this.__proto__ = scope; };
       try {
         // make URI string such as "file://....".
         url = coUtils.File.getURLSpec(entry); 
-        coUtils.Runtime.loadScript(url, scope);
-        if (scope.main) {
-          scope.main(this);
+        coUtils.Runtime.loadScript(url, module_scope);
+        if (module_scope.main) {
+          module_scope.main(this);
         } else {
           throw coUtils.Debug.Exception(
             _("Component scope symbol 'main' ",
@@ -590,6 +595,8 @@ Component.definition = {
   {
     var install_trigger;
 
+    this._broker = broker;
+
     if (this.__dependency) {
       this.dependency = {};
       if (this.__dependency.length > 0) {
@@ -611,7 +618,6 @@ Component.definition = {
         }, 
         this);
     }
-    this._broker = broker;
     broker.subscribe("get/components", 
       function(instances)
       {
@@ -624,10 +630,13 @@ Component.definition = {
     var broker;
     
     broker = this._broker;
+    if (!broker) {
+      coUtils.Debug.reportError(topic + " " + data.toSource());
+    }
     return broker.notify(topic, data);
   },
 
-  postMessage: function sendMessage(topic, data)
+  postMessage: function postMessage(topic, data)
   {
     var broker;
     
@@ -645,6 +654,25 @@ Component.definition = {
     
     broker = this._broker;
     return broker.uniget(topic, data);
+  },
+
+  getVariable: function getVariable(topic)
+  {
+    var broker, result, length;
+    
+    broker = this._broker;
+    result = broker.notify(topic);
+    length = result.length;
+    if (0 === length) {
+      return null;
+    } else {
+      if (1 !== length) {
+        coUtils.Debug.reportWarning(
+          _("Too many subscriber is found: %s"),
+          topic);
+        return result[0];
+      }
+    }
   },
 
   /** This method is expected to run test methods.
@@ -711,8 +739,9 @@ Plugin.definition = {
 
     id = this.id;
     value = Boolean(value);
+    broker = this._broker;
+
     if (value != this.__enabled) {
-      broker = this._broker;
       if (value) {
         try {
           broker.notify("install/" + id, broker);
@@ -724,7 +753,6 @@ Plugin.definition = {
           throw e;
         }
       } else {
-        broker.notify("uninstall/" + id, broker);
         broker.notify("uninstall/" + id, broker);
       }
       this.__enabled = value;
@@ -904,6 +932,7 @@ CoClass.prototype = {
   applyDefinition: function applyDefinition(definition) 
   {
     var prototype = Class.prototype.applyDefinition.apply(this, arguments);
+
     if (!Components.classes[prototype.contractID]) {
       this.factory = new XPCOMFactory(
         this, 
@@ -911,6 +940,7 @@ CoClass.prototype = {
         prototype.description,
         prototype.contractID
       );
+
       this.factory.registerSelf();
     }
     return prototype;
@@ -919,7 +949,7 @@ CoClass.prototype = {
   /** Unregister itself from XPCOM component management list. */
   destroy: function destroy()
   {
-    if (this.factory) {
+    if (null !== this.factory) {
       this.factory.unregisterSelf();
       this.factory = null;
     }
@@ -1133,4 +1163,4 @@ CompleterConcept.definition = {
 
 }; // CompleterConcept
 
-
+// EOF

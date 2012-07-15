@@ -26,16 +26,24 @@
 /**
  * @abstruct ComletionDisplayDriverBase
  */
-let CompletionDisplayDriverBase = new Abstruct().extends(Component);
+var CompletionDisplayDriverBase = new Abstruct().extends(Component);
 CompletionDisplayDriverBase.definition = {
 
   "[subscribe('@event/broker-started'), enabled]":
-  function onLoad(session)
+  function onLoad(broker)
   {
-    session.subscribe(
-      <>get/completion-display-driver/{this.type}</>, 
-      let (self = this) function() self);
-    session.notify("initialized/" + this.id, this);
+    var self;
+
+    self = this;
+
+    broker.subscribe(
+      "get/completion-display-driver/" + this.type, 
+      function()
+      {
+        return self;
+      });
+
+    this.sendMessage("initialized/" + this.id, this);
   },
 
 };
@@ -45,7 +53,7 @@ CompletionDisplayDriverBase.definition = {
  * @class ColorNumberCompletionDisplayDriver
  *
  */
-let ColorNumberCompletionDisplayDriver = new Class().extends(CompletionDisplayDriverBase);
+var ColorNumberCompletionDisplayDriver = new Class().extends(CompletionDisplayDriverBase);
 ColorNumberCompletionDisplayDriver.definition = {
 
   get id()
@@ -64,17 +72,23 @@ ColorNumberCompletionDisplayDriver.definition = {
 
   drive: function drive(grid, result, current_index) 
   {
-    let document = grid.ownerDocument;
-    let columns = grid.appendChild(document.createElement("colmns"))
+    var document, columns, rows;
+
+    document = grid.ownerDocument;
+    columns = grid.appendChild(document.createElement("colmns"))
     columns.appendChild(document.createElement("column"));
     columns.appendChild(document.createElement("column")).flex = 1;
-    let rows = grid.appendChild(document.createElement("rows"))
+    rows = grid.appendChild(document.createElement("rows"))
+
     //rows.style.border = "1px solid blue";
-    result.data.forEach(function(pair, index) {
-      let search_string = result.query.toLowerCase();
-      let renderer = this._renderer;
-      let session = this._broker;
-      session.uniget(
+    result.data.forEach(function(pair, index)
+    {
+      var search_string, renderer;
+
+      search_string = result.query.toLowerCase();
+      renderer = this._renderer;
+
+      this.request(
         "command/construct-chrome", 
         {
           parentNode: rows,
@@ -141,7 +155,7 @@ ColorNumberCompletionDisplayDriver.definition = {
  * @class ColorCompletionDisplayDriver
  *
  */
-let ColorCompletionDisplayDriver = new Class().extends(CompletionDisplayDriverBase);
+var ColorCompletionDisplayDriver = new Class().extends(CompletionDisplayDriverBase);
 ColorCompletionDisplayDriver.definition = {
 
   get id()
@@ -160,17 +174,23 @@ ColorCompletionDisplayDriver.definition = {
 
   drive: function drive(grid, result, current_index) 
   {
-    let document = grid.ownerDocument;
-    let columns = grid.appendChild(document.createElement("colmns"))
+    var document, columns, rows;
+
+    document = grid.ownerDocument;
+    columns = grid.appendChild(document.createElement("colmns"))
     columns.appendChild(document.createElement("column"));
     columns.appendChild(document.createElement("column")).flex = 1;
-    let rows = grid.appendChild(document.createElement("rows"))
+    rows = grid.appendChild(document.createElement("rows"))
+
     //rows.style.border = "1px solid blue";
-    result.data.forEach(function(pair, index) {
-      let search_string = result.query.toLowerCase();
-      let renderer = this._renderer;
-      let session = this._broker;
-      session.uniget(
+    result.data.forEach(function(pair, index) 
+    {
+      var search_string, renderer;
+
+      search_string = result.query.toLowerCase();
+      renderer = this._renderer;
+
+      this.request(
         "command/construct-chrome", 
         {
           parentNode: rows,
@@ -241,7 +261,7 @@ ColorCompletionDisplayDriver.definition = {
  * @class FontsizeCompletionDisplayDriver
  *
  */
-let FontsizeCompletionDisplayDriver = new Class().extends(CompletionDisplayDriverBase);
+var FontsizeCompletionDisplayDriver = new Class().extends(CompletionDisplayDriverBase);
 FontsizeCompletionDisplayDriver.definition = {
 
   get id()
@@ -252,16 +272,20 @@ FontsizeCompletionDisplayDriver.definition = {
 
   drive: function drive(grid, result, current_index) 
   {
-    let document = grid.ownerDocument;
-    let session = this._broker;
-    let rows = grid.appendChild(document.createElement("rows"))
-    for (let i = 0; i < result.data.length; ++i) {
-      let search_string = result.query.toLowerCase();
-      let completion_text = result.data[i].name;
-      let match_position = completion_text
+    var document, rows, i, search_string, completion_text,
+        match_position;
+
+    document = grid.ownerDocument;
+    rows = grid.appendChild(document.createElement("rows"))
+
+    for (i = 0; i < result.data.length; ++i) {
+      search_string = result.query.toLowerCase();
+      completion_text = result.data[i].name;
+      match_position = completion_text
         .toLowerCase()
         .indexOf(search_string);
-      session.uniget(
+
+      this.request(
         "command/construct-chrome", 
         {
           parentNode: rows,
@@ -312,7 +336,7 @@ FontsizeCompletionDisplayDriver.definition = {
  * @class FontFamilyCompletionDisplayDriver
  *
  */
-let FontFamilyCompletionDisplayDriver = new Class().extends(CompletionDisplayDriverBase);
+var FontFamilyCompletionDisplayDriver = new Class().extends(CompletionDisplayDriverBase);
 FontFamilyCompletionDisplayDriver.definition = {
 
   get id()
@@ -323,16 +347,19 @@ FontFamilyCompletionDisplayDriver.definition = {
 
   drive: function drive(grid, result, current_index) 
   {
-    let document = grid.ownerDocument;
-    let session = this._broker;
-    let rows = grid.appendChild(document.createElement("rows"))
-    for (let i = 0; i < result.data.length; ++i) {
-      let search_string = result.query.toLowerCase();
-      let completion_text = result.data[i].name;
-      let match_position = completion_text
+    var document, rows, i, search_string, completion_text, 
+        match_position;
+
+    document = grid.ownerDocument;
+    rows = grid.appendChild(document.createElement("rows"))
+
+    for (i = 0; i < result.data.length; ++i) {
+      search_string = result.query.toLowerCase();
+      completion_text = result.data[i].name;
+      match_position = completion_text
         .toLowerCase()
         .indexOf(search_string);
-      session.uniget(
+      this.request(
         "command/construct-chrome", 
         {
           parentNode: rows,
@@ -378,7 +405,7 @@ FontFamilyCompletionDisplayDriver.definition = {
  * @class TextCompletionDisplayDriver
  *
  */
-let TextCompletionDisplayDriver = new Class().extends(CompletionDisplayDriverBase);
+var TextCompletionDisplayDriver = new Class().extends(CompletionDisplayDriverBase);
 TextCompletionDisplayDriver.definition = {
 
   get id()
@@ -389,23 +416,29 @@ TextCompletionDisplayDriver.definition = {
 
   drive: function drive(grid, result, current_index) 
   {
-    let document = grid.ownerDocument;
-    let session = this._broker;
-    let rows = grid.appendChild(document.createElement("rows"))
-    for (let i = 0; i < result.data.length; ++i) {
-      let data = result.data[i];
-      let search_string = result.query.toLowerCase();
-      let completion_text = data.name;
-      if ("quoted" == result.option) {
+    var document, rows, i, data, search_string, completion_text,
+        match_position;
+
+    document = grid.ownerDocument;
+    rows = grid.appendChild(document.createElement("rows"))
+
+    for (i = 0; i < result.data.length; ++i) {
+      data = result.data[i];
+      search_string = result.query.toLowerCase();
+      completion_text = data.name;
+
+      if ("quoted" === result.option) {
         completion_text = completion_text.slice(1, -1);
       }
       if (completion_text.length > 32 && i != current_index) {
         completion_text = completion_text.substr(0, 32) + "...";
       }
-      let match_position = completion_text
+
+      match_position = completion_text
         .toLowerCase()
         .indexOf(search_string);
-      session.uniget(
+
+      this.request(
         "command/construct-chrome", 
         {
           parentNode: rows,
@@ -474,4 +507,4 @@ function main(broker)
   new TextCompletionDisplayDriver(broker);
 }
 
-
+// EOF

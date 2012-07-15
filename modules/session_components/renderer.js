@@ -22,6 +22,19 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+var thread_manager = Components
+  .classes["@mozilla.org/thread-manager;1"]
+  .getService();
+
+function wait(span) 
+{
+  var end_time = Date.now() + span;
+  var current_thread = thread_manager.currentThread;
+  do {
+    current_thread.processNextEvent(true);
+  } while ((current_thread.hasPendingEvents()) || Date.now() < end_time);
+};
+
 var CO_XTERM_256_COLOR_PROFILE = [
   /* 0       */ "#000000", // black
   /* 1       */ "#cd9988", // red
@@ -110,7 +123,7 @@ var CO_XTERM_256_COLOR_PROFILE = [
  * @Concept PersistentConcept
  *
  */
-let PersistentConcept = new Concept();
+var PersistentConcept = new Concept();
 PersistentConcept.definition = {
 
   get id()
@@ -127,7 +140,7 @@ PersistentConcept.definition = {
 /**
  * @trait PersistentTrait
  */
-let PersistentTrait = new Trait();
+var PersistentTrait = new Trait();
 PersistentTrait.definition = {
 
   /**
@@ -178,7 +191,7 @@ PersistentTrait.definition = {
       this.font_size = data.font_size;
       this._reverse = data.reverse;
       this.color = data.color;
-      this.sendMessage("command/draw");
+//      this.sendMessage("command/draw");
     } else {
       coUtils.Debug.reportWarning(
         _("Cannot restore last state of renderer: data not found."));
@@ -190,7 +203,7 @@ PersistentTrait.definition = {
 /**
  * @trait SlowBlinkTrait
  */
-let SlowBlinkTrait = new Trait();
+var SlowBlinkTrait = new Trait();
 SlowBlinkTrait.definition = {
 
   /**
@@ -201,17 +214,22 @@ SlowBlinkTrait.definition = {
     var broker;
 
     broker = this._broker;
+
     layer = new Layer(broker, "slowblink_canvas");
     layer.canvas.width = this._main_layer.canvas.width;
     layer.canvas.height = this._main_layer.canvas.height;
+
     this._slow_blink_layer = layer;
-    coUtils.Timer.setTimeout(function() {
-      this._slow_blink_layer.canvas.style.opacity 
-        = 1 - this._slow_blink_layer.canvas.style.opacity;
-      if (this._slow_blink_layer) {
-        coUtils.Timer.setTimeout(arguments.callee, this.slow_blink_interval, this);
-      }
-    }, this.slow_blink_interval, this);
+
+    coUtils.Timer.setTimeout(
+      function()
+      {
+        if (null !== this._slow_blink_layer) {
+          this._slow_blink_layer.canvas.style.opacity 
+            = 1 - this._slow_blink_layer.canvas.style.opacity;
+          coUtils.Timer.setTimeout(arguments.callee, this.slow_blink_interval, this);
+        }
+      }, this.slow_blink_interval, this);
 
   }, // createSlowBlinkLayer
 
@@ -220,7 +238,7 @@ SlowBlinkTrait.definition = {
 /**
  * @trait RapidBlinkTrait
  */
-let RapidBlinkTrait = new Trait();
+var RapidBlinkTrait = new Trait();
 RapidBlinkTrait.definition = {
 
   /**
@@ -235,13 +253,15 @@ RapidBlinkTrait.definition = {
     this._rapid_blink_layer.canvas.width = this._main_layer.canvas.width;
     this._rapid_blink_layer.canvas.height = this._main_layer.canvas.height;
 
-    coUtils.Timer.setTimeout(function() {
-      this._rapid_blink_layer.canvas.style.opacity 
-        = 1 - this._rapid_blink_layer.canvas.style.opacity;
-      if (this._rapid_blink_layer) {
-        coUtils.Timer.setTimeout(arguments.callee, this.rapid_blink_interval, this);
-      }
-    }, this.rapid_blink_interval, this);
+    coUtils.Timer.setTimeout(
+      function() 
+      {
+        if (null !== this._rapid_blink_layer) {
+          this._rapid_blink_layer.canvas.style.opacity 
+            = 1 - this._rapid_blink_layer.canvas.style.opacity;
+          coUtils.Timer.setTimeout(arguments.callee, this.rapid_blink_interval, this);
+        }
+      }, this.rapid_blink_interval, this);
 
   }, // createRapidBlinkLayer
 
@@ -251,7 +271,7 @@ RapidBlinkTrait.definition = {
 /**
  * @trait ReverseVideoTrait
  */
-let ReverseVideoTrait = new Trait();
+var ReverseVideoTrait = new Trait();
 ReverseVideoTrait.definition = {
 
   _reverse: false,
@@ -259,20 +279,22 @@ ReverseVideoTrait.definition = {
   "[subscribe('command/reverse-video'), enabled]": 
   function reverseVideo(value) 
   {
-    var map, i, broker, value;
+    var map, i, value;
 
-    broker = this._broker;
+    if (this._reverse !== value) {
 
-    if (this._reverse != value) {
       this._reverse = value;
+
       map = this.color;
+
       for (i = 0; i < map.length; ++i) {
         value = (parseInt(map[i].substr(1), 16) ^ 0x1ffffff)
           .toString(16)
           .replace(/^1/, "#");
         map[i] = value;
       }
-      broker.notify("command/draw", true);
+
+      this.dependency["screen"].dirty = true;
     }
 
   },
@@ -321,25 +343,118 @@ PalletManagerTrait.definition = {
   _reverse: false,
 
   "[subscribe('sequence/osc/4'), enabled]": 
-  function changeColor(value) 
+  function osc4(value) 
   {
-    var broker = this._broker;
-    var message;
-    var [number, spec] = value.split(";");
+    var message,
+        color,
+        [number, spec] = value.split(";");
 
     // range check.
-    if (0 > number && number > 254) {
+    if (0 > number && number > 255) {
       throw coUtils.Debug.Exception(
         _("Specified number is out of range: %d."), number);
     }
 
     // parse arguments.
-    if ("?" == spec) {
-      message = "4;" + number + ";" + this.color[number];
-      broker.notify("command/send-to-tty", message);
-    } 
+    if ("?" === spec) { // get specified color value
+      color = this.color[number];
+      color = "rgb:" + color.substr(1, 2) 
+            + "/" + color.substr(3, 2) 
+            + "/" + color.substr(5, 2)
+      message = "4;" + number + ";" + color;
+      this.sendMessage("command/send-to-tty", message);
+    } else { // set color
+      this.color[number] = coUtils.Color.parseX11ColorSpec(spec);
+    }
+  },
 
-    this.color[number] = coUtils.Color.parseX11ColorSpec(spec);
+  "[subscribe('sequence/osc/104'), pnp]":
+  function osc104(value)
+  {
+    var color,
+        [number] = value.split(";"),
+        scope = {};
+
+    // range check.
+    if (0 > number && number > 255) {
+      throw coUtils.Debug.Exception(
+        _("Specified number is out of range: %d."), number);
+    }
+
+    this.sendMessage("command/load-persistable-data", scope);
+
+    color = scope["renderer.color"] || this.__proto__.color;
+    this.color[number] = color[number];
+  },
+
+  "[subscribe('sequence/osc/10'), pnp]": 
+  function osc10(info) 
+  {
+    var outerchrome, color, message;
+
+    outerchrome = this.dependency["outerchrome"];
+
+    if ("?" === info) {
+      color = outerchrome.foreground_color;
+      color = "rgb:" + color.substr(1, 2) 
+            + "/" + color.substr(3, 2) 
+            + "/" + color.substr(5, 2)
+      message = "10;" + color;
+      this.sendMessage("command/send-to-tty", message);
+    } else { 
+      color = coUtils.Color.parseX11ColorSpec(value);
+      outerchrome.foreground_color = color;
+      this.foreground_color = color;
+      this.draw(true);
+    }
+  },
+
+  "[subscribe('sequence/osc/110'), pnp]":
+  function osc110()
+  {
+    var outerchrome = this.dependency["outerchrome"],
+        scope = {};
+
+    this.sendMessage("command/load-persistable-data", scope);
+
+    outerchrome.foreground_color 
+      = scope["outerchrome.foreground_color"] 
+      || outerchrome.__proto__.foreground_color;
+  },
+
+  "[subscribe('sequence/osc/11'), pnp]": 
+  function osc11(info) 
+  {
+    var outerchrome, color, message;
+
+    outerchrome = this.dependency["outerchrome"];
+
+    if ("?" === info) {
+      color = outerchrome.background_color;
+      color = "rgb:" + color.substr(1, 2) 
+            + "/" + color.substr(3, 2) 
+            + "/" + color.substr(5, 2)
+      message = "11;" + color;
+      this.sendMessage("command/send-to-tty", message);
+    } else {
+      color = coUtils.Color.parseX11ColorSpec(value);
+      outerchrome.background_color = color;
+      this.background_color = color;
+      this.draw(true);
+    }
+  },
+
+  "[subscribe('sequence/osc/111'), pnp]":
+  function osc111()
+  {
+    var outerchrome = this.dependency["outerchrome"],
+        scope = {};
+
+    this.sendMessage("command/load-persistable-data", scope);
+
+    outerchrome.background_color 
+      = scope["outerchrome.background_color"] 
+      || outerchrome.__proto__.background_color;
   },
 
 }; // PalletManagerTrait
@@ -394,6 +509,7 @@ Layer.definition = {
       {
         parentNode: "#tanasinn_center_area",
         tagName: "html:canvas",
+        style: "position: absolute",
         id: id,
         dir: "ltr",
       })[id];
@@ -455,6 +571,7 @@ Renderer.definition = {
 
   _offset: 0,
 
+  _main_layer: null,
   _slow_blink_layer: null,
   _rapid_blink_layer: null,
 
@@ -470,11 +587,11 @@ Renderer.definition = {
   "[persistable] bold_alpha": 1.00,
   "[persistable] bold_as_blur": false,
 //  "[persistable] enable_text_shadow": false,
-//  "[persistable] enable_render_bold_as_textshadow": false,
+//  "[persistable] enable_render_bold_as_textshadow": true,
   "[persistable] shadow_color": "white",
-  "[persistable] shadow_offset_x": 0.50,
+  "[persistable] shadow_offset_x": 0.00,
   "[persistable] shadow_offset_y": 0.00,
-  "[persistable] shadow_blur": 0.50,
+  "[persistable] shadow_blur": 2.00,
   "[persistable] transparent_color": 0,
   "[persistable, watchable] smoothing": true,
 
@@ -506,40 +623,35 @@ Renderer.definition = {
   "[uninstall]":
   function uninstall(broker) 
   {
-    this._main_layer.destroy();
-    this._main_layer = null;
+    if (null !== this._main_layer) {
+      this._main_layer.destroy();
+      this._main_layer = null;
+    }
 
-    if (this._slow_blink_layer) {
+    if (null !== this._slow_blink_layer) {
       this._slow_blink_layer.destroy();
       this._slow_blink_layer = null;
     }
 
-    if (this._rapid_blink_layer) {
+    if (null !== this._rapid_blink_layer) {
       this._rapid_blink_layer.destroy();
       this._rapid_blink_layer = null;
     }
   },
 
-  "[subscribe('sequence/osc/10'), pnp]": 
-  function osc10(info) 
+  "[subscribe('command/calculate-layout'), pnp]":
+  function calculateLayout()
   {
-    var outerchrome;
-
-    outerchrome = this.dependency["outerchrome"];
-    this.foreground_color = outerchrome.foreground_color;
-    this.background_color = outerchrome.background_color;
-    this.draw(true);
+    this.onWidthChanged();
+    this.onHeightChanged();
+    this.sendMessage("command/draw", true);
   },
 
-  "[subscribe('sequence/osc/11'), pnp]": 
-  function osc11(info) 
+  "[subscribe('@command/focus'), pnp]":
+  function onFirstFocus()
   {
-    var outerchrome;
-
-    outerchrome = this.dependency["outerchrome"];
-    this.foreground_color = outerchrome.foreground_color;
-    this.background_color = outerchrome.background_color;
-    this.draw(true);
+    this.onWidthChanged();
+    this.onHeightChanged();
   },
 
   /** Take screen capture and save it in png format. */
@@ -569,11 +681,10 @@ Renderer.definition = {
   "[subscribe('set/font-size'), pnp]": 
   function setFontSize(font_size) 
   {
-    var broker = this._broker;
-
     this.line_height += font_size - this.font_size;
     this.font_size = font_size;
-    broker.notify("event/font-size-changed", this.font_size);
+
+    this.sendMessage("event/font-size-changed", this.font_size);
   },
 
   "[subscribe('set/font-family'), pnp]": 
@@ -592,37 +703,37 @@ Renderer.definition = {
   "[subscribe('command/change-fontsize-by-offset'), pnp]":
   function changeFontSizeByOffset(offset) 
   {
-    var broker = this._broker;
-
     this.font_size = Number(this.font_size) + offset;
     this.line_height = Number(this.line_height) + offset;
-    broker.notify("event/font-size-changed", this.font_size);
+
+    this.sendMessage("event/font-size-changed", this.font_size);
   },
 
   "[subscribe('variable-changed/{screen.width | renderer.char_width}'), pnp]":
   function onWidthChanged(width, char_width) 
   {
     var canvas_width;
-    var broker = this._broker;
 
     width = width || this.dependency["screen"].width;
     char_width = char_width || this.char_width;
     canvas_width = 0 | (width * char_width);
+
     this._main_layer.canvas.width = canvas_width;
+
     if (this._slow_blink_layer) {
       this._slow_blink_layer.width = canvas_width;
     }
     if (this._rapid_blink_layer) {
       this._rapid_blink_layer.width = canvas_width;
     }
-    broker.notify("event/screen-width-changed", canvas_width);
+
+    this.sendMessage("event/screen-width-changed", canvas_width);
   },
 
   "[subscribe('variable-changed/{screen.height | renderer.line_height}'), pnp]":
   function onHeightChanged(height, line_height)
   {
     var canvas_height;
-    var broker = this._broker;
 
     height = height || this.dependency["screen"].height;
     line_height = line_height || this.line_height;
@@ -634,8 +745,25 @@ Renderer.definition = {
     if (this._rapid_blink_layer) {
       this._rapid_blink_layer.canvas.height = canvas_height;
     }
-    broker.notify("event/screen-height-changed", canvas_height);
+    this.sendMessage("event/screen-height-changed", canvas_height);
   },
+
+  /** Draw to canvas */
+  "[subscribe('command/draw'), enabled]": 
+  function draw(redraw_flag)
+  {
+    var info, 
+        screen = this.dependency["screen"];
+
+    if (redraw_flag) {
+      screen.dirty = true;
+    }
+
+    for (info in screen.getDirtyWords()) {
+      this._drawLine(info);
+    }
+
+  }, // draw
 
   _drawNormalText: 
   function _drawNormalText(codes, row, column, end, attr, type)
@@ -691,7 +819,7 @@ Renderer.definition = {
     var left, top, width, height;
 
     left = char_width * 2 * column;
-    top = line_height * (row + 1);
+    top = line_height * (row + 1) + 6;
     width = char_width * 2 * (end - column);
     height = line_height;
 
@@ -741,7 +869,7 @@ Renderer.definition = {
     var left, top, width, height;
 
     left = char_width * 2 * column;
-    top = line_height * row;
+    top = line_height * row + 6;
     width = char_width * 2 * (end - column);
     height = line_height;
 
@@ -829,66 +957,59 @@ Renderer.definition = {
 
   },
 
-  /** Draw to canvas */
-  "[subscribe('command/draw'), enabled]": 
-  function draw(redraw_flag)
+  _drawLine: function _drawLine(info) 
   {
-    var screen = this.dependency["screen"];
-    var type;
-    var info;
+    var { codes, row, column, end, attr, line } = info,
+        type;
 
-    if (redraw_flag) {
-      screen.dirty = true;
+    if (end === column) {
+      return;
     }
 
-    for (info in screen.getDirtyWords()) {
+    type = line.type;
+    switch (type) {
 
-      let { codes, row, column, end, attr, line } = info;
-      if (end == column) {
-        continue;
-      }
+      case coUtils.Constant.LINETYPE_NORMAL:
+        this._drawNormalText(codes, row, column, end, attr, type);
+        break;
 
-      type = line.type;
-      switch (type) {
+      case coUtils.Constant.LINETYPE_TOP:
+        this._drawDoubleHeightTextTop(codes, row, column, end, attr, type);
+        break;
 
-        case coUtils.Constant.LINETYPE_NORMAL:
-          this._drawNormalText(codes, row, column, end, attr, type);
-          break;
+      case coUtils.Constant.LINETYPE_BOTTOM:
+        this._drawDoubleHeightTextBottom(codes, row, column, end, attr, type);
+        break;
 
-        case coUtils.Constant.LINETYPE_TOP:
-          this._drawDoubleHeightTextTop(codes, row, column, end, attr, type);
-          break;
+      case coUtils.Constant.LINETYPE_DOUBLEWIDTH:
+        this._drawDoubleWidthText(codes, row, column, end, attr, type);
+        break;
 
-        case coUtils.Constant.LINETYPE_BOTTOM:
-          this._drawDoubleHeightTextBottom(codes, row, column, end, attr, type);
-          break;
+      case coUtils.Constant.LINETYPE_SIXEL:
+        this._drawSixel(line, row);
+        break;
 
-        case coUtils.Constant.LINETYPE_DOUBLEWIDTH:
-          this._drawDoubleWidthText(codes, row, column, end, attr, type);
-          break;
-
-        case coUtils.Constant.LINETYPE_SIXEL:
-          this._drawSixel(line, row);
-          break;
-
-        default:
-          throw coUtils.Debug.Exception(
-            _("Invalid double height mode was detected: %d."), 
-            type);
-      }
+      default:
+        throw coUtils.Debug.Exception(
+          _("Invalid double height mode was detected: %d."), 
+          type);
     }
-  }, // draw
+  },
 
   _drawSixel: 
   function _drawSixel(line, row)
   {
-    let context = this._main_layer.context;
-    let sixel_info = line.sixel_info;
-    let canvas = sixel_info.buffer;
-    let position = sixel_info.position;
-    let line_height = this.line_height;
-    let width = canvas.width;
+    var context, sixel_info, canvas, position, line_height, width;
+
+    context = this._main_layer.context;
+    sixel_info = line.sixel_info;
+    canvas = sixel_info.buffer;
+    position = sixel_info.position;
+    line_height = this.line_height;
+    width = canvas.width;
+
     context.clearRect(0, line_height * row, width, line_height);
+
     context.drawImage(
       canvas, 
       0, line_height * position, width, line_height,
@@ -928,12 +1049,14 @@ Renderer.definition = {
   _drawBackgroundImpl: 
   function _drawBackgroundImpl(context, x, y, width, height, attr) 
   {
+    var back_color;
+
     //if (!this._reverse && !attr.bgcolor) {
     //  context.clearRect(x, y, width, height);
     //} else {
+    
     /* Get hexadecimal formatted background color (#xxxxxx) 
      * form given attribute structure. */
-    let back_color;
     if (attr.bgcolor) {
       if (attr.inverse) {
         back_color = this.color[attr.fg];
@@ -975,6 +1098,10 @@ Renderer.definition = {
                      height, 
                      attr, type)
   {
+    var fore_color, fore_color_map, text, drcs_state, index, code,
+        glyph_index, source_top, source_left, source_width, source_height,
+        destination_top, destination_left, destination_width, destination_height;
+
     if (attr.blink) {
       if (null === this._slow_blink_layer) {
         this.createSlowBlinkLayer(this.slow_blink_interval);
@@ -1001,8 +1128,8 @@ Renderer.definition = {
 
     // Get hexadecimal formatted text color (#xxxxxx) 
     // form given attribute structure. 
-    let fore_color_map = this.color;
-    let fore_color;
+    fore_color_map = this.color;
+
     if (attr.fgcolor) {
       if (attr.inverse) {
         fore_color = fore_color_map[attr.bg];
@@ -1030,8 +1157,9 @@ Renderer.definition = {
     }
 
     if (null === this._drcs_state || !attr.drcs) {
-      let text = String.fromCharCode.apply(String, codes);
-      //if (this.enable_render_bold_as_textshadow && attr.bold) {
+      text = String.fromCharCode.apply(String, codes);
+
+      //if (this.enable_text_shadow) {
       //  context.shadowColor = this.shadow_color;
       //  context.shadowOffsetX = this.shadow_offset_x;
       //  context.shadowOffsetY = this.shadow_offset_y;
@@ -1040,20 +1168,22 @@ Renderer.definition = {
       //  context.shadowOffsetX = 0;
       //  context.shadowBlur = 0;
       //}
+
       context.fillText(text, x, y, char_width * length);
       if (attr.bold && this.bold_as_blur) {
         context.fillText(text, x + 1, y, char_width * length - 1);
       }
     } else {
-      let drcs_state = this._drcs_state;
-      for (let index = 0; index < codes.length; ++index) {
-        let code = codes[index] - this._offset;
+      drcs_state = this._drcs_state;
+
+      for (index = 0; index < codes.length; ++index) {
+        code = codes[index] - this._offset;
         if (drcs_state.start_code <= code && code <= drcs_state.end_code) {
-          //let glyph = drcs_state.glyphs[code - drcs_state.start_code];
+          //var glyph = drcs_state.glyphs[code - drcs_state.start_code];
           //context.putImageData(glyph, 0, 0)
-          let glyph_index = code - drcs_state.start_code;
-          let source_top, source_left, source_width, source_height;
-          let destination_top, destination_left, destination_width, destination_height;
+
+          glyph_index = code - drcs_state.start_code;
+
           switch (type) {
 
             case 0:
@@ -1145,10 +1275,14 @@ Renderer.definition = {
    */
   _calculateGlyphSize: function _calculateGlyphSize() 
   {
-    let font_size = this.font_size;
-    let font_family = this.font_family;
-    let [char_width, char_height, char_offset] 
+    var font_size, font_family, char_width, char_height, char_offset;
+
+    font_size = this.font_size;
+    font_family = this.font_family;
+
+    [char_width, char_height, char_offset] 
       = coUtils.Font.getAverageGlyphSize(font_size, font_family);
+
     // store result
     this.char_width = char_width;
     this.char_offset = char_offset;
@@ -1168,3 +1302,4 @@ function main(broker)
   new Renderer(broker);
 }
 
+// EOF

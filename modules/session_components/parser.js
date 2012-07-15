@@ -164,7 +164,7 @@ function null_function()
  * handle control characters in C0 area.
  *
  */
-let C0Parser = {
+var C0Parser = {
 
   _map: [],
 
@@ -390,9 +390,13 @@ SequenceParser.definition = {
   /** Construct child parsers from definition and make parser-chain. */
   append: function append(key, value, context) 
   {
-    let match = key
-      .match(/^(0x[0-9a-zA-Z]+)(%s)?$|^%d([\x20-\x7f]+)$|^%<Ps>([\x20-\x7f]+)$|^(.)%s$|^(%p)$|^(%c)$|^(.)$|^(.)(.+)$/);
-    let [, 
+    var match, code, next, accept_char, codes,
+        i, j, next_char, parser, action, index,
+        code1, code2, c;
+
+    match = key
+      .match(/^(0x[0-9a-zA-Z]{2})(.*)$|^%d([\x20-\x7f]+)$|^%<Ps>([\x20-\x7f]+)$|^(.)%s$|^(%p)$|^(%c)$|^(.)$|^(.)(.+)$/);
+    var [, 
       number, number2,
       char_with_param, 
       char_with_single_param,
@@ -402,10 +406,10 @@ SequenceParser.definition = {
       normal_char, first, next_chars
     ] = match;
     if (number) { // parse number
-      let code = parseInt(number, 16);
-      if (number2) {
+      code = parseInt(number, 16);
+      if ("%s" === number2) {
 
-        let action = function(params) 
+        function action(params) 
         {
           var data = coUtils.Text.safeConvertFromArray(params);
           return function() 
@@ -416,7 +420,14 @@ SequenceParser.definition = {
 
         C0Parser.append(code, new StringParser(action));
 
+      } else if (number2) {
+
+        code = parseInt(number, 16);
+        next = this[code] = this[code] || new SequenceParser;
+        next.append(number2, value, context);
+
       } else {
+
         if ("parse" in value) {
           C0Parser.append(code, value);
         } else {
@@ -428,25 +439,26 @@ SequenceParser.definition = {
       }
     } else if (char_with_param) {
 
-      let action = function(params) 
+      function action(params) 
       {
         return function() 
         {
           return value.apply(context, params);
         };
       };
-      let accept_char = char_with_param.charCodeAt(0);
+      accept_char = char_with_param.charCodeAt(0);
 
-      let codes = [
+      codes = [
         0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 
         0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f,
         0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39,
         0x7f,
         0x3b
       ];
-      let i;
+
       for (i = 0; i < codes.length; ++i) {
-        let code = codes[i];
+
+        code = codes[i];
         if (0x30 <= code && code < 0x3a) {
           this[code] = this[code] 
                      || new ParameterParser(code - 0x30);
@@ -460,18 +472,21 @@ SequenceParser.definition = {
         if (1 === char_with_param.length) {
           this[code][accept_char] = action;
         } else if (2 === char_with_param.length) {
-          let next_char = char_with_param.charCodeAt(1);
-          this[code][accept_char] = this[code][accept_char] || new SequenceParser();
+          next_char = char_with_param.charCodeAt(1);
+          this[code][accept_char] = this[code][accept_char] 
+                                 || new SequenceParser();
           this[code][accept_char][next_char] = action;
         } else {
           throw coUtile.Exception(_("Cannot add handler: %s."), key);
         }
       }
-      let parser = this;
-      let j;
+
+      parser = this;
+
       for (j = 0; j < char_with_param.length - 1; ++j) {
-        let accept_char = char_with_param.charCodeAt(j);
-        parser = parser[accept_char] = new SequenceParser();
+        accept_char = char_with_param.charCodeAt(j);
+        parser = parser[accept_char] 
+               = parser[accept_char] || new SequenceParser();
       }
       code = char_with_param.charCodeAt(char_with_param.length - 1);
       parser[code] = parser[code] || function() 
@@ -481,27 +496,29 @@ SequenceParser.definition = {
 
     } else if (char_with_single_param) {
 
-      let action = function(params)
+      action = function(params)
       {
         return function() 
         {
           return value.apply(context, params);
         };
       };
-      for (let i = 0; i < 10; ++i) {
-        let code = 0x30 + i;
+      for (i = 0; i < 10; ++i) {
+        code = 0x30 + i;
         this[code] = this[code] || new SequenceParser(0, code);
-        let parser = this[code];
-        for (let j = 0; j < char_with_single_param.length - 1; ++j) {
-          let accept_char = char_with_single_param.charCodeAt(j);
+        parser = this[code];
+        for (j = 0; j < char_with_single_param.length - 1; ++j) {
+          accept_char = char_with_single_param.charCodeAt(j);
           parser = parser[accept_char] = new SequenceParser();
         }
         code = char_with_single_param.charCodeAt(char_with_single_param.length - 1);
         parser[code] = action;
       }
-      let parser = this;
-      for (let j = 0; j < char_with_single_param.length - 1; ++j) {
-        let accept_char = char_with_single_param.charCodeAt(j);
+
+      parser = this;
+
+      for (j = 0; j < char_with_single_param.length - 1; ++j) {
+        accept_char = char_with_single_param.charCodeAt(j);
         parser = parser[accept_char] = parser[accept_char] || new SequenceParser();
       }
       code = char_with_single_param.charCodeAt(char_with_single_param.length - 1);
@@ -509,40 +526,64 @@ SequenceParser.definition = {
 
     } else if (char_with_string) {
       // define action
-      let action = function(params) 
+      action = function(params) 
       {
-        let data = String.fromCharCode.apply(String, params);
+        var data;
+
+        data = String.fromCharCode.apply(String, params);
         return function() value.call(context, data);
       };
-      let index = char_with_string.charCodeAt(0);
+
+      index = char_with_string.charCodeAt(0);
       this[index] = new StringParser(action) // chain to string parser.
     } else if (single_char) { // parse a char.
       this[0x20] = this[0x20] || new SequenceParser();
-      for (let code = 0x21; code < 0x7f; ++code) {
-        let c = String.fromCharCode(code);
-        this[0x20][code] = this[code] = function() value.call(context, c)
+
+      function make_handler(c)
+      {
+        return function()
+        {
+          return value.call(context, c)
+        };
+      }
+
+      for (code = 0x21; code < 0x7f; ++code) {
+        c = String.fromCharCode(code);
+        this[0x20][code] = this[code] = this[code] 
+                         || make_handler(c);
       }
     } else if (char_position) { // 
-      for (let code1 = 0x21; code1 < 0x7f; ++code1) {
-        let c1 = String.fromCharCode(code1);
-        for (let code2 = 0x21; code2 < 0x7f; ++code2) {
-          let c2 = String.fromCharCode(code2);
-          this[code1] = new SequenceParser();
-          this[code1][code2] = function() value.apply(context, [code1, code2])
+
+      function make_handler(code1, code2)
+      {
+        return function()
+        {
+          return value.apply(context, [code1, code2]);
+        };
+      }
+
+      for (code1 = 0x21; code1 < 0x7f; ++code1) {
+        for (code2 = 0x21; code2 < 0x7f; ++code2) {
+          this[code1] = this[code1] || new SequenceParser();
+          this[code1][code2] = this[code1][code2] 
+                            || make_handler(code1, code2)
         }
       }
     } else if (normal_char) {
-      let code = normal_char.charCodeAt(0);
+
+      code = normal_char.charCodeAt(0);
       if ("parse" in value) {
         this[code] = value;
       } else {
-        this[code] = function() value.apply(context);
+        this[code] = this[code] || function() value.apply(context);
       }
     } else {
-      let code = first.charCodeAt(0);
-      let next = this[code] = this[code] || new SequenceParser;
+
+      code = first.charCodeAt(0);
+      next = this[code] = this[code] || new SequenceParser;
+
       if (!next.append) {
-        next = this[code] = new SequenceParser;
+        next = this[code] = this[code] || new SequenceParser;
       }
       next.append(next_chars, value, context);
     }
@@ -600,6 +641,11 @@ VT100Grammar.definition = {
       context: this,
     });
     this.sendMessage("command/add-sequence", {
+      expression: "0x9C", 
+      handler: this.CSI,
+      context: this,
+    });
+    this.sendMessage("command/add-sequence", {
       expression: "ESC [", 
       handler: this.CSI,
       context: this,
@@ -640,7 +686,6 @@ VT100Grammar.definition = {
   function append(information) 
   {
     var {expression, handler, context} = information;
-    var match = expression.split(/\s+/);
     var pos = expression.indexOf(" ");
     var key = expression.substr(pos + 1)
     var prefix;
@@ -800,9 +845,9 @@ Parser.definition = {
    */
   install: function install(broker)
   {
-    var grammars;
-    var grammar;
-    var i;
+    var grammars,
+        grammar,
+        i;
 
     this.drive.enabled = true;
     this.onDataArrivedRecursively.enabled = true;
@@ -841,14 +886,18 @@ Parser.definition = {
   "[subscribe('command/change-mode'), enabled]":
   function onChangeMode(mode)
   {
-    var grammars = this._grammars;
-    var value;
+    var grammars = this._grammars,
+        value;
 
     if (grammars.hasOwnProperty(mode)) {
-      this._grammar = grammars[mode];
-      value = this._scanner.drain();
-      this._scanner.generator = null;
-      this.drive(value);
+      if (this._grammar === grammars[mode]) {
+        // nothing to do
+      } else {
+        this._grammar = grammars[mode];
+        value = this._scanner.drain();
+        this._scanner.generator = null;
+        this.drive(value);
+      }
     } else {
       coUtils.Debug.reportError(
         _("Specified mode '%s' was not found."), mode);
@@ -873,11 +922,12 @@ Parser.definition = {
   "[subscribe('event/data-arrived')]": 
   function drive(data)
   {
-    var scanner = this._scanner;
-    var action;
+    var scanner = this._scanner,
+         action;
 
 //    coUtils.Timer.setTimeout(function(){
     scanner.assign(data);
+
     for (action in this.parse(scanner, data)) {
       action();
     }
@@ -891,11 +941,11 @@ Parser.definition = {
   "[subscribe('event/data-arrived-recursively')]": 
   function onDataArrivedRecursively(data)
   {
-    var scanner, action;
-
-    scanner = new Scanner(broker);
+    var scanner = new Scanner(broker),
+        action;
 
     scanner.assign(data);
+
     for (action in this.parse(scanner)) {
       action();
     }
@@ -926,6 +976,18 @@ Parser.definition = {
         }
       }
     }
+
+    function make_handler(codes)
+    {
+      return function()
+      {
+        var converted_codes;
+
+        converted_codes = drcs_converter.convert(codes);
+        screen.write(converted_codes);
+      };
+    }
+
     while (!scanner.isEnd) {
 
       scanner.setAnchor(); // memorize current position.
@@ -942,13 +1004,7 @@ Parser.definition = {
  
         codes = this._decode(scanner);;
         if (codes.length) {
-          yield let (codes = codes) function () 
-          {
-            var converted_codes;
-
-            converted_codes = drcs_converter.convert(codes);
-            screen.write(converted_codes);
-          };
+          yield make_handler(codes);
         } else {
           if (scanner.isEnd) {
             break;
@@ -1035,3 +1091,4 @@ function main(broker)
   new VT100Grammar(broker);
 }
 
+// EOF

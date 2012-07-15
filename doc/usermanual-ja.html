@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
 <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8" />
-<meta name="generator" content="AsciiDoc 8.6.6" />
+<meta name="generator" content="AsciiDoc 8.6.7" />
 <title>tanasinn terminal emulator</title>
 <style type="text/css">
 /* Shared CSS for AsciiDoc xhtml11 and html5 backends */
@@ -681,7 +681,7 @@ toc: function (toclevels) {
 
   function tocEntries(el, toclevels) {
     var result = new Array;
-    var re = new RegExp('[hH]([2-'+(toclevels+1)+'])');
+    var re = new RegExp('[hH]([1-'+(toclevels+1)+'])');
     // Function that scans the DOM tree for header elements (the DOM2
     // nodeIterator API would be a better technique but not supported by all
     // browsers).
@@ -710,7 +710,7 @@ toc: function (toclevels) {
   var i;
   for (i = 0; i < toc.childNodes.length; i++) {
     var entry = toc.childNodes[i];
-    if (entry.nodeName == 'div'
+    if (entry.nodeName.toLowerCase() == 'div'
      && entry.getAttribute("class")
      && entry.getAttribute("class").match(/^toclevel/))
       tocEntriesToRemove.push(entry);
@@ -756,7 +756,7 @@ footnotes: function () {
   var entriesToRemove = [];
   for (i = 0; i < noteholder.childNodes.length; i++) {
     var entry = noteholder.childNodes[i];
-    if (entry.nodeName == 'div' && entry.getAttribute("class") == "footnote")
+    if (entry.nodeName.toLowerCase() == 'div' && entry.getAttribute("class") == "footnote")
       entriesToRemove.push(entry);
   }
   for (i = 0; i < entriesToRemove.length; i++) {
@@ -898,7 +898,6 @@ Disable ShellRPC plugin.</tt></pre>
 <div class="literalblock">
 <div class="content">
 <pre><tt>Version 0.2.1.1
-Supports inline Sixel Graphics.
 Supports UTF8/urxvt/SGR style mouse reporting.
 Improve performance.</tt></pre>
 </div></div>
@@ -925,33 +924,11 @@ Important bug fix, Now it works en_US locale, sorry!</tt></pre>
 <h3 id="_2012_04_08">2.6. 2012/04/08</h3>
 <div class="literalblock">
 <div class="content">
-<pre><tt>Now version 0.1.7.1 available.</tt></pre>
-</div></div>
-<div class="ulist"><ul>
-<li>
-<p>
+<pre><tt>Now version 0.1.7.1 available.
 Implement SGR blink feature.
-</p>
-</li>
-<li>
-<p>
-Implement SGR rapid blink feature(from DOS&#8217;s ANSI.SYS).
-</p>
-</li>
-<li>
-<p>
+Implement SGR rapid blink feature(from DOS's ANSI.SYS).
 Implement SGR italic feature.
-</p>
-</li>
-<li>
-<p>
-Implement SGR halfbright feature.
-</p>
-<div class="literalblock">
-<div class="content">
-<pre><tt>重要：0.1.5.0 / 0.1.5.1はビルド時のバグのため「動きません」。
-        0.1.5.2は一部のプラットフォームで動きません。
-        いろいろ試行錯誤しちゃった人はすみません。</tt></pre>
+Implement SGR halfbright feature.</tt></pre>
 </div></div>
 <div class="literalblock">
 <div class="content">
@@ -962,23 +939,12 @@ Implement SGR halfbright feature.
 <pre><tt>動かなかった場合は %USERPROFILE%¥.tanasinn.js (Windows)、または~/.tanasinn.js(それ以外のOS) に、
 このように書いてみてください。</tt></pre>
 </div></div>
-</li>
-</ul></div>
 <div class="listingblock">
 <div class="title">%USERPROFILE%¥.tanasinn.js or $HOME/.tanasinn.js</div>
 <div class="content">
 <pre><tt>process.cygwin_root = "C:\\cygwin";
 process.bin_path = "/bin:/usr/bin:/usr/local/bin:/opt/local/bin";
 process.python_path = "/usr/bin/python"</tt></pre>
-</div></div>
-<div class="literalblock">
-<div class="content">
-<pre><tt>それでもだめな環境もあるかもしれません。
-こちらからはtwitter用ハッシュタグ #tanasinn / #tanasinnが動かない あたりで探してみます。</tt></pre>
-</div></div>
-<div class="literalblock">
-<div class="content">
-<pre><tt>拡張フォルダ内のディレクトリ名が歴史的理由により意味不明になっていたので、かなり変えました。</tt></pre>
 </div></div>
 </div>
 </div>
@@ -1170,153 +1136,165 @@ Vimperator/Muttator のプラグインとして導入することができます
 </div>
 <div class="imageblock">
 <div class="content">
+<img src="images/starwars.png" alt="images/starwars.png" width="780" />
+</div>
+<div class="title">Figure 2. "<a href="http://www.asciimation.co.nz">STAR WARS ASCIIMATION</a>" と、そのtelnet版 version(<a href="http://towel.blinkenlights.nl)を走らせたところ�">http://towel.blinkenlights.nl)を走らせたところ�</a>��</div>
+</div>
+<div class="imageblock">
+<div class="content">
 <img src="images/bb2.png" alt="images/bb2.png" width="780" />
 </div>
-<div class="title">Figure 2. "<a href="http://w3m.sourceforge.net/index.en.html">BB</a>"(アスキーアートのデモプログラム)を走らせたところ。</div>
+<div class="title">Figure 3. "<a href="http://w3m.sourceforge.net/index.en.html">BB</a>"(アスキーアートのデモプログラム)を走らせたところ。</div>
 </div>
 <div class="imageblock">
 <div class="content">
 <img src="images/color2.png" alt="images/color2.png" width="780" />
 </div>
-<div class="title">Figure 3. <a href="http://code.google.com/p/myminios/source/browse/trunk/colortable16.sh?r=10">colortable.sh</a> and <a href="http://code.google.com/p/joeldotfiles/source/browse/trunk/256colors2.pl">256color2.pl</a>でカラーチャートを表示させたところ。</div>
+<div class="title">Figure 4. <a href="http://code.google.com/p/myminios/source/browse/trunk/colortable16.sh?r=10">colortable.sh</a> and <a href="http://code.google.com/p/joeldotfiles/source/browse/trunk/256colors2.pl">256color2.pl</a>でカラーチャートを表示させたところ。</div>
 </div>
 <div class="imageblock">
 <div class="content">
 <img src="images/ime2.png" alt="images/ime2.png" width="780" />
 </div>
-<div class="title">Figure 4. IMEで日本語を打ってみたところ (<a href="http://aquaskk.sourceforge.jp/">AquaSKK</a>使用)。</div>
+<div class="title">Figure 5. IMEで日本語を打ってみたところ (<a href="http://aquaskk.sourceforge.jp/">AquaSKK</a>使用)。</div>
 </div>
 <div class="imageblock">
 <div class="content">
 <img src="images/scroll2.png" alt="images/scroll2.png" width="780" />
 </div>
-<div class="title">Figure 5. スクロールバーインターフェースは必要なときにあらわれます(OSX Lionのように)。</div>
+<div class="title">Figure 6. スクロールバーインターフェースは必要なときにあらわれます(OSX Lionのように)。</div>
 </div>
 <div class="imageblock">
 <div class="content">
 <img src="images/overlay2.png" alt="images/overlay2.png" width="780" />
 </div>
-<div class="title">Figure 6. オーバーレイインジケータがフォントサイズ、ウィンドウサイズ、タイトルバーメッセージが変更されたときなどに表示されます。</div>
+<div class="title">Figure 7. オーバーレイインジケータがフォントサイズ、ウィンドウサイズ、タイトルバーメッセージが変更されたときなどに表示されます。</div>
 </div>
 <div class="imageblock">
 <div class="content">
 <img src="images/completion2.png" alt="images/completion2.png" width="780" />
 </div>
-<div class="title">Figure 7. <a href="http://vimperator.org/vimperator">Vimperator</a> や <a href="https://github.com/mooz/keysnail/wiki/">Keysnail</a> にインスパイアされたコマンドラインインターフェース。</div>
+<div class="title">Figure 8. <a href="http://vimperator.org/vimperator">Vimperator</a> や <a href="https://github.com/mooz/keysnail/wiki/">Keysnail</a> にインスパイアされたコマンドラインインターフェース。</div>
 </div>
 <div class="imageblock">
 <div class="content">
 <img src="images/fontfamily2.png" alt="images/fontfamily2.png" width="780" />
 </div>
-<div class="title">Figure 8. フォントファミリを選択しています。</div>
+<div class="title">Figure 9. フォントファミリを選択しています。</div>
 </div>
 <div class="imageblock">
 <div class="content">
 <img src="images/fontsize2.png" alt="images/fontsize2.png" width="780" />
 </div>
-<div class="title">Figure 9. フォントサイズを選択しています。</div>
+<div class="title">Figure 10. フォントサイズを選択しています。</div>
 </div>
 <div class="imageblock">
 <div class="content">
 <img src="images/launcher2.png" alt="images/launcher2.png" width="780" />
 </div>
-<div class="title">Figure 10. <a href="http://www.blacktree.com/">QuckSilver</a> や <a href="https://addons.mozilla.org/ja/firefox/addon/mozilla-labs-ubiquity/">Ubiquity</a> にインスパイアされたランチャーインターフェース。</div>
+<div class="title">Figure 11. <a href="http://www.blacktree.com/">QuckSilver</a> や <a href="https://addons.mozilla.org/ja/firefox/addon/mozilla-labs-ubiquity/">Ubiquity</a> にインスパイアされたランチャーインターフェース。</div>
 </div>
 <div class="imageblock">
 <div class="content">
 <img src="images/session2.png" alt="images/session2.png" width="780" />
 </div>
-<div class="title">Figure 11. デタッチ済みのセッションに再接続しているところ。ブラウザがクラッシュしたり再起動しても安心です。</div>
+<div class="title">Figure 12. デタッチ済みのセッションに再接続しているところ。ブラウザがクラッシュしたり再起動しても安心です。</div>
 </div>
 <div class="imageblock">
 <div class="content">
 <img src="images/sl2.png" alt="images/sl2.png" width="780" />
 </div>
-<div class="title">Figure 12. "<a href="http://www.tkl.iis.u-tokyo.ac.jp/~toyoda/index_e.html">sl</a>" (ジョークウェア)を走らせたところ。</div>
+<div class="title">Figure 13. "<a href="http://www.tkl.iis.u-tokyo.ac.jp/~toyoda/index_e.html">sl</a>" (ジョークウェア)を走らせたところ。</div>
 </div>
 <div class="imageblock">
 <div class="content">
 <img src="images/debug2.png" alt="images/debug2.png" width="780" />
 </div>
-<div class="title">Figure 13. セルフデバッギング。ターミナルI/Oシーケンスをリアルタイムにトレースしています。</div>
+<div class="title">Figure 14. セルフデバッギング。ターミナルI/Oシーケンスをリアルタイムにトレースしています。</div>
 </div>
 <div class="imageblock">
 <div class="content">
 <img src="images/vim.png" alt="images/vim.png" width="780" />
 </div>
-<div class="title">Figure 14. ポップアップメニューを表示しています。<a href="http://www.vim.org">Vim</a>の方をちょっと改造しました。</div>
+<div class="title">Figure 15. ポップアップメニューを表示しています。<a href="http://www.vim.org">Vim</a>の方をちょっと改造しました。</div>
 </div>
 <div class="imageblock">
 <div class="content">
 <img src="images/w3m2.png" alt="images/w3m2.png" width="780" />
 </div>
-<div class="title">Figure 15. ブラウザの中でブラウザ。プライベートパッチを当てた<a href="http://w3m.sourceforge.net/index.en.html">w3m</a>でインラインイメージを表示させました。ここまでくるとちょっと意味不明ですね。</div>
+<div class="title">Figure 16. ブラウザの中でブラウザ。プライベートパッチを当てた<a href="http://w3m.sourceforge.net/index.en.html">w3m</a>でインラインイメージを表示させました。ここまでくるとちょっと意味不明ですね。</div>
 </div>
 <div class="imageblock">
 <div class="content">
 <img src="images/wl3.png" alt="images/wl3.png" width="780" />
 </div>
-<div class="title">Figure 16. メーラーの中でメーラー。<a href="http://www.gohome.org/wl/index.html">Wonderlust</a>をemacs上で動かしているものをThunderbird上で動かしています。</div>
+<div class="title">Figure 17. メーラーの中でメーラー。<a href="http://www.gohome.org/wl/index.html">Wonderlust</a>をemacs上で動かしているものをThunderbird上で動かしています。</div>
 </div>
 <div class="imageblock">
 <div class="content">
 <img src="images/xulapp.png" alt="images/xulapp.png" width="780" />
 </div>
-<div class="title">Figure 17. tanasinnをtanasinnでメタ開発中。これはスタンドアロンXULアプリケーションとして動作させているところです。</div>
+<div class="title">Figure 18. tanasinnをtanasinnでメタ開発中。これはスタンドアロンXULアプリケーションとして動作させているところです。</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/3d.png" alt="images/3d.png" width="780" />
+</div>
+<div class="title">Figure 19. マウスドラッグで3D回転</div>
 </div>
 <div class="imageblock">
 <div class="content">
 <img src="images/roflbalt.png" alt="images/roflbalt.png" width="780" />
 </div>
-<div class="title">Figure 18. https:</div>
+<div class="title">Figure 20. <a href="https://github.com/pda/roflbalt">roflbalt</a>。Rubyで書かれたゲームです。</div>
 </div>
 <div class="imageblock">
 <div class="content">
 <img src="images/zsh.png" alt="images/zsh.png" width="780" />
 </div>
-<div class="title">Figure 19. zshのcorrect機能にプライベートシーケンスを仕込みました。シーケンスハンドラの応用例です。</div>
+<div class="title">Figure 21. zshのcorrect機能にプライベートシーケンスを仕込みました。シーケンスハンドラの応用例です。</div>
 </div>
 <div class="imageblock">
 <div class="content">
 <img src="images/tektronix.png" alt="images/tektronix.png" width="780" />
 </div>
-<div class="title">Figure 20. <a href="http://en.wikipedia.org/wiki/Tektronix_4010">Tektronix 4010/4014</a> エミュレーション。</div>
+<div class="title">Figure 22. <a href="http://en.wikipedia.org/wiki/Tektronix_4010">Tektronix 4010/4014</a> エミュレーション。</div>
 </div>
 <div class="imageblock">
 <div class="content">
 <img src="images/sixel.png" alt="images/sixel.png" width="780" />
 </div>
-<div class="title">Figure 21. <a href="https://en.wikipedia.org/wiki/Sixel">Sixel Graphics</a> エミュレーション。</div>
+<div class="title">Figure 23. <a href="https://en.wikipedia.org/wiki/Sixel">Sixel Graphics</a> エミュレーション。</div>
 </div>
 <div class="imageblock">
 <div class="content">
 <img src="images/decdhl.png" alt="images/decdhl.png" width="780" />
 </div>
-<div class="title">Figure 22. DECDHL/DECDWL。</div>
+<div class="title">Figure 24. DECDHL/DECDWL。</div>
 </div>
 <div class="imageblock">
 <div class="content">
 <img src="images/drcs.png" alt="images/drcs.png" width="780" />
 </div>
-<div class="title">Figure 23. DECDHLおよびDECDLD/<a href="http://vt100.net/dec/vt320/soft_characters">DRCS(Dynamically Redefined Character Set)</a>のあわせ技でGuiness。</div>
+<div class="title">Figure 25. DECDHLおよびDECDLD/<a href="http://vt100.net/dec/vt320/soft_characters">DRCS(Dynamically Redefined Character Set)</a>のあわせ技でGuiness。</div>
 </div>
 <div class="imageblock">
 <div class="content">
 <img src="images/nethack.png" alt="images/nethack.png" width="780" />
 </div>
-<div class="title">Figure 24. jnethackで遊んでいるところ。</div>
+<div class="title">Figure 26. jnethackで遊んでいるところ。</div>
 </div>
 <div class="imageblock">
 <div class="content">
 <img src="images/shellshock.png" alt="images/shellshock.png" width="780" />
 </div>
-<div class="title">Figure 25. <a href="http://blog.dhampir.no/content/shellshock-a-bash-3-bash-4-spaceshooter">ShellShock</a>で遊んでいるところ。</div>
+<div class="title">Figure 27. <a href="http://blog.dhampir.no/content/shellshock-a-bash-3-bash-4-spaceshooter">ShellShock</a>で遊んでいるところ。</div>
 </div>
 <div class="imageblock">
 <div class="content">
 <img src="images/mplayer.png" alt="images/mplayer.png" width="780" />
 </div>
-<div class="title">Figure 26. <a href="http://www.mplayerhq.hu/design7/news.html">mplayer</a>で動画を再生したところ。</div>
+<div class="title">Figure 28. <a href="http://www.mplayerhq.hu/design7/news.html">mplayer</a>で動画を再生したところ。</div>
 </div>
 </div>
 </div>
@@ -1442,7 +1420,7 @@ ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/</tt></pre>
 
 void function install_tanasinn() {
 
-    var file = "file:///…………/tanasinn/modules/common/process.js";
+    var file = "file:///…………/tanasinn/modules/common/process.js"; // &lt;-- process.jsのパス(URL表現)
 
     var contractID = "@zuse.jp/tanasinn/process;1";
     var process_class = Components.classes[contractID]
@@ -2091,39 +2069,39 @@ http://www.gnu.org/software/src-highlite -->
 <div class="content">
 <pre><tt>~/ or %USERPROFILE%/
    |
-   +-- .tanasinn.js &lt;-------------------------------- (1)
+   +-- .tanasinn.js    &lt;-------------------------------- (1)
    |
-   +-- .tanasinn/ &lt;-------------------------------- (2)
+   +-- .tanasinn/      &lt;-------------------------------- (2)
          |
-         +-- tanasinnrc &lt;---------------------- (3)
+         +-- tanasinnrc          &lt;---------------------- (3)
          |
-         +-- sessions.txt &lt;---------------------- (4)
+         +-- sessions.txt        &lt;---------------------- (4)
          |
-         +-- desktop_profile/ &lt;---------------------- (5)
+         +-- desktop_profile/    &lt;---------------------- (5)
          |
-         +-- session_profile/ &lt;---------------------- (6)
+         +-- session_profile/    &lt;---------------------- (6)
          |
-         +-- persist/ &lt;---------------------- (7)
+         +-- persist/            &lt;---------------------- (7)
          |
-         +-- history/ &lt;---------------------- (8)
+         +-- history/            &lt;---------------------- (8)
          |
-         +-- batches/ &lt;---------------------- (9)
+         +-- batches/            &lt;---------------------- (9)
          |
-         +-- cgi-bin/ &lt;---------------------- (10)
+         +-- cgi-bin/            &lt;---------------------- (10)
          |
-         +-- screenshot/ &lt;------------------- (11)
+         +-- screenshot/            &lt;------------------- (11)
          |
-         +-- log/ &lt;---------------------- (12)
+         +-- log/                &lt;---------------------- (12)
          |
-         +-- modules/ &lt;---------------------- (13)
+         +-- modules/            &lt;---------------------- (13)
                 |
-                +-- process_components/ &lt;------ (14)
+                +-- process_components/          &lt;------ (14)
                 |
-                +-- desktop_components/ &lt;------ (15)
+                +-- desktop_components/          &lt;------ (15)
                 |
-                +-- session_components/ &lt;------ (16)
+                +-- session_components/          &lt;------ (16)
                 |
-                +-- shared_components/ &lt;------ (17)</tt></pre>
+                +-- shared_components/           &lt;------ (17)</tt></pre>
 </div></div>
 <div class="sect3">
 <h4 id="_tanasinn_js">9.4.1. .tanasinn.js</h4>
@@ -2308,7 +2286,7 @@ command CloseMozilla call s:close_gecko_window()</tt></pre>
 <div class="paragraph"><p>このようにして使用します。</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>OpenMozilla http:</tt></pre>
+<pre><tt>OpenMozilla http://google.com</tt></pre>
 </div></div>
 <div class="imageblock">
 <div class="content">
@@ -2376,7 +2354,7 @@ cmap [置換対象キーシーケンス式] [置換後のキーシーケンス�
 <div class="ulist"><ul>
 <li>
 <p>
-&lt;Leader&gt; - 設定値nmap_manager.mapleaderおよびcmap_manager.mapleaderの値
+&lt;Leader&gt;        - 設定値nmap_manager.mapleaderおよびcmap_manager.mapleaderの値
 </p>
 </li>
 </ul></div>
@@ -2388,12 +2366,12 @@ cmap [置換対象キーシーケンス式] [置換後のキーシーケンス�
 <div class="ulist"><ul>
 <li>
 <p>
-&lt;nmode&gt; - ノーマルモード
+&lt;nmode&gt;         - ノーマルモード
 </p>
 </li>
 <li>
 <p>
-&lt;cmode&gt; - コマンドラインモード
+&lt;cmode&gt;         - コマンドラインモード
 </p>
 </li>
 </ul></div>
@@ -2405,7 +2383,7 @@ cmap [置換対象キーシーケンス式] [置換後のキーシーケンス�
 <div class="ulist"><ul>
 <li>
 <p>
-&lt;2-Shift&gt; - Shift key twice.
+&lt;2-Shift&gt;       - Shift key twice.
 </p>
 </li>
 </ul></div>
@@ -2417,22 +2395,22 @@ cmap [置換対象キーシーケンス式] [置換後のキーシーケンス�
 <div class="ulist"><ul>
 <li>
 <p>
-&lt;SwipeLeft&gt; - 左にスワイプ
+&lt;SwipeLeft&gt;     - 左にスワイプ
 </p>
 </li>
 <li>
 <p>
-&lt;SwipeRight&gt; - 右にスワイプ
+&lt;SwipeRight&gt;    - 右にスワイプ
 </p>
 </li>
 <li>
 <p>
-&lt;SwipeTop&gt; - 上にスワイプ
+&lt;SwipeTop&gt;      - 上にスワイプ
 </p>
 </li>
 <li>
 <p>
-&lt;SwipeBottom&gt; - 下にスワイプ
+&lt;SwipeBottom&gt;   - 下にスワイプ
 </p>
 </li>
 </ul></div>
@@ -2444,12 +2422,12 @@ cmap [置換対象キーシーケンス式] [置換後のキーシーケンス�
 <div class="ulist"><ul>
 <li>
 <p>
-&lt;PinchOpen&gt; - ピンチオープン
+&lt;PinchOpen&gt;     - ピンチオープン
 </p>
 </li>
 <li>
 <p>
-&lt;PinchClose&gt; - ピンチクローズ
+&lt;PinchClose&gt;    - ピンチクローズ
 </p>
 </li>
 </ul></div>
@@ -2461,12 +2439,12 @@ cmap [置換対象キーシーケンス式] [置換後のキーシーケンス�
 <div class="ulist"><ul>
 <li>
 <p>
-&lt;RotateRight&gt; - 時計回りに回転
+&lt;RotateRight&gt;   - 時計回りに回転
 </p>
 </li>
 <li>
 <p>
-&lt;RotateLeft&gt; - 反時計回りに回転
+&lt;RotateLeft&gt;    - 反時計回りに回転
 </p>
 </li>
 </ul></div>
@@ -2492,16 +2470,16 @@ cmap [置換対象キーシーケンス式] [置換後のキーシーケンス�
  #
 
  #for tmux
- nmap &lt;SwipeLeft&gt; &lt;C-b&gt;p
- nmap &lt;SwipeRight&gt; &lt;C-b&gt;n
- nmap &lt;SwipeDown&gt; &lt;C-b&gt;%
- nmap &lt;SwipeUp&gt; &lt;C-b&gt;!
- nmap &lt;RotateLeft&gt; &lt;C-b&gt;&lt;Space&gt;
- nmap &lt;RotateRight&gt; &lt;C-b&gt;&lt;Space&gt;
+ nmap &lt;SwipeLeft&gt;    &lt;C-b&gt;p
+ nmap &lt;SwipeRight&gt;   &lt;C-b&gt;n
+ nmap &lt;SwipeDown&gt;    &lt;C-b&gt;%
+ nmap &lt;SwipeUp&gt;      &lt;C-b&gt;!
+ nmap &lt;RotateLeft&gt;   &lt;C-b&gt;&lt;Space&gt;
+ nmap &lt;RotateRight&gt;  &lt;C-b&gt;&lt;Space&gt;
 
  # zoom in/out
- nmap &lt;PinchOpen&gt; &lt;cmode&gt;increase&lt;CR&gt;
- nmap &lt;PinchClose&gt; &lt;cmode&gt;decrease&lt;CR&gt;
+ nmap &lt;PinchOpen&gt;    &lt;cmode&gt;increase&lt;CR&gt;
+ nmap &lt;PinchClose&gt;   &lt;cmode&gt;decrease&lt;CR&gt;
 
  ##############################################################################
  #
@@ -2632,7 +2610,7 @@ tanasinnは結合度的にかなりゆるいタイプのコンポーネントフ
 <div class="content">
 <img src="images/busmodel.png" alt="images/busmodel.png" />
 </div>
-<div class="title">Figure 27. tanasinn Bus Model</div>
+<div class="title">Figure 29. tanasinn Bus Model</div>
 </div>
 <div class="literalblock">
 <div class="content">
@@ -3265,11 +3243,11 @@ by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
 <pre><tt>
-   <span style="color: #990000">(</span><span style="color: #FF0000">{</span>
-     tagName<span style="color: #990000">:</span> <span style="color: #FF0000">"box"</span><span style="color: #990000">,</span>
+   <span style="color: #990000">(</span><span style="color: #FF0000">{</span>                          <span style="font-style: italic"><span style="color: #9A1900">// &lt;--- (1)</span></span>
+     tagName<span style="color: #990000">:</span> <span style="color: #FF0000">"box"</span><span style="color: #990000">,</span>           <span style="font-style: italic"><span style="color: #9A1900">// &lt;--- (2)</span></span>
      flex<span style="color: #990000">:</span> <span style="color: #993399">1</span><span style="color: #990000">,</span>
-     style<span style="color: #990000">:</span> <span style="color: #FF0000">{</span>
-       backgroundColor<span style="color: #990000">:</span> <span style="color: #FF0000">"red"</span>
+     style<span style="color: #990000">:</span> <span style="color: #FF0000">{</span>                  <span style="font-style: italic"><span style="color: #9A1900">// &lt;--- (3)</span></span>
+       backgroundColor<span style="color: #990000">:</span> <span style="color: #FF0000">"red"</span>  <span style="font-style: italic"><span style="color: #9A1900">// &lt;--- (4)</span></span>
      <span style="color: #FF0000">}</span>
    <span style="color: #FF0000">}</span><span style="color: #990000">)</span>
 </tt></pre></div></div>
@@ -3300,19 +3278,19 @@ http://www.gnu.org/software/src-highlite -->
 <pre><tt>
    <span style="color: #990000">(</span><span style="color: #FF0000">{</span>
      tagName<span style="color: #990000">:</span> <span style="color: #FF0000">"html:div"</span><span style="color: #990000">,</span>
-     parentNode<span style="color: #990000">:</span> <span style="color: #FF0000">"id-of-parent"</span><span style="color: #990000">,</span>
+     parentNode<span style="color: #990000">:</span> <span style="color: #FF0000">"id-of-parent"</span><span style="color: #990000">,</span> <span style="font-style: italic"><span style="color: #9A1900">// &lt;--- (5)</span></span>
      style<span style="color: #990000">:</span> <span style="color: #FF0000">{</span>
        textAlign<span style="color: #990000">:</span> <span style="color: #FF0000">"center"</span>
      <span style="color: #FF0000">}</span>
-     childNodes<span style="color: #990000">:</span> <span style="color: #FF0000">{</span>
+     childNodes<span style="color: #990000">:</span> <span style="color: #FF0000">{</span>               <span style="font-style: italic"><span style="color: #9A1900">// &lt;--- (6)</span></span>
        tagName<span style="color: #990000">:</span> <span style="color: #FF0000">"html:div"</span><span style="color: #990000">,</span>
        style<span style="color: #990000">:</span> <span style="color: #FF0000">{</span>
          fontSize<span style="color: #990000">:</span> <span style="color: #FF0000">"1.5em"</span>
        <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
-       childNodes<span style="color: #990000">:</span> <span style="color: #990000">[</span>
+       childNodes<span style="color: #990000">:</span> <span style="color: #990000">[</span>             <span style="font-style: italic"><span style="color: #9A1900">// &lt;--- (7)</span></span>
          <span style="color: #FF0000">{</span>
            tagName<span style="color: #990000">:</span> <span style="color: #FF0000">"html:span"</span><span style="color: #990000">,</span>
-           innerText<span style="color: #990000">:</span> <span style="color: #FF0000">"abcde"</span>
+           innerText<span style="color: #990000">:</span> <span style="color: #FF0000">"abcde"</span>    <span style="font-style: italic"><span style="color: #9A1900">// &lt;--- (8)</span></span>
          <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
          <span style="color: #FF0000">{</span>
            tagName<span style="color: #990000">:</span> <span style="color: #FF0000">"html:div"</span><span style="color: #990000">,</span>
@@ -3362,7 +3340,7 @@ http://www.gnu.org/software/src-highlite -->
      tagName<span style="color: #990000">:</span> <span style="color: #FF0000">"hbox"</span><span style="color: #990000">,</span>
      id<span style="color: #990000">:</span> <span style="color: #FF0000">"parent"</span><span style="color: #990000">,</span>
      flex<span style="color: #990000">:</span> <span style="color: #993399">1</span><span style="color: #990000">,</span>
-     onconstruct<span style="color: #990000">:</span> <span style="color: #FF0000">{</span>
+     onconstruct<span style="color: #990000">:</span> <span style="color: #FF0000">{</span>              <span style="font-style: italic"><span style="color: #9A1900">// &lt;--- (9)</span></span>
        handler<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span> window<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">alert</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>id<span style="color: #990000">);</span> <span style="color: #FF0000">}</span>
      <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
      childNodes<span style="color: #990000">:</span> <span style="color: #990000">[</span>
@@ -3370,7 +3348,7 @@ http://www.gnu.org/software/src-highlite -->
          tagName<span style="color: #990000">:</span> <span style="color: #FF0000">"vbox"</span><span style="color: #990000">,</span>
          id<span style="color: #990000">:</span> <span style="color: #FF0000">"left"</span><span style="color: #990000">,</span>
          flex<span style="color: #990000">:</span> <span style="color: #993399">1</span><span style="color: #990000">,</span>
-         listener<span style="color: #990000">:</span> <span style="color: #FF0000">{</span>
+         listener<span style="color: #990000">:</span> <span style="color: #FF0000">{</span>             <span style="font-style: italic"><span style="color: #9A1900">// &lt;--- (10)</span></span>
            type<span style="color: #990000">:</span> <span style="color: #FF0000">"mouseover"</span><span style="color: #990000">,</span>
            context<span style="color: #990000">:</span> window<span style="color: #990000">,</span>
            handler<span style="color: #990000">:</span> onMouseOver
@@ -3445,7 +3423,7 @@ twitter: <a href="http://twitter.com/kefir_">http://twitter.com/kefir_</a></p></
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2012-05-31 23:01:37 JST
+Last updated 2012-07-15 16:28:09 JST
 </div>
 </div>
 </body>

@@ -26,6 +26,38 @@
 /**
  * @class ReverseVideo
  *
+ * DECSCNM — Screen Mode: Light or Dark Screen
+ *
+ * ref: http://www.vt100.net/docs/vt510-rm/DECSCNM
+ *
+ * This control function selects a dark or light background on the screen.
+ *
+ * Default: Dark background.
+ *
+ * Format
+ *
+ * CSI   ?     5     h
+ * 9/11  3/15  3/5   h
+ *
+ * 6/8   Set: reverse video.
+ *
+ * CSI   ?     5     l
+ * 9/11  3/15  3/5   6/12
+ *
+ * Reset: normal display.
+ *
+ * Description
+ *
+ * When DECSCNM is set, the screen displays dark characters on a light
+ * background.
+ * When DECSCNM is reset, the screen displays light characters on a dark
+ * background.
+ *
+ * Note on DECSCNM
+ *
+ * Screen mode only effects how the data appears on the screen. DECSCNM does 
+ * not change the data in page memory.
+ *
  */
 var ReverseVideo = new Class().extends(Plugin);
 ReverseVideo.definition = {
@@ -44,6 +76,9 @@ ReverseVideo.definition = {
     </module>,
 
   "[persistable] enabled_when_startup": true,
+  "[persistable] default_value": false,
+
+  _mode: null,
 
   /** installs itself. 
    *  @param {Broker} broker A Broker object.
@@ -51,8 +86,8 @@ ReverseVideo.definition = {
   "[install]":
   function install(broker) 
   {
-    this.activate.enabled = true;
-    this.deactivate.enabled = true;
+    this._mode = this.default_value;
+    this.reset();
   },
 
   /** Uninstalls itself.
@@ -61,31 +96,76 @@ ReverseVideo.definition = {
   "[uninstall]":
   function uninstall(broker) 
   {
-    this.activate.enabled = false;
-    this.deactivate.enabled = false;
+    this._mode = null;
   },
 
   /** Activate reverse video feature.
    */
-  "[subscribe('sequence/decset/5')]":
+  "[subscribe('sequence/decset/5'), pnp]":
   function activate() 
   { 
-    var broker = this._broker;
-    broker.notify("command/reverse-video", true);
+    this._mode = true;
+
+    this.sendMessage("command/reverse-video", true);
+
     coUtils.Debug.reportMessage(
       _("DECSET - DECSCNM (Reverse video) was called."));
   },
 
   /** Deactivate reverse video feature
    */
-  "[subscribe('sequence/decrst/5')]":
+  "[subscribe('sequence/decrst/5'), pnp]":
   function deactivate() 
   {
-    var broker = this._broker;
-    broker.notify("command/reverse-video", false);
+    this._mode = false;
+
+    this.sendMessage("command/reverse-video", false);
+
     coUtils.Debug.reportMessage(
       _("DECRST - DECSCNM (Reverse video) was called."));
   },
+
+  /** handle terminal reset event.
+   */
+  "[subscribe('command/{soft | hard}-terminal-reset'), pnp]":
+  function reset() 
+  {
+    if (this.default_value) {
+      this.activate();
+    } else {
+      this.deactivate();
+    }
+  },
+
+  /**
+   * Serialize snd persist current state.
+   */
+  "[subscribe('@command/backup'), type('Object -> Undefined'), pnp]": 
+  function backup(context) 
+  {
+    // serialize this plugin object.
+    context[this.id] = {
+      mode: this._mode,
+    };
+  },
+
+  /**
+   * Deserialize snd restore stored state.
+   */
+  "[subscribe('@command/restore'), type('Object -> Undefined'), pnp]": 
+  function restore(context) 
+  {
+    var data;
+
+    data = context[this.id];
+    if (data) {
+      this._mode = data.mode;
+    } else {
+      coUtils.Debug.reportWarning(
+        _("Cannot restore last state of renderer: data not found."));
+    }
+  },
+
 
 }; // class ReverseVideo
 
@@ -99,4 +179,4 @@ function main(broker)
   new ReverseVideo(broker);
 }
 
-
+// EOF

@@ -73,12 +73,35 @@ KeyboardActionMode.definition = {
 
 
   "[persistable] enabled_when_startup": true,
+  "[persistable] default_value": false,
+
+  _mode: false,
+
+  /** installs itself. 
+   *  @param {Broker} broker A Broker object.
+   */
+  "[install]":
+  function install(broker) 
+  {
+    this._mode = this.default_value;
+  },
+
+  /** Uninstalls itself.
+   *  @param {Broker} broker A broker object.
+   */
+  "[uninstall]":
+  function uninstall(broker) 
+  {
+    this._mode = null;
+  },
 
   /** disable input handler.
    */
   "[subscribe('sequence/sm/2'), pnp]":
   function activate() 
   { 
+    this._mode = true;
+
     // lock input manager.
     this.sendMessage("command/disable-input-manager", true);
   },
@@ -88,8 +111,51 @@ KeyboardActionMode.definition = {
   "[subscribe('sequence/rm/2'), pnp]":
   function deactivate() 
   {
+    this._mode = false;
+
     // unlock input manager.
     this.sendMessage("command/enable-input-manager", true);
+  },
+
+  /** on hard / soft reset
+   */
+  "[subscribe('command/{soft | hard}-terminal-reset'), pnp]":
+  function reset(broker) 
+  {
+    if (this.default_value) {
+      this.activate();
+    } else {
+      this.deactivate();
+    }
+  },
+
+  /**
+   * Serialize snd persist current state.
+   */
+  "[subscribe('@command/backup'), type('Object -> Undefined'), pnp]": 
+  function backup(context) 
+  {
+    // serialize this plugin object.
+    context[this.id] = {
+      mode: this._mode,
+    };
+  },
+
+  /**
+   * Deserialize snd restore stored state.
+   */
+  "[subscribe('@command/restore'), type('Object -> Undefined'), pnp]": 
+  function restore(context) 
+  {
+    var data;
+
+    data = context[this.id];
+    if (data) {
+      this._mode = data.mode;
+    } else {
+      coUtils.Debug.reportWarning(
+        _("Cannot restore last state of renderer: data not found."));
+    }
   },
 
 }; // class KeyboardActionMode
@@ -104,4 +170,4 @@ function main(broker)
   new KeyboardActionMode(broker);
 }
 
-
+// EOF

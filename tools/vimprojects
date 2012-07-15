@@ -14,6 +14,7 @@
  chrome.manifest.in
  chrome.manifest
  bootstrap.js
+
  content=content {
   tanasinn.svg
  }
@@ -63,7 +64,6 @@
   }
   process_components=process_components {
    desktop.js
-   trace.js
   }
   desktop_components=desktop_components {
    .
@@ -77,11 +77,15 @@
    map.js
   }
   session_components=session_components {
+
    parser.js
 
    line.js
    cursorstate.js
+   tabcontroller.js
    screen.js
+   psreport.js
+   conformance.js
 
    control.js
    escape.js
@@ -100,6 +104,8 @@
 
    plugin=.{
 
+    transform.js
+    blink.js
     drcs.js
     sixel.js
     mascot.js
@@ -109,24 +115,35 @@
     da2.js
     da3.js
     eaw.js
-    reversevideo.js
-    autorepeat.js
-    autowrap.js
-    reversewrap.js
     windowmanipulation.js
     scrollregion.js
     softreset.js
     hardreset.js
     sgrhandler.js
+
+    anm.js
+    ckm.js
+    colm.js
     irm.js
     lnm.js
     kam.js
     srm.js
+    altscreen.js
+    reversevideo.js
+    autorepeat.js
+    tcem.js
+    originmode.js
+    autowrap.js
+
+    reversewrap.js
     macro.js
     dsr.js
+    decdsr.js
     charset.js
     protection.js
     reportparams.js
+    terminfo.js
+    wheelscroll.js
 
     focusevent.js
     declocatormouse.js
@@ -138,6 +155,7 @@
 
     cursor.js
     splitter.js
+    gesture.js
 
     ime.js
     copy.js
@@ -168,6 +186,8 @@
     keysnail.js
 
     overlay.js
+    overlayimage.js
+    video.js
     browser.js
     agent.js
     completer.js
@@ -175,9 +195,11 @@
     command.js
     tabbox.js
     commandline.js
+    commandlineime.js
     batch.js
     publish.js
     screenshot.js
+    history.js
 
     charsetcompleter.js
     colorcompleter.js

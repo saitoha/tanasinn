@@ -27,7 +27,7 @@
  * @Trait Environment
  *
  */
-let Environment = new Trait();
+var Environment = new Trait();
 Environment.definition = {
 
 // public properties
@@ -35,13 +35,17 @@ Environment.definition = {
   /** @property bin_path */
   get bin_path()
   {
-    let broker = this._broker;
+    var broker;
+
+    broker = this._broker;
     return broker.bin_path;
   },
 
   set bin_path(value)
   {
-    let broker = this._broker;
+    var broker;
+
+    broker = this._broker;
     broker.bin_path = value;
   },
 
@@ -49,13 +53,17 @@ Environment.definition = {
   /** @property runtime_path */
   get runtime_path()
   {
-    let broker = this._broker;
+    var broker;
+    
+    broker = this._broker;
     return broker.runtime_path;
   },
 
   set runtime_path(value)
   {
-    let broker = this._broker;
+    var broker;
+
+    broker = this._broker;
     broker.runtime_path = value;
   },
 
@@ -86,7 +94,7 @@ Environment.definition = {
 /** 
  * @class Desktop
  */
-let Desktop = new Class().extends(Plugin)
+var Desktop = new Class().extends(Plugin)
                          .mix(Environment)
                          .mix(EventBroker);
 Desktop.definition = {
@@ -124,24 +132,52 @@ Desktop.definition = {
   function initializeWithWindow(window)
   {
     this._window = window;
-
-    // register getter topic.
-    let broker = this._broker;
-    this.subscribe("get/bin-path", function() broker.bin_path);
-    this.subscribe("get/python-path", function() broker.python_path);
-    broker.notify("install/desktop", broker);
+    this.install(this._broker);
   },
 
   "[install]":
   function install(broker)
   {
-    this.onShutdown.enabled = true;
-    this.getDesktopFromWindow.enabled = true;
-    this._root_element = this.window.document
+    var id, 
+        root_element;
+
+    // register getter topic.
+    this.subscribe(
+      "get/bin-path",
+      function()
+      {
+        return broker.bin_path;
+      });
+
+    this.subscribe(
+      "get/python-path", 
+      function()
+      {
+        return broker.python_path;
+      });
+
+    this.subscribe(
+      "get/runtime-path", 
+      function()
+      {
+        return broker.runtime_path;
+      });
+
+    root_element = this.window.document
       .documentElement
       .appendChild(this.window.document.createElement("box"));
     
-    this._root_element.id = "tanasinn_desktop";
+    id = root_element.id = coUtils.Uuid.generate().toString();
+  
+    this._root_element = root_element;
+
+    this.subscribe(
+      "get/root-element",
+      function()
+      {
+        return root_element;
+      }, this, id);
+
     this.notify("command/load-settings", this.profile);
 
     this.notify("event/broker-started", this);
@@ -150,10 +186,13 @@ Desktop.definition = {
   "[uninstall]":
   function uninstall(broker)
   {
-    this.onShutdown.enabled = false;
-    this.getDesktopFromWindow.enabled = false;
+    this.unsubscribe(this._root_element.id);
     this.clear();
-    this._root_element.parentNode.removeChild(this._root_element);
+
+    if (this._root_element) {
+      this._root_element.parentNode.removeChild(this._root_element);
+      this._root_element = null;
+    }
   },
   
   "[subscribe('event/enabled'), enabled]":
@@ -168,14 +207,14 @@ Desktop.definition = {
     this.notify("event/disabled");
   },
 
-  "[subscribe('event/shutdown')]":
+  "[subscribe('event/shutdown'), pnp]":
   function onShutdown()
   {
     this.notify("event/shutdown");
     this.uninstall(this._broker);
   },
   
-  "[subscribe('get/desktop-from-window')]":
+  "[subscribe('get/desktop-from-window'), pnp]":
   function getDesktopFromWindow(window)
   {
     return window.document
@@ -188,15 +227,14 @@ Desktop.definition = {
    */
   start: function start(parent, command, term, size, search_path, callback) 
   {
-    let broker = this._broker;
     // create request object;
     command = command 
       || this["default_command@" + coUtils.Runtime.os] 
       || this.default_command;
 
-    let [width, height] = size || [this.width, this.height];
+    var [width, height] = size || [this.width, this.height];
 
-    let request = { 
+    var request = { 
       parent: parent, 
       command: command, 
       term: term, 
@@ -204,7 +242,8 @@ Desktop.definition = {
       height: height,
     };
 
-    let session = this.uniget("event/session-requested", request);
+    this.uniget("event/session-requested", request);
+
     return parent;
   },
 
@@ -221,8 +260,8 @@ function main(process)
     "event/new-window-detected",
     function onDesktopRequested(window) 
     {
-      let desktop = new Desktop(process).initializeWithWindow(window);
-      return desktop;
+      return new Desktop(process).initializeWithWindow(window);
     });
 }
 
+// EOF

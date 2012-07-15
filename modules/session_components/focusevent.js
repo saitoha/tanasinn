@@ -26,7 +26,7 @@
 /**
  *  @class FocusEvent
  */
-let FocusEvent = new Class().extends(Plugin);
+var FocusEvent = new Class().extends(Plugin);
 FocusEvent.definition = {
 
   get id()
@@ -49,73 +49,61 @@ FocusEvent.definition = {
   "[install]":
   function install(broker) 
   {
-    /** Start to listen mouse event. */
-    this.backup.enabled = true;
-    this.restore.enabled = true;
-    this.onGotFocus.enabled = true;
-    this.onLostFocus.enabled = true;
-    this.onFocusReportingModeChanged.enabled = true;
   },
 
   /** Uninstalls itself. */
   "[uninstall]":
   function uninstall(broker) 
   {
-    // unregister mouse event DOM listeners.
-    this.backup.enabled = false;
-    this.restore.enabled = false;
-    this.onGotFocus.enabled = false;
-    this.onLostFocus.enabled = false;
-    this.onFocusReportingModeChanged.enabled = false;
   },
 
-  "[subscribe('command/backup')]": 
+  "[subscribe('command/backup'), pnp]": 
   function backup(context) 
   {
-    context.focus_event = {
+    context[this.id] = {
       focus_mode: this._focus_mode,
     }; 
   },
 
-  "[subscribe('command/restore')]": 
+  "[subscribe('command/restore'), pnp]": 
   function restore(context) 
   {
-    if (context.mouse) {
-      this._focus_mode = context.focus_event.focus_mode;
+    var data = context[this.id];
+
+    if (data) {
+      this._focus_mode = data.focus_mode;
     }
   },
   
   /** Fired at the focus reporting mode is changed. */
-  "[subscribe('event/focus-reporting-mode-changed')]": 
+  "[subscribe('event/focus-reporting-mode-changed'), pnp]": 
   function onFocusReportingModeChanged(mode) 
   {
     this._focus_mode = mode;
   },
 
-  "[subscribe('event/got-focus')]":
+  "[subscribe('event/got-focus'), pnp]":
   function onGotFocus()
   {
     this.onLostFocus.enabled = true;
     this.onGotFocus.enabled = false;
-    if (!this._focus_mode) {
-      return;
+
+    if (this._focus_mode) {
+      this.sendMessage("command/send-sequence/csi");
+      this.sendMessage("command/send-to-tty", "I"); // focus in
     }
-    let broker = this._broker;
-    let message = "\x1b[I"; // focus in
-    broker.notify("command/send-to-tty", message);
   },
 
-  "[subscribe('event/lost-focus')]":
+  "[subscribe('event/lost-focus'), pnp]":
   function onLostFocus()
   {
     this.onLostFocus.enabled = false;
     this.onGotFocus.enabled = true;
-    if (!this._focus_mode) {
-      return;
+
+    if (this._focus_mode) {
+      this.sendMessage("command/send-sequence/csi");
+      this.sendMessage("command/send-to-tty", "O"); // focus out
     }
-    let broker = this._broker;
-    let message = "\x1b[O"; // focus out
-    broker.notify("command/send-to-tty", message);
   },
 
 }; // class FocusEvent
@@ -131,3 +119,4 @@ function main(broker)
   new FocusEvent(broker);
 }
 
+// EOF

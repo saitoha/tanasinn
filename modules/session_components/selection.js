@@ -25,30 +25,110 @@
 /**
  * @trait Suitable
  */
-let Suitable = new Trait();
+var Suitable = new Trait();
 Suitable.definition = {
 
-  "[subscribe('event/screen-width-changed')]":
+  "[subscribe('event/screen-width-changed'), pnp]":
   function onWidthChanged(width) 
   {
-    let canvas = this._canvas;
+    var canvas;
+
+    canvas = this._canvas;
     canvas.width = width;
   },
 
-  "[subscribe('event/screen-height-changed')]": 
+  "[subscribe('event/screen-height-changed'), pnp]": 
   function onHeightChanged(height) 
   {
-    let canvas = this._canvas;
+    var canvas;
+
+    canvas = this._canvas;
     canvas.height = height;
   },
 
 };
 
 /**
+ * @trait DragSelect
+ */
+var DragSelect = new Trait();
+DragSelect.definition = {
+
+  _initial_position: null,
+
+  /** Dragstart handler. It starts a session of dragging selection. */
+  "[listen('dragstart', '#tanasinn_content'), pnp]":
+  function ondragstart(event) 
+  {
+    var initial_position, start, end;
+
+    if (event.ctrlKey) {
+      return;
+    }
+
+    if (event.shiftKey) {
+      return;
+    }
+
+    initial_position = this._convertPixelToPosition(event);
+
+    if (this._range) {
+
+      start = this._range[0];
+      end = this._range[1];
+
+      if (start <= initial_position && initial_position < end) {
+        return; // drag copy
+      }
+    }
+
+    this._initial_position = initial_position; // store initial_position
+
+    this._rectangle_selection_flag = event.altKey;
+    this._color = this.normal_selection_color;
+    this._context.fillStyle = this._color;
+
+    this.ondragmove.enabled = true;
+    this.ondragend.enabled = true;
+  },
+
+  /** Dragmove handler */
+  "[listen('mousemove')]":
+  function ondragmove(event) 
+  {
+    var initial_position = this._initial_position,
+        current_position = this._convertPixelToPosition(event),
+        start_position = Math.min(initial_position, current_position),
+        end_position = Math.max(initial_position, current_position) 
+
+    this.drawSelectionRange(start_position, end_position);
+    this.setRange(start_position, end_position);
+  },
+
+  /** Dragend handler */
+  "[listen('mouseup')]":
+  function ondragend(event) 
+  {
+    this.ondragmove.enabled = false;
+    this.ondragend.enabled = false;
+
+    this._initial_position = null;
+
+    if (this._range) {
+      this._setClearAction();
+      this._reportRange();
+    }
+  },
+
+}; // DragSelect
+
+
+/**
  * @class Selection
  */
-let Selection = new Class().extends(Plugin)
+var Selection = new Class().extends(Plugin)
                            .mix(Suitable)
+                           .mix(DragSelect)
                            .depends("renderer")
                            .depends("screen");
 Selection.definition = {
@@ -66,16 +146,15 @@ Selection.definition = {
     </module>,
 
   "[persistable] enabled_when_startup": true,
+  "[persistable] normal_selection_color": "white",
+  "[persistable] highlight_selection_color": "yellow",
+  "[persistable] smart_selection": true,
 
+  _color: "white",
   _canvas: null,
   _context: null,
   _range: null,
   _highlight_region: null,
-
-  "[persistable] normal_selection_color": "white",
-  "[persistable] highlight_selection_color": "yellow",
-
-  _color: "white",
 
   "[subscribe('event/mouse-tracking-mode-changed'), enabled]": 
   function onMouseTrackingModeChanged(data) 
@@ -115,8 +194,11 @@ Selection.definition = {
   "[install]":
   function install(broker) 
   {
-    let renderer = this._renderer;
-    let {selection_canvas} = broker.uniget(
+    var renderer;
+
+    renderer = this._renderer;
+
+    var {selection_canvas} = this.request(
       "command/construct-chrome", 
       {
         parentNode: "#tanasinn_center_area",
@@ -127,17 +209,6 @@ Selection.definition = {
     
     this._canvas = selection_canvas;
     this._context = selection_canvas.getContext("2d");
-
-    this.onWidthChanged.enabled = true;
-    this.onHeightChanged.enabled = true;
-    this.getRange.enabled = true;
-    this.onFirstFocus.enabled = true;
-
-    // register dom listeners.
-    this.ondragstart.enabled = true;
-    this.ondblclick.enabled = true;
-
-    broker.notify("initialized/selection", this);
   },
 
   /** Uninstalls itself 
@@ -146,36 +217,32 @@ Selection.definition = {
   "[uninstall]":
   function uninstall(broker) 
   {
-    this.clear();
-    this.onWidthChanged.enabled = false;
-    this.onHeightChanged.enabled = false;
-    this.getRange.enabled = false;
-    this.onFirstFocus.enabled = false;
-
-    this.ondragstart.enabled = false;
-    this.ondblclick.enabled = false;
-
     if (null !== this._canvas) {
       this._canvas.parentNode.removeChild(this._canvas);
       this._canvas = null;
     }
-    this._context = null;
+    if (null !== this._context) {
+      this.clear();
+      this._context = null;
+    }
 
   },
 
-  "[subscribe('@command/focus')]":
+  "[subscribe('@command/focus'), pnp]":
   function onFirstFocus() 
   {
-    let canvas = this._canvas;
+    var canvas;
+
+    canvas = this._canvas;
     canvas.width = canvas.parentNode.boxObject.width;
     canvas.height = canvas.parentNode.boxObject.height;
   },
 
   /** Doubleclick handler. It selects word under the mouse pointer. */
-  "[listen('dblclick', '#tanasinn_content')]":
+  "[listen('dblclick', '#tanasinn_content'), pnp]":
   function ondblclick(event) 
   {
-    let [column, row] = this.convertPixelToScreen(event);
+    var [column, row] = this.convertPixelToScreen(event);
     this.selectSurroundChars(column, row);
 
     this._setClearAction();
@@ -214,23 +281,30 @@ Selection.definition = {
   "[subscribe('event/start-highlight-mouse'), enabled]":
   function onStartHighlightMouse(args)
   {
-    let func = args[0];
+    var func, screen, column, row, x, y,
+        min_row, max_row, initial_position,
+        start, end;
+
+    func = args[0];
     if (0 == func) {
       this.clear();
       return;
     }
 
-    let broker = this._broker;
-    let screen = this.dependency["screen"];
-    let column = screen.width;
-    let row = screen.height;
-    let x = args[1] - 1;
-    let y = args[2] - 1;;
-    let min_row = args[3] - 1;
-    let max_row = args[4] - 1;
-    let initial_position = y * column + x;
+    screen = this.dependency["screen"];
+    column = screen.width;
+
+    row = screen.height;
+    x = args[1] - 1;
+    y = args[2] - 1;;
+
+    min_row = args[3] - 1;
+    max_row = args[4] - 1;
+
+    initial_position = y * column + x;
+
     if (this._range) {
-      let [start, end] = this._range;
+      [start, end] = this._range;
       if (start <= initial_position && initial_position < end) {
         return; // drag copy
       }
@@ -239,7 +313,7 @@ Selection.definition = {
     this._color = this.highlight_selection_color;
     this._context.fillStyle = this._color;
 
-    broker.notify(
+    this.sendMessage(
       "command/add-domlistener", 
       {
         target: this._canvas.ownerDocument, 
@@ -248,7 +322,7 @@ Selection.definition = {
         context: this,
         handler: function selection_dragstart(event) 
         {
-          broker.notify(
+          this.sendMessage(
             "command/add-domlistener", 
             {
               target: this._canvas.ownerDocument, 
@@ -257,16 +331,22 @@ Selection.definition = {
               context: this,
               handler: function selection_mousemove(event) 
               {
-                let [x, y] = this.convertPixelToScreen(event);
+                var x, y, current_position, start_position, end_position;
+
+                [x, y] = this.convertPixelToScreen(event);
+
                 if (y < min_row) {
                   y = min_row;
                 }
                 if (y > max_row - 1) {
                   y = max_row - 1;
                 }
-                let current_position = y * column + x;
-                let start_position = Math.min(initial_position, current_position);
-                let end_position = Math.max(initial_position, current_position) 
+
+                current_position = y * column + x;
+                
+                start_position = Math.min(initial_position, current_position);
+                end_position = Math.max(initial_position, current_position) 
+
                 start_position = Math.max(0, start_position);
                 end_position = Math.min(row * column, end_position);
                 this.drawSelectionRange(start_position, end_position);
@@ -274,7 +354,7 @@ Selection.definition = {
               }
             });
 
-          broker.notify(
+          this.sendMessage(
             "command/add-domlistener", 
             {
               target: this._canvas.ownerDocument,
@@ -283,7 +363,7 @@ Selection.definition = {
               context: this,
               handler: function selection_mouseup(event) 
               {
-                broker.notify("command/remove-domlistener", "_DRAGGING"); 
+                this.sendMessage("command/remove-domlistener", "_DRAGGING"); 
                 if (this._range) {
                   this._setClearAction();
                   this._reportRange();
@@ -293,98 +373,32 @@ Selection.definition = {
           }
         });
   },
-
-  /** Dragstart handler. It starts a session of dragging selection. */
-  "[listen('dragstart', '#tanasinn_content')]":
-  function ondragstart(event) 
-  {
-    let broker = this._broker;
-    let screen = this.dependency["screen"];
-    let column = screen.width;
-    let row = screen.height;
-    let [x, y] = this.convertPixelToScreen(event);
-    let initial_position = y * column + x;
-    if (this._range) {
-      let [start, end] = this._range;
-      if (start <= initial_position && initial_position < end) {
-        return; // drag copy
-      }
-    }
-    this._rectangle_selection_flag = event.altKey;
-    this._color = this.normal_selection_color;
-    this._context.fillStyle = this._color;
-
-    broker.notify(
-      "command/add-domlistener", 
-      {
-        target: this._canvas.ownerDocument, 
-        type: "mousemove", 
-        id: "_DRAGGING",
-        context: this,
-        handler: function selection_mousemove(event) 
-        {
-          let [x, y] = this.convertPixelToScreen(event);
-          let current_position = y * column + x;
-          let start_position = Math.min(initial_position, current_position);
-          let end_position = Math.max(initial_position, current_position) 
-          start_position = Math.max(0, start_position);
-          end_position = Math.min(row * column, end_position);
-          this.drawSelectionRange(start_position, end_position);
-          this.setRange(start_position, end_position);
-        }
-      });
-
-    broker.notify(
-      "command/add-domlistener", 
-      {
-        target: this._canvas.ownerDocument,
-        type: "mouseup", 
-        id: "_DRAGGING",
-        context: this,
-        handler: function selection_mouseup(event) 
-        {
-          broker.notify("command/remove-domlistener", "_DRAGGING"); 
-          if (this._range) {
-            this._setClearAction();
-            this._reportRange();
-          }
-        }
-      });
-  },
-
+ 
   /** This method called after selection range settled. It registers 3 DOM 
    *  listeners which wait for mouseup / dragstart / DOMMouseScroll event 
    *  and clears the selection once.
    */
   _setClearAction: function _setClearAction() 
   {
-    let id = "selection.clear";
-    let broker = this._broker;
-    broker.notify("command/add-domlistener", {
-      target: "#tanasinn_content",
-      type: "mouseup",
-      id: id,
-      context: this,
-      handler: function(event) 
-      {
-        if (2 == event.button) { // right click
-          return;
-        }
-        broker.notify("command/remove-domlistener", id); 
-        this.clear();
-      },
-    });
-    broker.notify("command/add-domlistener", {
-      target: "#tanasinn_content",
-      type: "DOMMouseScroll", 
-      id: id,
-      context: this,
-      handler: function handler(event) 
-      {
-        broker.notify("command/remove-domlistener", id); 
-        this.clear();
-      },
-    });
+    this.onClickAfterSelect.enabled = true;
+    this.onScrollAfterSelect.enabled = true;
+  },
+
+  "[listen('mouseup', '#tanasinn_content')]":
+  function onClickAfterSelect(event) 
+  {
+    if (2 === event.button) { // right click
+      return;
+    }
+    this.onClickAfterSelect.enabled = false;
+    this.clear();
+  },
+
+  "[listen('DOMMouseScroll', '#tanasinn_content')]":
+  function onScrollAfterSelect(event) 
+  {
+    this.onScrollAfterSelect.enabled = false;
+    this.clear();
   },
 
   /** Draw selection overlay to the canvas.
@@ -411,48 +425,63 @@ Selection.definition = {
    */
   drawSelectionRange: function drawSelectionRange(first, last) 
   {
+    var text, context, screen, renderer, column,
+        char_width, line_height, start_row, end_row,
+        start_column, end_column,
+        x, y, width, height, lines, i, line,
+        match, right_blank_length;
+
     this.clear();
 
     // checking precondition
-    if ("number" != typeof(first) 
-     || "number" != typeof(last)) {
+    if ("number" !== typeof(first) 
+     || "number" !== typeof(last)) {
       throw coUtils.Debug.Exception(
         _("Ill-typed arguments was given: [%d, %d]"), 
         first, last);
     }
 
     // if first argument was less then second argument, swaps them.
-    if (first > last)
+    if (first > last) {
       [first, last] = arguments;
+    }
 
-    let context = this._context;
-    let screen = this.dependency["screen"];
-    let renderer = this.dependency["renderer"];
-    let column = screen.width;
-    let char_width = renderer.char_width;
-    let line_height = renderer.line_height;
-    let start_row = Math.floor(first / column);
-    let end_row = Math.floor(last / column + 1.0);
-    let start_column = first % column;
-    let end_column = last % column;
+    context = this._context;
+
+    screen = this.dependency["screen"];
+    renderer = this.dependency["renderer"];
+
+    column = screen.width;
+    char_width = renderer.char_width;
+    line_height = renderer.line_height;
+    start_row = Math.floor(first / column);
+    end_row = Math.floor(last / column + 1.0);
+    start_column = first % column;
+    end_column = last % column;
 
     if (this._rectangle_selection_flag) {
 
       // draw outer region
-      let x = start_column * char_width;
-      let y = start_row * line_height;
-      let width = (end_column - start_column) * char_width;
-      let height = (end_row - start_row) * line_height;
+      x = start_column * char_width;
+      y = start_row * line_height;
+
+      width = (end_column - start_column) * char_width;
+      height = (end_row - start_row) * line_height;
+
       context.fillStyle = this._color;
       context.fillRect(x, y, width, height);
 
     } else {
-      // draw outer region
-      let x = 0;
-      let y = start_row * line_height;
-      let width = column * char_width;
-      let height = (end_row - start_row) * line_height;
+
       context.fillStyle = this._color;
+
+      // draw outer region
+      x = 0;
+      y = start_row * line_height;
+
+      width = column * char_width;
+      height = (end_row - start_row) * line_height;
+
       context.fillRect(x, y, width, height);
 
       // clear pre-start region
@@ -461,26 +490,56 @@ Selection.definition = {
       // clear post-end region
       context.clearRect(end_column * char_width, y + height - line_height, 
                         width - end_column * char_width, line_height);
+
+      if (this.smart_selection) {
+        text = screen.getTextInRange(first, last);
+        lines = text.split("\n");
+
+        right_blank_length = column - lines[0].length - start_column;
+        context.clearRect(width - right_blank_length * char_width, 
+                          start_row * line_height,
+                          right_blank_length * char_width,
+                          line_height);
+        for (i = start_row + 1; i < end_row; ++i) {
+          line = lines[i - start_row];
+          if (line) {
+            right_blank_length = column - line.length;
+            // clear post-end region
+            context.clearRect(width - right_blank_length * char_width, 
+                              i * line_height,
+                              right_blank_length * char_width,
+                              line_height);
+          }
+        }
+      }
     }
   },
 
   selectSurroundChars: function selectSurroundChars(column, row) 
   {
-    let context = this._context;
-    let screen = this.dependency["screen"];
-    let [start, end] = screen.getWordRangeFromPoint(column, row);
+    var context, screen, start, end;
+
+    context = this._context;
+    screen = this.dependency["screen"];
+    [start, end] = screen.getWordRangeFromPoint(column, row);
+
     this.drawSelectionRange(start, end);
     this.setRange(start, end);
     this._reportRange();
   },
 
-  "[subscribe('get/selection-info')]": 
+  "[subscribe('get/selection-info'), pnp]": 
   function getRange() 
   {
+    var start, end;
+
     if (null === this._range) {
       return null;
     }
-    let [start, end] = this._range;
+
+    start = this._range[0];
+    end = this._range[1];
+
     return {
       start: start, 
       end: end, 
@@ -503,41 +562,55 @@ Selection.definition = {
 
   _reportRange: function _reportRange()
   {
-    let [column, row] = this._range;
-    let message = coUtils.Text.format(_("selected: [%d, %d]"), column, row);
-    let broker = this._broker;
-    broker.notify("command/report-status-message", message);
+    var column = this._range[0],
+        row = this._range[1],
+        message = coUtils.Text.format(_("selected: [%d, %d]"), column, row);
+
+    this.sendMessage("command/report-status-message", message);
   },
 
   /** Clear selection canvas and range information. */
   clear: function clear() 
   {
-    let context = this._context;
-    let canvas = this._canvas;
-    context.clearRect(0, 0, canvas.width, canvas.height);
-    this._range = null; // clear range.
+    var context = this._context,
+        canvas = this._canvas;
+
+    if (canvas && context) {
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      this._range = null; // clear range.
+    }
+  },
+
+  _convertPixelToPosition: function convertPixelToScreen(event) 
+  {
+    var screen = this.dependency["screen"],
+        result = this.convertPixelToScreen(event);
+
+    return screen.width * result[1] + result[0];
   },
 
   convertPixelToScreen: function convertPixelToScreen(event) 
   {
-    let broker = this._broker;
-    let target_element = broker.uniget("command/query-selector", "#tanasinn_center_area");
-    let root_element = broker.root_element;
-    let box = target_element.boxObject;
-    let offsetX = box.screenX - root_element.boxObject.screenX;
-    let offsetY = box.screenY - root_element.boxObject.screenY;
-    let left = event.layerX - offsetX; 
-    let top = event.layerY - offsetY;
-    let renderer = this.dependency["renderer"];
-    let screen = this.dependency["screen"];
-    let char_width = renderer.char_width;
-    let line_height = renderer.line_height;
-    let column = Math.floor(left / char_width + 1.0);
-    let row = Math.floor(top / line_height + 1.0);
-    let max_column = screen.width;
-    let max_row = screen.height;
-    column = column > max_column ? max_column: column;
-    row = row > max_row ? max_row: row;
+    var target_element = this.request(
+          "command/query-selector", 
+          "#tanasinn_center_area"),
+        root_element = this.request("get/root-element"),
+        box = target_element.boxObject,
+        offsetX = box.screenX - root_element.boxObject.screenX,
+        offsetY = box.screenY - root_element.boxObject.screenY,
+        left = event.layerX - offsetX,
+        top = event.layerY - offsetY,
+        renderer = this.dependency["renderer"],
+        screen = this.dependency["screen"],
+        char_width = renderer.char_width,
+        line_height = renderer.line_height,
+        column = Math.floor(left / char_width + 1.0),
+        row = Math.floor(top / line_height + 1.0),
+        max_column = screen.width,
+        max_row = screen.height,
+        column = column > max_column ? max_column: column,
+        row = row > max_row ? max_row: row;
+
     return [column - 1, row - 1];
   },
 
@@ -554,4 +627,4 @@ function main(broker)
   new Selection(broker);
 }
 
-
+// EOF

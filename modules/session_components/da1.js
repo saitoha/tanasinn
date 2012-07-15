@@ -127,7 +127,6 @@ PrimaryDA.definition = {
   "[install]":
   function install(broker) 
   {
-    this.reply.enabled = true;
   },
 
   /** Uninstalls itself.
@@ -136,32 +135,26 @@ PrimaryDA.definition = {
   "[uninstall]":
   function uninstall(broker) 
   {
-    this.reply.enabled = false;
   },
 
   /** handle DA1 request */
   "[profile('vt100'), sequence('CSI %dc')]":
   function DA1(n) 
   { // Primary DA (Device Attributes)
-    var broker;
-
     if (n !== undefined && n !== 0) {
       coUtils.Debug.reportWarning(
         _("%s sequence [%s] was ignored."),
         arguments.callee.name, Array.slice(arguments));
     } else { //
-      broker = this._broker;
-      broker.notify("sequence/DA1");
+      this.sendMessage("sequence/DA1");
     }
   },
 
   /** retuns Device Attribute message */
-  "[subscribe('sequence/DA1')]":
+  "[subscribe('sequence/DA1'), pnp]":
   function reply()
   {
-    var reply = [];
-    var broker;
-    var message;
+     var message;
 
 //    var reply_map = {
 //      "VT100"  : "\x1b[?1;2c"
@@ -177,7 +170,7 @@ PrimaryDA.definition = {
 //      ,"VT520" : "\x1b[?65;1;2;7;8;9;12;18;19;21;23;24;42;44;45;46c"
 //      ,"VT525" : "\x1b[?65;1;2;7;9;12;18;19;21;22;23;24;42;44;45;46c"
 //    };
-    reply.push("\x1b[?65"); // header
+    //reply.push("?65"); // header
     //reply.push(65) // VT520
     //if (this.length >= 132) 
     //reply.push(1) // 132 columns
@@ -190,16 +183,15 @@ PrimaryDA.definition = {
     //reply.push(22) // ANSI color
     //reply.push(29) // ANSI text locator (i.e., DEC Locator mode)
     //var message = reply.join(";") + "c";
-    message = "\x1b[?1;2c";
+    message = "?1;2c";
     //var message = "\x1b[?1;2;6c";
     //var message = "\x1b[?c";
-    broker = this._broker;
-    //coUtils.Timer.setTimerout(function() {
-    broker.notify("command/send-to-tty", message);
+
+    this.sendMessage("command/send-sequence/csi", message);
+    this.sendMessage("command/send-to-tty", message);
     coUtils.Debug.reportMessage(
       _("Primary Device Attributes: '%s'."), 
-      message.replace("\x1b", "\\e"));
-    //}, 100);
+      "\\e" + message);
   },
 
 };
@@ -214,4 +206,4 @@ function main(broker)
   new PrimaryDA(broker);
 }
 
-
+// EOF

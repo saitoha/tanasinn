@@ -192,41 +192,58 @@ VT52SequenceParser.definition = {
   /** Construct child parsers from definition and make parser-chain. */
   append: function append(key, value, context) 
   {
-    let match = key
+    var match, number, char_position, normal_char,
+        first, next_chars, code, next,
+        code1, code2, c1;
+
+    function make_handler(value, context, y, x)
+    {
+      return function() value.call(context, y, x);
+    }
+
+    match = key
       .match(/^(0x[0-9a-zA-Z]+)|^(%p)|^(.)$|^(.)(.+)$/);
 
-    let [, 
+    [, 
       number, char_position,
       normal_char, first, next_chars
     ] = match;
     if (number) { // parse number
-      let code = parseInt(number);
+
+      code = parseInt(number);
       if ("parse" in value) {
         vt52C0Parser.append(code, value);
         this[code] = value;
       } else {
-        vt52C0Parser.append(code, function() value.apply(context));
-        this[code] = function() value.apply(context);
+        vt52C0Parser.append(
+          code, 
+          function()
+          {
+            return value.apply(context);
+          });
+        this[code] = function()
+        {
+          return value.apply(context);
+        };
       }
     } else if (char_position) { // 
-      for (let code1 = 0x20; code1 < 0x7f; ++code1) {
-        let c1 = String.fromCharCode(code1);
+      for (code1 = 0x20; code1 < 0x7f; ++code1) {
+        c1 = String.fromCharCode(code1);
         this[code1] = new VT52SequenceParser();
-        for (let code2 = 0x20; code2 < 0x7f; ++code2) {
-          this[code1][code2] = let (y = code1, x = code2)
-            function() value.call(context, y, x);
+        for (code2 = 0x20; code2 < 0x7f; ++code2) {
+          this[code1][code2] = make_handler(value, context, code1, code2);
         }
       }
     } else if (normal_char) {
-      let code = normal_char.charCodeAt(0);
+      code = normal_char.charCodeAt(0);
       if ("parse" in value) {
         this[code] = value;
       } else {
         this[code] = function() value.apply(context);
       }
     } else {
-      let code = first.charCodeAt(0);
-      let next = this[code] = this[code] || new VT52SequenceParser;
+      code = first.charCodeAt(0);
+      next = this[code] = this[code] || new VT52SequenceParser;
       if (!next.append) {
         next = this[code] = new VT52SequenceParser;
       }
@@ -261,22 +278,41 @@ VT52SequenceParser.definition = {
 /**
  * @class VT52
  */
-var VT52 = new Class().extends(Component);
+var VT52 = new Class().extends(Plugin)
+                      .depends("tab_controller")
+                      .depends("screen")
+                      .depends("cursorstate")
+                      ;
 VT52.definition = {
 
+  /** Component ID */
   get id()
     "vt52",
 
-  /** post constructor. 
-   *  @param {Broker} broker A Broker object.
-   */
-  "[subscribe('initialized/{screen & cursorstate}'), enabled]":
-  function onLoad(screen, cursor_state)
+  get info()
+    <plugin>
+        <name>{_("VT-52 mode")}</name>
+        <description>{
+          _("Emurate DEC VT-52 terminal.")
+        }</description>
+        <version>0.1.0</version>
+    </plugin>,
+
+  "[persistable] enabled_when_startup": true,
+
+
+  _tab_controller: null,
+  _screen: null,
+  _cursor_state: null,
+
+  "[install]":
+  function install(broker)
   {
     var sequences, i;
 
-    this._screen = screen;
-    this._cursor_state = cursor_state;
+    this._tab_controller = this.dependency["tab_controller"];
+    this._screen = this.dependency["screen"];
+    this._cursor_state = this.dependency["cursorstate"];
 
     this.sendMessage("initialized/vt52", this);
 
@@ -288,13 +324,24 @@ VT52.definition = {
       handler: this.ESC,
       context: this,
     });
+
     sequences = this.sendMessage("get/sequences/vt52");
+
     for (i = 0; i < sequences.length; ++i) {
       this.sendMessage("command/add-sequence/vt52", sequences[i]);
     }
+
   },
 
-  "[subscribe('get/grammars'), enabled]":
+  "[uninstall]":
+  function uninstall(broker)
+  {
+    this._tab_controller = null;
+    this._screen = null;
+    this._cursor_state = null;
+  },
+
+  "[subscribe('get/grammars'), pnp]":
   function onGrammarsRequested()
   {
     return this;
@@ -321,7 +368,7 @@ VT52.definition = {
    *
    *  @implements Grammar.<command/add-sequence/vt52> :: SequenceInfo -> Undefined
    */
-  "[subscribe('command/add-sequence/vt52'), type('SequenceInfo -> Undefined'), enabled]":
+  "[subscribe('command/add-sequence/vt52'), type('SequenceInfo -> Undefined'), pnp]":
   function append(information) 
   {
     var match, key, prefix;
@@ -729,6 +776,7 @@ VT52.definition = {
   function VTS()
   {
     var screen = this._screen;
+
     screen.eraseScreenBelow();
   },
 
@@ -736,6 +784,7 @@ VT52.definition = {
   function PLD()
   {
     var screen = this._screen;
+
     screen.eraseLineToRight();
   },
 
@@ -775,7 +824,7 @@ VT52.definition = {
   },
 
   /** Exit VT52 mode. 
-   * TODO exit VT52 mode
+   * exit VT52 mode
    */
   "[profile('vt52'), sequence('ESC <')]": 
   function V5EX() 
@@ -801,4 +850,4 @@ function main(broker)
   new VT52(broker);
 }
 
-
+// EOF

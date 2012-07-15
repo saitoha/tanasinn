@@ -27,67 +27,69 @@
 //
 
 var KEY_ANSI = {
-  "Ctrl Space" : "\x00", //  NUL
-  "Ctrl `"     : "\x00", //  NUL
-  "Ctrl 2"     : "\x00", //  NUL
-  "Ctrl a"     : "\x01", //  SOH
-  "Ctrl b"     : "\x02", //  STX
-  "Ctrl c"     : "\x03", //  ETX
-  "Ctrl d"     : "\x04", //  EOT
-  "Ctrl e"     : "\x05", //  ENQ
-  "Ctrl f"     : "\x06", //  ACK
-  "Ctrl g"     : "\x07", //  BEL
-  "Ctrl h"     : "\x08", //  BS
-  "Ctrl i"     : "\x09", //  HT
-  "Ctrl j"     : "\x0a", //  LF
-  "Ctrl k"     : "\x0b", //  VT
-  "Ctrl l"     : "\x0c", //  FF
-  "Ctrl m"     : "\x0d", //  CR
-  "Ctrl n"     : "\x0e", //  SO
-  "Ctrl o"     : "\x0f", //  SI
-  "Ctrl p"     : "\x10", //  DLE
-  "Ctrl q"     : "\x11", //  DC1
-  "Ctrl r"     : "\x12", //  DC2
-  "Ctrl s"     : "\x13", //  DC3
-  "Ctrl t"     : "\x14", //  DC4
-  "Ctrl u"     : "\x15", //  NAK
-  "Ctrl v"     : "\x16", //  SYN
-  "Ctrl w"     : "\x17", //  ETB
-  "Ctrl x"     : "\x18", //  CAN
-  "Ctrl y"     : "\x19", //  EM
-  "Ctrl z"     : "\x1a", //  SUB
-  "Ctrl ["     : "\x1b", //  ESC
-  "Ctrl 3"     : "\x1b", //  ESC
-  "Ctrl \\"    : "\x1c", //  FS
-  "Ctrl ]"     : "\x1d", //  GS
-  "Ctrl ^"     : "\x1e", //  RS
-  "Ctrl /"     : "\x1f", //  US
-  "Ctrl _"     : "\x1f", //  US
+  "Ctrl Space"    : "\x00", //  NUL
+  "Ctrl `"        : "\x00", //  NUL
+  "Ctrl 2"        : "\x00", //  NUL
+  "Ctrl a"        : "\x01", //  SOH
+  "Ctrl b"        : "\x02", //  STX
+  "Ctrl c"        : "\x03", //  ETX
+  "Ctrl d"        : "\x04", //  EOT
+  "Ctrl e"        : "\x05", //  ENQ
+  "Ctrl f"        : "\x06", //  ACK
+  "Ctrl g"        : "\x07", //  BEL
+  "Ctrl h"        : "\x08", //  BS
+  "Ctrl i"        : "\x09", //  HT
+  "Ctrl j"        : "\x0a", //  LF
+  "Ctrl k"        : "\x0b", //  VT
+  "Ctrl l"        : "\x0c", //  FF
+  "Ctrl m"        : "\x0d", //  CR
+  "Ctrl n"        : "\x0e", //  SO
+  "Ctrl o"        : "\x0f", //  SI
+  "Ctrl p"        : "\x10", //  DLE
+  "Ctrl q"        : "\x11", //  DC1
+  "Ctrl r"        : "\x12", //  DC2
+  "Ctrl s"        : "\x13", //  DC3
+  "Ctrl t"        : "\x14", //  DC4
+  "Ctrl u"        : "\x15", //  NAK
+  "Ctrl v"        : "\x16", //  SYN
+  "Ctrl w"        : "\x17", //  ETB
+  "Ctrl x"        : "\x18", //  CAN
+  "Ctrl y"        : "\x19", //  EM
+  "Ctrl z"        : "\x1a", //  SUB
+  "Ctrl ["        : "\x1b", //  ESC
+  "Ctrl 3"        : "\x1b", //  ESC
+  "Ctrl \\"       : "\x1c", //  FS
+  "Ctrl |"        : "\x1c", //  FS
+  "Ctrl ]"        : "\x1d", //  GS
+  "Ctrl ^"        : "\x1e", //  RS
+  "Ctrl /"        : "\x1f", //  US
+  "Ctrl Shift ?"  : "\x1f", //  US
+  "Ctrl _"        : "\x1f", //  US
 };
 
 
-let KEY_NORMAL_CURSOR = {
+var KEY_NORMAL_CURSOR = {
   "Left"   : "\x1b[D",  // kl / kcub1
   "Up"     : "\x1b[A",  // ku / kcuu1
   "Right"  : "\x1b[C",  // kr / kcuf1
   "Down"   : "\x1b[B",  // kd / kcud1
 };
 
-let KEY_APPLICATION_CURSOR = {
+var KEY_APPLICATION_CURSOR = {
   "Left"   : "\x1bOD",  // kl / kcub1
   "Up"     : "\x1bOA",  // ku / kcuu1
   "Right"  : "\x1bOC",  // kr / kcuf1
   "Down"   : "\x1bOB",  // kd / kcud1
 };
 
-let KEY_VT52_CURSOR = {
+var KEY_VT52_CURSOR = {
   "Left"   : "\x1bD",  // kl / kcub1
   "Up"     : "\x1bA",  // ku / kcuu1
   "Right"  : "\x1bC",  // kr / kcuf1
   "Down"   : "\x1bB",  // kd / kcud1
 };
 
-let KEY_NORMAL_KEYPAD = {
+var KEY_NORMAL_KEYPAD = {
 
   "PgUp"   : "\x1b[5~", // kP / kpp 
   "PgDn"   : "\x1b[6~", // kN / knp
@@ -301,26 +303,38 @@ var KEY_MAC_ALT_AS_META = {
 
 function coCreateKeyMap(expression_map, destination_map) 
 {
-  let map = destination_map || {};
-  for (let [key, value] in Iterator(expression_map)) 
+  var map, key, value, tokens, code;;
+
+  map = destination_map || {};
+  for ([key, value] in Iterator(expression_map)) 
   {
-    let tokens = key.split(/[\s\t]+/);
-    let code = tokens.pop();
-    code = coUtils.Keyboard.KEYNAME_PACKEDCODE_MAP[code.toLowerCase()] 
-      || code.replace(/\\x([0-9a-fA-F]+)/g, function() 
-      let (code = parseInt(arguments[1], 16))
-        String.fromCharCode(code)
-    ).charCodeAt(0);
-    code = tokens.reduce(function(code, token) code | 0x1 << { 
-      ctrl: coUtils.Keyboard.KEY_CTRL,// | coUtils.Keyboard.KEY_NOCHAR, 
-      alt: coUtils.Keyboard.KEY_ALT, 
-      shift: coUtils.Keyboard.KEY_SHIFT, 
-      meta: coUtils.Keyboard.KEY_META,// | coUtils.Keyboard.KEY_NOCHAR, 
-    } [token.toLowerCase()], code);
-    map[code] = value
-     .replace(/\\x([0-9a-fA-F]{1,2})/g, function() 
-       let (code = parseInt(arguments[1], 16)) String.fromCharCode(code))
-     .replace(/\\[eE]/g, '\x1b');
+    tokens = key.split(/[\s\t]+/);
+    code = tokens.pop();
+    code = coUtils.Keyboard.KEYNAME_PACKEDCODE_MAP[code.toLowerCase()]
+         || code.replace(/\\x([0-9a-fA-F]+)/g, 
+              function(key) 
+              {
+                var code;
+                code = parseInt(key, 16);
+                return String.fromCharCode(code);
+              }).charCodeAt(0);
+    code = tokens.reduce(
+        function(code, token) 
+        {
+          return code | 0x1 << { 
+              ctrl: coUtils.Constant.KEY_CTRL,// | coUtils.Constant.KEY_NOCHAR, 
+              alt: coUtils.Constant.KEY_ALT, 
+              shift: coUtils.Constant.KEY_SHIFT, 
+              meta: coUtils.Constant.KEY_META,// | coUtils.Constant.KEY_NOCHAR, 
+            } [token.toLowerCase()];
+        }, code);
+    map[code] = value.replace(/\\x([0-9a-fA-F]{1,2})/g, 
+        function() 
+        {
+          var code;
+          code = parseInt(arguments[1], 16);
+          return String.fromCharCode(code);
+        }).replace(/\\[eE]/g, '\x1b');
   }
   return map;
 }
@@ -328,7 +342,7 @@ function coCreateKeyMap(expression_map, destination_map)
 /**
  * @class DefaultKeyMappings
  */
-let DefaultKeyMappings = new Class().extends(Component);
+var DefaultKeyMappings = new Class().extends(Component);
 DefaultKeyMappings.definition = {
 
   get id()
@@ -337,7 +351,7 @@ DefaultKeyMappings.definition = {
   "[persistable] yen_as_5c": true,
   "[persistable] won_as_5c": true,
   "[persistable] mac_alt_as_meta": true,
-  "[persistable] backspace_as_delete": true,
+  "[persistable] backspace_as_delete": false,
   "[persistable] delete_as_function": true,
 
   cursor_mode: "normal",
@@ -673,7 +687,10 @@ InputManager.definition = {
   function uninstall(broker)
   {
     this._key_map = null; 
-    this._textbox.parentNode.removeChild(this._textbox);
+    if (null !== this._textbox) {
+      this._textbox.parentNode.removeChild(this._textbox);
+      this._textbox = null;
+    }
     this.sendMessage("event/collection-changed/modes");
   },
 
@@ -839,6 +856,8 @@ char:{event.isChar?"t":"f"}
 
     packed_code = coUtils.Keyboard
       .getPackedKeycodeFromEvent(info.event, this._alt_key);
+      //.getPackedKeycodeFromEvent(info.event, this._alt_key);
+
     this.sendMessage("event/scan-keycode", {
       mode: info.mode, 
       code: packed_code,
@@ -854,7 +873,8 @@ char:{event.isChar?"t":"f"}
       textbox: this._textbox, 
       code: info.code,
     });
-    if (!result && !(info.code & 1 << coUtils.Keyboard.KEY_MODE)) {
+
+    if (!result && !(info.code & (1 << coUtils.Constant.KEY_MODE))) {
       this.sendMessage("command/input-with-no-remapping", info.code);
     }
   },
@@ -867,8 +887,8 @@ char:{event.isChar?"t":"f"}
     c = packed_code & 0xffffff;// event.which;
     message = this._key_map[packed_code];
     if (!message) {
-      if (packed_code & (1 << coUtils.Keyboard.KEY_CTRL | 
-                         1 << coUtils.Keyboard.KEY_ALT)) {
+      if (packed_code & (1 << coUtils.Constant.KEY_CTRL | 
+                         1 << coUtils.Constant.KEY_ALT)) {
         if (0x20 <= c && c < 0x7f) {
           return; 
         }
@@ -965,3 +985,4 @@ function main(broker)
   new InputManager(broker);
 }
 
+// EOF

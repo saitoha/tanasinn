@@ -26,7 +26,7 @@
 /**
  * @class JsCompleter
  */
-let JsCompleter = new Class().extends(Component);
+var JsCompleter = new Class().extends(Component);
 JsCompleter.definition = {
 
   get id()
@@ -41,24 +41,32 @@ JsCompleter.definition = {
   "[completer('js'), enabled]":
   function complete(context)
   {
-    let broker = this._broker;
-    let { source, option, completers } = context;
-    let autocomplete_result = null; 
-    let pattern = /(.*?)(?:(\.|\[|\['|\[")(\w*))?$/;
-    let match = pattern.exec(source);
+    var autocomplete_result, pattern, match,
+        settled, notation, current, context, 
+        code, properties, lower_current;
+
+    autocomplete_result = null; 
+    pattern = /(.*?)(?:(\.|\[|\['|\[")(\w*))?$/;
+    match = pattern.exec(context.source);
+
     if (match) {
-      let [, settled, notation, current] = match;
-      let context = new function() void (this.__proto__ = broker.window);
+      [, settled, notation, current] = match;
+      dom = {
+        window: this.request("get/root-element").ownerDocument.defaultView,
+      };
+
+      context = new function() void (this.__proto__ = dom.window);
+
       if (notation) {
         try {
-          let code = "with (arguments[0]) { return (" + settled + ");}";
+          code = "with (arguments[0]) { return (" + settled + ");}";
           context = new Function(code) (context);
           if (!context) {
-            broker.notify("event/answer-completion", null);
+            this.sendMessage("event/answer-completion", null);
             return;
           }
         } catch (e) { 
-          broker.notify("event/answer-completion", null);
+          this.sendMessage("event/answer-completion", null);
           return;
         }
       } else {
@@ -66,11 +74,11 @@ JsCompleter.definition = {
       }
 
       // enumerate and gather properties.
-      let properties = [ key for (key in context) ];
+      properties = [ key for (key in context) ];
 
       if (true) {
         // add own property names.
-        if (null !== context && typeof context != "undefined") {
+        if (null !== context && typeof context !== "undefined") {
           Array.prototype.push.apply(
             properties, 
             Object.getOwnPropertyNames(context.__proto__)
@@ -78,10 +86,12 @@ JsCompleter.definition = {
         }
       }
 
-      properties = let (lower_current = current.toLowerCase()) 
-        properties.filter(function(key) {
-        if ("." == notation ) {
-          if ("number" == typeof key) {
+      lower_current = current.toLowerCase();
+
+      properties = properties.filter(function(key)
+      {
+        if ("." === notation ) {
+          if ("number" === typeof key) {
             // Number property after dot notation. 
             // etc. abc.13, abc.3
             return false; 
@@ -92,50 +102,53 @@ JsCompleter.definition = {
             return false; 
           }
         }
-        return -1 != String(key)
+        return -1 !== String(key)
           .toLowerCase()
           .indexOf(lower_current);
       }).sort(function(lhs, rhs) 
       {
         return String(lhs).toLowerCase().indexOf(current) ? 1: -1;
       });
-      if (0 == properties.lenth) {
-        broker.notify("event/answer-completion", null);
+      if (0 === properties.lenth) {
+        this.sendMessage("event/answer-completion", null);
         return;
       }
       autocomplete_result = {
         type: "text",
         query: current, 
-        data: properties.map(function(key) {
-          let value;
+        data: properties.map(function(key)
+        {
+          var value, type;
+
           try {
             value = context[key];
+            type = typeof value;
           } catch (e) { }
           return {
             name: context && notation ?
-              ("string" == typeof key) ?
+              ("string" === typeof key) ?
                 (/^\["?$/.test(notation)) ?
                   <>{key.replace('"', '\\"')}"]</>
-                : ("[\'" == notation) ?
+                : ("[\'" === notation) ?
                   <>{key.replace("'", "\\'")}']</>
                 : key
               : key
             : key,
-            value: let (type = typeof value)
-                ("function" == type) ?
+            value: ("function" === type) ?
                   "[Function " + value.name + "] "
-                : ("object" == type) ? // may be null
-                  String(value)
-                : ("undefined" == type) ?
-                  "undefined"
-                : ("string" == type) ?
-                  <>"{value.replace('"', '\\"')}"</>.toString() 
-                : String(value)
+                 : ("object" === type) ? // may be null
+                   String(value)
+                 : ("undefined" === type) ?
+                   "undefined"
+                 : ("string" === type) ?
+                   <>"{value.replace('"', '\\"')}"</>.toString() 
+                 : String(value)
           };
         }),
       };
     }
-    broker.notify("event/answer-completion", autocomplete_result);
+
+    this.sendMessage("event/answer-completion", autocomplete_result);
   },
 
 };
@@ -151,4 +164,4 @@ function main(broker)
   new JsCompleter(broker);
 }
 
-
+// EOF

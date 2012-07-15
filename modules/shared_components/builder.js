@@ -164,20 +164,21 @@
 /**
  * @class TemplateBuilder
  */
-let TemplateBuilder = new Trait();
+var TemplateBuilder = new Trait();
 TemplateBuilder.definition = {
 
   /** Builds a set of nodes of XUL/HTML/SVG elements. */
   buildChrome: 
   function buildChrome(template, results) 
   {
-    let broker = this._broker;
-    let root_element = broker.root_element;
+    var element, key, value;
+
     if (Array.isArray(template)) {
-      return template.map(function(node)
-      {
-        return this.buildChrome(node, results);
-      }, this);
+      return template.map(
+        function(node)
+        {
+          return this.buildChrome(node, results);
+        }, this);
     }
     if (!template.tagName) {
       if (!template.hasOwnProperty("text")) {
@@ -185,10 +186,12 @@ TemplateBuilder.definition = {
           _("tagName property not found: %s."),
           template.toSource());
       }
-      let document = root_element.ownerDocument;
-      return document.createTextNode(template.text);
+      return this.request("get/root-element")
+        .ownerDocument
+        .createTextNode(template.text);
     }
-    let element = this._createElement(template.tagName);
+
+    element = this._createElement(template.tagName);
     if (!element) {
       throw coUtils.Debug.Exception(
         _("Invalid tagName was detected: '%s'."), template.tagName);
@@ -196,21 +199,21 @@ TemplateBuilder.definition = {
     if (template.parentNode) { // processes "parentNode" property.
       this._processParentNode({value: element}, template.parentNode);
     }
-    for (let [key, value] in Iterator(template)) {
-      if ("tagName" == key) {
+    for ([key, value] in Iterator(template)) {
+      if ("tagName" === key) {
         // pass
-      } else if ("id" == key) {
+      } else if ("id" === key) {
         element.id = String(value);
         results[value] = element;
-      } else if ("parentNode" == key) {
+      } else if ("parentNode" === key) {
         // pass
-      } else if ("listener" == key) {
+      } else if ("listener" === key) {
         this._processListener({value: element}, value);
-      } else if ("onconstruct" == key) {
+      } else if ("onconstruct" === key) {
         value.call(element);
-      } else if ("innerText" == key) {
+      } else if ("innerText" === key) {
         this._processInnerText(element, value);
-      } else if ("childNodes" == key) {
+      } else if ("childNodes" === key) {
         this._processChildChromeNodes(element, value, results);
       } else { // other properties
         this._processAttribute(element, key, value);
@@ -223,18 +226,21 @@ TemplateBuilder.definition = {
   _createElement: 
   function _createElement(tagName) 
   {
-    let broker = this._broker;
-    let root_element = broker.root_element;
-    let touple = tagName.split(":"); // (tagName) or (namespace, tagName).
-    let document = root_element.ownerDocument;
-    if (1 == touple.length) {
+    var touple, namespace;
+
+    touple = tagName.split(":"); // (tagName) or (namespace, tagName).
+    document = this.request("get/root-element")
+      .ownerDocument;
+
+    if (1 === touple.length) {
       return document.createElement(tagName);
     } else {
-      let namespace = touple.shift().toLowerCase();
-      if ("html" == namespace) {
+      namespace = touple.shift().toLowerCase();
+
+      if ("html" === namespace) {
         const NS_XHTML = "http://www.w3.org/1999/xhtml";
         return document.createElementNS(NS_XHTML, tagName);
-      } else if ("svg" == namespace) {
+      } else if ("svg" === namespace) {
         const NS_SVG = "http://www.w3.org/2000/svg";
         return document.createElementNS(NS_SVG, tagName);
       } else {
@@ -265,27 +271,34 @@ TemplateBuilder.definition = {
   _processInnerText: 
   function _processInnerText(element, value) 
   {
-    let broker = this._broker;
-    let root_element = broker.root_element;
-    let textNode = root_element.ownerDocument.createTextNode(value);
-    element.appendChild(textNode);
+    var text_node;
+
+    text_node = this.request("get/root-element")
+      .ownerDocument
+      .createTextNode(value);
+
+    element.appendChild(text_node);
   },
 
   /** Processes a "parentNode" property. */
   _processParentNode: 
   function _processParentNode(element, value) 
   {
-    let type = typeof value;
-    if ("string" == type || "xml" == type) {
-      let broker = this._broker;
-      let target_element = broker.root_element.querySelector(String(value));
+    var target_element, type;
+
+    type = typeof value;
+
+    if ("string" === type || "xml" === type) {
+
+      target_element = this.request("get/root-element")
+        .querySelector(String(value));
+
       if (target_element) {
         target_element.appendChild(element.value);
       } else {
         if ("#" == value.charAt(0)) {
-          let id = value.substr(1);
-          broker.subscribe(
-            "@event/domnode-created/" + id, 
+          this._broker.subscribe(
+            "@event/domnode-created/" + value.substr(1), 
             function(target_element)
             {
               target_element.appendChild(element.value);
@@ -304,16 +317,18 @@ TemplateBuilder.definition = {
   _processChildChromeNodes: 
   function _processChildChromeNodes(element, value, results) 
   {
+    var i, node;
+
     if (Array.isArray(value)) {  // value is Array object.
-      for (let i = 0; i < value.length; ++i) {
-        let node = value[i];
+      for (i = 0; i < value.length; ++i) {
+        node = value[i];
         this._processChildChromeNodes(element, node, results);
       }
     } else {
       if (value.QueryInterface) {
         element.appendChild(value);
       } else {
-        let node = this.buildChrome(value, results)
+        node = this.buildChrome(value, results)
         this._processChildChromeNodes(element, node, results);
       }
     }
@@ -323,20 +338,24 @@ TemplateBuilder.definition = {
   _processAttribute: 
   function _processAttribute(element, key, value)  
   {
+    var keys, i, key;
+
     if (typeof value == "object") {
       element = element[key];
       if (!element) {
         throw coUtils.Debug.Exception(
           _("Invalid attribute/property name: '%s'"), key);
       }
-      let keys = Object.keys(value);
-      for (let i = 0; i < keys.length; ++i) {
-        let key = keys[i];
+
+      keys = Object.keys(value);
+
+      for (i = 0; i < keys.length; ++i) {
+        key = keys[i];
         arguments.callee(element, key, value[key]); // call recersively.
       }
     } else {
       value = String(value);
-      if ("style" == key) {
+      if ("style" === key) {
         element.style.cssText = value;
       } else {
         try {
@@ -359,7 +378,7 @@ TemplateBuilder.definition = {
 /**
  * @class ChromeBuilder
  */
-let ChromeBuilder = new Class().extends(Component)
+var ChromeBuilder = new Class().extends(Component)
                                .mix(TemplateBuilder); 
 ChromeBuilder.definition = {
 
@@ -373,20 +392,23 @@ ChromeBuilder.definition = {
   initialize: function initialize(broker)
   {
     this._map = {};
-    broker.notify("initialized" + this.id, this);
+    this.sendMessage("initialized" + this.id, this);
   },
 
 // public
   "[subscribe('command/construct-chrome'), enabled]":
   function constructChrome(template) 
   {
-    let results = {}
-    let root = this.buildChrome(template, results);
-    let broker = this._broker;
-    for (let [id, element] in Iterator(results)) {
+    var results, root, id, element;
+
+    results = {}
+    root = this.buildChrome(template, results);
+
+    for ([id, element] in Iterator(results)) {
       this._map[id] = element;
-      broker.notify("event/domnode-created/" + id, element);
+      this.sendMessage("event/domnode-created/" + id, element);
     }
+
     results["#root"] = root;
     return results;
   },
@@ -420,4 +442,4 @@ function main(broker)
 }
 
 
-
+// EOF

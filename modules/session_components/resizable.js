@@ -30,7 +30,7 @@
 /**
  * @trait ResizeShortcut
  */
-let ResizeShortcut = new Trait();
+var ResizeShortcut = new Trait();
 ResizeShortcut.definition = {
 
   /** Make the screen narrower by 1 column. */ 
@@ -71,7 +71,7 @@ ResizeShortcut.definition = {
  * @class Resize
  * @fn Enable resizable operation.
  */
-let Resize = new Class().extends(Plugin)
+var Resize = new Class().extends(Plugin)
                         .mix(ResizeShortcut)
                         .depends("screen");
 Resize.definition = {
@@ -90,8 +90,8 @@ Resize.definition = {
 
   "[persistable] enabled_when_startup": true,
 
-  "[persistable] min_column": 24,
-  "[persistable] min_row": 12,
+  "[persistable] min_column": 1,
+  "[persistable] min_row": 1,
 
   /** Resize screen. 
    * @param {Object} A pair of {column, row} for new size.
@@ -105,15 +105,18 @@ Resize.definition = {
     row = size.row;
 
     screen = this.dependency["screen"];
-    // Minimam size: 48 x 12 
+
+    // Minimam size: 12 x 6 
     min_column = this.min_column;
     min_row = this.min_row;
+
     if (column < min_column) {
       column = min_column;
     }
     if (row < min_row) {
       row = min_row;
     }
+
     screen.width = column;
     screen.height = row;
   },
@@ -128,10 +131,12 @@ Resize.definition = {
     screen = this.dependency["screen"];
     screen.dirty = true;
 
-    this.sendMessage("event/screen-size-changed", { 
-      column: screen.width, 
-      row: screen.height 
-    });
+    this.sendMessage(
+      "event/screen-size-changed", 
+      { 
+        column: screen.width, 
+        row: screen.height 
+      });
   },
 
   /** Make the screen narrower by n columns. 
@@ -143,7 +148,10 @@ Resize.definition = {
     var screen;
 
     screen = this.dependency["screen"];
-    this.resize({column: screen.width - n, row: screen.height});
+    this.resize({
+      column: screen.width - n,
+      row: screen.height
+    });
     this.update();
   },
 
@@ -156,7 +164,10 @@ Resize.definition = {
     var screen;
 
     screen = this.dependency["screen"];
-    this.resize({column: screen.width + n, row: screen.height});
+    this.resize({
+      column: screen.width + n,
+      row: screen.height
+    });
     this.update();
   },
 
@@ -169,7 +180,10 @@ Resize.definition = {
     var screen;
 
     screen = this.dependency["screen"];
-    this.resize({column: screen.width, row: screen.height - n});
+    this.resize({
+      column: screen.width, 
+      row: screen.height - n
+    });
     this.update();
   },
   
@@ -182,7 +196,10 @@ Resize.definition = {
     var screen;
 
     screen = this.dependency["screen"];
-    this.resize({column: screen.width, row: screen.height + n});
+    this.resize({
+      column: screen.width, 
+      row: screen.height + n
+    });
     this.update();
   },
 };
@@ -198,3 +215,4 @@ function main(broker)
   new Resize(broker);
 }
 
+// EOF

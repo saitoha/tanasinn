@@ -62,7 +62,7 @@ Mascot.definition = {
       ],
     }),
 
-  "[persistable] enabled_when_startup": false,
+  "[persistable] enabled_when_startup": true,
 
   "[persistable] mascot_image_file": "images/mascot.svg",
 
@@ -74,9 +74,102 @@ Mascot.definition = {
   "[install]":
   function install(broker) 
   {
-    var {tanasinn_mascot_layer}
-      = this.request("command/construct-chrome", this.template);
-    this._element = tanasinn_mascot_layer;
+    // lazy initialization for using with css 3D Transform
+    coUtils.Timer.setTimeout(
+      function timerProc()
+      {
+      }, 100, this);
+  },
+
+  /** Uninstalls itself.
+   *  @param {Broker} broker A broker object.
+   */
+  "[uninstall]":
+  function uninstall(broker) 
+  {
+    if (null !== this._element) {
+      this._element.parentNode.removeChild(this._element);
+      this._element = null;
+    }
+  },
+
+  "[subscribe('@command/focus'), pnp]":
+  function onFirstFocus(broker) 
+  {
+    this._element = this.request(
+      "command/construct-chrome", 
+      this.template
+    )["tanasinn_mascot_layer"];
+  },
+
+  getMascotImagePath: function getMascotImagePath()
+  {
+    var broker = this._broker,
+        path = broker.runtime_path + "/" + this.mascot_image_file,
+        file = coUtils.File.getFileLeafFromVirtualPath(path);
+
+    if (!file.exists()) {
+        path = this.mascot_image_file;
+        file = coUtils.File.getFileLeafFromVirtualPath(path);
+    }
+    return coUtils.File.getURLSpec(file);
+  },
+
+} // class Mascot
+
+/**
+ *  @class Cover
+ */
+var Cover = new Class().extends(Plugin);
+Cover.definition = {
+
+  get id()
+    "cover",
+
+  get info()
+    <module>
+        <name>{_("Cover")}</name>
+        <description>{
+          _("Apply glass effect.")
+        }</description>
+        <version>0.1</version>
+    </module>,
+
+  get template()
+    ({
+      parentNode: "#tanasinn_background_frame",
+      tagName: "box",
+      id: "tanasinn_cover_layer",
+      style: "opacity: 0.2;",
+      flex: 1,
+      childNodes: [
+        {
+          tagName: "vbox",
+          flex: 1,
+          style: {
+            backgroundSize: "100% 100%",
+            backgroundImage: "url(" + this.getMascotImagePath() + ")", 
+          },
+        },
+      ],
+    }),
+
+  "[persistable] enabled_when_startup": false,
+
+  "[persistable] mascot_image_file": "images/cover.png",
+
+  _element: null,
+
+  /** installs itself. 
+   *  @param {Broker} broker A broker object.
+   */
+  "[install]":
+  function install(broker) 
+  {
+    this._element = this.request(
+      "command/construct-chrome", 
+      this.template
+    )["tanasinn_cover_layer"];
   },
 
   /** Uninstalls itself.
@@ -105,7 +198,8 @@ Mascot.definition = {
     return coUtils.File.getURLSpec(file);
   },
 
-} // class Mascot
+} // class Cover
+
 
 /**
  * @fn main
@@ -115,6 +209,7 @@ Mascot.definition = {
 function main(broker) 
 {
   new Mascot(broker);
+  new Cover(broker);
 }
 
-
+// EOF

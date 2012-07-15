@@ -111,7 +111,7 @@ Control.definition = {
    
   /** Bell.
    */
-  "[profile('vt100'), sequence('0x07', 'ESC \\\\')]":
+  "[profile('vt100'), sequence('0x07', 'ESC g')]":
   function BEL() 
   {
     this.sendMessage("sequence/bel");
@@ -127,17 +127,6 @@ Control.definition = {
     screen = this._screen;
     screen.backSpace();
   },
-   
-  /** Horizontal tabulation.
-   */
-  "[profile('vt100'), sequence('0x09')]":
-  function HT() 
-  { // Horizontal Tab
-    var screen;
-
-    screen = this._screen;
-    screen.horizontalTab();
-  },
   
   /** Linefeed.
    */
@@ -152,7 +141,7 @@ Control.definition = {
       screen.carriageReturn();
     }
   },
- 
+  
   /** Index.
    */
   "[profile('vt100'), sequence('0x84', 'ESC D'), _('Index')]":
@@ -162,6 +151,22 @@ Control.definition = {
 
     screen = this._screen;
     screen.lineFeed();
+  },
+
+  /** SS2.
+   */
+  "[profile('vt100'), sequence('0x8f', 'ESC O'), _('SS2')]":
+  function SS2() 
+  {
+    this.sendMessage("sequences/ss2");
+  },
+
+  /** SS3.
+   */
+  "[profile('vt100'), sequence('0x90', 'ESC P'), _('SS3')]":
+  function SS3() 
+  {
+    this.sendMessage("sequences/ss3");
   },
  
   /** Vertical tabulation.
@@ -389,4 +394,4 @@ function main(broker)
   new Control(broker);
 }
 
-
+// EOF

@@ -25,7 +25,7 @@
 /**
  *  @class OverlayImage
  */
-let OverlayImage = new Class().extends(Plugin)
+var OverlayImage = new Class().extends(Plugin)
                               .depends("renderer");
 OverlayImage.definition = {
 
@@ -54,19 +54,14 @@ OverlayImage.definition = {
   _canvas: null,
  
   /** installs itself. 
-   *  @param {Session} session A session object.
+   *  @param {Broker} broker A broker object.
    */
   "[install]":
-  function install(session) 
+  function install(broker) 
   {
-    let {tanasinn_image_canvas} = session.uniget(
+    var {tanasinn_image_canvas} = this.request(
       "command/construct-chrome", this.template);
     this._canvas = tanasinn_image_canvas;
-    this.draw.enabled = true;
-    this.clear.enabled = true;
-    this.onWidthChanged.enabled = true;
-    this.onHeightChanged.enabled = true;
-    this.onKeypadModeChanged.enabled = true;
   },
 
   /** Uninstalls itself.
@@ -80,37 +75,34 @@ OverlayImage.definition = {
     }
 
     this._canvas = null;
-
-    this.draw.enabled = false;
-    this.clear.enabled = false;
-    this.onWidthChanged.enabled = false;
-    this.onHeightChanged.enabled = false;
-    this.onKeypadModeChanged.enabled = false;
   },
     
   /** Fired at the keypad mode is changed. */
-  "[subscribe('event/keypad-mode-changed')]": 
+  "[subscribe('event/keypad-mode-changed'), pnp]": 
   function onKeypadModeChanged(mode) 
   {
-    let canvas = this._canvas;  
+    var canvas, context;
+
+    canvas = this._canvas;  
     if (canvas) {
       canvas.width = canvas.parentNode.boxObject.width;
       canvas.height = canvas.parentNode.boxObject.height;
     }
-    let context = canvas.getContext("2d");
+
+    context = canvas.getContext("2d");
     if (canvas && context) {
       context.clearRect(0, 0, canvas.width, canvas.height);
     }
   },
 
 
-  "[subscribe('event/screen-width-changed')]": 
+  "[subscribe('event/screen-width-changed'), pnp]": 
   function onWidthChanged(width) 
   {
     this._canvas.width = width;
   },
 
-  "[subscribe('event/screen-height-changed')]": 
+  "[subscribe('event/screen-height-changed'), pnp]": 
   function onHeightChanged(height) 
   {
     this._canvas.height = height;
@@ -125,54 +117,68 @@ OverlayImage.definition = {
     }
   },
 
-  "[subscribe('sequence/osc/212')]":
+  "[subscribe('sequence/osc/212'), pnp]":
   function draw(data) 
   {
-    let broker = this._broker;
-    let canvas = {
+    var canvas, renderer, x, y, w, h, filename,
+        pixel_x, pixel_y, pixel_w, pixel_h,
+        cache, image, cache_holder,
+        NS_XHTML = "http://www.w3.org/1999/xhtml";
+
+    canvas = {
       context: this._canvas.getContext("2d")
     };
-    let renderer = this.dependency["renderer"];
-    let {char_width, line_height} = renderer;
-    let [x, y, w, h, filename] = data.split(";");
-    let pixel_x = Number(x) * char_width;
-    let pixel_y = Number(y) * line_height;
-    let pixel_w = Number(w) * char_width;
-    let pixel_h = Number(h) * line_height;
+    renderer = this.dependency["renderer"];
+
+    var {char_width, line_height} = renderer;
+    
+    [x, y, w, h, filename] = data.split(";");
+
+    pixel_x = Number(x) * char_width;
+    pixel_y = Number(y) * line_height;
+    pixel_w = Number(w) * char_width;
+    pixel_h = Number(h) * line_height;
+
     this._cache_holder = this._cache_holder || {};
-    let cache = this._cache_holder[filename];
-    const NS_XHTML = "http://www.w3.org/1999/xhtml";
-    let image = cache 
-      || broker.window.document.createElementNS(NS_XHTML, "img");
+
+    cache = this._cache_holder[filename];
+    image = cache 
+      || this.request("get/root-element").ownderDocument.createElementNS(NS_XHTML, "img");
     if (cache) {
       // draw immediately.
       canvas.context.drawImage(image, pixel_x, pixel_y, pixel_w, pixel_h);
     } else {
       // draw after the image is fully loaded.
-      let cache_holder = this._cache_holder;
-      image.onload = function onload() {
+      cache_holder = this._cache_holder;
+      image.onload = function onload()
+      {
         cache_holder[filename] = image;
         canvas.context.drawImage(image, pixel_x, pixel_y, pixel_w, pixel_h);
       }
       image.src = filename;
     }
 
-    //broker.notify("command/report-overlay-message", data);
+    //this.sendMessage("command/report-overlay-message", data);
   },
 
-  "[subscribe('sequence/osc/213')]":
+  "[subscribe('sequence/osc/213'), pnp]":
   function clear(data) 
   {
-    let broker = this._broker;
-    let context = this._canvas.getContext("2d");
-    let renderer = this.dependency["renderer"];
-    let {char_width, line_height} = renderer;
-    let [x, y, w, h] = data.split(";")
+    var context, renderer, x, y, w, h,
+        pixel_x, pixel_y, pixel_w, pixel_h;
+
+    context = this._canvas.getContext("2d");
+    renderer = this.dependency["renderer"];
+    var {char_width, line_height} = renderer;
+
+    [x, y, w, h] = data.split(";")
       .map(function(s, index) Number(s));
-    let pixel_x = x * char_width;
-    let pixel_y = y * line_height;
-    let pixel_w = w * char_width;
-    let pixel_h = h * line_height;
+
+    pixel_x = x * char_width;
+    pixel_y = y * line_height;
+    pixel_w = w * char_width;
+    pixel_h = h * line_height;
+
     context.clearRect(pixel_x, pixel_y, pixel_w, pixel_h);
   },
 
@@ -188,3 +194,4 @@ function main(broker)
   new OverlayImage(broker);
 }
 
+// EOF

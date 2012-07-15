@@ -23,10 +23,53 @@
  * ***** END LICENSE BLOCK ***** */
 
 
+function make_managed_handler(self, handler, topic)
+{
+  var wrapped_handler;
+
+  wrapped_handler = function() 
+  {
+    return handler.apply(self, arguments);
+  };
+
+  return wrapped_handler;
+}
+
+function apply_attribute(self, broker, key, attribute)
+{
+  var handler, wrapped_handler, id;
+
+  handler = self[key];
+  id = self.id + "." + key;
+
+  if (handler.id) {
+    wrapped_handler = handler;
+  } else {
+    wrapped_handler = make_managed_handler(self, handler);
+    wrapped_handler.id = id;
+    self[key] = wrapped_handler;
+  }
+
+  wrapped_handler.description = attribute.description;
+
+  broker.subscribe("install/" + self.id, 
+    function() 
+    {
+      wrapped_handler.enabled = true;
+    }, undefined, id + ".pnp");
+
+  broker.subscribe("uninstall/" + self.id, 
+    function() 
+    {
+      wrapped_handler.enabled = false;
+    }, undefined, id + ".pnp");
+}
+
+
 /**
  * @Attribute PnPAttribute
  */
-let PnPAttribute = new Attribute("pnp");
+var PnPAttribute = new Attribute("pnp");
 PnPAttribute.definition = {
 
   get __id()
@@ -64,38 +107,14 @@ PnPAttribute.definition = {
     attributes = this.__attributes;
 
     for (key in attributes) {
+
       attribute = attributes[key];
+
       if (!attribute["pnp"]) {
         continue;
       }
-      let handler = this[key];
-      id = this.id + "." + key;
 
-      let wrapped_handler;
-      if (handler.id) {
-        wrapped_handler = handler;
-      } else {
-        let self = this;
-        wrapped_handler = function() 
-          {
-            handler.apply(self, arguments);
-          };
-        wrapped_handler.id = id;
-        this[key] = wrapped_handler;
-      }
-
-      broker.subscribe("install/" + this.id, 
-        function() 
-        {
-          wrapped_handler.enabled = true;
-        }, this, id);
-
-      broker.subscribe("uninstall/" + this.id, 
-        function() 
-        {
-          wrapped_handler.enabled = false;
-        }, undefined, id);
-
+      apply_attribute(this, broker, key, attribute)
     } // key for (key in attributes) 
   },
 
@@ -112,3 +131,4 @@ function main(target_class)
   target_class.mix(PnPAttribute);
 }
 
+// EOF

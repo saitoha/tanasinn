@@ -151,14 +151,16 @@ ReportParams.definition = {
       // allowed to send unsolicited reports. (Unsolicited reports are 
       // sent when the terminal exits the SET-UP mode).
       case 0:
-        message = "\x1b[2;" + this._termattr;
+        message = "2;" + this._termattr;
+        this.sendMessage("command/send-sequence/csi");
         this.sendMessage("command/send-to-tty", message);
         break;
 
       // This message is a request; from now on the 
       // terminal may only report in response to a request.
       case 1:
-        message = "\x1b[3;" + this._termattr;
+        message = "3;" + this._termattr;
+        this.sendMessage("command/send-sequence/csi");
         this.sendMessage("command/send-to-tty", message);
         break;
 
@@ -181,4 +183,4 @@ function main(broker)
   new ReportParams(broker);
 }
 
-
+// EOF

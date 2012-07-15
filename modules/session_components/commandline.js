@@ -27,7 +27,7 @@
  * @class TextboxWidget
  *
  */
-let TextboxWidget = new Class();
+var TextboxWidget = new Class();
 TextboxWidget.definition = {
 
   "[persistable, watchable] font_color": "white",
@@ -56,7 +56,10 @@ TextboxWidget.definition = {
 
   dispose: function dispose(broker) 
   {
-    let dom = this._dom;
+    var dom;
+
+    dom = this._dom;
+
     if (dom.canvas) {
       dom.canvas.parentNode.removeChild(dom.canvas);
       dom.canvas = null;
@@ -117,7 +120,10 @@ TextboxWidget.definition = {
 
   commit: function commit()
   {
-    let dom = this._dom;
+    var dom;
+
+    dom = this._dom;
+
     this.value = this.value.substr(0, this.selectionStart) 
       + dom.textbox.value
       + this.value.substr(this.selectionEnd);
@@ -126,7 +132,10 @@ TextboxWidget.definition = {
 
   _clear: function _clear()
   {
-    let dom = this._dom;
+    var dom;
+
+    dom = this._dom;
+
     dom.context.clearRect(
       0, 0, 
       dom.canvas.width, dom.canvas.height);
@@ -134,26 +143,32 @@ TextboxWidget.definition = {
 
   _draw: function _draw()
   {
+    var dom, height, left, cursor_left, font, width;
+
     this._clear();
-    let dom = this._dom;
+
+    dom = this._dom;
     dom.context.fillStyle = this.font_color;
     dom.context.font = this.font_size + "px " + this.font_family + " " + this.font_weight;
-    let height = this._glyph_height;
 
-    if ("command" == this._mode) {
+    height = this._glyph_height;
+
+    if ("command" === this._mode) {
       if (this._main_buffer) {
         dom.context.fillText(this._main_buffer, 0, height + 2);
       }
       dom.context.globalAlpha = 0.5;
-      let left = dom.context.measureText(this._main_buffer).width;
+
+      left = dom.context.measureText(this._main_buffer).width;
       dom.context.fillText(
         this._completion_buffer.substr(this._main_buffer.length), left, height + 2);
 
       dom.context.globalAlpha = 0.5;
 
-      let cursor_left = this._main_buffer.substr(0, this._start);
+      cursor_left = this._main_buffer.substr(0, this._start);
       left = dom.context.measureText(cursor_left).width;
-      let font = dom.context.font;
+
+      font = dom.context.font;
       dom.context.font = "yellow";
       dom.context.fillRect(left, 0, 10, height);
       dom.context.font = font;
@@ -166,7 +181,7 @@ TextboxWidget.definition = {
       }
     }
     if (this._keystate_buffer) {
-      let width = dom.context.measureText(this._keystate_buffer).width;
+      width = dom.context.measureText(this._keystate_buffer).width;
       dom.context.clearRect(dom.canvas.width - width, 0, width, height);
       dom.context.fillText(this._keystate_buffer, dom.canvas.width - width, height + 2);
     }
@@ -191,7 +206,9 @@ TextboxWidget.definition = {
 
   set selectionEnd(position) 
   {
-    let dom = this._dom;
+    var dom;
+
+    dom = this._dom;
     this._end = position;
     dom.textbox.selectionEnd = position;
     this._draw();
@@ -221,45 +238,61 @@ TextboxWidget.definition = {
 
   blur: function blur() 
   {
-    let dom = this._dom;
+    var dom;
+    
+    dom = this._dom;
     dom.canvas.style.opacity = 0.7;
   },
 
   focus: function focus() 
   {
-    let dom = this._dom;
+    var dom;
+
+    dom = this._dom;
     dom.textbox.focus();
   },
 
   getCaretPosition: function getCaretPosition()
   {
-    let dom = this._dom;
-    let text = this.value.substr(0, this.selectionStart);
-    let position = dom.context.measureText(text).width;
+    var dom, text, position;
+
+    dom = this._dom;
+    text = this.value.substr(0, this.selectionStart);
+    position = dom.context.measureText(text).width;
+
     dom.textbox.style.fontFamily = this.font_family;
     dom.textbox.style.fontSize = (this.font_size - 2) + "px";
     dom.textbox.style.color = this.font_color;
     dom.textbox.parentNode.previousSibling.width = position;
+
     return position;
   },
 
   calculateSize: function calculateSize() 
   {
-    let dom = this._dom;
-    let fill_style = dom.context.fillStyle;
-    let font = dom.context.font;
-    let [width, height, top] = coUtils.Font
+    var dom, fill_style, font, width, height, top;
+
+    dom = this._dom;
+    fill_style = dom.context.fillStyle;
+    font = dom.context.font;
+    [width, height, top] = coUtils.Font
       .getAverageGlyphSize(this.font_size, this.font_family);
+
     dom.canvas.width = dom.canvas.parentNode.boxObject.width;
     this._glyph_height = height;
     dom.canvas.height = height + top;
+    dom.textbox.height = height + top;
+    dom.canvas.height = (this.font_size - 2);
+    dom.canvas.parentNode.height = dom.canvas.height;
     dom.context.fillStyle = fill_style;
     dom.context.font = font;
   },
 
   getInputField: function getInputField()
   {
-    let dom = this._dom;
+    var dom;
+
+    dom = this._dom;
     return dom.textbox;
   },
 
@@ -268,7 +301,7 @@ TextboxWidget.definition = {
 /**
  * @trait CompletionView
  */
-let CompletionView = new Trait();
+var CompletionView = new Trait();
 CompletionView.definition = {
 
   _index: -1,
@@ -295,20 +328,27 @@ CompletionView.definition = {
 
   _selectRow: function _selectRow(row)
   {
+    var completion_root, scroll_box, box_object,
+        scrollY, first_position, last_position;
+
     row.style.borderRadius = "6px";
     row.style.backgroundImage = "-moz-linear-gradient(top, #777, #555)";
     row.style.color = "white";
-    let completion_root = this._completion_root;
-    let scroll_box = completion_root.parentNode;
-    let box_object = scroll_box.boxObject
+
+    completion_root = this._completion_root;
+    scroll_box = completion_root.parentNode;
+    box_object = scroll_box.boxObject
       .QueryInterface(Components.interfaces.nsIScrollBoxObject)
+
     if (box_object) {
-      let scrollY = {};
+      scrollY = {};
       box_object.getPosition({}, scrollY);
-      let first_position = row.boxObject.y - scroll_box.boxObject.y;
-      let last_position = first_position 
+
+      first_position = row.boxObject.y - scroll_box.boxObject.y;
+      last_position = first_position 
         - scroll_box.boxObject.height 
         + row.boxObject.height;
+
       if (first_position < scrollY.value) {
         box_object.scrollTo(0, first_position);
       } else if (last_position > scrollY.value) {
@@ -319,6 +359,8 @@ CompletionView.definition = {
 
   select: function select(index)
   {
+    var rows, row;
+
     // restrict range of index.
     if (index < -1) {
       index = -1;
@@ -327,16 +369,18 @@ CompletionView.definition = {
       index = this.rowCount - 1;
     }
 
-    if (index != this.currentIndex) {
-      let rows = this._completion_root.querySelector("rows")
-      if (-1 != this.currentIndex) {
-        let row = rows.childNodes[this.currentIndex];
+    if (index !== this.currentIndex) {
+
+      rows = this._completion_root.querySelector("rows")
+      if (-1 !== this.currentIndex) {
+        row = rows.childNodes[this.currentIndex];
         if (row) {
           this._unselectRow(row);
         }
       }
-      if (-1 != index) {
-        let row = rows.childNodes[index];
+
+      if (-1 !== index) {
+        row = rows.childNodes[index];
         if (row) {
           this._selectRow(row);
         }
@@ -354,23 +398,25 @@ CompletionView.definition = {
   "[subscribe('command/select-next-candidate'), enabled]":
   function down()
   {
-    let index = Math.min(this.currentIndex + 1, this.rowCount - 1);
+    var index;
+
+    index = Math.min(this.currentIndex + 1, this.rowCount - 1);
     if (index >= 0) {
       this.select(index);
     }
-    let broker = this._broker;
-    broker.notify("command/fill");
+    this.sendMessage("command/fill");
   },
 
   "[subscribe('command/select-previous-candidate'), enabled]":
   function up()
   {
-    let index = Math.max(this.currentIndex - 1, -1);
+    var index;
+
+    index = Math.max(this.currentIndex - 1, -1);
     if (index >= 0) {
       this.select(index);
     }
-    let broker = this._broker;
-    broker.notify("command/fill");
+    this.sendMessage("command/fill");
   },
 
 }; // CompletionView
@@ -379,7 +425,7 @@ CompletionView.definition = {
  * @class Commandline
  *
  */
-let Commandline = new Class().extends(Plugin)
+var Commandline = new Class().extends(Plugin)
                              .mix(CompletionView);
 Commandline.definition = {
 
@@ -398,17 +444,17 @@ Commandline.definition = {
   "[persistable] enabled_when_startup": true,
 
   "[persistable] completion_delay": 180,
-  "[persistable] completion_popup_opacity": 1.00,
+  "[persistable] completion_popup_opacity": 0.70,
   "[persistable] completion_popup_max_height": 300,
+  "[persistable] completion_popup_background": "-moz-linear-gradient(top, #bbb, #777)",
+  "[persistable] completion_popup_background_opacity": 0.8,
 
   get template()
   [
     {
       parentNode: "#tanasinn_commandline_area",
-      tagName: "box",
-      style: <>
-        position: absolute;
-      </>,
+      tagName: "html:div",
+      style: "position: absolute;",
       childNodes: [
         {
           tagName: "box",
@@ -435,16 +481,13 @@ Commandline.definition = {
       tagName: "html:canvas",
       dir: "ltr",
       height: this.font_size,
-      style: <>
-        opacity: 0.7;
-      </>,
+      style: "opacity: 0.7; position: absolute",
     },
     {
       parentNode: "#tanasinn_chrome",
       tagName: "panel",
       id: "tanasinn_completion_popup",
       style: <> 
-        -moz-appearance: none;
         -moz-user-focus: ignore;
         background: transparent;
         border: none;
@@ -462,8 +505,8 @@ Commandline.definition = {
             flex: 1,
             style: <>
               border-radius: 7px;
-              background: -moz-linear-gradient(top, #bbb, #888);
-              opacity: 0.8;
+              background: {this.completion_popup_background};
+              opacity: {this.completion_popup_background_opacity};
             </>,
           },
           {
@@ -471,10 +514,7 @@ Commandline.definition = {
             id: "tanasinn_completion_scroll",
             orient: "vertical", // box-packing
             flex: 1,
-            style: <>
-              margin: 8px;
-              overflow-y: auto;
-            </>,
+            style: "margin: 8px; overflow-y: auto;",
             childNodes: {
               tagName: "grid",
               id: "tanasinn_completion_root",
@@ -501,13 +541,13 @@ Commandline.definition = {
   "[install]":
   function install(broker) 
   {
-    let {
+    var {
       tanasinn_commandline_canvas, 
       tanasinn_commandline, 
       tanasinn_completion_popup, 
       tanasinn_completion_scroll, 
       tanasinn_completion_root,
-    } = broker.uniget("command/construct-chrome", this.template);
+    } = this.request("command/construct-chrome", this.template);
 
     this._canvas = tanasinn_commandline_canvas;
 
@@ -515,27 +555,6 @@ Commandline.definition = {
     this._popup = tanasinn_completion_popup;
     this._scroll = tanasinn_completion_scroll;
     this._completion_root = tanasinn_completion_root;
-
-    this.show.enabled = true;
-    this.fill.enabled = true;
-    this.invalidate.enabled = true;
-    this.onStatusMessage.enabled = true;
-    this.onfocus.enabled = true;
-    this.onblur.enabled = true;
-    this.onkeydown.enabled = true;
-    this.onkeypress.enabled = true;
-    this.onpopupshowing.enabled = true;
-    this.onpopupshown.enabled = true;
-    this.onclick.enabled = true;
-    this.onchange.enabled = true;
-    this.enableCommandline.enabled = true;
-//    this.onFirstFocus.enabled = true;
-    this.setCompletionTrigger.enabled = true;
-    this.onStyleChanged.enabled = true;
-    this.onWidthChanged.enabled = true;
-    this.doCompletion.enabled = true;
-
-    this.onmousedown.enabled = true;
   },
   
   /** Uninstalls itself.
@@ -544,26 +563,6 @@ Commandline.definition = {
   "[uninstall]":
   function uninstall(broker) 
   {
-    this.show.enabled = false;
-    this.fill.enabled = false;
-    this.invalidate.enabled = false;
-    this.onStatusMessage.enabled = false;
-    this.onfocus.enabled = false;
-    this.onblur.enabled = false;
-    this.onkeydown.enabled = false;
-    this.onkeypress.enabled = false;
-    this.onpopupshowing.enabled = false;
-    this.onpopupshown.enabled = false;
-    this.onclick.enabled = false;
-    this.onchange.enabled = false;
-    this.enableCommandline.enabled = false;
-    this.setCompletionTrigger.enabled = false;
-//    this.onFirstFocus.enabled = false;
-    this.onStyleChanged.enabled = false;
-    this.onWidthChanged.enabled = false;
-    this.doCompletion.enabled = false;
-
-    this.onmousedown.enabled = false;
     if (this._popup) {
       if (undefined !== this._popup.hidePopup) {
         this._popup.hidePopup();
@@ -583,7 +582,7 @@ Commandline.definition = {
     }
   },
 
-  "[subscribe('variable-changed/commandline.{font_weight | font_size | default_text_shadow | font_family}')]":
+  "[subscribe('variable-changed/commandline.{font_weight | font_size | default_text_shadow | font_family}'), pnp]":
   function onStyleChanged() 
   {
   },
@@ -606,24 +605,26 @@ Commandline.definition = {
     return this._textbox.getInputField();
   },
 
-  "[subscribe('event/screen-width-changed')]": 
+  "[subscribe('event/screen-width-changed'), pnp]": 
   function onWidthChanged(width) 
   {
     this._canvas.width = width;
   },
 
-  "[subscribe('command/report-status-message')]":
+  "[subscribe('command/report-status-message'), pnp]":
   function onStatusMessage(message) 
   {
     if (this._textbox) {
       this._textbox.mode = "status";
-      coUtils.Timer.setTimeout(function() {
-        this._textbox.status = message;
-      }, 0, this);
+      coUtils.Timer.setTimeout(
+        function()
+        {
+          this._textbox.status = message;
+        }, 0, this);
     }
   },
 
-  "[subscribe('command/enable-commandline')]":
+  "[subscribe('command/enable-commandline'), pnp]":
   function enableCommandline() 
   {
     this._textbox.calculateSize();
@@ -633,8 +634,7 @@ Commandline.definition = {
     this._textbox.focus();
     this._textbox.focus();
 
-    let broker = this._broker;
-    broker.notify("event/mode-changed", "commandline");
+    this.sendMessage("event/mode-changed", "commandline");
   },
 
   "[subscribe('event/input-state-changed'), enabled]":
@@ -652,7 +652,7 @@ Commandline.definition = {
   /** Shows commandline interface. 
    *  @param {Object} A shortcut information object.
    */
-  "[nmap('<M-:>'), _('Show commandline interface.')]":
+  "[nmap('<M-:>'), _('Show commandline interface.'), pnp]":
   function show(info)
   {
     this._textbox.hidden = false;
@@ -664,16 +664,15 @@ Commandline.definition = {
     return true;
   },
 
-  "[listen('focus', '#tanasinn_commandline', true)]":
+  "[listen('focus', '#tanasinn_commandline', true), pnp]":
   function onfocus(event) 
   {
-    let session = this._broker;
     this._textbox.hidden = false;
     this._textbox.mode = "command";
     this.setCompletionTrigger();
   },
 
-  "[listen('blur', '#tanasinn_commandline', true)]":
+  "[listen('blur', '#tanasinn_commandline', true), pnp]":
   function onblur(event) 
   {
     this._textbox.blur();
@@ -688,19 +687,23 @@ Commandline.definition = {
     }
   },
 
-  "[subscribe('event/answer-completion')]":
+  "[subscribe('event/answer-completion'), pnp]":
   function doCompletion(result) 
   {
+    var grid, type, driver;
+
     this._result = result;
     delete this._timer;
-    let grid = this._completion_root;
+
+    grid = this._completion_root;
+
     while (grid.firstChild) {
       grid.removeChild(grid.firstChild);
     }
     if (result) {
-      let type = result.type || "text";
-      let broker = this._broker;
-      let driver = broker.uniget("get/completion-display-driver/" + type); 
+      type = result.type || "text";
+      driver = this.request("get/completion-display-driver/" + type); 
+
       if (driver) {
         driver.drive(grid, result, this.currentIndex);
         this.invalidate(result);
@@ -716,27 +719,31 @@ Commandline.definition = {
     }
   },
 
-  "[subscribe('command/invalidate')]":
+  "[subscribe('command/invalidate'), pnp]":
   function invalidate(result) 
   {
-    let textbox = this._textbox;
+    var textbox, document, index, completion_text,
+        settled_length, settled_text, text;;
+
+    textbox = this._textbox;
+
     if (result.data.length > 0) {
       this._popup.style.opacity = this.completion_popup_opacity;
-      if ("closed" == this._popup.state || "hiding" == this._popup.state) {
-        let broker = this._broker;
-        let document = broker.window.document;
+      if ("closed" === this._popup.state || "hiding" === this._popup.state) {
+        document = this.request("get/root-element").ownerDocument;
         if (document) {
           this._popup.width = this._canvas.width;
           this._popup.openPopup(this._canvas, "after_start", 0, 0, true, true);
         }
       }
-      let index = Math.max(0, this.currentIndex);
-      let completion_text = result.data[index].name;
-      if (0 == completion_text.indexOf(result.query)) {
-        let settled_length = 
-          this._stem_text.length - result.query.length;
-        let settled_text = textbox.value.substr(0, settled_length);
-        let text = settled_text + completion_text;
+
+      index = Math.max(0, this.currentIndex);
+      completion_text = result.data[index].name;
+      
+      if (0 === completion_text.indexOf(result.query)) {
+        settled_length = this._stem_text.length - result.query.length;
+        settled_text = textbox.value.substr(0, settled_length);
+        text = settled_text + completion_text;
         this._textbox.completion = text;
       } else {
         this._textbox.completion = "";
@@ -747,37 +754,44 @@ Commandline.definition = {
     }
   },
 
-  "[subscribe('command/fill')]":
+  "[subscribe('command/fill'), pnp]":
   function fill()
   {
-    let index = Math.max(0, this.currentIndex);
-    let result = this._result;
+    var index, result, textbox, completion_text,
+        settled_length, settled_text, text;
+
+    index = Math.max(0, this.currentIndex);
+    result = this._result;
+
     if (result) {
-      let textbox = this._textbox;
-      let completion_text = result.data[index].name;
-      let settled_length = 
-        this._stem_text.length - result.query.length;
-      let settled_text = textbox.value.substr(0, settled_length);
+      textbox = this._textbox;
+      completion_text = result.data[index].name;
+      settled_length = this._stem_text.length - result.query.length;
+      settled_text = textbox.value.substr(0, settled_length);
 
       textbox.value = settled_text + completion_text;
-      let text = settled_text + completion_text;
+      text = settled_text + completion_text;
 
       this._textbox.completion = "";
     }
   },
 
-  "[subscribe('command/set-completion-trigger')]":
+  "[subscribe('command/set-completion-trigger'), pnp]":
   function setCompletionTrigger() 
   {
+    var textbox, current_text;
+
     if (this._timer) {
       this._timer.cancel();
       delete this._timer;
     }
+
     this._timer = coUtils.Timer.setTimeout(function() {
       delete this._timer;
-      let textbox = this._textbox;
+      textbox = this._textbox;
+
       if (textbox) {
-        let current_text = this._textbox.value;
+        current_text = this._textbox.value;
         // if current text does not match completion text, hide it immediatly.
         if (!this._textbox.completion 
           || 0 != this._textbox.completion.indexOf(current_text)) {
@@ -785,8 +799,8 @@ Commandline.definition = {
         }
         this._stem_text = current_text;
         this.select(-1);
-        let broker = this._broker;
-        broker.notify(
+
+        this.sendMessage(
           "command/complete-commandline", 
           {
             source: current_text, 
@@ -795,7 +809,7 @@ Commandline.definition = {
     }, this.completion_delay, this);
   },
 
-  "[listen('keydown', '#tanasinn_commandline', true)]":
+  "[listen('keydown', '#tanasinn_commandline', true), pnp]":
   function onkeydown(event) 
   {
     event.stopPropagation();
@@ -805,22 +819,26 @@ Commandline.definition = {
   "[subscribe('event/keypress-commandline-with-remapping'), enabled]":
   function onKeypressCommandlineWithMapping(code) 
   {
-    let broker = this._broker;
-    let result = broker.uniget(
+    var result, with_ctrl, with_nochar, textbox, value,
+        start, end, text;
+
+    result = this.request(
       "event/commandline-input", 
       {
         textbox: this._textbox, 
         code: code,
       });
     if (!result) {
-      let with_ctrl = code & 1 << coUtils.Keyboard.KEY_CTRL;
-      let with_nochar = code & 1 << coUtils.Keyboard.KEY_NOCHAR;
+
+      with_ctrl = code & 1 << coUtils.Constant.KEY_CTRL;
+      with_nochar = code & 1 << coUtils.Constant.KEY_NOCHAR;
+
       if (!with_nochar && !with_ctrl) {
-        let textbox = this._textbox;
-        let value = textbox.value;
-        let start = textbox.selectionStart;
-        let end = textbox.selectionEnd;
-        let text = value.substr(0, textbox.selectionStart) 
+        textbox = this._textbox;
+        value = textbox.value;
+        start = textbox.selectionStart;
+        end = textbox.selectionEnd;
+        text = value.substr(0, textbox.selectionStart) 
           + String.fromCharCode(code & 0xfffff)
           + value.substr(textbox.selectionEnd);
 
@@ -836,13 +854,18 @@ Commandline.definition = {
   "[subscribe('event/keypress-commandline-with-no-remapping'), enabled]":
   function onKeypressCommandlineWithNoMapping(code) 
   {
-    let with_ctrl = code & 1 << coUtils.Keyboard.KEY_CTRL;
-    let with_nochar = code & 1 << coUtils.Keyboard.KEY_NOCHAR;
+    var with_ctrl, with_nochar, textbox,
+        value, start, end;
+
+    with_ctrl = code & 1 << coUtils.Constant.KEY_CTRL;
+    with_nochar = code & 1 << coUtils.Constant.KEY_NOCHAR;
+
     if (!with_nochar && !with_ctrl) {
-      let textbox = this._textbox;
-      let value = textbox.value;
-      let start = textbox.selectionStart;
-      let end = textbox.selectionEnd;
+      textbox = this._textbox;
+      value = textbox.value;
+      start = textbox.selectionStart;
+      end = textbox.selectionEnd;
+
       textbox.value 
         = value.substr(0, textbox.selectionStart) 
         + String.fromCharCode(code & 0xfffff)
@@ -853,25 +876,27 @@ Commandline.definition = {
     }
   },
 
-  "[listen('contextmenu', '#tanasinn_commandline', true), enabled]":
+  "[listen('contextmenu', '#tanasinn_commandline', true), pnp]":
   function oncontextmenu(event) 
   {
     event.preventDefault();
   },
 
-  "[listen('keypress', '#tanasinn_commandline', true)]":
+  "[listen('keypress', '#tanasinn_commandline', true), pnp]":
   function onkeypress(event) 
   {
-    let code = coUtils.Keyboard.getPackedKeycodeFromEvent(event);
-    let broker = this._broker;
-    broker.notify("event/scan-keycode", {
+    var code;
+
+    code = coUtils.Keyboard.getPackedKeycodeFromEvent(event);
+
+    this.sendMessage("event/scan-keycode", {
       mode: "commandline", 
       code: code,
       event: event,
     });
   },
 
-  "[listen('mousedown', '#tanasinn_completion_popup', true)]":
+  "[listen('mousedown', '#tanasinn_completion_popup', true), pnp]":
   function onmousedown(event) 
   {
     event.stopPropagation();
@@ -879,41 +904,46 @@ Commandline.definition = {
 
   onsubmit: function onsubmit() 
   {
-    let broker = this._broker;
-    let command = this._textbox.value;
+    var command;
 
+    command = this._textbox.value;
+
+    // hide completion popup
+    if (this._popup) {
+      if (this._popup.hidePopup) {
+        this._popup.hidePopup();
+      }
+    }
+
+    // clear textbox
     this._textbox.value = "";
     this._textbox.completion = "";
-    broker.notify("command/eval-commandline", command);
-//    this._textbox.blur();
-    let broker = this._broker;
-    broker.notify("command/focus");
+
+    this.sendMessage("command/eval-commandline", command);
+    
+    this.sendMessage("command/focus");
   },
 
-  "[listen('popupshown', '#tanasinn_commandline', false)]":
+  "[listen('popupshown', '#tanasinn_commandline', false), pnp]":
   function onpopupshown(event) 
   {
     this._textbox.focus();
     this._textbox.focus();
   },
 
-  "[listen('popupshowing', '#tanasinn_commandline', false)]":
+  "[listen('popupshowing', '#tanasinn_commandline', false), pnp]":
   function onpopupshowing(event) 
   {
   },
 
-  "[listen('click', '#tanasinn_commandline_canvas', false)]":
+  "[listen('click', '#tanasinn_commandline_canvas', false), pnp]":
   function onclick(event) 
   {
-    let broker = this._broker;
-    coUtils.Timer.setTimeout(function() {
-      broker.notify("command/enable-commandline");
-    }, 0);
-  },
-
-  "[listen('change', '#tanasinn_commandline', true)]":
-  function onchange(event) 
-  {
+    coUtils.Timer.setTimeout(
+      function() 
+      {
+        this.sendMessage("command/enable-commandline");
+      }, 0, this);
   },
 
 };
@@ -929,5 +959,4 @@ function main(broker)
   new Commandline(broker);
 }
 
-
-
+// EOF

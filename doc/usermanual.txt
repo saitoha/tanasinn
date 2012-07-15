@@ -24,7 +24,6 @@ link:./usermanual.html[English/英語]
 
 #endif
 
-#if __EN__
 == News
 
 === 2012/05/31 
@@ -69,11 +68,12 @@ link:./usermanual.html[English/英語]
 
 === 2012/04/08 
     Now version 0.1.7.1 available.
+    Implement SGR blink feature. 
+    Implement SGR rapid blink feature(from DOS's ANSI.SYS).
+    Implement SGR italic feature. 
+    Implement SGR halfbright feature. 
 
-    - Implement SGR blink feature. 
-    - Implement SGR rapid blink feature(from DOS's ANSI.SYS).
-    - Implement SGR italic feature. 
-    - Implement SGR halfbright feature. 
+#if __EN__
 
 If tanasinn does not work, try creating tanasinn.js at your home directory, as follows:
 
@@ -85,60 +85,6 @@ process.python_path = "/usr/bin/python"
 ----
 
 #elif __JP__
-== News 
- 
-=== 2012/05/31 
-    Version 0.2.2.1
-    DECSET 8840 / Ambiguous width switching.
-    DECSET 7700 / Ambiguous width reporting.
-    Implement LNM.
-    Implement REP.
-    Implement Keyboard Action Mode (KAM).
-    Implement Send/Receive Mode, local echo mode (SRM). 
-    implement DECSCA (Protection Attribute).
-    implement DECSED/DECSEL (Selective erase feature).
-    implement DECSERA (Selective Erase Rectangle Area).
-    More precise emulation.
-
-=== 2012/05/23 
-    Version 0.2.2.0
-    Supports OSC 52 base64 copy.
-    Supports DEC Locator Event Mode(without filter rectangle feature).
-    Supports character combining, more precise character rendering.
-    Implement LNM.
-    Implement Device Status Report(DSR).
-    Implement Tertiary Device Attributes (DA3).
-    Implement DECREQTPARM. 
-    More precise emulation, Now it passes vttest Menu 1, 2, 3, 4, 6, 7, and 8.
-    Disable ShellRPC plugin.
-
-=== 2012/05/05 
-    Version 0.2.1.1
-    Supports inline Sixel Graphics.
-    Supports UTF8/urxvt/SGR style mouse reporting.
-    Improve performance.
-
-=== 2012/04/18 
-    Version 0.2.0.0
-    More precise emulation. 
-    Now it passes vttest 1, 2, 3, 4, 7, and 8.
-    Improve performance.
-
-=== 2012/04/15 
-    Version 0.1.7.2
-    Important bug fix, Now it works en_US locale, sorry!
-
-=== 2012/04/08 
-    Now version 0.1.7.1 available.
-
-    - Implement SGR blink feature. 
-    - Implement SGR rapid blink feature(from DOS's ANSI.SYS).
-    - Implement SGR italic feature. 
-    - Implement SGR halfbright feature. 
-
-  重要：0.1.5.0 / 0.1.5.1はビルド時のバグのため「動きません」。
-          0.1.5.2は一部のプラットフォームで動きません。  
-          いろいろ試行錯誤しちゃった人はすみません。
 
   Python2.x系のパスやCygwinのルートディレクトリなどを探しまわり、環境情報を推定しようとします。
 
@@ -151,11 +97,6 @@ process.cygwin_root = "C:\\cygwin";
 process.bin_path = "/bin:/usr/bin:/usr/local/bin:/opt/local/bin";
 process.python_path = "/usr/bin/python"
 ----
-
-    それでもだめな環境もあるかもしれません。
-    こちらからはtwitter用ハッシュタグ #tanasinn / #tanasinnが動かない あたりで探してみます。
-
-    拡張フォルダ内のディレクトリ名が歴史的理由により意味不明になっていたので、かなり変えました。
 
 #endif
 
@@ -274,6 +215,13 @@ http:/#/www.mozilla-japan.org/MPL/MPL-1.1J.html[Mozilla Public License 1.1 (MPL1
 image::images/nyan.png[width=780]
 
 #if __EN__
+.Running "http://www.asciimation.co.nz[STAR WARS ASCIIMATION]" and its telnet version(http://towel.blinkenlights.nl).
+#elif __JP__
+."http://www.asciimation.co.nz[STAR WARS ASCIIMATION]" と、そのtelnet版 version(http://towel.blinkenlights.nl)を走らせたところ。
+#endif
+image::images/starwars.png[width=780]
+
+#if __EN__
 .Running "http:/#/w3m.sourceforge.net/index.en.html[BB]", an ascii art demo program.
 #elif __JP__
 ."http:/#/w3m.sourceforge.net/index.en.html[BB]"(アスキーアートのデモプログラム)を走らせたところ。
@@ -384,6 +332,13 @@ image::images/wl3.png[width=780]
 .tanasinnをtanasinnでメタ開発中。これはスタンドアロンXULアプリケーションとして動作させているところです。
 #endif
 image::images/xulapp.png[width=780]
+
+#if __EN__
+.3D rotation with mouse dragging.
+#elif __JP__
+.マウスドラッグで3D回転
+#endif
+image::images/3d.png[width=780]
 
 #if __EN__
 .https://github.com/pda/roflbalt[roflbalt]. A game written in Ruby.

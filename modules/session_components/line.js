@@ -162,7 +162,7 @@ LineGeneratorConcept.definition = {
 //  /** Compare every bit and detect equality of both objects. */
 //  equals: function equals(other)
 //  {
-//    return this.value >>> 21 == other.value >>> 21;
+//    return this.value >>> 21 === other.value >>> 21;
 //  },
 //
 //  /** Clear all properties and make it default state. */
@@ -435,7 +435,7 @@ Cell.definition = {
   equals: function equals(other)
   {
     //return this.value << 7 == other.value << 7;
-    return this.value == other.value;
+    return this.value === other.value;
   },
 
   /** Clear all properties and make it default state. */
@@ -538,7 +538,7 @@ DirtyRange.definition = {
   /** makes a union of ranges and store it. */
   addRange: function addRange(first, last) 
   {
-    if (this.first == this.last) {
+    if (this.first === this.last) {
       this.first = first;
       this.last = last;
     } else {
@@ -623,6 +623,7 @@ Line.definition = {
     this.cells = cells;
   },
 
+  /** back up to context */
   serialize: function serialize(context)
   {
     var cells, i, cell;
@@ -637,6 +638,7 @@ Line.definition = {
     }
   },
 
+  /** restore from to context */
   deserialize: function deserialize(context)
   {
     var cells, i, cell;
@@ -684,14 +686,14 @@ Line.definition = {
     if (!cell) {
       return false;
     }
-    if (0 == cell.c) {
+    if (0 === cell.c) {
       return true;
     }
     cell = cells[position - 1];
     if (!cell) {
       return false;
     }
-    return 0 == cell.c;
+    return 0 === cell.c;
   },
 
   /** Gets the range of surround characters. 
@@ -712,7 +714,7 @@ Line.definition = {
 
     cells = this.cells;
     current_char;
-    if (0 == current_char) {
+    if (0 === current_char) {
       current_char = cells[column + 1].c;
     } else {
       current_char = cells[column].c;
@@ -741,9 +743,9 @@ Line.definition = {
 
       result = column + 1;
       for ([index, cell] in Iterator(forward_chars)) {
-        if (0 == cell.c) {
+        if (0 === cell.c) {
           continue;
-        } if (category == getCharacterCategory(cell.c)) {
+        } if (category === getCharacterCategory(cell.c)) {
           result = column + 1 + index + 1;
           continue;
         }
@@ -759,10 +761,10 @@ Line.definition = {
 
       result = column;
       for ([index, cell] in Iterator(backward_chars.reverse())) {
-        if (0 == cell.c) {
+        if (0 === cell.c) {
           result = backward_chars.length - index - 1;
           continue;
-        } else if (category == getCharacterCategory(cell.c)) {
+        } else if (category === getCharacterCategory(cell.c)) {
           result = backward_chars.length - index - 1;
           continue;
         }
@@ -810,20 +812,24 @@ Line.definition = {
   /** returns a generator which iterates dirty words. */
   getDirtyWords: function getDirtyWords() 
   {
+    var attr, start, current, cell,
+        cells, max, cell, is_normal, range,
+        codes;
+
     if (this.dirty) {
-      let attr, start, current, cell;
-      let cells = this.cells;
-      let max = coUtils.Constant.LINETYPE_NORMAL == this.type ? 
+      cells = this.cells;
+      max = coUtils.Constant.LINETYPE_NORMAL === this.type ? 
         this.last: 
         Math.min(this.last, Math.floor(this.length / 2));
+
       for (current = this.first; current < max; ++current) {
-        let cell = cells[current];
-        let is_normal = cell.c > 1 && cell.c < 256;
+        cell = cells[current];
+        is_normal = cell.c > 1 && cell.c < 256;
         if (attr) {
           if (attr.equals(cell) && is_normal) {
             continue;
           } else {
-            let range = cells.slice(start, current);
+            range = cells.slice(start, current);
             yield { 
               codes: this._getCodePointsFromCells(range), 
               column: start, 
@@ -834,7 +840,7 @@ Line.definition = {
         }
         if (!is_normal) {
           if (0 === cell.c) {
-            let cell = cells[current + 1]; // MUST not null
+            cell = cells[current + 1]; // MUST not null
             if (cell) {
               yield { 
                 codes: this._getCodePointsFromCells([ cell ]), 
@@ -860,7 +866,7 @@ Line.definition = {
         attr = cells[current];
       }
       if (start < current && attr) {
-        let codes = cells.slice(start, current)
+        codes = cells.slice(start, current)
         yield { 
           codes: this._getCodePointsFromCells(codes), 
           column: start, 
@@ -1112,4 +1118,4 @@ function main(broker)
   new LineGenerator(broker);
 }
 
-
+// EOF

@@ -22,109 +22,12 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/**
- *
- * @class WheelScroll
- *
- *
- */
-let WheelScroll = new Class().extends(Plugin);
-WheelScroll.definition = {
-
-  get id()
-    "wheel_scroll",
-
-  get info()
-    <plugin>
-        <name>{_("Wheel Scroll")}</name>
-        <description>{
-          _("Handle Wheel/Touch scroll event.")
-        }</description>
-        <version>0.1</version>
-    </plugin>,
-
-  "[persistable] enabled_when_startup": true,
-
-  /** Installs itself. */
-  "[install]":
-  function install(broker) 
-  {
-    /** Start to listen mouse event. */
-    this.onMouseTrackingTypeChanged.enabled = true;
-    this.onMouseTrackingModeChanged.enabled = true;
-
-    this.onmousescroll.enabled = true;
-  },
-
-  /** Uninstalls itself. */
-  "[uninstall]":
-  function uninstall(broker) 
-  {
-    // unregister mouse event DOM listeners.
-    this.onMouseTrackingTypeChanged.enabled = false;
-    this.onMouseTrackingModeChanged.enabled = false;
-
-    this.onmousescroll.enabled = false;
-  },
-
-  /** Fired at the mouse tracking mode is changed. */
-  "[subscribe('event/mouse-tracking-mode-changed')]":
-  function onMouseTrackingModeChanged(data) 
-  {
-  },
-
-  /** Fired at the mouse tracking type is changed. */
-  "[subscribe('event/mouse-tracking-type-changed')]":
-  function onMouseTrackingTypeChanged(data) 
-  {
-  },
-
-  /** Fired at the locator reporting mode is changed. */
-  "[subscribe('command/change-locator-reporting-mode'), enabled]": 
-  function onChangeLocatorReportingMode(mode) 
-  {
-  },
-
-  /** Mouse down evnet listener */
-  "[listen('DOMMouseScroll', '#tanasinn_content')]": 
-  function onmousescroll(event) 
-  {
-    if(event.axis === event.VERTICAL_AXIS) {
-
-      let count = event.detail;
-      if (event.hasPixels) {
-        let line_height = renderer.line_height;
-        count = Math.round(count / line_height + 0.5);
-      } else {
-        count = Math.round(count / 2);
-      }
-      if (0 == count) {
-        return;
-      }
-
-      let broker = this._broker;
-
-//      if (this._in_scroll_session) {
-        if (count > 0) {
-          broker.notify("command/scroll-down-view", count);
-          broker.notify("command/draw");
-        } else if (count < 0) {
-          broker.notify("command/scroll-up-view", -count);
-          broker.notify("command/draw");
-        } else { // count == 1
-          return;
-        }
-      }
-//    }
-  },
-
-}; // class WheelScroll
 
 /**
  * @class DECLocatorMouse
  *
  */
-let DECLocatorMouse = new Class().extends(Plugin).depends("renderer");
+var DECLocatorMouse = new Class().extends(Plugin).depends("renderer");
 DECLocatorMouse.definition = {
 
   get id()
@@ -149,38 +52,26 @@ DECLocatorMouse.definition = {
   _in_scroll_session: false,
 
 
-  /** Installs itself. */
+  /** Installs itself. 
+   *  @param {Broker} broker A Broker object.
+   */
   "[install]":
   function install(broker) 
   {
-    /** Start to listen mouse event. */
-    this.onmousedown.enabled = true;
-    this.onmousemove.enabled = true;
-    this.onmouseup.enabled = true;
-    this.onMouseTrackingTypeChanged.enabled = true;
-    this.onMouseTrackingModeChanged.enabled = true;
-    this.backup.enabled = true;
-    this.restore.enabled = true;
   },
 
-  /** Uninstalls itself. */
+  /** Uninstalls itself. 
+   *  @param {Broker} broker A Broker object.
+   */
   "[uninstall]":
   function uninstall(broker) 
   {
     // unregister mouse event DOM listeners.
-    this.onmousedown.enabled = false;
-    this.onmousemove.enabled = false;
-    this.onmouseup.enabled = false;
-    this.onMouseTrackingTypeChanged.enabled = false;
-    this.onMouseTrackingModeChanged.enabled = false;
-    this.backup.enabled = false;
-    this.restore.enabled = false;
     this._locator_event = null;
-
     this.onmousescroll.enabled = false;
   },
 
-  "[subscribe('command/backup')]": 
+  "[subscribe('command/backup'), pnp]": 
   function backup(context) 
   {
     context.decmouse = {
@@ -188,11 +79,11 @@ DECLocatorMouse.definition = {
     }; 
   },
 
-  "[subscribe('command/restore')]": 
+  "[subscribe('command/restore'), pnp]": 
   function restore(context) 
   {
     if (context.decmouse) {
-      let {locator_reporting_mode} = context.decmouse;
+      var {locator_reporting_mode} = context.decmouse;
       this._locator_reporting_mode = locator_reporting_mode;
     }
   },
@@ -204,6 +95,173 @@ DECLocatorMouse.definition = {
     this._in_scroll_session = true;
   },
 
+  /**
+   *
+   * Enable Locator Reporting (DECELR)
+   *  
+   * CSI Ps ; Pu ' z
+   *
+   * Valid values for the first parameter:
+   * Ps = 0 → Locator disabled (default)
+   * Ps = 1 → Locator enabled
+   * Ps = 2 → Locator enabled for one report, then disabled
+   *
+   * The second parameter specifies the coordinate unit for locator reports.
+   *
+   * Valid values for the second parameter:
+   * Pu = 0 or omitted → default to character cells
+   * Pu = 1 → device physical pixels
+   * Pu = 2 → character cells
+   *
+   */
+  "[profile('vt100'), sequence('CSI %d\\'z')]":
+  function DECELR(n1, n2) 
+  { // Enable Locator Reporting
+
+    var oneshot, pixel;
+
+    switch (n1 || 0) {
+
+      case 0:
+        // Locator disabled (default)
+        this.sendMessage(
+          "command/change-locator-reporting-mode", 
+          null); 
+        return;
+
+      case 1:
+        // Locator enabled
+        oneshot = false;
+        break;
+
+      case 2:
+        // Locator enabled
+        oneshot = true;
+        break;
+
+      default:
+        throw coUtils.Debug.Error(
+          _("Invalid locator mode was specified: %d."), n1);
+
+    }
+
+    switch (n2 || 0) {
+
+      case 0:
+      case 2:
+        // character cells
+        pixel = false;
+        break;
+
+      case 1:
+        // device physical pixels
+        pixel = true;
+        break;
+
+      default:
+        throw coUtils.Debug.Error(
+          _("Invalid locator unit was specified: %d."), n1);
+
+    }
+
+    this.sendMessage(
+      "command/change-locator-reporting-mode", {
+        oneshot: oneshot, 
+        pixel: pixel,
+      }); 
+
+  },
+
+  /**
+   * Select the locator event.
+   *
+   * Pm = 0      Disables button up/down events, Disables filter rectangle.
+   *    = 1      Enables button down event.
+   *    = 2      Disables button down event.
+   *    = 3      Enables button up event.
+   *    = 4      Disables button up event.
+   */
+  "[profile('vt100'), sequence('CSI %d\\'{')]":
+  function DECSLE(n) 
+  { // TODO: Select Locator Events
+    
+    switch (n) {
+
+      case 0:
+        this.sendMessage("command/change-decterm-buttonup-event-mode", false);
+        this.sendMessage("command/change-decterm-buttondown-event-mode", false);
+        break;
+
+      case 1:
+        this.sendMessage("command/change-decterm-buttondown-event-mode", true);
+        break;
+
+      case 2:
+        this.sendMessage("command/change-decterm-buttondown-event-mode", false);
+        break;
+
+      case 3:
+        this.sendMessage("command/change-decterm-buttonup-event-mode", true);
+        break;
+
+      case 3:
+        this.sendMessage("command/change-decterm-buttonup-event-mode", false);
+        break;
+
+      default:
+        throw coUtils.Debug.Error(
+          _("Invalid locator event mode was specified: %d."), n);
+    }
+  },
+
+  /**
+   * Requests Locator Report.
+   * 
+   * Response: CSI Pe ; Pb ; Pr ; Pc ; Pp & w
+   * Pe: Event code.
+   * Pe =  0    Received a locator report request (DECRQLP), but the locator is unavailable.
+   *    =  1    Received a locator report request (DECRQLP).
+   *    =  2    Left button down.
+   *    =  3    Left button up.
+   *    =  4    Middle button down.
+   *    =  5    Middle button up.
+   *    =  6    Right button down.
+   *    =  7    Right button up.
+   *    =  8    Button 4 down. (not supported)
+   *    =  9    Button 4 up. (not supported)
+   *    = 10    Locator outside filter rectangle.
+   * 
+   * Pb: Button code, ASCII decimal 0-15 indicating which buttons are down if any.
+   *     The state of the four buttons on the locator correspond to the low four
+   *     bits of the decimal value, "1" means button depressed.
+   *   1    Right button.
+   *   2    Middle button.
+   *   4    Left button.
+   *   8    Button 4. (not supported)
+   * 
+   * Pr: Row coordinate.
+   * 
+   * Pc: Column coordinate.
+   * 
+   * Pp: Page. Always 1.
+   *
+   */
+  "[profile('vt100'), sequence('CSI %d\\'|')]":
+  function DECRQLP(n) 
+  { // Request Locator Position
+    this.sendMessage("event/locator-reporting-requested"); 
+  },
+
+
+  "[profile('vt100'), sequence('CSI %d\\ ~')]":
+  function DECTME(n) 
+  { // DEC Selectively Elase in Line
+    coUtils.Debug.reportWarning(
+      _("%s sequence [%s] was ignored."),
+      arguments.callee.name, Array.slice(arguments));
+  },
+
+
   /** Fired at scroll session is closed. */
   "[subscribe('event/scroll-session-closed'), enabled]":
   function onScrolSessionClosed() 
@@ -212,10 +270,11 @@ DECLocatorMouse.definition = {
   },
 
   /** Fired at the mouse tracking mode is changed. */
-  "[subscribe('event/mouse-tracking-mode-changed')]":
+  "[subscribe('event/mouse-tracking-mode-changed'), pnp]":
   function onMouseTrackingModeChanged(data) 
   {
     this._locator_reporting_mode = null;
+    this.onmousescroll.enabled = false;
   },
 
   /** Fired at the locator reporting mode is changed. */
@@ -245,7 +304,7 @@ DECLocatorMouse.definition = {
   },
 
   /** Fired at the mouse tracking type is changed. */
-  "[subscribe('event/mouse-tracking-type-changed')]":
+  "[subscribe('event/mouse-tracking-type-changed'), pnp]":
   function onMouseTrackingTypeChanged(data) 
   {
     this._locator_reporting_mode = null;
@@ -254,9 +313,13 @@ DECLocatorMouse.definition = {
   "[subscribe('event/locator-reporting-requested'), enabled]": 
   function reportDECTermStyleLocatorInfo()
   {
-    let code;
-    let event = this._locator_event;
-    let locator_reporting_mode = this._locator_reporting_mode;
+    var code,
+        event = this._locator_event,
+        locator_reporting_mode = this._locator_reporting_mode,
+        message,
+        column,
+        row;
+
     if (null === locator_reporting_mode) {
       return;
     }
@@ -267,19 +330,18 @@ DECLocatorMouse.definition = {
       code = 1;
     }
 
-    let column, row;
     if (locator_reporting_mode.pixel) {
       [column, row] = this._getCurrentPositionInPixel(event);
     } else {
       [column, row] = this._getCurrentPosition(event);
     }
 
-    let message = coUtils.Text.format(
-      "\x1b[%d;%d;%d;%d;1&w", 
+    message = coUtils.Text.format(
+      "%d;%d;%d;%d;1&w", 
       code, this._locator_state, row, column);
 
-    let broker = this._broker;
-    broker.notify("command/send-to-tty", message);
+    this.sendMessage("command/send-sequence/csi");
+    this.sendMessage("command/send-to-tty", message);
 
   },
 
@@ -287,12 +349,14 @@ DECLocatorMouse.definition = {
   "[listen('DOMMouseScroll', '#tanasinn_content')]": 
   function onmousescroll(event) 
   {
-    let renderer = this.dependency["renderer"];
-    if(event.axis === event.VERTICAL_AXIS) {
+    var renderer = this.dependency["renderer"],
+        count, line_height, locator_reporting_mode, sequences;
 
-      let count = event.detail;
+    if (event.axis === event.VERTICAL_AXIS) {
+
+      count = event.detail;
       if (event.hasPixels) {
-        let line_height = renderer.line_height;
+        line_height = renderer.line_height;
         count = Math.round(count / line_height + 0.5);
       } else {
         count = Math.round(count / 2);
@@ -301,24 +365,23 @@ DECLocatorMouse.definition = {
         return;
       }
 
-      let broker = this._broker;
-      let locator_reporting_mode = this._locator_reporting_mode;
+      locator_reporting_mode = this._locator_reporting_mode;
 
       if (this._in_scroll_session 
           || null === locator_reporting_mode) {
         if (count > 0) {
-          broker.notify("command/scroll-down-view", count);
-          broker.notify("command/draw");
+          this.sendMessage("command/scroll-down-view", count);
+          this.sendMessage("command/draw");
         } else if (count < 0) {
-          broker.notify("command/scroll-up-view", -count);
-          broker.notify("command/draw");
+          this.sendMessage("command/scroll-up-view", -count);
+          this.sendMessage("command/draw");
         } else { // count == 1
           return;
         }
 
       } else {
 
-        let sequences = [];
+        sequences = [];
         if (count > 0) {
           while (count--)
             sequences.push("\x1bOB")
@@ -329,23 +392,24 @@ DECLocatorMouse.definition = {
         } else {
           return; 
         }
-        let message = sequences.join("");
-        broker.notify("command/send-to-tty", message);
+        this.sendMessage("command/send-to-tty", sequences.join(""));
 
       }
     }
   },
 
   /** Mouse down evnet listener */
-  "[listen('mousedown', '#tanasinn_content')]": 
+  "[listen('mousedown', '#tanasinn_content'), pnp]": 
   function onmousedown(event) 
   {
+    var column, row, message, locator_reporting_mode;
 
     if (null === this._locator_reporting_mode) {
       return;
     }
 
-    let locator_reporting_mode = this._locator_reporting_mode;
+    locator_reporting_mode = this._locator_reporting_mode;
+
     if (null === locator_reporting_mode) {
       return;
     }
@@ -383,31 +447,33 @@ DECLocatorMouse.definition = {
     if (locator_reporting_mode.oneshot) {
       this._locator_reporting_mode = null;
     }
-    let column, row 
     if (locator_reporting_mode.pixel) {
       [column, row] = this._getCurrentPositionInPixel(event);
     } else {
       [column, row] = this._getCurrentPosition(event);
     }
-    let message = coUtils.Text.format(
-      "\x1b[%d;%d;%d;%d;1&w", 
+
+    message = coUtils.Text.format(
+      "%d;%d;%d;%d;1&w", 
       code, this._locator_state, row, column);
 
-    let broker = this._broker;
-    broker.notify("command/send-to-tty", message);
+    this.sendMessage("command/send-sequence/csi");
+    this.sendMessage("command/send-to-tty", message);
   },
 
   /** Mouse move evnet listener */
-  "[listen('mousemove', '#tanasinn_content')]": 
+  "[listen('mousemove', '#tanasinn_content'), pnp]": 
   function onmousemove(event) 
   {
     this._locator_event = event;
   },
 
   /** Mouse up evnet listener */
-  "[listen('mouseup', '#tanasinn_content')]": 
+  "[listen('mouseup', '#tanasinn_content'), pnp]": 
   function onmouseup(event) 
   {
+    var column, row, message;
+
     if (null === this._locator_reporting_mode) {
       return;
     }
@@ -443,53 +509,57 @@ DECLocatorMouse.definition = {
     if (locator_reporting_mode.oneshot) {
       this._locator_reporting_mode = null;
     }
-    let column, row 
+
     if (locator_reporting_mode.pixel) {
       [column, row] = this._getCurrentPositionInPixel(event);
     } else {
       [column, row] = this._getCurrentPosition(event);
     }
-    let message = coUtils.Text.format(
-      "\x1b[%d;%d;%d;%d;1&w", 
+
+    message = coUtils.Text.format(
+      "%d;%d;%d;%d;1&w", 
       code, this._locator_state, row, column);
 
-    let broker = this._broker;
-    broker.notify("command/send-to-tty", message);
+    this.sendMessage("command/send-sequence/csi");
+    this.sendMessage("command/send-to-tty", message);
 
   },
   
   // Helper: get current position from mouse event object.
   _getCurrentPosition: function _getCurrentPosition(event) 
   {
-    let broker = this._broker;
-    let target_element = broker.uniget(
-      "command/query-selector", 
-      "#tanasinn_center_area");
-    let box = target_element.boxObject;
-    let offsetX = box.screenX - broker.root_element.boxObject.screenX;
-    let offsetY = box.screenY - broker.root_element.boxObject.screenY;
-    let left = event.layerX - offsetX; // left position in pixel.
-    let top = event.layerY - offsetY;  // top position in pixel.
+    var root_element = this.request("get/root-element"),
+        target_element = this.request(
+          "command/query-selector", 
+          "#tanasinn_center_area"),
+        box = target_element.boxObject,
+        offsetX = box.screenX - root_element.boxObject.screenX,
+        offsetY = box.screenY - root_element.boxObject.screenY,
+        left = event.layerX - offsetX, // left position in pixel.
+        top = event.layerY - offsetY,  // top position in pixel.
 
-    // converts pixel coordinate to [column, row] style.
-    let renderer = this.dependency["renderer"];
-    let column = Math.round(left / renderer.char_width);
-    let row = Math.round(top / renderer.line_height);
+        // converts pixel coordinate to [column, row] style.
+        renderer = this.dependency["renderer"],
+
+        column = Math.round(left / renderer.char_width),
+        row = Math.round(top / renderer.line_height);
+
     return [column, row];
   },
 
   // Helper: get current position from mouse event object in pixel.
   _getCurrentPositionInPixel: function _getCurrentPositionInPixel(event) 
   {
-    let broker = this._broker;
-    let target_element = broker.uniget(
-      "command/query-selector", 
-      "#tanasinn_center_area");
-    let box = target_element.boxObject;
-    let offsetX = box.screenX - broker.root_element.boxObject.screenX;
-    let offsetY = box.screenY - broker.root_element.boxObject.screenY;
-    let left = event.layerX - offsetX; // left position in pixel.
-    let top = event.layerY - offsetY;  // top position in pixel.
+    var root_element = this.request("get/root-element"),
+        target_element = this.request(
+          "command/query-selector", 
+          "#tanasinn_center_area"),
+        box = target_element.boxObject,
+        offsetX = box.screenX - root_element.boxObject.screenX,
+        offsetY = box.screenY - root_element.boxObject.screenY,
+        left = event.layerX - offsetX, // left position in pixel.
+        top = event.layerY - offsetY;  // top position in pixel.
+
     return [left, top];
   },
 
@@ -502,7 +572,7 @@ DECLocatorMouse.definition = {
  */
 function main(broker) 
 {
-  new WheelScroll(broker);
   new DECLocatorMouse(broker);
 }
 
+// EOF

@@ -71,14 +71,14 @@ ScrollRegion.definition = {
   "[profile('vt100'), sequence('CSI %dr', 'CSI %d>')]":
   function DECSTBM(n1, n2) 
   {
-    var screen, min, max, top, bottom, tmp;
+    var screen = this.dependency["screen"],
+        min = 0,
+        max = screen.height,
+        top = (n1 || min + 1) - 1, bottom = n2 || max,
+        bottom = arguments.length > 1 ? n2: max,
+        tmp;
 
     // set scrolling region
-    screen = this.dependency["screen"];
-    min = 0;
-    max = screen.height;
-    top = (n1 || min + 1) - 1, bottom = n2 || max;
-    bottom = arguments.length > 1 ? n2: max;
 
     // Trim top, bottom with min, max.
     top = Math.max(top, min);
@@ -142,4 +142,4 @@ function main(broker)
   new ScrollRegion(broker);
 }
 
-
+// EOF

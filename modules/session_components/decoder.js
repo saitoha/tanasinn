@@ -36,45 +36,74 @@ MultiDecoder.definition = {
 
   _current_scheme: "UTF-8",
   _converter: null,
+  _converter_manager: null,
 
   /** Constructor
    */
   initialize: function initialize(broker) 
   {
-    var converter_manager, decoder_list, charset, 
-        alias, title, group;
+    var decoder_list, charset;
 
+    // get scriptable unicode converter
     this._converter = Components
       .classes["@mozilla.org/intl/scriptableunicodeconverter"]
       .createInstance(Components.interfaces.nsIScriptableUnicodeConverter);
-    converter_manager = Components
+
+    // get converter manager service
+    this._converter_manager = Components
       .classes["@mozilla.org/charset-converter-manager;1"]
       .getService(Components.interfaces.nsICharsetConverterManager);
-    decoder_list = converter_manager.getDecoderList();
+
+    // get decoders information
+    decoder_list = this._converter_manager.getDecoderList();
+
     while (decoder_list.hasMore()) {
+
+      // get character set name
       charset = decoder_list.getNext();
+
+      // subscribe "get/decoders" message
+      this._registerDecoder(charset);
+    }
+  },
+
+  _registerDecoder: function _registerDecoder(charset)
+  {
+    var alias, title, group, broker, converter_manager;
+
+    broker = this._broker;
+    converter_manager = this._converter_manager;
+
+    try {
+
+      // get alias
+      alias = converter_manager.getCharsetAlias(charset);
+
+      // get title
       try {
-        alias = converter_manager.getCharsetAlias(charset);
-        try {
-          title = converter_manager.getCharsetTitle(charset);
-        } catch(e) {
-          title = charset;
-        }
-        group = converter_manager.getCharsetLangGroup(charset);
-        broker.subscribe("get/decoders", 
-          function() 
-          {
-            return {
-              charset: charset,
-              converter: this,
-              title: title,
-              group: group,
-              alias: alias,
-            };
-          }, this, this.id);
-      } catch (e) {
-        coUtils.Debug.reportError(e);
+        title = converter_manager.getCharsetTitle(charset);
+      } catch(e) {
+        title = charset;
       }
+
+      // get group
+      group = converter_manager.getCharsetLangGroup(charset);
+
+      // register handler
+      broker.subscribe("get/decoders",
+        function() 
+        {
+          return {
+            charset: charset,
+            converter: this,
+            title: title,
+            group: group,
+            alias: alias,
+          };
+        }, this, this.id);
+
+    } catch (e) {
+      coUtils.Debug.reportError(e);
     }
   },
 
@@ -411,12 +440,16 @@ Decoder.definition = {
         _("Invalid character encoding schema specified: '%s'."), value);
     }
     decoder = decoder_info.converter;
+
     // Load resources if required.
     decoder.activate(scheme);
-    this._decoder = decoder;
-    this.initial_scheme = scheme;
-    message = coUtils.Text.format(_("Character encoding changed: [%s]."), scheme);
 
+    this._decoder = decoder;
+
+    this.initial_scheme = scheme;
+
+    // print status message
+    message = coUtils.Text.format(_("Character encoding changed: [%s]."), scheme);
     this.sendMessage("command/report-status-message", message); 
   },
 
@@ -429,7 +462,9 @@ Decoder.definition = {
       {
         this._decoder_map[information.charset] = information; 
       }, this);
+
     this.scheme = this.initial_scheme;
+
     this.sendMessage("initialized/decoder", this);
   },
 
@@ -448,10 +483,7 @@ Decoder.definition = {
    */ 
   decode: function decode(scanner) 
   {
-    var input_decoder;
-
-    input_decoder = this._decoder;
-    return input_decoder.decode(scanner);
+    return this._decoder.decode(scanner);
   },
 
 }; // 
@@ -471,4 +503,4 @@ function main(broker)
 }
 
 
-
+// EOF

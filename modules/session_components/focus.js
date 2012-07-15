@@ -25,7 +25,7 @@
 /**
  * @class FocusTracker
  */
-let FocusTracker = new Class().extends(Plugin);
+var FocusTracker = new Class().extends(Plugin);
 FocusTracker.definition = {
 
   get id()
@@ -50,8 +50,8 @@ FocusTracker.definition = {
   "[install]": 
   function install(broker)
   {
-    broker.notify("command/add-domlistener", {
-      target: broker.window.document,
+    this.sendMessage("command/add-domlistener", {
+      target: this.request("get/root-element").ownerDocument,
       type: "focus",
       context: this,
       handler: this.onfocus,
@@ -66,7 +66,7 @@ FocusTracker.definition = {
   "[uninstall]":
   function uninstall(broker)
   {
-    broker.notify("command/remove-domlistener", this.id)
+    this.sendMessage("command/remove-domlistener", this.id)
   },
 
   /** Fires when a focus event occured. 
@@ -74,35 +74,42 @@ FocusTracker.definition = {
    */
   onfocus: function onfocus(event)
   {
-    let broker = this._broker;
-    let command_dispatcher = broker.document.commandDispatcher;
-    let root_element = broker.root_element;
-    let target = event.explicitOriginalTarget;
-    if (null !== target && 
-        (!("nodeType" in target) || target.nodeType != target.NODE_DOCUMENT)) {
+    var domr, target, focused_element, relation;
+
+    dom = {
+      root_element: this.request("get/root-element"),
+    };
+
+    target = event.explicitOriginalTarget;
+
+    if (null === target) {
+      return;
+    }
+
+    if (!("nodeType" in target) || target.NODE_DOCUMENT !== target.nodeType) {
       target = target.parentNode;
       if (null !== target && undefined !== target
           && target.nodeType != target.NODE_DOCUMENT) {
-        let relation = root_element.compareDocumentPosition(target);
-//        coUtils.Debug.reportMessage("focus-relation: " + relation);
-        if ((relation & root_element.DOCUMENT_POSITION_CONTAINED_BY)) {
-//         || (relation & root_element.DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC)) {
+        relation = dom.root_element.compareDocumentPosition(target);
+        if ((relation & dom.root_element.DOCUMENT_POSITION_CONTAINED_BY)) {
           if (!this.disabled) {
             this.disabled = true;
-            if (!/tanasinn/.test(coUtils.Runtime.app_name)) {
-              broker.root_element.parentNode.appendChild(broker.root_element);
-            }
-            coUtils.Timer.setTimeout(function() {
-              this.disabled = false;
-            }, 0, this);
+            //if (!/tanasinn/.test(coUtils.Runtime.app_name)) {
+              dom.root_element.parentNode.appendChild(dom.root_element);
+            //}
+            coUtils.Timer.setTimeout(
+              function timerProc()
+              {
+                this.disabled = false;
+              }, 0, this);
             return;
           }
-          let focused_element = command_dispatcher.focusedElement;
-          broker.notify("event/got-focus");
-          broker.notify("event/focus-changed", focused_element);
+          focused_element = dom.root_element.ownerDocument.commandDispatcher.focusedElement;
+          this.sendMessage("event/got-focus");
+          this.sendMessage("event/focus-changed", focused_element);
         }
         else {
-          broker.notify("event/lost-focus");
+          this.sendMessage("event/lost-focus");
         }
       }
     }
@@ -119,3 +126,4 @@ function main(broker)
   new FocusTracker(broker);
 }
 
+// EOF

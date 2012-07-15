@@ -25,15 +25,17 @@
 
 function generateFileEntries(path) 
 {
-  let directory = Components
+  var directory, entries, file;
+
+  directory = Components
     .classes["@mozilla.org/file/local;1"]
     .createInstance(Components.interfaces.nsILocalFile);
   try {
     directory.initWithPath(path);
     if (directory.exists() && directory.isDirectory()) {
-      let entries = directory.directoryEntries;
+      entries = directory.directoryEntries;
       while (entries.hasMoreElements()) {
-        let file = entries.getNext();
+        file = entries.getNext();
         yield file.QueryInterface(Components.interfaces.nsIFile);
       }
     }
@@ -46,7 +48,7 @@ function generateFileEntries(path)
  * @class CGICompleter
  *
  */
-let CGICompleter = new Class().extends(Component);
+var CGICompleter = new Class().extends(Component);
 CGICompleter.definition = {
 
   get id()
@@ -61,48 +63,55 @@ CGICompleter.definition = {
   "[completer('cgi'), enabled]":
   function complete(context)
   {
-    let broker = this._broker;
-    let { source, option, completers } = context;
-    let match = source.match(/^(\s*)([$_\-@a-zA-Z\.]*)(\s?)/);
+    var broker, match, all, space, name, next,
+        next_completer_info, next_completer, option,
+        directory, entries, lower_name, candidates;
+
+    broker = this._broker;
+
+    match = context.source.match(/^(\s*)([$_\-@a-zA-Z\.]*)(\s?)/);
+
     if (null === match) {
-      broker.notify("event/answer-completion", null);
+      this.sendMessage("event/answer-completion", null);
       return;
     }
-    let [all, space, name, next] = match;
+
+    [all, space, name, next] = match;
+
     if (next) {
-      let next_completer_info = completers.shift();
+      next_completer_info = context.completers.shift();
       if (next_completer_info) {
-        let [next_completer, option] = next_completer_info.split("/");
-        broker.notify("command/query-completion/" + next_completer, {
-          source: source.substr(all.length),
+        [next_completer, option] = next_completer_info.split("/");
+        this.sendMessage("command/query-completion/" + next_completer, {
+          source: context.source.substr(all.length),
           option: option,
-          completers: completers,
+          completers: context.completers,
         });
       } else {
-        broker.notify("event/answer-completion", null);
+        this.sendMessage("event/answer-completion", null);
       }
       return;
     }
 
-    let directory = coUtils.File.getFileLeafFromVirtualPath(
+    directory = coUtils.File.getFileLeafFromVirtualPath(
       broker.runtime_path + "/" + broker.cgi_directory);
-    let entries = generateFileEntries(directory.path);
+    entries = generateFileEntries(directory.path);
 
-    let lower_name = name.toLowerCase();
-    let candidates = [
+    lower_name = name.toLowerCase();
+    candidates = [
       {
         key: file.leafName, 
         value: file.path,
       } for (file in entries) 
         if (file.isExecutable() && -1 != file.leafName.toLowerCase().indexOf(lower_name))
     ];
-    if (0 == candidates.length) {
-      broker.notify("event/answer-completion", null);
+    if (0 === candidates.length) {
+      this.sendMessage("event/answer-completion", null);
       return;
     }
-    broker.notify("event/answer-completion", {
+    this.sendMessage("event/answer-completion", {
       type: "text",
-      query: source, 
+      query: context.source, 
       data: candidates.map(function(candidate) ({
         name: candidate.key,
         value: String(candidate.value),
@@ -117,7 +126,7 @@ CGICompleter.definition = {
  * @class BatchCompleter
  *
  */
-let BatchCompleter = new Class().extends(Component);
+var BatchCompleter = new Class().extends(Component);
 BatchCompleter.definition = {
 
   get id()
@@ -132,39 +141,46 @@ BatchCompleter.definition = {
   "[completer('batch'), enabled]":
   function complete(context)
   {
-    let broker = this._broker;
-    let { source, option, completers } = context;
-    let match = source.match(/^(\s*)([$_\-@a-zA-Z\.]*)(\s?)/);
+    var broker, match, all, space, name, next,
+        next_completer_info, next_completer, option,
+        directory, entries, lower_name, candidates;
+
+    broker = this._broker;
+    match = context.source.match(/^(\s*)([$_\-@a-zA-Z\.]*)(\s?)/);
+
     if (null === match) {
-      broker.notify("event/answer-completion", null);
+      this.sendMessage("event/answer-completion", null);
       return;
     }
-    let [all, space, name, next] = match;
+
+    [all, space, name, next] = match;
+
     if (next) {
-      let next_completer_info = completers.shift();
+      next_completer_info = context.completers.shift();
+
       if (next_completer_info) {
-        let [next_completer, option] = next_completer_info.split("/");
-        broker.notify("command/query-completion/" + next_completer, {
-          source: source.substr(all.length),
+        [next_completer, option] = next_completer_info.split("/");
+        this.sendMessage("command/query-completion/" + next_completer, {
+          source: context.source.substr(all.length),
           option: option,
-          completers: completers,
+          completers: context.completers,
         });
       } else {
-        broker.notify("event/answer-completion", null);
+        this.sendMessage("event/answer-completion", null);
       }
       return;
     }
 
-    if ("global" == option) {
+    if ("global" === context.option) {
       broker = broker._broker;
     }
 
-    let directory = coUtils.File.getFileLeafFromVirtualPath(
+    directory = coUtils.File.getFileLeafFromVirtualPath(
       broker.runtime_path + "/" + broker.batch_directory);
-    let entries = generateFileEntries(directory.path);
+    entries = generateFileEntries(directory.path);
 
-    let lower_name = name.toLowerCase();
-    let candidates = [
+    lower_name = name.toLowerCase();
+    candidates = [
       {
         key: file.leafName.replace(/\.js$/, ""), 
         value: file.path,
@@ -172,13 +188,13 @@ BatchCompleter.definition = {
         if (-1 != file.leafName.toLowerCase().indexOf(lower_name))
     ];
 
-    if (0 == candidates.length) {
-      broker.notify("event/answer-completion", null);
+    if (0 === candidates.length) {
+      this.sendMessage("event/answer-completion", null);
       return;
     }
-    broker.notify("event/answer-completion", {
+    this.sendMessage("event/answer-completion", {
       type: "text",
-      query: source, 
+      query: context.source, 
       data: candidates.map(function(candidate) ({
         name: candidate.key,
         value: String(candidate.value),
@@ -194,7 +210,7 @@ BatchCompleter.definition = {
  * @class ProfileCompleter
  *
  */
-let ProfileCompleter = new Class().extends(Component);
+var ProfileCompleter = new Class().extends(Component);
 ProfileCompleter.definition = {
 
   get id()
@@ -210,58 +226,68 @@ ProfileCompleter.definition = {
   "[completer('profile'), enabled]":
   function complete(context)
   {
-    let broker = this._broker;
-    let { source, option, completers } = context;
-    let match = source.match(/^(\s*)([$_\-@a-zA-Z\.]*)(\s?)/);
+    var broker, match, all, space, name, next,
+        next_completer_info, next_completer, option,
+        entries, lower_name, candidates;
+
+    broker = this._broker;
+
+    match = context.source.match(/^(\s*)([$_\-@a-zA-Z\.]*)(\s?)/);
     if (null === match) {
-      broker.notify("event/answer-completion", null);
+      this.sendMessage("event/answer-completion", null);
       return;
     }
-    let [all, space, name, next] = match;
+    [all, space, name, next] = match;
+
     if (next) {
-      let next_completer_info = completers.shift();
+      next_completer_info = context.completers.shift();
       if (next_completer_info) {
-        let [next_completer, option] = next_completer_info.split("/");
-        broker.notify("command/query-completion/" + next_completer, {
-          source: source.substr(all.length),
+        [next_completer, option] = next_completer_info.split("/");
+        this.sendMessage("command/query-completion/" + next_completer, {
+          source: context.source.substr(all.length),
           option: option,
-          completers: completers,
+          completers: context.completers,
         });
       } else {
-        broker.notify("event/answer-completion", null);
+        this.sendMessage("event/answer-completion", null);
       }
       return;
     }
 
-    if ("global" == option) {
+    if ("global" === context.option) {
       broker = broker._broker;
     }
 
-    let entries = coUtils.File.getFileEntriesFromSerchPath(
+    entries = coUtils.File.getFileEntriesFromSerchPath(
         [broker.runtime_path + "/" + broker.profile_directory]);
 
-    let lower_name = name.toLowerCase();
-    let candidates = [
+    lower_name = name.toLowerCase();
+    candidates = [
       {
         key: file.leafName.replace(/\.js$/, ""), 
         value: file.path,
       } for (file in entries) 
-        if (-1 != file.leafName.toLowerCase().indexOf(lower_name))
+        if (-1 !== file.leafName.toLowerCase().indexOf(lower_name))
     ];
-    if (0 == candidates.length) {
-      broker.notify("event/answer-completion", null);
-      return;
+
+    if (0 === candidates.length) {
+      this.sendMessage("event/answer-completion", null);
+    } else {
+      this.sendMessage(
+        "event/answer-completion", 
+        {
+          type: "text",
+          query: context.source, 
+          data: candidates.map(
+            function(candidate) 
+            {
+              return {
+                name: candidate.key,
+                value: String(candidate.value),
+              };
+            }),
+        });
     }
-    let autocomplete_result = {
-      type: "text",
-      query: source, 
-      data: candidates.map(function(candidate) ({
-        name: candidate.key,
-        value: String(candidate.value),
-      })),
-    };
-    broker.notify("event/answer-completion", autocomplete_result);
-    return;
   },
 
 };
@@ -271,7 +297,7 @@ ProfileCompleter.definition = {
  * @class FileCompleter
  *
  */
-let FileCompleter = new Class().extends(Component);
+var FileCompleter = new Class().extends(Component);
 FileCompleter.definition = {
 
   get id()
@@ -287,20 +313,26 @@ FileCompleter.definition = {
   "[completer('file'), enabled]":
   function complete(context)
   {
-    let broker = this._broker;
-    let { source, option, completers } = context;
-    let pattern = /^\s*(?:(.*\/))?(.*)?/;
-    let match = source.match(pattern);
-    let [all, stem, leaf] = match;
-    let candidates;
-    let home = coUtils.File.getFileLeafFromVirtualPath("$Home");
+    var broker, pattern, match, all, stem, leaf, candidates,
+        home, lower_leaf, stem_length, cygwin_root;
+
+    broker = this._broker;
+
+    pattern = /^\s*(?:(.*\/))?(.*)?/;
+    match = context.source.match(pattern);
+    [all, stem, leaf] = match;
+    candidates;
+    home = coUtils.File.getFileLeafFromVirtualPath("$Home");
+
     leaf = leaf || "";
-    let lower_leaf = leaf.toLowerCase();
-    let stem_length = 0;
+
+    lower_leaf = leaf.toLowerCase();
+    stem_length = 0;
+
     if (stem) {
       if (!coUtils.File.isAbsolutePath(stem)) {
-        if ("WINNT" == coUtils.Runtime.os) {
-          let cygwin_root = broker.cygwin_root;
+        if ("WINNT" === coUtils.Runtime.os) {
+          cygwin_root = broker.cygwin_root;
           stem = cygwin_root + coUtils.File.getPathDelimiter() + stem;
         } else {
           stem = home.path + coUtils.File.getPathDelimiter() + stem;
@@ -312,22 +344,29 @@ FileCompleter.definition = {
       candidates = [file for (file in generateFileEntries(home.path))];
       stem_length = home.path.length + 1;
     }
+
     candidates = candidates
       .map(function(file) file.path.substr(stem_length))
       .filter(function(path) path.toLowerCase().match(lower_leaf))
-    if (0 == candidates.length) {
-      broker.notify("event/answer-completion", autocomplete_result);
-      return;
+      
+    if (0 === candidates.length) {
+      this.sendMessage("event/answer-completion", null);
+    } else {
+      this.sendMessage(
+        "event/answer-completion",
+        {
+          type: "text",
+          query: leaf, 
+          data: candidates.map(
+            function(path)
+            {
+              return {
+                name: path, 
+                value: path,
+              }
+            }),
+        });
     }
-    let autocomplete_result = {
-      type: "text",
-      query: leaf, 
-      data: candidates.map(function(path) ({
-        name: path, 
-        value: path,
-      })),
-    };
-    broker.notify("event/answer-completion", autocomplete_result);
   },
 
 };
@@ -345,4 +384,4 @@ function main(broker)
   new FileCompleter(broker);
 }
 
-
+// EOF

@@ -22,12 +22,12 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-const MOUSE_BUTTON1 = 0;
-const MOUSE_BUTTON3 = 1;
-const MOUSE_BUTTON2 = 2;
-const MOUSE_RELEASE = 3;
-const MOUSE_WHEEL_UP = 64;
-const MOUSE_WHEEL_DOWN = 65;
+var MOUSE_BUTTON1 = 0;
+var MOUSE_BUTTON3 = 1;
+var MOUSE_BUTTON2 = 2;
+var MOUSE_RELEASE = 3;
+var MOUSE_WHEEL_UP = 64;
+var MOUSE_WHEEL_DOWN = 65;
 
 /**
  *  @class Mouse
@@ -37,7 +37,7 @@ const MOUSE_WHEEL_DOWN = 65;
  *   - brodie's MouseTerm Project    https://github.com/brodie/mouseterm
  *   - Vivek Dasmohapatra            http://rtfm.etla.org/xterm/ctlseq.html
  */
-let Mouse = new Class().extends(Plugin).depends("renderer");
+var Mouse = new Class().extends(Plugin).depends("renderer");
 Mouse.definition = {
 
   get id()
@@ -62,38 +62,6 @@ Mouse.definition = {
 
   _in_scroll_session: false,
 
-  /** Installs itself. */
-  "[install]":
-  function install(broker) 
-  {
-    /** Start to listen mouse event. */
-    this.onmousedown.enabled = true;
-    this.ondragstart.enabled = true;
-    this.onmousemove.enabled = true;
-    this.onmouseup.enabled = true;
-    this.onMouseTrackingTypeChanged.enabled = true;
-    this.onMouseTrackingModeChanged.enabled = true;
-    this.backup.enabled = true;
-    this.restore.enabled = true;
-  },
-
-  /** Uninstalls itself. */
-  "[uninstall]":
-  function uninstall(broker) 
-  {
-    // unregister mouse event DOM listeners.
-    this.onmousedown.enabled = false;
-    this.ondragstart.enabled = false;
-    this.onmousemove.enabled = false;
-    this.onmouseup.enabled = false;
-    this.onMouseTrackingTypeChanged.enabled = false;
-    this.onMouseTrackingModeChanged.enabled = false;
-    this.backup.enabled = false;
-    this.restore.enabled = false;
-
-    this.onmousescroll.enabled = false;
-  },
-    
   /** Fired at scroll session is started. */
   "[subscribe('event/scroll-session-started'), enabled]":
   function onScrollSessionStarted() 
@@ -109,29 +77,27 @@ Mouse.definition = {
   },
 
   /** Fired at the mouse tracking type is changed. */
-  "[subscribe('event/mouse-tracking-type-changed')]":
+  "[subscribe('event/mouse-tracking-type-changed'), pnp]":
   function onMouseTrackingTypeChanged(data) 
   {
-    let broker = this._broker;
     if (coUtils.Constant.TRACKING_NONE == data) {
       this.onmousescroll.enabled = false;
-      broker.notify(_("Leaving mouse tracking type: [%s]."), this._tracking_type)
+      this.sendMessage(_("Leaving mouse tracking type: [%s]."), this._tracking_type)
     } else {
       this.onmousescroll.enabled = true;
-      broker.notify(_("Entering mouse tracking type: [%s]."), data)
+      this.sendMessage(_("Entering mouse tracking type: [%s]."), data)
     }
     this._tracking_type = data;
   },
 
   /** Fired at the mouse tracking mode is changed. */
-  "[subscribe('event/mouse-tracking-mode-changed')]":
+  "[subscribe('event/mouse-tracking-mode-changed'), pnp]":
   function onMouseTrackingModeChanged(data) 
   {
-    let broker = this._broker;
     if (coUtils.Constant.TRACKING_NONE == data) {
-      broker.notify(_("Leaving mouse tracking mode: [%s]."), this._tracking_mode)
+      this.sendMessage(_("Leaving mouse tracking mode: [%s]."), this._tracking_mode)
     } else {
-      broker.notify(_("Entering mouse tracking mode: [%s]."), data)
+      this.sendMessage(_("Entering mouse tracking mode: [%s]."), data)
     }
 
     this._tracking_mode = data;
@@ -148,7 +114,7 @@ Mouse.definition = {
     }
   },
 
-  "[subscribe('command/backup')]": 
+  "[subscribe('command/backup'), pnp]":
   function backup(context) 
   {
     context.mouse = {
@@ -156,7 +122,7 @@ Mouse.definition = {
     }; 
   },
 
-  "[subscribe('command/restore')]": 
+  "[subscribe('command/restore'), pnp]": 
   function restore(context) 
   {
     if (context.mouse) {
@@ -167,6 +133,8 @@ Mouse.definition = {
   /** Make packed mouse event data and send it to tty device. */
   _sendMouseEvent: function _sendMouseEvent(event, button) 
   {
+    var message, buffer, code, action, column, row,
+        tracking_type;
 
     // 0: button1, 1: button2, 2: button3, 3: release
     //
@@ -192,12 +160,10 @@ Mouse.definition = {
     //
     //             | 1              << 5
 
-    let message;
-    let buffer;
-    let code, action;
-    let [column, row] = this._getCurrentPosition(event);
+    [column, row] = this._getCurrentPosition(event);
 
-    let tracking_type = this._tracking_type;
+    tracking_type = this._tracking_type;
+
     switch (tracking_type) {
 
       // urxvt-style 
@@ -214,7 +180,7 @@ Mouse.definition = {
         //column += 32;
         //row += 32;
         message = coUtils.Text.format(
-          "\x1b[%d;%d;%dM", 
+          "%d;%d;%dM", 
           code, column, row);
 //        coUtils.Debug.reportError(message)
         break;
@@ -232,7 +198,7 @@ Mouse.definition = {
           action = "M";
         }
         message = coUtils.Text.format(
-          "\x1b[<%d;%d;%d%s", 
+          "<%d;%d;%d%s", 
           code, column, row, action);
 //        coUtils.Debug.reportError(message)
         break;
@@ -249,22 +215,25 @@ Mouse.definition = {
         code += 32;
         column += 32;
         row += 32;
-        buffer = [0x1b, 0x5b, 0x4d, code];
-        function putChar(c) {
+        buffer = [0x4d, code];
+
+        function putChar(c) 
+        {
+          var c1, c2;
+
           if (c >= 0x80) {
             // 110xxxxx 10xxxxxx
             // (0x00000080 - 0x000007ff) // 11bit
-            let c1 = c >> 6 & 0x1f | 0xc0;
-            let c2 = c & 0x3f | 0x80;
-            buffer.push(c1); 
-            buffer.push(c2); 
+            c1 = c >> 6 & 0x1f | 0xc0;
+            c2 = c & 0x3f | 0x80;
+            buffer.push(c1, c2); 
           } else {
             buffer.push(c);
           }
         }
         putChar(column);
         putChar(row);
-//        message = String.fromCharCode.apply(String, buffer);
+        message = String.fromCharCode.apply(String, buffer);
         break;
 
       default:
@@ -280,33 +249,37 @@ Mouse.definition = {
         column += 32;
         row += 32;
         // send escape sequence. 
-        //                            ESC    [     M          
-        message = String.fromCharCode(0x1b, 0x5b, 0x4d, code, column, row);
+        //                            M          
+        message = String.fromCharCode(0x4d, code, column, row);
 //        coUtils.Debug.reportMessage(message)
 
     } // switch (this._tracking_type)
 
-    let broker = this._broker;
-    broker.notify("command/send-to-tty", message);
+    //this.sendMessage("command/send-sequence/csi", message);
+    this.sendMessage("command/send-to-tty", "\x1b[" + message);
 
   },
 
   /** Dragstart event listener. */
-  "[listen('dragstart', '#tanasinn_content')]": 
+  "[listen('dragstart', '#tanasinn_content'), pnp]": 
   function ondragstart(event) 
   {
     this._pressed = true;
   },
 
   /** Mouse down evnet listener */
-  "[listen('DOMMouseScroll', '#tanasinn_content')]": 
+  "[listen('DOMMouseScroll', '#tanasinn_content'), pnp]": 
   function onmousescroll(event) 
   {
-    let renderer = this.dependency["renderer"];
-    if(event.axis === event.VERTICAL_AXIS) {
-      let count = event.detail;
+    var renderer, tracking_mode, count, line_height, i;
+    
+    renderer = this.dependency["renderer"];
+
+    if (event.axis === event.VERTICAL_AXIS) {
+
+      count = event.detail;
       if (event.hasPixels) {
-        let line_height = renderer.line_height;
+        line_height = renderer.line_height;
         count = Math.round(count / line_height + 0.5);
       } else {
         count = Math.round(count / 2);
@@ -315,23 +288,21 @@ Mouse.definition = {
         return;
       }
 
-      let tracking_mode = this._tracking_mode;
-      let broker = this._broker;
+      tracking_mode = this._tracking_mode;
       if (this._in_scroll_session 
           || coUtils.Constant.TRACKING_NONE == tracking_mode) {
         if (count > 0) {
-          broker.notify("command/scroll-down-view", count);
-          broker.notify("command/draw");
+          this.sendMessage("command/scroll-down-view", count);
+          this.sendMessage("command/draw");
         } else if (count < 0) {
-          broker.notify("command/scroll-up-view", -count);
-          broker.notify("command/draw");
+          this.sendMessage("command/scroll-up-view", -count);
+          this.sendMessage("command/draw");
         } else { // count == 1
           return;
         }
 
       } else {
 
-        let i;
         if (count > 0) {
           for (i = 0; i < count; ++i) {
             this._sendMouseEvent(event, 0x41); 
@@ -347,18 +318,17 @@ Mouse.definition = {
   },
 
   /** Mouse down evnet listener */
-  "[listen('mousedown', '#tanasinn_content')]": 
+  "[listen('mousedown', '#tanasinn_content'), pnp]": 
   function onmousedown(event) 
   {
+    var tracking_mode, button;
  
     this._pressed = true;
 
-    let tracking_mode = this._tracking_mode;
+    tracking_mode = this._tracking_mode;
     if (coUtils.Constant.TRACKING_NONE == tracking_mode) {
       return;
     }
-
-    let button;
 
     switch (event.button) {
 
@@ -384,19 +354,14 @@ Mouse.definition = {
   },
 
   /** Mouse move evnet listener */
-  "[listen('mousemove', '#tanasinn_content')]": 
+  "[listen('mousemove', '#tanasinn_content'), pnp]": 
   function onmousemove(event) 
   {
-    let tracking_mode = this._tracking_mode;
+    var tracking_mode, button;
+
+    tracking_mode = this._tracking_mode;
 
     switch (tracking_mode) {
-
-      case coUtils.Constant.TRACKING_NORMAL:
-        if (this._pressed) {
-          button = 32 + MOUSE_RELEASE;
-          this._sendMouseEvent(event, button); 
-        }
-        break;
 
       case coUtils.Constant.TRACKING_BUTTON:
         if (this._pressed) {
@@ -405,17 +370,17 @@ Mouse.definition = {
         }
         break;
 
-      case coUtils.Constant.TRACING_ANY:
+      case coUtils.Constant.TRACKING_ANY:
       // Send motion event.
-        let button;
         if (this._pressed) {
           button = 32 + event.button;
-          this._sendMouseEvent(event, button); 
         } else {
-          button = MOUSE_RELEASE;
+          button = 32 + MOUSE_RELEASE;
         }
+        this._sendMouseEvent(event, button); 
         break;
 
+      case coUtils.Constant.TRACKING_NORMAL:
       case coUtils.Constant.TRACKING_NONE:
       case coUtils.Constant.TRACKING_X10:
       case coUtils.Constant.TRACKING_HIGHLIGHT:
@@ -425,36 +390,43 @@ Mouse.definition = {
   },
 
   /** Mouse up evnet listener */
-  "[listen('mouseup', '#tanasinn_content')]": 
+  "[listen('mouseup', '#tanasinn_content'), pnp]": 
   function onmouseup(event) 
   {
+    var tracking_mode, button;
+
     this._pressed = false;
-    let tracking_mode = this._tracking_mode;
+
+    tracking_mode = this._tracking_mode;
     if (coUtils.Constant.TRACKING_NONE === tracking_mode) {
       return;
     }
 
-    let button = event.button;
+    button = event.button;
     this._sendMouseEvent(event, button); // release
   },
 
   // Helper: get current position from mouse event object.
   _getCurrentPosition: function _getCurrentPosition(event) 
   {
-    let broker = this._broker;
-    let target_element = broker.uniget(
+    var target_element, box, offsetX, offsetY, 
+        left, top, renderer, column, row, root_element;
+
+    target_element = this.request(
       "command/query-selector", 
       "#tanasinn_center_area");
-    let box = target_element.boxObject;
-    let offsetX = box.screenX - broker.root_element.boxObject.screenX;
-    let offsetY = box.screenY - broker.root_element.boxObject.screenY;
-    let left = event.layerX - offsetX; // left position in pixel.
-    let top = event.layerY - offsetY;  // top position in pixel.
+    box = target_element.boxObject;
+
+    root_element = this.request("get/root-element");
+    offsetX = box.screenX - root_element.boxObject.screenX;
+    offsetY = box.screenY - root_element.boxObject.screenY;
+    left = event.layerX - offsetX; // left position in pixel.
+    top = event.layerY - offsetY;  // top position in pixel.
 
     // converts pixel coordinate to [column, row] style.
-    let renderer = this.dependency["renderer"];
-    let column = Math.round(left / renderer.char_width);
-    let row = Math.round(top / renderer.line_height);
+    renderer = this.dependency["renderer"];
+    column = Math.round(left / renderer.char_width);
+    row = Math.round(top / renderer.line_height);
     return [column, row];
   },
 
@@ -470,3 +442,4 @@ function main(broker)
   new Mouse(broker);
 }
 
+// EOF
