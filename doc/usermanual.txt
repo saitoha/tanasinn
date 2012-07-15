@@ -26,6 +26,25 @@ link:./usermanual.html[English/英語]
 
 == News
 
+=== 2012/07/15 
+    Version 0.2.2.2
+    Support OSC 10/11.
+    Support DECSET 12 / cursor blinking.
+    Support DECSCUSR / cursor style switching.
+    Support WYSTCURM/WYULCURM (wise).
+    Support OSC 104/110/111 / reset color feature.
+    Implement Cursor blink transition.
+    Supports TNREPTAMB / report ambiguous width.
+    Handle DECSCL.
+    Support DECRQPSR.
+    Support S7C1T/S8C1T.
+    Support DECTABSR / tab stop report.
+    Handle DECCIR.
+    Implement smart selection feature.
+    Support termcap reporting feature.
+    Implement 3D Rotation feature, with dragging mouse.
+    Fix some bugs.
+
 === 2012/05/31 
     Version 0.2.2.1
     DECSET 8840 / Ambiguous width switching.
