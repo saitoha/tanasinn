@@ -639,6 +639,14 @@ Renderer.definition = {
     }
   },
 
+  "[subscribe('command/calculate-layout'), pnp]":
+  function calculateLayout()
+  {
+    this.onWidthChanged();
+    this.onHeightChanged();
+    this.sendMessage("command/draw", true);
+  },
+
   "[subscribe('@command/focus'), pnp]":
   function onFirstFocus()
   {
@@ -726,7 +734,6 @@ Renderer.definition = {
   function onHeightChanged(height, line_height)
   {
     var canvas_height;
-    var broker = this._broker;
 
     height = height || this.dependency["screen"].height;
     line_height = line_height || this.line_height;
@@ -738,7 +745,7 @@ Renderer.definition = {
     if (this._rapid_blink_layer) {
       this._rapid_blink_layer.canvas.height = canvas_height;
     }
-    broker.notify("event/screen-height-changed", canvas_height);
+    this.sendMessage("event/screen-height-changed", canvas_height);
   },
 
   /** Draw to canvas */

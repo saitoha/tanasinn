@@ -359,7 +359,6 @@ Transform.definition = {
       0, 1, 0, 0,
       0, 0, 1, 0,
       0, 0, 0, 1);
-
     this._element = root_element.querySelector("#tanasinn_outer_chrome");
     this._element.style.MozTransformStyle = "preserve-3d";
   },

@@ -243,6 +243,7 @@ PluginViewer.definition = {
 
       this.sendMessage("event/dependencies-updated");
       this.sendMessage("command/report-status-message", message);
+      this.sendMessage("command/calculate-layout");
     } catch (e) {
       checkbox.checked = !enabled;
       message = coUtils.Text.format(
@@ -296,13 +297,19 @@ PluginManagementCommands.definition = {
         message: _("Cannot enabled the module specified by given argument."),
       };
     }
-    modules.forEach(function(module) {
-      try {
-        module.enabled = is_enable;
-      } catch(e) {
-        coUtils.Debug.reportError(e); 
-      }
-    });
+
+    modules.forEach(
+      function each(module)
+      {
+        try {
+          module.enabled = is_enable;
+        } catch(e) {
+          coUtils.Debug.reportError(e); 
+        }
+      });
+
+    this.sendMessage("command/calculate-layout");
+
     return {
       success: true,
       message: _("Succeeded."),
