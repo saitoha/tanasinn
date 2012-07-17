@@ -47,7 +47,6 @@ AlertService.definition = {
   "[install]":
   function install(broker) 
   {
-    this.show.enabled = true;
   },
 
   /** Uninstalls itself. 
@@ -56,16 +55,13 @@ AlertService.definition = {
   "[uninstall]":
   function uninstall(broker) 
   {
-    this.show.enabled = false;
   },
 
-
-  "[subscribe('command/show-popup-alert')]":
+  "[subscribe('command/show-popup-alert'), pnp]":
   function show(data)
   {
-    var self;
+    var self = this;
 
-    self = this;
     try {
       Components.classes["@mozilla.org/alerts-service;1"]
         .getService(Components.interfaces.nsIAlertsService)
@@ -78,7 +74,7 @@ AlertService.definition = {
           {
             observe: function observe(subject, topic, data) 
             {
-              if ("alertclickcallback" == topic) {
+              if ("alertclickcallback" === topic) {
                 self.sendMessage("command/select-panel", "!console.panel");
               }
             }
@@ -531,7 +527,7 @@ Console.definition = {
                       },
                     },
                     onconstruct: function() {
-                      if ("error" == this.value) {
+                      if ("error" === this.value) {
                         coUtils.Timer.setTimeout(
                           function() this.checked = true, 
                           10, this);

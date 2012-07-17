@@ -106,11 +106,13 @@ KeySnail.definition = {
   /** get "KeySnail.modules" */
   _getKeyModule: function _getKeyModule()
   {
-    var broker, window, keysnail, modules, key;
+    var keysnail = this.request("get/root-element")
+          .ownerDocument
+          .defaultView
+          .KeySnail,
+        modules,
+        key;
 
-    broker = this._broker;
-    window = broker.window;
-    keysnail = window.KeySnail;
     if (!keysnail) {
       return null;
     }

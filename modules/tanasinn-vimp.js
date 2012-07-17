@@ -49,46 +49,37 @@ let g:tanasinnviewsourcecommand:
 try {
 
   void function() {
-  
-    var liberator, commands, completion, mappings, modes, editor, process;
 
-    liberator = window.liberator;
-    commands = liberator.modules.commands;
-    completion = liberator.modules.completion;
-    mappings = liberator.modules.mappings;
-    modes = liberator.modules.modes;
-    editor = liberator.modules.editor;
-    
-    /**
+     /**
      * @fn getTanasinnProcess
      */
     function getTanasinnProcess() 
     {
-      var current_file,
-          file,
+      var current_file = Components.stack
+            .filename
+            .split(" -> ").pop()
+            .split("?").shift(),
+          id = new Date().getTime(),
+          file = current_file + "/../../tanasinn/modules/common/process.js?" + id,
           scope = {};
 
-      current_file = Components.stack
-        .filename
-        .split(" -> ").pop()
-        .split("?").shift();
-      file = current_file + "/../../tanasinn/modules/common/process.js?" + new Date().getTime();
       Components
         .classes["@mozilla.org/moz/jssubscript-loader;1"]
         .getService(Components.interfaces.mozIJSSubScriptLoader)
         .loadSubScript(file, scope);
+      
       return scope.g_process;
     }
-    process = getTanasinnProcess();
-    
+ 
     function getDesktop() 
     {
-      var desktops, desktop;
+      var process = getTanasinnProcess(),
+          desktops = process.notify("get/desktop-from-window", window),
+          desktop;
 
-      desktops = process.notify("get/desktop-from-window", window);
       if (desktops) {
         desktop = desktops.filter(
-          function(desktop)
+          function filterProc(desktop)
           {
             return desktop;
           })[0];
@@ -99,6 +90,14 @@ try {
       desktop = process.uniget("event/new-window-detected", window);
       return desktop;
     }
+
+    var liberator = window.liberator,
+        commands = liberator.modules.commands,
+        completion = liberator.modules.completion,
+        mappings = liberator.modules.mappings,
+        modes = liberator.modules.modes,
+        editor = liberator.modules.editor;
+
     getDesktop();
     
     /**
@@ -169,12 +168,15 @@ try {
 
     editor.editFileExternally = function editFileExternally(path) 
     {
-      var editor_command, viewsource_command, desktop, complete, command, thread;
+      var editor_command = liberator.globalVariables.tanasinneditorcommand,
+          viewsource_command = liberator.globalVariables.tanasinnviewsourcecommand,
+          desktop = getDesktop(),
+          complete,
+          command,
+          thread;
 
-      editor_command = liberator.globalVariables.tanasinneditorcommand;
-      viewsource_command = liberator.globalVariables.tanasinnviewsourcecommand;
-      desktop = getDesktop();
-      if (/^[a-z]+:\/\//.test(path)) { // when path is url spec. (path is expected to be escaped.)
+      if (/^[a-z]+:\/\//.test(path)) {
+        // when path is url spec. (path is expected to be escaped.)
         if (!viewsource_command) {
           default_func.apply(liberator.modules.editor, arguments);
         } else {
@@ -186,12 +188,21 @@ try {
         if (!editor_command) {
           default_func.apply(liberator.modules.editor, arguments);
         } else {
+
           complete = false;
-          desktop.subscribe("@initialized/session", function(session) {
-            session.subscribe("@event/broker-stopping", function(session) {
-              complete = true;
+
+          desktop.subscribe(
+            "@initialized/session",
+            function(session)
+            {
+              session.subscribe(
+                "@event/broker-stopping",
+                function(session)
+                {
+                  complete = true;
+                }, this);
             }, this);
-          }, this);
+
           command = editor_command.replace(/%/g, path);
           desktop.notify("command/start-session", command);
           thread = Components.classes["@mozilla.org/thread-manager;1"]
@@ -207,9 +218,7 @@ try {
   } ();
 
 } catch (e) {
-  var message;
-
-  message = "Error at " + e.fileName + ":" + e.lineNumber + " " + String(e);
+  var message = "Error at " + e.fileName + ":" + e.lineNumber + " " + String(e);
   liberator.log(message);
   liberator.echoerr(message);
 }

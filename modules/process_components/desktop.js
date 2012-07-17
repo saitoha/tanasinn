@@ -207,14 +207,14 @@ Desktop.definition = {
     this.notify("event/disabled");
   },
 
-  "[subscribe('event/shutdown'), pnp]":
+  "[subscribe('event/shutdown'), enabled]":
   function onShutdown()
   {
     this.notify("event/shutdown");
     this.uninstall(this._broker);
   },
   
-  "[subscribe('get/desktop-from-window'), pnp]":
+  "[subscribe('get/desktop-from-window'), enabled]":
   function getDesktopFromWindow(window)
   {
     return window.document

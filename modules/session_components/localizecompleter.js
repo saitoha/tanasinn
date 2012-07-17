@@ -45,9 +45,18 @@ LocalizeCompleter.definition = {
   {
     var pattern = /^\s*([a-zA-Z-]*)(\s*)("?)((?:[^"])*)("?)(\s*)(.*)/,
         match = context.source.match(pattern),
-        all, language, space,
-        quote_start, message_id, quote_end, space2, next,
-        languages, lower_message_id, dict, data;
+        all,
+        language,
+        space,
+        quote_start,
+        message_id,
+        quote_end,
+        space2,
+        next,
+        languages,
+        lower_message_id,
+        dict,
+        data;
 
     [all, language, space, quote_start, message_id, quote_end, space2, next] = match;
 

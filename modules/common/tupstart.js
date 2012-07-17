@@ -181,14 +181,22 @@ EventBrokerBase.prototype = {
    */ 
   removeListener: function removeListener(id) 
   {
-    var count = 0;
-    var delegates, key, value;
+    var count = 0,
+        delegates,
+        key,
+        i,
+        value;
+
     // iterate delegate list and search target delegate(s) specified 
     // by the argument.
-    for ([, delegates] in Iterator(this._delegate_map)) {
-      for ([key, value] in Iterator(delegates)) {
-        if (value && value.id == id) {
-          delegates.splice(key, 1); // remove registered delegate.
+    for ([key, delegates] in Iterator(this._delegate_map)) {
+      for ([i, value] in Iterator(delegates)) {
+        if (value && value.id === id) {
+          if (1 === delegates.length) {
+            delete this._delegate_map[key];   
+          } else {
+            delegates.splice(i, 1); // remove registered delegate.
+          }
           ++count;
         }
       }
@@ -269,16 +277,19 @@ EventBrokerBase.prototype = {
    */
   uniget: function uniget(topic, data) 
   {
-    var events = this._delegate_map[topic];
-    var stack, delegate;
+    var events = this._delegate_map[topic],
+        stack,
+        delegate;
+
     if (!events) {
       throw coUtils.Debug.Exception(
         _("Subscriber not Found: '%s'."), topic);
-    } else if (1 != events.length) {
-      throw coUtils.Debug.Exception(
+    } else if (1 !== events.length) {
+      coUtils.Debug.reportError(
         _("Too many subscribers are found (length: %d): '%s'."), 
         events.length, topic);
     }
+
     try {
       delegate = events[0];
       return delegate.action(data);
@@ -613,26 +624,26 @@ EventExpressionProcesser.prototype = {
       void function() {
         var token = tokens.shift();
         var lhs, rhs;
-        if ("(" == token) {
+        if ("(" === token) {
           while (tokens.length) {
             arguments.callee.call(this);
           }
-        } else if (")" == token) {
+        } else if (")" === token) {
           return;
-        } else if ("@" == token) {
+        } else if ("@" === token) {
           arguments.callee.call(this);
           rhs = stack.pop();
           stack.push(new Once(rhs));
-        } else if ("~" == token) {
+        } else if ("~" === token) {
           arguments.callee.call(this);
           rhs = stack.pop();
           stack.push(new Not(rhs));
-        } else if ("&" == token || "and" == token) {
+        } else if ("&" === token || "and" === token) {
           arguments.callee.call(this);
           rhs = stack.pop();
           lhs = stack.pop();
           stack.push(new And(lhs, rhs));
-        } else if ("|" == token || "or" == token) {
+        } else if ("|" === token || "or" === token) {
           arguments.callee.call(this);
           rhs = stack.pop();
           lhs = stack.pop();
@@ -642,7 +653,7 @@ EventExpressionProcesser.prototype = {
         }
       }.call(this);
     };
-    if (1 != stack.length) {
+    if (1 !== stack.length) {
       throw coUtils.Debug.Exception(_("Invalid Expression: '%s'."), tokens);
     }
   },

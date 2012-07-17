@@ -246,9 +246,7 @@ Session.definition = {
   /** Create terminal UI and start tty session. */ 
   initializeWithRequest: function initializeWithRequest(request) 
   {
-    var id;
-
-    id = coUtils.Uuid.generate().toString();
+    var id = coUtils.Uuid.generate().toString();
 
     // register getter topic.
     this.subscribe(
@@ -308,12 +306,14 @@ Session.definition = {
     if (this._stopped) {
       return;
     }
-    this.unsubscribe(this._request_id);
+
+//    this.unsubscribe(this._request_id);
     this._stopped = true
     this.stop.enabled = false;
     this.notify("event/broker-stopping", this);
     this.notify("event/broker-stopped", this);
     this.clear();
+
     this._root_element = null;
     this._window = null;
 

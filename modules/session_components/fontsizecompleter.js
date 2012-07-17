@@ -22,16 +22,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-
-/**
- * @class FontsizeSet
- *
- */
-var FontsizeSet = new Class().extends(Component);
-FontsizeSet.definition = {
-};
-
-
 /**
  * @class FontsizeCompleter
  *
@@ -51,14 +41,21 @@ FontsizeCompleter.definition = {
   "[completer('fontsize'), enabled]":
   function complete(context)
   {
-    var broker, pattern, match, all, size, space,
-        next_completer_info, next_completer, option,
+    var pattern = /^\s*(.*)(\s?)/,
+        match = context.source.match(pattern),
+        all,
+        size,
+        space,
+        next_completer_info,
+        next_completer,
+        option,
         generator;
 
-    broker = this._broker;
+    if (null === match) {
+      this.sendMessage("event/answer-completion", null);
+      return;
+    }
 
-    pattern = /^\s*(.*)(\s?)/;
-    match = context.source.match(pattern);
     [all, size, space] = match;
 
     if (space) {
@@ -117,7 +114,6 @@ FontsizeCompleter.definition = {
  */
 function main(broker)
 {
-  new FontsizeSet(broker);
   new FontsizeCompleter(broker);
 }
 

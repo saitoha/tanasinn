@@ -79,21 +79,19 @@ Paste.definition = {
   "[command('paste'), nmap('<M-v>', '<C-S-V>'), _('Paste from clipboard.'), pnp]": 
   function paste() 
   {
-    var clipboard, trans, str, str_length, text;
-
-    clipboard = Components
-      .classes["@mozilla.org/widget/clipboard;1"]
-      .getService(Components.interfaces.nsIClipboard)
-
-    trans = Components
-      .classes["@mozilla.org/widget/transferable;1"]
-      .createInstance(Components.interfaces.nsITransferable);
+    var clipboard = Components
+          .classes["@mozilla.org/widget/clipboard;1"]
+          .getService(Components.interfaces.nsIClipboard),
+        trans = Components
+          .classes["@mozilla.org/widget/transferable;1"]
+          .createInstance(Components.interfaces.nsITransferable),
+        str = {},
+        str_length = {},
+        text;
 
     trans.addDataFlavor("text/unicode");
 
     clipboard.getData(trans, clipboard.kGlobalClipboard);
-	  str = {};
-	  str_length = {};
 	  trans.getTransferData("text/unicode", str, str_length);
 
     if (str.value && str_length.value) {
@@ -127,7 +125,7 @@ Paste.definition = {
     this._bracketed_paste_mode = mode;
   },
 
-};
+}; // class Paste
 
 /**
  * @fn main

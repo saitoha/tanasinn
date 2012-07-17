@@ -25,9 +25,7 @@
 
 function make_managed_handler(self, handler, topic)
 {
-  var wrapped_handler;
-
-  wrapped_handler = function() 
+  var wrapped_handler = function() 
   {
     return handler.apply(self, arguments);
   };
@@ -37,10 +35,11 @@ function make_managed_handler(self, handler, topic)
 
 function apply_attribute(self, broker, key, info, attribute)
 {
-  var handler, wrapped_handler, id, listener_info, old_onchange;
-
-  handler = self[key];
-  id = self.id + "." + key;
+  var handler = self[key],
+      id = self.id + "." + key,
+      wrapped_handler,
+      listener_info,
+      old_onchange;
 
   if (handler.id) {
     wrapped_handler = handler;

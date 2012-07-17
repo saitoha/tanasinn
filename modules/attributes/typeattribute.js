@@ -24,27 +24,29 @@
 
 function apply_attribute(self, attribute, key)
 {
-  var type_signature, types, handler, delegate;
-
-  [type_signature] = attribute["type"];
-
-  types = type_signature
-    .split(" -> ")
-    .map(function(type_name) ConceptContext[type_name]);
-
-  handler = self[key];
+  var type_signature = attribute["type"][0],
+      types = type_signature
+        .split(" -> ")
+        .map(
+          function mapProc(type_name)
+          {
+            return ConceptContext[type_name];
+          }),
+      handler = self[key],
+      delegate;
 
   delegate = self[key] = function() 
   {
-    var args, result;
+    var args = Array.slice(arguments),
+        result;
 
-    args = Array.slice(arguments);
     if (args.length !== types.length - 1) {
       coUtils.Debug.reportError(
         _("Invalid argument length detected. %s.%s (%s), args.length == %d."), 
         self.id, key, type_signature, args.length);
     }
-    args.forEach(function(arg, index)
+    args.forEach(
+      function each(arg, index)
       {
         if (types[index] && !types[index](arg)) {
           coUtils.Debug.reportError(
@@ -108,24 +110,28 @@ TypeAttribute.definition = {
    */
   initialize: function initialize(broker) 
   {
-    broker.subscribe("@event/broker-started", function(broker) {
+    broker.subscribe(
+      "@event/broker-started",
+      function onLoad(broker)
+      {
+        var attributes,
+            key,
+            attribute;
 
-      var attributes, key, attribute;
-
-      if (!broker.debug_flag) {
-        return;
-      }
-
-      attributes = this.__attributes;
-
-      for (key in attributes) {
-        attribute = attributes[key];
-        if (!attribute["type"]) {
-          continue;
+        if (!broker.debug_flag) {
+          return;
         }
-        apply_attribute(this, attribute, key);
-      }
-    }, this);
+
+        attributes = this.__attributes;
+
+        for (key in attributes) {
+          attribute = attributes[key];
+          if (!attribute["type"]) {
+            continue;
+          }
+          apply_attribute(this, attribute, key);
+        }
+      }, this);
   }, // initialize
 
 }; // TypeAttribute

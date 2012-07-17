@@ -42,26 +42,31 @@ EventCompleter.definition = {
   "[completer('event'), enabled]":
   function complete(context)
   {
-    var broker, pattern, match, all, name, space,
-        next_completer_info, next_completer, option,
-        lower_name, candidates;;
+    var broker = this._broker,
+        pattern = /^\s*(\S*)(\s*)/,
+        match = context.source.match(pattern),
+        all,
+        name,
+        space,
+        next_completer_info,
+        next_completer,
+        option,
+        lower_name,
+        candidates;
 
-    broker = this._broker;
-
-    var { source, option, completers } = context;
-    pattern = /^\s*(\S*)(\s*)/;
-    match = source.match(pattern);
     [all, name, space] = match;
 
     if (space) {
       next_completer_info = completers.shift();
       if (next_completer_info) {
         [next_completer, option] = next_completer_info.split("/");
-        this.sendMessage("command/query-completion/" + next_completer, {
-          source: source.substr(all.length),
-          option: option,
-          completers: completers,
-        });
+        this.sendMessage(
+          "command/query-completion/" + next_completer,
+          {
+            source: context.source.substr(all.length),
+            option: option,
+            completers: context.completers,
+          });
       } else {
         this.sendMessage("event/answer-completion", null);
       }
@@ -69,6 +74,7 @@ EventCompleter.definition = {
     }
 
     lower_name = name.toLowerCase();
+
     candidates = broker.keys.filter(
       function(candidate) 
       {
@@ -79,7 +85,7 @@ EventCompleter.definition = {
       "event/answer-completion",
       {
         type: "text",
-        query: source, 
+        query: context.source, 
         data: candidates.map(
           function(candidate)
           {

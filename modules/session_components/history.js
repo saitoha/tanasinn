@@ -80,7 +80,7 @@ CommandlineHistory.definition = {
    */
   loadHistory: function loadHistory() 
   {
-    var broker, path, file, content, converter, ostream;
+    var broker, path, file, converter, ostream;
 
     // create nsIFile object.
     broker = this._broker;
@@ -96,8 +96,7 @@ CommandlineHistory.definition = {
     this._file = file;
 
     if (file.exists() && file.isReadable) {
-      content = coUtils.IO.readFromFile(path, "UTF-8");
-      this._history = content.split(/[\r\n]+/)
+      this._history = coUtils.IO.readFromFile(path, "UTF-8").split(/[\r\n]+/)
         .reduce(function(prev, current) {
           prev[current] = true;
           return prev;

@@ -141,11 +141,10 @@ Vimperator.definition = {
   /** get "liberator" */
   _getLiberator: function _getLiberator()
   {
-    var broker;
-
-    broker = this._broker;
-    window = broker.window;
-    liberator = window.liberator;
+    var liberator = this.request("get/root-element")
+      .ownerDocument
+      .defaultView
+      .liberator;
 
     if (!liberator) {
       return null;
@@ -156,9 +155,11 @@ Vimperator.definition = {
   /** get "liberator.modules" */
   _getModules: function _getModules()
   {
-    var liberator, modules, events, modes;
+    var liberator = this._getLiberator(),
+        modules,
+        events,
+        modes;
 
-    liberator = this._getLiberator();
     if (!liberator) {
       return null;
     }

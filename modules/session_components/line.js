@@ -434,7 +434,7 @@ Cell.definition = {
   /** Compare every bit and detect equality of both objects. */
   equals: function equals(other)
   {
-    //return this.value << 7 == other.value << 7;
+    //return this.value << 7 === other.value << 7;
     return this.value === other.value;
   },
 

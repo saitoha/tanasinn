@@ -399,11 +399,11 @@ DefaultKeyMappings.definition = {
     settings.push(KEY_ANSI);
 
     // set cursor mode
-    if ("normal" == this.cursor_mode) {
+    if ("normal" === this.cursor_mode) {
       settings.push(KEY_APPLICATION_CURSOR);
-    } else if ("application" == this.cursor_mode) {
+    } else if ("application" === this.cursor_mode) {
       settings.push(KEY_NORMAL_CURSOR);
-    } else if ("vt52" == this.cursor_mode) {
+    } else if ("vt52" === this.cursor_mode) {
       settings.push(KEY_VT52_CURSOR);
     } else { // fallback
       coUtils.Debug.reportError(
@@ -506,9 +506,9 @@ ModeManager.definition = {
     mode = info.mode || this._mode;
     code = info.code;
 
-    if ("normal" == mode) {
+    if ("normal" === mode) {
       this.sendMessage('command/input-with-remapping', info); 
-    } else if ("commandline" == mode) {
+    } else if ("commandline" === mode) {
       this.sendMessage('event/keypress-commandline-with-remapping', code); 
     } else {
       throw coUtils.Debug.Exception(_("Unknown mode is specified: %s."), mode);
@@ -523,9 +523,9 @@ ModeManager.definition = {
     mode = info.mode || this._mode;
     code = info.code;
 
-    if ("normal" == mode) {
+    if ("normal" === mode) {
       this.sendMessage('command/input-with-no-remapping', info); 
-    } else if ("commandline" == mode) {
+    } else if ("commandline" === mode) {
       this.sendMessage('event/keypress-commandline-with-no-remapping', code); 
     } else {
       throw coUtils.Debug.Exception(_("Unknown mode is specified: %s."), mode);
@@ -538,6 +538,7 @@ ModeManager.definition = {
     this.sendMessage(
       "command/input-expression-with-remapping", 
       arguments_string);
+
     return {
       result: true,
     };
@@ -754,13 +755,13 @@ InputManager.definition = {
   "[subscribe('command/blur')]":
   function blur() 
   {
-    var broker, document, dispatcher;
+    var owner_document = this.request("get/root-element").ownerDocument,
+        dispatcher;
 
     this._textbox.blur(); // raise blur event.
-    broker = this._broker;
-    document = broker.window.document;
-    if (document) {
-      dispatcher = document.commandDispatcher;
+
+    if (owner_document) {
+      dispatcher = owner_document.commandDispatcher;
       if (dispatcher) {
         dispatcher.rewindFocus();
       }
@@ -796,9 +797,9 @@ InputManager.definition = {
   "[listen('keyup', '#tanasinn_default_input', true), pnp]":
   function onkeyup(event) 
   { // nothrow
-    if ("Darwin" == coUtils.Runtime.os) {
-      if (0x20 == event.keyCode
-          && 0x20 == event.which
+    if ("Darwin" === coUtils.Runtime.os) {
+      if (0x20 === event.keyCode
+          && 0x20 === event.which
           && event.ctrlKey) {
         this.onkeypress(event);
       }
@@ -821,8 +822,8 @@ InputManager.definition = {
     event.preventDefault();
     event.stopPropagation();
 
-    if (0x00 == event.keyCode
-        && 0x20 == event.which
+    if (0x00 === event.keyCode
+        && 0x20 === event.which
         && event.ctrlKey) {
       event.keyCode = 0x20;
       event.isChar = false;
@@ -893,7 +894,7 @@ char:{event.isChar?"t":"f"}
           return; 
         }
       }
-      if (0x0d == c && this._newline_mode) {
+      if (0x0d === c && this._newline_mode) {
         message = "\x0d\x0a";
       } else {
         message = String.fromCharCode(c);

@@ -32,9 +32,7 @@ CompletionDisplayDriverBase.definition = {
   "[subscribe('@event/broker-started'), enabled]":
   function onLoad(broker)
   {
-    var self;
-
-    self = this;
+    var self = this;
 
     broker.subscribe(
       "get/completion-display-driver/" + this.type, 
@@ -72,13 +70,14 @@ ColorNumberCompletionDisplayDriver.definition = {
 
   drive: function drive(grid, result, current_index) 
   {
-    var document, columns, rows;
+    var owner_document = grid.ownerDocument;
+        columns,
+        rows;
 
-    document = grid.ownerDocument;
-    columns = grid.appendChild(document.createElement("colmns"))
-    columns.appendChild(document.createElement("column"));
-    columns.appendChild(document.createElement("column")).flex = 1;
-    rows = grid.appendChild(document.createElement("rows"))
+    columns = grid.appendChild(owner_document.createElement("colmns"))
+    columns.appendChild(owner_document.createElement("column"));
+    columns.appendChild(owner_document.createElement("column")).flex = 1;
+    rows = grid.appendChild(owner_document.createElement("rows"))
 
     //rows.style.border = "1px solid blue";
     result.data.forEach(function(pair, index)
@@ -93,7 +92,7 @@ ColorNumberCompletionDisplayDriver.definition = {
         {
           parentNode: rows,
           tagName: "row",
-          style: current_index == index && <> 
+          style: current_index === index && <> 
             border: solid 2px blue;
             background: #226;
             color: white;
@@ -127,7 +126,7 @@ ColorNumberCompletionDisplayDriver.definition = {
                 font-size: 20px; 
                 margin: 0px 10px; 
               </>,
-              childNodes: -1 == range.start ?
+              childNodes: -1 === range.start ?
                 { text: range.text }:
                 [
                   { text: range.text.substr(0, range.start) },
@@ -174,13 +173,14 @@ ColorCompletionDisplayDriver.definition = {
 
   drive: function drive(grid, result, current_index) 
   {
-    var document, columns, rows;
+    var owner_document = grid.ownerDocument,
+        columns,
+        rows;
 
-    document = grid.ownerDocument;
-    columns = grid.appendChild(document.createElement("colmns"))
-    columns.appendChild(document.createElement("column"));
-    columns.appendChild(document.createElement("column")).flex = 1;
-    rows = grid.appendChild(document.createElement("rows"))
+    columns = grid.appendChild(owner_document.createElement("colmns"))
+    columns.appendChild(owner_document.createElement("column"));
+    columns.appendChild(owner_document.createElement("column")).flex = 1;
+    rows = grid.appendChild(owner_document.createElement("rows"))
 
     //rows.style.border = "1px solid blue";
     result.data.forEach(function(pair, index) 
@@ -195,7 +195,7 @@ ColorCompletionDisplayDriver.definition = {
         {
           parentNode: rows,
           tagName: "row",
-          style: current_index == index && <> 
+          style: current_index === index && <> 
             border: solid 2px blue;
             background: #226;
             color: white;
@@ -233,7 +233,7 @@ ColorCompletionDisplayDriver.definition = {
                 font-size: 20px;
                 margin: 0px 10px; 
               </>,
-              childNodes: -1 == range.start ?
+              childNodes: -1 === range.start ?
                 { text: range.text }:
                 [
                   { text: range.text.substr(0, range.start) },
@@ -272,11 +272,12 @@ FontsizeCompletionDisplayDriver.definition = {
 
   drive: function drive(grid, result, current_index) 
   {
-    var document, rows, i, search_string, completion_text,
+    var owner_document = grid.ownerDocument,
+        rows = grid.appendChild(owner_document.createElement("rows")),
+        i,
+        search_string,
+        completion_text,
         match_position;
-
-    document = grid.ownerDocument;
-    rows = grid.appendChild(document.createElement("rows"))
 
     for (i = 0; i < result.data.length; ++i) {
       search_string = result.query.toLowerCase();
@@ -290,7 +291,7 @@ FontsizeCompletionDisplayDriver.definition = {
         {
           parentNode: rows,
           tagName: "row",
-          style: i == current_index ? <>
+          style: i === current_index ? <>
             background: #226;
             color: white;
           </>: "",
@@ -301,7 +302,7 @@ FontsizeCompletionDisplayDriver.definition = {
                 font-size: 20px;
                 margin: 0px 8px;
               </>,
-              childNodes: -1 == match_position ? 
+              childNodes: -1 === match_position ? 
                 { text: completion_text }:
                 [
                   { text: completion_text.substr(0, match_position) },
@@ -347,11 +348,12 @@ FontFamilyCompletionDisplayDriver.definition = {
 
   drive: function drive(grid, result, current_index) 
   {
-    var document, rows, i, search_string, completion_text, 
+    var owner_document = grid.ownerDocument,
+        rows = grid.appendChild(owner_document.createElement("rows")),
+        i,
+        search_string,
+        completion_text, 
         match_position;
-
-    document = grid.ownerDocument;
-    rows = grid.appendChild(document.createElement("rows"))
 
     for (i = 0; i < result.data.length; ++i) {
       search_string = result.query.toLowerCase();
@@ -364,7 +366,7 @@ FontFamilyCompletionDisplayDriver.definition = {
         {
           parentNode: rows,
           tagName: "row",
-          style: i == current_index ? <>
+          style: i === current_index ? <>
             background: #226;
             color: white;
           </>: "",
@@ -378,7 +380,7 @@ FontFamilyCompletionDisplayDriver.definition = {
                 margin: 0px;
                 margin-left: 8px;
               </>,
-              childNodes: -1 == match_position ? 
+              childNodes: -1 === match_position ? 
                 { text: completion_text }:
                 [
                   { text: completion_text.substr(0, match_position) },
@@ -416,11 +418,13 @@ TextCompletionDisplayDriver.definition = {
 
   drive: function drive(grid, result, current_index) 
   {
-    var document, rows, i, data, search_string, completion_text,
+    var owner_document = grid.ownerDocument,
+        rows = grid.appendChild(owner_document.createElement("rows")),
+        i,
+        data,
+        search_string,
+        completion_text,
         match_position;
-
-    document = grid.ownerDocument;
-    rows = grid.appendChild(document.createElement("rows"))
 
     for (i = 0; i < result.data.length; ++i) {
       data = result.data[i];
@@ -443,7 +447,7 @@ TextCompletionDisplayDriver.definition = {
         {
           parentNode: rows,
           tagName: "row",
-          style: i == current_index ? <>
+          style: i === current_index ? <>
             background: #226;
             padding: 2px;
             color: white;
@@ -458,7 +462,7 @@ TextCompletionDisplayDriver.definition = {
                 padding-left: 8px;
                 font-size: 19px;
               </>,
-              childNodes: -1 == match_position ? 
+              childNodes: -1 === match_position ? 
                 { text: completion_text }:
                 [
                   { text: completion_text.substr(0, match_position) },

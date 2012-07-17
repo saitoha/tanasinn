@@ -74,7 +74,7 @@ VT52ParameterParser.definition = {
     this._first = first;
     this._c0action = [];
 
-    if (2 == arguments.length) {
+    if (2 === arguments.length) {
       this._default_action = c;
     }
   },
@@ -102,7 +102,7 @@ VT52ParameterParser.definition = {
         return undefined;
       }
       c = scanner.current();
-      if (c < 0x20 || 0x7f == c) {
+      if (c < 0x20 || 0x7f === c) {
         action = vt52C0Parser.get(c);
         if (undefined !== action) {
           this._c0action.push(action);
@@ -125,7 +125,7 @@ VT52ParameterParser.definition = {
       action = next(params);
     }
     default_action = this._default_action;
-    if (0 == this._c0action.length && null === default_action) {
+    if (0 === this._c0action.length && null === default_action) {
       return action;
     } 
     actions = this._c0action;
@@ -164,11 +164,11 @@ VT52ParameterParser.definition = {
       if (0x30 <= c && c <= 0x39) { // [0-9]
         scanner.moveNext();
         accumulator = accumulator * 10 + c - 0x30;
-      } else if (0x3b == c) { // ';'
+      } else if (0x3b === c) { // ';'
         scanner.moveNext();
         yield accumulator;
         accumulator = 0;
-      } else if (c < 0x20 || 0x7f == c) {
+      } else if (c < 0x20 || 0x7f === c) {
         yield accumulator;
         action = vt52C0Parser.get(c);
         if (undefined !== action) {
@@ -376,7 +376,7 @@ VT52.definition = {
     match = information.expression.split(/\s+/);
     key = match.pop();
     prefix = match.pop() || "C0";
-    if ("number" == typeof key) {
+    if ("number" === typeof key) {
       key = key.toString();
     }
     if (!this[prefix]) {

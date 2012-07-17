@@ -110,6 +110,19 @@ coUtils.Constant = {
   KEY_META                   : 26,
   KEY_MODE                   : 27,
 
+  // 
+  // Trace Data flags
+  //
+  TRACE_INPUT                : 0x1,
+  TRACE_OUTPUT               : 0x2,
+  TRACE_CONTROL              : 0x3,
+
+  //
+  // XML namespaces
+  //
+  NS_XHTML                   : "http://www.w3.org/1999/xhtml",
+  NS_XSVG                    : "http://www.w3.org/2000/svg",
+
   //
   // X11 color name definition
   //
@@ -1319,7 +1332,7 @@ var alert = coUtils.alert = function alert(message)
       .classes["@mozilla.org/embedcomp/prompt-service;1"]
       .getService(Components.interfaces.nsIPromptService);
 
-  if (arguments.length > 1 && "string" == typeof message) {
+  if (arguments.length > 1 && "string" === typeof message) {
     message = coUtils.Text.format.apply(coUtils.Text, arguments);
   }
   prompt_service.alert(this.window || null, "tanasinn", message);
@@ -1352,24 +1365,28 @@ coUtils.getWindow = function getWindow()
  */
 coUtils.format = function format(/* template, arg1, arg2, .... */) 
 {
-  var args = Array.slice(arguments);
-  var template = args.shift();
-  var result = template.replace(/%[s|f|d|i|x]/g, function(matchString) {
-    var value = args.shift();
-    if ("%s" == matchString) {
-      return String(value);
-    } else if ("%f" == matchString) {
-      return parseFloat(value).toString();
-    } else if ("%d" == matchString || "%i" == matchString) {
-      return parseInt(value).toString();
-    } else if ("%x" == matchString) {
-      return parseInt(value).toString(16);
-    }
-    throw Components.Exception([
-      _("A logical error occured."),
-      " matchString: ", "\"", matchString, "\""
-    ].join(""));
-  });
+  var args = Array.slice(arguments),
+      template = args.shift(),
+      result = template.replace(
+        /%[s|f|d|i|x]/g,
+        function replaceProc(match_string)
+        {
+          var value = args.shift();
+
+          if ("%s" === match_string) {
+            return String(value);
+          } else if ("%f" === match_string) {
+            return parseFloat(value).toString();
+          } else if ("%d" === match_string || "%i" === match_string) {
+            return parseInt(value).toString();
+          } else if ("%x" === match_string) {
+            return parseInt(value).toString(16);
+          }
+          throw Components.Exception([
+            _("A logical error occured."),
+            " match_string: ", "\"", match_string, "\""
+          ].join(""));
+        });
   return result;
 }
 
@@ -1377,10 +1394,14 @@ coUtils.Color = {
 
   parseX11ColorSpec: function parseX11ColorSpec(spec)
   {
-    var result;
-    var pattern = /^#([0-9a-fA-F]{3,12})$|^rgb:([0-9a-fA-F]+)\/([0-9a-fA-F]+)\/([0-9a-fA-F]+)$|^([a-zA-Z0-9\s]+)$/;
-    var match = spec.match(pattern);
-    var rgb, r, g, b, name;
+    var result,
+        pattern = /^#([0-9a-fA-F]{3,12})$|^rgb:([0-9a-fA-F]+)\/([0-9a-fA-F]+)\/([0-9a-fA-F]+)$|^([a-zA-Z0-9\s]+)$/,
+        match = spec.match(pattern),
+        rgb,
+        r,
+        g,
+        b,
+        name;
   
     if (null === match) {
       throw coUtils.Debug.Exception(
@@ -1713,7 +1734,7 @@ coUtils.IO = {
             result = {};
             nread = stream.readString(input.available(), result);
             buffer.push(result.value);
-            if (0 == nread)
+            if (0 === nread)
               break;
           }
           return buffer.join("");
@@ -1875,12 +1896,12 @@ coUtils.File = new function() {
 
   getPathDelimiter: function getPathDelimiter() 
   {
-    return "WINNT" == coUtils.Runtime.os ? "\\": "/";
+    return "WINNT" === coUtils.Runtime.os ? "\\": "/";
   },
   
   isAbsolutePath: function isAbsolutePath(path) 
   {
-    if ("WINNT" == coUtils.Runtime.os) {
+    if ("WINNT" === coUtils.Runtime.os) {
        return /^([a-zA-Z]:)?\\/.test(path);
     }
     return /^\//.test(path);
@@ -2098,7 +2119,7 @@ coUtils.Runtime = {
     match = location.match(/^([a-z]+):\/\//);
     if (match) { // location is URL spec formatted.
       [, protocol] = match;
-      if ("file" == protocol) { 
+      if ("file" === protocol) { 
         file = this.file_handler.getFileFromURLSpec(location);
       } else {
         throw coUtils.Debug.Exception(
@@ -2257,19 +2278,19 @@ coUtils.Keyboard = {
       } [char] || char;
     }
 
-    if ("-" == char || "<" == char || ">" == char) {
+    if ("-" === char || "<" === char || ">" === char) {
       char = "\\" + char;
     }
     buffer.push(char);
-    if (1 == buffer.length) {
-      if (1 == buffer[0].length) {
+    if (1 === buffer.length) {
+      if (1 === buffer[0].length) {
         return buffer.pop();
       } else {
         return "<" + buffer.pop() + ">";
       }
-    } else if (2 == buffer.length && 
-               "S" == buffer[0] && 
-               1 == buffer[1].length) {
+    } else if (2 === buffer.length && 
+               "S" === buffer[0] && 
+               1 === buffer[1].length) {
       return buffer.pop();
     }
     return "<" + buffer.join("-") + ">";
@@ -2299,7 +2320,7 @@ coUtils.Keyboard = {
       ;
 
     // fix for Space key with modifier.
-    if (0x20 == code && (event.shiftKey || event.ctrlKey || event.altKey)) {
+    if (0x20 === code && (event.shiftKey || event.ctrlKey || event.altKey)) {
       packed_code |= 1 << coUtils.Constant.KEY_NOCHAR;
     }
     return packed_code;
@@ -2569,24 +2590,28 @@ coUtils.Text = {
    */
   format: function format(/* template, arg1, arg2, .... */) 
   {
-    var args = [].slice.apply(arguments);
-    var template = args.shift();
-    var result = template.replace(/%[s|f|d|i|x]/g, function(matchString) {
-      var value = args.shift();
-      if ("%s" == matchString) {
-        return String(value);
-      } else if ("%f" == matchString) {
-        return parseFloat(value).toString();
-      } else if ("%d" == matchString || "%i" == matchString) {
-        return parseInt(value).toString();
-      } else if ("%x" == matchString) {
-        return parseInt(value).toString(16);
-      }
-      throw Components.Exception([
-        _("A logical error occured."),
-        " matchString: ", "\"", matchString, "\""
-      ].join(""));
-    });
+    var args = Array.slice(arguments),
+        template = args.shift(),
+        result = template.replace(
+          /%[s|f|d|i|x]/g, 
+          function replaceProc(match_string)
+          {
+            var value = args.shift();
+
+            if ("%s" === match_string) {
+              return String(value);
+            } else if ("%f" === match_string) {
+              return parseFloat(value).toString();
+            } else if ("%d" === match_string || "%i" === match_string) {
+              return parseInt(value).toString();
+            } else if ("%x" === match_string) {
+              return parseInt(value).toString(16);
+            }
+            throw Components.Exception([
+              _("A logical error occured."),
+              " match_string: ", "\"", match_string, "\""
+            ].join(""));
+          });
     return result;
   },
 
@@ -2678,7 +2703,7 @@ coUtils.Debug = {
   {
     var stack, flag;
 
-    if (arguments.length > 1 && "string" == typeof message) {
+    if (arguments.length > 1 && "string" === typeof message) {
       message = coUtils.Text.format.apply(coUtils.Text, arguments);
     }
     stack = Components.stack.caller;  // get caller"s context.
@@ -2695,7 +2720,7 @@ coUtils.Debug = {
     var stack, flag;
 
     // check if printf style arguments is given. 
-    if (arguments.length > 1 && "string" == typeof source) {
+    if (arguments.length > 1 && "string" === typeof source) {
       source = coUtils.Text.format.apply(coUtils.Text, arguments);
     }
     stack = Components.stack.caller;  // get caller"s context.
@@ -2711,7 +2736,7 @@ coUtils.Debug = {
   {
     var stack, flag;
 
-    if (arguments.length > 1 && "string" == typeof source) {
+    if (arguments.length > 1 && "string" === typeof source) {
       source = coUtils.Text.format.apply(coUtils.Text, arguments);
     }
     stack = Components.stack.caller;  // get caller"s context.
@@ -2729,7 +2754,7 @@ coUtils.Debug = {
     var escaped_source;
     var file, name, message;
 
-    if (arguments.length > 1 && "string" == typeof source) {
+    if (arguments.length > 1 && "string" === typeof source) {
       source = coUtils.format.apply(coUtils, arguments);
     }
     stack = Components.stack.caller;
@@ -2757,20 +2782,24 @@ coUtils.Debug = {
   {
     var error;
 
-    if (source === null || source === undefined)
-      source = String(source)
-    if (typeof source == "xml")
+    if (null === source || undefined === source) {
+      source = String(source);
+    }
+    if ("xml" === typeof source) {
       source = source.toString();
+    }
+
     const consoleService = Components
       .classes["@mozilla.org/consoleservice;1"]
       .getService(Components.interfaces.nsIConsoleService);
-    if (source && source.queryInterface !== undefined) 
+
+    if (source && undefined !== source.queryInterface) 
     {
-      if (source.QueryInterface(
-          Components.interfaces.nsIConsoleMessage) !== null) 
+      if (null !== source.QueryInterface(
+          Components.interfaces.nsIConsoleMessage)) 
       {
-        if (source.QueryInterface(
-            Components.interfaces.nsIScriptError) !== null) 
+        if (null !== source.QueryInterface(
+            Components.interfaces.nsIScriptError)) 
         {
           source.flags |= flag
         }
@@ -2781,12 +2810,12 @@ coUtils.Debug = {
       // else fallback!
     }
     //if (Error.prototype.isPrototypeOf(source)) // if source is Error object.
-    if (source.stack)
+    if (source.stack) {
       stack = source.stack; // use the stack of Error object.
+    }
     error = this.makeException(source, stack, flag);
     coUtils.Logging.logMessage(source.toString());
     consoleService.logMessage(error);
-    return;
   },
 
   /**
@@ -2795,15 +2824,18 @@ coUtils.Debug = {
   makeException: function makeException(source, stack, flag) 
   {
     var exception = Components
-      .classes["@mozilla.org/scripterror;1"]
-      .createInstance(Components.interfaces.nsIScriptError);
-    var is_error_object = !!source.fileName;
-    var message = "tanasinn: " 
-      + (is_error_object ? source.message: source.toString()).replace(/"/g, "\u201d");
-    var file = (is_error_object ? source.fileName: stack.filename)
-      .split(" -> ").pop().split("?").shift().replace(/"/g, "\u201d");
-    var sourceLine = is_error_object ? null: stack.sourceLine;
-    var line = is_error_object ? source.lineNumber: stack.lineNumber;
+          .classes["@mozilla.org/scripterror;1"]
+          .createInstance(Components.interfaces.nsIScriptError),
+        is_error_object = !!source.fileName,
+        message = "tanasinn: " 
+                + (is_error_object ? source.message: source.toString())
+                    .replace(/"/g, "\u201d"),
+        file = (is_error_object ? source.fileName: stack.filename)
+          .split(" -> ").pop()
+          .split("?").shift()
+          .replace(/"/g, "\u201d"),
+        line = is_error_object ? source.lineNumber: stack.lineNumber;
+
     exception.init(message, file, null, line, /* column */ 0, flag, "tanasinn");
     return exception;
   },
@@ -2822,6 +2854,7 @@ coUtils.Uuid = {
   generate: function generate() 
   {
     var uuid = this._uuid_generator.generateUUID();
+
     return uuid;
   },
 
@@ -2845,9 +2878,9 @@ coUtils.Localize = new function()
     initialize: function initialize() 
     {
       var locale_service = Components
-        .classes["@mozilla.org/intl/nslocaleservice;1"]
-        .getService(Components.interfaces.nsILocaleService); 
-      var locale = locale_service.getLocaleComponentForUserAgent();
+            .classes["@mozilla.org/intl/nslocaleservice;1"]
+            .getService(Components.interfaces.nsILocaleService),
+          locale = locale_service.getLocaleComponentForUserAgent();
 
       this._dictionaries_store = {};
       this.switchLocale(locale);
@@ -2874,15 +2907,14 @@ coUtils.Localize = new function()
     /** Loads locale-mapping file and apply it. */
     load: function load() 
     {
-      var locale = this._locale;
-      var path = "modules/locale/" + locale + ".json";
-      var file = coUtils.File.getFileLeafFromVirtualPath(path);
-      var db = null;
-      var content;
+      var locale = this._locale,
+          path = "modules/locale/" + locale + ".json",
+          file = coUtils.File.getFileLeafFromVirtualPath(path),
+          db = null,
+          content;
 
       if (file.exists()) {
-        content = coUtils.IO.readFromFile(path, "utf-8");
-        db = JSON.parse(content);
+        db = JSON.parse(coUtils.IO.readFromFile(path, "utf-8"));
       } else {
         db = {
           lang: this._locale, 
@@ -2923,8 +2955,7 @@ coUtils.Localize = new function()
         // make URI string such as "file://....".
         url = coUtils.File.getURLSpec(entry); 
         try {
-          content = coUtils.IO.readFromFile(url);
-          yield content;
+          yield coUtils.IO.readFromFile(url);
         } catch (e) {
           coUtils.Debug.reportError(e);
           coUtils.Debug.reportError(
@@ -2977,8 +3008,7 @@ coUtils.Localize = new function()
           db;
 
       if (file.exists()) {
-        content = coUtils.IO.readFromFile(location, "utf-8");
-        db = JSON.parse(content);
+        db = JSON.parse(coUtils.IO.readFromFile(location, "utf-8"));
         return db.dict;
       } else {
         return {};

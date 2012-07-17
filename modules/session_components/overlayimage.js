@@ -164,15 +164,25 @@ OverlayImage.definition = {
   "[subscribe('sequence/osc/213'), pnp]":
   function clear(data) 
   {
-    var context, renderer, x, y, w, h,
-        pixel_x, pixel_y, pixel_w, pixel_h;
-
-    context = this._canvas.getContext("2d");
-    renderer = this.dependency["renderer"];
-    var {char_width, line_height} = renderer;
+    var context = this._canvas.getContext("2d"),
+        renderer = this.dependency["renderer"],
+        char_width = renderer.char_width,
+        line_height = renderer.line_height,
+        x,
+        y,
+        w,
+        h,
+        pixel_x,
+        pixel_y,
+        pixel_w,
+        pixel_h;
 
     [x, y, w, h] = data.split(";")
-      .map(function(s, index) Number(s));
+      .map(
+        function mapProc(s, index)
+        {
+          return Number(s);
+        });
 
     pixel_x = x * char_width;
     pixel_y = y * line_height;

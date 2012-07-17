@@ -66,6 +66,8 @@
  *
  */
 
+var g_process;
+
 void function() {
 
   var tanasinn_scope = {}, // create scope.
@@ -73,8 +75,6 @@ void function() {
       loader;
   
   with (tanasinn_scope) {
-
-    var g_process;
 
     function getProcess()
     {

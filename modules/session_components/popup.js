@@ -33,15 +33,24 @@ ZshCompletion.definition = {
   "[subscribe('event/data-arrived')]": 
   function onDataArrived(data)
   {
-    var lines, match, prompt;
+    var lines = data.match(/<item>(.*?)<end>/gm)
+          .map(
+            function mapFunc(s)
+            {
+              return s.slice(6, -5);
+            })
+          .filter(
+            function filterFunc(s)
+            {
+              return !s.match(/<space>/);
+            }),
+        match = data.match(/\x1b.*$/),
+        prompt;
 
-    lines = data.match(/<item>(.*?)<end>/gm)
-      .map(function(s) s.slice(6, -5))
-      .filter(function(s) !s.match(/<space>/));  
     Array.prototype.push.apply(this.lines, lines);
-    match = data.match(/\x1b.*$/);
+
     if (null !== match) {
-      [prompt] = match;
+      prompt = match[0];
       this.onDataArrived.enabled = false;
       this.sendMessage("command/enable-default-parser");
       this.sendMessage("event/data-arrived", "\r" + prompt);

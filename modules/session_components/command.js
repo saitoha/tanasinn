@@ -40,22 +40,22 @@ CommandProvider.definition = {
 
   _getCommand: function _getCommand(command_name)
   {
-    var commands, filtered_command, tophit;
+    var commands = this.sendMessage("get/commands"),
+        filtered_command = commands.filter(
+          function filterProc(command) 
+          {
+            return 0 === command.name.replace(/[\[\]]/g, "")
+              .indexOf(command_name);
+          }),
+        tophit;
 
-    commands = this.sendMessage("get/commands");
-    filtered_command = commands.filter(
-      function(command) 
-      {
-        return 0 == command.name.replace(/[\[\]]/g, "")
-          .indexOf(command_name);
-      });
-
-    if (filtered_command.length == 0) {
+    if (0 === filtered_command.length) {
       return null;
     }
+
     if (filtered_command.length > 1) {
       tophit = filtered_command.shift();
-      if (tophit.name.length == command_name.length) {
+      if (tophit.name.length === command_name.length) {
         return tophit;
       }
       coUtils.Debug.reportWarning(
@@ -68,18 +68,20 @@ CommandProvider.definition = {
   "[subscribe('command/complete-commandline')]":
   function complete(completion_info) 
   {
-    var pattern, match, repeat, commnad_name, blank, command, text;
+    var pattern = /^\s*([0-9]*)(\w*)(\s*)/y,
+        match = pattern.exec(completion_info.source),
+        repeat,
+        commnad_name,
+        blank,
+        command,
+        text;
 
-    var {source} = completion_info;
-
-    pattern = /^\s*([0-9]*)(\w*)(\s*)/y;
-    match = pattern.exec(source);
     [, repeat, command_name, blank] = match;
 
     if (blank) {
       command = this._getCommand(command_name);
       if (command) {
-        text = source.substr(pattern.lastIndex);
+        text = completion_info.source.substr(pattern.lastIndex);
         command.complete(text);
       }
     } else {
@@ -90,18 +92,26 @@ CommandProvider.definition = {
   "[subscribe('command/eval-commandline')]":
   function evaluate(source) 
   {
-    var pattern, match, repeat, command_name, command, text, i, result;
+    var pattern = /^\s*([0-9]*)(\w+)(\s*)/y,
+        match = pattern.exec(source),
+        repeat,
+        command_name,
+        command,
+        text,
+        i,
+        result;
 
-    pattern = /^\s*([0-9]*)(\w+)(\s*)/y;
-    match = pattern.exec(source);
     if (null === match) {
       this.sendMessage(
         "command/report-status-message", 
         _("Failed to parse given commandline code."));
       return;
     }
+
     [, repeat, command_name, /* blank */] = match;
+
     command = this._getCommand(command_name);
+
     if (!command) {
       this.sendMessage(
         "command/report-status-message", 
@@ -166,14 +176,21 @@ SetCommand.definition = {
   "[command('set', ['option']), _('Set an option.'), enabled]":
   function evaluate(arguments_string)
   {
-    var modules, pattern, match, all, component_name, property, equal, candidates,
-        module, code, result, broker;
+    var broker = this._broker,
+        modules = this.sendMessage("get/components"),
+        pattern = /^\s*([$_a-zA-Z\.\-]+)\.([$_a-zA-Z]+)\s*(=?)\s*/,
+        match = arguments_string.match(pattern),
+        all,
+        component_name,
+        property,
+        equal,
+        candidates,
+        module,
+        code,
+        result;
 
-    broker = this._broker;
-    modules = this.sendMessage("get/components");
     modules.push(broker);
-    pattern = /^\s*([$_a-zA-Z\.\-]+)\.([$_a-zA-Z]+)\s*(=?)\s*/;
-    match = arguments_string.match(pattern);
+
     if (null === match) {
       return {
         success: false,
@@ -196,11 +213,11 @@ SetCommand.definition = {
       function(module) 
       {
         if ("id" in module) {
-          return module.id == component_name;
+          return module.id === component_name;
         }
         return false;
       });
-    if (0 == candidates.length) {
+    if (0 === candidates.length) {
       return {
         success: false,
         message: coUtils.Text.format(
@@ -268,7 +285,7 @@ SetGlobalCommand.definition = {
     var [module] = modules.filter(
       function(module) 
       {
-        return module.id == component_name;
+        return module.id === component_name;
       });
     if (!module) {
       return {
@@ -666,7 +683,7 @@ CharsetCommands.definition = {
     modules = this.sendMessage(is_encoder ? "get/encoders": "get/decoders");
 
     name = arguments_string.replace(/^\s+|\s+$/g, "");
-    modules = modules.filter(function(module) module.charset == name);
+    modules = modules.filter(function(module) module.charset === name);
 
     if (1 != modules.length) {
       return {

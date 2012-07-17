@@ -41,12 +41,16 @@ OptionCompleter.definition = {
   "[completer('option'), enabled]":
   function complete(context)
   {
-    var broker, match, space, name, operator_equal, next,
-        target_broker, lower_name, scope, options;
-
-    broker = this._broker;
-
-    match = context.source.match(/^(\s*)([$_\-@a-zA-Z\.]*)\s*(=?)\s*(.*)/);
+    var broker = this._broker,
+        match = context.source.match(/^(\s*)([$_\-@a-zA-Z\.]*)\s*(=?)\s*(.*)/),
+        space,
+        name,
+        operator_equal,
+        next,
+        target_broker,
+        lower_name,
+        scope,
+        options;
 
     if (null === match) {
       this.sendMessage("event/answer-completion", null);
@@ -54,6 +58,7 @@ OptionCompleter.definition = {
     }
 
     [, space, name, operator_equal, next] = match;
+
     if (!operator_equal && next) {
       this.sendMessage("event/answer-completion", null);
       return;

@@ -722,16 +722,18 @@ Commandline.definition = {
   "[subscribe('command/invalidate'), pnp]":
   function invalidate(result) 
   {
-    var textbox, document, index, completion_text,
-        settled_length, settled_text, text;;
-
-    textbox = this._textbox;
+    var textbox = this._textbox,
+        textbox,
+        index,
+        completion_text,
+        settled_length,
+        settled_text,
+        text;;
 
     if (result.data.length > 0) {
       this._popup.style.opacity = this.completion_popup_opacity;
       if ("closed" === this._popup.state || "hiding" === this._popup.state) {
-        document = this.request("get/root-element").ownerDocument;
-        if (document) {
+        if (this.request("get/root-element").ownerDocument) {
           this._popup.width = this._canvas.width;
           this._popup.openPopup(this._canvas, "after_start", 0, 0, true, true);
         }

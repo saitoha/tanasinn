@@ -34,23 +34,25 @@ PersistManager.definition = {
   "[subscribe('command/load-settings'), enabled]":
   function load(name)
   {
-    var broker, filename, profile_path, content, data;
+    var broker = this._broker,
+        filename = (name || broker.profile) + ".js",
+        profile_path = broker.runtime_path 
+                     + "/" + broker.profile_directory 
+                     + "/" + filename,
+        data;
 
     try {
-      broker = this._broker;
-      filename = (name || broker.profile) + ".js";
-      profile_path = broker.runtime_path 
-        + "/" + broker.profile_directory 
-        + "/" + filename;
+
       if (!coUtils.File.exists(profile_path)) {
         return;
       }
 
-      content = coUtils.IO.readFromFile(profile_path, "utf-8");
-      data = JSON.parse(content);
+      data = JSON.parse(coUtils.IO.readFromFile(profile_path, "utf-8"));
+
       if ("__load" in broker) {
         broker.__load(data);
       }
+
       this.sendMessage("command/before-load-persistable-data", data);
       this.sendMessage("command/load-persistable-data", data);
     } catch (e) {

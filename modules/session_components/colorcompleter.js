@@ -22,8 +22,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-
-
 /**
  * @class ColorNumberCompleter
  *
@@ -44,11 +42,18 @@ ColorNumberCompleter.definition = {
   "[completer('color-number'), enabled]":
   function complete(context)
   {
-    var renderer, color_map, pattern, match,
-        all, number, space, name, next, numbers,
-        lower_name, data;
-
-    color_map = this._getColorMap(context.option);
+    var color_map = this._getColorMap(context.option),
+        renderer, 
+        pattern,
+        match,
+        all,
+        number,
+        space,
+        name,
+        next,
+        numbers,
+        lower_name,
+        data;
 
     if (null === color_map) {
       coUtils.Debug.reportError(
@@ -122,9 +127,7 @@ ColorNumberCompleter.definition = {
 
   _getColorMap: function _getColorMap(option)
   {
-    var renderre;
-
-    renderer = this.dependency["renderer"];
+    var renderre = this.dependency["renderer"];
 
     switch (option) {
 
@@ -142,13 +145,14 @@ ColorNumberCompleter.definition = {
 
   _doNextCompletion: function _doNextCompletion(completers, source, all_length)
   {
-    var next_completer_info, next_completer, option;
+    var next_completer_info = completers.shift(),
+        next_completer,
+        option;
 
-    next_completer_info = completers.shift();
-    
     if (next_completer_info) {
       [next_completer, option] = next_completer_info.split("/");
-      this.sendMessage("command/query-completion/" + next_completer, 
+      this.sendMessage(
+        "command/query-completion/" + next_completer, 
         {
           source: source.substr(all_length),
           option: option,

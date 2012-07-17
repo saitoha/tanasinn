@@ -123,9 +123,8 @@ Escape.definition = {
   "[profile('vt100'), sequence('0x85', 'ESC E'), _('Next line')]":
   function NEL() 
   { // Carriage Return
-    var screen;
-   
-    screen = this._screen;
+    var screen = this._screen;
+
     screen.carriageReturn();
     screen.lineFeed();
   },
@@ -143,9 +142,8 @@ Escape.definition = {
   "[profile('vt100'), sequence('0x8d', 'ESC M'), _('Reverse index.')]": 
   function RI() 
   {
-    var screen;
+    var screen = this._screen;
 
-    screen = this._screen;
     screen.reverseIndex();
   },
 
@@ -199,9 +197,8 @@ Escape.definition = {
   "[profile('vt100'), sequence('0x98%s', 'ESC X%s')]": 
   function SOS() 
   {
-    var message;
+    var message = String.fromCharCode.apply(String, arguments);
 
-    message = String.fromCharCode.apply(String, arguments);
     this.sendMessage("sequence/sos", message);
   },
 
@@ -222,9 +219,8 @@ Escape.definition = {
   "[profile('vt100'), sequence('0x9f', 'ESC _%s')]": 
   function APC() 
   {
-    var message;
+    var message = String.fromCharCode.apply(String, arguments);
 
-    message = String.fromCharCode.apply(String, arguments);
     this.sendMessage("sequence/apc", message);
   },
   
@@ -247,11 +243,10 @@ Escape.definition = {
   "[profile('vt100'), sequence('0x9d', 'ESC ]%s')]": 
   function OSC(message) 
   {
-    var delimiter_position, num, command;
+    var delimiter_position = message.indexOf(";"),
+        num = message.substr(0, delimiter_position),
+        command = message.substr(delimiter_position + 1);
 
-    delimiter_position = message.indexOf(";");
-    num = message.substr(0, delimiter_position);
-    command = message.substr(delimiter_position + 1);
     this.sendMessage("sequence/osc/" + num, command);
   },
   

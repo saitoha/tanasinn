@@ -40,43 +40,27 @@ SnapResize.definition = {
   "[subscribe('event/window-resized')]":
   function onWindowResized(event)
   {
-    var window, broker, renderer, char_width, line_height, box_element, center_area,
-        horizontal_margin, vertical_margin, column, row;
+    var default_view = this.request("get/root-element").ownerDocument.defaultView,
+        renderer = this._renderer,
+        char_width = renderer.char_width,
+        line_height = renderer.line_height,
+        box_element = this.request("command/query-selector", "#box_element"),
+        center_area = this.request("command/query-selector", "#tanasinn_content"),
+        horizontal_margin = box_element.boxObject.width - center_area.boxObject.width,
+        vertical_margin = (box_element.boxObject.height - center_area.boxObject.height) / 2,
+        column = Math.floor((default_view.innerWidth - horizontal_margin) / char_width - 1),
+        row = Math.floor((default_view.innerHeight - vertical_margin) / line_height - 1);
 
-    broker = this._broker;
-    window = broker.window;
-    try {
-      renderer = this._renderer;
-      char_width = renderer.char_width;
-      line_height = renderer.line_height;
-      box_element = this.request("command/query-selector", "#box_element");
-      center_area = this.request("command/query-selector", "#tanasinn_content");
-      horizontal_margin = box_element.boxObject.width - center_area.boxObject.width;
-      vertical_margin = (box_element.boxObject.height - center_area.boxObject.height) / 2;
-      column = Math.floor((window.innerWidth - horizontal_margin) / char_width - 1);
-      row = Math.floor((window.innerHeight - vertical_margin) / line_height - 1);
+    this.sendMessage(
+      "command/resize-screen",
+      {
+        column: column,
+        row: row,
+      });
 
-      //coUtils.Debug.reportError(window.innerHeight + " " + vertical_margin + " " + row)
-      this.sendMessage(
-        "command/resize-screen",
-        {
-          column: column,
-          row: row,
-        });
-      this.sendMessage("command/draw", true);
-    } catch (e) {
-      coUtils.Debug.reportError(e)
-    } finally {
-    }
+    this.sendMessage("command/draw", true);
   },
 
-  removeWindowResizeHandler: function() 
-  {
-    var id;
-
-    id = [this.id, "install"].join(".");
-    this.sendMessage("command/add-domlistener", id); 
-  },
 };
 
 /**
@@ -189,30 +173,23 @@ Resizer.definition = {
 
   ondragstart: function ondragstart(event)
   {
-    var resizer, document, renderer, screen, 
-        initial_column, initial_row, 
-        originX, originY;
+    var resizer = this._resizer,
+        owner_document = this.request("get/root-element").ownerDocument,
+        renderer = this._renderer,
+        screen = this._screen,
+        initial_column = screen.width,
+        initial_row = screen.height,
+        originX = event.screenX,
+        originY = event.screenY;
     
-    resizer = this._resizer;    
-    document = this.request("get/root-element").ownerDocument;
-
-    renderer = this._renderer;
-    screen = this._screen;
-
     //this._capture_margin.hidden = true;
     event.stopPropagation(); // cancel defaut behavior
     this.sendMessage("event/resize-session-started", this);
 
-    initial_column = screen.width;
-    initial_row = screen.height;
-
-    originX = event.screenX;
-    originY = event.screenY;
-
     this.sendMessage(
       "command/add-domlistener",
       {
-        target: document,
+        target: owner_document,
         type: "mousemove",
         id: "_DRAGGING",
         context: this,
@@ -263,7 +240,7 @@ Resizer.definition = {
     this.sendMessage(
       "command/add-domlistener", 
       {
-        target: document,
+        target: owner_document,
         type: "mouseup",
         id: "_DRAGGING",
         context: this,

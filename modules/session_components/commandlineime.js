@@ -62,25 +62,23 @@ CommandlineIme.definition = {
   "[install]":
   function install(broker) 
   {
-    var textbox, version_comparator, focused_element;
+    var textbox = this.dependency["commandline"].getInputField();
+        version_comparator = Components
+          .classes["@mozilla.org/xpcom/version-comparator;1"]
+          .getService(Components.interfaces.nsIVersionComparator),
+        focused_element = this.request("get/root-element")
+          .ownerDocument.commandDispatcher.focusedElement;
 
-    textbox = this.dependency["commandline"].getInputField();
     textbox.style.width = "0%";
     textbox.style.imeMode = "inactive"; // disabled -> inactive
     textbox.style.border = "none"; // hide border
 
     // enables session event handlers.
-    version_comparator = Components
-      .classes["@mozilla.org/xpcom/version-comparator;1"]
-      .getService(Components.interfaces.nsIVersionComparator);
     if (version_comparator.compare(coUtils.Runtime.version, "10.0") <= 0)
     {
       this.startPolling.enabled = true;
       this.endPolling.enabled = true;
     }
-
-    focused_element = this.request("get/root-element")
-      .ownerDocument.commandDispatcher.focusedElement;
 
     if (focused_element && focused_element.isEqualNode(textbox)) {
       this.startPolling();
@@ -94,11 +92,9 @@ CommandlineIme.definition = {
   "[uninstall]":
   function uninstall(session) 
   {
-    var textbox;
+    var textbox = this.dependency["commandline"].getInputField();
 
     this.endPolling(); // stops polling timer. 
-
-    textbox = this.dependency["commandline"].getInputField();
 
     if (null !== textbox) {
       textbox.style.width = "";
@@ -166,9 +162,7 @@ CommandlineIme.definition = {
   "[listen('compositionstart', '#tanasinn_commandline'), pnp]":
   function oncompositionstart(event) 
   {
-    var version_comparator;;
-
-    version_comparator = Components
+    var version_comparator = Components
       .classes["@mozilla.org/xpcom/version-comparator;1"]
       .getService(Components.interfaces.nsIVersionComparator);
     if (version_comparator.compare(coUtils.Runtime.version, "10.0") >= 0) {
@@ -182,9 +176,7 @@ CommandlineIme.definition = {
   "[listen('compositionend', '#tanasinn_commandline'), pnp]":
   function oncompositionend(event) 
   {
-    var version_comparator;;
-
-    version_comparator = Components
+    var version_comparator = Components
       .classes["@mozilla.org/xpcom/version-comparator;1"]
       .getService(Components.interfaces.nsIVersionComparator);
 
@@ -199,9 +191,7 @@ CommandlineIme.definition = {
    */  
   onpoll: function onpoll() 
   {
-    var text;
-
-    text = this.dependency["commandline"].getInputField().value;
+    var text = this.dependency["commandline"].getInputField().value;
 
     if (text) { // if textbox contains some text data.
       if (!this._ime_input_flag) {
@@ -217,12 +207,10 @@ CommandlineIme.definition = {
   /** Shows textbox element. */
   _enableImeMode: function _enableImeMode() 
   {
-    var commandline, textbox, top, left;
-
-    commandline = this.dependency["commandline"];
-    textbox = this.dependency["commandline"].getInputField();
-    top = 0; // cursor.positionY * line_height + -4;
-    left = commandline.getCaretPosition(); // cursor.positionX * char_width + -2;
+    var commandline = this.dependency["commandline"],
+        textbox = this.dependency["commandline"].getInputField(),
+        top = 0, // cursor.positionY * line_height + -4;
+        left = commandline.getCaretPosition(); // cursor.positionX * char_width + -2;
 
     textbox.style.opacity = 1.0;
     this._ime_input_flag = true;
@@ -232,10 +220,8 @@ CommandlineIme.definition = {
 
   _disableImeMode: function _disableImeMode() 
   {
-    var commandline, textbox;
-
-    commandline = this.dependency["commandline"];
-    textbox = this.dependency["commandline"].getInputField();
+    var commandline = this.dependency["commandline"],
+        textbox = this.dependency["commandline"].getInputField();
 
     textbox.style.opacity = 0.0;
     this._ime_input_flag = false;
@@ -254,3 +240,4 @@ function main(broker)
   new CommandlineIme(broker);
 }
 
+// EOF

@@ -303,9 +303,11 @@ coUtils.Sessions = {
 
   update: function update()
   {
-    var lines, content, request_id, record, line;
+    var lines = [""],
+        request_id,
+        record,
+        line;
 
-    lines = [""];
     for ([request_id, record] in Iterator(this._records)) {
       line = [
         request_id,
@@ -317,8 +319,7 @@ coUtils.Sessions = {
       lines.unshift(line);
     }
 
-    content = lines.join("\n");
-    coUtils.IO.writeToFile(this.session_data_path, content);
+    coUtils.IO.writeToFile(this.session_data_path, lines.join("\n"));
     this._dirty = false;
   },
 
@@ -540,11 +541,11 @@ TextCompletionDisplayDriver.definition = {
 
   drive: function drive(grid, result, current_index) 
   {
-    var document, rows, i, search_string,
-        completion_text, match_position;
-
-    document = grid.ownerDocument;
-    rows = grid.appendChild(document.createElement("rows"))
+    var rows = grid.appendChild(grid.ownerDocument.createElement("rows")),
+        i,
+        search_string,
+        completion_text,
+        match_position;
 
     for (i = 0; i < result.labels.length; ++i) {
       search_string = result.query.toLowerCase();
@@ -553,7 +554,7 @@ TextCompletionDisplayDriver.definition = {
       if ("quoted" === result.option) {
         completion_text = completion_text.slice(1, -1);
       }
-      if (completion_text.length > 20 && i != current_index) {
+      if (completion_text.length > 20 && i !== current_index) {
         completion_text = completion_text.substr(0, 20) + "...";
       }
 
@@ -641,10 +642,10 @@ SessionsCompletionDisplayDriver.definition = {
 
   drive: function drive(grid, result, current_index) 
   {
-    var document, rows, i, search_string, completion_text;
-
-    document = grid.ownerDocument;
-    rows = grid.appendChild(document.createElement("rows"))
+    var rows = grid.appendChild(grid.ownerDocument.createElement("rows")),
+        i,
+        search_string,
+        completion_text;
 
     for (i = 0; i < result.labels.length; ++i) {
 
@@ -1244,19 +1245,16 @@ Launcher.definition = {
   "[subscribe('command/start-session')]":
   function startSession(command) 
   {
-    var desktop, document, box;
-
-    desktop = this._broker; 
-    document = this._element.ownerDocument;
+    var desktop = this._broker,
+        box = this._element.ownerDocument.createElement("box");
 
     command = command || "";
     command = command.replace(/^\s+|\s+$/g, "");
 
-    box = document.createElement("box");
-
     //if (!/tanasinn/.test(coUtils.Runtime.app_name)) {
     box.style.cssText = "position: fixed; top: 0px; left: 0px";
     //}
+    
     this._window_layer.appendChild(box);
     desktop.start(box, command);  // command
     box.style.left = (this.left = (this.left + Math.random() * 1000) % 140 + 20) + "px";

@@ -34,10 +34,10 @@ PublishCommand.definition = {
   "[command('publish', ['event', 'js']), _('Publish a message'), enabled]":
   function publish(arguments_string) 
   {
-    var pattern, match, topic, message;
-
-    pattern = /^(\S+)\s*(.*)$/;
-    match = arguments_string.match(pattern);
+    var pattern = /^(\S+)\s*(.*)$/,
+        match = arguments_string.match(pattern),
+        topic,
+        message;
 
     if (null === match) {
       return {
@@ -68,4 +68,4 @@ function main(broker)
   new PublishCommand(broker);
 }
 
-
+// EOF

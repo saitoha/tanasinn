@@ -41,11 +41,16 @@ NMapCompleter.definition = {
   "[completer('nmap'), enabled]":
   function complete(context)
   {
-    var match, all, name, next,
-        next_completer_info, next_completer, option,
-        expressions, lower_name, candidates;
-
-    match = context.source.match(/^\s*(\S*)(\s*)/);
+    var match = context.source.match(/^\s*(\S*)(\s*)/),
+        all,
+        name,
+        next,
+        next_completer_info,
+        next_completer,
+        option,
+        expressions,
+        lower_name,
+        candidates;
 
     if (null === match) {
       this.sendMessage("event/answer-completion", null);

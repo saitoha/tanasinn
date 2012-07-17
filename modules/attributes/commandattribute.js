@@ -25,9 +25,7 @@
 
 function make_managed_handler(self, handler)
 {
-  var wrapped_handler;
-
-  wrapped_handler = function() 
+  var wrapped_handler = function() 
   {
     return handler.apply(self, arguments);
   };

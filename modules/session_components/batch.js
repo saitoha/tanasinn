@@ -87,12 +87,14 @@ BatchLoader.definition = {
   "[subscribe('command/source'), command('source', ['file']), _('load and evaluate batch file.'), pnp]":
   function sourceCommand(arguments_string)
   {
-    var path, broker, cygwin_root, home, file, content;
-
-    path = arguments_string.replace(/^\s*|\s*$/g, "");
+    var path = arguments_string.replace(/^\s*|\s*$/g, ""),
+        broker,
+        cygwin_root,
+        home,
+        file;
 
     if ("$" != path.charAt(0) && !coUtils.File.isAbsolutePath(path)) {
-      if ("WINNT" == coUtils.Runtime.os) {
+      if ("WINNT" === coUtils.Runtime.os) {
         broker = this._broker;
         cygwin_root = broker.cygwin_root;
         path = cygwin_root + coUtils.File.getPathDelimiter() + path.replace(/\//g, "\\");
@@ -105,9 +107,10 @@ BatchLoader.definition = {
     file = coUtils.File.getFileLeafFromVirtualPath(path);
     if (file && file.exists()) {
       try {
-        content = coUtils.IO.readFromFile(path, "utf-8");
 
-        this.sendMessage("command/eval-source", content);
+        this.sendMessage(
+          "command/eval-source",
+          coUtils.IO.readFromFile(path, "utf-8"));
 
       } catch (e) {
         coUtils.Debug.reportError(e);
@@ -123,7 +126,7 @@ BatchLoader.definition = {
   function evalSource(source) 
   {
     source.split(/[\n\r]+/).forEach(
-      function(command) 
+      function each(command) 
       {
         if (!/^\s*$|^s*#/.test(command)) {
           this.sendMessage("command/eval-commandline", command);
@@ -153,7 +156,7 @@ BatchLoader.definition = {
     executable_path;
     os = coUtils.Runtime.os;
 
-    if ("WINNT" == os) {
+    if ("WINNT" === os) {
       cygwin_root = broker.cygwin_root;
       executable_path = cygwin_root + "\\bin\\run.exe";
     } else {
@@ -175,7 +178,8 @@ BatchLoader.definition = {
       .createInstance(Components.interfaces.nsIProcess);
     external_process.init(runtime);
     path = coUtils.File.getFileLeafFromVirtualPath(path).path;
-    if ("WINNT" == coUtils.Runtime.os) { // Windows
+
+    if ("WINNT" === coUtils.Runtime.os) { // Windows
       args = [
         "/bin/sh", "-wait", "-l", "-c",
         coUtils.Text.format(
@@ -206,4 +210,4 @@ function main(broker)
   new BatchLoader(broker);
 }
 
-
+// EOF

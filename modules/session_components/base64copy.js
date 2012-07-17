@@ -98,18 +98,15 @@ Base64Copy.definition = {
   /** parse OSC 52 text data stream. */
   _parseOSC52Data: function _parseOSC52Data(data)
   {
-    var position, content;
+    var position = data.indexOf(";");
 
-    position = data.indexOf(";");
     if (-1 === position) {
       throw coUtils.Debug.Exception(_("Cannot parse OSC 52 data."));
     }
 
     ++position;
 
-    content = data.substr(position);
-
-    return content;
+    return data.substr(position);
   },
 
   _setToClipboard: function _setToClipboard(text) 

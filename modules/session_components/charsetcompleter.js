@@ -41,37 +41,44 @@ CharsetCompleter.definition = {
   "[completer('charset'), enabled]":
   function complete(context)
   {
-    var broker, match, all, space, name, next,
-        next_completer_info, next_completer, option,
-        components, lower_source, candidates;
-
-    broker = this._broker;
-    var { source, option, completers } = context;
-
-    match = source.match(/^(\s*)([$_\-@a-zA-Z\.]*)(\s?)/);
+    var match = context.source.match(/^(\s*)([$_\-@a-zA-Z\.]*)(\s?)/),
+        all,
+        space,
+        name,
+        next,
+        next_completer_info,
+        next_completer,
+        option,
+        components,
+        lower_source,
+        candidates;
 
     if (null === match) {
       this.sendMessage("event/answer-completion", null);
       return;
     }
+
     [all, space, name, next] = match;
+
     if (next) {
-      next_completer_info = completers.shift();
+      next_completer_info = context.completers.shift();
       if (next_completer_info) {
         [next_completer, option] = next_completer_info.split("/");
-        this.sendMessage("command/query-completion/" + next_completer, {
-          source: source.substr(all.length),
-          option: option,
-          completers: completers,
-        });
+        this.sendMessage(
+          "command/query-completion/" + next_completer,
+          {
+            source: context.source.substr(all.length),
+            option: option,
+            completers: context.completers,
+          });
       } else {
         this.sendMessage("event/answer-completion", null);
       }
       return;
     }
-    components = this.sendMessage("get/" + option);
+    components = this.sendMessage("get/" + context.option);
 
-    lower_source = source.toLowerCase();
+    lower_source = context.source.toLowerCase();
 
     candidates = [
       {
@@ -88,7 +95,7 @@ CharsetCompleter.definition = {
         "event/answer-completion",
         {
           type: "text",
-          query: source, 
+          query: context.source, 
           data: candidates.map(
             function(candidate) 
             {
@@ -114,4 +121,4 @@ function main(broker)
   new CharsetCompleter(broker);
 }
 
-
+// EOF

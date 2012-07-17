@@ -41,11 +41,16 @@ ComponentsCompleter.definition = {
   "[completer('components'), enabled]":
   function complete(context)
   {
-    var match, all, space, name, next,
-        next_completer_info, next_completer,
-        option, modules, candidates;
-
-    match = context.source.match(/^(\s*)([$_\-@a-zA-Z\.]*)(\s?)/);
+    var match = context.source.match(/^(\s*)([$_\-@a-zA-Z\.]*)(\s?)/),
+        all,
+        space,
+        name,
+        next,
+        next_completer_info,
+        next_completer,
+        option,
+        modules,
+        candidates;
 
     if (null === match) {
       this.sendMessage("event/answer-completion", null);
@@ -121,11 +126,16 @@ PluginsCompleter.definition = {
   "[completer('plugin'), enabled]":
   function complete(context)
   {
-    var match, all, space, name, next,
-        next_completer_info, next_completer, option,
-        modules, candidates;
-
-    match = context.source.match(/^(\s*)([$_\-@a-zA-Z\.]*)(\s?)/);
+    var match = context.source.match(/^(\s*)([$_\-@a-zA-Z\.]*)(\s?)/),
+        all,
+        space,
+        name,
+        next,
+        next_completer_info,
+        next_completer,
+        option,
+        modules,
+        candidates;
 
     if (null === match) {
       this.sendMessage("event/answer-completion", null);
@@ -192,4 +202,4 @@ function main(broker)
   new PluginsCompleter(broker);
 }
 
-
+// EOF

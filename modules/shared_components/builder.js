@@ -226,11 +226,9 @@ TemplateBuilder.definition = {
   _createElement: 
   function _createElement(tagName) 
   {
-    var touple, namespace;
-
-    touple = tagName.split(":"); // (tagName) or (namespace, tagName).
-    document = this.request("get/root-element")
-      .ownerDocument;
+    var touple = tagName.split(":"), // (tagName) or (namespace, tagName).
+        document = this.request("get/root-element").ownerDocument,
+        namespace;
 
     if (1 === touple.length) {
       return document.createElement(tagName);
@@ -271,9 +269,7 @@ TemplateBuilder.definition = {
   _processInnerText: 
   function _processInnerText(element, value) 
   {
-    var text_node;
-
-    text_node = this.request("get/root-element")
+    var text_node = this.request("get/root-element")
       .ownerDocument
       .createTextNode(value);
 
@@ -284,9 +280,8 @@ TemplateBuilder.definition = {
   _processParentNode: 
   function _processParentNode(element, value) 
   {
-    var target_element, type;
-
-    type = typeof value;
+    var target_element,
+        type = typeof value;
 
     if ("string" === type || "xml" === type) {
 
@@ -296,7 +291,7 @@ TemplateBuilder.definition = {
       if (target_element) {
         target_element.appendChild(element.value);
       } else {
-        if ("#" == value.charAt(0)) {
+        if ("#" === value.charAt(0)) {
           this._broker.subscribe(
             "@event/domnode-created/" + value.substr(1), 
             function(target_element)
@@ -340,7 +335,7 @@ TemplateBuilder.definition = {
   {
     var keys, i, key;
 
-    if (typeof value == "object") {
+    if ("object" === typeof value) {
       element = element[key];
       if (!element) {
         throw coUtils.Debug.Exception(

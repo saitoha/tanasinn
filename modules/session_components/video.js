@@ -61,9 +61,8 @@ Video.definition = {
   "[install]":
   function install(broker) 
   {
-    var result;
+    var result = this.request("command/construct-chrome", this.template);
 
-    result = this.request("command/construct-chrome", this.template);
     this._element = result.tanasinn_video_layer;
   },
 
@@ -146,10 +145,8 @@ Video.definition = {
   "[subscribe('command/open-overlay-video'), pnp]":
   function open(left, top, width, height, id) 
   {
-    var renderer;
-
     // get renderer object
-    renderer = this.dependency["renderer"];
+    var renderer = this.dependency["renderer"];
 
     //this.close();
     // create UI part
@@ -180,9 +177,7 @@ Video.definition = {
   "[subscribe('sequence/osc/8813 | command/close-overlay-browser'), pnp]":
   function close() 
   {
-    var element;
-
-    element = this._element;
+    var element = this._element;
 
     while (element.firstChild) {
       element.removeChild(element.firstChild);

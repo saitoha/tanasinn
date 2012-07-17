@@ -238,11 +238,9 @@ CP932Decoder.definition = {
 
   activate: function activate() 
   {
-    var resource_path, content, mapping;
-
-    resource_path = "modules/charset/cp932.txt.js";
-    content = coUtils.IO.readFromFile(resource_path);
-    mapping = JSON.parse(content);
+    var resource_path = "modules/charset/cp932.txt.js",
+        json_content = coUtils.IO.readFromFile(resource_path),
+        mapping = JSON.parse(json_content);
     this._map = mapping.map;    
   },
 
@@ -255,9 +253,8 @@ CP932Decoder.definition = {
    */
   decode: function decode(scanner) 
   {
-    var map;
+    var map = this._map;
 
-    map = this._map;
     return function(scanner)
     {
       var c1, c2;

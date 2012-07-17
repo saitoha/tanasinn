@@ -22,10 +22,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-var CO_TRACE_INPUT = 1;
-var CO_TRACE_OUTPUT = 2;
-var CO_TRACE_CONTROL = 3;
-
 /**
  *
  * @class Tracer
@@ -92,7 +88,7 @@ Tracer.definition = {
     var info;
 
     info = {
-      type: CO_TRACE_INPUT, 
+      type: coUtils.Constant.TRACE_INPUT, 
       name: undefined,
       value: [message],
     };
@@ -114,7 +110,7 @@ Tracer.definition = {
         handler.apply(this, arguments);
 
         return {
-          type: CO_TRACE_CONTROL,
+          type: coUtils.Constant.TRACE_CONTROL,
           name: handler.name, 
           value: Array.slice(arguments),
         };
@@ -165,10 +161,11 @@ Hooker.definition = {
   "[subscribe('command/debugger-resume'), enabled]":
   function resume()  
   {
-    var buffer, action, result;
+    var buffer = this._buffer,
+        action,
+        result;
 
     this._step_mode = false;
-    buffer = this._buffer;
 
     // drain queued actions.
     while (0 !== buffer.length) {
@@ -184,7 +181,9 @@ Hooker.definition = {
   "[subscribe('command/debugger-step'), enabled]":
   function step()
   {
-    var buffer, action, result;
+    var buffer,
+        action,
+        result;
 
     if (this._hooked) {
       buffer = this._buffer;
@@ -202,7 +201,12 @@ Hooker.definition = {
   "[subscribe('command/debugger-trace-on'), enabled]":
   function set() 
   {
-    var parser, buffer, self, action, result, sequence;
+    var parser,
+        buffer,
+        self,
+        action,
+        result,
+        sequence;
 
     function make_action(sequence, action)
     {
@@ -377,10 +381,9 @@ Debugger.definition = {
   "[subscribe('@get/panel-items'), pnp]": 
   function onPanelItemRequested(panel) 
   {
-    var template, item, result;
-
-    template = this.template;
-    item = panel.alloc(this.id, _("Debugger"));
+    var template = this.template,
+        item = panel.alloc(this.id, _("Debugger")),
+        result;
 
     template.parentNode = item;
 
@@ -554,13 +557,13 @@ Debugger.definition = {
   {
     var [info, sequence] = trace_info;
     var {type, name, value} = info || {
-      type: CO_TRACE_OUTPUT,
+      type: coUtils.Constant.TRACE_OUTPUT,
       name: undefined,
       value: [sequence],
     };
     var child;
     switch (type) {
-      case CO_TRACE_CONTROL: 
+      case coUtils.Constant.TRACE_CONTROL: 
         child = [
           {
             tagName: "label",
@@ -623,7 +626,7 @@ Debugger.definition = {
         ]
         break;
 
-      case CO_TRACE_OUTPUT: 
+      case coUtils.Constant.TRACE_OUTPUT: 
         child = [
           {
             tagName: "label",

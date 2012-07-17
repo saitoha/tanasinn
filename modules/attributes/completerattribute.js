@@ -24,9 +24,7 @@
 
 function make_managed_handler(self, handler, topic)
 {
-  var wrapped_handler;
-
-  wrapped_handler = function() 
+  var wrapped_handler = function() 
   {
     return handler.apply(self, arguments);
   };
@@ -36,10 +34,10 @@ function make_managed_handler(self, handler, topic)
 
 function apply_attribute(self, broker, key, completer_name, attribute)
 {
-  var handler, wrapped_handler, id, old_onchange;
-
-  handler = self[key];
-  id = self.id + "." + key;
+  var handler = self[key],
+      id = self.id + "." + key,
+      wrapped_handler,
+      old_onchange;
 
   if (handler.id) {
     wrapped_handler = handler;
@@ -114,9 +112,10 @@ CompleterAttribute.definition = {
    */
   initialize: function initialize(broker) 
   {
-    var attributes, key, attribute, info;
-
-    attributes = this.__attributes;
+    var attributes = this.__attributes,
+        key,
+        attribute,
+        info;
 
     for (key in attributes) {
 

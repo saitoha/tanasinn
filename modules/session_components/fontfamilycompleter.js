@@ -22,8 +22,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-
-
 /**
  * @class FontFamilyCompleter
  *
