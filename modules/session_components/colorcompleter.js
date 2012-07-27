@@ -162,9 +162,7 @@ ColorNumberCompleter.definition = {
       this.sendMessage("event/answer-completion", null);
     }
   },
-
-
-};
+}; // ColorNumberCompleter
 
 /**
  * @fn main
@@ -176,4 +174,4 @@ function main(broker)
   new ColorNumberCompleter(broker);
 }
 
-
+// EOF

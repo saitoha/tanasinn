@@ -22,8 +22,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-
-
 /**
  * @class LocalizeCompleter
  *
@@ -133,7 +131,6 @@ LocalizeCompleter.definition = {
       }
     }
   },
-
 };
 
 
