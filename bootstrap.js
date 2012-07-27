@@ -29,6 +29,7 @@ function alert(message)
     .alert(null, "test", String(message));
 }
 
+/** Load modules and create tanasinn's process. */
 function start_tanasinn(data)
 {
   var io_service = Components
@@ -71,6 +72,9 @@ function start_tanasinn(data)
   return true;
 }
 
+/** shutdown tanasinn's process. 
+ *  close all terminal windows and clean up its resources.
+ **/
 function terminate_tanasinn()
 {
   Components
@@ -79,6 +83,7 @@ function terminate_tanasinn()
     .notifyObservers(null, "command/terminate-tanasinn", null);
 }
 
+/** startup event handler */
 function startup(data, reason) 
 {
   try {
@@ -90,6 +95,7 @@ function startup(data, reason)
   }
 }
 
+/** shutdown event handler */
 function shutdown(data, reason) 
 {
   var io_service;
@@ -104,6 +110,7 @@ function shutdown(data, reason)
   return true;
 }
 
+/** install event handler */
 function install(data, reason) 
 {
   try {
@@ -115,6 +122,7 @@ function install(data, reason)
   return true;
 }
 
+/** uninstall event handler */
 function uninstall(data, reason) 
 {
   try {
