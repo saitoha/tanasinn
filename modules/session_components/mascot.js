@@ -55,8 +55,8 @@ Mascot.definition = {
           src: this.getMascotImagePath(), 
           style: <>
             position: absolute;
-            margin-top: -62px;
-            margin-left: -80px;
+            margin-left: {this.offset_left}px;
+            margin-top: {this.offset_top}px;
           </>,
         },
       ],
@@ -65,6 +65,9 @@ Mascot.definition = {
   "[persistable] enabled_when_startup": true,
 
   "[persistable] mascot_image_file": "images/mascot.svg",
+  "[persistable] offset_left": -80,
+  "[persistable] offset_top": -62,
+  "[persistable] enabled_when_startup": false,
 
   _element: null,
 
