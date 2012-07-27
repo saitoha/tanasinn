@@ -121,7 +121,7 @@ coUtils.Constant = {
   // XML namespaces
   //
   NS_XHTML                   : "http://www.w3.org/1999/xhtml",
-  NS_XSVG                    : "http://www.w3.org/2000/svg",
+  NS_SVG                     : "http://www.w3.org/2000/svg",
 
   //
   // X11 color name definition
