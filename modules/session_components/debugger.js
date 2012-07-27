@@ -116,11 +116,13 @@ Tracer.definition = {
         };
       };
 
-      this.sendMessage("command/add-sequence", {
-        expression: information.expression, 
-        handler: delegate, 
-        context: information.context,
-      });
+      this.sendMessage(
+        "command/add-sequence",
+        {
+          expression: information.expression, 
+          handler: delegate, 
+          context: information.context,
+        });
 
     } catch (e) {
       coUtils.Debug.reportError(e);
@@ -210,31 +212,41 @@ Hooker.definition = {
 
     function make_action(sequence, action)
     {
-      buffer.push(function() [action(), sequence]);
+      buffer.push(
+        function do_action()
+        {
+          var result = action();
+          return [result, sequence];
+        });
     }
 
     if (!this._hooked) {
+
       parser = this.dependency["parser"];
       buffer = this._buffer;
       self = this;
       this._hooked = true;
-      parser.parse = function(data) 
-      {
-        if (self._step_mode) {
-          this.sendMessage("command/flow-control", false);
-        }
-        for (action in parser.__proto__.parse.call(parser, data)) {
-          sequence = parser._scanner.getCurrentToken();
-          make_action(sequence, action);
-        }
-        if (!self._step_mode) {
-          while (buffer.length) {
-            action = buffer.shift();
-            result = action();
-            this.sendMessage("command/debugger-trace-sequence", result);
+
+      // hook parser
+      parser.parse = function parse_alternative(data) 
+        {
+          if (self._step_mode) {
+            this.sendMessage("command/flow-control", false);
           }
-        }
-      };
+          for (action in parser.__proto__.parse.call(parser, data)) {
+            sequence = parser._scanner.getCurrentToken();
+            make_action(sequence, action);
+          }
+
+          // do action
+          if (!self._step_mode) {
+            while (buffer.length) {
+              action = buffer.shift();
+              result = action();
+              this.sendMessage("command/debugger-trace-sequence", result);
+            }
+          }
+        };
     };
   },
 
@@ -515,7 +527,7 @@ Debugger.definition = {
     }
     this.sendMessage("command/debugger-step");
   },
-
+/*
   "[command('breakpoint/bp'), pnp]": 
   function breakpoint(arguments_string) 
   {
@@ -525,7 +537,7 @@ Debugger.definition = {
     this._pattern = new RegExp(arguments_string);
     this.watchSequence.enabled = true;
   },
-
+*/
   _pattern: null,
 
   "[subscribe('command/debugger-trace-sequence')] watchSequence": 
@@ -556,11 +568,14 @@ Debugger.definition = {
   update: function update(trace_info) 
   {
     var [info, sequence] = trace_info;
+
     var {type, name, value} = info || {
       type: coUtils.Constant.TRACE_OUTPUT,
       name: undefined,
-      value: [sequence],
+      value: [sequence.slice(0, -1)],
     };
+
+    value = value || ["dfkjskl"];
     var child;
     switch (type) {
       case coUtils.Constant.TRACE_CONTROL: 
@@ -661,7 +676,7 @@ Debugger.definition = {
           },
           {
             tagName: "label",
-            value: this._escape(value.shift()),
+            value: value && this._escape(value.shift()),
             style: <>
               color: darkcyan;
               background: lightpink;
