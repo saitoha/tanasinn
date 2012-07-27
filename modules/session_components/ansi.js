@@ -22,67 +22,36 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-var ANSI_GATM = 1
-var ANSI_KAM  = 2
-var ANSI_CRM  = 3
-var ANSI_IRM  = 4
-var ANSI_SRTM = 5
-var ANSI_VEM  = 7
-var ANSI_HEM  = 10
-var ANSI_PUM  = 11
-var ANSI_SRM  = 12
-var ANSI_FEAM = 13
-var ANSI_FETM = 14
-var ANSI_MATM = 15
-var ANSI_TTM  = 16
-var ANSI_SATM = 17
-var ANSI_TSM  = 18
-var ANSI_EBM  = 19
-var ANSI_LNM  = 20
+var ANSI_GATM = 1,
+    ANSI_KAM  = 2,
+    ANSI_CRM  = 3,
+    ANSI_IRM  = 4,
+    ANSI_SRTM = 5,
+    ANSI_VEM  = 7,
+    ANSI_HEM  = 10,
+    ANSI_PUM  = 11,
+    ANSI_SRM  = 12,
+    ANSI_FEAM = 13,
+    ANSI_FETM = 14,
+    ANSI_MATM = 15,
+    ANSI_TTM  = 16,
+    ANSI_SATM = 17,
+    ANSI_TSM  = 18,
+    ANSI_EBM  = 19,
+    ANSI_LNM  = 20;
 
 /**
- * @class AnsiSpecifiedMode
+ * @class AnsiMode
  */
-var AnsiSpecifiedMode = new Class().extends(Component);
-AnsiSpecifiedMode.definition = {
+var AnsiMode = new Class().extends(Component);
+AnsiMode.definition = {
 
   get id()
     "ansimode",
 
-  _mode: null,
-
-  GATM: false, 
-  KAM: false, 
-  CRM: false, 
-  IRM: false, 
-  SRTM: false, 
-  VEM: false, 
-  HEM: false, 
-  PUM: false, 
-  SRM: false, 
-  FEAM: false, 
-  FETM: false, 
-  MATM: false, 
-  TTM: false, 
-  SATM: false, 
-  TSM: false, 
-  EBM: false, 
-  LNM: false, 
-
-  /** constructor */
-  "[subscribe('@event/broker-started'), enabled]":
-  function onLoad(broker) 
-  {
-    this._mode = [];
-  },
-
   set: function set(id, flag) 
   {
     switch (id) {
-
-      case ANSI_CRM:
-        this.CRM = flag 
-        break;
 
       default:
         try {
@@ -105,17 +74,27 @@ AnsiSpecifiedMode.definition = {
   "[profile('vt100'), sequence('CSI %dh')]":
   function SM(n) 
   { // set ANSI-Specified Mode. 
+    try {
+      this.request("sequence/sm/" + id);
+    } catch (e) {
+      coUtils.Debug.reportWarning(
+        _("SM: Unknown ANSI Mode ID [%d] was specified."), id);
+    }
     this.set(n, true);
-    this._mode[id] = true;
   },
 
   "[profile('vt100'), sequence('CSI %dl')]": 
   function RM(n) 
   { // reset ANSI-Specified Mode. 
-    this.set(n, false);
-    this._mode[id] = false;
+    try {
+      this.request("sequence/rm/" + id);
+    } catch (e) {
+      coUtils.Debug.reportWarning(
+        _("RM: Unknown ANSI Mode ID [%d] was specified."), id);
+    }
   },
-}; // AnsiSpecifiedMode
+
+}; // AnsiMode
 
 /**
  * @fn main
@@ -124,7 +103,7 @@ AnsiSpecifiedMode.definition = {
  */
 function main(broker) 
 {
-  new AnsiSpecifiedMode(broker);
+  new AnsiMode(broker);
 }
 
 // EOF
