@@ -1658,6 +1658,9 @@ Screen.definition = {
   "[persistable] initial_column": 80,
   "[persistable] initial_row": 24,
 
+  /** installs itself. 
+   *  @param {Broker} broker A Broker object.
+   */
   "[install]":
   function install(broker)
   {
@@ -1670,6 +1673,9 @@ Screen.definition = {
     this._line_generator = line_generator;
   },
 
+  /** uninstalls itself. 
+   *  @param {Broker} broker A Broker object.
+   */
   "[uninstall]":
   function uninstall(broker)
   {

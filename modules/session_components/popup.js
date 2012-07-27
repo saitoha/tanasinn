@@ -327,15 +327,28 @@ PopupMenu.definition = {
   "[subscribe('sequence/osc/200'), pnp]":
   function onDisplay(data) 
   {
-    var liens, row, column, selected, cursor_state,
-        renderer, line_height, char_width, x, y,
-        colormap, scrollbox, rows, box_object, row, 
-        scrollY, first_position, last_position;
+    var lines = data.split("-"),
+        renderer = this.dependency["renderer"],
+        line_height = renderer.line_height,
+        char_width = renderer.char_width,
+        row,
+        column,
+        selected,
+        cursor_state,
+        x,
+        y,
+        colormap,
+        scrollbox,
+        rows,
+        box_object,
+        row, 
+        scrollY,
+        first_position,
+        last_position;
 
     while (this._container.firstChild) {
       this._container.removeChild(this._container.firstChild);
     }
-    lines = data.split("-");
 
     [row, column, selected] = lines.shift()
       .split(",")
@@ -344,10 +357,6 @@ PopupMenu.definition = {
 
     cursor_state = this.dependency["cursorstate"];
     row = row || cursor_state.positionY + 1;
-
-    renderer = this.dependency["renderer"];
-    line_height = renderer.line_height;
-    char_width = renderer.char_width;
 
     x = column * char_width - 10;
     y = row * line_height;
@@ -453,18 +462,19 @@ PopupMenu.definition = {
 
   _selectRow: function _selectRow(row)
   {
-    var completion_root, scroll_box, box_object, scrollY, 
-        first_position, last_position;
+    var completion_root = this._completion_root,
+        scroll_box = completion_root.parentNode,
+        box_object = scroll_box.boxObject
+          .QueryInterface(Components.interfaces.nsIScrollBoxObject),
+        scrollY, 
+        first_position,
+        last_position;
 
     row.style.borderRadius = "6px";
     row.style.backgroundImage 
       = "-moz-linear-gradient(top, #777, #666)";
     row.style.color = "white";
 
-    completion_root = this._completion_root;
-    scroll_box = completion_root.parentNode;
-    box_object = scroll_box.boxObject
-      .QueryInterface(Components.interfaces.nsIScrollBoxObject)
     if (box_object) {
       scrollY = {};
 

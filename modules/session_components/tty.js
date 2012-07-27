@@ -294,11 +294,16 @@ Controller.definition = {
   onDataAvailable: 
   function onDataAvailable(request, context, input, offset, count) 
   {
-    var data, command_list, command, argv, operation, 
-        arg, screen, output, answer, reply;
-
-    data = context.readBytes(count);
-    command_list = data.split(/[\n\r]/);
+    var data = context.readBytes(count),
+        command_list = data.split(/[\n\r]/),
+        command,
+        argv,
+        operation, 
+        arg,
+        screen,
+        output,
+        answer,
+        reply;
 
     command_list.pop();
     try {
@@ -814,7 +819,7 @@ SocketTeletypeService.definition = {
   "[install]":
   function install(broker) 
   {
-    var request_id, record, backup_data_path, context, file, socket;
+    var request_id, record, socket;
 
     if (0 === broker.command.indexOf("&")) {
 
@@ -828,21 +833,8 @@ SocketTeletypeService.definition = {
       coUtils.Sessions.remove(broker, request_id);
       coUtils.Sessions.update();
 
-      backup_data_path = broker.runtime_path + "/persist/" + request_id + ".txt";
+      this.sendMessage("command/attach-session", request_id);
 
-      if (coUtils.File.exists(backup_data_path)) {
-
-        context = JSON.parse(coUtils.IO.readFromFile(backup_data_path, "utf-8"));
-
-        this.sendMessage("command/restore", context);
-
-        file = coUtils.File.getFileLeafFromVirtualPath(backup_data_path);
-
-        if (file.exists()) {
-          file.remove(false)
-        }
-        this.onFirstFocus.enabled = true;
-      }
     } else {
 
       socket = Components
@@ -872,6 +864,28 @@ SocketTeletypeService.definition = {
     this._pump = null;
     coUtils.Debug.reportMessage(_("Resources in TTY have been cleared."));
 
+  },
+
+  /**
+   * Attach to an existing session
+   * @param {Number} request_id the ID of the session to attach to.
+   */
+  "[subscribe('@command/attach-session'), enabled]":
+  function attachSession(request_id)
+  {
+    var backup_data_path = this._broker.runtime_path + "/persist/" + request_id + ".txt",
+        context;
+
+    if (coUtils.File.exists(backup_data_path)) {
+      // resume 
+      context = JSON.parse(coUtils.IO.readFromFile(backup_data_path, "utf-8"));
+      this.sendMessage("command/restore", context);
+      var file = coUtils.File.getFileLeafFromVirtualPath(backup_data_path);
+      if (file.exists()) {
+        file.remove(false)
+      }
+      this.onFirstFocus.enabled = true;
+    }
   },
 
   "[subscribe('@command/focus')]": 
@@ -976,9 +990,8 @@ SocketTeletypeService.definition = {
   onDataAvailable: 
   function onDataAvailable(request, context, input, offset, count) 
   {
-    var data;
+    var data = this._input.readBytes(count);
 
-    data = this._input.readBytes(count);
     this._input.close();
     this._input = null;
     var [control_port, pid, ttyname, termattr] = data.split(":");

@@ -236,5 +236,4 @@ function main(broker)
   new CommandlineHistory(broker);
 }
 
-
-
+// EOF

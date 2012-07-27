@@ -173,6 +173,9 @@ TransformMatrix.prototype = {
 
 };
 
+/**
+ * @fn getMatrixFrom2Vecters
+ */
 function getMatrixFrom2Vectors(a, b)
 {
   var cross = b.cross(a),
@@ -182,7 +185,6 @@ function getMatrixFrom2Vectors(a, b)
       x = normalized_axis.x,
       y = normalized_axis.y,
       z = normalized_axis.z,
-
       matrix = new TransformMatrix(
         1 + (1 - cos_angle) * (x * x - 1),
         -z * sin_angle + (1 - cos_angle) * x * y,
@@ -307,7 +309,6 @@ DragTransform.definition = {
         r2 = w * w + h * h * 1,
         d2 = r2 - x * x - y * y,
         z = d2 > 0 ? Math.sqrt(d2): -Math.sqrt(-d2);
-//        this.sendMessage("command/report-overlay-message", [x, y]);
 
     return new Vector3d(x, y, z);
   },

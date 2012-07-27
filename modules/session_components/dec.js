@@ -90,7 +90,9 @@ DecModeSequenceHandler.definition = {
   "[profile('vt100'), sequence('CSI ?%dl')]":
   function DECRST() 
   { // DEC-Private Mode Reset
-    var i, n, screen;
+    var i,
+        n,
+        screen;
 
     if (0 === arguments.length) {
       coUtils.Debug.reportWarning(_("DECRST: Length of Arguments is zero. "));
@@ -434,7 +436,9 @@ DecPrivateMode.definition = {
   "[profile('vt100'), sequence('CSI ?%dh')]":
   function DECSET() 
   { // DEC Private Mode Set
-    var i, n, screen;
+    var i,
+        n,
+        screen;
 
     if (0 === arguments.length) {
       coUtils.Debug.reportWarning(_("DECSET: Length of Arguments is zero. "));

@@ -415,7 +415,7 @@ Escape.definition = {
     this._screen = screen;
   },
 
-};
+}; // class Screen
 
 /**
  * @fn main

@@ -74,22 +74,15 @@ W3m.definition = {
   "[install]":
   function install(broker) 
   {
-    var renderer,
-        { tanasinn_w3m_canvas } = this.request(
+    var renderer = this.dependency["renderer"],
+        tanasinn_w3m_canvas = this.request(
           "command/construct-chrome", 
-          this.template);
+          this.template
+        ).tanasinn_w3m_canvas;
 
-    renderer = this.dependency["renderer"];
     // set initial size.
     this._canvas = tanasinn_w3m_canvas;
     this._context = this._canvas.getContext("2d");
-
-    this.onWidthChanged.enabled = true;
-    this.onHeightChanged.enabled = true;
-    this.onFirstFocus.enabled = true;
-    this.onKeypadModeChanged.enabled = true;
-    this.osc99.enabled = true;
-
   }, 
 
   /** Uninstall itself. 
@@ -98,11 +91,6 @@ W3m.definition = {
   "[uninstall]":
   function uninstall(broker) 
   {
-    this.onWidthChanged.enabled = false;
-    this.onHeightChanged.enabled = false;
-    this.onFirstFocus.enabled = false;
-    this.onKeypadModeChanged.enabled = false;
-    this.osc99.enabled = false;
     if (null !== this._canvas) {
       this._canvas.parentNode.removeChild(this._canvas);
       this._canvas = null
@@ -113,43 +101,39 @@ W3m.definition = {
   },
     
   /** Fired at the keypad mode is changed. */
-  "[subscribe('event/keypad-mode-changed')]": 
+  "[subscribe('event/keypad-mode-changed'), pnp]": 
   function onKeypadModeChanged(mode) 
   {
-    var canvas, context;
-
-    canvas = this._canvas;  
-    context = canvas.getContext("2d");
+    var canvas = this._canvas,
+        context = canvas.getContext("2d");
 
     if (canvas && context) {
       context.clearRect(0, 0, canvas.width, canvas.height);
     }
   },
 
-  "[subscribe('@command/focus')]":
+  "[subscribe('@command/focus'), pnp]":
   function onFirstFocus() 
   {
-    var canvas;
-
-    canvas = this._canvas;
+    var canvas = this._canvas;
 
     canvas.width = canvas.parentNode.boxObject.width;
     canvas.height = canvas.parentNode.boxObject.height;
   },
 
-  "[subscribe('event/screen-width-changed')]": 
+  "[subscribe('event/screen-width-changed'), pnp]": 
   function onWidthChanged(width) 
   {
     this._canvas.width = width;
   },
 
-  "[subscribe('event/screen-height-changed')]": 
+  "[subscribe('event/screen-height-changed'), pnp]": 
   function onHeightChanged(height) 
   {
     this._canvas.height = height;
   },
 
-  "[subscribe('sequence/osc/99')]":
+  "[subscribe('sequence/osc/99'), pnp]":
   function osc99(command) 
   {
     var args, operation, verb;
@@ -172,9 +156,9 @@ W3m.definition = {
   /** Process "w3m-draw" command. */
   "w3m-draw": function w3m_draw(bindex, index, x, y, w, h, sx, sy, sw, sh, filename) 
   {
-    var cache, broker, image,
-        self = this,
-        NS_XHTML = "http://www.w3.org/1999/xhtml";
+    var cache,
+        image,
+        self = this;
 
     x = parseInt(x);
     y = parseInt(y);
@@ -188,29 +172,32 @@ W3m.definition = {
 
     this._cache_holder = this._cache_holder || {};
     cache = this._cache_holder[filename];
-    broker = this._broker;
 
-    image = cache || broker.document.createElementNS(NS_XHTML, "img");//new Image;
+    image = cache || {
+      value: this.request("get/root-element")
+        .ownerDocument
+        .createElementNS(coUtils.Constant.NS_XHTML, "img")
+    };
 
     if (cache) {
-      this._draw(image, x, y, w, h, sx, sy, sw, sh); // draw immediately.
+      this._draw(image.value, x, y, w, h, sx, sy, sw, sh); // draw immediately.
     } else {
       // draw after the image is fully loaded.
-      image.onload = function onload() 
+      image.value.onload = function onload() 
         {
           self._cache_holder[filename] = image;
-          self._draw(image, x, y, w, h, sx, sy, sw, sh);
+          self._draw(image.value, x, y, w, h, sx, sy, sw, sh);
         }
-      image.src = "file://" + filename;
+      image.value.src = "file://" + filename;
     }
   },
 
   /** Process "w3m-size" command. */
   "w3m-size": function(op, filename)
   {
-    var cache_holder, cache, broker, 
-        self = this,
-        NS_XHTML = "http://www.w3.org/1999/xhtml";
+    var cache_holder,
+        cache, 
+        self = this;
 
     this._cache_holder = this._cache_holder || {};
 
@@ -220,29 +207,30 @@ W3m.definition = {
     if (cache) {
       this._sendSize(cache); // send immediately.
     } else {
-      broker = this._broker;
-      cache = broker.document.createElementNS(NS_XHTML, "img");//new Image;
-      // get metrics and send after the image is fully loaded.
+      cache = {
+        value: this.request("get/root-element")
+          .ownerDocument
+          .createElementNS(coUtils.Constant.NS_XHTML, "img"),
+      };
 
-      cache.onload = function() 
+      // get metrics and send after the image is fully loaded.
+      cache.value.onload = function() 
         { 
           cache_holder[filename] = cache; // cache loaded image.
-          self._sendSize(cache);
+          self._sendSize(cache.value);
         }
 
-      cache.src = "file://" + filename;
+      cache.value.src = "file://" + filename;
     }
   },
 
   /** Process "w3m-clear" command. */
   "w3m-clear": function() 
   {
-    var context, canvas, width, height;
-
-    context = this._context;
-    canvas = this._canvas;
-    width = canvas.width;
-    height = canvas.height;
+    var context = this._context,
+        canvas = this._canvas,
+        width = canvas.width,
+        height = canvas.height;
 
     context.clearRect(0, 0, width, height);
   },
@@ -250,20 +238,17 @@ W3m.definition = {
   /** Process "w3m-getcharsize" command. */
   "w3m-getcharsize": function(x, y) 
   {
-    var canvs, renderer, char_width, line_height, w, h, reply;
-
-    coUtils.Debug.reportMessage(_("w3m-getcharsize called."));
-
-    canvas = this._canvas;
-    renderer = this.dependency["renderer"];
-    char_width = renderer.char_width;
-    line_height = renderer.line_height;
-    w = 0 | (x * char_width + 0.5); // round off
-    h = 0 | (y * line_height + 0.5);
-    reply = [w, " ", h, "\n"].join("");
+    var canvas = this._canvas,
+        renderer = this.dependency["renderer"],
+        char_width = renderer.char_width,
+        line_height = renderer.line_height,
+        w = 0 | (x * char_width + 0.5), // round off
+        h = 0 | (y * line_height + 0.5),
+        reply = [w, " ", h, "\n"].join("");
 
     this.sendMessage("command/send-to-tty", reply);
 
+    coUtils.Debug.reportMessage(_("w3m-getcharsize called."));
     coUtils.Debug.reportMessage(
       _("w3m-getcharsize succeeded. reply: '%d'."), 
       reply);
@@ -273,15 +258,12 @@ W3m.definition = {
    */
   _draw: function(image, x, y, w, h, sx, sy, sw, sh) 
   {
-    var natural_width, natural_height;
+    var natural_width = image.naturalWidth,
+        natural_height = image.naturalHeight;
 
     try {
 
-      natural_width = image.naturalWidth;
-      natural_height = image.naturalHeight;
-
       if (sx >= natural_width || sy >= natural_height) {
-
         coUtils.Debug.reportMessage(
           _("Invalid metrics was given : [%s]."),
           [sx, sy, sw, sh, x, y, w, h].join(","));
@@ -310,21 +292,19 @@ W3m.definition = {
    */
   _sendSize: function _sendSize(image) 
   {
-    var width, height, message;
+    var width = parseInt(image.naturalWidth) || 0,
+        height = parseInt(image.naturalHeight) || 0,
+        message = coUtils.Text.format("%d %d\n", width, height);
 
-    width = parseInt(image.naturalWidth) || 0;
-    if (0 == width) {
+    if (0 === width) {
       coUtils.Debug.reportWarning(
-        _("image.naturalWidth is zero. source: '%s'."), filename);
+        _("image.naturalWidth is zero. source: '%s'."), image.src);
     }
 
-    height = parseInt(image.naturalHeight) || 0;
-    if (0 == height) {
+    if (0 === height) {
       coUtils.Debug.reportWarning(
-        _("image.naturalHeight is zero. source: '%s'."), filename);
+        _("image.naturalHeight is zero. source: '%s'."), image.src);
     }
-
-    message = coUtils.Text.format("%d %d\n", width, height);
 
     this.sendMessage("command/send-to-tty", message);
   },

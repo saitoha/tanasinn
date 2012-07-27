@@ -22,6 +22,20 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+var impl = {
+
+  get_profile_path: function get_profile_path(broker, name)
+  {
+    var runtime_path = broker.runtime_path,
+        profile_directory = broker.profile_directory,
+        filename = (name || broker.profile) + ".js",
+        profile_path = runtime_path + "/" + profile_directory + "/" + filename;
+  
+    return profile_path;
+  },
+
+}; // impl
+
 /**
  * @class PersistManager
  */ 
@@ -35,10 +49,7 @@ PersistManager.definition = {
   function load(name)
   {
     var broker = this._broker,
-        filename = (name || broker.profile) + ".js",
-        profile_path = broker.runtime_path 
-                     + "/" + broker.profile_directory 
-                     + "/" + filename,
+        profile_path = impl.get_profile_path(broker, name),
         data;
 
     try {
@@ -63,20 +74,17 @@ PersistManager.definition = {
   "[subscribe('command/save-settings'), enabled]":
   function save(name)
   {
-    var broker, data, filename, profile_path, serialized_data;
+    var broker = this._broker,
+        data = {},
+        profile_path = impl.get_profile_path(broker, name)
+        serialized_data;
 
-    broker = this._broker;
-    data = {};
     if ("__persist" in broker) {
       broker.__persist(data);
     }
     this.sendMessage("command/before-save-persistable-data", data);
     this.sendMessage("command/save-persistable-data", data);
 
-    filename = (name || broker.profile) + ".js";
-    profile_path = broker.runtime_path 
-      + "/" + broker.profile_directory 
-      + "/" + filename;
     serialized_data = JSON.stringify(data);
     coUtils.IO.writeToFile(profile_path, serialized_data);
   },
@@ -84,14 +92,10 @@ PersistManager.definition = {
   "[subscribe('command/delete-settings'), enabled]":
   function deleteSettings(name)
   {
-    var broker, filename, profile_path, file;
+    var broker = this._broker,
+        profile_path = impl.get_profile_path(broker, name)
+        file = coUtils.File.getFileLeafFromVirtualPath(profile_path);
 
-    broker = this._broker;
-    filename = (name || broker.profile) + ".js";
-    profile_path = broker.runtime_path
-      + "/" + broker.profile_directory
-      + "/" + filename;
-    file = coUtils.File.getFileLeafFromVirtualPath(profile_path);
     if (file.exists()) {
       file.remove(true);
     }
@@ -100,10 +104,9 @@ PersistManager.definition = {
   "[subscribe('command/get-settings'), enabled]":
   function get()
   {
-    var data, broker;
+    var broker = this._broker,
+        data = {};
 
-    data = {};
-    broker = this._broker;
     if ("__get" in broker) {
       broker.__get(data);
     }
@@ -122,6 +125,5 @@ function main(broker)
 {
   new PersistManager(broker);
 }
-
 
 // EOF

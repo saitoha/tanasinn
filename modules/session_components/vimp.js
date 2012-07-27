@@ -194,4 +194,4 @@ function main(broker)
   new Vimperator(broker);
 }
 
-
+// EOF

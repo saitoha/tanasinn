@@ -50,6 +50,9 @@ TabController.definition = {
   _cursor: null,
   _tab_stops: null,
 
+  /** installs itself. 
+   *  @param {Broker} broker A Broker object.
+   */
   "[install]":
   function install(broker)
   {
@@ -58,6 +61,9 @@ TabController.definition = {
     this._resetTabStop();
   },
 
+  /** uninstalls itself. 
+   *  @param {Broker} broker A Broker object.
+   */
   "[uninstall]":
   function uninstall(broker)
   {
@@ -71,14 +77,16 @@ TabController.definition = {
   "[profile('vt100'), sequence('0x09'), type('Undefined')]":
   function HT() 
   { // Horizontal Tab
-    var cursor, tab_stops, line, width, max, positionX,
-        i, stop, screen;
-
-    cursor = this._cursor;
-    tab_stops = this._tab_stops;
-    screen = this._screen;
-    line = screen.getCurrentLine();
-    width = screen.width;
+    var cursor = this._cursor,
+        tab_stops = this._tab_stops,
+        screen = this._screen,
+        line = screen.getCurrentLine(),
+        width = screen.width,
+        max,
+        positionX,
+        i,
+        stop,
+        screen;
 
     if (coUtils.Constant.LINETYPE_NORMAL === line.type) {
       max = 0 === tab_stops.length ? 0: tab_stops[tab_stops.length - 1];
@@ -209,10 +217,9 @@ TabController.definition = {
   /** reset tab stops */
   _resetTabStop: function _resetTabStop()
   {
-    var i, width;
-
     // update tab stops
-    width = this._screen.width;
+    var width = this._screen.width,
+        i;
 
     this._tab_stops = [];
 
@@ -268,6 +275,7 @@ TabController.definition = {
    *
    * Ps
    * indicates the tab stops to clear. There are only two values for Ps, 0 and 3.
+   *
    * 0 or none (default) - The terminal only clears the tab stop at the cursor.
    * 3                   - The terminal clears all tab stops.
    *
@@ -275,7 +283,6 @@ TabController.definition = {
   "[profile('vt100'), sequence('CSI %dg')]":
   function TBC(n) 
   { // TaB Clear
-
     var tab_stops, pisitionX, i, stop;
 
     switch (n || 0) {
@@ -330,15 +337,16 @@ TabController.definition = {
   "[profile('vt100'), sequence('CSI %dI')]":
   function CHT(n) 
   { // Cursor Horaizontal Tabulation
-    var tab_stops, cursor, width, positionX, i, stop, index;
-
+    var tab_stops = this._tab_stops,
+        cursor = this._cursor,
+        width = this._screen.width,
+        positionX = cursor.positionX,
+        i,
+        stop,
+        index;
+ 
     n = (n || 1) - 1;
 
-    tab_stops = this._tab_stops;
-    cursor = this._cursor;
-    width = this._screen.width;
-    positionX = cursor.positionX;;
- 
     if (positionX > width - 1) {
       //if (this._wraparound_mode) {
         cursor.positionX = 0;
@@ -385,13 +393,14 @@ TabController.definition = {
   "[profile('vt100'), sequence('CSI %dZ')]":
   function CBT(n) 
   { // Cursor Backward Tabulation
-    var tab_stops, cursor, positionX, i, stop, index;
+    var tab_stops = this._tab_stops,
+        cursor = this._cursor,
+        positionX = cursor.positionX,
+        i,
+        stop,
+        index;
 
     n = (n || 1) - 1;
-
-    tab_stops = this._tab_stops;
-    cursor = this._cursor;
-    positionX = cursor.positionX;;
 
     for (i = tab_stops.length - 1; i >= 0; --i) {
       stop = tab_stops[i];

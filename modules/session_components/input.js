@@ -303,9 +303,12 @@ var KEY_MAC_ALT_AS_META = {
 
 function coCreateKeyMap(expression_map, destination_map) 
 {
-  var map, key, value, tokens, code;;
+  var map = destination_map || {},
+      key,
+      value,
+      tokens,
+      code;
 
-  map = destination_map || {};
   for ([key, value] in Iterator(expression_map)) 
   {
     tokens = key.split(/[\s\t]+/);
@@ -853,9 +856,7 @@ char:{event.isChar?"t":"f"}
   "[subscribe('event/keypress'), enabled]":
   function onKeyPressEventReceived(info) 
   {
-    var packed_code;
-
-    packed_code = coUtils.Keyboard
+    var packed_code = coUtils.Keyboard
       .getPackedKeycodeFromEvent(info.event, this._alt_key);
       //.getPackedKeycodeFromEvent(info.event, this._alt_key);
 
@@ -868,9 +869,7 @@ char:{event.isChar?"t":"f"}
   "[subscribe('command/input-with-remapping'), pnp]": 
   function inputWithMapping(info)
   {
-    var result;
-
-    result = this.request("event/normal-input", {
+    var result = this.request("event/normal-input", {
       textbox: this._textbox, 
       code: info.code,
     });
@@ -883,10 +882,9 @@ char:{event.isChar?"t":"f"}
   "[subscribe('command/input-with-no-remapping'), pnp]": 
   function inputWithNoMapping(packed_code)
   {
-    var c, message;
+    var c = packed_code & 0xffffff,
+        message = this._key_map[packed_code];
 
-    c = packed_code & 0xffffff;// event.which;
-    message = this._key_map[packed_code];
     if (!message) {
       if (packed_code & (1 << coUtils.Constant.KEY_CTRL | 
                          1 << coUtils.Constant.KEY_ALT)) {
@@ -930,9 +928,8 @@ char:{event.isChar?"t":"f"}
   "[listen('input', '#tanasinn_default_input'), pnp]":
   function oninput(event) 
   {
-    var value;
+    var value = this._textbox.value;
 
-    value = this._textbox.value;
     this._textbox.value = "";
     this.sendMessage("command/input-text", value);
   },
@@ -943,9 +940,7 @@ char:{event.isChar?"t":"f"}
   "[listen('compositionstart', '#tanasinn_default_input'), pnp]":
   function oncompositionstart(event) 
   {
-    var version_comparator;
-
-    version_comparator = Components
+    var version_comparator = Components
       .classes["@mozilla.org/xpcom/version-comparator;1"]
       .getService(Components.interfaces.nsIVersionComparator);
 
@@ -960,9 +955,7 @@ char:{event.isChar?"t":"f"}
   "[listen('compositionend', '#tanasinn_default_input'), pnp]":
   function oncompositionend(event) 
   {
-    var version_comparator;
-
-    version_comparator = Components
+    var version_comparator = Components
       .classes["@mozilla.org/xpcom/version-comparator;1"]
       .getService(Components.interfaces.nsIVersionComparator);
 

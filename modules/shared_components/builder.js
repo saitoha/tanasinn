@@ -236,11 +236,9 @@ TemplateBuilder.definition = {
       namespace = touple.shift().toLowerCase();
 
       if ("html" === namespace) {
-        const NS_XHTML = "http://www.w3.org/1999/xhtml";
-        return document.createElementNS(NS_XHTML, tagName);
+        return document.createElementNS(coUtils.Constant.NS_XHTML, tagName);
       } else if ("svg" === namespace) {
-        const NS_SVG = "http://www.w3.org/2000/svg";
-        return document.createElementNS(NS_SVG, tagName);
+        return document.createElementNS(coUtils.Constant.NS_SVG, tagName);
       } else {
         throw coUtils.Debug.Exception(
           _("Unexpected tag name: '%s'."), tagName);

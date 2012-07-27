@@ -59,8 +59,11 @@ OverlayImage.definition = {
   "[install]":
   function install(broker) 
   {
-    var {tanasinn_image_canvas} = this.request(
-      "command/construct-chrome", this.template);
+    var tanasinn_image_canvas = this.request(
+      "command/construct-chrome",
+      this.template
+    ).tanasinn_image_canvas;
+
     this._canvas = tanasinn_image_canvas;
   },
 
@@ -81,15 +84,14 @@ OverlayImage.definition = {
   "[subscribe('event/keypad-mode-changed'), pnp]": 
   function onKeypadModeChanged(mode) 
   {
-    var canvas, context;
+    var canvas = this._canvas,
+        context = canvas.getContext("2d");
 
-    canvas = this._canvas;  
     if (canvas) {
       canvas.width = canvas.parentNode.boxObject.width;
       canvas.height = canvas.parentNode.boxObject.height;
     }
 
-    context = canvas.getContext("2d");
     if (canvas && context) {
       context.clearRect(0, 0, canvas.width, canvas.height);
     }
@@ -120,17 +122,24 @@ OverlayImage.definition = {
   "[subscribe('sequence/osc/212'), pnp]":
   function draw(data) 
   {
-    var canvas, renderer, x, y, w, h, filename,
-        pixel_x, pixel_y, pixel_w, pixel_h,
-        cache, image, cache_holder,
-        NS_XHTML = "http://www.w3.org/1999/xhtml";
-
-    canvas = {
-      context: this._canvas.getContext("2d")
-    };
-    renderer = this.dependency["renderer"];
-
-    var {char_width, line_height} = renderer;
+    var renderer = this.dependency["renderer"],
+        canvas = {
+          context: this._canvas.getContext("2d")
+        },
+        char_width = renderer.char_width,
+        line_height = renderer.line_height,
+        x,
+        y,
+        w,
+        h,
+        filename,
+        pixel_x,
+        pixel_y,
+        pixel_w,
+        pixel_h,
+        cache,
+        image,
+        cache_holder;
     
     [x, y, w, h, filename] = data.split(";");
 
@@ -143,7 +152,9 @@ OverlayImage.definition = {
 
     cache = this._cache_holder[filename];
     image = cache 
-      || this.request("get/root-element").ownderDocument.createElementNS(NS_XHTML, "img");
+      || this.request("get/root-element")
+          .ownderDocument
+          .createElementNS(coUtils.Constant.NS_XHTML, "img");
     if (cache) {
       // draw immediately.
       canvas.context.drawImage(image, pixel_x, pixel_y, pixel_w, pixel_h);
