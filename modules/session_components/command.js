@@ -178,7 +178,7 @@ SetCommand.definition = {
   {
     var broker = this._broker,
         modules = this.sendMessage("get/components"),
-        pattern = /^\s*([$_a-zA-Z\.\-]+)\.([$_a-zA-Z]+)\s*(=?)\s*/,
+        pattern = /^\s*([$_a-zA-Z0-9\.\-]+)\.([$_a-zA-Z]+)\s*(=?)\s*/,
         match = arguments_string.match(pattern),
         all,
         component_name,
