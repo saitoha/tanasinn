@@ -1529,14 +1529,41 @@ coUtils.Color = {
 
 coUtils.Clipboard = {
 
+  /** get text from clipboard */
+  get: function get() 
+  {
+    var clipboard = Components
+          .classes["@mozilla.org/widget/clipboard;1"]
+          .getService(Components.interfaces.nsIClipboard),
+        trans = Components
+          .classes["@mozilla.org/widget/transferable;1"]
+          .createInstance(Components.interfaces.nsITransferable),
+        str = {},
+        str_length = {},
+        text = "";
+
+    trans.addDataFlavor("text/unicode");
+
+    clipboard.getData(trans, clipboard.kGlobalClipboard);
+	  trans.getTransferData("text/unicode", str, str_length);
+
+    if (str.value && str_length.value) {
+      text = str.value
+        .QueryInterface(Components.interfaces.nsISupportsString)
+        .data
+        .substring(0, str_length.value / 2);
+    }
+
+    return text;
+  },
+
   /** set text to clipboard */
   set: function set(text) 
   {
-    var clipboard_helper;
-
-    clipboard_helper = Components
+    var clipboard_helper = Components
       .classes["@mozilla.org/widget/clipboardhelper;1"]
       .getService(Components.interfaces.nsIClipboardHelper);
+
     clipboard_helper.copyString(text);
   },
 
