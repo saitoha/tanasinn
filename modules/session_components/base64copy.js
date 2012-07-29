@@ -59,40 +59,71 @@ ForwardInputIterator.definition = {
 
 
 /**
- *  @class Base64Copy
+ *  @class Base64CopyPaste
  *  @brief Makes it enable to copy selected region by pressing short cut key.
  */
-var Base64Copy = new Class().extends(Plugin)
-                            .depends("decoder");
-Base64Copy.definition = {
+var Base64CopyPaste = new Class().extends(Plugin)
+                                 .depends("decoder");
+Base64CopyPaste.definition = {
 
   get id()
-    "base64copy",
+    "base64copypaste",
 
   get info()
     <Plugin>
-        <name>{_("Base64 Copy")}</name>
+        <name>{_("Base64 Copy/Paste")}</name>
         <description>{
-          _("Accept base64 encoded data and store it to clipboard.")
+          _("Accesss local clipboard and send/recieve text data in base64 encoded format.")
         }</description>
         <version>0.1</version>
     </Plugin>,
 
   "[persistable] enabled_when_startup": true,
+  "[persistable] enable_get_access": false,
+  "[persistable] enable_set_access": true,
+
+  /** installs itself. 
+   *  @param {Broker} broker A broker object.
+   */
+  "[install]":
+  function install(broker) 
+  {
+  },
+
+  /** Uninstalls itself.
+   *  @param {Broker} broker A broker object.
+   */
+  "[uninstall]":
+  function uninstall(broker) 
+  {
+  },
 
   /** Get selected text and put it to clipboard.  */
-  "[subscribe('sequence/osc/52'), _('Copy selected text.'), pnp]": 
-  function copy(data) 
+  "[subscribe('sequence/osc/52'), _('Copy/Paste selected text.'), pnp]": 
+  function osc52(data) 
   {
-    var buffer, text, scanner, encoded_data;
+    var encoded_data,
+        scanner,
+        buffer,
+        text;
 
-    encoded_data = this._parseOSC52Data(data);
-    scanner = this._getScanner(encoded_data);
-    
-    buffer = [c for (c in this._decode(scanner))]; 
-    text = coUtils.Text.safeConvertFromArray(buffer);
-    coUtils.Clipboard.set(text);
-    this._showMessage(text);
+    if (/^[0-9]+;\?$/.test(data)) {
+      if (this.enable_get_access) {
+        text = coUtils.Clipboard.get();
+        this.sendMessage("command/input-text", text);
+        this._showPasteMessage(text);
+      }
+    } else {
+      if (this.enable_set_access) {
+        encoded_data = this._parseOSC52Data(data),
+        scanner = this._getScanner(encoded_data),
+        buffer = [c for (c in this._decode(scanner))],
+        text = coUtils.Text.safeConvertFromArray(buffer);
+
+        coUtils.Clipboard.set(text);
+        this._showCopyMessage(text);
+      }
+    }
   },
 
   /** parse OSC 52 text data stream. */
@@ -121,19 +152,28 @@ Base64Copy.definition = {
 
   _getScanner: function _getScanner(text)
   {
-    var data;
-
-    data = coUtils.Text.base64decode(text);
+    var data = coUtils.Text.base64decode(text);
     return new ForwardInputIterator(data);
   },
 
   /** send message text to status bar. */
-  _showMessage: function _showMessage(text)
+  _showCopyMessage: function _showCopyMessage(text)
   {
-    var status_message;
+    var status_message = coUtils.Text.format(
+      _("Copied text to clipboard: %s"),
+      text);
 
-    status_message = coUtils.Text.format(
-      _("Copied text to clipboard: %s"), text);
+    this.sendMessage(
+      "command/report-status-message", 
+      status_message);
+  },
+
+  /** send message text to status bar. */
+  _showPasteMessage: function _showPasteMessage(text)
+  {
+    var status_message = coUtils.Text.format(
+      _("Pasted text from clipboard: %s"),
+      text);
 
     this.sendMessage(
       "command/report-status-message", 
@@ -194,7 +234,7 @@ Base64Copy.definition = {
     }
  },
 
-};
+}; // Base64CopyPaste
 
 /**
  * @fn main
@@ -203,7 +243,7 @@ Base64Copy.definition = {
  */
 function main(broker) 
 {
-  new Base64Copy(broker);
+  new Base64CopyPaste(broker);
 }
 
 // EOF

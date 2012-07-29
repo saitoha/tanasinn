@@ -74,7 +74,7 @@ ScrollRegion.definition = {
     var screen = this.dependency["screen"],
         min = 0,
         max = screen.height,
-        top = (n1 || min + 1) - 1, bottom = n2 || max,
+        top = (n1 || min + 1) - 1,
         bottom = arguments.length > 1 ? n2: max,
         tmp;
 

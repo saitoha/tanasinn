@@ -401,7 +401,6 @@ SequenceParser.definition = {
   /** Construct child parsers from definition and make parser-chain. */
   append: function append(key, value, context) 
   {
-
     var match = key.match(
           /^(0x[0-9a-zA-Z]{2})(.*)$|^%d([\x20-\x7f]+)$|^%<Ps>([\x20-\x7f]+)$|^(.)%s$|^(%p)$|^(%c)$|^(.)$|^(.)(.+)$/),
         code,
@@ -512,10 +511,11 @@ SequenceParser.definition = {
                = parser[accept_char] || new SequenceParser();
       }
       code = char_with_param.charCodeAt(char_with_param.length - 1);
-      parser[code] = function() 
-      {
-        return value.call(context, 0);
-      };
+      parser[code] = parser[code] || 
+        function() 
+        {
+          return value.call(context, 0);
+        };
 
     } else if (char_with_single_param) {
 
@@ -551,10 +551,12 @@ SequenceParser.definition = {
       // define action
       action = function(params) 
       {
-        var data;
+        var data = String.fromCharCode.apply(String, params);
 
-        data = String.fromCharCode.apply(String, params);
-        return function() value.call(context, data);
+        return function()
+          {
+            return value.call(context, data);
+          };
       };
 
       index = char_with_string.charCodeAt(0);
@@ -598,7 +600,10 @@ SequenceParser.definition = {
       if ("parse" in value) {
         this[code] = value;
       } else {
-        this[code] = this[code] || function() value.apply(context);
+        this[code] = this[code] || function()
+          {
+            return value.apply(context);
+          };
       }
     } else {
 
@@ -617,8 +622,8 @@ SequenceParser.definition = {
    */
   parse: function parse(scanner) 
   {
-    var c = scanner.current();
-    var next = this[c];
+    var c = scanner.current(),
+        next = this[c];
 
     if (next) { // c is part of control sequence.
       if ("parse" in next) { // next is parser.

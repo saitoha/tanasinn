@@ -118,6 +118,12 @@ Paste.definition = {
     return true; /* prevent default action */
   },
 
+  "[subscribe('command/paste'), pnp]":
+  function pasteFromClipboard(mode) 
+  {
+    this.paste();
+  },
+
   /** Set/Reset bracketed paste mode. */
   "[subscribe('command/change-bracketed-paste-mode'), pnp]":
   function onBracketedPasteModeChanged(mode) 
