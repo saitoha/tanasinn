@@ -119,7 +119,7 @@ TabController.definition = {
 
   /**
    *
-   * DECST8C — Set Tab at Every 8 Columns
+   * DECST8C - Set Tab at Every 8 Columns
    *
    * Set a tab stop at every eight columns starting with column 9.
    *
@@ -150,7 +150,7 @@ TabController.definition = {
 
   /**
    *
-   * DECTABSR — Tab Stop Report
+   * DECTABSR - Tab Stop Report
    * 
    * The terminal sends this sequence to the host in response to a request 
    * presentation state report (DECRQPSR) sequence. DECTABSR informs the host 
@@ -165,7 +165,7 @@ TabController.definition = {
    * the terminal's tab stops. When the application is finished, it can restore
    * the tab stops that were in effect before the application changed them. You
    * use the restore presentation state (DECRSPS) function to restore tab 
-   * stops. Refer to DECRSPS—Restore Presentation State for additional information.
+   * stops. Refer to DECRSPS - Restore Presentation State for additional information.
    *
    * Format
    *
@@ -232,7 +232,7 @@ TabController.definition = {
   },
 
   /**
-   * HTS — Horizontal Tab Set
+   * HTS - Horizontal Tab Set
    *
    * HTS sets a horizontal tab stop at the column position indicated by the 
    * value of the active column when the terminal receives an HTS.
@@ -262,7 +262,7 @@ TabController.definition = {
 
   /**
    *
-   * TBC—Tab Clear
+   * TBC - Tab Clear
    *
    * This control function clears tab stops.
    *
@@ -314,7 +314,7 @@ TabController.definition = {
 
   /**
    *
-   * CHT — Cursor Horizontal Forward Tabulation
+   * CHT - Cursor Horizontal Forward Tabulation
    *
    * Move the active position n tabs forward.
    *
@@ -367,7 +367,7 @@ TabController.definition = {
 
   /**
    *
-   * CBT — Cursor Backward Tabulation
+   * CBT - Cursor Backward Tabulation
    *
    * Move the active position n tabs backward.
    *
