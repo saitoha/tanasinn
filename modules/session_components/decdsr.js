@@ -118,6 +118,15 @@ DECDeviceStatusReport.definition = {
     
     switch (n1) {
 
+      case 53:
+        try {
+          this.request("event/locator-reporting-requested", null); 
+          this.sendMessage("command/send-sequence/csi", "?53n");
+        } catch(e) {
+          this.sendMessage("command/send-sequence/csi", "?50n");
+        }
+        break;
+
       case 63: // DECCKSR Memory Checksum Report
         this.DECCKSR(n2);
         break;

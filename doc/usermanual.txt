@@ -30,6 +30,8 @@ link:./usermanual.html[English/英語]
     Version 0.2.3.0
     support OSC 52 get access
     support DECRQM/DECRPM
+    support DECCKSR
+    support DECRQCRA
     disable Mascot plugin by default
     fix for vimperator intgration
     Fix some bugs.
