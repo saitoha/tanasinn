@@ -118,6 +118,38 @@ DECDeviceStatusReport.definition = {
     
     switch (n1) {
 
+      /**
+       * DECXCPR - Extended Cursor Position
+       * 
+       * The host asks the terminal for the current cursor position, 
+       * including the current page number.
+       *
+       * Format
+       * 
+       * CSI   ?     6     n
+       * 9/11  3/15  3/6   6/14
+       *
+       *
+       * Response
+       *
+       * CSI   Pl  ;   Pc  ;   Pp  R
+       *
+       *
+       * Parameters
+       * 
+       * Pl; Pc; Pp
+       * The terminal indicates that the cursor is currently at line Pl, column Pc, on page Pp.
+       *
+       */
+      case 6:
+        message = coUtils.Text.format(
+          "%d;%d;0R", 
+          cursor.positionY + 1, 
+          cursor.positionX + 1,
+          0);
+        this.sendMessage("command/send-sequence/csi", message);
+        break;
+
       case 53:
         try {
           this.request("event/locator-reporting-requested", null); 
