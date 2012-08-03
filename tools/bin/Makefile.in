@@ -1,7 +1,7 @@
 
 
 #TRUNK=http://ftp.mozilla.org/pub/mozilla.org/firefox/nightly/latest-oak
-TRUNK=http://ftp.mozilla.org/pub/mozilla.org/firefox/nightly/2012-05-16-mozilla-central-debug
+TRUNK=http://ftp.mozilla.org/pub/mozilla.org/firefox/nightly/2012/05/2012-05-16-mozilla-central-debug/
 CURL=curl
 UNZIP=unzip
 TANASINN_PLATFORM=@TANASINN_PLATFORM@
