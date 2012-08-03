@@ -172,12 +172,6 @@ DecModeSequenceHandler.definition = {
               "was not implemented."));
           break;
 
-        // Save cursor as in DECSC 
-        // (unless disabled by the titleinhibit resource)
-        case 1048:
-          this._screen.saveCursor();
-          break;
-
         // TODO: Set Sun function-key mode. 
         case 1051:
           coUtils.Debug.reportWarning(
@@ -338,12 +332,6 @@ DecModeSequenceHandler.definition = {
             _("DECRST 1037 - Send VT220 Remove from ",
               "the editing- keypad Delete key, ", 
               "was not implemented."));
-          break;
-
-        // Restore cursor as in DECRC 
-        // (unless disabled by the titleinhibit resource)
-        case 1048:
-          this._screen.restoreCursor();
           break;
 
         // Reset Sun function-key mode. 

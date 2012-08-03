@@ -148,6 +148,7 @@
     utf8mousemode.js
     sgrmousemode.js
     urxvtmouse.js
+    savecursor.js
     bracketpastemode.js
 
     macro.js
