@@ -154,6 +154,7 @@
     macro.js
     dsr.js
     decdsr.js
+    decrqcra.js
     charset.js
     protection.js
     reportparams.js

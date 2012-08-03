@@ -112,10 +112,10 @@ Utf8MouseMode.definition = {
   "[subscribe('sequence/decrqm/1005'), pnp]":
   function report() 
   {
-    var mode = this._mode ? 1: 2;
+    var mode = this._mode ? 1: 2,
+        message = "?1005;" + mode + "$y";
 
-    this.sendMessage("command/send-sequence/csi");
-    this.sendMessage("command/send-to-tty", "?1005;" + mode + "$y"); // DECRPM
+    this.sendMessage("command/send-sequence/csi", message);
   },
 
   /** on hard / soft reset

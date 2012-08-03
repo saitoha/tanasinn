@@ -613,9 +613,9 @@ Line.definition = {
   /** constructor */
   initialize: function initialize(length, attr) 
   {
-    var cells, cell;
+    var cells = [],
+        cell;
 
-    cells = [];
     while (length--) {
       cell = new Cell(attr);
       cells.push(cell);
@@ -626,13 +626,27 @@ Line.definition = {
   /** back up to context */
   serialize: function serialize(context)
   {
-    var cells, i, cell;
+    var cells = this.cells,
+        i,
+        cell;
 
     context.push(this.length);
     // this.cells.forEach(function(cell) cell.serialize(context));
-    cells = this.cells;
 
     for (i = 0; i < cells.length; ++i) {
+      cell = cells[i];
+      cell.serialize(context);
+    }
+  },
+
+  /** back up cells in specified range to given context */
+  serializeRange: function serializeRange(context, left, right)
+  {
+    var cells = this.cells,
+        i,
+        cell;
+
+    for (i = left; i < Math.min(cells.length, right); ++i) {
       cell = cells[i];
       cell.serialize(context);
     }
@@ -641,11 +655,12 @@ Line.definition = {
   /** restore from to context */
   deserialize: function deserialize(context)
   {
-    var cells, i, cell;
+    var cells = this.cells,
+        i,
+        cell;
 
     this.length = context.shift();
     // this.cells.forEach(function(cell) cell.deserialize(context));
-    cells = this.cells;
 
     for (i = 0; i < cells.length; ++i) {
       cell = cells[i];

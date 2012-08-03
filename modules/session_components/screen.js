@@ -2682,6 +2682,38 @@ Screen.definition = {
     this.dirty = true;
   },
 
+  calculateHashInRectangle:
+  function calculateHashInRectangle(top, left, bottom, right)
+  {
+    var cursor = this.cursor,
+        lines = this._lines,
+        attr = cursor.attr,
+        length = lines.length,
+        data = [],
+        crypto_hash = Components
+          .classes["@mozilla.org/security/hash;1"]
+          .createInstance(Components.interfaces.nsICryptoHash),
+        i,
+        line,
+        hash;
+
+    for (i = top; i < bottom; ++i) {
+      line = lines[i];
+      line.serializeRange(data, left, right);
+    }
+
+    crypto_hash.init(crypto_hash.MD5);
+    crypto_hash.update(data, data.length);
+    hash = crypto_hash.finish(false);
+    
+    function toHexString(charCode)
+    {
+      return ("0" + charCode.toString(16)).slice(-2);
+    }
+    
+    return [toHexString(hash.charCodeAt(i)) for (i in hash)].join("").toUpperCase();
+  },
+
 }; // class Screen
 
 

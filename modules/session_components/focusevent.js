@@ -89,8 +89,7 @@ FocusEvent.definition = {
     this.onGotFocus.enabled = false;
 
     if (this._focus_mode) {
-      this.sendMessage("command/send-sequence/csi");
-      this.sendMessage("command/send-to-tty", "I"); // focus in
+      this.sendMessage("command/send-sequence/csi", "I");
     }
   },
 
@@ -101,8 +100,7 @@ FocusEvent.definition = {
     this.onGotFocus.enabled = true;
 
     if (this._focus_mode) {
-      this.sendMessage("command/send-sequence/csi");
-      this.sendMessage("command/send-to-tty", "O"); // focus out
+      this.sendMessage("command/send-sequence/csi", "O");
     }
   },
 

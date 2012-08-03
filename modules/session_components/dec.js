@@ -460,8 +460,7 @@ DecPrivateMode.definition = {
     try {
       this.request("sequence/decrqm/" + n);
     } catch (e) {
-      this.sendMessage("command/send-sequence/csi");
-      this.sendMessage("command/send-to-tty", n + ";0$y"); // DECRPM
+      this.sendMessage("command/send-sequence/csi", n + ";0$y");
     }
   },
 
@@ -471,13 +470,15 @@ DecPrivateMode.definition = {
   "[profile('vt100'), sequence('CSI ?%d$p')]":
   function DECRQM_private(n) 
   {  // DEC Private Mode request
+    var message;
+
     n = n || 0;
 
     try {
       this.request("sequence/decrqm/" + n);
     } catch (e) {
-      this.sendMessage("command/send-sequence/csi");
-      this.sendMessage("command/send-to-tty", "?" + n + ";0$y"); // DECRPM
+      message = "?" + n + ";0$y";
+      this.sendMessage("command/send-sequence/csi", message);
     }
   },
 

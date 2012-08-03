@@ -255,8 +255,7 @@ Mouse.definition = {
 
     } // switch (this._tracking_type)
 
-    this.sendMessage("command/send-sequence/csi");
-    this.sendMessage("command/send-to-tty", message);
+    this.sendMessage("command/send-sequence/csi", message);
 
   },
 

@@ -121,10 +121,10 @@ SmoothScrollingMode.definition = {
   "[subscribe('sequence/decrqm/4'), pnp]":
   function report() 
   {
-    var mode = this._mode ? 1: 2;
+    var mode = this._mode ? 1: 2,
+        message = "?4;" + mode + "$y";
 
-    this.sendMessage("command/send-sequence/csi");
-    this.sendMessage("command/send-to-tty", "?4;" + mode + "$y"); // DECRPM
+    this.sendMessage("command/send-sequence/csi", message);
   },
 
   /** on hard / soft reset

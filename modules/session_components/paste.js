@@ -106,11 +106,9 @@ Paste.definition = {
       // Encodes the text message and send it to the tty device.
       if (true === this._bracketed_paste_mode) {
         // add bracket sequences.
-        this.sendMessage("command/send-sequence/csi");
-        this.sendMessage("command/send-to-tty", "200~");
+        this.sendMessage("command/send-sequence/csi", "200~");
         this.sendMessage("command/input-text", text);
-        this.sendMessage("command/send-sequence/csi");
-        this.sendMessage("command/send-to-tty", "201~");
+        this.sendMessage("command/send-sequence/csi", "201~");
       } else {
         this.sendMessage("command/input-text", text);
       }

@@ -26,6 +26,14 @@ link:./usermanual.html[English/英語]
 
 == News
 
+=== 2012/08/04 
+    Version 0.2.3.0
+    support OSC 52 get access
+    support DECRQM/DECRPM
+    disable Mascot plugin by default
+    fix for vimperator intgration
+    Fix some bugs.
+
 === 2012/07/15 
     Version 0.2.2.2
     Support OSC 10/11.

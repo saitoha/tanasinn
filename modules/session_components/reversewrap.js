@@ -100,10 +100,10 @@ ReverseWrap.definition = {
   "[subscribe('sequence/decrqm/45'), pnp]":
   function report() 
   {
-    var mode = this._mode ? 1: 2;
+    var mode = this._mode ? 1: 2,
+        message = "?45;" + mode + "$y";
 
-    this.sendMessage("command/send-sequence/csi");
-    this.sendMessage("command/send-to-tty", "?45;" + mode + "$y"); // DECRPM
+    this.sendMessage("command/send-sequence/csi", message);
   },
 
   /** handle terminal reset event.

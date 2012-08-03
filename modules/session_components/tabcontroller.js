@@ -201,9 +201,7 @@ TabController.definition = {
 
     message = result.join("/");
 
-    this.sendMessage("command/send-sequence/dcs");
-    this.sendMessage("command/send-to-tty", message);
-    this.sendMessage("command/send-sequence/st");
+    this.sendMessage("command/send-sequence/dcs-string", message);
 
   },
 

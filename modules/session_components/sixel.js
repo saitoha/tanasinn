@@ -202,11 +202,28 @@ Sixel.definition = {
   "[subscribe('sequence/dcs'), pnp]":
   function onDCS(data) 
   {
-    var renderer, screen, pattern, match,
-        P1, P2, P3, sixel, dom,
-        scanner, imagedata, x, y, color_no,
-        r, g, b, count, i, line_count,
-        space_type, c;
+    var renderer,
+        screen,
+        pattern,
+        match,
+        P1,
+        P2,
+        P3,
+        sixel,
+        dom,
+        scanner,
+        imagedata,
+        x,
+        y,
+        color_no,
+        r,
+        g,
+        b,
+        count,
+        i,
+        line_count,
+        space_type,
+        c;
 
     pattern = /^([0-9]);([01]);([0-9]+);?q((?:.|[\n\r])+)/;
     match = data.match(pattern);

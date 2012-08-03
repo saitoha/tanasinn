@@ -188,7 +188,7 @@ PrimaryDA.definition = {
     //var message = "\x1b[?c";
 
     this.sendMessage("command/send-sequence/csi", message);
-    this.sendMessage("command/send-to-tty", message);
+
     coUtils.Debug.reportMessage(
       _("Primary Device Attributes: '%s'."), 
       "\\e" + message);

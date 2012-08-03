@@ -340,8 +340,7 @@ DECLocatorMouse.definition = {
       "%d;%d;%d;%d;1&w", 
       code, this._locator_state, row, column);
 
-    this.sendMessage("command/send-sequence/csi");
-    this.sendMessage("command/send-to-tty", message);
+    this.sendMessage("command/send-sequence/csi", message);
 
   },
 
@@ -457,8 +456,7 @@ DECLocatorMouse.definition = {
       "%d;%d;%d;%d;1&w", 
       code, this._locator_state, row, column);
 
-    this.sendMessage("command/send-sequence/csi");
-    this.sendMessage("command/send-to-tty", message);
+    this.sendMessage("command/send-sequence/csi", message);
   },
 
   /** Mouse move evnet listener */
@@ -520,8 +518,7 @@ DECLocatorMouse.definition = {
       "%d;%d;%d;%d;1&w", 
       code, this._locator_state, row, column);
 
-    this.sendMessage("command/send-sequence/csi");
-    this.sendMessage("command/send-to-tty", message);
+    this.sendMessage("command/send-sequence/csi", message);
 
   },
   

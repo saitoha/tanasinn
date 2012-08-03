@@ -215,8 +215,7 @@ WindowManipulator.definition = {
         //       Response: CSI s t
         //         s = 1    Normal. (non-iconified)
         //           = 2    Iconified.
-        this.sendMessage("command/send-sequences/csi");
-        this.sendMessage("command/send-to-tty/", "1t");
+        this.sendMessage("command/send-sequence/csi", "1t");
         break;
 
       case 13:
@@ -229,8 +228,7 @@ WindowManipulator.definition = {
         y = target_element.boxObject.y;
         message = coUtils.Text.format("3;%d;%dt", x, y);
 
-        this.sendMessage("command/send-sequence/csi"); 
-        this.sendMessage("command/send-to-tty", message); 
+        this.sendMessage("command/send-sequence/csi", message); 
         break;
 
       case 14:
@@ -244,8 +242,7 @@ WindowManipulator.definition = {
         height = target_element.boxObject.height;
         message = coUtils.Text.format("4;%d;%dt", height, width);
 
-        this.sendMessage("command/send-sequence/csi"); 
-        this.sendMessage("command/send-to-tty", message); 
+        this.sendMessage("command/send-sequence/csi", message); 
         break;
 
       case 18:
@@ -258,8 +255,7 @@ WindowManipulator.definition = {
         height = screen.height;
         message = coUtils.Text.format("8;%d;%dt", height, width);
 
-        this.sendMessage("command/send-sequence/csi"); 
-        this.sendMessage("command/send-to-tty", message); 
+        this.sendMessage("command/send-sequence/csi", message); 
         break;
 
       case 19:
@@ -275,8 +271,7 @@ WindowManipulator.definition = {
         row = Math.floor(height / renderer.line_height);
         message = coUtils.Text.format("9;%d;%dt", row, column);
 
-        this.sendMessage("command/send-sequence/csi"); 
-        this.sendMessage("command/send-to-tty", message); 
+        this.sendMessage("command/send-sequence/csi", message); 
         break;
 
       case 20:
@@ -285,8 +280,6 @@ WindowManipulator.definition = {
         //         title    icon label. (window title)
         coUtils.Debug.reportWarning(
           _("DECSLPP 20: Reports icon label."));
-        this.sendMessage("command/send-sequence/csi"); 
-        this.sendMessage("command/send-to-tty", "10;abct"); 
         break;
 
       case 21:
@@ -295,8 +288,6 @@ WindowManipulator.definition = {
         //         title    Window title.
         coUtils.Debug.reportWarning(
           _("DECSLPP 21: Reports window title."));
-        this.sendMessage("command/send-sequence/csi"); 
-        this.sendMessage("command/send-to-tty", "10;cdet"); 
         break;
 
       default:

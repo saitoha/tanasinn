@@ -140,8 +140,7 @@ SecondaryDA.definition = {
                      // always zero.
     message = ">" + reply.join(";") + "c";
 
-    //this.sendMessage("command/send-sequence/csi");
-    this.sendMessage("command/send-to-tty", "\x1b[" + message);
+    this.sendMessage("command/send-sequence/csi", message);
 
     coUtils.Debug.reportMessage(
       _("Secondary Device Attributes is requested. reply: '%s'."), 

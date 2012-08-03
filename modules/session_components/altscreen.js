@@ -107,10 +107,10 @@ AlternateScreen.definition = {
   "[subscribe('sequence/decrqm/47'), pnp]":
   function report() 
   {
-    var mode = this._mode ? 1: 2;
+    var mode = this._mode ? 1: 2,
+        message = "?47;" + mode + "$y";
 
-    this.sendMessage("command/send-sequence/csi");
-    this.sendMessage("command/send-to-tty", "?47;" + mode + "$y"); // DECRPM
+    this.sendMessage("command/send-sequence/csi", message);
   },
 
   /** Use Alternate Screen Buffer 
@@ -151,21 +151,10 @@ AlternateScreen.definition = {
   "[subscribe('sequence/decrqm/1047'), pnp]":
   function report1047() 
   {
-    var mode = this._mode ? 1: 2;
+    var mode = this._mode ? 1: 2,
+        message = "?1047;" + mode + "$y";
 
-    this.sendMessage("command/send-sequence/csi");
-    this.sendMessage("command/send-to-tty", "?1047;" + mode + "$y"); // DECRPM
-  },
-
-  /** Report mode
-   */
-  "[subscribe('sequence/decrqm/1047'), pnp]":
-  function report() 
-  {
-    var mode = this._mode ? 1: 2;
-
-    this.sendMessage("command/send-sequence/csi");
-    this.sendMessage("command/send-to-tty", "?1047;" + mode + "$y"); // DECRPM
+    this.sendMessage("command/send-sequence/csi", message);
   },
 
   /** Save cursor as in DECSC and use Alternate Screen Buffer, 
@@ -206,10 +195,10 @@ AlternateScreen.definition = {
   "[subscribe('sequence/decrqm/1049'), pnp]":
   function report1049() 
   {
-    var mode = this._mode ? 1: 2;
+    var mode = this._mode ? 1: 2,
+        message = "?1049;" + mode + "$y";
 
-    this.sendMessage("command/send-sequence/csi");
-    this.sendMessage("command/send-to-tty", "?1049;" + mode + "$y"); // DECRPM
+    this.sendMessage("command/send-sequence/csi", message);
   },
 
   /** handle terminal reset event.

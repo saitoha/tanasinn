@@ -71,6 +71,7 @@
  *
  */
 var DECDeviceStatusReport = new Class().extends(Plugin)
+                                       .depends("screen")
                                        .depends("parser");
 DECDeviceStatusReport.definition = {
 
@@ -89,24 +90,37 @@ DECDeviceStatusReport.definition = {
   "[persistable] enabled_when_startup": true,
 
   _parser: null,
+  _screen: null,
 
+  /** installs itself. 
+   *  @param {Broker} broker A Broker object.
+   */
   "[install]":
   function install()
   {
     this._parser = this.dependency["parser"];
+    this._screen = this.dependency["screen"];
   },
 
+  /** uninstalls itself. 
+   *  @param {Broker} broker A Broker object.
+   */
   "[uninstall]":
   function uninstall()
   {
     this._parser = null;
+    this._screen = null;
   },
 
   "[profile('vt100'), sequence('CSI ?%dn')]":
-  function DECDSR(n) 
+  function DECDSR(n1, n2) 
   { // Device Status Report, DEC specific
     
-    switch (n) {
+    switch (n1) {
+
+      case 63: // DECCKSR Memory Checksum Report
+        this.DECCKSR(n2);
+        break;
 
       // report ambiguous width status (TNREPTAMB)
       case 8840:
@@ -115,8 +129,7 @@ DECDeviceStatusReport.definition = {
         } else {
           message = "?8841n";
         }
-        this.sendMessage("command/send-sequence/csi");
-        this.sendMessage("command/send-to-tty", message);
+        this.sendMessage("command/send-sequence/csi", message);
         break;
 
       default:
@@ -124,6 +137,28 @@ DECDeviceStatusReport.definition = {
           _("%s sequence [%s] was ignored."),
           arguments.callee.name, Array.slice(arguments));
     }
+  },
+
+  DECCKSR: function DECCKSR(id)
+  {
+    var screen = this._screen,
+        id,
+        top,
+        left,
+        bottom,
+        right,
+        checksum,
+        message;
+
+    top = 0;
+    left = 0;
+    bottom = screen.height;
+    right = screen.width;
+
+    checksum = screen.calculateHashInRectangle(top, left, bottom, right);
+    message = id + "!~" + checksum;
+
+    this.sendMessage("command/send-sequence/dcs-string", message);
   },
 
 };

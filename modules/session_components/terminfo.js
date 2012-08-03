@@ -607,11 +607,12 @@ Terminfo.definition = {
         {
           return parseInt(x, 16);
         });
+
       s = String.fromCharCode.apply(String, chars);
       value = db[s];
-      this.sendMessage("command/send-sequence/dcs");
+
       if (undefined === value) {
-        this.sendMessage("command/send-to-tty", "0+r");
+        message = "0+r";
       } else {
         message = value
           .split("")
@@ -623,9 +624,8 @@ Terminfo.definition = {
                 .toString(16);
             })
           .join("");
-        this.sendMessage("command/send-to-tty", message);
       }
-      this.sendMessage("command/send-sequence/st");
+      this.sendMessage("command/send-sequence/dcs-string", message);
     }
   },
 

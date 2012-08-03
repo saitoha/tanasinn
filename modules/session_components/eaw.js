@@ -132,7 +132,6 @@ AmbiguousWidthReporting.definition = {
       message = "2W";
     }
     this.sendMessage("command/send-sequence/csi", message);
-    this.sendMessage("command/send-to-tty", message);
   },
 
 }; // class EastAsianWidth

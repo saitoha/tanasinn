@@ -152,16 +152,14 @@ ReportParams.definition = {
       // sent when the terminal exits the SET-UP mode).
       case 0:
         message = "2;" + this._termattr;
-        this.sendMessage("command/send-sequence/csi");
-        this.sendMessage("command/send-to-tty", message);
+        this.sendMessage("command/send-sequence/csi", message);
         break;
 
       // This message is a request; from now on the 
       // terminal may only report in response to a request.
       case 1:
         message = "3;" + this._termattr;
-        this.sendMessage("command/send-sequence/csi");
-        this.sendMessage("command/send-to-tty", message);
+        this.sendMessage("command/send-sequence/csi", message);
         break;
 
       default:

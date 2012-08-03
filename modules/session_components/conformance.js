@@ -198,21 +198,29 @@ ConformanceLevel.definition = {
 
 
   "[subscribe('command/send-sequence/osc'), pnp]":
-  function send_OSC() 
+  function send_OSC(data) 
   {
-    var message;
+    var message = "";
 
     if (this._8bit_mode) {
-      message = "\x9d";
+      message += "\x9d";
     } else {
-      message = "\x1b]";
+      message += "\x1b]";
+    }
+
+    message += data;
+
+    if (this._8bit_mode) {
+      message += "\x07";
+    } else {
+      message += "\x1b\\";
     }
 
     this.sendMessage("command/send-to-tty", message);
   },
 
   "[subscribe('command/send-sequence/csi'), pnp]":
-  function send_CSI() 
+  function send_CSI(data) 
   {
     var message;
 
@@ -222,35 +230,32 @@ ConformanceLevel.definition = {
       message = "\x1b[";
     }
 
-    this.sendMessage("command/send-to-tty", message);
-  },
-
-  "[subscribe('command/send-sequence/dcs'), pnp]":
-  function send_DCS() 
-  {
-    var message;
-
-    if (this._8bit_mode) {
-      message = "\x90";
-    } else {
-      message = "\x1bP";
-    }
+    message += data;
 
     this.sendMessage("command/send-to-tty", message);
   },
 
-  "[subscribe('command/send-sequence/st'), pnp]":
-  function send_ST() 
+  "[subscribe('command/send-sequence/dcs-string'), pnp]":
+  function send_DCS_string(data) 
   {
-    var message;
+    var message = "";
 
     if (this._8bit_mode) {
-      message = "\x07";
+      message += "\x90";
     } else {
-      message = "\x1b\\";
+      message += "\x1bP";
+    }
+
+    message += data;
+
+    if (this._8bit_mode) {
+      message += "\x07";
+    } else {
+      message += "\x1b\\";
     }
 
     this.sendMessage("command/send-to-tty", message);
+
   },
 
   /** return 8bit mode state */

@@ -88,18 +88,23 @@ ANSIDeviceStatusReport.definition = {
 
   "[persistable] enabled_when_startup": true,
 
+  /** installs itself. 
+   *  @param {Broker} broker A Broker object.
+   */
   "[install]":
   function install()
   {
     this._cursor = this.dependency["cursorstate"];
   },
 
+  /** uninstalls itself. 
+   *  @param {Broker} broker A Broker object.
+   */
   "[uninstall]":
   function uninstall()
   {
     this._cursor = null;
   },
-
 
   "[profile('vt100'), sequence('CSI %dn')]":
   function DSR(n) 
@@ -112,8 +117,7 @@ ANSIDeviceStatusReport.definition = {
 
       // report terminal status
       case 5:
-        this.sendMessage("command/send-sequence/csi");
-        this.sendMessage("command/send-to-tty", "0n");
+        this.sendMessage("command/send-sequence/csi", "0n");
         break;
 
       // report cursor position
@@ -122,8 +126,7 @@ ANSIDeviceStatusReport.definition = {
           "%d;%dR", 
           cursor.positionY + 1, 
           cursor.positionX + 1);
-        this.sendMessage("command/send-sequence/csi");
-        this.sendMessage("command/send-to-tty", message);
+        this.sendMessage("command/send-sequence/csi", message);
         break;
 
       default:

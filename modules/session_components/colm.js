@@ -190,10 +190,10 @@ FixedColumnMode.definition = {
   "[subscribe('sequence/decrqm/3'), pnp]":
   function report3() 
   {
-    var mode = this._80mode ? 1: 2;
+    var mode = this._mode ? 1: 2,
+        message = "?3;" + mode + "$y";
 
-    this.sendMessage("command/send-sequence/csi");
-    this.sendMessage("command/send-to-tty", "?3;" + mode + "$y"); // DECRPM
+    this.sendMessage("command/send-sequence/csi", message);
   },
 
   /** Report mode
@@ -201,10 +201,10 @@ FixedColumnMode.definition = {
   "[subscribe('sequence/decrqm/40'), pnp]":
   function report() 
   {
-    var mode = this._mode ? 1: 2;
+    var mode = this._mode ? 1: 2,
+        message = "?40;" + mode + "$y";
 
-    this.sendMessage("command/send-sequence/csi");
-    this.sendMessage("command/send-to-tty", "?40;" + mode + "$y"); // DECRPM
+    this.sendMessage("command/send-sequence/csi", message);
   },
 
   /** on hard / soft reset
