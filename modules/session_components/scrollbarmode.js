@@ -22,42 +22,39 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-
 /**
- * @class TextCursorEnableMode
+ * @class ScrollbarMode
  *
- * DECTCEM — Text Cursor Enable Mode
- *
- * This control function makes the cursor visible or invisible.
- *
- * Default: Visible
+ * XT_SCRLBAR - x10-compatible mouse mode
+ * 
+ * Default: off
  *
  * Format
  *
- * CSI   ?     2     5     h
- * 9/11  3/15  3/2   3/5   6/8
+ * CSI   ?     3     0     h
+ * 9/11  3/15  3/3   3/0   6/8
  *
- * Set: makes the cursor visible.
+ * Set: enable x10 mouse mode.
  *
  *
- * CSI   ?     2     5     l
- * 9/11  3/15  3/2   3/5   6/12
+ * CSI   ?     3     0     l
+ * 9/11  3/15  3/3   3/0   6/12
  *
- * Reset: makes the cursor invisible.
+ * Reset: disable x10 mouse mode.
+ *
  */
-var TextCursorEnableMode = new Class().extends(Plugin)
-                                  .depends("cursorstate");
-TextCursorEnableMode.definition = {
+var ScrollbarMode = new Class().extends(Plugin);
+ScrollbarMode.definition = {
 
   get id()
-    "text_cursor_enable_mode",
+    "scrollbar_mode",
 
   get info()
     <module>
-        <name>{_("Text Cursor Enable Mode (DECTCEM)")}</name>
+        <name>{_("Scrollbar Mode")}</name>
         <version>0.1</version>
         <description>{
-          _("Switch the cursor's show/hide status.")
+          _("Switch show/hide scrollbar.")
         }</description>
     </module>,
 
@@ -73,7 +70,6 @@ TextCursorEnableMode.definition = {
   function install(broker) 
   {
     this._mode = this.default_value;
-    this._cursor = this.dependency["cursorstate"];
   },
 
   /** Uninstalls itself.
@@ -85,39 +81,45 @@ TextCursorEnableMode.definition = {
     this._mode = null;
   },
 
-  /** Show Cursor (DECTCEM)
+
+  /** Show Scrollbar (rxvt)
    */
-  "[subscribe('sequence/decset/25'), pnp]":
+  "[subscribe('sequence/decset/30'), pnp]":
   function activate() 
   { 
-    var cursor = this._cursor;
-
     this._mode = true;
 
-    this.sendMessage("event/cursor-visibility-changed", true);
+    // Show Scrollbar (rxvt)
+    this.sendMessage("command/scrollbar-show");
+
+    coUtils.Debug.reportMessage(
+      _("DECSET 30 - Show scrollbar feature (rxvt) is set."));
+
   },
 
-  /** Hide Cursor (DECTCEM)
+  /** Deactivate auto-repeat feature
    */
-  "[subscribe('sequence/decrst/25'), pnp]":
+  "[subscribe('sequence/decrst/30'), pnp]":
   function deactivate() 
   {
-    var cursor = this._cursor;
-
     this._mode = false;
 
-    this.sendMessage("event/cursor-visibility-changed", false);
+    this.sendMessage("command/scrollbar-hide");
+
+    coUtils.Debug.reportMessage(
+      _("DECRST 30 - Show-scrollbar feature (rxvt) is reset."));
+
   },
 
   /** Report mode
    */
-  "[subscribe('sequence/decrqm/25'), pnp]":
+  "[subscribe('sequence/decrqm/30'), pnp]":
   function report() 
   {
     var mode = this._mode ? 1: 2;
 
     this.sendMessage("command/send-sequence/csi");
-    this.sendMessage("command/send-to-tty", "?25;" + mode + "$y"); // DECRPM
+    this.sendMessage("command/send-to-tty", "?30;" + mode + "$y"); // DECRPM
   },
 
   /** on hard / soft reset
@@ -160,7 +162,8 @@ TextCursorEnableMode.definition = {
     }
   },
 
-}; // class TextCursorEnableMode
+}; // class ScrollbarMode
+
 
 /**
  * @fn main
@@ -169,7 +172,7 @@ TextCursorEnableMode.definition = {
  */
 function main(broker) 
 {
-  new TextCursorEnableMode(broker);
+  new ScrollbarMode(broker);
 }
 
 // EOF

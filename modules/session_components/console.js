@@ -190,13 +190,13 @@ MessageFilter.definition = {
           style: "color: red; width: 4em;",
         },
         { 
-          tagName: "box", 
-          innerText: "line: " + line,
+          tagName: "label", 
+          value: "line: " + line,
           style: "padding: 0px 4px",
         },
         { 
-          tagName: "box", 
-          innerText: message, 
+          tagName: "label", 
+          value: message, 
         },
       ]
     };
@@ -295,9 +295,9 @@ DisplayManager.definition = {
         border-bottom: 1px solid green;,
       </>,
       childNodes: [
-        { tagName: "box", innerText: "" },
-        { tagName: "box", innerText: "" },
-        { tagName: "box", innerText: message }
+        { tagName: "label", value: "" },
+        { tagName: "label", value: "" },
+        { tagName: "label", value: message }
       ]
     };
   },

@@ -24,37 +24,52 @@
 
 
 /**
- * @class TextCursorEnableMode
+ * @class OriginMode
  *
- * DECTCEM — Text Cursor Enable Mode
- *
- * This control function makes the cursor visible or invisible.
- *
- * Default: Visible
+ * DECOM - Origin Mode
+ * 
+ * This control function sets the origin for the cursor. DECOM determines if
+ * the cursor position is restricted to inside the page margins. When you
+ * power up or reset the terminal, you reset origin mode.
+ * 
+ * Default: Origin is at the upper-left of the screen, independent of margins.
  *
  * Format
  *
- * CSI   ?     2     5     h
- * 9/11  3/15  3/2   3/5   6/8
+ * CSI   ?     6     h
+ * 9/11  3/15  3/6   6/8
  *
- * Set: makes the cursor visible.
+ * Set: within margins.
+ * 
+ *
+ * CSI   ?     6     l
+ * 9/11  3/15  3/6   6/12
+ *
+ * Reset: upper-left corner.
  *
  *
- * CSI   ?     2     5     l
- * 9/11  3/15  3/2   3/5   6/12
+ * Description
+ * 
+ * When DECOM is set, the home cursor position is at the upper-left corner of
+ * the screen, within the margins. The starting point for line numbers depends
+ * on the current top margin setting. The cursor cannot move outside of the
+ * margins.
+ * 
+ * When DECOM is reset, the home cursor position is at the upper-left corner of
+ * the screen. The starting point for line numbers is independent of the
+ * margins. The cursor can move outside of the margins.
  *
- * Reset: makes the cursor invisible.
  */
-var TextCursorEnableMode = new Class().extends(Plugin)
-                                  .depends("cursorstate");
-TextCursorEnableMode.definition = {
+var OriginMode = new Class().extends(Plugin)
+                            .depends("cursorstate");
+OriginMode.definition = {
 
   get id()
-    "text_cursor_enable_mode",
+    "origin_mode",
 
   get info()
     <module>
-        <name>{_("Text Cursor Enable Mode (DECTCEM)")}</name>
+        <name>{_("Origin Mode(DECOM)")}</name>
         <version>0.1</version>
         <description>{
           _("Switch the cursor's show/hide status.")
@@ -62,7 +77,7 @@ TextCursorEnableMode.definition = {
     </module>,
 
   "[persistable] enabled_when_startup": true,
-  "[persistable] default_value": true,
+  "[persistable] default_value": false,
 
   _mode: null,
 
@@ -85,39 +100,52 @@ TextCursorEnableMode.definition = {
     this._mode = null;
   },
 
-  /** Show Cursor (DECTCEM)
+  /** Enable origin mode (DECOM)
    */
-  "[subscribe('sequence/decset/25'), pnp]":
+  "[subscribe('sequence/decset/6'), pnp]":
   function activate() 
   { 
     var cursor = this._cursor;
 
     this._mode = true;
 
-    this.sendMessage("event/cursor-visibility-changed", true);
+    // set
+    cursor.DECOM = true;
+
+    coUtils.Debug.reportMessage(
+      _("DECSET - DECOM (Origin mode) was set: (%d, %d)."),
+      cursor.originX,
+      cursor.originY);
+
   },
 
-  /** Hide Cursor (DECTCEM)
+  /** Disable origin mode (DECOM)
    */
-  "[subscribe('sequence/decrst/25'), pnp]":
+  "[subscribe('sequence/decrst/6'), pnp]":
   function deactivate() 
   {
     var cursor = this._cursor;
 
     this._mode = false;
 
-    this.sendMessage("event/cursor-visibility-changed", false);
+    // reset
+    cursor.DECOM = false;
+
+    coUtils.Debug.reportMessage(
+      _("DECSET - DECOM (Origin mode) was reset: (%d, %d)."),
+      cursor.positionX,
+      cursor.positionY);
   },
 
   /** Report mode
    */
-  "[subscribe('sequence/decrqm/25'), pnp]":
+  "[subscribe('sequence/decrqm/6'), pnp]":
   function report() 
   {
     var mode = this._mode ? 1: 2;
 
     this.sendMessage("command/send-sequence/csi");
-    this.sendMessage("command/send-to-tty", "?25;" + mode + "$y"); // DECRPM
+    this.sendMessage("command/send-to-tty", "?6;" + mode + "$y"); // DECRPM
   },
 
   /** on hard / soft reset
@@ -160,7 +188,7 @@ TextCursorEnableMode.definition = {
     }
   },
 
-}; // class TextCursorEnableMode
+}; // class OriginMode
 
 /**
  * @fn main
@@ -169,7 +197,7 @@ TextCursorEnableMode.definition = {
  */
 function main(broker) 
 {
-  new TextCursorEnableMode(broker);
+  new OriginMode(broker);
 }
 
 // EOF

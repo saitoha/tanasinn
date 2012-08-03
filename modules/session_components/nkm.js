@@ -24,47 +24,51 @@
 
 
 /**
- * @class TextCursorEnableMode
+ * @class NumericKeypadMode
  *
- * DECTCEM — Text Cursor Enable Mode
- *
- * This control function makes the cursor visible or invisible.
- *
- * Default: Visible
+ * DECNKM - Numeric Keypad Mode
+ * 
+ * This control function works like the DECKPAM and DECKPNM functions. 
+ * DECNKM is provided mainly for use with the request and report mode 
+ * (DECRQM/DECRPM) control functions.
+ * 
+ * Available in: VT Level 4 mode only
+ * 
+ * Default: Numeric
  *
  * Format
  *
- * CSI   ?     2     5     h
- * 9/11  3/15  3/2   3/5   6/8
+ * CSI   ?     6     6     h
+ * 9/11  3/15  3/6   3/6   6/8
  *
- * Set: makes the cursor visible.
+ * Set: application sequences.
  *
  *
- * CSI   ?     2     5     l
- * 9/11  3/15  3/2   3/5   6/12
+ * CSI   ?     6     6     l
+ * 9/11  3/15  3/6   3/6   6/12
  *
- * Reset: makes the cursor invisible.
+ * Reset: keypad characters.
+ *
  */
-var TextCursorEnableMode = new Class().extends(Plugin)
-                                  .depends("cursorstate");
-TextCursorEnableMode.definition = {
+var NumericKeypadMode = new Class().extends(Plugin);
+NumericKeypadMode.definition = {
 
   get id()
-    "text_cursor_enable_mode",
+    "numeric_keypad_mode",
 
   get info()
     <module>
-        <name>{_("Text Cursor Enable Mode (DECTCEM)")}</name>
+        <name>{_("Numeric Keypad Mode")}</name>
         <version>0.1</version>
         <description>{
-          _("Switch the cursor's show/hide status.")
+          _("Switch Numeric/Application keypad mode.")
         }</description>
     </module>,
 
   "[persistable] enabled_when_startup": true,
-  "[persistable] default_value": true,
+  "[persistable] default_value": false,
 
-  _mode: null,
+  _mode: false,
 
   /** installs itself. 
    *  @param {Broker} broker A Broker object.
@@ -73,7 +77,6 @@ TextCursorEnableMode.definition = {
   function install(broker) 
   {
     this._mode = this.default_value;
-    this._cursor = this.dependency["cursorstate"];
   },
 
   /** Uninstalls itself.
@@ -85,39 +88,41 @@ TextCursorEnableMode.definition = {
     this._mode = null;
   },
 
-  /** Show Cursor (DECTCEM)
+  /** set new line.
    */
-  "[subscribe('sequence/decset/25'), pnp]":
+  "[subscribe('sequence/decset/66'), pnp]":
   function activate() 
   { 
-    var cursor = this._cursor;
-
     this._mode = true;
 
-    this.sendMessage("event/cursor-visibility-changed", true);
+    // application keypad mode.
+    this.sendMessage(
+      "event/keypad-mode-changed", 
+      coUtils.Constant.KEYPAD_MODE_APPLICATION);
   },
 
-  /** Hide Cursor (DECTCEM)
+  /** set line feed.
    */
-  "[subscribe('sequence/decrst/25'), pnp]":
+  "[subscribe('sequence/decrst/66'), pnp]":
   function deactivate() 
   {
-    var cursor = this._cursor;
-
     this._mode = false;
 
-    this.sendMessage("event/cursor-visibility-changed", false);
+    // numeric keypad mode.
+    this.sendMessage(
+      "event/keypad-mode-changed", 
+      coUtils.Constant.KEYPAD_MODE_NUMERIC);
   },
 
   /** Report mode
    */
-  "[subscribe('sequence/decrqm/25'), pnp]":
+  "[subscribe('sequence/decrqm/66'), pnp]":
   function report() 
   {
     var mode = this._mode ? 1: 2;
 
     this.sendMessage("command/send-sequence/csi");
-    this.sendMessage("command/send-to-tty", "?25;" + mode + "$y"); // DECRPM
+    this.sendMessage("command/send-to-tty", "?66;" + mode + "$y"); // DECRPM
   },
 
   /** on hard / soft reset
@@ -160,7 +165,8 @@ TextCursorEnableMode.definition = {
     }
   },
 
-}; // class TextCursorEnableMode
+
+}; // class NumericKeypadMode
 
 /**
  * @fn main
@@ -169,7 +175,7 @@ TextCursorEnableMode.definition = {
  */
 function main(broker) 
 {
-  new TextCursorEnableMode(broker);
+  new NumericKeypadMode(broker);
 }
 
 // EOF

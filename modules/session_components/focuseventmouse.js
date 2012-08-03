@@ -24,47 +24,46 @@
 
 
 /**
- * @class TextCursorEnableMode
+ * @class FocusEventMode
  *
- * DECTCEM — Text Cursor Enable Mode
- *
- * This control function makes the cursor visible or invisible.
- *
- * Default: Visible
+ * XT_MSE_WIN - focus event mode
+ * 
+ * Default: off
  *
  * Format
  *
- * CSI   ?     2     5     h
- * 9/11  3/15  3/2   3/5   6/8
+ * CSI   ?     1     0     0     4     h
+ * 9/11  3/15  3/1   3/0   3/0   3/3   6/8
  *
- * Set: makes the cursor visible.
+ * Set: enable focus event mouse mode.
  *
  *
- * CSI   ?     2     5     l
- * 9/11  3/15  3/2   3/5   6/12
+ * CSI   ?     1     0     0     4     l
+ * 9/11  3/15  3/1   3/0   3/0   3/4   6/12
  *
- * Reset: makes the cursor invisible.
+ * Reset: disable focus event mouse mode.
+ *
  */
-var TextCursorEnableMode = new Class().extends(Plugin)
-                                  .depends("cursorstate");
-TextCursorEnableMode.definition = {
+var FocusEventMode = new Class().extends(Plugin);
+FocusEventMode.definition = {
 
   get id()
-    "text_cursor_enable_mode",
+    "focus_event_mode",
 
   get info()
     <module>
-        <name>{_("Text Cursor Enable Mode (DECTCEM)")}</name>
+        <name>{_("Focus Event Mode")}</name>
         <version>0.1</version>
         <description>{
-          _("Switch the cursor's show/hide status.")
+          _("Switch focus event mode.")
         }</description>
     </module>,
 
-  "[persistable] enabled_when_startup": true,
-  "[persistable] default_value": true,
 
-  _mode: null,
+  "[persistable] enabled_when_startup": true,
+  "[persistable] default_value": false,
+
+  _mode: false,
 
   /** installs itself. 
    *  @param {Broker} broker A Broker object.
@@ -73,7 +72,6 @@ TextCursorEnableMode.definition = {
   function install(broker) 
   {
     this._mode = this.default_value;
-    this._cursor = this.dependency["cursorstate"];
   },
 
   /** Uninstalls itself.
@@ -85,39 +83,39 @@ TextCursorEnableMode.definition = {
     this._mode = null;
   },
 
-  /** Show Cursor (DECTCEM)
+  /** Enable focus reporting mode.
    */
-  "[subscribe('sequence/decset/25'), pnp]":
+  "[subscribe('sequence/decset/1004'), pnp]":
   function activate() 
   { 
-    var cursor = this._cursor;
-
     this._mode = true;
 
-    this.sendMessage("event/cursor-visibility-changed", true);
+    this.sendMessage("event/focus-reporting-mode-changed", true);
+    coUtils.Debug.reportMessage(
+      _("DECSET 1004 - focus reporting mode was set."));
   },
-
-  /** Hide Cursor (DECTCEM)
+ 
+  /** Disable focus reporting mode.
    */
-  "[subscribe('sequence/decrst/25'), pnp]":
+  "[subscribe('sequence/decrst/1004'), pnp]":
   function deactivate() 
   {
-    var cursor = this._cursor;
-
     this._mode = false;
 
-    this.sendMessage("event/cursor-visibility-changed", false);
+    this.sendMessage("event/focus-reporting-mode-changed", false);
+    coUtils.Debug.reportMessage(
+      _("DECRST 1004 - focus reporting mode was reset."));
   },
 
   /** Report mode
    */
-  "[subscribe('sequence/decrqm/25'), pnp]":
+  "[subscribe('sequence/decrqm/1004'), pnp]":
   function report() 
   {
     var mode = this._mode ? 1: 2;
 
     this.sendMessage("command/send-sequence/csi");
-    this.sendMessage("command/send-to-tty", "?25;" + mode + "$y"); // DECRPM
+    this.sendMessage("command/send-to-tty", "?1004;" + mode + "$y"); // DECRPM
   },
 
   /** on hard / soft reset
@@ -160,7 +158,8 @@ TextCursorEnableMode.definition = {
     }
   },
 
-}; // class TextCursorEnableMode
+
+}; // class FocusEventMode
 
 /**
  * @fn main
@@ -169,7 +168,7 @@ TextCursorEnableMode.definition = {
  */
 function main(broker) 
 {
-  new TextCursorEnableMode(broker);
+  new FocusEventMode(broker);
 }
 
 // EOF

@@ -32,7 +32,7 @@ KeypadModeHandler.definition = {
 
   /** normal keypad (Normal). 
    *
-   * DECKPNM / DECKPNM — Keypad Numeric Mode
+   * DECKPNM / DECKPNM - Keypad Numeric Mode
    * 
    * DECKPNM enables the keypad to send numeric characters to the host. 
    * DECKPAM enables the keypad to send application sequences.
@@ -49,8 +49,8 @@ KeypadModeHandler.definition = {
    * Description
    * 
    * DECKPNM enables the numeric keypad to send the characters shown on each 
-   * key—number, comma, period, or minus sign. Keys PF1 to PF4 send 
-   * application sequences. See DECKPAM—Keypad Application Mode for more 
+   * key-number, comma, period, or minus sign. Keys PF1 to PF4 send 
+   * application sequences. See DECKPAM-Keypad Application Mode for more 
    * information.
    *
    * Note on DECKPNM
@@ -68,7 +68,7 @@ KeypadModeHandler.definition = {
  
   /** application keypad (NumLock). 
    *
-   * DECKPAM / DECPAM — Keypad Application Mode
+   * DECKPAM / DECPAM - Keypad Application Mode
    * 
    * DECKPAM enables the numeric keypad to send application sequences to the 
    * host. DECKPNM enables the numeric keypad to send numeric characters.
@@ -109,7 +109,7 @@ Escape.definition = {
    */
 
   /**
-   * NEL — Next Line
+   * NEL - Next Line
    *
    * Moves cursor to first position on next line. If cursor is at bottom 
    * margin, then screen performs a scroll-up.
@@ -288,7 +288,7 @@ Escape.definition = {
   },
 
   /**
-   * DECTST — Invoke Confidence Test
+   * DECTST - Invoke Confidence Test
    *
    * Select tests to be performed.
    *
@@ -303,16 +303,16 @@ Escape.definition = {
    * Ps is the parameter indicating a test to be done.
    *
    *   Ps   Test
-   *   0 	  "All Tests" (1,2,3,6)
-   *   1 	  Power-Up Self Test
-   *   2 	  RS-232 Port Data Loopback Test
-   *   3 	  Printer Port Loopback Test
-   *   4 	  Speed Select and Speed Indicator Test
-   *   5 	  Reserved - No action
-   *   6 	  RS-232 Port Modem Control Line Loopback Test
-   *   7 	  EIA-423 Port Loopback Test
-   *   8 	  Parallel Port Loopback Test
-   *   9 	  Repeat (Loop On) Other Tests In Parameter String
+   *   0    "All Tests" (1,2,3,6)
+   *   1    Power-Up Self Test
+   *   2    RS-232 Port Data Loopback Test
+   *   3    Printer Port Loopback Test
+   *   4    Speed Select and Speed Indicator Test
+   *   5    Reserved - No action
+   *   6    RS-232 Port Modem Control Line Loopback Test
+   *   7    EIA-423 Port Loopback Test
+   *   8    Parallel Port Loopback Test
+   *   9    Repeat (Loop On) Other Tests In Parameter String
    *
    * Description
    * 

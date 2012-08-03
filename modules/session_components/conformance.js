@@ -49,7 +49,7 @@ ConformanceLevel.definition = {
 
   /**
    *
-   * DECSCL — Select Conformance Level
+   * DECSCL - Select Conformance Level
    *
    * ref: http://www.vt100.net/docs/vt510-rm/DECSCL
    *
@@ -92,7 +92,7 @@ ConformanceLevel.definition = {
 
   /**
    *
-   * S7C1T—Send C1 Control Character to the Host
+   * S7C1T - Send C1 Control Character to the Host
    * 
    * The VT510 can send C1 control characters to the host as single 8-bit 
    * characters or as 7-bit escape sequences. You should select the format
@@ -125,7 +125,7 @@ ConformanceLevel.definition = {
 
   /**
    *
-   * S8C1T — Send C1 Control Character to the Host
+   * S8C1T - Send C1 Control Character to the Host
    * 
    * The following sequence causes the terminal to send C1 control characters
    * to the host as single 8-bit characters:

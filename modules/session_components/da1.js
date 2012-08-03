@@ -25,7 +25,7 @@
 /**
  * @class PrimaryDA
  *
- * DA1 — Primary Device Attributes
+ * DA1 - Primary Device Attributes
  * 
  * In this DA exchange, the host asks for the terminal's architectural 
  * class and basic attributes.
@@ -93,12 +93,12 @@
  * The host asks for the terminal's architectural class code and supported 
  * extensions.
  *
- * Response—N.A. (VT510 to host)   
+ * Response - N.A. (VT510 to host)   
  * CSI ? 64; 1; 2; 7; 8; 9; 15; 18; 21; 44; 45; 46 c   
  * The terminal is a class 4 device (64) and supports the Ps parameters 
  * listed above.
  *
- * Response— International (VT510 to host)   
+ * Response - International (VT510 to host)   
  * CSI ? 64; 1; 2; 7; 8; 9; 12; 15; 18; 21; 23; 24; 42; 44; 45; 46 c   
  * The terminal is a class 4 device (64) and supports the Ps parameters 
  * listed above.

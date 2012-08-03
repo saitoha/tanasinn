@@ -398,6 +398,7 @@ CompletionView.definition = {
   function down()
   {
     var index = Math.min(this.currentIndex + 1, this.rowCount - 1);
+
     if (index >= 0) {
       this.select(index);
     }
@@ -408,6 +409,7 @@ CompletionView.definition = {
   function up()
   {
     var index = Math.max(this.currentIndex - 1, -1);
+
     if (index >= 0) {
       this.select(index);
     }
@@ -483,6 +485,7 @@ Commandline.definition = {
       tagName: "panel",
       id: "tanasinn_completion_popup",
       style: <> 
+        /*-moz-appearance: none; */
         -moz-user-focus: ignore;
         background: transparent;
         border: none;

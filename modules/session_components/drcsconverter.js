@@ -587,10 +587,7 @@ DRCSConverter.definition = {
   function scsg0(dscs) 
   {
     //coUtils.Debug.reportMessage("g0 = " + dscs);
-
-    var new_charset;
-
-    new_charset = this._charset_table[dscs];
+    var new_charset = this._charset_table[dscs];
 
     if (undefined !== new_charset) {
       this._g[0] = new_charset;
@@ -601,9 +598,7 @@ DRCSConverter.definition = {
   function scsg1(dscs) 
   {
     //coUtils.Debug.reportMessage("g1 = " + dscs);
-    var new_charset;
-
-    new_charset = this._charset_table[dscs];
+    var new_charset = this._charset_table[dscs];
 
     if (undefined !== new_charset) {
       this._g[1] = new_charset;
@@ -614,9 +609,7 @@ DRCSConverter.definition = {
   function scsg2(dscs) 
   {
     //coUtils.Debug.reportMessage("g2 = " + dscs);
-    var new_charset;
-
-    new_charset = this._charset_table[dscs];
+    var new_charset = this._charset_table[dscs];
 
     if (undefined !== new_charset) {
       this._g[2] = new_charset;
@@ -626,9 +619,7 @@ DRCSConverter.definition = {
   "[subscribe('sequence/g3'), enabled]": 
   function scsg3(dscs) 
   {
-    var new_charset;
-
-    new_charset = this._charset_table[dscs];
+    var new_charset = this._charset_table[dscs];
 
     if (undefined !== new_charset) {
       this._g[3] = new_charset;
@@ -670,9 +661,11 @@ DRCSConverter.definition = {
 
   convert: function convert(codes) 
   {
-    var result, main, i, c;
+    var main = this._g[this._next || this._gl] || USASCII,
+        result,
+        i,
+        c;
 
-    main = this._g[this._next || this._gl] || USASCII;
     this._next = 0;
 
     result = [];

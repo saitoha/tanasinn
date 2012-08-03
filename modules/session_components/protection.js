@@ -61,7 +61,7 @@ Protection.definition = {
 
   /**
    *
-   * DECSCA — Select Character Protection Attribute
+   * DECSCA - Select Character Protection Attribute
    *
    * DECSCA defines the characters that come after it as erasable or not 
    * erasable from the screen. The selective erase control functions (DECSED
@@ -123,7 +123,7 @@ Protection.definition = {
 
   /**
    *
-   * DECSEL — Selective Erase in Line
+   * DECSEL - Selective Erase in Line
    *
    * This control function erases some or all of the erasable characters in
    * a single line of text. DECSEL erases only those characters defined as 
@@ -178,7 +178,7 @@ Protection.definition = {
 
   /**
    *
-   * DECSED — Selective Erase in Display
+   * DECSED - Selective Erase in Display
    *
    * This control function erases some or all of the erasable characters in 
    * the display. DECSED can only erase characters defined as erasable by the 
@@ -233,7 +233,7 @@ Protection.definition = {
   },
 
   /**
-   * DECSERA — Selective Erase Rectangular Area
+   * DECSERA - Selective Erase Rectangular Area
    *
    * This control function erases all erasable characters from a specified 
    * rectangular area in page memory. The select character protection 

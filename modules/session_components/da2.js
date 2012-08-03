@@ -25,7 +25,7 @@
 /**
  * @class SecondaryDA
  *
- * DA2 — Secondary Device Attributes
+ * DA2 - Secondary Device Attributes
  * 
  * In this DA exchange, the host requests the terminal's 
  * identification code, firmware version level, and hardware options.
@@ -130,9 +130,9 @@ SecondaryDA.definition = {
   "[subscribe('sequence/DA2'), pnp]":
   function reply()
   {
-    var reply, message;
-   
-    reply = [];
+    var reply = [],
+        message;
+
     reply.push(32);
     reply.push(277); // Firmware version (for xterm, this is the XFree86 patch 
                      // number, starting with 95). 

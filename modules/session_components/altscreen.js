@@ -102,6 +102,17 @@ AlternateScreen.definition = {
       _("DECRST - 47 (switch to main screen) was called."));
   },
 
+  /** Report mode
+   */
+  "[subscribe('sequence/decrqm/47'), pnp]":
+  function report() 
+  {
+    var mode = this._mode ? 1: 2;
+
+    this.sendMessage("command/send-sequence/csi");
+    this.sendMessage("command/send-to-tty", "?47;" + mode + "$y"); // DECRPM
+  },
+
   /** Use Alternate Screen Buffer 
    * (unless disabled by the titleInhibit resource)
    */
@@ -135,6 +146,28 @@ AlternateScreen.definition = {
       _("DECRST - 1047 (switch to main screen) was called."));
   },
 
+  /** Report mode
+   */
+  "[subscribe('sequence/decrqm/1047'), pnp]":
+  function report1047() 
+  {
+    var mode = this._mode ? 1: 2;
+
+    this.sendMessage("command/send-sequence/csi");
+    this.sendMessage("command/send-to-tty", "?1047;" + mode + "$y"); // DECRPM
+  },
+
+  /** Report mode
+   */
+  "[subscribe('sequence/decrqm/1047'), pnp]":
+  function report() 
+  {
+    var mode = this._mode ? 1: 2;
+
+    this.sendMessage("command/send-sequence/csi");
+    this.sendMessage("command/send-to-tty", "?1047;" + mode + "$y"); // DECRPM
+  },
+
   /** Save cursor as in DECSC and use Alternate Screen Buffer, 
    * clearing it first (unless disabled by the titleinhibit resource)
    */
@@ -166,6 +199,17 @@ AlternateScreen.definition = {
 
     coUtils.Debug.reportMessage(
       _("DECRST - 1049 (switch to main screen) was called."));
+  },
+
+  /** Report mode
+   */
+  "[subscribe('sequence/decrqm/1049'), pnp]":
+  function report1049() 
+  {
+    var mode = this._mode ? 1: 2;
+
+    this.sendMessage("command/send-sequence/csi");
+    this.sendMessage("command/send-to-tty", "?1049;" + mode + "$y"); // DECRPM
   },
 
   /** handle terminal reset event.

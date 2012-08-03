@@ -26,7 +26,7 @@
 /**
  * @class DECDeviceStatusReport
  *
- * DSR — Device Status Reports
+ * DSR - Device Status Reports
  *
  * The host computer and terminal exchange DSR sequences to provide the host 
  * with the operating status of the following features:

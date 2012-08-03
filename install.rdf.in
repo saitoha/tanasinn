@@ -7,9 +7,7 @@
     <em:name>@TANASINN_DISPLAY_NAME@</em:name>
     <em:version>@PACKAGE_VERSION@</em:version>
     <em:creator>saitoha</em:creator>
-    <em:description>
-        A Terminal Emurator Extension for Firefox/Thunderbird/SeaMonkey
-    </em:description>
+    <em:description>三 ┏( ^o^)┛ ＜ How Exciting Life is !!!!!!</em:description>
     <!--em:optionsURL>chrome://@TANASINN_PACKAGE_NAME@/content/preference.xul</em:optionsURL-->
     <em:iconURL>resource://tanasinn/content/tanasinn.svg</em:iconURL>
     <em:unpack>true</em:unpack>

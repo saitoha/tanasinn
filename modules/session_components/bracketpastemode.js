@@ -24,47 +24,46 @@
 
 
 /**
- * @class TextCursorEnableMode
+ * @class BracketedPasteMode
  *
- * DECTCEM — Text Cursor Enable Mode
- *
- * This control function makes the cursor visible or invisible.
- *
- * Default: Visible
+ * RT_BRACKTED - bracketed paste mode
+ * 
+ * Default: off
  *
  * Format
  *
- * CSI   ?     2     5     h
- * 9/11  3/15  3/2   3/5   6/8
+ * CSI   ?     2     0     0     4     h
+ * 9/11  3/15  3/2   3/0   3/0   3/4   6/8
  *
- * Set: makes the cursor visible.
+ * Set: enable bracketed paste mode.
  *
  *
- * CSI   ?     2     5     l
- * 9/11  3/15  3/2   3/5   6/12
+ * CSI   ?     2     0     0     4     l
+ * 9/11  3/15  3/2   3/0   3/0   3/4   6/12
  *
- * Reset: makes the cursor invisible.
+ * Reset: disable bracketed paste mode.
+ *
  */
-var TextCursorEnableMode = new Class().extends(Plugin)
-                                  .depends("cursorstate");
-TextCursorEnableMode.definition = {
+var BracketedPasteMode = new Class().extends(Plugin);
+BracketedPasteMode.definition = {
 
   get id()
-    "text_cursor_enable_mode",
+    "bracketed_paste_mode",
 
   get info()
     <module>
-        <name>{_("Text Cursor Enable Mode (DECTCEM)")}</name>
+        <name>{_("Bracketed Paste Mode")}</name>
         <version>0.1</version>
         <description>{
-          _("Switch the cursor's show/hide status.")
+          _("Switch bracketed paste mode.")
         }</description>
     </module>,
 
-  "[persistable] enabled_when_startup": true,
-  "[persistable] default_value": true,
 
-  _mode: null,
+  "[persistable] enabled_when_startup": true,
+  "[persistable] default_value": false,
+
+  _mode: false,
 
   /** installs itself. 
    *  @param {Broker} broker A Broker object.
@@ -73,7 +72,6 @@ TextCursorEnableMode.definition = {
   function install(broker) 
   {
     this._mode = this.default_value;
-    this._cursor = this.dependency["cursorstate"];
   },
 
   /** Uninstalls itself.
@@ -85,39 +83,39 @@ TextCursorEnableMode.definition = {
     this._mode = null;
   },
 
-  /** Show Cursor (DECTCEM)
+  /** Enable bracketed paste mode.
    */
-  "[subscribe('sequence/decset/25'), pnp]":
+  "[subscribe('sequence/decset/2004'), pnp]":
   function activate() 
   { 
-    var cursor = this._cursor;
-
     this._mode = true;
 
-    this.sendMessage("event/cursor-visibility-changed", true);
+    this.sendMessage("command/change-bracketed-paste-mode", true);
+    coUtils.Debug.reportMessage(
+      _("DECSET 2004 - Set bracketed paste mode is set."));
   },
 
-  /** Hide Cursor (DECTCEM)
+  /** Disable bracketed paste mode.
    */
-  "[subscribe('sequence/decrst/25'), pnp]":
+  "[subscribe('sequence/decrst/2004'), pnp]":
   function deactivate() 
   {
-    var cursor = this._cursor;
-
     this._mode = false;
-
-    this.sendMessage("event/cursor-visibility-changed", false);
+           
+    this.sendMessage("command/change-bracketed-paste-mode", false);
+    coUtils.Debug.reportMessage(
+      _("DECRST 2004 - Reset bracketed paste mode is reset."));
   },
 
   /** Report mode
    */
-  "[subscribe('sequence/decrqm/25'), pnp]":
+  "[subscribe('sequence/decrqm/2004'), pnp]":
   function report() 
   {
     var mode = this._mode ? 1: 2;
 
     this.sendMessage("command/send-sequence/csi");
-    this.sendMessage("command/send-to-tty", "?25;" + mode + "$y"); // DECRPM
+    this.sendMessage("command/send-to-tty", "?2004;" + mode + "$y"); // DECRPM
   },
 
   /** on hard / soft reset
@@ -160,7 +158,8 @@ TextCursorEnableMode.definition = {
     }
   },
 
-}; // class TextCursorEnableMode
+
+}; // class BracketedPasteMode
 
 /**
  * @fn main
@@ -169,7 +168,7 @@ TextCursorEnableMode.definition = {
  */
 function main(broker) 
 {
-  new TextCursorEnableMode(broker);
+  new BracketedPasteMode(broker);
 }
 
 // EOF

@@ -70,9 +70,11 @@ InputMacro.definition = {
   "[command('playinputmacro', []), _('Play input macro.'), pnp]": 
   function playInputMacro(name)
   {
-    var buffer, i, complete, thread;
+    var buffer = this._macros[name];
+        i,
+        complete,
+        thread;
 
-    buffer = this._macros[name];
     if (!buffer) {
       throw coUtils.Debug.Exception(
         _("The macro specified by given name is not found."));
@@ -106,10 +108,9 @@ InputMacro.definition = {
   "[command('completeinputmacro', []), _('Stop to recording current macro.'), pnp]": 
   function completeInputMacro()
   {
-    var buffer, name;
+    var buffer = this._macro_buffer,
+        name = this._current_macro_name;
 
-    buffer = this._macro_buffer;
-    name = this._current_macro_name;
     this._macro_buffer = null;
     this._current_macro_name = null;
     this._macros[name] = buffer;
@@ -118,7 +119,6 @@ InputMacro.definition = {
       message: coUtils.Text.format(_("Macro '%s' is defined."), name),
     }
   },
-
 
   "[subscribe('command/input-with-no-remapping'), pnp] _": 
   function _inputWithNoMapping(packed_code)

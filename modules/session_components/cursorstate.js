@@ -238,7 +238,7 @@ CursorState.definition = {
 
   /**
    *
-   * DECSC — Save Cursor
+   * DECSC - Save Cursor
    *
    * Format
    *    ESC    7
@@ -263,7 +263,7 @@ CursorState.definition = {
   },
    
   /**
-   * DECRC — Restore Cursor
+   * DECRC - Restore Cursor
    * 
    * Restores the terminal to the state saved by the save cursor (DECSC) function.
    *
@@ -296,7 +296,7 @@ CursorState.definition = {
 
   /**
    *
-   * DECCIR—Cursor Information Report (Terminal to Host)
+   * DECCIR - Cursor Information Report (Terminal to Host)
    * 
    * The terminal sends this sequence in response to a request presentation 
    * state report (DECRQPSR) sequence, CSI 1 $ w. DECCIR reports the status of
@@ -312,7 +312,7 @@ CursorState.definition = {
    * Description
    * 
    * DECCIR reports all the character sets if they are assigned to one of the 
-   * G0, G1, G2, or G3 sets. Refer to SCS—Select Character Set for all 
+   * G0, G1, G2, or G3 sets. Refer to SCS - Select Character Set for all 
    * character set designators.
    *
    * Parameters

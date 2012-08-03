@@ -26,7 +26,7 @@
 /**
  * @class NewLineMode
  *
- * LNM — Line Feed/New Line Mode
+ * LNM - Line Feed/New Line Mode
  *
  * @ref http://vt100.net/docs/vt510-rm/LNM
  *
@@ -127,6 +127,17 @@ NewLineMode.definition = {
 
     // disable insert mode.
     this.sendMessage("set/newline-mode", false);
+  },
+
+  /** Report mode
+   */
+  "[subscribe('sequence/rqm/20'), pnp]":
+  function report() 
+  {
+    var mode = this._mode ? 1: 2;
+
+    this.sendMessage("command/send-sequence/csi");
+    this.sendMessage("command/send-to-tty", "20;" + mode + "$y"); // DECRPM
   },
 
   /** on hard / soft reset

@@ -77,11 +77,6 @@ Mascot.definition = {
   "[install]":
   function install(broker) 
   {
-    // lazy initialization for using with css 3D Transform
-    coUtils.Timer.setTimeout(
-      function timerProc()
-      {
-      }, 100, this);
   },
 
   /** Uninstalls itself.

@@ -24,45 +24,55 @@
 
 
 /**
- * @class TextCursorEnableMode
+ * @class SmoothScrollingMode
  *
- * DECTCEM — Text Cursor Enable Mode
- *
- * This control function makes the cursor visible or invisible.
- *
- * Default: Visible
+ * DECSCLM - Scrolling Mode
+ * 
+ * This control function selects the way the terminal scrolls lines. 
+ * You can select one of two scroll settings, smooth or jump.
+ * 
+ * Default: Smooth scroll.
  *
  * Format
  *
- * CSI   ?     2     5     h
- * 9/11  3/15  3/2   3/5   6/8
+ * CSI    ?     4     h
+ * 9/11   3/15  3/4   6/8
  *
- * Set: makes the cursor visible.
+ * Set: smooth scroll.
+ *
+ * CSI    ?     4     l
+ * 9/11   3/15  3/4   6/12
+ *
+ * Reset: jump scroll.
  *
  *
- * CSI   ?     2     5     l
- * 9/11  3/15  3/2   3/5   6/12
+ * Description
+ * 
+ * When DECSLM is set, the terminal adds lines to the screen at a moderate,
+ * smooth rate. You can select a slow rate or fast rate in Display Set-Up.
+ * 
+ * When DECSLM is reset, the terminal can add lines to the screen as fast as
+ * it receives them.
  *
- * Reset: makes the cursor invisible.
  */
-var TextCursorEnableMode = new Class().extends(Plugin)
-                                  .depends("cursorstate");
-TextCursorEnableMode.definition = {
+var SmoothScrollingMode = new Class().extends(Plugin)
+                                 .depends("screen");
+SmoothScrollingMode.definition = {
 
   get id()
-    "text_cursor_enable_mode",
+    "smooth_scrolling_mode",
 
   get info()
     <module>
-        <name>{_("Text Cursor Enable Mode (DECTCEM)")}</name>
+        <name>{_("Smooth Scrolling Mode")}</name>
         <version>0.1</version>
         <description>{
-          _("Switch the cursor's show/hide status.")
+          _("Switch smooth scrolling mode / jump scrolling mode.")
         }</description>
     </module>,
 
   "[persistable] enabled_when_startup": true,
-  "[persistable] default_value": true,
+  "[persistable] default_value": false,
 
   _mode: null,
 
@@ -73,7 +83,6 @@ TextCursorEnableMode.definition = {
   function install(broker) 
   {
     this._mode = this.default_value;
-    this._cursor = this.dependency["cursorstate"];
   },
 
   /** Uninstalls itself.
@@ -85,39 +94,37 @@ TextCursorEnableMode.definition = {
     this._mode = null;
   },
 
-  /** Show Cursor (DECTCEM)
+  /** Smooth (Slow) Scloll (DECSCLM)
    */
-  "[subscribe('sequence/decset/25'), pnp]":
+  "[subscribe('sequence/decset/4'), pnp]":
   function activate() 
-  { 
-    var cursor = this._cursor;
-
+  {
     this._mode = true;
 
-    this.sendMessage("event/cursor-visibility-changed", true);
+    // smooth scroll.
+    this.sendMessage("command/change-scrolling-mode", true);
   },
 
-  /** Hide Cursor (DECTCEM)
+  /** Smooth (Slow) Scloll (DECSCLM)
    */
-  "[subscribe('sequence/decrst/25'), pnp]":
+  "[subscribe('sequence/decrst/4'), pnp]":
   function deactivate() 
   {
-    var cursor = this._cursor;
-
     this._mode = false;
 
-    this.sendMessage("event/cursor-visibility-changed", false);
+    // smooth scroll.
+    this.sendMessage("command/change-scrolling-mode", false);
   },
 
   /** Report mode
    */
-  "[subscribe('sequence/decrqm/25'), pnp]":
+  "[subscribe('sequence/decrqm/4'), pnp]":
   function report() 
   {
     var mode = this._mode ? 1: 2;
 
     this.sendMessage("command/send-sequence/csi");
-    this.sendMessage("command/send-to-tty", "?25;" + mode + "$y"); // DECRPM
+    this.sendMessage("command/send-to-tty", "?4;" + mode + "$y"); // DECRPM
   },
 
   /** on hard / soft reset
@@ -160,7 +167,7 @@ TextCursorEnableMode.definition = {
     }
   },
 
-}; // class TextCursorEnableMode
+}; // class SmoothScrollingMode
 
 /**
  * @fn main
@@ -169,7 +176,7 @@ TextCursorEnableMode.definition = {
  */
 function main(broker) 
 {
-  new TextCursorEnableMode(broker);
+  new SmoothScrollingMode(broker);
 }
 
 // EOF

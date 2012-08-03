@@ -26,7 +26,7 @@
 /**
  * @class AutoRepeat
  *
- * DECARM — Autorepeat Mode
+ * DECARM - Autorepeat Mode
  *
  * This control function determines whether or not keys automatically repeat 
  * their character when held down. If DECARM is set, then most keys you press 
@@ -144,6 +144,17 @@ AutoRepeat.definition = {
     this.sendMessage("command/change-auto-repeat-mode", false);
     coUtils.Debug.reportMessage(
       _("DECRST - DECARM (Auto-repeat Keys) is reset."));
+  },
+
+  /** Report mode
+   */
+  "[subscribe('sequence/decrqm/8'), pnp]":
+  function report() 
+  {
+    var mode = this._mode ? 1: 2;
+
+    this.sendMessage("command/send-sequence/csi");
+    this.sendMessage("command/send-to-tty", "?8;" + mode + "$y"); // DECRPM
   },
 
   /** handle terminal reset event.

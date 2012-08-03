@@ -24,47 +24,46 @@
 
 
 /**
- * @class TextCursorEnableMode
+ * @class Utf8MouseMode
  *
- * DECTCEM — Text Cursor Enable Mode
- *
- * This control function makes the cursor visible or invisible.
- *
- * Default: Visible
+ * XT_MSE_UTF - utf8 mouse mode
+ * 
+ * Default: off
  *
  * Format
  *
- * CSI   ?     2     5     h
- * 9/11  3/15  3/2   3/5   6/8
+ * CSI   ?     1     0     0     5     h
+ * 9/11  3/15  3/1   3/0   3/0   3/5   6/8
  *
- * Set: makes the cursor visible.
+ * Set: enable utf8 mouse mode.
  *
  *
- * CSI   ?     2     5     l
- * 9/11  3/15  3/2   3/5   6/12
+ * CSI   ?     1     0     0     5     l
+ * 9/11  3/15  3/1   3/0   3/0   3/5   6/12
  *
- * Reset: makes the cursor invisible.
+ * Reset: disable utf8 mouse mode.
+ *
  */
-var TextCursorEnableMode = new Class().extends(Plugin)
-                                  .depends("cursorstate");
-TextCursorEnableMode.definition = {
+var Utf8MouseMode = new Class().extends(Plugin);
+Utf8MouseMode.definition = {
 
   get id()
-    "text_cursor_enable_mode",
+    "utf8_mouse_mode",
 
   get info()
     <module>
-        <name>{_("Text Cursor Enable Mode (DECTCEM)")}</name>
+        <name>{_("UTF8 1005 Mouse Mode")}</name>
         <version>0.1</version>
         <description>{
-          _("Switch the cursor's show/hide status.")
+          _("Switch utf8 mouse mode.")
         }</description>
     </module>,
 
-  "[persistable] enabled_when_startup": true,
-  "[persistable] default_value": true,
 
-  _mode: null,
+  "[persistable] enabled_when_startup": true,
+  "[persistable] default_value": false,
+
+  _mode: false,
 
   /** installs itself. 
    *  @param {Broker} broker A Broker object.
@@ -73,7 +72,6 @@ TextCursorEnableMode.definition = {
   function install(broker) 
   {
     this._mode = this.default_value;
-    this._cursor = this.dependency["cursorstate"];
   },
 
   /** Uninstalls itself.
@@ -85,39 +83,39 @@ TextCursorEnableMode.definition = {
     this._mode = null;
   },
 
-  /** Show Cursor (DECTCEM)
+  /** Enable utf8-style mouse reporting.
    */
-  "[subscribe('sequence/decset/25'), pnp]":
+  "[subscribe('sequence/decset/1005'), pnp]":
   function activate() 
   { 
-    var cursor = this._cursor;
-
     this._mode = true;
 
-    this.sendMessage("event/cursor-visibility-changed", true);
+    this.sendMessage("event/mouse-tracking-type-changed", "utf8");
+    coUtils.Debug.reportMessage(
+      _("DECSET 1005 - Enable utf8-style mouse reporting, was set."));
   },
 
-  /** Hide Cursor (DECTCEM)
+  /** Disable utf8-style mouse reporting.
    */
-  "[subscribe('sequence/decrst/25'), pnp]":
+  "[subscribe('sequence/decrst/1005'), pnp]":
   function deactivate() 
   {
-    var cursor = this._cursor;
-
     this._mode = false;
-
-    this.sendMessage("event/cursor-visibility-changed", false);
+           
+    this.sendMessage("event/mouse-tracking-type-changed", null);
+    coUtils.Debug.reportMessage(
+      _("DECRST 1005 - Disable utf8-style mouse reporting, was reset."));
   },
 
   /** Report mode
    */
-  "[subscribe('sequence/decrqm/25'), pnp]":
+  "[subscribe('sequence/decrqm/1005'), pnp]":
   function report() 
   {
     var mode = this._mode ? 1: 2;
 
     this.sendMessage("command/send-sequence/csi");
-    this.sendMessage("command/send-to-tty", "?25;" + mode + "$y"); // DECRPM
+    this.sendMessage("command/send-to-tty", "?1005;" + mode + "$y"); // DECRPM
   },
 
   /** on hard / soft reset
@@ -160,7 +158,8 @@ TextCursorEnableMode.definition = {
     }
   },
 
-}; // class TextCursorEnableMode
+
+}; // class Utf8MouseMode
 
 /**
  * @fn main
@@ -169,7 +168,7 @@ TextCursorEnableMode.definition = {
  */
 function main(broker) 
 {
-  new TextCursorEnableMode(broker);
+  new Utf8MouseMode(broker);
 }
 
 // EOF

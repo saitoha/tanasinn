@@ -44,7 +44,7 @@ HardReset.definition = {
   "[persistable] enabled_when_startup": true,
 
   /** 
-   * RIS — Reset to Initial State
+   * RIS - Reset to Initial State
    * 
    * This control function causes a nonvolatile memory (NVR) recall to 
    * occur. RIS replaces all set-up features with their saved settings.

@@ -26,7 +26,7 @@
 /**
  * @class KeyboardActionMode
  *
- * KAM — Keyboard Action Mode
+ * KAM - Keyboard Action Mode
  *
  * This control function locks or unlocks the keyboard.
  *
@@ -117,6 +117,17 @@ KeyboardActionMode.definition = {
     this.sendMessage("command/enable-input-manager", true);
   },
 
+  /** Report mode
+   */
+  "[subscribe('sequence/rqm/2'), pnp]":
+  function report() 
+  {
+    var mode = this._mode ? 1: 2;
+
+    this.sendMessage("command/send-sequence/csi");
+    this.sendMessage("command/send-to-tty", "2;" + mode + "$y"); // DECRPM
+  },
+
   /** on hard / soft reset
    */
   "[subscribe('command/{soft | hard}-terminal-reset'), pnp]":
@@ -147,9 +158,8 @@ KeyboardActionMode.definition = {
   "[subscribe('@command/restore'), type('Object -> Undefined'), pnp]": 
   function restore(context) 
   {
-    var data;
+    var data = context[this.id];
 
-    data = context[this.id];
     if (data) {
       this._mode = data.mode;
     } else {

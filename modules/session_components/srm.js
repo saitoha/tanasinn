@@ -26,7 +26,7 @@
 /**
  * @class SendReceiveMode
  *
- * SRM — Local Echo: Send/Receive Mode
+ * SRM - Local Echo: Send/Receive Mode
  *
  * This control function turns local echo on or off. When local echo is on,
  * the terminal sends keyboard characters to the screen. The host does not 
@@ -118,6 +118,17 @@ SendReceiveMode.definition = {
 
     // disable insert mode.
     this.sendMessage("set/local-echo-mode", true);
+  },
+
+  /** Report mode
+   */
+  "[subscribe('sequence/rqm/12'), pnp]":
+  function report() 
+  {
+    var mode = this._mode ? 1: 2;
+
+    this.sendMessage("command/send-sequence/csi");
+    this.sendMessage("command/send-to-tty", "12;" + mode + "$y"); // DECRPM
   },
 
   /** on hard / soft reset

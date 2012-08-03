@@ -26,7 +26,7 @@
 /**
  * @class AutoWrap
  *
- * DECAWM — Autowrap Mode
+ * DECAWM - Autowrap Mode
  *
  * This control function determines whether or not received characters 
  * automatically wrap to the next line when the cursor reaches the right 
@@ -122,6 +122,17 @@ AutoWrap.definition = {
     this.sendMessage("command/disable-wraparound");
 //    coUtils.Debug.reportMessage(
 //      _("DECRST - DECAWM (Auto-wrap Mode) was reset."));
+  },
+
+  /** Report mode
+   */
+  "[subscribe('sequence/decrqm/7'), pnp]":
+  function report() 
+  {
+    var mode = this._mode ? 1: 2;
+
+    this.sendMessage("command/send-sequence/csi");
+    this.sendMessage("command/send-to-tty", "?7;" + mode + "$y"); // DECRPM
   },
 
   /** handle terminal reset event.

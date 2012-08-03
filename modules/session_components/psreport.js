@@ -46,7 +46,7 @@ PresentationStateReport.definition = {
 
   /**
    *
-   * DECRQPSR — Request Presentation State Report
+   * DECRQPSR - Request Presentation State Report
    *
    * The host sends this sequence to request a cursor information report
    * (DECCIR) or tabulation stop report (DECTABSR).

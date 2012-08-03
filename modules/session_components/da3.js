@@ -26,7 +26,7 @@
 /**
  * @class TirtiaryDA
  *
- * DA3 — Tertiary Device Attributes
+ * DA3 - Tertiary Device Attributes
  *
  * In this DA exchange, the host asks for the terminal unit identification 
  * code. This ID code serves as a way to identify each terminal in a system. 

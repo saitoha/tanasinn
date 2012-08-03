@@ -26,7 +26,7 @@
 /**
  * @class ApplicationCursorMode
  *
- * DECCKM — Cursor Keys Mode
+ * DECCKM - Cursor Keys Mode
  * 
  * This control function selects the sequences the arrow keys send. You can
  * use the four arrow keys to move the cursor through the current page or to
@@ -114,6 +114,17 @@ ApplicationCursorMode.definition = {
 
     // disable application cursor mode.
     this.sendMessage("command/change-cursor-mode", "application");
+  },
+
+  /** Report mode
+   */
+  "[subscribe('sequence/decrqm/1'), pnp]":
+  function report() 
+  {
+    var mode = this._mode ? 1: 2;
+
+    this.sendMessage("command/send-sequence/csi");
+    this.sendMessage("command/send-to-tty", "?1;" + mode + "$y"); // DECRPM
   },
 
   /** on hard / soft reset

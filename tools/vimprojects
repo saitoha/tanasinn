@@ -105,12 +105,10 @@
    plugin=.{
 
     transform.js
-    blink.js
     drcs.js
     sixel.js
     mascot.js
     base64copy.js
-    answerback.js
     da1.js
     da2.js
     da3.js
@@ -121,21 +119,37 @@
     hardreset.js
     sgrhandler.js
 
-    anm.js
-    ckm.js
-    colm.js
-    irm.js
-    lnm.js
     kam.js
+    irm.js
     srm.js
-    altscreen.js
+    lnm.js
+
+    ckm.js
+    anm.js
+    colm.js
+    sclm.js
     reversevideo.js
-    autorepeat.js
-    tcem.js
     originmode.js
     autowrap.js
-
+    autorepeat.js
+    blink.js
+    tcem.js
+    scrollbarmode.js
     reversewrap.js
+    altscreen.js
+    nkm.js
+    answerback.js
+    x10mouse.js
+    x11mouse.js
+    highlightmouse.js
+    buttoneventmouse.js
+    anyeventmouse.js
+    focuseventmouse.js
+    utf8mousemode.js
+    sgrmousemode.js
+    urxvtmouse.js
+    bracketpastemode.js
+
     macro.js
     dsr.js
     decdsr.js

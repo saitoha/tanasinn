@@ -22,130 +22,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/**
- * @class ScrollbarMode
- */
-var ScrollbarMode = new Class().extends(Plugin);
-ScrollbarMode.definition = {
-
-  get id()
-    "scrollbar_mode",
-
-  get info()
-    <module>
-        <name>{_("Scrollbar Mode")}</name>
-        <version>0.1</version>
-        <description>{
-          _("Switch show/hide scrollbar.")
-        }</description>
-    </module>,
-
-  "[persistable] enabled_when_startup": true,
-  "[persistable] default_value": true,
-
-  _mode: null,
-
-  /** installs itself. 
-   *  @param {Broker} broker A Broker object.
-   */
-  "[install]":
-  function install(broker) 
-  {
-    this._mode = this.default_value;
-  },
-
-  /** Uninstalls itself.
-   *  @param {Broker} broker A broker object.
-   */
-  "[uninstall]":
-  function uninstall(broker) 
-  {
-    this._mode = null;
-  },
-
-
-  /** Show Scrollbar (rxvt)
-   */
-  "[subscribe('sequence/decset/30'), pnp]":
-  function activate() 
-  { 
-    this._mode = true;
-
-    // Show Scrollbar (rxvt)
-    this.sendMessage("command/scrollbar-show");
-
-    coUtils.Debug.reportMessage(
-      _("DECSET 30 - Show scrollbar feature (rxvt) is set."));
-
-  },
-
-  /** Deactivate auto-repeat feature
-   */
-  "[subscribe('sequence/decrst/30'), pnp]":
-  function deactivate() 
-  {
-    this._mode = false;
-
-    this.sendMessage("command/scrollbar-hide");
-
-    coUtils.Debug.reportMessage(
-      _("DECRST 30 - Show-scrollbar feature (rxvt) is reset."));
-
-  },
-
-  /** on hard / soft reset
-   */
-  "[subscribe('command/{soft | hard}-terminal-reset'), pnp]":
-  function reset(broker) 
-  {
-    if (this.default_value) {
-      this.activate();
-    } else {
-      this.deactivate();
-    }
-  },
-
-  /**
-   * Serialize snd persist current state.
-   */
-  "[subscribe('@command/backup'), type('Object -> Undefined'), pnp]": 
-  function backup(context) 
-  {
-    // serialize this plugin object.
-    context[this.id] = {
-      mode: this._mode,
-    };
-  },
-
-  /**
-   * Deserialize snd restore stored state.
-   */
-  "[subscribe('@command/restore'), type('Object -> Undefined'), pnp]": 
-  function restore(context) 
-  {
-    var data = context[this.id];
-
-    if (data) {
-      this._mode = data.mode;
-    } else {
-      coUtils.Debug.reportWarning(
-        _("Cannot restore last state of renderer: data not found."));
-    }
-  },
-
-}; // class ScrollbarMode
-
-/**
- * @fn main
- * @brief Module entry point.
- * @param {Broker} broker The Broker object.
- */
-function main(broker) 
-{
-  new ANMSwitch(broker);
-}
-
-// EOF
 /** 
  * @class Scrollbar
  * @brief Shows scrollbar interface.
@@ -453,7 +329,6 @@ Scrollbar.definition = {
 function main(broker) 
 {
   new Scrollbar(broker);
-  new ScrollbarMode(broker);
 }
 
 // EOF 

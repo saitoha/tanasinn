@@ -26,10 +26,10 @@
 /**
  * @class FixedColumnMode
  *
- * DECCOLM — Select 80 or 132 Columns per Page
+ * DECCOLM - Select 80 or 132 Columns per Page
  *
  * There are two control functions that can set the page width to 80 or 132
- * columns, DECSCPP (DECSCPP—Select 80 or 132 Columns per Page) and DECCOLM.
+ * columns, DECSCPP (DECSCPP - Select 80 or 132 Columns per Page) and DECCOLM.
  *
  * Note
  *
@@ -88,6 +88,7 @@ FixedColumnMode.definition = {
   "[persistable] default_value": false,
 
   _mode: null,
+  _80mode: true,
 
   /** installs itself. 
    *  @param {Broker} broker A Broker object.
@@ -139,6 +140,7 @@ FixedColumnMode.definition = {
 
     // 80 column mode (DECCOLM)
     if (this._mode) {
+      this._80mode = false;
       this.sendMessage(
         "command/resize-screen",
         {
@@ -165,6 +167,7 @@ FixedColumnMode.definition = {
 
     // 80 column mode (DECCOLM)
     if (this._mode) {
+      this._80mode = true;
       this.sendMessage(
         "command/resize-screen",
         {
@@ -182,16 +185,38 @@ FixedColumnMode.definition = {
     }
   },
 
+  /** Report mode
+   */
+  "[subscribe('sequence/decrqm/3'), pnp]":
+  function report3() 
+  {
+    var mode = this._80mode ? 1: 2;
+
+    this.sendMessage("command/send-sequence/csi");
+    this.sendMessage("command/send-to-tty", "?3;" + mode + "$y"); // DECRPM
+  },
+
+  /** Report mode
+   */
+  "[subscribe('sequence/decrqm/40'), pnp]":
+  function report() 
+  {
+    var mode = this._mode ? 1: 2;
+
+    this.sendMessage("command/send-sequence/csi");
+    this.sendMessage("command/send-to-tty", "?40;" + mode + "$y"); // DECRPM
+  },
+
   /** on hard / soft reset
    */
   "[subscribe('command/{soft | hard}-terminal-reset'), pnp]":
   function reset(broker) 
   {
-    //if (this.default_value) {
-    //  this.activate();
-    //} else {
-    //  this.deactivate();
-    //}
+    if (this.default_value) {
+      this.activate();
+    } else {
+      this.deactivate();
+    }
   },
 
   /**

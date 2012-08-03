@@ -25,7 +25,7 @@
 /**
  * @class AnswerBack
  *
- * DECAAM — Set/Reset Auto Answerback Mode
+ * DECAAM - Set/Reset Auto Answerback Mode
  *
  * @ref http://www.vt100.net/docs/vt510-rm/DECAAM
  *
@@ -131,6 +131,17 @@ AnswerBack.definition = {
       _("DECAAM - DECAAM (disable answerback) was called."));
   },
 
+  /** Report mode
+   */
+  "[subscribe('sequence/decrqm/100'), pnp]":
+  function report() 
+  {
+    var mode = this._mode ? 1: 2;
+
+    this.sendMessage("command/send-sequence/csi");
+    this.sendMessage("command/send-to-tty", "?100;" + mode + "$y"); // DECRPM
+  },
+
   /** handle terminal reset event.
    */
   "[subscribe('command/{soft | hard}-terminal-reset'), pnp]":
@@ -161,9 +172,7 @@ AnswerBack.definition = {
   "[subscribe('@command/restore'), type('Object -> Undefined'), pnp]": 
   function restore(context) 
   {
-    var data;
-
-    data = context[this.id];
+    var data = context[this.id];
     if (data) {
       this._mode = data.mode;
     } else {

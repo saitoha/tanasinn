@@ -24,47 +24,46 @@
 
 
 /**
- * @class TextCursorEnableMode
+ * @class AnyEventMouseMode
  *
- * DECTCEM — Text Cursor Enable Mode
- *
- * This control function makes the cursor visible or invisible.
- *
- * Default: Visible
+ * XT_MSE_ANY - any event mouse mode
+ * 
+ * Default: off
  *
  * Format
  *
- * CSI   ?     2     5     h
- * 9/11  3/15  3/2   3/5   6/8
+ * CSI   ?     1     0     0     3     h
+ * 9/11  3/15  3/1   3/0   3/0   3/3   6/8
  *
- * Set: makes the cursor visible.
+ * Set: enable any event mouse mode.
  *
  *
- * CSI   ?     2     5     l
- * 9/11  3/15  3/2   3/5   6/12
+ * CSI   ?     1     0     0     3     l
+ * 9/11  3/15  3/1   3/0   3/0   3/3   6/12
  *
- * Reset: makes the cursor invisible.
+ * Reset: disable any event mouse mode.
+ *
  */
-var TextCursorEnableMode = new Class().extends(Plugin)
-                                  .depends("cursorstate");
-TextCursorEnableMode.definition = {
+var AnyEventMouseMode = new Class().extends(Plugin);
+AnyEventMouseMode.definition = {
 
   get id()
-    "text_cursor_enable_mode",
+    "any_event_mouse_mode",
 
   get info()
     <module>
-        <name>{_("Text Cursor Enable Mode (DECTCEM)")}</name>
+        <name>{_("Any Event Mouse Mode")}</name>
         <version>0.1</version>
         <description>{
-          _("Switch the cursor's show/hide status.")
+          _("Switch any event mouse mode.")
         }</description>
     </module>,
 
-  "[persistable] enabled_when_startup": true,
-  "[persistable] default_value": true,
 
-  _mode: null,
+  "[persistable] enabled_when_startup": true,
+  "[persistable] default_value": false,
+
+  _mode: false,
 
   /** installs itself. 
    *  @param {Broker} broker A Broker object.
@@ -73,7 +72,6 @@ TextCursorEnableMode.definition = {
   function install(broker) 
   {
     this._mode = this.default_value;
-    this._cursor = this.dependency["cursorstate"];
   },
 
   /** Uninstalls itself.
@@ -85,39 +83,43 @@ TextCursorEnableMode.definition = {
     this._mode = null;
   },
 
-  /** Show Cursor (DECTCEM)
+  /** Use All Motion Mouse Tracking.
    */
-  "[subscribe('sequence/decset/25'), pnp]":
+  "[subscribe('sequence/decset/1003'), pnp]":
   function activate() 
   { 
-    var cursor = this._cursor;
-
     this._mode = true;
-
-    this.sendMessage("event/cursor-visibility-changed", true);
+ 
+    this.sendMessage(
+      "event/mouse-tracking-mode-changed", 
+      coUtils.Constant.TRACKING_ANY);
+    coUtils.Debug.reportMessage(
+      _("DECSET 1003 - xterm all motion mouse tracking mode was set."));
   },
-
-  /** Hide Cursor (DECTCEM)
+ 
+  /** Don't Use All Motion Mouse Tracking.
    */
-  "[subscribe('sequence/decrst/25'), pnp]":
+  "[subscribe('sequence/decrst/1003'), pnp]":
   function deactivate() 
   {
-    var cursor = this._cursor;
-
     this._mode = false;
 
-    this.sendMessage("event/cursor-visibility-changed", false);
+    this.sendMessage(
+      "event/mouse-tracking-mode-changed", 
+      coUtils.Constant.TRACKING_NONE);
+    coUtils.Debug.reportMessage(
+      _("DECRST 1003 - xterm all motion mouse tracking mode was reset."));
   },
 
   /** Report mode
    */
-  "[subscribe('sequence/decrqm/25'), pnp]":
+  "[subscribe('sequence/decrqm/1003'), pnp]":
   function report() 
   {
     var mode = this._mode ? 1: 2;
 
     this.sendMessage("command/send-sequence/csi");
-    this.sendMessage("command/send-to-tty", "?25;" + mode + "$y"); // DECRPM
+    this.sendMessage("command/send-to-tty", "?1003;" + mode + "$y"); // DECRPM
   },
 
   /** on hard / soft reset
@@ -160,7 +162,8 @@ TextCursorEnableMode.definition = {
     }
   },
 
-}; // class TextCursorEnableMode
+
+}; // class AnyEventMouseMode
 
 /**
  * @fn main
@@ -169,7 +172,7 @@ TextCursorEnableMode.definition = {
  */
 function main(broker) 
 {
-  new TextCursorEnableMode(broker);
+  new AnyEventMouseMode(broker);
 }
 
 // EOF

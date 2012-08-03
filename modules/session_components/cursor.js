@@ -190,7 +190,7 @@ Cursor.definition = {
 
   /**
    *
-   * DECSCUSR — Set Cursor Style
+   * DECSCUSR - Set Cursor Style
    *
    * ref: http://www.vt100.net/docs/vt510-rm/DECSCUSR
    * 

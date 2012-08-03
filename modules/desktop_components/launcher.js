@@ -694,15 +694,15 @@ SessionsCompletionDisplayDriver.definition = {
               </>,
               childNodes: [
                 {
-                  tagName: "box",
+                  tagName: "html:div",
                   childNodes: { text: result.comments[i].command },
                 },
                 {
-                  tagName: "box",
+                  tagName: "html:div",
                   childNodes: { text: result.comments[i].ttyname + " $$" + result.comments[i].pid },
                 },
                 {
-                  tagName: "box",
+                  tagName: "html:div",
                   childNodes: { text: result.comments[i].request_id },
                 },
               ],

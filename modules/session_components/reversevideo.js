@@ -26,7 +26,7 @@
 /**
  * @class ReverseVideo
  *
- * DECSCNM — Screen Mode: Light or Dark Screen
+ * DECSCNM - Screen Mode: Light or Dark Screen
  *
  * ref: http://www.vt100.net/docs/vt510-rm/DECSCNM
  *
@@ -123,6 +123,17 @@ ReverseVideo.definition = {
 
     coUtils.Debug.reportMessage(
       _("DECRST - DECSCNM (Reverse video) was called."));
+  },
+
+  /** Report mode
+   */
+  "[subscribe('sequence/decrqm/5'), pnp]":
+  function report() 
+  {
+    var mode = this._mode ? 1: 2;
+
+    this.sendMessage("command/send-sequence/csi");
+    this.sendMessage("command/send-to-tty", "?5;" + mode + "$y"); // DECRPM
   },
 
   /** handle terminal reset event.

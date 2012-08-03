@@ -26,6 +26,25 @@
 /**
  * @class CursorBlink
  *
+ * XT_CBLINK - Cursor Blinking Mode (att610)
+ *
+ * This control function makes the cursor blinking or no-blinking.
+ *
+ * Default: No-blinking
+ *
+ * Format
+ *
+ * CSI   ?     1     2     h
+ * 9/11  3/15  3/1   3/2   6/8
+ *
+ * Set: makes the cursor blinking.
+ *
+ *
+ * CSI   ?     1     2     l
+ * 9/11  3/15  3/1   3/2   6/12
+ *
+ * Reset: makes the cursor no-blinking.
+ *
  */
 var CursorBlink = new Class().extends(Plugin)
                              .depends("cursorstate");
@@ -87,7 +106,7 @@ CursorBlink.definition = {
 
   /** Stop Blinking Cursor (att610).
    */
-  "[subscribe('sequence/decrst/47'), pnp]":
+  "[subscribe('sequence/decrst/12'), pnp]":
   function deactivate() 
   {
     var cursor = this._cursor;
@@ -98,6 +117,17 @@ CursorBlink.definition = {
 
     coUtils.Debug.reportMessage(
       _("DECSET - 12 (disable cursor blink) was called."));
+  },
+
+  /** Report mode
+   */
+  "[subscribe('sequence/decrqm/12'), pnp]":
+  function report() 
+  {
+    var mode = this._mode ? 1: 2;
+
+    this.sendMessage("command/send-sequence/csi");
+    this.sendMessage("command/send-to-tty", "?12;" + mode + "$y"); // DECRPM
   },
 
   /** handle terminal reset event.

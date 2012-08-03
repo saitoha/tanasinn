@@ -26,7 +26,7 @@
 /**
  * @class IRMSwitch
  *
- * IRM — Insert/Replace Mode
+ * IRM - Insert/Replace Mode
  *
  * This control function selects how the terminal adds characters to page 
  * memory. The terminal always adds new characters at the cursor position.
@@ -93,7 +93,6 @@ IRMSwitch.definition = {
     this._mode = null;
   },
 
-
   /** Activate auto-repeat feature.
    */
   "[subscribe('sequence/sm/4'), pnp]":
@@ -114,6 +113,17 @@ IRMSwitch.definition = {
 
     // disable insert mode.
     this.sendMessage("command/disable-insert-mode");
+  },
+
+  /** Report mode
+   */
+  "[subscribe('sequence/rqm/4'), pnp]":
+  function report() 
+  {
+    var mode = this._mode ? 1: 2;
+
+    this.sendMessage("command/send-sequence/csi");
+    this.sendMessage("command/send-to-tty", "4;" + mode + "$y"); // DECRPM
   },
 
   /** on hard / soft reset

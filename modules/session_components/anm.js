@@ -26,7 +26,7 @@
 /**
  * @class ANMSwitch
  *
- * DECANM — ANSI Mode
+ * DECANM - ANSI Mode
  *
  * DECANM changes the terminal to the VT52 mode of operation. In VT52 mode, 
  * the terminal acts like a VT52 terminal. This mode lets you use applications
@@ -133,6 +133,17 @@ ANMSwitch.definition = {
 
     coUtils.Debug.reportWarning(
       _("DECRST - DECANM was not implemented completely."));
+  },
+
+  /** Report mode
+   */
+  "[subscribe('sequence/decrqm/2'), pnp]":
+  function report() 
+  {
+    var mode = this._mode ? 1: 2;
+
+    this.sendMessage("command/send-sequence/csi");
+    this.sendMessage("command/send-to-tty", "?2;" + mode + "$y"); // DECRPM
   },
 
   /** on hard / soft reset

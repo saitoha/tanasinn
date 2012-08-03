@@ -26,7 +26,7 @@
 /**
  * @class CharsetModeHandler
  *
- * SCS — Select Character Set
+ * SCS - Select Character Set
  * 
  * Designate character sets to G-sets.
  *

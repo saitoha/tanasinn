@@ -95,6 +95,17 @@ ReverseWrap.definition = {
       _("DECRST 45 - Reverse-wraparound Mode was reset."));
   },
 
+  /** Report mode
+   */
+  "[subscribe('sequence/decrqm/45'), pnp]":
+  function report() 
+  {
+    var mode = this._mode ? 1: 2;
+
+    this.sendMessage("command/send-sequence/csi");
+    this.sendMessage("command/send-to-tty", "?45;" + mode + "$y"); // DECRPM
+  },
+
   /** handle terminal reset event.
    */
   "[subscribe('command/{soft | hard}-terminal-reset'), pnp]":
