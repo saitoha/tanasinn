@@ -235,7 +235,7 @@ ConformanceLevel.definition = {
     this.sendMessage("command/send-to-tty", message);
   },
 
-  "[subscribe('command/send-sequence/dcs-string'), pnp]":
+  "[subscribe('command/send-sequence/dcs'), pnp]":
   function send_DCS_string(data) 
   {
     var message = "";

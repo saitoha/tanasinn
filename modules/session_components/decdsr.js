@@ -199,7 +199,7 @@ DECDeviceStatusReport.definition = {
     checksum = screen.calculateHashInRectangle(top, left, bottom, right);
     message = id + "!~" + checksum;
 
-    this.sendMessage("command/send-sequence/dcs-string", message);
+    this.sendMessage("command/send-sequence/dcs", message);
   },
 
 };

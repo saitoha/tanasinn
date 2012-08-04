@@ -131,7 +131,7 @@ TirtiaryDA.definition = {
     reply.push("\\");
     message = reply.join("");
 
-    this.sendMessage("command/send-sequence/dcs-string", message);
+    this.sendMessage("command/send-sequence/dcs", message);
 
     coUtils.Debug.reportMessage(
       _("Tirtiary Device Attributes is requested. reply: '%s'."),

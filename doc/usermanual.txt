@@ -32,8 +32,9 @@ link:./usermanual.html[English/英語]
     support DECRQM/DECRPM
     support DECCKSR
     support DECRQCRA
+    support DECXCPR
     disable Mascot plugin by default
-    fix for vimperator intgration
+    fix for vimperator integration
     Fix some bugs.
 
 === 2012/07/15 
