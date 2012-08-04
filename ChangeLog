@@ -1,0 +1,87 @@
+
+2012-08-04 Hayaki Saito <user@zuse.jp>
+
+	* Version 0.2.3.0
+    * support OSC 52 get access
+    * support DECRQM/DECRPM
+    * support DECCKSR
+    * support DECRQCRA
+    * support DECXCPR
+    * disable Mascot plugin by default
+    * fix for vimperator integration
+    * Fix some bugs.
+
+2012-07-15 Hayaki Saito <user@zuse.jp>
+
+	* Version 0.2.2.2
+	* Support OSC 10/11.
+	* Support DECSET 12 / cursor blinking.
+	* Support DECSCUSR / cursor style switching.
+	* Support WYSTCURM/WYULCURM (wise).
+	* Support OSC 104/110/111 / reset color feature.
+	* Implement Cursor blink transition.
+	* Supports TNREPTAMB / report ambiguous width.
+	* Handle DECSCL.
+	* Support DECRQPSR.
+	* Support S7C1T/S8C1T.
+	* Support DECTABSR / tab stop report.
+	* Handle DECCIR.
+	* Implement smart selection feature.
+	* Support termcap reporting feature.
+	* Implement 3D Rotation feature, with dragging mouse.
+	* Fix some bugs.
+
+2012-05-31 Hayaki Saito <user@zuse.jp>
+
+	* Version 0.2.2.1
+	* DECSET 8840 / Ambiguous width switching.
+	* DECSET 7700 / Ambiguous width reporting.
+	* Implement LNM.
+	* Implement REP.
+	* Implement Keyboard Action Mode (KAM).
+	* Implement Send/Receive Mode, local echo mode (SRM).
+	* implement DECSCA (Protection Attribute).
+	* implement DECSED/DECSEL (Selective erase feature).
+	* implement DECSERA (Selective Erase Rectangle Area).
+	* More precise emulation.
+
+2012-05-23 Hayaki Saito <user@zuse.jp>
+
+	* Version 0.2.2.0
+	* Supports OSC 52 base64 copy.
+	* Supports DEC Locator Event Mode(without filter rectangle feature).
+	* Supports character combining, more precise character rendering.
+	* Implement LNM.
+	* Implement Device Status Report(DSR).
+	* Implement Tertiary Device Attributes (DA3).
+	* Implement DECREQTPARM.
+	* More precise emulation, Now it passes vttest Menu 1, 2, 3, 4, 6, 7, and 8.
+	* Disable ShellRPC plugin.
+
+2012-05-05 Hayaki Saito <user@zuse.jp>
+
+	* Version 0.2.1.1
+	* Supports UTF8/urxvt/SGR style mouse reporting.
+	* Improve performance.
+
+2012-04-18 Hayaki Saito <user@zuse.jp>
+
+	* Version 0.2.0.0
+	* More precise emulation.
+	* Now it passes vttest 1, 2, 3, 4, 7, and 8.
+	* Improve performance.
+
+2012-04-15 Hayaki Saito <user@zuse.jp>
+
+	* Version 0.1.7.2
+	* Important bug fix, Now it works on en_US locale.
+
+2012-04-08 Hayaki Saito <user@zuse.jp>
+
+	* Now version 0.1.7.1 available.
+	* Implement SGR blink feature.
+	* Implement SGR rapid blink feature(from DOS's ANSI.SYS).
+	* Implement SGR italic feature.
+	* Implement SGR halfbright feature.
+
+
