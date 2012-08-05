@@ -72,7 +72,6 @@ DRCSBuffer.definition = {
     if (this._map[mode]) {
       this.sendMessage("event/drcs-state-changed/g0", this._map[mode]);
     } else {
-      alert(mode)
       this.sendMessage("event/drcs-state-changed/g0", null);
     }
   },
