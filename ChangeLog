@@ -1,4 +1,12 @@
 
+
+2012-08-05 Hayaki Saito <user@zuse.jp>
+
+	* Version 0.2.3.1/0.2.3.2
+	* fix a bug in save command
+	* fix a bug in OSC 52 get access
+	* fix a serious emulation's bug.
+
 2012-08-04 Hayaki Saito <user@zuse.jp>
 
 	* Version 0.2.3.0
