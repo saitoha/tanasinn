@@ -76,7 +76,7 @@ PersistManager.definition = {
   {
     var broker = this._broker,
         data = {},
-        profile_path = impl.get_profile_path(broker, name)
+        profile_path = impl.get_profile_path(broker, name),
         serialized_data;
 
     if ("__persist" in broker) {
