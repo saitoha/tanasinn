@@ -23,10 +23,46 @@
  * ***** END LICENSE BLOCK ***** */
 
 
+/** 
+ * @class ForwardInputIterator
+ */ 
+var ForwardInputIterator = new Class();
+ForwardInputIterator.definition = {
+
+  _value: null,
+  _position: 0,
+
+  /** Assign new string data. position is reset. */
+  initialize: function initialize(value) 
+  {
+    this._value = value;
+    this._position = 0;
+  },
+
+  /** Returns single byte code point. */
+  current: function current() 
+  {
+    return this._value.charCodeAt(this._position);
+  },
+
+  /** Moves to next position. */
+  moveNext: function moveNext() 
+  {
+    ++this._position;
+  },
+
+  /** Returns whether scanner position is at end. */
+  get isEnd() 
+  {
+    return this._position >= this._value.length;
+  },
+};
+
 /**
  * @class NotificationService
  */
-var NotificationService = new Class().extends(Plugin);
+var NotificationService = new Class().extends(Plugin)
+                                     .depends("decoder");
 NotificationService.definition = {
 
   get id()
@@ -62,14 +98,17 @@ NotificationService.definition = {
   "[subscribe('sequence/osc/9'), pnp]":
   function osc9(data)
   {
-    var values = data.split(";"),
+    var scanner = new ForwardInputIterator(data),
+        decoder = this.dependency["decoder"],
+        sequence = [c for (c in decoder.decode(scanner))],
+        decoded_text = String.fromCharCode.apply(String, sequence);
+        values = decoded_text.split(";"),
         title = values[0],
         text = values[1],
         self = this,
-        file = coUtils.File
-          .getFileLeafFromVirtualPath("content/tanasinn.png"),
-        url = coUtils.File
-          .getURLSpec(file);
+        path = "content/tanasinn.png",
+        file = coUtils.File.getFileLeafFromVirtualPath(path),
+        url = coUtils.File.getURLSpec(file);
 
     Components.classes["@mozilla.org/alerts-service;1"]
       .getService(Components.interfaces.nsIAlertsService)

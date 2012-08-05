@@ -110,7 +110,7 @@ Base64CopyPaste.definition = {
     if (/^[0-9psc]+;\?$/.test(data)) {
       if (this.enable_get_access) {
         text = coUtils.Clipboard.get();
-        text = "52;p;?;" + coUtils.Text.base64encode(text);
+        text = "52;c;?;" + coUtils.Text.base64encode(text);
         this.sendMessage("command/send-sequence/osc", text);
         this._showPasteMessage(text);
       }

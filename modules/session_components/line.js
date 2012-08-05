@@ -221,7 +221,7 @@ var ATTR2_DRCS         = 31    // 10000000 01111111 01111111 01111111
 var Cell = new Class();
 Cell.definition = {
 
-  c: 0x01,
+  c: 0x20,
   value: 0x7,
 
   initialize: function initialize(attr) 
@@ -523,7 +523,7 @@ Cell.definition = {
   /** Erase the pair of character and attribute structure */
   erase: function erase(attr) 
   {
-    this.c = 0x01;
+    this.c = 0x20;
     if (attr) {
       this.value = attr.value;
     } else {

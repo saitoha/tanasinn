@@ -224,9 +224,8 @@ OverlayIndicator.definition = {
   "[subscribe('event/font-size-changed'), pnp]":
   function onFontSizeChanged(size)
   {
-    var message;
+    var message = size + "px";
 
-    message = size + "px";
     this.print(message);
     this.show(2000);
   },
@@ -234,13 +233,11 @@ OverlayIndicator.definition = {
   "[subscribe('sequence/osc/{0 | 2}'), pnp]":
   function onCommandReceived(data0, data2) 
   { // process OSC command.
-    var scanner, decoder, sequence, text, data;
-
-    data = data0 || data2;
-    scanner = new ForwardInputIterator(data);
-    decoder = this.dependency["decoder"];
-    sequence = [c for (c in decoder.decode(scanner))];
-    text = String.fromCharCode.apply(String, sequence);
+    var data = data0 || data2,
+        scanner = new ForwardInputIterator(data),
+        decoder = this.dependency["decoder"],
+        sequence = [c for (c in decoder.decode(scanner))],
+        text = String.fromCharCode.apply(String, sequence);
 
     this.print(text);
     this.show(400);

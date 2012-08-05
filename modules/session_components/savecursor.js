@@ -94,7 +94,7 @@ SaveCursorMode.definition = {
   { 
     this._mode = true;
 
-    this._screen.saveCursor();
+    this.sendMessage("command/backup-cursor-state");
   },
 
   /** Restore cursor as in DECRC 
@@ -105,7 +105,7 @@ SaveCursorMode.definition = {
   {
     this._mode = false;
    
-    this._screen.restoreCursor();
+    this.sendMessage("command/restore-cursor-state");
   },
 
   /** Report mode

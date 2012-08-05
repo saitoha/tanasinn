@@ -134,11 +134,11 @@ CursorState.definition = {
   },
 
   /** backup current cursor state. */
-  backup: function backup() 
+  "[subscribe('command/backup-cursor-state'), enabled]":
+  function backup() 
   {
-    var context;
+    var context = {};
 
-    context = {};
     this._backup_instance = context;
     this.sendMessage("command/save-cursor", context);
 
@@ -151,11 +151,11 @@ CursorState.definition = {
   },
 
   /** restore cursor state from the backup instance. */
-  restore: function restore() 
+  "[subscribe('command/restore-cursor-state'), enabled]":
+  function restore() 
   {
-    var context;
+    var context = this._backup_instance;
 
-    context = this._backup_instance;
     if (null === context) {
       coUtils.Debug.reportWarning(
         _('Cursor backup instance not found.'));
