@@ -64,7 +64,7 @@ SixelForwardInputIterator.definition = {
       throw coUtils.Debug.Exception(_("Cannot parse number."));
     }
     c = this.current();
-    return c == code;
+    return c === code;
   },
   
   parseUint: function parseUint() 
@@ -122,7 +122,6 @@ Sixel.definition = {
   /** UI template */
   get template() 
     ({
-//      parentNode: "#tanasinn_center_area",
       tagName: "html:canvas",
       id: "sixel_canvas",
     }),
@@ -138,6 +137,9 @@ Sixel.definition = {
   {
     this._color_table = [];
     this._buffers = [];
+
+    this._renderer = this.dependency["renderer"];
+    this._screen = this.dependency["screen"];
   },
 
   /** Uninstalls itself.
@@ -146,7 +148,8 @@ Sixel.definition = {
   "[uninstall]":
   function uninstall(broker) 
   {
-    var i, buffer;
+    var i,
+        buffer;
 
     this._map = null;
     this._color_table = null;
@@ -159,15 +162,20 @@ Sixel.definition = {
       buffer.context = null;
     }
     this._buffers = null;
+
+    this._renderer = null;
+    this._screen = null;
   },
 
   _setSixel: function _setSixel(imagedata, x, y, c) 
   {
-    var r, g, b, data, i, position;
-
-    [r, g, b] = this._color_table[this._color];
-
-    data = imagedata.data;
+    var color = this._color_table[this._color],
+        r = color[0],
+        g = color[1],
+        b = color[2],
+        data = imagedata.data,
+        i,
+        position;
 
     c -= 0x3f;
 
@@ -184,9 +192,7 @@ Sixel.definition = {
 
   _setColor: function _setColor(color_no, r, g, b) 
   {
-    var rgb_value;
-
-    rgb_value = [
+    var rgb_value = [
       Math.floor(r / 101 * 255), 
       Math.floor(g / 101 * 255), 
       Math.floor(b / 101 * 255)
@@ -199,66 +205,66 @@ Sixel.definition = {
     this._color = color_no;
   },
 
-  "[subscribe('sequence/dcs'), pnp]":
-  function onDCS(data) 
+  _createNewCanvas: function _createNewCanvas()
   {
-    var renderer,
-        screen,
-        pattern,
-        match,
-        P1,
-        P2,
-        P3,
-        sixel,
-        dom,
-        scanner,
-        imagedata,
-        x,
-        y,
-        color_no,
-        r,
-        g,
-        b,
-        count,
-        i,
-        line_count,
-        space_type,
-        c;
-
-    pattern = /^([0-9]);([01]);([0-9]+);?q((?:.|[\n\r])+)/;
-    match = data.match(pattern);
-    if (null === match) {
-      return;
-    }
-
-    renderer = this.dependency["renderer"];
-    screen = this.dependency["screen"];
-
-    [, P1, P2, P3, sixel] = match;
-
-    if (!sixel) {
-      return;
-    }
-
-    var {sixel_canvas} = this.request(
-      "command/construct-chrome", this.template);
+    var renderer = this._renderer,
+        screen = this._screen,
+        sixel_canvas = this.request(
+          "command/construct-chrome",
+          this.template
+          ).sixel_canvas,
+        dom = { 
+          canvas: sixel_canvas,
+          context: sixel_canvas.getContext("2d"),
+        };
 
     sixel_canvas.width = renderer.char_width * screen.width;
     sixel_canvas.height = renderer.line_height * screen.height * 2;
 
-    dom = { 
-      canvas: sixel_canvas,
-      context: sixel_canvas.getContext("2d"),
-    };
     this._buffers.push(dom);
 
-    scanner = new SixelForwardInputIterator(sixel);
-    imagedata = dom.context
-      .getImageData(0, 0, dom.canvas.width, dom.canvas.height * 2);
+    return dom;
+  },
 
-    x = 0;
-    y = 0;
-    count = 1;
+  "[subscribe('sequence/dcs'), pnp]":
+  function onDCS(data) 
+  {
+    var pattern = /^([0-9]);([01]);([0-9]+);?q((?:.|[\n\r])+)/,
+        match = data.match(pattern),
+        sixel;
+
+    if (null === match) {
+      return;
+    }
+
+    sixel = match[4];
+    if (!sixel) {
+      return;
+    }
+
+    this._parseSixel(sixel);
+  },
+
+  _parseSixel: function _parseSixel(sixel)
+  {
+    var renderer = this._renderer,
+        screen = this._screen,
+        dom = this._createNewCanvas(),
+        scanner = new SixelForwardInputIterator(sixel),
+        imagedata = dom.context
+          .getImageData(0, 0, dom.canvas.width, dom.canvas.height * 2),
+        x = 0,
+        y = 0,
+        count = 1,
+        color_no,
+        r,
+        g,
+        b,
+        i,
+        line_count,
+        space_type,
+        c,
+        max_x = 0;
 
     do {
       c = scanner.current();
@@ -292,26 +298,25 @@ Sixel.definition = {
               c = scanner.parseUint();
             }
           }
-
           break;
 
         case 0x23: // #
           scanner.moveNext();
           color_no = scanner.parseUint();
-          if (-1 == color_no) {
+          if (-1 === color_no) {
             throw coUtils.Debug.Exception(_("Cannot parse sixel format."));
           }
 
           c = scanner.current();
-          if (0x3b == c) { // ;
+          if (0x3b === c) { // ;
             scanner.moveNext();
             c = scanner.parseUint();
 
             space_type = "";
 
-            if (1 == c) { // HSL
+            if (1 === c) { // HSL
               space_type = "HSL"; 
-            } else if (2 == c) {
+            } else if (2 === c) {
               space_type = "RGB";
             } else {
               throw coUtils.Debug.Exception(_("Cannot parse sixel format."));
@@ -323,7 +328,7 @@ Sixel.definition = {
 
             scanner.moveNext();
             r = scanner.parseUint();
-            if (-1 == r) {
+            if (-1 === r) {
               throw coUtils.Debug.Exception(_("Cannot parse sixel format."));
             }
             if (!scanner.parseChar(0x3b)) {
@@ -332,7 +337,7 @@ Sixel.definition = {
 
             scanner.moveNext();
             g = scanner.parseUint();
-            if (-1 == g) {
+            if (-1 === g) {
               throw coUtils.Debug.Exception(_("Cannot parse sixel format."));
             }
             if (!scanner.parseChar(0x3b)) {
@@ -341,7 +346,7 @@ Sixel.definition = {
 
             scanner.moveNext();
             b = scanner.parseUint();
-            if (-1 == b) {
+            if (-1 === b) {
               throw coUtils.Debug.Exception(_("Cannot parse sixel format."));
             }
 
@@ -352,6 +357,8 @@ Sixel.definition = {
           break;
 
         case 0x24: // $
+          if (max_x > x)
+            max_x = x;
           count = 1;
           x = 0;
           scanner.moveNext();
@@ -451,6 +458,7 @@ Sixel.definition = {
 
     dom.context.putImageData(imagedata, 0, 0);
     line_count = Math.ceil(y / renderer.line_height);
+    cell_count = Math.ceil(max_x / renderer.char_height);
 
     for (i = 0; i < line_count; ++i) {
       screen.lineFeed();

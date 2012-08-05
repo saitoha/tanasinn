@@ -999,14 +999,12 @@ Renderer.definition = {
   _drawSixel: 
   function _drawSixel(line, row)
   {
-    var context, sixel_info, canvas, position, line_height, width;
-
-    context = this._main_layer.context;
-    sixel_info = line.sixel_info;
-    canvas = sixel_info.buffer;
-    position = sixel_info.position;
-    line_height = this.line_height;
-    width = canvas.width;
+    var context = this._main_layer.context,
+        sixel_info = line.sixel_info,
+        canvas = sixel_info.buffer,
+        position = sixel_info.position,
+        line_height = this.line_height,
+        width = canvas.width;
 
     context.clearRect(0, line_height * row, width, line_height);
 
@@ -1156,7 +1154,7 @@ Renderer.definition = {
       this._drawUnderline(context, x, y, char_width * length, fore_color);
     }
 
-    if (null === this._drcs_state || !attr.drcs) {
+    if (!attr.drcs) {
       text = String.fromCharCode.apply(String, codes);
 
       //if (this.enable_text_shadow) {
@@ -1174,7 +1172,7 @@ Renderer.definition = {
         context.fillText(text, x + 1, y, char_width * length - 1);
       }
     } else {
-      drcs_state = this._drcs_state;
+      drcs_state = attr.drcs;
 
       for (index = 0; index < codes.length; ++index) {
         code = codes[index] - this._offset;

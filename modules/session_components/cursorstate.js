@@ -220,9 +220,9 @@ CursorState.definition = {
   function onDRCSStateChangedG0(state) 
   {
     if (null !== state) {
-      this.attr.drcs = true;
+      this.attr.drcs = state;
     } else {
-      this.attr.drcs = false;
+      this.attr.drcs = null;
     }
   },
  
@@ -230,9 +230,9 @@ CursorState.definition = {
   function onDRCSStateChangedG1(state) 
   {
     if (null !== state) {
-      this.attr.drcs = true;
+      this.attr.drcs = state;
     } else {
-      this.attr.drcs = false;
+      this.attr.drcs = null;
     }
   },
 

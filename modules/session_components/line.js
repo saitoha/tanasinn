@@ -207,12 +207,12 @@ var ATTR2_FGCOLOR      = 24    // 00000001 00000000 00000000 00000000
 var ATTR2_BGCOLOR      = 25    // 00000010 00000000 00000000 00000000
 
 // tanasinn specific properties
-var ATTR2_LINK         = 27    // 00000100 00000000 00000000 00000000
-var ATTR2_HIGHLIGHT    = 28    // 00001000 00000000 00000000 00000000
+var ATTR2_LINK         = 26    // 00000100 00000000 00000000 00000000
+var ATTR2_HIGHLIGHT    = 27    // 00001000 00000000 00000000 00000000
 
-var ATTR2_WIDE         = 29    // 00010000 00000000 00000000 00000000
-var ATTR2_DRCS         = 30    // 00100000 00000000 00000000 00000000
-var ATTR2_PROTECTED    = 31    // 01000000 00000000 00000000 00000000
+var ATTR2_WIDE         = 28    // 00010000 00000000 00000000 00000000
+var ATTR2_PROTECTED    = 30    // 01000000 00000000 00000000 00000000
+var ATTR2_DRCS         = 31    // 10000000 01111111 01111111 01111111
 
 /**
  * @class Cell
@@ -221,7 +221,7 @@ var ATTR2_PROTECTED    = 31    // 01000000 00000000 00000000 00000000
 var Cell = new Class();
 Cell.definition = {
 
-  c: 0x20,
+  c: 0x01,
   value: 0x7,
 
   initialize: function initialize(attr) 
@@ -418,19 +418,82 @@ Cell.definition = {
   },
  
   /** getter of drcs attribute */
+  /*
   get drcs()
   {
     return this.value >>> ATTR2_DRCS & 0x1;
   },
+  */
 
   /** setter of drcs attribute */
+  /*
   set drcs(value) 
   {
     this.value = this.value
                & ~(0x1 << ATTR2_DRCS) 
                | value << ATTR2_DRCS;
   },
+  */
+/*
+  get dscs()
+  {
+    var i,
+        c,
+        offset,
+        buffer = [],
+        result;
 
+    if (!this.drcs) {
+      return null;
+    }
+
+    for (i = 0; i < 3; ++i) {
+      offset = i * 8;
+      c = this.value >>> offset & 0xff;
+      if (0 === c) {
+        break;
+      }
+      buffer.push(c);
+    }
+
+    if (0 === buffer.length) {
+      return null;
+    }
+
+    result = String.fromCharCode.apply(String, buffer);
+    return result;
+  },
+/*
+  set dscs(value)
+  {
+    var length = value.length,
+        i,
+        c,
+        offset;
+
+    if (null === value) {
+    }
+
+    // check dscs length
+    if (length < 1 | length > 3) {
+      throw coUtils.Debug.Exception(_("Invalid dscs length: %d."), length);
+    }
+
+    for (i = 0; i < length; ++i) {
+      c = value.charCodeAt(i);
+      if (20 <= c && c <= 127) {
+        offset = i * 8;
+        this.value = this.value 
+                   & ~(0xff << offset) 
+                   | value << offset;
+      } else {
+        throw coUtils.Debug.Exception(_("Invalid dscs string: %s."), value);
+      }
+    }
+
+    this.drcs = true;
+  },
+*/
   /** Compare every bit and detect equality of both objects. */
   equals: function equals(other)
   {
@@ -454,12 +517,13 @@ Cell.definition = {
   {
     this.c = c;
     this.value = attr.value;
+    this.drcs = attr.drcs;
   }, // write
 
   /** Erase the pair of character and attribute structure */
   erase: function erase(attr) 
   {
-    this.c = 0x20;
+    this.c = 0x01;
     if (attr) {
       this.value = attr.value;
     } else {
@@ -839,7 +903,7 @@ Line.definition = {
 
       for (current = this.first; current < max; ++current) {
         cell = cells[current];
-        is_normal = cell.c > 1 && cell.c < 256;
+        is_normal = cell.c > 0 && cell.c < 256;
         if (attr) {
           if (attr.equals(cell) && is_normal) {
             continue;
@@ -912,9 +976,12 @@ Line.definition = {
    */
   write: function write(position, codes, attr, insert_mode) 
   {
-    var i, cell, cells, length, range;
+    var cells = this.cells,
+        i,
+        cell,
+        length,
+        range;
 
-    cells = this.cells
     if (insert_mode) {
       this.addRange(position, this.length);
       length = codes.length;

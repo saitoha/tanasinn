@@ -72,6 +72,7 @@ DRCSBuffer.definition = {
     if (this._map[mode]) {
       this.sendMessage("event/drcs-state-changed/g0", this._map[mode]);
     } else {
+      alert(mode)
       this.sendMessage("event/drcs-state-changed/g0", null);
     }
   },
@@ -212,7 +213,7 @@ DRCSBuffer.definition = {
           var bits = char2sixelbits(c); 
           for (var [y, bit] in Iterator(bits)) {
             var position = (((y + h * 6) * 96 + n) * char_width + x) * 4;
-            if ("1" == bit) {
+            if ("1" === bit) {
               imagedata.data[position + 0] = 255;
               imagedata.data[position + 1] = 255;
               imagedata.data[position + 2] = 255;
@@ -226,7 +227,8 @@ DRCSBuffer.definition = {
     }
 
     canvas.getContext("2d").putImageData(imagedata, 0, 0);
-    this._map[dscs] = {
+
+    var drcs = {
       dscs: dscs,
       drcs_canvas: canvas,
       drcs_width: char_width,
@@ -235,7 +237,15 @@ DRCSBuffer.definition = {
       end_code: start_code + sixels.length,
       full_cell: full_cell,
     };
+
+    this.sendMessage("command/alloc-drcs", drcs);
   },
+
+  "[subscribe('command/alloc-drcs'), pnp]":
+  function allocDRCS(drcs)
+  {
+    this._map[drcs.dscs] = drcs; 
+  }
 
 } // class DRCSBuffer
 

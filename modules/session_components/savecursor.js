@@ -44,7 +44,8 @@
  * Reset: restore cursor state.
  *
  */
-var SaveCursorMode = new Class().extends(Plugin);
+var SaveCursorMode = new Class().extends(Plugin)
+                                .depends("screen");
 SaveCursorMode.definition = {
 
   get id()
@@ -72,6 +73,7 @@ SaveCursorMode.definition = {
   function install(broker) 
   {
     this._mode = this.default_value;
+    this._screen = this.dependency["screen"];
   },
 
   /** Uninstalls itself.
@@ -81,6 +83,7 @@ SaveCursorMode.definition = {
   function uninstall(broker) 
   {
     this._mode = null;
+    this._screen = null;
   },
 
   /** Save cursor as in DECSC 

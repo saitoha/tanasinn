@@ -2,7 +2,6 @@
  ChangeLog
  README
  TODO
- release_note.txt
  application.ini
  configure.ac
  acgecko.m4
@@ -271,7 +270,7 @@
    ~/.vimperator/plugin/twittperator.js
    .tanasinn.js
    licence.pl
-   EastAsianWidthDetectorGenerator.pl
+   WcwidthGenerator.pl
    tanasinn-vimp.js
    tanasinn-keysnail.js
    gecko.vim
