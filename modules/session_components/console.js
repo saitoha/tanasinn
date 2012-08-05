@@ -24,74 +24,6 @@
 
 
 /**
- * @class AlertService
- */
-var AlertService = new Class().extends(Plugin);
-AlertService.definition = {
-
-  get id()
-    "alert_service",
-
-  get info()
-    <module>
-        <name>{_("Alert Service")}</name>
-        <description>{
-          _("Provides asyncronous popup alert window.")
-        }</description>
-        <version>0.1</version>
-    </module>,
-
-  /** Installs itself.
-   *  @param {Broker} broker A Broker object.
-   */
-  "[install]":
-  function install(broker) 
-  {
-  },
-
-  /** Uninstalls itself. 
-   *  @param {Broker} broker A Broker object.
-   */
-  "[uninstall]":
-  function uninstall(broker) 
-  {
-  },
-
-  "[subscribe('command/show-popup-alert'), pnp]":
-  function show(data)
-  {
-    var self = this;
-
-    try {
-      Components.classes["@mozilla.org/alerts-service;1"]
-        .getService(Components.interfaces.nsIAlertsService)
-        .showAlertNotification(
-          "chrome://mozapps/skin/extensions/alerticon-error.png",
-          data.title,
-          data.text,
-          true,  // textClickable
-          data.text,     // cookie
-          {
-            observe: function observe(subject, topic, data) 
-            {
-              if ("alertclickcallback" === topic) {
-                self.sendMessage("command/select-panel", "!console.panel");
-              }
-            }
-          },   // listener
-          "" // name
-          ); 
-    } catch (e) {
-      ; // pass
-      // Ignore this error.
-      // This is typically NS_ERROR_NOT_AVAILABLE,
-      // which may happen, for example, on Mac OS X if Growl is not installed.
-    }
-  },
-
-}; // AlertSerice
-
-/**
  * @class MessageFilter
  */
 var MessageFilter = new Class().extends(Plugin);
@@ -113,6 +45,7 @@ MessageFilter.definition = {
     /^\[(.+?): "(tanasinn: )?([^"]*?)" {file: "([^"]*?)" line: ([0-9]+?)( name: "([^"]*?)")?}\]$/m,
   
   "[persistable] enabled_when_startup": true,
+  "[persistable] show_alert_message": false,
 
   /** Installs itself.
    *  @param {Broker} broker A Broker object.
@@ -147,14 +80,15 @@ MessageFilter.definition = {
 
   action: function action() 
   {
-    var logtext, match, category, message, file, line,
-        class_string, title, text;
-
-    logtext = this.logtext;
-    match = this.match;
-    [, category, , message, file, line] = match;
-
-    class_string = this._getClassString(category);
+    var logtext = this.logtext,
+        match = this.match,
+        category = match[1],
+        message = match[3],
+        file = match[4],
+        line = match[5],
+        class_string = this._getClassString(category),
+        title,
+        text;
 
     file = file.split("/").pop().split("?").shift();
 
@@ -162,12 +96,14 @@ MessageFilter.definition = {
       title = category;
       text = file + ":" + line + " " + message;
 
-      this.sendMessage(
-        "command/show-popup-alert", 
-        {
-          title: title,
-          text: text,
-        });
+      if (this.show_alert_message) {
+        this.sendMessage(
+          "command/show-popup-alert", 
+          {
+            title: title,
+            text: text,
+          });
+      }
     }
     return {
       parentNode: "#console_output_box",
@@ -657,7 +593,6 @@ Console.definition = {
 function main(broker) 
 {
   new Console(broker);
-  new AlertService(broker);
   new MessageFilter(broker);
   new DisplayManager(broker);
   new ConsoleListener(broker);

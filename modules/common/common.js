@@ -1963,10 +1963,10 @@ coUtils.File = new function() {
   getURLSpec: function getURLSpec(file) 
   {
     var io_service = Components
-      .classes["@mozilla.org/network/io-service;1"]
-      .getService(Components.interfaces.nsIIOService);
-    var file_handler = io_service.getProtocolHandler("file")
-      .QueryInterface(Components.interfaces.nsIFileProtocolHandler);
+          .classes["@mozilla.org/network/io-service;1"]
+          .getService(Components.interfaces.nsIIOService),
+        file_handler = io_service.getProtocolHandler("file")
+          .QueryInterface(Components.interfaces.nsIFileProtocolHandler);
     return file_handler.getURLSpecFromFile(file);
   },
 

@@ -181,6 +181,7 @@
     pluginview.js
     debugger.js
     console.js
+    alertservice.js
 
     scrollbar.js
     selection.js

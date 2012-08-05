@@ -7,9 +7,9 @@
     <em:name>@TANASINN_DISPLAY_NAME@</em:name>
     <em:version>@PACKAGE_VERSION@</em:version>
     <em:creator>saitoha</em:creator>
-    <em:description>三 ┏( ^o^)┛ ＜ How Exciting Life is !!!!!!</em:description>
+    <em:description>三 ┏( ^o^)┛ ＜ How Exciting Life is !!!!!! ＞ ┗(^o^ )┓ 三</em:description>
     <!--em:optionsURL>chrome://@TANASINN_PACKAGE_NAME@/content/preference.xul</em:optionsURL-->
-    <em:iconURL>resource://tanasinn/content/tanasinn.svg</em:iconURL>
+    <em:iconURL>resource://tanasinn/content/tanasinn.png</em:iconURL>
     <em:unpack>true</em:unpack>
     <em:bootstrap>true</em:bootstrap>
     <!--em:updateKey>MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDDTc3Y8e8/VxD+aeSbYzbH4guPHbG2d+d2R8ktCIZtoQgKdhcpjP1bTAZdRlrTlmT7TfjParkTDPRc3UB6avgdmL3dk7tGznuAZBLyXIoENcIDB0quBsbv+6vK73DBuMvF47NwVWw9uDy1amSD8Jdbpscn90MtIuiane7jh+kIZwIDAQAB</em:updateKey-->
@@ -19,7 +19,7 @@
         <!-- Firefox -->
         <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id> 
         <em:minVersion>4.0.2pre</em:minVersion>
-        <em:maxVersion>14.0a1</em:maxVersion>
+        <em:maxVersion>17.0a1</em:maxVersion>
       </Description>
       <Description>
         <!-- Thunderbird -->
