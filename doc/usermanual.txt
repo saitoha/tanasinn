@@ -31,6 +31,9 @@ link:./usermanual.html[English/英語]
     fix a bug in save command
     fix a bug in OSC 52 get access
 
+    Version 0.2.3.2
+    fix a serious emulation's bug.
+
 === 2012/08/04 
     Version 0.2.3.0
     support OSC 52 get access
