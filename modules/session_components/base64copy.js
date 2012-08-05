@@ -107,10 +107,11 @@ Base64CopyPaste.definition = {
         buffer,
         text;
 
-    if (/^[0-9]+;\?$/.test(data)) {
+    if (/^[0-9psc]+;\?$/.test(data)) {
       if (this.enable_get_access) {
         text = coUtils.Clipboard.get();
-        this.sendMessage("command/input-text", text);
+        text = "52;p;?;" + coUtils.Text.base64encode(text);
+        this.sendMessage("command/send-sequence/osc", text);
         this._showPasteMessage(text);
       }
     } else {
@@ -132,6 +133,9 @@ Base64CopyPaste.definition = {
     var position = data.indexOf(";");
 
     if (-1 === position) {
+      throw coUtils.Debug.Exception(_("Cannot parse OSC 52 data."));
+    }
+    if (!/^[0-9psc]+;/.test(data)) {
       throw coUtils.Debug.Exception(_("Cannot parse OSC 52 data."));
     }
 
@@ -172,7 +176,7 @@ Base64CopyPaste.definition = {
   _showPasteMessage: function _showPasteMessage(text)
   {
     var status_message = coUtils.Text.format(
-      _("Pasted text from clipboard: %s"),
+      _("Send text data from clipboard: %s"),
       text);
 
     this.sendMessage(
