@@ -26,6 +26,11 @@ link:./usermanual.html[English/英語]
 
 == News
 
+=== 2012/08/05 
+    Version 0.2.3.1
+    fix a bug in save command
+    fix a bug in OSC 52 get access
+
 === 2012/08/04 
     Version 0.2.3.0
     support OSC 52 get access
