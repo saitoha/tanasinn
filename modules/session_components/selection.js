@@ -60,7 +60,11 @@ DragSelect.definition = {
   "[listen('dragstart', '#tanasinn_content'), pnp]":
   function ondragstart(event) 
   {
-    var initial_position, start, end;
+    var screen = this._screen,
+        initial_position,
+        start,
+        end,
+        text;
 
     if (event.ctrlKey) {
       return;
@@ -71,6 +75,11 @@ DragSelect.definition = {
     }
 
     initial_position = this._convertPixelToPosition(event);
+
+    text = screen.getTextInRange(initial_position - 1, initial_position);
+    if ("\x00" === text) {
+      ++initial_position;
+    }
 
     if (this._range) {
 
@@ -98,8 +107,17 @@ DragSelect.definition = {
   {
     var initial_position = this._initial_position,
         current_position = this._convertPixelToPosition(event),
-        start_position = Math.min(initial_position, current_position),
-        end_position = Math.max(initial_position, current_position) 
+        screen = this._screen,
+        text = screen.getTextInRange(current_position - 1, current_position),
+        start_position,
+        end_position;
+
+    if ("\x00" === text) {
+      ++current_position;
+    }
+
+    start_position = Math.min(initial_position, current_position),
+    end_position = Math.max(initial_position, current_position);
 
     this.drawSelectionRange(start_position, end_position);
     this.setRange(start_position, end_position);
@@ -194,18 +212,19 @@ Selection.definition = {
   "[install]":
   function install(broker) 
   {
-    var renderer;
+    var selection_canvas;
+    
+    this._renderer = this.dependency["renderer"];
+    this._screen = this.dependency["screen"];
 
-    renderer = this._renderer;
-
-    var {selection_canvas} = this.request(
+    selection_canvas = this.request(
       "command/construct-chrome", 
       {
         parentNode: "#tanasinn_center_area",
         tagName: "html:canvas",
         id: "selection_canvas",
         style: { opacity: 0.5, },
-      });
+      }).selection_canvas;
     
     this._canvas = selection_canvas;
     this._context = selection_canvas.getContext("2d");
@@ -281,9 +300,18 @@ Selection.definition = {
   "[subscribe('event/start-highlight-mouse'), enabled]":
   function onStartHighlightMouse(args)
   {
-    var func, screen, column, row, x, y,
-        min_row, max_row, initial_position,
-        start, end;
+    var func,
+        screen,
+        column,
+        row,
+        x,
+        y,
+        min_row,
+        max_row,
+        initial_position,
+        start,
+        end,
+        text;
 
     func = args[0];
     if (0 == func) {
@@ -291,7 +319,7 @@ Selection.definition = {
       return;
     }
 
-    screen = this.dependency["screen"];
+    screen = this._screen;
     column = screen.width;
 
     row = screen.height;
@@ -309,6 +337,12 @@ Selection.definition = {
         return; // drag copy
       }
     }
+
+    text = screen.getTextInRange(initial_position, initial_position + 1);
+    if ("\x00" === text) {
+      ++initial_position;
+    }
+
     this._rectangle_selection_flag = false;
     this._color = this.highlight_selection_color;
     this._context.fillStyle = this._color;
@@ -331,9 +365,13 @@ Selection.definition = {
               context: this,
               handler: function selection_mousemove(event) 
               {
-                var x, y, current_position, start_position, end_position;
-
-                [x, y] = this.convertPixelToScreen(event);
+                var coordinate = this.convertPixelToScreen(event),
+                    x = coordinate[0],
+                    y = coordinate[1],
+                    current_position,
+                    start_position,
+                    end_position,
+                    text;
 
                 if (y < min_row) {
                   y = min_row;
@@ -343,12 +381,17 @@ Selection.definition = {
                 }
 
                 current_position = y * column + x;
+                text = screen.getTextInRange(current_position, current_position + 1);
+                if ("\x00" == text) {
+                  --current_position;
+                }
                 
                 start_position = Math.min(initial_position, current_position);
                 end_position = Math.max(initial_position, current_position) 
 
                 start_position = Math.max(0, start_position);
                 end_position = Math.min(row * column, end_position);
+
                 this.drawSelectionRange(start_position, end_position);
                 this.setRange(start_position, end_position);
               }
@@ -425,11 +468,26 @@ Selection.definition = {
    */
   drawSelectionRange: function drawSelectionRange(first, last) 
   {
-    var text, context, screen, renderer, column,
-        char_width, line_height, start_row, end_row,
-        start_column, end_column,
-        x, y, width, height, lines, i, line,
-        match, right_blank_length;
+    var text,
+        context,
+        screen,
+        renderer,
+        column,
+        char_width,
+        line_height,
+        start_row,
+        end_row,
+        start_column,
+        end_column,
+        x,
+        y,
+        width,
+        height,
+        lines,
+        i,
+        line,
+        match,
+        right_blank_length;
 
     this.clear();
 
@@ -448,8 +506,8 @@ Selection.definition = {
 
     context = this._context;
 
-    screen = this.dependency["screen"];
-    renderer = this.dependency["renderer"];
+    screen = this._screen;
+    renderer = this._renderer;
 
     column = screen.width;
     char_width = renderer.char_width;
@@ -520,7 +578,7 @@ Selection.definition = {
     var context, screen, start, end;
 
     context = this._context;
-    screen = this.dependency["screen"];
+    screen = this._screen;
     [start, end] = screen.getWordRangeFromPoint(column, row);
 
     this.drawSelectionRange(start, end);
@@ -583,7 +641,7 @@ Selection.definition = {
 
   _convertPixelToPosition: function convertPixelToScreen(event) 
   {
-    var screen = this.dependency["screen"],
+    var screen = this._screen,
         result = this.convertPixelToScreen(event);
 
     return screen.width * result[1] + result[0];
@@ -600,8 +658,8 @@ Selection.definition = {
         offsetY = box.screenY - root_element.boxObject.screenY,
         left = event.layerX - offsetX,
         top = event.layerY - offsetY,
-        renderer = this.dependency["renderer"],
-        screen = this.dependency["screen"],
+        renderer = this._renderer,
+        screen = this._screen,
         char_width = renderer.char_width,
         line_height = renderer.line_height,
         column = Math.floor(left / char_width + 1.0),

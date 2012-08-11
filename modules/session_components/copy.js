@@ -98,7 +98,8 @@ Copy.definition = {
 
     // and pass it to "screen". "screen" returns selected text.
     text = this.dependency["screen"]
-      .getTextInRange(range.start, range.end, range.is_rectangle);
+      .getTextInRange(range.start, range.end, range.is_rectangle)
+      .replace(/\x00/g, "");
     const clipboardHelper = Components
       .classes["@mozilla.org/widget/clipboardhelper;1"]
       .getService(Components.interfaces.nsIClipboardHelper);

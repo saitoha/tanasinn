@@ -114,7 +114,9 @@ DragCopy.definition = {
     width = feedback_canvas.width = foreground_canvas.width;
     height = feedback_canvas.height = foreground_canvas.height;
 
-    text = screen.getTextInRange(start, end, is_rectangle);
+    text = screen
+      .getTextInRange(start, end, is_rectangle)
+      .replace(/\x00/g, "");
     event.dataTransfer.setData("text/plain", text);
 
     feedback_context = feedback_canvas.getContext("2d");
