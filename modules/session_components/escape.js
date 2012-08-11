@@ -171,8 +171,6 @@ Escape.definition = {
   "[profile('vt100'), sequence('0x90%s', 'ESC P%s')]": 
   function DCS(message) 
   {
-    var message;
-
     if (/[\x00-\x1f]/.test(message[0])) {
       message = message.replace(/\x00/g, "\\");
       this.sendMessage("event/data-arrived-recursively", message);
@@ -195,10 +193,8 @@ Escape.definition = {
    *
    */
   "[profile('vt100'), sequence('0x98%s', 'ESC X%s')]": 
-  function SOS() 
+  function SOS(message) 
   {
-    var message = String.fromCharCode.apply(String, arguments);
-
     this.sendMessage("sequence/sos", message);
   },
 
@@ -216,11 +212,9 @@ Escape.definition = {
    * program.
    *
    */
-  "[profile('vt100'), sequence('0x9f', 'ESC _%s')]": 
-  function APC() 
+  "[profile('vt100'), sequence('0x9f%s', 'ESC _%s')]": 
+  function APC(message) 
   {
-    var message = String.fromCharCode.apply(String, arguments);
-
     this.sendMessage("sequence/apc", message);
   },
   
@@ -240,7 +234,7 @@ Escape.definition = {
    * operating system.
    *
    */
-  "[profile('vt100'), sequence('0x9d', 'ESC ]%s')]": 
+  "[profile('vt100'), sequence('0x9d%s', 'ESC ]%s')]": 
   function OSC(message) 
   {
     var delimiter_position = message.indexOf(";"),
