@@ -219,8 +219,8 @@ ConformanceLevel.definition = {
     this.sendMessage("command/send-to-tty", message);
   },
 
-  "[subscribe('command/send-sequence/csi'), pnp]":
-  function send_CSI(data) 
+  "[subscribe('command/get-sequence/csi'), pnp]":
+  function get_CSI() 
   {
     var message;
 
@@ -229,6 +229,13 @@ ConformanceLevel.definition = {
     } else {
       message = "\x1b[";
     }
+    return message;
+  },
+
+  "[subscribe('command/send-sequence/csi'), pnp]":
+  function send_CSI(data) 
+  {
+    var message = this.get_CSI();
 
     message += data;
 
