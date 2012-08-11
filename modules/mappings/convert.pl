@@ -9,10 +9,10 @@ print "({\n";
 print qq(  name: "$name",\n);
 print "  map: {\n";
 for (<IN>) {
-    if (m/^0x([0-9A-F]+)\s+0x([0-9A-F]+)/) {
+    if (m/^0x[0-9A-F]+\s+0x([0-9A-F]+)\s+0x([0-9A-F]+)/ || m/^0x([0-9A-F]+)\s+0x([0-9A-F]+)/) {
         my $key = hex($1);
         my $value = "0x".$2;
-        print "$key:$value,";
+        print "'$key':$value,";
     }
 }
 print "  }\n";
