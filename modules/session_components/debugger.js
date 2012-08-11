@@ -50,20 +50,21 @@ Tracer.definition = {
   "[subscribe('command/debugger-trace-on'), enabled]":
   function enable() 
   {
-    var sequences, i, information;
+    var sequences = this.sendMessage("get/sequences/" + this._mode),
+        i = 0,
+        information;
 
     this.onBeforeInput.enabled = true;
 
     // get sequence handlers
-    sequences = this.sendMessage("get/sequences/" + this._mode);
 
     // backup them
     this._backup_sequences = sequences;
 
-    for (i = 0; i < sequences.length; ++i) {
+    this.sendMessage("command/reset-sequences");
 
+    for (; i < sequences.length; ++i) {
       information = sequences[i];
-
       this._registerControlHandler(information);
     }
   },
@@ -71,12 +72,15 @@ Tracer.definition = {
   "[subscribe('command/debugger-trace-off'), enabled]":
   function disable() 
   {
-    var i, sequences, information;
+    var sequences = this.sendMessage("get/sequences/" + this._mode),
+        i = 0,
+        information;
 
     this.onBeforeInput.enabled = false;
 
-    sequences = this.sendMessage("get/sequences/" + this._mode);
-    for (i = 0; i < sequences.length; ++i) {
+    this.sendMessage("command/reset-sequences");
+
+    for (; i < sequences.length; ++i) {
       information = sequences[i];
       this.sendMessage("command/add-sequence", information);
     }
@@ -99,9 +103,9 @@ Tracer.definition = {
 
   _registerControlHandler: function _registerControlHandler(information)
   {
-    var handler, delegate;
+    var handler = information.handler,
+        delegate;
 
-    handler = information.handler;
 
     try {
 

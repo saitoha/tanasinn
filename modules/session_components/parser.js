@@ -475,7 +475,8 @@ SequenceParser.definition = {
         0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f,
         0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39,
         0x7f,
-        0x3b
+        0x3b,
+        0x90, 0x9d
       ];
 
       for (i = 0; i < codes.length; ++i) {
@@ -511,8 +512,8 @@ SequenceParser.definition = {
                = parser[accept_char] || new SequenceParser();
       }
       code = char_with_param.charCodeAt(char_with_param.length - 1);
-      parser[code] = parser[code] || 
-        function() 
+
+      parser[code] = parser[code] || function() 
         {
           return value.call(context, 0);
         };
@@ -657,9 +658,20 @@ VT100Grammar.definition = {
   "[subscribe('@event/broker-started'), enabled]":
   function onLoad(broker)
   {
-    var i;
-    var sequences;
+    var i, sequences;
 
+    this.resetSequences();
+
+    sequences = this.sendMessage("get/sequences/vt100");
+    for (i = 0; i < sequences.length; ++i) {
+      this.sendMessage("command/add-sequence", sequences[i]);
+    }
+    this.sendMessage("initialized/grammar", this);
+  },
+
+  "[subscribe('command/reset-sequences'), enabled]":
+  function resetSequences()
+  {
     this.ESC = new SequenceParser();
     this.CSI = new SequenceParser();
     SequenceParser.prototype[0x1b] = this.ESC;
@@ -678,11 +690,6 @@ VT100Grammar.definition = {
       handler: this.CSI,
       context: this,
     });
-    sequences = this.sendMessage("get/sequences/vt100");
-    for (i = 0; i < sequences.length; ++i) {
-      this.sendMessage("command/add-sequence", sequences[i]);
-    }
-    this.sendMessage("initialized/grammar", this);
   },
 
   "[subscribe('get/grammars'), enabled]":
@@ -713,23 +720,29 @@ VT100Grammar.definition = {
   "[subscribe('command/add-sequence'), type('SequenceInfo -> Undefined'), enabled]":
   function append(information) 
   {
-    var {expression, handler, context} = information;
-    var pos = expression.indexOf(" ");
-    var key = expression.substr(pos + 1)
-    var prefix;
+    var expression = information.expression,
+        pos = expression.indexOf(" "),
+        key = expression.substr(pos + 1),
+        prefix;
 
     if (-1 === pos) {
       prefix = "C0";
     } else {
       prefix = expression.substr(0, pos) || "C0";
     }
+
     if ("number" === typeof key) {
       key = key.toString();
     }
     if (!this[prefix]) {
       this[prefix] = new SequenceParser();
     }
-    this[prefix].append(key, handler, context);
+
+    this[prefix].append(
+        key,
+        information.handler,
+        information.context);
+
   }, // append
 
 }; // VT100Grammar
@@ -801,6 +814,12 @@ Scanner.definition = {
   function setAnchor() 
   {
     this._anchor = this._position;
+  },
+
+  "[type('Undefined')] rollback":
+  function rollback() 
+  {
+    this._position = this._anchor;
   },
 
   "[type('Undefined')] setSurplus":
