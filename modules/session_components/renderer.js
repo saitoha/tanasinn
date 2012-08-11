@@ -985,10 +985,10 @@ Renderer.definition = {
         this._drawDoubleWidthText(codes, row, column, end, attr, type);
         break;
 
-      case coUtils.Constant.LINETYPE_SIXEL:
-        this._drawSixel(line, row);
-        break;
-
+//      case coUtils.Constant.LINETYPE_SIXEL:
+//        this._drawSixel(line, row);
+//        break;
+//
       default:
         throw coUtils.Debug.Exception(
           _("Invalid double height mode was detected: %d."), 
@@ -1186,45 +1186,45 @@ Renderer.definition = {
 
             case 0:
               source_left = glyph_index * drcs_state.drcs_width;
-              source_top = 0;
+              source_top = drcs_state.drcs_top;
               source_width = drcs_state.drcs_width;
               source_height = drcs_state.drcs_height;
               destination_left = x + index * char_width;
               destination_top = y - this._text_offset;
-              destination_width = Math.round(char_width);
+              destination_width = char_width;
               destination_height = this.line_height;
               break;
 
             case 1:
               source_left = glyph_index * drcs_state.drcs_width;
-              source_top = 0;
+              source_top = drcs_state.drcs_top;
               source_width = drcs_state.drcs_width;
               source_height = drcs_state.drcs_height / 2;
               destination_left = x + index * char_width;
               destination_top = y - this._text_offset - this.line_height;
-              destination_width = Math.round(char_width);
+              destination_width = char_width;
               destination_height = this.line_height;
               break;
 
             case 2:
               source_left = glyph_index * drcs_state.drcs_width;
-              source_top = drcs_state.drcs_height / 2;
+              source_top = drcs_state.drcs_top + drcs_state.drcs_height / 2;
               source_width = drcs_state.drcs_width;
               source_height = drcs_state.drcs_height / 2;
               destination_left = x + index * char_width;
               destination_top = y - this._text_offset;
-              destination_width = Math.round(char_width);
+              destination_width = char_width;
               destination_height = this.line_height;
               break;
 
             case 3:
               source_left = glyph_index * drcs_state.drcs_width;
-              source_top = 0;
+              source_top = drcs_state.drcs_top;
               source_width = drcs_state.drcs_width;
               source_height = drcs_state.drcs_height;
               destination_left = x + index * char_width;
               destination_top = y - this._text_offset 
-              destination_width = Math.round(char_width);
+              destination_width = char_width;
               destination_height = this.line_height;
               break;
           }
@@ -1234,18 +1234,20 @@ Renderer.definition = {
             source_top,             // source top
             source_width,           // source width
             source_height,          // source height
-            destination_left,       // destination left
+            Math.floor(destination_left),       // destination left
             destination_top,        // destination top
-            destination_width,      // destination width
+            Math.ceil(destination_width),      // destination width
             destination_height);    // destination height
           
-          context.globalCompositeOperation = "source-atop";
-          context.fillRect(
-            x,
-            Math.ceil(y - this._text_offset + 0.5), 
-            char_width + 1, 
-            this.line_height);
-          context.globalCompositeOperation = "source-over";
+          if (!drcs_state.color) {
+            context.globalCompositeOperation = "source-atop";
+            context.fillRect(
+              Math.floor(x),
+              Math.floor(y - this._text_offset), 
+              Math.ceil(char_width), 
+              Math.ceil(this.line_height));
+            context.globalCompositeOperation = "source-over";
+          }
           
         }
       }

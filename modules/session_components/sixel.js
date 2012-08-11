@@ -357,7 +357,7 @@ Sixel.definition = {
           break;
 
         case 0x24: // $
-          if (max_x > x)
+          if (max_x < x)
             max_x = x;
           count = 1;
           x = 0;
@@ -457,15 +457,52 @@ Sixel.definition = {
     } while (!scanner.isEnd);
 
     dom.context.putImageData(imagedata, 0, 0);
-    line_count = Math.ceil(y / renderer.line_height);
-    cell_count = Math.ceil(max_x / renderer.char_height);
+    var line_height = renderer.line_height;
+    var char_width = renderer.char_width;
+    line_count = Math.ceil(y / line_height);
+    cell_count = Math.ceil(max_x / char_width);
 
+    //for (i = 0; i < line_count; ++i) {
+    //  screen.lineFeed();
+    //  screen.markAsSixelLine(dom.canvas, i);
+    //}
+    //screen.lineFeed();
+
+    var start_code = 0x21;
+    var end_code = start_code + cell_count;
+    var full_cell = true;
+
+    var buffer = [];
+    for (i = start_code; i < end_code; ++i) {
+      buffer.push(i);
+    }
+
+    var positionX = screen.cursor.positionX;
     for (i = 0; i < line_count; ++i) {
+      var dscs = "_" + String.fromCharCode(++this.no);
+      var drcs = {
+        dscs: dscs,
+        drcs_canvas: dom.canvas,
+        drcs_width: char_width,
+        drcs_height: line_height,
+        drcs_top: line_height * i,
+        start_code: start_code,
+        end_code: end_code,
+        full_cell: full_cell,
+        color: true,
+      };
+      this.sendMessage("command/alloc-drcs", drcs);
+      this.sendMessage("sequence/g0", dscs);
+      screen.write(buffer);
+      this.sendMessage("sequence/g0", "B");
+      screen.carriageReturn();
       screen.lineFeed();
-      screen.markAsSixelLine(dom.canvas, i);
+      screen.cursor.positionX = positionX;
     }
     screen.lineFeed();
   },
+
+  no: 0x20,
 
 }; // Sixel 
 

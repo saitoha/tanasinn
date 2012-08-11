@@ -1844,7 +1844,7 @@ Screen.definition = {
   },
 
   /** Write printable charactor seqences. */
-  "[subscribe('command/write'), type('Array -> Boolean -> Undefined')] write":
+  "[subscribe('command/write'), type('Array -> Boolean -> Undefined'), enabled]":
   function write(codes) 
   {
     var insert_mode = this._insert_mode,

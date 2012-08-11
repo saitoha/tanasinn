@@ -211,8 +211,8 @@ var ATTR2_LINK         = 26    // 00000100 00000000 00000000 00000000
 var ATTR2_HIGHLIGHT    = 27    // 00001000 00000000 00000000 00000000
 
 var ATTR2_WIDE         = 28    // 00010000 00000000 00000000 00000000
-var ATTR2_PROTECTED    = 30    // 01000000 00000000 00000000 00000000
-var ATTR2_DRCS         = 31    // 10000000 01111111 01111111 01111111
+var ATTR2_PROTECTED    = 29    // 00100000 00000000 00000000 00000000
+var ATTR2_DRCS         = 30    // 01000000 01111111 01111111 01111111
 
 /**
  * @class Cell
@@ -418,7 +418,7 @@ Cell.definition = {
   },
  
   /** getter of drcs attribute */
-  /*
+ /* 
   get drcs()
   {
     return this.value >>> ATTR2_DRCS & 0x1;
@@ -434,6 +434,7 @@ Cell.definition = {
                | value << ATTR2_DRCS;
   },
   */
+
 /*
   get dscs()
   {
@@ -505,11 +506,13 @@ Cell.definition = {
   clear: function clear() 
   {
     this.value = 0x7;
+    this.drcs = undefined;
   },
   
   copyFrom: function copyFrom(rhs) 
   { 
     this.value = rhs.value;
+    this.drcs = rhs.drcs;
   },
       
   /** Write a character with attribute structure. */
@@ -524,6 +527,7 @@ Cell.definition = {
   erase: function erase(attr) 
   {
     this.c = 0x20;
+    this.drcs = undefined;
     if (attr) {
       this.value = attr.value;
     } else {
@@ -648,16 +652,16 @@ Resizable.definition = {
    */
   expand: function expand(n) 
   {
-    var new_cells, cells;
+    function count(n)
+    {
+      while (n--) {
+        yield;
+      }
+    };
 
-    new_cells = [
-      new Cell for (i in function(n) { 
-        while (n--) { 
-          yield;
-        } 
-      } (n))
-    ];
-    cells = this.cells;
+    var new_cells = [ new Cell for (i in  count(n)) ],
+        cells = this.cells;
+
     cells.push.apply(cells, new_cells);
   },
 
@@ -742,9 +746,8 @@ Line.definition = {
   /** sets count of cells. */
   set length(value) 
   {
-    var diff;
-    
-    diff = value - this.cells.length;
+    var diff = value - this.cells.length;
+
     if (diff > 0) {
       this.expand(diff);
     } else if (diff < 0) {
@@ -758,10 +761,9 @@ Line.definition = {
    */ 
   isWide: function isWide(position) 
   {
-    var cells, cell;
+    var cells = this.cells,
+        cell = cells[position];
 
-    cells = this.cells;
-    cell = cells[position];
     if (!cell) {
       return false;
     }
@@ -789,10 +791,11 @@ Line.definition = {
   getWordRangeFromPoint: 
   function getWordRangeFromPoint(column, row) 
   {
-    var cells, current_char, backward_chars, forward_chars;;
+    var cells = this.cells,
+        current_char,
+        backward_chars,
+        forward_chars;
 
-    cells = this.cells;
-    current_char;
     if (0 === current_char) {
       current_char = cells[column + 1].c;
     } else {
@@ -818,9 +821,10 @@ Line.definition = {
 
     function getForwardBreakPoint(forward_chars, column, category) 
     {
-      var result, index, cell;
+      var result = column + 1,
+          index,
+          cell;
 
-      result = column + 1;
       for ([index, cell] in Iterator(forward_chars)) {
         if (0 === cell.c) {
           continue;
@@ -835,10 +839,14 @@ Line.definition = {
     
     function getBackwardBreakPoint(backward_chars, column, category) 
     {
-      var result, index, cell, category, 
-          forward_break_point, backward_break_point;
 
-      result = column;
+      var result = column,
+          index,
+          cell,
+          category, 
+          forward_break_point,
+          backward_break_point;
+
       for ([index, cell] in Iterator(backward_chars.reverse())) {
         if (0 === cell.c) {
           result = backward_chars.length - index - 1;
@@ -862,10 +870,10 @@ Line.definition = {
 
   _getCodePointsFromCells: function _getCodePointsFromCells(cells)
   {
-    var i;
-    var codes = [];
-    var cell;
-    var code;
+    var i,
+        codes = [],
+        cell,
+        code;
 
     for (i = 0; i < cells.length; ++i) {
       cell = cells[i];
@@ -891,8 +899,15 @@ Line.definition = {
   /** returns a generator which iterates dirty words. */
   getDirtyWords: function getDirtyWords() 
   {
-    var attr, start, current, cell,
-        cells, max, cell, is_normal, range,
+    var attr,
+        start,
+        current,
+        cell,
+        cells,
+        max,
+        cell,
+        is_normal,
+        range,
         codes;
 
     if (this.dirty) {
@@ -905,7 +920,7 @@ Line.definition = {
         cell = cells[current];
         is_normal = cell.c > 0 && cell.c < 256;
         if (attr) {
-          if (attr.equals(cell) && is_normal) {
+          if (attr.equals(cell) && is_normal && !cell.drcs) {
             continue;
           } else {
             range = cells.slice(start, current);
@@ -962,12 +977,10 @@ Line.definition = {
    */
   getTextInRange: function getTextInRange(start, end) 
   {
-    var codes;
-    
-    codes = this.cells
+    var codes = this.cells
       .slice(start, end)
-      .map(function(cell) cell.c)
-      .filter(function(code) code)
+      .map(function(cell) cell.c);
+      //.filter(function(code) code)
     return String.fromCharCode.apply(String, codes);
   },
 
@@ -1033,7 +1046,9 @@ Line.definition = {
    */
   erase: function erase(start, end, attr) 
   {
-    var i, cell, cells;
+    var i,
+        cell,
+        cells;
     
     this.addRange(start, end);
 //    this.cells

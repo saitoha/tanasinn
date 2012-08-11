@@ -2010,7 +2010,6 @@ $as_echo "no" >&6; }
 fi
 
 
-#AC_PROG_CC
 # Extract the first word of "asciidoc", so it can be a program name with args.
 set dummy asciidoc; ac_word=$2
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
@@ -2048,7 +2047,7 @@ $as_echo "no" >&6; }
 fi
 
 
-#[[ -n "${ASCIIDOC}" ]] && AC_MSG_ERROR(zip was not found.)
+#[[ -n "${ASCIIDOC}" ]] && AC_MSG_ERROR(asciidoc was not found.)
 
 
 TANASINN_PACKAGE_NAME="tanasinn"
@@ -2346,10 +2345,6 @@ fi
 $as_echo "$TANASINN_JS_PATH" >&6; }
 
 
-# ----------------------------------------------------------------------------
-# AC_TANASINN_OS
-# ----------------------------------------------------------------------------
-#
 ac_config_files="$ac_config_files Makefile doc/define.h doc/Makefile tools/bin/Makefile chrome.manifest install.rdf"
 
 cat >confcache <<\_ACEOF

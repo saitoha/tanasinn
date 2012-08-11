@@ -20,8 +20,6 @@
  content=chrome/content {
    app.xul
    tanasinn.xul
-   testsuite.xul
-   checking.xul
    testsuite.js
  }
  doc=doc {
@@ -277,7 +275,17 @@
    gecko.vim
   }
   mappings=mappings {
+   Makefile
+   convert.pl
+   convert-jis0212.pl
+   cp932.txt
    cp932.txt.js
+   jis0201.txt
+   jis0201.txt.js
+   jis0208.txt
+   jis0208.txt.js
+   jis0212.txt
+   jis0212.txt.js
   }
   EastAsianWidthDetectorGenerator.pl
   UnicodeCategoryDetector.pl

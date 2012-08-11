@@ -232,9 +232,11 @@ DRCSBuffer.definition = {
       drcs_canvas: canvas,
       drcs_width: char_width,
       drcs_height: char_height,
+      drcs_top: 0,
       start_code: start_code,
       end_code: start_code + sixels.length,
       full_cell: full_cell,
+      color: false,
     };
 
     this.sendMessage("command/alloc-drcs", drcs);
