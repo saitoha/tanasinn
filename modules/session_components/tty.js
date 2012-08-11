@@ -416,8 +416,8 @@ IOManager.definition = {
   _output: null,
   _socket: null,
 
-  "[persistable] outgoing_buffer_size": 1024 * 16,
-  "[persistable] incoming_buffer_size": 1024 * 8,
+  "[persistable] outgoing_buffer_size": 1024 * 64,
+  "[persistable] incoming_buffer_size": 1024 * 1,
 
   /** 
    * initialize it with Session object.
@@ -630,9 +630,7 @@ IOManager.definition = {
   onDataAvailable: 
   function onDataAvailable(request, context, input, offset, count)
   {
-    var data;
-
-    data = context.readBytes(count);
+    var data = context.readBytes(count);
 
     //coUtils.Timer.setTimeout(
     //  function timerProc()
