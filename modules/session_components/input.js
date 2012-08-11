@@ -393,13 +393,11 @@ DefaultKeyMappings.definition = {
   "[subscribe('command/build-key-mappings'), type('Object -> Undefined'), enabled]":
   function build(map)
   {
-    var settings, i, setting;
+    var settings = [ KEY_ANSI ],
+        i,
+        setting;
 
     this._map = map;
-
-    settings = [];
-
-    settings.push(KEY_ANSI);
 
     // set cursor mode
     if ("normal" === this.cursor_mode) {
@@ -651,6 +649,7 @@ InputManager.definition = {
     }),
 
   "[persistable] enabled_when_startup": true,
+  "[persistable] fix_for_ctrl_space": true,
 
   "[persistable, _('whether keypress event will be traced.')] debug_flag": 
   false,
@@ -797,16 +796,21 @@ InputManager.definition = {
   /** Keypress event handler. 
    *  @param {Event} event A event object.
    */
-  "[listen('keyup', '#tanasinn_default_input', true), pnp]":
-  function onkeyup(event) 
+  "[listen('keydown', '#tanasinn_default_input', true), pnp]":
+  function onkeydown(event) 
   { // nothrow
-    if ("Darwin" === coUtils.Runtime.os) {
+    if (this.fix_for_ctrl_space) {
       if (0x20 === event.keyCode
           && 0x20 === event.which
           && event.ctrlKey) {
         this.onkeypress(event);
       }
     }
+  },
+
+  "[listen('keyup', '#tanasinn_default_input', true), pnp]":
+  function onkeyup(event) 
+  {
     this.onkeypress.enabled = true;
     this.oninput.enabled = true;
   },
