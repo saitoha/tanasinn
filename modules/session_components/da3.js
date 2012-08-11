@@ -87,6 +87,8 @@ TirtiaryDA.definition = {
 
 
   "[persistable] enabled_when_startup": true,
+  "[persistable] site_id": 0xff,
+  "[persistable] unit_id": 0xffffff,
 
   /** installs itself. 
    *  @param {Broker} broker A Broker object.
@@ -121,15 +123,9 @@ TirtiaryDA.definition = {
   "[subscribe('sequence/DA3'), pnp]":
   function reply()
   {
-    var reply, message;
-   
-    reply = ["!|"]; // ! |
-    reply.push("FF");
-    reply.push("FF");
-    reply.push("FF");
-    reply.push("FF");
-    reply.push("\\");
-    message = reply.join("");
+    var message = "!|"
+                + this.site_id.toString(16)
+                + this.unit_id.toString(16);
 
     this.sendMessage("command/send-sequence/dcs", message);
 
