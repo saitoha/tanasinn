@@ -70,7 +70,7 @@ ConformanceLevel.definition = {
 
     if (61 === level) {
       level = 1;
-      this._8bit_mode = true;
+      this._8bit_mode = false;
     } else if (62 <= level && level <= 69) {
       if (0 === submode || 2 === submode) {
         this._8bit_mode = true;
