@@ -107,7 +107,7 @@ Base64CopyPaste.definition = {
         buffer,
         text;
 
-    if (/^[0-9psc]+;\?$/.test(data)) {
+    if (/^[0-7psc]+;\?$/.test(data)) {
       if (this.enable_get_access) {
         text = coUtils.Clipboard.get();
         text = "52;c;?;" + coUtils.Text.base64encode(text);
