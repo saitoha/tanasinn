@@ -90,6 +90,30 @@ ConformanceLevel.definition = {
     }
   },
 
+  "[subscribe('sequence/decrqss/decscl'), pnp]":
+  function onRequestStatus(data) 
+  {
+    var level,
+        submode,
+        message;
+
+    if (1 === this._conformance_level) {
+      level = 61;
+      submode = 0;
+    } else {
+      level = this._conformance_level + 60;
+      if (this._8bit_mode) {
+        submode = 0;
+      } else {
+        submode = 1;
+      }
+    }
+
+    message = "0$r" + level + ";" + submode + "\"p";
+
+    this.sendMessage("command/send-sequence/dcs", message);
+  },
+
   /**
    *
    * S7C1T - Send C1 Control Character to the Host
@@ -240,6 +264,12 @@ ConformanceLevel.definition = {
     message += data;
 
     this.sendMessage("command/send-to-tty", message);
+  },
+
+  "[subscribe('command/send-sequence/decrpss'), pnp]":
+  function send_DECRPSS_string(data) 
+  {
+    this.send_DCS_string("0$" + data);
   },
 
   "[subscribe('command/send-sequence/dcs'), pnp]":

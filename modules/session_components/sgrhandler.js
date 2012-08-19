@@ -388,7 +388,7 @@ SGRHandler.definition = {
             break;
 
           case 97:
-            attr.fg = 15
+            attr.fg = 15;
             break;
 
           case 100:
@@ -442,7 +442,79 @@ SGRHandler.definition = {
     }
   }, // SGR
 
-};
+  "[subscribe('sequence/decrqss/sgr'), pnp]":
+  function onRequestStatus(data) 
+  {
+    var attr = this._attr,
+        params = [],
+        message;
+
+    if (attr.bold) {
+      params.push(1);
+    }
+
+    if (attr.halfbright) {
+      params.push(2);
+    }
+
+    if (attr.italic) {
+      params.push(3);
+    }
+
+    if (attr.underline) {
+      params.push(4);
+    }
+
+    if (attr.blink) {
+      params.push(5);
+    }
+
+    if (attr.rapid_blink) {
+      params.push(6);
+    }
+
+    if (attr.inverse) {
+      params.push(7);
+    }
+
+    if (attr.invisible) {
+      params.push(8);
+    }
+
+    if (attr.fgcolor) {
+      if (attr.fg <= 7) {
+        params.push(30 + attr.fg);
+      } else if (attr.fg <= 15) {
+        params.push(82 + attr.fg);
+      } else {
+        params.push(38);
+        params.push(5);
+        params.push(attr.fg);
+      }
+    } else {
+      params.push(39);
+    }
+
+    if (attr.bgcolor) {
+      if (attr.bg <= 7) {
+        params.push(40 + attr.bg);
+      } else if (attr.bg <= 15) {
+        params.push(92 + attr.bg);
+      } else {
+        params.push(48);
+        params.push(5);
+        params.push(attr.bg);
+      }
+    } else {
+      params.push(49);
+    }
+
+    message = params.push(";") + m;
+
+    this.sendMessage("command/send-sequence/decrpss", message);
+  },
+
+}; // class SGRHandler
 
 /**
  * @fn main

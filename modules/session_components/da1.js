@@ -152,9 +152,10 @@ PrimaryDA.definition = {
 
   /** retuns Device Attribute message */
   "[subscribe('sequence/DA1'), pnp]":
-  function reply()
+  function DA1(n)
   {
-     var message;
+     var message,
+         reply = ["?"];
 
 //    var reply_map = {
 //      "VT100"  : "\x1b[?1;2c"
@@ -170,23 +171,23 @@ PrimaryDA.definition = {
 //      ,"VT520" : "\x1b[?65;1;2;7;8;9;12;18;19;21;23;24;42;44;45;46c"
 //      ,"VT525" : "\x1b[?65;1;2;7;9;12;18;19;21;22;23;24;42;44;45;46c"
 //    };
-    //reply.push("?65"); // header
-    //reply.push(65) // VT520
-    //if (this.length >= 132) 
-    //reply.push(1) // 132 columns
+    reply.push(64); // VT410
+    reply.push(";");
+    reply.push(1) // 132 columns
     //reply.push(2) // Printer
-    //reply.push(6) // Selective erase
-    //reply.push(7) // Soft character set (DRCS)
+    reply.push(";");
+    reply.push(7) // Soft character set (DRCS)
     //reply.push(8) // User-defined keys
-    //reply.push(9) // National replacememnt character sets
+    reply.push(";");
+    reply.push(9) // National replacememnt character sets
     //reply.push(15) // Technical characters
-    //reply.push(22) // ANSI color
+    reply.push(";");
+    reply.push(22) // ANSI color
+    reply.push("c");
     //reply.push(29) // ANSI text locator (i.e., DEC Locator mode)
-    //var message = reply.join(";") + "c";
-    message = "?1;2c";
+    message = reply.join("");
     //var message = "\x1b[?1;2;6c";
     //var message = "\x1b[?c";
-
     this.sendMessage("command/send-sequence/csi", message);
 
     coUtils.Debug.reportMessage(

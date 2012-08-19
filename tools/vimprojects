@@ -76,31 +76,31 @@
   session_components=session_components {
 
    parser.js
-
    line.js
    cursorstate.js
    tabcontroller.js
-   screen.js
-   psreport.js
-   conformance.js
-
    control.js
    escape.js
-   ansi.js
-   dec.js
-   vt52.js
-   tektronix.js
-
-   tty.js
-   input.js
-   decoder.js
    encoder.js
-   focus.js
-   window.js
    drcsconverter.js
 
    plugin=.{
 
+    tty.js
+    input.js
+    decoder.js
+    screen.js
+    ansi.js
+    dec.js
+
+    focus.js
+    window.js
+
+    vt52.js
+    tektronix.js
+
+    psreport.js
+    conformance.js
     transform.js
     drcs.js
     sixel.js
@@ -156,6 +156,7 @@
     protection.js
     reportparams.js
     terminfo.js
+    decrqss.js
     wheelscroll.js
 
     focusevent.js

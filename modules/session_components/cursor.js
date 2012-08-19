@@ -225,9 +225,7 @@ Cursor.definition = {
   "[profile('vt100'), sequence('CSI %d q')]":
   function DECSCUSR(n) 
   {
-    var cursor_state;
-
-    cursor_state = this.dependency["cursorstate"];
+    var cursor_state = this.dependency["cursorstate"];
 
     switch (n) {
 
@@ -268,7 +266,45 @@ Cursor.definition = {
         break;
     }
   },
-  
+ 
+  "[subscribe('sequence/decrqss/decscusr'), pnp]":
+  function onRequestStatus(data) 
+  {
+    var cursor_state = this.dependency["cursorstate"],
+        param;
+        message;
+
+    switch (this._style) {
+      case coUtils.Constant.CURSOR_STYLE_BLOCK:
+        if (cursor_state.blink) {
+          param = 1;
+        } else {
+          param = 2;
+        }
+        break;
+
+      case coUtils.Constant.CURSOR_STYLE_UNDERLINE:
+        if (cursor_state.blink) {
+          param = 3;
+        } else {
+          param = 4;
+        }
+        break;
+
+      case coUtils.Constant.CURSOR_STYLE_BEAM:
+        if (cursor_state.blink) {
+          param = 5;
+        } else {
+          param = 6;
+        }
+        break;
+    }
+
+    message = "0$r" + param + " q";
+
+    this.sendMessage("command/send-sequence/dcs", message);
+  },
+ 
   "[subscribe('event/cursor-visibility-changed'), pnp]": 
   function onCursorVisibilityChanged(value) 
   {

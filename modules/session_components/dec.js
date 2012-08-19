@@ -77,7 +77,7 @@ DecModeSequenceHandler.definition = {
             _("DECSET - DECPEX (Set print extent to full screen) was ignored."));
           break;
 
-        // Enable shifted key-functions (rxvt)
+        // TODO: Enable shifted key-functions (rxvt)
         case 35:
           this.sendMessage("command/enable-shifted-key-functions");
           coUtils.Debug.reportWarning(
@@ -85,56 +85,56 @@ DecModeSequenceHandler.definition = {
               "implemented completely."));
           break;
 
-        // Enable Tektronix mode (DECTEK)
+        // TODO: Enable Tektronix mode (DECTEK)
         case 38:
           coUtils.Debug.reportWarning(
             _("DECSET 38 - Enter Tektronix mode (DECTEK)."));
           this.sendMessage("command/change-mode", "tektronix");
           break;
 
-        // more(1) fix.
+        // TODO: more(1) fix.
         case 41:
           coUtils.Debug.reportWarning(
             _("DECSET 41 - enable fix for more(1) ", 
               "was not implemented."));
           break;
 
-        // Enable Nation Replacement Character sets (DECNRCM).
+        // TODO: Enable Nation Replacement Character sets (DECNRCM).
         case 42:
           coUtils.Debug.reportWarning(
             _("DECSET 42 - Enable Nation Replacement Character sets (DECNRCM) ", 
               "was not implemented."));
           break;
 
-        // Turn On Margin Bell
+        // TODO: Turn On Margin Bell
         case 44:
           coUtils.Debug.reportWarning(
             _("DECSET 44 - Turn On Margin Bell, ", 
               "was not implemented."));
           break;
 
-        // Start Logging
+        // TODO: Start Logging
         case 46:
           coUtils.Debug.reportWarning(
             _("DECSET 46 - Start Logging, ", 
               "was not implemented."));
           break;
 
-        // Backarrow key sends delete (DECBKM)
+        // TODO: Backarrow key sends delete (DECBKM)
         case 67:
           coUtils.Debug.reportWarning(
             _("DECSET 67 - Backarrow key sends delete (DECBKM), ", 
               "was not implemented."));
           break;
 
-        // Scroll to bottom on tty output (rxvt).
+        // TODO: Scroll to bottom on tty output (rxvt).
         case 1010:
           coUtils.Debug.reportWarning(
             _("DECSET 1010 - Scroll to bottom on tty output (rxvt), ", 
               "was not implemented."));
           break;
 
-        // Scroll to bottom on key press (rxvt).
+        // TODO: Scroll to bottom on key press (rxvt).
         case 1011:
           coUtils.Debug.reportWarning(
             _("DECSET 1011 - Scroll to bottom on key press (rxvt), ", 
@@ -246,7 +246,7 @@ DecModeSequenceHandler.definition = {
             _("DECRST - DECPEX (Set print extent to full screen) was ignored."));
           break;
 
-        // Enable shifted key-functions (rxvt)
+        // TODO: Enable shifted key-functions (rxvt)
         case 35:
           this.sendMessage("command/disable-shifted-key-functions");
           coUtils.Debug.reportWarning(
@@ -254,49 +254,49 @@ DecModeSequenceHandler.definition = {
               "implemented completely."));
           break;
 
-        // No more(1) fix.
+        // TODO: No more(1) fix.
         case 41:
           coUtils.Debug.reportWarning(
             _("DECRST 41 - disable fix for more(1) ", 
               "was not implemented."));
           break;
 
-        // Enable Nation Replacement Character sets (DECNRCM).
+        // TODO: Enable Nation Replacement Character sets (DECNRCM).
         case 42:
           coUtils.Debug.reportWarning(
             _("DECRST 42 - Enable Nation Replacement Character sets (DECNRCM) ", 
               "was not implemented."));
           break;
 
-        // Turn Off Margin Bell
+        // TODO: Turn Off Margin Bell
         case 44:
           coUtils.Debug.reportWarning(
             _("DECRST 44 - Turn Off Margin Bell, ", 
               "was not implemented."));
           break;
 
-        // Stop Logging
+        // TODO: Stop Logging
         case 46:
           coUtils.Debug.reportWarning(
             _("DECRST 46 - Stop Logging, ", 
               "was not implemented."));
           break;
 
-        // Backarrow key sends backspace (DECBKM)
+        // TODO: Backarrow key sends backspace (DECBKM)
         case 67:
           coUtils.Debug.reportWarning(
             _("DECRST 67 - Backarrow key sends delete (DECBKM), ", 
               "was not implemented."));
           break;
 
-        // Don't scroll to bottom on tty output (rxvt).
+        // TODO: Don't scroll to bottom on tty output (rxvt).
         case 1010:
           coUtils.Debug.reportWarning(
             _("DECRST 1010 - Don't scroll to bottom on tty output (rxvt), ", 
               "was not implemented."));
           break;
 
-        // Don't scroll to bottom on key press (rxvt).
+        // TODO: Don't scroll to bottom on key press (rxvt).
         case 1011:
           coUtils.Debug.reportWarning(
             _("DECRST 1010 - Don't scroll to bottom on key press (rxvt), ", 
@@ -334,28 +334,28 @@ DecModeSequenceHandler.definition = {
               "was not implemented."));
           break;
 
-        // Reset Sun function-key mode. 
+        // TODO: Reset Sun function-key mode. 
         case 1051:
           coUtils.Debug.reportWarning(
             _("DECRST 1051 - Reset Sun function-key mode, ", 
               "was not implemented."));
           break;
 
-        // Reset HP function-key mode. 
+        // TODO: Reset HP function-key mode. 
         case 1052:
           coUtils.Debug.reportWarning(
             _("DECRST 1052 - Reset HP function-key mode, ", 
               "was not implemented."));
           break;
 
-        // Reset legacy keyboard emulation (X11R6). 
+        // TODO: Reset legacy keyboard emulation (X11R6). 
         case 1060:
           coUtils.Debug.reportWarning(
             _("DECRST 1060 - Reset legacy keyboard emulation (X11R6), ", 
               "was not implemented."));
           break;
 
-        // Reset Sun/PC keyboard emulation of VT220 keyboard. 
+        // TODO: Reset Sun/PC keyboard emulation of VT220 keyboard. 
         case 1061:
           coUtils.Debug.reportWarning(
             _("DECRST 1061 - Reset Sun/PC keyboard emulation of VT220 keyboard, ", 
@@ -432,22 +432,41 @@ PersistOptionsTrait.definition = {
 /**
  * @class DecPrivateMode
  */
-var DecPrivateMode = new Class().extends(Component)
+var DecPrivateMode = new Class().extends(Plugin)
                                 .mix(DecModeSequenceHandler)
-                                .mix(PersistOptionsTrait);
+                                .mix(PersistOptionsTrait)
+                                .depends("screen")
+                                .depends("cursorstate");
 DecPrivateMode.definition = {
 
   get id()
     "decmode",
 
-  "[subscribe('initialized/{screen & cursorstate}'), enabled]":
-  function onLoad(screen, cursor_state)
+  get info()
+    <plugin>
+        <name>{_("Private Mode")}</name>
+        <version>0.1</version>
+        <description>{
+          _("Handle Extended mode switches (CSI ? Pm h).")
+        }</description>
+    </plugin>,
+
+  "[persistable] enabled_when_startup": true,
+
+  "[install]":
+  function install(broker)
   {
-    this._screen = screen;
-    this._cursor_state = cursor_state;
-    this.sendMessage("initialized/decmode", this);
+    this._screen = this.dependency["screen"];
+    this._cursor_state = this.dependency["cursorstate"];;
+  //  this.sendMessage("initialized/decmode", this);
   },
 
+  "[uninstall]":
+  function uninstall(broker)
+  {
+    this._screen = null;
+    this._cursor_state = null;
+  },
 
   /**
    * DECRQM_ansi

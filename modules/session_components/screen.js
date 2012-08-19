@@ -1213,18 +1213,6 @@ Viewable.definition = {
     return this.getLines(start, end);
   },
 
-  markAsSixelLine: function markAsSixelLine(buffer, position)
-  {
-    var line = this.getCurrentLine();
-
-    line.type = coUtils.Constant.LINETYPE_SIXEL;
-    line.dirty = true;
-    line.sixel_info = {
-      buffer: buffer, 
-      position: position,
-    };
-  },
-
   "[subscribe('event/before-input')]":
   function onBeforeInput(message) 
   {
@@ -1306,7 +1294,7 @@ Viewable.definition = {
         min_column,
         line,
         text,
-        i,
+        i = 0,
         buffer;
 
     // Rectangle selection mode.
@@ -1318,7 +1306,7 @@ Viewable.definition = {
       min_column = end_column;
     }
 
-    for (i = 0; i < lines.length; ++i) {
+    for (; i < lines.length; ++i) {
       line = lines[i];
       text = line.getTextInRange(min_column, max_column);
       buffer.push(text.replace(/ +$/, ""));
@@ -1782,6 +1770,16 @@ Screen.definition = {
     } else {
       this._height = value;
     }
+  },
+
+  get scrollTop()
+  {
+    return this._scroll_top;
+  },
+
+  get scrollBottom()
+  {
+    return this._scroll_bottom;
   },
 
   get bufferTop()

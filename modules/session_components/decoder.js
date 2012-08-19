@@ -267,7 +267,7 @@ CP932Decoder.definition = {
 
   activate: function activate() 
   {
-    var resource_path = "modules/mappings/cp932.txt.js",
+    var resource_path = "modules/mappings/jis0208.txt.js",
         json_content = coUtils.IO.readFromFile(resource_path),
         mapping = eval(json_content);
 
@@ -360,13 +360,17 @@ EUCJPDecoder.prototype = {
   {
     var resource_path_jis0208 = "modules/mappings/jis0208.txt.js",
         json_content_jis0208 = coUtils.IO.readFromFile(resource_path_jis0208),
-        mapping_jis0208 = eval(json_content_jis0208);
+        mapping_jis0208 = eval(json_content_jis0208),
         resource_path_jis0201 = "modules/mappings/jis0201.txt.js",
         json_content_jis0201 = coUtils.IO.readFromFile(resource_path_jis0201),
-        mapping_jis0201 = eval(json_content_jis0201);
+        mapping_jis0201 = eval(json_content_jis0201),
+        resource_path_jis0212 = "modules/mappings/jis0212.txt.js",
+        json_content_jis0212 = coUtils.IO.readFromFile(resource_path_jis0212),
+        mapping_jis0212 = eval(json_content_jis0212);
 
     this._jis0201_map = mapping_jis0201.map;    
     this._jis0208_map = mapping_jis0208.map;    
+    this._jis0212_map = mapping_jis0212.map;    
   },
 
   /** Parse EUC-JP character byte sequence and convert it 
@@ -379,7 +383,8 @@ EUCJPDecoder.prototype = {
   decode: function decode(scanner) 
   {
     var jis0201_map = this._jis0201_map,
-        jis0208_map = this._jis0208_map;
+        jis0208_map = this._jis0208_map,
+        jis0212_map = this._jis0212_map;
 
     return function(scanner)
     {
@@ -397,6 +402,12 @@ EUCJPDecoder.prototype = {
           code = c2;
           yield jis0201_map[code];
         } else if (0x8f === c1) {
+          scanner.moveNext();
+          c1 = scanner.current();
+          scanner.moveNext();
+          c2 = scanner.current();
+          code = ((c1 - 0x80) << 8) | (c2 - 0x80);
+          yield jis0212_map[code];
         } else if (c1 <= 0xff)  {
           scanner.moveNext();
           c2 = scanner.current();

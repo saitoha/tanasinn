@@ -43,11 +43,22 @@ var ANSI_GATM = 1,
 /**
  * @class AnsiMode
  */
-var AnsiMode = new Class().extends(Component);
+var AnsiMode = new Class().extends(Plugin);
 AnsiMode.definition = {
 
   get id()
     "ansimode",
+
+  get info()
+    <plugin>
+        <name>{_("ANSI Mode")}</name>
+        <version>0.1</version>
+        <description>{
+          _("Handle ANSI mode switches (CSI Pm h).")
+        }</description>
+    </plugin>,
+
+  "[persistable] enabled_when_startup": true,
 
   set: function set(id, flag) 
   {

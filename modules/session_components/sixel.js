@@ -462,12 +462,6 @@ Sixel.definition = {
     line_count = Math.ceil(y / line_height);
     cell_count = Math.ceil(max_x / char_width);
 
-    //for (i = 0; i < line_count; ++i) {
-    //  screen.lineFeed();
-    //  screen.markAsSixelLine(dom.canvas, i);
-    //}
-    //screen.lineFeed();
-
     var start_code = 0x21;
     var end_code = start_code + cell_count;
     var full_cell = true;

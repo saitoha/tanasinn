@@ -121,6 +121,24 @@ Protection.definition = {
     }
   },
 
+  "[subscribe('sequence/decrqss/decsca'), pnp]":
+  function onRequestStatus(data) 
+  { // Device Status Report
+    var attr = this._screen.cursor.attr,
+        param,
+        message;
+
+    if (attr.protected) {
+      param = 1;
+    } else {
+      param = 0;
+    }
+
+    message = "0$r" + param + "\"q";
+
+    this.sendMessage("command/send-sequence/dcs", message);
+  },
+
   /**
    *
    * DECSEL - Selective Erase in Line

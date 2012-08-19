@@ -86,8 +86,6 @@ CursorState.definition = {
     }
   },
 
-  // Using this flag insted of emurator._decMode.TCEM.
-
   _blink: true,
 
   _backup_instance: null,

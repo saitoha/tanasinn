@@ -62,10 +62,13 @@ Ime.definition = {
   "[install]":
   function install(broker) 
   {
-    var textbox, renderer, version_comparator, focused_element;
+    var textbox = this.dependency["inputmanager"].getInputField(),
+        renderer = this.dependency["renderer"],
+        version_comparator = Components
+          .classes["@mozilla.org/xpcom/version-comparator;1"]
+          .getService(Components.interfaces.nsIVersionComparator),
+        focused_element;
 
-    textbox = this.dependency["inputmanager"].getInputField();
-    renderer = this.dependency["renderer"];
     textbox.style.width = "0%";
     textbox.style.imeMode = "inactive"; // disabled -> inactive
     textbox.style.border = "none"; // hide border
@@ -76,9 +79,6 @@ Ime.definition = {
       renderer.font_family);
 
     // enables session event handlers.
-    version_comparator = Components
-      .classes["@mozilla.org/xpcom/version-comparator;1"]
-      .getService(Components.interfaces.nsIVersionComparator);
     if (version_comparator.compare(coUtils.Runtime.version, "10.0") <= 0)
     {
       this.startPolling.enabled = true;

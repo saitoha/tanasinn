@@ -68,10 +68,24 @@ ScrollRegion.definition = {
 
   "[persistable] enabled_when_startup": true,
 
+  _screen: null,
+
+  "[install]":
+  function install(broker)
+  {
+    this._screen = this.dependency["screen"];
+  },
+
+  "[uninstall]":
+  function uninstall(broker)
+  {
+    this._screen = null;
+  },
+
   "[profile('vt100'), sequence('CSI %dr', 'CSI %d>')]":
   function DECSTBM(n1, n2) 
   {
-    var screen = this.dependency["screen"],
+    var screen = this._screen,
         min = 0,
         max = screen.height,
         top = (n1 || min + 1) - 1,
@@ -112,6 +126,17 @@ ScrollRegion.definition = {
 //    screen.cursor.originX = screen.cursor.positionX; 
     screen.cursor.originY = screen.cursor.positionY; 
 
+  },
+
+  "[subscribe('sequence/decrqss/decstbm'), pnp]":
+  function onRequestStatus(data) 
+  {
+    var screen = this._screen,
+        top = screen.scrollTop + 1,
+        bottom = screen.scrollBottom,
+        message = "0$r" + top + ";" + bottom + "r";
+
+    this.sendMessage("command/send-sequence/decrpss", message);
   },
 
   /** Reset scroll region.
