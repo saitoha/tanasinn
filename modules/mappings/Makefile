@@ -26,3 +26,7 @@ jis0208.txt:
 
 jis0201.txt:
 	curl -o $@ http://unicode.org/Public/MAPPINGS/OBSOLETE/EASTASIA/JIS/JIS0201.TXT
+
+clean:
+	rm *.txt.js
+
