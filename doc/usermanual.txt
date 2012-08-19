@@ -26,6 +26,20 @@ link:./usermanual.html[English/英語]
 
 == News
 
+=== 2012/08/19 
+    Version 0.2.4.0
+    fix the Ctrl + Space key handling issue (reported by @teramako).
+    fix a conformance level's bug (for tmux).
+    fix OSC 52 (PASTE64) parse logic.
+    upgrade DA1 response, now it reports the capability of VT class 4.
+    support DECRQSS, implemented DECRPSS for SGR/DECSCA/DECSCL/DECSTBM/DECSCUSR.
+    improve double-width character's selection behavior.
+    re-enable CP-932 javascript decoder.
+    add EUC-JP decoder, implemented in Javascript.
+    add UTF-8/CP-932 parallel state decoder.
+    add UTF-8/CP-932/EUC-JP parallel state decoder.
+    make sixel rendering information as cell-level DRCS attribute
+
 === 2012/08/05 
     Version 0.2.3.1
     fix a bug in save command
