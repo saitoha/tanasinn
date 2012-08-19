@@ -165,13 +165,22 @@ Controller.definition = {
   function stop() 
   {
     this.post("disconnect\n");
-    this._input.close();
-    this._output.close();
-    this._pump.cancel(0);
 
-    this._input = null;
-    this._output = null;
-    this._pump = null;
+    if (null !== this._input) {
+      this._input.close();
+      this._input = null;
+    }
+
+    if (null !== this._output) {
+      this._output.close();
+      this._output = null;
+    }
+
+    if (null !== this._pump) {
+      this._pump.cancel(0);
+      this._pump = null;
+    }
+
     this._screen = null;
 
     coUtils.Debug.reportMessage(

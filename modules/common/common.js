@@ -2347,9 +2347,9 @@ coUtils.Keyboard = {
       ;
 
     // fix for Space key with modifier.
-    if (0x20 === code && (event.shiftKey || event.ctrlKey || event.altKey)) {
-      packed_code |= 1 << coUtils.Constant.KEY_NOCHAR;
-    }
+    //if (0x20 === code && (event.shiftKey || event.ctrlKey || event.altKey)) {
+    //  packed_code |= 1 << coUtils.Constant.KEY_NOCHAR;
+    //}
     return packed_code;
   },
 

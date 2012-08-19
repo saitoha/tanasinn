@@ -456,7 +456,6 @@ DefaultKeyMappings.definition = {
       setting = settings[i];
       coCreateKeyMap(setting, map);
     }
-
   },
 
   get: function get(code)
@@ -799,11 +798,13 @@ InputManager.definition = {
   "[listen('keydown', '#tanasinn_default_input', true), pnp]":
   function onkeydown(event) 
   { // nothrow
-    if (this.fix_for_ctrl_space) {
-      if (0x20 === event.keyCode
-          && 0x20 === event.which
-          && event.ctrlKey) {
-        this.onkeypress(event);
+    if ("Darwin" === coUtils.Runtime.os) {
+      if (this.fix_for_ctrl_space) {
+        if (0x20 === event.keyCode
+            && 0x20 === event.which
+            && event.ctrlKey) {
+          this.onkeypress(event);
+        }
       }
     }
   },
