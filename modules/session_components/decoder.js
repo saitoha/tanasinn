@@ -186,6 +186,7 @@ AsciiDecoder.definition = {
         }</description>
     </module>,
 
+  "[persistable] enabled_when_startup": true,
   "[persistable] displacement": 0x20,
 
   "[subscribe('get/decoders'), enabled]":
