@@ -129,6 +129,22 @@ CharsetModeHandler.definition = {
     this.sendMessage("sequence/g3", mode);
   },
 
+  /** Select default character set. */
+  "[profile('vt100'), sequence('ESC %@')]": 
+  function ISO_8859_1() 
+  {
+    this.sendMessage("change/decoder", "ISO-8859-1");
+    this.sendMessage("change/encoder", "ISO-8859-1");
+  },
+
+  /** Select UTF-8 character set. */
+  "[profile('vt100'), sequence('ESC %G')]": 
+  function UTF_8() 
+  {
+    this.sendMessage("change/decoder", "UTF-8");
+    this.sendMessage("change/encoder", "UTF-8");
+  },
+
 }; // CharsetModeHandler
 
 

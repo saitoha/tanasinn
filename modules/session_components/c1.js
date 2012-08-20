@@ -22,105 +22,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/** @class KeypadModeHandler
- */
-var KeypadModeHandler = new Class().extends(Plugin)
-                                   .depends("screen");
-KeypadModeHandler.definition = {
- 
-  get id()
-    "keypadmode",
-
-  get info()
-    <module>
-        <name>{_("Keypad Mode Handler")}</name>
-        <version>0.1</version>
-        <description>{
-          _("Handle C0 controls.")
-        }</description>
-    </module>,
-
-  "[persistable] enabled_when_startup": true,
-
-  _screen: null,
-    
-  "[install]": 
-  function install(broker) 
-  {
-    this._screen = this.dependency["screen"];
-  },
-    
-  "[uninstall]": 
-  function uninstall(broker) 
-  {
-    this._screen = null;
-  },
-
-  /** normal keypad (Normal). 
-   *
-   * DECKPNM / DECKPNM - Keypad Numeric Mode
-   * 
-   * DECKPNM enables the keypad to send numeric characters to the host. 
-   * DECKPAM enables the keypad to send application sequences.
-   * 
-   * DECKPNM and DECKPAM function the same as numeric keypad mode (DECNKM).
-   * 
-   * Default: Send numeric keypad characters.
-   *
-   * Format
-   *
-   * ESC    >
-   * 1/11   3/14   Send numeric keypad characters.
-   *
-   * Description
-   * 
-   * DECKPNM enables the numeric keypad to send the characters shown on each 
-   * key-number, comma, period, or minus sign. Keys PF1 to PF4 send 
-   * application sequences. See DECKPAM-Keypad Application Mode for more 
-   * information.
-   *
-   * Note on DECKPNM
-   * 
-   * The setting is not saved in NVM. When you turn on or reset the terminal, 
-   * it automatically selects numeric keypad mode.
-   */ 
-  "[profile('vt100'), sequence('ESC >')]":
-  function DECPNM() 
-  {
-    this.sendMessage(
-      "event/keypad-mode-changed", 
-      coUtils.Constant.KEYPAD_MODE_NORMAL);
-  },
- 
-  /** application keypad (NumLock). 
-   *
-   * DECKPAM / DECPAM - Keypad Application Mode
-   * 
-   * DECKPAM enables the numeric keypad to send application sequences to the 
-   * host. DECKPNM enables the numeric keypad to send numeric characters.
-   * 
-   * DECKPAM and DECKPNM function the same as numeric keypad mode (DECNKM).
-   *
-   * Format
-   *
-   * ESC    =
-   * 1/11   3/13   Send application sequences.
-   *
-   * Note on DECKPAM
-   * 
-   * The setting is not saved in NVM. When you turn on or reset the terminal, 
-   * it automatically selects numeric keypad mode.
-   */
-  "[profile('vt100'), sequence('ESC =')]": 
-  function DECPAM() 
-  {
-    this.sendMessage(
-      "event/keypad-mode-changed", 
-      coUtils.Constant.KEYPAD_MODE_APPLICATION);
-  },
-
-}; // KeypadMode
-
 /**
  * @class C1Control
  */
@@ -610,58 +511,7 @@ C1Control.definition = {
     this.sendMessage("sequence/apc", message);
   },
 
-};
-
-/**
- * @class CharsetSelector
- */
-var CharsetSelector = new Class().extends(Plugin);
-CharsetSelector.definition = {
-
-  get id()
-    "charset_selector",
-
-  get info()
-    <module>
-        <name>{_("Charset Selector")}</name>
-        <version>0.1</version>
-        <description>{
-          _("Add character set switching handler.")
-        }</description>
-    </module>,
-
-
-  "[persistable] enabled_when_startup": true,
-
-  _screen: null,
-    
-  "[install]": 
-  function install(broker) 
-  {
-  },
-    
-  "[uninstall]": 
-  function uninstall(broker) 
-  {
-  },
-
-  /** Select default character set. */
-  "[profile('vt100'), sequence('ESC %@')]": 
-  function ISO_8859_1() 
-  {
-    this.sendMessage("change/decoder", "ISO-8859-1");
-    this.sendMessage("change/encoder", "ISO-8859-1");
-  },
-
-  /** Select UTF-8 character set. */
-  "[profile('vt100'), sequence('ESC %G')]": 
-  function UTF_8() 
-  {
-    this.sendMessage("change/decoder", "UTF-8");
-    this.sendMessage("change/encoder", "UTF-8");
-  },
-
-}; // class CharsetSelector
+}; // C1Control
 
 /**
  * @fn main
@@ -670,9 +520,7 @@ CharsetSelector.definition = {
  */
 function main(broker) 
 {
-  new CharsetSelector(broker);
   new C1Control(broker);
-  new KeypadModeHandler(broker);
 }
 
 // EOF

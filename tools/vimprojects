@@ -89,7 +89,9 @@
     screen.js
     cursorstate.js
     tabcontroller.js
-    control.js
+    c0.js
+    c1.js
+    keypad.js
     ansi.js
     dec.js
 
