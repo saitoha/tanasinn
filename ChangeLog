@@ -1,7 +1,7 @@
 
 2012-08-19 Hayaki Saito <user@zuse.jp>
 
-    * Version 0.2.4.0
+    * Version 0.2.4.0 / 0.2.4.1
     * fix the Ctrl + Space key handling issue (reported by @teramako).
     * fix a conformance level's bug (for tmux).
     * fix OSC 52 (PASTE64) parse logic.
