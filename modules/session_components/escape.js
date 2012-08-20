@@ -157,6 +157,50 @@ C1Control.definition = {
   },
 
   /**
+   * PAD
+   */
+  "[profile('vt100'), sequence('0x80')]": 
+  function PAD() 
+  {
+    coUtils.Debug.reportWarning(
+      "%s sequence [%s] was ignored.",
+      arguments.callee.name, Array.slice(arguments));
+  },
+
+  /**
+   * HOP
+   */
+  "[profile('vt100'), sequence('0x81')]": 
+  function HOP() 
+  {
+    coUtils.Debug.reportWarning(
+      "%s sequence [%s] was ignored.",
+      arguments.callee.name, Array.slice(arguments));
+  },
+
+  /**
+   * BPH
+   */
+  "[profile('vt100'), sequence('0x82')]": 
+  function BPH() 
+  {
+    coUtils.Debug.reportWarning(
+      "%s sequence [%s] was ignored.",
+      arguments.callee.name, Array.slice(arguments));
+  },
+
+  /**
+   * NBH
+   */
+  "[profile('vt100'), sequence('0x83')]": 
+  function NBH() 
+  {
+    coUtils.Debug.reportWarning(
+      "%s sequence [%s] was ignored.",
+      arguments.callee.name, Array.slice(arguments));
+  },
+
+  /**
    *
    * IND - Index
    *
@@ -173,6 +217,118 @@ C1Control.definition = {
   function IND() 
   {
     this._screen.lineFeed();
+  },
+
+  /**
+   * NEL - Next Line
+   *
+   * Moves cursor to first position on next line. If cursor is at bottom 
+   * margin, then screen performs a scroll-up.
+   *
+   * Format
+   *
+   * ESC    E
+   * 1/11   4/5
+   *
+   */
+  "[profile('vt100'), sequence('0x85', 'ESC E'), _('Next line')]":
+  function NEL() 
+  { // Carriage Return
+    var screen = this._screen;
+
+    screen.carriageReturn();
+    screen.lineFeed();
+  },
+
+  /**
+   * SSA
+   */
+  "[profile('vt100'), sequence('0x86')]": 
+  function SSA() 
+  {
+    coUtils.Debug.reportWarning(
+      "%s sequence [%s] was ignored.",
+      arguments.callee.name, Array.slice(arguments));
+  },
+
+  /**
+   * ESA
+   */
+  "[profile('vt100'), sequence('0x87')]": 
+  function ESA() 
+  {
+    coUtils.Debug.reportWarning(
+      "%s sequence [%s] was ignored.",
+      arguments.callee.name, Array.slice(arguments));
+  },
+
+  /** 0x88 HTS is in tabcontroller.js */
+
+  /**
+   *
+   * HTJ - Horizontal Tab with Justify
+   * ESC I
+   *
+   * TODO:
+   * Same as HT except that the entry is right-justified before moving to the
+   * next tab stop. The control may be loaded into a programmable key for 
+   * operator use when desired.
+   */
+  "[profile('vt100'), sequence('0x89', 'ESC I')]": 
+  function HTJ() 
+  {
+    coUtils.Debug.reportWarning(
+      "%s sequence [%s] was ignored.",
+      arguments.callee.name, Array.slice(arguments));
+  },
+
+  /**
+   * VTS
+   */
+  "[profile('vt100'), sequence('0x8a', 'ESC J')]": 
+  function VTS() 
+  {
+    coUtils.Debug.reportWarning(
+      "%s sequence [%s] was ignored.",
+      arguments.callee.name, Array.slice(arguments));
+  },
+
+  /**
+   * PLD
+   */
+  "[profile('vt100'), sequence('0x8b', 'ESC K')]": 
+  function PLD() 
+  {
+    coUtils.Debug.reportWarning(
+      "%s sequence [%s] was ignored.",
+      arguments.callee.name, Array.slice(arguments));
+  },
+
+  /**
+   * PLU
+   */
+  "[profile('vt100'), sequence('0x8b', 'ESC L')]": 
+  function PLU() 
+  {
+    coUtils.Debug.reportWarning(
+      "%s sequence [%s] was ignored.",
+      arguments.callee.name, Array.slice(arguments));
+  },
+
+  /**
+   *
+   * RI – Reverse Index
+   * ESC M   
+   *
+   * Move the active position to the same horizontal position on the preceding 
+   * line. If the active position is at the top margin, a scroll down is 
+   * performed. Format Effector
+   *
+   */
+  "[profile('vt100'), sequence('0x8d', 'ESC M'), _('Reverse index.')]": 
+  function RI() 
+  {
+    this._screen.reverseIndex();
   },
 
   /**
@@ -213,7 +369,7 @@ C1Control.definition = {
 
   /** SS2.
    */
-  "[profile('vt100'), sequence('0x8f', 'ESC O'), _('SS2')]":
+  "[profile('vt100'), sequence('0x8e', 'ESC N'), _('SS2')]":
   function SS2() 
   {
     this.sendMessage("sequences/ss2");
@@ -221,47 +377,10 @@ C1Control.definition = {
 
   /** SS3.
    */
-  "[profile('vt100'), sequence('0x90', 'ESC P'), _('SS3')]":
+  "[profile('vt100'), sequence('0x8f', 'ESC O'), _('SS3')]":
   function SS3() 
   {
     this.sendMessage("sequences/ss3");
-  },
-
-  /**
-   * NEL - Next Line
-   *
-   * Moves cursor to first position on next line. If cursor is at bottom 
-   * margin, then screen performs a scroll-up.
-   *
-   * Format
-   *
-   * ESC    E
-   * 1/11   4/5
-   *
-   */
-  "[profile('vt100'), sequence('0x85', 'ESC E'), _('Next line')]":
-  function NEL() 
-  { // Carriage Return
-    var screen = this._screen;
-
-    screen.carriageReturn();
-    screen.lineFeed();
-  },
-
-  /**
-   *
-   * RI – Reverse Index
-   * ESC M   
-   *
-   * Move the active position to the same horizontal position on the preceding 
-   * line. If the active position is at the top margin, a scroll down is 
-   * performed. Format Effector
-   *
-   */
-  "[profile('vt100'), sequence('0x8d', 'ESC M'), _('Reverse index.')]": 
-  function RI() 
-  {
-    this._screen.reverseIndex();
   },
 
   /**
@@ -296,6 +415,83 @@ C1Control.definition = {
   },
 
   /**
+   * PU1
+   */
+  "[profile('vt100'), sequence('0x91', 'ESC Q')]": 
+  function PU1() 
+  {
+    coUtils.Debug.reportWarning(
+      "%s sequence [%s] was ignored.",
+      arguments.callee.name, Array.slice(arguments));
+  },
+
+  /**
+   * PU2
+   */
+  "[profile('vt100'), sequence('0x92', 'ESC R')]": 
+  function PU2() 
+  {
+    coUtils.Debug.reportWarning(
+      "%s sequence [%s] was ignored.",
+      arguments.callee.name, Array.slice(arguments));
+  },
+
+  /**
+   * STS
+   */
+  "[profile('vt100'), sequence('0x93', 'ESC S')]": 
+  function STS() 
+  {
+    coUtils.Debug.reportWarning(
+      "%s sequence [%s] was ignored.",
+      arguments.callee.name, Array.slice(arguments));
+  },
+
+  /**
+   * CCH
+   */
+  "[profile('vt100'), sequence('0x94', 'ESC T')]": 
+  function CCH() 
+  {
+    coUtils.Debug.reportWarning(
+      "%s sequence [%s] was ignored.",
+      arguments.callee.name, Array.slice(arguments));
+  },
+
+  /**
+   * MW
+   */
+  "[profile('vt100'), sequence('0x95', 'ESC U')]": 
+  function MW() 
+  {
+    coUtils.Debug.reportWarning(
+      "%s sequence [%s] was ignored.",
+      arguments.callee.name, Array.slice(arguments));
+  },
+
+  /**
+   * SPA
+   */
+  "[profile('vt100'), sequence('0x96', 'ESC V')]": 
+  function SPA() 
+  {
+    coUtils.Debug.reportWarning(
+      "%s sequence [%s] was ignored.",
+      arguments.callee.name, Array.slice(arguments));
+  },
+
+  /**
+   * EPA
+   */
+  "[profile('vt100'), sequence('0x97', 'ESC W')]": 
+  function EPA() 
+  {
+    coUtils.Debug.reportWarning(
+      "%s sequence [%s] was ignored.",
+      arguments.callee.name, Array.slice(arguments));
+  },
+
+  /**
    *
    * SOS - START OF STRING
    *
@@ -315,25 +511,38 @@ C1Control.definition = {
   },
 
   /**
-   *
-   * APC - APPLICATION PROGRAM COMMAND
-   *
-   * Notation: (C1)
-   * Representation: 09/15 or ESC 05/15
-   * APC is used as the opening delimiter of a control string for application
-   * program use. The command string following may consist of bit combinations
-   * in the range 00/08 to 00/13 and 02/00 to 07/14. The control string is 
-   * closed by the terminating delimiter STRING TERMINATOR (ST). The 
-   * interpretation of the command string depends on the relevant application 
-   * program.
-   *
+   * SGCI
    */
-  "[profile('vt100'), sequence('0x9f%s', 'ESC _%s')]": 
-  function APC(message) 
+  "[profile('vt100'), sequence('0x99', 'ESC Y')]": 
+  function SGCI() 
   {
-    this.sendMessage("sequence/apc", message);
+    coUtils.Debug.reportWarning(
+      "%s sequence [%s] was ignored.",
+      arguments.callee.name, Array.slice(arguments));
+  },
+
+  /**
+   * SCI
+   */
+  "[profile('vt100'), sequence('0x9a', 'ESC Z')]": 
+  function SCI() 
+  {
+    coUtils.Debug.reportWarning(
+      "%s sequence [%s] was ignored.",
+      arguments.callee.name, Array.slice(arguments));
   },
   
+  /**
+   * ST
+   */
+  "[profile('vt100'), sequence('0x9c', 'ESC \\\\')]": 
+  function ST() 
+  {
+    coUtils.Debug.reportWarning(
+      "%s sequence [%s] was ignored.",
+      arguments.callee.name, Array.slice(arguments));
+  },
+
   /**
    *
    * OSC - OPERATING SYSTEM COMMAND
@@ -379,6 +588,26 @@ C1Control.definition = {
   function PM(message) 
   {
     this.sendMessage("sequence/pm", message);
+  },
+
+  /**
+   *
+   * APC - APPLICATION PROGRAM COMMAND
+   *
+   * Notation: (C1)
+   * Representation: 09/15 or ESC 05/15
+   * APC is used as the opening delimiter of a control string for application
+   * program use. The command string following may consist of bit combinations
+   * in the range 00/08 to 00/13 and 02/00 to 07/14. The control string is 
+   * closed by the terminating delimiter STRING TERMINATOR (ST). The 
+   * interpretation of the command string depends on the relevant application 
+   * program.
+   *
+   */
+  "[profile('vt100'), sequence('0x9f%s', 'ESC _%s')]": 
+  function APC(message) 
+  {
+    this.sendMessage("sequence/apc", message);
   },
 
 };
