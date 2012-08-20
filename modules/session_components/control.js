@@ -23,19 +23,38 @@
  * ***** END LICENSE BLOCK ***** */
 
 /**
- * @class Control
+ * @class C0Control
  */
-var Control = new Class().extends(Component);
-Control.definition = {
+var C0Control = new Class().extends(Plugin)
+                           .depends("screen");
+C0Control.definition = {
 
   get id()
-    "control",
+    "c0control",
 
-  /** Post constructor */
-  "[subscribe('initialized/screen'), enabled]":
-  function onLoad(screen) 
+  get info()
+    <module>
+        <name>{_("C0 Control Handlers")}</name>
+        <version>0.1</version>
+        <description>{
+          _("Handle C0 controls.")
+        }</description>
+    </module>,
+
+  "[persistable] enabled_when_startup": true,
+
+  _screen: null,
+
+  "[install]":
+  function install(broker) 
   {
-    this._screen = screen;
+    this._screen = this.dependency["screen"];
+  },
+
+  "[uninstall]":
+  function uninstall(broker) 
+  {
+    this._screen = null;
   },
 
   "[subscribe('set/newline-mode'), enabled]":
@@ -45,6 +64,10 @@ Control.definition = {
   },
 
   /** Null.
+   *
+   * Ignored when received (not stored in input buffer) and used as a fill
+   * character.
+   *
    */
   "[profile('vt100'), sequence('0x00')]":
   function NUL() 
@@ -72,6 +95,9 @@ Control.definition = {
   },
  
   /** End of text.
+   *
+   * Can be selected as a half-duplex turnaround character.
+   *
    */
   "[profile('vt100'), sequence('0x03')]":
   function ETX() 
@@ -81,7 +107,12 @@ Control.definition = {
       arguments.callee.name, Array.slice(arguments));
   },
 
-  /** Start of transmission.
+  /** End of transmission.
+   *
+   * This character can be selected as a disconnect character or as a
+   * half-duplex turnaround character. When used as a turnaround character,
+   * the disconnect character is DLE-EOT.
+   *
    */
   "[profile('vt100'), sequence('0x04')]":
   function EOT() 
@@ -92,6 +123,9 @@ Control.definition = {
   },
   
   /** Enquire.
+   *
+   * This character transmits the answerback message.
+   *
    */
   "[profile('vt100'), sequence('0x05')]":
   function ENQ() 
@@ -110,6 +144,9 @@ Control.definition = {
   },
    
   /** Bell.
+   *
+   * Generates bell tone.
+   *
    */
   "[profile('vt100'), sequence('0x07', 'ESC g')]":
   function BEL() 
@@ -118,86 +155,76 @@ Control.definition = {
   },
 
   /** Back space.
+   *
+   * Moves cursor to the left one character position; if cursor is at left
+   * margin, no action occurs.
+   *
    */
   "[profile('vt100'), sequence('0x08')]":
   function BS() 
   { // BackSpace
-    var screen;
-
-    screen = this._screen;
-    screen.backSpace();
+    this._screen.backSpace();
   },
   
+  /** 0x09 HT is in tabcontroller.js */
+
   /** Linefeed.
+   *
+   *  Causes a linefeed or a new line operation. (See linefeed/new line mode.)
+   *  Also causes printing if auto print operation selected.
    */
   "[profile('vt100'), sequence('0x0A')]":
   function LF() 
   {
-    var screen;
+    var screen = this._screen;
 
-    screen = this._screen;
     screen.lineFeed();
+
     if (this._newline_mode) {
       screen.carriageReturn();
     }
   },
-  
-  /** Index.
-   */
-  "[profile('vt100'), sequence('0x84', 'ESC D'), _('Index')]":
-  function IND() 
-  {
-    var screen;
-
-    screen = this._screen;
-    screen.lineFeed();
-  },
-
-  /** SS2.
-   */
-  "[profile('vt100'), sequence('0x8f', 'ESC O'), _('SS2')]":
-  function SS2() 
-  {
-    this.sendMessage("sequences/ss2");
-  },
-
-  /** SS3.
-   */
-  "[profile('vt100'), sequence('0x90', 'ESC P'), _('SS3')]":
-  function SS3() 
-  {
-    this.sendMessage("sequences/ss3");
-  },
  
   /** Vertical tabulation.
+   *
+   * Processed as LF.
+   *
    */
   "[profile('vt100'), sequence('0x0B')]":
   function VT() 
   {
-    var screen;
+    var screen = this._screen;
 
-    screen = this._screen;
     screen.lineFeed();
+
     if (this._newline_mode) {
       screen.carriageReturn();
     }
   },
 
   /** Form feed.
+   *
+   * This character is processed as LF. 
+   * It can also be selected as a half-duplex turnaround character.
+   *
    */
   "[profile('vt100'), sequence('0x0C')]":
   function FF() 
   {
-    var screen;
+    var screen = this._screen;
 
-    screen = this._screen;
     screen.lineFeed();
+
     if (this._newline_mode) {
       screen.carriageReturn();
     }
   },
 
   /** Carriage return.
+   *
+   *  This character moves the cursor to left margin on the current line.
+   *  It can also be selected as a half-duplex turnaround character.
+   *
    */
   "[profile('vt100'), sequence('0x0D')]":
   function CR() 
@@ -209,6 +236,9 @@ Control.definition = {
   },
     
   /** Shift out.
+   *
+   * Selects G1 character set designated by a select character set sequence.
+   *
    */
   "[profile('vt100'), sequence('0x0E')]":
   function SO() 
@@ -217,6 +247,9 @@ Control.definition = {
   },
   
   /** Shift in.
+   *
+   * Selects G0 character set designated by a select character set sequence.
+   *
    */
   "[profile('vt100'), sequence('0x0F')]":
   function SI() 
@@ -254,6 +287,12 @@ Control.definition = {
   },
 
   /** Device control 3.
+   *
+   * This character is processed as XOFF. It causes the terminal to stop
+   * transmitting all characters except XOFF and XON.
+   *
+   * This character can also be selected as a half-duplex turnaround character.
+   *
    */
   "[profile('vt100'), sequence('0x13')]":
   function DC3() 
@@ -303,6 +342,10 @@ Control.definition = {
   },
   
   /** Cancel of previous word or charactor.
+   *
+   * If received during an escape or control sequence, cancels the sequence
+   * and displays substitution character ([]).
+   *
    */
   "[profile('vt100'), sequence('0x18')]":
   function CAN() 
@@ -323,6 +366,9 @@ Control.definition = {
   },
   
   /** Substitute.
+   *
+   * Processed as CAN.
+   *
    */
   "[profile('vt100'), sequence('0x1A')]":
   function SUB()
@@ -391,7 +437,7 @@ Control.definition = {
  */
 function main(broker) 
 {
-  new Control(broker);
+  new C0Control(broker);
 }
 
 // EOF
