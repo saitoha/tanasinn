@@ -73,6 +73,25 @@ TabController.definition = {
   },
    
   /** Horizontal tabulation.
+   *
+   * Moves cursor to next tab stop, or to right margin if there are no more
+   * tab stops.
+   *
+   * In edit mode, the tab character positions the cursor, and the character
+   * is not held in memory. When the character is received, the cursor moves
+   * to one of the following locations.
+   *
+   *  - Next tab stop
+   *  - Next field boundary (if erasure mode is set)
+   *  - Next unprotected field (if erasure mode is reset)
+   *  - First unprotected character position in the scrolling region (if the
+   *    cursor is above the scrolling region)
+   *  - Last character position of the screen (if the cursor is below the 
+   *    scrolling region)
+   *
+   * In edit mode, a tab received with no more tab stops or fields, causes the
+   * cursor to move to the end of the screen region.
+   *
    */
   "[profile('vt100'), sequence('0x09'), type('Undefined')]":
   function HT() 
@@ -84,7 +103,7 @@ TabController.definition = {
         width = screen.width,
         max,
         positionX,
-        i,
+        i = 0,
         stop,
         screen;
 
@@ -103,7 +122,7 @@ TabController.definition = {
       //}
     }
 
-    for (i = 0; i < tab_stops.length; ++i) {
+    for (; i < tab_stops.length; ++i) {
       stop = tab_stops[i];
       if (stop > positionX) {
         cursor.positionX = stop;
