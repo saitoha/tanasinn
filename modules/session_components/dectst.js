@@ -92,7 +92,6 @@ ConfidenceTest.definition = {
   "[install]":
   function install(broker) 
   {
-    alert(broker)
   },
 
   /** Uninstalls itself.
