@@ -153,8 +153,6 @@
  * When in an ISO/ANSI character set, issuing "CSI 12 m" is equivalent to 
  * "designating and invoking current 8 bit char set to G2 and GL."
  */
-
-
 var SGRHandler = new Class().extends(Plugin)
                             .depends("cursorstate");
 SGRHandler.definition = {
@@ -446,7 +444,7 @@ SGRHandler.definition = {
   function onRequestStatus(data) 
   {
     var attr = this._attr,
-        params = [],
+        params = [0],
         message;
 
     if (attr.bold) {
@@ -509,7 +507,7 @@ SGRHandler.definition = {
       params.push(49);
     }
 
-    message = params.push(";") + m;
+    message = params.join(";") + "m";
 
     this.sendMessage("command/send-sequence/decrpss", message);
   },
