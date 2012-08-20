@@ -24,6 +24,60 @@
 
 /**
  *  @class StatusRequest
+ *
+ * DECRQSS - Request Selection or Setting
+ * 
+ * The host requests the terminal setting. See DECRPSS for the terminal's
+ * response.
+ *
+ * Format
+ *
+ * DCS   $     q     D . . . D  ST
+ * 9/0   2/4   7/1   * ...      9/12
+ *
+ * Parameters
+ * 
+ * D ... D
+ * indicates the current setting of a valid control function that the host
+ * asked about. D . . . D consists of all the characters in the control
+ * function, except the CSI (9/11) or ESC [(1/11, 5/11) introducer characters.
+ *
+ *
+ * Description
+ * 
+ * DECRQSS (and DECRPSS) support the following settings or selections:
+ *
+ * Setting                            Mnemonic  Final Character(s)
+ * --------------------------------------------------------------------
+ * Select Active Status Display       DECSASD   $ }
+ * Select Attribute Change Extent     DECSACE   * x
+ * Set Character Attribute            DECSCA    " q
+ * Set Conformance Level              DECSCL    " p
+ * Set Columns Per Page               DECSCPP   $ |
+ * Set Lines Per Page                 DECSLPP   t
+ * Set Number of Lines per Screen     DECSNLS   * |
+ * Set Status Line Type               DECSSDT   $ ~
+ * Set Left and Right Margins         DECSLRM   s
+ * Set Top and Bottom Margins         DECSTBM   r
+ * Set Graphic Rendition              SGR       m
+ * Select Set-Up Language             DECSSL    p
+ * Select Printer Type                DECSPRTT  $ s
+ * Select Refresh Rate                DECSRFR   " t
+ * Select Digital Printed Data Type   DECSDPT   ( p
+ * Select ProPrinter Character Set    DECSPPCS  * p
+ * Select Communication Speed         DECSCS    * r
+ * Select Communication Port          DECSCP    * u
+ * Set Scroll Speed                   DECSSCLS  SP p
+ * Set Cursor Style                   DECSCUSR  SP q
+ * Set Key Click Volume               DECSKCV   SP r
+ * Set Warning Bell Volume            DECSWBV   SP t
+ * Set Margin Bell Volume             DECSMBV   SP u
+ * Set Lock Key Style                 DECSLCK   SP v
+ * Select Flow Control Type           DECSFC    * s
+ * Select Disconnect Delay Time       DECSDDT   $ q
+ * Set Transmit Rate Limit            DECSTRL   " u
+ * Set Port Parameter                 DECSPP    + w
+ * 
  */
 var StatusRequest = new Class().extends(Plugin);
 StatusRequest.definition = {
@@ -61,8 +115,6 @@ StatusRequest.definition = {
   "[subscribe('sequence/dcs'), pnp]":
   function onDCS(data) 
   {
-    var match, i, chars, value, message, param;
-
     if (0 === data.indexOf("$q")) {
       data = data.substr(2);
       switch (data) {
@@ -87,8 +139,7 @@ StatusRequest.definition = {
           this.sendMessage("sequence/decrqss/decscuser", data);
           break;
         default:
-          message = "1$r";
-          this.sendMessage("command/send-sequence/dcs", message);
+          this.sendMessage("command/send-sequence/dcs", "1$r");
           break;
       }
     }
