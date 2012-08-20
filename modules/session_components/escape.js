@@ -24,11 +24,37 @@
 
 /** @class KeypadModeHandler
  */
-var KeypadModeHandler = new Class().extends(Component);
+var KeypadModeHandler = new Class().extends(Plugin)
+                                   .depends("screen");
 KeypadModeHandler.definition = {
  
   get id()
     "keypadmode",
+
+  get info()
+    <module>
+        <name>{_("Keypad Mode Handler")}</name>
+        <version>0.1</version>
+        <description>{
+          _("Handle C0 controls.")
+        }</description>
+    </module>,
+
+  "[persistable] enabled_when_startup": true,
+
+  _screen: null,
+    
+  "[install]": 
+  function install(broker) 
+  {
+    this._screen = this.dependency["screen"];
+  },
+    
+  "[uninstall]": 
+  function uninstall(broker) 
+  {
+    this._screen = null;
+  },
 
   /** normal keypad (Normal). 
    *
@@ -95,18 +121,111 @@ KeypadModeHandler.definition = {
 
 }; // KeypadMode
 
-
 /**
- * @class Escape
+ * @class C1Control
  */
-var Escape = new Class().extends(Component);
-Escape.definition = {
+var C1Control = new Class().extends(Plugin)
+                           .depends("screen");
+C1Control.definition = {
 
   get id()
-    "escape",
+    "c1control",
 
-  /** Next line.
+  get info()
+    <module>
+        <name>{_("C1 Control Handlers")}</name>
+        <version>0.1</version>
+        <description>{
+          _("Handle C1 controls.")
+        }</description>
+    </module>,
+
+  "[persistable] enabled_when_startup": true,
+
+  _screen: null,
+    
+  "[install]": 
+  function install(broker) 
+  {
+    this._screen = this.dependency["screen"];
+  },
+    
+  "[uninstall]": 
+  function uninstall(broker) 
+  {
+    this._screen = null;
+  },
+
+  /**
+   *
+   * IND - Index
+   *
+   * IND moves the cursor down one line in the same column. If the cursor is
+   * at the bottom margin, then the screen performs a scroll-up.
+   *
+   * Format
+   *
+   * ESC   D
+   * 1/11  4/4
+   *
    */
+  "[profile('vt100'), sequence('0x84', 'ESC D'), _('Index')]":
+  function IND() 
+  {
+    this._screen.lineFeed();
+  },
+
+  /**
+   * SS - Single Shifts
+   *
+   * You use a single shift when you want to display the next character from a
+   * different character set. A single shift maps the G2 or G3 set into GL. 
+   * The character set is active for only one character, then the terminal
+   * returns to the previous character set in GL.
+   * 
+   * The terminal has two single-shift control functions available.
+   *
+   * Format
+   *
+   * Single-Shift Control  8-Bit   7-Bit         Function
+   * -------------------------------------------------------------------------
+   * Single shift 2        SS2     ESC   N       Maps G2 into GL for the 
+   *                       8/14    1/11  4/14    next character.
+   * Single shift 3        SS3     ESC   O       Maps G3 into GL for the
+   *                       8/15    1/11  4/15    next character.
+   *
+   * Example
+   * 
+   * Suppose the ASCII character set is in GL. You want to display the alpha
+   * character from the DEC Technical character set, already designated as G3.
+   * You do not want to replace the ASCII set just to display one character.
+   * Instead, you can use single shift 3 to temporarily map the DEC Technical
+   * set (G3) into GL.
+   *
+   * SS3
+   * single shift 3  a
+   * alpha character
+   * 
+   * After displaying the alpha character, the terminal maps the ASCII set
+   * (G1) back into GL, replacing the DEC Technical set (G3).
+   *
+   */
+
+  /** SS2.
+   */
+  "[profile('vt100'), sequence('0x8f', 'ESC O'), _('SS2')]":
+  function SS2() 
+  {
+    this.sendMessage("sequences/ss2");
+  },
+
+  /** SS3.
+   */
+  "[profile('vt100'), sequence('0x90', 'ESC P'), _('SS3')]":
+  function SS3() 
+  {
+    this.sendMessage("sequences/ss3");
+  },
 
   /**
    * NEL - Next Line
@@ -142,11 +261,8 @@ Escape.definition = {
   "[profile('vt100'), sequence('0x8d', 'ESC M'), _('Reverse index.')]": 
   function RI() 
   {
-    var screen = this._screen;
-
-    screen.reverseIndex();
+    this._screen.reverseIndex();
   },
-
 
   /**
    * Device Control Strings
@@ -265,6 +381,41 @@ Escape.definition = {
     this.sendMessage("sequence/pm", message);
   },
 
+};
+
+/**
+ * @class CharsetSelector
+ */
+var CharsetSelector = new Class().extends(Plugin);
+CharsetSelector.definition = {
+
+  get id()
+    "charset_selector",
+
+  get info()
+    <module>
+        <name>{_("Charset Selector")}</name>
+        <version>0.1</version>
+        <description>{
+          _("Add character set switching handler.")
+        }</description>
+    </module>,
+
+
+  "[persistable] enabled_when_startup": true,
+
+  _screen: null,
+    
+  "[install]": 
+  function install(broker) 
+  {
+  },
+    
+  "[uninstall]": 
+  function uninstall(broker) 
+  {
+  },
+
   /** Select default character set. */
   "[profile('vt100'), sequence('ESC %@')]": 
   function ISO_8859_1() 
@@ -281,135 +432,7 @@ Escape.definition = {
     this.sendMessage("change/encoder", "UTF-8");
   },
 
-  /**
-   * DECTST - Invoke Confidence Test
-   *
-   * Select tests to be performed.
-   *
-   * Format
-   *
-   * CSI    4     ;      Ps   ...  ;     Ps   y
-   * 9/11   3/4   3/11   3/n  ...  3/11  3/n  7/9
-   *
-   *
-   * Parameters
-   * 
-   * Ps is the parameter indicating a test to be done.
-   *
-   *   Ps   Test
-   *   0    "All Tests" (1,2,3,6)
-   *   1    Power-Up Self Test
-   *   2    RS-232 Port Data Loopback Test
-   *   3    Printer Port Loopback Test
-   *   4    Speed Select and Speed Indicator Test
-   *   5    Reserved - No action
-   *   6    RS-232 Port Modem Control Line Loopback Test
-   *   7    EIA-423 Port Loopback Test
-   *   8    Parallel Port Loopback Test
-   *   9    Repeat (Loop On) Other Tests In Parameter String
-   *
-   * Description
-   * 
-   * After the first parameter, "4", the parameters each select one test. 
-   * Several tests may be invoked at once by chaining the parameters together 
-   * separated by semicolons. The tests are not necessarily executed in the 
-   * order in which they are entered in the parameter string.
-   *
-   * "ESC # 8" invokes the Screen Alignment test for the VT510. Additionally,
-   * after executing the power-up selftest, the terminal displays either the 
-   * diagnostic messages in the upper left corner of the screen or the 
-   * "VT510 OK" message in the center of the screen and within a box. Upon 
-   * receipt of any character except XON or if the user types a keystroke, 
-   * the screen is cleared. If the terminal is in local mode, then characters 
-   * from the host are ignored and the message remains visible even if 
-   * characters are received from the host. DECTST causes a disconnect; 
-   * therefore, it should not be used in conjunction with a modem.
-   *
-   */
-  "[profile('vt100'), sequence('CSI %dy')]": 
-  function DECTST() 
-  {
-    var i, n;
-
-    for (i = 0; i < arguments.length; ++i) {
-
-      n = arguments[i];
-
-      switch (n) {
-
-        case 0:
-          coUtils.Debug.reportWarning(
-            _("DECTST 0: Invoking all test is not implemented."));
-          break;
-
-        case 1:
-          coUtils.Debug.reportWarning(
-            _("DECTST 1: Invoking Power-Up self test is not implemented."));
-          break;
-
-        case 2:
-          coUtils.Debug.reportWarning(
-            _("DECTST 2: Invoking RS-232 port data loopback test ", 
-              "is not implemented."));
-          break;
-
-        case 3:
-          coUtils.Debug.reportWarning(
-            _("DECTST 3: Invoking printer port loopback test ", 
-              "is not implemented."));
-          break;
-
-        case 4:
-          coUtils.Debug.reportWarning(
-            _("DECTST 4: Invoking speed select and speed indicator test ", 
-              "is not implemented."));
-          break;
-
-        case 5:
-          coUtils.Debug.reportWarning(
-            _("DECTST 5: Invoking this test(reserved) is not implemented."));
-          break;
-
-        case 6:
-          coUtils.Debug.reportWarning(
-            _("DECTST 6: Invoking RS-232 port modem control line ",
-              "loopback test is not implemented."));
-          break;
-
-        case 7:
-          coUtils.Debug.reportWarning(
-            _("DECTST 7: Invoking EIA-423 port loopback test ", 
-              "is not implemented."));
-          break;
-
-        case 8:
-          coUtils.Debug.reportWarning(
-            _("DECTST 8: Invoking parallel port loopback test ", 
-              "is not implemented."));
-          break;
-
-        case 9:
-          coUtils.Debug.reportWarning(
-            _("DECTST 8: Repeat (Loop on) other tests in parameter string ", 
-              "is not implemented."));
-          break;
-
-        default:
-          coUtils.Debug.reportWarning(
-            _("DECTST: Unknown test parameter is specified: %d."), n);
-
-      }
-    }
-  },
-  
-  /** constructor */
-  "[subscribe('initialized/screen'), enabled]": 
-  function onLoad(screen) 
-  {
-    this._screen = screen;
-  },
-
-}; // class Screen
+}; // class CharsetSelector
 
 /**
  * @fn main
@@ -418,7 +441,8 @@ Escape.definition = {
  */
 function main(broker) 
 {
-  new Escape(broker);
+  new CharsetSelector(broker);
+  new C1Control(broker);
   new KeypadModeHandler(broker);
 }
 

@@ -77,9 +77,6 @@
 
    parser.js
    line.js
-   cursorstate.js
-   tabcontroller.js
-   control.js
    escape.js
    encoder.js
    drcsconverter.js
@@ -90,6 +87,9 @@
     input.js
     decoder.js
     screen.js
+    cursorstate.js
+    tabcontroller.js
+    control.js
     ansi.js
     dec.js
 
@@ -157,6 +157,7 @@
     reportparams.js
     terminfo.js
     decrqss.js
+    dectst.js
     wheelscroll.js
 
     focusevent.js
