@@ -116,7 +116,9 @@ CursorState.definition = {
     this._blink = value;;
   },
 
-  /** constructor */
+  /** installs itself. 
+   *  @param {Broker} broker A broker object.
+   */
   "[install]":
   function install(broker) 
   {
@@ -125,6 +127,15 @@ CursorState.definition = {
       .shift()
       .cells
       .shift();
+  },
+
+  /** uninstalls itself. 
+   *  @param {Broker} broker A broker object.
+   */
+  "[uninstall]":
+  function uninstall(broker) 
+  {
+    this.attr = null;
   },
 
   /** reset cursor state. */

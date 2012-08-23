@@ -77,7 +77,6 @@
 
    parser.js
    line.js
-   escape.js
    encoder.js
    drcsconverter.js
 

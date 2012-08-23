@@ -45,12 +45,18 @@ C0Control.definition = {
 
   _screen: null,
 
+  /** installs itself. 
+   *  @param {Broker} broker A broker object.
+   */
   "[install]":
   function install(broker) 
   {
     this._screen = this.dependency["screen"];
   },
 
+  /** uninstalls itself. 
+   *  @param {Broker} broker A broker object.
+   */
   "[uninstall]":
   function uninstall(broker) 
   {

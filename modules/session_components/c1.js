@@ -45,12 +45,18 @@ C1Control.definition = {
 
   _screen: null,
     
+  /** installs itself. 
+   *  @param {Broker} broker A broker object.
+   */
   "[install]": 
   function install(broker) 
   {
     this._screen = this.dependency["screen"];
   },
     
+  /** uninstalls itself. 
+   *  @param {Broker} broker A broker object.
+   */
   "[uninstall]": 
   function uninstall(broker) 
   {
@@ -60,7 +66,7 @@ C1Control.definition = {
   /**
    * PAD
    */
-  "[profile('vt100'), sequence('0x80')]": 
+  "[profile('vt100'), sequence('0x80', 'ESC @'))]": 
   function PAD() 
   {
     coUtils.Debug.reportWarning(
@@ -71,7 +77,7 @@ C1Control.definition = {
   /**
    * HOP
    */
-  "[profile('vt100'), sequence('0x81')]": 
+  "[profile('vt100'), sequence('0x81', 'ESC A'))]": 
   function HOP() 
   {
     coUtils.Debug.reportWarning(
@@ -82,7 +88,7 @@ C1Control.definition = {
   /**
    * BPH
    */
-  "[profile('vt100'), sequence('0x82')]": 
+  "[profile('vt100'), sequence('0x82', 'ESC B'))]": 
   function BPH() 
   {
     coUtils.Debug.reportWarning(
@@ -93,7 +99,7 @@ C1Control.definition = {
   /**
    * NBH
    */
-  "[profile('vt100'), sequence('0x83')]": 
+  "[profile('vt100'), sequence('0x83', 'ESC C')]": 
   function NBH() 
   {
     coUtils.Debug.reportWarning(
@@ -144,7 +150,7 @@ C1Control.definition = {
   /**
    * SSA
    */
-  "[profile('vt100'), sequence('0x86')]": 
+  "[profile('vt100'), sequence('0x86', 'ESC F')]": 
   function SSA() 
   {
     coUtils.Debug.reportWarning(
@@ -155,7 +161,7 @@ C1Control.definition = {
   /**
    * ESA
    */
-  "[profile('vt100'), sequence('0x87')]": 
+  "[profile('vt100'), sequence('0x87', 'ESC G')]": 
   function ESA() 
   {
     coUtils.Debug.reportWarning(

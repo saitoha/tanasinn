@@ -157,18 +157,14 @@ process.python_path = "/usr/bin/python"
 == Download/License
 This software is distributed under http:/#/www.mozilla.org/MPL/1.1/[Mozilla Public License 1.1 (MPL1.1)] .
 
-- "develop" branch(XPI): https:/#/github.com/saitoha/tanasinn/raw/develop/download/tanasinn.xpi[download]
-- "master" branch(XPI): https:/#/github.com/saitoha/tanasinn/raw/master/download/tanasinn.xpi[download]
-- Old releases: https:/#/github.com/saitoha/tanasinn/tree/master/download/releases[download]
+- http:/#/zuse.jp/tanasinn/index.html[http:/zuse.jp/tanasinn/index.html]
 
 #elif __JP__
 
 == ダウンロード/ライセンス
 http:/#/www.mozilla-japan.org/MPL/MPL-1.1J.html[Mozilla Public License 1.1 (MPL1.1)] で配布しています。 
 
-- "develop"ブランチ版(XPI): https:/#/github.com/saitoha/tanasinn/raw/develop/download/tanasinn.xpi[ダウンロード]
-- "master"ブランチ版(XPI): https:/#/github.com/saitoha/tanasinn/raw/master/download/tanasinn.xpi[ダウンロード]
-- 過去のバージョン: https:/#/github.com/saitoha/tanasinn/tree/master/download/releases[ダウンロード]
+- http:/#/zuse.jp/tanasinn/index.html[http:/zuse.jp/tanasinn/index.html]
 
 #endif
 
