@@ -1323,14 +1323,187 @@ coUtils.Constant.LOCALE_ID_MAP = {
   'yo-NG':"Yoruba (Nigeria) / Yoruba (Nigeria)",
 };
 
+
+coUtils.Services = {
+
+  _window_watcher: null,
+  _prompt_service: null,
+  _window_mediator: null,
+  _clipboard: null,
+  _clipboard_helper: null,
+  _observer_service: null,
+  _io_service: null,
+  _directory_service: null,
+  _app_info: null,
+  _script_loader: null,
+  _thread_manager: null,
+  _console_service: null,
+  _uuid_generator: null,
+  _locale_service: null,
+
+  get windowWatcher()
+  { 
+    if (null === this._window_watcher) {
+      this._window_watcher = Components
+        .classes["@mozilla.org/embedcomp/window-watcher;1"]
+        .getService(Components.interfaces.nsIWindowWatcher);
+    }
+
+    return this._window_watcher;
+  },
+
+  get promptService()
+  { 
+    if (null === this._prompt_service) {
+      this._prompt_service = Components
+        .classes["@mozilla.org/embedcomp/prompt-service;1"]
+        .getService(Components.interfaces.nsIPromptService);
+    }
+
+    return this._prompt_service;
+  },
+
+  get windowMediator()
+  { 
+    if (null === this._window_mediator) {
+      this._window_mediator = Components
+        .classes["@mozilla.org/appshell/window-mediator;1"]
+        .getService(Components.interfaces.nsIWindowMediator);
+    }
+
+    return this._window_mediator;
+  },
+
+  get clipboard()
+  { 
+    if (null === this._clipboard) {
+      this._clipboard = Components
+        .classes["@mozilla.org/widget/clipboard;1"]
+        .getService(Components.interfaces.nsIClipboard);
+    }
+
+    return this._clipboard;
+  },
+
+  get clipboardHelper()
+  { 
+    if (null === this._clipboard_helper) {
+      this._clipboard_helper = Components
+        .classes["@mozilla.org/widget/clipboardhelper;1"]
+        .getService(Components.interfaces.nsIClipboardHelper);
+    }
+
+    return this._clipboard_helper;
+  },
+
+  get observerService()
+  { 
+    if (null === this._observer_service) {
+      this._observer_service = Components
+        .classes["@mozilla.org/observer-service;1"]
+        .getService(Components.interfaces.nsIObserverService);
+    }
+
+    return this._observer_service;
+  },
+
+  get ioService()
+  { 
+    if (null === this._io_service) {
+      this._io_service = Components
+        .classes["@mozilla.org/network/io-service;1"]
+        .getService(Components.interfaces.nsIIOService2);
+    }
+
+    return this._io_service;
+  },
+
+  get directoryService()
+  { 
+    if (null === this._directory_service) {
+      this._directory_service = Components
+        .classes["@mozilla.org/file/directory_service;1"]
+        .getService(Components.interfaces.nsIProperties);
+    }
+
+    return this._directory_service;
+  },
+
+  get appInfo()
+  { 
+    if (null === this._app_info) {
+      this._app_info = Components
+        .classes["@mozilla.org/xre/app-info;1"]
+        .getService(Components.interfaces.nsIXULAppInfo);
+    }
+
+    return this._app_info;
+  },
+
+  get scriptLoader()
+  { 
+    if (null === this._script_loader) {
+      this._script_loader = Components
+        .classes["@mozilla.org/moz/jssubscript-loader;1"]
+        .getService(Components.interfaces.mozIJSSubScriptLoader);
+    }
+
+    return this._script_loader;
+  },
+
+  get threadManager()
+  { 
+    if (null === this._thread_manager) {
+      this._thread_manager = Components
+        .classes["@mozilla.org/thread-manager;1"]
+        .getService();
+    }
+
+    return this._thread_manager;
+  },
+
+  get consoleService()
+  { 
+    if (null === this._console_service) {
+      this._console_service = Components
+        .classes["@mozilla.org/consoleservice;1"]
+        .getService(Components.interfaces.nsIConsoleService);
+    }
+
+    return this._console_service;
+  },
+
+  get UUIDGenerator()
+  { 
+    if (null === this._uuid_generator) {
+      this._uuid_generator = Components
+        .classes["@mozilla.org/uuid-generator;1"]
+        .getService(Components.interfaces.nsIUUIDGenerator);
+    }
+
+    return this._uuid_generator;
+  },
+
+  get localeService()
+  { 
+    if (null === this._locale_service) {
+      this._locale_service = Components
+        .classes["@mozilla.org/intl/nslocaleservice;1"]
+        .getService(Components.interfaces.nsILocaleService);
+    }
+
+    return this._locale_service;
+  },
+
+};
+
+
 /**
  * Show a message box dialog.
  */
 var alert = coUtils.alert = function alert(message)
 {
-  var prompt_service = Components
-      .classes["@mozilla.org/embedcomp/prompt-service;1"]
-      .getService(Components.interfaces.nsIPromptService);
+  var prompt_service = coUtils.Services.promptService;
 
   if (arguments.length > 1 && "string" === typeof message) {
     message = coUtils.Text.format.apply(coUtils.Text, arguments);
@@ -1338,20 +1511,34 @@ var alert = coUtils.alert = function alert(message)
   prompt_service.alert(this.window || null, "tanasinn", message);
 }
 
+coUtils.Algorighm = {
+
+  /** Return MD5 hash from the argument.
+   *  @param {Array} data source data
+   */
+  calculateMD5: function getMD5(data)
+  {
+    var crypt_hash = Components
+        .classes["@mozilla.org/security/hash;1"]
+        .createInstance(Components.interfaces.nsICryptoHash);
+
+    crypto_hash.init(crypto_hash.MD5);
+    crypto_hash.update(data, data.length);
+    return crypto_hash.finish(false);
+  },
+
+};
+
 /** Returns the window object.
  *  @return {Window} The window object.
  */
 coUtils.getWindow = function getWindow() 
 {
-  var result;
-  var window_mediator = Components
-    .classes["@mozilla.org/appshell/window-mediator;1"]
-    .getService(Components.interfaces.nsIWindowMediator);
-
   // Firefox/SeaMonkey - "navigator:browser"
   // ThunderBird - "mail:3pane"
-  result = window_mediator.getMostRecentWindow("navigator:browser") 
-        || window_mediator.getMostRecentWindow("mail:3pane"); 
+  var window_mediator = coUtils.Services.windowMediator,
+      result = window_mediator.getMostRecentWindow("navigator:browser") 
+            || window_mediator.getMostRecentWindow("mail:3pane"); 
 
   if (result) {
     return result;
@@ -1532,17 +1719,15 @@ coUtils.Clipboard = {
   /** get text from clipboard */
   get: function get() 
   {
-    var clipboard = Components
-          .classes["@mozilla.org/widget/clipboard;1"]
-          .getService(Components.interfaces.nsIClipboard),
-        trans = Components
+    var clipboard = coUtils.Services.clipboard;
+        transferable = Components
           .classes["@mozilla.org/widget/transferable;1"]
           .createInstance(Components.interfaces.nsITransferable),
         str = {},
         str_length = {},
         text = "";
 
-    trans.addDataFlavor("text/unicode");
+    transferable.addDataFlavor("text/unicode");
 
     clipboard.getData(trans, clipboard.kGlobalClipboard);
 	  trans.getTransferData("text/unicode", str, str_length);
@@ -1560,9 +1745,7 @@ coUtils.Clipboard = {
   /** set text to clipboard */
   set: function set(text) 
   {
-    var clipboard_helper = Components
-      .classes["@mozilla.org/widget/clipboardhelper;1"]
-      .getService(Components.interfaces.nsIClipboardHelper);
+    var clipboard_helper = coUtils.Services.clipboardHelper;
 
     clipboard_helper.copyString(text);
   },
@@ -1582,39 +1765,45 @@ coUtils.Event = {
   subscribeGlobalEvent: 
   function subscribeGlobalEvent(topic, handler, context)
   {
-    var delegate;
-    var observer;
+    var delegate,
+        observer;
 
     if (context) {
-      delegate = function() handler.apply(context, arguments);
+      delegate = function()
+      {
+        return handler.apply(context, arguments);
+      };
     } else {
       delegate = handler;
     }
-    this.observerService = this.observerService || Components
-      .classes["@mozilla.org/observer-service;1"]
-      .getService(Components.interfaces.nsIObserverService);
+
+
     observer = { 
       observe: function observe() 
       {
         delegate.apply(this, arguments);
       },
     };
+
     this._observers[topic] = this._observers[topic] || [];
     this._observers[topic].push(observer);
-    this.observerService.addObserver(observer, topic, false);
+
+    coUtils.Services.observerService.addObserver(observer, topic, false);
   },
   
   removeGlobalEvent: function removeGlobalEvent(topic)
   {
-    var observers;
+    var observers,
+        observer,
+        observer_service = coUtils.Services.observerService,
+        i = 0;
 
-    if (this.observerService) {
-      observers = this._observers[topic];
-      if (observers) {
-        observers.forEach(function(observer) 
-        {
-          this.observerService.removeObserver(observer, topic);
-        }, this);
+    observers = this._observers[topic];
+
+    if (observers) {
+      for (; i < observers.length; ++i) {
+        observer = observers[i];
+        observer_service.removeObserver(observer, topic);
       }
     }
   },
@@ -1625,10 +1814,7 @@ coUtils.Event = {
    */
   notifyGlobalEvent: function notifyGlobalEvent(topic, data) 
   {
-    this.observerService = this.observerService || Components
-      .classes["@mozilla.org/observer-service;1"]
-      .getService(Components.interfaces.nsIObserverService);
-    this.observerService.notifyObservers(null, topic, data)
+    coUtils.Services.observerService.notifyObservers(null, topic, data);
   },
 
 };
@@ -1695,14 +1881,6 @@ coUtils.Font = {
 
 };
 
-coUtils.Services = {
-
-  windowWatcher: Components
-    .classes["@mozilla.org/embedcomp/window-watcher;1"]
-    .getService(Components.interfaces.nsIWindowWatcher),
-
-};
-
 /** I/O Functions. */
 coUtils.IO = {
 
@@ -1737,16 +1915,13 @@ coUtils.IO = {
 
   _readFromFileImpl: function _readFromFileImpl(url, charset) 
   {
-    var channel = Components
-      .classes["@mozilla.org/network/io-service;1"]
-      .getService(Components.interfaces.nsIIOService2)
-      .newChannel(url, null, null);
-    var input = channel.open();
-    var stream;
-    var buffer;
-    var result;
-    var nread;
-    var stream;
+    var channel = coUtils.Services.ioService.newChannel(url, null, null),
+        input = channel.open(),
+        stream,
+        buffer,
+        result,
+        nread,
+        stream;
 
     try {
       if (charset) {
@@ -1771,7 +1946,7 @@ coUtils.IO = {
       } else {
         stream = Components
           .classes["@mozilla.org/scriptableinputstream;1"]
-          .getService(Components.interfaces.nsIScriptableInputStream);
+          .createInstance(Components.interfaces.nsIScriptableInputStream);
         stream.init(input); 
         try {
           return stream.read(input.available());
@@ -1860,12 +2035,13 @@ coUtils.IO = {
   saveCanvas: 
   function saveCanvas(source_canvas, file, is_thumbnail) 
   {
-    var NS_XHTML, context, canvas, source, target, io, persist;
-
-    NS_XHTML = "http://www.w3.org/1999/xhtml";
-    canvas = source_canvas
-      .ownerDocument
-      .createElementNS(NS_XHTML, "canvas");
+    var NS_XHTML = "http://www.w3.org/1999/xhtml",
+        canvas = source_canvas.ownerDocument.createElementNS(NS_XHTML, "canvas");
+        context,
+        io = coUtils.Services.ioService;
+        source,
+        target,
+        persist;
 
     canvas.style.background = "black";
 
@@ -1883,9 +2059,6 @@ coUtils.IO = {
     context.drawImage(source_canvas, 0, 0, canvas.width, canvas.height);
   
     // create a data url from the canvas and then create URIs of the source and targets.
-    io = Components
-      .classes["@mozilla.org/network/io-service;1"]
-      .getService(Components.interfaces.nsIIOService);
     source = io.newURI(canvas.toDataURL("image/png", ""), "UTF8", null);
     target = io.newFileURI(file)
   
@@ -1962,11 +2135,10 @@ coUtils.File = new function() {
    */
   getURLSpec: function getURLSpec(file) 
   {
-    var io_service = Components
-          .classes["@mozilla.org/network/io-service;1"]
-          .getService(Components.interfaces.nsIIOService),
+    var io_service = coUtils.Services.ioService,
         file_handler = io_service.getProtocolHandler("file")
           .QueryInterface(Components.interfaces.nsIFileProtocolHandler);
+
     return file_handler.getURLSpecFromFile(file);
   },
 
@@ -2066,9 +2238,7 @@ coUtils.File = new function() {
       if (file_name.match(/^resource:/)) {
         target_leaf = this.getSpecialDirectoryName("CurProcD");
       } else {
-        target_leaf = Components
-          .classes["@mozilla.org/network/io-service;1"]
-          .getService(Components.interfaces.nsIIOService)
+        target_leaf = coUtils.Services.ioService
           .getProtocolHandler("file")
           .QueryInterface(Components.interfaces.nsIFileProtocolHandler)
           .getFileFromURLSpec(file_name)
@@ -2086,9 +2256,8 @@ coUtils.File = new function() {
   getSpecialDirectoryName: 
   function getSpecialDirectoryName(name) 
   {
-    var directoryService = Components
-      .classes["@mozilla.org/file/directory_service;1"]
-      .getService(Components.interfaces.nsIProperties);
+    var directoryService = coUtils.Services.directoryService;
+
     return directoryService.get(name, Components.interfaces.nsIFile);
   },
 
@@ -2099,19 +2268,13 @@ coUtils.File = new function() {
 
 coUtils.Runtime = {
 
-  _app_info: Components
-    .classes["@mozilla.org/xre/app-info;1"]
-    .getService(Components.interfaces.nsIXULAppInfo),
+  _app_info: coUtils.Services.appInfo,
 
-  file_handler: Components
-    .classes["@mozilla.org/network/io-service;1"]
-    .getService(Components.interfaces.nsIIOService)
+  file_handler: coUtils.Services.ioService
     .getProtocolHandler("file")
     .QueryInterface(Components.interfaces.nsIFileProtocolHandler),
 
-  subscript_loader: Components
-    .classes["@mozilla.org/moz/jssubscript-loader;1"]
-    .getService(Components.interfaces.mozIJSSubScriptLoader),
+  subscript_loader: coUtils.Services.scriptLoader,
 
   get app_id() 
   {
@@ -2646,18 +2809,15 @@ coUtils.Text = {
 
 coUtils.Timer = {
 
-  _thread_manager: Components
-    .classes["@mozilla.org/thread-manager;1"]
-    .getService(),
+  _thread_manager: coUtils.Services.threadManager,
 
   wait: function wait(wait) 
   {
-    var enc_time;
+    var enc_time = Date.now() + wait;
 
-    end_time = Date.now() + wait;
     do {
       this._thread_manager.mainThread.processNextEvent(true);
-    } while ( (mainThread.hasPendingEvents()) || Date.now() < end_time );
+    } while ((mainThread.hasPendingEvents()) || Date.now() < end_time);
   },
 
   /**
@@ -2666,12 +2826,13 @@ coUtils.Timer = {
    */
   setTimeout: function setTimeout(timer_proc, interval, context) 
   {
-    var timer, type, observer, timer_callback_func;
+    var timer = Components
+          .classes["@mozilla.org/timer;1"]
+          .createInstance(Components.interfaces.nsITimer),
+        type = Components.interfaces.nsITimer.TYPE_ONE_SHOT,
+        observer,
+        timer_callback_func;
 
-    timer = Components
-      .classes["@mozilla.org/timer;1"]
-      .createInstance(Components.interfaces.nsITimer);
-    type = Components.interfaces.nsITimer.TYPE_ONE_SHOT;
     timer_callback_func = context ? 
       function invoke() 
       {
@@ -2682,6 +2843,7 @@ coUtils.Timer = {
 
     observer = { notify: timer_callback_func };
     timer.initWithCallback(observer, interval, type);
+
     return {
       cancel: function cancel() {
         timer.cancel();
@@ -2697,10 +2859,12 @@ coUtils.Timer = {
   setInterval: function setInterval(timer_proc, interval, context) 
   {
     var timer = Components
-      .classes["@mozilla.org/timer;1"]
-      .createInstance(Components.interfaces.nsITimer);
-    var type = Components.interfaces.nsITimer.TYPE_REPEATING_SLACK;
-    var timer_callback_func = context ? 
+          .classes["@mozilla.org/timer;1"]
+          .createInstance(Components.interfaces.nsITimer),
+        type = Components.interfaces.nsITimer.TYPE_REPEATING_SLACK,
+        timer_callback_func;
+
+    timer_callback_func = context ? 
       function invoke() 
       {
         timer_proc.apply(context, arguments);
@@ -2708,6 +2872,7 @@ coUtils.Timer = {
     : timer_proc;
 
     timer.initWithCallback({ notify: timer_callback_func }, interval, type);
+
     return {
       cancel: function cancel() {
         if (null !== timer) {
@@ -2798,16 +2963,16 @@ coUtils.Debug = {
         "}",
       "]"
     ].join("");
-    const consoleService = Components
-      .classes["@mozilla.org/consoleservice;1"]
-      .getService(Components.interfaces.nsIConsoleService);
+
     coUtils.Logging.logMessage(message);
-    consoleService.logStringMessage(message);
+    coUtils.Services.consoleService.logStringMessage(message);
   },
 
   reportException: function reportException(source, stack, flag) 
   {
-    var error;
+    var error,
+        console_service = coUtils.Services.consoleService;
+
 
     if (null === source || undefined === source) {
       source = String(source);
@@ -2815,10 +2980,6 @@ coUtils.Debug = {
     if ("xml" === typeof source) {
       source = source.toString();
     }
-
-    const consoleService = Components
-      .classes["@mozilla.org/consoleservice;1"]
-      .getService(Components.interfaces.nsIConsoleService);
 
     if (source && undefined !== source.queryInterface) 
     {
@@ -2831,7 +2992,7 @@ coUtils.Debug = {
           source.flags |= flag
         }
         coUtils.Logging.logMessage(source.toString());
-        consoleService.logMessage(source);
+        console_service.logMessage(source);
         return;
       }
       // else fallback!
@@ -2842,7 +3003,7 @@ coUtils.Debug = {
     }
     error = this.makeException(source, stack, flag);
     coUtils.Logging.logMessage(source.toString());
-    consoleService.logMessage(error);
+    console_service.logMessage(error);
   },
 
   /**
@@ -2864,6 +3025,7 @@ coUtils.Debug = {
         line = is_error_object ? source.lineNumber: stack.lineNumber;
 
     exception.init(message, file, null, line, /* column */ 0, flag, "tanasinn");
+
     return exception;
   },
 
@@ -2871,9 +3033,7 @@ coUtils.Debug = {
 
 coUtils.Uuid = {
 
-  _uuid_generator: Components
-    .classes["@mozilla.org/uuid-generator;1"]
-    .getService(Components.interfaces.nsIUUIDGenerator),
+  _uuid_generator: coUtils.Services.UUIDGenerator,
 
   /** Generates and returns UUID object. 
    *  @return {Object} Generated UUID object.
@@ -2904,9 +3064,7 @@ coUtils.Localize = new function()
     /** constructor */
     initialize: function initialize() 
     {
-      var locale_service = Components
-            .classes["@mozilla.org/intl/nslocaleservice;1"]
-            .getService(Components.interfaces.nsILocaleService),
+      var locale_service = coUtils.Services.localeService,
           locale = locale_service.getLocaleComponentForUserAgent();
 
       this._dictionaries_store = {};
