@@ -66,7 +66,7 @@ C1Control.definition = {
   /**
    * PAD
    */
-  "[profile('vt100'), sequence('0x80', 'ESC @'))]": 
+  "[profile('vt100'), sequence('0x80', 'ESC @')]": 
   function PAD() 
   {
     coUtils.Debug.reportWarning(
@@ -77,7 +77,7 @@ C1Control.definition = {
   /**
    * HOP
    */
-  "[profile('vt100'), sequence('0x81', 'ESC A'))]": 
+  "[profile('vt100'), sequence('0x81', 'ESC A')]": 
   function HOP() 
   {
     coUtils.Debug.reportWarning(
@@ -88,7 +88,7 @@ C1Control.definition = {
   /**
    * BPH
    */
-  "[profile('vt100'), sequence('0x82', 'ESC B'))]": 
+  "[profile('vt100'), sequence('0x82', 'ESC B')]": 
   function BPH() 
   {
     coUtils.Debug.reportWarning(
