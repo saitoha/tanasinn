@@ -22,6 +22,17 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+function wait(span) 
+{
+  var end_time = Date.now() + span,
+      current_thread = coUtils.Services.threadManager.currentThread;
+
+  do {
+    current_thread.processNextEvent(true);
+  } while ((current_thread.hasPendingEvents()) || Date.now() < end_time);
+};
+
+
 /**
  *  @class Paste
  */
@@ -104,16 +115,31 @@ Paste.definition = {
       text = text.replace(/[\x00-\x08\x0a-\x0c\x0e-\x1f]/g, "");
 
       // Encodes the text message and send it to the tty device.
-      if (true === this._bracketed_paste_mode) {
+      if (this._bracketed_paste_mode) {
         // add bracket sequences.
         this.sendMessage("command/send-sequence/csi", "200~");
-        this.sendMessage("command/input-text", text);
+        wait(100);
+        this._pasteImpl(text);
+/*
+        text.split("").forEach(
+          function(c)
+          {
+            this._pasteImpl(c);
+            wait(10);
+          });
+          */
+        wait(100);
         this.sendMessage("command/send-sequence/csi", "201~");
       } else {
-        this.sendMessage("command/input-text", text);
+        this._pasteImpl(text);
       }
     }
     return true; /* prevent default action */
+  },
+
+  _pasteImpl: function _pasteImpl(text)
+  {
+    this.sendMessage("command/input-text", text);
   },
 
   "[subscribe('command/paste'), pnp]":
