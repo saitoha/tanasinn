@@ -85,6 +85,10 @@ Cursor.definition = {
   "[install]": 
   function install(broker) 
   {
+    this._screen = this.dependency["screen"];
+    this._renderer = this.dependency["renderer"];
+    this._cursor_state = this.dependency["cursorstate"];
+
     /** Create cursor element. */
     var {cursor_canvas} 
       = this.request("command/construct-chrome", this.template);
@@ -119,15 +123,17 @@ Cursor.definition = {
     }
     this._context = null;
     this._initial_color = null;
+
+    this._screen = null;
+    this._renderer = null;
+    this._cursor_state = null;
   },
 
   "[subscribe('@command/focus'), pnp]":
   function onFirstFocus()
   {
-    var renderer, screen;
-
-    renderer = this.dependency["renderer"];
-    screen = this.dependency["screen"];
+    var renderer = this._renderer,
+        screen = this._screen;
 
     this._canvas.width = renderer.char_width * screen.width;
     this._canvas.height = renderer.line_height * screen.height;
@@ -136,17 +142,13 @@ Cursor.definition = {
   "[subscribe('sequence/sm/33'), pnp]":
   function WYSTCURM_ON()
   {
-    var screen = this.dependency["screen"];
-
-    screen.cursor.blink = true;
+    this._screen.cursor.blink = true;
   },
 
   "[subscribe('sequence/rm/33'), pnp]":
   function WYSTCURM_OFF()
   {
-    var screen = this.dependency["screen"];
-
-    screen.cursor.blink = false;
+    this._screen.cursor.blink = false;
   },
 
   "[subscribe('sequence/sm/34'), pnp]":
@@ -225,7 +227,7 @@ Cursor.definition = {
   "[profile('vt100'), sequence('CSI %d q')]":
   function DECSCUSR(n) 
   {
-    var cursor_state = this.dependency["cursorstate"];
+    var cursor_state = this._cursor_state;
 
     switch (n) {
 
@@ -270,7 +272,7 @@ Cursor.definition = {
   "[subscribe('sequence/decrqss/decscusr'), pnp]":
   function onRequestStatus(data) 
   {
-    var cursor_state = this.dependency["cursorstate"],
+    var cursor_state = this._cursor_state,
         param;
         message;
 
@@ -381,12 +383,9 @@ Cursor.definition = {
   /** Set cursor position */
   update: function update() 
   {
-    var screen, cursor_state, is_wide;
-
-    screen = this.dependency["screen"];
-    cursor_state = this.dependency["cursorstate"];
-
-    is_wide = screen.currentCharacterIsWide; // take care, it may be NULL!
+    var screen = this._screen,
+        cursor_state = this._cursor_state,
+        is_wide = screen.currentCharacterIsWide; // take care, it may be NULL!
 
     this._setVisibility(true);
     this._blink = cursor_state.blink;
@@ -441,7 +440,7 @@ Cursor.definition = {
   _renderImpl: function _renderImpl(context, row, column, is_wide)
   {
 
-    var renderer = this.dependency["renderer"],
+    var renderer = this._renderer,
         line_height = renderer.line_height,
         char_width = renderer.char_width;
 

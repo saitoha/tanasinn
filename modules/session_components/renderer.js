@@ -149,10 +149,10 @@ PersistentTrait.definition = {
   "[subscribe('@command/backup'), type('Object -> Undefined'), pnp]": 
   function backup(context) 
   {
-    var broker, path, file;
-
-    broker = this._broker;
-
+    var broker = this._broker,
+        path,
+        file;
+    
     // serialize this plugin object.
     context[this.id] = {
       line_height: this.line_height,
@@ -181,9 +181,8 @@ PersistentTrait.definition = {
   "[subscribe('@command/restore'), type('Object -> Undefined'), pnp]": 
   function restore(context) 
   {
-    var data;
+    var data = context[this.id];
 
-    data = context[this.id];
     if (data) {
       this.force_monospace_rendering = data.force_precious_rendering;
       this.line_height = data.line_height;
@@ -211,11 +210,9 @@ SlowBlinkTrait.definition = {
    */
   createSlowBlinkLayer: function createSlowBlinkLayer()
   {
-    var broker;
+    var broker = this._broker,
+        layer = new Layer(broker, "slowblink_canvas");
 
-    broker = this._broker;
-
-    layer = new Layer(broker, "slowblink_canvas");
     layer.canvas.width = this._main_layer.canvas.width;
     layer.canvas.height = this._main_layer.canvas.height;
 
@@ -246,9 +243,8 @@ RapidBlinkTrait.definition = {
    */
   createRapidBlinkLayer: function createRapidBlinkLayer()
   {
-    var broker;
+    var broker = this._broker;
 
-    broker = this._broker;
     this._rapid_blink_layer = new Layer(broker, "rapidblink_canvas");
     this._rapid_blink_layer.canvas.width = this._main_layer.canvas.width;
     this._rapid_blink_layer.canvas.height = this._main_layer.canvas.height;
@@ -279,7 +275,9 @@ ReverseVideoTrait.definition = {
   "[subscribe('command/reverse-video'), enabled]": 
   function reverseVideo(value) 
   {
-    var map, i, value;
+    var map,
+        i,
+        value;
 
     if (this._reverse !== value) {
 
@@ -300,34 +298,6 @@ ReverseVideoTrait.definition = {
   },
 
 }; // ReverseVideoTrait
-
-
-/**
- * @trait DRCSStateTrait
- */
-var DRCSStateTrait = new Trait();
-DRCSStateTrait.definition = {
-
-  _drcs_state: null, 
-
-  "[subscribe('event/drcs-state-changed/g0'), pnp]": 
-  function onDRCSStateChangedG0(state) 
-  {
-    if (state) {
-      this._drcs_state = state;
-    }
-  },
-
-  "[subscribe('event/drcs-state-changed/g1'), pnp]": 
-  function onDRCSStateChangedG1(state) 
-  {
-    if (state) {
-      this._drcs_state = state;
-    }
-  },
-
-}; // DRCSStateTrait
-
 
 /**
  * @trait PalletManagerTrait
@@ -538,10 +508,10 @@ var Renderer = new Class().extends(Plugin)
                           .mix(SlowBlinkTrait)
                           .mix(RapidBlinkTrait)
                           .mix(ReverseVideoTrait)
-                          .mix(DRCSStateTrait)
                           .mix(PalletManagerTrait)
                           .depends("outerchrome")
                           .depends("screen")
+                          .depends("drcs_buffer")
                           .requires("PersistentConcept");
 Renderer.definition = {
 
@@ -574,6 +544,7 @@ Renderer.definition = {
   _main_layer: null,
   _slow_blink_layer: null,
   _rapid_blink_layer: null,
+  _drcs_buffer: null,
 
   // font
   "[watchable, persistable] font_family": 
@@ -909,14 +880,16 @@ Renderer.definition = {
   _drawDoubleWidthText: 
   function _drawDoubleWidthText(codes, row, column, end, attr, type)
   {
-    var context = this._main_layer.context;
-    var line_height = this.line_height;
-    var char_width = this.char_width;
-    var font_size = this.font_size;
-    var font_family = this.font_family;
-    var text_offset = this._text_offset;
-
-    var left, top, width, height;
+    var context = this._main_layer.context,
+        line_height = this.line_height,
+        char_width = this.char_width,
+        font_size = this.font_size,
+        font_family = this.font_family,
+        text_offset = this._text_offset,
+        left,
+        top,
+        width,
+        height;
 
     context.font = (font_size * 2) + "px " + font_family;
     if (attr.italic) {
@@ -1096,9 +1069,21 @@ Renderer.definition = {
                      height, 
                      attr, type)
   {
-    var fore_color, fore_color_map, text, drcs_state, index, code,
-        glyph_index, source_top, source_left, source_width, source_height,
-        destination_top, destination_left, destination_width, destination_height;
+    var fore_color,
+        fore_color_map,
+        text,
+        drcs_state,
+        index,
+        code,
+        glyph_index,
+        source_top,
+        source_left,
+        source_width,
+        source_height,
+        destination_top,
+        destination_left,
+        destination_width,
+        destination_height;
 
     if (attr.blink) {
       if (null === this._slow_blink_layer) {
@@ -1275,13 +1260,12 @@ Renderer.definition = {
    */
   _calculateGlyphSize: function _calculateGlyphSize() 
   {
-    var font_size, font_family, char_width, char_height, char_offset;
-
-    font_size = this.font_size;
-    font_family = this.font_family;
-
-    [char_width, char_height, char_offset] 
-      = coUtils.Font.getAverageGlyphSize(font_size, font_family);
+    var font_size = this.font_size,
+        font_family = this.font_family,
+        glyph_info = coUtils.Font.getAverageGlyphSize(font_size, font_family),
+        char_width = glyph_info[0],
+        char_height = glyph_info[1],
+        char_offset = glyph_info[2];
 
     // store result
     this.char_width = char_width;

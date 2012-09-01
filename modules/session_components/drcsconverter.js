@@ -692,5 +692,4 @@ function main(broker)
   new DRCSConverter(broker);
 }
 
-
 // EOF

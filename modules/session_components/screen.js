@@ -23,14 +23,11 @@
  * ***** END LICENSE BLOCK ***** */
 
 
-var thread_manager = Components
-  .classes["@mozilla.org/thread-manager;1"]
-  .getService();
-
 function wait(span) 
 {
-  var end_time = Date.now() + span;
-  var current_thread = thread_manager.currentThread;
+  var end_time = Date.now() + span,
+      current_thread = coUtils.Services.threadManager.currentThread;
+
   do {
     current_thread.processNextEvent(true);
   } while ((current_thread.hasPendingEvents()) || Date.now() < end_time);
@@ -1113,13 +1110,7 @@ Viewable.definition = {
 
   _scrollback_amount: 0,
 
-  "[subscribe('event/broker-started'), enabled]":
-  function(broker) 
-  {
-    this.resetScrollRegion();
-  },
-
-  "[subscribe('command/scroll-down-view'), enabled]":
+  "[subscribe('command/scroll-down-view'), pnp]":
   function scrollDownView(n)
   {
     if (0 === n || 0 === this._scrollback_amount) {
@@ -1137,7 +1128,7 @@ Viewable.definition = {
     this.updateScrollInformation();
   },
 
-  "[subscribe('command/scroll-up-view'), enabled]":
+  "[subscribe('command/scroll-up-view'), pnp]":
   function scrollUpView(n)
   {
     var buffer_top = this.bufferTop;
@@ -1158,7 +1149,7 @@ Viewable.definition = {
     this.updateScrollInformation();
   },
 
-  "[subscribe('command/set-scroll-position'), enabled]":
+  "[subscribe('command/set-scroll-position'), pnp]":
   function setViewPosition(position)
   {
     var buffer_top = this.bufferTop;
@@ -1173,7 +1164,7 @@ Viewable.definition = {
     this.updateScrollInformation();
   },
 
-  "[subscribe('command/update-scroll-information'), enabled]":
+  "[subscribe('command/update-scroll-information'), pnp]":
   function updateScrollInformation()
   {
     var buffer_top = this.bufferTop,
@@ -1378,11 +1369,11 @@ var Scrollable = new Trait("Scrollable");
 Scrollable.definition = {
 
   "[persistable] scrollback_limit": 500,
-  "[persistable] smooth_scrolling_delay": 0,
+  "[persistable] smooth_scrolling_delay": 10,
 
   _smooth_scrolling: false,
 
-  "[subscribe('command/change-scrolling-mode'), enabled]":
+  "[subscribe('command/change-scrolling-mode'), pnp]":
   function onScrollingModeChanged(mode) 
   {
     this._smooth_scrolling = false;
@@ -1421,7 +1412,7 @@ Scrollable.definition = {
     this._lines = lines.slice(offset, offset + height);
 
     if (this._smooth_scrolling) {
-      this.sendMessage("command/draw");
+      this.sendMessage("command/draw", true);
       wait(this.smooth_scrolling_delay);
     }
   },
@@ -1494,7 +1485,7 @@ Scrollable.definition = {
     this._lines = lines.slice(offset, offset + height);
 
     if (this._smooth_scrolling) {
-      this.sendMessage("command/draw");
+      this.sendMessage("command/draw", true);
       wait(this.smooth_scrolling_delay);
     }
 
@@ -1659,6 +1650,8 @@ Screen.definition = {
     this._switchScreen();
     this.cursor = cursor_state;
     this._line_generator = line_generator;
+
+    this.resetScrollRegion();
   },
 
   /** uninstalls itself. 
@@ -1669,6 +1662,21 @@ Screen.definition = {
   {
     this._buffer = null;
     this._line_generator = null;
+    this.cursor = null;
+
+    this._buffer_top = 0;
+    this._lines = null;
+    this._width = 80;
+    this._height = 24;
+
+    this._scroll_top = null;
+    this._scroll_bottom = null;
+    this._screen_choice = coUtils.Constant.SCREEN_MAIN;
+    this._line_generator = null;
+
+    this._wraparound_mode = true;
+    this._insert_mode = false;
+    this._reverse_wraparound_mode = false;
   },
 
   /** 
@@ -1805,44 +1813,44 @@ Screen.definition = {
     return line.isWide(this.cursor.positionX);
   },
 
-  "[subscribe('command/enable-insert-mode'), enabled]":
+  "[subscribe('command/enable-insert-mode'), pnp]":
   function enableInsertMode() 
   {
     this._insert_mode = true;
   },
 
-  "[subscribe('command/disable-insert-mode'), enabled]":
+  "[subscribe('command/disable-insert-mode'), pnp]":
   function disableInsertMode() 
   {
     this._insert_mode = false;
   },
 
-  "[subscribe('command/enable-wraparound'), enabled]":
+  "[subscribe('command/enable-wraparound'), pnp]":
   function enableWraparound() 
   {
     this._wraparound_mode = true;
   },
 
-  "[subscribe('command/disable-wraparound'), enabled]":
+  "[subscribe('command/disable-wraparound'), pnp]":
   function disableWraparound() 
   {
     this._wraparound_mode = false;
   },
 
-  "[subscribe('command/enable-reverse-wraparound'), enabled]":
+  "[subscribe('command/enable-reverse-wraparound'), pnp]":
   function enableReverseWraparound() 
   {
     this._reverse_wraparound_mode = true;
   },
 
-  "[subscribe('command/disable-reverse-wraparound'), enabled]":
+  "[subscribe('command/disable-reverse-wraparound'), pnp]":
   function disableReverseWraparound() 
   {
     this._reverse_wraparound_mode = false;
   },
 
   /** Write printable charactor seqences. */
-  "[subscribe('command/write'), type('Array -> Boolean -> Undefined'), enabled]":
+  "[subscribe('command/write'), type('Array -> Boolean -> Undefined'), pnp]":
   function write(codes) 
   {
     var insert_mode = this._insert_mode,
@@ -2353,10 +2361,12 @@ Screen.definition = {
 
   },
 
-  "[subscribe('command/soft-terminal-reset'), enabled]": 
+  "[subscribe('command/soft-terminal-reset'), pnp]": 
   function softReset()
   {
-    var lines, i, line;
+    var lines,
+        i,
+        line;
 
     this.switchToMainScreen();
     this.resetScrollRegion();
@@ -2369,7 +2379,7 @@ Screen.definition = {
     }
   },
 
-  "[subscribe('command/hard-terminal-reset'), enabled]": 
+  "[subscribe('command/hard-terminal-reset'), pnp]": 
   function reset()
   {
     this.eraseScreenAll();
@@ -2576,7 +2586,7 @@ Screen.definition = {
    *
    * @implements ScreenBackupConcept.<command/backup>
    */
-  "[subscribe('command/backup'), type('Object -> Undefined'), enabled]": 
+  "[subscribe('command/backup'), type('Object -> Undefined'), pnp]": 
   function backup(data) 
   {
     var context = data[this.id] = [],
@@ -2604,7 +2614,7 @@ Screen.definition = {
    *
    * @implements ScreenBackupConcept.<command/restore>
    */
-  "[subscribe('command/restore'), type('Object -> Undefined'), enabled]": 
+  "[subscribe('command/restore'), type('Object -> Undefined'), pnp]": 
   function restore(data) 
   {
     var context = data[this.id],
@@ -2688,9 +2698,6 @@ Screen.definition = {
         attr = cursor.attr,
         length = lines.length,
         data = [],
-        crypto_hash = Components
-          .classes["@mozilla.org/security/hash;1"]
-          .createInstance(Components.interfaces.nsICryptoHash),
         i,
         line,
         hash;
@@ -2700,9 +2707,7 @@ Screen.definition = {
       line.serializeRange(data, left, right);
     }
 
-    crypto_hash.init(crypto_hash.MD5);
-    crypto_hash.update(data, data.length);
-    hash = crypto_hash.finish(false);
+    hash = coUtils.Algorighm.calculateMD5(data);
     
     function toHexString(charCode)
     {

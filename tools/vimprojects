@@ -84,7 +84,16 @@
 
     tty.js
     input.js
+
     decoder.js
+    multidecoder.js
+    asciidecoder.js
+    cp932decoder.js
+    eucjpdecoder.js
+    utf8decoder.js
+    utf8_cp932decoder.js
+    japanesedecoder.js
+
     screen.js
     cursorstate.js
     tabcontroller.js

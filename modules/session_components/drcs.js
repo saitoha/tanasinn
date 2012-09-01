@@ -22,6 +22,15 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+function char2sixelbits(c) 
+{
+  var code = "0000000" + (c.charCodeAt(0) - "?".charCodeAt(0)).toString(2);
+  return code
+    .substr(-6)
+    .split("")
+    .reverse();
+}
+
 /**
  *  @class DRCSBuffer
  */
@@ -61,7 +70,14 @@ DRCSBuffer.definition = {
   "[uninstall]":
   function uninstall(broker) 
   {
-    this._map = null;
+    var dscs;
+
+    if (null !== this._map) {
+      for (dscs in this._map) {
+        this._map[dscs].drcs_canvas = null;
+      }
+      this._map = null;
+    }
   },
 
   "[subscribe('sequence/g0'), pnp]":
@@ -106,14 +122,18 @@ DRCSBuffer.definition = {
   "[subscribe('sequence/dcs'), pnp]":
   function onDCS(data) 
   {
-    var pattern, match, canvas;
+    var pattern,
+        match,
+        canvas;
 
     //           Pfn    Pcn      Pe      Pcmw     Pw      Pt      Pcmh     Pcss    Dscs
     pattern = /^([01]);([0-9]+);([012]);([0-9]+);([012]);([012]);([0-9]+);([01])\{\s*([0-~])([\?-~\/;\n\r]+)$/;
     match = data.match(pattern);
+
     if (null === match) {
       return;
     }
+
     var [
       all,
       pfn,   // Pfn Font number
@@ -168,11 +188,13 @@ DRCSBuffer.definition = {
       3: 6,
       4: 7,
     } [pcmw] || Number(pcmw);
+
     var char_height = {
       2: 10,
       3: 10,
       4: 10,
     } [pcmw] || Number(pcmh) || 12;
+
     var charset_size = 0 == pcss ? 94: 96;
     var full_cell = pt == 2;
     var start_code = 0 == pcss ? ({ // 94 character set.
@@ -195,17 +217,14 @@ DRCSBuffer.definition = {
 
     canvas.width = char_width * 96;
     canvas.height = char_height * 1;
+
     var pointer_x = start_code * char_width;
-
-    function char2sixelbits(c) {
-      return ("0000000" + (c.charCodeAt(0) - "?".charCodeAt(0)).toString(2))
-        .substr(-6).split("").reverse();
-    }
-
     var imagedata = canvas
       .getContext("2d")
       .getImageData(0, 0, canvas.width, canvas.height);
+
     var sixels = value.split(";");
+
     for (var [n, glyph] in Iterator(sixels)) {
       for (var [h, line] in Iterator(glyph.split("/"))) {
         for (var [x, c] in Iterator(line.replace(/[^\?-~]/g, "").split(""))) {
@@ -246,7 +265,7 @@ DRCSBuffer.definition = {
   function allocDRCS(drcs)
   {
     this._map[drcs.dscs] = drcs; 
-  }
+  },
 
 } // class DRCSBuffer
 

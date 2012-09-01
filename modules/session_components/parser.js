@@ -1073,11 +1073,16 @@ Parser.definition = {
   _decode: function _decode(scanner)
   {
     var decoder = this._decoder,
+        generator = decoder.decode(scanner),
         codes = [],
         c,
         base;
 
-    for (c in decoder.decode(scanner)) {
+    if (null === generator) {
+      return [ 0x3f ]; // ?
+    }
+
+    for (c in generator) {
 
       if (c < 0xa1) {
         codes.push(c);
