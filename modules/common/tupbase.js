@@ -29,6 +29,7 @@ function Trait()
 {
   return this.initialize.apply(this, arguments);
 }
+
 Trait.prototype = {
 
   id: null,
@@ -135,7 +136,7 @@ AttributeContext.prototype = {
       });
   },
 
-  /** Returns this object's info */
+  /** Return the information of this object */
   toString: function toString() // override
   {
     return "[AttributeContext enabled(" + this.enabled + ")]";
@@ -148,7 +149,7 @@ var ConceptContext = {
 
   "Object": function(value) 
   { 
-    return "object" == typeof value; 
+    return "object" === typeof value; 
   },
 
   "Array": function(value) 
@@ -158,37 +159,37 @@ var ConceptContext = {
 
   "Action": function(value) 
   { 
-    return "function" == typeof value
-      || "undefined" == typeof value
+    return "function" === typeof value
+      || "undefined" === typeof value
       ; 
   },
 
   "Uint16": function(value) 
   { 
-    return "number" == typeof value 
+    return "number" === typeof value 
       && 0 <= value 
       && value < (1 << 16)
-      && 0 == value % 1
+      && 0 === value % 1
       ; 
   },
 
   "Uint32": function(value) 
   { 
-    return "number" == typeof value 
+    return "number" === typeof value 
       && 0 <= value 
       && value < (1 << 32)
-      && 0 == value % 1
+      && 0 === value % 1
       ; 
   },
 
   "Char": function(value) 
   { 
-    return "string" == typeof value && 1 == value.length; 
+    return "string" === typeof value && 1 === value.length; 
   },
 
   "String": function(value) 
   { 
-    return "string" == typeof value; 
+    return "string" === typeof value; 
   },
 
   "Undefined": function(value) 
@@ -222,7 +223,9 @@ function Prototype(definition, base_class, dependency_list)
         _("Ill-formed property name: '%s'."), key)
     }
 
-    [, , annotation, name] = match;
+    annotation = match[2];
+    name = match[3];
+
     if (annotation) {
       if (!name)
         name = definition[key].name || coUtils.Uuid.generate().toString();
@@ -258,7 +261,7 @@ function Prototype(definition, base_class, dependency_list)
       }
       if (!getter && !setter) { // member variable or function
         value = definition[decorated_key];
-        if ("initialize" == key && base_class && base_class.prototype.initialize) {
+        if ("initialize" === key && base_class && base_class.prototype.initialize) {
           // makes constructor chain.
           this.initialize = function() {
             base_class.prototype.initialize.apply(this, arguments);
@@ -355,15 +358,22 @@ Class.prototype = {
     this._dependency_list = [];
     this._concept_list = [];
 
-    constructor = function() {
+    constructor = function()
+    {
       if (this.initialize)
         return this.initialize.apply(this, arguments);
       return this;
     };
 
-    constructor.watch("prototype", 
-      function(name, oldval, newval) this.applyDefinition(newval));
+    constructor.watch(
+      "prototype", 
+      function(name, oldval, newval)
+      {
+        return this.applyDefinition(newval);
+      });
+
     constructor.__proto__ = this;
+
     return constructor;
   },
 
@@ -388,7 +398,9 @@ Class.prototype = {
       throw coUtils.Debug.Exception(
         _("Specified concept name '%s' is not defined."), name);
     } 
+
     concept = ConceptContext[name];
+
     if (this._defined) {
       ConceptContext[name](this.definition);
     } else {
@@ -440,16 +452,18 @@ Class.prototype = {
    */
   applyDefinition: function applyDefinition(definition)
   {
-    var trait;
-    var concept_name;
-    var i;
-    var mixin_list = this._mixin_list, 
-        concept_list = this._concept_list;
-    var prototype = new Prototype(
-      definition, this._base, this._dependency_list);
+    var trait,
+        concept_name,
+        i = 0,
+        mixin_list = this._mixin_list, 
+        concept_list = this._concept_list,
+        prototype = new Prototype(
+          definition,
+          this._base,
+          this._dependency_list);
 
     // Apply traits.
-    for (i = 0; i < mixin_list.length; ++i) {
+    for (; i < mixin_list.length; ++i) {
       trait = mixin_list[i];
       this.applyTrait(prototype, new Prototype(trait.prototype));
     }
@@ -474,10 +488,12 @@ Class.prototype = {
    */
   applyTrait: function applyTrait(prototype, trait) 
   {
-    var key;
-    var getter, setter;
-    var value;
-    var name, attribute;
+    var key,
+        getter,
+        setter,
+        value,
+        name,
+        attribute;
 
     for (key in trait) {
       // Detects whether the property specified by given key is
@@ -504,7 +520,7 @@ Class.prototype = {
             trait.initialize.apply(this, arguments);
             value.apply(this, arguments);
           };
-        } else if ("__attributes" == key) {
+        } else if ("__attributes" === key) {
           if (prototype.__attributes) {
             for ([name, ] in Iterator(trait.__attributes)) {
               attribute = trait.__attributes[name];
@@ -518,6 +534,7 @@ Class.prototype = {
         }
       }
     }
+
   }, // applyTrait
 
   /** Load *.js files from specified directories. 
@@ -526,10 +543,17 @@ Class.prototype = {
   loadAttributes: function loadAttributes(search_path, scope) 
   {
     var paths = coUtils.File.getFileEntriesFromSerchPath(search_path),
-        entry, url, module_scope;
+        entry,
+        url,
+        module_scope;
 
     for (entry in paths) {
-      module_scope = new function() { this.__proto__ = scope; };
+
+      module_scope = new function()
+      {
+        this.__proto__ = scope;
+      };
+
       try {
         // make URI string such as "file://....".
         url = coUtils.File.getURLSpec(entry); 
@@ -565,16 +589,18 @@ Abstruct.prototype = {
   /** Enumerates stored traits and apply them. */
   applyDefinition: function applyDefinition(definition) 
   {
-    var prototype = new Prototype(definition, this._base, this._dependency_list);
-    var i;
-    var trait;
-    var mixin_list = this._mixin_list;
+    var prototype = new Prototype(definition, this._base, this._dependency_list),
+        i = 0,
+        trait,
+        mixin_list = this._mixin_list;
 
-    for (i = 0; i < mixin_list.length; ++i) {
+    for (; i < mixin_list.length; ++i) {
       trait = mixin_list[i];
       this.applyTrait(prototype, new Prototype(trait.definition));
     }
+
     this._defined = true;
+
     return prototype;
 
   }, // applyDefinition
@@ -627,9 +653,8 @@ Component.definition = {
 
   sendMessage: function sendMessage(topic, data)
   {
-    var broker;
-    
-    broker = this._broker;
+    var broker = this._broker;
+
     if (!broker) {
       coUtils.Debug.reportError(topic + " " + data.toSource());
     }
@@ -650,29 +675,28 @@ Component.definition = {
 
   request: function request(topic, data)
   {
-    var broker;
-    
-    broker = this._broker;
+    var broker = this._broker;
+
     return broker.uniget(topic, data);
   },
 
   getVariable: function getVariable(topic)
   {
-    var broker, result, length;
-    
-    broker = this._broker;
-    result = broker.notify(topic);
-    length = result.length;
+    var broker = this._broker,
+        result = broker.notify(topic),
+        length = result.length;
+
     if (0 === length) {
       return null;
-    } else {
-      if (1 !== length) {
-        coUtils.Debug.reportWarning(
-          _("Too many subscriber is found: %s"),
-          topic);
-        return result[0];
-      }
     }
+
+    if (1 !== length) {
+      coUtils.Debug.reportWarning(
+        _("Too many subscriber is found: %s"),
+        topic);
+    }
+
+    return result[0];
   },
 
   /** This method is expected to run test methods.
@@ -733,15 +757,13 @@ Plugin.definition = {
     return this.__enabled;
   },
 
-  set enabled(value) 
+  set enabled(flag) 
   {
-    var broker, id;
+    var id = this.id,
+        broker = this._broker;
+        value = Boolean(flag);
 
-    id = this.id;
-    value = Boolean(value);
-    broker = this._broker;
-
-    if (value != this.__enabled) {
+    if (value !== this.__enabled) {
       if (value) {
         try {
           broker.notify("install/" + id, broker);
@@ -1052,12 +1074,16 @@ Concept.prototype = {
 
   _checkImpl: function _checkImpl(target, subscribers)
   {
-    var definition = this._definition;
-    var rule, comment;
-    var getter, setter;
-    var match;
-    var message, identifier, type;
-    var key;
+    var definition = this._definition,
+        rule,
+        comment,
+        getter,
+        setter,
+        match,
+        message,
+        identifier,
+        type,
+        key;
 
     for ([rule, comment] in Iterator(definition)) {
       getter = definition.__lookupGetter__(rule);
@@ -1121,6 +1147,7 @@ Concept.prototype = {
   define: function define(definition) // definition
   {
     var self = this;
+
     ConceptContext[definition.id] = function(target) 
     { 
       return self.check(target); 

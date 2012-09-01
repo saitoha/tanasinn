@@ -71,7 +71,8 @@ var g_process;
 void function() {
 
   var tanasinn_scope = {}, // create scope.
-      id, current_file,
+      id,
+      current_file,
       loader;
   
   with (tanasinn_scope) {
@@ -113,11 +114,11 @@ void function() {
             window_types = ["navigator:browser", "mail:3pane"],
             window_type,
             self = this,
-            i;
+            i = 0;
   
         coUtils.Services.windowWatcher.registerNotification(this);
   
-        for (i = 0; i < window_types.length; ++i) {
+        for (; i < window_types.length; ++i) {
           window_type = window_types[i];
           // add functionality to existing windows
           let browser_windows = window_mediator.getEnumerator(window_type);
@@ -157,11 +158,6 @@ void function() {
         }
 
         this.windows.push(window);
-        /*
-        Components.classes['@zuse.jp/tanasinn/process;1']
-          .getService(Components.interfaces.nsISupports)
-          .wrappedJSObject
-          */
         getProcess().notify("event/new-window-detected", window);
       },
     
@@ -244,9 +240,16 @@ void function() {
       {
         var path,
             directory,
-            search_paths = "CDEFGHIJKLMNOPQRSTUVWXYZ"
-              .split("")
-              .map(function(letter) letter + ":\\cygwin");
+            letters = ["C", "D", "E", "F", "G", 
+                       "H", "I", "J", "K", "L", 
+                       "M", "N", "O", "P", "Q", 
+                       "R", "S", "T", "U", "V", 
+                       "W", "X", "Y", "Z"],
+            search_paths = letters
+              .map(function(letter)
+              {
+                return letter + ":\\cygwin";
+              });
 
         search_paths.push("D:\\User\\Program\\cygwin");
 
@@ -274,10 +277,12 @@ void function() {
   
       _guessPythonPath: function _guessPythonPath() 
       {
-        var os = coUtils.Runtime.os;
-        var bin_path = this.bin_path;
-        var executeable_postfix = "WINNT" === os ? ".exe": "";
-        var python_paths = bin_path.split(":")
+        var os = coUtils.Runtime.os,
+            bin_path = this.bin_path,
+            executeable_postfix = "WINNT" === os ? ".exe": "",
+            python_paths;
+
+        python_paths = bin_path.split(":")
           .map(function(path) 
           {
             var directory = Components
@@ -346,21 +351,21 @@ void function() {
         };
         this._observers[topic] = this._observers[topic] || [];
         this._observers[topic].push(observer);
-        this.observerService.addObserver(observer, topic, false);
+        coUtils.Services.observerService.addObserver(observer, topic, false);
       },
       
       removeGlobalEvent: function removeGlobalEvent(topic)
       {
         var observers;
 
-        if (this.observerService && this._observers) {
+        if (this._observers) {
           observers = this._observers[topic];
           if (observers) {
             observers.forEach(
               function(observer) 
               {
                 try {
-                  this.observerService.removeObserver(observer, topic);
+                  coUtils.Services.observerService.removeObserver(observer, topic);
                 } catch(e) {
                   coUtils.Debug.reportWarning(e);
                 }
@@ -416,16 +421,13 @@ void function() {
   
       initial_settings_path: "$Home/.tanasinn.js",
    
-      observerService: Components
-        .classes["@mozilla.org/observer-service;1"]
-        .getService(Components.interfaces.nsIObserverService),
-  
       /** constructor. */
       initialize: function initialize() 
       {
         // load initial settings.
-        var path = this.initial_settings_path;
-        var file = coUtils.File.getFileLeafFromVirtualPath(path);
+        var path = this.initial_settings_path,
+            file = coUtils.File.getFileLeafFromVirtualPath(path);
+
         if (file && file.exists()) {
           try {
             coUtils.Runtime.loadScript(path, { process: this } );
@@ -433,6 +435,7 @@ void function() {
             coUtils.Debug.reportError(e);
           }
         }
+
         this.load(this, ["modules/process_components"], new this.default_scope);
         this._observers = {};
 
@@ -468,19 +471,14 @@ void function() {
  
       observe: function observe(subject, topic, data)
       {
+        var io_service = coUtils.Services.ioService,
+            process = this.wrappedJSObject;
+
         try {
-          Components
-            .classes["@mozilla.org/observer-service;1"]
-            .getService(Components.interfaces.nsIObserverService)
-            .removeObserver(topic, this);
+          coUtils.Services.observerService.removeObserver(topic, this);
         } catch (e) {
           // do nothing
         }
-        var io_service = Components
-          .classes["@mozilla.org/network/io-service;1"]
-          .getService(Components.interfaces.nsIIOService);
-      
-        var process = this.wrappedJSObject;
 
         process.notify("event/disabled");
         process.uninitialize();
