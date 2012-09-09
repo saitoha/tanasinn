@@ -41,13 +41,13 @@ DRCSBuffer.definition = {
     "drcs_buffer",
 
   get info()
-    <module>
-        <name>{_("DRCS Buffer")}</name>
-        <version>0.1</version>
-        <description>{
-          _("Provides DRCS(Dynamic Rendering Character Set) buffers.")
-        }</description>
-    </module>,
+  {
+    return {
+      name: _("DRCS Buffer"),
+      version: "0.1",
+      description: _("Provides DRCS(Dynamic Rendering Character Set) buffers.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
 

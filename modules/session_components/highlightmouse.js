@@ -51,14 +51,13 @@ HighlightMouseMode.definition = {
     "highlight_mouse_mode",
 
   get info()
-    <module>
-        <name>{_("Highlight Mouse Mode")}</name>
-        <version>0.1</version>
-        <description>{
-          _("Switch highlight mouse mode.")
-        }</description>
-    </module>,
-
+  {
+    return {
+      name: _("Highlight Mouse Mode"),
+      version: "0.1",
+      description: _("Switch highlight mouse mode.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
   "[persistable] default_value": false,

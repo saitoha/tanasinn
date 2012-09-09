@@ -68,13 +68,13 @@ OverlayIndicator.definition = {
     "overlayindicator",
 
   get info()
-    <module>
-        <name>{_("Overlay Indicator")}</name>
-        <description>{
-          _("Enables overlay indicator.")
-        }</description>
-        <version>0.1</version>
-    </module>,
+  {
+    return {
+      name: _("Overlay Indicator"),
+      version: "0.1",
+      description: _("Enables overlay indicator.")
+    };
+  },
 
   get template()
     ({
@@ -84,24 +84,24 @@ OverlayIndicator.definition = {
       align: "center",
       valign: "middle",
       id: "tanasinn_overlay_indicator",
-      style: <>
-        visibility: hidden;
-        opacity: 0.00;
-        max-width: 0px;
-      </>,
+      style: {
+        visibility: "hidden",
+        opacity: "0.00",
+        maxWidth: "0px",
+      },
       MozTransitionProperty: "opacity",
       childNodes: {
         tagName: "label",
         crop: "end",
         id: "tanasinn_overlay_indicator_content",
-        style: <> 
-          background: {this.background};
-          color: {this.color};
-          font-size: {this.fontSize};
-          padding: {this.padding}; 
-          border-radius: {this.borderRadius}; 
-          border: {this.border};
-        </>,
+        style: {
+          background: this.background,
+          color: this.color,
+          fontSize: this.fontSize,
+          padding: this.padding,
+          borderRadius: this.borderRadius,
+          border: this.border,
+        },
       },
     }),
 
@@ -162,14 +162,13 @@ OverlayIndicator.definition = {
   function onStyleChanged(chrome, decoder) 
   {
     if (null !== this._content) {
-      this._content.style.cssText = <> 
-        background: {this.background};
-        color: {this.color};
-        font-size: {this.fontSize};
-        padding: {this.padding}; 
-        border-radius: {this.borderRadius}; 
-        border: {this.border};
-      </>;
+      this._content.style.cssText = 
+        "background: " + this.background + ";" +
+        "color: " + this.color + ";" +
+        "font-size: " + this.fontSize + ";" +
+        "padding: " + this.padding + ";" +
+        "border-radius: " + this.borderRadius + ";" +
+        "border: " + this.border + ";";
     }
   },
 

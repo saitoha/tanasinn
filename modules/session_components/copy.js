@@ -35,13 +35,14 @@ Copy.definition = {
     "copy",
 
   get info()
-    <Plugin>
-        <name>{_("Copy")}</name>
-        <description>{
-          _("Makes it enable to copy selected text by context menu or pressing short cut key.")
-        }</description>
-        <version>0.1</version>
-    </Plugin>,
+  {
+    return {
+      name: _("Copy"),
+      version: "0.1",
+      description: _("Makes it enable to copy selected text by context menu",
+                     " or pressing short cut key.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
 

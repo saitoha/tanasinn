@@ -73,31 +73,30 @@ ZshCompletion.definition = {
       {
         parentNode: "#tanasinn_app_popup_container",
         tagName: "rows",
-        style: <>
-          -moz-user-focus: none;
-          font-family: {renderer.font_family};
-          font-size: {renderer.font_size}px;
-          font-weight: bold;
-          color: #ffefff;
-          text-shadow: 1px 1px 3px black, 0px 0px 4px black;
-        </>,
+        style: {
+          MozUserFocus: "none",
+          fontFamily: renderer.font_family,
+          fontSize: renderer.font_size + "px",
+          fontWeight: "bold",
+          color: "#ffefff",
+          textShadow: "1px 1px 3px black, 0px 0px 4px black",
+        },
         childNodes: [
           {
             tagName: "row",
-            style: "padding: 0px 10px; " + (index == selected && <>
-              background-image: -moz-linear-gradient(top, #ddd, #eee); 
-              -moz-box-shadow: 1px 1px 5px black;
-              box-shadow: 1px 1px 5px black;
-              color: #ffefef;
-              border-radius: 5px;
-            </>),
+            style: "padding: 0px 10px;" + (index !== selected ? "": 
+              "background-image: -moz-linear-gradient(top, #ddd, #eee); " +
+              "-moz-box-shadow: 1px 1px 5px black;" +
+              "box-shadow: 1px 1px 5px black;" +
+              "color: #ffefef;" +
+              "border-radius: 5px;"),
             childNodes: [
               {
                 tagName: "box",
                 innerText: function() 
                 { 
                   try { 
-                    return cell;//coUtils.Text.base64decode(cell); 
+                    return coUtils.Text.base64decode(cell); 
                   } catch(e) { 
                     return cell;
                   }
@@ -157,13 +156,13 @@ PopupMenu.definition = {
     "popup_menu",
 
   get info()
-    <module>
-        <name>{_("Popup Menu")}</name>
-        <description>{
-          _("Handles application plivate sequence and shows native popup menu.")
-        }</description>
-        <version>0.1</version>
-    </module>,
+  {
+    return {
+      name: _("Popup Menu"),
+      version: "0.1",
+      description: _("Handles application plivate sequence and shows native popup menu.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
 
@@ -199,12 +198,12 @@ PopupMenu.definition = {
           parentNode: "#tanasinn_background_frame",
           tagName: "panel",
           id: "tanasinn_app_popup",
-          style: <>
-            border: 0px;
-            -moz-appearance: none;
-            -moz-user-focus: none;
-            background-color: transparent;
-          </>,
+          style: {
+            border: "0px",
+            MozAppearance: "none",
+            MozUserFocus: "none",
+            backgroundColor: "transparent",
+          },
           noautofocus: true,
           noautohide: true,
           ignorekeys: true,
@@ -215,11 +214,11 @@ PopupMenu.definition = {
               {
                 tagName: "box",
                 flex: 1,
-                style: <>
-                  opacity: 0.40;
-                  background-image: -moz-linear-gradient(top, #aaa, #888); 
-                  border-radius: 8px;
-                </>,    
+                style: {
+                  opacity: "0.40",
+                  backgroundImage: "-moz-linear-gradient(top, #aaa, #888);",
+                  borderRadius: "8px;",
+                },
               },
               {
                 tagName: "scrollbox",
@@ -368,26 +367,23 @@ PopupMenu.definition = {
       {
         parentNode: "#tanasinn_app_popup_container",
         tagName: "rows",
-        style: <>
-          -moz-user-focus: none;
-          font-family: {renderer.font_family};
-          font-size: {renderer.font_size}px;
-          font-weight: bold;
-          color: #ffefff;
-          text-shadow: 1px 1px 3px black, 0px 0px 4px black;
-        </>,
+        style: {
+          MozUserFocus: "none",
+          fontFamily: renderer.font_family,
+          fontSize: renderer.font_size + "px",
+          fontWeight: "bold",
+          color: "#ffefff",
+          textShadow: "1px 1px 3px black, 0px 0px 4px black",
+        },
         childNodes: [
           {
             tagName: "row",
-            style: <>
-              padding: 0px 10px;
-            </> + (index == selected && <>
-              background-image: -moz-linear-gradient(top, #ddd, #eee); 
-              -moz-box-shadow: 1px 1px 5px black;
-              box-shadow: 1px 1px 5px black;
-              color: #ffefef;
-              border-radius: 5px;
-            </>),
+            style: "padding: 0px 10px;" + (index !== selected ? "":
+              "background-image: -moz-linear-gradient(top, #ddd, #eee);" +
+              "-moz-box-shadow: 1px 1px 5px black;" +
+              "box-shadow: 1px 1px 5px black;" +
+              "color: #ffefef;" +
+              "border-radius: 5px;"),
             childNodes: [
               {
                 tagName: "box",
@@ -399,10 +395,10 @@ PopupMenu.definition = {
                     return cell;
                   }
                 }(),
-                style: <>
-                  padding: 0px 5px;
-                  color: {colormap[index]};
-                </>,
+                style: {
+                  padding: "0px 5px",
+                  color: colormap[index],
+                },
               } for ([index, cell] in Iterator(line.split(",")))
             ]
           } for ([index, line] in Iterator(lines))

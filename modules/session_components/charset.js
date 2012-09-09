@@ -91,13 +91,13 @@ CharsetModeHandler.definition = {
     "charsetmode",
 
   get info()
-    <module>
-        <name>{_("Charset mode Handler")}</name>
-        <version>0.1</version>
-        <description>{
-          _("Switch NRC set with escape seqnence.")
-        }</description>
-    </module>,
+  {
+    return {
+      name: _("Charset mode Handler"),
+      version: "0.1",
+      description: _("Switch NRC set with escape seqnence.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
 

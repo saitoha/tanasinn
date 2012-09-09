@@ -51,14 +51,13 @@ BracketedPasteMode.definition = {
     "bracketed_paste_mode",
 
   get info()
-    <module>
-        <name>{_("Bracketed Paste Mode")}</name>
-        <version>0.1</version>
-        <description>{
-          _("Switch bracketed paste mode.")
-        }</description>
-    </module>,
-
+  {
+    return {
+      name: _("Bracketed Paste Mode"),
+      version: "0.1",
+      description: _("Switch bracketed paste mode.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
   "[persistable] default_value": false,

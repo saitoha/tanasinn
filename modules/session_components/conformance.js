@@ -34,13 +34,13 @@ ConformanceLevel.definition = {
     "conformanse_level",
 
   get info()
-    <plugin>
-        <name>{_("Conformance Level")}</name>
-        <description>{
-          _("Manage conformanse level and 7bit/8bit response mode.")
-        }</description>
-        <version>0.1.0</version>
-    </plugin>,
+  {
+    return {
+      name: _("Conformance Level"),
+      version: "0.1.0",
+      description: _("Manage conformanse level and 7bit/8bit response mode.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
 

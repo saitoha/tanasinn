@@ -430,13 +430,13 @@ Commandline.definition = {
     "commandline",
 
   get info()
-    <plugin>
-        <name>{_("Commandline Interface")}</name>
-        <version>0.1</version>
-        <description>{
-          _("Provides commandline interafce.")
-        }</description>
-    </plugin>,
+  {
+    return {
+      name: _("Commandline Interface"),
+      version: "0.1",
+      description: _("Provides commandline interafce.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
 
@@ -462,12 +462,12 @@ Commandline.definition = {
           childNodes: {
             tagName: "html:input",
             id: "tanasinn_commandline",
-            style: <> 
-              margin-top: -4px;
-              padding-top: 0px;
-              opacity: 0.0;
-              background: transparent;
-            </>,
+            style: {
+              marginTop: "-4px",
+              paddingTop: "0px",
+              opacity: "0.0",
+              background: "transparent",
+            },
           },
         },
       ],
@@ -484,13 +484,12 @@ Commandline.definition = {
       parentNode: "#tanasinn_chrome",
       tagName: "panel",
       id: "tanasinn_completion_popup",
-      style: <> 
-        /*-moz-appearance: none; */
-        -moz-user-focus: ignore;
-        background: transparent;
-        border: none;
-        font: menu;
-      </>,
+      style: { 
+        MozUserFocus: "ignore",
+        background: "transparent",
+        border: "none",
+        font: "menu",
+      },
       noautofocus: true,
       //noautohide: true, // commented out for linux.
       ignorekeys: true,
@@ -512,14 +511,14 @@ Commandline.definition = {
             childNodes: {
               tagName: "grid",
               id: "tanasinn_completion_root",
-              style: <> 
-                background: transparent;
-                color: white;
-                font-family: 'Lucida Console';
-                font-weight: bold;
-                font-size: 16px;
-                text-shadow: 1px 2px 4px black;
-              </>,
+              style: { 
+                background: "transparent",
+                color: "white",
+                fontFamily: "Lucida Console",
+                fontWeight: "bold",
+                fontSize: "16px",
+                textShadow: "1px 2px 4px black",
+              },
             }
           }, // tree
         ],
@@ -528,11 +527,13 @@ Commandline.definition = {
   ],
 
   get completion_style()
-    <>
-      border-radius: 7px;
-      background: {this.completion_popup_background};
-      opacity: {this.completion_popup_background_opacity};
-    </>,
+  {
+    return {
+      borderRadius: "7px",
+      background: this.completion_popup_background,
+      opacity: this.completion_popup_background_opacity,
+    };
+  },
 
   _result: null,
 

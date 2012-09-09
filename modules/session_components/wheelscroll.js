@@ -35,13 +35,13 @@ WheelScroll.definition = {
     "wheel_scroll",
 
   get info()
-    <plugin>
-        <name>{_("Wheel Scroll")}</name>
-        <description>{
-          _("Handle Wheel/Touch scroll event.")
-        }</description>
-        <version>0.1</version>
-    </plugin>,
+  {
+    return {
+      name: _("Wheel Scroll"),
+      version: "0.1",
+      description: _("Handle Wheel/Touch scroll event.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
 

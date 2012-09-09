@@ -72,13 +72,13 @@ ANMSwitch.definition = {
     "anm_switch",
 
   get info()
-    <module>
-        <name>{_("VT52 Switching Mode")}</name>
-        <version>0.1</version>
-        <description>{
-          _("Switch between VT100/VT52 mode.")
-        }</description>
-    </module>,
+  {
+    return {
+      name: _("VT52 Switching Mode"),
+      version: "0.1",
+      description: _("Switch between VT100/VT52 mode.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
   "[persistable] default_value": true,

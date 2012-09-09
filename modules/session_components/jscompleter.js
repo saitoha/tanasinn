@@ -116,35 +116,37 @@ JsCompleter.definition = {
       autocomplete_result = {
         type: "text",
         query: current, 
-        data: properties.map(function(key)
-        {
-          var value, type;
+        data: properties.map(
+          function(key)
+          {
+            var value,
+                type;
 
-          try {
-            value = context[key];
-            type = typeof value;
-          } catch (e) { }
-          return {
-            name: context && notation ?
-              ("string" === typeof key) ?
-                (/^\["?$/.test(notation)) ?
-                  <>{key.replace('"', '\\"')}"]</>
-                : ("[\'" === notation) ?
-                  <>{key.replace("'", "\\'")}']</>
+            try {
+              value = context[key];
+              type = typeof value;
+            } catch (e) { }
+            return {
+              name: context && notation ?
+                ("string" === typeof key) ?
+                  (/^\["?$/.test(notation)) ?
+                    key.replace('"', '\\"') + "\"]"
+                  : ("[\'" === notation) ?
+                    key.replace("'", "\\'") + "']"
+                  : key
                 : key
-              : key
-            : key,
-            value: ("function" === type) ?
-                  "[Function " + value.name + "] "
-                 : ("object" === type) ? // may be null
-                   String(value)
-                 : ("undefined" === type) ?
-                   "undefined"
-                 : ("string" === type) ?
-                   <>"{value.replace('"', '\\"')}"</>.toString() 
-                 : String(value)
-          };
-        }),
+              : key,
+              value: ("function" === type) ?
+                    "[Function " + value.name + "] "
+                   : ("object" === type) ? // may be null
+                     String(value)
+                   : ("undefined" === type) ?
+                     "undefined"
+                   : ("string" === type) ?
+                     value.replace('"', '\\"') + "\"" 
+                   : String(value)
+            };
+          }),
       };
     }
 

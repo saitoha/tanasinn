@@ -33,13 +33,13 @@ EncoderMenu.definition = {
     "encodings",
 
   get info()
-    <TanasinnPlugin>
-        <name>{_("Encoder Menu")}</name>
-        <description>{
-          _("Makes it enable to switch terminal encoding by context menu.")
-        }</description>
-        <version>0.1</version>
-    </TanasinnPlugin>,
+  {
+    return {
+      name: _("Encoder Menu"),
+      version: "0.1",
+      description: _("Makes it enable to switch terminal encoding by context menu.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
 
@@ -58,10 +58,8 @@ EncoderMenu.definition = {
   "[subscribe('get/contextmenu-entries'), pnp]": 
   function onContextMenu() 
   {
-    var encoder, encoder_scheme;
-
-    encoder = this.dependency["encoder"];
-    encoder_scheme = encoder.scheme;
+    var encoder = this.dependency["encoder"],
+        encoder_scheme = encoder.scheme;
 
     return {
         tagName: "menu",
@@ -110,13 +108,13 @@ DecoderMenu.definition = {
     "decodermenu",
 
   get info()
-    <Plugin>
-        <name>{_("Decoder Menu")}</name>
-        <description>{
-          _("Makes it enable to switch terminal decoder by context menu.")
-        }</description>
-        <version>0.1</version>
-    </Plugin>,
+  {
+    return {
+      name: _("Decoder Menu"),
+      version: "0.1",
+      description: _("Makes it enable to switch terminal decoder by context menu.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
   "[persistable] send_ff_when_encoding_changed": true,

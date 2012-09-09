@@ -32,13 +32,13 @@ FocusTracker.definition = {
     "focustracker",
 
   get info()
-    <plugin>
-        <name>{_("Focus")}</name>
-        <version>0.1</version>
-        <description>{
-          _("Enable focus management.")
-        }</description>
-    </plugin>,
+  {
+    return {
+      name: _("Focus"),
+      version: "0.1",
+      description: _("Enable focus management.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
   

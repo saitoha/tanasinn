@@ -33,13 +33,13 @@ Vimperator.definition = {
     "vimperator",
 
   get info()
-    <module>
-        <name>Vimperator</name>
-        <version>0.1</version>
-        <description>{
-          _("Apply some fixes for vimperator-installed environment.")
-        }</description>
-    </module>,
+  {
+    return {
+      name: _("Vimperator"),
+      version: "0.1",
+      description: _("Apply some fixes for vimperator-installed environment.")
+    };
+  },
   
   "[persistable] enabled_when_startup": true,
 

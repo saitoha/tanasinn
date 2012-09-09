@@ -67,14 +67,14 @@ AutoWrap.definition = {
     "autowrap",
 
   get info()
-    <module>
-        <name>{_("Auto Wrap Mode")}</name>
-        <version>0.1</version>
-        <description>{
-          _("Enable/disable auto-wrap feature(DECARM)",
-            " with escape seqnence.")
-        }</description>
-    </module>,
+  {
+    return {
+      name: _("Auto Wrap Mode"),
+      version: "0.1",
+      description: _("Enable/disable auto-wrap feature(DECARM)",
+                     " with escape seqnence.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
   "[persistable] default_value": true,

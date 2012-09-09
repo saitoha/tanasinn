@@ -47,20 +47,22 @@ W3m.definition = {
     "w3m",
 
   get info()
-    <plugin>
-        <name>{_("w3m")}</name>
-        <description>{
-          _("Makes it Cooperate with w3m.")
-        }</description>
-        <version>0.1</version>
-    </plugin>,
+  {
+    return {
+      name: _("w3m"),
+      version: "0.1",
+      description: _("Makes it Cooperate with w3m.")
+    };
+  },
 
   get template()
-    ({
+  {
+    return {
       parentNode: "#tanasinn_center_area",
       tagName: "html:canvas",
       id: "tanasinn_w3m_canvas",
-    }),
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
 
@@ -136,11 +138,9 @@ W3m.definition = {
   "[subscribe('sequence/osc/99'), pnp]":
   function osc99(command) 
   {
-    var args, operation, verb;
-
-    args = command.split(":");
-    operation = args.shift();     // retrieve operation name.
-    verb = this[operation];
+    var args = command.split(":"),
+        operation = args.shift(),     // retrieve operation name.
+        verb = this[operation];
 
     if (verb) {
       verb.apply(this, args); // dispatch command.

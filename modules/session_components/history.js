@@ -35,13 +35,13 @@ CommandlineHistory.definition = {
     "commandline_history",
 
   get info()
-    <plugin>
-        <name>{_("Commandline History")}</name>
-        <version>0.1</version>
-        <description>{
-          _("Provides commandline history database.")
-        }</description>
-    </plugin>,
+  {
+    return {
+      name: _("Commandline History"),
+      version: "0.1",
+      description: _("Provides commandline history database.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
 

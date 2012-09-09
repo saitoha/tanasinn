@@ -100,12 +100,11 @@ CmapAttribute.definition = {
     "cmap",
 
   get __info()
-    <Attribute>
-      <name>{_("Default CMap")}</name>
-      <description>{
-        _("Provides default keybind replacement settings in command line field.")
-      }</description>
-      <detail>
+  {
+    return {
+      name: _("Default CMap"),
+      description: _("Provides default keybind replacement settings in command line field.")
+      /*
       <![CDATA[
         "cmap" attribute defines default keybind replacement settings in command 
         line field. this settings are deald as "persistable".
@@ -119,8 +118,9 @@ CmapAttribute.definition = {
           },
 
       ]]>
-      </detail>
-    </Attribute>,
+      */
+    };
+  },
 
   /** constructor 
    *  @param {EventBroker} broker Parent broker object.

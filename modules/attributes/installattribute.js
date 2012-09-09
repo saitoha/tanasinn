@@ -74,12 +74,11 @@ InstallAttribute.definition = {
     "install",
 
   get __info()
-    <Attribute>
-      <name>{_("Install")}</name>
-      <description>{
-        _("Declare a 'install' event listener.")
-      }</description>
-      <detail>
+  {
+    return {
+      name: _("Install"),
+      description: _("Declare a 'install' event listener.")
+      /*
       <![CDATA[
         Declare a 'install' event listener.
 
@@ -92,8 +91,9 @@ InstallAttribute.definition = {
           },
 
       ]]>
-      </detail>
-    </Attribute>,
+      */
+    };
+  },
 
   /** constructor 
    *  @param {EventBroker} broker Parent broker object.
@@ -131,12 +131,11 @@ UninstallAttribute.definition = {
     "uninstall",
 
   get __info()
-    <Attribute>
-      <name>{_("Uninstall")}</name>
-      <description>{
-        _("Declare a 'uninstall' event listener.")
-      }</description>
-      <detail>
+  {
+    return {
+      name: _("Uninstall"),
+      description: _("Declare a 'uninstall' event listener.")
+      /*
       <![CDATA[
         Declare a 'uninstall' event listener.
 
@@ -149,8 +148,9 @@ UninstallAttribute.definition = {
           },
 
       ]]>
-      </detail>
-    </Attribute>,
+      */
+    };
+  },
 
   /** constructor 
    *  @param {EventBroker} broker Parent broker object.

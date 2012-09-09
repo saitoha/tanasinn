@@ -76,13 +76,13 @@ ConfidenceTest.definition = {
     "confidence_test",
 
   get info()
-    <module>
-        <name>{_("Confidence Test")}</name>
-        <version>0.1</version>
-        <description>{
-          _("Invoke Confidence Test.")
-        }</description>
-    </module>,
+  {
+    return {
+      name: _("Confidence Test"),
+      version: "0.1",
+      description: _("Invoke Confidence Test.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
 

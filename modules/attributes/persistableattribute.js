@@ -33,12 +33,11 @@ PersistableAttribute.definition = {
     "persistable",
 
   get __info()
-    <Attribute>
-      <name>{_("Persistable")}</name>
-      <description>{
-        _("Marks a member or property as 'persistable'.")
-      }</description>
-      <detail>
+  {
+    return {
+      name: _("Persistable"),
+      description: _("Marks a member or property as 'persistable'.")
+      /*
       <![CDATA[
         "persistable" attribute marks a member or property as "persistable".
 
@@ -47,9 +46,9 @@ PersistableAttribute.definition = {
           "[persistable] polling_interval": 500, 
 
       ]]>
-      </detail>
-    </Attribute>,
-
+      */
+    };
+  },
 
   /** constructor 
    *  @param {EventBroker} broker The "parent" broker object in 

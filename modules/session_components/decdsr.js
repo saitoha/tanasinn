@@ -79,13 +79,13 @@ DECDeviceStatusReport.definition = {
     "device_status_report_dec",
 
   get info()
-    <module>
-        <name>{_("Device Status Report / DEC")}</name>
-        <version>0.1</version>
-        <description>{
-          _("Send Device Status Report, DEC specific.")
-        }</description>
-    </module>,
+  {
+    return {
+      name: _("Device Status Report / DEC"),
+      version: "0.1",
+      description: _("Send Device Status Report, DEC specific.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
 

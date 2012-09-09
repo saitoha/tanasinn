@@ -1604,13 +1604,14 @@ Screen.definition = {
     "screen",
 
   get info()
-    <plugin>
-        <name>{_("Screen")}</name>
-        <description>{
-          _("Provides terminal screen buffer and some functions for operating it.")
-        }</description>
-        <version>0.1.0</version>
-    </plugin>,
+  {
+    return {
+      name: _("Screen"),
+      version: "0.1.0",
+      description: _("Provides terminal screen buffer and some",
+                     " functions for operating it.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
 
@@ -2549,8 +2550,8 @@ Screen.definition = {
       this._switchScreen();
       this._screen_choice = coUtils.Constant.SCREEN_MAIN;
     } else {
-      coUtils.Debug.reportWarning(
-        _("Main screen has been already selected."));
+//      coUtils.Debug.reportWarning(
+//        _("Main screen has been already selected."));
     }
   },
 

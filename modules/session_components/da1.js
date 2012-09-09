@@ -110,14 +110,13 @@ PrimaryDA.definition = {
     "primary_da",
 
   get info()
-    <module>
-        <name>{_("Primary Device Attribute")}</name>
-        <version>0.1</version>
-        <description>{
-          _("Reply primary device attribute message against requests.")
-        }</description>
-    </module>,
-
+  {
+    return {
+      name: _("Primary Device Attribute"),
+      version: "0.1",
+      description: _("Reply primary device attribute message against requests.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
 

@@ -70,13 +70,13 @@ SoftReset.definition = {
     "soft_reset",
 
   get info()
-    <module>
-        <name>{_("Soft Reset")}</name>
-        <version>0.1</version>
-        <description>{
-          _("Soft terminal reset with escape sequence.")
-        }</description>
-    </module>,
+  {
+    return {
+      name: _("Soft Reset"),
+      version: "0.1",
+      description: _("Soft terminal reset with escape sequence.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
 

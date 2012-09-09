@@ -34,14 +34,14 @@ EastAsianWidth.definition = {
     "east_asian_width",
 
   get info()
-    <module>
-        <name>{_("East Asian Width")}</name>
-        <version>0.1</version>
-        <description>{
-          _("Switch to treat east asian ambiguous width ",
-            "characters as single/double.")
-        }</description>
-    </module>,
+  {
+    return {
+      name: _("East Asian Width"),
+      version: "0.1",
+      description: _("Switch to treat east asian ambiguous width ",
+                     "characters as single/double.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
 
@@ -95,13 +95,13 @@ AmbiguousWidthReporting.definition = {
     "ambiguous_width_reporting",
 
   get info()
-    <module>
-        <name>{_("Ambiguous Width Reporting")}</name>
-        <version>0.1</version>
-        <description>{
-          _("Switch ambiguous width reporting. ")
-        }</description>
-    </module>,
+  {
+    return {
+      name: _("Ambiguous Width Reporting"),
+      version: "0.1",
+      description: _("Switch ambiguous width reporting. ")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
 

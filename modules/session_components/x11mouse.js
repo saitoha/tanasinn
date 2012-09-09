@@ -51,14 +51,13 @@ X11MouseMode.definition = {
     "x11_mouse_mode",
 
   get info()
-    <module>
-        <name>{_("X11 Mouse Mode")}</name>
-        <version>0.1</version>
-        <description>{
-          _("Switch X11 mouse mode.")
-        }</description>
-    </module>,
-
+  {
+    return {
+      name: _("X11 Mouse Mode"),
+      version: "0.1",
+      description: _("Switch X11 mouse mode.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
   "[persistable] default_value": false,

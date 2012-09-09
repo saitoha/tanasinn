@@ -35,13 +35,13 @@ Protection.definition = {
     "protection",
 
   get info()
-    <module>
-        <name>{_("Protection")}</name>
-        <version>0.1</version>
-        <description>{
-          _("Add protected character attribute support.")
-        }</description>
-    </module>,
+  {
+    return {
+      name: _("Protection"),
+      version: "0.1",
+      description: _("Add protected character attribute support.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
 

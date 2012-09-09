@@ -33,13 +33,13 @@ C0Control.definition = {
     "c0control",
 
   get info()
-    <module>
-        <name>{_("C0 Control Handlers")}</name>
-        <version>0.1</version>
-        <description>{
-          _("Handle C0 controls.")
-        }</description>
-    </module>,
+  {
+    return {
+      name: _("C0 Control Handlers"),
+      version: "0.1",
+      description: _("Handle C0 controls.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
 

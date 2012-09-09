@@ -24,13 +24,13 @@
 
 
 /**
- * @class CharsetCompleter
+ * @class ComponentsCompleter
  */
-var CharsetCompleter = new Class().extends(Component);
-CharsetCompleter.definition = {
+var ComponentsCompleter = new Class().extends(Component);
+ComponentsCompleter.definition = {
 
   get id()
-    "charset_completer",
+    "components_completer",
 
   /*
    * Search for a given string and notify a listener (either synchronously
@@ -38,17 +38,18 @@ CharsetCompleter.definition = {
    *
    * @param context - The completion context object. 
    */
-  "[completer('charset'), enabled]":
+  "[completer('components'), enabled]":
   function complete(context)
   {
     var match = context.source.match(/^(\s*)([$_\-@a-zA-Z\.]*)(\s?)/),
         all,
+        space,
+        name,
         next,
         next_completer_info,
         next_completer,
         option,
-        components,
-        lower_source,
+        modules,
         candidates;
 
     if (null === match) {
@@ -56,59 +57,55 @@ CharsetCompleter.definition = {
       return;
     }
 
-    all = match[0];
-    next = match[3];
+    [all, space, name, next] = match;
 
     if (next) {
       next_completer_info = context.completers.shift();
       if (next_completer_info) {
         [next_completer, option] = next_completer_info.split("/");
-        this.sendMessage(
-          "command/query-completion/" + next_completer,
-          {
-            source: context.source.substr(all.length),
-            option: option,
-            completers: context.completers,
-          });
+        this.sendMessage("command/query-completion/" + next_completer, {
+          source: context.source.substr(all.length),
+          option: option,
+          completers: context.completers,
+        });
       } else {
         this.sendMessage("event/answer-completion", null);
       }
       return;
     }
-    components = this.sendMessage("get/" + context.option);
 
-    lower_source = context.source.toLowerCase();
-
+    modules = this.sendMessage("get/components");
     candidates = [
       {
-        key: component.charset, 
-        value: component.title
-      } for ([, component] in Iterator(components)) 
-        if (-1 !== component.charset.toLowerCase().indexOf(lower_source))
+        key: module.id, 
+        value: module.info ? 
+          "[" + module.info.name + "] " + module.info.description: 
+          module.toString()
+      } for ([, module] in Iterator(modules)) 
+        if (module.id && module.id.match(context.source))
     ];
-
     if (0 === candidates.length) {
       this.sendMessage("event/answer-completion", null);
-    } else {
-      this.sendMessage(
-        "event/answer-completion",
-        {
-          type: "text",
-          query: context.source, 
-          data: candidates.map(
-            function(candidate) 
-            {
-              return {
-                name: candidate.key,
-                value: String(candidate.value),
-              };
-            }),
-        });
-      }
+      return;
+    }
+
+    this.sendMessage(
+      "event/answer-completion",
+      {
+        type: "text",
+        query: context.source, 
+        data: candidates.map(
+          function(candidate)
+          {
+            return {
+              name: candidate.key,
+              value: String(candidate.value),
+            }
+          }),
+      });
   },
 
 };
-
 
 /**
  * @fn main
@@ -117,7 +114,7 @@ CharsetCompleter.definition = {
  */
 function main(broker)
 {
-  new CharsetCompleter(broker);
+  new ComponentsCompleter(broker);
 }
 
 // EOF

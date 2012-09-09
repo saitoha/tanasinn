@@ -52,14 +52,13 @@ SaveCursorMode.definition = {
     "save_cursor_mode",
 
   get info()
-    <module>
-        <name>{_("Save Cursor")}</name>
-        <version>0.1</version>
-        <description>{
-          _("Save / Restore cursor state.")
-        }</description>
-    </module>,
-
+  {
+    return {
+      name: _("Save Cursor"),
+      version: "0.1",
+      description: _("Save / Restore cursor state.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
   "[persistable] default_value": false,

@@ -35,13 +35,13 @@ AlternateScreen.definition = {
     "alternate_screen",
 
   get info()
-    <module>
-        <name>{_("Alternate Screen")}</name>
-        <version>0.1</version>
-        <description>{
-          _("Switches between Main Alternate screens.")
-        }</description>
-    </module>,
+  {
+    return {
+      name: _("Alternate Screen"),
+      version: "0.1",
+      description: _("Switches between Main Alternate screens.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
   "[persistable] default_value": false,

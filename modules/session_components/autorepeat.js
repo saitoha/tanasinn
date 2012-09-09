@@ -84,15 +84,14 @@ AutoRepeat.definition = {
     "auto_repeat",
 
   get info()
-    <module>
-        <name>{_("Auto Repeat")}</name>
-        <version>0.1</version>
-        <description>{
-          _("Enable/disable Auto repeat feature(DECARM) ",
-            "with escape seqnence.")
-        }</description>
-    </module>,
-
+  {
+    return {
+      name: _("Auto Repeat"),
+      version: "0.1",
+      description: _("Enable/disable Auto repeat feature(DECARM) ",
+                     "with escape seqnence.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
   "[persistable] default_value": true,

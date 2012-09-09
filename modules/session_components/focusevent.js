@@ -33,13 +33,13 @@ FocusEvent.definition = {
     "focus_event",
 
   get info()
-    <plugin>
-        <name>{_("Focus Event")}</name>
-        <description>{
-          _("Send focus/blur events.")
-        }</description>
-        <version>0.1</version>
-    </plugin>,
+  {
+    return {
+      name: _("Focus Event"),
+      version: "0.1",
+      description: _("Send focus/blur events.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
 

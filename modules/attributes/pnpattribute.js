@@ -76,12 +76,11 @@ PnPAttribute.definition = {
     "pnp",
 
   get __info()
-    <Attribute>
-      <name>{_("PnP")}</name>
-      <description>{
-        _("Marks a function as a tupstart2 pnpr.")
-      }</description>
-      <detail>
+  {
+    return {
+      name: _("PnP"),
+      description: _("Marks a function as a tupstart2 pnpr.")
+      /*
       <![CDATA[
         "pnp" attribute marks a function as PnP handler.
 
@@ -94,8 +93,9 @@ PnPAttribute.definition = {
           },
 
       ]]>
-      </detail>
-    </Attribute>,
+      */
+    };
+  },
 
   /** constructor 
    *  @param {EventBroker} broker Parent broker object.

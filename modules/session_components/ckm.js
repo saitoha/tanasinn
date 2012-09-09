@@ -62,13 +62,13 @@ ApplicationCursorMode.definition = {
     "application_cursor",
 
   get info()
-    <module>
-        <name>{_("Application Cursor Mode")}</name>
-        <version>0.1</version>
-        <description>{
-          _("Switch between Normal mode/Application Cursor mode.")
-        }</description>
-    </module>,
+  {
+    return {
+      name: _("Application Cursor Mode"),
+      version: "0.1",
+      description: _("Switch between Normal mode/Application Cursor mode.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
   "[persistable] default_value": false,

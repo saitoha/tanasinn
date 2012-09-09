@@ -75,14 +75,13 @@ NewLineMode.definition = {
     "new_line_mode",
 
   get info()
-    <module>
-        <name>{_("LNM Switch")}</name>
-        <version>0.1</version>
-        <description>{
-          _("Switch Line Feed/New Line mode(NLM) with escape seqnence.")
-        }</description>
-    </module>,
-
+  {
+    return {
+      name: _("LNM Switch"),
+      version: "0.1",
+      description: _("Switch Line Feed/New Line mode(NLM) with escape seqnence.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
   "[persistable] default_value": false,

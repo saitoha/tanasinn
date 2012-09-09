@@ -50,13 +50,13 @@ ScrollbarMode.definition = {
     "scrollbar_mode",
 
   get info()
-    <module>
-        <name>{_("Scrollbar Mode")}</name>
-        <version>0.1</version>
-        <description>{
-          _("Switch show/hide scrollbar.")
-        }</description>
-    </module>,
+  {
+    return {
+      name: _("Scrollbar Mode"),
+      version: "0.1",
+      description: _("Switch show/hide scrollbar.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
   "[persistable] default_value": true,

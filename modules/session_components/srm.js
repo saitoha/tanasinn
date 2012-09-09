@@ -66,14 +66,13 @@ SendReceiveMode.definition = {
     "send_receive_mode",
 
   get info()
-    <module>
-        <name>{_("SRM Switch")}</name>
-        <version>0.1</version>
-        <description>{
-          _("Switch local echo mode(SRM) with escape seqnence.")
-        }</description>
-    </module>,
-
+  {
+    return {
+      name: _("SRM Switch"),
+      version: "0.1",
+      description: _("Switch local echo mode(SRM) with escape seqnence.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
   "[persistable] default_value": true,

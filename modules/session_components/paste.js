@@ -43,13 +43,13 @@ Paste.definition = {
     "paste",
 
   get info()
-    <plugin>
-        <name>{_("Paste")}</name>
-        <version>0.1</version>
-        <description>{
-          _("Paste a string from clipboard.")
-        }</description>
-    </plugin>,
+  {
+    return {
+      name: _("Paste"),
+      version: "0.1",
+      description: _("Paste a string from clipboard.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
 

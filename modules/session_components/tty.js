@@ -811,18 +811,21 @@ SocketTeletypeService.definition = {
     "tty",
 
   get info()
-    <plugin>
-        <name>{_("TTY")}</name>
-        <version>0.1</version>
-        <description>{
-          _("Drives a TTY device and control it.")
-        }</description>
-    </plugin>,
+  {
+    return {
+      name: _("TTY"),
+      version: "0.1",
+      description: _("Drives a TTY device and control it.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
 
   _socket: null,
 
+  /** Installs itself.
+   *  @param broker {Broker} A broker object.
+   */
   "[install]":
   function install(broker) 
   {
@@ -858,6 +861,9 @@ SocketTeletypeService.definition = {
     }
   },
 
+  /** Uninstalls itself.
+   *  @param broker {Broker} A broker object.
+   */
   "[uninstall]":
   function uninstall(broker)
   {

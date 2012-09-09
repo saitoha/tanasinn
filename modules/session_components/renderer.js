@@ -519,13 +519,13 @@ Renderer.definition = {
     "renderer",
 
   get info()
-    <plugin>
-        <name>{_("Renderer")}</name>
-        <description>{
-          _("Handles draw event and render output data to main canvas.")
-        }</description>
-        <version>0.2.0</version>
-    </plugin>,
+  {
+    return {
+      name: _("Renderer"),
+      version: "0.2.0",
+      description: _("Handles draw event and render output data to main canvas.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
 

@@ -136,13 +136,13 @@ OuterChrome.definition = {
     "outerchrome",
 
   get info()
-    <plugin>
-        <name>{_("Outer Chrome")}</name>
-        <description>{
-          _("Manages '#tanasinn_outer_chrome' XUL element.")
-        }</description>
-        <version>0.1.0</version>
-    </plugin>,
+  {
+    return {
+      name: _("Outer Chrome"),
+      version: "0.1.0",
+      description: _("Manages '#tanasinn_outer_chrome' XUL element.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
   "[persistable, watchable] background_opacity": 0.91,
@@ -153,15 +153,13 @@ OuterChrome.definition = {
   "[persistable, watchable] box_shadow": "5px 4px 29px black",
 
   get frame_style()
-    <>
-      -moz-box-shadow: {this.box_shadow};
-      box-shadow: {this.box_shadow};
-      border-radius: {this.border_radius}px;
-      background-image: {this.background}; 
-      background-size: 100% 100%; 
-      opacity: {this.background_opacity};
-      cursor: text;
-    </>.toString(),
+    "-moz-box-shadow: " + this.box_shadow + ";" +
+    "box-shadow: " + this.box_shadow + ";" +
+    "border-radius: " + this.border_radius + "px;" +
+    "background-image: " + this.background + ";" + 
+    "background-size: 100% 100%;" + 
+    "opacity: " + this.background_opacity + ";" +
+    "cursor: text;",
 
   get blend_color()
   {
@@ -416,19 +414,19 @@ Chrome.definition = {
     "chrome",
 
   get info()
-    <plugin>
-        <name>{_("Inner Chrome")}</name>
-        <description>{
-          _("Manages '#tanasinn_content' XUL element.")
-        }</description>
-        <version>0.1.0</version>
-    </plugin>,
+  {
+    return {
+      name: _("Inner Chrome"),
+      version: "0.1.0",
+      description: _("Manages '#tanasinn_content' XUL element.")
+    };
+  },
 
   get style()
-    <>
-      margin: {this.margin}px;
-      background: {this.background};
-    </>,
+  {
+    return "margin: " + this.margin + "px;" +
+           "background: " + this.background + ";";
+  },
 
   get template()
     [

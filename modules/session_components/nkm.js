@@ -57,13 +57,13 @@ NumericKeypadMode.definition = {
     "numeric_keypad_mode",
 
   get info()
-    <module>
-        <name>{_("Numeric Keypad Mode")}</name>
-        <version>0.1</version>
-        <description>{
-          _("Switch Numeric/Application keypad mode.")
-        }</description>
-    </module>,
+  {
+    return {
+      name: _("Numeric Keypad Mode"),
+      version: "0.1",
+      description: _("Switch Numeric/Application keypad mode.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
   "[persistable] default_value": false,

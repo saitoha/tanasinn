@@ -34,13 +34,13 @@ OverlayBrowser.definition = {
     "overlay_browser",
 
   get info()
-    <module>
-        <name>{_("OverlayBrowser")}</name>
-        <version>0.1</version>
-        <description>{
-          _("Display Gecko browser on terminal screen.")
-        }</description>
-    </module>,
+  {
+    return {
+      name: _("OverlayBrowser"),
+      version: "0.1",
+      description: _("Display Gecko browser on terminal screen.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
   "[persistable] open_delay": 20,

@@ -75,14 +75,13 @@ CaptureBox.definition = {
     "capturebox",
 
   get info()
-    <plugin>
-        <name>{_("Capture Box")}</name>
-        <description>{
-          _("Makes easy to drag window margin.")
-        }</description>
-        <version>0.1</version>
-    </plugin>,
-
+  {
+    return {
+      name: _("Capture Box"),
+      version: "0.1",
+      description: _("Makes easy to drag window margin.")
+    };
+  },
 
   get template()
     ({

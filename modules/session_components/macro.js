@@ -32,13 +32,13 @@ InputMacro.definition = {
     "input_macro",
 
   get info()
-    <module>
-        <name>{_("Input Macro")}</name>
-        <description>{
-          _("Record/Play keyboard input macro.")
-        }</description>
-        <version>0.1</version>
-    </module>,
+  {
+    return {
+      name: _("Input Macro"),
+      version: "0.1",
+      description: _("Record/Play keyboard input macro.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
 

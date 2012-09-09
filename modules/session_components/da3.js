@@ -77,14 +77,13 @@ TirtiaryDA.definition = {
     "tirtiary_da",
 
   get info()
-    <module>
-        <name>{_("Tirtiary Device Attribute")}</name>
-        <version>0.1</version>
-        <description>{
-          _("Reply Tirtiary device attribute message against requests.")
-        }</description>
-    </module>,
-
+  {
+    return {
+      name: _("Tirtiary Device Attribute"),
+      version: "0.1",
+      description: _("Reply Tirtiary device attribute message against requests.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
   "[persistable] site_id": 0xff,

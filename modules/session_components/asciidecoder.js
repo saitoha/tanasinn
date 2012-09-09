@@ -38,13 +38,13 @@ AsciiDecoder.definition = {
     "ascii",
 
   get info()
-    <module>
-        <name>{_("ASCII Decoder")}</name>
-        <version>0.1</version>
-        <description>{
-          _("Decoder for ISO 646-US(ASCII).")
-        }</description>
-    </module>,
+  {
+    return {
+      name: _("ASCII Decoder"),
+      version: "0.1",
+      description: _("Decoder for ISO 646-US(ASCII).")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
   "[persistable] displacement": 0x3f,

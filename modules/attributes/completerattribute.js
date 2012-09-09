@@ -85,12 +85,11 @@ CompleterAttribute.definition = {
     "completer",
 
   get __info()
-    <Attribute>
-      <name>{_("Completer")}</name>
-      <description>{
-        _("Marks a function as a completer procedure.")
-      }</description>
-      <detail>
+  {
+    return {
+      name: _("Completer"),
+      description: _("Marks a function as a completer procedure.")
+      /*
       <![CDATA[
         "completer" attribute marks a function as a completer procedure. 
 
@@ -103,9 +102,9 @@ CompleterAttribute.definition = {
           },
 
       ]]>
-      </detail>
-    </Attribute>,
-
+      */
+    };
+  },
 
   /** constructor 
    *  @param {EventBroker} broker Parent broker object.

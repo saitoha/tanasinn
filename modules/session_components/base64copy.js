@@ -70,13 +70,13 @@ Base64CopyPaste.definition = {
     "base64copypaste",
 
   get info()
-    <Plugin>
-        <name>{_("Base64 Copy/Paste")}</name>
-        <description>{
-          _("Accesss local clipboard and send/recieve text data in base64 encoded format.")
-        }</description>
-        <version>0.1</version>
-    </Plugin>,
+  {
+    return {
+      name: _("Base64 Copy/Paste"),
+      version: "0.1",
+      description: _("Accesss local clipboard and send/recieve text data in base64 encoded format.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
   "[persistable] enable_get_access": false,
@@ -106,8 +106,7 @@ Base64CopyPaste.definition = {
         scanner,
         buffer,
         text;
-
-    if (/^[0-7psc]+;\?$/.test(data)) {
+    if (/^[0-7psc]*;\?$/.test(data)) {
       if (this.enable_get_access) {
         text = coUtils.Clipboard.get();
         text = "52;c;?;" + coUtils.Text.base64encode(text);
@@ -135,7 +134,7 @@ Base64CopyPaste.definition = {
     if (-1 === position) {
       throw coUtils.Debug.Exception(_("Cannot parse OSC 52 data."));
     }
-    if (!/^[0-9psc]+;/.test(data)) {
+    if (!/^[0-9psc]*;/.test(data)) {
       throw coUtils.Debug.Exception(_("Cannot parse OSC 52 data."));
     }
 

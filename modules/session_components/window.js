@@ -37,13 +37,13 @@ WindowWatcher.definition = {
     "windowwatcher",
 
   get info()
-    <module>
-        <name>{_("Window watcher")}</name>
-        <version>0.1</version>
-        <description>{
-          _("Handler window events.")
-        }</description>
-    </module>,
+  {
+    return {
+      name: _("Window watcher"),
+      version: "0.1",
+      description: _("Handler window events.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
 

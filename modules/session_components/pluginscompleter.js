@@ -24,90 +24,6 @@
 
 
 /**
- * @class ComponentsCompleter
- */
-var ComponentsCompleter = new Class().extends(Component);
-ComponentsCompleter.definition = {
-
-  get id()
-    "components_completer",
-
-  /*
-   * Search for a given string and notify a listener (either synchronously
-   * or asynchronously) of the result
-   *
-   * @param context - The completion context object. 
-   */
-  "[completer('components'), enabled]":
-  function complete(context)
-  {
-    var match = context.source.match(/^(\s*)([$_\-@a-zA-Z\.]*)(\s?)/),
-        all,
-        space,
-        name,
-        next,
-        next_completer_info,
-        next_completer,
-        option,
-        modules,
-        candidates;
-
-    if (null === match) {
-      this.sendMessage("event/answer-completion", null);
-      return;
-    }
-
-    [all, space, name, next] = match;
-
-    if (next) {
-      next_completer_info = context.completers.shift();
-      if (next_completer_info) {
-        [next_completer, option] = next_completer_info.split("/");
-        this.sendMessage("command/query-completion/" + next_completer, {
-          source: context.source.substr(all.length),
-          option: option,
-          completers: context.completers,
-        });
-      } else {
-        this.sendMessage("event/answer-completion", null);
-      }
-      return;
-    }
-
-    modules = this.sendMessage("get/components");
-    candidates = [
-      {
-        key: module.id, 
-        value: module.info ? 
-          "[" + module.info..name + "] " + module.info..description: 
-          module.toString()
-      } for ([, module] in Iterator(modules)) 
-        if (module.id && module.id.match(context.source))
-    ];
-    if (0 === candidates.length) {
-      this.sendMessage("event/answer-completion", null);
-      return;
-    }
-
-    this.sendMessage(
-      "event/answer-completion",
-      {
-        type: "text",
-        query: context.source, 
-        data: candidates.map(
-          function(candidate)
-          {
-            return {
-              name: candidate.key,
-              value: String(candidate.value),
-            }
-          }),
-      });
-  },
-
-};
-
-/**
  * @class PluginsCompleter
  */
 var PluginsCompleter = new Class().extends(Component);
@@ -198,7 +114,6 @@ PluginsCompleter.definition = {
  */
 function main(broker)
 {
-  new ComponentsCompleter(broker);
   new PluginsCompleter(broker);
 }
 

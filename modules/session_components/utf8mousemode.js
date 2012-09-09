@@ -51,14 +51,13 @@ Utf8MouseMode.definition = {
     "utf8_mouse_mode",
 
   get info()
-    <module>
-        <name>{_("UTF8 1005 Mouse Mode")}</name>
-        <version>0.1</version>
-        <description>{
-          _("Switch utf8 mouse mode.")
-        }</description>
-    </module>,
-
+  {
+    return {
+      name: _("UTF8 1005 Mouse Mode"),
+      version: "0.1",
+      description: _("Switch utf8 mouse mode.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
   "[persistable] default_value": false,

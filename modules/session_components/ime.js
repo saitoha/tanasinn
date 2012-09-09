@@ -42,13 +42,13 @@ Ime.definition = {
     "ime",
 
   get info()
-    <plugin>
-        <name>{_("IME")}</name>
-        <description>{
-          _("Make you enable to input with IME.")
-        }</description>
-        <version>0.1</version>
-    </plugin>,
+  {
+    return {
+      name: _("IME"),
+      version: "0.1",
+      description: _("Make you enable to input with IME.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
   "[persistable] polling_interval": 500, // in milliseconds

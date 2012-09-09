@@ -35,16 +35,17 @@ Bell.definition = {
     "bell",
 
   get info()
-    <module>
-        <name>{_("Bell")}</name>
-        <description>{
-          _("Enables it to show visual bell / audio bell.")
-        }</description>
-        <version>0.2.0</version>
-    </module>,
+  {
+    return {
+      name: _("Bell"),
+      version: "0.2.0",
+      description: _("Enables it to show visual bell / audio bell.")
+    };
+  },
 
   get template()
-    ({
+  {
+    return {
       parentNode: "#tanasinn_center_area",
       tagName: "html:canvas",
       id: "tanasinn_visual_bell",
@@ -52,7 +53,8 @@ Bell.definition = {
       opacity: 0.0,
       margin: "-20px",
       MozTransitionProperty: "opacity",
-    }),
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
 

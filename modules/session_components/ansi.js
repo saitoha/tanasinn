@@ -50,13 +50,13 @@ AnsiMode.definition = {
     "ansimode",
 
   get info()
-    <plugin>
-        <name>{_("ANSI Mode")}</name>
-        <version>0.1</version>
-        <description>{
-          _("Handle ANSI mode switches (CSI Pm h).")
-        }</description>
-    </plugin>,
+  {
+    return {
+      name: _("ANSI Mode"),
+      version: "0.1",
+      description: _("Handle ANSI mode switches (CSI Pm h).")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
 

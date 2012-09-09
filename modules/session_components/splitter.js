@@ -50,11 +50,11 @@ Splitter.definition = {
       tagName: "vbox",
       id: "tanasinn_splitter",
       height: 16,
-      style: <> 
-        -moz-appearance: none;
-        cursor: ns-resize;
-        background: transparent;
-      </>,
+      style: {
+        MozAppearance: "none",
+        cursor: "ns-resize",
+        background: "transparent",
+      },
       listener: {
         type: "dragstart", 
         context: this,

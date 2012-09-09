@@ -22,12 +22,12 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-var MOUSE_BUTTON1 = 0;
-var MOUSE_BUTTON3 = 1;
-var MOUSE_BUTTON2 = 2;
-var MOUSE_RELEASE = 3;
-var MOUSE_WHEEL_UP = 64;
-var MOUSE_WHEEL_DOWN = 65;
+var MOUSE_BUTTON1 = 0,
+    MOUSE_BUTTON3 = 1,
+    MOUSE_BUTTON2 = 2,
+    MOUSE_RELEASE = 3,
+    MOUSE_WHEEL_UP = 64,
+    MOUSE_WHEEL_DOWN = 65;
 
 /**
  *  @class Mouse
@@ -44,13 +44,13 @@ Mouse.definition = {
     "mouse",
 
   get info()
-    <plugin>
-        <name>{_("Mouse")}</name>
-        <description>{
-          _("Listen mouse input events and send them to TTY device.")
-        }</description>
-        <version>0.1</version>
-    </plugin>,
+  {
+    return {
+      name: _("Mouse"),
+      version: "0.1",
+      description: _("Listen mouse input events and send them to TTY device.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
 

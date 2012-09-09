@@ -78,13 +78,13 @@ ANSIDeviceStatusReport.definition = {
     "device_status_report",
 
   get info()
-    <module>
-        <name>{_("Device Status Report / ANSI")}</name>
-        <version>0.1</version>
-        <description>{
-          _("Send Device Status Report, ANSI format.")
-        }</description>
-    </module>,
+  {
+    return {
+      name: _("Device Status Report / ANSI"),
+      version: "0.1",
+      description: _("Send Device Status Report, ANSI format."),
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
 

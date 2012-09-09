@@ -62,13 +62,13 @@ IRMSwitch.definition = {
     "irm_switch",
 
   get info()
-    <module>
-        <name>{_("IRM Switch")}</name>
-        <version>0.1</version>
-        <description>{
-          _("Switch Insert/Replace mode(IRM) with escape seqnence.")
-        }</description>
-    </module>,
+  {
+    return {
+      name: _("IRM Switch"),
+      version: "0.1",
+      description: _("Switch Insert/Replace mode(IRM) with escape seqnence.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
   "[persistable] default_value": false,

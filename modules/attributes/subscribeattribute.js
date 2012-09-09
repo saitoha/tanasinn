@@ -100,12 +100,11 @@ SubscribeAttribute.definition = {
     "subscribe",
 
   get __info()
-    <Attribute>
-      <name>{_("Subscribe")}</name>
-      <description>{
-        _("Marks a function as a tupstart2 subscriber.")
-      }</description>
-      <detail>
+  {
+    return {
+      name: _("Subscribe"),
+      description: _("Marks a function as a tupstart2 subscriber.")
+      /*
       <![CDATA[
         "subscribe" attribute marks a function as tupstart2 subscriber.
 
@@ -118,8 +117,9 @@ SubscribeAttribute.definition = {
           },
 
       ]]>
-      </detail>
-    </Attribute>,
+      */
+    };
+  },
 
   /** constructor 
    *  @param {EventBroker} broker Parent broker object.

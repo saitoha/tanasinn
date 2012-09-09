@@ -211,6 +211,7 @@ Hooker.definition = {
         buffer,
         self,
         action,
+        result_cache,
         result,
         sequence;
 
@@ -246,8 +247,11 @@ Hooker.definition = {
           if (!self._step_mode) {
             while (buffer.length) {
               action = buffer.shift();
+              result_cache = [];
+              this.sendMessage("command/debugger-trace-sequence", result_cache);
               result = action();
-              this.sendMessage("command/debugger-trace-sequence", result);
+              result_cache[0] = result[0];
+              result_cache[1] = result[1];
             }
           }
         };
@@ -277,14 +281,14 @@ Debugger.definition = {
     "debugger",
 
   get info()
-    <plugin>
-        <name>{_("Debugger")}</name>
-        <version>0.1</version>
-        <description>{
-          _("Enables you to run terminal emurator step-by-step and ", 
-            "observe input/output character sequence.")
-        }</description>
-    </plugin>,
+  {
+    return {
+      name: _("Debugger"),
+      version: "0.1",
+      description: _("Enables you to run terminal emurator step-by-step and ", 
+                     "observe input/output character sequence.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
 
@@ -350,18 +354,12 @@ Debugger.definition = {
         {
           tagName: "vbox",
           flex: 1,
-          style: <> 
-            width: 100%;
-            height: 100%;
-          </>,
+          style: "width: 100%; height: 100%;",
           childNodes: {
             tagName: "vbox",
             flex: 1,
             id: "tanasinn_trace",
-            style: <>
-              padding: 5px;
-              overflow-y: auto;
-            </>
+            style: "padding: 5px; overflow-y: auto;"
           },
         },
       ]
@@ -548,7 +546,7 @@ Debugger.definition = {
   function watchSequence(trace_info) 
   {
     if (this._pattern.test(trace_info.sequence)) {
-      this.watchSequence.eniabled = false;
+      this.watchSequence.enabled = false;
       this.doBreak();
     }
   },
@@ -587,10 +585,7 @@ Debugger.definition = {
           {
             tagName: "label",
             value: ">",
-            style: <>
-              padding: 3px;
-              color: darkred;
-            </>,
+            style: "padding: 3px; color: darkred;",
           },
           {
             tagName: "box",
@@ -599,46 +594,27 @@ Debugger.definition = {
             {
               tagName: "label",
               value: this._escape(sequence),
-              style: <>
-                color: red;
-                background: lightblue; 
-                border-radius: 6px;
-                padding: 3px;
-              </>,
+              style: "color: red; background: lightblue; border-radius: 6px; padding: 3px;",
             },
           },
           {
             tagName: "label",
             value: "-",
-            style: <>
-              color: black;
-              padding: 3px;
-            </>,
+            style: "color: black; padding: 3px;",
           },
           {
             tagName: "box",
-            style: <> 
-              background: lightyellow;
-              border-radius: 6px;
-              margin: 2px;
-              padding: 0px;
-            </>,
+            style: "background: lightyellow; border-radius: 6px; margin: 2px; padding: 0px;",
             childNodes: [
               {
                 tagName: "label",
                 value: name,
-                style: <>
-                  color: blue;
-                  padding: 1px;
-                </>,
+                style: "color: blue; padding: 1px;",
               },
               {
                 tagName: "label",
                 value: this._escape(value.toString()),
-                style: <>
-                  color: green;
-                  padding: 1px;
-                </>,
+                style: "color: green; padding: 1px;",
               }
             ],
           },
@@ -650,20 +626,12 @@ Debugger.definition = {
           {
             tagName: "label",
             value: ">",
-            style: <>
-              padding: 3px;
-              color: darkred;
-            </>,
+            style: "padding: 3px; color: darkred;",
           },
           {
             tagName: "label",
             value: this._escape(value.shift()),
-            style: <>
-              color: darkcyan;
-              background: lightgray;
-              border-radius: 6px;
-              padding: 3px;
-            </>,
+            style: "color: darkcyan; background: lightgray; border-radius: 6px; padding: 3px;",
           },
         ]
         break;
@@ -673,20 +641,12 @@ Debugger.definition = {
           {
             tagName: "label",
             value: "<",
-            style: <> 
-              padding: 3px; 
-              color: darkblue;
-            </>,
+            style: "padding: 3px; color: darkblue;",
           },
           {
             tagName: "label",
             value: value && this._escape(value.shift()),
-            style: <>
-              color: darkcyan;
-              background: lightpink;
-              border-radius: 6px;
-              padding: 3px;
-            </>,
+            style: "color: darkcyan; background: lightpink; border-radius: 6px; padding: 3px;",
           },
         ]
     }

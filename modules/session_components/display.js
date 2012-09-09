@@ -92,18 +92,18 @@ ColorNumberCompletionDisplayDriver.definition = {
         {
           parentNode: rows,
           tagName: "row",
-          style: current_index === index && <> 
-            border: solid 2px blue;
-            background: #226;
-            color: white;
-          </>,
+          style: current_index === index && { 
+            border: "solid 2px blue",
+            background: "#226",
+            color: "white",
+          },
           childNodes: [
             {
               tagName: "box",
-              style: <> 
-                background-color: {pair.value};
-                padding: 10px 20px; 
-              </>,
+              style: {
+                backgroundColor: pair.value,
+                padding: "10px 20px", 
+              },
             },
           ].concat([
             { 
@@ -122,10 +122,10 @@ ColorNumberCompletionDisplayDriver.definition = {
           ].map(function(range) {
             return {
               tagName: "box",
-              style: <> 
-                font-size: 20px; 
-                margin: 0px 10px; 
-              </>,
+              style: {
+                fontSize: "20px", 
+                margin: "0px 10px", 
+              },
               childNodes: -1 === range.start ?
                 { text: range.text }:
                 [
@@ -133,12 +133,12 @@ ColorNumberCompletionDisplayDriver.definition = {
                   {
                     tagName: "label",
                     innerText: range.text.substr(range.start, range.length),
-                    style: <> 
-                      margin: 0px; 
-                      font-weight: bold; 
-                      color: #f00; 
-                      text-decoration: underline; 
-                    </>,
+                    style: { 
+                      margin: "0px", 
+                      fontWeight: "bold", 
+                      color: "#f00", 
+                      textDecoration: "underline", 
+                    },
                   },
                   { text: range.text.substr(range.start + range.length) },
                 ],
@@ -195,25 +195,25 @@ ColorCompletionDisplayDriver.definition = {
         {
           parentNode: rows,
           tagName: "row",
-          style: current_index === index && <> 
-            border: solid 2px blue;
-            background: #226;
-            color: white;
-          </>,
+          style: current_index === index && { 
+            border: "solid 2px blue",
+            background: "#226",
+            color: "white",
+          },
           childNodes: [
             {
               tagName: "box",
-              style: <> 
-                background-color: {result.option};
-                padding: 0px 20px; 
-              </>,
+              style: { 
+                backgroundColor: result.option,
+                padding: "0px 20px", 
+              },
             },
             {
               tagName: "box",
-              style: <> 
-                background-color: {pair.name};
-                padding: 0px 20px; 
-              </>,
+              style: { 
+                backgroundColor: pair.name,
+                padding: "0px 20px", 
+              },
             },
           ].concat([
             { 
@@ -229,10 +229,10 @@ ColorCompletionDisplayDriver.definition = {
           ].map(function(range) {
             return {
               tagName: "box",
-              style: <> 
-                font-size: 20px;
-                margin: 0px 10px; 
-              </>,
+              style: { 
+                fontSize: "20px",
+                margin: "0px 10px", 
+              },
               childNodes: -1 === range.start ?
                 { text: range.text }:
                 [
@@ -240,12 +240,12 @@ ColorCompletionDisplayDriver.definition = {
                   {
                     tagName: "label",
                     innerText: range.text.substr(range.start, range.length),
-                    style: <> 
-                      margin: 0px; 
-                      font-weight: bold; 
-                      color: #f00; 
-                      text-decoration: underline; 
-                    </>,
+                    style: { 
+                      margin: "0px", 
+                      fontWeight: "bold",
+                      color: "#f00",
+                      textDecoration: "underline",
+                    },
                   },
                   { text: range.text.substr(range.start + range.length) },
                 ],
@@ -291,40 +291,44 @@ FontsizeCompletionDisplayDriver.definition = {
         {
           parentNode: rows,
           tagName: "row",
-          style: i === current_index ? <>
-            background: #226;
-            color: white;
-          </>: "",
+          style: i === current_index ? {
+            background: "#226",
+            color: "white",
+          }: "",
           childNodes: [
             {
               tagName: "box",
-              style: <>
-                font-size: 20px;
-                margin: 0px 8px;
-              </>,
+              style: { 
+                fontSize: "20px",
+                margin: "0px 8px",
+              },
               childNodes: -1 === match_position ? 
-                { text: completion_text }:
+                { 
+                  text: completion_text
+                }:
                 [
                   { text: completion_text.substr(0, match_position) },
                   {
                     tagName: "label",
                     innerText: completion_text.substr(match_position, search_string.length),
-                    style: <>
-                      margin: 0px; 
-                      font-weight: bold; 
-                      color: #f00; 
-                      text-decoration: underline;
-                    </>,
+                    style: { 
+                      margin: "0px", 
+                      fontWeight: "bold", 
+                      color: "#f00", 
+                      textDecoration: "underline",
+                    },
                   },
-                  { text: completion_text.substr(match_position + search_string.length) + "px" },
+                  { 
+                    text: completion_text.substr(match_position + search_string.length) + "px"
+                  },
                 ],
             },
             {
               tagName: "label",
-              style: <>
-                font-size: {completion_text}px;
-                margin: 0px;
-              </>,
+              style: {
+                fontSize: completion_text + "px",
+                margin: "0px",
+              },
               value: "abc123%& \u0353\u2874\u2953\u2231\u7453\u1123\u2123\u0123\uC642",
             },
           ],
@@ -366,35 +370,39 @@ FontFamilyCompletionDisplayDriver.definition = {
         {
           parentNode: rows,
           tagName: "row",
-          style: i === current_index ? <>
-            background: #226;
-            color: white;
-          </>: "",
+          style: i === current_index ? { 
+            background: "#226",
+            color: "white",
+          }: "",
           childNodes: [
             {
               tagName: "box",
-              style: <>
-                font-size: 40px;
-                font-family: {completion_text};
-                font-weight: normal;
-                margin: 0px;
-                margin-left: 8px;
-              </>,
+              style: {
+                fontSize: "40px",
+                fontFamily: completion_text,
+                fontWeight: "normal",
+                margin: "0px",
+                marginLeft: "8px",
+              },
               childNodes: -1 === match_position ? 
                 { text: completion_text }:
                 [
-                  { text: completion_text.substr(0, match_position) },
+                  {
+                    text: completion_text.substr(0, match_position)
+                  },
                   {
                     tagName: "label",
                     innerText: completion_text.substr(match_position, search_string.length),
-                    style: <>
-                      margin: 0px; 
-                      font-weight: bold; 
-                      color: #f00; 
-                      text-decoration: underline;
-                    </>,
+                    style: {
+                      margin: "0px", 
+                      fontWeight: "bold", 
+                      color: "#f00", 
+                      textDecoration: "underline",
+                    },
                   },
-                  { text: completion_text.substr(match_position + search_string.length) },
+                  { 
+                    text: completion_text.substr(match_position + search_string.length)
+                  },
                 ],
             },
           ],
@@ -447,47 +455,51 @@ TextCompletionDisplayDriver.definition = {
         {
           parentNode: rows,
           tagName: "row",
-          style: i === current_index ? <>
-            background: #226;
-            padding: 2px;
-            color: white;
-          </>: "",
+          style: i === current_index ? {
+            background: "#226",
+            padding: "2px",
+            color: "white",
+          }: "",
           childNodes: [
             {
               tagName: "box",
-              style: <>
-                padding-top: 3px;
-                margin: 0px;
-                overflow: hidden;
-                padding-left: 8px;
-                font-size: 19px;
-              </>,
+              style: { 
+                paddingTop: "3px",
+                margin: "0px",
+                overflow: "hidden",
+                paddingLeft: "8px",
+                fontSize: "19px",
+              },
               childNodes: -1 === match_position ? 
-                { text: completion_text }:
+                { 
+                  text: completion_text
+                }:
                 [
                   { text: completion_text.substr(0, match_position) },
                   {
                     tagName: "label",
                     innerText: completion_text.substr(match_position, search_string.length),
-                    style: <>
-                      margin: 0px; 
-                      font-weight: bold; 
-                      color: #f00; 
-                      text-decoration: underline;
-                    </>,
+                    style: { 
+                      margin: "0px", 
+                      fontWeight: "bold", 
+                      color: "#f00", 
+                      textDecoration: "underline",
+                    },
                   },
-                  { text: completion_text.substr(match_position + search_string.length) },
+                  { 
+                    text: completion_text.substr(match_position + search_string.length)
+                  },
                 ],
             },
             {
               tagName: "label",
-              style: <>
-                padding-top: 2px;
-                font-size: 16px;
-                text-shadow: 0px 0px 2px white;
-                font-family: 'Times New Roman';
-                color: #000;
-              </>,
+              style: { 
+                paddingTop: "2px",
+                fontSize: "16px",
+                textShadow: "0px 0px 2px white",
+                fontFamily: "Times New Roman",
+                color: "#000",
+              },
               value: data.value,
               crop: "end",
             },

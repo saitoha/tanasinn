@@ -79,12 +79,11 @@ TypeAttribute.definition = {
     "type",
 
   get __info()
-    <Attribute>
-      <name>{_("Type")}</name>
-      <description>{
-        _("Declares type signature of the function.")
-      }</description>
-      <detail>
+  {
+    return {
+      name: _("Type"),
+      description: _("Declares type signature of the function.")
+      /*
       <![CDATA[
         "type" attribute declares signature of the function. 
 
@@ -101,9 +100,9 @@ TypeAttribute.definition = {
           },
 
       ]]>
-      </detail>
-    </Attribute>,
-
+    */
+    };
+  },
 
   /** constructor 
    *  @param {EventBroker} broker Parent broker object.

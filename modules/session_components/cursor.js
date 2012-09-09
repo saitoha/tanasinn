@@ -36,18 +36,13 @@ Cursor.definition = {
     "cursor",
 
   get info()
-    <plugin>
-        <name>{_("Cursor")}</name>
-        <version>0.1</version>
-        <description>{
-          _("Make it Enabled to show cursor.")
-        }</description>
-        <detail lang="ja">
-        <![CDATA[
-          
-        ]]>
-        </detail>
-    </plugin>,
+  {
+    return {
+      name: _("Cursor"),
+      version: "0.1",
+      description: _("Make it Enabled to show cursor.")
+    };
+  },
 
   /** UI template */
   get template() 

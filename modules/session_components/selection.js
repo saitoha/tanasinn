@@ -155,13 +155,13 @@ Selection.definition = {
     "selection",
 
   get info()
-    <module>
-        <name>{_("Selection")}</name>
-        <description>{
-          _("Makes it enable to select text by dragging mouse.")
-        }</description>
-        <version>0.1</version>
-    </module>,
+  {
+    return {
+      name: _("Selection"),
+      version: "0.1",
+      description: _("Makes it enable to select text by dragging mouse.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
   "[persistable] normal_selection_color": "white",

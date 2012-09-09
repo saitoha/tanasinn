@@ -51,14 +51,13 @@ FocusEventMode.definition = {
     "focus_event_mode",
 
   get info()
-    <module>
-        <name>{_("Focus Event Mode")}</name>
-        <version>0.1</version>
-        <description>{
-          _("Switch focus event mode.")
-        }</description>
-    </module>,
-
+  {
+    return {
+      name: _("Focus Event Mode"),
+      version: "0.1",
+      description: _("Switch focus event mode.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
   "[persistable] default_value": false,

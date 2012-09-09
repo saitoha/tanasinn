@@ -33,13 +33,13 @@ Decoder.definition = {
     "decoder",
 
   get info()
-    <module>
-        <name>{_("Decoder")}</name>
-        <version>0.1</version>
-        <description>{
-          _("Decode incoming data stream and convert it into internal format.")
-        }</description>
-    </module>,
+  {
+    return {
+      name: _("Decoder"),
+      version: "0.1",
+      description: _("Decode incoming data stream and convert it into internal format.")
+    };
+  },
 
   _parser: null,
   _decoder_map: null,

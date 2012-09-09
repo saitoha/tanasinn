@@ -34,16 +34,17 @@ Mascot.definition = {
     "mascot",
 
   get info()
-    <module>
-        <name>{_("Mascot")}</name>
-        <description>{
-          _("Display mascot.")
-        }</description>
-        <version>0.1</version>
-    </module>,
+  {
+    return {
+      name: _("Mascot"),
+      version: "0.1",
+      description: _("Display mascot.")
+    };
+  },
 
   get template()
-    ({
+  {
+    return {
       parentNode: "#tanasinn_resizer_topright",
       //parentNode: "#tanasinn_outer_chrome",
       tagName: "box",
@@ -53,14 +54,15 @@ Mascot.definition = {
         {
           tagName: "image",
           src: this.getMascotImagePath(), 
-          style: <>
-            position: absolute;
-            margin-left: {this.offset_left}px;
-            margin-top: {this.offset_top}px;
-          </>,
+          style: {
+            position: "absolute",
+            marginLeft: this.offset_left + "px",
+            marginTop: this.offset_top + "px",
+          },
         },
       ],
-    }),
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
 
@@ -125,13 +127,13 @@ Cover.definition = {
     "cover",
 
   get info()
-    <module>
-        <name>{_("Cover")}</name>
-        <description>{
-          _("Apply glass effect.")
-        }</description>
-        <version>0.1</version>
-    </module>,
+  {
+    return {
+      name: _("Cover"),
+      version: "0.1",
+      description: _("Apply glass effect.")
+    };
+  },
 
   get template()
     ({

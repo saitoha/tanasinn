@@ -54,13 +54,13 @@ CursorBlink.definition = {
     "cursor_blink",
 
   get info()
-    <module>
-        <name>{_("Cursor Blink")}</name>
-        <version>0.1</version>
-        <description>{
-          _("Controls cursor blink switching.")
-        }</description>
-    </module>,
+  {
+    return {
+      name: _("Cursor Blink"),
+      version: "0.1",
+      description: _("Controls cursor blink switching.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
   "[persistable] default_value": false,

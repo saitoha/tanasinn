@@ -36,13 +36,13 @@ UTF8_CP932Decoder.definition = {
     "utf8-cp932-js",
 
   get info()
-    <module>
-        <name>{_("UTF-8 Decoder")}</name>
-        <version>0.1</version>
-        <description>{
-          _("Parallel decoder module for UTF-8/CP 932 character sets.")
-        }</description>
-    </module>,
+  {
+    return {
+      name: _("UTF-8 Decoder"),
+      version: "0.1",
+      description: _("Parallel decoder module for UTF-8/CP 932 character sets.")
+    };
+  },
 
   _cp932_map: null,
   _offset: 0,

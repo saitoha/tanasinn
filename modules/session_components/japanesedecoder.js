@@ -35,13 +35,13 @@ JapaneseDecoder.definition = {
     "japanese-js",
 
   get info()
-    <module>
-        <name>{_("Japanese Decoder")}</name>
-        <version>0.1</version>
-        <description>{
-          _("Parallel decoder module for Japanese character sets.")
-        }</description>
-    </module>,
+  {
+    return {
+      name: _("Japanese Decoder"),
+      version: "0.1",
+      description: _("Parallel decoder module for Japanese character sets.")
+    };
+  },
 
   _cp932_map: null,
   _jis0208_map: null,

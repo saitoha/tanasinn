@@ -25,20 +25,26 @@
 
 function apply_attribute(self, key)
 {
-  var getter, setter, path, body;
-
-  getter = self.__lookupGetter__(key);
-  setter = self.__lookupSetter__(key);
-
-  path = self.id + "." + key;
+  var getter = self.__lookupGetter__(key),
+      setter = self.__lookupSetter__(key),
+      path = self.id + "." + key,
+      body;
 
   if (!getter && !setter) {
 
     body = self[key];
     delete self[key];
 
-    self.__defineGetter__(key, function() body);
-    self.__defineSetter__(key, function(value)
+    self.__defineGetter__(
+      key,
+      function getBody()
+      {
+        return body;
+      })
+
+    self.__defineSetter__(
+      key,
+      function setBody(value)
       {
         if (body != value) {
           body = value;
@@ -60,12 +66,11 @@ WatchableAttribute.definition = {
     "watchable",
 
   get __info()
-    <Attribute>
-      <name>{_("Watchable")}</name>
-      <description>{
-        _("Declare a watchable member.")
-      }</description>
-      <detail>
+  {
+    return {
+      name: _("Watchable"),
+      description: _("Declare a watchable member.")
+      /*
       <![CDATA[
         "watchable" declare a watchable member.
 
@@ -74,17 +79,18 @@ WatchableAttribute.definition = {
           "[watchable] char_width": 6.5, 
 
       ]]>
-      </detail>
-    </Attribute>,
+      */
+    };
+  },
 
   /** constructor 
    *  @param {EventBroker} broker Parent broker object.
    */
   initialize: function initialize(broker)
   {
-    var attributes, key, attribute;
-
-    attributes = this.__attributes;
+    var attributes = this.__attributes,
+        key,
+        attribute;
 
     for (key in attributes) {
 

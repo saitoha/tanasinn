@@ -33,14 +33,14 @@ PluginViewer.definition = {
     "plugin_viewer",
 
   get info()
-    <plugin>
-        <name>{_("Component")}</name>
-        <description>{
-          _("List informatioin of plugins and makes it enable to ",
-            "install or uninstall plugins dynamically.")
-        }</description>
-        <version>0.1</version>
-    </plugin>,
+  {
+    return {
+      name: _("Component"),
+      version: "0.1",
+      description: _("List informatioin of plugins and makes it enable to ",
+                     "install or uninstall plugins dynamically.")
+    };
+  },
 
   get template()
   {
@@ -108,27 +108,27 @@ PluginViewer.definition = {
         tagName: "label", 
         //className: "text-link",
         style: "font-size: 1.4em; font-weight: bold;",
-        value: info..name.toString(),
+        value: info.name
       },
       { 
         tagName: "label", 
         style: "font-size: 1.4em; font-weight: bold;",
-        value: info..version.toString() 
+        value: info.version
       },
       { 
         tagName: "vbox", 
         childNodes: [
           {
             tagName: "label",
-            value: info..description.toString(),
+            value: info.description
           },
           {
             tagName: "label",
-            value: _("depends on: ") + depends_on.map(function(module) module.info..name, this).join("/"),
+            value: _("depends on: ") + depends_on.map(function(module) module.info.name, this).join("/"),
           },
           {
             tagName: "label",
-            value: _("depended by: ") + depended_by.map(function(module) module.info..name, this).join("/"),
+            value: _("depended by: ") + depended_by.map(function(module) module.info.name, this).join("/"),
           },
         ]
       },
@@ -163,7 +163,7 @@ PluginViewer.definition = {
 
     modules = this.sendMessage("get/components");
     this._modules = modules.filter(function(module) module.info)
-      .sort(function(lhs, rhs) lhs.info..name > rhs.info..name ? 1: -1);
+      .sort(function(lhs, rhs) lhs.info.name > rhs.info.name ? 1: -1);
     this.firstUpdate();
   },
 
@@ -238,7 +238,7 @@ PluginViewer.definition = {
       message = coUtils.Text.format(
         _("Succeeded to %s module %s."), 
         plugin.enabled ? _("install"): _("uninstall"), 
-        plugin.info..name);
+        plugin.info.name);
       this.update();
 
       this.sendMessage("event/dependencies-updated");
@@ -249,7 +249,7 @@ PluginViewer.definition = {
       message = coUtils.Text.format(
         _("Failed to %s module %s."), 
         enabled ? _("install"): _("uninstall"),
-        plugin.info..name);
+        plugin.info.name);
       this.sendMessage("command/report-status-message", message);
       coUtils.Debug.reportError(e);
     }

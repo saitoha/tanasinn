@@ -62,13 +62,13 @@ AnswerBack.definition = {
     "answerback",
 
   get info()
-    <module>
-        <name>{_("Answerback")}</name>
-        <version>0.1</version>
-        <description>{
-          _("Reply answerback message against incoming character '\x05'.")
-        }</description>
-    </module>,
+  {
+    return {
+      name: _("Answerback"),
+      version: "0.1",
+      description: _("Reply answerback message against incoming character '\x05'.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
   "[persistable] answerback_message": "",

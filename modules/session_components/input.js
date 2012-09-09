@@ -415,9 +415,9 @@ DefaultKeyMappings.definition = {
 
     // set keypad mode
     if (this.application_keypad) {
-      settings.push(KEY_NORMAL_KEYPAD);
-    } else {
       settings.push(KEY_APPLICATION_KEYPAD);
+    } else {
+      settings.push(KEY_NORMAL_KEYPAD);
     }
 
     if (this.yen_as_5c) {
@@ -620,32 +620,33 @@ InputManager.definition = {
     "inputmanager",
 
   get info()
-    <module>
-        <name>{_("Input Manager")}</name>
-        <description>{
-          _("Handle keyboard input event and send it to TTY device.")
-        }</description>
-        <version>0.1</version>
-    </module>,
+  {
+    return {
+      name: _("Input Manager"),
+      version: "0.1",
+      description: _("Handle keyboard input event and send it to TTY device.")
+    };
+  },
 
   get template()
-    ({ 
+  {
+    return { 
       parentNode: "#tanasinn_center_area",
       tagName: "bulletinboard",
-//      style: "border: solid 1px red",
       childNodes: {
         tagName: "textbox",
         className: "plain",
         id: "tanasinn_default_input",
-        style: <> 
-          ime-mode: disabled;
-          border: 0px; 
-          opacity: 0.00;
-        </>,
+        style: {
+          imeMode: "disabled",
+          border: "0px", 
+          opacity: "0.00",
+        },
         top: 0,
         left: 0,
       },
-    }),
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
   "[persistable] fix_for_ctrl_space": true,
@@ -840,15 +841,13 @@ InputManager.definition = {
     if (this.debug_flag) {
       this.sendMessage(
         this.debug_topic, 
-        <>
-code:{event.keyCode},
-which:{event.which},
-shift:{event.shiftKey?"t":"f"},
-ctl:{event.ctrlKey?"t":"f"},
-alt:{event.altKey?"t":"f"},
-meta:{event.metaKey?"t":"f"},
-char:{event.isChar?"t":"f"}
-        </>);
+        "code:" + event.keyCode + "," +
+        "which:" + event.which + "," +
+        "shift:" + event.shiftKey ? "t": "f" + "," +
+        "ctl:" + event.ctrlKey ? "t": "f" + "," +
+        "alt:" + event.altKey ? "t": "f" + "," +
+        "meta:" + event.metaKey ? "t": "f" + "," +
+        "char:" + event.isChar ? "t": "f");
     }
 
     this.onKeyPressEventReceived({

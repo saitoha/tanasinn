@@ -32,13 +32,13 @@ DragPaste.definition = {
     "dragpaste",
 
   get info()
-    <plugin>
-        <name>{_("Drag Paste")}</name>
-        <description>{
-          _("Make enable to accept dragged text and send it to TTY.")
-        }</description>
-        <version>0.1</version>
-    </plugin>,
+  {
+    return {
+      name: _("Drag Paste"),
+      version: "0.1",
+      description: _("Make enable to accept dragged text and send it to TTY.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
 

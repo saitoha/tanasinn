@@ -33,13 +33,13 @@ HardReset.definition = {
     "hard_reset",
 
   get info()
-    <module>
-        <name>{_("Hard Reset")}</name>
-        <version>0.1</version>
-        <description>{
-          _("Hard terminal reset with escape sequence.")
-        }</description>
-    </module>,
+  {
+    return {
+      name: _("Hard Reset"),
+      version: "0.1",
+      description: _("Hard terminal reset with escape sequence.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
 

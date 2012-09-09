@@ -32,13 +32,13 @@ MouseGesture.definition = {
     "mouse_gesture",
 
   get info()
-    <plugin>
-        <name>{_("Mouse Gesture")}</name>
-        <description>{
-          _("Handle mouse gesture event and send corresponding virtual key event.")
-        }</description>
-        <version>0.1</version>
-    </plugin>,
+  {
+    return {
+      name: _("Mouse Gesture"),
+      version: "0.1",
+      description: _("Handle mouse gesture event and send corresponding virtual key event.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
   "[persistable] magnify_delta_per_fontsize": 100,

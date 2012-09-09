@@ -95,12 +95,11 @@ NmapAttribute.definition = {
     "nmap",
 
   get __info()
-    <Attribute>
-      <name>{_("Default NMap")}</name>
-      <description>{
-        _("Provides default keybind replacement settings in normal mode.")
-      }</description>
-      <detail>
+  {
+    return {
+      name: _("Default NMap"),
+      description: _("Provides default keybind replacement settings in normal mode.")
+      /*
       <![CDATA[
         "nmap" attribute defines default keybind replacement settings in normal mode. 
         this settings are deald as "persistable".
@@ -114,9 +113,9 @@ NmapAttribute.definition = {
           },
 
       ]]>
-      </detail>
-    </Attribute>,
-
+      */
+    };
+  },
 
   /** constructor 
    *  @param {EventBroker} broker Parent broker object.

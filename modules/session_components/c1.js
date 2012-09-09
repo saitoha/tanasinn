@@ -33,13 +33,13 @@ C1Control.definition = {
     "c1control",
 
   get info()
-    <module>
-        <name>{_("C1 Control Handlers")}</name>
-        <version>0.1</version>
-        <description>{
-          _("Handle C1 controls.")
-        }</description>
-    </module>,
+  {
+    return {
+      name: _("C1 Control Handlers"),
+      version: "0.1",
+      description: _("Handle C1 control characters.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
 

@@ -63,13 +63,13 @@ SmoothScrollingMode.definition = {
     "smooth_scrolling_mode",
 
   get info()
-    <module>
-        <name>{_("Smooth Scrolling Mode")}</name>
-        <version>0.1</version>
-        <description>{
-          _("Switch smooth scrolling mode / jump scrolling mode.")
-        }</description>
-    </module>,
+  {
+    return {
+      name: _("Smooth Scrolling Mode"),
+      version: "0.1",
+      description: _("Switch smooth scrolling mode / jump scrolling mode.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
   "[persistable] default_value": false,

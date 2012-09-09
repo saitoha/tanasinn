@@ -40,16 +40,13 @@ CommandCompleter.definition = {
   "[subscribe('command/query-completion/command'), type('CompletionContext -> Undefined'), enabled]":
   function startSearch(context)
   {
-    var broker, lower_command_name, commands;
-
-    broker = this._broker;
-    lower_command_name = context.source.split(/\s+/).pop().toLowerCase();
-    commands = this.sendMessage("get/commands")
-      .filter(function(command) {
-        return 0 == command.name
-          .replace(/[\[\]]+/g, "")
-          .indexOf(lower_command_name);
-      }).sort(function(lhs, rhs) lhs.name.localeCompare(rhs.name));
+    var lower_command_name = context.source.split(/\s+/).pop().toLowerCase(),
+        commands = this.sendMessage("get/commands")
+          .filter(function(command) {
+            return 0 == command.name
+              .replace(/[\[\]]+/g, "")
+              .indexOf(lower_command_name);
+          }).sort(function(lhs, rhs) lhs.name.localeCompare(rhs.name));
 
     if (0 === commands.length) {
       this.sendMessage("event/answer-completion", null);
@@ -57,59 +54,16 @@ CommandCompleter.definition = {
       this.sendMessage("event/answer-completion", {
         type: "text",
         query: context.source, 
-        data: commands.map(function(command) ({
-          name: command.name.replace(/[\[\]]+/g, ""),
-          value: command.description,
-        })),
+        data: commands.map(
+          function(command)
+          {
+            return {
+              name: command.name.replace(/[\[\]]+/g, ""),
+              value: command.description,
+            };
+          }),
       });
     }
-  },
-
-};
-
-/**
- * @class HistoryCompleter
- */
-var HistoryCompleter = new Class().extends(Component);
-HistoryCompleter.definition = {
-
-  get id()
-    "history-completer",
-
-  _completion_component: Components
-    .classes["@mozilla.org/autocomplete/search;1?name=history"]
-    .createInstance(Components.interfaces.nsIAutoCompleteSearch),
-
-  /*
-   * Search for a given string and notify a listener (either synchronously
-   * or asynchronously) of the result
-   *
-   * @param source - The string to search for
-   * @param listener - A listener to notify when the search is complete
-   */
-  "[completer('history'), enabled]":
-  function complete(context)
-  {
-    var { source, option, completers } = context;
-
-    this._completion_component.startSearch(source, "", null, {
-        onSearchResult: function onSearchResult(search, result) 
-        { 
-          try {
-            const RESULT_SUCCESS = Components
-              .interfaces.nsIAutoCompleteResult.RESULT_SUCCESS;
-            if (result.searchResult == RESULT_SUCCESS) {
-              this.sendMessage("event/answer-completion", result);
-            } else {
-              coUtils.Debug.reportWarning(
-                _("Search component returns following result: %d"), 
-                result.searchResult);
-            }
-          } catch(e) {
-            coUtils.Debug.reportError(e);
-          }
-        }
-      });
   },
 
 };
@@ -121,7 +75,6 @@ HistoryCompleter.definition = {
  */
 function main(broker)
 {
-  new HistoryCompleter(broker);
   new CommandCompleter(broker);
 }
 

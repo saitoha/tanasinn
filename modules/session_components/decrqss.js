@@ -86,13 +86,13 @@ StatusRequest.definition = {
     "request_status_string",
 
   get info()
-    <module>
-        <name>{_("Status Request")}</name>
-        <version>0.1</version>
-        <description>{
-          _("Reply against REQRQSS query.")
-        }</description>
-    </module>,
+  {
+    return {
+      name: _("Status Request"),
+      version: "0.1",
+      description: _("Reply against REQRQSS query.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
 

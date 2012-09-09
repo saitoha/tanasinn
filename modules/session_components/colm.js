@@ -76,13 +76,13 @@ FixedColumnMode.definition = {
     "fixed_column_mode",
 
   get info()
-    <module>
-        <name>{_("Fixed Column Mode")}</name>
-        <version>0.1</version>
-        <description>{
-          _("Switch 80/132 columns mode.")
-        }</description>
-    </module>,
+  {
+    return {
+      name: _("Fixed Column Mode"),
+      version: "0.1",
+      description: _("Switch 80/132 columns mode.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
   "[persistable] default_value": false,

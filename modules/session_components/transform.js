@@ -330,15 +330,15 @@ Transform.definition = {
     "transform",
 
   get info()
-    <plugin>
-        <name>{_("Transforms")}</name>
-        <description>{
-          _("Convert the world coordinates with mouse operation")
-        }</description>
-        <version>0.1.0</version>
-    </plugin>,
+  {
+    return {
+      name: _("Transforms"),
+      version: "0.1.0",
+      description: _("Convert the world coordinates with mouse operation")
+    };
+  },
 
-  "[persistable] enabled_when_startup": false,
+  "[persistable] enabled_when_startup": true,
 
   _matrix: null,
   _element: null,
@@ -398,13 +398,13 @@ DragCover.definition = {
     "dragcover",
 
   get info()
-    <plugin>
-        <name>{_("DragCover")}</name>
-        <description>{
-          _("A Helper Object for gathering mouse dragging event's coordinate data.")
-        }</description>
-        <version>0.1.0</version>
-    </plugin>,
+  {
+    return {
+      name: _("DragCover"),
+      version: "0.1.0",
+      description: _("A Helper Object for gathering mouse dragging event's coordinate data.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
 

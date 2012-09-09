@@ -443,13 +443,13 @@ DecPrivateMode.definition = {
     "decmode",
 
   get info()
-    <plugin>
-        <name>{_("Private Mode")}</name>
-        <version>0.1</version>
-        <description>{
-          _("Handle Extended mode switches (CSI ? Pm h).")
-        }</description>
-    </plugin>,
+  {
+    return {
+      name: _("Private Mode"),
+      version: "0.1",
+      description: _("Handle Extended mode switches (CSI ? Pm h).")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
 

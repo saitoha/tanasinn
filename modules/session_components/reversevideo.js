@@ -66,14 +66,14 @@ ReverseVideo.definition = {
     "reverse_video",
 
   get info()
-    <module>
-        <name>{_("Reverse Video")}</name>
-        <version>0.1</version>
-        <description>{
-          _("Enable/disable Reverse video feature(DECSCNM)",
-            " with escape seqnence.")
-        }</description>
-    </module>,
+  {
+    return {
+      name: _("Reverse Video"),
+      version: "0.1",
+      description: _("Enable/disable Reverse video feature(DECSCNM)",
+                     " with escape seqnence.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
   "[persistable] default_value": false,

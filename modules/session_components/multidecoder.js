@@ -35,13 +35,13 @@ MultiDecoder.definition = {
     "multi",
 
   get info()
-    <module>
-        <name>{_("Multilingal Decoder")}</name>
-        <version>0.1</version>
-        <description>{
-          _("Gecko's decoder bridge.")
-        }</description>
-    </module>,
+  {
+    return {
+      name: _("Multilingal Decoder"),
+      version: "0.1",
+      description: _("Gecko's decoder bridge.")
+    };
+  },
 
   _current_scheme: "UTF-8",
   _converter: null,

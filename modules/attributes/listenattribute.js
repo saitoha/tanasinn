@@ -95,12 +95,11 @@ ListenAttribute.definition = {
     "listen",
 
   get __info()
-    <Attribute>
-      <name>{_("DOM Listener")}</name>
-      <description>{
-        _("Declares DOM listener procedure.")
-      }</description>
-      <detail>
+  {
+    return {
+      name: _("DOM Listener"),
+      description: _("Declares DOM listener procedure.")
+      /*
       <![CDATA[
         "listen" attribute defines a DOM listener procedure.
 
@@ -113,9 +112,9 @@ ListenAttribute.definition = {
           },
 
       ]]>
-      </detail>
-    </Attribute>,
-
+      */
+    };
+  },
 
   initialize: function initialize(broker) 
   {

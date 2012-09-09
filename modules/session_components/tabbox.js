@@ -37,14 +37,14 @@ BottomPanel.definition = {
     "bottompanel",
 
   get info()
-    <plugin>
-        <name>{_("Bottom Panel")}</name>
-        <description>{
-          _("Show tabbed panes which is able to contain variable plugin components ",
-            "at the bottom area of window.")
-        }</description>
-        <version>0.1</version>
-    </plugin>,
+  {
+    return {
+      name: _("Bottom Panel"),
+      version: "0.1",
+      description: _("Show tabbed panes which is able to contain variable plugin components ",
+                     "at the bottom area of window.")
+    };
+  },
 
   get template()
     ({
@@ -57,9 +57,9 @@ BottomPanel.definition = {
         {
           tagName: "vbox",
           flex: 1,
-          style: <>
-            opacity: 0.7;
-          </>,
+          style: {
+            opacity: "0.7",
+          },
         },
         {
           tagName: "vbox",
@@ -72,12 +72,10 @@ BottomPanel.definition = {
               context: this,
               handler: function(event) 
               {
-                var panel, tab, node, target;
-
-                target = event.target;
-
-                panel = target.selectedPanel;
-                tab = target.parentNode.selectedTab;
+                var target = event.target,
+                    panel = target.selectedPanel,
+                    tab = target.parentNode.selectedTab,
+                    node;
 
                 for ([, node] in Iterator(target.parentNode.tabs.childNodes)) {
                   node.style.color = "#777";
@@ -108,11 +106,11 @@ BottomPanel.definition = {
               { 
                 tagName: "tabpanels", 
                 id: "tanasinn_tabbox_tabpanels",
-                style: <>
-                  -moz-appearance: none;
-                  background: -moz-linear-gradient(top, #ccc, #777);
-                  border: 0px;
-                </>,
+                style: {
+                  MozAppearance: "none",
+                  background: "-moz-linear-gradient(top, #ccc, #777)",
+                  border: "0px",
+                },
               },
             ]
           }
@@ -296,20 +294,20 @@ BottomPanel.definition = {
         tagName: "tab",
         id: id,
         label: name,
-        style: <>
-          -moz-appearance: none;
-          font: menu;
-          color: black;
-          text-shadow: 0 1px rgba(255, 255, 255, .4);
-          background: -moz-linear-gradient(top, #fff, #ccc);
-          border-top-left-radius: 4px;
-          border-top-right-radius: 4px;
-          border-bottom: 0px;
-          border-left: 2px solid #aaa;
-          border-right: 2px solid #ccc;
-          margin-left: -2px;
-          margin-right: -4px;
-        </>,
+        style: {
+          MozAppearance: "none",
+          font: "menu",
+          color: "black",
+          textShadow: "0 1px rgba(255, 255, 255, .4)",
+          background: "-moz-linear-gradient(top, #fff, #ccc)",
+          borderTopLeftRadius: "4px",
+          borderTopRightRadius: "4px",
+          borderBottom: "0px",
+          borderLeft: "2px solid #aaa",
+          borderRight: "2px solid #ccc",
+          marginLeft: "-2px",
+          marginRight: "-4px",
+        },
       })[id];
 
     tab_panel = this.request(

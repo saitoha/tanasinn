@@ -74,7 +74,7 @@ ColorNumberCompleter.definition = {
       numbers = [i for (i in function() { for (var i = 0; i < 256; ++i) yield i; }())]
         .map(function(number) number.toString())
         .filter(function(number_as_string) -1 != number_as_string.indexOf(number));
-      if (0 == numbers.length) {
+      if (0 === numbers.length) {
         this.sendMessage("event/answer-completion", autocomplete_result);
       } else {
         this.sendMessage(

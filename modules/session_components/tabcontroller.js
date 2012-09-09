@@ -36,13 +36,13 @@ TabController.definition = {
     "tab_controller",
 
   get info()
-    <plugin>
-        <name>{_("Tab Controller")}</name>
-        <description>{
-          _("Retain tab-stop state and operate it.")
-        }</description>
-        <version>0.1.0</version>
-    </plugin>,
+  {
+    return {
+      name: _("Tab Controller"),
+      version: "0.1.0",
+      description: _("Retain tab-stop state and operate it.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
 

@@ -37,14 +37,13 @@ CP932Decoder.definition = {
     "cp932",
 
   get info()
-    <module>
-        <name>{_("CP-932 Decoder")}</name>
-        <version>0.1</version>
-        <description>{
-          _("Decoder module for CP-932 character set.")
-        }</description>
-    </module>,
-
+  {
+    return {
+      name: _("CP-932 Decoder"),
+      version: "0.1",
+      description: _("Decoder module for CP-932 character set.")
+    };
+  },
 
   "[persistable] displacement": 0x3f, // ?
 

@@ -34,13 +34,13 @@ DECLocatorMouse.definition = {
     "dec_locator_mouse",
 
   get info()
-    <plugin>
-        <name>{_("DEC Locator Mouse")}</name>
-        <description>{
-          _("Send DEC Locator mouse input events to TTY device.")
-        }</description>
-        <version>0.1</version>
-    </plugin>,
+  {
+    return {
+      name: _("DEC Locator Mouse"),
+      version: "0.1",
+      description: _("Send DEC Locator mouse input events to TTY device.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
 

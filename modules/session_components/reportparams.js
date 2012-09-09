@@ -34,13 +34,13 @@ ReportParams.definition = {
     "reportparams",
 
   get info()
-    <module>
-        <name>{_("Report Parameters")}</name>
-        <version>0.1</version>
-        <description>{
-          _("Reply against DECREQTPARM.")
-        }</description>
-    </module>,
+  {
+    return {
+      name: _("Report Parameters"),
+      version: "0.1",
+      description: _("Reply against DECREQTPARM.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
 

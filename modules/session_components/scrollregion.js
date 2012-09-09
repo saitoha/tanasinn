@@ -58,13 +58,13 @@ ScrollRegion.definition = {
     "scroll_region",
 
   get info()
-    <module>
-        <name>{_("Scroll Region")}</name>
-        <version>0.1</version>
-        <description>{
-          _("Set/Reset scroll region(DECSTBM) with escape sequence.")
-        }</description>
-    </module>,
+  {
+    return {
+      name: _("Scroll Region"),
+      version: "0.1",
+      description: _("Set/Reset scroll region(DECSTBM) with escape sequence.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
 

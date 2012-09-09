@@ -32,13 +32,13 @@ KeypadModeHandler.definition = {
     "keypadmode",
 
   get info()
-    <module>
-        <name>{_("Keypad Mode Handler")}</name>
-        <version>0.1</version>
-        <description>{
-          _("Switch keypad modes.")
-        }</description>
-    </module>,
+  {
+    return {
+      name: _("Keypad Mode Handler"),
+      version: "0.1",
+      description: _("Switch keypad modes.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
 

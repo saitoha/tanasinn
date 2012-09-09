@@ -569,13 +569,13 @@ Terminfo.definition = {
     "terminfo",
 
   get info()
-    <module>
-        <name>{_("termcap/terminfo Store")}</name>
-        <version>0.1</version>
-        <description>{
-          _("Get/Set termcap/terminfo capabilities.")
-        }</description>
-    </module>,
+  {
+    return {
+      name: _("termcap/terminfo Store"),
+      version: "0.1",
+      description: _("Get/Set termcap/terminfo capabilities.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
 

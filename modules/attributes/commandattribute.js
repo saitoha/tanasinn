@@ -140,12 +140,11 @@ CommandAttribute.definition = {
     "completer",
 
   get __info()
-    <Attribute>
-      <name>{_("Command")}</name>
-      <description>{
-        _("Declares a command procedure.")
-      }</description>
-      <detail>
+  {
+    return {
+      name: _("Command"),
+      description: _("Declares a command procedure.")
+      /*
       <![CDATA[
         "command" attribute declares a command procedure. 
 
@@ -158,9 +157,9 @@ CommandAttribute.definition = {
           },
 
       ]]>
-      </detail>
-    </Attribute>,
-
+      */
+    };
+  },
 
   /** constructor 
    *  @param {EventBroker} broker Parent broker object.

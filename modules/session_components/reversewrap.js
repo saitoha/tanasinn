@@ -34,14 +34,14 @@ ReverseWrap.definition = {
     "reversewrap",
 
   get info()
-    <module>
-        <name>{_("Reverse Wraparound Mode")}</name>
-        <version>0.1</version>
-        <description>{
-          _("Enable/disable reverse-wraparound feature",
-            " by escape seqnence.")
-        }</description>
-    </module>,
+  {
+    return {
+      name: _("Reverse Wraparound Mode"),
+      version: "0.1",
+      description: _("Enable/disable reverse-wraparound feature",
+                     " by escape seqnence.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
   "[persistable] default_value": false,

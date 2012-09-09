@@ -230,6 +230,7 @@
     charsetcompleter.js
     colorcompleter.js
     completer.js
+    historycompleter.js
     eventcompleter.js
     filecompleter.js
     fontfamilycompleter.js
@@ -239,6 +240,7 @@
     mapcompleter.js
     optioncompleter.js
     pluginscompleter.js
+    componentscompleter.js
 
   }
 

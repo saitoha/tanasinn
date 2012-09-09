@@ -32,13 +32,13 @@ Kill.definition = {
     "kill",
 
   get info()
-    <plugin>
-        <name>{_("Kill")}</name>
-        <description>{
-          _("Kill main process of current TTY session.")
-        }</description>
-        <version>0.1</version>
-    </plugin>,
+  {
+    return {
+      name: _("Kill"),
+      version: "0.1",
+      description: _("Kill main process of current TTY session.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
 

@@ -34,13 +34,13 @@ DragMove.definition = {
     "dragmove",
 
   get info()
-    <plugin>
-        <name>{_("Drag Move")}</name>
-        <description>{
-          _("Enable you to drag window title bar and move it.")
-        }</description>
-        <version>0.1</version>
-    </plugin>,
+  {
+    return {
+      name: _("Drag Move"),
+      version: "0.1",
+      description: _("Enable you to drag window title bar and move it.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
 

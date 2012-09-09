@@ -51,14 +51,13 @@ UrxvtMouseMode.definition = {
     "urxvt_mouse_mode",
 
   get info()
-    <module>
-        <name>{_("URXVT 1015 Mouse Mode")}</name>
-        <version>0.1</version>
-        <description>{
-          _("Switch urxvt mouse mode.")
-        }</description>
-    </module>,
-
+  {
+    return {
+      name: _("URXVT 1015 Mouse Mode"),
+      version: "0.1",
+      description: _("Switch urxvt mouse mode.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
   "[persistable] default_value": false,

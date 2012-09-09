@@ -109,13 +109,13 @@ Sixel.definition = {
     "sixel",
 
   get info()
-    <module>
-        <name>{_("Sixel")}</name>
-        <version>0.1</version>
-        <description>{
-          _("Provides overlay Sixel rendering layer.")
-        }</description>
-    </module>,
+  {
+    return {
+      name: _("Sixel"),
+      version: "0.1",
+      description: _("Provides overlay Sixel rendering layer.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
 

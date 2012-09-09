@@ -290,13 +290,13 @@ VT52.definition = {
     "vt52",
 
   get info()
-    <plugin>
-        <name>{_("VT-52 mode")}</name>
-        <description>{
-          _("Emurate DEC VT-52 terminal.")
-        }</description>
-        <version>0.1.0</version>
-    </plugin>,
+  {
+    return {
+      name: _("VT-52 mode"),
+      version: "0.1.0",
+      description: _("Emurate DEC VT-52 terminal.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
 

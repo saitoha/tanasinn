@@ -33,15 +33,15 @@ MessageFilter.definition = {
     "messagefilter",
 
   get info()
-    <module>
-        <name>{_("Message Filter")}</name>
-        <description>{
-          _("Receives raw console messages and formats them.")
-        }</description>
-        <version>0.1</version>
-    </module>,
+  {
+    return {
+      name: _("Message Filter"),
+      version: "0.1",
+      description: _("Receives raw console messages and formats them.")
+    };
+  },
 
-  get filter_expression()
+  filter_expression: 
     /^\[(.+?): "(tanasinn: )?([^"]*?)" {file: "([^"]*?)" line: ([0-9]+?)( name: "([^"]*?)")?}\]$/m,
   
   "[persistable] enabled_when_startup": true,
@@ -109,14 +109,14 @@ MessageFilter.definition = {
       parentNode: "#console_output_box",
       tagName: "row",
       className: "tanasinn-console-line " + class_string,
-      style: <>
-        background-color: { {
+      style: {
+        backgroundColor: {
           "JavaScript Error"  : "lightpink",
           "JavaScript Warning": "lightyellow",
           "JavaScript Message": "lightblue",
-        }[category] || "" };
-        border-bottom: 1px solid green;
-      </>,
+        }[category] || "",
+        borderBottom: "1px solid green",
+      },
       childNodes: [
         { 
           tagName: "label", 
@@ -227,9 +227,9 @@ DisplayManager.definition = {
     return {
       parentNode: "#console_output_box",
       tagName: "row",
-      style: <>
-        border-bottom: 1px solid green;,
-      </>,
+      style: {
+        borderBottom: "1px solid green",
+      },
       childNodes: [
         { tagName: "label", value: "" },
         { tagName: "label", value: "" },
@@ -377,13 +377,13 @@ Console.definition = {
     "console",
 
   get info()
-    <plugin>
-        <name>{_("Console")}</name>
-        <description>{
-          _("Connects the console service and display formatted messages.")
-        }</description>
-        <version>0.1</version>
-    </plugin>,
+  {
+    return {
+      name: _("Console"),
+      version: "0.1",
+      description: _("Connects the console service and display formatted messages.")
+    };
+  },
 
   get template()
     ({ 
@@ -423,13 +423,10 @@ Console.definition = {
             childNodes: [
               {
                 tagName: "toolbar",
-                style: <>
-                  -moz-appearance: none;
-                  //-moz-box-pack: center;
-                  border-radius: 8px;
-                  //border: solid 1px black;
-                  //margin: 0px 9px;
-                </>,
+                style: {
+                  MozAppearance: "none",
+                  borderRadius: "8px",
+                },
                 childNodes: [
                   {
                     tagName: "toolbarbutton",
@@ -438,20 +435,15 @@ Console.definition = {
                     value: mode.value,
                     group: "mode",
                     style: {
-                      cssText: <>
-                        background: -moz-linear-gradient(top, #ccc, #777);
-                        -moz-appearance: none;
-//                        border-radius: 8px;
-                        font: menu;
-                        text-shadow: 0 1px rgba(255, 255, 255, .4);
-                        margin: 0px;
-                        //margin-left: -1px;
-                        margin-right: -1px;
-                        padding: 0px 4px;
-                        border-radius: 2px;
-                        border: solid 1px black;
-                        //heihgt: 22px;
-                      </>,
+                      background: "-moz-linear-gradient(top, #ccc, #777)",
+                      MozAppearance: "none",
+                      font: "menu",
+                      textShadow: "0 1px rgba(255, 255, 255, .4)",
+                      margin: "0px",
+                      marginRight: "-1px",
+                      padding: "0px 4px",
+                      borderRadius: "2px",
+                      border: "solid 1px black",
                     },
                     listener: {
                       type: "command",
@@ -484,18 +476,14 @@ Console.definition = {
                 label: _("Clear"),
                 //id: "Console:clear",
                 style: { 
-                  cssText: <>
-                    //-moz-box-orient: vertical;
-                    //-moz-box-align: center;
-                    -moz-appearance: none;
-                    background: -moz-linear-gradient(top, #ccc, #777);
-                    font: menu;
-                    border-radius: 2px;
-                    border: solid 1px #444;
-                    text-shadow: 0 1px rgba(255, 255, 255, .4);
-                    margin: 0px 9px;
-                    padding: 0px 7px 0px 4px;
-                  </>
+                  MozAppearance: "none",
+                  background: "-moz-linear-gradient(top, #ccc, #777)",
+                  font: "menu",
+                  borderRadius: "2px",
+                  border: "solid 1px #444",
+                  textShadow: "0 1px rgba(255, 255, 255, .4)",
+                  margin: "0px 9px",
+                  padding: "0px 7px 0px 4px",
                 },
                 listener: {
                   type: "command",

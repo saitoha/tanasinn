@@ -69,13 +69,13 @@ NotificationService.definition = {
     "alert_service",
 
   get info()
-    <module>
-        <name>{_("Alert Service")}</name>
-        <description>{
-          _("Provides asyncronous popup alert window.")
-        }</description>
-        <version>0.1</version>
-    </module>,
+  {
+    return {
+      name: _("Alert Service"),
+      version: "0.1",
+      description: _("Provides asyncronous popup alert window.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
 
@@ -143,13 +143,13 @@ AlertService.definition = {
     "notification_service",
 
   get info()
-    <module>
-        <name>{_("Notification Service")}</name>
-        <description>{
-          _("Provides asyncronous popup notification window.")
-        }</description>
-        <version>0.1</version>
-    </module>,
+  {
+    return {
+      name: _("Notification Service"),
+      version: "0.1",
+      description: _("Provides asyncronous popup notification window.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
 

@@ -34,13 +34,13 @@ CursorState.definition = {
     "cursorstate",
 
   get info()
-    <module>
-        <name>{_("Cursor State")}</name>
-        <version>0.1</version>
-        <description>{
-          _("The cursor state object.")
-        }</description>
-    </module>,
+  {
+    return {
+      name: _("Cursor State"),
+      version: "0.1",
+      description: _("The cursor state object.")
+    };
+  },
 
   positionX: 0,
   positionY: 0,

@@ -161,13 +161,13 @@ SGRHandler.definition = {
     "sgr_handler",
 
   get info()
-    <module>
-        <name>{_("SGR Handler")}</name>
-        <version>0.1</version>
-        <description>{
-          _("Handle SGR sequence and enable character attribute support.")
-        }</description>
-    </module>,
+  {
+    return {
+      name: _("SGR Handler"),
+      version: "0.1",
+      description: _("Handle SGR sequence and enable character attribute support.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
 

@@ -35,13 +35,13 @@ UTF8Decoder.definition = {
     "UTF8-js",
 
   get info()
-    <module>
-        <name>{_("UTF-8 Decoder")}</name>
-        <version>0.1</version>
-        <description>{
-          _("Decoder module for UTF-8 character set.")
-        }</description>
-    </module>,
+  {
+    return {
+      name: _("UTF-8 Decoder"),
+      version: "0.1",
+      description: _("Decoder module for UTF-8 character set.")
+    };
+  },
 
   "[persistable] displacement": 0x3f,
   _offset: 0,
@@ -59,6 +59,7 @@ UTF8Decoder.definition = {
 
   activate: function activate() 
   {
+    /* skip */
   },
 
   /** Parse UTF-8 string sequence and convert it 
@@ -124,7 +125,7 @@ UTF8Decoder.definition = {
       return result;
     } else if (c < 0xf0) {
       // 1110xxxx 10xxxxxx 10xxxxxx 
-      // (0x00000800 - 0x0000ffff) // 16bit (UCS-2)
+      // (0x00000800 - 0x0000ffff) // 16bit
       if (0xe !== c >>> 4) {
         scanner.moveNext();
         scanner.moveNext();
@@ -151,7 +152,7 @@ UTF8Decoder.definition = {
       return result;
     } else if (c < 0xf8) {
       // 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx 
-      // (0x00010000 - 0x001fffff) // 21bit (UCS-4)
+      // (0x00010000 - 0x001fffff) // 21bit 
       if (0x1e !== c >>> 3) {
         scanner.moveNext();
         scanner.moveNext();

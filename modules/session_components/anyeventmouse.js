@@ -51,14 +51,13 @@ AnyEventMouseMode.definition = {
     "any_event_mouse_mode",
 
   get info()
-    <module>
-        <name>{_("Any Event Mouse Mode")}</name>
-        <version>0.1</version>
-        <description>{
-          _("Switch any event mouse mode.")
-        }</description>
-    </module>,
-
+  {
+    return {
+      name: _("Any Event Mouse Mode"),
+      version: "0.1",
+      description: _("Switch any event mouse mode.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
   "[persistable] default_value": false,

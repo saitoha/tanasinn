@@ -33,13 +33,13 @@ KeySnail.definition = {
     "keysnail",
 
   get info()
-    <module>
-        <name>KeySnail</name>
-        <description>{
-          _("Apply some fixes for keysnail-installed environment.")
-        }</description>
-        <version>0.1</version>
-    </module>,
+  {
+    return {
+      name: _("KeySnail"),
+      version: "0.1",
+      description: _("Apply some fixes for keysnail-installed environment.")
+    };
+  },
   
   "[persistable] enabled_when_startup": true,
 

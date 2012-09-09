@@ -50,13 +50,13 @@ WindowManipulator.definition = {
     "window_manipulatior",
 
   get info()
-    <module>
-        <name>{_("Window Manipulator")}</name>
-        <version>0.1</version>
-        <description>{
-          _("Report/Change window state, size, position, ...etc.")
-        }</description>
-    </module>,
+  {
+    return {
+      name: _("Window Manipulator"),
+      version: "0.1",
+      description: _("Report/Change window state, size, position, ...etc.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
 

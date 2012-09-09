@@ -39,13 +39,13 @@ DragCopy.definition = {
     "dragcopy",
 
   get info()
-    <plugin>
-        <name>{_("Drag Copy")}</name>
-        <description>{
-          _("Enables to drag selected text.")
-        }</description>
-        <version>0.1</version>
-    </plugin>,
+  {
+    return {
+      name: _("Drag Copy"),
+      version: "0.1",
+      description: _("Enables to drag selected text.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
 

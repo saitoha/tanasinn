@@ -80,13 +80,13 @@ Resize.definition = {
     "resize",
 
   get info()
-    <plugin>
-        <name>{_("Resize")}</name>
-        <description>{
-          _("Makes terminal window resizable.")
-        }</description>
-        <version>0.1</version>
-    </plugin>,
+  {
+    return {
+      name: _("Resize"),
+      version: "0.1",
+      description: _("Makes terminal window resizable.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
 

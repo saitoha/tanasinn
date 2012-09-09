@@ -53,13 +53,13 @@ TextCursorEnableMode.definition = {
     "text_cursor_enable_mode",
 
   get info()
-    <module>
-        <name>{_("Text Cursor Enable Mode (DECTCEM)")}</name>
-        <version>0.1</version>
-        <description>{
-          _("Switch the cursor's show/hide status.")
-        }</description>
-    </module>,
+  {
+    return {
+      name: _("Text Cursor Enable Mode (DECTCEM)"),
+      version: "0.1",
+      description: _("Switch the cursor's show/hide status.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
   "[persistable] default_value": true,

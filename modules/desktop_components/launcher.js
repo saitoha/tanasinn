@@ -566,20 +566,11 @@ TextCompletionDisplayDriver.definition = {
         {
           parentNode: rows,
           tagName: "row",
-          style: i == current_index ? <>
-            background: #226;
-            color: white;
-          </>: "",
+          style: i === current_index ? "background: #226; color: white;": "",
           childNodes: [
             {
               tagName: "box",
-              style: <>
-                font-size: 1.2em;
-                width: 50%;
-                margin: 0px;
-                overflow: hidden;
-                padding-left: 8px;
-              </>,
+              style: "font-size: 1.2em; width: 50%; margin: 0px; overflow: hidden; padding-left: 8px;",
               childNodes: -1 == match_position ? 
                 { text: completion_text }:
                 [
@@ -587,12 +578,7 @@ TextCompletionDisplayDriver.definition = {
                   {
                     tagName: "label",
                     innerText: completion_text.substr(match_position, search_string.length),
-                    style: <>
-                      margin: 0px; 
-                      font-weight: bold; 
-                      text-shadow: 1px 1px 2px black;
-                      color: #f88; 
-                    </>,
+                    style: "margin: 0px; font-weight: bold; text-shadow: 1px 1px 2px black; color: #f88;",
                   },
                   { text: completion_text.substr(match_position + search_string.length) },
                 ],
@@ -661,20 +647,20 @@ SessionsCompletionDisplayDriver.definition = {
         {
           parentNode: rows,
           tagName: "row",
-          style: i == current_index ? <>
-            background: #226;
-            color: white;
-          </>: "",
+          style: i === current_index ? {
+            background: "#226",
+            color: "white",
+          }: "",
           childNodes: [
             {
               tagName: "box",
-              style: <>
-                font-size: 1.2em;
-                width: 50%;
-                margin: 0px;
-                overflow: hidden;
-                padding-left: 8px;
-              </>,
+              style: {
+                fontSize: "1.2em",
+                width: "50%",
+                margin: "0px",
+                overflow: "hidden",
+                paddingLeft: "8px",
+              },
               childNodes: { 
                 tagName: "image",
                 width: 120,
@@ -685,13 +671,13 @@ SessionsCompletionDisplayDriver.definition = {
             },
             {
               tagName: "vbox",
-              style: <>
-                font-size: 1.2em;
-                width: 50%;
-                margin: 0px;
-                overflow: hidden;
-                padding-left: 8px;
-              </>,
+              style: {
+                fontSize: "1.2em",
+                width: "50%",
+                margin: "0px",
+                overflow: "hidden",
+                paddingLeft: "8px",
+              },
               childNodes: [
                 {
                   tagName: "html:div",
@@ -788,15 +774,13 @@ Launcher.definition = {
   },
 
   get textboxStyle()
-    <>
-      font-size: {this.font_size};
-      font-family: {this.font_family};
-      font-weight: {this.font_weight};
-      font-style: {this.font_style};
-      text-shadow: 1px 1px 3px black;
-      width: {this.textbox_width};
-      color: {this.textbox_color};
-    </>,
+    "font-size: " + this.font_size + ";" +
+    "font-family: " + this.font_family + ";" +
+    "font-weight: " + this.font_weight + ";" +
+    "font-style: " + this.font_style + ";" +
+    "text-shadow: 1px 1px 3px black;" +
+    "width: " + this.textbox_width + ";" +
+    "color: " + this.textbox_color + ";",
 
   "[subscribe('event/broker-started'), enabled]":
   function onLoad(desktop)
@@ -819,23 +803,23 @@ Launcher.definition = {
         tagName: "box",
         id: "tanasinn_launcher_layer",
         hidden: true,
-        style: <>
-          position: fixed;
-          left: 60px;
-          top: 80px;
-        </>,
+        style: {
+          position: "fixed",
+          left: "60px",
+          top: "80px",
+        },
         childNodes: [
           {
             tagName: "vbox",
-            style: <>
-              padding: 20px;
-              border-radius: 20px;
-              background: -moz-linear-gradient(top, #999, #444);
-              -moz-box-shadow: 10px 10px 20px black;
-              box-shadow: 10px 10px 20px black;
-              opacity: 0.85;
-              cursor: move;
-            </>,
+            style: {
+              padding: "20px",
+              borderRadius: "20px",
+              background: "-moz-linear-gradient(top, #999, #444)",
+              MozBoxShadow: "10px 10px 20px black",
+              boxShadow: "10px 10px 20px black",
+              opacity: "0.85",
+              cursor: "move",
+            },
             childNodes: {
               tagName: "textbox",
               id: "tanasinn_launcher_textbox",
@@ -845,17 +829,16 @@ Launcher.definition = {
           },
           {
             tagName: "panel",
-            style: <> 
-              -moz-appearance: none;
-              -moz-user-focus: ignore; 
-//              -moz-box-shadow: 15px 14px 9px black;
-              border: 1px solid #aaa;
-              border-radius: 10px;
-              font: menu;
-              opacity: 0.87;
-              background: transparent;
-              background: -moz-linear-gradient(top, #ccc, #aaa);
-            </>,
+            style: { 
+              MozAppearance: "none",
+              MozUserFocus: "ignore",
+              border: "1px solid #aaa",
+              borderRadius: "10px",
+              font: "menu",
+              opacity: "0.87",
+              background: "transparent",
+              background: "-moz-linear-gradient(top, #ccc, #aaa)",
+            },
             noautofocus: true,
             height: this.popup_height,
             id: "tanasinn_launcher_completion_popup",
@@ -865,33 +848,33 @@ Launcher.definition = {
               childNodes: [
                 {
                   tagName: "box",
-                  style: <> 
-                    border-radius: 12px;
-                    outline: none;
-                    border: none;
-                  </>,
+                  style: { 
+                    borderRadius: "12px",
+                    outline: "none",
+                    border: "none",
+                  },
                 },
                 {
                   tagName: "scrollbox",
                   id: "tanasinn_launcher_completion_scroll",
                   flex: 1,
-                  style: <> 
-                    margin: 12px;
-                    overflow-x: hidden;
-                    overflow-y: auto;
-                  </>,
+                  style: { 
+                    margin: "12px",
+                    overflowX: "hidden",
+                    overflowY: "auto",
+                  },
                   orient: "vertical", // box-packing
                   childNodes: {
                     tagName: "grid",
                     flex: 1,
                     id: "tanasinn_launcher_completion_root",
-                    style: <> 
-                      font-size: 20px;
-                      font-family: 'Menlo','Lucida Console';
-                      font-weight: bold;
-                      color: #fff;
-                      text-shadow: 1px 1px 7px black;
-                    </>,
+                    style: {
+                      fontSize: "20px",
+                      fontFamily: "'Menlo','Lucida Console'",
+                      fontWeight: "bold",
+                      color: "#fff",
+                      textShadow: "1px 1px 7px black",
+                    },
                   }
                 }, // scrollbox
               ],
@@ -1002,10 +985,7 @@ Launcher.definition = {
     if (index > -1) {
       row = completion_root.querySelector("rows").childNodes[index];
       row.style.color = "black";
-      row.style.cssText = <>
-        background: -moz-linear-gradient(top, #ddd, #eee);
-        border-radius: 4px;
-      </>.toString();
+      row.style.cssText = "background: -moz-linear-gradient(top, #ddd, #eee); border-radius: 4px;";
 
       try {
         scroll_box = completion_root.parentNode;
@@ -1464,7 +1444,7 @@ DragMove.definition = {
   "[install]":
   function install(broker) 
   {
-    var {tanasinn_drag_cover}
+    var tanasinn_drag_cover
       = this.request(
         "command/construct-chrome",
         {
@@ -1472,13 +1452,14 @@ DragMove.definition = {
           tagName: "box",
           id: "tanasinn_drag_cover",
           hidden: true,
-          style: <>
-            position: fixed;
-            left: 0px;
-            top: 0px;
-            padding: 100px;
-          </>,
-        });
+          style: {
+            position: "fixed",
+            left: "0px",
+            top: "0px",
+            padding: "100px",
+          },
+        }).tanasinn_drag_cover;
+
     this._drag_cover = tanasinn_drag_cover;
   },
 

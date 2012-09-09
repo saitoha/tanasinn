@@ -52,12 +52,11 @@ SequenceAttribute.definition = {
     "sequence",
 
   get __info()
-    <Attribute>
-      <name>{_("Sequence")}</name>
-      <description>{
-        _("Marks a function as a sequence handler.")
-      }</description>
-      <detail>
+  {
+    return {
+      name: _("Sequence"),
+      description: _("Marks a function as a sequence handler.")
+      /*
       <![CDATA[
         "sequence" attribute marks a function as sequence handler.
 
@@ -70,10 +69,9 @@ SequenceAttribute.definition = {
           },
 
       ]]>
-      </detail>
-    </Attribute>,
-
-
+      */
+    };
+  },
 
   /** constructor 
    *  @param {EventBroker} broker Parent broker object.
@@ -119,12 +117,11 @@ ProfileAttribute.definition = {
     "profile",
 
   get __info()
-    <Attribute>
-      <name>{_("Profile")}</name>
-      <description>{
-        _("Marks a function as a profile handler.")
-      }</description>
-      <detail>
+  {
+    return {
+      name: _("Profile"),
+      description: _("Marks a function as a profile handler.")
+      /*
       <![CDATA[
         "profile" attribute marks a sequence handler as a feature of specified mode.
 
@@ -137,10 +134,9 @@ ProfileAttribute.definition = {
           },
 
       ]]>
-      </detail>
-    </Attribute>,
-
-
+      */
+    };
+  },
 
   /** constructor 
    *  @param {EventBroker} broker Parent broker object.

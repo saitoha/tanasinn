@@ -51,14 +51,13 @@ ButtonEventMouseMode.definition = {
     "button_event_mouse_mode",
 
   get info()
-    <module>
-        <name>{_("Button Event Mouse Mode")}</name>
-        <version>0.1</version>
-        <description>{
-          _("Switch button event mouse mode.")
-        }</description>
-    </module>,
-
+  {
+    return {
+      name: _("Button Event Mouse Mode"),
+      version: "0.1",
+      description: _("Switch button event mouse mode."),
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
   "[persistable] default_value": false,

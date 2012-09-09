@@ -33,16 +33,17 @@ Agent.definition = {
     "agent",
 
   get info()
-    <module>
-        <name>{_("Agent (BETA)")}</name>
-        <description>{
-          _("Display agent.")
-        }</description>
-        <version>0.1b</version>
-    </module>,
+  {
+    return {
+      name: _("Agent (BETA)"),
+      description: _("Display agent."),
+      version: "0.1b",
+    };
+  },
 
   get template()
-    ({
+  {
+    return {
       parentNode: "#tanasinn_outer_chrome",
       tagName: "box",
       id: "tanasinn_agent_layer",
@@ -52,90 +53,90 @@ Agent.definition = {
         {
           tagName: "image",
           src: this.getAgentImagePath(), 
-          style: <>
-            position: absolute;
-            margin-top: -130px;
-            margin-right: -120px;
-            margin-left: 600px;
-          </>,
+          style: {
+            position: "absolute",
+            marginTop: "-130px",
+            marginRight: "-120px",
+            marginLeft: "600px",
+          },
         },
         {
           tagName: "box",
-          style: <>
-            position: absolute;
-            margin-top: -350px;
-            margin-right: -0px;
-            margin-left: 0px;
-            font-family: Arial Black,Cooper Black;
-          </>,
+          style: {
+            position: "absolute",
+            marginTop: "-350px",
+            marginRight: "-0px",
+            marginLeft: "0px",
+            fontFamily: "Arial Black,Cooper Black",
+          },
           childNodes: {
             tagName: "stack",
             childNodes: [
               {
                 tagName: "image",
                 src: this.getBalloonImagePath(),
-                style: <>
-                  opacity: 0.85;
-                </>,
+                style: { 
+                  opacity: "0.85",
+                },
               },
               {
                 tagName: "vbox",
-                style: <> 
-                  color: lightblue;     
-                  text-shadow: 1px 1px 5px black;
-                </>,
+                style: {
+                  color: "lightblue",     
+                  textShadow: "1px 1px 5px black",
+                },
                 childNodes: [
                   {
                     tagName: "label",
-                    style: <>
-                      margin-top: 100px;
-                      margin-left: 160px;
-                      font-size: 40px;
-                    </>,
+                    style: {
+                      marginTop: "100px",
+                      marginLeft: "160px",
+                      fontSize: "40px",
+                    },
                     value: "Take it easy !!!!!!"
                   },
                   {
                     tagName: "box",
-                    style: <>
-                      margin-top: -5px;
-                      margin-left: 130px;
-                      font-size: 28px;
-                    </>,
+                    style: {
+                      marginTop: "-5px",
+                      marginLeft: "130px",
+                      fontSize: "28px",
+                    },
                     childNodes: [
                       {
                         tagName: "label",
                         id: "tanasinn_agent_message",
-                        style: <>
-                          color: #faa;
-                        </>,
+                        style: {
+                          color: "#faa",
+                        },
                         value: "",
                       },
                       {
                         tagName: "label",
-                        style: <>
-                          color: lightblue;
-                        </>,
+                        style: { 
+                          color: "lightblue",
+                        },
                         value: " is correct?",
                       },
                       {
                         tagName: "label",
-                        style: <>
-                          color: white;
-                        </>,
+                        style: {
+                          color: "white",
+                        },
                         value: "[",
                       },
                       {
                         tagName: "label",
-                        style: <>
-                          color: lightpink;
-                        </>,
+                        style: {
+                          color: "lightpink",
+                        },
                         value: "n,y,a,e",
                       },
                       {
                         tagName: "label",
-                        style: <>
-                          color: white;
-                        </>,
+                        style: {
+                          color: "white",
+                        },
                         value: "]",
                       },
                     ],
@@ -146,7 +147,8 @@ Agent.definition = {
           },
         },
       ],
-    }),
+    };
+  },
 
   "[persistable] enabled_when_startup": false,
 

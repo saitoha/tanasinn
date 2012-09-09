@@ -86,14 +86,13 @@ SecondaryDA.definition = {
     "secondary_da",
 
   get info()
-    <module>
-        <name>{_("Secondary Device Attribute")}</name>
-        <version>0.1</version>
-        <description>{
-          _("Reply Secondary device attribute message against requests.")
-        }</description>
-    </module>,
-
+  {
+    return {
+      name: _("Secondary Device Attribute"),
+      version: "0.1",
+      description: _("Reply Secondary device attribute message against requests.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
 

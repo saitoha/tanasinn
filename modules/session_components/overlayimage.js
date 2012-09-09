@@ -33,13 +33,13 @@ OverlayImage.definition = {
     "overlay_image",
 
   get info()
-    <module>
-        <name>{_("Overlay Image (BETA)")}</name>
-        <version>0.1b</version>
-        <description>{
-          _("Display overlay image on terminal screen.")
-        }</description>
-    </module>,
+  {
+    return {
+      name: _("Overlay Image (BETA)"),
+      version: "0.1b",
+      description: _("Display overlay image on terminal screen.")
+    };
+  },
 
   get template()
     ({

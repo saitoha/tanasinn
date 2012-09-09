@@ -75,13 +75,13 @@ RectangleChecksumReport.definition = {
     "rectangle_checksum_report",
 
   get info()
-    <module>
-        <name>{_("Rectangle Checksum Report")}</name>
-        <version>0.1</version>
-        <description>{
-          _("Send checksum of specified rectangle area.")
-        }</description>
-    </module>,
+  {
+    return {
+      name: _("Rectangle Checksum Report"),
+      version: "0.1",
+      description: _("Send checksum of specified rectangle area.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
 

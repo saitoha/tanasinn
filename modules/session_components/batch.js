@@ -33,13 +33,13 @@ BatchLoader.definition = {
     "batch_loader",
 
   get info()
-    <module>
-        <name>{_("Batch Loader")}</name>
-        <description>{
-          _("Provides command batch loader.")
-        }</description>
-        <version>0.1</version>
-    </module>,
+  {
+    return {
+      name: _("Batch Loader"),
+      version: "0.1",
+      description: _("Provides command batch loader.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
 

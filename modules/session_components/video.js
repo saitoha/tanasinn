@@ -34,21 +34,23 @@ Video.definition = {
     "video",
 
   get info()
-    <module>
-        <name>{_("Video (BETA)")}</name>
-        <version>0.1b</version>
-        <description>{
-          _("Display overlay image on terminal screen.")
-        }</description>
-    </module>,
+  {
+    return {
+      name: _("Video (BETA)"),
+      version: "0.1b",
+      description: _("Display overlay image on terminal screen.")
+    };
+  },
 
   get template()
-    ({
+  {
+    return {
       parentNode: "#tanasinn_center_area",
       tagName: "html:div",
       id: "tanasinn_video_layer",
       style: "position: absolute;",
-    }),
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
   "[persistable] opacity": 0.60,

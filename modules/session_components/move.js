@@ -32,13 +32,13 @@ MoveShortcut.definition = {
     "moveshortcut",
 
   get info()
-    <plugin>
-        <name>{_("Move Shortcut")}</name>
-        <description>{
-          _("Enables you to move window by keyboard short cut.")
-        }</description>
-        <version>0.1</version>
-    </plugin>,
+  {
+    return {
+      name: _("Move Shortcut"),
+      version: "0.1",
+      description: _("Enables you to move window by keyboard short cut.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
 

@@ -33,13 +33,13 @@ Scrollbar.definition = {
     "scrollbar",
 
   get info()
-    <plugin>
-        <name>{_("Scroll Bar")}</name>
-        <description>{
-          _("Shows scrollbar interface.")
-        }</description>
-        <version>0.1</version>
-    </plugin>,
+  {
+    return {
+      name: _("Scroll Bar"),
+      version: "0.1",
+      description: _("Shows scrollbar interface.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
 
@@ -60,16 +60,16 @@ Scrollbar.definition = {
         tagName: "vbox",
         flex: 1,
         id: "tanasinn_scrollbar",
-        style: <> 
-          opacity: 0.00;
-          -moz-transition-property: opacity;
-          -moz-transition-duration: {this.transition_duration}ms;
-          border-radius: {this.inner_width + this.border_width * 2}px;
-          border: {this.border_width}px solid {this.color};
-          width: {this.inner_width + this.border_width * 2}px;
-          margin: 8px;
-          height: 100%;
-        </>,
+        style: { 
+          opacity: "0.00",
+          MozTransitionProperty: "opacity",
+          MozTransitionDuration: this.transition_duration + "ms",
+          borderRadius: (this.inner_width + this.border_width * 2) + "px",
+          border: this.border_width + "px solid " + this.color,
+          width: (this.inner_width + this.border_width * 2) + "px",
+          margin: "8px",
+          height: "100%",
+        },
         childNodes: [
           {
             tagName: "box",
@@ -91,7 +91,7 @@ Scrollbar.definition = {
             id: "tanasinn_scrollbar_current",
             height: this.inner_width * 2,
             style: { 
-              borderRadius: <>{this.inner_width / 2}px</>,
+              borderRadius: (this.inner_width / 2) + "px",
               backgroundColor: this.color,
             },
           },

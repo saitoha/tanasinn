@@ -37,13 +37,13 @@ EUCJPDecoder.prototype = {
     "EUC-JP-js",
 
   get info()
-    <module>
-        <name>{_("EUC-JP Decoder")}</name>
-        <version>0.1</version>
-        <description>{
-          _("Decoder module for EUC-JP character set.")
-        }</description>
-    </module>,
+  {
+    return {
+      name: _("EUC-JP Decoder"),
+      version: "0.1",
+      description: _("Decoder module for EUC-JP character set.")
+    };
+  },
 
   "[persistable] displacement": 0x3f,
 

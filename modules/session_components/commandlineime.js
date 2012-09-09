@@ -41,13 +41,13 @@ CommandlineIme.definition = {
     "commandline_ime",
 
   get info()
-    <plugin>
-        <name>{_("Commandline IME")}</name>
-        <description>{
-          _("Make you enable to input with IME at the commandline field.")
-        }</description>
-        <version>0.1</version>
-    </plugin>,
+  {
+    return {
+      name: _("Commandline IME"),
+      version: "0.1",
+      description: _("Make you enable to input with IME at the commandline field.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
 

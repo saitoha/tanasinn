@@ -34,13 +34,13 @@ PresentationStateReport.definition = {
     "presentation_state_report",
 
   get info()
-    <plugin>
-        <name>{_("Presentation State Report")}</name>
-        <description>{
-          _("Report presentation state (cursor / tab-stop inforamtion)")
-        }</description>
-        <version>0.1.0</version>
-    </plugin>,
+  {
+    return {
+      name: _("Presentation State Report"),
+      version: "0.1.0",
+      description: _("Report presentation state (cursor / tab-stop inforamtion)")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
 

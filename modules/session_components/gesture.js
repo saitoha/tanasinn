@@ -33,16 +33,17 @@ Gesture.definition = {
     "gesture",
 
   get info()
-    <module>
-        <name>{_("Gesture (BETA)")}</name>
-        <description>{
-          _("Interpret mouse gestures.")
-        }</description>
-        <version>0.1b</version>
-    </module>,
+  {
+    return {
+      name: _("Gesture (BETA)"),
+      version: "0.1b",
+      description: _("Interpret mouse gestures.")
+    };
+  },
 
   get template()
-    ({
+  {
+    return {
       parentNode: "#tanasinn_center_area",
       tagName: "box",
       orient: "vertical",
@@ -52,7 +53,8 @@ Gesture.definition = {
         tagName: "html:canvas",
         id: "tanasinn_gesture_canvas",
       },
-    }),
+    };
+  },
 
   "[persistable] enabled_when_startup": false,
 

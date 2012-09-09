@@ -63,14 +63,13 @@ KeyboardActionMode.definition = {
     "keyboard_action_mode",
 
   get info()
-    <module>
-        <name>{_("Keyboard action mode")}</name>
-        <version>0.1</version>
-        <description>{
-          _("Lock/Unlock the keyboard.")
-        }</description>
-    </module>,
-
+  {
+    return {
+      name: _("Keyboard action mode"),
+      version: "0.1",
+      description: _("Lock/Unlock the keyboard.")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
   "[persistable] default_value": false,
