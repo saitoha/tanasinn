@@ -70,7 +70,7 @@ ColorNumberCompletionDisplayDriver.definition = {
 
   drive: function drive(grid, result, current_index) 
   {
-    var owner_document = grid.ownerDocument;
+    var owner_document = grid.ownerDocument,
         columns,
         rows;
 

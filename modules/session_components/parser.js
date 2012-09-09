@@ -22,6 +22,17 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+function wait(span) 
+{
+  var end_time = Date.now() + span,
+      current_thread = coUtils.Services.threadManager.currentThread;
+
+  do {
+    current_thread.processNextEvent(true);
+  } while ((current_thread.hasPendingEvents()) || Date.now() < end_time);
+};
+
+
 //////////////////////////////////////////////////////////////////////////////
 //
 // Concepts
@@ -981,6 +992,9 @@ Parser.definition = {
       action();
     }
     this.sendMessage("command/draw"); // fire "draw" event.
+
+    wait(10);
+
 //    }, 10, this);
   },
 

@@ -843,17 +843,18 @@ InputManager.definition = {
         this.debug_topic, 
         "code:" + event.keyCode + "," +
         "which:" + event.which + "," +
-        "shift:" + event.shiftKey ? "t": "f" + "," +
-        "ctl:" + event.ctrlKey ? "t": "f" + "," +
-        "alt:" + event.altKey ? "t": "f" + "," +
-        "meta:" + event.metaKey ? "t": "f" + "," +
-        "char:" + event.isChar ? "t": "f");
+        "shift:" + (event.shiftKey ? "t": "f") + "," +
+        "ctl:" + (event.ctrlKey ? "t": "f") + "," +
+        "alt:" + (event.altKey ? "t": "f") + "," +
+        "meta:" + (event.metaKey ? "t": "f") + "," +
+        "char:" + (event.isChar ? "t": "f"));
     }
 
-    this.onKeyPressEventReceived({
-      mode: "normal", 
-      event: event,
-    });
+    this.onKeyPressEventReceived(
+      {
+        mode: "normal", 
+        event: event,
+      });
  
   },
 
@@ -873,10 +874,12 @@ InputManager.definition = {
   "[subscribe('command/input-with-remapping'), pnp]": 
   function inputWithMapping(info)
   {
-    var result = this.request("event/normal-input", {
-      textbox: this._textbox, 
-      code: info.code,
-    });
+    var result = this.request(
+      "event/normal-input", 
+      {
+        textbox: this._textbox, 
+        code: info.code,
+      });
 
     if (!result && !(info.code & (1 << coUtils.Constant.KEY_MODE))) {
       this.sendMessage("command/input-with-no-remapping", info.code);
@@ -944,9 +947,7 @@ InputManager.definition = {
   "[listen('compositionstart', '#tanasinn_default_input'), pnp]":
   function oncompositionstart(event) 
   {
-    var version_comparator = Components
-      .classes["@mozilla.org/xpcom/version-comparator;1"]
-      .getService(Components.interfaces.nsIVersionComparator);
+    var version_comparator = coUtils.Serivces.versionComparator;
 
     if (version_comparator.compare(coUtils.Runtime.version, "10.0") >= 0) {
       this.oninput.enabled = false;
@@ -959,9 +960,7 @@ InputManager.definition = {
   "[listen('compositionend', '#tanasinn_default_input'), pnp]":
   function oncompositionend(event) 
   {
-    var version_comparator = Components
-      .classes["@mozilla.org/xpcom/version-comparator;1"]
-      .getService(Components.interfaces.nsIVersionComparator);
+    var version_comparator = coUtils.Serivces.versionComparator;
 
     if (version_comparator.compare(coUtils.Runtime.version, "10.0") >= 0) {
       this.oninput.enabled = true;

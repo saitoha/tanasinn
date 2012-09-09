@@ -25,6 +25,7 @@
 function char2sixelbits(c) 
 {
   var code = "0000000" + (c.charCodeAt(0) - "?".charCodeAt(0)).toString(2);
+
   return code
     .substr(-6)
     .split("")

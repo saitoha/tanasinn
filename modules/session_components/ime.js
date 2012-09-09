@@ -64,9 +64,7 @@ Ime.definition = {
   {
     var textbox = this.dependency["inputmanager"].getInputField(),
         renderer = this.dependency["renderer"],
-        version_comparator = Components
-          .classes["@mozilla.org/xpcom/version-comparator;1"]
-          .getService(Components.interfaces.nsIVersionComparator),
+        version_comparator = coUtils.Services.versionComparator,
         focused_element;
 
     textbox.style.width = "0%";

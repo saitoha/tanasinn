@@ -127,7 +127,7 @@ ColorNumberCompleter.definition = {
 
   _getColorMap: function _getColorMap(option)
   {
-    var renderre = this.dependency["renderer"];
+    var renderer = this.dependency["renderer"];
 
     switch (option) {
 

@@ -292,7 +292,7 @@ ReverseVideoTrait.definition = {
         map[i] = value;
       }
 
-      this.dependency["screen"].dirty = true;
+      this._screen.dirty = true;
     }
 
   },
@@ -360,9 +360,9 @@ PalletManagerTrait.definition = {
   "[subscribe('sequence/osc/10'), pnp]": 
   function osc10(info) 
   {
-    var outerchrome, color, message;
-
-    outerchrome = this.dependency["outerchrome"];
+    var outerchrome = this._outerchrome,
+        color,
+        message;
 
     if ("?" === info) {
       color = outerchrome.foreground_color;
@@ -382,7 +382,7 @@ PalletManagerTrait.definition = {
   "[subscribe('sequence/osc/110'), pnp]":
   function osc110()
   {
-    var outerchrome = this.dependency["outerchrome"],
+    var outerchrome = this._outerchrome,
         scope = {};
 
     this.sendMessage("command/load-persistable-data", scope);
@@ -395,9 +395,9 @@ PalletManagerTrait.definition = {
   "[subscribe('sequence/osc/11'), pnp]": 
   function osc11(info) 
   {
-    var outerchrome, color, message;
-
-    outerchrome = this.dependency["outerchrome"];
+    var outerchrome = this._outerchrome;
+        color,
+        message;
 
     if ("?" === info) {
       color = outerchrome.background_color;
@@ -417,7 +417,7 @@ PalletManagerTrait.definition = {
   "[subscribe('sequence/osc/111'), pnp]":
   function osc111()
   {
-    var outerchrome = this.dependency["outerchrome"],
+    var outerchrome = this._outerchrome,
         scope = {};
 
     this.sendMessage("command/load-persistable-data", scope);
@@ -572,7 +572,8 @@ Renderer.definition = {
   "[install]":
   function install(broker) 
   {
-    var outerchrome;
+    this._outerchrome = this.dependency["outerchrome"];
+    this._screen = this.dependency["screen"];
 
     this._main_layer = new Layer(broker, "foreground_canvas");
 
@@ -583,9 +584,8 @@ Renderer.definition = {
     this.onWidthChanged();
     this.onHeightChanged();
 
-    outerchrome = this.dependency["outerchrome"];
-    this.foreground_color = outerchrome.foreground_color;
-    this.background_color = outerchrome.background_color;
+    this.foreground_color = this._outerchrome.foreground_color;
+    this.background_color = this._outerchrome.background_color;
   },
 
   /** Uninstalls itself.
@@ -594,6 +594,8 @@ Renderer.definition = {
   "[uninstall]":
   function uninstall(broker) 
   {
+    this._screen = null;
+
     if (null !== this._main_layer) {
       this._main_layer.destroy();
       this._main_layer = null;
@@ -667,7 +669,7 @@ Renderer.definition = {
   "[subscribe('variable-changed/renderer.font_{size | family}'), pnp]": 
   function onFontChanged(font_size) 
   {
-    this.dependency["screen"].dirty = true;
+    this._screen.dirty = true;
     this._calculateGlyphSize();
   },
 
@@ -685,7 +687,7 @@ Renderer.definition = {
   {
     var canvas_width;
 
-    width = width || this.dependency["screen"].width;
+    width = width || this._screen.width;
     char_width = char_width || this.char_width;
     canvas_width = 0 | (width * char_width);
 
@@ -706,9 +708,10 @@ Renderer.definition = {
   {
     var canvas_height;
 
-    height = height || this.dependency["screen"].height;
+    height = height || this._screen.height;
     line_height = line_height || this.line_height;
     canvas_height = 0 | (height * line_height);
+
     this._main_layer.canvas.height = canvas_height;
     if (this._slow_blink_layer) {
       this._slow_blink_layer.canvas.height = canvas_height;
@@ -724,7 +727,7 @@ Renderer.definition = {
   function draw(redraw_flag)
   {
     var info, 
-        screen = this.dependency["screen"];
+        screen = this._screen;
 
     if (redraw_flag) {
       screen.dirty = true;
@@ -739,18 +742,16 @@ Renderer.definition = {
   _drawNormalText: 
   function _drawNormalText(codes, row, column, end, attr, type)
   {
-    var context = this._main_layer.context;
-    var line_height = this.line_height;
-    var char_width = this.char_width;
-    var font_size = this.font_size;
-    var font_family = this.font_family;
-    var text_offset = this._text_offset;
-    var left, top, width, height;
-
-    left = char_width * column;
-    top = line_height * row;
-    width = (char_width * (end - column));
-    height = line_height;
+    var context = this._main_layer.context,
+        line_height = this.line_height,
+        char_width = this.char_width,
+        font_size = this.font_size,
+        font_family = this.font_family,
+        text_offset = this._text_offset,
+        left = char_width * column,
+        top = line_height * row,
+        width = (char_width * (end - column)),
+        height = line_height;
 
     this._drawBackground(
       context, 
@@ -780,48 +781,43 @@ Renderer.definition = {
   _drawDoubleHeightTextTop: 
   function _drawDoubleHeightTextTop(codes, row, column, end, attr, type)
   {
-    var context = this._main_layer.context;
-    var line_height = this.line_height;
-    var char_width = this.char_width;
-    var font_size = this.font_size;
-    var font_family = this.font_family;
-    var text_offset = this._text_offset;
-
-    var left, top, width, height;
-
-    left = char_width * 2 * column;
-    top = line_height * (row + 1) + 6;
-    width = char_width * 2 * (end - column);
-    height = line_height;
+    var context = this._main_layer.context,
+        line_height = this.line_height,
+        char_width = this.char_width,
+        font_size = this.font_size,
+        font_family = this.font_family,
+        text_offset = this._text_offset,
+        left = char_width * 2 * column,
+        top = line_height * (row + 1) + 6,
+        width = char_width * 2 * (end - column),
+        height = line_height;
 
     context.font = (font_size * 2) + "px " + font_family;
     if (attr.italic) {
       context.font = "italic " + context.font;
     }
 
-    this._drawBackground(
-      context, 
-      left | 0, 
-      line_height * row, 
-      width + Math.ceil(left) - left, 
-      height, 
-      attr);
+    this._drawBackground(context, 
+                         left | 0, 
+                         line_height * row, 
+                         width + Math.ceil(left) - left, 
+                         height, 
+                         attr);
 
     context.save();
     context.beginPath();
     context.rect(left, line_height * row, width, height);
     context.clip();
 
-    this._drawWord(
-      context, 
-      codes, 
-      left, 
-      top + text_offset / 2, 
-      char_width * 2, 
-      end - column, 
-      height, 
-      attr, 
-      type);
+    this._drawWord(context, 
+                   codes, 
+                   left, 
+                   top + text_offset / 2, 
+                   char_width * 2, 
+                   end - column, 
+                   height, 
+                   attr, 
+                   type);
 
     context.restore();
 
@@ -830,21 +826,19 @@ Renderer.definition = {
   _drawDoubleHeightTextBottom: 
   function _drawDoubleHeightTextBottom(codes, row, column, end, attr, type)
   {
-    var context = this._main_layer.context;
-    var line_height = this.line_height;
-    var char_width = this.char_width;
-    var font_size = this.font_size;
-    var font_family = this.font_family;
-    var text_offset = this._text_offset;
-
-    var left, top, width, height;
-
-    left = char_width * 2 * column;
-    top = line_height * row + 6;
-    width = char_width * 2 * (end - column);
-    height = line_height;
+    var context = this._main_layer.context,
+        line_height = this.line_height,
+        char_width = this.char_width,
+        font_size = this.font_size,
+        font_family = this.font_family,
+        text_offset = this._text_offset,
+        left = char_width * 2 * column,
+        top = line_height * row + 6,
+        width = char_width * 2 * (end - column),
+        height = line_height;
 
     context.font = (font_size * 2) + "px " + font_family;
+
     if (attr.italic) {
       context.font = "italic " + context.font;
     }
@@ -892,6 +886,7 @@ Renderer.definition = {
         height;
 
     context.font = (font_size * 2) + "px " + font_family;
+
     if (attr.italic) {
       context.font = "italic " + context.font;
     }
@@ -901,13 +896,12 @@ Renderer.definition = {
     width = char_width * 2 * (end - column);
     height = line_height;
 
-    this._drawBackground(
-      context, 
-      left | 0, 
-      line_height * row, 
-      width + Math.ceil(left) - left, 
-      height, 
-      attr);
+    this._drawBackground(context, 
+                         left | 0, 
+                         line_height * row, 
+                         width + Math.ceil(left) - left, 
+                         height, 
+                         attr);
 
     context.save();
     context.beginPath();
@@ -915,16 +909,15 @@ Renderer.definition = {
     context.transform(1, 0, 0, 0.5, 0, (top + text_offset) / 2);
     context.clip();
 
-    this._drawWord(
-      context, 
-      codes, 
-      left, 
-      top + text_offset, 
-      char_width * 2, 
-      end - column, 
-      height, 
-      attr, 
-      type);
+    this._drawWord(context, 
+                   codes, 
+                   left, 
+                   top + text_offset, 
+                   char_width * 2, 
+                   end - column, 
+                   height, 
+                   attr, 
+                   type);
 
     context.restore();
 
@@ -932,60 +925,57 @@ Renderer.definition = {
 
   _drawLine: function _drawLine(info) 
   {
-    var { codes, row, column, end, attr, line } = info,
-        type;
+    var type;
 
-    if (end === column) {
+    if (info.end === info.column) {
       return;
     }
 
-    type = line.type;
+    type = info.line.type;
+
     switch (type) {
 
       case coUtils.Constant.LINETYPE_NORMAL:
-        this._drawNormalText(codes, row, column, end, attr, type);
+        this._drawNormalText(info.codes,
+                             info.row,
+                             info.column,
+                             info.end,
+                             info.attr,
+                             type);
         break;
 
       case coUtils.Constant.LINETYPE_TOP:
-        this._drawDoubleHeightTextTop(codes, row, column, end, attr, type);
+        this._drawDoubleHeightTextTop(info.codes,
+                                      info.row,
+                                      info.column,
+                                      info.end,
+                                      info.attr,
+                                      type);
         break;
 
       case coUtils.Constant.LINETYPE_BOTTOM:
-        this._drawDoubleHeightTextBottom(codes, row, column, end, attr, type);
+        this._drawDoubleHeightTextBottom(info.codes,
+                                         info.row,
+                                         info.column,
+                                         info.end,
+                                         info.attr,
+                                         type);
         break;
 
       case coUtils.Constant.LINETYPE_DOUBLEWIDTH:
-        this._drawDoubleWidthText(codes, row, column, end, attr, type);
+        this._drawDoubleWidthText(info.codes,
+                                  info.row,
+                                  info.column,
+                                  info.end,
+                                  info.attr,
+                                  type);
         break;
 
-//      case coUtils.Constant.LINETYPE_SIXEL:
-//        this._drawSixel(line, row);
-//        break;
-//
       default:
         throw coUtils.Debug.Exception(
           _("Invalid double height mode was detected: %d."), 
           type);
     }
-  },
-
-  _drawSixel: 
-  function _drawSixel(line, row)
-  {
-    var context = this._main_layer.context,
-        sixel_info = line.sixel_info,
-        canvas = sixel_info.buffer,
-        position = sixel_info.position,
-        line_height = this.line_height,
-        width = canvas.width;
-
-    context.clearRect(0, line_height * row, width, line_height);
-
-    context.drawImage(
-      canvas, 
-      0, line_height * position, width, line_height,
-      0, line_height * row, width, line_height);
-
   },
 
   /** Render background attribute. 

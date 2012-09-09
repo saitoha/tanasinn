@@ -1340,6 +1340,7 @@ coUtils.Services = {
   _console_service: null,
   _uuid_generator: null,
   _locale_service: null,
+  _version_comparator: null,
 
   get windowWatcher()
   { 
@@ -1495,6 +1496,16 @@ coUtils.Services = {
     return this._locale_service;
   },
 
+  get versionComparator()
+  { 
+    if (null === this._version_comparator) {
+      this._version_comparator = Components
+        .classes["@mozilla.org/xpcom/version-comparator;1"]
+        .getService(Components.interfaces.nsIVersionComparator);
+    }
+
+    return this._version_comparator;
+  },
 };
 
 

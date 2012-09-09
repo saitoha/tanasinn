@@ -63,9 +63,7 @@ CommandlineIme.definition = {
   function install(broker) 
   {
     var textbox = this.dependency["commandline"].getInputField();
-        version_comparator = Components
-          .classes["@mozilla.org/xpcom/version-comparator;1"]
-          .getService(Components.interfaces.nsIVersionComparator),
+        version_comparator = coUtils.Services.versionComparator,
         focused_element = this.request("get/root-element")
           .ownerDocument.commandDispatcher.focusedElement;
 
@@ -162,9 +160,8 @@ CommandlineIme.definition = {
   "[listen('compositionstart', '#tanasinn_commandline'), pnp]":
   function oncompositionstart(event) 
   {
-    var version_comparator = Components
-      .classes["@mozilla.org/xpcom/version-comparator;1"]
-      .getService(Components.interfaces.nsIVersionComparator);
+    var version_comparator = coUtils.Serivces.versionComparator;
+
     if (version_comparator.compare(coUtils.Runtime.version, "10.0") >= 0) {
       this.oninput.enabled = false;
     }
@@ -176,9 +173,7 @@ CommandlineIme.definition = {
   "[listen('compositionend', '#tanasinn_commandline'), pnp]":
   function oncompositionend(event) 
   {
-    var version_comparator = Components
-      .classes["@mozilla.org/xpcom/version-comparator;1"]
-      .getService(Components.interfaces.nsIVersionComparator);
+    var version_comparator = coUtils.Serivces.versionComparator;
 
     if (version_comparator.compare(coUtils.Runtime.version, "10.0") >= 0) {
       this.oninput.enabled = true;
