@@ -28,10 +28,13 @@ Canvas.definition = {
   initialize: function initialize(canvas)
   {
     this._canvas = canvas;
+    this._context = canvas.getContext("2d");
   }, 
 
   dispose: function dispose()
   {
+    this._canvas = null;
+    this._context = null;
   }
 
 };
