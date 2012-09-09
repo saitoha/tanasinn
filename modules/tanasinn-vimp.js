@@ -22,6 +22,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 // PLUGIN_INFO//{{{
+/*
 var PLUGIN_INFO =
 <VimperatorPlugin>
     <name>{NAME}</name>
@@ -44,6 +45,7 @@ let g:tanasinnviewsourcecommand:
 
      ]]></detail>
 </VimperatorPlugin>;
+*/
 //}}}
 
 try {
