@@ -102,7 +102,7 @@ SixelScrollingMode.definition = {
     this._mode = true;
 
     // smooth scroll.
-    this.sendMessage("command/change-scrolling-mode", true);
+    this.sendMessage("command/change-sixel-display-mode", true);
   },
 
   /** Sixel Scrolling Mode (DECSDM)
@@ -113,7 +113,7 @@ SixelScrollingMode.definition = {
     this._mode = false;
 
     // smooth scroll.
-    this.sendMessage("command/change-sixel-scrolling-mode", false);
+    this.sendMessage("command/change-sixel-display-mode", false);
   },
 
   /** Report mode

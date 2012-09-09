@@ -114,6 +114,7 @@
     transform.js
     drcs.js
     sixel.js
+    sixelparser.js
     mascot.js
     base64copy.js
     da1.js
