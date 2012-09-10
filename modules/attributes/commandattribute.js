@@ -35,9 +35,14 @@ function make_managed_handler(self, handler)
 
 function apply_attribute(self, broker, key, command_arguments, attribute)
 {
-  var handler, wrapped_handler, name, args, old_onchange, commands;
+  var handler = self[key],
+      wrapped_handler,
+      name,
+      args,
+      old_onchange,
+      commands,
+      id;
 
-  handler = self[key];
   id = self.id + "." + key;
 
   if (handler.id) {
@@ -63,7 +68,11 @@ function apply_attribute(self, broker, key, command_arguments, attribute)
 
           complete: function complete(source) 
           {
-            var completers, name, option, completion_context;
+            var completers,
+                name,
+                option,
+                completion_context,
+                args;
 
             args = this.args;
             if (args && args.length) {

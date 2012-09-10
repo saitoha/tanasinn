@@ -94,7 +94,7 @@ Movable.definition = {
         static_scope = arguments.callee,
         timer = static_scope.timer,
         dom = {
-          root_element: this.request("get/root-element"),
+          root_element: this.request("get/root-element")
         },
         left,
         top,

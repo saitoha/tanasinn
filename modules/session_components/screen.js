@@ -31,7 +31,7 @@ function wait(span)
   do {
     current_thread.processNextEvent(true);
   } while ((current_thread.hasPendingEvents()) || Date.now() < end_time);
-};
+}
 
 
 //////////////////////////////////////////////////////////////////////////////

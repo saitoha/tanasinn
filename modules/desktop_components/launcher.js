@@ -1251,16 +1251,14 @@ Launcher.definition = {
   "[listen('keypress', '#tanasinn_launcher_textbox')]":
   function onkeypress(event) 
   { // nothrow
-    var code, is_char, textbox, length, start, end, 
-        value, position;
-
-    code = event.keyCode || event.which;
-    /*
-    this._this.sendMessage(
-      "command/report-overlay-message", 
-      [event.keyCode,event.which,event.isChar].join("/"));
-      */
-    is_char = 0 === event.keyCode;
+    var code = event.keyCode || event.which,
+        is_char = 0 === event.keyCode,
+        textbox,
+        length,
+        start,
+        end, 
+        value,
+        position;
 
     if (event.ctrlKey) { // ^
       event.stopPropagation();
@@ -1372,7 +1370,8 @@ Launcher.definition = {
 
   onkeyup: function onkeyup(event) 
   { // nothrow
-    var now, diff
+    var now,
+        diff,
         diff_min = 30,
         diff_max = 400;
 

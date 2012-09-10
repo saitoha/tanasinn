@@ -22,18 +22,16 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-var thread_manager = Components
-  .classes["@mozilla.org/thread-manager;1"]
-  .getService();
-
 function wait(span) 
 {
-  var end_time = Date.now() + span;
-  var current_thread = thread_manager.currentThread;
+  var end_time = Date.now() + span,
+      current_thread = coUtils.Services.threadManager.currentThread;
+
   do {
     current_thread.processNextEvent(true);
   } while ((current_thread.hasPendingEvents()) || Date.now() < end_time);
 };
+
 
 var CO_XTERM_256_COLOR_PROFILE = [
   /* 0       */ "#000000", // black
@@ -736,6 +734,7 @@ Renderer.definition = {
     for (info in screen.getDirtyWords()) {
       this._drawLine(info);
     }
+    //wait(10);
 
   }, // draw
 
@@ -1130,6 +1129,7 @@ Renderer.definition = {
     }
 
     if (!attr.drcs) {
+
       text = String.fromCharCode.apply(String, codes);
 
       //if (this.enable_text_shadow) {

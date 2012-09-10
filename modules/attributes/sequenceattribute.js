@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 
-function apply_attribute(self, broker, key, name, handler, expressions)
+function apply_attribute(self, broker, key, name, handler, expressions, id)
 {
   expressions.forEach(
     function(expression) 
@@ -92,7 +92,7 @@ SequenceAttribute.definition = {
         [name] = attributes[key]["profile"];
         handler = this[key];
 
-        apply_attribute(this, broker, key, name, handler, expressions);
+        apply_attribute(this, broker, key, name, handler, expressions, id);
       }
     }
 

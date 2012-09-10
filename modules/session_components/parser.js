@@ -985,17 +985,19 @@ Parser.definition = {
     var scanner = this._scanner,
         action;
 
-//    coUtils.Timer.setTimeout(function(){
     scanner.assign(data);
 
     for (action in this.parse(scanner, data)) {
       action();
     }
+    //coUtils.Timer.setTimeout(
+    //  function draw()
+    //  {
     this.sendMessage("command/draw"); // fire "draw" event.
+    //  }, 10, this);
 
-    wait(10);
+//    wait(50);
 
-//    }, 10, this);
   },
 
   /** Parse and evaluate control codes and text pieces from the scanner. 

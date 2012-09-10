@@ -74,13 +74,12 @@ FocusTracker.definition = {
    */
   onfocus: function onfocus(event)
   {
-    var domr, target, focused_element, relation;
-
-    dom = {
-      root_element: this.request("get/root-element"),
-    };
-
-    target = event.explicitOriginalTarget;
+    var dom = {
+        root_element: this.request("get/root-element"),
+      },
+      target = event.explicitOriginalTarget,
+      focused_element,
+      relation;
 
     if (null === target) {
       return;

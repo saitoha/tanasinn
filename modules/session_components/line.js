@@ -1025,12 +1025,12 @@ Line.definition = {
    */
   clear: function clear() 
   {
-    var cells, length, i, cell;
+    var cells = this.cells,
+        length = cells.length,
+        i = 0,
+        cell;
 
-    cells = this.cells;
-    length = cells.length;
-
-    for (i = 0; i < length; ++i) {
+    for (; i < length; ++i) {
       cell = cells[i];
       cell.erase();
     }
@@ -1120,10 +1120,12 @@ Line.definition = {
    */
   deleteCells: function deleteCells(start, n, attr) 
   {
-    var cells, length, range, i, cell;
+    var cells = this.cells,
+        length = this.length,
+        range,
+        i,
+        cell;
 
-    cells = this.cells;
-    length = this.length;
     this.addRange(start, length);
     range = cells.splice(start, n);
 
@@ -1149,9 +1151,12 @@ Line.definition = {
    */
   insertBlanks: function insertBlanks(start, n, attr) 
   {
-    var cells, length, range, i, cell;
+    var cells = this.cells,
+        length,
+        range,
+        i,
+        cell;
 
-    cells = this.cells;
     this.addRange(start, this.length);
     length = cells.length;
     range = cells.splice(-n);

@@ -22,19 +22,15 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-
-var thread_manager = Components
-  .classes["@mozilla.org/thread-manager;1"]
-  .getService();
-
 function wait(span) 
 {
-  var end_time = Date.now() + span;
-  var current_thread = thread_manager.currentThread;
+  var end_time = Date.now() + span,
+      current_thread = coUtils.Services.threadManager.currentThread;
+
   do {
     current_thread.processNextEvent(true);
   } while ((current_thread.hasPendingEvents()) || Date.now() < end_time);
-};
+}
 
 
 /**
@@ -121,12 +117,15 @@ WindowManipulator.definition = {
   "[subscribe('command/manipulate-window'), pnp]":
   function manipulate(args) 
   { 
-     var x, y,
-         screen, renderer,
-         column, row,
+     var x,
+         y,
+         screen,
+         renderer,
+         column,
+         row,
          target_element,
-         width, height,
-         x, y,
+         width,
+         height,
          message,
          n1 = args.shift();
 

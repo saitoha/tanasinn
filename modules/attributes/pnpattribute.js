@@ -102,9 +102,9 @@ PnPAttribute.definition = {
    */
   initialize: function initialize(broker) 
   {
-    var attributes, key, attribute, id;
-
-    attributes = this.__attributes;
+    var attributes = this.__attributes,
+        key,
+        attribute;
 
     for (key in attributes) {
 

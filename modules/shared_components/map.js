@@ -40,7 +40,9 @@ MappingManagerBase.definition = {
     var mappings;
 
     this._state = this._map = {};
+
     mappings = this.sendMessage("get/" + type);
+
     if (mappings) {
       mappings.forEach(
         function(delegate) 
@@ -65,10 +67,9 @@ MappingManagerBase.definition = {
   /** Registers a mapping specified by given expression. */
   register: function register(expression, delegate) 
   {
-    var packed_code_array, context;
+    var packed_code_array = coUtils.Keyboard.parseKeymapExpression(expression),
+        context = this._map;
 
-    packed_code_array = coUtils.Keyboard.parseKeymapExpression(expression);
-    context = this._map;
     packed_code_array.forEach(
       function(key_code) 
       {
@@ -80,16 +81,13 @@ MappingManagerBase.definition = {
   /** Unregisters a mapping. */
   unregister: function unregister(expression) 
   {
-    var packed_code_array;
-
-    packed_code_array = coUtils.Keyboard.parseKeymapExpression(expression);
+    var packed_code_array = coUtils.Keyboard.parseKeymapExpression(expression);
 
     void function(context) 
     {
-      var code, new_context;
+      var code = packed_code_array.shift(),
+          new_context = context[code];
 
-      code = packed_code_array.shift();
-      new_context = context[code];
       if (new_context.value) {
         delete new_context.value;
       } else {
@@ -103,9 +101,8 @@ MappingManagerBase.definition = {
 
   dispatch: function dispatch(map, info)
   {
-    var code, result;
-
-    code = info.code;
+    var code = info.code,
+        result;
 
     // swap mapleader as <Leader>
     if (this._state[coUtils.Keyboard.KEYNAME_PACKEDCODE_MAP.leader]) {
@@ -133,11 +130,9 @@ MappingManagerBase.definition = {
 
   expand: function expand()
   {
-    var result, context, mapleader;
-
-    result = {};
-    context = this._map;
-    mapleader = this.mapleader;
+    var result = {},
+        context = this._map,
+        mapleader = this.mapleader;
 
     void function walk(context, previous) 
     {
@@ -154,6 +149,7 @@ MappingManagerBase.definition = {
         }
       });
     } (this._map, []);
+
     return result;
   },
 
@@ -493,9 +489,8 @@ CommandlineKeyHandler.definition = {
   "[cmap('<Home>', '<C-a>'), _('move cursor to head of line.'), enabled]":
   function key_first(info) 
   {
-    var textbox;
+    var textbox = info.textbox;
 
-    textbox = info.textbox;
     textbox.selectionStart = 0;
     textbox.selectionEnd = 0;
     return true;
@@ -504,10 +499,9 @@ CommandlineKeyHandler.definition = {
   "[cmap('<End>', '<C-e>'), _('move cursor to end of line.'), enabled]":
   function key_end(info) 
   {
-    var textbox, length;
-    
-    textbox = info.textbox;
-    length = textbox.value.length;
+    var textbox = info.textbox,
+        length = textbox.value.length;
+
     textbox.selectionStart = length;
     textbox.selectionEnd = length;
 
@@ -553,11 +547,9 @@ CommandlineKeyHandler.definition = {
   "[cmap('<C-w>'), _('delete backward word.'), enabled]":
   function key_deleteword(info) 
   {
-    var textbox, value, position;
-
-    textbox = info.textbox;
-    value = textbox.value;
-    position = textbox.selectionEnd;
+    var textbox = info.textbox,
+        value = textbox.value,
+        position = textbox.selectionEnd;
 
     textbox.value
       = value.substr(0, position).replace(/\w+$|\W+$/, "") 
@@ -571,11 +563,10 @@ CommandlineKeyHandler.definition = {
   "[cmap('<C-Space>', '<C-@>', '<C-2>'), _('set mark.'), enabled]":
   function set_mark(info) 
   {
-    var textbox, value, position;
+    var textbox = info.textbox,
+        value = textbox.value,
+        position = textbox.selectionEnd;
 
-    textbox = info.textbox;
-    value = textbox.value;
-    position = textbox.selectionEnd;
     this._mark = position;
 
     this.sendMessage("command/set-completion-trigger", info);
@@ -598,10 +589,11 @@ NMapCommands.definition = {
   "[command('nmap', ['nmap', 'nmap']), _('Add a normal mapping.'), enabled]":
   function nmap(arguments_string)
   {
-    var pattern, match, source_mapping, destination_mapping, mapping_info;
-
-    pattern = /^\s*(\S+)\s+(.+)\s*$/;
-    match = arguments_string.match(pattern);
+    var pattern = /^\s*(\S+)\s+(.+)\s*$/,
+        match = arguments_string.match(pattern),
+        source_mapping,
+        destination_mapping,
+        mapping_info;
 
     if (null === match) {
       return {
@@ -610,13 +602,16 @@ NMapCommands.definition = {
       };
     }
 
-    [, source_mapping, destination_mapping] = match;
+    source_mapping = match[1];
+    destination_mapping = match[2];
 
     mapping_info = {
       source: source_mapping,
       destination: destination_mapping,
     };
+
     this.sendMessage("command/register-nmap", mapping_info);
+
     return {
       success: true,
       message: coUtils.Text.format(
@@ -629,10 +624,11 @@ NMapCommands.definition = {
   "[command('nnoremap', ['nmap', 'nmap']), _('Add a normal mapping (without re-mapping).'), enabled]":
   function nnoremap(arguments_string)
   {
-    var pattern, match, source_mapping, destination_mapping, mapping_info;
-
-    pattern = /^\s*(\S+)\s+(.+)\s*$/;
-    match = arguments_string.match(pattern);
+    var pattern = /^\s*(\S+)\s+(.+)\s*$/,
+        match = arguments_string.match(pattern),
+        source_mapping,
+        destination_mapping,
+        mapping_info;
 
     if (null === match) {
       return {
@@ -641,13 +637,16 @@ NMapCommands.definition = {
       };
     }
 
-    [, source_mapping, destination_mapping] = match;
+    source_mapping = match[1];
+    destination_mapping = match[2];
 
     mapping_info = {
       source: source_mapping,
       destination: destination_mapping,
     };
+
     this.sendMessage("command/register-nnoremap", mapping_info);
+
     return {
       success: true,
       message: coUtils.Text.format(
@@ -660,10 +659,9 @@ NMapCommands.definition = {
   "[command('nunmap', ['nmap']), _('Delete a normal mapping.'), enabled]":
   function nunmap(arguments_string)
   {
-    var pattern, match, expression;
-
-    pattern = /^\s*(\S+)\s*$/;
-    match = arguments_string.match(pattern);
+    var pattern = /^\s*(\S+)\s*$/,
+        match = arguments_string.match(pattern),
+        expression;
 
     if (null === match) {
       return {
@@ -672,7 +670,7 @@ NMapCommands.definition = {
       };
     }
 
-    [, expression] = match;
+    expression = match[1];
 
     this.sendMessage("command/unregister-nmap", expression);
     return {
@@ -694,10 +692,11 @@ CMapCommands.definition = {
   "[command('cmap', ['cmap', 'cmap']), _('Add a command line mapping.'), enabled]":
   function cmap(arguments_string)
   {
-    var pattern, match, source_mapping, destination_mapping, mapping_info;
-
-    pattern = /^\s*(\S+)\s+(.+)\s*$/;
-    match = arguments_string.match(pattern);
+    var pattern = /^\s*(\S+)\s+(.+)\s*$/,
+        match = arguments_string.match(pattern),
+        source_mapping,
+        destination_mapping,
+        mapping_info;
 
     if (null === match) {
       return {
@@ -725,10 +724,11 @@ CMapCommands.definition = {
   "[command('cnoremap', ['cmap', 'cmap']), _('Add a command line mapping (without re-mapping).'), enabled]":
   function cnoremap(arguments_string)
   {
-    var pattern, match, source_mapping, destination_mapping, mapping_info;
-
-    pattern = /^\s*(\S+)\s+(.+)\s*$/;
-    match = arguments_string.match(pattern);
+    var pattern = /^\s*(\S+)\s+(.+)\s*$/,
+        match = arguments_string.match(pattern),
+        source_mapping,
+        destination_mapping,
+        mapping_info;
 
     if (null === match) {
       return {
@@ -737,13 +737,16 @@ CMapCommands.definition = {
       };
     }
 
-    [, source_mapping, destination_mapping] = match;
+    source_mapping = match[1];
+    destination_mapping = match[2];
 
     mapping_info = {
       source: source_mapping,
       destination: destination_mapping,
     };
+
     this.sendMessage("command/register-cnoremap", mapping_info);
+
     return {
       success: true,
       message: coUtils.Text.format(
@@ -756,10 +759,10 @@ CMapCommands.definition = {
   "[command('cunmap', ['cmap']), _('Delete a normal mapping.'), enabled]":
   function cunmap(arguments_string)
   {
-    var pattern, match, source_mapping, expression;
-
-    pattern = /^\s*(\S+)\s*$/;
-    match = arguments_string.match(pattern);
+    var pattern = /^\s*(\S+)\s*$/,
+        match = arguments_string.match(pattern),
+        source_mapping,
+        expression;
 
     if (null === match) {
       return {
@@ -768,7 +771,7 @@ CMapCommands.definition = {
       };
     }
 
-    [, expression] = match;
+    expression = match[1];
 
     this.sendMessage("command/unregister-cmap", expression);
     return {

@@ -263,7 +263,8 @@ function Prototype(definition, base_class, dependency_list)
         value = definition[decorated_key];
         if ("initialize" === key && base_class && base_class.prototype.initialize) {
           // makes constructor chain.
-          this.initialize = function() {
+          this.initialize = function initialize()
+          {
             base_class.prototype.initialize.apply(this, arguments);
             value.apply(this, arguments);
           }
@@ -276,8 +277,8 @@ function Prototype(definition, base_class, dependency_list)
     }
   };
 
-  for (decorated_key in definition) {
-    copy.call(this, definition, decorated_key, base_class);
+  for (key in definition) {
+    copy.call(this, definition, key, base_class);
   }
 
   if (dependency_list) {

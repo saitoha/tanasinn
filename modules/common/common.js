@@ -2188,40 +2188,40 @@ coUtils.File = new function() {
   getFileEntriesFromSerchPath: 
   function getFileEntriesFromSerchPath(search_directories) 
   {
-    var self = this;
-    var entries = function entries() 
-    {
-      var path;
-      var target_leaf;
-      var entries;
-      var entry;
+    var self = this,
+        entries = function entries() 
+        {
+          var path,
+              target_leaf,
+              entries,
+              entry;
 
-      for each ([, path] in Iterator(search_directories)) {
-        try {
-          if (coUtils.File.exists(path)) {
-            target_leaf = coUtils.File.getFileLeafFromVirtualPath(path);
-            if (!target_leaf || !target_leaf.exists()) {
-              coUtils.Debug.reportWarning(
-                _("Cannot get file entries from '%s'. ",
-                  "It seems that specified path does not exist."), path);
-              continue;
-            }
-            if (target_leaf.isFile()) {
-              yield target_leaf;
-            } else {
-              entries = self.getFilesRecursively(target_leaf, /\.js$/);
-              for (entry in entries) {
-                yield entry;
+          for each ([, path] in Iterator(search_directories)) {
+            try {
+              if (coUtils.File.exists(path)) {
+                target_leaf = coUtils.File.getFileLeafFromVirtualPath(path);
+                if (!target_leaf || !target_leaf.exists()) {
+                  coUtils.Debug.reportWarning(
+                    _("Cannot get file entries from '%s'. ",
+                      "It seems that specified path does not exist."), path);
+                  continue;
+                }
+                if (target_leaf.isFile()) {
+                  yield target_leaf;
+                } else {
+                  entries = self.getFilesRecursively(target_leaf, /\.js$/);
+                  for (entry in entries) {
+                    yield entry;
+                  }
+                }
               }
+            } catch (e) {
+              coUtils.Debug.reportWarning(e);
+              coUtils.Debug.reportWarning(
+                _("Cannot get file entries from '%s'."), path);
             }
-          }
-        } catch (e) {
-          coUtils.Debug.reportWarning(e);
-          coUtils.Debug.reportWarning(
-            _("Cannot get file entries from '%s'."), path);
-        }
-      };
-    }.call();
+          };
+        }();
     return entries;
   },
 
@@ -2232,7 +2232,8 @@ coUtils.File = new function() {
         split_path = virtual_path.split(/[\/\\]/),
         root_entry = split_path.shift(),
         match = root_entry.match(/^\$([^/]+)$/),
-        file_name;
+        file_name,
+        target_leaf;
 
     if (match) {
       target_leaf = this.getSpecialDirectoryName(match.pop());
@@ -2904,7 +2905,8 @@ coUtils.Debug = {
    */
   Exception: function Exception(message) 
   {
-    var stack, flag;
+    var stack,
+        flag;
 
     if (arguments.length > 1 && "string" === typeof message) {
       message = coUtils.Text.format.apply(coUtils.Text, arguments);
@@ -2920,7 +2922,8 @@ coUtils.Debug = {
    */
   reportError: function reportError(source /* arg1, arg2, arg3, ... */) 
   {
-    var stack, flag;
+    var stack,
+        flag;
 
     // check if printf style arguments is given. 
     if (arguments.length > 1 && "string" === typeof source) {
@@ -2937,7 +2940,8 @@ coUtils.Debug = {
    */
   reportWarning: function reportWarning(source /* arg1, arg2, arg3, ... */) 
   {
-    var stack, flag;
+    var stack,
+        flag;
 
     if (arguments.length > 1 && "string" === typeof source) {
       source = coUtils.Text.format.apply(coUtils.Text, arguments);
@@ -2953,9 +2957,11 @@ coUtils.Debug = {
    */
   reportMessage: function reportMessage(source) 
   {
-    var stack;
-    var escaped_source;
-    var file, name, message;
+    var stack,
+        escaped_source,
+        file,
+        name,
+        message;
 
     if (arguments.length > 1 && "string" === typeof source) {
       source = coUtils.format.apply(coUtils, arguments);
