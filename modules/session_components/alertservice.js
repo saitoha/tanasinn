@@ -65,10 +65,9 @@ var NotificationService = new Class().extends(Plugin)
                                      .depends("decoder");
 NotificationService.definition = {
 
-  get id()
-    "alert_service",
+  id: "alert_service",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Alert Service"),
@@ -101,7 +100,7 @@ NotificationService.definition = {
     var scanner = new ForwardInputIterator(data),
         decoder = this.dependency["decoder"],
         sequence = [c for (c in decoder.decode(scanner))],
-        decoded_text = String.fromCharCode.apply(String, sequence);
+        decoded_text = coUtils.Text.safeConvertFromArray(sequence),
         values = decoded_text.split(";"),
         title = values[0],
         text = values[1],
@@ -139,10 +138,9 @@ NotificationService.definition = {
 var AlertService = new Class().extends(Plugin);
 AlertService.definition = {
 
-  get id()
-    "notification_service",
+  id: "notification_service",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Notification Service"),

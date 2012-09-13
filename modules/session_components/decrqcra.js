@@ -71,10 +71,9 @@ var RectangleChecksumReport = new Class().extends(Plugin)
                                          .depends("screen");
 RectangleChecksumReport.definition = {
 
-  get id()
-    "rectangle_checksum_report",
+  id: "rectangle_checksum_report",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Rectangle Checksum Report"),

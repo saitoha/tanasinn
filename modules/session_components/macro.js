@@ -28,10 +28,9 @@
 var InputMacro = new Class().extends(Plugin);
 InputMacro.definition = {
 
-  get id()
-    "input_macro",
+  id: "input_macro",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Input Macro"),

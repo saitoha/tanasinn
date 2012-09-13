@@ -30,10 +30,9 @@ var OverlayBrowser = new Class().extends(Plugin)
                                 .depends("renderer");
 OverlayBrowser.definition = {
 
-  get id()
-    "overlay_browser",
+  id: "overlay_browser",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("OverlayBrowser"),

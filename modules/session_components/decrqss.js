@@ -82,10 +82,9 @@
 var StatusRequest = new Class().extends(Plugin);
 StatusRequest.definition = {
 
-  get id()
-    "request_status_string",
+  id: "request_status_string",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Status Request"),

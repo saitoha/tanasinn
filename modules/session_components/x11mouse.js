@@ -47,10 +47,9 @@
 var X11MouseMode = new Class().extends(Plugin);
 X11MouseMode.definition = {
 
-  get id()
-    "x11_mouse_mode",
+  id: "x11_mouse_mode",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("X11 Mouse Mode"),

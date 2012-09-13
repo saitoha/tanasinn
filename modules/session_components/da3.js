@@ -73,10 +73,9 @@
 var TirtiaryDA = new Class().extends(Plugin);
 TirtiaryDA.definition = {
 
-  get id()
-    "tirtiary_da",
+  id: "tirtiary_da",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Tirtiary Device Attribute"),

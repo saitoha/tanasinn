@@ -124,8 +124,7 @@ var CO_XTERM_256_COLOR_PROFILE = [
 var PersistentConcept = new Concept();
 PersistentConcept.definition = {
 
-  get id()
-    "PersistentConcept",
+  id: "PersistentConcept",
 
   "<@command/backup> :: Object -> Undefined": 
   _("Serialize and persist current state."),
@@ -470,9 +469,7 @@ Layer.definition = {
   /** Constructor */
   initialize: function initialize(broker, id) 
   {
-    var canvas;
-
-    canvas = broker.uniget(
+    var canvas = broker.callSync(
       "command/construct-chrome", 
       {
         parentNode: "#tanasinn_center_area",
@@ -509,14 +506,12 @@ var Renderer = new Class().extends(Plugin)
                           .mix(PalletManagerTrait)
                           .depends("outerchrome")
                           .depends("screen")
-                          .depends("drcs_buffer")
                           .requires("PersistentConcept");
 Renderer.definition = {
 
-  get id()
-    "renderer",
+  id: "renderer",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Renderer"),
@@ -542,7 +537,7 @@ Renderer.definition = {
   _main_layer: null,
   _slow_blink_layer: null,
   _rapid_blink_layer: null,
-  _drcs_buffer: null,
+  _drcs_map: null,
 
   // font
   "[watchable, persistable] font_family": 
@@ -584,6 +579,8 @@ Renderer.definition = {
 
     this.foreground_color = this._outerchrome.foreground_color;
     this.background_color = this._outerchrome.background_color;
+
+    this._drcs_map = [];
   },
 
   /** Uninstalls itself.
@@ -608,6 +605,8 @@ Renderer.definition = {
       this._rapid_blink_layer.destroy();
       this._rapid_blink_layer = null;
     }
+
+    this._drcs_map = null;
   },
 
   "[subscribe('command/calculate-layout'), pnp]":
@@ -629,10 +628,9 @@ Renderer.definition = {
   "[subscribe('command/capture-screen'), pnp]": 
   function captureScreen(info) 
   {
-    coUtils.IO.saveCanvas(
-      this._main_layer.canvas, 
-      info.file, 
-      info.thumbnail);
+    coUtils.IO.saveCanvas(this._main_layer.canvas, 
+                          info.file, 
+                          info.thumbnail);
   },
 
   "[subscribe('variable-changed/renderer.smoothing'), enabled]": 
@@ -734,7 +732,6 @@ Renderer.definition = {
     for (info in screen.getDirtyWords()) {
       this._drawLine(info);
     }
-    //wait(10);
 
   }, // draw
 
@@ -752,28 +749,27 @@ Renderer.definition = {
         width = (char_width * (end - column)),
         height = line_height;
 
-    this._drawBackground(
-      context, 
-      left | 0, 
-      top, 
-      width + Math.ceil(left) - left, 
-      height, 
-      attr);
+    this._drawBackground(context, 
+                         left | 0, 
+                         top, 
+                         Math.round(width + Math.ceil(left) - left), 
+                         height, 
+                         attr);
 
     context.font = font_size + "px " + font_family;
     if (attr.italic) {
       context.font = "italic " + context.font;
     }
 
-    this._drawWord(
-      context, 
-      codes, 
-      left, 
-      top + text_offset, 
-      char_width, 
-      end - column, 
-      height, 
-      attr, type);
+    this._drawWord(context, 
+                   codes, 
+                   left, 
+                   top + text_offset, 
+                   char_width, 
+                   end - column, 
+                   height, 
+                   attr,
+                   type);
 
   },
 
@@ -842,29 +838,27 @@ Renderer.definition = {
       context.font = "italic " + context.font;
     }
 
-    this._drawBackground(
-      context, 
-      left | 0, 
-      line_height * row, 
-      width + Math.ceil(left) - left, 
-      height, 
-      attr);
+    this._drawBackground(context, 
+                         left | 0, 
+                         line_height * row, 
+                         width + Math.ceil(left) - left, 
+                         height, 
+                         attr);
 
     context.save();
     context.beginPath();
     context.rect(left, line_height * row, width, height);
     context.clip();
 
-    this._drawWord(
-      context, 
-      codes, 
-      left, 
-      top + text_offset / 2, 
-      char_width * 2, 
-      end - column, 
-      height, 
-      attr, 
-      type);
+    this._drawWord(context, 
+                   codes, 
+                   left, 
+                   top + text_offset / 2, 
+                   char_width * 2, 
+                   end - column, 
+                   height, 
+                   attr, 
+                   type);
 
     context.restore();
 
@@ -1052,27 +1046,19 @@ Renderer.definition = {
   _drawWord: 
   function _drawWord(context, 
                      codes, 
-                     x, y, 
+                     x,
+                     y, 
                      char_width, 
                      length, 
                      height, 
-                     attr, type)
+                     attr,
+                     type)
   {
     var fore_color,
         fore_color_map,
         text,
-        drcs_state,
-        index,
         code,
-        glyph_index,
-        source_top,
-        source_left,
-        source_width,
-        source_height,
-        destination_top,
-        destination_left,
-        destination_width,
-        destination_height;
+        drcs_state;
 
     if (attr.blink) {
       if (null === this._slow_blink_layer) {
@@ -1090,7 +1076,9 @@ Renderer.definition = {
       context.font = this._main_layer.context.font;
     }
 
-    if (attr.bold) {
+    if (attr.invisible) {
+      context.globalAlpha = 0.0;
+    } else if (attr.bold) {
       context.globalAlpha = this.bold_alpha;
     } else if (attr.halfbright) {
       context.globalAlpha = this.halfbright_alpha;
@@ -1128,7 +1116,15 @@ Renderer.definition = {
       this._drawUnderline(context, x, y, char_width * length, fore_color);
     }
 
-    if (!attr.drcs) {
+    drcs_state = attr.drcs;
+
+    if (codes[0] > 0x100000) {
+      drcs_state = this._drcs_map[String.fromCharCode((codes[0] & 0xff00) >>> 8)];
+      //alert([String.fromCharCode((codes[0] & 0xff00) >>> 8), codes[0] & 0xff])
+      codes[0] = codes[0] & 0xff;
+    }
+
+    if (!drcs_state) {
 
       text = String.fromCharCode.apply(String, codes);
 
@@ -1146,87 +1142,108 @@ Renderer.definition = {
       if (attr.bold && this.bold_as_blur) {
         context.fillText(text, x + 1, y, char_width * length - 1);
       }
+
     } else {
-      drcs_state = attr.drcs;
+      this._drawDrcs(context, codes, x, y, char_width, drcs_state, type);
+    }
+  },
 
-      for (index = 0; index < codes.length; ++index) {
-        code = codes[index] - this._offset;
-        if (drcs_state.start_code <= code && code <= drcs_state.end_code) {
-          //var glyph = drcs_state.glyphs[code - drcs_state.start_code];
-          //context.putImageData(glyph, 0, 0)
+  _drawDrcs: function _drawDrcs(context, codes, x, y, char_width, drcs_state, type)
+  {
+    var index = 0,
+        code,
+        glyph_index,
+        source_top,
+        source_left,
+        source_width,
+        source_height,
+        destination_top,
+        destination_left,
+        destination_width,
+        destination_height;
 
-          glyph_index = code - drcs_state.start_code;
+    for (; index < codes.length; ++index) {
+      code = codes[index] - this._offset;
+      if (drcs_state.start_code <= code && code <= drcs_state.end_code) {
+        //var glyph = drcs_state.glyphs[code - drcs_state.start_code];
+        //context.putImageData(glyph, 0, 0)
 
-          switch (type) {
+        glyph_index = code - drcs_state.start_code;
 
-            case 0:
-              source_left = glyph_index * drcs_state.drcs_width;
-              source_top = drcs_state.drcs_top;
-              source_width = drcs_state.drcs_width;
-              source_height = drcs_state.drcs_height;
-              destination_left = x + index * char_width;
-              destination_top = y - this._text_offset;
-              destination_width = char_width;
-              destination_height = this.line_height;
-              break;
+        switch (type) {
 
-            case 1:
-              source_left = glyph_index * drcs_state.drcs_width;
-              source_top = drcs_state.drcs_top;
-              source_width = drcs_state.drcs_width;
-              source_height = drcs_state.drcs_height / 2;
-              destination_left = x + index * char_width;
-              destination_top = y - this._text_offset - this.line_height;
-              destination_width = char_width;
-              destination_height = this.line_height;
-              break;
+          case 0:
+            source_left = glyph_index * drcs_state.drcs_width;
+            source_top = drcs_state.drcs_top;
+            source_width = drcs_state.drcs_width;
+            source_height = drcs_state.drcs_height;
+            destination_left = x + index * char_width;
+            destination_top = y - this._text_offset;
+            destination_width = char_width;
+            destination_height = this.line_height;
+            break;
 
-            case 2:
-              source_left = glyph_index * drcs_state.drcs_width;
-              source_top = drcs_state.drcs_top + drcs_state.drcs_height / 2;
-              source_width = drcs_state.drcs_width;
-              source_height = drcs_state.drcs_height / 2;
-              destination_left = x + index * char_width;
-              destination_top = y - this._text_offset;
-              destination_width = char_width;
-              destination_height = this.line_height;
-              break;
+          case 1:
+            source_left = glyph_index * drcs_state.drcs_width;
+            source_top = drcs_state.drcs_top;
+            source_width = drcs_state.drcs_width;
+            source_height = drcs_state.drcs_height / 2;
+            destination_left = x + index * char_width;
+            destination_top = y - this._text_offset - this.line_height;
+            destination_width = char_width;
+            destination_height = this.line_height;
+            break;
 
-            case 3:
-              source_left = glyph_index * drcs_state.drcs_width;
-              source_top = drcs_state.drcs_top;
-              source_width = drcs_state.drcs_width;
-              source_height = drcs_state.drcs_height;
-              destination_left = x + index * char_width;
-              destination_top = y - this._text_offset 
-              destination_width = char_width;
-              destination_height = this.line_height;
-              break;
-          }
-          context.drawImage(
-            drcs_state.drcs_canvas, 
-            source_left,            // source left
-            source_top,             // source top
-            source_width,           // source width
-            source_height,          // source height
-            Math.floor(destination_left),       // destination left
-            destination_top,        // destination top
-            Math.ceil(destination_width),      // destination width
-            destination_height);    // destination height
-          
-          if (!drcs_state.color) {
-            context.globalCompositeOperation = "source-atop";
-            context.fillRect(
-              Math.floor(x),
-              Math.floor(y - this._text_offset), 
-              Math.ceil(char_width), 
-              Math.ceil(this.line_height));
-            context.globalCompositeOperation = "source-over";
-          }
-          
+          case 2:
+            source_left = glyph_index * drcs_state.drcs_width;
+            source_top = drcs_state.drcs_top + drcs_state.drcs_height / 2;
+            source_width = drcs_state.drcs_width;
+            source_height = drcs_state.drcs_height / 2;
+            destination_left = x + index * char_width;
+            destination_top = y - this._text_offset;
+            destination_width = char_width;
+            destination_height = this.line_height;
+            break;
+
+          case 3:
+            source_left = glyph_index * drcs_state.drcs_width;
+            source_top = drcs_state.drcs_top;
+            source_width = drcs_state.drcs_width;
+            source_height = drcs_state.drcs_height;
+            destination_left = x + index * char_width;
+            destination_top = y - this._text_offset 
+            destination_width = char_width;
+            destination_height = this.line_height;
+            break;
         }
+        context.drawImage(
+          drcs_state.drcs_canvas, 
+          source_left,            // source left
+          source_top,             // source top
+          source_width,           // source width
+          source_height,          // source height
+          Math.floor(destination_left),       // destination left
+          destination_top,        // destination top
+          Math.ceil(destination_width),      // destination width
+          destination_height);    // destination height
+        
+        if (!drcs_state.color) {
+          context.globalCompositeOperation = "source-atop";
+          context.fillRect(Math.floor(x),
+                           Math.floor(y - this._text_offset), 
+                           Math.ceil(char_width), 
+                           Math.ceil(this.line_height));
+          context.globalCompositeOperation = "source-over";
+        }
+        
       }
     }
+  },
+
+  "[subscribe('command/alloc-drcs'), pnp]":
+  function allocDRCS(drcs)
+  {
+    this._drcs_map[drcs.dscs] = drcs; 
   },
 
   /** Rnder underline at specified position.

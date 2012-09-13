@@ -28,13 +28,12 @@
 var MultiDecoder = new Class().extends(Plugin);
 MultiDecoder.definition = {
 
-  get id()
-    "multidecoder",
+  id: "multidecoder",
 
   get scheme()
     "multi",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Multilingal Decoder"),

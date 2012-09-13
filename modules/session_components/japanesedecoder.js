@@ -28,13 +28,12 @@
 var JapaneseDecoder = new Class().extends(Component);
 JapaneseDecoder.definition = {
 
-  get id()
-    "japanese_decoder",
+  id: "japanese_decoder",
 
   get scheme()
     "japanese-js",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Japanese Decoder"),

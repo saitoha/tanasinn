@@ -30,10 +30,9 @@ var EastAsianWidth = new Class().extends(Plugin)
                                 .depends("parser");
 EastAsianWidth.definition = {
 
-  get id()
-    "east_asian_width",
+  id: "east_asian_width",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("East Asian Width"),
@@ -91,10 +90,9 @@ var AmbiguousWidthReporting = new Class().extends(Plugin)
                                 .depends("parser");
 AmbiguousWidthReporting.definition = {
 
-  get id()
-    "ambiguous_width_reporting",
+  id: "ambiguous_width_reporting",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Ambiguous Width Reporting"),

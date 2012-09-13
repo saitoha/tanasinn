@@ -84,10 +84,14 @@ VT52ParameterParser.definition = {
    */
   parse: function parse(scanner) 
   {
-    var params, c, action, self, next, 
-        meta_action, default_action, actions;
-
-    params = [param for (param in this._parseParameters(scanner))];
+    var params = [param for (param in this._parseParameters(scanner))],
+        c,
+        action,
+        self,
+        next, 
+        meta_action,
+        default_action,
+        actions;
 
     do {
       if (scanner.isEnd) {
@@ -132,8 +136,10 @@ VT52ParameterParser.definition = {
     actions.push(action);
 
     this._c0action = [];
-    return function() {
-      var action, i;
+    return function result()
+    {
+      var action,
+          i = 0;
 
       if (default_action) {
         action = vt52C0Parser.get(default_action);
@@ -141,7 +147,7 @@ VT52ParameterParser.definition = {
           action();
         }
       }
-      for (i = 0; i < actions.length; ++i) {
+      for (; i < actions.length; ++i) {
         actions[i]();
       }
     };
@@ -156,9 +162,10 @@ VT52ParameterParser.definition = {
   _parseParameters: 
   function _parseParameters(scanner) 
   {
-    var accumulator, c, action;
+    var accumulator = this._first,
+        c,
+        action;
 
-    accumulator = this._first;
     while (!scanner.isEnd) {
       c = scanner.current();
       if (0x30 <= c && c <= 0x39) { // [0-9]
@@ -192,9 +199,17 @@ VT52SequenceParser.definition = {
   /** Construct child parsers from definition and make parser-chain. */
   append: function append(key, value, context) 
   {
-    var match, number, char_position, normal_char,
-        first, next_chars, code, next,
-        code1, code2, c1;
+    var match,
+        number,
+        char_position,
+        normal_char,
+        first,
+        next_chars,
+        code,
+        next,
+        code1,
+        code2,
+        c1;
 
     function make_handler(value, context, y, x)
     {
@@ -256,10 +271,9 @@ VT52SequenceParser.definition = {
    */
   parse: function parse(scanner) 
   {
-    var c, next;
+    var c = scanner.current(),
+        next = this[c];
 
-    c = scanner.current();
-    next = this[c];
     if (next) { // c is part of control sequence.
       if ("parse" in next) { // next is parser.
         scanner.moveNext();
@@ -286,10 +300,9 @@ var VT52 = new Class().extends(Plugin)
 VT52.definition = {
 
   /** Component ID */
-  get id()
-    "vt52",
+  id: "vt52",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("VT-52 mode"),
@@ -308,7 +321,8 @@ VT52.definition = {
   "[install]":
   function install(broker)
   {
-    var sequences, i;
+    var sequences,
+        i = 0;
 
     this._tab_controller = this.dependency["tab_controller"];
     this._screen = this.dependency["screen"];
@@ -319,15 +333,17 @@ VT52.definition = {
     this.ESC = new VT52SequenceParser();
     VT52SequenceParser.prototype[0x1b] = this.ESC;
 
-    this.sendMessage("command/add-sequence/vt52", {
-      expression: "0x1B", 
-      handler: this.ESC,
-      context: this,
-    });
+    this.sendMessage(
+      "command/add-sequence/vt52",
+      {
+        expression: "0x1B", 
+        handler: this.ESC,
+        context: this,
+      });
 
     sequences = this.sendMessage("get/sequences/vt52");
 
-    for (i = 0; i < sequences.length; ++i) {
+    for (; i < sequences.length; ++i) {
       this.sendMessage("command/add-sequence/vt52", sequences[i]);
     }
 
@@ -356,10 +372,7 @@ VT52.definition = {
   "[type('Scanner -> Action')] parse":
   function parse(scanner) 
   {
-    var action;
-
-    action = vt52C0Parser.parse(scanner);
-    return action;
+    return vt52C0Parser.parse(scanner);
   },
 
   /** Append a sequence handler.
@@ -371,21 +384,21 @@ VT52.definition = {
   "[subscribe('command/add-sequence/vt52'), type('SequenceInfo -> Undefined'), pnp]":
   function append(information) 
   {
-    var match, key, prefix;
+    var match = information.expression.split(/\s+/),
+        key = match.pop(),
+        prefix = match.pop() || "C0";
 
-    match = information.expression.split(/\s+/);
-    key = match.pop();
-    prefix = match.pop() || "C0";
     if ("number" === typeof key) {
       key = key.toString();
     }
+
     if (!this[prefix]) {
       this[prefix] = new VT52SequenceParser();
     }
-    this[prefix].append(
-      key, 
-      information.handler, 
-      information.context);
+
+    this[prefix].append(key, 
+                        information.handler, 
+                        information.context);
 
   }, // append
 

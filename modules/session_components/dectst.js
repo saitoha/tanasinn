@@ -72,10 +72,9 @@
 var ConfidenceTest = new Class().extends(Plugin);
 ConfidenceTest.definition = {
 
-  get id()
-    "confidence_test",
+  id: "confidence_test",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Confidence Test"),

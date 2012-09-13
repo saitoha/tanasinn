@@ -102,10 +102,9 @@ SixelForwardInputIterator.definition = {
 var SixelParser = new Class().extends(Plugin);
 SixelParser.definition = {
 
-  get id()
-    "sixel_parser",
+  id: "sixel_parser",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Sixel Parser"),

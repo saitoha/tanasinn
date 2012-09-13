@@ -95,11 +95,13 @@ print <<EOF;
 
 function wcwidth_amb_as_single(c) 
 {
-    var s = String.fromCharCode(c);
-    if (/[@{[print_characters 2, %wcmap1]}]/.test(s)) {
-        return 2;
-    } else if (/[@{[print_characters 0, %wcmap1]}]/.test(s)) {
-        return 0;
+    if (c < 0x10000) {
+        var s = String.fromCharCode(c);
+        if (/[@{[print_characters 2, %wcmap1]}]/.test(s)) {
+            return 2;
+        } else if (/[@{[print_characters 0, %wcmap1]}]/.test(s)) {
+            return 0;
+        }
     } else if (c < 0x1F100) {
         return 1;
     } else if (c < 0x1F300) {
@@ -142,18 +144,21 @@ function wcwidth_amb_as_single(c)
         return 2;
     } else if (c < 0xE1000) {
         return 1;
-    } else {
-        return 2;
+    } else if (c > 0xFFFFF) {
+        return 1;
     }
+    return 1;
 } 
 
 function wcwidth_amb_as_double(c) 
 {
-    var s = String.fromCharCode(c);
-    if (/[@{[print_characters 2, %wcmap2]}]/.test(s)) {
-        return 2;
-    } else if (/[@{[print_characters 0, %wcmap2]}]/.test(s)) {
-        return 0;
+    if (c < 0x10000) {
+        var s = String.fromCharCode(c);
+        if (/[@{[print_characters 2, %wcmap2]}]/.test(s)) {
+            return 2;
+        } else if (/[@{[print_characters 0, %wcmap2]}]/.test(s)) {
+            return 0;
+        }
     } else if (c < 0x1F200) {
         return 1;
     } else if (c < 0x1F200) {
@@ -164,9 +169,10 @@ function wcwidth_amb_as_double(c)
         return 1;
     } else if (c < 0xE0000) {
         return 2;
-    } else {
-        return 1;
+    } else if (c > 0xFFFFF) {
+        return 2;
     }
+    return 2;
 }
 
 EOF

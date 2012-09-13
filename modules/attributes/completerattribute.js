@@ -50,14 +50,17 @@ function apply_attribute(self, broker, key, completer_name, attribute)
 
   old_onchange = wrapped_handler.onChange;
 
-  wrapped_handler.onChange = function(name, oldval, newval) 
+  wrapped_handler.onChange = 
+    function(name, oldval, newval) 
     {
       if (old_onchange) {
         old_onchange.apply(wrapped_handler, arguments);
       }
       if (oldval !== newval) {
         if (newval) {
-          broker.subscribe("command/query-completion/" + completer_name, wrapped_handler);
+          broker.subscribe(
+            "command/query-completion/" + completer_name,
+            wrapped_handler);
         } else {
           broker.unsubscribe(wrapped_handler.id);
         }

@@ -58,10 +58,9 @@
 var AnswerBack = new Class().extends(Plugin);
 AnswerBack.definition = {
 
-  get id()
-    "answerback",
+  id: "answerback",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Answerback"),

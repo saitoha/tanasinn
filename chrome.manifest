@@ -2,7 +2,4 @@
 # for Firefox
 content tanasinn chrome/content/
 resource tanasinn modules/
-#overlay chrome://songbird/content/xul/layoutWithBrowserOverlay.xul chrome://tanasinn/content/songbird.xul
-#overlay chrome://songbird/content/xul/layoutBaseOverlay.xul chrome://tanasinn/content/songbird.xul
-#overlay chrome://browser/content/browser.xul chrome://tanasinn/content/songbird.xul
 

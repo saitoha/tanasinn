@@ -31,10 +31,9 @@ var Protection = new Class().extends(Plugin)
                             .depends("screen");
 Protection.definition = {
 
-  get id()
-    "protection",
+  id: "protection",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Protection"),

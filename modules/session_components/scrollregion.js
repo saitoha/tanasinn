@@ -54,10 +54,9 @@ var ScrollRegion = new Class().extends(Plugin)
                               .depends("screen");
 ScrollRegion.definition = {
 
-  get id()
-    "scroll_region",
+  id: "scroll_region",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Scroll Region"),

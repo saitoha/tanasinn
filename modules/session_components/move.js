@@ -28,10 +28,9 @@
 var MoveShortcut = new Class().extends(Plugin);
 MoveShortcut.definition = {
 
-  get id()
-    "moveshortcut",
+  id: "moveshortcut",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Move Shortcut"),

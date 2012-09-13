@@ -72,10 +72,9 @@ var FixedColumnMode = new Class().extends(Plugin)
                                  .depends("screen");
 FixedColumnMode.definition = {
 
-  get id()
-    "fixed_column_mode",
+  id: "fixed_column_mode",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Fixed Column Mode"),

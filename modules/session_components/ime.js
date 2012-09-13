@@ -38,10 +38,9 @@ var Ime = new Class().extends(Plugin)
                      .depends("inputmanager");
 Ime.definition = {
 
-  get id()
-    "ime",
+  id: "ime",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("IME"),

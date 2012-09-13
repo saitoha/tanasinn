@@ -72,12 +72,14 @@ function apply_attribute(self, broker, key, command_arguments, attribute)
                 name,
                 option,
                 completion_context,
-                args;
+                completion_info,
+                args = this.args;
 
-            args = this.args;
             if (args && args.length) {
               completers = args.slice(0);
-              [name, option] = completers.shift().split("/");
+              completion_info = completers.shift().split("/");
+              name = completion_info[0];
+              option = completion_info[1];
               completion_context = {
                 source: source,
                 option: option,

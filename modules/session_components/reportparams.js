@@ -30,10 +30,9 @@
 var ReportParams = new Class().extends(Plugin);
 ReportParams.definition = {
 
-  get id()
-    "reportparams",
+  id: "reportparams",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Report Parameters"),

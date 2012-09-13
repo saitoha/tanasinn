@@ -29,13 +29,12 @@
 var UTF8_CP932Decoder = new Class().extends(Component);
 UTF8_CP932Decoder.definition = {
 
-  get id()
-    "utf8_cp932_decoder",
+  id: "utf8_cp932_decoder",
 
   get scheme()
     "utf8-cp932-js",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("UTF-8 Decoder"),

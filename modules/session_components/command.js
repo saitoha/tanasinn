@@ -28,8 +28,7 @@
 var CommandProvider = new Class().extends(Component);
 CommandProvider.definition = {
 
-  get id()
-    "commandprovider",
+  id: "commandprovider",
 
   "[subscribe('@event/broker-started'), enabled]":
   function onLoad(broker)
@@ -146,8 +145,7 @@ CommandProvider.definition = {
 var JsCommand = new Class().extends(Component);
 JsCommand.definition = {
 
-  get id()
-    "jscommand",
+  id: "jscommand",
 
   "[command('javascript/js', ['js']), _('Run a javascript code.'), enabled]":
   function evaluate(arguments_string)
@@ -170,8 +168,7 @@ JsCommand.definition = {
 var SetCommand = new Class().extends(Component);
 SetCommand.definition = {
 
-  get id()
-    "setcommand",
+  id: "setcommand",
 
   "[command('set', ['option']), _('Set an option.'), enabled]":
   function evaluate(arguments_string)
@@ -254,8 +251,7 @@ SetCommand.definition = {
 var SetGlobalCommand = new Class().extends(Component);
 SetGlobalCommand.definition = {
 
-  get id()
-    "setglobalcommand",
+  id: "setglobalcommand",
 
   "[command('setglobal', ['option/global']), _('Set a global option.'), enabled]":
   function evaluate(arguments_string)
@@ -327,8 +323,7 @@ SetGlobalCommand.definition = {
 var FontCommands = new Class().extends(Component);
 FontCommands.definition = {
 
-  get id()
-    "fontcommands",
+  id: "fontcommands",
 
   "[command('fontsize/fsize', ['fontsize']), _('Change terminal font size.'), enabled]":
   function fontsize(arguments_string)
@@ -418,8 +413,7 @@ FontCommands.definition = {
 var ColorCommands = new Class().extends(Component);
 ColorCommands.definition = {
 
-  get id()
-    "colorcommands",
+  id: "colorcommands",
 
   _renderer: null,
 
@@ -467,8 +461,7 @@ ColorCommands.definition = {
 var GlobalPersistCommand = new Class().extends(Component);
 GlobalPersistCommand.definition = {
 
-  get id()
-    "persist",
+  id: "persist",
 
   "[command('globalsave/gs', ['profile/global']), _('Persist current global settings.'), enabled]":
   function persist(arguments_string)
@@ -552,8 +545,7 @@ GlobalPersistCommand.definition = {
 var PersistCommand = new Class().extends(Component);
 PersistCommand.definition = {
 
-  get id()
-    "persist",
+  id: "persist",
 
   "[command('saveprofile/sp', ['profile']), _('Persist current settings.'), enabled]":
   function persist(arguments_string)
@@ -631,8 +623,7 @@ PersistCommand.definition = {
 var LocalizeCommand = new Class().extends(Component);
 LocalizeCommand.definition = {
 
-  get id()
-    "localize",
+  id: "localize",
 
   "[command('localize', ['localize']), _('Edit localization resource.'), enabled]":
   function evaluate(arguments_string)
@@ -673,8 +664,7 @@ LocalizeCommand.definition = {
 var CharsetCommands = new Class().extends(Component);
 CharsetCommands.definition = {
 
-  get id()
-    "charset",
+  id: "charset",
 
   _impl: function _impl(arguments_string, is_encoder) 
   {
@@ -722,8 +712,7 @@ CharsetCommands.definition = {
 var LscomponentCommand = new Class().extends(Component);
 LscomponentCommand.definition = {
 
-  get id()
-    "lscomponent_command",
+  id: "lscomponent_command",
 
   "[command('lscomponent/lc', ['components']), _('list components.'), enabled]":
   function evaluate(arguments_string)
@@ -739,8 +728,7 @@ LscomponentCommand.definition = {
 var EchoCommand = new Class().extends(Component);
 EchoCommand.definition = {
 
-  get id()
-    "echo_command",
+  id: "echo_command",
 
   "[command('echo'), _('echo message to status line.'), enabled]":
   function evaluate(arguments_string)
@@ -759,8 +747,7 @@ EchoCommand.definition = {
 var OverlayEchoCommand = new Class().extends(Component);
 OverlayEchoCommand.definition = {
 
-  get id()
-    "echo_command",
+  id: "echo_command",
 
   "[command('overlayecho/oe'), _('echo message at overlay indicator.'), enabled]":
   function evaluate(arguments_string)

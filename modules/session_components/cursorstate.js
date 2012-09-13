@@ -30,10 +30,9 @@ var CursorState = new Class().extends(Plugin)
                              .depends("linegenerator");
 CursorState.definition = {
 
-  get id()
-    "cursorstate",
+  id: "cursorstate",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Cursor State"),
@@ -174,19 +173,15 @@ CursorState.definition = {
   {
     var context = this._backup_instance;
 
-    if (null === context) {
-      coUtils.Debug.reportWarning(
-        _('Cursor backup instance not found.'));
-      return;
+    if (null !== context) {
+      this.positionX = context.positionX;
+      this.positionY = context.positionY;
+      this.originX = context.originX;
+      this.originY = context.originY;
+      this.blink = context.blink;
+      this.attr.value = context.attr_value;
+      this.sendMessage("command/restore-cursor", context);
     }
-    this.sendMessage("command/restore-cursor", context);
-
-    this.positionX = context.positionX;
-    this.positionY = context.positionY;
-    this.originX = context.originX;
-    this.originY = context.originY;
-    this.blink = context.blink;
-    this.attr.value = context.attr_value;
   },
 
   serialize: function serialize(context)
@@ -200,7 +195,9 @@ CursorState.definition = {
     context.push(this.blink);
     context.push(this.attr.value);
     context.push(null !== this._backup_instance);
+
     backup = this._backup_instance;
+
     if (null !== backup) {
       context.push(backup.positionX);
       context.push(backup.positionY);
@@ -221,6 +218,7 @@ CursorState.definition = {
     this.originY = context.shift();
     this.blink = context.shift();
     this.attr.value = context.shift();
+
     backup_exists = context.shift();
 
     if (backup_exists) {
@@ -271,7 +269,7 @@ CursorState.definition = {
    *   - Character sets (G0, G1, G2, or G3) currently in GL and GR
    *   - TODO: Wrap flag (autowrap or no autowrap)
    *   - State of origin mode (DECOM)
-   *   - TODO: Selective erase attribute
+   *   - Selective erase attribute
    *   - TODO: Any single shift 2 (SS2) or single shift 3 (SS3) functions sent
    */
   "[profile('vt100'), sequence('ESC 7')] DECSC": 

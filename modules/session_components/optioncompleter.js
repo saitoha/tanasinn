@@ -29,8 +29,7 @@
 var OptionCompleter = new Class().extends(Component);
 OptionCompleter.definition = {
 
-  get id()
-    "optioncompleter",
+  id: "optioncompleter",
 
   /*
    * Search for a given string and notify a listener (either synchronously
@@ -66,7 +65,7 @@ OptionCompleter.definition = {
     target_broker = "global" === context.option ? broker._broker: broker;
 
     lower_name = name.toLowerCase();
-    scope = target_broker.uniget("command/get-settings");
+    scope = target_broker.callSync("command/get-settings");
 
     if (!operator_equal) {
       options = [

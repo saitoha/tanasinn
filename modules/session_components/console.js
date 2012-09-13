@@ -29,10 +29,9 @@
 var MessageFilter = new Class().extends(Plugin);
 MessageFilter.definition = {
 
-  get id()
-    "messagefilter",
+  id: "messagefilter",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Message Filter"),
@@ -164,8 +163,7 @@ MessageFilter.definition = {
 var DisplayManager = new Class().extends(Component);
 DisplayManager.definition = {
 
-  get id()
-    "displaymanager",
+  id: "displaymanager",
 
   /** @Property {Boolean} whether auto scroll feature is enabled.  */
   "[persistable] auto_scroll": true,
@@ -196,9 +194,7 @@ DisplayManager.definition = {
    */
   append: function append(message) 
   {
-    var template;
-
-    template = this.applyFilters(message);
+    var template = this.applyFilters(message);
 
     this.request("command/construct-chrome", template);
 
@@ -246,8 +242,7 @@ DisplayManager.definition = {
 var ConsoleListener = new Class().extends(Component);
 ConsoleListener.definition = {
 
-  get id()
-    "consolelistener",
+  id: "consolelistener",
 
   _console_service: null,
   _display_manager: null,
@@ -373,10 +368,9 @@ ConsoleListener.definition = {
 var Console = new Class().extends(Plugin);
 Console.definition = {
 
-  get id()
-    "console",
+  id: "console",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Console"),
@@ -385,8 +379,9 @@ Console.definition = {
     };
   },
 
-  get template()
-    ({ 
+  getTemplate: function getTemplate()
+  {
+    return { 
       tagName: "vbox",
       id: "tanasinn_console_panel",
       className: "tanasinn-console",
@@ -496,7 +491,8 @@ Console.definition = {
         },
       */
       ]
-     }),
+     };
+  },
 
   "[persistable] enabled_when_startup": false,
 
@@ -518,7 +514,7 @@ Console.definition = {
   {
     var template, panel_item;
 
-    template = this.template;
+    template = this.getTemplate();
     panel_item = panel.alloc("console.panel", _("Console"))
 
     template.parentNode = panel_item;

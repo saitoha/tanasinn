@@ -45,8 +45,7 @@ function wait(span)
 var ScreenConcept = new Concept();
 ScreenConcept.definition = {
 
-  get id()
-    "ScreenConcept",
+  id: "ScreenConcept",
 
   // signature concept
   "allocate :: Uint16 -> Uint16 -> Array":
@@ -60,8 +59,7 @@ ScreenConcept.definition = {
 var ScreenSwitchConcept = new Concept();
 ScreenSwitchConcept.definition = {
 
-  get id()
-    "ScreenSwitch",
+  id: "ScreenSwitch",
 
   "switchToAlternateScreen :: Undefined":
   _("Switch to Alternate screen."),
@@ -83,8 +81,7 @@ ScreenSwitchConcept.definition = {
 var ScreenBackupConcept = new Concept();
 ScreenBackupConcept.definition = {
 
-  get id()
-    "ScreenBackup",
+  id: "ScreenBackup",
 
   "<command/backup> :: Object -> Undefined": 
   _("Backups screen into serialize context."),
@@ -101,8 +98,7 @@ ScreenBackupConcept.definition = {
 var ScreenCursorOperationsConcept = new Concept();
 ScreenCursorOperationsConcept.definition = {  
 
-  get id()
-    "ScreenCursorOperations",
+  id: "ScreenCursorOperations",
 
   "cursorForward :: Uint16 -> Undefined":
   _("Move cursor to forward (right)."),
@@ -137,8 +133,7 @@ ScreenCursorOperationsConcept.definition = {
 var ScreenEditConcept = new Concept();
 ScreenEditConcept.definition = {  
 
-  get id()
-    "ScreenEdit",
+  id: "ScreenEdit",
 
   "eraseLineToRight :: Undefined":
   _("Erase cells from current position to end of line."),
@@ -1468,7 +1463,7 @@ Scrollable.definition = {
           line.invalidate();
         }
       }
-    } else { // 0 === top && rest == 0
+    } else { // 0 === top && rest === 0
       range = lines.splice(0, n);
       for (i = 0; i < range.length; ++i) {
         line = range[i];
@@ -1600,10 +1595,9 @@ var Screen = new Class().extends(Plugin)
 Screen.definition = {
 
   /** Component ID */
-  get id()
-    "screen",
+  id: "screen",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Screen"),
@@ -2084,7 +2078,7 @@ Screen.definition = {
 
     if (positionX > 0) {
       cursor.positionX = positionX - 1;
-    } else if (this._reverse_wraparound_mode) { // positionX == 0
+    } else if (this._reverse_wraparound_mode) { // positionX === 0
       //this.reverseIndex(); // 
       this.cursorUp(1);
       cursor.positionX = width - 1;

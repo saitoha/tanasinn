@@ -47,10 +47,9 @@
 var BracketedPasteMode = new Class().extends(Plugin);
 BracketedPasteMode.definition = {
 
-  get id()
-    "bracketed_paste_mode",
+  id: "bracketed_paste_mode",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Bracketed Paste Mode"),

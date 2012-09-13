@@ -29,10 +29,9 @@ var C0Control = new Class().extends(Plugin)
                            .depends("screen");
 C0Control.definition = {
 
-  get id()
-    "c0control",
+  id: "c0control",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("C0 Control Handlers"),

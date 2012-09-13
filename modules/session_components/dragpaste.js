@@ -28,10 +28,9 @@
 var DragPaste = new Class().extends(Plugin);
 DragPaste.definition = {
 
-  get id()
-    "dragpaste",
+  id: "dragpaste",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Drag Paste"),

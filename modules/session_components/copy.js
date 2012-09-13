@@ -31,10 +31,9 @@ var Copy = new Class().extends(Plugin)
                       .depends("screen");
 Copy.definition = {
 
-  get id()
-    "copy",
+  id: "copy",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Copy"),

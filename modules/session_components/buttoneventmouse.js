@@ -47,10 +47,9 @@
 var ButtonEventMouseMode = new Class().extends(Plugin);
 ButtonEventMouseMode.definition = {
 
-  get id()
-    "button_event_mouse_mode",
+  id: "button_event_mouse_mode",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Button Event Mouse Mode"),

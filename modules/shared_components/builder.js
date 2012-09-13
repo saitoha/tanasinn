@@ -375,8 +375,7 @@ var ChromeBuilder = new Class().extends(Component)
                                .mix(TemplateBuilder); 
 ChromeBuilder.definition = {
 
-  get id()
-    "chromebuilder",
+  id: "chromebuilder",
 
   _template_builder: null,
   _map: null,

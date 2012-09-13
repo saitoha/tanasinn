@@ -30,10 +30,9 @@ var Video = new Class().extends(Plugin)
                        .depends("cursorstate");
 Video.definition = {
 
-  get id()
-    "video",
+  id: "video",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Video (BETA)"),
@@ -42,7 +41,7 @@ Video.definition = {
     };
   },
 
-  get template()
+  getTemplate: function getTemplate()
   {
     return {
       parentNode: "#tanasinn_center_area",
@@ -56,6 +55,8 @@ Video.definition = {
   "[persistable] opacity": 0.60,
 
   _element: null,
+  _renderer: null,
+  _cursor_state: null,
  
   /** installs itself. 
    *  @param {Broker} broker A broker object.
@@ -63,9 +64,11 @@ Video.definition = {
   "[install]":
   function install(broker) 
   {
-    var result = this.request("command/construct-chrome", this.template);
+    var result = this.request("command/construct-chrome", this.getTemplate());
 
     this._element = result.tanasinn_video_layer;
+    this._renderer = this.dependency["renderer"];
+    this._cursor_state = this.dependency["cursorstate"];
   },
 
   /** Uninstalls itself.
@@ -79,6 +82,8 @@ Video.definition = {
     }
 
     this._element = null;
+    this._renderer = null;
+    this._cursor_state = null;
   },
     
   /** Fired at the keypad mode is changed. */
@@ -121,25 +126,19 @@ Video.definition = {
     coUtils.Timer.setTimeout(
       function timerproc() 
       {
-        var result, col, line, width, height, id,
-            cursorstate;
+        var result = data.split(/\s+/),
+            col = result[0],
+            line = result[1],
+            width = result[2],
+            height = result[3],
+            id = result[4],
+            cursor_state = this._cursor_state;
 
-        result = data.split(/\s+/);
-
-        col = result[0];
-        line = result[1];
-        width = result[2];
-        height = result[3];
-        id = result[4];
-
-        cursorstate = this.dependency["cursorstate"];
-
-        this.open(
-          cursorstate.positionX - Number(col) + 1, 
-          cursorstate.positionY - Number(line) + 1,
-          Number(width), 
-          Number(height), 
-          id);
+        this.open(cursor_state.positionX - Number(col) + 1, 
+                  cursor_state.positionY - Number(line) + 1,
+                  Number(width), 
+                  Number(height), 
+                  id);
 
       }, this.open_delay, this);
   },
@@ -148,31 +147,26 @@ Video.definition = {
   function open(left, top, width, height, id) 
   {
     // get renderer object
-    var renderer = this.dependency["renderer"];
-
-    //this.close();
-    // create UI part
-    var {
-      tanasinn_video,
-    } = this.request(
-      "command/construct-chrome",
-      {
-        parentNode: "#tanasinn_video_layer",
-        id: tanasinn_video,
-        tagName: "html:iframe",
-        className: "youtube-player",
-        type: "text/html",
-        style: {
-          position: "absolute",
-          opacity: 0.6,
-          left: left * renderer.char_width + "px",
-          top: top * renderer.line_height + "px",
-          width: width * renderer.char_width + "px",
-          height: height * renderer.line_height + "px",
-        },
-        src: "http://www.youtube.com/embed/" + id + "?autoplay=1&enablejsapi=1",
-        frameborder: "0",
-      });
+    var renderer = this._renderer,
+        result = this.request(
+          "command/construct-chrome",
+          {
+            parentNode: "#tanasinn_video_layer",
+            id: tanasinn_video,
+            tagName: "html:iframe",
+            className: "youtube-player",
+            type: "text/html",
+            style: {
+              position: "absolute",
+              opacity: 0.6,
+              left: left * renderer.char_width + "px",
+              top: top * renderer.line_height + "px",
+              width: width * renderer.char_width + "px",
+              height: height * renderer.line_height + "px",
+            },
+            src: "http://www.youtube.com/embed/" + id + "?autoplay=1&enablejsapi=1",
+            frameborder: "0",
+          });
 
   },
 

@@ -552,8 +552,8 @@ Class.prototype = {
 
       module_scope = new function()
       {
-        this.__proto__ = scope;
       };
+      module_scope.prototype = scope;
 
       try {
         // make URI string such as "file://....".
@@ -635,18 +635,24 @@ Component.definition = {
         install_trigger, 
         function onLoad() 
         {
-          var args = arguments;
+          var args = arguments,
+              i = 0,
+              dependency = this.__dependency,
+              key;
 
-          this.__dependency.forEach(function(key, index) {
-            this.dependency[key] = args[index];
-          }, this);
+          for (; i < dependency.length; ++i) {
+            key = dependency[i];
+            this.dependency[key] = args[i];
+          }
+
           this.enabled = this.enabled_when_startup;
           broker.notify("initialized/" + this.id, this);
         }, 
         this);
     }
-    broker.subscribe("get/components", 
-      function(instances)
+    broker.subscribe(
+      "get/components", 
+      function getInstance(instances)
       {
         return this;
       }, this);
@@ -667,10 +673,9 @@ Component.definition = {
     var broker;
     
     coUtils.Timer.setTimeout(
-      function()
+      function timerProc()
       {
-        broker = this._broker;
-        broker.notify(topic, data);
+        this._broker.notify(topic, data);
       }, 0)
   },
 
@@ -678,7 +683,7 @@ Component.definition = {
   {
     var broker = this._broker;
 
-    return broker.uniget(topic, data);
+    return broker.callSync(topic, data);
   },
 
   getVariable: function getVariable(topic)
@@ -735,14 +740,14 @@ Plugin.definition = {
   {
     broker.subscribe(
       "command/set-enabled/" + this.id, 
-      function(value) 
+      function setEnabled(value) 
       {
         this.enabled = value;
       }, this);
 
     broker.subscribe(
       "@event/broker-stopping", 
-      function() 
+      function getEnabled() 
       {
         this.enabled = false;
       },
@@ -1004,12 +1009,14 @@ Attribute.prototype = {
 
 };
 
-Component.loadAttributes(["modules/attributes"], { 
-  ConceptContext: ConceptContext,
-  Attribute: Attribute,
-  coUtils: coUtils,
-  _: _,
-});
+Component.loadAttributes(
+  ["modules/attributes"],
+  { 
+    ConceptContext: ConceptContext,
+    Attribute: Attribute,
+    coUtils: coUtils,
+    _: _,
+  });
 
 /**
  * @class ClassAttribute
@@ -1076,17 +1083,22 @@ Concept.prototype = {
   _checkImpl: function _checkImpl(target, subscribers)
   {
     var definition = this._definition,
+        rules = Object.keys(definition),
         rule,
-        comment,
         getter,
         setter,
         match,
         message,
         identifier,
         type,
-        key;
+        key,
+        i;
 
-    for ([rule, comment] in Iterator(definition)) {
+    for (i = 0; i < rules.length; ++i) {
+      rule = rules[i];
+      if ("id" === rule) {
+        continue;
+      }
       getter = definition.__lookupGetter__(rule);
       setter = definition.__lookupSetter__(rule);
       if (!getter && !setter) {
@@ -1096,7 +1108,10 @@ Concept.prototype = {
             _("Ill-formed concept rule expression is specified: %s."), 
             rule);
         }
-        [, message, identifier, type] = match;
+
+        message = match[1];
+        identifier = match[2];
+        type = match[3];
 
         if (message) {
           key = message.replace(/\/\*$/, "");
@@ -1114,7 +1129,7 @@ Concept.prototype = {
                 target.id, rule);
             }
           }
-          subscribers[key].description = comment;
+          subscribers[key].description = definition[rule];
         }
 
         if (identifier) {
@@ -1135,7 +1150,7 @@ Concept.prototype = {
                   target.id, rule);
               }
             }
-            target[message].description = comment;
+            target[message].description = definition[rule];
           }
         }
       }
@@ -1170,8 +1185,7 @@ Concept.prototype = {
 var CompletionContextConcept = new Concept();
 CompletionContextConcept.definition = {
 
-  get id()
-    "CompletionContext",
+  id: "CompletionContext",
 
 }; // CompletionContextConcept
 
@@ -1182,8 +1196,7 @@ CompletionContextConcept.definition = {
 var CompleterConcept = new Concept();
 CompleterConcept.definition = {
 
-  get id()
-    "Completer",
+  id: "Completer",
 
   // signature concept
   "<command/query-completion/*> :: CompletionContext -> Undefined":

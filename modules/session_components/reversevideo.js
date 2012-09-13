@@ -62,10 +62,9 @@
 var ReverseVideo = new Class().extends(Plugin);
 ReverseVideo.definition = {
 
-  get id()
-    "reverse_video",
+  id: "reverse_video",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Reverse Video"),

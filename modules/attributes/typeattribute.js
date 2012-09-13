@@ -42,7 +42,7 @@ function apply_attribute(self, attribute, key)
 
     if (args.length !== types.length - 1) {
       coUtils.Debug.reportError(
-        _("Invalid argument length detected. %s.%s (%s), args.length == %d."), 
+        _("Invalid argument length detected. %s.%s (%s), args.length === %d."), 
         self.id, key, type_signature, args.length);
     }
     args.forEach(

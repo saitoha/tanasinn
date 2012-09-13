@@ -64,10 +64,9 @@ var OriginMode = new Class().extends(Plugin)
                             .depends("cursorstate");
 OriginMode.definition = {
 
-  get id()
-    "origin_mode",
+  id: "origin_mode",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Origin Mode(DECOM)"),

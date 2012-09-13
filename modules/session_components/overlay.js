@@ -64,10 +64,9 @@ var OverlayIndicator = new Class().extends(Plugin)
                                   .depends("decoder");
 OverlayIndicator.definition = {
 
-  get id()
-    "overlayindicator",
+  id: "overlayindicator",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Overlay Indicator"),
@@ -76,7 +75,7 @@ OverlayIndicator.definition = {
     };
   },
 
-  get template()
+  getTemplate: function getTemplate()
     ({
       parentNode: "#tanasinn_outer_chrome",
       tagName: "box",
@@ -97,9 +96,9 @@ OverlayIndicator.definition = {
         style: {
           background: this.background,
           color: this.color,
-          fontSize: this.fontSize,
+          fontSize: this.font_size,
           padding: this.padding,
-          borderRadius: this.borderRadius,
+          borderRadius: this.border_radius,
           border: this.border,
         },
       },
@@ -109,10 +108,11 @@ OverlayIndicator.definition = {
 
   "[persistable] fadeout_duration": 500,
   "[persistable] opacity": 0.80,
+  "[persistable, watchable] title_handling": false,
   "[persistable, watchable] color": "white",
-  "[persistable, watchable] fontSize": "30px",
+  "[persistable, watchable] font_size": "30px",
   "[persistable, watchable] padding": "0.3em",
-  "[persistable, watchable] borderRadius": "0.5em",
+  "[persistable, watchable] border_radius": "0.5em",
   "[persistable, watchable] border": "solid 8px white",
   "[persistable, watchable] background": "-moz-linear-gradient(top, #777, #000)",
 
@@ -121,23 +121,25 @@ OverlayIndicator.definition = {
   _timer: null,
  
   /** installs itself. 
-   *  @param {Session} session A session object.
+   *  @param {Broker} broker A session object.
    */
   "[install]":
-  function install(session) 
+  function install(broker) 
   {
-    var {tanasinn_overlay_indicator, tanasinn_overlay_indicator_content}
-      = this.request("command/construct-chrome", this.template);
+    var result = this.request("command/construct-chrome", this.getTemplate());
 
-    this._element = tanasinn_overlay_indicator;
-    this._content = tanasinn_overlay_indicator_content;
+    this._element = result.tanasinn_overlay_indicator;
+    this._content = result.tanasinn_overlay_indicator_content;
+
+    this._decoder = this.dependency["decoder"];
+    this.onTitleHandlingStateChanged();
   },
 
   /** Uninstalls itself.
-   *  @param {Session} session A session object.
+   *  @param {Broker} broker A session object.
    */
   "[uninstall]":
-  function uninstall(session) 
+  function uninstall(broker) 
   {
     if (null !== this._element) {
       this._element.parentNode.removeChild(this._element);
@@ -149,6 +151,9 @@ OverlayIndicator.definition = {
     if (null !== this._timer) {
       this._timer = null;
     }
+    if (null !== this._decoder) {
+      this._decoder = null;
+    }
   },
 
   "[subscribe('command/report-overlay-message'), pnp]":
@@ -158,18 +163,58 @@ OverlayIndicator.definition = {
     this.show(2000);
   },
 
-  "[subscribe('variable-changed/overlayindicator.{background | color | fontSize | padding | borderRadius | border}'), pnp]":
-  function onStyleChanged(chrome, decoder) 
+  "[subscribe('variable-changed/overlayindicator.background'), pnp]":
+  function onBackgroundChanged() 
   {
     if (null !== this._content) {
-      this._content.style.cssText = 
-        "background: " + this.background + ";" +
-        "color: " + this.color + ";" +
-        "font-size: " + this.fontSize + ";" +
-        "padding: " + this.padding + ";" +
-        "border-radius: " + this.borderRadius + ";" +
-        "border: " + this.border + ";";
+      this._content.style.background = this.background;
     }
+  },
+
+  "[subscribe('variable-changed/overlayindicator.color'), pnp]":
+  function onColorChanged() 
+  {
+    if (null !== this._content) {
+      this._content.style.color = this.color;
+    }
+  },
+
+  "[subscribe('variable-changed/overlayindicator.font_size'), pnp]":
+  function onFontSizeChanged() 
+  {
+    if (null !== this._content) {
+      this._content.style.fontSize = this.font_size;
+    }
+  },
+
+  "[subscribe('variable-changed/overlayindicator.padding'), pnp]":
+  function onPaddingChanged() 
+  {
+    if (null !== this._content) {
+      this._content.style.padding = this.padding;
+    }
+  },
+
+  "[subscribe('variable-changed/overlayindicator.border_radius'), pnp]":
+  function onBorderRadiusChanged() 
+  {
+    if (null !== this._content) {
+      this._content.style.borderRadius = this.border_radius;
+    }
+  },
+
+  "[subscribe('variable-changed/overlayindicator.border'), pnp]":
+  function onBorderChanged() 
+  {
+    if (null !== this._content) {
+      this._content.style.border = this.border;
+    }
+  },
+
+  "[subscribe('variable-changed/overlayindicator.title_handling'), pnp]":
+  function onTitleHandlingStateChanged() 
+  {
+    this.onCommandReceived.enabled = this.title_handling;
   },
 
   show: function show(timeout) 
@@ -213,9 +258,8 @@ OverlayIndicator.definition = {
   "[subscribe('command/resize-screen'), pnp]":
   function onScreenSizeChanged(size)
   {
-    var message;
-
-    message = size.column + " x " + size.row;
+    var message = size.column + " x " + size.row;
+    
     this.print(message);
     this.show(2000);
   },
@@ -229,14 +273,14 @@ OverlayIndicator.definition = {
     this.show(2000);
   },
 
-  "[subscribe('sequence/osc/{0 | 2}'), pnp]":
+  "[subscribe('sequence/osc/{0 | 2}')]":
   function onCommandReceived(data0, data2) 
   { // process OSC command.
     var data = data0 || data2,
         scanner = new ForwardInputIterator(data),
-        decoder = this.dependency["decoder"],
+        decoder = this._decoder,
         sequence = [c for (c in decoder.decode(scanner))],
-        text = String.fromCharCode.apply(String, sequence);
+        text = coUtils.Text.safeConvertFromArray(sequence);
 
     this.print(text);
     this.show(400);

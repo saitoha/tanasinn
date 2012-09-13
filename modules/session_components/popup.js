@@ -152,10 +152,9 @@ var PopupMenu = new Class().extends(Plugin)
                            ;
 PopupMenu.definition = {
 
-  get id()
-    "popup_menu",
+  id: "popup_menu",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Popup Menu"),

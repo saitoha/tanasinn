@@ -28,13 +28,12 @@
 var UTF8Decoder = new Class().extends(Component);
 UTF8Decoder.definition = {
 
-  get id()
-    "utf8_decoder",
+  id: "utf8_decoder",
 
   get scheme()
     "UTF8-js",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("UTF-8 Decoder"),

@@ -30,13 +30,12 @@
 var EUCJPDecoder = new Class().extends(Plugin);
 EUCJPDecoder.prototype = {
 
-  get id()
-    "eucjp_decoder",
+  id: "eucjp_decoder",
 
   get scheme()
     "EUC-JP-js",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("EUC-JP Decoder"),

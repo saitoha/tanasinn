@@ -29,10 +29,9 @@ var OverlayImage = new Class().extends(Plugin)
                               .depends("renderer");
 OverlayImage.definition = {
 
-  get id()
-    "overlay_image",
+  id: "overlay_image",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Overlay Image (BETA)"),
@@ -41,12 +40,14 @@ OverlayImage.definition = {
     };
   },
 
-  get template()
-    ({
+  getTemplate: function getTemplate()
+  {
+    return {
       parentNode: "#tanasinn_center_area",
       tagName: "html:canvas",
       id: "tanasinn_image_canvas",
-    }),
+    };
+  },
 
   "[persistable] enabled_when_startup": false,
   "[persistable] open_delay": 20,
@@ -61,7 +62,7 @@ OverlayImage.definition = {
   {
     var tanasinn_image_canvas = this.request(
       "command/construct-chrome",
-      this.template
+      this.getTemplate()
     ).tanasinn_image_canvas;
 
     this._canvas = tanasinn_image_canvas;
@@ -139,9 +140,15 @@ OverlayImage.definition = {
         pixel_h,
         cache,
         image,
-        cache_holder;
+        cache_holder,
+        match;
     
-    [x, y, w, h, filename] = data.split(";");
+    match = data.split(";");
+    x = match[0];
+    y = match[1];
+    w = match[2];
+    h = match[3];
+    filename = match[4];
 
     pixel_x = Number(x) * char_width;
     pixel_y = Number(y) * line_height;

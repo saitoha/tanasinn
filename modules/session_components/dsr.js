@@ -74,10 +74,9 @@ var ANSIDeviceStatusReport = new Class().extends(Plugin)
                                         .depends("cursorstate");
 ANSIDeviceStatusReport.definition = {
 
-  get id()
-    "device_status_report",
+  id: "device_status_report",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Device Status Report / ANSI"),

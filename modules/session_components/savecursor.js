@@ -48,10 +48,9 @@ var SaveCursorMode = new Class().extends(Plugin)
                                 .depends("screen");
 SaveCursorMode.definition = {
 
-  get id()
-    "save_cursor_mode",
+  id: "save_cursor_mode",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Save Cursor"),

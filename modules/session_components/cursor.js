@@ -32,10 +32,9 @@ var Cursor = new Class().extends(Plugin)
                         .depends("cursorstate");
 Cursor.definition = {
 
-  get id()
-    "cursor",
+  id: "cursor",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Cursor"),
@@ -45,7 +44,7 @@ Cursor.definition = {
   },
 
   /** UI template */
-  get template() 
+  getTemplate: function getTemplate() 
     ({
       parentNode: "#tanasinn_center_area",
       tagName: "html:canvas",
@@ -86,7 +85,7 @@ Cursor.definition = {
 
     /** Create cursor element. */
     var {cursor_canvas} 
-      = this.request("command/construct-chrome", this.template);
+      = this.request("command/construct-chrome", this.getTemplate());
 
     this._canvas = cursor_canvas;
     this._context = this._canvas.getContext("2d");

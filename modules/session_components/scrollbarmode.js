@@ -46,10 +46,9 @@
 var ScrollbarMode = new Class().extends(Plugin);
 ScrollbarMode.definition = {
 
-  get id()
-    "scrollbar_mode",
+  id: "scrollbar_mode",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Scrollbar Mode"),

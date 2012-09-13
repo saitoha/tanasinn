@@ -58,10 +58,9 @@
 var ApplicationCursorMode = new Class().extends(Plugin);
 ApplicationCursorMode.definition = {
 
-  get id()
-    "application_cursor",
+  id: "application_cursor",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Application Cursor Mode"),

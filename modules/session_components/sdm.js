@@ -59,10 +59,9 @@
 var SixelScrollingMode = new Class().extends(Plugin);
 SixelScrollingMode.definition = {
 
-  get id()
-    "sixel_scrolling_mode",
+  id: "sixel_scrolling_mode",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Sixel Scrolling Mode"),

@@ -29,10 +29,9 @@
 var HardReset = new Class().extends(Plugin);
 HardReset.definition = {
 
-  get id()
-    "hard_reset",
+  id: "hard_reset",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Hard Reset"),

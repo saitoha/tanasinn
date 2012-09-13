@@ -47,10 +47,9 @@
 var Utf8MouseMode = new Class().extends(Plugin);
 Utf8MouseMode.definition = {
 
-  get id()
-    "utf8_mouse_mode",
+  id: "utf8_mouse_mode",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("UTF8 1005 Mouse Mode"),

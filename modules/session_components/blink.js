@@ -50,10 +50,9 @@ var CursorBlink = new Class().extends(Plugin)
                              .depends("cursorstate");
 CursorBlink.definition = {
 
-  get id()
-    "cursor_blink",
+  id: "cursor_blink",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Cursor Blink"),

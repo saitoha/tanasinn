@@ -348,8 +348,7 @@ function coCreateKeyMap(expression_map, destination_map)
 var DefaultKeyMappings = new Class().extends(Component);
 DefaultKeyMappings.definition = {
 
-  get id()
-    "default_key_mappings",
+  id: "default_key_mappings",
 
   "[persistable] yen_as_5c": true,
   "[persistable] won_as_5c": true,
@@ -471,8 +470,7 @@ DefaultKeyMappings.definition = {
 var ModeManager = new Class().extends(Plugin);
 ModeManager.definition = {
 
-  get id()
-    "modemanager",
+  id: "modemanager",
 
   "[persistable] enabled_when_startup": true,
 
@@ -616,10 +614,9 @@ var InputManager = new Class().extends(Plugin)
                               .depends("encoder");
 InputManager.definition = {
 
-  get id()
-    "inputmanager",
+  id: "inputmanager",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Input Manager"),
@@ -628,7 +625,7 @@ InputManager.definition = {
     };
   },
 
-  get template()
+  getTemplate: function getTemplate()
   {
     return { 
       parentNode: "#tanasinn_center_area",
@@ -677,7 +674,7 @@ InputManager.definition = {
     this.sendMessage("command/build-key-mappings", map);
     this._key_map = map;
     tanasinn_default_input
-      = this.request("command/construct-chrome", this.template)
+      = this.request("command/construct-chrome", this.getTemplate())
           .tanasinn_default_input;
     this._textbox = tanasinn_default_input;
     this.sendMessage("event/collection-changed/modes");
@@ -947,7 +944,7 @@ InputManager.definition = {
   "[listen('compositionstart', '#tanasinn_default_input'), pnp]":
   function oncompositionstart(event) 
   {
-    var version_comparator = coUtils.Serivces.versionComparator;
+    var version_comparator = coUtils.Services.versionComparator;
 
     if (version_comparator.compare(coUtils.Runtime.version, "10.0") >= 0) {
       this.oninput.enabled = false;
@@ -960,7 +957,7 @@ InputManager.definition = {
   "[listen('compositionend', '#tanasinn_default_input'), pnp]":
   function oncompositionend(event) 
   {
-    var version_comparator = coUtils.Serivces.versionComparator;
+    var version_comparator = coUtils.Services.versionComparator;
 
     if (version_comparator.compare(coUtils.Runtime.version, "10.0") >= 0) {
       this.oninput.enabled = true;

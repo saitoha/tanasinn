@@ -28,8 +28,7 @@
 var PublishCommand = new Class().extends(Component);
 PublishCommand.definition = {
 
-  get id()
-    "publish",
+  id: "publish",
 
   "[command('publish', ['event', 'js']), _('Publish a message'), enabled]":
   function publish(arguments_string) 

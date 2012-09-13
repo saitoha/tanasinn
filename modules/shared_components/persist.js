@@ -42,8 +42,7 @@ var impl = {
 var PersistManager = new Class().extends(Component);
 PersistManager.definition = {
 
-  get id()
-    "persist_manager",
+  id: "persist_manager",
 
   "[subscribe('command/load-settings'), enabled]":
   function load(name)

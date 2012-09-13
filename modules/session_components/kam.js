@@ -59,10 +59,9 @@
 var KeyboardActionMode = new Class().extends(Plugin);
 KeyboardActionMode.definition = {
 
-  get id()
-    "keyboard_action_mode",
+  id: "keyboard_action_mode",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Keyboard action mode"),

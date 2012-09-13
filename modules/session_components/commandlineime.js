@@ -37,10 +37,9 @@ var CommandlineIme = new Class().extends(Plugin)
                                 .depends("commandline");
 CommandlineIme.definition = {
 
-  get id()
-    "commandline_ime",
+  id: "commandline_ime",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Commandline IME"),
@@ -160,7 +159,7 @@ CommandlineIme.definition = {
   "[listen('compositionstart', '#tanasinn_commandline'), pnp]":
   function oncompositionstart(event) 
   {
-    var version_comparator = coUtils.Serivces.versionComparator;
+    var version_comparator = coUtils.Services.versionComparator;
 
     if (version_comparator.compare(coUtils.Runtime.version, "10.0") >= 0) {
       this.oninput.enabled = false;
@@ -173,7 +172,7 @@ CommandlineIme.definition = {
   "[listen('compositionend', '#tanasinn_commandline'), pnp]":
   function oncompositionend(event) 
   {
-    var version_comparator = coUtils.Serivces.versionComparator;
+    var version_comparator = coUtils.Services.versionComparator;
 
     if (version_comparator.compare(coUtils.Runtime.version, "10.0") >= 0) {
       this.oninput.enabled = true;

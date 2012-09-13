@@ -28,10 +28,9 @@
 var FocusTracker = new Class().extends(Plugin);
 FocusTracker.definition = {
 
-  get id()
-    "focustracker",
+  id: "focustracker",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Focus"),

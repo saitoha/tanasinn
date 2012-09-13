@@ -71,10 +71,9 @@
 var NewLineMode = new Class().extends(Plugin);
 NewLineMode.definition = {
 
-  get id()
-    "new_line_mode",
+  id: "new_line_mode",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("LNM Switch"),

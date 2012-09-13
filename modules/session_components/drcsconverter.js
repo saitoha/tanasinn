@@ -528,8 +528,7 @@ DEC_Swiss_NRC_Set[0x7e] = 0xfb; //
 var DRCSConverter = new Class().extends(Component);
 DRCSConverter.definition = {
 
-  get id()
-    "drcs_converter",
+  id: "drcs_converter",
 
   _gl: 0,
   _gr: 0,

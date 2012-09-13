@@ -38,10 +38,9 @@ function char2sixelbits(c)
 var DRCSBuffer = new Class().extends(Plugin);
 DRCSBuffer.definition = {
 
-  get id()
-    "drcs_buffer",
+  id: "drcs_buffer",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("DRCS Buffer"),
@@ -184,7 +183,7 @@ DRCSBuffer.definition = {
     ] = match;
 
     var char_width = {
-      0: 2 == pw ? 9: 15,
+      0: 2 === Number(pw) ? 9: 15,
       2: 5,
       3: 6,
       4: 7,
@@ -196,12 +195,12 @@ DRCSBuffer.definition = {
       4: 10,
     } [pcmw] || Number(pcmh) || 12;
 
-    var charset_size = 0 == pcss ? 94: 96;
-    var full_cell = pt == 2;
-    var start_code = 0 == pcss ? ({ // 94 character set.
+    var charset_size = 0 === Number(pcss) ? 94: 96;
+    var full_cell = 2 === Number(pt);
+    var start_code = 0 === Number(pcss) ? ({ // 94 character set.
       0: 0x21,
     }  [pcn] || Number(pcn) + 0x21) 
-    : 1 == pcss ? Number(pcn) + 0x20 // 96 character set.
+    : 1 === Number(pcss) ? Number(pcn) + 0x20 // 96 character set.
     : Number(pcn) + 0x20; // unicode character set.
 
     this._map = this._map || {};

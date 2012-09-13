@@ -87,10 +87,9 @@
 var CharsetModeHandler = new Class().extends(Plugin)
 CharsetModeHandler.definition = {  
 
-  get id()
-    "charsetmode",
+  id: "charsetmode",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Charset mode Handler"),

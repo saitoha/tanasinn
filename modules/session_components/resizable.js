@@ -76,10 +76,9 @@ var Resize = new Class().extends(Plugin)
                         .depends("screen");
 Resize.definition = {
 
-  get id()
-    "resize",
+  id: "resize",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Resize"),

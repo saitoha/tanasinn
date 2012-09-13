@@ -28,10 +28,9 @@ var KeypadModeHandler = new Class().extends(Plugin)
                                    .depends("screen");
 KeypadModeHandler.definition = {
  
-  get id()
-    "keypadmode",
+  id: "keypadmode",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Keypad Mode Handler"),

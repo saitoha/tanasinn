@@ -47,10 +47,9 @@
 var FocusEventMode = new Class().extends(Plugin);
 FocusEventMode.definition = {
 
-  get id()
-    "focus_event_mode",
+  id: "focus_event_mode",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Focus Event Mode"),

@@ -439,10 +439,9 @@ var DecPrivateMode = new Class().extends(Plugin)
                                 .depends("cursorstate");
 DecPrivateMode.definition = {
 
-  get id()
-    "decmode",
+  id: "decmode",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Private Mode"),

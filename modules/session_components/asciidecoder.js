@@ -31,13 +31,12 @@
 var AsciiDecoder = new Class().extends(Plugin);
 AsciiDecoder.definition = {
 
-  get id()
-    "ascii_decoder",
+  id: "ascii_decoder",
 
   get scheme()
     "ascii",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("ASCII Decoder"),

@@ -58,10 +58,9 @@
 var IRMSwitch = new Class().extends(Plugin);
 IRMSwitch.definition = {
 
-  get id()
-    "irm_switch",
+  id: "irm_switch",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("IRM Switch"),

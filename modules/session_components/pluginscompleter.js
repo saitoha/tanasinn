@@ -29,8 +29,7 @@
 var PluginsCompleter = new Class().extends(Component);
 PluginsCompleter.definition = {
 
-  get id()
-    "plugins_completer",
+  id: "plugins_completer",
 
   /*
    * Search for a given string and notify a listener (either synchronously

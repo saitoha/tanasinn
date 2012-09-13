@@ -63,10 +63,9 @@
 var AutoWrap = new Class().extends(Plugin);
 AutoWrap.definition = {
 
-  get id()
-    "autowrap",
+  id: "autowrap",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Auto Wrap Mode"),

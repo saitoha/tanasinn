@@ -29,8 +29,7 @@
 var CommandCompleter = new Class().extends(Component).requires("Completer");
 CommandCompleter.definition = {
 
-  get id()
-    "command_completer",
+  id: "command_completer",
 
   /*
    * Search for a given string and notify the result.
@@ -42,11 +41,18 @@ CommandCompleter.definition = {
   {
     var lower_command_name = context.source.split(/\s+/).pop().toLowerCase(),
         commands = this.sendMessage("get/commands")
-          .filter(function(command) {
-            return 0 == command.name
-              .replace(/[\[\]]+/g, "")
-              .indexOf(lower_command_name);
-          }).sort(function(lhs, rhs) lhs.name.localeCompare(rhs.name));
+          .filter(
+            function(command)
+            {
+              return 0 === command
+                .name
+                .replace(/[\[\]]+/g, "")
+                .indexOf(lower_command_name);
+            }).sort(
+              function(lhs, rhs)
+              {
+                return lhs.name.localeCompare(rhs.name);
+              });
 
     if (0 === commands.length) {
       this.sendMessage("event/answer-completion", null);

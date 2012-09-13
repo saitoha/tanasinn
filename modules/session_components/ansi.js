@@ -46,10 +46,9 @@ var ANSI_GATM = 1,
 var AnsiMode = new Class().extends(Plugin);
 AnsiMode.definition = {
 
-  get id()
-    "ansimode",
+  id: "ansimode",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("ANSI Mode"),

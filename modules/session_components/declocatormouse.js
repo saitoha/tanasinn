@@ -30,10 +30,9 @@
 var DECLocatorMouse = new Class().extends(Plugin).depends("renderer");
 DECLocatorMouse.definition = {
 
-  get id()
-    "dec_locator_mouse",
+  id: "dec_locator_mouse",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("DEC Locator Mouse"),
@@ -360,7 +359,7 @@ DECLocatorMouse.definition = {
       } else {
         count = Math.round(count / 2);
       }
-      if (0 == count) {
+      if (0 === count) {
         return;
       }
 
@@ -374,7 +373,7 @@ DECLocatorMouse.definition = {
         } else if (count < 0) {
           this.sendMessage("command/scroll-up-view", -count);
           this.sendMessage("command/draw");
-        } else { // count == 1
+        } else { // count === 1
           return;
         }
 

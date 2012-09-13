@@ -47,10 +47,9 @@
 var UrxvtMouseMode = new Class().extends(Plugin);
 UrxvtMouseMode.definition = {
 
-  get id()
-    "urxvt_mouse_mode",
+  id: "urxvt_mouse_mode",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("URXVT 1015 Mouse Mode"),

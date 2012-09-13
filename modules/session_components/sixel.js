@@ -32,10 +32,9 @@ var Sixel = new Class().extends(Plugin)
                        ;
 Sixel.definition = {
 
-  get id()
-    "sixel",
+  id: "sixel",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Sixel"),
@@ -47,7 +46,7 @@ Sixel.definition = {
   "[persistable] enabled_when_startup": true,
 
   /** UI template */
-  get template() 
+  getTemplate: function getTemplate() 
   {
     return {
       parentNode: "#tanasinn_center_area",

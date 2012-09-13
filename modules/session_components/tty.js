@@ -92,8 +92,7 @@
 var ControllerConcept = new Concept();
 ControllerConcept.definition = {
 
-  get id()
-    "Controller",
+  id: "Controller",
 
 // message concept
   "<@event/broker-stopping> :: Undefined":
@@ -112,8 +111,7 @@ ControllerConcept.definition = {
 var IOManagerConcept = new Concept();
 IOManagerConcept.definition = {
 
-  get id()
-    "IOManager",
+  id: "IOManager",
   
 // message concept
   "<@event/broker-stopping> :: Undefined":
@@ -132,8 +130,7 @@ IOManagerConcept.definition = {
 var Controller = new Class().extends(Component).requires("Controller");
 Controller.definition = {
 
-  get id()
-    "tty_controller",
+  id: "tty_controller",
 
   _screen: null,
   _input: null,
@@ -418,14 +415,13 @@ var IOManager = new Class().extends(Component)
                            .requires("IOManager");
 IOManager.definition = {
 
-  get id()
-    "tty_iomanager",
+  id: "tty_iomanager",
 
   _input: null,
   _output: null,
   _socket: null,
 
-  "[persistable] outgoing_buffer_size": 1024 * 64,
+  "[persistable] outgoing_buffer_size": 1024 * 32,
   "[persistable] incoming_buffer_size": 1024 * 1,
 
   /** 
@@ -655,8 +651,7 @@ IOManager.definition = {
 var ExternalDriver = new Class().extends(Component);
 ExternalDriver.definition = {
 
-  get id()
-    "externaldriver",
+  id: "externaldriver",
 
   _external_process: null,
 
@@ -807,10 +802,9 @@ ExternalDriver.definition = {
 var SocketTeletypeService = new Class().extends(Plugin);
 SocketTeletypeService.definition = {
 
-  get id()
-    "tty",
+  id: "tty",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("TTY"),

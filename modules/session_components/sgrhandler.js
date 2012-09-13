@@ -157,10 +157,9 @@ var SGRHandler = new Class().extends(Plugin)
                             .depends("cursorstate");
 SGRHandler.definition = {
 
-  get id()
-    "sgr_handler",
+  id: "sgr_handler",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("SGR Handler"),
@@ -196,7 +195,7 @@ SGRHandler.definition = {
     //  sgr=%?%p9%t\E(0%e\E(B%;\E[0%?%p6%t;1%;%?%p2%t;4%;%?%p1%p3%|%t;7%;%?%p4%t;5%;%?%p7%t;8%;m,
     //
     attr = this._attr;
-    if (0 == arguments.length) {
+    if (0 === arguments.length) {
       attr.clear()
     } else {
 
@@ -277,7 +276,7 @@ SGRHandler.definition = {
             break;
 
           case 30:
-            attr.fg = 0;
+            attr.fgcolor = false;
             break;
 
           case 31:
@@ -309,7 +308,7 @@ SGRHandler.definition = {
             break;
 
           case 38:
-            arguments[++i] == 5 && (attr.fg = arguments[++i]);
+            arguments[++i] === 5 && (attr.fg = arguments[++i]);
             break;
 
           case 39:
@@ -318,6 +317,7 @@ SGRHandler.definition = {
             break;
 
           case 40:
+            attr.bgcolor = false;
             attr.bg = 0;
             break;
 
@@ -350,7 +350,7 @@ SGRHandler.definition = {
             break;
 
           case 48:
-            arguments[++i] == 5 && (attr.bg = arguments[++i]);
+            arguments[++i] === 5 && (attr.bg = arguments[++i]);
             break;
 
           case 49:

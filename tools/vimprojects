@@ -18,7 +18,6 @@
   tanasinn.svg
  }
  content=chrome/content {
-   app.xul
    tanasinn.xul
    testsuite.js
  }
@@ -222,6 +221,7 @@
     display.js
     command.js
     tabbox.js
+    titlebar.js
     commandline.js
     commandlineime.js
     batch.js
@@ -285,7 +285,6 @@
    ~/.vimperator/plugin/twittperator.js
    .tanasinn.js
    licence.pl
-   WcwidthGenerator.pl
    tanasinn-vimp.js
    tanasinn-keysnail.js
    gecko.vim
@@ -303,7 +302,7 @@
    jis0212.txt
    jis0212.txt.js
   }
-  EastAsianWidthDetectorGenerator.pl
+  WcwidthGenerator.pl
   UnicodeCategoryDetector.pl
   Makefile
  }

@@ -29,10 +29,9 @@
 var FocusEvent = new Class().extends(Plugin);
 FocusEvent.definition = {
 
-  get id()
-    "focus_event",
+  id: "focus_event",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Focus Event"),

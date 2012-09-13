@@ -29,10 +29,9 @@
 var BatchLoader = new Class().extends(Plugin);
 BatchLoader.definition = {
 
-  get id()
-    "batch_loader",
+  id: "batch_loader",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Batch Loader"),

@@ -31,10 +31,9 @@
 var CommandlineHistory = new Class().extends(Plugin);
 CommandlineHistory.definition = {
 
-  get id()
-    "commandline_history",
+  id: "commandline_history",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Commandline History"),

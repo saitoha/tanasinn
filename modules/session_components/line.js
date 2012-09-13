@@ -34,8 +34,7 @@
 var LineGeneratorConcept = new Concept();
 LineGeneratorConcept.definition = {
 
-  get id()
-    "LineGenerator",
+  id: "LineGenerator",
 
   // signature concept
   "allocate :: Uint16 -> Uint16 -> Array":
@@ -190,29 +189,30 @@ LineGeneratorConcept.definition = {
 //
 //}
 
-var ATTR2_FORECOLOR    = 0     // 00000000 00000000 00000000 11111111
-var ATTR2_BACKCOLOR    = 8     // 00000000 00000000 11111111 00000000
+var ATTR2_FORECOLOR    = 0,    // 00000000 00000000 00000000 11111111
+    ATTR2_BACKCOLOR    = 8,    // 00000000 00000000 11111111 00000000
 
-var ATTR2_BOLD         = 17    // 00000000 00000001 00000000 00000000
+    ATTR2_BOLD         = 16,   // 00000000 00000001 00000000 00000000
 
-var ATTR2_UNDERLINE    = 18    // 00000000 00000010 00000000 00000000
-var ATTR2_INVERSE      = 19    // 00000000 00000100 00000000 00000000
+    ATTR2_UNDERLINE    = 17,   // 00000000 00000010 00000000 00000000
+    ATTR2_INVERSE      = 18,   // 00000000 00000100 00000000 00000000
 
-var ATTR2_HALFBRIGHT   = 20    // 00000000 00001000 00000000 00000000
-var ATTR2_BLINK        = 21    // 00000000 00010000 00000000 00000000
-var ATTR2_RAPIDBLINK   = 22    // 00000000 00100000 00000000 00000000
-var ATTR2_ITALIC       = 23    // 00000000 01000000 00000000 00000000
+    ATTR2_INVISIBLE    = 19,   // 00000000 00001000 00000000 00000000
+    ATTR2_HALFBRIGHT   = 20,   // 00000000 00010000 00000000 00000000
+    ATTR2_BLINK        = 21,   // 00000000 00100000 00000000 00000000
+    ATTR2_RAPIDBLINK   = 22,   // 00000000 01000000 00000000 00000000
+    ATTR2_ITALIC       = 23,   // 00000000 10000000 00000000 00000000
 
-var ATTR2_FGCOLOR      = 24    // 00000001 00000000 00000000 00000000
-var ATTR2_BGCOLOR      = 25    // 00000010 00000000 00000000 00000000
+    ATTR2_FGCOLOR      = 24,   // 00000001 00000000 00000000 00000000
+    ATTR2_BGCOLOR      = 25,   // 00000010 00000000 00000000 00000000
 
 // tanasinn specific properties
-var ATTR2_LINK         = 26    // 00000100 00000000 00000000 00000000
-var ATTR2_HIGHLIGHT    = 27    // 00001000 00000000 00000000 00000000
+    ATTR2_LINK         = 26,   // 00000100 00000000 00000000 00000000
+    ATTR2_HIGHLIGHT    = 27,   // 00001000 00000000 00000000 00000000
 
-var ATTR2_WIDE         = 28    // 00010000 00000000 00000000 00000000
-var ATTR2_PROTECTED    = 29    // 00100000 00000000 00000000 00000000
-var ATTR2_DRCS         = 30    // 01000000 01111111 01111111 01111111
+    ATTR2_WIDE         = 28,   // 00010000 00000000 00000000 00000000
+    ATTR2_PROTECTED    = 29,   // 00100000 00000000 00000000 00000000
+    ATTR2_DRCS         = 30;   // 01000000 01111111 01111111 01111111
 
 /**
  * @class Cell
@@ -361,6 +361,20 @@ Cell.definition = {
                | value << ATTR2_INVERSE;
   },
 
+  /** getter of invisible attribute */
+  get invisible()
+  {
+    return this.value >>> ATTR2_INVISIBLE & 0x1;
+  },
+
+  /** setter of invisible attribute */
+  set invisible(value)
+  {
+    this.value = this.value
+               & ~(0x1 << ATTR2_INVISIBLE) 
+               | value << ATTR2_INVISIBLE;
+  },
+
   /** getter of halfbright attribute */
   get halfbright()
   {
@@ -494,7 +508,6 @@ Cell.definition = {
 
     this.drcs = true;
   },
-*/
   /** Compare every bit and detect equality of both objects. */
   equals: function equals(other)
   {
@@ -880,6 +893,8 @@ Line.definition = {
       code = cell.c;
       if (code < 0x10000) {
         codes.push(code);
+      } else if (code >= 0x100000) {
+        codes.push(code);
       } else {
         if ("object" === typeof code) {
           codes.push.apply(codes, code);
@@ -924,8 +939,9 @@ Line.definition = {
             continue;
           } else {
             range = cells.slice(start, current);
+            codes = this._getCodePointsFromCells(range);
             yield { 
-              codes: this._getCodePointsFromCells(range), 
+              codes: codes, 
               column: start, 
               end: current, 
               attr: attr,
@@ -979,7 +995,11 @@ Line.definition = {
   {
     var codes = this.cells
       .slice(start, end)
-      .map(function(cell) cell.c);
+      .map(
+        function mapFunc(cell)
+        {
+         return cell.c;
+        });
       //.filter(function(code) code)
     return String.fromCharCode.apply(String, codes);
   },
@@ -1074,7 +1094,9 @@ Line.definition = {
    */
   selectiveErase: function selectiveErase(start, end, attr) 
   {
-    var i, cell, cells;
+    var i,
+        cell,
+        cells;
     
     this.addRange(start, end);
 //    this.cells
@@ -1097,7 +1119,9 @@ Line.definition = {
   eraseWithTestPattern: 
   function eraseWithTestPattern(start, end, attr)
   {
-    var i, cell, cells;
+    var i,
+        cell,
+        cells;
 
     this.addRange(start, end);
 //    this.cells
@@ -1152,17 +1176,15 @@ Line.definition = {
   insertBlanks: function insertBlanks(start, n, attr) 
   {
     var cells = this.cells,
-        length,
-        range,
-        i,
+        length = cells.length,
+        range = cells.splice(-n),
+        i = 0,
         cell;
 
     this.addRange(start, this.length);
-    length = cells.length;
-    range = cells.splice(-n);
 
     // range.forEach(function(cell) cell.erase(attr));
-    for (i = 0; i < range.length; ++i) {
+    for (; i < range.length; ++i) {
       cell = range[i];
       cell.erase(attr);
     }
@@ -1184,8 +1206,7 @@ var LineGenerator = new Class().extends(Component)
                                .requires("LineGenerator");
 LineGenerator.definition = {
 
-  get id()
-    "linegenerator",
+  id: "linegenerator",
 
   "[subscribe('@event/broker-started'), enabled]":
   function onLoad(broker) 

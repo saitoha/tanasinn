@@ -75,10 +75,9 @@ var DECDeviceStatusReport = new Class().extends(Plugin)
                                        .depends("parser");
 DECDeviceStatusReport.definition = {
 
-  get id()
-    "device_status_report_dec",
+  id: "device_status_report_dec",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Device Status Report / DEC"),

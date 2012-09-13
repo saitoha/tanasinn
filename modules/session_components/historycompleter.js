@@ -29,8 +29,7 @@
 var HistoryCompleter = new Class().extends(Component);
 HistoryCompleter.definition = {
 
-  get id()
-    "history-completer",
+  id: "history-completer",
 
   _completion_component: Components
     .classes["@mozilla.org/autocomplete/search;1?name=history"]
@@ -52,7 +51,7 @@ HistoryCompleter.definition = {
           try {
             const RESULT_SUCCESS = Components
               .interfaces.nsIAutoCompleteResult.RESULT_SUCCESS;
-            if (result.searchResult == RESULT_SUCCESS) {
+            if (result.searchResult === RESULT_SUCCESS) {
               this.sendMessage("event/answer-completion", result);
             } else {
               coUtils.Debug.reportWarning(

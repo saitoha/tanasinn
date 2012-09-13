@@ -242,9 +242,8 @@ EventBrokerBase.prototype = {
    */
   multicast: function multicast(topic, data) 
   {
-    var events, stack;
-
-    events = this._delegate_map[topic];
+    var events = this._delegate_map[topic],
+        stack;
 
     if (events) {
       return events.map(function(delegate) 
@@ -275,7 +274,7 @@ EventBrokerBase.prototype = {
    *  @param {String} topic The notification topic.
    *  @return An result value which is returned by the delegate handler.
    */
-  uniget: function uniget(topic, data) 
+  callSync: function callSync(topic, data) 
   {
     var events = this._delegate_map[topic],
         stack,
@@ -305,6 +304,38 @@ EventBrokerBase.prototype = {
           .shift() + ": " + stack.lineNumber, 
         topic);
       return null;
+    }
+  },
+
+  callAsync: function callAsync(topic, data, complete)
+  {
+    var events = this._delegate_map[topic],
+        stack,
+        delegate;
+
+    if (!events) {
+      throw coUtils.Debug.Exception(
+        _("Subscriber not Found: '%s'."), topic);
+    } else if (1 !== events.length) {
+      coUtils.Debug.reportError(
+        _("Too many subscribers are found (length: %d): '%s'."), 
+        events.length, topic);
+    }
+
+    try {
+      delegate = events[0];
+      complete(delegate.action(data));
+    } catch (e) {
+      stack = Components.stack.caller.caller.caller;
+      coUtils.Debug.reportError(e);
+      coUtils.Debug.reportError(
+        _("called at: '%s'.\n", 
+          "The above Error is trapped in the ",
+          "following local event handler. '%s'."), 
+        stack.filename.split("->")
+          .pop().split("?")
+          .shift() + ": " + stack.lineNumber, 
+        topic);
     }
   },
 
@@ -370,6 +401,7 @@ EventBroker.prototype = {
   notify: function notify(topic, data)
   {
     var base = this._base;
+
     return base.multicast(String(topic), data);
   },
 
@@ -381,6 +413,7 @@ EventBroker.prototype = {
   post: function post(topic, data)
   {
     var base = this._base;
+
     base.post(String(topic), data);
   },
 
@@ -392,8 +425,9 @@ EventBroker.prototype = {
    */
   multiget: function multiget(topic, data)
   {
-    var base = this._base;
-    var result = base.multiget(String(topic), data);
+    var base = this._base,
+        result = base.multiget(String(topic), data);
+
     return result;
   },
 
@@ -403,11 +437,17 @@ EventBroker.prototype = {
    *  @param data An argument value which is given to event handlers.
    *  @return result value.
    */
-  uniget: function uniget(topic, data)
+  callSync: function callSync(topic, data)
   {
-    var base = this._base;
-    var result = base.uniget(String(topic), data);
+    var base = this._base,
+        result = base.callSync(String(topic), data);
+
     return result;
+  },
+
+  callAsync: function callAsync(topic, data, complete)
+  {
+    this._base.callSync(String(topic), data, complete);
   },
 
   /** Reset event map. */

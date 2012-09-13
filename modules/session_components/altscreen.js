@@ -31,10 +31,9 @@ var AlternateScreen = new Class().extends(Plugin)
                                  .depends("screen");
 AlternateScreen.definition = {
 
-  get id()
-    "alternate_screen",
+  id: "alternate_screen",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Alternate Screen"),

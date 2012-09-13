@@ -25,8 +25,7 @@
 var SnapResize = new Class().extends(Component);
 SnapResize.definition = {
 
-  get id()
-    "snapresize",
+  id: "snapresize",
 
   /** post-constructor */
   "[subscribe('@initialized/{chrome & renderer}'), enabled]":
@@ -71,10 +70,9 @@ SnapResize.definition = {
 var CaptureBox = new Class().extends(Plugin);
 CaptureBox.definition = {
 
-  get id()
-    "capturebox",
+  id: "capturebox",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Capture Box"),
@@ -83,7 +81,7 @@ CaptureBox.definition = {
     };
   },
 
-  get template()
+  getTemplate: function getTemplate()
     ({
       parentNode: "#tanasinn_chrome",
       tagName: "box",
@@ -106,7 +104,7 @@ CaptureBox.definition = {
   function onLoad(chrome) 
   {
     var {tanasinn_capture_box} 
-      = this.request("command/construct-chrome", this.template);
+      = this.request("command/construct-chrome", this.getTemplate());
     this._box = tanasinn_capture_box;
   },
 
@@ -128,7 +126,7 @@ CaptureBox.definition = {
 var Resizer = new Abstruct().extends(Component);
 Resizer.definition = {
 
-  get template()
+  getTemplate: function getTemplate()
     ({
       parentNode: this.parent,
       tagName: "box",
@@ -156,7 +154,7 @@ Resizer.definition = {
   {
     this._renderer = renderer;
     this._screen = screen;
-    this.request("command/construct-chrome", this.template);
+    this.request("command/construct-chrome", this.getTemplate());
   },
 
   /** mousedown event handler. */
@@ -226,8 +224,8 @@ Resizer.definition = {
               row: row,
             });
 
-          moveX = this.type.slice(-1) == "w" ? screen_width_cache - screen.width: 0;
-          moveY = this.type[0] == "n" ? screen_height_cache - screen.height: 0;
+          moveX = this.type.slice(-1) === "w" ? screen_width_cache - screen.width: 0;
+          moveY = this.type[0] === "n" ? screen_height_cache - screen.height: 0;
 
           if (0 !== moveX || 0 !== moveY) {
             this.sendMessage("command/move-by", [moveX * char_width, moveY * line_height]);
@@ -258,8 +256,7 @@ Resizer.definition = {
 var TopLeftResizer = new Class().extends(Resizer);
 TopLeftResizer.definition = {
 
-  get id()
-    "topleftresizer",
+  id: "topleftresizer",
 
   get parent()
     "#tanasinn_resizer_topleft",
@@ -271,8 +268,7 @@ TopLeftResizer.definition = {
 var TopRightResizer = new Class().extends(Resizer);
 TopRightResizer.definition = {
 
-  get id()
-    "toprightresizer",
+  id: "toprightresizer",
 
   get parent()
     "#tanasinn_resizer_topright",
@@ -284,8 +280,7 @@ TopRightResizer.definition = {
 var BottomLeftResizer = new Class().extends(Resizer);
 BottomLeftResizer.definition = {
 
-  get id()
-    "bottomleftresizer",
+  id: "bottomleftresizer",
 
   get parent()
     "#tanasinn_resizer_bottomleft",
@@ -297,8 +292,7 @@ BottomLeftResizer.definition = {
 var BottomRightResizer = new Class().extends(Resizer);
 BottomRightResizer.definition = {
 
-  get id()
-    "bottomrightresizer",
+  id: "bottomrightresizer",
 
   get parent()
     "#tanasinn_resizer_bottomright",
@@ -310,8 +304,7 @@ BottomRightResizer.definition = {
 var LeftResizer = new Class().extends(Resizer);
 LeftResizer.definition = {
 
-  get id()
-    "leftresizer",
+  id: "leftresizer",
 
   get parent()
     "#tanasinn_resizer_left",
@@ -323,8 +316,7 @@ LeftResizer.definition = {
 var RightResizer = new Class().extends(Resizer);
 RightResizer.definition = {
 
-  get id()
-    "rightresizer",
+  id: "rightresizer",
 
   get parent()
     "#tanasinn_resizer_right",
@@ -336,8 +328,7 @@ RightResizer.definition = {
 var TopResizer = new Class().extends(Resizer);
 TopResizer.definition = {
 
-  get id()
-    "topresizer",
+  id: "topresizer",
 
   get parent()
     "#tanasinn_resizer_top",
@@ -349,8 +340,7 @@ TopResizer.definition = {
 var BottomResizer = new Class().extends(Resizer);
 BottomResizer.definition = {
 
-  get id()
-    "bottomresizer",
+  id: "bottomresizer",
 
   get parent()
     "#tanasinn_resizer_bottom",

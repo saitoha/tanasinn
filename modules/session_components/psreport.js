@@ -30,10 +30,9 @@ var PresentationStateReport = new Class().extends(Plugin);
 PresentationStateReport.definition = {
   
   /** Component ID */
-  get id()
-    "presentation_state_report",
+  id: "presentation_state_report",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Presentation State Report"),

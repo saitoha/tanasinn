@@ -46,10 +46,9 @@ Canvas.definition = {
 var W3m = new Class().extends(Plugin).depends("renderer");
 W3m.definition = {
 
-  get id()
-    "w3m",
+  id: "w3m",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("w3m"),
@@ -58,7 +57,7 @@ W3m.definition = {
     };
   },
 
-  get template()
+  getTemplate: function getTemplate()
   {
     return {
       parentNode: "#tanasinn_center_area",
@@ -82,7 +81,7 @@ W3m.definition = {
     var renderer = this.dependency["renderer"],
         tanasinn_w3m_canvas = this.request(
           "command/construct-chrome", 
-          this.template
+          this.getTemplate()
         ).tanasinn_w3m_canvas;
 
     // set initial size.

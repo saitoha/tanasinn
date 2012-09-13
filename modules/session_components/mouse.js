@@ -40,10 +40,9 @@ var MOUSE_BUTTON1 = 0,
 var Mouse = new Class().extends(Plugin).depends("renderer");
 Mouse.definition = {
 
-  get id()
-    "mouse",
+  id: "mouse",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Mouse"),
@@ -80,7 +79,7 @@ Mouse.definition = {
   "[subscribe('event/mouse-tracking-type-changed'), pnp]":
   function onMouseTrackingTypeChanged(data) 
   {
-    if (coUtils.Constant.TRACKING_NONE == data) {
+    if (coUtils.Constant.TRACKING_NONE === data) {
       this.onmousescroll.enabled = false;
       this.sendMessage(_("Leaving mouse tracking type: [%s]."), this._tracking_type)
     } else {
@@ -94,7 +93,7 @@ Mouse.definition = {
   "[subscribe('event/mouse-tracking-mode-changed'), pnp]":
   function onMouseTrackingModeChanged(data) 
   {
-    if (coUtils.Constant.TRACKING_NONE == data) {
+    if (coUtils.Constant.TRACKING_NONE === data) {
       this.sendMessage(_("Leaving mouse tracking mode: [%s]."), this._tracking_mode)
     } else {
       this.sendMessage(_("Entering mouse tracking mode: [%s]."), data)
@@ -192,7 +191,7 @@ Mouse.definition = {
            | event.metaKey  << 3
            | event.ctrlKey  << 4
            ;
-        if ("mouseup" == event.type) {
+        if ("mouseup" === event.type) {
           action = "m";
         } else {
           action = "M";
@@ -289,14 +288,14 @@ Mouse.definition = {
 
       tracking_mode = this._tracking_mode;
       if (this._in_scroll_session 
-          || coUtils.Constant.TRACKING_NONE == tracking_mode) {
+          || coUtils.Constant.TRACKING_NONE === tracking_mode) {
         if (count > 0) {
           this.sendMessage("command/scroll-down-view", count);
           this.sendMessage("command/draw");
         } else if (count < 0) {
           this.sendMessage("command/scroll-up-view", -count);
           this.sendMessage("command/draw");
-        } else { // count == 1
+        } else { // count === 1
           return;
         }
 
@@ -325,7 +324,7 @@ Mouse.definition = {
     this._pressed = true;
 
     tracking_mode = this._tracking_mode;
-    if (coUtils.Constant.TRACKING_NONE == tracking_mode) {
+    if (coUtils.Constant.TRACKING_NONE === tracking_mode) {
       return;
     }
 

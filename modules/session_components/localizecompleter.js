@@ -29,8 +29,7 @@
 var LocalizeCompleter = new Class().extends(Component);
 LocalizeCompleter.definition = {
 
-  get id()
-    "localize-completer",
+  id: "localize-completer",
 
   /*
    * Search for a given string and notify a listener (either synchronously

@@ -66,10 +66,9 @@
 var SoftReset = new Class().extends(Plugin);
 SoftReset.definition = {
 
-  get id()
-    "soft_reset",
+  id: "soft_reset",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Soft Reset"),

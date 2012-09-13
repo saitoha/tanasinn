@@ -29,10 +29,9 @@
 var Decoder = new Class().extends(Plugin);
 Decoder.definition = {
 
-  get id()
-    "decoder",
+  id: "decoder",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Decoder"),

@@ -66,10 +66,9 @@ var Base64CopyPaste = new Class().extends(Plugin)
                                  .depends("decoder");
 Base64CopyPaste.definition = {
 
-  get id()
-    "base64copypaste",
+  id: "base64copypaste",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Base64 Copy/Paste"),

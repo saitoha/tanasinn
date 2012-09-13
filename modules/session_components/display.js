@@ -54,8 +54,7 @@ CompletionDisplayDriverBase.definition = {
 var ColorNumberCompletionDisplayDriver = new Class().extends(CompletionDisplayDriverBase);
 ColorNumberCompletionDisplayDriver.definition = {
 
-  get id()
-    "color-number-completion-display-driver",
+  id: "color-number-completion-display-driver",
 
   get type()
     "color-number",
@@ -132,7 +131,7 @@ ColorNumberCompletionDisplayDriver.definition = {
                   { text: range.text.substr(0, range.start) },
                   {
                     tagName: "label",
-                    innerText: range.text.substr(range.start, range.length),
+                    value: range.text.substr(range.start, range.length),
                     style: { 
                       margin: "0px", 
                       fontWeight: "bold", 
@@ -157,8 +156,7 @@ ColorNumberCompletionDisplayDriver.definition = {
 var ColorCompletionDisplayDriver = new Class().extends(CompletionDisplayDriverBase);
 ColorCompletionDisplayDriver.definition = {
 
-  get id()
-    "color-completion-display-driver",
+  id: "color-completion-display-driver",
 
   get type()
     "color",
@@ -239,7 +237,7 @@ ColorCompletionDisplayDriver.definition = {
                   { text: range.text.substr(0, range.start) },
                   {
                     tagName: "label",
-                    innerText: range.text.substr(range.start, range.length),
+                    value: range.text.substr(range.start, range.length),
                     style: { 
                       margin: "0px", 
                       fontWeight: "bold",
@@ -264,8 +262,7 @@ ColorCompletionDisplayDriver.definition = {
 var FontsizeCompletionDisplayDriver = new Class().extends(CompletionDisplayDriverBase);
 FontsizeCompletionDisplayDriver.definition = {
 
-  get id()
-    "fontsize-completion-display-driver",
+  id: "fontsize-completion-display-driver",
 
   get type()
     "fontsize",
@@ -310,7 +307,7 @@ FontsizeCompletionDisplayDriver.definition = {
                   { text: completion_text.substr(0, match_position) },
                   {
                     tagName: "label",
-                    innerText: completion_text.substr(match_position, search_string.length),
+                    value: completion_text.substr(match_position, search_string.length),
                     style: { 
                       margin: "0px", 
                       fontWeight: "bold", 
@@ -344,8 +341,7 @@ FontsizeCompletionDisplayDriver.definition = {
 var FontFamilyCompletionDisplayDriver = new Class().extends(CompletionDisplayDriverBase);
 FontFamilyCompletionDisplayDriver.definition = {
 
-  get id()
-    "font-family-completion-display-driver",
+  id: "font-family-completion-display-driver",
 
   get type()
     "font-family",
@@ -392,7 +388,7 @@ FontFamilyCompletionDisplayDriver.definition = {
                   },
                   {
                     tagName: "label",
-                    innerText: completion_text.substr(match_position, search_string.length),
+                    value: completion_text.substr(match_position, search_string.length),
                     style: {
                       margin: "0px", 
                       fontWeight: "bold", 
@@ -418,8 +414,7 @@ FontFamilyCompletionDisplayDriver.definition = {
 var TextCompletionDisplayDriver = new Class().extends(CompletionDisplayDriverBase);
 TextCompletionDisplayDriver.definition = {
 
-  get id()
-    "text-completion-display-driver",
+  id: "text-completion-display-driver",
 
   get type()
     "text",
@@ -478,7 +473,7 @@ TextCompletionDisplayDriver.definition = {
                   { text: completion_text.substr(0, match_position) },
                   {
                     tagName: "label",
-                    innerText: completion_text.substr(match_position, search_string.length),
+                    value: completion_text.substr(match_position, search_string.length),
                     style: { 
                       margin: "0px", 
                       fontWeight: "bold", 

@@ -32,10 +32,9 @@ var Splitter = new Class().extends(Plugin)
                           ;
 Splitter.definition = {
 
-  get id()
-    "splitter",
+  id: "splitter",
 
-  get info()
+  getInfo: function getInfo()
     <module type="plugin">
         <name>{_("Splitter")}</name>
         <description>{
@@ -45,8 +44,9 @@ Splitter.definition = {
         <version>0.1</version>
     </module>,
 
-  get template()
-    ({
+  getTemplate: function getTemplate()
+  {
+    return {
       tagName: "vbox",
       id: "tanasinn_splitter",
       height: 16,
@@ -60,23 +60,24 @@ Splitter.definition = {
         context: this,
         handler: this.ondragstart,
       }
-    }),
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
 
   /** Installs itself. 
-   *  @param {Session} session A session object.
+   *  @param {Broker} broker A session object.
    */
   "[install]":
-  function install(session) 
+  function install(broker) 
   {
-    var bottompanel, tabbox_element;
-    bottompanel = this.dependency["bottompanel"];
+    var bottompanel = this.dependency["bottompanel"],
+        tanasinn_splitter = this.request(
+          "command/construct-chrome",
+          this.getTemplate()).tanasinn_splitter,
+        tabbox_element = bottompanel.getElement();
 
     // create splitter element.
-    var {tanasinn_splitter}
-      = session.uniget("command/construct-chrome", this.template);
-    tabbox_element = bottompanel.getElement();
     tabbox_element.parentNode.insertBefore(tanasinn_splitter, tabbox_element);
 
     this._splitter = tanasinn_splitter;
@@ -148,20 +149,23 @@ Splitter.definition = {
         }
       },
     });
-    this.sendMessage("command/add-domlistener", {
-      target: dom.document,
-      type: "mouseup", 
-      id: "_DRAGGING",
-      context: this,
-      handler: function onmouseup() 
+    this.sendMessage(
+      "command/add-domlistener",
       {
-        dom.document.documentElement.style.cursor = "",
-        this.sendMessage("command/remove-domlistener", "_DRAGGING");
-        if (screen.height == initial_row)
-          return;
-        this.sendMessage("event/resize-session-closed");
-      }
-    });
+        target: dom.document,
+        type: "mouseup", 
+        id: "_DRAGGING",
+        context: this,
+        handler: function onmouseup() 
+        {
+          dom.document.documentElement.style.cursor = "",
+          this.sendMessage("command/remove-domlistener", "_DRAGGING");
+          if (screen.height === initial_row) {
+            return;
+          }
+          this.sendMessage("event/resize-session-closed");
+        }
+      });
   }
 } // class Splitter
 

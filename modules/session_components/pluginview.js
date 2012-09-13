@@ -29,10 +29,9 @@
 var PluginViewer = new Class().extends(Plugin);
 PluginViewer.definition = {
 
-  get id()
-    "plugin_viewer",
+  id: "plugin_viewer",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Component"),
@@ -42,7 +41,7 @@ PluginViewer.definition = {
     };
   },
 
-  get template()
+  getTemplate: function getTemplate()
   {
     return {
       parentNode: this._panel,
@@ -62,11 +61,23 @@ PluginViewer.definition = {
 
   _getRowTemplateFromModule: function _getRowTemplateFromModule(module)
   {
-    var info = ("info" in module) && module.info,
+    var info = module.getInfo(),
         depends = this._depends_map[module.id],
         depended = this._depended_map[module.id],
-        depends_on = Object.keys(depends).map(function(key) depends[key]),
-        depended_by = Object.keys(depended).map(function(key) depended[key])
+        depends_on = Object
+          .keys(depends)
+          .map(
+            function(key)
+            {
+              return depends[key];
+            }),
+        depended_by = Object
+          .keys(depended)
+          .map(
+            function(key)
+            {
+              return depended[key];
+            })
         self = this;
 
     return [
@@ -124,11 +135,21 @@ PluginViewer.definition = {
           },
           {
             tagName: "label",
-            value: _("depends on: ") + depends_on.map(function(module) module.info.name, this).join("/"),
+            value: _("depends on: ")
+              + depends_on.map(
+                function(module)
+                {
+                  return module.getInfo().name;
+                }, this).join("/"),
           },
           {
             tagName: "label",
-            value: _("depended by: ") + depended_by.map(function(module) module.info.name, this).join("/"),
+            value: _("depended by: ")
+              + depended_by.map(
+                function(module)
+                {
+                  return module.getInfo().name;
+                }, this).join("/"),
           },
         ]
       },
@@ -159,11 +180,17 @@ PluginViewer.definition = {
   "[subscribe('panel-selected/plugin_viewer')]":
   function onPanelSelected(name) 
   {
-    var modules;
+    var modules = this.sendMessage("get/components");
 
-    modules = this.sendMessage("get/components");
-    this._modules = modules.filter(function(module) module.info)
-      .sort(function(lhs, rhs) lhs.info.name > rhs.info.name ? 1: -1);
+    this._modules = modules.filter(
+      function(module)
+      {
+        return module.getInfo;
+      }).sort(
+        function(lhs, rhs)
+        {
+          return lhs.getInfo().name > rhs.getInfo().name ? 1: -1;
+        });
     this.firstUpdate();
   },
 
@@ -185,21 +212,28 @@ PluginViewer.definition = {
       depends_on[module.id] = depends_on[module.id] || {};
       depended_by[module.id] = depended_by[module.id] || {};
       Object.keys(module.dependency)
-        .map(function(key) module.dependency[key])
-        .filter(function(dependency) ("info" in dependency) && dependency.info)
-        .forEach(function(dependency) 
-        {
-          depends_on[module.id][dependency.id] = dependency;
-          depended_by[dependency.id] = depended_by[dependency.id] || {};
-          depended_by[dependency.id][module.id] = module;
-        });
+        .map(
+          function(key)
+          {
+            return module.dependency[key];
+          }).filter(
+            function(dependency)
+            {
+              return ("info" in dependency) && dependency.getInfo;
+            }).forEach(
+              function(dependency) 
+              {
+                depends_on[module.id][dependency.id] = dependency;
+                depended_by[dependency.id] = depended_by[dependency.id] || {};
+                depended_by[dependency.id][module.id] = module;
+              });
     }, this);
     this._depends_map = depends_on;
     this._depended_map = depended_by;
     if (this._panel.firstChild) {
       this._panel.removeChild(this._panel.firstChild);
     }
-    this.request("command/construct-chrome", this.template);
+    this.request("command/construct-chrome", this.getTemplate());
   },
 
   update: function update()    
@@ -213,14 +247,21 @@ PluginViewer.definition = {
       depends_on[module.id] = depends_on[module.id] || {};
       depended_by[module.id] = depended_by[module.id] || {};
       Object.keys(module.dependency)
-        .map(function(key) module.dependency[key])
-        .filter(function(dependency) ("info" in dependency) && dependency.info)
-        .forEach(function(dependency) 
-        {
-          depends_on[module.id][dependency.id] = dependency;
-          depended_by[dependency.id] = depended_by[dependency.id] || {};
-          depended_by[dependency.id][module.id] = module;
-        });
+        .map(
+          function(key)
+          {
+            return module.dependency[key];
+          }).filter(
+            function(dependency)
+            {
+              return ("info" in dependency) && dependency.getInfo;
+            }).forEach(
+              function(dependency) 
+              {
+                depends_on[module.id][dependency.id] = dependency;
+                depended_by[dependency.id] = depended_by[dependency.id] || {};
+                depended_by[dependency.id][module.id] = module;
+              });
     }, this);
     this._depends_map = depends_on;
     this._depended_map = depended_by;
@@ -229,16 +270,16 @@ PluginViewer.definition = {
   /** Fired when checkbox state is changed. */
   _setState: function _setState(plugin, checkbox) 
   {
-    var enabled, message;
+    var enabled = !checkbox.checked,
+        message;
 
-    enabled = !checkbox.checked;
     try {
       checkbox.setAttribute("checked", enabled);
       plugin.enabled = enabled;
       message = coUtils.Text.format(
         _("Succeeded to %s module %s."), 
         plugin.enabled ? _("install"): _("uninstall"), 
-        plugin.info.name);
+        plugin.getInfo().name);
       this.update();
 
       this.sendMessage("event/dependencies-updated");
@@ -249,7 +290,7 @@ PluginViewer.definition = {
       message = coUtils.Text.format(
         _("Failed to %s module %s."), 
         enabled ? _("install"): _("uninstall"),
-        plugin.info.name);
+        plugin.getInfo().name);
       this.sendMessage("command/report-status-message", message);
       coUtils.Debug.reportError(e);
     }
@@ -262,8 +303,7 @@ PluginViewer.definition = {
 var PluginManagementCommands = new Class().extends(Component);
 PluginManagementCommands.definition = {
 
-  get id()
-    "plugin_management_commands",
+  id: "plugin_management_commands",
 
   "[command('disable', ['plugin/enabled']), _('Disable a plugin.'), enabled]":
   function disable(arguments_string)
@@ -279,19 +319,30 @@ PluginManagementCommands.definition = {
 
   _impl: function _impl(arguments_string, is_enable) 
   {
-    var match, modules;
+    var match = arguments_string.match(/^(\s*)([$_\-@a-zA-Z\.]+)(\s*)$/),
+        modules,
+        space,
+        name,
+        next;
 
-    match = arguments_string.match(/^(\s*)([$_\-@a-zA-Z\.]+)(\s*)$/);
     if (null === match) {
       return {
         success: false,
         message: _("Failed to parse commandline argument."),
       };
     }
-    var [, space, name, next] = match;
+
+    space = match[1];
+    name = match[2];
+    next = match[3];
+
     modules = this.sendMessage("get/components");
-    modules = modules.filter(function(module) module.id == name);
-    if (0 == modules.length) {
+    modules = modules.filter(
+      function(module)
+      {
+        return module.id === name;
+      });
+    if (0 === modules.length) {
       return {
         success: false,
         message: _("Cannot enabled the module specified by given argument."),

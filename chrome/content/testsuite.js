@@ -13,11 +13,11 @@ try {
 
   process.notify("event/new-window-detected", window);
 
-  desktop = process.uniget("get/desktop-from-window", window);
+  desktop = process.callSync("get/desktop-from-window", window);
 
   desktop.start(window.document.documentElement);
 
 } catch (e) {
-  alert(e);
+  alert(e + "\n" + e.fileName + ":" + e.lineNumber);
 }
 

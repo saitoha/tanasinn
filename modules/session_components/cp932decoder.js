@@ -30,13 +30,12 @@
 var CP932Decoder = new Class().extends(Plugin);
 CP932Decoder.definition = {
 
-  get id()
-    "cp932_decoder",
+  id: "cp932_decoder",
 
   get scheme()
     "cp932",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("CP-932 Decoder"),

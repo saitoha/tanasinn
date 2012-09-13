@@ -106,10 +106,9 @@
 var PrimaryDA = new Class().extends(Plugin);
 PrimaryDA.definition = {
 
-  get id()
-    "primary_da",
+  id: "primary_da",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Primary Device Attribute"),

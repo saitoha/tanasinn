@@ -44,8 +44,7 @@ function wait(span)
 var GrammarConcept = new Concept();
 GrammarConcept.definition = {
 
-  get id()
-    "GrammarConcept",
+  id: "GrammarConcept",
 
   // message concept
   "<command/add-sequence> :: SequenceInfo -> Undefined":
@@ -64,8 +63,7 @@ GrammarConcept.definition = {
 var ScannerConcept = new Concept();
 ScannerConcept.definition = {
 
-  get id()
-    "ScannerConcept",
+  id: "ScannerConcept",
 
   // signature concept
   "assign :: String -> Undefined":
@@ -563,12 +561,12 @@ SequenceParser.definition = {
       // define action
       action = function(params) 
       {
-        var data = String.fromCharCode.apply(String, params);
+        var data = coUtils.Text.safeConvertFromArray(params);
 
         return function()
-          {
-            return value.call(context, data);
-          };
+        {
+          return value.call(context, data);
+        };
       };
 
       index = char_with_string.charCodeAt(0);
@@ -660,8 +658,7 @@ var VT100Grammar = new Class().extends(Component)
                               .requires("GrammarConcept");
 VT100Grammar.definition = {
 
-  get id()
-    "vt100",
+  id: "vt100",
 
   /** post constructor. 
    *  @param {Broker} broker A Broker object.
@@ -765,8 +762,7 @@ VT100Grammar.definition = {
 var Scanner = new Class().extends(Component).requires("ScannerConcept");
 Scanner.definition = {
 
-  get id()
-    "scanner",
+  id: "scanner",
 
   _value: null,
   _position: 0,
@@ -876,8 +872,7 @@ Scanner.definition = {
 var Parser = new Class().extends(Component);
 Parser.definition = {
 
-  get id()
-    "parser",
+  id: "parser",
 
   _grammar: null,
   _screen: null,

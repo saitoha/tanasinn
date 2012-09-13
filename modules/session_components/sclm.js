@@ -59,10 +59,9 @@ var SmoothScrollingMode = new Class().extends(Plugin)
                                  .depends("screen");
 SmoothScrollingMode.definition = {
 
-  get id()
-    "smooth_scrolling_mode",
+  id: "smooth_scrolling_mode",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Smooth Scrolling Mode"),

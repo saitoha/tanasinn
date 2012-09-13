@@ -62,10 +62,9 @@
 var SendReceiveMode = new Class().extends(Plugin);
 SendReceiveMode.definition = {
 
-  get id()
-    "send_receive_mode",
+  id: "send_receive_mode",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("SRM Switch"),

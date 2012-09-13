@@ -104,8 +104,7 @@ function generateEntries(paths)
 var ProgramCompleter = new Class().extends(CompleterBase);
 ProgramCompleter.definition = {
 
-  get id()
-    "program-completer",
+  id: "program-completer",
 
   get type()
     "program",
@@ -151,12 +150,15 @@ ProgramCompleter.definition = {
    */
   startSearch: function startSearch(source, listener)
   {
-    var broker, lower_source, search_paths, files, 
-        data, autocomplete_result,
-        search_path, cygwin_root, map;
-
-    broker = this._broker;
-    lower_source = source.toLowerCase();
+    var broker = this._broker,
+        lower_source = source.toLowerCase(),
+        search_paths,
+        files, 
+        data,
+        autocomplete_result,
+        search_path,
+        cygwin_root,
+        map;
 
     if ("WINNT" === coUtils.Runtime.os) {
       cygwin_root = broker.cygwin_root;
@@ -165,15 +167,14 @@ ProgramCompleter.definition = {
         .map(function(posix_path) 
         {
           return cygwin_root + "\\" + posix_path.replace(/\//g, "\\");
-        })
-        .reduce(function(map, path) 
-        {
-          var key;
+        }).reduce(function(map, path) 
+          {
+            var key;
 
-          key = path.replace(/\\$/, "");
-          map[key] = undefined;
-          return map; 
-        }, {});
+            key = path.replace(/\\$/, "");
+            map[key] = undefined;
+            return map; 
+          }, {});
       search_path = [key for ([key,] in Iterator(map))];
     } else {
       search_path = this._getSearchPath();
@@ -340,8 +341,7 @@ coUtils.Sessions = {
 var ProcessManager = new Class().extends(Component);
 ProcessManager.definition = {
 
-  get id()
-    "process_manager",
+  id: "process_manager",
 
   "[subscribe('@event/broker-started'), enabled]":
   function onLoad(broker)
@@ -362,7 +362,7 @@ ProcessManager.definition = {
         broker, cygwin_root, runtime, process;
 
     exit_code = this.sendSignal(0, pid);
-    return 0 == this.sendSignal(0, pid);
+    return 0 === this.sendSignal(0, pid);
     
     if ("number" !== typeof pid) {
       throw coUtils.Debug.Exception(
@@ -410,8 +410,11 @@ ProcessManager.definition = {
    */
   sendSignal: function sendSignal(signal, pid) 
   {
-    var runtime_path, args, broker, cygwin_root,
-        runtime, process;
+    var runtime_path,
+        args,
+        cygwin_root,
+        runtime,
+        process;
 
     if ("number" !== typeof signal || "number" !== typeof pid) {
       throw coUtils.Debug.Exception(
@@ -420,8 +423,7 @@ ProcessManager.definition = {
     }
 
     if ("WINNT" === coUtils.Runtime.os) {
-      broker = this._broker;
-      cygwin_root = broker.cygwin_root;
+      cygwin_root = this._broker.cygwin_root;
       runtime_path = cygwin_root + "\\bin\\run.exe";
       args = [ "kill", "-wait", "-" + signal, String(pid) ];
     } else { // Darwin, Linux or FreeBSD
@@ -461,15 +463,16 @@ var SessionsCompleter = new Class().extends(CompleterBase)
                                    .depends("process_manager");
 SessionsCompleter.definition = {
 
-  get id()
-    "sessions-completer",
+  id: "sessions-completer",
 
   get type()
     "sessions",
 
   _generateAvailableSession: function _generateAvailableSession()
   {
-    var records, request_id, record;
+    var records,
+        request_id,
+        record;
 
     coUtils.Sessions.load();
     records = coUtils.Sessions.getRecords();
@@ -500,15 +503,16 @@ SessionsCompleter.definition = {
    */
   startSearch: function startSearch(source, listener)
   {
-    var candidates, lower_source, data, autocomplete_result;
+    var candidates = [candidate for (candidate in this._generateAvailableSession())],
+        lower_source = source.toLowerCase(),
+        data = candidates.filter(
+          function(data)
+          {
+            return -1 != data.name.toLowerCase().indexOf(lower_source);
+          }),
+        autocomplete_result;
 
-    candidates = [candidate for (candidate in this._generateAvailableSession())];
-    lower_source = source.toLowerCase();
-
-    data = candidates.filter(function(data) {
-      return -1 != data.name.toLowerCase().indexOf(lower_source);
-    });
-    if (0 == data.length) {
+    if (0 === data.length) {
       listener.doCompletion(null);
       return -1;
     }
@@ -533,8 +537,7 @@ SessionsCompleter.definition = {
 var TextCompletionDisplayDriver = new Class().extends(CompletionDisplayDriverBase);
 TextCompletionDisplayDriver.definition = {
 
-  get id()
-    "text-completion-display-driver",
+  id: "text-completion-display-driver",
 
   get type()
     "text",
@@ -570,15 +573,26 @@ TextCompletionDisplayDriver.definition = {
           childNodes: [
             {
               tagName: "box",
-              style: "font-size: 1.2em; width: 50%; margin: 0px; overflow: hidden; padding-left: 8px;",
-              childNodes: -1 == match_position ? 
+              style: {
+                fontSize: "1.2em",
+                width: "50%",
+                margin: "0px",
+                overflow: "hidden",
+                paddingLeft: "8px",
+              },
+              childNodes: -1 === match_position ? 
                 { text: completion_text }:
                 [
                   { text: completion_text.substr(0, match_position) },
                   {
                     tagName: "label",
-                    innerText: completion_text.substr(match_position, search_string.length),
-                    style: "margin: 0px; font-weight: bold; text-shadow: 1px 1px 2px black; color: #f88;",
+                    value: completion_text.substr(match_position, search_string.length),
+                    style: {
+                      margin: "0px",
+                      fontWeight: "bold",
+                      textShadow: "1px 1px 2px black",
+                      color: "#f88",
+                    },
                   },
                   { text: completion_text.substr(match_position + search_string.length) },
                 ],
@@ -602,8 +616,7 @@ TextCompletionDisplayDriver.definition = {
 var SessionsCompletionDisplayDriver = new Class().extends(CompletionDisplayDriverBase);
 SessionsCompletionDisplayDriver.definition = {
 
-  get id()
-    "sessions-completion-display-driver",
+  id: "sessions-completion-display-driver",
 
   get type()
     "sessions",
@@ -706,8 +719,7 @@ SessionsCompletionDisplayDriver.definition = {
 var LauncherCompletionProvider = new Class().extends(Component);
 LauncherCompletionProvider.definition = {
 
-  get id()
-    "launcher-completion-provider",
+  id: "launcher-completion-provider",
 
   "[subscribe('command/complete'), enabled]": 
   function complete(request)
@@ -738,8 +750,7 @@ LauncherCompletionProvider.definition = {
 var Launcher = new Class().extends(Component);
 Launcher.definition = {
 
-  get id()
-    "launcher",
+  id: "launcher",
 
   top: 200,
   left: 500,
@@ -785,109 +796,104 @@ Launcher.definition = {
   "[subscribe('event/broker-started'), enabled]":
   function onLoad(desktop)
   {
-    var {
-      tanasinn_window_layer,
-      tanasinn_launcher_layer,
-      tanasinn_launcher_textbox,
-      tanasinn_launcher_completion_popup,
-      tanasinn_launcher_completion_root,
-    } = desktop.uniget("command/construct-chrome", 
-    [
-      {
-        parentNode: desktop.root_element,
-        tagName: "box",
-        id: "tanasinn_window_layer",
-      },
-      {
-        parentNode: desktop.root_element,
-        tagName: "box",
-        id: "tanasinn_launcher_layer",
-        hidden: true,
-        style: {
-          position: "fixed",
-          left: "60px",
-          top: "80px",
+    var result = desktop.callSync(
+      "command/construct-chrome", 
+      [
+        {
+          parentNode: desktop.root_element,
+          tagName: "box",
+          id: "tanasinn_window_layer",
         },
-        childNodes: [
-          {
-            tagName: "vbox",
-            style: {
-              padding: "20px",
-              borderRadius: "20px",
-              background: "-moz-linear-gradient(top, #999, #444)",
-              MozBoxShadow: "10px 10px 20px black",
-              boxShadow: "10px 10px 20px black",
-              opacity: "0.85",
-              cursor: "move",
-            },
-            childNodes: {
-              tagName: "textbox",
-              id: "tanasinn_launcher_textbox",
-              className: "plain",
-              style: this.textboxStyle,
-            },
+        {
+          parentNode: desktop.root_element,
+          tagName: "box",
+          id: "tanasinn_launcher_layer",
+          hidden: true,
+          style: {
+            position: "fixed",
+            left: "60px",
+            top: "80px",
           },
-          {
-            tagName: "panel",
-            style: { 
-              MozAppearance: "none",
-              MozUserFocus: "ignore",
-              border: "1px solid #aaa",
-              borderRadius: "10px",
-              font: "menu",
-              opacity: "0.87",
-              background: "transparent",
-              background: "-moz-linear-gradient(top, #ccc, #aaa)",
+          childNodes: [
+            {
+              tagName: "vbox",
+              style: {
+                padding: "20px",
+                borderRadius: "20px",
+                background: "-moz-linear-gradient(top, #999, #444)",
+                MozBoxShadow: "10px 10px 20px black",
+                boxShadow: "10px 10px 20px black",
+                opacity: "0.85",
+                cursor: "move",
+              },
+              childNodes: {
+                tagName: "textbox",
+                id: "tanasinn_launcher_textbox",
+                className: "plain",
+                style: this.textboxStyle,
+              },
             },
-            noautofocus: true,
-            height: this.popup_height,
-            id: "tanasinn_launcher_completion_popup",
-            childNodes: {
-              tagName: "stack",
-              flex: 1,
-              childNodes: [
-                {
-                  tagName: "box",
-                  style: { 
-                    borderRadius: "12px",
-                    outline: "none",
-                    border: "none",
-                  },
-                },
-                {
-                  tagName: "scrollbox",
-                  id: "tanasinn_launcher_completion_scroll",
-                  flex: 1,
-                  style: { 
-                    margin: "12px",
-                    overflowX: "hidden",
-                    overflowY: "auto",
-                  },
-                  orient: "vertical", // box-packing
-                  childNodes: {
-                    tagName: "grid",
-                    flex: 1,
-                    id: "tanasinn_launcher_completion_root",
-                    style: {
-                      fontSize: "20px",
-                      fontFamily: "'Menlo','Lucida Console'",
-                      fontWeight: "bold",
-                      color: "#fff",
-                      textShadow: "1px 1px 7px black",
+            {
+              tagName: "panel",
+              style: { 
+                MozAppearance: "none",
+                MozUserFocus: "ignore",
+                border: "1px solid #aaa",
+                borderRadius: "10px",
+                font: "menu",
+                opacity: "0.87",
+                background: "transparent",
+                background: "-moz-linear-gradient(top, #ccc, #aaa)",
+              },
+              noautofocus: true,
+              height: this.popup_height,
+              id: "tanasinn_launcher_completion_popup",
+              childNodes: {
+                tagName: "stack",
+                flex: 1,
+                childNodes: [
+                  {
+                    tagName: "box",
+                    style: { 
+                      borderRadius: "12px",
+                      outline: "none",
+                      border: "none",
                     },
-                  }
-                }, // scrollbox
-              ],
-            }, // stack
-          },  // panel
-        ],
-      },
-    ]);
-    this._window_layer = tanasinn_window_layer;
-    this._element = tanasinn_launcher_layer;
-    this._textbox = tanasinn_launcher_textbox;
-    this._popup = tanasinn_launcher_completion_popup;
-    this._completion_root = tanasinn_launcher_completion_root;
+                  },
+                  {
+                    tagName: "scrollbox",
+                    id: "tanasinn_launcher_completion_scroll",
+                    flex: 1,
+                    style: { 
+                      margin: "12px",
+                      overflowX: "hidden",
+                      overflowY: "auto",
+                    },
+                    orient: "vertical", // box-packing
+                    childNodes: {
+                      tagName: "grid",
+                      flex: 1,
+                      id: "tanasinn_launcher_completion_root",
+                      style: {
+                        fontSize: "20px",
+                        fontFamily: "'Menlo','Lucida Console'",
+                        fontWeight: "bold",
+                        color: "#fff",
+                        textShadow: "1px 1px 7px black",
+                      },
+                    }
+                  }, // scrollbox
+                ],
+              }, // stack
+            },  // panel
+          ],
+        },
+      ]);
+    this._window_layer = result.tanasinn_window_layer;
+    this._element = result.tanasinn_launcher_layer;
+    this._textbox = result.tanasinn_launcher_textbox;
+    this._popup = result.tanasinn_launcher_completion_popup;
+    this._completion_root = result.tanasinn_launcher_completion_root;
     this.onEnabled();
   },
 
@@ -1434,8 +1440,7 @@ Launcher.definition = {
 var DragMove = new Class().extends(Plugin);
 DragMove.definition = {
 
-  get id()
-    "launcher-dragmove",
+  id: "launcher-dragmove",
 
   "[persistable] enabled_when_startup": true,
 

@@ -29,8 +29,7 @@
 var CharsetCompleter = new Class().extends(Component);
 CharsetCompleter.definition = {
 
-  get id()
-    "charset_completer",
+  id: "charset_completer",
 
   /*
    * Search for a given string and notify a listener (either synchronously

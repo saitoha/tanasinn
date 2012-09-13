@@ -30,10 +30,9 @@ var Mascot = new Class().extends(Plugin)
                         .depends("cursorstate");
 Mascot.definition = {
 
-  get id()
-    "mascot",
+  id: "mascot",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Mascot"),
@@ -42,7 +41,7 @@ Mascot.definition = {
     };
   },
 
-  get template()
+  getTemplate: function getTemplate()
   {
     return {
       parentNode: "#tanasinn_resizer_topright",
@@ -98,7 +97,7 @@ Mascot.definition = {
   {
     this._element = this.request(
       "command/construct-chrome", 
-      this.template
+      this.getTemplate()
     )["tanasinn_mascot_layer"];
   },
 
@@ -123,10 +122,9 @@ Mascot.definition = {
 var Cover = new Class().extends(Plugin);
 Cover.definition = {
 
-  get id()
-    "cover",
+  id: "cover",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Cover"),
@@ -135,8 +133,9 @@ Cover.definition = {
     };
   },
 
-  get template()
-    ({
+  getTemplate: function getTemplate()
+  {
+    return {
       parentNode: "#tanasinn_background_frame",
       tagName: "box",
       id: "tanasinn_cover_layer",
@@ -152,7 +151,8 @@ Cover.definition = {
           },
         },
       ],
-    }),
+    };
+  },
 
   "[persistable] enabled_when_startup": false,
 
@@ -168,7 +168,7 @@ Cover.definition = {
   {
     this._element = this.request(
       "command/construct-chrome", 
-      this.template
+      this.getTemplate()
     )["tanasinn_cover_layer"];
   },
 

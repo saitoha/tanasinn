@@ -22,27 +22,15 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-function wait(span) 
-{
-  var end_time = Date.now() + span,
-      current_thread = coUtils.Services.threadManager.currentThread;
-
-  do {
-    current_thread.processNextEvent(true);
-  } while ((current_thread.hasPendingEvents()) || Date.now() < end_time);
-};
-
-
 /**
  *  @class Paste
  */
 var Paste = new Class().extends(Plugin);
 Paste.definition = {
 
-  get id()
-    "paste",
+  id: "paste",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Paste"),
@@ -118,7 +106,7 @@ Paste.definition = {
       if (this._bracketed_paste_mode) {
         // add bracket sequences.
         this.sendMessage("command/send-sequence/csi", "200~");
-        wait(100);
+        coUtils.Timer.wait(100);
         this._pasteImpl(text);
 /*
         text.split("").forEach(
@@ -128,7 +116,7 @@ Paste.definition = {
             wait(10);
           });
           */
-        wait(100);
+        coUtils.Timer.wait(100);
         this.sendMessage("command/send-sequence/csi", "201~");
       } else {
         this._pasteImpl(text);

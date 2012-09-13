@@ -32,10 +32,9 @@ var TabController = new Class().extends(Plugin)
 TabController.definition = {
   
   /** Component ID */
-  get id()
-    "tab_controller",
+  id: "tab_controller",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Tab Controller"),
@@ -58,6 +57,7 @@ TabController.definition = {
   {
     this._screen = this.dependency["screen"];
     this._cursor = this.dependency["cursorstate"];
+
     this._resetTabStop();
   },
 
@@ -211,9 +211,9 @@ TabController.definition = {
     var message,
         tab_stops = this._tab_stops,
         result = [],
-        i;
+        i = 0;
 
-    for (i = 0; i < tab_stops.length; ++i) {
+    for (; i < tab_stops.length; ++i) {
       result.push(tab_stops[i] + 1);
     }
     result.pop();
@@ -300,7 +300,10 @@ TabController.definition = {
   "[profile('vt100'), sequence('CSI %dg')]":
   function TBC(n) 
   { // TaB Clear
-    var tab_stops, pisitionX, i, stop;
+    var tab_stops,
+        pisitionX,
+        i,
+        stop;
 
     switch (n || 0) {
 

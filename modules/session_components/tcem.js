@@ -49,10 +49,9 @@ var TextCursorEnableMode = new Class().extends(Plugin)
                                   .depends("cursorstate");
 TextCursorEnableMode.definition = {
 
-  get id()
-    "text_cursor_enable_mode",
+  id: "text_cursor_enable_mode",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Text Cursor Enable Mode (DECTCEM)"),

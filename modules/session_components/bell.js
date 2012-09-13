@@ -31,10 +31,9 @@ var Bell = new Class().extends(Plugin)
                       ;
 Bell.definition = {
 
-  get id()
-    "bell",
+  id: "bell",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Bell"),
@@ -43,7 +42,7 @@ Bell.definition = {
     };
   },
 
-  get template()
+  getTemplate: function getTemplate()
   {
     return {
       parentNode: "#tanasinn_center_area",
@@ -73,7 +72,7 @@ Bell.definition = {
   function install(broker) 
   {
     var { tanasinn_visual_bell }
-      = this.request("command/construct-chrome", this.template);
+      = this.request("command/construct-chrome", this.getTemplate());
     this._cover = tanasinn_visual_bell;
     this.onFirstFocus();
   },

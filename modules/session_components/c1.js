@@ -29,10 +29,9 @@ var C1Control = new Class().extends(Plugin)
                            .depends("screen");
 C1Control.definition = {
 
-  get id()
-    "c1control",
+  id: "c1control",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("C1 Control Handlers"),

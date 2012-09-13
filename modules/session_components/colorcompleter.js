@@ -30,8 +30,7 @@ var ColorNumberCompleter = new Class().extends(Component)
                                       .depends("renderer");
 ColorNumberCompleter.definition = {
 
-  get id()
-    "colorcompleter",
+  id: "colorcompleter",
 
   /*
    * Search for a given string and notify a listener (either synchronously

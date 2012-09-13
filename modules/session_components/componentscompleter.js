@@ -29,8 +29,7 @@
 var ComponentsCompleter = new Class().extends(Component);
 ComponentsCompleter.definition = {
 
-  get id()
-    "components_completer",
+  id: "components_completer",
 
   /*
    * Search for a given string and notify a listener (either synchronously

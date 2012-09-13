@@ -29,10 +29,9 @@
 var Scrollbar = new Class().extends(Plugin);
 Scrollbar.definition = {
 
-  get id()
-    "scrollbar",
+  id: "scrollbar",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Scroll Bar"),
@@ -50,8 +49,9 @@ Scrollbar.definition = {
   "[persistable] color": "white",
   "[persistable] background_color": "white",
 
-  get template()
-    ({
+  getTemplate: function getTemplate()
+  {
+    return {
       parentNode: "#tanasinn_content",
       tagName: "vbox",
       id: "tanasinn_scrollbar_overlay",
@@ -110,7 +110,8 @@ Scrollbar.definition = {
           },
         ],
       },
-    }),
+    };
+  },
 
   /** Installs itself.
    * @param {Broker} broker A Broker object.
@@ -124,7 +125,7 @@ Scrollbar.definition = {
       tanasinn_scrollbar_before,
       tanasinn_scrollbar_current,
       tanasinn_scrollbar_after,
-    } = this.request("command/construct-chrome", this.template);
+    } = this.request("command/construct-chrome", this.getTemplate());
 
     this._scrollbar_overlay = tanasinn_scrollbar_overlay;
     this._scrollbar = tanasinn_scrollbar;
@@ -201,13 +202,13 @@ Scrollbar.definition = {
     before = this._before;
     current = this._current;
     after = this._after;
-    if (0 == scrollbar.style.opacity) {
+    if (0 === Number(scrollbar.style.opacity)) {
       scrollbar.style.opacity = this.active_opacity;
     }
     before.flex = scroll_info.start;
     current.flex = scroll_info.end - scroll_info.start;
     after.flex = scroll_info.size - scroll_info.end;
-    if (0 == after.flex && !this._dragging) {
+    if (0 === Number(after.flex) && !this._dragging) {
       if (0.00 != scrollbar.style.opacity) {
         scrollbar.style.opacity = 0.00;
       }
@@ -229,10 +230,10 @@ Scrollbar.definition = {
   "[listen('mouseover', '#tanasinn_scrollbar')]":
   function onmouseover(event) 
   {
-    var scrollbar;
+    var scrollbar = this._scrollbar;
 
-    scrollbar = this._scrollbar;
-    if (0 == this._after.flex && 0 == scrollbar.style.opacity) {
+    if (0 === Number(this._after.flex) && 
+        0 === Number(scrollbar.style.opacity)) {
       this.sendMessage("command/update-scroll-information");
       scrollbar.style.opacity = this.active_opacity;
     }
@@ -244,7 +245,7 @@ Scrollbar.definition = {
     var scrollbar;
 
     scrollbar = this._scrollbar;
-    if (0 == this._after.flex && 
+    if (0 === Number(this._after.flex) && 
         !this._dragging && 
         0.00 != scrollbar.style.opacity) {
       scrollbar.style.opacity = 0.00;

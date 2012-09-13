@@ -167,8 +167,7 @@ var Session = new Class().extends(Component)
                          .mix(EventBroker);
 Session.definition = {
 
-  get id()
-    "session",
+  id: "session",
 
   get request_id()
     this._request_id,

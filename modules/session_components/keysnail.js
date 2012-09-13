@@ -29,10 +29,9 @@
 var KeySnail = new Class().extends(Plugin);
 KeySnail.definition = {
 
-  get id()
-    "keysnail",
+  id: "keysnail",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("KeySnail"),

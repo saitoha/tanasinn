@@ -35,10 +35,9 @@ DragCopy.definition = {
   
   _mouse_mode: null,
 
-  get id()
-    "dragcopy",
+  id: "dragcopy",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Drag Copy"),
@@ -51,9 +50,9 @@ DragCopy.definition = {
 
   /** Installs itself. */
   "[install]":
-  function install(session)
+  function install(broker)
   {
-    var {feedback_canvas} = session.uniget(
+    var feedback_canvas = this.request(
       "command/construct-chrome", 
       {
         parentNode: "#tanasinn_center_area",
@@ -61,7 +60,7 @@ DragCopy.definition = {
         tagName: "html:canvas",
         style: "position: absolute;",
         hidden: true,
-      });
+      }).feedback_canvas;
     this._feedback_canvas  = feedback_canvas;
   },
 

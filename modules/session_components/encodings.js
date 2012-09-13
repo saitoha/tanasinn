@@ -29,10 +29,9 @@
 var EncoderMenu = new Class().extends(Plugin).depends("encoder");
 EncoderMenu.definition = {
 
-  get id()
-    "encodings",
+  id: "encodings",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Encoder Menu"),
@@ -104,10 +103,9 @@ EncoderMenu.definition = {
 var DecoderMenu = new Class().extends(Plugin).depends("decoder");
 DecoderMenu.definition = {
 
-  get id()
-    "decodermenu",
+  id: "decodermenu",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Decoder Menu"),

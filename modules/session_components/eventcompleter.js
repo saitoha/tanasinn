@@ -30,8 +30,7 @@
 var EventCompleter = new Class().extends(Component);
 EventCompleter.definition = {
 
-  get id()
-    "event_completer",
+  id: "event_completer",
 
   /*
    * Search for a given string and notify a listener (either synchronously
@@ -52,14 +51,17 @@ EventCompleter.definition = {
         next_completer,
         option,
         lower_name,
-        candidates;
+        candidates,
+        completion_info;
 
     [all, name, space] = match;
 
     if (space) {
       next_completer_info = completers.shift();
       if (next_completer_info) {
-        [next_completer, option] = next_completer_info.split("/");
+        completion_info = next_completer_info.split("/");
+        next_completer = completion_info[0];
+        option = completion_info[1];
         this.sendMessage(
           "command/query-completion/" + next_completer,
           {

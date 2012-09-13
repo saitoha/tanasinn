@@ -22,9 +22,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-
-var MODE_ALPHA = 0;
-var MODE_GRAPHICS = 1;
+var MODE_ALPHA = 0,
+    MODE_GRAPHICS = 1;
 
 /**
  * @class Tektronix
@@ -32,10 +31,9 @@ var MODE_GRAPHICS = 1;
 var Tektronix = new Class().extends(Plugin);
 Tektronix.definition = {
 
-  get id()
-    "tektronix",
+  id: "tektronix",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Tektronix 4010/4014 mode"),
@@ -89,10 +87,11 @@ Tektronix.definition = {
   "[subscribe('event/screen-width-changed'), enabled]":
   function onWidthChanged(width) 
   {
-    var dom, scale;
+    var dom = this._dom,
+        scale;
 
-    dom = this._dom;
     this._width = width;
+
     if (dom) {
       dom.canvas.width = width;
       scale = Math.min(width, dom.canvas.height) / 1024;
@@ -104,10 +103,11 @@ Tektronix.definition = {
   "[subscribe('event/screen-height-changed'), enabled]": 
   function onHeightChanged(height) 
   {
-    var dom, scale;
+    var dom = this._dom,
+        scale;
 
-    dom = this._dom;
     this._height = height;
+
     if (dom) {
       dom.canvas.height = height;
       scale = Math.min(dom.canvas.width, height) / 1024;
@@ -124,14 +124,16 @@ Tektronix.definition = {
 
   _parseGraphics: function _parseGraphics(scanner) 
   {
-    var dom, high_y, low_y, high_x, low_x, path_open;
+    var dom = this._dom,
+        high_y,
+        low_y,
+        high_x,
+        low_x,
+        path_open = false;
 
-    dom = this._dom;
     dom.context.fillStyle = this.default_text_color;
     dom.context.strokeStyle = this.default_line_style;
     dom.context.font = this.default_text_style;
-
-    path_open = false;
 
     scanner.moveNext();
 
@@ -147,7 +149,7 @@ Tektronix.definition = {
         path_open = false;
         return;
       }
-      if (1 != c >> 5) {
+      if (1 !== c >> 5) {
         dom.context.stroke();
         path_open = false;
         return;
@@ -162,7 +164,7 @@ Tektronix.definition = {
         path_open = false;
         return;
       }
-      if (3 != c >> 5) {
+      if (3 !== c >> 5) {
         dom.context.stroke();
         path_open = false;
         return;
@@ -179,8 +181,8 @@ Tektronix.definition = {
 
       c = scanner.current();
 
-      if (1 != c >> 5) {
-        if (3 == c >> 5) {
+      if (1 !== c >> 5) {
+        if (3 === c >> 5) {
           low_y  = c & 0x1f; // 011xxxxx
           scanner.moveNext();
           c = scanner.current();
@@ -189,7 +191,7 @@ Tektronix.definition = {
             path_open = false;
             return;
           }
-          if (1 != c >> 5) {
+          if (1 !== c >> 5) {
             dom.context.stroke();
             path_open = false;
             return;
@@ -212,7 +214,7 @@ Tektronix.definition = {
 
       c = scanner.current();
 
-      if (2 != c >> 5) {
+      if (2 !== c >> 5) {
         dom.context.stroke();
         path_open = false;
         return;
@@ -252,71 +254,75 @@ Tektronix.definition = {
   "[type('Scanner -> Action')] parse":
   function parse(scanner) 
   {
-    var dom, c, buffer, text;
+    var dom = this._dom,
+        c,
+        buffer,
+        text;
 
-    dom = this._dom;
     dom.context.fillStyle = this.default_text_color;
     dom.context.strokeStyle = this.default_line_style;
     dom.context.font = this.default_text_style;
-    if (MODE_GRAPHICS == this._mode) {
+
+    if (MODE_GRAPHICS === this._mode) {
       dom.context.beginPath();
       dom.context.moveTo(this._x, this._y);
       path_open = true;
       this._parseGraphics(scanner);
     }
+
     try {
 scan:
     while (!scanner.isEnd) {
 
       c = scanner.current();
 
-      if (0x07 == c) {
+      if (0x07 === c) {
         scanner.moveNext();
-      } else if (0x1d == c) {
+      } else if (0x1d === c) {
         this._mode = MODE_GRAPHICS;
         this._parseGraphics(scanner);
-      } else if (0x0a == c) {
+      } else if (0x0a === c) {
         scanner.moveNext();
         this._y += 26;
-      } else if (0x0d == c) {
+      } else if (0x0d === c) {
         scanner.moveNext();
         this._x = 0;
-      } else if (0x1b == c) {
+      } else if (0x1b === c) {
         scanner.moveNext();
         c = scanner.current();
-        if (0x03 == c) {
+        if (0x03 === c) {
           scanner.moveNext();
           this.sendMessage("command/change-mode", "vt100");
           coUtils.Debug.reportWarning(
             _("DECSET 38 - Leave Tektronix mode (DECTEK)."));
           return null;
-        } else if (0x05 == c) {
+        } else if (0x05 === c) {
           scanner.moveNext();
-        } else if (0x0c == c) {
+        } else if (0x0c === c) {
           scanner.moveNext();
           this._mode = MODE_ALPHA;
           dom.context.clearRect(
             0, 0, 
             this._width / this._scale, 
             this._height / this._scale);
-        } else if (0x0e == c) {
+        } else if (0x0e === c) {
           scanner.moveNext();
-        } else if (0x0f == c) {
+        } else if (0x0f === c) {
           scanner.moveNext();
-        } else if (0x5b == c) {     // [
+        } else if (0x5b === c) {     // [
           scanner.moveNext();
           c = scanner.current();
-          if (0x3f == c) {          // ?
+          if (0x3f === c) {          // ?
             scanner.moveNext(); 
             c = scanner.current();
-            if (0x33 == c) {        // 3
+            if (0x33 === c) {        // 3
               scanner.moveNext();
               c = scanner.current();
-              if (0x38 == c) {      // 8
+              if (0x38 === c) {      // 8
                 scanner.moveNext();
                 c = scanner.current();
-                if (0x68 == c) {           // h
-                } else if (0x6c == c) {    // l
+                if (0x68 === c) {           // h
+                } else if (0x6c === c) {    // l
                   this.sendMessage("command/change-mode", "vt100");
                   coUtils.Debug.reportWarning(
                     _("DECSET 38 - Leave Tektronix mode (DECTEK)."));
@@ -324,71 +330,71 @@ scan:
               }
             }
           }
-        } else if (0x60 == c) { // ` : Normal X Axis and Normal (solid) Vectors.
+        } else if (0x60 === c) { // ` : Normal X Axis and Normal (solid) Vectors.
           coUtils.Debug.reportWarning(_("esc `"));
           scanner.moveNext();
-        } else if (0x61 == c) { // a : Normal X Axis and Normal (solid) Vectors.
+        } else if (0x61 === c) { // a : Normal X Axis and Normal (solid) Vectors.
           coUtils.Debug.reportWarning(_("esc a"));
           scanner.moveNext();
-        } else if (0x62 == c) { // b : Normal X Axis and Normal (solid) Vectors.
+        } else if (0x62 === c) { // b : Normal X Axis and Normal (solid) Vectors.
           coUtils.Debug.reportWarning(_("esc b"));
           scanner.moveNext();
-        } else if (0x63 == c) { // c : Normal X Axis and Normal (solid) Vectors.
+        } else if (0x63 === c) { // c : Normal X Axis and Normal (solid) Vectors.
           coUtils.Debug.reportWarning(_("esc c"));
           scanner.moveNext();
-        } else if (0x64 == c) { // d : Normal X Axis and Normal (solid) Vectors.
+        } else if (0x64 === c) { // d : Normal X Axis and Normal (solid) Vectors.
           coUtils.Debug.reportWarning(_("esc d"));
           scanner.moveNext();
-        } else if (0x68 == c) { // h : Normal X Axis and Normal (solid) Vectors.
+        } else if (0x68 === c) { // h : Normal X Axis and Normal (solid) Vectors.
           coUtils.Debug.reportWarning(_("esc h"));
           scanner.moveNext();
-        } else if (0x69 == c) { // i : Normal X Axis and Normal (solid) Vectors.
+        } else if (0x69 === c) { // i : Normal X Axis and Normal (solid) Vectors.
           coUtils.Debug.reportWarning(_("esc i"));
           scanner.moveNext();
-        } else if (0x6a == c) { // j : Normal X Axis and Normal (solid) Vectors.
+        } else if (0x6a === c) { // j : Normal X Axis and Normal (solid) Vectors.
           coUtils.Debug.reportWarning(_("esc j"));
           scanner.moveNext();
-        } else if (0x6b == c) { // k : Normal X Axis and Normal (solid) Vectors.
+        } else if (0x6b === c) { // k : Normal X Axis and Normal (solid) Vectors.
           coUtils.Debug.reportWarning(_("esc k"));
           scanner.moveNext();
-        } else if (0x6c == c) { // l : Normal X Axis and Normal (solid) Vectors.
+        } else if (0x6c === c) { // l : Normal X Axis and Normal (solid) Vectors.
           coUtils.Debug.reportWarning(_("esc l"));
           scanner.moveNext();
-        } else if (0x70 == c) { // p : Normal X Axis and Normal (solid) Vectors.
+        } else if (0x70 === c) { // p : Normal X Axis and Normal (solid) Vectors.
           coUtils.Debug.reportWarning(_("esc p"));
           scanner.moveNext();
-        } else if (0x71 == c) { // q : Normal X Axis and Normal (solid) Vectors.
+        } else if (0x71 === c) { // q : Normal X Axis and Normal (solid) Vectors.
           coUtils.Debug.reportWarning(_("esc q"));
           scanner.moveNext();
-        } else if (0x72 == c) { // r : Normal X Axis and Normal (solid) Vectors.
+        } else if (0x72 === c) { // r : Normal X Axis and Normal (solid) Vectors.
           coUtils.Debug.reportWarning(_("esc r"));
           scanner.moveNext();
-        } else if (0x73 == c) { // s : Normal X Axis and Normal (solid) Vectors.
+        } else if (0x73 === c) { // s : Normal X Axis and Normal (solid) Vectors.
           coUtils.Debug.reportWarning(_("esc s"));
           scanner.moveNext();
-        } else if (0x74 == c) { // t : Normal X Axis and Normal (solid) Vectors.
+        } else if (0x74 === c) { // t : Normal X Axis and Normal (solid) Vectors.
           coUtils.Debug.reportWarning(_("esc t"));
           scanner.moveNext();
         } else {
           scanner.moveNext();
         }
-      } else if (0x0c == c) {
+      } else if (0x0c === c) {
         this._mode = MODE_ALPHA;
         dom.context.clearRect(
           0, 0, 
           this._width / this._scale, 
           this._height / this._scale);
         scanner.moveNext();
-      } else if (0x1f == c) { // <US> Alpha Mode
+      } else if (0x1f === c) { // <US> Alpha Mode
         this._mode = MODE_ALPHA;
         scanner.moveNext();
         continue;
       } else if (c < 0x20) {
         scanner.moveNext();
         coUtils.Debug.reportWarning(_("Unhandled character: %s"), c);
-      } else if (this._mode == MODE_GRAPHICS) {
+      } else if (this._mode === MODE_GRAPHICS) {
         this._parseGraphics(scanner);
-      } else if (this._mode == MODE_ALPHA) {
+      } else if (this._mode === MODE_ALPHA) {
         buffer = [];
         while (true) {
           if (scanner.isEnd) {
@@ -401,7 +407,8 @@ scan:
           buffer.push(c);
           scanner.moveNext();
         }
-        text = String.fromCharCode.apply(String, buffer);
+        text = coUtils.Text.safeConvertFromArray(buffer);
+
         dom.context.fillText(text, this._x, this._y);
 //        coUtils.Debug.reportError(
 //          "text: " + text + "[" + this._x + "," + this._y + "]" + "[" + buffer + "]");

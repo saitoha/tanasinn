@@ -30,10 +30,9 @@
 var DragMove = new Class().extends(Plugin);
 DragMove.definition = {
 
-  get id()
-    "dragmove",
+  id: "dragmove",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Drag Move"),
@@ -58,10 +57,15 @@ DragMove.definition = {
     this.ondragstart.enabled = false;
   },
 
-  "[listen('dragstart', '#tanasinn_content', true)]":
+  "[listen('dragstart', '#tanasinn_chrome')]":
   function ondragstart(dom_event) 
   {
-    var root_element, offsetY, offsetX, dom_document;
+    var root_element,
+        offsetY,
+        offsetX,
+        dom_document,
+        content,
+        relation;
 
     if (dom_event.ctrlKey) {
       return;
@@ -75,9 +79,15 @@ DragMove.definition = {
 
     offsetY = dom_event.screenY - root_element.boxObject.y;
 
-    if (!dom_event.shiftKey && offsetY > 60) {
+    content = root_element.querySelector("#tanasinn_content");
+    relation = content.compareDocumentPosition(dom_event.explicitOriginalTarget);
+
+    if (relation & content.DOCUMENT_POSITION_CONTAINED_BY) {
       return;
     }
+//    if (!dom_event.shiftKey && offsetY > 60) {
+//      return;
+//    }
 
     offsetX = dom_event.screenX - root_element.boxObject.x; 
 
@@ -87,46 +97,52 @@ DragMove.definition = {
     this.sendMessage("command/set-opacity", 0.30);
     // define mousemove hanler.
     dom_document = dom_event.target.ownerDocument; // managed by DOM
-    this.sendMessage("command/add-domlistener", {
-      target: dom_document, 
-      type: "mousemove", 
-      id: "_DRAGGING", 
-      context: this,
-      handler: function onmouseup(event) 
+    this.sendMessage(
+      "command/add-domlistener",
       {
-        var left, top;
+        target: dom_document, 
+        type: "mousemove", 
+        id: "_DRAGGING", 
+        context: this,
+        handler: function onmouseup(event) 
+        {
+          var left, top;
 
-        left = event.screenX - offsetX;
-        top = event.screenY - offsetY;
-        this.sendMessage("command/move-to", [left, top]);
-      }
-    });
-    this.sendMessage("command/add-domlistener", {
-      target: dom_document, 
-      type: "mouseup", 
-      id: "_DRAGGING",
-      context: this,
-      handler: function onmouseup(event) 
+          left = event.screenX - offsetX;
+          top = event.screenY - offsetY;
+          this.sendMessage("command/move-to", [left, top]);
+        }
+      });
+    this.sendMessage(
+      "command/add-domlistener",
       {
-        // uninstall listeners.
-        this.sendMessage("command/remove-domlistener", "_DRAGGING");
-        this.sendMessage("command/set-opacity", 1.00);
-      }, 
-    });
-    this.sendMessage("command/add-domlistener", {
-      target: dom_document, 
-      type: "keyup", 
-      id: "_DRAGGING",
-      context: this,
-      handler: function onkeyup(event) 
-      {
-        if (!event.shiftKey) {
+        target: dom_document, 
+        type: "mouseup", 
+        id: "_DRAGGING",
+        context: this,
+        handler: function onmouseup(event) 
+        {
           // uninstall listeners.
           this.sendMessage("command/remove-domlistener", "_DRAGGING");
           this.sendMessage("command/set-opacity", 1.00);
-        }
-      }, 
-    });
+        }, 
+      });
+    this.sendMessage(
+      "command/add-domlistener",
+      {
+        target: dom_document, 
+        type: "keyup", 
+        id: "_DRAGGING",
+        context: this,
+        handler: function onkeyup(event) 
+        {
+          if (!event.shiftKey) {
+            // uninstall listeners.
+            this.sendMessage("command/remove-domlistener", "_DRAGGING");
+            this.sendMessage("command/set-opacity", 1.00);
+          }
+        }, 
+      });
 
     dom_event = null;
     dom_document = null;

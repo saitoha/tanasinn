@@ -47,10 +47,9 @@
 var HighlightMouseMode = new Class().extends(Plugin);
 HighlightMouseMode.definition = {
 
-  get id()
-    "highlight_mouse_mode",
+  id: "highlight_mouse_mode",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Highlight Mouse Mode"),

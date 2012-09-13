@@ -35,8 +35,7 @@
 var MovableConcept = new Concept();
 MovableConcept.definition = {
 
-  get id()
-    "Movable",
+  id: "Movable",
 
 // message concept
   "<command/move-to> :: Array -> Undefined":
@@ -132,10 +131,9 @@ var OuterChrome = new Class().extends(Plugin)
                              .requires("Movable");
 OuterChrome.definition = {
 
-  get id()
-    "outerchrome",
+  id: "outerchrome",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Outer Chrome"),
@@ -228,7 +226,7 @@ OuterChrome.definition = {
    * Construct the skelton of user interface with some attributes 
    * and styles. 
    */
-  get template()
+  getTemplate: function getTemplate()
     ({
       parentNode: this.request("get/root-element"), 
       tagName: "box",
@@ -292,7 +290,7 @@ OuterChrome.definition = {
   function install(broker) 
   {
     // construct chrome elements. 
-    var result = this.request("command/construct-chrome", this.template);
+    var result = this.request("command/construct-chrome", this.getTemplate());
 
     this._element = result.tanasinn_outer_chrome;
     this._frame = result.tanasinn_background_frame;
@@ -410,10 +408,9 @@ OuterChrome.definition = {
 var Chrome = new Class().extends(Plugin).depends("outerchrome");
 Chrome.definition = {
 
-  get id()
-    "chrome",
+  id: "chrome",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Inner Chrome"),
@@ -428,8 +425,14 @@ Chrome.definition = {
            "background: " + this.background + ";";
   },
 
-  get template()
+  getTemplate: function getTemplate()
     [
+      {
+        parentNode: "#tanasinn_chrome",
+        id: "tanasinn_titlebar_area",
+        tagName: "box",
+        dir: "ltr",
+      },
       {
         parentNode: "#tanasinn_chrome",
         tagName: "stack",
@@ -469,7 +472,7 @@ Chrome.definition = {
   "[install]": 
   function install(broker) 
   {
-    var result = this.request("command/construct-chrome", this.template);
+    var result = this.request("command/construct-chrome", this.getTemplate());
 
     this._element = result.tanasinn_content;
     this._center = result.tanasinn_center_area;

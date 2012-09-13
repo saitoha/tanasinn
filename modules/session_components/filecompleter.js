@@ -51,8 +51,7 @@ function generateFileEntries(path)
 var CGICompleter = new Class().extends(Component);
 CGICompleter.definition = {
 
-  get id()
-    "cgi_completer",
+  id: "cgi_completer",
 
   /*
    * Search for a given string and notify a listener (either synchronously
@@ -63,30 +62,42 @@ CGICompleter.definition = {
   "[completer('cgi'), enabled]":
   function complete(context)
   {
-    var broker, match, all, space, name, next,
-        next_completer_info, next_completer, option,
-        directory, entries, lower_name, candidates;
-
-    broker = this._broker;
-
-    match = context.source.match(/^(\s*)([$_\-@a-zA-Z\.]*)(\s?)/);
+    var broker = this._broker,
+        match = context.source.match(/^(\s*)([$_\-@a-zA-Z\.]*)(\s?)/),
+        all,
+        name,
+        next,
+        next_completer_info,
+        next_completer,
+        option,
+        directory,
+        entries,
+        lower_name,
+        candidates,
+        completion_info;
 
     if (null === match) {
       this.sendMessage("event/answer-completion", null);
       return;
     }
 
-    [all, space, name, next] = match;
+    all = match[0];
+    name = match[2];
+    next = match[3];
 
     if (next) {
       next_completer_info = context.completers.shift();
       if (next_completer_info) {
-        [next_completer, option] = next_completer_info.split("/");
-        this.sendMessage("command/query-completion/" + next_completer, {
-          source: context.source.substr(all.length),
-          option: option,
-          completers: context.completers,
-        });
+        completion_info = next_completer_info.split("/");
+        next_completer = completion_info[0];
+        option = completion_info[1];
+        this.sendMessage(
+          "command/query-completion/" + next_completer,
+          {
+            source: context.source.substr(all.length),
+            option: option,
+            completers: context.completers,
+          });
       } else {
         this.sendMessage("event/answer-completion", null);
       }
@@ -129,8 +140,7 @@ CGICompleter.definition = {
 var BatchCompleter = new Class().extends(Component);
 BatchCompleter.definition = {
 
-  get id()
-    "batch_completer",
+  id: "batch_completer",
 
   /*
    * Search for a given string and notify a listener (either synchronously
@@ -141,30 +151,40 @@ BatchCompleter.definition = {
   "[completer('batch'), enabled]":
   function complete(context)
   {
-    var broker, match, all, space, name, next,
-        next_completer_info, next_completer, option,
-        directory, entries, lower_name, candidates;
-
-    broker = this._broker;
-    match = context.source.match(/^(\s*)([$_\-@a-zA-Z\.]*)(\s?)/);
+    var broker = this._broker,
+        match = context.source.match(/^(\s*)([$_\-@a-zA-Z\.]*)(\s?)/),
+        all,
+        name,
+        next,
+        next_completer_info,
+        next_completer,
+        option,
+        directory,
+        entries,
+        lower_name,
+        candidates;
 
     if (null === match) {
       this.sendMessage("event/answer-completion", null);
       return;
     }
 
-    [all, space, name, next] = match;
+    all = match[0];
+    name = match[2];
+    next = match[3];
 
     if (next) {
       next_completer_info = context.completers.shift();
 
       if (next_completer_info) {
         [next_completer, option] = next_completer_info.split("/");
-        this.sendMessage("command/query-completion/" + next_completer, {
-          source: context.source.substr(all.length),
-          option: option,
-          completers: context.completers,
-        });
+        this.sendMessage(
+          "command/query-completion/" + next_completer,
+          {
+            source: context.source.substr(all.length),
+            option: option,
+            completers: context.completers,
+          });
       } else {
         this.sendMessage("event/answer-completion", null);
       }
@@ -213,8 +233,7 @@ BatchCompleter.definition = {
 var ProfileCompleter = new Class().extends(Component);
 ProfileCompleter.definition = {
 
-  get id()
-    "profile-completer",
+  id: "profile-completer",
 
   /*
    * Search for a given string and notify a listener (either synchronously
@@ -300,8 +319,7 @@ ProfileCompleter.definition = {
 var FileCompleter = new Class().extends(Component);
 FileCompleter.definition = {
 
-  get id()
-    "file-completer",
+  id: "file-completer",
 
   /*
    * Search for a given string and notify a listener (either synchronously

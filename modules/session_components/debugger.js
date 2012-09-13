@@ -30,8 +30,7 @@
 var Tracer = new Class().extends(Component);
 Tracer.definition = {
 
-  get id()
-    "tracer",
+  id: "tracer",
 
   _mode: "vt100",
 
@@ -143,8 +142,7 @@ Tracer.definition = {
 var Hooker = new Class().extends(Component).depends("parser");
 Hooker.definition = {
 
-  get id()
-    "hooker",
+  id: "hooker",
 
   _buffer: null, 
   _hooked: false,
@@ -277,10 +275,9 @@ Hooker.definition = {
 var Debugger = new Class().extends(Plugin);
 Debugger.definition = {
 
-  get id()
-    "debugger",
+  id: "debugger",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Debugger"),
@@ -297,7 +294,7 @@ Debugger.definition = {
 
   _timer_id: null,
 
-  get template()
+  getTemplate: function getTemplate()
   {
     return {
       tagName: "hbox",
@@ -395,7 +392,7 @@ Debugger.definition = {
   "[subscribe('@get/panel-items'), pnp]": 
   function onPanelItemRequested(panel) 
   {
-    var template = this.template,
+    var template = this.getTemplate(),
         item = panel.alloc(this.id, _("Debugger")),
         result;
 

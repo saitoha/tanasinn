@@ -53,10 +53,9 @@
 var NumericKeypadMode = new Class().extends(Plugin);
 NumericKeypadMode.definition = {
 
-  get id()
-    "numeric_keypad_mode",
+  id: "numeric_keypad_mode",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Numeric Keypad Mode"),

@@ -42,10 +42,9 @@ var WindowManipulator = new Class().extends(Plugin)
                                    ;
 WindowManipulator.definition = {
 
-  get id()
-    "window_manipulatior",
+  id: "window_manipulatior",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Window Manipulator"),
@@ -293,7 +292,7 @@ WindowManipulator.definition = {
         return;
 
     }
-    wait(0);
+    coUtils.Timer.wait(0);
   },
 }; // class WindowManipulator
 

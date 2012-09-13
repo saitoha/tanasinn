@@ -29,10 +29,9 @@ var Agent = new Class().extends(Plugin)
                        .depends("cursorstate");
 Agent.definition = {
 
-  get id()
-    "agent",
+  id: "agent",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Agent (BETA)"),
@@ -41,14 +40,17 @@ Agent.definition = {
     };
   },
 
-  get template()
+  getTemplate: function getTemplate()
   {
     return {
       parentNode: "#tanasinn_outer_chrome",
-      tagName: "box",
+      tagName: "html:div",
       id: "tanasinn_agent_layer",
       //hidden: true,
-      style: "position: absolute;",
+      style: {
+        display: "-moz-box",
+        position: "absolute",
+      },
       childNodes: [
         {
           tagName: "image",
@@ -61,8 +63,9 @@ Agent.definition = {
           },
         },
         {
-          tagName: "box",
+          tagName: "html:div",
           style: {
+            display: "-moz-box",
             position: "absolute",
             marginTop: "-350px",
             marginRight: "-0px",
@@ -70,7 +73,8 @@ Agent.definition = {
             fontFamily: "Arial Black,Cooper Black",
           },
           childNodes: {
-            tagName: "stack",
+            tagName: "html:div",
+            style: "-moz-stack",
             childNodes: [
               {
                 tagName: "image",
@@ -80,8 +84,10 @@ Agent.definition = {
                 },
               },
               {
-                tagName: "vbox",
+                tagName: "html:div",
                 style: {
+                  display: "-moz-box",
+                  MozBoxOrient: "vertical",
                   color: "lightblue",     
                   textShadow: "1px 1px 5px black",
                 },
@@ -158,24 +164,24 @@ Agent.definition = {
   _element: null,
 
   /** installs itself. 
-   *  @param {Session} session A session object.
+   *  @param {Session} broker A session object.
    */
   "[install]":
-  function install(session) 
+  function install(broker) 
   {
-    var {tanasinn_agent_layer, tanasinn_agent_message}
-      = session.uniget("command/construct-chrome", this.template);
-    this._element = tanasinn_agent_layer;
-    this._message = tanasinn_agent_message;
+    var result = this.request("command/construct-chrome", this.getTemplate());
+
+    this._element = result.tanasinn_agent_layer;
+    this._message = result.tanasinn_agent_message;
     this.onBeforeInput.enabled = true;
     this.onCorrect.enabled = true;
   },
 
   /** Uninstalls itself.
-   *  @param {Session} session A session object.
+   *  @param {Session} broker A session object.
    */
   "[uninstall]":
-  function uninstall(session) 
+  function uninstall(broker) 
   {
     if (this._element) {
       this._element.parentNode.removeChild(this._element);

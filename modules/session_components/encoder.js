@@ -46,8 +46,7 @@ EncoderInfo.definition = {
 var MultiEncoder = new Class().extends(Component);
 MultiEncoder.definition = {
 
-  get id()
-    "multiencoder",
+  id: "multiencoder",
 
   _current_scheme: "UTF-8",
 
@@ -106,8 +105,7 @@ MultiEncoder.definition = {
 var Encoder = new Class().extends(Component);
 Encoder.definition = {
 
-  get id()
-    "encoder",
+  id: "encoder",
 
   _parser: null,
   _encoder_map: null,

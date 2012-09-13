@@ -80,10 +80,9 @@ var AutoRepeat = new Class().extends(Plugin)
                             .depends("parser");
 AutoRepeat.definition = {
 
-  get id()
-    "auto_repeat",
+  id: "auto_repeat",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Auto Repeat"),

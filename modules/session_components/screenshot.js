@@ -28,8 +28,7 @@
 var ScreenshotCommand = new Class().extends(Component);
 ScreenshotCommand.definition = {
 
-  get id()
-    "screenshot",
+  id: "screenshot",
 
   "[command('screenshot'), _('Convert screen to a image file.'), enabled]":
   function screenshot(arguments_string) 

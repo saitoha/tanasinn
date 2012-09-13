@@ -29,8 +29,7 @@
 var NMapCompleter = new Class().extends(Component);
 NMapCompleter.definition = {
 
-  get id()
-    "nmap_completer",
+  id: "nmap_completer",
 
   /*
    * Search for a given string and notify a listener (either synchronously
@@ -124,8 +123,7 @@ NMapCompleter.definition = {
 var CMapCompleter = new Class().extends(Component);
 CMapCompleter.definition = {
 
-  get id()
-    "cmap_completer",
+  id: "cmap_completer",
 
   /*
    * Search for a given string and notify a listener (either synchronously

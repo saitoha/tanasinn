@@ -82,10 +82,9 @@
 var SecondaryDA = new Class().extends(Plugin);
 SecondaryDA.definition = {
 
-  get id()
-    "secondary_da",
+  id: "secondary_da",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Secondary Device Attribute"),

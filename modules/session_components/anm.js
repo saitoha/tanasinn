@@ -68,10 +68,9 @@
 var ANMSwitch = new Class().extends(Plugin);
 ANMSwitch.definition = {
 
-  get id()
-    "anm_switch",
+  id: "anm_switch",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("VT52 Switching Mode"),

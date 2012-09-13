@@ -565,10 +565,9 @@ var db = {
 var Terminfo = new Class().extends(Plugin);
 Terminfo.definition = {
 
-  get id()
-    "terminfo",
+  id: "terminfo",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("termcap/terminfo Store"),
@@ -608,7 +607,8 @@ Terminfo.definition = {
           return parseInt(x, 16);
         });
 
-      s = String.fromCharCode.apply(String, chars);
+      s = coUtils.Text.safeConvertFromArray(chars);
+
       value = db[s];
 
       if (undefined === value) {

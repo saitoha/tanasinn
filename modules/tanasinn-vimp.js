@@ -89,7 +89,7 @@ try {
           return desktop;
         }
       }
-      desktop = process.uniget("event/new-window-detected", window);
+      desktop = process.callSync("event/new-window-detected", window);
       return desktop;
     }
 

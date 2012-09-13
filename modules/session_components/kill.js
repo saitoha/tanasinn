@@ -28,10 +28,9 @@
 var Kill = new Class().extends(Plugin);
 Kill.definition = {
 
-  get id()
-    "kill",
+  id: "kill",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Kill"),

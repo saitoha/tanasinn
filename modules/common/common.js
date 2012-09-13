@@ -1846,16 +1846,23 @@ coUtils.Font = {
         context = canvas.getContext("2d"),
         unit = test_string || "Mbc123-XYM",
         text = "",
-        i;
+        i = 0,
+        metrics,
+        char_width,
+        height,
+        data,
+        line_length,
+        first,
+        last;
 
-    for (i = 0; i < 10; ++i) {
+    for (; i < 10; ++i) {
       text += unit;
     }
 
     context.font = font_size + "px " + font_family;
-    var metrics = context.measureText(text);
-    var char_width = metrics.width / text.length;
-    var height = metrics.height;
+    metrics = context.measureText(text);
+    char_width = metrics.width / text.length;
+    height = metrics.height;
   
     text = "g\u3075";
     metrics = context.measureText(text);
@@ -1866,11 +1873,9 @@ coUtils.Font = {
     context.fillText(text, 0, 0);
     context.strokeText(text, 0, 0);
     context.restore();
-    var data = context.getImageData(0, 0, canvas.width, canvas.height).data; 
-    var line_length = data.length / (canvas.height * 4);
-  
-    var first, last;
-    var i;
+    data = context.getImageData(0, 0, canvas.width, canvas.height).data; 
+    line_length = data.length / (canvas.height * 4);
+
   detect_first:
     for (i = 3; i < data.length; i += 4) {
       if (data[i]) {
@@ -2652,7 +2657,7 @@ coUtils.Unicode = {
       return "";
     }
     byte_stream = [byte for (byte in coUtils.getUTF8ByteStreamGenerator(str))];
-    return String.fromCharCode.apply(String, byte_stream);
+    return coUtils.Text.safeConvertFromArray(byte_stream);
   },
 
 };
@@ -2767,10 +2772,11 @@ coUtils.Text = {
 
   safeConvertFromArray: function safaConvertFromArray(codes)
   {
-    var result;
-    var i, buffer_length;
-    var piece;
-    var str;
+    var result,
+        i,
+        buffer_length,
+        piece,
+        str;
   
     if (65000 > codes.length) {
       result = String.fromCharCode.apply(String, codes);
@@ -2828,7 +2834,7 @@ coUtils.Timer = {
     var enc_time = Date.now() + wait;
 
     do {
-      this._thread_manager.mainThread.processNextEvent(true);
+      this._thread_manager.currentThread.processNextEvent(true);
     } while ((mainThread.hasPendingEvents()) || Date.now() < end_time);
   },
 

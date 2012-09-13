@@ -30,10 +30,9 @@ var ConformanceLevel = new Class().extends(Plugin);
 ConformanceLevel.definition = {
   
   /** Component ID */
-  get id()
-    "conformanse_level",
+  id: "conformanse_level",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Conformance Level"),

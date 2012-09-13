@@ -99,8 +99,7 @@ var Desktop = new Class().extends(Plugin)
                          .mix(EventBroker);
 Desktop.definition = {
 
-  get id()
-    "desktop",
+  id: "desktop",
 
   get window()
     this._window,
@@ -242,7 +241,7 @@ Desktop.definition = {
       height: height,
     };
 
-    this.uniget("event/session-requested", request);
+    this.callSync("event/session-requested", request);
 
     return parent;
   },

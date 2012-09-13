@@ -29,8 +29,7 @@
 var FontFamilyCompleter = new Class().extends(Component);
 FontFamilyCompleter.definition = {
 
-  get id()
-    "font_family_completer",
+  id: "font_family_completer",
 
   /*
    * Search for a given string and notify a listener (either synchronously

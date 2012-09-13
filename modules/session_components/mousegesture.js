@@ -28,10 +28,9 @@
 var MouseGesture = new Class().extends(Plugin);
 MouseGesture.definition = {
 
-  get id()
-    "mouse_gesture",
+  id: "mouse_gesture",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Mouse Gesture"),

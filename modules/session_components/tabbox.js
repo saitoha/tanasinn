@@ -33,10 +33,9 @@ var BottomPanel = new Class().extends(Plugin)
                              .depends("screen");
 BottomPanel.definition = {
 
-  get id()
-    "bottompanel",
+  id: "bottompanel",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Bottom Panel"),
@@ -46,8 +45,9 @@ BottomPanel.definition = {
     };
   },
 
-  get template()
-    ({
+  getTemplate: function getTemplate()
+  {
+    return {
       tagName: "stack",
       parentNode: "#tanasinn_panel_area",
       flex: 1,
@@ -116,7 +116,8 @@ BottomPanel.definition = {
           }
         },
       ],
-    }),
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
 
@@ -135,7 +136,7 @@ BottomPanel.definition = {
       tanasinn_bottompanel, 
       tanasinn_tabbox, 
       tanasinn_arrowscrollbox,
-    } = this.request("command/construct-chrome", this.template);
+    } = this.request("command/construct-chrome", this.getTemplate());
 
     this._bottom_panel = tanasinn_bottompanel;
     this._tabbox = tanasinn_tabbox;
@@ -165,7 +166,7 @@ BottomPanel.definition = {
    */
   toggle: function toggle() 
   {
-    if (true == this._bottom_panel.collapsed) {
+    if (this._bottom_panel.collapsed) {
       this.open();
     } else {
       this.close();
@@ -363,7 +364,7 @@ BottomPanel.definition = {
     if (id in panel_map) { // Check if specified id was registered.
       [tab, ] = this._panel_map[id];
       // toggle open/close state.
-      if (true == this._bottom_panel.collapsed) {
+      if (this._bottom_panel.collapsed) {
         // Select specified tab and open the panel.
         this._selectTab(tab);
         this.open();

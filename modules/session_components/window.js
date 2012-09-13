@@ -33,10 +33,9 @@
 var WindowWatcher = new Class().extends(Plugin);
 WindowWatcher.definition = {
 
-  get id()
-    "windowwatcher",
+  id: "windowwatcher",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Window watcher"),
@@ -71,12 +70,9 @@ WindowWatcher.definition = {
   "[listen('MozRotateGesture', undefined, true), pnp]":
   function onRotateGesture(event) 
   {
-    var origninal_target, relation;
-
-    original_target = event.explicitOriginalTarget;
-
-    relation = this.request("get/root-element")
-      .compareDocumentPosition(original_target);
+    var original_target = event.explicitOriginalTarget,
+        relation = this.request("get/root-element")
+          .compareDocumentPosition(original_target);
 
     if ((relation & original_target.DOCUMENT_POSITION_CONTAINED_BY)) {
       event.preventDefault();
@@ -96,15 +92,12 @@ WindowWatcher.definition = {
   "[listen('MozSwipeGesture', undefined, true), pnp]":
   function onSwipeGesture(event) 
   {
-    var origninal_target, relation;
+    var original_target = event.explicitOriginalTarget,
+        relation = this.request("get/root-element")
+          .compareDocumentPosition(original_target);
 
     event.preventDefault();
     event.stopPropagation();
-
-    original_target = event.explicitOriginalTarget;
-
-    relation = this.request("get/root-element")
-      .compareDocumentPosition(original_target);
 
     if ((relation & original_target.DOCUMENT_POSITION_CONTAINED_BY)) {
       this.sendMessage("event/swipe-gesture", event.direction);
@@ -120,12 +113,9 @@ WindowWatcher.definition = {
   "[listen('MozMagnifyGesture', undefined, true), pnp]":
   function onMagnifyGesture(event) 
   {
-    var origninal_target, relation;
-
-    original_target = event.explicitOriginalTarget;
-
-    relation = this.request("get/root-element")
-      .compareDocumentPosition(original_target);
+    var original_target = event.explicitOriginalTarget,
+        relation = this.request("get/root-element")
+          .compareDocumentPosition(original_target);
 
     if ((relation & original_target.DOCUMENT_POSITION_CONTAINED_BY)) {
 

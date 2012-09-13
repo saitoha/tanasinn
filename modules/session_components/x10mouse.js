@@ -47,10 +47,9 @@
 var X10MouseMode = new Class().extends(Plugin);
 X10MouseMode.definition = {
 
-  get id()
-    "x10_mouse_mode",
+  id: "x10_mouse_mode",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("X10 Compatible Mouse Mode"),

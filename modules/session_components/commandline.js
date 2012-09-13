@@ -22,12 +22,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-
-/**
- * @class TextboxElement
- *
- */
-
 /**
  * @class TextboxWidget
  *
@@ -426,10 +420,9 @@ var Commandline = new Class().extends(Plugin)
                              .mix(CompletionView);
 Commandline.definition = {
 
-  get id()
-    "commandline",
+  id: "commandline",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Commandline Interface"),
@@ -446,85 +439,86 @@ Commandline.definition = {
   "[persistable] completion_popup_background": "-moz-linear-gradient(top, #bbb, #777)",
   "[persistable] completion_popup_background_opacity": 0.8,
 
-  get template()
-  [
-    {
-      parentNode: "#tanasinn_commandline_area",
-      tagName: "html:div",
-      style: "position: absolute;",
-      childNodes: [
-        {
-          tagName: "box",
-          id: "tanasinn_input_stem",
-        },
-        {
-          tagName: "box",
-          childNodes: {
-            tagName: "html:input",
-            id: "tanasinn_commandline",
-            style: {
-              marginTop: "-4px",
-              paddingTop: "0px",
-              opacity: "0.0",
-              background: "transparent",
-            },
-          },
-        },
-      ],
-    },
-    {
-      parentNode: "#tanasinn_commandline_area",
-      id: "tanasinn_commandline_canvas",
-      tagName: "html:canvas",
-      dir: "ltr",
-      height: this.font_size,
-      style: "opacity: 0.7; position: absolute",
-    },
-    {
-      parentNode: "#tanasinn_chrome",
-      tagName: "panel",
-      id: "tanasinn_completion_popup",
-      style: { 
-        MozUserFocus: "ignore",
-        background: "transparent",
-        border: "none",
-        font: "menu",
-      },
-      noautofocus: true,
-      //noautohide: true, // commented out for linux.
-      ignorekeys: true,
-      childNodes: {
-        tagName: "stack",
-        maxHeight: this.completion_popup_max_height,
+  getTemplate: function getTemplate()
+  {
+    return [
+      {
+        parentNode: "#tanasinn_commandline_area",
+        tagName: "html:div",
+        style: "position: absolute;",
         childNodes: [
           {
             tagName: "box",
-            flex: 1,
-            style: this.completion_style,
+            id: "tanasinn_input_stem",
           },
           {
-            tagName: "scrollbox",
-            id: "tanasinn_completion_scroll",
-            orient: "vertical", // box-packing
-            flex: 1,
-            style: "margin: 8px; overflow-y: auto;",
+            tagName: "box",
             childNodes: {
-              tagName: "grid",
-              id: "tanasinn_completion_root",
-              style: { 
+              tagName: "html:input",
+              id: "tanasinn_commandline",
+              style: {
+                marginTop: "-4px",
+                paddingTop: "0px",
+                opacity: "0.0",
                 background: "transparent",
-                color: "white",
-                fontFamily: "Lucida Console",
-                fontWeight: "bold",
-                fontSize: "16px",
-                textShadow: "1px 2px 4px black",
               },
-            }
-          }, // tree
+            },
+          },
         ],
-      }, // stack
-    },  // panel
-  ],
+      },
+      {
+        parentNode: "#tanasinn_commandline_area",
+        id: "tanasinn_commandline_canvas",
+        tagName: "html:canvas",
+        dir: "ltr",
+        style: "opacity: 0.7; position: absolute",
+      },
+      {
+        parentNode: "#tanasinn_chrome",
+        tagName: "panel",
+        id: "tanasinn_completion_popup",
+        style: { 
+          MozUserFocus: "ignore",
+          background: "transparent",
+          border: "none",
+          font: "menu",
+        },
+        noautofocus: true,
+        //noautohide: true, // commented out for linux.
+        ignorekeys: true,
+        childNodes: {
+          tagName: "stack",
+          maxHeight: this.completion_popup_max_height,
+          childNodes: [
+            {
+              tagName: "box",
+              flex: 1,
+              style: this.completion_style,
+            },
+            {
+              tagName: "scrollbox",
+              id: "tanasinn_completion_scroll",
+              orient: "vertical", // box-packing
+              flex: 1,
+              style: "margin: 8px; overflow-y: auto;",
+              childNodes: {
+                tagName: "grid",
+                id: "tanasinn_completion_root",
+                style: { 
+                  background: "transparent",
+                  color: "white",
+                  fontFamily: "Lucida Console",
+                  fontWeight: "bold",
+                  fontSize: "16px",
+                  textShadow: "1px 2px 4px black",
+                },
+              }
+            }, // tree
+          ],
+        }, // stack
+      },  // panel
+    ];
+  },
 
   get completion_style()
   {
@@ -549,7 +543,7 @@ Commandline.definition = {
       tanasinn_completion_popup, 
       tanasinn_completion_scroll, 
       tanasinn_completion_root,
-    } = this.request("command/construct-chrome", this.template);
+    } = this.request("command/construct-chrome", this.getTemplate());
 
     this._canvas = tanasinn_commandline_canvas;
 

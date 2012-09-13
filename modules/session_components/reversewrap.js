@@ -30,10 +30,9 @@
 var ReverseWrap = new Class().extends(Plugin);
 ReverseWrap.definition = {
 
-  get id()
-    "reversewrap",
+  id: "reversewrap",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Reverse Wraparound Mode"),

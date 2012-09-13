@@ -31,10 +31,9 @@
 var WheelScroll = new Class().extends(Plugin);
 WheelScroll.definition = {
 
-  get id()
-    "wheel_scroll",
+  id: "wheel_scroll",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Wheel Scroll"),
@@ -79,7 +78,8 @@ WheelScroll.definition = {
   "[listen('DOMMouseScroll', '#tanasinn_content'), pnp]": 
   function onmousescroll(event) 
   {
-    var count, line_height;
+    var count,
+        line_height;
 
     if(event.axis === event.VERTICAL_AXIS) {
 
@@ -103,7 +103,7 @@ WheelScroll.definition = {
         } else if (count < 0) {
           this.sendMessage("command/scroll-up-view", -count);
           this.sendMessage("command/draw");
-        } else { // count == 1
+        } else { // count === 1
           return;
         }
       }

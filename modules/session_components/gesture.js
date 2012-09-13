@@ -29,10 +29,9 @@
 var Gesture = new Class().extends(Plugin);
 Gesture.definition = {
 
-  get id()
-    "gesture",
+  id: "gesture",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Gesture (BETA)"),
@@ -41,7 +40,7 @@ Gesture.definition = {
     };
   },
 
-  get template()
+  getTemplate: function getTemplate()
   {
     return {
       parentNode: "#tanasinn_center_area",
@@ -77,7 +76,7 @@ Gesture.definition = {
   function install(broker) 
   {
     var {tanasinn_gesture_frame, tanasinn_gesture_canvas}
-      = this.request("command/construct-chrome", this.template);
+      = this.request("command/construct-chrome", this.getTemplate());
     this._frame = tanasinn_gesture_frame;
     this._canvas = tanasinn_gesture_canvas;
   },

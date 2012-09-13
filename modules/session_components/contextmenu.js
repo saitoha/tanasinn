@@ -28,10 +28,9 @@
 var Contextmenu = new Class().extends(Plugin);
 Contextmenu.definition = {
 
-  get id()
-    "contextmenu",
+  id: "contextmenu",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Context Menu"),
@@ -41,7 +40,7 @@ Contextmenu.definition = {
     };
   },
 
-  get template() 
+  getTemplate: function getTemplate() 
     ({
       tagName: "menupopup",
       parentNode: "#tanasinn_center_area",
@@ -135,7 +134,7 @@ Contextmenu.definition = {
       return;
     }
 
-    template = this.template;
+    template = this.getTemplate();
     template.childNodes = entries; // appendChild
 
     // construct them

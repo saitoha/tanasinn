@@ -36,8 +36,7 @@
 var DOMEventManager = new Class().extends(Component);
 DOMEventManager.definition = {
 
-  get id()
-    "domeventmanager",
+  id: "domeventmanager",
 
   _listener_list_map: null,
 

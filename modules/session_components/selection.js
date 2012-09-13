@@ -151,10 +151,9 @@ var Selection = new Class().extends(Plugin)
                            .depends("screen");
 Selection.definition = {
 
-  get id()
-    "selection",
+  id: "selection",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Selection"),
@@ -177,13 +176,13 @@ Selection.definition = {
   "[subscribe('event/mouse-tracking-mode-changed'), enabled]": 
   function onMouseTrackingModeChanged(data) 
   {
-    if (coUtils.Constant.TRACKING_NONE == data 
-     || coUtils.Constant.TRACKING_HIGHLIGHT == data) {
+    if (coUtils.Constant.TRACKING_NONE === data 
+     || coUtils.Constant.TRACKING_HIGHLIGHT === data) {
       this.ondblclick.enabled = true;
     } else {
       this.ondblclick.enabled = false;
     }
-    if (coUtils.Constant.TRACKING_NONE == data) {
+    if (coUtils.Constant.TRACKING_NONE === data) {
       this.ondragstart.enabled = true;
     } else {
       this.ondragstart.enabled = false;
@@ -314,7 +313,7 @@ Selection.definition = {
         text;
 
     func = args[0];
-    if (0 == func) {
+    if (0 === func) {
       this.clear();
       return;
     }
@@ -382,7 +381,7 @@ Selection.definition = {
 
                 current_position = y * column + x;
                 text = screen.getTextInRange(current_position, current_position + 1);
-                if ("\x00" == text) {
+                if ("\x00" === text) {
                   --current_position;
                 }
                 

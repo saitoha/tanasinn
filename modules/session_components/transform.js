@@ -326,10 +326,9 @@ var Transform = new Class().extends(Plugin)
                            .depends("outerchrome");
 Transform.definition = {
 
-  get id()
-    "transform",
+  id: "transform",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("Transforms"),
@@ -394,10 +393,9 @@ Transform.definition = {
 var DragCover = new Class().extends(Plugin)
 DragCover.definition = {
 
-  get id()
-    "dragcover",
+  id: "dragcover",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("DragCover"),

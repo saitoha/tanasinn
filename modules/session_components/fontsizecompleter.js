@@ -29,8 +29,7 @@
 var FontsizeCompleter = new Class().extends(Component);
 FontsizeCompleter.definition = {
 
-  get id()
-    "fontsize_completer",
+  id: "fontsize_completer",
 
   /*
    * Search for a given string and notify a listener (either synchronously

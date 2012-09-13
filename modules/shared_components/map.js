@@ -162,8 +162,7 @@ MappingManagerBase.definition = {
 var NormalMappingManager = new Class().extends(MappingManagerBase);
 NormalMappingManager.definition = {
 
-  get id()
-    "nmap_manager",
+  id: "nmap_manager",
 
   "[persistable] enabled_when_startup": true,
   "[persistable] mapleader": "<C-s>",
@@ -253,8 +252,7 @@ NormalMappingManager.definition = {
 var CommandlineMappingManager = new Class().extends(MappingManagerBase);
 CommandlineMappingManager.definition = {
 
-  get id()
-    "cmap_manager",
+  id: "cmap_manager",
 
   "[persistable] enabled_when_startup": true,
   "[persistable] mapleader": "<C-s>",
@@ -343,8 +341,7 @@ CommandlineMappingManager.definition = {
 var CommandlineKeyHandler = new Class().extends(Component);
 CommandlineKeyHandler.definition = {
 
-  get id()
-    "emacs_keybind",
+  id: "emacs_keybind",
 
   _mark: -1,
 
@@ -583,8 +580,7 @@ CommandlineKeyHandler.definition = {
 var NMapCommands = new Class().extends(Component);
 NMapCommands.definition = {
 
-  get id()
-    "nmap_command",
+  id: "nmap_command",
 
   "[command('nmap', ['nmap', 'nmap']), _('Add a normal mapping.'), enabled]":
   function nmap(arguments_string)
@@ -686,8 +682,7 @@ NMapCommands.definition = {
 var CMapCommands = new Class().extends(Component);
 CMapCommands.definition = {
 
-  get id()
-    "cmap_command",
+  id: "cmap_command",
 
   "[command('cmap', ['cmap', 'cmap']), _('Add a command line mapping.'), enabled]":
   function cmap(arguments_string)

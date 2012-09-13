@@ -47,10 +47,9 @@
 var SGRMouseMode = new Class().extends(Plugin);
 SGRMouseMode.definition = {
 
-  get id()
-    "sgr_mouse_mode",
+  id: "sgr_mouse_mode",
 
-  get info()
+  getInfo: function getInfo()
   {
     return {
       name: _("SGR 1006 Mouse Mode"),

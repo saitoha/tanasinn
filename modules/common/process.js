@@ -380,21 +380,11 @@ void function() {
     /**
      * @class Process
      */
-    var Process = new CoClass().extends(EventBroker).mix(Environment);
+    var Process = new Class().extends(EventBroker).mix(Environment);
     Process.definition = {
   
-      get id()
-        "process",
+      id: "process",
     
-      get classID()
-        Components.ID("{BA5BFE08-CEFB-4C20-BEE6-FCEE9EABBDC1}"),
-    
-      get description()
-        "tanasinn Process class.",
-    
-      get contractID()
-        "@zuse.jp/tanasinn/process;1",
-     
       get default_scope()
         function() 
         { 
@@ -416,9 +406,6 @@ void function() {
         return this;
       },
 
-      get wrappedJSObject()
-        this,
-  
       initial_settings_path: "$Home/.tanasinn.js",
    
       /** constructor. */
