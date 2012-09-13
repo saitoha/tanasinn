@@ -82,12 +82,9 @@ DragMove.definition = {
     content = root_element.querySelector("#tanasinn_content");
     relation = content.compareDocumentPosition(dom_event.explicitOriginalTarget);
 
-    if (relation & content.DOCUMENT_POSITION_CONTAINED_BY) {
+    if (!dom_event.shiftKey && (relation & content.DOCUMENT_POSITION_CONTAINED_BY)) {
       return;
     }
-//    if (!dom_event.shiftKey && offsetY > 60) {
-//      return;
-//    }
 
     offsetX = dom_event.screenX - root_element.boxObject.x; 
 

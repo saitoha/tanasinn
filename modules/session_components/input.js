@@ -632,7 +632,7 @@ InputManager.definition = {
       tagName: "bulletinboard",
       childNodes: {
         tagName: "textbox",
-        className: "plain",
+        //className: "plain",
         id: "tanasinn_default_input",
         style: {
           imeMode: "disabled",

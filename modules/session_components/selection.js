@@ -40,9 +40,8 @@ Suitable.definition = {
   "[subscribe('event/screen-height-changed'), pnp]": 
   function onHeightChanged(height) 
   {
-    var canvas;
+    var canvas = this._canvas;
 
-    canvas = this._canvas;
     canvas.height = height;
   },
 
@@ -89,6 +88,7 @@ DragSelect.definition = {
       if (start <= initial_position && initial_position < end) {
         return; // drag copy
       }
+      this._range = null;
     }
 
     this._initial_position = initial_position; // store initial_position
@@ -99,6 +99,7 @@ DragSelect.definition = {
 
     this.ondragmove.enabled = true;
     this.ondragend.enabled = true;
+    event.explicitOriginalTarget.style.cursor = "text";
   },
 
   /** Dragmove handler */
@@ -127,15 +128,39 @@ DragSelect.definition = {
   "[listen('mouseup')]":
   function ondragend(event) 
   {
+    var initial_position = this._initial_position,
+        current_position,
+        start,
+        end,
+        text;
+
     this.ondragmove.enabled = false;
     this.ondragend.enabled = false;
 
+    current_position = this._convertPixelToPosition(event),
+    start = Math.min(initial_position, current_position),
+    end = Math.max(initial_position, current_position);
+
+    this._doAccessibilityHack(start, end);
+
     this._initial_position = null;
+    event.explicitOriginalTarget.style.cursor = "";
 
     if (this._range) {
       this._setClearAction();
       this._reportRange();
     }
+  },
+
+  _doAccessibilityHack: function _doAccessibilityHack(start, end)
+  {
+    var screen = this._screen,
+        text = screen.getTextInRange(start, end);
+
+    this._textbox.readOnly = true;
+
+    this._textbox.value = text;
+    this._textbox.select();
   },
 
 }; // DragSelect
@@ -148,7 +173,8 @@ var Selection = new Class().extends(Plugin)
                            .mix(Suitable)
                            .mix(DragSelect)
                            .depends("renderer")
-                           .depends("screen");
+                           .depends("screen")
+                           .depends("inputmanager");
 Selection.definition = {
 
   id: "selection",
@@ -163,8 +189,8 @@ Selection.definition = {
   },
 
   "[persistable] enabled_when_startup": true,
-  "[persistable] normal_selection_color": "white",
-  "[persistable] highlight_selection_color": "yellow",
+  "[persistable] normal_selection_color": "yellow",
+  "[persistable] highlight_selection_color": "white",
   "[persistable] smart_selection": true,
 
   _color: "white",
@@ -211,22 +237,25 @@ Selection.definition = {
   "[install]":
   function install(broker) 
   {
-    var selection_canvas;
+    var result;
     
     this._renderer = this.dependency["renderer"];
     this._screen = this.dependency["screen"];
+    this._textbox = this.dependency["inputmanager"].getInputField(),
 
-    selection_canvas = this.request(
+    result = this.request(
       "command/construct-chrome", 
       {
         parentNode: "#tanasinn_center_area",
         tagName: "html:canvas",
         id: "selection_canvas",
-        style: { opacity: 0.5, },
-      }).selection_canvas;
+        style: {
+          opacity: 0.2,
+        },
+      });
     
-    this._canvas = selection_canvas;
-    this._context = selection_canvas.getContext("2d");
+    this._canvas = result.selection_canvas;
+    this._context = result.selection_canvas.getContext("2d");
   },
 
   /** Uninstalls itself 
@@ -249,9 +278,8 @@ Selection.definition = {
   "[subscribe('@command/focus'), pnp]":
   function onFirstFocus() 
   {
-    var canvas;
+    var canvas = this._canvas;
 
-    canvas = this._canvas;
     canvas.width = canvas.parentNode.boxObject.width;
     canvas.height = canvas.parentNode.boxObject.height;
   },
@@ -574,13 +602,15 @@ Selection.definition = {
 
   selectSurroundChars: function selectSurroundChars(column, row) 
   {
-    var context, screen, start, end;
+    var context = this._context,
+        screen = this._screen,
+        range = screen.getWordRangeFromPoint(column, row),
+        start = range[0],
+        end = range[1];
 
-    context = this._context;
-    screen = this._screen;
-    [start, end] = screen.getWordRangeFromPoint(column, row);
-
+    this._color = this.normal_selection_color;
     this.drawSelectionRange(start, end);
+    this._doAccessibilityHack(start, end);
     this.setRange(start, end);
     this._reportRange();
   },
@@ -633,6 +663,9 @@ Selection.definition = {
         canvas = this._canvas;
 
     if (canvas && context) {
+      //this._textbox.value = "";
+      this._textbox.readOnly = false;
+      //this._textbox.reset();
       context.clearRect(0, 0, canvas.width, canvas.height);
       this._range = null; // clear range.
     }
