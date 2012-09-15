@@ -55,6 +55,9 @@ WindowManipulator.definition = {
 
   "[persistable] enabled_when_startup": true,
 
+  _hex_mode: false,
+  _utf8_mode: false,
+
   /**
    *
    * DECSLPP - Window manipulation.
@@ -162,10 +165,12 @@ WindowManipulator.definition = {
         column = Math.ceil(x / renderer.char_width);
         row = Math.ceil(y / renderer.line_height);
 
-        this.sendMessage("command/resize-screen", {
-          column: column, 
-          row: row,
-        });
+        this.sendMessage(
+          "command/resize-screen",
+          {
+            column: column, 
+            row: row,
+          });
         break;
 
       case 5:
@@ -244,10 +249,10 @@ WindowManipulator.definition = {
         break;
 
       case 18:
-        // TODO: Reports terminal size in characters.
-        //       Response: CSI 8 ; y ; x t
-        //         y    Terminal height in characters. (Lines)
-        //         x    Terminal width in characters. (Columns)
+        // Reports terminal size in characters.
+        // Response: CSI 8 ; y ; x t
+        //   y    Terminal height in characters. (Lines)
+        //   x    Terminal width in characters. (Columns)
         screen = this.dependency["screen"];
         width = screen.width;
         height = screen.height;
@@ -273,27 +278,37 @@ WindowManipulator.definition = {
         break;
 
       case 20:
-        // TODO: Reports icon label.
-        //       Response: OSC L title ST
-        //         title    icon label. (window title)
-        coUtils.Debug.reportWarning(
-          _("DECSLPP 20: Reports icon label."));
+        // Reports icon label.
+        // Response: OSC L title ST
+        //   title    icon label. (window title)
+        this.sendMessage("sequence/decslpp/20"); 
         break;
 
       case 21:
-        // TODO: Reports window title.
-        //       Response: OSC l title ST
-        //         title    Window title.
-        coUtils.Debug.reportWarning(
-          _("DECSLPP 21: Reports window title."));
+        // Reports window title.
+        // Response: OSC l title ST
+        //   title    Window title.
+        this.sendMessage("sequence/decslpp/21"); 
         break;
 
       default:
-        return;
+        if (21 < n1 && n1 <= 72) {
+          screen = this.dependency["screen"];
+          width = screen.width;
+          this.sendMessage(
+            "command/resize-screen",
+            {
+              column: width, 
+              row: n1,
+            });
+        }
+
+       return;
 
     }
     coUtils.Timer.wait(0);
   },
+
 }; // class WindowManipulator
 
 /**

@@ -2253,13 +2253,12 @@ Screen.definition = {
         lines = this._lines,
         attr = cursor.attr,
         positionY = cursor.positionY,
-        i,
-        line;
+        i = 0,
+        line = lines[positionY];
 
-    line = lines[positionY];
     line.selectiveErase(0, cursor.positionX + 1, attr);
 
-    for (i = 0; i < positionY; ++i) {
+    for (; i < positionY; ++i) {
       line = lines[i];
       line.selectiveErase(0, width, attr);
     }
@@ -2296,10 +2295,10 @@ Screen.definition = {
         lines = this._lines,
         attr = cursor.attr,
         length = lines.length,
-        i,
+        i = 0,
         line;
 
-    for (i = 0; i < length; ++i) {
+    for (; i < length; ++i) {
       line = lines[i];
       line.selectiveErase(0, width, attr);
       line.type = coUtils.Constant.LINETYPE_NORMAL;
@@ -2314,10 +2313,10 @@ Screen.definition = {
         lines = this._lines,
         attr = cursor.attr,
         length = lines.length,
-        i,
+        i = top,
         line;
 
-    for (i = top; i < bottom; ++i) {
+    for (; i < bottom; ++i) {
       line = lines[i];
       line.selectiveErase(left, right, attr);
       line.type = coUtils.Constant.LINETYPE_NORMAL;
@@ -2331,10 +2330,10 @@ Screen.definition = {
     var attr = this.cursor.attr,
         width = this._width,
         lines = this._lines,
-        i,
+        i = 0,
         line;
 
-    for (i = 0; i < lines.length; ++i) {
+    for (; i < lines.length; ++i) {
       line = lines[i];
       line.eraseWithTestPattern(0, width, attr);
     }
@@ -2370,7 +2369,7 @@ Screen.definition = {
   function softReset()
   {
     var lines,
-        i,
+        i = 0,
         line;
 
     this.switchToMainScreen();
@@ -2378,7 +2377,7 @@ Screen.definition = {
 
     lines = this._getCurrentViewLines();
 
-    for (i = 0; i < lines.length; ++i) {
+    for (; i < lines.length; ++i) {
       line = lines[i];
       line.type = coUtils.Constant.LINETYPE_NORMAL;
     }
@@ -2454,10 +2453,10 @@ Screen.definition = {
   { // Scroll Left
     var lines = this._lines,
         attr = this.cursor.attr,
-        i,
+        i = 0,
         line;
 
-    for (i = 0; i < lines.length; ++i) {
+    for (; i < lines.length; ++i) {
       line = lines[i];
       line.deleteCells(0, n, attr);
     }
@@ -2469,10 +2468,10 @@ Screen.definition = {
   { // Scroll Right
     var lines = this._lines,
         attr = this.cursor.attr,
-        i,
+        i = 0,
         line;
 
-    for (i = 0; i < lines.length; ++i) {
+    for (; i < lines.length; ++i) {
       line = lines[i];
       line.insertBlanks(0, n, attr);
     }
