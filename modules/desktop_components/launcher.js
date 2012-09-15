@@ -545,12 +545,12 @@ TextCompletionDisplayDriver.definition = {
   drive: function drive(grid, result, current_index) 
   {
     var rows = grid.appendChild(grid.ownerDocument.createElement("rows")),
-        i,
+        i = 0,
         search_string,
         completion_text,
         match_position;
 
-    for (i = 0; i < result.labels.length; ++i) {
+    for (; i < result.labels.length; ++i) {
       search_string = result.query.toLowerCase();
       completion_text = result.labels[i];
 
@@ -623,7 +623,10 @@ SessionsCompletionDisplayDriver.definition = {
 
   getImageSource: function getImageSource(request_id)
   {
-    var broker, image_path, image_file, image_url;
+    var broker,
+        image_path,
+        image_file,
+        image_url;
 
     try {
       broker = this._broker;
@@ -920,7 +923,10 @@ Launcher.definition = {
   "[subscribe('event/enabled'), enabled]":
   function onEnabled()
   {
-    var broker, keydown_handler, keyup_handler, self;
+    var broker,
+        keydown_handler,
+        keyup_handler,
+        self;
 
     self = this;
 
@@ -932,17 +938,29 @@ Launcher.definition = {
 
     broker = this._broker;
 
-    keydown_handler = function() self.onkeydown.apply(self, arguments);
+    keydown_handler = function()
+    {
+      return self.onkeydown.apply(self, arguments);
+    };
     broker.window.addEventListener("keydown", keydown_handler, /* capture */ true);
     broker.subscribe(
       "event/disabled", 
-      function() broker.window.removeEventListener("keydown", keydown_handler, true));
+      function()
+      {
+        return broker.window.removeEventListener("keydown", keydown_handler, true);
+      });
 
-    keyup_handler = function() self.onkeyup.apply(self, arguments);
+    keyup_handler = function()
+    {
+      return self.onkeyup.apply(self, arguments);
+    };
     broker.window.addEventListener("keyup", keyup_handler, /* capture */ true);
     broker.subscribe(
       "event/disabled", 
-      function() broker.window.removeEventListener("keyup", keyup_handler, true));
+      function()
+      {
+        return broker.window.removeEventListener("keyup", keyup_handler, true);
+      });
   },
 
   "[subscribe('event/disabled'), enabled]":
@@ -991,7 +1009,8 @@ Launcher.definition = {
     if (index > -1) {
       row = completion_root.querySelector("rows").childNodes[index];
       row.style.color = "black";
-      row.style.cssText = "background: -moz-linear-gradient(top, #ddd, #eee); border-radius: 4px;";
+      row.style.background = "-moz-linear-gradient(top, #ddd, #eee)";
+      row.style.borderRadius = "4px";
 
       try {
         scroll_box = completion_root.parentNode;
@@ -1021,12 +1040,13 @@ Launcher.definition = {
 
   doCompletion: function doCompletion(result) 
   {
-    var completion_root, type, driver;
+    var completion_root = this._completion_root,
+        type,
+        driver;
 
     this._result = result;
     delete this._timer;
 
-    completion_root = this._completion_root;
     while (completion_root.firstChild) {
       completion_root.removeChild(completion_root.firstChild);
     }
@@ -1048,9 +1068,14 @@ Launcher.definition = {
 
   invalidate: function invalidate(result) 
   {
-    var textbox, popup, focused_element, completion_root,
-        index, completion_text,
-        settled_length, settled_text;
+    var textbox = this._textbox,
+        popup,
+        focused_element,
+        completion_root,
+        index,
+        completion_text,
+        settled_length,
+        settled_text;
 
     textbox = this._textbox;
 
@@ -1092,9 +1117,8 @@ Launcher.definition = {
 
   down: function down()
   {
-    var index;
+    var index = Math.min(this.currentIndex + 1, this.rowCount - 1);
 
-    index = Math.min(this.currentIndex + 1, this.rowCount - 1);
     if (index >= 0) {
       this.select(index);
     }
@@ -1104,9 +1128,8 @@ Launcher.definition = {
 
   up: function up()
   {
-    var index;
+    var index = Math.max(this.currentIndex - 1, -1);
 
-    index = Math.max(this.currentIndex - 1, -1);
     if (index >= 0) {
       this.select(index);
     }
@@ -1116,11 +1139,12 @@ Launcher.definition = {
 
   fill: function fill()
   {
-    var index, result, textbox, completion_text, 
-        settled_length, settled_text;
-
-    index = Math.max(0, this.currentIndex);
-    result = this._result;
+    var index = Math.max(0, this.currentIndex),
+        result = this._result,
+        textbox,
+        completion_text, 
+        settled_length,
+        settled_text;
 
     if (this._result) {
       textbox = this._textbox;
@@ -1179,9 +1203,7 @@ Launcher.definition = {
   "[subscribe('event/hotkey-double-{ctrl | alt}'), enabled]":
   function onDoubleCtrl() 
   {
-    var box;
-
-    box = this._element;
+    var box = this._element;
 
     if (box.hidden) {
       this.show();
@@ -1193,9 +1215,8 @@ Launcher.definition = {
   "[subscribe('command/show-launcher'), enabled]":
   function show()
   {
-    var box;
+    var box = this._element;
 
-    box = this._element;
     box.parentNode.appendChild(box);
     box.hidden = false;
     coUtils.Timer.setTimeout(function() {
@@ -1207,11 +1228,9 @@ Launcher.definition = {
   "[subscribe('command/hide-launcher'), enabled]":
   function hide()
   {
-    var box, textbox, popup;
-
-    box = this._element;
-    textbox = this._textbox;
-    popup = this._popup;
+    var box = this._element,
+        textbox = this._textbox,
+        popup = this._popup;
 
     if (popup.hidePopup) {
       popup.hidePopup();
@@ -1222,9 +1241,8 @@ Launcher.definition = {
 
   enter: function enter() 
   {
-    var command;
+    var command = this._textbox.value;
 
-    command = this._textbox.value;
     this.sendMessage("command/start-session", command);
   },
 
@@ -1448,23 +1466,23 @@ DragMove.definition = {
   "[install]":
   function install(broker) 
   {
-    var tanasinn_drag_cover
-      = this.request(
-        "command/construct-chrome",
-        {
-          parentNode: "#tanasinn_launcher_layer",
-          tagName: "box",
-          id: "tanasinn_drag_cover",
-          hidden: true,
-          style: {
-            position: "fixed",
-            left: "0px",
-            top: "0px",
-            padding: "100px",
-          },
-        }).tanasinn_drag_cover;
+    var result = this.request(
+      "command/construct-chrome",
+      {
+        parentNode: "#tanasinn_launcher_layer",
+        tagName: "box",
+        id: "tanasinn_drag_cover",
+        hidden: true,
+        style: {
+          position: "absolute",
+          left: "0px",
+          top: "0px",
+          border: "solid 1px red",
+          padding: "100px",
+        },
+      });
 
-    this._drag_cover = tanasinn_drag_cover;
+    this._drag_cover = result.tanasinn_drag_cover;
   },
 
   /** Uninstalls itself. */
@@ -1474,83 +1492,62 @@ DragMove.definition = {
     this._drag_cover.parentNode.removeChild(this._drag_cover);
   },
 
+  "[listen('mousemove')]":
+  function onmousemove(event)
+  {
+    var left = event.clientX - this._offsetX,
+        top = event.clientY - this._offsetY;
+
+    this.sendMessage("command/move-to", [left, top]);
+  },
+
+  "[listen('mouseup')]":
+  function onmouseup(event) 
+  {
+    // uninstall listeners.
+    this.onmousemove.enabled = false;
+    this.onmouseup.enabled = false;
+    this.onkeyup.enabled = false;
+    this.sendMessage("command/set-opacity", 1.00);
+    this._drag_cover.hidden = true;
+  }, 
+
+  "[listen('keyup')]":
+  function onkeyup(event) 
+  {
+    if (!event.shiftKey) {
+      // uninstall listeners.
+      this.onmousemove.enabled = false;
+      this.onmouseup.enabled = false;
+      this.onkeyup.enabled = false;
+      this.sendMessage("command/set-opacity", 1.00);
+    }
+  }, 
+
   "[listen('dragstart', '#tanasinn_launcher_layer', true), pnp]":
   function ondragstart(dom_event) 
   {
-    var session, offsetX, offsetY, dom_document;
-
     dom_event.stopPropagation();
-    session = this._broker;
 
     // get relative coodinates on target element.
-    offsetX = dom_event.clientX - dom_event.target.boxObject.x; 
-    offsetY = dom_event.clientY - dom_event.target.boxObject.y;
+    this._offsetX = dom_event.clientX - dom_event.target.boxObject.x; 
+    this._offsetY = dom_event.clientY - dom_event.target.boxObject.y;
 
     this._drag_cover.hidden = false;
 
-    this._drag_cover.style.left 
-      = dom_event.clientX - this._drag_cover.boxObject.width / 2 + "px";
-    this._drag_cover.style.top 
-      = dom_event.clientY - this._drag_cover.boxObject.height / 2 + "px";
+    this._drag_cover.style.left = "-300px";
+    this._drag_cover.style.top = "-300px";
+    this._drag_cover.style.width 
+      + (dom_event.explicitOriginalTarget.boxObject.width + 600) + "px";
+    this._drag_cover.style.height 
+      + (dom_event.explicitOriginalTarget.boxObject.height + 600) + "px";
 
-    coUtils.Timer.setTimeout(
-      function() {
-        this._drag_cover.hidden = true;
-      }, 1000, this);
+    this.sendMessage("command/set-opacity", 0.30);
 
-    session.notify("command/set-opacity", 0.30);
+    this.onmousemove.enabled = true;
+    this.onmouseup.enabled = true;
+    this.onkeyup.enabled = true;
 
-    // define mousemove hanler.
-    
-    dom_document = dom_event.target.ownerDocument; // managed by DOM
-
-    session.notify("command/add-domlistener", {
-      target: dom_document, 
-      type: "mousemove", 
-      id: "_DRAGGING", 
-      context: this,
-      handler: function onmouseup(event) 
-      {
-        var left, top;
-
-        left = event.clientX - offsetX;
-        top = event.clientY - offsetY;
-
-        this.sendMessage("command/move-to", [left, top]);
-      }
-    });
-
-    session.notify("command/add-domlistener", {
-      target: dom_document, 
-      type: "mouseup", 
-      id: "_DRAGGING",
-      context: this,
-      handler: function onmouseup(event) 
-      {
-        // uninstall listeners.
-        session.notify("command/remove-domlistener", "_DRAGGING");
-        session.notify("command/set-opacity", 1.00);
-        this._drag_cover.hidden = true;
-      }, 
-    });
-
-    session.notify("command/add-domlistener", {
-      target: dom_document, 
-      type: "keyup", 
-      id: "_DRAGGING",
-      context: this,
-      handler: function onkeyup(event) 
-      {
-        if (!event.shiftKey) {
-          // uninstall listeners.
-          session.notify("command/remove-domlistener", "_DRAGGING");
-          session.notify("command/set-opacity", 1.00);
-        }
-      }, 
-    });
-
-    dom_event = null;
-    dom_document = null;
   },
 };
 

@@ -153,6 +153,9 @@ ScreenEditConcept.definition = {
   "eraseScreenAll :: Undefined":
   _("Erase every cells in screen."),
 
+  "eraseScrollback :: Undefined":
+  _("Erase scroll back memory."),
+
   "insertBlanks :: Uint16 -> Undefined":
   _("Insert n cells at specified position."),
       
@@ -551,9 +554,8 @@ ScreenSequenceHandler.definition = {
         this.eraseScreenAll();
         break;
       
-      case 3: // TODO: erase saved lines (xterm)  
-        coUtils.Debug.reportWarning(
-          _("ED 3 (xterm, erase saved lines) was ignored."));
+      case 3: // erase saved lines (xterm)  
+        this.eraseScrollback();
         break;
 
       default:
@@ -2234,6 +2236,14 @@ Screen.definition = {
     }
   },
 
+  /** Erase scrollback. */
+  "[type('Undefined')] eraseScrollback":
+  function eraseScrollback() 
+  {
+    this._buffer = this._buffer.slice(this._buffer_top);
+    this._buffer_top = 0;
+  },
+
   /** Erase cells from current position to head of buffer. */
   "[type('Undefined')] selectiveEraseScreenAbove":
   function selectiveEraseScreenAbove() 
@@ -2586,7 +2596,7 @@ Screen.definition = {
   {
     var context = data[this.id] = [],
         lines = this._buffer,
-        i;
+        i = 0;
 
     // serialize members.
     context.push(this.width, this.height, this._buffer_top);
@@ -2594,7 +2604,7 @@ Screen.definition = {
     context.push(this._buffer.length);
 
     // serialize each lines.
-    for (i = 0; i < lines.length; ++i) {
+    for (; i < lines.length; ++i) {
       lines[i].serialize(context);
     }
 
