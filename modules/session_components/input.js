@@ -491,7 +491,8 @@ ModeManager.definition = {
   "[persistable] enabled_when_startup": true,
 
   _modes: null,
-  _mode: "normal",
+
+  _mode: coUtils.Constant.INPUT_MODE_NORMAL,
 
   /** Installs itself. 
    *  @param {Broker} a broker object.
@@ -518,12 +519,18 @@ ModeManager.definition = {
     var mode = info.mode || this._mode,
         code = info.code;
 
-    if ("normal" === mode) {
-      this.sendMessage('command/input-with-remapping', info); 
-    } else if ("commandline" === mode) {
-      this.sendMessage('event/keypress-commandline-with-remapping', code); 
-    } else {
-      throw coUtils.Debug.Exception(_("Unknown mode is specified: %s."), mode);
+    switch (mode) {
+
+      case coUtils.Constant.INPUT_MODE_NORMAL:
+        this.sendMessage('command/input-with-remapping', info); 
+        break;
+
+      case coUtils.Constant.INPUT_MODE_COMMANDLINE:
+        this.sendMessage('event/keypress-commandline-with-remapping', code); 
+        break;
+
+      default:
+        throw coUtils.Debug.Exception(_("Unknown mode is specified: %s."), mode);
     }
   },
 
@@ -533,12 +540,18 @@ ModeManager.definition = {
     var mode = info.mode || this._mode,
         code = info.code;
 
-    if ("normal" === mode) {
-      this.sendMessage('command/input-with-no-remapping', info); 
-    } else if ("commandline" === mode) {
-      this.sendMessage('event/keypress-commandline-with-no-remapping', code); 
-    } else {
-      throw coUtils.Debug.Exception(_("Unknown mode is specified: %s."), mode);
+    switch (mode) {
+
+      case coUtils.Constant.INPUT_MODE_NORMAL:
+        this.sendMessage('command/input-with-no-remapping', info); 
+        break;
+
+      case coUtils.Constant.INPUT_MODE_COMMANDLINE:
+        this.sendMessage('event/keypress-commandline-with-no-remapping', code); 
+        break;
+
+      default:
+        throw coUtils.Debug.Exception(_("Unknown mode is specified: %s."), mode);
     }
   },
 
@@ -590,7 +603,7 @@ ModeManager.definition = {
     return true;
   },
 
-  "[subscribe('event/mode-changed'), pnp]":
+  "[subscribe('event/input-mode-changed'), pnp]":
   function onModeChanged(mode)
   {
     this._mode = mode;
@@ -758,7 +771,10 @@ InputManager.definition = {
     this._textbox.focus(); // <-- blur out for current element.
     this._textbox.focus(); // <-- blur out for current element.
     this._textbox.focus(); // <-- set focus to textbox element.
-    this.sendMessage("event/mode-changed", "normal");
+
+    this.sendMessage(
+      "event/input-mode-changed",
+      coUtils.Constant.INPUT_MODE_NORMAL);
   },
 
   "[command('blur', []), nmap('<M-z>', '<C-S-Z>'), _('Blur tanasinn window'), pnp]":
@@ -870,7 +886,7 @@ InputManager.definition = {
 
     this.onKeyPressEventReceived(
       {
-        mode: "normal", 
+        mode: coUtils.Constant.INPUT_MODE_NORMAL, 
         event: event,
       });
  

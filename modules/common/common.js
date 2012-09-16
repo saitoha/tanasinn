@@ -50,6 +50,12 @@ coUtils.Constant = {
   CURSOR_MODE_NORMAL:         0x0,
   CURSOR_MODE_APPLICATION:    0x1,
   CURSOR_MODE_VT52:           0x2,
+
+  //
+  // Input mode
+  //
+  INPUT_MODE_NORMAL:          0x0,
+  INPUT_MODE_COMMANDLINE:     0x1,
   
   //
   // Mouse Button

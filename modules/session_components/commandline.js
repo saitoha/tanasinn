@@ -625,7 +625,9 @@ Commandline.definition = {
     this._textbox.focus();
     this._textbox.focus();
 
-    this.sendMessage("event/mode-changed", "commandline");
+    this.sendMessage(
+      "event/input-mode-changed",
+      coUtils.Constant.INPUT_MODE_COMMANDLINE);
   },
 
   "[subscribe('event/input-state-changed'), enabled]":
@@ -898,11 +900,13 @@ Commandline.definition = {
   {
     var code = coUtils.Keyboard.getPackedKeycodeFromEvent(event);
 
-    this.sendMessage("event/scan-keycode", {
-      mode: "commandline", 
-      code: code,
-      event: event,
-    });
+    this.sendMessage(
+      "event/scan-keycode",
+      {
+        mode: coUtils.Constant.INPUT_MODE_COMMANDLINE, 
+        code: code,
+        event: event,
+      });
   },
 
   "[listen('mousedown', '#tanasinn_completion_popup', true), pnp]":

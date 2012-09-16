@@ -60,6 +60,8 @@ Cursor.definition = {
 
   _timer: null,
 
+  _input_mode: coUtils.Constant.INPUT_MODE_NORMAL,
+
   _blink: true,
   _style: coUtils.Constant.CURSOR_STYLE_BLOCK,
 
@@ -79,15 +81,16 @@ Cursor.definition = {
   "[install]": 
   function install(broker) 
   {
+    var result;
+
     this._screen = this.dependency["screen"];
     this._renderer = this.dependency["renderer"];
     this._cursor_state = this.dependency["cursorstate"];
 
     /** Create cursor element. */
-    var {cursor_canvas} 
-      = this.request("command/construct-chrome", this.getTemplate());
+    result = this.request("command/construct-chrome", this.getTemplate());
 
-    this._canvas = cursor_canvas;
+    this._canvas = result.cursor_canvas;
     this._context = this._canvas.getContext("2d");
     this._cursor_visibility_backup = [];
     this._initial_color = this._color;
@@ -160,7 +163,8 @@ Cursor.definition = {
   "[subscribe('sequence/osc/12'), pnp]":
   function OSC12(value)
   {
-    var message, color;
+    var message,
+        color;
 
     // parse arguments.
     if ("?" === value) {
@@ -271,6 +275,7 @@ Cursor.definition = {
         message;
 
     switch (this._style) {
+
       case coUtils.Constant.CURSOR_STYLE_BLOCK:
         if (cursor_state.blink) {
           param = 1;
@@ -418,6 +423,13 @@ Cursor.definition = {
     }
   },
 
+  "[subscribe('event/input-mode-changed'), pnp]":
+  function onModeChanged(mode)
+  {
+    this._input_mode = mode;
+    this.update();
+  },
+
   /** Render cursor. */
   _render: function _render(row, column, is_wide) 
   {
@@ -440,9 +452,6 @@ Cursor.definition = {
 
     var y, x, width, height, line_height;
 
-    // set cursor color
-    context.fillStyle = this.color;
-  
     // calculate cursor position, size
     switch (this._style) {
 
@@ -475,7 +484,26 @@ Cursor.definition = {
     }
 
     // draw cursor
-    context.fillRect(x, y, width, height);
+    switch (this._input_mode) {
+
+      case coUtils.Constant.INPUT_MODE_NORMAL:
+        // set cursor color
+        context.fillStyle = this.color;
+
+        // draw
+        context.fillRect(x, y, width, height);
+        break;
+
+      case coUtils.Constant.INPUT_MODE_COMMANDLINE:
+        // set cursor color
+        context.strokeStyle = this.color;
+        context.lineWidth = 3;
+        context.lineJoin = "round";
+
+        // draw
+        context.strokeRect(x - 1, y - 1, width + 1, height + 1);
+        break;
+    }
   },
 
   /** Set blink timer. */
