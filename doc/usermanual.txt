@@ -26,6 +26,14 @@ link:./usermanual.html[English/英語]
 
 == News
 
+=== 2012/09/16 
+    Version 0.3.0.0
+	Support ED 3 / clear scroll buffer(xterm)
+	Support xterm's(#252) "Title Mode"
+	Support 8bit input mode
+	Add PopClip integration
+	Enable 3D Transform plugin by default
+
 === 2012/08/19 
     Version 0.2.4.0/0.2.4.1
     fix the Ctrl + Space key handling issue (reported by @teramako).
