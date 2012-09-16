@@ -265,6 +265,29 @@ ConformanceLevel.definition = {
     this.sendMessage("command/send-to-tty", message);
   },
 
+  "[subscribe('command/get-sequence/ss3'), pnp]":
+  function get_SS3() 
+  {
+    var message;
+
+    if (this._8bit_mode) {
+      message = "\x8f";
+    } else {
+      message = "\x1bO";
+    }
+    return message;
+  },
+
+  "[subscribe('command/send-sequence/ss3'), pnp]":
+  function send_SS3(data) 
+  {
+    var message = this.get_SS3();
+
+    message += data;
+
+    this.sendMessage("command/send-to-tty", message);
+  },
+
   "[subscribe('command/send-sequence/decrpss'), pnp]":
   function send_DECRPSS_string(data) 
   {

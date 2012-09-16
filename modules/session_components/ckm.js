@@ -101,7 +101,9 @@ ApplicationCursorMode.definition = {
     this._mode = true;
 
     // enable application cursor mode.
-    this.sendMessage("command/change-cursor-mode", "normal");
+    this.sendMessage(
+      "command/change-cursor-mode",
+      coUtils.Constant.CURSOR_MODE_NORMAL);
   },
 
   /** Deactivate auto-repeat feature
@@ -112,7 +114,9 @@ ApplicationCursorMode.definition = {
     this._mode = false;
 
     // disable application cursor mode.
-    this.sendMessage("command/change-cursor-mode", "application");
+    this.sendMessage(
+      "command/change-cursor-mode",
+      coUtils.Constant.CURSOR_MODE_APPLICATION);
   },
 
   /** Report mode
@@ -156,9 +160,8 @@ ApplicationCursorMode.definition = {
   "[subscribe('@command/restore'), type('Object -> Undefined'), pnp]": 
   function restore(context) 
   {
-    var data;
+    var data = context[this.id];
 
-    data = context[this.id];
     if (data) {
       this._mode = data.mode;
     } else {

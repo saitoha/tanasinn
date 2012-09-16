@@ -43,6 +43,13 @@ coUtils.Constant = {
   KEYPAD_MODE_NORMAL:         0x0,
   KEYPAD_MODE_APPLICATION:    0x1,
   KEYPAD_MODE_NUMERIC:        0x2,
+
+  //
+  // Cursor mode
+  //
+  CURSOR_MODE_NORMAL:         0x0,
+  CURSOR_MODE_APPLICATION:    0x1,
+  CURSOR_MODE_VT52:           0x2,
   
   //
   // Mouse Button

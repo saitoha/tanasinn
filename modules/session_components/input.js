@@ -69,17 +69,17 @@ var KEY_ANSI = {
 
 
 var KEY_NORMAL_CURSOR = {
-  "Left"   : "\x1b[D",  // kl / kcub1
-  "Up"     : "\x1b[A",  // ku / kcuu1
-  "Right"  : "\x1b[C",  // kr / kcuf1
-  "Down"   : "\x1b[B",  // kd / kcud1
+  "Left"   : "<CSI>D",  // kl / kcub1
+  "Up"     : "<CSI>A",  // ku / kcuu1
+  "Right"  : "<CSI>C",  // kr / kcuf1
+  "Down"   : "<CSI>B",  // kd / kcud1
 };
 
 var KEY_APPLICATION_CURSOR = {
-  "Left"   : "\x1bOD",  // kl / kcub1
-  "Up"     : "\x1bOA",  // ku / kcuu1
-  "Right"  : "\x1bOC",  // kr / kcuf1
-  "Down"   : "\x1bOB",  // kd / kcud1
+  "Left"   : "<SS3>D",  // kl / kcub1
+  "Up"     : "<SS3>A",  // ku / kcuu1
+  "Right"  : "<SS3>C",  // kr / kcuf1
+  "Down"   : "<SS3>B",  // kd / kcud1
 };
 
 var KEY_VT52_CURSOR = {
@@ -91,76 +91,76 @@ var KEY_VT52_CURSOR = {
 
 var KEY_NORMAL_KEYPAD = {
 
-  "PgUp"   : "\x1b[5~", // kP / kpp 
-  "PgDn"   : "\x1b[6~", // kN / knp
-  "End"    : "\x1b[4~", // @7 / kend
-  "Home"   : "\x1b[1~", // kh / khome
-  "Ins"    : "\x1b[2~",
-  "Del"    : "\x1b[3~",
-  "F1"     : "\x1bOP",
-  "F2"     : "\x1bOQ",
-  "F3"     : "\x1bOR",
-  "F4"     : "\x1bOS",
-  "F5"     : "\x1b[15~",
-  "F6"     : "\x1b[17~",
-  "F7"     : "\x1b[18~",
-  "F8"     : "\x1b[19~",
-  "F9"     : "\x1b[20~",
-  "F10"    : "\x1b[21~",
-  "F11"    : "\x1b[23~",
-  "F12"    : "\x1b[24~",
+  "PgUp"   : "<CSI>5~", // kP / kpp 
+  "PgDn"   : "<CSI>6~", // kN / knp
+  "End"    : "<CSI>4~", // @7 / kend
+  "Home"   : "<CSI>1~", // kh / khome
+  "Ins"    : "<CSI>2~",
+  "Del"    : "<CSI>3~",
+  "F1"     : "<SS3>P",
+  "F2"     : "<SS3>Q",
+  "F3"     : "<SS3>R",
+  "F4"     : "<SS3>S",
+  "F5"     : "<CSI>15~",
+  "F6"     : "<CSI>17~",
+  "F7"     : "<CSI>18~",
+  "F8"     : "<CSI>19~",
+  "F9"     : "<CSI>20~",
+  "F10"    : "<CSI>21~",
+  "F11"    : "<CSI>23~",
+  "F12"    : "<CSI>24~",
 
-  "Shift PgUp" : "\x1b[5~",
-  "Shift PgDn" : "\x1b[6~",
-  "Shift End"  : "\x1b[4~",
-  "Shift Home" : "\x1b[1~",
-  "Shift Ins"  : "\x1b[2~",
-  "Shift Del"  : "\x1b[3~",
-  "Shift F1"   : "\x1b[25~",
-  "Shift F2"   : "\x1b[26~",
-  "Shift F3"   : "\x1b[28~",
-  "Shift F4"   : "\x1b[29~",
-  "Shift F5"   : "\x1b[31~",
-  "Shift F6"   : "\x1b[32~",
-  "Shift F7"   : "\x1b[33~",
-  "Shift F8"   : "\x1b[34~",
+  "Shift PgUp" : "<CSI>5~",
+  "Shift PgDn" : "<CSI>6~",
+  "Shift End"  : "<CSI>4~",
+  "Shift Home" : "<CSI>1~",
+  "Shift Ins"  : "<CSI>2~",
+  "Shift Del"  : "<CSI>3~",
+  "Shift F1"   : "<CSI>25~",
+  "Shift F2"   : "<CSI>26~",
+  "Shift F3"   : "<CSI>28~",
+  "Shift F4"   : "<CSI>29~",
+  "Shift F5"   : "<CSI>31~",
+  "Shift F6"   : "<CSI>32~",
+  "Shift F7"   : "<CSI>33~",
+  "Shift F8"   : "<CSI>34~",
 };
 
 var KEY_APPLICATION_KEYPAD = {
 
-  "PgUp"   : "\x1b[5~", // kP / kpp 
-  "PgDn"   : "\x1b[6~", // kN / knp
-  "End"    : "\x1b[4~", // @7 / kend
-  "Home"   : "\x1b[1~", // kh / khome
-  "Ins"    : "\x1b[2~",
-  "Del"    : "\x1b[3~",
-  "F1"     : "\x1bOP",
-  "F2"     : "\x1bOQ",
-  "F3"     : "\x1bOR",
-  "F4"     : "\x1bOS",
-  "F5"     : "\x1b[15~",
-  "F6"     : "\x1b[17~",
-  "F7"     : "\x1b[18~",
-  "F8"     : "\x1b[19~",
-  "F9"     : "\x1b[20~",
-  "F10"    : "\x1b[21~",
-  "F11"    : "\x1b[23~",
-  "F12"    : "\x1b[24~",
+  "PgUp"   : "<CSI>5~", // kP / kpp 
+  "PgDn"   : "<CSI>6~", // kN / knp
+  "End"    : "<CSI>4~", // @7 / kend
+  "Home"   : "<CSI>1~", // kh / khome
+  "Ins"    : "<CSI>2~",
+  "Del"    : "<CSI>3~",
+  "F1"     : "<SS3>P",
+  "F2"     : "<SS3>Q",
+  "F3"     : "<SS3>R",
+  "F4"     : "<SS3>S",
+  "F5"     : "<CSI>15~",
+  "F6"     : "<CSI>17~",
+  "F7"     : "<CSI>18~",
+  "F8"     : "<CSI>19~",
+  "F9"     : "<CSI>20~",
+  "F10"    : "<CSI>21~",
+  "F11"    : "<CSI>23~",
+  "F12"    : "<CSI>24~",
 
-  "Shift PgUp" : "\x1b[5~",
-  "Shift PgDn" : "\x1b[6~",
-  "Shift End"  : "\x1b[4~",
-  "Shift Home" : "\x1b[1~",
-  "Shift Ins"  : "\x1b[2~",
-  "Shift Del"  : "\x1b[3~",
-  "Shift F1"   : "\x1b[25~",
-  "Shift F2"   : "\x1b[26~",
-  "Shift F3"   : "\x1b[28~",
-  "Shift F4"   : "\x1b[29~",
-  "Shift F5"   : "\x1b[31~",
-  "Shift F6"   : "\x1b[32~",
-  "Shift F7"   : "\x1b[33~",
-  "Shift F8"   : "\x1b[34~",
+  "Shift PgUp" : "<CSI>5~",
+  "Shift PgDn" : "<CSI>6~",
+  "Shift End"  : "<CSI>4~",
+  "Shift Home" : "<CSI>1~",
+  "Shift Ins"  : "<CSI>2~",
+  "Shift Del"  : "<CSI>3~",
+  "Shift F1"   : "<CSI>25~",
+  "Shift F2"   : "<CSI>26~",
+  "Shift F3"   : "<CSI>28~",
+  "Shift F4"   : "<CSI>29~",
+  "Shift F5"   : "<CSI>31~",
+  "Shift F6"   : "<CSI>32~",
+  "Shift F7"   : "<CSI>33~",
+  "Shift F8"   : "<CSI>34~",
 
 };
 
@@ -178,7 +178,7 @@ var KEY_BACKSPACE_AS_DEL = {
 };
 
 var KEY_DELETE_AS_FUNC = {
-  "delete"     : "\x1b[3~",
+  "delete"     : "<CSI>3~",
 };
 
 var KEY_MAC_ALT_AS_META = {
@@ -321,6 +321,7 @@ function coCreateKeyMap(expression_map, destination_map)
                 code = parseInt(key, 16);
                 return String.fromCharCode(code);
               }).charCodeAt(0);
+
     code = tokens.reduce(
         function(code, token) 
         {
@@ -331,6 +332,7 @@ function coCreateKeyMap(expression_map, destination_map)
               meta: coUtils.Constant.KEY_META,// | coUtils.Constant.KEY_NOCHAR, 
             } [token.toLowerCase()];
         }, code);
+
     map[code] = value.replace(/\\x([0-9a-fA-F]{1,2})/g, 
         function() 
         {
@@ -356,15 +358,15 @@ DefaultKeyMappings.definition = {
   "[persistable] backspace_as_delete": false,
   "[persistable] delete_as_function": true,
 
-  cursor_mode: "normal",
-  application_keypad: false,
+  _cursor_mode: coUtils.Constant.CURSOR_MODE_NORMAL,
+  _application_keypad: false,
 
   _map: null,
 
   "[subscribe('command/change-cursor-mode'), enabled]":
   function onChangeCursorMode(mode)
   {
-    this.cursor_mode = mode;
+    this._cursor_mode = mode;
     this.build(this._map);
   },
 
@@ -374,11 +376,17 @@ DefaultKeyMappings.definition = {
     switch (mode) {
 
       case "vt100":
-        this.sendMessage("command/change-cursor-mode", "normal");
+        if (coUtils.Constant.CURSOR_MODE_VT52 === this._cursor_mode) {
+          this.sendMessage(
+            "command/change-cursor-mode",
+            coUtils.Constant.CURSOR_MODE_NORMAL);
+        }
         break;
 
       case "vt52":
-        this.sendMessage("command/change-cursor-mode", "vt52");
+        this.sendMessage(
+          "command/change-cursor-mode",
+          coUtils.Constant.CURSOR_MODE_VT52);
         break;
 
       default:
@@ -399,21 +407,29 @@ DefaultKeyMappings.definition = {
     this._map = map;
 
     // set cursor mode
-    if ("normal" === this.cursor_mode) {
-      settings.push(KEY_APPLICATION_CURSOR);
-    } else if ("application" === this.cursor_mode) {
-      settings.push(KEY_NORMAL_CURSOR);
-    } else if ("vt52" === this.cursor_mode) {
-      settings.push(KEY_VT52_CURSOR);
-    } else { // fallback
-      coUtils.Debug.reportError(
-        _("Invalid cursor mode was specified: %s."), 
-        this.cursor_mode);
-      settings.push(KEY_NORMAL_CURSOR);
+    switch (this._cursor_mode) {
+
+      case coUtils.Constant.CURSOR_MODE_NORMAL:
+       settings.push(KEY_APPLICATION_CURSOR);
+       break;
+
+      case coUtils.Constant.CURSOR_MODE_APPLICATION:
+        settings.push(KEY_NORMAL_CURSOR);
+        break;
+
+      case coUtils.Constant.CURSOR_MODE_VT52:
+        settings.push(KEY_VT52_CURSOR);
+        break;
+
+      default:
+        coUtils.Debug.reportError(
+          _("Invalid cursor mode was specified: %s."), 
+          this._cursor_mode);
+        settings.push(KEY_NORMAL_CURSOR);
     }
 
     // set keypad mode
-    if (this.application_keypad) {
+    if (this._application_keypad) {
       settings.push(KEY_APPLICATION_KEYPAD);
     } else {
       settings.push(KEY_NORMAL_KEYPAD);
@@ -499,10 +515,8 @@ ModeManager.definition = {
   "[subscribe('event/scan-keycode'), pnp]":
   function onScanKeycode(info) 
   {
-    var mode, code;
-
-    mode = info.mode || this._mode;
-    code = info.code;
+    var mode = info.mode || this._mode,
+        code = info.code;
 
     if ("normal" === mode) {
       this.sendMessage('command/input-with-remapping', info); 
@@ -516,10 +530,8 @@ ModeManager.definition = {
   "[subscribe('event/scan-keycode-with-no-remapping'), pnp]":
   function onScanKeycodeWithoutMapping(info) 
   {
-    var mode, code;
-
-    mode = info.mode || this._mode;
-    code = info.code;
+    var mode = info.mode || this._mode,
+        code = info.code;
 
     if ("normal" === mode) {
       this.sendMessage('command/input-with-no-remapping', info); 
@@ -545,7 +557,9 @@ ModeManager.definition = {
   "[subscribe('command/input-expression-with-remapping'), pnp]":
   function inputExpressionWithMapping(expression) 
   {
-    var packed_code_array, i, packed_code;
+    var packed_code_array,
+        i,
+        packed_code;
 
     packed_code_array = coUtils.Keyboard
       .parseKeymapExpression(expression);
@@ -560,7 +574,9 @@ ModeManager.definition = {
   "[subscribe('command/input-expression-with-no-remapping'), pnp]":
   function inputExpressionWithNoRemapping(expression) 
   {
-    var packed_code_array, i, packed_code;
+    var packed_code_array,
+        i,
+        packed_code;
 
     packed_code_array = coUtils.Keyboard
       .parseKeymapExpression(expression);
@@ -667,16 +683,19 @@ InputManager.definition = {
   "[install]":
   function install(broker)
   {
-    var map, tanasinn_default_input;
+    var map = {},
+        result;
 
     // Get [bit-packed keycode -> terminal input sequence] map
-    map = {};
     this.sendMessage("command/build-key-mappings", map);
+
     this._key_map = map;
-    tanasinn_default_input
-      = this.request("command/construct-chrome", this.getTemplate())
-          .tanasinn_default_input;
-    this._textbox = tanasinn_default_input;
+
+    result = this.request(
+      "command/construct-chrome",
+      this.getTemplate());
+
+    this._textbox = result.tanasinn_default_input;
     this.sendMessage("event/collection-changed/modes");
   },
 
@@ -745,9 +764,11 @@ InputManager.definition = {
   "[command('blur', []), nmap('<M-z>', '<C-S-Z>'), _('Blur tanasinn window'), pnp]":
   function blurCommand() 
   {
-    coUtils.Timer.setTimeout(function() {
-      this.blur();
-    }, 100, this);
+    coUtils.Timer.setTimeout(
+      function blur()
+      {
+        this.blur();
+      }, 100, this);
   },
 
   /** blur focus from the textbox elment. */
@@ -862,10 +883,12 @@ InputManager.definition = {
       .getPackedKeycodeFromEvent(info.event, this._alt_key);
       //.getPackedKeycodeFromEvent(info.event, this._alt_key);
 
-    this.sendMessage("event/scan-keycode", {
-      mode: info.mode, 
-      code: packed_code,
-    });
+    this.sendMessage(
+      "event/scan-keycode",
+      {
+        mode: info.mode, 
+        code: packed_code,
+      });
   },
 
   "[subscribe('command/input-with-remapping'), pnp]": 
@@ -887,9 +910,22 @@ InputManager.definition = {
   function inputWithNoMapping(packed_code)
   {
     var c = packed_code & 0xffffff,
-        message = this._key_map[packed_code];
+        message = this._key_map[packed_code],
+        match;
 
-    if (!message) {
+    if (message) {
+      match = message.match(/^<(.*)>(.*$)/);
+      if (match) {
+        switch (match[1]) {
+          case "CSI":
+            this.sendMessage("command/send-sequence/csi", match[2]);
+            return;
+          case "SS3":
+            this.sendMessage("command/send-sequence/ss3", match[2]);
+            return;
+        }
+      }
+    } else {
       if (packed_code & (1 << coUtils.Constant.KEY_CTRL | 
                          1 << coUtils.Constant.KEY_ALT)) {
         if (0x20 <= c && c < 0x7f) {
@@ -918,6 +954,7 @@ InputManager.definition = {
     if (data) {
       message = this.dependency["encoder"].encode(data);
       this.sendMessage("command/send-to-tty", message);
+
       if (this._local_echo_mode) {
         this.sendMessage("event/data-arrived", message);
       }

@@ -1475,9 +1475,10 @@ DragMove.definition = {
         hidden: true,
         style: {
           position: "absolute",
-          left: "0px",
-          top: "0px",
-          border: "solid 1px red",
+          left: "-100px",
+          top: "-200px",
+          width: "800px",
+          height: "400px",
           padding: "100px",
         },
       });
@@ -1534,13 +1535,6 @@ DragMove.definition = {
     this._offsetY = dom_event.clientY - dom_event.target.boxObject.y;
 
     this._drag_cover.hidden = false;
-
-    this._drag_cover.style.left = "-300px";
-    this._drag_cover.style.top = "-300px";
-    this._drag_cover.style.width 
-      + (dom_event.explicitOriginalTarget.boxObject.width + 600) + "px";
-    this._drag_cover.style.height 
-      + (dom_event.explicitOriginalTarget.boxObject.height + 600) + "px";
 
     this.sendMessage("command/set-opacity", 0.30);
 
