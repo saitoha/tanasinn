@@ -125,7 +125,6 @@ MultiDecoder.definition = {
 
     } catch (e) {
       coUtils.Debug.reportError(e);
-      alert(charset)
     }
   },
 

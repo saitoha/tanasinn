@@ -89,6 +89,16 @@ var KEY_VT52_CURSOR = {
   "Down"   : "\x1bB",  // kd / kcud1
 };
 
+var KEY_SUNPC_NORMAL_KEYPAD = {
+  "End"    : "<CSI>H",
+  "Home"   : "<CSI>F",
+};
+
+var KEY_SUNPC_APPLICATION_KEYPAD = {
+  "End"    : "<SS3>H",
+  "Home"   : "<SS3>F",
+};
+
 var KEY_NORMAL_KEYPAD = {
 
   "PgUp"   : "<CSI>5~", // kP / kpp 
@@ -312,6 +322,7 @@ function coCreateKeyMap(expression_map, destination_map)
   for ([key, value] in Iterator(expression_map)) 
   {
     tokens = key.split(/[\s\t]+/);
+
     code = tokens.pop();
     code = coUtils.Keyboard.KEYNAME_PACKEDCODE_MAP[code.toLowerCase()]
          || code.replace(/\\x([0-9a-fA-F]+)/g, 
