@@ -7,6 +7,9 @@ ZIP=@ZIP@
 TPUT=@TPUT@
 ASCIIDOC=@ASCIIDOC@
 RM=rm -f
+MKDIR=mkdir -p
+CP=cp -f
+PACKAGE_VERSION=@PACKAGE_VERSION@
 
 ##ifeq ($(TPUT), )
 #MSTART=
@@ -21,7 +24,12 @@ EEND="$$($(TPUT) sgr0; $(TPUT) setaf 6)"
 ##endif
 
 all: $(XPI) tanasinn-docs.zip
-	cp -f $(XPI) tanasinn-docs.zip download/
+	$(CP) $(XPI) tanasinn-docs.zip download/
+	if [ ! -d download/$(PACKAGE_VERSION) ]; then \
+		$(MKDIR) download/$(PACKAGE_VERSION); \
+	fi
+	$(CP) $(XPI) download/$(PACKAGE_VERSION)/
+	git add -f download/$(PACKAGE_VERSION)/*.xpi
 
 tanasinn-docs.zip: doc/usermanual.html
 	@echo "$(MSTART) Create documentation package....$(MEND)" 
