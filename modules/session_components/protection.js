@@ -223,9 +223,7 @@ Protection.definition = {
   "[profile('vt100'), sequence('CSI ?%dJ')]":
   function DECSED(n) 
   { // Selective Erase Display
-    var screen
-     
-    screen = this._screen;
+    var screen = this._screen;
    
     switch (n || 0) {
 
@@ -303,14 +301,11 @@ Protection.definition = {
   "[profile('vt100'), sequence('CSI %d${')]":
   function DECSERA(n1, n2, n3, n4) 
   { // Selective Erase Rectangle Area
-    var screen, top, left, bottom, right;
-
-    screen = this._screen;
-
-    top = (n1 || 1) - 1;
-    left = (n2 || 1) - 1;
-    bottom = (n3 || 1) - 1;
-    right = (n4 || 1) - 1;
+    var screen = this._screen,
+        top = (n1 || 1) - 1,
+        left = (n2 || 1) - 1,
+        bottom = (n3 || 1) - 1,
+        right = (n4 || 1) - 1;
 
     if (top >= bottom || left >= right) {
       throw coUtils.Debug.Exception(
@@ -318,8 +313,12 @@ Protection.definition = {
         arguments.callee.name, Array.slice(arguments));
     }
 
-    bottom = Math.min(bottom, screen.height);
-    right = Math.min(right, screen.width);
+    if (bottom > screen.height) {
+      bottom = screen.height;
+    }
+    if (right > screen.width) {
+      right = screen.width;
+    }
 
     screen.selectiveEraseRectangle(top, left, bottom, right);
   },
