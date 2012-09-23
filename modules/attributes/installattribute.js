@@ -25,9 +25,7 @@
 
 function make_managed_handler(self, handler, topic)
 {
-  var wrapped_handler;
-
-  wrapped_handler = function() 
+  var wrapped_handler = function() 
   {
     return handler.apply(self, arguments);
   };
@@ -37,10 +35,9 @@ function make_managed_handler(self, handler, topic)
 
 function apply_attribute(self, broker, key, topic)
 {
-  var handler, wrapped_handler, id;
-
-  handler = self[key];
-  id = self.id + "." + key;
+  var handler = self[key],
+      id = self.id + "." + key,
+      wrapped_handler;
 
   if (handler.id) {
     wrapped_handler = handler;
@@ -100,9 +97,9 @@ InstallAttribute.definition = {
    */
   initialize: function initialize(broker)
   {
-    var attributes, key, target_attribute;
-
-    attributes = this.__attributes;
+    var attributes = this.__attributes,
+        key,
+        target_attribute;
 
     for (key in attributes) {
 

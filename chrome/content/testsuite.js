@@ -1,5 +1,6 @@
 
-var process, desktop;
+var process,
+    desktop;
 
 try {
   Components
