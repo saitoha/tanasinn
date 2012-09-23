@@ -171,20 +171,18 @@ Ime.definition = {
   /** Shows textbox element. */
   _enableImeMode: function _enableImeMode() 
   {
-    var textbox, renderer, cursor, line_height, char_width, char_height,
-        char_offset, normal_color, font_size, top, left;;
+    var textbox = this.dependency["inputmanager"].getInputField(),
+        renderer = this.dependency["renderer"],
+        cursor = this.dependency["cursorstate"],
+        line_height = renderer.line_height,
+        char_width = renderer.char_width,
+        char_height = renderer.char_height,
+        char_offset = renderer.char_offset,
+        normal_color = renderer.color,
+        font_size = renderer.font_size,
+        top = cursor.positionY * line_height + -4,
+        left = cursor.positionX * char_width + -2;
 
-    textbox = this.dependency["inputmanager"].getInputField();
-    renderer = this.dependency["renderer"];
-    cursor = this.dependency["cursorstate"];
-    line_height = renderer.line_height;
-    char_width = renderer.char_width;
-    char_height = renderer.char_height;
-    char_offset = renderer.char_offset;
-    normal_color = renderer.color;
-    font_size = renderer.font_size;
-    top = cursor.positionY * line_height + -4;
-    left = cursor.positionX * char_width + -2;
     textbox.setAttribute("top", top);
     textbox.setAttribute("left", left);
     textbox.style.opacity = 1.0;
