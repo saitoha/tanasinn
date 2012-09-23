@@ -424,11 +424,11 @@ SGRHandler.definition = {
 
           default:
             if (300 <= p && p <= 399) {
-              attr.bg = p - 300;
+              attr.fg = p - 300;
             } else if (400 <= p && p <= 499) {
               attr.bg = p - 400;
             } else if (3000 <= p && p <= 3255) {
-              attr.bg = p - 3000;
+              attr.fg = p - 3000;
             } else if (4000 <= p && p <= 4255) {
               attr.bg = p - 4000;
             } else {
