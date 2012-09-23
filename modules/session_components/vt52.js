@@ -842,7 +842,7 @@ VT52.definition = {
   "[profile('vt52'), sequence('ESC <')]": 
   function V5EX() 
   {
-    this.sendMessage("command/change-mode", "vt100");
+    this.sendMessage("command/change-emulation-mode", "vt100");
     coUtils.Debug.reportMessage("Exit VT52 mode.");
   },
 

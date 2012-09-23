@@ -292,7 +292,7 @@ scan:
         c = scanner.current();
         if (0x03 === c) {
           scanner.moveNext();
-          this.sendMessage("command/change-mode", "vt100");
+          this.sendMessage("command/change-emulation-mode", "vt100");
           coUtils.Debug.reportWarning(
             _("DECSET 38 - Leave Tektronix mode (DECTEK)."));
           return null;
@@ -323,7 +323,7 @@ scan:
                 c = scanner.current();
                 if (0x68 === c) {           // h
                 } else if (0x6c === c) {    // l
-                  this.sendMessage("command/change-mode", "vt100");
+                  this.sendMessage("command/change-emulation-mode", "vt100");
                   coUtils.Debug.reportWarning(
                     _("DECSET 38 - Leave Tektronix mode (DECTEK)."));
                 }

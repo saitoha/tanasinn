@@ -34,7 +34,7 @@ Tracer.definition = {
 
   _mode: "vt100",
 
-  "[subscribe('command/change-mode'), enabled]":
+  "[subscribe('command/change-emulation-mode'), enabled]":
   function onChangeMode(mode) 
   { 
     if (this.onBeforeInput.enabled) {

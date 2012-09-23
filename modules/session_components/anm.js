@@ -114,7 +114,7 @@ ANMSwitch.definition = {
     this.sendMessage("sequence/g1", "B");
     this.sendMessage("sequence/g2", "B");
     this.sendMessage("sequence/g3", "B");
-    this.sendMessage("command/change-mode", "vt100");
+    this.sendMessage("command/change-emulation-mode", "vt100");
 
     coUtils.Debug.reportWarning(
       _("DECSET - DECANM was not implemented completely."));
@@ -128,7 +128,7 @@ ANMSwitch.definition = {
     this._mode = false;
 
     // Designate VT52 mode.
-    this.sendMessage("command/change-mode", "vt52");
+    this.sendMessage("command/change-emulation-mode", "vt52");
 
     coUtils.Debug.reportWarning(
       _("DECRST - DECANM was not implemented completely."));

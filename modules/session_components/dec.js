@@ -85,11 +85,11 @@ DecModeSequenceHandler.definition = {
               "implemented completely."));
           break;
 
-        // TODO: Enable Tektronix mode (DECTEK)
+        // Enable Tektronix mode (DECTEK)
         case 38:
           coUtils.Debug.reportWarning(
             _("DECSET 38 - Enter Tektronix mode (DECTEK)."));
-          this.sendMessage("command/change-mode", "tektronix");
+          this.sendMessage("command/change-emulation-mode", "tektronix");
           break;
 
         // TODO: more(1) fix.
@@ -395,11 +395,11 @@ PersistOptionsTrait.definition = {
 
     var save_buffer = this._dec_save_buffer,
         alternate_buffer = this._dec_alternate_buffer,
-        i,
+        i = 0,
         key,
         value;
 
-    for (i = 0; i < arguments.length; ++i) {
+    for (; i < arguments.length; ++i) {
       key = arguments[i];
       value = save_buffer[key] = alternate_buffer[key];
       if (value) {
@@ -418,10 +418,10 @@ PersistOptionsTrait.definition = {
   {  // DEC Private Mode Save
     var save_buffer = this._dec_save_buffer,
         alternate_buffer = this._dec_alternate_buffer,
-        i,
+        i = 0,
         key;
 
-    for (i = 0; i < arguments.length; ++i) {
+    for (; i < arguments.length; ++i) {
       key = arguments[i];
       alternate_buffer[key] = save_buffer[key];
     }
