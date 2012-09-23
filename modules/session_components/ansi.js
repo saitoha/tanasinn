@@ -85,10 +85,10 @@ AnsiMode.definition = {
   function SM(n) 
   { // set ANSI-Specified Mode. 
     try {
-      this.request("sequence/sm/" + id);
+      this.request("sequence/sm/" + n);
     } catch (e) {
       coUtils.Debug.reportWarning(
-        _("SM: Unknown ANSI Mode ID [%d] was specified."), id);
+        _("SM: Unknown ANSI Mode ID [%d] was specified."), n);
     }
     this.set(n, true);
   },
@@ -97,10 +97,10 @@ AnsiMode.definition = {
   function RM(n) 
   { // reset ANSI-Specified Mode. 
     try {
-      this.request("sequence/rm/" + id);
+      this.request("sequence/rm/" + n);
     } catch (e) {
       coUtils.Debug.reportWarning(
-        _("RM: Unknown ANSI Mode ID [%d] was specified."), id);
+        _("RM: Unknown ANSI Mode ID [%d] was specified."), n);
     }
   },
 
