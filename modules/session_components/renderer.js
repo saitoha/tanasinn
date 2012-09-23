@@ -210,8 +210,8 @@ SlowBlinkTrait.definition = {
     var broker = this._broker,
         layer = new Layer(broker, "slowblink_canvas");
 
-    layer.canvas.width = this._main_layer.canvas.width;
-    layer.canvas.height = this._main_layer.canvas.height;
+    layer.setWidth(this._main_layer.getWidth());
+    layer.setHeight(this._main_layer.getHeight());
 
     this._slow_blink_layer = layer;
 
@@ -243,8 +243,8 @@ RapidBlinkTrait.definition = {
     var broker = this._broker;
 
     this._rapid_blink_layer = new Layer(broker, "rapidblink_canvas");
-    this._rapid_blink_layer.canvas.width = this._main_layer.canvas.width;
-    this._rapid_blink_layer.canvas.height = this._main_layer.canvas.height;
+    this._rapid_blink_layer.setWidth(this._main_layer.getWidth());
+    this._rapid_blink_layer.setHeight(this._main_layer.getHeight());
 
     coUtils.Timer.setTimeout(
       function() 
@@ -354,14 +354,18 @@ PalletManagerTrait.definition = {
     this.color[number] = color[number];
   },
 
+  /**
+   * Set foreground color (xterm)
+   *
+   */
   "[subscribe('sequence/osc/10'), pnp]": 
-  function osc10(info) 
+  function osc10(value) 
   {
     var outerchrome = this._outerchrome,
         color,
         message;
 
-    if ("?" === info) {
+    if ("?" === value) {
       color = outerchrome.foreground_color;
       color = "rgb:" + color.substr(1, 2) 
             + "/" + color.substr(3, 2) 
@@ -389,14 +393,18 @@ PalletManagerTrait.definition = {
       || outerchrome.__proto__.foreground_color;
   },
 
+  /**
+   * Set background color (xterm)
+   *
+   */
   "[subscribe('sequence/osc/11'), pnp]": 
-  function osc11(info) 
+  function osc11(value) 
   {
-    var outerchrome = this._outerchrome;
+    var outerchrome = this._outerchrome,
         color,
         message;
 
-    if ("?" === info) {
+    if ("?" === value) {
       color = outerchrome.background_color;
       color = "rgb:" + color.substr(1, 2) 
             + "/" + color.substr(3, 2) 
@@ -436,22 +444,22 @@ Layer.definition = {
   canvas: null,
   context: null,
 
-  get width()
+  getWidth: function getWidth()
   {
     return this.canvas.width;
   },
 
-  set width(value)
+  setWidth: function setWidth(value)
   {
     this.canvas.width = value;
   },
 
-  get height()
+  getHeight: function getHeight()
   {
     return this.canvas.height;
   },
 
-  set height(value)
+  setHeight: function setHeight(value)
   {
     this.canvas.height = value;
   },
@@ -546,12 +554,12 @@ Renderer.definition = {
   "[watchable, persistable] font_size": 14,
 
   "[persistable] force_precious_rendering": false,
-  "[persistable] normal_alpha": 0.80,
-  "[persistable] halfbright_alpha": 0.40,
+  "[persistable] normal_alpha": 1.00,
+  "[persistable] halfbright_alpha": 0.50,
   "[persistable] bold_alpha": 1.00,
   "[persistable] bold_as_blur": false,
-//  "[persistable] enable_text_shadow": false,
-//  "[persistable] enable_render_bold_as_textshadow": true,
+  "[persistable] enable_text_shadow": false,
+  "[persistable] enable_render_bold_as_textshadow": true,
   "[persistable] shadow_color": "white",
   "[persistable] shadow_offset_x": 0.00,
   "[persistable] shadow_offset_y": 0.00,
@@ -687,13 +695,13 @@ Renderer.definition = {
     char_width = char_width || this.char_width;
     canvas_width = 0 | (width * char_width);
 
-    this._main_layer.canvas.width = canvas_width;
+    this._main_layer.setWidth(canvas_width);
 
     if (this._slow_blink_layer) {
-      this._slow_blink_layer.width = canvas_width;
+      this._slow_blink_layer.setWidth(canvas_width);
     }
     if (this._rapid_blink_layer) {
-      this._rapid_blink_layer.width = canvas_width;
+      this._rapid_blink_layer.setWidth(canvas_width);
     }
 
     this.sendMessage("event/screen-width-changed", canvas_width);
@@ -708,12 +716,12 @@ Renderer.definition = {
     line_height = line_height || this.line_height;
     canvas_height = 0 | (height * line_height);
 
-    this._main_layer.canvas.height = canvas_height;
+    this._main_layer.setHeight(canvas_height);
     if (this._slow_blink_layer) {
-      this._slow_blink_layer.canvas.height = canvas_height;
+      this._slow_blink_layer.setHeight(canvas_height);
     }
     if (this._rapid_blink_layer) {
-      this._rapid_blink_layer.canvas.height = canvas_height;
+      this._rapid_blink_layer.setHeight(canvas_height);
     }
     this.sendMessage("event/screen-height-changed", canvas_height);
   },
@@ -1128,15 +1136,16 @@ Renderer.definition = {
 
       text = String.fromCharCode.apply(String, codes);
 
-      //if (this.enable_text_shadow) {
-      //  context.shadowColor = this.shadow_color;
-      //  context.shadowOffsetX = this.shadow_offset_x;
-      //  context.shadowOffsetY = this.shadow_offset_y;
-      //  context.shadowBlur = this.shadow_blur;
+      if (this.enable_text_shadow) {
+        context.shadowColor = context.fillStyle;//this.shadow_color;
+        context.shadowOffsetX = this.shadow_offset_x;
+        context.shadowOffsetY = this.shadow_offset_y;
+        context.shadowBlur = this.shadow_blur;
+        context.fillText(text, x, y, char_width * length);
       //} else {
       //  context.shadowOffsetX = 0;
       //  context.shadowBlur = 0;
-      //}
+      }
 
       context.fillText(text, x, y, char_width * length);
       if (attr.bold && this.bold_as_blur) {
@@ -1177,9 +1186,9 @@ Renderer.definition = {
             source_top = drcs_state.drcs_top;
             source_width = drcs_state.drcs_width;
             source_height = drcs_state.drcs_height;
-            destination_left = x + index * char_width;
+            destination_left = Math.floor(x + index * char_width);
             destination_top = y - this._text_offset;
-            destination_width = char_width;
+            destination_width = Math.ceil(char_width);
             destination_height = this.line_height;
             break;
 
@@ -1188,9 +1197,9 @@ Renderer.definition = {
             source_top = drcs_state.drcs_top;
             source_width = drcs_state.drcs_width;
             source_height = drcs_state.drcs_height / 2;
-            destination_left = x + index * char_width;
+            destination_left = Math.floor(x + index * char_width);
             destination_top = y - this._text_offset - this.line_height;
-            destination_width = char_width;
+            destination_width = Math.ceil(char_width);
             destination_height = this.line_height;
             break;
 
@@ -1199,9 +1208,9 @@ Renderer.definition = {
             source_top = drcs_state.drcs_top + drcs_state.drcs_height / 2;
             source_width = drcs_state.drcs_width;
             source_height = drcs_state.drcs_height / 2;
-            destination_left = x + index * char_width;
+            destination_left = Math.floor(x + index * char_width);
             destination_top = y - this._text_offset;
-            destination_width = char_width;
+            destination_width = Math.ceil(char_width);
             destination_height = this.line_height;
             break;
 
@@ -1210,30 +1219,58 @@ Renderer.definition = {
             source_top = drcs_state.drcs_top;
             source_width = drcs_state.drcs_width;
             source_height = drcs_state.drcs_height;
-            destination_left = x + index * char_width;
+            destination_left = Math.floor(x + index * char_width);
             destination_top = y - this._text_offset 
-            destination_width = char_width;
+            destination_width = Math.ceil(char_width);
             destination_height = this.line_height;
             break;
         }
-        context.drawImage(
-          drcs_state.drcs_canvas, 
-          source_left,            // source left
-          source_top,             // source top
-          source_width,           // source width
-          source_height,          // source height
-          Math.floor(destination_left),       // destination left
-          destination_top,        // destination top
-          Math.ceil(destination_width),      // destination width
-          destination_height);    // destination height
-        
         if (!drcs_state.color) {
-          context.globalCompositeOperation = "source-atop";
-          context.fillRect(Math.floor(x),
-                           Math.floor(y - this._text_offset), 
-                           Math.ceil(char_width), 
-                           Math.ceil(this.line_height));
-          context.globalCompositeOperation = "source-over";
+          context.drawImage(
+            drcs_state.drcs_canvas, 
+            source_left,            // source left
+            source_top,             // source top
+            source_width,           // source width
+            source_height,          // source height
+            destination_left,       // destination left
+            destination_top,        // destination top
+            destination_width,      // destination width
+            destination_height);    // destination height
+        } else { 
+          var drcs_context = drcs_state.drcs_canvas.getContext("2d");
+          context.globalAlpha = 1.0;
+          drcs_context.clearRect(
+            drcs_state.drcs_width * 96, // destination left
+            source_top,                 // destination top
+            destination_width,          // destination width
+            destination_height);        // destination height
+          drcs_context.drawImage(
+            drcs_state.drcs_canvas, 
+            source_left,                // source left
+            source_top,                 // source top
+            source_width,               // source width
+            source_height,              // source height
+            drcs_state.drcs_width * 96, // destination left
+            source_top,                 // destination top
+            destination_width,          // destination width
+            destination_height);        // destination height
+          drcs_context.fillStyle = context.fillStyle;
+          drcs_context.globalCompositeOperation = "source-atop";
+          drcs_context.fillRect(drcs_state.drcs_width * 96,
+                                source_top, 
+                                destination_width, 
+                                destination_height);
+          drcs_context.globalCompositeOperation = "source-over";
+          context.drawImage(
+            drcs_state.drcs_canvas, 
+            drcs_state.drcs_width * 96, // source left
+            source_top,                 // source top
+            destination_width,          // source width
+            destination_height,         // source height
+            destination_left,           // destination left
+            destination_top,            // destination top
+            destination_width,          // destination width
+            destination_height);        // destination height
         }
         
       }
