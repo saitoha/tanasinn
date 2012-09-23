@@ -185,7 +185,8 @@ Cursor.definition = {
     var scope = {};
     this.sendMessage("command/load-persistable-data", scope);
 
-    this.color = scope[this.id + ".color"] || this.__proto__.color;
+    this.color = scope[this.id + ".color"]
+               || this.__proto__.color;
   },
 
   /**
@@ -324,10 +325,9 @@ Cursor.definition = {
   "[subscribe('command/restore'), pnp]": 
   function restore(context) 
   {
-    var cursor;
+    var cursor = context.cursor;
 
-    if (context.cursor) {
-      cursor = context.cursor;
+    if (cursor) {
       this.opacity = cursor.opacity;
       this.color = cursor.color;
     }
@@ -448,9 +448,12 @@ Cursor.definition = {
 
     var renderer = this._renderer,
         line_height = renderer.line_height,
-        char_width = renderer.char_width;
-
-    var y, x, width, height, line_height;
+        char_width = renderer.char_width,
+        y,
+        x,
+        width,
+        height,
+        line_height;
 
     // calculate cursor position, size
     switch (this._style) {
@@ -509,16 +512,14 @@ Cursor.definition = {
   /** Set blink timer. */
   _prepareBlink: function _prepareBlink() 
   {
-    var i;
+    var i = 0;
 
     if (null !== this._timer) {
       this._timer.cancel();
     } 
 
-    i = 0;
-
     this._timer = coUtils.Timer.setInterval(
-      function()
+      function timerProc()
       {
         if (this._blink && i++ % 2) {
           this._setVisibility(false);
