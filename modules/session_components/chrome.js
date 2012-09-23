@@ -150,36 +150,39 @@ OuterChrome.definition = {
   "[persistable, watchable] border_radius": 8,
   "[persistable, watchable] box_shadow": "5px 4px 29px black",
 
-  get frame_style()
-    "-moz-box-shadow: " + this.box_shadow + ";" +
-    "box-shadow: " + this.box_shadow + ";" +
-    "border-radius: " + this.border_radius + "px;" +
-    "background-image: " + this.background + ";" + 
-    "background-size: 100% 100%;" + 
-    "opacity: " + this.background_opacity + ";" +
-    "cursor: text;",
+  _getFrameStyle: function _getFrameStyle()
+  {
+    return "-moz-box-shadow: " + this.box_shadow + ";" +
+           "box-shadow: " + this.box_shadow + ";" +
+           "border-radius: " + this.border_radius + "px;" +
+           "background-image: " + this._getBackground() + ";" + 
+           "background-size: 100% 100%;" + 
+           "opacity: " + this.background_opacity + ";" +
+           "cursor: text;";
+  },
 
-  get blend_color()
+  _getBlendColor: function _getBlendColor()
   {
     var f = parseInt(this.foreground_color.substr(1), 16),
         b = parseInt(this.background_color.substr(1), 16),
-        color = (((((f >>> 16 & 0xff) + (b >>> 16 & 0xff) * 2) / 2.0) | 0) << 16)
-              | (((((f >>>  8 & 0xff) + (b >>>  8 & 0xff) * 2) / 2.0) | 0) <<  8) 
-              | (((((f        & 0xff) + (b        & 0xff) * 2) / 2.0) | 0) <<  0);
+        color = (((((f >>> 16 & 0xff) + (b >>> 16 & 0xff) * 2) / 3.0) | 0) << 16)
+              | (((((f >>>  8 & 0xff) + (b >>>  8 & 0xff) * 2) / 3.0) | 0) <<  8) 
+              | (((((f        & 0xff) + (b        & 0xff) * 2) / 3.0) | 0) <<  0);
 
     return (color + 0x1000000)
         .toString(16)
         .replace(/^1/, "#");
   },
 
-  get background() 
+  _getBackground: function _getBackground() 
   {
     return coUtils.Text.format(
       "-moz-radial-gradient(top,%s,%s)", 
-      this.blend_color, this.background_color);
+      this._getBlendColor(),
+      this.background_color);
   },
 
-  getImagePath: function getImagePath()
+  _getImagePath: function _getImagePath()
   {
     var path = this._broker.runtime_path + "/" + "images/cover.png",
         file = coUtils.File.getFileLeafFromVirtualPath(path);
@@ -199,19 +202,16 @@ OuterChrome.definition = {
         color3byte;
 
     if (value) {
-
       color3byte = parseInt(this.background_color.substr(1), 16);
       reverse_color = (color3byte ^ 0x1ffffff)
           .toString(16)
           .replace(/^1/, "#");
-
       this._frame.style.background 
-        = coUtils.Text.format(
-          "-moz-linear-gradient(top, %s, %s)", 
-          reverse_color, this.blend_color);
-
+        = "-moz-linear-gradient(top,"
+        + reverse_color + ","
+        + this._getBlendColor() + ")";
     } else {
-      this._frame.style.background = this.background;
+      this._frame.style.background = this._getBackground();
     }
   },
 
@@ -219,15 +219,16 @@ OuterChrome.definition = {
   function changeForegroundColor(value) 
   {
     this.foreground_color = coUtils.Color.parseX11ColorSpec(value);
-    this._frame.style.cssText = this.frame_style;
+    this._frame.style.cssText = this._getFrameStyle();
   },
 
   /** 
    * Construct the skelton of user interface with some attributes 
    * and styles. 
    */
-  getTemplate: function getTemplate()
-    ({
+  _getTemplate: function _getTemplate()
+  {
+    return {
       parentNode: this.request("get/root-element"), 
       tagName: "box",
       id: "tanasinn_chrome_root",
@@ -239,7 +240,7 @@ OuterChrome.definition = {
           {
             tagName: "box",
             id: "tanasinn_background_frame",
-            style: this.frame_style,
+            style: this._getFrameStyle(),
           },
           {
             tagName: "grid",
@@ -277,11 +278,11 @@ OuterChrome.definition = {
           },
         ],
       },
-    }),
+    };
+  },
 
   _element: null,
   _frame: null,
-  board: null,
 
   /** Installs itself. 
    *  @param {Broker} broker A Broker object.
@@ -290,7 +291,7 @@ OuterChrome.definition = {
   function install(broker) 
   {
     // construct chrome elements. 
-    var result = this.request("command/construct-chrome", this.getTemplate());
+    var result = this.request("command/construct-chrome", this._getTemplate());
 
     this._element = result.tanasinn_outer_chrome;
     this._frame = result.tanasinn_background_frame;
@@ -333,13 +334,14 @@ OuterChrome.definition = {
   "[subscribe('variable-changed/outerchrome.{background_color | foreground_color | gradation}'), pnp]": 
   function updateColor() 
   {
-    this._frame.style.cssText = this.frame_style;
+    this._frame.style.cssText = this._getFrameStyle();
+    this._frame.style.width = this._frame.boxObject.width + "px";
   },
 
   "[subscribe('variable-changed/outerchrome.{background_opacity | border_radius | box_shadow}'), pnp]": 
   function updateStyle() 
   {
-    this._frame.style.cssText = this.frame_style;
+    this._frame.style.cssText = this._getFrameStyle();
   },
 
   "[subscribe('event/shift-key-down'), enabled]": 
@@ -419,14 +421,15 @@ Chrome.definition = {
     };
   },
 
-  get style()
+  _getStyle: function _getStyle()
   {
     return "margin: " + this.margin + "px;" +
            "background: " + this.background + ";";
   },
 
-  getTemplate: function getTemplate()
-    [
+  _getTemplate: function _getTemplate()
+  {
+    return [
       {
         parentNode: "#tanasinn_chrome",
         id: "tanasinn_titlebar_area",
@@ -442,7 +445,7 @@ Chrome.definition = {
           {
             id: "tanasinn_center_area",
             tagName: "stack",
-            style: this.style,
+            style: this._getStyle(),
           },
         ],
       },
@@ -458,7 +461,8 @@ Chrome.definition = {
         tagName: "vbox",
         dir: "ltr",
       },
-    ],
+    ];
+  },
 
   "[persistable] enabled_when_startup": true,
 
@@ -472,7 +476,7 @@ Chrome.definition = {
   "[install]": 
   function install(broker) 
   {
-    var result = this.request("command/construct-chrome", this.getTemplate());
+    var result = this.request("command/construct-chrome", this._getTemplate());
 
     this._element = result.tanasinn_content;
     this._center = result.tanasinn_center_area;
@@ -491,7 +495,7 @@ Chrome.definition = {
   "[subscribe('variable-changed/chrome.{margin | background}'), pnp]": 
   function updateStyle()
   {
-    this._center.style.cssText = this.style;
+    this._center.style.cssText = this._getStyle();
   },
 
   /** Fired when The session is stopping. */
@@ -552,7 +556,7 @@ Chrome.definition = {
     this.sendMessage("command/focus");
   },
 
-};
+}; // Chrome
 
 /**
  * @fn main
