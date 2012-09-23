@@ -215,7 +215,7 @@ DRCSBuffer.definition = {
         })["#root"];
     }
 
-    canvas.width = char_width * 96;
+    canvas.width = char_width * 97;
     canvas.height = char_height * 1;
 
     var pointer_x = start_code * char_width;
@@ -230,7 +230,7 @@ DRCSBuffer.definition = {
         for (var [x, c] in Iterator(line.replace(/[^\?-~]/g, "").split(""))) {
           var bits = char2sixelbits(c); 
           for (var [y, bit] in Iterator(bits)) {
-            var position = (((y + h * 6) * 96 + n) * char_width + x) * 4;
+            var position = (((y + h * 6) * 97 + n) * char_width + x) * 4;
             if ("1" === bit) {
               imagedata.data[position + 0] = 255;
               imagedata.data[position + 1] = 255;

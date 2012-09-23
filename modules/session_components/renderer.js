@@ -546,6 +546,7 @@ Renderer.definition = {
   _slow_blink_layer: null,
   _rapid_blink_layer: null,
   _drcs_map: null,
+  _drcs_canvas: null,
 
   // font
   "[watchable, persistable] font_family": 
@@ -615,6 +616,7 @@ Renderer.definition = {
     }
 
     this._drcs_map = null;
+    this._drcs_canvas = null;
   },
 
   "[subscribe('command/calculate-layout'), pnp]":
@@ -1062,11 +1064,10 @@ Renderer.definition = {
                      attr,
                      type)
   {
-    var fore_color,
-        fore_color_map,
-        text,
+    var fore_color = this._get_fore_color(attr),
         code,
-        drcs_state;
+        dscs,
+        drcs_state = attr.drcs;
 
     if (attr.blink) {
       if (null === this._slow_blink_layer) {
@@ -1094,13 +1095,37 @@ Renderer.definition = {
       context.globalAlpha = this.normal_alpha;
     }
 
+    context.fillStyle = fore_color;
+
+    if (attr.underline) {
+      this._drawUnderline(context, x, y, char_width * length, fore_color);
+    }
+
+    code = codes[0];
+
+    if (code > 0x100000) {
+      dscs = String.fromCharCode((code & 0xff00) >>> 8);
+      drcs_state = this._drcs_map[dscs];
+      codes[0] = codes & 0xff;
+    }
+
+    if (drcs_state) {
+      this._drawDrcs(context, codes, x, y, char_width, drcs_state, type);
+    } else {
+      this._drawText(context, codes, x, y, char_width, length, attr);
+    }
+  },
+
+  _get_fore_color: function _get_fore_color(attr)
+  {
+    var fore_color_map = this.color,
+        fore_color;
+
     // Get hexadecimal formatted text color (#xxxxxx) 
     // form given attribute structure. 
-    fore_color_map = this.color;
-
     if (attr.fgcolor) {
       if (attr.inverse) {
-        fore_color = fore_color_map[attr.bg];
+         fore_color_map[attr.bg];
       } else {
         fore_color = fore_color_map[attr.fg];
       }
@@ -1118,42 +1143,28 @@ Renderer.definition = {
         .replace(/^1/, "#");
     }
 
-    context.fillStyle = fore_color;
+    return fore_color;
 
-    if (attr.underline) {
-      this._drawUnderline(context, x, y, char_width * length, fore_color);
-    }
+  },
 
-    drcs_state = attr.drcs;
+  _drawText: function _drawText(context, codes, x, y, char_width, length, attr)
+  {
+    var text = String.fromCharCode.apply(String, codes);
 
-    if (codes[0] > 0x100000) {
-      drcs_state = this._drcs_map[String.fromCharCode((codes[0] & 0xff00) >>> 8)];
-      //alert([String.fromCharCode((codes[0] & 0xff00) >>> 8), codes[0] & 0xff])
-      codes[0] = codes[0] & 0xff;
-    }
-
-    if (!drcs_state) {
-
-      text = String.fromCharCode.apply(String, codes);
-
-      if (this.enable_text_shadow) {
-        context.shadowColor = context.fillStyle;//this.shadow_color;
-        context.shadowOffsetX = this.shadow_offset_x;
-        context.shadowOffsetY = this.shadow_offset_y;
-        context.shadowBlur = this.shadow_blur;
-        context.fillText(text, x, y, char_width * length);
-      //} else {
-      //  context.shadowOffsetX = 0;
-      //  context.shadowBlur = 0;
-      }
-
+    if (this.enable_text_shadow) {
+      context.shadowColor = context.fillStyle;//this.shadow_color;
+      context.shadowOffsetX = this.shadow_offset_x;
+      context.shadowOffsetY = this.shadow_offset_y;
+      context.shadowBlur = this.shadow_blur;
       context.fillText(text, x, y, char_width * length);
-      if (attr.bold && this.bold_as_blur) {
-        context.fillText(text, x + 1, y, char_width * length - 1);
-      }
+    //} else {
+    //  context.shadowOffsetX = 0;
+    //  context.shadowBlur = 0;
+    }
 
-    } else {
-      this._drawDrcs(context, codes, x, y, char_width, drcs_state, type);
+    context.fillText(text, x, y, char_width * length);
+    if (attr.bold && this.bold_as_blur) {
+      context.fillText(text, x + 1, y, char_width * length - 1);
     }
   },
 
@@ -1169,7 +1180,8 @@ Renderer.definition = {
         destination_top,
         destination_left,
         destination_width,
-        destination_height;
+        destination_height,
+        drcs_context;
 
     for (; index < codes.length; ++index) {
       code = codes[index] - this._offset;
@@ -1225,7 +1237,7 @@ Renderer.definition = {
             destination_height = this.line_height;
             break;
         }
-        if (!drcs_state.color) {
+        if (drcs_state.color) {
           context.drawImage(
             drcs_state.drcs_canvas, 
             source_left,            // source left
@@ -1237,11 +1249,21 @@ Renderer.definition = {
             destination_width,      // destination width
             destination_height);    // destination height
         } else { 
-          var drcs_context = drcs_state.drcs_canvas.getContext("2d");
+          if (null === this._drcs_canvas) {
+            this._drcs_canvas = this.request(
+              "command/construct-chrome",
+              {
+                tagName: "html:canvas",
+                id: "tanasinn_drcs_offscreen_canvas",
+                width: 300,
+                height: 300,
+              }).tanasinn_drcs_offscreen_canvas;
+          }
+          drcs_context = this._drcs_canvas.getContext("2d");
           context.globalAlpha = 1.0;
           drcs_context.clearRect(
-            drcs_state.drcs_width * 96, // destination left
-            source_top,                 // destination top
+            0,                          // destination left
+            0,                          // destination top
             destination_width,          // destination width
             destination_height);        // destination height
           drcs_context.drawImage(
@@ -1250,21 +1272,21 @@ Renderer.definition = {
             source_top,                 // source top
             source_width,               // source width
             source_height,              // source height
-            drcs_state.drcs_width * 96, // destination left
-            source_top,                 // destination top
+            0,                          // destination left
+            0,                          // destination top
             destination_width,          // destination width
             destination_height);        // destination height
           drcs_context.fillStyle = context.fillStyle;
           drcs_context.globalCompositeOperation = "source-atop";
-          drcs_context.fillRect(drcs_state.drcs_width * 96,
-                                source_top, 
+          drcs_context.fillRect(0,
+                                0, 
                                 destination_width, 
                                 destination_height);
           drcs_context.globalCompositeOperation = "source-over";
           context.drawImage(
-            drcs_state.drcs_canvas, 
-            drcs_state.drcs_width * 96, // source left
-            source_top,                 // source top
+            this._drcs_canvas, 
+            0,                          // source left
+            0,                          // source top
             destination_width,          // source width
             destination_height,         // source height
             destination_left,           // destination left
@@ -1272,7 +1294,6 @@ Renderer.definition = {
             destination_width,          // destination width
             destination_height);        // destination height
         }
-        
       }
     }
   },

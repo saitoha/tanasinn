@@ -80,18 +80,16 @@ Hexadecimal   | Equivalent 7-bit control  | Mnemonic  | Description
 # Escape Sequence
 
 Sequence      |                        |
---------------|------------------------|-------------------------
-ESC 6         | DECBI                  | TODO:
+--------------|------------------------|---------------------------------------------------------------------------------------------
 ESC 7         | DECSC                  | Save the following items.
-              |                        |   - Cursor position
-              |                        |   - Character attributes (SGR)
-              |                        |   - GL and GR state
-              |                        |   - Wrap flag
-              |                        |   - Origin mode state
-              |                        |   - Selective erase attribute (DECSCA)
-              |                        |   - Any single SS2 or SS3 functions sent
+              |                        | Cursor position
+              |                        | Character attributes (SGR)
+              |                        | GL and GR state
+              |                        | Wrap flag
+              |                        | Origin mode state
+              |                        | Selective erase attribute (DECSCA)
+              |                        | Any single SS2 or SS3 functions sent
 ESC 8         | DECRC                  | Restores the terminal to the state saved by the save cursor (DECSC) function. 
-ESC 9         | DECFI                  | TODO:
 ESC >         | DECKPAM/DECPAM         | Using Application Keypad Mode.
 ESC =         | DECKPNM/DECPNM         | Using Normal Keypad Mode.
 ESC D         | IND                    | Moves the cursor down one line in the same column.
@@ -167,18 +165,6 @@ CSI Ps a                          | HPR               | Moves cursor to the righ
 CSI Ps c                          | DA                | Primary Device Attribute. The default value of Ps is 0.
                                   |                   | Ps = 0    Asks for the terminal`s architectural class and basic attributes.
                                   |                   | Response: Depends the Terminal ID setting.
-                                  |                   |   VT100     ESC [ 1 ; 2 c
-                                  |                   |   VT100J    ESC [ 5 ; 2 c
-                                  |                   |   VT101     ESC [ 1 ; 0 c
-                                  |                   |   VT102     ESC [ 6 c
-                                  |                   |   VT102J    ESC [ 15 c
-                                  |                   |   VT220J    ESC [ 62 ; 1 ; 2 ; 5 ; 6 ; 7 ; 8 c
-                                  |                   |   VT282     ESC [ 62 ; 1 ; 2 ; 4 ; 5 ; 6 ; 7 ; 8 ; 10 ; 11 c
-                                  |                   |   VT320     CSI 63 ; 1 ; 2 ; 6 ; 7 ; 8 c
-                                  |                   |   VT382     CSI 63 ; 1 ; 2 ; 4 ; 5 ; 6 ; 7 ; 8 ; 10 ; 15 c
-                                  |                   |   VT420     CSI 64 ; 1 ; 2 ; 7 ; 8 ; 9 ; 15 ; 18 ; 21 c
-                                  |                   |   VT520     CSI 65 ; 1 ; 2 ; 7 ; 8 ; 9 ; 12 ; 18 ; 19 ; 21 ; 23 ; 24 ; 42 ; 44 ; 45 ; 46 c
-                                  |                   |   VT525     CSI 65 ; 1 ; 2 ; 7 ; 9 ; 12 ; 18 ; 19 ; 21 ; 22 ; 23 ; 24 ; 42 ; 44 ; 45 ; 46 c
 CSI Ps d                          | VPA               | Move to the corresponding vertical position (line Ps) of the current column. The default value of Ps is 1.
 CSI Ps e                          | VPR               | Moves cursor down Ps lines in the same column. The default value of Ps is 1.
 CSI Ps1 ; Ps2 f                   | HVP               | Moves cursor to the Ps1-th line and to the Ps2-th column. The default value of Ps1 and Ps2 is 1.
@@ -249,7 +235,6 @@ CSI = Ps c                        | DA3 (Tertiary DA) | Tertiary Device Attribut
                                   |                   |               dddddddd  Terminal Unique ID
 CSI > Ps c                        | DA2 (Secondary DA)| Secondary Device Attribute. The default value of Ps is 0.
                                   |                   | Ps = 0      Secondary Device Attribute request.
-                                  |                   |         Response: CSI > 32 ; 100 ; 2 c
 CSI ? Ps J                        | DECSED            | Selective erase in display. DECSED only erase characters defined as erasable by the DECSCA control function. The default value of Ps is 0.
                                   |                   | Ps = 0      Erase from cursor through the end of the display.
                                   |                   |    = 1      Erase from the beginning of the display through the cursor.
@@ -496,6 +481,8 @@ DCS $ q Pt ST                                     | DECRQSS          | Request s
 DCS Pfn;Pcn;Pe;Pcmw;Pw;Pt;Pcmh;Pcss;Dscs{ ... ST  | DECDLD           | 
 DCS Pm q ... ST                                   | Sixel            |
 DCS + q ... ST                                    | Termcap Request  |
+
+
 # OSC Sequence
 
 Format
@@ -503,35 +490,35 @@ Format
 OSC Ps ; Pt ST
 OSC Ps ; Pt BEL
 
-Ps        | Description
-------------------------------------------------------------------------------------------------------
-0, 2      | Change window title to Pt.
-4         | Change color.
-          | Pt = c ; spec
-          | Change color number c to the color specified by spec.
-          | spec accepts following formats.
-          | rgb:r/g/b
-          | rgb:rr/gg/bb
-          | rgb:rrr/ggg/bbb
-          | rgb:rrrr/gggg/bbbb
-          | #rgb
-          | #rrggbb
-          | #rrrgggbbb
-          | #rrrrggggbbbb
-9         | Display notification message (Growl is required in Mac OSX).
-10        | Change VT Window's text foreground color to Pt. Format of Pt is same as OSC 4's spec.
-11        | Change VT Window's text background color to Pt. Format of Pt is same as OSC 4's spec.
-12        | Change cursor color to Pt. Format of Pt is same as OSC 4's spec.
-52        | Clipboard access.
-          | Pt = Pc ; Pd
-          | Change the contents of clipboard Pc to Pd.
-          | Pc: ignored.
-          | Pd: new clipboard contents. encoded in base64.
-          | If Pd is "?", terminal returns OSC 52
-104       | Reset text color.
-110       | Reset foreground color.
-111       | Reset background color.
-112       | Reset cursor color.
+Ps        | Mnemonic  | Description
+----------|-----------|------------------------------------------------------------------------------------------
+0,2       | -         | Change window title to Pt.
+4         | -         | Change color.
+          |           | Pt = c ; spec
+          |           | Change color number c to the color specified by spec.
+          |           | spec accepts following formats.
+          |           | rgb:r/g/b
+          |           | rgb:rr/gg/bb
+          |           | rgb:rrr/ggg/bbb
+          |           | rgb:rrrr/gggg/bbbb
+          |           | #rgb
+          |           | #rrggbb
+          |           | #rrrgggbbb
+          |           | #rrrrggggbbbb
+9         | -         | Display notification message (Growl is required in Mac OSX).
+10        | -         | Change VT Window's text foreground color to Pt. Format of Pt is same as OSC 4's spec.
+11        | -         | Change VT Window's text background color to Pt. Format of Pt is same as OSC 4's spec.
+12        | -         | Change cursor color to Pt. Format of Pt is same as OSC 4's spec.
+52        | -         | Clipboard access.
+          |           | Pt = Pc ; Pd
+          |           | Change the contents of clipboard Pc to Pd.
+          |           | Pc: ignored.
+          |           | Pd: new clipboard contents. encoded in base64.
+          |           | If Pd is "?", terminal returns OSC 52
+104       | -         | Reset text color.
+110       | -         | Reset foreground color.
+111       | -         | Reset background color.
+112       | -         | Reset cursor color.
 
 
 # SOS Sequence
