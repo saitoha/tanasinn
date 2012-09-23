@@ -501,7 +501,7 @@
  *  set_pglen_inch                slength    sL       YI Set page length to #1 hundredth of an inch
  */
 
-var db = {
+var TERMINFO_DB = {
   // max_colors: maximum number of colors on screen
   "Co":     "256",
   "colors": "256",
@@ -597,7 +597,11 @@ Terminfo.definition = {
   "[subscribe('sequence/dcs'), pnp]":
   function onDCS(data) 
   {
-    var match, i, chars, value, message;
+    var match,
+        i,
+        chars,
+        value,
+        message;
 
     if (0 === data.indexOf("+q")) {
       match = data.match(/[0-9a-fA-F]{2}/g);
@@ -609,21 +613,24 @@ Terminfo.definition = {
 
       s = coUtils.Text.safeConvertFromArray(chars);
 
-      value = db[s];
+      value = TERMINFO_DB[s];
 
       if (undefined === value) {
         message = "0+r";
       } else {
-        message = value
-          .split("")
-          .map(
-            function(c)
-            {
-              return c
-                .charCodeAt(0)
-                .toString(16);
-            })
-          .join("");
+        message = "1+r"
+                + match.join("")
+                + "="
+                + value
+                  .split("")
+                  .map(
+                    function(c)
+                    {
+                      return c
+                        .charCodeAt(0)
+                        .toString(16);
+                    })
+                  .join("");
       }
       this.sendMessage("command/send-sequence/dcs", message);
     }
