@@ -2,6 +2,7 @@
  ChangeLog
  README
  TODO
+ ctrlseqs.md
  application.ini
  configure.ac
  acgecko.m4
@@ -143,6 +144,8 @@
     blink.js
     tcem.js
     scrollbarmode.js
+    titlemode.js
+    terminalmode.js
     reversewrap.js
     altscreen.js
     nkm.js

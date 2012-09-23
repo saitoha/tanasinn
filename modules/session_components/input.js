@@ -381,7 +381,7 @@ DefaultKeyMappings.definition = {
     this.build(this._map);
   },
 
-  "[subscribe('command/change-mode'), enabled]":
+  "[subscribe('command/change-emulation-mode'), enabled]":
   function onChangeEmulationMode(mode)
   {
     switch (mode) {
@@ -672,7 +672,7 @@ InputManager.definition = {
       tagName: "bulletinboard",
       childNodes: {
         tagName: "textbox",
-        //className: "plain",
+        className: "plain",
         id: "tanasinn_default_input",
         style: {
           imeMode: "disabled",

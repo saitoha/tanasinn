@@ -252,15 +252,6 @@ DECLocatorMouse.definition = {
   },
 
 
-  "[profile('vt100'), sequence('CSI %d\\ ~')]":
-  function DECTME(n) 
-  { // DEC Selectively Elase in Line
-    coUtils.Debug.reportWarning(
-      _("%s sequence [%s] was ignored."),
-      arguments.callee.name, Array.slice(arguments));
-  },
-
-
   /** Fired at scroll session is closed. */
   "[subscribe('event/scroll-session-closed'), enabled]":
   function onScrolSessionClosed() 

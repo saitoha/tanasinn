@@ -938,7 +938,7 @@ Parser.definition = {
     }
   },
 
-  "[subscribe('command/change-mode'), enabled]":
+  "[subscribe('command/change-emulation-mode'), enabled]":
   function onChangeMode(mode)
   {
     var grammars = this._grammars,

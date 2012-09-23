@@ -144,7 +144,9 @@ SecondaryDA.definition = {
     //var csi = this.request("command/get-sequence/csi");
     //this.sendMessage("command/send-to-tty", "\x1b[>41;281;0c");
 
-    this.sendMessage("command/send-sequence/csi", ">41;277;0c");
+    this.sendMessage(
+      "command/send-sequence/csi",
+      ">41;277;0c");
 
     //coUtils.Debug.reportMessage(
     //  _("Secondary Device Attributes is requested. reply: '%s'."), 
