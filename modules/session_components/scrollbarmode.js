@@ -25,22 +25,22 @@
 /**
  * @class ScrollbarMode
  *
- * XT_SCRLBAR - x10-compatible mouse mode
+ * XT_SCRLBAR - show/hide scroll bar
  * 
- * Default: off
+ * Default: on
  *
  * Format
  *
  * CSI   ?     3     0     h
  * 9/11  3/15  3/3   3/0   6/8
  *
- * Set: enable x10 mouse mode.
+ * Set: enable scroll bar.
  *
  *
  * CSI   ?     3     0     l
  * 9/11  3/15  3/3   3/0   6/12
  *
- * Reset: disable x10 mouse mode.
+ * Reset: disable scroll bar.
  *
  */
 var ScrollbarMode = new Class().extends(Plugin);
