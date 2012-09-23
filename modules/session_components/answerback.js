@@ -100,12 +100,22 @@ AnswerBack.definition = {
   {
     var message;
 
-    if (this._mode) {
-      message = String(this.answerback_message);
-      if (message.length) {
-        this.sendMessage("command/send-to-tty", message);
-      }
+    message = String(this.answerback_message);
+    if (message.length) {
+      this.sendMessage("command/send-to-tty", message);
     }
+  },
+
+  "[subscribe('@command/focus'), pnp]":
+  function onFirstFocus()
+  {
+    coUtils.Timer.setTimeout(
+      function onAutoAnswerBack()
+      {
+        if (this._mode) {
+          this.answerback();
+        }
+      }, 500, this);
   },
 
   /** Activate reverse video feature.
