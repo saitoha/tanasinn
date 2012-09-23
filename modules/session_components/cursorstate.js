@@ -277,6 +277,12 @@ CursorState.definition = {
   {
     this.backup(); 
   },
+
+  "[profile('vt100'), sequence('CSI s')] DECSC": 
+  function SCP() 
+  {
+    this.backup(); 
+  },
    
   /**
    * DECRC - Restore Cursor
@@ -305,6 +311,12 @@ CursorState.definition = {
    */
   "[profile('vt100'), sequence('ESC 8')] DECRC": 
   function DECRC() 
+  {
+    this.restore();
+  },
+
+  "[profile('vt100'), sequence('CSI u')] DECRC": 
+  function RCP() 
   {
     this.restore();
   },
