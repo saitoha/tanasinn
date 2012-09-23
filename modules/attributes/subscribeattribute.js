@@ -25,9 +25,7 @@
 
 function make_managed_handler(self, handler, topic)
 {
-  var wrapped_handler;
-
-  wrapped_handler = function() 
+  var wrapped_handler = function() 
   {
     return handler.apply(self, arguments);
   };
@@ -37,10 +35,10 @@ function make_managed_handler(self, handler, topic)
 
 function apply_attribute(self, broker, key, attribute, topic)
 {
-  var handler, wrapped_handler, id, old_onchange;
-
-  handler = self[key];
-  id = self.id + "." + key;
+  var handler = self[key],
+      id = self.id + "." + key,
+      wrapped_handler,
+      old_onchange;
 
   if (handler.id) {
     wrapped_handler = handler;
@@ -81,7 +79,8 @@ function apply_attribute(self, broker, key, attribute, topic)
 //      broker.unsubscribe(id);
 //    }, undefined, id);
 
-  broker.subscribe("get/subscribers", 
+  broker.subscribe(
+    "get/subscribers", 
     function(subscribers)
     {
       subscribers[id] = handler;
@@ -126,9 +125,10 @@ SubscribeAttribute.definition = {
    */
   initialize: function initialize(broker) 
   {
-    var attributes, key, attribute, topic;
-
-    attributes = this.__attributes;
+    var attributes = this.__attributes,
+        key,
+        attribute,
+        topic;
 
     for (key in attributes) {
 

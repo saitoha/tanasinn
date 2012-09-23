@@ -125,8 +125,8 @@ ProgramCompleter.definition = {
     delimiter = ("WINNT" === coUtils.Runtime.os) ? ";": ":"
 
     // split PATH string by delimiter and get existing paths
-    paths = path.split(delimiter)
-      .filter(function(path) 
+    paths = path.split(delimiter).filter(
+      function filterProc(path) 
       {
         if (!path) {
           return false;
@@ -245,24 +245,24 @@ coUtils.Sessions = {
   {
     delete this._records[request_id];
     this._dirty = true;
-    coUtils.Timer.setTimeout(function timerproc()
-    {
-      var backup_data_path, file;
 
-      backup_data_path = broker.runtime_path + "/persist/" + request_id + ".txt";
-      file = coUtils.File.getFileLeafFromVirtualPath(backup_data_path);
+    coUtils.Timer.setTimeout(
+      function timerProc()
+      {
+        var backup_data_path = broker.runtime_path + "/persist/" + request_id + ".txt",
+            file = coUtils.File.getFileLeafFromVirtualPath(backup_data_path);
 
-      if (file.exists()) {
-        file.remove(true);
-      }
+        if (file.exists()) {
+          file.remove(true);
+        }
 
-      backup_data_path = broker.runtime_path + "/persist/" + request_id + ".png";
-      file = coUtils.File.getFileLeafFromVirtualPath(backup_data_path);
+        backup_data_path = broker.runtime_path + "/persist/" + request_id + ".png";
+        file = coUtils.File.getFileLeafFromVirtualPath(backup_data_path);
 
-      if (file.exists()) {
-        file.remove(true);
-      }
-    }, 1000, this);
+        if (file.exists()) {
+          file.remove(true);
+        }
+      }, 1000, this);
   },
 
   get: function get(request_id)
@@ -275,7 +275,8 @@ coUtils.Sessions = {
 
   load: function load() 
   {
-    var sessions, lines;
+    var sessions,
+        lines;
 
     this._records = {};
     if (coUtils.File.exists(this.session_data_path)) {
@@ -358,49 +359,7 @@ ProcessManager.definition = {
    */
   processIsAvailable: function processIsAvailable(pid) 
   {
-    var exit_code, runtime_path, args, 
-        broker, cygwin_root, runtime, process;
-
-    exit_code = this.sendSignal(0, pid);
     return 0 === this.sendSignal(0, pid);
-    
-    if ("number" !== typeof pid) {
-      throw coUtils.Debug.Exception(
-        _("sendSignal: Invalid argument is detected. [%s]"), 
-        pid);
-    }
-
-    if ("WINNT" === coUtils.Runtime.os) {
-      broker = this._broker;
-      cygwin_root = broker.cygwin_root;
-      runtime_path = cygwin_root + "\\bin\\run.exe";
-      args = [ "/bin/ps", "-p", String(pid) ];
-    } else { // Darwin, Linux or FreeBSD
-      runtime_path = "/bin/ps";
-      args = [ "-p", String(pid) ];
-    }
-
-    // create new localfile object.
-    runtime = Components
-      .classes["@mozilla.org/file/local;1"]
-      .createInstance(Components.interfaces.nsILocalFile);
-    runtime.initWithPath(runtime_path);
-
-    // create new process object.
-    process = Components
-      .classes["@mozilla.org/process/util;1"]
-      .createInstance(Components.interfaces.nsIProcess);
-    process.init(runtime);
-
-    try {
-      process.run(/* blocking */ true, args, args.length);
-    } catch (e) {
-      coUtils.Debug.reportMessage(
-        _("command '%s' failed."), 
-        args.join(" "));
-      return false;
-    }
-    return 0 === process.exitValue;
   },
 
   /** Sends a signal to specified process. it runs "kill" command.
@@ -1219,10 +1178,13 @@ Launcher.definition = {
 
     box.parentNode.appendChild(box);
     box.hidden = false;
-    coUtils.Timer.setTimeout(function() {
-      this._textbox.focus();
-      this._textbox.focus();
-    }, 0, this);
+
+    coUtils.Timer.setTimeout(
+      function timerProc()
+      {
+        this._textbox.focus();
+        this._textbox.focus();
+      }, 0, this);
   },
 
   "[subscribe('command/hide-launcher'), enabled]":
