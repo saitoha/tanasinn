@@ -215,8 +215,8 @@ PopupMenu.definition = {
                 flex: 1,
                 style: {
                   opacity: "0.40",
-                  backgroundImage: "-moz-linear-gradient(top, #aaa, #888);",
-                  borderRadius: "8px;",
+                  backgroundImage: "-moz-linear-gradient(top, #aaa, #888)",
+                  borderRadius: "8px",
                 },
               },
               {
@@ -325,7 +325,7 @@ PopupMenu.definition = {
   "[subscribe('sequence/osc/200'), pnp]":
   function onDisplay(data) 
   {
-    var lines = data.split("-"),
+    var lines = data.split("\n"),
         renderer = this.dependency["renderer"],
         line_height = renderer.line_height,
         char_width = renderer.char_width,
@@ -391,6 +391,8 @@ PopupMenu.definition = {
                   try { 
                     return coUtils.Text.base64decode(cell); 
                   } catch(e) { 
+                    coUtils.Debug.reportError(e);
+                    coUtils.Debug.reportError("text: " + cell);
                     return cell;
                   }
                 }(),
