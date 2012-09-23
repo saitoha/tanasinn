@@ -215,7 +215,7 @@ SGRHandler.definition = {
 
           case 2:
             attr.bold = false;
-            attr.halfbright = true; // TODO: halfbright
+            attr.halfbright = true;
             break;
 
           case 3:
@@ -239,7 +239,7 @@ SGRHandler.definition = {
             break;
 
           case 8:
-            attr.invisible = true; // TODO: SGR invisible
+            attr.invisible = true;
             break;
 
           case 10:
