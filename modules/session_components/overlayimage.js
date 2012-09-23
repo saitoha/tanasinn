@@ -49,7 +49,7 @@ OverlayImage.definition = {
     };
   },
 
-  "[persistable] enabled_when_startup": false,
+  "[persistable] enabled_when_startup": true,
   "[persistable] open_delay": 20,
 
   _canvas: null,
@@ -60,12 +60,10 @@ OverlayImage.definition = {
   "[install]":
   function install(broker) 
   {
-    var tanasinn_image_canvas = this.request(
-      "command/construct-chrome",
-      this.getTemplate()
-    ).tanasinn_image_canvas;
-
-    this._canvas = tanasinn_image_canvas;
+    var result = this.request("command/construct-chrome",
+                              this.getTemplate());
+    this._canvas = result.tanasinn_image_canvas;
+    this._renderer = this.dependency["renderer"];
   },
 
   /** Uninstalls itself.
@@ -77,8 +75,8 @@ OverlayImage.definition = {
     if (this._canvas) {
       this._canvas.parentNode.removeChild(this._canvas);
     }
-
     this._canvas = null;
+    this._renderer = null;
   },
     
   /** Fired at the keypad mode is changed. */
@@ -123,7 +121,7 @@ OverlayImage.definition = {
   "[subscribe('sequence/osc/212'), pnp]":
   function draw(data) 
   {
-    var renderer = this.dependency["renderer"],
+    var renderer = this._renderer,
         canvas = {
           context: this._canvas.getContext("2d")
         },
@@ -160,7 +158,7 @@ OverlayImage.definition = {
     cache = this._cache_holder[filename];
     image = cache 
       || this.request("get/root-element")
-          .ownderDocument
+          .ownerDocument
           .createElementNS(coUtils.Constant.NS_XHTML, "img");
     if (cache) {
       // draw immediately.
@@ -175,15 +173,14 @@ OverlayImage.definition = {
       }
       image.src = filename;
     }
-
-    //this.sendMessage("command/report-overlay-message", data);
+//    this.sendMessage("command/report-overlay-message", data);
   },
 
   "[subscribe('sequence/osc/213'), pnp]":
   function clear(data) 
   {
     var context = this._canvas.getContext("2d"),
-        renderer = this.dependency["renderer"],
+        renderer = this._renderer,
         char_width = renderer.char_width,
         line_height = renderer.line_height,
         x,
