@@ -43,15 +43,35 @@ EastAsianWidth.definition = {
   },
 
   "[persistable] enabled_when_startup": true,
+  "[persistable] default_value": false,
+
+  _mode: false,
+
+  /** installs itself. 
+   *  @param {Broker} broker A Broker object.
+   */
+  "[install]":
+  function install(broker) 
+  {
+    this._mode = this.default_value;
+  },
+
+  /** Uninstalls itself.
+   *  @param {Broker} broker A broker object.
+   */
+  "[uninstall]":
+  function uninstall(broker) 
+  {
+    this._mode = null;
+  },
 
   /** Treat ambiguous width characters as double-width.
    */
   "[subscribe('sequence/decset/8840'), pnp]":
   function activate() 
   { // Treat ambiguous characters as double
-    var parser;
+    var parser = this.dependency["parser"];
 
-    parser = this.dependency["parser"];
     parser.ambiguous_as_wide = true;
     coUtils.Debug.reportMessage("DECAMB: double");
   },
@@ -61,12 +81,63 @@ EastAsianWidth.definition = {
   "[subscribe('sequence/decrst/8840'), pnp]":
   function deactivate() 
   { // Treat ambiguous characters as single
-    var parser;
+    var parser = this.dependency["parser"];
 
-    parser = this.dependency["parser"];
     parser.ambiguous_as_wide = false;
     coUtils.Debug.reportMessage("DECAMB: single");
   },
+
+  /** Report mode
+   */
+  "[subscribe('sequence/decrqm/8840'), pnp]":
+  function report() 
+  {
+    var mode = this._mode ? 1: 2,
+        message = "?8840;" + mode + "$y";
+
+    this.sendMessage("command/send-sequence/csi", message);
+  },
+
+  /** on hard / soft reset
+   */
+  "[subscribe('command/{soft | hard}-terminal-reset'), pnp]":
+  function reset(broker) 
+  {
+    if (this.default_value) {
+      this.activate();
+    } else {
+      this.deactivate();
+    }
+  },
+
+  /**
+   * Serialize snd persist current state.
+   */
+  "[subscribe('@command/backup'), type('Object -> Undefined'), pnp]": 
+  function backup(context) 
+  {
+    // serialize this plugin object.
+    context[this.id] = {
+      mode: this._mode,
+    };
+  },
+
+  /**
+   * Deserialize snd restore stored state.
+   */
+  "[subscribe('@command/restore'), type('Object -> Undefined'), pnp]": 
+  function restore(context) 
+  {
+    var data = context[this.id];
+
+    if (data) {
+      this._mode = data.mode;
+    } else {
+      coUtils.Debug.reportWarning(
+        _("Cannot restore last state of renderer: data not found."));
+    }
+  },
+
 
 }; // class EastAsianWidth
 
@@ -102,6 +173,28 @@ AmbiguousWidthReporting.definition = {
   },
 
   "[persistable] enabled_when_startup": true,
+  "[persistable] default_value": false,
+
+  _mode: false,
+
+  /** installs itself. 
+   *  @param {Broker} broker A Broker object.
+   */
+  "[install]":
+  function install(broker) 
+  {
+    this._mode = this.default_value;
+  },
+
+  /** Uninstalls itself.
+   *  @param {Broker} broker A broker object.
+   */
+  "[uninstall]":
+  function uninstall(broker) 
+  {
+    this._mode = null;
+  },
+
 
   /** Enable ambiguous width reporting.
    */
@@ -131,6 +224,58 @@ AmbiguousWidthReporting.definition = {
     }
     this.sendMessage("command/send-sequence/csi", message);
   },
+
+  /** Report mode
+   */
+  "[subscribe('sequence/decrqm/7700'), pnp]":
+  function report() 
+  {
+    var mode = this._mode ? 1: 2,
+        message = "?7700;" + mode + "$y";
+
+    this.sendMessage("command/send-sequence/csi", message);
+  },
+
+  /** on hard / soft reset
+   */
+  "[subscribe('command/{soft | hard}-terminal-reset'), pnp]":
+  function reset(broker) 
+  {
+    if (this.default_value) {
+      this.activate();
+    } else {
+      this.deactivate();
+    }
+  },
+
+  /**
+   * Serialize snd persist current state.
+   */
+  "[subscribe('@command/backup'), type('Object -> Undefined'), pnp]": 
+  function backup(context) 
+  {
+    // serialize this plugin object.
+    context[this.id] = {
+      mode: this._mode,
+    };
+  },
+
+  /**
+   * Deserialize snd restore stored state.
+   */
+  "[subscribe('@command/restore'), type('Object -> Undefined'), pnp]": 
+  function restore(context) 
+  {
+    var data = context[this.id];
+
+    if (data) {
+      this._mode = data.mode;
+    } else {
+      coUtils.Debug.reportWarning(
+        _("Cannot restore last state of renderer: data not found."));
+    }
+  },
+
 
 }; // class EastAsianWidth
 
