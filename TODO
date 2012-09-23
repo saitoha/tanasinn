@@ -1,5 +1,9 @@
 
 - renewal console plugin's interface, adding text search feature.
 
-- reserching nsIIdleSrevice
+- reserch nsIIdleSrevice
+- implement DECBI/DECFI
+- implement MC/DECMC
+- implement DECPEX mode
+- implement DECSASD
 

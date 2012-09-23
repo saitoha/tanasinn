@@ -863,7 +863,25 @@ Windows(XP/Vista/7) + Cygwin / Mac / Linux / FreeBSD 環境で動作します。
 <h2 id="_news">2. News</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_2012_09_16">2.1. 2012/09/16</h3>
+<h3 id="_2012_09_23">2.1. 2012/09/23</h3>
+<div class="literalblock">
+<div class="content">
+<pre><code>Version 0.3.0.1
+Implement Auto Answerback mode (DECAAM)
+Implement DECERA / Erase Rectangle Area
+Support HPB/VPB
+Support SCP / Save Cursor Position
+Support RCP / Restore Cursor Position
+SUpport xterm's "Titlebar Mode"
+Support 8bit mode input
+Fix DRCS Rendering bug
+Fix termcap response's bug
+Fix SGR rendition's bug
+Fix Fix OSC10/11's bug</code></pre>
+</div></div>
+</div>
+<div class="sect2">
+<h3 id="_2012_09_16">2.2. 2012/09/16</h3>
 <div class="literalblock">
 <div class="content">
 <pre><code>Version 0.3.0.0
@@ -875,7 +893,7 @@ Windows(XP/Vista/7) + Cygwin / Mac / Linux / FreeBSD 環境で動作します。
 </div></div>
 </div>
 <div class="sect2">
-<h3 id="_2012_08_19">2.2. 2012/08/19</h3>
+<h3 id="_2012_08_19">2.3. 2012/08/19</h3>
 <div class="literalblock">
 <div class="content">
 <pre><code>Version 0.2.4.0/0.2.4.1
@@ -893,7 +911,7 @@ make sixel rendering information as cell-level DRCS attribute</code></pre>
 </div></div>
 </div>
 <div class="sect2">
-<h3 id="_2012_08_05">2.3. 2012/08/05</h3>
+<h3 id="_2012_08_05">2.4. 2012/08/05</h3>
 <div class="literalblock">
 <div class="content">
 <pre><code>Version 0.2.3.1
@@ -907,7 +925,7 @@ fix a serious emulation's bug.</code></pre>
 </div></div>
 </div>
 <div class="sect2">
-<h3 id="_2012_08_04">2.4. 2012/08/04</h3>
+<h3 id="_2012_08_04">2.5. 2012/08/04</h3>
 <div class="literalblock">
 <div class="content">
 <pre><code>Version 0.2.3.0
@@ -922,7 +940,7 @@ Fix some bugs.</code></pre>
 </div></div>
 </div>
 <div class="sect2">
-<h3 id="_2012_07_15">2.5. 2012/07/15</h3>
+<h3 id="_2012_07_15">2.6. 2012/07/15</h3>
 <div class="literalblock">
 <div class="content">
 <pre><code>Version 0.2.2.2
@@ -945,7 +963,7 @@ Fix some bugs.</code></pre>
 </div></div>
 </div>
 <div class="sect2">
-<h3 id="_2012_05_31">2.6. 2012/05/31</h3>
+<h3 id="_2012_05_31">2.7. 2012/05/31</h3>
 <div class="literalblock">
 <div class="content">
 <pre><code>Version 0.2.2.1
@@ -962,7 +980,7 @@ More precise emulation.</code></pre>
 </div></div>
 </div>
 <div class="sect2">
-<h3 id="_2012_05_23">2.7. 2012/05/23</h3>
+<h3 id="_2012_05_23">2.8. 2012/05/23</h3>
 <div class="literalblock">
 <div class="content">
 <pre><code>Version 0.2.2.0
@@ -978,7 +996,7 @@ Disable ShellRPC plugin.</code></pre>
 </div></div>
 </div>
 <div class="sect2">
-<h3 id="_2012_05_05">2.8. 2012/05/05</h3>
+<h3 id="_2012_05_05">2.9. 2012/05/05</h3>
 <div class="literalblock">
 <div class="content">
 <pre><code>Version 0.2.1.1
@@ -987,7 +1005,7 @@ Improve performance.</code></pre>
 </div></div>
 </div>
 <div class="sect2">
-<h3 id="_2012_04_18">2.9. 2012/04/18</h3>
+<h3 id="_2012_04_18">2.10. 2012/04/18</h3>
 <div class="literalblock">
 <div class="content">
 <pre><code>Version 0.2.0.0
@@ -997,7 +1015,7 @@ Improve performance.</code></pre>
 </div></div>
 </div>
 <div class="sect2">
-<h3 id="_2012_04_15">2.10. 2012/04/15</h3>
+<h3 id="_2012_04_15">2.11. 2012/04/15</h3>
 <div class="literalblock">
 <div class="content">
 <pre><code>Version 0.1.7.2
@@ -1005,7 +1023,7 @@ Important bug fix, Now it works en_US locale, sorry!</code></pre>
 </div></div>
 </div>
 <div class="sect2">
-<h3 id="_2012_04_08">2.11. 2012/04/08</h3>
+<h3 id="_2012_04_08">2.12. 2012/04/08</h3>
 <div class="literalblock">
 <div class="content">
 <pre><code>Now version 0.1.7.1 available.
@@ -1694,21 +1712,12 @@ saveprofileのような保存操作はとくに必要ありません。</p></div
 <h4 id="_外観の設定">9.3.3. 外観の設定</h4>
 <div class="sect4">
 <h5 id="_fgcolor">fgcolor</h5>
-<div class="paragraph"><p>前景色を設定します。</p></div>
+<div class="paragraph"><p>パレット色を設定します。</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><code>fgcolor [色番号] [CSS color]</code></pre>
+<pre><code>changepallet [色番号] [CSS color]</code></pre>
 </div></div>
-<div class="paragraph"><p>[色番号]に対応する前景色パレットに、[CSS color]で表現される色が設定・適用されます。</p></div>
-</div>
-<div class="sect4">
-<h5 id="_bgcolor">bgcolor</h5>
-<div class="paragraph"><p>背景色を設定します。</p></div>
-<div class="listingblock">
-<div class="content">
-<pre><code>bgcolor [色番号] [CSS color]</code></pre>
-</div></div>
-<div class="paragraph"><p>[色番号]に対応する背景色パレットに、[CSS color]で表現される色が設定・適用されます。</p></div>
+<div class="paragraph"><p>[色番号]に対応するパレットに、[CSS color]で表現される色が設定・適用されます。</p></div>
 <div class="imageblock">
 <div class="content">
 <img src="images/bgcolor.png" alt="images/bgcolor.png" width="780" />
@@ -3497,7 +3506,7 @@ twitter: <a href="http://twitter.com/kefir_">http://twitter.com/kefir_</a></p></
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2012-09-23 16:54:25 JST
+Last updated 2012-09-23 17:17:42 JST
 </div>
 </div>
 </body>
