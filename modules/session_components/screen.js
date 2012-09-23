@@ -567,6 +567,75 @@ ScreenSequenceHandler.definition = {
   },
 
   /**
+   * DECERA - Erase Rectangular Area
+   * 
+   * This control function erases characters from the specified rectangular
+   * area in page memory. When an area is erased, DECERA replaces all
+   * character positions with the space character (2/0). DECERA erases
+   * character values and visual attributes from the specified area.
+   * DECERA does not erase line attributes.
+   * 
+   * Available in: VT Level 4 mode only
+   *
+   * Format
+   *
+   * CSI   Pt    ;     Pl    ;     Pb    ;     Pr    $     z
+   * 9/11  3/n   3/11  3/n   3/11  3/n   3/11  3/n   2/4   7/10
+   *
+   * Parameters
+   * 
+   * Pt, Pl, Pb, and Pr
+   * define the rectangular area to be erased:
+   * 
+   * Pt is the top-line border. Pt must be less than or equal to Pb.
+   * Default: Pt = 1.
+   * 
+   * Pl is the left-column border. Pl must be less than or equal to Pr.
+   * Default: Pl = 1.
+   * 
+   * Pb is the bottom-line border.
+   * Default: Pb = the last line of the active page.
+   * 
+   * Pr is the right-column border.
+   *
+   * Default: Pr = the last column of the active page.
+   *
+   * Notes on DECERA
+   * 
+   *     The coordinates of the rectangular area are affected by the setting
+   *     of origin mode (DECOM).
+   *     DECERA is not affected by the page margins.
+   *     If the value of Pt, Pl, Pb, or Pr exceeds the width or height of the
+   *     active page, then the value is treated as the width or height of that
+   *     page.
+   *     DECERA does not change the active cursor position.
+   */
+  "[profile('vt100'), sequence('CSI %d$z')]":
+  function DECERA(n1, n2, n3, n4) 
+  { // Erase Rectangle Area
+    var screen = this._screen,
+        top = (n1 || 1) - 1,
+        left = (n2 || 1) - 1,
+        bottom = (n3 || 1) - 1,
+        right = (n4 || 1) - 1;
+
+    if (top >= bottom || left >= right) {
+      throw coUtils.Debug.Exception(
+        _("Invalid arguments detected in %s [%s]."),
+        arguments.callee.name, Array.slice(arguments));
+    }
+
+    if (bottom > screen.height) {
+      bottom = screen.height;
+    }
+    if (right > screen.width) {
+      right = screen.width;
+    }
+
+    screen.eraseRectangle(top, left, bottom, right);
+  },
+
+  /**
    *
    * EL — Erase in Line
    * 
@@ -859,6 +928,33 @@ ScreenSequenceHandler.definition = {
   },
 
   /**
+   * HPB — Horizontal Position Backward
+   * 
+   * Inquire as to the amount of free memory for programmable key operations.
+   *
+   * Format
+   *
+   * CSI    Pn    j
+   * 9/11   3/n   6/10
+   *
+   * @param {Number} n indicates horizontal position.
+   *
+   * Parameter default value: Pn = 1
+   *
+   * Description
+   * 
+   * HPB causes the active data position to be moved by n character positions
+   * in the data component in the direction opposite to that of the character
+   * progression, where n equals the value of Pn.
+   *
+   */
+  "[profile('vt100'), sequence('CSI %da')]":
+  function HPB(n) 
+  { // 
+    this.cursorBackward(n || 1);
+  },
+
+  /**
    * VPA—Vertical Line Position Absolute
    * 
    * VPA inquires as to the amount of free memory for programmable key operations.
@@ -891,6 +987,8 @@ ScreenSequenceHandler.definition = {
   /**
    * VPR — Vertical Position Relative
    *
+   * @ref http://vt100.net/docs/vt520-rm/
+   *
    * VPR inquires as to the amount of free memory for programmable key 
    * operations.
    *
@@ -908,6 +1006,7 @@ ScreenSequenceHandler.definition = {
    * horizontal position at n-th following vertical position. If an attempt 
    * is made to move the active position below the last line, the active 
    * position stops at the last line.
+   *
    */
   "[profile('vt100'), sequence('CSI %de')]":
   function VPR(n) 
@@ -916,25 +1015,28 @@ ScreenSequenceHandler.definition = {
   },
 
   /**
-   * VPR — Vertical Position Relative
+   * VPB — Vertical Position Relative
    *
    * @ref http://vt100.net/docs/vt520-rm/
+   *
+   * VPB - line position backward
    *
    * Move vertically Pn lines in the current column. The default value is 1.
    *
    * Format
    *
-   * CSI   Pn   e 
-   * 9/11  3/n  6/5
+   * CSI   Pn   k 
+   * 9/11  3/n  6/11
    *
    * Parameters
    * @param {Number} n number of lines to move.
    *
    * Description
-   * VPR causes the active position to be moved to vertically corresponding Pn 
-   * lines following the current position of the active line. If an attempt is 
-   * made to move the active position beyond the last line, the active position 
-   * stops at the last line.
+   *
+   * Parameter default value: Pn = 1
+   * VPB causes the active data position to be moved by n line positions in
+   * the data component in a direction opposite to that of the line
+   * progression, where n equals the value of Pn.
    *
    */
   "[profile('vt100'), sequence('CSI %dk')]":
@@ -1514,8 +1616,9 @@ Resizable.definition = {
     this._scroll_bottom -= n;
 
     // fix cursor position.
-    if (this.cursor.positionY >= this._height)
+    if (this.cursor.positionY >= this._height) {
       this.cursor.positionY = this._height - 1;
+    }
   },
   
   /** Create new lines and Push after last line. */
@@ -2209,8 +2312,12 @@ Screen.definition = {
         line;
    
     line = lines[positionY];
-    line.erase(cursor.positionX, width, attr);
+    if (!line) {
+      positionY = cursor.positionY = height - 1;
+      line = lines[positionY];
+    }
 
+    line.erase(cursor.positionX, width, attr);
     for (i = positionY + 1; i < height; ++i) {
       line = lines[i];
       line.erase(0, width, attr);
@@ -2232,6 +2339,24 @@ Screen.definition = {
     for (i = 0; i < length; ++i) {
       line = lines[i];
       line.erase(0, width, attr);
+      line.type = coUtils.Constant.LINETYPE_NORMAL;
+    }
+  },
+
+  /** Erase every cells in rectanglar area. */
+  "[type('Undefined')] eraseRectangle":
+  function eraseRectangle(top, left, bottom, right) 
+  {
+    var cursor = this.cursor,
+        lines = this._lines,
+        attr = cursor.attr,
+        length = lines.length,
+        i = top,
+        line;
+
+    for (; i < bottom; ++i) {
+      line = lines[i];
+      line.erase(left, right, attr);
       line.type = coUtils.Constant.LINETYPE_NORMAL;
     }
   },
