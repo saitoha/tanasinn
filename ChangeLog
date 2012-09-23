@@ -6,6 +6,7 @@
 	* Support 8bit input mode
 	* Add PopClip integration
 	* Enable 3D Transform plugin by default
+	* Fix some bugs.
 
 2012-08-19 Hayaki Saito <user@zuse.jp>
 
