@@ -35,17 +35,13 @@ Environment.definition = {
   /** @property bin_path */
   get bin_path()
   {
-    var broker;
-
-    broker = this._broker;
+    var broker = this._broker;
     return broker.bin_path;
   },
 
   set bin_path(value)
   {
-    var broker;
-
-    broker = this._broker;
+    var broker = this._broker;
     broker.bin_path = value;
   },
 
@@ -53,17 +49,13 @@ Environment.definition = {
   /** @property runtime_path */
   get runtime_path()
   {
-    var broker;
-    
-    broker = this._broker;
+    var broker = this._broker;
     return broker.runtime_path;
   },
 
   set runtime_path(value)
   {
-    var broker;
-
-    broker = this._broker;
+    var broker = this._broker;
     broker.runtime_path = value;
   },
 
