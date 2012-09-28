@@ -80,30 +80,6 @@ DRCSBuffer.definition = {
     }
   },
 
-  "[subscribe('sequence/g0'), pnp]":
-  function onSCSG0(mode) 
-  {
-    this._g0 = mode;
-    this._map = this._map || {};
-    if (this._map[mode]) {
-      this.sendMessage("event/drcs-state-changed/g0", this._map[mode]);
-    } else {
-      this.sendMessage("event/drcs-state-changed/g0", null);
-    }
-  },
-
-  "[subscribe('sequence/g1'), pnp]":
-  function onSCSG1(mode) 
-  {
-    this._g1 = mode;
-    this._map = this._map || {};
-    if (this._map[mode]) {
-      this.sendMessage("event/drcs-state-changed/g1", this._map[mode]);
-    } else {
-      this.sendMessage("event/drcs-state-changed/g1", null);
-    }
-  },
-
   getDRCSInfo: function getDRCSInfo(code) 
   {
     var drcs_info;
@@ -127,7 +103,7 @@ DRCSBuffer.definition = {
         canvas;
 
     //           Pfn    Pcn      Pe      Pcmw     Pw      Pt      Pcmh     Pcss    Dscs
-    pattern = /^([01]);([0-9]+);([012]);([0-9]+);([012]);([012]);([0-9]+);([01])\{\s*([0-~])([\?-~\/;\n\r]+)$/;
+    pattern = /^([01]);([0-9]+);([012]);([0-9]+);([012]);([012]);([0-9]+);([01])\{(\s*[0-~])([\?-~\/;\n\r]+)$/;
     match = data.match(pattern);
 
     if (null === match) {
