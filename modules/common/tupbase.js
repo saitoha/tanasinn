@@ -361,8 +361,9 @@ Class.prototype = {
 
     constructor = function()
     {
-      if (this.initialize)
+      if (this.initialize) {
         return this.initialize.apply(this, arguments);
+      }
       return this;
     };
 
@@ -650,6 +651,7 @@ Component.definition = {
         }, 
         this);
     }
+
     broker.subscribe(
       "get/components", 
       function getInstance(instances)
@@ -734,6 +736,8 @@ var Plugin = new Abstruct().extends(Component);
 Plugin.definition = {
 
   __enabled: false,
+
+  "[persistable] enabled_when_startup": true,
 
   /** constructor */
   initialize: function initialize(broker)
@@ -937,11 +941,12 @@ XPCOMFactory.definition = {
   QueryInterface: function QueryInterface(a_IID)
   {
     if (!a_IID.equals(Components.interafaces.nsIFactory) 
+     && !a_IID.equals(Components.interafaces.nsIObserver)
      && !a_IID.equals(Components.interafaces.nsISupports))
       throw Components.results.NS_ERROR_NOT_IMPLEMENTED;
     return this;
   },
-
+ 
 }; // class XPCOMFactory
 
 /** @constructor CoClass
