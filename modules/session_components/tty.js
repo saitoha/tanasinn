@@ -87,25 +87,6 @@
  */
 
 /**
- * @concept ControllerConcept
- */
-var ControllerConcept = new Concept();
-ControllerConcept.definition = {
-
-  id: "Controller",
-
-// message concept
-  "<@event/broker-stopping> :: Undefined":
-  _("Close Control channel and stop communication with TTY device."),
-
-// signature concept
-  "post :: String -> Undefined":
-  _("Posts a command message asynchronously."),
-
-}; // ControllerConcept
-
-
-/**
  * @concept IOManagerConcept
  */
 var IOManagerConcept = new Concept();
@@ -123,290 +104,6 @@ IOManagerConcept.definition = {
 
 }; // IOManagerConcept
 
-
-/**
- * @class Controller
- */
-var Controller = new Class().extends(Component).requires("Controller");
-Controller.definition = {
-
-  id: "tty_controller",
-
-  _screen: null,
-  _input: null,
-  _output: null,
-
-  "[persistable] beacon_interval": 2000,
-
-  /** constructor */
-  "[subscribe('@initialized/screen'), enabled]":
-  function onLoad(screen)
-  {
-    this._screen = screen;
-  },
-
-  /** Posts a command message asynchronously. 
-   * @param {String} command command message string for external program. 
-   */
-  "[type('String -> Undefined')]":
-  function post(command) 
-  {
-    if (this._output) {
-      this._output.write(command, command.length);
-    }
-  },
-
-  /** Close Control channel and stop communication with TTY device.
-   */
-  "[subscribe('@event/broker-stopping'), type('Undefined'), enabled]":
-  function stop() 
-  {
-    this.post("disconnect\n");
-
-    if (null !== this._input) {
-      this._input.close();
-      this._input = null;
-    }
-
-    if (null !== this._output) {
-      this._output.close();
-      this._output = null;
-    }
-
-    if (null !== this._pump) {
-      this._pump.cancel(0);
-      this._pump = null;
-    }
-
-    this._screen = null;
-
-    coUtils.Debug.reportMessage(
-      _("Resources in Controller have been cleared."));
-  },
-
-  /**
-   * Changes screen resolution of TTY device.
-   * @param width new horizontal resolution of TTY device.
-   * @param height new vertical resolution of TTY device.
-   */
-  "[subscribe('event/screen-size-changed')]": 
-  function resize(size) 
-  {
-    var width = coUtils.Text.base64encode(size.column),
-        height = coUtils.Text.base64encode(size.row),
-        command = coUtils.Text.format("resize %s %s\n", width, height);
-
-    this.post(command);
-  },
-
-  "[subscribe('@command/kill')]": 
-  function kill()
-  {
-    this.post("kill\n");
-  },
-
-  /** flow controll 
-   * Suspend/Resume output.
-   * @param {Boolean} flag true: resume output. false: suspend output.
-   */
-  "[subscribe('command/flow-control')]":
-  function flowControl(flag) 
-  {
-    this.post(flag ? "xon\n": "xoff\n");
-  },
-
-  "[subscribe('event/{control & io}-socket-ready'), enabled]":
-  function connect(control_port, io_port) 
-  {
-    var self = this,
-        timer;
-
-    this._start(control_port);
-
-    timer = coUtils.Timer.setInterval(
-      function timerProc()
-      {
-        if (self.post) {
-          self.post("beacon\n");
-        } else {
-          timer.cancel();
-          self = null;
-          timer = null;
-        }
-      }, self.beacon_interval);
-
-    this._send_initial_data(io_port);
-    this.sendMessage("initialized/tty", this);
-  },
-
-// nsIRequestObserver implementation.
-  /**
-   * Called to signify the beginning of an asynchronous request.
-   *
-   * @param aRequest request being observed
-   * @param aContext user defined context
-   *
-   * An exception thrown from onStartRequest has the side-effect of
-   * causing the request to be canceled.
-   */
-  onStartRequest: function onStartRequest(request, context)
-  {
-    coUtils.Debug.reportMessage(_("Controller::onStartRequest called. "));
-  },
-
-  /**
-   * Called to signify the end of an asynchronous request.  This
-   * call is always preceded by a call to onStartRequest.
-   *
-   * @param aRequest request being observed
-   * @param aContext user defined context
-   * @param aStatusCode reason for stopping (NS_OK if completed successfully)
-   *
-   * An exception thrown from onStopRequest is generally ignored.
-   */
-  onStopRequest: function onStopRequest(request, context, status)
-  {
-    coUtils.Debug.reportMessage(
-      _("Controller::onStopRequest called. status: %s."), status);
-    try {
-      this._broker.stop();
-    } catch (e) { 
-      coUtils.Debug.reportError(e)
-    }
-  },
-
-// nsIStreamListener implementation
-   /**
-    * Called when the next chunk of data (corresponding to the request) may
-    * be read without blocking the calling thread.  The onDataAvailable impl
-    * must read exactly |aCount| bytes of data before returning.
-    *
-    * @param aRequest request corresponding to the source of the data
-    * @param aContext user defined context
-    * @param aInputStream input stream containing the data chunk
-    * @param aOffset
-    *        Number of bytes that were sent in previous onDataAvailable calls
-    *        for this request. In other words, the sum of all previous count
-    *        parameters.
-    *        If that number is greater than or equal to 2^32, this parameter
-    *        will be PR_UINT32_MAX (2^32 - 1).
-    * @param aCount number of bytes available in the stream
-    *
-    * NOTE: The aInputStream parameter must implement readSegments.
-    *
-    * An exception thrown from onDataAvailable has the side-effect of
-    * causing the request to be canceled.
-    */
-  onDataAvailable: 
-  function onDataAvailable(request, context, input, offset, count) 
-  {
-    var data = context.readBytes(count),
-        command_list = data.split(/[\n\r]/),
-        command,
-        argv,
-        operation, 
-        arg,
-        screen,
-        output,
-        answer,
-        reply;
-
-    command_list.pop();
-    try {
-      do {
-        command = command_list.shift();
-        argv = command.split(" ");
-        operation = argv.shift();
-        if ("request" === operation) {
-          arg = coUtils.Text.base64decode(argv.shift());
-          screen = this._screen;
-          output = this._output;
-          if ("column" === arg) {
-            answer = coUtils.Text.base64encode(screen.width)
-            reply = coUtils.Text.format("answer %s\n", answer);
-            output.write(reply, reply.length);
-          } else if ("rows" === arg) {
-            answer = coUtils.Text.base64encode(screen.height)
-            reply = coUtils.Text.format("answer %s\n", answer);
-            output.write(reply, reply.length);
-          }
-        } else {
-          coUtils.Debug.reportError(_("Unknown command: [%s]."), command);
-        }
-      } while (command_list.length)
-    } catch (e) { 
-      coUtils.Debug.reportError(e)
-    }
-  },
-
-// private
-  _send_initial_data: function _send_initial_data(io_port)
-  {
-    var broker = this._broker,
-        sessiondb_path, 
-        message;
-
-    sessiondb_path = coUtils.File
-      .getFileLeafFromVirtualPath(broker.runtime_path + "/sessions.txt").path;
-
-    if ("WINNT" === coUtils.Runtime.os) {
-      sessiondb_path 
-        = sessiondb_path
-          .replace(/\\/g, "/")
-          .replace(
-            /^([a-zA-Z]):/, 
-            function() "/cygdrive/" + arguments[1].toLowerCase())
-          ;
-    }
-
-    message = [
-      io_port, 
-      broker.request_id,
-      coUtils.Text.base64encode(sessiondb_path),
-    ].join(" ");
-
-    this.post(message);
-
-    this.flowControl.enabled = true;
-    this.post.enabled = true;
-    this.resize.enabled = true;
-    this.kill.enabled = true;
-
-  },
-
-  /** Starts TCP client socket, and listen it asynchronously.
-   */
-  _start: function _start(control_port) 
-  {
-    var transport, istream, ostream, scriptable_input_stream, pump;
-
-    transport = Components
-      .classes["@mozilla.org/network/socket-transport-service;1"]
-      .getService(Components.interfaces.nsISocketTransportService)
-      .createTransport(null, 0, "127.0.0.1", control_port, null),
-
-    istream = transport.openInputStream(0, 128, 1);
-
-    ostream = transport.openOutputStream(0, 128, 1);
-
-    scriptable_input_stream = Components
-      .classes["@mozilla.org/scriptableinputstream;1"]
-      .createInstance(Components.interfaces.nsIScriptableInputStream);
-    scriptable_input_stream.init(istream);
-
-    this._input = scriptable_input_stream;
-    this._output = ostream;
-
-    pump = Components
-      .classes["@mozilla.org/network/input-stream-pump;1"]
-      .createInstance(Components.interfaces.nsIInputStreamPump);
-    pump.init(istream, -1, -1, 0, 0, false);
-    pump.asyncRead(this, scriptable_input_stream);
-    this._pump = pump;
-  },
-
-
-}; // Controller
 
 /**
  * @class IOManager
@@ -431,14 +128,8 @@ IOManager.definition = {
   "[subscribe('@event/broker-started'), enabled]":
   function onLoad(broker) 
   {
-    var socket;
+    var socket = coUtils.Components.createLoopbackServerSocket(this);
 
-    socket = Components
-      .classes["@mozilla.org/network/server-socket;1"]
-      .createInstance(Components.interfaces.nsIServerSocket);
-
-    socket.init(/* port */ -1, /* loop back */ true, /* connection count */ 1);
-    socket.asyncListen(this);
     this._socket = socket;
     this._port = socket.port;
     this.send.enabled = true;
@@ -523,7 +214,10 @@ IOManager.definition = {
   onSocketAccepted: 
   function onSocketAccepted(serv, transport) 
   {
-    var ostream, istream, binary_stream, stream_pump;
+    var ostream,
+        istream,
+        binary_stream,
+        stream_pump;
 
     try {
       coUtils.Debug.reportMessage(
@@ -534,21 +228,12 @@ IOManager.definition = {
       coUtils.Debug.reportMessage(_("Started to observe incoming data."));
 
       // handle given stream as binary stream (null characters are allowed).
-      binary_stream = Components
-        .classes["@mozilla.org/binaryinputstream;1"]
-        .createInstance(Components.interfaces.nsIBinaryInputStream);
-      binary_stream.setInputStream(istream);
-      this._binary_stream = binary_stream;
+      this._binary_stream = coUtils.Components.createBinaryInputStream(istream);
 
       // make "stream pump" object and listen it.
-      stream_pump = Components
-        . classes["@mozilla.org/network/input-stream-pump;1"]
-        .createInstance(Components.interfaces.nsIInputStreamPump);
-      stream_pump.init(istream, -1, -1, 0, 0, false);
-      stream_pump.asyncRead(this, binary_stream);
-      this._stream_pump = stream_pump;
+      this._stream_pump = coUtils.Components.createStreamPump(istream, this);
 
-      this._input = binary_stream;
+      this._input = this._binary_stream;
       this._output = ostream;
 
       this.send.enabled = true;
@@ -604,7 +289,7 @@ IOManager.definition = {
     coUtils.Debug.reportMessage(
       _("onStopRequest called. status: %s"), status);
     try {
-      this._broker.stop();
+      this.sendMessage("command/stop");
     } catch (e) { 
       coUtils.Debug.reportError(e)
     }
@@ -635,7 +320,7 @@ IOManager.definition = {
   onDataAvailable: 
   function onDataAvailable(request, context, input, offset, count)
   {
-    var data = context.readBytes(count);
+    var data = this._input.readBytes(count);
 
     //coUtils.Timer.setTimeout(
     //  function timerProc()
@@ -664,32 +349,28 @@ ExternalDriver.definition = {
   /** Kill target process. */
   kill: function kill(pid) 
   {
-    var kill_path, args, broker, cygwin_root, external_process, 
-        runtime, process;
+    var kill_path,
+        args,
+        broker = this._broker,
+        cygwin_root,
+        external_process, 
+        runtime,
+        process;
 
     if ("WINNT" === coUtils.Runtime.os) {
-      broker = this._broker;
       cygwin_root = broker.cygwin_root;
       kill_path = broker.cygwin_root + "\\bin\\run.exe";
       args = [ "/bin/kill", "-9", String(pid) ];
     } else { // Darwin, Linux or FreeBSD
       external_process = this._external_process;
-      //if (external_process.isRunning)
-      //  external_process.kill();
       kill_path = "/bin/kill";
       args = [ "-9", String(pid) ];
     }
     // create new localfile object.
-    runtime = Components
-      .classes["@mozilla.org/file/local;1"]
-      .createInstance(Components.interfaces.nsILocalFile);
-    runtime.initWithPath(kill_path);
+    runtime = coUtils.Components.createLocalFile(kill_path);
 
     // create new process object.
-    process = Components
-      .classes["@mozilla.org/process/util;1"]
-      .createInstance(Components.interfaces.nsIProcess);
-    process.init(runtime);
+    process = coUtils.Components.createProcessFromFile(runtime);
 
     try {
       process.run(/* blocking */ true, args, args.length);
@@ -712,10 +393,14 @@ ExternalDriver.definition = {
   "[subscribe('command/start-ttydriver-process'), enabled]": 
   function start(connection_port) 
   {
-    var broker, executable_path, cygwin_root, runtime, 
-        external_process, script_absolute_path, args, python_path;
-
-    broker = this._broker;
+    var broker = this._broker,
+        executable_path,
+        cygwin_root,
+        runtime, 
+        external_process,
+        script_absolute_path,
+        args,
+        python_path;
 
     if ("WINNT" === coUtils.Runtime.os) {
       cygwin_root = broker.cygwin_root;
@@ -723,19 +408,16 @@ ExternalDriver.definition = {
     } else {
       executable_path = this.request("get/python-path");
     }
+
     // create new localfile object.
-    runtime = Components
-      .classes["@mozilla.org/file/local;1"]
-      .createInstance(Components.interfaces.nsILocalFile);
-    runtime.initWithPath(executable_path);
+    runtime = coUtils.Components.createLocalFile(executable_path);
+
     if (!runtime.exists() || !runtime.isExecutable()) {
       throw coUtils.Debug.Exeption(_("Could not launch python: file not found."));
     }
+
     // create new process object.
-    external_process = Components
-      .classes["@mozilla.org/process/util;1"]
-      .createInstance(Components.interfaces.nsIProcess);
-    external_process.init(runtime);
+    external_process = coUtils.Components.createProcessFromFile(runtime);
     this._external_process = external_process;
 
     // get script absolute path from abstract path.
@@ -768,7 +450,7 @@ ExternalDriver.definition = {
 
   observe: function observe(subject, topic, data)
   {
-    this._broker.stop();
+    this.sendMessage("command/stop");
   },
 
   /** Kills handling process if it was alive. */
@@ -816,6 +498,8 @@ SocketTeletypeService.definition = {
   "[persistable] enabled_when_startup": true,
 
   _socket: null,
+  _pump: null,
+  _settings: null,
 
   /** Installs itself.
    *  @param broker {Broker} A broker object.
@@ -823,36 +507,6 @@ SocketTeletypeService.definition = {
   "[install]":
   function install(broker) 
   {
-    var request_id, record, socket;
-
-    if (0 === broker.command.indexOf("&")) {
-
-      request_id = broker.command.substr(1);
-      record = coUtils.Sessions.get(request_id);
-
-      this.sendMessage("event/control-socket-ready", Number(record.control_port));
-
-      this._pid = Number(record.pid);
-
-      coUtils.Sessions.remove(broker, request_id);
-      coUtils.Sessions.update();
-
-      this.sendMessage("command/attach-session", request_id);
-
-    } else {
-
-      socket = Components
-        .classes["@mozilla.org/network/server-socket;1"]
-        .createInstance(Components.interfaces.nsIServerSocket);
-  
-      // initialize server socket.
-      socket.init(/* port */ -1, /* loop back */ true, /* connection count */ 1);
-      socket.asyncListen(this);
-      this._socket = socket;
-  
-      // nsIProcess::runAsync.
-      this.sendMessage("command/start-ttydriver-process", socket.port); 
-    }
   },
 
   /** Uninstalls itself.
@@ -869,15 +523,50 @@ SocketTeletypeService.definition = {
     }
     this._socket = null;
     this._pump = null;
-    coUtils.Debug.reportMessage(_("Resources in TTY have been cleared."));
+    this._settings = null;
 
+    coUtils.Debug.reportMessage(_("Resources in TTY have been cleared."));
   },
 
+  "[subscribe('@command/start-tty-service'), pnp]":
+  function startService(settings)
+  {
+    var record,
+        socket,
+        request_id;
+
+    this._settings = settings;
+
+    if (0 === settings.command.indexOf("&")) {
+
+      request_id = settings.command.substr(1);
+      record = coUtils.Sessions.get(request_id);
+
+      this.sendMessage(
+        "event/control-socket-ready",
+        Number(record.control_port));
+
+      this._pid = Number(record.pid);
+
+      coUtils.Sessions.remove(this._broker, request_id);
+      coUtils.Sessions.update();
+
+      this.sendMessage("command/attach-session", request_id);
+
+    } else {
+
+      this._socket = coUtils.Components.createLoopbackServerSocket(this);
+  
+      // nsIProcess::runAsync.
+      this.sendMessage("command/start-ttydriver-process", this._socket.port); 
+    }
+  },
+ 
   /**
    * Attach to an existing session
    * @param {Number} request_id the ID of the session to attach to.
    */
-  "[subscribe('@command/attach-session'), enabled]":
+  "[subscribe('@command/attach-session'), pnp]":
   function attachSession(request_id)
   {
     var backup_data_path = this._broker.runtime_path + "/persist/" + request_id + ".txt",
@@ -912,7 +601,8 @@ SocketTeletypeService.definition = {
     data = JSON.stringify(context);
 
     coUtils.IO.writeToFile(path, data);
-    this._broker.stop();
+
+    this.sendMessage("command/stop");
   },
 
   "[subscribe('sequence/osc/97'), pnp]":
@@ -921,32 +611,33 @@ SocketTeletypeService.definition = {
     this._ttyname = ttyname;
   },
 
+// nsIServerSocketListener implementation
+  /**
+   * nsIServerSocketListener::onSocketAccepted
+   *
+   * This method is called when a client connection is accepted.
+   *
+   * @param serv
+   *        The server socket.
+   * @param transport
+   *        The connected socket transport.
+   */
   onSocketAccepted: function onSocketAccepted(serv, transport) 
   {
-    var broker = this._broker,
-        istream = transport.openInputStream(0, 1024, 1),
+    var istream = transport.openInputStream(0, 1024, 1),
         ostream = transport.openOutputStream(0, 1024, 1),
-        message = [broker.command, broker.term]
-          .map(function(value) coUtils.Text.base64encode(value))
-          .join(" "),
-        scriptable_input_stream, // nsIScriptableInputStream
-        pump;                    // nsIInputStreamPump
+        settings = this._settings,
+        message = coUtils.Text.base64encode(settings.command) + " "
+                + coUtils.Text.base64encode(settings.term) + " "
+                + coUtils.Text.base64encode(settings.locale),
+        scriptable_stream = coUtils.Components.createScriptableInputStream(istream),
+        pump = coUtils.Components.createStreamPump(istream, this);
 
     ostream.write(message, message.length);
 
-    scriptable_input_stream = Components
-      .classes["@mozilla.org/scriptableinputstream;1"]
-      .createInstance(Components.interfaces.nsIScriptableInputStream);
-    scriptable_input_stream.init(istream);
-
-    pump = Components
-      .classes["@mozilla.org/network/input-stream-pump;1"]
-      .createInstance(Components.interfaces.nsIInputStreamPump);
-    pump.init(istream, -1, -1, 0, 0, false);
-    pump.asyncRead(this, null);
 
     this._pump = pump;
-    this._input = scriptable_input_stream;
+    this._input = scriptable_stream;
   },
 
   /**
@@ -994,18 +685,44 @@ SocketTeletypeService.definition = {
   {
   },
 
+// nsIStreamListener
+  /**
+   * Called when the next chunk of data (corresponding to the request) may
+   * be read without blocking the calling thread.  The onDataAvailable impl
+   * must read exactly |aCount| bytes of data before returning.
+   *
+   * @param request request corresponding to the source of the data
+   * @param context user defined context
+   * @param input input stream containing the data chunk
+   * @param offset
+   *        Number of bytes that were sent in previous onDataAvailable calls
+   *        for this request. In other words, the sum of all previous count
+   *        parameters.
+   * @param count number of bytes available in the stream
+   *
+   * NOTE: The aInputStream parameter must implement readSegments.
+   *
+   * An exception thrown from onDataAvailable has the side-effect of
+   * causing the request to be canceled.
+   */
   onDataAvailable: 
   function onDataAvailable(request, context, input, offset, count) 
   {
-    var data = this._input.readBytes(count);
+    var data = this._input.readBytes(count),
+        args = data.split(":"),
+        control_port = Number(args[0]),
+        pid = Number(args[1]),
+        ttyname = args[2],
+        termattr = args[3];
 
     this._input.close();
     this._input = null;
-    var [control_port, pid, ttyname, termattr] = data.split(":");
+
     this.sendMessage("event/termattr-changed", termattr);
-    this._pid = Number(pid);
+    this._pid = pid;
+
     if (control_port) {
-      this.sendMessage("event/control-socket-ready", Number(control_port));
+      this.sendMessage("event/control-socket-ready", control_port);
     } else {
       coUtils.Debug.reportError(_("Failed to connect to ttydriver."));
     }
@@ -1023,6 +740,22 @@ SocketTeletypeService.definition = {
     return this._ttyname;
   },
 
+  /**
+   * Provides runtime type discovery.
+   * @param aIID the IID of the requested interface.
+   * @return the resulting interface pointer.
+   */
+  QueryInterface: function QueryInterface(a_IID)
+  {
+    if (!a_IID.equals(Components.interafaces.nsIRequestObserver) 
+     && !a_IID.equals(Components.interafaces.nsIServerSocketListener)
+     && !a_IID.equals(Components.interafaces.nsIServerSocketListener)
+     && !a_IID.equals(Components.interafaces.nsIStreamListener)
+     && !a_IID.equals(Components.interafaces.nsISupports))
+      throw Components.results.NS_ERROR_NOT_IMPLEMENTED;
+    return this;
+  },
+
 }; // class SocketTeletypeService
 
 /**
@@ -1032,8 +765,6 @@ SocketTeletypeService.definition = {
  */
 function main(broker) 
 {
-  new IOManager(broker);
-  new Controller(broker);
   new ExternalDriver(broker);
   new SocketTeletypeService(broker);
 }
