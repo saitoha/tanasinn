@@ -60,11 +60,16 @@ var KEY_ANSI = {
   "Ctrl 3"        : "\x1b", //  ESC
   "Ctrl \\"       : "\x1c", //  FS
   "Ctrl |"        : "\x1c", //  FS
+  "Ctrl 4"        : "\x1c", //  FS
   "Ctrl ]"        : "\x1d", //  GS
+  "Ctrl 5"        : "\x1d", //  GS
   "Ctrl ^"        : "\x1e", //  RS
+  "Ctrl 6"        : "\x1e", //  RS
   "Ctrl /"        : "\x1f", //  US
   "Ctrl Shift ?"  : "\x1f", //  US
   "Ctrl _"        : "\x1f", //  US
+  "Ctrl 7"        : "\x1f", //  US
+  "Ctrl 8"        : "\x7f", //  DEL
 };
 
 
