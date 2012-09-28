@@ -71,11 +71,8 @@ function generateEntries(paths)
   var file, directory, path, entries;
 
   for ([, path] in Iterator(paths)) {
-    directory = Components
-      .classes["@mozilla.org/file/local;1"]
-      .createInstance(Components.interfaces.nsILocalFile);
     try {
-      directory.initWithPath(path);
+      directory = coUtils.Components.createLocalFile(path);
       if (directory.exists() && directory.isDirectory()) {
         entries = directory.directoryEntries;
         while (entries.hasMoreElements()) {
@@ -111,7 +108,10 @@ ProgramCompleter.definition = {
 
   _getSearchPath: function _getSearchPath()
   {
-    var environment, path, delimiter, paths;
+    var environment,
+        path,
+        delimiter,
+        paths;
 
     // get environment object
     environment = Components
@@ -167,7 +167,8 @@ ProgramCompleter.definition = {
         .map(function(posix_path) 
         {
           return cygwin_root + "\\" + posix_path.replace(/\//g, "\\");
-        }).reduce(function(map, path) 
+        }).reduce(
+          function(map, path) 
           {
             var key;
 
@@ -391,16 +392,10 @@ ProcessManager.definition = {
     }
 
     // create new localfile object.
-    runtime = Components
-      .classes["@mozilla.org/file/local;1"]
-      .createInstance(Components.interfaces.nsILocalFile);
-    runtime.initWithPath(runtime_path);
+    runtime = coUtils.Components.createLocalFile(runtime_path);
 
     // create new process object.
-    process = Components
-      .classes["@mozilla.org/process/util;1"]
-      .createInstance(Components.interfaces.nsIProcess);
-    process.init(runtime);
+    process = coUtils.Components.createProcessFromFile(runtime);
 
     try {
       process.run(/* blocking */ true, args, args.length);
@@ -528,7 +523,11 @@ TextCompletionDisplayDriver.definition = {
         {
           parentNode: rows,
           tagName: "row",
-          style: i === current_index ? "background: #226; color: white;": "",
+          style: i === current_index ? {
+            background: "#226",
+            color: "white",
+          }: {
+          },
           childNodes: [
             {
               tagName: "box",
@@ -558,7 +557,11 @@ TextCompletionDisplayDriver.definition = {
             },
             {
               tagName: "label",
-              style: "font-size: 1em; color: #555; text-shadow: none;",
+              style: {
+                fontSize: "1em",
+                color: "#555",
+                textShadow: "none",
+              },
               value: result.comments && result.comments[i],
               crop: "end",
             },
@@ -582,23 +585,23 @@ SessionsCompletionDisplayDriver.definition = {
 
   getImageSource: function getImageSource(request_id)
   {
-    var broker,
+    var broker = this._broker,
         image_path,
         image_file,
         image_url;
 
     try {
-      broker = this._broker;
       image_path = broker.runtime_path + "/persist/" + request_id + ".png";
       image_file = coUtils.File.getFileLeafFromVirtualPath(image_path);
-      image_url = coUtils.File.getURLSpec(image_file);
-
-      return image_url;
+      if (image_file.exists()) {
+        image_url = coUtils.File.getURLSpec(image_file);
+        return image_url;
+      }
     } catch (e) {
       coUtils.Debug.reportError(e);
     }
 
-    return ""; // TODO: return url for "no image".
+    return null; // TODO: return url for "no image".
   },
 
   drive: function drive(grid, result, current_index) 
@@ -606,7 +609,8 @@ SessionsCompletionDisplayDriver.definition = {
     var rows = grid.appendChild(grid.ownerDocument.createElement("rows")),
         i,
         search_string,
-        completion_text;
+        completion_text,
+        image_url;
 
     for (i = 0; i < result.labels.length; ++i) {
 
@@ -617,59 +621,67 @@ SessionsCompletionDisplayDriver.definition = {
         completion_text = completion_text.substr(0, 20) + "...";
       }
 
-      this.request(
-        "command/construct-chrome", 
-        {
-          parentNode: rows,
-          tagName: "row",
-          style: i === current_index ? {
-            background: "#226",
-            color: "white",
-          }: "",
-          childNodes: [
-            {
-              tagName: "box",
-              style: {
-                fontSize: "1.2em",
-                width: "50%",
-                margin: "0px",
-                overflow: "hidden",
-                paddingLeft: "8px",
-              },
-              childNodes: { 
-                tagName: "image",
-                width: 120,
-                height: 80,
-                style: "border: 1px solid #66f; margin: 9px;",
-                src: this.getImageSource(result.comments[i].request_id),
-              },
+      image_url = this.getImageSource(result.comments[i].request_id);
+
+      if (null !== image_url) {
+        this.request(
+          "command/construct-chrome", 
+          {
+            parentNode: rows,
+            tagName: "row",
+            style: i === current_index ? {
+              background: "#226",
+              color: "white",
+            }: {
             },
-            {
-              tagName: "vbox",
-              style: {
-                fontSize: "1.2em",
-                width: "50%",
-                margin: "0px",
-                overflow: "hidden",
-                paddingLeft: "8px",
+            childNodes: [
+              {
+                tagName: "box",
+                style: {
+                  fontSize: "1.2em",
+                  width: "50%",
+                  margin: "0px",
+                  overflow: "hidden",
+                  paddingLeft: "8px",
+                },
+                childNodes: { 
+                  tagName: "image",
+                  width: 120,
+                  height: 80,
+                  style: {
+                    border: "1px solid #66f",
+                    margin: "9px",
+                  },
+                  src: image_url, 
+                },
               },
-              childNodes: [
-                {
-                  tagName: "html:div",
-                  childNodes: { text: result.comments[i].command },
+              {
+                tagName: "vbox",
+                style: {
+                  fontSize: "1.2em",
+                  width: "50%",
+                  margin: "0px",
+                  overflow: "hidden",
+                  paddingLeft: "8px",
                 },
-                {
-                  tagName: "html:div",
-                  childNodes: { text: result.comments[i].ttyname + " $$" + result.comments[i].pid },
-                },
-                {
-                  tagName: "html:div",
-                  childNodes: { text: result.comments[i].request_id },
-                },
-              ],
-            },
-          ],
-        });
+                childNodes: [
+                  {
+                    tagName: "html:div",
+                    childNodes: { text: result.comments[i].command },
+                  },
+                  {
+                    tagName: "html:div",
+                    childNodes: { text: result.comments[i].ttyname + " $$" + result.comments[i].pid },
+                  },
+                  {
+                    tagName: "html:div",
+                    childNodes: { text: result.comments[i].request_id },
+                  },
+                ],
+              },
+            ],
+          });
+      }
     } // for i
   },
 };
@@ -747,13 +759,16 @@ Launcher.definition = {
   },
 
   get textboxStyle()
-    "font-size: " + this.font_size + ";" +
-    "font-family: " + this.font_family + ";" +
-    "font-weight: " + this.font_weight + ";" +
-    "font-style: " + this.font_style + ";" +
-    "text-shadow: 1px 1px 3px black;" +
-    "width: " + this.textbox_width + ";" +
-    "color: " + this.textbox_color + ";",
+  {
+    return "font-size: " + this.font_size + ";" +
+           "font-family: " + this.font_family + ";" +
+           "font-weight: " + this.font_weight + ";" +
+           "font-style: " + this.font_style + ";" +
+           "text-shadow: 1px 1px 3px black;" +
+           "width: " + this.textbox_width + ";" +
+           "color: " + this.textbox_color + ";"
+           ;
+  },
 
   "[subscribe('event/broker-started'), enabled]":
   function onLoad(desktop)
@@ -862,7 +877,8 @@ Launcher.definition = {
   "[subscribe('command/move-to'), enabled]":
   function moveTo(info)
   {
-    var [left, top] = info;
+    var left = info[0],
+        top = info[1];
 
     this._element.style.left = left + "px";
     this._element.style.top = top + "px";
@@ -885,9 +901,7 @@ Launcher.definition = {
     var broker,
         keydown_handler,
         keyup_handler,
-        self;
-
-    self = this;
+        self = this;
 
     this.onkeypress.enabled = true;
     this.onfocus.enabled = true;
@@ -964,12 +978,14 @@ Launcher.definition = {
       }
       row.style.background = "";
       row.style.color = "";
+      row.style.textShadow = "1px 1px 7px black";
     }
     if (index > -1) {
       row = completion_root.querySelector("rows").childNodes[index];
-      row.style.color = "black";
+      row.style.color = "#000000";
       row.style.background = "-moz-linear-gradient(top, #ddd, #eee)";
       row.style.borderRadius = "4px";
+      row.style.textShadow = "1px 1px 7px white";
 
       try {
         scroll_box = completion_root.parentNode;
@@ -1036,8 +1052,6 @@ Launcher.definition = {
         settled_length,
         settled_text;
 
-    textbox = this._textbox;
-
     if (textbox.boxObject.scrollLeft > 0) {
 //      this._completion.inputField.value = "";
     } else if (result.labels.length > 0) {
@@ -1063,13 +1077,9 @@ Launcher.definition = {
 
         settled_length = this._stem_text.length - result.query.length;
         settled_text = textbox.value.substr(0, settled_length);
-//        this._completion.inputField.value 
-//          = settled_text + completion_text;
       } else {
-//        this._completion.inputField.value = "";
       }
     } else {
-//      this._completion.inputField.value = "";
       this._popup.hidePopup();
     }
   },
@@ -1081,7 +1091,6 @@ Launcher.definition = {
     if (index >= 0) {
       this.select(index);
     }
-    //this.invalidate();
     this.fill();
   },
 
@@ -1092,7 +1101,6 @@ Launcher.definition = {
     if (index >= 0) {
       this.select(index);
     }
-    //this.invalidate();
     this.fill();
   },
 
