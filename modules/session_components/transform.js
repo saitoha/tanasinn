@@ -65,7 +65,9 @@ Vector3d.prototype = {
   /** get dot product for this and other */
   dot: function dot(/* Vector3d */ other)
   {
-    return this.x * other.x + this.y * other.y + this.z * other.z;
+    return this.x * other.x
+         + this.y * other.y
+         + this.z * other.z;
   },
 
   /** get cross product for this and other */
@@ -230,11 +232,7 @@ DragTransform.definition = {
     }
 
     this._begin_point = this.get2DCoordinate(event);
-
-    root_element = this.request("get/root-element");
-    root_element.firstChild.style.MozPerspective 
-      = Math.floor(this._begin_point.abs() * 1.5) + "px";
-
+    this.perspective = Math.floor(this._begin_point.abs() * 1.5);
 
     this.onMouseMove.enabled = true;
     this.onMouseUp.enabled = true;
@@ -252,7 +250,7 @@ DragTransform.definition = {
         matrix = getMatrixFrom2Vectors(a, b);
 
     this._last_matrix = this._matrix.apply(matrix);
-    this._element.style.MozTransform = this._last_matrix.toString();
+    this.transform_matrix = this._last_matrix.toString();
   },
 
   /** alt/shift keydown event handler, enables the dragging helper object */
@@ -338,6 +336,8 @@ Transform.definition = {
   },
 
   "[persistable] enabled_when_startup": true,
+  "[persistable, watchable] transform_matrix": "",
+  "[persistable, watchable] perspective": null,
 
   _matrix: null,
   _element: null,
@@ -361,6 +361,9 @@ Transform.definition = {
       0, 0, 0, 1);
     this._element = root_element.querySelector("#tanasinn_outer_chrome");
     this._element.style.MozTransformStyle = "preserve-3d";
+    if (this.transform_matrix) {
+      this.onTransformMatrixChanged();
+    }
   },
 
   /** Uninstalls itself.
@@ -370,6 +373,16 @@ Transform.definition = {
   function uninstall(broker)
   {
     this._element = null;
+    this._matrix = null;
+    this._width = 0;
+    this._height = 0;
+  },
+
+  "[subscribe('variable-changed/transform.transform_matrix'), pnp]": 
+  function onTransformMatrixChanged() 
+  {
+    this._element.parentNode.style.MozPerspective = this.perspective + "px";
+    this._element.style.MozTransform = this.transform_matrix;
   },
 
   "[subscribe('event/screen-width-changed'), pnp]": 
@@ -383,6 +396,7 @@ Transform.definition = {
   {
     this._height = height;
   },
+
 }; // Transform
 
 
