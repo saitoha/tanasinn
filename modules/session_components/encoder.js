@@ -22,90 +22,25 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-var EncoderInfo = new Class();
-EncoderInfo.definition = {
-
-  initialize: function(broker, converter, charset, title)
-  {
-    broker.subscribe(
-      "get/encoders", 
-      function getEncoders() 
-      {
-        return {
-          charset: charset,
-          converter: converter,
-          title: title,
-        };
-      });
-  },
-};
-
-/**
- * @class MultiEncoder
- */
-var MultiEncoder = new Class().extends(Component);
-MultiEncoder.definition = {
-
-  id: "multiencoder",
-
-  _current_scheme: "UTF-8",
-
-  _converter: null,
-
-  /** constructor */
-  initialize: function initialize(broker) 
-  {
-    var converter_manager, encoder_list, charset, title, info;
-
-    this._converter = Components
-      .classes["@mozilla.org/intl/scriptableunicodeconverter"]
-      .createInstance(Components.interfaces.nsIScriptableUnicodeConverter);
-
-    converter_manager = Components
-      .classes["@mozilla.org/charset-converter-manager;1"]
-      .getService(Components.interfaces.nsICharsetConverterManager);
-
-    encoder_list = converter_manager.getEncoderList();
-
-    // enumerate charcter sets.
-    while (encoder_list.hasMore()) {
-
-      charset = encoder_list.getNext();
-
-      try {
-        try {
-          title = converter_manager.getCharsetTitle(charset);
-        } catch (e) { // fallback
-          title = charset;
-        }
-        new EncoderInfo(broker, this, charset, title);
-      } catch (e) {
-        coUtils.Debug.reportError(e);
-      }
-    }
-  },
-
-  activate: function active(scheme)
-  {
-    this._current_scheme = scheme;
-    this._converter.charset = this._current_scheme;
-  },
-
-  encode: function encode(data)
-  {
-    return this._converter.ConvertFromUnicode(data); 
-  },
-};
-
 
 /**
  * @class Encoder
  *
  */
-var Encoder = new Class().extends(Component);
+var Encoder = new Class().extends(Plugin);
 Encoder.definition = {
 
   id: "encoder",
+
+  getInfo: function getInfo()
+  {
+    return {
+      name: _("Encoder"),
+      version: "0.1",
+      description: _("Encode output data stream to specified format.")
+    };
+  },
+
 
   _parser: null,
   _encoder_map: null,
@@ -115,16 +50,16 @@ Encoder.definition = {
 
   /** Gets character encoding scheme */
   get scheme()
-    this.initial_scheme,
+  {
+    return this.initial_scheme;
+  },
 
   /** Sets character encoding scheme */
   set scheme(value) 
   {
-    var scheme, encoder, message;
-
-    scheme = value;//.toLowerCase();
-
-    encoder = this._encoder_map[scheme].converter;
+    var scheme = value,//.toLowerCase();
+        encoder = this._encoder_map[scheme].converter,
+        message;
 
     if (!encoder) {
       throw coUtils.Debug.Exception(
@@ -137,7 +72,7 @@ Encoder.definition = {
     this._encoder = encoder;
     this.initial_scheme = scheme;
 
-    message = coUtils
+    message = coUtils.Text
       .format(_("Input character encoding changed: [%s]."), scheme);
     this.sendMessage("command/report-status-message", message); 
 
@@ -149,14 +84,16 @@ Encoder.definition = {
     this._cache = {};
 
     this._encoder_map = this.sendMessage("get/encoders")
-      .reduce(function(map, information) 
-      {
-        map[information.charset] = information; 
-        return map;
-      });
+      .reduce(
+        function(map, information) 
+        {
+          map[information.charset] = information; 
+          return map;
+        });
     this.scheme = this.initial_scheme;
 
-    broker.subscribe("change/encoder", 
+    broker.subscribe(
+      "change/encoder", 
       function(scheme) 
       {
         this.scheme = scheme;
@@ -175,7 +112,7 @@ Encoder.definition = {
     return this._encoder.encode(data);
   },
 
-};
+}; // Encoder
 
 /**
  * @fn main
@@ -185,8 +122,6 @@ Encoder.definition = {
 function main(broker) 
 {
   new Encoder(broker);
-  new MultiEncoder(broker);
 }
-
 
 // EOF
