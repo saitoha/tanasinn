@@ -505,7 +505,6 @@ DEC_Swedish_NRC_Set[0x7e] = 0xfc; //
 /* DEC Swiss NRC Set 
  * DSCS = =
  */
-//f9,20,e0,20,e9,e7,ea,ee,e8,20,f4,20,e4,f6,fc,fb
 var DEC_Swiss_NRC_Set = USASCII.slice(0);
 DEC_Swiss_NRC_Set[0x23] = 0xf9; // 
 DEC_Swiss_NRC_Set[0x40] = 0xe0; // 
@@ -522,13 +521,24 @@ DEC_Swiss_NRC_Set[0x7e] = 0xfb; //
 
 
 /**
- * @class DRCConverter
+ * @class NRCSConverter
  *
  */
-var DRCSConverter = new Class().extends(Component);
-DRCSConverter.definition = {
+var NRCSConverter = new Class().extends(Plugin);
+NRCSConverter.definition = {
 
   id: "drcs_converter",
+
+  getInfo: function getInfo()
+  {
+    return {
+      name: _("NRCS Converter"),
+      version: "0.1",
+      description: _("Provides NRCS support.")
+    };
+  },
+
+  "[persistable] enabled_when_startup": true,
 
   _gl: 0,
   _gr: 0,
@@ -552,10 +562,25 @@ DRCSConverter.definition = {
     "=": DEC_Swiss_NRC_Set,
   },
 
-  "[subscribe('event/broker-started'), enabled]": 
-  function onLoad(broker) 
+  /** Installs itself. 
+   *  @param {Broker} broker A Broker object.
+   */
+  "[install]": 
+  function install(broker) 
   {
     this._g = [];
+  },
+
+  /** Uninstalls itself. 
+   *  @param {Broker} broker A Broker object.
+   */
+  "[uninstall]": 
+  function uninstall(broker) 
+  {
+    this._g = null;
+    this._gl = 0;
+    this._gr = 0;
+    this._next = 0;
   },
 
   "[subscribe('event/shift-in'), enabled]": 
@@ -658,28 +683,53 @@ DRCSConverter.definition = {
     this._gr = 1;
   },
 
+  "[subscribe('command/alloc-drcs'), enabled]":
+  function allocDRCS(drcs)
+  {
+    this._charset_table[drcs.dscs] = drcs; 
+  },
+
   convert: function convert(codes) 
   {
-    var main = this._g[this._next || this._gl] || USASCII,
+    var left = this._g[this._next || this._gl] || USASCII,
+        right = this._g[this._gr] || USASCII,
         result,
         i,
         c;
 
+    if (USASCII === left && ISO_8859_Latin1 === right) {
+      return codes;
+    }
+
     this._next = 0;
 
     result = [];
-    for (i = 0; i < codes.length; ++i ) {
-      c = codes[i];
-      if (c < 0x80) { // GL
-        result.push(main[c]);
-      } else {
+
+    if (left.dscs) {
+      for (i = 0; i < codes.length; ++i ) {
+        c = codes[i];
+        if (c < 0x80) { // GL
+          c = 0x100000 | left.dscs.charCodeAt(left.dscs.length - 1) << 8 | c;
+        }
         result.push(c);
       }
+    } else {
+      for (i = 0; i < codes.length; ++i ) {
+        c = codes[i];
+        if (c < 0x80) { // GL
+          result.push(left[c]);
+        } else if (c < 0xff) { // GR
+          result.push(right[c]);
+        } else {
+          result.push(c);
+        }
+      }
     }
+
     return result;
   },
 
-};
+}; // NRCS converter
 
 /**
  * @fn main
@@ -688,7 +738,7 @@ DRCSConverter.definition = {
  */
 function main(broker) 
 {
-  new DRCSConverter(broker);
+  new NRCSConverter(broker);
 }
 
 // EOF
