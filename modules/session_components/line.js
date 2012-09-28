@@ -432,12 +432,10 @@ Cell.definition = {
   },
  
   /** getter of drcs attribute */
- /* 
   get drcs()
   {
-    return this.value >>> ATTR2_DRCS & 0x1;
+    return this.c >>> 20 & 0x1;
   },
-  */
 
   /** setter of drcs attribute */
   /*
@@ -447,7 +445,6 @@ Cell.definition = {
                & ~(0x1 << ATTR2_DRCS) 
                | value << ATTR2_DRCS;
   },
-  */
 
 /*
   get dscs()
@@ -506,7 +503,7 @@ Cell.definition = {
       }
     }
 
-    this.drcs = true;
+//    this.drcs = true;
   },
   /** Compare every bit and detect equality of both objects. */
   equals: function equals(other)
@@ -519,13 +516,13 @@ Cell.definition = {
   clear: function clear() 
   {
     this.value = 0x7;
-    this.drcs = undefined;
+    //this.drcs = undefined;
   },
   
   copyFrom: function copyFrom(rhs) 
   { 
     this.value = rhs.value;
-    this.drcs = rhs.drcs;
+    //this.drcs = rhs.drcs;
   },
       
   /** Write a character with attribute structure. */
@@ -533,14 +530,14 @@ Cell.definition = {
   {
     this.c = c;
     this.value = attr.value;
-    this.drcs = attr.drcs;
+    //this.drcs = attr.drcs;
   }, // write
 
   /** Erase the pair of character and attribute structure */
   erase: function erase(attr) 
   {
     this.c = 0x20;
-    this.drcs = undefined;
+    //this.drcs = undefined;
     if (attr) {
       this.value = attr.value;
     } else {
@@ -883,17 +880,15 @@ Line.definition = {
 
   _getCodePointsFromCells: function _getCodePointsFromCells(cells)
   {
-    var i,
+    var i = 0,
         codes = [],
         cell,
         code;
 
-    for (i = 0; i < cells.length; ++i) {
+    for (; i < cells.length; ++i) {
       cell = cells[i];
       code = cell.c;
-      if (code < 0x10000) {
-        codes.push(code);
-      } else if (code >= 0x100000) {
+      if (code < 0x10000 || 0x100000 <= code) {
         codes.push(code);
       } else {
         if ("object" === typeof code) {
@@ -921,7 +916,7 @@ Line.definition = {
         cells,
         max,
         cell,
-        is_normal,
+        is_ascii,
         range,
         codes;
 
@@ -933,9 +928,9 @@ Line.definition = {
 
       for (current = this.first; current < max; ++current) {
         cell = cells[current];
-        is_normal = cell.c > 0 && cell.c < 256;
+        is_ascii = cell.c > 0 && cell.c < 0x80;
         if (attr) {
-          if (attr.equals(cell) && is_normal && !cell.drcs) {
+          if (attr.equals(cell) && is_ascii && !attr.drcs) {
             continue;
           } else {
             range = cells.slice(start, current);
@@ -948,12 +943,12 @@ Line.definition = {
             };
           } 
         }
-        if (!is_normal) {
+        if (!is_ascii) {
           if (0 === cell.c) {
             cell = cells[current + 1]; // MUST not null
             if (cell) {
               yield { 
-                codes: this._getCodePointsFromCells([ cell ]), 
+                codes: this._getCodePointsFromCells([cell]), 
                 column: current, 
                 end: current + 2, 
                 attr: cell,
@@ -965,7 +960,7 @@ Line.definition = {
             continue;
           } else { // combined
             yield { 
-              codes: this._getCodePointsFromCells([ cell ]), 
+              codes: this._getCodePointsFromCells([cell]), 
               column: current, 
               end: current + 1, 
               attr: cell,
@@ -1202,25 +1197,46 @@ Line.definition = {
  * @class LineGenerator
  *
  */
-var LineGenerator = new Class().extends(Component)
+var LineGenerator = new Class().extends(Plugin)
                                .requires("LineGenerator");
 LineGenerator.definition = {
 
   id: "linegenerator",
 
-  "[subscribe('@event/broker-started'), enabled]":
-  function onLoad(broker) 
+  getInfo: function getInfo()
   {
-    this.sendMessage("initialized/" + this.id, this);
+    return {
+      name: _("Line Generator"),
+      version: "0.1",
+      description: _("Provides line objects for screen object.")
+    };
+  },
+
+  "[persistable] enabled_when_startup": true,
+
+
+  /** Installs itself. 
+   *  @param {Broker} broker A Broker object.
+   */
+  "[install]":
+  function install(broker) 
+  {
+  },
+
+  /** Uninstalls itself. 
+   *  @param {Broker} broker A Broker object.
+   */
+  "[uninstall]":
+  function uninstall(broker) 
+  {
   },
 
   /** Allocates n cells at once. */
   "[type('Uint16 -> Uint16 -> Array')]":
   function allocate(width, n, attr) 
   {
-    var line, buffer;
-    
-    buffer = [];
+    var line,
+        buffer = [];
 
     while (n--) {
       line = new Line(width, attr);
