@@ -160,16 +160,7 @@ PersistentTrait.definition = {
       color: this.color,
     };
 
-    // make image file path
-    path = broker.runtime_path 
-             + "/persist/" 
-             + broker.request_id 
-             + ".png";
-
-    // get file object
-    file = coUtils.File.getFileLeafFromVirtualPath(path);
-
-    coUtils.IO.saveCanvas(this._main_layer.canvas, file, true);
+    this.onIdle();
   },
 
   /**
@@ -192,6 +183,20 @@ PersistentTrait.definition = {
       coUtils.Debug.reportWarning(
         _("Cannot restore last state of renderer: data not found."));
     }
+  },
+
+  "[subscribe('event/idle'), pnp]": 
+  function onIdle()
+  {
+    // make image file path
+    var broker = this._broker,
+        path = broker.runtime_path 
+             + "/persist/" 
+             + broker.request_id 
+             + ".png",
+        file = coUtils.File.getFileLeafFromVirtualPath(path);
+
+    coUtils.IO.saveCanvas(this._main_layer.canvas, file, true);
   },
 
 }; // trait PersistentTrait
@@ -314,7 +319,9 @@ PalletManagerTrait.definition = {
   {
     var message,
         color,
-        [number, spec] = value.split(";");
+        args = value.split(";");
+        number = args[0],
+        spec = args[1];
 
     // range check.
     if (0 > number && number > 255) {
@@ -589,7 +596,7 @@ Renderer.definition = {
     this.foreground_color = this._outerchrome.foreground_color;
     this.background_color = this._outerchrome.background_color;
 
-    this._drcs_map = [];
+    this._drcs_map = {};
   },
 
   /** Uninstalls itself.
@@ -1104,8 +1111,8 @@ Renderer.definition = {
     code = codes[0];
 
     if (code > 0x100000) {
-      dscs = String.fromCharCode((code & 0xff00) >>> 8);
-      drcs_state = this._drcs_map[dscs];
+      dscs = String.fromCharCode(code >>> 8 & 0xff);
+      drcs_state = this._drcs_map[" " + dscs];
       codes[0] = codes & 0xff;
     }
 
