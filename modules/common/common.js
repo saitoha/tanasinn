@@ -1521,6 +1521,77 @@ coUtils.Services = {
   },
 };
 
+coUtils.Components = {
+
+  createLoopbackServerSocket: function createLoopbackServerSocket(listener)
+  { 
+    var socket = Components
+        .classes["@mozilla.org/network/server-socket;1"]
+        .createInstance(Components.interfaces.nsIServerSocket);
+
+    socket.init(/* port */ -1, /* loop back */ true, /* connection count */ 1);
+    socket.asyncListen(listener);
+
+    return socket;
+  },
+
+  createScriptableInputStream: function createScriptableInputStream(input_stream)
+  {
+    var stream = Components
+          .classes["@mozilla.org/scriptableinputstream;1"]
+          .createInstance(Components.interfaces.nsIScriptableInputStream);
+
+    stream.init(input_stream);
+
+    return stream;
+  },
+
+  createBinaryInputStream: function createBinaryInputStream(input_stream)
+  {
+    var stream = Components
+        .classes["@mozilla.org/binaryinputstream;1"]
+        .createInstance(Components.interfaces.nsIBinaryInputStream);
+
+    stream.setInputStream(input_stream);
+
+    return stream;
+  },
+
+  createStreamPump: function createStreamPump(input_stream, listener)
+  {
+    var pump = Components
+          .classes["@mozilla.org/network/input-stream-pump;1"]
+          .createInstance(Components.interfaces.nsIInputStreamPump);
+
+    pump.init(input_stream, -1, -1, 0, 0, false);
+    pump.asyncRead(listener, null);
+
+    return pump;
+  },
+
+  createLocalFile: function createLocalFile(path)
+  {
+    var file = Components
+      .classes["@mozilla.org/file/local;1"]
+      .createInstance(Components.interfaces.nsILocalFile);
+
+    file.initWithPath(path);
+
+    return file;
+  },
+
+  createProcessFromFile: function createProcessFromFile(file)
+  {
+    var process = Components
+      .classes["@mozilla.org/process/util;1"]
+      .createInstance(Components.interfaces.nsIProcess);
+
+    process.init(file);
+
+    return process;
+  },
+};
+
 
 /**
  * Show a message box dialog.
@@ -1619,7 +1690,11 @@ coUtils.Color = {
         _("Invalid spec string: %s."), spec);
     }
   
-    [, rgb, r, g, b, name] = match;
+    rgb = match[1];
+    r = match[2];
+    g = match[3];
+    b = match[4];
+    name = match[5];
   
     if (rgb) {
       result = this._convertRGBSpec1(rgb); 
@@ -1642,8 +1717,16 @@ coUtils.Color = {
       case 3:
         result = "#" + rgb
           .split("")
-          .map(function(c) 0x100 + (parseInt(c, 16) << 4))
-          .map(function(n) n.toString(16).substr(1))
+          .map(
+            function(c) 
+            {
+              return 0x100 + (parseInt(c, 16) << 4);
+            })
+          .map(
+            function(n)
+            {
+              return n.toString(16).substr(1);
+            })
           .join("")
           ;
         break;
@@ -1655,8 +1738,16 @@ coUtils.Color = {
       case 9:
         result = "#" + rgb
           .match(/.../g)
-          .map(function(c) 0x100 + (parseInt(c, 16) >>> 4))
-          .map(function(n) n.toString(16).substr(1))
+          .map(
+            function(c)
+            {
+              return 0x100 + (parseInt(c, 16) >>> 4);
+            })
+          .map(
+            function(n)
+            {
+              return n.toString(16).substr(1);
+            })
           .join("")
           ;
         break;
@@ -1664,8 +1755,16 @@ coUtils.Color = {
       case 12:
         result = "#" + rgb
           .match(/..../g)
-          .map(function(c) 0x100 + (parseInt(c, 16) >>> 8))
-          .map(function(n) n.toString(16).substr(1))
+          .map(
+            function(c)
+            {
+              return 0x100 + (parseInt(c, 16) >>> 8);
+            })
+          .map(
+            function(n)
+            {
+              return n.toString(16).substr(1);
+            })
           .join("")
           ;
         break;
@@ -1681,11 +1780,11 @@ coUtils.Color = {
 
   _convertRGBSpec2: function _parseRGBSpec(r, g, b)
   {
-    var buffer = "#";
-    var n;
-    var i;
+    var buffer = "#",
+        n,
+        i = 0;
   
-    for (i = 0; i < arguments.length; ++i) {
+    for (; i < arguments.length; ++i) {
 
       n = arguments[i]; // r / g / b
   
@@ -1724,15 +1823,16 @@ coUtils.Color = {
   _convertColorName: function _convertColorName(name) 
   {
     var canonical_name = name
-      .replace(/\s+/g, "")
-      .toLowerCase()
-      ;
-    var color = coUtils.Constant.X11_COLOR_MAP[canonical_name]
+          .replace(/\s+/g, "")
+          .toLowerCase(),
+        color = coUtils.Constant.X11_COLOR_MAP[canonical_name]
              || coUtils.Constant.WEB140_COLOR_MAP[canonical_name];
+
     if (!color) {
       throw coUtils.Debug.Exception(
         _("Invalid color name was specified: %s."), name);
     }
+
     return color;
   }, // _convertColorName
 
@@ -2065,9 +2165,9 @@ coUtils.IO = {
   function saveCanvas(source_canvas, file, is_thumbnail) 
   {
     var NS_XHTML = "http://www.w3.org/1999/xhtml",
-        canvas = source_canvas.ownerDocument.createElementNS(NS_XHTML, "canvas");
-        context,
-        io = coUtils.Services.ioService;
+        canvas = source_canvas.ownerDocument.createElementNS(NS_XHTML, "canvas"),
+        context = canvas.getContext("2d"),
+        io = coUtils.Services.ioService,
         source,
         target,
         persist;
@@ -2082,7 +2182,6 @@ coUtils.IO = {
       canvas.height = source_canvas.height;
     }
   
-    context = canvas.getContext("2d");
     context.fillStyle = "rgba(0, 0, 0, 0.7)";
     context.fillRect(0, 0, canvas.width, canvas.height);
     context.drawImage(source_canvas, 0, 0, canvas.width, canvas.height);
@@ -2256,11 +2355,7 @@ coUtils.File = new function() {
     if (match) {
       target_leaf = this.getSpecialDirectoryName(match.pop());
     } else if (coUtils.File.isAbsolutePath(virtual_path)) { // absolute path
-      target_leaf = Components
-        .classes["@mozilla.org/file/local;1"]
-        .createInstance(Components.interfaces.nsILocalFile);
-      target_leaf.initWithPath(virtual_path);
-      return target_leaf;
+      return coUtils.Components.createLocalFile(virtual_path);
     } else { // relative path
       file_name = [
         Components.stack.filename.split(" -> ").pop().split("?").shift()
@@ -2695,14 +2790,10 @@ coUtils.Logger.prototype = {
     var path = coUtils.File
           .getFileLeafFromVirtualPath(this.log_file_path)
           .path,
-        file = Components
-          .classes["@mozilla.org/file/local;1"]
-          .createInstance(Components.interfaces.nsILocalFile),
+        file = coUtils.Components.createLocalFile(path),
         ostream,
         converter;
     
-    file.initWithPath(path);
-
     // check if target log file exists.
     if (file.exists()) {
       if (!file.isFile) { // check if target is file node.
@@ -2983,7 +3074,7 @@ coUtils.Debug = {
         message;
 
     if (arguments.length > 1 && "string" === typeof source) {
-      source = coUtils.format.apply(coUtils, arguments);
+      source = coUtils.Text.format.apply(coUtils, arguments);
     }
     stack = Components.stack.caller;
     escaped_source = String(source).replace(/"/g, "\u201d");
