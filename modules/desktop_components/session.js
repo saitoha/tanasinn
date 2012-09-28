@@ -234,6 +234,14 @@ Session.definition = {
   {
     var id = coUtils.Uuid.generate().toString();
 
+    // register stop topic
+    this.subscribe(
+      "command/stop", 
+      function()
+      { 
+        this.stop();
+      }, this, id);
+
     // register getter topic.
     this.subscribe(
       "get/bin-path", 
