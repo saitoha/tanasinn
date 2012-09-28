@@ -37,7 +37,8 @@ var MOUSE_BUTTON1 = 0,
  *   - brodie's MouseTerm Project    https://github.com/brodie/mouseterm
  *   - Vivek Dasmohapatra            http://rtfm.etla.org/xterm/ctlseq.html
  */
-var Mouse = new Class().extends(Plugin).depends("renderer");
+var Mouse = new Class().extends(Plugin)
+                       .depends("renderer");
 Mouse.definition = {
 
   id: "mouse",
@@ -60,6 +61,24 @@ Mouse.definition = {
   _installed: false,
 
   _in_scroll_session: false,
+
+  /** installs itself. 
+   *  @param {Broker} broker A Broker object.
+   */
+  "[install]":
+  function install(broker) 
+  {
+    this._renderer = this.dependency["renderer"];
+  },
+
+  /** Uninstalls itself.
+   *  @param {Broker} broker A broker object.
+   */
+  "[uninstall]":
+  function uninstall(broker) 
+  {
+    this._renderer = null;
+  },
 
   /** Fired at scroll session is started. */
   "[subscribe('event/scroll-session-started'), enabled]":
@@ -176,12 +195,9 @@ Mouse.definition = {
              | event.ctrlKey  << 4
              ;
         code += 32;
-        //column += 32;
-        //row += 32;
         message = coUtils.Text.format(
           "%d;%d;%dM", 
           code, column, row);
-//        coUtils.Debug.reportError(message)
         break;
 
       // sgr-style 
@@ -199,7 +215,6 @@ Mouse.definition = {
         message = coUtils.Text.format(
           "<%d;%d;%d%s", 
           code, column, row, action);
-//        coUtils.Debug.reportError(message)
         break;
 
       case "utf8":
@@ -218,7 +233,8 @@ Mouse.definition = {
 
         function putChar(c) 
         {
-          var c1, c2;
+          var c1,
+              c2;
 
           if (c >= 0x80) {
             // 110xxxxx 10xxxxxx
@@ -250,7 +266,6 @@ Mouse.definition = {
         // send escape sequence. 
         //                            M          
         message = String.fromCharCode(0x4d, code, column, row);
-//        coUtils.Debug.reportMessage(message)
 
     } // switch (this._tracking_type)
 
@@ -269,9 +284,11 @@ Mouse.definition = {
   "[listen('DOMMouseScroll', '#tanasinn_content'), pnp]": 
   function onmousescroll(event) 
   {
-    var renderer, tracking_mode, count, line_height, i;
-    
-    renderer = this.dependency["renderer"];
+    var renderer = this._renderer,
+        tracking_mode,
+        count,
+        line_height,
+        i;
 
     if (event.axis === event.VERTICAL_AXIS) {
 
@@ -319,11 +336,11 @@ Mouse.definition = {
   "[listen('mousedown', '#tanasinn_content'), pnp]": 
   function onmousedown(event) 
   {
-    var tracking_mode, button;
+    var tracking_mode = this._tracking_mode,
+        button;
  
     this._pressed = true;
 
-    tracking_mode = this._tracking_mode;
     if (coUtils.Constant.TRACKING_NONE === tracking_mode) {
       return;
     }
@@ -355,9 +372,8 @@ Mouse.definition = {
   "[listen('mousemove', '#tanasinn_content'), pnp]": 
   function onmousemove(event) 
   {
-    var tracking_mode, button;
-
-    tracking_mode = this._tracking_mode;
+    var tracking_mode = this._tracking_mode,
+        button;
 
     switch (tracking_mode) {
 
@@ -391,40 +407,34 @@ Mouse.definition = {
   "[listen('mouseup', '#tanasinn_content'), pnp]": 
   function onmouseup(event) 
   {
-    var tracking_mode, button;
+    var tracking_mode = this._tracking_mode,
+        button;
 
     this._pressed = false;
 
-    tracking_mode = this._tracking_mode;
-    if (coUtils.Constant.TRACKING_NONE === tracking_mode) {
-      return;
+    if (coUtils.Constant.TRACKING_NONE !== tracking_mode) {
+      button = event.button;
+      this._sendMouseEvent(event, button); // release
     }
 
-    button = event.button;
-    this._sendMouseEvent(event, button); // release
   },
 
   // Helper: get current position from mouse event object.
   _getCurrentPosition: function _getCurrentPosition(event) 
   {
-    var target_element, box, offsetX, offsetY, 
-        left, top, renderer, column, row, root_element;
+    var renderer = this._renderer,
+        target_element = this.request(
+          "command/query-selector", 
+          "#tanasinn_center_area"),
+        box = target_element.boxObject,
+        root_element = this.request("get/root-element"),
+        offsetX = box.screenX - root_element.boxObject.screenX,
+        offsetY = box.screenY - root_element.boxObject.screenY,
+        left = event.layerX - offsetX, // left position in pixel.
+        top = event.layerY - offsetY,  // top position in pixel.
+        column = Math.round(left / renderer.char_width),
+        row = Math.round(top / renderer.line_height);
 
-    target_element = this.request(
-      "command/query-selector", 
-      "#tanasinn_center_area");
-    box = target_element.boxObject;
-
-    root_element = this.request("get/root-element");
-    offsetX = box.screenX - root_element.boxObject.screenX;
-    offsetY = box.screenY - root_element.boxObject.screenY;
-    left = event.layerX - offsetX; // left position in pixel.
-    top = event.layerY - offsetY;  // top position in pixel.
-
-    // converts pixel coordinate to [column, row] style.
-    renderer = this.dependency["renderer"];
-    column = Math.round(left / renderer.char_width);
-    row = Math.round(top / renderer.line_height);
     return [column, row];
   },
 
