@@ -231,26 +231,6 @@ CursorState.definition = {
       backup.attr_value = context.shift();
     }
   },
- 
-  "[subscribe('event/drcs-state-changed/g0'), enabled]": 
-  function onDRCSStateChangedG0(state) 
-  {
-    if (null !== state) {
-      this.attr.drcs = state;
-    } else {
-      this.attr.drcs = null;
-    }
-  },
- 
-  "[subscribe('event/drcs-state-changed/g1'), enabled]": 
-  function onDRCSStateChangedG1(state) 
-  {
-    if (null !== state) {
-      this.attr.drcs = state;
-    } else {
-      this.attr.drcs = null;
-    }
-  },
 
   /**
    *
