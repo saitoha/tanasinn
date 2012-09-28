@@ -63,13 +63,11 @@ BatchLoader.definition = {
   "[command('import', ['batch']), _('load batch file from search path.'), pnp]":
   function loadBatchCommand(name) 
   {
-    var broker, file;
-
-    broker = this._broker;
-    file = coUtils.File.getFileLeafFromVirtualPath(
-      broker.runtime_path + 
-      "/" + 
-      broker.batch_directory);
+    var broker = this._broker,
+        file = coUtils.File.getFileLeafFromVirtualPath(
+          broker.runtime_path + 
+          "/" + 
+          broker.batch_directory);
 
     file.append(name);
 
@@ -136,11 +134,9 @@ BatchLoader.definition = {
   "[subscribe('@command/focus'), enabled]":
   function onFirstFocus() 
   {
-    var broker, path;
-
     // load rc file.
-    broker = this._broker;
-    path = broker.runtime_path + "/" + broker.rcfile;
+    var broker = this._broker,
+        path = broker.runtime_path + "/" + broker.rcfile;
 
     this.sendMessage("command/source", path);
   },
@@ -148,12 +144,14 @@ BatchLoader.definition = {
   "[command('execcgi', ['cgi']), subscribe('command/execute-cgi'), enabled]":
   function execCGI(arguments_string) 
   {
-    var broker, path, cygwin_root, executable_path, os, runtime, external_process;
-
-    broker = this._broker;
-    path = broker.runtime_path + "/cgi-bin/" + arguments_string.replace(/^\s+|\s+$/, "");
-    executable_path;
-    os = coUtils.Runtime.os;
+    var broker = this._broker,
+        path = broker.runtime_path
+             + "/cgi-bin/"
+             + arguments_string.replace(/^\s+|\s+$/, ""),
+        executable_path;
+        os = coUtils.Runtime.os,
+        runtime,
+        external_process;
 
     if ("WINNT" === os) {
       cygwin_root = broker.cygwin_root;
@@ -163,19 +161,13 @@ BatchLoader.definition = {
     }
 
     // create new localfile object.
-    runtime = Components
-      .classes["@mozilla.org/file/local;1"]
-      .createInstance(Components.interfaces.nsILocalFile);
-    runtime.initWithPath(executable_path);
+    runtime = coUtils.Components.createLocalFile(executable_path);
     if (!runtime.exists() || !runtime.isExecutable()) {
       return false;
     }
 
     // create new process object.
-    external_process = Components
-      .classes["@mozilla.org/process/util;1"]
-      .createInstance(Components.interfaces.nsIProcess);
-    external_process.init(runtime);
+    external_process = coUtils.Components.createProcessFromFile(runtime);
     path = coUtils.File.getFileLeafFromVirtualPath(path).path;
 
     if ("WINNT" === coUtils.Runtime.os) { // Windows
