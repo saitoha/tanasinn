@@ -51,6 +51,9 @@ ShellSettings.definition = {
   "[install]":
   function install(broker) 
   {
+    this.term = broker.term;
+    this.command = broker.command;
+
     this.sendMessage(
       "command/start-tty-service",
       {
