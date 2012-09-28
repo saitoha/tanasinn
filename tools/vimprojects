@@ -75,16 +75,24 @@
   }
   session_components=session_components {
 
-   parser.js
-   line.js
-   encoder.js
    drcsconverter.js
 
    plugin=.{
 
+    line.js
+    grammer.js
+    scanner.js
+    parser.js
+    shell.js
     tty.js
+    ttycontroller.js
+    ttyiomanager.js
     input.js
+    idleservice.js
+    alertservice.js
 
+    encoder.js
+    multiencoder.js
     decoder.js
     multidecoder.js
     asciidecoder.js
@@ -150,6 +158,8 @@
     altscreen.js
     nkm.js
     answerback.js
+    mouse.js
+    declocatormouse.js
     x10mouse.js
     x11mouse.js
     highlightmouse.js
@@ -175,9 +185,7 @@
     wheelscroll.js
 
     focusevent.js
-    declocatormouse.js
     mousegesture.js
-    mouse.js
 
     chrome.js
     renderer.js
@@ -195,7 +203,6 @@
     pluginview.js
     debugger.js
     console.js
-    alertservice.js
 
     scrollbar.js
     selection.js
