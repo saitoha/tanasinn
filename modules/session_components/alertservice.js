@@ -117,18 +117,32 @@ NotificationService.definition = {
         text,
         true,  // textClickable
         text,     // cookie
-        {
-          observe: function observe(subject, topic, data) 
-          {
-            if ("alertclickcallback" === topic) {
-              self.sendMessage("command/focus");
-            }
-          }
-        },   // listener
+        this,
         "" // name
         ); 
   },
 
+// nsIObserver implementation
+  observe: function observe(subject, topic, data) 
+  {
+    if ("alertclickcallback" === topic) {
+      this.sendMessage("command/focus");
+    }
+  },
+
+  /**
+   * Provides runtime type discovery.
+   * @param aIID the IID of the requested interface.
+   * @return the resulting interface pointer.
+   */
+  QueryInterface: function QueryInterface(a_IID)
+  {
+    if (!a_IID.equals(Components.interafaces.nsIObserver)
+     && !a_IID.equals(Components.interafaces.nsISupports))
+      throw Components.results.NS_ERROR_NOT_IMPLEMENTED;
+    return this;
+  },
+ 
 }; // NotificationService
 
 
