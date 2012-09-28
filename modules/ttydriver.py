@@ -432,7 +432,7 @@ if __name__ == "__main__":
     connection_socket.connect(("127.0.0.1", connection_port))
 
     startup_info = connection_socket.recv(BUFFER_SIZE).split(" ");
-    command, term = [ base64.b64decode(value) for value in startup_info]
+    command, term, lang = [ base64.b64decode(value) for value in startup_info]
     
     ## modify termios properties, and enables master's output flow control ON. 
     #master, slave = create_a_pair_of_tty_device();
@@ -447,6 +447,7 @@ if __name__ == "__main__":
         sys.stdout.write("\x1bc")
         sys.stdout.flush()
         os.environ["TERM"] = term 
+        os.environ["LANG"] = lang 
         os.environ["__TANASINN"] = term 
         os.execlp("/bin/sh", "/bin/sh", "-c", "cd $HOME && exec %s" % command)
     ttyname = os.read(master, ttyname_max_length).rstrip()
