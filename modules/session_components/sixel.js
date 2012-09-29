@@ -185,19 +185,16 @@ Sixel.definition = {
         start_code = 0x21,
         end_code = start_code + cell_count,
         full_cell = true,
-        buffer = [],
+        buffer,
         screen = this._screen,
         positionX = screen.cursor.positionX,
         dscs,
         drcs,
-        i;
+        i = 0,
+        j;
 
-    for (i = start_code; i < end_code; ++i) {
-      buffer.push(i);
-    }
-
-    for (i = 0; i < line_count; ++i) {
-      dscs = "_" + String.fromCharCode(++this._no);
+    for (; i < line_count; ++i) {
+      dscs = " " + String.fromCharCode(++this._no);
       drcs = {
         dscs: dscs,
         drcs_canvas: result.canvas,
@@ -209,10 +206,16 @@ Sixel.definition = {
         full_cell: full_cell,
         color: true,
       };
+
       this.sendMessage("command/alloc-drcs", drcs);
-      this.sendMessage("sequence/g0", dscs);
+
+      buffer = [];
+      for (j = start_code; j < end_code; ++j) {
+        buffer.push(0x100000 | this._no << 8 | j);
+      }
+
       screen.write(buffer);
-      this.sendMessage("sequence/g0", "B");
+
       screen.carriageReturn();
       screen.lineFeed();
       screen.cursor.positionX = positionX;
