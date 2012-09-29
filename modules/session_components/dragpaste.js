@@ -49,10 +49,6 @@ DragPaste.definition = {
   "[install]":
   function install(broker) 
   {
-    this.ondragover.enabled = true;
-    this.ondragenter.enabled = true;
-    this.ondrop.enabled = true;
-    this.onBracketedPasteModeChanged.enabled = true;
   },
 
   /** Uninstalls itself. 
@@ -61,24 +57,20 @@ DragPaste.definition = {
   "[uninstall]":
   function uninstall(broker) 
   {
-    this.ondragover.enabled = false;
-    this.ondragenter.enabled = false;
-    this.ondrop.enabled = false;
-    this.onBracketedPasteModeChanged.enabled = false;
   },
 
   /** A dragover event handler for center area element. 
    *  @param {Event} event A event object.
    */
-  "[listen('dragover', '#tanasinn_content', true)]":
+  "[listen('dragover', '#tanasinn_content', true), pnp]":
   function ondragover(event) 
   {
-    var data_transfer;
+    var data_transfer = event.dataTransfer;
 
-    data_transfer = event.dataTransfer;
     if (data_transfer.types.contains("text/plain")) {
       event.preventDefault();
     }
+
     if ("copy" != data_transfer.dropEffect)
       data_transfer.dropEffect = "copy";
     data_transfer.effectAllowed = "copy";
@@ -87,7 +79,7 @@ DragPaste.definition = {
   /** A dragenter event handler for center area element. 
    *  @param {Event} event A event object.
    */
-  "[listen('dragenter', '#tanasinn_content', true)]":
+  "[listen('dragenter', '#tanasinn_content', true), pnp]":
   function ondragenter(event) 
   {
     if (event.dataTransfer.types.contains("text/plain")) {
@@ -100,12 +92,12 @@ DragPaste.definition = {
   /** A drop event handler for center area element. 
    *  @param {Event} event A event object.
    */
-  "[listen('drop', '#tanasinn_content', true)]":
+  "[listen('drop', '#tanasinn_content', true), pnp]":
   function ondrop(event) 
   {
-    var data_transfer, text;
+    var data_transfer = event.dataTransfer,
+        text;
 
-    data_transfer = event.dataTransfer;
     if (data_transfer.types.contains("text/plain")) {
 	    text = data_transfer.getData("text/plain");
 
@@ -125,7 +117,7 @@ DragPaste.definition = {
   },
 
   /** Set/Reset bracketed paste mode. */
-  "[subscribe('command/change-bracketed-paste-mode')]":
+  "[subscribe('command/change-bracketed-paste-mode'), pnp]":
   function onBracketedPasteModeChanged(mode) 
   {
     this._bracketed_paste_mode = mode;
