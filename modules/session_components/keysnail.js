@@ -22,6 +22,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+"use strict";
+
 /**
  *  @class KeySnail
  *  @brief apply some fixes for KeySnail-installed environment. 

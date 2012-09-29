@@ -22,6 +22,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+"use strict";
+
 /**
  * @class DragMove
  * @fn Enable Drag-and-Drop operation.

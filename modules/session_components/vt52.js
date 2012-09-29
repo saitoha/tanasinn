@@ -22,6 +22,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+"use strict";
+
 
 var vt52C0Parser = {
 

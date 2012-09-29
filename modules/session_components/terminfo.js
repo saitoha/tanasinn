@@ -22,6 +22,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+"use strict";
+
 /*
  * from linux man page
  * auto_left_margin              bw         bw        cub1 wraps from column 0 to last column
@@ -601,7 +603,8 @@ Terminfo.definition = {
         i,
         chars,
         value,
-        message;
+        message,
+        s;
 
     if (0 === data.indexOf("+q")) {
       match = data.match(/[0-9a-fA-F]{2}/g);
@@ -632,11 +635,12 @@ Terminfo.definition = {
                     })
                   .join("");
       }
+
       this.sendMessage("command/send-sequence/dcs", message);
     }
   },
 
-} // class DRCSBuffer
+} // class Terminfo
 
 /**
  * @fn main

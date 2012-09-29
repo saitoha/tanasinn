@@ -22,6 +22,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+"use strict";
+
 function char2sixelbits(c) 
 {
   var code = "0000000" + (c.charCodeAt(0) - "?".charCodeAt(0)).toString(2);

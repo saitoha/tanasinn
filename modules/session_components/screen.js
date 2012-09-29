@@ -22,6 +22,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+"use strict";
+
 
 function wait(span) 
 {
@@ -948,7 +950,7 @@ ScreenSequenceHandler.definition = {
    * progression, where n equals the value of Pn.
    *
    */
-  "[profile('vt100'), sequence('CSI %da')]":
+  "[profile('vt100'), sequence('CSI %dj')]":
   function HPB(n) 
   { // 
     this.cursorBackward(n || 1);

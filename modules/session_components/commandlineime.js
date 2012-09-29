@@ -22,6 +22,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+"use strict";
+
 
 /**
  *  @class CommandlineIme
@@ -61,7 +63,7 @@ CommandlineIme.definition = {
   "[install]":
   function install(broker) 
   {
-    var textbox = this.dependency["commandline"].getInputField();
+    var textbox = this.dependency["commandline"].getInputField(),
         version_comparator = coUtils.Services.versionComparator,
         focused_element = this.request("get/root-element")
           .ownerDocument.commandDispatcher.focusedElement;

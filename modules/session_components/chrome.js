@@ -22,6 +22,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+"use strict";
+
 /** @package ui
  *
  * [ Chrome Overview ]
@@ -90,8 +92,7 @@ Movable.definition = {
   {
     var x = offset[0],
         y = offset[1],
-        static_scope = arguments.callee,
-        timer = static_scope.timer,
+        timer = this._timer,
         dom = {
           root_element: this.request("get/root-element")
         },
@@ -106,18 +107,22 @@ Movable.definition = {
     if (this.move_transition) {
       dom.root_element.style.MozTransitionProperty = "left, top";
       dom.root_element.style.MozTransitionDuration = this.move_duration + "ms";
-      static_scope.timer = coUtils.Timer.setTimeout(
-        function timerProc() 
-        {
-          dom.root_element.style.MozTransitionProperty = "";
-          dom.root_element.style.MozTransitionDuration = "0ms";
-        }, this.move_duration);
+      this._timer = coUtils.Timer
+        .setTimeout(this._onTransitionEnd, this.move_duration, this);
     }
 
     left = parseInt(dom.root_element.style.left) + x;
     top = parseInt(dom.root_element.style.top) + y;
 
     this.moveTo([left, top]);
+  },
+
+  _onTransitionEnd: function _onTransitionEnd()
+  {
+    var root_element = this.request("get/root-element");
+
+    root_element.style.MozTransitionProperty = "";
+    root_element.style.MozTransitionDuration = "0ms";
   },
 
 };
@@ -283,6 +288,8 @@ OuterChrome.definition = {
 
   _element: null,
   _frame: null,
+  _timer: null,
+
 
   /** Installs itself. 
    *  @param {Broker} broker A Broker object.
@@ -316,6 +323,10 @@ OuterChrome.definition = {
         }
       }
       this._element = null;
+    }
+    if (null !== this._timer) {
+      this._timer.cancel();
+      this._timer = null;
     }
   },
 

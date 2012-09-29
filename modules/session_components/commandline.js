@@ -22,6 +22,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+"use strict";
+
 /**
  * @class TextboxWidget
  *
@@ -267,7 +269,7 @@ TextboxWidget.definition = {
         fill_style = dom.context.fillStyle,
         font = dom.context.font,
         glyphinfo = coUtils.Font
-          .getAverageGlyphSize(this.font_size, this.font_family);
+          .getAverageGlyphSize(this.font_size, this.font_family),
         width = glyphinfo[0],
         height = glyphinfo[1],
         top = glyphinfo[2];

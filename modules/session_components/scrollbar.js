@@ -22,6 +22,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+"use strict";
+
 /** 
  * @class Scrollbar
  * @brief Shows scrollbar interface.

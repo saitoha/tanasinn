@@ -22,6 +22,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+"use strict";
+
 /**
  *  @class EncoderMenu
  *  @brief Makes it enable to switch terminal encoding by context menu.

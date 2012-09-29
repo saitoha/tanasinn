@@ -22,6 +22,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+"use strict";
+
 function apply_attribute(self, attribute, key)
 {
   var type_signature = attribute["type"][0],

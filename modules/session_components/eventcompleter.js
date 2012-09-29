@@ -23,6 +23,8 @@
  * ***** END LICENSE BLOCK ***** */
 
 
+"use strict";
+
 /**
  * @class EventCompleter
  *

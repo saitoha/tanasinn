@@ -22,6 +22,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+"use strict";
+
 /**
  *  @class Vimperator
  *  @brief apply some fixes for Vimperator-installed environment. 

@@ -22,6 +22,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+"use strict";
 
 /**
  * @Trait Environment

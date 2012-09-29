@@ -22,6 +22,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+"use strict";
+
 /**
  * @abstruct CompleterBase
  */
@@ -819,7 +821,7 @@ Launcher.definition = {
                 borderRadius: "10px",
                 font: "menu",
                 opacity: "0.87",
-                background: "transparent",
+                //background: "transparent",
                 background: "-moz-linear-gradient(top, #ccc, #aaa)",
               },
               noautofocus: true,

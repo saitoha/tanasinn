@@ -22,6 +22,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+"use strict";
+
 /**
  *  @class MouseGesture
  */
@@ -112,17 +114,18 @@ MouseGesture.definition = {
   "[subscribe('event/magnify-gesture'), pnp]": 
   function onMagnifyGesture(delta) 
   {
-    var i, count,
+    var i = 0,
+        count,
         magnify_delta = this.magnify_delta_per_fontsize;
 
     if (delta > 0) {
       count = Math.ceil(delta / magnify_delta);
-      for (i = 0; i < count; ++i) {
+      for (; i < count; ++i) {
         this.sendMessage("command/input-expression-with-remapping", "<PinchOpen>");
       }
     } else if (delta < 0) {
       count = Math.floor(- delta / magnify_delta);
-      for (i = 0; i < count; ++i) {
+      for (; i < count; ++i) {
         this.sendMessage("command/input-expression-with-remapping", "<PinchClose>");
       }
     }

@@ -22,6 +22,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+"use strict";
+
 var SnapResize = new Class().extends(Component);
 SnapResize.definition = {
 

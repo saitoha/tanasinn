@@ -22,6 +22,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+"use strict";
+
 
 /**
  *  @class Mascot
@@ -68,7 +70,6 @@ Mascot.definition = {
   "[persistable] mascot_image_file": "images/mascot.svg",
   "[persistable] offset_left": -80,
   "[persistable] offset_top": -62,
-  "[persistable] enabled_when_startup": false,
 
   _element: null,
 

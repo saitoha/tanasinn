@@ -22,6 +22,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+"use strict";
+
 var Canvas = new Class();
 Canvas.definition = {
 

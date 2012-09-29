@@ -22,6 +22,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+"use strict";
+
 /**
  * @class AnswerBack
  *
@@ -72,6 +74,7 @@ AnswerBack.definition = {
   "[persistable] enabled_when_startup": true,
   "[persistable] answerback_message": "",
   "[persistable] default_value": false,
+  "[persistable] answerback_delay": 500,
 
   _mode: false,
 
@@ -94,20 +97,9 @@ AnswerBack.definition = {
     this._mode = null;
   },
 
-  /** retuns answerback message */
-  "[subscribe('command/answerback'), pnp]":
-  function answerback()
-  {
-    var message;
-
-    message = String(this.answerback_message);
-    if (message.length) {
-      this.sendMessage("command/send-to-tty", message);
-    }
-  },
-
-  "[subscribe('@command/focus'), pnp]":
-  function onFirstFocus()
+  /** after session is initialized */
+  "[subscribe('@event/session-initialized'), pnp]":
+  function onSessionInitialized()
   {
     coUtils.Timer.setTimeout(
       function onAutoAnswerBack()
@@ -115,7 +107,18 @@ AnswerBack.definition = {
         if (this._mode) {
           this.answerback();
         }
-      }, 500, this);
+      }, this.answerback_delay, this);
+  },
+
+  /** retuns answerback message */
+  "[subscribe('command/answerback'), pnp]":
+  function answerback()
+  {
+    var message = String(this.answerback_message);
+
+    if (message.length) {
+      this.sendMessage("command/send-to-tty", message);
+    }
   },
 
   /** Activate reverse video feature.

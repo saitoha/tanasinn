@@ -22,6 +22,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+"use strict";
+
 /**
  * @class Parser
  * @brief Parse byte sequence emitted by TTY device.

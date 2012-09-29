@@ -22,6 +22,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+"use strict";
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -804,78 +805,84 @@ Line.definition = {
     var cells = this.cells,
         current_char,
         backward_chars,
-        forward_chars;
+        forward_chars,
+        character_category, 
+        forward_break_point,
+        backward_break_point;
 
     if (0 === current_char) {
       current_char = cells[column + 1].c;
     } else {
       current_char = cells[column].c;
     }
+
     backward_chars = cells.slice(0, column);
     forward_chars = cells.slice(column + 1);
 
-    function getCharacterCategory(code) {
-      var c;
+    character_category = this._getCharacterCategory(current_char);
 
-      c = String.fromCharCode(code);
-      if (/^\s$/.test(c)) {
-        return 0;
-      } else if (/^[0-9a-zA-Z]$/.test(c)) {
-        return 1;
-      } else if (/^\w$/.test(c)) {
-        return 2;
-      } else {
-        return 3;
-      }
-    }
-
-    function getForwardBreakPoint(forward_chars, column, category) 
-    {
-      var result = column + 1,
-          index,
-          cell;
-
-      for ([index, cell] in Iterator(forward_chars)) {
-        if (0 === cell.c) {
-          continue;
-        } if (category === getCharacterCategory(cell.c)) {
-          result = column + 1 + index + 1;
-          continue;
-        }
-        break;
-      }
-      return result;
-    }
-    
-    function getBackwardBreakPoint(backward_chars, column, category) 
-    {
-
-      var result = column,
-          index,
-          cell,
-          category, 
-          forward_break_point,
-          backward_break_point;
-
-      for ([index, cell] in Iterator(backward_chars.reverse())) {
-        if (0 === cell.c) {
-          result = backward_chars.length - index - 1;
-          continue;
-        } else if (category === getCharacterCategory(cell.c)) {
-          result = backward_chars.length - index - 1;
-          continue;
-        }
-        break;
-      }
-      return result;
-    }
-
-    category = getCharacterCategory(current_char);
     forward_break_point 
-      = getForwardBreakPoint(forward_chars, column, category);
+      = this._getForwardBreakPoint(forward_chars, column, character_category);
     backward_break_point 
-      = getBackwardBreakPoint(backward_chars, column, category);
+      = this._getBackwardBreakPoint(backward_chars, column, character_category);
+
     return [backward_break_point, forward_break_point];
+  },
+ 
+  _getCharacterCategory: 
+  function _getCharacterCategory(code)
+  {
+    var c = String.fromCharCode(code);
+
+    if (/^\s$/.test(c)) {
+      return 0;
+    } else if (/^[0-9a-zA-Z]$/.test(c)) {
+      return 1;
+    } else if (/^\w$/.test(c)) {
+      return 2;
+    } else {
+      return 3;
+    }
+  },
+
+  _getForwardBreakPoint:
+  function _getForwardBreakPoint(forward_chars, column, category) 
+  {
+    var result = column + 1,
+        index,
+        cell;
+
+    for ([index, cell] in Iterator(forward_chars)) {
+      if (0 === cell.c) {
+        continue;
+      } if (category === this._getCharacterCategory(cell.c)) {
+        result = column + 1 + index + 1;
+        continue;
+      }
+      break;
+    }
+
+    return result;
+  },
+   
+  _getBackwardBreakPoint:
+  function _getBackwardBreakPoint(backward_chars, column, category) 
+  {
+    var result = column,
+        index,
+        cell;
+
+    for ([index, cell] in Iterator(backward_chars.reverse())) {
+      if (0 === cell.c) {
+        result = backward_chars.length - index - 1;
+        continue;
+      } else if (category === this._getCharacterCategory(cell.c)) {
+        result = backward_chars.length - index - 1;
+        continue;
+      }
+      break;
+    }
+    return result;
   },
 
   _getCodePointsFromCells: function _getCodePointsFromCells(cells)

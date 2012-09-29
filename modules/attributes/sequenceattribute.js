@@ -22,6 +22,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+"use strict";
+
 
 function apply_attribute(self, broker, key, name, handler, expressions, id)
 {

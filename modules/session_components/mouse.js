@@ -22,6 +22,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+"use strict";
+
 var MOUSE_BUTTON1 = 0,
     MOUSE_BUTTON3 = 1,
     MOUSE_BUTTON2 = 2,
@@ -61,6 +63,7 @@ Mouse.definition = {
   _installed: false,
 
   _in_scroll_session: false,
+  _renderer: null,
 
   /** installs itself. 
    *  @param {Broker} broker A Broker object.
@@ -148,10 +151,143 @@ Mouse.definition = {
     }
   },
 
+  _getUrxvtMouseReport: function _getUrxvtMouseReport(event, button)
+  {
+    var code,
+        message, 
+        coordinate = this._getCurrentPosition(event),
+        column = coordinate[0],
+        row = coordinate[1];
+
+    if ("mouseup" === event.type) {
+      button = 3;
+    }
+    code = button 
+         | event.shiftKey << 2 
+         | event.metaKey  << 3
+         | event.ctrlKey  << 4
+         ;
+
+    code += 32; // add offset +32
+
+    message = coUtils.Text.format(
+      "%d;%d;%dM", 
+      code, column, row);
+
+    return message;
+  },
+
+  _getSgrMouseReport: function _getSgrMouseReport(event, button)
+  {
+    var code,
+        action,
+        message,
+        coordinate = this._getCurrentPosition(event),
+        column = coordinate[0],
+        row = coordinate[1];
+
+    code = button 
+       | event.shiftKey << 2 
+       | event.metaKey  << 3
+       | event.ctrlKey  << 4
+       ;
+
+    if ("mouseup" === event.type) {
+      action = "m";
+    } else {
+      action = "M";
+    }
+
+    message = coUtils.Text.format(
+      "<%d;%d;%d%s", 
+      code, column, row, action);
+
+    return message;
+  },
+
+
+  _getUtf8MouseReport: function _getUtf8MouseReport(event, button)
+  {
+    var code,
+        button,
+        message,
+        coordinate = this._getCurrentPosition(event),
+        column = coordinate[0],
+        row = coordinate[1],
+        buffer;
+
+    if ("mouseup" === event.type) {
+      button = 3;
+    }
+
+    code = button 
+         | event.shiftKey << 2 
+         | event.metaKey  << 3
+         | event.ctrlKey  << 4
+         ;
+
+    code += 32;
+    column += 32;
+    row += 32;
+
+    buffer = [0x4d, code];
+
+    if (column >= 0x80) {
+      buffer.push(column >> 6 & 0x1f | 0xc0, column & 0x3f | 0x80); 
+    } else {
+      buffer.push(column);
+    }
+
+    if (row >= 0x80) {
+      buffer.push(row >> 6 & 0x1f | 0xc0, row & 0x3f | 0x80); 
+    } else {
+      buffer.push(row);
+    }
+
+    message = String.fromCharCode.apply(String, buffer);
+
+    return message;
+  },
+
+  _getNormalMouseReport: function _getNormalMouseReport(event, button)
+  {
+    var code,
+        button,
+        message,
+        coordinate = this._getCurrentPosition(event),
+        column = coordinate[0],
+        row = coordinate[1];
+
+    if ("mouseup" === event.type) {
+      button = 3;
+    }
+
+    code = button 
+         | event.shiftKey << 2 
+         | event.metaKey  << 3
+         | event.ctrlKey  << 4
+         ;
+
+    code += 32;
+    column += 32;
+    row += 32;
+
+    // send escape sequence. 
+    //                            M          
+    message = String.fromCharCode(0x4d, code, column, row);
+
+    return message;
+  },
+
   /** Make packed mouse event data and send it to tty device. */
   _sendMouseEvent: function _sendMouseEvent(event, button) 
   {
-    var message, buffer, code, action, column, row,
+    var message,
+        buffer,
+        code,
+        action,
+        column,
+        row,
         tracking_type;
 
     // 0: button1, 1: button2, 2: button3, 3: release
@@ -178,94 +314,25 @@ Mouse.definition = {
     //
     //             | 1              << 5
 
-    [column, row] = this._getCurrentPosition(event);
-
-    tracking_type = this._tracking_type;
-
-    switch (tracking_type) {
+    switch (this._tracking_type) {
 
       // urxvt-style 
       case "urxvt":
-        if ("mouseup" === event.type) {
-          button = 3;
-        }
-        code = button 
-             | event.shiftKey << 2 
-             | event.metaKey  << 3
-             | event.ctrlKey  << 4
-             ;
-        code += 32;
-        message = coUtils.Text.format(
-          "%d;%d;%dM", 
-          code, column, row);
+        message = this._getUrxvtMouseReport(event, button);
         break;
 
       // sgr-style 
       case "sgr":
-        code = button 
-           | event.shiftKey << 2 
-           | event.metaKey  << 3
-           | event.ctrlKey  << 4
-           ;
-        if ("mouseup" === event.type) {
-          action = "m";
-        } else {
-          action = "M";
-        }
-        message = coUtils.Text.format(
-          "<%d;%d;%d%s", 
-          code, column, row, action);
+        message = this._getSgrMouseReport(event, button);
         break;
 
       case "utf8":
-        if ("mouseup" === event.type) {
-          button = 3;
-        }
-        code = button 
-             | event.shiftKey << 2 
-             | event.metaKey  << 3
-             | event.ctrlKey  << 4
-             ;
-        code += 32;
-        column += 32;
-        row += 32;
-        buffer = [0x4d, code];
-
-        function putChar(c) 
-        {
-          var c1,
-              c2;
-
-          if (c >= 0x80) {
-            // 110xxxxx 10xxxxxx
-            // (0x00000080 - 0x000007ff) // 11bit
-            c1 = c >> 6 & 0x1f | 0xc0;
-            c2 = c & 0x3f | 0x80;
-            buffer.push(c1, c2); 
-          } else {
-            buffer.push(c);
-          }
-        }
-        putChar(column);
-        putChar(row);
-        message = String.fromCharCode.apply(String, buffer);
+        message = this._getUtf8MouseReport(event, button);
         break;
 
       default:
-        if ("mouseup" === event.type) {
-          button = 3;
-        }
-        code = button 
-             | event.shiftKey << 2 
-             | event.metaKey  << 3
-             | event.ctrlKey  << 4
-             ;
-        code += 32;
-        column += 32;
-        row += 32;
-        // send escape sequence. 
-        //                            M          
-        message = String.fromCharCode(0x4d, code, column, row);
+        message = this._getNormalMouseReport(event, button);
+        break;
 
     } // switch (this._tracking_type)
 

@@ -22,6 +22,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+"use strict";
+
 /** @file Window
  *
  */
@@ -79,8 +81,6 @@ WindowWatcher.definition = {
       event.stopPropagation();
 
       this.sendMessage("event/rotate-gesture", event.direction);
-
-      event.direction = 0;
     }
   },
 
@@ -123,7 +123,6 @@ WindowWatcher.definition = {
 
       event.preventDefault();
       event.stopPropagation();
-      event.direction = 0;
     }
   },
   

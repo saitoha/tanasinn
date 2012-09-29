@@ -22,6 +22,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+"use strict";
+
 var EncoderInfo = new Class();
 EncoderInfo.definition = {
 

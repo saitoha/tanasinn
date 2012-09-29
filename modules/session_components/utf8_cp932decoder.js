@@ -22,6 +22,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+"use strict";
 
 /**
  * @class UTF8_CP932Decoder

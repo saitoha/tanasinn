@@ -22,6 +22,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+"use strict";
+
 /** 
  * @class Splitter
  */
@@ -35,14 +37,14 @@ Splitter.definition = {
   id: "splitter",
 
   getInfo: function getInfo()
-    <module type="plugin">
-        <name>{_("Splitter")}</name>
-        <description>{
-          _("Make it enable to change the height of bottom-panel ",
-            "by dragging horizontal bar like interface.")
-        }</description>
-        <version>0.1</version>
-    </module>,
+  {
+    return {
+      name: _("Splitter"),
+      version: "0.1",
+      description: _("Make it enable to change the height of bottom-panel ",
+                     "by dragging horizontal bar like interface.")
+    };
+  },
 
   getTemplate: function getTemplate()
   {

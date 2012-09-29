@@ -22,6 +22,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+"use strict";
+
 function wait(span) 
 {
   var end_time = Date.now() + span,

@@ -22,6 +22,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+"use strict";
+
 var MODE_ALPHA = 0,
     MODE_GRAPHICS = 1;
 

@@ -22,6 +22,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+"use strict";
+
 /**
  * - cmap overview
  *   "cmap" attribute defines default keybind replacement settings in command 

@@ -22,6 +22,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+"use strict";
+
 /**
  * @class DragCopy
  */
@@ -116,14 +118,12 @@ DragCopy.definition = {
         selection_canvas = this.request("command/query-selector", "#selection_canvas"),
         foreground_canvas = this.request("command/query-selector", "#foreground_canvas"),
         feedback_context = feedback_canvas.getContext("2d"),
-        width = feedback_canvas.width = foreground_canvas.width,
-        height = feedback_canvas.height = foreground_canvas.height,
         text = screen
           .getTextInRange(start, end, is_rectangle)
           .replace(/\x00/g, ""),
         coordinate = this._getPixelMetricsFromEvent(event),
         left = coordinate[0],
-        top = coordingate[1];
+        top = coordinate[1];
 
     feedback_canvas.hidden = false;
 
@@ -142,8 +142,11 @@ DragCopy.definition = {
   {
     var feedback_canvas = this._feedback_canvas,
         selection_canvas = this.request("command/query-selector", "#selection_canvas"),
+        foreground_canvas = this.request("command/query-selector", "#foreground_canvas"),
         feedback_context = feedback_canvas.getContext("2d"),
-        selection_context = selection_canvas.getContext("2d");
+        selection_context = selection_canvas.getContext("2d"),
+        width = feedback_canvas.width = foreground_canvas.width,
+        height = feedback_canvas.height = foreground_canvas.height;
 
     // disable this handler
     this.ondragend.enabled = false;

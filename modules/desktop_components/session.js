@@ -22,6 +22,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+"use strict";
+
 /** @package session
  *
  * [ Session overview ]
@@ -282,13 +284,14 @@ Session.definition = {
     this.notify("command/load-settings", this.profile);
     this.notify("event/broker-started", this);
     
-    coUtils.Timer.setTimeout(
-      function timerProc()
-      {
-        this.notify("command/focus");
-        this.notify("command/focus");
-        this.notify("command/focus");
-      }, this.initial_focus_delay, this);
+    //coUtils.Timer.setTimeout(
+    //  function timerProc()
+    //  {
+    this.notify("command/focus");
+    //this.notify("command/focus");
+    //this.notify("command/focus");
+    //  }, this.initial_focus_delay, this);
+    this.notify("event/session-initialized");
 
     return this;
   },

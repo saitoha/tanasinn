@@ -22,6 +22,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+"use strict";
+
 /** @class KeypadModeHandler
  */
 var KeypadModeHandler = new Class().extends(Plugin)

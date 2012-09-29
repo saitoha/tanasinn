@@ -92,6 +92,8 @@ print <<EOF;
  *
  * ***** END LICENSE BLOCK ***** */
 
+"use strict";
+
 
 function wcwidth_amb_as_single(c) 
 {

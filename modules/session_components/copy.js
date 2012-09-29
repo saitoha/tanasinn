@@ -22,6 +22,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+"use strict";
+
 /**
  *  @class Copy
  *  @brief Makes it enable to copy selected region by pressing short cut key.

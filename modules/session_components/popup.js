@@ -20,6 +20,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+"use strict";
+
 var ZshCompletion = new Trait();
 ZshCompletion.definition = {
 

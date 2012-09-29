@@ -23,6 +23,8 @@
  * ***** END LICENSE BLOCK ***** */
 
 
+"use strict";
+
 //////////////////////////////////////////////////////////////////////////////
 //
 // Concepts
@@ -208,7 +210,8 @@ ParameterParser.definition = {
         meta_action,
         default_action,
         actions,
-        next;
+        next,
+        param;
 
     for (param in this._parseParameters(scanner)) {
       params.push(param);
@@ -383,7 +386,8 @@ SequenceParser.definition = {
         index,
         code1,
         code2,
-        c;
+        c,
+        make_handler;
 
     var [, 
       number, number2,
@@ -399,7 +403,7 @@ SequenceParser.definition = {
       code = parseInt(number, 16);
       if ("%s" === number2) {
 
-        function action(params) 
+        var action = function(params) 
         {
           var data = coUtils.Text.safeConvertFromArray(params);
           return function() 
@@ -429,7 +433,7 @@ SequenceParser.definition = {
       }
     } else if (char_with_param) {
 
-      function action(params) 
+      action = function action(params) 
       {
         return function() 
         {
@@ -534,7 +538,7 @@ SequenceParser.definition = {
 
       this[0x20] = this[0x20] || new SequenceParser();
 
-      function make_handler(c)
+      make_handler = function make_handler(c)
       {
         return function()
         {
@@ -550,7 +554,7 @@ SequenceParser.definition = {
 
     } else if (char_position) { // 
 
-      function make_handler(code1, code2)
+      make_handler = function make_handler(code1, code2)
       {
         return function()
         {

@@ -23,6 +23,8 @@
  * ***** END LICENSE BLOCK ***** */
 
 
+"use strict";
+
 function make_managed_handler(self, handler)
 {
   var wrapped_handler = function() 

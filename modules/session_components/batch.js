@@ -22,6 +22,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+"use strict";
 
 /**
  *  @class BatchLoader
@@ -131,6 +132,7 @@ BatchLoader.definition = {
       }, this);
   },
 
+
   "[subscribe('@command/focus'), enabled]":
   function onFirstFocus() 
   {
@@ -141,6 +143,10 @@ BatchLoader.definition = {
     this.sendMessage("command/source", path);
   },
 
+  /**
+   * @command execcgi
+   *
+   */
   "[command('execcgi', ['cgi']), subscribe('command/execute-cgi'), enabled]":
   function execCGI(arguments_string) 
   {

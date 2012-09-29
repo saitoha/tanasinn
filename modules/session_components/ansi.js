@@ -22,6 +22,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+"use strict";
+
 var ANSI_GATM = 1,
     ANSI_KAM  = 2,
     ANSI_CRM  = 3,
