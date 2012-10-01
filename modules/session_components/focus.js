@@ -89,7 +89,7 @@ FocusTracker.definition = {
     if (!("nodeType" in target) || target.NODE_DOCUMENT !== target.nodeType) {
       target = target.parentNode;
       if (null !== target && undefined !== target
-          && target.nodeType != target.NODE_DOCUMENT) {
+          && target.nodeType !== target.NODE_DOCUMENT) {
         relation = dom.root_element.compareDocumentPosition(target);
         if ((relation & dom.root_element.DOCUMENT_POSITION_CONTAINED_BY)) {
           if (!this.disabled) {

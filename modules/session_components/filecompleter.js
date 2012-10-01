@@ -116,7 +116,7 @@ CGICompleter.definition = {
         key: file.leafName, 
         value: file.path,
       } for (file in entries) 
-        if (file.isExecutable() && -1 != file.leafName.toLowerCase().indexOf(lower_name))
+        if (file.isExecutable() && -1 !== file.leafName.toLowerCase().indexOf(lower_name))
     ];
     if (0 === candidates.length) {
       this.sendMessage("event/answer-completion", null);
@@ -207,7 +207,7 @@ BatchCompleter.definition = {
         key: file.leafName.replace(/\.js$/, ""), 
         value: file.path,
       } for (file in entries) 
-        if (-1 != file.leafName.toLowerCase().indexOf(lower_name))
+        if (-1 !== file.leafName.toLowerCase().indexOf(lower_name))
     ];
 
     if (0 === candidates.length) {

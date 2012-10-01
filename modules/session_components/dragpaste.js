@@ -73,8 +73,9 @@ DragPaste.definition = {
       event.preventDefault();
     }
 
-    if ("copy" != data_transfer.dropEffect)
+    if ("copy" !== data_transfer.dropEffect) {
       data_transfer.dropEffect = "copy";
+    }
     data_transfer.effectAllowed = "copy";
   },
 

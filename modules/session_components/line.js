@@ -588,7 +588,7 @@ DirtyRange.definition = {
   /** Detect whether it has some range. */
   get dirty()
   {
-    return this.first != this.last;
+    return this.first !== this.last;
   },
 
   invalidate: function invalidate() 
@@ -633,7 +633,7 @@ DirtyRange.definition = {
   /** makes intersection range and set it. */
   trimRange: function trimRange(first, last) 
   {
-    if (this.first != this.last) {
+    if (this.first !== this.last) {
       if (first > this.first)
         this.first = first
       if (last < this.last)
