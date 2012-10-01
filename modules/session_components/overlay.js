@@ -275,10 +275,10 @@ OverlayIndicator.definition = {
     this.show(2000);
   },
 
-  "[subscribe('sequence/osc/{0 | 2}')]":
-  function onCommandReceived(data0, data2) 
+  "[subscribe('sequence/osc/{0 | 1 | 2}')]":
+  function onCommandReceived(data0, data1, data2) 
   { // process OSC command.
-    var data = data0 || data2,
+    var data = data0 || data1 || data2,
         scanner = new ForwardInputIterator(data),
         decoder = this._decoder,
         sequence = [c for (c in decoder.decode(scanner))],

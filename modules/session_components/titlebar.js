@@ -189,7 +189,7 @@ Titlebar.definition = {
     
     if (this.enable_title_reporting) {
       if (this._query_utf8_mode) {
-        message += this.dependency["encoder"].encode(this._title_text);
+        message += this._encoder.encode(this._title_text);
       } else {
         message += this._title_text;
       }
@@ -211,14 +211,14 @@ Titlebar.definition = {
   // Reports window title.
   // Response: OSC l title ST
   //   title    Window title.
-  "[subscribe('sequence/decslpp/21'), pnp]":
+  "[subscribe('sequence/decslpp/{20 | 21}'), pnp]":
   function onTitleQueryHexModeDisabled() 
   {
     var message = "";
     
     if (this.enable_title_reporting) {
       if (this._query_utf8_mode) {
-        message += this.dependency["encoder"].encode(this._title_text);
+        message += this._encoder.encode(this._title_text);
       } else {
         message += this._title_text;
       }
@@ -235,10 +235,10 @@ Titlebar.definition = {
     this.sendMessage("command/send-sequence/osc", "l" + message)
   },
 
-  "[subscribe('sequence/osc/{0 | 2}'), pnp]":
-  function onCommandReceived(data0, data2) 
+  "[subscribe('sequence/osc/{0 | 1 | 2}'), pnp]":
+  function onCommandReceived(data0, data1, data2) 
   { // process OSC command.
-    var data = data0 || data2,
+    var data = data0 || data1 || data2,
         decoder,
         sequence,
         text,
