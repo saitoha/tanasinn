@@ -72,7 +72,7 @@ FontFamilyCompleter.definition = {
 //        .EnumerateAllFonts({})
         .EnumerateFonts("x-western", "monospace", {})
         .filter(function(font_family) 
-          -1 != font_family.toLowerCase().indexOf(name.toLowerCase()));
+          -1 !== font_family.toLowerCase().indexOf(name.toLowerCase()));
 
       this.sendMessage(
         "event/answer-completion",
