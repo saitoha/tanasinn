@@ -173,12 +173,18 @@ SGRHandler.definition = {
 
   _attr: null, // current cursor attribute
 
+  /** installs itself. 
+   *  @param {Broker} broker A Broker object.
+   */
   "[install]":
   function install()
   {
     this._attr = this.dependency["cursorstate"].attr;
   },
 
+  /** uninstalls itself. 
+   *  @param {Broker} broker A Broker object.
+   */
   "[uninstall]":
   function uninstall()
   {

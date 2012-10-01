@@ -189,7 +189,7 @@ Scrollbar.definition = {
                      + parseInt(this._after.flex);
     position = Math.max(position, min_position);
     position = Math.min(position, max_position);
-    if (position != this._before.flex) {
+    if (position !== this._before.flex) {
       this.sendMessage("command/set-scroll-position", position);
       this.sendMessage("command/draw");
     }
@@ -211,7 +211,7 @@ Scrollbar.definition = {
     current.flex = scroll_info.end - scroll_info.start;
     after.flex = scroll_info.size - scroll_info.end;
     if (0 === Number(after.flex) && !this._dragging) {
-      if (0.00 != scrollbar.style.opacity) {
+      if (0.00 !== scrollbar.style.opacity) {
         scrollbar.style.opacity = 0.00;
       }
     }
@@ -249,7 +249,7 @@ Scrollbar.definition = {
     scrollbar = this._scrollbar;
     if (0 === Number(this._after.flex) && 
         !this._dragging && 
-        0.00 != scrollbar.style.opacity) {
+        0.00 !== scrollbar.style.opacity) {
       scrollbar.style.opacity = 0.00;
     }
   },

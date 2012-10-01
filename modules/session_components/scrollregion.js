@@ -71,12 +71,18 @@ ScrollRegion.definition = {
 
   _screen: null,
 
+  /** uninstalls itself. 
+   *  @param {Broker} broker A Broker object.
+   */
   "[install]":
   function install(broker)
   {
     this._screen = this.dependency["screen"];
   },
 
+  /** uninstalls itself. 
+   *  @param {Broker} broker A Broker object.
+   */
   "[uninstall]":
   function uninstall(broker)
   {
