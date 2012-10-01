@@ -58,7 +58,7 @@ function apply_attribute(self, broker, key, attribute, topic)
       if (old_onchange) {
         old_onchange.apply(wrapped_handler, arguments);
       }
-      if (oldval != newval) {
+      if (oldval !== newval) {
         if (newval) {
           broker.subscribe(topic, wrapped_handler, undefined, id);
         } else {

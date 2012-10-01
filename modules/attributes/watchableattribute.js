@@ -48,7 +48,7 @@ function apply_attribute(self, key)
       key,
       function setBody(value)
       {
-        if (body != value) {
+        if (body !== value) {
           body = value;
           self.sendMessage("variable-changed/" + path, value);
         }

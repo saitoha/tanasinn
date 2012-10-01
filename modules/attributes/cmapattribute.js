@@ -83,7 +83,7 @@ function apply_attribute(self, broker, key, expressions, attribute)
     "command/save-persistable-data", 
     function persist(context) // Save settings to persistent context.
     {
-      if (expressions.join("") != wrapped_handler.expressions.join("")) {
+      if (expressions.join("") !== wrapped_handler.expressions.join("")) {
         context[wrapped_handler.id + ".cmap"] = wrapped_handler.expressions;
       }
     }, self);

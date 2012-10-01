@@ -121,7 +121,7 @@ function apply_attribute(self, broker, key, command_arguments, attribute)
         old_onchange.apply(wrapped_handler, arguments);
       }
 
-      if (oldval != newval) {
+      if (oldval !== newval) {
         if (newval) {
           for (i = 0; i < commands.length; ++i) {
             commands[i].register(wrapped_handler.id);
