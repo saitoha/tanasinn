@@ -374,8 +374,14 @@ Transform.definition = {
   "[uninstall]":
   function uninstall(broker)
   {
-    this._element = null;
+    if (null !== this._element) {
+      this._element.parentNode.style.MozPerspective = "";
+      this._element.style.MozTransformStyle = "";
+      this._element.style.MozTransform = "";
+      this._element = null;
+    }
     this._matrix = null;
+    this._last_matrix = null;
     this._width = 0;
     this._height = 0;
   },
@@ -420,6 +426,16 @@ DragCover.definition = {
     };
   },
 
+  getTemplate: function getTemplate()
+  {
+    return {
+      tagName: "box",
+      id: "tanasinn_capture_cover",
+      style: "position: fixed; top: 0px; left: 0px;",
+      hidden: true,
+    };
+  },
+
   "[persistable] enabled_when_startup": true,
 
   _cover: null,
@@ -431,17 +447,12 @@ DragCover.definition = {
   function install(broker)
   {
     var root_element = this.request("get/root-element"),
-        document_element = root_element.ownerDocument.documentElement;
+        document_element = root_element.ownerDocument.documentElement,
+        result = this.request(
+          "command/construct-chrome",
+          this.getTemplate());
 
-    this._cover = this.request(
-      "command/construct-chrome",
-      {
-        tagName: "box",
-        id: "tanasinn_capture_cover",
-        style: "position: fixed; top: 0px; left: 0px;",
-        hidden: true,
-      })["tanasinn_capture_cover"];
-
+    this._cover = result.tanasinn_capture_cover;
     document_element.appendChild(this._cover);
 
     this._cover.style.width = document_element.boxObject.width + "px";
