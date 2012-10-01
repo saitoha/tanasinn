@@ -647,7 +647,6 @@ Component.definition = {
           }
 
           this.enabled = this.enabled_when_startup;
-          broker.notify("initialized/" + this.id, this);
         }, 
         this);
     }
@@ -784,6 +783,7 @@ Plugin.definition = {
             this.id);
           throw e;
         }
+        broker.notify("initialized/" + this.id, this);
       } else {
         broker.notify("uninstall/" + id, broker);
       }
@@ -1127,7 +1127,7 @@ Concept.prototype = {
               target.id, rule);
           }
           if (subscribers[key].type) {
-            if (type != subscribers[key].type) {
+            if (type !== subscribers[key].type.toString()) {
               throw coUtils.Debug.Exception(
                 _("Component '%s' does not implement required ",
                   "message-concept: %s. - ill-typed."),
@@ -1148,7 +1148,7 @@ Concept.prototype = {
               target.id, rule);
 
             if (target[message].type) {
-              if (type != subscribers[message].type) {
+              if (type !== subscribers[message].type.toString()) {
                 throw coUtils.Debug.Exception(
                   _("Component '%s' does not implement required ",
                     "signature-concept: %s - ill-typed."),
