@@ -260,7 +260,7 @@ CursorState.definition = {
     this.backup(); 
   },
 
-  "[profile('vt100'), sequence('CSI s')] DECSC": 
+  "[profile('vt100'), sequence('CSI s')] SCP": 
   function SCP() 
   {
     this.backup(); 
@@ -297,7 +297,7 @@ CursorState.definition = {
     this.restore();
   },
 
-  "[profile('vt100'), sequence('CSI u')] DECRC": 
+  "[profile('vt100'), sequence('CSI u')] RCP": 
   function RCP() 
   {
     this.restore();
