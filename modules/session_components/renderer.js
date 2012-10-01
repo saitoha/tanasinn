@@ -223,12 +223,12 @@ SlowBlinkTrait.definition = {
     this._slow_blink_layer = layer;
 
     coUtils.Timer.setTimeout(
-      function()
+      function timerProc()
       {
         if (null !== this._slow_blink_layer) {
           this._slow_blink_layer.canvas.style.opacity 
             = 1 - this._slow_blink_layer.canvas.style.opacity;
-          coUtils.Timer.setTimeout(arguments.callee, this.slow_blink_interval, this);
+          coUtils.Timer.setTimeout(timerProc, this.slow_blink_interval, this);
         }
       }, this.slow_blink_interval, this);
 
@@ -641,6 +641,12 @@ Renderer.definition = {
   {
     this.onWidthChanged();
     this.onHeightChanged();
+  },
+
+  "[subscribe('command/paint-foreground'), pnp]": 
+  function paintForeground(context) 
+  {
+    context.drawImage(this._main_layer.canvas, 0, 0);
   },
 
   /** Take screen capture and save it in png format. */
