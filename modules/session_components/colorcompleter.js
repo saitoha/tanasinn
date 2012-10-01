@@ -73,8 +73,15 @@ ColorNumberCompleter.definition = {
       this._doNextCompletion(context.completers, context.source, all.length);
     } else if (!space) {
       numbers = [i for (i in function() { for (var i = 0; i < 256; ++i) yield i; }())]
-        .map(function(number) number.toString())
-        .filter(function(number_as_string) -1 != number_as_string.indexOf(number));
+        .map(
+          function mapFunc(number)
+          {
+            return number.toString();
+          }).filter(
+            function filterFunc(number_as_string)
+            {
+              return -1 !== number_as_string.indexOf(number);
+            });
       if (0 === numbers.length) {
         this.sendMessage("event/answer-completion", autocomplete_result);
       } else {
