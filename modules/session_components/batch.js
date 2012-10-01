@@ -91,7 +91,7 @@ BatchLoader.definition = {
         home,
         file;
 
-    if ("$" != path.charAt(0) && !coUtils.File.isAbsolutePath(path)) {
+    if ("$" !== path.charAt(0) && !coUtils.File.isAbsolutePath(path)) {
       if ("WINNT" === coUtils.Runtime.os) {
         broker = this._broker;
         cygwin_root = broker.cygwin_root;
