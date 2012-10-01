@@ -459,7 +459,6 @@ DecPrivateMode.definition = {
   {
     this._screen = this.dependency["screen"];
     this._cursor_state = this.dependency["cursorstate"];;
-  //  this.sendMessage("initialized/decmode", this);
   },
 
   "[uninstall]":
