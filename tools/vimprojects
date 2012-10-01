@@ -110,6 +110,7 @@
     keypad.js
     ansi.js
     dec.js
+    doublesized.js
 
     focus.js
     window.js
@@ -228,7 +229,6 @@
     browser.js
     agent.js
     completer.js
-    display.js
     command.js
     tabbox.js
     titlebar.js
@@ -238,6 +238,13 @@
     publish.js
     screenshot.js
     history.js
+
+    display.js
+    textdisplaydriver.js
+    colornumberdisplaydriver.js
+    colordisplaydriver.js
+    fontsizedisplaydriver.js
+    fontfamilydisplaydriver.js
 
     charsetcompleter.js
     colorcompleter.js
@@ -277,10 +284,6 @@
   locale=locale {
    ja-JP.json
   }
-  config {
-   key.conf
-   key-linux.conf
-  }
   tool {
    /etc/profile
    ~/.profile
@@ -293,11 +296,10 @@
    ~/.tanasinn/bin
    ~/.tanasinn/cgi-bin
    ~/.vimperator/plugin/twittperator.js
-   .tanasinn.js
+   ~/.tanasinn.js
    licence.pl
    tanasinn-vimp.js
    tanasinn-keysnail.js
-   gecko.vim
   }
   mappings=mappings {
    Makefile
