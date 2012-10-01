@@ -76,7 +76,7 @@ MessageFilter.definition = {
   {
     this.logtext = logtext;
     this.match = logtext.match(this.filter_expression);
-    return null != this.match;
+    return null !== this.match;
   },
 
   action: function action() 

@@ -677,7 +677,7 @@ CharsetCommands.definition = {
     name = arguments_string.replace(/^\s+|\s+$/g, "");
     modules = modules.filter(function(module) module.charset === name);
 
-    if (1 != modules.length) {
+    if (1 !== modules.length) {
       return {
         success: false,
         message: _("Cannot enabled the module specified by given argument."),

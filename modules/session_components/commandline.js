@@ -800,7 +800,7 @@ Commandline.definition = {
           current_text = textbox.value;
           // if current text does not match completion text, hide it immediatly.
           if (!textbox.completion 
-            || 0 != textbox.completion.indexOf(current_text)) {
+            || 0 !== textbox.completion.indexOf(current_text)) {
             textbox.completion = "";
           }
           this._stem_text = current_text;
