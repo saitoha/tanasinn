@@ -22,6 +22,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+"use strict";
+
 var impl = {
 
   get_profile_path: function get_profile_path(broker, name)
