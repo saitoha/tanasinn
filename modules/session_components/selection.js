@@ -617,6 +617,12 @@ Selection.definition = {
     this._reportRange();
   },
 
+  "[subscribe('command/paint-drag-region'), pnp]": 
+  function paintForeground(context) 
+  {
+    context.drawImage(this._canvas, 0, 0);
+  },
+
   "[subscribe('get/selection-info'), pnp]": 
   function getRange() 
   {
