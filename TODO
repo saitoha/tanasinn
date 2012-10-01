@@ -1,9 +1,11 @@
 
-- renewal console plugin's interface, adding text search feature.
-
-- reserch nsIIdleSrevice
+- Renewal console plugin's UI
+- Text search feature
 - implement DECBI/DECFI
 - implement MC/DECMC
 - implement DECPEX mode
 - implement DECSASD
-
+- implement DECUDK
+- Fix Sixel Graphics behavior more strictry
+- Fix DRCS behavior more strictry
+- Fix Ctrl + Space issue on X11 environment
