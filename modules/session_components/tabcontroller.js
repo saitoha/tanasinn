@@ -245,7 +245,7 @@ TabController.definition = {
     for (i = 8; i < width; i += 8) {
       this._tab_stops.push(i);
     }
-    if (i != width - 1) {
+    if (i !== width - 1) {
       this._tab_stops.push(width - 1);
     }
   },
@@ -303,7 +303,7 @@ TabController.definition = {
   function TBC(n) 
   { // TaB Clear
     var tab_stops,
-        pisitionX,
+        positionX,
         i,
         stop;
 
