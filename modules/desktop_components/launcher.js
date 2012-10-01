@@ -70,9 +70,16 @@ CompletionDisplayDriverBase.definition = {
 
 function generateEntries(paths) 
 {
-  var file, directory, path, entries;
+  var file,
+      directory,
+      path,
+      entries,
+      i = 0;
 
-  for ([, path] in Iterator(paths)) {
+  for (; i < paths.length; ++i) {
+
+    path = paths[i];
+
     try {
       directory = coUtils.Components.createLocalFile(path);
       if (directory.exists() && directory.isDirectory()) {
@@ -205,7 +212,7 @@ ProgramCompleter.definition = {
       }).filter(
         function(data)
         {
-          return -1 != data.name
+          return -1 !== data.name
             .toLowerCase()
             .indexOf(lower_source);
         });
@@ -464,7 +471,7 @@ SessionsCompleter.definition = {
         data = candidates.filter(
           function(data)
           {
-            return -1 != data.name.toLowerCase().indexOf(lower_source);
+            return -1 !== data.name.toLowerCase().indexOf(lower_source);
           }),
         autocomplete_result;
 
@@ -619,7 +626,7 @@ SessionsCompletionDisplayDriver.definition = {
       search_string = result.query.toLowerCase().substr(1);
       completion_text = result.comments[i].command;
 
-      if (completion_text.length > 20 && i != current_index) {
+      if (completion_text.length > 20 && i !== current_index) {
         completion_text = completion_text.substr(0, 20) + "...";
       }
 
@@ -1141,7 +1148,7 @@ Launcher.definition = {
 
       current_text = this._textbox.value;
       // if current text does not match completion text, hide it immediatly.
-//      if (0 != this._completion.value.indexOf(current_text)) {
+//      if (0 !== this._completion.value.indexOf(current_text)) {
 //        this._completion.inputField.value = "";
 //      }
       this._stem_text = current_text;
