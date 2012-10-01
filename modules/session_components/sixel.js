@@ -59,7 +59,7 @@ Sixel.definition = {
 
   _color: null,
   _buffers: null,
-  _no: 0x20,
+  _no: 0x0,
   _display_mode: false,
 
   /** installs itself. 
@@ -157,7 +157,7 @@ Sixel.definition = {
   "[subscribe('sequence/dcs'), pnp]":
   function onDCS(data) 
   {
-    var pattern = /^([0-9]);([01]);([0-9]+);?q((?:.|[\n\r])+)/,
+    var pattern = /^(?:[0-9;]*)?q((?:.|[\n\r])+)/,
         match = data.match(pattern),
         sixel;
 
@@ -165,7 +165,7 @@ Sixel.definition = {
       return;
     }
 
-    sixel = match[4];
+    sixel = match[1];
     if (!sixel) {
       return;
     }
@@ -194,7 +194,7 @@ Sixel.definition = {
         j;
 
     for (; i < line_count; ++i) {
-      dscs = " " + String.fromCharCode(++this._no);
+      dscs = " " + String.fromCharCode(0x20 + ++this._no % 94);
       drcs = {
         dscs: dscs,
         drcs_canvas: result.canvas,
@@ -211,7 +211,7 @@ Sixel.definition = {
 
       buffer = [];
       for (j = start_code; j < end_code; ++j) {
-        buffer.push(0x100000 | this._no << 8 | j);
+        buffer.push(0x100000 | (0x20 + this._no % 94) << 8 | j);
       }
 
       screen.write(buffer);
