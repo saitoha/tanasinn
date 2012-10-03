@@ -37,10 +37,9 @@ function make_managed_handler(self, handler)
 
 function apply_attribute(self, broker, key, expressions, attribute)
 {
-  var handler, wrapped_handler, id;
-
-  handler = self[key];
-  id = self.id + "." + key;
+  var handler = self[key],
+      id = self.id + "." + key,
+      wrapped_handler;
 
   if (handler.id) {
     wrapped_handler = handler;
