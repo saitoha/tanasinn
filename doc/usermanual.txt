@@ -979,11 +979,11 @@ saveprofileのような保存操作はとくに必要ありません。
 
 #if __EN__
 
-===== changepallet
+===== changepalette
 Set pallet color.
 
 ----
-changepallet [Color Number] [CSS color]
+changepalette [Color Number] [CSS color]
 ----
 
 
@@ -993,7 +993,7 @@ changepallet [Color Number] [CSS color]
 
 パレット色を設定します。
 ----
-changepallet [色番号] [CSS color]
+changepalette [色番号] [CSS color]
 ----
 [色番号]に対応するパレットに、[CSS color]で表現される色が設定・適用されます。
 
