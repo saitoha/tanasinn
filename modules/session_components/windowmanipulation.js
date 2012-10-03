@@ -60,21 +60,23 @@ WindowManipulator.definition = {
   _hex_mode: false,
   _utf8_mode: false,
 
-  /** uninstalls itself. 
-   *  @param {Broker} broker A Broker object.
+  _screen: null,
+  _renderer: null,
+
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(broker)
+  function install(context)
   {
-    this._screen = this.dependency["screen"];
-    this._renderer = this.dependency["renderer"];
+    this._screen = context["screen"];
+    this._renderer = context["renderer"];
   },
 
   /** uninstalls itself. 
-   *  @param {Broker} broker A Broker object.
    */
   "[uninstall]":
-  function uninstall(broker)
+  function uninstall()
   {
     this._screen = null;
     this._renderer = null;

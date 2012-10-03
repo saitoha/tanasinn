@@ -503,19 +503,18 @@ SocketTeletypeService.definition = {
   _pump: null,
   _settings: null,
 
-  /** Installs itself.
-   *  @param broker {Broker} A broker object.
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(broker) 
+  function install(context) 
   {
   },
 
   /** Uninstalls itself.
-   *  @param broker {Broker} A broker object.
    */
   "[uninstall]":
-  function uninstall(broker)
+  function uninstall()
   {
     if (this._socket) {
       this._socket.close();

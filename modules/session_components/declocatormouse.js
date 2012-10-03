@@ -51,22 +51,24 @@ DECLocatorMouse.definition = {
   _locator_state: 0,
   _locator_event: null,
   _in_scroll_session: false,
-
+  _renderer: null,
 
   /** Installs itself. 
-   *  @param {Broker} broker A Broker object.
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(broker) 
+  function install(context) 
   {
+    this._renderer = context["renderer"];
   },
 
   /** Uninstalls itself. 
-   *  @param {Broker} broker A Broker object.
    */
   "[uninstall]":
-  function uninstall(broker) 
+  function uninstall() 
   {
+    this._renderer = null;
+
     // unregister mouse event DOM listeners.
     this._locator_event = null;
     this.onmousescroll.enabled = false;
@@ -340,8 +342,11 @@ DECLocatorMouse.definition = {
   "[listen('DOMMouseScroll', '#tanasinn_content')]": 
   function onmousescroll(event) 
   {
-    var renderer = this.dependency["renderer"],
-        count, line_height, locator_reporting_mode, sequences;
+    var renderer = this._renderer,
+        count,
+        line_height,
+        locator_reporting_mode,
+        sequences;
 
     if (event.axis === event.VERTICAL_AXIS) {
 
@@ -528,7 +533,7 @@ DECLocatorMouse.definition = {
         top = event.layerY - offsetY,  // top position in pixel.
 
         // converts pixel coordinate to [column, row] style.
-        renderer = this.dependency["renderer"],
+        renderer = this._renderer,
 
         column = Math.round(left / renderer.char_width),
         row = Math.round(top / renderer.line_height);

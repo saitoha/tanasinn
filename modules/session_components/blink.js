@@ -69,22 +69,21 @@ CursorBlink.definition = {
   _mode: null,
   _cursor: null,
 
-  /** installs itself. 
-   *  @param {Broker} broker A Broker object.
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(broker) 
+  function install(context) 
   {
     this._mode = this.default_value;
-    this._cursor = this.dependency["cursorstate"];
+    this._cursor = context["cursorstate"];
     this.reset();
   },
 
   /** Uninstalls itself.
-   *  @param {Broker} broker A broker object.
    */
   "[uninstall]":
-  function uninstall(broker) 
+  function uninstall() 
   {
     this._mode = null;
     this._cursor = null;

@@ -464,7 +464,7 @@ ScreenSequenceHandler.definition = {
       default:
         coUtils.Debug.reportWarning(
           _("%s sequence [%s] was ignored."),
-          arguments.callee.name, Array.slice(arguments));
+          "ED", Array.slice(arguments));
     }
 
   },
@@ -525,7 +525,7 @@ ScreenSequenceHandler.definition = {
     if (top >= bottom || left >= right) {
       throw coUtils.Debug.Exception(
         _("Invalid arguments detected in %s [%s]."),
-        arguments.callee.name, Array.slice(arguments));
+        "DECERA", Array.slice(arguments));
     }
 
     if (bottom > screen.height) {
@@ -581,7 +581,7 @@ ScreenSequenceHandler.definition = {
       default:
         coUtils.Debug.reportWarning(
           _("%s sequence [%s] was ignored."),
-          arguments.callee.name, Array.slice(arguments));
+          "EL", Array.slice(arguments));
     }
   },
 
@@ -1084,7 +1084,7 @@ ScreenSequenceHandler.definition = {
   { // TODO: Media Copy
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
-      arguments.callee.name, Array.slice(arguments));
+      "MC", Array.slice(arguments));
   },
 
   "[profile('vt100'), sequence('CSI ?%di')]":
@@ -1092,14 +1092,14 @@ ScreenSequenceHandler.definition = {
   { // TODO: Media Copy, DEC-specific
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
-      arguments.callee.name, Array.slice(arguments));
+      "DECMC", Array.slice(arguments));
   },
 
   "[profile('vt100'), sequence('0x98', 'ESC X')]":
   function SOS(message) 
   {
     coUtils.Debug.reportWarning(
-      _("Ignored %s [%s]"), arguments.callee.name, message);
+      _("Ignored %s [%s]"), "SOS", message);
   },
 
 } // aspect ScreenSequenceHandler
@@ -1640,14 +1640,14 @@ Screen.definition = {
   "[persistable] initial_column": 80,
   "[persistable] initial_row": 24,
 
-  /** installs itself. 
-   *  @param {Broker} broker A Broker object.
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(broker)
+  function install(context)
   {
-    var line_generator = this.dependency["linegenerator"],
-        cursor_state = this.dependency["cursorstate"];
+    var line_generator = context["linegenerator"],
+        cursor_state = context["cursorstate"];
 
     this._buffer = line_generator.allocate(this._width, this._height * 2);
     this._switchScreen();
@@ -1658,10 +1658,9 @@ Screen.definition = {
   },
 
   /** uninstalls itself. 
-   *  @param {Broker} broker A Broker object.
    */
   "[uninstall]":
-  function uninstall(broker)
+  function uninstall()
   {
     this._buffer = null;
     this._line_generator = null;

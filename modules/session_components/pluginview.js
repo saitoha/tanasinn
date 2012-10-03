@@ -94,7 +94,12 @@ PluginViewer.definition = {
             self._broker.subscribe("event/dependencies-updated",
               function() 
               {
-                var depends, depended, depends_on, depends_by, disabled;
+                var depends,
+                    depended,
+                    depends_on,
+                    depended_by,
+                    disabled;
+
                 this.setAttribute("checked", module.enabled);
 
                 depends = self._depends_map[module.id];
@@ -205,10 +210,9 @@ PluginViewer.definition = {
 
   firstUpdate: function firstUpdate()    
   {
-    var depends_on, depends_by;
+    var depends_on = {},
+        depended_by = {};
 
-    depends_on = {};
-    depended_by = {};
     this._modules.forEach(function(module) 
     {
       depends_on[module.id] = depends_on[module.id] || {};
@@ -240,10 +244,9 @@ PluginViewer.definition = {
 
   update: function update()    
   {
-    var depends_on, depends_by;
+    var depends_on = {},
+        depended_by = {};
 
-    depends_on = {};
-    depended_by = {};
     this._modules.forEach(function(module) 
     {
       depends_on[module.id] = depends_on[module.id] || {};

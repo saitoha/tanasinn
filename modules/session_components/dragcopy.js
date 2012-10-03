@@ -65,22 +65,25 @@ DragCopy.definition = {
 
   "[persistable] enabled_when_startup": true,
 
-  /** Installs itself. */
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
+   */
   "[install]":
-  function install(broker)
+  function install(context)
   {
     var result = this.request("command/construct-chrome", this.getTemplate());
 
     this._feedback_canvas = result.feedback_canvas;
 
-    this._screen = this.dependency["screen"];
-    this._renderer = this.dependency["renderer"];
-    this._selection = this.dependency["selection"];
+    this._screen = context["screen"];
+    this._renderer = context["renderer"];
+    this._selection = context["selection"];
   },
 
-  /** Uninstalls itself. */
+  /** Uninstalls itself. 
+   */
   "[uninstall]":
-  function uninstall(session)
+  function uninstall()
   {
     if (null !== this._feedback_canvas) {
       this._feedback_canvas.parentNode.removeChild(this._feedback_canvas);

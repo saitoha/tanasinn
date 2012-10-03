@@ -47,8 +47,11 @@ IdleService.definition = {
 
   _idle_service: null,
 
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
+   */
   "[install]": 
-  function install(broker) 
+  function install(context) 
   {
     this._idle_service = Components
       .classes["@mozilla.org/widget/idleservice;1"]
@@ -57,8 +60,10 @@ IdleService.definition = {
     this.set();
   },
 
+  /** Uninstalls itself. 
+   */
   "[uninstall]": 
-  function uninstall(broker) 
+  function uninstall() 
   {
     this.reset();
 

@@ -43,25 +43,21 @@ Kill.definition = {
 
   "[persistable] enabled_when_startup": true,
 
-  /** Installs itself. */
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
+   */
   "[install]":
-  function install() 
+  function install(context)
   {
-    this.detach.enabled = true;
-    this.kill.enabled = true;
-    this.onContextMenu.enabled = true;
   }, 
 
   /** Uninstall itself. */
   "[uninstall]":
   function uninstall() 
   {
-    this.detach.enabled = false;
-    this.kill.enabled = false;
-    this.onContextMenu.enabled = false;
   },
 
-  "[subscribe('get/contextmenu-entries')]":
+  "[subscribe('get/contextmenu-entries'), pnp]":
   function onContextMenu() 
   {
     return [
@@ -87,7 +83,7 @@ Kill.definition = {
   },
 
   /** detach from process */
-  "[command('detach'), _('detach from process.')]":
+  "[command('detach'), _('detach from process.'), pnp]":
   function detach() 
   {
     var broker;
@@ -97,16 +93,18 @@ Kill.definition = {
   },
 
   /** kill process and stop tty */
-  "[command('kill/quit'), _('kill process and stop tty')]":
+  "[command('kill/quit'), _('kill process and stop tty'), pnp]":
   function kill() 
   {
     // stops TTY device.
     this.sendMessage("command/kill"); 
 
     broker = this._broker;
-    coUtils.Timer.setTimeout(function() {
-      broker.stop(); 
-    }, 1500);
+    coUtils.Timer.setTimeout(
+      function timerProc()
+      {
+        broker.stop(); 
+      }, 1500);
   },
 }
 

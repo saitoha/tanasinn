@@ -51,23 +51,22 @@ TabController.definition = {
   _cursor: null,
   _tab_stops: null,
 
-  /** installs itself. 
-   *  @param {Broker} broker A Broker object.
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(broker)
+  function install(context)
   {
-    this._screen = this.dependency["screen"];
-    this._cursor = this.dependency["cursorstate"];
+    this._screen = context["screen"];
+    this._cursor = context["cursorstate"];
 
     this._resetTabStop();
   },
 
   /** uninstalls itself. 
-   *  @param {Broker} broker A Broker object.
    */
   "[uninstall]":
-  function uninstall(broker)
+  function uninstall()
   {
     this._screen = null;
     this._cursor = null;
@@ -165,7 +164,7 @@ TabController.definition = {
     } else {
       coUtils.Debug.reportWarning(
         _("%s sequence [%s] was ignored."),
-        arguments.callee.name, Array.slice(arguments));
+        "DECST8C", Array.slice(arguments));
     }
   },
 
@@ -329,7 +328,7 @@ TabController.definition = {
       defalut:
         coUtils.Debug.reportWarning(
           _("%s sequence [%s] was ignored."),
-          arguments.callee.name, Array.slice(arguments));
+          "TBC", Array.slice(arguments));
 
     }
   },

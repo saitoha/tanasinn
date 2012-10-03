@@ -48,21 +48,22 @@ EastAsianWidth.definition = {
   "[persistable] default_value": false,
 
   _mode: false,
+  _parser: null,
 
-  /** installs itself. 
-   *  @param {Broker} broker A Broker object.
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(broker) 
+  function install(context) 
   {
     this._mode = this.default_value;
+    this._parser = context["parser"];
   },
 
   /** Uninstalls itself.
-   *  @param {Broker} broker A broker object.
    */
   "[uninstall]":
-  function uninstall(broker) 
+  function uninstall() 
   {
     this._mode = null;
   },
@@ -72,7 +73,7 @@ EastAsianWidth.definition = {
   "[subscribe('sequence/decset/8840'), pnp]":
   function activate() 
   { // Treat ambiguous characters as double
-    var parser = this.dependency["parser"];
+    var parser = this._parser;
 
     parser.ambiguous_as_wide = true;
     coUtils.Debug.reportMessage("DECAMB: double");
@@ -83,7 +84,7 @@ EastAsianWidth.definition = {
   "[subscribe('sequence/decrst/8840'), pnp]":
   function deactivate() 
   { // Treat ambiguous characters as single
-    var parser = this.dependency["parser"];
+    var parser = this._parser;
 
     parser.ambiguous_as_wide = false;
     coUtils.Debug.reportMessage("DECAMB: single");
@@ -179,20 +180,19 @@ AmbiguousWidthReporting.definition = {
 
   _mode: false,
 
-  /** installs itself. 
-   *  @param {Broker} broker A Broker object.
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(broker) 
+  function install(context) 
   {
     this._mode = this.default_value;
   },
 
   /** Uninstalls itself.
-   *  @param {Broker} broker A broker object.
    */
   "[uninstall]":
-  function uninstall(broker) 
+  function uninstall() 
   {
     this._mode = null;
   },

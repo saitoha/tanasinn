@@ -135,20 +135,19 @@ Controller.definition = {
   _input: null,
   _output: null,
 
-  /** Installs itself.
-   *  @param broker {Broker} A broker object.
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(broker)
+  function install(context)
   {
-    this._screen = this.dependency["screen"];
+    this._screen = context["screen"];
   },
 
   /** Uninstalls itself.
-   *  @param broker {Broker} A broker object.
    */
   "[uninstall]":
-  function uninstall(broker)
+  function uninstall()
   {
     this._screen = null;
     this._input = null;

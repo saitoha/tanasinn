@@ -254,12 +254,12 @@ RapidBlinkTrait.definition = {
     this._rapid_blink_layer.setHeight(this._main_layer.getHeight());
 
     coUtils.Timer.setTimeout(
-      function() 
+      function timerProc() 
       {
         if (null !== this._rapid_blink_layer) {
           this._rapid_blink_layer.canvas.style.opacity 
             = 1 - this._rapid_blink_layer.canvas.style.opacity;
-          coUtils.Timer.setTimeout(arguments.callee, this.rapid_blink_interval, this);
+          coUtils.Timer.setTimeout(timerProc, this.rapid_blink_interval, this);
         }
       }, this.rapid_blink_interval, this);
 
@@ -577,16 +577,19 @@ Renderer.definition = {
   "[persistable] transparent_color": 0,
   "[persistable, watchable] smoothing": true,
 
-  /** Installs itself.
-   *  @param broker {Broker} A broker object.
+  _outerchrome: null,
+  _screen: null,
+
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(broker) 
+  function install(context) 
   {
-    this._outerchrome = this.dependency["outerchrome"];
-    this._screen = this.dependency["screen"];
+    this._outerchrome = context["outerchrome"];
+    this._screen = context["screen"];
 
-    this._main_layer = new Layer(broker, "foreground_canvas");
+    this._main_layer = new Layer(this._broker, "foreground_canvas");
 
     // set smoothing configuration
     this._main_layer.smoothing = this.smoothing;
@@ -602,10 +605,9 @@ Renderer.definition = {
   },
 
   /** Uninstalls itself.
-   *  @param broker {Broker} A Broker object.
    */
   "[uninstall]":
-  function uninstall(broker) 
+  function uninstall() 
   {
     this._screen = null;
 
@@ -626,6 +628,9 @@ Renderer.definition = {
 
     this._drcs_map = null;
     this._drcs_canvas = null;
+
+    this._outerchrome = null;
+    this._screen = null;
   },
 
   "[subscribe('command/calculate-layout'), pnp]":

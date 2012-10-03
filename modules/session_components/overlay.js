@@ -122,26 +122,25 @@ OverlayIndicator.definition = {
   _content: null,
   _timer: null,
  
-  /** installs itself. 
-   *  @param {Broker} broker A session object.
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(broker) 
+  function install(context) 
   {
     var result = this.request("command/construct-chrome", this.getTemplate());
 
     this._element = result.tanasinn_overlay_indicator;
     this._content = result.tanasinn_overlay_indicator_content;
 
-    this._decoder = this.dependency["decoder"];
+    this._decoder = context["decoder"];
     this.onTitleHandlingStateChanged();
   },
 
   /** Uninstalls itself.
-   *  @param {Broker} broker A session object.
    */
   "[uninstall]":
-  function uninstall(broker) 
+  function uninstall() 
   {
     if (null !== this._element) {
       this._element.parentNode.removeChild(this._element);

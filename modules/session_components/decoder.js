@@ -83,8 +83,11 @@ Decoder.definition = {
     this.sendMessage("command/report-status-message", message); 
   },
 
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
+   */
   "[install]": 
-  function install(broker) 
+  function install(context) 
   {
     this._decoder_map = {};
     this.sendMessage("get/decoders").map(
@@ -98,8 +101,10 @@ Decoder.definition = {
     this.sendMessage("initialized/decoder", this);
   },
 
+  /** Uninstalls itself. 
+   */
   "[uninstall]": 
-  function uninstall(broker) 
+  function uninstall() 
   {
     this._decoder_map = null;
   },

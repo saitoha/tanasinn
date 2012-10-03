@@ -320,15 +320,18 @@ VT52.definition = {
   _screen: null,
   _cursor_state: null,
 
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
+   */
   "[install]":
-  function install(broker)
+  function install(context)
   {
     var sequences,
         i = 0;
 
-    this._tab_controller = this.dependency["tab_controller"];
-    this._screen = this.dependency["screen"];
-    this._cursor_state = this.dependency["cursorstate"];
+    this._tab_controller = context["tab_controller"];
+    this._screen = context["screen"];
+    this._cursor_state = context["cursorstate"];
 
     this.sendMessage("initialized/vt52", this);
 
@@ -351,8 +354,10 @@ VT52.definition = {
 
   },
 
+  /** Unnstalls itself. 
+   */
   "[uninstall]":
-  function uninstall(broker)
+  function uninstall()
   {
     this._tab_controller = null;
     this._screen = null;

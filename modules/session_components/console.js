@@ -48,20 +48,19 @@ MessageFilter.definition = {
   "[persistable] enabled_when_startup": true,
   "[persistable] show_alert_message": false,
 
-  /** Installs itself.
-   *  @param {Broker} broker A Broker object.
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(broker) 
+  function install(context) 
   {
     this.sendMessage("event/console-filter-collection-changed");
   },
 
   /** Uninstalls itself. 
-   *  @param {Broker} broker A Broker object.
    */
   "[uninstall]":
-  function uninstall(broker) 
+  function uninstall() 
   {
     this.sendMessage("event/console-filter-collection-changed");
   },
@@ -498,15 +497,18 @@ Console.definition = {
 
   "[persistable] enabled_when_startup": false,
 
-  /** Installs itself */
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
+   */
   "[install]":
-  function install(broker) 
+  function install(context) 
   {
   }, 
 
-  /** Uninstalls itself. */
+  /** Uninstalls itself.
+   */
   "[uninstall]":
-  function uninstall(broker) 
+  function uninstall() 
   {
     this.sendMessage("command/remove-panel", "console.panel");
   },

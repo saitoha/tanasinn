@@ -534,10 +534,10 @@ Commandline.definition = {
   _result: null,
 
   /** Installs itself. 
-   *  @param {Broker} broker A Broker object.
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(broker) 
+  function install(context) 
   {
     var {
       tanasinn_commandline_canvas, 
@@ -556,10 +556,9 @@ Commandline.definition = {
   },
   
   /** Uninstalls itself.
-   *  @param {Broker} broker A Broker object.
    */
   "[uninstall]":
-  function uninstall(broker) 
+  function uninstall() 
   {
     if (this._popup) {
       if (undefined !== this._popup.hidePopup) {

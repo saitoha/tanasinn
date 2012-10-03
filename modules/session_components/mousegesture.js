@@ -45,18 +45,17 @@ MouseGesture.definition = {
   "[persistable] magnify_delta_per_fontsize": 100,
 
   /** Installs itself. 
-   *  @param {Broker} broker A Broker object.
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(broker) 
+  function install(context) 
   {
   },
 
   /** Uninstalls itself. 
-   *  @param {Broker} broker A Broker object.
    */
   "[uninstall]":
-  function uninstall(broker) 
+  function uninstall() 
   {
   },
 

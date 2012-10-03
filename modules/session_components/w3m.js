@@ -74,17 +74,20 @@ W3m.definition = {
   _context: null,
   _cache_holder: null,
 
+  _renderer: null,
+
   /** Installs itself. 
-   *  @param {Broker} broker A Broker object.
-   */ 
+   *  @param {InstallContext} context A InstallContext object.
+   */
   "[install]":
-  function install(broker) 
+  function install(context) 
   {
-    var renderer = this.dependency["renderer"],
-        tanasinn_w3m_canvas = this.request(
+    var tanasinn_w3m_canvas = this.request(
           "command/construct-chrome", 
           this.getTemplate()
         ).tanasinn_w3m_canvas;
+
+    this._renderer = context["renderer"];
 
     // set initial size.
     this._canvas = tanasinn_w3m_canvas;
@@ -92,10 +95,9 @@ W3m.definition = {
   }, 
 
   /** Uninstall itself. 
-   *  @param {Broker} broker A Broker object.
    */
   "[uninstall]":
-  function uninstall(broker) 
+  function uninstall() 
   {
     if (null !== this._canvas) {
       this._canvas.parentNode.removeChild(this._canvas);
@@ -243,7 +245,7 @@ W3m.definition = {
   "w3m-getcharsize": function(x, y) 
   {
     var canvas = this._canvas,
-        renderer = this.dependency["renderer"],
+        renderer = this._renderer,
         char_width = renderer.char_width,
         line_height = renderer.line_height,
         w = 0 | (x * char_width + 0.5), // round off

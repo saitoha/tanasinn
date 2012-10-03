@@ -99,6 +99,9 @@ Titlebar.definition = {
   _query_hex_mode: false,
   _query_utf8_mode: true,
 
+  _encoder: null,
+  _decoder: null,
+
   getTemplate: function getTemplate()
   {
     return {
@@ -118,17 +121,17 @@ Titlebar.definition = {
   },
 
   /** Installs itself. 
-   *  @param {Broker} broker A Broker object.
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(broker) 
+  function install(context) 
   {
     var result = this.request(
       "command/construct-chrome",
       this.getTemplate());
 
-    this._decoder = this.dependency["decoder"];
-    this._encoder = this.dependency["encoder"];
+    this._decoder = context["decoder"];
+    this._encoder = context["encoder"];
     this._canvas = result.tanasinn_titlebar_canvas;
     this._canvas.width = this._canvas.parentNode.boxObject.width;
 
@@ -139,16 +142,17 @@ Titlebar.definition = {
   },
   
   /** Uninstalls itself.
-   *  @param {Broker} broker A Broker object.
    */
   "[uninstall]":
-  function uninstall(broker) 
+  function uninstall() 
   {
     this._canvas = null;
     this._decoder = null;
     this._encoder = null;
+
   },
 
+  /** When screen size is changed */
   "[subscribe('event/screen-width-changed'), pnp]": 
   function onWidthChanged(width) 
   {
@@ -239,6 +243,7 @@ Titlebar.definition = {
   function onCommandReceived(data0, data1, data2) 
   { // process OSC command.
     var data = data0 || data1 || data2,
+        scanner,
         decoder,
         sequence,
         text,

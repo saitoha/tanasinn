@@ -18,9 +18,12 @@
  content=content {
   tanasinn.svg
  }
- content=chrome/content {
+ chrome=chrome {
+  content=content {
    tanasinn.xul
    testsuite.js
+
+  }
  }
  doc=doc {
   define.h
@@ -66,6 +69,13 @@
    .
    launcher.js
    session.js
+   sessiondisplaydriver.js
+   programcompleter.js
+   processmanager.js
+   sessioncompleter.js
+   textdisplaydriver.js
+   launchercompletionprovider.js
+   dragmove.js
   }
   shared_components=shared_components {
    builder.js
@@ -229,7 +239,6 @@
     browser.js
     agent.js
     completer.js
-    command.js
     tabbox.js
     titlebar.js
     commandline.js
@@ -238,6 +247,20 @@
     publish.js
     screenshot.js
     history.js
+
+    command.js
+    changepalettecommand.js
+    jscommand.js
+    overlayecho.js
+    echocommand.js
+    lscommand.js
+    charsetcommand.js
+    localizecommand.js
+    persistcommand.js
+    globalpersistcommand.js
+    fontcommands.js
+    setglobalcommand.js
+    setcommand.js
 
     display.js
     textdisplaydriver.js

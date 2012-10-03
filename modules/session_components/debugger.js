@@ -366,19 +366,18 @@ Debugger.definition = {
   },
 
   /** Installs itself. 
-   *  @param {Broker} broker A Broker object.
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]": 
-  function install(broker) 
+  function install(context) 
   {
     this._queue = [];
   },
 
   /** Uninstalls itself 
-   *  @param {Broker} broker A Broker object.
    */
   "[uninstall]":
-  function uninstall(broker)
+  function uninstall()
   {
     this.trace.enabled = false;
 

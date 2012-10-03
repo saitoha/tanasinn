@@ -65,20 +65,19 @@ Mouse.definition = {
   _in_scroll_session: false,
   _renderer: null,
 
-  /** installs itself. 
-   *  @param {Broker} broker A Broker object.
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(broker) 
+  function install(context) 
   {
-    this._renderer = this.dependency["renderer"];
+    this._renderer = context["renderer"];
   },
 
   /** Uninstalls itself.
-   *  @param {Broker} broker A broker object.
    */
   "[uninstall]":
-  function uninstall(broker) 
+  function uninstall() 
   {
     this._renderer = null;
   },

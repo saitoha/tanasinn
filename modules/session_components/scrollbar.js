@@ -115,56 +115,38 @@ Scrollbar.definition = {
     };
   },
 
-  /** Installs itself.
-   * @param {Broker} broker A Broker object.
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(broker) 
+  function install(context) 
   {
-    var {
-      tanasinn_scrollbar_overlay,
-      tanasinn_scrollbar,
-      tanasinn_scrollbar_before,
-      tanasinn_scrollbar_current,
-      tanasinn_scrollbar_after,
-    } = this.request("command/construct-chrome", this.getTemplate());
+    var result = this.request("command/construct-chrome", this.getTemplate());
 
-    this._scrollbar_overlay = tanasinn_scrollbar_overlay;
-    this._scrollbar = tanasinn_scrollbar;
-    this._before = tanasinn_scrollbar_before;
-    this._current = tanasinn_scrollbar_current;
-    this._after = tanasinn_scrollbar_after;
-
-    this.onScrollPositionChanged.enabled = true;
-    this.ondblclick.enabled = true;
-    this.ondragstart.enabled = true;
-    this.onmouseover.enabled = true;
-    this.onmouseout.enabled = true;
-    this.onScrollbarHide.enabled = true;
-    this.onScrollbarShow.enabled = true;
+    this._scrollbar_overlay = result.tanasinn_scrollbar_overlay;
+    this._scrollbar = result.tanasinn_scrollbar;
+    this._before = result.tanasinn_scrollbar_before;
+    this._current = result.tanasinn_scrollbar_current;
+    this._after = result.tanasinn_scrollbar_after;
   },
 
   /** Unnstalls itself. 
-   * @param {Broker} broker A Broker object.
    */
   "[uninstall]":
-  function uninstall(broker) 
+  function uninstall() 
   {
-    this.onScrollPositionChanged.enabled = false;
-    this.ondblclick.enabled = false;
-    this.ondragstart.enabled = false;
-    this.onmouseover.enabled = false;
-    this.onmouseout.enabled = false;
-    this.onScrollbarHide.enabled = false;
-    this.onScrollbarShow.enabled = false;
     // remove scrollbar element
     if (null !== this._scrollbar_overlay) {
       this._scrollbar_overlay.parentNode.removeChild(this._scrollbar_overlay);
       this._scrollbar_overlay = null;
     }
+    this._scrollbar = null;
+    this._before = null;
+    this._current = null;
+    this._after = null;
   },
 
-  "[subscribe('command/scrollbar-hide')]":
+  "[subscribe('command/scrollbar-hide'), pnp]":
   function onScrollbarHide() 
   {
     if (this._scrollbar_overlay) {
@@ -172,7 +154,7 @@ Scrollbar.definition = {
     }
   },
 
-  "[subscribe('command/scrollbar-show')]":
+  "[subscribe('command/scrollbar-show'), pnp]":
   function onScrollbarShow() 
   {
     if (this._scrollbar_overlay) {
@@ -195,7 +177,7 @@ Scrollbar.definition = {
     }
   },
 
-  "[subscribe('event/scroll-position-changed'), enabled]":
+  "[subscribe('event/scroll-position-changed'), pnp]":
   function onScrollPositionChanged(scroll_info) 
   {
     var scrollbar, before, current, after;
@@ -217,19 +199,13 @@ Scrollbar.definition = {
     }
   },
 
-  "[listen('dragstart', '#tanasinn_scrollbar')]":
-  function ondragstart(event) 
-  {
-    event.stopPropagation();
-  },
-
-  "[listen('dblclick', '#tanasinn_scrollbar')]":
+  "[listen('dblclick', '#tanasinn_scrollbar'), pnp]":
   function ondblclick(event) 
   {
     event.stopPropagation();
   },
   
-  "[listen('mouseover', '#tanasinn_scrollbar')]":
+  "[listen('mouseover', '#tanasinn_scrollbar'), pnp]":
   function onmouseover(event) 
   {
     var scrollbar = this._scrollbar;
@@ -241,7 +217,7 @@ Scrollbar.definition = {
     }
   },
 
-  "[listen('mouseout', '#tanasinn_scrollbar')]":
+  "[listen('mouseout', '#tanasinn_scrollbar'), pnp]":
   function onmouseout(event) 
   {
     var scrollbar;
@@ -254,7 +230,13 @@ Scrollbar.definition = {
     }
   },
 
-  "[listen('dragstart', '#tanasinn_scrollbar_current')]":
+  "[listen('dragstart', '#tanasinn_scrollbar'), pnp]":
+  function ondragstart_scrollbar(event) 
+  {
+    event.stopPropagation();
+  },
+
+  "[listen('dragstart', '#tanasinn_scrollbar_current'), pnp]":
   function ondragstart(dom_event) 
   {
     var initial_y, dom_document, radius, height, before_flex,

@@ -83,20 +83,23 @@ Base64CopyPaste.definition = {
   "[persistable] enable_get_access": false,
   "[persistable] enable_set_access": true,
 
-  /** installs itself. 
-   *  @param {Broker} broker A broker object.
+  _decoder: null,
+
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(broker) 
+  function install(context) 
   {
+    this._decoder = context["decoder"];
   },
 
   /** Uninstalls itself.
-   *  @param {Broker} broker A broker object.
    */
   "[uninstall]":
-  function uninstall(broker) 
+  function uninstall() 
   {
+    this._decoder = null;
   },
 
   /** Get selected text and put it to clipboard.  */
@@ -187,7 +190,7 @@ Base64CopyPaste.definition = {
   /** decode and sanitize encoded byte stream.  */
   _decode: function _decode(scanner)
   {
-    var decoder = this.dependency["decoder"],
+    var decoder = this._decoder,
         c;
 
     while (true) {

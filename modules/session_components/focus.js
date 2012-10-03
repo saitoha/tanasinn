@@ -46,10 +46,10 @@ FocusTracker.definition = {
   disabled: false,
 
   /** Installs itself. 
-   *  @param {Broker} broker A broker object.
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]": 
-  function install(broker)
+  function install(context)
   {
     this.sendMessage("command/add-domlistener", {
       target: this.request("get/root-element").ownerDocument,
@@ -62,10 +62,9 @@ FocusTracker.definition = {
   },
 
   /** Uninstalls itself. 
-   *  @param {Broker} broker A broker object.
    */
   "[uninstall]":
-  function uninstall(broker)
+  function uninstall()
   {
     this.sendMessage("command/remove-domlistener", this.id)
   },
@@ -102,13 +101,13 @@ FocusTracker.definition = {
               {
                 this.disabled = false;
               }, 0, this);
+            this.sendMessage("event/lost-focus");
             return;
           }
           focused_element = dom.root_element.ownerDocument.commandDispatcher.focusedElement;
           this.sendMessage("event/got-focus");
           this.sendMessage("event/focus-changed", focused_element);
-        }
-        else {
+        } else {
           this.sendMessage("event/lost-focus");
         }
       }

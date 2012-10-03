@@ -51,19 +51,18 @@ CommandlineHistory.definition = {
   "[persistable] history_file_path": "history/commandline.txt",
 
   /** Installs itself. 
-   *  @param {Session} session A Session object.
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(session) 
+  function install(context)
   {
     this.loadHistory();
   },
 
   /** Uninstalls itself. 
-   *  @param {Session} session A Session object.
    */
   "[uninstall]":
-  function uninstall(session) 
+  function uninstall() 
   {
     if (null !== this._converter) {
       this._converter.flush();

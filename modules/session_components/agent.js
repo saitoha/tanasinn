@@ -165,11 +165,11 @@ Agent.definition = {
 
   _element: null,
 
-  /** installs itself. 
-   *  @param {Session} broker A session object.
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(broker) 
+  function install(context) 
   {
     var result = this.request("command/construct-chrome", this.getTemplate());
 
@@ -180,10 +180,9 @@ Agent.definition = {
   },
 
   /** Uninstalls itself.
-   *  @param {Session} broker A session object.
    */
   "[uninstall]":
-  function uninstall(broker) 
+  function uninstall() 
   {
     if (this._element) {
       this._element.parentNode.removeChild(this._element);

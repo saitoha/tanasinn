@@ -124,11 +124,11 @@ IOManager.definition = {
   _output: null,
   _socket: null,
 
-  /** Installs itself.
-   *  @param broker {Broker} A broker object.
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(broker) 
+  function install(context) 
   {
     var socket = coUtils.Components.createLoopbackServerSocket(this);
 
@@ -139,10 +139,9 @@ IOManager.definition = {
   },
 
   /** Uninstalls itself.
-   *  @param broker {Broker} A broker object.
    */
   "[uninstall]":
-  function uninstall(broker) 
+  function uninstall() 
   {
     this._socket = null;
     this._port = null;

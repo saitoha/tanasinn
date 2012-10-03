@@ -48,12 +48,17 @@ Protection.definition = {
 
   _screen: null, // reference of screen object
 
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
+   */
   "[install]":
-  function install()
+  function install(context)
   {
-    this._screen = this.dependency["screen"];
+    this._screen = context["screen"];
   },
 
+  /** Uninstalls itself. 
+   */
   "[uninstall]":
   function uninstall()
   {
@@ -118,7 +123,7 @@ Protection.definition = {
       default:
         coUtils.Debug.reportWarning(
           _("%s sequence [%s] was ignored."),
-          arguments.callee.name, Array.slice(arguments));
+          "DECSCA", Array.slice(arguments));
     }
   },
 
@@ -191,7 +196,7 @@ Protection.definition = {
       default:
         coUtils.Debug.reportWarning(
           _("%s sequence [%s] was ignored."),
-          arguments.callee.name, Array.slice(arguments));
+          "DECSCL", Array.slice(arguments));
     }
   },
 
@@ -244,7 +249,7 @@ Protection.definition = {
       default:
         coUtils.Debug.reportWarning(
           _("%s sequence [%s] was ignored."),
-          arguments.callee.name, Array.slice(arguments));
+          "DECSED", Array.slice(arguments));
     }
 
   },
@@ -312,7 +317,7 @@ Protection.definition = {
     if (top >= bottom || left >= right) {
       throw coUtils.Debug.Exception(
         _("Invalid arguments detected in %s [%s]."),
-        arguments.callee.name, Array.slice(arguments));
+        "DECSERA", Array.slice(arguments));
     }
 
     if (bottom > screen.height) {

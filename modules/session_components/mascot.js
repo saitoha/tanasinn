@@ -73,19 +73,18 @@ Mascot.definition = {
 
   _element: null,
 
-  /** installs itself. 
-   *  @param {Broker} broker A broker object.
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(broker) 
+  function install(context) 
   {
   },
 
   /** Uninstalls itself.
-   *  @param {Broker} broker A broker object.
    */
   "[uninstall]":
-  function uninstall(broker) 
+  function uninstall() 
   {
     if (null !== this._element) {
       this._element.parentNode.removeChild(this._element);
@@ -161,23 +160,21 @@ Cover.definition = {
 
   _element: null,
 
-  /** installs itself. 
-   *  @param {Broker} broker A broker object.
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(broker) 
+  function install(context) 
   {
-    this._element = this.request(
-      "command/construct-chrome", 
-      this.getTemplate()
-    )["tanasinn_cover_layer"];
+    var result = this.request("command/construct-chrome", this.getTemplate());
+
+    this._element = result.tanasinn_cover_layer;
   },
 
   /** Uninstalls itself.
-   *  @param {Broker} broker A broker object.
    */
   "[uninstall]":
-  function uninstall(broker) 
+  function uninstall() 
   {
     if (null !== this._element) {
       this._element.parentNode.removeChild(this._element);

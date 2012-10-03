@@ -28,11 +28,41 @@
  * @class ColorNumberCompleter
  *
  */
-var ColorNumberCompleter = new Class().extends(Component)
+var ColorNumberCompleter = new Class().extends(Plugin)
                                       .depends("renderer");
 ColorNumberCompleter.definition = {
 
   id: "colorcompleter",
+
+  getInfo: function getInfo()
+  {
+    return {
+      name: _("Color Number Completer"),
+      version: "0.1",
+      description: _("Provides color number completion service.")
+    };
+  },
+
+  "[persistable] enabled_when_startup": true,
+
+  _renderer: null,
+
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
+   */
+  "[install]":
+  function install(context) 
+  {
+    this._renderer = context["renderer"];
+  },
+
+  /** Uninstalls itself.
+   */
+  "[uninstall]":
+  function uninstall() 
+  {
+    this._renderer = null;
+  },
 
   /*
    * Search for a given string and notify a listener (either synchronously
@@ -135,7 +165,7 @@ ColorNumberCompleter.definition = {
 
   _getColorMap: function _getColorMap(option)
   {
-    var renderer = this.dependency["renderer"];
+    var renderer = this._renderer;
 
     switch (option) {
 

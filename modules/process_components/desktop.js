@@ -95,10 +95,14 @@ Desktop.definition = {
   id: "desktop",
 
   get window()
-    this._window,
+  {
+    return this._window;
+  },
 
   get root_element()
-    this._root_element,
+  {
+    return this._root_element;
+  },
 
   "[persistable] profile_directory": "desktop_profile",
   "[persistable] profile": "default",
@@ -124,14 +128,17 @@ Desktop.definition = {
   function initializeWithWindow(window)
   {
     this._window = window;
-    this.install(this._broker);
+    this.install();
   },
 
+  /** Installs itself. 
+   */
   "[install]":
-  function install(broker)
+  function install()
   {
     var id, 
-        root_element;
+        root_element,
+        broker = this._broker;
 
     // register getter topic.
     this.subscribe(
@@ -175,8 +182,10 @@ Desktop.definition = {
     this.notify("event/broker-started", this);
   },
 
+  /** Uninstalls itself. 
+   */
   "[uninstall]":
-  function uninstall(broker)
+  function uninstall()
   {
     this.unsubscribe(this._root_element.id);
     this.clear();

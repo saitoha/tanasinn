@@ -208,7 +208,7 @@ DecModeSequenceHandler.definition = {
           } catch (e) {
             coUtils.Debug.reportWarning(
               _("%s sequence [%s] was ignored."),
-              arguments.callee.name, n);
+              "DECSET", n);
           }
 
       } // end switch
@@ -370,7 +370,7 @@ DecModeSequenceHandler.definition = {
           } catch (e) {
             coUtils.Debug.reportWarning(
               _("%s sequence [%s] was ignored."),
-              arguments.callee.name, n);
+              "DECRST", n);
           }
 
       } // end switch
@@ -454,15 +454,23 @@ DecPrivateMode.definition = {
 
   "[persistable] enabled_when_startup": true,
 
+  _screen: null,
+  _cursor_state: null,
+
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
+   */
   "[install]":
-  function install(broker)
+  function install(context)
   {
-    this._screen = this.dependency["screen"];
-    this._cursor_state = this.dependency["cursorstate"];;
+    this._screen = context["screen"];
+    this._cursor_state = context["cursorstate"];;
   },
 
+  /** Uninstalls itself. 
+   */
   "[uninstall]":
-  function uninstall(broker)
+  function uninstall()
   {
     this._screen = null;
     this._cursor_state = null;

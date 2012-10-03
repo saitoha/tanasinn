@@ -640,10 +640,10 @@ VT100Grammar.definition = {
   CSI: null,
 
   /** Installs itself. 
-   *  @param {Broker} broker A Broker object.
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(broker)
+  function install(context)
   {
     var i,
         sequences;
@@ -651,17 +651,16 @@ VT100Grammar.definition = {
     this.resetSequences();
 
     sequences = this.sendMessage("get/sequences/vt100");
+
     for (i = 0; i < sequences.length; ++i) {
       this.sendMessage("command/add-sequence", sequences[i]);
     }
-    this.sendMessage("initialized/grammar", this);
   },
 
   /** Uninstalls itself. 
-   *  @param {Broker} broker A Broker object.
    */
   "[uninstall]":
-  function uninstall(broker)
+  function uninstall()
   {
     this.ESC = null;
     this.CSI = null;

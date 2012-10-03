@@ -71,16 +71,16 @@ Gesture.definition = {
   _element: null,
   _timer: null,
  
-  /** installs itself. 
-   *  @param {Broker} broker A Broker object.
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(broker) 
+  function install(context) 
   {
-    var {tanasinn_gesture_frame, tanasinn_gesture_canvas}
-      = this.request("command/construct-chrome", this.getTemplate());
-    this._frame = tanasinn_gesture_frame;
-    this._canvas = tanasinn_gesture_canvas;
+    var result = this.request("command/construct-chrome", this.getTemplate());
+
+    this._frame = result.tanasinn_gesture_frame;
+    this._canvas = result.tanasinn_gesture_canvas;
   },
 
   /** Uninstalls itself.

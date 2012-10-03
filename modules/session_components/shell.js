@@ -47,12 +47,14 @@ ShellSettings.definition = {
   "[persistable] command": "login -pf $USER",
   "[persistable] locale": "ja_JP.UTF-8",
 
-  /** Installs itself.
-   *  @param broker {Broker} A broker object.
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(broker) 
+  function install(context) 
   {
+    var broker = this._broker;
+
     this.term = broker.term;
     this.command = broker.command;
 
@@ -66,10 +68,9 @@ ShellSettings.definition = {
   },
 
   /** Uninstalls itself.
-   *  @param broker {Broker} A broker object.
    */
   "[uninstall]":
-  function uninstall(broker) 
+  function uninstall() 
   {
   },
 

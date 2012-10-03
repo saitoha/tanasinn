@@ -45,19 +45,18 @@ BatchLoader.definition = {
 
   _element: null,
  
-  /** installs itself. 
-   *  @param {Session} session A session object.
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(session) 
+  function install(context) 
   {
   },
 
   /** Uninstalls itself.
-   *  @param {Session} session A session object.
    */
   "[uninstall]":
-  function uninstall(session) 
+  function uninstall() 
   {
   },
 

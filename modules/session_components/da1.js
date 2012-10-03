@@ -121,19 +121,18 @@ PrimaryDA.definition = {
 
   "[persistable] enabled_when_startup": true,
 
-  /** installs itself. 
-   *  @param {Broker} broker A Broker object.
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(broker) 
+  function install(context) 
   {
   },
 
   /** Uninstalls itself.
-   *  @param {Broker} broker A broker object.
    */
   "[uninstall]":
-  function uninstall(broker) 
+  function uninstall() 
   {
   },
 
@@ -144,7 +143,7 @@ PrimaryDA.definition = {
     if (n !== undefined && n !== 0) {
       coUtils.Debug.reportWarning(
         _("%s sequence [%s] was ignored."),
-        arguments.callee.name, Array.slice(arguments));
+        "DA1", Array.slice(arguments));
     } else { //
       this.sendMessage("sequence/DA1");
     }

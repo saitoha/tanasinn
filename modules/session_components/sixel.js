@@ -62,24 +62,27 @@ Sixel.definition = {
   _no: 0x0,
   _display_mode: false,
 
-  /** installs itself. 
-   *  @param {Broker} broker A Broker object.
+  _renderer: null,
+  _screen: null,
+  _sixel_parser: null,
+
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(broker) 
+  function install(context) 
   {
     this._buffers = [];
 
-    this._renderer = this.dependency["renderer"];
-    this._screen = this.dependency["screen"];
-    this._sixel_parser = this.dependency["sixel_parser"];
+    this._renderer = context["renderer"];
+    this._screen = context["screen"];
+    this._sixel_parser = context["sixel_parser"];
   },
 
   /** Uninstalls itself.
-   *  @param {Broker} broker A broker object.
    */
   "[uninstall]":
-  function uninstall(broker) 
+  function uninstall() 
   {
     var i = 0,
         buffer;

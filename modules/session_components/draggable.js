@@ -45,21 +45,22 @@ DragMove.definition = {
 
   "[persistable] enabled_when_startup": true,
 
-  /** Installs itself. */
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
+   */
   "[install]":
-  function install(session) 
+  function install(context) 
   {
-    this.ondragstart.enabled = true;
   },
 
-  /** Uninstalls itself. */
+  /** Uninstalls itself.
+   */
   "[uninstall]":
-  function uninstall(session) 
+  function uninstall() 
   {
-    this.ondragstart.enabled = false;
   },
 
-  "[listen('dragstart', '#tanasinn_chrome')]":
+  "[listen('dragstart', '#tanasinn_chrome'), pnp]":
   function ondragstart(dom_event) 
   {
     var root_element,

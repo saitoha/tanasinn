@@ -513,20 +513,18 @@ ModeManager.definition = {
   _mode: coUtils.Constant.INPUT_MODE_NORMAL,
 
   /** Installs itself. 
-   *  @param {Broker} a broker object.
-   *  @notify collection-changed/modes
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(broker)
+  function install(context)
   {
     this._modes = this.sendMessage("get/modes");
   },
 
   /** Uninstalls itself. 
-   *  @param {Broker} a broker object.
    */
   "[uninstall]":
-  function uninstall(broker)
+  function uninstall()
   {
     this._modes = null;
   },
@@ -706,13 +704,13 @@ InputManager.definition = {
 
   _newlne_mode: false,
   _local_echo_mode: false,
+  _encoder: null,
 
   /** Installs itself. 
-   *  @param {Broker} brokr a Broker object.
-   *  @notify collection-changed/modes
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(broker)
+  function install(context)
   {
     var map = {},
         result;
@@ -726,15 +724,16 @@ InputManager.definition = {
       "command/construct-chrome",
       this.getTemplate());
 
+    this._encoder = context["encoder"];
+
     this._textbox = result.tanasinn_default_input;
     this.sendMessage("event/collection-changed/modes");
   },
 
   /** Uninstalls itself. 
-   *  @param {Broker} broker a Broker object.
    */
   "[uninstall]":
-  function uninstall(broker)
+  function uninstall()
   {
     this._key_map = null; 
     if (null !== this._textbox) {
@@ -742,6 +741,8 @@ InputManager.definition = {
       this._textbox = null;
     }
     this.sendMessage("event/collection-changed/modes");
+
+    this._encoder = null;
   },
 
   "[subscribe('set/local-echo-mode'), enabled]":
@@ -784,11 +785,12 @@ InputManager.definition = {
   "[subscribe('command/focus'), pnp]":
   function focus() 
   {
-    // call focus() 2 times.
-    this._textbox.focus(); // <-- blur out for current element.
-    this._textbox.focus(); // <-- blur out for current element.
-    this._textbox.focus(); // <-- blur out for current element.
-    this._textbox.focus(); // <-- set focus to textbox element.
+    // call focus() 4 times.
+    var textbox = this._textbox;
+    textbox.focus(); // <-- blur out for current element.
+    textbox.focus(); // <-- blur out for current element.
+    textbox.focus(); // <-- blur out for current element.
+    textbox.focus(); // <-- set focus to textbox element.
 
     this.sendMessage(
       "event/input-mode-changed",
@@ -798,11 +800,11 @@ InputManager.definition = {
   "[command('blur', []), nmap('<M-z>', '<C-S-Z>'), _('Blur tanasinn window'), pnp]":
   function blurCommand() 
   {
-    coUtils.Timer.setTimeout(
-      function blur()
-      {
+    //coUtils.Timer.setTimeout(
+    //  function blur()
+    //  {
         this.blur();
-      }, 100, this);
+    //  }, 100, this);
   },
 
   /** blur focus from the textbox elment. */
@@ -830,7 +832,7 @@ InputManager.definition = {
   },
 
   /** handle double-shift key event, and interpret it to <2-Shift> */
-  "[subscribe('event/hotkey-double-shift'), enabled]":
+  "[subscribe('event/hotkey-double-shift')]":
   function onDoubleShift(event) 
   {
     this.sendMessage(
@@ -838,8 +840,20 @@ InputManager.definition = {
       "<2-shift>");
   },
 
+  "[subscribe('event/got-focus'), enabled]":
+  function onGotFocus(event) 
+  {
+    this.onDoubleShift.enabled = true;
+  },
+
+  "[subscribe('event/lost-focus'), enabled]":
+  function onLostFocus(event) 
+  {
+    this.onDoubleShift.enabled = false;
+  },
+
   /** handle <2-shift> event, and switch focus to commandline. */
-  "[nmap('<2-shift>', '<cmode>'), pnp]":
+  "[nmap('<2-shift>', '<cmode>')]":
   function switchToCommandline(event) 
   { // nothrow
     this.sendMessage("command/enable-commandline")
@@ -986,7 +1000,7 @@ InputManager.definition = {
     var message;
 
     if (data) {
-      message = this.dependency["encoder"].encode(data);
+      message = this._encoder.encode(data);
       this.sendMessage("command/send-to-tty", message);
 
       if (this._local_echo_mode) {

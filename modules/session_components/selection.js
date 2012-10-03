@@ -201,6 +201,10 @@ Selection.definition = {
   _range: null,
   _highlight_region: null,
 
+  _textbox: null,
+  _screen: null,
+  _renderer: null,
+
   "[subscribe('event/mouse-tracking-mode-changed'), enabled]": 
   function onMouseTrackingModeChanged(data) 
   {
@@ -235,15 +239,17 @@ Selection.definition = {
     }
   },
 
-  /** Installs itself */
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
+   */
   "[install]":
-  function install(broker) 
+  function install(context) 
   {
     var result;
     
-    this._renderer = this.dependency["renderer"];
-    this._screen = this.dependency["screen"];
-    this._textbox = this.dependency["inputmanager"].getInputField(),
+    this._renderer = context["renderer"];
+    this._screen = context["screen"];
+    this._textbox = context["inputmanager"].getInputField(),
 
     result = this.request(
       "command/construct-chrome", 
@@ -261,10 +267,9 @@ Selection.definition = {
   },
 
   /** Uninstalls itself 
-   *  @param {Broker} A Broker object.
    */
   "[uninstall]":
-  function uninstall(broker) 
+  function uninstall() 
   {
     if (null !== this._canvas) {
       this._canvas.parentNode.removeChild(this._canvas);

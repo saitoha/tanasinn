@@ -117,24 +117,23 @@ CursorState.definition = {
     this._blink = value;;
   },
 
-  /** installs itself. 
-   *  @param {Broker} broker A broker object.
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(broker) 
+  function install(context) 
   {
-    this.attr = this.dependency["linegenerator"]
+    this.attr = context["linegenerator"]
       .allocate(1, 1)
       .shift()
       .cells
       .shift();
   },
 
-  /** uninstalls itself. 
-   *  @param {Broker} broker A broker object.
+  /** Uninstalls itself. 
    */
   "[uninstall]":
-  function uninstall(broker) 
+  function uninstall() 
   {
     this.attr = null;
   },

@@ -90,19 +90,18 @@ TirtiaryDA.definition = {
   "[persistable] site_id": 0xff,
   "[persistable] unit_id": 0xffffff,
 
-  /** installs itself. 
-   *  @param {Broker} broker A Broker object.
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(broker) 
+  function install(context) 
   {
   },
 
   /** Uninstalls itself.
-   *  @param {Broker} broker A broker object.
    */
   "[uninstall]":
-  function uninstall(broker) 
+  function uninstall() 
   {
   },
 
@@ -113,7 +112,7 @@ TirtiaryDA.definition = {
     if (n !== undefined && n !== 0) {
       coUtils.Debug.reportWarning(
         _("%s sequence [%s] was ignored."),
-        arguments.callee.name, Array.slice(arguments));
+        "DA3", Array.slice(arguments));
     } else { //
       this.sendMessage("sequence/DA3");
     }

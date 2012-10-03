@@ -93,18 +93,17 @@ DECDeviceStatusReport.definition = {
   _parser: null,
   _screen: null,
 
-  /** installs itself. 
-   *  @param {Broker} broker A Broker object.
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install()
+  function install(context)
   {
-    this._parser = this.dependency["parser"];
-    this._screen = this.dependency["screen"];
+    this._parser = context["parser"];
+    this._screen = context["screen"];
   },
 
   /** uninstalls itself. 
-   *  @param {Broker} broker A Broker object.
    */
   "[uninstall]":
   function uninstall()
@@ -177,7 +176,7 @@ DECDeviceStatusReport.definition = {
       default:
         coUtils.Debug.reportWarning(
           _("%s sequence [%s] was ignored."),
-          arguments.callee.name, Array.slice(arguments));
+          "DECDSR", Array.slice(arguments));
     }
   },
 

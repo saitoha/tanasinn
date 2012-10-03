@@ -58,22 +58,20 @@ Parser.definition = {
 
   _wcwidth: null,
 
-  /** installs itself. 
-   *  @param {Broker} broker A Broker object.
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(broker)
+  function install(context)
   {
     var grammars = this.sendMessage("get/grammars"),
         grammar,
         i = 0;
 
-    this._scanner = this.dependency["scanner"];    
-    this._screen = this.dependency["screen"];
-    this._decoder = this.dependency["decoder"];
-    this._drcs_converter = this.dependency["drcs_converter"];
-
-    this.onDataArrivedRecursively.enabled = true;
+    this._scanner = context["scanner"];    
+    this._screen = context["screen"];
+    this._decoder = context["decoder"];
+    this._drcs_converter = context["drcs_converter"];
 
     this._grammars = {};
 
@@ -87,12 +85,14 @@ Parser.definition = {
   },
 
   /** uninstalls itself. 
-   *  @param {Broker} broker A Broker object.
    */
   "[uninstall]":
-  function uninstall(broker)
+  function uninstall()
   {
-    this.onDataArrivedRecursively.enabled = false;
+    this._scanner = null;
+    this._screen = null;
+    this._decoder = null;
+    this._drcs_converter = null;
   },
 
   "[subscribe('variable-changed/parser.ambiguous_as_wide'), pnp]":
@@ -159,7 +159,7 @@ Parser.definition = {
   /** Parse and evaluate control codes and text pieces from the scanner. 
    *  @param {String} data incoming data in text format.
    */
-  "[subscribe('event/data-arrived-recursively')]": 
+  "[subscribe('event/data-arrived-recursively'), pnp]": 
   function onDataArrivedRecursively(data)
   {
     var scanner = new Scanner(broker),

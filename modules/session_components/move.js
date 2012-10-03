@@ -46,18 +46,17 @@ MoveShortcut.definition = {
   "[persistable] step": 60,
 
   /** Installs itself. 
-   *  @param {Session} session A Session object.
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(session) 
+  function install(context) 
   {
   },
   
   /** Uninstalls itself.
-   *  @param {Session} session A Session object.
    */
   "[uninstall]":
-  function uninstall(session) 
+  function uninstall() 
   {
   },
 

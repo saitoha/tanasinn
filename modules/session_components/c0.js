@@ -46,20 +46,19 @@ C0Control.definition = {
 
   _screen: null,
 
-  /** installs itself. 
-   *  @param {Broker} broker A broker object.
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(broker) 
+  function install(context) 
   {
-    this._screen = this.dependency["screen"];
+    this._screen = context["screen"];
   },
 
   /** uninstalls itself. 
-   *  @param {Broker} broker A broker object.
    */
   "[uninstall]":
-  function uninstall(broker) 
+  function uninstall() 
   {
     this._screen = null;
   },
@@ -87,8 +86,8 @@ C0Control.definition = {
   function SOH() 
   {
     coUtils.Debug.reportWarning(
-      "%s sequence [%s] was ignored.",
-      arguments.callee.name, Array.slice(arguments));
+      _("%s sequence [%s] was ignored."),
+      "SOH", Array.slice(arguments));
   },
   
   /** Start of text.
@@ -97,8 +96,8 @@ C0Control.definition = {
   function STX()  
   {
     coUtils.Debug.reportWarning(
-      "%s sequence [%s] was ignored.",
-      arguments.callee.name, Array.slice(arguments));
+      _("%s sequence [%s] was ignored."),
+      "STX", Array.slice(arguments));
   },
  
   /** End of text.
@@ -110,8 +109,8 @@ C0Control.definition = {
   function ETX() 
   {
     coUtils.Debug.reportWarning(
-      "%s sequence [%s] was ignored.",
-      arguments.callee.name, Array.slice(arguments));
+      _("%s sequence [%s] was ignored."),
+      "ETX", Array.slice(arguments));
   },
 
   /** End of transmission.
@@ -125,8 +124,8 @@ C0Control.definition = {
   function EOT() 
   {
     coUtils.Debug.reportWarning(
-      "%s sequence [%s] was ignored.",
-      arguments.callee.name, Array.slice(arguments));
+      _("%s sequence [%s] was ignored."),
+      "EOT", Array.slice(arguments));
   },
   
   /** Enquire.
@@ -146,8 +145,8 @@ C0Control.definition = {
   function ACK() 
   {
     coUtils.Debug.reportWarning(
-      "%s sequence [%s] was ignored.",
-      arguments.callee.name, Array.slice(arguments));
+      _("%s sequence [%s] was ignored."),
+      "ACK", Array.slice(arguments));
   },
    
   /** Bell.
@@ -270,8 +269,8 @@ C0Control.definition = {
   function DLE() 
   {
     coUtils.Debug.reportWarning(
-      "%s sequence [%s] was ignored.",
-      arguments.callee.name, Array.slice(arguments));
+      _("%s sequence [%s] was ignored."),
+      "DLE", Array.slice(arguments));
   },
  
   /** Device control 1.
@@ -289,8 +288,8 @@ C0Control.definition = {
   function DC2() 
   {
     coUtils.Debug.reportWarning(
-      _("%s sequence [%s] was ignored.",
-        arguments.callee.name, Array.slice(arguments)));
+      _("%s sequence [%s] was ignored."),
+      "DC2", Array.slice(arguments));
   },
 
   /** Device control 3.
@@ -314,8 +313,8 @@ C0Control.definition = {
   function DC4() 
   {
     coUtils.Debug.reportWarning(
-      _("%s sequence [%s] was ignored.",
-        arguments.callee.name, Array.slice(arguments)));
+      _("%s sequence [%s] was ignored."),
+      "DC4", Array.slice(arguments));
   },
   
   /** Negative acknowledge.
@@ -324,8 +323,8 @@ C0Control.definition = {
   function NAK() 
   {
     coUtils.Debug.reportWarning(
-      _("%s sequence [%s] was ignored.",
-        arguments.callee.name, Array.slice(arguments)));
+      _("%s sequence [%s] was ignored."),
+      "NAK", Array.slice(arguments));
   },
   
   /** Synchronous idle.
@@ -334,8 +333,8 @@ C0Control.definition = {
   function SYN() 
   {
     coUtils.Debug.reportWarning(
-      _("%s sequence [%s] was ignored.",
-        arguments.callee.name, Array.slice(arguments)));
+      _("%s sequence [%s] was ignored."),
+      "SYN", Array.slice(arguments));
   },
   
   /** End of transmission block.
@@ -344,8 +343,8 @@ C0Control.definition = {
   function ETB() 
   {
     coUtils.Debug.reportWarning(
-      _("%s sequence [%s] was ignored.",
-        arguments.callee.name, Array.slice(arguments)));
+      _("%s sequence [%s] was ignored."),
+      "ETB", Array.slice(arguments));
   },
   
   /** Cancel of previous word or charactor.
@@ -358,8 +357,8 @@ C0Control.definition = {
   function CAN() 
   {
     coUtils.Debug.reportWarning(
-      _("%s sequence [%s] was ignored.",
-        arguments.callee.name, Array.slice(arguments)));
+      _("%s sequence [%s] was ignored."),
+      "CAN", Array.slice(arguments));
   },
   
   /** End of medium.
@@ -368,8 +367,8 @@ C0Control.definition = {
   function EM() 
   {
     coUtils.Debug.reportWarning(
-      _("%s sequence [%s] was ignored.",
-        arguments.callee.name, Array.slice(arguments)));
+      _("%s sequence [%s] was ignored."),
+      "EM", Array.slice(arguments));
   },
   
   /** Substitute.
@@ -381,8 +380,8 @@ C0Control.definition = {
   function SUB()
   {
     coUtils.Debug.reportWarning(
-      _("%s sequence [%s] was ignored.",
-        arguments.callee.name, Array.slice(arguments)));
+      _("%s sequence [%s] was ignored."),
+      "SUB", Array.slice(arguments));
   },
   
   /** File separator.
@@ -391,8 +390,8 @@ C0Control.definition = {
   function FS() 
   {
     coUtils.Debug.reportWarning(
-      _("%s sequence [%s] was ignored.",
-        arguments.callee.name, Array.slice(arguments)));
+      _("%s sequence [%s] was ignored."),
+      "FS", Array.slice(arguments));
   },
  
   /** Group separator.
@@ -401,8 +400,8 @@ C0Control.definition = {
   function GS() 
   {
     coUtils.Debug.reportWarning(
-      _("%s sequence [%s] was ignored.",
-        arguments.callee.name, Array.slice(arguments)));
+      _("%s sequence [%s] was ignored."),
+      "GS", Array.slice(arguments));
   },
   
   /** Record separator.
@@ -411,8 +410,8 @@ C0Control.definition = {
   function RS() 
   {
     coUtils.Debug.reportWarning(
-      _("%s sequence [%s] was ignored.",
-        arguments.callee.name, Array.slice(arguments)));
+      _("%s sequence [%s] was ignored."),
+      "RS", Array.slice(arguments));
   },
   
   /** Unit separator.
@@ -421,8 +420,8 @@ C0Control.definition = {
   function US() 
   {
     coUtils.Debug.reportWarning(
-      _("%s sequence [%s] was ignored.",
-        arguments.callee.name, Array.slice(arguments)));
+      _("%s sequence [%s] was ignored."),
+      "US", Array.slice(arguments));
   },
   
   /** Delete.
@@ -431,8 +430,8 @@ C0Control.definition = {
   function DEL() 
   {
     coUtils.Debug.reportWarning(
-      _("%s sequence [%s] was ignored.",
-        arguments.callee.name, Array.slice(arguments)));
+      _("%s sequence [%s] was ignored."),
+      "DEL", Array.slice(arguments));
   },
 
 };

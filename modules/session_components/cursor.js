@@ -76,18 +76,22 @@ Cursor.definition = {
   "[persistable] blink_transition_duration": 600, /* in msec */
   "[persistable] timing_function": "ease-in-out",
   "[persistable] initial_blink": true,
+
+  _screen: null,
+  _renderer: null,
+  _cursor_state: null,
  
   /** Installs itself. 
-   *  @param {Broker} broker A Broker object.
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]": 
-  function install(broker) 
+  function install(context) 
   {
     var result;
 
-    this._screen = this.dependency["screen"];
-    this._renderer = this.dependency["renderer"];
-    this._cursor_state = this.dependency["cursorstate"];
+    this._screen = context["screen"];
+    this._renderer = context["renderer"];
+    this._cursor_state = context["cursorstate"];
 
     /** Create cursor element. */
     result = this.request("command/construct-chrome", this.getTemplate());
@@ -107,10 +111,9 @@ Cursor.definition = {
   },
 
   /** Uninstalls itself. 
-   *  @param {Broker} broker A Broker object.
    */
-  "[subscribe('uninstall/cursor'), enabled]":
-  function uninstall(broker) 
+  "[uninstall]":
+  function uninstall() 
   {
     if (null !== this._timer) {
       this._timer.cancel();

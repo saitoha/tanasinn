@@ -564,19 +564,18 @@ NRCSConverter.definition = {
   },
 
   /** Installs itself. 
-   *  @param {Broker} broker A Broker object.
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]": 
-  function install(broker) 
+  function install(context) 
   {
     this._g = [];
   },
 
   /** Uninstalls itself. 
-   *  @param {Broker} broker A Broker object.
    */
   "[uninstall]": 
-  function uninstall(broker) 
+  function uninstall() 
   {
     this._g = null;
     this._gl = 0;

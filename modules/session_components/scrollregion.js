@@ -71,20 +71,19 @@ ScrollRegion.definition = {
 
   _screen: null,
 
-  /** uninstalls itself. 
-   *  @param {Broker} broker A Broker object.
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(broker)
+  function install(context)
   {
-    this._screen = this.dependency["screen"];
+    this._screen = context["screen"];
   },
 
-  /** uninstalls itself. 
-   *  @param {Broker} broker A Broker object.
+  /** Uninstalls itself. 
    */
   "[uninstall]":
-  function uninstall(broker)
+  function uninstall()
   {
     this._screen = null;
   },
@@ -124,7 +123,7 @@ ScrollRegion.definition = {
     } else {
       coUtils.Debug.reportWarning(
         _("%s sequence [%s] was ignored."),
-        arguments.callee.name, Array.slice(arguments));
+        "DECSTBM", Array.slice(arguments));
     }
     // TODO: I wonder if I should implement this feature.
     // DECSTBM moves the cursor to column 1, line 1 of the page.

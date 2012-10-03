@@ -67,17 +67,25 @@ Splitter.definition = {
 
   "[persistable] enabled_when_startup": true,
 
+  _renderer: null,
+  _screen: null,
+  _bottompanel: null,
+
   /** Installs itself. 
-   *  @param {Broker} broker A session object.
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(broker) 
+  function install(context) 
   {
-    var bottompanel = this.dependency["bottompanel"],
+    var bottompanel = context["bottompanel"],
         tanasinn_splitter = this.request(
           "command/construct-chrome",
           this.getTemplate()).tanasinn_splitter,
         tabbox_element = bottompanel.getElement();
+
+    this._renderer = context["renderer"];
+    this._screen = context["screen"];
+    this._bottompanel = context["bottompanel"];
 
     // create splitter element.
     tabbox_element.parentNode.insertBefore(tanasinn_splitter, tabbox_element);
@@ -86,16 +94,19 @@ Splitter.definition = {
   },
 
   /** Unnstalls itself.
-   *  @param {Session} session A session object.
    */
   "[uninstall]":
-  function uninstall(session) 
+  function uninstall() 
   {
     // remove splitter element
     if (null !== this._splitter) {
       this._splitter.parentNode.removeChild(this._splitter);
       this._splitter = null;
     }
+
+    this._renderer = null;
+    this._screen = null;
+    this._bottompanel = null;
   },
 
   /** Makes splitter bar behave as vertical resizebar.
@@ -113,21 +124,18 @@ Splitter.definition = {
    */
   ondragstart: function ondragstart(event) 
   {
-    var dom, renderer, screen, bottompanel, document, 
-        initial_height, initial_row, line_height, y;
-    dom = {
-      document: this.request("get/root-element").ownerDocument,
-    }
-    renderer = this.dependency["renderer"];
-    screen = this.dependency["screen"];
-    bottompanel = this.dependency["bottompanel"];
-    initial_height = bottompanel.panelHeight;
-    initial_row = screen.height;
-    line_height = renderer.line_height;
+    var dom = {
+          document: this.request("get/root-element").ownerDocument,
+        },
+        renderer = this._renderer,
+        screen = this._screen,
+        bottompanel = this._bottompanel,
+        initial_height = bottompanel.panelHeight,
+        initial_row = screen.height,
+        line_height = renderer.line_height,
+        y = event.screenY;
 
     dom.document.documentElement.style.cursor = "row-resize";
-
-    y = event.screenY;
 
     this.sendMessage("event/resize-session-started");
     this.sendMessage("command/add-domlistener", {

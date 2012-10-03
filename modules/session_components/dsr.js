@@ -89,17 +89,18 @@ ANSIDeviceStatusReport.definition = {
 
   "[persistable] enabled_when_startup": true,
 
-  /** installs itself. 
-   *  @param {Broker} broker A Broker object.
+  _cursor: null,
+
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install()
+  function install(context)
   {
-    this._cursor = this.dependency["cursorstate"];
+    this._cursor = context["cursorstate"];
   },
 
-  /** uninstalls itself. 
-   *  @param {Broker} broker A Broker object.
+  /** Uninstalls itself. 
    */
   "[uninstall]":
   function uninstall()
@@ -133,7 +134,7 @@ ANSIDeviceStatusReport.definition = {
       default:
         coUtils.Debug.reportWarning(
           _("%s sequence [%s] was ignored."),
-          arguments.callee.name, Array.slice(arguments));
+          "DSR", Array.slice(arguments));
     }
   },
 };

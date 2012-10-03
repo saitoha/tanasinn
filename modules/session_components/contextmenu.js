@@ -61,21 +61,20 @@ Contextmenu.definition = {
 
   _entries: null,
 
-  /** Installs itself.
-   *  @param {Broker} broker A Broker object.
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]": 
-  function install(broker) 
+  function install(context) 
   {
     // register DOM listener.
     this.onFlagChanged(this.handle_right_click_insted_of_oncontextmenu);
   },
 
   /** Uninstalls itself.
-   *  @param {Broker} broker A Broker object.
    */
   "[uninstall]":
-  function uninstall(broker) 
+  function uninstall() 
   {
     // unregister DOM listener.
     this.onRightClick.enabled = false;

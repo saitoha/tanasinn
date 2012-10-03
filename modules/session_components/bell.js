@@ -66,24 +66,28 @@ Bell.definition = {
   "[persistable] sound_bell": true,
 
   _cover: null,
- 
-  /** installs itself. 
-   *  @param {Broker} broker A Broker object.
+  _renderer: null,
+  _screen: null, 
+
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(broker) 
+  function install(context) 
   {
-    var { tanasinn_visual_bell }
-      = this.request("command/construct-chrome", this.getTemplate());
-    this._cover = tanasinn_visual_bell;
+    var result = this.request("command/construct-chrome", this.getTemplate());
+
+    this._renderer = context["renderer"];
+    this._screen = context["screen"];
+
+    this._cover = result.tanasinn_visual_bell;
     this.onFirstFocus();
   },
 
   /** Uninstalls itself.
-   *  @param {Broker} broker A Broker object.
    */
   "[uninstall]":
-  function uninstall(broker) 
+  function uninstall() 
   {
     if (null !== this._cover) {
       this._cover.parentNode.removeChild(this._cover);
@@ -94,10 +98,8 @@ Bell.definition = {
   "[subscribe('@command/focus'), pnp]":
   function onFirstFocus()
   {
-    var renderer, screen;
-
-    renderer = this.dependency["renderer"];
-    screen = this.dependency["screen"];
+    var renderer = this._renderer,
+        screen = this._screen;
 
     this._cover.width = renderer.char_width * screen.width;
     this._cover.height = renderer.line_height * screen.height;

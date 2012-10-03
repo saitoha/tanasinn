@@ -22,6 +22,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+"use strict";
+
 /**
  * @class Trait
  */
@@ -74,6 +76,7 @@ Trait.prototype = {
   }
 
 }; // class Trait
+
 
 /**
  * @class AttributeContext
@@ -132,7 +135,10 @@ AttributeContext.prototype = {
       function getter() 
       {
         this._target[id] = [true];
-        return function() this._target[id] = Array.slice(arguments);
+        return function()
+        {
+          this._target[id] = Array.slice(arguments);
+        }
       });
   },
 
@@ -143,7 +149,6 @@ AttributeContext.prototype = {
   },
 
 }; // class AttributeContext
-
 
 var ConceptContext = {
 
@@ -209,8 +214,12 @@ var ConceptContext = {
  */
 function Prototype(definition, base_class, dependency_list) 
 {
+  var intercept,
+      copy,
+      decorated_key;
+
   /** Parses decorated key and sets attributes. */
-  function intercept(key) 
+  intercept = function intercept(key) 
   {
     var match = key.match(/^([\w-@]+)$|^\[(.+)\]\s*(.*)\s*$/),
         annotation,
@@ -243,7 +252,7 @@ function Prototype(definition, base_class, dependency_list)
     return key;
   };
 
-  function copy(definition, decorated_key, base_class) 
+  copy = function copy(definition, decorated_key, base_class) 
   {
     var getter = definition.__lookupGetter__(decorated_key),
         setter = definition.__lookupSetter__(decorated_key),
@@ -277,8 +286,8 @@ function Prototype(definition, base_class, dependency_list)
     }
   };
 
-  for (key in definition) {
-    copy.call(this, definition, key, base_class);
+  for (decorated_key in definition) {
+    copy.call(this, definition, decorated_key, base_class);
   }
 
   if (dependency_list) {
@@ -609,6 +618,7 @@ Abstruct.prototype = {
 
 }; // Abstruct
 
+
 /** 
  * @abstruct Component
  * The base class of component node in tupbase2.
@@ -736,7 +746,7 @@ Plugin.definition = {
 
   __enabled: false,
 
-  "[persistable] enabled_when_startup": true,
+//  "[persistable] enabled_when_startup": true,
 
   /** constructor */
   initialize: function initialize(broker)
@@ -769,13 +779,13 @@ Plugin.definition = {
   set enabled(flag) 
   {
     var id = this.id,
-        broker = this._broker;
+        broker = this._broker,
         value = Boolean(flag);
 
     if (value !== this.__enabled) {
       if (value) {
         try {
-          broker.notify("install/" + id, broker);
+          broker.notify("install/" + id, this.dependency);
         } catch (e) {
           coUtils.Debug.reportError(e);
           coUtils.Debug.reportError(
@@ -785,7 +795,7 @@ Plugin.definition = {
         }
         broker.notify("initialized/" + this.id, this);
       } else {
-        broker.notify("uninstall/" + id, broker);
+        broker.notify("uninstall/" + id);
       }
       this.__enabled = value;
       this.enabled_when_startup = value;

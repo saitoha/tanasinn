@@ -47,35 +47,43 @@ Copy.definition = {
 
   "[persistable] enabled_when_startup": true,
 
+  _selection: null,
+  _screen: null,
+
   /** Installs itself. 
-   *  @param {Broker} broker A Broker object.
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]": 
-  function install(session) 
+  function install(context) 
   {
+    this._selection = context["selection"];
+    this._screen = context["screen"];
   },
 
   /** Uninstalls itself. 
-   *  @param {Broker} broker A Broker object.
    */
   "[uninstall]":
-  function uninstall(session) 
+  function uninstall() 
   {
+    this._selection = null;
+    this._screen = null;
   },
 
   "[subscribe('get/contextmenu-entries'), pnp]":
   function onContextMenuEntriesRequested() 
   {
-    var range;
+    var range = this._selection.getRange();
 
-    range = this.dependency["selection"].getRange();
     return range && {
         tagName: "menuitem",
         label: _("Copy Selected Text"), 
         listener: {
           type: "command", 
           context: this,
-          handler: function() this.copyImpl(range)
+          handler: function() 
+          {
+            return this.copyImpl(range);
+          },
         }
       };
   },
@@ -84,10 +92,9 @@ Copy.definition = {
   "[command('copy'), nmap('<M-c>', '<C-S-c>'), _('Copy selected text.'), pnp]": 
   function copy(info) 
   {
-    var range;
-
     // get selection range from "selection plugin"
-    range = this.dependency["selection"].getRange();
+    var range = this._selection.getRange();
+
     if (range) {
       this.copyImpl(range);
     }
@@ -96,16 +103,19 @@ Copy.definition = {
 
   copyImpl: function copyImpl(range) 
   {
-    var text, status_message;
+    var text,
+        status_message,
+        clipboard_helper;
 
     // and pass it to "screen". "screen" returns selected text.
-    text = this.dependency["screen"]
+    text = this._screen
       .getTextInRange(range.start, range.end, range.is_rectangle)
       .replace(/\x00/g, "");
-    const clipboardHelper = Components
-      .classes["@mozilla.org/widget/clipboardhelper;1"]
-      .getService(Components.interfaces.nsIClipboardHelper);
-    clipboardHelper.copyString(text);
+
+    clipboard_helper = Components
+         .classes["@mozilla.org/widget/clipboardhelper;1"]
+         .getService(Components.interfaces.nsIClipboardHelper);
+    clipboard_helper.copyString(text);
 
     status_message = coUtils.Text.format(
       _("Copied text to clipboard: %s"), text);

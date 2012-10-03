@@ -79,8 +79,8 @@ ConformanceLevel.definition = {
         this._8bit_mode = false;
       } else {
         coUtils.Debug.reportWarning(
-          "%s sequence [%s] was ignored.",
-          arguments.callee.name, Array.slice(arguments));
+          _("%s sequence [%s] was ignored."),
+          "DECSCL", Array.slice(arguments));
         return;
       }
       level = 4;
