@@ -132,6 +132,7 @@ Titlebar.definition = {
 
     this._decoder = context["decoder"];
     this._encoder = context["encoder"];
+
     this._canvas = result.tanasinn_titlebar_canvas;
     this._canvas.width = this._canvas.parentNode.boxObject.width;
 

@@ -49,7 +49,6 @@ Video.definition = {
       parentNode: "#tanasinn_center_area",
       tagName: "html:div",
       id: "tanasinn_video_layer",
-      style: "position: absolute;",
     };
   },
 

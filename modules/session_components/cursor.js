@@ -47,13 +47,14 @@ Cursor.definition = {
 
   /** UI template */
   getTemplate: function getTemplate() 
-    ({
+  {
+    return {
       parentNode: "#tanasinn_center_area",
       tagName: "html:canvas",
       id: "cursor_canvas",
       MozTransitionProperty: "opacity",
-      style: "position: absolute;",
-    }),
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
 

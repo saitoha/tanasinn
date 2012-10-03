@@ -432,7 +432,11 @@ DragCover.definition = {
     return {
       tagName: "box",
       id: "tanasinn_capture_cover",
-      style: "position: fixed; top: 0px; left: 0px;",
+      style: {
+        position: "fixed",
+        top: "0px",
+        left: "0px",
+      },
       hidden: true,
     };
   },

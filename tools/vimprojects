@@ -22,7 +22,6 @@
   content=content {
    tanasinn.xul
    testsuite.js
-
   }
  }
  doc=doc {
@@ -262,7 +261,6 @@
     setglobalcommand.js
     setcommand.js
 
-    display.js
     textdisplaydriver.js
     colornumberdisplaydriver.js
     colordisplaydriver.js
