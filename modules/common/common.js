@@ -22,6 +22,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+"use strict";
+
 /** @package common
  * Provides basic utility and services.
  */
@@ -1590,6 +1592,22 @@ coUtils.Components = {
 
     return process;
   },
+
+  createWebBrowserPersist: function createWebBrowserPersist(file)
+  {
+    var persist = Components
+      .classes["@mozilla.org/embedding/browser/nsWebBrowserPersist;1"]
+      .createInstance(Components.interfaces.nsIWebBrowserPersist);
+    
+    persist.persistFlags = Components
+      .interfaces.nsIWebBrowserPersist
+      .PERSIST_FLAGS_REPLACE_EXISTING_FILES;
+    persist.persistFlags |= Components
+      .interfaces.nsIWebBrowserPersist
+      .PERSIST_FLAGS_AUTODETECT_APPLY_CONVERSION;
+
+    return persist;
+  },
 };
 
 
@@ -1854,7 +1872,7 @@ coUtils.Clipboard = {
     transferable.addDataFlavor("text/unicode");
 
     clipboard.getData(trans, clipboard.kGlobalClipboard);
-	  trans.getTransferData("text/unicode", str, str_length);
+    trans.getTransferData("text/unicode", str, str_length);
 
     if (str.value && str_length.value) {
       text = str.value
@@ -2097,7 +2115,8 @@ coUtils.IO = {
   writeToFile: 
   function writeToFile(path, data, callback) 
   {
-    var file = coUtils.File.getFileLeafFromVirtualPath(path);
+    var file = coUtils.File.getFileLeafFromVirtualPath(path),
+        make_directory;
 
     if (file.exists()) { // check if target exists.
       // check if target is file node.
@@ -2112,7 +2131,7 @@ coUtils.IO = {
       }
     } else { // if target is not exists.
       // create base directories recursively (= mkdir -p).
-      function make_directory(current) 
+      make_directory = function make_directory(current) 
       {
         var parent = current.parent;
 
@@ -2124,41 +2143,44 @@ coUtils.IO = {
       make_directory(file);
     }
     this._writeToFileImpl(file, data, callback);
-  },	 
+  },   
 
   _writeToFileImpl: 
   function _writeToFileImpl(file, data, callback) 
   {
-    var mode, ostream, converter, istream;
+    var mode,
+        ostream,
+        converter,
+        istream;
 
-  	Components.utils.import("resource://gre/modules/NetUtil.jsm");
-  	Components.utils.import("resource://gre/modules/FileUtils.jsm");
+    Components.utils.import("resource://gre/modules/NetUtil.jsm");
+    Components.utils.import("resource://gre/modules/FileUtils.jsm");
 
-  	// file is nsIFile, data is a string
-  	mode = FileUtils.MODE_WRONLY 
+    // file is nsIFile, data is a string
+    mode = FileUtils.MODE_WRONLY 
          | FileUtils.MODE_CREATE 
          | FileUtils.MODE_TRUNCATE;
-  	ostream = FileUtils.openSafeFileOutputStream(file, mode);
-  	converter = Components
+    ostream = FileUtils.openSafeFileOutputStream(file, mode);
+    converter = Components
       .classes["@mozilla.org/intl/scriptableunicodeconverter"]
       .createInstance(Components.interfaces.nsIScriptableUnicodeConverter);
-  	converter.charset = "UTF-8";
-  	istream = converter.convertToInputStream(data);
-  	NetUtil.asyncCopy(istream, ostream, function(status) {
+    converter.charset = "UTF-8";
+    istream = converter.convertToInputStream(data);
+    NetUtil.asyncCopy(istream, ostream, function(status) {
       try {
-  	    if (!Components.isSuccessCode(status)) {
+        if (!Components.isSuccessCode(status)) {
           throw coUtils.Debug.Exception(
             _("An error occured when writing to ",
               "local file [%s]. Status code is [%x]."),
             file, status);
-  	    }
+        }
       } finally {
         FileUtils.closeSafeFileOutputStream(ostream);
         if (callback) {
           callback();
         }
       }
-  	}); // _writeToFileImpl
+    }); // _writeToFileImpl
   },
 
   saveCanvas: 
@@ -2170,7 +2192,7 @@ coUtils.IO = {
         io = coUtils.Services.ioService,
         source,
         target,
-        persist;
+        persist = coUtils.Components.createWebBrowserPersist();
 
     canvas.style.background = "black";
 
@@ -2189,18 +2211,6 @@ coUtils.IO = {
     // create a data url from the canvas and then create URIs of the source and targets.
     source = io.newURI(canvas.toDataURL("image/png", ""), "UTF8", null);
     target = io.newFileURI(file)
-  
-    // prepare to save the canvas data  
-    persist = Components
-      .classes["@mozilla.org/embedding/browser/nsWebBrowserPersist;1"]
-      .createInstance(Components.interfaces.nsIWebBrowserPersist);
-    
-    persist.persistFlags = Components
-      .interfaces.nsIWebBrowserPersist
-      .PERSIST_FLAGS_REPLACE_EXISTING_FILES;
-    persist.persistFlags |= Components
-      .interfaces.nsIWebBrowserPersist
-      .PERSIST_FLAGS_AUTODETECT_APPLY_CONVERSION;
   
     // save the canvas data to the file  
     persist.saveURI(source, null, null, null, null, file);
@@ -2281,7 +2291,7 @@ coUtils.File = new function() {
   function getFilesRecursively(directory, filter) 
   {
     var directory_entries = directory.clone().directoryEntries;
-    var callee = arguments.callee;
+    var callee = getFilesRecursively;
     return function() { // return generator.
       var file;
       var name;
@@ -2648,16 +2658,17 @@ coUtils.Keyboard = {
   parseKeymapExpression: 
   function parseKeymapExpression(expression) 
   {
-    var pattern = /<.+?>|./g;
-    var match = expression.match(pattern);
-    var strokes = match;
-    var key_code_array = [];
-    var i, j;
-    var stroke;
-    var tokens;
-    var key_code;
-    var last_key;
-    var sequence;
+    var pattern = /<.+?>|./g,
+        match = expression.match(pattern),
+        strokes = match,
+        key_code_array = [],
+        i,
+        j,
+        stroke,
+        tokens,
+        key_code,
+        last_key,
+        sequence;
 
     for (i = 0; i < strokes.length; ++i) {
       stroke = strokes[i];
@@ -2709,28 +2720,10 @@ coUtils.Keyboard = {
 
 coUtils.Unicode = {
 
-  /**
-   * @fn doubleWidthTest
-   * @brief Test if given unicode character is categorized as 
-   *        "East Asian Width Character".
-   * @return true if given character code point is categorized in 
-   *         F(FullWidth) or W(Wide).
-   */
-  doubleWidthTest: function doubleWidthTest(c) 
-  { // TODO: See EastAsianWidth.txt
-    return coUCS2EastAsianWidthTest(c);
-  },
-
-  isNonSpacingMark: function isNonSpacingMark(code)
-  {
-    var c = String.fromCharCode(code);
-    return coUCS2NonSpacingMarkTest(c);
-  },
-
   getUTF8ByteStreamGenerator: function getUTF8ByteStreamGenerator(str) 
   {
-    var c;
-    var code;
+    var c,
+        code;
 
     for each (c in str) {
       code = c.charCodeAt(0);
@@ -2756,16 +2749,6 @@ coUtils.Unicode = {
         yield (code & 0x3f) | 0x80; 
       }
     }
-  },
-
-  encodeUCS4toUTF8: function(str) 
-  {
-    var byte_stream;
-    if (!str) {
-      return "";
-    }
-    byte_stream = [byte for (byte in coUtils.getUTF8ByteStreamGenerator(str))];
-    return coUtils.Text.safeConvertFromArray(byte_stream);
   },
 
 };
@@ -3173,6 +3156,107 @@ coUtils.Uuid = {
   },
 
 }; // coUtils.Uuid
+
+coUtils.Sessions = {
+
+  _records: null,
+  _dirty: true,
+
+  session_data_path: "$Home/.tanasinn/sessions.txt",
+
+  remove: function remove(broker, request_id)
+  {
+    delete this._records[request_id];
+    this._dirty = true;
+
+    coUtils.Timer.setTimeout(
+      function timerProc()
+      {
+        var backup_data_path = broker.runtime_path + "/persist/" + request_id + ".txt",
+            file = coUtils.File.getFileLeafFromVirtualPath(backup_data_path);
+
+        if (file.exists()) {
+          file.remove(true);
+        }
+
+        backup_data_path = broker.runtime_path + "/persist/" + request_id + ".png";
+        file = coUtils.File.getFileLeafFromVirtualPath(backup_data_path);
+
+        if (file.exists()) {
+          file.remove(true);
+        }
+      }, 1000, this);
+  },
+
+  get: function get(request_id)
+  {
+    if (!this._records) {
+      this.load();
+    }
+    return this._records[request_id];
+  },
+
+  load: function load() 
+  {
+    var sessions,
+        lines;
+
+    this._records = {};
+    if (coUtils.File.exists(this.session_data_path)) {
+      sessions = coUtils.IO.readFromFile(this.session_data_path);
+      lines = sessions.split(/[\r\n]+/);
+
+      lines.forEach(function(line) {
+        var request_id, command, control_port, pid, ttyname,
+            sequence;
+
+        sequence = line.split(",");
+        if (sequence.length > 4) {
+          [request_id, command, control_port, pid, ttyname] = sequence;
+          this._records[request_id] = {
+            request_id: request_id,
+            command: command && coUtils.Text.base64decode(command),
+            control_port: Number(control_port),
+            pid: Number(pid),
+            ttyname: ttyname,
+          }
+        };
+      }, this);
+    }
+    this._dirty = false;
+  },
+
+  update: function update()
+  {
+    var lines = [""],
+        request_id,
+        record,
+        line;
+
+    for ([request_id, record] in Iterator(this._records)) {
+      line = [
+        request_id,
+        coUtils.Text.base64encode(record.command),
+        record.control_port,
+        record.pid,
+        record.ttyname
+      ].join(",");
+      lines.unshift(line);
+    }
+
+    coUtils.IO.writeToFile(this.session_data_path, lines.join("\n"));
+    this._dirty = false;
+  },
+
+  getRecords: function getRecords()
+  {
+    if (!this._records) {
+      this.load();
+    }
+    return this._records;
+  },
+
+};
 
 /**
  * @class Localize
