@@ -22,6 +22,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+"use strict";
+
 function alert(message)
 {
   Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
