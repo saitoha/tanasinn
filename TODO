@@ -9,3 +9,5 @@
 - Fix Sixel Graphics behavior more strictry
 - Fix DRCS behavior more strictry
 - Fix Ctrl + Space issue on X11 environment
+- implement OSC 701
+- implement OSC 7771
