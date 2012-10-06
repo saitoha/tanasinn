@@ -26,10 +26,10 @@ EEND="$$($(TPUT) sgr0; $(TPUT) setaf 6)"
 all: $(XPI) tanasinn-docs.zip
 	$(CP) $(XPI) tanasinn-docs.zip download/
 	if [ ! -d download/$(PACKAGE_VERSION) ]; then \
-		$(MKDIR) download/$(PACKAGE_VERSION); \
+		$(MKDIR) download/releases/$(PACKAGE_VERSION); \
 	fi
-	$(CP) $(XPI) download/$(PACKAGE_VERSION)/
-	git add -f download/$(PACKAGE_VERSION)/*.xpi
+	$(CP) $(XPI) download/releases/$(PACKAGE_VERSION)/
+	git add -f download/releases/$(PACKAGE_VERSION)/*.xpi
 
 tanasinn-docs.zip: doc/usermanual.html
 	@echo "$(MSTART) Create documentation package....$(MEND)" 
