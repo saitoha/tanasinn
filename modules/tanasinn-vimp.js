@@ -21,48 +21,49 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+"use strict";
+
 try {
 
    /**
    * @fn getTanasinnProcess
    */
-  function getTanasinnProcess() 
-  {
-    var current_file = Components.stack
-          .filename
-          .split(" -> ").pop()
-          .split("?").shift(),
-        id = new Date().getTime(),
-        file = current_file + "/../../tanasinn/modules/common/process.js?" + id,
-        scope = {};
+  var getTanasinnProcess = function getTanasinnProcess() 
+      {
+        var current_file = Components.stack
+              .filename
+              .split(" -> ").pop()
+              .split("?").shift(),
+            id = new Date().getTime(),
+            file = current_file + "/../../tanasinn/modules/common/process.js?" + id,
+            scope = {};
 
-    Components
-      .classes["@mozilla.org/moz/jssubscript-loader;1"]
-      .getService(Components.interfaces.mozIJSSubScriptLoader)
-      .loadSubScript(file, scope);
-    
-    return scope.g_process;
-  }
+        Components
+          .classes["@mozilla.org/moz/jssubscript-loader;1"]
+          .getService(Components.interfaces.mozIJSSubScriptLoader)
+          .loadSubScript(file, scope);
+        
+        return scope.g_process;
+      },
+      getDesktop = function getDesktop() 
+      {
+        var process = getTanasinnProcess(),
+            desktops = process.notify("get/desktop-from-window", window),
+            desktop;
 
-  function getDesktop() 
-  {
-    var process = getTanasinnProcess(),
-        desktops = process.notify("get/desktop-from-window", window),
-        desktop;
-
-    if (desktops) {
-      desktop = desktops.filter(
-        function filterProc(desktop)
-        {
-          return desktop;
-        })[0];
-      if (desktop) {
+        if (desktops) {
+          desktop = desktops.filter(
+            function filterProc(desktop)
+            {
+              return desktop;
+            })[0];
+          if (desktop) {
+            return desktop;
+          }
+        }
+        desktop = process.callSync("event/new-window-detected", window);
         return desktop;
-      }
-    }
-    desktop = process.callSync("event/new-window-detected", window);
-    return desktop;
-  }
+      };
 
   var liberator = window.liberator,
       commands = liberator.modules.commands,
