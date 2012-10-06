@@ -39,6 +39,7 @@
  modules=modules {
   Makefile
   common=common {
+   config.js.in
    process.js
    common.js
    tupstart.js
@@ -254,6 +255,7 @@
     jscommand.js
     overlayecho.js
     echocommand.js
+    versioncommand.js
     lscommand.js
     charsetcommand.js
     localizecommand.js

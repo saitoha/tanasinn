@@ -102,6 +102,7 @@ void function() {
 
 //  coUtils.Runtime.loadScript("modules/common/pot.js", tanasinn_scope);
   coUtils.Runtime.loadScript("modules/unicode/wcwidth.js", tanasinn_scope);
+  coUtils.Runtime.loadScript("modules/common/config.js", tanasinn_scope);
   coUtils.Runtime.loadScript("modules/common/tupstart.js", tanasinn_scope);
   coUtils.Runtime.loadScript("modules/common/tupbase.js", tanasinn_scope);
 
