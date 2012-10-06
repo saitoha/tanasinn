@@ -58,6 +58,7 @@ ForwardInputIterator.definition = {
   {
     return this._position >= this._value.length;
   },
+
 }; // ForwardInputIterator
 
 /**
