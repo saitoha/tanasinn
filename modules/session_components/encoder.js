@@ -24,7 +24,6 @@
 
 "use strict";
 
-
 /**
  * @class Encoder
  *
@@ -43,25 +42,58 @@ Encoder.definition = {
     };
   },
 
-
-  _parser: null,
-  _encoder_map: null,
   _cache: null,
 
+  "[persistable] enabled_when_startup": true,
   "[persistable] initial_scheme": "UTF-8",
 
-  /** Gets character encoding scheme */
-  get scheme()
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
+   */
+  "[install]":
+  function install(context) 
   {
-    return this.initial_scheme;
+    this._cache = {};
+
+    this.changeScheme(this.initial_scheme);
   },
 
-  /** Sets character encoding scheme */
-  set scheme(value) 
+  /** Uninstalls itself. 
+   */
+  "[uninstall]":
+  function uninstall() 
   {
-    var scheme = value,//.toLowerCase();
-        encoder = this._encoder_map[scheme].converter,
+    this._cache = null;
+  },
+
+  "[subscribe('event/session-initialized'), pnp]":
+  function onSessionInitialized(broker)
+  {
+    this.changeScheme(this.initial_scheme);
+  },
+
+  "[subscribe('change/encoder'), pnp]":
+  /** Sets character encoding scheme */
+  function changeScheme(value) 
+  {
+    var encoders = this.sendMessage("get/encoders"),
+        encoder_map,
+        scheme,
+        encoder,
         message;
+
+    if (!encoders) {
+      return;
+    }
+
+    encoder_map = encoders.reduce(
+      function reduceProc(map, information) 
+      {
+        map[information.charset] = information; 
+        return map;
+      });
+    scheme = value;//.toLowerCase();
+    encoder = encoder_map[scheme].converter;
 
     if (!encoder) {
       throw coUtils.Debug.Exception(
@@ -78,30 +110,6 @@ Encoder.definition = {
       .format(_("Input character encoding changed: [%s]."), scheme);
     this.sendMessage("command/report-status-message", message); 
 
-  },
-
-  "[subscribe('@event/broker-started'), enabled]": 
-  function onLoad(broker) 
-  {
-    this._cache = {};
-
-    this._encoder_map = this.sendMessage("get/encoders")
-      .reduce(
-        function(map, information) 
-        {
-          map[information.charset] = information; 
-          return map;
-        });
-    this.scheme = this.initial_scheme;
-
-    broker.subscribe(
-      "change/encoder", 
-      function(scheme) 
-      {
-        this.scheme = scheme;
-      }, this)
-
-    this.sendMessage("initialized/encoder", this);
   },
 
   /** Encode incoming string data.
@@ -124,6 +132,10 @@ Encoder.definition = {
 function main(broker) 
 {
   new Encoder(broker);
+}
+
+function test(broker)
+{
 }
 
 // EOF
