@@ -1873,6 +1873,7 @@ Screen.definition = {
         if (this._wraparound_mode) {
           cursor.positionX = 0;
           this.lineFeed();
+          line = this.getCurrentLine();
         } else {
           cursor.positionX = width - 1;
         }
@@ -1892,6 +1893,7 @@ Screen.definition = {
             break;
           }
         }
+
         positionX = cursor.positionX;
         length = width - positionX;
         run = codes.slice(it, it + length);
