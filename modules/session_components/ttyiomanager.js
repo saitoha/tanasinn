@@ -117,7 +117,7 @@ IOManager.definition = {
   id: "tty_iomanager",
 
   "[persistable] enabled_when_startup": true,
-  "[persistable] outgoing_buffer_size": 1024 * 32,
+  "[persistable] outgoing_buffer_size": 1024 * 64,
   "[persistable] incoming_buffer_size": 1024 * 1,
 
   _input: null,
