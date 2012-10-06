@@ -27,8 +27,14 @@
 var EncoderInfo = new Class();
 EncoderInfo.definition = {
 
-  initialize: function(broker, converter, charset, title)
+  _broker: null,
+  _id: null,
+
+  initialize: function initialize(broker, converter, charset, title)
   {
+    this._id = coUtils.Uuid.generate();
+    this._broker = broker;
+
     broker.subscribe(
       "get/encoders", 
       function getEncoders() 
@@ -38,9 +44,15 @@ EncoderInfo.definition = {
           converter: converter,
           title: title,
         };
-      });
+      }, this._id);
   },
-};
+
+  uninitialize: function uninitialize()
+  {
+    this._broker.unsubscribe(id);
+  },
+
+}; // EncoderInfo
 
 /**
  * @class MultiEncoder
@@ -59,13 +71,18 @@ MultiEncoder.definition = {
     };
   },
 
+  "[persistable] enabled_when_startup": true,
 
   _current_scheme: "UTF-8",
 
   _converter: null,
+  _encoders: null,
 
-  /** constructor */
-  initialize: function initialize(broker) 
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
+   */
+  "[install]":
+  function install(context) 
   {
     var converter_manager,
         encoder_list,
@@ -83,6 +100,8 @@ MultiEncoder.definition = {
 
     encoder_list = converter_manager.getEncoderList();
 
+    this._encoders = [];
+
     // enumerate charcter sets.
     while (encoder_list.hasMore()) {
 
@@ -94,11 +113,20 @@ MultiEncoder.definition = {
         } catch (e) { // fallback
           title = charset;
         }
-        new EncoderInfo(broker, this, charset, title);
+
+        info = new EncoderInfo(this._broker, this, charset, title);
+        this._encoders.push(info);
       } catch (e) {
         coUtils.Debug.reportError(e);
       }
     }
+  },
+
+  /** Uninstalls itself. 
+   */
+  "[uninstall]":
+  function uninstall() 
+  {
   },
 
   activate: function active(scheme)
