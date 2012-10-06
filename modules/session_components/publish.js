@@ -47,7 +47,8 @@ PublishCommand.definition = {
       };
     }
 
-    [, topic, message] = match;
+    topic = match[1];
+    message = match[2];
 
     this.sendMessage(topic, new Function("return (" + message + ");")())
 
