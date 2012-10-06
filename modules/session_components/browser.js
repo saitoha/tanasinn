@@ -43,7 +43,7 @@ OverlayBrowser.definition = {
     };
   },
 
-  "[persistable] enabled_when_startup": true,
+  "[persistable] enabled_when_startup": false,
   "[persistable] open_delay": 20,
 
   _element: null,
