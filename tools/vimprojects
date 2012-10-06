@@ -84,8 +84,6 @@
   }
   session_components=session_components {
 
-   drcsconverter.js
-
    plugin=.{
 
     line.js
@@ -97,11 +95,13 @@
     ttycontroller.js
     ttyiomanager.js
     input.js
+    drcsconverter.js
     idleservice.js
     alertservice.js
 
     encoder.js
     multiencoder.js
+
     decoder.js
     multidecoder.js
     asciidecoder.js
@@ -185,14 +185,16 @@
     macro.js
     dsr.js
     decdsr.js
-    decrqcra.js
     charset.js
     protection.js
     reportparams.js
     terminfo.js
-    decrqss.js
     dectst.js
     wheelscroll.js
+
+    decrqcra.js
+    decrqss.js
+    decrqupss.js
 
     focusevent.js
     mousegesture.js
