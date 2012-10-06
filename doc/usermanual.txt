@@ -1164,11 +1164,11 @@ decrease
 
 #if __EN__
 
-==== blur (new!)
+==== blur
 
 #elif __JP__
 
-==== blur (new!)
+==== blur
 
 ウィンドウからフォーカスをはずします。
 
@@ -1245,9 +1245,9 @@ paste
 ==== nmap
 ==== nnoremap
 ==== nunmap
-==== cmap (new!)
-==== cnoremap (new!)
-==== cunmap (new!)
+==== cmap
+==== cnoremap
+==== cunmap
 
 #elif __JP__
 
@@ -1259,9 +1259,9 @@ paste
 ==== nmap
 ==== nnoremap
 ==== nunmap
-==== cmap (new!)
-==== cnoremap (new!)
-==== cunmap (new!)
+==== cmap
+==== cnoremap
+==== cunmap
 
 #endif
 
@@ -1775,7 +1775,7 @@ publish command/report-overlay-message "Hello, World!"
 #if __EN__
 
 
-===== sendkeys (new!)
+===== sendkeys
 
 Interpret specified Key Sequence Expression, and raise the key events.
 
@@ -1794,7 +1794,7 @@ sendkeys <PinchOpen>
 
 #elif __JP__
 
-===== sendkeys (new!)
+===== sendkeys
 
 指定されたキーシーケンス式を解釈し、キーイベントとして実行します。
 
@@ -1817,7 +1817,7 @@ sendkeys <PinchOpen>
 #if __EN__
 
 
-===== source (new!)
+===== source
 
 Load and evaluate specified file as tanasinn command batch file.
 
@@ -1827,7 +1827,7 @@ source [Path]
 
 #elif __JP__
 
-===== source (new!)
+===== source
 
 指定されたファイルをtanasinnコマンドバッチファイルとして読み込み、実行します。
 
@@ -1840,11 +1840,11 @@ source [ファイル・パス]
 
 #if __EN__
 
-===== import (new!)
+===== import
 
 #elif __JP__
 
-===== import (new!)
+===== import
 
 指定されたファイル名を~/.tanasinn/batchesディレクトリから検索し、コマンドバッチファイルとして実行します。
 
@@ -1857,12 +1857,12 @@ import [ファイル名]
 
 #if __EN__
 
-===== execcgi (new!)
+===== execcgi
 
 #elif __JP__
 
 
-===== execcgi (new!)
+===== execcgi
 
 指定されたファイル名を~/.tanasinn/cgi-binディレクトリから検索し、実行した結果をコマンドバッチとして再解釈し、実行します。
 
@@ -1900,11 +1900,11 @@ execcgi [ファイル名]
 
 #if __EN__
 
-===== vimperator (new!)
+===== vimperator
 
 #elif __JP__
 
-===== vimperator (new!)
+===== vimperator
 
 vimperatorにコマンドを送ります。
 
@@ -1916,11 +1916,11 @@ vimperator [command]
 
 #if __EN__
 
-===== echo (new!)
+===== echo
 
 #elif __JP__
 
-===== echo (new!)
+===== echo
 
 ステータスラインにメッセージを表示します。
 
@@ -1933,11 +1933,30 @@ echo [メッセージ]
 
 #if __EN__
 
-===== overlayecho (new!)
+===== version
+
+Show version.
 
 #elif __JP__
 
-===== overlayecho (new!)
+===== version
+
+バージョンを表示します。
+
+----
+echo [メッセージ]
+----
+
+#endif
+
+
+#if __EN__
+
+===== overlayecho
+
+#elif __JP__
+
+===== overlayecho
 
 オーバーレイインジケータにメッセージを表示します。
 ----
@@ -1949,11 +1968,11 @@ overlayecho [メッセージ]
 
 #if __EN__
 
-===== screenshot (new!)
+===== screenshot
 
 #elif __JP__
 
-===== screenshot (new!)
+===== screenshot
 
 現在のスクリーンを画像形式(png)で保存します。
 

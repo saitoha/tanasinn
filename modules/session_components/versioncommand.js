@@ -30,14 +30,14 @@
 var VersionCommand = new Class().extends(Plugin);
 VersionCommand.definition = {
 
-  id: "echo_command",
+  id: "version_command",
 
   getInfo: function getInfo()
   {
     return {
-      name: _("Echo Command"),
+      name: _("Version Command"),
       version: "0.1",
-      description: _("Provides echo command.")
+      description: _("Provides version command.")
     };
   },
 
@@ -59,6 +59,7 @@ VersionCommand.definition = {
   },
 
 
+  /** Show version */
   "[command('version'), _('echo version.'), enabled]":
   function evaluate(arguments_string)
   {
