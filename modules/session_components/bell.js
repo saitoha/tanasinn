@@ -50,7 +50,6 @@ Bell.definition = {
       parentNode: "#tanasinn_center_area",
       tagName: "html:canvas",
       id: "tanasinn_visual_bell",
-      style: "position: absolute",
       opacity: 0.0,
       margin: "-20px",
       MozTransitionProperty: "opacity",
