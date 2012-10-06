@@ -13,3 +13,6 @@
 - implement OSC 7771
 - main buffer's adaptive resize
 - IME control
+- Improve drag move experience
+- Improve drag resize experience
+- Support Growl like notification system
