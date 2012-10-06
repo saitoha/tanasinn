@@ -1,3 +1,19 @@
+2012-10-06 Hayaki Saito <user@zuse.jp>
+
+    * Version 0.3.0.2
+    * Fix
+    * Implement DECERA / Erase Rectangle Area
+    * Support HPB/VPB
+    * Support SCP / Save Cursor Position
+    * Support RCP / Restore Cursor Position
+    * SUpport xterm's "Titlebar Mode"
+    * Support 8bit mode input
+    * Fix DRCS Rendering bug
+    * Fix termcap response's bug
+    * Fix SGR rendition's bug
+    * Fix Fix OSC10/11's bug
+
+
 2012-09-23 Hayaki Saito <user@zuse.jp>
 
     * Version 0.3.0.1
