@@ -26,6 +26,27 @@ link:./usermanual.html[English/英語]
 
 == News
 
+=== 2012/10/06 
+    Version 0.3.0.2
+    Fix SCOSCP/SCORCP's bug
+    Add version command
+    Support DECRQUPSS/DECAUPSS
+    Change CSI 14 t's behavior
+    Support F13-F63 keys
+    Fix xenl behavior's bug
+    Fix XUL layout issue for firefox18.0a
+    Add IdleService plugin
+    Take auto-snapshot with using IdleService
+    Fix a bug with taking screenshots
+    Assign Ctrl + {4,5,6,7,8} -> FS/GS/RS/US/DEL
+    Allow a DSCS starting with space character in DECDLD
+    Implement auto-answerback mode
+    Fix a dragcopy plugin's bug
+    Handle OSC 1
+    Fix terminfo response's bug
+    Fix sixel graphics's data processing bug
+    Fix for the launcher's session missing bug
+
 === 2012/09/23 
     Version 0.3.0.1
     Implement Auto Answerback mode (DECAAM)
