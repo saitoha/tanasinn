@@ -2918,11 +2918,12 @@ coUtils.Timer = {
 
   wait: function wait(wait) 
   {
-    var enc_time = Date.now() + wait;
+    var enc_time = Date.now() + wait,
+        current_thread = this._thread_manager.currentThread;
 
     do {
-      this._thread_manager.currentThread.processNextEvent(true);
-    } while ((mainThread.hasPendingEvents()) || Date.now() < end_time);
+      current_thread.processNextEvent(true);
+    } while ((current_thread.hasPendingEvents()) || Date.now() < end_time);
   },
 
   /**
