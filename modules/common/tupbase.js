@@ -681,12 +681,12 @@ Component.definition = {
 
   postMessage: function postMessage(topic, data)
   {
-    var broker;
+    var broker = this._broker;
     
     coUtils.Timer.setTimeout(
       function timerProc()
       {
-        this._broker.notify(topic, data);
+        broker.notify(topic, data);
       }, 0)
   },
 
