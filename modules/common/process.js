@@ -128,26 +128,33 @@ void function() {
       for (; i < window_types.length; ++i) {
         window_type = window_types[i];
         // add functionality to existing windows
-        let browser_windows = window_mediator.getEnumerator(window_type);
-        while (browser_windows.hasMoreElements()) { // enumerate existing windows.
-          // only run the "start" immediately if the browser is completely loaded
-          let dom = {
-            window: browser_windows.getNext()
-          };
-          if ("complete" === dom.window.document.readyState) {
-            this.dispatchWindowEvent(dom.window);
-          } else {
-            // Wait for the window to finish loading before running the callback
-            // Listen for one load event before checking the window type
-            dom.window.addEventListener(
-              "load", 
-              function(event) 
-              {
+        void function(self)
+        {
+          var browser_windows = window_mediator.getEnumerator(window_type);
+
+          while (browser_windows.hasMoreElements()) { // enumerate existing windows.
+            // only run the "start" immediately if the browser is completely loaded
+            void function()
+            {
+              var dom = {
+                window: browser_windows.getNext()
+              };
+              if ("complete" === dom.window.document.readyState) {
                 self.dispatchWindowEvent(dom.window);
-              },
-              false);
-          }
-        } // while
+              } else {
+                // Wait for the window to finish loading before running the callback
+                // Listen for one load event before checking the window type
+                dom.window.addEventListener(
+                  "load", 
+                  function onLoad(event) 
+                  {
+                    self.dispatchWindowEvent(dom.window);
+                  },
+                  false);
+              }
+            } ();
+          } // while
+        } (this);
       }
     },
   
@@ -160,11 +167,17 @@ void function() {
   
     dispatchWindowEvent: function dispatchWindowEvent(window) 
     {
-      if (this.windows.some(function(w) w === window)) {
-        return;
+      var i = 0,
+          windows = this.windows;
+
+      for (; i < windows.length; ++i) {
+        if ( w === window) {
+          return;
+        }
       }
 
-      this.windows.push(window);
+      windows.push(window);
+
       getProcess().notify("event/new-window-detected", window);
     },
   
@@ -245,8 +258,8 @@ void function() {
 
     _guessCygwinRoot: function _guessCygwinRoot() 
     {
-      var path,
-          directory,
+      var directory,
+          i = 0,
           letters = ["C", "D", "E", "F", "G", 
                      "H", "I", "J", "K", "L", 
                      "M", "N", "O", "P", "Q", 
@@ -260,11 +273,11 @@ void function() {
 
       search_paths.push("D:\\User\\Program\\cygwin");
 
-      for ([, path] in Iterator(search_paths)) {
+      for (; i < search_paths.length; ++i) {
         directory = Components
           .classes["@mozilla.org/file/local;1"]
           .createInstance(Components.interfaces.nsILocalFile);
-        directory.initWithPath(path);
+        directory.initWithPath(search_paths[i]);
         if (directory.exists() && directory.isDirectory) {
           return directory.path;
         }
