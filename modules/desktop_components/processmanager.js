@@ -24,8 +24,6 @@
 
 "use strict";
 
-
-
 /**
  * @class ProcessManager
  *

@@ -40,27 +40,6 @@ SessionsCompletionDisplayDriver.definition = {
     return this;
   },
 
-  getImageSource: function getImageSource(request_id)
-  {
-    var broker = this._broker,
-        image_path,
-        image_file,
-        image_url;
-
-    try {
-      image_path = broker.runtime_path + "/persist/" + request_id + ".png";
-      image_file = coUtils.File.getFileLeafFromVirtualPath(image_path);
-      if (image_file.exists()) {
-        image_url = coUtils.File.getURLSpec(image_file);
-        return image_url;
-      }
-    } catch (e) {
-      coUtils.Debug.reportError(e);
-    }
-
-    return null; // TODO: return url for "no image".
-  },
-
   drive: function drive(grid, result, current_index) 
   {
     var rows = grid.appendChild(grid.ownerDocument.createElement("rows")),
@@ -78,9 +57,9 @@ SessionsCompletionDisplayDriver.definition = {
         completion_text = completion_text.substr(0, 20) + "...";
       }
 
-      image_url = this.getImageSource(result.comments[i].request_id);
+      image_url = result.data[i].image;
 
-      //if (null !== image_url) {
+      if (null !== image_url) {
         this.request(
           "command/construct-chrome", 
           {
@@ -138,7 +117,7 @@ SessionsCompletionDisplayDriver.definition = {
               },
             ],
           });
-      //}
+      }
     } // for i
   },
 };

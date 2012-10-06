@@ -40,21 +40,45 @@ SessionsCompleter.definition = {
     return this;
   },
  
+  _getImageSource: function _getImageSource(request_id)
+  {
+    var broker = this._broker,
+        image_path,
+        image_file,
+        image_url;
+
+    try {
+      image_path = broker.runtime_path + "/persist/" + request_id + ".png";
+      image_file = coUtils.File.getFileLeafFromVirtualPath(image_path);
+      if (image_file.exists()) {
+        image_url = coUtils.File.getURLSpec(image_file);
+        return image_url;
+      }
+    } catch (e) {
+      coUtils.Debug.reportError(e);
+    }
+
+    return null; // TODO: return url for "no image".
+  },
+
   _generateAvailableSession: function _generateAvailableSession()
   {
     var records,
         request_id,
-        record;
+        record,
+        image_path;
 
     coUtils.Sessions.load();
     records = coUtils.Sessions.getRecords();
 
     for ([request_id, record] in Iterator(records)) {
       try {
-        if (this.dependency["process_manager"].processIsAvailable(record.pid)) {
+        image_path = this._getImageSource(request_id);
+        if (image_path && this.dependency["process_manager"].processIsAvailable(record.pid)) {
           yield {
             name: "&" + request_id,
             value: record,
+            image: image_path,
           };
         } else {
           coUtils.Sessions.remove(this._broker, request_id);
