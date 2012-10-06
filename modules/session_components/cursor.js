@@ -62,6 +62,7 @@ Cursor.definition = {
   _cursor_visibility_backup: null,
 
   _timer: null,
+  _blink_state: false,
 
   _input_mode: coUtils.Constant.INPUT_MODE_NORMAL,
 
@@ -518,37 +519,41 @@ Cursor.definition = {
   /** Set blink timer. */
   _prepareBlink: function _prepareBlink() 
   {
-    var i = 0;
-
     if (null !== this._timer) {
       this._timer.cancel();
     } 
 
-    this._timer = coUtils.Timer.setInterval(
-      function timerProc()
-      {
-        if (this._blink && i++ % 2) {
-          this._setVisibility(false);
-        } else {
-          this._setVisibility(true);
-        }
-      }, this.blink_duration, this);
+    this._timer = coUtils.Timer
+      .setInterval(this._blinkImpl, this.blink_duration, this);
+  },
+
+  _blinkImpl: function _blinkImpl()
+  {
+    this._blink_state = !this._blink_state;
+
+    if (this._blink && this._blink_state) {
+      this._setVisibility(false);
+    } else {
+      this._setVisibility(true);
+    }
   },
 
   /** Set cursor visibility. */
   _setVisibility: function _setVisibility(visibility) 
   {
-    if (this._canvas) {
-      this._canvas.style.MozTransitionDuration = this.blink_transition_duration + "ms";
-      this._canvas.style.transitionTimingFunction = this.transition_function;
+    var canvas = this._canvas;
+
+    if (canvas) {
+      canvas.style.MozTransitionDuration = this.blink_transition_duration + "ms";
+      canvas.style.transitionTimingFunction = this.transition_function;
       if (visibility) {
-        this._canvas.style.opacity = this.opacity;
+        canvas.style.opacity = this.opacity;
       } else {
-        this._canvas.style.opacity = this.opacity2;
+        canvas.style.opacity = this.opacity2;
       }
     }
   }
-}
+}; // Cursor
 
 /**
  * @fn main
