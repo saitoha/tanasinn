@@ -516,19 +516,16 @@ Console.definition = {
   "[subscribe('@get/panel-items'), pnp]": 
   function onPanelItemRequested(panel) 
   {
-    var template, panel_item;
-
-    template = this.getTemplate();
-    panel_item = panel.alloc("console.panel", _("Console"))
+    var template = this.getTemplate(),
+        panel_item = panel.alloc("console.panel", _("Console")),
+        result;
 
     template.parentNode = panel_item;
 
-    var {
-      tanasinn_console_panel, 
-      console_output_box,
-    } = this.request("command/construct-chrome", template);
-    this._console_box = tanasinn_console_panel;
-    this._output_box = console_output_box;
+    result = this.request("command/construct-chrome", template);
+
+    this._console_box = result.tanasinn_console_panel;
+    this._output_box = result.console_output_box;
     return panel_item;
   },
 
@@ -552,9 +549,9 @@ Console.definition = {
   /** tracks growing scroll region. */
   scrollToBottom: function scrollToBottom() 
   {
-    var output_element, frame_element, current_scroll_position;
-
-    output_element = this._output_box;
+    var output_element = this._output_box,
+        frame_element,
+        current_scroll_position;
 
     if (this._output_box) {
       frame_element = output_element.parentNode;
@@ -569,7 +566,7 @@ Console.definition = {
         }
       }
     }
-  }
+  },
 
 };
 

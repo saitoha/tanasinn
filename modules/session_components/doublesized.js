@@ -98,7 +98,8 @@ DoubleSizedCharacters.definition = {
   "[profile('vt100'), sequence('ESC #3')]": 
   function DECDHLT() 
   {
-    var line = this.getCurrentLine();
+    var screen = this._screen,
+        line = screen.getCurrentLine();
 
     line.type = coUtils.Constant.LINETYPE_TOP;
     line.dirty = 1;
@@ -108,7 +109,8 @@ DoubleSizedCharacters.definition = {
   "[profile('vt100'), sequence('ESC #4')]": 
   function DECDHLB() 
   {
-    var line = this.getCurrentLine();
+    var screen = this._screen,
+        line = screen.getCurrentLine();
 
     line.type = coUtils.Constant.LINETYPE_BOTTOM;
     line.dirty = 1;
@@ -131,7 +133,8 @@ DoubleSizedCharacters.definition = {
   "[profile('vt100'), sequence('ESC #5')]": 
   function DECSWL() 
   {
-    var line = this.getCurrentLine();
+    var screen = this._screen,
+        line = screen.getCurrentLine();
 
     line.type = coUtils.Constant.LINETYPE_NORMAL;
     line.dirty = 1;
@@ -154,7 +157,8 @@ DoubleSizedCharacters.definition = {
   "[profile('vt100'), sequence('ESC #6')]": 
   function DECDWL() 
   {
-    var line = this.getCurrentLine();
+    var screen = this._screen,
+        line = screen.getCurrentLine();
 
     line.type = coUtils.Constant.LINETYPE_DOUBLEWIDTH;
     line.dirty = 1;
