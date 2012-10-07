@@ -99,9 +99,9 @@ CursorBlink.definition = {
     this._mode = true;
 
     cursor.blink = true;
-
-    coUtils.Debug.reportMessage(
-      _("DECSET - 12 (enable cursor blink) was called."));
+//
+//    coUtils.Debug.reportMessage(
+//      _("DECSET - 12 (enable cursor blink) was called."));
   },
 
   /** Stop Blinking Cursor (att610).
@@ -114,9 +114,9 @@ CursorBlink.definition = {
     this._mode = false;
 
     cursor.blink = false;
-
-    coUtils.Debug.reportMessage(
-      _("DECSET - 12 (disable cursor blink) was called."));
+//
+//    coUtils.Debug.reportMessage(
+//      _("DECSET - 12 (disable cursor blink) was called."));
   },
 
   /** Report mode
