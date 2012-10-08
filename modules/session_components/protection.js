@@ -30,6 +30,7 @@
  *
  */
 var Protection = new Class().extends(Plugin)
+                            .depends("cursorstate")
                             .depends("screen");
 Protection.definition = {
 
@@ -47,6 +48,7 @@ Protection.definition = {
   "[persistable] enabled_when_startup": true,
 
   _screen: null, // reference of screen object
+  _cursor_state: null,
 
   /** Installs itself. 
    *  @param {InstallContext} context A InstallContext object.
@@ -55,6 +57,7 @@ Protection.definition = {
   function install(context)
   {
     this._screen = context["screen"];
+    this._cursor_state = context["cursorstate"];
   },
 
   /** Uninstalls itself. 
@@ -63,6 +66,7 @@ Protection.definition = {
   function uninstall()
   {
     this._screen = null;
+    this._cursor_state = null;
   },
 
   /**
@@ -101,7 +105,7 @@ Protection.definition = {
   function DECSCA(n) 
   { // Device Status Report
 
-    var attr = this._screen.cursor.attr;
+    var attr = this._cursor_state.attr;
 
     switch (n || 0) {
 
@@ -130,7 +134,7 @@ Protection.definition = {
   "[subscribe('sequence/decrqss/decsca'), pnp]":
   function onRequestStatus(data) 
   { // Device Status Report
-    var attr = this._screen.cursor.attr,
+    var attr = this._cursor_state.attr,
         param,
         message;
 
@@ -175,9 +179,7 @@ Protection.definition = {
   "[profile('vt100'), sequence('CSI ?%dK')]":
   function DECSEL(n) 
   { // Selective Erase Line
-    var screen
-     
-    screen = this._screen;
+    var screen = this._screen;
    
     switch (n || 0) {
 
