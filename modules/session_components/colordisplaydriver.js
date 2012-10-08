@@ -29,20 +29,43 @@
  * @class ColorCompletionDisplayDriver
  *
  */
-var ColorCompletionDisplayDriver = new Class().extends(Component);
+var ColorCompletionDisplayDriver = new Class().extends(Plugin)
+                                              .depends("renderer");
 ColorCompletionDisplayDriver.definition = {
 
   id: "color-completion-display-driver",
 
-  _renderer: null,
-
-  "[subscribe('@initialized/renderer'), enabled]":
-  function onRendererInitialized(renderer)
+  getInfo: function getInfo()
   {
-    this._renderer = renderer;
+    return {
+      name: _("Color Completion Display Driver"),
+      version: "0.1",
+      description: _("The display component of color completion.")
+    };
   },
 
-  "[subscribe('get/completion-display-driver/color'), enabled]":
+  "[persistable] enabled_when_startup": true,
+
+  _renderer: null,
+
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
+   */
+  "[install]":
+  function install(context) 
+  {
+    this._renderer = context["renderer"];
+  },
+
+  /** Uninstalls itself 
+   */
+  "[uninstall]":
+  function uninstall() 
+  {
+    this._renderer = null;
+  },
+
+  "[subscribe('get/completion-display-driver/color'), pnp]":
   function onDisplayDriversRequested()
   {
     return this;
