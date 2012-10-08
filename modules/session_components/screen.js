@@ -1133,7 +1133,7 @@ Viewable.definition = {
   "[subscribe('command/scroll-up-view'), pnp]":
   function scrollUpView(n)
   {
-    var buffer_top = this.bufferTop;
+    var buffer_top = this.getBufferTop();
 
     if (0 === n || buffer_top === this._scrollback_amount) {
       return;
@@ -1154,7 +1154,7 @@ Viewable.definition = {
   "[subscribe('command/set-scroll-position'), pnp]":
   function setViewPosition(position)
   {
-    var buffer_top = this.bufferTop;
+    var buffer_top = this.getBufferTop();
 
     if (0 === this._scrollback_amount) {
       if (position !== buffer_top - this._scrollback_amount) {
@@ -1169,7 +1169,7 @@ Viewable.definition = {
   "[subscribe('command/update-scroll-information'), pnp]":
   function updateScrollInformation()
   {
-    var buffer_top = this.bufferTop,
+    var buffer_top = this.getBufferTop(),
         width = this.width,
         lines = this._getCurrentViewLines(),
         i,
@@ -1199,7 +1199,7 @@ Viewable.definition = {
 
   _getCurrentViewLines: function _getCurrentViewLines()
   {
-    var buffer_top = this.bufferTop,
+    var buffer_top = this.getBufferTop(),
         start = buffer_top - this._scrollback_amount,
         end = start + this.height;
 
@@ -1262,21 +1262,28 @@ Viewable.definition = {
    */  
   getWordRangeFromPoint: function getWordRangeFromPoint(column, row) 
   {
-    var line = this._getCurrentViewLines()[row],
+    var lines = this._getCurrentViewLines(),
+        line = lines[row],
         start,
         end,
-        offset;
+        offset,
+        range;
 
-    if (line) {
-      [start, end] = line.getWordRangeFromPoint(column);
-      offset = this.width * row;
-      return [offset + start, offset + end];
-    } else {
+    if (!line) {
       throw coUtils.Debug.Exception(
         _("Invalid parameter was passed. ",
           "Probably 'row' parameter was in out of range. row: [%d]."), 
         row);
     }
+
+    range = line.getWordRangeFromPoint(column);
+
+    start = range[0];
+    end = range[1];
+
+    offset = this.width * row;
+
+    return [offset + start, offset + end];
   },
 
   _getTextInRectangle: 
@@ -1385,7 +1392,7 @@ Scrollable.definition = {
   _scrollDown: function _scrollDown(top, bottom, n) 
   {
     var lines = this._buffer,
-        offset = this.bufferTop,
+        offset = this.getBufferTop(),
         width = this._width,
         height = this._height,
         attr = this.cursor.attr,
@@ -1782,17 +1789,17 @@ Screen.definition = {
     }
   },
 
-  get scrollTop()
+  getScrollTop: function getScrollTop()
   {
     return this._scroll_top;
   },
 
-  get scrollBottom()
+  getScrollBottom: function getScrollBottom()
   {
     return this._scroll_bottom;
   },
 
-  get bufferTop()
+  getBufferTop: function getBufferTop()
   {
     return this._buffer_top;
   },
