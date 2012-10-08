@@ -155,6 +155,7 @@
  * "designating and invoking current 8 bit char set to G2 and GL."
  */
 var SGRHandler = new Class().extends(Plugin)
+                            .depends("palette")
                             .depends("cursorstate");
 SGRHandler.definition = {
 
@@ -172,6 +173,7 @@ SGRHandler.definition = {
   "[persistable] enabled_when_startup": true,
 
   _attr: null, // current cursor attribute
+  _palette: null,
 
   /** Installs itself. 
    *  @param {InstallContext} context A InstallContext object.
@@ -179,6 +181,7 @@ SGRHandler.definition = {
   "[install]":
   function install(context)
   {
+    this._palette = context["palette"];
     this._attr = context["cursorstate"].attr;
   },
 
@@ -187,6 +190,7 @@ SGRHandler.definition = {
   "[uninstall]":
   function uninstall()
   {
+    this._palette = null;
     this._attr = null;
   },
 
@@ -284,7 +288,7 @@ SGRHandler.definition = {
 
           case 30:
             attr.fg = 0;
-            attr.fgcolor = false;
+            //attr.fgcolor = false;
             break;
 
           case 31:
@@ -316,7 +320,23 @@ SGRHandler.definition = {
             break;
 
           case 38:
-            arguments[++i] === 5 && (attr.fg = arguments[++i]);
+            switch (arguments[++i]) {
+              case 2:
+                {
+                  var r = arguments[++i],
+                      g = arguments[++i],
+                      b = arguments[++i];
+
+                  attr.fg = this._palette.getApproximateColorNumber(r, g, b);
+                  break;
+                }
+              case 5:
+                attr.fg = arguments[++i];
+                break;
+
+              default:
+                break;
+            }
             break;
 
           case 39:
@@ -326,7 +346,7 @@ SGRHandler.definition = {
 
           case 40:
             attr.bg = 0;
-            attr.bgcolor = false;
+            //attr.bgcolor = false;
             break;
 
           case 41:
@@ -358,7 +378,23 @@ SGRHandler.definition = {
             break;
 
           case 48:
-            arguments[++i] === 5 && (attr.bg = arguments[++i]);
+            switch (arguments[++i]) {
+              case 2:
+                {
+                  var r = arguments[++i],
+                      g = arguments[++i],
+                      b = arguments[++i];
+
+                  attr.bg = this._palette.getApproximateColorNumber(r, g, b);
+                  break;
+                }
+              case 5:
+                attr.bg = arguments[++i];
+                break;
+
+              default:
+                break;
+            }
             break;
 
           case 49:
