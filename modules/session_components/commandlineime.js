@@ -65,7 +65,9 @@ CommandlineIme.definition = {
   {
     var version_comparator = coUtils.Services.versionComparator,
         focused_element = this.request("get/root-element")
-          .ownerDocument.commandDispatcher.focusedElement,
+          .ownerDocument
+          .commandDispatcher
+          .focusedElement,
         textbox;
 
     this._commandline = context["commandline"];
