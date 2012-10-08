@@ -28,12 +28,44 @@
  * @class FontsizeCompletionDisplayDriver
  *
  */
-var FontsizeCompletionDisplayDriver = new Class().extends(Component);
+var FontsizeCompletionDisplayDriver = new Class().extends(Plugin);
 FontsizeCompletionDisplayDriver.definition = {
 
   id: "fontsize-completion-display-driver",
 
-  "[subscribe('get/completion-display-driver/fontsize'), enabled]":
+  getInfo: function getInfo()
+  {
+    return {
+      name: _("Color Completion Display Driver"),
+      version: "0.1",
+      description: _("The display component of font size completion.")
+    };
+  },
+
+  "[persistable] enabled_when_startup": true,
+
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
+   */
+  "[install]":
+  function install(context) 
+  {
+  },
+
+  /** Uninstalls itself 
+   */
+  "[uninstall]":
+  function uninstall() 
+  {
+  },
+
+  "[subscribe('get/completion-display-driver/color'), pnp]":
+  function onDisplayDriversRequested()
+  {
+    return this;
+  },
+
+  "[subscribe('get/completion-display-driver/fontsize'), pnp]":
   function onDisplayDriversRequested()
   {
     return this;
