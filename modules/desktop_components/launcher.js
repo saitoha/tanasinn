@@ -28,13 +28,24 @@
 /** 
  * @class Launcher
  */
-var Launcher = new Class().extends(Component);
+var Launcher = new Class().extends(Plugin);
 Launcher.definition = {
 
   id: "launcher",
 
+  getInfo: function getInfo()
+  {
+    return {
+      name: _("Launcher"),
+      version: "0.1",
+      description: _("Provides launcher UI.")
+    };
+  },
+
   top: 200,
   left: 500,
+
+  "[persistable, watchable] enabled_when_startup": true,
 
   "[persistable, watchable] popup_height": 400,
   "[persistable, watchable] completion_delay": 180,
@@ -52,7 +63,7 @@ Launcher.definition = {
   _last_altup_time: 0,
   _last_shiftup_time: 0,
 
-  get rowCount() 
+  getRowCount: function getRowCount() 
   {
     if (!this._result) {
       return 0;
@@ -60,12 +71,12 @@ Launcher.definition = {
     return this._result.labels.length;
   },
 
-  get currentIndex()
+  getCurrentIndex: function getCurrentIndex()
   {
     return this._index;
   },
 
-  get textboxStyle()
+  getTextboxStyle: function getTextboxStyle()
   {
     return "font-size: " + this.font_size + ";" +
            "font-family: " + this.font_family + ";" +
@@ -77,102 +88,109 @@ Launcher.definition = {
            ;
   },
 
-  "[subscribe('event/broker-started'), enabled]":
-  function onLoad(desktop)
+  getTemplate: function getTemplate()
   {
-    var result = desktop.callSync(
-      "command/construct-chrome", 
-      [
-        {
-          parentNode: desktop.root_element,
-          tagName: "box",
-          id: "tanasinn_window_layer",
+    return [
+      {
+        parentNode: this._broker.root_element,
+        tagName: "box",
+        id: "tanasinn_window_layer",
+      },
+      {
+        parentNode: this._broker.root_element,
+        tagName: "box",
+        id: "tanasinn_launcher_layer",
+        hidden: true,
+        style: {
+          position: "fixed",
+          left: "60px",
+          top: "80px",
         },
-        {
-          parentNode: desktop.root_element,
-          tagName: "box",
-          id: "tanasinn_launcher_layer",
-          hidden: true,
-          style: {
-            position: "fixed",
-            left: "60px",
-            top: "80px",
-          },
-          childNodes: [
-            {
-              tagName: "vbox",
-              style: {
-                padding: "20px",
-                borderRadius: "20px",
-                background: "-moz-linear-gradient(top, #999, #444)",
-                MozBoxShadow: "10px 10px 20px black",
-                boxShadow: "10px 10px 20px black",
-                opacity: "0.85",
-                cursor: "move",
-              },
-              childNodes: {
-                tagName: "textbox",
-                id: "tanasinn_launcher_textbox",
-                className: "plain",
-                style: this.textboxStyle,
-              },
+        childNodes: [
+          {
+            tagName: "vbox",
+            style: {
+              padding: "20px",
+              borderRadius: "20px",
+              background: "-moz-linear-gradient(top, #999, #444)",
+              MozBoxShadow: "10px 10px 20px black",
+              boxShadow: "10px 10px 20px black",
+              opacity: "0.85",
+              cursor: "move",
             },
-            {
-              tagName: "panel",
-              style: { 
-                MozAppearance: "none",
-                MozUserFocus: "ignore",
-                border: "1px solid #aaa",
-                borderRadius: "10px",
-                font: "menu",
-                opacity: "0.87",
-                //background: "transparent",
-                background: "-moz-linear-gradient(top, #ccc, #aaa)",
-              },
-              noautofocus: true,
-              height: this.popup_height,
-              id: "tanasinn_launcher_completion_popup",
-              childNodes: {
-                tagName: "stack",
-                flex: 1,
-                childNodes: [
-                  {
-                    tagName: "box",
-                    style: { 
-                      borderRadius: "12px",
-                      outline: "none",
-                      border: "none",
-                    },
+            childNodes: {
+              tagName: "textbox",
+              id: "tanasinn_launcher_textbox",
+              className: "plain",
+              style: this.getTextboxStyle(),
+            },
+          },
+          {
+            tagName: "panel",
+            style: { 
+              MozAppearance: "none",
+              MozUserFocus: "ignore",
+              border: "1px solid #aaa",
+              borderRadius: "10px",
+              font: "menu",
+              opacity: "0.87",
+              //background: "transparent",
+              background: "-moz-linear-gradient(top, #ccc, #aaa)",
+            },
+            noautofocus: true,
+            height: this.popup_height,
+            id: "tanasinn_launcher_completion_popup",
+            childNodes: {
+              tagName: "stack",
+              flex: 1,
+              childNodes: [
+                {
+                  tagName: "box",
+                  style: { 
+                    borderRadius: "12px",
+                    outline: "none",
+                    border: "none",
                   },
-                  {
-                    tagName: "scrollbox",
-                    id: "tanasinn_launcher_completion_scroll",
+                },
+                {
+                  tagName: "scrollbox",
+                  id: "tanasinn_launcher_completion_scroll",
+                  flex: 1,
+                  style: { 
+                    margin: "12px",
+                    overflowX: "hidden",
+                    overflowY: "auto",
+                  },
+                  orient: "vertical", // box-packing
+                  childNodes: {
+                    tagName: "grid",
                     flex: 1,
-                    style: { 
-                      margin: "12px",
-                      overflowX: "hidden",
-                      overflowY: "auto",
+                    id: "tanasinn_launcher_completion_root",
+                    style: {
+                      fontSize: "20px",
+                      fontFamily: "'Menlo','Lucida Console'",
+                      fontWeight: "bold",
+                      color: "#fff",
+                      textShadow: "1px 1px 7px black",
                     },
-                    orient: "vertical", // box-packing
-                    childNodes: {
-                      tagName: "grid",
-                      flex: 1,
-                      id: "tanasinn_launcher_completion_root",
-                      style: {
-                        fontSize: "20px",
-                        fontFamily: "'Menlo','Lucida Console'",
-                        fontWeight: "bold",
-                        color: "#fff",
-                        textShadow: "1px 1px 7px black",
-                      },
-                    }
-                  }, // scrollbox
-                ],
-              }, // stack
-            },  // panel
-          ],
-        },
-      ]);
+                  }
+                }, // scrollbox
+              ],
+            }, // stack
+          },  // panel
+        ],
+      },
+    ];
+  },
+
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
+   */
+  "[install]":
+  function install(context)
+  {
+    var result = this.request("command/construct-chrome", this.getTemplate());
+
     this._window_layer = result.tanasinn_window_layer;
     this._element = result.tanasinn_launcher_layer;
     this._textbox = result.tanasinn_launcher_textbox;
@@ -181,7 +199,15 @@ Launcher.definition = {
     this.onEnabled();
   },
 
-  "[subscribe('command/move-to'), enabled]":
+  /** Uninstalls itself. 
+   *  @param {InstallContext} context A InstallContext object.
+   */
+  "[uninstall]":
+  function uninstall(context)
+  {
+  },
+
+  "[subscribe('command/move-to'), pnp]":
   function moveTo(info)
   {
     var left = info[0],
@@ -192,7 +218,7 @@ Launcher.definition = {
     this._popup.hidePopup();
   },
   
-  "[subscribe('event/shutdown'), enabled]":
+  "[subscribe('event/shutdown'), pnp]":
   function shutdown()
   {
     this.enabled = false;
@@ -202,7 +228,7 @@ Launcher.definition = {
     }
   },
   
-  "[subscribe('event/enabled'), enabled]":
+  "[subscribe('event/enabled'), pnp]":
   function onEnabled()
   {
     var broker,
@@ -243,7 +269,7 @@ Launcher.definition = {
       });
   },
 
-  "[subscribe('event/disabled'), enabled]":
+  "[subscribe('event/disabled'), pnp]":
   function onDisabled()
   {
     if (this._textbox) {
@@ -256,24 +282,29 @@ Launcher.definition = {
     this.startSession.enabled = false;
   },
 
-  "[subscribe('variable-changed/launcher.{font_size | font_family | font_weight | font_style}'), enabled]":
+  "[subscribe('variable-changed/launcher.{font_size | font_family | font_weight | font_style}'), pnp]":
   function onStyleChanged(chrome, decoder) 
   {
     if (this._textbox) {
-      this._textbox.style.cssText = this.textboxStyle;
+      this._textbox.style.cssText = this.getTextboxStyle();
     }
   },
 
   select: function select(index)
   {
-    var completion_root, row, scroll_box, box_object, scrollY,
-        first_position, last_position;
+    var completion_root,
+        row,
+        scroll_box,
+        box_object,
+        scrollY,
+        first_position,
+        last_position;
 
     if (index < -1) {
       index = -1;
     }
-    if (index > this.rowCount) {
-      index = this.rowCount - 1;
+    if (index > this.getRowCount()) {
+      index = this.getRowCount() - 1;
     }
 
     completion_root = this._completion_root;
@@ -338,7 +369,7 @@ Launcher.definition = {
       driver = this.request("get/completion-display-driver/" + type); 
 
       if (driver) {
-        driver.drive(completion_root, result, this.currentIndex);
+        driver.drive(completion_root, result, this.getCurrentIndex());
         this.invalidate(result);
       } else {
         coUtils.Debug.reportError(
@@ -377,7 +408,7 @@ Launcher.definition = {
         }
       }
 
-      index = Math.max(0, this.currentIndex);
+      index = Math.max(0, this.getCurrentIndex());
       completion_text = result.labels[index];
 
       if (completion_text && 0 === completion_text.indexOf(result.query)) {
@@ -393,7 +424,7 @@ Launcher.definition = {
 
   down: function down()
   {
-    var index = Math.min(this.currentIndex + 1, this.rowCount - 1);
+    var index = Math.min(this.getCurrentIndex() + 1, this.getRowCount() - 1);
 
     if (index >= 0) {
       this.select(index);
@@ -403,7 +434,7 @@ Launcher.definition = {
 
   up: function up()
   {
-    var index = Math.max(this.currentIndex - 1, -1);
+    var index = Math.max(this.getCurrentIndex() - 1, -1);
 
     if (index >= 0) {
       this.select(index);
@@ -413,7 +444,7 @@ Launcher.definition = {
 
   fill: function fill()
   {
-    var index = Math.max(0, this.currentIndex),
+    var index = Math.max(0, this.getCurrentIndex()),
         result = this._result,
         textbox,
         completion_text, 
@@ -474,7 +505,7 @@ Launcher.definition = {
     this.setCompletionTrigger();
   },
 
-  "[subscribe('event/hotkey-double-{ctrl | alt}'), enabled]":
+  "[subscribe('event/hotkey-double-{ctrl | alt}'), pnp]":
   function onDoubleCtrl() 
   {
     var box = this._element;
@@ -486,7 +517,7 @@ Launcher.definition = {
     }
   },
 
-  "[subscribe('command/show-launcher'), enabled]":
+  "[subscribe('command/show-launcher'), pnp]":
   function show()
   {
     var box = this._element;
@@ -502,7 +533,7 @@ Launcher.definition = {
       }, 0, this);
   },
 
-  "[subscribe('command/hide-launcher'), enabled]":
+  "[subscribe('command/hide-launcher'), pnp]":
   function hide()
   {
     var box = this._element,
@@ -529,12 +560,15 @@ Launcher.definition = {
     var desktop = this._broker,
         box = this._element.ownerDocument.createElement("box");
 
-    command = command || "";
-    command = command.replace(/^\s+|\s+$/g, "");
+    if (command) {
+      command = command.replace(/^\s+|\s+$/g, "");
+    } else {
+      command = "";
+    }
 
-    //if (!/tanasinn/.test(coUtils.Runtime.app_name)) {
-    box.style.cssText = "position: fixed; top: 0px; left: 0px";
-    //}
+    box.style.position = "fixed";
+    box.style.left = "0px";
+    box.style.top = "0px";
     
     this._window_layer.appendChild(box);
     desktop.start(box, command);  // command
