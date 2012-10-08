@@ -27,13 +27,15 @@
 /**
  * @class JapaneseDecoder
  */
-var JapaneseDecoder = new Class().extends(Component);
+var JapaneseDecoder = new Class().extends(Plugin);
 JapaneseDecoder.definition = {
 
   id: "japanese_decoder",
 
   get scheme()
-    "japanese-js",
+  {
+    return "japanese-js";
+  },
 
   getInfo: function getInfo()
   {
@@ -44,12 +46,29 @@ JapaneseDecoder.definition = {
     };
   },
 
+  "[persistable] enabled_when_startup": true,
+
   _cp932_map: null,
   _jis0208_map: null,
   _offset: 0,
 
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
+   */
+  "[install]":
+  function install(context) 
+  {
+  },
+
+  /** uninstalls itself. 
+   */
+  "[uninstall]":
+  function uninstall() 
+  {
+  },
+
   /** Constructor **/
-  "[subscribe('get/decoders'), enabled]":
+  "[subscribe('get/decoders'), pnp]":
   function getDecoders(map) 
   {
     return {
