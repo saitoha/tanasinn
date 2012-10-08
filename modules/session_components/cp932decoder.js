@@ -35,7 +35,9 @@ CP932Decoder.definition = {
   id: "cp932_decoder",
 
   get scheme()
-    "cp932",
+  {
+    return "cp932";
+  },
 
   getInfo: function getInfo()
   {
@@ -46,12 +48,29 @@ CP932Decoder.definition = {
     };
   },
 
+  "[persistable] enabled_when_startup": true,
+
   "[persistable] displacement": 0x3f, // ?
 
   _map: null,
   _offset: 0,
 
-  "[subscribe('get/decoders'), enabled]": 
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
+   */
+  "[install]":
+  function install(context) 
+  {
+  },
+
+  /** uninstalls itself. 
+   */
+  "[uninstall]":
+  function uninstall() 
+  {
+  },
+
+  "[subscribe('get/decoders'), pnp]": 
   function getDecoders() 
   {
     return {
@@ -84,7 +103,8 @@ CP932Decoder.definition = {
 
   _generate: function _generate(scanner)
   {
-     var c1, c2;
+     var c1,
+         c2;
 
      while (!scanner.isEnd) {
        c1 = scanner.current();// + this._offset;
