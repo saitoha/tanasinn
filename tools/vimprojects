@@ -277,10 +277,9 @@
     fontsizedisplaydriver.js
     fontfamilydisplaydriver.js
 
-    completer.js
+    commandcompleter.js
     charsetcompleter.js
     colorcompleter.js
-    completer.js
     historycompleter.js
     eventcompleter.js
     filecompleter.js

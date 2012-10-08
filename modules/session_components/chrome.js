@@ -192,9 +192,9 @@ OuterChrome.definition = {
     var frame = this._frame;
 
     //frame.style.width = frame.boxObject.width + 1 + "px";
-    frame.style.height = frame.boxObject.height + 1 + "px";
+//    frame.style.height = frame.boxObject.height + 1 + "px";
     //frame.style.width = frame.boxObject.width - 1 + "px";
-    frame.style.height = frame.boxObject.height - 1 + "px";
+//    frame.style.height = frame.boxObject.height - 1 + "px";
   },
 
   _getImagePath: function _getImagePath()

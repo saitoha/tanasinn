@@ -131,22 +131,26 @@ ConsoleListener.definition = {
   /** Unregister isself from console service */
   unregister: function unregister() 
   {
-    coUtils.Debug.reportMessage(
-      _("Unregister listener from console service."));
-    this._console_service.unregisterListener(this);
-    coUtils.Debug.reportMessage(
-      _("Succeeded to unregister console listener."));
-    this.onSessionStopping.enabled = false;
-    //this.onQuitApplication.enabled = false;
+    var console_service = this._console_service;
+
+    if (console_service) {
+      coUtils.Debug.reportMessage(
+        _("Unregister listener from console service."));
+      this._console_service.unregisterListener(this);
+      coUtils.Debug.reportMessage(
+        _("Succeeded to unregister console listener."));
+      this.onSessionStopping.enabled = false;
+      //this.onQuitApplication.enabled = false;
+      this._console_service = null;
+    }
   },
 
   /** Get recent console messages from buffer of console services. */
   _getMessageArray: function _getMessageArray()
   {
-    var message_array;
+    var message_array = {};
     
     // get latest 250 messages.
-    message_array = {};
     this._console_service.getMessageArray(message_array, {});
     return message_array;
   },

@@ -463,10 +463,21 @@ function coCreateKeyMap(expression_map, destination_map)
 /**
  * @class DefaultKeyMappings
  */
-var DefaultKeyMappings = new Class().extends(Component);
+var DefaultKeyMappings = new Class().extends(Plugin);
 DefaultKeyMappings.definition = {
 
   id: "default_key_mappings",
+
+  getInfo: function getInfo()
+  {
+    return {
+      name: _("Mode Manager"),
+      version: "0.1",
+      description: _("Manage modes")
+    };
+  },
+
+  "[persistable] enabled_when_startup": true,
 
   "[persistable] yen_as_5c": true,
   "[persistable] won_as_5c": true,
@@ -479,14 +490,29 @@ DefaultKeyMappings.definition = {
 
   _map: null,
 
-  "[subscribe('command/change-cursor-mode'), enabled]":
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
+   */
+  "[install]":
+  function install(context)
+  {
+  },
+
+  /** Uninstalls itself. 
+   */
+  "[uninstall]":
+  function uninstall()
+  {
+  },
+
+  "[subscribe('command/change-cursor-mode'), pnp]":
   function onChangeCursorMode(mode)
   {
     this._cursor_mode = mode;
     this.build(this._map);
   },
 
-  "[subscribe('command/change-emulation-mode'), enabled]":
+  "[subscribe('command/change-emulation-mode'), pnp]":
   function onChangeEmulationMode(mode)
   {
     switch (mode) {
@@ -513,7 +539,7 @@ DefaultKeyMappings.definition = {
     }
   },
 
-  "[subscribe('command/build-key-mappings'), type('Object -> Undefined'), enabled]":
+  "[subscribe('command/build-key-mappings'), type('Object -> Undefined'), pnp]":
   function build(map)
   {
     var settings = [ KEY_ANSI ],
@@ -603,6 +629,15 @@ var ModeManager = new Class().extends(Plugin);
 ModeManager.definition = {
 
   id: "modemanager",
+
+  getInfo: function getInfo()
+  {
+    return {
+      name: _("Mode Manager"),
+      version: "0.1",
+      description: _("Manage modes")
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
 
@@ -734,13 +769,13 @@ MacAltKeyWatcher.definition = {
 
   _alt_on: false,
 
-  "[subscribe('event/alt-key-down'), enabled]":
+  "[subscribe('event/alt-key-down'), pnp]":
   function onAltKeyDown()
   {
     this._alt_key = true;
   },
 
-  "[subscribe('event/alt-key-up'), enabled]":
+  "[subscribe('event/alt-key-up'), pnp]":
   function onAltKeyUp()
   {
     this._alt_key = false;
@@ -754,6 +789,7 @@ MacAltKeyWatcher.definition = {
  */
 var InputManager = new Class().extends(Plugin)
                               .mix(MacAltKeyWatcher)
+                              .depends("modemanager")
                               .depends("encoder");
 InputManager.definition = {
 
@@ -843,7 +879,7 @@ InputManager.definition = {
     this._encoder = null;
   },
 
-  "[subscribe('set/local-echo-mode'), enabled]":
+  "[subscribe('set/local-echo-mode'), pnp]":
   function setLocalEchoMode(value) 
   {
     this._local_echo_mode = value;
@@ -930,7 +966,7 @@ InputManager.definition = {
   },
 
   /** handle double-shift key event, and interpret it to <2-Shift> */
-  "[subscribe('event/hotkey-double-shift')]":
+  "[subscribe('event/hotkey-double-shift'), pnp]":
   function onDoubleShift(event) 
   {
     this.sendMessage(
@@ -938,13 +974,13 @@ InputManager.definition = {
       "<2-shift>");
   },
 
-  "[subscribe('event/got-focus'), enabled]":
+  "[subscribe('event/got-focus'), pnp]":
   function onGotFocus(event) 
   {
     this.onDoubleShift.enabled = true;
   },
 
-  "[subscribe('event/lost-focus'), enabled]":
+  "[subscribe('event/lost-focus'), pnp]":
   function onLostFocus(event) 
   {
     this.onDoubleShift.enabled = false;
@@ -1022,7 +1058,7 @@ InputManager.definition = {
  
   },
 
-  "[subscribe('event/keypress'), enabled]":
+  "[subscribe('event/keypress'), pnp]":
   function onKeyPressEventReceived(info) 
   {
     var packed_code = coUtils.Keyboard

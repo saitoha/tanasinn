@@ -58,7 +58,9 @@ DragCopy.definition = {
       parentNode: "#tanasinn_center_area",
       id: "feedback_canvas",
       tagName: "html:canvas",
-      style: "position: absolute;",
+      style: {
+        position: "absolute",
+      },
       hidden: true,
     };
   },

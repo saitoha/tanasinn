@@ -29,7 +29,7 @@
  *
  */
 var ColorNumberCompleter = new Class().extends(Plugin)
-                                      .depends("renderer");
+                                      .depends("palette");
 ColorNumberCompleter.definition = {
 
   id: "colorcompleter",
@@ -45,7 +45,7 @@ ColorNumberCompleter.definition = {
 
   "[persistable] enabled_when_startup": true,
 
-  _renderer: null,
+  _palette: null,
 
   /** Installs itself. 
    *  @param {InstallContext} context A InstallContext object.
@@ -53,7 +53,7 @@ ColorNumberCompleter.definition = {
   "[install]":
   function install(context) 
   {
-    this._renderer = context["renderer"];
+    this._palette = context["palette"];
   },
 
   /** Uninstalls itself.
@@ -61,7 +61,7 @@ ColorNumberCompleter.definition = {
   "[uninstall]":
   function uninstall() 
   {
-    this._renderer = null;
+    this._palette = null;
   },
 
   /*
@@ -70,11 +70,10 @@ ColorNumberCompleter.definition = {
    *
    * @param context - The completion context object. 
    */
-  "[completer('color-number'), enabled]":
+  "[completer('color-number'), pnp]":
   function complete(context)
   {
     var color_map = this._getColorMap(context.option),
-        renderer, 
         pattern,
         match,
         all,
@@ -97,7 +96,11 @@ ColorNumberCompleter.definition = {
     pattern = /^\s*([0-9]*)(\s*)(.*)(\s?)/;
     match = context.source.match(pattern);
 
-    [all, number, space, name, next] = match;
+    all = match[0];
+    number = match[1];
+    space = match[2];
+    name = match[3];
+    next = match[4];
 
     if (next) {
       this._doNextCompletion(context.completers, context.source, all.length);
@@ -165,16 +168,16 @@ ColorNumberCompleter.definition = {
 
   _getColorMap: function _getColorMap(option)
   {
-    var renderer = this._renderer;
+    var palette = this._palette;
 
     switch (option) {
 
       case "fg":
-        return renderer.color;
+        return palette.color;
         break;
 
       case "bg":
-        return renderer.color;
+        return palette.color;
 
       default:
         return null;

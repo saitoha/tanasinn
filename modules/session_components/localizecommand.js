@@ -59,7 +59,7 @@ LocalizeCommand.definition = {
   {
   },
 
-  "[command('localize', ['localize']), _('Edit localization resource.'), enabled]":
+  "[command('localize', ['localize']), _('Edit localization resource.'), pnp]":
   function evaluate(arguments_string)
   {
     var broker = this._broker,
@@ -78,7 +78,9 @@ LocalizeCommand.definition = {
       };
     }
 
-    [, language, key, value] = match;
+    language = match[1];
+    key = match[2];
+    value = match[3];
 
     key = key.replace(/\\(?!\\)/g, "\\");
     value = value.replace(/\\(?!\\)/g, "\\");
@@ -87,10 +89,12 @@ LocalizeCommand.definition = {
 
     dict[key] = value;
     coUtils.Localize.setDictionary(language, dict);
+
     return {
       success: true,
       message: _("Succeeded."),
     };
+
   },
 };
 

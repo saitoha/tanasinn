@@ -27,7 +27,7 @@
 /**
  *  @class ScreenshotCommand
  */
-var ScreenshotCommand = new Class().extends(Component);
+var ScreenshotCommand = new Class().extends(Plugin);
 ScreenshotCommand.definition = {
 
   id: "screenshot",

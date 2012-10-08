@@ -28,7 +28,7 @@
 /**
  * @class PersistCommand
  */
-var PersistCommand = new Class().extends(Component);
+var PersistCommand = new Class().extends(Plugin);
 PersistCommand.definition = {
 
   id: "persist",
@@ -60,7 +60,7 @@ PersistCommand.definition = {
   },
 
 
-  "[command('saveprofile/sp', ['profile']), _('Persist current settings.'), enabled]":
+  "[command('saveprofile/sp', ['profile']), _('Persist current settings.'), pnp]":
   function persist(arguments_string)
   {
     var match = arguments_string.match(/^\s*([$_\-@a-zA-Z\.]*)\s*$/),
@@ -82,7 +82,7 @@ PersistCommand.definition = {
     };
   },
 
-  "[command('loadprofile/lp', ['profile']), _('Load a profile.'), enabled]":
+  "[command('loadprofile/lp', ['profile']), _('Load a profile.'), pnp]":
   function load(arguments_string)
   {
     var match = arguments_string.match(/^\s*([$_\-@a-zA-Z\.]*)\s*$/),
@@ -105,7 +105,7 @@ PersistCommand.definition = {
     };
   },
 
-  "[command('deleteprofile/dp', ['profile']), _('Delete a profile.'), enabled]":
+  "[command('deleteprofile/dp', ['profile']), _('Delete a profile.'), pnp]":
   function deleteprofile(arguments_string)
   {
     var match = arguments_string.match(/^\s*([$_\-@a-zA-Z\.]*)\s*$/),
