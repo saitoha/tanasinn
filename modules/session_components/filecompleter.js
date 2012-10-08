@@ -27,11 +27,10 @@
 
 function generateFileEntries(path) 
 {
-  var directory, entries, file;
+  var directory = coUtils.Components.createLocalFile(),
+      entries,
+      file;
 
-  directory = Components
-    .classes["@mozilla.org/file/local;1"]
-    .createInstance(Components.interfaces.nsILocalFile);
   try {
     directory.initWithPath(path);
     if (directory.exists() && directory.isDirectory()) {
@@ -50,10 +49,36 @@ function generateFileEntries(path)
  * @class CGICompleter
  *
  */
-var CGICompleter = new Class().extends(Component);
+var CGICompleter = new Class().extends(Plugin);
 CGICompleter.definition = {
 
   id: "cgi_completer",
+
+  getInfo: function getInfo()
+  {
+    return {
+      name: _("CGI Completer"),
+      description: _("Provides completion information of cgi modules."),
+      version: "0.1",
+    };
+  },
+
+  "[persistable] enabled_when_startup": true,
+
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
+   */
+  "[install]":
+  function install(context) 
+  {
+  },
+
+  /** Uninstalls itself.
+   */
+  "[uninstall]":
+  function uninstall() 
+  {
+  },
 
   /*
    * Search for a given string and notify a listener (either synchronously
@@ -61,7 +86,7 @@ CGICompleter.definition = {
    *
    * @param context - The completion context object. 
    */
-  "[completer('cgi'), enabled]":
+  "[completer('cgi'), pnp]":
   function complete(context)
   {
     var broker = this._broker,
@@ -132,17 +157,43 @@ CGICompleter.definition = {
     });
   },
 
-};
+}; // CGICompleter
 
 
 /**
  * @class BatchCompleter
  *
  */
-var BatchCompleter = new Class().extends(Component);
+var BatchCompleter = new Class().extends(Plugin);
 BatchCompleter.definition = {
 
   id: "batch_completer",
+
+  getInfo: function getInfo()
+  {
+    return {
+      name: _("Batch Completer"),
+      description: _("Provides completion information of batch modules."),
+      version: "0.1",
+    };
+  },
+
+  "[persistable] enabled_when_startup": true,
+
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
+   */
+  "[install]":
+  function install(context) 
+  {
+  },
+
+  /** Uninstalls itself.
+   */
+  "[uninstall]":
+  function uninstall() 
+  {
+  },
 
   /*
    * Search for a given string and notify a listener (either synchronously
@@ -150,7 +201,7 @@ BatchCompleter.definition = {
    *
    * @param context - The completion context object. 
    */
-  "[completer('batch'), enabled]":
+  "[completer('batch'), pnp]":
   function complete(context)
   {
     var broker = this._broker,
@@ -232,10 +283,36 @@ BatchCompleter.definition = {
  * @class ProfileCompleter
  *
  */
-var ProfileCompleter = new Class().extends(Component);
+var ProfileCompleter = new Class().extends(Plugin);
 ProfileCompleter.definition = {
 
   id: "profile-completer",
+
+  getInfo: function getInfo()
+  {
+    return {
+      name: _("Profile Completer"),
+      description: _("Provides completion information of profiles."),
+      version: "0.1",
+    };
+  },
+
+  "[persistable] enabled_when_startup": true,
+
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
+   */
+  "[install]":
+  function install(context) 
+  {
+  },
+
+  /** Uninstalls itself.
+   */
+  "[uninstall]":
+  function uninstall() 
+  {
+  },
 
   /*
    * Search for a given string and notify a listener (either synchronously
@@ -244,21 +321,29 @@ ProfileCompleter.definition = {
    * @param source - The string to search for
    * @param listener - A listener to notify when the search is complete
    */
-  "[completer('profile'), enabled]":
+  "[completer('profile'), pnp]":
   function complete(context)
   {
-    var broker, match, all, space, name, next,
-        next_completer_info, next_completer, option,
-        entries, lower_name, candidates;
+    var broker = this._broker,
+        match = context.source.match(/^(\s*)([$_\-@a-zA-Z\.]*)(\s?)/),
+        all,
+        name,
+        next,
+        next_completer_info,
+        next_completer,
+        option,
+        entries,
+        lower_name,
+        candidates;
 
-    broker = this._broker;
-
-    match = context.source.match(/^(\s*)([$_\-@a-zA-Z\.]*)(\s?)/);
     if (null === match) {
       this.sendMessage("event/answer-completion", null);
       return;
     }
-    [all, space, name, next] = match;
+
+    all = match[0];
+    name = match[2];
+    next = match[3];
 
     if (next) {
       next_completer_info = context.completers.shift();
@@ -318,10 +403,36 @@ ProfileCompleter.definition = {
  * @class FileCompleter
  *
  */
-var FileCompleter = new Class().extends(Component);
+var FileCompleter = new Class().extends(Plugin);
 FileCompleter.definition = {
 
   id: "file-completer",
+
+  getInfo: function getInfo()
+  {
+    return {
+      name: _("File Completer"),
+      description: _("Provides completion information of local file paths."),
+      version: "0.1",
+    };
+  },
+
+  "[persistable] enabled_when_startup": true,
+
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
+   */
+  "[install]":
+  function install(context) 
+  {
+  },
+
+  /** Uninstalls itself.
+   */
+  "[uninstall]":
+  function uninstall() 
+  {
+  },
 
   /*
    * Search for a given string and notify a listener (either synchronously
@@ -330,18 +441,23 @@ FileCompleter.definition = {
    * @param source - The string to search for
    * @param listener - A listener to notify when the search is complete
    */
-  "[completer('file'), enabled]":
+  "[completer('file'), pnp]":
   function complete(context)
   {
-    var broker, pattern, match, all, stem, leaf, candidates,
-        home, lower_leaf, stem_length, cygwin_root;
+    var broker = this._broker,
+        pattern = /^\s*(?:(.*\/))?(.*)?/,
+        match = context.source.match(pattern),
+        stem,
+        leaf,
+        candidates,
+        home,
+        lower_leaf,
+        stem_length,
+        cygwin_root;
 
-    broker = this._broker;
+    stem = match[1];
+    leaf = match[2];
 
-    pattern = /^\s*(?:(.*\/))?(.*)?/;
-    match = context.source.match(pattern);
-    [all, stem, leaf] = match;
-    candidates;
     home = coUtils.File.getFileLeafFromVirtualPath("$Home");
 
     leaf = leaf || "";
@@ -378,7 +494,7 @@ FileCompleter.definition = {
           type: "text",
           query: leaf, 
           data: candidates.map(
-            function(path)
+            function mapFunc(path)
             {
               return {
                 name: path, 
@@ -389,7 +505,7 @@ FileCompleter.definition = {
     }
   },
 
-};
+}; // FileCompleter
 
 /**
  * @fn main
