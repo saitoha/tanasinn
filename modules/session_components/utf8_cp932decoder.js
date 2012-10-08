@@ -27,13 +27,15 @@
 /**
  * @class UTF8_CP932Decoder
  */
-var UTF8_CP932Decoder = new Class().extends(Component);
+var UTF8_CP932Decoder = new Class().extends(Plugin);
 UTF8_CP932Decoder.definition = {
 
   id: "utf8_cp932_decoder",
 
   get scheme()
-    "utf8-cp932-js",
+  {
+    return "utf8-cp932-js";
+  },
 
   getInfo: function getInfo()
   {
@@ -44,11 +46,28 @@ UTF8_CP932Decoder.definition = {
     };
   },
 
+  "[persistable] enabled_when_startup": true,
+
   _cp932_map: null,
   _offset: 0,
 
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
+   */
+  "[install]":
+  function install(context) 
+  {
+  },
+
+  /** uninstalls itself. 
+   */
+  "[uninstall]":
+  function uninstall() 
+  {
+  },
+
   /** Constructor **/
-  "[subscribe('get/decoders'), enabled]":
+  "[subscribe('get/decoders'), pnp]":
   function getDecoders(map) 
   {
     return {
