@@ -90,15 +90,6 @@ Decoder.definition = {
   function install(context) 
   {
     this._decoder_map = {};
-    this.sendMessage("get/decoders").map(
-      function mapfunc(information)
-      {
-        this._decoder_map[information.charset] = information; 
-      }, this);
-
-    this.scheme = this.initial_scheme;
-
-    this.sendMessage("initialized/decoder", this);
   },
 
   /** Uninstalls itself. 
@@ -109,7 +100,19 @@ Decoder.definition = {
     this._decoder_map = null;
   },
 
-  "[subscribe('change/decoder'), enabled]": 
+  "[subscribe('event/session-initialized'), pnp]": 
+  function onSessionInitialized(scheme) 
+  {
+    this.sendMessage("get/decoders").map(
+      function mapfunc(information)
+      {
+        this._decoder_map[information.charset] = information; 
+      }, this);
+
+    this.scheme = this.initial_scheme;
+  },
+
+  "[subscribe('change/decoder'), pnp]": 
   function changeDecoder(scheme) 
   {
     this.scheme = scheme;
