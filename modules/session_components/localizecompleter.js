@@ -28,10 +28,36 @@
  * @class LocalizeCompleter
  *
  */
-var LocalizeCompleter = new Class().extends(Component);
+var LocalizeCompleter = new Class().extends(Plugin);
 LocalizeCompleter.definition = {
 
   id: "localize-completer",
+
+  getInfo: function getInfo()
+  {
+    return {
+      name: _("Localize Strings Completer"),
+      description: _("Provides completion information of localize strings."),
+      version: "0.1",
+    };
+  },
+
+  "[persistable] enabled_when_startup": true,
+
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
+   */
+  "[install]":
+  function install(context) 
+  {
+  },
+
+  /** Uninstalls itself.
+   */
+  "[uninstall]":
+  function uninstall() 
+  {
+  },
 
   /*
    * Search for a given string and notify a listener (either synchronously
@@ -39,25 +65,20 @@ LocalizeCompleter.definition = {
    *
    * @param context - The completion context object. 
    */
-  "[completer('localize'), enabled]":
+  "[completer('localize'), pnp]":
   function complete(context)
   {
     var pattern = /^\s*([a-zA-Z-]*)(\s*)("?)((?:[^"])*)("?)(\s*)(.*)/,
         match = context.source.match(pattern),
-        all,
-        language,
-        space,
-        quote_start,
-        message_id,
-        quote_end,
-        space2,
-        next,
+        language = match[1],
+        space = match[2],
+        message_id = match[4],
+        space2 = match[6],
+        next = match[7],
         languages,
         lower_message_id,
         dict,
         data;
-
-    [all, language, space, quote_start, message_id, quote_end, space2, next] = match;
 
     if (!space) {
       languages = [key for ([key, ] in Iterator(coUtils.Constant.LOCALE_ID_MAP))]
@@ -132,7 +153,7 @@ LocalizeCompleter.definition = {
       }
     }
   },
-};
+}; // LocalizeCompleter
 
 
 /**
