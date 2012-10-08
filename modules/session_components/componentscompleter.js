@@ -28,10 +28,36 @@
 /**
  * @class ComponentsCompleter
  */
-var ComponentsCompleter = new Class().extends(Component);
+var ComponentsCompleter = new Class().extends(Plugin);
 ComponentsCompleter.definition = {
 
   id: "components_completer",
+
+  getInfo: function getInfo()
+  {
+    return {
+      name: _("Components Completer"),
+      description: _("Provides completion information of components."),
+      version: "0.1",
+    };
+  },
+
+  "[persistable] enabled_when_startup": true,
+
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
+   */
+  "[install]":
+  function install(context) 
+  {
+  },
+
+  /** Uninstalls itself.
+   */
+  "[uninstall]":
+  function uninstall() 
+  {
+  },
 
   /*
    * Search for a given string and notify a listener (either synchronously
@@ -39,7 +65,7 @@ ComponentsCompleter.definition = {
    *
    * @param context - The completion context object. 
    */
-  "[completer('components'), enabled]":
+  "[completer('components'), pnp]":
   function complete(context)
   {
     var match = context.source.match(/^(\s*)([$_\-@a-zA-Z\.]*)(\s?)/),
@@ -58,7 +84,10 @@ ComponentsCompleter.definition = {
       return;
     }
 
-    [all, space, name, next] = match;
+    all = match[0];
+    space = match[1];
+    name = match[2];
+    next = match[3];
 
     if (next) {
       next_completer_info = context.completers.shift();
@@ -106,7 +135,7 @@ ComponentsCompleter.definition = {
       });
   },
 
-};
+}; // ComponentsCompleter
 
 /**
  * @fn main
