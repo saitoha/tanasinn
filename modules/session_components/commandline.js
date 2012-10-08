@@ -447,7 +447,6 @@ Commandline.definition = {
       {
         parentNode: "#tanasinn_commandline_area",
         tagName: "html:div",
-        style: "position: absolute;",
         childNodes: [
           {
             tagName: "box",
@@ -473,7 +472,9 @@ Commandline.definition = {
         id: "tanasinn_commandline_canvas",
         tagName: "html:canvas",
         dir: "ltr",
-        style: "opacity: 0.7; position: absolute",
+        style: {
+          opacity: "0.7",
+        },
       },
       {
         parentNode: "#tanasinn_chrome",
@@ -502,7 +503,10 @@ Commandline.definition = {
               id: "tanasinn_completion_scroll",
               orient: "vertical", // box-packing
               flex: 1,
-              style: "margin: 8px; overflow-y: auto;",
+              style: {
+                margin: "8px",
+                overflowY: "auto",
+              },
               childNodes: {
                 tagName: "grid",
                 id: "tanasinn_completion_root",
