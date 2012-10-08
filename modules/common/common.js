@@ -1608,6 +1608,33 @@ coUtils.Components = {
 
     return persist;
   },
+
+  createHistoryCompleter: function createHistoryCompleter()
+  {
+    var completer = Components
+      .classes["@mozilla.org/autocomplete/search;1?name=history"]
+      .createInstance(Components.interfaces.nsIAutoCompleteSearch);
+
+    return completer;
+  },
+
+  getFontEnumerator: function getFontEnumerator()
+  {
+    var enumerator = Components
+      .classes["@mozilla.org/gfx/fontenumerator;1"]
+      .getService(Components.interfaces.nsIFontEnumerator)
+
+    return enumerator;
+  },
+
+  getConsoleService: function getConsoleService()
+  {
+    var console_service = Components
+      .classes["@mozilla.org/consoleservice;1"]
+      .getService(Components.interfaces.nsIConsoleService);
+
+    return console_service;
+  },
 };
 
 
