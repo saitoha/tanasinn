@@ -29,10 +29,36 @@
  * @class EventCompleter
  *
  */
-var EventCompleter = new Class().extends(Component);
+var EventCompleter = new Class().extends(Plugin);
 EventCompleter.definition = {
 
   id: "event_completer",
+
+  getInfo: function getInfo()
+  {
+    return {
+      name: _("Event Completer"),
+      description: _("Provides completion information of tupstart events."),
+      version: "0.1",
+    };
+  },
+
+  "[persistable] enabled_when_startup": true,
+
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
+   */
+  "[install]":
+  function install(context) 
+  {
+  },
+
+  /** Uninstalls itself.
+   */
+  "[uninstall]":
+  function uninstall() 
+  {
+  },
 
   /*
    * Search for a given string and notify a listener (either synchronously
@@ -40,7 +66,7 @@ EventCompleter.definition = {
    *
    * @param context - The completion context object. 
    */
-  "[completer('event'), enabled]":
+  "[completer('event'), pnp]":
   function complete(context)
   {
     var broker = this._broker,
@@ -101,7 +127,7 @@ EventCompleter.definition = {
       });
   },
 
-};
+}; // EventCompleter
 
 /**
  * @fn main
