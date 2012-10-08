@@ -28,20 +28,43 @@
  * @class ColorNumberCompletionDisplayDriver
  *
  */
-var ColorNumberCompletionDisplayDriver = new Class().extends(Component);
+var ColorNumberCompletionDisplayDriver = new Class().extends(Plugin)
+                                                    .depends("renderer");
 ColorNumberCompletionDisplayDriver.definition = {
 
   id: "color-number-completion-display-driver",
 
-  _renderer: null,
-
-  "[subscribe('@initialized/renderer'), enabled]":
-  function onRendererInitialized(renderer)
+  getInfo: function getInfo()
   {
-    this._renderer = renderer;
+    return {
+      name: _("Color Number Completion Display Driver"),
+      version: "0.1",
+      description: _("The display component of color number completion.")
+    };
   },
 
-  "[subscribe('get/completion-display-driver/color-number'), enabled]":
+  "[persistable] enabled_when_startup": true,
+
+  _renderer: null,
+
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
+   */
+  "[install]":
+  function install(context) 
+  {
+    this._renderer = context["renderer"];
+  },
+
+  /** Uninstalls itself 
+   */
+  "[uninstall]":
+  function uninstall() 
+  {
+    this._renderer = null;
+  },
+
+  "[subscribe('get/completion-display-driver/color-number'), pnp]":
   function onDisplayDriversRequested()
   {
     return this;
@@ -61,10 +84,8 @@ ColorNumberCompletionDisplayDriver.definition = {
     //rows.style.border = "1px solid blue";
     result.data.forEach(function(pair, index)
     {
-      var search_string, renderer;
-
-      search_string = result.query.toLowerCase();
-      renderer = this._renderer;
+      var search_string = result.query.toLowerCase(),
+          renderer = this._renderer;
 
       this.request(
         "command/construct-chrome", 
