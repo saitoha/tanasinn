@@ -22,8 +22,10 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-pref("toolkit.defaultChromeURI", "chrome://tanasinn/content/tanasinn.xul");
-pref("nglayout.debug.disable_xul_cache", true)
-pref("nglayout.debug.disable_xul_fastload", true)
-pref("browser.cache.disk.enable", false)
+pref("toolkit.defaultChromeURI",
+     "chrome://tanasinn/content/tanasinn.xul");
+pref("nglayout.debug.disable_xul_cache", true);
+pref("nglayout.debug.disable_xul_fastload", true);
+pref("browser.cache.disk.enable", false);
+pref("browser.cache.memory.enable", false);
 
