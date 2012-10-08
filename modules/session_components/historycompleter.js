@@ -28,14 +28,40 @@
 /**
  * @class HistoryCompleter
  */
-var HistoryCompleter = new Class().extends(Component);
+var HistoryCompleter = new Class().extends(Plugin);
 HistoryCompleter.definition = {
 
   id: "history-completer",
 
-  _completion_component: Components
-    .classes["@mozilla.org/autocomplete/search;1?name=history"]
-    .createInstance(Components.interfaces.nsIAutoCompleteSearch),
+  getInfo: function getInfo()
+  {
+    return {
+      name: _("History Completer"),
+      description: _("Provides completion information of history."),
+      version: "0.1",
+    };
+  },
+
+  "[persistable] enabled_when_startup": true,
+
+  _completion_component: null,
+
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
+   */
+  "[install]":
+  function install(context) 
+  {
+    this._completion_component = coUtils.Components.createHistoryCompleter();
+  },
+
+  /** Uninstalls itself.
+   */
+  "[uninstall]":
+  function uninstall() 
+  {
+    this._completion_component = null;
+  },
 
   /*
    * Search for a given string and notify a listener (either synchronously
@@ -44,7 +70,7 @@ HistoryCompleter.definition = {
    * @param source - The string to search for
    * @param listener - A listener to notify when the search is complete
    */
-  "[completer('history'), enabled]":
+  "[completer('history'), pnp]":
   function complete(context)
   {
     this._completion_component.startSearch(context.source, "", null, {
@@ -67,7 +93,7 @@ HistoryCompleter.definition = {
       });
   },
 
-};
+}; // HistoryCompleter
 
 
 /**
