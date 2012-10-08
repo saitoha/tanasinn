@@ -28,10 +28,36 @@
  * @class FontsizeCompleter
  *
  */
-var FontsizeCompleter = new Class().extends(Component);
+var FontsizeCompleter = new Class().extends(Plugin);
 FontsizeCompleter.definition = {
 
   id: "fontsize_completer",
+
+  getInfo: function getInfo()
+  {
+    return {
+      name: _("Font Size Completer"),
+      description: _("Provides completion information of font sizes."),
+      version: "0.1",
+    };
+  },
+
+  "[persistable] enabled_when_startup": true,
+
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
+   */
+  "[install]":
+  function install(context) 
+  {
+  },
+
+  /** Uninstalls itself.
+   */
+  "[uninstall]":
+  function uninstall() 
+  {
+  },
 
   /*
    * Search for a given string and notify a listener (either synchronously
@@ -39,7 +65,7 @@ FontsizeCompleter.definition = {
    *
    * @param context - The completion context object. 
    */
-  "[completer('fontsize'), enabled]":
+  "[completer('fontsize'), pnp]":
   function complete(context)
   {
     var pattern = /^\s*(.*)(\s?)/,
@@ -57,7 +83,9 @@ FontsizeCompleter.definition = {
       return;
     }
 
-    [all, size, space] = match;
+    all = match[0];
+    size = match[1];
+    space = match[2];
 
     if (space) {
       next_completer_info = context.completers.shift();
@@ -78,7 +106,8 @@ FontsizeCompleter.definition = {
 
       generator = function() 
         { 
-          var i, str;
+          var i,
+              str;
 
           for (i = 8; i < 100; ++i) {
             str = i.toString(); 
@@ -105,7 +134,7 @@ FontsizeCompleter.definition = {
     }
   },
 
-};
+}; // FontsizeCompleter
 
 
 /**
