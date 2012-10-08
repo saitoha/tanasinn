@@ -32,13 +32,40 @@ ScreenshotCommand.definition = {
 
   id: "screenshot",
 
-  "[command('screenshot'), _('Convert screen to a image file.'), enabled]":
+  getInfo: function getInfo()
+  {
+    return {
+      name: _("Screenshot Command"),
+      description: _("Provides screenshot command."),
+      version: "0.1",
+    };
+  },
+
+  "[persistable] enabled_when_startup": true,
+
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
+   */
+  "[install]":
+  function install(context) 
+  {
+  },
+
+  /** Uninstalls itself.
+   */
+  "[uninstall]":
+  function uninstall() 
+  {
+  },
+
+  "[command('screenshot'), _('Convert screen to a image file.'), pnp]":
   function screenshot(arguments_string) 
   {
-    var pattern, match, path, file, name;
-    
-    pattern = /^(\S+)s*$/;
-    match = arguments_string.match(pattern);
+    var pattern = /^(\S+)s*$/,
+        match = arguments_string.match(pattern),
+        path,
+        file,
+        name;
 
     if (null === match) {
       return {
