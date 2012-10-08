@@ -28,10 +28,36 @@
  * @class FontFamilyCompleter
  *
  */
-var FontFamilyCompleter = new Class().extends(Component);
+var FontFamilyCompleter = new Class().extends(Plugin);
 FontFamilyCompleter.definition = {
 
   id: "font_family_completer",
+
+  getInfo: function getInfo()
+  {
+    return {
+      name: _("Font Family Completer"),
+      description: _("Provides completion information of font families."),
+      version: "0.1",
+    };
+  },
+
+  "[persistable] enabled_when_startup": true,
+
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
+   */
+  "[install]":
+  function install(context) 
+  {
+  },
+
+  /** Uninstalls itself.
+   */
+  "[uninstall]":
+  function uninstall() 
+  {
+  },
 
   /*
    * Search for a given string and notify a listener (either synchronously
@@ -39,18 +65,23 @@ FontFamilyCompleter.definition = {
    *
    * @param context - The completion context object. 
    */
-  "[completer('font-family'), enabled]":
+  "[completer('font-family'), pnp]":
   function complete(context)
   {
-    var broker, pattern, match, all, name, space,
-        next_completer_info, next_completer, option,
+    var broker = this._broker,
+        pattern = /^\s*(.*)(\s?)/,
+        match = context.source.match(pattern),
+        all,
+        name,
+        space,
+        next_completer_info,
+        next_completer,
+        option,
         font_list;
 
-    broker = this._broker;
-
-    pattern = /^\s*(.*)(\s?)/;
-    match = context.source.match(pattern);
-    [all, name, space] = match;
+    all = match[0];
+    name = match[1];
+    space = match[2];
 
     if (space) {
       next_completer_info = context.completers.shift();
@@ -66,9 +97,7 @@ FontFamilyCompleter.definition = {
       }
     } else {
 
-      font_list = Components
-        .classes["@mozilla.org/gfx/fontenumerator;1"]
-        .getService(Components.interfaces.nsIFontEnumerator)
+      font_list = coUtils.Components.getFontEnumerator()
 //        .EnumerateAllFonts({})
         .EnumerateFonts("x-western", "monospace", {})
         .filter(function(font_family) 
@@ -91,7 +120,7 @@ FontFamilyCompleter.definition = {
     }
   },
 
-};
+}; // FontFamilyCompleter
 
 
 /**
