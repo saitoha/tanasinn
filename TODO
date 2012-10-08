@@ -1,18 +1,24 @@
 
-- Rewrite console plugin's UI
-- Text search feature
+
+- Fix Ctrl + Space issue on X11 environment
+- Fix Alt-Shift issue on WINNT/X11 environment
+
+- main buffer's adaptive resize
+- Improve drag move experience
+- Improve drag resize experience
+- IME control
+- Support Growl like notification system
+
+- Fix Sixel Graphics behavior more strictry
+- Fix DRCS behavior more strictry
+
 - implement DECBI/DECFI
 - implement MC/DECMC
 - implement DECPEX mode
 - implement DECSASD
 - implement DECUDK
-- Fix Sixel Graphics behavior more strictry
-- Fix DRCS behavior more strictry
-- Fix Ctrl + Space issue on X11 environment
 - implement OSC 701
 - implement OSC 7771
-- main buffer's adaptive resize
-- IME control
-- Improve drag move experience
-- Improve drag resize experience
-- Support Growl like notification system
+
+- Rewrite console plugin's UI
+- Text search feature
