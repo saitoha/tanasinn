@@ -31,6 +31,7 @@ var Sixel = new Class().extends(Plugin)
                        .depends("sixel_parser")
                        .depends("renderer")
                        .depends("screen")
+                       .depends("cursorstate")
                        ;
 Sixel.definition = {
 
@@ -76,6 +77,7 @@ Sixel.definition = {
 
     this._renderer = context["renderer"];
     this._screen = context["screen"];
+    this._cursor_state = context["cursorstate"];
     this._sixel_parser = context["sixel_parser"];
   },
 
@@ -101,6 +103,7 @@ Sixel.definition = {
     this._buffers = null;
     this._renderer = null;
     this._screen = null;
+    this._cursor_state = null;
     this._sixel_parser = null;
   },
 
@@ -181,6 +184,7 @@ Sixel.definition = {
     var dom = this._createNewCanvas(),
         result = this._sixel_parser.parse(sixel, dom),
         renderer = this._renderer,
+        cursor_state = this._cursor_state,
         line_height = renderer.line_height,
         char_width = renderer.char_width,
         line_count = Math.ceil(result.max_y / line_height),
@@ -190,7 +194,7 @@ Sixel.definition = {
         full_cell = true,
         buffer,
         screen = this._screen,
-        positionX = screen.cursor.positionX,
+        positionX = cursor_state.positionX,
         dscs,
         drcs,
         i = 0,
@@ -221,7 +225,8 @@ Sixel.definition = {
 
       screen.carriageReturn();
       screen.lineFeed();
-      screen.cursor.positionX = positionX;
+
+      cursor_state.positionX = positionX;
     }
     screen.lineFeed();
   },
