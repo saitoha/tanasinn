@@ -28,10 +28,36 @@
 /**
  * @class OptionCompleter
  */
-var OptionCompleter = new Class().extends(Component);
+var OptionCompleter = new Class().extends(Plugin);
 OptionCompleter.definition = {
 
   id: "optioncompleter",
+
+  getInfo: function getInfo()
+  {
+    return {
+      name: _("Option Completer"),
+      description: _("Provides completion information of options."),
+      version: "0.1",
+    };
+  },
+
+  "[persistable] enabled_when_startup": true,
+
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
+   */
+  "[install]":
+  function install(context) 
+  {
+  },
+
+  /** Uninstalls itself.
+   */
+  "[uninstall]":
+  function uninstall() 
+  {
+  },
 
   /*
    * Search for a given string and notify a listener (either synchronously
@@ -39,12 +65,11 @@ OptionCompleter.definition = {
    *
    * @param context - The completion context object. 
    */
-  "[completer('option'), enabled]":
+  "[completer('option'), pnp]":
   function complete(context)
   {
     var broker = this._broker,
         match = context.source.match(/^(\s*)([$_\-@a-zA-Z\.]*)\s*(=?)\s*(.*)/),
-        space,
         name,
         operator_equal,
         next,
@@ -58,7 +83,9 @@ OptionCompleter.definition = {
       return;
     }
 
-    [, space, name, operator_equal, next] = match;
+    name = match[2];
+    operator_equal = match[3];
+    next = match[4];
 
     if (!operator_equal && next) {
       this.sendMessage("event/answer-completion", null);
@@ -110,7 +137,7 @@ OptionCompleter.definition = {
     }
   },
 
-};
+}; // OptionCompleter
 
 /**
  * @fn main
