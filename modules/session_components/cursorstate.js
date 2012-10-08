@@ -138,6 +138,18 @@ CursorState.definition = {
     this.attr = null;
   },
 
+  "[subscribe('sequence/sm/33'), pnp]":
+  function WYSTCURM_ON()
+  {
+    this._cursor_state.blink = true;
+  },
+
+  "[subscribe('sequence/rm/33'), pnp]":
+  function WYSTCURM_OFF()
+  {
+    this._cursor_state.blink = false;
+  },
+
   /** reset cursor state. */
   "[subscribe('command/{soft | hard}-terminal-reset'), enabled]":
   function reset() 

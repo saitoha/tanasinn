@@ -143,18 +143,6 @@ Cursor.definition = {
     this._canvas.height = renderer.line_height * screen.height;
   },
 
-  "[subscribe('sequence/sm/33'), pnp]":
-  function WYSTCURM_ON()
-  {
-    this._screen.cursor.blink = true;
-  },
-
-  "[subscribe('sequence/rm/33'), pnp]":
-  function WYSTCURM_OFF()
-  {
-    this._screen.cursor.blink = false;
-  },
-
   "[subscribe('sequence/sm/34'), pnp]":
   function WYULCURM_ON()
   {
