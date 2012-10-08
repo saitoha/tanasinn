@@ -4,6 +4,7 @@
  TODO
  ctrlseqs.md
  application.ini
+ configure.ac.in
  configure.ac
  acgecko.m4
  acplatform.m4
@@ -95,6 +96,7 @@
     tty.js
     ttycontroller.js
     ttyiomanager.js
+    externaldriver.js
     input.js
     drcsconverter.js
     idleservice.js
@@ -201,6 +203,7 @@
     mousegesture.js
 
     chrome.js
+    palette.js
     renderer.js
 
     cursor.js
@@ -215,7 +218,11 @@
 
     pluginview.js
     debugger.js
+
+    consolelistener.js
     console.js
+    consoledisplaymanager.js
+    consolemessagefilter.js
 
     scrollbar.js
     selection.js
@@ -240,7 +247,6 @@
     video.js
     browser.js
     agent.js
-    completer.js
     tabbox.js
     titlebar.js
     commandline.js
@@ -271,6 +277,7 @@
     fontsizedisplaydriver.js
     fontfamilydisplaydriver.js
 
+    completer.js
     charsetcompleter.js
     colorcompleter.js
     completer.js
@@ -282,6 +289,7 @@
     jscompleter.js
     localizecompleter.js
     mapcompleter.js
+    cmapcompleter.js
     optioncompleter.js
     pluginscompleter.js
     componentscompleter.js
@@ -320,7 +328,7 @@
    ~/.tanasinn/tanasinnrc
    ~/.tanasinn/bin
    ~/.tanasinn/cgi-bin
-   ~/.vimperator/plugin/twittperator.js
+   ~/.vimperator/plugin/tanasinn-vimp.js
    ~/.tanasinn.js
    licence.pl
    tanasinn-vimp.js
