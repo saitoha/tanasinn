@@ -35,7 +35,9 @@ EUCJPDecoder.prototype = {
   id: "eucjp_decoder",
 
   get scheme()
-    "EUC-JP-js",
+  {
+    return "EUC-JP-js";
+  },
 
   getInfo: function getInfo()
   {
@@ -46,11 +48,28 @@ EUCJPDecoder.prototype = {
     };
   },
 
+  "[persistable] enabled_when_startup": true,
+
   "[persistable] displacement": 0x3f,
 
   _map: null,
 
-  "[subscribe('get/decoders'), enabled]": 
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
+   */
+  "[install]":
+  function install(context) 
+  {
+  },
+
+  /** uninstalls itself. 
+   */
+  "[uninstall]":
+  function uninstall() 
+  {
+  },
+
+  "[subscribe('get/decoders'), pnp]": 
   function getDecoders() 
   {
     return {
