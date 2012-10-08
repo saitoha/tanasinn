@@ -27,13 +27,15 @@
 /**
  * @class UTF8Decoder
  */
-var UTF8Decoder = new Class().extends(Component);
+var UTF8Decoder = new Class().extends(Plugin);
 UTF8Decoder.definition = {
 
   id: "utf8_decoder",
 
   get scheme()
-    "UTF8-js",
+  {
+    return "UTF8-js";
+  },
 
   getInfo: function getInfo()
   {
@@ -44,11 +46,29 @@ UTF8Decoder.definition = {
     };
   },
 
+  "[persistable] enabled_when_startup": true,
+
   "[persistable] displacement": 0x3f,
   _offset: 0,
 
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
+   */
+  "[install]":
+  function install(context) 
+  {
+  },
+
+  /** uninstalls itself. 
+   */
+  "[uninstall]":
+  function uninstall() 
+  {
+  },
+
+
   /** Constructor **/
-  "[subscribe('get/decoders'), enabled]":
+  "[subscribe('get/decoders'), pnp]":
   function getDecoders() 
   {
     return {
