@@ -28,10 +28,36 @@
  * @class NMapCompleter
  *
  */
-var NMapCompleter = new Class().extends(Component);
+var NMapCompleter = new Class().extends(Plugin);
 NMapCompleter.definition = {
 
   id: "nmap_completer",
+
+  getInfo: function getInfo()
+  {
+    return {
+      name: _("Normal Mode Mapping Completer"),
+      description: _("Provides completion information of normal mode mappings."),
+      version: "0.1",
+    };
+  },
+
+  "[persistable] enabled_when_startup": true,
+
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
+   */
+  "[install]":
+  function install(context) 
+  {
+  },
+
+  /** Uninstalls itself.
+   */
+  "[uninstall]":
+  function uninstall() 
+  {
+  },
 
   /*
    * Search for a given string and notify a listener (either synchronously
@@ -39,7 +65,7 @@ NMapCompleter.definition = {
    *
    * @param context - The completion context object. 
    */
-  "[completer('nmap'), enabled]":
+  "[completer('nmap'), pnp]":
   function complete(context)
   {
     var match = context.source.match(/^\s*(\S*)(\s*)/),
@@ -58,7 +84,9 @@ NMapCompleter.definition = {
       return;
     }
 
-    [all, name, next] = match;
+    all = match[0];
+    name = match[1];
+    next = match[2];
 
     if (next) {
       next_completer_info = context.completers.shift();
@@ -115,95 +143,8 @@ NMapCompleter.definition = {
     }
   },
 
-};
+}; // NMapCompleter
 
-
-/**
- * @class CMapCompleter
- *
- */
-var CMapCompleter = new Class().extends(Component);
-CMapCompleter.definition = {
-
-  id: "cmap_completer",
-
-  /*
-   * Search for a given string and notify a listener (either synchronously
-   * or asynchronously) of the result
-   *
-   * @param context - The completion context object. 
-   */
-  "[completer('cmap'), enabled]":
-  function complete(context)
-  {
-    var match, all, name, next,
-        next_completer_info, next_completer, option,
-        expressions, lower_name, candidates;
-
-    match = context.source.match(/^\s*(\S*)(\s*)/);
-
-    if (null === match) {
-      this.sendMessage("event/answer-completion", null);
-      return;
-    }
-
-    [all, name, next] = match;
-
-    if (next) {
-      next_completer_info = context.completers.shift();
-      if (next_completer_info) {
-        [next_completer, option] = next_completer_info.split("/");
-        this.sendMessage(
-          "command/query-completion/" + next_completer,
-          {
-            source: context.source.substr(all.length),
-            option: option,
-            completers: context.completers,
-          });
-      } else {
-        this.sendMessage("event/answer-completion", null);
-      }
-      return;
-    }
-
-    expressions = this.request("get/registered-cmap");
-    lower_name = name.toLowerCase();
-    candidates = Object.getOwnPropertyNames(expressions)
-      .filter(
-        function filterFunc(expression)
-        {
-          return -1 !== expression.toLowerCase().indexOf(lower_name); 
-        })
-      .map(
-        function mapFunc(key)
-        {
-          return { 
-            key: key,
-            value: expressions[key],
-          };
-        });
-
-    if (0 === candidates.length) {
-      this.sendMessage("event/answer-completion", null);
-    } else {
-      this.sendMessage(
-        "event/answer-completion",
-        {
-          type: "text",
-          query: context.source, 
-          data: candidates.map(
-            function(candidate)
-            {
-              return {
-                name: candidate.key,
-                value: String(candidate.value),
-              }
-            }),
-        });
-    }
-  },
-
-}; // CMapCompleter
 
 /**
  * @fn main
@@ -213,7 +154,6 @@ CMapCompleter.definition = {
 function main(broker)
 {
   new NMapCompleter(broker);
-  new CMapCompleter(broker);
 }
 
 // EOF
