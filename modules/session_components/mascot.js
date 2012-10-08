@@ -65,7 +65,7 @@ Mascot.definition = {
     };
   },
 
-  "[persistable] enabled_when_startup": true,
+  "[persistable] enabled_when_startup": false,
 
   "[persistable] mascot_image_file": "images/mascot.svg",
   "[persistable] offset_left": -80,
