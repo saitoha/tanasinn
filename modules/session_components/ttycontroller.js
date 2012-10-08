@@ -245,7 +245,6 @@ Controller.definition = {
       }, self.beacon_interval);
 
     this._send_initial_data(io_port);
-    this.sendMessage("initialized/tty", this);
   },
 
 // nsIRequestObserver implementation.
