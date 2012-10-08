@@ -333,8 +333,6 @@ VT52.definition = {
     this._screen = context["screen"];
     this._cursor_state = context["cursorstate"];
 
-    this.sendMessage("initialized/vt52", this);
-
     this.ESC = new VT52SequenceParser();
     VT52SequenceParser.prototype[0x1b] = this.ESC;
 
