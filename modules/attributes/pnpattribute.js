@@ -74,31 +74,6 @@ function apply_attribute(self, broker, key, attribute)
 var PnPAttribute = new Attribute("pnp");
 PnPAttribute.definition = {
 
-  get __id()
-    "pnp",
-
-  get __info()
-  {
-    return {
-      name: _("PnP"),
-      description: _("Marks a function as a tupstart2 pnpr.")
-      /*
-      <![CDATA[
-        "pnp" attribute marks a function as PnP handler.
-
-        usage:
-
-          "[pnp('event/the-event-occured'), pnp]":
-          function func1(n) 
-          { 
-            ....
-          },
-
-      ]]>
-      */
-    };
-  },
-
   /** constructor 
    *  @param {EventBroker} broker Parent broker object.
    */

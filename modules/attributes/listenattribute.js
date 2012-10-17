@@ -93,31 +93,6 @@ function apply_attribute(self, broker, key, info, attribute)
 var ListenAttribute = new Attribute("listen");
 ListenAttribute.definition = {
 
-  get __id()
-    "listen",
-
-  get __info()
-  {
-    return {
-      name: _("DOM Listener"),
-      description: _("Declares DOM listener procedure.")
-      /*
-      <![CDATA[
-        "listen" attribute defines a DOM listener procedure.
-
-        usage:
-
-          "[listen('dblclick', '#tanasinn_content'), enabled]":
-          function func1() 
-          {
-            ....
-          },
-
-      ]]>
-      */
-    };
-  },
-
   initialize: function initialize(broker) 
   {
     var attributes, key, info, attribute;

@@ -86,31 +86,6 @@ function apply_attribute(self, broker, key, completer_name, attribute)
 var CompleterAttribute = new Attribute("completer");
 CompleterAttribute.definition = {
 
-  get __id()
-    "completer",
-
-  get __info()
-  {
-    return {
-      name: _("Completer"),
-      description: _("Marks a function as a completer procedure.")
-      /*
-      <![CDATA[
-        "completer" attribute marks a function as a completer procedure. 
-
-        usage:
-
-          "[completer('fontsize'), enabled]": 
-          function func1() 
-          {
-            ....
-          },
-
-      ]]>
-      */
-    };
-  },
-
   /** constructor 
    *  @param {EventBroker} broker Parent broker object.
    */

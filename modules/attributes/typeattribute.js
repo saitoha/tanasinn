@@ -77,35 +77,6 @@ function apply_attribute(self, attribute, key)
 var TypeAttribute = new Attribute("type");
 TypeAttribute.definition = {
 
-  get __id()
-    "type",
-
-  get __info()
-  {
-    return {
-      name: _("Type"),
-      description: _("Declares type signature of the function.")
-      /*
-      <![CDATA[
-        "type" attribute declares signature of the function. 
-
-        usage:
-
-          "[type('String -> Number -> Boolean')]":
-          function command1(str, num)
-          {
-            ....
-            if (...) {
-              return false
-            }
-            return true;
-          },
-
-      ]]>
-    */
-    };
-  },
-
   /** constructor 
    *  @param {EventBroker} broker Parent broker object.
    */
