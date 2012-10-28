@@ -110,7 +110,7 @@ LocalizeCompleter.definition = {
       lower_message_id = message_id.toLowerCase();
 
       if (!this._keys) {
-        this._keys = [id for (id in coUtils.Localize.generateMessages())];
+        this._keys = coUtils.Localize.getMessages();
       }
 
       dict = coUtils.Localize.getDictionary(language);
