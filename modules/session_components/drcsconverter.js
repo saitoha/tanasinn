@@ -583,31 +583,31 @@ NRCSConverter.definition = {
     this._next = 0;
   },
 
-  "[subscribe('event/shift-in'), enabled]": 
+  "[subscribe('event/shift-in'), pnp]": 
   function shiftIn() 
   {
     this._gl = 0;
   },
 
-  "[subscribe('event/shift-out'), enabled]": 
+  "[subscribe('event/shift-out'), pnp]": 
   function shiftOut() 
   {
     this._gl = 1;
   },
 
-  "[subscribe('sequence/ss2'), enabled]": 
+  "[subscribe('sequence/ss2'), pnp]": 
   function ss2() 
   {
     this._next = 2;
   },
 
-  "[subscribe('sequence/ss3'), enabled]": 
+  "[subscribe('sequence/ss3'), pnp]": 
   function ss3() 
   {
     this._next = 3;
   },
 
-  "[subscribe('sequence/g0'), enabled]": 
+  "[subscribe('sequence/g0'), pnp]": 
   function scsg0(dscs) 
   {
     //coUtils.Debug.reportMessage("g0 = " + dscs);
@@ -618,7 +618,7 @@ NRCSConverter.definition = {
     }
   },
 
-  "[subscribe('sequence/g1'), enabled]": 
+  "[subscribe('sequence/g1'), pnp]": 
   function scsg1(dscs) 
   {
     //coUtils.Debug.reportMessage("g1 = " + dscs);
@@ -629,7 +629,7 @@ NRCSConverter.definition = {
     }
   },
 
-  "[subscribe('sequence/g2'), enabled]": 
+  "[subscribe('sequence/g2'), pnp]": 
   function scsg2(dscs) 
   {
     //coUtils.Debug.reportMessage("g2 = " + dscs);
@@ -640,7 +640,7 @@ NRCSConverter.definition = {
     }
   },
 
-  "[subscribe('sequence/g3'), enabled]": 
+  "[subscribe('sequence/g3'), pnp]": 
   function scsg3(dscs) 
   {
     var new_charset = this._charset_table[dscs];
@@ -650,7 +650,7 @@ NRCSConverter.definition = {
     }
   },
 
-  "[subscribe('command/save-cursor'), enabled]": 
+  "[subscribe('command/save-cursor'), pnp]": 
   function saveCursor(context) 
   {
     context.g0 = this._g[0];
@@ -661,7 +661,7 @@ NRCSConverter.definition = {
     context.gr = this._gr;
   },
 
-  "[subscribe('command/restore-cursor'), enabled]": 
+  "[subscribe('command/restore-cursor'), pnp]": 
   function restoreCursor(context) 
   {
     this._g[0] = context.g0;
@@ -672,7 +672,7 @@ NRCSConverter.definition = {
     this._gr = context.gr;
   },
 
-  "[subscribe('command/{soft | hard}-terminal-reset'), enabled]":
+  "[subscribe('command/{soft | hard}-terminal-reset'), pnp]":
   function reset(context) 
   {
     this._g[0] = USASCII;
@@ -683,10 +683,16 @@ NRCSConverter.definition = {
     this._gr = 1;
   },
 
-  "[subscribe('command/alloc-drcs'), enabled]":
+  "[subscribe('command/alloc-drcs'), pnp]":
   function allocDRCS(drcs)
   {
     this._charset_table[drcs.dscs] = drcs; 
+  },
+
+  "[subscribe('command/query-da1-capability'), pnp]":
+  function onQueryDA1Capability(mode)
+  {
+    return 9; // NRCS
   },
 
   convert: function convert(codes) 

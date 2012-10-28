@@ -81,6 +81,12 @@ DRCSBuffer.definition = {
     }
   },
 
+  "[subscribe('command/query-da1-capability'), pnp]":
+  function onQueryDA1Capability(mode)
+  {
+    return 7; // DRCS
+  },
+
   getDRCSInfo: function getDRCSInfo(code) 
   {
     var drcs_info;

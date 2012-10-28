@@ -74,6 +74,12 @@ DECLocatorMouse.definition = {
     this.onmousescroll.enabled = false;
   },
 
+  "[subscribe('command/query-da1-capability'), pnp]":
+  function onQueryDA1Capability(mode)
+  {
+    return 29; // ANSI Text locator
+  },
+
   "[subscribe('command/backup'), pnp]": 
   function backup(context) 
   {
