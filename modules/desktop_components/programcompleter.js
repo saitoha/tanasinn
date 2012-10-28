@@ -64,12 +64,39 @@ function generateEntries(paths)
 /** 
  * @class ProgramCompleter
  */
-var ProgramCompleter = new Class().extends(Component);
+var ProgramCompleter = new Class().extends(Plugin);
 ProgramCompleter.definition = {
 
   id: "program-completer",
 
-  "[subscribe('get/completer/program'), enabled]":
+  getInfo: function getInfo()
+  {
+    return {
+      name: _("Program Completer"),
+      version: "0.1",
+      description: _("Provides the completion information of executable programs.")
+    };
+  },
+
+  "[persistable, watchable] enabled_when_startup": true,
+
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
+   */
+  "[install]":
+  function install(context)
+  {
+  },
+
+  /** Uninstalls itself. 
+   *  @param {InstallContext} context A InstallContext object.
+   */
+  "[uninstall]":
+  function uninstall(context)
+  {
+  },
+
+  "[subscribe('get/completer/program'), pnp]":
   function onCompletersRequested(broker)
   {
     return this;
@@ -126,22 +153,21 @@ ProgramCompleter.definition = {
         data,
         autocomplete_result,
         search_path,
-        cygwin_root,
         map;
 
     if ("WINNT" === coUtils.Runtime.os) {
-      cygwin_root = broker.cygwin_root;
-      map = (broker.bin_path || "/bin:/usr/local/bin")
+      map = (coUtils.Runtime.getBinPath() || "/bin:/usr/local/bin")
         .split(":")
         .map(function(posix_path) 
         {
-          return cygwin_root + "\\" + posix_path.replace(/\//g, "\\");
+          return coUtils.Runtime.getCygwinRoot()
+                + "\\"
+                + posix_path.replace(/\//g, "\\");
         }).reduce(
           function(map, path) 
           {
-            var key;
+            var key = path.replace(/\\$/, "");
 
-            key = path.replace(/\\$/, "");
             map[key] = undefined;
             return map; 
           }, {});
@@ -154,9 +180,8 @@ ProgramCompleter.definition = {
     data = files.map(
       function(file) 
       {
-        var path;
-
-        path = file.path;
+        var path = file.path;
+        
         if ("WINNT" === coUtils.Runtime.os) {
           path = path
             .replace(/\\/g, "/")
