@@ -27,7 +27,7 @@
 function wait(span) 
 {
   var end_time = Date.now() + span,
-      current_thread = coUtils.Services.threadManager.currentThread;
+      current_thread = coUtils.Services.getThreadManager().currentThread;
 
   do {
     current_thread.processNextEvent(true);
@@ -66,7 +66,7 @@ PersistentTrait.definition = {
   /**
    * Serialize snd persist current state.
    */
-  "[subscribe('@command/backup'), type('Object -> Undefined'), pnp]": 
+  "[subscribe('@command/backup'), type('Object -> Undefined'), enabled]": 
   function backup(context) 
   {
     var broker = this._broker,
@@ -519,7 +519,7 @@ Renderer.definition = {
                          attr);
 
     context.font = font_size + "px " + font_family;
-    if (attr.italic) {
+    if (1 === attr.italic) {
       context.font = "italic " + context.font;
     }
 
@@ -550,7 +550,7 @@ Renderer.definition = {
         height = line_height;
 
     context.font = (font_size * 2) + "px " + font_family;
-    if (attr.italic) {
+    if (1 === attr.italic) {
       context.font = "italic " + context.font;
     }
 
@@ -596,7 +596,7 @@ Renderer.definition = {
 
     context.font = (font_size * 2) + "px " + font_family;
 
-    if (attr.italic) {
+    if (1 === attr.italic) {
       context.font = "italic " + context.font;
     }
 
@@ -642,7 +642,7 @@ Renderer.definition = {
 
     context.font = (font_size * 2) + "px " + font_family;
 
-    if (attr.italic) {
+    if (1 === attr.italic) {
       context.font = "italic " + context.font;
     }
 
@@ -739,13 +739,13 @@ Renderer.definition = {
   _drawBackground: 
   function _drawBackground(context, x, y, width, height, attr)
   {
-    if (attr.blink) {
+    if (1 === attr.blink) {
       if (null === this._slow_blink_layer) {
         this.createSlowBlinkLayer(this.slow_blink_interval);
       }
       this._drawBackgroundImpl(context, x, y, width, height, attr);
       this._drawBackgroundImpl(this._slow_blink_layer.context, x, y, width, height, attr);
-    } else if (attr.rapid_blink) {
+    } else if (1 === attr.rapid_blink) {
       if (null === this._rapid_blink_layer) {
         this.createRapidBlinkLayer(this.rapid_blink_interval);
       }
@@ -796,7 +796,7 @@ Renderer.definition = {
         dscs,
         drcs_state = attr.drcs;
 
-    if (attr.blink) {
+    if (1 === attr.blink) {
       if (null === this._slow_blink_layer) {
         this.createSlowBlinkLayer(this.slow_blink_interval);
       }
@@ -804,7 +804,7 @@ Renderer.definition = {
       context.font = this._main_layer.context.font;
     }
 
-    if (attr.rapid_blink) {
+    if (1 === attr.rapid_blink) {
       if (null === this._rapid_blink_layer) {
         this.createRapidBlinkLayer(this.rapid_blink_interval);
       }
@@ -812,11 +812,11 @@ Renderer.definition = {
       context.font = this._main_layer.context.font;
     }
 
-    if (attr.invisible) {
+    if (1 === attr.invisible) {
       context.globalAlpha = 0.0;
-    } else if (attr.bold) {
+    } else if (1 === attr.bold) {
       context.globalAlpha = this.bold_alpha;
-    } else if (attr.halfbright) {
+    } else if (1 === attr.halfbright) {
       context.globalAlpha = this.halfbright_alpha;
     } else {
       context.globalAlpha = this.normal_alpha;
@@ -824,7 +824,7 @@ Renderer.definition = {
 
     context.fillStyle = fore_color;
 
-    if (attr.underline) {
+    if (1 === attr.underline) {
       this._drawUnderline(context, x, y, char_width * length, fore_color);
     }
 
@@ -859,7 +859,7 @@ Renderer.definition = {
     }
 
     context.fillText(text, x, y, char_width * length);
-    if (attr.bold && this.bold_as_blur) {
+    if (1 === attr.bold && this.bold_as_blur) {
       context.fillText(text, x + 1, y, char_width * length - 1);
     }
   },
