@@ -37,6 +37,7 @@
 var Ime = new Class().extends(Plugin)
                      .depends("renderer")
                      .depends("cursorstate")
+                     .depends("palette")
                      .depends("inputmanager");
 Ime.definition = {
 
@@ -73,6 +74,7 @@ Ime.definition = {
         focused_element;
 
     this._renderer = renderer;
+    this._palette = context["palette"];
     this._cursor_state = context["cursorstate"];
     this._input_manager = input_manager;
 
@@ -116,6 +118,9 @@ Ime.definition = {
     textbox.style.position = ""; 
 
     this._input_manger = null;
+    this._cursor_state = null;
+    this._renderer = null;
+    this._palette = null;
 
     // disables session event handlers.
     this.startPolling.enabled = false;
@@ -182,12 +187,13 @@ Ime.definition = {
   {
     var textbox = this._input_manager.getInputField(),
         renderer = this._renderer,
+        palette = this._palette,
         cursor = this._cursor_state,
         line_height = renderer.line_height,
         char_width = renderer.char_width,
         char_height = renderer.char_height,
         char_offset = renderer.char_offset,
-        normal_color = renderer.color,
+        normal_color = palette.color,
         font_size = renderer.font_size,
         top = cursor.positionY * line_height + -4,
         left = cursor.positionX * char_width + -2;
