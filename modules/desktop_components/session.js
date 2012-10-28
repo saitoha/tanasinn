@@ -53,17 +53,6 @@ Environment.definition = {
 
 // public properties
 
-  /** @property bin_path */
-  get bin_path()
-  {
-    return this._broker.bin_path;
-  },
-
-  set bin_path(value)
-  {
-    this._broker.bin_path = value;
-  },
-
   /** @property runtime_path */
   get runtime_path()
   {
@@ -92,11 +81,6 @@ Environment.definition = {
   set search_path(value)
   {
     this._search_path = value;
-  },
-
-  get cygwin_root()
-  {
-    return this._broker.cygwin_root;
   },
 
 }; // Environment
@@ -269,20 +253,6 @@ Session.definition = {
 
     // register getter topic.
     this.subscribe(
-      "get/bin-path", 
-      function()
-      {
-        return this.request("get/bin-path");
-      }, this, id);
-
-    this.subscribe(
-      "get/python-path", 
-      function()
-      { 
-        return this.request("get/python-path");
-      }, this, id);
-
-    this.subscribe(
       "get/root-element", 
       function()
       { 
@@ -314,7 +284,7 @@ Session.definition = {
     //this.notify("command/focus");
     //this.notify("command/focus");
     //  }, this.initial_focus_delay, this);
-    this.notify("event/session-initialized");
+    this.notify("event/session-initialized", this);
 
     return this;
   },
@@ -361,7 +331,9 @@ function main(desktop)
     "event/session-requested", 
     function(request) 
     {
-      new Session(desktop).initializeWithRequest(request);
+      var session = new Session(desktop);
+      session.initializeWithRequest(request);
+      return session;
     });
 }
 

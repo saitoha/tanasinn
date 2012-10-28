@@ -33,20 +33,6 @@ Environment.definition = {
 
 // public properties
 
-  /** @property bin_path */
-  get bin_path()
-  {
-    var broker = this._broker;
-    return broker.bin_path;
-  },
-
-  set bin_path(value)
-  {
-    var broker = this._broker;
-    broker.bin_path = value;
-  },
-
-
   /** @property runtime_path */
   get runtime_path()
   {
@@ -74,11 +60,6 @@ Environment.definition = {
   set search_path(value)
   {
     this._search_path = value;
-  },
-
-  get cygwin_root()
-  {
-    return this._broker.cygwin_root;
   },
 
 }; // Environment
@@ -139,21 +120,6 @@ Desktop.definition = {
     var id, 
         root_element,
         broker = this._broker;
-
-    // register getter topic.
-    this.subscribe(
-      "get/bin-path",
-      function()
-      {
-        return broker.bin_path;
-      });
-
-    this.subscribe(
-      "get/python-path", 
-      function()
-      {
-        return broker.python_path;
-      });
 
     this.subscribe(
       "get/runtime-path", 
@@ -261,7 +227,8 @@ function main(process)
     "event/new-window-detected",
     function onDesktopRequested(window) 
     {
-      return new Desktop(process).initializeWithWindow(window);
+      var desktop = new Desktop(process);
+      return desktop.initializeWithWindow(window);
     });
 }
 

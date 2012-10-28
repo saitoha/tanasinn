@@ -29,12 +29,39 @@
  * @class SessionsCompletionDisplayDriver
  *
  */
-var SessionsCompletionDisplayDriver = new Class().extends(Component);
+var SessionsCompletionDisplayDriver = new Class().extends(Plugin);
 SessionsCompletionDisplayDriver.definition = {
 
   id: "sessions-completion-display-driver",
 
-  "[subscribe('get/completion-display-driver/sessions'), enabled]":
+  getInfo: function getInfo()
+  {
+    return {
+      name: _("Session Completion Display Driver"),
+      version: "0.1",
+      description: _("Draw completion list of suspended sessions.")
+    };
+  },
+
+  "[persistable, watchable] enabled_when_startup": true,
+
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
+   */
+  "[install]":
+  function install(context)
+  {
+  },
+
+  /** Uninstalls itself. 
+   *  @param {InstallContext} context A InstallContext object.
+   */
+  "[uninstall]":
+  function uninstall(context)
+  {
+  },
+
+  "[subscribe('get/completion-display-driver/sessions'), pnp]":
   function onDisplayDriverRequested(broker)
   {
     return this;
