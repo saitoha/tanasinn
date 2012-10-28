@@ -186,7 +186,7 @@ PaletteManager.definition = {
             + "/" + color.substr(3, 2) 
             + "/" + color.substr(5, 2)
       message = "4;" + number + ";" + color;
-      this.sendMessage("command/send-to-tty", message);
+      this.sendMessage("command/send-sequence/osc", message);
     } else { // set color
       this.color[number] = coUtils.Color.parseX11ColorSpec(spec);
     }
@@ -228,7 +228,7 @@ PaletteManager.definition = {
             + "/" + color.substr(3, 2) 
             + "/" + color.substr(5, 2)
       message = "10;" + color;
-      this.sendMessage("command/send-to-tty", message);
+      this.sendMessage("command/send-sequence/osc", message);
     } else { 
       color = coUtils.Color.parseX11ColorSpec(value);
       outerchrome.foreground_color = color;
@@ -267,7 +267,7 @@ PaletteManager.definition = {
             + "/" + color.substr(3, 2) 
             + "/" + color.substr(5, 2)
       message = "11;" + color;
-      this.sendMessage("command/send-to-tty", message);
+      this.sendMessage("command/send-sequence/osc", message);
     } else {
       color = coUtils.Color.parseX11ColorSpec(value);
       outerchrome.background_color = color;
