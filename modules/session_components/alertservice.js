@@ -115,8 +115,7 @@ NotificationService.definition = {
         file = coUtils.File.getFileLeafFromVirtualPath(path),
         url = coUtils.File.getURLSpec(file);
 
-    Components.classes["@mozilla.org/alerts-service;1"]
-      .getService(Components.interfaces.nsIAlertsService)
+    coUtils.Components.getAlertService()
       .showAlertNotification(
         url,
         title,
@@ -193,8 +192,7 @@ AlertService.definition = {
     var self = this;
 
     try {
-      Components.classes["@mozilla.org/alerts-service;1"]
-        .getService(Components.interfaces.nsIAlertsService)
+      coUtils.Components.getAlertService()
         .showAlertNotification(
           "chrome://mozapps/skin/extensions/alerticon-error.png",
           data.title,
