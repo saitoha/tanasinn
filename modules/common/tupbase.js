@@ -553,16 +553,20 @@ Class.prototype = {
    */
   loadAttributes: function loadAttributes(search_path, scope) 
   {
-    var paths = coUtils.File.getFileEntriesFromSerchPath(search_path),
+    var paths = coUtils.File.getFileEntriesFromSearchPath(search_path),
         entry,
         url,
-        module_scope;
+        module_scope,
+        i = 0;
 
-    for (entry in paths) {
+    for (; i < paths.length; ++i) {
+
+      entry = paths[i];
 
       module_scope = new function()
       {
       };
+
       module_scope.prototype = scope;
 
       try {
@@ -1019,10 +1023,10 @@ Attribute.prototype = {
 
   toString: function toString()
   {
-    return "[Attribute " + this.__id + "]";
+    return "[Attribute]";
   },
 
-};
+}; // Attribute
 
 Component.loadAttributes(
   ["modules/attributes"],
