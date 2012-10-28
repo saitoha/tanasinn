@@ -207,7 +207,7 @@ PaletteManager.definition = {
 
     this.sendMessage("command/load-persistable-data", scope);
 
-    color = scope["renderer.color"] || this.__proto__.color;
+    color = scope["palette.color"] || this.__proto__.color;
     this.color[number] = color[number];
   },
 
@@ -359,14 +359,14 @@ PaletteManager.definition = {
 
     // Get hexadecimal formatted text color (#xxxxxx) 
     // form given attribute structure. 
-    if (attr.fgcolor) {
-      if (attr.inverse) {
+    if (1 === attr.fgcolor) {
+      if (1 === attr.inverse) {
          this.color[attr.bg];
       } else {
         fore_color = this.color[attr.fg];
       }
     } else {
-      if (attr.inverse) {
+      if (1 === attr.inverse) {
         fore_color = this.background_color;
       } else {
         fore_color = this.foreground_color;
@@ -389,14 +389,14 @@ PaletteManager.definition = {
 
     /* Get hexadecimal formatted background color (#xxxxxx) 
      * form given attribute structure. */
-    if (attr.bgcolor) {
-      if (attr.inverse) {
+    if (1 === attr.bgcolor) {
+      if (1 === attr.inverse) {
         back_color = this.color[attr.fg];
       } else {
         back_color = this.color[attr.bg];
       }
     } else {
-      if (attr.inverse) {
+      if (1 === attr.inverse) {
         back_color = this.foreground_color;
       } else {
         return null;
