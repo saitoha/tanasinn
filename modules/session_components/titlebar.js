@@ -89,6 +89,7 @@ Titlebar.definition = {
   "[persistable, watchable] initial_query_utf8_mode": true,
   "[persistable, watchable] enable_title_reporting": false,
 
+  "[persistable, watchable] template": "%s - tanasinn",
   "[persistable, watchable] font_color": "white",
   "[persistable, watchable] font_size": 12,
   "[persistable, watchable] font_family": "Lucida Console,Latha,Georgia,monospace",
@@ -113,7 +114,7 @@ Titlebar.definition = {
       height: this.font_size,
       style: {
         padding: "0px",
-        margin: "0px",
+        marginBottom: "6px",
         opacity: "1.0",
         width: "100%",
         cursor: "move",
@@ -141,6 +142,7 @@ Titlebar.definition = {
     this._set_utf8_mode = this.initial_set_utf8_mode;
     this._query_hex_mode = this.initial_query_hex_mode;
     this._query_utf8_mode = this.initial_query_utf8_mode;
+
   },
   
   /** Uninstalls itself.
@@ -151,7 +153,13 @@ Titlebar.definition = {
     this._canvas = null;
     this._decoder = null;
     this._encoder = null;
+  },
 
+  /** When session is initialized */
+  "[subscribe('command/send-titlebar-string'), pnp]": 
+  function sendTitlebarString(value) 
+  {
+    this._print(value);
   },
 
   /** When screen size is changed */
@@ -277,9 +285,13 @@ Titlebar.definition = {
   {
     var canvas = this._canvas,
         context = canvas.getContext("2d"),
+        template = this.template,
         metrics,
         left;
 
+    if (template) {
+      text = coUtils.Text.format(template, text);
+    }
     this._title_text = text;
 
     canvas.width = canvas.parentNode.boxObject.width;
