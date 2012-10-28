@@ -154,6 +154,12 @@ Sixel.definition = {
     return dom;
   },
 
+  "[subscribe('command/query-da1-capability'), pnp]":
+  function onQueryDA1Capability(mode)
+  {
+    return 4; // sixel
+  },
+
   "[subscribe('command/change-sixel-display-mode'), pnp]":
   function onSixelDisplayModeChanged(mode)
   {
