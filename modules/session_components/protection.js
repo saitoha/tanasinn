@@ -111,17 +111,17 @@ Protection.definition = {
 
       // (default)  DECSED and DECSEL can erase characters.
       case 0:
-        attr.protected = false;
+        attr.protected = 0;
         break;
 
       // DECSED and DECSEL cannot erase characters.
       case 1:
-        attr.protected = true;
+        attr.protected = 1;
         break;
 
       // Same as 0.
       case 2:
-        attr.protected = false;
+        attr.protected = 0;
         break;
 
       default:
@@ -138,7 +138,7 @@ Protection.definition = {
         param,
         message;
 
-    if (attr.protected) {
+    if (1 === attr.protected) {
       param = 1;
     } else {
       param = 0;
