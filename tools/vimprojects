@@ -42,6 +42,15 @@
   common=common {
    config.js.in
    process.js
+   color.js
+   locale.js
+   factory.js
+   logging.js
+   algorithm.js
+   timer.js
+   clipboard.js
+   uuid.js
+   sessions.js
    common.js
    tupstart.js
    tupbase.js
@@ -350,7 +359,7 @@
   UnicodeCategoryDetector.pl
   Makefile
  }
- =defaults/preferences {
+ prefs=defaults/preferences {
   prefs.js
  }
 }
