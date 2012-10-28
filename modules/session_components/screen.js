@@ -28,7 +28,7 @@
 function wait(span) 
 {
   var end_time = Date.now() + span,
-      current_thread = coUtils.Services.threadManager.currentThread;
+      current_thread = coUtils.Services.getThreadManager().currentThread;
 
   do {
     current_thread.processNextEvent(true);
@@ -2747,7 +2747,7 @@ Screen.definition = {
       line.serializeRange(data, left, right);
     }
 
-    hash = coUtils.Algorighm.calculateMD5(data);
+    hash = coUtils.Algorithm.calculateMD5(data);
     
     function toHexString(charCode)
     {
