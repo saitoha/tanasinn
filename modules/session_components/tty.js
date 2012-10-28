@@ -153,24 +153,25 @@ SocketTeletypeService.definition = {
       request_id = settings.command.substr(1);
       record = coUtils.Sessions.get(request_id);
 
-      this.sendMessage(
-        "event/control-socket-ready",
-        Number(record.control_port));
+      if (record) {
+        this.sendMessage(
+          "event/control-socket-ready",
+          Number(record.control_port));
 
-      this._pid = Number(record.pid);
+        this._pid = Number(record.pid);
 
-      coUtils.Sessions.remove(this._broker, request_id);
-      coUtils.Sessions.update();
+        coUtils.Sessions.remove(this._broker, request_id);
+        coUtils.Sessions.update();
 
-      this.sendMessage("command/attach-session", request_id);
+        this.sendMessage("command/attach-session", request_id);
+        return;
+      }
 
-    } else {
-
-      this._socket = coUtils.Components.createLoopbackServerSocket(this);
-  
-      // nsIProcess::runAsync.
-      this.sendMessage("command/start-ttydriver-process", this._socket.port); 
     }
+    this._socket = coUtils.Components.createLoopbackServerSocket(this);
+  
+    // nsIProcess::runAsync.
+    this.sendMessage("command/start-ttydriver-process", this._socket.port); 
   },
  
   /**
