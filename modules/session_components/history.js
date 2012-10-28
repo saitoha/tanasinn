@@ -88,11 +88,7 @@ CommandlineHistory.definition = {
       .getFileLeafFromVirtualPath(broker.runtime_path + "/" + this.history_file_path)
       .path;
 
-    file = Components
-      .classes["@mozilla.org/file/local;1"]
-      .createInstance(Components.interfaces.nsILocalFile);
-
-    file.initWithPath(path);
+    file = coUtils.Components.createLocalFile(path);
     this._file = file;
 
     if (file.exists() && file.isReadable) {
@@ -121,9 +117,7 @@ CommandlineHistory.definition = {
       // create base directories recursively (= mkdir -p).
       void function make_directory(current) 
       {
-        var parent;
-
-        parent = current.parent;
+        var parent = current.parent;
 
         if (!parent.exists()) {
           make_directory(parent);
@@ -133,24 +127,23 @@ CommandlineHistory.definition = {
     }
    
     // create output stream.
-    ostream = Components
-      .classes["@mozilla.org/network/file-output-stream;1"]
-      .createInstance(Components.interfaces.nsIFileOutputStream);  
+    ostream = coUtils.Components.createFileOutputStream();
       
     // write (0x02), appending (0x10), "rw"
-    const PR_WRONLY = 0x02;
-    const PR_CREATE_FILE = 0x08;
-    const PR_APPEND = 0x10;
-    const PR_TRUNCATE = 0x20;
-    ostream.init(file, PR_WRONLY| PR_CREATE_FILE| PR_APPEND, -1, 0);   
+    ostream.init(
+      file,
+      0x02 /* PR_WRONLY */|
+      0x08 /* PR_CREATE_FILE */|
+      0x10 /* PR_APPEND */,
+      -1, 0);   
     
-    converter = Components
-      .classes["@mozilla.org/intl/converter-output-stream;1"].  
-      createInstance(Components.interfaces.nsIConverterOutputStream);  
+    converter = coUtils.Components.createConverterOutputStream();
     converter.init(ostream, "UTF-8", 0, 0);  
+
     this._converter = converter;
   },
 
+  /** close history file */
   closeHistory: function closeHistory()
   {
     // close history file.
