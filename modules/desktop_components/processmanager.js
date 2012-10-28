@@ -28,15 +28,36 @@
  * @class ProcessManager
  *
  */
-var ProcessManager = new Class().extends(Component);
+var ProcessManager = new Class().extends(Plugin);
 ProcessManager.definition = {
 
   id: "process_manager",
 
-  "[subscribe('@event/broker-started'), enabled]":
-  function onLoad(broker)
+  getInfo: function getInfo()
   {
-    this.sendMessage("initialized/" + this.id, this);
+    return {
+      name: _("Process Manager"),
+      version: "0.1",
+      description: _("Manage suspended processes.")
+    };
+  },
+
+  "[persistable, watchable] enabled_when_startup": true,
+
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
+   */
+  "[install]":
+  function install(context)
+  {
+  },
+
+  /** Uninstalls itself. 
+   *  @param {InstallContext} context A InstallContext object.
+   */
+  "[uninstall]":
+  function uninstall(context)
+  {
   },
 
   /** Checks if the process is running. 
@@ -60,7 +81,6 @@ ProcessManager.definition = {
   {
     var runtime_path,
         args,
-        cygwin_root,
         runtime,
         process;
 
@@ -71,8 +91,7 @@ ProcessManager.definition = {
     }
 
     if ("WINNT" === coUtils.Runtime.os) {
-      cygwin_root = this._broker.cygwin_root;
-      runtime_path = cygwin_root + "\\bin\\run.exe";
+      runtime_path = coUtils.Runtime.getCygwinRoot() + "\\bin\\run.exe";
       args = [ "kill", "-wait", "-" + signal, String(pid) ];
     } else { // Darwin, Linux or FreeBSD
       runtime_path = "/bin/kill";
