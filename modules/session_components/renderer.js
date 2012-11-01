@@ -843,7 +843,6 @@ Renderer.definition = {
     }
   },
 
-<<<<<<< HEAD
   _get_fore_color: function _get_fore_color(attr)
   {
     var fore_color_map = this.color,
@@ -875,8 +874,6 @@ Renderer.definition = {
 
   },
 
-=======
->>>>>>> 48f9e2a7c21d01ce95fc41b3ae443970a3bb211f
   _drawText: function _drawText(context, codes, x, y, char_width, length, attr)
   {
     var text = String.fromCharCode.apply(String, codes);
