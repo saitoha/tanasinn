@@ -70,9 +70,8 @@ DOMEventManager.definition = {
   "[subscribe('command/add-domlistener'), enabled]":
   function add(listener) 
   {
-    var dom, id;
-
-    dom = {};
+    var dom = {},
+        id;
 
     if (!listener.target) {
       this._addImpl(

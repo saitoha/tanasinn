@@ -53,27 +53,16 @@ Environment.definition = {
 
 // public properties
 
-  /** @property runtime_path */
-  get runtime_path()
-  {
-    return this._broker.runtime_path;
-  },
-
-  set runtime_path(value)
-  {
-    this._broker.runtime_path = value;
-  },
-
   /** @property search_path */
   get search_path()
   {
-    var broker = this._broker;
+    var runtimepath = coUtils.Runtime.getRuntimePath();
 
     return this._search_path || [ 
       "modules/shared_components",
       "modules/session_components",
-      broker.runtime_path + "/modules/shared_components",
-      broker.runtime_path + "/modules/session_components"
+      runtimepath + "/modules/shared_components",
+      runtimepath + "/modules/session_components"
     ];
 
   },
@@ -243,24 +232,9 @@ Session.definition = {
 
     this.load(this, this.search_path, new this._broker._broker.default_scope);
 
-    // register stop topic
-    this.subscribe(
-      "command/stop", 
-      function()
-      { 
-        this.stop();
-      }, this, id);
-
     // register getter topic.
     this.subscribe(
       "get/root-element", 
-      function()
-      { 
-        return request.parent;
-      }, this, id);
-
-    this.subscribe(
-      "get/runtime-path", 
       function()
       { 
         return request.parent;
@@ -277,15 +251,9 @@ Session.definition = {
     this.notify("command/load-settings", this.profile);
     this.notify("event/broker-started", this);
     
-    //coUtils.Timer.setTimeout(
-    //  function timerProc()
-    //  {
-    this.notify("command/focus");
-    //this.notify("command/focus");
-    //this.notify("command/focus");
-    //  }, this.initial_focus_delay, this);
     this.notify("event/session-initialized", this);
 
+    this.notify("command/focus");
     return this;
   },
 
@@ -296,12 +264,11 @@ Session.definition = {
     if (this._stopped) {
       return;
     }
-
-//    this.unsubscribe(this._request_id);
     this._stopped = true
     this.stop.enabled = false;
     this.notify("event/broker-stopping", this);
     this.notify("event/broker-stopped", this);
+    this.unsubscribe(this._request_id);
     this.clear();
 
     this._root_element = null;
@@ -320,6 +287,20 @@ Session.definition = {
 }; // class Session
 
 
+var SessionFactory = new Class().extends(Plugin)
+SessionFactory.definition = {
+
+  "[subscribe('event/session-requested'), enabled]": 
+  function(request) 
+  {
+    var session = new Session(this._broker);
+
+    session.initializeWithRequest(request);
+    return session;
+  },
+
+}; // class SessionFactory
+
 /**
  * @fn main
  * @brief Module entry point.
@@ -327,14 +308,7 @@ Session.definition = {
  */
 function main(desktop) 
 {
-  desktop.subscribe(
-    "event/session-requested", 
-    function(request) 
-    {
-      var session = new Session(desktop);
-      session.initializeWithRequest(request);
-      return session;
-    });
+  new SessionFactory(desktop);
 }
 
 // EOF

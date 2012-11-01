@@ -146,8 +146,7 @@ ProgramCompleter.definition = {
    */
   startSearch: function startSearch(source, listener)
   {
-    var broker = this._broker,
-        lower_source = source.toLowerCase(),
+    var lower_source = source.toLowerCase(),
         search_paths,
         files, 
         data,

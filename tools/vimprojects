@@ -227,6 +227,8 @@
 
     pluginview.js
     debugger.js
+    tracer.js
+    hooker.js
 
     consolelistener.js
     console.js

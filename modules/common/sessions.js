@@ -42,14 +42,15 @@ coUtils.Sessions = {
     coUtils.Timer.setTimeout(
       function timerProc()
       {
-        var backup_data_path = broker.runtime_path + "/persist/" + request_id + ".txt",
+        var runtimepath = coUtils.Runtime.getRuntimePath(),
+            backup_data_path = runtimepath + "/persist/" + request_id + ".txt",
             file = coUtils.File.getFileLeafFromVirtualPath(backup_data_path);
 
         if (file.exists()) {
           file.remove(true);
         }
 
-        backup_data_path = broker.runtime_path + "/persist/" + request_id + ".png";
+        backup_data_path = runtimepath + "/persist/" + request_id + ".png";
         file = coUtils.File.getFileLeafFromVirtualPath(backup_data_path);
 
         if (file.exists()) {

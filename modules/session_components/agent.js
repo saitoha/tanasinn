@@ -207,8 +207,7 @@ Agent.definition = {
 
   getAgentImagePath: function getAgentImagePath()
   {
-    var broker = this._broker,
-        path = broker.runtime_path + "/" + this.agent_image_file,
+    var path = coUtils.Runtime.getRuntimePath() + "/" + this.agent_image_file,
         file = coUtils.File.getFileLeafFromVirtualPath(path);
 
     return coUtils.File.getURLSpec(file);
@@ -216,8 +215,7 @@ Agent.definition = {
 
   getBalloonImagePath: function getBalloonImagePath()
   {
-    var broker = this._broker,
-        path = broker.runtime_path + "/" + this.balloon_image_file,
+    var path = coUtils.Runtime.getRuntimePath() + "/" + this.balloon_image_file,
         file = coUtils.File.getFileLeafFromVirtualPath(path);
 
     return coUtils.File.getURLSpec(file);

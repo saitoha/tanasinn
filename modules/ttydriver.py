@@ -434,23 +434,19 @@ if __name__ == "__main__":
     startup_info = connection_socket.recv(BUFFER_SIZE).split(" ");
     command, term, lang = [ base64.b64decode(value) for value in startup_info]
     
-    ## modify termios properties, and enables master's output flow control ON. 
-    #master, slave = create_a_pair_of_tty_device();
-
     ## fork slave's process, and get tty name.
-    #pid, ttyname = fork_app_process(master, slave, command, term)    
     ttyname_max_length = 20 #1024
     pid, master = pty.fork()
     if not pid:
-        sys.stdout.write("%%-%ds" % ttyname_max_length % os.ttyname(0))
-        sys.stdout.flush()
-        sys.stdout.write("\x1bc")
-        sys.stdout.flush()
+        #sys.stdout.write("%%-%ds" % ttyname_max_length % os.ttyname(0))
+        #sys.stdout.flush()
+        #sys.stdout.write("\x1bc")
+        #sys.stdout.flush()
         os.environ["TERM"] = term 
         os.environ["LANG"] = lang 
         os.environ["__TANASINN"] = term 
         os.execlp("/bin/sh", "/bin/sh", "-c", "cd $HOME && exec %s" % command)
-    ttyname = os.read(master, ttyname_max_length).rstrip()
+    ttyname = "unknown ttyname"#os.read(master, ttyname_max_length).rstrip()
 
     iflag, oflag, cflag, lflag, ispeed, cspeed, cc = termios.tcgetattr(master)
 
@@ -517,15 +513,12 @@ if __name__ == "__main__":
             io_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             io_socket.connect(("127.0.0.1", io_port))
 
-            driver = TeletypeDriver(
-                pid, 
-                ttyname, 
-                master, 
-                io_socket, 
-                control_connection)
+            driver = TeletypeDriver(pid, 
+                                    ttyname, 
+                                    master, 
+                                    io_socket, 
+                                    control_connection)
             driver.drive_tty()
-
-            time.sleep(1)
 
             if not driver.isalive():
                 trace("closed.")

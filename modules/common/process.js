@@ -228,17 +228,6 @@ void function() {
   // public properties
     _observer_service: tanasinn_scope.coUtils.Services.getObserverService(),
 
-    /** @property runtime_path */
-    get runtime_path()
-    {
-      return this._runtime_path || "$Home/.tanasinn";
-    },
-
-    set runtime_path(value)
-    {
-      this._runtime_path = value;
-    },
-
     _observers: null,
 
     subscribeGlobalEvent: 

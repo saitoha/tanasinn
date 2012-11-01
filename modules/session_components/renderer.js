@@ -69,8 +69,7 @@ PersistentTrait.definition = {
   "[subscribe('@command/backup'), type('Object -> Undefined'), enabled]": 
   function backup(context) 
   {
-    var broker = this._broker,
-        path,
+    var path,
         file;
     
     // serialize this plugin object.
@@ -107,10 +106,9 @@ PersistentTrait.definition = {
   function onIdle()
   {
     // make image file path
-    var broker = this._broker,
-        path = broker.runtime_path 
+    var path = coUtils.Runtime.getRuntimePath() 
              + "/persist/" 
-             + broker.request_id 
+             + this._broker.request_id 
              + ".png",
         file = coUtils.File.getFileLeafFromVirtualPath(path);
 

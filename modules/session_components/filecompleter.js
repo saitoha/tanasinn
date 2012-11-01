@@ -132,7 +132,7 @@ CGICompleter.definition = {
     }
 
     directory = coUtils.File.getFileLeafFromVirtualPath(
-      broker.runtime_path + "/" + broker.cgi_directory);
+      coUtils.Runtime.getCGIDirectory());
     entries = generateFileEntries(directory.path);
 
     lower_name = name.toLowerCase();
@@ -249,7 +249,7 @@ BatchCompleter.definition = {
     }
 
     directory = coUtils.File.getFileLeafFromVirtualPath(
-      broker.runtime_path + "/" + broker.batch_directory);
+      coUtils.Runtime.getRuntimePath() + "/" + broker.batch_directory);
     entries = generateFileEntries(directory.path);
 
     lower_name = name.toLowerCase();
@@ -368,7 +368,7 @@ ProfileCompleter.definition = {
     lower_name = name.toLowerCase();
 
     entries = coUtils.File.getFileEntriesFromSearchPath(
-        [broker.runtime_path + "/" + broker.profile_directory]);
+        [coUtils.Runtime.getRuntimePath() + "/" + broker.profile_directory]);
 
     candidates = [];
 

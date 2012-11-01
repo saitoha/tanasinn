@@ -278,7 +278,6 @@ C0Control.definition = {
   "[profile('vt100'), sequence('0x11')]":
   function DC1() 
   {
-    //this.sendMessage("command/send-to-tty", "\u0011");
     this.sendMessage("command/flow-control", true);
   },
   
@@ -303,7 +302,6 @@ C0Control.definition = {
   "[profile('vt100'), sequence('0x13')]":
   function DC3() 
   {
-    //this.sendMessage("command/send-to-tty", "\u0013");
     this.sendMessage("command/flow-control", false);
   },
   

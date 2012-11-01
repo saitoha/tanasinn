@@ -28,10 +28,9 @@ var impl = {
 
   get_profile_path: function get_profile_path(broker, name)
   {
-    var runtime_path = broker.runtime_path,
-        profile_directory = broker.profile_directory,
+    var profile_directory = broker.profile_directory,
         filename = (name || broker.profile) + ".js",
-        profile_path = runtime_path + "/" + profile_directory + "/" + filename;
+        profile_path = coUtils.Runtime.getRuntimePath() + "/" + profile_directory + "/" + filename;
   
     return profile_path;
   },

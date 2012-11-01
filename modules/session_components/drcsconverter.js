@@ -610,7 +610,6 @@ NRCSConverter.definition = {
   "[subscribe('sequence/g0'), pnp]": 
   function scsg0(dscs) 
   {
-    //coUtils.Debug.reportMessage("g0 = " + dscs);
     var new_charset = this._charset_table[dscs];
 
     if (undefined !== new_charset) {
@@ -621,7 +620,6 @@ NRCSConverter.definition = {
   "[subscribe('sequence/g1'), pnp]": 
   function scsg1(dscs) 
   {
-    //coUtils.Debug.reportMessage("g1 = " + dscs);
     var new_charset = this._charset_table[dscs];
 
     if (undefined !== new_charset) {
@@ -632,7 +630,6 @@ NRCSConverter.definition = {
   "[subscribe('sequence/g2'), pnp]": 
   function scsg2(dscs) 
   {
-    //coUtils.Debug.reportMessage("g2 = " + dscs);
     var new_charset = this._charset_table[dscs];
 
     if (undefined !== new_charset) {

@@ -321,8 +321,7 @@ PaletteManager.definition = {
   "[subscribe('@command/backup'), type('Object -> Undefined'), pnp]": 
   function backup(context) 
   {
-    var broker = this._broker,
-        path,
+    var path,
         file;
     
     // serialize this plugin object.

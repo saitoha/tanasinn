@@ -575,7 +575,6 @@ VT52.definition = {
   "[profile('vt52'), sequence('0x11')]":
   function DC1() 
   {
-    //session.notify("command/send-to-tty", "\u0011");
     this.sendMessage("command/flow-control", true);
   },
   
@@ -594,7 +593,6 @@ VT52.definition = {
   "[profile('vt52'), sequence('0x13')]":
   function DC3() 
   {
-    //session.notify("command/send-to-tty", "\u0013");
     this.sendMessage("command/flow-control", false);
   },
   

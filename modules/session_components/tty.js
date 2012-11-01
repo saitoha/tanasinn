@@ -181,7 +181,7 @@ SocketTeletypeService.definition = {
   "[subscribe('@command/attach-session'), pnp]":
   function attachSession(request_id)
   {
-    var backup_data_path = this._broker.runtime_path + "/persist/" + request_id + ".txt",
+    var backup_data_path = coUtils.Runtime.getRuntimePath() + "/persist/" + request_id + ".txt",
         context;
 
     if (coUtils.File.exists(backup_data_path)) {
@@ -206,9 +206,8 @@ SocketTeletypeService.definition = {
   function detach()
   {
     var context = {},
-        runtime_path = this._broker.runtime_path,
         request_id = this._broker.request_id,
-        path = runtime_path + "/persist/" + request_id + ".txt",
+        path = coUtils.Runtime.getRuntimePath() + "/persist/" + request_id + ".txt",
         data;
 
     this.sendMessage("command/backup", context);

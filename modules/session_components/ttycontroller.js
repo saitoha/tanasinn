@@ -277,7 +277,7 @@ Controller.definition = {
     coUtils.Debug.reportMessage(
       _("Controller::onStopRequest called. status: %s."), status);
     try {
-      this.sendMessage("command/stop");
+    //  this.sendMessage("command/stop");
     } catch (e) { 
       coUtils.Debug.reportError(e)
     }
@@ -350,7 +350,7 @@ Controller.definition = {
 // private
   _get_sessiondb_path: function _get_sessiondb_path()
   {
-    var virtual_path = this._broker.runtime_path + "/sessions.txt",
+    var virtual_path = coUtils.Runtime.getRuntimePath() + "/sessions.txt",
         sessiondb_path = coUtils.File
           .getFileLeafFromVirtualPath(virtual_path).path;
 

@@ -33,27 +33,16 @@ Environment.definition = {
 
 // public properties
 
-  /** @property runtime_path */
-  get runtime_path()
-  {
-    var broker = this._broker;
-    return broker.runtime_path;
-  },
-
-  set runtime_path(value)
-  {
-    var broker = this._broker;
-    broker.runtime_path = value;
-  },
-
   /** @property search_path */
   get search_path()
   {
+    var runtimepath = coUtils.Runtime.getRuntimePath();
+
     return this._search_path || [
       "modules/desktop_components",
       "modules/shared_components",
-      this.runtime_path + "/modules/desktop_components",
-      this.runtime_path + "/modules/shared_components"
+      runtimepath + "/modules/desktop_components",
+      runtimepath + "/modules/shared_components"
     ];
   },
 
@@ -118,15 +107,7 @@ Desktop.definition = {
   function install()
   {
     var id, 
-        root_element,
-        broker = this._broker;
-
-    this.subscribe(
-      "get/runtime-path", 
-      function()
-      {
-        return broker.runtime_path;
-      });
+        root_element;
 
     root_element = this.window.document
       .documentElement
@@ -216,6 +197,19 @@ Desktop.definition = {
 
 }; // Desktop
 
+var DesktopFactory = new Class().extends(Plugin);
+DesktopFactory.definition = {
+
+  "[subscribe('event/new-window-detected'), enabled]":
+  function onNewWindowDetected(window)
+  {
+    var desktop = new Desktop(this._broker);
+
+    return desktop.initializeWithWindow(window);
+  },
+
+}; // DesktopFactory
+
 /**
  * @fn main
  * @brief Module entry point
@@ -223,13 +217,7 @@ Desktop.definition = {
  */
 function main(process) 
 {
-  process.subscribe(
-    "event/new-window-detected",
-    function onDesktopRequested(window) 
-    {
-      var desktop = new Desktop(process);
-      return desktop.initializeWithWindow(window);
-    });
+  new DesktopFactory(process);
 }
 
 // EOF

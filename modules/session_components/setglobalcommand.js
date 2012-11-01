@@ -63,8 +63,7 @@ SetGlobalCommand.definition = {
   "[command('setglobal', ['option/global']), _('Set a global option.'), pnp]":
   function evaluate(arguments_string)
   {
-    var broker = this._broker,
-        desktop = broker._broker,
+    var desktop = this._broker._broker,
         modules = desktop.notify("get/components"),
         pattern = /^\s*([$_a-zA-Z\.\-]+)\.([$_a-zA-Z]+)(=?)/y,
         match = arguments_string.match(pattern),

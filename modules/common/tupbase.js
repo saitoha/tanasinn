@@ -145,7 +145,7 @@ AttributeContext.prototype = {
   /** Return the information of this object */
   toString: function toString() // override
   {
-    return "[AttributeContext enabled(" + this.enabled + ")]";
+    return "[AttributeContext]";
   },
 
 }; // class AttributeContext
@@ -639,7 +639,7 @@ Component.definition = {
 
     this._broker = broker;
 
-    if (this.__dependency) {
+    if (null !== this.__dependency) {
       this.dependency = {};
       if (this.__dependency.length > 0) {
         install_trigger = "initialized/{" + this.__dependency.join("&") + "}";
@@ -764,7 +764,7 @@ Plugin.definition = {
 
     broker.subscribe(
       "@event/broker-stopping", 
-      function getEnabled() 
+      function setDisabled() 
       {
         this.enabled = false;
       },
@@ -775,7 +775,7 @@ Plugin.definition = {
    * @property {Boolean} enabled Boolean flag that indicates install/uninstall 
    *                     state of plugin object.  
    */
-  get enabled() 
+  getEnabled: function getEnabled() 
   {
     return this.__enabled;
   },

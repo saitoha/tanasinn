@@ -299,7 +299,7 @@ IOManager.definition = {
     coUtils.Debug.reportMessage(
       _("onStopRequest called. status: %s"), status);
     try {
-      this.sendMessage("command/stop");
+    //  this.sendMessage("command/stop");
     } catch (e) { 
       coUtils.Debug.reportError(e)
     }

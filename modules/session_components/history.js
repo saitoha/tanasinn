@@ -80,12 +80,14 @@ CommandlineHistory.definition = {
    */
   loadHistory: function loadHistory() 
   {
-    var broker, path, file, converter, ostream;
+    var path,
+        file,
+        converter,
+        ostream;
 
     // create nsIFile object.
-    broker = this._broker;
     path = coUtils.File
-      .getFileLeafFromVirtualPath(broker.runtime_path + "/" + this.history_file_path)
+      .getFileLeafFromVirtualPath(coUtils.Runtime.getRuntimePath() + "/" + this.history_file_path)
       .path;
 
     file = coUtils.Components.createLocalFile(path);
@@ -155,14 +157,11 @@ CommandlineHistory.definition = {
   "[command('clearhistory/chistory'), _('clear command line history.'), pnp]":
   function clearHistory()
   {
-    var broker;
-
     this.closeHistory();
 
     // remove history file.
-    broker = this._broker;
     coUtils.File
-      .getFileLeafFromVirtualPath(broker.runtime_path + "/" + this.history_file_path)
+      .getFileLeafFromVirtualPath(coUtils.Runtime.getRuntimePath() + "/" + this.history_file_path)
       .remove(false);
 
     this.loadHistory();

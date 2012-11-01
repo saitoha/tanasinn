@@ -74,15 +74,12 @@ SessionsCompleter.definition = {
   _getImageSource: function _getImageSource(request_id)
   {
     try {
-      var image_path = this._broker.runtime_path 
+      var image_path = coUtils.Runtime.getRuntimePath() 
                      + "/persist/" + request_id + ".png",
           image_file = coUtils.File.getFileLeafFromVirtualPath(image_path),
           image_url;
-      //alert(this._broker.runtime_path + "/persist/" + request_id + ".png" + "\n" + image_file.path);
-      //if (image_file.exists()) {
         image_url = coUtils.File.getURLSpec(image_file);
         return image_url;
-     // }
     } catch (e) {
       coUtils.Debug.reportError(e);
     }

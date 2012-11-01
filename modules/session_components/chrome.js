@@ -199,7 +199,7 @@ OuterChrome.definition = {
 
   _getImagePath: function _getImagePath()
   {
-    var path = this._broker.runtime_path + "/" + "images/cover.png",
+    var path = coUtils.Runtime.getRuntimePath() + "/" + "images/cover.png",
         file = coUtils.File.getFileLeafFromVirtualPath(path);
 
     if (!file.exists()) {
@@ -209,6 +209,22 @@ OuterChrome.definition = {
 
     return coUtils.File.getURLSpec(file);
   },
+
+  /** Fired when The session is stopping. */
+  "[subscribe('event/before-broker-stopping'), enabled]": 
+  function onSessionStoping() 
+  {
+    var target = this._frame;
+
+    this.sendMessage("command/blur");
+
+    if (target.parentNode) {
+      target.parentNode.hidden = true;
+      target.parentNode.removeChild(target);
+    }
+    this._frame = null;
+    
+  }, 
 
   "[subscribe('command/reverse-video'), pnp]": 
   function reverseVideo(value) 
@@ -341,7 +357,7 @@ OuterChrome.definition = {
     }
   },
 
-  "[subscribe('@command/focus'), pnp]":
+  "[subscribe('event/session-initialized'), pnp]":
   function onFirstFocus() 
   {
     this._element.hidden = false;
@@ -524,19 +540,6 @@ Chrome.definition = {
   {
     this._center.style.cssText = this._getStyle();
   },
-
-  /** Fired when The session is stopping. */
-  "[subscribe('@event/broker-stopping'), enabled]": 
-  function onSessionStoping() 
-  {
-    var target = this._element;
-
-    this.sendMessage("command/blur");
-
-    if (target.parentNode) {
-      target.parentNode.removeChild(target);
-    }
-  }, 
 
   "[subscribe('command/query-selector'), enabled]":
   function querySelector(selector) 

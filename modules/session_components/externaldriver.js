@@ -137,7 +137,6 @@ ExternalDriver.definition = {
   {
     var kill_path,
         args,
-        broker = this._broker,
         external_process, 
         runtime,
         process;
@@ -178,8 +177,7 @@ ExternalDriver.definition = {
   "[subscribe('command/start-ttydriver-process'), pnp]": 
   function start(connection_port) 
   {
-    var broker = this._broker,
-        executable_path,
+    var executable_path,
         runtime, 
         external_process,
         script_absolute_path,
@@ -248,7 +246,12 @@ ExternalDriver.definition = {
 // nsIObserver
   observe: function observe(subject, topic, data)
   {
-    this.sendMessage("command/stop");
+    this.sendMessage("event/before-broker-stopping");
+    coUtils.Timer.setTimeout(
+      function timerProc()
+      {
+        this._broker.stop(); 
+      }, 50, this);
   },
 
   /**

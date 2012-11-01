@@ -103,8 +103,7 @@ Mascot.definition = {
 
   getMascotImagePath: function getMascotImagePath()
   {
-    var broker = this._broker,
-        path = broker.runtime_path + "/" + this.mascot_image_file,
+    var path = coUtils.Runtime.getRuntimePath() + "/" + this.mascot_image_file,
         file = coUtils.File.getFileLeafFromVirtualPath(path);
 
     if (!file.exists()) {
@@ -184,11 +183,9 @@ Cover.definition = {
 
   getMascotImagePath: function getMascotImagePath()
   {
-    var broker, path, file;
+    var path = coUtils.Runtime.getRuntimePath() + "/" + this.mascot_image_file,
+        file = coUtils.File.getFileLeafFromVirtualPath(path);
 
-    broker = this._broker;
-    path = broker.runtime_path + "/" + this.mascot_image_file;
-    file = coUtils.File.getFileLeafFromVirtualPath(path);
     if (!file.exists()) {
         path = this.mascot_image_file;
         file = coUtils.File.getFileLeafFromVirtualPath(path);

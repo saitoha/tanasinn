@@ -90,7 +90,7 @@ PluginViewer.definition = {
 
         onconstruct: function()
           {
-            this.setAttribute("checked", module.enabled);
+            this.setAttribute("checked", module.getEnabled());
             self._broker.subscribe("event/dependencies-updated",
               function() 
               {
@@ -100,23 +100,24 @@ PluginViewer.definition = {
                     depended_by,
                     disabled;
 
-                this.setAttribute("checked", module.enabled);
+                this.setAttribute("checked", module.getEnabled());
 
                 depends = self._depends_map[module.id];
                 depended = self._depended_map[module.id];
                 depends_on = Object.keys(depends).map(function(key) depends[key]);
                 depended_by = Object.keys(depended).map(function(key) depended[key]);
 
-                disabled = module.enabled ? 
-                  depended_by.some(function(module) module.enabled):
-                  depends_on.some(function(module) !module.enabled);
+                disabled = module.getEnabled() ? 
+                  depended_by.some(function(module) { return module.getEnabled(); }):
+                  depends_on.some(function(module) { return !module.getEnabled(); });
 
                 this.setAttribute("disabled", disabled);
               }, this, this.id);
           },
-        disabled: module.enabled ? 
-          depended_by.some(function(module) module.enabled):
-          depends_on.some(function(module) !module.enabled),
+        disabled: module.getEnabled() ? 
+          depended_by.some(function(module) { return module.getEnabled(); }):
+          depends_on.some(function(module) { return !module.getEnabled(); }),
+
         listener: {
           type: "command",
           handler: function(event) self._setState(module, this)

@@ -784,6 +784,26 @@ coUtils.Runtime = {
     ].join(":");
   },
 
+  getRuntimePath: function getRuntimePath()
+  {
+    return "$Home/.tanasinn";
+  },
+
+  getResourceFilePath: function getResourceFilePath()
+  {
+    return this.getRuntimePath() + "/tanasinnrc";
+  },
+
+  getBatchDirectory: function getBatchDirectory()
+  {
+    return this.getRuntimePath() + "/batch";
+  },
+
+  getCGIDirectory: function getCGIDirectory()
+  {
+    return this.getRuntimePath() + "/cgi-bin";
+  },
+
   getCygwinRoot: function getCygwinRoot() 
   {
     var directory,
