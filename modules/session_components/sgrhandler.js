@@ -293,13 +293,8 @@ SGRHandler.definition = {
             break;
 
           case 30:
-<<<<<<< HEAD
             attr.fg = 0;
-            //attr.fgcolor = false;
-=======
-            attr.fg = 3;
             //attr.fgcolor = 0;
->>>>>>> 48f9e2a7c21d01ce95fc41b3ae443970a3bb211f
             break;
 
           case 31:
@@ -357,11 +352,7 @@ SGRHandler.definition = {
 
           case 40:
             attr.bg = 0;
-<<<<<<< HEAD
-            //attr.bgcolor = false;
-=======
             //attr.bgcolor = 0;
->>>>>>> 48f9e2a7c21d01ce95fc41b3ae443970a3bb211f
             break;
 
           case 41:
