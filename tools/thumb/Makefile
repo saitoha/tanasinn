@@ -4,8 +4,8 @@ all:
 		-framework Cocoa \
 		-framework QuickLook
 	$(CC) -o display display.c
-	./qlthumb Makefile a.png
-	./display a.png
+	./qlthumb Makefile a.jpg
+	./display a.jpg
 
 
 

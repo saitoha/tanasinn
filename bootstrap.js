@@ -22,6 +22,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+"use strict";
+
 function alert(message)
 {
   Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
@@ -39,7 +41,8 @@ function start_tanasinn(data)
       file_handler, // nsIFileProtocolHandler
       process_file, // tanasinn's Process file
       process_url,  // the location of process.js
-      message;      // error message
+      message,      // error message
+      scope = {};
 
   terminate_tanasinn();
 
@@ -59,11 +62,11 @@ function start_tanasinn(data)
 
     process_url = file_handler.getURLSpecFromFile(process_file);
 
-    var scope = {};
     Components
       .classes["@mozilla.org/moz/jssubscript-loader;1"]
       .getService(Components.interfaces.mozIJSSubScriptLoader)
       .loadSubScript(process_url + "?" + new Date().getTime(), scope);
+
   } catch(e) {
     message = e.fileName + ":" + e.lineNumber + " " + e.toString();
     Components.reportError(message);

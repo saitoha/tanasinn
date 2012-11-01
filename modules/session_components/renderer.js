@@ -223,12 +223,12 @@ SlowBlinkTrait.definition = {
     this._slow_blink_layer = layer;
 
     coUtils.Timer.setTimeout(
-      function()
+      function timerProc()
       {
         if (null !== this._slow_blink_layer) {
           this._slow_blink_layer.canvas.style.opacity 
             = 1 - this._slow_blink_layer.canvas.style.opacity;
-          coUtils.Timer.setTimeout(arguments.callee, this.slow_blink_interval, this);
+          coUtils.Timer.setTimeout(timerProc, this.slow_blink_interval, this);
         }
       }, this.slow_blink_interval, this);
 
@@ -254,12 +254,12 @@ RapidBlinkTrait.definition = {
     this._rapid_blink_layer.setHeight(this._main_layer.getHeight());
 
     coUtils.Timer.setTimeout(
-      function() 
+      function timerProc() 
       {
         if (null !== this._rapid_blink_layer) {
           this._rapid_blink_layer.canvas.style.opacity 
             = 1 - this._rapid_blink_layer.canvas.style.opacity;
-          coUtils.Timer.setTimeout(arguments.callee, this.rapid_blink_interval, this);
+          coUtils.Timer.setTimeout(timerProc, this.rapid_blink_interval, this);
         }
       }, this.rapid_blink_interval, this);
 
@@ -1134,7 +1134,7 @@ Renderer.definition = {
     // form given attribute structure. 
     if (attr.fgcolor) {
       if (attr.inverse) {
-         fore_color_map[attr.bg];
+        fore_color = fore_color_map[attr.bg];
       } else {
         fore_color = fore_color_map[attr.fg];
       }

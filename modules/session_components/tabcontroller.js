@@ -303,7 +303,7 @@ TabController.definition = {
   function TBC(n) 
   { // TaB Clear
     var tab_stops,
-        pisitionX,
+        positionX,
         i,
         stop;
 
