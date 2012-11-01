@@ -49,7 +49,6 @@ Video.definition = {
       parentNode: "#tanasinn_center_area",
       tagName: "html:div",
       id: "tanasinn_video_layer",
-      style: "position: absolute;",
     };
   },
 
@@ -60,24 +59,23 @@ Video.definition = {
   _renderer: null,
   _cursor_state: null,
  
-  /** installs itself. 
-   *  @param {Broker} broker A broker object.
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(broker) 
+  function install(context) 
   {
     var result = this.request("command/construct-chrome", this.getTemplate());
 
     this._element = result.tanasinn_video_layer;
-    this._renderer = this.dependency["renderer"];
-    this._cursor_state = this.dependency["cursorstate"];
+    this._renderer = context["renderer"];
+    this._cursor_state = context["cursorstate"];
   },
 
   /** Uninstalls itself.
-   *  @param {Broker} broker A broker object.
    */
   "[uninstall]":
-  function uninstall(broker) 
+  function uninstall() 
   {
     if (null !== this._element) {
       this._element.parentNode.removeChild(this._element);

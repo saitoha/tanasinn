@@ -46,18 +46,17 @@ DragPaste.definition = {
   _bracketed_paste_mode: false,
 
   /** Installs itself. 
-   *  @param {Broker} broker A Broker object.
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(broker) 
+  function install(context) 
   {
   },
 
   /** Uninstalls itself. 
-   *  @param {Broker} broker A Broker object.
    */
   "[uninstall]":
-  function uninstall(broker) 
+  function uninstall() 
   {
   },
 
@@ -73,8 +72,9 @@ DragPaste.definition = {
       event.preventDefault();
     }
 
-    if ("copy" != data_transfer.dropEffect)
+    if ("copy" !== data_transfer.dropEffect) {
       data_transfer.dropEffect = "copy";
+    }
     data_transfer.effectAllowed = "copy";
   },
 

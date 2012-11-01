@@ -53,17 +53,6 @@ Environment.definition = {
 
 // public properties
 
-  /** @property bin_path */
-  get bin_path()
-  {
-    return this._broker.bin_path;
-  },
-
-  set bin_path(value)
-  {
-    this._broker.bin_path = value;
-  },
-
   /** @property runtime_path */
   get runtime_path()
   {
@@ -92,11 +81,6 @@ Environment.definition = {
   set search_path(value)
   {
     this._search_path = value;
-  },
-
-  get cygwin_root()
-  {
-    return this._broker.cygwin_root;
   },
 
 }; // Environment
@@ -171,29 +155,56 @@ Session.definition = {
 
   id: "session",
 
+  getInfo: function getInfo()
+  {
+    return {
+      name: _("Session"),
+      version: "0.1",
+      description: _("A Broker module which manages TTY session.")
+    };
+  },
+
   get request_id()
-    this._request_id,
+  {
+    return this._request_id;
+  },
 
   get window()
-    this._window,
+  {
+    return this._window;
+  },
 
   get document()
-    this.window.document,
+  {
+    return this.window.document;
+  },
 
   get root_element()
-    this._root_element,
+  {
+    return this._root_element;
+  },
 
   get command()
-    this._command,
+  {
+    return this._command;
+  },
 
   get term()
-    this._term,
+  {
+    return this._term;
+  },
 
   get process()
-    this._broker,
+  {
+    return this._broker;
+  },
 
   get parent()
-    this._broker,
+  {
+    return this._broker;
+  },
+
+  "[persistable] enabled_when_startup": true,
 
   "[persistable] profile_directory": "session_profile",
   "[persistable] batch_directory": "batches",
@@ -206,12 +217,6 @@ Session.definition = {
 
   _stopped: false,
   _request_id: null,
-
-  /** constructor */
-  initialize: function initialize(broker)
-  {
-    this.load(this, this.search_path, new broker._broker.default_scope);
-  },
 
   "[subscribe('command/send-command'), enabled]":
   function sendCommand(command) 
@@ -236,6 +241,8 @@ Session.definition = {
   {
     var id = coUtils.Uuid.generate().toString();
 
+    this.load(this, this.search_path, new this._broker._broker.default_scope);
+
     // register stop topic
     this.subscribe(
       "command/stop", 
@@ -245,20 +252,6 @@ Session.definition = {
       }, this, id);
 
     // register getter topic.
-    this.subscribe(
-      "get/bin-path", 
-      function()
-      {
-        return this.request("get/bin-path");
-      }, this, id);
-
-    this.subscribe(
-      "get/python-path", 
-      function()
-      { 
-        return this.request("get/python-path");
-      }, this, id);
-
     this.subscribe(
       "get/root-element", 
       function()
@@ -291,7 +284,7 @@ Session.definition = {
     //this.notify("command/focus");
     //this.notify("command/focus");
     //  }, this.initial_focus_delay, this);
-    this.notify("event/session-initialized");
+    this.notify("event/session-initialized", this);
 
     return this;
   },
@@ -338,7 +331,9 @@ function main(desktop)
     "event/session-requested", 
     function(request) 
     {
-      new Session(desktop).initializeWithRequest(request);
+      var session = new Session(desktop);
+      session.initializeWithRequest(request);
+      return session;
     });
 }
 

@@ -83,10 +83,26 @@ Decoder.definition = {
     this.sendMessage("command/report-status-message", message); 
   },
 
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
+   */
   "[install]": 
-  function install(broker) 
+  function install(context) 
   {
     this._decoder_map = {};
+  },
+
+  /** Uninstalls itself. 
+   */
+  "[uninstall]": 
+  function uninstall() 
+  {
+    this._decoder_map = null;
+  },
+
+  "[subscribe('event/session-initialized'), pnp]": 
+  function onSessionInitialized(scheme) 
+  {
     this.sendMessage("get/decoders").map(
       function mapfunc(information)
       {
@@ -94,17 +110,9 @@ Decoder.definition = {
       }, this);
 
     this.scheme = this.initial_scheme;
-
-    this.sendMessage("initialized/decoder", this);
   },
 
-  "[uninstall]": 
-  function uninstall(broker) 
-  {
-    this._decoder_map = null;
-  },
-
-  "[subscribe('change/decoder'), enabled]": 
+  "[subscribe('change/decoder'), pnp]": 
   function changeDecoder(scheme) 
   {
     this.scheme = scheme;

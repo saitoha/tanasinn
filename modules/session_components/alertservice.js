@@ -58,7 +58,8 @@ ForwardInputIterator.definition = {
   {
     return this._position >= this._value.length;
   },
-};
+
+}; // ForwardInputIterator
 
 /**
  * @class NotificationService
@@ -80,27 +81,30 @@ NotificationService.definition = {
 
   "[persistable] enabled_when_startup": true,
 
-  /** Installs itself.
-   *  @param {Broker} broker A Broker object.
+  _decoder: null,
+
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(broker) 
+  function install(context) 
   {
+    this._decoder = context["decoder"];
   },
 
   /** Uninstalls itself. 
-   *  @param {Broker} broker A Broker object.
    */
   "[uninstall]":
-  function uninstall(broker) 
+  function uninstall() 
   {
+    this._decoder = null;
   },
 
   "[subscribe('sequence/osc/9'), pnp]":
   function osc9(data)
   {
     var scanner = new ForwardInputIterator(data),
-        decoder = this.dependency["decoder"],
+        decoder = this._decoder,
         sequence = [c for (c in decoder.decode(scanner))],
         decoded_text = coUtils.Text.safeConvertFromArray(sequence),
         values = decoded_text.split(";"),
@@ -111,8 +115,7 @@ NotificationService.definition = {
         file = coUtils.File.getFileLeafFromVirtualPath(path),
         url = coUtils.File.getURLSpec(file);
 
-    Components.classes["@mozilla.org/alerts-service;1"]
-      .getService(Components.interfaces.nsIAlertsService)
+    coUtils.Components.getAlertService()
       .showAlertNotification(
         url,
         title,
@@ -140,8 +143,9 @@ NotificationService.definition = {
   QueryInterface: function QueryInterface(a_IID)
   {
     if (!a_IID.equals(Components.interafaces.nsIObserver)
-     && !a_IID.equals(Components.interafaces.nsISupports))
+     && !a_IID.equals(Components.interafaces.nsISupports)) {
       throw Components.results.NS_ERROR_NOT_IMPLEMENTED;
+    }
     return this;
   },
  
@@ -167,19 +171,18 @@ AlertService.definition = {
 
   "[persistable] enabled_when_startup": true,
 
-  /** Installs itself.
-   *  @param {Broker} broker A Broker object.
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(broker) 
+  function install(context) 
   {
   },
 
   /** Uninstalls itself. 
-   *  @param {Broker} broker A Broker object.
    */
   "[uninstall]":
-  function uninstall(broker) 
+  function uninstall() 
   {
   },
 
@@ -189,8 +192,7 @@ AlertService.definition = {
     var self = this;
 
     try {
-      Components.classes["@mozilla.org/alerts-service;1"]
-        .getService(Components.interfaces.nsIAlertsService)
+      coUtils.Components.getAlertService()
         .showAlertNotification(
           "chrome://mozapps/skin/extensions/alerticon-error.png",
           data.title,

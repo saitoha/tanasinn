@@ -28,10 +28,37 @@
 /**
  * @class JsCompleter
  */
-var JsCompleter = new Class().extends(Component);
+var JsCompleter = new Class().extends(Plugin);
 JsCompleter.definition = {
 
   id: "jscompleter",
+
+  getInfo: function getInfo()
+  {
+    return {
+      name: _("Javascript Completer"),
+      description: _("Provides javascript completion."),
+      version: "0.1",
+    };
+  },
+
+  "[persistable] enabled_when_startup": true,
+
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
+   */
+  "[install]":
+  function install(context) 
+  {
+  },
+
+  /** Uninstalls itself.
+   */
+  "[uninstall]":
+  function uninstall() 
+  {
+  },
+
 
   /*
    * Search for a given string and notify a listener (either synchronously
@@ -39,19 +66,26 @@ JsCompleter.definition = {
    *
    * @param context - The completion context object. 
    */
-  "[completer('js'), enabled]":
+  "[completer('js'), pnp]":
   function complete(context)
   {
-    var autocomplete_result, pattern, match,
-        settled, notation, current, context, 
-        code, properties, lower_current;
-
-    autocomplete_result = null; 
-    pattern = /(.*?)(?:(\.|\[|\['|\[")(\w*))?$/;
-    match = pattern.exec(context.source);
+    var autocomplete_result = null,
+        pattern = /(.*?)(?:(\.|\[|\['|\[")(\w*))?$/,
+        match = pattern.exec(context.source),
+        settled,
+        notation,
+        current,
+        context, 
+        code,
+        properties,
+        lower_current;
 
     if (match) {
-      [, settled, notation, current] = match;
+
+      settled = match[1];
+      notation = match[2];
+      current = match[3];
+
       dom = {
         window: this.request("get/root-element").ownerDocument.defaultView,
       };
@@ -154,7 +188,7 @@ JsCompleter.definition = {
     this.sendMessage("event/answer-completion", autocomplete_result);
   },
 
-};
+}; // JsCompleter
 
 
 /**

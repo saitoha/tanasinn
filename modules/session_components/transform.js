@@ -347,11 +347,11 @@ Transform.definition = {
   _width: 0,
   _height: 0,
 
-  /** Installs itself.
-   *  @param broker {Broker} A broker object.
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(broker)
+  function install(context)
   {
     var root_element = this.request("get/root-element"),
         document_element = root_element.ownerDocument.documentElement;
@@ -369,13 +369,18 @@ Transform.definition = {
   },
 
   /** Uninstalls itself.
-   *  @param broker {Broker} A Broker object.
    */
   "[uninstall]":
-  function uninstall(broker)
+  function uninstall()
   {
-    this._element = null;
+    if (null !== this._element) {
+      this._element.parentNode.style.MozPerspective = "";
+      this._element.style.MozTransformStyle = "";
+      this._element.style.MozTransform = "";
+      this._element = null;
+    }
     this._matrix = null;
+    this._last_matrix = null;
     this._width = 0;
     this._height = 0;
   },
@@ -383,8 +388,10 @@ Transform.definition = {
   "[subscribe('variable-changed/transform.transform_matrix'), pnp]": 
   function onTransformMatrixChanged() 
   {
-    this._element.parentNode.style.MozPerspective = this.perspective + "px";
-    this._element.style.MozTransform = this.transform_matrix;
+    var element = this._element;
+
+    element.parentNode.style.MozPerspective = this.perspective + "px";
+    element.style.MozTransform = this.transform_matrix;
   },
 
   "[subscribe('event/screen-width-changed'), pnp]": 
@@ -420,28 +427,37 @@ DragCover.definition = {
     };
   },
 
+  getTemplate: function getTemplate()
+  {
+    return {
+      tagName: "box",
+      id: "tanasinn_capture_cover",
+      style: {
+        position: "fixed",
+        top: "0px",
+        left: "0px",
+      },
+      hidden: true,
+    };
+  },
+
   "[persistable] enabled_when_startup": true,
 
   _cover: null,
 
-  /** Installs itself.
-   *  @param broker {Broker} A broker object.
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(broker)
+  function install(context)
   {
     var root_element = this.request("get/root-element"),
-        document_element = root_element.ownerDocument.documentElement;
+        document_element = root_element.ownerDocument.documentElement,
+        result = this.request(
+          "command/construct-chrome",
+          this.getTemplate());
 
-    this._cover = this.request(
-      "command/construct-chrome",
-      {
-        tagName: "box",
-        id: "tanasinn_capture_cover",
-        style: "position: fixed; top: 0px; left: 0px;",
-        hidden: true,
-      })["tanasinn_capture_cover"];
-
+    this._cover = result.tanasinn_capture_cover;
     document_element.appendChild(this._cover);
 
     this._cover.style.width = document_element.boxObject.width + "px";
@@ -450,10 +466,9 @@ DragCover.definition = {
   },
 
   /** Uninstalls itself.
-   *  @param broker {Broker} A Broker object.
    */
   "[uninstall]":
-  function uninstall(broker)
+  function uninstall()
   {
     if (null !== this._cover) {
       this._cover.parentNode.removeChild(this._cover);

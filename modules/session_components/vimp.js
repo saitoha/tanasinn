@@ -44,11 +44,11 @@ Vimperator.definition = {
   
   "[persistable] enabled_when_startup": true,
 
-  /** Install itself. 
-   *  @param {Session} session A session object.
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(session)
+  function install(context)
   {
     var modules = this._getModules();
 
@@ -61,10 +61,9 @@ Vimperator.definition = {
   },
 
   /** Uninstall itself. 
-   *  @param {Session} session A session object.
    */
   "[uninstall]":
-  function uninstall(session) 
+  function uninstall() 
   {
     var modules = this._getModules();
 

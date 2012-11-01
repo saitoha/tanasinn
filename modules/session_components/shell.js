@@ -45,14 +45,16 @@ ShellSettings.definition = {
   "[persistable] enabled_when_startup": true,
   "[persistable] term": "xterm",
   "[persistable] command": "login -pf $USER",
-  "[persistable] locale": "ja_JP.UTF-8",
+  "[persistable] locale": coUtils.Localize.locale.replace(/-/, "_") + ".UTF-8",
 
-  /** Installs itself.
-   *  @param broker {Broker} A broker object.
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(broker) 
+  function install(context) 
   {
+    var broker = this._broker;
+
     this.term = broker.term;
     this.command = broker.command;
 
@@ -66,10 +68,9 @@ ShellSettings.definition = {
   },
 
   /** Uninstalls itself.
-   *  @param broker {Broker} A broker object.
    */
   "[uninstall]":
-  function uninstall(broker) 
+  function uninstall() 
   {
   },
 
@@ -89,6 +90,12 @@ ShellSettings.definition = {
   function setLocale(locale) 
   {
     this.locale = locale;
+  },
+
+  "[subscribe('event/session-initialized'), pnp]":
+  function onSessionInitialized(session) 
+  {
+    this.sendMessage("command/send-titlebar-string", this.command);
   },
 
 }; // ShellSettings

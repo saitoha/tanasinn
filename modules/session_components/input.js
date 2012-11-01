@@ -126,6 +126,55 @@ var KEY_NORMAL_KEYPAD = {
   "F10"    : "<CSI>21~",
   "F11"    : "<CSI>23~",
   "F12"    : "<CSI>24~",
+  "F13"    : "<CSI>1;2P",
+  "F14"    : "<CSI>1;2Q",
+  "F15"    : "<CSI>1;2R",
+  "F16"    : "<CSI>1;2S",
+  "F17"    : "<CSI>15;2~",
+  "F18"    : "<CSI>17;2~",
+  "F19"    : "<CSI>18;2~",
+  "F20"    : "<CSI>19;2~",
+  "F21"    : "<CSI>20;2~",
+  "F22"    : "<CSI>21;2~",
+  "F25"    : "<CSI>1;5P",
+  "F26"    : "<CSI>1;5Q",
+  "F27"    : "<CSI>1;5R",
+  "F28"    : "<CSI>1;5S",
+  "F29"    : "<CSI>15;5~",
+  "F30"    : "<CSI>17;5~",
+  "F31"    : "<CSI>18;5~",
+  "F32"    : "<CSI>19;5~",
+  "F33"    : "<CSI>20;5~",
+  "F34"    : "<CSI>21;5~",
+  "F35"    : "<CSI>23;5~",
+  "F36"    : "<CSI>24;5~",
+  "F37"    : "<CSI>1;6P",
+  "F38"    : "<CSI>1;6Q",
+  "F39"    : "<CSI>1;6R",
+  "F40"    : "<CSI>1;6S",
+  "F41"    : "<CSI>15;6~",
+  "F42"    : "<CSI>17;6~",
+  "F43"    : "<CSI>18;6~",
+  "F44"    : "<CSI>19;6~",
+  "F45"    : "<CSI>20;6~",
+  "F46"    : "<CSI>21;6~",
+  "F47"    : "<CSI>23;6~",
+  "F48"    : "<CSI>24;6~",
+  "F49"    : "<CSI>1;3P",
+  "F50"    : "<CSI>1;3Q",
+  "F51"    : "<CSI>1;3R",
+  "F52"    : "<CSI>1;3S",
+  "F53"    : "<CSI>15;3~",
+  "F54"    : "<CSI>17;3~",
+  "F55"    : "<CSI>18;3~",
+  "F56"    : "<CSI>19;3~",
+  "F57"    : "<CSI>20;3~",
+  "F58"    : "<CSI>21;3~",
+  "F59"    : "<CSI>23;3~",
+  "F60"    : "<CSI>24;3~",
+  "F61"    : "<CSI>1;4P",
+  "F62"    : "<CSI>1;4Q",
+  "F63"    : "<CSI>1;4R",
 
   "Shift PgUp" : "<CSI>5~",
   "Shift PgDn" : "<CSI>6~",
@@ -163,6 +212,55 @@ var KEY_APPLICATION_KEYPAD = {
   "F10"    : "<CSI>21~",
   "F11"    : "<CSI>23~",
   "F12"    : "<CSI>24~",
+  "F13"    : "<CSI>1;2P",
+  "F14"    : "<CSI>1;2Q",
+  "F15"    : "<CSI>1;2R",
+  "F16"    : "<CSI>1;2S",
+  "F17"    : "<CSI>15;2~",
+  "F18"    : "<CSI>17;2~",
+  "F19"    : "<CSI>18;2~",
+  "F20"    : "<CSI>19;2~",
+  "F21"    : "<CSI>20;2~",
+  "F22"    : "<CSI>21;2~",
+  "F25"    : "<CSI>1;5P",
+  "F26"    : "<CSI>1;5Q",
+  "F27"    : "<CSI>1;5R",
+  "F28"    : "<CSI>1;5S",
+  "F29"    : "<CSI>15;5~",
+  "F30"    : "<CSI>17;5~",
+  "F31"    : "<CSI>18;5~",
+  "F32"    : "<CSI>19;5~",
+  "F33"    : "<CSI>20;5~",
+  "F34"    : "<CSI>21;5~",
+  "F35"    : "<CSI>23;5~",
+  "F36"    : "<CSI>24;5~",
+  "F37"    : "<CSI>1;6P",
+  "F38"    : "<CSI>1;6Q",
+  "F39"    : "<CSI>1;6R",
+  "F40"    : "<CSI>1;6S",
+  "F41"    : "<CSI>15;6~",
+  "F42"    : "<CSI>17;6~",
+  "F43"    : "<CSI>18;6~",
+  "F44"    : "<CSI>19;6~",
+  "F45"    : "<CSI>20;6~",
+  "F46"    : "<CSI>21;6~",
+  "F47"    : "<CSI>23;6~",
+  "F48"    : "<CSI>24;6~",
+  "F49"    : "<CSI>1;3P",
+  "F50"    : "<CSI>1;3Q",
+  "F51"    : "<CSI>1;3R",
+  "F52"    : "<CSI>1;3S",
+  "F53"    : "<CSI>15;3~",
+  "F54"    : "<CSI>17;3~",
+  "F55"    : "<CSI>18;3~",
+  "F56"    : "<CSI>19;3~",
+  "F57"    : "<CSI>20;3~",
+  "F58"    : "<CSI>21;3~",
+  "F59"    : "<CSI>23;3~",
+  "F60"    : "<CSI>24;3~",
+  "F61"    : "<CSI>1;4P",
+  "F62"    : "<CSI>1;4Q",
+  "F63"    : "<CSI>1;4R",
 
   "Shift PgUp" : "<CSI>5~",
   "Shift PgDn" : "<CSI>6~",
@@ -365,10 +463,21 @@ function coCreateKeyMap(expression_map, destination_map)
 /**
  * @class DefaultKeyMappings
  */
-var DefaultKeyMappings = new Class().extends(Component);
+var DefaultKeyMappings = new Class().extends(Plugin);
 DefaultKeyMappings.definition = {
 
   id: "default_key_mappings",
+
+  getInfo: function getInfo()
+  {
+    return {
+      name: _("Mode Manager"),
+      version: "0.1",
+      description: _("Manage modes")
+    };
+  },
+
+  "[persistable] enabled_when_startup": true,
 
   "[persistable] yen_as_5c": true,
   "[persistable] won_as_5c": true,
@@ -381,14 +490,29 @@ DefaultKeyMappings.definition = {
 
   _map: null,
 
-  "[subscribe('command/change-cursor-mode'), enabled]":
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
+   */
+  "[install]":
+  function install(context)
+  {
+  },
+
+  /** Uninstalls itself. 
+   */
+  "[uninstall]":
+  function uninstall()
+  {
+  },
+
+  "[subscribe('command/change-cursor-mode'), pnp]":
   function onChangeCursorMode(mode)
   {
     this._cursor_mode = mode;
     this.build(this._map);
   },
 
-  "[subscribe('command/change-emulation-mode'), enabled]":
+  "[subscribe('command/change-emulation-mode'), pnp]":
   function onChangeEmulationMode(mode)
   {
     switch (mode) {
@@ -415,7 +539,7 @@ DefaultKeyMappings.definition = {
     }
   },
 
-  "[subscribe('command/build-key-mappings'), type('Object -> Undefined'), enabled]":
+  "[subscribe('command/build-key-mappings'), type('Object -> Undefined'), pnp]":
   function build(map)
   {
     var settings = [ KEY_ANSI ],
@@ -506,6 +630,15 @@ ModeManager.definition = {
 
   id: "modemanager",
 
+  getInfo: function getInfo()
+  {
+    return {
+      name: _("Mode Manager"),
+      version: "0.1",
+      description: _("Manage modes")
+    };
+  },
+
   "[persistable] enabled_when_startup": true,
 
   _modes: null,
@@ -513,20 +646,18 @@ ModeManager.definition = {
   _mode: coUtils.Constant.INPUT_MODE_NORMAL,
 
   /** Installs itself. 
-   *  @param {Broker} a broker object.
-   *  @notify collection-changed/modes
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(broker)
+  function install(context)
   {
     this._modes = this.sendMessage("get/modes");
   },
 
   /** Uninstalls itself. 
-   *  @param {Broker} a broker object.
    */
   "[uninstall]":
-  function uninstall(broker)
+  function uninstall()
   {
     this._modes = null;
   },
@@ -638,13 +769,13 @@ MacAltKeyWatcher.definition = {
 
   _alt_on: false,
 
-  "[subscribe('event/alt-key-down'), enabled]":
+  "[subscribe('event/alt-key-down'), pnp]":
   function onAltKeyDown()
   {
     this._alt_key = true;
   },
 
-  "[subscribe('event/alt-key-up'), enabled]":
+  "[subscribe('event/alt-key-up'), pnp]":
   function onAltKeyUp()
   {
     this._alt_key = false;
@@ -658,6 +789,7 @@ MacAltKeyWatcher.definition = {
  */
 var InputManager = new Class().extends(Plugin)
                               .mix(MacAltKeyWatcher)
+                              .depends("modemanager")
                               .depends("encoder");
 InputManager.definition = {
 
@@ -706,13 +838,13 @@ InputManager.definition = {
 
   _newlne_mode: false,
   _local_echo_mode: false,
+  _encoder: null,
 
   /** Installs itself. 
-   *  @param {Broker} brokr a Broker object.
-   *  @notify collection-changed/modes
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(broker)
+  function install(context)
   {
     var map = {},
         result;
@@ -726,15 +858,16 @@ InputManager.definition = {
       "command/construct-chrome",
       this.getTemplate());
 
+    this._encoder = context["encoder"];
+
     this._textbox = result.tanasinn_default_input;
     this.sendMessage("event/collection-changed/modes");
   },
 
   /** Uninstalls itself. 
-   *  @param {Broker} broker a Broker object.
    */
   "[uninstall]":
-  function uninstall(broker)
+  function uninstall()
   {
     this._key_map = null; 
     if (null !== this._textbox) {
@@ -742,9 +875,11 @@ InputManager.definition = {
       this._textbox = null;
     }
     this.sendMessage("event/collection-changed/modes");
+
+    this._encoder = null;
   },
 
-  "[subscribe('set/local-echo-mode'), enabled]":
+  "[subscribe('set/local-echo-mode'), pnp]":
   function setLocalEchoMode(value) 
   {
     this._local_echo_mode = value;
@@ -784,11 +919,12 @@ InputManager.definition = {
   "[subscribe('command/focus'), pnp]":
   function focus() 
   {
-    // call focus() 2 times.
-    this._textbox.focus(); // <-- blur out for current element.
-    this._textbox.focus(); // <-- blur out for current element.
-    this._textbox.focus(); // <-- blur out for current element.
-    this._textbox.focus(); // <-- set focus to textbox element.
+    // call focus() 4 times.
+    var textbox = this._textbox;
+    textbox.focus(); // <-- blur out for current element.
+    textbox.focus(); // <-- blur out for current element.
+    textbox.focus(); // <-- blur out for current element.
+    textbox.focus(); // <-- set focus to textbox element.
 
     this.sendMessage(
       "event/input-mode-changed",
@@ -798,11 +934,11 @@ InputManager.definition = {
   "[command('blur', []), nmap('<M-z>', '<C-S-Z>'), _('Blur tanasinn window'), pnp]":
   function blurCommand() 
   {
-    coUtils.Timer.setTimeout(
-      function blur()
-      {
+    //coUtils.Timer.setTimeout(
+    //  function blur()
+    //  {
         this.blur();
-      }, 100, this);
+    //  }, 100, this);
   },
 
   /** blur focus from the textbox elment. */
@@ -830,7 +966,7 @@ InputManager.definition = {
   },
 
   /** handle double-shift key event, and interpret it to <2-Shift> */
-  "[subscribe('event/hotkey-double-shift'), enabled]":
+  "[subscribe('event/hotkey-double-shift'), pnp]":
   function onDoubleShift(event) 
   {
     this.sendMessage(
@@ -838,8 +974,20 @@ InputManager.definition = {
       "<2-shift>");
   },
 
+  "[subscribe('event/got-focus'), pnp]":
+  function onGotFocus(event) 
+  {
+    this.onDoubleShift.enabled = true;
+  },
+
+  "[subscribe('event/lost-focus'), pnp]":
+  function onLostFocus(event) 
+  {
+    this.onDoubleShift.enabled = false;
+  },
+
   /** handle <2-shift> event, and switch focus to commandline. */
-  "[nmap('<2-shift>', '<cmode>'), pnp]":
+  "[nmap('<2-shift>', '<cmode>')]":
   function switchToCommandline(event) 
   { // nothrow
     this.sendMessage("command/enable-commandline")
@@ -910,7 +1058,7 @@ InputManager.definition = {
  
   },
 
-  "[subscribe('event/keypress'), enabled]":
+  "[subscribe('event/keypress'), pnp]":
   function onKeyPressEventReceived(info) 
   {
     var packed_code = coUtils.Keyboard
@@ -986,7 +1134,7 @@ InputManager.definition = {
     var message;
 
     if (data) {
-      message = this.dependency["encoder"].encode(data);
+      message = this._encoder.encode(data);
       this.sendMessage("command/send-to-tty", message);
 
       if (this._local_echo_mode) {

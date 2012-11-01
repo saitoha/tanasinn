@@ -65,7 +65,7 @@ ZshCompletion.definition = {
   {
     var lines = this.lines,
         colormap = [ "", "#cdffcf", "#cdd", "#dfffdd" ],
-        renderer = this.dependency["renderer"],
+        renderer = this._renderer,
         selected = -1;
 
     this.onDataArrived.enabled = false;
@@ -174,12 +174,13 @@ PopupMenu.definition = {
 
   _cover: null,
   _is_showing: false,
+  _renderer: null,
  
-  /** installs itself. 
-   *  @param {Broker} broker A broker object.
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(broker) 
+  function install(context) 
   {
     var {
       tanasinn_app_popup_datum,
@@ -241,13 +242,15 @@ PopupMenu.definition = {
     this._popup = tanasinn_app_popup;
     this._scrollbox = tanasinn_app_popup_scrollbox;
     this._container = tanasinn_app_popup_container;
+
+    this._renderer = context["renderer"];
+    this._cursor_state = context["cursor_state"];
   },
 
   /** Uninstalls itself.
-   *  @param {Broker} broker A Broker object.
    */
   "[uninstall]":
-  function uninstall(broekr) 
+  function uninstall() 
   {
     if (null !== this._datum) {
       this._datum.parentNode.removeChild(this._datum);
@@ -257,6 +260,9 @@ PopupMenu.definition = {
       this._popup.parentNode.removeChild(this._popup);
       this._popup = null;
     }
+
+    this._renderer = null;
+    this._cursor_state = null;
   },
 
   "[listen('mousedown', '#tanasinn_app_popup', true), pnp]":
@@ -328,7 +334,7 @@ PopupMenu.definition = {
   function onDisplay(data) 
   {
     var lines = data.split("\n"),
-        renderer = this.dependency["renderer"],
+        renderer = this._renderer,
         line_height = renderer.line_height,
         char_width = renderer.char_width,
         row,
@@ -355,7 +361,7 @@ PopupMenu.definition = {
       .map(function(str) Number(str));
     this._selected = selected;
 
-    cursor_state = this.dependency["cursorstate"];
+    cursor_state = this._cursor_state;
     row = row || cursor_state.positionY + 1;
 
     x = column * char_width - 10;

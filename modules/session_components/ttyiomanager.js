@@ -117,18 +117,18 @@ IOManager.definition = {
   id: "tty_iomanager",
 
   "[persistable] enabled_when_startup": true,
-  "[persistable] outgoing_buffer_size": 1024 * 32,
+  "[persistable] outgoing_buffer_size": 1024 * 64,
   "[persistable] incoming_buffer_size": 1024 * 1,
 
   _input: null,
   _output: null,
   _socket: null,
 
-  /** Installs itself.
-   *  @param broker {Broker} A broker object.
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(broker) 
+  function install(context) 
   {
     var socket = coUtils.Components.createLoopbackServerSocket(this);
 
@@ -139,10 +139,9 @@ IOManager.definition = {
   },
 
   /** Uninstalls itself.
-   *  @param broker {Broker} A broker object.
    */
   "[uninstall]":
-  function uninstall(broker) 
+  function uninstall() 
   {
     this._socket = null;
     this._port = null;

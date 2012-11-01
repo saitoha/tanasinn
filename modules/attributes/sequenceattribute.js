@@ -50,31 +50,6 @@ function apply_attribute(self, broker, key, name, handler, expressions, id)
 var SequenceAttribute = new Attribute("sequence");
 SequenceAttribute.definition = {
 
-  get __id()
-    "sequence",
-
-  get __info()
-  {
-    return {
-      name: _("Sequence"),
-      description: _("Marks a function as a sequence handler.")
-      /*
-      <![CDATA[
-        "sequence" attribute marks a function as sequence handler.
-
-        usage:
-
-          "[profile('vt100'), sequence('CSI ?%dh')]":
-          function DECSET(n) 
-          { 
-            ....
-          },
-
-      ]]>
-      */
-    };
-  },
-
   /** constructor 
    *  @param {EventBroker} broker Parent broker object.
    */
@@ -114,31 +89,6 @@ SequenceAttribute.definition = {
  */
 var ProfileAttribute = new Attribute("profile");
 ProfileAttribute.definition = {
-
-  get __id()
-    "profile",
-
-  get __info()
-  {
-    return {
-      name: _("Profile"),
-      description: _("Marks a function as a profile handler.")
-      /*
-      <![CDATA[
-        "profile" attribute marks a sequence handler as a feature of specified mode.
-
-        usage:
-
-          "[profile('vt100'), sequence('CSI ?%dh')]":
-          function DECSET(n) 
-          { 
-            ....
-          },
-
-      ]]>
-      */
-    };
-  },
 
   /** constructor 
    *  @param {EventBroker} broker Parent broker object.

@@ -28,7 +28,7 @@
 function wait(span) 
 {
   var end_time = Date.now() + span,
-      current_thread = coUtils.Services.threadManager.currentThread;
+      current_thread = coUtils.Services.getThreadManager().currentThread;
 
   do {
     current_thread.processNextEvent(true);
@@ -386,105 +386,6 @@ ScreenSequenceHandler.definition = {
     this.setPositionX(x);
   },
 
-  /** 
-   *
-   * DECDHL — Double-Width, Double-Height Line
-   *
-   * These two control functions make the line with the cursor the top or 
-   * bottom half of a double-height, double-width line. You must use these 
-   * sequences in pairs on adjacent lines. In other words, the same display 
-   * characters must appear in the same positions on both lines to form 
-   * double-height characters. If the line was single width and single height,
-   * then all characters to the right of the screen center are lost.
-   *
-   * Format
-   *
-   * ESC    #    3
-   * 1/11   2/3  3/3  
-   *
-   * Top Half
-   *
-   *
-   * ESC    #    4
-   * 1/11   2/3  3/4  
-   *
-   * Bottom Half
-   *
-   * Description
-   *
-   * The following sequences make the phrase "VT510 Video Terminal" a 
-   * double-height, double-width line.
-   *
-   * ESC#3 VT510 Video Terminal
-   * ESC#4 VT510 Video Terminal
-   *
-   * */
-  /** DEC double-height line, top half. */
-  "[profile('vt100'), sequence('ESC #3')]": 
-  function DECDHL_top() 
-  {
-    var line = this.getCurrentLine();
-
-    line.type = coUtils.Constant.LINETYPE_TOP;
-    line.dirty = 1;
-  },
-
-  /** DEC double-height line, bottom half. */
-  "[profile('vt100'), sequence('ESC #4')]": 
-  function DECDHL_bottom() 
-  {
-    var line = this.getCurrentLine();
-
-    line.type = coUtils.Constant.LINETYPE_BOTTOM;
-    line.dirty = 1;
-  },
-
-  /** 
-   *
-   * DECSWL — Single-Width, Single-Height Line
-   *
-   * DECSWL makes the line with the cursor a single-width, single-height 
-   * line. This line attribute is the standard for all new lines on the 
-   * screen.
-   *
-   * Format
-   *
-   * ESC   #     5
-   * 1/11  2/3   3/5
-   *
-   */ 
-  "[profile('vt100'), sequence('ESC #5')]": 
-  function DECSWL() 
-  {
-    var line = this.getCurrentLine();
-
-    line.type = coUtils.Constant.LINETYPE_NORMAL;
-    line.dirty = 1;
-  },
-
-  /** DEC double-width line. 
-   *
-   * DECDWL — Double-Width, Single-Height Line
-   *
-   * This control function makes the line with the cursor a double-width, 
-   * single-height line. If the line was single width and single height, then 
-   * all characters to the right of the screen's center are lost.
-   *
-   * Format
-   *
-   * ESC    #     6
-   * 1/11   2/3   3/6
-   *
-   */
-  "[profile('vt100'), sequence('ESC #6')]": 
-  function DECDWL() 
-  {
-    var line = this.getCurrentLine();
-
-    line.type = coUtils.Constant.LINETYPE_DOUBLEWIDTH;
-    line.dirty = 1;
-  },
-
   /**
    *
    * DECALN — Screen Alignment Pattern
@@ -563,7 +464,7 @@ ScreenSequenceHandler.definition = {
       default:
         coUtils.Debug.reportWarning(
           _("%s sequence [%s] was ignored."),
-          arguments.callee.name, Array.slice(arguments));
+          "ED", Array.slice(arguments));
     }
 
   },
@@ -624,7 +525,7 @@ ScreenSequenceHandler.definition = {
     if (top >= bottom || left >= right) {
       throw coUtils.Debug.Exception(
         _("Invalid arguments detected in %s [%s]."),
-        arguments.callee.name, Array.slice(arguments));
+        "DECERA", Array.slice(arguments));
     }
 
     if (bottom > screen.height) {
@@ -680,7 +581,7 @@ ScreenSequenceHandler.definition = {
       default:
         coUtils.Debug.reportWarning(
           _("%s sequence [%s] was ignored."),
-          arguments.callee.name, Array.slice(arguments));
+          "EL", Array.slice(arguments));
     }
   },
 
@@ -1183,7 +1084,7 @@ ScreenSequenceHandler.definition = {
   { // TODO: Media Copy
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
-      arguments.callee.name, Array.slice(arguments));
+      "MC", Array.slice(arguments));
   },
 
   "[profile('vt100'), sequence('CSI ?%di')]":
@@ -1191,14 +1092,14 @@ ScreenSequenceHandler.definition = {
   { // TODO: Media Copy, DEC-specific
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
-      arguments.callee.name, Array.slice(arguments));
+      "DECMC", Array.slice(arguments));
   },
 
   "[profile('vt100'), sequence('0x98', 'ESC X')]":
   function SOS(message) 
   {
     coUtils.Debug.reportWarning(
-      _("Ignored %s [%s]"), arguments.callee.name, message);
+      _("Ignored %s [%s]"), "SOS", message);
   },
 
 } // aspect ScreenSequenceHandler
@@ -1232,7 +1133,7 @@ Viewable.definition = {
   "[subscribe('command/scroll-up-view'), pnp]":
   function scrollUpView(n)
   {
-    var buffer_top = this.bufferTop;
+    var buffer_top = this.getBufferTop();
 
     if (0 === n || buffer_top === this._scrollback_amount) {
       return;
@@ -1253,7 +1154,7 @@ Viewable.definition = {
   "[subscribe('command/set-scroll-position'), pnp]":
   function setViewPosition(position)
   {
-    var buffer_top = this.bufferTop;
+    var buffer_top = this.getBufferTop();
 
     if (0 === this._scrollback_amount) {
       if (position !== buffer_top - this._scrollback_amount) {
@@ -1268,7 +1169,7 @@ Viewable.definition = {
   "[subscribe('command/update-scroll-information'), pnp]":
   function updateScrollInformation()
   {
-    var buffer_top = this.bufferTop,
+    var buffer_top = this.getBufferTop(),
         width = this.width,
         lines = this._getCurrentViewLines(),
         i,
@@ -1298,7 +1199,7 @@ Viewable.definition = {
 
   _getCurrentViewLines: function _getCurrentViewLines()
   {
-    var buffer_top = this.bufferTop,
+    var buffer_top = this.getBufferTop(),
         start = buffer_top - this._scrollback_amount,
         end = start + this.height;
 
@@ -1361,21 +1262,28 @@ Viewable.definition = {
    */  
   getWordRangeFromPoint: function getWordRangeFromPoint(column, row) 
   {
-    var line = this._getCurrentViewLines()[row],
+    var lines = this._getCurrentViewLines(),
+        line = lines[row],
         start,
         end,
-        offset;
+        offset,
+        range;
 
-    if (line) {
-      [start, end] = line.getWordRangeFromPoint(column);
-      offset = this.width * row;
-      return [offset + start, offset + end];
-    } else {
+    if (!line) {
       throw coUtils.Debug.Exception(
         _("Invalid parameter was passed. ",
           "Probably 'row' parameter was in out of range. row: [%d]."), 
         row);
     }
+
+    range = line.getWordRangeFromPoint(column);
+
+    start = range[0];
+    end = range[1];
+
+    offset = this.width * row;
+
+    return [offset + start, offset + end];
   },
 
   _getTextInRectangle: 
@@ -1484,7 +1392,7 @@ Scrollable.definition = {
   _scrollDown: function _scrollDown(top, bottom, n) 
   {
     var lines = this._buffer,
-        offset = this.bufferTop,
+        offset = this.getBufferTop(),
         width = this._width,
         height = this._height,
         attr = this.cursor.attr,
@@ -1739,14 +1647,14 @@ Screen.definition = {
   "[persistable] initial_column": 80,
   "[persistable] initial_row": 24,
 
-  /** installs itself. 
-   *  @param {Broker} broker A Broker object.
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(broker)
+  function install(context)
   {
-    var line_generator = this.dependency["linegenerator"],
-        cursor_state = this.dependency["cursorstate"];
+    var line_generator = context["linegenerator"],
+        cursor_state = context["cursorstate"];
 
     this._buffer = line_generator.allocate(this._width, this._height * 2);
     this._switchScreen();
@@ -1757,10 +1665,9 @@ Screen.definition = {
   },
 
   /** uninstalls itself. 
-   *  @param {Broker} broker A Broker object.
    */
   "[uninstall]":
-  function uninstall(broker)
+  function uninstall()
   {
     this._buffer = null;
     this._line_generator = null;
@@ -1882,17 +1789,17 @@ Screen.definition = {
     }
   },
 
-  get scrollTop()
+  getScrollTop: function getScrollTop()
   {
     return this._scroll_top;
   },
 
-  get scrollBottom()
+  getScrollBottom: function getScrollBottom()
   {
     return this._scroll_bottom;
   },
 
-  get bufferTop()
+  getBufferTop: function getBufferTop()
   {
     return this._buffer_top;
   },
@@ -1973,6 +1880,7 @@ Screen.definition = {
         if (this._wraparound_mode) {
           cursor.positionX = 0;
           this.lineFeed();
+          line = this.getCurrentLine();
         } else {
           cursor.positionX = width - 1;
         }
@@ -1992,6 +1900,7 @@ Screen.definition = {
             break;
           }
         }
+
         positionX = cursor.positionX;
         length = width - positionX;
         run = codes.slice(it, it + length);
@@ -2838,7 +2747,7 @@ Screen.definition = {
       line.serializeRange(data, left, right);
     }
 
-    hash = coUtils.Algorighm.calculateMD5(data);
+    hash = coUtils.Algorithm.calculateMD5(data);
     
     function toHexString(charCode)
     {

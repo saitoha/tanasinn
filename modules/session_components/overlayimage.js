@@ -56,23 +56,22 @@ OverlayImage.definition = {
 
   _canvas: null,
  
-  /** installs itself. 
-   *  @param {Broker} broker A broker object.
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(broker) 
+  function install(context) 
   {
-    var result = this.request("command/construct-chrome",
-                              this.getTemplate());
+    var result = this.request("command/construct-chrome", this.getTemplate());
+
     this._canvas = result.tanasinn_image_canvas;
-    this._renderer = this.dependency["renderer"];
+    this._renderer = context["renderer"];
   },
 
   /** Uninstalls itself.
-   *  @param {Broker} broker A broker object.
    */
   "[uninstall]":
-  function uninstall(broker) 
+  function uninstall() 
   {
     if (this._canvas) {
       this._canvas.parentNode.removeChild(this._canvas);

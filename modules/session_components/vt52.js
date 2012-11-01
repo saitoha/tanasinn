@@ -320,17 +320,18 @@ VT52.definition = {
   _screen: null,
   _cursor_state: null,
 
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
+   */
   "[install]":
-  function install(broker)
+  function install(context)
   {
     var sequences,
         i = 0;
 
-    this._tab_controller = this.dependency["tab_controller"];
-    this._screen = this.dependency["screen"];
-    this._cursor_state = this.dependency["cursorstate"];
-
-    this.sendMessage("initialized/vt52", this);
+    this._tab_controller = context["tab_controller"];
+    this._screen = context["screen"];
+    this._cursor_state = context["cursorstate"];
 
     this.ESC = new VT52SequenceParser();
     VT52SequenceParser.prototype[0x1b] = this.ESC;
@@ -351,8 +352,10 @@ VT52.definition = {
 
   },
 
+  /** Unnstalls itself. 
+   */
   "[uninstall]":
-  function uninstall(broker)
+  function uninstall()
   {
     this._tab_controller = null;
     this._screen = null;
@@ -418,8 +421,8 @@ VT52.definition = {
   function SOH() 
   {
     coUtils.Debug.reportWarning(
-      "%s sequence [%s] was ignored.",
-      arguments.callee.name, Array.slice(arguments));
+      _("%s sequence [%s] was ignored."),
+      "SOH", Array.slice(arguments));
   },
   
   /** Start of text.
@@ -428,8 +431,8 @@ VT52.definition = {
   function STX()  
   {
     coUtils.Debug.reportWarning(
-      "%s sequence [%s] was ignored.",
-      arguments.callee.name, Array.slice(arguments));
+      _("%s sequence [%s] was ignored."),
+      "STX", Array.slice(arguments));
   },
  
   /** End of text.
@@ -438,8 +441,8 @@ VT52.definition = {
   function ETX() 
   {
     coUtils.Debug.reportWarning(
-      "%s sequence [%s] was ignored.",
-      arguments.callee.name, Array.slice(arguments));
+      _("%s sequence [%s] was ignored."),
+      "ETX", Array.slice(arguments));
   },
 
   /** Start of transmission.
@@ -448,8 +451,8 @@ VT52.definition = {
   function EOT() 
   {
     coUtils.Debug.reportWarning(
-      "%s sequence [%s] was ignored.",
-      arguments.callee.name, Array.slice(arguments));
+      _("%s sequence [%s] was ignored."),
+      "EOT", Array.slice(arguments));
   },
   
   /** Enquire.
@@ -466,8 +469,8 @@ VT52.definition = {
   function ACK() 
   {
     coUtils.Debug.reportWarning(
-      "%s sequence [%s] was ignored.",
-      arguments.callee.name, Array.slice(arguments));
+      _("%s sequence [%s] was ignored."),
+      "ACK", Array.slice(arguments));
   },
    
   /** Bell.
@@ -563,8 +566,8 @@ VT52.definition = {
   function DLE() 
   {
     coUtils.Debug.reportWarning(
-      "%s sequence [%s] was ignored.",
-      arguments.callee.name, Array.slice(arguments));
+      _("%s sequence [%s] was ignored."),
+      "DLE", Array.slice(arguments));
   },
  
   /** Device control 1.
@@ -582,8 +585,8 @@ VT52.definition = {
   function DC2() 
   {
     coUtils.Debug.reportWarning(
-      _("%s sequence [%s] was ignored.",
-        arguments.callee.name, Array.slice(arguments)));
+      _("%s sequence [%s] was ignored."),
+        "DC2", Array.slice(arguments));
   },
 
   /** Device control 3.
@@ -601,8 +604,8 @@ VT52.definition = {
   function DC4() 
   {
     coUtils.Debug.reportWarning(
-      _("%s sequence [%s] was ignored.",
-        arguments.callee.name, Array.slice(arguments)));
+      _("%s sequence [%s] was ignored."),
+        "DC4", Array.slice(arguments));
   },
   
   /** Negative acknowledge.
@@ -611,8 +614,8 @@ VT52.definition = {
   function NAK() 
   {
     coUtils.Debug.reportWarning(
-      _("%s sequence [%s] was ignored.",
-        arguments.callee.name, Array.slice(arguments)));
+      _("%s sequence [%s] was ignored."),
+        "NAK", Array.slice(arguments));
   },
   
   /** Synchronous idle.
@@ -621,8 +624,8 @@ VT52.definition = {
   function SYN() 
   {
     coUtils.Debug.reportWarning(
-      _("%s sequence [%s] was ignored.",
-        arguments.callee.name, Array.slice(arguments)));
+      _("%s sequence [%s] was ignored."),
+        "SYN", Array.slice(arguments));
   },
   
   /** End of transmission block.
@@ -631,8 +634,8 @@ VT52.definition = {
   function ETB() 
   {
     coUtils.Debug.reportWarning(
-      _("%s sequence [%s] was ignored.",
-        arguments.callee.name, Array.slice(arguments)));
+      _("%s sequence [%s] was ignored."),
+        "ETB", Array.slice(arguments));
   },
   
   /** Cancel of previous word or charactor.
@@ -641,8 +644,8 @@ VT52.definition = {
   function CAN() 
   {
     coUtils.Debug.reportWarning(
-      _("%s sequence [%s] was ignored.",
-        arguments.callee.name, Array.slice(arguments)));
+      _("%s sequence [%s] was ignored."),
+        "CAN", Array.slice(arguments));
   },
   
   /** End of medium.
@@ -651,8 +654,8 @@ VT52.definition = {
   function EM() 
   {
     coUtils.Debug.reportWarning(
-      _("%s sequence [%s] was ignored.",
-        arguments.callee.name, Array.slice(arguments)));
+      _("%s sequence [%s] was ignored."),
+        "EM", Array.slice(arguments));
   },
   
   /** Substitute.
@@ -661,8 +664,8 @@ VT52.definition = {
   function SUB()
   {
     coUtils.Debug.reportWarning(
-      _("%s sequence [%s] was ignored.",
-        arguments.callee.name, Array.slice(arguments)));
+      _("%s sequence [%s] was ignored."),
+        "SUB", Array.slice(arguments));
   },
   
   /** File separator.
@@ -671,8 +674,8 @@ VT52.definition = {
   function FS() 
   {
     coUtils.Debug.reportWarning(
-      _("%s sequence [%s] was ignored.",
-        arguments.callee.name, Array.slice(arguments)));
+      _("%s sequence [%s] was ignored."),
+        "FS", Array.slice(arguments));
   },
  
   /** Group separator.
@@ -681,8 +684,8 @@ VT52.definition = {
   function GS() 
   {
     coUtils.Debug.reportWarning(
-      _("%s sequence [%s] was ignored.",
-        arguments.callee.name, Array.slice(arguments)));
+      _("%s sequence [%s] was ignored."),
+        "GS", Array.slice(arguments));
   },
   
   /** Record separator.
@@ -691,8 +694,8 @@ VT52.definition = {
   function RS() 
   {
     coUtils.Debug.reportWarning(
-      _("%s sequence [%s] was ignored.",
-        arguments.callee.name, Array.slice(arguments)));
+      _("%s sequence [%s] was ignored."),
+        "RS", Array.slice(arguments));
   },
   
   /** Unit separator.
@@ -701,8 +704,8 @@ VT52.definition = {
   function US() 
   {
     coUtils.Debug.reportWarning(
-      _("%s sequence [%s] was ignored.",
-        arguments.callee.name, Array.slice(arguments)));
+      _("%s sequence [%s] was ignored."),
+        "US", Array.slice(arguments));
   },
   
   /** Delete.
@@ -712,12 +715,6 @@ VT52.definition = {
   {
     var screen = this._screen;
     screen.backSpace();
-
-    /*
-    coUtils.Debug.reportWarning(
-      _("%s sequence [%s] was ignored.",
-        arguments.callee.name, Array.slice(arguments)));
-        */
   },
 
   "[profile('vt52'), sequence('ESC A')]":

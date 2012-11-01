@@ -53,6 +53,7 @@
  *
  */
 var ScrollRegion = new Class().extends(Plugin)
+                              .depends("cursorstate")
                               .depends("screen");
 ScrollRegion.definition = {
 
@@ -71,22 +72,30 @@ ScrollRegion.definition = {
 
   _screen: null,
 
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
+   */
   "[install]":
-  function install(broker)
+  function install(context)
   {
-    this._screen = this.dependency["screen"];
+    this._screen = context["screen"];
+    this._cursor_state = context["cursorstate"];
   },
 
+  /** Uninstalls itself. 
+   */
   "[uninstall]":
-  function uninstall(broker)
+  function uninstall()
   {
     this._screen = null;
+    this._cursor_state = null;
   },
 
   "[profile('vt100'), sequence('CSI %dr', 'CSI %d>')]":
   function DECSTBM(n1, n2) 
   {
     var screen = this._screen,
+        cursor_state = this._cursor_state,
         min = 0,
         max = screen.height,
         top = (n1 || min + 1) - 1,
@@ -118,23 +127,21 @@ ScrollRegion.definition = {
     } else {
       coUtils.Debug.reportWarning(
         _("%s sequence [%s] was ignored."),
-        arguments.callee.name, Array.slice(arguments));
+        "DECSTBM", Array.slice(arguments));
     }
     // TODO: I wonder if I should implement this feature.
     // DECSTBM moves the cursor to column 1, line 1 of the page.
     screen.setPositionX(0);
     screen.setPositionY(top);
-//    screen.cursor.originX = screen.cursor.positionX; 
-    screen.cursor.originY = screen.cursor.positionY; 
-
+    cursor_state.DECOM = true;
   },
 
   "[subscribe('sequence/decrqss/decstbm'), pnp]":
   function onRequestStatus(data) 
   {
     var screen = this._screen,
-        top = screen.scrollTop + 1,
-        bottom = screen.scrollBottom,
+        top = screen.getScrollTop() + 1,
+        bottom = screen.getScrollBottom(),
         message = "0$r" + top + ";" + bottom + "r";
 
     this.sendMessage("command/send-sequence/decrpss", message);

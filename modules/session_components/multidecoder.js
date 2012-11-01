@@ -33,7 +33,9 @@ MultiDecoder.definition = {
   id: "multidecoder",
 
   get scheme()
-    "multi",
+  {
+    return "multi";
+  },
 
   getInfo: function getInfo()
   {
@@ -44,13 +46,17 @@ MultiDecoder.definition = {
     };
   },
 
+  "[persistable] enabled_when_startup": true,
+
   _current_scheme: "UTF-8",
   _converter: null,
   _converter_manager: null,
 
-  /** Constructor
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
    */
-  initialize: function initialize(broker) 
+  "[install]":
+  function install(context) 
   {
     var decoder_list,
         charset;
@@ -78,6 +84,13 @@ MultiDecoder.definition = {
         this._registerDecoder(charset);
       }
     }
+  },
+
+  /** uninstalls itself. 
+   */
+  "[uninstall]":
+  function uninstall() 
+  {
   },
 
   _registerDecoder: function _registerDecoder(charset)

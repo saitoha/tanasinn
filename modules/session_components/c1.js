@@ -46,20 +46,19 @@ C1Control.definition = {
 
   _screen: null,
     
-  /** installs itself. 
-   *  @param {Broker} broker A broker object.
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]": 
-  function install(broker) 
+  function install(context) 
   {
-    this._screen = this.dependency["screen"];
+    this._screen = context["screen"];
   },
     
   /** uninstalls itself. 
-   *  @param {Broker} broker A broker object.
    */
   "[uninstall]": 
-  function uninstall(broker) 
+  function uninstall() 
   {
     this._screen = null;
   },
@@ -71,8 +70,8 @@ C1Control.definition = {
   function PAD() 
   {
     coUtils.Debug.reportWarning(
-      "%s sequence [%s] was ignored.",
-      arguments.callee.name, Array.slice(arguments));
+      _("%s sequence [%s] was ignored."),
+      "PAD", Array.slice(arguments));
   },
 
   /**
@@ -82,8 +81,8 @@ C1Control.definition = {
   function HOP() 
   {
     coUtils.Debug.reportWarning(
-      "%s sequence [%s] was ignored.",
-      arguments.callee.name, Array.slice(arguments));
+      _("%s sequence [%s] was ignored."),
+      "HOP", Array.slice(arguments));
   },
 
   /**
@@ -93,8 +92,8 @@ C1Control.definition = {
   function BPH() 
   {
     coUtils.Debug.reportWarning(
-      "%s sequence [%s] was ignored.",
-      arguments.callee.name, Array.slice(arguments));
+      _("%s sequence [%s] was ignored."),
+      "BPH", Array.slice(arguments));
   },
 
   /**
@@ -104,8 +103,8 @@ C1Control.definition = {
   function NBH() 
   {
     coUtils.Debug.reportWarning(
-      "%s sequence [%s] was ignored.",
-      arguments.callee.name, Array.slice(arguments));
+      _("%s sequence [%s] was ignored."),
+      "NBH", Array.slice(arguments));
   },
 
   /**
@@ -155,8 +154,8 @@ C1Control.definition = {
   function SSA() 
   {
     coUtils.Debug.reportWarning(
-      "%s sequence [%s] was ignored.",
-      arguments.callee.name, Array.slice(arguments));
+      _("%s sequence [%s] was ignored."),
+      "SSA", Array.slice(arguments));
   },
 
   /**
@@ -166,8 +165,8 @@ C1Control.definition = {
   function ESA() 
   {
     coUtils.Debug.reportWarning(
-      "%s sequence [%s] was ignored.",
-      arguments.callee.name, Array.slice(arguments));
+      _("%s sequence [%s] was ignored."),
+      "ESA", Array.slice(arguments));
   },
 
   /** 0x88 HTS is in tabcontroller.js */
@@ -186,8 +185,8 @@ C1Control.definition = {
   function HTJ() 
   {
     coUtils.Debug.reportWarning(
-      "%s sequence [%s] was ignored.",
-      arguments.callee.name, Array.slice(arguments));
+      _("%s sequence [%s] was ignored."),
+      "HTJ", Array.slice(arguments));
   },
 
   /**
@@ -197,8 +196,8 @@ C1Control.definition = {
   function VTS() 
   {
     coUtils.Debug.reportWarning(
-      "%s sequence [%s] was ignored.",
-      arguments.callee.name, Array.slice(arguments));
+      _("%s sequence [%s] was ignored."),
+      "VTS", Array.slice(arguments));
   },
 
   /**
@@ -208,8 +207,8 @@ C1Control.definition = {
   function PLD() 
   {
     coUtils.Debug.reportWarning(
-      "%s sequence [%s] was ignored.",
-      arguments.callee.name, Array.slice(arguments));
+      _("%s sequence [%s] was ignored."),
+      "PLD", Array.slice(arguments));
   },
 
   /**
@@ -219,8 +218,8 @@ C1Control.definition = {
   function PLU() 
   {
     coUtils.Debug.reportWarning(
-      "%s sequence [%s] was ignored.",
-      arguments.callee.name, Array.slice(arguments));
+      _("%s sequence [%s] was ignored."),
+      "PLU", Array.slice(arguments));
   },
 
   /**
@@ -329,8 +328,8 @@ C1Control.definition = {
   function PU1() 
   {
     coUtils.Debug.reportWarning(
-      "%s sequence [%s] was ignored.",
-      arguments.callee.name, Array.slice(arguments));
+      _("%s sequence [%s] was ignored."),
+      "PU1", Array.slice(arguments));
   },
 
   /**
@@ -340,8 +339,8 @@ C1Control.definition = {
   function PU2() 
   {
     coUtils.Debug.reportWarning(
-      "%s sequence [%s] was ignored.",
-      arguments.callee.name, Array.slice(arguments));
+      _("%s sequence [%s] was ignored."),
+      "PU2", Array.slice(arguments));
   },
 
   /**
@@ -351,8 +350,8 @@ C1Control.definition = {
   function STS() 
   {
     coUtils.Debug.reportWarning(
-      "%s sequence [%s] was ignored.",
-      arguments.callee.name, Array.slice(arguments));
+      _("%s sequence [%s] was ignored."),
+      "STS", Array.slice(arguments));
   },
 
   /**
@@ -362,8 +361,8 @@ C1Control.definition = {
   function CCH() 
   {
     coUtils.Debug.reportWarning(
-      "%s sequence [%s] was ignored.",
-      arguments.callee.name, Array.slice(arguments));
+      _("%s sequence [%s] was ignored."),
+      "CCH", Array.slice(arguments));
   },
 
   /**
@@ -373,8 +372,8 @@ C1Control.definition = {
   function MW() 
   {
     coUtils.Debug.reportWarning(
-      "%s sequence [%s] was ignored.",
-      arguments.callee.name, Array.slice(arguments));
+      _("%s sequence [%s] was ignored."),
+      "MW", Array.slice(arguments));
   },
 
   /**
@@ -384,8 +383,8 @@ C1Control.definition = {
   function SPA() 
   {
     coUtils.Debug.reportWarning(
-      "%s sequence [%s] was ignored.",
-      arguments.callee.name, Array.slice(arguments));
+      _("%s sequence [%s] was ignored."),
+      "SPA", Array.slice(arguments));
   },
 
   /**
@@ -395,8 +394,8 @@ C1Control.definition = {
   function EPA() 
   {
     coUtils.Debug.reportWarning(
-      "%s sequence [%s] was ignored.",
-      arguments.callee.name, Array.slice(arguments));
+      _("%s sequence [%s] was ignored."),
+      "EPA", Array.slice(arguments));
   },
 
   /**
@@ -425,8 +424,8 @@ C1Control.definition = {
   function SGCI() 
   {
     coUtils.Debug.reportWarning(
-      "%s sequence [%s] was ignored.",
-      arguments.callee.name, Array.slice(arguments));
+      _("%s sequence [%s] was ignored."),
+      "SGCI", Array.slice(arguments));
   },
 
   /**
@@ -436,8 +435,8 @@ C1Control.definition = {
   function SCI() 
   {
     coUtils.Debug.reportWarning(
-      "%s sequence [%s] was ignored.",
-      arguments.callee.name, Array.slice(arguments));
+      _("%s sequence [%s] was ignored."),
+      "SCI", Array.slice(arguments));
   },
   
   /**
@@ -447,8 +446,8 @@ C1Control.definition = {
   function ST() 
   {
     coUtils.Debug.reportWarning(
-      "%s sequence [%s] was ignored.",
-      arguments.callee.name, Array.slice(arguments));
+      _("%s sequence [%s] was ignored."),
+      "ST", Array.slice(arguments));
   },
 
   /**

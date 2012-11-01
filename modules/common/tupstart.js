@@ -22,6 +22,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+"use strict";
+
 /**
  * @file tupstart.js
  *
@@ -462,10 +464,13 @@ EventBroker.prototype = {
    */
   load: function load(broker, search_path, scope) 
   {
-    var paths = coUtils.File.getFileEntriesFromSerchPath(search_path);
-    var entry;
-    var url;
-    for (entry in paths) {
+    var paths = coUtils.File.getFileEntriesFromSearchPath(search_path),
+        entry,
+        url,
+        i = 0;
+
+    for (; i < paths.length; ++i) {
+      entry = paths[i];
       try {
         // make URI string such as "file://....".
         url = coUtils.File.getURLSpec(entry); 
@@ -661,30 +666,30 @@ EventExpressionProcesser.prototype = {
   {
     var stack = [];
     while (tokens.length) {
-      void function() {
+      void function impl() {
         var token = tokens.shift();
         var lhs, rhs;
         if ("(" === token) {
           while (tokens.length) {
-            arguments.callee.call(this);
+            impl.call(this);
           }
         } else if (")" === token) {
           return;
         } else if ("@" === token) {
-          arguments.callee.call(this);
+          impl.call(this);
           rhs = stack.pop();
           stack.push(new Once(rhs));
         } else if ("~" === token) {
-          arguments.callee.call(this);
+          impl.call(this);
           rhs = stack.pop();
           stack.push(new Not(rhs));
         } else if ("&" === token || "and" === token) {
-          arguments.callee.call(this);
+          impl.call(this);
           rhs = stack.pop();
           lhs = stack.pop();
           stack.push(new And(lhs, rhs));
         } else if ("|" === token || "or" === token) {
-          arguments.callee.call(this);
+          impl.call(this);
           rhs = stack.pop();
           lhs = stack.pop();
           stack.push(new Or(lhs, rhs));

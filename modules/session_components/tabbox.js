@@ -128,28 +128,29 @@ BottomPanel.definition = {
   _bottom_panel: null,
   _scrollbox: null,
 
-  /** Installs itself 
-   *  @param {Broker} broker A Broker object.
+  _renderer: null,
+  _screen: null,
+
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(broker) 
+  function install(context) 
   {
-    var {
-      tanasinn_bottompanel, 
-      tanasinn_tabbox, 
-      tanasinn_arrowscrollbox,
-    } = this.request("command/construct-chrome", this.getTemplate());
+    var result = this.request("command/construct-chrome", this.getTemplate());
 
-    this._bottom_panel = tanasinn_bottompanel;
-    this._tabbox = tanasinn_tabbox;
-    this._scrollbox = tanasinn_arrowscrollbox;
+    this._bottom_panel = result.tanasinn_bottompanel;
+    this._tabbox = result.tanasinn_tabbox;
+    this._scrollbox = result.tanasinn_arrowscrollbox;
+
+    this._renderer = context["renderer"];
+    this._screen = context["screen"];
   },
 
   /** Uninstalls itself 
-   *  @param {Broker} broker A Broker object.
    */
   "[uninstall]":
-  function uninstall(broker) 
+  function uninstall() 
   {
     if (null !== this._bottom_panel) {
       this._bottom_panel.parentNode.removeChild(this._bottom_panel);
@@ -157,6 +158,9 @@ BottomPanel.definition = {
     }
     this._scrollbox = null;
     this._tabbox = null;
+
+    this._renderer = null;
+    this._screen = null;
   },
 
   getElement: function getElement() 
@@ -192,19 +196,17 @@ BottomPanel.definition = {
   "[command('openpanel'), _('Open bottom panel.'), pnp]":
   function open() 
   {
-    var bottom_panel, renderer, screen, line_height, 
-        row, max_screen_height, panel, diff;
-
-    bottom_panel = this._bottom_panel;
-    renderer = this.dependency["renderer"];
-    screen = this.dependency["screen"];
+    var bottom_panel = this._bottom_panel,
+        renderer = this._renderer,
+        screen = this._screen,
+        // restricts bottom panel's height.
+        line_height = renderer.line_height,
+        row = screen.height,
+        max_screen_height = Math.floor(line_height * row / 2),
+        panel,
+        diff;
 
     this.sendMessage("get/panel-items", this);
-
-    // restricts bottom panel's height.
-    line_height = renderer.line_height;
-    row = screen.height;
-    max_screen_height = Math.floor(line_height * row / 2);
 
     for ([, panel] in Iterator(this._tabbox.tabpanels.childNodes)) {
       if (panel.height > max_screen_height) {
@@ -239,12 +241,10 @@ BottomPanel.definition = {
   "[command('closepanel'), _('Close bottom panel'), pnp]":
   function close() 
   {
-    var bottom_panel, renderer, line_height, diff;
-
-    bottom_panel = this._bottom_panel;
-    renderer = this.dependency["renderer"];
-    line_height = renderer.line_height;
-    diff = Math.floor(bottom_panel.boxObject.height / line_height);
+    var bottom_panel = this._bottom_panel,
+        renderer = this._renderer,
+        line_height = renderer.line_height,
+        diff = Math.floor(bottom_panel.boxObject.height / line_height);
 
     bottom_panel.setAttribute("collapsed", true);
 

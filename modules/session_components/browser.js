@@ -43,24 +43,27 @@ OverlayBrowser.definition = {
     };
   },
 
-  "[persistable] enabled_when_startup": true,
+  "[persistable] enabled_when_startup": false,
   "[persistable] open_delay": 20,
 
   _element: null,
+  _cursor_state: null,
+  _renderer: null,
  
-  /** installs itself. 
-   *  @param {Session} session A session object.
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(session) 
+  function install(context) 
   {
+    this._cursor_state = context["cursorstate"];
+    this._renderer = context["renderer"];
   },
 
   /** Uninstalls itself.
-   *  @param {Session} session A session object.
    */
   "[uninstall]":
-  function uninstall(session) 
+  function uninstall() 
   {
     if (null !== this._element) {
       this._element.parentNode.removeChild(this._element);
@@ -68,6 +71,8 @@ OverlayBrowser.definition = {
 
     this._element = null;
     this._overlay = null;
+    this._cursor_state = null;
+    this._renderer = null;
   },
 
   "[subscribe('sequence/osc/210'), pnp]":
@@ -76,25 +81,19 @@ OverlayBrowser.definition = {
     coUtils.Timer.setTimeout(
       function timerproc() 
       {
-        var result, col, line, width, height, url,
-            cursorstate;
+        var result = data.split(/\s+/),
+            col = result[0],
+            line = result[1],
+            width = result[2],
+            height = result[3],
+            url = result[4],
+            cursorstate = this._cursor_state;
 
-        result = data.split(/\s+/);
-
-        col = result[0];
-        line = result[1];
-        width = result[2];
-        height = result[3];
-        url = result[4];
-
-        cursorstate = this.dependency["cursorstate"];
-
-        this.open(
-          cursorstate.positionX - Number(col) + 1, 
-          cursorstate.positionY - Number(line) + 1,
-          Number(width), 
-          Number(height), 
-          url);
+        this.open(cursorstate.positionX - Number(col) + 1, 
+                  cursorstate.positionY - Number(line) + 1,
+                  Number(width), 
+                  Number(height), 
+                  url);
 
       }, this.open_delay, this);
   },
@@ -102,41 +101,38 @@ OverlayBrowser.definition = {
   "[subscribe('command/open-overlay-browser'), pnp]":
   function open(left, top, width, height, url) 
   {
-    var renderer;
-
     // get renderer object
-    renderer = this.dependency["renderer"];
+    var renderer = this._renderer,
+        result;
 
     this.close();
 
     // create UI part
-    var {
-      tanasinn_browser_layer,
-    } = this.request("command/construct-chrome", {
-      parentNode: "#tanasinn_center_area",
-      tagName: "bulletinboard",
-      id: "tanasinn_browser_layer",
-      childNodes: {
-        tagName: "browser",
-        id: "tanasinn_browser_overlay",
-        src: url,
-        left: left * renderer.char_width,
-        top: top * renderer.line_height,
-        width: width * renderer.char_width,
-        height: height * renderer.line_height,
-      },
-    });
+    result = this.request(
+      "command/construct-chrome",
+      {
+        parentNode: "#tanasinn_center_area",
+        tagName: "bulletinboard",
+        id: "tanasinn_browser_layer",
+        childNodes: {
+          tagName: "browser",
+          id: "tanasinn_browser_overlay",
+          src: url,
+          left: left * renderer.char_width,
+          top: top * renderer.line_height,
+          width: width * renderer.char_width,
+          height: height * renderer.line_height,
+        },
+      });
 
-    this._element = tanasinn_browser_layer;
+    this._element = result.tanasinn_browser_layer;
 
   },
 
   "[subscribe('sequence/osc/211 | command/close-overlay-browser'), pnp]":
   function close(data) 
   {
-    var element;
-
-    element = this._element;
+    var element = this._element;
 
     if (null !== element) {
       element.parentNode.removeChild(element);

@@ -37,10 +37,9 @@ function make_managed_handler(self, handler)
 
 function apply_attribute(self, broker, key, expressions, attribute)
 {
-  var handler, wrapped_handler, id;
-
-  handler = self[key];
-  id = self.id + "." + key;
+  var handler = self[key],
+      id = self.id + "." + key,
+      wrapped_handler;
 
   if (handler.id) {
     wrapped_handler = handler;
@@ -84,40 +83,12 @@ function apply_attribute(self, broker, key, expressions, attribute)
 
 }
 
-
-
 /**
  * @Attribute NmapAttribute
  *
  */
 var NmapAttribute = new Attribute("nmap");
 NmapAttribute.definition = {
-
-  get __id()
-    "nmap",
-
-  get __info()
-  {
-    return {
-      name: _("Default NMap"),
-      description: _("Provides default keybind replacement settings in normal mode.")
-      /*
-      <![CDATA[
-        "nmap" attribute defines default keybind replacement settings in normal mode. 
-        this settings are deald as "persistable".
-
-        usage:
-
-          "[nmap('<C-n>', '<F7>')]": 
-          function func1() 
-          {
-            ....
-          },
-
-      ]]>
-      */
-    };
-  },
 
   /** constructor 
    *  @param {EventBroker} broker Parent broker object.

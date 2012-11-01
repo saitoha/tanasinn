@@ -165,8 +165,8 @@ ReportParams.definition = {
 
       default:
         coUtils.Debug.reportWarning(
-          "%s sequence [%s] was ignored.",
-          arguments.callee.name, Array.slice(arguments));
+          _("%s sequence [%s] was ignored."),
+          "DECREQTPARM", Array.slice(arguments));
     }
   },
 

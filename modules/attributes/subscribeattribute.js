@@ -58,7 +58,7 @@ function apply_attribute(self, broker, key, attribute, topic)
       if (old_onchange) {
         old_onchange.apply(wrapped_handler, arguments);
       }
-      if (oldval != newval) {
+      if (oldval !== newval) {
         if (newval) {
           broker.subscribe(topic, wrapped_handler, undefined, id);
         } else {
@@ -96,31 +96,6 @@ function apply_attribute(self, broker, key, attribute, topic)
  */
 var SubscribeAttribute = new Attribute("subscribe");
 SubscribeAttribute.definition = {
-
-  get __id()
-    "subscribe",
-
-  get __info()
-  {
-    return {
-      name: _("Subscribe"),
-      description: _("Marks a function as a tupstart2 subscriber.")
-      /*
-      <![CDATA[
-        "subscribe" attribute marks a function as tupstart2 subscriber.
-
-        usage:
-
-          "[subscribe('event/the-event-occured'), enabled]":
-          function func1(n) 
-          { 
-            ....
-          },
-
-      ]]>
-      */
-    };
-  },
 
   /** constructor 
    *  @param {EventBroker} broker Parent broker object.

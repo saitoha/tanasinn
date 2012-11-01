@@ -49,8 +49,11 @@ Tektronix.definition = {
   "[persistable] default_text_color": "white",
   "[persistable] default_text_style": "26px monospace",
 
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
+   */
   "[install]":
-  function install(broker) 
+  function install(context) 
   {
     var tanasinn_tektronix_canvas;
 
@@ -75,8 +78,10 @@ Tektronix.definition = {
     this.onHeightChanged(this._height);
   },
 
+  /** Uninstalls itself. 
+   */
   "[uninstall]":
-  function uninstall(broker) 
+  function uninstall() 
   {
     if (this._dom) {
       this._dom.canvas.parentNode.removeChild(this._dom.canvas);

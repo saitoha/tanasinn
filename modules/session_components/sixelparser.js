@@ -71,10 +71,8 @@ SixelForwardInputIterator.definition = {
   
   parseUint: function parseUint() 
   {
-    var n, c;
-
-    n = 0;
-    c = this.current();
+    var n = 0,
+        c = this.current();
 
     if (0x30 <= c && c <= 0x39) {
       n = c - 0x30;
@@ -124,13 +122,13 @@ SixelParser.definition = {
         g = color[1],
         b = color[2],
         data = imagedata.data,
-        i,
+        i = 0,
         position;
 
     c -= 0x3f;
 
-    for (i = 5; i >= 0; --i) {
-      if (c & 1 << i) {
+    for (; i < 6; ++i) {
+      if (c & 0x1 << i) {
         position = ((y + i) * imagedata.width * 1 + x) * 4;
         data[position] = r;
         data[position + 1] = g; 
@@ -264,8 +262,9 @@ SixelParser.definition = {
           break;
   
         case 0x24: // $
-          if (max_x < x)
+          if (max_x < x) {
             max_x = x;
+          }
           count = 1;
           x = 0;
           scanner.moveNext();

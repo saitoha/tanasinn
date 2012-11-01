@@ -121,19 +121,18 @@ PrimaryDA.definition = {
 
   "[persistable] enabled_when_startup": true,
 
-  /** installs itself. 
-   *  @param {Broker} broker A Broker object.
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(broker) 
+  function install(context) 
   {
   },
 
   /** Uninstalls itself.
-   *  @param {Broker} broker A broker object.
    */
   "[uninstall]":
-  function uninstall(broker) 
+  function uninstall() 
   {
   },
 
@@ -144,7 +143,7 @@ PrimaryDA.definition = {
     if (n !== undefined && n !== 0) {
       coUtils.Debug.reportWarning(
         _("%s sequence [%s] was ignored."),
-        arguments.callee.name, Array.slice(arguments));
+        "DA1", Array.slice(arguments));
     } else { //
       this.sendMessage("sequence/DA1");
     }
@@ -155,7 +154,9 @@ PrimaryDA.definition = {
   function DA1(n)
   {
      var message,
-         reply = ["?"];
+         reply = ["?"],
+         capability;
+
 
 //    var reply_map = {
 //      "VT100"  : "\x1b[?1;2c"
@@ -171,23 +172,18 @@ PrimaryDA.definition = {
 //      ,"VT520" : "\x1b[?65;1;2;7;8;9;12;18;19;21;23;24;42;44;45;46c"
 //      ,"VT525" : "\x1b[?65;1;2;7;9;12;18;19;21;22;23;24;42;44;45;46c"
 //    };
+
+    capability = this.sendMessage("command/query-da1-capability");
+    capability.push(1) // 132 columns
+
     reply.push(64); // VT410
     reply.push(";");
-    reply.push(1) // 132 columns
-    //reply.push(2) // Printer
-    reply.push(";");
-    reply.push(7) // Soft character set (DRCS)
-    //reply.push(8) // User-defined keys
-    reply.push(";");
-    reply.push(9) // National replacememnt character sets
-    //reply.push(15) // Technical characters
-    reply.push(";");
-    reply.push(22) // ANSI color
+    reply.push(capability.sort(function sortFunc(lhs, rhs)
+                               {
+                                 return lhs > rhs;
+                               }).join(";"));
     reply.push("c");
-    //reply.push(29) // ANSI text locator (i.e., DEC Locator mode)
     message = reply.join("");
-    //var message = "\x1b[?1;2;6c";
-    //var message = "\x1b[?c";
     this.sendMessage("command/send-sequence/csi", message);
 
     coUtils.Debug.reportMessage(

@@ -28,11 +28,41 @@
  * @class ColorNumberCompleter
  *
  */
-var ColorNumberCompleter = new Class().extends(Component)
-                                      .depends("renderer");
+var ColorNumberCompleter = new Class().extends(Plugin)
+                                      .depends("palette");
 ColorNumberCompleter.definition = {
 
   id: "colorcompleter",
+
+  getInfo: function getInfo()
+  {
+    return {
+      name: _("Color Number Completer"),
+      version: "0.1",
+      description: _("Provides color number completion service.")
+    };
+  },
+
+  "[persistable] enabled_when_startup": true,
+
+  _palette: null,
+
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
+   */
+  "[install]":
+  function install(context) 
+  {
+    this._palette = context["palette"];
+  },
+
+  /** Uninstalls itself.
+   */
+  "[uninstall]":
+  function uninstall() 
+  {
+    this._palette = null;
+  },
 
   /*
    * Search for a given string and notify a listener (either synchronously
@@ -40,11 +70,10 @@ ColorNumberCompleter.definition = {
    *
    * @param context - The completion context object. 
    */
-  "[completer('color-number'), enabled]":
+  "[completer('color-number'), pnp]":
   function complete(context)
   {
     var color_map = this._getColorMap(context.option),
-        renderer, 
         pattern,
         match,
         all,
@@ -67,14 +96,25 @@ ColorNumberCompleter.definition = {
     pattern = /^\s*([0-9]*)(\s*)(.*)(\s?)/;
     match = context.source.match(pattern);
 
-    [all, number, space, name, next] = match;
+    all = match[0];
+    number = match[1];
+    space = match[2];
+    name = match[3];
+    next = match[4];
 
     if (next) {
       this._doNextCompletion(context.completers, context.source, all.length);
     } else if (!space) {
       numbers = [i for (i in function() { for (var i = 0; i < 256; ++i) yield i; }())]
-        .map(function(number) number.toString())
-        .filter(function(number_as_string) -1 != number_as_string.indexOf(number));
+        .map(
+          function mapFunc(number)
+          {
+            return number.toString();
+          }).filter(
+            function filterFunc(number_as_string)
+            {
+              return -1 !== number_as_string.indexOf(number);
+            });
       if (0 === numbers.length) {
         this.sendMessage("event/answer-completion", autocomplete_result);
       } else {
@@ -128,16 +168,16 @@ ColorNumberCompleter.definition = {
 
   _getColorMap: function _getColorMap(option)
   {
-    var renderer = this.dependency["renderer"];
+    var palette = this._palette;
 
     switch (option) {
 
       case "fg":
-        return renderer.color;
+        return palette.color;
         break;
 
       case "bg":
-        return renderer.color;
+        return palette.color;
 
       default:
         return null;

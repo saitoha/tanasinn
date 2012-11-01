@@ -45,20 +45,19 @@ KeypadModeHandler.definition = {
 
   _screen: null,
     
-  /** installs itself. 
-   *  @param {Broker} broker A broker object.
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]": 
-  function install(broker) 
+  function install(context) 
   {
-    this._screen = this.dependency["screen"];
+    this._screen = context["screen"];
   },
     
   /** uninstalls itself. 
-   *  @param {Broker} broker A broker object.
    */
   "[uninstall]": 
-  function uninstall(broker) 
+  function uninstall() 
   {
     this._screen = null;
   },

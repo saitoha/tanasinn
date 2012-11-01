@@ -51,7 +51,7 @@ AC_DEFUN([AC_TANASINN_OPEN],
      TANASINN_OPEN=xdg-open
      ;;
  esac 
- AC_MSG_RESULT($TANASINN_OS)
+ AC_MSG_RESULT($TANASINN_OPEN)
  ])
 
 # ----------------------------------------------------------------------------

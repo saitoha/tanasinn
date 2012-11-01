@@ -117,26 +117,37 @@ CursorState.definition = {
     this._blink = value;;
   },
 
-  /** installs itself. 
-   *  @param {Broker} broker A broker object.
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(broker) 
+  function install(context) 
   {
-    this.attr = this.dependency["linegenerator"]
+    this.attr = context["linegenerator"]
       .allocate(1, 1)
       .shift()
       .cells
       .shift();
   },
 
-  /** uninstalls itself. 
-   *  @param {Broker} broker A broker object.
+  /** Uninstalls itself. 
    */
   "[uninstall]":
-  function uninstall(broker) 
+  function uninstall() 
   {
     this.attr = null;
+  },
+
+  "[subscribe('sequence/sm/33'), pnp]":
+  function WYSTCURM_ON()
+  {
+    this._cursor_state.blink = true;
+  },
+
+  "[subscribe('sequence/rm/33'), pnp]":
+  function WYSTCURM_OFF()
+  {
+    this._cursor_state.blink = false;
   },
 
   /** reset cursor state. */
@@ -259,12 +270,6 @@ CursorState.definition = {
   {
     this.backup(); 
   },
-
-  "[profile('vt100'), sequence('CSI s')] DECSC": 
-  function SCP() 
-  {
-    this.backup(); 
-  },
    
   /**
    * DECRC - Restore Cursor
@@ -297,12 +302,17 @@ CursorState.definition = {
     this.restore();
   },
 
-  "[profile('vt100'), sequence('CSI u')] DECRC": 
-  function RCP() 
+  "[profile('vt100'), sequence('CSI s')] SCP": 
+  function SCOSCP() 
+  {
+    this.backup(); 
+  },
+
+  "[profile('vt100'), sequence('CSI u')] RCP": 
+  function SCORCP() 
   {
     this.restore();
   },
-
 
   /**
    *

@@ -223,7 +223,7 @@ var Cell = new Class();
 Cell.definition = {
 
   c: 0x20,
-  value: 0x7,
+  value: 0x0,
 
   initialize: function initialize(attr) 
   {
@@ -241,7 +241,7 @@ Cell.definition = {
   /** setter of foreground color */
   set fg(value)
   {
-    this.fgcolor = true;
+    this.fgcolor = 1;
     this.value = this.value 
                & ~(0xff << ATTR2_FORECOLOR) 
                | value << ATTR2_FORECOLOR;
@@ -256,7 +256,7 @@ Cell.definition = {
   /** setter of background color */
   set bg(value)
   {
-    this.bgcolor = true;
+    this.bgcolor = 1;
     this.value = this.value 
                & ~(0xff << ATTR2_BACKCOLOR) 
                | value << ATTR2_BACKCOLOR;
@@ -456,7 +456,7 @@ Cell.definition = {
         buffer = [],
         result;
 
-    if (!this.drcs) {
+    if (0 === this.drcs) {
       return null;
     }
 
@@ -503,8 +503,6 @@ Cell.definition = {
         throw coUtils.Debug.Exception(_("Invalid dscs string: %s."), value);
       }
     }
-
-//    this.drcs = true;
   },
   /** Compare every bit and detect equality of both objects. */
   equals: function equals(other)
@@ -516,14 +514,12 @@ Cell.definition = {
   /** Clear all properties and make it default state. */
   clear: function clear() 
   {
-    this.value = 0x7;
-    //this.drcs = undefined;
+    this.value = 0x0;
   },
   
   copyFrom: function copyFrom(rhs) 
   { 
     this.value = rhs.value;
-    //this.drcs = rhs.drcs;
   },
       
   /** Write a character with attribute structure. */
@@ -531,18 +527,16 @@ Cell.definition = {
   {
     this.c = c;
     this.value = attr.value;
-    //this.drcs = attr.drcs;
   }, // write
 
   /** Erase the pair of character and attribute structure */
   erase: function erase(attr) 
   {
     this.c = 0x20;
-    //this.drcs = undefined;
     if (attr) {
       this.value = attr.value;
     } else {
-      this.value = 0x7;
+      this.value = 0x0;
     }
 
   }, // erase
@@ -588,7 +582,7 @@ DirtyRange.definition = {
   /** Detect whether it has some range. */
   get dirty()
   {
-    return this.first != this.last;
+    return this.first !== this.last;
   },
 
   invalidate: function invalidate() 
@@ -633,7 +627,7 @@ DirtyRange.definition = {
   /** makes intersection range and set it. */
   trimRange: function trimRange(first, last) 
   {
-    if (this.first != this.last) {
+    if (this.first !== this.last) {
       if (first > this.first)
         this.first = first
       if (last < this.last)
@@ -937,7 +931,7 @@ Line.definition = {
         cell = cells[current];
         is_ascii = cell.c > 0 && cell.c < 0x80;
         if (attr) {
-          if (attr.equals(cell) && is_ascii && !attr.drcs) {
+          if (attr.equals(cell) && is_ascii && 0 === attr.drcs) {
             continue;
           } else {
             range = cells.slice(start, current);
@@ -1221,20 +1215,18 @@ LineGenerator.definition = {
 
   "[persistable] enabled_when_startup": true,
 
-
   /** Installs itself. 
-   *  @param {Broker} broker A Broker object.
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(broker) 
+  function install(context) 
   {
   },
 
   /** Uninstalls itself. 
-   *  @param {Broker} broker A Broker object.
    */
   "[uninstall]":
-  function uninstall(broker) 
+  function uninstall() 
   {
   },
 

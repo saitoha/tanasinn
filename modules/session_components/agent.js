@@ -165,11 +165,11 @@ Agent.definition = {
 
   _element: null,
 
-  /** installs itself. 
-   *  @param {Session} broker A session object.
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(broker) 
+  function install(context) 
   {
     var result = this.request("command/construct-chrome", this.getTemplate());
 
@@ -180,14 +180,14 @@ Agent.definition = {
   },
 
   /** Uninstalls itself.
-   *  @param {Session} broker A session object.
    */
   "[uninstall]":
-  function uninstall(broker) 
+  function uninstall() 
   {
     if (this._element) {
       this._element.parentNode.removeChild(this._element);
     }
+
     this.onBeforeInput.enabled = false;
     this.onCorrect.enabled = false;
   },
@@ -207,22 +207,18 @@ Agent.definition = {
 
   getAgentImagePath: function getAgentImagePath()
   {
-    var broker, path, file;
-
-    broker = this._broker;
-    path = broker.runtime_path + "/" + this.agent_image_file;
-    file = coUtils.File.getFileLeafFromVirtualPath(path);
+    var broker = this._broker,
+        path = broker.runtime_path + "/" + this.agent_image_file,
+        file = coUtils.File.getFileLeafFromVirtualPath(path);
 
     return coUtils.File.getURLSpec(file);
   },
 
   getBalloonImagePath: function getBalloonImagePath()
   {
-    var broker, path, file;
-
-    broker = this._broker;
-    path = broker.runtime_path + "/" + this.balloon_image_file;
-    file = coUtils.File.getFileLeafFromVirtualPath(path);
+    var broker = this._broker,
+        path = broker.runtime_path + "/" + this.balloon_image_file,
+        file = coUtils.File.getFileLeafFromVirtualPath(path);
 
     return coUtils.File.getURLSpec(file);
   },

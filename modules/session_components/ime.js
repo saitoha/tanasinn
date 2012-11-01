@@ -37,6 +37,7 @@
 var Ime = new Class().extends(Plugin)
                      .depends("renderer")
                      .depends("cursorstate")
+                     .depends("palette")
                      .depends("inputmanager");
 Ime.definition = {
 
@@ -56,17 +57,26 @@ Ime.definition = {
 
   _timer: null,
   _ime_input_flag: false,
+  _input_manager: null,
+  _renderer: null,
+  _cursor_state: null,
 
-  /** Installs plugin 
-   *  @param {Broker} broker A Broker object.
-   */ 
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
+   */
   "[install]":
-  function install(broker) 
+  function install(context) 
   {
-    var textbox = this.dependency["inputmanager"].getInputField(),
-        renderer = this.dependency["renderer"],
+    var input_manager = context["inputmanager"],
+        textbox = input_manager.getInputField(),
+        renderer = context["renderer"],
         version_comparator = coUtils.Services.versionComparator,
         focused_element;
+
+    this._renderer = renderer;
+    this._palette = context["palette"];
+    this._cursor_state = context["cursorstate"];
+    this._input_manager = input_manager;
 
     textbox.style.width = "0%";
     textbox.style.imeMode = "inactive"; // disabled -> inactive
@@ -95,19 +105,22 @@ Ime.definition = {
   }, // install
 
   /** Uninstall plugin 
-   *  @param {Broker} broker A Broker object.
    */
   "[uninstall]":
-  function uninstall(broker) 
+  function uninstall() 
   {
-    var textbox;
+    var textbox = this._input_manager.getInputField();
 
     this.endPolling(); // stops polling timer. 
-    textbox = this.dependency["inputmanager"].getInputField();
     textbox.style.width = "";
     textbox.style.imeMode = "disabled";
     textbox.style.border = "";  
     textbox.style.position = ""; 
+
+    this._input_manger = null;
+    this._cursor_state = null;
+    this._renderer = null;
+    this._palette = null;
 
     // disables session event handlers.
     this.startPolling.enabled = false;
@@ -156,9 +169,8 @@ Ime.definition = {
    */  
   onpoll: function onpoll() 
   {
-    var text;
+    var text = this._input_manager.getInputField().value;
 
-    text = this.dependency["inputmanager"].getInputField().value;
     if (text) { // if textbox contains some text data.
       if (!this._ime_input_flag) {
         this._enableImeMode(); // makes the IME mode enabled.
@@ -173,14 +185,15 @@ Ime.definition = {
   /** Shows textbox element. */
   _enableImeMode: function _enableImeMode() 
   {
-    var textbox = this.dependency["inputmanager"].getInputField(),
-        renderer = this.dependency["renderer"],
-        cursor = this.dependency["cursorstate"],
+    var textbox = this._input_manager.getInputField(),
+        renderer = this._renderer,
+        palette = this._palette,
+        cursor = this._cursor_state,
         line_height = renderer.line_height,
         char_width = renderer.char_width,
         char_height = renderer.char_height,
         char_offset = renderer.char_offset,
-        normal_color = renderer.color,
+        normal_color = palette.color,
         font_size = renderer.font_size,
         top = cursor.positionY * line_height + -4,
         left = cursor.positionX * char_width + -2;
@@ -192,13 +205,15 @@ Ime.definition = {
     textbox.style.color = normal_color[7];
     textbox.style.fontSize = font_size + "px";
     textbox.style.width = "100%";
+
     this._ime_input_flag = true;
+
     this.sendMessage("command/ime-mode-on", this);
   },
 
   _disableImeMode: function _disableImeMode() 
   {
-    this.dependency["inputmanager"].getInputField().style.opacity = 0.0;
+    this._input_manager.getInputField().style.opacity = 0.0;
     this._ime_input_flag = false;
     this.sendMessage("command/ime-mode-off", this);
   }

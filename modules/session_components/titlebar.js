@@ -58,6 +58,7 @@ ForwardInputIterator.definition = {
   {
     return this._position >= this._value.length;
   },
+
 }; // ForwardInputIterator
 
 /**
@@ -88,6 +89,7 @@ Titlebar.definition = {
   "[persistable, watchable] initial_query_utf8_mode": true,
   "[persistable, watchable] enable_title_reporting": false,
 
+  "[persistable, watchable] template": "%s - tanasinn",
   "[persistable, watchable] font_color": "white",
   "[persistable, watchable] font_size": 12,
   "[persistable, watchable] font_family": "Lucida Console,Latha,Georgia,monospace",
@@ -99,6 +101,9 @@ Titlebar.definition = {
   _query_hex_mode: false,
   _query_utf8_mode: true,
 
+  _encoder: null,
+  _decoder: null,
+
   getTemplate: function getTemplate()
   {
     return {
@@ -109,7 +114,7 @@ Titlebar.definition = {
       height: this.font_size,
       style: {
         padding: "0px",
-        margin: "0px",
+        marginBottom: "6px",
         opacity: "1.0",
         width: "100%",
         cursor: "move",
@@ -118,17 +123,18 @@ Titlebar.definition = {
   },
 
   /** Installs itself. 
-   *  @param {Broker} broker A Broker object.
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(broker) 
+  function install(context) 
   {
     var result = this.request(
       "command/construct-chrome",
       this.getTemplate());
 
-    this._decoder = this.dependency["decoder"];
-    this._encoder = this.dependency["encoder"];
+    this._decoder = context["decoder"];
+    this._encoder = context["encoder"];
+
     this._canvas = result.tanasinn_titlebar_canvas;
     this._canvas.width = this._canvas.parentNode.boxObject.width;
 
@@ -136,19 +142,27 @@ Titlebar.definition = {
     this._set_utf8_mode = this.initial_set_utf8_mode;
     this._query_hex_mode = this.initial_query_hex_mode;
     this._query_utf8_mode = this.initial_query_utf8_mode;
+
   },
   
   /** Uninstalls itself.
-   *  @param {Broker} broker A Broker object.
    */
   "[uninstall]":
-  function uninstall(broker) 
+  function uninstall() 
   {
     this._canvas = null;
     this._decoder = null;
     this._encoder = null;
   },
 
+  /** When session is initialized */
+  "[subscribe('command/send-titlebar-string'), pnp]": 
+  function sendTitlebarString(value) 
+  {
+    this._print(value);
+  },
+
+  /** When screen size is changed */
   "[subscribe('event/screen-width-changed'), pnp]": 
   function onWidthChanged(width) 
   {
@@ -189,7 +203,7 @@ Titlebar.definition = {
     
     if (this.enable_title_reporting) {
       if (this._query_utf8_mode) {
-        message += this.dependency["encoder"].encode(this._title_text);
+        message += this._encoder.encode(this._title_text);
       } else {
         message += this._title_text;
       }
@@ -211,14 +225,14 @@ Titlebar.definition = {
   // Reports window title.
   // Response: OSC l title ST
   //   title    Window title.
-  "[subscribe('sequence/decslpp/21'), pnp]":
+  "[subscribe('sequence/decslpp/{20 | 21}'), pnp]":
   function onTitleQueryHexModeDisabled() 
   {
     var message = "";
     
     if (this.enable_title_reporting) {
       if (this._query_utf8_mode) {
-        message += this.dependency["encoder"].encode(this._title_text);
+        message += this._encoder.encode(this._title_text);
       } else {
         message += this._title_text;
       }
@@ -235,10 +249,11 @@ Titlebar.definition = {
     this.sendMessage("command/send-sequence/osc", "l" + message)
   },
 
-  "[subscribe('sequence/osc/{0 | 2}'), pnp]":
-  function onCommandReceived(data0, data2) 
+  "[subscribe('sequence/osc/{0 | 1 | 2}'), pnp]":
+  function onCommandReceived(data0, data1, data2) 
   { // process OSC command.
-    var data = data0 || data2,
+    var data = data0 || data1 || data2,
+        scanner,
         decoder,
         sequence,
         text,
@@ -270,9 +285,13 @@ Titlebar.definition = {
   {
     var canvas = this._canvas,
         context = canvas.getContext("2d"),
+        template = this.template,
         metrics,
         left;
 
+    if (template) {
+      text = coUtils.Text.format(template, text);
+    }
     this._title_text = text;
 
     canvas.width = canvas.parentNode.boxObject.width;

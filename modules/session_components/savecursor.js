@@ -65,22 +65,22 @@ SaveCursorMode.definition = {
   "[persistable] default_value": false,
 
   _mode: false,
+  _screen :null,
 
-  /** installs itself. 
-   *  @param {Broker} broker A Broker object.
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(broker) 
+  function install(context) 
   {
     this._mode = this.default_value;
-    this._screen = this.dependency["screen"];
+    this._screen = context["screen"];
   },
 
   /** Uninstalls itself.
-   *  @param {Broker} broker A broker object.
    */
   "[uninstall]":
-  function uninstall(broker) 
+  function uninstall() 
   {
     this._mode = null;
     this._screen = null;

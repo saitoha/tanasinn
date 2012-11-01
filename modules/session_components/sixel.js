@@ -31,6 +31,7 @@ var Sixel = new Class().extends(Plugin)
                        .depends("sixel_parser")
                        .depends("renderer")
                        .depends("screen")
+                       .depends("cursorstate")
                        ;
 Sixel.definition = {
 
@@ -59,27 +60,31 @@ Sixel.definition = {
 
   _color: null,
   _buffers: null,
-  _no: 0x20,
+  _no: 0x0,
   _display_mode: false,
 
-  /** installs itself. 
-   *  @param {Broker} broker A Broker object.
+  _renderer: null,
+  _screen: null,
+  _sixel_parser: null,
+
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(broker) 
+  function install(context) 
   {
     this._buffers = [];
 
-    this._renderer = this.dependency["renderer"];
-    this._screen = this.dependency["screen"];
-    this._sixel_parser = this.dependency["sixel_parser"];
+    this._renderer = context["renderer"];
+    this._screen = context["screen"];
+    this._cursor_state = context["cursorstate"];
+    this._sixel_parser = context["sixel_parser"];
   },
 
   /** Uninstalls itself.
-   *  @param {Broker} broker A broker object.
    */
   "[uninstall]":
-  function uninstall(broker) 
+  function uninstall() 
   {
     var i = 0,
         buffer;
@@ -98,6 +103,7 @@ Sixel.definition = {
     this._buffers = null;
     this._renderer = null;
     this._screen = null;
+    this._cursor_state = null;
     this._sixel_parser = null;
   },
 
@@ -148,6 +154,12 @@ Sixel.definition = {
     return dom;
   },
 
+  "[subscribe('command/query-da1-capability'), pnp]":
+  function onQueryDA1Capability(mode)
+  {
+    return 4; // sixel
+  },
+
   "[subscribe('command/change-sixel-display-mode'), pnp]":
   function onSixelDisplayModeChanged(mode)
   {
@@ -157,7 +169,7 @@ Sixel.definition = {
   "[subscribe('sequence/dcs'), pnp]":
   function onDCS(data) 
   {
-    var pattern = /^([0-9]);([01]);([0-9]+);?q((?:.|[\n\r])+)/,
+    var pattern = /^(?:[0-9;]*)?q((?:.|[\n\r])+)/,
         match = data.match(pattern),
         sixel;
 
@@ -165,7 +177,7 @@ Sixel.definition = {
       return;
     }
 
-    sixel = match[4];
+    sixel = match[1];
     if (!sixel) {
       return;
     }
@@ -178,6 +190,7 @@ Sixel.definition = {
     var dom = this._createNewCanvas(),
         result = this._sixel_parser.parse(sixel, dom),
         renderer = this._renderer,
+        cursor_state = this._cursor_state,
         line_height = renderer.line_height,
         char_width = renderer.char_width,
         line_count = Math.ceil(result.max_y / line_height),
@@ -187,14 +200,14 @@ Sixel.definition = {
         full_cell = true,
         buffer,
         screen = this._screen,
-        positionX = screen.cursor.positionX,
+        positionX = cursor_state.positionX,
         dscs,
         drcs,
         i = 0,
         j;
 
     for (; i < line_count; ++i) {
-      dscs = " " + String.fromCharCode(++this._no);
+      dscs = " " + String.fromCharCode(0x20 + ++this._no % 94);
       drcs = {
         dscs: dscs,
         drcs_canvas: result.canvas,
@@ -211,14 +224,15 @@ Sixel.definition = {
 
       buffer = [];
       for (j = start_code; j < end_code; ++j) {
-        buffer.push(0x100000 | this._no << 8 | j);
+        buffer.push(0x100000 | (0x20 + this._no % 94) << 8 | j);
       }
 
       screen.write(buffer);
 
       screen.carriageReturn();
       screen.lineFeed();
-      screen.cursor.positionX = positionX;
+
+      cursor_state.positionX = positionX;
     }
     screen.lineFeed();
   },

@@ -28,10 +28,36 @@
 /**
  * @class PluginsCompleter
  */
-var PluginsCompleter = new Class().extends(Component);
+var PluginsCompleter = new Class().extends(Plugin);
 PluginsCompleter.definition = {
 
   id: "plugins_completer",
+
+  getInfo: function getInfo()
+  {
+    return {
+      name: _("Plugins Completer"),
+      description: _("Provides completion information of plugins."),
+      version: "0.1",
+    };
+  },
+
+  "[persistable] enabled_when_startup": true,
+
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
+   */
+  "[install]":
+  function install(context) 
+  {
+  },
+
+  /** Uninstalls itself.
+   */
+  "[uninstall]":
+  function uninstall() 
+  {
+  },
 
   /*
    * Search for a given string and notify a listener (either synchronously
@@ -40,7 +66,7 @@ PluginsCompleter.definition = {
    * @param source - The string to search for
    * @param listener - A listener to notify when the search is complete
    */
-  "[completer('plugin'), enabled]":
+  "[completer('plugin'), pnp]":
   function complete(context)
   {
     var match = context.source.match(/^(\s*)([$_\-@a-zA-Z\.]*)(\s?)/),
@@ -59,7 +85,10 @@ PluginsCompleter.definition = {
       return;
     }
 
-    [all, space, name, next] = match;
+    all = match[0];
+    space = match[1];
+    name = match[2];
+    next = match[3];
 
     if (next) {
       next_completer_info = context.completers.shift();
@@ -106,7 +135,7 @@ PluginsCompleter.definition = {
       });
   },
 
-};
+}; // PluginsCompleter
 
 /**
  * @fn main

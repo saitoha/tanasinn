@@ -27,13 +27,15 @@
 /**
  * @class UTF8Decoder
  */
-var UTF8Decoder = new Class().extends(Component);
+var UTF8Decoder = new Class().extends(Plugin);
 UTF8Decoder.definition = {
 
   id: "utf8_decoder",
 
   get scheme()
-    "UTF8-js",
+  {
+    return "UTF8-js";
+  },
 
   getInfo: function getInfo()
   {
@@ -44,11 +46,27 @@ UTF8Decoder.definition = {
     };
   },
 
+  "[persistable] enabled_when_startup": true,
+
   "[persistable] displacement": 0x3f,
-  _offset: 0,
+
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
+   */
+  "[install]":
+  function install(context) 
+  {
+  },
+
+  /** uninstalls itself. 
+   */
+  "[uninstall]":
+  function uninstall() 
+  {
+  },
 
   /** Constructor **/
-  "[subscribe('get/decoders'), enabled]":
+  "[subscribe('get/decoders'), pnp]":
   function getDecoders() 
   {
     return {
@@ -99,6 +117,9 @@ UTF8Decoder.definition = {
         second,
         third,
         fourth,
+        fifth,
+        sixth,
+        seventh,
         result;
 
     if (c < 0x20 || (0x7f <= c && c < 0xa0)) {
@@ -188,7 +209,113 @@ UTF8Decoder.definition = {
       }
       return result;
     }
-    return null;
+    /*
+    else if (c < 0xfc) {
+      // 111110xx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx
+      // (0x00200000 - 0x03ffffff) // 26bit 
+      if (0x3e !== c >>> 2) {
+        scanner.moveNext();
+        scanner.moveNext();
+        scanner.moveNext();
+        scanner.moveNext();
+        return this.displacement;
+      }
+      first = (c & 0x3) << 24;
+      scanner.moveNext();
+      c = scanner.current();
+      if (0x2 !== c >>> 6) {
+        scanner.moveNext();
+        scanner.moveNext();
+        scanner.moveNext();
+        return this.displacement;
+      }
+      second = (c & 0x3f) << 18;
+      scanner.moveNext();
+      c = scanner.current();
+      if (0x2 !== c >>> 6) {
+        scanner.moveNext();
+        scanner.moveNext();
+        return this.displacement;
+      }
+      third = (c & 0x3f) << 12;
+      scanner.moveNext();
+      c = scanner.current();
+      if (0x2 !== c >>> 6) {
+        scanner.moveNext();
+        return this.displacement;
+      }
+      fourth = (c & 0x3f) << 6;
+      scanner.moveNext();
+      c = scanner.current();
+      if (0x2 !== c >>> 6) {
+        return this.displacement;
+      }
+      fifth = c & 0x3f;
+      result = first | second | third | fourth | fifth;
+      if (result < 0x200000) {
+        return this.displacement;
+      }
+      return result;
+    } else {
+      // 1111110x 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx
+      // (0x04000000 - 0x7fffffff) // 31bit 
+      if (0x7e !== c >>> 1) {
+        scanner.moveNext();
+        scanner.moveNext();
+        scanner.moveNext();
+        scanner.moveNext();
+        scanner.moveNext();
+        return this.displacement;
+      }
+      first = (c & 0x3) << 30;
+      scanner.moveNext();
+      c = scanner.current();
+      if (0x2 !== c >>> 6) {
+        scanner.moveNext();
+        scanner.moveNext();
+        scanner.moveNext();
+        scanner.moveNext();
+        return this.displacement;
+      }
+      second = (c & 0x3f) << 24;
+      scanner.moveNext();
+      c = scanner.current();
+      if (0x2 !== c >>> 6) {
+        scanner.moveNext();
+        scanner.moveNext();
+        scanner.moveNext();
+        return this.displacement;
+      }
+      third = (c & 0x3f) << 18;
+      scanner.moveNext();
+      c = scanner.current();
+      if (0x2 !== c >>> 6) {
+        scanner.moveNext();
+        scanner.moveNext();
+        return this.displacement;
+      }
+      fourth = (c & 0x3f) << 12;
+      scanner.moveNext();
+      c = scanner.current();
+      if (0x2 !== c >>> 6) {
+        scanner.moveNext();
+        return this.displacement;
+      }
+      fifth = (c & 0x3f) << 6;
+      scanner.moveNext();
+      c = scanner.current();
+      if (0x2 !== c >>> 6) {
+        return this.displacement;
+      }
+      sixth = c & 0x3f;
+      result = first | second | third | fourth | fifth | sixth;
+      if (result < 0x4000000) {
+        return this.displacement;
+      }
+      return result;
+    }
+    */
+    return this.displacement;
   },
 
 }; // class UTF8Decoder

@@ -155,6 +155,7 @@
  * "designating and invoking current 8 bit char set to G2 and GL."
  */
 var SGRHandler = new Class().extends(Plugin)
+                            .depends("palette")
                             .depends("cursorstate");
 SGRHandler.definition = {
 
@@ -172,30 +173,45 @@ SGRHandler.definition = {
   "[persistable] enabled_when_startup": true,
 
   _attr: null, // current cursor attribute
+  _palette: null,
 
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
+   */
   "[install]":
-  function install()
+  function install(context)
   {
-    this._attr = this.dependency["cursorstate"].attr;
+    this._palette = context["palette"];
+    this._attr = context["cursorstate"].attr;
   },
 
+  /** Uninstalls itself. 
+   */
   "[uninstall]":
   function uninstall()
   {
+    this._palette = null;
     this._attr = null;
+  },
+
+  "[subscribe('command/query-da1-capability'), pnp]":
+  function onQueryDA1Capability(mode)
+  {
+    return 22; // ANSI color
   },
 
   "[profile('vt100'), sequence('CSI %dm')]":
   function SGR(n) 
   { // character attributes
-    var attr, i, p;
+    var attr = this._attr,
+        i,
+        p;
 
     // -- xterm-256color --
     //  setab=\E[%?%p1%{8}%<%t4%p1%d%e%p1%{16}%<%t10%p1%{8}%-%d%e48;5;%p1%d%;m,
     //  setaf=\E[%?%p1%{8}%<%t3%p1%d%e%p1%{16}%<%t9%p1%{8}%-%d%e38;5;%p1%d%;m,
     //  sgr=%?%p9%t\E(0%e\E(B%;\E[0%?%p6%t;1%;%?%p2%t;4%;%?%p1%p3%|%t;7%;%?%p4%t;5%;%?%p7%t;8%;m,
     //
-    attr = this._attr;
     if (0 === arguments.length) {
       attr.clear()
     } else {
@@ -211,36 +227,36 @@ SGRHandler.definition = {
             break;
 
           case 1:
-            attr.bold = true;
+            attr.bold = 1;
             break;
 
           case 2:
-            attr.bold = false;
-            attr.halfbright = true;
+            attr.bold = 0;
+            attr.halfbright = 1;
             break;
 
           case 3:
-            attr.italic = true;
+            attr.italic = 1;
             break;
 
           case 4:
-            attr.underline = true;
+            attr.underline = 1;
             break;
 
           case 5:
-            attr.blink = true; // slow blink, less than 150 times per minute.
+            attr.blink = 1; // slow blink, less than 150 times per minute.
             break;
 
           case 6:
-            attr.rapid_blink = true; // rapid blink, 150 times per minute or more.
+            attr.rapid_blink = 1; // rapid blink, 150 times per minute or more.
             break;
 
           case 7:
-            attr.inverse = true;
+            attr.inverse = 1;
             break;
 
           case 8:
-            attr.invisible = true;
+            attr.invisible = 1;
             break;
 
           case 10:
@@ -252,33 +268,38 @@ SGRHandler.definition = {
             break;
 
           case 21:
-            attr.bold = false;
+            attr.bold = 0;
             break;
 
           case 22:
-            attr.halfbright = false;
+            attr.halfbright = 0;
             break;
 
           case 23:
-            attr.italic = false;
+            attr.italic = 0;
             break;
           
           case 24:
-            attr.underline = false;
+            attr.underline = 0;
             break;
 
           case 25:
-            attr.blink = false;
-            attr.rapid_blink = false;
+            attr.blink = 0;
+            attr.rapid_blink = 0;
             break;
 
           case 27:
-            attr.inverse = false; // SGR positive (not inverse)
+            attr.inverse = 0; // SGR positive (not inverse)
             break;
 
           case 30:
+<<<<<<< HEAD
             attr.fg = 0;
             //attr.fgcolor = false;
+=======
+            attr.fg = 3;
+            //attr.fgcolor = 0;
+>>>>>>> 48f9e2a7c21d01ce95fc41b3ae443970a3bb211f
             break;
 
           case 31:
@@ -310,17 +331,37 @@ SGRHandler.definition = {
             break;
 
           case 38:
-            arguments[++i] === 5 && (attr.fg = arguments[++i]);
+            switch (arguments[++i]) {
+              case 2:
+                {
+                  var r = arguments[++i],
+                      g = arguments[++i],
+                      b = arguments[++i];
+
+                  attr.fg = this._palette.getApproximateColorNumber(r, g, b);
+                  break;
+                }
+              case 5:
+                attr.fg = arguments[++i];
+                break;
+
+              default:
+                break;
+            }
             break;
 
           case 39:
-            attr.fgcolor = false;
-            attr.bold = false; // SGR default fg.
+            attr.fgcolor = 0;
+            attr.bold = 0; // SGR default fg.
             break;
 
           case 40:
             attr.bg = 0;
+<<<<<<< HEAD
             //attr.bgcolor = false;
+=======
+            //attr.bgcolor = 0;
+>>>>>>> 48f9e2a7c21d01ce95fc41b3ae443970a3bb211f
             break;
 
           case 41:
@@ -352,11 +393,27 @@ SGRHandler.definition = {
             break;
 
           case 48:
-            arguments[++i] === 5 && (attr.bg = arguments[++i]);
+            switch (arguments[++i]) {
+              case 2:
+                {
+                  var r = arguments[++i],
+                      g = arguments[++i],
+                      b = arguments[++i];
+
+                  attr.bg = this._palette.getApproximateColorNumber(r, g, b);
+                  break;
+                }
+              case 5:
+                attr.bg = arguments[++i];
+                break;
+
+              default:
+                break;
+            }
             break;
 
           case 49:
-            attr.bgcolor = false; // SGR default bg.
+            attr.bgcolor = 0; // SGR default bg.
             break;
 
           case 90:
@@ -449,39 +506,39 @@ SGRHandler.definition = {
         params = [0],
         message;
 
-    if (attr.bold) {
+    if (1 === attr.bold) {
       params.push(1);
     }
 
-    if (attr.halfbright) {
+    if (1 === attr.halfbright) {
       params.push(2);
     }
 
-    if (attr.italic) {
+    if (1 === attr.italic) {
       params.push(3);
     }
 
-    if (attr.underline) {
+    if (1 === attr.underline) {
       params.push(4);
     }
 
-    if (attr.blink) {
+    if (1 === attr.blink) {
       params.push(5);
     }
 
-    if (attr.rapid_blink) {
+    if (1 === attr.rapid_blink) {
       params.push(6);
     }
 
-    if (attr.inverse) {
+    if (1 === attr.inverse) {
       params.push(7);
     }
 
-    if (attr.invisible) {
+    if (1 === attr.invisible) {
       params.push(8);
     }
 
-    if (attr.fgcolor) {
+    if (1 === attr.fgcolor) {
       if (attr.fg <= 7) {
         params.push(30 + attr.fg);
       } else if (attr.fg <= 15) {
@@ -495,7 +552,7 @@ SGRHandler.definition = {
       params.push(39);
     }
 
-    if (attr.bgcolor) {
+    if (1 === attr.bgcolor) {
       if (attr.bg <= 7) {
         params.push(40 + attr.bg);
       } else if (attr.bg <= 15) {

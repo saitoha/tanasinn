@@ -26,6 +26,28 @@ link:./usermanual.html[English/英語]
 
 == News
 
+=== 2012/10/06 
+    Version 0.3.0.2
+    Fix SCOSCP/SCORCP's bug
+    Add version command
+    Support DECRQUPSS/DECAUPSS
+    Change CSI 14 t's behavior
+    Support F13-F63 keys
+    Fix xenl behavior's bug
+    Fix XUL layout issue for firefox18.0a
+    Disable overlay browser plugin by default, for security
+    Add IdleService plugin
+    Take auto-snapshot with using IdleService
+    Fix a bug with taking screenshots
+    Assign Ctrl + {4,5,6,7,8} -> FS/GS/RS/US/DEL
+    Allow a DSCS starting with space character in DECDLD
+    Implement auto-answerback mode
+    Fix a dragcopy plugin's bug
+    Handle OSC 1
+    Fix terminfo response's bug
+    Fix sixel graphics's data processing bug
+    Fix for the launcher's session missing bug
+
 === 2012/09/23 
     Version 0.3.0.1
     Implement Auto Answerback mode (DECAAM)
@@ -979,11 +1001,11 @@ saveprofileのような保存操作はとくに必要ありません。
 
 #if __EN__
 
-===== changepallet
+===== changepalette
 Set pallet color.
 
 ----
-changepallet [Color Number] [CSS color]
+changepalette [Color Number] [CSS color]
 ----
 
 
@@ -993,7 +1015,7 @@ changepallet [Color Number] [CSS color]
 
 パレット色を設定します。
 ----
-changepallet [色番号] [CSS color]
+changepalette [色番号] [CSS color]
 ----
 [色番号]に対応するパレットに、[CSS color]で表現される色が設定・適用されます。
 
@@ -1164,11 +1186,11 @@ decrease
 
 #if __EN__
 
-==== blur (new!)
+==== blur
 
 #elif __JP__
 
-==== blur (new!)
+==== blur
 
 ウィンドウからフォーカスをはずします。
 
@@ -1245,9 +1267,9 @@ paste
 ==== nmap
 ==== nnoremap
 ==== nunmap
-==== cmap (new!)
-==== cnoremap (new!)
-==== cunmap (new!)
+==== cmap
+==== cnoremap
+==== cunmap
 
 #elif __JP__
 
@@ -1259,9 +1281,9 @@ paste
 ==== nmap
 ==== nnoremap
 ==== nunmap
-==== cmap (new!)
-==== cnoremap (new!)
-==== cunmap (new!)
+==== cmap
+==== cnoremap
+==== cunmap
 
 #endif
 
@@ -1775,7 +1797,7 @@ publish command/report-overlay-message "Hello, World!"
 #if __EN__
 
 
-===== sendkeys (new!)
+===== sendkeys
 
 Interpret specified Key Sequence Expression, and raise the key events.
 
@@ -1794,7 +1816,7 @@ sendkeys <PinchOpen>
 
 #elif __JP__
 
-===== sendkeys (new!)
+===== sendkeys
 
 指定されたキーシーケンス式を解釈し、キーイベントとして実行します。
 
@@ -1817,7 +1839,7 @@ sendkeys <PinchOpen>
 #if __EN__
 
 
-===== source (new!)
+===== source
 
 Load and evaluate specified file as tanasinn command batch file.
 
@@ -1827,7 +1849,7 @@ source [Path]
 
 #elif __JP__
 
-===== source (new!)
+===== source
 
 指定されたファイルをtanasinnコマンドバッチファイルとして読み込み、実行します。
 
@@ -1840,11 +1862,11 @@ source [ファイル・パス]
 
 #if __EN__
 
-===== import (new!)
+===== import
 
 #elif __JP__
 
-===== import (new!)
+===== import
 
 指定されたファイル名を~/.tanasinn/batchesディレクトリから検索し、コマンドバッチファイルとして実行します。
 
@@ -1857,12 +1879,12 @@ import [ファイル名]
 
 #if __EN__
 
-===== execcgi (new!)
+===== execcgi
 
 #elif __JP__
 
 
-===== execcgi (new!)
+===== execcgi
 
 指定されたファイル名を~/.tanasinn/cgi-binディレクトリから検索し、実行した結果をコマンドバッチとして再解釈し、実行します。
 
@@ -1900,11 +1922,11 @@ execcgi [ファイル名]
 
 #if __EN__
 
-===== vimperator (new!)
+===== vimperator
 
 #elif __JP__
 
-===== vimperator (new!)
+===== vimperator
 
 vimperatorにコマンドを送ります。
 
@@ -1916,11 +1938,11 @@ vimperator [command]
 
 #if __EN__
 
-===== echo (new!)
+===== echo
 
 #elif __JP__
 
-===== echo (new!)
+===== echo
 
 ステータスラインにメッセージを表示します。
 
@@ -1933,11 +1955,30 @@ echo [メッセージ]
 
 #if __EN__
 
-===== overlayecho (new!)
+===== version
+
+Show version.
 
 #elif __JP__
 
-===== overlayecho (new!)
+===== version
+
+バージョンを表示します。
+
+----
+echo [メッセージ]
+----
+
+#endif
+
+
+#if __EN__
+
+===== overlayecho
+
+#elif __JP__
+
+===== overlayecho
 
 オーバーレイインジケータにメッセージを表示します。
 ----
@@ -1949,11 +1990,11 @@ overlayecho [メッセージ]
 
 #if __EN__
 
-===== screenshot (new!)
+===== screenshot
 
 #elif __JP__
 
-===== screenshot (new!)
+===== screenshot
 
 現在のスクリーンを画像形式(png)で保存します。
 
@@ -2369,6 +2410,7 @@ let g:tanasinnviewsourcecommand="vim +e '%'"
 「%」はエスケープ済みのURL文字列に置換されます。
 この例ではvimのインストールが必要になります。
 
+#if 0
 === Vimで現在のウィンドウにブラウザをオーバーレイで出したい
 「Overlay Browser」という拡張をやっつけで書いてスナップショットビルドに入れておいたので、とりいそぎですが使用方法をご説明します。
 
@@ -2409,6 +2451,8 @@ CloseMozilla
 
 を呼んで自分で状態管理していただく必要があります。
 まだリサイズとかアップデートを実装していませんので使いづらいと思います。
+
+#endif
 
 === ターミナルからtanasinnに対してコマンドを送りたい
 

@@ -94,22 +94,38 @@ Resize.definition = {
   "[persistable] min_column": 1,
   "[persistable] min_row": 1,
 
+  _screen: null,
+
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
+   */
+  "[install]":
+  function install(context) 
+  {
+    this._screen = context["screen"];
+  },
+
+  /** Uninstalls itself.
+   */
+  "[uninstall]":
+  function uninstall() 
+  {
+    this._screen = null;
+  },
+
+
   /** Resize screen. 
    * @param {Object} A pair of {column, row} for new size.
    */ 
   "[subscribe('command/resize-screen'), pnp]":
   function resize(size) 
   {
-    var column, row, screen, min_column, min_row;
-
-    column = size.column;
-    row = size.row;
-
-    screen = this.dependency["screen"];
-
-    // Minimam size: 12 x 6 
-    min_column = this.min_column;
-    min_row = this.min_row;
+    var column = size.column,
+        row = size.row,
+        screen = this._screen,
+        // Minimam size: 12 x 6 
+        min_column = this.min_column,
+        min_row = this.min_row;
 
     if (column < min_column) {
       column = min_column;
@@ -127,9 +143,8 @@ Resize.definition = {
   "[subscribe('event/resize-session-closed'), pnp]":
   function update() 
   {
-    var screen;
+    var screen = this._screen;
 
-    screen = this.dependency["screen"];
     screen.dirty = true;
 
     this.sendMessage(
@@ -146,9 +161,8 @@ Resize.definition = {
   "[subscribe('command/shrink-column'), pnp]":
   function shrinkColumn(n) 
   {
-    var screen;
+    var screen = this._screen;
 
-    screen = this.dependency["screen"];
     this.resize({
       column: screen.width - n,
       row: screen.height
@@ -162,9 +176,8 @@ Resize.definition = {
   "[subscribe('command/expand-column'), pnp]":
   function expandColumn(n) 
   {
-    var screen;
+    var screen = this._screen;
 
-    screen = this.dependency["screen"];
     this.resize({
       column: screen.width + n,
       row: screen.height
@@ -178,9 +191,8 @@ Resize.definition = {
   "[subscribe('command/shrink-row'), pnp]":
   function shrinkRow(n)
   {
-    var screen;
+    var screen = this._screen;
 
-    screen = this.dependency["screen"];
     this.resize({
       column: screen.width, 
       row: screen.height - n
@@ -194,9 +206,8 @@ Resize.definition = {
   "[subscribe('command/expand-row'), pnp]":
   function expandRow(n) 
   {
-    var screen;
+    var screen = this._screen;
 
-    screen = this.dependency["screen"];
     this.resize({
       column: screen.width, 
       row: screen.height + n

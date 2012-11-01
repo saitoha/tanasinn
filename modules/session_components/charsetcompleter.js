@@ -28,10 +28,37 @@
 /**
  * @class CharsetCompleter
  */
-var CharsetCompleter = new Class().extends(Component);
+var CharsetCompleter = new Class().extends(Plugin);
 CharsetCompleter.definition = {
 
   id: "charset_completer",
+
+  getInfo: function getInfo()
+  {
+    return {
+      name: _("Character Sets Completer"),
+      description: _("Provides completion information of character sets."),
+      version: "0.1",
+    };
+  },
+
+  "[persistable] enabled_when_startup": true,
+
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
+   */
+  "[install]":
+  function install(context) 
+  {
+  },
+
+  /** Uninstalls itself.
+   */
+  "[uninstall]":
+  function uninstall() 
+  {
+  },
+
 
   /*
    * Search for a given string and notify a listener (either synchronously
@@ -39,7 +66,7 @@ CharsetCompleter.definition = {
    *
    * @param context - The completion context object. 
    */
-  "[completer('charset'), enabled]":
+  "[completer('charset'), pnp]":
   function complete(context)
   {
     var match = context.source.match(/^(\s*)([$_\-@a-zA-Z\.]*)(\s?)/),

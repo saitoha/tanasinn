@@ -24,7 +24,6 @@
 
 "use strict";
 
-
 /**
  *  @class CommandlineIme
  *  
@@ -56,18 +55,24 @@ CommandlineIme.definition = {
 
   _timer: null,
   _ime_input_flag: false,
+  _commandline: null,
 
-  /** Installs plugin 
-   *  @param {Broker} broker A Broker object.
-   */ 
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
+   */
   "[install]":
-  function install(broker) 
+  function install(context) 
   {
-    var textbox = this.dependency["commandline"].getInputField(),
-        version_comparator = coUtils.Services.versionComparator,
+    var version_comparator = coUtils.Services.versionComparator,
         focused_element = this.request("get/root-element")
-          .ownerDocument.commandDispatcher.focusedElement;
+          .ownerDocument
+          .commandDispatcher
+          .focusedElement,
+        textbox;
 
+    this._commandline = context["commandline"];
+
+    textbox = this._commandline.getInputField(),
     textbox.style.width = "0%";
     textbox.style.imeMode = "inactive"; // disabled -> inactive
     textbox.style.border = "none"; // hide border
@@ -86,12 +91,11 @@ CommandlineIme.definition = {
   }, // install
 
   /** Uninstall plugin 
-   *  @param {Session} session A session object.
    */
   "[uninstall]":
-  function uninstall(session) 
+  function uninstall() 
   {
-    var textbox = this.dependency["commandline"].getInputField();
+    var textbox = this._commandline.getInputField();
 
     this.endPolling(); // stops polling timer. 
 
@@ -105,6 +109,8 @@ CommandlineIme.definition = {
     // disables session event handlers.
     this.startPolling.enabled = false;
     this.endPolling.enabled = false;
+
+    this._commandline = null;
   },
 
   "[subscribe('command/input-text'), pnp]": 
@@ -142,7 +148,7 @@ CommandlineIme.definition = {
   "[listen('input', '#tanasinn_default_input')]":
   function oninput(event) 
   {
-    this.dependency["commandline"].commit();
+    this._commandline.commit();
     this._disableImeMode();
   },
  
@@ -187,7 +193,7 @@ CommandlineIme.definition = {
    */  
   onpoll: function onpoll() 
   {
-    var text = this.dependency["commandline"].getInputField().value;
+    var text = this._commandline.getInputField().value;
 
     if (text) { // if textbox contains some text data.
       if (!this._ime_input_flag) {
@@ -203,8 +209,8 @@ CommandlineIme.definition = {
   /** Shows textbox element. */
   _enableImeMode: function _enableImeMode() 
   {
-    var commandline = this.dependency["commandline"],
-        textbox = this.dependency["commandline"].getInputField(),
+    var commandline = this._commandline,
+        textbox = commandline.getInputField(),
         top = 0, // cursor.positionY * line_height + -4;
         left = commandline.getCaretPosition(); // cursor.positionX * char_width + -2;
 
@@ -216,8 +222,8 @@ CommandlineIme.definition = {
 
   _disableImeMode: function _disableImeMode() 
   {
-    var commandline = this.dependency["commandline"],
-        textbox = this.dependency["commandline"].getInputField();
+    var commandline = this._commandline,
+        textbox = this._commandline.getInputField();
 
     textbox.style.opacity = 0.0;
     this._ime_input_flag = false;

@@ -187,6 +187,16 @@ OuterChrome.definition = {
       this.background_color);
   },
 
+  _forceUpdate: function _forceUpdate()
+  {
+    var frame = this._frame;
+
+    //frame.style.width = frame.boxObject.width + 1 + "px";
+//    frame.style.height = frame.boxObject.height + 1 + "px";
+    //frame.style.width = frame.boxObject.width - 1 + "px";
+//    frame.style.height = frame.boxObject.height - 1 + "px";
+  },
+
   _getImagePath: function _getImagePath()
   {
     var path = this._broker.runtime_path + "/" + "images/cover.png",
@@ -211,6 +221,7 @@ OuterChrome.definition = {
       reverse_color = (color3byte ^ 0x1ffffff)
           .toString(16)
           .replace(/^1/, "#");
+
       this._frame.style.background 
         = "-moz-linear-gradient(top,"
         + reverse_color + ","
@@ -218,6 +229,7 @@ OuterChrome.definition = {
     } else {
       this._frame.style.background = this._getBackground();
     }
+    this._forceUpdate();
   },
 
   "[subscribe('event/special-color-changed'), enabled]": 
@@ -292,10 +304,10 @@ OuterChrome.definition = {
 
 
   /** Installs itself. 
-   *  @param {Broker} broker A Broker object.
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]": 
-  function install(broker) 
+  function install(context) 
   {
     // construct chrome elements. 
     var result = this.request("command/construct-chrome", this._getTemplate());
@@ -310,10 +322,9 @@ OuterChrome.definition = {
   },
 
   /** Uninstalls itself. 
-   *  @param {Broker} broker A Broker object.
    */
   "[uninstall]":
-  function uninstall(broker) 
+  function uninstall() 
   {
     // destruct chrome elements. 
     if (null !== this._element) {
@@ -346,7 +357,7 @@ OuterChrome.definition = {
   function updateColor() 
   {
     this._frame.style.cssText = this._getFrameStyle();
-    this._frame.style.width = this._frame.boxObject.width + "px";
+    this._forceUpdte();
   },
 
   "[subscribe('variable-changed/outerchrome.{background_opacity | border_radius | box_shadow}'), pnp]": 
@@ -484,8 +495,11 @@ Chrome.definition = {
 
   _element: null,
 
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
+   */
   "[install]": 
-  function install(broker) 
+  function install(context) 
   {
     var result = this.request("command/construct-chrome", this._getTemplate());
 
@@ -493,8 +507,10 @@ Chrome.definition = {
     this._center = result.tanasinn_center_area;
   },
 
+  /** Uninstalls itself. 
+   */
   "[uninstall]":
-  function uninstall(broker) 
+  function uninstall() 
   {
     if (this._element && this._element.parentNode) {
       this._element.parentNode.removeChild(this._element);

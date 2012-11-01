@@ -52,32 +52,40 @@ DragCopy.definition = {
     };
   },
 
+  getTemplate: function getTemplate()
+  {
+    return {
+      parentNode: "#tanasinn_center_area",
+      id: "feedback_canvas",
+      tagName: "html:canvas",
+      style: {
+        position: "absolute",
+      },
+      hidden: true,
+    };
+  },
+
   "[persistable] enabled_when_startup": true,
 
-  /** Installs itself. */
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
+   */
   "[install]":
-  function install(broker)
+  function install(context)
   {
-    var result = this.request(
-      "command/construct-chrome", 
-      {
-        parentNode: "#tanasinn_center_area",
-        id: "feedback_canvas",
-        tagName: "html:canvas",
-        style: "position: absolute;",
-        hidden: true,
-      });
+    var result = this.request("command/construct-chrome", this.getTemplate());
 
     this._feedback_canvas = result.feedback_canvas;
 
-    this._screen = this.dependency["screen"];
-    this._renderer = this.dependency["renderer"];
-    this._selection = this.dependency["selection"];
+    this._screen = context["screen"];
+    this._renderer = context["renderer"];
+    this._selection = context["selection"];
   },
 
-  /** Uninstalls itself. */
+  /** Uninstalls itself. 
+   */
   "[uninstall]":
-  function uninstall(session)
+  function uninstall()
   {
     if (null !== this._feedback_canvas) {
       this._feedback_canvas.parentNode.removeChild(this._feedback_canvas);
@@ -115,8 +123,6 @@ DragCopy.definition = {
     var canvas = this._canvas,
         screen = this._screen,
         feedback_canvas = this._feedback_canvas,
-        selection_canvas = this.request("command/query-selector", "#selection_canvas"),
-        foreground_canvas = this.request("command/query-selector", "#foreground_canvas"),
         feedback_context = feedback_canvas.getContext("2d"),
         text = screen
           .getTextInRange(start, end, is_rectangle)
@@ -129,9 +135,9 @@ DragCopy.definition = {
 
     event.dataTransfer.setData("text/plain", text);
     feedback_context.globalCompositeOperation = "source-over";
-    feedback_context.drawImage(selection_canvas, 0, 0);
+    this.sendMessage("command/paint-drag-region", feedback_context);
     feedback_context.globalCompositeOperation = "source-in";
-    feedback_context.drawImage(foreground_canvas, 0, 0);
+    this.sendMessage("command/paint-foreground", feedback_context);
     event.dataTransfer.setDragImage(feedback_canvas, left * 1, top * 1);
 
     this.ondragend.enabled = true;
@@ -141,18 +147,14 @@ DragCopy.definition = {
   function ondragend(event)
   {
     var feedback_canvas = this._feedback_canvas,
-        selection_canvas = this.request("command/query-selector", "#selection_canvas"),
-        foreground_canvas = this.request("command/query-selector", "#foreground_canvas"),
         feedback_context = feedback_canvas.getContext("2d"),
-        selection_context = selection_canvas.getContext("2d"),
-        width = feedback_canvas.width = foreground_canvas.width,
-        height = feedback_canvas.height = foreground_canvas.height;
+        width = feedback_canvas.width = feedback_canvas.width,
+        height = feedback_canvas.height = feedback_canvas.height;
 
     // disable this handler
     this.ondragend.enabled = false;
 
     feedback_context.clearRect(0, 0, width, height);
-    selection_context.clearRect(0, 0, width, height);
     feedback_canvas.hidden = true;
   },
 
@@ -163,7 +165,7 @@ DragCopy.definition = {
   _getPixelMetricsFromEvent: 
   function _getPixelMetricsFromEvent(event) 
   {
-    var target_element = this.request("command/query-selector", "#tanasinn_content"),
+    var target_element = event.explicitOriginalTarget,
         root_element = target_element.parentNode,
         box = target_element.boxObject,
         offsetX = box.screenX - root_element.boxObject.screenX,
@@ -232,8 +234,12 @@ DragCopy.definition = {
         max_column = screen.width,
         max_row = screen.height;
 
-    column = column > max_column ? max_column: column;
-    row = row > max_row ? max_row: row;
+    if (column > max_column) {
+      column = max_column;
+    }
+    if (row > max_row) {
+      row = max_row;
+    }
 
     return [column - 1, row - 1];
   },

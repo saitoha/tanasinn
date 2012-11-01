@@ -22,6 +22,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+"use strict";
+
 /**
  * @class Trait
  */
@@ -74,6 +76,7 @@ Trait.prototype = {
   }
 
 }; // class Trait
+
 
 /**
  * @class AttributeContext
@@ -132,7 +135,10 @@ AttributeContext.prototype = {
       function getter() 
       {
         this._target[id] = [true];
-        return function() this._target[id] = Array.slice(arguments);
+        return function()
+        {
+          this._target[id] = Array.slice(arguments);
+        }
       });
   },
 
@@ -143,7 +149,6 @@ AttributeContext.prototype = {
   },
 
 }; // class AttributeContext
-
 
 var ConceptContext = {
 
@@ -209,8 +214,12 @@ var ConceptContext = {
  */
 function Prototype(definition, base_class, dependency_list) 
 {
+  var intercept,
+      copy,
+      decorated_key;
+
   /** Parses decorated key and sets attributes. */
-  function intercept(key) 
+  intercept = function intercept(key) 
   {
     var match = key.match(/^([\w-@]+)$|^\[(.+)\]\s*(.*)\s*$/),
         annotation,
@@ -243,7 +252,7 @@ function Prototype(definition, base_class, dependency_list)
     return key;
   };
 
-  function copy(definition, decorated_key, base_class) 
+  copy = function copy(definition, decorated_key, base_class) 
   {
     var getter = definition.__lookupGetter__(decorated_key),
         setter = definition.__lookupSetter__(decorated_key),
@@ -277,8 +286,8 @@ function Prototype(definition, base_class, dependency_list)
     }
   };
 
-  for (key in definition) {
-    copy.call(this, definition, key, base_class);
+  for (decorated_key in definition) {
+    copy.call(this, definition, decorated_key, base_class);
   }
 
   if (dependency_list) {
@@ -544,16 +553,20 @@ Class.prototype = {
    */
   loadAttributes: function loadAttributes(search_path, scope) 
   {
-    var paths = coUtils.File.getFileEntriesFromSerchPath(search_path),
+    var paths = coUtils.File.getFileEntriesFromSearchPath(search_path),
         entry,
         url,
-        module_scope;
+        module_scope,
+        i = 0;
 
-    for (entry in paths) {
+    for (; i < paths.length; ++i) {
+
+      entry = paths[i];
 
       module_scope = new function()
       {
       };
+
       module_scope.prototype = scope;
 
       try {
@@ -609,6 +622,7 @@ Abstruct.prototype = {
 
 }; // Abstruct
 
+
 /** 
  * @abstruct Component
  * The base class of component node in tupbase2.
@@ -647,7 +661,6 @@ Component.definition = {
           }
 
           this.enabled = this.enabled_when_startup;
-          broker.notify("initialized/" + this.id, this);
         }, 
         this);
     }
@@ -672,12 +685,12 @@ Component.definition = {
 
   postMessage: function postMessage(topic, data)
   {
-    var broker;
+    var broker = this._broker;
     
     coUtils.Timer.setTimeout(
       function timerProc()
       {
-        this._broker.notify(topic, data);
+        broker.notify(topic, data);
       }, 0)
   },
 
@@ -737,7 +750,7 @@ Plugin.definition = {
 
   __enabled: false,
 
-  "[persistable] enabled_when_startup": true,
+//  "[persistable] enabled_when_startup": true,
 
   /** constructor */
   initialize: function initialize(broker)
@@ -770,13 +783,13 @@ Plugin.definition = {
   set enabled(flag) 
   {
     var id = this.id,
-        broker = this._broker;
+        broker = this._broker,
         value = Boolean(flag);
 
     if (value !== this.__enabled) {
       if (value) {
         try {
-          broker.notify("install/" + id, broker);
+          broker.notify("install/" + id, this.dependency);
         } catch (e) {
           coUtils.Debug.reportError(e);
           coUtils.Debug.reportError(
@@ -784,8 +797,9 @@ Plugin.definition = {
             this.id);
           throw e;
         }
+        broker.notify("initialized/" + this.id, this);
       } else {
-        broker.notify("uninstall/" + id, broker);
+        broker.notify("uninstall/" + id);
       }
       this.__enabled = value;
       this.enabled_when_startup = value;
@@ -1009,10 +1023,10 @@ Attribute.prototype = {
 
   toString: function toString()
   {
-    return "[Attribute " + this.__id + "]";
+    return "[Attribute]";
   },
 
-};
+}; // Attribute
 
 Component.loadAttributes(
   ["modules/attributes"],
@@ -1127,7 +1141,7 @@ Concept.prototype = {
               target.id, rule);
           }
           if (subscribers[key].type) {
-            if (type != subscribers[key].type) {
+            if (type !== subscribers[key].type.toString()) {
               throw coUtils.Debug.Exception(
                 _("Component '%s' does not implement required ",
                   "message-concept: %s. - ill-typed."),
@@ -1148,7 +1162,7 @@ Concept.prototype = {
               target.id, rule);
 
             if (target[message].type) {
-              if (type != subscribers[message].type) {
+              if (type !== subscribers[message].type.toString()) {
                 throw coUtils.Debug.Exception(
                   _("Component '%s' does not implement required ",
                     "signature-concept: %s - ill-typed."),

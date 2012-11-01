@@ -239,12 +239,14 @@ TextboxWidget.definition = {
   blur: function blur() 
   {
     var dom = this._dom;
+
     dom.canvas.style.opacity = 0.5;
   },
 
   focus: function focus() 
   {
     var dom = this._dom;
+
     dom.canvas.style.opacity = 0.7;
     dom.textbox.focus();
   },
@@ -300,7 +302,7 @@ CompletionView.definition = {
 
   _index: -1,
 
-  get rowCount() 
+  _getRowCount: function _getRowCount() 
   {
     if (!this._result) {
       return 0;
@@ -308,7 +310,7 @@ CompletionView.definition = {
     return this._result.data.length;
   },
 
-  get currentIndex()
+  _getCurrentIndex: function _getCurrentIndex()
   {
     return this._index;
   },
@@ -360,15 +362,15 @@ CompletionView.definition = {
     if (index < -1) {
       index = -1;
     }
-    if (index > this.rowCount) {
-      index = this.rowCount - 1;
+    if (index > this._getRowCount()) {
+      index = this._getRowCount() - 1;
     }
 
-    if (index !== this.currentIndex) {
+    if (index !== this._getCurrentIndex()) {
 
       rows = this._completion_root.querySelector("rows")
-      if (-1 !== this.currentIndex) {
-        row = rows.childNodes[this.currentIndex];
+      if (-1 !== this._getCurrentIndex()) {
+        row = rows.childNodes[this._getCurrentIndex()];
         if (row) {
           this._unselectRow(row);
         }
@@ -393,7 +395,7 @@ CompletionView.definition = {
   "[subscribe('command/select-next-candidate'), pnp]":
   function down()
   {
-    var index = Math.min(this.currentIndex + 1, this.rowCount - 1);
+    var index = Math.min(this._getCurrentIndex() + 1, this._getRowCount() - 1);
 
     if (index >= 0) {
       this.select(index);
@@ -404,7 +406,7 @@ CompletionView.definition = {
   "[subscribe('command/select-previous-candidate'), pnp]":
   function up()
   {
-    var index = Math.max(this.currentIndex - 1, -1);
+    var index = Math.max(this._getCurrentIndex() - 1, -1);
 
     if (index >= 0) {
       this.select(index);
@@ -447,7 +449,6 @@ Commandline.definition = {
       {
         parentNode: "#tanasinn_commandline_area",
         tagName: "html:div",
-        style: "position: absolute;",
         childNodes: [
           {
             tagName: "box",
@@ -473,7 +474,9 @@ Commandline.definition = {
         id: "tanasinn_commandline_canvas",
         tagName: "html:canvas",
         dir: "ltr",
-        style: "opacity: 0.7; position: absolute",
+        style: {
+          opacity: "0.7",
+        },
       },
       {
         parentNode: "#tanasinn_chrome",
@@ -495,14 +498,17 @@ Commandline.definition = {
             {
               tagName: "box",
               flex: 1,
-              style: this.completion_style,
+              style: this.getCompletionStyle(),
             },
             {
               tagName: "scrollbox",
               id: "tanasinn_completion_scroll",
               orient: "vertical", // box-packing
               flex: 1,
-              style: "margin: 8px; overflow-y: auto;",
+              style: {
+                margin: "8px",
+                overflowY: "auto",
+              },
               childNodes: {
                 tagName: "grid",
                 id: "tanasinn_completion_root",
@@ -522,7 +528,7 @@ Commandline.definition = {
     ];
   },
 
-  get completion_style()
+  getCompletionStyle: function getCompletionStyle()
   {
     return {
       borderRadius: "7px",
@@ -534,32 +540,25 @@ Commandline.definition = {
   _result: null,
 
   /** Installs itself. 
-   *  @param {Broker} broker A Broker object.
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(broker) 
+  function install(context) 
   {
-    var {
-      tanasinn_commandline_canvas, 
-      tanasinn_commandline, 
-      tanasinn_completion_popup, 
-      tanasinn_completion_scroll, 
-      tanasinn_completion_root,
-    } = this.request("command/construct-chrome", this.getTemplate());
+    var result = this.request("command/construct-chrome", this.getTemplate());
 
-    this._canvas = tanasinn_commandline_canvas;
+    this._canvas = result.tanasinn_commandline_canvas;
 
-    this._textbox = new TextboxWidget(tanasinn_commandline, this._canvas);
-    this._popup = tanasinn_completion_popup;
-    this._scroll = tanasinn_completion_scroll;
-    this._completion_root = tanasinn_completion_root;
+    this._textbox = new TextboxWidget(result.tanasinn_commandline, this._canvas);
+    this._popup = result.tanasinn_completion_popup;
+    this._scroll = result.tanasinn_completion_scroll;
+    this._completion_root = result.tanasinn_completion_root;
   },
   
   /** Uninstalls itself.
-   *  @param {Broker} broker A Broker object.
    */
   "[uninstall]":
-  function uninstall(broker) 
+  function uninstall() 
   {
     if (this._popup) {
       if (undefined !== this._popup.hidePopup) {
@@ -620,12 +619,14 @@ Commandline.definition = {
   "[subscribe('command/enable-commandline'), pnp]":
   function enableCommandline() 
   {
-    this._textbox.calculateSize();
-    this._textbox.status = "";
-    this._textbox.mode = "command";
-    this._textbox.focus();
-    this._textbox.focus();
-    this._textbox.focus();
+    var textbox = this._textbox;
+
+    textbox.calculateSize();
+    textbox.status = "";
+    textbox.mode = "command";
+    textbox.focus();
+    textbox.focus();
+    textbox.focus();
 
     this.sendMessage(
       "event/input-mode-changed",
@@ -702,7 +703,7 @@ Commandline.definition = {
       driver = this.request("get/completion-display-driver/" + type); 
 
       if (driver) {
-        driver.drive(grid, result, this.currentIndex);
+        driver.drive(grid, result, this._getCurrentIndex());
         this.invalidate(result);
       } else {
         coUtils.Debug.reportError(
@@ -736,7 +737,7 @@ Commandline.definition = {
         }
       }
 
-      index = Math.max(0, this.currentIndex);
+      index = Math.max(0, this._getCurrentIndex());
       completion_text = result.data[index].name;
       
       if (0 === completion_text.indexOf(result.query)) {
@@ -756,19 +757,17 @@ Commandline.definition = {
   "[subscribe('command/fill'), pnp]":
   function fill()
   {
-    var index,
-        result,
+    var result = this._result,
+        index,
         textbox,
         completion_text,
         settled_length,
         settled_text,
         text;
 
-    index = Math.max(0, this.currentIndex);
-    result = this._result;
-
     if (result) {
       textbox = this._textbox;
+      index = Math.max(0, this._getCurrentIndex());
       completion_text = result.data[index].name;
       settled_length = this._stem_text.length - result.query.length;
       settled_text = textbox.value.substr(0, settled_length);
@@ -800,7 +799,7 @@ Commandline.definition = {
           current_text = textbox.value;
           // if current text does not match completion text, hide it immediatly.
           if (!textbox.completion 
-            || 0 != textbox.completion.indexOf(current_text)) {
+            || 0 !== textbox.completion.indexOf(current_text)) {
             textbox.completion = "";
           }
           this._stem_text = current_text;

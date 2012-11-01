@@ -161,7 +161,7 @@ function wcwidth_amb_as_double(c)
         } else if (/[@{[print_characters 0, %wcmap2]}]/.test(s)) {
             return 0;
         }
-    } else if (c < 0x1F200) {
+    } else if (c < 0x1F100) {
         return 1;
     } else if (c < 0x1F200) {
         return 2;

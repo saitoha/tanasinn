@@ -67,35 +67,51 @@ Splitter.definition = {
 
   "[persistable] enabled_when_startup": true,
 
+  _renderer: null,
+  _screen: null,
+  _bottompanel: null,
+  _initial_row: null,
+  _initial_height: null,
+  _initial_y: null,
+
   /** Installs itself. 
-   *  @param {Broker} broker A session object.
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(broker) 
+  function install(context) 
   {
-    var bottompanel = this.dependency["bottompanel"],
-        tanasinn_splitter = this.request(
-          "command/construct-chrome",
-          this.getTemplate()).tanasinn_splitter,
+    var bottompanel = context["bottompanel"],
+        result = this.request("command/construct-chrome", this.getTemplate()),
         tabbox_element = bottompanel.getElement();
 
-    // create splitter element.
-    tabbox_element.parentNode.insertBefore(tanasinn_splitter, tabbox_element);
+    this._renderer = context["renderer"];
+    this._screen = context["screen"];
+    this._bottompanel = context["bottompanel"];
 
-    this._splitter = tanasinn_splitter;
+    // create splitter element.
+    tabbox_element.parentNode.insertBefore(result.tanasinn_splitter, tabbox_element);
+
+    this._splitter = result.tanasinn_splitter;
   },
 
   /** Unnstalls itself.
-   *  @param {Session} session A session object.
    */
   "[uninstall]":
-  function uninstall(session) 
+  function uninstall() 
   {
     // remove splitter element
     if (null !== this._splitter) {
       this._splitter.parentNode.removeChild(this._splitter);
       this._splitter = null;
     }
+
+    this._renderer = null;
+    this._screen = null;
+    this._bottompanel = null;
+
+    this._initial_row = null;
+    this._initial_height = null;
+    this._initial_y = null;
   },
 
   /** Makes splitter bar behave as vertical resizebar.
@@ -113,62 +129,64 @@ Splitter.definition = {
    */
   ondragstart: function ondragstart(event) 
   {
-    var dom, renderer, screen, bottompanel, document, 
-        initial_height, initial_row, line_height, y;
-    dom = {
-      document: this.request("get/root-element").ownerDocument,
-    }
-    renderer = this.dependency["renderer"];
-    screen = this.dependency["screen"];
-    bottompanel = this.dependency["bottompanel"];
-    initial_height = bottompanel.panelHeight;
-    initial_row = screen.height;
-    line_height = renderer.line_height;
+    var dom = {
+          document: this.request("get/root-element").ownerDocument,
+        },
+        renderer = this._renderer,
+        screen = this._screen,
+        bottompanel = this._bottompanel,
+        initial_height = bottompanel.panelHeight,
+        initial_row = screen.height,
+        line_height = renderer.line_height,
+        initial_y = event.screenY;
+
+    this._initial_height = initial_height;
+    this._initial_row = initial_row;
+    this._initial_y = initial_y;
 
     dom.document.documentElement.style.cursor = "row-resize";
 
-    y = event.screenY;
-
     this.sendMessage("event/resize-session-started");
-    this.sendMessage("command/add-domlistener", {
-      target: dom.document,
-      type: "mousemove",
-      id: "_DRAGGING",
-      context: this,
-      handler: function onmousemove(event) 
-      {
-        var diff, row;
+    this.onmousemove.enabled = true;
+    this.onmouseup.enabled = true;
+  },
 
-        diff = event.screenY - y;
+  "[listen('mousemove')]":
+  function onmousemove(event) 
+  {
+    var diff = event.screenY - this._initial_y,
+        line_height = this._renderer.line_height,
+        initial_row = this._initial_row,
+        initial_height = this._initial_height,
+        bottompanel = this._bottompanel,
         row = initial_row + Math.round(diff / line_height);
-        screen.height = row;
-        diff = (row - initial_row) * line_height;
-        if (initial_height - diff < 0) {
-          bottompanel.close();
-          bottompanel.panelHeight = initial_height;
-        } else {
-          bottompanel.panelHeight = initial_height - diff;
-        }
-      },
-    });
-    this.sendMessage(
-      "command/add-domlistener",
-      {
-        target: dom.document,
-        type: "mouseup", 
-        id: "_DRAGGING",
-        context: this,
-        handler: function onmouseup() 
-        {
-          dom.document.documentElement.style.cursor = "",
-          this.sendMessage("command/remove-domlistener", "_DRAGGING");
-          if (screen.height === initial_row) {
-            return;
-          }
-          this.sendMessage("event/resize-session-closed");
-        }
-      });
-  }
+
+    this._screen.height = row;
+
+    diff = (row - initial_row) * line_height;
+
+    if (initial_height - diff < 0) {
+      bottompanel.close();
+      bottompanel.panelHeight = initial_height;
+    } else {
+      bottompanel.panelHeight = initial_height - diff;
+    }
+  },
+
+  "[listen('mouseup')]":
+  function onmouseup(event) 
+  {
+    event.explicitOriginalTarget.ownerDocument.documentElement.style.cursor = "",
+
+    this.sendMessage("command/remove-domlistener", "_DRAGGING");
+    this.onmousemove.enabled = false;
+    this.onmouseup.enabled = false;
+
+    if (this._screen.height !== this._initial_row) {
+      this.sendMessage("event/resize-session-closed");
+    }
+  },
+
 } // class Splitter
 
 

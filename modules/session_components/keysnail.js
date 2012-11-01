@@ -44,31 +44,25 @@ KeySnail.definition = {
   
   "[persistable] enabled_when_startup": true,
 
-  /** Install itself. 
-   *  @param {Session} session A session object.
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(session)
+  function install(context)
   {
     this.onGotFocus();
-    this.onGotFocus.enabled = true;  
-    this.onLostFocus.enabled = true;  
-
   },
 
   /** Uninstall itself. 
-   *  @param {Session} session A session object.
    */
   "[uninstall]":
-  function uninstall(session) 
+  function uninstall() 
   {
     this.onLostFocus();
-    this.onGotFocus.enabled = false;  
-    this.onLostFocus.enabled = false;  
   },
 
   /** install focus event. */
-  "[subscribe('event/got-focus | command/focus')]":
+  "[subscribe('event/got-focus | command/focus'), pnp]":
   function onGotFocus() 
   {
     var key;
@@ -83,7 +77,7 @@ KeySnail.definition = {
   },
 
   /** install blur evnet. */
-  "[subscribe('event/lost-focus | command/blur')]":
+  "[subscribe('event/lost-focus | command/blur'), pnp]":
   function onLostFocus() 
   {
     var key;

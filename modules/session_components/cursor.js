@@ -47,13 +47,14 @@ Cursor.definition = {
 
   /** UI template */
   getTemplate: function getTemplate() 
-    ({
+  {
+    return {
       parentNode: "#tanasinn_center_area",
       tagName: "html:canvas",
       id: "cursor_canvas",
       MozTransitionProperty: "opacity",
-      style: "position: absolute;",
-    }),
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
 
@@ -61,6 +62,7 @@ Cursor.definition = {
   _cursor_visibility_backup: null,
 
   _timer: null,
+  _blink_state: false,
 
   _input_mode: coUtils.Constant.INPUT_MODE_NORMAL,
 
@@ -76,18 +78,22 @@ Cursor.definition = {
   "[persistable] blink_transition_duration": 600, /* in msec */
   "[persistable] timing_function": "ease-in-out",
   "[persistable] initial_blink": true,
+
+  _screen: null,
+  _renderer: null,
+  _cursor_state: null,
  
   /** Installs itself. 
-   *  @param {Broker} broker A Broker object.
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]": 
-  function install(broker) 
+  function install(context) 
   {
     var result;
 
-    this._screen = this.dependency["screen"];
-    this._renderer = this.dependency["renderer"];
-    this._cursor_state = this.dependency["cursorstate"];
+    this._screen = context["screen"];
+    this._renderer = context["renderer"];
+    this._cursor_state = context["cursorstate"];
 
     /** Create cursor element. */
     result = this.request("command/construct-chrome", this.getTemplate());
@@ -107,10 +113,9 @@ Cursor.definition = {
   },
 
   /** Uninstalls itself. 
-   *  @param {Broker} broker A Broker object.
    */
-  "[subscribe('uninstall/cursor'), enabled]":
-  function uninstall(broker) 
+  "[uninstall]":
+  function uninstall() 
   {
     if (null !== this._timer) {
       this._timer.cancel();
@@ -136,18 +141,6 @@ Cursor.definition = {
 
     this._canvas.width = renderer.char_width * screen.width;
     this._canvas.height = renderer.line_height * screen.height;
-  },
-
-  "[subscribe('sequence/sm/33'), pnp]":
-  function WYSTCURM_ON()
-  {
-    this._screen.cursor.blink = true;
-  },
-
-  "[subscribe('sequence/rm/33'), pnp]":
-  function WYSTCURM_OFF()
-  {
-    this._screen.cursor.blink = false;
   },
 
   "[subscribe('sequence/sm/34'), pnp]":
@@ -514,37 +507,41 @@ Cursor.definition = {
   /** Set blink timer. */
   _prepareBlink: function _prepareBlink() 
   {
-    var i = 0;
-
     if (null !== this._timer) {
       this._timer.cancel();
     } 
 
-    this._timer = coUtils.Timer.setInterval(
-      function timerProc()
-      {
-        if (this._blink && i++ % 2) {
-          this._setVisibility(false);
-        } else {
-          this._setVisibility(true);
-        }
-      }, this.blink_duration, this);
+    this._timer = coUtils.Timer
+      .setInterval(this._blinkImpl, this.blink_duration, this);
+  },
+
+  _blinkImpl: function _blinkImpl()
+  {
+    this._blink_state = !this._blink_state;
+
+    if (this._blink && this._blink_state) {
+      this._setVisibility(false);
+    } else {
+      this._setVisibility(true);
+    }
   },
 
   /** Set cursor visibility. */
   _setVisibility: function _setVisibility(visibility) 
   {
-    if (this._canvas) {
-      this._canvas.style.MozTransitionDuration = this.blink_transition_duration + "ms";
-      this._canvas.style.transitionTimingFunction = this.transition_function;
+    var canvas = this._canvas;
+
+    if (canvas) {
+      canvas.style.MozTransitionDuration = this.blink_transition_duration + "ms";
+      canvas.style.transitionTimingFunction = this.transition_function;
       if (visibility) {
-        this._canvas.style.opacity = this.opacity;
+        canvas.style.opacity = this.opacity;
       } else {
-        this._canvas.style.opacity = this.opacity2;
+        canvas.style.opacity = this.opacity2;
       }
     }
   }
-}
+}; // Cursor
 
 /**
  * @fn main

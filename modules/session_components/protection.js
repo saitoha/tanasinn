@@ -30,6 +30,7 @@
  *
  */
 var Protection = new Class().extends(Plugin)
+                            .depends("cursorstate")
                             .depends("screen");
 Protection.definition = {
 
@@ -47,17 +48,25 @@ Protection.definition = {
   "[persistable] enabled_when_startup": true,
 
   _screen: null, // reference of screen object
+  _cursor_state: null,
 
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
+   */
   "[install]":
-  function install()
+  function install(context)
   {
-    this._screen = this.dependency["screen"];
+    this._screen = context["screen"];
+    this._cursor_state = context["cursorstate"];
   },
 
+  /** Uninstalls itself. 
+   */
   "[uninstall]":
   function uninstall()
   {
     this._screen = null;
+    this._cursor_state = null;
   },
 
   /**
@@ -96,40 +105,40 @@ Protection.definition = {
   function DECSCA(n) 
   { // Device Status Report
 
-    var attr = this._screen.cursor.attr;
+    var attr = this._cursor_state.attr;
 
     switch (n || 0) {
 
       // (default)  DECSED and DECSEL can erase characters.
       case 0:
-        attr.protected = false;
+        attr.protected = 0;
         break;
 
       // DECSED and DECSEL cannot erase characters.
       case 1:
-        attr.protected = true;
+        attr.protected = 1;
         break;
 
       // Same as 0.
       case 2:
-        attr.protected = false;
+        attr.protected = 0;
         break;
 
       default:
         coUtils.Debug.reportWarning(
           _("%s sequence [%s] was ignored."),
-          arguments.callee.name, Array.slice(arguments));
+          "DECSCA", Array.slice(arguments));
     }
   },
 
   "[subscribe('sequence/decrqss/decsca'), pnp]":
   function onRequestStatus(data) 
   { // Device Status Report
-    var attr = this._screen.cursor.attr,
+    var attr = this._cursor_state.attr,
         param,
         message;
 
-    if (attr.protected) {
+    if (1 === attr.protected) {
       param = 1;
     } else {
       param = 0;
@@ -170,9 +179,7 @@ Protection.definition = {
   "[profile('vt100'), sequence('CSI ?%dK')]":
   function DECSEL(n) 
   { // Selective Erase Line
-    var screen
-     
-    screen = this._screen;
+    var screen = this._screen;
    
     switch (n || 0) {
 
@@ -191,7 +198,7 @@ Protection.definition = {
       default:
         coUtils.Debug.reportWarning(
           _("%s sequence [%s] was ignored."),
-          arguments.callee.name, Array.slice(arguments));
+          "DECSCL", Array.slice(arguments));
     }
   },
 
@@ -244,7 +251,7 @@ Protection.definition = {
       default:
         coUtils.Debug.reportWarning(
           _("%s sequence [%s] was ignored."),
-          arguments.callee.name, Array.slice(arguments));
+          "DECSED", Array.slice(arguments));
     }
 
   },
@@ -312,7 +319,7 @@ Protection.definition = {
     if (top >= bottom || left >= right) {
       throw coUtils.Debug.Exception(
         _("Invalid arguments detected in %s [%s]."),
-        arguments.callee.name, Array.slice(arguments));
+        "DECSERA", Array.slice(arguments));
     }
 
     if (bottom > screen.height) {

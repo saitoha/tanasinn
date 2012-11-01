@@ -27,7 +27,7 @@
 function wait(span) 
 {
   var end_time = Date.now() + span,
-      current_thread = coUtils.Services.threadManager.currentThread;
+      current_thread = coUtils.Services.getThreadManager().currentThread;
 
   do {
     current_thread.processNextEvent(true);
@@ -59,6 +59,28 @@ WindowManipulator.definition = {
 
   _hex_mode: false,
   _utf8_mode: false,
+
+  _screen: null,
+  _renderer: null,
+
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
+   */
+  "[install]":
+  function install(context)
+  {
+    this._screen = context["screen"];
+    this._renderer = context["renderer"];
+  },
+
+  /** uninstalls itself. 
+   */
+  "[uninstall]":
+  function uninstall()
+  {
+    this._screen = null;
+    this._renderer = null;
+  },
 
   /**
    *
@@ -163,7 +185,7 @@ WindowManipulator.definition = {
         // Resize window to height Ps2 pixels and width Ps3 pixels.
         y = args[0] || 100;
         x = args[1] || 100;
-        renderer = this.dependency["renderer"];
+        renderer = this._renderer;
         column = Math.ceil(x / renderer.char_width);
         row = Math.ceil(y / renderer.line_height);
 
@@ -242,9 +264,10 @@ WindowManipulator.definition = {
         //   y    Window height in pixels.
         //   x    Window width in pixels.
         //
-        target_element = this.request("get/root-element");
-        width = target_element.boxObject.width;
-        height = target_element.boxObject.height;
+        screen = this._screen;
+        renderer = this._renderer;
+        width = screen.width * renderer.char_width;
+        height = screen.height * renderer.line_height;
         message = coUtils.Text.format("4;%d;%dt", height, width);
 
         this.sendMessage("command/send-sequence/csi", message); 
@@ -255,7 +278,7 @@ WindowManipulator.definition = {
         // Response: CSI 8 ; y ; x t
         //   y    Terminal height in characters. (Lines)
         //   x    Terminal width in characters. (Columns)
-        screen = this.dependency["screen"];
+        screen = this._screen;
         width = screen.width;
         height = screen.height;
         message = coUtils.Text.format("8;%d;%dt", height, width);
@@ -271,7 +294,7 @@ WindowManipulator.definition = {
         target_element = this.request("get/root-element").ownerDocument.documentElement;
         width = target_element.boxObject.width;
         height = target_element.boxObject.height;
-        renderer = this.dependency["renderer"];
+        renderer = this._renderer;
         column = Math.floor(width / renderer.char_width);
         row = Math.floor(height / renderer.line_height);
         message = coUtils.Text.format("9;%d;%dt", row, column);
@@ -295,7 +318,7 @@ WindowManipulator.definition = {
 
       default:
         if (21 < n1 && n1 <= 72) {
-          screen = this.dependency["screen"];
+          screen = this._screen;
           width = screen.width;
           this.sendMessage(
             "command/resize-screen",

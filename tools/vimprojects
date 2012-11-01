@@ -4,6 +4,7 @@
  TODO
  ctrlseqs.md
  application.ini
+ configure.ac.in
  configure.ac
  acgecko.m4
  acplatform.m4
@@ -18,9 +19,11 @@
  content=content {
   tanasinn.svg
  }
- content=chrome/content {
+ chrome=chrome {
+  content=content {
    tanasinn.xul
    testsuite.js
+  }
  }
  doc=doc {
   define.h
@@ -37,7 +40,17 @@
  modules=modules {
   Makefile
   common=common {
+   config.js.in
    process.js
+   color.js
+   locale.js
+   factory.js
+   logging.js
+   algorithm.js
+   timer.js
+   clipboard.js
+   uuid.js
+   sessions.js
    common.js
    tupstart.js
    tupbase.js
@@ -66,6 +79,13 @@
    .
    launcher.js
    session.js
+   sessiondisplaydriver.js
+   programcompleter.js
+   processmanager.js
+   sessioncompleter.js
+   textdisplaydriver.js
+   launchercompletionprovider.js
+   dragmove.js
   }
   shared_components=shared_components {
    builder.js
@@ -74,8 +94,6 @@
    map.js
   }
   session_components=session_components {
-
-   drcsconverter.js
 
    plugin=.{
 
@@ -87,12 +105,15 @@
     tty.js
     ttycontroller.js
     ttyiomanager.js
+    externaldriver.js
     input.js
+    drcsconverter.js
     idleservice.js
     alertservice.js
 
     encoder.js
     multiencoder.js
+
     decoder.js
     multidecoder.js
     asciidecoder.js
@@ -110,6 +131,7 @@
     keypad.js
     ansi.js
     dec.js
+    doublesized.js
 
     focus.js
     window.js
@@ -175,19 +197,22 @@
     macro.js
     dsr.js
     decdsr.js
-    decrqcra.js
     charset.js
     protection.js
     reportparams.js
     terminfo.js
-    decrqss.js
     dectst.js
     wheelscroll.js
+
+    decrqcra.js
+    decrqss.js
+    decrqupss.js
 
     focusevent.js
     mousegesture.js
 
     chrome.js
+    palette.js
     renderer.js
 
     cursor.js
@@ -202,7 +227,11 @@
 
     pluginview.js
     debugger.js
+
+    consolelistener.js
     console.js
+    consoledisplaymanager.js
+    consolemessagefilter.js
 
     scrollbar.js
     selection.js
@@ -227,9 +256,6 @@
     video.js
     browser.js
     agent.js
-    completer.js
-    display.js
-    command.js
     tabbox.js
     titlebar.js
     commandline.js
@@ -239,9 +265,30 @@
     screenshot.js
     history.js
 
+    command.js
+    changepalettecommand.js
+    jscommand.js
+    overlayecho.js
+    echocommand.js
+    versioncommand.js
+    lscommand.js
+    charsetcommand.js
+    localizecommand.js
+    persistcommand.js
+    globalpersistcommand.js
+    fontcommands.js
+    setglobalcommand.js
+    setcommand.js
+
+    textdisplaydriver.js
+    colornumberdisplaydriver.js
+    colordisplaydriver.js
+    fontsizedisplaydriver.js
+    fontfamilydisplaydriver.js
+
+    commandcompleter.js
     charsetcompleter.js
     colorcompleter.js
-    completer.js
     historycompleter.js
     eventcompleter.js
     filecompleter.js
@@ -250,6 +297,7 @@
     jscompleter.js
     localizecompleter.js
     mapcompleter.js
+    cmapcompleter.js
     optioncompleter.js
     pluginscompleter.js
     componentscompleter.js
@@ -277,10 +325,6 @@
   locale=locale {
    ja-JP.json
   }
-  config {
-   key.conf
-   key-linux.conf
-  }
   tool {
    /etc/profile
    ~/.profile
@@ -292,12 +336,11 @@
    ~/.tanasinn/tanasinnrc
    ~/.tanasinn/bin
    ~/.tanasinn/cgi-bin
-   ~/.vimperator/plugin/twittperator.js
-   .tanasinn.js
+   ~/.vimperator/plugin/tanasinn-vimp.js
+   ~/.tanasinn.js
    licence.pl
    tanasinn-vimp.js
    tanasinn-keysnail.js
-   gecko.vim
   }
   mappings=mappings {
    Makefile
@@ -316,7 +359,7 @@
   UnicodeCategoryDetector.pl
   Makefile
  }
- =defaults/preferences {
+ prefs=defaults/preferences {
   prefs.js
  }
 }

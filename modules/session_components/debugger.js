@@ -29,14 +29,41 @@
  * @class Tracer
  *
  */
-var Tracer = new Class().extends(Component);
+var Tracer = new Class().extends(Plugin);
 Tracer.definition = {
 
   id: "tracer",
 
+  getInfo: function getInfo()
+  {
+    return {
+      name: _("Tracer"),
+      version: "0.1",
+      description: _("Intercept I/O events and send its information ",
+                     "to Debugger plugin")
+    };
+  },
+
+  "[persistable] enabled_when_startup": true,
+
   _mode: "vt100",
 
-  "[subscribe('command/change-emulation-mode'), enabled]":
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
+   */
+  "[install]": 
+  function install(context) 
+  {
+  },
+
+  /** Uninstalls itself 
+   */
+  "[uninstall]":
+  function uninstall()
+  {
+  },
+
+  "[subscribe('command/change-emulation-mode'), pnp]":
   function onChangeMode(mode) 
   { 
     if (this.onBeforeInput.enabled) {
@@ -48,7 +75,7 @@ Tracer.definition = {
     }
   },
 
-  "[subscribe('command/debugger-trace-on'), enabled]":
+  "[subscribe('command/debugger-trace-on'), pnp]":
   function enable() 
   {
     var sequences = this.sendMessage("get/sequences/" + this._mode),
@@ -70,7 +97,7 @@ Tracer.definition = {
     }
   },
 
-  "[subscribe('command/debugger-trace-off'), enabled]":
+  "[subscribe('command/debugger-trace-off'), pnp]":
   function disable() 
   {
     var sequences = this.sendMessage("get/sequences/" + this._mode),
@@ -90,9 +117,7 @@ Tracer.definition = {
   "[subscribe('command/send-to-tty')]":
   function onBeforeInput(message) 
   {
-    var info;
-
-    info = {
+    var info = {
       type: coUtils.Constant.TRACE_INPUT, 
       name: undefined,
       value: [message],
@@ -102,11 +127,11 @@ Tracer.definition = {
       [info, undefined]); 
   },
 
-  _registerControlHandler: function _registerControlHandler(information)
+  _registerControlHandler:
+  function _registerControlHandler(information)
   {
     var handler = information.handler,
         delegate;
-
 
     try {
 
@@ -141,19 +166,44 @@ Tracer.definition = {
  * @class Hooker
  *
  */
-var Hooker = new Class().extends(Component).depends("parser");
+var Hooker = new Class().extends(Plugin)
+                        .depends("parser");
 Hooker.definition = {
 
   id: "hooker",
+
+  getInfo: function getInfo()
+  {
+    return {
+      name: _("Hooker"),
+      version: "0.1",
+      description: _("Switch Debugger's step execution state")
+    };
+  },
+
+  "[persistable] enabled_when_startup": true,
 
   _buffer: null, 
   _hooked: false,
   _step_mode: false,
 
-  /** Constructor */
-  initialize: function initialize(broker) 
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
+   */
+  "[install]": 
+  function install(context) 
   {
     this._buffer = [];
+    this._parser = context["parser"];
+  },
+
+  /** Uninstalls itself 
+   */
+  "[uninstall]":
+  function uninstall()
+  {
+    this._buffer = null;
+    this._parser = null;
   },
 
   /** Suspend TTY and enter debug session. */
@@ -264,17 +314,56 @@ Hooker.definition = {
     var parser;
 
     if (this._hooked) {
-      parser = this.dependency["parser"];
+      parser = this._parser;
       delete parser.parse; // uninstall hook
       this._hooked = false;
     }
   },
-}
+
+}; // Hooker
+
+/** 
+ * @class ForwardInputIterator
+ */ 
+var ForwardInputIterator = new Class();
+ForwardInputIterator.definition = {
+
+  _value: null,
+  _position: 0,
+
+  /** Assign new string data. position is reset. */
+  initialize: function initialize(value) 
+  {
+    this._value = value;
+    this._position = 0;
+  },
+
+  /** Returns single byte code point. */
+  current: function current() 
+  {
+    return this._value.charCodeAt(this._position);
+  },
+
+  /** Moves to next position. */
+  moveNext: function moveNext() 
+  {
+    ++this._position;
+  },
+
+  /** Returns whether scanner position is at end. */
+  get isEnd() 
+  {
+    return this._position >= this._value.length;
+  },
+
+}; // ForwardInputIterator
+
 
 /**
  * @class Debugger
  */
-var Debugger = new Class().extends(Plugin);
+var Debugger = new Class().extends(Plugin)
+                          .depends("decoder");
 Debugger.definition = {
 
   id: "debugger",
@@ -366,19 +455,19 @@ Debugger.definition = {
   },
 
   /** Installs itself. 
-   *  @param {Broker} broker A Broker object.
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]": 
-  function install(broker) 
+  function install(context) 
   {
     this._queue = [];
+    this._decoder = context["decoder"];
   },
 
   /** Uninstalls itself 
-   *  @param {Broker} broker A Broker object.
    */
   "[uninstall]":
-  function uninstall(broker)
+  function uninstall()
   {
     this.trace.enabled = false;
 
@@ -388,6 +477,8 @@ Debugger.definition = {
 
     this._timer = null;
     this._queue = null;
+    this._decoder = null;
+
     this.sendMessage("command/remove-panel", this.id);
   },
 
@@ -558,7 +649,15 @@ Debugger.definition = {
     }
   },
 
-  _escape: function _escape(str) 
+  _escapeAll: function _escapeAll(str) 
+  {
+    return str.replace(/[\x00-\xff]/g, function(c) 
+    {
+      return "<" + (0x100 + c.charCodeAt(0)).toString(16).substr(1, 2) + ">";
+    });
+  },
+
+  _escapeC0: function _escapeC0(str) 
   {
     return str.replace(/[\u0000-\u001f]/g, function(c) 
     {
@@ -566,25 +665,35 @@ Debugger.definition = {
     });
   },
 
+  _decodeString: function _decodeString(data)
+  {
+    var scanner = new ForwardInputIterator(data),
+        decoder = this._decoder,
+        sequence = [c for (c in decoder.decode(scanner))],
+        text = coUtils.Text.safeConvertFromArray(sequence);
+
+    return text;
+  },
+
   update: function update(trace_info) 
   {
-    var [info, sequence] = trace_info;
+    var info = trace_info[0],
+        sequence = trace_info[1],
+        type = info ? info.type: coUtils.Constant.TRACE_OUTPUT,
+        name = info && info.name,
+        value = info ? info.value: [sequence.slice(0, -1)],
+        child;
 
-    var {type, name, value} = info || {
-      type: coUtils.Constant.TRACE_OUTPUT,
-      name: undefined,
-      value: [sequence.slice(0, -1)],
-    };
-
-    value = value || ["dfkjskl"];
-    var child;
     switch (type) {
       case coUtils.Constant.TRACE_CONTROL: 
         child = [
           {
             tagName: "label",
             value: ">",
-            style: "padding: 3px; color: darkred;",
+            style: {
+              padding: "3px",
+              color: "darkred",
+            },
           },
           {
             tagName: "box",
@@ -592,28 +701,47 @@ Debugger.definition = {
             childNodes:
             {
               tagName: "label",
-              value: this._escape(sequence),
-              style: "color: red; background: lightblue; border-radius: 6px; padding: 3px;",
+              value: this._escapeC0(sequence),
+              style: {
+                color: "red",
+                background: "lightblue",
+                borderRadius: "6px",
+                padding: "3px",
+              },
             },
           },
           {
             tagName: "label",
             value: "-",
-            style: "color: black; padding: 3px;",
+            style: {
+              color: "black",
+              padding: "3px",
+            },
           },
           {
             tagName: "box",
-            style: "background: lightyellow; border-radius: 6px; margin: 2px; padding: 0px;",
+            style: {
+              background: "lightyellow",
+              borderRadius: "6px",
+              margin: "2px",
+              padding: "0px",
+            },
             childNodes: [
               {
                 tagName: "label",
                 value: name,
-                style: "color: blue; padding: 1px;",
+                style: {
+                  color: "blue",
+                  padding: "1px",
+                },
               },
               {
                 tagName: "label",
-                value: this._escape(value.toString()),
-                style: "color: green; padding: 1px;",
+                value: this._escapeC0(value.toString()),
+                style: {
+                  color: "green",
+                  padding: "1px",
+                },
               }
             ],
           },
@@ -628,9 +756,37 @@ Debugger.definition = {
             style: "padding: 3px; color: darkred;",
           },
           {
+            tagName: "box",
+            width: 120,
+            childNodes:
+            {
+              tagName: "label",
+              value: this._escapeC0(value[0]),
+              style: {
+                color: "red",
+                background: "lightblue",
+                borderRadius: "6px",
+                padding: "3px",
+              },
+            },
+          },
+          {
             tagName: "label",
-            value: this._escape(value.shift()),
-            style: "color: darkcyan; background: lightgray; border-radius: 6px; padding: 3px;",
+            value: "-",
+            style: {
+              color: "black",
+              padding: "3px",
+            },
+          },
+          {
+            tagName: "label",
+            value: this._decodeString(value.shift()),
+            style: {
+              color: "darkcyan",
+              background: "lightgray",
+              borderRadius: "6px",
+              padding: "3px",
+            },
           },
         ]
         break;
@@ -644,17 +800,31 @@ Debugger.definition = {
           },
           {
             tagName: "label",
-            value: value && this._escape(value.shift()),
-            style: "color: darkcyan; background: lightpink; border-radius: 6px; padding: 3px;",
+            value: value && this._escapeC0(value.shift()),
+            style: {
+              color: "darkcyan",
+              background: "lightpink",
+              borderRadius: "6px",
+              padding: "3px",
+            },
           },
         ]
     }
-    this.request("command/construct-chrome", {
-      parentNode: "#tanasinn_trace",
-      tagName: "hbox",
-      style: "width: 400px; max-width: 400px; font-weight: bold; text-shadow: 0px 0px 2px black; font-size: 20px; ",
-      childNodes: child,
-    });
+
+    this.request(
+      "command/construct-chrome",
+      {
+        parentNode: "#tanasinn_trace",
+        tagName: "hbox",
+        style: {
+          width: "400px",
+          maxWidth: "400px",
+          fontWeight: "bold",
+          textShadow: "0px 0px 2px black",
+          fontSize: "20px",
+        },
+        childNodes: child,
+      });
   },
 
 

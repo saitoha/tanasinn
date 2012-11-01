@@ -282,7 +282,7 @@ ParameterParser.definition = {
   /** Parse numeric parameters separated by semicolons ";". 
    *  @param {Scanner} scanner A Scanner object.
    *
-   * Paramter -> ([0-9]+, ";")*, [0-9]+
+   * Paramter -> ([0-9]+, (";" or ":"))*, [0-9]+
    *
    */
   _parseParameters: 
@@ -297,7 +297,7 @@ ParameterParser.definition = {
       if (0x30 <= c && c <= 0x39) { // [0-9]
         scanner.moveNext();
         accumulator = accumulator * 10 + c - 0x30;
-      } else if (0x3b === c) { // ';'
+      } else if (0x3a === c || 0x3b === c) { // ':' or ';'
         scanner.moveNext();
         yield accumulator;
         accumulator = 0;
@@ -325,7 +325,7 @@ ParameterParserStartingWithSemicolon.definition = {
   /** Parse numeric parameters separated by semicolons ";". 
    *  @param {Scanner} scanner A Scanner object.
    *
-   * Paramter -> ([0-9]+, ";")*, [0-9]+
+   * Paramter -> ([0-9]+, (";" | ":"))*, [0-9]+
    *
    */
   _parseParameters: 
@@ -338,12 +338,13 @@ ParameterParserStartingWithSemicolon.definition = {
     yield 0;
 
     accumulator = this._first;
+
     while (!scanner.isEnd) {
       c = scanner.current();
       if (0x30 <= c && c <= 0x39) { // [0-9]
         scanner.moveNext();
         accumulator = accumulator * 10 + c - 0x30;
-      } else if (0x3b === c) { // ';'
+      } else if (0x3a === c || 0x3b === c) { // ':' or ';'
         scanner.moveNext();
         yield accumulator;
         accumulator = 0;
@@ -640,10 +641,10 @@ VT100Grammar.definition = {
   CSI: null,
 
   /** Installs itself. 
-   *  @param {Broker} broker A Broker object.
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(broker)
+  function install(context)
   {
     var i,
         sequences;
@@ -651,17 +652,16 @@ VT100Grammar.definition = {
     this.resetSequences();
 
     sequences = this.sendMessage("get/sequences/vt100");
+
     for (i = 0; i < sequences.length; ++i) {
       this.sendMessage("command/add-sequence", sequences[i]);
     }
-    this.sendMessage("initialized/grammar", this);
   },
 
   /** Uninstalls itself. 
-   *  @param {Broker} broker A Broker object.
    */
   "[uninstall]":
-  function uninstall(broker)
+  function uninstall()
   {
     this.ESC = null;
     this.CSI = null;

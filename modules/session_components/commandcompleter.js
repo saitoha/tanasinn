@@ -28,17 +28,44 @@
  * @class CommandCompleter
  *
  */
-var CommandCompleter = new Class().extends(Component).requires("Completer");
+var CommandCompleter = new Class().extends(Plugin)
+                                  .requires("Completer");
 CommandCompleter.definition = {
 
   id: "command_completer",
+
+  getInfo: function getInfo()
+  {
+    return {
+      name: _("Command Completer"),
+      description: _("Provides completion information of commands."),
+      version: "0.1",
+    };
+  },
+
+  "[persistable] enabled_when_startup": true,
+
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
+   */
+  "[install]":
+  function install(context) 
+  {
+  },
+
+  /** Uninstalls itself.
+   */
+  "[uninstall]":
+  function uninstall() 
+  {
+  },
 
   /*
    * Search for a given string and notify the result.
    *
    * @param source - The string to search for
    */
-  "[subscribe('command/query-completion/command'), type('CompletionContext -> Undefined'), enabled]":
+  "[subscribe('command/query-completion/command'), type('CompletionContext -> Undefined'), pnp]":
   function startSearch(context)
   {
     var lower_command_name = context.source.split(/\s+/).pop().toLowerCase(),
@@ -63,7 +90,7 @@ CommandCompleter.definition = {
         type: "text",
         query: context.source, 
         data: commands.map(
-          function(command)
+          function mapFunc(command)
           {
             return {
               name: command.name.replace(/[\[\]]+/g, ""),
@@ -74,7 +101,7 @@ CommandCompleter.definition = {
     }
   },
 
-};
+}; // CommandCompleter
 
 /**
  * @fn main

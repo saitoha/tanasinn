@@ -3,7 +3,8 @@
 
 AC_PREREQ(2.61)
 
-AC_INIT([tanasinn],[0.3.0.1],[user@zuse.jp])
+AC_INIT([tanasinn],[0.3.0.2],[user@zuse.jp])
+
 AC_CANONICAL_TARGET
 
 # Checks for programs.
@@ -46,6 +47,7 @@ AC_CONFIG_FILES([Makefile
                  doc/define.h
                  doc/Makefile
                  tools/bin/Makefile
+                 modules/common/config.js
                  chrome.manifest 
                  install.rdf])
 AC_OUTPUT

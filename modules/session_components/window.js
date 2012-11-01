@@ -49,18 +49,17 @@ WindowWatcher.definition = {
   "[persistable] enabled_when_startup": true,
 
   /** Installs itself. 
-   *  @param {Broker} a broker object.
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(broker)
+  function install(context)
   {
   },
 
   /** Uninstalls itself. 
-   *  @param {Broker} a broker object.
    */
   "[uninstall]":
-  function uninstall(broker)
+  function uninstall()
   {
   },
 

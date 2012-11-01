@@ -135,20 +135,19 @@ Controller.definition = {
   _input: null,
   _output: null,
 
-  /** Installs itself.
-   *  @param broker {Broker} A broker object.
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(broker)
+  function install(context)
   {
-    this._screen = this.dependency["screen"];
+    this._screen = context["screen"];
   },
 
   /** Uninstalls itself.
-   *  @param broker {Broker} A broker object.
    */
   "[uninstall]":
-  function uninstall(broker)
+  function uninstall()
   {
     this._screen = null;
     this._input = null;
@@ -246,7 +245,6 @@ Controller.definition = {
       }, self.beacon_interval);
 
     this._send_initial_data(io_port);
-    this.sendMessage("initialized/tty", this);
   },
 
 // nsIRequestObserver implementation.

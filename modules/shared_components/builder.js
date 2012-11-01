@@ -22,6 +22,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+"use strict";
+
 /**
  * @file builder.js
  * @brief Accept UI-template object and convert it to a tree of DOM element.
@@ -171,11 +173,13 @@ TemplateBuilder.definition = {
   buildChrome: 
   function buildChrome(template, results) 
   {
-    var element, key, value;
+    var element,
+        key,
+        value;
 
     if (Array.isArray(template)) {
       return template.map(
-        function(node)
+        function mapFunc(node)
         {
           return this.buildChrome(node, results);
         }, this);
@@ -331,7 +335,9 @@ TemplateBuilder.definition = {
   _processAttribute: 
   function _processAttribute(element, key, value)  
   {
-    var keys, i, key;
+    var keys,
+        i,
+        key;
 
     if ("object" === typeof value) {
       element = element[key];
@@ -344,7 +350,7 @@ TemplateBuilder.definition = {
 
       for (i = 0; i < keys.length; ++i) {
         key = keys[i];
-        arguments.callee(element, key, value[key]); // call recersively.
+        this._processAttribute(element, key, value[key]); // call recersively.
       }
     } else {
       value = String(value);

@@ -1,9 +1,32 @@
 
-- renewal console plugin's interface, adding text search feature.
 
-- reserch nsIIdleSrevice
+- Support Windows 8 RTM
+- Support Hangl Jamo
+
+- Fix full-width character copy/paste issue
+- Fix Ctrl + Space issue on X11 environment
+- Fix Alt-Shift issue on WINNT/X11 environment
+
+- Support OSC 5 (alternative attributes)
+- Support OSC 13/14 (corsor color)
+- Completion issue after Ctrl + P / Ctrl + N
+
+- main buffer's adaptive resize
+- Improve drag move experience
+- Improve drag resize experience
+- IME control
+- Support Growl like notification system
+
+- Fix Sixel Graphics behavior more strictry
+- Fix DRCS behavior more strictry
+
 - implement DECBI/DECFI
 - implement MC/DECMC
 - implement DECPEX mode
 - implement DECSASD
+- implement DECUDK
+- implement OSC 701
+- implement OSC 7771
 
+- Rewrite console plugin's UI
+- Text search feature

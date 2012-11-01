@@ -44,22 +44,29 @@ EncoderMenu.definition = {
 
   "[persistable] enabled_when_startup": true,
 
-  /** Installs itself. */
+  _encoder: null,
+
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
+   */
   "[install]":
-  function install(broker) 
+  function install(context) 
   {
+    this._encoder = context["encoder"];
   },
 
-  /** Uninstalls itself. */
+  /** Uninstalls itself.
+   */
   "[uninstall]":
-  function uninstall(broker) 
+  function uninstall() 
   {
+    this._encoder = null;
   },
 
   "[subscribe('get/contextmenu-entries'), pnp]": 
   function onContextMenu() 
   {
-    var encoder = this.dependency["encoder"],
+    var encoder = this._encoder,
         encoder_scheme = encoder.scheme;
 
     return {
@@ -119,26 +126,30 @@ DecoderMenu.definition = {
   "[persistable] enabled_when_startup": true,
   "[persistable] send_ff_when_encoding_changed": true,
 
-  /** Installs itself. */
+  _decoder: null,
+
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
+   */
   "[install]":
-  function install(broker) 
+  function install(context) 
   {
+    this._decoder = context["decoder"];
   },
 
   /** Uninstalls itself. */
   "[uninstall]":
-  function uninstall(broker) 
+  function uninstall() 
   {
+    this._decoder = null;
   },
 
   "[subscribe('get/contextmenu-entries'), pnp]":
   function onContextMenu() 
   {
-    var decoder, decoders, decoder_scheme;
-
-    decoder = this.dependency["decoder"];
-    decoders = this.sendMessage("get/decoders");
-    decoder_scheme = decoder.scheme;
+    var decoder = this._decoder,
+        decoders = this.sendMessage("get/decoders"),
+        decoder_scheme = decoder.scheme;
 
     return {
       tagName: "menu",

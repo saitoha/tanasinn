@@ -88,17 +88,16 @@ RectangleChecksumReport.definition = {
 
   _screen: null,
 
-  /** installs itself. 
-   *  @param {Broker} broker A Broker object.
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install()
+  function install(context)
   {
-    this._screen = this.dependency["screen"];
+    this._screen = context["screen"];
   },
 
-  /** uninstalls itself. 
-   *  @param {Broker} broker A Broker object.
+  /** Uninstalls itself. 
    */
   "[uninstall]":
   function uninstall()

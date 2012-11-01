@@ -27,12 +27,38 @@
 /**
  *  @class PublishCommand
  */
-var PublishCommand = new Class().extends(Component);
+var PublishCommand = new Class().extends(Plugin);
 PublishCommand.definition = {
 
   id: "publish",
 
-  "[command('publish', ['event', 'js']), _('Publish a message'), enabled]":
+  getInfo: function getInfo()
+  {
+    return {
+      name: _("Publish Command"),
+      description: _("Provides publish command."),
+      version: "0.1",
+    };
+  },
+
+  "[persistable] enabled_when_startup": true,
+
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
+   */
+  "[install]":
+  function install(context) 
+  {
+  },
+
+  /** Uninstalls itself.
+   */
+  "[uninstall]":
+  function uninstall() 
+  {
+  },
+
+  "[command('publish', ['event', 'js']), _('Publish a message'), pnp]":
   function publish(arguments_string) 
   {
     var pattern = /^(\S+)\s*(.*)$/,
@@ -47,7 +73,8 @@ PublishCommand.definition = {
       };
     }
 
-    [, topic, message] = match;
+    topic = match[1];
+    message = match[2];
 
     this.sendMessage(topic, new Function("return (" + message + ");")())
 

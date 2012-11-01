@@ -31,27 +31,6 @@
 var PersistableAttribute = new Attribute("persistable");
 PersistableAttribute.definition = {
 
-  get __id()
-    "persistable",
-
-  get __info()
-  {
-    return {
-      name: _("Persistable"),
-      description: _("Marks a member or property as 'persistable'.")
-      /*
-      <![CDATA[
-        "persistable" attribute marks a member or property as "persistable".
-
-        usage:
-
-          "[persistable] polling_interval": 500, 
-
-      ]]>
-      */
-    };
-  },
-
   /** constructor 
    *  @param {EventBroker} broker The "parent" broker object in 
    *                              the Event broker hierarchy.

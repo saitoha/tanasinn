@@ -22,6 +22,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+"use strict";
+
 /**
  * @class MappingManagerBase
  * @brief Manage mappings.
@@ -83,7 +85,7 @@ MappingManagerBase.definition = {
   {
     var packed_code_array = coUtils.Keyboard.parseKeymapExpression(expression);
 
-    void function(context) 
+    void function impl(context) 
     {
       var code = packed_code_array.shift(),
           new_context = context[code];
@@ -91,7 +93,7 @@ MappingManagerBase.definition = {
       if (new_context.value) {
         delete new_context.value;
       } else {
-        arguments.callee(new_context);
+        impl(new_context);
       }
       if (!Object.getOwnPropertyNames(new_context).length) {
         delete context[code];
@@ -168,20 +170,18 @@ NormalMappingManager.definition = {
   "[persistable] mapleader": "<C-s>",
 
   /** Installs itself. 
-   *  @param {Broker} a broker object.
-   *  @notify initialized/inputmanager
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(broker)
+  function install(context)
   {
     this.installImpl("nmap");
   },
 
   /** Uninstalls itself. 
-   *  @param {Broker} a broker object.
    */
   "[uninstall]":
-  function uninstall(broker)
+  function uninstall()
   {
     this.uninstallImpl();
   },
@@ -258,20 +258,18 @@ CommandlineMappingManager.definition = {
   "[persistable] mapleader": "<C-s>",
 
   /** Installs itself. 
-   *  @param {Broker} a broker object.
-   *  @notify initialized/inputmanager
+   *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(broker)
+  function install(context)
   {
     this.installImpl("cmap");
   },
 
   /** Uninstalls itself. 
-   *  @param {Broker} a broker object.
    */
   "[uninstall]":
-  function uninstall(broker)
+  function uninstall()
   {
     this.uninstallImpl();
   },

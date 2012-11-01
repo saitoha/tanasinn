@@ -24,18 +24,44 @@
 
 "use strict";
 
-var SnapResize = new Class().extends(Component);
+var SnapResize = new Class().extends(Plugin)
+                            .depends("chrome")
+                            .depends("renderer");
 SnapResize.definition = {
 
   id: "snapresize",
 
-  /** post-constructor */
-  "[subscribe('@initialized/{chrome & renderer}'), enabled]":
-  function onLoad(chrome, renderer) 
+  getInfo: function getInfo()
   {
-    this._chrome = chrome;
-    this._renderer = renderer;
-    this.onWindowResized.enabled = true;  
+    return {
+      name: _("Drag Resize"),
+      version: "0.1",
+      description: _("Provides drag resize feature.")
+    };
+  },
+
+  "[persistable] enabled_when_startup": true,
+
+  _renderer: null,
+  _chrome: null,
+
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
+   */
+  "[install]":
+  function install(context) 
+  {
+    this._renderer = context["renderer"];
+    this._chrome = context["chrome"];
+  },
+
+  /** Uninstalls itself 
+   */
+  "[uninstall]":
+  function uninstall() 
+  {
+    this._renderer = null;
+    this._chrome = null;
   },
 
   "[subscribe('event/window-resized')]":
@@ -69,7 +95,8 @@ SnapResize.definition = {
  * @class CaptureBox
  *
  */
-var CaptureBox = new Class().extends(Plugin);
+var CaptureBox = new Class().extends(Plugin)
+                            .depends("chrome");
 CaptureBox.definition = {
 
   id: "capturebox",
@@ -84,7 +111,8 @@ CaptureBox.definition = {
   },
 
   getTemplate: function getTemplate()
-    ({
+  {
+    return {
       parentNode: "#tanasinn_chrome",
       tagName: "box",
       id: "tanasinn_capture_box",
@@ -96,18 +124,28 @@ CaptureBox.definition = {
         marginLeft: -this.capture_box_size / 2 + "px",
         marginTop: -this.capture_box_size / 2 + "px"
       }
-    }),
+    };
+  },
 
   "[persistable] enabled_when_startup": true,
   "[persistable] capture_box_size": 200,
 
-  /** post-constructor */
-  "[subscribe('@initialized/chrome'), enabled]":
-  function onLoad(chrome) 
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
+   */
+  "[install]":
+  function install(context) 
   {
-    var {tanasinn_capture_box} 
-      = this.request("command/construct-chrome", this.getTemplate());
-    this._box = tanasinn_capture_box;
+    var result = this.request("command/construct-chrome", this.getTemplate());
+
+    this._box = result.tanasinn_capture_box;
+  },
+
+  /** Uninstalls itself 
+   */
+  "[uninstall]":
+  function uninstall() 
+  {
   },
 
   "[subscribe('command/show-capture-box'), enabled]":
@@ -129,13 +167,16 @@ var Resizer = new Abstruct().extends(Component);
 Resizer.definition = {
 
   getTemplate: function getTemplate()
-    ({
+  {
+    return {
       parentNode: this.parent,
       tagName: "box",
       id: "tanasinn_" + this.type + "_resize",
       width: 10,
       height: 10,
-      style: "cursor: " + this.type + "-resize;",
+      style: {
+        cursor: this.type + "-resize",
+      },
       listener: [
         {
           type: "mousedown",
@@ -148,7 +189,8 @@ Resizer.definition = {
           handler: this.ondragstart,
         },
       ]
-    }),
+    };
+  },
 
   /** post-constructor */
   "[subscribe('@initialized/{chrome & renderer & screen}'), enabled]":
@@ -260,11 +302,9 @@ TopLeftResizer.definition = {
 
   id: "topleftresizer",
 
-  get parent()
-    "#tanasinn_resizer_topleft",
+  parent: "#tanasinn_resizer_topleft",
 
-  get type()
-    "nw",
+  type: "nw",
 };
 
 var TopRightResizer = new Class().extends(Resizer);
@@ -272,11 +312,9 @@ TopRightResizer.definition = {
 
   id: "toprightresizer",
 
-  get parent()
-    "#tanasinn_resizer_topright",
+  parent: "#tanasinn_resizer_topright",
 
-  get type()
-    "ne",
+  type: "ne",
 };
 
 var BottomLeftResizer = new Class().extends(Resizer);
@@ -284,11 +322,9 @@ BottomLeftResizer.definition = {
 
   id: "bottomleftresizer",
 
-  get parent()
-    "#tanasinn_resizer_bottomleft",
+  parent: "#tanasinn_resizer_bottomleft",
 
-  get type()
-    "sw",
+  type: "sw",
 };
 
 var BottomRightResizer = new Class().extends(Resizer);
@@ -296,11 +332,9 @@ BottomRightResizer.definition = {
 
   id: "bottomrightresizer",
 
-  get parent()
-    "#tanasinn_resizer_bottomright",
+  parent: "#tanasinn_resizer_bottomright",
 
-  get type()
-    "se",
+  type: "se",
 };
 
 var LeftResizer = new Class().extends(Resizer);
@@ -308,11 +342,9 @@ LeftResizer.definition = {
 
   id: "leftresizer",
 
-  get parent()
-    "#tanasinn_resizer_left",
+  parent: "#tanasinn_resizer_left",
 
-  get type()
-    "w",
+  type: "w",
 };
 
 var RightResizer = new Class().extends(Resizer);
@@ -320,11 +352,9 @@ RightResizer.definition = {
 
   id: "rightresizer",
 
-  get parent()
-    "#tanasinn_resizer_right",
+  parent: "#tanasinn_resizer_right",
 
-  get type()
-    "e",
+  type: "e",
 };
 
 var TopResizer = new Class().extends(Resizer);
@@ -332,11 +362,9 @@ TopResizer.definition = {
 
   id: "topresizer",
 
-  get parent()
-    "#tanasinn_resizer_top",
+  parent: "#tanasinn_resizer_top",
 
-  get type()
-    "n",
+  type: "n",
 };
 
 var BottomResizer = new Class().extends(Resizer);
@@ -344,11 +372,9 @@ BottomResizer.definition = {
 
   id: "bottomresizer",
 
-  get parent()
-    "#tanasinn_resizer_bottom",
+  parent: "#tanasinn_resizer_bottom",
 
-  get type()
-    "s",
+  type: "s",
 };
 
 /**

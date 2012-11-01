@@ -33,7 +33,7 @@
 
 function make_managed_handler(self, handler, topic)
 {
-  var wrapped_handler = function() 
+  function wrapped_handler() 
   {
     return handler.apply(self, arguments);
   };
@@ -43,10 +43,9 @@ function make_managed_handler(self, handler, topic)
 
 function apply_attribute(self, broker, key, expressions, attribute)
 {
-  var handler, wrapped_handler, id;
-
-  handler = self[key];
-  id = self.id + "." + key;
+  var handler = self[key],
+      id = self.id + "." + key,
+      wrapped_handler;
 
   if (handler.id) {
     wrapped_handler = handler;
@@ -83,7 +82,7 @@ function apply_attribute(self, broker, key, expressions, attribute)
     "command/save-persistable-data", 
     function persist(context) // Save settings to persistent context.
     {
-      if (expressions.join("") != wrapped_handler.expressions.join("")) {
+      if (expressions.join("") !== wrapped_handler.expressions.join("")) {
         context[wrapped_handler.id + ".cmap"] = wrapped_handler.expressions;
       }
     }, self);
@@ -97,32 +96,6 @@ function apply_attribute(self, broker, key, expressions, attribute)
  */
 var CmapAttribute = new Attribute("cmap");
 CmapAttribute.definition = {
-
-  get __id()
-    "cmap",
-
-  get __info()
-  {
-    return {
-      name: _("Default CMap"),
-      description: _("Provides default keybind replacement settings in command line field.")
-      /*
-      <![CDATA[
-        "cmap" attribute defines default keybind replacement settings in command 
-        line field. this settings are deald as "persistable".
-
-        usage:
-
-          "[cmap('<C-n>', '<F7>')]": 
-          function func1() 
-          {
-            ....
-          },
-
-      ]]>
-      */
-    };
-  },
 
   /** constructor 
    *  @param {EventBroker} broker Parent broker object.

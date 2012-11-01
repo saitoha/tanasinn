@@ -22,6 +22,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+"use strict";
+
 /** 
  * @class domEventManager
  * @brief A thin wrapper of Element.addEventListener / Element.removeEventListener.

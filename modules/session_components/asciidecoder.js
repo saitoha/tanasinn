@@ -36,7 +36,9 @@ AsciiDecoder.definition = {
   id: "ascii_decoder",
 
   get scheme()
-    "ascii",
+  {
+    return "ascii";
+  },
 
   getInfo: function getInfo()
   {
@@ -48,9 +50,25 @@ AsciiDecoder.definition = {
   },
 
   "[persistable] enabled_when_startup": true,
+
   "[persistable] displacement": 0x3f,
 
-  "[subscribe('get/decoders'), enabled]":
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
+   */
+  "[install]":
+  function install(context) 
+  {
+  },
+
+  /** uninstalls itself. 
+   */
+  "[uninstall]":
+  function uninstall() 
+  {
+  },
+
+  "[subscribe('get/decoders'), pnp]":
   function getDecoders() 
   {
     return {

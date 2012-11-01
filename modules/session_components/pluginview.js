@@ -94,7 +94,12 @@ PluginViewer.definition = {
             self._broker.subscribe("event/dependencies-updated",
               function() 
               {
-                var depends, depended, depends_on, depends_by, disabled;
+                var depends,
+                    depended,
+                    depends_on,
+                    depended_by,
+                    disabled;
+
                 this.setAttribute("checked", module.enabled);
 
                 depends = self._depends_map[module.id];
@@ -205,10 +210,9 @@ PluginViewer.definition = {
 
   firstUpdate: function firstUpdate()    
   {
-    var depends_on, depends_by;
+    var depends_on = {},
+        depended_by = {};
 
-    depends_on = {};
-    depended_by = {};
     this._modules.forEach(function(module) 
     {
       depends_on[module.id] = depends_on[module.id] || {};
@@ -240,10 +244,9 @@ PluginViewer.definition = {
 
   update: function update()    
   {
-    var depends_on, depends_by;
+    var depends_on = {},
+        depended_by = {};
 
-    depends_on = {};
-    depended_by = {};
     this._modules.forEach(function(module) 
     {
       depends_on[module.id] = depends_on[module.id] || {};
@@ -302,18 +305,44 @@ PluginViewer.definition = {
 /**
  * @class PluginManagementCommands
  */
-var PluginManagementCommands = new Class().extends(Component);
+var PluginManagementCommands = new Class().extends(Plugin);
 PluginManagementCommands.definition = {
 
   id: "plugin_management_commands",
 
-  "[command('disable', ['plugin/enabled']), _('Disable a plugin.'), enabled]":
+  getInfo: function getInfo()
+  {
+    return {
+      name: _("Plugin Management Commands"),
+      description: _("Provides enable/disable commands."),
+      version: "0.1",
+    };
+  },
+
+  "[persistable] enabled_when_startup": true,
+
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
+   */
+  "[install]":
+  function install(context) 
+  {
+  },
+
+  /** Uninstalls itself.
+   */
+  "[uninstall]":
+  function uninstall() 
+  {
+  },
+
+  "[command('disable', ['plugin/enabled']), _('Disable a plugin.'), pnp]":
   function disable(arguments_string)
   {
     return this._impl(arguments_string, /* is_enable */ false);
   },
 
-  "[command('enable', ['plugin/disabled']), _('Enable a plugin.'), enabled]":
+  "[command('enable', ['plugin/disabled']), _('Enable a plugin.'), pnp]":
   function enable(arguments_string)
   {
     return this._impl(arguments_string, /* is_enable */ true);
