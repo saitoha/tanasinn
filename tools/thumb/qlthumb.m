@@ -66,6 +66,7 @@ int main(int argc, char *argv[])
         return -1;
 
     NSBitmapImageRep *rawImage = [NSBitmapImageRep imageRepWithData:[iconImage TIFFRepresentation]];
+
     rawImage = fillBackground(rawImage);
     NSDictionary *properties = [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:YES]
                                                            forKey:NSImageInterlaced];
@@ -74,6 +75,7 @@ int main(int argc, char *argv[])
                                           properties:properties];
     [data writeToFile:@"/dev/stdout"
            atomically:NO];
+
     [pool release];
     return 0;
 }

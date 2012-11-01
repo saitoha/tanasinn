@@ -841,6 +841,37 @@ Renderer.definition = {
     }
   },
 
+  _get_fore_color: function _get_fore_color(attr)
+  {
+    var fore_color_map = this.color,
+        fore_color;
+
+    // Get hexadecimal formatted text color (#xxxxxx) 
+    // form given attribute structure. 
+    if (attr.fgcolor) {
+      if (attr.inverse) {
+        fore_color = fore_color_map[attr.bg];
+      } else {
+        fore_color = fore_color_map[attr.fg];
+      }
+    } else {
+      if (attr.inverse) {
+        fore_color = this.background_color;
+      } else {
+        fore_color = this.foreground_color;
+      }
+    }
+
+    if (this._reverse) {
+      fore_color = (parseInt(fore_color.substr(1), 16) ^ 0x1ffffff)
+        .toString(16)
+        .replace(/^1/, "#");
+    }
+
+    return fore_color;
+
+  },
+
   _drawText: function _drawText(context, codes, x, y, char_width, length, attr)
   {
     var text = String.fromCharCode.apply(String, codes);

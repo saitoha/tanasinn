@@ -4,7 +4,6 @@ all:
 		-framework QuickLook \
 		Cocoa
 	$(CC) -o display display.c
-	./qlthumb . > b.png
 
 
 

@@ -293,7 +293,7 @@ SGRHandler.definition = {
             break;
 
           case 30:
-            attr.fg = 3;
+            attr.fg = 0;
             //attr.fgcolor = 0;
             break;
 
