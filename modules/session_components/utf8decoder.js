@@ -208,9 +208,7 @@ UTF8Decoder.definition = {
         return this.displacement;
       }
       return result;
-    }
-    /*
-    else if (c < 0xfc) {
+    } else if (c < 0xfc) {
       // 111110xx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx
       // (0x00200000 - 0x03ffffff) // 26bit 
       if (0x3e !== c >>> 2) {
@@ -314,7 +312,6 @@ UTF8Decoder.definition = {
       }
       return result;
     }
-    */
     return this.displacement;
   },
 

@@ -570,6 +570,7 @@ NRCSConverter.definition = {
   function install(context) 
   {
     this._g = [];
+    this.reset();
   },
 
   /** Uninstalls itself. 
@@ -695,7 +696,7 @@ NRCSConverter.definition = {
   convert: function convert(codes) 
   {
     var left = this._g[this._next || this._gl] || USASCII,
-        right = this._g[this._gr] || USASCII,
+        right = this._g[this._gr] || ISO_8859_Latin1,
         result,
         i,
         c;
