@@ -356,6 +356,19 @@ coUtils.Components = {
     return this._alert_service;
   },
 
+  _environment: null,
+
+  getEnvironment: function getEnvironment()
+  {
+    if (null === this._environment) {
+      this._environment = Components
+        .classes["@mozilla.org/process/environment;1"].
+        getService(Components.interfaces.nsIEnvironment);
+    }
+
+    return this._environment;
+  },
+
   _sound: null,
 
   getSound: function getSound()
