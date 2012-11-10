@@ -32,7 +32,7 @@ coUtils.Timer = {
 
   wait: function wait(wait) 
   {
-    var enc_time = Date.now() + wait,
+    var end_time = Date.now() + wait,
         current_thread = this._thread_manager.currentThread;
 
     do {
@@ -101,4 +101,4 @@ coUtils.Timer = {
 
 }; // coUtils.Timer
 
-
+// EOF
