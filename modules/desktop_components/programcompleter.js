@@ -69,6 +69,8 @@ ProgramCompleter.definition = {
 
   id: "program-completer",
 
+  _files: null,
+
   getInfo: function getInfo()
   {
     return {
@@ -104,18 +106,10 @@ ProgramCompleter.definition = {
 
   _getSearchPath: function _getSearchPath()
   {
-    var environment,
-        path,
+    var environment = coUtils.Components.getEnvironment(),
+        path = environment.get("PATH"),
         delimiter,
         paths;
-
-    // get environment object
-    environment = Components
-      .classes["@mozilla.org/process/environment;1"].
-      getService(Components.interfaces.nsIEnvironment);
-
-    // get PATH variable from environment
-    path = environment.get("PATH");
 
     // detect delimiter for PATH string
     delimiter = ("WINNT" === coUtils.Runtime.os) ? ";": ":"
@@ -147,36 +141,14 @@ ProgramCompleter.definition = {
   startSearch: function startSearch(source, listener)
   {
     var lower_source = source.toLowerCase(),
-        search_paths,
-        files, 
         data,
-        autocomplete_result,
-        search_path,
-        map;
+        autocomplete_result;
 
-    if ("WINNT" === coUtils.Runtime.os) {
-      map = (coUtils.Runtime.getBinPath() || "/bin:/usr/local/bin")
-        .split(":")
-        .map(function(posix_path) 
-        {
-          return coUtils.Runtime.getCygwinRoot()
-                + "\\"
-                + posix_path.replace(/\//g, "\\");
-        }).reduce(
-          function(map, path) 
-          {
-            var key = path.replace(/\\$/, "");
-
-            map[key] = undefined;
-            return map; 
-          }, {});
-      search_path = [key for ([key,] in Iterator(map))];
-    } else {
-      search_path = this._getSearchPath();
+    if (null === this._files) {
+      this._prepareCompletionData();
     }
 
-    files = [file for (file in generateEntries(search_path))];
-    data = files.map(
+    data = this._files.map(
       function(file) 
       {
         var path = file.path;
@@ -226,6 +198,43 @@ ProgramCompleter.definition = {
     return 0;
   },
 
+  _prepareCompletionData: function _prepareCompletionData()
+  {
+    var search_paths,
+        files, 
+        autocomplete_result,
+        search_path,
+        map;
+
+    if ("WINNT" === coUtils.Runtime.os) {
+      map = (coUtils.Runtime.getBinPath() || "/bin:/usr/local/bin")
+        .split(":")
+        .map(function(posix_path) 
+        {
+          return coUtils.Runtime.getCygwinRoot()
+                + "\\"
+                + posix_path.replace(/\//g, "\\");
+        }).reduce(
+          function(map, path) 
+          {
+            var key = path.replace(/\\$/, "");
+
+            map[key] = undefined;
+            return map; 
+          }, {});
+      search_path = [key for ([key,] in Iterator(map))];
+    } else {
+      search_path = this._getSearchPath();
+    }
+
+    this._files = [file for (file in generateEntries(search_path))];
+  },
+
+  "[subscribe('event/idle'), pnp]": 
+  function onIdle()
+  {
+    this._prepareCompletionData();
+  },
 };
 
 /**
