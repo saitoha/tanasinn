@@ -1,7 +1,18 @@
 
 
+- Support Windows 8 RTM
+- Support Hangl Jamo
+
+- Fix full-width character copy/paste issue
 - Fix Ctrl + Space issue on X11 environment
 - Fix Alt-Shift issue on WINNT/X11 environment
+
+- UCS mode / ISO-2022 mode
+- The width issue of DEC Special graphics
+
+- Support OSC 5 (alternative attributes)
+- Support OSC 13/14 (corsor color)
+- Completion issue after Ctrl + P / Ctrl + N
 
 - main buffer's adaptive resize
 - Improve drag move experience

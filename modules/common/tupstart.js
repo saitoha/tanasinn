@@ -464,10 +464,13 @@ EventBroker.prototype = {
    */
   load: function load(broker, search_path, scope) 
   {
-    var paths = coUtils.File.getFileEntriesFromSerchPath(search_path);
-    var entry;
-    var url;
-    for (entry in paths) {
+    var paths = coUtils.File.getFileEntriesFromSearchPath(search_path),
+        entry,
+        url,
+        i = 0;
+
+    for (; i < paths.length; ++i) {
+      entry = paths[i];
       try {
         // make URI string such as "file://....".
         url = coUtils.File.getURLSpec(entry); 

@@ -42,6 +42,7 @@ Kill.definition = {
   },
 
   "[persistable] enabled_when_startup": true,
+  "[persistable] kill_delay": 500,
 
   /** Installs itself. 
    *  @param {InstallContext} context A InstallContext object.
@@ -86,8 +87,6 @@ Kill.definition = {
   "[command('detach'), _('detach from process.'), pnp]":
   function detach() 
   {
-    var broker;
-
     // stops TTY device.
     this.sendMessage("command/detach"); 
   },
@@ -98,13 +97,12 @@ Kill.definition = {
   {
     // stops TTY device.
     this.sendMessage("command/kill"); 
-
-    broker = this._broker;
+    this.sendMessage("event/before-broker-stopping");
     coUtils.Timer.setTimeout(
       function timerProc()
       {
-        broker.stop(); 
-      }, 1500);
+        this._broker.stop(); 
+      }, this.kill_delay, this);
   },
 }
 

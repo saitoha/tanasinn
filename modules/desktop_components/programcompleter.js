@@ -64,12 +64,41 @@ function generateEntries(paths)
 /** 
  * @class ProgramCompleter
  */
-var ProgramCompleter = new Class().extends(Component);
+var ProgramCompleter = new Class().extends(Plugin);
 ProgramCompleter.definition = {
 
   id: "program-completer",
 
-  "[subscribe('get/completer/program'), enabled]":
+  _files: null,
+
+  getInfo: function getInfo()
+  {
+    return {
+      name: _("Program Completer"),
+      version: "0.1",
+      description: _("Provides the completion information of executable programs.")
+    };
+  },
+
+  "[persistable, watchable] enabled_when_startup": true,
+
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
+   */
+  "[install]":
+  function install(context)
+  {
+  },
+
+  /** Uninstalls itself. 
+   *  @param {InstallContext} context A InstallContext object.
+   */
+  "[uninstall]":
+  function uninstall(context)
+  {
+  },
+
+  "[subscribe('get/completer/program'), pnp]":
   function onCompletersRequested(broker)
   {
     return this;
@@ -77,18 +106,10 @@ ProgramCompleter.definition = {
 
   _getSearchPath: function _getSearchPath()
   {
-    var environment,
-        path,
+    var environment = coUtils.Components.getEnvironment(),
+        path = environment.get("PATH"),
         delimiter,
         paths;
-
-    // get environment object
-    environment = Components
-      .classes["@mozilla.org/process/environment;1"].
-      getService(Components.interfaces.nsIEnvironment);
-
-    // get PATH variable from environment
-    path = environment.get("PATH");
 
     // detect delimiter for PATH string
     delimiter = ("WINNT" === coUtils.Runtime.os) ? ";": ":"
@@ -119,44 +140,19 @@ ProgramCompleter.definition = {
    */
   startSearch: function startSearch(source, listener)
   {
-    var broker = this._broker,
-        lower_source = source.toLowerCase(),
-        search_paths,
-        files, 
+    var lower_source = source.toLowerCase(),
         data,
-        autocomplete_result,
-        search_path,
-        cygwin_root,
-        map;
+        autocomplete_result;
 
-    if ("WINNT" === coUtils.Runtime.os) {
-      cygwin_root = broker.cygwin_root;
-      map = (broker.bin_path || "/bin:/usr/local/bin")
-        .split(":")
-        .map(function(posix_path) 
-        {
-          return cygwin_root + "\\" + posix_path.replace(/\//g, "\\");
-        }).reduce(
-          function(map, path) 
-          {
-            var key;
-
-            key = path.replace(/\\$/, "");
-            map[key] = undefined;
-            return map; 
-          }, {});
-      search_path = [key for ([key,] in Iterator(map))];
-    } else {
-      search_path = this._getSearchPath();
+    if (null === this._files) {
+      this._prepareCompletionData();
     }
 
-    files = [file for (file in generateEntries(search_path))];
-    data = files.map(
+    data = this._files.map(
       function(file) 
       {
-        var path;
-
-        path = file.path;
+        var path = file.path;
+        
         if ("WINNT" === coUtils.Runtime.os) {
           path = path
             .replace(/\\/g, "/")
@@ -202,6 +198,43 @@ ProgramCompleter.definition = {
     return 0;
   },
 
+  _prepareCompletionData: function _prepareCompletionData()
+  {
+    var search_paths,
+        files, 
+        autocomplete_result,
+        search_path,
+        map;
+
+    if ("WINNT" === coUtils.Runtime.os) {
+      map = (coUtils.Runtime.getBinPath() || "/bin:/usr/local/bin")
+        .split(":")
+        .map(function(posix_path) 
+        {
+          return coUtils.Runtime.getCygwinRoot()
+                + "\\"
+                + posix_path.replace(/\//g, "\\");
+        }).reduce(
+          function(map, path) 
+          {
+            var key = path.replace(/\\$/, "");
+
+            map[key] = undefined;
+            return map; 
+          }, {});
+      search_path = [key for ([key,] in Iterator(map))];
+    } else {
+      search_path = this._getSearchPath();
+    }
+
+    this._files = [file for (file in generateEntries(search_path))];
+  },
+
+  "[subscribe('event/idle'), pnp]": 
+  function onIdle()
+  {
+    this._prepareCompletionData();
+  },
 };
 
 /**

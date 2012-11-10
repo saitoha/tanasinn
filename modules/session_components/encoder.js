@@ -24,6 +24,42 @@
 
 "use strict";
 
+coUtils.Unicode = {
+
+  getUTF8ByteStreamGenerator: function getUTF8ByteStreamGenerator(str) 
+  {
+    var c,
+        code;
+
+    for each (c in str) {
+      code = c.charCodeAt(0);
+      if (code < 0x80)
+        // xxxxxxxx -> xxxxxxxx
+        yield code;
+      else if (code < 0x800) {
+        // 00000xxx xxxxxxxx -> 110xxxxx 10xxxxxx
+        yield (code >>> 6) | 0xc0;
+        yield (code & 0x3f) | 0x80; 
+      }
+      else if (code < 0x10000) {
+        // xxxxxxxx xxxxxxxx -> 1110xxxx 10xxxxxx 10xxxxxx
+        yield (code >>> 12) | 0xe0;
+        yield ((code >>> 6) & 0x3f) | 0x80;
+        yield (code & 0x3f) | 0x80; 
+      }
+      else  {
+        // 000xxxxx xxxxxxxx xxxxxxxx -> 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
+        yield (code >>> 18) | 0xf0;
+        yield ((code >>> 12) & 0x3f) | 0x80; 
+        yield ((code >>> 6) & 0x3f) | 0x80; 
+        yield (code & 0x3f) | 0x80; 
+      }
+    }
+  },
+
+};
+
+
 /**
  * @class Encoder
  *

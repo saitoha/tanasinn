@@ -64,27 +64,6 @@ function apply_attribute(self, key)
 var WatchableAttribute = new Attribute("watchable");
 WatchableAttribute.definition = {
 
-  get __id()
-    "watchable",
-
-  get __info()
-  {
-    return {
-      name: _("Watchable"),
-      description: _("Declare a watchable member.")
-      /*
-      <![CDATA[
-        "watchable" declare a watchable member.
-
-        usage:
-
-          "[watchable] char_width": 6.5, 
-
-      ]]>
-      */
-    };
-  },
-
   /** constructor 
    *  @param {EventBroker} broker Parent broker object.
    */

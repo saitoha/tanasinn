@@ -63,11 +63,8 @@ BatchLoader.definition = {
   "[command('import', ['batch']), _('load batch file from search path.'), pnp]":
   function loadBatchCommand(name) 
   {
-    var broker = this._broker,
-        file = coUtils.File.getFileLeafFromVirtualPath(
-          broker.runtime_path + 
-          "/" + 
-          broker.batch_directory);
+    var file = coUtils.File.getFileLeafFromVirtualPath(
+          coUtils.Runtime.getBatchDirectory());
 
     file.append(name);
 
@@ -85,16 +82,14 @@ BatchLoader.definition = {
   function sourceCommand(arguments_string)
   {
     var path = arguments_string.replace(/^\s*|\s*$/g, ""),
-        broker,
-        cygwin_root,
         home,
         file;
 
     if ("$" !== path.charAt(0) && !coUtils.File.isAbsolutePath(path)) {
       if ("WINNT" === coUtils.Runtime.os) {
-        broker = this._broker;
-        cygwin_root = broker.cygwin_root;
-        path = cygwin_root + coUtils.File.getPathDelimiter() + path.replace(/\//g, "\\");
+        path = coUtils.Runtime.getCygwinRoot()
+             + coUtils.File.getPathDelimiter()
+             + path.replace(/\//g, "\\");
       } else {
         home = coUtils.File.getFileLeafFromVirtualPath("$Home");
         path = home.path + coUtils.File.getPathDelimiter() + path;
@@ -136,8 +131,7 @@ BatchLoader.definition = {
   function onFirstFocus() 
   {
     // load rc file.
-    var broker = this._broker,
-        path = broker.runtime_path + "/" + broker.rcfile;
+    var path = coUtils.Runtime.getResourceFilePath();
 
     this.sendMessage("command/source", path);
   },
@@ -149,8 +143,7 @@ BatchLoader.definition = {
   "[command('execcgi', ['cgi']), subscribe('command/execute-cgi'), enabled]":
   function execCGI(arguments_string) 
   {
-    var broker = this._broker,
-        path = broker.runtime_path
+    var path = coUtils.Runtime.getRuntimePath()
              + "/cgi-bin/"
              + arguments_string.replace(/^\s+|\s+$/, ""),
         executable_path;
@@ -159,8 +152,8 @@ BatchLoader.definition = {
         external_process;
 
     if ("WINNT" === os) {
-      cygwin_root = broker.cygwin_root;
-      executable_path = cygwin_root + "\\bin\\run.exe";
+      executable_path = coUtils.Runtime.getCygwinRoot()
+                      + "\\bin\\run.exe";
     } else {
       executable_path = "/bin/sh";
     }

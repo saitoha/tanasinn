@@ -33,52 +33,22 @@ Environment.definition = {
 
 // public properties
 
-  /** @property bin_path */
-  get bin_path()
-  {
-    var broker = this._broker;
-    return broker.bin_path;
-  },
-
-  set bin_path(value)
-  {
-    var broker = this._broker;
-    broker.bin_path = value;
-  },
-
-
-  /** @property runtime_path */
-  get runtime_path()
-  {
-    var broker = this._broker;
-    return broker.runtime_path;
-  },
-
-  set runtime_path(value)
-  {
-    var broker = this._broker;
-    broker.runtime_path = value;
-  },
-
   /** @property search_path */
   get search_path()
   {
+    var runtimepath = coUtils.Runtime.getRuntimePath();
+
     return this._search_path || [
       "modules/desktop_components",
       "modules/shared_components",
-      this.runtime_path + "/modules/desktop_components",
-      this.runtime_path + "/modules/shared_components"
+      runtimepath + "/modules/desktop_components",
+      runtimepath + "/modules/shared_components"
     ];
   },
 
   set search_path(value)
   {
     this._search_path = value;
-  },
-
-  get cygwin_root()
-  {
-    return this._broker.cygwin_root;
   },
 
 }; // Environment
@@ -137,30 +107,7 @@ Desktop.definition = {
   function install()
   {
     var id, 
-        root_element,
-        broker = this._broker;
-
-    // register getter topic.
-    this.subscribe(
-      "get/bin-path",
-      function()
-      {
-        return broker.bin_path;
-      });
-
-    this.subscribe(
-      "get/python-path", 
-      function()
-      {
-        return broker.python_path;
-      });
-
-    this.subscribe(
-      "get/runtime-path", 
-      function()
-      {
-        return broker.runtime_path;
-      });
+        root_element;
 
     root_element = this.window.document
       .documentElement
@@ -250,6 +197,19 @@ Desktop.definition = {
 
 }; // Desktop
 
+var DesktopFactory = new Class().extends(Plugin);
+DesktopFactory.definition = {
+
+  "[subscribe('event/new-window-detected'), enabled]":
+  function onNewWindowDetected(window)
+  {
+    var desktop = new Desktop(this._broker);
+
+    return desktop.initializeWithWindow(window);
+  },
+
+}; // DesktopFactory
+
 /**
  * @fn main
  * @brief Module entry point
@@ -257,12 +217,7 @@ Desktop.definition = {
  */
 function main(process) 
 {
-  process.subscribe(
-    "event/new-window-detected",
-    function onDesktopRequested(window) 
-    {
-      return new Desktop(process).initializeWithWindow(window);
-    });
+  new DesktopFactory(process);
 }
 
 // EOF

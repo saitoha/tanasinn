@@ -29,12 +29,39 @@
  * @class TextCompletionDisplayDriver
  *
  */
-var TextCompletionDisplayDriver = new Class().extends(Component);
+var TextCompletionDisplayDriver = new Class().extends(Plugin);
 TextCompletionDisplayDriver.definition = {
 
   id: "text-completion-display-driver",
 
-  "[subscribe('get/completion-display-driver/text'), enabled]":
+  getInfo: function getInfo()
+  {
+    return {
+      name: _("Launcher Text Completion Display Driver"),
+      version: "0.1",
+      description: _("Draw text completion information for launcher.")
+    };
+  },
+
+  "[persistable, watchable] enabled_when_startup": true,
+
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
+   */
+  "[install]":
+  function install(context)
+  {
+  },
+
+  /** Uninstalls itself. 
+   *  @param {InstallContext} context A InstallContext object.
+   */
+  "[uninstall]":
+  function uninstall(context)
+  {
+  },
+
+  "[subscribe('get/completion-display-driver/text'), pnp]":
   function onDisplayDriverRequested(broker)
   {
     return this;
@@ -113,7 +140,7 @@ TextCompletionDisplayDriver.definition = {
         });
     } // for i
   },
-};
+}; // TextCompletionDisplayDriver
 
 
 /**

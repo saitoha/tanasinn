@@ -186,7 +186,7 @@ PaletteManager.definition = {
             + "/" + color.substr(3, 2) 
             + "/" + color.substr(5, 2)
       message = "4;" + number + ";" + color;
-      this.sendMessage("command/send-to-tty", message);
+      this.sendMessage("command/send-sequence/osc", message);
     } else { // set color
       this.color[number] = coUtils.Color.parseX11ColorSpec(spec);
     }
@@ -207,7 +207,7 @@ PaletteManager.definition = {
 
     this.sendMessage("command/load-persistable-data", scope);
 
-    color = scope["renderer.color"] || this.__proto__.color;
+    color = scope["palette.color"] || this.__proto__.color;
     this.color[number] = color[number];
   },
 
@@ -228,7 +228,7 @@ PaletteManager.definition = {
             + "/" + color.substr(3, 2) 
             + "/" + color.substr(5, 2)
       message = "10;" + color;
-      this.sendMessage("command/send-to-tty", message);
+      this.sendMessage("command/send-sequence/osc", message);
     } else { 
       color = coUtils.Color.parseX11ColorSpec(value);
       outerchrome.foreground_color = color;
@@ -267,7 +267,7 @@ PaletteManager.definition = {
             + "/" + color.substr(3, 2) 
             + "/" + color.substr(5, 2)
       message = "11;" + color;
-      this.sendMessage("command/send-to-tty", message);
+      this.sendMessage("command/send-sequence/osc", message);
     } else {
       color = coUtils.Color.parseX11ColorSpec(value);
       outerchrome.background_color = color;
@@ -321,8 +321,7 @@ PaletteManager.definition = {
   "[subscribe('@command/backup'), type('Object -> Undefined'), pnp]": 
   function backup(context) 
   {
-    var broker = this._broker,
-        path,
+    var path,
         file;
     
     // serialize this plugin object.
@@ -330,8 +329,6 @@ PaletteManager.definition = {
       reverse: this._reverse,
       color: this.color,
     };
-
-    this.onIdle();
   },
 
   /**
@@ -359,14 +356,14 @@ PaletteManager.definition = {
 
     // Get hexadecimal formatted text color (#xxxxxx) 
     // form given attribute structure. 
-    if (attr.fgcolor) {
-      if (attr.inverse) {
-         this.color[attr.bg];
+    if (1 === attr.fgcolor) {
+      if (1 === attr.inverse) {
+        fore_color = this.color[attr.bg];
       } else {
         fore_color = this.color[attr.fg];
       }
     } else {
-      if (attr.inverse) {
+      if (1 === attr.inverse) {
         fore_color = this.background_color;
       } else {
         fore_color = this.foreground_color;
@@ -389,14 +386,14 @@ PaletteManager.definition = {
 
     /* Get hexadecimal formatted background color (#xxxxxx) 
      * form given attribute structure. */
-    if (attr.bgcolor) {
-      if (attr.inverse) {
+    if (1 === attr.bgcolor) {
+      if (1 === attr.inverse) {
         back_color = this.color[attr.fg];
       } else {
         back_color = this.color[attr.bg];
       }
     } else {
-      if (attr.inverse) {
+      if (1 === attr.inverse) {
         back_color = this.foreground_color;
       } else {
         return null;

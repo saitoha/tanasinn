@@ -27,12 +27,39 @@
 /** 
  * @class LauncherCompletionProvider
  */
-var LauncherCompletionProvider = new Class().extends(Component);
+var LauncherCompletionProvider = new Class().extends(Plugin);
 LauncherCompletionProvider.definition = {
 
   id: "launcher-completion-provider",
 
-  "[subscribe('command/complete'), enabled]": 
+  getInfo: function getInfo()
+  {
+    return {
+      name: _("Launcher Completion Provider"),
+      version: "0.1",
+      description: _("Provides completion information for launcher.")
+    };
+  },
+
+  "[persistable, watchable] enabled_when_startup": true,
+
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
+   */
+  "[install]":
+  function install(context)
+  {
+  },
+
+  /** Uninstalls itself. 
+   *  @param {InstallContext} context A InstallContext object.
+   */
+  "[uninstall]":
+  function uninstall(context)
+  {
+  },
+
+  "[subscribe('command/complete'), pnp]": 
   function complete(request)
   {
     var source = request.source,

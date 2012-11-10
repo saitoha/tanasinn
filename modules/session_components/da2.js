@@ -130,28 +130,16 @@ SecondaryDA.definition = {
   "[subscribe('sequence/DA2'), pnp]":
   function reply()
   {
-    var message;
-
     //
-    // 32;  terminal ID 
+    // 0;  terminal ID 
     // 277: Firmware version (for xterm, this is the XFree86 patch 
     //      number, starting with 95). 
     // 2:   DEC Terminal"s ROM cartridge registration number, 
     //      always zero.
     //
-    //message = ">32;277;0c";
-    //this.sendMessage("command/send-to-tty", message);
-
-    //var csi = this.request("command/get-sequence/csi");
-    //this.sendMessage("command/send-to-tty", "\x1b[>41;281;0c");
-
     this.sendMessage(
       "command/send-sequence/csi",
-      ">41;277;0c");
-
-    //coUtils.Debug.reportMessage(
-    //  _("Secondary Device Attributes is requested. reply: '%s'."), 
-    //  "\\e" + message);
+      ">0;277;0c");
   },
 
 };

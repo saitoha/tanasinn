@@ -103,7 +103,7 @@ IdleService.definition = {
   },
 
 
-}; // Decoder
+}; // IdleService
 
 /**
  * @fn main

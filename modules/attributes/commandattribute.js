@@ -149,31 +149,6 @@ function apply_attribute(self, broker, key, command_arguments, attribute)
 var CommandAttribute = new Attribute("command");
 CommandAttribute.definition = {
 
-  get __id()
-    "completer",
-
-  get __info()
-  {
-    return {
-      name: _("Command"),
-      description: _("Declares a command procedure.")
-      /*
-      <![CDATA[
-        "command" attribute declares a command procedure. 
-
-        usage:
-
-          "[command('command1', ['arg1_completer']), _('description.'), enabled]":
-          function command1(arguments_string)
-          {
-            ....
-          },
-
-      ]]>
-      */
-    };
-  },
-
   /** constructor 
    *  @param {EventBroker} broker Parent broker object.
    */

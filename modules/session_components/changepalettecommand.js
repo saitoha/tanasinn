@@ -29,7 +29,7 @@
  * @class ChangePaletteCommand
  */
 var ChangePaletteCommand = new Class().extends(Plugin)
-                               .depends("renderer");
+                               .depends("palette");
 ChangePaletteCommand.definition = {
 
   id: "colorcommands",
@@ -45,7 +45,7 @@ ChangePaletteCommand.definition = {
 
   "[persistable] enabled_when_startup": true,
 
-  _renderer: null,
+  _palette: null,
 
   /** Installs itself. 
    *  @param {InstallContext} context A InstallContext object.
@@ -53,7 +53,7 @@ ChangePaletteCommand.definition = {
   "[install]":
   function install(context) 
   {
-    this._renderer = context["renderer"];
+    this._palette = context["palette"];
   },
 
   /** Uninstalls itself 
@@ -61,7 +61,7 @@ ChangePaletteCommand.definition = {
   "[uninstall]":
   function uninstall() 
   {
-    this._renderer = null;
+    this._palette = null;
   },
 
   "[command('changepallet', ['color-number/fg']), _('Change pallet.'), pnp]":
@@ -71,7 +71,7 @@ ChangePaletteCommand.definition = {
         match = arguments_string.match(pattern),
         number,
         color,
-        renderer = this._renderer;
+        palette = this._palette;
 
     if (null === match) {
       return {
@@ -85,7 +85,7 @@ ChangePaletteCommand.definition = {
     number = match[1];
     color = match[2];
 
-    renderer.color[number] = color;
+    palette.color[number] = color;
 
     this.sendMessage("command/draw", /* redraw */true);
 

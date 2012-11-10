@@ -132,7 +132,7 @@ CGICompleter.definition = {
     }
 
     directory = coUtils.File.getFileLeafFromVirtualPath(
-      broker.runtime_path + "/" + broker.cgi_directory);
+      coUtils.Runtime.getCGIDirectory());
     entries = generateFileEntries(directory.path);
 
     lower_name = name.toLowerCase();
@@ -249,7 +249,7 @@ BatchCompleter.definition = {
     }
 
     directory = coUtils.File.getFileLeafFromVirtualPath(
-      broker.runtime_path + "/" + broker.batch_directory);
+      coUtils.Runtime.getRuntimePath() + "/" + broker.batch_directory);
     entries = generateFileEntries(directory.path);
 
     lower_name = name.toLowerCase();
@@ -334,7 +334,8 @@ ProfileCompleter.definition = {
         option,
         entries,
         lower_name,
-        candidates;
+        candidates,
+        i = 0;
 
     if (null === match) {
       this.sendMessage("event/answer-completion", null);
@@ -364,17 +365,22 @@ ProfileCompleter.definition = {
       broker = broker._broker;
     }
 
-    entries = coUtils.File.getFileEntriesFromSerchPath(
-        [broker.runtime_path + "/" + broker.profile_directory]);
-
     lower_name = name.toLowerCase();
-    candidates = [
-      {
-        key: file.leafName.replace(/\.js$/, ""), 
-        value: file.path,
-      } for (file in entries) 
-        if (-1 !== file.leafName.toLowerCase().indexOf(lower_name))
-    ];
+
+    entries = coUtils.File.getFileEntriesFromSearchPath(
+        [coUtils.Runtime.getRuntimePath() + "/" + broker.profile_directory]);
+
+    candidates = [];
+
+    for (; i < entries.length; ++i) {
+      file = entries[i];
+      if (-1 !== file.leafName.toLowerCase().indexOf(lower_name)) {
+        candidates.push({
+          key: file.leafName.replace(/\.js$/, ""), 
+          value: file.path,
+        });
+      }
+    }
 
     if (0 === candidates.length) {
       this.sendMessage("event/answer-completion", null);
@@ -452,8 +458,7 @@ FileCompleter.definition = {
         candidates,
         home,
         lower_leaf,
-        stem_length,
-        cygwin_root;
+        stem_length;
 
     stem = match[1];
     leaf = match[2];
@@ -468,8 +473,9 @@ FileCompleter.definition = {
     if (stem) {
       if (!coUtils.File.isAbsolutePath(stem)) {
         if ("WINNT" === coUtils.Runtime.os) {
-          cygwin_root = broker.cygwin_root;
-          stem = cygwin_root + coUtils.File.getPathDelimiter() + stem;
+          stem = coUtils.Runtime.getCygwinRoot()
+               + coUtils.File.getPathDelimiter()
+               + stem;
         } else {
           stem = home.path + coUtils.File.getPathDelimiter() + stem;
         }

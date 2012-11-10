@@ -153,24 +153,25 @@ SocketTeletypeService.definition = {
       request_id = settings.command.substr(1);
       record = coUtils.Sessions.get(request_id);
 
-      this.sendMessage(
-        "event/control-socket-ready",
-        Number(record.control_port));
+      if (record) {
+        this.sendMessage(
+          "event/control-socket-ready",
+          Number(record.control_port));
 
-      this._pid = Number(record.pid);
+        this._pid = Number(record.pid);
 
-      coUtils.Sessions.remove(this._broker, request_id);
-      coUtils.Sessions.update();
+        coUtils.Sessions.remove(this._broker, request_id);
+        coUtils.Sessions.update();
 
-      this.sendMessage("command/attach-session", request_id);
+        this.sendMessage("command/attach-session", request_id);
+        return;
+      }
 
-    } else {
-
-      this._socket = coUtils.Components.createLoopbackServerSocket(this);
-  
-      // nsIProcess::runAsync.
-      this.sendMessage("command/start-ttydriver-process", this._socket.port); 
     }
+    this._socket = coUtils.Components.createLoopbackServerSocket(this);
+  
+    // nsIProcess::runAsync.
+    this.sendMessage("command/start-ttydriver-process", this._socket.port); 
   },
  
   /**
@@ -180,7 +181,7 @@ SocketTeletypeService.definition = {
   "[subscribe('@command/attach-session'), pnp]":
   function attachSession(request_id)
   {
-    var backup_data_path = this._broker.runtime_path + "/persist/" + request_id + ".txt",
+    var backup_data_path = coUtils.Runtime.getRuntimePath() + "/persist/" + request_id + ".txt",
         context;
 
     if (coUtils.File.exists(backup_data_path)) {
@@ -205,17 +206,15 @@ SocketTeletypeService.definition = {
   function detach()
   {
     var context = {},
-        runtime_path = this._broker.runtime_path,
         request_id = this._broker.request_id,
-        path = runtime_path + "/persist/" + request_id + ".txt",
+        path = coUtils.Runtime.getRuntimePath() + "/persist/" + request_id + ".txt",
         data;
 
     this.sendMessage("command/backup", context);
     data = JSON.stringify(context);
 
     coUtils.IO.writeToFile(path, data);
-
-    this.sendMessage("command/stop");
+    this._broker.stop()
   },
 
   "[subscribe('sequence/osc/97'), pnp]":

@@ -28,13 +28,44 @@
 /** 
  * @class SessionsCompleter
  */
-var SessionsCompleter = new Class().extends(Component)
+var SessionsCompleter = new Class().extends(Plugin)
                                    .depends("process_manager");
 SessionsCompleter.definition = {
 
   id: "sessions-completer",
 
-  "[subscribe('get/completer/sessions'), enabled]":
+  getInfo: function getInfo()
+  {
+    return {
+      name: _("Launcher Session Completion Provider"),
+      version: "0.1",
+      description: _("Provides session completion information for launcher.")
+    };
+  },
+
+  "[persistable, watchable] enabled_when_startup": true,
+
+  _process_manager: null,
+
+  /** Installs itself. 
+   *  @param {InstallContext} context A InstallContext object.
+   */
+  "[install]":
+  function install(context)
+  {
+    this._process_manager = context["process_manager"];
+  },
+
+  /** Uninstalls itself. 
+   *  @param {InstallContext} context A InstallContext object.
+   */
+  "[uninstall]":
+  function uninstall(context)
+  {
+    this._process_manager = null;
+  },
+
+  "[subscribe('get/completer/sessions'), pnp]":
   function onCompletersRequested(broker)
   {
     return this;
@@ -42,18 +73,13 @@ SessionsCompleter.definition = {
  
   _getImageSource: function _getImageSource(request_id)
   {
-    var broker = this._broker,
-        image_path,
-        image_file,
-        image_url;
-
     try {
-      image_path = broker.runtime_path + "/persist/" + request_id + ".png";
-      image_file = coUtils.File.getFileLeafFromVirtualPath(image_path);
-      if (image_file.exists()) {
+      var image_path = coUtils.Runtime.getRuntimePath() 
+                     + "/persist/" + request_id + ".png",
+          image_file = coUtils.File.getFileLeafFromVirtualPath(image_path),
+          image_url;
         image_url = coUtils.File.getURLSpec(image_file);
         return image_url;
-      }
     } catch (e) {
       coUtils.Debug.reportError(e);
     }
@@ -70,18 +96,23 @@ SessionsCompleter.definition = {
 
     coUtils.Sessions.load();
     records = coUtils.Sessions.getRecords();
-
     for ([request_id, record] in Iterator(records)) {
       try {
         image_path = this._getImageSource(request_id);
-        if (image_path && this.dependency["process_manager"].processIsAvailable(record.pid)) {
-          yield {
-            name: "&" + request_id,
-            value: record,
-            image: image_path,
-          };
+        //alert(request_id + "\n" + image_path)
+        if (image_path) {
+          if (this._process_manager.processIsAvailable(record.pid)) {
+            //alert(image_path)
+            yield {
+              name: "&" + request_id,
+              value: record,
+              image: image_path,
+            };
+          } else {
+            coUtils.Sessions.remove(this._broker, request_id);
+          } 
         } else {
-          coUtils.Sessions.remove(this._broker, request_id);
+          //coUtils.Sessions.remove(this._broker, request_id);
         }
       } catch (e) {
         coUtils.Debug.reportError(e);

@@ -145,7 +145,7 @@ AttributeContext.prototype = {
   /** Return the information of this object */
   toString: function toString() // override
   {
-    return "[AttributeContext enabled(" + this.enabled + ")]";
+    return "[AttributeContext]";
   },
 
 }; // class AttributeContext
@@ -553,16 +553,20 @@ Class.prototype = {
    */
   loadAttributes: function loadAttributes(search_path, scope) 
   {
-    var paths = coUtils.File.getFileEntriesFromSerchPath(search_path),
+    var paths = coUtils.File.getFileEntriesFromSearchPath(search_path),
         entry,
         url,
-        module_scope;
+        module_scope,
+        i = 0;
 
-    for (entry in paths) {
+    for (; i < paths.length; ++i) {
+
+      entry = paths[i];
 
       module_scope = new function()
       {
       };
+
       module_scope.prototype = scope;
 
       try {
@@ -635,7 +639,7 @@ Component.definition = {
 
     this._broker = broker;
 
-    if (this.__dependency) {
+    if (null !== this.__dependency) {
       this.dependency = {};
       if (this.__dependency.length > 0) {
         install_trigger = "initialized/{" + this.__dependency.join("&") + "}";
@@ -760,7 +764,7 @@ Plugin.definition = {
 
     broker.subscribe(
       "@event/broker-stopping", 
-      function getEnabled() 
+      function setDisabled() 
       {
         this.enabled = false;
       },
@@ -771,7 +775,7 @@ Plugin.definition = {
    * @property {Boolean} enabled Boolean flag that indicates install/uninstall 
    *                     state of plugin object.  
    */
-  get enabled() 
+  getEnabled: function getEnabled() 
   {
     return this.__enabled;
   },
@@ -1019,10 +1023,10 @@ Attribute.prototype = {
 
   toString: function toString()
   {
-    return "[Attribute " + this.__id + "]";
+    return "[Attribute]";
   },
 
-};
+}; // Attribute
 
 Component.loadAttributes(
   ["modules/attributes"],
@@ -1032,26 +1036,6 @@ Component.loadAttributes(
     coUtils: coUtils,
     _: _,
   });
-
-/**
- * @class ClassAttribute
- */
-function ClassAttribute()
-{
-  return this.initialize.apply(this, arguments);
-}
-ClassAttribute.prototype = {
-
-  __proto__: Trait.prototype,
-
-  /** constructor */
-  initialize: function initialize(id) 
-  {
-    AttributeContext.prototype.define(id, this);
-  },
-
-}; // ClassAttribute
-
 
 /**
  * @class Concept
@@ -1072,14 +1056,14 @@ Concept.prototype = {
   /** */
   check: function check(target)
   {
-    var attributes = target.__attributes;
-    var subscribers = Object
+    var attributes = target.__attributes,
+        subscribers = Object
       .getOwnPropertyNames(attributes)
       .reduce(function(map, key) {
-        var value = attributes[key];
-        var tokens;
-        var i;
-        var k;
+        var value = attributes[key],
+            tokens,
+            i,
+            k;
         if (value.subscribe) {
           tokens = value.subscribe.toString().split("/");
           for (i = 0; i < tokens.length; ++i) {

@@ -60,7 +60,7 @@ Sixel.definition = {
 
   _color: null,
   _buffers: null,
-  _no: 0x0,
+  _counter: 0x0,
   _display_mode: false,
 
   _renderer: null,
@@ -154,6 +154,12 @@ Sixel.definition = {
     return dom;
   },
 
+  "[subscribe('command/query-da1-capability'), pnp]":
+  function onQueryDA1Capability(mode)
+  {
+    return 4; // sixel
+  },
+
   "[subscribe('command/change-sixel-display-mode'), pnp]":
   function onSixelDisplayModeChanged(mode)
   {
@@ -163,20 +169,58 @@ Sixel.definition = {
   "[subscribe('sequence/dcs'), pnp]":
   function onDCS(data) 
   {
-    var pattern = /^(?:[0-9;]*)?q((?:.|[\n\r])+)/,
-        match = data.match(pattern),
+    var pattern = /^(?:[0-9;]*)?q/,
+        match = data.substr(0, 32).match(pattern),
         sixel;
-
     if (null === match) {
       return;
     }
 
-    sixel = match[1];
+    sixel = data.substr(data.indexOf("#"))
     if (!sixel) {
       return;
     }
 
     this._parseSixel(sixel);
+  },
+
+  _processSixelLine:
+  function _processSixelLine(canvas, 
+                             char_width,
+                             line_height,
+                             drcs_top,
+                             start_code,
+                             end_code,
+                             full_cell,
+                             positionX)
+  {
+    var dscs = " " + String.fromCharCode(0x20 + ++this._counter % 94),
+        buffer = [],
+        screen = this._screen,
+        cursor_state = this._cursor_state,
+        i;
+
+    this.sendMessage(
+      "command/alloc-drcs",
+      {
+        dscs: dscs,
+        drcs_canvas: canvas,
+        drcs_width: char_width,
+        drcs_height: line_height,
+        drcs_top: drcs_top,
+        start_code: start_code,
+        end_code: end_code,
+        full_cell: full_cell,
+        color: true,
+      });
+
+    for (i = start_code; i < end_code; ++i) {
+      buffer.push(0x100000 | (0x20 + this._counter % 94) << 8 | i);
+    }
+
+    screen.write(buffer);
+    cursor_state.positionX = positionX;
+    screen.lineFeed();
   },
 
   _parseSixel: function _parseSixel(sixel)
@@ -185,50 +229,29 @@ Sixel.definition = {
         result = this._sixel_parser.parse(sixel, dom),
         renderer = this._renderer,
         cursor_state = this._cursor_state,
+        screen = this._screen,
         line_height = renderer.line_height,
         char_width = renderer.char_width,
         line_count = Math.ceil(result.max_y / line_height),
-        cell_count = Math.ceil(result.max_x / char_width),
+        max_cell_count = screen.width - cursor_state.positionX,
+        cell_count = Math.min(Math.ceil(result.max_x / char_width), max_cell_count),
         start_code = 0x21,
         end_code = start_code + cell_count,
         full_cell = true,
-        buffer,
-        screen = this._screen,
         positionX = cursor_state.positionX,
-        dscs,
-        drcs,
-        i = 0,
-        j;
+        i = 0;
 
     for (; i < line_count; ++i) {
-      dscs = " " + String.fromCharCode(0x20 + ++this._no % 94);
-      drcs = {
-        dscs: dscs,
-        drcs_canvas: result.canvas,
-        drcs_width: char_width,
-        drcs_height: line_height,
-        drcs_top: line_height * i,
-        start_code: start_code,
-        end_code: end_code,
-        full_cell: full_cell,
-        color: true,
-      };
-
-      this.sendMessage("command/alloc-drcs", drcs);
-
-      buffer = [];
-      for (j = start_code; j < end_code; ++j) {
-        buffer.push(0x100000 | (0x20 + this._no % 94) << 8 | j);
-      }
-
-      screen.write(buffer);
-
-      screen.carriageReturn();
-      screen.lineFeed();
-
-      cursor_state.positionX = positionX;
+      this._processSixelLine(result.canvas,
+                             char_width,
+                             line_height,
+                             line_height * i,
+                             start_code,
+                             end_code,
+                             full_cell,
+                             positionX);
     }
-    screen.lineFeed();
+
   },
 
 }; // Sixel 

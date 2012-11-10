@@ -45,7 +45,7 @@ ShellSettings.definition = {
   "[persistable] enabled_when_startup": true,
   "[persistable] term": "xterm",
   "[persistable] command": "login -pf $USER",
-  "[persistable] locale": "ja_JP.UTF-8",
+  "[persistable] locale": coUtils.Localize.locale.replace(/-/, "_") + ".UTF-8",
 
   /** Installs itself. 
    *  @param {InstallContext} context A InstallContext object.
@@ -90,6 +90,12 @@ ShellSettings.definition = {
   function setLocale(locale) 
   {
     this.locale = locale;
+  },
+
+  "[subscribe('event/session-initialized'), pnp]":
+  function onSessionInitialized(session) 
+  {
+    this.sendMessage("command/send-titlebar-string", this.command);
   },
 
 }; // ShellSettings

@@ -42,6 +42,15 @@
   common=common {
    config.js.in
    process.js
+   color.js
+   locale.js
+   factory.js
+   logging.js
+   algorithm.js
+   timer.js
+   clipboard.js
+   uuid.js
+   sessions.js
    common.js
    tupstart.js
    tupbase.js
@@ -83,6 +92,7 @@
    domevent.js
    persist.js
    map.js
+   idleservice.js
   }
   session_components=session_components {
 
@@ -99,7 +109,6 @@
     externaldriver.js
     input.js
     drcsconverter.js
-    idleservice.js
     alertservice.js
 
     encoder.js
@@ -202,6 +211,7 @@
     focusevent.js
     mousegesture.js
 
+    outerchrome.js
     chrome.js
     palette.js
     renderer.js
@@ -218,6 +228,8 @@
 
     pluginview.js
     debugger.js
+    tracer.js
+    hooker.js
 
     consolelistener.js
     console.js
@@ -350,7 +362,7 @@
   UnicodeCategoryDetector.pl
   Makefile
  }
- =defaults/preferences {
+ prefs=defaults/preferences {
   prefs.js
  }
 }

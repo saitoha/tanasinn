@@ -5,12 +5,28 @@
 # vim swap file
 *~
 *.un~
+\#*#
 
 # autoconf
 config.log
 config.status
 autom4te.cache
 config.h
+
+# build
+Makefile
+doc/Makefile
+doc/define.h
+doc/README-en.asciidoc
+doc/README-ja.asciidoc
+modules/UnicodeData.txt
+modules/EastAsianWidth.txt
+tanasinn-docs.zip
+tools/bin/tmp
+tools/bin/mac-x86_64
+
+# doc
+doc/tanasinn
 
 # object file
 *.o
@@ -24,3 +40,16 @@ TAGS
 
 # sed backup
 *-e
+
+# ditaa
+doc/images/*.jar
+doc/images/*.zip
+
+# for Mac
+.DS_Store
+
+# tools
+tools/vim/vim
+tools/w3m/w3m
+tools/w3m/gc-7.1
+tools/w3m/gc-7.1.tar.gz

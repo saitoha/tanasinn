@@ -75,7 +75,7 @@ ScreenshotCommand.definition = {
     }
     [, name] = match;
 
-    path = this._broker.runtime_path + "/screenshot/" + name + ".png";
+    path = coUtils.Runtime.getRuntimePath() + "/screenshot/" + name + ".png";
     file = coUtils.File
       .getFileLeafFromVirtualPath(path)
       .QueryInterface(Components.interfaces.nsILocalFile);

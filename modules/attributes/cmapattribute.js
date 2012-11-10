@@ -97,32 +97,6 @@ function apply_attribute(self, broker, key, expressions, attribute)
 var CmapAttribute = new Attribute("cmap");
 CmapAttribute.definition = {
 
-  get __id()
-    "cmap",
-
-  get __info()
-  {
-    return {
-      name: _("Default CMap"),
-      description: _("Provides default keybind replacement settings in command line field.")
-      /*
-      <![CDATA[
-        "cmap" attribute defines default keybind replacement settings in command 
-        line field. this settings are deald as "persistable".
-
-        usage:
-
-          "[cmap('<C-n>', '<F7>')]": 
-          function func1() 
-          {
-            ....
-          },
-
-      ]]>
-      */
-    };
-  },
-
   /** constructor 
    *  @param {EventBroker} broker Parent broker object.
    */

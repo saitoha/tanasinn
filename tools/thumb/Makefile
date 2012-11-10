@@ -1,11 +1,9 @@
 
 all:
 	$(CC) -o qlthumb qlthumb.m \
-		-framework Cocoa \
-		-framework QuickLook
+		-framework QuickLook \
+		Cocoa
 	$(CC) -o display display.c
-	./qlthumb Makefile a.png
-	./display a.png
 
 
 

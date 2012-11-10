@@ -132,29 +132,32 @@ Bell.definition = {
     }, 10, this);
   },
 
+  _showCover: function _showCover()
+  {
+    this._cover.style.opacity = this.opacity;
+  },
+
+  _hideCover: function _hideCover()
+  {
+    this._cover.style.opacity = 0.0;
+  },
+
   /** Plays visual bell effect. */
   visualBell: function visualBell() 
   {
     if (this._cover) {
       this._cover.style.backgroundColor = this.color;
-      this._cover.style.opacity = this.opacity;
+      this._showCover();
       this._cover.style.MozTransitionDuration = this.duration + "ms";
-      coUtils.Timer.setTimeout(
-        function() 
-        {
-          this._cover.style.opacity = 0.0;
-        }, this.duration, this);
+      coUtils.Timer.setTimeout(this._hideCover, this.duration, this);
     }
   },
 
   /** Plays 'beep' sound asynchronously. */
   beep: function beep() 
   {
-    var sound;
+    var sound = coUtils.Components.getSound();
 
-    sound = Components
-      .classes["@mozilla.org/sound;1"]
-      .getService(Components.interfaces.nsISound)
     sound.beep();
     //sound.playSystemSound("Blow");
   },

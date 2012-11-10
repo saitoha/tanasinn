@@ -101,7 +101,7 @@ Paste.definition = {
         .substring(0, str_length.value / 2);
 
       // sanitize text.
-      text = text.replace(/[\x00-\x08\x0a-\x0c\x0e-\x1f]/g, "");
+      text = text.replace(/[\x00-\x08\x0b-\x0c\x0e-\x1f]/g, "");
 
       // Encodes the text message and send it to the tty device.
       if (this._bracketed_paste_mode) {

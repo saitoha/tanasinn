@@ -68,8 +68,7 @@ FontFamilyCompleter.definition = {
   "[completer('font-family'), pnp]":
   function complete(context)
   {
-    var broker = this._broker,
-        pattern = /^\s*(.*)(\s?)/,
+    var pattern = /^\s*(.*)(\s?)/,
         match = context.source.match(pattern),
         all,
         name,

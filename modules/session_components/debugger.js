@@ -24,304 +24,6 @@
 
 "use strict";
 
-/**
- *
- * @class Tracer
- *
- */
-var Tracer = new Class().extends(Plugin);
-Tracer.definition = {
-
-  id: "tracer",
-
-  getInfo: function getInfo()
-  {
-    return {
-      name: _("Tracer"),
-      version: "0.1",
-      description: _("Intercept I/O events and send its information ",
-                     "to Debugger plugin")
-    };
-  },
-
-  "[persistable] enabled_when_startup": true,
-
-  _mode: "vt100",
-
-  /** Installs itself. 
-   *  @param {InstallContext} context A InstallContext object.
-   */
-  "[install]": 
-  function install(context) 
-  {
-  },
-
-  /** Uninstalls itself 
-   */
-  "[uninstall]":
-  function uninstall()
-  {
-  },
-
-  "[subscribe('command/change-emulation-mode'), pnp]":
-  function onChangeMode(mode) 
-  { 
-    if (this.onBeforeInput.enabled) {
-      this.disable();
-      this._mode = mode;
-      this.enable();
-    } else {
-      this._mode = mode;
-    }
-  },
-
-  "[subscribe('command/debugger-trace-on'), pnp]":
-  function enable() 
-  {
-    var sequences = this.sendMessage("get/sequences/" + this._mode),
-        i = 0,
-        information;
-
-    this.onBeforeInput.enabled = true;
-
-    // get sequence handlers
-
-    // backup them
-    this._backup_sequences = sequences;
-
-    this.sendMessage("command/reset-sequences");
-
-    for (; i < sequences.length; ++i) {
-      information = sequences[i];
-      this._registerControlHandler(information);
-    }
-  },
-
-  "[subscribe('command/debugger-trace-off'), pnp]":
-  function disable() 
-  {
-    var sequences = this.sendMessage("get/sequences/" + this._mode),
-        i = 0,
-        information;
-
-    this.onBeforeInput.enabled = false;
-
-    this.sendMessage("command/reset-sequences");
-
-    for (; i < sequences.length; ++i) {
-      information = sequences[i];
-      this.sendMessage("command/add-sequence", information);
-    }
-  },
-
-  "[subscribe('command/send-to-tty')]":
-  function onBeforeInput(message) 
-  {
-    var info = {
-      type: coUtils.Constant.TRACE_INPUT, 
-      name: undefined,
-      value: [message],
-    };
-    this.sendMessage(
-      "command/debugger-trace-sequence", 
-      [info, undefined]); 
-  },
-
-  _registerControlHandler:
-  function _registerControlHandler(information)
-  {
-    var handler = information.handler,
-        delegate;
-
-    try {
-
-      delegate = function()
-      {
-        handler.apply(this, arguments);
-
-        return {
-          type: coUtils.Constant.TRACE_CONTROL,
-          name: handler.name, 
-          value: Array.slice(arguments),
-        };
-      };
-
-      this.sendMessage(
-        "command/add-sequence",
-        {
-          expression: information.expression, 
-          handler: delegate, 
-          context: information.context,
-        });
-
-    } catch (e) {
-      coUtils.Debug.reportError(e);
-    }
-  },
-
-}; // class Tracer
-
-/**
- *
- * @class Hooker
- *
- */
-var Hooker = new Class().extends(Plugin)
-                        .depends("parser");
-Hooker.definition = {
-
-  id: "hooker",
-
-  getInfo: function getInfo()
-  {
-    return {
-      name: _("Hooker"),
-      version: "0.1",
-      description: _("Switch Debugger's step execution state")
-    };
-  },
-
-  "[persistable] enabled_when_startup": true,
-
-  _buffer: null, 
-  _hooked: false,
-  _step_mode: false,
-
-  /** Installs itself. 
-   *  @param {InstallContext} context A InstallContext object.
-   */
-  "[install]": 
-  function install(context) 
-  {
-    this._buffer = [];
-    this._parser = context["parser"];
-  },
-
-  /** Uninstalls itself 
-   */
-  "[uninstall]":
-  function uninstall()
-  {
-    this._buffer = null;
-    this._parser = null;
-  },
-
-  /** Suspend TTY and enter debug session. */
-  "[subscribe('command/debugger-pause'), enabled]":
-  function pause() 
-  {
-    this._step_mode = true;
-  },
-
-  /** Resume TTY and close debug session */
-  "[subscribe('command/debugger-resume'), enabled]":
-  function resume()  
-  {
-    var buffer = this._buffer,
-        action,
-        result;
-
-    this._step_mode = false;
-
-    // drain queued actions.
-    while (0 !== buffer.length) {
-      action = buffer.shift();
-      result = action();
-      this.sendMessage("command/debugger-trace-sequence", result);
-    }
-    this.sendMessage("command/flow-control", true);
-    this.sendMessage("command/draw"); // redraw
-  },
-
-  /** Execute 1 command. */
-  "[subscribe('command/debugger-step'), enabled]":
-  function step()
-  {
-    var buffer,
-        action,
-        result;
-
-    if (this._hooked) {
-      buffer = this._buffer;
-      action = buffer.shift();
-      if (action) {
-        result = action();
-        this.sendMessage("command/debugger-trace-sequence", result);
-        this.sendMessage("command/draw"); // redraw
-      } else {
-        this.sendMessage("command/flow-control", true);
-      }
-    }
-  },
-
-  "[subscribe('command/debugger-trace-on'), enabled]":
-  function set() 
-  {
-    var parser,
-        buffer,
-        self,
-        action,
-        result_cache,
-        result,
-        sequence;
-
-    function make_action(sequence, action)
-    {
-      buffer.push(
-        function do_action()
-        {
-          var result = action();
-          return [result, sequence];
-        });
-    }
-
-    if (!this._hooked) {
-
-      parser = this.dependency["parser"];
-      buffer = this._buffer;
-      self = this;
-      this._hooked = true;
-
-      // hook parser
-      parser.parse = function parse_alternative(data) 
-        {
-          if (self._step_mode) {
-            this.sendMessage("command/flow-control", false);
-          }
-          for (action in parser.__proto__.parse.call(parser, data)) {
-            sequence = parser._scanner.getCurrentToken();
-            make_action(sequence, action);
-          }
-
-          // do action
-          if (!self._step_mode) {
-            while (buffer.length) {
-              action = buffer.shift();
-              result_cache = [];
-              this.sendMessage("command/debugger-trace-sequence", result_cache);
-              result = action();
-              result_cache[0] = result[0];
-              result_cache[1] = result[1];
-            }
-          }
-        };
-    };
-  },
-
-  "[subscribe('command/debugger-trace-off'), enabled]":
-  function unset() 
-  {
-    var parser;
-
-    if (this._hooked) {
-      parser = this._parser;
-      delete parser.parse; // uninstall hook
-      this._hooked = false;
-    }
-  },
-
-}; // Hooker
-
 /** 
  * @class ForwardInputIterator
  */ 
@@ -363,7 +65,8 @@ ForwardInputIterator.definition = {
  * @class Debugger
  */
 var Debugger = new Class().extends(Plugin)
-                          .depends("decoder");
+                          .depends("decoder")
+                          .depends("bottompanel");
 Debugger.definition = {
 
   id: "debugger",
@@ -516,7 +219,7 @@ Debugger.definition = {
     }
   },
 
-  "[command('enabledebugger/eg'), _('Attach the debugger and trace incoming sequences.'), pnp]": 
+  "[command('activatedebugger/eg'), _('Attach the debugger and trace incoming sequences.'), pnp]": 
   function enableDebugger()
   {
     if (!this._trace_box) {
@@ -556,7 +259,7 @@ Debugger.definition = {
     }, this.update_interval, this);
   },
  
-  "[command('disabledebugger'), _('Detach the debugger.'), pnp]": 
+  "[command('deactivatedebugger/dd'), _('Detach the debugger.'), pnp]": 
   function disableDebugger()
   {
     if (!this._trace_box) {
@@ -761,7 +464,7 @@ Debugger.definition = {
             childNodes:
             {
               tagName: "label",
-              value: this._escapeC0(value[0]),
+              value: this._escapeAll(value[0]),
               style: {
                 color: "red",
                 background: "lightblue",
@@ -845,8 +548,6 @@ Debugger.definition = {
 function main(broker) 
 {
   new Debugger(broker);
-  new Hooker(broker);
-  new Tracer(broker);
 }
 
 // EOF

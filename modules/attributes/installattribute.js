@@ -51,15 +51,6 @@ function apply_attribute(self, broker, key, topic)
   }
 
   broker.subscribe(topic, wrapped_handler, undefined, id);
-  //if (topic.match(/cursor/)) {
-  //  broker.subscribe(topic, function() { alert(id) }, undefined, id);
-  //}
-  //broker.subscribe(
-  //  "event/broker-stopped", 
-  //  function() 
-  //  {
-  //    broker.unsubscribe(id);
-  //  }, undefined, id);
 }
 
 /**
@@ -68,31 +59,6 @@ function apply_attribute(self, broker, key, topic)
  */
 var InstallAttribute = new Attribute("install");
 InstallAttribute.definition = {
-
-  get __id()
-    "install",
-
-  get __info()
-  {
-    return {
-      name: _("Install"),
-      description: _("Declare a 'install' event listener.")
-      /*
-      <![CDATA[
-        Declare a 'install' event listener.
-
-        usage:
-
-          "[install]":
-          function install()
-          {
-             ....
-          },
-
-      ]]>
-      */
-    };
-  },
 
   /** constructor 
    *  @param {EventBroker} broker Parent broker object.
@@ -125,31 +91,6 @@ InstallAttribute.definition = {
  */
 var UninstallAttribute = new Attribute("uninstall");
 UninstallAttribute.definition = {
-
-  get __id()
-    "uninstall",
-
-  get __info()
-  {
-    return {
-      name: _("Uninstall"),
-      description: _("Declare a 'uninstall' event listener.")
-      /*
-      <![CDATA[
-        Declare a 'uninstall' event listener.
-
-        usage:
-
-          "[uninstall]":
-          function uninstall()
-          {
-             ....
-          },
-
-      ]]>
-      */
-    };
-  },
 
   /** constructor 
    *  @param {EventBroker} broker Parent broker object.

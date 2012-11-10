@@ -290,7 +290,7 @@ Parser.definition = {
 
           default: // 0
             if (0 === codes.length) {
-              codes.push(c);
+              codes.push([0x20, c]);
             } else {
               base = codes[codes.length - 1];
               if ("number" === typeof base) {
