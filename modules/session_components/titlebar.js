@@ -136,8 +136,6 @@ Titlebar.definition = {
     this._encoder = context["encoder"];
 
     this._canvas = result.tanasinn_titlebar_canvas;
-    this._canvas.width = this._canvas.parentNode.boxObject.width;
-
     this._set_hex_mode = this.initial_set_hex_mode;
     this._set_utf8_mode = this.initial_set_utf8_mode;
     this._query_hex_mode = this.initial_query_hex_mode;
@@ -156,6 +154,12 @@ Titlebar.definition = {
   },
 
   /** When session is initialized */
+  "[subscribe('event/session-initialized'), pnp]": 
+  function onSessionInitialized(session) 
+  {
+    this._canvas.width = this._canvas.parentNode.boxObject.width;
+  },
+
   "[subscribe('command/send-titlebar-string'), pnp]": 
   function sendTitlebarString(value) 
   {
