@@ -163,16 +163,6 @@ Session.definition = {
     return this._window;
   },
 
-  get document()
-  {
-    return this.window.document;
-  },
-
-  get root_element()
-  {
-    return this._root_element;
-  },
-
   get command()
   {
     return this._command;
@@ -242,7 +232,6 @@ Session.definition = {
 
     this._request_id = id;
     this._window = request.parent.ownerDocument.defaultView;
-    this._root_element = request.parent;
     this._command = request.command;
     this._term = request.term || this.default_term;
 
@@ -253,7 +242,12 @@ Session.definition = {
     
     this.notify("event/session-initialized", this);
 
-    this.notify("command/focus");
+    coUtils.Timer.setTimeout(
+      function timerProc()
+      {
+        this.notify("command/show");
+        this.notify("command/focus");
+      }, this.initial_focus_delay, this);
     return this;
   },
 
@@ -271,7 +265,6 @@ Session.definition = {
     this.unsubscribe(this._request_id);
     this.clear();
 
-    this._root_element = null;
     this._window = null;
 
     //if (coUtils.Runtime.app_name.match(/tanasinn/)) {
