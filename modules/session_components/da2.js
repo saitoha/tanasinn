@@ -131,7 +131,7 @@ SecondaryDA.definition = {
   function reply()
   {
     //
-    // 41;  terminal ID 
+    // 0;  terminal ID 
     // 277: Firmware version (for xterm, this is the XFree86 patch 
     //      number, starting with 95). 
     // 2:   DEC Terminal"s ROM cartridge registration number, 
@@ -139,7 +139,7 @@ SecondaryDA.definition = {
     //
     this.sendMessage(
       "command/send-sequence/csi",
-      ">41;277;0c");
+      ">0;277;0c");
   },
 
 };
