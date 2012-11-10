@@ -90,14 +90,16 @@ Launcher.definition = {
 
   getTemplate: function getTemplate()
   {
+    var root_element = this.request("get/root-element");
+
     return [
       {
-        parentNode: this._broker.root_element,
+        parentNode: root_element,
         tagName: "box",
         id: "tanasinn_window_layer",
       },
       {
-        parentNode: this._broker.root_element,
+        parentNode: root_element,
         tagName: "box",
         id: "tanasinn_launcher_layer",
         hidden: true,
