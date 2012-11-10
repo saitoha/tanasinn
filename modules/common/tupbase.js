@@ -1038,26 +1038,6 @@ Component.loadAttributes(
   });
 
 /**
- * @class ClassAttribute
- */
-function ClassAttribute()
-{
-  return this.initialize.apply(this, arguments);
-}
-ClassAttribute.prototype = {
-
-  __proto__: Trait.prototype,
-
-  /** constructor */
-  initialize: function initialize(id) 
-  {
-    AttributeContext.prototype.define(id, this);
-  },
-
-}; // ClassAttribute
-
-
-/**
  * @class Concept
  */
 function Concept()
@@ -1076,14 +1056,14 @@ Concept.prototype = {
   /** */
   check: function check(target)
   {
-    var attributes = target.__attributes;
-    var subscribers = Object
+    var attributes = target.__attributes,
+        subscribers = Object
       .getOwnPropertyNames(attributes)
       .reduce(function(map, key) {
-        var value = attributes[key];
-        var tokens;
-        var i;
-        var k;
+        var value = attributes[key],
+            tokens,
+            i,
+            k;
         if (value.subscribe) {
           tokens = value.subscribe.toString().split("/");
           for (i = 0; i < tokens.length; ++i) {
