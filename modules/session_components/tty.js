@@ -214,8 +214,7 @@ SocketTeletypeService.definition = {
     data = JSON.stringify(context);
 
     coUtils.IO.writeToFile(path, data);
-
-    this.sendMessage("command/stop");
+    this._broker.stop()
   },
 
   "[subscribe('sequence/osc/97'), pnp]":

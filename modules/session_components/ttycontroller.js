@@ -276,11 +276,11 @@ Controller.definition = {
   {
     coUtils.Debug.reportMessage(
       _("Controller::onStopRequest called. status: %s."), status);
-    try {
-    //  this.sendMessage("command/stop");
-    } catch (e) { 
-      coUtils.Debug.reportError(e)
-    }
+    coUtils.Timer.setTimeout(
+      function timerProc()
+      {
+        this._broker.stop()
+      }, 10, this);
   },
 
 // nsIStreamListener implementation
