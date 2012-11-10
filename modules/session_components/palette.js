@@ -329,8 +329,6 @@ PaletteManager.definition = {
       reverse: this._reverse,
       color: this.color,
     };
-
-    this.onIdle();
   },
 
   /**
@@ -360,7 +358,7 @@ PaletteManager.definition = {
     // form given attribute structure. 
     if (1 === attr.fgcolor) {
       if (1 === attr.inverse) {
-         this.color[attr.bg];
+        fore_color = this.color[attr.bg];
       } else {
         fore_color = this.color[attr.fg];
       }
