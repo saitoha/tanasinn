@@ -60,6 +60,7 @@ Cursor.definition = {
 
   _cursor_visibility: true,
   _cursor_visibility_backup: null,
+  _debugged: false,
 
   _timer: null,
   _blink_state: false,
@@ -302,6 +303,18 @@ Cursor.definition = {
     this.sendMessage("command/send-sequence/dcs", message);
   },
  
+  "[subscribe('command/debugger-pause'), pnp]": 
+  function onPause() 
+  {
+    this._debugged = true;
+  },
+
+  "[subscribe('command/debugger-resume'), pnp]": 
+  function onResume() 
+  {
+    this._debugged = false;
+  },
+
   "[subscribe('event/cursor-visibility-changed'), pnp]": 
   function onCursorVisibilityChanged(value) 
   {
@@ -433,7 +446,7 @@ Cursor.definition = {
 
     context.clearRect(0, 0, canvas.width, canvas.height);
 
-    if (this._cursor_visibility) {
+    if (this._cursor_visibility || this._debugged) {
       this._renderImpl(context, row, column, is_wide);
     }
   },
