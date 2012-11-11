@@ -372,16 +372,17 @@ ScreenSequenceHandler.definition = {
   "[profile('vt100'), sequence('CSI %dH')]":
   function CUP(n1, n2) 
   { // move CUrsor to absolute Position 
-    var x, y;
+    var top = this._scroll_top,
+        bottom = this._scroll_bottom,
+        y = (n1 || 1) - 1 + this.cursor.originY,
+        x = (n2 || 1) - 1 + this.cursor.originX;
 
-    // with no parameters, move to origin
-//    this.setPositionY((n1 || 1) - 1);
-//    this.setPositionY((n1 || 1) - 1 + this._scroll_top);
-    y = (n1 || 1) - 1 + this.cursor.originY;
-//    if (y >= this._scroll_bottom) {
-//      y = this._scroll_bottom - 1;
-//    }
-    x = (n2 || 1) - 1;// + this.cursor.originX;
+    if (y >= bottom) {
+      y = bottom - 1;
+    } else if (y < top) {
+      y = top
+    }
+
     this.setPositionY(y);
     this.setPositionX(x);
   },
@@ -2431,13 +2432,14 @@ Screen.definition = {
   function reverseIndex() 
   { // cursor up
     var cursor_state = this.cursor,
-        line = this.getCurrentLine(),
         top = this._scroll_top,
-        bottom = this._scroll_bottom,
         positionY = cursor_state.positionY;
-
-    if (positionY <= top) {
-      this._scrollDown(top, bottom, 1);
+//alert(positionY + ";" + top)
+    if (positionY === top) {
+      this._scrollDown(top, this._scroll_bottom, 1);
+    } else if (positionY < top) {
+      cursor_state.positionY = top  
+      this._scrollDown(top, this._scroll_bottom, 1);
     } else {
       --cursor_state.positionY;
     }
@@ -2447,17 +2449,18 @@ Screen.definition = {
   "[type('Undefined')] lineFeed":
   function lineFeed() 
   { // cursor down
-    var cursor = this.cursor,
-        top = this._scroll_top,
+    var cursor_state = this.cursor,
+        top,
         bottom = this._scroll_bottom,
-        positionY = cursor.positionY;
+        positionY = cursor_state.positionY;
 
     if (positionY === bottom - 1) {
-      this._scrollUp(top, bottom, 1);
+      this._scrollUp(this._scroll_top, bottom, 1);
     } else if (positionY > bottom - 1) {
-      cursor.positionY = bottom - 1;
+      cursor_state.positionY = bottom - 1;
+      this._scrollUp(this._scroll_top, bottom, 1);
     } else {
-      ++cursor.positionY;
+      ++cursor_state.positionY;
     }
   },
 
