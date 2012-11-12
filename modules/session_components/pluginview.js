@@ -79,7 +79,7 @@ PluginViewer.definition = {
             function(key)
             {
               return depended[key];
-            })
+            }),
         self = this;
 
     return [
