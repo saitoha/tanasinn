@@ -646,16 +646,7 @@ VT100Grammar.definition = {
   "[install]":
   function install(context)
   {
-    var i,
-        sequences;
-
     this.resetSequences();
-
-    sequences = this.sendMessage("get/sequences/vt100");
-
-    for (i = 0; i < sequences.length; ++i) {
-      this.sendMessage("command/add-sequence", sequences[i]);
-    }
   },
 
   /** Uninstalls itself. 
@@ -667,27 +658,44 @@ VT100Grammar.definition = {
     this.CSI = null;
   },
 
+  "[subscribe('event/session-initialized'), pnp]":
+  function onSessionInitialized()
+  {
+    var sequences = this.sendMessage("get/sequences/vt100"),
+        i;
+
+    for (i = 0; i < sequences.length; ++i) {
+      this.sendMessage("command/add-sequence", sequences[i]);
+    }
+  },
+
   "[subscribe('command/reset-sequences'), pnp]":
   function resetSequences()
   {
     this.ESC = new SequenceParser();
     this.CSI = new SequenceParser();
     SequenceParser.prototype[0x1b] = this.ESC;
-    this.sendMessage("command/add-sequence", {
-      expression: "0x1B", 
-      handler: this.ESC,
-      context: this,
-    });
-    this.sendMessage("command/add-sequence", {
-      expression: "0x9C", 
-      handler: this.CSI,
-      context: this,
-    });
-    this.sendMessage("command/add-sequence", {
-      expression: "ESC [", 
-      handler: this.CSI,
-      context: this,
-    });
+    this.sendMessage(
+      "command/add-sequence",
+      {
+        expression: "0x1B", 
+        handler: this.ESC,
+        context: this,
+      });
+    this.sendMessage(
+      "command/add-sequence",
+      {
+        expression: "0x9C", 
+        handler: this.CSI,
+        context: this,
+      });
+    this.sendMessage(
+      "command/add-sequence",
+      {
+        expression: "ESC [", 
+        handler: this.CSI,
+        context: this,
+      });
   },
 
   "[subscribe('get/grammars'), pnp]":

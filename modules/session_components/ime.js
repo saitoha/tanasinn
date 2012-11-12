@@ -112,10 +112,13 @@ Ime.definition = {
     var textbox = this._input_manager.getInputField();
 
     this.endPolling(); // stops polling timer. 
-    textbox.style.width = "";
-    textbox.style.imeMode = "disabled";
-    textbox.style.border = "";  
-    textbox.style.position = ""; 
+
+    if (null !== textbox) {
+      textbox.style.width = "";
+      textbox.style.imeMode = "disabled";
+      textbox.style.border = "";  
+      textbox.style.position = ""; 
+    }
 
     this._input_manger = null;
     this._cursor_state = null;

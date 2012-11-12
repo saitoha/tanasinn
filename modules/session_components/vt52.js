@@ -326,9 +326,6 @@ VT52.definition = {
   "[install]":
   function install(context)
   {
-    var sequences,
-        i = 0;
-
     this._tab_controller = context["tab_controller"];
     this._screen = context["screen"];
     this._cursor_state = context["cursorstate"];
@@ -343,13 +340,6 @@ VT52.definition = {
         handler: this.ESC,
         context: this,
       });
-
-    sequences = this.sendMessage("get/sequences/vt52");
-
-    for (; i < sequences.length; ++i) {
-      this.sendMessage("command/add-sequence/vt52", sequences[i]);
-    }
-
   },
 
   /** Unnstalls itself. 
@@ -360,6 +350,17 @@ VT52.definition = {
     this._tab_controller = null;
     this._screen = null;
     this._cursor_state = null;
+  },
+
+  "[subscribe('event/session-initialized'), pnp]":
+  function onSessionInitialized()
+  {
+    var sequences = this.sendMessage("get/sequences/vt52"),
+        i = 0;
+
+    for (; i < sequences.length; ++i) {
+      this.sendMessage("command/add-sequence/vt52", sequences[i]);
+    }
   },
 
   "[subscribe('get/grammars'), pnp]":
@@ -768,7 +769,7 @@ VT52.definition = {
   "[profile('vt52'), sequence('ESC H')]":
   function HTS()
   {
-    var cursor = this._screen.cursor;
+    var cursor = this._cursor_state;
     cursor.positionX = cursor.originX;
     cursor.positionY = cursor.originY;
   },

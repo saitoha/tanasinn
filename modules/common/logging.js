@@ -43,8 +43,7 @@ coUtils.Logging = {
           .path,
         file = coUtils.Components.createLocalFile(path),
         ostream,
-        converter,
-        parent;
+        converter;
     
     // check if target log file exists.
     if (file.exists()) {
@@ -62,10 +61,14 @@ coUtils.Logging = {
       // create base directories recursively (= mkdir -p).
       void function make_directory(current) 
       {
-        parent = current.parent;
+        var parent = current.parent;
         if (!parent.exists()) {
           make_directory(parent);
-          parent.create(coUtils.Constant.DIRECTORY_TYPE, -1);
+          try {
+            parent.create(coUtils.Constant.DIRECTORY_TYPE, parseInt("0700", 8));
+          } catch (e) {
+            alert(parent.path)
+          }
         }
       } (file);
     }

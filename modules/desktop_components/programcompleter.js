@@ -49,7 +49,7 @@ function generateEntries(paths)
               && !file.path.match(/\.(dll|manifest)$/)) {
             yield file;
           } else {
-            if (file.isExecutable()) {
+            if (file.isSymlink() || file.isExecutable()) {
               yield file;
             } 
           }

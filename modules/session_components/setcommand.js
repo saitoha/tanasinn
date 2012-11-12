@@ -140,7 +140,6 @@ SetCommand.definition = {
  */
 function main(broker)
 {
-  new CommandProvider(broker);
   new SetCommand(broker);
 }
 

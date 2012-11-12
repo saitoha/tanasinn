@@ -350,7 +350,7 @@ ScreenSequenceHandler.definition = {
   },
 
   /**
-   * CUP—Cursor Position
+   * CUP - Cursor Position
    * 
    * This control function moves the cursor to the specified line and column. 
    * The starting point for lines and columns depends on the setting of 
@@ -372,16 +372,23 @@ ScreenSequenceHandler.definition = {
   "[profile('vt100'), sequence('CSI %dH')]":
   function CUP(n1, n2) 
   { // move CUrsor to absolute Position 
-    var x, y;
+    var top = this._scroll_top,
+        bottom = this._scroll_bottom,
+        cursor = this.cursor,
+        y = (n1 || 1) - 1,
+        x = (n2 || 1) - 1;
 
-    // with no parameters, move to origin
-//    this.setPositionY((n1 || 1) - 1);
-//    this.setPositionY((n1 || 1) - 1 + this._scroll_top);
-    y = (n1 || 1) - 1 + this.cursor.originY;
-//    if (y >= this._scroll_bottom) {
-//      y = this._scroll_bottom - 1;
-//    }
-    x = (n2 || 1) - 1;// + this.cursor.originX;
+    if (cursor.DECOM) {
+      y += cursor.originY;
+      x += cursor.originX;
+    }
+
+    if (y >= bottom) {
+      y = bottom - 1;
+    } else if (y < top) {
+      y = top
+    }
+
     this.setPositionY(y);
     this.setPositionX(x);
   },
@@ -424,16 +431,16 @@ ScreenSequenceHandler.definition = {
    * Format
    *
    * CSI    Ps    J
-   * 9/11 	3/n   4/10
+   * 9/11   3/n   4/10
    *
    * Parameters
    * 
    * Ps   represents the amount of the display to erase.
    *
-   * Ps 	Area Erased
-   *      0 (default) 	From the cursor through the end of the display
-   *      1 	From the beginning of the display through the cursor
-   *      2 	The complete display
+   * Ps   Area Erased
+   *      0 (default)   From the cursor through the end of the display
+   *      1             From the beginning of the display through the cursor
+   *      2             The complete display
    * 
    * Programming Tip
    * Use a Ps value of 2 to erase the complete display in a fast, 
@@ -516,11 +523,18 @@ ScreenSequenceHandler.definition = {
   "[profile('vt100'), sequence('CSI %d$z')]":
   function DECERA(n1, n2, n3, n4) 
   { // Erase Rectangle Area
-    var screen = this._screen,
-        top = (n1 || 1) - 1,
+    var top = (n1 || 1) - 1,
         left = (n2 || 1) - 1,
         bottom = (n3 || 1) - 1,
-        right = (n4 || 1) - 1;
+        right = (n4 || 1) - 1,
+        cursor = this.cursor;
+
+    if (cursor.DECOM) {
+      top += cursor.originY;
+      left += cursor.originX;
+      bottom += cursor.originY;
+      right += cursor.originX;
+    }
 
     if (top >= bottom || left >= right) {
       throw coUtils.Debug.Exception(
@@ -528,14 +542,14 @@ ScreenSequenceHandler.definition = {
         "DECERA", Array.slice(arguments));
     }
 
-    if (bottom > screen.height) {
-      bottom = screen.height;
+    if (bottom > this.height) {
+      bottom = this.height;
     }
-    if (right > screen.width) {
-      right = screen.width;
+    if (right > this.width) {
+      right = this.width;
     }
 
-    screen.eraseRectangle(top, left, bottom, right);
+    this.eraseRectangle(top, left, bottom, right);
   },
 
   /**
@@ -549,16 +563,16 @@ ScreenSequenceHandler.definition = {
    * Format
    *
    * CSI    Ps    K
-   * 9/11 	3/n   4/11
+   * 9/11   3/n   4/11
    *
    * Parameters
    * 
    * Ps   represents the section of the line to erase.
    *
-   * Ps 	Section Erased
-   *      0 (default) 	From the cursor through the end of the line
-   *      1 	From the beginning of the line through the cursor
-   *      2 	The complete line
+   * Ps   Section Erased
+   *      0 (default) From the cursor through the end of the line
+   *      1           From the beginning of the line through the cursor
+   *      2           The complete line
    */
   "[profile('vt100'), sequence('CSI %dK')]":
   function EL(n) 
@@ -1053,12 +1067,12 @@ ScreenSequenceHandler.definition = {
    * Format
    *
    * CSI    f
-   * 9/11 	6/6
+   * 9/11   6/6
    *
    * Cursor moves to home position selected by DECOM
    *
    * CSI    Pl    ;     Pc   f
-   * 9/11	  3/n   3/11 	3/n  6/6
+   * 9/11   3/n   3/11  3/n  6/6
    *
    * Moves cursor to line Pl, column Pc
    *
@@ -1073,10 +1087,17 @@ ScreenSequenceHandler.definition = {
   "[profile('vt100'), sequence('CSI %df')]":
   function HVP(n1, n2) 
   { // Horizontal and Vertical Position
-    var cursor = this.cursor;
+    var cursor = this.cursor,
+        y = (n1 || 1) - 1,
+        x = (n2 || 1) - 1;
 
-    this.setPositionY((n1 || 1) - 1 + cursor.originY);
-    this.setPositionX((n2 || 1) - 1 + cursor.originX);
+    if (cursor.DECOM) {
+      y += cursor.originY;
+      x += cursor.originX;
+    }
+
+    this.setPositionY(y);
+    this.setPositionX(x);
   },
 
   "[profile('vt100'), sequence('CSI %di')]":
@@ -2431,13 +2452,14 @@ Screen.definition = {
   function reverseIndex() 
   { // cursor up
     var cursor_state = this.cursor,
-        line = this.getCurrentLine(),
         top = this._scroll_top,
-        bottom = this._scroll_bottom,
         positionY = cursor_state.positionY;
-
-    if (positionY <= top) {
-      this._scrollDown(top, bottom, 1);
+//alert(positionY + ";" + top)
+    if (positionY === top) {
+      this._scrollDown(top, this._scroll_bottom, 1);
+    } else if (positionY < top) {
+      cursor_state.positionY = top  
+      this._scrollDown(top, this._scroll_bottom, 1);
     } else {
       --cursor_state.positionY;
     }
@@ -2447,17 +2469,18 @@ Screen.definition = {
   "[type('Undefined')] lineFeed":
   function lineFeed() 
   { // cursor down
-    var cursor = this.cursor,
-        top = this._scroll_top,
+    var cursor_state = this.cursor,
+        top,
         bottom = this._scroll_bottom,
-        positionY = cursor.positionY;
+        positionY = cursor_state.positionY;
 
     if (positionY === bottom - 1) {
-      this._scrollUp(top, bottom, 1);
+      this._scrollUp(this._scroll_top, bottom, 1);
     } else if (positionY > bottom - 1) {
-      cursor.positionY = bottom - 1;
+      cursor_state.positionY = bottom - 1;
+      this._scrollUp(this._scroll_top, bottom, 1);
     } else {
-      ++cursor.positionY;
+      ++cursor_state.positionY;
     }
   },
 

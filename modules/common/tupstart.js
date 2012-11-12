@@ -375,7 +375,10 @@ EventBroker.prototype = {
    * */
   subscribe: function subscribe(expression, listener, context, id) 
   {
-    var delegate = function() listener.apply(context, arguments);
+    var delegate = function()
+    {
+      return listener.apply(context, arguments);
+    }
     this._processer.subscribe(expression, delegate, id);
     //if (this._parent) {
     //  this._parent.subscribe(expression, delegate, id);
@@ -469,6 +472,14 @@ EventBroker.prototype = {
         url,
         i = 0;
 
+    paths = paths.sort(function(lhs, rhs)
+                    {
+                      return lhs > rhs
+                    });
+    //alert(paths.map(function (f) f.path.split("/").pop()).join("\n"))
+    paths = paths.reverse()
+    //alert(paths.map(function (f) f.path.split("/").pop()).join("\n"))
+
     for (; i < paths.length; ++i) {
       entry = paths[i];
       try {
@@ -497,103 +508,168 @@ EventBroker.prototype = {
 //
 
 /** The event expression node class for unary operator '@'. */
-function Once(rhs) ({ 
+function Once(rhs) 
+{
+  return { 
 
-  rhs: rhs,
+    rhs: rhs,
 
-  get test() 
-    this.rhs.test,
+    get test() 
+    {
+      return this.rhs.test;
+    },
 
-  get value() 
-    this.rhs.value,
+    get value() 
+    {
+      return this.rhs.value;
+    },
 
-  reset: function reset() 
-  {
-    this.rhs = null;
-    this.__defineGetter__("test", function() false);
-  },
+    reset: function reset() 
+    {
+      this.rhs = null;
+      this.__defineGetter__(
+        "test",
+        function test()
+        {
+          return false;
+        });
+    },
 
-  toString: function() "[Once " + this.rhs + " ]",
+    toString: function toString()
+    {
+      return "[Once " + this.rhs + " ]";
+    }
 
-}); // class Once
+  };
+
+} // class Once
 
 /** The event expression node class for unary operator '~'. */
-function Not(rhs) ({ 
+function Not(rhs) 
+{ 
+  return {
 
-  rhs: rhs,
+    rhs: rhs,
 
-  get test() 
-    !this.rhs.test,
+    get test() 
+    {
+      return !this.rhs.test;
+    },
 
-  get value() 
-    this.rhs.value,
+    get value() 
+    {
+      return this.rhs.value;
+    },
 
-  reset: function() 
-    this.rhs.reset(),
+    reset: function reset() 
+    {
+      this.rhs.reset();
+    },
 
-  toString: function() "[Not " + this.lhs + " " + this.rhs + " ]",
+    toString: function toString()
+    {
+      return "[Not " + this.lhs + " " + this.rhs + " ]";
+    }
 
-}); // class Not
+  };
+
+}; // class Not
 
 /** The event expression node class for binary operator '&'. */
-function And(lhs, rhs) ({ 
+function And(lhs, rhs)
+{
+  return { 
 
-  lhs: lhs,
-  rhs: rhs,
+    lhs: lhs,
+    rhs: rhs,
+  
+    get test() 
+    {
+      return this.lhs.test && this.rhs.test;
+    },
+  
+    get value() 
+    {
+      return this.lhs.value.concat(this.rhs.value);
+    },
+  
+    reset: function reset() 
+    {
+      this.lhs.reset();
+      this.rhs.reset();
+    },
+  
+    toString: function toString()
+    {
+      "[And " + this.lhs + " " + this.rhs + " ]";
+    },
 
-  get test() 
-    this.lhs.test && this.rhs.test,
+  };
 
-  get value() 
-    this.lhs.value.concat(this.rhs.value),
-
-  reset: function() 
-    [this.lhs, this.rhs]
-      .forEach(function(node) node.reset()),
-
-  toString: function() "[And " + this.lhs + " " + this.rhs + " ]",
-
-}); // class And
+} // class And
 
 /** The event expression node class for binary operator '|'. */
-function Or(lhs, rhs) ({ 
+function Or(lhs, rhs) 
+{
+  return { 
 
-  lhs: lhs,
-  rhs: rhs,
+    lhs: lhs,
+    rhs: rhs,
 
-  get test() 
-    this.lhs.test || this.rhs.test,
+    get test() 
+    {
+      return this.lhs.test || this.rhs.test;
+    },
 
-  get value() 
-    this.lhs.value.concat(this.rhs.value),
+    get value() 
+    {
+      return this.lhs.value.concat(this.rhs.value);
+    },
 
-  reset: function() 
-    [this.lhs, this.rhs]
-      .forEach(function(node) node.reset()),
+    reset: function reset() 
+    {
+      this.lhs.reset();
+      this.rhs.reset();
+    },
 
-  toString: function() "[Or " + this.lhs + " " + this.rhs + " ]",
+    toString: function toString()
+    { 
+      return "[Or " + this.lhs + " " + this.rhs + " ]";
+    },
 
-}); // class Or
+  };
 
-function Actor(broker, token, stack, delegate, id) {
+} // class Or
+
+function Actor(broker, token, stack, delegate, id)
+{
 
   var self = this;
 
   this.__proto__ = { 
+
     test: false,
+
     value: [ null ],
-    reset: function() 
+
+    reset: function reset() 
     { 
       this.value = [ null ];
       this.test = false;
     },
-    toString: function() "[Actor " + token + "]",
+
+    toString: function toString()
+    {
+      return "[Actor " + token + "]";
+    }
+
   };
 
   broker.addListener(token, function(subject) 
   {
-    var result;
-    var root;
+    var result,
+        root;
+
     self.test = true;
     self.value = [ subject ];
     root = stack[0]; // get root node of parse tree from stack top.
@@ -602,7 +678,9 @@ function Actor(broker, token, stack, delegate, id) {
       root.reset();
       return result;
     }
+
     return null;
+
   }, id);
 
 } // class Actor
@@ -630,10 +708,15 @@ EventExpressionProcesser.prototype = {
   _generateTokens: function _generateTokens(text) 
   {
     // [blank] or [operators] or [identifier]
-    var pattern = new RegExp(/\s*(?:(@|~|&|\||\(|\))|([A-Za-z0-9_\-\/\.]*)\{([^\}]+)\}([A-Za-z0-9_\-\/\.]*)|([A-Za-z0-9_\-\/\.]+))/y);
-    var match;
-    var operator, first, expression, last, identifier;
-    var token;
+    var pattern = new RegExp(/\s*(?:(@|~|&|\||\(|\))|([A-Za-z0-9_\-\/\.]*)\{([^\}]+)\}([A-Za-z0-9_\-\/\.]*)|([A-Za-z0-9_\-\/\.]+))/y),
+        match,
+        operator,
+        first,
+        expression,
+        last,
+        identifier,
+        token;
+
     //pattern.lastIndex = 0;
     while (true) {
       match = pattern.exec(text);

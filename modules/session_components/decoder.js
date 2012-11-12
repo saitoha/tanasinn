@@ -103,7 +103,9 @@ Decoder.definition = {
   "[subscribe('event/session-initialized'), pnp]": 
   function onSessionInitialized(scheme) 
   {
-    this.sendMessage("get/decoders").map(
+    var decoders = this.sendMessage("get/decoders");
+
+    decoders.map(
       function mapfunc(information)
       {
         this._decoder_map[information.charset] = information; 

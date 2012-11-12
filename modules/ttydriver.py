@@ -336,7 +336,7 @@ class TeletypeDriver:
                 action = getattr(self, operation)
                 action([ base64.b64decode(arg) for arg in argv ])
             else:
-                self.control_socket.send("? " + operation + "\n")
+                self.control_socket.send("? %s\n" % operation)
     
     def drive_tty(self):
     
@@ -495,7 +495,7 @@ if __name__ == "__main__":
         rspeed = 112
 
     # make termattr string
-    termattr = str(par) + ";" + str(nbits) + ";" + str(xspeed) + ";" + str(rspeed) + ";" + "1;0x"
+    termattr = "%d;%d;%d;%d;1;0x" % (par, nbits, xspeed, rspeed)
 
     # send control channel's port, pid, ttyname
     connection_socket.send("%s:%s:%s:%s" % (control_port, pid, ttyname, termattr))
