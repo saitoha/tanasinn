@@ -1091,7 +1091,7 @@ ScreenSequenceHandler.definition = {
         y = (n1 || 1) - 1,
         x = (n2 || 1) - 1;
 
-    if (screen.cursor.DECOM) {
+    if (cursor.DECOM) {
       y += cursor.originY;
       x += cursor.originX;
     }
