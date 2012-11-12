@@ -111,8 +111,8 @@ PluginsCompleter.definition = {
         key: module.id, 
         value: module
       } for ([, module] in Iterator(modules)) 
-        if (module.id && module.id.match(context.source) 
-            && module.enabled === ("enabled" === context.option))
+        if (module.id && module.id.match(context.source)
+            && module.getEnabled && module.getEnabled() === ("enabled" === context.option))
     ];
     if (0 === candidates.length) {
       this.sendMessage("event/answer-completion", null);
