@@ -230,7 +230,7 @@ update-web:
 	ssh user@zuse.jp ./build.sh
 
 update: all
-	cp tanasinn.xpi /var/www/tanasinn/tanasinn-current.xpi
+	cp tanasinn.xpi /var/www/tanasinn/tanasinn-$(PACKAGE_VERSION).xpi
 	cp doc/*.html /var/www/tanasinn/
 	cp doc/images/*.png /var/www/tanasinn/images/
 

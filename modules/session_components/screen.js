@@ -523,13 +523,13 @@ ScreenSequenceHandler.definition = {
   "[profile('vt100'), sequence('CSI %d$z')]":
   function DECERA(n1, n2, n3, n4) 
   { // Erase Rectangle Area
-    var screen = this._screen,
-        top = (n1 || 1) - 1,
+    var top = (n1 || 1) - 1,
         left = (n2 || 1) - 1,
         bottom = (n3 || 1) - 1,
-        right = (n4 || 1) - 1;
+        right = (n4 || 1) - 1,
+        cursor = this.cursor;
 
-    if (screen.cursor.DECOM) {
+    if (cursor.DECOM) {
       top += cursor.originY;
       left += cursor.originX;
       bottom += cursor.originY;
@@ -542,14 +542,14 @@ ScreenSequenceHandler.definition = {
         "DECERA", Array.slice(arguments));
     }
 
-    if (bottom > screen.height) {
-      bottom = screen.height;
+    if (bottom > this.height) {
+      bottom = this.height;
     }
-    if (right > screen.width) {
-      right = screen.width;
+    if (right > this.width) {
+      right = this.width;
     }
 
-    screen.eraseRectangle(top, left, bottom, right);
+    this.eraseRectangle(top, left, bottom, right);
   },
 
   /**
