@@ -1,3 +1,12 @@
+2012-11-12 Hayaki Saito <user@zuse.jp>
+
+    * Version 0.3.1.2/0.3.1.3/0.3.1.4
+    * Fix origin mode behavior
+    * Fix some reference error
+    * [important] Fix an installation error when creating $HOME/.tanasinn
+    * [important] Fix some modules' dependency issue 
+    * Fix plugin manager's initialization issue
+
 2012-11-11 Hayaki Saito <user@zuse.jp>
 
     * Version 0.3.1.1
