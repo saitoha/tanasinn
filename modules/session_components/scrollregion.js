@@ -133,6 +133,7 @@ ScrollRegion.definition = {
     // DECSTBM moves the cursor to column 1, line 1 of the page.
     screen.setPositionX(0);
     screen.setPositionY(top);
+    cursor_state.setOrigin();
   },
 
   "[subscribe('sequence/decrqss/decstbm'), pnp]":
