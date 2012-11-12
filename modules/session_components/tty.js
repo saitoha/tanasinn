@@ -93,7 +93,9 @@
  *  @class SocketTeletypeService
  *  @brief Listen mouse input events and send them to TTY device.
  */
-var SocketTeletypeService = new Class().extends(Plugin);
+var SocketTeletypeService = new Class().extends(Plugin)
+                                       .depends("tty_controller")
+                                       .depends("externaldriver");
 SocketTeletypeService.definition = {
 
   id: "tty",
@@ -119,6 +121,8 @@ SocketTeletypeService.definition = {
   "[install]":
   function install(context) 
   {
+     this._externaldriver = context["externaldriver"];
+     this._ttycontroller = context["tty_controller"];
   },
 
   /** Uninstalls itself.
@@ -169,9 +173,10 @@ SocketTeletypeService.definition = {
 
     }
     this._socket = coUtils.Components.createLoopbackServerSocket(this);
-  
+
     // nsIProcess::runAsync.
-    this.sendMessage("command/start-ttydriver-process", this._socket.port); 
+    //this.sendMessage("command/start-ttydriver-process", this._socket.port); 
+    this._externaldriver.start(this._socket.port)
   },
  
   /**

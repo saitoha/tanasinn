@@ -111,6 +111,7 @@ IOManagerConcept.definition = {
  * @class IOManager
  */
 var IOManager = new Class().extends(Plugin)
+                           .depends("tty_controller")
                            .requires("IOManager");
 IOManager.definition = {
 
@@ -173,7 +174,6 @@ IOManager.definition = {
     //      },
     //    }, 0, 0, null)
     //}
-    
     if (this._output) {
       this._output.write(data, data.length);
       //this._output.flush();
