@@ -64,23 +64,11 @@ Parser.definition = {
   "[install]":
   function install(context)
   {
-    var grammars = this.sendMessage("get/grammars"),
-        grammar,
-        i = 0;
-
     this._scanner = context["scanner"];    
     this._screen = context["screen"];
     this._decoder = context["decoder"];
     this._drcs_converter = context["drcs_converter"];
 
-    this._grammars = {};
-
-    for (; i < grammars.length; ++i) {
-      grammar = grammars[i];
-      this._grammars[grammar.id] = grammar;
-    }
-
-    this._grammar = this._grammars[this.initial_grammar];
     this.onChangeAmbiguousCharacterWidth(this.ambiguous_as_wide);
   },
 
@@ -93,6 +81,23 @@ Parser.definition = {
     this._screen = null;
     this._decoder = null;
     this._drcs_converter = null;
+  },
+
+  "[subscribe('event/session-initialized'), pnp]":
+  function onSessionInitialized(session)
+  {
+    var grammars = this.sendMessage("get/grammars"),
+        grammar,
+        i;
+
+    this._grammars = {};
+
+    for (i = 0; i < grammars.length; ++i) {
+      grammar = grammars[i];
+      this._grammars[grammar.id] = grammar;
+    }
+
+    this._grammar = this._grammars[this.initial_grammar];
   },
 
   "[subscribe('variable-changed/parser.ambiguous_as_wide'), pnp]":
