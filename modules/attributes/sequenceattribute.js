@@ -55,10 +55,12 @@ SequenceAttribute.definition = {
    */
   initialize: function initialize(broker)
   {
-    var attributes, id, key, expressions, name, handler;
-
-    attributes = this.__attributes;
-    id = this.id + "." + "__sequence";
+    var attributes = this.__attributes,
+        id = this.id + "." + "__sequence",
+        key,
+        expressions,
+        name,
+        handler;
 
     for (key in attributes) {
 
@@ -66,7 +68,10 @@ SequenceAttribute.definition = {
 
       if (expressions) {
 
-        [name] = attributes[key]["profile"];
+        name = attributes[key]["profile"][0];
+        if (!name) {
+          throw new Error("profile attribute is required: '" + id + "." + key + "'");
+        }
         handler = this[key];
 
         apply_attribute(this, broker, key, name, handler, expressions, id);

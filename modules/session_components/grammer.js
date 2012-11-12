@@ -646,7 +646,6 @@ VT100Grammar.definition = {
   "[install]":
   function install(context)
   {
-    this.resetSequences();
   },
 
   /** Uninstalls itself. 
@@ -664,6 +663,8 @@ VT100Grammar.definition = {
     var sequences = this.sendMessage("get/sequences/vt100"),
         i;
 
+    this.resetSequences();
+
     for (i = 0; i < sequences.length; ++i) {
       this.sendMessage("command/add-sequence", sequences[i]);
     }
@@ -675,6 +676,7 @@ VT100Grammar.definition = {
     this.ESC = new SequenceParser();
     this.CSI = new SequenceParser();
     SequenceParser.prototype[0x1b] = this.ESC;
+
     this.sendMessage(
       "command/add-sequence",
       {
@@ -682,6 +684,7 @@ VT100Grammar.definition = {
         handler: this.ESC,
         context: this,
       });
+
     this.sendMessage(
       "command/add-sequence",
       {
@@ -689,6 +692,7 @@ VT100Grammar.definition = {
         handler: this.CSI,
         context: this,
       });
+
     this.sendMessage(
       "command/add-sequence",
       {
@@ -714,6 +718,7 @@ VT100Grammar.definition = {
   function parse(scanner) 
   {
     var action = C0Parser.parse(scanner);
+
     return action;
   },
 
