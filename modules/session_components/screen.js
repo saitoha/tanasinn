@@ -350,7 +350,7 @@ ScreenSequenceHandler.definition = {
   },
 
   /**
-   * CUP—Cursor Position
+   * CUP - Cursor Position
    * 
    * This control function moves the cursor to the specified line and column. 
    * The starting point for lines and columns depends on the setting of 
@@ -374,8 +374,14 @@ ScreenSequenceHandler.definition = {
   { // move CUrsor to absolute Position 
     var top = this._scroll_top,
         bottom = this._scroll_bottom,
-        y = (n1 || 1) - 1 + this.cursor.originY,
-        x = (n2 || 1) - 1 + this.cursor.originX;
+        cursor = this.cursor,
+        y = (n1 || 1) - 1,
+        x = (n2 || 1) - 1;
+
+    if (cursor.DECOM) {
+      y += cursor.originY;
+      x += cursor.originX;
+    }
 
     if (y >= bottom) {
       y = bottom - 1;
@@ -425,16 +431,16 @@ ScreenSequenceHandler.definition = {
    * Format
    *
    * CSI    Ps    J
-   * 9/11 	3/n   4/10
+   * 9/11   3/n   4/10
    *
    * Parameters
    * 
    * Ps   represents the amount of the display to erase.
    *
-   * Ps 	Area Erased
-   *      0 (default) 	From the cursor through the end of the display
-   *      1 	From the beginning of the display through the cursor
-   *      2 	The complete display
+   * Ps   Area Erased
+   *      0 (default)   From the cursor through the end of the display
+   *      1             From the beginning of the display through the cursor
+   *      2             The complete display
    * 
    * Programming Tip
    * Use a Ps value of 2 to erase the complete display in a fast, 
@@ -523,6 +529,13 @@ ScreenSequenceHandler.definition = {
         bottom = (n3 || 1) - 1,
         right = (n4 || 1) - 1;
 
+    if (screen.cursor.DECOM) {
+      top += cursor.originY;
+      left += cursor.originX;
+      bottom += cursor.originY;
+      right += cursor.originX;
+    }
+
     if (top >= bottom || left >= right) {
       throw coUtils.Debug.Exception(
         _("Invalid arguments detected in %s [%s]."),
@@ -550,16 +563,16 @@ ScreenSequenceHandler.definition = {
    * Format
    *
    * CSI    Ps    K
-   * 9/11 	3/n   4/11
+   * 9/11   3/n   4/11
    *
    * Parameters
    * 
    * Ps   represents the section of the line to erase.
    *
-   * Ps 	Section Erased
-   *      0 (default) 	From the cursor through the end of the line
-   *      1 	From the beginning of the line through the cursor
-   *      2 	The complete line
+   * Ps   Section Erased
+   *      0 (default) From the cursor through the end of the line
+   *      1           From the beginning of the line through the cursor
+   *      2           The complete line
    */
   "[profile('vt100'), sequence('CSI %dK')]":
   function EL(n) 
@@ -1054,12 +1067,12 @@ ScreenSequenceHandler.definition = {
    * Format
    *
    * CSI    f
-   * 9/11 	6/6
+   * 9/11   6/6
    *
    * Cursor moves to home position selected by DECOM
    *
    * CSI    Pl    ;     Pc   f
-   * 9/11	  3/n   3/11 	3/n  6/6
+   * 9/11   3/n   3/11  3/n  6/6
    *
    * Moves cursor to line Pl, column Pc
    *
@@ -1074,10 +1087,17 @@ ScreenSequenceHandler.definition = {
   "[profile('vt100'), sequence('CSI %df')]":
   function HVP(n1, n2) 
   { // Horizontal and Vertical Position
-    var cursor = this.cursor;
+    var cursor = this.cursor,
+        y = (n1 || 1) - 1,
+        x = (n2 || 1) - 1;
 
-    this.setPositionY((n1 || 1) - 1 + cursor.originY);
-    this.setPositionX((n2 || 1) - 1 + cursor.originX);
+    if (screen.cursor.DECOM) {
+      y += cursor.originY;
+      x += cursor.originX;
+    }
+
+    this.setPositionY(y);
+    this.setPositionX(x);
   },
 
   "[profile('vt100'), sequence('CSI %di')]":

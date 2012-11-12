@@ -87,13 +87,6 @@ CursorState.definition = {
   set DECOM(value)
   {
     this._DECOM = value;
-    if (value) {
-      this._originY = this.positionY;
-      this._originX = this.positionX;
-    } else {
-      this._originY = 0;
-      this._originX = 0;
-    }
   },
 
   _blink: true,
@@ -148,6 +141,18 @@ CursorState.definition = {
   function WYSTCURM_OFF()
   {
     this._cursor_state.blink = false;
+  },
+
+  resetOrigin: function setOrigin()
+  {
+    this._originY = 0;
+    this._originX = 0;
+  },
+
+  setOrigin: function setOrigin()
+  {
+    this._originY = this.positionY;
+    this._originX = this.positionX;
   },
 
   /** reset cursor state. */
