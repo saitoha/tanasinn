@@ -136,7 +136,7 @@ import pty
 
 debug_flag = False
 
-BUFFER_SIZE = 1024
+BUFFER_SIZE = 2048
 
 if not hasattr(os, "uname"):
     sys.exit("If you are running Windows OS, use cygwin's python. ;-)")
@@ -204,7 +204,8 @@ class TeletypeDriver:
     def fork_reading_process(self):
         pid = os.fork()
         if pid == 0:
-            io_fd = self.io_socket.fileno()
+            io_socket = self.io_socket
+            io_fd = io_socket.fileno()
             control_fd = self.control_socket.fileno()
             rfds = [self.master]
             wfds = []
@@ -216,11 +217,11 @@ class TeletypeDriver:
                 data = os.read(self.master, BUFFER_SIZE)
                 if not data:
                     break
-                self.io_socket.send(data)
+                io_socket.send(data)
                 #if len(data) < 1200:
                 #time.sleep(0.01)
             os.close(self.master)
-            self.io_socket.close()
+            io_socket.close()
             self.control_socket.close()
             trace("exit from reading process.")
             sys.exit(0)
@@ -438,6 +439,14 @@ if __name__ == "__main__":
     ttyname_max_length = 20 #1024
     pid, master = pty.fork()
     if not pid:
+        try:
+            t = termios.tcgetattr(sys.stdin.fileno())
+            backup = termios.tcgetattr(sys.stdin.fileno())
+            t[6][termios.VMIN] = 1
+            t[6][termios.VTIME] = 0
+            termios.tcsetattr(sys.stdin.fileno(), termios.TCSANOW, t)
+        except:
+            termios.tcsetattr(sys.stdin.fileno(), termios.TCSANOW, backup)
         #sys.stdout.write("%%-%ds" % ttyname_max_length % os.ttyname(0))
         #sys.stdout.flush()
         #sys.stdout.write("\x1bc")
