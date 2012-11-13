@@ -258,14 +258,14 @@ Session.definition = {
     if (this._stopped) {
       return;
     }
-
     this._stopped = true
+    this.stop.enabled = false;
+
     this.notify("event/before-broker-stopping", this);
 
     coUtils.Timer.setTimeout(
       function timerProc()
       {
-        this.stop.enabled = false;
         this.notify("event/broker-stopping", this);
         this.notify("event/broker-stopped", this);
         this.unsubscribe(this._request_id);
@@ -281,7 +281,7 @@ Session.definition = {
         //    .getService(Components.interfaces.fuelIApplication);
         //  application.quit();
         //}
-      }, 300);
+      }, 500, this);
   },
 
 }; // class Session

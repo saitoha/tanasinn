@@ -70,6 +70,7 @@ ProgramCompleter.definition = {
   id: "program-completer",
 
   _files: null,
+  _search_path: null,
 
   getInfo: function getInfo()
   {
@@ -108,11 +109,9 @@ ProgramCompleter.definition = {
   {
     var environment = coUtils.Components.getEnvironment(),
         path = environment.get("PATH"),
-        delimiter,
+        // detect delimiter for PATH string
+        delimiter = ("WINNT" === coUtils.Runtime.os) ? ";": ":", 
         paths;
-
-    // detect delimiter for PATH string
-    delimiter = ("WINNT" === coUtils.Runtime.os) ? ";": ":"
 
     // split PATH string by delimiter and get existing paths
     paths = path.split(delimiter).filter(
@@ -203,28 +202,39 @@ ProgramCompleter.definition = {
     var search_paths,
         files, 
         autocomplete_result,
-        search_path,
-        map;
+        search_path = this._search_path,
+        map,
+        keys,
+        i;
 
-    if ("WINNT" === coUtils.Runtime.os) {
-      map = (coUtils.Runtime.getBinPath() || "/bin:/usr/local/bin")
-        .split(":")
-        .map(function(posix_path) 
-        {
-          return coUtils.Runtime.getCygwinRoot()
-                + "\\"
-                + posix_path.replace(/\//g, "\\");
-        }).reduce(
-          function(map, path) 
+    if (null === this._search_path) {
+      if ("WINNT" === coUtils.Runtime.os) {
+        map = (coUtils.Runtime.getBinPath() || "/bin:/usr/local/bin")
+          .split(":")
+          .map(function mapFunc(posix_path) 
           {
-            var key = path.replace(/\\$/, "");
+            var cygwin_root = coUtils.Runtime.getCygwinRoot(),
+                win_path = posix_path.replace(/\//g, "\\");
 
-            map[key] = undefined;
-            return map; 
-          }, {});
-      search_path = [key for ([key,] in Iterator(map))];
-    } else {
-      search_path = this._getSearchPath();
+            return cygwin_root + "\\" + win_path;
+          }).reduce(
+            function(map, path) 
+            {
+              var key = path.replace(/\\$/, "");
+
+              map[key] = undefined;
+              return map; 
+            }, {});
+
+        keys = Object.keys(map);
+        search_path = [];
+        for (i = 0; i < keys.length; ++i) {
+          search_path.push(key);
+        }
+      } else {
+        search_path = this._getSearchPath();
+      }
+      this._search_path = search_path;
     }
 
     this._files = [file for (file in generateEntries(search_path))];
