@@ -208,6 +208,12 @@ Controller.definition = {
     this.post(command);
   },
 
+  "[subscribe('@command/detach'), pnp]": 
+  function detach()
+  {
+    this.post("detach\n");
+  },
+
   "[subscribe('@command/kill')]": 
   function kill()
   {

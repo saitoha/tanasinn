@@ -213,11 +213,13 @@ Launcher.definition = {
   function moveTo(info)
   {
     var left = info[0],
-        top = info[1];
+        top = info[1],
+        element = this._element,
+        popup = this._popup;
 
-    this._element.style.left = left + "px";
-    this._element.style.top = top + "px";
-    this._popup.hidePopup();
+    element.style.left = left + "px";
+    element.style.top = top + "px";
+    popup.hidePopup();
   },
   
   "[subscribe('event/shutdown'), pnp]":
@@ -250,10 +252,11 @@ Launcher.definition = {
     {
       return self.onkeydown.apply(self, arguments);
     };
+
     broker.window.addEventListener("keydown", keydown_handler, /* capture */ true);
     broker.subscribe(
       "event/disabled", 
-      function()
+      function onDisabled()
       {
         return broker.window.removeEventListener("keydown", keydown_handler, true);
       });
@@ -265,7 +268,7 @@ Launcher.definition = {
     broker.window.addEventListener("keyup", keyup_handler, /* capture */ true);
     broker.subscribe(
       "event/disabled", 
-      function()
+      function onDisabled()
       {
         return broker.window.removeEventListener("keyup", keyup_handler, true);
       });
@@ -294,22 +297,21 @@ Launcher.definition = {
 
   select: function select(index)
   {
-    var completion_root,
+    var completion_root = this._completion_root,
         row,
         scroll_box,
         box_object,
         scrollY,
         first_position,
-        last_position;
+        last_position,
+        row_count = this.getRowCount();
 
     if (index < -1) {
       index = -1;
     }
-    if (index > this.getRowCount()) {
-      index = this.getRowCount() - 1;
+    if (index > row_count) {
+      index = row_count - 1;
     }
-
-    completion_root = this._completion_root;
 
     if (this._index > -1) {
       row = completion_root.querySelector("rows").childNodes[this._index];
@@ -337,7 +339,9 @@ Launcher.definition = {
           box_object.getPosition({}, scrollY);
 
           first_position = row.boxObject.y - completion_root.boxObject.y;
-          last_position = first_position - scroll_box.boxObject.height + row.boxObject.height;
+          last_position = first_position
+                        - scroll_box.boxObject.height
+                        + row.boxObject.height;
 
           if (first_position < scrollY.value) {
             box_object.scrollTo(0, first_position);
@@ -410,15 +414,15 @@ Launcher.definition = {
         }
       }
 
-      index = Math.max(0, this.getCurrentIndex());
-      completion_text = result.labels[index];
+      //index = Math.max(0, this.getCurrentIndex());
+      //completion_text = result.labels[index];
 
-      if (completion_text && 0 === completion_text.indexOf(result.query)) {
+      //if (completion_text && 0 === completion_text.indexOf(result.query)) {
 
-        settled_length = this._stem_text.length - result.query.length;
-        settled_text = textbox.value.substr(0, settled_length);
-      } else {
-      }
+      //  settled_length = this._stem_text.length - result.query.length;
+      //  settled_text = textbox.value.substr(0, settled_length);
+      //} else {
+      //}
     } else {
       this._popup.hidePopup();
     }
@@ -456,13 +460,9 @@ Launcher.definition = {
     if (this._result) {
       textbox = this._textbox;
       completion_text = result.labels[index];
-
-      settled_length = 
-        this._stem_text.length - result.query.length;
+      settled_length = this._stem_text.length - result.query.length;
       settled_text = textbox.value.substr(0, settled_length);
-
       textbox.inputField.value = settled_text + completion_text;
-//      this._completion.inputField.value = "";
     }
   },
 
@@ -552,6 +552,10 @@ Launcher.definition = {
   enter: function enter() 
   {
     var command = this._textbox.value;
+
+    if ("&" === command[0]) {
+      this._textbox.inputField.value = ""
+    }
 
     this.sendMessage("command/start-session", command);
   },
@@ -761,7 +765,7 @@ Launcher.definition = {
       this.sendMessage("event/alt-key-down");
     }
   },
-};
+}; // Launcher
 
 
 /**
