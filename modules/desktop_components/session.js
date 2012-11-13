@@ -258,23 +258,30 @@ Session.definition = {
     if (this._stopped) {
       return;
     }
+
     this._stopped = true
-    this.stop.enabled = false;
-    this.notify("event/broker-stopping", this);
-    this.notify("event/broker-stopped", this);
-    this.unsubscribe(this._request_id);
-    this.clear();
+    this.notify("event/before-broker-stopping", this);
 
-    this._window = null;
+    coUtils.Timer.setTimeout(
+      function timerProc()
+      {
+        this.stop.enabled = false;
+        this.notify("event/broker-stopping", this);
+        this.notify("event/broker-stopped", this);
+        this.unsubscribe(this._request_id);
+        this.clear();
 
-    //if (coUtils.Runtime.app_name.match(/tanasinn/)) {
-    //  this.window.close(); // close window
+        this._window = null;
 
-    //  var application = Components
-    //    .classes["@mozilla.org/fuel/application;1"]
-    //    .getService(Components.interfaces.fuelIApplication);
-    //  application.quit();
-    //}
+        //if (coUtils.Runtime.app_name.match(/tanasinn/)) {
+        //  this.window.close(); // close window
+
+        //  var application = Components
+        //    .classes["@mozilla.org/fuel/application;1"]
+        //    .getService(Components.interfaces.fuelIApplication);
+        //  application.quit();
+        //}
+      }, 300);
   },
 
 }; // class Session

@@ -246,12 +246,7 @@ ExternalDriver.definition = {
 // nsIObserver
   observe: function observe(subject, topic, data)
   {
-    this.sendMessage("event/before-broker-stopping");
-    coUtils.Timer.setTimeout(
-      function timerProc()
-      {
-        this._broker.stop(); 
-      }, 50, this);
+    this._broker.stop(); 
   },
 
   /**
