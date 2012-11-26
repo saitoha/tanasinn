@@ -43,7 +43,7 @@ IdleService.definition = {
   },
 
   "[persistable] enabled_when_startup": true,
-  "[persistable, watchable] timer_interval": 5,
+  "[persistable, watchable] timer_interval": 10,
 
   _idle_service: null,
 
