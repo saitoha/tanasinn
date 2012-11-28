@@ -942,13 +942,11 @@ InputManager.definition = {
   },
 
   /** blur focus from the textbox elment. */
-  "[subscribe('command/blur')]":
+  "[subscribe('command/blur | event/before-broker-stopping')]":
   function blur() 
   {
     var owner_document = this.request("get/root-element").ownerDocument,
         dispatcher;
-
-    this._textbox.blur(); // raise blur event.
 
     if (owner_document) {
       dispatcher = owner_document.commandDispatcher;
@@ -956,6 +954,9 @@ InputManager.definition = {
         dispatcher.rewindFocus();
       }
     }
+
+    this._textbox.blur(); // raise blur event.
+
     return true;
   },
 

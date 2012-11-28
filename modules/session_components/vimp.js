@@ -88,7 +88,7 @@ Vimperator.definition = {
   },
 
   /** install blur evnet. */
-  "[subscribe('event/lost-focus | command/blur')]":
+  "[subscribe('event/lost-focus | command/blur | event/before-broker-stopping')]":
   function onLostFocus() 
   {
     var modules = this._getModules();

@@ -63,6 +63,8 @@ PersistentConcept.definition = {
 var PersistentTrait = new Trait();
 PersistentTrait.definition = {
 
+   _thumb_lastupdate: 0,
+
   /**
    * Serialize snd persist current state.
    */
@@ -105,14 +107,21 @@ PersistentTrait.definition = {
   "[subscribe('event/idle'), pnp]": 
   function onIdle()
   {
-    // make image file path
-    var path = coUtils.Runtime.getRuntimePath() 
-             + "/persist/" 
-             + this._broker.request_id 
-             + ".png",
-        file = coUtils.File.getFileLeafFromVirtualPath(path);
+    var thumb_update = new Date().getTime();
 
-    coUtils.IO.saveCanvas(this._main_layer.canvas, file, true);
+    if (thumb_update - this._thumb_lastupdate > 30 * 1000) {
+
+      this._thumb_lastupdate = thumb_update;
+
+      // make image file path
+      var path = coUtils.Runtime.getRuntimePath() 
+               + "/persist/" 
+               + this._broker.request_id 
+               + ".png",
+          file = coUtils.File.getFileLeafFromVirtualPath(path);
+
+      coUtils.IO.saveCanvas(this._main_layer.canvas, file, true);
+    }
   },
 
 }; // trait PersistentTrait
