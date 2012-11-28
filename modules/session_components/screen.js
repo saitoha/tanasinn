@@ -345,8 +345,17 @@ ScreenSequenceHandler.definition = {
   "[profile('vt100'), sequence('CSI %dG')]":
   function CHA(n) 
   { // cursor CHaracter Absolute column
-    this.setPositionX((n || 1) - 1);
-    //this.setPositionX((n || 1) - 1 + this.cursor.originX);
+    var max = this._width - 1,
+        cursor = this.cursor;
+
+    n = (n || 1) - 1;
+
+    if (n > max) {
+      cursor.positionX = max;
+    } else {
+      cursor.positionX = n;
+    }
+
   },
 
   /**
@@ -372,25 +381,27 @@ ScreenSequenceHandler.definition = {
   "[profile('vt100'), sequence('CSI %dH')]":
   function CUP(n1, n2) 
   { // move CUrsor to absolute Position 
-    var top = this._scroll_top,
-        bottom = this._scroll_bottom,
+    var top,
+        bottom,
         cursor = this.cursor,
         y = (n1 || 1) - 1,
         x = (n2 || 1) - 1;
 
     if (cursor.DECOM) {
-      y += cursor.originY;
-      x += cursor.originX;
+      top = this._scroll_top;
+      bottom = this._scroll_bottom;
+      y += top;
+    } else {
+      top = 0;
+      bottom = this._height;
     }
 
+    cursor.positionX = x;
     if (y >= bottom) {
-      y = bottom - 1;
-    } else if (y < top) {
-      y = top
+      cursor.positionY = bottom - 1;
+    } else {
+      cursor.positionY = y;
     }
-
-    this.setPositionY(y);
-    this.setPositionX(x);
   },
 
   /**
@@ -530,11 +541,16 @@ ScreenSequenceHandler.definition = {
         cursor = this.cursor;
 
     if (cursor.DECOM) {
-      top += cursor.originY;
-      left += cursor.originX;
-      bottom += cursor.originY;
-      right += cursor.originX;
+      top += self._scroll_top;
+      bottom += self._scroll_top;
+      if (top >= self._scroll_bottom) {
+        top = self._scroll_bottom - 1
+      }
+      if (bottom >= self._scroll_bottom) {
+        bottom = self._scroll_bottom - 1
+      }
     }
+
 
     if (top >= bottom || left >= right) {
       throw coUtils.Debug.Exception(
@@ -897,8 +913,17 @@ ScreenSequenceHandler.definition = {
   "[profile('vt100'), sequence('CSI %dd')]":
   function VPA(n) 
   { // set Virtical Position Absolutely
-    this.setPositionY((n || 1) - 1);
-    //this.setPositionY((n || 1) - 1 + this.cursor.originY);
+    var max = this._height - 1,
+        cursor = this.cursor;
+
+    n = (n || 1) - 1;
+
+    if (n > max) {
+      cursor.positionY = max;
+    } else {
+      cursor.positionY = n;
+    }
+
   },
 
   /**
@@ -984,7 +1009,7 @@ ScreenSequenceHandler.definition = {
   function CNL(n) 
   {
     this.cursorDown(n || 1);
-    this.setPositionX(0);
+    this.cursor.positionX = 0;
   },
 
   /**
@@ -1010,7 +1035,7 @@ ScreenSequenceHandler.definition = {
   function CPL(n) 
   {
     this.cursorUp(n || 1);
-    this.setPositionX(0);
+    this.cursor.positionX = 0;
   },
 
   /**
@@ -1035,7 +1060,16 @@ ScreenSequenceHandler.definition = {
   "[profile('vt100'), sequence('CSI %d`')]":
   function HPA(n) 
   { 
-    this.setPositionX((n || 1) - 1);
+    var max = this._width - 1,
+        cursor = this.cursor;
+
+    n = (n || 1) - 1;
+
+    if (n > max) {
+      cursor.positionX = max;
+    } else {
+      cursor.positionX = n;
+    }
   },
   
   /**
@@ -1087,17 +1121,27 @@ ScreenSequenceHandler.definition = {
   "[profile('vt100'), sequence('CSI %df')]":
   function HVP(n1, n2) 
   { // Horizontal and Vertical Position
-    var cursor = this.cursor,
+    var top,
+        bottom,
+        cursor = this.cursor,
         y = (n1 || 1) - 1,
         x = (n2 || 1) - 1;
 
     if (cursor.DECOM) {
-      y += cursor.originY;
-      x += cursor.originX;
+      top = self._scroll_top;
+      bottom = self._scroll_bottom;
+      y += top;
+    } else {
+      top = 0;
+      bottom = self._height;
     }
 
-    this.setPositionY(y);
-    this.setPositionX(x);
+    cursor.positionX = x;
+    if (y >= bottom) {
+      cursor.positionY = bottom - 1;
+    } else {
+      cursor.positionY = y;
+    }
   },
 
   "[profile('vt100'), sequence('CSI %di')]":
@@ -2009,7 +2053,7 @@ Screen.definition = {
     }
   },
 
-  /** Move CUrsor Up (CUP). */
+  /** Move CUrsor Up (CUU). */
   "[type('Uint16 -> Undefined')] cursorUp":
   function cursorUp(n) 
   { 
@@ -2041,7 +2085,7 @@ Screen.definition = {
     }
   },
 
-  /** Move CUrsor Up (CUP). */
+  /** Move CUrsor Up (CUU). */
   "[type('Uint16 -> Undefined')] cursorUpAbsolutely":
   function cursorUpAbsolutely(n) 
   { 
@@ -2100,6 +2144,7 @@ Screen.definition = {
       cursor.positionY = n;
     }
   },
+
 
   /** BackSpace (BS). */
   "[type('Undefined')] backSpace":
