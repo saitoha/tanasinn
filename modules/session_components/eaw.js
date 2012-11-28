@@ -70,7 +70,7 @@ EastAsianWidth.definition = {
 
   /** Treat ambiguous width characters as double-width.
    */
-  "[subscribe('sequence/decset/8840'), pnp]":
+  "[subscribe('sequence/decset/{8840 | 8428}'), pnp]":
   function activate() 
   { // Treat ambiguous characters as double
     var parser = this._parser;
@@ -81,7 +81,7 @@ EastAsianWidth.definition = {
 
   /** Treat ambiguous width characters as single-width.
    */
-  "[subscribe('sequence/decrst/8840'), pnp]":
+  "[subscribe('sequence/decrst/{8840 | 8428}'), pnp]":
   function deactivate() 
   { // Treat ambiguous characters as single
     var parser = this._parser;
@@ -97,6 +97,17 @@ EastAsianWidth.definition = {
   {
     var mode = this._mode ? 1: 2,
         message = "?8840;" + mode + "$y";
+
+    this.sendMessage("command/send-sequence/csi", message);
+  },
+
+  /** Report mode
+   */
+  "[subscribe('sequence/decrqm/8428'), pnp]":
+  function report() 
+  {
+    var mode = this._mode ? 1: 2,
+        message = "?8428;" + mode + "$y";
 
     this.sendMessage("command/send-sequence/csi", message);
   },
