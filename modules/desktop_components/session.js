@@ -260,21 +260,28 @@ Session.definition = {
     }
     this._stopped = true
     this.stop.enabled = false;
-    this.notify("event/broker-stopping", this);
-    this.notify("event/broker-stopped", this);
-    this.unsubscribe(this._request_id);
-    this.clear();
 
-    this._window = null;
+    this.notify("event/before-broker-stopping", this);
 
-    //if (coUtils.Runtime.app_name.match(/tanasinn/)) {
-    //  this.window.close(); // close window
+    coUtils.Timer.setTimeout(
+      function timerProc()
+      {
+        this.notify("event/broker-stopping", this);
+        this.notify("event/broker-stopped", this);
+        this.unsubscribe(this._request_id);
+        this.clear();
 
-    //  var application = Components
-    //    .classes["@mozilla.org/fuel/application;1"]
-    //    .getService(Components.interfaces.fuelIApplication);
-    //  application.quit();
-    //}
+        this._window = null;
+
+        //if (coUtils.Runtime.app_name.match(/tanasinn/)) {
+        //  this.window.close(); // close window
+
+        //  var application = Components
+        //    .classes["@mozilla.org/fuel/application;1"]
+        //    .getService(Components.interfaces.fuelIApplication);
+        //  application.quit();
+        //}
+      }, 500, this);
   },
 
 }; // class Session

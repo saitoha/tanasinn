@@ -83,6 +83,7 @@ Cursor.definition = {
   _screen: null,
   _renderer: null,
   _cursor_state: null,
+  _previous_position: null,
  
   /** Installs itself. 
    *  @param {InstallContext} context A InstallContext object.
@@ -108,7 +109,6 @@ Cursor.definition = {
     // subscribe some events.
     //
     // initial update
-    this.onFirstFocus();
     this.update();
     this._prepareBlink();
   },
@@ -132,10 +132,11 @@ Cursor.definition = {
     this._screen = null;
     this._renderer = null;
     this._cursor_state = null;
+    this._previous_position = null;
   },
 
-  "[subscribe('@command/focus'), pnp]":
-  function onFirstFocus()
+  "[subscribe('@event/session-initialized'), pnp]":
+  function onSessionInitialized()
   {
     var renderer = this._renderer,
         screen = this._screen;
@@ -315,6 +316,20 @@ Cursor.definition = {
     this._debugged = false;
   },
 
+  clear: function clear()
+  {
+    var context = this._context,
+        canvas = this._canvas;
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    this._previous_position = null;
+  },
+
+  "[subscribe('event/font-size-changed'), pnp]": 
+  function onFontSizeChanged(value) 
+  {
+    this.clear();
+  },
+
   "[subscribe('event/cursor-visibility-changed'), pnp]": 
   function onCursorVisibilityChanged(value) 
   {
@@ -360,12 +375,14 @@ Cursor.definition = {
   function onWidthChanged(width)
   {
     this._canvas.width = width;
+    this.clear();
   },
 
   "[subscribe('event/screen-height-changed'), pnp]": 
   function onHeightChanged(height)
   {
     this._canvas.height = height;
+    this.clear();
   },
 
   "[subscribe('command/draw'), pnp]": 
@@ -442,12 +459,18 @@ Cursor.definition = {
   _render: function _render(row, column, is_wide) 
   {
     var context = this._context,
-        canvas = this._canvas;
+        canvas = this._canvas,
+        previous_position = this._previous_position;
 
-    context.clearRect(0, 0, canvas.width, canvas.height);
+    if (null === previous_position) {
+    } else {
+      context.clearRect.apply(context, previous_position);
+    }
 
     if (this._cursor_visibility || this._debugged) {
       this._renderImpl(context, row, column, is_wide);
+    } else {
+      this._previous_position = null;
     }
   },
 
@@ -503,6 +526,8 @@ Cursor.definition = {
 
         // draw
         context.fillRect(x, y, width, height);
+
+        this._previous_position = [x - 3, y - 3, width + 6, height + 6];
         break;
 
       case coUtils.Constant.INPUT_MODE_COMMANDLINE:
@@ -512,7 +537,12 @@ Cursor.definition = {
         context.lineJoin = "round";
 
         // draw
-        context.strokeRect(x - 1, y - 1, width + 1, height + 1);
+        context.strokeRect(x - 1, y - 1, width + 2, height + 2);
+        this._previous_position = [x - 3, y - 3, width + 6, height + 6];
+        break;
+
+      default:
+        this._previous_position = null;
         break;
     }
   },
