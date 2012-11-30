@@ -299,7 +299,7 @@
     fontsizecompleter.js
     jscompleter.js
     localizecompleter.js
-    mapcompleter.js
+    nmapcompleter.js
     cmapcompleter.js
     optioncompleter.js
     pluginscompleter.js

@@ -310,7 +310,7 @@ C1Control.definition = {
    * into Local Test Mode (Setup T) and manually keying in the control sequence.
    *
    */
-  "[profile('vt100'), sequence('0x90%s', 'ESC P%s')]": 
+  "[profile('vt100'), sequence('0x90 ... ST', 'ESC P ... ST')]": 
   function DCS(message) 
   {
     if (/[\x00-\x1f]/.test(message[0])) {
@@ -411,7 +411,7 @@ C1Control.definition = {
    * of the character string depends on the application.
    *
    */
-  "[profile('vt100'), sequence('0x98%s', 'ESC X%s')]": 
+  "[profile('vt100'), sequence('0x98 ... ST', 'ESC X ... ST')]": 
   function SOS(message) 
   {
     this.sendMessage("sequence/sos", message);
@@ -466,7 +466,7 @@ C1Control.definition = {
    * operating system.
    *
    */
-  "[profile('vt100'), sequence('0x9d%s', 'ESC ]%s')]": 
+  "[profile('vt100'), sequence('0x9d ... ST', 'ESC ] ... ST')]": 
   function OSC(message) 
   {
     var delimiter_position = message.indexOf(";"),
@@ -491,7 +491,7 @@ C1Control.definition = {
    *
    */
   /** private message */
-  "[profile('vt100'), sequence('0x9e', 'ESC ^%s')]": 
+  "[profile('vt100'), sequence('0x9e ... ST', 'ESC ^ ... ST')]": 
   function PM(message) 
   {
     this.sendMessage("sequence/pm", message);
@@ -511,7 +511,7 @@ C1Control.definition = {
    * program.
    *
    */
-  "[profile('vt100'), sequence('0x9f%s', 'ESC _%s')]": 
+  "[profile('vt100'), sequence('0x9f ... ST', 'ESC _ ... ST')]": 
   function APC(message) 
   {
     this.sendMessage("sequence/apc", message);

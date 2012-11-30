@@ -91,7 +91,7 @@ ScrollRegion.definition = {
     this._cursor_state = null;
   },
 
-  "[profile('vt100'), sequence('CSI %dr', 'CSI %d>')]":
+  "[profile('vt100'), sequence('CSI Ps;Ps r')]":
   function DECSTBM(n1, n2) 
   {
     var screen = this._screen,

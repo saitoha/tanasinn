@@ -48,583 +48,29 @@ GrammarConcept.definition = {
 
 }; // GrammarConcept
 
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// implementation
-//
-
-
-/**
- * @class StringParser
- * @brief Parse string.
- */
-var StringParser = new Class();
-StringParser.definition = {
-
-  _action: null, // semantic action
-
-  /** constructor 
-   *  @param {Function} action A semantic action.
-   */
-  initialize: function initialize(action) 
-  {
-    this._action = action;
-  },
-
-  /** Parse string parameter. 
-   *  @param {Scanner} scanner A Scanner object.
-   */
-  parse: function parse(scanner, previous) 
-  {
-    var sequence = previous || [],
-        self = this,
-        c;
-
-    for (c in this._parseString(scanner)) {
-      sequence.push(c);
-    }
-
-    if (scanner.isEnd) {
-      return function(scanner) 
-      {
-        yield parse.apply(self, [scanner, sequence]);
-      };
-    }
-    return this._action(sequence);
-  },
-
-  /* 
-   *  StringTerminator ->   ( <0x07> | "<0x1b>\" | <LastCharacterOfStream> )
-   *  StringCharacter  -> any 1byte characters without StringTerminator
-   *  String           -> <StringCharacter>+  , <StringTerminator>
-   */
-  _parseString: function _parseString(scanner) 
-  {
-    var c;
-
-    while (!scanner.isEnd) {
-      c = scanner.current();
-      if (0x1b === c) {    // '\e'
-        scanner.moveNext();
-        if (scanner.isEnd) {
-          break;
-        }
-        c = scanner.current();
-        if (0x5d !== c && 0x0d !== c && 0xdd !== c) {
-          break;
-        }
-        yield 0x1b;
-        yield c;
-        scanner.moveNext();
-      }
-      if (0x07 === c) {
-        break;
-      }
-      yield c;
-      scanner.moveNext();
-    }
-  },
-};
-
-function null_function()
-{
-}
+var _STATE_GROUND        = 0,
+    _STATE_ESC           = 1,
+    _STATE_ESC_IBYTES    = 2,
+    _STATE_CSI_PBYTES    = 3,
+    _STATE_CSI_IBYTES    = 4,
+    _STATE_OSC           = 5,
+    _STATE_OSC_FINAL     = 6,
+    _STATE_STRING        = 7,
+    _STATE_STRING_FINAL  = 8;
 
 /**
- * handle control characters in C0 area.
- *
- */
-var C0Parser = {
-
-  _map: [],
-
-  append: function append(key, value)
-  {
-    this._map[key] = value;
-  },
-
-  get: function get(key)
-  {
-    return this._map[key];
-  },
-
-  parse: function parse(scanner) 
-  {
-    var c,
-        action;
-
-    if (scanner.isEnd) {
-      return undefined;
-    }
-
-    c = scanner.current();
-    action = this._map[c];
-
-    if (undefined === action) {
-      return undefined;
-    }
-
-    if ("parse" in action) {
-      scanner.moveNext();
-      action = action.parse(scanner);
-      if (undefined === action && !scanner.isEnd) {
-        return null_function;
-      }
-      return action;
-    }
-    return action;
-  },
-
-}; // C0Parser
-
-/**
- * @class ParameterParser
- * @brief Parse parameter. 
- */ 
-var ParameterParser = new Class().extends(Array);
-ParameterParser.definition = {
-
-  _default_action: null,
-  _c0action: null,
-
-  /** constructor */
-  initialize: function initialize(first, c)
-  {
-    this._first = first;
-    this._c0action = [];
-
-    if (2 === arguments.length) {
-      this._default_action = c;
-    }
-  },
-
-  /** Parse parameters and returns the correspond action.
-   *  @param {Scanner} scanner A Scanner object.
-   */
-  parse: function parse(scanner) 
-  {
-    var params = [],
-        c,
-        action,
-        meta_action,
-        default_action,
-        actions,
-        next,
-        param;
-
-    for (param in this._parseParameters(scanner)) {
-      params.push(param);
-    }
-
-    do {
-      if (scanner.isEnd) {
-        return undefined;
-      }
-      c = scanner.current();
-      if (c < 0x20 || 0x7f === c) {
-        action = C0Parser.get(c);
-        if (undefined !== action) {
-          this._c0action.push(action);
-        }
-        scanner.moveNext(); 
-        continue;
-      }
-      break;
-    } while (true);
-
-    next = this[c];
-
-    if (undefined === next) {
-    } else if ("parse" in next) {
-      scanner.moveNext();
-      c = scanner.current();
-      meta_action = next[c];
-      if (meta_action) {
-        action = meta_action(params);
-      }
-    } else {
-      action = next(params);
-    }
-    default_action = this._default_action;
-    if (0 === this._c0action.length && null === default_action) {
-      return action;
-    } 
-    
-    actions = this._c0action;
-    actions.push(action);
-
-    this._c0action = [];
-
-    return function()
-      {
-        var i,
-            action;
-
-        if (default_action) {
-          action = C0Parser.get(default_action);
-          if (undefined !== action) {
-            action();
-          }
-        }
-        for (i = 0; i < actions.length; ++i) {
-          action = actions[i];
-          if (action) {
-            try {
-              action();
-            } catch(e) {
-            }
-          }
-        }
-      };
-  }, // parse
-
-  /** Parse numeric parameters separated by semicolons ";". 
-   *  @param {Scanner} scanner A Scanner object.
-   *
-   * Paramter -> ([0-9]+, (";" or ":"))*, [0-9]+
-   *
-   */
-  _parseParameters: 
-  function _parseParameters(scanner) 
-  {
-    var accumulator = this._first,
-        c,
-        action;
-
-    while (!scanner.isEnd) {
-      c = scanner.current();
-      if (0x30 <= c && c <= 0x39) { // [0-9]
-        scanner.moveNext();
-        accumulator = accumulator * 10 + c - 0x30;
-      } else if (0x3a === c || 0x3b === c) { // ':' or ';'
-        scanner.moveNext();
-        yield accumulator;
-        accumulator = 0;
-      } else if (c < 0x20 || 0x7f === c) {
-        yield accumulator;
-        action = C0Parser.get(c);
-        if (undefined !== action) {
-          this._c0action.push(action);
-        }
-        scanner.moveNext();
-      } else {
-        yield accumulator;
-        break;
-      }
-    }
-  }, // _parseParameters
-};
-
-/**
- * @class ParameterParserStartingWithSemicolon
- */
-var ParameterParserStartingWithSemicolon = new Class().extends(ParameterParser);
-ParameterParserStartingWithSemicolon.definition = {
-
-  /** Parse numeric parameters separated by semicolons ";". 
-   *  @param {Scanner} scanner A Scanner object.
-   *
-   * Paramter -> ([0-9]+, (";" | ":"))*, [0-9]+
-   *
-   */
-  _parseParameters: 
-  function _parseParameters(scanner) 
-  {
-    var accumulator,
-        c,
-        action;
-
-    yield 0;
-
-    accumulator = this._first;
-
-    while (!scanner.isEnd) {
-      c = scanner.current();
-      if (0x30 <= c && c <= 0x39) { // [0-9]
-        scanner.moveNext();
-        accumulator = accumulator * 10 + c - 0x30;
-      } else if (0x3a === c || 0x3b === c) { // ':' or ';'
-        scanner.moveNext();
-        yield accumulator;
-        accumulator = 0;
-      } else if (c < 0x20 || 0x7f === c) {
-        yield accumulator;
-        action = C0Parser.get(c);
-        if (undefined !== action) {
-          this._c0action.push(action);
-        }
-        scanner.moveNext();
-      } else {
-        yield accumulator;
-        break;
-      }
-    }
-  }, // _parseParameters
-
-}; // class ParameterParserStartingWithSemicolon
-
-/**
- * @class SequenceParser
- */
-var SequenceParser = new Class().extends(Array);
-SequenceParser.definition = {
-
-  /** Construct child parsers from definition and make parser-chain. */
-  append: function append(key, value, context) 
-  {
-    var match = key.match(
-          /^(0x[0-9a-zA-Z]{2})(.*)$|^%d([\x20-\x7f]+)$|^%<Ps>([\x20-\x7f]+)$|^(.)%s$|^(%p)$|^(%c)$|^(.)$|^(.)(.+)$/),
-        code,
-        next,
-        accept_char,
-        codes,
-        i,
-        j,
-        next_char,
-        parser,
-        action,
-        index,
-        code1,
-        code2,
-        c,
-        make_handler;
-
-    var [, 
-      number, number2,
-      char_with_param, 
-      char_with_single_param,
-      char_with_string, 
-      char_position,
-      single_char, 
-      normal_char, first, next_chars
-    ] = match;
-
-    if (number) { // parse number
-      code = parseInt(number, 16);
-      if ("%s" === number2) {
-
-        var action = function(params) 
-        {
-          var data = coUtils.Text.safeConvertFromArray(params);
-          return function() 
-          {
-            return value.call(context, data);
-          };
-        };
-
-        C0Parser.append(code, new StringParser(action));
-
-      } else if (number2) {
-
-        code = parseInt(number, 16);
-        next = this[code] = this[code] || new SequenceParser;
-        next.append(number2, value, context);
-
-      } else {
-
-        if ("parse" in value) {
-          C0Parser.append(code, value);
-        } else {
-          C0Parser.append(code, function() 
-          {
-            return value.apply(context);
-          });
-        }
-      }
-    } else if (char_with_param) {
-
-      action = function action(params) 
-      {
-        return function() 
-        {
-          return value.apply(context, params);
-        };
-      };
-      accept_char = char_with_param.charCodeAt(0);
-
-      codes = [
-        0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 
-        0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f,
-        0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39,
-        0x7f,
-        0x3b,
-        0x90, 0x9d
-      ];
-
-      for (i = 0; i < codes.length; ++i) {
-
-        code = codes[i];
-        if (0x30 <= code && code < 0x3a) {
-          this[code] = this[code] 
-                     || new ParameterParser(code - 0x30);
-        } else if (0x3b === code) {
-          this[code] = this[code] 
-                     || new ParameterParserStartingWithSemicolon(0);
-        } else {
-          this[code] = this[code] 
-                     || new ParameterParser(0, code);
-        }
-        if (1 === char_with_param.length) {
-          this[code][accept_char] = action;
-        } else if (2 === char_with_param.length) {
-          next_char = char_with_param.charCodeAt(1);
-          this[code][accept_char] = this[code][accept_char] 
-                                 || new SequenceParser();
-          this[code][accept_char][next_char] = action;
-        } else {
-          throw coUtile.Exception(_("Cannot add handler: %s."), key);
-        }
-      }
-
-      parser = this;
-
-      for (j = 0; j < char_with_param.length - 1; ++j) {
-        accept_char = char_with_param.charCodeAt(j);
-        parser = parser[accept_char] 
-               = parser[accept_char] || new SequenceParser();
-      }
-      code = char_with_param.charCodeAt(char_with_param.length - 1);
-
-      parser[code] = parser[code] || function() 
-        {
-          return value.call(context, 0);
-        };
-
-    } else if (char_with_single_param) {
-
-      action = function(params)
-      {
-        return function() 
-        {
-          return value.apply(context, params);
-        };
-      };
-      for (i = 0; i < 10; ++i) {
-        code = 0x30 + i;
-        this[code] = this[code] || new SequenceParser(0, code);
-        parser = this[code];
-        for (j = 0; j < char_with_single_param.length - 1; ++j) {
-          accept_char = char_with_single_param.charCodeAt(j);
-          parser = parser[accept_char] = new SequenceParser();
-        }
-        code = char_with_single_param.charCodeAt(char_with_single_param.length - 1);
-        parser[code] = action;
-      }
-
-      parser = this;
-
-      for (j = 0; j < char_with_single_param.length - 1; ++j) {
-        accept_char = char_with_single_param.charCodeAt(j);
-        parser = parser[accept_char] = parser[accept_char] || new SequenceParser();
-      }
-      code = char_with_single_param.charCodeAt(char_with_single_param.length - 1);
-      parser[code] = parser[code] || action;
-
-    } else if (char_with_string) {
-      // define action
-      action = function(params) 
-      {
-        var data = coUtils.Text.safeConvertFromArray(params);
-
-        return function()
-        {
-          return value.call(context, data);
-        };
-      };
-
-      index = char_with_string.charCodeAt(0);
-      this[index] = new StringParser(action) // chain to string parser.
-    } else if (single_char) { // parse a char.
-
-      this[0x20] = this[0x20] || new SequenceParser();
-
-      make_handler = function make_handler(c)
-      {
-        return function()
-        {
-          return value.call(context, c)
-        };
-      }
-
-      for (code = 0x21; code < 0x7f; ++code) {
-        c = String.fromCharCode(code);
-        this[code] = this[code] || make_handler(c);
-        this[0x20][code] = this[0x20][code] || make_handler(" " + c);
-      }
-
-    } else if (char_position) { // 
-
-      make_handler = function make_handler(code1, code2)
-      {
-        return function()
-        {
-          return value.apply(context, [code1, code2]);
-        };
-      }
-
-      for (code1 = 0x21; code1 < 0x7f; ++code1) {
-        for (code2 = 0x21; code2 < 0x7f; ++code2) {
-          this[code1] = this[code1] || new SequenceParser();
-          this[code1][code2] = this[code1][code2] 
-                            || make_handler(code1, code2)
-        }
-      }
-    } else if (normal_char) {
-
-      code = normal_char.charCodeAt(0);
-      if ("parse" in value) {
-        this[code] = value;
-      } else {
-        this[code] = this[code] || function()
-          {
-            return value.apply(context);
-          };
-      }
-    } else {
-
-      code = first.charCodeAt(0);
-      next = this[code] = this[code] || new SequenceParser;
-
-      if (!next.append) {
-        next = this[code] = this[code] || new SequenceParser;
-      }
-      next.append(next_chars, value, context);
-    }
-  }, // append
-
-  /** Scan and get asocciated action. 
-   *  @param {Scanner} scanner A Scanner object.
-   */
-  parse: function parse(scanner) 
-  {
-    var c = scanner.current(),
-        next = this[c];
-
-    if (next) { // c is part of control sequence.
-      if ("parse" in next) { // next is parser.
-        scanner.moveNext();
-        return next.parse(scanner);
-      } else { 
-        return next // next is action.
-      }
-    } else {
-      return undefined;
-    }
-  }, // parse
-
-}; // class SequenceParser
-
-/**
- * @class VT100Grammar
+ * @class VT100Grammar2
  *
  *
  */
-var VT100Grammar = new Class().extends(Plugin)
-                              .requires("GrammarConcept");
-VT100Grammar.definition = {
+var VT100Grammar2 = new Class().extends(Plugin)
+                               .requires("GrammarConcept");
+VT100Grammar2.definition = {
 
   id: "vt100",
+
+  _state: _STATE_GROUND,
+  _str: null,
 
   getInfo: function getInfo()
   {
@@ -637,15 +83,17 @@ VT100Grammar.definition = {
 
   "[persistable] enabled_when_startup": true,
 
-  ESC: null,
-  CSI: null,
-
   /** Installs itself. 
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
   function install(context)
   {
+    this._str = null;
+    this._char_map = [];
+    this._esc_map = {};
+    this._csi_map = {};
+    this._str_map = [];
   },
 
   /** Uninstalls itself. 
@@ -653,8 +101,8 @@ VT100Grammar.definition = {
   "[uninstall]":
   function uninstall()
   {
-    this.ESC = null;
-    this.CSI = null;
+    this._state = _STATE_GROUND;
+    this._str = null;
   },
 
   "[subscribe('event/session-initialized'), pnp]":
@@ -673,33 +121,6 @@ VT100Grammar.definition = {
   "[subscribe('command/reset-sequences'), pnp]":
   function resetSequences()
   {
-    this.ESC = new SequenceParser();
-    this.CSI = new SequenceParser();
-    SequenceParser.prototype[0x1b] = this.ESC;
-
-    this.sendMessage(
-      "command/add-sequence",
-      {
-        expression: "0x1B", 
-        handler: this.ESC,
-        context: this,
-      });
-
-    this.sendMessage(
-      "command/add-sequence",
-      {
-        expression: "0x9C", 
-        handler: this.CSI,
-        context: this,
-      });
-
-    this.sendMessage(
-      "command/add-sequence",
-      {
-        expression: "ESC [", 
-        handler: this.CSI,
-        context: this,
-      });
   },
 
   "[subscribe('get/grammars'), pnp]":
@@ -717,8 +138,215 @@ VT100Grammar.definition = {
   "[type('Scanner -> Action')] parse":
   function parse(scanner) 
   {
-    var action = C0Parser.parse(scanner);
+    var c;
+    while (!scanner.isEnd) {
+      c = scanner.current();
+      if (this._state === _STATE_OSC) {
+        if (c === 0x1b) {
+          this._state = _STATE_OSC_FINAL;
+        } else if (c === 0x07) {
+          this._state = _STATE_GROUND;
+          return this._dispatch_string(this._str);
+        } else if (c < 0x20) {
+          this._state = _STATE_GROUND;
+        } else {
+          this._str.push(c);
+        }
+      } else if (this._state === _STATE_OSC_FINAL) {
+        if (c === 0x5c) {
+          this._state = _STATE_GROUND;
+          return this._dispatch_string(this._str);
+        } else if (c < 0x20) {
+          this._state = _STATE_GROUND;
+        } else {
+          this._state = _STATE_OSC;
+          this._str.push(c);
+        }
+      } else if (this._state === _STATE_STRING) {
+        if (c === 0x1b) {
+          this._state = _STATE_STRING_FINAL;
+        } else if (c === 0x07) {
+          this._state = _STATE_GROUND;
+          return this._dispatch_string(this._str);
+        } else if (c < 0x20) {
+          this._state = _STATE_GROUND;
+        } else {
+          this._str.push(c);
+        }
+      } else if (this._state === _STATE_STRING_FINAL) {
+        if (c === 0x5c) {
+          this._state = _STATE_GROUND;
+          return this._dispatch_string(this._str);
+        } else if (c < 0x20) {
+          this._state = _STATE_GROUND;
+        } else {
+          this._state = _STATE_STRING;
+          this._str.push(c);
+        }
+      } else if (c === 0x1b) {
+        this._state = _STATE_ESC;
+      } else if (c === 0x18 || c === 0x1a) {
+        this._state = _STATE_GROUND;
+      } else if (c < 0x20) { // C0
+        return this._dispatch_char(c);
+      } else if (c > 0x9f) {
+        this._state = _STATE_GROUND;
+        return null;
+      } else if (c >= 0x7f) { // DEL, C1
+        return this._dispatch_char(c);
+      } else if (this._state === _STATE_ESC) {
+        if (c <= 0x2f) { // SP to / 
+          this._ibytes = [c];
+          this._state = _STATE_ESC_IBYTES;
+        } else if (c === 0x50 || c === 0x58 || c === 0x5e || c === 0x5f) {
+          this._str = [c];
+          this._state = _STATE_STRING;
+        } else if (c === 0x5b) { // [
+          this._ibytes = [];
+          this._pbytes = [];
+          this._state = _STATE_CSI_PBYTES;
+        } else if (c === 0x5d) { // ]
+          this._str = [c];
+          this._state = _STATE_OSC;
+        } else if (c <= 0x7f) { // 0 to ~
+          this._state = _STATE_GROUND;
+          return this._dispatch_esc([], c)
+        } else if (c <= 0x9f) {
+          this._state = _STATE_GROUND;
+        } else {
+          this._state = _STATE_GROUND;
+          return null;
+        }
+      } else if (this._state === _STATE_ESC_IBYTES) {
+        if (c <= 0x2f) { // SP to / 
+          this._ibytes.push(c);
+        } else if (c <= 0x7f) { // 0 to ~
+          this._state = _STATE_GROUND;
+          return this._dispatch_esc(this._ibytes, c)
+        } else if (c <= 0x9f) {
+          this._state = _STATE_GROUND;
+        } else {
+          this._state = _STATE_GROUND;
+          return null;
+        }
+      } else if (this._state === _STATE_CSI_PBYTES) {
+        if (c <= 0x2f) { // SP to / 
+          this._ibytes.push(c);
+          this._satte = _STATE_CSI_IBYTES;
+        } else if (c <= 0x3f) {
+          this._pbytes.push(c);
+        } else if (c <= 0x7e) {
+          this._state = _STATE_GROUND;
+          return this._dispatch_csi(this._pbytes, this._ibytes, c)
+        } else if (c <= 0x9f) {
+          this._state = _STATE_GROUND;
+        } else {
+          this._state = _STATE_GROUND;
+          return null;
+        }
+      } else if (this._state === _STATE_CSI_IBYTES) {
+        if (c <= 0x2f) { // SP to / 
+          this._ibytes.push(c);
+        } else if (c <= 0x7e) {
+          this._state = _STATE_GROUND;
+          return this._dispatch_csi(this._pbytes, this._ibytes, c)
+        } else if (c <= 0x9f) {
+          this._state = _STATE_GROUND;
+        } else {
+          this._state = _STATE_GROUND;
+          return null;
+        }
+      } else {
+        this._state = _STATE_GROUND;
+        return null;
+      }
+      scanner.moveNext()
+    }
+    return null;
+  },
 
+  _dispatch_csi: function _dispatch_csi(pbytes, ibytes, fbyte)
+  {
+    var prefix = pbytes[0],
+        key,
+        action,
+        handler,
+        params,
+        i,
+        param; 
+
+    if (prefix >= 0x3c && prefix <= 0x3f) {
+      pbytes.shift();
+      ibytes.unshift(prefix);
+    }
+    ibytes.push(fbyte);
+    key = String.fromCharCode.apply(String, ibytes),
+    params = String.fromCharCode.apply(String, pbytes).split(";");
+    for (i = 0; i < params.length; ++i) {
+      param = params[i];
+      if (0 === param.length) {
+        params[i] = 0;
+      } else {
+        params[i] = parseInt(param);
+      }
+    }
+    handler = this._csi_map[key];
+    if (!handler) {
+      throw coUtils.Debug.Exception(_("CSI: Handler not found: "+ key), key);
+    }
+    action = function() { handler(params) };
+
+    return action;
+  },
+
+  _dispatch_esc: function _dispatch_esc(ibytes, fbyte)
+  {
+    var action,
+        key,
+        handler,
+        params,
+        f = String.fromCharCode(fbyte),
+        i;
+
+    if (ibytes.length > 0) {
+      i = String.fromCharCode.apply(String, ibytes);
+      handler = this._esc_map[i];
+      if (handler) {
+        return function() { handler([f]) };
+      }
+      handler = this._esc_map[i + f];
+      if (handler) {
+        return function() { handler([]) };
+      }
+    } else {
+      handler = this._esc_map[f];
+      return function() { handler([]) };
+    }
+
+    return null;
+  },
+
+  _dispatch_char: function _dispatch_char(c)
+  {
+    var action = this._char_map[c];
+
+    if (!action) {
+      throw coUtils.Debug.Exception(_("Parse error: %s"), c);
+    }
+    return action;
+  },
+
+  _dispatch_string: function _dispatch_string(value)
+  {
+    var c = value.shift(),
+        handler = this._str_map[c],
+        action,
+        data;
+    if (!handler) {
+      return null;
+    }
+    data = coUtils.Text.safeConvertFromArray(value);
+    action = function() { handler(data); };
     return action;
   },
 
@@ -732,31 +360,53 @@ VT100Grammar.definition = {
   function append(information) 
   {
     var expression = information.expression,
-        pos = expression.indexOf(" "),
-        key = expression.substr(pos + 1),
-        prefix;
-
-    if (-1 === pos) {
-      prefix = "C0";
-    } else {
-      prefix = expression.substr(0, pos) || "C0";
-    }
-
-    if ("number" === typeof key) {
-      key = key.toString();
-    }
-    if (!this[prefix]) {
-      this[prefix] = new SequenceParser();
-    }
-
-    this[prefix].append(
+        handler = information.handler,
+        context = information.context,
+        tokens = expression.split(" "),
+        token,
         key,
-        information.handler,
-        information.context);
+        key_chars,
+        prefix,
+        i;
 
+    if (1 === tokens.length) {
+      key = Number(tokens[0]);
+      this._char_map[key] = function(params) { handler.apply(context, params) };
+    } else {
+      prefix = tokens.shift();
+      if ("ESC" === prefix) {
+        if (tokens[tokens.length - 1] === "ST"
+         && tokens[tokens.length - 2] === "...") {
+          prefix = tokens[0].charCodeAt(0);
+          this._str_map[prefix] = function(param) { handler.call(context, param) };
+        } else {
+          key = tokens.map(function (token)
+          {
+            if ("SP" === token) {
+              return " ";
+            } else if (token.length > 1) {
+              return "";
+            }
+            return token;
+          }).join("");
+          this._esc_map[key] = function(params) { handler.apply(context, params) };
+        }
+      } else if ("CSI" === prefix) {
+        key = tokens.map(function (token)
+        {
+          if ("SP" === token) {
+            return " ";
+          } else if (token.length > 1) {
+            return "";
+          }
+          return token;
+        }).join("");
+        this._csi_map[key] = function(params) { handler.apply(context, params) };
+      }
+    }
   }, // append
 
-}; // VT100Grammar
+}; // VT100Grammar2
 
 
 /**
@@ -766,7 +416,7 @@ VT100Grammar.definition = {
  */
 function main(broker) 
 {
-  new VT100Grammar(broker);
+  new VT100Grammar2(broker);
 }
 
 // EOF

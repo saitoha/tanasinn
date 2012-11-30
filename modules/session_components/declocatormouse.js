@@ -123,7 +123,7 @@ DECLocatorMouse.definition = {
    * Pu = 2 → character cells
    *
    */
-  "[profile('vt100'), sequence('CSI %d\\'z')]":
+  "[profile('vt100'), sequence('CSI Ps;Pu \\' z')]":
   function DECELR(n1, n2) 
   { // Enable Locator Reporting
 
@@ -190,7 +190,7 @@ DECLocatorMouse.definition = {
    *    = 3      Enables button up event.
    *    = 4      Disables button up event.
    */
-  "[profile('vt100'), sequence('CSI %d\\'{')]":
+  "[profile('vt100'), sequence('CSI Pm \\' {')]":
   function DECSLE(n) 
   { // TODO: Select Locator Events
     
@@ -255,7 +255,7 @@ DECLocatorMouse.definition = {
    * Pp: Page. Always 1.
    *
    */
-  "[profile('vt100'), sequence('CSI %d\\'|')]":
+  "[profile('vt100'), sequence('CSI Pe;Pb;Pr;Pc;Pp & w')]":
   function DECRQLP(n) 
   { // Request Locator Position
     this.sendMessage("event/locator-reporting-requested"); 

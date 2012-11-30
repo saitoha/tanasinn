@@ -101,7 +101,7 @@ Protection.definition = {
    * graphic rendition (SGR) function.
    *
    */
-  "[profile('vt100'), sequence('CSI %d\"q')]":
+  "[profile('vt100'), sequence('CSI Ps \" q')]":
   function DECSCA(n) 
   { // Device Status Report
 
@@ -176,7 +176,7 @@ Protection.definition = {
    * 2    The complete line
    *
    */
-  "[profile('vt100'), sequence('CSI ?%dK')]":
+  "[profile('vt100'), sequence('CSI ? Ps K')]":
   function DECSEL(n) 
   { // Selective Erase Line
     var screen = this._screen;
@@ -229,7 +229,7 @@ Protection.definition = {
    * 2    The complete display
    *
    */
-  "[profile('vt100'), sequence('CSI ?%dJ')]":
+  "[profile('vt100'), sequence('CSI ? Ps J')]":
   function DECSED(n) 
   { // Selective Erase Display
     var screen = this._screen;
@@ -307,7 +307,7 @@ Protection.definition = {
    * DECSERA does not change the active cursor position.
    *
    */
-  "[profile('vt100'), sequence('CSI %d${')]":
+  "[profile('vt100'), sequence('CSI Ps $ {')]":
   function DECSERA(n1, n2, n3, n4) 
   { // Selective Erase Rectangle Area
     var screen = this._screen,

@@ -81,7 +81,7 @@ SoftReset.definition = {
 
   "[persistable] enabled_when_startup": true,
 
-  "[profile('vt100'), sequence('CSI !p')]": 
+  "[profile('vt100'), sequence('CSI ! p')]": 
   function DECSTR() 
   { // TODO: DEC specific - Soft Terminal Reset
     // notify soft terminal reset event.

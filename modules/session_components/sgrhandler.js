@@ -200,7 +200,7 @@ SGRHandler.definition = {
     return 22; // ANSI color
   },
 
-  "[profile('vt100'), sequence('CSI %dm')]":
+  "[profile('vt100'), sequence('CSI Pm m')]":
   function SGR(n) 
   { // character attributes
     var attr = this._attr,

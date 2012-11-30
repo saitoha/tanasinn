@@ -806,7 +806,7 @@ VT52.definition = {
       _("PLU was not implemented."));
   },
 
-  "[profile('vt52'), sequence('ESC Y%p')]":
+  "[profile('vt52'), sequence('ESC Y PyPx')]":
   function ESC_Y(y, x)
   {
     var screen = this._screen;

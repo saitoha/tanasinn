@@ -191,20 +191,6 @@ Parser.definition = {
         result,
         next;
 
-    if (null !== scanner.generator) {
-      result = scanner.generator(scanner);
-      if (result) {
-        next = result.next();
-        if (next.isGenerator()) {
-          scanner.generator = next;
-        } else {
-          scanner.generator = null;
-          yield next;
-          scanner.moveNext();
-        }
-      }
-    }
-
     function make_handler(codes)
     {
       return function()
@@ -217,19 +203,11 @@ Parser.definition = {
     }
 
     while (!scanner.isEnd) {
-
-      scanner.setAnchor(); // memorize current position.
-
       action = grammar.parse(scanner);
-      if (action) {
-        if (action.isGenerator()) {
-          scanner.generator = action;
-        } else {
-          yield action;
-          scanner.moveNext();
-        }
+      if (null !== action) {
+        scanner.moveNext();
+        yield action;
       } else if (!scanner.isEnd) {
- 
         codes = this._decode(scanner);
         if (0 !== codes.length) {
           yield make_handler(codes);
@@ -240,8 +218,6 @@ Parser.definition = {
           scanner.moveNext();
           break;
         }
-      } else { // scanner.isEnd
-        scanner.setSurplus(); // backup surplus (unparsed) sequence.
       }
     }
 

@@ -93,7 +93,7 @@ TitleModeHandler.definition = {
    * titles) or for encoding the title into hexadecimal when querying the value.
    *
    */
-  "[profile('vt100'), sequence('CSI >%dT')]":
+  "[profile('vt100'), sequence('CSI > Ps T')]":
   function XT_TITLEMODE()
   {
     var i = 0,

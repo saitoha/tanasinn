@@ -169,7 +169,7 @@ PaletteManager.definition = {
   {
     var message,
         color,
-        args = value.split(";");
+        args = value.split(";"),
         number = args[0],
         spec = args[1];
 

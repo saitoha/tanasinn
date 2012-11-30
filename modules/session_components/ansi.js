@@ -83,7 +83,7 @@ AnsiMode.definition = {
   {
   },
 
-  "[profile('vt100'), sequence('CSI %dh')]":
+  "[profile('vt100'), sequence('CSI Pm h')]":
   function SM(n) 
   { // set ANSI-Specified Mode. 
     try {
@@ -95,7 +95,7 @@ AnsiMode.definition = {
     this.set(n, true);
   },
 
-  "[profile('vt100'), sequence('CSI %dl')]": 
+  "[profile('vt100'), sequence('CSI Pm l')]": 
   function RM(n) 
   { // reset ANSI-Specified Mode. 
     try {

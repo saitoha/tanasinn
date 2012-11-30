@@ -41,12 +41,7 @@ DecModeSequenceHandler.definition = {
     this._dec_alternate_buffer = {};
   },
 
-  "[profile('vt100'), sequence('CSI =%dM', 'CSI <%dM', 'CSI <%dm')]":
-  function skip() 
-  {
-  },
-   
-  "[profile('vt100'), sequence('CSI ?%dh')]":
+  "[profile('vt100'), sequence('CSI ? Pm h')]":
   function DECSET() 
   { // DEC Private Mode Set
     var i,
@@ -215,7 +210,7 @@ DecModeSequenceHandler.definition = {
     } // end for
   },
 
-  "[profile('vt100'), sequence('CSI ?%dl')]":
+  "[profile('vt100'), sequence('CSI ? Pm l')]":
   function DECRST() 
   { // DEC-Private Mode Reset
     var i,
@@ -391,7 +386,7 @@ PersistOptionsTrait.definition = {
   /**
    * XT_REST - Restore extended options.
    */
-  "[profile('vt100'), sequence('CSI ?%dr')]":
+  "[profile('vt100'), sequence('CSI ? Pm r')]":
   function XT_REST(n) 
   { // DEC Private Mode Restore
 
@@ -415,7 +410,7 @@ PersistOptionsTrait.definition = {
   /**
    * XT_SAVE - Save extended options.
    */
-  "[profile('vt100'), sequence('CSI ?%ds')]":
+  "[profile('vt100'), sequence('CSI ? Pm s')]":
   function XT_SAVE() 
   {  // DEC Private Mode Save
     var save_buffer = this._dec_save_buffer,
@@ -479,7 +474,7 @@ DecPrivateMode.definition = {
   /**
    * DECRQM_ansi
    */
-  "[profile('vt100'), sequence('CSI %d$p')]":
+  "[profile('vt100'), sequence('CSI Pm $ p')]":
   function DECRQM_ansi(n) 
   {  // ANSI Mode request
     n = n || 0;
@@ -494,7 +489,7 @@ DecPrivateMode.definition = {
   /**
    * DECRQM_private
    */
-  "[profile('vt100'), sequence('CSI ?%d$p')]":
+  "[profile('vt100'), sequence('CSI ? Pm $ p')]":
   function DECRQM_private(n) 
   {  // DEC Private Mode request
     var message;

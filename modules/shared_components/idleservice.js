@@ -43,7 +43,7 @@ IdleService.definition = {
   },
 
   "[persistable] enabled_when_startup": true,
-  "[persistable, watchable] timer_interval": 10,
+  "[persistable, watchable] timer_interval": 5,
 
   _idle_service: null,
 
@@ -82,9 +82,7 @@ IdleService.definition = {
 
   observe: function observe(subject, topic, data)
   {
-    this.reset();
     this.sendMessage("event/idle");
-    this.set();
   },
  
 // nsIObserver implementation

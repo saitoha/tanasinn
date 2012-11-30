@@ -63,7 +63,7 @@ ConformanceLevel.definition = {
    * When you change the conformance level, the terminal performs a hard reset (RIS).
    *
    */
-  "[profile('vt100'), sequence('CSI %d\"p')]": 
+  "[profile('vt100'), sequence('CSI Ps;Ps \" p')]": 
   function DECSCL(n1, n2) 
   {
     var level = n1,
@@ -142,7 +142,7 @@ ConformanceLevel.definition = {
    * VT Level 1 or VT52 mode, 7-bit controls | Same. Terminal ignores sequence.
    *
    */
-  "[profile('vt100'), sequence('ESC 0x20F')]":
+  "[profile('vt100'), sequence('ESC SP F')]":
   function S7C1T(n) 
   {
     this._8bit_mode = false;
@@ -171,7 +171,7 @@ ConformanceLevel.definition = {
    * VT Level 1 mode  Same. Terminal | ignores sequence.
    *
    */
-  "[profile('vt100'), sequence('ESC 0x20G')]":
+  "[profile('vt100'), sequence('ESC SP G')]":
   function S8C1T() 
   {
     this._8bit_mode = true;

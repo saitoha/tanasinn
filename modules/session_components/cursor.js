@@ -219,7 +219,7 @@ Cursor.definition = {
    * The escape sequence DECTCEM can enable or disable the cursor display.
    *
    */
-  "[profile('vt100'), sequence('CSI %d q')]":
+  "[profile('vt100'), sequence('CSI Ps SP q')]":
   function DECSCUSR(n) 
   {
     var cursor_state = this._cursor_state;

@@ -234,7 +234,7 @@ ScreenSequenceHandler.definition = {
    * scrolling margins.
    *
    */
-  "[profile('vt100'), sequence('CSI %d@')]":
+  "[profile('vt100'), sequence('CSI Pn @')]":
   function ICH(n) 
   { // Insert (blank) CHaracters.
     this.insertBlanks(n || 1)
@@ -257,7 +257,7 @@ ScreenSequenceHandler.definition = {
    * @param {Number} n the number of lines to move the cursor up.
    *
    */
-  "[profile('vt100'), sequence('CSI %dA')]":
+  "[profile('vt100'), sequence('CSI Pn A')]":
   function CUU(n) 
   { // CUrsor Up
     this.cursorUp(n || 1);
@@ -278,7 +278,7 @@ ScreenSequenceHandler.definition = {
    *
    * @param {Number} n the number of lines to move the cursor down.
    */
-  "[profile('vt100'), sequence('CSI %dB')]":
+  "[profile('vt100'), sequence('CSI Pn B')]":
   function CUD(n) 
   { // CUrsor Down
     this.cursorDown(n || 1);
@@ -297,7 +297,7 @@ ScreenSequenceHandler.definition = {
    *
    * @param {Number} n the number of columns to move the cursor to the right.
    */
-  "[profile('vt100'), sequence('CSI %dC')]":
+  "[profile('vt100'), sequence('CSI Pn C')]":
   function CUF(n) 
   { // CUrsor Forward (right).
     this.cursorForward(n || 1);
@@ -316,7 +316,7 @@ ScreenSequenceHandler.definition = {
    * 
    * @param {Number} n the number of columns to move the cursor to the left.
    */
-  "[profile('vt100'), sequence('CSI %dD')]":
+  "[profile('vt100'), sequence('CSI Pn D')]":
   function CUB(n) 
   { // CUrsor Back (left).
     this.cursorBackward(n || 1);
@@ -342,7 +342,7 @@ ScreenSequenceHandler.definition = {
    * The active position is moved to the n-th character position of the
    * active line.
    */
-  "[profile('vt100'), sequence('CSI %dG')]":
+  "[profile('vt100'), sequence('CSI Pn G')]":
   function CHA(n) 
   { // cursor CHaracter Absolute column
     var max = this._width - 1,
@@ -378,7 +378,7 @@ ScreenSequenceHandler.definition = {
    * @param {Number} n2 the number of the column to move to. If n1 is 0 or 1, 
    *                    then the cursor moves to column 1.
    */
-  "[profile('vt100'), sequence('CSI %dH')]":
+  "[profile('vt100'), sequence('CSI Pl;Pc H')]":
   function CUP(n1, n2) 
   { // move CUrsor to absolute Position 
     var top,
@@ -425,7 +425,7 @@ ScreenSequenceHandler.definition = {
    * Also see the screen alignment in Chapter 2.
    *
    */
-  "[profile('vt100'), sequence('ESC #8')]":
+  "[profile('vt100'), sequence('ESC # 8')]":
   function DECALN() 
   { // DEC Screen Alignment Test
     this.eraseScreenAllWithTestPattern();
@@ -457,7 +457,7 @@ ScreenSequenceHandler.definition = {
    * Use a Ps value of 2 to erase the complete display in a fast, 
    * efficient manner.
    */
-  "[profile('vt100'), sequence('CSI %dJ')]":
+  "[profile('vt100'), sequence('CSI Ps J')]":
   function ED(n) 
   { // Erase Display
    
@@ -531,7 +531,7 @@ ScreenSequenceHandler.definition = {
    *     page.
    *     DECERA does not change the active cursor position.
    */
-  "[profile('vt100'), sequence('CSI %d$z')]":
+  "[profile('vt100'), sequence('CSI Pt;Pl;Pb;Pr $ z')]":
   function DECERA(n1, n2, n3, n4) 
   { // Erase Rectangle Area
     var top = (n1 || 1) - 1,
@@ -590,7 +590,7 @@ ScreenSequenceHandler.definition = {
    *      1           From the beginning of the line through the cursor
    *      2           The complete line
    */
-  "[profile('vt100'), sequence('CSI %dK')]":
+  "[profile('vt100'), sequence('CSI Ps K')]":
   function EL(n) 
   { // Erase Line
    
@@ -640,7 +640,7 @@ ScreenSequenceHandler.definition = {
    *  the page margins. 
    *
    */
-  "[profile('vt100'), sequence('CSI %dL')]":
+  "[profile('vt100'), sequence('CSI Pn L')]":
   function IL(n) 
   { // Insert Line
     this.insertLine(n || 1);
@@ -671,7 +671,7 @@ ScreenSequenceHandler.definition = {
    * the number of lines 
    *
    */
-  "[profile('vt100'), sequence('CSI %dM')]":
+  "[profile('vt100'), sequence('CSI Pn M')]":
   function DL(n) 
   { // Delete Line.
     this.deleteLine(n || 1);
@@ -680,8 +680,8 @@ ScreenSequenceHandler.definition = {
   /**
    * Delete Character (DCH)  
    *
-   * 9/11    5/0 
-   * CSI  Pn  P
+   * CSI    Pn    P
+   * 9/11   3/n   5/0 
    *
    *  Deletes Pn characters starting with the character at the cursor position. 
    *  When a character is deleted, all characters to the right of the cursor 
@@ -692,7 +692,7 @@ ScreenSequenceHandler.definition = {
    *  The spaces created at the end of the line have all their character 
    *  attributes off.
    */
-  "[profile('vt100'), sequence('CSI %dP')]":
+  "[profile('vt100'), sequence('CSI Pn P')]":
   function DCH(n) 
   { // Delete CHaracters
     this.deleteCharacters(n || 1);
@@ -716,7 +716,7 @@ ScreenSequenceHandler.definition = {
    * The active presentation position is not affected by this control function.
    *
    */
-  "[profile('vt100'), sequence('CSI %d @')]":
+  "[profile('vt100'), sequence('CSI Pn SP @')]":
   function SL(n) 
   { // Scroll Left
     this.scrollLeft(n || 1);
@@ -740,7 +740,7 @@ ScreenSequenceHandler.definition = {
    * The active presentation position is not affected by this control function.
    *
    */
-  "[profile('vt100'), sequence('CSI %d A')]":
+  "[profile('vt100'), sequence('CSI Pn SP A')]":
   function SR(n) 
   { // Scroll Right
     this.scrollRight(n || 1);
@@ -763,7 +763,7 @@ ScreenSequenceHandler.definition = {
    *                   display. You cannot pan past the bottom margin of the 
    *                   current page.
    */
-  "[profile('vt100'), sequence('CSI %dS')]":
+  "[profile('vt100'), sequence('CSI Pn S')]":
   function SU(n) 
   { // Scroll Up line
     this.scrollUpLine(n || 1);
@@ -785,7 +785,7 @@ ScreenSequenceHandler.definition = {
    *                   Pn old lines disappear at the bottom of the display. 
    *                   You cannot pan past the top margin of the current page.
    */
-  "[profile('vt100'), sequence('CSI %dT')]":
+  "[profile('vt100'), sequence('CSI Pn T')]":
   function SD(n) 
   { // Scroll Down line
     var argc = arguments.length;
@@ -829,7 +829,7 @@ ScreenSequenceHandler.definition = {
    * The cursor remains in the same position.
    *
    */
-  "[profile('vt100'), sequence('CSI %dX')]":
+  "[profile('vt100'), sequence('CSI Pn X')]":
   function ECH(n) 
   { // Erase CHaracters
     this.eraseCharacters(n || 1);
@@ -854,7 +854,7 @@ ScreenSequenceHandler.definition = {
    * the active position past the last position on the line, then the active 
    * position stops at the last position on the line.
    */
-  "[profile('vt100'), sequence('CSI %da')]":
+  "[profile('vt100'), sequence('CSI Pn a')]":
   function HPR(n) 
   { // 
     this.cursorForward(n || 1);
@@ -881,7 +881,7 @@ ScreenSequenceHandler.definition = {
    * progression, where n equals the value of Pn.
    *
    */
-  "[profile('vt100'), sequence('CSI %dj')]":
+  "[profile('vt100'), sequence('CSI Pn j')]":
   function HPB(n) 
   { // 
     this.cursorBackward(n || 1);
@@ -910,7 +910,7 @@ ScreenSequenceHandler.definition = {
    * attempt is made to move the active position below the last line, then 
    * the active position stops on the last line.
    */
-  "[profile('vt100'), sequence('CSI %dd')]":
+  "[profile('vt100'), sequence('CSI Pn d')]":
   function VPA(n) 
   { // set Virtical Position Absolutely
     var max = this._height - 1,
@@ -950,7 +950,7 @@ ScreenSequenceHandler.definition = {
    * position stops at the last line.
    *
    */
-  "[profile('vt100'), sequence('CSI %de')]":
+  "[profile('vt100'), sequence('CSI Pn e')]":
   function VPR(n) 
   { 
     this.cursorDown(n || 1);
@@ -981,7 +981,7 @@ ScreenSequenceHandler.definition = {
    * progression, where n equals the value of Pn.
    *
    */
-  "[profile('vt100'), sequence('CSI %dk')]":
+  "[profile('vt100'), sequence('CSI Pn k')]":
   function VPB(n) 
   { 
     this.cursorUp(n || 1);
@@ -1005,7 +1005,7 @@ ScreenSequenceHandler.definition = {
    * 
    * The active position is moved to the first character of the n-th following line.
    */
-  "[profile('vt100'), sequence('CSI %dE')]":
+  "[profile('vt100'), sequence('CSI Pn E')]":
   function CNL(n) 
   {
     this.cursorDown(n || 1);
@@ -1031,7 +1031,7 @@ ScreenSequenceHandler.definition = {
    * 
    * The active position is moved to the first character of the n-th preceding line.
    */
-  "[profile('vt100'), sequence('CSI %dF')]":
+  "[profile('vt100'), sequence('CSI Pn F')]":
   function CPL(n) 
   {
     this.cursorUp(n || 1);
@@ -1057,7 +1057,7 @@ ScreenSequenceHandler.definition = {
    * position past the last position on the line, then the active position 
    * stops at the last position on the line.
    */
-  "[profile('vt100'), sequence('CSI %d`')]":
+  "[profile('vt100'), sequence('CSI Pn `')]":
   function HPA(n) 
   { 
     var max = this._width - 1,
@@ -1078,13 +1078,13 @@ ScreenSequenceHandler.definition = {
    *
    * Format
    *
-   * ESC [ Pn b
+   * CSI Pn b
    *
    * Causes the single graphic character immediately preceding the control
    * to be repeated Pn times.
    *
    */
-  "[profile('vt100'), sequence('CSI %db')]":
+  "[profile('vt100'), sequence('CSI Pn b')]":
   function REP(n) 
   { // REPeat the preceding graphic character
     this.repeat(n || 1);
@@ -1118,7 +1118,7 @@ ScreenSequenceHandler.definition = {
    * the first line or column, respectively. Origin mode (DECOM) selects line
    * numbering and the ability to move the cursor into margins.
    */
-  "[profile('vt100'), sequence('CSI %df')]":
+  "[profile('vt100'), sequence('CSI Pl;Pc f')]":
   function HVP(n1, n2) 
   { // Horizontal and Vertical Position
     var top,
@@ -1144,7 +1144,7 @@ ScreenSequenceHandler.definition = {
     }
   },
 
-  "[profile('vt100'), sequence('CSI %di')]":
+  "[profile('vt100'), sequence('CSI Pn i')]":
   function MC(n) 
   { // TODO: Media Copy
     coUtils.Debug.reportWarning(
@@ -1152,7 +1152,7 @@ ScreenSequenceHandler.definition = {
       "MC", Array.slice(arguments));
   },
 
-  "[profile('vt100'), sequence('CSI ?%di')]":
+  "[profile('vt100'), sequence('CSI ? Pn i')]":
   function DECMC(n) 
   { // TODO: Media Copy, DEC-specific
     coUtils.Debug.reportWarning(

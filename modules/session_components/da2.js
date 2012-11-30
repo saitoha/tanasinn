@@ -113,7 +113,7 @@ SecondaryDA.definition = {
   },
 
   /** handle DA2 request. */
-  "[profile('vt100'), sequence('CSI >%dc'), pnp]":
+  "[profile('vt100'), sequence('CSI > Ps c'), pnp]":
   function DA2(n) 
   { // Secondary DA (Device Attributes)
     if (n !== undefined && n !== 0) {

@@ -155,7 +155,7 @@ TabController.definition = {
    * HTS sets a horizontal tab stop at the active column.
    *
    */
-  "[profile('vt100'), sequence('CSI ?%dW')]":
+  "[profile('vt100'), sequence('CSI ? Pn W')]":
   function DECST8C(n) 
   { 
     if (5 === n) {
@@ -298,7 +298,7 @@ TabController.definition = {
    * 3                   - The terminal clears all tab stops.
    *
    */
-  "[profile('vt100'), sequence('CSI %dg')]":
+  "[profile('vt100'), sequence('CSI Ps g')]":
   function TBC(n) 
   { // TaB Clear
     var tab_stops,
@@ -355,7 +355,7 @@ TabController.definition = {
    * the following n-th horizontal tabulation stop.
    *
    */
-  "[profile('vt100'), sequence('CSI %dI')]":
+  "[profile('vt100'), sequence('CSI Pn I')]":
   function CHT(n) 
   { // Cursor Horaizontal Tabulation
     var tab_stops = this._tab_stops,
@@ -411,7 +411,7 @@ TabController.definition = {
    * then the active position stays at column one.
    *
    */
-  "[profile('vt100'), sequence('CSI %dZ')]":
+  "[profile('vt100'), sequence('CSI Pn Z')]":
   function CBT(n) 
   { // Cursor Backward Tabulation
     var tab_stops = this._tab_stops,

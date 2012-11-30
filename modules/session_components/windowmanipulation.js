@@ -132,7 +132,7 @@ WindowManipulator.definition = {
    *               title    Window title.
    * 
    */
-  "[profile('vt100'), sequence('CSI %dt')]":
+  "[profile('vt100'), sequence('CSI Ps t')]":
   function DECSLPP(n1, n2, n3) 
   {
     this.sendMessage(

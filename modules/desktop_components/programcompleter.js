@@ -233,7 +233,14 @@ ProgramCompleter.definition = {
   "[subscribe('event/idle'), pnp]": 
   function onIdle()
   {
-    this._prepareCompletionData();
+    if (null !== this._files) {
+      try {
+        this._prepareCompletionData();
+      } catch(e) {
+        // pass
+        this._files = []; 
+      }
+    }
   },
 };
 

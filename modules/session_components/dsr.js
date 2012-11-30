@@ -108,7 +108,7 @@ ANSIDeviceStatusReport.definition = {
     this._cursor = null;
   },
 
-  "[profile('vt100'), sequence('CSI %dn')]":
+  "[profile('vt100'), sequence('CSI Ps n')]":
   function DSR(n) 
   { // Device Status Report
 

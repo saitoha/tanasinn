@@ -212,7 +212,7 @@ OuterChrome.definition = {
 
     this.sendMessage("command/blur");
 
-    if (target.parentNode) {
+    if (target && target.parentNode) {
       target.parentNode.hidden = true;
       target.parentNode.removeChild(target);
     }

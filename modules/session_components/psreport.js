@@ -68,7 +68,7 @@ PresentationStateReport.definition = {
    * 2   Tab stop report (DECTABSR)
    *
    */
-  "[profile('vt100'), sequence('CSI %d$w')]":
+  "[profile('vt100'), sequence('CSI Ps $ w')]":
   function DECRQPSR(n) 
   {
     n = n || 0;

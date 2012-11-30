@@ -112,7 +112,6 @@ PersistentTrait.definition = {
     if (thumb_update - this._thumb_lastupdate > 30 * 1000) {
 
       this._thumb_lastupdate = thumb_update;
-
       // make image file path
       var path = coUtils.Runtime.getRuntimePath() 
                + "/persist/" 

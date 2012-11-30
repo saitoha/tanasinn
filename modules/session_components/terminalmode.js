@@ -93,7 +93,7 @@ TerminalMode.definition = {
    *     DECANM and DECSCL can also change the VT operating modes.
    *
    */
-  "[profile('vt100'), sequence('CSI %d\\ ~')]":
+  "[profile('vt100'), sequence('CSI Ps \\ ~')]":
   function DECTME(n) 
   {
     switch (n || 0) {

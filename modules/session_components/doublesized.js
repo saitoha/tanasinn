@@ -95,7 +95,7 @@ DoubleSizedCharacters.definition = {
   },
 
   /** DEC double-height line, top half. */
-  "[profile('vt100'), sequence('ESC #3')]": 
+  "[profile('vt100'), sequence('ESC # 3')]": 
   function DECDHLT() 
   {
     var screen = this._screen,
@@ -106,7 +106,7 @@ DoubleSizedCharacters.definition = {
   },
 
   /** DEC double-height line, bottom half. */
-  "[profile('vt100'), sequence('ESC #4')]": 
+  "[profile('vt100'), sequence('ESC # 4')]": 
   function DECDHLB() 
   {
     var screen = this._screen,
@@ -130,7 +130,7 @@ DoubleSizedCharacters.definition = {
    * 1/11  2/3   3/5
    *
    */ 
-  "[profile('vt100'), sequence('ESC #5')]": 
+  "[profile('vt100'), sequence('ESC # 5')]": 
   function DECSWL() 
   {
     var screen = this._screen,
@@ -154,7 +154,7 @@ DoubleSizedCharacters.definition = {
    * 1/11   2/3   3/6
    *
    */
-  "[profile('vt100'), sequence('ESC #6')]": 
+  "[profile('vt100'), sequence('ESC # 6')]": 
   function DECDWL() 
   {
     var screen = this._screen,

@@ -103,35 +103,35 @@ CharsetModeHandler.definition = {
   "[persistable] enabled_when_startup": true,
 
   /** select G0 character set */
-  "[profile('vt100'), sequence('ESC (%c'), _('Select Character Set G0')]": 
+  "[profile('vt100'), sequence('ESC ( Pc'), _('Select Character Set G0')]": 
   function SCSG0(mode) 
   {
     this.sendMessage("sequence/g0", mode);
   },
   
   /** select G1 character set */
-  "[profile('vt100'), sequence('ESC )%c'), _('Select Character Set G1')]": 
+  "[profile('vt100'), sequence('ESC ) Pc'), _('Select Character Set G1')]": 
   function SCSG1(mode) 
   {
     this.sendMessage("sequence/g1", mode);
   },
 
   /** select G2 character set */
-  "[profile('vt100'), sequence('ESC *%c'), _('Select Character Set G2')]": 
+  "[profile('vt100'), sequence('ESC * Pc'), _('Select Character Set G2')]": 
   function SCSG2(mode) 
   {
     this.sendMessage("sequence/g2", mode);
   },
 
   /** select G3 character set */
-  "[profile('vt100'), sequence('ESC +%c'), _('Select Character Set G3')]": 
+  "[profile('vt100'), sequence('ESC + Pc'), _('Select Character Set G3')]": 
   function SCSG3(mode) 
   {
     this.sendMessage("sequence/g3", mode);
   },
 
   /** Select default character set. */
-  "[profile('vt100'), sequence('ESC %@')]": 
+  "[profile('vt100'), sequence('ESC % @')]": 
   function ISO_8859_1() 
   {
     this.sendMessage("change/decoder", "ISO-8859-1");
@@ -139,7 +139,7 @@ CharsetModeHandler.definition = {
   },
 
   /** Select UTF-8 character set. */
-  "[profile('vt100'), sequence('ESC %G')]": 
+  "[profile('vt100'), sequence('ESC % G')]": 
   function UTF_8() 
   {
     this.sendMessage("change/decoder", "UTF-8");

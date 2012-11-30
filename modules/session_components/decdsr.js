@@ -112,7 +112,7 @@ DECDeviceStatusReport.definition = {
     this._screen = null;
   },
 
-  "[profile('vt100'), sequence('CSI ?%dn')]":
+  "[profile('vt100'), sequence('CSI ? Ps n')]":
   function DECDSR(n1, n2) 
   { // Device Status Report, DEC specific
     

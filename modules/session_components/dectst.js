@@ -103,7 +103,7 @@ ConfidenceTest.definition = {
   },
 
   /** Invoke Confidence Test */
-  "[profile('vt100'), sequence('CSI %dy')]": 
+  "[profile('vt100'), sequence('CSI Ps y')]": 
   function DECTST() 
   {
     var i = 0,

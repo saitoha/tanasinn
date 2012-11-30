@@ -55,7 +55,7 @@ ReportParams.definition = {
    *
    * DECREQTPARM – Request Terminal Parameters
    *
-   * ESC [ <sol> x   
+   * CSI <sol> x   
    *
    * The sequence DECREPTPARM is sent by the terminal controller to notify 
    * the host of the status of selected terminal parameters. The status 
@@ -140,7 +140,7 @@ ReportParams.definition = {
    * These sequence parameters are explained below in the DECREQTPARM sequence.
    *
    */
-  "[profile('vt100'), sequence('CSI %dx')]": 
+  "[profile('vt100'), sequence('CSI Ps x')]": 
   function DECREQTPARM(n) 
   { // Request Terminal Parameters
 

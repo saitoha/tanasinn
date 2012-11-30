@@ -105,7 +105,7 @@ RectangleChecksumReport.definition = {
     this._screen = null;
   },
 
-  "[profile('vt100'), sequence('CSI %d*y')]":
+  "[profile('vt100'), sequence('CSI Pm * y')]":
   function DECRQCRA(n1, n2, n3, n4, n5, n6) 
   { // Request Checksum of Rectangle Area
     var screen = this._screen,

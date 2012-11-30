@@ -86,7 +86,7 @@ UPSSRequest.definition = {
   {
   },
 
-  "[profile('vt100'), sequence('CSI &u')]":
+  "[profile('vt100'), sequence('CSI & u')]":
   function onUPSSRequest() 
   {
     var reply = "0!uA";

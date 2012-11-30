@@ -106,7 +106,7 @@ TirtiaryDA.definition = {
   },
 
   /** handle DA3 request. */
-  "[profile('vt100'), sequence('CSI =%dc')]":
+  "[profile('vt100'), sequence('CSI = Ps c')]":
   function DA3(n) 
   { // Tirtiary DA (Device Attributes)
     if (n !== undefined && n !== 0) {
