@@ -404,7 +404,11 @@ DECLocatorMouse.definition = {
   "[listen('mousedown', '#tanasinn_content'), pnp]": 
   function onmousedown(event) 
   {
-    var column, row, message, locator_reporting_mode;
+    var column,
+        row,
+        message,
+        locator_reporting_mode,
+        code;
 
     if (null === this._locator_reporting_mode) {
       return;
@@ -473,7 +477,10 @@ DECLocatorMouse.definition = {
   "[listen('mouseup', '#tanasinn_content'), pnp]": 
   function onmouseup(event) 
   {
-    var column, row, message;
+    var column,
+        row,
+        message,
+        code;
 
     if (null === this._locator_reporting_mode) {
       return;
