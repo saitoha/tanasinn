@@ -141,7 +141,7 @@ VT100Grammar2.definition = {
     var c;
     while (!scanner.isEnd) {
       c = scanner.current();
-      if (this._state === _STATE_OSC) {
+      if (_STATE_OSC === this._state) {
         if (c === 0x1b) {
           this._state = _STATE_OSC_FINAL;
         } else if (c === 0x07) {
@@ -152,7 +152,7 @@ VT100Grammar2.definition = {
         } else {
           this._str.push(c);
         }
-      } else if (this._state === _STATE_OSC_FINAL) {
+      } else if (_STATE_OSC_FINAL === this._state) {
         if (c === 0x5c) {
           this._state = _STATE_GROUND;
           return this._dispatch_string(this._str);
@@ -162,7 +162,7 @@ VT100Grammar2.definition = {
           this._state = _STATE_OSC;
           this._str.push(c);
         }
-      } else if (this._state === _STATE_STRING) {
+      } else if (_STATE_STRING === this._state) {
         if (c === 0x1b) {
           this._state = _STATE_STRING_FINAL;
         } else if (c === 0x07) {
@@ -173,7 +173,7 @@ VT100Grammar2.definition = {
         } else {
           this._str.push(c);
         }
-      } else if (this._state === _STATE_STRING_FINAL) {
+      } else if (_STATE_STRING_FINAL === this._state) {
         if (c === 0x5c) {
           this._state = _STATE_GROUND;
           return this._dispatch_string(this._str);
@@ -194,7 +194,7 @@ VT100Grammar2.definition = {
         return null;
       } else if (c >= 0x7f) { // DEL, C1
         return this._dispatch_char(c);
-      } else if (this._state === _STATE_ESC) {
+      } else if (_STATE_ESC === this._state) {
         if (c <= 0x2f) { // SP to / 
           this._ibytes = [c];
           this._state = _STATE_ESC_IBYTES;
@@ -210,14 +210,14 @@ VT100Grammar2.definition = {
           this._state = _STATE_OSC;
         } else if (c <= 0x7f) { // 0 to ~
           this._state = _STATE_GROUND;
-          return this._dispatch_esc([], c)
+          return this._dispatch_single_esc(c)
         } else if (c <= 0x9f) {
           this._state = _STATE_GROUND;
         } else {
           this._state = _STATE_GROUND;
           return null;
         }
-      } else if (this._state === _STATE_ESC_IBYTES) {
+      } else if (_STATE_ESC_IBYTES === this._state) {
         if (c <= 0x2f) { // SP to / 
           this._ibytes.push(c);
         } else if (c <= 0x7f) { // 0 to ~
@@ -229,7 +229,7 @@ VT100Grammar2.definition = {
           this._state = _STATE_GROUND;
           return null;
         }
-      } else if (this._state === _STATE_CSI_PBYTES) {
+      } else if (_STATE_CSI_PBYTES === this._state) {
         if (c <= 0x2f) { // SP to / 
           this._ibytes.push(c);
           this._satte = _STATE_CSI_IBYTES;
@@ -244,7 +244,7 @@ VT100Grammar2.definition = {
           this._state = _STATE_GROUND;
           return null;
         }
-      } else if (this._state === _STATE_CSI_IBYTES) {
+      } else if (_STATE_CSI_IBYTES === this._state) {
         if (c <= 0x2f) { // SP to / 
           this._ibytes.push(c);
         } else if (c <= 0x7e) {
@@ -292,11 +292,21 @@ VT100Grammar2.definition = {
     }
     handler = this._csi_map[key];
     if (!handler) {
-      throw coUtils.Debug.Exception(_("CSI: Handler not found: "+ key), key);
+      return null;
     }
     action = function() { handler(params) };
 
     return action;
+  },
+
+  _dispatch_single_esc: function _dispatch_single_esc(fbyte)
+  {
+    var f = String.fromCharCode(fbyte),
+        handler = this._esc_map[f];
+    if (handler) {
+      return null;
+    }
+    return handler;
   },
 
   _dispatch_esc: function _dispatch_esc(ibytes, fbyte)
@@ -306,23 +316,15 @@ VT100Grammar2.definition = {
         handler,
         params,
         f = String.fromCharCode(fbyte),
-        i;
-
-    if (ibytes.length > 0) {
-      i = String.fromCharCode.apply(String, ibytes);
-      handler = this._esc_map[i];
-      if (handler) {
-        return function() { handler([f]) };
-      }
-      handler = this._esc_map[i + f];
-      if (handler) {
-        return function() { handler([]) };
-      }
-    } else {
-      handler = this._esc_map[f];
-      return function() { handler([]) };
+        i = String.fromCharCode.apply(String, ibytes);
+    handler = this._esc_map[i + f];
+    if (handler) {
+      return handler;
     }
-
+    handler = this._esc_map[i];
+    if (handler) {
+      return function() { handler(f) };
+    }
     return null;
   },
 
@@ -374,9 +376,10 @@ VT100Grammar2.definition = {
       this._char_map[key] = function(params) { handler.apply(context, params) };
     } else {
       prefix = tokens.shift();
+      length = tokens.length;
       if ("ESC" === prefix) {
-        if (tokens[tokens.length - 1] === "ST"
-         && tokens[tokens.length - 2] === "...") {
+        if (tokens[length - 1] === "ST"
+         && tokens[length - 2] === "...") {
           prefix = tokens[0].charCodeAt(0);
           this._str_map[prefix] = function(param) { handler.call(context, param) };
         } else {
@@ -389,7 +392,7 @@ VT100Grammar2.definition = {
             }
             return token;
           }).join("");
-          this._esc_map[key] = function(params) { handler.apply(context, params) };
+          this._esc_map[key] = function(param) { handler.call(context, param) };
         }
       } else if ("CSI" === prefix) {
         key = tokens.map(function (token)

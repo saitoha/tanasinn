@@ -1,3 +1,18 @@
+2012-11-30 Hayaki Saito <user@zuse.jp>
+    * Version 0.3.1.7
+    * Add some performance improvement around nsIdleService
+    * Fix an assignment error around DEC locator mode
+    * Fix an assignment error around OSC4 get access
+    * Re-fix DECOM behavior
+    * Make idle service more lazy
+    * Supports DECSET 8428 (RLogin)
+    * Supports Hangul Jamo combining
+
+2012-11-14 Hayaki Saito <user@zuse.jp>
+
+    * Version 0.3.1.6
+    * Fix a performance bug around nsIdleService
+
 2012-11-12 Hayaki Saito <user@zuse.jp>
 
     * Version 0.3.1.2/0.3.1.3/0.3.1.4/0.3.1.5
