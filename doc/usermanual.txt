@@ -27,18 +27,19 @@ link:./usermanual.html[English/英語]
 == News
 
 === 2012-11-30
-    * Version 0.3.1.7
-    * Add some performance improvement around nsIdleService
-    * Fix an assignment error around DEC locator mode
-    * Fix an assignment error around OSC4 get access
-    * Re-fix DECOM behavior
-    * Make idle service more lazy
-    * Supports DECSET 8428 (RLogin)
-    * Supports Hangul Jamo combining
+    Version 0.3.1.7
+    Supports ISO-6429/ISO-2022 compatible parsing
+    Add some performance improvement around nsIdleService
+    Fix an assignment error around DEC locator mode
+    Fix an assignment error around OSC4 get access
+    Re-fix DECOM behavior
+    Make idle service more lazy
+    Supports DECSET 8428 (RLogin)
+    Supports Hangul Jamo combining
 
 === 2012-11-14
-    * Version 0.3.1.6
-    * Fix a performance bug around nsIdleService
+    Version 0.3.1.6
+    Fix a performance bug around nsIdleService
 
 === 2012/11/12
     Version 0.3.1.2/0.3.1.3/0.3.1.4/0.3.1.5
@@ -257,6 +258,7 @@ http:/#/www.mozilla-japan.org/MPL/MPL-1.1J.html[Mozilla Public License 1.1 (MPL1
     - Full Gecko based user interface (HTML Canvas + XUL), it is flexible and easy to customize.
     - Multi-platform, now supports Mac / FreeBSD / Linux (Tested in Ubuntu) / 
       Windows(XP/Vista/7) + http:/#/www.cygwin.com[Cygwin] (requires posix python).
+    - Supports ISO-6429/ISO-2022 compatible parsing
     - Supports plugin architecture. it supports Plug-and-Play installing & uninstalling.
     - Retaining TTY session during closing/restarting browser.
       you can reconnect suspended terminal session.
@@ -290,6 +292,7 @@ http:/#/www.mozilla-japan.org/MPL/MPL-1.1J.html[Mozilla Public License 1.1 (MPL1
     - Geckoベースのユーザーインターフェース (HTML Canvas + XUL)。柔軟でカスタマイズが容易です。
     - マルチプラットフォーム。現在サポートされるのは、Mac / FreeBSD / Linux(というかUbuntu) / 
       Windows(XP/Vista/7) + http:/#/www.cygwin.com[Cygwin]環境 (POSIX版Pythonが必要)
+    - ISO-6429/ISO-2022互換パーサー搭載 
     - プラグインアーキテクチャ。プラグアンドプレイでのインストール・アンインストールが可能。
     - ブラウザを再起動したり閉じたりしている間、ターミナルセッションを保持します。
       サスペンドしたセッションに後から再接続できます。 

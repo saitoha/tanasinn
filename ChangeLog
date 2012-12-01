@@ -1,5 +1,6 @@
 2012-11-30 Hayaki Saito <user@zuse.jp>
     * Version 0.3.1.7
+    * Supports ISO-6429/ISO-2022 compatible parsing
     * Add some performance improvement around nsIdleService
     * Fix an assignment error around DEC locator mode
     * Fix an assignment error around OSC4 get access
