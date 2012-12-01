@@ -369,6 +369,7 @@ VT100Grammar2.definition = {
         key,
         key_chars,
         prefix,
+        length,
         i;
 
     if (1 === tokens.length) {
