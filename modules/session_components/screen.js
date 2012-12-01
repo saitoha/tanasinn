@@ -1460,7 +1460,6 @@ Scrollable.definition = {
         offset = this.getBufferTop(),
         width = this._width,
         height = this._height,
-        attr = this.cursor.attr,
         i,
         line,
         range;
@@ -1498,7 +1497,6 @@ Scrollable.definition = {
         offset = this._buffer_top,
         width = this._width,
         height = this._height,
-        attr = this.cursor.attr,
         i, 
         range,  // rotation range
         line, 
@@ -1521,7 +1519,7 @@ Scrollable.definition = {
       }
     } else if (rest > 0) {
       if (n > rest) {
-        range = this._createLines(rest, attr);
+        range = this._createLines(rest);
         offset = this._buffer_top += rest;
         for (i = 0; i < range.length; ++i) {
           line = range[i];
@@ -1535,7 +1533,7 @@ Scrollable.definition = {
         this._scrollUp(n - rest)
         return;
       } else {
-        range = this._createLines(n, attr);
+        range = this._createLines(n);
         offset = this._buffer_top += n;
         for (i = 0; i < range.length; ++i) {
           line = range[i];
@@ -2769,13 +2767,13 @@ Screen.definition = {
     return this._lines[this.cursor.positionY]
   },
 
-  _createLines: function _createLines(n, attr) 
+  _createLines: function _createLines(n) 
   {
     var buffer = [],
         width = this._width,
         line_generator = this._line_generator;
 
-    return line_generator.allocate(width, n, attr);
+    return line_generator.allocate(width, n);
   },
 
   /** Switch between Main/Alternate screens. */

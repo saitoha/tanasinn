@@ -225,13 +225,6 @@ Cell.definition = {
   c: 0x20,
   value: 0x0,
 
-  initialize: function initialize(attr) 
-  {
-    if (undefined !== attr) {
-      this.value = attr.value;
-    }
-  },
-
   /** getter of foreground color */
   get fg()
   {
@@ -664,7 +657,7 @@ Resizable.definition = {
       }
     };
 
-    var new_cells = [ new Cell for (i in  count(n)) ],
+    var new_cells = [ new Cell for (i in count(n)) ],
         cells = this.cells;
 
     cells.push.apply(cells, new_cells);
@@ -684,13 +677,13 @@ Line.definition = {
   type: coUtils.Constant.LINETYPE_NORMAL,
 
   /** constructor */
-  initialize: function initialize(length, attr) 
+  initialize: function initialize(length) 
   {
     var cells = [],
         cell;
 
     while (length--) {
-      cell = new Cell(attr);
+      cell = new Cell();
       cells.push(cell);
     }
     this.cells = cells;
@@ -1232,13 +1225,13 @@ LineGenerator.definition = {
 
   /** Allocates n cells at once. */
   "[type('Uint16 -> Uint16 -> Array')]":
-  function allocate(width, n, attr) 
+  function allocate(width, n) 
   {
     var line,
         buffer = [];
 
     while (n--) {
-      line = new Line(width, attr);
+      line = new Line(width);
       buffer.push(line);
     }
     return buffer;
