@@ -189,11 +189,14 @@ VT100Grammar2.definition = {
         this._state = _STATE_GROUND;
       } else if (c < 0x20) { // C0
         return this._dispatch_char(c);
-      } else if (c > 0x9f) {
+      } else if (c >= 0x80) {
         this._state = _STATE_GROUND;
         return null;
-      } else if (c >= 0x7f) { // DEL, C1
-        return this._dispatch_char(c);
+      //} else if (c > 0x9f) {
+      //  this._state = _STATE_GROUND;
+      //  return null;
+      //} else if (c >= 0x7f) { // DEL, C1
+      //  return this._dispatch_char(c);
       } else if (_STATE_ESC === this._state) {
         if (c <= 0x2f) { // SP to / 
           this._ibytes = [c];
@@ -333,7 +336,7 @@ VT100Grammar2.definition = {
     var action = this._char_map[c];
 
     if (!action) {
-      throw coUtils.Debug.Exception(_("Parse error: %s"), c);
+      return null;
     }
     return action;
   },

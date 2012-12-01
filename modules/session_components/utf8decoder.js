@@ -91,14 +91,211 @@ UTF8Decoder.definition = {
 
   _generate: function _generate(scanner)
   {
-    var c;
+    var c,
+        first,
+        second,
+        third,
+        fourth,
+        fifth,
+        sixth,
+        seventh,
+        result;
 
     while (!scanner.isEnd) {
-      c = this._getNextCharacter(scanner);
-      if (null === c) {
+      c = scanner.current();
+
+      if (c < 0x20) {
         break;
+      } else if (c < 0x7f) { // 8bit (ASCII/DEC/ISO)
+        yield c;
+      } else if (c < 0xe0) {
+        // 110xxxxx 10xxxxxx 
+        // (0x00000080 - 0x000007ff) // 11bit
+        if (0x6 !== c >>> 5) {
+          scanner.moveNext();
+          yield this.displacement;
+          continue;
+        }
+        first = (c & 0x1f) << 6;
+        scanner.moveNext();
+        c = scanner.current();
+        if (0x2 !== c >>> 6) {
+          yield this.displacement;
+          continue;
+        }
+        second = c & 0x3f;
+        result = first | second;
+        if (result < 0x9f) {
+          scanner.moveNext();
+          yield this.displacement;
+          continue;
+        }
+        yield result;
+      } else if (c < 0xf0) {
+        // 1110xxxx 10xxxxxx 10xxxxxx 
+        // (0x00000800 - 0x0000ffff) // 16bit
+        if (0xe !== c >>> 4) {
+          scanner.moveNext();
+          scanner.moveNext();
+          yield this.displacement;
+          continue;
+        }
+        first = (c & 0xf) << 12;
+        scanner.moveNext();
+        c = scanner.current();
+        if (0x2 !== c >>> 6) {
+          scanner.moveNext();
+          yield this.displacement;
+          yield this.displacement;
+          continue;
+        }
+        second = (c & 0x3f) << 6;
+        scanner.moveNext();
+        c = scanner.current();
+        if (0x2 !== c >>> 6) {
+          yield this.displacement;
+          continue;
+        }
+        third = c & 0x3f;
+        result = first | second | third;
+        if (result < 0x800) {
+          scanner.moveNext();
+          yield this.displacement;
+          continue;
+        }
+        yield result;
+      } else if (c < 0xf8) {
+        // 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx 
+        // (0x00010000 - 0x001fffff) // 21bit 
+        if (0x1e !== c >>> 3) {
+          scanner.moveNext();
+          yield this.displacement;
+          continue;
+        }
+        first = (c & 0x7) << 18;
+        scanner.moveNext();
+        c = scanner.current();
+        if (0x2 !== c >>> 6) {
+          yield this.displacement;
+          continue;
+        }
+        second = (c & 0x3f) << 12;
+        scanner.moveNext();
+        c = scanner.current();
+        if (0x2 !== c >>> 6) {
+          yield this.displacement;
+          continue;
+        }
+        third = (c & 0x3f) << 6;
+        scanner.moveNext();
+        c = scanner.current();
+        if (0x2 !== c >>> 6) {
+          yield this.displacement;
+          continue;
+        }
+        fourth = c & 0x3f;
+        result = first | second | third | fourth;
+        if (result < 0x10000) {
+          scanner.moveNext();
+          yield this.displacement;
+          continue;
+        }
+        yield result;
+      } else if (c < 0xfc) {
+        // 111110xx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx
+        // (0x00200000 - 0x03ffffff) // 26bit 
+        if (0x3e !== c >>> 2) {
+          scanner.moveNext();
+          yield this.displacement;
+        }
+        first = (c & 0x3) << 24;
+        scanner.moveNext();
+        c = scanner.current();
+        if (0x2 !== c >>> 6) {
+          yield this.displacement;
+          continue;
+        }
+        second = (c & 0x3f) << 18;
+        scanner.moveNext();
+        c = scanner.current();
+        if (0x2 !== c >>> 6) {
+          yield this.displacement;
+          continue;
+        }
+        third = (c & 0x3f) << 12;
+        scanner.moveNext();
+        c = scanner.current();
+        if (0x2 !== c >>> 6) {
+          yield this.displacement;
+          continue;
+        }
+        fourth = (c & 0x3f) << 6;
+        scanner.moveNext();
+        c = scanner.current();
+        if (0x2 !== c >>> 6) {
+          yield this.displacement;
+          continue;
+        }
+        fifth = c & 0x3f;
+        result = first | second | third | fourth | fifth;
+        if (result < 0x200000) {
+          scanner.moveNext();
+          yield this.displacement;
+          continue;
+        }
+        yield this.displacement;
+      } else {
+        // 1111110x 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx
+        // (0x04000000 - 0x7fffffff) // 31bit 
+        if (0x7e !== c >>> 1) {
+          scanner.moveNext();
+          yield this.displacement;
+          continue;
+        }
+        first = (c & 0x3) << 30;
+        scanner.moveNext();
+        c = scanner.current();
+        if (0x2 !== c >>> 6) {
+          yield this.displacement;
+          continue;
+        }
+        second = (c & 0x3f) << 24;
+        scanner.moveNext();
+        c = scanner.current();
+        if (0x2 !== c >>> 6) {
+          yield this.displacement;
+          continue;
+        }
+        third = (c & 0x3f) << 18;
+        scanner.moveNext();
+        c = scanner.current();
+        if (0x2 !== c >>> 6) {
+          yield this.displacement;
+          continue;
+        }
+        fourth = (c & 0x3f) << 12;
+        scanner.moveNext();
+        c = scanner.current();
+        if (0x2 !== c >>> 6) {
+          yield this.displacement;
+          continue;
+        }
+        fifth = (c & 0x3f) << 6;
+        scanner.moveNext();
+        c = scanner.current();
+        if (0x2 !== c >>> 6) {
+          yield this.displacement;
+          continue;
+        }
+        sixth = c & 0x3f;
+        result = first | second | third | fourth | fifth | sixth;
+        if (result < 0x4000000) {
+          scanner.moveNext();
+          yield this.displacement;
+          continue;
+        }
+        yield this.displacement;
       }
-      yield c;
       scanner.moveNext();
     };
   },
@@ -112,207 +309,6 @@ UTF8Decoder.definition = {
    */
   _getNextCharacter: function _getNextCharacter(scanner) 
   {
-    var c = scanner.current(),
-        first,
-        second,
-        third,
-        fourth,
-        fifth,
-        sixth,
-        seventh,
-        result;
-
-    if (c < 0x20 || (0x7f <= c && c < 0xa0)) {
-      return null;
-    } else if (c < 0x7f) { // 8bit (ASCII/DEC/ISO)
-      return c;
-    } else if (c < 0xe0) {
-      // 110xxxxx 10xxxxxx 
-      // (0x00000080 - 0x000007ff) // 11bit
-      if (0x6 !== c >>> 5) {
-        scanner.moveNext();
-        return this.displacement;
-      }
-      first = (c & 0x1f) << 6;
-      scanner.moveNext();
-      c = scanner.current();
-      if (0x2 !== c >>> 6) {
-        return this.displacement;
-      }
-      second = c & 0x3f;
-      result = first | second;
-      if (result < 0x80) {
-        return this.displacement;
-      }
-      return result;
-    } else if (c < 0xf0) {
-      // 1110xxxx 10xxxxxx 10xxxxxx 
-      // (0x00000800 - 0x0000ffff) // 16bit
-      if (0xe !== c >>> 4) {
-        scanner.moveNext();
-        scanner.moveNext();
-        return this.displacement;
-      }
-      first = (c & 0xf) << 12;
-      scanner.moveNext();
-      c = scanner.current();
-      if (0x2 !== c >>> 6) {
-        scanner.moveNext();
-        return this.displacement;
-      }
-      second = (c & 0x3f) << 6;
-      scanner.moveNext();
-      c = scanner.current();
-      if (0x2 !== c >>> 6) {
-        return this.displacement;
-      }
-      third = c & 0x3f;
-      result = first | second | third;
-      if (result < 0x800) {
-        return this.displacement;
-      }
-      return result;
-    } else if (c < 0xf8) {
-      // 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx 
-      // (0x00010000 - 0x001fffff) // 21bit 
-      if (0x1e !== c >>> 3) {
-        scanner.moveNext();
-        scanner.moveNext();
-        scanner.moveNext();
-        return this.displacement;
-      }
-      first = (c & 0x7) << 18;
-      scanner.moveNext();
-      c = scanner.current();
-      if (0x2 !== c >>> 6) {
-        scanner.moveNext();
-        scanner.moveNext();
-        return this.displacement;
-      }
-      second = (c & 0x3f) << 12;
-      scanner.moveNext();
-      c = scanner.current();
-      if (0x2 !== c >>> 6) {
-        scanner.moveNext();
-        return this.displacement;
-      }
-      third = (c & 0x3f) << 6;
-      scanner.moveNext();
-      c = scanner.current();
-      if (0x2 !== c >>> 6) {
-        return this.displacement;
-      }
-      fourth = c & 0x3f;
-      result = first | second | third | fourth;
-      if (result < 0x10000) {
-        return this.displacement;
-      }
-      return result;
-    } else if (c < 0xfc) {
-      // 111110xx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx
-      // (0x00200000 - 0x03ffffff) // 26bit 
-      if (0x3e !== c >>> 2) {
-        scanner.moveNext();
-        scanner.moveNext();
-        scanner.moveNext();
-        scanner.moveNext();
-        return this.displacement;
-      }
-      first = (c & 0x3) << 24;
-      scanner.moveNext();
-      c = scanner.current();
-      if (0x2 !== c >>> 6) {
-        scanner.moveNext();
-        scanner.moveNext();
-        scanner.moveNext();
-        return this.displacement;
-      }
-      second = (c & 0x3f) << 18;
-      scanner.moveNext();
-      c = scanner.current();
-      if (0x2 !== c >>> 6) {
-        scanner.moveNext();
-        scanner.moveNext();
-        return this.displacement;
-      }
-      third = (c & 0x3f) << 12;
-      scanner.moveNext();
-      c = scanner.current();
-      if (0x2 !== c >>> 6) {
-        scanner.moveNext();
-        return this.displacement;
-      }
-      fourth = (c & 0x3f) << 6;
-      scanner.moveNext();
-      c = scanner.current();
-      if (0x2 !== c >>> 6) {
-        return this.displacement;
-      }
-      fifth = c & 0x3f;
-      result = first | second | third | fourth | fifth;
-      if (result < 0x200000) {
-        return this.displacement;
-      }
-      return result;
-    } else {
-      // 1111110x 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx
-      // (0x04000000 - 0x7fffffff) // 31bit 
-      if (0x7e !== c >>> 1) {
-        scanner.moveNext();
-        scanner.moveNext();
-        scanner.moveNext();
-        scanner.moveNext();
-        scanner.moveNext();
-        return this.displacement;
-      }
-      first = (c & 0x3) << 30;
-      scanner.moveNext();
-      c = scanner.current();
-      if (0x2 !== c >>> 6) {
-        scanner.moveNext();
-        scanner.moveNext();
-        scanner.moveNext();
-        scanner.moveNext();
-        return this.displacement;
-      }
-      second = (c & 0x3f) << 24;
-      scanner.moveNext();
-      c = scanner.current();
-      if (0x2 !== c >>> 6) {
-        scanner.moveNext();
-        scanner.moveNext();
-        scanner.moveNext();
-        return this.displacement;
-      }
-      third = (c & 0x3f) << 18;
-      scanner.moveNext();
-      c = scanner.current();
-      if (0x2 !== c >>> 6) {
-        scanner.moveNext();
-        scanner.moveNext();
-        return this.displacement;
-      }
-      fourth = (c & 0x3f) << 12;
-      scanner.moveNext();
-      c = scanner.current();
-      if (0x2 !== c >>> 6) {
-        scanner.moveNext();
-        return this.displacement;
-      }
-      fifth = (c & 0x3f) << 6;
-      scanner.moveNext();
-      c = scanner.current();
-      if (0x2 !== c >>> 6) {
-        return this.displacement;
-      }
-      sixth = c & 0x3f;
-      result = first | second | third | fourth | fifth | sixth;
-      if (result < 0x4000000) {
-        return this.displacement;
-      }
-      return result;
-    }
-    return this.displacement;
   },
 
 }; // class UTF8Decoder
