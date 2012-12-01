@@ -1,3 +1,8 @@
+2012-12-01 Hayaki Saito <user@zuse.jp>
+    * Version 0.3.1.7
+    * Pass Makus Khun's UTF-8 stress test!
+      http://www.cl.cam.ac.uk/~mgk25/ucs/examples/UTF-8-test.txt
+
 2012-11-30 Hayaki Saito <user@zuse.jp>
     * Version 0.3.1.7
     * Supports ISO-6429/ISO-2022 compatible parsing

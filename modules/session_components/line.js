@@ -533,10 +533,10 @@ Cell.definition = {
   erase: function erase(attr) 
   {
     this.c = 0x20;
-    if (attr) {
-      this.value = attr.value;
-    } else {
+    if (null === attr) {
       this.value = 0x0;
+    } else {
+      this.value = attr.value;
     }
 
   }, // erase

@@ -1476,7 +1476,7 @@ Scrollable.definition = {
 
     for (i = 0; i < range.length; ++i) {
       line = range[i];
-      line.erase(0, width, attr);
+      line.erase(0, width, null);
       line.type = coUtils.Constant.LINETYPE_NORMAL;
     }
 
@@ -1516,7 +1516,7 @@ Scrollable.definition = {
       range = lines.splice(offset + top, n);
       for (i = 0; i < range.length; ++i) {
         line = range[i];
-        line.erase(0, width, attr);
+        line.erase(0, width, null);
         line.type = coUtils.Constant.LINETYPE_NORMAL;
       }
     } else if (rest > 0) {
@@ -1546,7 +1546,7 @@ Scrollable.definition = {
       range = lines.splice(0, n);
       for (i = 0; i < range.length; ++i) {
         line = range[i];
-        line.erase(0, width, attr);
+        line.erase(0, width, null);
         line.length = width;
         line.invalidate();
         line.type = coUtils.Constant.LINETYPE_NORMAL;

@@ -3,7 +3,7 @@
 
 AC_PREREQ(2.61)
 
-AC_INIT([tanasinn],[0.3.1.7],[user@zuse.jp])
+AC_INIT([tanasinn],[0.3.1.8],[user@zuse.jp])
 
 AC_CANONICAL_TARGET
 

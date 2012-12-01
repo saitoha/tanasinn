@@ -142,9 +142,9 @@ VT100Grammar2.definition = {
     while (!scanner.isEnd) {
       c = scanner.current();
       if (_STATE_OSC === this._state) {
-        if (c === 0x1b) {
+        if (0x1b === c) {
           this._state = _STATE_OSC_FINAL;
-        } else if (c === 0x07) {
+        } else if (0x07 === c) {
           this._state = _STATE_GROUND;
           return this._dispatch_string(this._str);
         } else if (c < 0x20) {
@@ -153,7 +153,7 @@ VT100Grammar2.definition = {
           this._str.push(c);
         }
       } else if (_STATE_OSC_FINAL === this._state) {
-        if (c === 0x5c) {
+        if (0x5c === c) {
           this._state = _STATE_GROUND;
           return this._dispatch_string(this._str);
         } else if (c < 0x20) {
@@ -163,9 +163,9 @@ VT100Grammar2.definition = {
           this._str.push(c);
         }
       } else if (_STATE_STRING === this._state) {
-        if (c === 0x1b) {
+        if (0x1b === c) {
           this._state = _STATE_STRING_FINAL;
-        } else if (c === 0x07) {
+        } else if (0x07 === c) {
           this._state = _STATE_GROUND;
           return this._dispatch_string(this._str);
         } else if (c < 0x20) {
@@ -174,7 +174,7 @@ VT100Grammar2.definition = {
           this._str.push(c);
         }
       } else if (_STATE_STRING_FINAL === this._state) {
-        if (c === 0x5c) {
+        if (0x5c === c) {
           this._state = _STATE_GROUND;
           return this._dispatch_string(this._str);
         } else if (c < 0x20) {
@@ -183,32 +183,29 @@ VT100Grammar2.definition = {
           this._state = _STATE_STRING;
           this._str.push(c);
         }
-      } else if (c === 0x1b) {
+      } else if (0x1b === c) {
         this._state = _STATE_ESC;
-      } else if (c === 0x18 || c === 0x1a) {
+      } else if (0x18 === c || 0x1a === c) {
         this._state = _STATE_GROUND;
       } else if (c < 0x20) { // C0
         return this._dispatch_char(c);
-      } else if (c >= 0x80) {
+      } else if (c > 0x9f) {
         this._state = _STATE_GROUND;
         return null;
-      //} else if (c > 0x9f) {
-      //  this._state = _STATE_GROUND;
-      //  return null;
-      //} else if (c >= 0x7f) { // DEL, C1
-      //  return this._dispatch_char(c);
+      } else if (c >= 0x7f) { // DEL, C1
+        return this._dispatch_char(c);
       } else if (_STATE_ESC === this._state) {
         if (c <= 0x2f) { // SP to / 
           this._ibytes = [c];
           this._state = _STATE_ESC_IBYTES;
-        } else if (c === 0x50 || c === 0x58 || c === 0x5e || c === 0x5f) {
+        } else if (0x50 === c || 0x58 === c || 0x5e === c || 0x5f === c) {
           this._str = [c];
           this._state = _STATE_STRING;
-        } else if (c === 0x5b) { // [
+        } else if (0x5b === c) { // [
           this._ibytes = [];
           this._pbytes = [];
           this._state = _STATE_CSI_PBYTES;
-        } else if (c === 0x5d) { // ]
+        } else if (0x5d === c) { // ]
           this._str = [c];
           this._state = _STATE_OSC;
         } else if (c <= 0x7f) { // 0 to ~
@@ -306,7 +303,7 @@ VT100Grammar2.definition = {
   {
     var f = String.fromCharCode(fbyte),
         handler = this._esc_map[f];
-    if (handler) {
+    if (!handler) {
       return null;
     }
     return handler;
