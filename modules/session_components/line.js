@@ -744,12 +744,17 @@ Line.definition = {
   /** sets count of cells. */
   set length(value) 
   {
-    var diff = value - this.cells.length;
+    var diff = value - this.cells.length,
+        last_cell;
 
     if (diff > 0) {
       this.expand(diff);
     } else if (diff < 0) {
       this.collapse(-diff);
+      last_cell = this.cells[value - 1];
+      if (0 === last_cell.c) {
+        last_cell.erase();
+      }
     }
   },
       
