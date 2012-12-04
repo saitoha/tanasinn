@@ -455,6 +455,10 @@ if __name__ == "__main__":
         #sys.stdout.flush()
         os.environ["TERM"] = term 
         os.environ["LANG"] = lang 
+        paths = os.environ["PATH"].split(":")
+        if not "/usr/local/bin" in paths:
+            os.environ["PATH"] = "/usr/local/bin:" + os.environ["PATH"]
+        os.environ[""] = lang 
         os.environ["__TANASINN"] = term 
         os.execlp("/bin/sh", "/bin/sh", "-c", "cd $HOME && exec %s" % command)
     ttyname = "unknown ttyname"#os.read(master, ttyname_max_length).rstrip()
