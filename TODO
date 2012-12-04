@@ -1,6 +1,5 @@
 
 
-- Fix broken VT-52 mode
 - Fix broker debugger
 - Support Windows 8 RTM
 
@@ -17,7 +16,6 @@
 
 - main buffer's adaptive resize
 - Improve drag move experience
-- Improve drag resize experience
 - IME control
 - Support Growl like notification system
 
