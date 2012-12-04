@@ -1,7 +1,8 @@
 
 
+- Fix broken VT-52 mode
+- Fix broker debugger
 - Support Windows 8 RTM
-- Support Hangl Jamo
 
 - Fix full-width character copy/paste issue
 - Fix Ctrl + Space issue on X11 environment
@@ -23,6 +24,7 @@
 - Fix Sixel Graphics behavior more strictry
 - Fix DRCS behavior more strictry
 
+- imprement DECCRA
 - implement DECBI/DECFI
 - implement MC/DECMC
 - implement DECPEX mode
@@ -33,3 +35,4 @@
 
 - Rewrite console plugin's UI
 - Text search feature
+
