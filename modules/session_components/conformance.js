@@ -178,7 +178,7 @@ ConformanceLevel.definition = {
   },
 
   "[subscribe('command/send-sequence/sos'), pnp]":
-  function send_PM() 
+  function send_SOS() 
   {
     var message;
 
@@ -188,12 +188,16 @@ ConformanceLevel.definition = {
       message = "\x1bX";
     }
 
-    this.sendMessage("command/send-to-tty", message);
+    coUtils.Timer.setTimeout(
+      function timerProc()
+      {
+        this.sendMessage("command/send-to-tty", message);
+      }, 1, this);
   },
 
 
   "[subscribe('command/send-sequence/apc'), pnp]":
-  function send_PM() 
+  function send_APC() 
   {
     var message;
 
@@ -203,7 +207,11 @@ ConformanceLevel.definition = {
       message = "\x1b_";
     }
 
-    this.sendMessage("command/send-to-tty", message);
+    coUtils.Timer.setTimeout(
+      function timerProc()
+      {
+        this.sendMessage("command/send-to-tty", message);
+      }, 1, this);
   },
 
 
@@ -218,7 +226,11 @@ ConformanceLevel.definition = {
       message = "\x1b^";
     }
 
-    this.sendMessage("command/send-to-tty", message);
+    coUtils.Timer.setTimeout(
+      function timerProc()
+      {
+        this.sendMessage("command/send-to-tty", message);
+      }, 1, this);
   },
 
 
@@ -241,7 +253,11 @@ ConformanceLevel.definition = {
       message += "\x1b\\";
     }
 
-    this.sendMessage("command/send-to-tty", message);
+    coUtils.Timer.setTimeout(
+      function timerProc()
+      {
+        this.sendMessage("command/send-to-tty", message);
+      }, 1, this);
   },
 
   "[subscribe('command/get-sequence/csi'), pnp]":
@@ -264,7 +280,11 @@ ConformanceLevel.definition = {
 
     message += data;
 
-    this.sendMessage("command/send-to-tty", message);
+    coUtils.Timer.setTimeout(
+      function timerProc()
+      {
+        this.sendMessage("command/send-to-tty", message);
+      }, 1, this);
   },
 
   "[subscribe('command/get-sequence/ss3'), pnp]":
@@ -287,7 +307,11 @@ ConformanceLevel.definition = {
 
     message += data;
 
-    this.sendMessage("command/send-to-tty", message);
+    coUtils.Timer.setTimeout(
+      function timerProc()
+      {
+        this.sendMessage("command/send-to-tty", message);
+      }, 1, this);
   },
 
   "[subscribe('command/send-sequence/decrpss'), pnp]":
@@ -315,7 +339,11 @@ ConformanceLevel.definition = {
       message += "\x1b\\";
     }
 
-    this.sendMessage("command/send-to-tty", message);
+    coUtils.Timer.setTimeout(
+      function timerProc()
+      {
+        this.sendMessage("command/send-to-tty", message);
+      }, 1, this);
 
   },
 
