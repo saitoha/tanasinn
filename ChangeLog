@@ -1,5 +1,18 @@
+2012-12-04 Hayaki Saito <user@zuse.jp>
+    * Version 0.3.1.9
+    * Add GCLI integration support
+    * Fix bce issue when scrolling 
+    * Improve lines/cells allocation performance
+    * Take a delay for response against DA2, for MinEd
+    * Improve resize performance
+    * Improve parser performance
+    * Fix broken wide character issue when resizing lines
+    * Fix the multiline copy issue
+    * Fix broken VT52 mode
+    * Disable debugger plugin by default
+
 2012-12-01 Hayaki Saito <user@zuse.jp>
-    * Version 0.3.1.7
+    * Version 0.3.1.8
     * Pass Makus Khun's UTF-8 stress test!
       http://www.cl.cam.ac.uk/~mgk25/ucs/examples/UTF-8-test.txt
 

@@ -74,6 +74,7 @@
   }
   process_components=process_components {
    desktop.js
+   gcli.js
   }
   desktop_components=desktop_components {
    .
@@ -137,6 +138,7 @@
     window.js
 
     vt52.js
+    vt52c0.js
     tektronix.js
 
     psreport.js
@@ -359,7 +361,6 @@
    jis0212.txt.js
   }
   WcwidthGenerator.pl
-  UnicodeCategoryDetector.pl
   Makefile
  }
  prefs=defaults/preferences {
