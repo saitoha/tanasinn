@@ -317,7 +317,7 @@ WindowManipulator.definition = {
         break;
 
       default:
-        if (21 < n1 && n1 <= 72) {
+        if (23 < n1 && n1 <= 72) {
           screen = this._screen;
           width = screen.width;
           this.sendMessage(
