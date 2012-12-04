@@ -172,10 +172,11 @@ Resizer.definition = {
       parentNode: this.parent,
       tagName: "box",
       id: "tanasinn_" + this.type + "_resize",
-      width: 10,
-      height: 10,
+      width: 13,
+      height: 13,
       style: {
         cursor: this.type + "-resize",
+        margin: -8,
       },
       listener: [
         {
@@ -274,7 +275,7 @@ Resizer.definition = {
           if (0 !== moveX || 0 !== moveY) {
             this.sendMessage("command/move-by", [moveX * char_width, moveY * line_height]);
           }
-          this.sendMessage("command/draw", true);
+          //this.sendMessage("command/draw", true);
         }
       });
 
