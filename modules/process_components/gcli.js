@@ -47,7 +47,7 @@ GCLI.definition = {
     var self = this;
 
     gcli.addCommand({
-      name: "tstart",
+      name: "tanasinn",
       description: "run tanasinn",
       params: [
         {
