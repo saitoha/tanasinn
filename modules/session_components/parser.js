@@ -172,9 +172,7 @@ Parser.definition = {
 
     scanner.assign(data);
 
-    for (action in this.parse(scanner)) {
-      action();
-    }
+    this.parse(scanner);
     this.sendMessage("command/draw"); // fire "draw" event.
   },
 
@@ -186,37 +184,16 @@ Parser.definition = {
     var grammar = this._grammar,
         screen = this._screen,
         drcs_converter = this._drcs_converter,
-        action,
-        codes,
-        result,
-        next;
-
-    function make_handler(codes)
-    {
-      return function()
-      {
-        var converted_codes;
-
-        converted_codes = drcs_converter.convert(codes);
-        screen.write(converted_codes);
-      };
-    }
+        codes;
 
     while (!scanner.isEnd) {
-      action = grammar.parse(scanner);
-      if (null !== action) {
+      while (grammar.parse(scanner)) {
         scanner.moveNext();
-        yield action;
-      } else if (!scanner.isEnd) {
+      }
+      if (!scanner.isEnd) {
         codes = this._decode(scanner);
         if (0 !== codes.length) {
-          yield make_handler(codes);
-        } else {
-          if (scanner.isEnd) {
-            break;
-          }
-          scanner.moveNext();
-          break;
+          screen.write(drcs_converter.convert(codes));
         }
       }
     }
