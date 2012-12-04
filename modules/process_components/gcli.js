@@ -59,13 +59,15 @@ GCLI.definition = {
       ],
       exec: function tanasinn(args, context)
         {
-          var command = args.commandline.join(" ");
-          self._getDesktop().callSync("command/start-session", command);
+          var command = args.commandline.join(" "),
+              desktop = self._getCurrentDesktop();
+
+          desktop.callSync("command/start-session", command);
         }
     });
   },
 
-  _getDesktop: function _getDesktop() 
+  _getCurrentDesktop: function _getDesktop() 
   {
     var window = coUtils.getWindow(),
         desktops = this.sendMessage("get/desktop-from-window", window),
