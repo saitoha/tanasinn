@@ -81,7 +81,7 @@ Debugger.definition = {
     };
   },
 
-  "[persistable] enabled_when_startup": true,
+  "[persistable] enabled_when_startup": false,
 
   "[persistable] auto_scroll": true,
   "[persistable] update_interval": 100,
