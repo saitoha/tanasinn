@@ -125,20 +125,26 @@ W3m.definition = {
   {
     var canvas = this._canvas;
 
-    canvas.width = canvas.parentNode.boxObject.width;
-    canvas.height = canvas.parentNode.boxObject.height;
+    if (canvas) {
+      canvas.width = canvas.parentNode.boxObject.width;
+      canvas.height = canvas.parentNode.boxObject.height;
+    }
   },
 
   "[subscribe('event/screen-width-changed'), pnp]": 
   function onWidthChanged(width) 
   {
-    this._canvas.width = width;
+    if (this._canvas) {
+      this._canvas.width = width;
+    }
   },
 
   "[subscribe('event/screen-height-changed'), pnp]": 
   function onHeightChanged(height) 
   {
-    this._canvas.height = height;
+    if (this._canvas) {
+      this._canvas.height = height;
+    }
   },
 
   "[subscribe('sequence/osc/99'), pnp]":
