@@ -81,7 +81,7 @@ Desktop.definition = {
   default_command: "login -pf $USER",
   "default_command@Linux" : "$SHELL",
   "default_command@FreeBSD" : "$SHELL",
-  "default_command@Darwin": "login -pf $USER",
+  "default_command@Darwin": "login -pfq $USER",
   "default_command@WINNT" : "login -pf $USER",
   term: null,
 
@@ -143,18 +143,24 @@ Desktop.definition = {
     }
   },
   
+  /** called when this extension is enabled
+   */
   "[subscribe('event/enabled'), enabled]":
   function onEnabled()
   {
     this.notify("event/enabled");
   },
 
+  /** called when this extension is disabled
+   */
   "[subscribe('event/disabled'), enabled]":
   function onDisabled()
   {
     this.notify("event/disabled");
   },
 
+  /** called when shutting down
+   */
   "[subscribe('event/shutdown'), enabled]":
   function onShutdown()
   {
@@ -162,6 +168,8 @@ Desktop.definition = {
     this.uninstall(this._broker);
   },
   
+  /** if specified window is current window, returns itself, or returns null.
+   */
   "[subscribe('get/desktop-from-window'), enabled]":
   function getDesktopFromWindow(window)
   {
