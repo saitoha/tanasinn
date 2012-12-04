@@ -24,272 +24,10 @@
 
 "use strict";
 
-
-var vt52C0Parser = {
-
-  _map: [],
-
-  append: function append(key, value)
-  {
-    this._map[key] = value;
-  },
-
-  get: function get(key)
-  {
-    return this._map[key];
-  },
-
-  parse: function parse(scanner) 
-  {
-    var c, action;
-
-    if (scanner.isEnd) {
-      return undefined;
-    }
-    c = scanner.current();
-    action = this._map[c];
-    if (undefined === action) {
-      return undefined;
-    }
-    if ("parse" in action) {
-      scanner.moveNext();
-      return action.parse(scanner);
-    }
-    return action;
-  },
-
-}; // vt52C0Parser
-
-/**
- * @class VT52ParameterParser
- * @brief Parse parameter. 
- */ 
-var VT52ParameterParser = new Class().extends(Array);
-VT52ParameterParser.definition = {
-
-  _default_action: null,
-  _c0action: null,
-
-  /** constructor */
-  initialize: function initialize(first, c)
-  {
-    this._first = first;
-    this._c0action = [];
-
-    if (2 === arguments.length) {
-      this._default_action = c;
-    }
-  },
-
-  /** Parse parameters and returns the correspond action.
-   *  @param {Scanner} scanner A Scanner object.
-   */
-  parse: function parse(scanner) 
-  {
-    var params = [param for (param in this._parseParameters(scanner))],
-        c,
-        action,
-        self,
-        next, 
-        meta_action,
-        default_action,
-        actions;
-
-    do {
-      if (scanner.isEnd) {
-        self = this;
-        return function(scanner) 
-        {
-          var result;
-
-          result = parse.apply(self, scanner);
-          yield result;
-        };
-        return undefined;
-      }
-      c = scanner.current();
-      if (c < 0x20 || 0x7f === c) {
-        action = vt52C0Parser.get(c);
-        if (undefined !== action) {
-          this._c0action.push(action);
-        }
-        scanner.moveNext(); 
-        continue;
-      }
-      break;
-    } while (true);
-
-    next = this[c];
-
-    if (undefined === next) {
-    } else if (next.hasOwnProperty("parse")) {
-      meta_action = next.parse(scanner);
-      if (meta_action) {
-        action = meta_action(params);
-      }
-    } else {
-      action = next(params);
-    }
-    default_action = this._default_action;
-    if (0 === this._c0action.length && null === default_action) {
-      return action;
-    } 
-    actions = this._c0action;
-    actions.push(action);
-
-    this._c0action = [];
-    return function result()
-    {
-      var action,
-          i = 0;
-
-      if (default_action) {
-        action = vt52C0Parser.get(default_action);
-        if (undefined !== action) {
-          action();
-        }
-      }
-      for (; i < actions.length; ++i) {
-        actions[i]();
-      }
-    };
-  }, // parse
-
-  /** Parse numeric parameters separated by semicolons ";". 
-   *  @param {Scanner} scanner A Scanner object.
-   *
-   * Paramter -> ([0-9]+, ";")*, [0-9]+
-   *
-   */
-  _parseParameters: 
-  function _parseParameters(scanner) 
-  {
-    var accumulator = this._first,
-        c,
-        action;
-
-    while (!scanner.isEnd) {
-      c = scanner.current();
-      if (0x30 <= c && c <= 0x39) { // [0-9]
-        scanner.moveNext();
-        accumulator = accumulator * 10 + c - 0x30;
-      } else if (0x3b === c) { // ';'
-        scanner.moveNext();
-        yield accumulator;
-        accumulator = 0;
-      } else if (c < 0x20 || 0x7f === c) {
-        yield accumulator;
-        action = vt52C0Parser.get(c);
-        if (undefined !== action) {
-          this._c0action.push(action);
-        }
-        scanner.moveNext();
-      } else {
-        yield accumulator;
-        break;
-      }
-    }
-  }, // _parseParameters
-};
-
-/**
- * @class VT52SequenceParser
- */
-var VT52SequenceParser = new Class().extends(Array);
-VT52SequenceParser.definition = {
-
-  /** Construct child parsers from definition and make parser-chain. */
-  append: function append(key, value, context) 
-  {
-    var match,
-        number,
-        char_position,
-        normal_char,
-        first,
-        next_chars,
-        code,
-        next,
-        code1,
-        code2,
-        c1;
-
-    function make_handler(value, context, y, x)
-    {
-      return function() value.call(context, y, x);
-    }
-
-    match = key
-      .match(/^(0x[0-9a-zA-Z]+)|^(%p)|^(.)$|^(.)(.+)$/);
-
-    [, 
-      number, char_position,
-      normal_char, first, next_chars
-    ] = match;
-    if (number) { // parse number
-
-      code = parseInt(number);
-      if ("parse" in value) {
-        vt52C0Parser.append(code, value);
-        this[code] = value;
-      } else {
-        vt52C0Parser.append(
-          code, 
-          function()
-          {
-            return value.apply(context);
-          });
-        this[code] = function()
-        {
-          return value.apply(context);
-        };
-      }
-    } else if (char_position) { // 
-      for (code1 = 0x20; code1 < 0x7f; ++code1) {
-        c1 = String.fromCharCode(code1);
-        this[code1] = new VT52SequenceParser();
-        for (code2 = 0x20; code2 < 0x7f; ++code2) {
-          this[code1][code2] = make_handler(value, context, code1, code2);
-        }
-      }
-    } else if (normal_char) {
-      code = normal_char.charCodeAt(0);
-      if ("parse" in value) {
-        this[code] = value;
-      } else {
-        this[code] = function() value.apply(context);
-      }
-    } else {
-      code = first.charCodeAt(0);
-      next = this[code] = this[code] || new VT52SequenceParser;
-      if (!next.append) {
-        next = this[code] = new VT52SequenceParser;
-      }
-      next.append(next_chars, value, context);
-    }
-  }, // append
-
-  /** Scan and get asocciated action. 
-   *  @param {Scanner} scanner A Scanner object.
-   */
-  parse: function parse(scanner) 
-  {
-    var c = scanner.current(),
-        next = this[c];
-
-    if (next) { // c is part of control sequence.
-      if ("parse" in next) { // next is parser.
-        scanner.moveNext();
-        return next.parse(scanner);
-      } else { 
-        return next // next is action.
-      }
-    } else {
-      return undefined;
-    }
-  }, // parse
-
-}; // class VT52SequenceParser
-
+var _STATE_GROUND = 0,
+    _STATE_ESC    = 1,
+    _STATE_ESC_Y1 = 2,
+    _STATE_ESC_Y2 = 3;
 
 /**
  * @class VT52
@@ -308,7 +46,7 @@ VT52.definition = {
   {
     return {
       name: _("VT-52 mode"),
-      version: "0.1.0",
+      version: "0.2.0",
       description: _("Emurate DEC VT-52 terminal.")
     };
   },
@@ -329,17 +67,9 @@ VT52.definition = {
     this._tab_controller = context["tab_controller"];
     this._screen = context["screen"];
     this._cursor_state = context["cursorstate"];
-
-    this.ESC = new VT52SequenceParser();
-    VT52SequenceParser.prototype[0x1b] = this.ESC;
-
-    this.sendMessage(
-      "command/add-sequence/vt52",
-      {
-        expression: "0x1B", 
-        handler: this.ESC,
-        context: this,
-      });
+    this._esc_map = [];
+    this._char_map = [];
+    this._state = _STATE_GROUND;
   },
 
   /** Unnstalls itself. 
@@ -350,6 +80,8 @@ VT52.definition = {
     this._tab_controller = null;
     this._screen = null;
     this._cursor_state = null;
+    this._esc_map = null;
+    this._char_map = null;
   },
 
   "[subscribe('event/session-initialized'), pnp]":
@@ -378,7 +110,49 @@ VT52.definition = {
   "[type('Scanner -> Action')] parse":
   function parse(scanner) 
   {
-    return vt52C0Parser.parse(scanner);
+    var c,
+        action,
+        state,
+        screen;
+
+    while (!scanner.isEnd) {
+      c = scanner.current()
+      state = this._state;
+      if (0x1b === c) {
+        this._state = _STATE_ESC;
+      } else if (c < 0x20) {
+        action = this._char_map[c];
+        if (action) {
+          action();
+        }
+        //this._state = _STATE_GROUND;
+      } else if (_STATE_ESC === state) {
+        action = this._esc_map[c];
+        if (0x59 === c) {
+          this._state = _STATE_ESC_Y1;
+        } else {
+          if (action) {
+            action();
+          }
+          this._state = _STATE_GROUND;
+        }
+      } else if (_STATE_ESC_Y1 === state) {
+        this._c1 = c;
+        this._state = _STATE_ESC_Y2;
+      } else if (_STATE_ESC_Y2 === state) {
+        if (action) {
+          action(this._c1, c);
+        }
+        this._state = _STATE_GROUND;
+      } else if (c < 0x80) /*if (_STATE_GROUND === state)*/ {
+        //return false; 
+        screen = this._screen;
+        if (screen.cursor.positionX < this._screen.width) {
+          screen.write([c])
+        }
+      }
+      scanner.moveNext();
+    }
   },
 
   /** Append a sequence handler.
@@ -390,22 +164,38 @@ VT52.definition = {
   "[subscribe('command/add-sequence/vt52'), type('SequenceInfo -> Undefined'), pnp]":
   function append(information) 
   {
-    var match = information.expression.split(/\s+/),
-        key = match.pop(),
-        prefix = match.pop() || "C0";
+    var expression = information.expression,
+        tokens = expression.split(/\s+/),
+        context = information.context,
+        handler = information.handler,
+        length = tokens.length,
+        key;
 
-    if ("number" === typeof key) {
-      key = key.toString();
+    if (1 === length) {
+      key = Number(tokens[0]);
+      this._char_map[key] = 
+        function action()
+        {
+          return handler.call(context);
+        };
+      //this._hookmap.body[handler.name] = [key, handler];
+    } else if (2 === length) {
+      key = tokens.pop().charCodeAt();
+      length = tokens.length;
+      this._esc_map[key] =
+        function action()
+        {
+          return handler.call(context);
+        };
+    } else if (3 == length) {
+      key = tokens[1].charCodeAt(0);
+      length = tokens.length;
+      this._esc_map[key] =
+        function action(py, px)
+        {
+          return handler.call(context, py, px);
+        };
     }
-
-    if (!this[prefix]) {
-      this[prefix] = new VT52SequenceParser();
-    }
-
-    this[prefix].append(key, 
-                        information.handler, 
-                        information.context);
-
   }, // append
 
 
@@ -766,23 +556,26 @@ VT52.definition = {
     this.sendMessage("event/shift-in"); 
   },
 
+  /** Move the cursor to the home position.
+   */
   "[profile('vt52'), sequence('ESC H')]":
   function HTS()
   {
     var cursor = this._cursor_state;
-    cursor.positionX = cursor.originX;
-    cursor.positionY = cursor.originY;
+
+    cursor.positionX = 0;
+    cursor.positionY = 0;
   },
 
   "[profile('vt52'), sequence('ESC I')]":
   function HTJ()
   {
     var screen = this._screen;
-    this.sendMessage("command/draw", true);
     screen.reverseIndex();
-    this.sendMessage("command/draw", true);
   },
 
+  /** Erase from the cursor to the end of the screen
+   */
   "[profile('vt52'), sequence('ESC J')]":
   function VTS()
   {
@@ -791,6 +584,8 @@ VT52.definition = {
     screen.eraseScreenBelow();
   },
 
+  /** Erase from the cursor to the end of the line.
+   */
   "[profile('vt52'), sequence('ESC K')]":
   function PLD()
   {
@@ -810,8 +605,11 @@ VT52.definition = {
   function ESC_Y(y, x)
   {
     var screen = this._screen;
+
     screen.setPositionY(y - 0x20);
     screen.setPositionX(x - 0x20);
+    screen.cursor.positionY = y - 0x20;
+    screen.cursor.positionX = x - 0x20;
   },
 
   "[profile('vt52'), sequence('ESC Z')]":
