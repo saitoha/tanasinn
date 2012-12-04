@@ -384,6 +384,7 @@ ScreenSequenceHandler.definition = {
     var top,
         bottom,
         cursor = this.cursor,
+        width = this._width,
         y = (n1 || 1) - 1,
         x = (n2 || 1) - 1;
 
@@ -396,7 +397,11 @@ ScreenSequenceHandler.definition = {
       bottom = this._height;
     }
 
-    cursor.positionX = x;
+    if (x >= width) {
+      cursor.positionX = width - 1;
+    } else {
+      cursor.positionX = x;
+    }
     if (y >= bottom) {
       cursor.positionY = bottom - 1;
     } else {
@@ -1124,6 +1129,7 @@ ScreenSequenceHandler.definition = {
     var top,
         bottom,
         cursor = this.cursor,
+        width = this._width,
         y = (n1 || 1) - 1,
         x = (n2 || 1) - 1;
 
@@ -1136,7 +1142,11 @@ ScreenSequenceHandler.definition = {
       bottom = self._height;
     }
 
-    cursor.positionX = x;
+    if (x >= width) {
+      cursor.positionX = width - 1;
+    } else {
+      cursor.positionX = x;
+    }
     if (y >= bottom) {
       cursor.positionY = bottom - 1;
     } else {
@@ -1407,9 +1417,9 @@ Viewable.definition = {
       }
 
       text = line.getTextInRange(start, end);
-      buffer.push(text.replace(/ +$/, ""));
+      buffer.push(text.replace(/ +$/, "\n"));
     }
-    return buffer.join("\n"); 
+    return buffer.join(""); 
   },
 
   /** get text in specified range. 
@@ -1529,7 +1539,6 @@ Scrollable.definition = {
         range.unshift(offset + bottom - rest, 0);
         Array.prototype.splice.apply(lines, range);
         this._lines = lines.slice(offset, offset + height);
-
         this._scrollUp(n - rest)
         return;
       } else {
@@ -1623,17 +1632,20 @@ Resizable.definition = {
     var cursor = this.cursor,
         width = this._width -= n,
         lines = this._lines,
-        i;
+        i,
+        line;
 
     // set new width.
     for (i = 0; i < lines.length; ++i) {
-      lines[i].length = width;
+      line = lines[i];
+      line.length = width;
     }
 
     // fix cursor position.
     if (cursor.positionX >= width) {
       cursor.positionX = width - 1;
     }
+
   },
   
   /** Create new colmuns and Push after last column. */
@@ -1642,11 +1654,13 @@ Resizable.definition = {
     // increase width
     var width = this._width += n,
         lines = this._lines,
-        i;
+        i,
+        line;
 
     // set new width.
     for (i = 0; i < lines.length; ++i) {
-      lines[i].length = width;
+      line = lines[i];
+      line.length = width;
     }
   },
 
@@ -1792,7 +1806,8 @@ Screen.definition = {
   set "[persistable] width"(value) 
   {
     var width,
-        cursor;
+        cursor,
+        new_width;
 
     if (this._buffer) {
 
@@ -1807,11 +1822,14 @@ Screen.definition = {
       }
 
       cursor = this.cursor;
-      if (cursor.positionX >= this._width) {
-        cursor.positionX = this._width - 1;
+      new_width = this._width;
+      if (cursor.positionX >= new_width) {
+        cursor.positionX = new_width - 1;
       }
 
-      this.sendMessage("variable-changed/screen.width", this.width);
+      this.sendMessage(
+        "variable-changed/screen.width",
+        new_width);
     } else {
       this._width = value;
     }
@@ -2497,7 +2515,7 @@ Screen.definition = {
     var cursor_state = this.cursor,
         top = this._scroll_top,
         positionY = cursor_state.positionY;
-//alert(positionY + ";" + top)
+
     if (positionY === top) {
       this._scrollDown(top, this._scroll_bottom, 1);
     } else if (positionY < top) {
@@ -2637,9 +2655,6 @@ Screen.definition = {
     if (coUtils.Constant.SCREEN_MAIN === this._screen_choice) {
       this._switchScreen();
       this._screen_choice = coUtils.Constant.SCREEN_ALTERNATE;
-    } else {
-      coUtils.Debug.reportWarning(
-        _("Alternate screen had been already selected."));
     }
   },
 
@@ -2654,9 +2669,6 @@ Screen.definition = {
     if (coUtils.Constant.SCREEN_ALTERNATE === this._screen_choice) {
       this._switchScreen();
       this._screen_choice = coUtils.Constant.SCREEN_MAIN;
-    } else {
-//      coUtils.Debug.reportWarning(
-//        _("Main screen has been already selected."));
     }
   },
 
@@ -2668,9 +2680,11 @@ Screen.definition = {
   "[type('Undefined')] selectAlternateScreen":
   function selectAlternateScreen() 
   {
-    this.cursor.backup();
-    this.switchToAlternateScreen();
-    this.eraseScreenAll();
+    if (coUtils.Constant.SCREEN_MAIN === this._screen_choice) {
+      this.cursor.backup();
+      this.switchToAlternateScreen();
+      this.eraseScreenAll();
+    }
   },
 
   /** Erase screen, switch to Main screen, and restore cursor. 
@@ -2681,9 +2695,11 @@ Screen.definition = {
   "[type('Undefined')] selectMainScreen":
   function selectMainScreen() 
   {
-    this.eraseScreenAll();
-    this.switchToMainScreen();
-    this.cursor.restore();
+    if (coUtils.Constant.SCREEN_ALTERNATE === this._screen_choice) {
+      this.eraseScreenAll();
+      this.switchToMainScreen();
+      this.cursor.restore();
+    }
   },
   
 // ScreenBackupConcept Implementation
