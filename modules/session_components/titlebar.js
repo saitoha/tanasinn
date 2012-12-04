@@ -111,7 +111,7 @@ Titlebar.definition = {
       id: "tanasinn_titlebar_canvas",
       tagName: "html:canvas",
       dir: "ltr",
-      height: this.font_size,
+      height: this.font_size + 4,
       style: {
         padding: "0px",
         marginBottom: "6px",
