@@ -104,7 +104,7 @@ ApplicationCursorMode.definition = {
     // enable application cursor mode.
     this.sendMessage(
       "command/change-cursor-mode",
-      coUtils.Constant.CURSOR_MODE_NORMAL);
+      coUtils.Constant.CURSOR_MODE_APPLICATION);
   },
 
   /** Deactivate auto-repeat feature
@@ -117,7 +117,7 @@ ApplicationCursorMode.definition = {
     // disable application cursor mode.
     this.sendMessage(
       "command/change-cursor-mode",
-      coUtils.Constant.CURSOR_MODE_APPLICATION);
+      coUtils.Constant.CURSOR_MODE_NORMAL);
   },
 
   /** Report mode
