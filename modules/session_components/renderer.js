@@ -896,7 +896,8 @@ Renderer.definition = {
     }
 
     context.fillText(text, x, y, char_width * length);
-    if (1 === attr.bold && this.bold_as_blur) {
+    //context.fillText(text.replace(/ +$/, ""), x, y);
+    if ( this.bold_as_blur && 1 === attr.bold) {
       context.fillText(text, x + 1, y, char_width * length - 1);
     }
   },

@@ -1485,7 +1485,7 @@ Scrollable.definition = {
 
     for (i = 0; i < range.length; ++i) {
       line = range[i];
-      line.erase(0, width, null);
+      line.erase(0, width, undefined);
       line.type = coUtils.Constant.LINETYPE_NORMAL;
     }
 
@@ -1524,7 +1524,7 @@ Scrollable.definition = {
       range = lines.splice(offset + top, n);
       for (i = 0; i < range.length; ++i) {
         line = range[i];
-        line.erase(0, width, null);
+        line.erase(0, width, undefined);
         line.type = coUtils.Constant.LINETYPE_NORMAL;
       }
     } else if (rest > 0) {
@@ -1553,7 +1553,79 @@ Scrollable.definition = {
       range = lines.splice(0, n);
       for (i = 0; i < range.length; ++i) {
         line = range[i];
-        line.erase(0, width, null);
+        line.erase(0, width, undefined);
+        line.length = width;
+        line.invalidate();
+        line.type = coUtils.Constant.LINETYPE_NORMAL;
+      }
+    }
+
+    // line.splice(offset + bottom -m, 0, ....);
+    range.unshift(offset + bottom - n, 0);
+    Array.prototype.splice.apply(lines, range);
+    this._lines = lines.slice(offset, offset + height);
+
+    if (this._smooth_scrolling) {
+      this.sendMessage("command/draw", true);
+      wait(this.smooth_scrolling_delay);
+    }
+
+  },
+
+  /** Scroll down the buffer by n lines. */
+  _scrollUpBCE: function _scrollUp(top, bottom, n, attr) 
+  {
+    var lines = this._buffer,
+        offset = this._buffer_top,
+        width = this._width,
+        height = this._height,
+        i, 
+        range,  // rotation range
+        line, 
+        rest;
+
+    // set dirty flag.
+    for (i = n; i < this._lines.length; ++i) {
+      line = this._lines[i];
+      line.invalidate();
+    }
+
+    // rotate lines.
+    rest = this.scrollback_limit - offset;
+    if (top > 0) {
+      range = lines.splice(offset + top, n);
+      for (i = 0; i < range.length; ++i) {
+        line = range[i];
+        line.erase(0, width, attr);
+        line.type = coUtils.Constant.LINETYPE_NORMAL;
+      }
+    } else if (rest > 0) {
+      if (n > rest) {
+        range = this._createLines(rest);
+        offset = this._buffer_top += rest;
+        for (i = 0; i < range.length; ++i) {
+          line = range[i];
+          line.invalidate();
+        }
+        // line.splice(offset + bottom -m, 0, ....);
+        range.unshift(offset + bottom - rest, 0);
+        Array.prototype.splice.apply(lines, range);
+        this._lines = lines.slice(offset, offset + height);
+        this._scrollUp(n - rest)
+        return;
+      } else {
+        range = this._createLines(n);
+        offset = this._buffer_top += n;
+        for (i = 0; i < range.length; ++i) {
+          line = range[i];
+          line.invalidate();
+        }
+      }
+    } else { // 0 === top && rest === 0
+      range = lines.splice(0, n);
+      for (i = 0; i < range.length; ++i) {
+        line = range[i];
+        line.erase(0, width, attr);
         line.length = width;
         line.invalidate();
         line.type = coUtils.Constant.LINETYPE_NORMAL;
@@ -1960,7 +2032,7 @@ Screen.definition = {
       if (positionX >= width) {
         if (this._wraparound_mode) {
           cursor.positionX = 0;
-          this.lineFeed();
+          this._wrap();
           line = this.getCurrentLine();
         } else {
           cursor.positionX = width - 1;
@@ -1974,7 +2046,7 @@ Screen.definition = {
           if (this._wraparound_mode) {
             cursor.positionX = 0;
             //this.carriageReturn();
-            this.lineFeed();
+            this._wrap();
             line = this.getCurrentLine();
           } else {
             cursor.positionX = width - 1;
@@ -2526,22 +2598,39 @@ Screen.definition = {
     }
   },
   
+  _wrap: function _wrap() 
+  {
+    var cursor = this.cursor,
+        top,
+        bottom = this._scroll_bottom,
+        positionY = cursor.positionY;
+
+    if (positionY === bottom - 1) {
+      this._scrollUpBCE(this._scroll_top, bottom, 1, cursor.attr);
+    } else if (positionY > bottom - 1) {
+      cursor.positionY = bottom - 1;
+      this._scrollUpBCE(this._scroll_top, bottom, 1, curosr.attr);
+    } else {
+      ++cursor.positionY;
+    }
+  },
+
   /** Line Feed (LF) */
   "[type('Undefined')] lineFeed":
   function lineFeed() 
   { // cursor down
-    var cursor_state = this.cursor,
+    var cursor = this.cursor,
         top,
         bottom = this._scroll_bottom,
-        positionY = cursor_state.positionY;
+        positionY = cursor.positionY;
 
     if (positionY === bottom - 1) {
       this._scrollUp(this._scroll_top, bottom, 1);
     } else if (positionY > bottom - 1) {
-      cursor_state.positionY = bottom - 1;
+      cursor.positionY = bottom - 1;
       this._scrollUp(this._scroll_top, bottom, 1);
     } else {
-      ++cursor_state.positionY;
+      ++cursor.positionY;
     }
   },
 
