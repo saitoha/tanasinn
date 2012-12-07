@@ -68,7 +68,7 @@ W3m.definition = {
     };
   },
 
-  "[persistable] enabled_when_startup": true,
+  "[persistable] enabled_when_startup": false,
 
   _canvas: null,
   _context: null,
