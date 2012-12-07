@@ -26,7 +26,6 @@ tools/bin/tmp
 tools/bin/mac-x86_64
 
 # doc
-doc/tanasinn
 
 # object file
 *.o

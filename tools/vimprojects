@@ -30,6 +30,10 @@
   define.h.in
   Makefile.in
   usermanual.txt
+  tanasinn=tanasinn {
+   index.html
+   index.html.in
+  }
  }
  tutorial=~/.tanasinn/modules {
   session_components=session_components {
