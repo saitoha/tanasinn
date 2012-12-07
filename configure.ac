@@ -46,6 +46,7 @@ AC_TANASINN_JS_PATH
 AC_CONFIG_FILES([Makefile 
                  doc/define.h
                  doc/Makefile
+                 doc/tanasinn/index.html
                  tools/bin/Makefile
                  modules/common/config.js
                  chrome.manifest 
