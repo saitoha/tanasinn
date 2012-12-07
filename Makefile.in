@@ -27,6 +27,7 @@ all: $(XPI) tanasinn-docs.zip
 	$(CP) $(XPI) tanasinn-docs.zip download/
 	if [ ! -d download/$(PACKAGE_VERSION) ]; then \
 		$(MKDIR) download/releases/$(PACKAGE_VERSION); \
+		git tag $(PACKAGE_VERSION)pre; \
 	fi
 	$(CP) $(XPI) download/releases/$(PACKAGE_VERSION)/
 	git add -f download/releases/$(PACKAGE_VERSION)/*.xpi
@@ -227,6 +228,12 @@ run-xulapp:
 	esac	
 
 update-web:
+	ssh user@zuse.jp ./build.sh
+
+release: update-web
+	git merge develop
+	git tag $(PACKAGE_VERSION)
+	git push
 	ssh user@zuse.jp ./build.sh
 
 update: all
