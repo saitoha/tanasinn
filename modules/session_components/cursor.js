@@ -330,6 +330,16 @@ Cursor.definition = {
     this.clear();
   },
 
+  hide: function hide() 
+  {
+    this._cursor_visibility = false;
+  },
+
+  show: function show() 
+  {
+    this._cursor_visibility = true;
+  },
+
   "[subscribe('event/cursor-visibility-changed'), pnp]": 
   function onCursorVisibilityChanged(value) 
   {
