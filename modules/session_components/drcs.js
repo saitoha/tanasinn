@@ -37,7 +37,8 @@ function char2sixelbits(c)
 /**
  *  @class DRCSBuffer
  */
-var DRCSBuffer = new Class().extends(Plugin);
+var DRCSBuffer = new Class().extends(Plugin)
+                            .depends("sixel_parser");
 DRCSBuffer.definition = {
 
   id: "drcs_buffer",
@@ -56,6 +57,7 @@ DRCSBuffer.definition = {
   _map: null,
   _g0: "B",
   _g1: "B",
+  _counter: 0x0,
 
   /** Installs itself. 
    *  @param {InstallContext} context A InstallContext object.
@@ -64,6 +66,7 @@ DRCSBuffer.definition = {
   function install(context) 
   {
     this._map = {};
+    this._sixel_parser = context["sixel_parser"];
   },
 
   /** Uninstalls itself.
@@ -79,6 +82,7 @@ DRCSBuffer.definition = {
       }
       this._map = null;
     }
+    this._sixel_parser = null;
   },
 
   "[subscribe('command/query-da1-capability'), pnp]":
@@ -110,7 +114,7 @@ DRCSBuffer.definition = {
         canvas;
 
     //           Pfn    Pcn      Pe      Pcmw     Pw      Pt      Pcmh     Pcss    Dscs
-    pattern = /^([01]);([0-9]+);([012]);([0-9]+);([012]);([012]);([0-9]+);([01])\{(\s*[0-~])([\?-~\/;\n\r]+)$/;
+    pattern = /^([01]);([0-9]+);([012]);([0-9]+);([012]);([0123]);([0-9]+);([01])\{(\s*[0-~])(.+)$/;
     match = data.match(pattern);
 
     if (null === match) {
@@ -201,47 +205,83 @@ DRCSBuffer.definition = {
     canvas.width = char_width * 97;
     canvas.height = char_height * 1;
 
-    var pointer_x = start_code * char_width;
-    var imagedata = canvas
-      .getContext("2d")
-      .getImageData(0, 0, canvas.width, canvas.height);
+    if (3 === pt) {
 
-    var sixels = value.split(";");
+      var sixel = value.substr(data.indexOf("#"))
+      if (!sixel) {
+        return;
+      }
 
-    for (var [n, glyph] in Iterator(sixels)) {
-      for (var [h, line] in Iterator(glyph.split("/"))) {
-        for (var [x, c] in Iterator(line.replace(/[^\?-~]/g, "").split(""))) {
-          var bits = char2sixelbits(c); 
-          for (var [y, bit] in Iterator(bits)) {
-            var position = (((y + h * 6) * 97 + n) * char_width + x) * 4;
-            if ("1" === bit) {
-              imagedata.data[position + 0] = 255;
-              imagedata.data[position + 1] = 255;
-              imagedata.data[position + 2] = 255;
-              imagedata.data[position + 3] = 255;
-            } else {
-          //    imagedata.data[position + 3] = 255;
+      var dom = { 
+        canvas: canvas,
+        context: canvas.getContext("2d"),
+      };
+
+      var result = this._sixel_parser.parse(sixel, dom),
+          char_height = renderer.char_height,
+          line_count = Math.ceil(result.max_y / char_height),
+          cell_count = Math.ceil(result.max_x / char_width),
+          start_code = 0x21,
+          end_code = start_code + cell_count,
+          full_cell = true;
+
+      this.sendMessage(
+        "command/alloc-drcs",
+        {
+          dscs: dscs,
+          drcs_canvas: canvas,
+          drcs_width: char_width,
+          drcs_height: char_height,
+          drcs_top: 0,
+          start_code: start_code,
+          end_code: end_code,
+          full_cell: full_cell,
+          color: true,
+        });
+
+    } else {
+      var pointer_x = start_code * char_width;
+      var imagedata = canvas
+        .getContext("2d")
+        .getImageData(0, 0, canvas.width, canvas.height);
+
+      var sixels = value.split(";");
+
+      for (var [n, glyph] in Iterator(sixels)) {
+        for (var [h, line] in Iterator(glyph.split("/"))) {
+          for (var [x, c] in Iterator(line.replace(/[^\?-~]/g, "").split(""))) {
+            var bits = char2sixelbits(c); 
+            for (var [y, bit] in Iterator(bits)) {
+              var position = (((y + h * 6) * 97 + n) * char_width + x) * 4;
+              if ("1" === bit) {
+                imagedata.data[position + 0] = 255;
+                imagedata.data[position + 1] = 255;
+                imagedata.data[position + 2] = 255;
+                imagedata.data[position + 3] = 255;
+              } else {
+            //    imagedata.data[position + 3] = 255;
+              }
             }
           }
         }
       }
+
+      canvas.getContext("2d").putImageData(imagedata, 0, 0);
+
+      var drcs = {
+        dscs: dscs,
+        drcs_canvas: canvas,
+        drcs_width: char_width,
+        drcs_height: char_height,
+        drcs_top: 0,
+        start_code: start_code,
+        end_code: start_code + sixels.length,
+        full_cell: full_cell,
+        color: false,
+      };
+
+      this.sendMessage("command/alloc-drcs", drcs);
     }
-
-    canvas.getContext("2d").putImageData(imagedata, 0, 0);
-
-    var drcs = {
-      dscs: dscs,
-      drcs_canvas: canvas,
-      drcs_width: char_width,
-      drcs_height: char_height,
-      drcs_top: 0,
-      start_code: start_code,
-      end_code: start_code + sixels.length,
-      full_cell: full_cell,
-      color: false,
-    };
-
-    this.sendMessage("command/alloc-drcs", drcs);
   },
 
   "[subscribe('command/alloc-drcs'), pnp]":
