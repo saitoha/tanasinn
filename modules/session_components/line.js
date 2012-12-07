@@ -526,7 +526,7 @@ Cell.definition = {
   erase: function erase(attr) 
   {
     this.c = 0x20;
-    if (null === attr) {
+    if (undefined === attr) {
       this.value = 0x0;
     } else {
       this.value = attr.value;
@@ -753,7 +753,7 @@ Line.definition = {
       this.collapse(-diff);
       last_cell = this.cells[value - 1];
       if (0 === last_cell.c) {
-        last_cell.erase();
+        last_cell.erase(undefined);
       }
     }
   },
@@ -1007,7 +1007,8 @@ Line.definition = {
         i,
         cell,
         length,
-        range;
+        range,
+        code;
 
     if (insert_mode) {
       this.addRange(position, this.length);
@@ -1025,12 +1026,18 @@ Line.definition = {
 
     } else { // replace mode
 
-      this.addRange(position, position + codes.length);
-      // codes.forEach(function(code) cells[position++].write(code, attr));
       for (i = 0; i < codes.length; ++i) {
+        code = codes[i];
         cell = cells[position + i];
-        cell.write(codes[i], attr);
+        //if (cell.c !== code || !attr.equals(cell)) {
+        //  if (first > position + i) {
+        //    first = position + i;
+        //  }
+        //  last = position + i + 1;
+        cell.write(code, attr);
+        //}
       }
+      this.addRange(position, position + codes.length);
     }
   },
 
@@ -1046,7 +1053,7 @@ Line.definition = {
 
     for (; i < length; ++i) {
       cell = cells[i];
-      cell.erase();
+      cell.erase(undefined);
     }
     this.type = coUtils.Constant.LINETYPE_NORMAL;
   },
