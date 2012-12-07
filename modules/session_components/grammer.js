@@ -59,13 +59,13 @@ var _STATE_GROUND        = 0,
     _STATE_STRING_FINAL  = 8;
 
 /**
- * @class VT100Grammar2
+ * @class VT100Grammar
  *
  *
  */
-var VT100Grammar2 = new Class().extends(Plugin)
-                               .requires("GrammarConcept");
-VT100Grammar2.definition = {
+var VT100Grammar = new Class().extends(Plugin)
+                              .requires("GrammarConcept");
+VT100Grammar.definition = {
 
   id: "vt100",
 
@@ -149,14 +149,16 @@ VT100Grammar2.definition = {
     var c;
     while (!scanner.isEnd) {
       c = scanner.current();
-      if (_STATE_OSC === this._state) {
+      if (0x18 === c || 0x1a === c) {
+        this._state = _STATE_GROUND;
+      } else if (_STATE_OSC === this._state) {
         if (0x1b === c) {
           this._state = _STATE_OSC_FINAL;
         } else if (0x07 === c) {
           this._state = _STATE_GROUND;
           return this._dispatch_string(this._str);
         } else if (c < 0x20) {
-          this._state = _STATE_GROUND;
+        //  this._state = _STATE_GROUND;
         } else {
           this._str.push(c);
         }
@@ -165,7 +167,7 @@ VT100Grammar2.definition = {
           this._state = _STATE_GROUND;
           return this._dispatch_string(this._str);
         } else if (c < 0x20) {
-          this._state = _STATE_GROUND;
+        //  this._state = _STATE_GROUND;
         } else {
           this._state = _STATE_OSC;
           this._str.push(c);
@@ -173,11 +175,11 @@ VT100Grammar2.definition = {
       } else if (_STATE_STRING === this._state) {
         if (0x1b === c) {
           this._state = _STATE_STRING_FINAL;
-        } else if (0x07 === c) {
+        } else if (0x07 === c || 0x9c === c) {
           this._state = _STATE_GROUND;
           return this._dispatch_string(this._str);
         } else if (c < 0x20) {
-          this._state = _STATE_GROUND;
+        //  this._state = _STATE_GROUND;
         } else {
           this._str.push(c);
         }
@@ -186,22 +188,25 @@ VT100Grammar2.definition = {
           this._state = _STATE_GROUND;
           return this._dispatch_string(this._str);
         } else if (c < 0x20) {
-          this._state = _STATE_GROUND;
+        //  this._state = _STATE_GROUND;
         } else {
           this._state = _STATE_STRING;
           this._str.push(c);
         }
       } else if (0x1b === c) {
         this._state = _STATE_ESC;
-      } else if (0x18 === c || 0x1a === c) {
-        this._state = _STATE_GROUND;
       } else if (c < 0x20) { // C0
         return this._dispatch_char(c);
       } else if (c > 0x9f) {
         this._state = _STATE_GROUND;
         return false;
       } else if (c >= 0x7f) { // DEL, C1
-        return this._dispatch_char(c);
+        if (0x90 === c) {
+          this._str = [c - 0x40];
+          this._state = _STATE_STRING;
+        } else {
+          return this._dispatch_char(c);
+        }
       } else if (_STATE_ESC === this._state) {
         if (c <= 0x2f) { // SP to / 
           this._ibytes = [c];
@@ -332,9 +337,9 @@ VT100Grammar2.definition = {
       handler();
       return true;
     }
-    handler = this._esc_map[i];
+    handler = this._esc_map[i[0]];
     if (handler) {
-      handler(f);
+      handler(i.substr(1) + f);
       return true;
     }
     return false;
@@ -423,7 +428,7 @@ VT100Grammar2.definition = {
     }
   }, // append
 
-}; // VT100Grammar2
+}; // VT100Grammar
 
 
 /**
@@ -433,7 +438,7 @@ VT100Grammar2.definition = {
  */
 function main(broker) 
 {
-  new VT100Grammar2(broker);
+  new VT100Grammar(broker);
 }
 
 // EOF
