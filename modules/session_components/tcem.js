@@ -48,7 +48,7 @@
  * Reset: makes the cursor invisible.
  */
 var TextCursorEnableMode = new Class().extends(Plugin)
-                                  .depends("cursorstate");
+                                      .depends("cursor");
 TextCursorEnableMode.definition = {
 
   id: "text_cursor_enable_mode",
@@ -75,7 +75,7 @@ TextCursorEnableMode.definition = {
   function install(context) 
   {
     this._mode = this.default_value;
-    this._cursor = context["cursorstate"];
+    this._cursor = context["cursor"];
   },
 
   /** Uninstalls itself.
@@ -96,7 +96,8 @@ TextCursorEnableMode.definition = {
 
     this._mode = true;
 
-    this.sendMessage("event/cursor-visibility-changed", true);
+    cursor.show();
+    //this.sendMessage("event/cursor-visibility-changed", true);
   },
 
   /** Hide Cursor (DECTCEM)
@@ -108,7 +109,8 @@ TextCursorEnableMode.definition = {
 
     this._mode = false;
 
-    this.sendMessage("event/cursor-visibility-changed", false);
+    cursor.hide();
+    //this.sendMessage("event/cursor-visibility-changed", false);
   },
 
   /** Report mode
