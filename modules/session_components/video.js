@@ -52,7 +52,7 @@ Video.definition = {
     };
   },
 
-  "[persistable] enabled_when_startup": true,
+  "[persistable] enabled_when_startup": false,
   "[persistable] opacity": 0.60,
 
   _element: null,
@@ -93,9 +93,10 @@ Video.definition = {
     this._element.style.opacity = this.opacity;
   },
 
-  "[subscribe('event/keypad-mode-changed'), pnp]": 
+  "[subscribe('event/keypad-mode-changed')]": 
   function onKeypadModeChanged(mode) 
   {
+    this.onKeypadModeChanged.enabled = false;
     this.close();
   },
 
@@ -167,7 +168,7 @@ Video.definition = {
             src: "http://www.youtube.com/embed/" + id + "?autoplay=1&enablejsapi=1",
             frameborder: "0",
           });
-
+    this.onKeypadModeChanged.enabled = true;
   },
 
   "[subscribe('sequence/osc/8813 | command/close-overlay-browser'), pnp]":
