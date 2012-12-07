@@ -76,24 +76,24 @@ var KEY_ANSI = {
 
 
 var KEY_NORMAL_CURSOR = {
-  "Left"   : "<CSI>D",  // kl / kcub1
-  "Up"     : "<CSI>A",  // ku / kcuu1
-  "Right"  : "<CSI>C",  // kr / kcuf1
-  "Down"   : "<CSI>B",  // kd / kcud1
+  "Left"         : "<CSI>D",     // kl / kcub1
+  "Up"           : "<CSI>A",     // ku / kcuu1
+  "Right"        : "<CSI>C",     // kr / kcuf1
+  "Down"         : "<CSI>B",     // kd / kcud1
 };
 
 var KEY_APPLICATION_CURSOR = {
-  "Left"   : "<SS3>D",  // kl / kcub1
-  "Up"     : "<SS3>A",  // ku / kcuu1
-  "Right"  : "<SS3>C",  // kr / kcuf1
-  "Down"   : "<SS3>B",  // kd / kcud1
+  "Left"         : "<SS3>D",     // kl / kcub1
+  "Up"           : "<SS3>A",     // ku / kcuu1
+  "Right"        : "<SS3>C",     // kr / kcuf1
+  "Down"         : "<SS3>B",     // kd / kcud1
 };
 
 var KEY_VT52_CURSOR = {
-  "Left"   : "\x1bD",  // kl / kcub1
-  "Up"     : "\x1bA",  // ku / kcuu1
-  "Right"  : "\x1bC",  // kr / kcuf1
-  "Down"   : "\x1bB",  // kd / kcud1
+  "Left"         : "\x1bD",  // kl / kcub1
+  "Up"           : "\x1bA",  // ku / kcuu1
+  "Right"        : "\x1bC",  // kr / kcuf1
+  "Down"         : "\x1bB",  // kd / kcud1
 };
 
 var KEY_SUNPC_NORMAL_KEYPAD = {
@@ -107,7 +107,6 @@ var KEY_SUNPC_APPLICATION_KEYPAD = {
 };
 
 var KEY_NORMAL_KEYPAD = {
-
   "PgUp"   : "<CSI>5~", // kP / kpp 
   "PgDn"   : "<CSI>6~", // kN / knp
   "End"    : "<CSI>4~", // @7 / kend
@@ -176,20 +175,30 @@ var KEY_NORMAL_KEYPAD = {
   "F62"    : "<CSI>1;4Q",
   "F63"    : "<CSI>1;4R",
 
-  "Shift PgUp" : "<CSI>5~",
-  "Shift PgDn" : "<CSI>6~",
-  "Shift End"  : "<CSI>4~",
-  "Shift Home" : "<CSI>1~",
-  "Shift Ins"  : "<CSI>2~",
-  "Shift Del"  : "<CSI>3~",
-  "Shift F1"   : "<CSI>25~",
-  "Shift F2"   : "<CSI>26~",
-  "Shift F3"   : "<CSI>28~",
-  "Shift F4"   : "<CSI>29~",
-  "Shift F5"   : "<CSI>31~",
-  "Shift F6"   : "<CSI>32~",
-  "Shift F7"   : "<CSI>33~",
-  "Shift F8"   : "<CSI>34~",
+  "Shift PgUp"   : "<CSI>5~",
+  "Shift PgDn"   : "<CSI>6~",
+  "Shift End"    : "<CSI>4~",
+  "Shift Home"   : "<CSI>1~",
+  "Shift Ins"    : "<CSI>2~",
+  "Shift Del"    : "<CSI>3~",
+  "Shift F1"     : "<CSI>25~",
+  "Shift F2"     : "<CSI>26~",
+  "Shift F3"     : "<CSI>28~",
+  "Shift F4"     : "<CSI>29~",
+  "Shift F5"     : "<CSI>31~",
+  "Shift F6"     : "<CSI>32~",
+  "Shift F7"     : "<CSI>33~",
+  "Shift F8"     : "<CSI>34~",
+  "Shift Left"   : "<CSI>1;2D",
+  "Shift Up"     : "<CSI>1;2A",
+  "Shift Right"  : "<CSI>1;2C",
+  "Shift Down"   : "<CSI>1;2B",
+  "Ctrl Left"    : "<CSI>1;5D",
+  "Ctrl Up"      : "<CSI>1;5A",
+  "Ctrl Right"   : "<CSI>1;5C",
+  "Ctrl Down"    : "<CSI>1;5B",
+
+
 };
 
 var KEY_APPLICATION_KEYPAD = {
@@ -262,20 +271,28 @@ var KEY_APPLICATION_KEYPAD = {
   "F62"    : "<CSI>1;4Q",
   "F63"    : "<CSI>1;4R",
 
-  "Shift PgUp" : "<CSI>5~",
-  "Shift PgDn" : "<CSI>6~",
-  "Shift End"  : "<CSI>4~",
-  "Shift Home" : "<CSI>1~",
-  "Shift Ins"  : "<CSI>2~",
-  "Shift Del"  : "<CSI>3~",
-  "Shift F1"   : "<CSI>25~",
-  "Shift F2"   : "<CSI>26~",
-  "Shift F3"   : "<CSI>28~",
-  "Shift F4"   : "<CSI>29~",
-  "Shift F5"   : "<CSI>31~",
-  "Shift F6"   : "<CSI>32~",
-  "Shift F7"   : "<CSI>33~",
-  "Shift F8"   : "<CSI>34~",
+  "Shift PgUp"   : "<CSI>5~",
+  "Shift PgDn"   : "<CSI>6~",
+  "Shift End"    : "<CSI>4~",
+  "Shift Home"   : "<CSI>1~",
+  "Shift Ins"    : "<CSI>2~",
+  "Shift Del"    : "<CSI>3~",
+  "Shift F1"     : "<CSI>25~",
+  "Shift F2"     : "<CSI>26~",
+  "Shift F3"     : "<CSI>28~",
+  "Shift F4"     : "<CSI>29~",
+  "Shift F5"     : "<CSI>31~",
+  "Shift F6"     : "<CSI>32~",
+  "Shift F7"     : "<CSI>33~",
+  "Shift F8"     : "<CSI>34~",
+  "Shift Left"   : "<CSI>1;2D",
+  "Shift Up"     : "<CSI>1;2A",
+  "Shift Right"  : "<CSI>1;2C",
+  "Shift Down"   : "<CSI>1;2B",
+  "Ctrl Left"    : "<CSI>1;5D",
+  "Ctrl Up"      : "<CSI>1;5A",
+  "Ctrl Right"   : "<CSI>1;5C",
+  "Ctrl Down"    : "<CSI>1;5B",
 
 };
 
@@ -552,11 +569,11 @@ DefaultKeyMappings.definition = {
     switch (this._cursor_mode) {
 
       case coUtils.Constant.CURSOR_MODE_NORMAL:
-       settings.push(KEY_APPLICATION_CURSOR);
+       settings.push(KEY_NORMAL_CURSOR);
        break;
 
       case coUtils.Constant.CURSOR_MODE_APPLICATION:
-        settings.push(KEY_NORMAL_CURSOR);
+        settings.push(KEY_APPLICATION_CURSOR);
         break;
 
       case coUtils.Constant.CURSOR_MODE_VT52:
