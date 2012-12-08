@@ -57,6 +57,9 @@ VT52.definition = {
   _tab_controller: null,
   _screen: null,
   _cursor_state: null,
+  _esc_map: null,
+  _char_map: null,
+  _state: _STATE_GROUND,
 
   /** Installs itself. 
    *  @param {InstallContext} context A InstallContext object.
@@ -170,6 +173,9 @@ VT52.definition = {
         handler = information.handler,
         length = tokens.length,
         key;
+
+    this._esc_map = this._esc_map || [];
+    this._char_map = this._char_map || [];
 
     if (1 === length) {
       key = Number(tokens[0]);

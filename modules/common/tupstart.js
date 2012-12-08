@@ -476,9 +476,7 @@ EventBroker.prototype = {
                     {
                       return lhs > rhs
                     });
-    //alert(paths.map(function (f) f.path.split("/").pop()).join("\n"))
     paths = paths.reverse()
-    //alert(paths.map(function (f) f.path.split("/").pop()).join("\n"))
 
     for (; i < paths.length; ++i) {
       entry = paths[i];

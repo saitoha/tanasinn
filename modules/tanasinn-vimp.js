@@ -71,8 +71,7 @@ try {
       mappings = liberator.modules.mappings,
       modes = liberator.modules.modes,
       editor = liberator.modules.editor;
-
-  getDesktop();
+      desktop = getDesktop();
   
   /**
    * @command tanasinnlaunch 
@@ -81,7 +80,7 @@ try {
     "Show tanasinn's Launcher.", 
     function tanasinnLaunch(args) 
     { 
-      getDesktop().notify("command/show-launcher");
+      desktop.notify("command/show-launcher");
     }
   );
   
@@ -92,7 +91,7 @@ try {
     "Run a operating system command on tanasinn.", 
     function tanasinnStart(args) 
     { 
-      getDesktop().notify("command/start-session", args.string);
+      desktop.notify("command/start-session", args.string);
     },
     { 
       argCount: "?",
@@ -109,7 +108,7 @@ try {
     "Run a tanasinn command on active tanasinn sessions.", 
     function sendCommand(args) 
     { 
-      getDesktop().notify("command/send-command", args.string);
+      desktop.notify("command/send-command", args.string);
     },
     { 
       argCount: "?",
@@ -125,7 +124,7 @@ try {
     "Send keys to tanasinn.", 
     function send_keys(args) 
     { 
-      getDesktop().notify("command/send-keys", args.string);
+      desktop.notify("command/send-keys", args.string);
     },
     { 
       argCount: "?",
@@ -144,7 +143,6 @@ try {
   {
     var editor_command = liberator.globalVariables.tanasinneditorcommand,
         viewsource_command = liberator.globalVariables.tanasinnviewsourcecommand,
-        desktop = getDesktop(),
         complete,
         command,
         thread;

@@ -240,4 +240,5 @@ update: all
 	cp tanasinn.xpi /var/www/tanasinn/tanasinn-$(PACKAGE_VERSION).xpi
 	cp doc/*.html /var/www/tanasinn/
 	cp doc/images/*.png /var/www/tanasinn/images/
+	cp doc/tanasinn/index.html /var/www/tanasinn/index.html
 

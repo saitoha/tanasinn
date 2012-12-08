@@ -64,11 +64,7 @@ coUtils.Logging = {
         var parent = current.parent;
         if (!parent.exists()) {
           make_directory(parent);
-          try {
-            parent.create(coUtils.Constant.DIRECTORY_TYPE, parseInt("0700", 8));
-          } catch (e) {
-            alert(parent.path)
-          }
+          parent.create(coUtils.Constant.DIRECTORY_TYPE, parseInt("0700", 8));
         }
       } (file);
     }
