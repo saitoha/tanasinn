@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+        <meta http-equiv="Pragma" content="no-cache">
+        <meta http-equiv="Cache-Control" content="no-cache">
+	<title>tanasinn terminal emulator</title>
+	<link rel="stylesheet" href="css/global.css">
+	<script src="js/jquery.min.js"></script>
+	<script src="js/slides.min.jquery.js"></script>
+	<script>
+		$(function(){
+			$('#slides').slides({
+				preload: true,
+				preloadImage: 'img/loading.gif',
+				play: 5000,
+				pause: 2500,
+				hoverPause: true,
+				animationStart: function(current){
+					$('.caption').animate({
+						bottom:-35
+					},100);
+					if (window.console && console.log) {
+						// example return of current slide number
+						console.log('animationStart on slide: ', current);
+					};
+				},
+				animationComplete: function(current){
+					$('.caption').animate({
+						bottom:0
+					},200);
+					if (window.console && console.log) {
+						// example return of current slide number
+						console.log('animationComplete on slide: ', current);
+					};
+				},
+				slidesLoaded: function() {
+					$('.caption').animate({
+						bottom:0
+					},200);
+				}
+			});
+		});
+	</script>
+    <script type="text/javascript">
+        $(function(){
+            var frames = [ "三 ┏( ^o^)┛", "三 ┗( ^o^)┓" ],
+                i = 0,
+                id = null,
+                tiun = $("#tiuntiun");
+
+            $("#learn").bind("mouseenter", function(e) {
+                if (id)
+                    clearTimeout(id);
+                id = setInterval(function() {
+                    if (Math.random() > 0.7) {
+                        i = 1 - i;
+                        tiun.html(frames[i]);
+                    }
+                }, 20);
+            });
+            $("#learn").bind("mouseleave", function(e) {
+                clearTimeout(id);
+                id = null;
+                tiun.html(frames[0]);
+            });
+          });
+    </script>
+    <style>
+        img.icon0 { width: 48px; vertical-align: middle; }
+        img.icon { width: 36px; vertical-align: middle; }
+        div#environment {
+            font-size: 25px;
+            font-family: Arial;
+            text-align: center;
+            white-space: nowrap;
+        }
+    </style>
+</head>
+<body>
+	<div id="container">
+        <table style="margin: 30px 0px 10px 0px; white-space: nowrap;">
+            <tr>
+                <td style="text-align: center;">
+                    <div style="line-height: 20px;">
+                        <span style="font-size: 42px">tanasinn</span>
+                    </div>
+                    <div style="line-height: 10px;">
+                        <span style="font-size: 21px">let's dive into it.</span>
+                    </div>
+                <td>
+                <td style="padding-left: 10px;">
+                    <img src="img/mozilla.png" class="icon0" style="width: 60px;"/>
+                </td>
+                <td style="vertical-align: bottom; padding: 0px 4px 0px 8px;">
+                    <span style="font-size: 30px;" >＋</span>
+                </td>
+                <td style="padding-left: 10px;">
+                    <img src="img/terminal.png" class="icon0" style="width: 44px;"/>
+                </td>
+                <td style="vertical-align: bottom; padding-left: 10px; font-family: Arial;">
+                    <span style="font-size: 22px; margin: 10px 6px; line-height: 44px;" >三 ┏( ^o^)┛ ＜</span>
+                    <span style="font-size: 20px;">How Exciting Life is !!!!!!<span>
+                </td>
+            </tr>
+        </table>
+		<div id="example">
+			<img src="img/new-ribbon.png" width="112" height="112" alt="New Ribbon" id="ribbon">
+			<div id="slides">
+				<div class="slides_container">
+					<div class="slide">
+                        <a href=""
+                           title=""
+                           target="_blank">
+                           <img src="img/nyan.png" width="700" height="480" alt="Slide 1">
+                        </a>
+						<div class="caption">
+							<p>Running "Nyan Cat"</p>
+						</div>
+					</div>
+					<div class="slide">
+                        <a href=""
+                           title=""
+                           target="_blank">
+                           <img src="img/starwars.png" width="700" height="480" alt="Slide 2">
+                        </a>
+						<div class="caption" style="bottom:0">
+							<p>"STAR WARS ASCIIMATION" and its telnet version(http://towel.blinkenlights.nl).</p>
+						</div>
+					</div>
+					<div class="slide">
+                        <a href=""
+                           title=""
+                           target="_blank">
+                           <img src="img/bb2.png" width="700" height="480" alt="Slide 3">
+                        </a>
+						<div class="caption">
+							<p>Running "BB", an ascii art demo program.</p>
+						</div>
+					</div>
+					<div class="slide">
+                        <a href=""
+                           title=""
+                           target="_blank">
+                           <img src="img/color2.png" width="700" height="480" alt="Slide 4">
+                        </a>
+						<div class="caption">
+							<p>Displaying color chart with colortable.sh and 256color2.pl.</p>
+						</div>
+					</div>
+					<!--div class="slide">
+                        <a href=""
+                           title=""
+                           target="_blank">
+                           <img src="img/ime2.png" width="700" height="480" alt="Slide 5">
+                        </a>
+						<div class="caption">
+							<p>Typing Japanese with IME (here is AquaSKK).</p>
+						</div>
+					</div-->
+					<!--div class="slide">
+                        <a href=""
+                           title=""
+                           target="_blank">
+                           <img src="img/scroll2.png" width="700" height="480" alt="Slide 6">
+                        </a>
+						<div class="caption">
+							<p>Scroll bar interface emerges only when it is needed.</p>
+						</div>
+					</div-->
+					<!--div class="slide">
+                        <a href=""
+                           title=""
+                           target="_blank">
+                           <img src="img/overlay2.png" width="700" height="480" alt="Slide 7">
+                        </a>
+						<div class="caption">
+							<p>Overlay indicator dislays various messages. it emerges when font size / window size / title bar message is changed.</p>
+						</div>
+					</div-->
+					<div class="slide">
+                        <a href=""
+                           title=""
+                           target="_blank">
+                           <img src="img/completion2.png" width="700" height="480" alt="Slide 8">
+                        </a>
+						<div class="caption">
+							<p>Commandline interface inspired by Vimperator / Keysnail (here is fgcolor command).</p>
+						</div>
+					</div>
+					<div class="slide">
+                        <a href=""
+                           title=""
+                           target="_blank">
+                           <img src="img/fontfamily2.png" width="700" height="480" alt="Slide 10">
+                        </a>
+						<div class="caption">
+							<p>Choosing font-family.</p>
+						</div>
+					</div>
+					<!--div class="slide">
+                        <a href=""
+                           title=""
+                           target="_blank">
+                           <img src="img/fontsize2.png" width="700" height="480" alt="Slide 12">
+                        </a>
+						<div class="caption">
+							<p>Selecting font-size.</p>
+						</div>
+					</div-->
+					<!--div class="slide">
+                        <a href=""
+                           title=""
+                           target="_blank">
+                           <img src="img/launcher2.png" width="700" height="480" alt="Slide 13">
+                       </a>
+						<div class="caption">
+							<p>Launcher interface inspired by QuckSilver / Ubiquity.</p>
+						</div>
+					</div-->
+					<div class="slide">
+                        <a href=""
+                           title=""
+                           target="_blank">
+                           <img src="img/session2.png" width="700" height="480" alt="Slide 14">
+                        </a>
+						<div class="caption">
+							<p>Reconnecting a detached session. It is all OK if your browser will crash or restart unexpectedly.</p>
+						</div>
+					</div>
+					<!--div class="slide">
+                        <a href=""
+                           title=""
+                           target="_blank">
+                           <img src="img/sl2.png" width="700" height="480" alt="Slide 15">
+                        </a>
+						<div class="caption">
+							<p>Running "sl" (a joke software).</p>
+						</div>
+					</div-->
+					<div class="slide">
+                        <a href=""
+                           title=""
+                           target="_blank">
+                           <img src="img/debug2.png" width="700" height="480" alt="Slide 15">
+                        </a>
+						<div class="caption">
+							<p>Self-Debugging and tracing terminal I/O sequence in real-time.</p>
+						</div>
+					</div>
+					<div class="slide">
+                        <a href=""
+                           title=""
+                           target="_blank">
+                           <img src="img/vim.png" width="700" height="480" alt="Slide 16">
+                        </a>
+						<div class="caption">
+							<p>Providing cool pop-up menu. it is cooperating with patched Vim.</p>
+						</div>
+					</div>
+					<div class="slide">
+                        <a href=""
+                           title=""
+                           target="_blank">
+                           <img src="img/w3m2.png" width="700" height="480" alt="Slide 17">
+                       </a>
+						<div class="caption">
+							<p>Browser-in-browser. running w3m (applied private patch) with inline images. How crazy!!!</p>
+						</div>
+					</div>
+					<div class="slide">
+                        <a href=""
+                           title=""
+                           target="_blank">
+                           <img src="img/wl3.png" width="700" height="480" alt="Slide 18">
+                       </a>
+						<div class="caption">
+							<p>Mailer-in-mailer. running Wonderlust on emacs on Thunderbird.</p>
+						</div>
+					</div>
+					<div class="slide">
+                        <a href=""
+                           title=""
+                           target="_blank">
+                           <img src="img/xulapp.png" width="700" height="480" alt="Slide 19">
+                       </a>
+						<div class="caption">
+							<p>Meta-developing tanasinn with tanasinn at out of jail. it runs as a standalone XUL application.</p>
+						</div>
+					</div>
+					<div class="slide">
+                        <a href=""
+                           title=""
+                           target="_blank">
+                           <img src="img/3d.png" width="700" height="480" alt="Slide 20">
+                       </a>
+						<div class="caption">
+							<p>3D rotation with mouse dragging.</p>
+						</div>
+					</div>
+					<div class="slide">
+                        <a href=""
+                           title=""
+                           target="_blank">
+                           <img src="img/zsh.png" width="700" height="480" alt="Slide 21">
+                       </a>
+						<div class="caption">
+							<p>zsh's "correct" handler.</p>
+						</div>
+					</div>
+					<div class="slide">
+                        <a href=""
+                           title=""
+                           target="_blank">
+                           <img src="img/tektronix.png" width="700" height="480" alt="Slide 22">
+                       </a>
+						<div class="caption">
+							<p>Tektronix 4010/4014 emulation.</p>
+						</div>
+					</div>
+					<div class="slide">
+                        <a href=""
+                           title=""
+                           target="_blank">
+                           <img src="img/sixel.png" width="700" height="480" alt="Slide 23">
+                       </a>
+						<div class="caption">
+							<p>Sixel Graphics emulation.</p>
+						</div>
+					</div>
+					<!--div class="slide">
+                        <a href=""
+                           title=""
+                           target="_blank">
+                           <img src="img/decdhl.png" width="700" height="480" alt="Slide 24">
+                       </a>
+						<div class="caption">
+							<p>DECDHL/DECDWL.</p>
+						</div>
+					</div-->
+					<div class="slide">
+                        <a href=""
+                           title=""
+                           target="_blank">
+                           <img src="img/drcs.png" width="700" height="480" alt="Slide 25">
+                       </a>
+						<div class="caption">
+							<p> "Guiness" with DECDLD/DRCS(Dynamically Redefined Character Set).</p>
+						</div>
+					</div>
+					<!--div class="slide">
+                        <a href=""
+                           title=""
+                           target="_blank">
+                           <img src="img/nethack.png" width="700" height="480" alt="Slide 26">
+                       </a>
+						<div class="caption">
+							<p>playing nethack.</p>
+						</div>
+					</div-->
+					<!--div class="slide">
+                        <a href=""
+                           title=""
+                           target="_blank">
+                           <img src="img/shellshock.png" width="700" height="480" alt="Slide 27">
+                       </a>
+						<div class="caption">
+							<p>playing ShellShock.</p>
+						</div>
+					</div-->
+					<div class="slide">
+                        <a href=""
+                           title=""
+                           target="_blank">
+                           <img src="img/mplayer.png" width="700" height="480" alt="Slide 28">
+                       </a>
+						<div class="caption">
+							<p>playing MPlayer.</p>
+						</div>
+					</div>
+				</div>
+				<a href="#" class="prev"><img src="img/arrow-prev.png" width="24" height="43" alt="Arrow Prev"></a>
+				<a href="#" class="next"><img src="img/arrow-next.png" width="24" height="43" alt="Arrow Next"></a>
+			</div>
+			<img src="img/example-frame.png" width="869" height="341" alt="Example Frame" id="frame">
+		</div>
+        <div style="text-align: center;">
+            <div id="environment" style="font-size: 28px;">
+               supported environment = 
+            </div>
+        </div>
+        <div id="environment">
+            <span>
+            (
+            <img src="img/mac.png" alt="Mac OSX" class="icon"/>
+            |
+            <img src="img/linux.png" alt="Linux" class="icon"/>
+            |
+            <img src="img/cygwin.png" alt="Cygwin" class="icon"/>
+            |
+            <img src="img/freebsd.png" alt="FreeBSD" class="icon"/>
+            )
+
+            x
+
+            <img src="img/python.png" alt="FreeBSD" class="icon"/>
+
+            x
+
+            (
+            <img src="img/firefox.png" alt="Firefox" class="icon"/>
+            |
+            <img src="img/thunderbird.png" alt="ThunderBird" class="icon"/>
+            |
+            <img src="img/seamonkey.png" alt="SeaMonkey" class="icon"/>
+            )
+
+            [
+            x
+            (
+            <img src="img/vimperator.png" alt="Vimperator" class="icon"/>
+            |
+            <img src="img/keysnail.png" alt="KeySnail" class="icon"/>
+            )
+            ]
+            </span>
+       </div>
+       <div style="text-align: center;">
+           <center>
+                <a href="http://zuse.jp/tanasinn/tanasinn-@PACKAGE_VERSION@.xpi">
+                    <table style="margin: 25px;">
+                        <tr>
+                            <td style="vertical-align: middle;">
+                                <img src="img/install.png" width="48px">
+                            </td>
+                            <td>
+                                <div style="font-size: 42px; line-height: 34px;">
+                                    Install
+                                </div>
+                                <div style="font-size: 18px; line-height: 14px;">
+                                    version @PACKAGE_VERSION@ 
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </a>
+            </center>
+		    <div id="more" style="text-align: center; font-size: 20px; font-family: Arial;">
+                <span id="tiuntiun" style="margin: 0px 5px;">三 ┏( ^o^)┛ </span>
+                <a id="learn" href="http://zuse.jp/tanasinn/usermanual.html">learn more about tanasinn<a/>
+		    </div>
+		    <div id="footer">
+                <p>This page uses <a href="http://slidesjs.com">slides.js</a>, an awesome slideshow plugin for jQuery. Above slideshow is based on its <a href="http://slidesjs.com/examples/standard/">example page</a>.</p>
+                <p>Terminal Icon from <a href="http://www.iconfinder.com/icondetails/22281/128/commandline_prompt_shell_terminal_icon">here</a>, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC BY-SA 2.0</a> licensed.</p>
+                <p>Install Icon from <a href="http://www.iconarchive.com/show/cats-icons-by-mcdo-design/Installer-icon.html">here</a>.</p>
+		    </div>
+        </div>
+	</div>
+
+    <!-- fork me !! -->
+    <a href="https://github.com/saitoha/tanasinn">
+        <img style="position: absolute; top: 0; right: 0; border: 0;"
+              src="img/github-fork-me.png"
+              alt="Fork me on GitHub" />
+    </a>
+</body>
+</html>
