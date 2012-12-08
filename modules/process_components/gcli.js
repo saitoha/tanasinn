@@ -54,7 +54,6 @@ GCLI.definition = {
           name: "commandline",
           type: { name: "array", subtype: "string" },
           description: "command line",
-          defaultValue: [""]
         }
       ],
       exec: function tanasinn(args, context)
