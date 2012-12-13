@@ -89,12 +89,16 @@ Titlebar.definition = {
   "[persistable, watchable] initial_query_utf8_mode": true,
   "[persistable, watchable] enable_title_reporting": false,
 
-  "[persistable, watchable] template": "%s - tanasinn",
+  "[persistable, watchable] default_title": "tanasinn",
   "[persistable, watchable] font_color": "white",
   "[persistable, watchable] font_size": 12,
   "[persistable, watchable] font_family": "Lucida Console,Latha,Georgia,monospace",
 
   _title_text: "",
+  _icon_title_text: "",
+
+  _title_stack: null,
+  _icon_title_stack: null,
 
   _set_hex_mode: false,
   _set_utf8_mode: true,
@@ -135,6 +139,9 @@ Titlebar.definition = {
     this._decoder = context["decoder"];
     this._encoder = context["encoder"];
 
+    this._title_stack = [];
+    this._icon_title_stack = [];
+
     this._canvas = result.tanasinn_titlebar_canvas;
     this._set_hex_mode = this.initial_set_hex_mode;
     this._set_utf8_mode = this.initial_set_utf8_mode;
@@ -151,6 +158,17 @@ Titlebar.definition = {
     this._canvas = null;
     this._decoder = null;
     this._encoder = null;
+
+    this._title_stack = null;
+    this._icon_title_stack = null;
+
+    this._set_hex_mode = false;
+    this._set_utf8_mode = true;
+    this._query_hex_mode = false;
+    this._query_utf8_mode = true;
+
+    this._title_text = "";
+    this._icon_title_text = "";
   },
 
   /** When session is initialized */
@@ -163,7 +181,15 @@ Titlebar.definition = {
   "[subscribe('command/send-titlebar-string'), pnp]": 
   function sendTitlebarString(value) 
   {
-    this._print(value);
+    this._title_text = value;
+    this._print();
+  },
+
+  /** When default title is changed */
+  "[subscribe('variable-changed/titlebar.default_title'), pnp]": 
+  function onDefaultTitleChanged(title) 
+  {
+    this._print();
   },
 
   /** When screen size is changed */
@@ -171,6 +197,30 @@ Titlebar.definition = {
   function onWidthChanged(width) 
   {
     this._canvas.width = width;
+  },
+
+  "[subscribe('command/title-set-utf8-mode-enabled'), pnp]":
+  function onTitleSetUtf8ModeEnabled() 
+  {
+    this._set_utf8_mode = true;
+  },
+
+  "[subscribe('command/title-set-hex-mode-enabled'), pnp]":
+  function onTitleSetHexModeEnabled() 
+  {
+    this._set_hex_mode = true;
+  },
+
+  "[subscribe('command/title-query-utf8-mode-enabled'), pnp]":
+  function onTitleQueryUtf8ModeEnabled() 
+  {
+    this._query_utf8_mode = true;
+  },
+
+  "[subscribe('command/title-query-hex-mode-enabled'), pnp]":
+  function onTitleQueryHexModeEnabled() 
+  {
+    this._query_hex_mode = true;
   },
 
   "[subscribe('command/title-set-utf8-mode-disabled'), pnp]":
@@ -197,40 +247,87 @@ Titlebar.definition = {
     this._query_hex_mode = false;
   },
 
-  // Reports icon label.
+  // Reports window title.
   // Response: OSC L title ST
   //   title    icon label. (window title)
   "[subscribe('sequence/decslpp/20'), pnp]":
   function onTitleQueryHexModeDisabled() 
   {
-    var message = "";
-    
-    if (this.enable_title_reporting) {
-      if (this._query_utf8_mode) {
-        message += this._encoder.encode(this._title_text);
-      } else {
-        message += this._title_text;
-      }
-
-      if (this._query_hex_mode) {
-        message = message
-          .split("")
-          .map(function mapFunc(c)
-            {
-              return c.charCodeAt(0).toString(16);
-            }).join("");
-      }
-    }
+    var message = this._getIconTitle();
 
     this.sendMessage("command/send-sequence/osc", "L" + message)
   },
 
-
   // Reports window title.
   // Response: OSC l title ST
   //   title    Window title.
-  "[subscribe('sequence/decslpp/{20 | 21}'), pnp]":
+  "[subscribe('sequence/decslpp/21'), pnp]":
   function onTitleQueryHexModeDisabled() 
+  {
+    var message = this._getTitle();
+
+    this.sendMessage("command/send-sequence/osc", "l" + message)
+  },
+
+  "[subscribe('sequence/decslpp/22'), pnp]":
+  function onTitlePush(n) 
+  {
+    switch (n) {
+      case 0:
+        this._title_stack.push(this._title_text);
+        this._icon_title_stack.push(this._icon_title_text);
+        break;
+
+      case 1:
+        this._icon_title_stack.push(this._icon_title_text);
+        break;
+
+      case 2:
+        this._title_stack.push(this._title_text);
+        break;
+    }
+  },
+
+  "[subscribe('sequence/decslpp/23'), pnp]":
+  function onTitlePop(n) 
+  {
+    switch (n) {
+
+      case 0:
+        if (this._title_stack.length > 0) {
+          this._title_text = this._title_stack.pop();
+        } else {
+          this._title_text = "";
+        }
+        if (this._icon_title_stack.length > 0) {
+          this._icon_title_text = this._icon_title_stack.pop();
+        } else {
+          this._icon_title_text = "";
+        }
+        this._print();
+        break;
+
+      case 1:
+        if (this._icon_title_stack.length > 0) {
+          this._icon_title_text = this._icon_title_stack.pop();
+        } else {
+          this._icon_title_text = "";
+        }
+        this._print();
+        break;
+
+      case 2:
+        if (this._title_stack.length > 0) {
+          this._title_text = this._title_stack.pop();
+        } else {
+          this._title_text = "";
+        }
+        this._print();
+        break;
+    }
+  },
+
+  _getTitle: function _getTitle(data)
   {
     var message = "";
     
@@ -250,53 +347,115 @@ Titlebar.definition = {
       }
     }
 
-    this.sendMessage("command/send-sequence/osc", "l" + message)
+    return message;
   },
 
-  "[subscribe('sequence/osc/{0 | 1 | 2}'), pnp]":
-  function onCommandReceived(data0, data1, data2) 
-  { // process OSC command.
-    var data = data0 || data1 || data2,
-        scanner,
-        decoder,
-        sequence,
-        text,
+  _getIconTitle: function _getTitle(data)
+  {
+    var message = "";
+    
+    if (this.enable_title_reporting) {
+      if (this._query_utf8_mode) {
+        message += this._encoder.encode(this._title_text);
+      } else {
+        message += this._icon_title_text;
+      }
+
+      if (this._query_hex_mode) {
+        message = message.split("").map(
+          function mapFunc(c)
+          {
+            return c.charCodeAt(0).toString(16);
+          }).join("");
+      }
+    }
+
+    return message;
+  },
+
+  _setTitle: function _setTitle(data)
+  {
+    var text,
         match,
-        i = 0;
+        i;
 
     if (this._set_hex_mode) {
-      match = coUtils.Text
-        .safeConvertFromArray(data)
-        .match(/[a-zA-Z0-9]/g);
+      match = data.match(/[a-zA-Z0-9]/g);
       for (data = []; i < match.length; ++i) {
         data.push(parseInt(match[i], 16));
       }
     }
 
     if (this._set_utf8_mode) {
-      scanner = new ForwardInputIterator(data),
-      decoder = this._decoder,
-      sequence = [c for (c in decoder.decode(scanner))],
-      text = coUtils.Text.safeConvertFromArray(sequence);
+      text = this._decoder.decodeString(data);
     } else {
       text = coUtils.Text.safeConvertFromArray(data); 
     }
 
-    this._print(text);
+    this._title_text = text;
+    this._print();
   },
 
-  _print: function _print(text)
+  _setIconTitle: function _setIconTitle(data)
+  {
+    var text,
+        match,
+        i;
+
+    if (this._set_hex_mode) {
+      match = data.match(/[a-zA-Z0-9]/g);
+      for (data = []; i < match.length; ++i) {
+        data.push(parseInt(match[i], 16));
+      }
+    }
+
+    if (this._set_utf8_mode) {
+      text = this._decoder.decodeString(data);
+    } else {
+      text = coUtils.Text.safeConvertFromArray(data); 
+    }
+
+    this._icon_title_text = text;
+    this._print();
+  },
+
+  "[subscribe('sequence/osc/0'), pnp]":
+  function osc0(data) 
+  {
+    this._setTitle(data);
+    this._setIconTitle(data);
+    this._print();
+  },
+
+  "[subscribe('sequence/osc/1'), pnp]":
+  function osc1(data) 
+  { // process OSC command.
+    this._setIconTitle(data);
+    this._print();
+  },
+
+  "[subscribe('sequence/osc/2'), pnp]":
+  function osc2(data) 
+  { // process OSC command.
+    this._setTitle(data);
+    this._print();
+  },
+
+  _print: function _print()
   {
     var canvas = this._canvas,
         context = canvas.getContext("2d"),
-        template = this.template,
         metrics,
-        left;
+        left,
+        text;
 
-    if (template) {
-      text = coUtils.Text.format(template, text);
+    if (this._title_text === this._icon_title_text) {
+      text = this._title_text;
+    } else if ("" === this._title_text && "" === this._icon_title_text) {
+      text = this.default_title;
+    } else {
+      text = this._title_text + " " + this._icon_title_text; 
     }
-    this._title_text = text;
 
     canvas.width = canvas.parentNode.boxObject.width;
     context.fillStyle = this.font_color;
