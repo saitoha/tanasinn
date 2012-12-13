@@ -581,7 +581,7 @@ DirtyRange.definition = {
   invalidate: function invalidate() 
   {
     this.first = 0;
-    this.last = this.length;
+    this.last = this.cells.length;
   },
 
   /** Marks it "dirty" or "clear". */
@@ -589,7 +589,7 @@ DirtyRange.definition = {
   {
     if (value) {
       this.first = 0;
-      this.last = this.length;
+      this.last = this.cells.length;
     } else {
       this.clearRange();
     }
@@ -609,10 +609,10 @@ DirtyRange.definition = {
       this.last = last;
     } else {
       if (first < this.first) {
-        this.first = first
+        this.first = first;
       }
       if (last > this.last) {
-        this.last = last
+        this.last = last;
       }
     }
   },
@@ -641,8 +641,10 @@ Resizable.definition = {
    */ 
   collapse: function collapse(n) 
   {
-    this.cells.splice(-n);
-    this.trimRange(0, this.length);
+    var cells = this.cells;
+
+    cells.splice(-n);
+    this.trimRange(0, cells.length);
   },
 
   /** push n cells to end of line. 
@@ -696,7 +698,7 @@ Line.definition = {
         i,
         cell;
 
-    context.push(this.length);
+    context.push(cells.length);
     // this.cells.forEach(function(cell) cell.serialize(context));
 
     for (i = 0; i < cells.length; ++i) {
@@ -923,7 +925,7 @@ Line.definition = {
       cells = this.cells;
       max = coUtils.Constant.LINETYPE_NORMAL === this.type ? 
         this.last: 
-        Math.min(this.last, Math.floor(this.length / 2));
+        Math.min(this.last, Math.floor(cells.length / 2));
 
       for (current = this.first; current < max; ++current) {
         cell = cells[current];
@@ -1008,10 +1010,11 @@ Line.definition = {
         cell,
         length,
         range,
-        code;
+        code,
+	end;
 
     if (insert_mode) {
-      this.addRange(position, this.length);
+      this.addRange(position, cells.length);
       length = codes.length;
       range = cells.splice(-length);
 
@@ -1037,7 +1040,14 @@ Line.definition = {
         cell.write(code, attr);
         //}
       }
-      this.addRange(position, position + codes.length);
+      end = position + codes.length;
+      if (position > 0) {
+	--position;
+      }
+      if (end < cells.length) {
+	++end;
+      }
+      this.addRange(position, end);
     }
   },
 
@@ -1146,7 +1156,7 @@ Line.definition = {
   deleteCells: function deleteCells(start, n, attr) 
   {
     var cells = this.cells,
-        length = this.length,
+        length = cells.length,
         range,
         i,
         cell;
@@ -1182,7 +1192,7 @@ Line.definition = {
         i = 0,
         cell;
 
-    this.addRange(start, this.length);
+    this.addRange(start, cells.length);
 
     // range.forEach(function(cell) cell.erase(attr));
     for (; i < range.length; ++i) {
