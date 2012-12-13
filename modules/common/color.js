@@ -1101,21 +1101,40 @@ coUtils.Color = {
 
     return diff;
   },
+  
+  parseCSSColor: function parseCSSColor(text)
+  {
+    var pattern_24bit = /#([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})/,
+        pattern_rgba = /rgba\(\s*([0-9]+)\s*,\s*([0-9]+)\s*,\s*([0-9]+)\s*,\s*([0-9]+)\s*\)/,
+        pattern_rgb = /rgb\(\s*([0-9]+)\s*,\s*([0-9]+)\s*,\s*([0-9]+)\s*\)/,
+        match;
+
+    match = text.match(pattern_24bit);
+    if (null !== match) {
+      return [parseInt(match[1], 16),
+              parseInt(match[2], 16),
+              parseInt(match[3], 16)];
+    }
+    match = text.match(pattern_rgba);
+    if (null !== match) {
+      return [Number(match[1]),
+              Number(match[2]),
+              Number(match[3]),
+              Number(match[4])];
+    }
+    match = text.match(pattern_rgb);
+    if (null !== match) {
+      return [Number(match[1]),
+              Number(match[2]),
+              Number(match[3])];
+    }
+    throw coUtils.Debug.Exception(_("Parse error was detected: '%s'."), text);
+  },
 
   adjust: function adjust(lhs, rhs, mindiff, maxdiff)
   {
-    var lhs_rgb = lhs
-          .match(/[0-9A-Fa-f]{2}/g)
-          .map(function mapFunc(hex)
-            {
-              return parseInt(hex, 16);
-            }),
-        rhs_rgb = rhs
-          .match(/[0-9A-Fa-f]{2}/g)
-          .map(function mapFunc(hex)
-            {
-              return parseInt(hex, 16);
-            }),
+    var lhs_rgb = this.parseCSSColor(lhs),
+        rhs_rgb = this.parseCSSColor(rhs),
         diff = this._getDiff(lhs_rgb, rhs_rgb),
         result;
   
