@@ -137,6 +137,7 @@ PaletteManager.definition = {
 
   foreground_color: null,
   background_color: null,
+  adjusted_color: null,
 
   _reverse: false,
   _outerchrome: null,
@@ -147,10 +148,13 @@ PaletteManager.definition = {
   "[install]":
   function install(context) 
   {
+    var i;
+
     this._outerchrome = context["outerchrome"];
 
     this.foreground_color = this._outerchrome.foreground_color;
     this.background_color = this._outerchrome.background_color;
+    this.adjust_colors();
   },
 
   /** Uninstalls itself.
@@ -162,6 +166,24 @@ PaletteManager.definition = {
 
     this.foreground_color = null;
     this.background_color = null;
+    this.adjusted_color = null;
+  },
+
+  adjust_colors: function adjust_colors() 
+  {
+    var i = 0,
+        base_color = this.background_color;
+
+    this.adjusted_color = this.adjust_color || this.color.slice(0);
+
+    for (; i < 16; ++i) {
+      this.adjusted_color[i] = coUtils
+        .Color
+        .adjust(this.color[i], base_color, 150, 180);
+    }
+    this.foreground_color = coUtils
+      .Color
+      .adjust(this.foreground_color, base_color, 150, 180);
   },
 
   "[subscribe('sequence/osc/4'), enabled]": 
@@ -272,6 +294,7 @@ PaletteManager.definition = {
       color = coUtils.Color.parseX11ColorSpec(value);
       outerchrome.background_color = color;
       this.background_color = color;
+      this.adjust_colors();
       this.sendMessage("command/draw", true);
     }
   },
@@ -342,7 +365,6 @@ PaletteManager.definition = {
     if (data) {
       this._reverse = data.reverse;
       this.color = data.color;
-//      this.sendMessage("command/draw");
     } else {
       coUtils.Debug.reportWarning(
         _("Cannot restore last state of renderer: data not found."));
@@ -357,10 +379,18 @@ PaletteManager.definition = {
     // Get hexadecimal formatted text color (#xxxxxx) 
     // form given attribute structure. 
     if (1 === attr.fgcolor) {
-      if (1 === attr.inverse) {
-        fore_color = this.color[attr.bg];
+      if (1 === attr.bgcolor) {
+        if (1 === attr.inverse) {
+          fore_color = this.color[attr.bg];
+        } else {
+          fore_color = this.color[attr.fg];
+        }
       } else {
-        fore_color = this.color[attr.fg];
+        if (1 === attr.inverse) {
+          fore_color = this.adjusted_color[attr.bg];
+        } else {
+          fore_color = this.adjusted_color[attr.fg];
+        }
       }
     } else {
       if (1 === attr.inverse) {
