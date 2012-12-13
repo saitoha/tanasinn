@@ -45,7 +45,7 @@ int
 getCharSize()
 {
     int w = 0, h = 0;
-    printf("\x1b]99;w3m-getcharsize:%d:%d\x07", COLS, LINES);
+    writestr("\x1b]99;w3m-getcharsize:%d:%d\x07", COLS, LINES);
     fscanf(stdin, "%d %d", &w, &h);
     if (!(w > 0 && h > 0))
 	return FALSE;

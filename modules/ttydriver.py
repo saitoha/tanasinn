@@ -120,19 +120,7 @@
 #     Comming soon...
 #
 
-import os
-import socket
-import errno
-import sys
-import signal
-import re
-import fcntl
-import struct
-import termios
-import time
-import base64
-import select
-import pty
+import os, socket, errno, sys, signal, re, fcntl, struct, termios, base64, select, pty
 
 debug_flag = False
 
@@ -143,6 +131,13 @@ if not hasattr(os, "uname"):
 
 system = os.uname()
 
+rcdir = os.path.join(os.getenv("HOME"), ".tanasinn")
+logdir = os.path.join(rcdir, "log")
+if not os.path.exists(logdir):
+    os.makedirs(logdir)
+logfile = os.path.join(logdir, "tty.log")
+log = open(logfile, "w")
+
 def trace(message):
     if debug_flag:
         if system[0] == 'Darwin':
@@ -151,7 +146,7 @@ def trace(message):
             os.system("espeak '%s'" % message)
         if system[0] == 'CYGWIN_NT-6.0':
             os.system("SofTalk.exe /T:0 /W:%s" % message)
-    os.system("echo '%s' >> ~/.tanasinn/log/tty.log &" % message);
+    log.write(message + "\n") 
 
 trace("start.")
 
