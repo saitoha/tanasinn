@@ -282,7 +282,7 @@ Renderer.definition = {
   "[persistable] enabled_when_startup": true,
 
   // cell geometry (in pixel)
-  "[watchable, persistable] line_height": 16,
+  "[watchable, persistable] line_height": 18,
   "[watchable] char_width": 6.5, 
   "[watchable] char_height": 4, 
   "[watchable] char_offset": 11, 
@@ -303,11 +303,12 @@ Renderer.definition = {
   "[watchable, persistable] font_family": 
     "Monaco,Menlo,Lucida Console,monospace",
 
-  "[watchable, persistable] font_size": 14,
+  "[watchable, persistable] font_size": 16,
 
   "[persistable] force_precious_rendering": false,
   "[persistable] normal_alpha": 1.00,
   "[persistable] halfbright_alpha": 0.50,
+  "[persistable] background_alpha": 0.45,
   "[persistable] bold_alpha": 1.00,
   "[persistable] bold_as_blur": false,
   "[persistable] enable_text_shadow": false,
@@ -487,7 +488,7 @@ Renderer.definition = {
   },
 
   /** Draw to canvas */
-  "[subscribe('command/draw'), enabled]": 
+  "[subscribe('command/draw'), pnp]": 
   function draw(redraw_flag)
   {
     var info, 
@@ -774,13 +775,14 @@ Renderer.definition = {
     var back_color = this._palette.get_back_color(attr);
 
     if (null === back_color) {
-      context.clearRect(x, y, width, height);
+      context.clearRect(x, y, width + 1, height);
     } else {
-      context.globalAlpha = 1.0;
+      context.globalAlpha = this.background_alpha;
 
       /* Draw background */
       context.fillStyle = back_color;
-      context.fillRect(x, y, width, height);
+      context.clearRect(x, y, width + 1, height);
+      context.fillRect(x, y, width + 1, height);
     }
   },
 
@@ -802,6 +804,9 @@ Renderer.definition = {
         dscs,
         drcs_state = attr.drcs;
 
+    if (1 === attr.invisible) {
+      return;
+    }
     if (1 === attr.blink) {
       if (null === this._slow_blink_layer) {
         this.createSlowBlinkLayer(this.slow_blink_interval);
@@ -818,9 +823,7 @@ Renderer.definition = {
       context.font = this._main_layer.context.font;
     }
 
-    if (1 === attr.invisible) {
-      context.globalAlpha = 0.0;
-    } else if (1 === attr.bold) {
+    if (1 === attr.bold) {
       context.globalAlpha = this.bold_alpha;
     } else if (1 === attr.halfbright) {
       context.globalAlpha = this.halfbright_alpha;
