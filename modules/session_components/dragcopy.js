@@ -126,10 +126,10 @@ DragCopy.definition = {
         feedback_context = feedback_canvas.getContext("2d"),
         text = screen
           .getTextInRange(start, end, is_rectangle)
-          .replace(/\x00/g, ""),
+          .replace(/[\x00\r]/g, ""),
         coordinate = this._getPixelMetricsFromEvent(event),
-        left = coordinate[0],
-        top = coordinate[1];
+        left = coordinate[0] - 20,
+        top = coordinate[1] - 40;
 
     feedback_canvas.hidden = false;
 
@@ -210,10 +210,9 @@ DragCopy.definition = {
   "[listen('dragstart', '#tanasinn_content'), pnp]":
   function ondragstart(event)
   {
-    if (null !== this._mouse_mode) {
+    if (null === this._mouse_mode) {
       this._startDragging(event);
     }
-    
   },
 
   convertPixelToScreen: function convertPixelToScreen(event) 

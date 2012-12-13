@@ -110,7 +110,7 @@ Copy.definition = {
     // and pass it to "screen". "screen" returns selected text.
     text = this._screen
       .getTextInRange(range.start, range.end, range.is_rectangle)
-      .replace(/\x00/g, "");
+      .replace(/[\x00\r]/g, "");
 
     clipboard_helper = Components
          .classes["@mozilla.org/widget/clipboardhelper;1"]

@@ -1419,7 +1419,7 @@ Viewable.definition = {
       text = line.getTextInRange(start, end);
       buffer.push(text.replace(/ +$/, "\n"));
     }
-    return buffer.join(""); 
+    return buffer.join("\r"); 
   },
 
   /** get text in specified range. 
