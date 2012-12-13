@@ -112,6 +112,7 @@ IOManagerConcept.definition = {
  */
 var IOManager = new Class().extends(Plugin)
                            .depends("tty_controller")
+                           .depends("parser")
                            .requires("IOManager");
 IOManager.definition = {
 
@@ -124,6 +125,7 @@ IOManager.definition = {
   _input: null,
   _output: null,
   _socket: null,
+  _parser: null,
 
   /** Installs itself. 
    *  @param {InstallContext} context A InstallContext object.
@@ -135,6 +137,7 @@ IOManager.definition = {
 
     this._socket = socket;
     this._port = socket.port;
+    this._parser = context["parser"];
 
     this.sendMessage("event/io-socket-ready", socket.port);
   },
@@ -146,6 +149,7 @@ IOManager.definition = {
   {
     this._socket = null;
     this._port = null;
+    this._parser = null;
   },
 
   /**
@@ -332,11 +336,12 @@ IOManager.definition = {
   {
     var data = this._input.readBytes(count);
 
-    //coUtils.Timer.setTimeout(
-    //  function timerProc()
-    //  {
-    this.sendMessage("event/data-arrived", data);
-    //  }, 30, this);
+    coUtils.Timer.setTimeout(
+      function timerProc()
+      {
+        this._parser.drive(data); 
+    //this.sendMessage("event/data-arrived", data);
+      }, 30, this);
   },
 };
 
