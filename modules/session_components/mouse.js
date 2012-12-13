@@ -40,6 +40,7 @@ var MOUSE_BUTTON1 = 0,
  *   - Vivek Dasmohapatra            http://rtfm.etla.org/xterm/ctlseq.html
  */
 var Mouse = new Class().extends(Plugin)
+                       .depends("screen")
                        .depends("renderer");
 Mouse.definition = {
 
@@ -64,6 +65,7 @@ Mouse.definition = {
 
   _in_scroll_session: false,
   _renderer: null,
+  _screen: null,
 
   /** Installs itself. 
    *  @param {InstallContext} context A InstallContext object.
@@ -72,6 +74,7 @@ Mouse.definition = {
   function install(context) 
   {
     this._renderer = context["renderer"];
+    this._screen = context["screen"];
   },
 
   /** Uninstalls itself.
@@ -80,6 +83,7 @@ Mouse.definition = {
   function uninstall() 
   {
     this._renderer = null;
+    this._screen = null;
   },
 
   /** Fired at scroll session is started. */
@@ -489,6 +493,7 @@ Mouse.definition = {
   _getCurrentPosition: function _getCurrentPosition(event) 
   {
     var renderer = this._renderer,
+    	screen = this._screen,
         target_element = this.request(
           "command/query-selector", 
           "#tanasinn_center_area"),
@@ -498,9 +503,20 @@ Mouse.definition = {
         offsetY = box.screenY - root_element.boxObject.screenY,
         left = event.layerX - offsetX, // left position in pixel.
         top = event.layerY - offsetY,  // top position in pixel.
-        column = Math.round(left / renderer.char_width),
-        row = Math.round(top / renderer.line_height);
-
+        column = Math.ceil(left / renderer.char_width),
+        row = Math.ceil(top / renderer.line_height);
+    if (column < 1) {
+      column = 1;
+    }
+    if (column > screen.width) {
+      column = screen.width;
+    }
+    if (row < 1) {
+      row = 1;
+    }
+    if (row > screen.height) {
+      row = screen.height;
+    }
     return [column, row];
   },
 
