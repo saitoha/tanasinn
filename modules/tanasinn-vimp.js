@@ -33,7 +33,8 @@ try {
         var current_file = Components.stack
               .filename
               .split(" -> ").pop()
-              .split("?").shift(),
+              .split("?").shift()
+              .replace(/^liberator:\/\/template\//, ""),
             id = new Date().getTime(),
             file = current_file + "/../../tanasinn/modules/common/process.js?" + id,
             scope = {};
@@ -70,7 +71,7 @@ try {
       completion = liberator.modules.completion,
       mappings = liberator.modules.mappings,
       modes = liberator.modules.modes,
-      editor = liberator.modules.editor;
+      editor = liberator.modules.editor,
       desktop = getDesktop();
   
   /**
@@ -143,47 +144,55 @@ try {
   {
     var editor_command = liberator.globalVariables.tanasinneditorcommand,
         viewsource_command = liberator.globalVariables.tanasinnviewsourcecommand,
-        complete,
-        command,
-        thread;
+        command;
 
-    if (/^[a-z]+:\/\//.test(path)) {
+    if (/^(?:http|https|ftp):\/\//.test(path)) {
       // when path is url spec. (path is expected to be escaped.)
       if (!viewsource_command) {
         default_func.apply(liberator.modules.editor, arguments);
       } else {
-        desktop.notify(
-          "command/start-session", 
-          viewsource_command.replace(/%/g, path));
+        // make nsIURL
+        var url = Components
+          .classes["@mozilla.org/network/standard-url;1"]
+          .createInstance(Components.interfaces.nsIURL);
+        url.spec = path;
+        
+        // make nsILocalFile
+        var file = Components
+          .classes["@mozilla.org/file/local;1"]
+          .createInstance(Components.interfaces.nsILocalFile);
+        io.withTempFiles(
+          function (tmpfile)
+          {
+try {
+            // save URL to file
+            var persist = Components
+              .classes["@mozilla.org/embedding/browser/nsWebBrowserPersist;1"]
+              .createInstance(Components.interfaces.nsIWebBrowserPersist);
+            persist.saveURI(url,
+                            /* aCacheKey */ null,
+                            /* aReferrer */ null,
+                            /* aPostData */ null,
+                            /* aExtraHeaders */ null,
+                            tmpfile,
+                            /* aPrivacyContext */ null);
+            window.setTimeout(
+              function timerFunc()
+              {
+                desktop.notify(
+                  "command/start-session", 
+                  viewsource_command.replace(/%/g, tmpfile.path));
+              }, 1000);
+} catch (e) {alert(e)}
+          });
       };
     } else { // when path is native one.
       if (!editor_command) {
         default_func.apply(liberator.modules.editor, arguments);
       } else {
-
-        complete = false;
-
-        desktop.subscribe(
-          "@initialized/session",
-          function(session)
-          {
-            session.subscribe(
-              "@event/broker-stopping",
-              function(session)
-              {
-                complete = true;
-              }, this);
-          }, this);
-
         command = editor_command.replace(/%/g, path);
-        desktop.notify("command/start-session", command);
-        thread = Components.classes["@mozilla.org/thread-manager;1"]
-          .getService(Components.interfaces.nsIThreadManager)
-          .currentThread;
-        while (!complete) {
-          thread.processNextEvent(true);
-        }
-      };
+        desktop.notify("command/start-session-and-wait", command);
+      }
     }
   };
 

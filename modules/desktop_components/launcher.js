@@ -245,6 +245,7 @@ Launcher.definition = {
     this.onblur.enabled = true;
     this.oninput.enabled = true;
     this.startSession.enabled = true;
+    this.startSessionAndWait.enabled = true;
 
     broker = this._broker;
 
@@ -285,6 +286,7 @@ Launcher.definition = {
     this.onblur.enabled = false;
     this.oninput.enabled = false;
     this.startSession.enabled = false;
+    this.startSessionAndWait.enabled = false;
   },
 
   "[subscribe('variable-changed/launcher.{font_size | font_family | font_weight | font_style}'), pnp]":
@@ -581,6 +583,35 @@ Launcher.definition = {
     box.style.left = (this.left = (this.left + Math.random() * 1000) % 140 + 20) + "px";
     box.style.top = (this.top = (this.top + Math.random() * 1000) % 140 + 20) + "px";
     this.hide();
+  },
+  
+  "[subscribe('command/start-session-and-wait'), pnp]":
+  function startSessionAndWait(command)
+  {
+    var complete = false,
+        broker = this._broker,
+        thread = Components.classes["@mozilla.org/thread-manager;1"]
+          .getService(Components.interfaces.nsIThreadManager)
+          .currentThread;
+
+    broker.subscribe(
+      "@initialized/session",
+      function onSessionInitialized(session)
+      {
+        session.subscribe(
+          "@event/broker-stopping",
+          function onSessionStopping(session)
+          {
+            complete = true;
+          }, this);
+      }, this);
+
+    this.sendMessage("command/start-session", command);
+
+    while (!complete) {
+      thread.processNextEvent(true);
+    }
+    
   },
 
   "[listen('blur', '#tanasinn_launcher_textbox')]":
