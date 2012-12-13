@@ -214,12 +214,13 @@ var DragTransform = new Trait();
 DragTransform.definition = {
 
   _last_matrix: null,
+  _active: false,
 
   /** Dragstart handler. It starts a session of dragging selection. */
   "[listen('dragstart', '#tanasinn_capture_cover'), pnp]":
   function ondragstart(event) 
   {
-    var root_element;
+    var box;
 
     if (!event.altKey) {
       return;
@@ -234,7 +235,8 @@ DragTransform.definition = {
     }
 
     this._begin_point = this.get2DCoordinate(event);
-    this.perspective = Math.floor(this._begin_point.abs() * 1.5);
+    box = this._element.boxObject;
+    this.perspective = Math.floor(box.width + box.height);
 
     this.onMouseMove.enabled = true;
     this.onMouseUp.enabled = true;
@@ -255,19 +257,35 @@ DragTransform.definition = {
     this.transform_matrix = this._last_matrix.toString();
   },
 
+  "[subscribe('event/got-focus'), pnp]":
+  function onGotFocus() 
+  {
+    this._active = true;
+  },
+
+  "[subscribe('event/lost-focus'), pnp]":
+  function onLostFocus() 
+  {
+    this._active = false;
+  },
+
   /** alt/shift keydown event handler, enables the dragging helper object */
   "[subscribe('event/{alt & shift}-key-down'), pnp]":
   function onModifierKeysDown() 
   {
-    this.sendMessage("command/enable-drag-cover");
+    if (this._active) {
+      this.sendMessage("command/enable-drag-cover");
+    }
   },
 
   /** alt/shift keyup event handler, detects the timing for drag end */
   "[subscribe('event/{alt | shift}-key-up'), pnp]":
   function onModifierKeyUp() 
   {
-    this.sendMessage("command/disable-drag-cover");
-    this.onDragEnd();
+    if (this._active) {
+      this.sendMessage("command/disable-drag-cover");
+      this.onDragEnd();
+    }
   },
 
   /** "mouseup" event handler, detects the timing for dragend */
@@ -353,8 +371,7 @@ Transform.definition = {
   "[install]":
   function install(context)
   {
-    var root_element = this.request("get/root-element"),
-        document_element = root_element.ownerDocument.documentElement;
+    var root_element = this.request("get/root-element");
 
     this._matrix = new TransformMatrix(
       1, 0, 0, 0,
@@ -373,10 +390,12 @@ Transform.definition = {
   "[uninstall]":
   function uninstall()
   {
-    if (null !== this._element) {
-      this._element.parentNode.style.MozPerspective = "";
-      this._element.style.MozTransformStyle = "";
-      this._element.style.MozTransform = "";
+    var element = this._element;
+
+    if (null !== element) {
+      element.parentNode.style.MozPerspective = "";
+      element.style.MozTransformStyle = "";
+      element.style.MozTransform = "";
       this._element = null;
     }
     this._matrix = null;
