@@ -132,12 +132,10 @@ WindowManipulator.definition = {
    *               title    Window title.
    * 
    */
-  "[profile('vt100'), sequence('CSI Ps t')]":
+  "[profile('vt100'), sequence('CSI Ps t'), pnp]":
   function DECSLPP(n1, n2, n3) 
   {
-    this.sendMessage(
-      "command/manipulate-window", 
-      Array.slice(arguments)); 
+    this.manipulate(Array.slice(arguments));
   },
 
   "[subscribe('command/manipulate-window'), pnp]":
@@ -153,7 +151,8 @@ WindowManipulator.definition = {
          width,
          height,
          message,
-         n1 = args.shift();
+         n1 = args.shift(),
+         n2;
 
     switch (n1) {
 
@@ -314,6 +313,16 @@ WindowManipulator.definition = {
         // Response: OSC l title ST
         //   title    Window title.
         this.sendMessage("sequence/decslpp/21"); 
+        break;
+
+      case 22:
+        n2 = args.shift();
+        this.sendMessage("sequence/decslpp/22", n2); 
+        break;
+
+      case 23:
+        n2 = args.shift();
+        this.sendMessage("sequence/decslpp/23", n2); 
         break;
 
       default:
