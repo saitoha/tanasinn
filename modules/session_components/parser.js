@@ -155,9 +155,7 @@ Parser.definition = {
 
     scanner.assign(data);
 
-    for (action in this.parse(scanner, data)) {
-      action();
-    }
+    this.parse(scanner);
     this.sendMessage("command/draw"); // fire "draw" event.
   },
 
