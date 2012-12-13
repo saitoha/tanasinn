@@ -94,7 +94,7 @@ TitleModeHandler.definition = {
    *
    */
   "[profile('vt100'), sequence('CSI > Ps T')]":
-  function XT_TITLEMODE()
+  function XT_RESETTITLEMODE()
   {
     var i = 0,
         n;
@@ -122,6 +122,41 @@ TitleModeHandler.definition = {
         case 3:
           // Do not query window/icon labels using UTF-8. 
           this.sendMessage("command/title-query-utf8-mode-disabled");
+          break;
+
+      }
+    }
+  },
+
+  "[profile('vt100'), sequence('CSI > Ps t')]":
+  function XT_SETTITLEMODE()
+  {
+    var i = 0,
+        n;
+
+    for (;i < arguments.length; ++i) {
+      n = arguments[i];
+
+      switch (n) {
+
+        case 0:
+          // Set window/icon labels using hexadecimal.
+          this.sendMessage("command/title-set-hex-mode-enabled");
+          break;
+
+        case 1:
+          // Query window/icon labels using hexadecimal.
+          this.sendMessage("command/title-query-hex-mode-enabled");
+          break;
+
+        case 2:
+          // Set window/icon labels using UTF-8.
+          this.sendMessage("command/title-set-utf8-mode-enabled");
+          break;
+
+        case 3:
+          // Do not query window/icon labels using UTF-8. 
+          this.sendMessage("command/title-query-utf8-mode-enabled");
           break;
 
       }
