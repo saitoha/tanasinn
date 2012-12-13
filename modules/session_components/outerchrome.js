@@ -183,17 +183,14 @@ OuterChrome.definition = {
 
   _forceUpdate: function _forceUpdate()
   {
-    var frame = this._frame;
-
-    //frame.style.width = frame.boxObject.width + 1 + "px";
-//    frame.style.height = frame.boxObject.height + 1 + "px";
-    //frame.style.width = frame.boxObject.width - 1 + "px";
-//    frame.style.height = frame.boxObject.height - 1 + "px";
+    // force redrawing
+    this.moveBy([1, 0]) 
+    this.moveBy([-1, 0]) 
   },
 
   _getImagePath: function _getImagePath()
   {
-    var path = coUtils.Runtime.getRuntimePath() + "/" + "images/cover.png",
+    var path = coUtils.Runtime.getRuntimePath() + "/images/cover.png",
         file = coUtils.File.getFileLeafFromVirtualPath(path);
 
     if (!file.exists()) {
@@ -233,7 +230,7 @@ OuterChrome.definition = {
           .replace(/^1/, "#");
 
       this._frame.style.background 
-        = "-moz-linear-gradient(top,"
+        = "-moz-radial-gradient(top,"
         + reverse_color + ","
         + this._getBlendColor() + ")";
     } else {
@@ -367,7 +364,7 @@ OuterChrome.definition = {
   function updateColor() 
   {
     this._frame.style.cssText = this._getFrameStyle();
-    this._forceUpdte();
+    this._forceUpdate();
   },
 
   "[subscribe('variable-changed/outerchrome.{background_opacity | border_radius | box_shadow}'), pnp]": 
