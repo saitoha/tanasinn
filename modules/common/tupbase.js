@@ -504,7 +504,9 @@ Class.prototype = {
         setter,
         value,
         name,
-        attribute;
+        attribute,
+	keys,
+	i;
 
     for (key in trait) {
       // Detects whether the property specified by given key is
@@ -533,7 +535,9 @@ Class.prototype = {
           };
         } else if ("__attributes" === key) {
           if (prototype.__attributes) {
-            for ([name, ] in Iterator(trait.__attributes)) {
+            keys = Object.keys(trait.__attributes);
+            for (i = 0; i < keys.length; ++i) {
+              name = keys[i];
               attribute = trait.__attributes[name];
               prototype.__attributes[name] = attribute;
             }
@@ -766,7 +770,11 @@ Plugin.definition = {
       "@event/broker-stopping", 
       function setDisabled() 
       {
-        this.enabled = false;
+        coUtils.Timer.setTimeout(
+          function timerProc()
+	  {
+            this.enabled = false;
+	  }, 3000 * Math.random());
       },
       this);
   },

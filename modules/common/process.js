@@ -184,7 +184,7 @@ void function() {
           process;
 
       for (; i < windows.length; ++i) {
-        if ( windows[i] === window) {
+        if (window === windows[i]) {
           return;
         }
       }
