@@ -696,12 +696,12 @@ NRCSConverter.definition = {
   convert: function convert(codes) 
   {
     var left = this._g[this._next || this._gl] || USASCII,
-        right = this._g[this._gr] || ISO_8859_Latin1,
+        //right = this._g[this._gr] || ISO_8859_Latin1,
         result,
         i,
         c;
 
-    if (USASCII === left && ISO_8859_Latin1 === right) {
+    if (USASCII === left) {
       return codes;
     }
 
@@ -718,12 +718,13 @@ NRCSConverter.definition = {
         result.push(c);
       }
     } else {
+
       for (i = 0; i < codes.length; ++i ) {
         c = codes[i];
         if (c < 0x80) { // GL
           result.push(left[c]);
-        } else if (c < 0xff) { // GR
-          result.push(right[c]);
+        //} else if (c < 0xff) { // GR
+        //  result.push(right[c]);
         } else {
           result.push(c);
         }
