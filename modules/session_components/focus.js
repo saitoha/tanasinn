@@ -43,7 +43,7 @@ FocusTracker.definition = {
 
   "[persistable] enabled_when_startup": true,
   
-  disabled: false,
+  _disabled: false,
 
   /** Installs itself. 
    *  @param {InstallContext} context A InstallContext object.
@@ -59,6 +59,14 @@ FocusTracker.definition = {
       capture: true,
       id: this.id,
     });
+    this.sendMessage("command/add-domlistener", {
+      target: this.request("get/root-element").ownerDocument,
+      type: "blur",
+      context: this,
+      handler: this.onblur,
+      capture: true,
+      id: this.id,
+    });
   },
 
   /** Uninstalls itself. 
@@ -69,6 +77,84 @@ FocusTracker.definition = {
     this.sendMessage("command/remove-domlistener", this.id)
   },
 
+  _onblurimpl: function _onblurimpl(dom)
+  {
+    var focused_element,
+        relation;
+
+    if (null === dom.target) {
+      return;
+    }
+    if (undefined === dom.target) {
+      return;
+    }
+    if (dom.target.nodeType === dom.target.NODE_DOCUMENT) {
+      return;
+    }
+
+    relation = dom.root_element.compareDocumentPosition(dom.target);
+    if ((relation & dom.root_element.DOCUMENT_POSITION_CONTAINED_BY)) {
+      this.sendMessage("event/lost-focus");
+    }
+  },
+
+  _onfocusimpl: function _onfocusimpl(dom)
+  {
+    var focused_element,
+        relation;
+
+    if (null === dom.target) {
+      return;
+    }
+    if (undefined === dom.target) {
+      return;
+    }
+    if (dom.target.nodeType === dom.target.NODE_DOCUMENT) {
+      return;
+    }
+
+    relation = dom.root_element.compareDocumentPosition(dom.target);
+    if ((relation & dom.root_element.DOCUMENT_POSITION_CONTAINED_BY)) {
+      this._disabled = true;
+      dom.root_element.parentNode.appendChild(dom.root_element);
+      coUtils.Timer.setTimeout(
+        function timerProc()
+        {
+          this._disabled = false;
+        }, 30, this);
+      focused_element = dom.root_element.ownerDocument.commandDispatcher.focusedElement;
+      this.sendMessage("event/got-focus");
+      this.sendMessage("event/focus-changed", focused_element);
+    } else {
+      this.sendMessage("event/lost-focus");
+    }
+  },
+
+  /** Fires when a focus event occured. 
+   *  @param {Event} event A event object.
+   */
+  onblur: function onfocus(event)
+  {
+    var dom = {
+        root_element: this.request("get/root-element"),
+        target: event.explicitOriginalTarget,
+      };
+
+    if (null === dom.target) {
+      return;
+    }
+
+    //if (this._disabled) {
+    //  return;
+    //}
+
+    if (!("nodeType" in dom.target)
+        || dom.target.NODE_DOCUMENT !== dom.target.nodeType) {
+      dom.target = dom.target.parentNode;
+      this._onblurimpl(dom);
+    }
+  },
+
   /** Fires when a focus event occured. 
    *  @param {Event} event A event object.
    */
@@ -76,41 +162,21 @@ FocusTracker.definition = {
   {
     var dom = {
         root_element: this.request("get/root-element"),
-      },
-      target = event.explicitOriginalTarget,
-      focused_element,
-      relation;
+        target: event.explicitOriginalTarget,
+      };
 
-    if (null === target) {
+    if (null === dom.target) {
       return;
     }
 
-    if (!("nodeType" in target) || target.NODE_DOCUMENT !== target.nodeType) {
-      target = target.parentNode;
-      if (null !== target && undefined !== target
-          && target.nodeType !== target.NODE_DOCUMENT) {
-        relation = dom.root_element.compareDocumentPosition(target);
-        if ((relation & dom.root_element.DOCUMENT_POSITION_CONTAINED_BY)) {
-          if (!this.disabled) {
-            this.disabled = true;
-            //if (!/tanasinn/.test(coUtils.Runtime.app_name)) {
-              dom.root_element.parentNode.appendChild(dom.root_element);
-            //}
-            coUtils.Timer.setTimeout(
-              function timerProc()
-              {
-                this.disabled = false;
-              }, 0, this);
-            this.sendMessage("event/lost-focus");
-            return;
-          }
-          focused_element = dom.root_element.ownerDocument.commandDispatcher.focusedElement;
-          this.sendMessage("event/got-focus");
-          this.sendMessage("event/focus-changed", focused_element);
-        } else {
-          this.sendMessage("event/lost-focus");
-        }
-      }
+    if (this._disabled) {
+      return;
+    }
+    
+    if (!("nodeType" in dom.target)
+        || dom.target.NODE_DOCUMENT !== dom.target.nodeType) {
+      dom.target = dom.target.parentNode;
+      this._onfocusimpl(dom);
     }
   },
 };
