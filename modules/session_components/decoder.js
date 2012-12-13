@@ -24,6 +24,43 @@
 
 "use strict";
 
+/** 
+ * @class ForwardInputIterator
+ */ 
+var ForwardInputIterator = new Class();
+ForwardInputIterator.definition = {
+
+  _value: null,
+  _position: 0,
+
+  /** Assign new string data. position is reset. */
+  initialize: function initialize(value) 
+  {
+    this._value = value;
+    this._position = 0;
+  },
+
+  /** Returns single byte code point. */
+  current: function current() 
+  {
+    return this._value.charCodeAt(this._position);
+  },
+
+  /** Moves to next position. */
+  moveNext: function moveNext() 
+  {
+    ++this._position;
+  },
+
+  /** Returns whether scanner position is at end. */
+  get isEnd() 
+  {
+    return this._position >= this._value.length;
+  },
+
+}; // ForwardInputIterator
+
+
 /**
  * @class Decoder
  *
@@ -52,7 +89,9 @@ Decoder.definition = {
 
   /** Gets character encoding scheme */
   get scheme()
-    this.initial_scheme,
+  {
+    return this.initial_scheme;
+  },
 
   /** Sets character encoding scheme */
   set scheme(value) 
@@ -130,6 +169,31 @@ Decoder.definition = {
   decode: function decode(scanner) 
   {
     return this._decoder.decode(scanner);
+  },
+
+  /** Read input sequence and convert it to an UTF-16 string
+   *
+   *  @param {String} data input data
+   *  @return {String} Converted string 
+   */ 
+  decodeString: function decodeString(data)
+  {
+    var scanner = new ForwardInputIterator(data),
+        sequence = [],
+        result,
+        code;
+    
+    for (code in this.decode(scanner)) {
+      if (code < 0x10000) {
+        sequence.push(code);
+      } else {
+        // emit 16bit + 16bit surrogate pair.
+        code -= 0x10000;
+        sequence.push((code >> 10) | 0xD800, (code & 0x3FF) | 0xDC00);
+      }
+    }
+
+    return coUtils.Text.safeConvertFromArray(sequence);
   },
 
 }; // Decoder
