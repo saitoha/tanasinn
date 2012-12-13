@@ -53,6 +53,7 @@ var _STATE_GROUND        = 0,
     _STATE_ESC_IBYTES    = 2,
     _STATE_CSI_PBYTES    = 3,
     _STATE_CSI_IBYTES    = 4,
+
     _STATE_OSC           = 5,
     _STATE_OSC_FINAL     = 6,
     _STATE_STRING        = 7,
@@ -306,7 +307,7 @@ VT100Grammar.definition = {
     }
     handler = this._csi_map[key];
     if (!handler) {
-      return false;
+      return true;
     }
     handler(params);
 
@@ -318,7 +319,7 @@ VT100Grammar.definition = {
     var f = String.fromCharCode(fbyte),
         handler = this._esc_map[f];
     if (!handler) {
-      return false;
+      return true;
     }
     handler();
     return true;
@@ -342,7 +343,7 @@ VT100Grammar.definition = {
       handler(i.substr(1) + f);
       return true;
     }
-    return false;
+    return true;
   },
 
   _dispatch_char: function _dispatch_char(c)
@@ -363,7 +364,7 @@ VT100Grammar.definition = {
         action,
         data;
     if (!handler) {
-      return false;
+      return true;
     }
     data = coUtils.Text.safeConvertFromArray(value);
     handler(data);
@@ -423,7 +424,9 @@ VT100Grammar.definition = {
           }
           return token;
         }).join("");
+
         this._csi_map[key] = function(params) { return handler.apply(context, params) };
+      } else {
       }
     }
   }, // append
