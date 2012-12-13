@@ -263,10 +263,10 @@ Session.definition = {
 
     this.notify("event/before-broker-stopping", this);
 
+    this.notify("event/broker-stopping", this);
     coUtils.Timer.setTimeout(
       function timerProc()
       {
-        this.notify("event/broker-stopping", this);
         this.notify("event/broker-stopped", this);
         this.unsubscribe(this._request_id);
         this.clear();
@@ -281,7 +281,7 @@ Session.definition = {
         //    .getService(Components.interfaces.fuelIApplication);
         //  application.quit();
         //}
-      }, 500, this);
+      }, 0, this);
   },
 
 }; // class Session
@@ -291,7 +291,7 @@ var SessionFactory = new Class().extends(Plugin)
 SessionFactory.definition = {
 
   "[subscribe('event/session-requested'), enabled]": 
-  function(request) 
+  function onSessionRequested(request) 
   {
     var session = new Session(this._broker);
 
