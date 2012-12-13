@@ -439,10 +439,13 @@ function coCreateKeyMap(expression_map, destination_map)
       key,
       value,
       tokens,
-      code;
+      code,
+      keys = Object.keys(expression_map),
+      i;
 
-  for ([key, value] in Iterator(expression_map)) 
-  {
+  for (i = 0; i < keys.length; ++i) {
+    key = keys[i];
+    value = expression_map[key];
     tokens = key.split(/[\s\t]+/);
 
     code = tokens.pop();
@@ -806,6 +809,7 @@ MacAltKeyWatcher.definition = {
  */
 var InputManager = new Class().extends(Plugin)
                               .mix(MacAltKeyWatcher)
+                              .depends("parser")
                               .depends("modemanager")
                               .depends("encoder");
 InputManager.definition = {
@@ -856,6 +860,7 @@ InputManager.definition = {
   _newlne_mode: false,
   _local_echo_mode: false,
   _encoder: null,
+  _parser: null,
 
   /** Installs itself. 
    *  @param {InstallContext} context A InstallContext object.
@@ -876,6 +881,7 @@ InputManager.definition = {
       this.getTemplate());
 
     this._encoder = context["encoder"];
+    this._parser = context["parser"];
 
     this._textbox = result.tanasinn_default_input;
     this.sendMessage("event/collection-changed/modes");
@@ -894,6 +900,7 @@ InputManager.definition = {
     this.sendMessage("event/collection-changed/modes");
 
     this._encoder = null;
+    this._parser = null;
   },
 
   "[subscribe('set/local-echo-mode'), pnp]":
@@ -951,15 +958,22 @@ InputManager.definition = {
   "[command('blur', []), nmap('<M-z>', '<C-S-Z>'), _('Blur tanasinn window'), pnp]":
   function blurCommand() 
   {
-    //coUtils.Timer.setTimeout(
-    //  function blur()
-    //  {
+    coUtils.Timer.setTimeout(
+      function blur()
+      {
         this.blur();
-    //  }, 100, this);
+      }, 100, this);
+  },
+
+  "[subscribe('event/before-broker-stopping')]":
+  function onSessionStopping() 
+  {
+    this.blur();
+    this.enabled = false;
   },
 
   /** blur focus from the textbox elment. */
-  "[subscribe('command/blur | event/before-broker-stopping')]":
+  "[subscribe('command/blur')]":
   function blur() 
   {
     var owner_document = this.request("get/root-element").ownerDocument,
@@ -1156,7 +1170,7 @@ InputManager.definition = {
       this.sendMessage("command/send-to-tty", message);
 
       if (this._local_echo_mode) {
-        this.sendMessage("event/data-arrived", message);
+        this._parser.drive(message);
       }
     }
 
