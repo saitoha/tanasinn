@@ -157,20 +157,17 @@ ConsoleListener.definition = {
 
   _trackHistricalMessages: function _trackHistricalMessages()
   {
-    var message_array;
+    var message_array,
+        messages,
+        i;
 
     // in case messages are not found, consoleService returns null.
     message_array = this._getMessageArray();
     if (null !== message_array) {
-      //for (var [index, message] in Iterator(message_array.value.reverse())) {
-      //  if (/tanasinn_initialize/.test(message.message)) {
-          message_array.value
-      //      .slice(0, index + 1)
-      //      .reverse()
-            .forEach(function(message) this.observe(message), this);
-      //    break;
-      //  }
-      //}
+      messages = message_array.value;
+      for (i = 0; i < messages.length; ++i) {
+        this.observe(messages[i]);
+      }
     }
   },
 };
