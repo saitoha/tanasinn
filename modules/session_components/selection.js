@@ -78,6 +78,7 @@ DragSelect.definition = {
     initial_position = this._convertPixelToPosition(event);
 
     text = screen.getTextInRange(initial_position - 1, initial_position);
+
     if ("\x00" === text) {
       ++initial_position;
     }
@@ -97,7 +98,9 @@ DragSelect.definition = {
 
     this._rectangle_selection_flag = event.altKey;
     this._color = this.normal_selection_color;
+    this._context.lineJoin = "round";
     this._context.fillStyle = this._color;
+    this._context.strokeStyle = this._color;
 
     this.ondragmove.enabled = true;
     this.ondragend.enabled = true;
@@ -176,6 +179,7 @@ var Selection = new Class().extends(Plugin)
                            .mix(DragSelect)
                            .depends("renderer")
                            .depends("screen")
+                           .depends("palette")
                            .depends("inputmanager");
 Selection.definition = {
 
@@ -185,18 +189,19 @@ Selection.definition = {
   {
     return {
       name: _("Selection"),
-      version: "0.1",
+      version: "0.2",
       description: _("Makes it enable to select text by dragging mouse.")
     };
   },
 
   "[persistable] enabled_when_startup": true,
-  "[persistable] normal_selection_color": "yellow",
-  "[persistable] highlight_selection_color": "white",
-  "[persistable] smart_selection": true,
-
-  _color: "white",
+  "[persistable] normal_selection_color": "rgba(255, 255, 0, 0.05)",
+  "[persistable] highlight_selection_color": "rgba(170, 255, 170, 0.15)",
+  "[persistable] edge_color": "rgba(255, 255, 0, 0.4)",
+  "[persistable] shadow_color": "#ffffff",
+  _color: "#ffffff",
   _canvas: null,
+  _working_canvas: null,
   _context: null,
   _range: null,
   _highlight_region: null,
@@ -249,21 +254,29 @@ Selection.definition = {
     
     this._renderer = context["renderer"];
     this._screen = context["screen"];
+    this._palette = context["palette"];
     this._textbox = context["inputmanager"].getInputField(),
-
+    //coUtils.Color.adjust(
     result = this.request(
       "command/construct-chrome", 
       {
         parentNode: "#tanasinn_center_area",
         tagName: "html:canvas",
         id: "selection_canvas",
-        style: {
-          opacity: 0.2,
-        },
       });
     
     this._canvas = result.selection_canvas;
     this._context = result.selection_canvas.getContext("2d");
+
+    result = this.request(
+      "command/construct-chrome", 
+      {
+        tagName: "html:canvas",
+        id: "selection_working_canvas",
+      });
+
+    this._working_canvas = result.selection_working_canvas;
+    this._working_context = result.selection_working_canvas.getContext("2d");
   },
 
   /** Uninstalls itself 
@@ -274,10 +287,12 @@ Selection.definition = {
     if (null !== this._canvas) {
       this._canvas.parentNode.removeChild(this._canvas);
       this._canvas = null;
+      this._working_canvas = null;
     }
     if (null !== this._context) {
       this.clear();
       this._context = null;
+      this._working_context = null;
     }
 
   },
@@ -295,7 +310,10 @@ Selection.definition = {
   "[listen('dblclick', '#tanasinn_content'), pnp]":
   function ondblclick(event) 
   {
-    var [column, row] = this.convertPixelToScreen(event);
+    var pos = this.convertPixelToScreen(event),
+        column = pos[0],
+        row = pos[1];
+
     this.selectSurroundChars(column, row);
 
     this._setClearAction();
@@ -521,7 +539,12 @@ Selection.definition = {
         i,
         line,
         match,
-        right_blank_length;
+        right_blank_length,
+        pi = Math.PI,
+        r1,
+        r2,
+        length,
+	j;
 
     this.clear();
 
@@ -538,7 +561,9 @@ Selection.definition = {
       [first, last] = arguments;
     }
 
-    context = this._context;
+    this._working_canvas.width = this._canvas.width;
+    this._working_canvas.height = this._canvas.height;
+    context = this._working_context;
 
     screen = this._screen;
     renderer = this._renderer;
@@ -554,18 +579,25 @@ Selection.definition = {
     if (this._rectangle_selection_flag) {
 
       // draw outer region
-      x = start_column * char_width;
-      y = start_row * line_height;
+      x = Math.min(start_column, end_column) * char_width;
+      y = Math.min(start_row, end_row) * line_height;
 
-      width = (end_column - start_column) * char_width;
-      height = (end_row - start_row) * line_height;
+      width = Math.abs(end_column - start_column) * char_width;
+      height = Math.abs(end_row - start_row) * line_height;
 
       context.fillStyle = this._color;
-      context.fillRect(x, y, width, height);
-
+      r1 = 4;
+      r2 = 4;
+      context.beginPath();
+      context.arc(x + r1, y + r1, r2, pi * 1.0 , pi * 1.5, false); 
+      context.lineTo(x - r1 + width, y + r1 - r2); 
+      context.arc(x - r1 + width, y + r1, r2, pi * 1.5 , pi * 0, false); 
+      context.lineTo(x - r1 + width + r2, y - r1 + height); 
+      context.arc(x - r1 + width, y - r1 + height, r2, pi * 0, pi * 0.5, false); 
+      context.lineTo(x + r1, y - r1 + height + r2); 
+      context.arc(x + r1, y - r1 + height, r2, pi * 0.5, pi * 1.0, false); 
+      context.lineTo(x + r1 - r2, y + r1); 
     } else {
-
-      context.fillStyle = this._color;
 
       // draw outer region
       x = 0;
@@ -574,37 +606,98 @@ Selection.definition = {
       width = column * char_width;
       height = (end_row - start_row) * line_height;
 
-      context.fillRect(x, y, width, height);
+      context.beginPath();
+ 
+      text = screen.getTextInRange(first, last).replace(/\n/g, "");
+      lines = text.split("\r");
 
-      // clear pre-start region
-      context.clearRect(x, y, start_column * char_width, line_height);
-
-      // clear post-end region
-      context.clearRect(end_column * char_width, y + height - line_height, 
-                        width - end_column * char_width, line_height);
-
-      if (this.smart_selection) {
-        text = screen.getTextInRange(first, last);
-        lines = text.split("\n");
-
-        right_blank_length = column - lines[0].length - start_column;
-        context.clearRect(width - right_blank_length * char_width, 
-                          start_row * line_height,
-                          right_blank_length * char_width,
-                          line_height);
+      right_blank_length = column - lines[0].length - start_column;
+      if (Math.abs(start_row - end_row) <= 1) {
+        x = Math.min(start_column, end_column) * char_width;
+        y = Math.min(start_row, end_row) * line_height;
+        width = Math.abs(start_column - end_column) * char_width;
+        height = 1 * line_height;
+        r1 = 4;
+        r2 = 4;
+        context.shadowBlur = 0;
+        context.shadowColor = "white";
+        context.arc(x + r1, y + r1, r2, pi * 1.0 , pi * 1.5, false); 
+        context.lineTo(x - r1 + width, y + r1 - r2); 
+        context.arc(x - r1 + width, y + r1, r2, pi * 1.5 , pi * 0, false); 
+        context.lineTo(x - r1 + width + r2, y - r1 + height); 
+        context.arc(x - r1 + width, y - r1 + height, r2, pi * 0, pi * 0.5, false); 
+        context.lineTo(x + r1, y - r1 + height + r2); 
+        context.arc(x + r1, y - r1 + height, r2, pi * 0.5, pi * 1.0, false); 
+        context.lineTo(x + r1 - r2, y + r1); 
+      } else {
+        r1 = 4;
+        r2 = 4;
+        x = start_column * char_width;
+        y = start_row * line_height;
+        context.shadowBlur = 0;
+        context.shadowColor = "white";
+        context.arc(x + r1, y + r1, r2, pi * 1.0 , pi * 1.5, false); 
+        length = start_column + lines[0].length;
+        x = length * char_width;
+        //context.lineTo(x - r1, y + r1 - r2); 
+        context.arc(x - r1, y + r1, r2, pi * 1.5 , pi * 0, false); 
         for (i = start_row + 1; i < end_row; ++i) {
           line = lines[i - start_row];
-          if (line) {
-            right_blank_length = column - line.length;
-            // clear post-end region
-            context.clearRect(width - right_blank_length * char_width, 
-                              i * line_height,
-                              right_blank_length * char_width,
-                              line_height);
+          if (undefined !== line) {
+            if (line.length < length) {
+              context.arc(x - r1, i * line_height - r1, r2, pi * 0, pi * 0.5); 
+              x = line.length * char_width;
+              context.lineTo(x - r1 + r2, i * line_height); 
+              length = line.length;
+            } else if (line.length > length) {
+              context.lineTo(x - r1 + r2, i * line_height); 
+              x = line.length * char_width;
+              context.arc(x - r1, i * line_height + r1, r2, pi * 1.5, pi * 2); 
+              length = line.length;
+            }
           }
         }
+        x = Math.min(line.length, end_column) * char_width;
+        context.arc(x - r1, i * line_height - r1, r2, pi * 0, pi * 0.5, false); 
+        context.arc(0 + r1, i * line_height - r1, r2, pi * 0.5, pi * 1.0, false); 
+        context.arc(0 + r1, (start_row + 1) * line_height + r1, r2, pi * 1.0 , pi * 1.5, false); 
+        context.lineTo(start_column * char_width + r1 - r2, y + line_height); 
+        context.lineTo(start_column * char_width + r1 - r2, y + r1); 
+        context.arc(start_column * char_width + r1, y + r1, r2, pi * 1.0 , pi * 1.5, false); 
       }
     }
+
+    context.shadowBlur = 10;
+    context.lineWidth = 3;
+    context.shadowColor = this._shadowColor;
+    context.fillStyle = this._color;
+    context.strokeStyle = this.edge_color;
+    context.fill();
+    //context.drawImage(this._canvas.parentNode, 0, 0);
+    context.stroke();
+    //this._context.globalCompositeOperation = "source-over";
+    //this.sendMessage("command/paint-foreground", this._context);
+    //this._context.globalCompositeOperation = "destination-and";
+    this._context.drawImage(this._working_canvas, 0, 0);
+    //this._context.drawImage(this._working_canvas, 0, 0);
+    //this._context.drawImage(this._working_canvas, 0, 0);
+    //this._context.strokeStyle = this.edge_color;
+    //this._context.shadowColor = this._shadowColor;
+    //this._context.globalCompositeOperation = "lighter";
+    ////context.globalAlpha = 0.2;
+    //this.sendMessage("command/paint-foreground", this._context);
+    //this.sendMessage("command/paint-foreground", this._context);
+    //this.sendMessage("command/paint-foreground", this._context);
+    //this.sendMessage("command/paint-foreground", this._context);
+    //context.globalAlpha = 1.0;
+    //this._context.globalCompositeOperation = "source-in";
+    //this._context.drawImage(this._working_canvas, 0, 0);
+    //this._context.globalCompositeOperation = "source-in";
+    //this._context.drawImage(this._working_canvas, 0, 0);
+    //this._context.drawImage(this._working_canvas, 0, 0);
+    //this._context.globalCompositeOperation = "source-over";
+    //this._context.drawImage(this._working_canvas, 0, 0);
+
   },
 
   selectSurroundChars: function selectSurroundChars(column, row) 
@@ -625,7 +718,10 @@ Selection.definition = {
   "[subscribe('command/paint-drag-region'), pnp]": 
   function paintForeground(context) 
   {
-    context.drawImage(this._canvas, 0, 0);
+    var i;
+    for (i = 0; i < 10; ++i) {
+      context.drawImage(this._canvas, 0, 0);
+    }
   },
 
   "[subscribe('get/selection-info'), pnp]": 
