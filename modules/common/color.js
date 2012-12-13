@@ -1030,6 +1030,103 @@ coUtils.Color = {
     return color;
   }, // _convertColorName
 
+  _getDiff: function _getDiff(lhs, rhs)
+  {
+     var diff = (Math.abs(lhs[0] - rhs[0]) * 299
+               + Math.abs(lhs[1] - rhs[1]) * 587 
+               + Math.abs(lhs[2] - rhs[2]) * 114) / 1000.0;
+  
+     return diff;
+  },
+
+  _adjustToMinDiff:
+  function _adjustToMinDiff(target, base, diff, mindiff)
+  {
+    var n = 0,
+        i,
+        e,
+        delta;
+
+    for (; n < 100; ++n) {
+      if (diff < mindiff) {
+        for (i = 0; i < 3; ++i) {
+          e = target[i];
+          delta = e - base[i];
+          if (0 === delta) {
+            delta = e > 128 ? -10 : +10;
+          } else {
+            delta = delta / Math.abs(delta) * Math.floor((mindiff - diff) / 3);
+          }
+          e += delta;
+          e = Math.round(e);
+          if (e > 0xff) {
+            e = 0xff; 
+          }
+          if (e < 0) {
+            e = 0;
+          }
+          target[i] = e;
+        }
+        diff = this._getDiff(target, base);
+      }
+    }
+  
+    return diff;
+  },
+
+  _adjustToMaxDiff:
+  function _adjustToMinDiff(target, base, diff, maxdiff)
+  {
+    var n = 0,
+        i,
+        e;
+
+    for (; n < 100; ++n) {
+      if (diff > maxdiff) {
+        for (i = 0; i < 3; ++i) {
+          e = target[i];
+          e = e + (base[i] - e) * 0.1;
+          e = Math.round(e);
+          if (e > 0xff) {
+            e = 0xff; 
+          }
+          if (e < 0) {
+            e = 0;
+          }
+          target[i] = e;
+        }
+        diff = this._getDiff(target, base);
+      }
+    }
+
+    return diff;
+  },
+
+  adjust: function adjust(lhs, rhs, mindiff, maxdiff)
+  {
+    var lhs_rgb = lhs
+          .match(/[0-9A-Fa-f]{2}/g)
+          .map(function mapFunc(hex)
+            {
+              return parseInt(hex, 16);
+            }),
+        rhs_rgb = rhs
+          .match(/[0-9A-Fa-f]{2}/g)
+          .map(function mapFunc(hex)
+            {
+              return parseInt(hex, 16);
+            }),
+        diff = this._getDiff(lhs_rgb, rhs_rgb),
+        result;
+  
+    diff = this._adjustToMinDiff(lhs_rgb, rhs_rgb, diff, mindiff);
+    diff = this._adjustToMaxDiff(lhs_rgb, rhs_rgb, diff, maxdiff);
+    result = "#" + (0x1000000 + (lhs_rgb[0] << 16 | lhs_rgb[1] << 8 | lhs_rgb[2]))
+            .toString(16)
+            .substr(1);
+    return result;
+  },
+
 }; // coUtils.Color
 
 
