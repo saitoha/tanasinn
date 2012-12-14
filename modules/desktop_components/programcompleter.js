@@ -205,6 +205,7 @@ ProgramCompleter.definition = {
         search_path = this._search_path,
         map,
         keys,
+        key,
         i;
 
     if (null === this._search_path) {
@@ -229,6 +230,7 @@ ProgramCompleter.definition = {
         keys = Object.keys(map);
         search_path = [];
         for (i = 0; i < keys.length; ++i) {
+          key = keys[i];
           search_path.push(key);
         }
       } else {
