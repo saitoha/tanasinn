@@ -146,7 +146,10 @@ def trace(message):
             os.system("espeak '%s'" % message)
         if system[0] == 'CYGWIN_NT-6.0':
             os.system("SofTalk.exe /T:0 /W:%s" % message)
-    log.write(message + "\n") 
+    try:
+      log.write(message + "\n") 
+    except:
+      pass
 
 trace("start.")
 
