@@ -885,6 +885,8 @@ InputManager.definition = {
 
     this._textbox = result.tanasinn_default_input;
     this.sendMessage("event/collection-changed/modes");
+
+    this.onDoubleShift.enabled = true;
   },
 
   /** Uninstalls itself. 
@@ -901,6 +903,7 @@ InputManager.definition = {
 
     this._encoder = null;
     this._parser = null;
+    this.onDoubleShift.enabled = false;
   },
 
   "[subscribe('set/local-echo-mode'), pnp]":
@@ -955,7 +958,7 @@ InputManager.definition = {
       coUtils.Constant.INPUT_MODE_NORMAL);
   },
 
-  "[command('blur', []), nmap('<M-z>', '<C-S-Z>'), _('Blur tanasinn window'), pnp]":
+  "[command('blur', []), nmap('<M-z>', '<C-S-z>', '<C-S-Z>'), _('Blur tanasinn window'), pnp]":
   function blurCommand() 
   {
     coUtils.Timer.setTimeout(
@@ -997,9 +1000,9 @@ InputManager.definition = {
     return this._textbox;
   },
 
-  /** handle double-shift key event, and interpret it to <2-Shift> */
-  "[subscribe('event/hotkey-double-shift'), pnp]":
-  function onDoubleShift(event) 
+  /** handle double-shift key event, and interpret it to <2-shift> */
+  "[subscribe('event/hotkey-double-shift')]":
+  function onDoubleShift() 
   {
     this.sendMessage(
       "command/input-expression-with-remapping", 
@@ -1019,7 +1022,7 @@ InputManager.definition = {
   },
 
   /** handle <2-shift> event, and switch focus to commandline. */
-  "[nmap('<2-shift>', '<cmode>')]":
+  "[nmap('<2-shift>', '<cmode>'), pnp]":
   function switchToCommandline(event) 
   { // nothrow
     this.sendMessage("command/enable-commandline")
