@@ -193,6 +193,11 @@ SocketTeletypeService.definition = {
       // resume 
       context = JSON.parse(coUtils.IO.readFromFile(backup_data_path, "utf-8"));
       this.sendMessage("command/restore", context);
+      coUtils.Timer.setTimeout(
+        function timerProc()
+        {
+          this.sendMessage("command/draw", true);
+        }, 500, this);
       var file = coUtils.File.getFileLeafFromVirtualPath(backup_data_path);
       if (file.exists()) {
         file.remove(false)

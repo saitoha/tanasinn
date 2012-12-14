@@ -122,7 +122,7 @@
 
 import os, socket, errno, sys, signal, re, fcntl, struct, termios, base64, select, pty
 
-debug_flag = False
+debug_flag = True
 
 BUFFER_SIZE = 2048
 
@@ -383,11 +383,11 @@ class TeletypeDriver:
         except:
             pass 
 
-def add_record(request_id, command, control_port, pid, ttyname):
+def add_record(sessiondb_path, request_id, command, control_port, pid, ttyname):
     lockfile = open(sys.argv[0], "r")
     try:
         fcntl.flock(lockfile.fileno(), fcntl.LOCK_EX)
-        f = open(sessiondb_path, "a")
+        f = open(sessiondb_path, "aw")
         try:
             f.write("%s,%s,%s,%s,%s\n" 
                     % (request_id, base64.b64encode(command), control_port, pid, ttyname));
@@ -398,7 +398,7 @@ def add_record(request_id, command, control_port, pid, ttyname):
         lockfile.close()
 
 
-def del_record(request_id):
+def del_record(sessiondb_path, request_id):
     lockfile = open(sys.argv[0], "r")
     try:
         fcntl.flock(lockfile.fileno(), fcntl.LOCK_EX)
@@ -406,7 +406,8 @@ def del_record(request_id):
         lines = [];
         try:
             for line in f:
-                lines.append(line)
+                if line.split(",")[0] != request_id:
+                    lines.append(line)
 
             f.seek()
 
@@ -540,7 +541,7 @@ if __name__ == "__main__":
                 trace("closed.")
                 break
             else:
-                add_record(request_id, command, control_port, pid, ttyname)
+                add_record(sessiondb_path, request_id, command, control_port, pid, ttyname)
                 trace("suspended.")
 
                 # re-establish <Control channel> socket connection. 
@@ -550,7 +551,8 @@ if __name__ == "__main__":
                 io_port = int(io_port_str)
                 sessiondb_path = base64.b64decode(sessiondb_path)
 
-                os.system("test -e ~/.tanasinn/sessions.txt && sed -i -e '/^%s,/d' ~/.tanasinn/sessions.txt" % request_id)
+                #del_record(sessiondb_path, request_id)
+                #os.system("test -e ~/.tanasinn/sessions.txt && sed -i -e '/^%s,/d' ~/.tanasinn/sessions.txt" % request_id)
 
     except socket.error:
         trace("A socket error occured.")
