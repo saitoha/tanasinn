@@ -28,51 +28,22 @@ try {
    /**
    * @fn getTanasinnProcess
    */
-  var getTanasinnProcess = function getTanasinnProcess() 
+  var desktop = function getDesktop() 
       {
-        var current_file = Components.stack
-              .filename
-              .split(" -> ").pop()
-              .split("?").shift()
+        var current_file = Components.stack.filename.split(" -> ").pop().split("?").shift()
               .replace(/^liberator:\/\/template\//, ""),
-            id = new Date().getTime(),
-            file = current_file + "/../../tanasinn/modules/common/process.js?" + id,
+            path = current_file + "/../../tanasinn/modules/common/process.js",// + new Date().getTime(),
             scope = {};
-
-        Components
-          .classes["@mozilla.org/moz/jssubscript-loader;1"]
-          .getService(Components.interfaces.mozIJSSubScriptLoader)
-          .loadSubScript(file, scope);
-        
-        return scope.g_process;
-      },
-      getDesktop = function getDesktop() 
-      {
-        var process = getTanasinnProcess(),
-            desktops = process.notify("get/desktop-from-window", window),
-            desktop;
-
-        if (desktops) {
-          desktop = desktops.filter(
-            function filterProc(desktop)
-            {
-              return desktop;
-            })[0];
-          if (desktop) {
-            return desktop;
-          }
-        }
-        desktop = process.callSync("event/new-window-detected", window);
-        return desktop;
-      };
-
-  var liberator = window.liberator,
+        Cc["@mozilla.org/moz/jssubscript-loader;1"].getService(Ci.mozIJSSubScriptLoader)
+          .loadSubScript(path, scope);
+        return scope.g_process.getDesktopFromWindow(window);
+      }(),
+      liberator = window.liberator,
       commands = liberator.modules.commands,
       completion = liberator.modules.completion,
       mappings = liberator.modules.mappings,
       modes = liberator.modules.modes,
-      editor = liberator.modules.editor,
-      desktop = getDesktop();
+      editor = liberator.modules.editor;
   
   /**
    * @command tanasinnlaunch 
@@ -164,11 +135,18 @@ try {
         io.withTempFiles(
           function (tmpfile)
           {
-try {
             // save URL to file
             var persist = Components
               .classes["@mozilla.org/embedding/browser/nsWebBrowserPersist;1"]
-              .createInstance(Components.interfaces.nsIWebBrowserPersist);
+              .createInstance(Components.interfaces.nsIWebBrowserPersist),
+                count = 0;
+            persist.persistFlags |= persist.PERSIST_FLAGS_AUTODETECT_APPLY_CONVERSION
+                                  | persist.PERSIST_FLAGS_FROM_CACHE
+                                  | persist.PERSIST_FLAGS_REPLACE_EXISTING_FILES
+                                  | persist.ENCODE_FLAGS_FORMATTED
+                                  //| persist.ENCODE_FLAGS_CR_LINEBREAKS
+                                  //| persist.ENCODE_FLAGS_LF_LINEBREAKS
+                                  ;
             persist.saveURI(url,
                             /* aCacheKey */ null,
                             /* aReferrer */ null,
@@ -179,11 +157,18 @@ try {
             window.setTimeout(
               function timerFunc()
               {
-                desktop.notify(
-                  "command/start-session", 
-                  viewsource_command.replace(/%/g, tmpfile.path));
-              }, 1000);
-} catch (e) {alert(e)}
+                if (10 === ++count) {
+                  desktop.notify(
+                    "command/start-session", 
+                    viewsource_command.replace(/%/g, path));
+                } else if (persist.PERSIST_STATE_FINISHED === persist.currentState) {
+                  desktop.notify(
+                    "command/start-session", 
+                    viewsource_command.replace(/%/g, tmpfile.path));
+                } else {
+                  setTimeout(timerFunc, 200);
+                }
+              }, 500);
           });
       };
     } else { // when path is native one.

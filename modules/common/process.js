@@ -333,15 +333,21 @@ void function() {
   
     getDesktopFromWindow: function getDesktopFromWindow(window) 
     {
-      var desktops = this.notify("get/desktop-from-window", window);
-
-      if (!desktops) {
-        this.notify("event/new-window-detected", window);
-        desktops = this.notify("get/desktop-from-window", window);
+      var desktops = this.notify("get/desktop-from-window", window),
+          desktop;
+      if (desktops) {
+        desktop = desktops.filter(
+          function filterProc(desktop)
+          {
+            return desktop;
+          })[0];
+        if (desktop) {
+          return desktop;
+        }
       }
-      return desktops.shift();
+      return this.callSync("event/new-window-detected", window);
     },
-
+    
     /* override */
     toString: function toString()
     {
