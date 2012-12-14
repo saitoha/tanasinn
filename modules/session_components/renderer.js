@@ -387,6 +387,11 @@ Renderer.definition = {
     this.onHeightChanged();
   },
 
+  getCanvas: function getCanvas(context) 
+  {
+    return this._main_layer.canvas;
+  },
+
   "[subscribe('command/paint-foreground'), pnp]": 
   function paintForeground(context) 
   {
@@ -519,9 +524,10 @@ Renderer.definition = {
         height = line_height;
 
     this._drawBackground(context, 
-                         left | 0, 
+                         left,// | 0, 
                          top, 
-                         Math.round(width + Math.ceil(left) - left), 
+			 width,
+                         //Math.round(width + Math.ceil(left) - left), 
                          height, 
                          attr);
 
@@ -532,7 +538,7 @@ Renderer.definition = {
 
     this._drawWord(context, 
                    codes, 
-                   left, 
+                   left,// | 0, 
                    top + text_offset, 
                    char_width, 
                    end - column, 
@@ -772,17 +778,17 @@ Renderer.definition = {
   _drawBackgroundImpl: 
   function _drawBackgroundImpl(context, x, y, width, height, attr) 
   {
-    var back_color = this._palette.get_back_color(attr);
+    var back_color = this._palette.getBackColor(attr);
 
     if (null === back_color) {
-      context.clearRect(x, y, width + 1, height);
+      context.clearRect(x, y, width, height);
     } else {
       context.globalAlpha = this.background_alpha;
 
       /* Draw background */
       context.fillStyle = back_color;
-      context.clearRect(x, y, width + 1, height);
-      context.fillRect(x, y, width + 1, height);
+      context.clearRect(x, y, width, height);
+      context.fillRect(x, y, width, height);
     }
   },
 
@@ -799,7 +805,7 @@ Renderer.definition = {
                      attr,
                      type)
   {
-    var fore_color = this._palette.get_fore_color(attr),
+    var fore_color = this._palette.getForeColor(attr),
         code,
         dscs,
         drcs_state = attr.drcs;
@@ -850,37 +856,6 @@ Renderer.definition = {
     } else {
       this._drawText(context, codes, x, y, char_width, length, attr);
     }
-  },
-
-  _get_fore_color: function _get_fore_color(attr)
-  {
-    var fore_color_map = this.color,
-        fore_color;
-
-    // Get hexadecimal formatted text color (#xxxxxx) 
-    // form given attribute structure. 
-    if (attr.fgcolor) {
-      if (attr.inverse) {
-        fore_color = fore_color_map[attr.bg];
-      } else {
-        fore_color = fore_color_map[attr.fg];
-      }
-    } else {
-      if (attr.inverse) {
-        fore_color = this.background_color;
-      } else {
-        fore_color = this.foreground_color;
-      }
-    }
-
-    if (this._reverse) {
-      fore_color = (parseInt(fore_color.substr(1), 16) ^ 0x1ffffff)
-        .toString(16)
-        .replace(/^1/, "#");
-    }
-
-    return fore_color;
-
   },
 
   _drawText: function _drawText(context, codes, x, y, char_width, length, attr)
