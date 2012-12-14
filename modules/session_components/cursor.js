@@ -73,8 +73,11 @@ Cursor.definition = {
   _initial_color: null,
 
   "[persistable, watchable] color": "#77ff77",
-  "[persistable, watchable] opacity": 0.7,
+  "[persistable, watchable] opacity": 0.5,
   "[persistable, watchable] opacity2": 0.1,
+  "[persistable, watchable] radius": 2,
+  "[persistable, watchable] shadow_blur": 4,
+  "[persistable, watchable] shadow_color": "white",
   "[persistable] blink_duration": 700, /* in msec */
   "[persistable] blink_transition_duration": 600, /* in msec */
   "[persistable] timing_function": "ease-in-out",
@@ -408,7 +411,7 @@ Cursor.definition = {
   },
 
   /** Set cursor position */
-  "[subscribe('variable-changed/cursor.{color | opacity}'), pnp]": 
+  "[subscribe('variable-changed/cursor.{color | opacity | opacity2 | radius | shadow_blur | shadow_color}'), pnp]": 
   function onCursorSettingsChanged() 
   {
     this.update();
@@ -494,7 +497,8 @@ Cursor.definition = {
         x,
         width,
         height,
-        line_height;
+        line_height,
+	r;
 
     // calculate cursor position, size
     switch (this._style) {
@@ -533,11 +537,18 @@ Cursor.definition = {
       case coUtils.Constant.INPUT_MODE_NORMAL:
         // set cursor color
         context.fillStyle = this.color;
-
         // draw
-        context.fillRect(x, y, width, height);
+	context.shadowBlur = this.shadow_blur;
+	context.shadowColor = this.shadow_color;
+	context.beginPath();
+	r = this.radius;
+	context.arc(x + r, y + r, r, Math.PI, Math.PI * 1.5, false);
+	context.arc(x + width - r, y + r, r, Math.PI * 1.5, Math.PI * 0, false);
+	context.arc(x + width - r, y + height - r, r, Math.PI * 0, Math.PI * 0.5, false);
+	context.arc(x + r, y + height - r, r, Math.PI * 0.5, Math.PI * 1, false);
+	context.fill();
 
-        this._previous_position = [x - 3, y - 3, width + 6, height + 6];
+        this._previous_position = [x - 13, y - 13, width + 26, height + 26];
         break;
 
       case coUtils.Constant.INPUT_MODE_COMMANDLINE:
@@ -547,8 +558,18 @@ Cursor.definition = {
         context.lineJoin = "round";
 
         // draw
-        context.strokeRect(x - 1, y - 1, width + 2, height + 2);
-        this._previous_position = [x - 3, y - 3, width + 6, height + 6];
+	context.shadowBlur = this.shadow_blur;
+	context.shadowColor = this.shadow_color;
+	context.beginPath();
+	r = this.radius;
+	context.arc(x + r, y + r, r, Math.PI, Math.PI * 1.5, false);
+	context.arc(x + width - r, y + r, r, Math.PI * 1.5, Math.PI * 0, false);
+	context.arc(x + width - r, y + height - r, r, Math.PI * 0, Math.PI * 0.5, false);
+	context.arc(x + r, y + height - r, r, Math.PI * 0.5, Math.PI * 1, false);
+	context.lineTo(x, y + r);
+	context.stroke();
+
+        this._previous_position = [x - 13, y - 13, width + 26, height + 26];
         break;
 
       default:
