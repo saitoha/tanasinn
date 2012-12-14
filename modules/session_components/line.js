@@ -1041,12 +1041,12 @@ Line.definition = {
         //}
       }
       end = position + codes.length;
-      if (position > 0) {
-	--position;
-      }
-      if (end < cells.length) {
-	++end;
-      }
+      //if (position > 0) {
+      //  --position;
+      //}
+      //if (end < cells.length) {
+      //  ++end;
+      //}
       this.addRange(position, end);
     }
   },
