@@ -309,6 +309,7 @@ OuterChrome.definition = {
   _element: null,
   _frame: null,
   _timer: null,
+  _chrome: null,
 
 
   /** Installs itself. 
@@ -321,6 +322,7 @@ OuterChrome.definition = {
     var result = this.request("command/construct-chrome", this._getTemplate());
 
     this._element = result.tanasinn_outer_chrome;
+    this._chrome = result.tanasinn_chrome;
     this._frame = result.tanasinn_background_frame;
 
     if (this.auto_color_adjustment) {
@@ -347,6 +349,9 @@ OuterChrome.definition = {
         }
       }
       this._element = null;
+    }
+    if (null !== this._chrome) {
+      this._chrome = null;
     }
     if (null !== this._timer) {
       this._timer.cancel();
@@ -379,35 +384,47 @@ OuterChrome.definition = {
     this._frame.style.cssText = this._getFrameStyle();
   },
 
-  "[subscribe('event/shift-key-down'), enabled]": 
+  "[subscribe('event/shift-key-down'), pnp]": 
   function onShiftKeyDown() 
   {
-    var target = this._element.querySelector("#tanasinn_chrome");
-    target.style.cursor = "move";
+    var target = this._chrome;
+
+    if (null !== target) {
+      target.style.cursor = "move";
+    }
   },
 
-  "[subscribe('event/shift-key-up'), enabled]": 
+  "[subscribe('event/shift-key-up'), pnp]": 
   function onShiftKeyUp() 
   {
-    var target = this._element.querySelector("#tanasinn_chrome");
-    target.style.cursor = "";
+    var target = this._chrome;
+
+    if (null !== target) {
+      target.style.cursor = "";
+    }
   },
 
-  "[subscribe('event/alt-key-down'), enabled]": 
+  "[subscribe('event/alt-key-down'), pnp]": 
   function onAltKeyDown() 
   {
-    var target = this._element.querySelector("#tanasinn_chrome");
-    target.style.cursor = "crosshair";
+    var target = this._chrome;
+
+    if (null !== target) {
+      target.style.cursor = "crosshair";
+    }
   },
 
-  "[subscribe('event/alt-key-up'), enabled]": 
+  "[subscribe('event/alt-key-up'), pnp]":
   function onAltKeyUp() 
   {
-    var target = this._element.querySelector("#tanasinn_chrome");
-    target.style.cursor = "";
+    var target = this._chrome;
+
+    if (null !== target) {
+      target.style.cursor = "";
+    }
   },
 
-  "[subscribe('command/set-opacity'), enabled]": 
+  "[subscribe('command/set-opacity'), pnp]": 
   function setOpacity(opacity, duration) 
   {
     // get target element
