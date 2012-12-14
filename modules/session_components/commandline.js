@@ -386,6 +386,12 @@ CompletionView.definition = {
     };
   },
 
+  "[subscribe('variable-changed/outerchrome.foreground_color'), pnp]": 
+  function updateColor(color) 
+  {
+    this._textbox.font_color = this._outerchrome.foreground_color;
+  },
+
   "[subscribe('command/select-current-candidate'), pnp]":
   function enter(info)
   {
@@ -421,6 +427,7 @@ CompletionView.definition = {
  *
  */
 var Commandline = new Class().extends(Plugin)
+                             .depends("outerchrome")
                              .mix(CompletionView);
 Commandline.definition = {
 
@@ -550,6 +557,8 @@ Commandline.definition = {
     this._canvas = result.tanasinn_commandline_canvas;
 
     this._textbox = new TextboxWidget(result.tanasinn_commandline, this._canvas);
+    this._outerchrome = context["outerchrome"];
+    this._textbox.font_color = this._outerchrome.foreground_color;
     this._popup = result.tanasinn_completion_popup;
     this._scroll = result.tanasinn_completion_scroll;
     this._completion_root = result.tanasinn_completion_root;
