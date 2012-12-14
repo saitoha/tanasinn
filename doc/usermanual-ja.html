@@ -1618,53 +1618,6 @@ ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/</code></pre>
 <pre><code>$RUNTIMEは'$HOME/.{vimperator,muttator}'のようなVimperator/Muttatorのランタイムディレクトリです。</code></pre>
 </div></div>
 </div>
-<div class="sect2">
-<h3 id="_keysnail経由でインストール">8.3. KeySnail経由でインストール:</h3>
-<div class="listingblock">
-<div class="title">keysnail.js</div>
-<div class="content">
-<pre><code>............
-
-void function install_tanasinn() {
-
-    var file = "file:///…………/tanasinn/modules/common/process.js"; // &lt;-- process.jsのパス(URL表現)
-
-    var contractID = "@zuse.jp/tanasinn/process;1";
-    var process_class = Components.classes[contractID]
-    if (!process_class) {
-        Components.classes["@mozilla.org/moz/jssubscript-loader;1"]
-            .getService(Components.interfaces.mozIJSSubScriptLoader)
-            .loadSubScript(file);
-        process_class = Components.classes[contractID]
-    }
-    var process = process_class
-        .getService(Components.interfaces.nsISupports)
-        .wrappedJSObject;
-
-    shell.add(["tanasinnlaunch","tla[unch]"],
-              "Show tanasinn's Launcher.",
-              function () {
-                  process.getDesktopFromWindow(window)
-                      .post("command/show-launcher");
-              }, {
-                argcount: "0",
-                bang: true
-              });
-
-    shell.add(["tanasinnstart","tst[art]"],
-              "Run a command on tanasinn.",
-              function (args, extra) {
-                  process.getDesktopFromWindow(window)
-                      .post("command/start-session", extra.left);
-              }, {
-                argcount: "?",
-                bang: true
-              });
-} ();
-
-............</code></pre>
-</div></div>
-</div>
 </div>
 </div>
 <div class="sect1">
@@ -3589,7 +3542,7 @@ twitter: <a href="http://twitter.com/kefir_">http://twitter.com/kefir_</a></p></
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2012-12-04 22:29:12 JST
+Last updated 2012-12-14 22:44:34 JST
 </div>
 </div>
 </body>
