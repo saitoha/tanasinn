@@ -475,8 +475,12 @@ Selection.definition = {
    */
   _setClearAction: function _setClearAction() 
   {
-    this.onClickAfterSelect.enabled = true;
-    this.onScrollAfterSelect.enabled = true;
+    coUtils.Timer.setTimeout(
+      function()
+      {
+        this.onClickAfterSelect.enabled = true;
+        this.onScrollAfterSelect.enabled = true;
+      }, 100, this);
   },
 
   "[listen('mouseup', '#tanasinn_content')]":
@@ -561,9 +565,7 @@ Selection.definition = {
       [first, last] = arguments;
     }
 
-    this._working_canvas.width = this._canvas.width;
-    this._working_canvas.height = this._canvas.height;
-    context = this._working_context;
+    context = this._context;
 
     screen = this._screen;
     renderer = this._renderer;
@@ -667,37 +669,15 @@ Selection.definition = {
       }
     }
 
-    context.shadowBlur = 10;
-    context.lineWidth = 3;
     context.shadowColor = this._shadowColor;
     context.fillStyle = this._color;
-    context.strokeStyle = this.edge_color;
     context.fill();
-    //context.drawImage(this._canvas.parentNode, 0, 0);
+    context.shadowBlur = 18;
+    context.fillStyle = context.createPattern(this._renderer.getCanvas(), "");
+    context.fill();
+    context.strokeStyle = this.edge_color;
+    context.lineWidth = 4;
     context.stroke();
-    //this._context.globalCompositeOperation = "source-over";
-    //this.sendMessage("command/paint-foreground", this._context);
-    //this._context.globalCompositeOperation = "destination-and";
-    this._context.drawImage(this._working_canvas, 0, 0);
-    //this._context.drawImage(this._working_canvas, 0, 0);
-    //this._context.drawImage(this._working_canvas, 0, 0);
-    //this._context.strokeStyle = this.edge_color;
-    //this._context.shadowColor = this._shadowColor;
-    //this._context.globalCompositeOperation = "lighter";
-    ////context.globalAlpha = 0.2;
-    //this.sendMessage("command/paint-foreground", this._context);
-    //this.sendMessage("command/paint-foreground", this._context);
-    //this.sendMessage("command/paint-foreground", this._context);
-    //this.sendMessage("command/paint-foreground", this._context);
-    //context.globalAlpha = 1.0;
-    //this._context.globalCompositeOperation = "source-in";
-    //this._context.drawImage(this._working_canvas, 0, 0);
-    //this._context.globalCompositeOperation = "source-in";
-    //this._context.drawImage(this._working_canvas, 0, 0);
-    //this._context.drawImage(this._working_canvas, 0, 0);
-    //this._context.globalCompositeOperation = "source-over";
-    //this._context.drawImage(this._working_canvas, 0, 0);
-
   },
 
   selectSurroundChars: function selectSurroundChars(column, row) 
