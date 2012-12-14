@@ -131,7 +131,10 @@ if not hasattr(os, "uname"):
 
 system = os.uname()
 
-rcdir = os.path.join(os.getenv("HOME"), ".tanasinn")
+if 'CYGWIN' in system[0]:
+    rcdir = os.path.join(os.getenv("USERPROFILE"), ".tanasinn")
+else:
+    rcdir = os.path.join(os.getenv("HOME"), ".tanasinn")
 logdir = os.path.join(rcdir, "log")
 if not os.path.exists(logdir):
     os.makedirs(logdir)
