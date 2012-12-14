@@ -301,7 +301,7 @@ Renderer.definition = {
 
   // font
   "[watchable, persistable] font_family": 
-    "Monaco,Menlo,Lucida Console,monospace",
+    "Monaco,Menlo,Lucida Console,DejaVu Sans Mono,monospace",
 
   "[watchable, persistable] font_size": 16,
 
