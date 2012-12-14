@@ -399,8 +399,8 @@ Controller.definition = {
           .classes["@mozilla.org/network/socket-transport-service;1"]
           .getService(Components.interfaces.nsISocketTransportService)
           .createTransport(null, 0, "127.0.0.1", control_port, null),
-        istream = transport.openInputStream(0, 128, 1),
-        ostream = transport.openOutputStream(0, 128, 1),
+        istream = transport.openInputStream(0, 256, 1),
+        ostream = transport.openOutputStream(0, 256, 1),
         scriptable_stream = coUtils.Components.createScriptableInputStream(istream),
         pump = coUtils.Components.createStreamPump(istream, this);
 

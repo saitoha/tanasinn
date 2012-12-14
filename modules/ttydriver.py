@@ -122,7 +122,7 @@
 
 import os, socket, errno, sys, signal, re, fcntl, struct, termios, base64, select, pty
 
-debug_flag = True
+debug_flag = False
 
 BUFFER_SIZE = 2048
 
@@ -131,15 +131,17 @@ if not hasattr(os, "uname"):
 
 system = os.uname()
 
-if 'CYGWIN' in system[0]:
+if "CYGWIN" in system[0]:
     rcdir = os.path.join(os.getenv("USERPROFILE"), ".tanasinn")
 else:
     rcdir = os.path.join(os.getenv("HOME"), ".tanasinn")
+print rcdir
 logdir = os.path.join(rcdir, "log")
 if not os.path.exists(logdir):
     os.makedirs(logdir)
 logfile = os.path.join(logdir, "tty.log")
-log = open(logfile, "w")
+log = open(logfile, "aw")
+log.write("------\n")
 
 def trace(message):
     if debug_flag:
@@ -151,6 +153,7 @@ def trace(message):
             os.system("SofTalk.exe /T:0 /W:%s" % message)
     try:
       log.write(message + "\n") 
+      log.flush()
     except:
       pass
 
@@ -387,7 +390,7 @@ def add_record(sessiondb_path, request_id, command, control_port, pid, ttyname):
     lockfile = open(sys.argv[0], "r")
     try:
         fcntl.flock(lockfile.fileno(), fcntl.LOCK_EX)
-        f = open(sessiondb_path, "aw")
+        f = open(sessiondb_path, "a")
         try:
             f.write("%s,%s,%s,%s,%s\n" 
                     % (request_id, base64.b64encode(command), control_port, pid, ttyname));
@@ -402,14 +405,14 @@ def del_record(sessiondb_path, request_id):
     lockfile = open(sys.argv[0], "r")
     try:
         fcntl.flock(lockfile.fileno(), fcntl.LOCK_EX)
-        f = open(sessiondb_path, "rw")
+        f = open(sessiondb_path, "r")
         lines = [];
         try:
             for line in f:
                 if line.split(",")[0] != request_id:
                     lines.append(line)
-
-            f.seek()
+            
+            f.seek(0)
 
             for line in lines:
                 f.write(line)
@@ -552,7 +555,6 @@ if __name__ == "__main__":
                 sessiondb_path = base64.b64decode(sessiondb_path)
 
                 #del_record(sessiondb_path, request_id)
-                #os.system("test -e ~/.tanasinn/sessions.txt && sed -i -e '/^%s,/d' ~/.tanasinn/sessions.txt" % request_id)
 
     except socket.error:
         trace("A socket error occured.")
