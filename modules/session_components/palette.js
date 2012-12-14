@@ -104,13 +104,6 @@ var CO_XTERM_256_COLOR_PROFILE = [
   /* 252-255 */ "#d0d0d0", "#dadada", "#e4e4e4", "#eeeeee"
 ]; // CO_XTERM_256_COLOR_PROFILE
 
-function reverseColor(color)
-{
-  return (parseInt(color.substr(1), 16) ^ 0x1ffffff)
-    .toString(16)
-    .replace(/^1/, "#");
-}
-
 /**
  * @trait PaletteManager
  */
@@ -134,6 +127,7 @@ PaletteManager.definition = {
   
   /** color map for Normal characters. */
   "[watchable, persistable] color": CO_XTERM_256_COLOR_PROFILE.slice(0),       
+  "[persistable] enable_adjustment": true,
 
   foreground_color: null,
   background_color: null,
@@ -148,13 +142,16 @@ PaletteManager.definition = {
   "[install]":
   function install(context) 
   {
-    var i;
+    var outerchrome = context["outerchrome"];
 
-    this._outerchrome = context["outerchrome"];
+    this._outerchrome = outerchrome;
 
-    this.foreground_color = this._outerchrome.foreground_color;
-    this.background_color = this._outerchrome.background_color;
-    this.adjust_colors();
+    this.foreground_color = outerchrome.foreground_color;
+    this.background_color = outerchrome.background_color;
+
+    if (this.enable_adjustment) {
+      this.adjust_colors();
+    }
   },
 
   /** Uninstalls itself.
@@ -179,7 +176,7 @@ PaletteManager.definition = {
     for (; i < 16; ++i) {
       this.adjusted_color[i] = coUtils
         .Color
-        .adjust(this.color[i], base_color, 150, 180);
+        .adjust(this.color[i], base_color, 180, 200);
     }
     this.foreground_color = coUtils
       .Color
@@ -294,7 +291,9 @@ PaletteManager.definition = {
       color = coUtils.Color.parseX11ColorSpec(value);
       outerchrome.background_color = color;
       this.background_color = color;
-      this.adjust_colors();
+      if (this.enable_adjustment) {
+        this.adjust_colors();
+      }
       this.sendMessage("command/draw", true);
     }
   },
@@ -326,12 +325,12 @@ PaletteManager.definition = {
       map = this.color;
 
       for (i = 0; i < map.length; ++i) {
-        map[i] = reverseColor(map[i]);
+        map[i] = coUtils.Color.reverse(map[i]);
       }
 
       this.color = map;
-      this.background_color = reverseColor(this.background_color);
-      this.foreground_color = reverseColor(this.foreground_color);
+      this.background_color = coUtils.Color.reverse(this.background_color);
+      this.foreground_color = coUtils.Color.reverse(this.foreground_color);
 
       this.sendMessage("command/draw");
     }
@@ -372,7 +371,7 @@ PaletteManager.definition = {
   },
 
 
-  get_fore_color: function get_fore_color(attr)
+  getForeColor: function getForeColor(attr)
   {
     var fore_color;
 
@@ -410,7 +409,7 @@ PaletteManager.definition = {
 
   },
 
-  get_back_color: function get_back_color(attr)
+  getBackColor: function getBackColor(attr)
   {
     var back_color;
 
