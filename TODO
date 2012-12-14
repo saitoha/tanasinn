@@ -1,11 +1,16 @@
 
 
-- Fix broker debugger
+- Fix broken debugger
 - Support Windows 8 RTM
+- Support alternate screen transition
+- Support background color auto tuning
 
 - Fix full-width character copy/paste issue
 - Fix Ctrl + Space issue on X11 environment
 - Fix Alt-Shift issue on WINNT/X11 environment
+- Fix copying text includes combining characters
+
+- Supports multi page selection and auto-scrolling with dragging
 
 - UCS mode / ISO-2022 mode
 - The width issue of DEC Special graphics
