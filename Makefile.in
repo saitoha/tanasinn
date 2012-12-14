@@ -230,7 +230,7 @@ run-xulapp:
 update-web:
 	ssh user@zuse.jp ./build.sh
 
-release: update-web
+release: 
 	git checkout master
 	git merge develop
 	git tag $(PACKAGE_VERSION) || true

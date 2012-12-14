@@ -201,7 +201,6 @@ Selection.definition = {
   "[persistable] shadow_color": "#ffffff",
   _color: "#ffffff",
   _canvas: null,
-  _working_canvas: null,
   _context: null,
   _range: null,
   _highlight_region: null,
@@ -267,16 +266,6 @@ Selection.definition = {
     
     this._canvas = result.selection_canvas;
     this._context = result.selection_canvas.getContext("2d");
-
-    result = this.request(
-      "command/construct-chrome", 
-      {
-        tagName: "html:canvas",
-        id: "selection_working_canvas",
-      });
-
-    this._working_canvas = result.selection_working_canvas;
-    this._working_context = result.selection_working_canvas.getContext("2d");
   },
 
   /** Uninstalls itself 
@@ -287,12 +276,10 @@ Selection.definition = {
     if (null !== this._canvas) {
       this._canvas.parentNode.removeChild(this._canvas);
       this._canvas = null;
-      this._working_canvas = null;
     }
     if (null !== this._context) {
       this.clear();
       this._context = null;
-      this._working_context = null;
     }
 
   },
@@ -678,6 +665,7 @@ Selection.definition = {
     context.strokeStyle = this.edge_color;
     context.lineWidth = 4;
     context.stroke();
+    context = null;
   },
 
   selectSurroundChars: function selectSurroundChars(column, row) 

@@ -1186,7 +1186,7 @@ coUtils.Color = {
     acc = Math.round(r / 10) << 16
         | Math.round(g / 10) << 8
         | Math.round(b / 10);
-
+    canvas = null;
     return (0x1000000 + acc).toString(16).replace(/^1/, "#");
   },
 

@@ -258,11 +258,22 @@ Session.definition = {
     if (this._stopped) {
       return;
     }
+
     this._stopped = true
     this.stop.enabled = false;
 
-    this.notify("event/before-broker-stopping", this);
+    function wait(span) 
+    {
+      var end_time = Date.now() + span,
+          current_thread = coUtils.Services.getThreadManager().currentThread;
+    
+      do {
+        current_thread.processNextEvent(true);
+      } while ((current_thread.hasPendingEvents()) || Date.now() < end_time);
+    };
 
+
+    this.notify("event/before-broker-stopping", this);
     this.notify("event/broker-stopping", this);
     coUtils.Timer.setTimeout(
       function timerProc()
@@ -270,18 +281,9 @@ Session.definition = {
         this.notify("event/broker-stopped", this);
         this.unsubscribe(this._request_id);
         this.clear();
+      }, 30000, this)
 
-        this._window = null;
-
-        //if (coUtils.Runtime.app_name.match(/tanasinn/)) {
-        //  this.window.close(); // close window
-
-        //  var application = Components
-        //    .classes["@mozilla.org/fuel/application;1"]
-        //    .getService(Components.interfaces.fuelIApplication);
-        //  application.quit();
-        //}
-      }, 0, this);
+    this._window = null;
   },
 
 }; // class Session

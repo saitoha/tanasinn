@@ -476,7 +476,7 @@ EventBroker.prototype = {
                     {
                       return lhs > rhs
                     });
-    paths = paths.reverse()
+    //paths = paths.reverse()
 
     for (; i < paths.length; ++i) {
       entry = paths[i];

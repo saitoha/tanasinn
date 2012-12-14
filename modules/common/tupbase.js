@@ -759,6 +759,16 @@ Plugin.definition = {
   /** constructor */
   initialize: function initialize(broker)
   {
+    function wait(span) 
+    {
+      var end_time = Date.now() + span,
+          current_thread = coUtils.Services.getThreadManager().currentThread;
+    
+      do {
+        current_thread.processNextEvent(true);
+      } while ((current_thread.hasPendingEvents()) || Date.now() < end_time);
+    };
+
     broker.subscribe(
       "command/set-enabled/" + this.id, 
       function setEnabled(value) 
@@ -772,9 +782,9 @@ Plugin.definition = {
       {
         coUtils.Timer.setTimeout(
           function timerProc()
-	  {
+          {
             this.enabled = false;
-	  }, 3000 * Math.random());
+          }, 20000 * Math.random(), this);
       },
       this);
   },

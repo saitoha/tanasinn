@@ -26,6 +26,23 @@ link:./usermanual.html[English/英語]
 
 == News
 
+=== 2012-12-14
+    Version 0.3.1.11
+    Support auto color adjustment feature
+    Fix broken vimperator plugin
+    Fix broken title mode plugin
+    Fix broken "blur" command
+    Change default font size 
+    Support fancy style selection rendering
+    Support title stacking (xterm)
+    Implement rounded-style rectangle cursor rendering
+
+=== 2012-12-08
+    Version 0.3.1.10
+    Disable w3m plugin by default 
+    Disable overlay image plugin by default
+    Disable video plugin by default
+
 === 2012-12-04
     Version 0.3.1.9
     Add GCLI integration support
