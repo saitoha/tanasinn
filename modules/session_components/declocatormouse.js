@@ -388,7 +388,6 @@ DECLocatorMouse.definition = {
           while (count--)
             sequences.push("\x1bOB")
         } else if (count < 0) {
-          //sequences.push("\x1b[B")
           while (count++)
             sequences.push("\x1bOA")
         } else {
