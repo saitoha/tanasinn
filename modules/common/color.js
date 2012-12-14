@@ -1146,6 +1146,68 @@ coUtils.Color = {
     return result;
   },
 
+  /**
+   * @fn getAverageGlyphSize
+   * @brief Test font rendering and calculate average glyph width.
+   */
+  inspectContentColor: function inspectContentColor()
+  {
+    var NS_XHTML = "http://www.w3.org/1999/xhtml",
+        canvas = coUtils.getWindow()
+          .document
+          .createElementNS(NS_XHTML , "html:canvas"),
+        context = canvas.getContext("2d"),
+        content = coUtils.getWindow().content,
+        data,
+        w,
+        h,
+        i,
+        r = 0,
+        g = 0,
+        b = 0,
+        acc = 0;
+    canvas.width = 10;
+    canvas.height = 10;
+
+
+    w = content.innerWidth  || content.document.documentElement.clientWidth;
+    h = content.innerHeight || content.document.documentElement.clientHeight;
+    context.imageSmoothingEnabled = true;
+    context.save();
+    context.scale(10.0 / w, 10.0 / h);
+    context.drawWindow(content, content.scrollX, content.scrollY, w, h, "rgb(255,255,255)");
+    context.restore();
+    data = context.getImageData(0, 0, 10, 10).data;
+    for (i = 0; i < 400; i += 44) {
+      r += data[i];
+      g += data[i + 1];
+      b += data[i + 2];
+    }
+    acc = Math.round(r / 10) << 16
+        | Math.round(g / 10) << 8
+        | Math.round(b / 10);
+
+    return (0x1000000 + acc).toString(16).replace(/^1/, "#");
+  },
+
+  blend: function blend(lhs, rhs)
+  {
+    var lhs_rgb = this.parseCSSColor(lhs),
+        rhs_rgb = this.parseCSSColor(rhs),
+        result = "#"
+               + Math.round(0x100 + (lhs_rgb[0] + rhs_rgb[0]) / 2).toString(16).substr(1)
+               + Math.round(0x100 + (lhs_rgb[1] + rhs_rgb[1]) / 2).toString(16).substr(1)
+               + Math.round(0x100 + (lhs_rgb[2] + rhs_rgb[2]) / 2).toString(16).substr(1);
+    return result;
+  },
+
+  reverse: function reverse(color)
+  {
+    return (parseInt(color.substr(1), 16) ^ 0x1ffffff)
+      .toString(16)
+      .replace(/^1/, "#");
+  },
+
 }; // coUtils.Color
 
 
