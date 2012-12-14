@@ -142,6 +142,7 @@ OuterChrome.definition = {
   },
 
   "[persistable] enabled_when_startup": true,
+  "[persistable] auto_color_adjustment": false,
   "[persistable, watchable] background_opacity": 0.91,
   "[persistable, watchable] background_color": "#000000",
   "[persistable, watchable] foreground_color": "#ffffff",
@@ -322,9 +323,11 @@ OuterChrome.definition = {
     this._element = result.tanasinn_outer_chrome;
     this._frame = result.tanasinn_background_frame;
 
-    this.foreground_color = coUtils.Color.inspectContentColor();
-    this.background_color = coUtils.Color.reverse(this.foreground_color);
-    this.foreground_color = coUtils.Color.adjust(this.foreground_color, this.background_color, 180, 200);
+    if (this.auto_color_adjustment) {
+      this.foreground_color = coUtils.Color.inspectContentColor();
+      this.background_color = coUtils.Color.reverse(this.foreground_color);
+      this.foreground_color = coUtils.Color.adjust(this.foreground_color, this.background_color, 180, 200);
+    }
     //if (coUtils.Runtime.app_name.match(/tanasinn/)) {
     //  this._element.firstChild.style.borderRadius = "0px";
     //  this._element.firstChild.style.margin = "0px";
