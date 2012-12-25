@@ -131,7 +131,8 @@ PaletteManager.definition = {
 
   foreground_color: null,
   background_color: null,
-  adjusted_color: null,
+  adjusted_fgcolor: null,
+  adjusted_bgcolor: null,
 
   _reverse: false,
   _outerchrome: null,
@@ -149,9 +150,7 @@ PaletteManager.definition = {
     this.foreground_color = outerchrome.foreground_color;
     this.background_color = outerchrome.background_color;
 
-    if (this.enable_adjustment) {
-      this.adjust_colors();
-    }
+    this.adjust_colors();
   },
 
   /** Uninstalls itself.
@@ -163,24 +162,47 @@ PaletteManager.definition = {
 
     this.foreground_color = null;
     this.background_color = null;
-    this.adjusted_color = null;
+    this.adjusted_fgcolor = null;
   },
 
   adjust_colors: function adjust_colors() 
   {
-    var i = 0,
+    var i,
         base_color = this.background_color;
 
-    this.adjusted_color = this.adjust_color || this.color.slice(0);
+    if (this.enable_adjustment) {
+      this.adjusted_fgcolor = this.adjusted_fgcolor || this.color.slice(0);
+      this.adjusted_bgcolor = this.adjusted_bgcolor || this.color.slice(0);
 
-    for (; i < 16; ++i) {
-      this.adjusted_color[i] = coUtils
+      for (i = 0; i < 16; ++i) {
+        this.adjusted_fgcolor[i] = coUtils
+          .Color
+          .adjust(this.color[i], base_color, 180, 200);
+      }
+
+      for (i = 0; i < 16; ++i) {
+        this.adjusted_bgcolor[i] = coUtils
+          .Color
+          .adjust(this.color[i], base_color, 100, 120);
+      }
+      this.inverted_foreground_color = coUtils
         .Color
-        .adjust(this.color[i], base_color, 180, 200);
+        .adjust(this.background_color, base_color, 120, 150);
+
+      this.foreground_color = coUtils
+        .Color
+        .adjust(this.foreground_color, base_color, 150, 180);
+
+      this.inverted_background_color = coUtils
+        .Color
+        .adjust(this.foreground_color, base_color, 120, 150);
+    } else {
+      this.adjusted_fgcolor = this.color;
+      this.adjusted_bgcolor = this.color;
+      this.inverted_foreground_color = this.background_color;
+      this.inverted_background_color = this.foreground_color;
     }
-    this.foreground_color = coUtils
-      .Color
-      .adjust(this.foreground_color, base_color, 150, 180);
+
   },
 
   "[subscribe('sequence/osc/4'), enabled]": 
@@ -291,9 +313,7 @@ PaletteManager.definition = {
       color = coUtils.Color.parseX11ColorSpec(value);
       outerchrome.background_color = color;
       this.background_color = color;
-      if (this.enable_adjustment) {
-        this.adjust_colors();
-      }
+      this.adjust_colors();
       this.sendMessage("command/draw", true);
     }
   },
@@ -382,13 +402,13 @@ PaletteManager.definition = {
         if (1 === attr.inverse) {
           fore_color = this.color[attr.bg];
         } else {
-          fore_color = this.color[attr.fg];
+          fore_color = this.adjusted_fgcolor[attr.fg];
         }
       } else {
         if (1 === attr.inverse) {
-          fore_color = this.adjusted_color[attr.bg];
+          fore_color = this.adjusted_fgcolor[attr.bg];
         } else {
-          fore_color = this.adjusted_color[attr.fg];
+          fore_color = this.adjusted_fgcolor[attr.fg];
         }
       }
     } else {
@@ -398,12 +418,6 @@ PaletteManager.definition = {
         fore_color = this.foreground_color;
       }
     }
-
-//    if (this._reverse) {
-//      fore_color = (parseInt(fore_color.substr(1), 16) ^ 0x1ffffff)
-//        .toString(16)
-//        .replace(/^1/, "#");
-//    }
 
     return fore_color;
 
@@ -417,13 +431,13 @@ PaletteManager.definition = {
      * form given attribute structure. */
     if (1 === attr.bgcolor) {
       if (1 === attr.inverse) {
-        back_color = this.color[attr.fg];
+        back_color = this.adjusted_bgcolor[attr.fg];
       } else {
-        back_color = this.color[attr.bg];
+        back_color = this.adjusted_bgcolor[attr.bg];
       }
     } else {
       if (1 === attr.inverse) {
-        back_color = this.foreground_color;
+        back_color = this.inverted_background_color;
       } else {
         return null;
       }
