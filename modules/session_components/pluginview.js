@@ -351,7 +351,7 @@ PluginManagementCommands.definition = {
 
   _impl: function _impl(arguments_string, is_enable) 
   {
-    var match = arguments_string.match(/^(\s*)([$_\-@a-zA-Z\.]+)(\s*)$/),
+    var match = arguments_string.match(/^(\s*)([$_\-@0-9a-zA-Z\.]+)(\s*)$/),
         modules,
         space,
         name,
@@ -399,7 +399,7 @@ PluginManagementCommands.definition = {
     };
   },
 
-};
+}; // PluginViewer
 
 
 /**
