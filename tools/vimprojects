@@ -91,6 +91,7 @@
    textdisplaydriver.js
    launchercompletionprovider.js
    dragmove.js
+   openinw3m.js
   }
   shared_components=shared_components {
    builder.js
@@ -179,6 +180,7 @@
     autorepeat.js
     blink.js
     tcem.js
+    appesc.js
     scrollbarmode.js
     titlemode.js
     terminalmode.js

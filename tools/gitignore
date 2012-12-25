@@ -4,8 +4,9 @@
 
 # vim swap file
 *~
-*.un~
-\#*#
+.*.un~
+.*.swp
+.\#*#
 
 # autoconf
 config.log
