@@ -236,7 +236,7 @@ DragTransform.definition = {
 
     this._begin_point = this.get2DCoordinate(event);
     box = this._element.boxObject;
-    this.perspective = Math.floor(box.width + box.height);
+    this.perspective = Math.floor(Math.sqrt(box.width * box.width + box.height * box.height));
 
     this.onMouseMove.enabled = true;
     this.onMouseUp.enabled = true;
