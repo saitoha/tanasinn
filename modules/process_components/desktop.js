@@ -98,6 +98,7 @@ Desktop.definition = {
   function initializeWithWindow(window)
   {
     this._window = window;
+    window.tanasinn_desktop = this;
     this.install();
   },
 
