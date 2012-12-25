@@ -89,6 +89,18 @@ var KEY_APPLICATION_CURSOR = {
   "Down"         : "<SS3>B",     // kd / kcud1
 };
 
+var KEY_NORMAL_ESCAPE = {
+  "ESC"           : "\x1b",
+  "Ctrl ["        : "\x1b", //  ESC
+  "Ctrl \x1b"     : "\x1b", //  ESC
+};
+
+var KEY_APPLICATION_ESCAPE = {
+  "ESC"           : "\x1bO[",
+  "Ctrl ["        : "\x1bO[", //  ESC
+  "Ctrl \x1b"     : "\x1bO[", //  ESC
+};
+
 var KEY_VT52_CURSOR = {
   "Left"         : "\x1bD",  // kl / kcub1
   "Up"           : "\x1bA",  // ku / kcuu1
@@ -507,6 +519,8 @@ DefaultKeyMappings.definition = {
 
   _cursor_mode: coUtils.Constant.CURSOR_MODE_NORMAL,
   _application_keypad: false,
+  _application_escape: false,
+  _us_escape: false,
 
   _map: null,
 
@@ -523,6 +537,13 @@ DefaultKeyMappings.definition = {
   "[uninstall]":
   function uninstall()
   {
+  },
+
+  "[subscribe('command/change-application-escape'), pnp]":
+  function onChangeApplicationEscape(mode)
+  {
+    this._application_escape = mode;
+    this.build(this._map);
   },
 
   "[subscribe('command/change-cursor-mode'), pnp]":
@@ -588,6 +609,13 @@ DefaultKeyMappings.definition = {
           _("Invalid cursor mode was specified: %s."), 
           this._cursor_mode);
         settings.push(KEY_NORMAL_CURSOR);
+    }
+
+    // set application escape mode
+    if (this._application_escape) {
+      settings.push(KEY_APPLICATION_ESCAPE);
+    } else {
+      settings.push(KEY_NORMAL_ESCAPE);
     }
 
     // set keypad mode
@@ -765,9 +793,11 @@ ModeManager.definition = {
 
     for (i = 0; i < packed_code_array.length; ++i) {
       packed_code = packed_code_array[i];
-      this.sendMessage("event/scan-keycode-with-no-remapping", { 
-        code: packed_code 
-      });
+      this.sendMessage(
+        "event/scan-keycode-with-no-remapping",
+        {
+          code: packed_code 
+        });
     }
     return true;
   },
