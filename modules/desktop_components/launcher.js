@@ -509,7 +509,7 @@ Launcher.definition = {
     this.setCompletionTrigger();
   },
 
-  "[subscribe('event/hotkey-double-{ctrl | alt}'), pnp]":
+  "[subscribe('event/hotkey-double-ctrl'), pnp]":
   function onDoubleCtrl() 
   {
     var box = this._element;
@@ -783,17 +783,31 @@ Launcher.definition = {
         this._last_altup_time = now;
       }
       this.sendMessage("event/alt-key-up");
+    } else {
+      this._last_shiftup_time = 0;
+      this._last_ctrlup_time = 0;
+      this._last_altup_time = 0;
     }
   },
 
   onkeydown: function onkeydown(event) 
   { // nothrow
     if (16 === event.keyCode && 16 === event.which && !event.isChar) {
+      this._last_ctrlup_time = 0;
+      this._last_altup_time = 0;
       this.sendMessage("event/shift-key-down");
     } else if (17 === event.keyCode && 17 === event.which && !event.isChar) {
+      this._last_shiftup_time = 0;
+      this._last_altup_time = 0;
       this.sendMessage("event/ctrl-key-down");
     } else if (18 === event.keyCode && 18 === event.which && !event.isChar) {
+      this._last_shiftup_time = 0;
+      this._last_ctrlup_time = 0;
       this.sendMessage("event/alt-key-down");
+    } else {
+      this._last_shiftup_time = 0;
+      this._last_ctrlup_time = 0;
+      this._last_altup_time = 0;
     }
   },
 }; // Launcher
