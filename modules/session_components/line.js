@@ -47,173 +47,30 @@ LineGeneratorConcept.definition = {
 //
 // Implementation
 //
+var _ATTR_BACKCOLOR    = 0,    // 00000000 00000000 00000000 11111111
+    _ATTR_FORECOLOR    = 8,    // 00000000 00000000 11111111 00000000
 
-////                                    vvvv                     v    
-//const ATTR_CHARACTER   = 0     // 00000000 00011111 11111111 11111111
-//const ATTR_FORECOLOR   = 24    // 00001111 00000000 00000000 00000000
-//const ATTR_BOLD        = 21    // 00000000 00100000 00000000 00000000
-//const ATTR_BACKCOLOR   = 28    // 11110000 00000000 00000000 00000000
-//
-//const ATTR_UNDERLINE   = 22    // 00000000 01000000 00000000 00000000
-//const ATTR_INVERSE     = 23    // 00000000 10000000 00000000 00000000
-//
-///**
-// * @class Cell
-// * @brief Bit-packed structure for terminal cell's attribute.
-// */
-//var Cell = new Class();
-//Cell.definition = {
-//
-//  /** default value */
-//  value: 0x0,
-//
-//  get c()
-//  {
-//    this.value ^ 0x20;
-//    //this.value & 0x1fffff ^ 0x20;
-//  },
-//
-////  set c(value)
-////    this.value = (this.value & ~0x1fffff | value) ^ 0x20,
-////    //this.value = (this.value | 0x1fffff) & (value ^ 0x20),
-//
-//  /** getter of foreground color */
-//  get fg()
-//  {
-//    return this.inverse ?
-//      this.value >>> ATTR_BACKCOLOR & 0xf
-//    : (this.value >>> ATTR_FORECOLOR & 0xf) ^ 0xf;
-//  },
-//
-//  /** setter of foreground color */
-//  set fg(value)
-//  {
-//    this.value = this.value & ~(0xf << ATTR_FORECOLOR) 
-//               | ((value ^ 0xf & 0xf) << ATTR_FORECOLOR);
-//  },
-//
-//  /** getter of background color */
-//  get bg()
-//  {
-//    return this.inverse ?
-//      (this.value >>> ATTR_FORECOLOR & 0xf) ^ 0xf
-//    : this.value >>> ATTR_BACKCOLOR & 0xf;
-//  },
-//
-//  /** setter of background color */
-//  set bg(value)
-//  {
-//    this.value = this.value & ~(0xf << ATTR_BACKCOLOR) 
-//                            | value << ATTR_BACKCOLOR;
-//  },
-//
-//  /** getter of bold attribute */
-//  get bold()
-//  {
-//    return this.value >> ATTR_BOLD & 0x1;
-//  },
-//
-//  /** setter of bold attribute */
-//  set bold(value)
-//  {
-//    this.value = this.value & ~(0x1 << ATTR_BOLD) 
-//                            | value << ATTR_BOLD;
-//  },
-//  
-//  /** getter of blink attribute */
-//  get blink()
-//  {
-//    return this.value >>> ATTR_BLINK & 0x1;
-//  },
-//
-//  /** setter of blink attribute */
-//  set blink(value)
-//  {
-//    this.value = this.value & ~(0x1 << ATTR_BLINK) 
-//                            | value << ATTR_BLINK;
-//  },
-//  
-//  /** getter of inverse attribute */
-//  get inverse()
-//  {
-//    return this.value >>> ATTR_INVERSE & 0x1;
-//  },
-//
-//  /** setter of inverse attribute */
-//  set inverse(value)
-//  {
-//    this.value = this.value & ~(0x1 << ATTR_INVERSE) 
-//                            | value << ATTR_INVERSE;
-//  },
-//  
-//  /** getter of underline attribute */
-//  get underline()
-//  {
-//    return this.value >>> ATTR_UNDERLINE & 0x1;
-//  },
-//
-//  /** setter of underline attribute */
-//  set underline(value)
-//  {
-//    this.value = this.value & ~(0x1 << ATTR_UNDERLINE) 
-//                            | value << ATTR_UNDERLINE;
-//  },
-//
-//  /** Compare every bit and detect equality of both objects. */
-//  equals: function equals(other)
-//  {
-//    return this.value >>> 21 === other.value >>> 21;
-//  },
-//
-//  /** Clear all properties and make it default state. */
-//  clear: function clear()
-//  {
-//    this.value &= 0x1fffff;
-//  },
-//  
-//  copyFrom: function copyFrom(rhs) 
-//  { 
-//    this.value = rhs.value;
-//  },
-//      
-//  /** Write a character with attribute structure. */
-//  write: function write(c, attr) 
-//  {
-//    this.value = attr.value & 0xffe00000 | c ^ 0x20;
-//  },
-//
-//  /** Erase the pair of character and attribute structure */
-//  erase: function erase() 
-//  {
-//    this.value = 0;
-//  },
-//
-//}
+    _ATTR_BOLD         = 16,   // 00000000 00000001 00000000 00000000
 
-var ATTR2_FORECOLOR    = 0,    // 00000000 00000000 00000000 11111111
-    ATTR2_BACKCOLOR    = 8,    // 00000000 00000000 11111111 00000000
+    _ATTR_UNDERLINE    = 17,   // 00000000 00000010 00000000 00000000
+    _ATTR_INVERSE      = 18,   // 00000000 00000100 00000000 00000000
 
-    ATTR2_BOLD         = 16,   // 00000000 00000001 00000000 00000000
+    _ATTR_INVISIBLE    = 19,   // 00000000 00001000 00000000 00000000
+    _ATTR_HALFBRIGHT   = 20,   // 00000000 00010000 00000000 00000000
+    _ATTR_BLINK        = 21,   // 00000000 00100000 00000000 00000000
+    _ATTR_RAPIDBLINK   = 22,   // 00000000 01000000 00000000 00000000
+    _ATTR_ITALIC       = 23,   // 00000000 10000000 00000000 00000000
 
-    ATTR2_UNDERLINE    = 17,   // 00000000 00000010 00000000 00000000
-    ATTR2_INVERSE      = 18,   // 00000000 00000100 00000000 00000000
-
-    ATTR2_INVISIBLE    = 19,   // 00000000 00001000 00000000 00000000
-    ATTR2_HALFBRIGHT   = 20,   // 00000000 00010000 00000000 00000000
-    ATTR2_BLINK        = 21,   // 00000000 00100000 00000000 00000000
-    ATTR2_RAPIDBLINK   = 22,   // 00000000 01000000 00000000 00000000
-    ATTR2_ITALIC       = 23,   // 00000000 10000000 00000000 00000000
-
-    ATTR2_FGCOLOR      = 24,   // 00000001 00000000 00000000 00000000
-    ATTR2_BGCOLOR      = 25,   // 00000010 00000000 00000000 00000000
+    _ATTR_FGCOLOR      = 24,   // 00000001 00000000 00000000 00000000
+    _ATTR_BGCOLOR      = 25,   // 00000010 00000000 00000000 00000000
 
 // tanasinn specific properties
-    ATTR2_LINK         = 26,   // 00000100 00000000 00000000 00000000
-    ATTR2_HIGHLIGHT    = 27,   // 00001000 00000000 00000000 00000000
+    _ATTR_LINK         = 26,   // 00000100 00000000 00000000 00000000
+    _ATTR_HIGHLIGHT    = 27,   // 00001000 00000000 00000000 00000000
 
-    ATTR2_WIDE         = 28,   // 00010000 00000000 00000000 00000000
-    ATTR2_PROTECTED    = 29,   // 00100000 00000000 00000000 00000000
-    ATTR2_DRCS         = 30;   // 01000000 01111111 01111111 01111111
+    _ATTR_WIDE         = 28,   // 00010000 00000000 00000000 00000000
+    _ATTR_PROTECTED    = 29,   // 00100000 00000000 00000000 00000000
+    _ATTR_DRCS         = 30;   // 01000000 01111111 01111111 01111111
 
 /**
  * @class Cell
@@ -228,7 +85,7 @@ Cell.definition = {
   /** getter of foreground color */
   get fg()
   {
-    return this.value >>> ATTR2_FORECOLOR & 0xff;
+    return this.value >>> _ATTR_FORECOLOR & 0xff;
   },
 
   /** setter of foreground color */
@@ -236,14 +93,14 @@ Cell.definition = {
   {
     this.fgcolor = 1;
     this.value = this.value 
-               & ~(0xff << ATTR2_FORECOLOR) 
-               | value << ATTR2_FORECOLOR;
+               & ~(0xff << _ATTR_FORECOLOR) 
+               | value << _ATTR_FORECOLOR;
   },
 
   /** getter of background color */
   get bg()
   {
-    return this.value >>> ATTR2_BACKCOLOR & 0xff;
+    return this.value >>> _ATTR_BACKCOLOR & 0xff;
   },
 
   /** setter of background color */
@@ -251,252 +108,180 @@ Cell.definition = {
   {
     this.bgcolor = 1;
     this.value = this.value 
-               & ~(0xff << ATTR2_BACKCOLOR) 
-               | value << ATTR2_BACKCOLOR;
+               & ~(0xff << _ATTR_BACKCOLOR) 
+               | value << _ATTR_BACKCOLOR;
   },
 
   /** getter of bold attribute */
   get bold()
   {
-    return this.value >> ATTR2_BOLD & 0x1;
+    return this.value >> _ATTR_BOLD & 0x1;
   },
 
   /** setter of bold attribute */
   set bold(value)
   {
     this.value = this.value 
-               & ~(0x1 << ATTR2_BOLD) 
-               | value << ATTR2_BOLD;
+               & ~(0x1 << _ATTR_BOLD) 
+               | value << _ATTR_BOLD;
   },
   
   /** getter of blink attribute */
   get blink()
   {
-    return this.value >>> ATTR2_BLINK & 0x1;
+    return this.value >>> _ATTR_BLINK & 0x1;
   },
 
   /** setter of blink attribute */
   set blink(value)
   {
     this.value = this.value
-               & ~(0x1 << ATTR2_BLINK) 
-               | value << ATTR2_BLINK;
+               & ~(0x1 << _ATTR_BLINK) 
+               | value << _ATTR_BLINK;
   },
   
   /** getter of rapid_blink attribute */
   get rapid_blink()
   {
-    return this.value >>> ATTR2_RAPIDBLINK & 0x1;
+    return this.value >>> _ATTR_RAPIDBLINK & 0x1;
   },
 
   /** setter of rapid_blink attribute */
   set rapid_blink(value)
   {
     this.value = this.value
-               & ~(0x1 << ATTR2_RAPIDBLINK) 
-               | value << ATTR2_RAPIDBLINK;
+               & ~(0x1 << _ATTR_RAPIDBLINK) 
+               | value << _ATTR_RAPIDBLINK;
   },
    
   /** getter of italic attribute */
   get italic()
   {
-    return this.value >>> ATTR2_ITALIC & 0x1;
+    return this.value >>> _ATTR_ITALIC & 0x1;
   },
 
   /** setter of italic attribute */
   set italic(value)
   {
     this.value = this.value
-               & ~(0x1 << ATTR2_ITALIC) 
-               | value << ATTR2_ITALIC;
+               & ~(0x1 << _ATTR_ITALIC) 
+               | value << _ATTR_ITALIC;
   },
  
   /** getter of fgcolor attribute */
   get fgcolor()
   {
-    return this.value >>> ATTR2_FGCOLOR & 0x1;
+    return this.value >>> _ATTR_FGCOLOR & 0x1;
   },
 
   /** setter of fgcolor attribute */
   set fgcolor(value)
   {
     this.value = this.value
-               & ~(0x1 << ATTR2_FGCOLOR) 
-               | value << ATTR2_FGCOLOR;
+               & ~(0x1 << _ATTR_FGCOLOR) 
+               | value << _ATTR_FGCOLOR;
   },
 
   
   /** getter of bgcolor attribute */
   get bgcolor()
   {
-    return this.value >>> ATTR2_BGCOLOR & 0x1;
+    return this.value >>> _ATTR_BGCOLOR & 0x1;
   },
 
   /** setter of bgcolor attribute */
   set bgcolor(value)
   {
     this.value = this.value
-               & ~(0x1 << ATTR2_BGCOLOR) 
-               | value << ATTR2_BGCOLOR;
+               & ~(0x1 << _ATTR_BGCOLOR) 
+               | value << _ATTR_BGCOLOR;
   },
 
 
   /** getter of inverse attribute */
   get inverse()
   {
-    return this.value >>> ATTR2_INVERSE & 0x1;
+    return this.value >>> _ATTR_INVERSE & 0x1;
   },
 
   /** setter of inverse attribute */
   set inverse(value)
   {
     this.value = this.value
-               & ~(0x1 << ATTR2_INVERSE) 
-               | value << ATTR2_INVERSE;
+               & ~(0x1 << _ATTR_INVERSE) 
+               | value << _ATTR_INVERSE;
   },
 
   /** getter of invisible attribute */
   get invisible()
   {
-    return this.value >>> ATTR2_INVISIBLE & 0x1;
+    return this.value >>> _ATTR_INVISIBLE & 0x1;
   },
 
   /** setter of invisible attribute */
   set invisible(value)
   {
     this.value = this.value
-               & ~(0x1 << ATTR2_INVISIBLE) 
-               | value << ATTR2_INVISIBLE;
+               & ~(0x1 << _ATTR_INVISIBLE) 
+               | value << _ATTR_INVISIBLE;
   },
 
   /** getter of halfbright attribute */
   get halfbright()
   {
-    return this.value >>> ATTR2_HALFBRIGHT & 0x1;
+    return this.value >>> _ATTR_HALFBRIGHT & 0x1;
   },
 
   /** setter of halfbright attribute */
   set halfbright(value)
   {
     this.value = this.value
-               & ~(0x1 << ATTR2_HALFBRIGHT) 
-               | value << ATTR2_HALFBRIGHT;
+               & ~(0x1 << _ATTR_HALFBRIGHT) 
+               | value << _ATTR_HALFBRIGHT;
   },
   
   /** getter of underline attribute */
   get underline()
   {
-    return this.value >>> ATTR2_UNDERLINE & 0x1;
+    return this.value >>> _ATTR_UNDERLINE & 0x1;
   },
 
   /** setter of underline attribute */
   set underline(value) 
   {
     this.value = this.value
-               & ~(0x1 << ATTR2_UNDERLINE) 
-               | value << ATTR2_UNDERLINE;
+               & ~(0x1 << _ATTR_UNDERLINE) 
+               | value << _ATTR_UNDERLINE;
   },
      
   /** getter of wide attribute */
   get wide()
   {
-    return this.value >>> ATTR2_WIDE & 0x1;
+    return this.value >>> _ATTR_WIDE & 0x1;
   },
 
   /** setter of wide attribute */
   set wide(value) 
   {
     this.value = this.value
-               & ~(0x1 << ATTR2_WIDE) 
-               | value << ATTR2_WIDE;
+               & ~(0x1 << _ATTR_WIDE) 
+               | value << _ATTR_WIDE;
   },
   
   /** getter of protected attribute */
   get protected()
   {
-    return this.value >>> ATTR2_PROTECTED & 0x1;
+    return this.value >>> _ATTR_PROTECTED & 0x1;
   },
 
   /** setter of protected attribute */
   set protected(value) 
   {
     this.value = this.value
-               & ~(0x1 << ATTR2_PROTECTED) 
-               | value << ATTR2_PROTECTED;
+               & ~(0x1 << _ATTR_PROTECTED) 
+               | value << _ATTR_PROTECTED;
   },
  
-  /** getter of drcs attribute */
-  get drcs()
-  {
-    return this.c >>> 20 & 0x1;
-  },
-
-  /** setter of drcs attribute */
-  /*
-  set drcs(value) 
-  {
-    this.value = this.value
-               & ~(0x1 << ATTR2_DRCS) 
-               | value << ATTR2_DRCS;
-  },
-
-/*
-  get dscs()
-  {
-    var i,
-        c,
-        offset,
-        buffer = [],
-        result;
-
-    if (0 === this.drcs) {
-      return null;
-    }
-
-    for (i = 0; i < 3; ++i) {
-      offset = i * 8;
-      c = this.value >>> offset & 0xff;
-      if (0 === c) {
-        break;
-      }
-      buffer.push(c);
-    }
-
-    if (0 === buffer.length) {
-      return null;
-    }
-
-    result = String.fromCharCode.apply(String, buffer);
-    return result;
-  },
-/*
-  set dscs(value)
-  {
-    var length = value.length,
-        i,
-        c,
-        offset;
-
-    if (null === value) {
-    }
-
-    // check dscs length
-    if (length < 1 | length > 3) {
-      throw coUtils.Debug.Exception(_("Invalid dscs length: %d."), length);
-    }
-
-    for (i = 0; i < length; ++i) {
-      c = value.charCodeAt(i);
-      if (20 <= c && c <= 127) {
-        offset = i * 8;
-        this.value = this.value 
-                   & ~(0xff << offset) 
-                   | value << offset;
-      } else {
-        throw coUtils.Debug.Exception(_("Invalid dscs string: %s."), value);
-      }
-    }
-  },
   /** Compare every bit and detect equality of both objects. */
   equals: function equals(other)
   {
@@ -507,6 +292,7 @@ Cell.definition = {
   /** Clear all properties and make it default state. */
   clear: function clear() 
   {
+    this.c = 0x20;
     this.value = 0x0;
   },
   
@@ -523,22 +309,18 @@ Cell.definition = {
   }, // write
 
   /** Erase the pair of character and attribute structure */
-  erase: function erase(attr) 
+  erase: function erase(attrvalue) 
   {
     this.c = 0x20;
-    if (undefined === attr) {
-      this.value = 0x0;
-    } else {
-      this.value = attr.value;
-    }
-
+    this.value = attrvalue;
   }, // erase
 
   /** Erase if the cell id marked as "erasable". */
-  selectiveErase: function selectiveErase(attr) 
+  selectiveErase: function selectiveErase(attrvalue) 
   {
     if (!this.protected) {
-      this.erase(attr);
+      this.c = 0x20;
+      this.value = attrvalue;
     }
   }, // erase
 
@@ -553,6 +335,25 @@ Cell.definition = {
   {
     this.c = context.shift();
     this.value = context.shift();
+  },
+
+  getCodes: function getCodes()
+  {
+    var code = this.c,
+        i;
+
+    if (code < 0x10000 || 0x100000 <= code) {
+      yield code;
+    } else if ("object" === typeof code) {
+      for (i = 0; i < code.length; ++i) {
+        yield code[i];
+      }
+    } else {
+      // emit 16bit + 16bit surrogate pair.
+      code -= 0x10000;
+      yield (code >> 10) | 0xD800;
+      yield (code & 0x3FF) | 0xDC00;
+    }
   },
 
 }; // Cell
@@ -755,7 +556,7 @@ Line.definition = {
       this.collapse(-diff);
       last_cell = this.cells[value - 1];
       if (0 === last_cell.c) {
-        last_cell.erase(undefined);
+        last_cell.clear();
       }
     }
   },
@@ -882,25 +683,14 @@ Line.definition = {
   _getCodePointsFromCells: function _getCodePointsFromCells(cells)
   {
     var i = 0,
+        c,
         codes = [],
-        cell,
-        code;
+        cell;
 
     for (; i < cells.length; ++i) {
       cell = cells[i];
-      code = cell.c;
-      if (code < 0x10000 || 0x100000 <= code) {
-        codes.push(code);
-      } else {
-        if ("object" === typeof code) {
-          codes.push.apply(codes, code);
-        } else {
-          // emit 16bit + 16bit surrogate pair.
-          code -= 0x10000;
-          codes.push(
-            (code >> 10) | 0xD800,
-            (code & 0x3FF) | 0xDC00);
-        }
+      for (c in cell.getCodes()) {
+        codes.push(c);
       }
     }
 
@@ -919,7 +709,8 @@ Line.definition = {
         cell,
         is_ascii,
         range,
-        codes;
+        codes,
+        c;
 
     if (this.dirty) {
       cells = this.cells;
@@ -931,7 +722,7 @@ Line.definition = {
         cell = cells[current];
         is_ascii = cell.c > 0 && cell.c < 0x80;
         if (attr) {
-          if (attr.equals(cell) && is_ascii && 0 === attr.drcs) {
+          if (attr.equals(cell) && is_ascii /*&& 0 === attr.drcs*/) {
             continue;
           } else {
             range = cells.slice(start, current);
@@ -947,9 +738,9 @@ Line.definition = {
         if (!is_ascii) {
           if (0 === cell.c) {
             cell = cells[current + 1]; // MUST not null
-            if (cell) {
+            if (undefined !== cell) {
               yield { 
-                codes: this._getCodePointsFromCells([cell]), 
+                codes: [c for (c in cell.getCodes())],
                 column: current, 
                 end: current + 2, 
                 attr: cell,
@@ -961,7 +752,7 @@ Line.definition = {
             continue;
           } else { // combined
             yield { 
-              codes: this._getCodePointsFromCells([cell]), 
+              codes: [c for (c in cell.getCodes())], 
               column: current, 
               end: current + 1, 
               attr: cell,
@@ -1063,7 +854,7 @@ Line.definition = {
 
     for (; i < length; ++i) {
       cell = cells[i];
-      cell.erase(undefined);
+      cell.clear();
     }
     this.type = coUtils.Constant.LINETYPE_NORMAL;
   },
@@ -1075,27 +866,19 @@ Line.definition = {
    * 
    * [ a b c d e f g h ] -> [ a b       f g h ]
    */
-  erase: function erase(start, end, attr) 
+  erase: function erase(start, end, attrvalue) 
   {
     var i,
         cell,
         cells;
     
     this.addRange(start, end);
-//    this.cells
-//      .slice(start, end)
-//      .forEach(function(cell) cell.erase(attr));
 
     cells = this.cells;
     end = Math.min(end, cells.length);
     for (i = start; i < end; ++i) {
       cell = cells[i];
-      //if (cell) {
-      //  if ("object" === typeof cell.c) {
-      //    end += cell.c.length - 0;
-      //  }
-      //}
-      cell.erase(attr);
+      cell.erase(attrvalue);
     }
   },
 
@@ -1103,22 +886,19 @@ Line.definition = {
    * erace cells marked as "erasable" at specified range. 
    *
    */
-  selectiveErase: function selectiveErase(start, end, attr) 
+  selectiveErase: function selectiveErase(start, end, attrvalue) 
   {
     var i,
         cell,
         cells;
     
     this.addRange(start, end);
-//    this.cells
-//      .slice(start, end)
-//      .forEach(function(cell) cell.erase(attr));
 
     cells = this.cells;
     end = Math.min(end, cells.length);
     for (i = start; i < end; ++i) {
       cell = cells[i];
-      cell.selectiveErase(attr);
+      cell.selectiveErase(attrvalue);
     }
   },
 
@@ -1153,7 +933,7 @@ Line.definition = {
    * 
    * [ a b c d e f g h ] -> [ a b f g h       ]
    */
-  deleteCells: function deleteCells(start, n, attr) 
+  deleteCells: function deleteCells(start, n, attrvalue) 
   {
     var cells = this.cells,
         length = cells.length,
@@ -1164,13 +944,9 @@ Line.definition = {
     this.addRange(start, length);
     range = cells.splice(start, n);
 
-    // range.forEach(function(cell) cell.erase(attr));
     for (i = 0; i < range.length; ++i) {
       cell = range[i];
-      //if ("object" === typeof cell.c) {
-      //  end += cell.c.length - 1;
-      //}
-      cell.erase(attr);
+      cell.erase(attrvalue);
     }
 
     range.unshift(length, 0) // make arguments.
@@ -1184,7 +960,7 @@ Line.definition = {
    * 
    * [ a b c d e f g h ] -> [ a b       c d e ]
    */
-  insertBlanks: function insertBlanks(start, n, attr) 
+  insertBlanks: function insertBlanks(start, n, attrvalue) 
   {
     var cells = this.cells,
         length = cells.length,
@@ -1194,10 +970,9 @@ Line.definition = {
 
     this.addRange(start, cells.length);
 
-    // range.forEach(function(cell) cell.erase(attr));
     for (; i < range.length; ++i) {
       cell = range[i];
-      cell.erase(attr);
+      cell.erase(attrvalue);
     }
 
     range.unshift(start, 0) // make arguments.
