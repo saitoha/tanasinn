@@ -86,7 +86,7 @@ SessionsCompletionDisplayDriver.definition = {
 
       image_url = result.data[i].image;
 
-      if (null !== image_url) {
+      if (image_url) {
         this.request(
           "command/construct-chrome", 
           {
