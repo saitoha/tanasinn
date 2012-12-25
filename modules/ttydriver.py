@@ -405,22 +405,25 @@ def del_record(sessiondb_path, request_id):
     lockfile = open(sys.argv[0], "r")
     try:
         fcntl.flock(lockfile.fileno(), fcntl.LOCK_EX)
+
         f = open(sessiondb_path, "r")
         lines = [];
         try:
             for line in f:
                 if line.split(",")[0] != request_id:
                     lines.append(line)
-            
-            f.seek(0)
+        finally:
+            f.close()
 
+        f = open(sessiondb_path, "w")
+        try:
             for line in lines:
                 f.write(line)
 
             f.flush()
-            f.truncate()
         finally:
             f.close()
+
     finally:
         lockfile.close()
 
@@ -446,18 +449,6 @@ if __name__ == "__main__":
     ttyname_max_length = 20 #1024
     pid, master = pty.fork()
     if not pid:
-        try:
-            t = termios.tcgetattr(sys.stdin.fileno())
-            backup = termios.tcgetattr(sys.stdin.fileno())
-            t[6][termios.VMIN] = 1
-            t[6][termios.VTIME] = 0
-            termios.tcsetattr(sys.stdin.fileno(), termios.TCSANOW, t)
-        except:
-            termios.tcsetattr(sys.stdin.fileno(), termios.TCSANOW, backup)
-        #sys.stdout.write("%%-%ds" % ttyname_max_length % os.ttyname(0))
-        #sys.stdout.flush()
-        #sys.stdout.write("\x1bc")
-        #sys.stdout.flush()
         os.environ["TERM"] = term 
         os.environ["LANG"] = lang 
         paths = os.environ["PATH"].split(":")
@@ -467,6 +458,11 @@ if __name__ == "__main__":
         os.environ["__TANASINN"] = term 
         os.execlp("/bin/sh", "/bin/sh", "-c", "cd $HOME && exec %s" % command)
     ttyname = "unknown ttyname"#os.read(master, ttyname_max_length).rstrip()
+    ttyname = ""
+    try:
+        ttyname = os.ttyname(pid)
+    except:
+        pass
 
     iflag, oflag, cflag, lflag, ispeed, cspeed, cc = termios.tcgetattr(master)
 
@@ -554,7 +550,7 @@ if __name__ == "__main__":
                 io_port = int(io_port_str)
                 sessiondb_path = base64.b64decode(sessiondb_path)
 
-                #del_record(sessiondb_path, request_id)
+                del_record(sessiondb_path, request_id)
 
     except socket.error:
         trace("A socket error occured.")
