@@ -1470,6 +1470,7 @@ Scrollable.definition = {
         offset = this.getBufferTop(),
         width = this._width,
         height = this._height,
+        attrvalue = this.cursor.attr.value & 0xff,
         i,
         line,
         range;
@@ -1485,7 +1486,7 @@ Scrollable.definition = {
 
     for (i = 0; i < range.length; ++i) {
       line = range[i];
-      line.erase(0, width, undefined);
+      line.erase(0, width, attrvalue);
       line.type = coUtils.Constant.LINETYPE_NORMAL;
     }
 
@@ -1507,14 +1508,16 @@ Scrollable.definition = {
         offset = this._buffer_top,
         width = this._width,
         height = this._height,
+        cursor = this.cursor,
+        attrvalue = cursor.attr.value & 0xff,
         i, 
         range,  // rotation range
         line, 
         rest;
 
     // set dirty flag.
-    for (i = n; i < this._lines.length; ++i) {
-      line = this._lines[i];
+    for (i = n; i < lines.length; ++i) {
+      line = lines[i];
       line.invalidate();
     }
 
@@ -1524,7 +1527,7 @@ Scrollable.definition = {
       range = lines.splice(offset + top, n);
       for (i = 0; i < range.length; ++i) {
         line = range[i];
-        line.erase(0, width, undefined);
+        line.erase(0, width, attrvalue);
         line.type = coUtils.Constant.LINETYPE_NORMAL;
       }
     } else if (rest > 0) {
@@ -1539,7 +1542,7 @@ Scrollable.definition = {
         range.unshift(offset + bottom - rest, 0);
         Array.prototype.splice.apply(lines, range);
         this._lines = lines.slice(offset, offset + height);
-        this._scrollUp(n - rest)
+        this._scrollUp(top, bottom, n - rest)
         return;
       } else {
         range = this._createLines(n);
@@ -1553,79 +1556,7 @@ Scrollable.definition = {
       range = lines.splice(0, n);
       for (i = 0; i < range.length; ++i) {
         line = range[i];
-        line.erase(0, width, undefined);
-        line.length = width;
-        line.invalidate();
-        line.type = coUtils.Constant.LINETYPE_NORMAL;
-      }
-    }
-
-    // line.splice(offset + bottom -m, 0, ....);
-    range.unshift(offset + bottom - n, 0);
-    Array.prototype.splice.apply(lines, range);
-    this._lines = lines.slice(offset, offset + height);
-
-    if (this._smooth_scrolling) {
-      this.sendMessage("command/draw", true);
-      wait(this.smooth_scrolling_delay);
-    }
-
-  },
-
-  /** Scroll down the buffer by n lines. */
-  _scrollUpBCE: function _scrollUp(top, bottom, n, attr) 
-  {
-    var lines = this._buffer,
-        offset = this._buffer_top,
-        width = this._width,
-        height = this._height,
-        i, 
-        range,  // rotation range
-        line, 
-        rest;
-
-    // set dirty flag.
-    for (i = n; i < this._lines.length; ++i) {
-      line = this._lines[i];
-      line.invalidate();
-    }
-
-    // rotate lines.
-    rest = this.scrollback_limit - offset;
-    if (top > 0) {
-      range = lines.splice(offset + top, n);
-      for (i = 0; i < range.length; ++i) {
-        line = range[i];
-        line.erase(0, width, attr);
-        line.type = coUtils.Constant.LINETYPE_NORMAL;
-      }
-    } else if (rest > 0) {
-      if (n > rest) {
-        range = this._createLines(rest);
-        offset = this._buffer_top += rest;
-        for (i = 0; i < range.length; ++i) {
-          line = range[i];
-          line.invalidate();
-        }
-        // line.splice(offset + bottom -m, 0, ....);
-        range.unshift(offset + bottom - rest, 0);
-        Array.prototype.splice.apply(lines, range);
-        this._lines = lines.slice(offset, offset + height);
-        this._scrollUp(n - rest)
-        return;
-      } else {
-        range = this._createLines(n);
-        offset = this._buffer_top += n;
-        for (i = 0; i < range.length; ++i) {
-          line = range[i];
-          line.invalidate();
-        }
-      }
-    } else { // 0 === top && rest === 0
-      range = lines.splice(0, n);
-      for (i = 0; i < range.length; ++i) {
-        line = range[i];
-        line.erase(0, width, attr);
+        line.erase(0, width, attrvalue);
         line.length = width;
         line.invalidate();
         line.type = coUtils.Constant.LINETYPE_NORMAL;
@@ -2026,13 +1957,13 @@ Screen.definition = {
 
     if (0 === codes[0]) {
       if (positionX >= width) {
-        line.erase(positionX - 1, positionX, cursor.attr);
+        line.erase(positionX - 1, positionX, cursor.attr.value & 0xff);
       }
     } else {
       if (positionX >= width) {
         if (this._wraparound_mode) {
           cursor.positionX = 0;
-          this._wrap();
+          this.lineFeed();
           line = this.getCurrentLine();
         } else {
           cursor.positionX = width - 1;
@@ -2046,7 +1977,7 @@ Screen.definition = {
           if (this._wraparound_mode) {
             cursor.positionX = 0;
             //this.carriageReturn();
-            this._wrap();
+            this.lineFeed();
             line = this.getCurrentLine();
           } else {
             cursor.positionX = width - 1;
@@ -2274,7 +2205,7 @@ Screen.definition = {
     if (line) {
       cursor = this.cursor;
       width = this._width;
-      line.erase(cursor.positionX, width, cursor.attr);
+      line.erase(cursor.positionX, width, cursor.attr.value & 0xff);
     } else {
       coUtils.Debug.reportWarning(
         _("eraseLineToRight: Current line is null."));
@@ -2286,9 +2217,10 @@ Screen.definition = {
   function eraseLineToLeft() 
   {
     var cursor = this.cursor,
-        line = this.getCurrentLine();
+        line = this.getCurrentLine(),
+        attrvalue = cursor.attr.value & 0xff;
 
-    line.erase(0, cursor.positionX + 1, cursor.attr);
+    line.erase(0, cursor.positionX + 1, attrvalue);
   },
 
   /** Erase current line */
@@ -2297,9 +2229,10 @@ Screen.definition = {
   {
     var cursor = this.cursor,
         line = this.getCurrentLine(),
-        width = this._width;
+        width = this._width,
+        attrvalue = cursor.attr.value & 0xff;
 
-    line.erase(0, width, cursor.attr);
+    line.erase(0, width, attrvalue);
   },
 
   /** Erase cells marked as "erasable" from current position to end 
@@ -2314,7 +2247,7 @@ Screen.definition = {
     if (line) {
       cursor = this.cursor;
       width = this._width;
-      line.selectiveErase(cursor.positionX, width, cursor.attr);
+      line.selectiveErase(cursor.positionX, width, cursor.attr.value & 0xff);
     } else {
       coUtils.Debug.reportWarning(
         _("selectiveEraseLineToRight: Current line is null."));
@@ -2329,7 +2262,7 @@ Screen.definition = {
     var cursor = this.cursor,
         line = this.getCurrentLine();
 
-    line.selectiveErase(0, cursor.positionX + 1, cursor.attr);
+    line.selectiveErase(0, cursor.positionX + 1, cursor.attr.value & 0xff);
   },
 
   /** Erase cells marked as "erasable" from line */
@@ -2340,7 +2273,7 @@ Screen.definition = {
         line = this.getCurrentLine(),
         width = this._width;
 
-    line.selectiveErase(0, width, cursor.attr);
+    line.selectiveErase(0, width, cursor.attr.value & 0xff);
   },
 
   /** Erase cells from current position to head of buffer. */
@@ -2350,16 +2283,16 @@ Screen.definition = {
     var cursor = this.cursor,
         width = this._width,
         lines = this._lines,
-        attr = cursor.attr,
+        attrvalue = cursor.attr.value & 0xff,
         positionY = cursor.positionY,
         i,
         line;
     
-    lines[positionY].erase(0, cursor.positionX + 1, attr);
+    lines[positionY].erase(0, cursor.positionX + 1, attrvalue);
 
     for (i = 0; i < positionY; ++i) {
       line = lines[i];
-      line.erase(0, width, attr);
+      line.erase(0, width, attrvalue);
     }
   },
 
@@ -2369,7 +2302,7 @@ Screen.definition = {
   {
     var cursor = this.cursor,
         width = this._width,
-        attr = cursor.attr,
+        attrvalue = cursor.attr.value & 0xff,
         lines = this._lines,
         positionY = cursor.positionY,
         height = this._height,
@@ -2382,10 +2315,10 @@ Screen.definition = {
       line = lines[positionY];
     }
 
-    line.erase(cursor.positionX, width, attr);
+    line.erase(cursor.positionX, width, attrvalue);
     for (i = positionY + 1; i < height; ++i) {
       line = lines[i];
-      line.erase(0, width, attr);
+      line.erase(0, width, attrvalue);
     }
   },
 
@@ -2396,14 +2329,14 @@ Screen.definition = {
     var width = this._width,
         cursor = this.cursor,
         lines = this._lines,
-        attr = cursor.attr,
+        attrvalue = cursor.attr.value & 0xff,
         length = lines.length,
         i, 
         line;
 
     for (i = 0; i < length; ++i) {
       line = lines[i];
-      line.erase(0, width, attr);
+      line.erase(0, width, attrvalue);
       line.type = coUtils.Constant.LINETYPE_NORMAL;
     }
   },
@@ -2414,14 +2347,14 @@ Screen.definition = {
   {
     var cursor = this.cursor,
         lines = this._lines,
-        attr = cursor.attr,
+        attrvalue = cursor.attr.value & 0xff,
         length = lines.length,
         i = top,
         line;
 
     for (; i < bottom; ++i) {
       line = lines[i];
-      line.erase(left, right, attr);
+      line.erase(left, right, attrvalue);
       line.type = coUtils.Constant.LINETYPE_NORMAL;
     }
   },
@@ -2441,16 +2374,16 @@ Screen.definition = {
     var cursor = this.cursor,
         width = this._width,
         lines = this._lines,
-        attr = cursor.attr,
+        attrvalue = cursor.attr.value & 0xff,
         positionY = cursor.positionY,
         i = 0,
         line = lines[positionY];
 
-    line.selectiveErase(0, cursor.positionX + 1, attr);
+    line.selectiveErase(0, cursor.positionX + 1, attrvalue);
 
     for (; i < positionY; ++i) {
       line = lines[i];
-      line.selectiveErase(0, width, attr);
+      line.selectiveErase(0, width, attrvalue);
     }
   },
 
@@ -2460,7 +2393,7 @@ Screen.definition = {
   {
     var cursor = this.cursor,
         width = this._width,
-        attr = cursor.attr,
+        attrvalue = cursor.attr.value & 0xff,
         lines = this._lines,
         positionY = cursor.positionY,
         height = this._height,
@@ -2468,11 +2401,11 @@ Screen.definition = {
         line;
    
     line = lines[positionY];
-    line.selectiveErase(cursor.positionX, width, attr);
+    line.selectiveErase(cursor.positionX, width, attrvalue);
 
     for (i = positionY + 1; i < height; ++i) {
       line = lines[i];
-      line.selectiveErase(0, width, attr);
+      line.selectiveErase(0, width, attrvalue);
     }
   },
 
@@ -2483,14 +2416,14 @@ Screen.definition = {
     var width = this._width,
         cursor = this.cursor,
         lines = this._lines,
-        attr = cursor.attr,
+        attrvalue = cursor.attr.value & 0xff,
         length = lines.length,
         i = 0,
         line;
 
     for (; i < length; ++i) {
       line = lines[i];
-      line.selectiveErase(0, width, attr);
+      line.selectiveErase(0, width, attrvalue);
       line.type = coUtils.Constant.LINETYPE_NORMAL;
     }
   },
@@ -2501,14 +2434,14 @@ Screen.definition = {
   {
     var cursor = this.cursor,
         lines = this._lines,
-        attr = cursor.attr,
+        attrvalue = cursor.attr.value & 0xff,
         length = lines.length,
         i = top,
         line;
 
     for (; i < bottom; ++i) {
       line = lines[i];
-      line.selectiveErase(left, right, attr);
+      line.selectiveErase(left, right, attrvalue);
       line.type = coUtils.Constant.LINETYPE_NORMAL;
     }
   },
@@ -2517,7 +2450,7 @@ Screen.definition = {
   "[type('Undefined')] eraseScreenAllWithTestPattern":
   function eraseScreenAllWithTestPattern() 
   {
-    var attr = this.cursor.attr,
+    var attrvalue = this.cursor.attr.value & 0xff,
         width = this._width,
         lines = this._lines,
         i = 0,
@@ -2525,7 +2458,7 @@ Screen.definition = {
 
     for (; i < lines.length; ++i) {
       line = lines[i];
-      line.eraseWithTestPattern(0, width, attr);
+      line.eraseWithTestPattern(0, width, attrvalue);
     }
   },
 
@@ -2535,9 +2468,9 @@ Screen.definition = {
   {
     var line = this.getCurrentLine(),
         cursor = this.cursor,
-        attr = cursor.attr;
+        attrvalue = cursor.attr.value & 0xff;
 
-    line.insertBlanks(cursor.positionX, n, attr);
+    line.insertBlanks(cursor.positionX, n, attrvalue);
   },
       
   "[type('Uint16 -> Uint16 -> Undefined')] setScrollRegion":
@@ -2597,24 +2530,7 @@ Screen.definition = {
       --cursor_state.positionY;
     }
   },
-  
-  _wrap: function _wrap() 
-  {
-    var cursor = this.cursor,
-        top,
-        bottom = this._scroll_bottom,
-        positionY = cursor.positionY;
-
-    if (positionY === bottom - 1) {
-      this._scrollUpBCE(this._scroll_top, bottom, 1, cursor.attr);
-    } else if (positionY > bottom - 1) {
-      cursor.positionY = bottom - 1;
-      this._scrollUpBCE(this._scroll_top, bottom, 1, curosr.attr);
-    } else {
-      ++cursor.positionY;
-    }
-  },
-
+ 
   /** Line Feed (LF) */
   "[type('Undefined')] lineFeed":
   function lineFeed() 
@@ -2661,13 +2577,13 @@ Screen.definition = {
   function scrollLeft(n) 
   { // Scroll Left
     var lines = this._lines,
-        attr = this.cursor.attr,
+        attrvalue = this.cursor.attr.value & 0xff,
         i = 0,
         line;
 
     for (; i < lines.length; ++i) {
       line = lines[i];
-      line.deleteCells(0, n, attr);
+      line.deleteCells(0, n, attrvalue);
     }
   },
 
@@ -2676,13 +2592,13 @@ Screen.definition = {
   function scrollRight(n) 
   { // Scroll Right
     var lines = this._lines,
-        attr = this.cursor.attr,
+        attrvalue = this.cursor.attr.value & 0xff,
         i = 0,
         line;
 
     for (; i < lines.length; ++i) {
       line = lines[i];
-      line.insertBlanks(0, n, attr);
+      line.insertBlanks(0, n, attrvalue);
     }
   },
 
@@ -2711,14 +2627,14 @@ Screen.definition = {
   function eraseCharacters(n) 
   { // Erase CHaracters
     var line = this.getCurrentLine(),
-        attr = this.cursor.attr,
+        attrvalue = this.cursor.attr.value & 0xff,
         start = this.cursor.positionX,
         end = start + n;
 
     if (end > line.length) {
       end = line.length;
     }
-    line.erase(start, end, attr);
+    line.erase(start, end, attrvalue);
   },
 
   /** delete n characters at current line. */
@@ -2726,9 +2642,10 @@ Screen.definition = {
   function deleteCharacters(n) 
   { // Delete CHaracters
     var line = this.getCurrentLine(),
-        attr = this.cursor.attr;
+        cursor = this.cursor,
+        attrvalue = cursor.attr.value & 0xff;
 
-    line.deleteCells(this.cursor.positionX, n, attr);
+    line.deleteCells(cursor.positionX, n, attrvalue);
   },
 
 // ScreenSwitchConcept implementation
@@ -2906,7 +2823,6 @@ Screen.definition = {
   {
     var cursor = this.cursor,
         lines = this._lines,
-        attr = cursor.attr,
         length = lines.length,
         data = [],
         i,
