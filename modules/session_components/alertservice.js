@@ -116,15 +116,14 @@ NotificationService.definition = {
         url = coUtils.File.getURLSpec(file);
 
     coUtils.Components.getAlertService()
-      .showAlertNotification(
-        url,
-        title,
-        text,
-        true,  // textClickable
-        text,     // cookie
-        this,
-        "" // name
-        ); 
+      .showAlertNotification(url,
+                             title,
+                             text,
+                             true,  // textClickable
+                             text,     // cookie
+                             this,
+                             "" // name
+                             ); 
   },
 
 // nsIObserver implementation
