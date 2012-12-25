@@ -108,8 +108,6 @@ AutoWrap.definition = {
     this._mode = true;
 
     this.sendMessage("command/enable-wraparound");
-//    coUtils.Debug.reportMessage(
-//      _("DECSET - DECAWM (Auto-wrap Mode) was set."));
   },
 
   /** Deactivate auto-wrap feature(DECAWM).
@@ -120,8 +118,6 @@ AutoWrap.definition = {
     this._mode = false;
 
     this.sendMessage("command/disable-wraparound");
-//    coUtils.Debug.reportMessage(
-//      _("DECRST - DECAWM (Auto-wrap Mode) was reset."));
   },
 
   /** Report mode
