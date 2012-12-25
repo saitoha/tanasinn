@@ -55,9 +55,8 @@ var _STATE_GROUND        = 0,
     _STATE_CSI_IBYTES    = 4,
 
     _STATE_OSC           = 5,
-    _STATE_OSC_FINAL     = 6,
-    _STATE_STRING        = 7,
-    _STATE_STRING_FINAL  = 8;
+    _STATE_STRING        = 6,
+    _STATE_ST            = 7;
 
 /**
  * @class VT100Grammar
@@ -90,7 +89,8 @@ VT100Grammar.definition = {
   "[install]":
   function install(context)
   {
-    this._str = null;
+    this._ibytes = [];
+    this._pbytes = [];
   },
 
   /** Uninstalls itself. 
@@ -99,7 +99,8 @@ VT100Grammar.definition = {
   function uninstall()
   {
     this._state = _STATE_GROUND;
-    this._str = null;
+    this._ibytes = null;
+    this._pbytes = null;
     this._hookmap = null;
   },
 
@@ -147,136 +148,163 @@ VT100Grammar.definition = {
   "[type('Scanner -> Action')] parse":
   function parse(scanner) 
   {
-    var c;
+    var c,
+        state = this._state,
+        ibytes = this._ibytes,
+        pbytes = this._pbytes;
+
     while (!scanner.isEnd) {
       c = scanner.current();
-      if (0x18 === c || 0x1a === c) {
-        this._state = _STATE_GROUND;
-      } else if (_STATE_OSC === this._state) {
+      if (_STATE_GROUND === state) {
         if (0x1b === c) {
-          this._state = _STATE_OSC_FINAL;
-        } else if (0x07 === c) {
-          this._state = _STATE_GROUND;
-          return this._dispatch_string(this._str);
-        } else if (c < 0x20) {
-        //  this._state = _STATE_GROUND;
+          state = _STATE_ESC;
+        } else if (c < 0x20) { // C0
+          this._dispatch_char(c);
+        } else if (c < 0x80) {
+          break;
+        } else if (c <= 0x9f) { // DEL, C1
+          if (0x90 === c) {
+            ibytes = [c - 0x40];
+            state = _STATE_STRING;
+          } else {
+            this._dispatch_char(c);
+          }
         } else {
-          this._str.push(c);
+          break;
         }
-      } else if (_STATE_OSC_FINAL === this._state) {
-        if (0x5c === c) {
-          this._state = _STATE_GROUND;
-          return this._dispatch_string(this._str);
-        } else if (c < 0x20) {
-        //  this._state = _STATE_GROUND;
-        } else {
-          this._state = _STATE_OSC;
-          this._str.push(c);
-        }
-      } else if (_STATE_STRING === this._state) {
-        if (0x1b === c) {
-          this._state = _STATE_STRING_FINAL;
-        } else if (0x07 === c || 0x9c === c) {
-          this._state = _STATE_GROUND;
-          return this._dispatch_string(this._str);
-        } else if (c < 0x20) {
-        //  this._state = _STATE_GROUND;
-        } else {
-          this._str.push(c);
-        }
-      } else if (_STATE_STRING_FINAL === this._state) {
-        if (0x5c === c) {
-          this._state = _STATE_GROUND;
-          return this._dispatch_string(this._str);
-        } else if (c < 0x20) {
-        //  this._state = _STATE_GROUND;
-        } else {
-          this._state = _STATE_STRING;
-          this._str.push(c);
-        }
-      } else if (0x1b === c) {
-        this._state = _STATE_ESC;
-      } else if (c < 0x20) { // C0
-        return this._dispatch_char(c);
-      } else if (c > 0x9f) {
-        this._state = _STATE_GROUND;
-        return false;
-      } else if (c >= 0x7f) { // DEL, C1
-        if (0x90 === c) {
-          this._str = [c - 0x40];
-          this._state = _STATE_STRING;
-        } else {
-          return this._dispatch_char(c);
-        }
-      } else if (_STATE_ESC === this._state) {
-        if (c <= 0x2f) { // SP to / 
-          this._ibytes = [c];
-          this._state = _STATE_ESC_IBYTES;
+      } else if (_STATE_ESC === state) {
+        if (0x5b === c) { // [
+          ibytes = [];
+          pbytes = [];
+          state = _STATE_CSI_PBYTES;
+        } else if (0x18 === c || 0x1a === c) {
+          state = _STATE_GROUND;
+        } else if (c < 0x20) { // C0
+          this._dispatch_char(c);
+        } else if (c <= 0x2f) { // SP to / 
+          ibytes = [c];
+          state = _STATE_ESC_IBYTES;
         } else if (0x50 === c || 0x58 === c || 0x5e === c || 0x5f === c) {
-          this._str = [c];
-          this._state = _STATE_STRING;
-        } else if (0x5b === c) { // [
-          this._ibytes = [];
-          this._pbytes = [];
-          this._state = _STATE_CSI_PBYTES;
+          ibytes = [c];
+          state = _STATE_STRING;
         } else if (0x5d === c) { // ]
-          this._str = [c];
-          this._state = _STATE_OSC;
+          ibytes = [c];
+          state = _STATE_OSC;
         } else if (c <= 0x7f) { // 0 to ~
-          this._state = _STATE_GROUND;
-          return this._dispatch_single_esc(c);
-        } else if (c <= 0x9f) {
-          this._state = _STATE_GROUND;
+          state = _STATE_GROUND;
+          this._dispatch_single_esc(c);
         } else {
-          this._state = _STATE_GROUND;
-          return false;
+          state = _STATE_GROUND;
         }
-      } else if (_STATE_ESC_IBYTES === this._state) {
+      } else if (_STATE_CSI_PBYTES === state) {
         if (c <= 0x2f) { // SP to / 
-          this._ibytes.push(c);
-        } else if (c <= 0x7f) { // 0 to ~
-          this._state = _STATE_GROUND;
-          return this._dispatch_esc(this._ibytes, c)
-        } else if (c <= 0x9f) {
-          this._state = _STATE_GROUND;
-        } else {
-          this._state = _STATE_GROUND;
-          return false;
-        }
-      } else if (_STATE_CSI_PBYTES === this._state) {
-        if (c <= 0x2f) { // SP to / 
-          this._ibytes.push(c);
-          this._satte = _STATE_CSI_IBYTES;
+          if (c >= 0x20) { // C0
+            ibytes.push(c);
+            this._satte = _STATE_CSI_IBYTES;
+          } else {
+            if (0x1b === c) {
+              state = _STATE_ESC;
+            } else if (0x18 === c || 0x1a === c) {
+              state = _STATE_GROUND;
+            } else {
+              this._dispatch_char(c);
+            }
+          }
         } else if (c <= 0x3f) {
-          this._pbytes.push(c);
+          pbytes.push(c);
         } else if (c <= 0x7e) {
-          this._state = _STATE_GROUND;
-          return this._dispatch_csi(this._pbytes, this._ibytes, c)
+          state = _STATE_GROUND;
+          this._dispatch_csi_no_ibytes(pbytes, c)
         } else if (c <= 0x9f) {
-          this._state = _STATE_GROUND;
+          this._dispatch_char(c)
         } else {
-          this._state = _STATE_GROUND;
-          return false;
+          state = _STATE_GROUND;
         }
-      } else if (_STATE_CSI_IBYTES === this._state) {
-        if (c <= 0x2f) { // SP to / 
-          this._ibytes.push(c);
+      } else if (_STATE_CSI_IBYTES === state) {
+        if (0x1b === c) {
+          state = _STATE_ESC;
+        } else if (0x18 === c || 0x1a === c) {
+          state = _STATE_GROUND;
+          this._dispatch_char(c);
+        } else if (c < 0x20) { // C0
+          this._dispatch_char(c);
+        } else if (c <= 0x2f) { // SP to / 
+          ibytes.push(c);
         } else if (c <= 0x7e) {
-          this._state = _STATE_GROUND;
-          return this._dispatch_csi(this._pbytes, this._ibytes, c)
+          state = _STATE_GROUND;
+          this._dispatch_csi(pbytes, ibytes, c)
         } else if (c <= 0x9f) {
-          this._state = _STATE_GROUND;
+          this._dispatch_char(c)
         } else {
-          this._state = _STATE_GROUND;
-          return false;
+          state = _STATE_GROUND;
         }
-      } else {
-        this._state = _STATE_GROUND;
-        return false;
+      } else if (_STATE_OSC === state) {
+        if (0x1b === c) {
+          state = _STATE_ST;
+        } else if (0x07 === c) {
+          state = _STATE_GROUND;
+          this._dispatch_string(ibytes);
+        } else if (0x18 === c || 0x1a === c) {
+          state = _STATE_GROUND;
+          this._dispatch_char(c);
+        } else if (c < 0x20) {
+        //  state = _STATE_GROUND;
+        } else {
+          ibytes.push(c);
+        }
+      } else if (_STATE_STRING === state) {
+        if (0x1b === c) {
+          state = _STATE_ST;
+          this._dispatch_char(c);
+        } else if (0x07 === c || 0x9c === c) {
+          state = _STATE_GROUND;
+          this._dispatch_string(ibytes);
+        } else if (0x18 === c || 0x1a === c) {
+          state = _STATE_GROUND;
+        } else if (c < 0x20) {
+        //  state = _STATE_GROUND;
+        } else {
+          ibytes.push(c);
+        }
+      } else if (_STATE_ST === state) {
+        if (0x5c === c) {
+          state = _STATE_GROUND;
+          this._dispatch_string(ibytes);
+          this._dispatch_char(c);
+        } else if (0x18 === c || 0x1a === c) {
+          state = _STATE_GROUND;
+        } else if (c < 0x20) {
+        //  state = _STATE_GROUND;
+        } else {
+          state = _STATE_STRING;
+          ibytes.push(c);
+        }
+      } else if (_STATE_ESC_IBYTES === state) {
+        if (c < 0x20) { // C0
+          if (0x1b === c) {
+            state = _STATE_ESC;
+          } else if (0x18 === c || 0x1a === c) {
+            state = _STATE_GROUND;
+            this._dispatch_char(c);
+          } else {
+            this._dispatch_char(c);
+          }
+        } else if (c <= 0x2f) { // SP to / 
+          ibytes.push(c);
+        } else if (c <= 0x7f) { // 0 to ~
+          state = _STATE_GROUND;
+          this._dispatch_esc(ibytes, c)
+        } else if (c <= 0x9f) {
+          this._dispatch_char(c)
+        } else {
+          state = _STATE_GROUND;
+        }
       }
       scanner.moveNext()
     }
-    return false;
+    this._state = state;
+    this._pbytes = pbytes;
+    this._ibytes = ibytes;
   },
 
   _dispatch_csi: function _dispatch_csi(pbytes, ibytes, fbyte)
@@ -294,8 +322,44 @@ VT100Grammar.definition = {
       ibytes.unshift(prefix);
     }
     ibytes.push(fbyte);
-    key = String.fromCharCode.apply(String, ibytes),
-    params = String.fromCharCode.apply(String, pbytes).split(/[;:]/);
+    key = String.fromCharCode.apply(null, ibytes),
+    params = String.fromCharCode.apply(null, pbytes).split(/[;:]/);
+
+    for (i = 0; i < params.length; ++i) {
+      param = params[i];
+      if (0 === param.length) {
+        params[i] = 0;
+      } else {
+        params[i] = parseInt(param);
+      }
+    }
+    handler = this._csi_map[key];
+    if (!handler) {
+      return true;
+    }
+    handler(params);
+
+    return true;
+  },
+
+  _dispatch_csi_no_ibytes: function _dispatch_csi_no_ibytes(pbytes, fbyte)
+  {
+    var prefix = pbytes[0],
+        key,
+        action,
+        handler,
+        params,
+        i,
+        param,
+        ibytes = []; 
+
+    if (prefix >= 0x3c && prefix <= 0x3f) {
+      pbytes.shift();
+      ibytes.unshift(prefix);
+    }
+    ibytes.push(fbyte);
+    key = String.fromCharCode.apply(null, ibytes),
+    params = String.fromCharCode.apply(null, pbytes).split(/[;:]/);
 
     for (i = 0; i < params.length; ++i) {
       param = params[i];
@@ -332,7 +396,7 @@ VT100Grammar.definition = {
         handler,
         params,
         f = String.fromCharCode(fbyte),
-        i = String.fromCharCode.apply(String, ibytes);
+        i = String.fromCharCode.apply(null, ibytes);
     handler = this._esc_map[i + f];
     if (handler) {
       handler();
