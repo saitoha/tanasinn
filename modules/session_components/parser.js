@@ -185,12 +185,11 @@ Parser.definition = {
         codes;
 
     while (!scanner.isEnd) {
-      while (grammar.parse(scanner)) {
-        scanner.moveNext();
-      }
+      grammar.parse(scanner)
       if (!scanner.isEnd) {
         codes = this._decode(scanner);
         if (0 !== codes.length) {
+          //screen.write(codes);
           screen.write(drcs_converter.convert(codes));
         }
       }
