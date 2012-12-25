@@ -78,8 +78,10 @@ SessionsCompleter.definition = {
                      + "/persist/" + request_id + ".png",
           image_file = coUtils.File.getFileLeafFromVirtualPath(image_path),
           image_url;
+      if (image_file.exists()) {
         image_url = coUtils.File.getURLSpec(image_file);
         return image_url;
+      }
     } catch (e) {
       coUtils.Debug.reportError(e);
     }
@@ -99,10 +101,8 @@ SessionsCompleter.definition = {
     for ([request_id, record] in Iterator(records)) {
       try {
         image_path = this._getImageSource(request_id);
-        //alert(request_id + "\n" + image_path)
         if (image_path) {
           if (this._process_manager.processIsAvailable(record.pid)) {
-            //alert(image_path)
             yield {
               name: "&" + request_id,
               value: record,
