@@ -812,16 +812,13 @@ Renderer.definition = {
 
     if (1 === attr.invisible) {
       return;
-    }
-    if (1 === attr.blink) {
+    } else if (1 === attr.blink) {
       if (null === this._slow_blink_layer) {
         this.createSlowBlinkLayer(this.slow_blink_interval);
       }
       context = this._slow_blink_layer.context;
       context.font = this._main_layer.context.font;
-    }
-
-    if (1 === attr.rapid_blink) {
+    } else if (1 === attr.rapid_blink) {
       if (null === this._rapid_blink_layer) {
         this.createRapidBlinkLayer(this.rapid_blink_interval);
       }
@@ -860,7 +857,7 @@ Renderer.definition = {
 
   _drawText: function _drawText(context, codes, x, y, char_width, length, attr)
   {
-    var text = String.fromCharCode.apply(String, codes);
+    var text = String.fromCharCode.apply(null, codes);
 
     if (this.enable_text_shadow) {
       context.shadowColor = context.fillStyle;//this.shadow_color;
