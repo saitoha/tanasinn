@@ -169,11 +169,11 @@ Cursor.definition = {
     // parse arguments.
     if ("?" === value) {
       color = this.color;
-      color = "rgb:" + color.substr(1, 2) 
-            + "/" + color.substr(3, 2) 
-            + "/" + color.substr(5, 2)
+      color = "rgb:" + color.substr(1, 2) + "00"
+            + "/" + color.substr(3, 2) + "00"
+            + "/" + color.substr(5, 2) + "00"
       message = "12;" + color;
-      this.sendMessage("command/send-to-tty", message);
+      this.sendMessage("command/send-sequense/osc", message);
     } else {
       this.color = coUtils.Color.parseX11ColorSpec(value);
     }
