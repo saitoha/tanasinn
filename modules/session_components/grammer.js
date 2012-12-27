@@ -247,8 +247,15 @@ VT100Grammar.definition = {
         } else if (0x18 === c || 0x1a === c) {
           state = _STATE_GROUND;
           this._dispatch_char(c);
+        } else if (c < 0x08) {
+          state = _STATE_GROUND;
+          this._dispatch_string(ibytes);
+        } else if (c < 0x0e) {
+          state = _STATE_GROUND;
+          ibytes.push(c);
         } else if (c < 0x20) {
-        //  state = _STATE_GROUND;
+          state = _STATE_GROUND;
+          this._dispatch_string(ibytes);
         } else {
           ibytes.push(c);
         }
@@ -261,8 +268,12 @@ VT100Grammar.definition = {
           this._dispatch_string(ibytes);
         } else if (0x18 === c || 0x1a === c) {
           state = _STATE_GROUND;
+        } else if (c < 0x08) {
+          state = _STATE_GROUND;
+        } else if (c < 0x0e) {
+          ibytes.push(c);
         } else if (c < 0x20) {
-        //  state = _STATE_GROUND;
+          state = _STATE_GROUND;
         } else {
           ibytes.push(c);
         }
