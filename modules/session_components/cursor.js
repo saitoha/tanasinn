@@ -173,7 +173,7 @@ Cursor.definition = {
             + "/" + color.substr(3, 2) + "00"
             + "/" + color.substr(5, 2) + "00"
       message = "12;" + color;
-      this.sendMessage("command/send-sequense/osc", message);
+      this.sendMessage("command/send-sequence/osc", message);
     } else {
       this.color = coUtils.Color.parseX11ColorSpec(value);
     }
