@@ -223,9 +223,9 @@ PaletteManager.definition = {
     // parse arguments.
     if ("?" === spec) { // get specified color value
       color = this.color[number];
-      color = "rgb:" + color.substr(1, 2) 
-            + "/" + color.substr(3, 2) 
-            + "/" + color.substr(5, 2)
+      color = "rgb:" + color.substr(1, 2) + "00"
+            + "/" + color.substr(3, 2) + "00"
+            + "/" + color.substr(5, 2) + "00"
       message = "4;" + number + ";" + color;
       this.sendMessage("command/send-sequence/osc", message);
     } else { // set color
@@ -265,9 +265,9 @@ PaletteManager.definition = {
 
     if ("?" === value) {
       color = outerchrome.foreground_color;
-      color = "rgb:" + color.substr(1, 2) 
-            + "/" + color.substr(3, 2) 
-            + "/" + color.substr(5, 2)
+      color = "rgb:" + color.substr(1, 2) + "00"
+            + "/" + color.substr(3, 2) + "00"
+            + "/" + color.substr(5, 2) + "00"
       message = "10;" + color;
       this.sendMessage("command/send-sequence/osc", message);
     } else { 
@@ -304,9 +304,9 @@ PaletteManager.definition = {
 
     if ("?" === value) {
       color = outerchrome.background_color;
-      color = "rgb:" + color.substr(1, 2) 
-            + "/" + color.substr(3, 2) 
-            + "/" + color.substr(5, 2)
+      color = "rgb:" + color.substr(1, 2) + "00"
+            + "/" + color.substr(3, 2) + "00"
+            + "/" + color.substr(5, 2) + "00"
       message = "11;" + color;
       this.sendMessage("command/send-sequence/osc", message);
     } else {
