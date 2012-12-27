@@ -470,10 +470,17 @@ C1Control.definition = {
   function OSC(message) 
   {
     var delimiter_position = message.indexOf(";"),
-        num = message.substr(0, delimiter_position),
-        command = message.substr(delimiter_position + 1);
+        num,
+        command;
 
-    this.sendMessage("sequence/osc/" + num, command);
+    if (-1 === delimiter_position) {
+      num = message;
+      this.sendMessage("sequence/osc/" + num);
+    } else {
+      num = message.substr(0, delimiter_position),
+      command = message.substr(delimiter_position + 1);
+      this.sendMessage("sequence/osc/" + num, command);
+    }
   },
   
   /**
