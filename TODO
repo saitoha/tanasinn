@@ -3,7 +3,6 @@
 - Fix broken debugger
 - Support Windows 8 RTM
 - Support alternate screen transition
-- Support background color auto tuning
 
 - Fix full-width character copy/paste issue
 - Fix Ctrl + Space issue on X11 environment
@@ -16,7 +15,7 @@
 - The width issue of DEC Special graphics
 
 - Support OSC 5 (alternative attributes)
-- Support OSC 13/14 (corsor color)
+- Support OSC 13/14 (mouse corsor color)
 - Completion issue after Ctrl + P / Ctrl + N
 
 - main buffer's adaptive resize
