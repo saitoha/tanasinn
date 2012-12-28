@@ -181,6 +181,7 @@
     blink.js
     tcem.js
     appesc.js
+    appwheel.js
     scrollbarmode.js
     titlemode.js
     terminalmode.js

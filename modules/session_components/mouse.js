@@ -66,6 +66,8 @@ Mouse.definition = {
   _in_scroll_session: false,
   _renderer: null,
   _screen: null,
+  _cursor_mode: coUtils.Constant.CURSOR_MODE_APPLICATION,
+  _application_wheel_mode: false,
 
   /** Installs itself. 
    *  @param {InstallContext} context A InstallContext object.
@@ -84,20 +86,36 @@ Mouse.definition = {
   {
     this._renderer = null;
     this._screen = null;
+    this._cursor_mode = coUtils.Constant.CURSOR_MODE_APPLICATION;
+    this._application_wheel_mode = false;
   },
 
-  /** Fired at scroll session is started. */
-  "[subscribe('event/scroll-session-started'), enabled]":
+  /** Fired when scroll session is started. */
+  "[subscribe('event/scroll-session-started'), pnp]":
   function onScrollSessionStarted() 
   {
     this._in_scroll_session = true;
   },
 
-  /** Fired at scroll session is closed. */
-  "[subscribe('event/scroll-session-closed'), enabled]":
+  /** Fired when scroll session is closed. */
+  "[subscribe('event/scroll-session-closed'), pnp]":
   function onScrolSessionClosed() 
   {
     this._in_scroll_session = false;
+  },
+
+  /** Fired when cursor mode is changed. */
+  "[subscribe('command/change-cursor-mode'), pnp]":
+  function onCursorModeChanged(value) 
+  {
+    this._cursor_mode = value;
+  },
+
+  /** Fired when wheel mode is changed. */
+  "[subscribe('command/change-application-wheel-mode'), pnp]":
+  function onApplicationWheelModeChanged(value) 
+  {
+    this._application_wheel_mode = value;
   },
 
   /** Fired at the mouse tracking type is changed. */
@@ -387,17 +405,39 @@ Mouse.definition = {
         }
 
       } else {
-
-        if (count > 0) {
-          for (i = 0; i < count; ++i) {
-            this._sendMouseEvent(event, 0x41); 
+        if (this._application_wheel_mode) {
+          if (coUtils.Constant.CURSOR_MODE_APPLICATION === this._cursor_mode) {
+            if (count > 0) {
+              for (i = 0; i < count; ++i) {
+                this.sendMessage("command/send-sequence/ss3", "B");
+              }
+            } else {
+              for (i = 0; i < -count; ++i) {
+                this.sendMessage("command/send-sequence/ss3", "A");
+              }
+            }
+          } else {
+            if (count > 0) {
+              for (i = 0; i < count; ++i) {
+                this.sendMessage("command/send-sequence/csi", "B");
+              }
+            } else {
+              for (i = 0; i < -count; ++i) {
+                this.sendMessage("command/send-sequence/csi", "A");
+              }
+            }
           }
         } else {
-          for (i = 0; i < -count; ++i) {
-            this._sendMouseEvent(event, 0x40); 
+          if (count > 0) {
+            for (i = 0; i < count; ++i) {
+              this._sendMouseEvent(event, 0x41); 
+            }
+          } else {
+            for (i = 0; i < -count; ++i) {
+              this._sendMouseEvent(event, 0x40); 
+            }
           }
         }
-
       }
     }
   },

@@ -72,7 +72,7 @@ ApplicationEscape.definition = {
   },
 
   "[persistable] enabled_when_startup": true,
-  "[persistable] default_value": true,
+  "[persistable] default_value": false,
 
   _mode: null,
 
