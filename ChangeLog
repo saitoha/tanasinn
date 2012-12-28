@@ -1,3 +1,18 @@
+2012-12-28 Hayaki Saito <user@zuse.jp>
+    * Version 0.3.1.13
+    * Support application cursor mode (DECSET 7727)
+    * Support Broken ST (xterm #171 or later)
+    * Change the format of OSC 4/10/11, rr/gg/bb -> rrrr/gggg/bbbb
+    * Add openinw3m plugin with context menu integration
+    * Fix some errors on Linux environment
+    * Fix completer's bug on Windows environment
+    * Fix broken Cygwin's session resume feature
+    * Fix double-ctrl locking issue
+    * Fix BCE behavior
+    * Fix a bug around enable/disable command
+    * Change default font on Linux
+    * Fix single argument OSC's bug
+
 2012-12-14 Hayaki Saito <user@zuse.jp>
     * Version 0.3.1.11
     * Support auto color adjustment feature
