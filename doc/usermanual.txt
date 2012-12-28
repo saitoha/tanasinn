@@ -28,7 +28,7 @@ link:./usermanual.html[English/英語]
 
 === 2012-12-28
     Version 0.3.1.13
-    Support application cursor mode (DECSET 7727)
+    Support application escape mode (DECSET 7727)
     Support Broken ST (xterm #171 or later)
     Change the format of OSC 4/10/11/12, rr/gg/bb -> rrrr/gggg/bbbb
     Add openinw3m plugin with context menu integration
