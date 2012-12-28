@@ -504,9 +504,14 @@
  */
 
 var TERMINFO_DB = {
-  // max_colors: maximum number of colors on screen
-  "Co":     "256",
-  "colors": "256",
+
+//  "TN":     "tanasinn",
+//
+//  "smcup":  "\x1b[?7727h\x1b[?2004h\x1b[?1049h",
+//  "ti":     "\x1b[?7727h\x1b[?2004h\x1b[?1049h",
+//
+//  "rmcup":  "\x1b[?1049l\x1b[?2004l\x1b[?7727l",
+//  "te":     "\x1b[?1049l\x1b[?2004l\x1b[?7727l",
 
   // key_up: up-arrow key
   "kcuu1":  "\x1bOA",
@@ -524,25 +529,61 @@ var TERMINFO_DB = {
   "kcub1":  "\x1bOD",
   "kl":     "\x1bOD",
 
-  // key_f1: F1 function key
-  "kf1":    "\x1bOP",
-  "k1":     "\x1bOP",
+  // key_sf: scroll-forward key
+  "kind":   "\x1b[1;2B",
+  "kF":     "\x1b[1;2B",
 
-  // key_shome: shifted home key
-  "kHOM":   "\x1b[1;2H",
-  "#2":     "\x1b[1;2H",
+  // key_sr: scroll-backward key
+  "kri":    "\x1b[1;2A",
+  "kR":     "\x1b[1;2A",
+
+  // key_sright: right-arrow key
+  "kRIT":   "\x1b[1;2C",
+  "%i":     "\x1b[1;2C",
 
   // key_sleft: shifted left-arrow key
   "kLFT":   "\x1b[1;2D",
   "#4":     "\x1b[1;2D",
 
+  // key_dc: delete-character key
+  "kdch1":  "\x1b[3~",
+  "kD":     "\x1b[3~", 
+
+  // key_ic: insert-character key
+  "kich1":  "\x1b[2~",
+  "kI":     "\x1b[2~", 
+
+  // key_home: home key
+  "khome":  "\x1b[H",
+  "kh":     "\x1b[H",
+
+  // key_end: end key
+  "kend":   "\x1b[F",
+  "@7":     "\x1b[F",
+
+  // key_shome: shifted home key
+  "kHOM":   "\x1b[1;2H",
+  "#2":     "\x1b[1;2H",
+
   // key_send: shifted end key
   "kEND":   "\x1b[1;2F",
   "*7":     "\x1b[1;2F",
 
-  // key_sright: right-arrow key
-  "kRIT":   "\x1b[1;2C",
-  "%i":     "\x1b[1;2C",
+  // key_select: select key
+  "kslt":   "\x1b[4~",
+  "*6":     "\x1b[4~",
+
+  // key_sselect: shifted select key
+  "kSLT":   "\x1b[4~",
+  "#6":     "\x1b[4~",
+
+  // key_find: find key
+  "kfnd":   "\x1b[1~",
+  "@0":     "\x1b[1~",
+
+  // key_sfind: shifted find key
+  "kFND":   "\x1b[1;2~",
+  "*0":     "\x1b[1;2~",
 
   // key_npage: knp kN next-page key
   "knp":    "\x1b[6~",
@@ -552,6 +593,14 @@ var TERMINFO_DB = {
   "kpp":    "\x1b[5~",
   "kP":     "\x1b[5~",
 
+  // key_snext: shifted next key
+  "kNXT":   "\x1b[6;2~",
+  "%c":     "\x1b[6;2~",
+
+  // key_sprevious: shifted previous key
+  "kPRV":   "\x1b[5;2~",
+  "%e":     "\x1b[5;2~",
+
   // enter_blink_mode: turn on blinking
   "blink":  "\x1b[5m",
   "mb":     "\x1b[5m",
@@ -559,6 +608,142 @@ var TERMINFO_DB = {
   // enter_bold_mode: turn on bold (extra bright) mode
   "bold":   "\x1b[1m",
   "md":     "\x1b[1m",
+ 
+  // key_f1: F1 function key
+  "kf1":    "\x1bOP",
+  "k1":     "\x1bOP",
+ 
+  // key_f42: function key
+  "kf42":    "\x1b[63~",
+  "FW":      "\x1b[63~",
+
+  // key_f43: function key
+  "kf43":    "\x1b[64~",
+  "FX":      "\x1b[64~",
+
+  // key_f44: function key
+  "kf44":    "\x1b[65~",
+  "FY":      "\x1b[65~",
+
+  // key_f45: function key
+  "kf45":    "\x1b[66~",
+  "FZ":      "\x1b[66~",
+
+  // key_f46: function key
+  "kf46":    "\x1b[67~",
+  "Fa":      "\x1b[67~",
+
+  // key_f47: function key
+  "kf47":    "\x1b[68~",
+  "Fb":      "\x1b[68~",
+
+  // key_f48: function key
+  "kf48":    "\x1b[69~",
+  "Fc":      "\x1b[69~",
+
+  // key_f49: function key
+  "kf49":    "\x1b[70~",
+  "Fd":      "\x1b[70~",
+
+  // key_f50: function key
+  "kf50":    "\x1b[71~",
+  "Fe":      "\x1b[71~",
+
+  // key_f51: function key
+  "kf51":    "\x1b[72~",
+  "Ff":      "\x1b[72~",
+
+  // key_f52: function key
+  "kf52":    "\x1b[73~",
+  "Fg":      "\x1b[73~",
+
+  // key_f53: function key
+  "kf53":    "\x1b[74~",
+  "Fh":      "\x1b[74~",
+
+  // key_f54: function key
+  "kf54":    "\x1b[75~",
+  "Fi":      "\x1b[75~",
+
+  // key_f55: function key
+  "kf55":    "\x1b[76~",
+  "Fj":      "\x1b[76~",
+
+  // key_f56: function key
+  "kf56":    "\x1b[77~",
+  "Fk":      "\x1b[77~",
+
+  // key_f57: function key
+  "kf57":    "\x1b[78~",
+  "Fl":      "\x1b[78~",
+
+  // key_f58: function key
+  "kf58":    "\x1b[79~",
+  "Fm":      "\x1b[79~",
+
+  // key_f59: function key
+  "kf59":    "\x1b[80~",
+  "Fn":      "\x1b[80~",
+
+  // key_f60: function key
+  "kf60":    "\x1b[81~",
+  "Fo":      "\x1b[81~",
+
+  // key_f61: function key
+  "kf61":    "\x1b[82~",
+  "Fp":      "\x1b[82~",
+
+  // key_f62: function key
+  "kf62":    "\x1b[83~",
+  "Fq":      "\x1b[83~",
+
+  // key_f63: F63 function key
+  "kf63":    "\x1b[84~",
+  "Fr":      "\x1b[84~",
+
+  // key_a1: upper left of keypad
+  "ka1":    "\x1b[H",
+  "K1":     "\x1b[H",
+
+  // key_a3: upper right of keypad
+  "ka3":    "\x1b[5~",
+  "K3":     "\x1b[5~",
+
+  // key_c1: lower left of keypad
+  "kc1":    "\x1b[F",
+  "K4":     "\x1b[F",
+
+  // key_c3: lower right of keypad
+  "kc3":    "\x1b[6~",
+  "K5":     "\x1b[6~",
+
+  // key_btab: back-tab key
+  "kcbt":   "\x1b[Z",
+  "kB":     "\x1b[Z",
+  
+  // key_clear: clear-screen or erase key
+  "kclr":   "",
+  "kC":     "",
+  
+  // key_undo: undo key
+  "kund":   "",
+  "&8":     "",
+
+   // key_backspace: backspace key
+  "kbs":    "^H",
+  "kb":     "^H",
+
+  // key_help: help key
+  "khlp":   "\x1b[28~", 
+  "%1":     "\x1b[28~", 
+
+  // key_shelp: shifted help key
+  "kHLP":   "\x1b[28;2~", 
+  "#1":     "\x1b[28;2~", 
+
+  // max_colors: maximum number of colors on screen
+  "Co":     "256",
+  "colors": "256",
 };
 
 /**
@@ -630,7 +815,9 @@ Terminfo.definition = {
                     {
                       return c
                         .charCodeAt(0)
-                        .toString(16);
+                        .toString(16)
+                        .toUpperCase()
+                        ;
                     })
                   .join("");
       }
