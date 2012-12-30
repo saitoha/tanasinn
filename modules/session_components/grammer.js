@@ -200,7 +200,7 @@ VT100Grammar.definition = {
         if (c <= 0x2f) { // SP to / 
           if (c >= 0x20) { // C0
             ibytes.push(c);
-            this._satte = _STATE_CSI_IBYTES;
+            state = _STATE_CSI_IBYTES;
           } else {
             if (0x1b === c) {
               state = _STATE_ESC;
