@@ -24,23 +24,34 @@
 
 "use strict";
 
-/**
- * @class EastAsianWidth
- *
- */
-var EastAsianWidth = new Class().extends(Plugin)
-                                .depends("parser");
-EastAsianWidth.definition = {
 
-  id: "east_asian_width",
+/**
+ * @class AmbiguousWidthReporting
+ *
+ * http://code.google.com/p/mintty/wiki/CtrlSeqs
+ *
+ * Applications can ask to be notified when the width of the so-called 
+ * ambiguous width character category changes due to the user changing font.
+ *
+ * sequence   reporting
+ * ^[[?7700l  disabled
+ * ^[[?7700h  enabled
+ *
+ * When enabled, ^[[1W is sent when changing to an "ambiguous narrow" font 
+ * and ^[[2W is sent when changing to an "ambiguous wide" font. 
+ */
+var AmbiguousWidthReporting = new Class().extends(Plugin)
+                                .depends("parser");
+AmbiguousWidthReporting.definition = {
+
+  id: "ambiguous_width_reporting",
 
   getInfo: function getInfo()
   {
     return {
-      name: _("East Asian Width"),
+      name: _("Ambiguous Width Reporting"),
       version: "0.1",
-      description: _("Switch to treat east asian ambiguous width ",
-                     "characters as single/double.")
+      description: _("Switch ambiguous width reporting. ")
     };
   },
 
@@ -48,7 +59,6 @@ EastAsianWidth.definition = {
   "[persistable] default_value": false,
 
   _mode: false,
-  _parser: null,
 
   /** Installs itself. 
    *  @param {InstallContext} context A InstallContext object.
@@ -57,7 +67,6 @@ EastAsianWidth.definition = {
   function install(context) 
   {
     this._mode = this.default_value;
-    this._parser = context["parser"];
   },
 
   /** Uninstalls itself.
@@ -68,72 +77,43 @@ EastAsianWidth.definition = {
     this._mode = null;
   },
 
-  /** Treat ambiguous width characters as double-width.
+
+  /** Enable ambiguous width reporting.
    */
-  "[subscribe('sequence/decset/8840'), pnp]":
-  function activate8840() 
-  { // Treat ambiguous characters as double
-    var parser = this._parser;
-
-    parser.ambiguous_as_wide = true;
-    this._mode = true
-    coUtils.Debug.reportMessage("TNAMB: double");
-  },
-
-  /** Treat ambiguous width characters as single-width.
-   */
-  "[subscribe('sequence/decrst/8840'), pnp]":
-  function deactivate8840() 
-  { // Treat ambiguous characters as single
-    var parser = this._parser;
-
-    parser.ambiguous_as_wide = false;
-    this._mode = false
-    coUtils.Debug.reportMessage("TNAMB: single");
-  },
-
-  /** Treat ambiguous width characters as single-width.
-   */
-  "[subscribe('sequence/decset/8428}'), pnp]":
+  "[subscribe('sequence/decset/7700'), pnp]":
   function activate() 
-  { // Treat ambiguous characters as double
-    var parser = this._parser;
-
-    parser.ambiguous_as_wide = false;
-    this._mode = false
-    coUtils.Debug.reportMessage("TNAMB: single");
+  { // Enable ambiguous width reporting
   },
 
-  /** Treat ambiguous width characters as double-width.
+  /** Disable ambiguous width reporting.
    */
-  "[subscribe('sequence/decrst/8428}'), pnp]":
+  "[subscribe('sequence/decrst/7700'), pnp]":
   function deactivate() 
-  { // Treat ambiguous characters as single
-    var parser = this._parser;
-
-    parser.ambiguous_as_wide = true;
-    this._mode = true
-    coUtils.Debug.reportMessage("TNAMB: double");
+  { // Disable ambigous width reporting
   },
 
-  /** Report mode
+  /** Disable ambiguous width reporting.
    */
-  "[subscribe('sequence/decrqm/8840'), pnp]":
-  function report() 
-  {
-    var mode = this._mode ? 1: 2,
-        message = "?8840;" + mode + "$y";
+  "[subscribe('variable-changed/parser.ambiguous_as_wide'), pnp]":
+  function onAmbiguousWidthChanged(value) 
+  { // Disable ambigous width reporting
+    var message;
 
+    if (value) {
+      message = "2W";
+    } else {
+      message = "1W";
+    }
     this.sendMessage("command/send-sequence/csi", message);
   },
 
   /** Report mode
    */
-  "[subscribe('sequence/decrqm/8428'), pnp]":
+  "[subscribe('sequence/decrqm/7700'), pnp]":
   function report() 
   {
     var mode = this._mode ? 1: 2,
-        message = "?8428;" + mode + "$y";
+        message = "?7700;" + mode + "$y";
 
     this.sendMessage("command/send-sequence/csi", message);
   },
@@ -181,6 +161,7 @@ EastAsianWidth.definition = {
 
 }; // class EastAsianWidth
 
+
 /**
  * @fn main
  * @brief Module entry point.
@@ -188,7 +169,7 @@ EastAsianWidth.definition = {
  */
 function main(broker) 
 {
-  new EastAsianWidth(broker);
+  new AmbiguousWidthReporting(broker);
 }
 
 // EOF
