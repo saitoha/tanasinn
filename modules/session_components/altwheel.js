@@ -26,15 +26,15 @@
 
 
 /**
- * @class ApplicationWheel
+ * @class AlternateWheel
  *
  * Application Wheel Mode (MinTTY)
  *
  */
-var ApplicationWheel = new Class().extends(Plugin);
-ApplicationWheel.definition = {
+var AlternateWheel = new Class().extends(Plugin);
+AlternateWheel.definition = {
 
-  id: "appwheel",
+  id: "altwheel",
 
   getInfo: function getInfo()
   {
@@ -158,7 +158,7 @@ ApplicationWheel.definition = {
  */
 function main(broker) 
 {
-  new ApplicationWheel(broker);
+  new AlternateWheel(broker);
 }
 
 // EOF
