@@ -24,11 +24,11 @@
 
 "use strict";
 
-var MOUSE_BUTTON1 = 0,
-    MOUSE_BUTTON3 = 1,
-    MOUSE_BUTTON2 = 2,
-    MOUSE_RELEASE = 3,
-    MOUSE_WHEEL_UP = 64,
+var MOUSE_BUTTON1    = 0,
+    MOUSE_BUTTON3    = 1,
+    MOUSE_BUTTON2    = 2,
+    MOUSE_RELEASE    = 3,
+    MOUSE_WHEEL_UP   = 64,
     MOUSE_WHEEL_DOWN = 65;
 
 /**
@@ -117,6 +117,7 @@ Mouse.definition = {
   function onApplicationWheelModeChanged(value) 
   {
     this._application_wheel_mode = value;
+    this.onmousescroll.enabled = value;
   },
 
   /** Fired at the mouse tracking type is changed. */
@@ -394,7 +395,7 @@ Mouse.definition = {
 
       tracking_mode = this._tracking_mode;
       if (this._in_scroll_session 
-          || coUtils.Constant.TRACKING_NONE === tracking_mode) {
+          || (!this._application_wheel_mode && coUtils.Constant.TRACKING_NONE === tracking_mode)) {
         if (count > 0) {
           this.sendMessage("command/scroll-down-view", count);
           this.sendMessage("command/draw");

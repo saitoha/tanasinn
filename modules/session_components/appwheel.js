@@ -46,7 +46,7 @@ ApplicationWheel.definition = {
   },
 
   "[persistable] enabled_when_startup": true,
-  "[persistable] default_value": false,
+  "[persistable] default_value": true,
 
   _mode: null,
 
@@ -70,7 +70,7 @@ ApplicationWheel.definition = {
 
   /** Activate application wheel mode feature(MinTTY).
    */
-  "[subscribe('sequence/decset/7786'), pnp]":
+  "[subscribe('sequence/decset/{1007 | 7786}'), pnp]":
   function activate() 
   { 
     this._mode = true;
@@ -80,12 +80,23 @@ ApplicationWheel.definition = {
 
   /** Deactivate application wheel mode feature(MinTTY).
    */
-  "[subscribe('sequence/decrst/7786'), pnp]":
+  "[subscribe('sequence/decrst/{1007 | 7786}'), pnp]":
   function deactivate() 
   {
     this._mode = false;
 
     this.sendMessage("command/change-application-wheel-mode", false);
+  },
+
+  /** Report mode
+   */
+  "[subscribe('sequence/decrqm/1007'), pnp]":
+  function report() 
+  {
+    var mode = this._mode ? 1: 2,
+        message = "?1007;" + mode + "$y";
+
+    this.sendMessage("command/send-sequence/csi", message);
   },
 
   /** Report mode
