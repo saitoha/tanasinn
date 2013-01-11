@@ -62,6 +62,7 @@ Mouse.definition = {
 
   _pressed: false,
   _installed: false,
+  _last_position: null,
 
   _in_scroll_session: false,
   _renderer: null,
@@ -129,6 +130,8 @@ Mouse.definition = {
       this.onmousescroll.enabled = true;
       this.sendMessage(_("Entering mouse tracking type: [%s]."), data)
     }
+
+    this._last_position = null,
     this._tracking_type = data;
   },
 
@@ -142,6 +145,7 @@ Mouse.definition = {
       this.sendMessage(_("Entering mouse tracking mode: [%s]."), data)
     }
 
+    this._last_position = null,
     this._tracking_mode = data;
   },
 
@@ -172,14 +176,13 @@ Mouse.definition = {
     }
   },
 
-  _getUrxvtMouseReport: function _getUrxvtMouseReport(event, button)
+  _getUrxvtMouseReport: function _getUrxvtMouseReport(event, button, coordinate)
   {
     var code,
         message, 
-        coordinate = this._getCurrentPosition(event),
         column = coordinate[0],
         row = coordinate[1];
-
+    
     if ("mouseup" === event.type) {
       button = 3;
     }
@@ -198,12 +201,11 @@ Mouse.definition = {
     return message;
   },
 
-  _getSgrMouseReport: function _getSgrMouseReport(event, button)
+  _getSgrMouseReport: function _getSgrMouseReport(event, button, coordinate)
   {
     var code,
         action,
         message,
-        coordinate = this._getCurrentPosition(event),
         column = coordinate[0],
         row = coordinate[1];
 
@@ -227,12 +229,11 @@ Mouse.definition = {
   },
 
 
-  _getUtf8MouseReport: function _getUtf8MouseReport(event, button)
+  _getUtf8MouseReport: function _getUtf8MouseReport(event, button, coordinate)
   {
     var code,
         button,
         message,
-        coordinate = this._getCurrentPosition(event),
         column = coordinate[0],
         row = coordinate[1],
         buffer;
@@ -270,12 +271,11 @@ Mouse.definition = {
     return message;
   },
 
-  _getNormalMouseReport: function _getNormalMouseReport(event, button)
+  _getNormalMouseReport: function _getNormalMouseReport(event, button, coordinate)
   {
     var code,
         button,
         message,
-        coordinate = this._getCurrentPosition(event),
         column = coordinate[0],
         row = coordinate[1];
 
@@ -301,7 +301,7 @@ Mouse.definition = {
   },
 
   /** Make packed mouse event data and send it to tty device. */
-  _sendMouseEvent: function _sendMouseEvent(event, button) 
+  _sendMouseEvent: function _sendMouseEvent(event, button, coordinate)
   {
     var message,
         buffer,
@@ -339,20 +339,20 @@ Mouse.definition = {
 
       // urxvt-style 
       case "urxvt":
-        message = this._getUrxvtMouseReport(event, button);
+        message = this._getUrxvtMouseReport(event, button, coordinate);
         break;
 
       // sgr-style 
       case "sgr":
-        message = this._getSgrMouseReport(event, button);
+        message = this._getSgrMouseReport(event, button, coordinate);
         break;
 
       case "utf8":
-        message = this._getUtf8MouseReport(event, button);
+        message = this._getUtf8MouseReport(event, button, coordinate);
         break;
 
       default:
-        message = this._getNormalMouseReport(event, button);
+        message = this._getNormalMouseReport(event, button, coordinate);
         break;
 
     } // switch (this._tracking_type)
@@ -376,7 +376,8 @@ Mouse.definition = {
         tracking_mode,
         count,
         line_height,
-        i;
+        i,
+        coordinate;
 
     if (event.axis === event.VERTICAL_AXIS) {
 
@@ -428,13 +429,16 @@ Mouse.definition = {
             }
           }
         } else {
+
+          coordinate = this._getCurrentPosition(event);
+
           if (count > 0) {
             for (i = 0; i < count; ++i) {
-              this._sendMouseEvent(event, 0x41); 
+              this._sendMouseEvent(event, 0x41, coordinate);
             }
           } else {
             for (i = 0; i < -count; ++i) {
-              this._sendMouseEvent(event, 0x40); 
+              this._sendMouseEvent(event, 0x40, coordinate); 
             }
           }
         }
@@ -447,7 +451,8 @@ Mouse.definition = {
   function onmousedown(event) 
   {
     var tracking_mode = this._tracking_mode,
-        button;
+        button,
+        coordinate;
  
     this._pressed = true;
 
@@ -475,7 +480,9 @@ Mouse.definition = {
           event.button);
 
     }
-    this._sendMouseEvent(event, button); 
+
+    coordinate = this._getCurrentPosition(event);
+    this._sendMouseEvent(event, button, coordinate); 
   },
 
   /** Mouse move evnet listener */
@@ -483,25 +490,41 @@ Mouse.definition = {
   function onmousemove(event) 
   {
     var tracking_mode = this._tracking_mode,
-        button;
+        button,
+        coordinate,
+        last_position;
 
     switch (tracking_mode) {
 
       case coUtils.Constant.TRACKING_BUTTON:
         if (this._pressed) {
           button = 32 + event.button;//MOUSE_RELEASE;//event.button;
-          this._sendMouseEvent(event, button); 
+          coordinate = this._getCurrentPosition(event);
+          last_position = this._last_position;
+          if (null === last_position
+              || coordinate[0] !== last_position[0]
+              || coordinate[1] !== last_position[1]) {
+            this._sendMouseEvent(event, button, coordinate); 
+            this._last_position = coordinate;
+          }
         }
         break;
 
       case coUtils.Constant.TRACKING_ANY:
-      // Send motion event.
+        // Send motion event.
         if (this._pressed) {
           button = 32 + event.button;
         } else {
           button = 32 + MOUSE_RELEASE;
         }
-        this._sendMouseEvent(event, button); 
+        coordinate = this._getCurrentPosition(event);
+        last_position = this._last_position;
+        if (null === last_position
+            || coordinate[0] !== last_position[0]
+            || coordinate[1] !== last_position[1]) {
+          this._sendMouseEvent(event, button, coordinate); 
+          this._last_position = coordinate;
+        }
         break;
 
       case coUtils.Constant.TRACKING_NORMAL:
@@ -518,13 +541,15 @@ Mouse.definition = {
   function onmouseup(event) 
   {
     var tracking_mode = this._tracking_mode,
-        button;
+        button,
+        coordinate;
 
     this._pressed = false;
 
     if (coUtils.Constant.TRACKING_NONE !== tracking_mode) {
       button = event.button;
-      this._sendMouseEvent(event, button); // release
+      coordinate = this._getCurrentPosition(event);
+      this._sendMouseEvent(event, button, coordinate); // release
     }
 
   },
