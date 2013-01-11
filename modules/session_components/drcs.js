@@ -114,7 +114,7 @@ DRCSBuffer.definition = {
         canvas;
 
     //           Pfn    Pcn      Pe      Pcmw     Pw      Pt      Pcmh     Pcss    Dscs
-    pattern = /^([01]);([0-9]+);([012]);([0-9]+);([012]);([0123]);([0-9]+);([01])\{(\s*[0-~])(.+)$/;
+    pattern = /^([01]);([0-9]+);([012]);([0-9]+);([012]);([0123]);([0-9]+);([01])\{(\s*[0-~])([\x00-\x7e]+)$/;
     match = data.match(pattern);
 
     if (null === match) {
