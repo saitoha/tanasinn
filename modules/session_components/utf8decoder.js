@@ -108,6 +108,8 @@ UTF8Decoder.definition = {
         break;
       } else if (c < 0x7f) { // 8bit (ASCII/DEC/ISO)
         yield c;
+      } else if (c === 0x7f) {
+        break;
       } else if (c < 0xe0) {
         // 110xxxxx 10xxxxxx 
         // (0x00000080 - 0x000007ff) // 11bit

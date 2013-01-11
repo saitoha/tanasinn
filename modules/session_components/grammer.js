@@ -160,7 +160,7 @@ VT100Grammar.definition = {
           state = _STATE_ESC;
         } else if (c < 0x20) { // C0
           this._dispatch_char(c);
-        } else if (c < 0x80) {
+        } else if (c < 0x7f) {
           break;
         } else if (c <= 0x9f) { // DEL, C1
           if (0x90 === c) {
@@ -190,7 +190,7 @@ VT100Grammar.definition = {
         } else if (0x5d === c) { // ]
           ibytes = [c];
           state = _STATE_OSC;
-        } else if (c <= 0x7f) { // 0 to ~
+        } else if (c <= 0x7e) { // 0 to ~
           state = _STATE_GROUND;
           this._dispatch_single_esc(c);
         } else {
@@ -294,7 +294,7 @@ VT100Grammar.definition = {
         } else if (0x5d === c) { // ]
           ibytes = [c];
           state = _STATE_OSC;
-        } else if (c <= 0x7f) { // 0 to ~
+        } else if (c <= 0x7e) { // 0 to ~
           state = _STATE_GROUND;
           this._dispatch_single_esc(c);
         } else {
@@ -312,7 +312,7 @@ VT100Grammar.definition = {
           }
         } else if (c <= 0x2f) { // SP to / 
           ibytes.push(c);
-        } else if (c <= 0x7f) { // 0 to ~
+        } else if (c <= 0x7e) { // 0 to ~
           state = _STATE_GROUND;
           this._dispatch_esc(ibytes, c)
         } else if (c <= 0x9f) {
