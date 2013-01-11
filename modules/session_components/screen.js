@@ -2648,6 +2648,11 @@ Screen.definition = {
     line.deleteCells(cursor.positionX, n, attrvalue);
   },
 
+  isAltScreen: function isAltScreen()
+  {
+    return coUtils.Constant.SCREEN_ALTERNATE === this._screen_choice;
+  },
+
 // ScreenSwitchConcept implementation
 
   /** Switch to Alternate screen 

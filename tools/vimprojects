@@ -183,6 +183,7 @@
     tcem.js
     appesc.js
     altwheel.js
+    appwheel.js
     scrollbarmode.js
     titlemode.js
     terminalmode.js

@@ -69,6 +69,7 @@ Mouse.definition = {
   _screen: null,
   _cursor_mode: coUtils.Constant.CURSOR_MODE_APPLICATION,
   _application_wheel_mode: false,
+  _alternate_wheel_mode: false,
 
   /** Installs itself. 
    *  @param {InstallContext} context A InstallContext object.
@@ -89,6 +90,7 @@ Mouse.definition = {
     this._screen = null;
     this._cursor_mode = coUtils.Constant.CURSOR_MODE_APPLICATION;
     this._application_wheel_mode = false;
+    this._alternate_wheel_mode = false;
   },
 
   /** Fired when scroll session is started. */
@@ -117,6 +119,13 @@ Mouse.definition = {
   function onApplicationWheelModeChanged(value) 
   {
     this._application_wheel_mode = value;
+  },
+
+  /** Fired when wheel mode is changed. */
+  "[subscribe('command/change-alternate-wheel-mode'), pnp]":
+  function onApplicationWheelModeChanged(value) 
+  {
+    this._alternate_wheel_mode = value;
     this.onmousescroll.enabled = value;
   },
 
@@ -374,6 +383,7 @@ Mouse.definition = {
   function onmousescroll(event) 
   {
     var renderer = this._renderer,
+        screen = this._screen,
         tracking_mode,
         count,
         line_height,
@@ -395,7 +405,8 @@ Mouse.definition = {
 
       tracking_mode = this._tracking_mode;
       if (this._in_scroll_session 
-          || (!this._application_wheel_mode && coUtils.Constant.TRACKING_NONE === tracking_mode)) {
+          || (!(this._alternate_wheel_mode && screen.isAltScreen())
+              && coUtils.Constant.TRACKING_NONE === tracking_mode)) {
         if (count > 0) {
           this.sendMessage("command/scroll-down-view", count);
           this.sendMessage("command/draw");
@@ -407,25 +418,41 @@ Mouse.definition = {
         }
 
       } else {
-        if (this._application_wheel_mode) {
+        if (this._alternate_wheel_mode && screen.isAltScreen()) {
           if (coUtils.Constant.CURSOR_MODE_APPLICATION === this._cursor_mode) {
             if (count > 0) {
               for (i = 0; i < count; ++i) {
-                this.sendMessage("command/send-sequence/ss3", "B");
+                if (this._application_wheel_mode) {
+                  this.sendMessage("command/send-sequence/ss3", "b");
+                } else {
+                  this.sendMessage("command/send-sequence/ss3", "B");
+                }
               }
             } else {
               for (i = 0; i < -count; ++i) {
-                this.sendMessage("command/send-sequence/ss3", "A");
+                if (this._application_wheel_mode) {
+                  this.sendMessage("command/send-sequence/ss3", "a");
+                } else {
+                  this.sendMessage("command/send-sequence/ss3", "A");
+                }
               }
             }
           } else {
             if (count > 0) {
               for (i = 0; i < count; ++i) {
-                this.sendMessage("command/send-sequence/csi", "B");
+                if (this._application_wheel_mode) {
+                  this.sendMessage("command/send-sequence/csi", "b");
+                } else {
+                  this.sendMessage("command/send-sequence/csi", "B");
+                }
               }
             } else {
               for (i = 0; i < -count; ++i) {
-                this.sendMessage("command/send-sequence/csi", "A");
+                if (this._application_wheel_mode) {
+                  this.sendMessage("command/send-sequence/csi", "a");
+                } else {
+                  this.sendMessage("command/send-sequence/csi", "A");
+                }
               }
             }
           }

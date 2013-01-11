@@ -39,9 +39,9 @@ AlternateWheel.definition = {
   getInfo: function getInfo()
   {
     return {
-      name: _("Application Wheel Mode"),
+      name: _("Alternate Wheel Mode"),
       version: "0.1",
-      description: _("Controll the keycode sent by the Esc key")
+      description: _("Enable/Disable alternate scroll(xterm), mousewheel reporting(MinTTY) feature")
     };
   },
 
@@ -68,24 +68,24 @@ AlternateWheel.definition = {
     this._mode = null;
   },
 
-  /** Activate application wheel mode feature(MinTTY).
+  /** Activate alternate wheel mode feature(xterm/MinTTY).
    */
   "[subscribe('sequence/decset/{1007 | 7786}'), pnp]":
   function activate() 
   { 
     this._mode = true;
 
-    this.sendMessage("command/change-application-wheel-mode", true);
+    this.sendMessage("command/change-alternate-wheel-mode", true);
   },
 
-  /** Deactivate application wheel mode feature(MinTTY).
+  /** Deactivate alternate wheel mode feature(xterm/MinTTY).
    */
   "[subscribe('sequence/decrst/{1007 | 7786}'), pnp]":
   function deactivate() 
   {
     this._mode = false;
 
-    this.sendMessage("command/change-application-wheel-mode", false);
+    this.sendMessage("command/change-alternate-wheel-mode", false);
   },
 
   /** Report mode

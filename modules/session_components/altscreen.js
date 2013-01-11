@@ -183,7 +183,6 @@ AlternateScreen.definition = {
 
     this._mode = false;
 
-    screen.eraseScreenAll();
     screen.selectMainScreen();
 
     coUtils.Debug.reportMessage(
