@@ -132,7 +132,7 @@ EastAsianWidth.definition = {
   "[subscribe('sequence/decrqm/8428'), pnp]":
   function report() 
   {
-    var mode = this._mode ? 1: 2,
+    var mode = this._mode ? 2: 1,
         message = "?8428;" + mode + "$y";
 
     this.sendMessage("command/send-sequence/csi", message);
