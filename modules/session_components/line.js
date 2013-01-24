@@ -778,16 +778,38 @@ Line.definition = {
   /** returns plain text in specified range. 
    * @return {String} selected string.
    */
-  getTextInRange: function getTextInRange(start, end) 
+  getTextInRange: function getTextInRange(start, end, raw)
   {
-    var codes = this.cells
-      .slice(start, end)
-      .map(
-        function mapFunc(cell)
-        {
-         return cell.c;
-        });
-      //.filter(function(code) code)
+    var codes,
+        cells = this.cells.slice(start, end),
+        cell,
+        i,
+        j,
+        c;
+
+    if (raw) {
+      codes = [];
+      for (i = 0; i < cells.length; ++i) {
+        cell = cells[i];
+        codes.push(cell.c);
+      }
+    } else {
+      codes = [];
+      for (i = 0; i < cells.length; ++i) {
+        cell = cells[i];
+        c = cell.c;
+        if (c < 0x10000) {
+          codes.push(c);
+        } else if ("object" === typeof c) {
+          Array.prototype.push.apply(codes, c);
+        } else {
+          // emit 16bit + 16bit surrogate pair.
+          c -= 0x10000;
+          codes.push((c >> 10) | 0xD800);
+          codes.push((c & 0x3FF) | 0xDC00);
+        }
+      }
+    }
     return String.fromCharCode.apply(String, codes);
   },
 
