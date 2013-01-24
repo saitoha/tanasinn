@@ -154,9 +154,9 @@ function wcwidth_amb_as_single(c)
 {
     if (c < 0x10000) {
         var s = String.fromCharCode(c);
-        if (/^(?:[@{[print_characters 2, %wcmap1]}]|@{[print_characters 2, %wclmap1]})\$/.test(s)) {
+        if (/^[@{[print_characters 2, %wcmap1]}]\$/.test(s)) {
             return 2;
-        } else if (/^(?:[@{[print_characters 0, %wcmap1]}]|@{[print_characters 0, %wclmap1]})\$/.test(s)) {
+        } else if (/^[@{[print_characters 0, %wcmap1]}]\$/.test(s)) {
             return 0;
         }
     } else if (c < 0x1F200) {
@@ -175,9 +175,9 @@ function wcwidth_amb_as_double(c)
 {
     if (c < 0x10000) {
         var s = String.fromCharCode(c);
-        if (/^(?:[@{[print_characters 2, %wcmap2]}]|@{[print_characters 2, %wclmap2]})\$/.test(s)) {
+        if (/^[@{[print_characters 2, %wcmap2]}]\$/.test(s)) {
             return 2;
-        } else if (/^(?:[@{[print_characters 0, %wcmap2]}]|@{[print_characters 0, %wclmap2]})\$/.test(s)) {
+        } else if (/^[@{[print_characters 0, %wcmap2]}]\$/.test(s)) {
             return 0;
         }
     } else if (c < 0x1F100) {
