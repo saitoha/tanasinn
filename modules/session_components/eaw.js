@@ -144,9 +144,9 @@ EastAsianWidth.definition = {
   function reset(broker) 
   {
     if (this.default_value) {
-      this.activate();
-    } else {
       this.deactivate();
+    } else {
+      this.activate();
     }
   },
 
