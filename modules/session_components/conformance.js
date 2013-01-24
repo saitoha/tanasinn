@@ -44,6 +44,7 @@ ConformanceLevel.definition = {
   },
 
   "[persistable] enabled_when_startup": true,
+  "[persistable] response_delay": 1,
 
   _8bit_mode: false,
   _conformance_level: 4,
@@ -188,11 +189,11 @@ ConformanceLevel.definition = {
       message = "\x1bX";
     }
 
-    coUtils.Timer.setTimeout(
-      function timerProc()
-      {
+    //coUtils.Timer.setTimeout(
+    //  function timerProc()
+    //  {
         this.sendMessage("command/send-to-tty", message);
-      }, 1, this);
+    //  }, this.response_delay, this);
   },
 
 
@@ -207,11 +208,11 @@ ConformanceLevel.definition = {
       message = "\x1b_";
     }
 
-    coUtils.Timer.setTimeout(
-      function timerProc()
-      {
+    //coUtils.Timer.setTimeout(
+    //  function timerProc()
+    //  {
         this.sendMessage("command/send-to-tty", message);
-      }, 1, this);
+    //  }, this.response_delay, this);
   },
 
 
@@ -226,11 +227,11 @@ ConformanceLevel.definition = {
       message = "\x1b^";
     }
 
-    coUtils.Timer.setTimeout(
-      function timerProc()
-      {
+    //coUtils.Timer.setTimeout(
+    //  function timerProc()
+    //  {
         this.sendMessage("command/send-to-tty", message);
-      }, 1, this);
+    //  }, this.response_delay, this);
   },
 
 
@@ -253,11 +254,11 @@ ConformanceLevel.definition = {
       message += "\x1b\\";
     }
 
-    coUtils.Timer.setTimeout(
-      function timerProc()
-      {
+    //coUtils.Timer.setTimeout(
+    //  function timerProc()
+    //  {
         this.sendMessage("command/send-to-tty", message);
-      }, 1, this);
+    //  }, this.response_delay, this);
   },
 
   "[subscribe('command/get-sequence/csi'), pnp]":
@@ -280,11 +281,11 @@ ConformanceLevel.definition = {
 
     message += data;
 
-    coUtils.Timer.setTimeout(
-      function timerProc()
-      {
+    //coUtils.Timer.setTimeout(
+    //  function timerProc()
+    //  {
         this.sendMessage("command/send-to-tty", message);
-      }, 1, this);
+    //  }, this.response_delay, this);
   },
 
   "[subscribe('command/get-sequence/ss3'), pnp]":
@@ -307,11 +308,11 @@ ConformanceLevel.definition = {
 
     message += data;
 
-    coUtils.Timer.setTimeout(
-      function timerProc()
-      {
+    //coUtils.Timer.setTimeout(
+    //  function timerProc()
+    //  {
         this.sendMessage("command/send-to-tty", message);
-      }, 1, this);
+    //  }, this.response_delay, this);
   },
 
   "[subscribe('command/send-sequence/decrpss'), pnp]":
@@ -339,11 +340,11 @@ ConformanceLevel.definition = {
       message += "\x1b\\";
     }
 
-    coUtils.Timer.setTimeout(
-      function timerProc()
-      {
+    //coUtils.Timer.setTimeout(
+    //  function timerProc()
+    //  {
         this.sendMessage("command/send-to-tty", message);
-      }, 1, this);
+    //  }, this.response_delay, this);
 
   },
 
