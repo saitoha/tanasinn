@@ -307,12 +307,6 @@ CursorState.definition = {
     this.restore();
   },
 
-  "[profile('vt100'), sequence('CSI s')] SCP": 
-  function SCOSCP() 
-  {
-    this.backup(); 
-  },
-
   "[profile('vt100'), sequence('CSI u')] RCP": 
   function SCORCP() 
   {
