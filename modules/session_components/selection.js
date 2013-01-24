@@ -77,7 +77,7 @@ DragSelect.definition = {
 
     initial_position = this._convertPixelToPosition(event);
 
-    text = screen.getTextInRange(initial_position - 1, initial_position);
+    text = screen.getCharacter(initial_position - 1);
 
     if ("\x00" === text) {
       ++initial_position;
@@ -114,7 +114,7 @@ DragSelect.definition = {
     var initial_position = this._initial_position,
         current_position = this._convertPixelToPosition(event),
         screen = this._screen,
-        text = screen.getTextInRange(current_position - 1, current_position),
+        text = screen.getCharacter(current_position - 1),
         start_position,
         end_position;
 
@@ -377,7 +377,7 @@ Selection.definition = {
       }
     }
 
-    text = screen.getTextInRange(initial_position, initial_position + 1);
+    text = screen.getCharacter(initial_position);
     if ("\x00" === text) {
       ++initial_position;
     }
@@ -420,7 +420,7 @@ Selection.definition = {
                 }
 
                 current_position = y * column + x;
-                text = screen.getTextInRange(current_position, current_position + 1);
+                text = screen.getCharacter(current_position);
                 if ("\x00" === text) {
                   --current_position;
                 }
@@ -597,7 +597,7 @@ Selection.definition = {
 
       context.beginPath();
  
-      text = screen.getTextInRange(first, last).replace(/\n/g, "");
+      text = screen.getRawTextInRange(first, last).replace(/\n/g, "");
       lines = text.split("\r");
 
       right_blank_length = column - lines[0].length - start_column;
