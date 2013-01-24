@@ -105,16 +105,21 @@ Copy.definition = {
   {
     var text,
         status_message,
-        clipboard_helper;
+        clipboard_helper,
+        screen = this._screen;
 
     // and pass it to "screen". "screen" returns selected text.
-    text = this._screen
-      .getTextInRange(range.start, range.end, range.is_rectangle)
-      .replace(/[\x00\r]/g, "");
+    if (range.is_rectangle) {
+      text = screen
+        .getTextInRect(range.start, range.end)
+        .replace(/[\x00\r]/g, "");
+    } else {
+      text = screen
+        .getTextInRange(range.start, range.end)
+        .replace(/[\x00\r]/g, "");
+    }
 
-    clipboard_helper = Components
-         .classes["@mozilla.org/widget/clipboardhelper;1"]
-         .getService(Components.interfaces.nsIClipboardHelper);
+    clipboard_helper = coUtils.Services.getClipboardHelper()
     clipboard_helper.copyString(text);
 
     status_message = coUtils.Text.format(
