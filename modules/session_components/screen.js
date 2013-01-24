@@ -702,6 +702,68 @@ ScreenSequenceHandler.definition = {
   { // Delete CHaracters
     this.deleteCharacters(n || 1);
   },
+
+  /**
+   * SCP - Save Cursor Position
+   *
+   * CSI    Pn    s
+   * 9/11   3/n   7/3 
+   *
+   * or
+   *
+   * DECSLRM - Set Left and Right Margins
+   * 
+   * This control function sets the left and right margins to define the
+   * scrolling region. DECSLRM only works when vertical split screen mode
+   * (DECLRMM) is set.
+   * 
+   * Available in: VT Level 4 mode only
+   * 
+   * Default: Margins are at the left and right page borders.
+   *
+   * Format
+   *
+   * CSI        Pl      ;       Pr      s
+   * 9/11       3/n     3/11    3/n     7/3
+   *
+   * Parameters
+   * 
+   * Pl is the column number for the left margin.
+   * Default: Pl = 1.
+   * 
+   * Pr is the column number for the right margin.
+   * Default: Pr = 80 or 132 (depending on the page width).
+   *
+   * Notes on DECSLRM
+   * 
+   *     The value of the left margin (Pl) must be less than the right
+   *     margin (Pr).
+   *     The maximum size of the scrolling region is the page size,
+   *     based on the setting of set columns per page (DECSCPP).
+   *     The minimum size of the scrolling region is two columns.
+   *     The terminal only recognizes this control function if vertical
+   *     split screen mode (DECLRMM) is set.
+   *     DECSLRM moves the cursor to column 1, line 1 of the page.
+   *     If the left and right margins are set to columns other than 1
+   *     and 80 (or 132), then the terminal cannot scroll smoothly.
+   *
+   */
+  "[profile('vt100'), sequence('CSI Pn s')]":
+  function DECSLRM(n1, n2) 
+  { // Scroll Left
+    n1 = (n1 || 1) - 1;
+    n2 = (n2 || 1) - 1;
+    this.setHorizontalScrollRegion(n1, n2 + 1);
+
+    this.sendMessage("command/backup-cursor-state");
+  },
+
+  setHorizontalScrollRegion:
+  function setHorizontalScrollRegion(left, right)
+  {
+    this._scroll_left = left;
+    this._scroll_right = right;
+  },
    
   /**
    *
@@ -1362,7 +1424,7 @@ Viewable.definition = {
   },
 
   _getTextInRectangle: 
-  function _getTextInRectangle(lines, start_column, end_column)
+  function _getTextInRectangle(lines, start_column, end_column, raw)
   {
     var buffer = [],
         max_column,
@@ -1383,14 +1445,14 @@ Viewable.definition = {
 
     for (; i < lines.length; ++i) {
       line = lines[i];
-      text = line.getTextInRange(min_column, max_column);
+      text = line.getTextInRange(min_column, max_column, raw);
       buffer.push(text.replace(/ +$/, ""));
     }
     return buffer.join("\n"); 
   },
 
   _getTextInRangeImpl: 
-  function _getTextInRangeImpl(lines, start_column, end_column)
+  function _getTextInRangeImpl(lines, start_column, end_column, raw)
   {
     var buffer = [],
         width = this.width,
@@ -1416,13 +1478,27 @@ Viewable.definition = {
         end = width;
       }
 
-      text = line.getTextInRange(start, end);
+      text = line.getTextInRange(start, end, raw);
       buffer.push(text.replace(/ +$/, "\n"));
     }
     return buffer.join("\r"); 
   },
 
-  /** get text in specified range. 
+  /** get raw text in specified range. 
+   */
+  getRawTextInRange: function getRawTextInRange(start, end, is_rectangle) 
+  {
+    var width = this.width,
+        start_column = start % width,
+        end_column = end % width,
+        start_row = Math.floor(start / width),
+        end_row = Math.floor(end / width) + 1,
+        lines = this._getCurrentViewLines().slice(start_row, end_row);
+
+    return this._getTextInRangeImpl(lines, start_column, end_column, /* raw */true);
+  },
+
+  /** get UTF-16 text in specified range. 
    */
   getTextInRange: function getTextInRange(start, end, is_rectangle) 
   {
@@ -1433,12 +1509,36 @@ Viewable.definition = {
         end_row = Math.floor(end / width) + 1,
         lines = this._getCurrentViewLines().slice(start_row, end_row);
 
-    if (is_rectangle) {
-      return this._getTextInRectangle(lines, start_column, end_column);
-    } else {
-      return this._getTextInRangeImpl(lines, start_column, end_column);
-    }
+    return this._getTextInRangeImpl(lines, start_column, end_column, /* raw */false);
+  },
 
+  /** get raw character in specified position. 
+   */
+  getCharacter: function getCharacter(start) 
+  {
+    var end = start + 1, 
+        width = this.width,
+        start_column = start % width,
+        end_column = end % width,
+        start_row = Math.floor(start / width),
+        end_row = Math.floor(end / width) + 1,
+        lines = this._getCurrentViewLines().slice(start_row, end_row);
+
+    return this._getTextInRangeImpl(lines, start_column, end_column, /* raw */true);
+  },
+
+  /** get UTF-16 text in specified rectangular range. 
+   */
+  getTextInRect: function getTextInRect(start, end) 
+  {
+    var width = this.width,
+        start_column = start % width,
+        end_column = end % width,
+        start_row = Math.floor(start / width),
+        end_row = Math.floor(end / width) + 1,
+        lines = this._getCurrentViewLines().slice(start_row, end_row);
+
+    return this._getTextInRectangle(lines, start_column, end_column, /* raw */false);
   },
 
 }; // Viewable
@@ -1470,34 +1570,64 @@ Scrollable.definition = {
         offset = this.getBufferTop(),
         width = this._width,
         height = this._height,
+        left = this._scroll_left,
+        right = this._scroll_right,
         attrvalue = this.cursor.attr.value & 0xff,
         i,
+        j,
+        cell,
+        tmprange,
+        rotaterange,
         line,
         range;
 
-    // set dirty flag.
-    for (i = offset + top; i < offset + bottom - n; ++i) {
-      line = lines[i];
-      line.invalidate();
-    }
+    if (0 === left && right === this._width) {
+      // set dirty flag.
+      for (i = offset + top; i < offset + bottom - n; ++i) {
+        line = lines[i];
+        line.invalidate();
+      }
 
-    // rotate lines.
-    range = lines.splice(offset + bottom - n, n);
+      // rotate lines.
+      range = lines.splice(offset + bottom - n, n);
 
-    for (i = 0; i < range.length; ++i) {
-      line = range[i];
-      line.erase(0, width, attrvalue);
-      line.type = coUtils.Constant.LINETYPE_NORMAL;
-    }
+      for (i = 0; i < range.length; ++i) {
+        line = range[i];
+        line.erase(0, width, attrvalue);
+        line.type = coUtils.Constant.LINETYPE_NORMAL;
+      }
 
-    range.unshift(offset + top, 0);
+      range.unshift(offset + top, 0);
 
-    Array.prototype.splice.apply(lines, range);
-    this._lines = lines.slice(offset, offset + height);
+      Array.prototype.splice.apply(lines, range);
+      this._lines = lines.slice(offset, offset + height);
 
-    if (this._smooth_scrolling) {
-      this.sendMessage("command/draw", true);
-      wait(this.smooth_scrolling_delay);
+      if (this._smooth_scrolling) {
+        this.sendMessage("command/draw", true);
+        wait(this.smooth_scrolling_delay);
+      }
+    } else {
+      range = lines.slice(offset + top, offset + bottom);
+      tmprange = [];
+      for (i = 0; i < range.length; ++i) {
+        line = range[i];
+        tmprange.push(line.cells.splice(left, right - left));
+      }
+      rotaterange = tmprange.splice(bottom - top - n, n);
+      for (i = 0; i < rotaterange.length; ++i) {
+        line = rotaterange[i];
+        for (j = 0; j < line.length; ++j) {
+          cell = line[j];
+          cell.erase(attrvalue);
+        }
+      }
+      Array.prototype.unshift.apply(tmprange, rotaterange)
+      for (i = 0; i < range.length; ++i) {
+        line = range[i];
+        tmprange[i].unshift(left, 0);
+        Array.prototype.splice.apply(line.cells, tmprange[i]);
+        line.addRange(left, right);
+      }
     }
   },
 
@@ -1509,68 +1639,97 @@ Scrollable.definition = {
         width = this._width,
         height = this._height,
         cursor = this.cursor,
+        left = this._scroll_left,
+        right = this._scroll_right,
         attrvalue = cursor.attr.value & 0xff,
-        i, 
+        i,
+        j,
+        cell,
+        tmprange,
+        rotaterange,
         range,  // rotation range
         line, 
         rest;
 
-    // set dirty flag.
-    for (i = n; i < lines.length; ++i) {
-      line = lines[i];
-      line.invalidate();
-    }
-
-    // rotate lines.
-    rest = this.scrollback_limit - offset;
-    if (top > 0) {
-      range = lines.splice(offset + top, n);
-      for (i = 0; i < range.length; ++i) {
-        line = range[i];
-        line.erase(0, width, attrvalue);
-        line.type = coUtils.Constant.LINETYPE_NORMAL;
-      }
-    } else if (rest > 0) {
-      if (n > rest) {
-        range = this._createLines(rest);
-        offset = this._buffer_top += rest;
-        for (i = 0; i < range.length; ++i) {
-          line = range[i];
-          line.invalidate();
-        }
-        // line.splice(offset + bottom -m, 0, ....);
-        range.unshift(offset + bottom - rest, 0);
-        Array.prototype.splice.apply(lines, range);
-        this._lines = lines.slice(offset, offset + height);
-        this._scrollUp(top, bottom, n - rest)
-        return;
-      } else {
-        range = this._createLines(n);
-        offset = this._buffer_top += n;
-        for (i = 0; i < range.length; ++i) {
-          line = range[i];
-          line.invalidate();
-        }
-      }
-    } else { // 0 === top && rest === 0
-      range = lines.splice(0, n);
-      for (i = 0; i < range.length; ++i) {
-        line = range[i];
-        line.erase(0, width, attrvalue);
-        line.length = width;
+    if (0 === left && right === this._width) {
+      // set dirty flag.
+      for (i = offset + top + n; i < offset + bottom; ++i) {
+        line = lines[i];
         line.invalidate();
-        line.type = coUtils.Constant.LINETYPE_NORMAL;
       }
-    }
+      // rotate lines.
+      rest = this.scrollback_limit - offset;
+      if (top > 0) {
+        range = lines.splice(offset + top, n);
+        for (i = 0; i < range.length; ++i) {
+          line = range[i];
+          line.erase(0, width, attrvalue);
+          line.type = coUtils.Constant.LINETYPE_NORMAL;
+        }
+      } else if (rest > 0) {
+        if (n > rest) {
+          range = this._createLines(rest);
+          offset = this._buffer_top += rest;
+          for (i = 0; i < range.length; ++i) {
+            line = range[i];
+            line.invalidate();
+          }
+          // line.splice(offset + bottom -m, 0, ....);
+          range.unshift(offset + bottom - rest, 0);
+          Array.prototype.splice.apply(lines, range);
+          this._lines = lines.slice(offset, offset + height);
+          this._scrollUp(top, bottom, n - rest)
+          return;
+        } else {
+          range = this._createLines(n);
+          offset = this._buffer_top += n;
+          for (i = 0; i < range.length; ++i) {
+            line = range[i];
+            line.invalidate();
+          }
+        }
+      } else { // 0 === top && rest === 0
+        range = lines.splice(0, n);
+        for (i = 0; i < range.length; ++i) {
+          line = range[i];
+          line.erase(0, width, attrvalue);
+          line.length = width;
+          line.invalidate();
+          line.type = coUtils.Constant.LINETYPE_NORMAL;
+        }
+      }
 
-    // line.splice(offset + bottom -m, 0, ....);
-    range.unshift(offset + bottom - n, 0);
-    Array.prototype.splice.apply(lines, range);
-    this._lines = lines.slice(offset, offset + height);
+      // line.splice(offset + bottom -m, 0, ....);
+      range.unshift(offset + bottom - n, 0);
+      Array.prototype.splice.apply(lines, range);
+      this._lines = lines.slice(offset, offset + height);
 
-    if (this._smooth_scrolling) {
-      this.sendMessage("command/draw", true);
-      wait(this.smooth_scrolling_delay);
+      if (this._smooth_scrolling) {
+        this.sendMessage("command/draw", true);
+        wait(this.smooth_scrolling_delay);
+      }
+    } else {
+      range = lines.slice(offset + top, offset + bottom);
+      tmprange = [];
+      for (i = 0; i < range.length; ++i) {
+        line = range[i];
+        tmprange.push(line.cells.splice(left, right - left));
+      }
+      rotaterange = tmprange.splice(0, n);
+      for (i = 0; i < rotaterange.length; ++i) {
+        line = rotaterange[i];
+        for (j = 0; j < line.length; ++j) {
+          cell = line[j];
+          cell.erase(attrvalue);
+        }
+      }
+      Array.prototype.push.apply(tmprange, rotaterange)
+      for (i = 0; i < range.length; ++i) {
+        line = range[i];
+        tmprange[i].unshift(left, 0);
+        Array.prototype.splice.apply(line.cells, tmprange[i]);
+        line.addRange(left, right);
+      }
     }
 
   },
@@ -1715,6 +1874,8 @@ Screen.definition = {
   _width: 80,
   _height: 24,
   _scroll_top: null,
+  _scroll_left: null,
+  _scroll_right: null,
   _scroll_bottom: null,
   _screen_choice: coUtils.Constant.SCREEN_MAIN,
   _line_generator: null,
@@ -1760,6 +1921,8 @@ Screen.definition = {
 
     this._scroll_top = null;
     this._scroll_bottom = null;
+    this._scroll_left = null;
+    this._scroll_right = null;
     this._screen_choice = coUtils.Constant.SCREEN_MAIN;
     this._line_generator = null;
 
@@ -1836,6 +1999,7 @@ Screen.definition = {
     } else {
       this._width = value;
     }
+    this._scroll_right = this._width;
   },
 
   /** 
@@ -2485,7 +2649,8 @@ Screen.definition = {
   {
     this._scroll_top = 0;
     this._scroll_bottom = this._height;
-
+    this._scroll_left = 0
+    this._scroll_right = this._width;
   },
 
   "[subscribe('command/soft-terminal-reset'), pnp]": 
@@ -2579,11 +2744,19 @@ Screen.definition = {
     var lines = this._lines,
         attrvalue = this.cursor.attr.value & 0xff,
         i = 0,
-        line;
+        j = 0,
+        leftmargin = this._scroll_left,
+        rightmargin = this._scroll_right,
+        range,
+        cells;
 
     for (; i < lines.length; ++i) {
-      line = lines[i];
-      line.deleteCells(0, n, attrvalue);
+      cells = lines[i].cells;
+      range = cells.splice(leftmargin, n);
+      for (; j < range.length; ++j) {
+        cells[j].erase(attrvalue);
+      }
+      cells.splice(rightmargin - n, 0, range);
     }
   },
 
@@ -2594,11 +2767,19 @@ Screen.definition = {
     var lines = this._lines,
         attrvalue = this.cursor.attr.value & 0xff,
         i = 0,
-        line;
+        j = 0,
+        leftmargin = this._scroll_left,
+        rightmargin = this._scroll_right,
+        range,
+        cells;
 
     for (; i < lines.length; ++i) {
-      line = lines[i];
-      line.insertBlanks(0, n, attrvalue);
+      cells = lines[i].cells;
+      range = cells.splice(rightmargin, n);
+      for (; j < range.length; ++j) {
+        cells[j].erase(attrvalue);
+      }
+      cells.splice(leftmargin, 0, range);
     }
   },
 
@@ -2729,6 +2910,7 @@ Screen.definition = {
     // serialize members.
     context.push(this.width, this.height, this._buffer_top);
     context.push(this._scroll_top, this._scroll_bottom);
+    context.push(this._scroll_left, this._scroll_right);
     context.push(this._buffer.length);
 
     // serialize each lines.
@@ -2761,6 +2943,8 @@ Screen.definition = {
     this._buffer_top = context.shift();
     this._scroll_top = context.shift();
     this._scroll_bottom = context.shift();
+    this._scroll_left = context.shift();
+    this._scroll_right = context.shift();
 
     buffer_length = context.shift();
 
