@@ -124,13 +124,20 @@ DragCopy.definition = {
         screen = this._screen,
         feedback_canvas = this._feedback_canvas,
         feedback_context = feedback_canvas.getContext("2d"),
-        text = screen
-          .getTextInRange(start, end, is_rectangle)
-          .replace(/[\x00\r]/g, ""),
+        text,
         coordinate = this._getPixelMetricsFromEvent(event),
         left = coordinate[0] - 20,
         top = coordinate[1] - 40;
 
+    if (is_rectangle) {
+      text = screen
+        .getTextInRect(start, end)
+        .replace(/[\x00\r]/g, "");
+    } else {
+      text = screen
+        .getTextInRange(start, end)
+        .replace(/[\x00\r]/g, "");
+    }
     feedback_canvas.hidden = false;
 
     event.dataTransfer.setData("text/plain", text);
