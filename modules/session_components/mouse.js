@@ -404,9 +404,61 @@ Mouse.definition = {
       }
 
       tracking_mode = this._tracking_mode;
-      if (this._in_scroll_session 
-          || (!(this._alternate_wheel_mode && screen.isAltScreen())
-              && coUtils.Constant.TRACKING_NONE === tracking_mode)) {
+      if (!this._in_scroll_session
+          && this._alternate_wheel_mode
+          && screen.isAltScreen()
+          && coUtils.Constant.TRACKING_NONE === tracking_mode) {
+        if (coUtils.Constant.CURSOR_MODE_APPLICATION === this._cursor_mode) {
+          if (count > 0) {
+            for (i = 0; i < count; ++i) {
+              if (this._application_wheel_mode) {
+                this.sendMessage("command/send-sequence/ss3", "b");
+              } else {
+                this.sendMessage("command/send-sequence/ss3", "B");
+              }
+            }
+          } else {
+            for (i = 0; i < -count; ++i) {
+              if (this._application_wheel_mode) {
+                this.sendMessage("command/send-sequence/ss3", "a");
+              } else {
+                this.sendMessage("command/send-sequence/ss3", "A");
+              }
+            }
+          }
+        } else {
+          if (count > 0) {
+            for (i = 0; i < count; ++i) {
+              if (this._application_wheel_mode) {
+                this.sendMessage("command/send-sequence/csi", "b");
+              } else {
+                this.sendMessage("command/send-sequence/csi", "B");
+              }
+            }
+          } else {
+            for (i = 0; i < -count; ++i) {
+              if (this._application_wheel_mode) {
+                this.sendMessage("command/send-sequence/csi", "a");
+              } else {
+                this.sendMessage("command/send-sequence/csi", "A");
+              }
+            }
+          }
+        }
+      } else if (!this._in_scroll_session
+                 && coUtils.Constant.TRACKING_NONE !== tracking_mode) {
+        coordinate = this._getCurrentPosition(event);
+
+        if (count > 0) {
+          for (i = 0; i < count; ++i) {
+            this._sendMouseEvent(event, 0x41, coordinate);
+          }
+        } else {
+          for (i = 0; i < -count; ++i) {
+            this._sendMouseEvent(event, 0x40, coordinate); 
+          }
+        }
+      } else {
         if (count > 0) {
           this.sendMessage("command/scroll-down-view", count);
           this.sendMessage("command/draw");
@@ -414,61 +466,7 @@ Mouse.definition = {
           this.sendMessage("command/scroll-up-view", -count);
           this.sendMessage("command/draw");
         } else { // count === 1
-          return;
-        }
-
-      } else {
-        if (this._alternate_wheel_mode && screen.isAltScreen()) {
-          if (coUtils.Constant.CURSOR_MODE_APPLICATION === this._cursor_mode) {
-            if (count > 0) {
-              for (i = 0; i < count; ++i) {
-                if (this._application_wheel_mode) {
-                  this.sendMessage("command/send-sequence/ss3", "b");
-                } else {
-                  this.sendMessage("command/send-sequence/ss3", "B");
-                }
-              }
-            } else {
-              for (i = 0; i < -count; ++i) {
-                if (this._application_wheel_mode) {
-                  this.sendMessage("command/send-sequence/ss3", "a");
-                } else {
-                  this.sendMessage("command/send-sequence/ss3", "A");
-                }
-              }
-            }
-          } else {
-            if (count > 0) {
-              for (i = 0; i < count; ++i) {
-                if (this._application_wheel_mode) {
-                  this.sendMessage("command/send-sequence/csi", "b");
-                } else {
-                  this.sendMessage("command/send-sequence/csi", "B");
-                }
-              }
-            } else {
-              for (i = 0; i < -count; ++i) {
-                if (this._application_wheel_mode) {
-                  this.sendMessage("command/send-sequence/csi", "a");
-                } else {
-                  this.sendMessage("command/send-sequence/csi", "A");
-                }
-              }
-            }
-          }
-        } else {
-
-          coordinate = this._getCurrentPosition(event);
-
-          if (count > 0) {
-            for (i = 0; i < count; ++i) {
-              this._sendMouseEvent(event, 0x41, coordinate);
-            }
-          } else {
-            for (i = 0; i < -count; ++i) {
-              this._sendMouseEvent(event, 0x40, coordinate); 
-            }
-          }
+          // do nothing
         }
       }
     }
