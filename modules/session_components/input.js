@@ -914,6 +914,7 @@ InputManager.definition = {
     this._parser = context["parser"];
 
     this._textbox = result.tanasinn_default_input;
+    this._textbox.inputField.style.imeMode = "disabled";
     this.sendMessage("event/collection-changed/modes");
 
     this.onDoubleShift.enabled = true;

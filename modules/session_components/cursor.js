@@ -446,15 +446,15 @@ Cursor.definition = {
     this.update();
   },
 
-  "[subscribe('command/ime-mode-on'), pnp]": 
-  function onImeModeOn(ime) 
+  "[subscribe('command/ime-composition-start'), pnp]": 
+  function onCompositionStart(ime) 
   {
     this._cursor_visibility_backup.push(this._cursor_visibility);
     this._cursor_visibility = false;
   },
 
-  "[subscribe('command/ime-mode-off'), pnp]": 
-  function onImeModeOff(ime) 
+  "[subscribe('event/ime-composition-end'), pnp]": 
+  function onCompositionEnd(ime) 
   {
     if (0 !== this._cursor_visibility_backup.length) {
       this._cursor_visibility = this._cursor_visibility_backup.pop();

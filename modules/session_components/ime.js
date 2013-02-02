@@ -60,6 +60,7 @@ Ime.definition = {
   _input_manager: null,
   _renderer: null,
   _cursor_state: null,
+  _enabled: true,
 
   /** Installs itself. 
    *  @param {InstallContext} context A InstallContext object.
@@ -77,9 +78,10 @@ Ime.definition = {
     this._palette = context["palette"];
     this._cursor_state = context["cursorstate"];
     this._input_manager = input_manager;
+    this._enabled = true;
 
     textbox.style.width = "0%";
-    textbox.style.imeMode = "inactive"; // disabled -> inactive
+    textbox.inputField.style.imeMode = "inactive"; // disabled -> inactive
     textbox.style.border = "none"; // hide border
     //textbox.style.position = "absolute"; // relative -> absolute
     textbox.style.font = coUtils.Text.format(
@@ -90,8 +92,8 @@ Ime.definition = {
     // enables session event handlers.
     if (version_comparator.compare(coUtils.Runtime.version, "10.0") <= 0)
     {
-      this.startPolling.enabled = true;
-      this.endPolling.enabled = true;
+      this.onGotFocus.enabled = true;
+      this.onLostFocus.enabled = true;
     }
 
     focused_element = this.request("get/root-element")
@@ -99,7 +101,7 @@ Ime.definition = {
       .commandDispatcher
       .focusedElement;
     if (focused_element && focused_element.isEqualNode(textbox)) {
-      this.startPolling();
+      this.onGotFocus();
     }
       
   }, // install
@@ -111,11 +113,11 @@ Ime.definition = {
   {
     var textbox = this._input_manager.getInputField();
 
-    this.endPolling(); // stops polling timer. 
+    this._endPolling(); // stops polling timer. 
 
     if (null !== textbox) {
       textbox.style.width = "";
-      textbox.style.imeMode = "disabled";
+      textbox.inputField.style.imeMode = "disabled";
       textbox.style.border = "";  
       textbox.style.position = ""; 
     }
@@ -126,19 +128,79 @@ Ime.definition = {
     this._palette = null;
 
     // disables session event handlers.
-    this.startPolling.enabled = false;
-    this.endPolling.enabled = false;
+    this.onGotFocus.enabled = false;
+    this.onLostFocus.enabled = false;
+  },
+
+  "[profile('vt100'), sequence('CSI < Ps t')]":
+  function TTIMEST(n) 
+  {
+    n = n || 0;
+    if (0 === n) {
+      this.sendMessage("command/disable-ime");
+    } else if (1 === n) {
+      this.sendMessage("command/enable-ime");
+    }
   },
 
   "[subscribe('command/input-text'), pnp]": 
   function oninput(value) 
   {
-    this._disableImeMode(); // closes IME input session.
+    this._compositionEnd(); // closes IME input session.
   },
 
   /** Starts the polling timer. */
   "[subscribe('event/got-focus')]":
-  function startPolling() 
+  function onGotFocus() 
+  {
+    //if (this._enabled) {
+      this._startPolling();
+    //}
+  },
+
+  /** Stops the polling timer. */
+  "[subscribe('event/lost-focus')]":
+  function onLostFocus() 
+  {
+    this._endPolling();
+  },
+
+  /** Enable IME */
+  "[subscribe('command/enable-ime'), pnp]":
+  function enableIME() 
+  {
+    var textbox = this._input_manager.getInputField();
+    textbox.inputField.style.imeMode = "active";
+    this.sendMessage("command/disable-focus-events");
+    textbox.blur();
+    textbox.focus();
+    textbox.focus();
+    textbox.focus();
+    textbox.focus();
+    this.sendMessage("command/enable-focus-events");
+    this._enabled = true;
+    this._startPolling();
+  },
+
+  /** Stops the polling timer. */
+  "[subscribe('command/disable-ime'), pnp]":
+  function disableIME() 
+  {
+    var textbox = this._input_manager.getInputField();
+
+    textbox.inputField.style.imeMode = "inactive";
+    this.sendMessage("command/disable-focus-events");
+    textbox.blur();
+    textbox.focus();
+    textbox.focus();
+    textbox.focus();
+    textbox.focus();
+    this.sendMessage("command/enable-focus-events");
+    this._enabled = false;
+    this._endPolling();
+  },
+
+  _startPolling: function _startPolling() 
   {
     if (this._timer) {
       this._timer.cancel();
@@ -148,9 +210,7 @@ Ime.definition = {
       .setInterval(this.onpoll, this.polling_interval, this);
   },
 
-  /** Stops the polling timer. */
-  "[subscribe('event/lost-focus')]":
-  function endPolling() 
+  _endPolling: function _endPolling() 
   {
     if (this._timer) {
       this._timer.cancel();
@@ -164,7 +224,9 @@ Ime.definition = {
   "[listen('compositionupdate', '#tanasinn_default_input'), pnp]":
   function oncompositionupdate(event) 
   {
-    this.onpoll();
+    //if (this._enabled) {
+      this.onpoll();
+    //}
   },
 
   /** A interval timer handler function that observes the textbox content
@@ -176,17 +238,17 @@ Ime.definition = {
 
     if (text) { // if textbox contains some text data.
       if (!this._ime_input_flag) {
-        this._enableImeMode(); // makes the IME mode enabled.
+        this._compositionStart(); // makes the IME mode enabled.
       }
     } else {   // if textbox is empty.
       if (this._ime_input_flag) {
-        this._disableImeMode(); // makes the IME mode disabled.
+        this._compositionEnd(); // makes the IME mode disabled.
       }
     }
   },
 
   /** Shows textbox element. */
-  _enableImeMode: function _enableImeMode() 
+  _compositionStart: function _compositionStart() 
   {
     var textbox = this._input_manager.getInputField(),
         renderer = this._renderer,
@@ -211,14 +273,14 @@ Ime.definition = {
 
     this._ime_input_flag = true;
 
-    this.sendMessage("command/ime-mode-on", this);
+    this.sendMessage("event/ime-composition-start", this);
   },
 
-  _disableImeMode: function _disableImeMode() 
+  _compositionEnd: function _compositionEnd() 
   {
-    this._input_manager.getInputField().style.opacity = 0.0;
+    this._input_manager.getInputField().style.opacity = 0.5;
     this._ime_input_flag = false;
-    this.sendMessage("command/ime-mode-off", this);
+    this.sendMessage("event/ime-composition-end", this);
   }
 };
 
