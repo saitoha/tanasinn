@@ -746,8 +746,8 @@ Component.definition = {
  * It has "enabled" property and derived classes are expected to implements
  * following methods: 
  *
- *  - function install(session)    Install itself.
- *  - function uninstall(session)  Uninstall itself.
+ *  - function install(context)    Install itself.
+ *  - function uninstall(context)  Uninstall itself.
  */
 var Plugin = new Abstruct().extends(Component);
 Plugin.definition = {
