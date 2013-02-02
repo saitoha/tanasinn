@@ -76,8 +76,7 @@ DOMEventManager.definition = {
     if (!listener.target) {
       this._addImpl(
           listener, 
-          this.request("get/root-element").ownerDocument.defaultView
-          );
+          this.request("get/root-element").ownerDocument.defaultView);
     } else if ("string" === typeof listener.target) {
 
       id = listener.target.substr(1);
