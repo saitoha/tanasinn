@@ -81,7 +81,7 @@ Movable.definition = {
    * @fn moveBy
    * @brief Move terminal window.
    */
-  "[subscribe('command/move-by'), type('Array -> Undefined'), enabled]":
+  "[subscribe('command/move-by'), type('Array -> Undefined'), pnp]":
   function moveBy(offset) 
   {
     var x = offset[0],
@@ -240,7 +240,7 @@ OuterChrome.definition = {
     this._forceUpdate();
   },
 
-  "[subscribe('event/special-color-changed'), enabled]": 
+  "[subscribe('event/special-color-changed'), pnp]": 
   function changeForegroundColor(value) 
   {
     this.foreground_color = coUtils.Color.parseX11ColorSpec(value);
