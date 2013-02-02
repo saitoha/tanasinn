@@ -116,7 +116,7 @@ CommandlineIme.definition = {
   "[subscribe('command/input-text'), pnp]": 
   function oninput(value) 
   {
-    this._disableImeMode(); // closes IME input session.
+    this._compositionEnd(); // closes IME input session.
   },
 
   /** Starts the polling timer. */
@@ -149,7 +149,7 @@ CommandlineIme.definition = {
   function oninput(event) 
   {
     this._commandline.commit();
-    this._disableImeMode();
+    this._compositionEnd();
   },
  
   /** compositionend event handler. 
@@ -197,30 +197,30 @@ CommandlineIme.definition = {
 
     if (text) { // if textbox contains some text data.
       if (!this._ime_input_flag) {
-        this._enableImeMode(); // makes the IME mode enabled.
+        this._compositionStart(); // makes the IME mode enabled.
       }
     } else {   // if textbox is empty.
       if (this._ime_input_flag) {
-        this._disableImeMode(); // makes the IME mode disabled.
+        this._compositionEnd(); // makes the IME mode disabled.
       }
     }
   },
 
   /** Shows textbox element. */
-  _enableImeMode: function _enableImeMode() 
+  _compositionStart: function _compositionStart() 
   {
     var commandline = this._commandline,
         textbox = commandline.getInputField(),
-        top = 0, // cursor.positionY * line_height + -4;
-        left = commandline.getCaretPosition(); // cursor.positionX * char_width + -2;
+        top = -30,
+        left = commandline.getCaretPosition();
 
     textbox.style.opacity = 1.0;
     this._ime_input_flag = true;
 
-    this.sendMessage("command/ime-mode-on", this);
+    this.sendMessage("event/ime-composition-start", this);
   },
 
-  _disableImeMode: function _disableImeMode() 
+  _compositionEnd: function _compositionEnd() 
   {
     var commandline = this._commandline,
         textbox = this._commandline.getInputField();
@@ -228,7 +228,7 @@ CommandlineIme.definition = {
     textbox.style.opacity = 0.0;
     this._ime_input_flag = false;
 
-    this.sendMessage("command/ime-mode-off", this);
+    this.sendMessage("event/ime-composition-end", this);
   }
 };
 
