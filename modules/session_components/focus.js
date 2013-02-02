@@ -51,22 +51,6 @@ FocusTracker.definition = {
   "[install]": 
   function install(context)
   {
-    this.sendMessage("command/add-domlistener", {
-      target: this.request("get/root-element").ownerDocument,
-      type: "focus",
-      context: this,
-      handler: this.onfocus,
-      capture: true,
-      id: this.id,
-    });
-    this.sendMessage("command/add-domlistener", {
-      target: this.request("get/root-element").ownerDocument,
-      type: "blur",
-      context: this,
-      handler: this.onblur,
-      capture: true,
-      id: this.id,
-    });
   },
 
   /** Uninstalls itself. 
@@ -74,7 +58,18 @@ FocusTracker.definition = {
   "[uninstall]":
   function uninstall()
   {
-    this.sendMessage("command/remove-domlistener", this.id)
+  },
+
+  "[subscribe('command/enable-focus-events'), pnp]": 
+  function enableFocusEvents()
+  {
+    this._disabled = false;
+  },
+
+  "[subscribe('command/disable-focus-events'), pnp]": 
+  function disableFocusEvents()
+  {
+    this._disabled = true;
   },
 
   _onblurimpl: function _onblurimpl(dom)
@@ -130,10 +125,11 @@ FocusTracker.definition = {
     }
   },
 
-  /** Fires when a focus event occured. 
+  /** Fires when a blur event occured. 
    *  @param {Event} event A event object.
    */
-  onblur: function onfocus(event)
+  "[listen('blur', null, true), pnp]":
+  function onblur(event)
   {
     var dom = {
         root_element: this.request("get/root-element"),
@@ -144,9 +140,9 @@ FocusTracker.definition = {
       return;
     }
 
-    //if (this._disabled) {
-    //  return;
-    //}
+    if (this._disabled) {
+      return;
+    }
 
     if (!("nodeType" in dom.target)
         || dom.target.NODE_DOCUMENT !== dom.target.nodeType) {
@@ -158,7 +154,9 @@ FocusTracker.definition = {
   /** Fires when a focus event occured. 
    *  @param {Event} event A event object.
    */
-  onfocus: function onfocus(event)
+
+  "[listen('focus', null, true), pnp]":
+  function onfocus(event)
   {
     var dom = {
         root_element: this.request("get/root-element"),
