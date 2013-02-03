@@ -44,18 +44,18 @@ FontFamilyCompletionDisplayDriver.definition = {
 
   "[persistable] enabled_when_startup": true,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
   },
 
-  /** Uninstalls itself 
+  /** Uninstalls itself
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
   },
 
@@ -65,13 +65,13 @@ FontFamilyCompletionDisplayDriver.definition = {
     return this;
   },
 
-  drive: function drive(grid, result, current_index) 
+  drive: function drive(grid, result, current_index)
   {
     var owner_document = grid.ownerDocument,
         rows = grid.appendChild(owner_document.createElement("rows")),
         i,
         search_string,
-        completion_text, 
+        completion_text,
         match_position;
 
     for (i = 0; i < result.data.length; ++i) {
@@ -81,11 +81,11 @@ FontFamilyCompletionDisplayDriver.definition = {
         .toLowerCase()
         .indexOf(search_string);
       this.request(
-        "command/construct-chrome", 
+        "command/construct-chrome",
         {
           parentNode: rows,
           tagName: "row",
-          style: i === current_index ? { 
+          style: i === current_index ? {
             background: "#226",
             color: "white",
           }: "",
@@ -99,7 +99,7 @@ FontFamilyCompletionDisplayDriver.definition = {
                 margin: "0px",
                 marginLeft: "8px",
               },
-              childNodes: -1 === match_position ? 
+              childNodes: -1 === match_position ?
                 { text: completion_text }:
                 [
                   {
@@ -109,13 +109,13 @@ FontFamilyCompletionDisplayDriver.definition = {
                     tagName: "label",
                     value: completion_text.substr(match_position, search_string.length),
                     style: {
-                      margin: "0px", 
-                      fontWeight: "bold", 
-                      color: "#f00", 
+                      margin: "0px",
+                      fontWeight: "bold",
+                      color: "#f00",
                       textDecoration: "underline",
                     },
                   },
-                  { 
+                  {
                     text: completion_text.substr(match_position + search_string.length)
                   },
                 ],

@@ -25,7 +25,7 @@
 "use strict";
 
 
-function generateFileEntries(path) 
+function generateFileEntries(path)
 {
   var directory = coUtils.Components.createLocalFile(),
       entries,
@@ -65,18 +65,18 @@ CGICompleter.definition = {
 
   "[persistable] enabled_when_startup": true,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
   },
 
   /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
   },
 
@@ -84,7 +84,7 @@ CGICompleter.definition = {
    * Search for a given string and notify a listener (either synchronously
    * or asynchronously) of the result
    *
-   * @param context - The completion context object. 
+   * @param context - The completion context object.
    */
   "[completer('cgi'), pnp]":
   function complete(context)
@@ -138,9 +138,9 @@ CGICompleter.definition = {
     lower_name = name.toLowerCase();
     candidates = [
       {
-        key: file.leafName, 
+        key: file.leafName,
         value: file.path,
-      } for (file in entries) 
+      } for (file in entries)
         if (file.isExecutable() && -1 !== file.leafName.toLowerCase().indexOf(lower_name))
     ];
     if (0 === candidates.length) {
@@ -149,7 +149,7 @@ CGICompleter.definition = {
     }
     this.sendMessage("event/answer-completion", {
       type: "text",
-      query: context.source, 
+      query: context.source,
       data: candidates.map(function(candidate) ({
         name: candidate.key,
         value: String(candidate.value),
@@ -180,18 +180,18 @@ BatchCompleter.definition = {
 
   "[persistable] enabled_when_startup": true,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
   },
 
   /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
   },
 
@@ -199,7 +199,7 @@ BatchCompleter.definition = {
    * Search for a given string and notify a listener (either synchronously
    * or asynchronously) of the result
    *
-   * @param context - The completion context object. 
+   * @param context - The completion context object.
    */
   "[completer('batch'), pnp]":
   function complete(context)
@@ -255,9 +255,9 @@ BatchCompleter.definition = {
     lower_name = name.toLowerCase();
     candidates = [
       {
-        key: file.leafName.replace(/\.js$/, ""), 
+        key: file.leafName.replace(/\.js$/, ""),
         value: file.path,
-      } for (file in entries) 
+      } for (file in entries)
         if (-1 !== file.leafName.toLowerCase().indexOf(lower_name))
     ];
 
@@ -267,7 +267,7 @@ BatchCompleter.definition = {
     }
     this.sendMessage("event/answer-completion", {
       type: "text",
-      query: context.source, 
+      query: context.source,
       data: candidates.map(function(candidate) ({
         name: candidate.key,
         value: String(candidate.value),
@@ -299,18 +299,18 @@ ProfileCompleter.definition = {
 
   "[persistable] enabled_when_startup": true,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
   },
 
   /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
   },
 
@@ -376,7 +376,7 @@ ProfileCompleter.definition = {
       file = entries[i];
       if (-1 !== file.leafName.toLowerCase().indexOf(lower_name)) {
         candidates.push({
-          key: file.leafName.replace(/\.js$/, ""), 
+          key: file.leafName.replace(/\.js$/, ""),
           value: file.path,
         });
       }
@@ -386,12 +386,12 @@ ProfileCompleter.definition = {
       this.sendMessage("event/answer-completion", null);
     } else {
       this.sendMessage(
-        "event/answer-completion", 
+        "event/answer-completion",
         {
           type: "text",
-          query: context.source, 
+          query: context.source,
           data: candidates.map(
-            function(candidate) 
+            function(candidate)
             {
               return {
                 name: candidate.key,
@@ -425,18 +425,18 @@ FileCompleter.definition = {
 
   "[persistable] enabled_when_startup": true,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
   },
 
   /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
   },
 
@@ -490,7 +490,7 @@ FileCompleter.definition = {
     candidates = candidates
       .map(function(file) file.path.substr(stem_length))
       .filter(function(path) path.toLowerCase().match(lower_leaf))
-      
+
     if (0 === candidates.length) {
       this.sendMessage("event/answer-completion", null);
     } else {
@@ -498,12 +498,12 @@ FileCompleter.definition = {
         "event/answer-completion",
         {
           type: "text",
-          query: leaf, 
+          query: leaf,
           data: candidates.map(
             function mapFunc(path)
             {
               return {
-                name: path, 
+                name: path,
                 value: path,
               }
             }),

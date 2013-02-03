@@ -25,14 +25,14 @@
 var ZshCompletion = new Trait();
 ZshCompletion.definition = {
 
-  _clearGrid: function _clearGrid() 
+  _clearGrid: function _clearGrid()
   {
     while (this._container.firstChild) {
       this._container.removeChild(this._container.firstChild);
     }
   },
 
-  "[subscribe('event/data-arrived')]": 
+  "[subscribe('event/data-arrived')]":
   function onDataArrived(data)
   {
     var lines = data.match(/<item>(.*?)<end>/gm)
@@ -61,7 +61,7 @@ ZshCompletion.definition = {
     }
   },
 
-  display: function display() 
+  display: function display()
   {
     var lines = this.lines,
         colormap = [ "", "#cdffcf", "#cdd", "#dfffdd" ],
@@ -71,7 +71,7 @@ ZshCompletion.definition = {
     this.onDataArrived.enabled = false;
 
     this.request(
-      "command/construct-chrome", 
+      "command/construct-chrome",
       {
         parentNode: "#tanasinn_app_popup_container",
         tagName: "rows",
@@ -86,7 +86,7 @@ ZshCompletion.definition = {
         childNodes: [
           {
             tagName: "row",
-            style: "padding: 0px 10px;" + (index !== selected ? "": 
+            style: "padding: 0px 10px;" + (index !== selected ? "":
               "background-image: -moz-linear-gradient(top, #ddd, #eee); " +
               "-moz-box-shadow: 1px 1px 5px black;" +
               "box-shadow: 1px 1px 5px black;" +
@@ -95,11 +95,11 @@ ZshCompletion.definition = {
             childNodes: [
               {
                 tagName: "box",
-                innerText: function() 
-                { 
-                  try { 
-                    return coUtils.Text.base64decode(cell); 
-                  } catch(e) { 
+                innerText: function()
+                {
+                  try {
+                    return coUtils.Text.base64decode(cell);
+                  } catch(e) {
                     return cell;
                   }
                 }(),
@@ -112,12 +112,12 @@ ZshCompletion.definition = {
     this._datum.style.height = renderer.line_height + "px";
     this._is_showing = true;
     this._popup.openPopup(
-      this._datum, 
+      this._datum,
       "after_start", 0, 0, true, true);
   },
 
   "[subscribe('sequence/osc/202'), pnp]":
-  function onZshCompletion(data) 
+  function onZshCompletion(data)
   {
     this.sendMessage("command/disable-default-parser");
     this.onDataArrived.enabled = true;
@@ -125,13 +125,13 @@ ZshCompletion.definition = {
   },
 
   "[subscribe('sequence/osc/203'), enabled]":
-  function onZshCompletionCategory(data) 
+  function onZshCompletionCategory(data)
   {
     this.lines.push("-----" + data);
   },
 
   "[subscribe('sequence/osc/204'), enabled]":
-  function onThingy(data) 
+  function onThingy(data)
   {
     var kind, str;
 
@@ -175,12 +175,12 @@ PopupMenu.definition = {
   _cover: null,
   _is_showing: false,
   _renderer: null,
- 
-  /** Installs itself. 
+
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
     var {
       tanasinn_app_popup_datum,
@@ -188,7 +188,7 @@ PopupMenu.definition = {
       tanasinn_app_popup_scrollbox,
       tanasinn_app_popup_container,
     } = this.request(
-      "command/construct-chrome", 
+      "command/construct-chrome",
       [
         {
           parentNode: "#tanasinn_center_area",
@@ -250,7 +250,7 @@ PopupMenu.definition = {
   /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
     if (null !== this._datum) {
       this._datum.parentNode.removeChild(this._datum);
@@ -266,7 +266,7 @@ PopupMenu.definition = {
   },
 
   "[listen('mousedown', '#tanasinn_app_popup', true), pnp]":
-  function onmousedown(event) 
+  function onmousedown(event)
   {
     var target = event.explicitOriginalTarget;
         diff,
@@ -306,7 +306,7 @@ PopupMenu.definition = {
   },
 
   "[listen('mousemove', '#tanasinn_app_popup', true), pnp]":
-  function onmousemove(event) 
+  function onmousemove(event)
   {
     var target = event.explicitOriginalTarget;
 
@@ -315,23 +315,23 @@ PopupMenu.definition = {
     }
 
     if (this._mouseover) {
-      this._mouseover.style.backgroundColor = ""; 
+      this._mouseover.style.backgroundColor = "";
       this._mouseover.style.borderRadius = "5px";
     }
 
     this._mouseover = target;
-    target.style.backgroundColor = "#ccc"; 
+    target.style.backgroundColor = "#ccc";
   },
 
   "[listen('mouseup', '#tanasinn_app_popup', true), pnp]":
-  function onmouseup(event) 
+  function onmouseup(event)
   {
     event.stopPropagation();
     event.preventDefault();
   },
 
   "[subscribe('sequence/osc/200'), pnp]":
-  function onDisplay(data) 
+  function onDisplay(data)
   {
     var lines = data.split("\n"),
         renderer = this._renderer,
@@ -347,7 +347,7 @@ PopupMenu.definition = {
         scrollbox,
         rows,
         box_object,
-        row, 
+        row,
         scrollY,
         first_position,
         last_position;
@@ -370,7 +370,7 @@ PopupMenu.definition = {
     colormap = [ "", "#cdffcf", "#cdd", "#dfffdd" ];
 
     this.request(
-      "command/construct-chrome", 
+      "command/construct-chrome",
       {
         parentNode: "#tanasinn_app_popup_container",
         tagName: "rows",
@@ -394,11 +394,11 @@ PopupMenu.definition = {
             childNodes: [
               {
                 tagName: "box",
-                innerText: function() 
-                { 
-                  try { 
-                    return coUtils.Text.base64decode(cell); 
-                  } catch(e) { 
+                innerText: function()
+                {
+                  try {
+                    return coUtils.Text.base64decode(cell);
+                  } catch(e) {
                     coUtils.Debug.reportError(e);
                     coUtils.Debug.reportError("text: " + cell);
                     return cell;
@@ -419,7 +419,7 @@ PopupMenu.definition = {
     //if (!this._is_showing) {
       this._is_showing = true;
       this._popup.openPopup(
-        this._datum, 
+        this._datum,
         "after_start", x, 0, true, true);
     //}
     //
@@ -434,10 +434,10 @@ PopupMenu.definition = {
         row = rows.childNodes[selected];
         scrollY = {};
         box_object.getPosition({}, scrollY);
-        first_position = row.boxObject.y 
+        first_position = row.boxObject.y
           - scrollbox.boxObject.y;
-        last_position = first_position 
-          - scrollbox.boxObject.height 
+        last_position = first_position
+          - scrollbox.boxObject.height
           + row.boxObject.height;
         if (first_position < scrollY.value) {
           box_object.scrollTo(0, first_position);
@@ -451,11 +451,11 @@ PopupMenu.definition = {
   },
 
   "[subscribe('sequence/osc/201'), pnp]":
-  function onUndisplay() 
+  function onUndisplay()
   {
     this._is_showing = false;
     coUtils.Timer.setTimeout(
-      function() 
+      function()
       {
         if (false === this._is_showing) {
           this._popup.hidePopup();
@@ -471,12 +471,12 @@ PopupMenu.definition = {
         scroll_box = completion_root.parentNode,
         box_object = scroll_box.boxObject
           .QueryInterface(Components.interfaces.nsIScrollBoxObject),
-        scrollY, 
+        scrollY,
         first_position,
         last_position;
 
     row.style.borderRadius = "6px";
-    row.style.backgroundImage 
+    row.style.backgroundImage
       = "-moz-linear-gradient(top, #777, #666)";
     row.style.color = "white";
 
@@ -485,10 +485,10 @@ PopupMenu.definition = {
 
       box_object.getPosition({}, scrollY);
 
-      first_position = row.boxObject.y 
+      first_position = row.boxObject.y
         - scroll_box.boxObject.y;
-      last_position = first_position 
-        - scroll_box.boxObject.height 
+      last_position = first_position
+        - scroll_box.boxObject.height
         + row.boxObject.height;
       if (first_position < scrollY.value) {
         box_object.scrollTo(0, first_position);
@@ -506,7 +506,7 @@ PopupMenu.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new PopupMenu(broker);
 }

@@ -30,10 +30,10 @@ coUtils.Uuid = {
 
   _uuid_generator: coUtils.Services.getUUIDGenerator(),
 
-  /** Generates and returns UUID object. 
+  /** Generates and returns UUID object.
    *  @return {Object} Generated UUID object.
    */
-  generate: function generate() 
+  generate: function generate()
   {
     var uuid = this._uuid_generator.generateUUID();
 

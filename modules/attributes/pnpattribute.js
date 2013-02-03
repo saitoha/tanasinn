@@ -29,7 +29,7 @@ function make_managed_handler(self, handler, topic)
 {
   var wrapped_handler;
 
-  wrapped_handler = function() 
+  wrapped_handler = function()
   {
     return handler.apply(self, arguments);
   };
@@ -54,14 +54,14 @@ function apply_attribute(self, broker, key, attribute)
 
   wrapped_handler.description = attribute.description;
 
-  broker.subscribe("install/" + self.id, 
-    function() 
+  broker.subscribe("install/" + self.id,
+    function()
     {
       wrapped_handler.enabled = true;
     }, undefined, id + ".pnp");
 
-  broker.subscribe("uninstall/" + self.id, 
-    function() 
+  broker.subscribe("uninstall/" + self.id,
+    function()
     {
       wrapped_handler.enabled = false;
     }, undefined, id + ".pnp");
@@ -74,10 +74,10 @@ function apply_attribute(self, broker, key, attribute)
 var PnPAttribute = new Attribute("pnp");
 PnPAttribute.definition = {
 
-  /** constructor 
+  /** constructor
    *  @param {EventBroker} broker Parent broker object.
    */
-  initialize: function initialize(broker) 
+  initialize: function initialize(broker)
   {
     var attributes = this.__attributes,
         key,
@@ -92,7 +92,7 @@ PnPAttribute.definition = {
       }
 
       apply_attribute(this, broker, key, attribute)
-    } // key for (key in attributes) 
+    } // key for (key in attributes)
   },
 
 };

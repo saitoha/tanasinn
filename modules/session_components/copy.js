@@ -50,37 +50,37 @@ Copy.definition = {
   _selection: null,
   _screen: null,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
-  "[install]": 
-  function install(context) 
+  "[install]":
+  function install(context)
   {
     this._selection = context["selection"];
     this._screen = context["screen"];
   },
 
-  /** Uninstalls itself. 
+  /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
     this._selection = null;
     this._screen = null;
   },
 
   "[subscribe('get/contextmenu-entries'), pnp]":
-  function onContextMenuEntriesRequested() 
+  function onContextMenuEntriesRequested()
   {
     var range = this._selection.getRange();
 
     return range && {
         tagName: "menuitem",
-        label: _("Copy Selected Text"), 
+        label: _("Copy Selected Text"),
         listener: {
-          type: "command", 
+          type: "command",
           context: this,
-          handler: function() 
+          handler: function()
           {
             return this.copyImpl(range);
           },
@@ -89,8 +89,8 @@ Copy.definition = {
   },
 
   /** Get selected text and put it to clipboard.  */
-  "[command('copy'), nmap('<M-c>', '<C-S-c>'), _('Copy selected text.'), pnp]": 
-  function copy(info) 
+  "[command('copy'), nmap('<M-c>', '<C-S-c>'), _('Copy selected text.'), pnp]":
+  function copy(info)
   {
     // get selection range from "selection plugin"
     var range = this._selection.getRange();
@@ -101,7 +101,7 @@ Copy.definition = {
     return true;
   },
 
-  copyImpl: function copyImpl(range) 
+  copyImpl: function copyImpl(range)
   {
     var text,
         status_message,
@@ -135,7 +135,7 @@ Copy.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new Copy(broker);
 }

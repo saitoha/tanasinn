@@ -47,11 +47,11 @@ ColorNumberCompleter.definition = {
 
   _palette: null,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
     this._palette = context["palette"];
   },
@@ -59,7 +59,7 @@ ColorNumberCompleter.definition = {
   /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
     this._palette = null;
   },
@@ -68,7 +68,7 @@ ColorNumberCompleter.definition = {
    * Search for a given string and notify a listener (either synchronously
    * or asynchronously) of the result
    *
-   * @param context - The completion context object. 
+   * @param context - The completion context object.
    */
   "[completer('color-number'), pnp]":
   function complete(context)
@@ -122,12 +122,12 @@ ColorNumberCompleter.definition = {
           "event/answer-completion",
           {
             type: "color-number",
-            query: context.source, 
+            query: context.source,
             data: numbers.map(
-              function(number) 
+              function(number)
               {
                 return {
-                  name: number, 
+                  name: number,
                   value: color_map[number],
                 };
               }),
@@ -140,7 +140,7 @@ ColorNumberCompleter.definition = {
           name: key,
           value: value,
         } for ([key, value] in Iterator(coUtils.Constant.WEB140_COLOR_MAP))
-      ].filter(function(pair) 
+      ].filter(function(pair)
       {
         if (-1 !== pair.name.toLowerCase().indexOf(lower_name)) {
           return true;
@@ -158,7 +158,7 @@ ColorNumberCompleter.definition = {
           "event/answer-completion",
           {
             type: "color",
-            query: name, 
+            query: name,
             option: color_map[number],
             data: data,
           });
@@ -193,7 +193,7 @@ ColorNumberCompleter.definition = {
     if (next_completer_info) {
       [next_completer, option] = next_completer_info.split("/");
       this.sendMessage(
-        "command/query-completion/" + next_completer, 
+        "command/query-completion/" + next_completer,
         {
           source: source.substr(all_length),
           option: option,

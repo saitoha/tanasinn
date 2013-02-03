@@ -57,7 +57,7 @@
  *
  * Note on DECSCNM
  *
- * Screen mode only effects how the data appears on the screen. DECSCNM does 
+ * Screen mode only effects how the data appears on the screen. DECSCNM does
  * not change the data in page memory.
  *
  */
@@ -81,11 +81,11 @@ ReverseVideo.definition = {
 
   _mode: null,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
     this._mode = this.default_value;
     this.reset();
@@ -94,7 +94,7 @@ ReverseVideo.definition = {
   /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
     this._mode = null;
   },
@@ -102,8 +102,8 @@ ReverseVideo.definition = {
   /** Activate reverse video feature.
    */
   "[subscribe('sequence/decset/5'), pnp]":
-  function activate() 
-  { 
+  function activate()
+  {
     this._mode = true;
 
     this.sendMessage("command/reverse-video", true);
@@ -115,7 +115,7 @@ ReverseVideo.definition = {
   /** Deactivate reverse video feature
    */
   "[subscribe('sequence/decrst/5'), pnp]":
-  function deactivate() 
+  function deactivate()
   {
     this._mode = false;
 
@@ -128,7 +128,7 @@ ReverseVideo.definition = {
   /** Report mode
    */
   "[subscribe('sequence/decrqm/5'), pnp]":
-  function report() 
+  function report()
   {
     var mode = this._mode ? 1: 2,
         message = "?5;" + mode + "$y";
@@ -139,7 +139,7 @@ ReverseVideo.definition = {
   /** handle terminal reset event.
    */
   "[subscribe('command/{soft | hard}-terminal-reset'), pnp]":
-  function reset() 
+  function reset()
   {
     if (this.default_value) {
       this.activate();
@@ -151,8 +151,8 @@ ReverseVideo.definition = {
   /**
    * Serialize snd persist current state.
    */
-  "[subscribe('@command/backup'), type('Object -> Undefined'), pnp]": 
-  function backup(context) 
+  "[subscribe('@command/backup'), type('Object -> Undefined'), pnp]":
+  function backup(context)
   {
     // serialize this plugin object.
     context[this.id] = {
@@ -163,8 +163,8 @@ ReverseVideo.definition = {
   /**
    * Deserialize snd restore stored state.
    */
-  "[subscribe('@command/restore'), type('Object -> Undefined'), pnp]": 
-  function restore(context) 
+  "[subscribe('@command/restore'), type('Object -> Undefined'), pnp]":
+  function restore(context)
   {
     var data;
 
@@ -185,7 +185,7 @@ ReverseVideo.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new ReverseVideo(broker);
 }

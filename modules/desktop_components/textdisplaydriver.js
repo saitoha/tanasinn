@@ -45,7 +45,7 @@ TextCompletionDisplayDriver.definition = {
 
   "[persistable, watchable] enabled_when_startup": true,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
@@ -53,7 +53,7 @@ TextCompletionDisplayDriver.definition = {
   {
   },
 
-  /** Uninstalls itself. 
+  /** Uninstalls itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[uninstall]":
@@ -67,7 +67,7 @@ TextCompletionDisplayDriver.definition = {
     return this;
   },
 
-  drive: function drive(grid, result, current_index) 
+  drive: function drive(grid, result, current_index)
   {
     var rows = grid.appendChild(grid.ownerDocument.createElement("rows")),
         i = 0,
@@ -90,7 +90,7 @@ TextCompletionDisplayDriver.definition = {
         .toLowerCase()
         .indexOf(search_string);
       this.request(
-        "command/construct-chrome", 
+        "command/construct-chrome",
         {
           parentNode: rows,
           tagName: "row",
@@ -109,7 +109,7 @@ TextCompletionDisplayDriver.definition = {
                 overflow: "hidden",
                 paddingLeft: "8px",
               },
-              childNodes: -1 === match_position ? 
+              childNodes: -1 === match_position ?
                 { text: completion_text }:
                 [
                   { text: completion_text.substr(0, match_position) },
@@ -148,7 +148,7 @@ TextCompletionDisplayDriver.definition = {
  * @brief Module entry point
  * @param {Desktop} desktop The Desktop object.
  */
-function main(desktop) 
+function main(desktop)
 {
   new TextCompletionDisplayDriver(desktop);
 }

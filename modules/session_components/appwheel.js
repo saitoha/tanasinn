@@ -50,11 +50,11 @@ ApplicationWheel.definition = {
 
   _mode: null,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
     this._mode = this.default_value;
     this.reset();
@@ -63,7 +63,7 @@ ApplicationWheel.definition = {
   /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
     this._mode = null;
   },
@@ -71,8 +71,8 @@ ApplicationWheel.definition = {
   /** Activate application wheel mode feature(MinTTY).
    */
   "[subscribe('sequence/decset/7787'), pnp]":
-  function activate() 
-  { 
+  function activate()
+  {
     this._mode = true;
 
     this.sendMessage("command/change-application-wheel-mode", true);
@@ -81,7 +81,7 @@ ApplicationWheel.definition = {
   /** Deactivate application wheel mode feature(MinTTY).
    */
   "[subscribe('sequence/decrst/7787'), pnp]":
-  function deactivate() 
+  function deactivate()
   {
     this._mode = false;
 
@@ -91,7 +91,7 @@ ApplicationWheel.definition = {
   /** Report mode
    */
   "[subscribe('sequence/decrqm/7786'), pnp]":
-  function report() 
+  function report()
   {
     var mode = this._mode ? 1: 2,
         message = "?7787;" + mode + "$y";
@@ -102,7 +102,7 @@ ApplicationWheel.definition = {
   /** handle terminal reset event.
    */
   "[subscribe('command/{soft | hard}-terminal-reset'), pnp]":
-  function reset() 
+  function reset()
   {
     if (this.default_value) {
       this.activate();
@@ -114,8 +114,8 @@ ApplicationWheel.definition = {
   /**
    * Serialize snd persist current state.
    */
-  "[subscribe('@command/backup'), type('Object -> Undefined'), pnp]": 
-  function backup(context) 
+  "[subscribe('@command/backup'), type('Object -> Undefined'), pnp]":
+  function backup(context)
   {
     // serialize this plugin object.
     context[this.id] = {
@@ -126,8 +126,8 @@ ApplicationWheel.definition = {
   /**
    * Deserialize snd restore stored state.
    */
-  "[subscribe('@command/restore'), type('Object -> Undefined'), pnp]": 
-  function restore(context) 
+  "[subscribe('@command/restore'), type('Object -> Undefined'), pnp]":
+  function restore(context)
   {
     var data;
 
@@ -145,7 +145,7 @@ ApplicationWheel.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new ApplicationWheel(broker);
 }

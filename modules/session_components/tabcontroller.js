@@ -24,7 +24,7 @@
 
 "use strict";
 
- 
+
 /**
  * @trait TabController
  */
@@ -32,7 +32,7 @@ var TabController = new Class().extends(Plugin)
                                .depends("cursorstate")
                                .depends("screen");
 TabController.definition = {
-  
+
   /** Component ID */
   id: "tab_controller",
 
@@ -51,7 +51,7 @@ TabController.definition = {
   _cursor: null,
   _tab_stops: null,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
@@ -63,7 +63,7 @@ TabController.definition = {
     this._resetTabStop();
   },
 
-  /** uninstalls itself. 
+  /** uninstalls itself.
    */
   "[uninstall]":
   function uninstall()
@@ -72,7 +72,7 @@ TabController.definition = {
     this._cursor = null;
     this._tab_stops = null;
   },
-   
+
   /** Horizontal tabulation.
    *
    * Moves cursor to next tab stop, or to right margin if there are no more
@@ -87,7 +87,7 @@ TabController.definition = {
    *  - Next unprotected field (if erasure mode is reset)
    *  - First unprotected character position in the scrolling region (if the
    *    cursor is above the scrolling region)
-   *  - Last character position of the screen (if the cursor is below the 
+   *  - Last character position of the screen (if the cursor is below the
    *    scrolling region)
    *
    * In edit mode, a tab received with no more tab stops or fields, causes the
@@ -95,7 +95,7 @@ TabController.definition = {
    *
    */
   "[profile('vt100'), sequence('0x09'), type('Undefined')]":
-  function HT() 
+  function HT()
   { // Horizontal Tab
     var cursor = this._cursor,
         tab_stops = this._tab_stops,
@@ -150,14 +150,14 @@ TabController.definition = {
    *
    * Description
    *
-   * Any tab stop setting before this command is executed is cleared 
+   * Any tab stop setting before this command is executed is cleared
    * automatically. Control function TBC clears the tab stops on the display;
    * HTS sets a horizontal tab stop at the active column.
    *
    */
   "[profile('vt100'), sequence('CSI ? Pn W')]":
-  function DECST8C(n) 
-  { 
+  function DECST8C(n)
+  {
     if (5 === n) {
       // Set Tab at Every 8 Columns
       this._resetTabStop();
@@ -171,38 +171,38 @@ TabController.definition = {
   /**
    *
    * DECTABSR - Tab Stop Report
-   * 
-   * The terminal sends this sequence to the host in response to a request 
-   * presentation state report (DECRQPSR) sequence. DECTABSR informs the host 
+   *
+   * The terminal sends this sequence to the host in response to a request
+   * presentation state report (DECRQPSR) sequence. DECTABSR informs the host
    * of the terminal's current tab settings.
-   * 
+   *
    * Programming Tip
    *
-   * Applications can use information in the tab stop report to save the 
+   * Applications can use information in the tab stop report to save the
    * current tab stops. Later, the application can restore the saved tab stops.
-   * 
+   *
    * This operation is useful for applications that need to temporarily change
    * the terminal's tab stops. When the application is finished, it can restore
    * the tab stops that were in effect before the application changed them. You
-   * use the restore presentation state (DECRSPS) function to restore tab 
+   * use the restore presentation state (DECRSPS) function to restore tab
    * stops. Refer to DECRSPS - Restore Presentation State for additional information.
    *
    * Format
    *
    * DCS   2     $     u     D ... D  ST
    * 9/0   3/2   2/4   7/5   ...      9/12
-   * 
+   *
    * Parameters
-   * 
+   *
    * D...D
    * is a data string indicating the column number location of each tab stop.
    *
    * Example
-   * 
+   *
    * The following is an example of a DECTABSR sequence:
-   * 
+   *
    * DCS 2 $ u 9/ 17/ 25/ 33/ 41/ 49/ 57/ 65/ 73 ST
-   * 
+   *
    * 9, 17, 25, 33, 41, 49, 57, 65, and 73 are the column numbers for tab stops.
    *
    */
@@ -252,7 +252,7 @@ TabController.definition = {
   /**
    * HTS - Horizontal Tab Set
    *
-   * HTS sets a horizontal tab stop at the column position indicated by the 
+   * HTS sets a horizontal tab stop at the column position indicated by the
    * value of the active column when the terminal receives an HTS.
    *
    * You can use either one of the following formats:
@@ -265,8 +265,8 @@ TabController.definition = {
    * Executing an HTS does not effect the other horizontal tab stop settings.
    *
    */
-  "[profile('vt100'), sequence('0x88', 'ESC H'), _('Tab set.')]": 
-  function HTS() 
+  "[profile('vt100'), sequence('0x88', 'ESC H'), _('Tab set.')]":
+  function HTS()
   {
     var cursor = this._cursor;
 
@@ -299,7 +299,7 @@ TabController.definition = {
    *
    */
   "[profile('vt100'), sequence('CSI Ps g')]":
-  function TBC(n) 
+  function TBC(n)
   { // TaB Clear
     var tab_stops,
         positionX,
@@ -356,7 +356,7 @@ TabController.definition = {
    *
    */
   "[profile('vt100'), sequence('CSI Pn I')]":
-  function CHT(n) 
+  function CHT(n)
   { // Cursor Horaizontal Tabulation
     var tab_stops = this._tab_stops,
         cursor = this._cursor,
@@ -365,7 +365,7 @@ TabController.definition = {
         i,
         stop,
         index;
- 
+
     n = (n || 1) - 1;
 
     if (positionX > width - 1) {
@@ -375,7 +375,7 @@ TabController.definition = {
         return;
       //}
     }
-   
+
     for (i = 0; i < tab_stops.length; ++i) {
       stop = tab_stops[i];
       if (stop > positionX) {
@@ -406,13 +406,13 @@ TabController.definition = {
    * Description
    *
    * The active position is moved to the character position corresponding to
-   * the n-th preceding horizontal tabulation stop. If an attempt is made to 
-   * move the active position past the first character position on the line, 
+   * the n-th preceding horizontal tabulation stop. If an attempt is made to
+   * move the active position past the first character position on the line,
    * then the active position stays at column one.
    *
    */
   "[profile('vt100'), sequence('CSI Pn Z')]":
-  function CBT(n) 
+  function CBT(n)
   { // Cursor Backward Tabulation
     var tab_stops = this._tab_stops,
         cursor = this._cursor,
@@ -441,7 +441,7 @@ TabController.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new TabController(broker);
 }

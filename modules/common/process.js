@@ -47,7 +47,7 @@
  *                                      | desktop |
  *                                      +----+----+
  *                                           |
- *                             ----+---------+------+------- 
+ *                             ----+---------+------+-------
  *                                 |                |
  *                            +----+-----+     +----+----+
  *                            | launcher |     | session |
@@ -76,7 +76,7 @@ function alert(message)
 }
 
 var g_process;
-try {
+
 void function() {
 
   var Core = {
@@ -126,7 +126,7 @@ void function() {
   loader = {
 
     windows: [],
-  
+
     initialize: function initialize()
     {
       var window_mediator = Components
@@ -135,11 +135,11 @@ void function() {
           window_types = ["navigator:browser", "mail:3pane"],
           window_type,
           self = this,
-          i = 0;
+          i;
 
       tanasinn_scope.coUtils.WindowWatcher.register(this);
 
-      for (; i < window_types.length; ++i) {
+      for (i = 0; i < window_types.length; ++i) {
         window_type = window_types[i];
         // add functionality to existing windows
         void function(self)
@@ -159,8 +159,8 @@ void function() {
                 // Wait for the window to finish loading before running the callback
                 // Listen for one load event before checking the window type
                 dom.window.addEventListener(
-                  "load", 
-                  function onLoad(event) 
+                  "load",
+                  function onLoad(event)
                   {
                     self.dispatchWindowEvent(dom.window);
                   },
@@ -171,19 +171,19 @@ void function() {
         } (this);
       }
     },
-  
+
     uninitialize: function uninitialize()
     {
       tanasinn_scope.coUtils.WindowWatcher.unregister(this);
     },
-  
-    dispatchWindowEvent: function dispatchWindowEvent(window) 
+
+    dispatchWindowEvent: function dispatchWindowEvent(window)
     {
-      var i = 0,
+      var i,
           windows = this.windows,
           process;
 
-      for (; i < windows.length; ++i) {
+      for (i = 0; i < windows.length; ++i) {
         if (window === windows[i]) {
           return;
         }
@@ -194,9 +194,9 @@ void function() {
       process = getProcess();
       process.notify("event/new-window-detected", window);
     },
-  
+
     // Handles opening new navigator window.
-    observe: function observe(subject, topic, data) 
+    observe: function observe(subject, topic, data)
     {
       var self = this,
           dom = {
@@ -206,7 +206,7 @@ void function() {
       if ("domwindowopened" === topic) {
         dom.window.addEventListener(
           "load",
-          function onLoad() 
+          function onLoad()
           {
             var window_type = dom.window.document
                                 .documentElement
@@ -230,7 +230,7 @@ void function() {
 
     _observers: null,
 
-    subscribeGlobalEvent: 
+    subscribeGlobalEvent:
     function subscribeGlobalEvent(topic, handler, context)
     {
       var delegate,
@@ -244,8 +244,8 @@ void function() {
       } else {
         delegate = handler;
       }
-      observer = { 
-        observe: function observe() 
+      observer = {
+        observe: function observe()
         {
           delegate.apply(this, arguments);
         },
@@ -254,7 +254,7 @@ void function() {
       this._observers[topic].push(observer);
       this._observer_service.addObserver(observer, topic, false);
     },
-    
+
     removeGlobalEvent: function removeGlobalEvent(topic)
     {
       var observers,
@@ -284,19 +284,19 @@ void function() {
   Process.definition = {
 
     id: "process",
-  
+
     get default_scope()
     {
-      return function scope() 
-      { 
+      return function scope()
+      {
         this.__proto__ = tanasinn_scope;
       };
     },
 
     initial_settings_path: "$Home/.tanasinn.js",
- 
+
     /** constructor. */
-    initialize: function initialize() 
+    initialize: function initialize()
     {
       // load initial settings.
       var path = this.initial_settings_path,
@@ -314,8 +314,8 @@ void function() {
       this._observers = {};
 
       this.subscribeGlobalEvent(
-        "quit-application", 
-        function onQuitApplication() 
+        "quit-application",
+        function onQuitApplication()
         {
           this.notify("event/disabled", this);
         }, this);
@@ -330,8 +330,8 @@ void function() {
       loader.uninitialize();  // unregister window watcher handler
       Process.destroy();      // unregister XPCOM object
     },
-  
-    getDesktopFromWindow: function getDesktopFromWindow(window) 
+
+    getDesktopFromWindow: function getDesktopFromWindow(window)
     {
       var desktops = this.notify("get/desktop-from-window", window),
           desktop;
@@ -347,7 +347,7 @@ void function() {
       }
       return this.callSync("event/new-window-detected", window);
     },
-    
+
     /* override */
     toString: function toString()
     {
@@ -368,16 +368,16 @@ void function() {
 
       this.notify("event/disabled");
       this.uninitialize();
-    
+
       io_service
         .getProtocolHandler("resource")
         .QueryInterface(Components.interfaces.nsIResProtocolHandler)
         .setSubstitution("tanasinn", null);
-    
+
       this.notify("event/shutdown");
       this.clear();
     },
-  
+
     /**
      * Provides runtime type discovery.
      * @param aIID the IID of the requested interface.
@@ -385,7 +385,7 @@ void function() {
      */
     QueryInterface: function QueryInterface(a_IID)
     {
-      if (!a_IID.equals(Components.interafaces.nsIObserver) 
+      if (!a_IID.equals(Components.interafaces.nsIObserver)
        && !a_IID.equals(Components.interafaces.nsISupports)) {
         throw Components.results.NS_ERROR_NOT_IMPLEMENTED;
       }
@@ -395,7 +395,6 @@ void function() {
   }; // Process
 
   loader.initialize();
- 
+
 } ();
-} catch (e) {alert(e + "\n" + e.lineNumber)}
 // EOF

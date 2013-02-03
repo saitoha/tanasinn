@@ -29,7 +29,7 @@
  * @class X10MouseMode
  *
  * XT_MSE_X10 - x10-compatible mouse mode
- * 
+ *
  * Default: off
  *
  * Format
@@ -65,11 +65,11 @@ X10MouseMode.definition = {
 
   _mode: false,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
     this._mode = this.default_value;
   },
@@ -77,7 +77,7 @@ X10MouseMode.definition = {
   /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
     this._mode = null;
   },
@@ -85,12 +85,12 @@ X10MouseMode.definition = {
   /** Enable x10-style mouse reporting.
    */
   "[subscribe('sequence/decset/9'), pnp]":
-  function activate() 
-  { 
+  function activate()
+  {
     this._mode = true;
 
     this.sendMessage(
-      "event/mouse-tracking-mode-changed", 
+      "event/mouse-tracking-mode-changed",
       coUtils.Constant.TRACKING_X10);
     coUtils.Debug.reportMessage(
       _("DECSET 9 - X10 mouse tracking mode was set."));
@@ -99,12 +99,12 @@ X10MouseMode.definition = {
   /** Disable x10-style mouse reporting.
    */
   "[subscribe('sequence/decrst/9'), pnp]":
-  function deactivate() 
+  function deactivate()
   {
     this._mode = false;
-           
+
     this.sendMessage(
-      "event/mouse-tracking-mode-changed", 
+      "event/mouse-tracking-mode-changed",
       coUtils.Constant.TRACKING_NONE);
     coUtils.Debug.reportMessage(
       _("DECRST 9 - X10 mouse tracking mode was reset."));
@@ -113,7 +113,7 @@ X10MouseMode.definition = {
   /** Report mode
    */
   "[subscribe('sequence/decrqm/9'), pnp]":
-  function report() 
+  function report()
   {
     var mode = this._mode ? 1: 2,
         message = "?9;" + mode + "$y";
@@ -124,7 +124,7 @@ X10MouseMode.definition = {
   /** on hard / soft reset
    */
   "[subscribe('command/{soft | hard}-terminal-reset'), pnp]":
-  function reset(broker) 
+  function reset(broker)
   {
     if (this.default_value) {
       this.activate();
@@ -136,8 +136,8 @@ X10MouseMode.definition = {
   /**
    * Serialize snd persist current state.
    */
-  "[subscribe('@command/backup'), type('Object -> Undefined'), pnp]": 
-  function backup(context) 
+  "[subscribe('@command/backup'), type('Object -> Undefined'), pnp]":
+  function backup(context)
   {
     // serialize this plugin object.
     context[this.id] = {
@@ -148,8 +148,8 @@ X10MouseMode.definition = {
   /**
    * Deserialize snd restore stored state.
    */
-  "[subscribe('@command/restore'), type('Object -> Undefined'), pnp]": 
-  function restore(context) 
+  "[subscribe('@command/restore'), type('Object -> Undefined'), pnp]":
+  function restore(context)
   {
     var data = context[this.id];
 
@@ -169,7 +169,7 @@ X10MouseMode.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new X10MouseMode(broker);
 }

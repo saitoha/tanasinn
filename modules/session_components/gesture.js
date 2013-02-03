@@ -70,12 +70,12 @@ Gesture.definition = {
 
   _element: null,
   _timer: null,
- 
-  /** Installs itself. 
+
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
     var result = this.request("command/construct-chrome", this.getTemplate());
 
@@ -87,7 +87,7 @@ Gesture.definition = {
    *  @param {Broker} broker A Broker object.
    */
   "[uninstall]":
-  function uninstall(broker) 
+  function uninstall(broker)
   {
     if (this._frame) {
       this._frame.parentNode.removeChild(this._element);
@@ -97,20 +97,20 @@ Gesture.definition = {
     this.ondragend.enabled = false;
   },
 
-  "[subscribe('event/screen-width-changed'), pnp]": 
-  function onWidthChanged(width) 
+  "[subscribe('event/screen-width-changed'), pnp]":
+  function onWidthChanged(width)
   {
     this._canvas.width = width;
   },
 
-  "[subscribe('event/screen-height-changed'), pnp]": 
-  function onHeightChanged(height) 
+  "[subscribe('event/screen-height-changed'), pnp]":
+  function onHeightChanged(height)
   {
     this._canvas.height = height;
   },
 
   "[listen('mousedown', '#tanasinn_outer_chrome'), pnp]":
-  function ondragstart(event) 
+  function ondragstart(event)
   {
     var x, y;
 
@@ -127,7 +127,7 @@ Gesture.definition = {
   },
 
   "[listen('mouseup', '#tanasinn_outer_chrome')]":
-  function ondragend(event) 
+  function ondragend(event)
   {
     this.onmousemove.enabled = false;
     this.ondragend.enabled = false;
@@ -139,7 +139,7 @@ Gesture.definition = {
   _position: null,
 
   "[listen('mousemove', '#tanasinn_outer_chrome')]":
-  function onmousemove(event) 
+  function onmousemove(event)
   {
     var canvas, context, x, y, previousX, previousY;
 
@@ -169,7 +169,7 @@ Gesture.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new Gesture(broker);
 }

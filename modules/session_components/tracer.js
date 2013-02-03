@@ -48,15 +48,15 @@ Tracer.definition = {
 
   _mode: "vt100",
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
-  "[install]": 
-  function install(context) 
+  "[install]":
+  function install(context)
   {
   },
 
-  /** Uninstalls itself 
+  /** Uninstalls itself
    */
   "[uninstall]":
   function uninstall()
@@ -64,8 +64,8 @@ Tracer.definition = {
   },
 
   "[subscribe('command/change-emulation-mode'), pnp]":
-  function onChangeMode(mode) 
-  { 
+  function onChangeMode(mode)
+  {
     if (this.onBeforeInput.enabled) {
       this.disable();
       this._mode = mode;
@@ -76,7 +76,7 @@ Tracer.definition = {
   },
 
   "[subscribe('command/debugger-trace-on'), pnp]":
-  function enable() 
+  function enable()
   {
     var sequences = this.sendMessage("get/sequences/" + this._mode),
         i = 0,
@@ -98,7 +98,7 @@ Tracer.definition = {
   },
 
   "[subscribe('command/debugger-trace-off'), pnp]":
-  function disable() 
+  function disable()
   {
     var sequences = this.sendMessage("get/sequences/" + this._mode),
         i = 0,
@@ -115,16 +115,16 @@ Tracer.definition = {
   },
 
   "[subscribe('command/send-to-tty')]":
-  function onBeforeInput(message) 
+  function onBeforeInput(message)
   {
     var info = {
-      type: coUtils.Constant.TRACE_INPUT, 
+      type: coUtils.Constant.TRACE_INPUT,
       name: undefined,
       value: [message],
     };
     this.sendMessage(
-      "command/debugger-trace-sequence", 
-      [info, undefined]); 
+      "command/debugger-trace-sequence",
+      [info, undefined]);
   },
 
   _registerControlHandler:
@@ -141,7 +141,7 @@ Tracer.definition = {
 
         return {
           type: coUtils.Constant.TRACE_CONTROL,
-          name: handler.name, 
+          name: handler.name,
           value: Array.slice(arguments),
         };
       };
@@ -149,8 +149,8 @@ Tracer.definition = {
       this.sendMessage(
         "command/add-sequence",
         {
-          expression: information.expression, 
-          handler: delegate, 
+          expression: information.expression,
+          handler: delegate,
           context: information.context,
         });
 
@@ -166,7 +166,7 @@ Tracer.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new Tracer(broker);
 }

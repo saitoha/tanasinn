@@ -52,24 +52,24 @@ JapaneseDecoder.definition = {
   _jis0208_map: null,
   _offset: 0,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
   },
 
-  /** uninstalls itself. 
+  /** uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
   },
 
   /** Constructor **/
   "[subscribe('get/decoders'), pnp]":
-  function getDecoders(map) 
+  function getDecoders(map)
   {
     return {
       charset: this.scheme,
@@ -78,7 +78,7 @@ JapaneseDecoder.definition = {
     };
   },
 
-  activate: function activate() 
+  activate: function activate()
   {
     var resource_path_cp932 = "modules/mappings/cp932.txt.js",
         json_content_cp932 = coUtils.IO.readFromFile(resource_path_cp932),
@@ -87,14 +87,14 @@ JapaneseDecoder.definition = {
         json_content_jis0208 = coUtils.IO.readFromFile(resource_path_jis0208),
         mapping_jis0208 = eval(json_content_jis0208);
 
-    this._cp932_map = mapping_cp932.map;    
-    this._jis0208_map = mapping_jis0208.map;    
+    this._cp932_map = mapping_cp932.map;
+    this._jis0208_map = mapping_jis0208.map;
   },
 
-  /** Parse UTF-8 string sequence and convert it 
-   *  to UCS-4 code point sequence. 
+  /** Parse UTF-8 string sequence and convert it
+   *  to UCS-4 code point sequence.
    */
-  decode: function decode(scanner) 
+  decode: function decode(scanner)
   {
     var self = this;
 
@@ -113,14 +113,14 @@ JapaneseDecoder.definition = {
     } (scanner);
   },
 
-  /** Decode UTF-8 encoded byte sequences 
-   *  and Return UCS-4 character set code point. 
+  /** Decode UTF-8 encoded byte sequences
+   *  and Return UCS-4 character set code point.
    *
-   *  @param {Scanner} scanner A scanner object that attached to 
+   *  @param {Scanner} scanner A scanner object that attached to
    *                   current input stream.
-   *  @return {Array} Converted sequence 
+   *  @return {Array} Converted sequence
    */
-  _getNextCharacter: function _getNextCharacter(scanner) 
+  _getNextCharacter: function _getNextCharacter(scanner)
   {
     var c = scanner.current(),
         c2,
@@ -141,7 +141,7 @@ JapaneseDecoder.definition = {
       c2 = scanner.current();
 
       // UTF-8
-      // 110xxxxx 10xxxxxx 
+      // 110xxxxx 10xxxxxx
       // (0x00000080 - 0x000007ff) // 11bit
       if (0x6 === c >>> 5 && 0x2 === c2 >>> 6) {
         first = (c & 0x1f) << 6;
@@ -158,7 +158,7 @@ JapaneseDecoder.definition = {
             return result;
           }
         }
-      } 
+      }
 
       result = this._jis0208_map[c - 0x80 << 8 | c2 - 0x80];
       if (result) {
@@ -170,7 +170,7 @@ JapaneseDecoder.definition = {
       c2 = scanner.current();
 
       // UTF-8
-      // 1110xxxx 10xxxxxx 10xxxxxx 
+      // 1110xxxx 10xxxxxx 10xxxxxx
       // (0x00000800 - 0x0000ffff) // 16bit (UCS-2)
       if (0xe === c >>> 4 && 0x2 === c2 >>> 6) {
         first = (c & 0xf) << 12;
@@ -206,7 +206,7 @@ JapaneseDecoder.definition = {
       c2 = scanner.current();
 
       // UTF-8
-      // 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx 
+      // 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
       // (0x00010000 - 0x001fffff) // 21bit (UCS-4)
       if (0x1e === c >>> 3 && 0x2 === c >>> 6) {
         first = (c & 0x7) << 18;
@@ -264,7 +264,7 @@ JapaneseDecoder.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new JapaneseDecoder(broker);
 }

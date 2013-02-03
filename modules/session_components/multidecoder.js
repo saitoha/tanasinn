@@ -52,11 +52,11 @@ MultiDecoder.definition = {
   _converter: null,
   _converter_manager: null,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
     var decoder_list,
         charset;
@@ -86,10 +86,10 @@ MultiDecoder.definition = {
     }
   },
 
-  /** uninstalls itself. 
+  /** uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
   },
 
@@ -127,7 +127,7 @@ MultiDecoder.definition = {
       // register handler
       broker.subscribe(
         "get/decoders",
-        function() 
+        function()
         {
           return {
             charset: charset,
@@ -143,20 +143,20 @@ MultiDecoder.definition = {
     }
   },
 
-  activate: function activate(scheme) 
+  activate: function activate(scheme)
   {
     this._current_scheme = scheme;
     this._converter.charset = this._current_scheme;
   },
 
-  decode: function decode(scanner) 
+  decode: function decode(scanner)
   {
     var data = [c for (c in this._generate(scanner)) ],
         str;
 
     if (data.length) {
       try {
-        str = this._converter.convertFromByteArray(data, data.length); 
+        str = this._converter.convertFromByteArray(data, data.length);
       } catch(e) {
         this._converter.charset = this._converter.charset;
         return null;
@@ -173,7 +173,7 @@ MultiDecoder.definition = {
     return [];
   },
 
-  _generate: function _generate(scanner) 
+  _generate: function _generate(scanner)
   {
     var c;
 
@@ -195,7 +195,7 @@ MultiDecoder.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new MultiDecoder(broker);
 }

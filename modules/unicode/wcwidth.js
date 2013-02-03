@@ -23,7 +23,7 @@
 
 "use strict";
 
-function wcwidth_amb_as_single(c) 
+function wcwidth_amb_as_single(c)
 {
     if (c < 0x10000) {
         var s = String.fromCharCode(c);
@@ -42,9 +42,9 @@ function wcwidth_amb_as_single(c)
         return 2;
     }
     return 1;
-} 
+}
 
-function wcwidth_amb_as_double(c) 
+function wcwidth_amb_as_double(c)
 {
     if (c < 0x10000) {
         var s = String.fromCharCode(c);

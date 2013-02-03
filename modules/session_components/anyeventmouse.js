@@ -29,7 +29,7 @@
  * @class AnyEventMouseMode
  *
  * XT_MSE_ANY - any event mouse mode
- * 
+ *
  * Default: off
  *
  * Format
@@ -65,11 +65,11 @@ AnyEventMouseMode.definition = {
 
   _mode: false,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
     this._mode = this.default_value;
   },
@@ -77,7 +77,7 @@ AnyEventMouseMode.definition = {
   /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
     this._mode = null;
   },
@@ -85,26 +85,26 @@ AnyEventMouseMode.definition = {
   /** Use All Motion Mouse Tracking.
    */
   "[subscribe('sequence/decset/1003'), pnp]":
-  function activate() 
-  { 
+  function activate()
+  {
     this._mode = true;
- 
+
     this.sendMessage(
-      "event/mouse-tracking-mode-changed", 
+      "event/mouse-tracking-mode-changed",
       coUtils.Constant.TRACKING_ANY);
     coUtils.Debug.reportMessage(
       _("DECSET 1003 - xterm all motion mouse tracking mode was set."));
   },
- 
+
   /** Don't Use All Motion Mouse Tracking.
    */
   "[subscribe('sequence/decrst/1003'), pnp]":
-  function deactivate() 
+  function deactivate()
   {
     this._mode = false;
 
     this.sendMessage(
-      "event/mouse-tracking-mode-changed", 
+      "event/mouse-tracking-mode-changed",
       coUtils.Constant.TRACKING_NONE);
     coUtils.Debug.reportMessage(
       _("DECRST 1003 - xterm all motion mouse tracking mode was reset."));
@@ -113,7 +113,7 @@ AnyEventMouseMode.definition = {
   /** Report mode
    */
   "[subscribe('sequence/decrqm/1003'), pnp]":
-  function report() 
+  function report()
   {
     var mode = this._mode ? 1: 2,
         message = "?1003;" + mode + "$y";
@@ -124,7 +124,7 @@ AnyEventMouseMode.definition = {
   /** on hard / soft reset
    */
   "[subscribe('command/{soft | hard}-terminal-reset'), pnp]":
-  function reset(broker) 
+  function reset(broker)
   {
     if (this.default_value) {
       this.activate();
@@ -136,8 +136,8 @@ AnyEventMouseMode.definition = {
   /**
    * Serialize snd persist current state.
    */
-  "[subscribe('@command/backup'), type('Object -> Undefined'), pnp]": 
-  function backup(context) 
+  "[subscribe('@command/backup'), type('Object -> Undefined'), pnp]":
+  function backup(context)
   {
     // serialize this plugin object.
     context[this.id] = {
@@ -148,8 +148,8 @@ AnyEventMouseMode.definition = {
   /**
    * Deserialize snd restore stored state.
    */
-  "[subscribe('@command/restore'), type('Object -> Undefined'), pnp]": 
-  function restore(context) 
+  "[subscribe('@command/restore'), type('Object -> Undefined'), pnp]":
+  function restore(context)
   {
     var data = context[this.id];
 
@@ -169,7 +169,7 @@ AnyEventMouseMode.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new AnyEventMouseMode(broker);
 }

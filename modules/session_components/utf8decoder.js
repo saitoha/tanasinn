@@ -50,24 +50,24 @@ UTF8Decoder.definition = {
 
   "[persistable] displacement": 0x3f,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
   },
 
-  /** uninstalls itself. 
+  /** uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
   },
 
   /** Constructor **/
   "[subscribe('get/decoders'), pnp]":
-  function getDecoders() 
+  function getDecoders()
   {
     return {
       charset: this.scheme,
@@ -76,15 +76,15 @@ UTF8Decoder.definition = {
     };
   },
 
-  activate: function activate() 
+  activate: function activate()
   {
     /* skip */
   },
 
-  /** Parse UTF-8 string sequence and convert it 
-   *  to UCS-4 code point sequence. 
+  /** Parse UTF-8 string sequence and convert it
+   *  to UCS-4 code point sequence.
    */
-  decode: function decode(scanner) 
+  decode: function decode(scanner)
   {
     return this._generate(scanner);
   },
@@ -111,7 +111,7 @@ UTF8Decoder.definition = {
       } else if (c === 0x7f) {
         break;
       } else if (c < 0xe0) {
-        // 110xxxxx 10xxxxxx 
+        // 110xxxxx 10xxxxxx
         // (0x00000080 - 0x000007ff) // 11bit
         if (0x6 !== c >>> 5) {
           scanner.moveNext();
@@ -134,7 +134,7 @@ UTF8Decoder.definition = {
         }
         yield result;
       } else if (c < 0xf0) {
-        // 1110xxxx 10xxxxxx 10xxxxxx 
+        // 1110xxxx 10xxxxxx 10xxxxxx
         // (0x00000800 - 0x0000ffff) // 16bit
         if (0xe !== c >>> 4) {
           scanner.moveNext();
@@ -167,8 +167,8 @@ UTF8Decoder.definition = {
         }
         yield result;
       } else if (c < 0xf8) {
-        // 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx 
-        // (0x00010000 - 0x001fffff) // 21bit 
+        // 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
+        // (0x00010000 - 0x001fffff) // 21bit
         if (0x1e !== c >>> 3) {
           scanner.moveNext();
           yield this.displacement;
@@ -205,7 +205,7 @@ UTF8Decoder.definition = {
         yield result;
       } else if (c < 0xfc) {
         // 111110xx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx
-        // (0x00200000 - 0x03ffffff) // 26bit 
+        // (0x00200000 - 0x03ffffff) // 26bit
         if (0x3e !== c >>> 2) {
           scanner.moveNext();
           yield this.displacement;
@@ -248,7 +248,7 @@ UTF8Decoder.definition = {
         yield this.displacement;
       } else {
         // 1111110x 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx
-        // (0x04000000 - 0x7fffffff) // 31bit 
+        // (0x04000000 - 0x7fffffff) // 31bit
         if (0x7e !== c >>> 1) {
           scanner.moveNext();
           yield this.displacement;
@@ -302,14 +302,14 @@ UTF8Decoder.definition = {
     };
   },
 
-  /** Decode UTF-8 encoded byte sequences 
-   *  and Return UCS-4 character set code point. 
+  /** Decode UTF-8 encoded byte sequences
+   *  and Return UCS-4 character set code point.
    *
-   *  @param {Scanner} scanner A scanner object that attached to 
+   *  @param {Scanner} scanner A scanner object that attached to
    *                   current input stream.
-   *  @return {Array} Converted sequence 
+   *  @return {Array} Converted sequence
    */
-  _getNextCharacter: function _getNextCharacter(scanner) 
+  _getNextCharacter: function _getNextCharacter(scanner)
   {
   },
 
@@ -320,7 +320,7 @@ UTF8Decoder.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new UTF8Decoder(broker);
 }

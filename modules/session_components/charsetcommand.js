@@ -44,23 +44,23 @@ CharsetCommands.definition = {
 
   "[persistable] enabled_when_startup": true,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
   },
 
-  /** Uninstalls itself 
+  /** Uninstalls itself
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
   },
 
 
-  _impl: function _impl(arguments_string, is_encoder) 
+  _impl: function _impl(arguments_string, is_encoder)
   {
     var modules, name;
 
@@ -77,7 +77,7 @@ CharsetCommands.definition = {
     }
 
     this.sendMessage(
-      is_encoder ? "change/encoder": "change/decoder", 
+      is_encoder ? "change/encoder": "change/decoder",
       name)
 
     return {

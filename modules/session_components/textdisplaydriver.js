@@ -44,18 +44,18 @@ TextCompletionDisplayDriver.definition = {
 
   "[persistable] enabled_when_startup": true,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
   },
 
-  /** Uninstalls itself 
+  /** Uninstalls itself
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
   },
 
@@ -66,7 +66,7 @@ TextCompletionDisplayDriver.definition = {
     return this;
   },
 
-  drive: function drive(grid, result, current_index) 
+  drive: function drive(grid, result, current_index)
   {
     var owner_document = grid.ownerDocument,
         rows = grid.appendChild(owner_document.createElement("rows")),
@@ -93,7 +93,7 @@ TextCompletionDisplayDriver.definition = {
         .indexOf(search_string);
 
       this.request(
-        "command/construct-chrome", 
+        "command/construct-chrome",
         {
           parentNode: rows,
           tagName: "row",
@@ -105,15 +105,15 @@ TextCompletionDisplayDriver.definition = {
           childNodes: [
             {
               tagName: "box",
-              style: { 
+              style: {
                 paddingTop: "3px",
                 margin: "0px",
                 overflow: "hidden",
                 paddingLeft: "8px",
                 fontSize: "19px",
               },
-              childNodes: -1 === match_position ? 
-                { 
+              childNodes: -1 === match_position ?
+                {
                   text: completion_text
                 }:
                 [
@@ -121,21 +121,21 @@ TextCompletionDisplayDriver.definition = {
                   {
                     tagName: "label",
                     value: completion_text.substr(match_position, search_string.length),
-                    style: { 
-                      margin: "0px", 
-                      fontWeight: "bold", 
-                      color: "#f00", 
+                    style: {
+                      margin: "0px",
+                      fontWeight: "bold",
+                      color: "#f00",
                       textDecoration: "underline",
                     },
                   },
-                  { 
+                  {
                     text: completion_text.substr(match_position + search_string.length)
                   },
                 ],
             },
             {
               tagName: "label",
-              style: { 
+              style: {
                 paddingTop: "2px",
                 fontSize: "16px",
                 textShadow: "0px 0px 2px white",

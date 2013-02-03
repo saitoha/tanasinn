@@ -34,7 +34,7 @@ MappingManagerBase.definition = {
   _map: null,
   _state: null,
 
-  /** Gets pre-defined mappings and store them. 
+  /** Gets pre-defined mappings and store them.
    *  @param {String} type "nmap" or "cmap".
    * */
   installImpl: function installImpl(type)
@@ -47,10 +47,10 @@ MappingManagerBase.definition = {
 
     if (mappings) {
       mappings.forEach(
-        function(delegate) 
+        function(delegate)
         {
           delegate.expressions.forEach(
-            function(expression) 
+            function(expression)
             {
               this.register(expression, delegate);
             }, this);
@@ -58,7 +58,7 @@ MappingManagerBase.definition = {
     }
   },
 
-  /** Clear the key mappings and the input state. 
+  /** Clear the key mappings and the input state.
    *  @param {EventBroker} broker parent broker object.
    */
   uninstallImpl: function uninstallImpl(broker)
@@ -67,13 +67,13 @@ MappingManagerBase.definition = {
   },
 
   /** Registers a mapping specified by given expression. */
-  register: function register(expression, delegate) 
+  register: function register(expression, delegate)
   {
     var packed_code_array = coUtils.Keyboard.parseKeymapExpression(expression),
         context = this._map;
 
     packed_code_array.forEach(
-      function(key_code) 
+      function(key_code)
       {
         context = context[key_code] = context[key_code] || {};
       }, this);
@@ -81,11 +81,11 @@ MappingManagerBase.definition = {
   },
 
   /** Unregisters a mapping. */
-  unregister: function unregister(expression) 
+  unregister: function unregister(expression)
   {
     var packed_code_array = coUtils.Keyboard.parseKeymapExpression(expression);
 
-    void function impl(context) 
+    void function impl(context)
     {
       var code = packed_code_array.shift(),
           new_context = context[code];
@@ -136,9 +136,9 @@ MappingManagerBase.definition = {
         context = this._map,
         mapleader = this.mapleader;
 
-    void function walk(context, previous) 
+    void function walk(context, previous)
     {
-      Object.getOwnPropertyNames(context).forEach(function(name) 
+      Object.getOwnPropertyNames(context).forEach(function(name)
       {
         var expression;
 
@@ -169,7 +169,7 @@ NormalMappingManager.definition = {
   "[persistable] enabled_when_startup": true,
   "[persistable] mapleader": "<C-s>",
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
@@ -178,7 +178,7 @@ NormalMappingManager.definition = {
     this.installImpl("nmap");
   },
 
-  /** Uninstalls itself. 
+  /** Uninstalls itself.
    */
   "[uninstall]":
   function uninstall()
@@ -186,10 +186,10 @@ NormalMappingManager.definition = {
     this.uninstallImpl();
   },
 
-  /** Handles normal input event and dispatches stored nmap handler. 
-   *  @param {Object} An object includes XUL textbox field element 
+  /** Handles normal input event and dispatches stored nmap handler.
+   *  @param {Object} An object includes XUL textbox field element
    *                  and key code.
-   */ 
+   */
   "[subscribe('event/normal-input'), enabled]":
   function onNormalInput(info)
   {
@@ -208,10 +208,10 @@ NormalMappingManager.definition = {
     var delegate,
         self = this;
 
-    delegate = function() 
+    delegate = function()
     {
       self.sendMessage(
-        "command/input-expression-with-remapping", 
+        "command/input-expression-with-remapping",
         info.destination);
       return true;
     };
@@ -229,7 +229,7 @@ NormalMappingManager.definition = {
     delegate = function()
     {
       self.sendMessage(
-        "command/input-expression-with-no-remapping", 
+        "command/input-expression-with-no-remapping",
         info.destination);
       return true;
     }
@@ -257,7 +257,7 @@ CommandlineMappingManager.definition = {
   "[persistable] enabled_when_startup": true,
   "[persistable] mapleader": "<C-s>",
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
@@ -266,7 +266,7 @@ CommandlineMappingManager.definition = {
     this.installImpl("cmap");
   },
 
-  /** Uninstalls itself. 
+  /** Uninstalls itself.
    */
   "[uninstall]":
   function uninstall()
@@ -274,10 +274,10 @@ CommandlineMappingManager.definition = {
     this.uninstallImpl();
   },
 
-  /** Handles command line input event and dispatches stored cmap handler. 
-   *  @param {Object} An object includes XUL textbox field element 
+  /** Handles command line input event and dispatches stored cmap handler.
+   *  @param {Object} An object includes XUL textbox field element
    *                  and key code.
-   */ 
+   */
   "[subscribe('event/commandline-input'), enabled]":
   function onCommandlineInput(info)
   {
@@ -296,10 +296,10 @@ CommandlineMappingManager.definition = {
     var delegate,
         self = this;
 
-    delegate = function() 
+    delegate = function()
     {
       self.sendMessage(
-        "command/input-expression-with-remapping", 
+        "command/input-expression-with-remapping",
         info.destination);
       return true;
     };
@@ -314,10 +314,10 @@ CommandlineMappingManager.definition = {
     var delegate,
         self = this;
 
-    delegate = function() 
+    delegate = function()
     {
       self.sendMessage(
-        "command/input-expression-with-no-remapping", 
+        "command/input-expression-with-no-remapping",
         info.destination);
       return true;
     }
@@ -344,7 +344,7 @@ CommandlineKeyHandler.definition = {
   _mark: -1,
 
   "[cmap('<Esc>', '<C-]>', '<C-2>', '<C-g>', '<2-shift>', '<nmode>'), _('cancel to input.'), enabled]":
-  function key_escape(info) 
+  function key_escape(info)
   {
     this.sendMessage("command/focus");
     this._mark = -1;
@@ -353,7 +353,7 @@ CommandlineKeyHandler.definition = {
   },
 
   "[cmap('<left>', '<C-b>'), _('move cursor backward.'), enabled]":
-  function key_back(info) 
+  function key_back(info)
   {
     var textbox, start, end;
 
@@ -392,7 +392,7 @@ CommandlineKeyHandler.definition = {
   },
 
   "[cmap('<C-k>'), _('delete chars after cursor position.'), enabled]":
-  function key_truncate(info) 
+  function key_truncate(info)
   {
     var textbox, value, start, end;
 
@@ -402,11 +402,11 @@ CommandlineKeyHandler.definition = {
     end = textbox.selectionEnd;
 
     if (start === end) {
-      textbox.value 
+      textbox.value
         = value.substr(0, textbox.selectionStart);
     } else {
-      textbox.value 
-        = value.substr(0, textbox.selectionStart) 
+      textbox.value
+        = value.substr(0, textbox.selectionStart)
         + value.substr(textbox.selectionEnd);
       textbox.selectionStart = start;
       textbox.selectionEnd = start;
@@ -418,7 +418,7 @@ CommandlineKeyHandler.definition = {
   },
 
   "[cmap('<C-d>', '<Del>'), _('delete forward char.'), enabled]":
-  function key_delete(info) 
+  function key_delete(info)
   {
     var textbox, value, start, end;
 
@@ -431,14 +431,14 @@ CommandlineKeyHandler.definition = {
       if (0 === start) {
         return true;
       }
-      textbox.value 
+      textbox.value
         = value.substr(0, start)
         + value.substr(start + 1)
       textbox.selectionStart = start;
       textbox.selectionEnd = start;
     } else {
-      textbox.value 
-        = value.substr(0, start) 
+      textbox.value
+        = value.substr(0, start)
         + value.substr(end);
       textbox.selectionStart = start;
       textbox.selectionEnd = start;
@@ -450,7 +450,7 @@ CommandlineKeyHandler.definition = {
   },
 
   "[cmap('<C-h>', '<BS>'), _('delete backward char.'), enabled]":
-  function key_backspace(info) 
+  function key_backspace(info)
   {
     var textbox, value, start, end;
 
@@ -463,14 +463,14 @@ CommandlineKeyHandler.definition = {
       if (0 === start) {
         return true;
       }
-      textbox.value 
+      textbox.value
         = value.substr(0, start - 1)
         + value.substr(start)
       textbox.selectionStart = start - 1;
       textbox.selectionEnd = start - 1;
     } else {
-      textbox.value 
-        = value.substr(0, start) 
+      textbox.value
+        = value.substr(0, start)
         + value.substr(end);
       textbox.selectionStart = start;
       textbox.selectionEnd = start;
@@ -480,9 +480,9 @@ CommandlineKeyHandler.definition = {
 
     return true;
   },
- 
+
   "[cmap('<Home>', '<C-a>'), _('move cursor to head of line.'), enabled]":
-  function key_first(info) 
+  function key_first(info)
   {
     var textbox = info.textbox;
 
@@ -492,7 +492,7 @@ CommandlineKeyHandler.definition = {
   },
 
   "[cmap('<End>', '<C-e>'), _('move cursor to end of line.'), enabled]":
-  function key_end(info) 
+  function key_end(info)
   {
     var textbox = info.textbox,
         length = textbox.value.length;
@@ -504,35 +504,35 @@ CommandlineKeyHandler.definition = {
   },
 
   "[cmap('<C-j>', '<CR>'), _('submit commandlne text.'), enabled]":
-  function key_enter(info) 
+  function key_enter(info)
   {
     this.sendMessage("command/select-current-candidate", info);
     return true;
   },
 
   "[cmap('<C-p>', '<Up>', '<S-Tab>'), _('select previous candidate.'), enabled]":
-  function key_prev(info) 
+  function key_prev(info)
   {
     this.sendMessage("command/select-previous-candidate", info);
     return true;
   },
 
   "[cmap('<C-n>', '<Down>', '<Tab>'), _('select next candidate.'), enabled]":
-  function key_next(info) 
+  function key_next(info)
   {
     this.sendMessage("command/select-next-candidate", info);
     return true;
   },
 
   "[cmap('<C-S-p>'), _('select previous history.'), enabled]":
-  function key_history_prev(info) 
+  function key_history_prev(info)
   {
     this.sendMessage("command/select-previous-history", info);
     return true;
   },
 
   "[cmap('<C-S-n>'), _('select next history.'), enabled]":
-  function key_history_next(info) 
+  function key_history_next(info)
   {
     this.sendMessage("command/select-next-history", info);
     this._mark = -1;
@@ -540,14 +540,14 @@ CommandlineKeyHandler.definition = {
   },
 
   "[cmap('<C-w>'), _('delete backward word.'), enabled]":
-  function key_deleteword(info) 
+  function key_deleteword(info)
   {
     var textbox = info.textbox,
         value = textbox.value,
         position = textbox.selectionEnd;
 
     textbox.value
-      = value.substr(0, position).replace(/\w+$|\W+$/, "") 
+      = value.substr(0, position).replace(/\w+$|\W+$/, "")
       + value.substr(position);
     this._mark = -1;
 
@@ -556,7 +556,7 @@ CommandlineKeyHandler.definition = {
   },
 
   "[cmap('<C-Space>', '<C-@>', '<C-2>'), _('set mark.'), enabled]":
-  function set_mark(info) 
+  function set_mark(info)
   {
     var textbox = info.textbox,
         value = textbox.value,
@@ -610,7 +610,7 @@ NMapCommands.definition = {
       success: true,
       message: coUtils.Text.format(
         _("Map was defined: '%s' -> '%s' (with re-mapping)."),
-        source_mapping, 
+        source_mapping,
         destination_mapping),
     };
   },
@@ -644,8 +644,8 @@ NMapCommands.definition = {
     return {
       success: true,
       message: coUtils.Text.format(
-        _("Map was defined: '%s' -> '%s' (without re-mapping)."), 
-        source_mapping, 
+        _("Map was defined: '%s' -> '%s' (without re-mapping)."),
+        source_mapping,
         destination_mapping),
     };
   },
@@ -699,7 +699,7 @@ CMapCommands.definition = {
     }
 
     [, source_mapping, destination_mapping] = match;
-    
+
     mapping_info = {
       source: source_mapping,
       destination: destination_mapping,
@@ -709,7 +709,7 @@ CMapCommands.definition = {
       success: true,
       message: coUtils.Text.format(
         _("Map was defined: '%s' -> '%s' (with re-mapping)."),
-        source_mapping, 
+        source_mapping,
         destination_mapping),
     };
   },
@@ -743,8 +743,8 @@ CMapCommands.definition = {
     return {
       success: true,
       message: coUtils.Text.format(
-        _("Map was defined: '%s' -> '%s' (without re-mapping)."), 
-        source_mapping, 
+        _("Map was defined: '%s' -> '%s' (without re-mapping)."),
+        source_mapping,
         destination_mapping),
     };
   },

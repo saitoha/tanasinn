@@ -26,7 +26,7 @@
 
 function make_managed_handler(self, handler, topic)
 {
-  var wrapped_handler = function() 
+  var wrapped_handler = function()
   {
     return handler.apply(self, arguments);
   };
@@ -52,8 +52,8 @@ function apply_attribute(self, broker, key, completer_name, attribute)
 
   old_onchange = wrapped_handler.onChange;
 
-  wrapped_handler.onChange = 
-    function(name, oldval, newval) 
+  wrapped_handler.onChange =
+    function(name, oldval, newval)
     {
       if (old_onchange) {
         old_onchange.apply(wrapped_handler, arguments);
@@ -86,10 +86,10 @@ function apply_attribute(self, broker, key, completer_name, attribute)
 var CompleterAttribute = new Attribute("completer");
 CompleterAttribute.definition = {
 
-  /** constructor 
+  /** constructor
    *  @param {EventBroker} broker Parent broker object.
    */
-  initialize: function initialize(broker) 
+  initialize: function initialize(broker)
   {
     var attributes = this.__attributes,
         key,
@@ -117,7 +117,7 @@ CompleterAttribute.definition = {
  * @brief Module entry point
  * @param {Class} target_class The Class object.
  */
-function main(target_class) 
+function main(target_class)
 {
   target_class.mix(CompleterAttribute);
 }

@@ -26,14 +26,14 @@
 
 /**
  * - cmap overview
- *   "cmap" attribute defines default keybind replacement settings in command 
+ *   "cmap" attribute defines default keybind replacement settings in command
  *   line field. this settings are deald as "persistable".
  *
  */
 
 function make_managed_handler(self, handler, topic)
 {
-  function wrapped_handler() 
+  function wrapped_handler()
   {
     return handler.apply(self, arguments);
   };
@@ -61,7 +61,7 @@ function apply_attribute(self, broker, key, expressions, attribute)
 
   // Register load handler.
   broker.subscribe(
-    "command/load-persistable-data", 
+    "command/load-persistable-data",
     function load(context) // Restores settings from context object.
     {
       var expressions;
@@ -79,7 +79,7 @@ function apply_attribute(self, broker, key, expressions, attribute)
 
   // Register persist handler.
   broker.subscribe(
-    "command/save-persistable-data", 
+    "command/save-persistable-data",
     function persist(context) // Save settings to persistent context.
     {
       if (expressions.join("") !== wrapped_handler.expressions.join("")) {
@@ -97,10 +97,10 @@ function apply_attribute(self, broker, key, expressions, attribute)
 var CmapAttribute = new Attribute("cmap");
 CmapAttribute.definition = {
 
-  /** constructor 
+  /** constructor
    *  @param {EventBroker} broker Parent broker object.
    */
-  initialize: function initialize(broker) 
+  initialize: function initialize(broker)
   {
     var attributes, key, attribute, expressions;
 

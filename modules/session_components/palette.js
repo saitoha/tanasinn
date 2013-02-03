@@ -42,65 +42,65 @@ var CO_XTERM_256_COLOR_PROFILE = [
   /* 13      */ "#ff00ff", // blight magenta
   /* 14      */ "#00ffff", // blight cyan
   /* 15      */ "#ffffff", // blight white
-  /* 16 -19  */ "#000000", "#00005f", "#000087", "#0000af", 
+  /* 16 -19  */ "#000000", "#00005f", "#000087", "#0000af",
   /* 20 -23  */ "#0000d7", "#0000ff", "#005f00", "#005f5f",
-  /* 24 -27  */ "#005f87", "#005faf", "#005fd7", "#005fff", 
+  /* 24 -27  */ "#005f87", "#005faf", "#005fd7", "#005fff",
   /* 28 -31  */ "#008700", "#00875f", "#008787", "#0087af",
-  /* 32 -35  */ "#0087d7", "#0087ff", "#00af00", "#00af5f", 
+  /* 32 -35  */ "#0087d7", "#0087ff", "#00af00", "#00af5f",
   /* 36 -39  */ "#00af87", "#00afaf", "#00afd7", "#00afff",
-  /* 40 -43  */ "#00d700", "#00d75f", "#00d787", "#00d7af", 
+  /* 40 -43  */ "#00d700", "#00d75f", "#00d787", "#00d7af",
   /* 44 -47  */ "#00d7d7", "#00d7ff", "#00ff00", "#00ff5f",
-  /* 48 -51  */ "#00ff87", "#00ffaf", "#00ffd7", "#00ffff", 
+  /* 48 -51  */ "#00ff87", "#00ffaf", "#00ffd7", "#00ffff",
   /* 52 -55  */ "#5f0000", "#5f005f", "#5f0087", "#5f00af",
-  /* 56 -59  */ "#5f00d7", "#5f00ff", "#5f5f00", "#5f5f5f", 
+  /* 56 -59  */ "#5f00d7", "#5f00ff", "#5f5f00", "#5f5f5f",
   /* 60 -63  */ "#5f5f87", "#5f5faf", "#5f5fd7", "#5f5fff",
-  /* 64 -67  */ "#5f8700", "#5f875f", "#5f8787", "#5f87af", 
+  /* 64 -67  */ "#5f8700", "#5f875f", "#5f8787", "#5f87af",
   /* 68 -71  */ "#5f87d7", "#5f87ff", "#5faf00", "#5faf5f",
-  /* 72 -75  */ "#5faf87", "#5fafaf", "#5fafd7", "#5fafff", 
+  /* 72 -75  */ "#5faf87", "#5fafaf", "#5fafd7", "#5fafff",
   /* 76 -79  */ "#5fd700", "#5fd75f", "#5fd787", "#5fd7af",
-  /* 80 -83  */ "#5fd7d7", "#5fd7ff", "#5fff00", "#5fff5f", 
+  /* 80 -83  */ "#5fd7d7", "#5fd7ff", "#5fff00", "#5fff5f",
   /* 84 -87  */ "#5fff87", "#5fffaf", "#5fffd7", "#5fffff",
-  /* 88 -91  */ "#870000", "#87005f", "#870087", "#8700af", 
+  /* 88 -91  */ "#870000", "#87005f", "#870087", "#8700af",
   /* 92 -95  */ "#8700d7", "#8700ff", "#875f00", "#875f5f",
-  /* 96 -99  */ "#875f87", "#875faf", "#875fd7", "#875fff", 
+  /* 96 -99  */ "#875f87", "#875faf", "#875fd7", "#875fff",
   /* 100-103 */ "#878700", "#87875f", "#878787", "#8787af",
-  /* 104-107 */ "#8787d7", "#8787ff", "#87af00", "#87af5f", 
+  /* 104-107 */ "#8787d7", "#8787ff", "#87af00", "#87af5f",
   /* 108-111 */ "#87af87", "#87afaf", "#87afd7", "#87afff",
-  /* 112-115 */ "#87d700", "#87d75f", "#87d787", "#87d7af", 
+  /* 112-115 */ "#87d700", "#87d75f", "#87d787", "#87d7af",
   /* 116-119 */ "#87d7d7", "#87d7ff", "#87ff00", "#87ff5f",
-  /* 120-123 */ "#87ff87", "#87ffaf", "#87ffd7", "#87ffff", 
+  /* 120-123 */ "#87ff87", "#87ffaf", "#87ffd7", "#87ffff",
   /* 124-127 */ "#af0000", "#af005f", "#af0087", "#af00af",
-  /* 128-131 */ "#af00d7", "#af00ff", "#af5f00", "#af5f5f", 
+  /* 128-131 */ "#af00d7", "#af00ff", "#af5f00", "#af5f5f",
   /* 132-135 */ "#af5f87", "#af5faf", "#af5fd7", "#af5fff",
-  /* 136-139 */ "#af8700", "#af875f", "#af8787", "#af87af", 
+  /* 136-139 */ "#af8700", "#af875f", "#af8787", "#af87af",
   /* 140-143 */ "#af87d7", "#af87ff", "#afaf00", "#afaf5f",
   /* 144-147 */ "#afaf87", "#afafaf", "#afafd7", "#afafff",
   /* 148-151 */ "#afd700", "#afd75f", "#afd787", "#afd7af",
-  /* 152-155 */ "#afd7d7", "#afd7ff", "#afff00", "#afff5f", 
+  /* 152-155 */ "#afd7d7", "#afd7ff", "#afff00", "#afff5f",
   /* 156-159 */ "#afff87", "#afffaf", "#afffd7", "#afffff",
-  /* 160-163 */ "#d70000", "#d7005f", "#d70087", "#d700af", 
+  /* 160-163 */ "#d70000", "#d7005f", "#d70087", "#d700af",
   /* 164-167 */ "#d700d7", "#d700ff", "#d75f00", "#d75f5f",
-  /* 168-171 */ "#d75f87", "#d75faf", "#d75fd7", "#d75fff", 
+  /* 168-171 */ "#d75f87", "#d75faf", "#d75fd7", "#d75fff",
   /* 172-175 */ "#d78700", "#d7875f", "#d78787", "#d787af",
-  /* 176-179 */ "#d787d7", "#d787ff", "#d7af00", "#d7af5f", 
+  /* 176-179 */ "#d787d7", "#d787ff", "#d7af00", "#d7af5f",
   /* 180-183 */ "#d7af87", "#d7afaf", "#d7afd7", "#d7afff",
-  /* 184-187 */ "#d7d700", "#d7d75f", "#d7d787", "#d7d7af", 
+  /* 184-187 */ "#d7d700", "#d7d75f", "#d7d787", "#d7d7af",
   /* 188-191 */ "#d7d7d7", "#d7d7ff", "#d7ff00", "#d7ff5f",
-  /* 192-195 */ "#d7ff87", "#d7ffaf", "#d7ffd7", "#d7ffff", 
+  /* 192-195 */ "#d7ff87", "#d7ffaf", "#d7ffd7", "#d7ffff",
   /* 196-199 */ "#ff0000", "#ff005f", "#ff0087", "#ff00af",
-  /* 200-203 */ "#ff00d7", "#ff00ff", "#ff5f00", "#ff5f5f", 
+  /* 200-203 */ "#ff00d7", "#ff00ff", "#ff5f00", "#ff5f5f",
   /* 204-207 */ "#ff5f87", "#ff5faf", "#ff5fd7", "#ff5fff",
-  /* 208-211 */ "#ff8700", "#ff875f", "#ff8787", "#ff87af", 
+  /* 208-211 */ "#ff8700", "#ff875f", "#ff8787", "#ff87af",
   /* 212-215 */ "#ff87d7", "#ff87ff", "#ffaf00", "#ffaf5f",
-  /* 216-219 */ "#ffaf87", "#ffafaf", "#ffafd7", "#ffafff", 
+  /* 216-219 */ "#ffaf87", "#ffafaf", "#ffafd7", "#ffafff",
   /* 220-223 */ "#ffd700", "#ffd75f", "#ffd787", "#ffd7af",
-  /* 224-227 */ "#ffd7d7", "#ffd7ff", "#ffff00", "#ffff5f", 
+  /* 224-227 */ "#ffd7d7", "#ffd7ff", "#ffff00", "#ffff5f",
   /* 228-231 */ "#ffff87", "#ffffaf", "#ffffd7", "#ffffff",
-  /* 232-235 */ "#080808", "#121212", "#1c1c1c", "#262626", 
+  /* 232-235 */ "#080808", "#121212", "#1c1c1c", "#262626",
   /* 236-239 */ "#303030", "#3a3a3a", "#444444", "#4e4e4e",
-  /* 240-243 */ "#585858", "#626262", "#6c6c6c", "#767676", 
+  /* 240-243 */ "#585858", "#626262", "#6c6c6c", "#767676",
   /* 244-247 */ "#808080", "#8a8a8a", "#949494", "#9e9e9e",
-  /* 248-251 */ "#a8a8a8", "#b2b2b2", "#bcbcbc", "#c6c6c6", 
+  /* 248-251 */ "#a8a8a8", "#b2b2b2", "#bcbcbc", "#c6c6c6",
   /* 252-255 */ "#d0d0d0", "#dadada", "#e4e4e4", "#eeeeee"
 ]; // CO_XTERM_256_COLOR_PROFILE
 
@@ -110,7 +110,7 @@ var CO_XTERM_256_COLOR_PROFILE = [
 var PaletteManager = new Class().extends(Plugin)
                                 .depends("outerchrome");
 PaletteManager.definition = {
-  
+
   id: "palette",
 
   getInfo: function getInfo()
@@ -124,9 +124,9 @@ PaletteManager.definition = {
 
   "[persistable] enabled_when_startup": true,
   // color map (index No. is spacified by SGR escape sequences)
-  
+
   /** color map for Normal characters. */
-  "[watchable, persistable] color": CO_XTERM_256_COLOR_PROFILE.slice(0),       
+  "[watchable, persistable] color": CO_XTERM_256_COLOR_PROFILE.slice(0),
   "[persistable] enable_adjustment": true,
 
   foreground_color: null,
@@ -137,11 +137,11 @@ PaletteManager.definition = {
   _reverse: false,
   _outerchrome: null,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
     var outerchrome = context["outerchrome"];
 
@@ -156,7 +156,7 @@ PaletteManager.definition = {
   /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
     this._outerchrome = null;
 
@@ -165,7 +165,7 @@ PaletteManager.definition = {
     this.adjusted_fgcolor = null;
   },
 
-  adjust_colors: function adjust_colors() 
+  adjust_colors: function adjust_colors()
   {
     var i,
         base_color = this.background_color;
@@ -205,8 +205,8 @@ PaletteManager.definition = {
 
   },
 
-  "[subscribe('sequence/osc/4'), enabled]": 
-  function osc4(value) 
+  "[subscribe('sequence/osc/4'), enabled]":
+  function osc4(value)
   {
     var message,
         color,
@@ -256,8 +256,8 @@ PaletteManager.definition = {
    * Set foreground color (xterm)
    *
    */
-  "[subscribe('sequence/osc/10'), pnp]": 
-  function osc10(value) 
+  "[subscribe('sequence/osc/10'), pnp]":
+  function osc10(value)
   {
     var outerchrome = this._outerchrome,
         color,
@@ -270,7 +270,7 @@ PaletteManager.definition = {
             + "/" + color.substr(5, 2) + "00"
       message = "10;" + color;
       this.sendMessage("command/send-sequence/osc", message);
-    } else { 
+    } else {
       color = coUtils.Color.parseX11ColorSpec(value);
       outerchrome.foreground_color = color;
       this.foreground_color = color;
@@ -286,8 +286,8 @@ PaletteManager.definition = {
 
     this.sendMessage("command/load-persistable-data", scope);
 
-    outerchrome.foreground_color 
-      = scope["outerchrome.foreground_color"] 
+    outerchrome.foreground_color
+      = scope["outerchrome.foreground_color"]
       || outerchrome.__proto__.foreground_color;
   },
 
@@ -295,8 +295,8 @@ PaletteManager.definition = {
    * Set background color (xterm)
    *
    */
-  "[subscribe('sequence/osc/11'), pnp]": 
-  function osc11(value) 
+  "[subscribe('sequence/osc/11'), pnp]":
+  function osc11(value)
   {
     var outerchrome = this._outerchrome,
         color,
@@ -326,13 +326,13 @@ PaletteManager.definition = {
 
     this.sendMessage("command/load-persistable-data", scope);
 
-    outerchrome.background_color 
-      = scope["outerchrome.background_color"] 
+    outerchrome.background_color
+      = scope["outerchrome.background_color"]
       || outerchrome.__proto__.background_color;
   },
 
-  "[subscribe('command/reverse-video'), enabled]": 
-  function reverseVideo(value) 
+  "[subscribe('command/reverse-video'), enabled]":
+  function reverseVideo(value)
   {
     var map,
         i,
@@ -360,12 +360,12 @@ PaletteManager.definition = {
   /**
    * Serialize snd persist current state.
    */
-  "[subscribe('@command/backup'), type('Object -> Undefined'), pnp]": 
-  function backup(context) 
+  "[subscribe('@command/backup'), type('Object -> Undefined'), pnp]":
+  function backup(context)
   {
     var path,
         file;
-    
+
     // serialize this plugin object.
     context[this.id] = {
       reverse: this._reverse,
@@ -376,8 +376,8 @@ PaletteManager.definition = {
   /**
    * Deserialize snd restore stored state.
    */
-  "[subscribe('@command/restore'), type('Object -> Undefined'), pnp]": 
-  function restore(context) 
+  "[subscribe('@command/restore'), type('Object -> Undefined'), pnp]":
+  function restore(context)
   {
     var data = context[this.id];
 
@@ -395,8 +395,8 @@ PaletteManager.definition = {
   {
     var fore_color;
 
-    // Get hexadecimal formatted text color (#xxxxxx) 
-    // form given attribute structure. 
+    // Get hexadecimal formatted text color (#xxxxxx)
+    // form given attribute structure.
     if (1 === attr.fgcolor) {
       if (1 === attr.bgcolor) {
         if (1 === attr.inverse) {
@@ -427,7 +427,7 @@ PaletteManager.definition = {
   {
     var back_color;
 
-    /* Get hexadecimal formatted background color (#xxxxxx) 
+    /* Get hexadecimal formatted background color (#xxxxxx)
      * form given attribute structure. */
     if (1 === attr.bgcolor) {
       if (1 === attr.inverse) {
@@ -493,7 +493,7 @@ PaletteManager.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new PaletteManager(broker);
 }

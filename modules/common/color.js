@@ -851,12 +851,12 @@ function generateReverseMap(source_map)
       key,
       value;
 
-  for (; i < keys.length; ++i) { 
+  for (; i < keys.length; ++i) {
     key = keys[i];
     value = source_map[key];
     result[value] = key;
     source_map[key.toLowerCase()] = value;
-  } 
+  }
   return result;
 };
 
@@ -878,41 +878,41 @@ coUtils.Color = {
         g,
         b,
         name;
-  
+
     if (null === match) {
       throw coUtils.Debug.Exception(
         _("Invalid spec string: %s."), spec);
     }
-  
+
     rgb = match[1];
     r = match[2];
     g = match[3];
     b = match[4];
     name = match[5];
-  
+
     if (rgb) {
-      result = this._convertRGBSpec1(rgb); 
+      result = this._convertRGBSpec1(rgb);
     } else if (r) {
-      result = this._convertRGBSpec2(r, g, b);       
+      result = this._convertRGBSpec2(r, g, b);
     } else {
-      result = this._convertColorName(name); 
-    } 
+      result = this._convertColorName(name);
+    }
 
     return result;
 
-  }, // parseX11ColorSpec 
- 
+  }, // parseX11ColorSpec
+
   _convertRGBSpec1: function _parseRGBSpec(rgb)
   {
     var result;
-    
+
     switch (rgb.length) {
-  
+
       case 3:
         result = "#" + rgb
           .split("")
           .map(
-            function(c) 
+            function(c)
             {
               return 0x100 + (parseInt(c, 16) << 4);
             })
@@ -924,11 +924,11 @@ coUtils.Color = {
           .join("")
           ;
         break;
-  
+
       case 6:
         result = "#" + rgb;
         break;
-  
+
       case 9:
         result = "#" + rgb
           .match(/.../g)
@@ -945,7 +945,7 @@ coUtils.Color = {
           .join("")
           ;
         break;
-  
+
       case 12:
         result = "#" + rgb
           .match(/..../g)
@@ -962,11 +962,11 @@ coUtils.Color = {
           .join("")
           ;
         break;
-  
+
       default:
         throw coUtils.Debug.Exception(
           _("Invalid rgb format was specified: %s."), rgb);
-  
+
     }
 
     return result;
@@ -977,34 +977,34 @@ coUtils.Color = {
     var buffer = "#",
         n,
         i = 0;
-  
+
     for (; i < arguments.length; ++i) {
 
       n = arguments[i]; // r / g / b
-  
+
       switch (n.length) {
-  
+
         case 1:
           n = parseInt(n, 16) << 4;
           break;
-  
+
         case 2:
           n = parseInt(n, 16);
           break;
-  
+
         case 3:
           n = parseInt(n, 16) >>> 4;
           break;
-  
+
         case 4:
           n = parseInt(n, 16) >>> 8;
           break;
-  
+
         default:
           throw coUtils.Debug.Exception(
             _("Invalid rgb format was specified: %s."), spec);
       }
-  
+
       buffer += (0x100 + n)
         .toString(16)
         .substr(1)
@@ -1014,7 +1014,7 @@ coUtils.Color = {
 
   }, // _convertRGBSpec2
 
-  _convertColorName: function _convertColorName(name) 
+  _convertColorName: function _convertColorName(name)
   {
     var canonical_name = name
           .replace(/\s+/g, "")
@@ -1033,9 +1033,9 @@ coUtils.Color = {
   _getDiff: function _getDiff(lhs, rhs)
   {
      var diff = (Math.abs(lhs[0] - rhs[0]) * 299
-               + Math.abs(lhs[1] - rhs[1]) * 587 
+               + Math.abs(lhs[1] - rhs[1]) * 587
                + Math.abs(lhs[2] - rhs[2]) * 114) / 1000.0;
-  
+
      return diff;
   },
 
@@ -1060,7 +1060,7 @@ coUtils.Color = {
           e += delta;
           e = Math.round(e);
           if (e > 0xff) {
-            e = 0xff; 
+            e = 0xff;
           }
           if (e < 0) {
             e = 0;
@@ -1070,7 +1070,7 @@ coUtils.Color = {
         diff = this._getDiff(target, base);
       }
     }
-  
+
     return diff;
   },
 
@@ -1088,7 +1088,7 @@ coUtils.Color = {
           e = e + (base[i] - e) * 0.1;
           e = Math.round(e);
           if (e > 0xff) {
-            e = 0xff; 
+            e = 0xff;
           }
           if (e < 0) {
             e = 0;
@@ -1101,7 +1101,7 @@ coUtils.Color = {
 
     return diff;
   },
-  
+
   parseCSSColor: function parseCSSColor(text)
   {
     var pattern_24bit = /#([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})/,
@@ -1137,7 +1137,7 @@ coUtils.Color = {
         rhs_rgb = this.parseCSSColor(rhs),
         diff = this._getDiff(lhs_rgb, rhs_rgb),
         result;
-  
+
     diff = this._adjustToMinDiff(lhs_rgb, rhs_rgb, diff, mindiff);
     diff = this._adjustToMaxDiff(lhs_rgb, rhs_rgb, diff, maxdiff);
     result = "#" + (0x1000000 + (lhs_rgb[0] << 16 | lhs_rgb[1] << 8 | lhs_rgb[2]))

@@ -31,7 +31,7 @@ var Suitable = new Trait();
 Suitable.definition = {
 
   "[subscribe('event/screen-width-changed'), pnp]":
-  function onWidthChanged(width) 
+  function onWidthChanged(width)
   {
     var canvas;
 
@@ -39,8 +39,8 @@ Suitable.definition = {
     canvas.width = width;
   },
 
-  "[subscribe('event/screen-height-changed'), pnp]": 
-  function onHeightChanged(height) 
+  "[subscribe('event/screen-height-changed'), pnp]":
+  function onHeightChanged(height)
   {
     var canvas = this._canvas;
 
@@ -59,7 +59,7 @@ DragSelect.definition = {
 
   /** Dragstart handler. It starts a session of dragging selection. */
   "[listen('dragstart', '#tanasinn_content'), pnp]":
-  function ondragstart(event) 
+  function ondragstart(event)
   {
     var screen = this._screen,
         initial_position,
@@ -109,7 +109,7 @@ DragSelect.definition = {
 
   /** Dragmove handler */
   "[listen('mousemove')]":
-  function ondragmove(event) 
+  function ondragmove(event)
   {
     var initial_position = this._initial_position,
         current_position = this._convertPixelToPosition(event),
@@ -131,7 +131,7 @@ DragSelect.definition = {
 
   /** Dragend handler */
   "[listen('mouseup')]":
-  function ondragend(event) 
+  function ondragend(event)
   {
     var initial_position = this._initial_position,
         current_position,
@@ -209,10 +209,10 @@ Selection.definition = {
   _screen: null,
   _renderer: null,
 
-  "[subscribe('event/mouse-tracking-mode-changed'), enabled]": 
-  function onMouseTrackingModeChanged(data) 
+  "[subscribe('event/mouse-tracking-mode-changed'), enabled]":
+  function onMouseTrackingModeChanged(data)
   {
-    if (coUtils.Constant.TRACKING_NONE === data 
+    if (coUtils.Constant.TRACKING_NONE === data
      || coUtils.Constant.TRACKING_HIGHLIGHT === data) {
       this.ondblclick.enabled = true;
     } else {
@@ -228,8 +228,8 @@ Selection.definition = {
     }
   },
 
-  "[subscribe('command/change-locator-reporting-mode'), enabled]": 
-  function onChangeLocatorReportingMode(mode) 
+  "[subscribe('command/change-locator-reporting-mode'), enabled]":
+  function onChangeLocatorReportingMode(mode)
   {
     if (null === mode) {
       this.ondragstart.enabled = true;
@@ -243,35 +243,35 @@ Selection.definition = {
     }
   },
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
     var result;
-    
+
     this._renderer = context["renderer"];
     this._screen = context["screen"];
     this._palette = context["palette"];
     this._textbox = context["inputmanager"].getInputField(),
     //coUtils.Color.adjust(
     result = this.request(
-      "command/construct-chrome", 
+      "command/construct-chrome",
       {
         parentNode: "#tanasinn_center_area",
         tagName: "html:canvas",
         id: "selection_canvas",
       });
-    
+
     this._canvas = result.selection_canvas;
     this._context = result.selection_canvas.getContext("2d");
   },
 
-  /** Uninstalls itself 
+  /** Uninstalls itself
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
     if (null !== this._canvas) {
       this._canvas.parentNode.removeChild(this._canvas);
@@ -285,7 +285,7 @@ Selection.definition = {
   },
 
   "[subscribe('@command/focus'), pnp]":
-  function onFirstFocus() 
+  function onFirstFocus()
   {
     var canvas = this._canvas;
 
@@ -295,7 +295,7 @@ Selection.definition = {
 
   /** Doubleclick handler. It selects word under the mouse pointer. */
   "[listen('dblclick', '#tanasinn_content'), pnp]":
-  function ondblclick(event) 
+  function ondblclick(event)
   {
     var pos = this.convertPixelToScreen(event),
         column = pos[0],
@@ -305,34 +305,34 @@ Selection.definition = {
 
     this._setClearAction();
   },
-  
+
   /**
    *
-   * Mouse highlight tracking notifies a program of a button press, receives 
-   * a range of lines from the program, highlights the region covered by the 
-   * mouse within that range until button release, and then sends the program 
+   * Mouse highlight tracking notifies a program of a button press, receives
+   * a range of lines from the program, highlights the region covered by the
+   * mouse within that range until button release, and then sends the program
    * the release coordinates. It is enabled by specifying parameter 1001 to
-   * DECSET. Highlighting is performed only for button 1, though other button 
-   * events can be received. Warning: use of this mode requires a cooperating 
-   * program or it will hang xterm. On button press, the same information as 
-   * for normal tracking is generated; xterm then waits for the program to 
-   * send mouse tracking information. All X events are ignored until the 
-   * proper escape sequence is received from the pty: 
+   * DECSET. Highlighting is performed only for button 1, though other button
+   * events can be received. Warning: use of this mode requires a cooperating
+   * program or it will hang xterm. On button press, the same information as
+   * for normal tracking is generated; xterm then waits for the program to
+   * send mouse tracking information. All X events are ignored until the
+   * proper escape sequence is received from the pty:
    *
-   * CSI P s ; P s ; P s ; P s ; P s T . 
+   * CSI P s ; P s ; P s ; P s ; P s T .
    *
-   * The parameters are func, startx, starty, firstrow, and lastrow. 
-   * func is non-zero to initiate highlight tracking and zero to abort. 
-   * startx and starty give the starting x and y location for the highlighted 
+   * The parameters are func, startx, starty, firstrow, and lastrow.
+   * func is non-zero to initiate highlight tracking and zero to abort.
+   * startx and starty give the starting x and y location for the highlighted
    * region. The ending location tracks the mouse, but will never be above row
-   * firstrow and will always be above row lastrow. (The top of the screen is 
-   * row 1.) When the button is released, xterm reports the ending position 
-   * one of two ways: if the start and end coordinates are valid text 
-   * locations: CSI t C x C y . If either coordinate is past the end of the 
-   * line: CSI T C x C y C x C y C x C y . The parameters are startx, starty, 
-   * endx, endy, mousex, and mousey. startx, starty, endx, and endy give the 
-   * starting and ending character positions of the region. mousex and mousey 
-   * give the location of the mouse at button up, which may not be over a 
+   * firstrow and will always be above row lastrow. (The top of the screen is
+   * row 1.) When the button is released, xterm reports the ending position
+   * one of two ways: if the start and end coordinates are valid text
+   * locations: CSI t C x C y . If either coordinate is past the end of the
+   * line: CSI T C x C y C x C y C x C y . The parameters are startx, starty,
+   * endx, endy, mousex, and mousey. startx, starty, endx, and endy give the
+   * starting and ending character positions of the region. mousex and mousey
+   * give the location of the mouse at button up, which may not be over a
    * character.
    *
    */
@@ -387,22 +387,22 @@ Selection.definition = {
     this._context.fillStyle = this._color;
 
     this.sendMessage(
-      "command/add-domlistener", 
+      "command/add-domlistener",
       {
-        target: this._canvas.ownerDocument, 
-        type: "dragstart", 
+        target: this._canvas.ownerDocument,
+        type: "dragstart",
         id: "_DRAGGING",
         context: this,
-        handler: function selection_dragstart(event) 
+        handler: function selection_dragstart(event)
         {
           this.sendMessage(
-            "command/add-domlistener", 
+            "command/add-domlistener",
             {
-              target: this._canvas.ownerDocument, 
-              type: "mousemove", 
+              target: this._canvas.ownerDocument,
+              type: "mousemove",
               id: "_DRAGGING",
               context: this,
-              handler: function selection_mousemove(event) 
+              handler: function selection_mousemove(event)
               {
                 var coordinate = this.convertPixelToScreen(event),
                     x = coordinate[0],
@@ -424,9 +424,9 @@ Selection.definition = {
                 if ("\x00" === text) {
                   --current_position;
                 }
-                
+
                 start_position = Math.min(initial_position, current_position);
-                end_position = Math.max(initial_position, current_position) 
+                end_position = Math.max(initial_position, current_position)
 
                 start_position = Math.max(0, start_position);
                 end_position = Math.min(row * column, end_position);
@@ -437,15 +437,15 @@ Selection.definition = {
             });
 
           this.sendMessage(
-            "command/add-domlistener", 
+            "command/add-domlistener",
             {
               target: this._canvas.ownerDocument,
-              type: "mouseup", 
+              type: "mouseup",
               id: "_DRAGGING",
               context: this,
-              handler: function selection_mouseup(event) 
+              handler: function selection_mouseup(event)
               {
-                this.sendMessage("command/remove-domlistener", "_DRAGGING"); 
+                this.sendMessage("command/remove-domlistener", "_DRAGGING");
                 if (this._range) {
                   this._setClearAction();
                   this._reportRange();
@@ -455,12 +455,12 @@ Selection.definition = {
           }
         });
   },
- 
-  /** This method called after selection range settled. It registers 3 DOM 
-   *  listeners which wait for mouseup / dragstart / DOMMouseScroll event 
+
+  /** This method called after selection range settled. It registers 3 DOM
+   *  listeners which wait for mouseup / dragstart / DOMMouseScroll event
    *  and clears the selection once.
    */
-  _setClearAction: function _setClearAction() 
+  _setClearAction: function _setClearAction()
   {
     coUtils.Timer.setTimeout(
       function()
@@ -471,7 +471,7 @@ Selection.definition = {
   },
 
   "[listen('mouseup', '#tanasinn_content')]":
-  function onClickAfterSelect(event) 
+  function onClickAfterSelect(event)
   {
     if (2 === event.button) { // right click
       return;
@@ -481,7 +481,7 @@ Selection.definition = {
   },
 
   "[listen('DOMMouseScroll', '#tanasinn_content')]":
-  function onScrollAfterSelect(event) 
+  function onScrollAfterSelect(event)
   {
     this.onScrollAfterSelect.enabled = false;
     this.clear();
@@ -492,7 +492,7 @@ Selection.definition = {
    * - Line selection mode.
    *
    *    Selection overlay can be regarded as A - B - C.
-   *    
+   *
    *       region B   first
    *          v         v
    *      +.............+-------------------------+
@@ -509,7 +509,7 @@ Selection.definition = {
    * - Rectangle selection mode.
    *
    */
-  drawSelectionRange: function drawSelectionRange(first, last) 
+  drawSelectionRange: function drawSelectionRange(first, last)
   {
     var text,
         context,
@@ -540,10 +540,10 @@ Selection.definition = {
     this.clear();
 
     // checking precondition
-    if ("number" !== typeof(first) 
+    if ("number" !== typeof(first)
      || "number" !== typeof(last)) {
       throw coUtils.Debug.Exception(
-        _("Ill-typed arguments was given: [%d, %d]"), 
+        _("Ill-typed arguments was given: [%d, %d]"),
         first, last);
     }
 
@@ -578,14 +578,14 @@ Selection.definition = {
       r1 = 4;
       r2 = 4;
       context.beginPath();
-      context.arc(x + r1, y + r1, r2, pi * 1.0 , pi * 1.5, false); 
-      context.lineTo(x - r1 + width, y + r1 - r2); 
-      context.arc(x - r1 + width, y + r1, r2, pi * 1.5 , pi * 0, false); 
-      context.lineTo(x - r1 + width + r2, y - r1 + height); 
-      context.arc(x - r1 + width, y - r1 + height, r2, pi * 0, pi * 0.5, false); 
-      context.lineTo(x + r1, y - r1 + height + r2); 
-      context.arc(x + r1, y - r1 + height, r2, pi * 0.5, pi * 1.0, false); 
-      context.lineTo(x + r1 - r2, y + r1); 
+      context.arc(x + r1, y + r1, r2, pi * 1.0 , pi * 1.5, false);
+      context.lineTo(x - r1 + width, y + r1 - r2);
+      context.arc(x - r1 + width, y + r1, r2, pi * 1.5 , pi * 0, false);
+      context.lineTo(x - r1 + width + r2, y - r1 + height);
+      context.arc(x - r1 + width, y - r1 + height, r2, pi * 0, pi * 0.5, false);
+      context.lineTo(x + r1, y - r1 + height + r2);
+      context.arc(x + r1, y - r1 + height, r2, pi * 0.5, pi * 1.0, false);
+      context.lineTo(x + r1 - r2, y + r1);
     } else {
 
       // draw outer region
@@ -596,7 +596,7 @@ Selection.definition = {
       height = (end_row - start_row) * line_height;
 
       context.beginPath();
- 
+
       text = screen.getRawTextInRange(first, last).replace(/\n/g, "");
       lines = text.split("\r");
 
@@ -610,14 +610,14 @@ Selection.definition = {
         r2 = 4;
         context.shadowBlur = 0;
         context.shadowColor = "white";
-        context.arc(x + r1, y + r1, r2, pi * 1.0 , pi * 1.5, false); 
-        context.lineTo(x - r1 + width, y + r1 - r2); 
-        context.arc(x - r1 + width, y + r1, r2, pi * 1.5 , pi * 0, false); 
-        context.lineTo(x - r1 + width + r2, y - r1 + height); 
-        context.arc(x - r1 + width, y - r1 + height, r2, pi * 0, pi * 0.5, false); 
-        context.lineTo(x + r1, y - r1 + height + r2); 
-        context.arc(x + r1, y - r1 + height, r2, pi * 0.5, pi * 1.0, false); 
-        context.lineTo(x + r1 - r2, y + r1); 
+        context.arc(x + r1, y + r1, r2, pi * 1.0 , pi * 1.5, false);
+        context.lineTo(x - r1 + width, y + r1 - r2);
+        context.arc(x - r1 + width, y + r1, r2, pi * 1.5 , pi * 0, false);
+        context.lineTo(x - r1 + width + r2, y - r1 + height);
+        context.arc(x - r1 + width, y - r1 + height, r2, pi * 0, pi * 0.5, false);
+        context.lineTo(x + r1, y - r1 + height + r2);
+        context.arc(x + r1, y - r1 + height, r2, pi * 0.5, pi * 1.0, false);
+        context.lineTo(x + r1 - r2, y + r1);
       } else {
         r1 = 4;
         r2 = 4;
@@ -625,34 +625,34 @@ Selection.definition = {
         y = start_row * line_height;
         context.shadowBlur = 0;
         context.shadowColor = "white";
-        context.arc(x + r1, y + r1, r2, pi * 1.0 , pi * 1.5, false); 
+        context.arc(x + r1, y + r1, r2, pi * 1.0 , pi * 1.5, false);
         length = start_column + lines[0].length;
         x = length * char_width;
-        //context.lineTo(x - r1, y + r1 - r2); 
-        context.arc(x - r1, y + r1, r2, pi * 1.5 , pi * 0, false); 
+        //context.lineTo(x - r1, y + r1 - r2);
+        context.arc(x - r1, y + r1, r2, pi * 1.5 , pi * 0, false);
         for (i = start_row + 1; i < end_row; ++i) {
           line = lines[i - start_row];
           if (undefined !== line) {
             if (line.length < length) {
-              context.arc(x - r1, i * line_height - r1, r2, pi * 0, pi * 0.5); 
+              context.arc(x - r1, i * line_height - r1, r2, pi * 0, pi * 0.5);
               x = line.length * char_width;
-              context.lineTo(x - r1 + r2, i * line_height); 
+              context.lineTo(x - r1 + r2, i * line_height);
               length = line.length;
             } else if (line.length > length) {
-              context.lineTo(x - r1 + r2, i * line_height); 
+              context.lineTo(x - r1 + r2, i * line_height);
               x = line.length * char_width;
-              context.arc(x - r1, i * line_height + r1, r2, pi * 1.5, pi * 2); 
+              context.arc(x - r1, i * line_height + r1, r2, pi * 1.5, pi * 2);
               length = line.length;
             }
           }
         }
         x = Math.min(line.length, end_column) * char_width;
-        context.arc(x - r1, i * line_height - r1, r2, pi * 0, pi * 0.5, false); 
-        context.arc(0 + r1, i * line_height - r1, r2, pi * 0.5, pi * 1.0, false); 
-        context.arc(0 + r1, (start_row + 1) * line_height + r1, r2, pi * 1.0 , pi * 1.5, false); 
-        context.lineTo(start_column * char_width + r1 - r2, y + line_height); 
-        context.lineTo(start_column * char_width + r1 - r2, y + r1); 
-        context.arc(start_column * char_width + r1, y + r1, r2, pi * 1.0 , pi * 1.5, false); 
+        context.arc(x - r1, i * line_height - r1, r2, pi * 0, pi * 0.5, false);
+        context.arc(0 + r1, i * line_height - r1, r2, pi * 0.5, pi * 1.0, false);
+        context.arc(0 + r1, (start_row + 1) * line_height + r1, r2, pi * 1.0 , pi * 1.5, false);
+        context.lineTo(start_column * char_width + r1 - r2, y + line_height);
+        context.lineTo(start_column * char_width + r1 - r2, y + r1);
+        context.arc(start_column * char_width + r1, y + r1, r2, pi * 1.0 , pi * 1.5, false);
       }
     }
 
@@ -668,7 +668,7 @@ Selection.definition = {
     context = null;
   },
 
-  selectSurroundChars: function selectSurroundChars(column, row) 
+  selectSurroundChars: function selectSurroundChars(column, row)
   {
     var context = this._context,
         screen = this._screen,
@@ -683,8 +683,8 @@ Selection.definition = {
     this._reportRange();
   },
 
-  "[subscribe('command/paint-drag-region'), pnp]": 
-  function paintForeground(context) 
+  "[subscribe('command/paint-drag-region'), pnp]":
+  function paintForeground(context)
   {
     var i;
     for (i = 0; i < 10; ++i) {
@@ -692,8 +692,8 @@ Selection.definition = {
     }
   },
 
-  "[subscribe('get/selection-info'), pnp]": 
-  function getRange() 
+  "[subscribe('get/selection-info'), pnp]":
+  function getRange()
   {
     var start, end;
 
@@ -705,20 +705,20 @@ Selection.definition = {
     end = this._range[1];
 
     return {
-      start: start, 
-      end: end, 
+      start: start,
+      end: end,
       is_rectangle: this._rectangle_selection_flag
     };
   },
 
   "[subscribe('event/before-input')]":
-  function onBeforeInput(message) 
+  function onBeforeInput(message)
   {
     this.onBeforeInput.enabled = false;
     this.clear();
   },
 
-  setRange: function setRange(column, row) 
+  setRange: function setRange(column, row)
   {
     this.onBeforeInput.enabled = true;
     this._range = [column, row];
@@ -734,7 +734,7 @@ Selection.definition = {
   },
 
   /** Clear selection canvas and range information. */
-  clear: function clear() 
+  clear: function clear()
   {
     var context = this._context,
         canvas = this._canvas;
@@ -748,7 +748,7 @@ Selection.definition = {
     }
   },
 
-  _convertPixelToPosition: function convertPixelToScreen(event) 
+  _convertPixelToPosition: function convertPixelToScreen(event)
   {
     var screen = this._screen,
         result = this.convertPixelToScreen(event);
@@ -756,10 +756,10 @@ Selection.definition = {
     return screen.width * result[1] + result[0];
   },
 
-  convertPixelToScreen: function convertPixelToScreen(event) 
+  convertPixelToScreen: function convertPixelToScreen(event)
   {
     var target_element = this.request(
-          "command/query-selector", 
+          "command/query-selector",
           "#tanasinn_center_area"),
         root_element = this.request("get/root-element"),
         box = target_element.boxObject,
@@ -789,7 +789,7 @@ Selection.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new Selection(broker);
 }

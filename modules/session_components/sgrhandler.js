@@ -29,7 +29,7 @@
  *
  * SGR — Select Graphic Rendition
  *
- * This control function selects one or more character attributes at the 
+ * This control function selects one or more character attributes at the
  * same time.
  *
  * Default: Clear all attributes.
@@ -41,12 +41,12 @@
  *
  * Parameters
  *
- * Ps is a number representing a certain visual attribute. 
- * You can use more than one Ps value to select different character 
+ * Ps is a number representing a certain visual attribute.
+ * You can use more than one Ps value to select different character
  * attributes. Table 5–16 lists Ps values and the attributes they select.
  *
  * Default: Ps = 0 (clears all attributes).
- * 
+ *
  * Table: Visual Character Attribute Values Ps Attribute
  *
  * 0   All attributes off
@@ -55,11 +55,11 @@
  * 5   Blinking
  * 7   Negative image
  * 8   Invisible image
- * 10  The ASCII character set is the current 7-bit display character set 
+ * 10  The ASCII character set is the current 7-bit display character set
  *     (default)—SCO Console only.
- * 11  Map Hex 00-7F of the PC character set codes to the current 7-bit 
+ * 11  Map Hex 00-7F of the PC character set codes to the current 7-bit
  *     display character set—SCO Console only.
- * 12  Map Hex 80-FF of the current character set to the current 7-bit 
+ * 12  Map Hex 80-FF of the current character set to the current 7-bit
  *     display character set—SCO Console only.
  * 22  Bold off
  * 24  Underline off
@@ -70,7 +70,7 @@
  * Examples
  *
  * When you select more than one attribute in an SGR sequence, then they are
- * executed in order. For example, you can use the following sequence to 
+ * executed in order. For example, you can use the following sequence to
  * display text that is bold, blinking, and underlined:
  *
  * CSI 0 ; 1 ; 5 ; 4 m
@@ -81,10 +81,10 @@
  *
  * Notes on SGR
  *
- * After you select an attribute, the terminal applies that attribute to all 
- * new characters received. If you move characters by scrolling, then the 
+ * After you select an attribute, the terminal applies that attribute to all
+ * new characters received. If you move characters by scrolling, then the
  * attributes move with the characters.
- * If you display control characters, then the terminal ignores the bold 
+ * If you display control characters, then the terminal ignores the bold
  * attribute for displayed control characters.
  *
  *
@@ -94,7 +94,7 @@
  *                              20-7F: ASCII characters
  *                              80-FF: 8 bit PC characters
  *
- * Executing "CSI 11 m"         00-1F: PC characters, except the following 
+ * Executing "CSI 11 m"         00-1F: PC characters, except the following
  *                                     codes when XON/XOFF is enabled:
  *                                        1B (ESC)
  *                                        11 (DC1)
@@ -103,9 +103,9 @@
  *                              20-7F: ASCII characters (or PC 7 bit character)
  *                              80-FF: 8 bit PC characters
  *
- * Executing "CSI 12 m"         00-1F: PC characters that are located in 
- *                                     80 - 9F in PC character set, except 
- *                                     the following codes when XON/XOFF is 
+ * Executing "CSI 12 m"         00-1F: PC characters that are located in
+ *                                     80 - 9F in PC character set, except
+ *                                     the following codes when XON/XOFF is
  *                                     enabled:
  *                                        9B (ESC)
  *                                        91 (DC1)
@@ -126,32 +126,32 @@
  *                              80-9F: control code
  *                              A0-FF: GR characters
  *
- * Commands "CSI 10-12 m" affect only the Hex 00-7F portion of the display 
- * character set. The hex 80-FF region of the display character set is left 
+ * Commands "CSI 10-12 m" affect only the Hex 00-7F portion of the display
+ * character set. The hex 80-FF region of the display character set is left
  * intact.
  *
- * The ASCII character set with control codes residing in Hex 00 to 1F 
- * region is the default 7-bit display character set. This is true 
- * regardless of the ISO/ANSI or PC character set. When in an ISO/ANSI 
- * character set, issuing "CSI 10 m" is equivalent to "designating and 
+ * The ASCII character set with control codes residing in Hex 00 to 1F
+ * region is the default 7-bit display character set. This is true
+ * regardless of the ISO/ANSI or PC character set. When in an ISO/ANSI
+ * character set, issuing "CSI 10 m" is equivalent to "designating and
  * invoking ASCII to G0 and GL."
  *
- * When "ESC 11 m" is executed, the display character set is loaded with 
- * codes in the Hex 00 to 7F region of a PC character set. PC characters 
- * whose code values are less than 1F can be displayed through this 
- * sequence except 1B (ESC) and 11(DC1), 13(DC3) when XON/XOFF is enabled. 
- * 1B is always executed as an ESC to allow the application to execute the 
- * command to go back to the default character set. Hex 11 and 13 can be 
+ * When "ESC 11 m" is executed, the display character set is loaded with
+ * codes in the Hex 00 to 7F region of a PC character set. PC characters
+ * whose code values are less than 1F can be displayed through this
+ * sequence except 1B (ESC) and 11(DC1), 13(DC3) when XON/XOFF is enabled.
+ * 1B is always executed as an ESC to allow the application to execute the
+ * command to go back to the default character set. Hex 11 and 13 can be
  * displayed only when XON/XOFF is disabled. This command does not work when
  * the ISO/ANSI character set is selected.
  *
- * Command "ESC 12 m" toggles the high bit of the current 8-bit character 
- * set. All the characters in Hex 80-FF region can be displayed as 7-bit 
- * codes except 9B (ESC) and 91(DC1), 93(DC3) when XON/XOFF is enabled. 
- * After the command is executed, 1B is executed as an ESC. Hex 11 and 13 
+ * Command "ESC 12 m" toggles the high bit of the current 8-bit character
+ * set. All the characters in Hex 80-FF region can be displayed as 7-bit
+ * codes except 9B (ESC) and 91(DC1), 93(DC3) when XON/XOFF is enabled.
+ * After the command is executed, 1B is executed as an ESC. Hex 11 and 13
  * can be displayed only when XON/XOFF is disabled.
  *
- * When in an ISO/ANSI character set, issuing "CSI 12 m" is equivalent to 
+ * When in an ISO/ANSI character set, issuing "CSI 12 m" is equivalent to
  * "designating and invoking current 8 bit char set to G2 and GL."
  */
 var SGRHandler = new Class().extends(Plugin)
@@ -175,7 +175,7 @@ SGRHandler.definition = {
   _attr: null, // current cursor attribute
   _palette: null,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
@@ -185,7 +185,7 @@ SGRHandler.definition = {
     this._attr = context["cursorstate"].attr;
   },
 
-  /** Uninstalls itself. 
+  /** Uninstalls itself.
    */
   "[uninstall]":
   function uninstall()
@@ -201,7 +201,7 @@ SGRHandler.definition = {
   },
 
   "[profile('vt100'), sequence('CSI Pm m')]":
-  function SGR(n) 
+  function SGR(n)
   { // character attributes
     var attr = this._attr,
         length = arguments.length,
@@ -278,7 +278,7 @@ SGRHandler.definition = {
           case 23:
             attr.italic = 0;
             break;
-          
+
           case 24:
             attr.underline = 0;
             break;
@@ -374,7 +374,7 @@ SGRHandler.definition = {
           case 44:
             attr.bg = 4;
             break;
-            
+
           case 45:
             attr.bg = 5;
             break;
@@ -486,7 +486,7 @@ SGRHandler.definition = {
               attr.bg = p - 4000;
             } else {
               coUtils.Debug.reportWarning(
-                _("Ignored SGR %s, arguments: [%s]"), 
+                _("Ignored SGR %s, arguments: [%s]"),
                 p, Array.slice(arguments));
             }
         }
@@ -495,7 +495,7 @@ SGRHandler.definition = {
   }, // SGR
 
   "[subscribe('sequence/decrqss/sgr'), pnp]":
-  function onRequestStatus(data) 
+  function onRequestStatus(data)
   {
     var attr = this._attr,
         params = [0],
@@ -573,7 +573,7 @@ SGRHandler.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new SGRHandler(broker);
 }

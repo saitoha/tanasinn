@@ -24,7 +24,7 @@
 
 "use strict";
 
-/** 
+/**
  * @class domEventManager
  * @brief A thin wrapper of Element.addEventListener / Element.removeEventListener.
  *
@@ -42,7 +42,7 @@ DOMEventManager.definition = {
 
   _listener_list_map: null,
 
-  /** A thin wrapper function of Element.addEventListener. 
+  /** A thin wrapper function of Element.addEventListener.
    * @param listener {coIDOMEventListener} A listener object implements following interface.
    *
    * interface coIDOMEventListener {
@@ -52,10 +52,10 @@ DOMEventManager.definition = {
    *
    *   // event type.
    *   property string type;
-   *   
+   *
    *   // ID string for registration.
    *   property string id;
-   *   
+   *
    *   // use capture?
    *   property bool capture;
    *
@@ -63,19 +63,19 @@ DOMEventManager.definition = {
    *   property object context;
    *
    *   // handler function, passed evnet object as an argument.
-   *   property nsIDOMEventListener handler; 
+   *   property nsIDOMEventListener handler;
    *
    * };
    */
   "[subscribe('command/add-domlistener'), enabled]":
-  function add(listener) 
+  function add(listener)
   {
     var dom = {},
         id;
 
     if (!listener.target) {
       this._addImpl(
-          listener, 
+          listener,
           this.request("get/root-element").ownerDocument.defaultView);
     } else if ("string" === typeof listener.target) {
 
@@ -90,15 +90,15 @@ DOMEventManager.definition = {
       } else {
         if ("#" === listener.target.charAt(0)) {
           this._broker.subscribe(
-            "@event/domnode-created/" + id, 
-            function onNodeCreated(target_element) 
+            "@event/domnode-created/" + id,
+            function onNodeCreated(target_element)
             {
               this._addImpl(listener, target_element);
               target_element = null;
             }, this);
         } else {
           throw coUtils.Debug.Exception(
-            _("Target element specified by given id is Not Found: %s."), 
+            _("Target element specified by given id is Not Found: %s."),
             listener.target);
         }
       }
@@ -130,7 +130,7 @@ DOMEventManager.definition = {
 
     if (target && type && handler) { // validate listener object.
       delegate = this.createDelegate(handler, context);
-      target.addEventListener(type, delegate, capture); 
+      target.addEventListener(type, delegate, capture);
       id = listener.id;
       if (id) {
         this._listener_list_map = this._listener_list_map || {};
@@ -144,12 +144,12 @@ DOMEventManager.definition = {
       listener = null;
     } else {
       throw coUtils.Debug.Exception(
-        _("Invalid argument was given. id: [%s], type: [%s]."), 
+        _("Invalid argument was given. id: [%s], type: [%s]."),
         listener.id, listener.type)
     }
   },
 
-  /** A thin wrapper function of Element.eventEventListener. 
+  /** A thin wrapper function of Element.eventEventListener.
    * @param string id ID string for unregistration.
    */
   "[subscribe('command/remove-domlistener'), enabled]":
@@ -193,7 +193,7 @@ DOMEventManager.definition = {
  * @brief Module entry point
  * @param {Process} process The Process object.
  */
-function main(broker) 
+function main(broker)
 {
   new DOMEventManager(broker);
 }

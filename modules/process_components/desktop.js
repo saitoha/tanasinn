@@ -54,7 +54,7 @@ Environment.definition = {
 }; // Environment
 
 
-/** 
+/**
  * @class Desktop
  */
 var Desktop = new Class().extends(Plugin)
@@ -94,7 +94,7 @@ Desktop.definition = {
     this.load(this, this.search_path, new broker.default_scope);
   },
 
-  initializeWithWindow: 
+  initializeWithWindow:
   function initializeWithWindow(window)
   {
     this._window = window;
@@ -102,20 +102,20 @@ Desktop.definition = {
     this.install();
   },
 
-  /** Installs itself. 
+  /** Installs itself.
    */
   "[install]":
   function install()
   {
-    var id, 
+    var id,
         root_element;
 
     root_element = this.window.document
       .documentElement
       .appendChild(this.window.document.createElement("box"));
-    
+
     id = root_element.id = coUtils.Uuid.generate().toString();
-  
+
     this._root_element = root_element;
 
     this.subscribe(
@@ -130,7 +130,7 @@ Desktop.definition = {
     this.notify("event/broker-started", this);
   },
 
-  /** Uninstalls itself. 
+  /** Uninstalls itself.
    */
   "[uninstall]":
   function uninstall()
@@ -143,7 +143,7 @@ Desktop.definition = {
       this._root_element = null;
     }
   },
-  
+
   /** called when this extension is enabled
    */
   "[subscribe('event/enabled'), enabled]":
@@ -168,7 +168,7 @@ Desktop.definition = {
     this.notify("event/shutdown");
     this.uninstall(this._broker);
   },
-  
+
   /** if specified window is current window, returns itself, or returns null.
    */
   "[subscribe('get/desktop-from-window'), enabled]":
@@ -176,25 +176,25 @@ Desktop.definition = {
   {
     return window.document
       .documentElement
-      .isEqualNode(this._window.document.documentElement) ? 
+      .isEqualNode(this._window.document.documentElement) ?
         this: null;
   },
 
-  /** Creates a session object and starts it. 
+  /** Creates a session object and starts it.
    */
-  start: function start(parent, command, term, size, search_path, callback) 
+  start: function start(parent, command, term, size, search_path, callback)
   {
     // create request object;
-    command = command 
-      || this["default_command@" + coUtils.Runtime.os] 
+    command = command
+      || this["default_command@" + coUtils.Runtime.os]
       || this.default_command;
 
     var [width, height] = size || [this.width, this.height];
 
-    var request = { 
-      parent: parent, 
-      command: command, 
-      term: term, 
+    var request = {
+      parent: parent,
+      command: command,
+      term: term,
       width: width,
       height: height,
     };
@@ -224,7 +224,7 @@ DesktopFactory.definition = {
  * @brief Module entry point
  * @param {Process} process The Process object.
  */
-function main(process) 
+function main(process)
 {
   new DesktopFactory(process);
 }

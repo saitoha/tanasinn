@@ -42,31 +42,31 @@ FocusTracker.definition = {
   },
 
   "[persistable] enabled_when_startup": true,
-  
+
   _disabled: false,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
-  "[install]": 
+  "[install]":
   function install(context)
   {
   },
 
-  /** Uninstalls itself. 
+  /** Uninstalls itself.
    */
   "[uninstall]":
   function uninstall()
   {
   },
 
-  "[subscribe('command/enable-focus-events'), pnp]": 
+  "[subscribe('command/enable-focus-events'), pnp]":
   function enableFocusEvents()
   {
     this._disabled = false;
   },
 
-  "[subscribe('command/disable-focus-events'), pnp]": 
+  "[subscribe('command/disable-focus-events'), pnp]":
   function disableFocusEvents()
   {
     this._disabled = true;
@@ -125,7 +125,7 @@ FocusTracker.definition = {
     }
   },
 
-  /** Fires when a blur event occured. 
+  /** Fires when a blur event occured.
    *  @param {Event} event A event object.
    */
   "[listen('blur', null, true), pnp]":
@@ -151,7 +151,7 @@ FocusTracker.definition = {
     }
   },
 
-  /** Fires when a focus event occured. 
+  /** Fires when a focus event occured.
    *  @param {Event} event A event object.
    */
 
@@ -170,7 +170,7 @@ FocusTracker.definition = {
     if (this._disabled) {
       return;
     }
-    
+
     if (!("nodeType" in dom.target)
         || dom.target.NODE_DOCUMENT !== dom.target.nodeType) {
       dom.target = dom.target.parentNode;

@@ -29,7 +29,7 @@ var coUtils = coUtils || { };
 coUtils.Clipboard = {
 
   /** get text from clipboard */
-  get: function get() 
+  get: function get()
   {
     var clipboard = coUtils.Services.getClipboard();
         transferable = coUtils.Components.createTransferable(),
@@ -53,7 +53,7 @@ coUtils.Clipboard = {
   },
 
   /** set text to clipboard */
-  set: function set(text) 
+  set: function set(text)
   {
     var clipboard_helper = coUtils.Services.getClipboardHelper();
 

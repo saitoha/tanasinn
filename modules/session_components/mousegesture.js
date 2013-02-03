@@ -44,24 +44,24 @@ MouseGesture.definition = {
   "[persistable] enabled_when_startup": true,
   "[persistable] magnify_delta_per_fontsize": 100,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
   },
 
-  /** Uninstalls itself. 
+  /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
   },
 
   /** Swipe down evnet listener */
-  "[subscribe('event/swipe-gesture'), pnp]": 
-  function onSwipeGesture(direction) 
+  "[subscribe('event/swipe-gesture'), pnp]":
+  function onSwipeGesture(direction)
   {
     switch (direction) {
 
@@ -89,8 +89,8 @@ MouseGesture.definition = {
   },
 
    /** Swipe down evnet listener */
-  "[subscribe('event/rotate-gesture'), pnp]": 
-  function onRotateGesture(direction) 
+  "[subscribe('event/rotate-gesture'), pnp]":
+  function onRotateGesture(direction)
   {
     switch (direction) {
 
@@ -108,10 +108,10 @@ MouseGesture.definition = {
 
     }
   },
- 
+
   /** handles magnify-gesture evnet. */
-  "[subscribe('event/magnify-gesture'), pnp]": 
-  function onMagnifyGesture(delta) 
+  "[subscribe('event/magnify-gesture'), pnp]":
+  function onMagnifyGesture(delta)
   {
     var i = 0,
         count,
@@ -138,7 +138,7 @@ MouseGesture.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new MouseGesture(broker);
 }

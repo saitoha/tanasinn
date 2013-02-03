@@ -24,7 +24,7 @@
 
 "use strict";
 
-/** 
+/**
  * @class BottomPanel
  *
  * messages:
@@ -72,7 +72,7 @@ BottomPanel.definition = {
             listener: {
               type: "select",
               context: this,
-              handler: function(event) 
+              handler: function(event)
               {
                 var target = event.target,
                     panel = target.selectedPanel,
@@ -94,19 +94,19 @@ BottomPanel.definition = {
             },
             style: "-moz-appearance: none; overflow-x: hidden; overflow-y: hidden; border: 0px;",
             childNodes: [
-              { 
+              {
                 tagName: "arrowscrollbox",
                 id: "tanasinn_arrowscrollbox",
                 clicktoscroll: "true",
                 orient: "horizontal",
                 childNodes: {
-                  tagName: "tabs", 
+                  tagName: "tabs",
                   id: "tanasinn_tabbox_tabs",
-                  setfocus: false, 
+                  setfocus: false,
                 },
               },
-              { 
-                tagName: "tabpanels", 
+              {
+                tagName: "tabpanels",
                 id: "tanasinn_tabbox_tabpanels",
                 style: {
                   MozAppearance: "none",
@@ -131,11 +131,11 @@ BottomPanel.definition = {
   _renderer: null,
   _screen: null,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
     var result = this.request("command/construct-chrome", this.getTemplate());
 
@@ -147,10 +147,10 @@ BottomPanel.definition = {
     this._screen = context["screen"];
   },
 
-  /** Uninstalls itself 
+  /** Uninstalls itself
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
     if (null !== this._bottom_panel) {
       this._bottom_panel.parentNode.removeChild(this._bottom_panel);
@@ -163,14 +163,14 @@ BottomPanel.definition = {
     this._screen = null;
   },
 
-  getElement: function getElement() 
+  getElement: function getElement()
   {
     return this._tabbox;
   },
 
   /** Toggles show/hide state of bottom panel.
    */
-  toggle: function toggle() 
+  toggle: function toggle()
   {
     if (this._bottom_panel.collapsed) {
       this.open();
@@ -187,14 +187,14 @@ BottomPanel.definition = {
    *   +---------------+             +---------------+
    *   |               | center      |               |
    *   |               | panel's     | center screen |
-   *   | center screen | height is   |               |     
+   *   | center screen | height is   |               |
    *   |               | shrinked.-> +---------------+     total
    *   |               |             |               |     height
    *   |               |             | bottom panel  |     is not
    *   +---------------+             +---------------+ <-- changed.
    */
   "[command('openpanel'), _('Open bottom panel.'), pnp]":
-  function open() 
+  function open()
   {
     var bottom_panel = this._bottom_panel,
         renderer = this._renderer,
@@ -226,20 +226,20 @@ BottomPanel.definition = {
   },
 
   /** Hide bottom panel.
-   * As closing panel, center-screen's height is expanded as mach as 
+   * As closing panel, center-screen's height is expanded as mach as
    * bottom panel's height.
    *
    *   +---------------+             +---------------+
    *   |               |             |               |
    *   | center screen |             |               |
-   *   |               |             | center screen |     
+   *   |               |             | center screen |
    *   +---------------+ center      |               |     total
    *   |               | panel's     |               |     height
    *   | bottom panel  | height is   |               |     is not
    *   +---------------+ expanded.-> +---------------+ <-- changed.
    */
   "[command('closepanel'), _('Close bottom panel'), pnp]":
-  function close() 
+  function close()
   {
     var bottom_panel = this._bottom_panel,
         renderer = this._renderer,
@@ -256,7 +256,7 @@ BottomPanel.definition = {
   /**
    * @property panelHeight
    */
-  get panelHeight() 
+  get panelHeight()
   {
     var sample_panel, result;
 
@@ -266,7 +266,7 @@ BottomPanel.definition = {
     return result;
   },
 
-  set panelHeight(value) 
+  set panelHeight(value)
   {
     var panel;
 
@@ -275,11 +275,11 @@ BottomPanel.definition = {
     }
   },
 
-  /** Allocates and returns new panel element. 
+  /** Allocates and returns new panel element.
    * @param {String} id A panel id.
    * @param {String} name.
    */
-  alloc: function alloc(id, name) 
+  alloc: function alloc(id, name)
   {
     var tanasinn_tab, tab_panel;
 
@@ -291,7 +291,7 @@ BottomPanel.definition = {
     }
 
     tanasinn_tab = this.request(
-      "command/construct-chrome", 
+      "command/construct-chrome",
       {
         parentNode: "#tanasinn_tabbox_tabs",
         tagName: "tab",
@@ -314,7 +314,7 @@ BottomPanel.definition = {
       })[id];
 
     tab_panel = this.request(
-      "command/construct-chrome", 
+      "command/construct-chrome",
       {
         parentNode: "#tanasinn_tabbox_tabpanels",
         tagName: "tabpanel",
@@ -329,11 +329,11 @@ BottomPanel.definition = {
     return tab_panel;
   },
 
-  _selectTab: function _selectTab(tab) 
+  _selectTab: function _selectTab(tab)
   {
     var box_object;
 
-    this._tabbox.selectedTab = tab; 
+    this._tabbox.selectedTab = tab;
 
     box_object = this._scrollbox;
 
@@ -344,9 +344,9 @@ BottomPanel.definition = {
 
   /** Select specified panel.
    * @param {String} id A panel id.
-   */ 
+   */
   "[subscribe('command/select-panel'), pnp]":
-  function select(id) 
+  function select(id)
   {
     var toggle, panel_map, tab;
 
@@ -386,9 +386,9 @@ BottomPanel.definition = {
   /** Removes specified panel.
    * @param {String} id A panel id.
    * TODO: when it is removed, selected position is tilted.
-   */ 
+   */
   "[subscribe('command/remove-panel'), pnp]":
-  function remove(id) 
+  function remove(id)
   {
     var panel_map, tab, tab_panel;
 
@@ -412,7 +412,7 @@ BottomPanel.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new BottomPanel(broker);
 }

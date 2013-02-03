@@ -4,7 +4,7 @@
 # ***** BEGIN LICENSE BLOCK *****
 # Version: MPL 1.1
 #
-# The contents of this file are subject to the Mozilla Public License Version
+# These contents of this file are subject to the Mozilla Public License Version
 # 1.1 (the "License"); you may not use this file except in compliance with
 # the License. You may obtain a copy of the License at
 # http://www.mozilla.org/MPL/
@@ -24,39 +24,40 @@
 # ***** END LICENSE BLOCK *****
 
 ## @package ttydriver
-#  
+#
 # @brief Create and handle a pair of TTY device, and run a program on them.
 #
 # [ Module Overview ]
 #
 # This module is assumed to be called by tanasinn's "tty.js".
-# First, tanasinn opens TCP channel and listen on 2 ports, [I/O channel] and 
+# First, tanasinn opens TCP channel and listen on 2 ports, [I/O channel] and
 # [Control channel].
-# Next, tanasinn should call this script, with 2 arguments that is represent 
+# Next, tanasinn should call this script, with 2 arguments that is represent
 # above-mentioned 2 channel's port numbers.
-# Then, A TeletypeDriver object is instanciate. it connect these channels and 
+# Then, A TeletypeDriver object is instanciate. it connect these channels and
 # establish TCP connection, and finally forks new 4 processes as follows:
-# 
+#
 # 1. Application Process
-#    This is user-specified application process, launched by command such as 
+#    This is user-specified application process, launched by command such as
 #    the following.
 # <pre>
 #       /bin/sh -c 'exec <startcommand>'
 # </pre>
 #    <startcommand> is asked for tanasinn through the <Control channel>.
-#    
+#
 # 2. Writing Process
-#    This process wait to receive data from tanasinn through <I/O channel>,
-#    which is user's input key sequence in many cases. 
+#    This process waits to receive data from tanasinn through <I/O channel>,
+#    which is user's input key sequence in many cases.
 #    As receiving data, the Process passes it to TTY master device as it is.
 #
 # 3. Reading Process
-#    This process wait to receive data from TTY master device, which is output 
+#    This process waits to receive data from TTY master device, which is output
 #    sequence from application program in many cases.
-#    As receiving data, the Process passes it to tanasinn through [I/O channel].
+#    As receiving data, the Process passes it to tanasinn through
+#    [I/O channel].
 #
 # 4. Controlling Process
-#    This process comminucate with tanasinn through [Control channel] in 
+#    This process comminucates with tanasinn through [Control channel] in
 #    simple, lightweight, 7bit ascii-based protocol.
 #
 # <pre>
@@ -91,16 +92,16 @@
 #
 #     1. This protocol is line-oriented. line terminator is '\n' (0x0a).
 #
-#     2. This protocol is command-based. 1 line should be interpreted as 1 
+#     2. This protocol is command-based. 1 line should be interpreted as 1
 #        command.
-#        A command is composed of 1 or multiple tokens. delimiter character is 
+#        A command is composed of 1 or multiple tokens. delimiter character is
 #        ' ' (0x20).
 #
 #     3. First token is <b>opecode</b>, represent a operation.
 #        An opecode consists of lower-case alphabetic sets ([a-z]+).
 #
 #     4. Tokens after <b>opecode</b> represent arguments.
-#        An arguments consists of multiple printable characters, that is 
+#        An arguments consists of multiple printable characters, that is
 #        encoded in base64 Data Encodings, defined in RFC-3548.
 # <pre>
 #        example 1:
@@ -108,7 +109,7 @@
 # </pre>
 #          Opecode of this command is "xoff". "\n" is line terminator.
 # <pre>
-#        example 2: 
+#        example 2:
 #          resize ODA= MjQ=\n
 # </pre>
 #          In this case, opecode is "resize".
@@ -120,7 +121,17 @@
 #     Comming soon...
 #
 
-import os, socket, errno, sys, signal, re, fcntl, struct, termios, base64, select, pty
+import os
+import socket
+import errno
+import sys
+import signal
+import fcntl
+import struct
+import termios
+import base64
+import select
+import pty
 
 debug_flag = False
 
@@ -143,6 +154,7 @@ logfile = os.path.join(logdir, "tty.log")
 log = open(logfile, "aw")
 log.write("------\n")
 
+
 def trace(message):
     if debug_flag:
         if system[0] == 'Darwin':
@@ -152,12 +164,13 @@ def trace(message):
         if system[0] == 'CYGWIN_NT-6.0':
             os.system("SofTalk.exe /T:0 /W:%s" % message)
     try:
-      log.write(message + "\n") 
-      log.flush()
+        log.write(message + "\n")
+        log.flush()
     except:
-      pass
+        pass
 
 trace("start.")
+
 
 class TeletypeDriver:
 
@@ -181,7 +194,7 @@ class TeletypeDriver:
         reply = sock.recv(BUFFER_SIZE)
         result = base64.b64decode(reply.split("\n").pop(0).split(" ").pop())
         return result
-    
+
     def fork_writing_process(self):
         pid = os.fork()
         if pid == 0:
@@ -190,9 +203,9 @@ class TeletypeDriver:
             rfds = [io_fd]
             wfds = []
             xfds = [self.master, io_fd, control_fd]
-            while True: 
+            while True:
                 rfd, wfd, xfd = select.select(rfds, wfds, xfds)
-                if xfd: # checking error.
+                if xfd:  # checking error.
                     break
                 data = self.io_socket.recv(BUFFER_SIZE)
                 if not data:
@@ -204,7 +217,7 @@ class TeletypeDriver:
             trace("exit from writing process.")
             sys.exit(0)
         return pid
-    
+
     def fork_reading_process(self):
         pid = os.fork()
         if pid == 0:
@@ -216,8 +229,8 @@ class TeletypeDriver:
             xfds = [self.master, io_fd, control_fd]
             while True:
                 rfd, wfd, xfd = select.select(rfds, wfds, xfds)
-                if xfd: # checking error.
-                    break    
+                if xfd:  # checking error.
+                    break
                 data = os.read(self.master, BUFFER_SIZE)
                 if not data:
                     break
@@ -230,11 +243,11 @@ class TeletypeDriver:
             trace("exit from reading process.")
             sys.exit(0)
         return pid
-   
+
     def fork_control_process(self):
 
         # set initial size.
-        self.resize([ int(self.call_sync(key)) for key in ["column", "rows"] ])
+        self.resize([int(self.call_sync(key)) for key in ["column", "rows"]])
 
         pid = os.fork()
         if pid == 0:
@@ -244,12 +257,12 @@ class TeletypeDriver:
             rfds = [control_fd]
             wfds = []
             xfds = [self.master, io_fd, control_fd]
-            while True: # TTY -> mozilla
+            while True:  # TTY -> mozilla
                 rfd, wfd, xfd = select.select(rfds, wfds, xfds, 20)
-                if xfd: # checking error.
-                    break    
-                if not rfd: # checking error.
-                    break    
+                if xfd:  # checking error.
+                    break
+                if not rfd:  # checking error.
+                    break
                 data = self.control_socket.recv(BUFFER_SIZE)
                 if data == "beacon\n":
                     continue
@@ -266,13 +279,13 @@ class TeletypeDriver:
         return pid
 
     def request(self, argv):
-        arg = argv.pop(0) # shift
+        arg = argv.pop(0)  # shift
         if arg == "name":
-            reply = base64.b64encode(self.__ttyname) 
+            reply = base64.b64encode(self.__ttyname)
             message = "answer %s\n" % reply
             self.control_socket.send(message)
         elif arg == "pid":
-            reply = base64.b64encode(str(self.__app_process_pid)) 
+            reply = base64.b64encode(str(self.__app_process_pid))
             message = "answer %s\n" % reply
             self.control_socket.send(message)
 
@@ -305,10 +318,10 @@ class TeletypeDriver:
 
     def resize(self, argv):
 
-        width, height = [ int(arg) for arg in argv ]
+        width, height = [int(arg) for arg in argv]
 
-        # NOW, we send TIOCSWINSZ IOCTL for 
-        # the TTY master device with winsize structure, 
+        # NOW, we send TIOCSWINSZ IOCTL for
+        # the TTY master device with winsize structure,
         # which is defined in "sys/ioctl.h" as follows:
         #
         # struct winsize {
@@ -322,7 +335,7 @@ class TeletypeDriver:
         # notify Application process that terminal size has been changed.
         os.kill(self.__app_process_pid, signal.SIGWINCH)
         #trace("Resized: " + str(width) + " " + str(height))
-        width, height = [ int(arg) for arg in argv ]
+        width, height = [int(arg) for arg in argv]
 
     def xoff(self, argv):
         #fcntl.ioctl(self.master, termios.TIOCSTOP, 0)
@@ -337,22 +350,22 @@ class TeletypeDriver:
         lines.pop()
         for line in lines:
             argv = line.split(" ")
-            operation = argv.pop(0) # shift
+            operation = argv.pop(0)  # shift
             # dispatch commands.
             if hasattr(self, operation):
                 action = getattr(self, operation)
-                action([ base64.b64decode(arg) for arg in argv ])
+                action([base64.b64decode(arg) for arg in argv])
             else:
                 self.control_socket.send("? %s\n" % operation)
-    
+
     def drive_tty(self):
-    
+
         # Fork reading process.
         reading_process_pid = self.fork_reading_process()
 
         # Fork writing process.
         writing_process_pid = self.fork_writing_process()
-        
+
         # listen control commands, and dispatch them.
         control_process_pid = self.fork_control_process()
 
@@ -364,13 +377,13 @@ class TeletypeDriver:
         while True:
             pid, status = os.wait()
             if pid == control_process_pid:
-                break;
+                break
             if pid == self.__app_process_pid:
                 try:
                     os.kill(control_process_pid, signal.SIGKILL)
                 except:
                     pass
-                break;
+                break
 
         #os.waitpid(control_process_pid, 0)
         #try:
@@ -384,16 +397,18 @@ class TeletypeDriver:
         try:
             os.kill(reading_process_pid, signal.SIGKILL)
         except:
-            pass 
+            pass
 
-def add_record(sessiondb_path, request_id, command, control_port, pid, ttyname):
+
+def add_record(sessiondb_path, request_id,
+               command, control_port, pid, ttyname):
     lockfile = open(sys.argv[0], "r")
     try:
         fcntl.flock(lockfile.fileno(), fcntl.LOCK_EX)
         f = open(sessiondb_path, "a")
         try:
-            f.write("%s,%s,%s,%s,%s\n" 
-                    % (request_id, base64.b64encode(command), control_port, pid, ttyname));
+            line = "%s,%s,%s,%s,%s\n" % (request_id, base64.b64encode(command))
+            f.write(line, control_port, pid, ttyname)
             f.flush()
         finally:
             f.close()
@@ -407,7 +422,7 @@ def del_record(sessiondb_path, request_id):
         fcntl.flock(lockfile.fileno(), fcntl.LOCK_EX)
 
         f = open(sessiondb_path, "r")
-        lines = [];
+        lines = []
         try:
             for line in f:
                 if line.split(",")[0] != request_id:
@@ -427,7 +442,8 @@ def del_record(sessiondb_path, request_id):
     finally:
         lockfile.close()
 
-if __name__ == "__main__":    
+
+if __name__ == "__main__":
     if len(sys.argv) < 1:
         sys.exit("usage %s [connection_channel_port]" % sys.argv[0])
 
@@ -442,34 +458,34 @@ if __name__ == "__main__":
     connection_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     connection_socket.connect(("127.0.0.1", connection_port))
 
-    startup_info = connection_socket.recv(BUFFER_SIZE).split(" ");
-    command, term, lang = [ base64.b64decode(value) for value in startup_info]
-    
+    startup_info = connection_socket.recv(BUFFER_SIZE).split(" ")
+    command, term, lang = [base64.b64decode(value) for value in startup_info]
+
     ## fork slave's process, and get tty name.
-    ttyname_max_length = 20 #1024
+    ttyname_max_length = 20  # 1024
     pid, master = pty.fork()
     if not pid:
-        os.environ["TERM"] = term 
-        os.environ["LANG"] = lang 
+        os.environ["TERM"] = term
+        os.environ["LANG"] = lang
         paths = os.environ["PATH"].split(":")
         if not "/usr/local/bin" in paths:
             os.environ["PATH"] = "/usr/local/bin:" + os.environ["PATH"]
-        os.environ[""] = lang 
-        os.environ["__TANASINN"] = term 
+        os.environ[""] = lang
+        os.environ["__TANASINN"] = term
         os.execlp("/bin/sh", "/bin/sh", "-c", "cd $HOME && exec %s" % command)
-    ttyname = "unknown ttyname"#os.read(master, ttyname_max_length).rstrip()
+    ttyname = "unknown ttyname"  # os.read(master, ttyname_max_length).rstrip()
     ttyname = ""
     try:
         ttyname = os.ttyname(pid)
     except:
         pass
 
-    iflag, oflag, cflag, lflag, ispeed, cspeed, cc = termios.tcgetattr(master)
+    iflag, oflag, cflag, lflag, ispeed, ospeed, cc = termios.tcgetattr(master)
 
     # get par
     if not cflag & termios.PARENB:
         par = 1
-    elif clags & termios.PARODD:
+    elif cflag & termios.PARODD:
         par = 4
     else:
         par = 5
@@ -481,24 +497,22 @@ if __name__ == "__main__":
         nbits = 2
 
     # get xspeed, rspeed
-    speed_map = { 
-        50         :0, 
-        75         :8, 
-        110        :16,
-        134.5      :24,
-        150        :32,
-        200        :40,
-        300        :48,
-        600        :56,
-        1200       :64,
-        1800       :72,
-        2000       :80,
-        2400       :88,
-        3600       :96,
-        4800       :104,
-        9600       :112,
-        19200      :120
-        }
+    speed_map = {50: 0,
+                 75: 8,
+                 110: 16,
+                 134.5: 24,
+                 150: 32,
+                 200: 40,
+                 300: 48,
+                 600: 56,
+                 1200: 64,
+                 1800: 72,
+                 2000: 80,
+                 2400: 88,
+                 3600: 96,
+                 4800: 104,
+                 9600: 112,
+                 19200: 120}
 
     try:
         xspeed = speed_map[ospeed]
@@ -514,25 +528,27 @@ if __name__ == "__main__":
     termattr = "%d;%d;%d;%d;1;0x" % (par, nbits, xspeed, rspeed)
 
     # send control channel's port, pid, ttyname
-    connection_socket.send("%s:%s:%s:%s" % (control_port, pid, ttyname, termattr))
-    connection_socket.close();
+    message = "%s:%s:%s:%s" % (control_port, pid, ttyname, termattr)
+    connection_socket.send(message)
+    connection_socket.close()
 
-    # establish <Control channel> socket connection. 
+    # establish <Control channel> socket connection.
     control_connection, addr = control_socket.accept()
-    io_port_str, request_id, sessiondb_path = control_connection.recv(BUFFER_SIZE).split(" ")
+    reply = control_connection.recv(BUFFER_SIZE)
+    io_port_str, request_id, sessiondb_path = reply.split(" ")
     io_port = int(io_port_str)
     sessiondb_path = base64.b64decode(sessiondb_path)
 
     try:
         while True:
-            # establish <I/O channel> socket connection. 
+            # establish <I/O channel> socket connection.
             io_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             io_socket.connect(("127.0.0.1", io_port))
 
-            driver = TeletypeDriver(pid, 
-                                    ttyname, 
-                                    master, 
-                                    io_socket, 
+            driver = TeletypeDriver(pid,
+                                    ttyname,
+                                    master,
+                                    io_socket,
                                     control_connection)
             driver.drive_tty()
 
@@ -540,13 +556,15 @@ if __name__ == "__main__":
                 trace("closed.")
                 break
             else:
-                add_record(sessiondb_path, request_id, command, control_port, pid, ttyname)
+                add_record(sessiondb_path, request_id, command,
+                           control_port, pid, ttyname)
                 trace("suspended.")
 
-                # re-establish <Control channel> socket connection. 
+                # re-establish <Control channel> socket connection.
                 control_connection, addr = control_socket.accept()
                 trace("resume.")
-                io_port_str, request_id, sessiondb_path = control_connection.recv(BUFFER_SIZE).split(" ")
+                reply = control_connection.recv(BUFFER_SIZE)
+                io_port_str, request_id, sessiondb_path = reply.split(" ")
                 io_port = int(io_port_str)
                 sessiondb_path = base64.b64decode(sessiondb_path)
 
@@ -556,4 +574,3 @@ if __name__ == "__main__":
         trace("A socket error occured.")
     finally:
         os.close(master)
-

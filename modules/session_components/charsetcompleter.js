@@ -44,18 +44,18 @@ CharsetCompleter.definition = {
 
   "[persistable] enabled_when_startup": true,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
   },
 
   /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
   },
 
@@ -64,7 +64,7 @@ CharsetCompleter.definition = {
    * Search for a given string and notify a listener (either synchronously
    * or asynchronously) of the result
    *
-   * @param context - The completion context object. 
+   * @param context - The completion context object.
    */
   "[completer('charset'), pnp]":
   function complete(context)
@@ -109,9 +109,9 @@ CharsetCompleter.definition = {
 
     candidates = [
       {
-        key: component.charset, 
+        key: component.charset,
         value: component.title
-      } for ([, component] in Iterator(components)) 
+      } for ([, component] in Iterator(components))
         if (-1 !== component.charset.toLowerCase().indexOf(lower_source))
     ];
 
@@ -122,9 +122,9 @@ CharsetCompleter.definition = {
         "event/answer-completion",
         {
           type: "text",
-          query: context.source, 
+          query: context.source,
           data: candidates.map(
-            function(candidate) 
+            function(candidate)
             {
               return {
                 name: candidate.key,

@@ -28,7 +28,7 @@ try {
    /**
    * @fn getTanasinnProcess
    */
-  var desktop = function getDesktop() 
+  var desktop = function getDesktop()
       {
         var current_file = Components.stack.filename.split(" -> ").pop().split("?").shift()
               .replace(/^liberator:\/\/template\//, ""),
@@ -44,74 +44,74 @@ try {
       mappings = liberator.modules.mappings,
       modes = liberator.modules.modes,
       editor = liberator.modules.editor;
-  
+
   /**
-   * @command tanasinnlaunch 
+   * @command tanasinnlaunch
    */
-  commands.addUserCommand(["tanasinnlaunch", "tla[unch]"], 
-    "Show tanasinn's Launcher.", 
-    function tanasinnLaunch(args) 
-    { 
+  commands.addUserCommand(["tanasinnlaunch", "tla[unch]"],
+    "Show tanasinn's Launcher.",
+    function tanasinnLaunch(args)
+    {
       desktop.notify("command/show-launcher");
     }
   );
-  
+
   /**
-   * @command tanasinncommand 
+   * @command tanasinncommand
    */
-  commands.addUserCommand(["tanasinnstart", "tstart"], 
-    "Run a operating system command on tanasinn.", 
-    function tanasinnStart(args) 
-    { 
+  commands.addUserCommand(["tanasinnstart", "tstart"],
+    "Run a operating system command on tanasinn.",
+    function tanasinnStart(args)
+    {
       desktop.notify("command/start-session", args.string);
     },
-    { 
+    {
       argCount: "?",
       completer: function (context) completion.shellCommand(context),
       bang: true,
       literal: 0,
-    } 
+    }
   );
-  
+
   /**
-   * @command tanasinnsend 
+   * @command tanasinnsend
    */
-  commands.addUserCommand(["tanasinncommand", "tcommand"], 
-    "Run a tanasinn command on active tanasinn sessions.", 
-    function sendCommand(args) 
-    { 
+  commands.addUserCommand(["tanasinncommand", "tcommand"],
+    "Run a tanasinn command on active tanasinn sessions.",
+    function sendCommand(args)
+    {
       desktop.notify("command/send-command", args.string);
     },
-    { 
+    {
       argCount: "?",
       bang: true,
       literal: 0,
-    } 
+    }
   );
-  
+
   /**
    * @command tanasinnsendkeys
    */
-  commands.addUserCommand(["tanasinnsendkeys", "tsend"], 
-    "Send keys to tanasinn.", 
-    function send_keys(args) 
-    { 
+  commands.addUserCommand(["tanasinnsendkeys", "tsend"],
+    "Send keys to tanasinn.",
+    function send_keys(args)
+    {
       desktop.notify("command/send-keys", args.string);
     },
-    { 
+    {
       argCount: "?",
       bang: true,
       literal: 0,
-    } 
+    }
   );
-  
+
   /**
-   * Hooks "<C-i>" and "gF" key mappings and runs "g:tanasinneditorcommand" 
+   * Hooks "<C-i>" and "gF" key mappings and runs "g:tanasinneditorcommand"
    * or "g:tanasinnviewsourcecommand", instead of default "editor" option.
    */
   var default_func = editor.editFileExternally;
 
-  editor.editFileExternally = function editFileExternally(path) 
+  editor.editFileExternally = function editFileExternally(path)
   {
     var editor_command = liberator.globalVariables.tanasinneditorcommand,
         viewsource_command = liberator.globalVariables.tanasinnviewsourcecommand,
@@ -127,7 +127,7 @@ try {
           .classes["@mozilla.org/network/standard-url;1"]
           .createInstance(Components.interfaces.nsIURL);
         url.spec = path;
-        
+
         // make nsILocalFile
         var file = Components
           .classes["@mozilla.org/file/local;1"]
@@ -159,11 +159,11 @@ try {
               {
                 if (10 === ++count) {
                   desktop.notify(
-                    "command/start-session", 
+                    "command/start-session",
                     viewsource_command.replace(/%/g, path));
                 } else if (persist.PERSIST_STATE_FINISHED === persist.currentState) {
                   desktop.notify(
-                    "command/start-session", 
+                    "command/start-session",
                     viewsource_command.replace(/%/g, tmpfile.path));
                 } else {
                   setTimeout(timerFunc, 200);

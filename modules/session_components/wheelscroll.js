@@ -46,42 +46,42 @@ WheelScroll.definition = {
 
   "[persistable] enabled_when_startup": true,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
   },
 
   /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
   },
 
   /** Fired at the mouse tracking mode is changed. */
   "[subscribe('event/mouse-tracking-mode-changed'), pnp]":
-  function onMouseTrackingModeChanged(data) 
+  function onMouseTrackingModeChanged(data)
   {
   },
 
   /** Fired at the mouse tracking type is changed. */
   "[subscribe('event/mouse-tracking-type-changed'), pnp]":
-  function onMouseTrackingTypeChanged(data) 
+  function onMouseTrackingTypeChanged(data)
   {
   },
 
   /** Fired at the locator reporting mode is changed. */
-  "[subscribe('command/change-locator-reporting-mode'), enabled]": 
-  function onChangeLocatorReportingMode(mode) 
+  "[subscribe('command/change-locator-reporting-mode'), enabled]":
+  function onChangeLocatorReportingMode(mode)
   {
   },
 
   /** Mouse down evnet listener */
-  "[listen('DOMMouseScroll', '#tanasinn_content'), pnp]": 
-  function onmousescroll(event) 
+  "[listen('DOMMouseScroll', '#tanasinn_content'), pnp]":
+  function onmousescroll(event)
   {
     var count,
         line_height;
@@ -122,7 +122,7 @@ WheelScroll.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new WheelScroll(broker);
 }

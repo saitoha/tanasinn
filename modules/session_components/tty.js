@@ -59,16 +59,16 @@
  *
  *     1. This protocol is line-oriented. line terminator is '\n' (0x0a).
  *
- *     2. This protocol is command-based. 1 line should be interpreted as 1 
+ *     2. This protocol is command-based. 1 line should be interpreted as 1
  *        command.
- *        A command is composed of 1 or multiple tokens. token's delimiter is 
+ *        A command is composed of 1 or multiple tokens. token's delimiter is
  *        ' ' (0x20).
  *
  *     3. First token is <b>opecode</b>, represent a operation.
  *        An opecode consists of lower-case alphabetic sets ([a-z]+).
  *
  *     4. Tokens after <b>opecode</b> represent arguments.
- *        An arguments consists of multiple printable characters, that is 
+ *        An arguments consists of multiple printable characters, that is
  *        encoded in base64 Data Encodings, defined in RFC-3548.
  * <pre>
  *        example 1:
@@ -76,7 +76,7 @@
  * </pre>
  *          Opecode of this command is "xoff". "\n" is line terminator.
  * <pre>
- *        example 2: 
+ *        example 2:
  *          resize ODA= MjQ=\n
  * </pre>
  *          In this case, opecode is "resize".
@@ -115,11 +115,11 @@ SocketTeletypeService.definition = {
   _pump: null,
   _settings: null,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
      this._externaldriver = context["externaldriver"];
      this._ttycontroller = context["tty_controller"];
@@ -175,10 +175,10 @@ SocketTeletypeService.definition = {
     this._socket = coUtils.Components.createLoopbackServerSocket(this);
 
     // nsIProcess::runAsync.
-    //this.sendMessage("command/start-ttydriver-process", this._socket.port); 
+    //this.sendMessage("command/start-ttydriver-process", this._socket.port);
     this._externaldriver.start(this._socket.port)
   },
- 
+
   /**
    * Attach to an existing session
    * @param {Number} request_id the ID of the session to attach to.
@@ -190,7 +190,7 @@ SocketTeletypeService.definition = {
         context;
 
     if (coUtils.File.exists(backup_data_path)) {
-      // resume 
+      // resume
       context = JSON.parse(coUtils.IO.readFromFile(backup_data_path, "utf-8"));
       this.sendMessage("command/restore", context);
       coUtils.Timer.setTimeout(
@@ -206,13 +206,13 @@ SocketTeletypeService.definition = {
     }
   },
 
-  "[subscribe('@command/focus')]": 
+  "[subscribe('@command/focus')]":
   function onFirstFocus()
   {
     this.sendMessage("command/draw", true);
   },
 
-  "[subscribe('@command/detach'), pnp]": 
+  "[subscribe('@command/detach'), pnp]":
   function detach()
   {
     var context = {},
@@ -228,7 +228,7 @@ SocketTeletypeService.definition = {
   },
 
   "[subscribe('sequence/osc/97'), pnp]":
-  function osc97(ttyname) 
+  function osc97(ttyname)
   {
     this._ttyname = ttyname;
   },
@@ -244,7 +244,7 @@ SocketTeletypeService.definition = {
    * @param transport
    *        The connected socket transport.
    */
-  onSocketAccepted: function onSocketAccepted(serv, transport) 
+  onSocketAccepted: function onSocketAccepted(serv, transport)
   {
     var istream = transport.openInputStream(0, 1024, 1),
         ostream = transport.openOutputStream(0, 1024, 1),
@@ -275,7 +275,7 @@ SocketTeletypeService.definition = {
    *        server socket was manually closed, then this value will be
    *        NS_BINDING_ABORTED.
    */
-  onStopListening: function onStopListening(a_serv, a_status) 
+  onStopListening: function onStopListening(a_serv, a_status)
   {
   },
 
@@ -327,8 +327,8 @@ SocketTeletypeService.definition = {
    * An exception thrown from onDataAvailable has the side-effect of
    * causing the request to be canceled.
    */
-  onDataAvailable: 
-  function onDataAvailable(request, context, input, offset, count) 
+  onDataAvailable:
+  function onDataAvailable(request, context, input, offset, count)
   {
     var data = this._input.readBytes(count),
         args = data.split(":"),
@@ -351,13 +351,13 @@ SocketTeletypeService.definition = {
   },
 
   /** @property Retrieve "pid" property value from TTY driver. */
-  get pid() 
+  get pid()
   {
     return this._pid;
   },
 
   /** @property Retrieve "name" property value from TTY driver. */
-  get name() 
+  get name()
   {
     return this._ttyname;
   },
@@ -385,7 +385,7 @@ SocketTeletypeService.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new SocketTeletypeService(broker);
 }

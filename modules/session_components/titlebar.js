@@ -25,9 +25,9 @@
 "use strict";
 
 
-/** 
+/**
  * @class ForwardInputIterator
- */ 
+ */
 var ForwardInputIterator = new Class();
 ForwardInputIterator.definition = {
 
@@ -35,26 +35,26 @@ ForwardInputIterator.definition = {
   _position: 0,
 
   /** Assign new string data. position is reset. */
-  initialize: function initialize(value) 
+  initialize: function initialize(value)
   {
     this._value = value;
     this._position = 0;
   },
 
   /** Returns single byte code point. */
-  current: function current() 
+  current: function current()
   {
     return this._value.charCodeAt(this._position);
   },
 
   /** Moves to next position. */
-  moveNext: function moveNext() 
+  moveNext: function moveNext()
   {
     ++this._position;
   },
 
   /** Returns whether scanner position is at end. */
-  get isEnd() 
+  get isEnd()
   {
     return this._position >= this._value.length;
   },
@@ -126,11 +126,11 @@ Titlebar.definition = {
     };
   },
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
     var result = this.request(
       "command/construct-chrome",
@@ -149,11 +149,11 @@ Titlebar.definition = {
     this._query_utf8_mode = this.initial_query_utf8_mode;
 
   },
-  
+
   /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
     this._canvas = null;
     this._decoder = null;
@@ -172,77 +172,77 @@ Titlebar.definition = {
   },
 
   /** When session is initialized */
-  "[subscribe('event/session-initialized'), pnp]": 
-  function onSessionInitialized(session) 
+  "[subscribe('event/session-initialized'), pnp]":
+  function onSessionInitialized(session)
   {
     this._canvas.width = this._canvas.parentNode.boxObject.width;
   },
 
-  "[subscribe('command/send-titlebar-string'), pnp]": 
-  function sendTitlebarString(value) 
+  "[subscribe('command/send-titlebar-string'), pnp]":
+  function sendTitlebarString(value)
   {
     this._title_text = value;
     this._print();
   },
 
   /** When default title is changed */
-  "[subscribe('variable-changed/titlebar.default_title'), pnp]": 
-  function onDefaultTitleChanged(title) 
+  "[subscribe('variable-changed/titlebar.default_title'), pnp]":
+  function onDefaultTitleChanged(title)
   {
     this._print();
   },
 
   /** When screen size is changed */
-  "[subscribe('event/screen-width-changed'), pnp]": 
-  function onWidthChanged(width) 
+  "[subscribe('event/screen-width-changed'), pnp]":
+  function onWidthChanged(width)
   {
     this._canvas.width = width;
   },
 
   "[subscribe('command/title-set-utf8-mode-enabled'), pnp]":
-  function onTitleSetUtf8ModeEnabled() 
+  function onTitleSetUtf8ModeEnabled()
   {
     this._set_utf8_mode = true;
   },
 
   "[subscribe('command/title-set-hex-mode-enabled'), pnp]":
-  function onTitleSetHexModeEnabled() 
+  function onTitleSetHexModeEnabled()
   {
     this._set_hex_mode = true;
   },
 
   "[subscribe('command/title-query-utf8-mode-enabled'), pnp]":
-  function onTitleQueryUtf8ModeEnabled() 
+  function onTitleQueryUtf8ModeEnabled()
   {
     this._query_utf8_mode = true;
   },
 
   "[subscribe('command/title-query-hex-mode-enabled'), pnp]":
-  function onTitleQueryHexModeEnabled() 
+  function onTitleQueryHexModeEnabled()
   {
     this._query_hex_mode = true;
   },
 
   "[subscribe('command/title-set-utf8-mode-disabled'), pnp]":
-  function onTitleSetUtf8ModeDisabled() 
+  function onTitleSetUtf8ModeDisabled()
   {
     this._set_utf8_mode = false;
   },
 
   "[subscribe('command/title-set-hex-mode-disabled'), pnp]":
-  function onTitleSetHexModeDisabled() 
+  function onTitleSetHexModeDisabled()
   {
     this._set_hex_mode = false;
   },
 
   "[subscribe('command/title-query-utf8-mode-disabled'), pnp]":
-  function onTitleQueryUtf8ModeDisabled() 
+  function onTitleQueryUtf8ModeDisabled()
   {
     this._query_utf8_mode = false;
   },
 
   "[subscribe('command/title-query-hex-mode-disabled'), pnp]":
-  function onTitleQueryHexModeDisabled() 
+  function onTitleQueryHexModeDisabled()
   {
     this._query_hex_mode = false;
   },
@@ -251,7 +251,7 @@ Titlebar.definition = {
   // Response: OSC L title ST
   //   title    icon label. (window title)
   "[subscribe('sequence/decslpp/20'), pnp]":
-  function onTitleQueryHexModeDisabled() 
+  function onTitleQueryHexModeDisabled()
   {
     var message = this._getIconTitle();
 
@@ -262,7 +262,7 @@ Titlebar.definition = {
   // Response: OSC l title ST
   //   title    Window title.
   "[subscribe('sequence/decslpp/21'), pnp]":
-  function onTitleQueryHexModeDisabled() 
+  function onTitleQueryHexModeDisabled()
   {
     var message = this._getTitle();
 
@@ -270,7 +270,7 @@ Titlebar.definition = {
   },
 
   "[subscribe('sequence/decslpp/22'), pnp]":
-  function onTitlePush(n) 
+  function onTitlePush(n)
   {
     switch (n) {
       case 0:
@@ -289,7 +289,7 @@ Titlebar.definition = {
   },
 
   "[subscribe('sequence/decslpp/23'), pnp]":
-  function onTitlePop(n) 
+  function onTitlePop(n)
   {
     switch (n) {
 
@@ -330,7 +330,7 @@ Titlebar.definition = {
   _getTitle: function _getTitle(data)
   {
     var message = "";
-    
+
     if (this.enable_title_reporting) {
       if (this._query_utf8_mode) {
         message += this._encoder.encode(this._title_text);
@@ -353,7 +353,7 @@ Titlebar.definition = {
   _getIconTitle: function _getTitle(data)
   {
     var message = "";
-    
+
     if (this.enable_title_reporting) {
       if (this._query_utf8_mode) {
         message += this._encoder.encode(this._title_text);
@@ -389,7 +389,7 @@ Titlebar.definition = {
     if (this._set_utf8_mode) {
       text = this._decoder.decodeString(data);
     } else {
-      text = coUtils.Text.safeConvertFromArray(data); 
+      text = coUtils.Text.safeConvertFromArray(data);
     }
 
     this._title_text = text;
@@ -412,7 +412,7 @@ Titlebar.definition = {
     if (this._set_utf8_mode) {
       text = this._decoder.decodeString(data);
     } else {
-      text = coUtils.Text.safeConvertFromArray(data); 
+      text = coUtils.Text.safeConvertFromArray(data);
     }
 
     this._icon_title_text = text;
@@ -420,7 +420,7 @@ Titlebar.definition = {
   },
 
   "[subscribe('sequence/osc/0'), pnp]":
-  function osc0(data) 
+  function osc0(data)
   {
     this._setTitle(data);
     this._setIconTitle(data);
@@ -428,14 +428,14 @@ Titlebar.definition = {
   },
 
   "[subscribe('sequence/osc/1'), pnp]":
-  function osc1(data) 
+  function osc1(data)
   { // process OSC command.
     this._setIconTitle(data);
     this._print();
   },
 
   "[subscribe('sequence/osc/2'), pnp]":
-  function osc2(data) 
+  function osc2(data)
   { // process OSC command.
     this._setTitle(data);
     this._print();
@@ -454,7 +454,7 @@ Titlebar.definition = {
     } else if ("" === this._title_text && "" === this._icon_title_text) {
       text = this.default_title;
     } else {
-      text = this._title_text + " " + this._icon_title_text; 
+      text = this._title_text + " " + this._icon_title_text;
     }
 
     canvas.width = canvas.parentNode.boxObject.width;

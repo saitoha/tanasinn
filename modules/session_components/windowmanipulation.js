@@ -24,7 +24,7 @@
 
 "use strict";
 
-function wait(span) 
+function wait(span)
 {
   var end_time = Date.now() + span,
       current_thread = coUtils.Services.getThreadManager().currentThread;
@@ -63,7 +63,7 @@ WindowManipulator.definition = {
   _screen: null,
   _renderer: null,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
@@ -73,7 +73,7 @@ WindowManipulator.definition = {
     this._renderer = context["renderer"];
   },
 
-  /** uninstalls itself. 
+  /** uninstalls itself.
    */
   "[uninstall]":
   function uninstall()
@@ -97,50 +97,50 @@ WindowManipulator.definition = {
    *     =  9    Change maximize state of window.
    *             Ps2 = 0    Restore maximized window.
    *                 = 1    Maximize window.
-   * 
+   *
    *     = 11    Reports window state.
    *             Response: CSI s t
    *               s = 1    Normal. (non-iconified)
    *                 = 2    Iconified.
-   * 
+   *
    *     = 13    Reports window position.
    *             Response: CSI 3 ; x ; y t
    *               x    X position of window.
    *               y    Y position of window.
-   * 
+   *
    *     = 14    Reports window size in pixels.
    *             Response: CSI 4 ; y ; x t
    *               y    Window height in pixels.
    *               x    Window width in pixels.
-   * 
+   *
    *     = 18    Reports terminal size in characters.
    *             Response: CSI 8 ; y ; x t
    *               y    Terminal height in characters. (Lines)
    *               x    Terminal width in characters. (Columns)
-   * 
+   *
    *     = 19    Reports root window size in characters.
    *             Response: CSI 9 ; y ; x t
    *               y    Root window height in characters.
    *               x    Root window width in characters.
-   * 
+   *
    *     = 20    Reports icon label.
    *             Response: OSC L title ST
    *               title    icon label. (window title)
-   * 
+   *
    *     = 21    Reports window title.
    *             Response: OSC l title ST
    *               title    Window title.
-   * 
+   *
    */
   "[profile('vt100'), sequence('CSI Ps t'), pnp]":
-  function DECSLPP(n1, n2, n3) 
+  function DECSLPP(n1, n2, n3)
   {
     this.manipulate(Array.slice(arguments));
   },
 
   "[subscribe('command/manipulate-window'), pnp]":
-  function manipulate(args) 
-  { 
+  function manipulate(args)
+  {
      var x,
          y,
          screen,
@@ -191,7 +191,7 @@ WindowManipulator.definition = {
         this.sendMessage(
           "command/resize-screen",
           {
-            column: column, 
+            column: column,
             row: row,
           });
         break;
@@ -222,10 +222,10 @@ WindowManipulator.definition = {
         this.sendMessage(
           "command/resize-screen",
           {
-            column: x, 
+            column: x,
             row: y,
           });
-        
+
         break;
 
       case 9:
@@ -254,7 +254,7 @@ WindowManipulator.definition = {
         y = target_element.boxObject.y;
         message = coUtils.Text.format("3;%d;%dt", x, y);
 
-        this.sendMessage("command/send-sequence/csi", message); 
+        this.sendMessage("command/send-sequence/csi", message);
         break;
 
       case 14:
@@ -269,7 +269,7 @@ WindowManipulator.definition = {
         height = screen.height * renderer.line_height;
         message = coUtils.Text.format("4;%d;%dt", height, width);
 
-        this.sendMessage("command/send-sequence/csi", message); 
+        this.sendMessage("command/send-sequence/csi", message);
         break;
 
       case 18:
@@ -282,7 +282,7 @@ WindowManipulator.definition = {
         height = screen.height;
         message = coUtils.Text.format("8;%d;%dt", height, width);
 
-        this.sendMessage("command/send-sequence/csi", message); 
+        this.sendMessage("command/send-sequence/csi", message);
         break;
 
       case 19:
@@ -298,31 +298,31 @@ WindowManipulator.definition = {
         row = Math.floor(height / renderer.line_height);
         message = coUtils.Text.format("9;%d;%dt", row, column);
 
-        this.sendMessage("command/send-sequence/csi", message); 
+        this.sendMessage("command/send-sequence/csi", message);
         break;
 
       case 20:
         // Reports icon label.
         // Response: OSC L title ST
         //   title    icon label. (window title)
-        this.sendMessage("sequence/decslpp/20"); 
+        this.sendMessage("sequence/decslpp/20");
         break;
 
       case 21:
         // Reports window title.
         // Response: OSC l title ST
         //   title    Window title.
-        this.sendMessage("sequence/decslpp/21"); 
+        this.sendMessage("sequence/decslpp/21");
         break;
 
       case 22:
         n2 = args.shift();
-        this.sendMessage("sequence/decslpp/22", n2); 
+        this.sendMessage("sequence/decslpp/22", n2);
         break;
 
       case 23:
         n2 = args.shift();
-        this.sendMessage("sequence/decslpp/23", n2); 
+        this.sendMessage("sequence/decslpp/23", n2);
         break;
 
       default:
@@ -332,7 +332,7 @@ WindowManipulator.definition = {
           this.sendMessage(
             "command/resize-screen",
             {
-              column: width, 
+              column: width,
               row: n1,
             });
         }
@@ -350,7 +350,7 @@ WindowManipulator.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new WindowManipulator(broker);
 }

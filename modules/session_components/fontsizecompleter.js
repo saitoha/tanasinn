@@ -44,18 +44,18 @@ FontsizeCompleter.definition = {
 
   "[persistable] enabled_when_startup": true,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
   },
 
   /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
   },
 
@@ -63,7 +63,7 @@ FontsizeCompleter.definition = {
    * Search for a given string and notify a listener (either synchronously
    * or asynchronously) of the result
    *
-   * @param context - The completion context object. 
+   * @param context - The completion context object.
    */
   "[completer('fontsize'), pnp]":
   function complete(context)
@@ -104,13 +104,13 @@ FontsizeCompleter.definition = {
       }
     } else {
 
-      generator = function() 
-        { 
+      generator = function()
+        {
           var i,
               str;
 
           for (i = 8; i < 100; ++i) {
-            str = i.toString(); 
+            str = i.toString();
             if (-1 !== str.indexOf(context.source)) {
               yield str;
             }
@@ -121,12 +121,12 @@ FontsizeCompleter.definition = {
         "event/answer-completion",
         {
           type: "fontsize",
-          query: context.source, 
+          query: context.source,
           data: [i for (i in generator)].map(
             function(size)
             {
               return {
-                name: size, 
+                name: size,
                 value: size,
               };
             }),

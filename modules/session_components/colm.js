@@ -35,9 +35,9 @@
  *
  * Note
  *
- * It is recommended that new applications use DECSCPP rather than DECCOLM. 
+ * It is recommended that new applications use DECSCPP rather than DECCOLM.
  * DECSCPP does not clear page memory or reset the scrolling regions, as does
- * DECCOLM. DECCOLM is provided mainly for compatibility with previous 
+ * DECCOLM. DECCOLM is provided mainly for compatibility with previous
  * products.
  *
  * Default: 80 columns
@@ -61,7 +61,7 @@
  * corresponding 80- or 132-column font.
  *
  *  If you change the DECCOLM setting, the terminal:
- *    - Sets the left, right, top and bottom scrolling margins to their 
+ *    - Sets the left, right, top and bottom scrolling margins to their
  *      default positions.
  *    - Erases all data in page memory.
  *
@@ -92,11 +92,11 @@ FixedColumnMode.definition = {
   _80mode: true,
   _screen: null,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
     this._mode = this.default_value;
     this._screen = context["screen"];
@@ -105,7 +105,7 @@ FixedColumnMode.definition = {
   /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
     this._mode = null;
     this._screen = null;
@@ -114,8 +114,8 @@ FixedColumnMode.definition = {
   /** Allow 80 <--> 132 mode
    */
   "[subscribe('sequence/decset/40'), pnp]":
-  function activate() 
-  { 
+  function activate()
+  {
     this._mode = true;
 
     coUtils.Debug.reportMessage(
@@ -125,7 +125,7 @@ FixedColumnMode.definition = {
   /** Disallow 80 <--> 132 mode
    */
   "[subscribe('sequence/decrst/40'), pnp]":
-  function deactivate() 
+  function deactivate()
   {
     this._mode = false;
 
@@ -136,7 +136,7 @@ FixedColumnMode.definition = {
   /** Change to 132 column mode
    */
   "[subscribe('sequence/decset/3'), pnp]":
-  function changeTo132ColumnMode() 
+  function changeTo132ColumnMode()
   {
     var screen = this._screen;
 
@@ -153,9 +153,9 @@ FixedColumnMode.definition = {
 
       this.sendMessage(
         "event/screen-size-changed",
-        { 
-          column: screen.width, 
-          row: screen.height 
+        {
+          column: screen.width,
+          row: screen.height
         });
     }
   },
@@ -163,7 +163,7 @@ FixedColumnMode.definition = {
   /** Change to 80 column mode
    */
   "[subscribe('sequence/decrst/3'), pnp]":
-  function changeTo80ColumnMode() 
+  function changeTo80ColumnMode()
   {
     var screen = this._screen;
 
@@ -180,9 +180,9 @@ FixedColumnMode.definition = {
 
       this.sendMessage(
         "event/screen-size-changed",
-        { 
-          column: screen.width, 
-          row: screen.height 
+        {
+          column: screen.width,
+          row: screen.height
         });
     }
   },
@@ -190,7 +190,7 @@ FixedColumnMode.definition = {
   /** Report mode
    */
   "[subscribe('sequence/decrqm/3'), pnp]":
-  function report3() 
+  function report3()
   {
     var mode = this._mode ? 1: 2,
         message = "?3;" + mode + "$y";
@@ -201,7 +201,7 @@ FixedColumnMode.definition = {
   /** Report mode
    */
   "[subscribe('sequence/decrqm/40'), pnp]":
-  function report() 
+  function report()
   {
     var mode = this._mode ? 1: 2,
         message = "?40;" + mode + "$y";
@@ -212,7 +212,7 @@ FixedColumnMode.definition = {
   /** on hard / soft reset
    */
   "[subscribe('command/{soft | hard}-terminal-reset'), pnp]":
-  function reset(broker) 
+  function reset(broker)
   {
     if (this.default_value) {
       this.activate();
@@ -224,8 +224,8 @@ FixedColumnMode.definition = {
   /**
    * Serialize snd persist current state.
    */
-  "[subscribe('@command/backup'), type('Object -> Undefined'), pnp]": 
-  function backup(context) 
+  "[subscribe('@command/backup'), type('Object -> Undefined'), pnp]":
+  function backup(context)
   {
     // serialize this plugin object.
     context[this.id] = {
@@ -236,8 +236,8 @@ FixedColumnMode.definition = {
   /**
    * Deserialize snd restore stored state.
    */
-  "[subscribe('@command/restore'), type('Object -> Undefined'), pnp]": 
-  function restore(context) 
+  "[subscribe('@command/restore'), type('Object -> Undefined'), pnp]":
+  function restore(context)
   {
     var data = context[this.id];
 
@@ -256,7 +256,7 @@ FixedColumnMode.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new FixedColumnMode(broker);
 }

@@ -59,16 +59,16 @@
  *
  *     1. This protocol is line-oriented. line terminator is '\n' (0x0a).
  *
- *     2. This protocol is command-based. 1 line should be interpreted as 1 
+ *     2. This protocol is command-based. 1 line should be interpreted as 1
  *        command.
- *        A command is composed of 1 or multiple tokens. token's delimiter is 
+ *        A command is composed of 1 or multiple tokens. token's delimiter is
  *        ' ' (0x20).
  *
  *     3. First token is <b>opecode</b>, represent a operation.
  *        An opecode consists of lower-case alphabetic sets ([a-z]+).
  *
  *     4. Tokens after <b>opecode</b> represent arguments.
- *        An arguments consists of multiple printable characters, that is 
+ *        An arguments consists of multiple printable characters, that is
  *        encoded in base64 Data Encodings, defined in RFC-3548.
  * <pre>
  *        example 1:
@@ -76,7 +76,7 @@
  * </pre>
  *          Opecode of this command is "xoff". "\n" is line terminator.
  * <pre>
- *        example 2: 
+ *        example 2:
  *          resize ODA= MjQ=\n
  * </pre>
  *          In this case, opecode is "resize".
@@ -111,13 +111,13 @@ ExternalDriver.definition = {
 
   /*
    * @param {String} script_path The first argument which is passed to runtime,
-   *                             expected to be script file path. 
+   *                             expected to be script file path.
    */
   "[persistable] script_path": "modules/ttydriver.py",
 
   _external_process: null,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
@@ -133,11 +133,11 @@ ExternalDriver.definition = {
   },
 
   /** Kill target process. */
-  kill: function kill(pid) 
+  kill: function kill(pid)
   {
     var kill_path,
         args,
-        external_process, 
+        external_process,
         runtime,
         process;
 
@@ -160,7 +160,7 @@ ExternalDriver.definition = {
       process.run(/* blocking */ true, args, args.length);
     } catch (e) {
       coUtils.Debug.reportMessage(
-        _("command '%s' failed."), 
+        _("command '%s' failed."),
         args.join(" "));
       return false;
     }
@@ -168,17 +168,17 @@ ExternalDriver.definition = {
   },
 
   /**
-   * Run external driver with arguments 
+   * Run external driver with arguments
    * which represents <I/O port No.> <Control port No.>.
    *
-   * @param {Number} control_port 
+   * @param {Number} control_port
    *
    */
-  "[subscribe('command/start-ttydriver-process'), pnp]": 
-  function start(connection_port) 
+  "[subscribe('command/start-ttydriver-process'), pnp]":
+  function start(connection_port)
   {
     var executable_path,
-        runtime, 
+        runtime,
         external_process,
         script_absolute_path,
         args;
@@ -210,7 +210,7 @@ ExternalDriver.definition = {
       args = [
         "/bin/sh", "-wait", "-l", "-c",
         coUtils.Text.format(
-          "exec %s \"$(cygpath '%s')\" %d", 
+          "exec %s \"$(cygpath '%s')\" %d",
           coUtils.Runtime.getPythonPath(),
           script_absolute_path,
           connection_port)
@@ -226,7 +226,7 @@ ExternalDriver.definition = {
 
   /** Kills handling process if it was alive. */
   "[subscribe('@event/broker-stopping'), pnp]":
-  function stop() 
+  function stop()
   {
     var external_process;
 
@@ -246,7 +246,7 @@ ExternalDriver.definition = {
 // nsIObserver
   observe: function observe(subject, topic, data)
   {
-    this._broker.stop(); 
+    this._broker.stop();
   },
 
   /**
@@ -270,7 +270,7 @@ ExternalDriver.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new ExternalDriver(broker);
 }

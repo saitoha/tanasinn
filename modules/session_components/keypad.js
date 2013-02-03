@@ -29,7 +29,7 @@
 var KeypadModeHandler = new Class().extends(Plugin)
                                    .depends("screen");
 KeypadModeHandler.definition = {
- 
+
   id: "keypadmode",
 
   getInfo: function getInfo()
@@ -44,33 +44,33 @@ KeypadModeHandler.definition = {
   "[persistable] enabled_when_startup": true,
 
   _screen: null,
-    
-  /** Installs itself. 
+
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
-  "[install]": 
-  function install(context) 
+  "[install]":
+  function install(context)
   {
     this._screen = context["screen"];
   },
-    
-  /** uninstalls itself. 
+
+  /** uninstalls itself.
    */
-  "[uninstall]": 
-  function uninstall() 
+  "[uninstall]":
+  function uninstall()
   {
     this._screen = null;
   },
 
-  /** normal keypad (Normal). 
+  /** normal keypad (Normal).
    *
    * DECKPNM / DECKPNM - Keypad Numeric Mode
-   * 
-   * DECKPNM enables the keypad to send numeric characters to the host. 
+   *
+   * DECKPNM enables the keypad to send numeric characters to the host.
    * DECKPAM enables the keypad to send application sequences.
-   * 
+   *
    * DECKPNM and DECKPAM function the same as numeric keypad mode (DECNKM).
-   * 
+   *
    * Default: Send numeric keypad characters.
    *
    * Format
@@ -79,32 +79,32 @@ KeypadModeHandler.definition = {
    * 1/11   3/14   Send numeric keypad characters.
    *
    * Description
-   * 
-   * DECKPNM enables the numeric keypad to send the characters shown on each 
-   * key-number, comma, period, or minus sign. Keys PF1 to PF4 send 
-   * application sequences. See DECKPAM-Keypad Application Mode for more 
+   *
+   * DECKPNM enables the numeric keypad to send the characters shown on each
+   * key-number, comma, period, or minus sign. Keys PF1 to PF4 send
+   * application sequences. See DECKPAM-Keypad Application Mode for more
    * information.
    *
    * Note on DECKPNM
-   * 
-   * The setting is not saved in NVM. When you turn on or reset the terminal, 
+   *
+   * The setting is not saved in NVM. When you turn on or reset the terminal,
    * it automatically selects numeric keypad mode.
-   */ 
+   */
   "[profile('vt100'), sequence('ESC >')]":
-  function DECPNM() 
+  function DECPNM()
   {
     this.sendMessage(
-      "event/keypad-mode-changed", 
+      "event/keypad-mode-changed",
       coUtils.Constant.KEYPAD_MODE_NORMAL);
   },
- 
-  /** application keypad (NumLock). 
+
+  /** application keypad (NumLock).
    *
    * DECKPAM / DECPAM - Keypad Application Mode
-   * 
-   * DECKPAM enables the numeric keypad to send application sequences to the 
+   *
+   * DECKPAM enables the numeric keypad to send application sequences to the
    * host. DECKPNM enables the numeric keypad to send numeric characters.
-   * 
+   *
    * DECKPAM and DECKPNM function the same as numeric keypad mode (DECNKM).
    *
    * Format
@@ -113,15 +113,15 @@ KeypadModeHandler.definition = {
    * 1/11   3/13   Send application sequences.
    *
    * Note on DECKPAM
-   * 
-   * The setting is not saved in NVM. When you turn on or reset the terminal, 
+   *
+   * The setting is not saved in NVM. When you turn on or reset the terminal,
    * it automatically selects numeric keypad mode.
    */
-  "[profile('vt100'), sequence('ESC =')]": 
-  function DECPAM() 
+  "[profile('vt100'), sequence('ESC =')]":
+  function DECPAM()
   {
     this.sendMessage(
-      "event/keypad-mode-changed", 
+      "event/keypad-mode-changed",
       coUtils.Constant.KEYPAD_MODE_APPLICATION);
   },
 
@@ -132,7 +132,7 @@ KeypadModeHandler.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new KeypadModeHandler(broker);
 }

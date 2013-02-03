@@ -27,7 +27,7 @@
 
 /**
  *  @class Cursor
- */ 
+ */
 var Cursor = new Class().extends(Plugin)
                         .depends("renderer")
                         .depends("screen")
@@ -46,7 +46,7 @@ Cursor.definition = {
   },
 
   /** UI template */
-  getTemplate: function getTemplate() 
+  getTemplate: function getTemplate()
   {
     return {
       parentNode: "#tanasinn_center_area",
@@ -87,12 +87,12 @@ Cursor.definition = {
   _renderer: null,
   _cursor_state: null,
   _previous_position: null,
- 
-  /** Installs itself. 
+
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
-  "[install]": 
-  function install(context) 
+  "[install]":
+  function install(context)
   {
     var result;
 
@@ -116,10 +116,10 @@ Cursor.definition = {
     this._prepareBlink();
   },
 
-  /** Uninstalls itself. 
+  /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
     if (null !== this._timer) {
       this._timer.cancel();
@@ -194,7 +194,7 @@ Cursor.definition = {
    * DECSCUSR - Set Cursor Style
    *
    * ref: http://www.vt100.net/docs/vt510-rm/DECSCUSR
-   * 
+   *
    * Select the style of the cursor on the screen.
    *
    * Format
@@ -203,7 +203,7 @@ Cursor.definition = {
    * 9/11  3/n   2/0   7/1
    *
    * Parameters
-   * 
+   *
    * Ps indicates the style of the cursor.
    *
    * Ps             Cursor Style
@@ -214,17 +214,17 @@ Cursor.definition = {
    * 4              Steady Underline
    * 5              Blink IBEAM (TeraTerm, mintty)
    * 6              Steady IBEAM (TeraTerm, mintty)
-   * 
+   *
    * This sequence causes the cursor to be displayed in a different style when
    * the cursor is enabled.
    *
    * Note on DECSCUSR
-   * 
+   *
    * The escape sequence DECTCEM can enable or disable the cursor display.
    *
    */
   "[profile('vt100'), sequence('CSI Ps SP q')]":
-  function DECSCUSR(n) 
+  function DECSCUSR(n)
   {
     var cursor_state = this._cursor_state;
 
@@ -267,9 +267,9 @@ Cursor.definition = {
         break;
     }
   },
- 
+
   "[subscribe('sequence/decrqss/decscusr'), pnp]":
-  function onRequestStatus(data) 
+  function onRequestStatus(data)
   {
     var cursor_state = this._cursor_state,
         param;
@@ -306,15 +306,15 @@ Cursor.definition = {
 
     this.sendMessage("command/send-sequence/dcs", message);
   },
- 
-  "[subscribe('command/debugger-pause'), pnp]": 
-  function onPause() 
+
+  "[subscribe('command/debugger-pause'), pnp]":
+  function onPause()
   {
     this._debugged = true;
   },
 
-  "[subscribe('command/debugger-resume'), pnp]": 
-  function onResume() 
+  "[subscribe('command/debugger-resume'), pnp]":
+  function onResume()
   {
     this._debugged = false;
   },
@@ -327,39 +327,39 @@ Cursor.definition = {
     this._previous_position = null;
   },
 
-  "[subscribe('event/font-size-changed'), pnp]": 
-  function onFontSizeChanged(value) 
+  "[subscribe('event/font-size-changed'), pnp]":
+  function onFontSizeChanged(value)
   {
     this.clear();
   },
 
-  hide: function hide() 
+  hide: function hide()
   {
     this._cursor_visibility = false;
   },
 
-  show: function show() 
+  show: function show()
   {
     this._cursor_visibility = true;
   },
 
-  "[subscribe('event/cursor-visibility-changed'), pnp]": 
-  function onCursorVisibilityChanged(value) 
+  "[subscribe('event/cursor-visibility-changed'), pnp]":
+  function onCursorVisibilityChanged(value)
   {
     this._cursor_visibility = value;
   },
 
-  "[subscribe('command/backup'), pnp]": 
-  function backup(context) 
+  "[subscribe('command/backup'), pnp]":
+  function backup(context)
   {
     context.cursor = {
       opacity: this.opacity,
       color: this.color,
-    }; 
+    };
   },
 
-  "[subscribe('command/restore'), pnp]": 
-  function restore(context) 
+  "[subscribe('command/restore'), pnp]":
+  function restore(context)
   {
     var cursor = context.cursor;
 
@@ -369,8 +369,8 @@ Cursor.definition = {
     }
   },
 
-  "[subscribe('command/terminal-cursor-blinking-mode-change'), pnp]": 
-  function onBlinkingModeChanged(blink) 
+  "[subscribe('command/terminal-cursor-blinking-mode-change'), pnp]":
+  function onBlinkingModeChanged(blink)
   {
     this._blink = blink;
 
@@ -384,41 +384,41 @@ Cursor.definition = {
     }
   },
 
-  "[subscribe('event/screen-width-changed'), pnp]": 
+  "[subscribe('event/screen-width-changed'), pnp]":
   function onWidthChanged(width)
   {
     this._canvas.width = width;
     this.clear();
   },
 
-  "[subscribe('event/screen-height-changed'), pnp]": 
+  "[subscribe('event/screen-height-changed'), pnp]":
   function onHeightChanged(height)
   {
     this._canvas.height = height;
     this.clear();
   },
 
-  "[subscribe('command/draw'), pnp]": 
-  function onDraw() 
+  "[subscribe('command/draw'), pnp]":
+  function onDraw()
   {
     this.update();
   },
 
-  "[subscribe('variable-changed/renderer.{line_height | char_width}'), pnp]": 
-  function onCursorSizeChanged() 
-  {
-    this.update();
-  },
-
-  /** Set cursor position */
-  "[subscribe('variable-changed/cursor.{color | opacity | opacity2 | radius | shadow_blur | shadow_color}'), pnp]": 
-  function onCursorSettingsChanged() 
+  "[subscribe('variable-changed/renderer.{line_height | char_width}'), pnp]":
+  function onCursorSizeChanged()
   {
     this.update();
   },
 
   /** Set cursor position */
-  update: function update() 
+  "[subscribe('variable-changed/cursor.{color | opacity | opacity2 | radius | shadow_blur | shadow_color}'), pnp]":
+  function onCursorSettingsChanged()
+  {
+    this.update();
+  },
+
+  /** Set cursor position */
+  update: function update()
   {
     var screen = this._screen,
         cursor_state = this._cursor_state,
@@ -430,15 +430,15 @@ Cursor.definition = {
   },
 
   "[subscribe('event/scroll-session-started'), pnp]":
-  function onScrollSessionStarted() 
+  function onScrollSessionStarted()
   {
     this._cursor_visibility_backup.push(this._cursor_visibility);
     this._cursor_visibility = false;
     this.update();
   },
-    
+
   "[subscribe('event/scroll-session-closed'), pnp]":
-  function onScrollSessionClosed() 
+  function onScrollSessionClosed()
   {
     if (0 !== this._cursor_visibility_backup.length) {
       this._cursor_visibility = this._cursor_visibility_backup.pop();
@@ -446,15 +446,15 @@ Cursor.definition = {
     this.update();
   },
 
-  "[subscribe('command/ime-composition-start'), pnp]": 
-  function onCompositionStart(ime) 
+  "[subscribe('command/ime-composition-start'), pnp]":
+  function onCompositionStart(ime)
   {
     this._cursor_visibility_backup.push(this._cursor_visibility);
     this._cursor_visibility = false;
   },
 
-  "[subscribe('event/ime-composition-end'), pnp]": 
-  function onCompositionEnd(ime) 
+  "[subscribe('event/ime-composition-end'), pnp]":
+  function onCompositionEnd(ime)
   {
     if (0 !== this._cursor_visibility_backup.length) {
       this._cursor_visibility = this._cursor_visibility_backup.pop();
@@ -469,7 +469,7 @@ Cursor.definition = {
   },
 
   /** Render cursor. */
-  _render: function _render(row, column, is_wide) 
+  _render: function _render(row, column, is_wide)
   {
     var context = this._context,
         canvas = this._canvas,
@@ -579,11 +579,11 @@ Cursor.definition = {
   },
 
   /** Set blink timer. */
-  _prepareBlink: function _prepareBlink() 
+  _prepareBlink: function _prepareBlink()
   {
     if (null !== this._timer) {
       this._timer.cancel();
-    } 
+    }
 
     this._timer = coUtils.Timer
       .setInterval(this._blinkImpl, this.blink_duration, this);
@@ -601,7 +601,7 @@ Cursor.definition = {
   },
 
   /** Set cursor visibility. */
-  _setVisibility: function _setVisibility(visibility) 
+  _setVisibility: function _setVisibility(visibility)
   {
     var canvas = this._canvas;
 
@@ -622,7 +622,7 @@ Cursor.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new Cursor(broker);
 }

@@ -71,11 +71,11 @@ while (<IN>) {
     if ($_ =~ /^([0-9A-F]{4});[^;]*;(Mn|Me|Cf)/
      || $_ =~ /^11[6-9A-F][0-9A-F];/
      || $_ =~ /^200B;/ )
-    { 
+    {
         $wcmap1{$1} = 0;
         $wcmap2{$1} = 0;
     }
-#    if ($_ =~ /^([0-9A-F]{5});[^;]*;(Mn|Me|Cf)/) { 
+#    if ($_ =~ /^([0-9A-F]{5});[^;]*;(Mn|Me|Cf)/) {
 #        my $n = hex $1;
 #        my $first = sprintf "%04x", (($n >> 10) + 0xD800);
 #        my $second = sprintf "%04x", (($n & 0x3ff) + 0xDC00);
@@ -150,7 +150,7 @@ print <<EOF;
 
 "use strict";
 
-function wcwidth_amb_as_single(c) 
+function wcwidth_amb_as_single(c)
 {
     if (c < 0x10000) {
         var s = String.fromCharCode(c);
@@ -169,9 +169,9 @@ function wcwidth_amb_as_single(c)
         return 2;
     }
     return 1;
-} 
+}
 
-function wcwidth_amb_as_double(c) 
+function wcwidth_amb_as_double(c)
 {
     if (c < 0x10000) {
         var s = String.fromCharCode(c);

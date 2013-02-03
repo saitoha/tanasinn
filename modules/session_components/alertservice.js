@@ -25,9 +25,9 @@
 "use strict";
 
 
-/** 
+/**
  * @class ForwardInputIterator
- */ 
+ */
 var ForwardInputIterator = new Class();
 ForwardInputIterator.definition = {
 
@@ -35,26 +35,26 @@ ForwardInputIterator.definition = {
   _position: 0,
 
   /** Assign new string data. position is reset. */
-  initialize: function initialize(value) 
+  initialize: function initialize(value)
   {
     this._value = value;
     this._position = 0;
   },
 
   /** Returns single byte code point. */
-  current: function current() 
+  current: function current()
   {
     return this._value.charCodeAt(this._position);
   },
 
   /** Moves to next position. */
-  moveNext: function moveNext() 
+  moveNext: function moveNext()
   {
     ++this._position;
   },
 
   /** Returns whether scanner position is at end. */
-  get isEnd() 
+  get isEnd()
   {
     return this._position >= this._value.length;
   },
@@ -83,19 +83,19 @@ NotificationService.definition = {
 
   _decoder: null,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
     this._decoder = context["decoder"];
   },
 
-  /** Uninstalls itself. 
+  /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
     this._decoder = null;
   },
@@ -123,11 +123,11 @@ NotificationService.definition = {
                              text,     // cookie
                              this,
                              "" // name
-                             ); 
+                             );
   },
 
 // nsIObserver implementation
-  observe: function observe(subject, topic, data) 
+  observe: function observe(subject, topic, data)
   {
     if ("alertclickcallback" === topic) {
       this.sendMessage("command/focus");
@@ -147,7 +147,7 @@ NotificationService.definition = {
     }
     return this;
   },
- 
+
 }; // NotificationService
 
 
@@ -170,18 +170,18 @@ AlertService.definition = {
 
   "[persistable] enabled_when_startup": true,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
   },
 
-  /** Uninstalls itself. 
+  /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
   },
 
@@ -199,7 +199,7 @@ AlertService.definition = {
           true,  // textClickable
           data.text,     // cookie
           {
-            observe: function observe(subject, topic, data) 
+            observe: function observe(subject, topic, data)
             {
               if ("alertclickcallback" === topic) {
                 self.sendMessage("command/select-panel", "!console.panel");
@@ -207,7 +207,7 @@ AlertService.definition = {
             }
           },   // listener
           "" // name
-          ); 
+          );
     } catch (e) {
       ; // pass
       // Ignore this error.
@@ -223,7 +223,7 @@ AlertService.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new AlertService(broker);
   new NotificationService(broker);

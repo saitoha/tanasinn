@@ -42,43 +42,43 @@ MessageFilter.definition = {
     };
   },
 
-  filter_expression: 
+  filter_expression:
     /^\[(.+?): "(tanasinn: )?([^"]*?)" {file: "([^"]*?)" line: ([0-9]+?)( name: "([^"]*?)")?}\]$/m,
-  
+
   "[persistable] enabled_when_startup": true,
   "[persistable] show_alert_message": false,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
     this.sendMessage("event/console-filter-collection-changed");
   },
 
-  /** Uninstalls itself. 
+  /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
     this.sendMessage("event/console-filter-collection-changed");
   },
 
-  "[subscribe('get/message-filters'), pnp]": 
-  function onMessageFiltersRequired(filters) 
+  "[subscribe('get/message-filters'), pnp]":
+  function onMessageFiltersRequired(filters)
   {
     return this;
   },
 
-  test: function test(logtext) 
+  test: function test(logtext)
   {
     this.logtext = logtext;
     this.match = logtext.match(this.filter_expression);
     return null !== this.match;
   },
 
-  action: function action() 
+  action: function action()
   {
     var logtext = this.logtext,
         match = this.match,
@@ -98,7 +98,7 @@ MessageFilter.definition = {
 
       if (this.show_alert_message) {
         this.sendMessage(
-          "command/show-popup-alert", 
+          "command/show-popup-alert",
           {
             title: title,
             text: text,
@@ -118,31 +118,31 @@ MessageFilter.definition = {
         borderBottom: "1px solid green",
       },
       childNodes: [
-        { 
-          tagName: "label", 
+        {
+          tagName: "label",
           crop: "start",
           width: 100,
-          value: file + " ", 
+          value: file + " ",
           style: "color: red; width: 4em;",
         },
-        { 
-          tagName: "label", 
+        {
+          tagName: "label",
           value: "line: " + line,
           style: "padding: 0px 4px",
         },
-        { 
-          tagName: "label", 
-          value: message, 
+        {
+          tagName: "label",
+          value: message,
         },
       ]
     };
   },
 
-  /** Returns className string which corresponds to specified message category 
-   *  string. 
+  /** Returns className string which corresponds to specified message category
+   *  string.
    *  @param {String} category A message category string.
    */
-  _getClassString: function(category) 
+  _getClassString: function(category)
   {
     var result;
 
@@ -162,7 +162,7 @@ MessageFilter.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new MessageFilter(broker);
 }

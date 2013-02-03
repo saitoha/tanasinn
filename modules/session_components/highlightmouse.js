@@ -29,7 +29,7 @@
  * @class HighlightMouseMode
  *
  * XT_MSE_HL - highlight mouse mode
- * 
+ *
  * Default: off
  *
  * Format
@@ -65,11 +65,11 @@ HighlightMouseMode.definition = {
 
   _mode: false,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
     this._mode = this.default_value;
   },
@@ -77,34 +77,34 @@ HighlightMouseMode.definition = {
   /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
     this._mode = null;
   },
 
-  /** Send Mouse X & Y on button press and release. 
+  /** Send Mouse X & Y on button press and release.
    */
   "[subscribe('sequence/decset/1001'), pnp]":
-  function activate() 
-  { 
+  function activate()
+  {
     this._mode = true;
 
     this.sendMessage(
-      "event/mouse-tracking-mode-changed", 
+      "event/mouse-tracking-mode-changed",
       coUtils.Constant.TRACKING_HIGHLIGHT);
     coUtils.Debug.reportMessage(
       _("DECSET 1001 - xterm hilite mouse tracking mode was set."));
   },
- 
+
   /** Don't Use Hilite Mouse Tracking.
    */
   "[subscribe('sequence/decrst/1001'), pnp]":
-  function deactivate() 
+  function deactivate()
   {
     this._mode = false;
 
     this.sendMessage(
-      "event/mouse-tracking-mode-changed", 
+      "event/mouse-tracking-mode-changed",
       coUtils.Constant.TRACKING_NONE);
     coUtils.Debug.reportMessage(
       _("DECRST 1001 - xterm hilite mouse tracking mode was reset."));
@@ -113,7 +113,7 @@ HighlightMouseMode.definition = {
   /** Report mode
    */
   "[subscribe('sequence/decrqm/1001'), pnp]":
-  function report() 
+  function report()
   {
     var mode = this._mode ? 1: 2,
         message = "?1001;" + mode + "$y";
@@ -124,7 +124,7 @@ HighlightMouseMode.definition = {
   /** on hard / soft reset
    */
   "[subscribe('command/{soft | hard}-terminal-reset'), pnp]":
-  function reset(broker) 
+  function reset(broker)
   {
     if (this.default_value) {
       this.activate();
@@ -136,8 +136,8 @@ HighlightMouseMode.definition = {
   /**
    * Serialize snd persist current state.
    */
-  "[subscribe('@command/backup'), type('Object -> Undefined'), pnp]": 
-  function backup(context) 
+  "[subscribe('@command/backup'), type('Object -> Undefined'), pnp]":
+  function backup(context)
   {
     // serialize this plugin object.
     context[this.id] = {
@@ -148,8 +148,8 @@ HighlightMouseMode.definition = {
   /**
    * Deserialize snd restore stored state.
    */
-  "[subscribe('@command/restore'), type('Object -> Undefined'), pnp]": 
-  function restore(context) 
+  "[subscribe('@command/restore'), type('Object -> Undefined'), pnp]":
+  function restore(context)
   {
     var data = context[this.id];
 
@@ -169,7 +169,7 @@ HighlightMouseMode.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new HighlightMouseMode(broker);
 }

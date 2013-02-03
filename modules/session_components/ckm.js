@@ -29,11 +29,11 @@
  * @class ApplicationCursorMode
  *
  * DECCKM - Cursor Keys Mode
- * 
+ *
  * This control function selects the sequences the arrow keys send. You can
  * use the four arrow keys to move the cursor through the current page or to
  * send special application commands.
- * 
+ *
  * Default: Cursor
  *
  * Format
@@ -50,11 +50,11 @@
  * Reset: cursor sequences.
  *
  * Description
- * 
- * If the DECCKM function is set, then the arrow keys send application 
+ *
+ * If the DECCKM function is set, then the arrow keys send application
  * sequences to the host.
- * 
- * If the DECCKM function is reset, then the arrow keys send ANSI cursor 
+ *
+ * If the DECCKM function is reset, then the arrow keys send ANSI cursor
  * sequences to the host.
  */
 var ApplicationCursorMode = new Class().extends(Plugin);
@@ -76,11 +76,11 @@ ApplicationCursorMode.definition = {
 
   _mode: null,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
     this._mode = this.default_value;
   },
@@ -88,7 +88,7 @@ ApplicationCursorMode.definition = {
   /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
     this._mode = null;
   },
@@ -97,8 +97,8 @@ ApplicationCursorMode.definition = {
   /** Activate auto-repeat feature.
    */
   "[subscribe('sequence/decset/1'), pnp]":
-  function activate() 
-  { 
+  function activate()
+  {
     this._mode = true;
 
     // enable application cursor mode.
@@ -110,7 +110,7 @@ ApplicationCursorMode.definition = {
   /** Deactivate auto-repeat feature
    */
   "[subscribe('sequence/decrst/1'), pnp]":
-  function deactivate() 
+  function deactivate()
   {
     this._mode = false;
 
@@ -123,7 +123,7 @@ ApplicationCursorMode.definition = {
   /** Report mode
    */
   "[subscribe('sequence/decrqm/1'), pnp]":
-  function report() 
+  function report()
   {
     var mode = this._mode ? 1: 2,
         message = "?1;" + mode + "$y";
@@ -134,7 +134,7 @@ ApplicationCursorMode.definition = {
   /** on hard / soft reset
    */
   "[subscribe('command/{soft | hard}-terminal-reset'), pnp]":
-  function reset(broker) 
+  function reset(broker)
   {
     if (this.default_value) {
       this.activate();
@@ -146,8 +146,8 @@ ApplicationCursorMode.definition = {
   /**
    * Serialize snd persist current state.
    */
-  "[subscribe('@command/backup'), type('Object -> Undefined'), pnp]": 
-  function backup(context) 
+  "[subscribe('@command/backup'), type('Object -> Undefined'), pnp]":
+  function backup(context)
   {
     // serialize this plugin object.
     context[this.id] = {
@@ -158,8 +158,8 @@ ApplicationCursorMode.definition = {
   /**
    * Deserialize snd restore stored state.
    */
-  "[subscribe('@command/restore'), type('Object -> Undefined'), pnp]": 
-  function restore(context) 
+  "[subscribe('@command/restore'), type('Object -> Undefined'), pnp]":
+  function restore(context)
   {
     var data = context[this.id];
 
@@ -178,7 +178,7 @@ ApplicationCursorMode.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new ApplicationCursorMode(broker);
 }

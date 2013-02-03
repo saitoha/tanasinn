@@ -43,18 +43,18 @@ CommandProvider.definition = {
 
   "[persistable] enabled_when_startup": true,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
   },
 
-  /** Uninstalls itself 
+  /** Uninstalls itself
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
   },
 
@@ -62,7 +62,7 @@ CommandProvider.definition = {
   {
     var commands = this.sendMessage("get/commands"),
         filtered_command = commands.filter(
-          function filterProc(command) 
+          function filterProc(command)
           {
             return 0 === command.name.replace(/[\[\]]/g, "")
               .indexOf(command_name);
@@ -84,9 +84,9 @@ CommandProvider.definition = {
     }
     return filtered_command.shift();
   },
-  
+
   "[subscribe('command/complete-commandline'), pnp]":
-  function complete(completion_info) 
+  function complete(completion_info)
   {
     var pattern = /^\s*([0-9]*)(\w*)(\s*)/y,
         match = pattern.exec(completion_info.source),
@@ -108,9 +108,9 @@ CommandProvider.definition = {
       this.sendMessage("command/query-completion/command", completion_info);
     }
   },
-  
+
   "[subscribe('command/eval-commandline'), pnp]":
-  function evaluate(source) 
+  function evaluate(source)
   {
     var pattern = /^\s*([0-9]*)(\w+)(\s*)/y,
         match = pattern.exec(source),
@@ -123,7 +123,7 @@ CommandProvider.definition = {
 
     if (null === match) {
       this.sendMessage(
-        "command/report-status-message", 
+        "command/report-status-message",
         _("Failed to parse given commandline code."));
       return;
     }
@@ -134,7 +134,7 @@ CommandProvider.definition = {
 
     if (!command) {
       this.sendMessage(
-        "command/report-status-message", 
+        "command/report-status-message",
         coUtils.Text.format(
           _("Command '%s' is not found."), command_name));
       return; // unknown command;
@@ -152,7 +152,7 @@ CommandProvider.definition = {
       }
     } catch (e) {
       this.sendMessage(
-        "command/report-status-message", 
+        "command/report-status-message",
         coUtils.Text.format(
           _("Failed to evaluate given commandline code: %s"), e));
       return;

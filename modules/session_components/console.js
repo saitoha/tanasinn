@@ -45,7 +45,7 @@ Console.definition = {
 
   getTemplate: function getTemplate()
   {
-    return { 
+    return {
       tagName: "vbox",
       id: "tanasinn_console_panel",
       className: "tanasinn-console",
@@ -77,8 +77,8 @@ Console.definition = {
           childNodes: {
             tagName: "hbox",
             style: {
-              overflow: "hidden", 
-              margin: "0px", 
+              overflow: "hidden",
+              margin: "0px",
               MozBoxPack: "center",
             },
             childNodes: [
@@ -108,8 +108,8 @@ Console.definition = {
                     },
                     listener: {
                       type: "command",
-                      handler: function(event) 
-                      { 
+                      handler: function(event)
+                      {
                         var id = "#console_output_box";
                         var output_box = tab_panel.querySelector(id);
                         output_box.className = this.value;
@@ -118,7 +118,7 @@ Console.definition = {
                     onconstruct: function() {
                       if ("error" === this.value) {
                         coUtils.Timer.setTimeout(
-                          function() this.checked = true, 
+                          function() this.checked = true,
                           10, this);
                       }
                     },
@@ -136,7 +136,7 @@ Console.definition = {
                 tagName: "toolbarbutton",
                 label: _("Clear"),
                 //id: "Console:clear",
-                style: { 
+                style: {
                   MozAppearance: "none",
                   background: "-moz-linear-gradient(top, #ccc, #777)",
                   font: "menu",
@@ -162,24 +162,24 @@ Console.definition = {
 
   "[persistable] enabled_when_startup": false,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
-  }, 
+  },
 
   /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
     this.sendMessage("command/remove-panel", "console.panel");
   },
 
-  "[subscribe('@get/panel-items'), pnp]": 
-  function onPanelItemRequested(panel) 
+  "[subscribe('@get/panel-items'), pnp]":
+  function onPanelItemRequested(panel)
   {
     var template = this.getTemplate(),
         panel_item = panel.alloc("console.panel", _("Console")),
@@ -195,16 +195,16 @@ Console.definition = {
   },
 
   "[command('console'), nmap('<C-S-a>', '<M-a>'), _('Open console.'), pnp]":
-  function select(info) 
+  function select(info)
   {
     this.sendMessage("command/select-panel", "console.panel");
     return true;
   },
-  
-  /** Clears all message lines from output container. 
+
+  /** Clears all message lines from output container.
    */
   "[subscribe('command/clear-messages')]":
-  function clear() 
+  function clear()
   {
     while (this._console_box.firstChild) {
       this._console_box.removeChild(this._console_box.firstChild);
@@ -212,7 +212,7 @@ Console.definition = {
   },
 
   /** tracks growing scroll region. */
-  scrollToBottom: function scrollToBottom() 
+  scrollToBottom: function scrollToBottom()
   {
     var output_element = this._output_box,
         frame_element,
@@ -222,7 +222,7 @@ Console.definition = {
       frame_element = output_element.parentNode;
 
       if (frame_element && frame_element.scrollHeight && frame_element.boxObject) {
-        current_scroll_position 
+        current_scroll_position
           = frame_element.scrollTop + frame_element.boxObject.height;
         if (current_scroll_position + 50 > frame_element.scrollHeight) {
           //coUtils.Timer.setTimeout(function() {
@@ -240,7 +240,7 @@ Console.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new Console(broker);
 }

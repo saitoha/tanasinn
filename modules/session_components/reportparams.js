@@ -55,30 +55,30 @@ ReportParams.definition = {
    *
    * DECREQTPARM – Request Terminal Parameters
    *
-   * CSI <sol> x   
+   * CSI <sol> x
    *
-   * The sequence DECREPTPARM is sent by the terminal controller to notify 
-   * the host of the status of selected terminal parameters. The status 
-   * sequence may be sent when requested by the host or at the terminal's 
-   * discretion. DECREPTPARM is sent upon receipt of a DECREQTPARM. 
-   * On power-up or reset, the VT100 is inhibited from sending unsolicited 
+   * The sequence DECREPTPARM is sent by the terminal controller to notify
+   * the host of the status of selected terminal parameters. The status
+   * sequence may be sent when requested by the host or at the terminal's
+   * discretion. DECREPTPARM is sent upon receipt of a DECREQTPARM.
+   * On power-up or reset, the VT100 is inhibited from sending unsolicited
    * reports.
    *
    * The meanings of the sequence parameters are:
    *
    * Parameter  Value       Meaning
    *
-   * <sol>      0 or none   This message is a request (DECREQTPARM) and the 
-   *                        terminal will be allowed to send unsolicited 
-   *                        reports. (Unsolicited reports are sent when the 
+   * <sol>      0 or none   This message is a request (DECREQTPARM) and the
+   *                        terminal will be allowed to send unsolicited
+   *                        reports. (Unsolicited reports are sent when the
    *                        terminal exits the SET-UP mode).
    *
-   *            1           This message is a request; from now on the 
+   *            1           This message is a request; from now on the
    *                        terminal may only report in response to a request.
    *
    *            2           This message is a report (DECREPTPARM).
    *
-   *            3           This message is a report and the terminal is only 
+   *            3           This message is a report and the terminal is only
    *                        reporting on request.
    *
    * <par>      1           No parity set
@@ -91,13 +91,13 @@ ReportParams.definition = {
    *
    *            2           7 bits per character
    *
-   * <xspeed>, 
+   * <xspeed>,
    * <rspeed>   0           50  Bits per second
    *
    *            8           75
-   * 
+   *
    *            16          110
-   * 
+   *
    *            24          134.5
    *
    *            32          150
@@ -119,7 +119,7 @@ ReportParams.definition = {
    *            96          3600
    *
    *            104         4800
-   *            
+   *
    *            112         9600
    *
    *            120         19200
@@ -127,36 +127,36 @@ ReportParams.definition = {
    * <clkmul>   1           The bit rate multiplier is 16.
    *
    * <flags>    0-15        This value communicates the four switch values in
-   *                        block 5 of SET UP B, which are only visible to the 
-   *                        user when an STP option is installed. These bits 
-   *                        may be assigned for an STP device. The four bits 
+   *                        block 5 of SET UP B, which are only visible to the
+   *                        user when an STP option is installed. These bits
+   *                        may be assigned for an STP device. The four bits
    *                        are a decimal-encoded binary number.
    *
    *
    * DECREPTPARM – Report Terminal Parameters
    *
-   * ESC [ <sol>; <par>; <nbits>; <xspeed>; <rspeed>; <clkmul>; <flags> x    
+   * ESC [ <sol>; <par>; <nbits>; <xspeed>; <rspeed>; <clkmul>; <flags> x
    *
    * These sequence parameters are explained below in the DECREQTPARM sequence.
    *
    */
-  "[profile('vt100'), sequence('CSI Ps x')]": 
-  function DECREQTPARM(n) 
+  "[profile('vt100'), sequence('CSI Ps x')]":
+  function DECREQTPARM(n)
   { // Request Terminal Parameters
 
     var message;
 
     switch (n || 0) {
 
-      // This message is a request (DECREQTPARM) and the terminal will be 
-      // allowed to send unsolicited reports. (Unsolicited reports are 
+      // This message is a request (DECREQTPARM) and the terminal will be
+      // allowed to send unsolicited reports. (Unsolicited reports are
       // sent when the terminal exits the SET-UP mode).
       case 0:
         message = "2;" + this._termattr;
         this.sendMessage("command/send-sequence/csi", message);
         break;
 
-      // This message is a request; from now on the 
+      // This message is a request; from now on the
       // terminal may only report in response to a request.
       case 1:
         message = "3;" + this._termattr;
@@ -177,7 +177,7 @@ ReportParams.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new ReportParams(broker);
 }

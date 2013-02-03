@@ -29,11 +29,11 @@
  * @class OriginMode
  *
  * DECOM - Origin Mode
- * 
+ *
  * This control function sets the origin for the cursor. DECOM determines if
  * the cursor position is restricted to inside the page margins. When you
  * power up or reset the terminal, you reset origin mode.
- * 
+ *
  * Default: Origin is at the upper-left of the screen, independent of margins.
  *
  * Format
@@ -42,7 +42,7 @@
  * 9/11  3/15  3/6   6/8
  *
  * Set: within margins.
- * 
+ *
  *
  * CSI   ?     6     l
  * 9/11  3/15  3/6   6/12
@@ -51,12 +51,12 @@
  *
  *
  * Description
- * 
+ *
  * When DECOM is set, the home cursor position is at the upper-left corner of
  * the screen, within the margins. The starting point for line numbers depends
  * on the current top margin setting. The cursor cannot move outside of the
  * margins.
- * 
+ *
  * When DECOM is reset, the home cursor position is at the upper-left corner of
  * the screen. The starting point for line numbers is independent of the
  * margins. The cursor can move outside of the margins.
@@ -83,11 +83,11 @@ OriginMode.definition = {
   _mode: null,
   _cursor: null,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
     this._mode = this.default_value;
     this._cursor = context["cursorstate"];
@@ -96,7 +96,7 @@ OriginMode.definition = {
   /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
     this._mode = null;
     this._cusor = null;
@@ -105,8 +105,8 @@ OriginMode.definition = {
   /** Enable origin mode (DECOM)
    */
   "[subscribe('sequence/decset/6'), pnp]":
-  function activate() 
-  { 
+  function activate()
+  {
     var cursor = this._cursor;
 
     this._mode = true;
@@ -124,7 +124,7 @@ OriginMode.definition = {
   /** Disable origin mode (DECOM)
    */
   "[subscribe('sequence/decrst/6'), pnp]":
-  function deactivate() 
+  function deactivate()
   {
     var cursor = this._cursor;
 
@@ -142,7 +142,7 @@ OriginMode.definition = {
   /** Report mode
    */
   "[subscribe('sequence/decrqm/6'), pnp]":
-  function report() 
+  function report()
   {
     var mode = this._mode ? 1: 2,
         message = "?6;" + mode + "$y";
@@ -153,7 +153,7 @@ OriginMode.definition = {
   /** on hard / soft reset
    */
   "[subscribe('command/{soft | hard}-terminal-reset'), pnp]":
-  function reset(broker) 
+  function reset(broker)
   {
     if (this.default_value) {
       this.activate();
@@ -165,8 +165,8 @@ OriginMode.definition = {
   /**
    * Serialize snd persist current state.
    */
-  "[subscribe('@command/backup'), type('Object -> Undefined'), pnp]": 
-  function backup(context) 
+  "[subscribe('@command/backup'), type('Object -> Undefined'), pnp]":
+  function backup(context)
   {
     // serialize this plugin object.
     context[this.id] = {
@@ -177,8 +177,8 @@ OriginMode.definition = {
   /**
    * Deserialize snd restore stored state.
    */
-  "[subscribe('@command/restore'), type('Object -> Undefined'), pnp]": 
-  function restore(context) 
+  "[subscribe('@command/restore'), type('Object -> Undefined'), pnp]":
+  function restore(context)
   {
     var data = context[this.id];
 
@@ -197,7 +197,7 @@ OriginMode.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new OriginMode(broker);
 }

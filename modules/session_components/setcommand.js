@@ -44,18 +44,18 @@ SetCommand.definition = {
 
   "[persistable] enabled_when_startup": true,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
   },
 
-  /** Uninstalls itself 
+  /** Uninstalls itself
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
   },
 
@@ -96,7 +96,7 @@ SetCommand.definition = {
     }
 
     candidates = modules.filter(
-      function(module) 
+      function(module)
       {
         if ("id" in module) {
           return module.id === component_name;
@@ -107,10 +107,10 @@ SetCommand.definition = {
       return {
         success: false,
         message: coUtils.Text.format(
-          _("Module %s is not found."), 
+          _("Module %s is not found."),
           component_name),
       };
-    } 
+    }
     module = candidates.shift();
     if (!equal) {
       return {
@@ -118,15 +118,15 @@ SetCommand.definition = {
         message: module[property].toSource(),
       };
     }
-    code = arguments_string.substr(all.length); 
+    code = arguments_string.substr(all.length);
     result = new Function(
       "with (arguments[0]) { return (" + code + ");}"
     ) (this._broker.window);
-    module[property] = result; 
+    module[property] = result;
     return {
       success: true,
       message: coUtils.Text.format(
-        _("%s.%s -> %s"), 
+        _("%s.%s -> %s"),
         component_name, property, result && result.toSource()),
     };
   },

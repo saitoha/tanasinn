@@ -47,11 +47,11 @@ IdleService.definition = {
 
   _idle_service: null,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
-  "[install]": 
-  function install(context) 
+  "[install]":
+  function install(context)
   {
     this._idle_service = Components
       .classes["@mozilla.org/widget/idleservice;1"]
@@ -60,10 +60,10 @@ IdleService.definition = {
     this.set();
   },
 
-  /** Uninstalls itself. 
+  /** Uninstalls itself.
    */
-  "[uninstall]": 
-  function uninstall() 
+  "[uninstall]":
+  function uninstall()
   {
     this.reset();
 
@@ -84,7 +84,7 @@ IdleService.definition = {
   {
     this.sendMessage("event/idle");
   },
- 
+
 // nsIObserver implementation
   /**
    * Provides runtime type discovery.
@@ -93,7 +93,7 @@ IdleService.definition = {
    */
   QueryInterface: function QueryInterface(a_IID)
   {
-    if (!a_IID.equals(Components.interafaces.nsIObserver) 
+    if (!a_IID.equals(Components.interafaces.nsIObserver)
      && !a_IID.equals(Components.interafaces.nsISupports)) {
       throw Components.results.NS_ERROR_NOT_IMPLEMENTED;
     }
@@ -108,7 +108,7 @@ IdleService.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new IdleService(broker);
 }

@@ -45,22 +45,22 @@ MoveShortcut.definition = {
 
   "[persistable] step": 60,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
-  {
-  },
-  
-  /** Uninstalls itself.
-   */
-  "[uninstall]":
-  function uninstall() 
+  function install(context)
   {
   },
 
-  /** Moves window to right. 
+  /** Uninstalls itself.
+   */
+  "[uninstall]":
+  function uninstall()
+  {
+  },
+
+  /** Moves window to right.
    *  @param {Object} A shortcut information object.
    */
   "[command('left'), nmap('<M-h>', '<C-S-h>'), _('Move window to left'), pnp]":
@@ -70,7 +70,7 @@ MoveShortcut.definition = {
     return true;
   },
 
-  /** Moves window down. 
+  /** Moves window down.
    *  @param {Object} A shortcut information object.
    */
   "[command('down'), nmap('<M-j>', '<C-S-j>'), _('Move window down'), pnp]":
@@ -80,7 +80,7 @@ MoveShortcut.definition = {
     return true;
   },
 
-  /** Moves window up. 
+  /** Moves window up.
    *  @param {Object} A shortcut information object.
    */
   "[command('up'), nmap('<M-k>', '<C-S-k>'), _('Move window up'), pnp]":
@@ -90,7 +90,7 @@ MoveShortcut.definition = {
     return true;
   },
 
-  /** Moves window to right. 
+  /** Moves window to right.
    *  @param {Object} A shortcut information object.
    */
   "[command('right'), nmap('<M-l>', '<C-S-l>'), _('Move window to right'), pnp]":
@@ -102,7 +102,7 @@ MoveShortcut.definition = {
 
   "[subscribe('command/test')]":
   function onTest()
-  { 
+  {
     var enabled;
 
     enabled = this.enabled;

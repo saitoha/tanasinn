@@ -29,11 +29,11 @@
  *
  * DECSTBM — Set Top and Bottom Margins
  *
- * This control function sets the top and bottom margins for the current 
+ * This control function sets the top and bottom margins for the current
  * page. You cannot perform scrolling outside the margins.
  *
  * Default: Margins are at the page limits.
- * 
+ *
  * Format:
  *
  *  CSI  Pt  ;    Pb  r
@@ -46,7 +46,7 @@
  *  Default: Pb = current number of lines per screen.
  *
  *  Notes on DECSTBM
- *  - The value of the top margin (Pt) must be less than the bottom 
+ *  - The value of the top margin (Pt) must be less than the bottom
  *    margin (Pb).
  *  - The maximum size of the scrolling region is the page size.
  *  - DECSTBM moves the cursor to column 1, line 1 of the page.
@@ -72,7 +72,7 @@ ScrollRegion.definition = {
 
   _screen: null,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
@@ -82,7 +82,7 @@ ScrollRegion.definition = {
     this._cursor_state = context["cursorstate"];
   },
 
-  /** Uninstalls itself. 
+  /** Uninstalls itself.
    */
   "[uninstall]":
   function uninstall()
@@ -92,7 +92,7 @@ ScrollRegion.definition = {
   },
 
   "[profile('vt100'), sequence('CSI Ps;Ps r')]":
-  function DECSTBM(n1, n2) 
+  function DECSTBM(n1, n2)
   {
     var screen = this._screen,
         cursor_state = this._cursor_state,
@@ -121,7 +121,7 @@ ScrollRegion.definition = {
       screen.setScrollRegion(top, bottom);
       /*
       coUtils.Debug.reportMessage(
-        "Scrolling region was set [%d:%d]. arguments: (%d, %d).", 
+        "Scrolling region was set [%d:%d]. arguments: (%d, %d).",
         top, bottom, n1, n2);
         */
     } else {
@@ -137,7 +137,7 @@ ScrollRegion.definition = {
   },
 
   "[subscribe('sequence/decrqss/decstbm'), pnp]":
-  function onRequestStatus(data) 
+  function onRequestStatus(data)
   {
     var screen = this._screen,
         top = screen.getScrollTop() + 1,
@@ -150,16 +150,16 @@ ScrollRegion.definition = {
   /** Reset scroll region.
    */
   "[subscribe('command/reset-scroll-region'), pnp]":
-  function reset() 
-  { 
+  function reset()
+  {
     this.DECSTBM();
   },
 
   /** Soft/Hard terminal reset.
    */
   "[subscribe('command/{soft | hard}-terminal-reset'), pnp]":
-  function reset() 
-  { 
+  function reset()
+  {
     this.DECSTBM();
   },
 
@@ -170,7 +170,7 @@ ScrollRegion.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new ScrollRegion(broker);
 }

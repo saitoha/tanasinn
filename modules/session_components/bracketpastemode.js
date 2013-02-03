@@ -29,7 +29,7 @@
  * @class BracketedPasteMode
  *
  * RT_BRACKTED - bracketed paste mode
- * 
+ *
  * Default: off
  *
  * Format
@@ -65,11 +65,11 @@ BracketedPasteMode.definition = {
 
   _mode: false,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
     this._mode = this.default_value;
   },
@@ -77,7 +77,7 @@ BracketedPasteMode.definition = {
   /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
     this._mode = null;
   },
@@ -85,8 +85,8 @@ BracketedPasteMode.definition = {
   /** Enable bracketed paste mode.
    */
   "[subscribe('sequence/decset/2004'), pnp]":
-  function activate() 
-  { 
+  function activate()
+  {
     this._mode = true;
 
     this.sendMessage("command/change-bracketed-paste-mode", true);
@@ -97,10 +97,10 @@ BracketedPasteMode.definition = {
   /** Disable bracketed paste mode.
    */
   "[subscribe('sequence/decrst/2004'), pnp]":
-  function deactivate() 
+  function deactivate()
   {
     this._mode = false;
-           
+
     this.sendMessage("command/change-bracketed-paste-mode", false);
     coUtils.Debug.reportMessage(
       _("DECRST 2004 - Reset bracketed paste mode is reset."));
@@ -109,7 +109,7 @@ BracketedPasteMode.definition = {
   /** Report mode
    */
   "[subscribe('sequence/decrqm/2004'), pnp]":
-  function report() 
+  function report()
   {
     var mode = this._mode ? 1: 2,
         message = "?2004;" + mode + "$y";
@@ -120,7 +120,7 @@ BracketedPasteMode.definition = {
   /** on hard / soft reset
    */
   "[subscribe('command/{soft | hard}-terminal-reset'), pnp]":
-  function reset(broker) 
+  function reset(broker)
   {
     if (this.default_value) {
       this.activate();
@@ -132,8 +132,8 @@ BracketedPasteMode.definition = {
   /**
    * Serialize snd persist current state.
    */
-  "[subscribe('@command/backup'), type('Object -> Undefined'), pnp]": 
-  function backup(context) 
+  "[subscribe('@command/backup'), type('Object -> Undefined'), pnp]":
+  function backup(context)
   {
     // serialize this plugin object.
     context[this.id] = {
@@ -144,8 +144,8 @@ BracketedPasteMode.definition = {
   /**
    * Deserialize snd restore stored state.
    */
-  "[subscribe('@command/restore'), type('Object -> Undefined'), pnp]": 
-  function restore(context) 
+  "[subscribe('@command/restore'), type('Object -> Undefined'), pnp]":
+  function restore(context)
   {
     var data = context[this.id];
 
@@ -165,7 +165,7 @@ BracketedPasteMode.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new BracketedPasteMode(broker);
 }

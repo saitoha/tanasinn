@@ -25,7 +25,7 @@
 "use strict";
 
 
-/** 
+/**
  * @class SessionsCompleter
  */
 var SessionsCompleter = new Class().extends(Plugin)
@@ -47,7 +47,7 @@ SessionsCompleter.definition = {
 
   _process_manager: null,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
@@ -56,7 +56,7 @@ SessionsCompleter.definition = {
     this._process_manager = context["process_manager"];
   },
 
-  /** Uninstalls itself. 
+  /** Uninstalls itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[uninstall]":
@@ -70,11 +70,11 @@ SessionsCompleter.definition = {
   {
     return this;
   },
- 
+
   _getImageSource: function _getImageSource(request_id)
   {
     try {
-      var image_path = coUtils.Runtime.getRuntimePath() 
+      var image_path = coUtils.Runtime.getRuntimePath()
                      + "/persist/" + request_id + ".png",
           image_file = coUtils.File.getFileLeafFromVirtualPath(image_path),
           image_url;
@@ -110,7 +110,7 @@ SessionsCompleter.definition = {
             };
           } else {
             coUtils.Sessions.remove(this._broker, request_id);
-          } 
+          }
         } else {
           //coUtils.Sessions.remove(this._broker, request_id);
         }
@@ -146,7 +146,7 @@ SessionsCompleter.definition = {
 
     autocomplete_result = {
       type: "sessions",
-      query: source, 
+      query: source,
       labels: data.map(
                 function(data)
                 {
@@ -171,7 +171,7 @@ SessionsCompleter.definition = {
  * @brief Module entry point
  * @param {Desktop} desktop The Desktop object.
  */
-function main(desktop) 
+function main(desktop)
 {
   new SessionsCompleter(desktop);
 }

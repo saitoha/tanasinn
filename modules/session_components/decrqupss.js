@@ -29,8 +29,8 @@
  *
  *  DECRQUPSS User-Preferred Supplemental Set
  *
- * Applications can ask for the current user-preferred supplemental 
- * set. The terminal responds with the user-preferred supplemental 
+ * Applications can ask for the current user-preferred supplemental
+ * set. The terminal responds with the user-preferred supplemental
  * set (DECAUPSS) sequence.
  *
  * Host Request (DECRQUPSS)
@@ -44,7 +44,7 @@
  *
  * Terminal Responses
  *
- * The terminal uses the DECAUPSS device control string to report 
+ * The terminal uses the DECAUPSS device control string to report
  * the current user-preferred supplemental set (UPSS).
  * The terminal sends DECAUPSS in response to a DECRQUPSS sequence.
  * The terminal can send one of the following reports:
@@ -71,23 +71,23 @@ UPSSRequest.definition = {
 
   "[persistable] enabled_when_startup": true,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
   },
 
   /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
   },
 
   "[profile('vt100'), sequence('CSI & u')]":
-  function onUPSSRequest() 
+  function onUPSSRequest()
   {
     var reply = "0!uA";
     //var reply = "0!u%5";
@@ -103,7 +103,7 @@ UPSSRequest.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new UPSSRequest(broker);
 }

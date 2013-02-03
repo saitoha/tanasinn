@@ -27,7 +27,7 @@
 
 function make_managed_handler(self, handler, topic)
 {
-  var wrapped_handler = function() 
+  var wrapped_handler = function()
   {
     return handler.apply(self, arguments);
   };
@@ -59,7 +59,7 @@ function apply_attribute(self, broker, key, info, attribute)
 
   old_onchange = wrapped_handler.onChange;
 
-  wrapped_handler.onChange = function(name, oldval, newval) 
+  wrapped_handler.onChange = function(name, oldval, newval)
     {
       if (old_onchange) {
         old_onchange.apply(wrapped_handler, arguments);
@@ -93,7 +93,7 @@ function apply_attribute(self, broker, key, info, attribute)
 var ListenAttribute = new Attribute("listen");
 ListenAttribute.definition = {
 
-  initialize: function initialize(broker) 
+  initialize: function initialize(broker)
   {
     var attributes, key, info, attribute;
 
@@ -110,7 +110,7 @@ ListenAttribute.definition = {
       }
 
       apply_attribute(this, broker, key, info, attribute);
-    } // key for (key in attributes) 
+    } // key for (key in attributes)
   },
 
 };

@@ -42,14 +42,14 @@ Contextmenu.definition = {
     };
   },
 
-  getTemplate: function getTemplate() 
+  getTemplate: function getTemplate()
     ({
       tagName: "menupopup",
       parentNode: "#tanasinn_center_area",
       id: "tanasinn_contextmenu",
       childNodes: this._entries,
       listener: {
-        type: "popuphidden", 
+        type: "popuphidden",
         context: this,
         handler: this.onpopuphidden,
       } ,
@@ -61,11 +61,11 @@ Contextmenu.definition = {
 
   _entries: null,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
-  "[install]": 
-  function install(context) 
+  "[install]":
+  function install(context)
   {
     // register DOM listener.
     this.onFlagChanged(this.handle_right_click_insted_of_oncontextmenu);
@@ -74,21 +74,21 @@ Contextmenu.definition = {
   /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
     // unregister DOM listener.
     this.onRightClick.enabled = false;
   },
 
   "[subscribe('variable-changed/contextmenu.handle_right_click_insted_of_oncontextmenu'), pnp]":
-  function onFlagChanged(value) 
+  function onFlagChanged(value)
   {
     this.onRightClick.enabled = value;
   },
 
   /** detect right click */
   "[listen('mouseup', '#tanasinn_content')]":
-  function onRightClick(event) 
+  function onRightClick(event)
   {
     if (2 === event.button) { // right click
       this.show(event);
@@ -96,7 +96,7 @@ Contextmenu.definition = {
   },
 
   /** "popuphidden" event handler */
-  onpopuphidden: function onpopuphidden(event) 
+  onpopuphidden: function onpopuphidden(event)
   {
     var target = event.explicitOriginalTarget;
 
@@ -108,7 +108,7 @@ Contextmenu.definition = {
 
   /** "contextmenu" (right click or ctrl + click) event handler */
   "[listen('contextmenu', '#tanasinn_content'), pnp]":
-  function oncontextmenu(event) 
+  function oncontextmenu(event)
   {
     // suppress default action (hide default contextmenu)
     event.stopPropagation();
@@ -120,7 +120,7 @@ Contextmenu.definition = {
   },
 
   /** show contextmenu */
-  show: function show(event) 
+  show: function show(event)
   {
     // get contextmenu entries
     var entries = this.sendMessage("get/contextmenu-entries")
@@ -150,7 +150,7 @@ Contextmenu.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new Contextmenu(broker);
 }

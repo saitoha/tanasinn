@@ -59,7 +59,7 @@ Movable.definition = {
    * @brief Move terminal window.
    */
   "[subscribe('command/move-to'), type('Array -> Undefined'), enabled]":
-  function moveTo(coordinate) 
+  function moveTo(coordinate)
   {
     var x = coordinate[0],
         y = coordinate[1],
@@ -82,7 +82,7 @@ Movable.definition = {
    * @brief Move terminal window.
    */
   "[subscribe('command/move-by'), type('Array -> Undefined'), pnp]":
-  function moveBy(offset) 
+  function moveBy(offset)
   {
     var x = offset[0],
         y = offset[1],
@@ -121,7 +121,7 @@ Movable.definition = {
 
 };
 
-/** 
+/**
  * @class OuterChrome
  * @brief Manage a terminal UI and a session.
  */
@@ -155,8 +155,8 @@ OuterChrome.definition = {
     return "-moz-box-shadow: " + this.box_shadow + ";" +
            "box-shadow: " + this.box_shadow + ";" +
            "border-radius: " + this.border_radius + "px;" +
-           "background-image: " + this._getBackground() + ";" + 
-           "background-size: 100% 100%;" + 
+           "background-image: " + this._getBackground() + ";" +
+           "background-size: 100% 100%;" +
            "opacity: " + this.background_opacity + ";" +
            "cursor: text;";
   },
@@ -166,7 +166,7 @@ OuterChrome.definition = {
     var f = parseInt(this.foreground_color.substr(1), 16),
         b = parseInt(this.background_color.substr(1), 16),
         color = (((((f >>> 16 & 0xff) + (b >>> 16 & 0xff) * 2) / 3.0) | 0) << 16)
-              | (((((f >>>  8 & 0xff) + (b >>>  8 & 0xff) * 2) / 3.0) | 0) <<  8) 
+              | (((((f >>>  8 & 0xff) + (b >>>  8 & 0xff) * 2) / 3.0) | 0) <<  8)
               | (((((f        & 0xff) + (b        & 0xff) * 2) / 3.0) | 0) <<  0);
 
     return (color + 0x1000000)
@@ -174,10 +174,10 @@ OuterChrome.definition = {
         .replace(/^1/, "#");
   },
 
-  _getBackground: function _getBackground() 
+  _getBackground: function _getBackground()
   {
     return coUtils.Text.format(
-      "-moz-radial-gradient(top,%s,%s)", 
+      "-moz-radial-gradient(top,%s,%s)",
       this._getBlendColor(),
       this.background_color);
   },
@@ -185,8 +185,8 @@ OuterChrome.definition = {
   _forceUpdate: function _forceUpdate()
   {
     // force redrawing
-    this.moveBy([1, 0]) 
-    this.moveBy([-1, 0]) 
+    this.moveBy([1, 0])
+    this.moveBy([-1, 0])
   },
 
   _getImagePath: function _getImagePath()
@@ -203,8 +203,8 @@ OuterChrome.definition = {
   },
 
   /** Fired when The session is stopping. */
-  "[subscribe('event/before-broker-stopping'), enabled]": 
-  function onSessionStoping() 
+  "[subscribe('event/before-broker-stopping'), enabled]":
+  function onSessionStoping()
   {
     var target = this._frame;
 
@@ -215,11 +215,11 @@ OuterChrome.definition = {
       target.parentNode.removeChild(target);
     }
     this._frame = null;
-    
-  }, 
 
-  "[subscribe('command/reverse-video'), pnp]": 
-  function reverseVideo(value) 
+  },
+
+  "[subscribe('command/reverse-video'), pnp]":
+  function reverseVideo(value)
   {
     var reverse_color,
         color3byte;
@@ -230,7 +230,7 @@ OuterChrome.definition = {
           .toString(16)
           .replace(/^1/, "#");
 
-      this._frame.style.background 
+      this._frame.style.background
         = "-moz-radial-gradient(top,"
         + reverse_color + ","
         + this._getBlendColor() + ")";
@@ -240,21 +240,21 @@ OuterChrome.definition = {
     this._forceUpdate();
   },
 
-  "[subscribe('event/special-color-changed'), pnp]": 
-  function changeForegroundColor(value) 
+  "[subscribe('event/special-color-changed'), pnp]":
+  function changeForegroundColor(value)
   {
     this.foreground_color = coUtils.Color.parseX11ColorSpec(value);
     this._frame.style.cssText = this._getFrameStyle();
   },
 
-  /** 
-   * Construct the skelton of user interface with some attributes 
-   * and styles. 
+  /**
+   * Construct the skelton of user interface with some attributes
+   * and styles.
    */
   _getTemplate: function _getTemplate()
   {
     return {
-      parentNode: this.request("get/root-element"), 
+      parentNode: this.request("get/root-element"),
       tagName: "box",
       id: "tanasinn_chrome_root",
       childNodes: {
@@ -290,7 +290,7 @@ OuterChrome.definition = {
                     { tagName: "hbox", id: "tanasinn_resizer_right", },
                   ]
                 },
-                { 
+                {
                   tagName: "row",
                   childNodes: [
                     { tagName: "box", id: "tanasinn_resizer_bottomleft", },
@@ -312,13 +312,13 @@ OuterChrome.definition = {
   _chrome: null,
 
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
-  "[install]": 
-  function install(context) 
+  "[install]":
+  function install(context)
   {
-    // construct chrome elements. 
+    // construct chrome elements.
     var result = this.request("command/construct-chrome", this._getTemplate());
 
     this._element = result.tanasinn_outer_chrome;
@@ -336,12 +336,12 @@ OuterChrome.definition = {
     //}
   },
 
-  /** Uninstalls itself. 
+  /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
-    // destruct chrome elements. 
+    // destruct chrome elements.
     if (null !== this._element) {
       if (this._element.parentNode) {
         if (this._element.parentNode.parentNode) {
@@ -360,7 +360,7 @@ OuterChrome.definition = {
   },
 
   "[subscribe('command/show'), pnp]":
-  function show() 
+  function show()
   {
     this._element.hidden = false;
   },
@@ -371,21 +371,21 @@ OuterChrome.definition = {
     this.sendMessage("command/focus");
   },
 
-  "[subscribe('variable-changed/outerchrome.{background_color | foreground_color | gradation}'), pnp]": 
-  function updateColor() 
+  "[subscribe('variable-changed/outerchrome.{background_color | foreground_color | gradation}'), pnp]":
+  function updateColor()
   {
     this._frame.style.cssText = this._getFrameStyle();
     this._forceUpdate();
   },
 
-  "[subscribe('variable-changed/outerchrome.{background_opacity | border_radius | box_shadow}'), pnp]": 
-  function updateStyle() 
+  "[subscribe('variable-changed/outerchrome.{background_opacity | border_radius | box_shadow}'), pnp]":
+  function updateStyle()
   {
     this._frame.style.cssText = this._getFrameStyle();
   },
 
-  "[subscribe('event/shift-key-down'), pnp]": 
-  function onShiftKeyDown() 
+  "[subscribe('event/shift-key-down'), pnp]":
+  function onShiftKeyDown()
   {
     var target = this._chrome;
 
@@ -394,8 +394,8 @@ OuterChrome.definition = {
     }
   },
 
-  "[subscribe('event/shift-key-up'), pnp]": 
-  function onShiftKeyUp() 
+  "[subscribe('event/shift-key-up'), pnp]":
+  function onShiftKeyUp()
   {
     var target = this._chrome;
 
@@ -404,8 +404,8 @@ OuterChrome.definition = {
     }
   },
 
-  "[subscribe('event/alt-key-down'), pnp]": 
-  function onAltKeyDown() 
+  "[subscribe('event/alt-key-down'), pnp]":
+  function onAltKeyDown()
   {
     var target = this._chrome;
 
@@ -415,7 +415,7 @@ OuterChrome.definition = {
   },
 
   "[subscribe('event/alt-key-up'), pnp]":
-  function onAltKeyUp() 
+  function onAltKeyUp()
   {
     var target = this._chrome;
 
@@ -424,14 +424,14 @@ OuterChrome.definition = {
     }
   },
 
-  "[subscribe('command/set-opacity'), pnp]": 
-  function setOpacity(opacity, duration) 
+  "[subscribe('command/set-opacity'), pnp]":
+  function setOpacity(opacity, duration)
   {
     // get target element
     var target = this._element;
 
     if (target.style.opacity <= opacity) {
-      duration = 0; 
+      duration = 0;
     }
 
     // transition duration
@@ -446,7 +446,7 @@ OuterChrome.definition = {
     target.style.opacity = opacity;
 
     coUtils.Timer.setTimeout(
-      function clearTransitionParameters() 
+      function clearTransitionParameters()
       {
         target.style.MozTransitionProperty = "";
         target.style.MozTransitionDuration = "0ms";
@@ -461,7 +461,7 @@ OuterChrome.definition = {
  * @brief Module entry point.
  * @param {Broker} Broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new OuterChrome(broker);
 }

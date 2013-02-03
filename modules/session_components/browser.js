@@ -49,12 +49,12 @@ OverlayBrowser.definition = {
   _element: null,
   _cursor_state: null,
   _renderer: null,
- 
-  /** Installs itself. 
+
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
     this._cursor_state = context["cursorstate"];
     this._renderer = context["renderer"];
@@ -63,7 +63,7 @@ OverlayBrowser.definition = {
   /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
     if (null !== this._element) {
       this._element.parentNode.removeChild(this._element);
@@ -76,10 +76,10 @@ OverlayBrowser.definition = {
   },
 
   "[subscribe('sequence/osc/210'), pnp]":
-  function handleSequence(data) 
+  function handleSequence(data)
   {
     coUtils.Timer.setTimeout(
-      function timerproc() 
+      function timerproc()
       {
         var result = data.split(/\s+/),
             col = result[0],
@@ -89,17 +89,17 @@ OverlayBrowser.definition = {
             url = result[4],
             cursorstate = this._cursor_state;
 
-        this.open(cursorstate.positionX - Number(col) + 1, 
+        this.open(cursorstate.positionX - Number(col) + 1,
                   cursorstate.positionY - Number(line) + 1,
-                  Number(width), 
-                  Number(height), 
+                  Number(width),
+                  Number(height),
                   url);
 
       }, this.open_delay, this);
   },
 
   "[subscribe('command/open-overlay-browser'), pnp]":
-  function open(left, top, width, height, url) 
+  function open(left, top, width, height, url)
   {
     // get renderer object
     var renderer = this._renderer,
@@ -130,7 +130,7 @@ OverlayBrowser.definition = {
   },
 
   "[subscribe('sequence/osc/211 | command/close-overlay-browser'), pnp]":
-  function close(data) 
+  function close(data)
   {
     var element = this._element;
 
@@ -147,7 +147,7 @@ OverlayBrowser.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new OverlayBrowser(broker);
 }

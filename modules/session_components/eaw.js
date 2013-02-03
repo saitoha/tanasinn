@@ -50,11 +50,11 @@ EastAsianWidth.definition = {
   _mode: false,
   _parser: null,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
     this._mode = this.default_value;
     this._parser = context["parser"];
@@ -63,7 +63,7 @@ EastAsianWidth.definition = {
   /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
     this._mode = null;
   },
@@ -71,7 +71,7 @@ EastAsianWidth.definition = {
   /** Treat ambiguous width characters as double-width.
    */
   "[subscribe('sequence/decset/8840'), pnp]":
-  function activate8840() 
+  function activate8840()
   { // Treat ambiguous characters as double
     var parser = this._parser;
 
@@ -83,7 +83,7 @@ EastAsianWidth.definition = {
   /** Treat ambiguous width characters as single-width.
    */
   "[subscribe('sequence/decrst/8840'), pnp]":
-  function deactivate8840() 
+  function deactivate8840()
   { // Treat ambiguous characters as single
     var parser = this._parser;
 
@@ -95,7 +95,7 @@ EastAsianWidth.definition = {
   /** Treat ambiguous width characters as single-width.
    */
   "[subscribe('sequence/decset/8428}'), pnp]":
-  function activate() 
+  function activate()
   { // Treat ambiguous characters as double
     var parser = this._parser;
 
@@ -107,7 +107,7 @@ EastAsianWidth.definition = {
   /** Treat ambiguous width characters as double-width.
    */
   "[subscribe('sequence/decrst/8428}'), pnp]":
-  function deactivate() 
+  function deactivate()
   { // Treat ambiguous characters as single
     var parser = this._parser;
 
@@ -119,7 +119,7 @@ EastAsianWidth.definition = {
   /** Report mode
    */
   "[subscribe('sequence/decrqm/8840'), pnp]":
-  function report() 
+  function report()
   {
     var mode = this._mode ? 1: 2,
         message = "?8840;" + mode + "$y";
@@ -130,7 +130,7 @@ EastAsianWidth.definition = {
   /** Report mode
    */
   "[subscribe('sequence/decrqm/8428'), pnp]":
-  function report() 
+  function report()
   {
     var mode = this._mode ? 2: 1,
         message = "?8428;" + mode + "$y";
@@ -141,7 +141,7 @@ EastAsianWidth.definition = {
   /** on hard / soft reset
    */
   "[subscribe('command/{soft | hard}-terminal-reset'), pnp]":
-  function reset(broker) 
+  function reset(broker)
   {
     if (this.default_value) {
       this.deactivate();
@@ -153,8 +153,8 @@ EastAsianWidth.definition = {
   /**
    * Serialize snd persist current state.
    */
-  "[subscribe('@command/backup'), type('Object -> Undefined'), pnp]": 
-  function backup(context) 
+  "[subscribe('@command/backup'), type('Object -> Undefined'), pnp]":
+  function backup(context)
   {
     // serialize this plugin object.
     context[this.id] = {
@@ -165,8 +165,8 @@ EastAsianWidth.definition = {
   /**
    * Deserialize snd restore stored state.
    */
-  "[subscribe('@command/restore'), type('Object -> Undefined'), pnp]": 
-  function restore(context) 
+  "[subscribe('@command/restore'), type('Object -> Undefined'), pnp]":
+  function restore(context)
   {
     var data = context[this.id];
 
@@ -186,7 +186,7 @@ EastAsianWidth.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new EastAsianWidth(broker);
 }

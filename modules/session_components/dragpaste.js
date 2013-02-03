@@ -45,26 +45,26 @@ DragPaste.definition = {
 
   _bracketed_paste_mode: false,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
   },
 
-  /** Uninstalls itself. 
+  /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
   },
 
-  /** A dragover event handler for center area element. 
+  /** A dragover event handler for center area element.
    *  @param {Event} event A event object.
    */
   "[listen('dragover', '#tanasinn_content', true), pnp]":
-  function ondragover(event) 
+  function ondragover(event)
   {
     var data_transfer = event.dataTransfer;
 
@@ -78,24 +78,24 @@ DragPaste.definition = {
     data_transfer.effectAllowed = "copy";
   },
 
-  /** A dragenter event handler for center area element. 
+  /** A dragenter event handler for center area element.
    *  @param {Event} event A event object.
    */
   "[listen('dragenter', '#tanasinn_content', true), pnp]":
-  function ondragenter(event) 
+  function ondragenter(event)
   {
     if (event.dataTransfer.types.contains("text/plain")) {
       this.sendMessage("command/focus");
     } else {
       event.preventDefault();
     }
-  }, 
+  },
 
-  /** A drop event handler for center area element. 
+  /** A drop event handler for center area element.
    *  @param {Event} event A event object.
    */
   "[listen('drop', '#tanasinn_content', true), pnp]":
-  function ondrop(event) 
+  function ondrop(event)
   {
     var data_transfer = event.dataTransfer,
         text;
@@ -120,7 +120,7 @@ DragPaste.definition = {
 
   /** Set/Reset bracketed paste mode. */
   "[subscribe('command/change-bracketed-paste-mode'), pnp]":
-  function onBracketedPasteModeChanged(mode) 
+  function onBracketedPasteModeChanged(mode)
   {
     this._bracketed_paste_mode = mode;
   },
@@ -133,7 +133,7 @@ DragPaste.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new DragPaste(broker);
 }

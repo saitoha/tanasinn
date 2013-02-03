@@ -54,18 +54,18 @@ DisplayManager.definition = {
   _filters: null,
   _console: null,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
-  "[install]": 
-  function install(context) 
+  "[install]":
+  function install(context)
   {
     this._console = context["console"];
 
     this.onConsoleFilterCollectionChanged();
   },
 
-  /** Uninstalls itself 
+  /** Uninstalls itself
    */
   "[uninstall]":
   function uninstall()
@@ -74,15 +74,15 @@ DisplayManager.definition = {
   },
 
   "[subscribe('event/console-filter-collection-changed'), pnp]":
-  function onConsoleFilterCollectionChanged() 
+  function onConsoleFilterCollectionChanged()
   {
     this._filters = this.sendMessage("get/message-filters");
   },
 
-  /** Appends a message line to output container. 
+  /** Appends a message line to output container.
    *  @param {String} message raw message text from console service.
    */
-  append: function append(message) 
+  append: function append(message)
   {
     var template = this.applyFilters(message);
 
@@ -97,7 +97,7 @@ DisplayManager.definition = {
   /** apply filters and convert a message to ui template.
    * @param {String} message raw message string from console service.
    */
-  applyFilters: function applyFilters(message) 
+  applyFilters: function applyFilters(message)
   {
     var filter;
 
@@ -130,7 +130,7 @@ DisplayManager.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new DisplayManager(broker);
 }

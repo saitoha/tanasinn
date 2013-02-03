@@ -44,23 +44,23 @@ HardReset.definition = {
 
   "[persistable] enabled_when_startup": true,
 
-  /** 
+  /**
    * RIS - Reset to Initial State
-   * 
-   * This control function causes a nonvolatile memory (NVR) recall to 
+   *
+   * This control function causes a nonvolatile memory (NVR) recall to
    * occur. RIS replaces all set-up features with their saved settings.
-   * 
-   * The terminal stores these saved settings in NVR memory. 
-   * The saved setting for a feature is the same as the factory-default 
+   *
+   * The terminal stores these saved settings in NVR memory.
+   * The saved setting for a feature is the same as the factory-default
    * setting, unless you saved a new setting.
    *
    * Note
-   * 
-   * It is recommended that you not use RIS to reset the terminal. 
-   * You should use a soft terminal reset (DECSTR) instead. 
-   * RIS usually causes a communication line disconnect and may change the 
-   * current baud rate settings. When performing a RIS, the terminal sends 
-   * XOFF to the host to stop communication. When the RIS is complete, the 
+   *
+   * It is recommended that you not use RIS to reset the terminal.
+   * You should use a soft terminal reset (DECSTR) instead.
+   * RIS usually causes a communication line disconnect and may change the
+   * current baud rate settings. When performing a RIS, the terminal sends
+   * XOFF to the host to stop communication. When the RIS is complete, the
    * terminal sends XON to resume communication.
    *
    * Format
@@ -69,7 +69,7 @@ HardReset.definition = {
    * 1/11   6/3
    *
    * RIS Actions
-   * 
+   *
    *   Sets all features listed on set-up screens to their saved settings.
    *
    *   - TODO: Causes a communication line disconnect.
@@ -86,8 +86,8 @@ HardReset.definition = {
    *   - TODO: Erases the paste buffer.
    *
    */
-  "[profile('vt100'), sequence('ESC c')]": 
-  function RIS() 
+  "[profile('vt100'), sequence('ESC c')]":
+  function RIS()
   {
     this.sendMessage("command/hard-terminal-reset");
   },
@@ -99,7 +99,7 @@ HardReset.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new HardReset(broker);
 }

@@ -24,9 +24,9 @@
 
 "use strict";
 
-/** 
+/**
  * @class ForwardInputIterator
- */ 
+ */
 var ForwardInputIterator = new Class();
 ForwardInputIterator.definition = {
 
@@ -34,26 +34,26 @@ ForwardInputIterator.definition = {
   _position: 0,
 
   /** Assign new string data. position is reset. */
-  initialize: function initialize(value) 
+  initialize: function initialize(value)
   {
     this._value = value;
     this._position = 0;
   },
 
   /** Returns single byte code point. */
-  current: function current() 
+  current: function current()
   {
     return this._value.charCodeAt(this._position);
   },
 
   /** Moves to next position. */
-  moveNext: function moveNext() 
+  moveNext: function moveNext()
   {
     ++this._position;
   },
 
   /** Returns whether scanner position is at end. */
-  get isEnd() 
+  get isEnd()
   {
     return this._position >= this._value.length;
   },
@@ -85,11 +85,11 @@ Base64CopyPaste.definition = {
 
   _decoder: null,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
     this._decoder = context["decoder"];
   },
@@ -97,14 +97,14 @@ Base64CopyPaste.definition = {
   /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
     this._decoder = null;
   },
 
   /** Get selected text and put it to clipboard.  */
-  "[subscribe('sequence/osc/52'), _('Copy/Paste selected text.'), pnp]": 
-  function osc52(data) 
+  "[subscribe('sequence/osc/52'), _('Copy/Paste selected text.'), pnp]":
+  function osc52(data)
   {
     var encoded_data,
         scanner,
@@ -147,10 +147,10 @@ Base64CopyPaste.definition = {
     return data.substr(position);
   },
 
-  _setToClipboard: function _setToClipboard(text) 
+  _setToClipboard: function _setToClipboard(text)
   {
     var clipboard_helper
-     
+
     clipboard_helper = Components
       .classes["@mozilla.org/widget/clipboardhelper;1"]
       .getService(Components.interfaces.nsIClipboardHelper);
@@ -171,7 +171,7 @@ Base64CopyPaste.definition = {
       text);
 
     this.sendMessage(
-      "command/report-status-message", 
+      "command/report-status-message",
       status_message);
   },
 
@@ -183,7 +183,7 @@ Base64CopyPaste.definition = {
       text);
 
     this.sendMessage(
-      "command/report-status-message", 
+      "command/report-status-message",
       status_message);
   },
 
@@ -248,7 +248,7 @@ Base64CopyPaste.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new Base64CopyPaste(broker);
 }

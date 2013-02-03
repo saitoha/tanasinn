@@ -45,7 +45,7 @@ SessionsCompletionDisplayDriver.definition = {
 
   "[persistable, watchable] enabled_when_startup": true,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
@@ -53,7 +53,7 @@ SessionsCompletionDisplayDriver.definition = {
   {
   },
 
-  /** Uninstalls itself. 
+  /** Uninstalls itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[uninstall]":
@@ -67,7 +67,7 @@ SessionsCompletionDisplayDriver.definition = {
     return this;
   },
 
-  drive: function drive(grid, result, current_index) 
+  drive: function drive(grid, result, current_index)
   {
     var rows = grid.appendChild(grid.ownerDocument.createElement("rows")),
         i,
@@ -88,7 +88,7 @@ SessionsCompletionDisplayDriver.definition = {
 
       if (image_url) {
         this.request(
-          "command/construct-chrome", 
+          "command/construct-chrome",
           {
             parentNode: rows,
             tagName: "row",
@@ -107,7 +107,7 @@ SessionsCompletionDisplayDriver.definition = {
                   overflow: "hidden",
                   paddingLeft: "8px",
                 },
-                childNodes: { 
+                childNodes: {
                   tagName: "image",
                   width: 120,
                   height: 80,
@@ -115,7 +115,7 @@ SessionsCompletionDisplayDriver.definition = {
                     border: "1px solid #66f",
                     margin: "9px",
                   },
-                  src: image_url || "", 
+                  src: image_url || "",
                 },
               },
               {
@@ -155,7 +155,7 @@ SessionsCompletionDisplayDriver.definition = {
  * @brief Module entry point
  * @param {Desktop} desktop The Desktop object.
  */
-function main(desktop) 
+function main(desktop)
 {
   new SessionsCompletionDisplayDriver(desktop);
 }

@@ -396,7 +396,7 @@ coUtils.Localize = new function()
     _dictionaries_store: null,
 
     /** constructor */
-    initialize: function initialize() 
+    initialize: function initialize()
     {
       var locale_service = coUtils.Services.getLocaleService(),
           locale = locale_service.getLocaleComponentForUserAgent();
@@ -406,12 +406,12 @@ coUtils.Localize = new function()
     },
 
     /** @property locale */
-    get locale() 
+    get locale()
     {
       return this._locale;
     },
 
-    set locale(value) 
+    set locale(value)
     {
       this._locale = value;
     },
@@ -424,7 +424,7 @@ coUtils.Localize = new function()
     },
 
     /** Loads locale-mapping file and apply it. */
-    load: function load() 
+    load: function load()
     {
       var locale = this._locale,
           path = "modules/locale/" + locale + ".json",
@@ -436,25 +436,25 @@ coUtils.Localize = new function()
         db = JSON.parse(coUtils.IO.readFromFile(path, "utf-8"));
       } else {
         db = {
-          lang: this._locale, 
+          lang: this._locale,
           dict: {},
         };
       }
       this._dictionaries_store[db.lang] = db.dict;
     },
-    
+
     /** Translate message text. */
-    get: function get(text) 
+    get: function get(text)
     {
       var dictionary = this._dictionaries_store[this._locale] || {};
 
       return dictionary[text] || text;
     },
 
-    /** Set locale. 
+    /** Set locale.
      * @param locale
      */
-    setLocale: function setLocale(locale)  
+    setLocale: function setLocale(locale)
     {
       this._locale = locale;
     },
@@ -462,7 +462,7 @@ coUtils.Localize = new function()
     /** The generator method that iterates source code text.
      *  @return {Array} source code text contents.
      */
-    _getSources: function _getSources(search_path) 
+    _getSources: function _getSources(search_path)
     {
       var entries = coUtils.File.getFileEntriesFromSearchPath(search_path),
           entry,
@@ -474,7 +474,7 @@ coUtils.Localize = new function()
       for (; i < entries.length; ++i) {
         entry = entries[i];
         // make URI string such as "file://....".
-        url = coUtils.File.getURLSpec(entry); 
+        url = coUtils.File.getURLSpec(entry);
         try {
           result.push(coUtils.IO.readFromFile(url));
         } catch (e) {
@@ -487,11 +487,11 @@ coUtils.Localize = new function()
       return result;
     },
 
-    /** The generator method that extracts message-id string from source code 
+    /** The generator method that extracts message-id string from source code
      *  files.
      *  @return {Array} message-id strings.
      */
-    getMessages: function getMessages() 
+    getMessages: function getMessages()
     {
       var pattern = /_\(("(.+?)("[\n\r\s]*,[\n\r\s]*".+?)*"|'(.+?)')\)/g,
           sources = this._getSources([ "modules/" ]),
@@ -561,13 +561,13 @@ coUtils.Localize = new function()
 
   };
   prototype.initialize();
-  return prototype; 
+  return prototype;
 };
 
 /**
  * @fn _
  */
-function _() 
+function _()
 {
   var lines = [].slice.apply(arguments),
       result;

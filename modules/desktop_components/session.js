@@ -28,15 +28,15 @@
  *
  * [ Session overview ]
  *
- * tanasinn's "Session" is a concept that abstracts Terminal session and 
+ * tanasinn's "Session" is a concept that abstracts Terminal session and
  * all resources associated with it.
- * It behaves as a mediator object, and be associated with following session-local 
- * objects: 
- * 
+ * It behaves as a mediator object, and be associated with following session-local
+ * objects:
+ *
  * 1. Event Manager
  * 2. TTY driver object
  * 3. Environment service
- * 4. VT Emurator. 
+ * 4. VT Emurator.
  * 5. Output Parser
  * 6. Input Manager
  * 7. User interface
@@ -58,7 +58,7 @@ Environment.definition = {
   {
     var runtimepath = coUtils.Runtime.getRuntimePath();
 
-    return this._search_path || [ 
+    return this._search_path || [
       "modules/shared_components",
       "modules/session_components",
       runtimepath + "/modules/shared_components",
@@ -82,49 +82,49 @@ RouteKeyEvents.definition = {
 
   /** route double shift hotkey evnet */
   "[subscribe('event/hotkey-double-shift'), enabled]":
-  function onDoubleShift() 
+  function onDoubleShift()
   {
     this.notify("event/hotkey-double-shift", this);
   },
 
   /** route ctrl key down evnet */
   "[subscribe('event/ctrl-key-down'), enabled]":
-  function onCtrlKeyDown() 
+  function onCtrlKeyDown()
   {
     this.notify("event/ctrl-key-down", this);
   },
 
   /** route ctrl key up evnet */
   "[subscribe('event/ctrl-key-up'), enabled]":
-  function onCtrlKeyUp() 
+  function onCtrlKeyUp()
   {
     this.notify("event/ctrl-key-up", this);
   },
 
   /** route alt key down evnet */
   "[subscribe('event/alt-key-down'), enabled]":
-  function onAltKeyDown() 
+  function onAltKeyDown()
   {
     this.notify("event/alt-key-down", this);
   },
 
   /** route alt key up evnet */
   "[subscribe('event/alt-key-up'), enabled]":
-  function onAltKeyUp() 
+  function onAltKeyUp()
   {
     this.notify("event/alt-key-up", this);
   },
 
   /** route shift key down evnet */
   "[subscribe('event/shift-key-down'), enabled]":
-  function onShiftKeyDown() 
+  function onShiftKeyDown()
   {
     this.notify("event/shift-key-down", this);
   },
 
   /** route shift key up evnet */
   "[subscribe('event/shift-key-up'), enabled]":
-  function onShiftKeyUp() 
+  function onShiftKeyUp()
   {
     this.notify("event/shift-key-up", this);
   },
@@ -198,25 +198,25 @@ Session.definition = {
   _request_id: null,
 
   "[subscribe('command/send-command'), enabled]":
-  function sendCommand(command) 
+  function sendCommand(command)
   {
     this.notify("command/eval-commandline", command);
   },
 
   "[subscribe('command/send-keys'), enabled]":
-  function sendKeys(expression) 
+  function sendKeys(expression)
   {
     this.notify("command/input-expression-with-remapping", expression);
   },
 
   "[subscribe('event/disabled'), enabled]":
-  function onDisabled() 
+  function onDisabled()
   {
     this.notify("command/detach", this);
   },
 
-  /** Create terminal UI and start tty session. */ 
-  initializeWithRequest: function initializeWithRequest(request) 
+  /** Create terminal UI and start tty session. */
+  initializeWithRequest: function initializeWithRequest(request)
   {
     var id = coUtils.Uuid.generate().toString();
 
@@ -224,9 +224,9 @@ Session.definition = {
 
     // register getter topic.
     this.subscribe(
-      "get/root-element", 
+      "get/root-element",
       function()
-      { 
+      {
         return request.parent;
       }, this, id);
 
@@ -239,7 +239,7 @@ Session.definition = {
 
     this.notify("command/load-settings", this.profile);
     this.notify("event/broker-started", this);
-    
+
     this.notify("event/session-initialized", this);
 
     coUtils.Timer.setTimeout(
@@ -253,7 +253,7 @@ Session.definition = {
 
   /** Send event/broker-stopping message. */
   "[subscribe('event/shutdown'), enabled]":
-  function stop() 
+  function stop()
   {
     if (this._stopped) {
       return;
@@ -262,11 +262,11 @@ Session.definition = {
     this._stopped = true
     this.stop.enabled = false;
 
-    function wait(span) 
+    function wait(span)
     {
       var end_time = Date.now() + span,
           current_thread = coUtils.Services.getThreadManager().currentThread;
-    
+
       do {
         current_thread.processNextEvent(true);
       } while ((current_thread.hasPendingEvents()) || Date.now() < end_time);
@@ -292,8 +292,8 @@ Session.definition = {
 var SessionFactory = new Class().extends(Plugin)
 SessionFactory.definition = {
 
-  "[subscribe('event/session-requested'), enabled]": 
-  function onSessionRequested(request) 
+  "[subscribe('event/session-requested'), enabled]":
+  function onSessionRequested(request)
   {
     var session = new Session(this._broker);
 
@@ -308,7 +308,7 @@ SessionFactory.definition = {
  * @brief Module entry point.
  * @param {Desktop} desktop The Desktop object.
  */
-function main(desktop) 
+function main(desktop)
 {
   new SessionFactory(desktop);
 }

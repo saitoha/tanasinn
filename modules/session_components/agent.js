@@ -56,7 +56,7 @@ Agent.definition = {
       childNodes: [
         {
           tagName: "image",
-          src: this.getAgentImagePath(), 
+          src: this.getAgentImagePath(),
           style: {
             position: "absolute",
             marginTop: "-130px",
@@ -81,7 +81,7 @@ Agent.definition = {
               {
                 tagName: "image",
                 src: this.getBalloonImagePath(),
-                style: { 
+                style: {
                   opacity: "0.85",
                 },
               },
@@ -90,7 +90,7 @@ Agent.definition = {
                 style: {
                   display: "-moz-box",
                   MozBoxOrient: "vertical",
-                  color: "lightblue",     
+                  color: "lightblue",
                   textShadow: "1px 1px 5px black",
                 },
                 childNodes: [
@@ -121,7 +121,7 @@ Agent.definition = {
                       },
                       {
                         tagName: "label",
-                        style: { 
+                        style: {
                           color: "lightblue",
                         },
                         value: " is correct?",
@@ -165,11 +165,11 @@ Agent.definition = {
 
   _element: null,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
     var result = this.request("command/construct-chrome", this.getTemplate());
 
@@ -182,7 +182,7 @@ Agent.definition = {
   /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
     if (this._element) {
       this._element.parentNode.removeChild(this._element);
@@ -193,13 +193,13 @@ Agent.definition = {
   },
 
   "[subscribe('event/before-input')]":
-  function onBeforeInput(data) 
+  function onBeforeInput(data)
   {
     this._element.hidden = true;
   },
 
   "[subscribe('sequence/osc/206')]":
-  function onCorrect(data) 
+  function onCorrect(data)
   {
     this._element.hidden = false;
     this._message.setAttribute("value", data);
@@ -229,7 +229,7 @@ Agent.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new Agent(broker);
 }

@@ -53,23 +53,23 @@ AsciiDecoder.definition = {
 
   "[persistable] displacement": 0x3f,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
   },
 
-  /** uninstalls itself. 
+  /** uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
   },
 
   "[subscribe('get/decoders'), pnp]":
-  function getDecoders() 
+  function getDecoders()
   {
     return {
       charset: this.scheme,
@@ -78,16 +78,16 @@ AsciiDecoder.definition = {
     };
   },
 
-  activate: function activate() 
+  activate: function activate()
   {
   },
 
-  decode: function decode(scanner) 
+  decode: function decode(scanner)
   {
     return this._generate(scanner);
   },
 
-  _generate: function _generate(scanner) 
+  _generate: function _generate(scanner)
   {
     var c;
 
@@ -111,7 +111,7 @@ AsciiDecoder.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new AsciiDecoder(broker);
 }

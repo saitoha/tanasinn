@@ -55,23 +55,23 @@ CP932Decoder.definition = {
   _map: null,
   _offset: 0,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
   },
 
-  /** uninstalls itself. 
+  /** uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
   },
 
-  "[subscribe('get/decoders'), pnp]": 
-  function getDecoders() 
+  "[subscribe('get/decoders'), pnp]":
+  function getDecoders()
   {
     return {
       charset: this.scheme,
@@ -80,23 +80,23 @@ CP932Decoder.definition = {
     };
   },
 
-  activate: function activate() 
+  activate: function activate()
   {
     var resource_path = "modules/mappings/cp932.txt.js",
         json_content = coUtils.IO.readFromFile(resource_path),
         mapping = eval(json_content);
 
-    this._map = mapping.map;    
+    this._map = mapping.map;
   },
 
-  /** Parse CP-932 character byte sequence and convert it 
-   *  to UCS-4 code point sequence. 
+  /** Parse CP-932 character byte sequence and convert it
+   *  to UCS-4 code point sequence.
    *
-   *  @param {Scanner} scanner A scanner object that attached to 
+   *  @param {Scanner} scanner A scanner object that attached to
    *                   current input stream.
-   *  @return {Array} Converted sequence 
+   *  @return {Array} Converted sequence
    */
-  decode: function decode(scanner) 
+  decode: function decode(scanner)
   {
     return this._generate(scanner);
   },
@@ -113,12 +113,12 @@ CP932Decoder.definition = {
        } if (c1 < 0x7f) { // ASCII range.
          yield c1;
        } else if (
-         (0x81 <= c1 && c1 <= 0x9f) || 
+         (0x81 <= c1 && c1 <= 0x9f) ||
          (0xe0 <= c1 && c1 <= 0xfc)) { // cp932 first character
          scanner.moveNext();
          c2 = scanner.current();
          if (
-           (0x40 <= c2 && c2 <= 0x7e) || 
+           (0x40 <= c2 && c2 <= 0x7e) ||
            (0x80 <= c2 && c2 <= 0xfc)) { // cp932 second character
            code = (c1 << 8) | (c2);
            yield this._map[code];
@@ -141,7 +141,7 @@ CP932Decoder.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new CP932Decoder(broker);
 }

@@ -59,16 +59,16 @@
  *
  *     1. This protocol is line-oriented. line terminator is '\n' (0x0a).
  *
- *     2. This protocol is command-based. 1 line should be interpreted as 1 
+ *     2. This protocol is command-based. 1 line should be interpreted as 1
  *        command.
- *        A command is composed of 1 or multiple tokens. token's delimiter is 
+ *        A command is composed of 1 or multiple tokens. token's delimiter is
  *        ' ' (0x20).
  *
  *     3. First token is <b>opecode</b>, represent a operation.
  *        An opecode consists of lower-case alphabetic sets ([a-z]+).
  *
  *     4. Tokens after <b>opecode</b> represent arguments.
- *        An arguments consists of multiple printable characters, that is 
+ *        An arguments consists of multiple printable characters, that is
  *        encoded in base64 Data Encodings, defined in RFC-3548.
  * <pre>
  *        example 1:
@@ -76,7 +76,7 @@
  * </pre>
  *          Opecode of this command is "xoff". "\n" is line terminator.
  * <pre>
- *        example 2: 
+ *        example 2:
  *          resize ODA= MjQ=\n
  * </pre>
  *          In this case, opecode is "resize".
@@ -95,7 +95,7 @@ var IOManagerConcept = new Concept();
 IOManagerConcept.definition = {
 
   id: "IOManager",
-  
+
 // message concept
   "<@event/broker-stopping> :: Undefined":
   _("Close I/O channel and stop communication with TTY device."),
@@ -127,11 +127,11 @@ IOManager.definition = {
   _socket: null,
   _parser: null,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
     var socket = coUtils.Components.createLoopbackServerSocket(this);
 
@@ -145,7 +145,7 @@ IOManager.definition = {
   /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
     this._socket = null;
     this._port = null;
@@ -155,7 +155,7 @@ IOManager.definition = {
   /**
    * @property {Number} port Port number for I/O communication.
    */
-  get port() 
+  get port()
   {
     if (!this._port) {
       throw coUtils.Debug.Exception(_("I/O socket is not available."));
@@ -167,7 +167,7 @@ IOManager.definition = {
    * @param {String} data Character seqence data for sending to TTY device.
    */
   "[subscribe('command/send-to-tty'), type('String -> Undefined'), pnp]":
-  function send(data) 
+  function send(data)
   {
     //if (this._output) {
     //  this._output
@@ -182,13 +182,13 @@ IOManager.definition = {
       this._output.write(data, data.length);
       //this._output.flush();
     }
-    
+
   },
 
   /** Close I/O channel and stop communication with TTY device.
    */
   "[subscribe('@event/broker-stopping'), type('Undefined'), pnp]":
-  function stop() 
+  function stop()
   {
     if (this._input) {
       this._input.close();
@@ -225,8 +225,8 @@ IOManager.definition = {
    * @param transport
    *        The connected socket transport.
    */
-  onSocketAccepted: 
-  function onSocketAccepted(serv, transport) 
+  onSocketAccepted:
+  function onSocketAccepted(serv, transport)
   {
     var ostream,
         istream,
@@ -235,7 +235,7 @@ IOManager.definition = {
 
     try {
       coUtils.Debug.reportMessage(
-        _("Connected to ttydriver. port: %d"), 
+        _("Connected to ttydriver. port: %d"),
         serv.port);
       ostream = transport.openOutputStream(0, this.incoming_buffer_size, 1);
       istream = transport.openInputStream(0, this.outgoing_buffer_size, 1);
@@ -269,11 +269,11 @@ IOManager.definition = {
    *        server socket was manually closed, then this value will be
    *        NS_BINDING_ABORTED.
    */
-  onStopListening: 
-  function nsIServerSocketListener_onStopListening(a_serv, a_status) 
+  onStopListening:
+  function nsIServerSocketListener_onStopListening(a_serv, a_status)
   {
   },
- 
+
 // nsIRequestObserver implementation.
   /**
    * Called to signify the beginning of an asynchronous request.
@@ -304,7 +304,7 @@ IOManager.definition = {
       _("onStopRequest called. status: %s"), status);
     try {
     //  this.sendMessage("command/stop");
-    } catch (e) { 
+    } catch (e) {
       coUtils.Debug.reportError(e)
     }
   },
@@ -331,7 +331,7 @@ IOManager.definition = {
     * An exception thrown from onDataAvailable has the side-effect of
     * causing the request to be canceled.
     */
-  onDataAvailable: 
+  onDataAvailable:
   function onDataAvailable(request, context, input, offset, count)
   {
     var data = this._input.readBytes(count);
@@ -339,7 +339,7 @@ IOManager.definition = {
     coUtils.Timer.setTimeout(
       function timerProc()
       {
-        this._parser.drive(data); 
+        this._parser.drive(data);
     //this.sendMessage("event/data-arrived", data);
       }, 30, this);
   },
@@ -351,7 +351,7 @@ IOManager.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new IOManager(broker);
 }

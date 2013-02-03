@@ -37,24 +37,24 @@
  * Format
  *
  * CSI    2    h
- * 9/11   3/2  6/8  
+ * 9/11   3/2  6/8
  *
  * Set: locks the keyboard.
  *
  *
  * CSI    2    l
- * 9/11   3/2  6/12   
+ * 9/11   3/2  6/12
  *
  * Reset: unlocks the keyboard.
  *
  * Description
  *
- * If KAM is set, then the keyboard cannot send characters to the host. The 
- * Wait indicator appears on the keyboard indicator line at the bottom of the 
- * screen. The terminal ignores all keystrokes that send characters to the 
+ * If KAM is set, then the keyboard cannot send characters to the host. The
+ * Wait indicator appears on the keyboard indicator line at the bottom of the
+ * screen. The terminal ignores all keystrokes that send characters to the
  * host. KAM does not affect the F3 (Set-Up) or F4 (Session) keys.
  *
- * If KAM is reset, then the terminal unlocks the keyboard. The keyboard can 
+ * If KAM is reset, then the terminal unlocks the keyboard. The keyboard can
  * send characters to the host.
  *
  */
@@ -77,11 +77,11 @@ KeyboardActionMode.definition = {
 
   _mode: false,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
     this._mode = this.default_value;
   },
@@ -89,7 +89,7 @@ KeyboardActionMode.definition = {
   /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
     this._mode = null;
   },
@@ -97,8 +97,8 @@ KeyboardActionMode.definition = {
   /** disable input handler.
    */
   "[subscribe('sequence/sm/2'), pnp]":
-  function activate() 
-  { 
+  function activate()
+  {
     this._mode = true;
 
     // lock input manager.
@@ -108,7 +108,7 @@ KeyboardActionMode.definition = {
   /** enable input handler.
    */
   "[subscribe('sequence/rm/2'), pnp]":
-  function deactivate() 
+  function deactivate()
   {
     this._mode = false;
 
@@ -119,7 +119,7 @@ KeyboardActionMode.definition = {
   /** Report mode
    */
   "[subscribe('sequence/rqm/2'), pnp]":
-  function report() 
+  function report()
   {
     var mode = this._mode ? 1: 2,
         message = "2;" + mode + "$y";
@@ -130,7 +130,7 @@ KeyboardActionMode.definition = {
   /** on hard / soft reset
    */
   "[subscribe('command/{soft | hard}-terminal-reset'), pnp]":
-  function reset(broker) 
+  function reset(broker)
   {
     if (this.default_value) {
       this.activate();
@@ -142,8 +142,8 @@ KeyboardActionMode.definition = {
   /**
    * Serialize snd persist current state.
    */
-  "[subscribe('@command/backup'), type('Object -> Undefined'), pnp]": 
-  function backup(context) 
+  "[subscribe('@command/backup'), type('Object -> Undefined'), pnp]":
+  function backup(context)
   {
     // serialize this plugin object.
     context[this.id] = {
@@ -154,8 +154,8 @@ KeyboardActionMode.definition = {
   /**
    * Deserialize snd restore stored state.
    */
-  "[subscribe('@command/restore'), type('Object -> Undefined'), pnp]": 
-  function restore(context) 
+  "[subscribe('@command/restore'), type('Object -> Undefined'), pnp]":
+  function restore(context)
   {
     var data = context[this.id];
 
@@ -174,7 +174,7 @@ KeyboardActionMode.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new KeyboardActionMode(broker);
 }

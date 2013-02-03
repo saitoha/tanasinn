@@ -35,14 +35,14 @@ DecModeSequenceHandler.definition = {
   _dec_alternate_buffer: null,
 
   /** Constructor */
-  initialize: function initialize(broker) 
+  initialize: function initialize(broker)
   {
     this._dec_save_buffer = {};
     this._dec_alternate_buffer = {};
   },
 
   "[profile('vt100'), sequence('CSI ? Pm h')]":
-  function DECSET() 
+  function DECSET()
   { // DEC Private Mode Set
     var i,
         n,
@@ -78,7 +78,7 @@ DecModeSequenceHandler.definition = {
         case 35:
           this.sendMessage("command/enable-shifted-key-functions");
           coUtils.Debug.reportWarning(
-            _("DECSET 35 - Enable-Shifted-Key-Function feature (rxvt) was not ", 
+            _("DECSET 35 - Enable-Shifted-Key-Function feature (rxvt) was not ",
               "implemented completely."));
           break;
 
@@ -92,49 +92,49 @@ DecModeSequenceHandler.definition = {
         // TODO: more(1) fix.
         case 41:
           coUtils.Debug.reportWarning(
-            _("DECSET 41 - enable fix for more(1) ", 
+            _("DECSET 41 - enable fix for more(1) ",
               "was not implemented."));
           break;
 
         // TODO: Enable Nation Replacement Character sets (DECNRCM).
         case 42:
           coUtils.Debug.reportWarning(
-            _("DECSET 42 - Enable Nation Replacement Character sets (DECNRCM) ", 
+            _("DECSET 42 - Enable Nation Replacement Character sets (DECNRCM) ",
               "was not implemented."));
           break;
 
         // TODO: Turn On Margin Bell
         case 44:
           coUtils.Debug.reportWarning(
-            _("DECSET 44 - Turn On Margin Bell, ", 
+            _("DECSET 44 - Turn On Margin Bell, ",
               "was not implemented."));
           break;
 
         // TODO: Start Logging
         case 46:
           coUtils.Debug.reportWarning(
-            _("DECSET 46 - Start Logging, ", 
+            _("DECSET 46 - Start Logging, ",
               "was not implemented."));
           break;
 
         // TODO: Backarrow key sends delete (DECBKM)
         case 67:
           coUtils.Debug.reportWarning(
-            _("DECSET 67 - Backarrow key sends delete (DECBKM), ", 
+            _("DECSET 67 - Backarrow key sends delete (DECBKM), ",
               "was not implemented."));
           break;
 
         // TODO: Scroll to bottom on tty output (rxvt).
         case 1010:
           coUtils.Debug.reportWarning(
-            _("DECSET 1010 - Scroll to bottom on tty output (rxvt), ", 
+            _("DECSET 1010 - Scroll to bottom on tty output (rxvt), ",
               "was not implemented."));
           break;
 
         // TODO: Scroll to bottom on key press (rxvt).
         case 1011:
           coUtils.Debug.reportWarning(
-            _("DECSET 1011 - Scroll to bottom on key press (rxvt), ", 
+            _("DECSET 1011 - Scroll to bottom on key press (rxvt), ",
               "was not implemented."));
           break;
 
@@ -152,12 +152,12 @@ DecModeSequenceHandler.definition = {
               "was not implemented."));
           break;
 
-        // TODO: Send ESC when Meta modifies a key 
+        // TODO: Send ESC when Meta modifies a key
         // (enables the metaSendsEscape resource).
         case 1036:
           coUtils.Debug.reportWarning(
             _("DECSET 1036 - Send ESC when Meta modifies a key ",
-              "(enables the metaSendsEscape resource), ", 
+              "(enables the metaSendsEscape resource), ",
               "was not implemented."));
           break;
 
@@ -165,35 +165,35 @@ DecModeSequenceHandler.definition = {
         case 1037:
           coUtils.Debug.reportWarning(
             _("DECSET 1037 - Send DEL from ",
-              "the editing- keypad Delete key, ", 
+              "the editing- keypad Delete key, ",
               "was not implemented."));
           break;
 
-        // TODO: Set Sun function-key mode. 
+        // TODO: Set Sun function-key mode.
         case 1051:
           coUtils.Debug.reportWarning(
-            _("DECSET 1051 - Set Sun function-key mode, ", 
+            _("DECSET 1051 - Set Sun function-key mode, ",
               "was not implemented."));
           break;
 
-        // TODO: Set HP function-key mode. 
+        // TODO: Set HP function-key mode.
         case 1052:
           coUtils.Debug.reportWarning(
-            _("DECSET 1052 - Set HP function-key mode, ", 
+            _("DECSET 1052 - Set HP function-key mode, ",
               "was not implemented."));
           break;
 
-        // TODO: Set legacy keyboard emulation (X11R6). 
+        // TODO: Set legacy keyboard emulation (X11R6).
         case 1060:
           coUtils.Debug.reportWarning(
-            _("DECSET 1052 - Set legacy keyboard emulation (X11R6), ", 
+            _("DECSET 1052 - Set legacy keyboard emulation (X11R6), ",
               "was not implemented."));
           break;
 
-        // TODO: Set Sun/PC keyboard emulation of VT220 keyboard. 
+        // TODO: Set Sun/PC keyboard emulation of VT220 keyboard.
         case 1061:
           coUtils.Debug.reportWarning(
-            _("DECSET 1052 - Set Sun/PC keyboard emulation of VT220 keyboard, ", 
+            _("DECSET 1052 - Set Sun/PC keyboard emulation of VT220 keyboard, ",
               "was not implemented."));
           break;
 
@@ -211,7 +211,7 @@ DecModeSequenceHandler.definition = {
   },
 
   "[profile('vt100'), sequence('CSI ? Pm l')]":
-  function DECRST() 
+  function DECRST()
   { // DEC-Private Mode Reset
     var i,
         n,
@@ -247,56 +247,56 @@ DecModeSequenceHandler.definition = {
         case 35:
           this.sendMessage("command/disable-shifted-key-functions");
           coUtils.Debug.reportWarning(
-            _("DECRST - Enable-Shifted-Key-Function feature (rxvt) was not ", 
+            _("DECRST - Enable-Shifted-Key-Function feature (rxvt) was not ",
               "implemented completely."));
           break;
 
         // TODO: No more(1) fix.
         case 41:
           coUtils.Debug.reportWarning(
-            _("DECRST 41 - disable fix for more(1) ", 
+            _("DECRST 41 - disable fix for more(1) ",
               "was not implemented."));
           break;
 
         // TODO: Enable Nation Replacement Character sets (DECNRCM).
         case 42:
           coUtils.Debug.reportWarning(
-            _("DECRST 42 - Enable Nation Replacement Character sets (DECNRCM) ", 
+            _("DECRST 42 - Enable Nation Replacement Character sets (DECNRCM) ",
               "was not implemented."));
           break;
 
         // TODO: Turn Off Margin Bell
         case 44:
           coUtils.Debug.reportWarning(
-            _("DECRST 44 - Turn Off Margin Bell, ", 
+            _("DECRST 44 - Turn Off Margin Bell, ",
               "was not implemented."));
           break;
 
         // TODO: Stop Logging
         case 46:
           coUtils.Debug.reportWarning(
-            _("DECRST 46 - Stop Logging, ", 
+            _("DECRST 46 - Stop Logging, ",
               "was not implemented."));
           break;
 
         // TODO: Backarrow key sends backspace (DECBKM)
         case 67:
           coUtils.Debug.reportWarning(
-            _("DECRST 67 - Backarrow key sends delete (DECBKM), ", 
+            _("DECRST 67 - Backarrow key sends delete (DECBKM), ",
               "was not implemented."));
           break;
 
         // TODO: Don't scroll to bottom on tty output (rxvt).
         case 1010:
           coUtils.Debug.reportWarning(
-            _("DECRST 1010 - Don't scroll to bottom on tty output (rxvt), ", 
+            _("DECRST 1010 - Don't scroll to bottom on tty output (rxvt), ",
               "was not implemented."));
           break;
 
         // TODO: Don't scroll to bottom on key press (rxvt).
         case 1011:
           coUtils.Debug.reportWarning(
-            _("DECRST 1010 - Don't scroll to bottom on key press (rxvt), ", 
+            _("DECRST 1010 - Don't scroll to bottom on key press (rxvt), ",
               "was not implemented."));
           break;
 
@@ -314,12 +314,12 @@ DecModeSequenceHandler.definition = {
               "was not implemented."));
           break;
 
-        // TODO:Don't send ESC when Meta modifies a key 
+        // TODO:Don't send ESC when Meta modifies a key
         // (disables the metaSendsEscape resource).
         case 1036:
           coUtils.Debug.reportWarning(
             _("DECRST 1036 - Don't send ESC when Meta modifies a key ",
-              "(disables the metaSendsEscape resource), ", 
+              "(disables the metaSendsEscape resource), ",
               "was not implemented."));
           break;
 
@@ -327,35 +327,35 @@ DecModeSequenceHandler.definition = {
         case 1037:
           coUtils.Debug.reportWarning(
             _("DECRST 1037 - Send VT220 Remove from ",
-              "the editing- keypad Delete key, ", 
+              "the editing- keypad Delete key, ",
               "was not implemented."));
           break;
 
-        // TODO: Reset Sun function-key mode. 
+        // TODO: Reset Sun function-key mode.
         case 1051:
           coUtils.Debug.reportWarning(
-            _("DECRST 1051 - Reset Sun function-key mode, ", 
+            _("DECRST 1051 - Reset Sun function-key mode, ",
               "was not implemented."));
           break;
 
-        // TODO: Reset HP function-key mode. 
+        // TODO: Reset HP function-key mode.
         case 1052:
           coUtils.Debug.reportWarning(
-            _("DECRST 1052 - Reset HP function-key mode, ", 
+            _("DECRST 1052 - Reset HP function-key mode, ",
               "was not implemented."));
           break;
 
-        // TODO: Reset legacy keyboard emulation (X11R6). 
+        // TODO: Reset legacy keyboard emulation (X11R6).
         case 1060:
           coUtils.Debug.reportWarning(
-            _("DECRST 1060 - Reset legacy keyboard emulation (X11R6), ", 
+            _("DECRST 1060 - Reset legacy keyboard emulation (X11R6), ",
               "was not implemented."));
           break;
 
-        // TODO: Reset Sun/PC keyboard emulation of VT220 keyboard. 
+        // TODO: Reset Sun/PC keyboard emulation of VT220 keyboard.
         case 1061:
           coUtils.Debug.reportWarning(
-            _("DECRST 1061 - Reset Sun/PC keyboard emulation of VT220 keyboard, ", 
+            _("DECRST 1061 - Reset Sun/PC keyboard emulation of VT220 keyboard, ",
               "was not implemented."));
           break;
 
@@ -387,7 +387,7 @@ PersistOptionsTrait.definition = {
    * XT_REST - Restore extended options.
    */
   "[profile('vt100'), sequence('CSI ? Pm r')]":
-  function XT_REST(n) 
+  function XT_REST(n)
   { // DEC Private Mode Restore
 
     var save_buffer = this._dec_save_buffer,
@@ -411,7 +411,7 @@ PersistOptionsTrait.definition = {
    * XT_SAVE - Save extended options.
    */
   "[profile('vt100'), sequence('CSI ? Pm s')]":
-  function XT_SAVE() 
+  function XT_SAVE()
   {  // DEC Private Mode Save
     var save_buffer = this._dec_save_buffer,
         alternate_buffer = this._dec_alternate_buffer,
@@ -452,7 +452,7 @@ DecPrivateMode.definition = {
   _screen: null,
   _cursor_state: null,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
@@ -462,7 +462,7 @@ DecPrivateMode.definition = {
     this._cursor_state = context["cursorstate"];;
   },
 
-  /** Uninstalls itself. 
+  /** Uninstalls itself.
    */
   "[uninstall]":
   function uninstall()
@@ -475,7 +475,7 @@ DecPrivateMode.definition = {
    * DECRQM_ansi
    */
   "[profile('vt100'), sequence('CSI Pm $ p')]":
-  function DECRQM_ansi(n) 
+  function DECRQM_ansi(n)
   {  // ANSI Mode request
     n = n || 0;
 
@@ -490,7 +490,7 @@ DecPrivateMode.definition = {
    * DECRQM_private
    */
   "[profile('vt100'), sequence('CSI ? Pm $ p')]":
-  function DECRQM_private(n) 
+  function DECRQM_private(n)
   {  // DEC Private Mode request
     var message;
 
@@ -515,7 +515,7 @@ DecPrivateMode.definition = {
   PFF:   false,   // Print Form Feed Mode (true:  The terminal sends a form feed (FF) to the printer at the end of a printing function.
                  //                       false: The terminal sends nothing to the printer at the end of a printing function.)
   PEX:   false,   // Print Extent Mode (true:  The print function prints the complete page.
-                 //                    false: The print function prints the scrolling region only (data inside the margins).)    
+                 //                    false: The print function prints the scrolling region only (data inside the margins).)
   RLM:   false,   // Right-to-Left Mode
   HEBM:  false,   // Hebrew/N-A Keyboard Mapping Mode
   HEM:   false,   // Hebrew Encoding Mode
@@ -558,7 +558,7 @@ DecPrivateMode.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new DecPrivateMode(broker);
 }

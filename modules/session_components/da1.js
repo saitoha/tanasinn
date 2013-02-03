@@ -28,23 +28,23 @@
  * @class PrimaryDA
  *
  * DA1 - Primary Device Attributes
- * 
- * In this DA exchange, the host asks for the terminal's architectural 
+ *
+ * In this DA exchange, the host asks for the terminal's architectural
  * class and basic attributes.
  *
  * Host Request
- * 
+ *
  * The host uses the following sequence to send this request:
  *
  * CSI    c     or   CSI    0     c
  * 9/11   6/3   or   9/11   3/0   6/3
  *
  * Terminal Response
- * 
- * The terminal responds by sending its architectural class and basic 
- * attributes to the host. This response depends on the terminal's current 
+ *
+ * The terminal responds by sending its architectural class and basic
+ * attributes to the host. This response depends on the terminal's current
  * operating VT level.
- * 
+ *
  * Response from North American Terminal
  *
  * CSI    ?      6     4     ;      Ps1   ;      ...   Psn   c
@@ -54,16 +54,16 @@
  *
  * CSI    ?      6     4     ;      Ps1   ;      ...   Psn   c
  * 9/11   3/15   3/6   3/4   3/11   3/n   3/11   ...   3/n   6/3
- * 
+ *
  * Parameters
- * 
+ *
  * Ps1 ; . . . Psn
- * reports different device attributes between the North American terminal 
+ * reports different device attributes between the North American terminal
  * and the international terminal.
- * 
- * The value of the first parameter is encoded so a simple range check can 
- * be performed to determine the basic service class and level of the device. 
- * The VT510 is a level 4 terminal so its service class code is 64. The 
+ *
+ * The value of the first parameter is encoded so a simple range check can
+ * be performed to determine the basic service class and level of the device.
+ * The VT510 is a level 4 terminal so its service class code is 64. The
  * following extensions to level 4 are provided:
  *
  * Ps   Meaning
@@ -87,22 +87,22 @@
  * 46   ASCII emulation
  *
  * Primary DA Example
- * 
+ *
  * Here is a typical primary DA exchange.
  *
- * Request (Host to VT510)   
- * CSI c or CSI 0 c   
- * The host asks for the terminal's architectural class code and supported 
+ * Request (Host to VT510)
+ * CSI c or CSI 0 c
+ * The host asks for the terminal's architectural class code and supported
  * extensions.
  *
- * Response - N.A. (VT510 to host)   
- * CSI ? 64; 1; 2; 7; 8; 9; 15; 18; 21; 44; 45; 46 c   
- * The terminal is a class 4 device (64) and supports the Ps parameters 
+ * Response - N.A. (VT510 to host)
+ * CSI ? 64; 1; 2; 7; 8; 9; 15; 18; 21; 44; 45; 46 c
+ * The terminal is a class 4 device (64) and supports the Ps parameters
  * listed above.
  *
- * Response - International (VT510 to host)   
- * CSI ? 64; 1; 2; 7; 8; 9; 12; 15; 18; 21; 23; 24; 42; 44; 45; 46 c   
- * The terminal is a class 4 device (64) and supports the Ps parameters 
+ * Response - International (VT510 to host)
+ * CSI ? 64; 1; 2; 7; 8; 9; 12; 15; 18; 21; 23; 24; 42; 44; 45; 46 c
+ * The terminal is a class 4 device (64) and supports the Ps parameters
  * listed above.
  */
 var PrimaryDA = new Class().extends(Plugin);
@@ -121,24 +121,24 @@ PrimaryDA.definition = {
 
   "[persistable] enabled_when_startup": true,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
   },
 
   /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
   },
 
   /** handle DA1 request */
   "[profile('vt100'), sequence('CSI Ps c')]":
-  function DA1(n) 
+  function DA1(n)
   { // Primary DA (Device Attributes)
     if (n !== undefined && n !== 0) {
       coUtils.Debug.reportWarning(
@@ -187,7 +187,7 @@ PrimaryDA.definition = {
     this.sendMessage("command/send-sequence/csi", message);
 
     coUtils.Debug.reportMessage(
-      _("Primary Device Attributes: '%s'."), 
+      _("Primary Device Attributes: '%s'."),
       "\\e" + message);
   },
 
@@ -198,7 +198,7 @@ PrimaryDA.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new PrimaryDA(broker);
 }

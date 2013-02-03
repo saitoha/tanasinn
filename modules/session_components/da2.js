@@ -28,18 +28,18 @@
  * @class SecondaryDA
  *
  * DA2 - Secondary Device Attributes
- * 
- * In this DA exchange, the host requests the terminal's 
+ *
+ * In this DA exchange, the host requests the terminal's
  * identification code, firmware version level, and hardware options.
  * Host Request
- * 
+ *
  * The host uses the following sequence to send this request:
  *
  * CSI    >      c     or   CSI    >      0     c
  * 9/11   3/14   6/3   or   9/11   3/14   3/0   6/3
  *
  * Terminal Response
- * 
+ *
  * The terminal with a VT keyboard uses the following sequence to respond:
  *
  * CSI    >      6     1     ;      Pv    ;      0     c
@@ -53,14 +53,14 @@
  * DA2R for terminal with PC keyboard.
  *
  * Parameters
- * 
+ *
  * 61
- * indicates the identification code of the terminal for the secondary 
+ * indicates the identification code of the terminal for the secondary
  * device attributes command.
- * 
+ *
  * Pv
  * indicates the version level of the firmware implementing the terminal
- * management functions, for example, editing, as shown in the following 
+ * management functions, for example, editing, as shown in the following
  * table.
  *
  * Pv   Version
@@ -68,17 +68,17 @@
  * 20   V2.0 (released version 2.0)
  *
  * Secondary DA Example
- * 
+ *
  * The following is a typical secondary DA exchange:
  *
- * Request (Host to VT510)   
- * CSI > c or CSI > 0 c   
- * The host asks for the terminal's identification, firmware version, 
+ * Request (Host to VT510)
+ * CSI > c or CSI > 0 c
+ * The host asks for the terminal's identification, firmware version,
  * current hardware options.
  *
- * Response (VT510 to host)   
- * CSI > 61; 20; 1 c   
- * The terminal identifies itself as a VT510 that uses version 2.0 
+ * Response (VT510 to host)
+ * CSI > 61; 20; 1 c
+ * The terminal identifies itself as a VT510 that uses version 2.0
  * firmware, and has a PC keyboard option.
  */
 var SecondaryDA = new Class().extends(Plugin);
@@ -97,24 +97,24 @@ SecondaryDA.definition = {
 
   "[persistable] enabled_when_startup": true,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
   },
 
   /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
   },
 
   /** handle DA2 request. */
   "[profile('vt100'), sequence('CSI > Ps c'), pnp]":
-  function DA2(n) 
+  function DA2(n)
   { // Secondary DA (Device Attributes)
     if (n !== undefined && n !== 0) {
       coUtils.Debug.reportWarning(
@@ -131,10 +131,10 @@ SecondaryDA.definition = {
   function reply()
   {
     //
-    // 0;  terminal ID 
-    // 277: Firmware version (for xterm, this is the XFree86 patch 
-    //      number, starting with 95). 
-    // 2:   DEC Terminal"s ROM cartridge registration number, 
+    // 0;  terminal ID
+    // 277: Firmware version (for xterm, this is the XFree86 patch
+    //      number, starting with 95).
+    // 2:   DEC Terminal"s ROM cartridge registration number,
     //      always zero.
     //
     this.sendMessage(
@@ -149,7 +149,7 @@ SecondaryDA.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new SecondaryDA(broker);
 }

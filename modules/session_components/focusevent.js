@@ -46,31 +46,31 @@ FocusEvent.definition = {
 
   _focus_mode: false,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
   },
 
   /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
   },
 
-  "[subscribe('command/backup'), pnp]": 
-  function backup(context) 
+  "[subscribe('command/backup'), pnp]":
+  function backup(context)
   {
     context[this.id] = {
       focus_mode: this._focus_mode,
-    }; 
+    };
   },
 
-  "[subscribe('command/restore'), pnp]": 
-  function restore(context) 
+  "[subscribe('command/restore'), pnp]":
+  function restore(context)
   {
     var data = context[this.id];
 
@@ -78,10 +78,10 @@ FocusEvent.definition = {
       this._focus_mode = data.focus_mode;
     }
   },
-  
+
   /** Fired at the focus reporting mode is changed. */
-  "[subscribe('event/focus-reporting-mode-changed'), pnp]": 
-  function onFocusReportingModeChanged(mode) 
+  "[subscribe('event/focus-reporting-mode-changed'), pnp]":
+  function onFocusReportingModeChanged(mode)
   {
     this._focus_mode = mode;
   },
@@ -116,7 +116,7 @@ FocusEvent.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new FocusEvent(broker);
 }

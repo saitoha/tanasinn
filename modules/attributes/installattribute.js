@@ -27,7 +27,7 @@
 
 function make_managed_handler(self, handler, topic)
 {
-  var wrapped_handler = function() 
+  var wrapped_handler = function()
   {
     return handler.apply(self, arguments);
   };
@@ -60,7 +60,7 @@ function apply_attribute(self, broker, key, topic)
 var InstallAttribute = new Attribute("install");
 InstallAttribute.definition = {
 
-  /** constructor 
+  /** constructor
    *  @param {EventBroker} broker Parent broker object.
    */
   initialize: function initialize(broker)
@@ -92,7 +92,7 @@ InstallAttribute.definition = {
 var UninstallAttribute = new Attribute("uninstall");
 UninstallAttribute.definition = {
 
-  /** constructor 
+  /** constructor
    *  @param {EventBroker} broker Parent broker object.
    */
   initialize: function initialize(broker)

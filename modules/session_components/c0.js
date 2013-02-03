@@ -46,19 +46,19 @@ C0Control.definition = {
 
   _screen: null,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
     this._screen = context["screen"];
   },
 
-  /** uninstalls itself. 
+  /** uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
     this._screen = null;
   },
@@ -76,37 +76,37 @@ C0Control.definition = {
    *
    */
   "[profile('vt100'), sequence('0x00')]":
-  function NUL() 
+  function NUL()
   {
   },
-  
+
   /** Start of heading.
    */
   "[profile('vt100'), sequence('0x01')]":
-  function SOH() 
+  function SOH()
   {
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
       "SOH", Array.slice(arguments));
   },
-  
+
   /** Start of text.
    */
   "[profile('vt100'), sequence('0x02')]":
-  function STX()  
+  function STX()
   {
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
       "STX", Array.slice(arguments));
   },
- 
+
   /** End of text.
    *
    * Can be selected as a half-duplex turnaround character.
    *
    */
   "[profile('vt100'), sequence('0x03')]":
-  function ETX() 
+  function ETX()
   {
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
@@ -121,41 +121,41 @@ C0Control.definition = {
    *
    */
   "[profile('vt100'), sequence('0x04')]":
-  function EOT() 
+  function EOT()
   {
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
       "EOT", Array.slice(arguments));
   },
-  
+
   /** Enquire.
    *
    * This character transmits the answerback message.
    *
    */
   "[profile('vt100'), sequence('0x05')]":
-  function ENQ() 
+  function ENQ()
   {
     this.sendMessage("command/answerback");
   },
-  
+
   /** Acknowledge.
    */
   "[profile('vt100'), sequence('0x06')]":
-  function ACK() 
+  function ACK()
   {
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
       "ACK", Array.slice(arguments));
   },
-   
+
   /** Bell.
    *
    * Generates bell tone.
    *
    */
   "[profile('vt100'), sequence('0x07', 'ESC g')]":
-  function BEL() 
+  function BEL()
   {
     this.sendMessage("sequence/bel");
   },
@@ -167,11 +167,11 @@ C0Control.definition = {
    *
    */
   "[profile('vt100'), sequence('0x08')]":
-  function BS() 
+  function BS()
   { // BackSpace
     this._screen.backSpace();
   },
-  
+
   /** 0x09 HT is in tabcontroller.js */
 
   /** Linefeed.
@@ -180,7 +180,7 @@ C0Control.definition = {
    *  Also causes printing if auto print operation selected.
    */
   "[profile('vt100'), sequence('0x0A')]":
-  function LF() 
+  function LF()
   {
     var screen = this._screen;
 
@@ -190,14 +190,14 @@ C0Control.definition = {
       screen.carriageReturn();
     }
   },
- 
+
   /** Vertical tabulation.
    *
    * Processed as LF.
    *
    */
   "[profile('vt100'), sequence('0x0B')]":
-  function VT() 
+  function VT()
   {
     var screen = this._screen;
 
@@ -210,12 +210,12 @@ C0Control.definition = {
 
   /** Form feed.
    *
-   * This character is processed as LF. 
+   * This character is processed as LF.
    * It can also be selected as a half-duplex turnaround character.
    *
    */
   "[profile('vt100'), sequence('0x0C')]":
-  function FF() 
+  function FF()
   {
     var screen = this._screen;
 
@@ -233,32 +233,32 @@ C0Control.definition = {
    *
    */
   "[profile('vt100'), sequence('0x0D')]":
-  function CR() 
+  function CR()
   { // Carriage Return
     var screen;
 
     screen = this._screen;
     screen.carriageReturn();
   },
-    
+
   /** Shift out.
    *
    * Selects G1 character set designated by a select character set sequence.
    *
    */
   "[profile('vt100'), sequence('0x0E')]":
-  function SO() 
+  function SO()
   { // shift out
     this.sendMessage("event/shift-out");
   },
-  
+
   /** Shift in.
    *
    * Selects G0 character set designated by a select character set sequence.
    *
    */
   "[profile('vt100'), sequence('0x0F')]":
-  function SI() 
+  function SI()
   { // shift out
     this.sendMessage("event/shift-in");
   },
@@ -266,25 +266,25 @@ C0Control.definition = {
   /** Data link escape.
    */
   "[profile('vt100'), sequence('0x10')]":
-  function DLE() 
+  function DLE()
   {
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
       "DLE", Array.slice(arguments));
   },
- 
+
   /** Device control 1.
    */
   "[profile('vt100'), sequence('0x11')]":
-  function DC1() 
+  function DC1()
   {
     this.sendMessage("command/flow-control", true);
   },
-  
+
   /** Device control 2.
    */
   "[profile('vt100'), sequence('0x12')]":
-  function DC2() 
+  function DC2()
   {
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
@@ -300,51 +300,51 @@ C0Control.definition = {
    *
    */
   "[profile('vt100'), sequence('0x13')]":
-  function DC3() 
+  function DC3()
   {
     this.sendMessage("command/flow-control", false);
   },
-  
+
   /** Device control 4.
    */
   "[profile('vt100'), sequence('0x14')]":
-  function DC4() 
+  function DC4()
   {
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
       "DC4", Array.slice(arguments));
   },
-  
+
   /** Negative acknowledge.
    */
   "[profile('vt100'), sequence('0x15')]":
-  function NAK() 
+  function NAK()
   {
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
       "NAK", Array.slice(arguments));
   },
-  
+
   /** Synchronous idle.
    */
   "[profile('vt100'), sequence('0x16')]":
-  function SYN() 
+  function SYN()
   {
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
       "SYN", Array.slice(arguments));
   },
-  
+
   /** End of transmission block.
    */
   "[profile('vt100'), sequence('0x17')]":
-  function ETB() 
+  function ETB()
   {
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
       "ETB", Array.slice(arguments));
   },
-  
+
   /** Cancel of previous word or charactor.
    *
    * If received during an escape or control sequence, cancels the sequence
@@ -352,23 +352,23 @@ C0Control.definition = {
    *
    */
   "[profile('vt100'), sequence('0x18')]":
-  function CAN() 
+  function CAN()
   {
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
       "CAN", Array.slice(arguments));
   },
-  
+
   /** End of medium.
    */
   "[profile('vt100'), sequence('0x19')]":
-  function EM() 
+  function EM()
   {
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
       "EM", Array.slice(arguments));
   },
-  
+
   /** Substitute.
    *
    * Processed as CAN.
@@ -381,51 +381,51 @@ C0Control.definition = {
       _("%s sequence [%s] was ignored."),
       "SUB", Array.slice(arguments));
   },
-  
+
   /** File separator.
    */
   "[profile('vt100'), sequence('0x1C')]":
-  function FS() 
+  function FS()
   {
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
       "FS", Array.slice(arguments));
   },
- 
+
   /** Group separator.
    */
   "[profile('vt100'), sequence('0x1D')]":
-  function GS() 
+  function GS()
   {
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
       "GS", Array.slice(arguments));
   },
-  
+
   /** Record separator.
    */
   "[profile('vt100'), sequence('0x1E')]":
-  function RS() 
+  function RS()
   {
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
       "RS", Array.slice(arguments));
   },
-  
+
   /** Unit separator.
    */
   "[profile('vt100'), sequence('0x1F')]":
-  function US() 
+  function US()
   {
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
       "US", Array.slice(arguments));
   },
-  
+
   /** Delete.
    */
   "[profile('vt100'), sequence('0x7F', '0xFF')]":
-  function DEL() 
+  function DEL()
   {
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
@@ -439,7 +439,7 @@ C0Control.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new C0Control(broker);
 }

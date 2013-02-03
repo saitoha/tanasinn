@@ -28,7 +28,7 @@
  *  @class StatusRequest
  *
  * DECRQSS - Request Selection or Setting
- * 
+ *
  * The host requests the terminal setting. See DECRPSS for the terminal's
  * response.
  *
@@ -38,7 +38,7 @@
  * 9/0   2/4   7/1   * ...      9/12
  *
  * Parameters
- * 
+ *
  * D ... D
  * indicates the current setting of a valid control function that the host
  * asked about. D . . . D consists of all the characters in the control
@@ -46,7 +46,7 @@
  *
  *
  * Description
- * 
+ *
  * DECRQSS (and DECRPSS) support the following settings or selections:
  *
  * Setting                            Mnemonic  Final Character(s)
@@ -79,7 +79,7 @@
  * Select Disconnect Delay Time       DECSDDT   $ q
  * Set Transmit Rate Limit            DECSTRL   " u
  * Set Port Parameter                 DECSPP    + w
- * 
+ *
  */
 var StatusRequest = new Class().extends(Plugin);
 StatusRequest.definition = {
@@ -97,23 +97,23 @@ StatusRequest.definition = {
 
   "[persistable] enabled_when_startup": true,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
   },
 
   /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
   },
 
   "[subscribe('sequence/dcs'), pnp]":
-  function onDCS(data) 
+  function onDCS(data)
   {
     if (0 === data.indexOf("$q")) {
       data = data.substr(2);
@@ -152,7 +152,7 @@ StatusRequest.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new StatusRequest(broker);
 }

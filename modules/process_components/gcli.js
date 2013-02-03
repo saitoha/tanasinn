@@ -38,11 +38,11 @@ GCLI.definition = {
 
   "[persistable] enabled_when_startup": true,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install() 
+  function install()
   {
     var self = this;
 
@@ -66,12 +66,12 @@ GCLI.definition = {
     });
   },
 
-  _getCurrentDesktop: function _getDesktop() 
+  _getCurrentDesktop: function _getDesktop()
   {
     var window = coUtils.getWindow(),
         desktops = this.sendMessage("get/desktop-from-window", window),
         desktop;
-  
+
     if (desktops) {
       desktop = desktops.filter(
         function filterProc(desktop)
@@ -85,7 +85,7 @@ GCLI.definition = {
     desktop = this.sendMessage("event/new-window-detected", window).pop();
     return desktop;
   }
-  
+
 };
 
 /**
@@ -93,7 +93,7 @@ GCLI.definition = {
  * @brief Module entry point
  * @param {Desktop} desktop The Desktop object.
  */
-function main(process) 
+function main(process)
 {
   new GCLI(process).install();
 }

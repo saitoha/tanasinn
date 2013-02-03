@@ -47,11 +47,11 @@ ShellSettings.definition = {
   "[persistable] command": "login -pf $USER",
   "[persistable] locale": coUtils.Localize.locale.replace(/-/, "_") + ".UTF-8",
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
     var broker = this._broker;
 
@@ -70,30 +70,30 @@ ShellSettings.definition = {
   /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
   },
 
   "[subscribe('command/set-environment/term'), pnp]":
-  function setTerm(term) 
+  function setTerm(term)
   {
     this.term = term;
   },
 
   "[subscribe('command/set-environment/command'), pnp]":
-  function setLocale(command) 
+  function setLocale(command)
   {
     this.command = command;
   },
 
   "[subscribe('command/set-environment/locale'), pnp]":
-  function setLocale(locale) 
+  function setLocale(locale)
   {
     this.locale = locale;
   },
 
   "[subscribe('event/session-initialized'), pnp]":
-  function onSessionInitialized(session) 
+  function onSessionInitialized(session)
   {
     this.sendMessage("command/send-titlebar-string", this.command);
   },
@@ -105,7 +105,7 @@ ShellSettings.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new ShellSettings(broker);
 }

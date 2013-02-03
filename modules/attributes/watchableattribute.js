@@ -64,7 +64,7 @@ function apply_attribute(self, key)
 var WatchableAttribute = new Attribute("watchable");
 WatchableAttribute.definition = {
 
-  /** constructor 
+  /** constructor
    *  @param {EventBroker} broker Parent broker object.
    */
   initialize: function initialize(broker)

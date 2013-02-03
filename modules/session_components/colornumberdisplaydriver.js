@@ -47,19 +47,19 @@ ColorNumberCompletionDisplayDriver.definition = {
 
   _renderer: null,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
     this._renderer = context["renderer"];
   },
 
-  /** Uninstalls itself 
+  /** Uninstalls itself
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
     this._renderer = null;
   },
@@ -70,7 +70,7 @@ ColorNumberCompletionDisplayDriver.definition = {
     return this;
   },
 
-  drive: function drive(grid, result, current_index) 
+  drive: function drive(grid, result, current_index)
   {
     var owner_document = grid.ownerDocument,
         columns,
@@ -88,11 +88,11 @@ ColorNumberCompletionDisplayDriver.definition = {
           renderer = this._renderer;
 
       this.request(
-        "command/construct-chrome", 
+        "command/construct-chrome",
         {
           parentNode: rows,
           tagName: "row",
-          style: current_index === index && { 
+          style: current_index === index && {
             border: "solid 2px blue",
             background: "#226",
             color: "white",
@@ -102,29 +102,29 @@ ColorNumberCompletionDisplayDriver.definition = {
               tagName: "box",
               style: {
                 backgroundColor: pair.value,
-                padding: "10px 20px", 
+                padding: "10px 20px",
               },
             },
           ].concat([
-            { 
+            {
               text: pair.name,
-              start: pair.name.toLowerCase().indexOf(search_string), 
+              start: pair.name.toLowerCase().indexOf(search_string),
               length: search_string.length,
             },
-            { 
+            {
               text: pair.value,
-              start: -1, 
+              start: -1,
             },
-            { 
+            {
               text: coUtils.Constant.WEB140_COLOR_MAP_REVERSE[pair.value] || "",
-              start: -1, 
+              start: -1,
             }
           ].map(function(range) {
             return {
               tagName: "box",
               style: {
-                fontSize: "20px", 
-                margin: "0px 10px", 
+                fontSize: "20px",
+                margin: "0px 10px",
               },
               childNodes: -1 === range.start ?
                 { text: range.text }:
@@ -133,11 +133,11 @@ ColorNumberCompletionDisplayDriver.definition = {
                   {
                     tagName: "label",
                     value: range.text.substr(range.start, range.length),
-                    style: { 
-                      margin: "0px", 
-                      fontWeight: "bold", 
-                      color: "#f00", 
-                      textDecoration: "underline", 
+                    style: {
+                      margin: "0px",
+                      fontWeight: "bold",
+                      color: "#f00",
+                      textDecoration: "underline",
                     },
                   },
                   { text: range.text.substr(range.start + range.length) },
@@ -145,7 +145,7 @@ ColorNumberCompletionDisplayDriver.definition = {
             };
           }))
         });
-    }, this); 
+    }, this);
   },
 
 }; // ColorNumberCompletionDisplayDriver

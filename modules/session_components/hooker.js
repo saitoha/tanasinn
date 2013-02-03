@@ -46,21 +46,21 @@ Hooker.definition = {
 
   "[persistable] enabled_when_startup": true,
 
-  _buffer: null, 
+  _buffer: null,
   _hooked: false,
   _step_mode: false,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
-  "[install]": 
-  function install(context) 
+  "[install]":
+  function install(context)
   {
     this._buffer = [];
     this._parser = context["parser"];
   },
 
-  /** Uninstalls itself 
+  /** Uninstalls itself
    */
   "[uninstall]":
   function uninstall()
@@ -71,14 +71,14 @@ Hooker.definition = {
 
   /** Suspend TTY and enter debug session. */
   "[subscribe('command/debugger-pause'), enabled]":
-  function pause() 
+  function pause()
   {
     this._step_mode = true;
   },
 
   /** Resume TTY and close debug session */
   "[subscribe('command/debugger-resume'), enabled]":
-  function resume()  
+  function resume()
   {
     var buffer = this._buffer,
         action,
@@ -118,7 +118,7 @@ Hooker.definition = {
   },
 
   "[subscribe('command/debugger-trace-on'), enabled]":
-  function set() 
+  function set()
   {
     var parser,
         buffer,
@@ -146,7 +146,7 @@ Hooker.definition = {
       this._hooked = true;
 
       // hook parser
-      parser.parse = function parse_alternative(data) 
+      parser.parse = function parse_alternative(data)
         {
           if (self._step_mode) {
             this.sendMessage("command/flow-control", false);
@@ -172,7 +172,7 @@ Hooker.definition = {
   },
 
   "[subscribe('command/debugger-trace-off'), enabled]":
-  function unset() 
+  function unset()
   {
     var parser;
 
@@ -191,7 +191,7 @@ Hooker.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new Hooker(broker);
 }

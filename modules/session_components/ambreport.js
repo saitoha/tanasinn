@@ -30,15 +30,15 @@
  *
  * http://code.google.com/p/mintty/wiki/CtrlSeqs
  *
- * Applications can ask to be notified when the width of the so-called 
+ * Applications can ask to be notified when the width of the so-called
  * ambiguous width character category changes due to the user changing font.
  *
  * sequence   reporting
  * ^[[?7700l  disabled
  * ^[[?7700h  enabled
  *
- * When enabled, ^[[1W is sent when changing to an "ambiguous narrow" font 
- * and ^[[2W is sent when changing to an "ambiguous wide" font. 
+ * When enabled, ^[[1W is sent when changing to an "ambiguous narrow" font
+ * and ^[[2W is sent when changing to an "ambiguous wide" font.
  */
 var AmbiguousWidthReporting = new Class().extends(Plugin)
                                 .depends("parser");
@@ -60,11 +60,11 @@ AmbiguousWidthReporting.definition = {
 
   _mode: false,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
     this._mode = this.default_value;
   },
@@ -72,7 +72,7 @@ AmbiguousWidthReporting.definition = {
   /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
     this._mode = null;
   },
@@ -81,21 +81,21 @@ AmbiguousWidthReporting.definition = {
   /** Enable ambiguous width reporting.
    */
   "[subscribe('sequence/decset/7700'), pnp]":
-  function activate() 
+  function activate()
   { // Enable ambiguous width reporting
   },
 
   /** Disable ambiguous width reporting.
    */
   "[subscribe('sequence/decrst/7700'), pnp]":
-  function deactivate() 
+  function deactivate()
   { // Disable ambigous width reporting
   },
 
   /** Disable ambiguous width reporting.
    */
   "[subscribe('variable-changed/parser.ambiguous_as_wide'), pnp]":
-  function onAmbiguousWidthChanged(value) 
+  function onAmbiguousWidthChanged(value)
   { // Disable ambigous width reporting
     var message;
 
@@ -110,7 +110,7 @@ AmbiguousWidthReporting.definition = {
   /** Report mode
    */
   "[subscribe('sequence/decrqm/7700'), pnp]":
-  function report() 
+  function report()
   {
     var mode = this._mode ? 1: 2,
         message = "?7700;" + mode + "$y";
@@ -121,7 +121,7 @@ AmbiguousWidthReporting.definition = {
   /** on hard / soft reset
    */
   "[subscribe('command/{soft | hard}-terminal-reset'), pnp]":
-  function reset(broker) 
+  function reset(broker)
   {
     if (this.default_value) {
       this.activate();
@@ -133,8 +133,8 @@ AmbiguousWidthReporting.definition = {
   /**
    * Serialize snd persist current state.
    */
-  "[subscribe('@command/backup'), type('Object -> Undefined'), pnp]": 
-  function backup(context) 
+  "[subscribe('@command/backup'), type('Object -> Undefined'), pnp]":
+  function backup(context)
   {
     // serialize this plugin object.
     context[this.id] = {
@@ -145,8 +145,8 @@ AmbiguousWidthReporting.definition = {
   /**
    * Deserialize snd restore stored state.
    */
-  "[subscribe('@command/restore'), type('Object -> Undefined'), pnp]": 
-  function restore(context) 
+  "[subscribe('@command/restore'), type('Object -> Undefined'), pnp]":
+  function restore(context)
   {
     var data = context[this.id];
 
@@ -167,7 +167,7 @@ AmbiguousWidthReporting.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new AmbiguousWidthReporting(broker);
 }

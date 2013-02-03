@@ -54,7 +54,7 @@ Mascot.definition = {
       childNodes: [
         {
           tagName: "image",
-          src: this.getMascotImagePath(), 
+          src: this.getMascotImagePath(),
           style: {
             position: "absolute",
             marginLeft: this.offset_left + "px",
@@ -73,18 +73,18 @@ Mascot.definition = {
 
   _element: null,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
   },
 
   /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
     if (null !== this._element) {
       this._element.parentNode.removeChild(this._element);
@@ -93,10 +93,10 @@ Mascot.definition = {
   },
 
   "[subscribe('@command/focus'), pnp]":
-  function onFirstFocus(broker) 
+  function onFirstFocus(broker)
   {
     this._element = this.request(
-      "command/construct-chrome", 
+      "command/construct-chrome",
       this.getTemplate()
     )["tanasinn_mascot_layer"];
   },
@@ -146,7 +146,7 @@ Cover.definition = {
           flex: 1,
           style: {
             backgroundSize: "100% 100%",
-            backgroundImage: "url(" + this.getMascotImagePath() + ")", 
+            backgroundImage: "url(" + this.getMascotImagePath() + ")",
           },
         },
       ],
@@ -159,11 +159,11 @@ Cover.definition = {
 
   _element: null,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
     var result = this.request("command/construct-chrome", this.getTemplate());
 
@@ -173,7 +173,7 @@ Cover.definition = {
   /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
     if (null !== this._element) {
       this._element.parentNode.removeChild(this._element);
@@ -201,7 +201,7 @@ Cover.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new Mascot(broker);
   new Cover(broker);

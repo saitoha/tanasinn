@@ -46,11 +46,11 @@ EncoderMenu.definition = {
 
   _encoder: null,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
     this._encoder = context["encoder"];
   },
@@ -58,13 +58,13 @@ EncoderMenu.definition = {
   /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
     this._encoder = null;
   },
 
-  "[subscribe('get/contextmenu-entries'), pnp]": 
-  function onContextMenu() 
+  "[subscribe('get/contextmenu-entries'), pnp]":
+  function onContextMenu()
   {
     var encoder = this._encoder,
         encoder_scheme = encoder.scheme;
@@ -75,7 +75,7 @@ EncoderMenu.definition = {
         childNodes: {
           tagName: "menupopup",
           childNodes: this.sendMessage("get/encoders").map(
-            function getEncoders(information) 
+            function getEncoders(information)
             {
               var charset = information.charset;
 
@@ -86,7 +86,7 @@ EncoderMenu.definition = {
                 name: "encoding",
                 checked: encoder_scheme === information.charset,
                 listener: {
-                  type: "command", 
+                  type: "command",
                   context: this,
                   handler: function() this._onChange(charset),
                 }
@@ -96,9 +96,9 @@ EncoderMenu.definition = {
       };
   },
 
-  /** Switch terminal encoding setting. 
+  /** Switch terminal encoding setting.
    */
-  _onChange: function(scheme) 
+  _onChange: function(scheme)
   {
     this._scheme = scheme;
     this.sendMessage("change/encoder", scheme)
@@ -128,24 +128,24 @@ DecoderMenu.definition = {
 
   _decoder: null,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
     this._decoder = context["decoder"];
   },
 
   /** Uninstalls itself. */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
     this._decoder = null;
   },
 
   "[subscribe('get/contextmenu-entries'), pnp]":
-  function onContextMenu() 
+  function onContextMenu()
   {
     var decoder = this._decoder,
         decoders = this.sendMessage("get/decoders"),
@@ -157,8 +157,8 @@ DecoderMenu.definition = {
       childNodes: {
         tagName: "menupopup",
         childNodes: decoders.map(
-          function mapFunc(information) 
-          { 
+          function mapFunc(information)
+          {
             var charset = information.charset;
 
             return {
@@ -168,9 +168,9 @@ DecoderMenu.definition = {
               name: "encoding",
               checked: decoder_scheme === charset,
               listener: {
-                type: "command", 
+                type: "command",
                 context: this,
-                handler: function onEncodingChanged() 
+                handler: function onEncodingChanged()
                 {
                   return this._onChange(charset);
                 },
@@ -181,16 +181,16 @@ DecoderMenu.definition = {
     };
   },
 
-  /** Switch terminal decoding setting. 
+  /** Switch terminal decoding setting.
    */
-  _onChange: function(scheme) 
+  _onChange: function(scheme)
   {
     this._scheme = scheme;
     this.sendMessage("change/decoder", scheme)
 
-    // send control + l 
+    // send control + l
     if (this.send_ff_when_encoding_changed) {
-      this.sendMessage("command/send-to-tty", String.fromCharCode(0x0c)); 
+      this.sendMessage("command/send-to-tty", String.fromCharCode(0x0c));
     }
   }
 };
@@ -201,7 +201,7 @@ DecoderMenu.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new EncoderMenu(broker)
   new DecoderMenu(broker)

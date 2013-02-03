@@ -24,9 +24,9 @@
 
 "use strict";
 
-/** 
+/**
  * @class ForwardInputIterator
- */ 
+ */
 var ForwardInputIterator = new Class();
 ForwardInputIterator.definition = {
 
@@ -34,26 +34,26 @@ ForwardInputIterator.definition = {
   _position: 0,
 
   /** Assign new string data. position is reset. */
-  initialize: function initialize(value) 
+  initialize: function initialize(value)
   {
     this._value = value;
     this._position = 0;
   },
 
   /** Returns single byte code point. */
-  current: function current() 
+  current: function current()
   {
     return this._value.charCodeAt(this._position);
   },
 
   /** Moves to next position. */
-  moveNext: function moveNext() 
+  moveNext: function moveNext()
   {
     ++this._position;
   },
 
   /** Returns whether scanner position is at end. */
-  get isEnd() 
+  get isEnd()
   {
     return this._position >= this._value.length;
   },
@@ -121,12 +121,12 @@ OverlayIndicator.definition = {
   _element: null,
   _content: null,
   _timer: null,
- 
-  /** Installs itself. 
+
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
     var result = this.request("command/construct-chrome", this.getTemplate());
 
@@ -140,7 +140,7 @@ OverlayIndicator.definition = {
   /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
     if (null !== this._element) {
       this._element.parentNode.removeChild(this._element);
@@ -158,14 +158,14 @@ OverlayIndicator.definition = {
   },
 
   "[subscribe('command/report-overlay-message'), pnp]":
-  function report(message) 
+  function report(message)
   {
     this.print(message);
     this.show(2000);
   },
 
   "[subscribe('variable-changed/overlayindicator.background'), pnp]":
-  function onBackgroundChanged() 
+  function onBackgroundChanged()
   {
     if (null !== this._content) {
       this._content.style.background = this.background;
@@ -173,7 +173,7 @@ OverlayIndicator.definition = {
   },
 
   "[subscribe('variable-changed/overlayindicator.color'), pnp]":
-  function onColorChanged() 
+  function onColorChanged()
   {
     if (null !== this._content) {
       this._content.style.color = this.color;
@@ -181,7 +181,7 @@ OverlayIndicator.definition = {
   },
 
   "[subscribe('variable-changed/overlayindicator.font_size'), pnp]":
-  function onFontSizeChanged() 
+  function onFontSizeChanged()
   {
     if (null !== this._content) {
       this._content.style.fontSize = this.font_size;
@@ -189,7 +189,7 @@ OverlayIndicator.definition = {
   },
 
   "[subscribe('variable-changed/overlayindicator.padding'), pnp]":
-  function onPaddingChanged() 
+  function onPaddingChanged()
   {
     if (null !== this._content) {
       this._content.style.padding = this.padding;
@@ -197,7 +197,7 @@ OverlayIndicator.definition = {
   },
 
   "[subscribe('variable-changed/overlayindicator.border_radius'), pnp]":
-  function onBorderRadiusChanged() 
+  function onBorderRadiusChanged()
   {
     if (null !== this._content) {
       this._content.style.borderRadius = this.border_radius;
@@ -205,7 +205,7 @@ OverlayIndicator.definition = {
   },
 
   "[subscribe('variable-changed/overlayindicator.border'), pnp]":
-  function onBorderChanged() 
+  function onBorderChanged()
   {
     if (null !== this._content) {
       this._content.style.border = this.border;
@@ -213,12 +213,12 @@ OverlayIndicator.definition = {
   },
 
   "[subscribe('variable-changed/overlayindicator.title_handling'), pnp]":
-  function onTitleHandlingStateChanged() 
+  function onTitleHandlingStateChanged()
   {
     this.onCommandReceived.enabled = this.title_handling;
   },
 
-  show: function show(timeout) 
+  show: function show(timeout)
   {
     if (null !== this._timer) {
       this._timer.cancel();
@@ -228,7 +228,7 @@ OverlayIndicator.definition = {
     this._element.style.opacity = this.opacity;
     if (timeout) {
       this._timer = coUtils.Timer.setTimeout(
-        function() 
+        function()
         {
           this._timer = null;
           this.hide();
@@ -236,13 +236,13 @@ OverlayIndicator.definition = {
     }
   },
 
-  hide: function hide() 
+  hide: function hide()
   {
     if (null !== this._element) {
       this._element.style.MozTransitionDuration = this.fadeout_duration + "ms";
-      this._element.style.opacity = 0.0; 
+      this._element.style.opacity = 0.0;
       coUtils.Timer.setTimeout(
-        function() 
+        function()
         {
           if (this._element) {
             this._element.style.visibility = "hidden";
@@ -251,7 +251,7 @@ OverlayIndicator.definition = {
     }
   },
 
-  print: function print(message) 
+  print: function print(message)
   {
     this._content.setAttribute("value", String(message));
   },
@@ -260,7 +260,7 @@ OverlayIndicator.definition = {
   function onScreenSizeChanged(size)
   {
     var message = size.column + " x " + size.row;
-    
+
     this.print(message);
     this.show(2000);
   },
@@ -275,7 +275,7 @@ OverlayIndicator.definition = {
   },
 
   "[subscribe('sequence/osc/{0 | 1 | 2}')]":
-  function onCommandReceived(data0, data1, data2) 
+  function onCommandReceived(data0, data1, data2)
   { // process OSC command.
     var data = data0 || data1 || data2,
         scanner = new ForwardInputIterator(data),
@@ -295,7 +295,7 @@ OverlayIndicator.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new OverlayIndicator(broker);
 }

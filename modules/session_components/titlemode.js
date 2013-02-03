@@ -44,19 +44,19 @@ TitleModeHandler.definition = {
   },
 
   "[persistable] enabled_when_startup": true,
-  
-  /** Installs itself. 
+
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
   },
-  
+
   /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
   },
 
@@ -65,27 +65,27 @@ TitleModeHandler.definition = {
    * Each parameter enables a single feature.
    *
    * Title Modes
-   * 
+   *
    * The window- and icon-labels can be set or queried using control sequences.
    * As a VT220-emulator, xterm "should" limit the character encoding for the
    * corresponding strings to ISO-8859-1. Indeed, it used to be the case (and
    * was documented) that window titles had to be ISO-8859-1. This is no longer
    * the case. However, there are many applications which still assume that titles
    * are set using ISO-8859-1. So that is the default behavior.
-   * 
+   *
    * If xterm is running with UTF-8 encoding, it is possible to use window- and
    * icon-labels encoded using UTF-8. That is because the underlying X libraries
    * (and many, but not all) window managers support this feature.
-   * 
+   *
    * The utf8Title X resource setting tells xterm to disable a reconversion of
    * the title string back to ISO-8859-1, allowing the title strings to be
    * interpreted as UTF-8. The same feature can be enabled using the title mode
    * control sequence described in this summary.
-   * 
+   *
    * Separate from the ability to set the titles, xterm provides the ability to
    * query the titles, returning them either in ISO-8859-1 or UTF-8. This choice
    * is available only while xterm is using UTF-8 encoding.
-   * 
+   *
    * Finally, the characters sent to, or returned by a title control are less
    * constrained than the rest of the control sequences. To make them more
    * manageable (and constrained), for use in shell scripts, xterm has an
@@ -120,7 +120,7 @@ TitleModeHandler.definition = {
           break;
 
         case 3:
-          // Do not query window/icon labels using UTF-8. 
+          // Do not query window/icon labels using UTF-8.
           this.sendMessage("command/title-query-utf8-mode-disabled");
           break;
 
@@ -155,7 +155,7 @@ TitleModeHandler.definition = {
           break;
 
         case 3:
-          // Do not query window/icon labels using UTF-8. 
+          // Do not query window/icon labels using UTF-8.
           this.sendMessage("command/title-query-utf8-mode-enabled");
           break;
 

@@ -49,7 +49,7 @@ Sixel.definition = {
   "[persistable] enabled_when_startup": true,
 
   /** UI template */
-  getTemplate: function getTemplate() 
+  getTemplate: function getTemplate()
   {
     return {
       parentNode: "#tanasinn_center_area",
@@ -67,11 +67,11 @@ Sixel.definition = {
   _screen: null,
   _sixel_parser: null,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
     this._buffers = [];
 
@@ -84,7 +84,7 @@ Sixel.definition = {
   /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
     var i = 0,
         buffer;
@@ -127,7 +127,7 @@ Sixel.definition = {
       sixel_canvas.width = renderer.char_width * screen.width;
       sixel_canvas.height = renderer.line_height * screen.height;
 
-      dom = { 
+      dom = {
         canvas: sixel_canvas,
         context: sixel_canvas.getContext("2d"),
       };
@@ -144,7 +144,7 @@ Sixel.definition = {
       sixel_canvas.width = renderer.char_width * screen.width;
       sixel_canvas.height = renderer.line_height * screen.height * 2;
 
-      dom = { 
+      dom = {
         canvas: sixel_canvas,
         context: sixel_canvas.getContext("2d"),
       };
@@ -167,7 +167,7 @@ Sixel.definition = {
   },
 
   "[subscribe('sequence/dcs'), pnp]":
-  function onDCS(data) 
+  function onDCS(data)
   {
     var pattern = /^(?:[0-9;]*)?q/,
         match = data.substr(0, 32).match(pattern),
@@ -185,7 +185,7 @@ Sixel.definition = {
   },
 
   _processSixelLine:
-  function _processSixelLine(canvas, 
+  function _processSixelLine(canvas,
                              char_width,
                              line_height,
                              drcs_top,
@@ -254,14 +254,14 @@ Sixel.definition = {
 
   },
 
-}; // Sixel 
+}; // Sixel
 
 /**
  * @fn main
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new Sixel(broker);
 }

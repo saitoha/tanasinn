@@ -35,7 +35,7 @@
  * The first controls application escape key mode, where the escape key
  * sends a keycode that allows applications such as vim to tell it apart
  * from the escape character appearing at the start of many other keycodes,
- * without resorting to a timeout mechanism. 
+ * without resorting to a timeout mechanism.
  *
  * +---------------+---------------+---------+
  * |sequence       |mode           |keycode  |
@@ -76,11 +76,11 @@ ApplicationEscape.definition = {
 
   _mode: null,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
     this._mode = this.default_value;
     this.reset();
@@ -89,7 +89,7 @@ ApplicationEscape.definition = {
   /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
     this._mode = null;
   },
@@ -97,8 +97,8 @@ ApplicationEscape.definition = {
   /** Activate auto-wrap feature(DECAWM).
    */
   "[subscribe('sequence/decset/7727'), pnp]":
-  function activate() 
-  { 
+  function activate()
+  {
     this._mode = true;
 
     this.sendMessage("command/change-application-escape", true);
@@ -107,7 +107,7 @@ ApplicationEscape.definition = {
   /** Deactivate auto-wrap feature(DECAWM).
    */
   "[subscribe('sequence/decrst/7727'), pnp]":
-  function deactivate() 
+  function deactivate()
   {
     this._mode = false;
 
@@ -117,7 +117,7 @@ ApplicationEscape.definition = {
   /** Report mode
    */
   "[subscribe('sequence/decrqm/7727'), pnp]":
-  function report() 
+  function report()
   {
     var mode = this._mode ? 1: 2,
         message = "?7727;" + mode + "$y";
@@ -128,7 +128,7 @@ ApplicationEscape.definition = {
   /** handle terminal reset event.
    */
   "[subscribe('command/{soft | hard}-terminal-reset'), pnp]":
-  function reset() 
+  function reset()
   {
     if (this.default_value) {
       this.activate();
@@ -140,8 +140,8 @@ ApplicationEscape.definition = {
   /**
    * Serialize snd persist current state.
    */
-  "[subscribe('@command/backup'), type('Object -> Undefined'), pnp]": 
-  function backup(context) 
+  "[subscribe('@command/backup'), type('Object -> Undefined'), pnp]":
+  function backup(context)
   {
     // serialize this plugin object.
     context[this.id] = {
@@ -152,8 +152,8 @@ ApplicationEscape.definition = {
   /**
    * Deserialize snd restore stored state.
    */
-  "[subscribe('@command/restore'), type('Object -> Undefined'), pnp]": 
-  function restore(context) 
+  "[subscribe('@command/restore'), type('Object -> Undefined'), pnp]":
+  function restore(context)
   {
     var data;
 
@@ -171,7 +171,7 @@ ApplicationEscape.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new ApplicationEscape(broker);
 }

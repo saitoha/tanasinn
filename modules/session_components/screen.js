@@ -25,7 +25,7 @@
 "use strict";
 
 
-function wait(span) 
+function wait(span)
 {
   var end_time = Date.now() + span,
       current_thread = coUtils.Services.getThreadManager().currentThread;
@@ -85,10 +85,10 @@ ScreenBackupConcept.definition = {
 
   id: "ScreenBackup",
 
-  "<command/backup> :: Object -> Undefined": 
+  "<command/backup> :: Object -> Undefined":
   _("Backups screen into serialize context."),
 
-  "<command/restore> :: Object -> Undefined": 
+  "<command/restore> :: Object -> Undefined":
   _("Restores screen from serialize context."),
 
 }; // ScreenBackupConcept
@@ -98,7 +98,7 @@ ScreenBackupConcept.definition = {
  *
  */
 var ScreenCursorOperationsConcept = new Concept();
-ScreenCursorOperationsConcept.definition = {  
+ScreenCursorOperationsConcept.definition = {
 
   id: "ScreenCursorOperations",
 
@@ -110,7 +110,7 @@ ScreenCursorOperationsConcept.definition = {
 
   "cursorUp :: Uint16 -> Undefined":
   _("Move CUrsor Up (CUP)."),
-  
+
   "cursorDown :: Uint16 -> Undefined":
   _("Move CUrsor Down (CUD)."),
 
@@ -122,7 +122,7 @@ ScreenCursorOperationsConcept.definition = {
 
   "backSpace :: Undefined":
   _("BackSpace (BS)."),
- 
+
   "carriageReturn :: Undefined":
   _("CarriageReturn (CR)."),
 
@@ -133,7 +133,7 @@ ScreenCursorOperationsConcept.definition = {
  *
  */
 var ScreenEditConcept = new Concept();
-ScreenEditConcept.definition = {  
+ScreenEditConcept.definition = {
 
   id: "ScreenEdit",
 
@@ -160,7 +160,7 @@ ScreenEditConcept.definition = {
 
   "insertBlanks :: Uint16 -> Undefined":
   _("Insert n cells at specified position."),
-      
+
   "setScrollRegion :: Uint16 -> Uint16 -> Undefined":
   _("Sets top margin and bottom margin of scroll region."),
 
@@ -169,7 +169,7 @@ ScreenEditConcept.definition = {
 
   "reverseIndex :: Undefined":
   _("Reverse Index (RI)."),
-  
+
   "lineFeed :: Undefined":
   _("Line Feed (LF)"),
 
@@ -204,15 +204,15 @@ ScreenEditConcept.definition = {
  * @trait ScreenSequenceHandler
  *
  */
-var ScreenSequenceHandler = new Trait() 
+var ScreenSequenceHandler = new Trait()
 ScreenSequenceHandler.definition = {
 
   /**
    * ICH — Insert Character
-   * 
-   * This control function inserts one or more space (SP) characters starting 
+   *
+   * This control function inserts one or more space (SP) characters starting
    * at the cursor position.
-   * 
+   *
    * Available in: VT Level 4 mode only
    *
    * Format
@@ -221,30 +221,30 @@ ScreenSequenceHandler.definition = {
    * 9/11   3/n   4/0
    *
    * Parameters
-   * 
+   *
    * @param {Number} n the number of characters to insert.
    *
    * Default: Pn = 1.
    * Description
-   * 
-   * The ICH sequence inserts Pn blank characters with the normal character 
-   * attribute. The cursor remains at the beginning of the blank characters. 
-   * Text between the cursor and right margin moves to the right. Characters 
-   * scrolled past the right margin are lost. ICH has no effect outside the 
+   *
+   * The ICH sequence inserts Pn blank characters with the normal character
+   * attribute. The cursor remains at the beginning of the blank characters.
+   * Text between the cursor and right margin moves to the right. Characters
+   * scrolled past the right margin are lost. ICH has no effect outside the
    * scrolling margins.
    *
    */
   "[profile('vt100'), sequence('CSI Pn @')]":
-  function ICH(n) 
+  function ICH(n)
   { // Insert (blank) CHaracters.
     this.insertBlanks(n || 1)
   },
-  
+
   /**
    * CUU — Cursor Up
-   * 
-   * Moves the cursor up a specified number of lines in the same column. 
-   * The cursor stops at the top margin. If the cursor is already above the 
+   *
+   * Moves the cursor up a specified number of lines in the same column.
+   * The cursor stops at the top margin. If the cursor is already above the
    * top margin, then the cursor stops at the top line.
    *
    * Format
@@ -253,22 +253,22 @@ ScreenSequenceHandler.definition = {
    * 9/11   3/n   4/1
    *
    * Parameters
-   * 
+   *
    * @param {Number} n the number of lines to move the cursor up.
    *
    */
   "[profile('vt100'), sequence('CSI Pn A')]":
-  function CUU(n) 
+  function CUU(n)
   { // CUrsor Up
     this.cursorUp(n || 1);
   },
 
   /**
    * CUD — Cursor Down
-   * 
-   * This control function moves the cursor down a specified number of lines 
-   * in the same column. The cursor stops at the bottom margin. If the cursor 
-   * is already below the bottom margin, then the cursor stops at the bottom 
+   *
+   * This control function moves the cursor down a specified number of lines
+   * in the same column. The cursor stops at the bottom margin. If the cursor
+   * is already below the bottom margin, then the cursor stops at the bottom
    * line.
    *
    * Format
@@ -279,15 +279,15 @@ ScreenSequenceHandler.definition = {
    * @param {Number} n the number of lines to move the cursor down.
    */
   "[profile('vt100'), sequence('CSI Pn B')]":
-  function CUD(n) 
+  function CUD(n)
   { // CUrsor Down
     this.cursorDown(n || 1);
   },
 
   /**
    * CUF — Cursor Forward
-   * 
-   * This control function moves the cursor to the right by a specified 
+   *
+   * This control function moves the cursor to the right by a specified
    * number of columns. The cursor stops at the right border of the page.
    *
    * Format
@@ -298,35 +298,35 @@ ScreenSequenceHandler.definition = {
    * @param {Number} n the number of columns to move the cursor to the right.
    */
   "[profile('vt100'), sequence('CSI Pn C')]":
-  function CUF(n) 
+  function CUF(n)
   { // CUrsor Forward (right).
     this.cursorForward(n || 1);
   },
 
   /**
    * CUB — Cursor Backward
-   * 
-   * This control function moves the cursor to the left by a specified number 
+   *
+   * This control function moves the cursor to the left by a specified number
    * of columns. The cursor stops at the left border of the page.
    *
    * Format
    *
    * CSI    Pn    D
    * 9/11   3/n   4/4
-   * 
+   *
    * @param {Number} n the number of columns to move the cursor to the left.
    */
   "[profile('vt100'), sequence('CSI Pn D')]":
-  function CUB(n) 
+  function CUB(n)
   { // CUrsor Back (left).
     this.cursorBackward(n || 1);
   },
 
   /**
    * CHA — Cursor Horizontal Absolute
-   * 
+   *
    * Move the active position to the n-th character of the active line.
-   * 
+   *
    * Default: 1.
    *
    * Format
@@ -334,16 +334,16 @@ ScreenSequenceHandler.definition = {
    * CSI    Pn    G
    * 9/11   3/n   4/7
    *
-   * @param {Number} n the number of active positions to the n-th character 
+   * @param {Number} n the number of active positions to the n-th character
    *                   of the active line.
    *
    * Description
-   * 
+   *
    * The active position is moved to the n-th character position of the
    * active line.
    */
   "[profile('vt100'), sequence('CSI Pn G')]":
-  function CHA(n) 
+  function CHA(n)
   { // cursor CHaracter Absolute column
     var max = this._width - 1,
         cursor = this.cursor;
@@ -360,9 +360,9 @@ ScreenSequenceHandler.definition = {
 
   /**
    * CUP - Cursor Position
-   * 
-   * This control function moves the cursor to the specified line and column. 
-   * The starting point for lines and columns depends on the setting of 
+   *
+   * This control function moves the cursor to the specified line and column.
+   * The starting point for lines and columns depends on the setting of
    * origin mode (DECOM). CUP applies only to the current page.
    *
    * Format
@@ -371,16 +371,16 @@ ScreenSequenceHandler.definition = {
    * 9/11   3/n   3/11   3/n   4/8
    *
    * Parameters
-   * 
-   * @param {Number} n1 the number of the line to move to. If n1 is 0 or 1, 
+   *
+   * @param {Number} n1 the number of the line to move to. If n1 is 0 or 1,
    *                    then the cursor moves to line 1.
-   * 
-   * @param {Number} n2 the number of the column to move to. If n1 is 0 or 1, 
+   *
+   * @param {Number} n2 the number of the column to move to. If n1 is 0 or 1,
    *                    then the cursor moves to column 1.
    */
   "[profile('vt100'), sequence('CSI Pl;Pc H')]":
-  function CUP(n1, n2) 
-  { // move CUrsor to absolute Position 
+  function CUP(n1, n2)
+  { // move CUrsor to absolute Position
     var top,
         bottom,
         cursor = this.cursor,
@@ -413,8 +413,8 @@ ScreenSequenceHandler.definition = {
    *
    * DECALN — Screen Alignment Pattern
    *
-   * This control function fills the complete screen area with a test pattern 
-   * used for adjusting screen alignment. Normally, only manufacturing and 
+   * This control function fills the complete screen area with a test pattern
+   * used for adjusting screen alignment. Normally, only manufacturing and
    * service personnel would use DECALN.
    *
    * Format
@@ -431,17 +431,17 @@ ScreenSequenceHandler.definition = {
    *
    */
   "[profile('vt100'), sequence('ESC # 8')]":
-  function DECALN() 
+  function DECALN()
   { // DEC Screen Alignment Test
     this.eraseScreenAllWithTestPattern();
   },
 
   /**
    * ED — Erase in Display
-   * 
+   *
    * This control function erases characters from part or all of the display.
-   * When you erase complete lines, they become single-height, single-width 
-   * lines, with all visual character attributes cleared. ED works inside or 
+   * When you erase complete lines, they become single-height, single-width
+   * lines, with all visual character attributes cleared. ED works inside or
    * outside the scrolling margins.
    *
    * Format
@@ -450,22 +450,22 @@ ScreenSequenceHandler.definition = {
    * 9/11   3/n   4/10
    *
    * Parameters
-   * 
+   *
    * Ps   represents the amount of the display to erase.
    *
    * Ps   Area Erased
    *      0 (default)   From the cursor through the end of the display
    *      1             From the beginning of the display through the cursor
    *      2             The complete display
-   * 
+   *
    * Programming Tip
-   * Use a Ps value of 2 to erase the complete display in a fast, 
+   * Use a Ps value of 2 to erase the complete display in a fast,
    * efficient manner.
    */
   "[profile('vt100'), sequence('CSI Ps J')]":
-  function ED(n) 
+  function ED(n)
   { // Erase Display
-   
+
     switch (n || 0) {
 
       case 0:   // erase below
@@ -479,8 +479,8 @@ ScreenSequenceHandler.definition = {
       case 2: // erase all
         this.eraseScreenAll();
         break;
-      
-      case 3: // erase saved lines (xterm)  
+
+      case 3: // erase saved lines (xterm)
         this.eraseScrollback();
         break;
 
@@ -494,13 +494,13 @@ ScreenSequenceHandler.definition = {
 
   /**
    * DECERA - Erase Rectangular Area
-   * 
+   *
    * This control function erases characters from the specified rectangular
    * area in page memory. When an area is erased, DECERA replaces all
    * character positions with the space character (2/0). DECERA erases
    * character values and visual attributes from the specified area.
    * DECERA does not erase line attributes.
-   * 
+   *
    * Available in: VT Level 4 mode only
    *
    * Format
@@ -509,25 +509,25 @@ ScreenSequenceHandler.definition = {
    * 9/11  3/n   3/11  3/n   3/11  3/n   3/11  3/n   2/4   7/10
    *
    * Parameters
-   * 
+   *
    * Pt, Pl, Pb, and Pr
    * define the rectangular area to be erased:
-   * 
+   *
    * Pt is the top-line border. Pt must be less than or equal to Pb.
    * Default: Pt = 1.
-   * 
+   *
    * Pl is the left-column border. Pl must be less than or equal to Pr.
    * Default: Pl = 1.
-   * 
+   *
    * Pb is the bottom-line border.
    * Default: Pb = the last line of the active page.
-   * 
+   *
    * Pr is the right-column border.
    *
    * Default: Pr = the last column of the active page.
    *
    * Notes on DECERA
-   * 
+   *
    *     The coordinates of the rectangular area are affected by the setting
    *     of origin mode (DECOM).
    *     DECERA is not affected by the page margins.
@@ -537,7 +537,7 @@ ScreenSequenceHandler.definition = {
    *     DECERA does not change the active cursor position.
    */
   "[profile('vt100'), sequence('CSI Pt;Pl;Pb;Pr $ z')]":
-  function DECERA(n1, n2, n3, n4) 
+  function DECERA(n1, n2, n3, n4)
   { // Erase Rectangle Area
     var top = (n1 || 1) - 1,
         left = (n2 || 1) - 1,
@@ -576,9 +576,9 @@ ScreenSequenceHandler.definition = {
   /**
    *
    * EL — Erase in Line
-   * 
+   *
    * This control function erases characters on the line that has the cursor.
-   * EL clears all character attributes from erased character positions. EL 
+   * EL clears all character attributes from erased character positions. EL
    * works inside or outside the scrolling margins.
    *
    * Format
@@ -587,7 +587,7 @@ ScreenSequenceHandler.definition = {
    * 9/11   3/n   4/11
    *
    * Parameters
-   * 
+   *
    * Ps   represents the section of the line to erase.
    *
    * Ps   Section Erased
@@ -596,9 +596,9 @@ ScreenSequenceHandler.definition = {
    *      2           The complete line
    */
   "[profile('vt100'), sequence('CSI Ps K')]":
-  function EL(n) 
+  function EL(n)
   { // Erase Line
-   
+
     switch (n || 0) {
 
       case 0: // erase to right
@@ -624,7 +624,7 @@ ScreenSequenceHandler.definition = {
    *
    *  IL — Insert Line
    *
-   *  This control function inserts one or more blank lines, starting at the 
+   *  This control function inserts one or more blank lines, starting at the
    *  cursor.
    *
    *  Format
@@ -641,12 +641,12 @@ ScreenSequenceHandler.definition = {
    *  Description
    *
    *  As lines are inserted, lines below the cursor and in the scrolling region
-   *  move down. Lines scrolled off the page are lost. IL has no effect outside 
-   *  the page margins. 
+   *  move down. Lines scrolled off the page are lost. IL has no effect outside
+   *  the page margins.
    *
    */
   "[profile('vt100'), sequence('CSI Pn L')]":
-  function IL(n) 
+  function IL(n)
   { // Insert Line
     this.insertLine(n || 1);
   },
@@ -654,7 +654,7 @@ ScreenSequenceHandler.definition = {
   /**
    * DL — Delete Line
    *
-   * This control function deletes one or more lines in the scrolling region, 
+   * This control function deletes one or more lines in the scrolling region,
    * starting with the line that has the cursor.
    *
    * Format
@@ -671,34 +671,34 @@ ScreenSequenceHandler.definition = {
    * Description
    *
    * As lines are deleted, lines below the cursor and in the scrolling region
-   * move up. The terminal adds blank lines with no visual character 
-   * attributes at the bottom of the scrolling region. If Pn is greater than 
-   * the number of lines 
+   * move up. The terminal adds blank lines with no visual character
+   * attributes at the bottom of the scrolling region. If Pn is greater than
+   * the number of lines
    *
    */
   "[profile('vt100'), sequence('CSI Pn M')]":
-  function DL(n) 
+  function DL(n)
   { // Delete Line.
     this.deleteLine(n || 1);
   },
 
   /**
-   * Delete Character (DCH)  
+   * Delete Character (DCH)
    *
    * CSI    Pn    P
-   * 9/11   3/n   5/0 
+   * 9/11   3/n   5/0
    *
-   *  Deletes Pn characters starting with the character at the cursor position. 
-   *  When a character is deleted, all characters to the right of the cursor 
-   *  move to the left. 
-   *  This creates a space character at the right margin for each character 
-   *  deleted. 
-   *  Character attributes move with the characters. 
-   *  The spaces created at the end of the line have all their character 
+   *  Deletes Pn characters starting with the character at the cursor position.
+   *  When a character is deleted, all characters to the right of the cursor
+   *  move to the left.
+   *  This creates a space character at the right margin for each character
+   *  deleted.
+   *  Character attributes move with the characters.
+   *  The spaces created at the end of the line have all their character
    *  attributes off.
    */
   "[profile('vt100'), sequence('CSI Pn P')]":
-  function DCH(n) 
+  function DCH(n)
   { // Delete CHaracters
     this.deleteCharacters(n || 1);
   },
@@ -707,18 +707,18 @@ ScreenSequenceHandler.definition = {
    * SCP - Save Cursor Position
    *
    * CSI    Pn    s
-   * 9/11   3/n   7/3 
+   * 9/11   3/n   7/3
    *
    * or
    *
    * DECSLRM - Set Left and Right Margins
-   * 
+   *
    * This control function sets the left and right margins to define the
    * scrolling region. DECSLRM only works when vertical split screen mode
    * (DECLRMM) is set.
-   * 
+   *
    * Available in: VT Level 4 mode only
-   * 
+   *
    * Default: Margins are at the left and right page borders.
    *
    * Format
@@ -727,15 +727,15 @@ ScreenSequenceHandler.definition = {
    * 9/11       3/n     3/11    3/n     7/3
    *
    * Parameters
-   * 
+   *
    * Pl is the column number for the left margin.
    * Default: Pl = 1.
-   * 
+   *
    * Pr is the column number for the right margin.
    * Default: Pr = 80 or 132 (depending on the page width).
    *
    * Notes on DECSLRM
-   * 
+   *
    *     The value of the left margin (Pl) must be less than the right
    *     margin (Pr).
    *     The maximum size of the scrolling region is the page size,
@@ -749,7 +749,7 @@ ScreenSequenceHandler.definition = {
    *
    */
   "[profile('vt100'), sequence('CSI Pn s')]":
-  function DECSLRM(n1, n2) 
+  function DECSLRM(n1, n2)
   { // Scroll Left
     n1 = (n1 || 1) - 1;
     n2 = (n2 || 1) - 1;
@@ -764,11 +764,11 @@ ScreenSequenceHandler.definition = {
     this._scroll_left = left;
     this._scroll_right = right;
   },
-   
+
   /**
    *
    * SL — Scroll Left
-   * 
+   *
    * Format
    *
    * CSI    Pn    SP    @
@@ -776,23 +776,23 @@ ScreenSequenceHandler.definition = {
    *
    * Parameter default value: Pn = 1
    *
-   * SL causes the data in the presentation component to be moved by n 
-   * character positions if the line orientation is horizontal, or by n 
-   * line positions if the line orientation is vertical, such that the data 
+   * SL causes the data in the presentation component to be moved by n
+   * character positions if the line orientation is horizontal, or by n
+   * line positions if the line orientation is vertical, such that the data
    * appear to move to the left; where n equals the value of Pn.
    * The active presentation position is not affected by this control function.
    *
    */
   "[profile('vt100'), sequence('CSI Pn SP @')]":
-  function SL(n) 
+  function SL(n)
   { // Scroll Left
     this.scrollLeft(n || 1);
   },
-   
+
   /**
    *
    * SR — Scroll Right
-   * 
+   *
    * Format
    *
    * CSI    Pn    SP    A
@@ -800,23 +800,23 @@ ScreenSequenceHandler.definition = {
    *
    * Parameter default value: Pn = 1
    *
-   * SR causes the data in the presentation component to be moved by n 
-   * character positions if the line orientation is horizontal, or by n line 
+   * SR causes the data in the presentation component to be moved by n
+   * character positions if the line orientation is horizontal, or by n line
    * positions if the line orientation is vertical, such that the data appear
    * to move to the right; where n equals the value of Pn.
    * The active presentation position is not affected by this control function.
    *
    */
   "[profile('vt100'), sequence('CSI Pn SP A')]":
-  function SR(n) 
+  function SR(n)
   { // Scroll Right
     this.scrollRight(n || 1);
   },
- 
+
   /**
    * SU—Pan Down
-   * 
-   * This control function moves the user window down a specified number of 
+   *
+   * This control function moves the user window down a specified number of
    * lines in page memory.
    *
    * Format
@@ -824,22 +824,22 @@ ScreenSequenceHandler.definition = {
    * CSI    Pn    S
    * 9/11   3/n   5/3
    *
-   * @param {Number} n the number of lines to move the user window down in 
-   *                   page memory. Pn new lines appear at the bottom of the 
-   *                   display. Pn old lines disappear at the top of the 
-   *                   display. You cannot pan past the bottom margin of the 
+   * @param {Number} n the number of lines to move the user window down in
+   *                   page memory. Pn new lines appear at the bottom of the
+   *                   display. Pn old lines disappear at the top of the
+   *                   display. You cannot pan past the bottom margin of the
    *                   current page.
    */
   "[profile('vt100'), sequence('CSI Pn S')]":
-  function SU(n) 
+  function SU(n)
   { // Scroll Up line
     this.scrollUpLine(n || 1);
   },
 
   /**
    * SD — Pan Up
-   * 
-   * This control function moves the user window up a specified number of 
+   *
+   * This control function moves the user window up a specified number of
    * lines in page memory.
    *
    * Format
@@ -847,13 +847,13 @@ ScreenSequenceHandler.definition = {
    * CSI    Pn    T
    * 9/11   3/n   5/4
    *
-   * @param {Number} n the number of lines to move the user window up in page 
-   *                   memory. Pn new lines appear at the top of the display. 
-   *                   Pn old lines disappear at the bottom of the display. 
+   * @param {Number} n the number of lines to move the user window up in page
+   *                   memory. Pn new lines appear at the top of the display.
+   *                   Pn old lines disappear at the bottom of the display.
    *                   You cannot pan past the top margin of the current page.
    */
   "[profile('vt100'), sequence('CSI Pn T')]":
-  function SD(n) 
+  function SD(n)
   { // Scroll Down line
     var argc = arguments.length;
 
@@ -869,7 +869,7 @@ ScreenSequenceHandler.definition = {
 
       case 6:
         this.sendMessage(
-          "event/start-highlight-mouse", 
+          "event/start-highlight-mouse",
           Array.slice(arguments));
         break;
 
@@ -881,7 +881,7 @@ ScreenSequenceHandler.definition = {
     } // switch argc
   },
 
-  /** 
+  /**
    *
    * Erase Character (ECH)
    * (VT200 mode only)
@@ -889,22 +889,22 @@ ScreenSequenceHandler.definition = {
    * 9/11     5/8
    * CSI  Pn   X
    *
-   * Erases characters at the cursor position and the next Pn-1 characters. 
-   * A parameter of 0 or 1 erases a single character. 
-   * Character attributes are set to normal. No reformatting of data on the 
+   * Erases characters at the cursor position and the next Pn-1 characters.
+   * A parameter of 0 or 1 erases a single character.
+   * Character attributes are set to normal. No reformatting of data on the
    * line occurs.
    * The cursor remains in the same position.
    *
    */
   "[profile('vt100'), sequence('CSI Pn X')]":
-  function ECH(n) 
+  function ECH(n)
   { // Erase CHaracters
     this.eraseCharacters(n || 1);
   },
 
   /**
    * HPR — Horizontal Position Relative
-   * 
+   *
    * Inquire as to the amount of free memory for programmable key operations.
    *
    * Format
@@ -915,21 +915,21 @@ ScreenSequenceHandler.definition = {
    * @param {Number} n indicates horizontal position.
    *
    * Description
-   * 
-   * HPR causes the active position to be moved to the n-th following 
-   * horizontal position of the active line. If an attempt is made to move 
-   * the active position past the last position on the line, then the active 
+   *
+   * HPR causes the active position to be moved to the n-th following
+   * horizontal position of the active line. If an attempt is made to move
+   * the active position past the last position on the line, then the active
    * position stops at the last position on the line.
    */
   "[profile('vt100'), sequence('CSI Pn a')]":
-  function HPR(n) 
-  { // 
+  function HPR(n)
+  { //
     this.cursorForward(n || 1);
   },
 
   /**
    * HPB — Horizontal Position Backward
-   * 
+   *
    * Inquire as to the amount of free memory for programmable key operations.
    *
    * Format
@@ -942,21 +942,21 @@ ScreenSequenceHandler.definition = {
    * Parameter default value: Pn = 1
    *
    * Description
-   * 
+   *
    * HPB causes the active data position to be moved by n character positions
    * in the data component in the direction opposite to that of the character
    * progression, where n equals the value of Pn.
    *
    */
   "[profile('vt100'), sequence('CSI Pn j')]":
-  function HPB(n) 
-  { // 
+  function HPB(n)
+  { //
     this.cursorBackward(n || 1);
   },
 
   /**
    * VPA—Vertical Line Position Absolute
-   * 
+   *
    * VPA inquires as to the amount of free memory for programmable key operations.
    *
    * Format
@@ -966,19 +966,19 @@ ScreenSequenceHandler.definition = {
    * @param {Number} n column number.
    *
    * Description
-   * 
-   * VPA causes the active position to be moved to the corresponding 
+   *
+   * VPA causes the active position to be moved to the corresponding
    * horizontal position.
-   * 
+   *
    * The default value is 1.
-   * 
-   * Move cursor to line Pn. VPA causes the active position to be moved to 
-   * the corresponding horizontal position at vertical position Pn. If an 
-   * attempt is made to move the active position below the last line, then 
+   *
+   * Move cursor to line Pn. VPA causes the active position to be moved to
+   * the corresponding horizontal position at vertical position Pn. If an
+   * attempt is made to move the active position below the last line, then
    * the active position stops on the last line.
    */
   "[profile('vt100'), sequence('CSI Pn d')]":
-  function VPA(n) 
+  function VPA(n)
   { // set Virtical Position Absolutely
     var max = this._height - 1,
         cursor = this.cursor;
@@ -998,7 +998,7 @@ ScreenSequenceHandler.definition = {
    *
    * @ref http://vt100.net/docs/vt520-rm/
    *
-   * VPR inquires as to the amount of free memory for programmable key 
+   * VPR inquires as to the amount of free memory for programmable key
    * operations.
    *
    * Format
@@ -1008,18 +1008,18 @@ ScreenSequenceHandler.definition = {
    * @param {Number} n column number.
    *
    * Description
-   * 
-   * VPR causes the active position to be moved to the corresponding 
+   *
+   * VPR causes the active position to be moved to the corresponding
    * horizontal position.
-   * This command causes the active position to be moved to the corresponding 
-   * horizontal position at n-th following vertical position. If an attempt 
-   * is made to move the active position below the last line, the active 
+   * This command causes the active position to be moved to the corresponding
+   * horizontal position at n-th following vertical position. If an attempt
+   * is made to move the active position below the last line, the active
    * position stops at the last line.
    *
    */
   "[profile('vt100'), sequence('CSI Pn e')]":
-  function VPR(n) 
-  { 
+  function VPR(n)
+  {
     this.cursorDown(n || 1);
   },
 
@@ -1034,7 +1034,7 @@ ScreenSequenceHandler.definition = {
    *
    * Format
    *
-   * CSI   Pn   k 
+   * CSI   Pn   k
    * 9/11  3/n  6/11
    *
    * Parameters
@@ -1049,31 +1049,31 @@ ScreenSequenceHandler.definition = {
    *
    */
   "[profile('vt100'), sequence('CSI Pn k')]":
-  function VPB(n) 
-  { 
+  function VPB(n)
+  {
     this.cursorUp(n || 1);
   },
 
   /**
    * CNL — Cursor Next Line
-   * 
+   *
    * Move the cursor to the next line.
-   * 
+   *
    * Default: 1.
    *
    * Format
    * CSI    Pn    E
    * 9/11   3/n   4/5
    *
-   * @param {Number} n the active position to the first character of the n-th 
+   * @param {Number} n the active position to the first character of the n-th
    *                 following line.
    *
    * Description
-   * 
+   *
    * The active position is moved to the first character of the n-th following line.
    */
   "[profile('vt100'), sequence('CSI Pn E')]":
-  function CNL(n) 
+  function CNL(n)
   {
     this.cursorDown(n || 1);
     this.cursor.positionX = 0;
@@ -1081,9 +1081,9 @@ ScreenSequenceHandler.definition = {
 
   /**
    * CPL — Cursor Previous Line
-   * 
+   *
    * Move the cursor to the preceding line.
-   * 
+   *
    * Default: 1.
    *
    * Format
@@ -1091,15 +1091,15 @@ ScreenSequenceHandler.definition = {
    * CSI    Pn    F
    * 9/11   3/n   4/6
    *
-   * @param {Number} n the number of active position moved to the first 
+   * @param {Number} n the number of active position moved to the first
    *                   character of the n-th preceding line.
    *
    * Description
-   * 
+   *
    * The active position is moved to the first character of the n-th preceding line.
    */
   "[profile('vt100'), sequence('CSI Pn F')]":
-  function CPL(n) 
+  function CPL(n)
   {
     this.cursorUp(n || 1);
     this.cursor.positionX = 0;
@@ -1107,7 +1107,7 @@ ScreenSequenceHandler.definition = {
 
   /**
    * HPA — Horizontal Position Absolute
-   * 
+   *
    * Inquire as to the amount of free memory for programmable key operations.
    *
    * Format
@@ -1118,15 +1118,15 @@ ScreenSequenceHandler.definition = {
    * @param {Number} n indicates horizontal position.
    *
    * Description
-   * 
-   * HPA causes the active position to be moved to the n-th horizontal 
-   * position of the active line. If an attempt is made to move the active 
-   * position past the last position on the line, then the active position 
+   *
+   * HPA causes the active position to be moved to the n-th horizontal
+   * position of the active line. If an attempt is made to move the active
+   * position past the last position on the line, then the active position
    * stops at the last position on the line.
    */
   "[profile('vt100'), sequence('CSI Pn `')]":
-  function HPA(n) 
-  { 
+  function HPA(n)
+  {
     var max = this._width - 1,
         cursor = this.cursor;
 
@@ -1138,10 +1138,10 @@ ScreenSequenceHandler.definition = {
       cursor.positionX = n;
     }
   },
-  
+
   /**
    *
-   * REP - Repeat 
+   * REP - Repeat
    *
    * Format
    *
@@ -1152,7 +1152,7 @@ ScreenSequenceHandler.definition = {
    *
    */
   "[profile('vt100'), sequence('CSI Pn b')]":
-  function REP(n) 
+  function REP(n)
   { // REPeat the preceding graphic character
     this.repeat(n || 1);
   },
@@ -1161,8 +1161,8 @@ ScreenSequenceHandler.definition = {
    *
    * HVP — Horizontal and Vertical Position
    *
-   * This control function works the same as the cursor position (CUP) 
-   * function. New applications should use CUP instead of HVP. HVP is 
+   * This control function works the same as the cursor position (CUP)
+   * function. New applications should use CUP instead of HVP. HVP is
    * provided for compatibility with earlier VT products.
    *
    * Format
@@ -1181,12 +1181,12 @@ ScreenSequenceHandler.definition = {
    *
    * Pl; Pc
    *
-   * If Pl or Pc is not selected or selected as 0, then the cursor moves to 
+   * If Pl or Pc is not selected or selected as 0, then the cursor moves to
    * the first line or column, respectively. Origin mode (DECOM) selects line
    * numbering and the ability to move the cursor into margins.
    */
   "[profile('vt100'), sequence('CSI Pl;Pc f')]":
-  function HVP(n1, n2) 
+  function HVP(n1, n2)
   { // Horizontal and Vertical Position
     var top,
         bottom,
@@ -1217,7 +1217,7 @@ ScreenSequenceHandler.definition = {
   },
 
   "[profile('vt100'), sequence('CSI Pn i')]":
-  function MC(n) 
+  function MC(n)
   { // TODO: Media Copy
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
@@ -1225,7 +1225,7 @@ ScreenSequenceHandler.definition = {
   },
 
   "[profile('vt100'), sequence('CSI ? Pn i')]":
-  function DECMC(n) 
+  function DECMC(n)
   { // TODO: Media Copy, DEC-specific
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
@@ -1233,7 +1233,7 @@ ScreenSequenceHandler.definition = {
   },
 
   "[profile('vt100'), sequence('0x98', 'ESC X')]":
-  function SOS(message) 
+  function SOS(message)
   {
     coUtils.Debug.reportWarning(
       _("Ignored %s [%s]"), "SOS", message);
@@ -1313,7 +1313,7 @@ Viewable.definition = {
         line;
 
     this.sendMessage(
-      "event/scroll-position-changed", 
+      "event/scroll-position-changed",
       {
         start: buffer_top - this._scrollback_amount,
         end: buffer_top - this._scrollback_amount + this._height,
@@ -1344,7 +1344,7 @@ Viewable.definition = {
   },
 
   "[subscribe('event/before-input')]":
-  function onBeforeInput(message) 
+  function onBeforeInput(message)
   {
     this.onBeforeInput.enabled = false;
     this._scrollback_amount = 0;
@@ -1353,10 +1353,10 @@ Viewable.definition = {
     this.sendMessage("event/scroll-session-closed", true);
   },
 
-  _interracedScan: function _interracedScan(lines) 
+  _interracedScan: function _interracedScan(lines)
   {
     var row;
-    
+
     for (row = 1; row < lines.length; row += 2) {
       yield [row, lines[row]];
     }
@@ -1365,7 +1365,7 @@ Viewable.definition = {
     }
   },
 
-  getDirtyWords: function getDirtyWords() 
+  getDirtyWords: function getDirtyWords()
   {
     var lines = this._getCurrentViewLines(),
         row,
@@ -1374,30 +1374,30 @@ Viewable.definition = {
 
     for ([row, line] in Iterator(lines)) {
       for (info in line.getDirtyWords()) {
-        yield { 
-          codes: info.codes, 
-          row: row, 
-          column: info.column, 
+        yield {
+          codes: info.codes,
+          row: row,
+          column: info.column,
           end: info.end,
-          attr: info.attr, 
+          attr: info.attr,
           line: line,
         };
       }
     }
   },
 
-  /** Gets the range of surround characters. 
+  /** Gets the range of surround characters.
    *
    * ex.
    *
-   *         point 
+   *         point
    *           v
-   * 123 abcdefghijk lmnop 
+   * 123 abcdefghijk lmnop
    *     ^          ^
    *   start       end
    *
-   */  
-  getWordRangeFromPoint: function getWordRangeFromPoint(column, row) 
+   */
+  getWordRangeFromPoint: function getWordRangeFromPoint(column, row)
   {
     var lines = this._getCurrentViewLines(),
         line = lines[row],
@@ -1409,7 +1409,7 @@ Viewable.definition = {
     if (!line) {
       throw coUtils.Debug.Exception(
         _("Invalid parameter was passed. ",
-          "Probably 'row' parameter was in out of range. row: [%d]."), 
+          "Probably 'row' parameter was in out of range. row: [%d]."),
         row);
     }
 
@@ -1423,7 +1423,7 @@ Viewable.definition = {
     return [offset + start, offset + end];
   },
 
-  _getTextInRectangle: 
+  _getTextInRectangle:
   function _getTextInRectangle(lines, start_column, end_column, raw)
   {
     var buffer = [],
@@ -1448,10 +1448,10 @@ Viewable.definition = {
       text = line.getTextInRange(min_column, max_column, raw);
       buffer.push(text.replace(/ +$/, ""));
     }
-    return buffer.join("\n"); 
+    return buffer.join("\n");
   },
 
-  _getTextInRangeImpl: 
+  _getTextInRangeImpl:
   function _getTextInRangeImpl(lines, start_column, end_column, raw)
   {
     var buffer = [],
@@ -1481,12 +1481,12 @@ Viewable.definition = {
       text = line.getTextInRange(start, end, raw);
       buffer.push(text.replace(/ +$/, "\n"));
     }
-    return buffer.join("\r"); 
+    return buffer.join("\r");
   },
 
-  /** get raw text in specified range. 
+  /** get raw text in specified range.
    */
-  getRawTextInRange: function getRawTextInRange(start, end, is_rectangle) 
+  getRawTextInRange: function getRawTextInRange(start, end, is_rectangle)
   {
     var width = this.width,
         start_column = start % width,
@@ -1498,9 +1498,9 @@ Viewable.definition = {
     return this._getTextInRangeImpl(lines, start_column, end_column, /* raw */true);
   },
 
-  /** get UTF-16 text in specified range. 
+  /** get UTF-16 text in specified range.
    */
-  getTextInRange: function getTextInRange(start, end, is_rectangle) 
+  getTextInRange: function getTextInRange(start, end, is_rectangle)
   {
     var width = this.width,
         start_column = start % width,
@@ -1512,11 +1512,11 @@ Viewable.definition = {
     return this._getTextInRangeImpl(lines, start_column, end_column, /* raw */false);
   },
 
-  /** get raw character in specified position. 
+  /** get raw character in specified position.
    */
-  getCharacter: function getCharacter(start) 
+  getCharacter: function getCharacter(start)
   {
-    var end = start + 1, 
+    var end = start + 1,
         width = this.width,
         start_column = start % width,
         end_column = end % width,
@@ -1527,9 +1527,9 @@ Viewable.definition = {
     return this._getTextInRangeImpl(lines, start_column, end_column, /* raw */true);
   },
 
-  /** get UTF-16 text in specified rectangular range. 
+  /** get UTF-16 text in specified rectangular range.
    */
-  getTextInRect: function getTextInRect(start, end) 
+  getTextInRect: function getTextInRect(start, end)
   {
     var width = this.width,
         start_column = start % width,
@@ -1558,13 +1558,13 @@ Scrollable.definition = {
   _smooth_scrolling: false,
 
   "[subscribe('command/change-scrolling-mode'), pnp]":
-  function onScrollingModeChanged(mode) 
+  function onScrollingModeChanged(mode)
   {
     this._smooth_scrolling = false;
   },
 
   /** Scroll up the buffer by n lines. */
-  _scrollDown: function _scrollDown(top, bottom, n) 
+  _scrollDown: function _scrollDown(top, bottom, n)
   {
     var lines = this._buffer,
         offset = this.getBufferTop(),
@@ -1632,7 +1632,7 @@ Scrollable.definition = {
   },
 
   /** Scroll down the buffer by n lines. */
-  _scrollUp: function _scrollUp(top, bottom, n) 
+  _scrollUp: function _scrollUp(top, bottom, n)
   {
     var lines = this._buffer,
         offset = this._buffer_top,
@@ -1648,7 +1648,7 @@ Scrollable.definition = {
         tmprange,
         rotaterange,
         range,  // rotation range
-        line, 
+        line,
         rest;
 
     if (0 === left && right === this._width) {
@@ -1743,7 +1743,7 @@ var Resizable = new Trait("Resizable");
 Resizable.definition = {
 
   /** Pop and Remove last n lines from screen. */
-  _popLines: function _popLines(n) 
+  _popLines: function _popLines(n)
   {
     var buffer = this._buffer,
         offset = this._buffer_top;
@@ -1764,9 +1764,9 @@ Resizable.definition = {
       this.cursor.positionY = this._height - 1;
     }
   },
-  
+
   /** Create new lines and Push after last line. */
-  _pushLines: function _pushLines(n) 
+  _pushLines: function _pushLines(n)
   {
     var buffer = this._buffer,
         new_lines = this._createLines(n),
@@ -1786,9 +1786,9 @@ Resizable.definition = {
     // expand scroll region.
     this._scroll_bottom += n;
   },
- 
+
   /** Pop and Remove last n columns from screen. */
-  _popColumns: function _popColumns(n) 
+  _popColumns: function _popColumns(n)
   {
     // decrease width
     var cursor = this.cursor,
@@ -1809,9 +1809,9 @@ Resizable.definition = {
     }
 
   },
-  
+
   /** Create new colmuns and Push after last column. */
-  _pushColumns: function _pushColumns(n) 
+  _pushColumns: function _pushColumns(n)
   {
     // increase width
     var width = this._width += n,
@@ -1865,7 +1865,7 @@ Screen.definition = {
 
   /**
    * @property cursor
-   * @brief Manages cursor position and some attributes. 
+   * @brief Manages cursor position and some attributes.
    */
   cursor: null,
   _buffer: null,
@@ -1888,7 +1888,7 @@ Screen.definition = {
   "[persistable] initial_column": 80,
   "[persistable] initial_row": 24,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
@@ -1905,7 +1905,7 @@ Screen.definition = {
     this.resetScrollRegion();
   },
 
-  /** uninstalls itself. 
+  /** uninstalls itself.
    */
   "[uninstall]":
   function uninstall()
@@ -1931,7 +1931,7 @@ Screen.definition = {
     this._reverse_wraparound_mode = false;
   },
 
-  /** 
+  /**
    * @property dirty
    */
   get dirty()
@@ -1960,16 +1960,16 @@ Screen.definition = {
     }
   },
 
-  /** 
+  /**
    * @property width
    * Screen width in counting the number of columns.
    */
-  get "[persistable] width"() 
+  get "[persistable] width"()
   {
     return this._width;
   },
 
-  set "[persistable] width"(value) 
+  set "[persistable] width"(value)
   {
     var width,
         cursor,
@@ -2002,19 +2002,19 @@ Screen.definition = {
     this._scroll_right = this._width;
   },
 
-  /** 
+  /**
    * @property height
    * Screen height in counting the number of lines.
    */
-  get "[persistable] height"() 
+  get "[persistable] height"()
   {
     return this._height;
   },
 
-  set "[persistable] height"(value) 
+  set "[persistable] height"(value)
   {
     var cursor;
-    
+
     if (this._buffer) {
       if (value === this._height) {
         return;
@@ -2052,15 +2052,15 @@ Screen.definition = {
     return this._buffer_top;
   },
 
-  getLines: function getLines(start, end) 
+  getLines: function getLines(start, end)
   {
     return this._buffer.slice(start, end);
   },
 
   /** Detects whether caracter that is assigned current cursor position is
-   *  wide. 
+   *  wide.
    */
-  get currentCharacterIsWide() 
+  get currentCharacterIsWide()
   {
     var line = this.getCurrentLine();
 
@@ -2071,44 +2071,44 @@ Screen.definition = {
   },
 
   "[subscribe('command/enable-insert-mode'), pnp]":
-  function enableInsertMode() 
+  function enableInsertMode()
   {
     this._insert_mode = true;
   },
 
   "[subscribe('command/disable-insert-mode'), pnp]":
-  function disableInsertMode() 
+  function disableInsertMode()
   {
     this._insert_mode = false;
   },
 
   "[subscribe('command/enable-wraparound'), pnp]":
-  function enableWraparound() 
+  function enableWraparound()
   {
     this._wraparound_mode = true;
   },
 
   "[subscribe('command/disable-wraparound'), pnp]":
-  function disableWraparound() 
+  function disableWraparound()
   {
     this._wraparound_mode = false;
   },
 
   "[subscribe('command/enable-reverse-wraparound'), pnp]":
-  function enableReverseWraparound() 
+  function enableReverseWraparound()
   {
     this._reverse_wraparound_mode = true;
   },
 
   "[subscribe('command/disable-reverse-wraparound'), pnp]":
-  function disableReverseWraparound() 
+  function disableReverseWraparound()
   {
     this._reverse_wraparound_mode = false;
   },
 
   /** Write printable charactor seqences. */
   "[subscribe('command/write'), type('Array -> Boolean -> Undefined'), pnp]":
-  function write(codes) 
+  function write(codes)
   {
     var insert_mode = this._insert_mode,
         width = this._width,
@@ -2200,7 +2200,7 @@ Screen.definition = {
   //
   /** Move cursor to forward (right). */
   "[type('Uint16 -> Undefined')] cursorForward":
-  function cursorForward(n) 
+  function cursorForward(n)
   {
     var cursor = this.cursor,
         positionX = cursor.positionX + n,
@@ -2215,7 +2215,7 @@ Screen.definition = {
 
   /** Move cursor to backward (left). */
   "[type('Uint16 -> Undefined')] cursorBackward":
-  function cursorBackward(n) 
+  function cursorBackward(n)
   {
     var width = this._width,
         cursor = this.cursor,
@@ -2238,8 +2238,8 @@ Screen.definition = {
 
   /** Move CUrsor Up (CUU). */
   "[type('Uint16 -> Undefined')] cursorUp":
-  function cursorUp(n) 
-  { 
+  function cursorUp(n)
+  {
     var cursor = this.cursor,
         positionY = cursor.positionY - n,
         min = this._scroll_top;
@@ -2250,16 +2250,16 @@ Screen.definition = {
       cursor.positionY = min;
     }
   },
-  
+
   /** Move CUrsor Down (CUD). */
   "[type('Uint16 -> Undefined')] cursorDown":
-  function cursorDown(n) 
+  function cursorDown(n)
   {
     var cursor = this.cursor,
         positionY = cursor.positionY + n,
         max = this._scroll_bottom - 1;
 
-    // If an attempt is made to move the active position below the last line, 
+    // If an attempt is made to move the active position below the last line,
     // the active position stops at the last line.
     if (positionY > max) {
       cursor.positionY = max;
@@ -2270,8 +2270,8 @@ Screen.definition = {
 
   /** Move CUrsor Up (CUU). */
   "[type('Uint16 -> Undefined')] cursorUpAbsolutely":
-  function cursorUpAbsolutely(n) 
-  { 
+  function cursorUpAbsolutely(n)
+  {
     var cursor = this.cursor,
         positionY = cursor.positionY - n,
         min = 0;
@@ -2282,16 +2282,16 @@ Screen.definition = {
       cursor.positionY = min;
     }
   },
-  
+
   /** Move CUrsor Down (CUD). */
   "[type('Uint16 -> Undefined')] cursorDownAbsolutely":
-  function cursorDownAbsolutely(n) 
+  function cursorDownAbsolutely(n)
   {
     var cursor = this.cursor,
         positionY = cursor.positionY + n,
         max = this._height - 1;
 
-    // If an attempt is made to move the active position below the last line, 
+    // If an attempt is made to move the active position below the last line,
     // the active position stops at the last line.
     if (positionY > max) {
       cursor.positionY = max;
@@ -2302,7 +2302,7 @@ Screen.definition = {
 
   /** cursor CHaracter Absolute column (CHA). */
   "[type('Uint16 -> Undefined')] setPositionX":
-  function setPositionX(n) 
+  function setPositionX(n)
   {
     var max = this._width - 1,
         cursor = this.cursor;
@@ -2316,7 +2316,7 @@ Screen.definition = {
 
   /** set Virtical Position Absolutely (VPA). */
   "[type('Uint16 -> Undefined')] setPositionY":
-  function setPositionY(n) 
+  function setPositionY(n)
   {
     var max = this._height - 1,
         cursor = this.cursor;
@@ -2331,7 +2331,7 @@ Screen.definition = {
 
   /** BackSpace (BS). */
   "[type('Undefined')] backSpace":
-  function backSpace() 
+  function backSpace()
   {
     var cursor = this.cursor,
         width = this._width,
@@ -2344,15 +2344,15 @@ Screen.definition = {
     if (positionX > 0) {
       cursor.positionX = positionX - 1;
     } else if (this._reverse_wraparound_mode) { // positionX === 0
-      //this.reverseIndex(); // 
+      //this.reverseIndex(); //
       this.cursorUp(1);
       cursor.positionX = width - 1;
     }
   },
- 
+
   /** CarriageReturn (CR). */
   "[type('Undefined')] carriageReturn":
-  function carriageReturn() 
+  function carriageReturn()
   {
     this.cursor.positionX = 0;
   },
@@ -2360,7 +2360,7 @@ Screen.definition = {
 // ScreenEditConcept implementation
   /** Erase cells from current position to end of line. */
   "[type('Undefined')] eraseLineToRight":
-  function eraseLineToRight() 
+  function eraseLineToRight()
   {
     var line = this.getCurrentLine(),
         cursor,
@@ -2378,7 +2378,7 @@ Screen.definition = {
 
   /** Erase cells from specified position to head of line. */
   "[type('Undefined')] eraseLineToLeft":
-  function eraseLineToLeft() 
+  function eraseLineToLeft()
   {
     var cursor = this.cursor,
         line = this.getCurrentLine(),
@@ -2389,7 +2389,7 @@ Screen.definition = {
 
   /** Erase current line */
   "[type('Undefined')] eraseLine":
-  function eraseLine() 
+  function eraseLine()
   {
     var cursor = this.cursor,
         line = this.getCurrentLine(),
@@ -2399,10 +2399,10 @@ Screen.definition = {
     line.erase(0, width, attrvalue);
   },
 
-  /** Erase cells marked as "erasable" from current position to end 
+  /** Erase cells marked as "erasable" from current position to end
    *  of line. */
   "[type('Undefined')] selectiveEraseLineToRight":
-  function selectiveEraseLineToRight() 
+  function selectiveEraseLineToRight()
   {
     var line = this.getCurrentLine();
         cursor,
@@ -2418,10 +2418,10 @@ Screen.definition = {
     }
   },
 
-  /** Erase cells marked as "erasable" from specified position to head 
+  /** Erase cells marked as "erasable" from specified position to head
    *  of line. */
   "[type('Undefined')] selectiveEraseLineToLeft":
-  function selectiveEraseLineToLeft() 
+  function selectiveEraseLineToLeft()
   {
     var cursor = this.cursor,
         line = this.getCurrentLine();
@@ -2431,7 +2431,7 @@ Screen.definition = {
 
   /** Erase cells marked as "erasable" from line */
   "[type('Undefined')] selectiveEraseLine":
-  function selectiveEraseLine() 
+  function selectiveEraseLine()
   {
     var cursor = this.cursor,
         line = this.getCurrentLine(),
@@ -2442,7 +2442,7 @@ Screen.definition = {
 
   /** Erase cells from current position to head of buffer. */
   "[type('Undefined')] eraseScreenAbove":
-  function eraseScreenAbove() 
+  function eraseScreenAbove()
   {
     var cursor = this.cursor,
         width = this._width,
@@ -2451,7 +2451,7 @@ Screen.definition = {
         positionY = cursor.positionY,
         i,
         line;
-    
+
     lines[positionY].erase(0, cursor.positionX + 1, attrvalue);
 
     for (i = 0; i < positionY; ++i) {
@@ -2462,7 +2462,7 @@ Screen.definition = {
 
   /** Erase cells from current position to end of buffer. */
   "[type('Undefined')] eraseScreenBelow":
-  function eraseScreenBelow() 
+  function eraseScreenBelow()
   {
     var cursor = this.cursor,
         width = this._width,
@@ -2472,7 +2472,7 @@ Screen.definition = {
         height = this._height,
         i,
         line;
-   
+
     line = lines[positionY];
     if (!line) {
       positionY = cursor.positionY = height - 1;
@@ -2488,14 +2488,14 @@ Screen.definition = {
 
   /** Erase every cells in screen. */
   "[type('Undefined')] eraseScreenAll":
-  function eraseScreenAll() 
+  function eraseScreenAll()
   {
     var width = this._width,
         cursor = this.cursor,
         lines = this._lines,
         attrvalue = cursor.attr.value & 0xff,
         length = lines.length,
-        i, 
+        i,
         line;
 
     for (i = 0; i < length; ++i) {
@@ -2507,7 +2507,7 @@ Screen.definition = {
 
   /** Erase every cells in rectanglar area. */
   "[type('Undefined')] eraseRectangle":
-  function eraseRectangle(top, left, bottom, right) 
+  function eraseRectangle(top, left, bottom, right)
   {
     var cursor = this.cursor,
         lines = this._lines,
@@ -2525,7 +2525,7 @@ Screen.definition = {
 
   /** Erase scrollback. */
   "[type('Undefined')] eraseScrollback":
-  function eraseScrollback() 
+  function eraseScrollback()
   {
     this._buffer = this._buffer.slice(this._buffer_top);
     this._buffer_top = 0;
@@ -2533,7 +2533,7 @@ Screen.definition = {
 
   /** Erase cells from current position to head of buffer. */
   "[type('Undefined')] selectiveEraseScreenAbove":
-  function selectiveEraseScreenAbove() 
+  function selectiveEraseScreenAbove()
   {
     var cursor = this.cursor,
         width = this._width,
@@ -2553,7 +2553,7 @@ Screen.definition = {
 
   /** Erase cells from current position to end of buffer. */
   "[type('Undefined')] selectiveEraseScreenBelow":
-  function selectiveEraseScreenBelow() 
+  function selectiveEraseScreenBelow()
   {
     var cursor = this.cursor,
         width = this._width,
@@ -2563,7 +2563,7 @@ Screen.definition = {
         height = this._height,
         i,
         line;
-   
+
     line = lines[positionY];
     line.selectiveErase(cursor.positionX, width, attrvalue);
 
@@ -2575,7 +2575,7 @@ Screen.definition = {
 
   /** Erase every cells marked as "erasable" in screen. */
   "[type('Undefined')] selectiveEraseScreenAll":
-  function selectiveEraseScreenAll() 
+  function selectiveEraseScreenAll()
   {
     var width = this._width,
         cursor = this.cursor,
@@ -2594,7 +2594,7 @@ Screen.definition = {
 
   /** Erase every cells marked as "erasable" in rectanglar area. */
   "[type('Undefined')] selectiveEraseRectangle":
-  function selectiveEraseRectangle(top, left, bottom, right) 
+  function selectiveEraseRectangle(top, left, bottom, right)
   {
     var cursor = this.cursor,
         lines = this._lines,
@@ -2612,7 +2612,7 @@ Screen.definition = {
 
   /** Erase every cells in screen. */
   "[type('Undefined')] eraseScreenAllWithTestPattern":
-  function eraseScreenAllWithTestPattern() 
+  function eraseScreenAllWithTestPattern()
   {
     var attrvalue = this.cursor.attr.value & 0xff,
         width = this._width,
@@ -2628,7 +2628,7 @@ Screen.definition = {
 
   /** Insert n cells at specified position. */
   "[type('Uint16 -> Undefined')] insertBlanks":
-  function insertBlanks(n) 
+  function insertBlanks(n)
   {
     var line = this.getCurrentLine(),
         cursor = this.cursor,
@@ -2636,16 +2636,16 @@ Screen.definition = {
 
     line.insertBlanks(cursor.positionX, n, attrvalue);
   },
-      
+
   "[type('Uint16 -> Uint16 -> Undefined')] setScrollRegion":
-  function setScrollRegion(top, bottom) 
+  function setScrollRegion(top, bottom)
   {
     this._scroll_top = top;
     this._scroll_bottom = bottom;
   },
 
   "[type('Undefined')] resetScrollRegion":
-  function resetScrollRegion() 
+  function resetScrollRegion()
   {
     this._scroll_top = 0;
     this._scroll_bottom = this._height;
@@ -2653,7 +2653,7 @@ Screen.definition = {
     this._scroll_right = this._width;
   },
 
-  "[subscribe('command/soft-terminal-reset'), pnp]": 
+  "[subscribe('command/soft-terminal-reset'), pnp]":
   function softReset()
   {
     var lines,
@@ -2671,7 +2671,7 @@ Screen.definition = {
     }
   },
 
-  "[subscribe('command/hard-terminal-reset'), pnp]": 
+  "[subscribe('command/hard-terminal-reset'), pnp]":
   function reset()
   {
     this.eraseScreenAll();
@@ -2680,7 +2680,7 @@ Screen.definition = {
 
   /** Reverse Index (RI) */
   "[type('Undefined')] reverseIndex":
-  function reverseIndex() 
+  function reverseIndex()
   { // cursor up
     var cursor_state = this.cursor,
         top = this._scroll_top,
@@ -2689,16 +2689,16 @@ Screen.definition = {
     if (positionY === top) {
       this._scrollDown(top, this._scroll_bottom, 1);
     } else if (positionY < top) {
-      cursor_state.positionY = top  
+      cursor_state.positionY = top
       this._scrollDown(top, this._scroll_bottom, 1);
     } else {
       --cursor_state.positionY;
     }
   },
- 
+
   /** Line Feed (LF) */
   "[type('Undefined')] lineFeed":
-  function lineFeed() 
+  function lineFeed()
   { // cursor down
     var cursor = this.cursor,
         top,
@@ -2717,7 +2717,7 @@ Screen.definition = {
 
   /** insert n lines */
   "[type('Uint16 -> Undefined')] insertLine":
-  function insertLine(n) 
+  function insertLine(n)
   { // Insert Line
     var positionY = this.cursor.positionY,
         bottom = this._scroll_bottom,
@@ -2728,7 +2728,7 @@ Screen.definition = {
 
   /** delete n lines */
   "[type('Uint16 -> Undefined')] deleteLine":
-  function deleteLine(n) 
+  function deleteLine(n)
   { // Delete Line.
     var positionY = this.cursor.positionY,
         bottom = this._scroll_bottom,
@@ -2739,7 +2739,7 @@ Screen.definition = {
 
   /** scroll left n columns */
   "[type('Uint16 -> Undefined')] scrollLeft":
-  function scrollLeft(n) 
+  function scrollLeft(n)
   { // Scroll Left
     var lines = this._lines,
         attrvalue = this.cursor.attr.value & 0xff,
@@ -2762,7 +2762,7 @@ Screen.definition = {
 
   /** scroll right n columns */
   "[type('Uint16 -> Undefined')] scrollRight":
-  function scrollRight(n) 
+  function scrollRight(n)
   { // Scroll Right
     var lines = this._lines,
         attrvalue = this.cursor.attr.value & 0xff,
@@ -2785,7 +2785,7 @@ Screen.definition = {
 
   /** scroll down n lines */
   "[type('Uint16 -> Undefined')] scrollDownLine":
-  function scrollDownLine(n) 
+  function scrollDownLine(n)
   { // Scroll Up line
     var top = this._scroll_top,
         bottom = this._scroll_bottom;
@@ -2795,7 +2795,7 @@ Screen.definition = {
 
   /** scroll up n lines */
   "[type('Uint16 -> Undefined')] scrollUpLine":
-  function scrollUpLine(n) 
+  function scrollUpLine(n)
   { // Scroll Down line
     var top = this._scroll_top,
         bottom = this._scroll_bottom;
@@ -2805,7 +2805,7 @@ Screen.definition = {
 
   /** erase n characters at current line. */
   "[type('Uint16 -> Undefined')] eraseCharacters":
-  function eraseCharacters(n) 
+  function eraseCharacters(n)
   { // Erase CHaracters
     var line = this.getCurrentLine(),
         attrvalue = this.cursor.attr.value & 0xff,
@@ -2820,7 +2820,7 @@ Screen.definition = {
 
   /** delete n characters at current line. */
   "[type('Uint16 -> Undefined')] deleteCharacters":
-  function deleteCharacters(n) 
+  function deleteCharacters(n)
   { // Delete CHaracters
     var line = this.getCurrentLine(),
         cursor = this.cursor,
@@ -2836,12 +2836,12 @@ Screen.definition = {
 
 // ScreenSwitchConcept implementation
 
-  /** Switch to Alternate screen 
+  /** Switch to Alternate screen
    *
    * @implements ScreenSwitchConcept.switchToAlternateScreen
    */
   "[type('Undefined')] switchToAlternateScreen":
-  function switchToAlternateScreen() 
+  function switchToAlternateScreen()
   {
     // select alternate lines.
     if (coUtils.Constant.SCREEN_MAIN === this._screen_choice) {
@@ -2850,12 +2850,12 @@ Screen.definition = {
     }
   },
 
-  /** Switch to Main screen 
+  /** Switch to Main screen
    *
    * @implements ScreenSwitchConcept.switchToMainScreen
    */
   "[type('Undefined')] switchToMainScreen":
-  function switchToMainScreen() 
+  function switchToMainScreen()
   {
     // select main lines.
     if (coUtils.Constant.SCREEN_ALTERNATE === this._screen_choice) {
@@ -2868,9 +2868,9 @@ Screen.definition = {
    *
    * @implements ScreenSwitchConcept.selectAlternateScreen
    *
-   */ 
+   */
   "[type('Undefined')] selectAlternateScreen":
-  function selectAlternateScreen() 
+  function selectAlternateScreen()
   {
     if (coUtils.Constant.SCREEN_MAIN === this._screen_choice) {
       this.cursor.backup();
@@ -2879,13 +2879,13 @@ Screen.definition = {
     }
   },
 
-  /** Erase screen, switch to Main screen, and restore cursor. 
+  /** Erase screen, switch to Main screen, and restore cursor.
    *
    * @implements ScreenSwitchConcept.selectMainScreen
    *
-   */ 
+   */
   "[type('Undefined')] selectMainScreen":
-  function selectMainScreen() 
+  function selectMainScreen()
   {
     if (coUtils.Constant.SCREEN_ALTERNATE === this._screen_choice) {
       this.eraseScreenAll();
@@ -2893,15 +2893,15 @@ Screen.definition = {
       this.cursor.restore();
     }
   },
-  
+
 // ScreenBackupConcept Implementation
 
   /** Backups screen into serialize context.
    *
    * @implements ScreenBackupConcept.<command/backup>
    */
-  "[subscribe('command/backup'), type('Object -> Undefined'), pnp]": 
-  function backup(data) 
+  "[subscribe('command/backup'), type('Object -> Undefined'), pnp]":
+  function backup(data)
   {
     var context = data[this.id] = [],
         lines = this._buffer,
@@ -2929,8 +2929,8 @@ Screen.definition = {
    *
    * @implements ScreenBackupConcept.<command/restore>
    */
-  "[subscribe('command/restore'), type('Object -> Undefined'), pnp]": 
-  function restore(data) 
+  "[subscribe('command/restore'), type('Object -> Undefined'), pnp]":
+  function restore(data)
   {
     var context = data[this.id],
         i,
@@ -2973,12 +2973,12 @@ Screen.definition = {
 
 // private methods
   /** Returns the line object which is on current cursor position. */
-  getCurrentLine: function getCurrentLine() 
+  getCurrentLine: function getCurrentLine()
   {
     return this._lines[this.cursor.positionY]
   },
 
-  _createLines: function _createLines(n) 
+  _createLines: function _createLines(n)
   {
     var buffer = [],
         width = this._width,
@@ -2988,7 +2988,7 @@ Screen.definition = {
   },
 
   /** Switch between Main/Alternate screens. */
-  _switchScreen: function _switchScreen() 
+  _switchScreen: function _switchScreen()
   {
     // select alternate lines.
     var buffer = this._buffer,
@@ -3024,12 +3024,12 @@ Screen.definition = {
     }
 
     hash = coUtils.Algorithm.calculateMD5(data);
-    
+
     function toHexString(charCode)
     {
       return ("0" + charCode.toString(16)).slice(-2);
     }
-    
+
     return [toHexString(hash.charCodeAt(i)) for (i in hash)].join("").toUpperCase();
   },
 
@@ -3041,7 +3041,7 @@ Screen.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new Screen(broker);
 }

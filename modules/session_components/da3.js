@@ -30,8 +30,8 @@
  *
  * DA3 - Tertiary Device Attributes
  *
- * In this DA exchange, the host asks for the terminal unit identification 
- * code. This ID code serves as a way to identify each terminal in a system. 
+ * In this DA exchange, the host asks for the terminal unit identification
+ * code. This ID code serves as a way to identify each terminal in a system.
  * The unit ID code is preset at the factory.
  *
  * Host Request
@@ -43,7 +43,7 @@
  *
  * Terminal Response
  *
- * The terminal responds by sending a report terminal unit ID (DECRPTUI) 
+ * The terminal responds by sending a report terminal unit ID (DECRPTUI)
  * control string to the host. DECRPTUI is available in VT Level 4 mode only.
  *
  * DCS  !    |      D . . . D   ST
@@ -53,23 +53,23 @@
  *
  * D...D
  * is the unit ID of the terminal, consisting of four hexadecimal pairs. The
- * first pair represents the manufacturing site code. This code can be any 
+ * first pair represents the manufacturing site code. This code can be any
  * hexadecimal value from 00 through FF.
  *
- * The last three hexadecimal pairs are the terminal ID number. This number 
+ * The last three hexadecimal pairs are the terminal ID number. This number
  * is unique for each terminal manufactured at that site.
  *
  * Tertiary DA Example
  *
  * Here is a typical tertiary DA exchange.
  *
- * Request (Host to Terminal)   
+ * Request (Host to Terminal)
  *
  * CSI = c or CSI = 0 c      The host asks for the terminal unit ID.
  *
- * DECRPTUI Response (Terminal to host)   
+ * DECRPTUI Response (Terminal to host)
  *
- * DCS ! | 00 01 02 05 ST    The terminal was manufactured at site 00 and 
+ * DCS ! | 00 01 02 05 ST    The terminal was manufactured at site 00 and
  *                           has a unique ID number of 125.
  */
 var TirtiaryDA = new Class().extends(Plugin);
@@ -90,24 +90,24 @@ TirtiaryDA.definition = {
   "[persistable] site_id": 0xff,
   "[persistable] unit_id": 0xffffff,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
   },
 
   /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
   },
 
   /** handle DA3 request. */
   "[profile('vt100'), sequence('CSI = Ps c')]":
-  function DA3(n) 
+  function DA3(n)
   { // Tirtiary DA (Device Attributes)
     if (n !== undefined && n !== 0) {
       coUtils.Debug.reportWarning(
@@ -141,7 +141,7 @@ TirtiaryDA.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new TirtiaryDA(broker);
 }

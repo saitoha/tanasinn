@@ -45,20 +45,20 @@ SnapResize.definition = {
   _renderer: null,
   _chrome: null,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
     this._renderer = context["renderer"];
     this._chrome = context["chrome"];
   },
 
-  /** Uninstalls itself 
+  /** Uninstalls itself
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
     this._renderer = null;
     this._chrome = null;
@@ -119,8 +119,8 @@ CaptureBox.definition = {
       hidden: true,
       style: {
         position: "fixed",
-        width: this.capture_box_size + "px", 
-        height: this.capture_box_size + "px", 
+        width: this.capture_box_size + "px",
+        height: this.capture_box_size + "px",
         marginLeft: -this.capture_box_size / 2 + "px",
         marginTop: -this.capture_box_size / 2 + "px"
       }
@@ -130,29 +130,29 @@ CaptureBox.definition = {
   "[persistable] enabled_when_startup": true,
   "[persistable] capture_box_size": 200,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
     var result = this.request("command/construct-chrome", this.getTemplate());
 
     this._box = result.tanasinn_capture_box;
   },
 
-  /** Uninstalls itself 
+  /** Uninstalls itself
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
   },
 
   "[subscribe('command/show-capture-box'), enabled]":
-  function box(position) 
+  function box(position)
   {
     var x = position.x,
-        y = position.y, 
+        y = position.y,
         box = this._box;
 
     box.style.left = x + "px";
@@ -195,7 +195,7 @@ Resizer.definition = {
 
   /** post-constructor */
   "[subscribe('@initialized/{chrome & renderer & screen}'), enabled]":
-  function onLoad(chrome, renderer, screen) 
+  function onLoad(chrome, renderer, screen)
   {
     this._renderer = renderer;
     this._screen = screen;
@@ -203,12 +203,12 @@ Resizer.definition = {
   },
 
   /** mousedown event handler. */
-  onmousedown: function onmousedown(event) 
+  onmousedown: function onmousedown(event)
   {
     this.request(
-      "command/show-capture-box", 
+      "command/show-capture-box",
       {
-        x: event.clientX, 
+        x: event.clientX,
         y: event.clientY
       });
   },
@@ -223,7 +223,7 @@ Resizer.definition = {
         initial_row = screen.height,
         originX = event.screenX,
         originY = event.screenY;
-    
+
     //this._capture_margin.hidden = true;
     event.stopPropagation(); // cancel defaut behavior
     this.sendMessage("event/resize-session-started", this);
@@ -236,7 +236,7 @@ Resizer.definition = {
         id: "_DRAGGING",
         context: this,
 
-        handler: function onmousemove(event) 
+        handler: function onmousemove(event)
         {
           var char_width, line_height, diffX, diffY,
               column, row, screen_width_cache, screen_height_cache,
@@ -263,9 +263,9 @@ Resizer.definition = {
           screen_height_cache = screen.height;
 
           this.sendMessage(
-            "command/resize-screen", 
+            "command/resize-screen",
             {
-              column: column, 
+              column: column,
               row: row,
             });
 
@@ -280,13 +280,13 @@ Resizer.definition = {
       });
 
     this.sendMessage(
-      "command/add-domlistener", 
+      "command/add-domlistener",
       {
         target: owner_document,
         type: "mouseup",
         id: "_DRAGGING",
         context: this,
-        handler: function onmouseup(event) 
+        handler: function onmouseup(event)
         {
           // uninstall listeners.
           this.sendMessage("command/remove-domlistener", "_DRAGGING");
@@ -383,7 +383,7 @@ BottomResizer.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   //if (!coUtils.Runtime.app_name.match(/tanasinn/)) {
     new CaptureBox(broker);

@@ -45,30 +45,30 @@ Paste.definition = {
 
   _bracketed_paste_mode: false,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
   },
 
-  /** Uninstalls itself. 
+  /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
   },
-  
+
   /** Context menu handler. */
-  "[subscribe('get/contextmenu-entries'), pnp]": 
-  function onContextMenu() 
+  "[subscribe('get/contextmenu-entries'), pnp]":
+  function onContextMenu()
   {
     return {
       tagName: "menuitem",
-      label: _("paste"), 
+      label: _("paste"),
       listener: {
-        type: "command", 
+        type: "command",
         context: this,
         handler: this.paste,
       }
@@ -76,8 +76,8 @@ Paste.definition = {
   },
 
   /** paste the text from clipboard. */
-  "[command('paste'), nmap('<M-v>', '<C-S-V>'), _('Paste from clipboard.'), pnp]": 
-  function paste() 
+  "[command('paste'), nmap('<M-v>', '<C-S-V>'), _('Paste from clipboard.'), pnp]":
+  function paste()
   {
     var clipboard = Components
           .classes["@mozilla.org/widget/clipboard;1"]
@@ -132,14 +132,14 @@ Paste.definition = {
   },
 
   "[subscribe('command/paste'), pnp]":
-  function pasteFromClipboard(mode) 
+  function pasteFromClipboard(mode)
   {
     this.paste();
   },
 
   /** Set/Reset bracketed paste mode. */
   "[subscribe('command/change-bracketed-paste-mode'), pnp]":
-  function onBracketedPasteModeChanged(mode) 
+  function onBracketedPasteModeChanged(mode)
   {
     this._bracketed_paste_mode = mode;
   },
@@ -151,7 +151,7 @@ Paste.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new Paste(broker);
 }

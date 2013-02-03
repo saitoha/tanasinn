@@ -55,12 +55,12 @@ OverlayImage.definition = {
   "[persistable] open_delay": 20,
 
   _canvas: null,
- 
-  /** Installs itself. 
+
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
     var result = this.request("command/construct-chrome", this.getTemplate());
 
@@ -71,7 +71,7 @@ OverlayImage.definition = {
   /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
     if (this._canvas) {
       this._canvas.parentNode.removeChild(this._canvas);
@@ -79,10 +79,10 @@ OverlayImage.definition = {
     this._canvas = null;
     this._renderer = null;
   },
-    
+
   /** Fired at the keypad mode is changed. */
-  "[subscribe('event/keypad-mode-changed'), pnp]": 
-  function onKeypadModeChanged(mode) 
+  "[subscribe('event/keypad-mode-changed'), pnp]":
+  function onKeypadModeChanged(mode)
   {
     var canvas = this._canvas,
         context = canvas.getContext("2d");
@@ -98,20 +98,20 @@ OverlayImage.definition = {
   },
 
 
-  "[subscribe('event/screen-width-changed'), pnp]": 
-  function onWidthChanged(width) 
+  "[subscribe('event/screen-width-changed'), pnp]":
+  function onWidthChanged(width)
   {
     this._canvas.width = width;
   },
 
-  "[subscribe('event/screen-height-changed'), pnp]": 
-  function onHeightChanged(height) 
+  "[subscribe('event/screen-height-changed'), pnp]":
+  function onHeightChanged(height)
   {
     this._canvas.height = height;
   },
 
   "[subscribe('@command/focus'), enabled]":
-  function onFirstFocus() 
+  function onFirstFocus()
   {
     if (this._canvas) {
       this._canvas.width = this._canvas.parentNode.boxObject.width;
@@ -120,7 +120,7 @@ OverlayImage.definition = {
   },
 
   "[subscribe('sequence/osc/212'), pnp]":
-  function draw(data) 
+  function draw(data)
   {
     var renderer = this._renderer,
         canvas = {
@@ -141,7 +141,7 @@ OverlayImage.definition = {
         image,
         cache_holder,
         match;
-    
+
     match = data.split(";");
     x = match[0];
     y = match[1];
@@ -157,7 +157,7 @@ OverlayImage.definition = {
     this._cache_holder = this._cache_holder || {};
 
     cache = this._cache_holder[filename];
-    image = cache 
+    image = cache
       || this.request("get/root-element")
           .ownerDocument
           .createElementNS(coUtils.Constant.NS_XHTML, "img");
@@ -178,7 +178,7 @@ OverlayImage.definition = {
   },
 
   "[subscribe('sequence/osc/213'), pnp]":
-  function clear(data) 
+  function clear(data)
   {
     var context = this._canvas.getContext("2d"),
         renderer = this._renderer,
@@ -215,7 +215,7 @@ OverlayImage.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new OverlayImage(broker);
 }

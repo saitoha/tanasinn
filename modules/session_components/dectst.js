@@ -38,7 +38,7 @@
  *
  *
  * Parameters
- * 
+ *
  * Ps is the parameter indicating a test to be done.
  *
  *   Ps   Test
@@ -54,20 +54,20 @@
  *   9    Repeat (Loop On) Other Tests In Parameter String
  *
  * Description
- * 
- * After the first parameter, "4", the parameters each select one test. 
- * Several tests may be invoked at once by chaining the parameters together 
- * separated by semicolons. The tests are not necessarily executed in the 
+ *
+ * After the first parameter, "4", the parameters each select one test.
+ * Several tests may be invoked at once by chaining the parameters together
+ * separated by semicolons. The tests are not necessarily executed in the
  * order in which they are entered in the parameter string.
  *
  * "ESC # 8" invokes the Screen Alignment test for the VT510. Additionally,
- * after executing the power-up selftest, the terminal displays either the 
- * diagnostic messages in the upper left corner of the screen or the 
- * "VT510 OK" message in the center of the screen and within a box. Upon 
- * receipt of any character except XON or if the user types a keystroke, 
- * the screen is cleared. If the terminal is in local mode, then characters 
- * from the host are ignored and the message remains visible even if 
- * characters are received from the host. DECTST causes a disconnect; 
+ * after executing the power-up selftest, the terminal displays either the
+ * diagnostic messages in the upper left corner of the screen or the
+ * "VT510 OK" message in the center of the screen and within a box. Upon
+ * receipt of any character except XON or if the user types a keystroke,
+ * the screen is cleared. If the terminal is in local mode, then characters
+ * from the host are ignored and the message remains visible even if
+ * characters are received from the host. DECTST causes a disconnect;
  * therefore, it should not be used in conjunction with a modem.
  *
  */
@@ -87,24 +87,24 @@ ConfidenceTest.definition = {
 
   "[persistable] enabled_when_startup": true,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
   },
 
   /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
   },
 
   /** Invoke Confidence Test */
-  "[profile('vt100'), sequence('CSI Ps y')]": 
-  function DECTST() 
+  "[profile('vt100'), sequence('CSI Ps y')]":
+  function DECTST()
   {
     var i = 0,
         n;
@@ -127,19 +127,19 @@ ConfidenceTest.definition = {
 
         case 2:
           coUtils.Debug.reportWarning(
-            _("DECTST 2: Invoking RS-232 port data loopback test ", 
+            _("DECTST 2: Invoking RS-232 port data loopback test ",
               "is not implemented."));
           break;
 
         case 3:
           coUtils.Debug.reportWarning(
-            _("DECTST 3: Invoking printer port loopback test ", 
+            _("DECTST 3: Invoking printer port loopback test ",
               "is not implemented."));
           break;
 
         case 4:
           coUtils.Debug.reportWarning(
-            _("DECTST 4: Invoking speed select and speed indicator test ", 
+            _("DECTST 4: Invoking speed select and speed indicator test ",
               "is not implemented."));
           break;
 
@@ -156,19 +156,19 @@ ConfidenceTest.definition = {
 
         case 7:
           coUtils.Debug.reportWarning(
-            _("DECTST 7: Invoking EIA-423 port loopback test ", 
+            _("DECTST 7: Invoking EIA-423 port loopback test ",
               "is not implemented."));
           break;
 
         case 8:
           coUtils.Debug.reportWarning(
-            _("DECTST 8: Invoking parallel port loopback test ", 
+            _("DECTST 8: Invoking parallel port loopback test ",
               "is not implemented."));
           break;
 
         case 9:
           coUtils.Debug.reportWarning(
-            _("DECTST 8: Repeat (Loop on) other tests in parameter string ", 
+            _("DECTST 8: Repeat (Loop on) other tests in parameter string ",
               "is not implemented."));
           break;
 
@@ -188,7 +188,7 @@ ConfidenceTest.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new ConfidenceTest(broker);
 }

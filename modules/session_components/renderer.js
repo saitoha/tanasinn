@@ -24,7 +24,7 @@
 
 "use strict";
 
-function wait(span) 
+function wait(span)
 {
   var end_time = Date.now() + span,
       current_thread = coUtils.Services.getThreadManager().currentThread;
@@ -49,10 +49,10 @@ PersistentConcept.definition = {
 
   id: "PersistentConcept",
 
-  "<@command/backup> :: Object -> Undefined": 
+  "<@command/backup> :: Object -> Undefined":
   _("Serialize and persist current state."),
 
-  "<@command/restore> :: Object -> Undefined": 
+  "<@command/restore> :: Object -> Undefined":
   _("Deserialize and restore stored state."),
 
 }; // concept PersistentConcept
@@ -68,12 +68,12 @@ PersistentTrait.definition = {
   /**
    * Serialize snd persist current state.
    */
-  "[subscribe('@command/backup'), type('Object -> Undefined'), enabled]": 
-  function backup(context) 
+  "[subscribe('@command/backup'), type('Object -> Undefined'), enabled]":
+  function backup(context)
   {
     var path,
         file;
-    
+
     // serialize this plugin object.
     context[this.id] = {
       line_height: this.line_height,
@@ -88,8 +88,8 @@ PersistentTrait.definition = {
   /**
    * Deserialize snd restore stored state.
    */
-  "[subscribe('@command/restore'), type('Object -> Undefined'), pnp]": 
-  function restore(context) 
+  "[subscribe('@command/restore'), type('Object -> Undefined'), pnp]":
+  function restore(context)
   {
     var data = context[this.id];
 
@@ -104,7 +104,7 @@ PersistentTrait.definition = {
     }
   },
 
-  "[subscribe('event/idle'), pnp]": 
+  "[subscribe('event/idle'), pnp]":
   function onIdle()
   {
     var thumb_update = new Date().getTime();
@@ -113,9 +113,9 @@ PersistentTrait.definition = {
 
       this._thumb_lastupdate = thumb_update;
       // make image file path
-      var path = coUtils.Runtime.getRuntimePath() 
-               + "/persist/" 
-               + this._broker.request_id 
+      var path = coUtils.Runtime.getRuntimePath()
+               + "/persist/"
+               + this._broker.request_id
                + ".png",
           file = coUtils.File.getFileLeafFromVirtualPath(path);
 
@@ -148,7 +148,7 @@ SlowBlinkTrait.definition = {
       function timerProc()
       {
         if (null !== this._slow_blink_layer) {
-          this._slow_blink_layer.canvas.style.opacity 
+          this._slow_blink_layer.canvas.style.opacity
             = 1 - this._slow_blink_layer.canvas.style.opacity;
           coUtils.Timer.setTimeout(timerProc, this.slow_blink_interval, this);
         }
@@ -165,7 +165,7 @@ var RapidBlinkTrait = new Trait();
 RapidBlinkTrait.definition = {
 
   /**
-   * 
+   *
    */
   createRapidBlinkLayer: function createRapidBlinkLayer()
   {
@@ -176,10 +176,10 @@ RapidBlinkTrait.definition = {
     this._rapid_blink_layer.setHeight(this._main_layer.getHeight());
 
     coUtils.Timer.setTimeout(
-      function timerProc() 
+      function timerProc()
       {
         if (null !== this._rapid_blink_layer) {
-          this._rapid_blink_layer.canvas.style.opacity 
+          this._rapid_blink_layer.canvas.style.opacity
             = 1 - this._rapid_blink_layer.canvas.style.opacity;
           coUtils.Timer.setTimeout(timerProc, this.rapid_blink_interval, this);
         }
@@ -229,10 +229,10 @@ Layer.definition = {
   },
 
   /** Constructor */
-  initialize: function initialize(broker, id) 
+  initialize: function initialize(broker, id)
   {
     var canvas = broker.callSync(
-      "command/construct-chrome", 
+      "command/construct-chrome",
       {
         parentNode: "#tanasinn_center_area",
         tagName: "html:canvas",
@@ -255,10 +255,10 @@ Layer.definition = {
 }; // class Layer
 
 
-/** 
+/**
  * @class Renderer
  * @brief Scan screen state and render it to canvas element.
- */ 
+ */
 var Renderer = new Class().extends(Plugin)
                           .mix(PersistentTrait)
                           .mix(SlowBlinkTrait)
@@ -283,13 +283,13 @@ Renderer.definition = {
 
   // cell geometry (in pixel)
   "[watchable, persistable] line_height": 18,
-  "[watchable] char_width": 6.5, 
-  "[watchable] char_height": 4, 
-  "[watchable] char_offset": 11, 
-  "[persistable] slow_blink_interval": 800, 
-  "[persistable] rapid_blink_interval": 400, 
+  "[watchable] char_width": 6.5,
+  "[watchable] char_height": 4,
+  "[watchable] char_offset": 11,
+  "[persistable] slow_blink_interval": 800,
+  "[persistable] rapid_blink_interval": 400,
 
-  _text_offset: 10, 
+  _text_offset: 10,
 
   _offset: 0,
 
@@ -300,7 +300,7 @@ Renderer.definition = {
   _drcs_canvas: null,
 
   // font
-  "[watchable, persistable] font_family": 
+  "[watchable, persistable] font_family":
     "Monaco,Menlo,Lucida Console,DejaVu Sans Mono,monospace",
 
   "[watchable, persistable] font_size": 16,
@@ -323,11 +323,11 @@ Renderer.definition = {
   _screen: null,
   _palette: null,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
     this._screen = context["screen"];
     this._palette = context["palette"];
@@ -347,7 +347,7 @@ Renderer.definition = {
   /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
     this._screen = null;
 
@@ -387,28 +387,28 @@ Renderer.definition = {
     this.onHeightChanged();
   },
 
-  getCanvas: function getCanvas(context) 
+  getCanvas: function getCanvas(context)
   {
     return this._main_layer.canvas;
   },
 
-  "[subscribe('command/paint-foreground'), pnp]": 
-  function paintForeground(context) 
+  "[subscribe('command/paint-foreground'), pnp]":
+  function paintForeground(context)
   {
     context.drawImage(this._main_layer.canvas, 0, 0);
   },
 
   /** Take screen capture and save it in png format. */
-  "[subscribe('command/capture-screen'), pnp]": 
-  function captureScreen(info) 
+  "[subscribe('command/capture-screen'), pnp]":
+  function captureScreen(info)
   {
-    coUtils.IO.saveCanvas(this._main_layer.canvas, 
-                          info.file, 
+    coUtils.IO.saveCanvas(this._main_layer.canvas,
+                          info.file,
                           info.thumbnail);
   },
 
-  "[subscribe('variable-changed/renderer.smoothing'), enabled]": 
-  function onSmoothingChanged(value) 
+  "[subscribe('variable-changed/renderer.smoothing'), enabled]":
+  function onSmoothingChanged(value)
   {
     if (this._main_layer) {
       this._main_layer.smoothing = value;
@@ -421,8 +421,8 @@ Renderer.definition = {
     }
   },
 
-  "[subscribe('set/font-size'), pnp]": 
-  function setFontSize(font_size) 
+  "[subscribe('set/font-size'), pnp]":
+  function setFontSize(font_size)
   {
     this.line_height += font_size - this.font_size;
     this.font_size = font_size;
@@ -430,21 +430,21 @@ Renderer.definition = {
     this.sendMessage("event/font-size-changed", this.font_size);
   },
 
-  "[subscribe('set/font-family'), pnp]": 
-  function setFontFamily(font_family) 
+  "[subscribe('set/font-family'), pnp]":
+  function setFontFamily(font_family)
   {
     this.font_family = font_family;
   },
 
-  "[subscribe('variable-changed/renderer.font_{size | family}'), pnp]": 
-  function onFontChanged(font_size) 
+  "[subscribe('variable-changed/renderer.font_{size | family}'), pnp]":
+  function onFontChanged(font_size)
   {
     this._screen.dirty = true;
     this._calculateGlyphSize();
   },
 
   "[subscribe('command/change-fontsize-by-offset'), pnp]":
-  function changeFontSizeByOffset(offset) 
+  function changeFontSizeByOffset(offset)
   {
     this.font_size = Number(this.font_size) + offset;
     this.line_height = Number(this.line_height) + offset;
@@ -453,7 +453,7 @@ Renderer.definition = {
   },
 
   "[subscribe('variable-changed/{screen.width | renderer.char_width}'), pnp]":
-  function onWidthChanged(width, char_width) 
+  function onWidthChanged(width, char_width)
   {
     var canvas_width;
 
@@ -493,10 +493,10 @@ Renderer.definition = {
   },
 
   /** Draw to canvas */
-  "[subscribe('command/draw'), pnp]": 
+  "[subscribe('command/draw'), pnp]":
   function draw(redraw_flag)
   {
-    var info, 
+    var info,
         screen = this._screen;
 
     if (redraw_flag) {
@@ -509,7 +509,7 @@ Renderer.definition = {
 
   }, // draw
 
-  _drawNormalText: 
+  _drawNormalText:
   function _drawNormalText(codes, row, column, end, attr, type)
   {
     var context = this._main_layer.context,
@@ -523,12 +523,12 @@ Renderer.definition = {
         width = (char_width * (end - column)),
         height = line_height;
 
-    this._drawBackground(context, 
-                         left,// | 0, 
-                         top, 
+    this._drawBackground(context,
+                         left,// | 0,
+                         top,
 			 width,
-                         //Math.round(width + Math.ceil(left) - left), 
-                         height, 
+                         //Math.round(width + Math.ceil(left) - left),
+                         height,
                          attr);
 
     context.font = font_size + "px " + font_family;
@@ -536,19 +536,19 @@ Renderer.definition = {
       context.font = "italic " + context.font;
     }
 
-    this._drawWord(context, 
-                   codes, 
-                   left,// | 0, 
-                   top + text_offset, 
-                   char_width, 
-                   end - column, 
-                   height, 
+    this._drawWord(context,
+                   codes,
+                   left,// | 0,
+                   top + text_offset,
+                   char_width,
+                   end - column,
+                   height,
                    attr,
                    type);
 
   },
 
-  _drawDoubleHeightTextTop: 
+  _drawDoubleHeightTextTop:
   function _drawDoubleHeightTextTop(codes, row, column, end, attr, type)
   {
     var context = this._main_layer.context,
@@ -567,11 +567,11 @@ Renderer.definition = {
       context.font = "italic " + context.font;
     }
 
-    this._drawBackground(context, 
-                         left | 0, 
-                         line_height * row, 
-                         width + Math.ceil(left) - left, 
-                         height, 
+    this._drawBackground(context,
+                         left | 0,
+                         line_height * row,
+                         width + Math.ceil(left) - left,
+                         height,
                          attr);
 
     context.save();
@@ -579,21 +579,21 @@ Renderer.definition = {
     context.rect(left, line_height * row, width, height);
     context.clip();
 
-    this._drawWord(context, 
-                   codes, 
-                   left, 
-                   top + text_offset / 2, 
-                   char_width * 2, 
-                   end - column, 
-                   height, 
-                   attr, 
+    this._drawWord(context,
+                   codes,
+                   left,
+                   top + text_offset / 2,
+                   char_width * 2,
+                   end - column,
+                   height,
+                   attr,
                    type);
 
     context.restore();
 
   },
 
-  _drawDoubleHeightTextBottom: 
+  _drawDoubleHeightTextBottom:
   function _drawDoubleHeightTextBottom(codes, row, column, end, attr, type)
   {
     var context = this._main_layer.context,
@@ -613,11 +613,11 @@ Renderer.definition = {
       context.font = "italic " + context.font;
     }
 
-    this._drawBackground(context, 
-                         left | 0, 
-                         line_height * row, 
-                         width + Math.ceil(left) - left, 
-                         height, 
+    this._drawBackground(context,
+                         left | 0,
+                         line_height * row,
+                         width + Math.ceil(left) - left,
+                         height,
                          attr);
 
     context.save();
@@ -625,21 +625,21 @@ Renderer.definition = {
     context.rect(left, line_height * row, width, height);
     context.clip();
 
-    this._drawWord(context, 
-                   codes, 
-                   left, 
-                   top + text_offset / 2, 
-                   char_width * 2, 
-                   end - column, 
-                   height, 
-                   attr, 
+    this._drawWord(context,
+                   codes,
+                   left,
+                   top + text_offset / 2,
+                   char_width * 2,
+                   end - column,
+                   height,
+                   attr,
                    type);
 
     context.restore();
 
   },
 
-  _drawDoubleWidthText: 
+  _drawDoubleWidthText:
   function _drawDoubleWidthText(codes, row, column, end, attr, type)
   {
     var context = this._main_layer.context,
@@ -664,11 +664,11 @@ Renderer.definition = {
     width = char_width * 2 * (end - column);
     height = line_height;
 
-    this._drawBackground(context, 
-                         left | 0, 
-                         line_height * row, 
-                         width + Math.ceil(left) - left, 
-                         height, 
+    this._drawBackground(context,
+                         left | 0,
+                         line_height * row,
+                         width + Math.ceil(left) - left,
+                         height,
                          attr);
 
     context.save();
@@ -677,21 +677,21 @@ Renderer.definition = {
     context.transform(1, 0, 0, 0.5, 0, (top + text_offset) / 2);
     context.clip();
 
-    this._drawWord(context, 
-                   codes, 
-                   left, 
-                   top + text_offset, 
-                   char_width * 2, 
-                   end - column, 
-                   height, 
-                   attr, 
+    this._drawWord(context,
+                   codes,
+                   left,
+                   top + text_offset,
+                   char_width * 2,
+                   end - column,
+                   height,
+                   attr,
                    type);
 
     context.restore();
 
   },
 
-  _drawLine: function _drawLine(info) 
+  _drawLine: function _drawLine(info)
   {
     var type;
 
@@ -741,15 +741,15 @@ Renderer.definition = {
 
       default:
         throw coUtils.Debug.Exception(
-          _("Invalid double height mode was detected: %d."), 
+          _("Invalid double height mode was detected: %d."),
           type);
     }
   },
 
-  /** Render background attribute. 
+  /** Render background attribute.
    *
    */
-  _drawBackground: 
+  _drawBackground:
   function _drawBackground(context, x, y, width, height, attr)
   {
     if (1 === attr.blink) {
@@ -775,8 +775,8 @@ Renderer.definition = {
     }
   },
 
-  _drawBackgroundImpl: 
-  function _drawBackgroundImpl(context, x, y, width, height, attr) 
+  _drawBackgroundImpl:
+  function _drawBackgroundImpl(context, x, y, width, height, attr)
   {
     var back_color = this._palette.getBackColor(attr);
 
@@ -794,14 +794,14 @@ Renderer.definition = {
 
   /** Render text in specified cells.
    */
-  _drawWord: 
-  function _drawWord(context, 
-                     codes, 
+  _drawWord:
+  function _drawWord(context,
+                     codes,
                      x,
-                     y, 
-                     char_width, 
-                     length, 
-                     height, 
+                     y,
+                     char_width,
+                     length,
+                     height,
                      attr,
                      type)
   {
@@ -941,14 +941,14 @@ Renderer.definition = {
             source_width = drcs_state.drcs_width;
             source_height = drcs_state.drcs_height;
             destination_left = Math.floor(x + index * char_width);
-            destination_top = y - this._text_offset 
+            destination_top = y - this._text_offset
             destination_width = Math.ceil(char_width);
             destination_height = this.line_height;
             break;
         }
         if (drcs_state.color) {
           context.drawImage(
-            drcs_state.drcs_canvas, 
+            drcs_state.drcs_canvas,
             source_left,            // source left
             source_top,             // source top
             source_width,           // source width
@@ -957,7 +957,7 @@ Renderer.definition = {
             destination_top,        // destination top
             destination_width,      // destination width
             destination_height);    // destination height
-        } else { 
+        } else {
           if (null === this._drcs_canvas) {
             this._drcs_canvas = this.request(
               "command/construct-chrome",
@@ -976,7 +976,7 @@ Renderer.definition = {
             destination_width,          // destination width
             destination_height);        // destination height
           drcs_context.drawImage(
-            drcs_state.drcs_canvas, 
+            drcs_state.drcs_canvas,
             source_left,                // source left
             source_top,                 // source top
             source_width,               // source width
@@ -988,12 +988,12 @@ Renderer.definition = {
           drcs_context.fillStyle = context.fillStyle;
           drcs_context.globalCompositeOperation = "source-atop";
           drcs_context.fillRect(0,
-                                0, 
-                                destination_width, 
+                                0,
+                                destination_width,
                                 destination_height);
           drcs_context.globalCompositeOperation = "source-over";
           context.drawImage(
-            this._drcs_canvas, 
+            this._drcs_canvas,
             0,                          // source left
             0,                          // source top
             destination_width,          // source width
@@ -1010,7 +1010,7 @@ Renderer.definition = {
   "[subscribe('command/alloc-drcs'), pnp]":
   function allocDRCS(drcs)
   {
-    this._drcs_map[drcs.dscs] = drcs; 
+    this._drcs_map[drcs.dscs] = drcs;
   },
 
   /** Rnder underline at specified position.
@@ -1021,7 +1021,7 @@ Renderer.definition = {
    */
   _drawUnderline: function _drawUnderline(context, x, y, width, fore_color)
   {
-     // Render underline 
+     // Render underline
      context.lineWidth = 1;
      context.strokeStyle = fore_color;
      context.beginPath();
@@ -1032,7 +1032,7 @@ Renderer.definition = {
 
   /** Do test rendering and calculate glyph width with current font and font size.
    */
-  _calculateGlyphSize: function _calculateGlyphSize() 
+  _calculateGlyphSize: function _calculateGlyphSize()
   {
     var font_size = this.font_size,
         font_family = this.font_family,
@@ -1055,7 +1055,7 @@ Renderer.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new Renderer(broker);
 }

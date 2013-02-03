@@ -27,8 +27,8 @@
 /**
  * @class Vector3d
  */
-function Vector3d() 
-{ 
+function Vector3d()
+{
   return this.initialize.apply(this, arguments);
 };
 Vector3d.prototype = {
@@ -49,8 +49,8 @@ Vector3d.prototype = {
   abs: function abs()
   {
     // (x^2 + y^2 + z^2) ^ (1/2)
-    return Math.sqrt(this.x * this.x 
-                   + this.y * this.y 
+    return Math.sqrt(this.x * this.x
+                   + this.y * this.y
                    + this.z * this.z);
   },
 
@@ -59,7 +59,7 @@ Vector3d.prototype = {
   {
     var abs = this.abs();
 
-    return new Vector3d(this.x / abs, 
+    return new Vector3d(this.x / abs,
                         this.y / abs,
                         this.z / abs);
   },
@@ -76,8 +76,8 @@ Vector3d.prototype = {
   cross: function cross(/* Vector3d */ other)
   {
     return new Vector3d(
-      this.y * other.z - this.z * other.y, 
-      this.z * other.x - this.x * other.z, 
+      this.y * other.z - this.z * other.y,
+      this.z * other.x - this.x * other.z,
       this.x * other.y - this.y * other.x);
   },
 
@@ -89,8 +89,8 @@ Vector3d.prototype = {
  * @class TransformMatrix
  *
  */
-function TransformMatrix() 
-{ 
+function TransformMatrix()
+{
   return this.initialize.apply(this, arguments);
 };
 TransformMatrix.prototype = {
@@ -116,9 +116,9 @@ TransformMatrix.prototype = {
   _m33: 1,
 
   /** constructor */
-  initialize: function initialize(m00, m01, m02, m03, 
-                                  m10, m11, m12, m13, 
-                                  m20, m21, m22, m23, 
+  initialize: function initialize(m00, m01, m02, m03,
+                                  m10, m11, m12, m13,
+                                  m20, m21, m22, m23,
                                   m30, m31, m32, m33)
   {
     this._m00 = m00;
@@ -165,7 +165,7 @@ TransformMatrix.prototype = {
 
   toString: function toString()
   {
-    return "matrix3d(" 
+    return "matrix3d("
       + [
         this._m00, this._m01, this._m02, this._m03,
         this._m10, this._m11, this._m12, this._m13,
@@ -218,7 +218,7 @@ DragTransform.definition = {
 
   /** Dragstart handler. It starts a session of dragging selection. */
   "[listen('dragstart', '#tanasinn_capture_cover'), pnp]":
-  function ondragstart(event) 
+  function ondragstart(event)
   {
     var box;
 
@@ -245,7 +245,7 @@ DragTransform.definition = {
 
   /** Dragmove handler */
   "[listen('mousemove')]":
-  function onMouseMove(event) 
+  function onMouseMove(event)
   {
     //event.stopPropagation();
     //event.preventDefault();
@@ -258,20 +258,20 @@ DragTransform.definition = {
   },
 
   "[subscribe('event/got-focus'), pnp]":
-  function onGotFocus() 
+  function onGotFocus()
   {
     this._active = true;
   },
 
   "[subscribe('event/lost-focus'), pnp]":
-  function onLostFocus() 
+  function onLostFocus()
   {
     this._active = false;
   },
 
   /** alt/shift keydown event handler, enables the dragging helper object */
   "[subscribe('event/{alt & shift}-key-down'), pnp]":
-  function onModifierKeysDown() 
+  function onModifierKeysDown()
   {
     if (this._active) {
       this.sendMessage("command/enable-drag-cover");
@@ -280,7 +280,7 @@ DragTransform.definition = {
 
   /** alt/shift keyup event handler, detects the timing for drag end */
   "[subscribe('event/{alt | shift}-key-up'), pnp]":
-  function onModifierKeyUp() 
+  function onModifierKeyUp()
   {
     if (this._active) {
       this.sendMessage("command/disable-drag-cover");
@@ -290,7 +290,7 @@ DragTransform.definition = {
 
   /** "mouseup" event handler, detects the timing for dragend */
   "[listen('mouseup')]":
-  function onMouseUp(event) 
+  function onMouseUp(event)
   {
     //event.stopPropagation();
     //event.preventDefault();
@@ -298,7 +298,7 @@ DragTransform.definition = {
   },
 
   /** Dragend handler */
-  onDragEnd: function onDragEnd(event) 
+  onDragEnd: function onDragEnd(event)
   {
     this.onMouseMove.enabled = false;
     this.onMouseUp.enabled = false;
@@ -312,10 +312,10 @@ DragTransform.definition = {
 //    this.sendMessage("command/focus");
   },
 
-  get2DCoordinate: function get2DCoordinate(event) 
+  get2DCoordinate: function get2DCoordinate(event)
   {
     var target_element = this.request(
-          "command/query-selector", 
+          "command/query-selector",
           "#tanasinn_background_frame"),
         root_element = this.request("get/root-element").ownerDocument.documentElement,
         offsetX = target_element.boxObject.screenX - root_element.boxObject.screenX,
@@ -365,7 +365,7 @@ Transform.definition = {
   _width: 0,
   _height: 0,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
@@ -404,8 +404,8 @@ Transform.definition = {
     this._height = 0;
   },
 
-  "[subscribe('variable-changed/transform.transform_matrix'), pnp]": 
-  function onTransformMatrixChanged() 
+  "[subscribe('variable-changed/transform.transform_matrix'), pnp]":
+  function onTransformMatrixChanged()
   {
     var element = this._element;
 
@@ -413,14 +413,14 @@ Transform.definition = {
     element.style.MozTransform = this.transform_matrix;
   },
 
-  "[subscribe('event/screen-width-changed'), pnp]": 
-  function onWidthChanged(width) 
+  "[subscribe('event/screen-width-changed'), pnp]":
+  function onWidthChanged(width)
   {
     this._width = width;
   },
 
-  "[subscribe('event/screen-height-changed'), pnp]": 
-  function onHeightChanged(height) 
+  "[subscribe('event/screen-height-changed'), pnp]":
+  function onHeightChanged(height)
   {
     this._height = height;
   },
@@ -464,7 +464,7 @@ DragCover.definition = {
 
   _cover: null,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
@@ -480,7 +480,7 @@ DragCover.definition = {
     document_element.appendChild(this._cover);
 
     this._cover.style.width = document_element.boxObject.width + "px";
-    this._cover.style.height = document_element.boxObject.height + "px"; 
+    this._cover.style.height = document_element.boxObject.height + "px";
 
   },
 
@@ -496,13 +496,13 @@ DragCover.definition = {
   },
 
   "[subscribe('command/enable-drag-cover'), pnp]":
-  function enableDragCover() 
+  function enableDragCover()
   {
     this._cover.hidden = false;
   },
 
   "[subscribe('command/disable-drag-cover'), pnp]":
-  function disableDragCover() 
+  function disableDragCover()
   {
     var cover = this._cover;
 
@@ -518,7 +518,7 @@ DragCover.definition = {
  * @brief Module entry point.
  * @param {Broker} Broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new Transform(broker);
   new DragCover(broker);

@@ -83,7 +83,7 @@ VT100Grammar.definition = {
 
   "[persistable] enabled_when_startup": true,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
@@ -93,7 +93,7 @@ VT100Grammar.definition = {
     this._pbytes = [];
   },
 
-  /** Uninstalls itself. 
+  /** Uninstalls itself.
    */
   "[uninstall]":
   function uninstall()
@@ -139,14 +139,14 @@ VT100Grammar.definition = {
     return this;
   },
 
-  /** Parse and returns asocciated action. 
+  /** Parse and returns asocciated action.
    *  @param {Scanner} scanner A Scanner object.
    *  @param {Function|Undefined} Action object.
    *
    *  @implements Grammar.parse :: Scanner -> Action
    */
   "[type('Scanner -> Action')] parse":
-  function parse(scanner) 
+  function parse(scanner)
   {
     var c,
         state = this._state,
@@ -181,15 +181,15 @@ VT100Grammar.definition = {
           state = _STATE_GROUND;
         } else if (c < 0x20) { // C0
           this._dispatch_char(c);
-        } else if (c <= 0x2f) { // SP to / 
+        } else if (c <= 0x2f) { // SP to /
           ibytes = [c];
           state = _STATE_ESC_IBYTES;
-        } else if (0x50 === c || 0x58 === c || 0x5e === c || 0x5f === c) {
-          ibytes = [c];
-          state = _STATE_STRING;
         } else if (0x5d === c) { // ]
           ibytes = [c];
           state = _STATE_OSC;
+        } else if (0x50 === c || 0x58 === c || 0x5e === c || 0x5f === c) {
+          ibytes = [c];
+          state = _STATE_STRING;
         } else if (c <= 0x7e) { // 0 to ~
           state = _STATE_GROUND;
           this._dispatch_single_esc(c);
@@ -197,7 +197,7 @@ VT100Grammar.definition = {
           state = _STATE_GROUND;
         }
       } else if (_STATE_CSI_PBYTES === state) {
-        if (c <= 0x2f) { // SP to / 
+        if (c <= 0x2f) { // SP to /
           if (c >= 0x20) { // C0
             ibytes.push(c);
             state = _STATE_CSI_IBYTES;
@@ -228,7 +228,7 @@ VT100Grammar.definition = {
           this._dispatch_char(c);
         } else if (c < 0x20) { // C0
           this._dispatch_char(c);
-        } else if (c <= 0x2f) { // SP to / 
+        } else if (c <= 0x2f) { // SP to /
           ibytes.push(c);
         } else if (c <= 0x7e) {
           state = _STATE_GROUND;
@@ -285,7 +285,7 @@ VT100Grammar.definition = {
           state = _STATE_GROUND;
         } else if (c < 0x20) { // C0
           this._dispatch_char(c);
-        } else if (c <= 0x2f) { // SP to / 
+        } else if (c <= 0x2f) { // SP to /
           ibytes = [c];
           state = _STATE_ESC_IBYTES;
         } else if (0x50 === c || 0x58 === c || 0x5e === c || 0x5f === c) {
@@ -310,7 +310,7 @@ VT100Grammar.definition = {
           } else {
             this._dispatch_char(c);
           }
-        } else if (c <= 0x2f) { // SP to / 
+        } else if (c <= 0x2f) { // SP to /
           ibytes.push(c);
         } else if (c <= 0x7e) { // 0 to ~
           state = _STATE_GROUND;
@@ -336,7 +336,7 @@ VT100Grammar.definition = {
         handler,
         params,
         i,
-        param; 
+        param;
 
     if (prefix >= 0x3c && prefix <= 0x3f) {
       pbytes.shift();
@@ -372,7 +372,7 @@ VT100Grammar.definition = {
         params,
         i,
         param,
-        ibytes = []; 
+        ibytes = [];
 
     if (prefix >= 0x3c && prefix <= 0x3f) {
       pbytes.shift();
@@ -457,13 +457,13 @@ VT100Grammar.definition = {
   },
 
   /** Append a sequence handler.
-   *  @param {Object} information A register information object that has 
+   *  @param {Object} information A register information object that has
    *                              "expression", "handler", and "context" key.
    *
    *  @implements Grammar.<command/add-sequence> :: SequenceInfo -> Undefined
    */
   "[subscribe('command/add-sequence'), type('SequenceInfo -> Undefined'), pnp]":
-  function append(information) 
+  function append(information)
   {
     var expression = information.expression,
         handler = information.handler,
@@ -524,7 +524,7 @@ VT100Grammar.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new VT100Grammar(broker);
 }

@@ -47,7 +47,7 @@ InputMacro.definition = {
   _macro_buffer: null,
   _current_macro_name: null,
 
-  "[command('recordinputmacro', []), _('Record input macro with given name.'), pnp]": 
+  "[command('recordinputmacro', []), _('Record input macro with given name.'), pnp]":
   function recordInputMacro(name)
   {
     if (!name) {
@@ -68,7 +68,7 @@ InputMacro.definition = {
     }
   },
 
-  "[command('playinputmacro', []), _('Play input macro.'), pnp]": 
+  "[command('playinputmacro', []), _('Play input macro.'), pnp]":
   function playInputMacro(name)
   {
     var buffer = this._macros[name];
@@ -106,7 +106,7 @@ InputMacro.definition = {
     }
   },
 
-  "[command('completeinputmacro', []), _('Stop to recording current macro.'), pnp]": 
+  "[command('completeinputmacro', []), _('Stop to recording current macro.'), pnp]":
   function completeInputMacro()
   {
     var buffer = this._macro_buffer,
@@ -121,7 +121,7 @@ InputMacro.definition = {
     }
   },
 
-  "[subscribe('command/input-with-no-remapping'), pnp] _": 
+  "[subscribe('command/input-with-no-remapping'), pnp] _":
   function _inputWithNoMapping(packed_code)
   {
     if (null !== this._macro_buffer) {
@@ -138,7 +138,7 @@ InputMacro.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new InputMacro(broker);
 }

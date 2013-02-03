@@ -24,7 +24,7 @@
 
 "use strict";
 
-/** 
+/**
  * @class Scrollbar
  * @brief Shows scrollbar interface.
  */
@@ -62,7 +62,7 @@ Scrollbar.definition = {
         tagName: "vbox",
         flex: 1,
         id: "tanasinn_scrollbar",
-        style: { 
+        style: {
           opacity: "0.00",
           MozTransitionProperty: "opacity",
           MozTransitionDuration: this.transition_duration + "ms",
@@ -80,7 +80,7 @@ Scrollbar.definition = {
               {
                 type: "click",
                 context: this,
-                handler: function onclick(event) 
+                handler: function onclick(event)
                 {
                   event.stopPropagation();
                   this.changePosition(this._before.flex - 10);
@@ -92,7 +92,7 @@ Scrollbar.definition = {
             tagName: "box",
             id: "tanasinn_scrollbar_current",
             height: this.inner_width * 2,
-            style: { 
+            style: {
               borderRadius: (this.inner_width / 2) + "px",
               backgroundColor: this.color,
             },
@@ -103,7 +103,7 @@ Scrollbar.definition = {
             listener: {
               type: "click",
               context: this,
-              handler: function onclick(event) 
+              handler: function onclick(event)
               {
                 event.stopPropagation();
                 this.changePosition(this._before.flex + 10);
@@ -115,11 +115,11 @@ Scrollbar.definition = {
     };
   },
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
     var result = this.request("command/construct-chrome", this.getTemplate());
 
@@ -130,10 +130,10 @@ Scrollbar.definition = {
     this._after = result.tanasinn_scrollbar_after;
   },
 
-  /** Unnstalls itself. 
+  /** Unnstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
     // remove scrollbar element
     if (null !== this._scrollbar_overlay) {
@@ -147,7 +147,7 @@ Scrollbar.definition = {
   },
 
   "[subscribe('command/scrollbar-hide'), pnp]":
-  function onScrollbarHide() 
+  function onScrollbarHide()
   {
     if (this._scrollbar_overlay) {
       this._scrollbar_overlay.hidden = true;
@@ -155,19 +155,19 @@ Scrollbar.definition = {
   },
 
   "[subscribe('command/scrollbar-show'), pnp]":
-  function onScrollbarShow() 
+  function onScrollbarShow()
   {
     if (this._scrollbar_overlay) {
       this._scrollbar_overlay.hidden = false;
     }
   },
 
-  changePosition: function changePosition(position) 
+  changePosition: function changePosition(position)
   {
     var min_position, max_position;
 
     min_position = 0;
-    max_position = parseInt(this._before.flex) 
+    max_position = parseInt(this._before.flex)
                      + parseInt(this._after.flex);
     position = Math.max(position, min_position);
     position = Math.min(position, max_position);
@@ -178,7 +178,7 @@ Scrollbar.definition = {
   },
 
   "[subscribe('event/scroll-position-changed'), pnp]":
-  function onScrollPositionChanged(scroll_info) 
+  function onScrollPositionChanged(scroll_info)
   {
     var scrollbar, before, current, after;
 
@@ -200,17 +200,17 @@ Scrollbar.definition = {
   },
 
   "[listen('dblclick', '#tanasinn_scrollbar'), pnp]":
-  function ondblclick(event) 
+  function ondblclick(event)
   {
     event.stopPropagation();
   },
-  
+
   "[listen('mouseover', '#tanasinn_scrollbar'), pnp]":
-  function onmouseover(event) 
+  function onmouseover(event)
   {
     var scrollbar = this._scrollbar;
 
-    if (0 === Number(this._after.flex) && 
+    if (0 === Number(this._after.flex) &&
         0 === Number(scrollbar.style.opacity)) {
       this.sendMessage("command/update-scroll-information");
       scrollbar.style.opacity = this.active_opacity;
@@ -218,26 +218,26 @@ Scrollbar.definition = {
   },
 
   "[listen('mouseout', '#tanasinn_scrollbar'), pnp]":
-  function onmouseout(event) 
+  function onmouseout(event)
   {
     var scrollbar;
 
     scrollbar = this._scrollbar;
-    if (0 === Number(this._after.flex) && 
-        !this._dragging && 
+    if (0 === Number(this._after.flex) &&
+        !this._dragging &&
         0.00 !== scrollbar.style.opacity) {
       scrollbar.style.opacity = 0.00;
     }
   },
 
   "[listen('dragstart', '#tanasinn_scrollbar'), pnp]":
-  function ondragstart_scrollbar(event) 
+  function ondragstart_scrollbar(event)
   {
     event.stopPropagation();
   },
 
   "[listen('dragstart', '#tanasinn_scrollbar_current'), pnp]":
-  function ondragstart(dom_event) 
+  function ondragstart(dom_event)
   {
     var initial_y, dom_document, radius, height, before_flex,
         current_flex, after_flex, flex, flex_per_height,
@@ -264,13 +264,13 @@ Scrollbar.definition = {
 
     // register mousemove listener.
     this.sendMessage(
-      "command/add-domlistener", 
+      "command/add-domlistener",
       {
         type: "mousemove",
         id: "_DRAGGING",
         target: dom_document,
         context: this,
-        handler: function onmousemove(event) 
+        handler: function onmousemove(event)
         {
           var delta, position;
 
@@ -282,14 +282,14 @@ Scrollbar.definition = {
 
     // register mouseup listener.
     this.sendMessage(
-      "command/add-domlistener", 
+      "command/add-domlistener",
       {
         type: "mouseup",
         id: "_DRAGGING",
         target: dom_document,
         capture: true,
         context: this,
-        handler: function onmouseup(event) 
+        handler: function onmouseup(event)
         {
           this._dragging = false;
           this.sendMessage("command/remove-domlistener", "_DRAGGING");
@@ -311,9 +311,9 @@ Scrollbar.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new Scrollbar(broker);
 }
 
-// EOF 
+// EOF

@@ -24,7 +24,7 @@
 
 "use strict";
 
-function char2sixelbits(c) 
+function char2sixelbits(c)
 {
   var code = "0000000" + (c.charCodeAt(0) - "?".charCodeAt(0)).toString(2);
 
@@ -59,11 +59,11 @@ DRCSBuffer.definition = {
   _g1: "B",
   _counter: 0x0,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
     this._map = {};
     this._sixel_parser = context["sixel_parser"];
@@ -72,7 +72,7 @@ DRCSBuffer.definition = {
   /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
     var dscs;
 
@@ -91,7 +91,7 @@ DRCSBuffer.definition = {
     return 7; // DRCS
   },
 
-  getDRCSInfo: function getDRCSInfo(code) 
+  getDRCSInfo: function getDRCSInfo(code)
   {
     var drcs_info;
 
@@ -107,7 +107,7 @@ DRCSBuffer.definition = {
   },
 
   "[subscribe('sequence/dcs'), pnp]":
-  function onDCS(data) 
+  function onDCS(data)
   {
     var pattern,
         match,
@@ -126,12 +126,12 @@ DRCSBuffer.definition = {
       pfn,   // Pfn Font number
       pcn,   // Starting Character
       pe,    // Erase control:
-             //   0: erase all characters in the DRCS buffer with this number, 
-             //      width and rendition. 
+             //   0: erase all characters in the DRCS buffer with this number,
+             //      width and rendition.
              //   1: erase only characters in locations being reloaded.
-             //   2: erase all renditions of the soft character set 
+             //   2: erase all renditions of the soft character set
              //      (normal, bold, 80-column, 132-column).
-             //   
+             //
       pcmw,  // Character matrix width
              //   Selects the maximum character cell width.
              //   0: 15 pxiels wide for 80 columns, 9pixels wide for 132 columns. (Default)
@@ -143,7 +143,7 @@ DRCSBuffer.definition = {
              //   6: 6 pixels wide
              //   ...
              //   15: 15 pixcels wide
-      pw,    // Font width        
+      pw,    // Font width
              //   Selects the number of columns per line (font set size).
              //   0: 80 columns. (Default)
              //   1: 80 columns.
@@ -186,7 +186,7 @@ DRCSBuffer.definition = {
     var full_cell = 2 === Number(pt);
     var start_code = 0 === Number(pcss) ? ({ // 94 character set.
       0: 0x21,
-    }  [pcn] || Number(pcn) + 0x21) 
+    }  [pcn] || Number(pcn) + 0x21)
     : 1 === Number(pcss) ? Number(pcn) + 0x20 // 96 character set.
     : Number(pcn) + 0x20; // unicode character set.
 
@@ -212,7 +212,7 @@ DRCSBuffer.definition = {
         return;
       }
 
-      var dom = { 
+      var dom = {
         canvas: canvas,
         context: canvas.getContext("2d"),
       };
@@ -250,7 +250,7 @@ DRCSBuffer.definition = {
       for (var [n, glyph] in Iterator(sixels)) {
         for (var [h, line] in Iterator(glyph.split("/"))) {
           for (var [x, c] in Iterator(line.replace(/[^\?-~]/g, "").split(""))) {
-            var bits = char2sixelbits(c); 
+            var bits = char2sixelbits(c);
             for (var [y, bit] in Iterator(bits)) {
               var position = (((y + h * 6) * 97 + n) * char_width + x) * 4;
               if ("1" === bit) {
@@ -287,7 +287,7 @@ DRCSBuffer.definition = {
   "[subscribe('command/alloc-drcs'), pnp]":
   function allocDRCS(drcs)
   {
-    this._map[drcs.dscs] = drcs; 
+    this._map[drcs.dscs] = drcs;
   },
 
 } // class DRCSBuffer
@@ -297,7 +297,7 @@ DRCSBuffer.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new DRCSBuffer(broker);
 }

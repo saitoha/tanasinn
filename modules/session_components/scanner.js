@@ -54,10 +54,10 @@ ScannerConcept.definition = {
 }; // ScannerConcept
 
 
-/** 
+/**
  * @class Scanner
  * @brief Character scanner for UTF-8 characters sequence.
- */ 
+ */
 var Scanner = new Class().extends(Plugin)
                          .requires("ScannerConcept");
 Scanner.definition = {
@@ -82,7 +82,7 @@ Scanner.definition = {
 
   generator: null,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
@@ -90,7 +90,7 @@ Scanner.definition = {
   {
   },
 
-  /** Uninstalls itself. 
+  /** Uninstalls itself.
    */
   "[uninstall]":
   function uninstall()
@@ -104,7 +104,7 @@ Scanner.definition = {
 
   /** Assign new string data. position is reset. */
   "[type('String -> Undefined')] assign":
-  function assign(value) 
+  function assign(value)
   { // re-assign new value.
     if (this._nextvalue) {
       this._value = this._nextvalue;  // TODO: performance improvment.
@@ -117,7 +117,7 @@ Scanner.definition = {
 
   /** Returns single byte code point. */
   "[type('Uint16')] current":
-  function current() 
+  function current()
   {
     var code = this._value.charCodeAt(this._position);
     return code;
@@ -125,7 +125,7 @@ Scanner.definition = {
 
   /** Moves to next position. */
   "[type('Undefined')] moveNext":
-  function moveNext() 
+  function moveNext()
   {
     ++this._position;
     if (this.isEnd) {
@@ -136,31 +136,31 @@ Scanner.definition = {
   },
 
   /** Returns whether scanner position is at end. */
-  get isEnd() 
+  get isEnd()
   {
     return this._position >= this._value.length;
   },
 
   "[type('Undefined')] setAnchor":
-  function setAnchor() 
+  function setAnchor()
   {
     this._anchor = this._position;
   },
 
   "[type('Undefined')] rollback":
-  function rollback() 
+  function rollback()
   {
     this._position = this._anchor;
   },
 
   "[type('Undefined')] setSurplus":
-  function setSurplus() 
+  function setSurplus()
   {
     this._nextvalue = this._value.substr(this._anchor);
   },
 
   "[type('String')] getCurrentToken":
-  function getCurrentToken() 
+  function getCurrentToken()
   {
     return this._value.slice(this._anchor, this._position + 1);
   },
@@ -174,16 +174,16 @@ Scanner.definition = {
     this._anchor = 0;
     this._anchor = 0;
     this._nextvalue = null;
-    
+
     return value;
   },
 
-  _hasNextValue: function _hasNextValue() 
+  _hasNextValue: function _hasNextValue()
   {
     return null !== this._nextvalue;
   },
 
-  _switchToNextValue: function _switchToNextValue() 
+  _switchToNextValue: function _switchToNextValue()
   {
     this._value = this._nextvalue;
     this._nextvalue = null;
@@ -196,7 +196,7 @@ Scanner.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new Scanner(broker);
 }

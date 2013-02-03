@@ -75,7 +75,7 @@ function start_tanasinn(data)
   return true;
 }
 
-/** shutdown tanasinn's process. 
+/** shutdown tanasinn's process.
  *  close all terminal windows and clean up its resources.
  **/
 function terminate_tanasinn()
@@ -87,7 +87,7 @@ function terminate_tanasinn()
 }
 
 /** startup event handler */
-function startup(data, reason) 
+function startup(data, reason)
 {
   try {
     return start_tanasinn(data);
@@ -99,7 +99,7 @@ function startup(data, reason)
 }
 
 /** shutdown event handler */
-function shutdown(data, reason) 
+function shutdown(data, reason)
 {
   var io_service;
 
@@ -114,7 +114,7 @@ function shutdown(data, reason)
 }
 
 /** install event handler */
-function install(data, reason) 
+function install(data, reason)
 {
   try {
   } catch (e) {
@@ -126,7 +126,7 @@ function install(data, reason)
 }
 
 /** uninstall event handler */
-function uninstall(data, reason) 
+function uninstall(data, reason)
 {
   try {
     terminate_tanasinn();

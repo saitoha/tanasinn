@@ -29,7 +29,7 @@
  * @class Utf8MouseMode
  *
  * XT_MSE_UTF - utf8 mouse mode
- * 
+ *
  * Default: off
  *
  * Format
@@ -65,11 +65,11 @@ Utf8MouseMode.definition = {
 
   _mode: false,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
     this._mode = this.default_value;
   },
@@ -77,7 +77,7 @@ Utf8MouseMode.definition = {
   /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
     this._mode = null;
   },
@@ -85,8 +85,8 @@ Utf8MouseMode.definition = {
   /** Enable utf8-style mouse reporting.
    */
   "[subscribe('sequence/decset/1005'), pnp]":
-  function activate() 
-  { 
+  function activate()
+  {
     this._mode = true;
 
     this.sendMessage("event/mouse-tracking-type-changed", "utf8");
@@ -97,10 +97,10 @@ Utf8MouseMode.definition = {
   /** Disable utf8-style mouse reporting.
    */
   "[subscribe('sequence/decrst/1005'), pnp]":
-  function deactivate() 
+  function deactivate()
   {
     this._mode = false;
-           
+
     this.sendMessage("event/mouse-tracking-type-changed", null);
     coUtils.Debug.reportMessage(
       _("DECRST 1005 - Disable utf8-style mouse reporting, was reset."));
@@ -109,7 +109,7 @@ Utf8MouseMode.definition = {
   /** Report mode
    */
   "[subscribe('sequence/decrqm/1005'), pnp]":
-  function report() 
+  function report()
   {
     var mode = this._mode ? 1: 2,
         message = "?1005;" + mode + "$y";
@@ -120,7 +120,7 @@ Utf8MouseMode.definition = {
   /** on hard / soft reset
    */
   "[subscribe('command/{soft | hard}-terminal-reset'), pnp]":
-  function reset(broker) 
+  function reset(broker)
   {
     if (this.default_value) {
       this.activate();
@@ -132,8 +132,8 @@ Utf8MouseMode.definition = {
   /**
    * Serialize snd persist current state.
    */
-  "[subscribe('@command/backup'), type('Object -> Undefined'), pnp]": 
-  function backup(context) 
+  "[subscribe('@command/backup'), type('Object -> Undefined'), pnp]":
+  function backup(context)
   {
     // serialize this plugin object.
     context[this.id] = {
@@ -144,8 +144,8 @@ Utf8MouseMode.definition = {
   /**
    * Deserialize snd restore stored state.
    */
-  "[subscribe('@command/restore'), type('Object -> Undefined'), pnp]": 
-  function restore(context) 
+  "[subscribe('@command/restore'), type('Object -> Undefined'), pnp]":
+  function restore(context)
   {
     var data = context[this.id];
 
@@ -165,7 +165,7 @@ Utf8MouseMode.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new Utf8MouseMode(broker);
 }

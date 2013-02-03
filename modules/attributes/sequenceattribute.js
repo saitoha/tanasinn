@@ -28,11 +28,11 @@
 function apply_attribute(self, broker, key, name, handler, expressions, id)
 {
   expressions.forEach(
-    function(expression) 
+    function(expression)
     {
       broker.subscribe(
-        "get/sequences/" + name, 
-        function getSequences() 
+        "get/sequences/" + name,
+        function getSequences()
         {
           return {
             expression: expression,
@@ -50,7 +50,7 @@ function apply_attribute(self, broker, key, name, handler, expressions, id)
 var SequenceAttribute = new Attribute("sequence");
 SequenceAttribute.definition = {
 
-  /** constructor 
+  /** constructor
    *  @param {EventBroker} broker Parent broker object.
    */
   initialize: function initialize(broker)
@@ -95,7 +95,7 @@ SequenceAttribute.definition = {
 var ProfileAttribute = new Attribute("profile");
 ProfileAttribute.definition = {
 
-  /** constructor 
+  /** constructor
    *  @param {EventBroker} broker Parent broker object.
    */
   initialize: function initialize(broker)

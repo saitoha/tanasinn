@@ -50,7 +50,7 @@ Protection.definition = {
   _screen: null, // reference of screen object
   _cursor_state: null,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
@@ -60,7 +60,7 @@ Protection.definition = {
     this._cursor_state = context["cursorstate"];
   },
 
-  /** Uninstalls itself. 
+  /** Uninstalls itself.
    */
   "[uninstall]":
   function uninstall()
@@ -73,7 +73,7 @@ Protection.definition = {
    *
    * DECSCA - Select Character Protection Attribute
    *
-   * DECSCA defines the characters that come after it as erasable or not 
+   * DECSCA defines the characters that come after it as erasable or not
    * erasable from the screen. The selective erase control functions (DECSED
    * and DECSEL) can only erase characters defined as erasable.
    *
@@ -87,7 +87,7 @@ Protection.definition = {
    * Parameters
    *
    * Ps
-   * defines all characters that follow the DECSCA function as erasable or not 
+   * defines all characters that follow the DECSCA function as erasable or not
    * erasable.
    *
    * Ps   Meaning
@@ -97,12 +97,12 @@ Protection.definition = {
    *
    * Note on DECSCA
    *
-   * DECSCA does not effect visual character attributes set by the select 
+   * DECSCA does not effect visual character attributes set by the select
    * graphic rendition (SGR) function.
    *
    */
   "[profile('vt100'), sequence('CSI Ps \" q')]":
-  function DECSCA(n) 
+  function DECSCA(n)
   { // Device Status Report
 
     var attr = this._cursor_state.attr;
@@ -132,7 +132,7 @@ Protection.definition = {
   },
 
   "[subscribe('sequence/decrqss/decsca'), pnp]":
-  function onRequestStatus(data) 
+  function onRequestStatus(data)
   { // Device Status Report
     var attr = this._cursor_state.attr,
         param,
@@ -154,8 +154,8 @@ Protection.definition = {
    * DECSEL - Selective Erase in Line
    *
    * This control function erases some or all of the erasable characters in
-   * a single line of text. DECSEL erases only those characters defined as 
-   * erasable by the DECSCA control function. DECSEL works inside or outside 
+   * a single line of text. DECSEL erases only those characters defined as
+   * erasable by the DECSCA control function. DECSEL works inside or outside
    * the scrolling margins.
    *
    * Available in: VT Level 4 mode only
@@ -177,10 +177,10 @@ Protection.definition = {
    *
    */
   "[profile('vt100'), sequence('CSI ? Ps K')]":
-  function DECSEL(n) 
+  function DECSEL(n)
   { // Selective Erase Line
     var screen = this._screen;
-   
+
     switch (n || 0) {
 
       case 0: // erase to right
@@ -206,9 +206,9 @@ Protection.definition = {
    *
    * DECSED - Selective Erase in Display
    *
-   * This control function erases some or all of the erasable characters in 
-   * the display. DECSED can only erase characters defined as erasable by the 
-   * DECSCA control function. DECSED works inside or outside the scrolling 
+   * This control function erases some or all of the erasable characters in
+   * the display. DECSED can only erase characters defined as erasable by the
+   * DECSCA control function. DECSED works inside or outside the scrolling
    * margins.
    *
    * Available in: VT Level 4 mode only
@@ -230,10 +230,10 @@ Protection.definition = {
    *
    */
   "[profile('vt100'), sequence('CSI ? Ps J')]":
-  function DECSED(n) 
+  function DECSED(n)
   { // Selective Erase Display
     var screen = this._screen;
-   
+
     switch (n || 0) {
 
       case 0:   // erase below
@@ -247,7 +247,7 @@ Protection.definition = {
       case 2: // erase all
         screen.selectiveEraseScreenAll();
         break;
-      
+
       default:
         coUtils.Debug.reportWarning(
           _("%s sequence [%s] was ignored."),
@@ -259,12 +259,12 @@ Protection.definition = {
   /**
    * DECSERA - Selective Erase Rectangular Area
    *
-   * This control function erases all erasable characters from a specified 
-   * rectangular area in page memory. The select character protection 
-   * attribute (DECSCA) control function defines whether or not DECSERA can 
+   * This control function erases all erasable characters from a specified
+   * rectangular area in page memory. The select character protection
+   * attribute (DECSCA) control function defines whether or not DECSERA can
    * erase characters.
    *
-   * When an area is erased, DECSERA replaces character positions with the 
+   * When an area is erased, DECSERA replaces character positions with the
    * space character (2/0). DECSERA does not change:
    *
    * - Visual attributes set by the select graphic rendition (SGR) function
@@ -302,13 +302,13 @@ Protection.definition = {
    * The coordinates of the rectangular area are affected by the setting of
    * origin mode (DECOM).
    * DECSERA is not affected by the page margins.
-   * If the value of Pt, Pl, Pb, or Pr exceeds the width or height of the 
+   * If the value of Pt, Pl, Pb, or Pr exceeds the width or height of the
    * active page, then the value is treated as the width or height of that page.
    * DECSERA does not change the active cursor position.
    *
    */
   "[profile('vt100'), sequence('CSI Ps $ {')]":
-  function DECSERA(n1, n2, n3, n4) 
+  function DECSERA(n1, n2, n3, n4)
   { // Selective Erase Rectangle Area
     var screen = this._screen,
         top = (n1 || 1) - 1,
@@ -339,7 +339,7 @@ Protection.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new Protection(broker);
 }

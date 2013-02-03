@@ -26,14 +26,14 @@
 
 /**
  *  @class CommandlineIme
- *  
- *  This plugin makes it enable to supports IME mode.
- *  It watches the value of main inputbox element with polling. 
- *  (NOTE that Mozilla's inputbox at IME editing mode does not fires ANY DOM 
- *  events!)
- *  object. and shows a line on editing as an watermark/overlay object. 
  *
- */ 
+ *  This plugin makes it enable to supports IME mode.
+ *  It watches the value of main inputbox element with polling.
+ *  (NOTE that Mozilla's inputbox at IME editing mode does not fires ANY DOM
+ *  events!)
+ *  object. and shows a line on editing as an watermark/overlay object.
+ *
+ */
 var CommandlineIme = new Class().extends(Plugin)
                                 .depends("commandline");
 CommandlineIme.definition = {
@@ -57,11 +57,11 @@ CommandlineIme.definition = {
   _ime_input_flag: false,
   _commandline: null,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
     var version_comparator = coUtils.Services.versionComparator,
         focused_element = this.request("get/root-element")
@@ -87,23 +87,23 @@ CommandlineIme.definition = {
     if (focused_element && focused_element.isEqualNode(textbox)) {
       this.startPolling();
     }
-      
+
   }, // install
 
-  /** Uninstall plugin 
+  /** Uninstall plugin
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
     var textbox = this._commandline.getInputField();
 
-    this.endPolling(); // stops polling timer. 
+    this.endPolling(); // stops polling timer.
 
     if (null !== textbox) {
       textbox.style.width = "";
       textbox.style.imeMode = "disabled";
-      textbox.style.border = "";  
-      textbox.style.position = ""; 
+      textbox.style.border = "";
+      textbox.style.position = "";
     }
 
     // disables session event handlers.
@@ -113,15 +113,15 @@ CommandlineIme.definition = {
     this._commandline = null;
   },
 
-  "[subscribe('command/input-text'), pnp]": 
-  function oninput(value) 
+  "[subscribe('command/input-text'), pnp]":
+  function oninput(value)
   {
     this._compositionEnd(); // closes IME input session.
   },
 
   /** Starts the polling timer. */
   "[subscribe('event/got-focus')]":
-  function startPolling() 
+  function startPolling()
   {
     if (this._timer) {
       this._timer.cancel();
@@ -133,39 +133,39 @@ CommandlineIme.definition = {
 
   /** Stops the polling timer. */
   "[subscribe('event/lost-focus')]":
-  function endPolling() 
+  function endPolling()
   {
     if (this._timer) {
       this._timer.cancel();
       this._timer = null;
     }
   },
- 
-  /** input event handler. 
+
+  /** input event handler.
    *  @param {Event} event A event object.
    *  @notify event/input Notifies that a input event is occured.
    */
   "[listen('input', '#tanasinn_default_input')]":
-  function oninput(event) 
+  function oninput(event)
   {
     this._commandline.commit();
     this._compositionEnd();
   },
- 
-  /** compositionend event handler. 
+
+  /** compositionend event handler.
    *  @{Event} event A event object.
    */
   "[listen('compositionupdate', '#tanasinn_commandline'), pnp]":
-  function oncompositionupdate(event) 
+  function oncompositionupdate(event)
   {
     this.onpoll();
   },
- 
-  /** compositionstart event handler. 
+
+  /** compositionstart event handler.
    *  @{Event} event A event object.
    */
   "[listen('compositionstart', '#tanasinn_commandline'), pnp]":
-  function oncompositionstart(event) 
+  function oncompositionstart(event)
   {
     var version_comparator = coUtils.Services.versionComparator;
 
@@ -173,12 +173,12 @@ CommandlineIme.definition = {
       this.oninput.enabled = false;
     }
   },
-  
-  /** compositionend event handler. 
+
+  /** compositionend event handler.
    *  @{Event} event A event object.
    */
   "[listen('compositionend', '#tanasinn_commandline'), pnp]":
-  function oncompositionend(event) 
+  function oncompositionend(event)
   {
     var version_comparator = coUtils.Services.versionComparator;
 
@@ -189,9 +189,9 @@ CommandlineIme.definition = {
   },
 
   /** A interval timer handler function that observes the textbox content
-   *  value and switches IME enabled/disabled state. 
-   */  
-  onpoll: function onpoll() 
+   *  value and switches IME enabled/disabled state.
+   */
+  onpoll: function onpoll()
   {
     var text = this._commandline.getInputField().value;
 
@@ -207,7 +207,7 @@ CommandlineIme.definition = {
   },
 
   /** Shows textbox element. */
-  _compositionStart: function _compositionStart() 
+  _compositionStart: function _compositionStart()
   {
     var commandline = this._commandline,
         textbox = commandline.getInputField(),
@@ -220,7 +220,7 @@ CommandlineIme.definition = {
     this.sendMessage("event/ime-composition-start", this);
   },
 
-  _compositionEnd: function _compositionEnd() 
+  _compositionEnd: function _compositionEnd()
   {
     var commandline = this._commandline,
         textbox = this._commandline.getInputField();
@@ -237,7 +237,7 @@ CommandlineIme.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new CommandlineIme(broker);
 }

@@ -29,14 +29,14 @@
  * @class SixelScrollingMode
  *
  * DECSDM - Sixel Scrolling Mode
- * 
+ *
  * Sixel Scrolling
  *
  * When sixel scrolling is enabled, the sixel image begins at the top left of
- * the active text position. A sixel image will scroll the display when the 
- * image reaches the bottom margin of the display (the image may also scroll 
- * off the top of the display). A graphics new line character (–) is sent 
- * immediately after the sixel dump, and the text cursor is set at the same 
+ * the active text position. A sixel image will scroll the display when the
+ * image reaches the bottom margin of the display (the image may also scroll
+ * off the top of the display). A graphics new line character (–) is sent
+ * immediately after the sixel dump, and the text cursor is set at the same
  * position as the sixel cursor upon exiting sixel mode.
  * With sixel scrolling disabled, the sixel image begins at the top left of
  * the display. When the image reaches the bottom margin, the display does not
@@ -77,11 +77,11 @@ SixelScrollingMode.definition = {
 
   _mode: null,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
     this._mode = this.default_value;
   },
@@ -89,7 +89,7 @@ SixelScrollingMode.definition = {
   /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
     this._mode = null;
   },
@@ -97,7 +97,7 @@ SixelScrollingMode.definition = {
   /** Sixel Display Mode (DECSDM)
    */
   "[subscribe('sequence/decset/80'), pnp]":
-  function activate() 
+  function activate()
   {
     this._mode = true;
 
@@ -108,7 +108,7 @@ SixelScrollingMode.definition = {
   /** Sixel Scrolling Mode (DECSDM)
    */
   "[subscribe('sequence/decrst/80'), pnp]":
-  function deactivate() 
+  function deactivate()
   {
     this._mode = false;
 
@@ -119,7 +119,7 @@ SixelScrollingMode.definition = {
   /** Report mode
    */
   "[subscribe('sequence/decrqm/80'), pnp]":
-  function report() 
+  function report()
   {
     var mode = this._mode ? 1: 2,
         message = "?80;" + mode + "$y";
@@ -130,7 +130,7 @@ SixelScrollingMode.definition = {
   /** on hard / soft reset
    */
   "[subscribe('command/{soft | hard}-terminal-reset'), pnp]":
-  function reset(broker) 
+  function reset(broker)
   {
     if (this.default_value) {
       this.activate();
@@ -142,8 +142,8 @@ SixelScrollingMode.definition = {
   /**
    * Serialize snd persist current state.
    */
-  "[subscribe('@command/backup'), type('Object -> Undefined'), pnp]": 
-  function backup(context) 
+  "[subscribe('@command/backup'), type('Object -> Undefined'), pnp]":
+  function backup(context)
   {
     // serialize this plugin object.
     context[this.id] = {
@@ -154,8 +154,8 @@ SixelScrollingMode.definition = {
   /**
    * Deserialize and restore stored state.
    */
-  "[subscribe('@command/restore'), type('Object -> Undefined'), pnp]": 
-  function restore(context) 
+  "[subscribe('@command/restore'), type('Object -> Undefined'), pnp]":
+  function restore(context)
   {
     var data = context[this.id];
 
@@ -174,7 +174,7 @@ SixelScrollingMode.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new SixelScrollingMode(broker);
 }

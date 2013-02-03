@@ -26,5 +26,3 @@
 
 var coUtils = coUtils || { };
 
-
-

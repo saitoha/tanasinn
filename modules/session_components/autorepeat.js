@@ -30,9 +30,9 @@
  *
  * DECARM - Autorepeat Mode
  *
- * This control function determines whether or not keys automatically repeat 
- * their character when held down. If DECARM is set, then most keys you press 
- * for more than 0.5 seconds send a character repeatedly until you release 
+ * This control function determines whether or not keys automatically repeat
+ * their character when held down. If DECARM is set, then most keys you press
+ * for more than 0.5 seconds send a character repeatedly until you release
  * the key.
  *
  * Default: Repeat (set)
@@ -40,13 +40,13 @@
  * Format
  *
  * CSI    ?      8    h
- * 9/11   3/15   3/8  6/8  
+ * 9/11   3/15   3/8  6/8
  *
  * Set: keys autorepeat when pressed for more than 0.5 seconds.
  *
  *
  * CSI    ?      8    l
- * 9/11   3/15   3/8  6/12   
+ * 9/11   3/15   3/8  6/12
  *
  * Reset: keys do not autorepeat.
  *
@@ -57,7 +57,7 @@
  *   F2 (Print)
  *   F3 (Set-Up)
  *   F4 (Session)
- *   F5 (Break) 
+ *   F5 (Break)
  *   Compose Character
  *   Shift
  *   Alt Function
@@ -99,11 +99,11 @@ AutoRepeat.definition = {
 
   _mode: null,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
     this._mode = this.default_value;
     this.reset();
@@ -112,7 +112,7 @@ AutoRepeat.definition = {
   /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
     this._mode = null;
   },
@@ -120,8 +120,8 @@ AutoRepeat.definition = {
   /** Activate auto-repeat feature.
    */
   "[subscribe('sequence/decset/8'), pnp]":
-  function activate() 
-  { 
+  function activate()
+  {
     this._mode = true;
 
     // Auto-repeat Keys (DECARM)
@@ -134,7 +134,7 @@ AutoRepeat.definition = {
   /** Deactivate auto-repeat feature
    */
   "[subscribe('sequence/decrst/8'), pnp]":
-  function deactivate() 
+  function deactivate()
   {
     this._mode = false;
 
@@ -148,7 +148,7 @@ AutoRepeat.definition = {
   /** Report mode
    */
   "[subscribe('sequence/decrqm/8'), pnp]":
-  function report() 
+  function report()
   {
     var mode = this._mode ? 1: 2,
         message = "?8;" + mode + "$y";
@@ -159,7 +159,7 @@ AutoRepeat.definition = {
   /** handle terminal reset event.
    */
   "[subscribe('command/{soft | hard}-terminal-reset'), pnp]":
-  function reset() 
+  function reset()
   {
     if (this.default_value) {
       this.activate();
@@ -171,8 +171,8 @@ AutoRepeat.definition = {
   /**
    * Serialize snd persist current state.
    */
-  "[subscribe('@command/backup'), type('Object -> Undefined'), pnp]": 
-  function backup(context) 
+  "[subscribe('@command/backup'), type('Object -> Undefined'), pnp]":
+  function backup(context)
   {
     // serialize this plugin object.
     context[this.id] = {
@@ -183,8 +183,8 @@ AutoRepeat.definition = {
   /**
    * Deserialize snd restore stored state.
    */
-  "[subscribe('@command/restore'), type('Object -> Undefined'), pnp]": 
-  function restore(context) 
+  "[subscribe('@command/restore'), type('Object -> Undefined'), pnp]":
+  function restore(context)
   {
     var data;
 
@@ -205,7 +205,7 @@ AutoRepeat.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new AutoRepeat(broker);
 }

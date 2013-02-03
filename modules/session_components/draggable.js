@@ -45,23 +45,23 @@ DragMove.definition = {
 
   "[persistable] enabled_when_startup": true,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
   },
 
   /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
   },
 
   "[listen('dragstart', '#tanasinn_chrome'), pnp]":
-  function ondragstart(dom_event) 
+  function ondragstart(dom_event)
   {
     var root_element,
         offsetY,
@@ -89,7 +89,7 @@ DragMove.definition = {
       return;
     }
 
-    offsetX = dom_event.screenX - root_element.boxObject.x; 
+    offsetX = dom_event.screenX - root_element.boxObject.x;
 
     dom_event.stopPropagation();
 
@@ -100,11 +100,11 @@ DragMove.definition = {
     this.sendMessage(
       "command/add-domlistener",
       {
-        target: dom_document, 
-        type: "mousemove", 
-        id: "_DRAGGING", 
+        target: dom_document,
+        type: "mousemove",
+        id: "_DRAGGING",
         context: this,
-        handler: function onmouseup(event) 
+        handler: function onmouseup(event)
         {
           var left, top;
 
@@ -116,32 +116,32 @@ DragMove.definition = {
     this.sendMessage(
       "command/add-domlistener",
       {
-        target: dom_document, 
-        type: "mouseup", 
+        target: dom_document,
+        type: "mouseup",
         id: "_DRAGGING",
         context: this,
-        handler: function onmouseup(event) 
+        handler: function onmouseup(event)
         {
           // uninstall listeners.
           this.sendMessage("command/remove-domlistener", "_DRAGGING");
           this.sendMessage("command/set-opacity", 1.00);
-        }, 
+        },
       });
     this.sendMessage(
       "command/add-domlistener",
       {
-        target: dom_document, 
-        type: "keyup", 
+        target: dom_document,
+        type: "keyup",
         id: "_DRAGGING",
         context: this,
-        handler: function onkeyup(event) 
+        handler: function onkeyup(event)
         {
           if (!event.shiftKey) {
             // uninstall listeners.
             this.sendMessage("command/remove-domlistener", "_DRAGGING");
             this.sendMessage("command/set-opacity", 1.00);
           }
-        }, 
+        },
       });
 
     dom_event = null;
@@ -155,7 +155,7 @@ DragMove.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new DragMove(broker);
 }

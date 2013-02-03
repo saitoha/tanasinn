@@ -36,8 +36,8 @@ EncoderInfo.definition = {
     this._broker = broker;
 
     broker.subscribe(
-      "get/encoders", 
-      function getEncoders() 
+      "get/encoders",
+      function getEncoders()
       {
         return {
           charset: charset,
@@ -78,11 +78,11 @@ MultiEncoder.definition = {
   _converter: null,
   _encoders: null,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
     var converter_manager,
         encoder_list,
@@ -122,10 +122,10 @@ MultiEncoder.definition = {
     }
   },
 
-  /** Uninstalls itself. 
+  /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
   },
 
@@ -137,7 +137,7 @@ MultiEncoder.definition = {
 
   encode: function encode(data)
   {
-    return this._converter.ConvertFromUnicode(data); 
+    return this._converter.ConvertFromUnicode(data);
   },
 };
 
@@ -146,7 +146,7 @@ MultiEncoder.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new MultiEncoder(broker);
 }

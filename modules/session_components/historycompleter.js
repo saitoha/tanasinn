@@ -46,11 +46,11 @@ HistoryCompleter.definition = {
 
   _completion_component: null,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
     this._completion_component = coUtils.Components.createHistoryCompleter();
   },
@@ -58,7 +58,7 @@ HistoryCompleter.definition = {
   /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
     this._completion_component = null;
   },
@@ -74,8 +74,8 @@ HistoryCompleter.definition = {
   function complete(context)
   {
     this._completion_component.startSearch(context.source, "", null, {
-        onSearchResult: function onSearchResult(search, result) 
-        { 
+        onSearchResult: function onSearchResult(search, result)
+        {
           try {
             const RESULT_SUCCESS = Components
               .interfaces.nsIAutoCompleteResult.RESULT_SUCCESS;
@@ -83,7 +83,7 @@ HistoryCompleter.definition = {
               this.sendMessage("event/answer-completion", result);
             } else {
               coUtils.Debug.reportWarning(
-                _("Search component returns following result: %d"), 
+                _("Search component returns following result: %d"),
                 result.searchResult);
             }
           } catch(e) {

@@ -92,7 +92,7 @@ PluginViewer.definition = {
           {
             this.setAttribute("checked", module.getEnabled());
             self._broker.subscribe("event/dependencies-updated",
-              function() 
+              function()
               {
                 var depends,
                     depended,
@@ -107,14 +107,14 @@ PluginViewer.definition = {
                 depends_on = Object.keys(depends).map(function(key) depends[key]);
                 depended_by = Object.keys(depended).map(function(key) depended[key]);
 
-                disabled = module.getEnabled() ? 
+                disabled = module.getEnabled() ?
                   depended_by.some(function(module) { return module.getEnabled(); }):
                   depends_on.some(function(module) { return !module.getEnabled(); });
 
                 this.setAttribute("disabled", disabled);
               }, this, this.id);
           },
-        disabled: module.getEnabled() ? 
+        disabled: module.getEnabled() ?
           depended_by.some(function(module) { return module.getEnabled(); }):
           depends_on.some(function(module) { return !module.getEnabled(); }),
 
@@ -123,19 +123,19 @@ PluginViewer.definition = {
           handler: function(event) self._setState(module, this)
         }
       },
-      { 
-        tagName: "label", 
+      {
+        tagName: "label",
         //className: "text-link",
         style: "font-size: 1.4em; font-weight: bold;",
         value: info.name
       },
-      { 
-        tagName: "label", 
+      {
+        tagName: "label",
         style: "font-size: 1.4em; font-weight: bold;",
         value: info.version
       },
-      { 
-        tagName: "vbox", 
+      {
+        tagName: "vbox",
         childNodes: [
           {
             tagName: "label",
@@ -172,21 +172,21 @@ PluginViewer.definition = {
    *  @param {Broker} broker A Broker object.
    */
   "[uninstall]":
-  function uninstall(broker) 
+  function uninstall(broker)
   {
     this.onPanelSelected.enabled = false;
     this.sendMessage("command/remove-panel", this.id);
   },
 
-  "[subscribe('@get/panel-items'), pnp]": 
-  function onPanelItemRequested(panel) 
+  "[subscribe('@get/panel-items'), pnp]":
+  function onPanelItemRequested(panel)
   {
     this._panel = panel.alloc(this.id, _("Plugins"));
     this.onPanelSelected.enabled = true;
   },
 
   "[subscribe('panel-selected/plugin_viewer')]":
-  function onPanelSelected(name) 
+  function onPanelSelected(name)
   {
     var modules = this.sendMessage("get/components");
 
@@ -209,12 +209,12 @@ PluginViewer.definition = {
     return true;
   },
 
-  firstUpdate: function firstUpdate()    
+  firstUpdate: function firstUpdate()
   {
     var depends_on = {},
         depended_by = {};
 
-    this._modules.forEach(function(module) 
+    this._modules.forEach(function(module)
     {
       depends_on[module.id] = depends_on[module.id] || {};
       depended_by[module.id] = depended_by[module.id] || {};
@@ -228,7 +228,7 @@ PluginViewer.definition = {
             {
               return ("info" in dependency) && dependency.getInfo;
             }).forEach(
-              function(dependency) 
+              function(dependency)
               {
                 depends_on[module.id][dependency.id] = dependency;
                 depended_by[dependency.id] = depended_by[dependency.id] || {};
@@ -243,12 +243,12 @@ PluginViewer.definition = {
     this.request("command/construct-chrome", this.getTemplate());
   },
 
-  update: function update()    
+  update: function update()
   {
     var depends_on = {},
         depended_by = {};
 
-    this._modules.forEach(function(module) 
+    this._modules.forEach(function(module)
     {
       depends_on[module.id] = depends_on[module.id] || {};
       depended_by[module.id] = depended_by[module.id] || {};
@@ -262,7 +262,7 @@ PluginViewer.definition = {
             {
               return ("info" in dependency) && dependency.getInfo;
             }).forEach(
-              function(dependency) 
+              function(dependency)
               {
                 depends_on[module.id][dependency.id] = dependency;
                 depended_by[dependency.id] = depended_by[dependency.id] || {};
@@ -274,7 +274,7 @@ PluginViewer.definition = {
   },
 
   /** Fired when checkbox state is changed. */
-  _setState: function _setState(plugin, checkbox) 
+  _setState: function _setState(plugin, checkbox)
   {
     var enabled = !checkbox.checked,
         message;
@@ -283,8 +283,8 @@ PluginViewer.definition = {
       checkbox.setAttribute("checked", enabled);
       plugin.enabled = enabled;
       message = coUtils.Text.format(
-        _("Succeeded to %s module %s."), 
-        plugin.enabled ? _("install"): _("uninstall"), 
+        _("Succeeded to %s module %s."),
+        plugin.enabled ? _("install"): _("uninstall"),
         plugin.getInfo().name);
       this.update();
 
@@ -294,7 +294,7 @@ PluginViewer.definition = {
     } catch (e) {
       checkbox.checked = !enabled;
       message = coUtils.Text.format(
-        _("Failed to %s module %s."), 
+        _("Failed to %s module %s."),
         enabled ? _("install"): _("uninstall"),
         plugin.getInfo().name);
       this.sendMessage("command/report-status-message", message);
@@ -322,18 +322,18 @@ PluginManagementCommands.definition = {
 
   "[persistable] enabled_when_startup": true,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
   },
 
   /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
   },
 
@@ -349,7 +349,7 @@ PluginManagementCommands.definition = {
     return this._impl(arguments_string, /* is_enable */ true);
   },
 
-  _impl: function _impl(arguments_string, is_enable) 
+  _impl: function _impl(arguments_string, is_enable)
   {
     var match = arguments_string.match(/^(\s*)([$_\-@0-9a-zA-Z\.]+)(\s*)$/),
         modules,
@@ -387,7 +387,7 @@ PluginManagementCommands.definition = {
         try {
           module.enabled = is_enable;
         } catch(e) {
-          coUtils.Debug.reportError(e); 
+          coUtils.Debug.reportError(e);
         }
       });
 

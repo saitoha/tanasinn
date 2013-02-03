@@ -44,7 +44,7 @@ coUtils.Logging = {
         file = coUtils.Components.createLocalFile(path),
         ostream,
         converter;
-    
+
     // check if target log file exists.
     if (file.exists()) {
       if (!file.isFile) { // check if target is file node.
@@ -59,7 +59,7 @@ coUtils.Logging = {
       }
     } else { // if target is not exists.
       // create base directories recursively (= mkdir -p).
-      void function make_directory(current) 
+      void function make_directory(current)
       {
         var parent = current.parent;
         if (!parent.exists()) {
@@ -68,36 +68,36 @@ coUtils.Logging = {
         }
       } (file);
     }
-   
+
     // create output stream.
     ostream = coUtils.Components.createFileOutputStream();
-      
+
     // write (0x02), appending (0x10), "rw"
     ostream.init(
       file,
       0x02 /* PR_WRONLY */| 0x08 /* PR_CREATE_FILE */| 0x10 /* PR_APPEND */,
-      -1, 0);   
-    
-    converter = coUtils.Components.createConverterOutputStream();
-    converter.init(ostream, "UTF-8", 0, 0);  
+      -1, 0);
 
-    this.logMessage("");  
-    this.logMessage("---------------------------------------");  
-    this.logMessage("-----" + new Date().toString() + "-----");  
-    this.logMessage("---------------------------------------");  
+    converter = coUtils.Components.createConverterOutputStream();
+    converter.init(ostream, "UTF-8", 0, 0);
+
+    this.logMessage("");
+    this.logMessage("---------------------------------------");
+    this.logMessage("-----" + new Date().toString() + "-----");
+    this.logMessage("---------------------------------------");
 
     this._converter = converter;
   },
 
-  uninitialize: function uninitialize() 
+  uninitialize: function uninitialize()
   {
-    this._converter.close(); // closes the output stream.  
+    this._converter.close(); // closes the output stream.
   },
 
   logMessage: function logMessage(message)
   {
     try {
-      this._converter.writeString(message + "\n");  
+      this._converter.writeString(message + "\n");
     } catch (e) {
       /* Ignore any errors to prevent recursive-call. */
     }
@@ -111,9 +111,9 @@ coUtils.Debug = {
 
   /**
    * Makes exception object.
-   * @param message 
+   * @param message
    */
-  Exception: function Exception(message) 
+  Exception: function Exception(message)
   {
     var stack,
         flag;
@@ -128,14 +128,14 @@ coUtils.Debug = {
 
   /**
    * Report error to Console service.
-   * @param {String} source 
+   * @param {String} source
    */
-  reportError: function reportError(source /* arg1, arg2, arg3, ... */) 
+  reportError: function reportError(source /* arg1, arg2, arg3, ... */)
   {
     var stack,
         flag;
 
-    // check if printf style arguments is given. 
+    // check if printf style arguments is given.
     if (arguments.length > 1 && "string" === typeof source) {
       source = coUtils.Text.format.apply(coUtils.Text, arguments);
     }
@@ -146,9 +146,9 @@ coUtils.Debug = {
 
   /**
    * Report warning to Console service.
-   * @param {String} source 
+   * @param {String} source
    */
-  reportWarning: function reportWarning(source /* arg1, arg2, arg3, ... */) 
+  reportWarning: function reportWarning(source /* arg1, arg2, arg3, ... */)
   {
     var stack,
         flag;
@@ -163,9 +163,9 @@ coUtils.Debug = {
 
   /**
    * Report warning to Console service.
-   * @param source 
+   * @param source
    */
-  reportMessage: function reportMessage(source) 
+  reportMessage: function reportMessage(source)
   {
     var stack,
         escaped_source,
@@ -182,7 +182,7 @@ coUtils.Debug = {
     name = stack.name && stack.name.replace(/"/g, "\u201d");
     message = [
       "[",
-        "JavaScript Message: \"tanasinn: ", escaped_source, "\" ", 
+        "JavaScript Message: \"tanasinn: ", escaped_source, "\" ",
         "{",
           "file: \"", file, "\" ",
           "line: ", stack.lineNumber, " ",
@@ -195,7 +195,7 @@ coUtils.Debug = {
     coUtils.Services.consoleService.logStringMessage(message);
   },
 
-  reportException: function reportException(source, stack, flag) 
+  reportException: function reportException(source, stack, flag)
   {
     var error,
         console_service = coUtils.Services.consoleService;
@@ -207,13 +207,13 @@ coUtils.Debug = {
       source = source.toString();
     }
 
-    if (source && undefined !== source.queryInterface) 
+    if (source && undefined !== source.queryInterface)
     {
       if (null !== source.QueryInterface(
-          Components.interfaces.nsIConsoleMessage)) 
+          Components.interfaces.nsIConsoleMessage))
       {
         if (null !== source.QueryInterface(
-            Components.interfaces.nsIScriptError)) 
+            Components.interfaces.nsIScriptError))
         {
           source.flags |= flag
         }
@@ -235,11 +235,11 @@ coUtils.Debug = {
   /**
    * Makes an exception object from given information.
    */
-  makeException: function makeException(source, stack, flag) 
+  makeException: function makeException(source, stack, flag)
   {
     var exception = coUtils.Components.createScriptError(),
         is_error_object = !!source.fileName,
-        message = "tanasinn: " 
+        message = "tanasinn: "
                 + (is_error_object ? source.message: source.toString())
                     .replace(/"/g, "\u201d"),
         file = (is_error_object ? source.fileName: stack.filename)

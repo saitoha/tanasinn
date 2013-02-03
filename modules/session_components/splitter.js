@@ -24,7 +24,7 @@
 
 "use strict";
 
-/** 
+/**
  * @class Splitter
  */
 var Splitter = new Class().extends(Plugin)
@@ -58,7 +58,7 @@ Splitter.definition = {
         background: "transparent",
       },
       listener: {
-        type: "dragstart", 
+        type: "dragstart",
         context: this,
         handler: this.ondragstart,
       }
@@ -74,11 +74,11 @@ Splitter.definition = {
   _initial_height: null,
   _initial_y: null,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
     var bottompanel = context["bottompanel"],
         result = this.request("command/construct-chrome", this.getTemplate()),
@@ -97,7 +97,7 @@ Splitter.definition = {
   /** Unnstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
     // remove splitter element
     if (null !== this._splitter) {
@@ -121,13 +121,13 @@ Splitter.definition = {
    *   +---------------+              +---------------+
    *   |               |              | center screen |
    *   | center screen |              |               |
-   *   |               | splitter  -> +---------------+     
+   *   |               | splitter  -> +---------------+
    *   +---------------+ can slids    |               |     total
    *   |               | vertically.  | bottom panel  |     height
    *   | bottom panel  |              |               |     is not
    *   +---------------+              +---------------+ <-- changed.
    */
-  ondragstart: function ondragstart(event) 
+  ondragstart: function ondragstart(event)
   {
     var dom = {
           document: this.request("get/root-element").ownerDocument,
@@ -152,7 +152,7 @@ Splitter.definition = {
   },
 
   "[listen('mousemove')]":
-  function onmousemove(event) 
+  function onmousemove(event)
   {
     var diff = event.screenY - this._initial_y,
         line_height = this._renderer.line_height,
@@ -174,7 +174,7 @@ Splitter.definition = {
   },
 
   "[listen('mouseup')]":
-  function onmouseup(event) 
+  function onmouseup(event)
   {
     event.explicitOriginalTarget.ownerDocument.documentElement.style.cursor = "",
 
@@ -195,7 +195,7 @@ Splitter.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new Splitter(broker);
 }

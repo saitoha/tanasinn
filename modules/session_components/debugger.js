@@ -24,9 +24,9 @@
 
 "use strict";
 
-/** 
+/**
  * @class ForwardInputIterator
- */ 
+ */
 var ForwardInputIterator = new Class();
 ForwardInputIterator.definition = {
 
@@ -34,26 +34,26 @@ ForwardInputIterator.definition = {
   _position: 0,
 
   /** Assign new string data. position is reset. */
-  initialize: function initialize(value) 
+  initialize: function initialize(value)
   {
     this._value = value;
     this._position = 0;
   },
 
   /** Returns single byte code point. */
-  current: function current() 
+  current: function current()
   {
     return this._value.charCodeAt(this._position);
   },
 
   /** Moves to next position. */
-  moveNext: function moveNext() 
+  moveNext: function moveNext()
   {
     ++this._position;
   },
 
   /** Returns whether scanner position is at end. */
-  get isEnd() 
+  get isEnd()
   {
     return this._position >= this._value.length;
   },
@@ -76,7 +76,7 @@ Debugger.definition = {
     return {
       name: _("Debugger"),
       version: "0.1",
-      description: _("Enables you to run terminal emurator step-by-step and ", 
+      description: _("Enables you to run terminal emurator step-by-step and ",
                      "observe input/output character sequence.")
     };
   },
@@ -157,17 +157,17 @@ Debugger.definition = {
     };
   },
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
-  "[install]": 
-  function install(context) 
+  "[install]":
+  function install(context)
   {
     this._queue = [];
     this._decoder = context["decoder"];
   },
 
-  /** Uninstalls itself 
+  /** Uninstalls itself
    */
   "[uninstall]":
   function uninstall()
@@ -185,8 +185,8 @@ Debugger.definition = {
     this.sendMessage("command/remove-panel", this.id);
   },
 
-  "[subscribe('@get/panel-items'), pnp]": 
-  function onPanelItemRequested(panel) 
+  "[subscribe('@get/panel-items'), pnp]":
+  function onPanelItemRequested(panel)
   {
     var template = this.getTemplate(),
         item = panel.alloc(this.id, _("Debugger")),
@@ -206,7 +206,7 @@ Debugger.definition = {
     return item;
   },
 
-  doAttach: function doAttach() 
+  doAttach: function doAttach()
   {
     try {
       if (this._checkbox_attach.checked) {
@@ -219,7 +219,7 @@ Debugger.definition = {
     }
   },
 
-  "[command('activatedebugger/eg'), _('Attach the debugger and trace incoming sequences.'), pnp]": 
+  "[command('activatedebugger/eg'), _('Attach the debugger and trace incoming sequences.'), pnp]":
   function enableDebugger()
   {
     if (!this._trace_box) {
@@ -234,7 +234,7 @@ Debugger.definition = {
     if (this._timer) {
       this._timer.cancel();
     }
-    this._timer = coUtils.Timer.setInterval(function() 
+    this._timer = coUtils.Timer.setInterval(function()
     {
       var updated = false,      // update flag
           queue = this._queue,  // queue object
@@ -258,8 +258,8 @@ Debugger.definition = {
       }
     }, this.update_interval, this);
   },
- 
-  "[command('deactivatedebugger/dd'), _('Detach the debugger.'), pnp]": 
+
+  "[command('deactivatedebugger/dd'), _('Detach the debugger.'), pnp]":
   function disableDebugger()
   {
     if (!this._trace_box) {
@@ -281,8 +281,8 @@ Debugger.definition = {
     this.sendMessage("command/debugger-resume");
   },
 
-  "[command('breakdebugger'), _('Break debugger.'), pnp]": 
-  function doBreak() 
+  "[command('breakdebugger'), _('Break debugger.'), pnp]":
+  function doBreak()
   {
     if (!this._trace_box) {
       this.select();
@@ -299,8 +299,8 @@ Debugger.definition = {
     this.sendMessage("command/debugger-pause");
   },
 
-  "[command('resumedebugger'), _('Resume terminal.')]": 
-  function doResume() 
+  "[command('resumedebugger'), _('Resume terminal.')]":
+  function doResume()
   {
     if (!this._trace_box) {
       this.select();
@@ -315,7 +315,7 @@ Debugger.definition = {
   },
 
   "[command('step'), _('Do step over.')]":
-  function doStep() 
+  function doStep()
   {
     if (!this._trace_box) {
       this.select();
@@ -323,8 +323,8 @@ Debugger.definition = {
     this.sendMessage("command/debugger-step");
   },
 /*
-  "[command('breakpoint/bp'), pnp]": 
-  function breakpoint(arguments_string) 
+  "[command('breakpoint/bp'), pnp]":
+  function breakpoint(arguments_string)
   {
     if (!this._trace_box) {
       this.select();
@@ -335,8 +335,8 @@ Debugger.definition = {
 */
   _pattern: null,
 
-  "[subscribe('command/debugger-trace-sequence')] watchSequence": 
-  function watchSequence(trace_info) 
+  "[subscribe('command/debugger-trace-sequence')] watchSequence":
+  function watchSequence(trace_info)
   {
     if (this._pattern.test(trace_info.sequence)) {
       this.watchSequence.enabled = false;
@@ -344,25 +344,25 @@ Debugger.definition = {
     }
   },
 
-  "[subscribe('command/debugger-trace-sequence')]": 
-  function trace(trace_info) 
+  "[subscribe('command/debugger-trace-sequence')]":
+  function trace(trace_info)
   {
     if (this._queue) {
       this._queue.push(trace_info);
     }
   },
 
-  _escapeAll: function _escapeAll(str) 
+  _escapeAll: function _escapeAll(str)
   {
-    return str.replace(/[\x00-\xff]/g, function(c) 
+    return str.replace(/[\x00-\xff]/g, function(c)
     {
       return "<" + (0x100 + c.charCodeAt(0)).toString(16).substr(1, 2) + ">";
     });
   },
 
-  _escapeC0: function _escapeC0(str) 
+  _escapeC0: function _escapeC0(str)
   {
-    return str.replace(/[\u0000-\u001f]/g, function(c) 
+    return str.replace(/[\u0000-\u001f]/g, function(c)
     {
       return "<" + (0x100 + c.charCodeAt(0)).toString(16).substr(1, 2) + ">";
     });
@@ -378,7 +378,7 @@ Debugger.definition = {
     return text;
   },
 
-  update: function update(trace_info) 
+  update: function update(trace_info)
   {
     var info = trace_info[0],
         sequence = trace_info[1],
@@ -388,7 +388,7 @@ Debugger.definition = {
         child;
 
     switch (type) {
-      case coUtils.Constant.TRACE_CONTROL: 
+      case coUtils.Constant.TRACE_CONTROL:
         child = [
           {
             tagName: "label",
@@ -451,7 +451,7 @@ Debugger.definition = {
         ]
         break;
 
-      case coUtils.Constant.TRACE_OUTPUT: 
+      case coUtils.Constant.TRACE_OUTPUT:
         child = [
           {
             tagName: "label",
@@ -533,7 +533,7 @@ Debugger.definition = {
 
   /** select this panel */
   "[command('debugger'), nmap('<M-d>', '<C-S-d>'), _('Open debugger.'), pnp]":
-  function select() 
+  function select()
   {
     this.sendMessage("command/select-panel", this.id);
     return true;
@@ -545,7 +545,7 @@ Debugger.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new Debugger(broker);
 }

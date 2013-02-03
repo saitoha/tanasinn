@@ -54,23 +54,23 @@ EUCJPDecoder.prototype = {
 
   _map: null,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
   },
 
-  /** uninstalls itself. 
+  /** uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
   },
 
-  "[subscribe('get/decoders'), pnp]": 
-  function getDecoders() 
+  "[subscribe('get/decoders'), pnp]":
+  function getDecoders()
   {
     return {
       charset: this.scheme,
@@ -79,7 +79,7 @@ EUCJPDecoder.prototype = {
     };
   },
 
-  activate: function activate() 
+  activate: function activate()
   {
     var resource_path_jis0208 = "modules/mappings/jis0208.txt.js",
         json_content_jis0208 = coUtils.IO.readFromFile(resource_path_jis0208),
@@ -91,19 +91,19 @@ EUCJPDecoder.prototype = {
         json_content_jis0212 = coUtils.IO.readFromFile(resource_path_jis0212),
         mapping_jis0212 = eval(json_content_jis0212);
 
-    this._jis0201_map = mapping_jis0201.map;    
-    this._jis0208_map = mapping_jis0208.map;    
-    this._jis0212_map = mapping_jis0212.map;    
+    this._jis0201_map = mapping_jis0201.map;
+    this._jis0208_map = mapping_jis0208.map;
+    this._jis0212_map = mapping_jis0212.map;
   },
 
-  /** Parse EUC-JP character byte sequence and convert it 
-   *  to UCS-4 code point sequence. 
+  /** Parse EUC-JP character byte sequence and convert it
+   *  to UCS-4 code point sequence.
    *
-   *  @param {Scanner} scanner A scanner object that attached to 
+   *  @param {Scanner} scanner A scanner object that attached to
    *                   current input stream.
-   *  @return {Array} Converted sequence 
+   *  @return {Array} Converted sequence
    */
-  decode: function decode(scanner) 
+  decode: function decode(scanner)
   {
     return this._generate(scanner);
   },
@@ -155,7 +155,7 @@ EUCJPDecoder.prototype = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new EUCJPDecoder(broker);
 }

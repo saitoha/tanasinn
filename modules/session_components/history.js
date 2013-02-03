@@ -50,7 +50,7 @@ CommandlineHistory.definition = {
   _history_index: 0,
   "[persistable] history_file_path": "history/commandline.txt",
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
@@ -59,10 +59,10 @@ CommandlineHistory.definition = {
     this.loadHistory();
   },
 
-  /** Uninstalls itself. 
+  /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
     if (null !== this._converter) {
       this._converter.flush();
@@ -78,7 +78,7 @@ CommandlineHistory.definition = {
   /**
    *
    */
-  loadHistory: function loadHistory() 
+  loadHistory: function loadHistory()
   {
     var path,
         file,
@@ -117,7 +117,7 @@ CommandlineHistory.definition = {
       }
     } else { // if target is not exists.
       // create base directories recursively (= mkdir -p).
-      void function make_directory(current) 
+      void function make_directory(current)
       {
         var parent = current.parent;
 
@@ -127,20 +127,20 @@ CommandlineHistory.definition = {
         }
       } (file);
     }
-   
+
     // create output stream.
     ostream = coUtils.Components.createFileOutputStream();
-      
+
     // write (0x02), appending (0x10), "rw"
     ostream.init(
       file,
       0x02 /* PR_WRONLY */|
       0x08 /* PR_CREATE_FILE */|
       0x10 /* PR_APPEND */,
-      -1, 0);   
-    
+      -1, 0);
+
     converter = coUtils.Components.createConverterOutputStream();
-    converter.init(ostream, "UTF-8", 0, 0);  
+    converter.init(ostream, "UTF-8", 0, 0);
 
     this._converter = converter;
   },
@@ -150,7 +150,7 @@ CommandlineHistory.definition = {
   {
     // close history file.
     if (this._converter) {
-      this._converter.close(); // closes the output stream.  
+      this._converter.close(); // closes the output stream.
     }
   },
 

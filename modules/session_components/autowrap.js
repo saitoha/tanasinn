@@ -30,8 +30,8 @@
  *
  * DECAWM - Autowrap Mode
  *
- * This control function determines whether or not received characters 
- * automatically wrap to the next line when the cursor reaches the right 
+ * This control function determines whether or not received characters
+ * automatically wrap to the next line when the cursor reaches the right
  * border of a page in page memory.
  *
  * Default: No autowrap
@@ -39,25 +39,25 @@
  * Format
  *
  * CSI    ?      7    h
- * 9/11   3/15   3/7  6/8  
+ * 9/11   3/15   3/7  6/8
  *
  * Set: autowrap.
  *
  *
  * CSI    ?      7    l
- * 9/11   3/15   3/7  6/12   
+ * 9/11   3/15   3/7  6/12
  *
  * Reset: no autowrap.
  *
  *
  * Description
  *
- * If the DECAWM function is set, then graphic characters received when the 
- * cursor is at the right border of the page appear at the beginning of the 
- * next line. Any text on the page scrolls up if the cursor is at the end of 
+ * If the DECAWM function is set, then graphic characters received when the
+ * cursor is at the right border of the page appear at the beginning of the
+ * next line. Any text on the page scrolls up if the cursor is at the end of
  * the scrolling region.
  *
- * If the DECAWM function is reset, then graphic characters received when the 
+ * If the DECAWM function is reset, then graphic characters received when the
  * cursor is at the right border of the page replace characters already on the
  * page.
  *
@@ -82,11 +82,11 @@ AutoWrap.definition = {
 
   _mode: null,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
     this._mode = this.default_value;
     this.reset();
@@ -95,7 +95,7 @@ AutoWrap.definition = {
   /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
     this._mode = null;
   },
@@ -103,8 +103,8 @@ AutoWrap.definition = {
   /** Activate auto-wrap feature(DECAWM).
    */
   "[subscribe('sequence/decset/7'), pnp]":
-  function activate() 
-  { 
+  function activate()
+  {
     this._mode = true;
 
     this.sendMessage("command/enable-wraparound");
@@ -113,7 +113,7 @@ AutoWrap.definition = {
   /** Deactivate auto-wrap feature(DECAWM).
    */
   "[subscribe('sequence/decrst/7'), pnp]":
-  function deactivate() 
+  function deactivate()
   {
     this._mode = false;
 
@@ -123,7 +123,7 @@ AutoWrap.definition = {
   /** Report mode
    */
   "[subscribe('sequence/decrqm/7'), pnp]":
-  function report() 
+  function report()
   {
     var mode = this._mode ? 1: 2,
         message = "?7;" + mode + "$y";
@@ -134,7 +134,7 @@ AutoWrap.definition = {
   /** handle terminal reset event.
    */
   "[subscribe('command/{soft | hard}-terminal-reset'), pnp]":
-  function reset() 
+  function reset()
   {
     if (this.default_value) {
       this.activate();
@@ -146,8 +146,8 @@ AutoWrap.definition = {
   /**
    * Serialize snd persist current state.
    */
-  "[subscribe('@command/backup'), type('Object -> Undefined'), pnp]": 
-  function backup(context) 
+  "[subscribe('@command/backup'), type('Object -> Undefined'), pnp]":
+  function backup(context)
   {
     // serialize this plugin object.
     context[this.id] = {
@@ -158,8 +158,8 @@ AutoWrap.definition = {
   /**
    * Deserialize snd restore stored state.
    */
-  "[subscribe('@command/restore'), type('Object -> Undefined'), pnp]": 
-  function restore(context) 
+  "[subscribe('@command/restore'), type('Object -> Undefined'), pnp]":
+  function restore(context)
   {
     var data;
 
@@ -180,7 +180,7 @@ AutoWrap.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new AutoWrap(broker);
 }

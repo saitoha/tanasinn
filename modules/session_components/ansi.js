@@ -61,7 +61,7 @@ AnsiMode.definition = {
 
   "[persistable] enabled_when_startup": true,
 
-  set: function set(id, flag) 
+  set: function set(id, flag)
   {
     switch (id) {
 
@@ -79,13 +79,13 @@ AnsiMode.definition = {
     }
   },
 
-  reset: function reset() 
+  reset: function reset()
   {
   },
 
   "[profile('vt100'), sequence('CSI Pm h')]":
-  function SM(n) 
-  { // set ANSI-Specified Mode. 
+  function SM(n)
+  { // set ANSI-Specified Mode.
     try {
       this.request("sequence/sm/" + n);
     } catch (e) {
@@ -95,9 +95,9 @@ AnsiMode.definition = {
     this.set(n, true);
   },
 
-  "[profile('vt100'), sequence('CSI Pm l')]": 
-  function RM(n) 
-  { // reset ANSI-Specified Mode. 
+  "[profile('vt100'), sequence('CSI Pm l')]":
+  function RM(n)
+  { // reset ANSI-Specified Mode.
     try {
       this.request("sequence/rm/" + n);
     } catch (e) {
@@ -113,7 +113,7 @@ AnsiMode.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new AnsiMode(broker);
 }

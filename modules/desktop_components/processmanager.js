@@ -44,7 +44,7 @@ ProcessManager.definition = {
 
   "[persistable, watchable] enabled_when_startup": true,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
@@ -52,7 +52,7 @@ ProcessManager.definition = {
   {
   },
 
-  /** Uninstalls itself. 
+  /** Uninstalls itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[uninstall]":
@@ -60,14 +60,14 @@ ProcessManager.definition = {
   {
   },
 
-  /** Checks if the process is running. 
-   *  It runs the command "kill -0 <pid>" and checks return value... if it 
+  /** Checks if the process is running.
+   *  It runs the command "kill -0 <pid>" and checks return value... if it
    *  failed, the process is not available.
    *  @param {Number} pid the process ID to be checked.
-   *  @return {Boolean} boolean value whether the specified process is 
-   *                    available. 
+   *  @return {Boolean} boolean value whether the specified process is
+   *                    available.
    */
-  processIsAvailable: function processIsAvailable(pid) 
+  processIsAvailable: function processIsAvailable(pid)
   {
     return 0 === this.sendSignal(0, pid);
   },
@@ -75,9 +75,9 @@ ProcessManager.definition = {
   /** Sends a signal to specified process. it runs "kill" command.
    *  @param {Number} signal value to be sent.
    *  @param {Number} pid the process ID to be checked.
-   *  @return {Number} a return value of kill command. 
+   *  @return {Number} a return value of kill command.
    */
-  sendSignal: function sendSignal(signal, pid) 
+  sendSignal: function sendSignal(signal, pid)
   {
     var runtime_path,
         args,
@@ -86,7 +86,7 @@ ProcessManager.definition = {
 
     if ("number" !== typeof signal || "number" !== typeof pid) {
       throw coUtils.Debug.Exception(
-        _("sendSignal: Invalid arguments are detected. [%s, %s]"), 
+        _("sendSignal: Invalid arguments are detected. [%s, %s]"),
         signal, pid);
     }
 
@@ -108,7 +108,7 @@ ProcessManager.definition = {
       process.run(/* blocking */ true, args, args.length);
     } catch (e) {
       coUtils.Debug.reportMessage(
-        _("command '%s' failed."), 
+        _("command '%s' failed."),
         args.join(" "));
       return false;
     }
@@ -122,7 +122,7 @@ ProcessManager.definition = {
  * @brief Module entry point
  * @param {Desktop} desktop The Desktop object.
  */
-function main(desktop) 
+function main(desktop)
 {
   new ProcessManager(desktop);
 }

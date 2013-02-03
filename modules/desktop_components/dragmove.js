@@ -35,11 +35,11 @@ DragMove.definition = {
 
   "[persistable] enabled_when_startup": true,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
     var result = this.request(
       "command/construct-chrome",
@@ -61,10 +61,10 @@ DragMove.definition = {
     this._drag_cover = result.tanasinn_drag_cover;
   },
 
-  /** Uninstalls itself. 
+  /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
     this._drag_cover.parentNode.removeChild(this._drag_cover);
   },
@@ -79,7 +79,7 @@ DragMove.definition = {
   },
 
   "[listen('mouseup')]":
-  function onmouseup(event) 
+  function onmouseup(event)
   {
     // uninstall listeners.
     this.onmousemove.enabled = false;
@@ -87,10 +87,10 @@ DragMove.definition = {
     this.onkeyup.enabled = false;
     this.sendMessage("command/set-opacity", 1.00);
     this._drag_cover.hidden = true;
-  }, 
+  },
 
   "[listen('keyup')]":
-  function onkeyup(event) 
+  function onkeyup(event)
   {
     if (!event.shiftKey) {
       // uninstall listeners.
@@ -99,15 +99,15 @@ DragMove.definition = {
       this.onkeyup.enabled = false;
       this.sendMessage("command/set-opacity", 1.00);
     }
-  }, 
+  },
 
   "[listen('dragstart', '#tanasinn_launcher_layer', true), pnp]":
-  function ondragstart(dom_event) 
+  function ondragstart(dom_event)
   {
     dom_event.stopPropagation();
 
     // get relative coodinates on target element.
-    this._offsetX = dom_event.clientX - dom_event.target.boxObject.x; 
+    this._offsetX = dom_event.clientX - dom_event.target.boxObject.x;
     this._offsetY = dom_event.clientY - dom_event.target.boxObject.y;
 
     this._drag_cover.hidden = false;
@@ -127,7 +127,7 @@ DragMove.definition = {
  * @brief Module entry point
  * @param {Desktop} desktop The Desktop object.
  */
-function main(desktop) 
+function main(desktop)
 {
   new DragMove(desktop);
 }

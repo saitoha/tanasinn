@@ -44,18 +44,18 @@ LocalizeCompleter.definition = {
 
   "[persistable] enabled_when_startup": true,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
   },
 
   /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
   },
 
@@ -63,7 +63,7 @@ LocalizeCompleter.definition = {
    * Search for a given string and notify a listener (either synchronously
    * or asynchronously) of the result
    *
-   * @param context - The completion context object. 
+   * @param context - The completion context object.
    */
   "[completer('localize'), pnp]":
   function complete(context)
@@ -83,10 +83,10 @@ LocalizeCompleter.definition = {
     if (!space) {
       languages = [key for ([key, ] in Iterator(coUtils.Constant.LOCALE_ID_MAP))]
         .filter(
-          function filterFunc(iso639_language) 
-          { 
+          function filterFunc(iso639_language)
+          {
             return -1 !== iso639_language.toLowerCase()
-              .indexOf(language.toLowerCase()); 
+              .indexOf(language.toLowerCase());
           });
       if (0 === languages.length) {
         this.sendMessage("event/answer-completion", null);
@@ -95,12 +95,12 @@ LocalizeCompleter.definition = {
           "event/answer-completion",
           {
             type: "text",
-            query: context.source, 
+            query: context.source,
             data: languages.map(
-              function mapFunc(language) 
+              function mapFunc(language)
               {
                 return {
-                  name: language, 
+                  name: language,
                   value: coUtils.Constant.LOCALE_ID_MAP[language],
                 };
               }),
@@ -120,7 +120,7 @@ LocalizeCompleter.definition = {
           value: dict[key] || "",
         } for ([, key] in Iterator(this._keys))
       ].filter(
-        function filterFunc(pair) 
+        function filterFunc(pair)
         {
           if (-1 !== pair.name.toLowerCase().indexOf(lower_message_id)) {
             return true;
@@ -133,11 +133,11 @@ LocalizeCompleter.definition = {
       } else {
         if (!space2) {
           this.sendMessage(
-            "event/answer-completion", 
+            "event/answer-completion",
             {
               type: "text",
               option: "quoted",
-              query: message_id, 
+              query: message_id,
               data: data,
             });
         } else {
@@ -146,7 +146,7 @@ LocalizeCompleter.definition = {
             {
               type: "text",
               option: "quoted",
-              query: next, 
+              query: next,
               data: data,
             });
         }

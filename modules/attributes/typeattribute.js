@@ -37,14 +37,14 @@ function apply_attribute(self, attribute, key)
       handler = self[key],
       delegate;
 
-  delegate = self[key] = function() 
+  delegate = self[key] = function()
   {
     var args = Array.slice(arguments),
         result;
 
     if (args.length !== types.length - 1) {
       coUtils.Debug.reportError(
-        _("Invalid argument length detected. %s.%s (%s), args.length === %d."), 
+        _("Invalid argument length detected. %s.%s (%s), args.length === %d."),
         self.id, key, type_signature, args.length);
     }
     args.forEach(
@@ -52,17 +52,17 @@ function apply_attribute(self, attribute, key)
       {
         if (types[index] && !types[index](arg)) {
           coUtils.Debug.reportError(
-            _("Ill-typed argument detected. %s.%s (%d of %s) - %s."), 
+            _("Ill-typed argument detected. %s.%s (%d of %s) - %s."),
             self.id, key, index, type_signature, arg);
-        } 
+        }
       });
 
     result = handler.apply(self, arguments);
     if (types[args.length] && !types[args.length](result)) {
       coUtils.Debug.reportError(
-        _("Ill-typed result value detected. %s.%s (%s) - %s."), 
+        _("Ill-typed result value detected. %s.%s (%s) - %s."),
         self.id, key, type_signature, result);
-    } 
+    }
     return result;
   };
 
@@ -77,10 +77,10 @@ function apply_attribute(self, attribute, key)
 var TypeAttribute = new Attribute("type");
 TypeAttribute.definition = {
 
-  /** constructor 
+  /** constructor
    *  @param {EventBroker} broker Parent broker object.
    */
-  initialize: function initialize(broker) 
+  initialize: function initialize(broker)
   {
     broker.subscribe(
       "@event/broker-started",

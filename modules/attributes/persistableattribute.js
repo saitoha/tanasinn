@@ -31,19 +31,19 @@
 var PersistableAttribute = new Attribute("persistable");
 PersistableAttribute.definition = {
 
-  /** constructor 
-   *  @param {EventBroker} broker The "parent" broker object in 
+  /** constructor
+   *  @param {EventBroker} broker The "parent" broker object in
    *                              the Event broker hierarchy.
    */
-  initialize: function initialize(broker) 
+  initialize: function initialize(broker)
   {
     var attributes, keys;
 
-    if ("__attributes" in this) { 
+    if ("__attributes" in this) {
 
       attributes = this.__attributes;
       keys = Object.getOwnPropertyNames(attributes)
-        .filter(function(key) 
+        .filter(function(key)
           {
             var attribute;
 
@@ -59,22 +59,22 @@ PersistableAttribute.definition = {
           });
 
       broker.subscribe(
-        "command/load-persistable-data", 
-        function load(context) 
+        "command/load-persistable-data",
+        function load(context)
         {
           this.__load(context, keys);
         }, this);
 
       broker.subscribe(
-        "command/save-persistable-data", 
-        function save(context) 
+        "command/save-persistable-data",
+        function save(context)
         {
           this.__persist(context, keys);
         }, this);
 
       broker.subscribe(
-        "command/get-persistable-data", 
-        function get(context) 
+        "command/get-persistable-data",
+        function get(context)
         {
           this.__get(context, keys);
         }, this);
@@ -83,11 +83,11 @@ PersistableAttribute.definition = {
   }, // initialize
 
   /** Load persistable parameter value from context object. */
-  __load: function __load(context, keys) 
+  __load: function __load(context, keys)
   {
     var attributes;
 
-    if ("__attributes" in this) { 
+    if ("__attributes" in this) {
       attributes = this.__attributes;
       keys = keys || Object.getOwnPropertyNames(attributes)
         .filter(function(key)
@@ -126,11 +126,11 @@ PersistableAttribute.definition = {
   }, // __load
 
   /** Sets persistable parameter value to context object. */
-  __persist: function __persist(context, keys) 
+  __persist: function __persist(context, keys)
   {
     var attributes;
 
-    if ("__attributes" in this) { 
+    if ("__attributes" in this) {
       attributes = this.__attributes;
       if (!keys) {
         keys = Object.getOwnPropertyNames(attributes)
@@ -170,14 +170,14 @@ PersistableAttribute.definition = {
     }
   }, // __persist
 
-  /** set persistable members to context object. 
+  /** set persistable members to context object.
    * @param {Object} context A context object.
    */
-  __get: function __get(context, keys) 
+  __get: function __get(context, keys)
   {
     var attributes;
-    
-    if ("__attributes" in this) { 
+
+    if ("__attributes" in this) {
       attributes = this.__attributes;
       if (!keys) {
         keys = Object.getOwnPropertyNames(attributes)

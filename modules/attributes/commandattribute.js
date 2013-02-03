@@ -27,7 +27,7 @@
 
 function make_managed_handler(self, handler)
 {
-  var wrapped_handler = function() 
+  var wrapped_handler = function()
   {
     return handler.apply(self, arguments);
   };
@@ -68,7 +68,7 @@ function apply_attribute(self, broker, key, command_arguments, attribute)
           description: attribute.description,
           args: args && args.slice(),
 
-          complete: function complete(source) 
+          complete: function complete(source)
           {
             var completers,
                 name,
@@ -88,12 +88,12 @@ function apply_attribute(self, broker, key, command_arguments, attribute)
                 completers: completers,
               };
               self.sendMessage(
-                "command/query-completion/" + name, 
+                "command/query-completion/" + name,
                 completion_context);
             };
           },
 
-          evaluate: function evaluate() 
+          evaluate: function evaluate()
           {
             return handler.apply(self, arguments);
           },
@@ -101,8 +101,8 @@ function apply_attribute(self, broker, key, command_arguments, attribute)
           register: function register(id)
           {
             broker.subscribe(
-              "get/commands", 
-              function() 
+              "get/commands",
+              function()
               {
                 return this;
               }, this, id);
@@ -113,7 +113,7 @@ function apply_attribute(self, broker, key, command_arguments, attribute)
       }, self);
 
   old_onchange = wrapped_handler.onChange;
-  wrapped_handler.onChange = function(name, oldval, newval) 
+  wrapped_handler.onChange = function(name, oldval, newval)
     {
       var i;
 
@@ -149,10 +149,10 @@ function apply_attribute(self, broker, key, command_arguments, attribute)
 var CommandAttribute = new Attribute("command");
 CommandAttribute.definition = {
 
-  /** constructor 
+  /** constructor
    *  @param {EventBroker} broker Parent broker object.
    */
-  initialize: function initialize(broker) 
+  initialize: function initialize(broker)
   {
     var attributes, key, attribute, command_arguments;
 

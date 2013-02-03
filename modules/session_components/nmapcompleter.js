@@ -44,18 +44,18 @@ NMapCompleter.definition = {
 
   "[persistable] enabled_when_startup": true,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
   },
 
   /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
   },
 
@@ -63,7 +63,7 @@ NMapCompleter.definition = {
    * Search for a given string and notify a listener (either synchronously
    * or asynchronously) of the result
    *
-   * @param context - The completion context object. 
+   * @param context - The completion context object.
    */
   "[completer('nmap'), pnp]":
   function complete(context)
@@ -111,13 +111,13 @@ NMapCompleter.definition = {
         .filter(
           function filterFunc(expression)
           {
-            return -1 !== expression.toLowerCase().indexOf(lower_name); 
+            return -1 !== expression.toLowerCase().indexOf(lower_name);
           })
         .map(
           function mapFunc(key)
           {
-            return { 
-              key: key, 
+            return {
+              key: key,
               value: expressions[key],
             };
           });
@@ -129,7 +129,7 @@ NMapCompleter.definition = {
           "event/answer-completion",
           {
             type: "text",
-            query: context.source, 
+            query: context.source,
             data: candidates.map(
               function mapFunc(candidate)
               {

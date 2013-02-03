@@ -92,8 +92,8 @@ Cell.definition = {
   set fg(value)
   {
     this.fgcolor = 1;
-    this.value = this.value 
-               & ~(0xff << _ATTR_FORECOLOR) 
+    this.value = this.value
+               & ~(0xff << _ATTR_FORECOLOR)
                | value << _ATTR_FORECOLOR;
   },
 
@@ -107,8 +107,8 @@ Cell.definition = {
   set bg(value)
   {
     this.bgcolor = 1;
-    this.value = this.value 
-               & ~(0xff << _ATTR_BACKCOLOR) 
+    this.value = this.value
+               & ~(0xff << _ATTR_BACKCOLOR)
                | value << _ATTR_BACKCOLOR;
   },
 
@@ -121,11 +121,11 @@ Cell.definition = {
   /** setter of bold attribute */
   set bold(value)
   {
-    this.value = this.value 
-               & ~(0x1 << _ATTR_BOLD) 
+    this.value = this.value
+               & ~(0x1 << _ATTR_BOLD)
                | value << _ATTR_BOLD;
   },
-  
+
   /** getter of blink attribute */
   get blink()
   {
@@ -136,10 +136,10 @@ Cell.definition = {
   set blink(value)
   {
     this.value = this.value
-               & ~(0x1 << _ATTR_BLINK) 
+               & ~(0x1 << _ATTR_BLINK)
                | value << _ATTR_BLINK;
   },
-  
+
   /** getter of rapid_blink attribute */
   get rapid_blink()
   {
@@ -150,10 +150,10 @@ Cell.definition = {
   set rapid_blink(value)
   {
     this.value = this.value
-               & ~(0x1 << _ATTR_RAPIDBLINK) 
+               & ~(0x1 << _ATTR_RAPIDBLINK)
                | value << _ATTR_RAPIDBLINK;
   },
-   
+
   /** getter of italic attribute */
   get italic()
   {
@@ -164,10 +164,10 @@ Cell.definition = {
   set italic(value)
   {
     this.value = this.value
-               & ~(0x1 << _ATTR_ITALIC) 
+               & ~(0x1 << _ATTR_ITALIC)
                | value << _ATTR_ITALIC;
   },
- 
+
   /** getter of fgcolor attribute */
   get fgcolor()
   {
@@ -178,11 +178,11 @@ Cell.definition = {
   set fgcolor(value)
   {
     this.value = this.value
-               & ~(0x1 << _ATTR_FGCOLOR) 
+               & ~(0x1 << _ATTR_FGCOLOR)
                | value << _ATTR_FGCOLOR;
   },
 
-  
+
   /** getter of bgcolor attribute */
   get bgcolor()
   {
@@ -193,7 +193,7 @@ Cell.definition = {
   set bgcolor(value)
   {
     this.value = this.value
-               & ~(0x1 << _ATTR_BGCOLOR) 
+               & ~(0x1 << _ATTR_BGCOLOR)
                | value << _ATTR_BGCOLOR;
   },
 
@@ -208,7 +208,7 @@ Cell.definition = {
   set inverse(value)
   {
     this.value = this.value
-               & ~(0x1 << _ATTR_INVERSE) 
+               & ~(0x1 << _ATTR_INVERSE)
                | value << _ATTR_INVERSE;
   },
 
@@ -222,7 +222,7 @@ Cell.definition = {
   set invisible(value)
   {
     this.value = this.value
-               & ~(0x1 << _ATTR_INVISIBLE) 
+               & ~(0x1 << _ATTR_INVISIBLE)
                | value << _ATTR_INVISIBLE;
   },
 
@@ -236,10 +236,10 @@ Cell.definition = {
   set halfbright(value)
   {
     this.value = this.value
-               & ~(0x1 << _ATTR_HALFBRIGHT) 
+               & ~(0x1 << _ATTR_HALFBRIGHT)
                | value << _ATTR_HALFBRIGHT;
   },
-  
+
   /** getter of underline attribute */
   get underline()
   {
@@ -247,13 +247,13 @@ Cell.definition = {
   },
 
   /** setter of underline attribute */
-  set underline(value) 
+  set underline(value)
   {
     this.value = this.value
-               & ~(0x1 << _ATTR_UNDERLINE) 
+               & ~(0x1 << _ATTR_UNDERLINE)
                | value << _ATTR_UNDERLINE;
   },
-     
+
   /** getter of wide attribute */
   get wide()
   {
@@ -261,13 +261,13 @@ Cell.definition = {
   },
 
   /** setter of wide attribute */
-  set wide(value) 
+  set wide(value)
   {
     this.value = this.value
-               & ~(0x1 << _ATTR_WIDE) 
+               & ~(0x1 << _ATTR_WIDE)
                | value << _ATTR_WIDE;
   },
-  
+
   /** getter of protected attribute */
   get protected()
   {
@@ -275,13 +275,13 @@ Cell.definition = {
   },
 
   /** setter of protected attribute */
-  set protected(value) 
+  set protected(value)
   {
     this.value = this.value
-               & ~(0x1 << _ATTR_PROTECTED) 
+               & ~(0x1 << _ATTR_PROTECTED)
                | value << _ATTR_PROTECTED;
   },
- 
+
   /** Compare every bit and detect equality of both objects. */
   equals: function equals(other)
   {
@@ -290,33 +290,33 @@ Cell.definition = {
   },
 
   /** Clear all properties and make it default state. */
-  clear: function clear() 
+  clear: function clear()
   {
     this.c = 0x20;
     this.value = 0x0;
   },
-  
-  copyFrom: function copyFrom(rhs) 
-  { 
+
+  copyFrom: function copyFrom(rhs)
+  {
     this.value = rhs.value;
   },
-      
+
   /** Write a character with attribute structure. */
-  write: function write(c, attr) 
+  write: function write(c, attr)
   {
     this.c = c;
     this.value = attr.value;
   }, // write
 
   /** Erase the pair of character and attribute structure */
-  erase: function erase(attrvalue) 
+  erase: function erase(attrvalue)
   {
     this.c = 0x20;
     this.value = attrvalue;
   }, // erase
 
   /** Erase if the cell id marked as "erasable". */
-  selectiveErase: function selectiveErase(attrvalue) 
+  selectiveErase: function selectiveErase(attrvalue)
   {
     if (!this.protected) {
       this.c = 0x20;
@@ -368,25 +368,25 @@ DirtyRange.definition = {
   first: 0,
   last: 0,
 
-  initialize: function initialize(length) 
+  initialize: function initialize(length)
   {
     this.last = length;
   },
-  
+
   /** Detect whether it has some range. */
   get dirty()
   {
     return this.first !== this.last;
   },
 
-  invalidate: function invalidate() 
+  invalidate: function invalidate()
   {
     this.first = 0;
     this.last = this.cells.length;
   },
 
   /** Marks it "dirty" or "clear". */
-  set dirty(value) 
+  set dirty(value)
   {
     if (value) {
       this.first = 0;
@@ -397,13 +397,13 @@ DirtyRange.definition = {
   },
 
   /** clears the range. */
-  clearRange: function clearRange() 
+  clearRange: function clearRange()
   {
     this.last = this.first;
   },
 
   /** makes a union of ranges and store it. */
-  addRange: function addRange(first, last) 
+  addRange: function addRange(first, last)
   {
     if (this.first === this.last) {
       this.first = first;
@@ -419,7 +419,7 @@ DirtyRange.definition = {
   },
 
   /** makes intersection range and set it. */
-  trimRange: function trimRange(first, last) 
+  trimRange: function trimRange(first, last)
   {
     if (this.first !== this.last) {
       if (first > this.first)
@@ -429,7 +429,7 @@ DirtyRange.definition = {
     }
   },
 }
- 
+
 /**
  * @trait Resizable
  *
@@ -437,10 +437,10 @@ DirtyRange.definition = {
 var Resizable = new Trait();
 Resizable.definition = {
 
-  /** pop last n cells from the line. 
+  /** pop last n cells from the line.
    * @param {Number} n count of cell to pop.
-   */ 
-  collapse: function collapse(n) 
+   */
+  collapse: function collapse(n)
   {
     var cells = this.cells;
 
@@ -448,10 +448,10 @@ Resizable.definition = {
     this.trimRange(0, cells.length);
   },
 
-  /** push n cells to end of line. 
+  /** push n cells to end of line.
    * @param {Number} n count of cell to push.
    */
-  expand: function expand(n) 
+  expand: function expand(n)
   {
     function count(n)
     {
@@ -468,7 +468,7 @@ Resizable.definition = {
 
 }; // trait Resizable
 
-/** 
+/**
  * @brief The Line class, has a set of Cells,
  *        and Provides few functions for low-level input operation.
  */
@@ -480,7 +480,7 @@ Line.definition = {
   type: coUtils.Constant.LINETYPE_NORMAL,
 
   /** constructor */
-  initialize: function initialize(length) 
+  initialize: function initialize(length)
   {
     var cells = [],
         cell;
@@ -539,13 +539,13 @@ Line.definition = {
   },
 
   /** gets count of cells */
-  get length() 
+  get length()
   {
     return this.cells.length
   },
 
   /** sets count of cells. */
-  set length(value) 
+  set length(value)
   {
     var diff = value - this.cells.length,
         last_cell;
@@ -560,12 +560,12 @@ Line.definition = {
       }
     }
   },
-      
-  /** 
-   * Detects whether the cell located at specified position is wide. 
+
+  /**
+   * Detects whether the cell located at specified position is wide.
    * @param {Number} position.
-   */ 
-  isWide: function isWide(position) 
+   */
+  isWide: function isWide(position)
   {
     var cells = this.cells,
         cell = cells[position];
@@ -583,25 +583,25 @@ Line.definition = {
     return 0 === cell.c;
   },
 
-  /** Gets the range of surround characters. 
+  /** Gets the range of surround characters.
    *
    * ex.
    *
-   *         point 
+   *         point
    *           v
-   * 123 abcdefghijk lmnop 
+   * 123 abcdefghijk lmnop
    *     ^          ^
    *   start       end
    *
-   */  
-  getWordRangeFromPoint: 
-  function getWordRangeFromPoint(column, row) 
+   */
+  getWordRangeFromPoint:
+  function getWordRangeFromPoint(column, row)
   {
     var cells = this.cells,
         current_char,
         backward_chars,
         forward_chars,
-        character_category, 
+        character_category,
         forward_break_point,
         backward_break_point;
 
@@ -616,15 +616,15 @@ Line.definition = {
 
     character_category = this._getCharacterCategory(current_char);
 
-    forward_break_point 
+    forward_break_point
       = this._getForwardBreakPoint(forward_chars, column, character_category);
-    backward_break_point 
+    backward_break_point
       = this._getBackwardBreakPoint(backward_chars, column, character_category);
 
     return [backward_break_point, forward_break_point];
   },
- 
-  _getCharacterCategory: 
+
+  _getCharacterCategory:
   function _getCharacterCategory(code)
   {
     var c = String.fromCharCode(code);
@@ -641,7 +641,7 @@ Line.definition = {
   },
 
   _getForwardBreakPoint:
-  function _getForwardBreakPoint(forward_chars, column, category) 
+  function _getForwardBreakPoint(forward_chars, column, category)
   {
     var result = column + 1,
         index,
@@ -659,9 +659,9 @@ Line.definition = {
 
     return result;
   },
-   
+
   _getBackwardBreakPoint:
-  function _getBackwardBreakPoint(backward_chars, column, category) 
+  function _getBackwardBreakPoint(backward_chars, column, category)
   {
     var result = column,
         index,
@@ -698,7 +698,7 @@ Line.definition = {
   },
 
   /** returns a generator which iterates dirty words. */
-  getDirtyWords: function getDirtyWords() 
+  getDirtyWords: function getDirtyWords()
   {
     var attr,
         start,
@@ -714,8 +714,8 @@ Line.definition = {
 
     if (this.dirty) {
       cells = this.cells;
-      max = coUtils.Constant.LINETYPE_NORMAL === this.type ? 
-        this.last: 
+      max = coUtils.Constant.LINETYPE_NORMAL === this.type ?
+        this.last:
         Math.min(this.last, Math.floor(cells.length / 2));
 
       for (current = this.first; current < max; ++current) {
@@ -727,22 +727,22 @@ Line.definition = {
           } else {
             range = cells.slice(start, current);
             codes = this._getCodePointsFromCells(range);
-            yield { 
-              codes: codes, 
-              column: start, 
-              end: current, 
+            yield {
+              codes: codes,
+              column: start,
+              end: current,
               attr: attr,
             };
-          } 
+          }
         }
         if (!is_ascii) {
           if (0 === cell.c) {
             cell = cells[current + 1]; // MUST not null
             if (undefined !== cell) {
-              yield { 
+              yield {
                 codes: [c for (c in cell.getCodes())],
-                column: current, 
-                end: current + 2, 
+                column: current,
+                end: current + 2,
                 attr: cell,
               };
               ++current;
@@ -751,10 +751,10 @@ Line.definition = {
             }
             continue;
           } else { // combined
-            yield { 
-              codes: [c for (c in cell.getCodes())], 
-              column: current, 
-              end: current + 1, 
+            yield {
+              codes: [c for (c in cell.getCodes())],
+              column: current,
+              end: current + 1,
               attr: cell,
             };
           }
@@ -764,10 +764,10 @@ Line.definition = {
       }
       if (start < current && attr) {
         codes = cells.slice(start, current)
-        yield { 
-          codes: this._getCodePointsFromCells(codes), 
-          column: start, 
-          end: current, 
+        yield {
+          codes: this._getCodePointsFromCells(codes),
+          column: start,
+          end: current,
           attr: attr,
         };
       }
@@ -775,7 +775,7 @@ Line.definition = {
     }
   },
 
-  /** returns plain text in specified range. 
+  /** returns plain text in specified range.
    * @return {String} selected string.
    */
   getTextInRange: function getTextInRange(start, end, raw)
@@ -813,10 +813,10 @@ Line.definition = {
     return String.fromCharCode.apply(String, codes);
   },
 
-  /** write to cells at specified position 
-   *  with given character and an attribute. 
+  /** write to cells at specified position
+   *  with given character and an attribute.
    */
-  write: function write(position, codes, attr, insert_mode) 
+  write: function write(position, codes, attr, insert_mode)
   {
     var cells = this.cells,
         i,
@@ -864,10 +864,10 @@ Line.definition = {
     }
   },
 
-  /** 
+  /**
    * clear all cells.
    */
-  clear: function clear() 
+  clear: function clear()
   {
     var cells = this.cells,
         length = cells.length,
@@ -881,19 +881,19 @@ Line.definition = {
     this.type = coUtils.Constant.LINETYPE_NORMAL;
   },
 
-  /** 
-   * erace cells at specified range. 
+  /**
+   * erace cells at specified range.
    *
    * ex. erase(2, 5)
-   * 
+   *
    * [ a b c d e f g h ] -> [ a b       f g h ]
    */
-  erase: function erase(start, end, attrvalue) 
+  erase: function erase(start, end, attrvalue)
   {
     var i,
         cell,
         cells;
-    
+
     this.addRange(start, end);
 
     cells = this.cells;
@@ -904,16 +904,16 @@ Line.definition = {
     }
   },
 
-  /** 
-   * erace cells marked as "erasable" at specified range. 
+  /**
+   * erace cells marked as "erasable" at specified range.
    *
    */
-  selectiveErase: function selectiveErase(start, end, attrvalue) 
+  selectiveErase: function selectiveErase(start, end, attrvalue)
   {
     var i,
         cell,
         cells;
-    
+
     this.addRange(start, end);
 
     cells = this.cells;
@@ -924,12 +924,12 @@ Line.definition = {
     }
   },
 
-  /** 
-   * erace cells with test pattern. 
+  /**
+   * erace cells with test pattern.
    *
    * [ a b c d e f g h ] -> [ E E E E E E E E ]
    */
-  eraseWithTestPattern: 
+  eraseWithTestPattern:
   function eraseWithTestPattern(start, end, attr)
   {
     var i,
@@ -952,10 +952,10 @@ Line.definition = {
    /**
    *
    * ex. deleteCells(2, 3, attr)
-   * 
+   *
    * [ a b c d e f g h ] -> [ a b f g h       ]
    */
-  deleteCells: function deleteCells(start, n, attrvalue) 
+  deleteCells: function deleteCells(start, n, attrvalue)
   {
     var cells = this.cells,
         length = cells.length,
@@ -975,14 +975,14 @@ Line.definition = {
     // cells.splice(this.length, 0, ....)
     Array.prototype.splice.apply(cells, range);
   },
- 
+
   /**
    *
    * ex. insertBlanks(2, 3)
-   * 
+   *
    * [ a b c d e f g h ] -> [ a b       c d e ]
    */
-  insertBlanks: function insertBlanks(start, n, attrvalue) 
+  insertBlanks: function insertBlanks(start, n, attrvalue)
   {
     var cells = this.cells,
         length = cells.length,
@@ -1004,7 +1004,7 @@ Line.definition = {
   },
 
 } // class Line
-  
+
 
 /**
  * @class LineGenerator
@@ -1027,24 +1027,24 @@ LineGenerator.definition = {
 
   "[persistable] enabled_when_startup": true,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
   },
 
-  /** Uninstalls itself. 
+  /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
   },
 
   /** Allocates n cells at once. */
   "[type('Uint16 -> Uint16 -> Array')]":
-  function allocate(width, n) 
+  function allocate(width, n)
   {
     var line,
         buffer = [];
@@ -1063,7 +1063,7 @@ LineGenerator.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new LineGenerator(broker);
 }

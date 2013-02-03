@@ -24,13 +24,13 @@
 
 "use strict";
 
- 
+
 /**
  * @trait ConformanceLevel
  */
 var ConformanceLevel = new Class().extends(Plugin);
 ConformanceLevel.definition = {
-  
+
   /** Component ID */
   id: "conformanse_level",
 
@@ -55,8 +55,8 @@ ConformanceLevel.definition = {
    *
    * ref: http://www.vt100.net/docs/vt510-rm/DECSCL
    *
-   * You select the terminal's operating level by using the following select 
-   * conformance level (DECSCL) control sequences. The factory default is level 
+   * You select the terminal's operating level by using the following select
+   * conformance level (DECSCL) control sequences. The factory default is level
    * 4 (VT Level 4 mode, 7-bit controls).
    *
    * Note
@@ -64,8 +64,8 @@ ConformanceLevel.definition = {
    * When you change the conformance level, the terminal performs a hard reset (RIS).
    *
    */
-  "[profile('vt100'), sequence('CSI Ps;Ps \" p')]": 
-  function DECSCL(n1, n2) 
+  "[profile('vt100'), sequence('CSI Ps;Ps \" p')]":
+  function DECSCL(n1, n2)
   {
     var level = n1,
         submode = n2;
@@ -93,7 +93,7 @@ ConformanceLevel.definition = {
   },
 
   "[subscribe('sequence/decrqss/decscl'), pnp]":
-  function onRequestStatus(data) 
+  function onRequestStatus(data)
   {
     var level,
         submode,
@@ -119,11 +119,11 @@ ConformanceLevel.definition = {
   /**
    *
    * S7C1T - Send C1 Control Character to the Host
-   * 
-   * The VT510 can send C1 control characters to the host as single 8-bit 
+   *
+   * The VT510 can send C1 control characters to the host as single 8-bit
    * characters or as 7-bit escape sequences. You should select the format
    * that matches the operating level you are using.
-   * 
+   *
    * The following sequence causes the terminal to send all C1 control
    * characters as 7-bit escape sequences or single 8-bit characters:
    *
@@ -133,7 +133,7 @@ ConformanceLevel.definition = {
    * 1/11  2/0   4/7
    *
    * Description
-   * 
+   *
    * This sequence changes the terminal mode as follows:
    *
    * Mode Before                             | Mode After
@@ -144,7 +144,7 @@ ConformanceLevel.definition = {
    *
    */
   "[profile('vt100'), sequence('ESC SP F')]":
-  function S7C1T(n) 
+  function S7C1T(n)
   {
     this._8bit_mode = false;
   },
@@ -152,7 +152,7 @@ ConformanceLevel.definition = {
   /**
    *
    * S8C1T - Send C1 Control Character to the Host
-   * 
+   *
    * The following sequence causes the terminal to send C1 control characters
    * to the host as single 8-bit characters:
    *
@@ -162,7 +162,7 @@ ConformanceLevel.definition = {
    * 1/11  2/0   4/6
    *
    * Description
-   * 
+   *
    * This sequence changes the terminal mode as follows:
    *
    * Mode Before                     | Mode After
@@ -173,13 +173,13 @@ ConformanceLevel.definition = {
    *
    */
   "[profile('vt100'), sequence('ESC SP G')]":
-  function S8C1T() 
+  function S8C1T()
   {
     this._8bit_mode = true;
   },
 
   "[subscribe('command/send-sequence/sos'), pnp]":
-  function send_SOS() 
+  function send_SOS()
   {
     var message;
 
@@ -198,7 +198,7 @@ ConformanceLevel.definition = {
 
 
   "[subscribe('command/send-sequence/apc'), pnp]":
-  function send_APC() 
+  function send_APC()
   {
     var message;
 
@@ -217,7 +217,7 @@ ConformanceLevel.definition = {
 
 
   "[subscribe('command/send-sequence/pm'), pnp]":
-  function send_PM() 
+  function send_PM()
   {
     var message;
 
@@ -236,7 +236,7 @@ ConformanceLevel.definition = {
 
 
   "[subscribe('command/send-sequence/osc'), pnp]":
-  function send_OSC(data) 
+  function send_OSC(data)
   {
     var message = "";
 
@@ -262,7 +262,7 @@ ConformanceLevel.definition = {
   },
 
   "[subscribe('command/get-sequence/csi'), pnp]":
-  function get_CSI() 
+  function get_CSI()
   {
     var message;
 
@@ -275,7 +275,7 @@ ConformanceLevel.definition = {
   },
 
   "[subscribe('command/send-sequence/csi'), pnp]":
-  function send_CSI(data) 
+  function send_CSI(data)
   {
     var message = this.get_CSI();
 
@@ -289,7 +289,7 @@ ConformanceLevel.definition = {
   },
 
   "[subscribe('command/get-sequence/ss3'), pnp]":
-  function get_SS3() 
+  function get_SS3()
   {
     var message;
 
@@ -302,7 +302,7 @@ ConformanceLevel.definition = {
   },
 
   "[subscribe('command/send-sequence/ss3'), pnp]":
-  function send_SS3(data) 
+  function send_SS3(data)
   {
     var message = this.get_SS3();
 
@@ -316,13 +316,13 @@ ConformanceLevel.definition = {
   },
 
   "[subscribe('command/send-sequence/decrpss'), pnp]":
-  function send_DECRPSS_string(data) 
+  function send_DECRPSS_string(data)
   {
     this.send_DCS_string("0$" + data);
   },
 
   "[subscribe('command/send-sequence/dcs'), pnp]":
-  function send_DCS_string(data) 
+  function send_DCS_string(data)
   {
     var message = "";
 
@@ -350,7 +350,7 @@ ConformanceLevel.definition = {
 
   /** return 8bit mode state */
   "[subscribe('get/8bit-mode-state')]":
-  function get8bitModeState() 
+  function get8bitModeState()
   {
     return this._8bit_mode;
   },
@@ -362,7 +362,7 @@ ConformanceLevel.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new ConformanceLevel(broker);
 }

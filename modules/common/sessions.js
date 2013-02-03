@@ -67,7 +67,7 @@ coUtils.Sessions = {
     return this._records[request_id];
   },
 
-  load: function load() 
+  load: function load()
   {
     var sessions,
         lines,

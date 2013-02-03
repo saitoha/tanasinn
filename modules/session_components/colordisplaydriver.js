@@ -48,19 +48,19 @@ ColorCompletionDisplayDriver.definition = {
 
   _renderer: null,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
     this._renderer = context["renderer"];
   },
 
-  /** Uninstalls itself 
+  /** Uninstalls itself
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
     this._renderer = null;
   },
@@ -71,7 +71,7 @@ ColorCompletionDisplayDriver.definition = {
     return this;
   },
 
-  drive: function drive(grid, result, current_index) 
+  drive: function drive(grid, result, current_index)
   {
     var owner_document = grid.ownerDocument,
         columns,
@@ -83,7 +83,7 @@ ColorCompletionDisplayDriver.definition = {
     rows = grid.appendChild(owner_document.createElement("rows"))
 
     //rows.style.border = "1px solid blue";
-    result.data.forEach(function(pair, index) 
+    result.data.forEach(function(pair, index)
     {
       var search_string, renderer;
 
@@ -91,11 +91,11 @@ ColorCompletionDisplayDriver.definition = {
       renderer = this._renderer;
 
       this.request(
-        "command/construct-chrome", 
+        "command/construct-chrome",
         {
           parentNode: rows,
           tagName: "row",
-          style: current_index === index && { 
+          style: current_index === index && {
             border: "solid 2px blue",
             background: "#226",
             color: "white",
@@ -103,35 +103,35 @@ ColorCompletionDisplayDriver.definition = {
           childNodes: [
             {
               tagName: "box",
-              style: { 
+              style: {
                 backgroundColor: result.option,
-                padding: "0px 20px", 
+                padding: "0px 20px",
               },
             },
             {
               tagName: "box",
-              style: { 
+              style: {
                 backgroundColor: pair.name,
-                padding: "0px 20px", 
+                padding: "0px 20px",
               },
             },
           ].concat([
-            { 
+            {
               text: pair.name,
-              start: pair.name.toLowerCase().indexOf(search_string), 
+              start: pair.name.toLowerCase().indexOf(search_string),
               length: search_string.length,
             },
-            { 
+            {
               text: pair.value,
-              start: pair.value.toLowerCase().indexOf(search_string), 
+              start: pair.value.toLowerCase().indexOf(search_string),
               length: search_string.length,
             }
           ].map(function(range) {
             return {
               tagName: "box",
-              style: { 
+              style: {
                 fontSize: "20px",
-                margin: "0px 10px", 
+                margin: "0px 10px",
               },
               childNodes: -1 === range.start ?
                 { text: range.text }:
@@ -140,8 +140,8 @@ ColorCompletionDisplayDriver.definition = {
                   {
                     tagName: "label",
                     value: range.text.substr(range.start, range.length),
-                    style: { 
-                      margin: "0px", 
+                    style: {
+                      margin: "0px",
                       fontWeight: "bold",
                       color: "#f00",
                       textDecoration: "underline",
@@ -152,7 +152,7 @@ ColorCompletionDisplayDriver.definition = {
             };
           }))
         });
-    }, this); 
+    }, this);
   },
 
 }; // ColorCompletionDisplayDriver

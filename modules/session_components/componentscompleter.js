@@ -44,18 +44,18 @@ ComponentsCompleter.definition = {
 
   "[persistable] enabled_when_startup": true,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
   },
 
   /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
   },
 
@@ -63,7 +63,7 @@ ComponentsCompleter.definition = {
    * Search for a given string and notify a listener (either synchronously
    * or asynchronously) of the result
    *
-   * @param context - The completion context object. 
+   * @param context - The completion context object.
    */
   "[completer('components'), pnp]":
   function complete(context)
@@ -107,11 +107,11 @@ ComponentsCompleter.definition = {
     modules = this.sendMessage("get/components");
     candidates = [
       {
-        key: module.id, 
-        value: module.info ? 
-          "[" + module.info.name + "] " + module.info.description: 
+        key: module.id,
+        value: module.info ?
+          "[" + module.info.name + "] " + module.info.description:
           module.toString()
-      } for ([, module] in Iterator(modules)) 
+      } for ([, module] in Iterator(modules))
         if (module.id && module.id.match(context.source))
     ];
     if (0 === candidates.length) {
@@ -123,7 +123,7 @@ ComponentsCompleter.definition = {
       "event/answer-completion",
       {
         type: "text",
-        query: context.source, 
+        query: context.source,
         data: candidates.map(
           function(candidate)
           {

@@ -47,7 +47,7 @@ TerminalMode.definition = {
 
   /**
    * DECTME - Terminal Mode Emulation
-   * 
+   *
    * Select a terminal emulation mode.
    *
    * Format
@@ -56,7 +56,7 @@ TerminalMode.definition = {
    * 9/11  3/n   2/0   7/17
    *
    * Parameters
-   * 
+   *
    * Ps
    * The Ps parameter selects the terminal emulation mode as follows:
    * Table 5–10 Terminal Emulation Modes
@@ -78,23 +78,23 @@ TerminalMode.definition = {
    * 13             | SCO Console
    *
    * Description
-   * 
-   * This sequence allows you to select the terminal emulation mode. 
+   *
+   * This sequence allows you to select the terminal emulation mode.
    * After any mode change is made, a soft reset is performed.
    *
    * Notes on DECTME
-   * 
+   *
    *     Printer operations are not affected or halted by a change in mode.
    *     A soft reset is always performed as a result of a mode change between
    *     VT modes.
-   * 
+   *
    *     Exception: Entering VT52 mode using DECANM does not cause a soft
    *     reset from VT100 mode.
    *     DECANM and DECSCL can also change the VT operating modes.
    *
    */
   "[profile('vt100'), sequence('CSI Ps \\ ~')]":
-  function DECTME(n) 
+  function DECTME(n)
   {
     switch (n || 0) {
 
@@ -115,7 +115,7 @@ TerminalMode.definition = {
         coUtils.Debug.reportWarning(
           _("Unsupported emulation mode [%s] was specified."),
           Array.slice(arguments));
-      
+
     }
   },
 
@@ -126,7 +126,7 @@ TerminalMode.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new TerminalMode(broker);
 }

@@ -25,7 +25,7 @@
 "use strict";
 
 
-/** 
+/**
  * @class Chrome
  * @brief Manage a terminal UI and a session.
  */
@@ -95,11 +95,11 @@ InnerChrome.definition = {
 
   _element: null,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
-  "[install]": 
-  function install(context) 
+  "[install]":
+  function install(context)
   {
     var result = this.request("command/construct-chrome", this._getTemplate());
 
@@ -107,10 +107,10 @@ InnerChrome.definition = {
     this._center = result.tanasinn_center_area;
   },
 
-  /** Uninstalls itself. 
+  /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
     if (this._element && this._element.parentNode) {
       this._element.parentNode.removeChild(this._element);
@@ -119,22 +119,22 @@ InnerChrome.definition = {
     this._center = null;
   },
 
-  "[subscribe('variable-changed/chrome.{margin | background}'), pnp]": 
+  "[subscribe('variable-changed/chrome.{margin | background}'), pnp]":
   function updateStyle()
   {
     this._center.style.cssText = this._getStyle();
   },
 
   "[subscribe('command/query-selector'), enabled]":
-  function querySelector(selector) 
+  function querySelector(selector)
   {
     var root_element = this.request("get/root-element");
     return root_element.querySelector(selector);
   },
 
   /** Fired when a resize session started. */
-  "[subscribe('event/resize-session-started'), enabled]": 
-  function onResizeSessionStarted(subject) 
+  "[subscribe('event/resize-session-started'), enabled]":
+  function onResizeSessionStarted(subject)
   {
     this.sendMessage("command/set-opacity", this.resize_opacity);
   },
@@ -146,7 +146,7 @@ InnerChrome.definition = {
     this.sendMessage("command/set-opacity", 1.00);
   },
 
-  /** An event handler which is fired when the keyboard focus is got. 
+  /** An event handler which is fired when the keyboard focus is got.
    */
   "[subscribe('event/got-focus'), pnp]":
   function onGotFocus()
@@ -155,7 +155,7 @@ InnerChrome.definition = {
     this.sendMessage("command/set-opacity", 1.00);
   },
 
-  /** An event handler which is fired when the keyboard focus is lost. 
+  /** An event handler which is fired when the keyboard focus is lost.
    */
   "[subscribe('event/lost-focus'), pnp]":
   function onLostFocus()
@@ -177,7 +177,7 @@ InnerChrome.definition = {
  * @brief Module entry point.
  * @param {Broker} Broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new InnerChrome(broker);
 }

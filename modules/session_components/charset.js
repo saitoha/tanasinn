@@ -29,7 +29,7 @@
  * @class CharsetModeHandler
  *
  * SCS - Select Character Set
- * 
+ *
  * Designate character sets to G-sets.
  *
  * Format
@@ -38,7 +38,7 @@
  * 1/11   ...   ...
  *
  * Parameters
- * 
+ *
  * I is the intermediate character representing the G-set designator.
  *
  * I   94-Character G-set
@@ -50,7 +50,7 @@
  * -   G1
  * .   G2
  * /   G3
- * 
+ *
  * Dscs represents a character set designator.
  * Dscs         Default 94-Character Set
  * % 5          DEC Supplemental
@@ -87,7 +87,7 @@
  * <            User-preferred Supplemental
  */
 var CharsetModeHandler = new Class().extends(Plugin)
-CharsetModeHandler.definition = {  
+CharsetModeHandler.definition = {
 
   id: "charsetmode",
 
@@ -103,44 +103,44 @@ CharsetModeHandler.definition = {
   "[persistable] enabled_when_startup": true,
 
   /** select G0 character set */
-  "[profile('vt100'), sequence('ESC ( Pc'), _('Select Character Set G0')]": 
-  function SCSG0(mode) 
+  "[profile('vt100'), sequence('ESC ( Pc'), _('Select Character Set G0')]":
+  function SCSG0(mode)
   {
     this.sendMessage("sequence/g0", mode);
   },
-  
+
   /** select G1 character set */
-  "[profile('vt100'), sequence('ESC ) Pc'), _('Select Character Set G1')]": 
-  function SCSG1(mode) 
+  "[profile('vt100'), sequence('ESC ) Pc'), _('Select Character Set G1')]":
+  function SCSG1(mode)
   {
     this.sendMessage("sequence/g1", mode);
   },
 
   /** select G2 character set */
-  "[profile('vt100'), sequence('ESC * Pc'), _('Select Character Set G2')]": 
-  function SCSG2(mode) 
+  "[profile('vt100'), sequence('ESC * Pc'), _('Select Character Set G2')]":
+  function SCSG2(mode)
   {
     this.sendMessage("sequence/g2", mode);
   },
 
   /** select G3 character set */
-  "[profile('vt100'), sequence('ESC + Pc'), _('Select Character Set G3')]": 
-  function SCSG3(mode) 
+  "[profile('vt100'), sequence('ESC + Pc'), _('Select Character Set G3')]":
+  function SCSG3(mode)
   {
     this.sendMessage("sequence/g3", mode);
   },
 
   /** Select default character set. */
-  "[profile('vt100'), sequence('ESC % @')]": 
-  function ISO_8859_1() 
+  "[profile('vt100'), sequence('ESC % @')]":
+  function ISO_8859_1()
   {
     this.sendMessage("change/decoder", "ISO-8859-1");
     this.sendMessage("change/encoder", "ISO-8859-1");
   },
 
   /** Select UTF-8 character set. */
-  "[profile('vt100'), sequence('ESC % G')]": 
-  function UTF_8() 
+  "[profile('vt100'), sequence('ESC % G')]":
+  function UTF_8()
   {
     this.sendMessage("change/decoder", "UTF-8");
     this.sendMessage("change/encoder", "UTF-8");
@@ -154,7 +154,7 @@ CharsetModeHandler.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new CharsetModeHandler(broker);
 }

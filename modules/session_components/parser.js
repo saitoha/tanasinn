@@ -58,13 +58,13 @@ Parser.definition = {
 
   _wcwidth: null,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
   function install(context)
   {
-    this._scanner = context["scanner"];    
+    this._scanner = context["scanner"];
     this._screen = context["screen"];
     this._decoder = context["decoder"];
     this._drcs_converter = context["drcs_converter"];
@@ -72,7 +72,7 @@ Parser.definition = {
     this.onChangeAmbiguousCharacterWidth(this.ambiguous_as_wide);
   },
 
-  /** uninstalls itself. 
+  /** uninstalls itself.
    */
   "[uninstall]":
   function uninstall()
@@ -132,22 +132,22 @@ Parser.definition = {
     }
   },
 
-  "[subscribe('command/enable-default-parser'), pnp]": 
+  "[subscribe('command/enable-default-parser'), pnp]":
   function enableDefaultParser()
   {
     this.drive.enabled = true;
   },
 
-  "[subscribe('command/disable-default-parser'), pnp]": 
+  "[subscribe('command/disable-default-parser'), pnp]":
   function disableDefaultParser()
   {
     this.drive.enabled = false;
   },
 
-  /** Parse and evaluate control codes and text pieces from the scanner. 
+  /** Parse and evaluate control codes and text pieces from the scanner.
    *  @param {String} data incoming data in text format.
    */
-  "[subscribe('event/data-arrived'), pnp]": 
+  "[subscribe('event/data-arrived'), pnp]":
   function drive(data)
   {
     var scanner = this._scanner,
@@ -159,10 +159,10 @@ Parser.definition = {
     this.sendMessage("command/draw"); // fire "draw" event.
   },
 
-  /** Parse and evaluate control codes and text pieces from the scanner. 
+  /** Parse and evaluate control codes and text pieces from the scanner.
    *  @param {String} data incoming data in text format.
    */
-  "[subscribe('event/data-arrived-recursively'), pnp]": 
+  "[subscribe('event/data-arrived-recursively'), pnp]":
   function onDataArrivedRecursively(data)
   {
     var scanner = new Scanner(broker),
@@ -174,7 +174,7 @@ Parser.definition = {
     this.sendMessage("command/draw"); // fire "draw" event.
   },
 
-  /** Parse control codes and text pieces from the scanner. 
+  /** Parse control codes and text pieces from the scanner.
    *  @param {String} data incoming data in text format.
    */
   parse: function parse(scanner)
@@ -220,7 +220,7 @@ Parser.definition = {
          *  example:
          *
          *  +--------+--------+--------+--------+--------+--------+-
-         *  | 0x0041 | 0x0042 | 0x0043 | 0x3042 | 0x0044 | 0x3044 |  
+         *  | 0x0041 | 0x0042 | 0x0043 | 0x3042 | 0x0044 | 0x3044 |
          *  +--------+--------+--------+--------+--------+--------+-
          *                        ^                          ^
          *                       wide                       wide
@@ -228,7 +228,7 @@ Parser.definition = {
          *  Above character sequence will to be converted as follows.
          *
          *  +--------+--------+--------+--------+--------+--------+--------+--------+-
-         *  | 0x0041 | 0x0042 | 0x0043 | 0x0000 | 0x3042 | 0x0044 | 0x0000 | 0x3044 |  
+         *  | 0x0041 | 0x0042 | 0x0043 | 0x0000 | 0x3042 | 0x0044 | 0x0000 | 0x3044 |
          *  +--------+--------+--------+--------+--------+--------+--------+--------+-
          *                                 ^                          ^
          *                              inserted                   inserted
@@ -268,7 +268,7 @@ Parser.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new Parser(broker);
 }

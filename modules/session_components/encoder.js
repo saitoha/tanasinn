@@ -26,7 +26,7 @@
 
 coUtils.Unicode = {
 
-  getUTF8ByteStreamGenerator: function getUTF8ByteStreamGenerator(str) 
+  getUTF8ByteStreamGenerator: function getUTF8ByteStreamGenerator(str)
   {
     var c,
         code;
@@ -39,20 +39,20 @@ coUtils.Unicode = {
       else if (code < 0x800) {
         // 00000xxx xxxxxxxx -> 110xxxxx 10xxxxxx
         yield (code >>> 6) | 0xc0;
-        yield (code & 0x3f) | 0x80; 
+        yield (code & 0x3f) | 0x80;
       }
       else if (code < 0x10000) {
         // xxxxxxxx xxxxxxxx -> 1110xxxx 10xxxxxx 10xxxxxx
         yield (code >>> 12) | 0xe0;
         yield ((code >>> 6) & 0x3f) | 0x80;
-        yield (code & 0x3f) | 0x80; 
+        yield (code & 0x3f) | 0x80;
       }
       else  {
         // 000xxxxx xxxxxxxx xxxxxxxx -> 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
         yield (code >>> 18) | 0xf0;
-        yield ((code >>> 12) & 0x3f) | 0x80; 
-        yield ((code >>> 6) & 0x3f) | 0x80; 
-        yield (code & 0x3f) | 0x80; 
+        yield ((code >>> 12) & 0x3f) | 0x80;
+        yield ((code >>> 6) & 0x3f) | 0x80;
+        yield (code & 0x3f) | 0x80;
       }
     }
   },
@@ -83,21 +83,21 @@ Encoder.definition = {
   "[persistable] enabled_when_startup": true,
   "[persistable] initial_scheme": "UTF-8",
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
     this._cache = {};
 
     this.changeScheme(this.initial_scheme);
   },
 
-  /** Uninstalls itself. 
+  /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
     this._cache = null;
   },
@@ -110,7 +110,7 @@ Encoder.definition = {
 
   "[subscribe('change/encoder'), pnp]":
   /** Sets character encoding scheme */
-  function changeScheme(value) 
+  function changeScheme(value)
   {
     var encoders = this.sendMessage("get/encoders"),
         encoder_map,
@@ -123,9 +123,9 @@ Encoder.definition = {
     }
 
     encoder_map = encoders.reduce(
-      function reduceProc(map, information) 
+      function reduceProc(map, information)
       {
-        map[information.charset] = information; 
+        map[information.charset] = information;
         return map;
       });
     scheme = value;//.toLowerCase();
@@ -144,16 +144,16 @@ Encoder.definition = {
 
     message = coUtils.Text
       .format(_("Input character encoding changed: [%s]."), scheme);
-    this.sendMessage("command/report-status-message", message); 
+    this.sendMessage("command/report-status-message", message);
 
   },
 
   /** Encode incoming string data.
    *
    *  @param {String} data a text message in Unicode string.
-   *  @return {String} Converted string. 
-   */ 
-  encode: function encode(data) 
+   *  @return {String} Converted string.
+   */
+  encode: function encode(data)
   {
     return this._encoder.encode(data);
   },
@@ -165,7 +165,7 @@ Encoder.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new Encoder(broker);
 }

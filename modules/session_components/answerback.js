@@ -52,7 +52,7 @@
  *
  *
  * Description
- * 
+ *
  * When modem control is enabled, the answerback message is sent 500 ms after
  * the connection is made.
  *
@@ -78,11 +78,11 @@ AnswerBack.definition = {
 
   _mode: false,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
     this._mode = this.default_value;
     this.reset();
@@ -91,7 +91,7 @@ AnswerBack.definition = {
   /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
     this._mode = null;
   },
@@ -123,8 +123,8 @@ AnswerBack.definition = {
   /** Activate reverse video feature.
    */
   "[subscribe('sequence/decset/100'), pnp]":
-  function activate() 
-  { 
+  function activate()
+  {
     this._mode = true;
 
     coUtils.Debug.reportMessage(
@@ -134,7 +134,7 @@ AnswerBack.definition = {
   /** Deactivate reverse video feature
    */
   "[subscribe('sequence/decrst/100'), pnp]":
-  function deactivate() 
+  function deactivate()
   {
     this._mode = false;
 
@@ -145,7 +145,7 @@ AnswerBack.definition = {
   /** Report mode
    */
   "[subscribe('sequence/decrqm/100'), pnp]":
-  function report() 
+  function report()
   {
     var mode = this._mode ? 1: 2,
         message = "?100;" + mode + "$y";
@@ -156,7 +156,7 @@ AnswerBack.definition = {
   /** handle terminal reset event.
    */
   "[subscribe('command/{soft | hard}-terminal-reset'), pnp]":
-  function reset() 
+  function reset()
   {
     if (this.default_value) {
       this.activate();
@@ -168,8 +168,8 @@ AnswerBack.definition = {
   /**
    * Serialize snd persist current state.
    */
-  "[subscribe('@command/backup'), type('Object -> Undefined'), pnp]": 
-  function backup(context) 
+  "[subscribe('@command/backup'), type('Object -> Undefined'), pnp]":
+  function backup(context)
   {
     // serialize this plugin object.
     context[this.id] = {
@@ -180,8 +180,8 @@ AnswerBack.definition = {
   /**
    * Deserialize snd restore stored state.
    */
-  "[subscribe('@command/restore'), type('Object -> Undefined'), pnp]": 
-  function restore(context) 
+  "[subscribe('@command/restore'), type('Object -> Undefined'), pnp]":
+  function restore(context)
   {
     var data = context[this.id];
     if (data) {
@@ -199,7 +199,7 @@ AnswerBack.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new AnswerBack(broker);
 }

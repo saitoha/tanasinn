@@ -61,7 +61,7 @@ VT52.definition = {
   _char_map: null,
   _state: _STATE_GROUND,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
@@ -75,7 +75,7 @@ VT52.definition = {
     this._state = _STATE_GROUND;
   },
 
-  /** Unnstalls itself. 
+  /** Unnstalls itself.
    */
   "[uninstall]":
   function uninstall()
@@ -104,14 +104,14 @@ VT52.definition = {
     return this;
   },
 
-  /** Parse and returns asocciated action. 
+  /** Parse and returns asocciated action.
    *  @param {Scanner} scanner A Scanner object.
    *  @param {Function|Undefined} Action object.
    *
    *  @implements Grammar.parse :: Scanner -> Action
    */
   "[type('Scanner -> Action')] parse":
-  function parse(scanner) 
+  function parse(scanner)
   {
     var c,
         action,
@@ -148,7 +148,7 @@ VT52.definition = {
         }
         this._state = _STATE_GROUND;
       } else if (c < 0x80) /*if (_STATE_GROUND === state)*/ {
-        //return false; 
+        //return false;
         screen = this._screen;
         if (screen.cursor.positionX < this._screen.width) {
           screen.write([c])
@@ -159,13 +159,13 @@ VT52.definition = {
   },
 
   /** Append a sequence handler.
-   *  @param {Object} information A register information object that has 
+   *  @param {Object} information A register information object that has
    *                              "expression", "handler", and "context" key.
    *
    *  @implements Grammar.<command/add-sequence/vt52> :: SequenceInfo -> Undefined
    */
   "[subscribe('command/add-sequence/vt52'), type('SequenceInfo -> Undefined'), pnp]":
-  function append(information) 
+  function append(information)
   {
     var expression = information.expression,
         tokens = expression.split(/\s+/),
@@ -179,7 +179,7 @@ VT52.definition = {
 
     if (1 === length) {
       key = Number(tokens[0]);
-      this._char_map[key] = 
+      this._char_map[key] =
         function action()
         {
           return handler.call(context);
@@ -208,34 +208,34 @@ VT52.definition = {
   /** Null.
    */
   "[profile('vt52'), sequence('0x00')]":
-  function NUL() 
+  function NUL()
   {
   },
-  
+
   /** Start of heading.
    */
   "[profile('vt52'), sequence('0x01')]":
-  function SOH() 
+  function SOH()
   {
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
       "SOH", Array.slice(arguments));
   },
-  
+
   /** Start of text.
    */
   "[profile('vt52'), sequence('0x02')]":
-  function STX()  
+  function STX()
   {
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
       "STX", Array.slice(arguments));
   },
- 
+
   /** End of text.
    */
   "[profile('vt52'), sequence('0x03')]":
-  function ETX() 
+  function ETX()
   {
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
@@ -245,35 +245,35 @@ VT52.definition = {
   /** Start of transmission.
    */
   "[profile('vt52'), sequence('0x04')]":
-  function EOT() 
+  function EOT()
   {
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
       "EOT", Array.slice(arguments));
   },
-  
+
   /** Enquire.
    */
   "[profile('vt52'), sequence('0x05')]":
-  function ENQ() 
+  function ENQ()
   {
     this.sendMessage("command/answerback");
   },
-  
+
   /** Acknowledge.
    */
   "[profile('vt52'), sequence('0x06')]":
-  function ACK() 
+  function ACK()
   {
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
       "ACK", Array.slice(arguments));
   },
-   
+
   /** Bell.
    */
   "[profile('vt52'), sequence('0x07', 'ESC \\\\')]":
-  function BEL() 
+  function BEL()
   {
     this.sendMessage("sequence/bel");
   },
@@ -281,43 +281,43 @@ VT52.definition = {
   /** Back space.
    */
   "[profile('vt52'), sequence('0x08')]":
-  function BS() 
+  function BS()
   { // BackSpace
     var screen = this._screen;
     screen.backSpace();
   },
-   
+
   /** Horizontal tabulation.
    */
   "[profile('vt52'), sequence('0x09'), _('Horizontal tabulation')]":
-  function HT() 
+  function HT()
   { // Horizontal Tab
     var screen = this._screen;
     screen.horizontalTab();
   },
-  
+
   /** Linefeed.
    */
   "[profile('vt52'), sequence('0x0A'), _('Line Feed')]":
-  function LF() 
+  function LF()
   {
     var screen = this._screen;
     screen.lineFeed();
   },
- 
+
   /** Index.
    */
   "[profile('vt52'), sequence('0x84'), _('Index')]":
-  function IND() 
+  function IND()
   {
     var screen = this._screen;
     screen.lineFeed();
   },
- 
+
   /** Vertical tabulation.
    */
   "[profile('vt52'), sequence('0x0B')]":
-  function VT() 
+  function VT()
   {
     var screen = this._screen;
     screen.lineFeed();
@@ -326,7 +326,7 @@ VT52.definition = {
   /** Form feed.
    */
   "[profile('vt52'), sequence('0x0C')]":
-  function FF() 
+  function FF()
   {
     var screen = this._screen;
     screen.lineFeed();
@@ -335,24 +335,24 @@ VT52.definition = {
   /** Carriage return.
    */
   "[profile('vt52'), sequence('0x0D')]":
-  function CR() 
+  function CR()
   { // Carriage Return
     var screen = this._screen;
     screen.carriageReturn();
   },
-    
+
   /** Shift out.
    */
   "[profile('vt52'), sequence('0x0E')]":
-  function SO() 
+  function SO()
   { // shift out
     this.sendMessage("event/shift-out");
   },
-  
+
   /** Shift in.
    */
   "[profile('vt52'), sequence('0x0F')]":
-  function SI() 
+  function SI()
   { // shift out
     this.sendMessage("event/shift-in");
   },
@@ -360,25 +360,25 @@ VT52.definition = {
   /** Data link escape.
    */
   "[profile('vt52'), sequence('0x10')]":
-  function DLE() 
+  function DLE()
   {
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
       "DLE", Array.slice(arguments));
   },
- 
+
   /** Device control 1.
    */
   "[profile('vt52'), sequence('0x11')]":
-  function DC1() 
+  function DC1()
   {
     this.sendMessage("command/flow-control", true);
   },
-  
+
   /** Device control 2.
    */
   "[profile('vt52'), sequence('0x12')]":
-  function DC2() 
+  function DC2()
   {
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
@@ -388,71 +388,71 @@ VT52.definition = {
   /** Device control 3.
    */
   "[profile('vt52'), sequence('0x13')]":
-  function DC3() 
+  function DC3()
   {
     this.sendMessage("command/flow-control", false);
   },
-  
+
   /** Device control 4.
    */
   "[profile('vt52'), sequence('0x14')]":
-  function DC4() 
+  function DC4()
   {
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
         "DC4", Array.slice(arguments));
   },
-  
+
   /** Negative acknowledge.
    */
   "[profile('vt52'), sequence('0x15')]":
-  function NAK() 
+  function NAK()
   {
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
         "NAK", Array.slice(arguments));
   },
-  
+
   /** Synchronous idle.
    */
   "[profile('vt52'), sequence('0x16')]":
-  function SYN() 
+  function SYN()
   {
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
         "SYN", Array.slice(arguments));
   },
-  
+
   /** End of transmission block.
    */
   "[profile('vt52'), sequence('0x17')]":
-  function ETB() 
+  function ETB()
   {
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
         "ETB", Array.slice(arguments));
   },
-  
+
   /** Cancel of previous word or charactor.
    */
   "[profile('vt52'), sequence('0x18')]":
-  function CAN() 
+  function CAN()
   {
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
         "CAN", Array.slice(arguments));
   },
-  
+
   /** End of medium.
    */
   "[profile('vt52'), sequence('0x19')]":
-  function EM() 
+  function EM()
   {
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
         "EM", Array.slice(arguments));
   },
-  
+
   /** Substitute.
    */
   "[profile('vt52'), sequence('0x1A')]":
@@ -462,51 +462,51 @@ VT52.definition = {
       _("%s sequence [%s] was ignored."),
         "SUB", Array.slice(arguments));
   },
-  
+
   /** File separator.
    */
   "[profile('vt52'), sequence('0x1C')]":
-  function FS() 
+  function FS()
   {
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
         "FS", Array.slice(arguments));
   },
- 
+
   /** Group separator.
    */
   "[profile('vt52'), sequence('0x1D')]":
-  function GS() 
+  function GS()
   {
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
         "GS", Array.slice(arguments));
   },
-  
+
   /** Record separator.
    */
   "[profile('vt52'), sequence('0x1E')]":
-  function RS() 
+  function RS()
   {
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
         "RS", Array.slice(arguments));
   },
-  
+
   /** Unit separator.
    */
   "[profile('vt52'), sequence('0x1F')]":
-  function US() 
+  function US()
   {
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
         "US", Array.slice(arguments));
   },
-  
+
   /** Delete.
    */
   "[profile('vt52'), sequence('0x7F', '0xFF')]":
-  function DEL() 
+  function DEL()
   {
     var screen = this._screen;
     screen.backSpace();
@@ -559,7 +559,7 @@ VT52.definition = {
   function ESA()
   {
     this.sendMessage("sequence/g0", "B");
-    this.sendMessage("event/shift-in"); 
+    this.sendMessage("event/shift-in");
   },
 
   /** Move the cursor to the home position.
@@ -624,32 +624,32 @@ VT52.definition = {
     this.sendMessage("command/send-to-tty", "\x1b/Z");
   },
 
-  "[profile('vt52'), sequence('ESC =')]": 
-  function () 
+  "[profile('vt52'), sequence('ESC =')]":
+  function ()
   {
     coUtils.Debug.reportWarning(
       _("EnterAlternativeKeypadMode was not implemented."));
   },
 
-  "[profile('vt52'), sequence('ESC >')]": 
-  function () 
+  "[profile('vt52'), sequence('ESC >')]":
+  function ()
   {
     coUtils.Debug.reportWarning(
       _("ExitAlternativeKeypadMode was not implemented."));
   },
 
-  /** Exit VT52 mode. 
+  /** Exit VT52 mode.
    * exit VT52 mode
    */
-  "[profile('vt52'), sequence('ESC <')]": 
-  function V5EX() 
+  "[profile('vt52'), sequence('ESC <')]":
+  function V5EX()
   {
     this.sendMessage("command/change-emulation-mode", "vt100");
     coUtils.Debug.reportMessage("Exit VT52 mode.");
   },
 
-  "[profile('vt100'), sequence('ESC <')]": 
-  function V5EX_VT100() 
+  "[profile('vt100'), sequence('ESC <')]":
+  function V5EX_VT100()
   {
   },
 
@@ -660,7 +660,7 @@ VT52.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new VT52(broker);
 }

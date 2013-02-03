@@ -69,11 +69,11 @@ CursorBlink.definition = {
   _mode: null,
   _cursor: null,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
     this._mode = this.default_value;
     this._cursor = context["cursorstate"];
@@ -83,7 +83,7 @@ CursorBlink.definition = {
   /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
     this._mode = null;
     this._cursor = null;
@@ -92,8 +92,8 @@ CursorBlink.definition = {
   /** Start Blinking Cursor (att610).
    */
   "[subscribe('sequence/decset/12'), pnp]":
-  function activate() 
-  { 
+  function activate()
+  {
     var cursor = this._cursor;
 
     this._mode = true;
@@ -107,7 +107,7 @@ CursorBlink.definition = {
   /** Stop Blinking Cursor (att610).
    */
   "[subscribe('sequence/decrst/12'), pnp]":
-  function deactivate() 
+  function deactivate()
   {
     var cursor = this._cursor;
 
@@ -122,7 +122,7 @@ CursorBlink.definition = {
   /** Report mode
    */
   "[subscribe('sequence/decrqm/12'), pnp]":
-  function report() 
+  function report()
   {
     var mode = this._mode ? 1: 2,
         message = "?12;" + mode + "$y";
@@ -133,7 +133,7 @@ CursorBlink.definition = {
   /** handle terminal reset event.
    */
   "[subscribe('command/{soft | hard}-terminal-reset'), pnp]":
-  function reset() 
+  function reset()
   {
     if (this.default_value) {
       this.activate();
@@ -145,8 +145,8 @@ CursorBlink.definition = {
   /**
    * Serialize snd persist current state.
    */
-  "[subscribe('@command/backup'), type('Object -> Undefined'), pnp]": 
-  function backup(context) 
+  "[subscribe('@command/backup'), type('Object -> Undefined'), pnp]":
+  function backup(context)
   {
     // serialize this plugin object.
     context[this.id] = {
@@ -157,8 +157,8 @@ CursorBlink.definition = {
   /**
    * Deserialize snd restore stored state.
    */
-  "[subscribe('@command/restore'), type('Object -> Undefined'), pnp]": 
-  function restore(context) 
+  "[subscribe('@command/restore'), type('Object -> Undefined'), pnp]":
+  function restore(context)
   {
     var data;
 
@@ -179,7 +179,7 @@ CursorBlink.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new CursorBlink(broker);
 }

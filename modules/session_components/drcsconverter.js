@@ -29,7 +29,7 @@
  * @brief Convert DEC Special character set -> Unicode characters.
  *
  * -*- from "VT220 Programmer Reference Manual" -*-
- * http://vt100.net/docs/vt220-rm/table2-4.html 
+ * http://vt100.net/docs/vt220-rm/table2-4.html
  *
  * -*- from manpage of terminfo -*-
  *
@@ -337,45 +337,45 @@ var DEC_Multinational_Character_Set = USASCII.slice(0);
 
 /* DEC Special Graphics Character Set */
 var DEC_Special_Graphics_Character_Set = USASCII.slice(0);
-DEC_Special_Graphics_Character_Set[0x60] = 0x25c6; // 
-DEC_Special_Graphics_Character_Set[0x61] = 0x2592; // 
+DEC_Special_Graphics_Character_Set[0x60] = 0x25c6; //
+DEC_Special_Graphics_Character_Set[0x61] = 0x2592; //
 DEC_Special_Graphics_Character_Set[0x62] = 0x2409; // HT
 DEC_Special_Graphics_Character_Set[0x63] = 0x240c; // FF
 DEC_Special_Graphics_Character_Set[0x64] = 0x240d; // CR
 DEC_Special_Graphics_Character_Set[0x65] = 0x240a; // LF
-DEC_Special_Graphics_Character_Set[0x66] = 0xb0; // 
-DEC_Special_Graphics_Character_Set[0x67] = 0xb1; // 
+DEC_Special_Graphics_Character_Set[0x66] = 0xb0; //
+DEC_Special_Graphics_Character_Set[0x67] = 0xb1; //
 DEC_Special_Graphics_Character_Set[0x68] = 0x2424; // NL
 DEC_Special_Graphics_Character_Set[0x69] = 0x240b; // VT
-DEC_Special_Graphics_Character_Set[0x6a] = 0x2518; // 
-DEC_Special_Graphics_Character_Set[0x6b] = 0x2510; // 
-DEC_Special_Graphics_Character_Set[0x6c] = 0x250c; // 
-DEC_Special_Graphics_Character_Set[0x6d] = 0x2514; // 
-DEC_Special_Graphics_Character_Set[0x6e] = 0x253c; // 
-DEC_Special_Graphics_Character_Set[0x6f] = 0x23ba; // 
-DEC_Special_Graphics_Character_Set[0x70] = 0x23bb; // 
-DEC_Special_Graphics_Character_Set[0x71] = 0x2500; // 
-DEC_Special_Graphics_Character_Set[0x72] = 0x23bc; // 
-DEC_Special_Graphics_Character_Set[0x73] = 0x23bd; // 
-DEC_Special_Graphics_Character_Set[0x74] = 0x251c; // 
-DEC_Special_Graphics_Character_Set[0x75] = 0x2524; // 
-DEC_Special_Graphics_Character_Set[0x76] = 0x2534; // 
-DEC_Special_Graphics_Character_Set[0x77] = 0x252c; // 
-DEC_Special_Graphics_Character_Set[0x78] = 0x2502; // 
-DEC_Special_Graphics_Character_Set[0x79] = 0x2264; // 
-DEC_Special_Graphics_Character_Set[0x7a] = 0x2265; // 
-DEC_Special_Graphics_Character_Set[0x7b] = 0x03c0; // 
-DEC_Special_Graphics_Character_Set[0x7c] = 0x2260; // 
-DEC_Special_Graphics_Character_Set[0x7d] = 0xa3; // 
-DEC_Special_Graphics_Character_Set[0x7e] = 0xb7; // 
+DEC_Special_Graphics_Character_Set[0x6a] = 0x2518; //
+DEC_Special_Graphics_Character_Set[0x6b] = 0x2510; //
+DEC_Special_Graphics_Character_Set[0x6c] = 0x250c; //
+DEC_Special_Graphics_Character_Set[0x6d] = 0x2514; //
+DEC_Special_Graphics_Character_Set[0x6e] = 0x253c; //
+DEC_Special_Graphics_Character_Set[0x6f] = 0x23ba; //
+DEC_Special_Graphics_Character_Set[0x70] = 0x23bb; //
+DEC_Special_Graphics_Character_Set[0x71] = 0x2500; //
+DEC_Special_Graphics_Character_Set[0x72] = 0x23bc; //
+DEC_Special_Graphics_Character_Set[0x73] = 0x23bd; //
+DEC_Special_Graphics_Character_Set[0x74] = 0x251c; //
+DEC_Special_Graphics_Character_Set[0x75] = 0x2524; //
+DEC_Special_Graphics_Character_Set[0x76] = 0x2534; //
+DEC_Special_Graphics_Character_Set[0x77] = 0x252c; //
+DEC_Special_Graphics_Character_Set[0x78] = 0x2502; //
+DEC_Special_Graphics_Character_Set[0x79] = 0x2264; //
+DEC_Special_Graphics_Character_Set[0x7a] = 0x2265; //
+DEC_Special_Graphics_Character_Set[0x7b] = 0x03c0; //
+DEC_Special_Graphics_Character_Set[0x7c] = 0x2260; //
+DEC_Special_Graphics_Character_Set[0x7d] = 0xa3; //
+DEC_Special_Graphics_Character_Set[0x7e] = 0xb7; //
 
-/* DEC British NRC Set 
+/* DEC British NRC Set
  * DSCS = B
  */
 var DEC_British_NRC_Set = USASCII.slice(0);
 DEC_British_NRC_Set[0x23] = 0xa3; // pond
 
-/* DEC Dutch NRC Set 
+/* DEC Dutch NRC Set
  * DSCS = 4
  */
 var DEC_Dutch_NRC_Set = USASCII.slice(0);
@@ -384,141 +384,141 @@ DEC_Dutch_NRC_Set[0x40] = 0xbe; // 3/4
 DEC_Dutch_NRC_Set[0x5b] = 0xff; // ij
 DEC_Dutch_NRC_Set[0x5c] = 0xbd; // 1/2
 DEC_Dutch_NRC_Set[0x5d] = 0x7c; // |
-DEC_Dutch_NRC_Set[0x7b] = 0xa8; // 
-DEC_Dutch_NRC_Set[0x7c] = 0x66; // 0x0192; // 
-DEC_Dutch_NRC_Set[0x7d] = 0xbc; // 
-DEC_Dutch_NRC_Set[0x7e] = 0xb4; // 
+DEC_Dutch_NRC_Set[0x7b] = 0xa8; //
+DEC_Dutch_NRC_Set[0x7c] = 0x66; // 0x0192; //
+DEC_Dutch_NRC_Set[0x7d] = 0xbc; //
+DEC_Dutch_NRC_Set[0x7e] = 0xb4; //
 
-/* DEC Finnish NRC Set 
+/* DEC Finnish NRC Set
  * DSCS = 5, C
  */
 var DEC_Finnish_NRC_Set = USASCII.slice(0);
-DEC_Finnish_NRC_Set[0x5b] = 0xc4; // 
-DEC_Finnish_NRC_Set[0x5c] = 0xd6; // 
-DEC_Finnish_NRC_Set[0x5d] = 0xc5; // 
-DEC_Finnish_NRC_Set[0x5e] = 0xdc; // 
-DEC_Finnish_NRC_Set[0x60] = 0xe9; // 
-DEC_Finnish_NRC_Set[0x7b] = 0xe4; // 
-DEC_Finnish_NRC_Set[0x7c] = 0xf6; // 
-DEC_Finnish_NRC_Set[0x7d] = 0xe5; // 
-DEC_Finnish_NRC_Set[0x7e] = 0xfc; // 
+DEC_Finnish_NRC_Set[0x5b] = 0xc4; //
+DEC_Finnish_NRC_Set[0x5c] = 0xd6; //
+DEC_Finnish_NRC_Set[0x5d] = 0xc5; //
+DEC_Finnish_NRC_Set[0x5e] = 0xdc; //
+DEC_Finnish_NRC_Set[0x60] = 0xe9; //
+DEC_Finnish_NRC_Set[0x7b] = 0xe4; //
+DEC_Finnish_NRC_Set[0x7c] = 0xf6; //
+DEC_Finnish_NRC_Set[0x7d] = 0xe5; //
+DEC_Finnish_NRC_Set[0x7e] = 0xfc; //
 
-/* DEC French NRC Set 
+/* DEC French NRC Set
  * DSCS = R
  */
 var DEC_French_NRC_Set = USASCII.slice(0);
-DEC_French_NRC_Set[0x23] = 0xa3; // 
-DEC_French_NRC_Set[0x40] = 0xe0; // 
-DEC_French_NRC_Set[0x5b] = 0xb0; // 
-DEC_French_NRC_Set[0x5c] = 0xe7; // 
-DEC_French_NRC_Set[0x5d] = 0xa7; // 
-DEC_French_NRC_Set[0x7b] = 0xe9; // 
-DEC_French_NRC_Set[0x7c] = 0xf9; // 
-DEC_French_NRC_Set[0x7d] = 0xe8; // 
-DEC_French_NRC_Set[0x7e] = 0xa8; // 
+DEC_French_NRC_Set[0x23] = 0xa3; //
+DEC_French_NRC_Set[0x40] = 0xe0; //
+DEC_French_NRC_Set[0x5b] = 0xb0; //
+DEC_French_NRC_Set[0x5c] = 0xe7; //
+DEC_French_NRC_Set[0x5d] = 0xa7; //
+DEC_French_NRC_Set[0x7b] = 0xe9; //
+DEC_French_NRC_Set[0x7c] = 0xf9; //
+DEC_French_NRC_Set[0x7d] = 0xe8; //
+DEC_French_NRC_Set[0x7e] = 0xa8; //
 
-/* DEC French Canadian NRC Set 
+/* DEC French Canadian NRC Set
  * DSCS = Q
  */
 var DEC_French_Canadian_NRC_Set = USASCII.slice(0);
-DEC_French_Canadian_NRC_Set[0x40] = 0xe0; // 
-DEC_French_Canadian_NRC_Set[0x5b] = 0xe2; // 
-DEC_French_Canadian_NRC_Set[0x5c] = 0xe7; // 
-DEC_French_Canadian_NRC_Set[0x5d] = 0xea; // 
-DEC_French_Canadian_NRC_Set[0x5e] = 0xee; // 
-DEC_French_Canadian_NRC_Set[0x60] = 0xf4; // 
-DEC_French_Canadian_NRC_Set[0x7b] = 0xe9; // 
-DEC_French_Canadian_NRC_Set[0x7c] = 0xf9; // 
-DEC_French_Canadian_NRC_Set[0x7d] = 0xe8; // 
-DEC_French_Canadian_NRC_Set[0x7e] = 0xfb; // 
+DEC_French_Canadian_NRC_Set[0x40] = 0xe0; //
+DEC_French_Canadian_NRC_Set[0x5b] = 0xe2; //
+DEC_French_Canadian_NRC_Set[0x5c] = 0xe7; //
+DEC_French_Canadian_NRC_Set[0x5d] = 0xea; //
+DEC_French_Canadian_NRC_Set[0x5e] = 0xee; //
+DEC_French_Canadian_NRC_Set[0x60] = 0xf4; //
+DEC_French_Canadian_NRC_Set[0x7b] = 0xe9; //
+DEC_French_Canadian_NRC_Set[0x7c] = 0xf9; //
+DEC_French_Canadian_NRC_Set[0x7d] = 0xe8; //
+DEC_French_Canadian_NRC_Set[0x7e] = 0xfb; //
 
-/* DEC German NRC Set 
+/* DEC German NRC Set
  * DSCS = K
  */
 var DEC_German_NRC_Set = USASCII.slice(0);
-DEC_German_NRC_Set[0x40] = 0xa7; // 
-DEC_German_NRC_Set[0x5b] = 0xc4; // 
-DEC_German_NRC_Set[0x5c] = 0xd6; // 
-DEC_German_NRC_Set[0x5d] = 0xdc; // 
-DEC_German_NRC_Set[0x7b] = 0xe4; // 
-DEC_German_NRC_Set[0x7c] = 0xf6; // 
-DEC_German_NRC_Set[0x7d] = 0xfc; // 
-DEC_German_NRC_Set[0x7e] = 0xdf; // 
+DEC_German_NRC_Set[0x40] = 0xa7; //
+DEC_German_NRC_Set[0x5b] = 0xc4; //
+DEC_German_NRC_Set[0x5c] = 0xd6; //
+DEC_German_NRC_Set[0x5d] = 0xdc; //
+DEC_German_NRC_Set[0x7b] = 0xe4; //
+DEC_German_NRC_Set[0x7c] = 0xf6; //
+DEC_German_NRC_Set[0x7d] = 0xfc; //
+DEC_German_NRC_Set[0x7e] = 0xdf; //
 
-/* DEC Italian German NRC Set 
+/* DEC Italian German NRC Set
  * DSCS = Y
  */
 var DEC_Italian_NRC_Set = USASCII.slice(0);
-DEC_Italian_NRC_Set[0x23] = 0xa3; // 
-DEC_Italian_NRC_Set[0x40] = 0xa7; // 
-DEC_Italian_NRC_Set[0x5b] = 0xb0; // 
-DEC_Italian_NRC_Set[0x5c] = 0xe7; // 
-DEC_Italian_NRC_Set[0x5d] = 0xe9; // 
-DEC_Italian_NRC_Set[0x60] = 0xf9; // 
-DEC_Italian_NRC_Set[0x7b] = 0xe0; // 
-DEC_Italian_NRC_Set[0x7c] = 0xf2; // 
-DEC_Italian_NRC_Set[0x7d] = 0xe8; // 
-DEC_Italian_NRC_Set[0x7e] = 0xec; // 
+DEC_Italian_NRC_Set[0x23] = 0xa3; //
+DEC_Italian_NRC_Set[0x40] = 0xa7; //
+DEC_Italian_NRC_Set[0x5b] = 0xb0; //
+DEC_Italian_NRC_Set[0x5c] = 0xe7; //
+DEC_Italian_NRC_Set[0x5d] = 0xe9; //
+DEC_Italian_NRC_Set[0x60] = 0xf9; //
+DEC_Italian_NRC_Set[0x7b] = 0xe0; //
+DEC_Italian_NRC_Set[0x7c] = 0xf2; //
+DEC_Italian_NRC_Set[0x7d] = 0xe8; //
+DEC_Italian_NRC_Set[0x7e] = 0xec; //
 
-/* DEC Norwegian/Danish NRC Set 
+/* DEC Norwegian/Danish NRC Set
  * DSCS = E, 6
  */
 var DEC_Norwegian_Danish_NRC_Set = USASCII.slice(0);
-DEC_Norwegian_Danish_NRC_Set[0x40] = 0xc4; // 
-DEC_Norwegian_Danish_NRC_Set[0x5b] = 0xc6; // 
-DEC_Norwegian_Danish_NRC_Set[0x5c] = 0xd8; // 
-DEC_Norwegian_Danish_NRC_Set[0x5d] = 0xc5; // 
-DEC_Norwegian_Danish_NRC_Set[0x5e] = 0xdc; // 
-DEC_Norwegian_Danish_NRC_Set[0x60] = 0xe4; // 
-DEC_Norwegian_Danish_NRC_Set[0x7b] = 0xe6; // 
-DEC_Norwegian_Danish_NRC_Set[0x7c] = 0xf8; // 
-DEC_Norwegian_Danish_NRC_Set[0x7d] = 0xe5; // 
-DEC_Norwegian_Danish_NRC_Set[0x7e] = 0xfc; // 
+DEC_Norwegian_Danish_NRC_Set[0x40] = 0xc4; //
+DEC_Norwegian_Danish_NRC_Set[0x5b] = 0xc6; //
+DEC_Norwegian_Danish_NRC_Set[0x5c] = 0xd8; //
+DEC_Norwegian_Danish_NRC_Set[0x5d] = 0xc5; //
+DEC_Norwegian_Danish_NRC_Set[0x5e] = 0xdc; //
+DEC_Norwegian_Danish_NRC_Set[0x60] = 0xe4; //
+DEC_Norwegian_Danish_NRC_Set[0x7b] = 0xe6; //
+DEC_Norwegian_Danish_NRC_Set[0x7c] = 0xf8; //
+DEC_Norwegian_Danish_NRC_Set[0x7d] = 0xe5; //
+DEC_Norwegian_Danish_NRC_Set[0x7e] = 0xfc; //
 
-/* DEC Spanish NRC Set 
+/* DEC Spanish NRC Set
  * DSCS = Z
  */
 var DEC_Spanish_NRC_Set = USASCII.slice(0);
-DEC_Spanish_NRC_Set[0x23] = 0xa3; // 
-DEC_Spanish_NRC_Set[0x40] = 0xa7; // 
-DEC_Spanish_NRC_Set[0x5b] = 0xa1; // 
-DEC_Spanish_NRC_Set[0x5c] = 0xd1; // 
-DEC_Spanish_NRC_Set[0x5d] = 0xbf; // 
-DEC_Spanish_NRC_Set[0x7b] = 0xb0; // 
-DEC_Spanish_NRC_Set[0x7c] = 0xf1; // 
-DEC_Spanish_NRC_Set[0x7d] = 0xe7; // 
+DEC_Spanish_NRC_Set[0x23] = 0xa3; //
+DEC_Spanish_NRC_Set[0x40] = 0xa7; //
+DEC_Spanish_NRC_Set[0x5b] = 0xa1; //
+DEC_Spanish_NRC_Set[0x5c] = 0xd1; //
+DEC_Spanish_NRC_Set[0x5d] = 0xbf; //
+DEC_Spanish_NRC_Set[0x7b] = 0xb0; //
+DEC_Spanish_NRC_Set[0x7c] = 0xf1; //
+DEC_Spanish_NRC_Set[0x7d] = 0xe7; //
 
-/* DEC Swedish NRC Set 
+/* DEC Swedish NRC Set
  * DSCS = H, 7
  */
 var DEC_Swedish_NRC_Set = USASCII.slice(0);
-DEC_Swedish_NRC_Set[0x40] = 0xc9; // 
-DEC_Swedish_NRC_Set[0x5b] = 0xc4; // 
-DEC_Swedish_NRC_Set[0x5c] = 0xd6; // 
-DEC_Swedish_NRC_Set[0x5d] = 0xc5; // 
-DEC_Swedish_NRC_Set[0x5e] = 0xdc; // 
-DEC_Swedish_NRC_Set[0x60] = 0xe9; // 
-DEC_Swedish_NRC_Set[0x7b] = 0xe4; // 
-DEC_Swedish_NRC_Set[0x7c] = 0xf6; // 
-DEC_Swedish_NRC_Set[0x7d] = 0xe5; // 
-DEC_Swedish_NRC_Set[0x7e] = 0xfc; // 
+DEC_Swedish_NRC_Set[0x40] = 0xc9; //
+DEC_Swedish_NRC_Set[0x5b] = 0xc4; //
+DEC_Swedish_NRC_Set[0x5c] = 0xd6; //
+DEC_Swedish_NRC_Set[0x5d] = 0xc5; //
+DEC_Swedish_NRC_Set[0x5e] = 0xdc; //
+DEC_Swedish_NRC_Set[0x60] = 0xe9; //
+DEC_Swedish_NRC_Set[0x7b] = 0xe4; //
+DEC_Swedish_NRC_Set[0x7c] = 0xf6; //
+DEC_Swedish_NRC_Set[0x7d] = 0xe5; //
+DEC_Swedish_NRC_Set[0x7e] = 0xfc; //
 
-/* DEC Swiss NRC Set 
+/* DEC Swiss NRC Set
  * DSCS = =
  */
 var DEC_Swiss_NRC_Set = USASCII.slice(0);
-DEC_Swiss_NRC_Set[0x23] = 0xf9; // 
-DEC_Swiss_NRC_Set[0x40] = 0xe0; // 
-DEC_Swiss_NRC_Set[0x5b] = 0xe9; // 
-DEC_Swiss_NRC_Set[0x5c] = 0xe7; // 
-DEC_Swiss_NRC_Set[0x5d] = 0xea; // 
-DEC_Swiss_NRC_Set[0x5e] = 0xee; // 
-DEC_Swiss_NRC_Set[0x5f] = 0xe8; // 
-DEC_Swiss_NRC_Set[0x60] = 0xf4; // 
-DEC_Swiss_NRC_Set[0x7b] = 0xe4; // 
-DEC_Swiss_NRC_Set[0x7c] = 0xf6; // 
-DEC_Swiss_NRC_Set[0x7d] = 0xfc; // 
-DEC_Swiss_NRC_Set[0x7e] = 0xfb; // 
+DEC_Swiss_NRC_Set[0x23] = 0xf9; //
+DEC_Swiss_NRC_Set[0x40] = 0xe0; //
+DEC_Swiss_NRC_Set[0x5b] = 0xe9; //
+DEC_Swiss_NRC_Set[0x5c] = 0xe7; //
+DEC_Swiss_NRC_Set[0x5d] = 0xea; //
+DEC_Swiss_NRC_Set[0x5e] = 0xee; //
+DEC_Swiss_NRC_Set[0x5f] = 0xe8; //
+DEC_Swiss_NRC_Set[0x60] = 0xf4; //
+DEC_Swiss_NRC_Set[0x7b] = 0xe4; //
+DEC_Swiss_NRC_Set[0x7c] = 0xf6; //
+DEC_Swiss_NRC_Set[0x7d] = 0xfc; //
+DEC_Swiss_NRC_Set[0x7e] = 0xfb; //
 
 
 /**
@@ -563,20 +563,20 @@ NRCSConverter.definition = {
     "=": DEC_Swiss_NRC_Set,
   },
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
-  "[install]": 
-  function install(context) 
+  "[install]":
+  function install(context)
   {
     this._g = [];
     this.reset();
   },
 
-  /** Uninstalls itself. 
+  /** Uninstalls itself.
    */
-  "[uninstall]": 
-  function uninstall() 
+  "[uninstall]":
+  function uninstall()
   {
     this._g = null;
     this._gl = 0;
@@ -584,32 +584,32 @@ NRCSConverter.definition = {
     this._next = 0;
   },
 
-  "[subscribe('event/shift-in'), pnp]": 
-  function shiftIn() 
+  "[subscribe('event/shift-in'), pnp]":
+  function shiftIn()
   {
     this._gl = 0;
   },
 
-  "[subscribe('event/shift-out'), pnp]": 
-  function shiftOut() 
+  "[subscribe('event/shift-out'), pnp]":
+  function shiftOut()
   {
     this._gl = 1;
   },
 
-  "[subscribe('sequence/ss2'), pnp]": 
-  function ss2() 
+  "[subscribe('sequence/ss2'), pnp]":
+  function ss2()
   {
     this._next = 2;
   },
 
-  "[subscribe('sequence/ss3'), pnp]": 
-  function ss3() 
+  "[subscribe('sequence/ss3'), pnp]":
+  function ss3()
   {
     this._next = 3;
   },
 
-  "[subscribe('sequence/g0'), pnp]": 
-  function scsg0(dscs) 
+  "[subscribe('sequence/g0'), pnp]":
+  function scsg0(dscs)
   {
     var new_charset = this._charset_table[dscs];
 
@@ -618,8 +618,8 @@ NRCSConverter.definition = {
     }
   },
 
-  "[subscribe('sequence/g1'), pnp]": 
-  function scsg1(dscs) 
+  "[subscribe('sequence/g1'), pnp]":
+  function scsg1(dscs)
   {
     var new_charset = this._charset_table[dscs];
 
@@ -628,8 +628,8 @@ NRCSConverter.definition = {
     }
   },
 
-  "[subscribe('sequence/g2'), pnp]": 
-  function scsg2(dscs) 
+  "[subscribe('sequence/g2'), pnp]":
+  function scsg2(dscs)
   {
     var new_charset = this._charset_table[dscs];
 
@@ -638,8 +638,8 @@ NRCSConverter.definition = {
     }
   },
 
-  "[subscribe('sequence/g3'), pnp]": 
-  function scsg3(dscs) 
+  "[subscribe('sequence/g3'), pnp]":
+  function scsg3(dscs)
   {
     var new_charset = this._charset_table[dscs];
 
@@ -648,8 +648,8 @@ NRCSConverter.definition = {
     }
   },
 
-  "[subscribe('command/save-cursor'), pnp]": 
-  function saveCursor(context) 
+  "[subscribe('command/save-cursor'), pnp]":
+  function saveCursor(context)
   {
     context.g0 = this._g[0];
     context.g1 = this._g[1];
@@ -659,8 +659,8 @@ NRCSConverter.definition = {
     context.gr = this._gr;
   },
 
-  "[subscribe('command/restore-cursor'), pnp]": 
-  function restoreCursor(context) 
+  "[subscribe('command/restore-cursor'), pnp]":
+  function restoreCursor(context)
   {
     this._g[0] = context.g0;
     this._g[1] = context.g1;
@@ -671,7 +671,7 @@ NRCSConverter.definition = {
   },
 
   "[subscribe('command/{soft | hard}-terminal-reset'), pnp]":
-  function reset(context) 
+  function reset(context)
   {
     this._g[0] = USASCII;
     this._g[1] = ISO_8859_Latin1;
@@ -684,7 +684,7 @@ NRCSConverter.definition = {
   "[subscribe('command/alloc-drcs'), pnp]":
   function allocDRCS(drcs)
   {
-    this._charset_table[drcs.dscs] = drcs; 
+    this._charset_table[drcs.dscs] = drcs;
   },
 
   "[subscribe('command/query-da1-capability'), pnp]":
@@ -693,7 +693,7 @@ NRCSConverter.definition = {
     return 9; // NRCS
   },
 
-  convert: function convert(codes) 
+  convert: function convert(codes)
   {
     var left = this._g[this._next || this._gl] || USASCII,
         //right = this._g[this._gr] || ISO_8859_Latin1,
@@ -741,7 +741,7 @@ NRCSConverter.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new NRCSConverter(broker);
 }

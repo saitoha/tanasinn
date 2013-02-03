@@ -30,7 +30,7 @@
  *
  * IRM - Insert/Replace Mode
  *
- * This control function selects how the terminal adds characters to page 
+ * This control function selects how the terminal adds characters to page
  * memory. The terminal always adds new characters at the cursor position.
  *
  * Default: Replace.
@@ -41,16 +41,16 @@
  * 9/11   3/4  6/8
  *
  * Set: insert mode.
- * 
+ *
  *
  * CSI    4    l
- * 9/11   3/4  6/12   
+ * 9/11   3/4  6/12
  *
  * Reset: replace mode.
  *
  * Description
  *
- * If IRM mode is set, then new characters move characters in page memory 
+ * If IRM mode is set, then new characters move characters in page memory
  * to the right. Characters moved past the page's right border are lost.
  *
  * If IRM mode is reset, then new characters replace the character at the
@@ -76,11 +76,11 @@ IRMSwitch.definition = {
 
   _mode: null,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
     this._mode = this.default_value;
   },
@@ -88,7 +88,7 @@ IRMSwitch.definition = {
   /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
     this._mode = null;
   },
@@ -96,8 +96,8 @@ IRMSwitch.definition = {
   /** Activate auto-repeat feature.
    */
   "[subscribe('sequence/sm/4'), pnp]":
-  function activate() 
-  { 
+  function activate()
+  {
     this._mode = true;
 
     // enable insert mode.
@@ -107,7 +107,7 @@ IRMSwitch.definition = {
   /** Deactivate auto-repeat feature
    */
   "[subscribe('sequence/rm/4'), pnp]":
-  function deactivate() 
+  function deactivate()
   {
     this._mode = false;
 
@@ -118,7 +118,7 @@ IRMSwitch.definition = {
   /** Report mode
    */
   "[subscribe('sequence/rqm/4'), pnp]":
-  function report() 
+  function report()
   {
     var mode = this._mode ? 1: 2,
         message = "4;" + mode + "$y";
@@ -129,7 +129,7 @@ IRMSwitch.definition = {
   /** on hard / soft reset
    */
   "[subscribe('command/{soft | hard}-terminal-reset'), pnp]":
-  function reset(broker) 
+  function reset(broker)
   {
     if (this.default_value) {
       this.activate();
@@ -141,8 +141,8 @@ IRMSwitch.definition = {
   /**
    * Serialize snd persist current state.
    */
-  "[subscribe('@command/backup'), type('Object -> Undefined'), pnp]": 
-  function backup(context) 
+  "[subscribe('@command/backup'), type('Object -> Undefined'), pnp]":
+  function backup(context)
   {
     // serialize this plugin object.
     context[this.id] = {
@@ -153,8 +153,8 @@ IRMSwitch.definition = {
   /**
    * Deserialize snd restore stored state.
    */
-  "[subscribe('@command/restore'), type('Object -> Undefined'), pnp]": 
-  function restore(context) 
+  "[subscribe('@command/restore'), type('Object -> Undefined'), pnp]":
+  function restore(context)
   {
     var data;
 
@@ -174,7 +174,7 @@ IRMSwitch.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new IRMSwitch(broker);
 }

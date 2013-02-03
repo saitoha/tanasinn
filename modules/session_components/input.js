@@ -119,7 +119,7 @@ var KEY_SUNPC_APPLICATION_KEYPAD = {
 };
 
 var KEY_NORMAL_KEYPAD = {
-  "PgUp"   : "<CSI>5~", // kP / kpp 
+  "PgUp"   : "<CSI>5~", // kP / kpp
   "PgDn"   : "<CSI>6~", // kN / knp
   "End"    : "<CSI>4~", // @7 / kend
   "Home"   : "<CSI>1~", // kh / khome
@@ -215,7 +215,7 @@ var KEY_NORMAL_KEYPAD = {
 
 var KEY_APPLICATION_KEYPAD = {
 
-  "PgUp"   : "<CSI>5~", // kP / kpp 
+  "PgUp"   : "<CSI>5~", // kP / kpp
   "PgDn"   : "<CSI>6~", // kN / knp
   "End"    : "<CSI>4~", // @7 / kend
   "Home"   : "<CSI>1~", // kh / khome
@@ -394,7 +394,7 @@ var KEY_MAC_ALT_AS_META = {
   "Alt \u00b5" : "\x1bm",
   "Alt \u2264" : "\x1b,",
   "Alt \u2265" : "\x1b.",
-  "Alt \u00f7" : "\x1b/", 
+  "Alt \u00f7" : "\x1b/",
 
   "Alt Shift \u2044" : "\x1b!",
   "Alt Shift \u20ac" : "\x1b\"",
@@ -445,7 +445,7 @@ var KEY_MAC_ALT_AS_META = {
   "Alt Shift \u0060" : "\x1b_",
 };
 
-function coCreateKeyMap(expression_map, destination_map) 
+function coCreateKeyMap(expression_map, destination_map)
 {
   var map = destination_map || {},
       key,
@@ -462,8 +462,8 @@ function coCreateKeyMap(expression_map, destination_map)
 
     code = tokens.pop();
     code = coUtils.Keyboard.KEYNAME_PACKEDCODE_MAP[code.toLowerCase()]
-         || code.replace(/\\x([0-9a-fA-F]+)/g, 
-              function(key) 
+         || code.replace(/\\x([0-9a-fA-F]+)/g,
+              function(key)
               {
                 var code;
                 code = parseInt(key, 16);
@@ -471,18 +471,18 @@ function coCreateKeyMap(expression_map, destination_map)
               }).charCodeAt(0);
 
     code = tokens.reduce(
-        function(code, token) 
+        function(code, token)
         {
-          return code | 0x1 << { 
-              ctrl: coUtils.Constant.KEY_CTRL,// | coUtils.Constant.KEY_NOCHAR, 
-              alt: coUtils.Constant.KEY_ALT, 
-              shift: coUtils.Constant.KEY_SHIFT, 
-              meta: coUtils.Constant.KEY_META,// | coUtils.Constant.KEY_NOCHAR, 
+          return code | 0x1 << {
+              ctrl: coUtils.Constant.KEY_CTRL,// | coUtils.Constant.KEY_NOCHAR,
+              alt: coUtils.Constant.KEY_ALT,
+              shift: coUtils.Constant.KEY_SHIFT,
+              meta: coUtils.Constant.KEY_META,// | coUtils.Constant.KEY_NOCHAR,
             } [token.toLowerCase()];
         }, code);
 
-    map[code] = value.replace(/\\x([0-9a-fA-F]{1,2})/g, 
-        function() 
+    map[code] = value.replace(/\\x([0-9a-fA-F]{1,2})/g,
+        function()
         {
           var code;
           code = parseInt(arguments[1], 16);
@@ -524,7 +524,7 @@ DefaultKeyMappings.definition = {
 
   _map: null,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
@@ -532,7 +532,7 @@ DefaultKeyMappings.definition = {
   {
   },
 
-  /** Uninstalls itself. 
+  /** Uninstalls itself.
    */
   "[uninstall]":
   function uninstall()
@@ -574,7 +574,7 @@ DefaultKeyMappings.definition = {
 
       default:
         coUtils.Debug.reportError(
-          _("Invalid emulation mode was specified: %s."), 
+          _("Invalid emulation mode was specified: %s."),
           mode);
 
     }
@@ -606,7 +606,7 @@ DefaultKeyMappings.definition = {
 
       default:
         coUtils.Debug.reportError(
-          _("Invalid cursor mode was specified: %s."), 
+          _("Invalid cursor mode was specified: %s."),
           this._cursor_mode);
         settings.push(KEY_NORMAL_CURSOR);
     }
@@ -640,7 +640,7 @@ DefaultKeyMappings.definition = {
 //    if (this.delete_as_function) {
 //      settings.push(KEY_DELETE_AS_FUNC);
 //    }
-   
+
     // OS specific
     switch (coUtils.Runtime.os) {
 
@@ -693,7 +693,7 @@ ModeManager.definition = {
 
   _mode: coUtils.Constant.INPUT_MODE_NORMAL,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
@@ -702,7 +702,7 @@ ModeManager.definition = {
     this._modes = this.sendMessage("get/modes");
   },
 
-  /** Uninstalls itself. 
+  /** Uninstalls itself.
    */
   "[uninstall]":
   function uninstall()
@@ -711,7 +711,7 @@ ModeManager.definition = {
   },
 
   "[subscribe('event/scan-keycode'), pnp]":
-  function onScanKeycode(info) 
+  function onScanKeycode(info)
   {
     var mode = info.mode || this._mode,
         code = info.code;
@@ -719,11 +719,11 @@ ModeManager.definition = {
     switch (mode) {
 
       case coUtils.Constant.INPUT_MODE_NORMAL:
-        this.sendMessage('command/input-with-remapping', info); 
+        this.sendMessage('command/input-with-remapping', info);
         break;
 
       case coUtils.Constant.INPUT_MODE_COMMANDLINE:
-        this.sendMessage('event/keypress-commandline-with-remapping', code); 
+        this.sendMessage('event/keypress-commandline-with-remapping', code);
         break;
 
       default:
@@ -732,7 +732,7 @@ ModeManager.definition = {
   },
 
   "[subscribe('event/scan-keycode-with-no-remapping'), pnp]":
-  function onScanKeycodeWithoutMapping(info) 
+  function onScanKeycodeWithoutMapping(info)
   {
     var mode = info.mode || this._mode,
         code = info.code;
@@ -740,11 +740,11 @@ ModeManager.definition = {
     switch (mode) {
 
       case coUtils.Constant.INPUT_MODE_NORMAL:
-        this.sendMessage('command/input-with-no-remapping', info); 
+        this.sendMessage('command/input-with-no-remapping', info);
         break;
 
       case coUtils.Constant.INPUT_MODE_COMMANDLINE:
-        this.sendMessage('event/keypress-commandline-with-no-remapping', code); 
+        this.sendMessage('event/keypress-commandline-with-no-remapping', code);
         break;
 
       default:
@@ -753,10 +753,10 @@ ModeManager.definition = {
   },
 
   "[command('sendkeys/sk'), pnp]":
-  function sendkeys(arguments_string) 
+  function sendkeys(arguments_string)
   {
     this.sendMessage(
-      "command/input-expression-with-remapping", 
+      "command/input-expression-with-remapping",
       arguments_string);
 
     return {
@@ -765,7 +765,7 @@ ModeManager.definition = {
   },
 
   "[subscribe('command/input-expression-with-remapping'), pnp]":
-  function inputExpressionWithMapping(expression) 
+  function inputExpressionWithMapping(expression)
   {
     var packed_code_array,
         i,
@@ -782,7 +782,7 @@ ModeManager.definition = {
   },
 
   "[subscribe('command/input-expression-with-no-remapping'), pnp]":
-  function inputExpressionWithNoRemapping(expression) 
+  function inputExpressionWithNoRemapping(expression)
   {
     var packed_code_array,
         i,
@@ -796,7 +796,7 @@ ModeManager.definition = {
       this.sendMessage(
         "event/scan-keycode-with-no-remapping",
         {
-          code: packed_code 
+          code: packed_code
         });
     }
     return true;
@@ -857,7 +857,7 @@ InputManager.definition = {
 
   getTemplate: function getTemplate()
   {
-    return { 
+    return {
       parentNode: "#tanasinn_center_area",
       tagName: "bulletinboard",
       childNodes: {
@@ -866,7 +866,7 @@ InputManager.definition = {
         id: "tanasinn_default_input",
         style: {
           imeMode: "disabled",
-          border: "0px", 
+          border: "0px",
           opacity: "0.00",
         },
         top: 0,
@@ -878,10 +878,10 @@ InputManager.definition = {
   "[persistable] enabled_when_startup": true,
   "[persistable] fix_for_ctrl_space": true,
 
-  "[persistable, _('whether keypress event will be traced.')] debug_flag": 
+  "[persistable, _('whether keypress event will be traced.')] debug_flag":
   false,
 
-  "[persistable, _('where keypress event will be traced.')] debug_topic": 
+  "[persistable, _('where keypress event will be traced.')] debug_topic":
   "command/report-overlay-message",
 
   _key_map: null,
@@ -892,7 +892,7 @@ InputManager.definition = {
   _encoder: null,
   _parser: null,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
@@ -914,18 +914,17 @@ InputManager.definition = {
     this._parser = context["parser"];
 
     this._textbox = result.tanasinn_default_input;
-    this._textbox.inputField.style.imeMode = "disabled";
     this.sendMessage("event/collection-changed/modes");
 
     this.onDoubleShift.enabled = true;
   },
 
-  /** Uninstalls itself. 
+  /** Uninstalls itself.
    */
   "[uninstall]":
   function uninstall()
   {
-    this._key_map = null; 
+    this._key_map = null;
     if (null !== this._textbox) {
       this._textbox.parentNode.removeChild(this._textbox);
       this._textbox = null;
@@ -938,7 +937,7 @@ InputManager.definition = {
   },
 
   "[subscribe('set/local-echo-mode'), pnp]":
-  function setLocalEchoMode(value) 
+  function setLocalEchoMode(value)
   {
     this._local_echo_mode = value;
   },
@@ -950,14 +949,14 @@ InputManager.definition = {
   },
 
   "[subscribe('command/change-auto-repeat-mode'), pnp]":
-  function onAutoRepeatModeChanged(mode) 
+  function onAutoRepeatModeChanged(mode)
   {
     this._auto_repeat = mode;
   },
 
   /** Makes input event handler enabled. */
   "[subscribe('command/enable-input-manager'), pnp]":
-  function enableInputManager() 
+  function enableInputManager()
   {
     this.onkeypress.enabled = true;
     this.onkeyup.enabled = true;
@@ -966,7 +965,7 @@ InputManager.definition = {
 
   /** Makes input event handler disabled. */
   "[subscribe('command/disable-input-manager'), pnp]":
-  function disableInputManager() 
+  function disableInputManager()
   {
     this.onkeypress.enabled = false;
     this.onkeyup.enabled = false;
@@ -975,7 +974,7 @@ InputManager.definition = {
 
   /** get focus on the textbox elment. */
   "[subscribe('command/focus'), pnp]":
-  function focus() 
+  function focus()
   {
     // call focus() 4 times.
     var textbox = this._textbox;
@@ -990,7 +989,7 @@ InputManager.definition = {
   },
 
   "[command('blur', []), nmap('<M-z>', '<C-S-z>', '<C-S-Z>'), _('Blur tanasinn window'), pnp]":
-  function blurCommand() 
+  function blurCommand()
   {
     coUtils.Timer.setTimeout(
       function blur()
@@ -1000,7 +999,7 @@ InputManager.definition = {
   },
 
   "[subscribe('event/before-broker-stopping')]":
-  function onSessionStopping() 
+  function onSessionStopping()
   {
     this.blur();
     this.enabled = false;
@@ -1008,7 +1007,7 @@ InputManager.definition = {
 
   /** blur focus from the textbox elment. */
   "[subscribe('command/blur')]":
-  function blur() 
+  function blur()
   {
     var owner_document = this.request("get/root-element").ownerDocument,
         dispatcher;
@@ -1026,44 +1025,44 @@ InputManager.definition = {
   },
 
   /** getter of the textbox element. */
-  getInputField: function getInputField() 
+  getInputField: function getInputField()
   {
     return this._textbox;
   },
 
   /** handle double-shift key event, and interpret it to <2-shift> */
   "[subscribe('event/hotkey-double-shift')]":
-  function onDoubleShift() 
+  function onDoubleShift()
   {
     this.sendMessage(
-      "command/input-expression-with-remapping", 
+      "command/input-expression-with-remapping",
       "<2-shift>");
   },
 
   "[subscribe('event/got-focus'), pnp]":
-  function onGotFocus(event) 
+  function onGotFocus(event)
   {
     this.onDoubleShift.enabled = true;
   },
 
   "[subscribe('event/lost-focus'), pnp]":
-  function onLostFocus(event) 
+  function onLostFocus(event)
   {
     this.onDoubleShift.enabled = false;
   },
 
   /** handle <2-shift> event, and switch focus to commandline. */
   "[nmap('<2-shift>', '<cmode>'), pnp]":
-  function switchToCommandline(event) 
+  function switchToCommandline(event)
   { // nothrow
     this.sendMessage("command/enable-commandline")
   },
 
-  /** Keypress event handler. 
+  /** Keypress event handler.
    *  @param {Event} event A event object.
    */
   "[listen('keydown', '#tanasinn_default_input', true), pnp]":
-  function onkeydown(event) 
+  function onkeydown(event)
   { // nothrow
     if ("Darwin" === coUtils.Runtime.os) {
       if (this.fix_for_ctrl_space) {
@@ -1077,17 +1076,17 @@ InputManager.definition = {
   },
 
   "[listen('keyup', '#tanasinn_default_input', true), pnp]":
-  function onkeyup(event) 
+  function onkeyup(event)
   {
     this.onkeypress.enabled = true;
     this.oninput.enabled = true;
   },
 
-  /** Keypress event handler. 
+  /** Keypress event handler.
    *  @param {Event} event A event object.
    */
   "[listen('keypress', '#tanasinn_default_input', true), pnp]":
-  function onkeypress(event) 
+  function onkeypress(event)
   { // nothrow
     if (false === this._auto_repeat) {
       this.onkeypress.enabled = false;
@@ -1106,7 +1105,7 @@ InputManager.definition = {
 
     if (this.debug_flag) {
       this.sendMessage(
-        this.debug_topic, 
+        this.debug_topic,
         "code:" + event.keyCode + "," +
         "which:" + event.which + "," +
         "shift:" + (event.shiftKey ? "t": "f") + "," +
@@ -1118,14 +1117,14 @@ InputManager.definition = {
 
     this.onKeyPressEventReceived(
       {
-        mode: coUtils.Constant.INPUT_MODE_NORMAL, 
+        mode: coUtils.Constant.INPUT_MODE_NORMAL,
         event: event,
       });
- 
+
   },
 
   "[subscribe('event/keypress'), pnp]":
-  function onKeyPressEventReceived(info) 
+  function onKeyPressEventReceived(info)
   {
     var packed_code = coUtils.Keyboard
       .getPackedKeycodeFromEvent(info.event, this._alt_key);
@@ -1134,18 +1133,18 @@ InputManager.definition = {
     this.sendMessage(
       "event/scan-keycode",
       {
-        mode: info.mode, 
+        mode: info.mode,
         code: packed_code,
       });
   },
 
-  "[subscribe('command/input-with-remapping'), pnp]": 
+  "[subscribe('command/input-with-remapping'), pnp]":
   function inputWithMapping(info)
   {
     var result = this.request(
-      "event/normal-input", 
+      "event/normal-input",
       {
-        textbox: this._textbox, 
+        textbox: this._textbox,
         code: info.code,
       });
 
@@ -1154,7 +1153,7 @@ InputManager.definition = {
     }
   },
 
-  "[subscribe('command/input-with-no-remapping'), pnp]": 
+  "[subscribe('command/input-with-no-remapping'), pnp]":
   function inputWithNoMapping(packed_code)
   {
     var c = packed_code & 0xffffff,
@@ -1174,10 +1173,10 @@ InputManager.definition = {
         }
       }
     } else {
-      if (packed_code & (1 << coUtils.Constant.KEY_CTRL | 
+      if (packed_code & (1 << coUtils.Constant.KEY_CTRL |
                          1 << coUtils.Constant.KEY_ALT)) {
         if (0x20 <= c && c < 0x7f) {
-          return; 
+          return;
         }
       }
       if (0x0d === c && this._newline_mode) {
@@ -1190,10 +1189,10 @@ InputManager.definition = {
     this.sendMessage("command/input-text", message);
   },
 
-  /** Send input sequences to TTY device. 
+  /** Send input sequences to TTY device.
    *  @param {String} data a text message in Unicode string.
    *  @notify command/send-to-tty
-   */ 
+   */
   "[subscribe('command/input-text'), pnp]":
   function processInputSequence(data)
   {
@@ -1210,24 +1209,24 @@ InputManager.definition = {
 
   },
 
-  /** input event handler. 
+  /** input event handler.
    *  @param {Event} event A event object.
    *  @notify event/input Notifies that a input event is occured.
    */
   "[listen('input', '#tanasinn_default_input'), pnp]":
-  function oninput(event) 
+  function oninput(event)
   {
     var value = this._textbox.value;
 
     this._textbox.value = "";
     this.sendMessage("command/input-text", value);
   },
- 
-  /** compositionstart event handler. 
+
+  /** compositionstart event handler.
    *  @{Event} event A event object.
    */
   "[listen('compositionstart', '#tanasinn_default_input'), pnp]":
-  function oncompositionstart(event) 
+  function oncompositionstart(event)
   {
     var version_comparator = coUtils.Services.versionComparator;
 
@@ -1235,12 +1234,12 @@ InputManager.definition = {
       this.oninput.enabled = false;
     }
   },
-  
-  /** compositionend event handler. 
+
+  /** compositionend event handler.
    *  @{Event} event A event object.
    */
   "[listen('compositionend', '#tanasinn_default_input'), pnp]":
-  function oncompositionend(event) 
+  function oncompositionend(event)
   {
     var version_comparator = coUtils.Services.versionComparator;
 
@@ -1249,7 +1248,7 @@ InputManager.definition = {
       this.oninput(event);
     }
   },
-  
+
 };
 
 /**
@@ -1257,7 +1256,7 @@ InputManager.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new DefaultKeyMappings(broker);
   new ModeManager(broker);

@@ -45,18 +45,18 @@ SetGlobalCommand.definition = {
 
   "[persistable] enabled_when_startup": true,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
   },
 
-  /** Uninstalls itself 
+  /** Uninstalls itself
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
   },
 
@@ -86,7 +86,7 @@ SetGlobalCommand.definition = {
       };
     }
     var [module] = modules.filter(
-      function(module) 
+      function(module)
       {
         return module.id === component_name;
       });
@@ -95,19 +95,19 @@ SetGlobalCommand.definition = {
         success: false,
         message: coUtils.Text.format(_("Module %s is not found."), component_name),
       };
-    }  
+    }
     if (!equal) {
       return {
         success: true,
         message: module[property].toSource(),
       };
     } else {
-      code = arguments_string.substr(all.length); 
+      code = arguments_string.substr(all.length);
       try {
         result = new Function(
           "with (arguments[0]) { return (" + code + ");}"
         ) (this._broker.window);
-        module[property] = result; 
+        module[property] = result;
       } catch (e) {
         return {
           success: false,

@@ -25,10 +25,10 @@
 "use strict";
 
 
-/** 
+/**
  * @class ConsoleListener
  * Listen console messages and pass them to display manager.
- */ 
+ */
 var ConsoleListener = new Class().extends(Plugin)
                                  .depends("displaymanager");
 ConsoleListener.definition = {
@@ -50,11 +50,11 @@ ConsoleListener.definition = {
   _console_service: null,
   _display_manager: null,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
     this._console_service = coUtils.Components.getConsoleService();
     this._display_manager = context["displaymanager"];
@@ -63,7 +63,7 @@ ConsoleListener.definition = {
     //this.onQuitApplication.enabled = true;
     this.detach.enabled = true;
     this.onSessionStopping.enabled = true;
-    
+
     coUtils.Timer.setTimeout(function()
       {
         // register object which implements nsIConsoleListener.
@@ -74,23 +74,23 @@ ConsoleListener.definition = {
       }, this.register_delay, this);
   },
 
-  /** Uninstalls itself. 
+  /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
     this._console_service = null;
     this._display_manager = null;
   },
 
-  "[subscribe('@command/detach')]": 
-  function detach() 
+  "[subscribe('@command/detach')]":
+  function detach()
   {
     coUtils.Timer.setTimeout(this.unregister, 10, this);
   },
-  
-  "[subscribe('@event/broker-stopping')]": 
-  function onSessionStopping() 
+
+  "[subscribe('@event/broker-stopping')]":
+  function onSessionStopping()
   {
     coUtils.Timer.setTimeout(this.unregister, 10, this);
   },
@@ -115,7 +115,7 @@ ConsoleListener.definition = {
         coUtils.Debug.reportWarning(e);
       } catch (e) {
         // Nothing to do.
-        // To guard against stack overflow, 
+        // To guard against stack overflow,
         // we MUST not emit any console output.
       }
     }
@@ -129,7 +129,7 @@ ConsoleListener.definition = {
   },
 
   /** Unregister isself from console service */
-  unregister: function unregister() 
+  unregister: function unregister()
   {
     var console_service = this._console_service;
 
@@ -149,7 +149,7 @@ ConsoleListener.definition = {
   _getMessageArray: function _getMessageArray()
   {
     var message_array = {};
-    
+
     // get latest 250 messages.
     this._console_service.getMessageArray(message_array, {});
     return message_array;
@@ -177,7 +177,7 @@ ConsoleListener.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new ConsoleListener(broker);
 }

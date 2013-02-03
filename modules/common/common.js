@@ -58,7 +58,7 @@ coUtils.Constant = {
   //
   INPUT_MODE_NORMAL:          0x0,
   INPUT_MODE_COMMANDLINE:     0x1,
-  
+
   //
   // Mouse Button
   //
@@ -115,7 +115,7 @@ coUtils.Constant = {
   CURSOR_STYLE_UNDERLINE:     0x1,
   CURSOR_STYLE_BEAM:          0x2,
 
-  // 
+  //
   // KeyCode Modifiers
   //
   KEY_CTRL                   : 22,
@@ -125,7 +125,7 @@ coUtils.Constant = {
   KEY_META                   : 26,
   KEY_MODE                   : 27,
 
-  // 
+  //
   // Trace Data flags
   //
   TRACE_INPUT                : 0x1,
@@ -174,7 +174,7 @@ coUtils.Services = {
   _version_comparator: null,
 
   getPromptService: function getPromptService()
-  { 
+  {
     if (null === this._prompt_service) {
       this._prompt_service = Components
         .classes["@mozilla.org/embedcomp/prompt-service;1"]
@@ -185,7 +185,7 @@ coUtils.Services = {
   },
 
   getWindowMediator: function getWindowMediator()
-  { 
+  {
     if (null === this._window_mediator) {
       this._window_mediator = Components
         .classes["@mozilla.org/appshell/window-mediator;1"]
@@ -196,7 +196,7 @@ coUtils.Services = {
   },
 
   getClipboard: function getClipboard()
-  { 
+  {
     if (null === this._clipboard) {
       this._clipboard = Components
         .classes["@mozilla.org/widget/clipboard;1"]
@@ -207,7 +207,7 @@ coUtils.Services = {
   },
 
   getClipboardHelper: function getClipboardHelper()
-  { 
+  {
     if (null === this._clipboard_helper) {
       this._clipboard_helper = Components
         .classes["@mozilla.org/widget/clipboardhelper;1"]
@@ -218,7 +218,7 @@ coUtils.Services = {
   },
 
   getObserverService: function getObserverService()
-  { 
+  {
     if (null === this._observer_service) {
       this._observer_service = Components
         .classes["@mozilla.org/observer-service;1"]
@@ -229,7 +229,7 @@ coUtils.Services = {
   },
 
   getIoService: function getIoService()
-  { 
+  {
     if (null === this._io_service) {
       this._io_service = Components
         .classes["@mozilla.org/network/io-service;1"]
@@ -240,7 +240,7 @@ coUtils.Services = {
   },
 
   get directoryService()
-  { 
+  {
     if (null === this._directory_service) {
       this._directory_service = Components
         .classes["@mozilla.org/file/directory_service;1"]
@@ -251,7 +251,7 @@ coUtils.Services = {
   },
 
   getAppInfo: function getAppInfo()
-  { 
+  {
     if (null === this._app_info) {
       this._app_info = Components
         .classes["@mozilla.org/xre/app-info;1"]
@@ -262,7 +262,7 @@ coUtils.Services = {
   },
 
   getScriptLoader: function getScriptLoader()
-  { 
+  {
     if (null === this._script_loader) {
       this._script_loader = Components
         .classes["@mozilla.org/moz/jssubscript-loader;1"]
@@ -273,7 +273,7 @@ coUtils.Services = {
   },
 
   getThreadManager: function getThreadManager()
-  { 
+  {
     if (null === this._thread_manager) {
       this._thread_manager = Components
         .classes["@mozilla.org/thread-manager;1"]
@@ -284,7 +284,7 @@ coUtils.Services = {
   },
 
   get consoleService()
-  { 
+  {
     if (null === this._console_service) {
       this._console_service = Components
         .classes["@mozilla.org/consoleservice;1"]
@@ -295,7 +295,7 @@ coUtils.Services = {
   },
 
   getUUIDGenerator: function getUUIDGenerator()
-  { 
+  {
     if (null === this._uuid_generator) {
       this._uuid_generator = Components
         .classes["@mozilla.org/uuid-generator;1"]
@@ -306,7 +306,7 @@ coUtils.Services = {
   },
 
   getLocaleService: function getLocaleService()
-  { 
+  {
     if (null === this._locale_service) {
       this._locale_service = Components
         .classes["@mozilla.org/intl/nslocaleservice;1"]
@@ -317,7 +317,7 @@ coUtils.Services = {
   },
 
   get versionComparator()
-  { 
+  {
     if (null === this._version_comparator) {
       this._version_comparator = Components
         .classes["@mozilla.org/xpcom/version-comparator;1"]
@@ -333,7 +333,7 @@ coUtils.Components = {
   _window_watcher: null,
 
   getWindowWatcher: function getWindowWatcher()
-  { 
+  {
     if (null === this._window_watcher) {
       this._window_watcher = Components
         .classes["@mozilla.org/embedcomp/window-watcher;1"]
@@ -383,7 +383,7 @@ coUtils.Components = {
   },
 
   createLoopbackServerSocket: function createLoopbackServerSocket(listener)
-  { 
+  {
     var socket = Components
         .classes["@mozilla.org/network/server-socket;1"]
         .createInstance(Components.interfaces.nsIServerSocket);
@@ -455,7 +455,7 @@ coUtils.Components = {
     var persist = Components
       .classes["@mozilla.org/embedding/browser/nsWebBrowserPersist;1"]
       .createInstance(Components.interfaces.nsIWebBrowserPersist);
-    
+
     persist.persistFlags = Components
       .interfaces.nsIWebBrowserPersist
       .PERSIST_FLAGS_REPLACE_EXISTING_FILES;
@@ -501,22 +501,22 @@ coUtils.Components = {
 
     return crypt_hash;
   },
-   
+
   createFileOutputStream: function createFileOutputStream()
   {
     // create output stream.
     var ostream = Components
       .classes["@mozilla.org/network/file-output-stream;1"]
-      .createInstance(Components.interfaces.nsIFileOutputStream);  
+      .createInstance(Components.interfaces.nsIFileOutputStream);
 
     return ostream;
   },
- 
+
   createConverterOutputStream: function createConverterOutputStream()
   {
     var converter = Components
-      .classes["@mozilla.org/intl/converter-output-stream;1"].  
-      createInstance(Components.interfaces.nsIConverterOutputStream);  
+      .classes["@mozilla.org/intl/converter-output-stream;1"].
+      createInstance(Components.interfaces.nsIConverterOutputStream);
 
     return converter;
   },
@@ -592,12 +592,12 @@ coUtils.File = new function() {
     return file.exists();
   },
 
-  getPathDelimiter: function getPathDelimiter() 
+  getPathDelimiter: function getPathDelimiter()
   {
     return "WINNT" === coUtils.Runtime.os ? "\\": "/";
   },
-  
-  isAbsolutePath: function isAbsolutePath(path) 
+
+  isAbsolutePath: function isAbsolutePath(path)
   {
     if ("WINNT" === coUtils.Runtime.os) {
        return /^([a-zA-Z]:)?\\/.test(path);
@@ -607,12 +607,12 @@ coUtils.File = new function() {
 
   /** Gets last modiried time from specified file.
    *  @param {nsIFile} file A nsIFile object.
-   *  @return {Number} The time when the file referenced by specified nsIFile 
-   *                   was last modified. The value of this attribute is 
-   *                   milliseconds since midnight (00:00:00), January 1, 
+   *  @return {Number} The time when the file referenced by specified nsIFile
+   *                   was last modified. The value of this attribute is
+   *                   milliseconds since midnight (00:00:00), January 1,
    *                   1970 Greenwich Mean Time (GMT).
    */
-  getLastModifiedTime: function getLastModifiedTime(file) 
+  getLastModifiedTime: function getLastModifiedTime(file)
   {
     var last_modified_time = null;
     if (null !== file) {
@@ -627,11 +627,11 @@ coUtils.File = new function() {
     }
     return last_modified_time;
   },
-  
+
   /** Gets URI-formatted string from file object.
    *  @param {nsIFile} file A nsIFile object.
    */
-  getURLSpec: function getURLSpec(file) 
+  getURLSpec: function getURLSpec(file)
   {
     var io_service = coUtils.Services.getIoService(),
         file_handler = io_service.getProtocolHandler("file")
@@ -640,15 +640,15 @@ coUtils.File = new function() {
     return file_handler.getURLSpecFromFile(file);
   },
 
-  /** The Generator method which iteartes all or filterd files under 
+  /** The Generator method which iteartes all or filterd files under
    *  specified directory.
    *  @param {nsIFile} file A nsIFile object that indicates a directory.
-   *  @param {Regexp} filter A Regexp object by which iterated file is 
+   *  @param {Regexp} filter A Regexp object by which iterated file is
    *                         filtered.
    *  @return {Generator} A generator for iterated nsIFile objects.
    */
-  getFilesRecursively: 
-  function getFilesRecursively(directory, filter, entries) 
+  getFilesRecursively:
+  function getFilesRecursively(directory, filter, entries)
   {
     var directory_entries = directory.clone().directoryEntries,
         callee = getFilesRecursively,
@@ -669,8 +669,8 @@ coUtils.File = new function() {
     }
   },
 
-  getFileEntriesFromSearchPath: 
-  function getFileEntriesFromSearchPath(search_directories) 
+  getFileEntriesFromSearchPath:
+  function getFileEntriesFromSearchPath(search_directories)
   {
     var entries = [],
         path,
@@ -705,8 +705,8 @@ coUtils.File = new function() {
     return entries;
   },
 
-  getFileLeafFromVirtualPath: 
-  function getFileLeafFromVirtualPath(virtual_path) 
+  getFileLeafFromVirtualPath:
+  function getFileLeafFromVirtualPath(virtual_path)
   {
     var virtual_path = String(virtual_path),
         split_path = virtual_path.split(/[\/\\]/),
@@ -743,8 +743,8 @@ coUtils.File = new function() {
     return target_leaf;
   },
 
-  getSpecialDirectoryName: 
-  function getSpecialDirectoryName(name) 
+  getSpecialDirectoryName:
+  function getSpecialDirectoryName(name)
   {
     var directoryService = coUtils.Services.directoryService;
 
@@ -765,12 +765,12 @@ coUtils.Runtime = {
 
   subscript_loader: coUtils.Services.getScriptLoader(),
 
-  get app_id() 
+  get app_id()
   {
     return this._app_info.ID;
   },
 
-  get app_name() 
+  get app_name()
   {
     return this._app_info.name;
   },
@@ -790,9 +790,9 @@ coUtils.Runtime = {
   getBinPath: function getBinPath()
   {
     return [
-      "/bin", 
-      "/usr/bin/", 
-      "/usr/local/bin", 
+      "/bin",
+      "/usr/bin/",
+      "/usr/local/bin",
       "/opt/local/bin"
     ].join(":");
   },
@@ -817,14 +817,14 @@ coUtils.Runtime = {
     return this.getRuntimePath() + "/cgi-bin";
   },
 
-  getCygwinRoot: function getCygwinRoot() 
+  getCygwinRoot: function getCygwinRoot()
   {
     var directory,
         i = 0,
-        letters = ["C", "D", "E", "F", "G", 
-                   "H", "I", "J", "K", "L", 
-                   "M", "N", "O", "P", "Q", 
-                   "R", "S", "T", "U", "V", 
+        letters = ["C", "D", "E", "F", "G",
+                   "H", "I", "J", "K", "L",
+                   "M", "N", "O", "P", "Q",
+                   "R", "S", "T", "U", "V",
                    "W", "X", "Y", "Z"],
         search_paths = letters
           .map(function(letter)
@@ -846,7 +846,7 @@ coUtils.Runtime = {
     throw coUtils.Debug.Exception(_("Cannot guess cygwin root path."));
   },
 
-  getPythonPath: function getPythonPath() 
+  getPythonPath: function getPythonPath()
   {
     var os = coUtils.Runtime.os,
         bin_path = coUtils.Runtime.getBinPath(),
@@ -854,7 +854,7 @@ coUtils.Runtime = {
         python_paths;
 
     python_paths = bin_path.split(":")
-      .map(function(path) 
+      .map(function(path)
       {
         var native_path,
             directory;
@@ -873,12 +873,12 @@ coUtils.Runtime = {
           directory: directory,
           path: path,
         };
-      }, this).filter(function(info) 
+      }, this).filter(function(info)
       {
         return info.directory.exists() && info.directory.isDirectory();
       }).reduce(function(accumulator, info) {
         var paths = [ 2.9, 2.8, 2.7, 2.6, 2.5 ]
-          .map(function(version) 
+          .map(function(version)
           {
             var file = info.directory.clone();
             file.append("python" + version + executeable_postfix);
@@ -886,7 +886,7 @@ coUtils.Runtime = {
           }).filter(function(file)
           {
             return file.exists() && file.isExecutable();
-          }).map(function(file) 
+          }).map(function(file)
           {
             if ("WINNT" === os) {
               return info.path + "/" + file.leafName;
@@ -899,7 +899,7 @@ coUtils.Runtime = {
     return python_paths.shift();
   },
 
-  loadScript: function loadScript(location, scope) 
+  loadScript: function loadScript(location, scope)
   {
     var url = null,
         file = null,
@@ -910,7 +910,7 @@ coUtils.Runtime = {
     match = location.match(/^([a-z]+):\/\//);
     if (match) { // location is URL spec formatted.
       protocol = match[1];
-      if ("file" === protocol) { 
+      if ("file" === protocol) {
         file = this.file_handler.getFileFromURLSpec(location);
       } else {
         throw coUtils.Debug.Exception(
@@ -921,7 +921,7 @@ coUtils.Runtime = {
       file = coUtils.File.getFileLeafFromVirtualPath(location);
       if (!file || !file.exists()) {
         throw coUtils.Debug.Exception(
-          _("Cannot get file entries from '%s'. ", 
+          _("Cannot get file entries from '%s'. ",
             "It seems that specified path does not exists."), file.path);
       }
       url = coUtils.File.getURLSpec(file);
@@ -948,7 +948,7 @@ coUtils.IO = {
    *  @param {String} location A URI string of target file.
    *  @param {String} charset Target file's encoding.
    */
-  readFromFile: function readFromFile(location, charset) 
+  readFromFile: function readFromFile(location, charset)
   {
     var url,
         file;
@@ -974,7 +974,7 @@ coUtils.IO = {
     return this._readFromFileImpl(url, charset);
   },
 
-  _readFromFileImpl: function _readFromFileImpl(url, charset) 
+  _readFromFileImpl: function _readFromFileImpl(url, charset)
   {
     var channel = coUtils.Services.getIoService().newChannel(url, null, null),
         input = channel.open(),
@@ -987,7 +987,7 @@ coUtils.IO = {
     try {
       if (charset) {
         stream = coUtils.Components.createConverterInputStream();
-        stream.init(input, charset, 1024, 
+        stream.init(input, charset, 1024,
           coUtils.Constant.DEFAULT_REPLACEMENT_CHARACTER);
         try {
           buffer = [];
@@ -1016,13 +1016,13 @@ coUtils.IO = {
     }
   },
 
-  /** Writes text data asynchronously to the file that specified as argument. 
+  /** Writes text data asynchronously to the file that specified as argument.
    *  @param {String} path Target file path.
    *  @param {String} data The contents written to target file.
    *  @param {Function} callback.
    */
-  writeToFile: 
-  function writeToFile(path, data, callback) 
+  writeToFile:
+  function writeToFile(path, data, callback)
   {
     var file = coUtils.File.getFileLeafFromVirtualPath(path),
         make_directory;
@@ -1040,7 +1040,7 @@ coUtils.IO = {
       }
     } else { // if target is not exists.
       // create base directories recursively (= mkdir -p).
-      make_directory = function make_directory(current) 
+      make_directory = function make_directory(current)
       {
         var parent = current.parent;
 
@@ -1052,10 +1052,10 @@ coUtils.IO = {
       make_directory(file);
     }
     this._writeToFileImpl(file, data, callback);
-  },   
+  },
 
-  _writeToFileImpl: 
-  function _writeToFileImpl(file, data, callback) 
+  _writeToFileImpl:
+  function _writeToFileImpl(file, data, callback)
   {
     var mode,
         ostream,
@@ -1066,8 +1066,8 @@ coUtils.IO = {
     Components.utils.import("resource://gre/modules/FileUtils.jsm");
 
     // file is nsIFile, data is a string
-    mode = FileUtils.MODE_WRONLY 
-         | FileUtils.MODE_CREATE 
+    mode = FileUtils.MODE_WRONLY
+         | FileUtils.MODE_CREATE
          | FileUtils.MODE_TRUNCATE;
     ostream = FileUtils.openSafeFileOutputStream(file, mode);
     converter = coUtils.Components.createScriptableUnicodeConverter();
@@ -1091,8 +1091,8 @@ coUtils.IO = {
     }); // _writeToFileImpl
   },
 
-  saveCanvas: 
-  function saveCanvas(source_canvas, file, is_thumbnail) 
+  saveCanvas:
+  function saveCanvas(source_canvas, file, is_thumbnail)
   {
     var NS_XHTML = "http://www.w3.org/1999/xhtml",
         canvas = source_canvas.ownerDocument.createElementNS(NS_XHTML, "canvas"),
@@ -1110,15 +1110,15 @@ coUtils.IO = {
       canvas.width = source_canvas.width;
       canvas.height = source_canvas.height;
     }
-  
+
     context.fillStyle = "rgba(0, 0, 0, 0.7)";
     context.fillRect(0, 0, canvas.width, canvas.height);
     context.drawImage(source_canvas, 0, 0, canvas.width, canvas.height);
-  
+
     // create a data url from the canvas and then create URIs of the source and targets.
     source = io.newURI(canvas.toDataURL("image/png", ""), "UTF8", null);
-  
-    // save the canvas data to the file  
+
+    // save the canvas data to the file
     if (coUtils.Services.versionComparator.compare(coUtils.Runtime.version, "18.0") >= 0) {
       persist.saveURI(source, null, null, null, null, file, null);
     } else {
@@ -1153,13 +1153,13 @@ coUtils.Runtime.loadScript("modules/common/algorithm.js", this);
 /** Returns the window object.
  *  @return {Window} The window object.
  */
-coUtils.getWindow = function getWindow() 
+coUtils.getWindow = function getWindow()
 {
   // Firefox/SeaMonkey - "navigator:browser"
   // ThunderBird - "mail:3pane"
   var window_mediator = coUtils.Services.getWindowMediator(),
-      result = window_mediator.getMostRecentWindow("navigator:browser") 
-            || window_mediator.getMostRecentWindow("mail:3pane"); 
+      result = window_mediator.getMostRecentWindow("navigator:browser")
+            || window_mediator.getMostRecentWindow("mail:3pane");
 
   if (result) {
     return result;
@@ -1176,10 +1176,10 @@ coUtils.Event = {
    /** Register system-global event handler.
     *  @param {String} topic The notification topic.
     *  @param {Function} context The handler function.
-    *  @param {Object} context A "this" object in which the listener handler 
+    *  @param {Object} context A "this" object in which the listener handler
     *                  is to be evalute.
     */
-  subscribeGlobalEvent: 
+  subscribeGlobalEvent:
   function subscribeGlobalEvent(topic, handler, context)
   {
     var delegate,
@@ -1195,8 +1195,8 @@ coUtils.Event = {
     }
 
 
-    observer = { 
-      observe: function observe() 
+    observer = {
+      observe: function observe()
       {
         delegate.apply(this, arguments);
       },
@@ -1207,7 +1207,7 @@ coUtils.Event = {
 
     coUtils.Services.getObserverService().addObserver(observer, topic, false);
   },
-  
+
   removeGlobalEvent: function removeGlobalEvent(topic)
   {
     var observers,
@@ -1229,7 +1229,7 @@ coUtils.Event = {
    *  @param {String} topic The notification topic.
    *  @return {Array} An array which contains result values.
    */
-  notifyGlobalEvent: function notifyGlobalEvent(topic, data) 
+  notifyGlobalEvent: function notifyGlobalEvent(topic, data)
   {
     coUtils.Services.getObserverService().notifyObservers(null, topic, data);
   },
@@ -1242,7 +1242,7 @@ coUtils.Font = {
    * @fn getAverageGlyphSize
    * @brief Test font rendering and calculate average glyph width.
    */
-  getAverageGlyphSize: 
+  getAverageGlyphSize:
   function getAverageGlyphSize(font_size, font_family, test_string)
   {
     var NS_XHTML = "http://www.w3.org/1999/xhtml",
@@ -1269,7 +1269,7 @@ coUtils.Font = {
     metrics = context.measureText(text);
     char_width = metrics.width / text.length;
     height = metrics.height;
-  
+
     text = "g\u3075";
     metrics = context.measureText(text);
     canvas.width = metrics.width;
@@ -1279,7 +1279,7 @@ coUtils.Font = {
     context.fillText(text, 0, 0);
     context.strokeText(text, 0, 0);
     context.restore();
-    data = context.getImageData(0, 0, canvas.width, canvas.height).data; 
+    data = context.getImageData(0, 0, canvas.width, canvas.height).data;
     line_length = data.length / (canvas.height * 4);
 
   detect_first:
@@ -1338,9 +1338,9 @@ coUtils.Keyboard = {
     rotateright : 0xf0000001,
     space       : ("Darwin" === coUtils.Runtime.os) << coUtils.Constant.KEY_NOCHAR | 0x0020,
     sp          : ("Darwin" === coUtils.Runtime.os) << coUtils.Constant.KEY_NOCHAR | 0x0020,
-    bs          : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x0008, 
-    backspace   : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x0008, 
-    tab         : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x0009, 
+    bs          : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x0008,
+    backspace   : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x0008,
+    tab         : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x0009,
     enter       : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x000d,
     return      : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x000d,
     cr          : 0x1 << coUtils.Constant.KEY_NOCHAR | 0x000d,
@@ -1381,7 +1381,7 @@ coUtils.Keyboard = {
     f19         : 0x1 << coUtils.Constant.KEY_NOCHAR | 0xf716,
   },
 
-  getCodeToNameMap: function getCodeToNameMap() 
+  getCodeToNameMap: function getCodeToNameMap()
   {
     var result = {},
         keys = Object.keys(this.KEYNAME_PACKEDCODE_MAP),
@@ -1403,7 +1403,7 @@ coUtils.Keyboard = {
     return result;
   },
 
-  convertCodeToExpression: 
+  convertCodeToExpression:
   function convertCodeToExpression(packed_code)
   {
     var char;
@@ -1451,21 +1451,21 @@ coUtils.Keyboard = {
       } else {
         return "<" + buffer.pop() + ">";
       }
-    } else if (2 === buffer.length && 
-               "S" === buffer[0] && 
+    } else if (2 === buffer.length &&
+               "S" === buffer[0] &&
                1 === buffer[1].length) {
       return buffer.pop();
     }
     return "<" + buffer.join("-") + ">";
   },
 
-  getPackedKeycodeFromEvent: 
-  function getPackedKeycodeFromEvent(event, alt) 
+  getPackedKeycodeFromEvent:
+  function getPackedKeycodeFromEvent(event, alt)
   {
     var packed_code;
     var code = event.keyCode || event.which;
     if (event.shiftKey && (
-          event.ctrlKey || 
+          event.ctrlKey ||
           event.altKey ||
           event.metaKey)) {
       if (/* A */ 65 <= code && code <= 90 /* Z */) {
@@ -1474,10 +1474,10 @@ coUtils.Keyboard = {
     }
 
     // make packed code
-    packed_code = code 
-      | Boolean(event.ctrlKey)   << coUtils.Constant.KEY_CTRL 
-      | (Boolean(event.altKey) || alt) << coUtils.Constant.KEY_ALT 
-      | Boolean(event.shiftKey)  << coUtils.Constant.KEY_SHIFT 
+    packed_code = code
+      | Boolean(event.ctrlKey)   << coUtils.Constant.KEY_CTRL
+      | (Boolean(event.altKey) || alt) << coUtils.Constant.KEY_ALT
+      | Boolean(event.shiftKey)  << coUtils.Constant.KEY_SHIFT
       | Boolean(event.keyCode)   << coUtils.Constant.KEY_NOCHAR
       | Boolean(event.metaKey)   << coUtils.Constant.KEY_META
       ;
@@ -1493,8 +1493,8 @@ coUtils.Keyboard = {
    * @fn parseKeymapExpression
    * Convert from a key map expression to a packed key code.
    */
-  parseKeymapExpression: 
-  function parseKeymapExpression(expression) 
+  parseKeymapExpression:
+  function parseKeymapExpression(expression)
   {
     var pattern = /<.+?>|./g,
         match = expression.match(pattern),
@@ -1533,7 +1533,7 @@ coUtils.Keyboard = {
         // if last_key is a printable character (ex, a, b, X, Y)
         key_code = last_key.charCodeAt(0);
       }
-   
+
       for (j = 0; j < tokens.length; ++j) {
         sequence = tokens[j];
         if (sequence.match(/^C$/i)) {
@@ -1550,7 +1550,7 @@ coUtils.Keyboard = {
         }
       }
       key_code_array.push(key_code);
-    } 
+    }
     return key_code_array;
   },
 
@@ -1560,12 +1560,12 @@ coUtils.Runtime.loadScript("modules/common/logging.js", this);
 
 coUtils.Text = {
 
-  base64decode: function base64decode(str) 
+  base64decode: function base64decode(str)
   {
     return coUtils.getWindow().atob(str);
   },
-  
-  base64encode: function base64encode(str) 
+
+  base64encode: function base64encode(str)
   {
     return coUtils.getWindow().btoa(str);
   },
@@ -1577,7 +1577,7 @@ coUtils.Text = {
         buffer_length,
         piece,
         str;
-  
+
     if (65000 > codes.length) {
       result = String.fromCharCode.apply(String, codes);
     } else {
@@ -1593,15 +1593,15 @@ coUtils.Text = {
   },
 
   /** Provides printf-like formatting.
-   *  @param {String} template 
+   *  @param {String} template
    *  @return {String} Formatted string.
    */
-  format: function format(/* template, arg1, arg2, .... */) 
+  format: function format(/* template, arg1, arg2, .... */)
   {
     var args = Array.slice(arguments),
         template = args.shift(),
         result = template.replace(
-          /%[s|f|d|i|x]/g, 
+          /%[s|f|d|i|x]/g,
           function replaceProc(match_string)
           {
             var value = args.shift();

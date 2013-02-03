@@ -29,13 +29,13 @@
  * @class NumericKeypadMode
  *
  * DECNKM - Numeric Keypad Mode
- * 
- * This control function works like the DECKPAM and DECKPNM functions. 
- * DECNKM is provided mainly for use with the request and report mode 
+ *
+ * This control function works like the DECKPAM and DECKPNM functions.
+ * DECNKM is provided mainly for use with the request and report mode
  * (DECRQM/DECRPM) control functions.
- * 
+ *
  * Available in: VT Level 4 mode only
- * 
+ *
  * Default: Numeric
  *
  * Format
@@ -71,11 +71,11 @@ NumericKeypadMode.definition = {
 
   _mode: false,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
     this._mode = this.default_value;
   },
@@ -83,7 +83,7 @@ NumericKeypadMode.definition = {
   /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
     this._mode = null;
   },
@@ -91,33 +91,33 @@ NumericKeypadMode.definition = {
   /** set new line.
    */
   "[subscribe('sequence/decset/66'), pnp]":
-  function activate() 
-  { 
+  function activate()
+  {
     this._mode = true;
 
     // application keypad mode.
     this.sendMessage(
-      "event/keypad-mode-changed", 
+      "event/keypad-mode-changed",
       coUtils.Constant.KEYPAD_MODE_APPLICATION);
   },
 
   /** set line feed.
    */
   "[subscribe('sequence/decrst/66'), pnp]":
-  function deactivate() 
+  function deactivate()
   {
     this._mode = false;
 
     // numeric keypad mode.
     this.sendMessage(
-      "event/keypad-mode-changed", 
+      "event/keypad-mode-changed",
       coUtils.Constant.KEYPAD_MODE_NUMERIC);
   },
 
   /** Report mode
    */
   "[subscribe('sequence/decrqm/66'), pnp]":
-  function report() 
+  function report()
   {
     var mode = this._mode ? 1: 2,
         message = "?66;" + mode + "$y";
@@ -128,7 +128,7 @@ NumericKeypadMode.definition = {
   /** on hard / soft reset
    */
   "[subscribe('command/{soft | hard}-terminal-reset'), pnp]":
-  function reset(broker) 
+  function reset(broker)
   {
     if (this.default_value) {
       this.activate();
@@ -140,8 +140,8 @@ NumericKeypadMode.definition = {
   /**
    * Serialize snd persist current state.
    */
-  "[subscribe('@command/backup'), type('Object -> Undefined'), pnp]": 
-  function backup(context) 
+  "[subscribe('@command/backup'), type('Object -> Undefined'), pnp]":
+  function backup(context)
   {
     // serialize this plugin object.
     context[this.id] = {
@@ -152,8 +152,8 @@ NumericKeypadMode.definition = {
   /**
    * Deserialize snd restore stored state.
    */
-  "[subscribe('@command/restore'), type('Object -> Undefined'), pnp]": 
-  function restore(context) 
+  "[subscribe('@command/restore'), type('Object -> Undefined'), pnp]":
+  function restore(context)
   {
     var data = context[this.id];
 
@@ -173,7 +173,7 @@ NumericKeypadMode.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new NumericKeypadMode(broker);
 }

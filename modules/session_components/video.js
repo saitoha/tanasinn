@@ -58,12 +58,12 @@ Video.definition = {
   _element: null,
   _renderer: null,
   _cursor_state: null,
- 
-  /** Installs itself. 
+
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
     var result = this.request("command/construct-chrome", this.getTemplate());
 
@@ -75,7 +75,7 @@ Video.definition = {
   /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
     if (null !== this._element) {
       this._element.parentNode.removeChild(this._element);
@@ -85,35 +85,35 @@ Video.definition = {
     this._renderer = null;
     this._cursor_state = null;
   },
-    
+
   /** Fired at the keypad mode is changed. */
-  "[subscribe('variable-changed/video.opacity'), pnp]": 
-  function onOpacityChanged() 
+  "[subscribe('variable-changed/video.opacity'), pnp]":
+  function onOpacityChanged()
   {
     this._element.style.opacity = this.opacity;
   },
 
-  "[subscribe('event/keypad-mode-changed')]": 
-  function onKeypadModeChanged(mode) 
+  "[subscribe('event/keypad-mode-changed')]":
+  function onKeypadModeChanged(mode)
   {
     this.onKeypadModeChanged.enabled = false;
     this.close();
   },
 
-  "[subscribe('event/screen-width-changed'), pnp]": 
-  function onWidthChanged(width) 
+  "[subscribe('event/screen-width-changed'), pnp]":
+  function onWidthChanged(width)
   {
     this._element.style.width = width + "px";
   },
 
-  "[subscribe('event/screen-height-changed'), pnp]": 
-  function onHeightChanged(height) 
+  "[subscribe('event/screen-height-changed'), pnp]":
+  function onHeightChanged(height)
   {
     this._element.style.height = height + "px";
   },
 
   "[subscribe('@command/focus'), pnp]":
-  function onFirstFocus() 
+  function onFirstFocus()
   {
     if (this._element) {
       this._element.style.width = this._element.parentNode.boxObject.width + "px";
@@ -122,10 +122,10 @@ Video.definition = {
   },
 
   "[subscribe('sequence/osc/8812'), pnp]":
-  function handleSequence(data) 
+  function handleSequence(data)
   {
     coUtils.Timer.setTimeout(
-      function timerproc() 
+      function timerproc()
       {
         var result = data.split(/\s+/),
             col = result[0],
@@ -135,17 +135,17 @@ Video.definition = {
             id = result[4],
             cursor_state = this._cursor_state;
 
-        this.open(cursor_state.positionX - Number(col) + 1, 
+        this.open(cursor_state.positionX - Number(col) + 1,
                   cursor_state.positionY - Number(line) + 1,
-                  Number(width), 
-                  Number(height), 
+                  Number(width),
+                  Number(height),
                   id);
 
       }, this.open_delay, this);
   },
 
   "[subscribe('command/open-overlay-video'), pnp]":
-  function open(left, top, width, height, id) 
+  function open(left, top, width, height, id)
   {
     // get renderer object
     var renderer = this._renderer,
@@ -172,7 +172,7 @@ Video.definition = {
   },
 
   "[subscribe('sequence/osc/8813 | command/close-overlay-browser'), pnp]":
-  function close() 
+  function close()
   {
     var element = this._element;
 
@@ -188,7 +188,7 @@ Video.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new Video(broker);
 }

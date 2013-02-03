@@ -63,9 +63,9 @@
  * tilde_glitch                  hz         hz        cannot print ~'s (hazeltine)
  * transparent_underline         ul         ul        underline character overstrikes
  * xon_xoff                      xon        xo        terminal uses xon/xoff handshaking
- * 
+ *
  * ric capabilities
- * 
+ *
  * columns                       cols       co        number of columns in a line
  * init_tabs                     it         it        tabs initially every # spaces
  * label_height                  lh         lh        rows in each label
@@ -82,8 +82,8 @@
  * padding_baud_rate             pb         pb        lowest baud rate where padding needed
  * virtual_terminal              vt         vt        virtual terminal number (CB/unix)
  * width_status_line             wsl        ws        number of columns in status line
- * 
- * 
+ *
+ *
  * bit_image_entwining           bitwin     Yo        number of passes for each bit-image row
  * bit_image_type                bitype     Yp        type of bit-image device
  * buffer_capacity               bufsz      Ya        numbers of bytes buffered before printing
@@ -101,10 +101,10 @@
  * output_res_vert_inch          orvi       Yl        vertical resolution in units per inch
  * print_rate                    cps        Ym        print rate in characters per second
  * wide_char_size                widcs      Yn        character step size when in double wide mode
- * 
- * 
+ *
+ *
  * ng capabilities
- * 
+ *
  * acs_chars                     acsc       ac        graphics charset pairs, based on vt100
  * back_tab                      cbt        bt        back tab (P)
  * bell                          bel        bl        audible signal (bell) (P)
@@ -459,7 +459,7 @@
  * xoff_character                xoffc      XF        XOFF character
  * xon_character                 xonc       XN        XON character
  * zero_motion                   zerom      Zx        No motion for subsequent character
- * 
+ *
  * alt_scancode_esc              scesa        S8        Alternate escape for scancode emulation
  * bit_image_carriage_return     bicr         Yv        Move to beginning of same row
  * bit_image_newline             binel        Zz        Move to next row of the bit image
@@ -492,7 +492,7 @@
  * set_lr_margin                 smglr        ML        Set both left and right margins to #1, #2.  (ML is not in BSD termcap).
  * set_page_length               slines       YZ        Set page length to #1 lines
  * set_tb_margin                 smgtb        MT        Sets both top and bottom margins to #1, #2
- * 
+ *
  *  enter_horizontal_hl_mode      ehhlm      Xh       Enter horizontal highlight mode
  *  enter_left_hl_mode            elhlm      Xl       Enter left highlight mode
  *  enter_low_hl_mode             elohlm     Xo       Enter low highlight mode
@@ -524,7 +524,7 @@ var TERMINFO_DB = {
   // key_right: right-arrow key
   "kcuf1":  "\x1bOC",
   "kr":     "\x1bOC",
-  
+
   // key_left: left-arrow key
   "kcub1":  "\x1bOD",
   "kl":     "\x1bOD",
@@ -547,11 +547,11 @@ var TERMINFO_DB = {
 
   // key_dc: delete-character key
   "kdch1":  "\x1b[3~",
-  "kD":     "\x1b[3~", 
+  "kD":     "\x1b[3~",
 
   // key_ic: insert-character key
   "kich1":  "\x1b[2~",
-  "kI":     "\x1b[2~", 
+  "kI":     "\x1b[2~",
 
   // key_home: home key
   "khome":  "\x1b[H",
@@ -608,11 +608,11 @@ var TERMINFO_DB = {
   // enter_bold_mode: turn on bold (extra bright) mode
   "bold":   "\x1b[1m",
   "md":     "\x1b[1m",
- 
+
   // key_f1: F1 function key
   "kf1":    "\x1bOP",
   "k1":     "\x1bOP",
- 
+
   // key_f42: function key
   "kf42":    "\x1b[63~",
   "FW":      "\x1b[63~",
@@ -720,11 +720,11 @@ var TERMINFO_DB = {
   // key_btab: back-tab key
   "kcbt":   "\x1b[Z",
   "kB":     "\x1b[Z",
-  
+
   // key_clear: clear-screen or erase key
   "kclr":   "",
   "kC":     "",
-  
+
   // key_undo: undo key
   "kund":   "",
   "&8":     "",
@@ -734,12 +734,12 @@ var TERMINFO_DB = {
   "kb":     "^H",
 
   // key_help: help key
-  "khlp":   "\x1b[28~", 
-  "%1":     "\x1b[28~", 
+  "khlp":   "\x1b[28~",
+  "%1":     "\x1b[28~",
 
   // key_shelp: shifted help key
-  "kHLP":   "\x1b[28;2~", 
-  "#1":     "\x1b[28;2~", 
+  "kHLP":   "\x1b[28;2~",
+  "#1":     "\x1b[28;2~",
 
   // max_colors: maximum number of colors on screen
   "Co":     "256",
@@ -765,23 +765,23 @@ Terminfo.definition = {
 
   "[persistable] enabled_when_startup": true,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
   },
 
   /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
   },
 
   "[subscribe('sequence/dcs'), pnp]":
-  function onDCS(data) 
+  function onDCS(data)
   {
     var match,
         i,
@@ -793,7 +793,7 @@ Terminfo.definition = {
     if (0 === data.indexOf("+q")) {
       match = data.match(/[0-9a-fA-F]{2}/g);
       chars = match.map(
-        function(x) 
+        function(x)
         {
           return parseInt(x, 16);
         });
@@ -833,7 +833,7 @@ Terminfo.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new Terminfo(broker);
 }

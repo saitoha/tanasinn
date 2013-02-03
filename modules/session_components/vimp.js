@@ -26,7 +26,7 @@
 
 /**
  *  @class Vimperator
- *  @brief apply some fixes for Vimperator-installed environment. 
+ *  @brief apply some fixes for Vimperator-installed environment.
  */
 var Vimperator = new Class().extends(Plugin);
 Vimperator.definition = {
@@ -41,10 +41,10 @@ Vimperator.definition = {
       description: _("Apply some fixes for vimperator-installed environment.")
     };
   },
-  
+
   "[persistable] enabled_when_startup": true,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
@@ -54,30 +54,30 @@ Vimperator.definition = {
 
     if (modules) {
       this.onGotFocus();
-      this.onGotFocus.enabled = true;  
-      this.onLostFocus.enabled = true;  
-      this.vimperatorCommand.enabled = true;  
+      this.onGotFocus.enabled = true;
+      this.onLostFocus.enabled = true;
+      this.vimperatorCommand.enabled = true;
     }
   },
 
-  /** Uninstall itself. 
+  /** Uninstall itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
     var modules = this._getModules();
 
     if (modules) {
       this.onLostFocus();
-      this.onGotFocus.enabled = false;  
-      this.onLostFocus.enabled = false;  
-      this.vimperatorCommand.enabled = false;  
+      this.onGotFocus.enabled = false;
+      this.onLostFocus.enabled = false;
+      this.vimperatorCommand.enabled = false;
     }
   },
 
   /** install focus event. */
   "[subscribe('event/got-focus | command/focus')]":
-  function onGotFocus() 
+  function onGotFocus()
   {
     var modules = this._getModules();
 
@@ -89,7 +89,7 @@ Vimperator.definition = {
 
   /** install blur evnet. */
   "[subscribe('event/lost-focus | command/blur | event/before-broker-stopping')]":
-  function onLostFocus() 
+  function onLostFocus()
   {
     var modules = this._getModules();
 
@@ -101,7 +101,7 @@ Vimperator.definition = {
 
   /** Handles stop event. */
   "[subscribe('@event/broker-stopping'), enabled]":
-  function onSessionStopping() 
+  function onSessionStopping()
   {
     var modules = this._getModules();
     if (!modules) {
@@ -110,11 +110,11 @@ Vimperator.definition = {
     modules.events.onEscape();
   },
 
-  /** 
+  /**
    * @command vimperator
    */
   "[command('vimperator')]":
-  function vimperatorCommand(arguments_string) 
+  function vimperatorCommand(arguments_string)
   {
     var liberator = this._getLiberator();
 
@@ -139,7 +139,7 @@ Vimperator.definition = {
     }
     return liberator;
   },
-    
+
   /** get "liberator.modules" */
   _getModules: function _getModules()
   {
@@ -156,7 +156,7 @@ Vimperator.definition = {
     if (!modules) {
       return null;
     }
-    
+
     events = modules.events;
     if (!events) {
       return null;
@@ -170,7 +170,7 @@ Vimperator.definition = {
     return modules;
   },
 
-} // class 
+} // class
 
 
 /**
@@ -178,7 +178,7 @@ Vimperator.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new Vimperator(broker);
 }

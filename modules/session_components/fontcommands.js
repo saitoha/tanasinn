@@ -44,18 +44,18 @@ FontCommands.definition = {
 
   "[persistable] enabled_when_startup": true,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
   },
 
-  /** Uninstalls itself 
+  /** Uninstalls itself
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
   },
 
@@ -70,7 +70,7 @@ FontCommands.definition = {
       return {
         success: false,
         message: coUtils.Text.format(
-          _("Ill-formed arguments: %s."), 
+          _("Ill-formed arguments: %s."),
           arguments_string),
       };
     }
@@ -92,12 +92,12 @@ FontCommands.definition = {
 
     pattern = /^\s*(.+)\s*$/;
     match = arguments_string.match(pattern);
-    
+
     if (null === match) {
       return {
         success: false,
         message: coUtils.Text.format(
-          _("Ill-formed arguments: %s."), 
+          _("Ill-formed arguments: %s."),
           arguments_string),
       };
     }

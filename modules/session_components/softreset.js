@@ -27,7 +27,7 @@
 /**
  * @class SoftReset
  * DECSTR — Soft Terminal Reset
- * 
+ *
  * Perform a soft reset to the default values listed in following Table.
  *
  * Format
@@ -36,31 +36,31 @@
  * 9/11   2/1   7/0
  *
  * Description
- * 
+ *
  * Terminal's Default Settings
  *
  * Mode                              Mnemonic   State after DECSTR
  *
  * Text cursor enable                DECTCEM    Cursor enabled.
  * Insert/replace                    IRM        TODO: Replace mode.
- * Origin                            DECOM      Absolute (cursor origin at 
+ * Origin                            DECOM      Absolute (cursor origin at
  *                                              upper-left of screen.)
  * Autowrap                          DECAWM     No autowrap.
  * National replacement CS           DECNRCM    TODO: Multinational set.
  * Keyboard action                   KAM        TODO: Unlocked.
  * Numeric keypad                    DECNKM     TODO: Numeric characters.
  * Cursor keys                       DECCKM     TODO: Normal (arrow keys).
- * Set top and bottom margins        DECSTBM    Top margin = 1; 
+ * Set top and bottom margins        DECSTBM    Top margin = 1;
  *                                              bottom margin = page length.
  * All character sets                G0-3,GL,GR Default settings.
  * Select graphic rendition          SGR        TODO: Normal rendition.
- * Select character attribute        DECSCA     TODO: Normal (erasable by DECSEL 
+ * Select character attribute        DECSCA     TODO: Normal (erasable by DECSEL
  *                                              TODO: and DECSED).
  * Save cursor state                 DECSC      Home position.
  * Assign user-pref supplemental set DECAUPSS   TODO: Set selected in Set-Up.
  * Select active status display      DECSASD    TODO: Main display.
  * Keyboard position mode            DECKPM     TODO: Character codes.
- * Cursor direction                  DECRLM     TODO: Reset (Left-to-right), 
+ * Cursor direction                  DECRLM     TODO: Reset (Left-to-right),
  *                                              TODO: regardless of NVR setting.
  * PC Term mode                      DECPCTERM  TODO: Always reset.
  *
@@ -81,8 +81,8 @@ SoftReset.definition = {
 
   "[persistable] enabled_when_startup": true,
 
-  "[profile('vt100'), sequence('CSI ! p')]": 
-  function DECSTR() 
+  "[profile('vt100'), sequence('CSI ! p')]":
+  function DECSTR()
   { // TODO: DEC specific - Soft Terminal Reset
     // notify soft terminal reset event.
     this.sendMessage("command/soft-terminal-reset");
@@ -98,7 +98,7 @@ SoftReset.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new SoftReset(broker);
 }

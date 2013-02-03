@@ -26,7 +26,7 @@
 
 /**
  *  @class KeySnail
- *  @brief apply some fixes for KeySnail-installed environment. 
+ *  @brief apply some fixes for KeySnail-installed environment.
  */
 var KeySnail = new Class().extends(Plugin);
 KeySnail.definition = {
@@ -41,10 +41,10 @@ KeySnail.definition = {
       description: _("Apply some fixes for keysnail-installed environment.")
     };
   },
-  
+
   "[persistable] enabled_when_startup": true,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
@@ -53,17 +53,17 @@ KeySnail.definition = {
     this.onGotFocus();
   },
 
-  /** Uninstall itself. 
+  /** Uninstall itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
     this.onLostFocus();
   },
 
   /** install focus event. */
   "[subscribe('event/got-focus | command/focus'), pnp]":
-  function onGotFocus() 
+  function onGotFocus()
   {
     var key;
 
@@ -78,7 +78,7 @@ KeySnail.definition = {
 
   /** install blur evnet. */
   "[subscribe('event/lost-focus | command/blur'), pnp]":
-  function onLostFocus() 
+  function onLostFocus()
   {
     var key;
 
@@ -93,7 +93,7 @@ KeySnail.definition = {
 
   /** Handles stop event. */
   "[subscribe('@event/broker-stopping'), enabled]":
-  function onSessionStopping() 
+  function onSessionStopping()
   {
     this.onLostFocus();
   },
@@ -116,7 +116,7 @@ KeySnail.definition = {
     if (!modules) {
       return null;
     }
-    
+
     key = modules.key;
     if (!key) {
       return null;
@@ -125,7 +125,7 @@ KeySnail.definition = {
     return key;
   },
 
-} // class 
+} // class
 
 
 /**
@@ -133,7 +133,7 @@ KeySnail.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new KeySnail(broker);
 }

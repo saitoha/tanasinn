@@ -59,16 +59,16 @@
  *
  *     1. This protocol is line-oriented. line terminator is '\n' (0x0a).
  *
- *     2. This protocol is command-based. 1 line should be interpreted as 1 
+ *     2. This protocol is command-based. 1 line should be interpreted as 1
  *        command.
- *        A command is composed of 1 or multiple tokens. token's delimiter is 
+ *        A command is composed of 1 or multiple tokens. token's delimiter is
  *        ' ' (0x20).
  *
  *     3. First token is <b>opecode</b>, represent a operation.
  *        An opecode consists of lower-case alphabetic sets ([a-z]+).
  *
  *     4. Tokens after <b>opecode</b> represent arguments.
- *        An arguments consists of multiple printable characters, that is 
+ *        An arguments consists of multiple printable characters, that is
  *        encoded in base64 Data Encodings, defined in RFC-3548.
  * <pre>
  *        example 1:
@@ -76,7 +76,7 @@
  * </pre>
  *          Opecode of this command is "xoff". "\n" is line terminator.
  * <pre>
- *        example 2: 
+ *        example 2:
  *          resize ODA= MjQ=\n
  * </pre>
  *          In this case, opecode is "resize".
@@ -135,7 +135,7 @@ Controller.definition = {
   _input: null,
   _output: null,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
@@ -154,11 +154,11 @@ Controller.definition = {
     this._output = null;
   },
 
-  /** Posts a command message asynchronously. 
-   * @param {String} command command message string for external program. 
+  /** Posts a command message asynchronously.
+   * @param {String} command command message string for external program.
    */
   "[type('String -> Undefined')]":
-  function post(command) 
+  function post(command)
   {
     if (this._output) {
       this._output.write(command, command.length);
@@ -168,7 +168,7 @@ Controller.definition = {
   /** Close Control channel and stop communication with TTY device.
    */
   "[subscribe('@event/broker-stopping'), type('Undefined'), pnp]":
-  function stop() 
+  function stop()
   {
     this.post("disconnect\n");
 
@@ -198,8 +198,8 @@ Controller.definition = {
    * @param width new horizontal resolution of TTY device.
    * @param height new vertical resolution of TTY device.
    */
-  "[subscribe('event/screen-size-changed')]": 
-  function resize(size) 
+  "[subscribe('event/screen-size-changed')]":
+  function resize(size)
   {
     var width = coUtils.Text.base64encode(size.column),
         height = coUtils.Text.base64encode(size.row),
@@ -208,30 +208,30 @@ Controller.definition = {
     this.post(command);
   },
 
-  "[subscribe('@command/detach'), pnp]": 
+  "[subscribe('@command/detach'), pnp]":
   function detach()
   {
     this.post("detach\n");
   },
 
-  "[subscribe('@command/kill')]": 
+  "[subscribe('@command/kill')]":
   function kill()
   {
     this.post("kill\n");
   },
 
-  /** flow controll 
+  /** flow controll
    * Suspend/Resume output.
    * @param {Boolean} flag true: resume output. false: suspend output.
    */
   "[subscribe('command/flow-control')]":
-  function flowControl(flag) 
+  function flowControl(flag)
   {
     this.post(flag ? "xon\n": "xoff\n");
   },
 
   "[subscribe('event/{control & io}-socket-ready'), pnp]":
-  function connect(control_port, io_port) 
+  function connect(control_port, io_port)
   {
     var self = this,
         timer;
@@ -311,14 +311,14 @@ Controller.definition = {
     * An exception thrown from onDataAvailable has the side-effect of
     * causing the request to be canceled.
     */
-  onDataAvailable: 
-  function onDataAvailable(request, context, input, offset, count) 
+  onDataAvailable:
+  function onDataAvailable(request, context, input, offset, count)
   {
     var data = this._input.readBytes(count),
         command_list = data.split(/[\n\r]/),
         command,
         argv,
-        operation, 
+        operation,
         arg,
         screen,
         output,
@@ -348,7 +348,7 @@ Controller.definition = {
           coUtils.Debug.reportError(_("Unknown command: [%s]."), command);
         }
       } while (command_list.length)
-    } catch (e) { 
+    } catch (e) {
       coUtils.Debug.reportError(e)
     }
   },
@@ -361,11 +361,11 @@ Controller.definition = {
           .getFileLeafFromVirtualPath(virtual_path).path;
 
     if ("WINNT" === coUtils.Runtime.os) {
-      sessiondb_path 
+      sessiondb_path
         = sessiondb_path
           .replace(/\\/g, "/")
           .replace(
-            /^([a-zA-Z]):/, 
+            /^([a-zA-Z]):/,
             function()
             {
               return "/cygdrive/" + arguments[1].toLowerCase();
@@ -374,7 +374,7 @@ Controller.definition = {
 
     return sessiondb_path;
 
-  },  
+  },
 
   _send_initial_data: function _send_initial_data(io_port)
   {
@@ -393,7 +393,7 @@ Controller.definition = {
 
   /** Starts TCP client socket, and listen it asynchronously.
    */
-  _start: function _start(control_port) 
+  _start: function _start(control_port)
   {
     var transport = Components
           .classes["@mozilla.org/network/socket-transport-service;1"]
@@ -418,7 +418,7 @@ Controller.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new Controller(broker);
 }

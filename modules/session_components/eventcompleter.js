@@ -45,18 +45,18 @@ EventCompleter.definition = {
 
   "[persistable] enabled_when_startup": true,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
   },
 
   /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
   },
 
@@ -64,7 +64,7 @@ EventCompleter.definition = {
    * Search for a given string and notify a listener (either synchronously
    * or asynchronously) of the result
    *
-   * @param context - The completion context object. 
+   * @param context - The completion context object.
    */
   "[completer('event'), pnp]":
   function complete(context)
@@ -106,7 +106,7 @@ EventCompleter.definition = {
     lower_name = name.toLowerCase();
 
     candidates = broker.keys.filter(
-      function(candidate) 
+      function(candidate)
       {
         return -1 !== candidate.toLowerCase().indexOf(lower_name);
       });
@@ -115,12 +115,12 @@ EventCompleter.definition = {
       "event/answer-completion",
       {
         type: "text",
-        query: context.source, 
+        query: context.source,
         data: candidates.map(
           function(candidate)
           {
             return {
-              name: candidate, 
+              name: candidate,
               value: candidate,
             };
           }),

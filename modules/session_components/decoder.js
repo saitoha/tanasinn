@@ -24,9 +24,9 @@
 
 "use strict";
 
-/** 
+/**
  * @class ForwardInputIterator
- */ 
+ */
 var ForwardInputIterator = new Class();
 ForwardInputIterator.definition = {
 
@@ -34,26 +34,26 @@ ForwardInputIterator.definition = {
   _position: 0,
 
   /** Assign new string data. position is reset. */
-  initialize: function initialize(value) 
+  initialize: function initialize(value)
   {
     this._value = value;
     this._position = 0;
   },
 
   /** Returns single byte code point. */
-  current: function current() 
+  current: function current()
   {
     return this._value.charCodeAt(this._position);
   },
 
   /** Moves to next position. */
-  moveNext: function moveNext() 
+  moveNext: function moveNext()
   {
     ++this._position;
   },
 
   /** Returns whether scanner position is at end. */
-  get isEnd() 
+  get isEnd()
   {
     return this._position >= this._value.length;
   },
@@ -94,7 +94,7 @@ Decoder.definition = {
   },
 
   /** Sets character encoding scheme */
-  set scheme(value) 
+  set scheme(value)
   {
     var scheme = value,
         decoder_info = this._decoder_map[scheme],
@@ -119,54 +119,54 @@ Decoder.definition = {
     message = coUtils.Text.format(
       _("Character encoding changed: [%s]."),
       scheme);
-    this.sendMessage("command/report-status-message", message); 
+    this.sendMessage("command/report-status-message", message);
   },
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
-  "[install]": 
-  function install(context) 
+  "[install]":
+  function install(context)
   {
     this._decoder_map = {};
   },
 
-  /** Uninstalls itself. 
+  /** Uninstalls itself.
    */
-  "[uninstall]": 
-  function uninstall() 
+  "[uninstall]":
+  function uninstall()
   {
     this._decoder_map = null;
   },
 
-  "[subscribe('event/session-initialized'), pnp]": 
-  function onSessionInitialized(scheme) 
+  "[subscribe('event/session-initialized'), pnp]":
+  function onSessionInitialized(scheme)
   {
     var decoders = this.sendMessage("get/decoders");
 
     decoders.map(
       function mapfunc(information)
       {
-        this._decoder_map[information.charset] = information; 
+        this._decoder_map[information.charset] = information;
       }, this);
 
     this.scheme = this.initial_scheme;
   },
 
-  "[subscribe('change/decoder'), pnp]": 
-  function changeDecoder(scheme) 
+  "[subscribe('change/decoder'), pnp]":
+  function changeDecoder(scheme)
   {
     this.scheme = scheme;
   },
 
-  /** Read input byte-stream sequence at the specified scanner's 
+  /** Read input byte-stream sequence at the specified scanner's
    *  current position, and convert it to an UCS-4 code point sequence.
    *
-   *  @param {Scanner} scanner A scanner object that attached to 
+   *  @param {Scanner} scanner A scanner object that attached to
    *                   current input stream.
-   *  @return {Array} Converted sequence 
-   */ 
-  decode: function decode(scanner) 
+   *  @return {Array} Converted sequence
+   */
+  decode: function decode(scanner)
   {
     return this._decoder.decode(scanner);
   },
@@ -174,15 +174,15 @@ Decoder.definition = {
   /** Read input sequence and convert it to an UTF-16 string
    *
    *  @param {String} data input data
-   *  @return {String} Converted string 
-   */ 
+   *  @return {String} Converted string
+   */
   decodeString: function decodeString(data)
   {
     var scanner = new ForwardInputIterator(data),
         sequence = [],
         result,
         code;
-    
+
     for (code in this.decode(scanner)) {
       if (code < 0x10000) {
         sequence.push(code);
@@ -203,7 +203,7 @@ Decoder.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new Decoder(broker);
 }

@@ -43,23 +43,23 @@ PublishCommand.definition = {
 
   "[persistable] enabled_when_startup": true,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
   },
 
   /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
   },
 
   "[command('publish', ['event', 'js']), _('Publish a message'), pnp]":
-  function publish(arguments_string) 
+  function publish(arguments_string)
   {
     var pattern = /^(\S+)\s*(.*)$/,
         match = arguments_string.match(pattern),
@@ -91,7 +91,7 @@ PublishCommand.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new PublishCommand(broker);
 }

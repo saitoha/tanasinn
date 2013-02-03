@@ -49,16 +49,16 @@ Tektronix.definition = {
   "[persistable] default_text_color": "white",
   "[persistable] default_text_style": "26px monospace",
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
     var tanasinn_tektronix_canvas;
 
     tanasinn_tektronix_canvas = this.request(
-      "command/construct-chrome", 
+      "command/construct-chrome",
       {
         parentNode: "#tanasinn_center_area",
         tagName: "html:canvas",
@@ -78,10 +78,10 @@ Tektronix.definition = {
     this.onHeightChanged(this._height);
   },
 
-  /** Uninstalls itself. 
+  /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
     if (this._dom) {
       this._dom.canvas.parentNode.removeChild(this._dom.canvas);
@@ -92,7 +92,7 @@ Tektronix.definition = {
   },
 
   "[subscribe('event/screen-width-changed'), enabled]":
-  function onWidthChanged(width) 
+  function onWidthChanged(width)
   {
     var dom = this._dom,
         scale;
@@ -107,8 +107,8 @@ Tektronix.definition = {
     }
   },
 
-  "[subscribe('event/screen-height-changed'), enabled]": 
-  function onHeightChanged(height) 
+  "[subscribe('event/screen-height-changed'), enabled]":
+  function onHeightChanged(height)
   {
     var dom = this._dom,
         scale;
@@ -129,7 +129,7 @@ Tektronix.definition = {
     return this;
   },
 
-  _parseGraphics: function _parseGraphics(scanner) 
+  _parseGraphics: function _parseGraphics(scanner)
   {
     var dom = this._dom,
         high_y,
@@ -252,14 +252,14 @@ Tektronix.definition = {
 
   }, // _parseGraphics
 
-  /** Parse and returns asocciated action. 
+  /** Parse and returns asocciated action.
    *  @param {Scanner} scanner A Scanner object.
    *  @param {Function|Undefined} Action object.
    *
    *  @implements Grammar.parse :: Scanner -> Action
    */
   "[type('Scanner -> Action')] parse":
-  function parse(scanner) 
+  function parse(scanner)
   {
     var dom = this._dom,
         c,
@@ -311,8 +311,8 @@ scan:
           scanner.moveNext();
           this._mode = MODE_ALPHA;
           dom.context.clearRect(
-            0, 0, 
-            this._width / this._scale, 
+            0, 0,
+            this._width / this._scale,
             this._height / this._scale);
         } else if (0x0e === c) {
           scanner.moveNext();
@@ -322,7 +322,7 @@ scan:
           scanner.moveNext();
           c = scanner.current();
           if (0x3f === c) {          // ?
-            scanner.moveNext(); 
+            scanner.moveNext();
             c = scanner.current();
             if (0x33 === c) {        // 3
               scanner.moveNext();
@@ -390,8 +390,8 @@ scan:
       } else if (0x0c === c) {
         this._mode = MODE_ALPHA;
         dom.context.clearRect(
-          0, 0, 
-          this._width / this._scale, 
+          0, 0,
+          this._width / this._scale,
           this._height / this._scale);
         scanner.moveNext();
       } else if (0x1f === c) { // <US> Alpha Mode
@@ -427,7 +427,7 @@ scan:
       }
 
     } // while
-    
+
 
     } catch (e) {
       coUtils.Debug.reportError(e);
@@ -442,7 +442,7 @@ scan:
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new Tektronix(broker);
 }

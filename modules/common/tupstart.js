@@ -27,14 +27,14 @@
 /**
  * @file tupstart.js
  *
- * Defines class EventBroker, which is able to interpret and evaluate 
+ * Defines class EventBroker, which is able to interpret and evaluate
  * "Topic" and "Event Expression".
  *
  * [ "Topic" Overview ]
  *
  *    In this event system, registered events is concerned by "topic" that
  *    is string variable consists of some digits and alphabets.
- *     
+ *
  *    If you registered an event as follows:
  *
  *       var id = broker.subscribe(<topic>, <handler>, ....);
@@ -49,22 +49,22 @@
  *       broker.unsubscribe(id);
  *
  *    NOTE that this ID is NOT correnponds to a handler, one-to-one.
- *    The relation between Topic-ID is as same as that, because this event 
+ *    The relation between Topic-ID is as same as that, because this event
  *    system is based on the concept of multicast delegate system.
- * 
+ *
  *    +----------+ n      1 +-----------+ n      1 +-----------+
  *    | handler  |>---------|    ID     |>---------|   topic   |
  *    +----------+          +-----------+          +-----------+
- *    
+ *
  *
  * [ "Event Expression" Overview ]
  *
  *    Event Expression indicates how the broker waits multiple events.
- *    It was given to subscriber method, that called such as: 
+ *    It was given to subscriber method, that called such as:
  *
  *       broker.subscribe(<expression>, ....);
  *
- *    <expression> consists of 1 or multiple event topics and other tokens, 
+ *    <expression> consists of 1 or multiple event topics and other tokens,
  *    that ruled by simple grammer. the detail of it is as below...
  *
  *
@@ -85,12 +85,12 @@
  *
  *    UnaryOperator := '@' | '~'
  *
- *    UnaryExpression := PrimaryExpression | UnaryOperator, PrimaryExpression 
+ *    UnaryExpression := PrimaryExpression | UnaryOperator, PrimaryExpression
  *
  *    BinaryOperator := 'and' | 'or' | '&' | '|'
  *
- *    BinaryExpression := UnaryExpression 
- *                      | UnaryExpression, BinaryOperator, UnaryExpression 
+ *    BinaryExpression := UnaryExpression
+ *                      | UnaryExpression, BinaryOperator, UnaryExpression
  *
  *    Expression := BinaryExpression
  *
@@ -99,7 +99,7 @@
  *
  *    - case 1.
  *
- *      "A"  
+ *      "A"
  *
  *       -> it triggered when the event "A" is signaled.
  *
@@ -107,69 +107,69 @@
  *
  *      "A | B"
  *
- *      -> wait for multiple events "A" OR "B". 
- *         it is triggerd when one of either events is signaled. 
+ *      -> wait for multiple events "A" OR "B".
+ *         it is triggerd when one of either events is signaled.
  *
  *    - case 3.
  *
  *      "A & B"
  *
- *      -> wait for both events "A" AND "B" 
- *         it is triggerd when both of these events is signaled. 
+ *      -> wait for both events "A" AND "B"
+ *         it is triggerd when both of these events is signaled.
  *
  *
  */
 
-/** 
+/**
  * @class EventBrokerBase
- * @brief Provides loose-coupling muticast event system service. 
+ * @brief Provides loose-coupling muticast event system service.
  *
- * This class is similar to, but different from nsIObserverservice. 
+ * This class is similar to, but different from nsIObserverservice.
  * It does not manages application-global event, but local-scoped one.
  * Stored observers are not objects, but simple delegate functions.
  *
  */
-function EventBrokerBase() 
+function EventBrokerBase()
 {
   this.initialize.apply(this, arguments);
 }
 EventBrokerBase.prototype = {
 
-  /** 
+  /**
    * @property {Object} A map of stored delegate lists, indexed by topic.
    */
   _delegate_map: null,
 
   /** Constructor */
-  initialize: function initialize() 
+  initialize: function initialize()
   {
-    this._delegate_map = {}; 
+    this._delegate_map = {};
   },
 
-  /** Subscribes event handler with a topic. 
-   *  @param {String} topic The notification topic. This string-valued 
-   *                        key uniquely identifies the notification. 
+  /** Subscribes event handler with a topic.
+   *  @param {String} topic The notification topic. This string-valued
+   *                        key uniquely identifies the notification.
    *                        This parameter MUST NOT includes any space characters.
    *  @param {Function} delegate The handler function.
    *  @param {String} id specified event ID string.
-   *  @return {String} An event ID string which is needed to unregister the 
+   *  @return {String} An event ID string which is needed to unregister the
    *                   handler from event map.
-   */ 
-  addListener: function addListener(topic, delegate, id) 
+   */
+  addListener: function addListener(topic, delegate, id)
   {
     var delegate_map;
     var delegate_list;
 
-    //coUtils.Debug.reportMessage(_("event registered: '%s'."), topic); 
+    //coUtils.Debug.reportMessage(_("event registered: '%s'."), topic);
     if (/\s/.test(topic)) { // detect whether topic includes space characters.
       throw Components.Exception(
         _("Ill-formed topic string '%s' was given. ",
-          "It includs space characters."), 
+          "It includs space characters."),
         topic);
     }
     id = id || coUtils.Uuid.generate().toString(); // generate new ID string if it was empty.
     delegate_map = this._delegate_map;
-    if (!delegate_map.hasOwnProperty(topic)) { // if delegate list associated with given 
+    if (!delegate_map.hasOwnProperty(topic)) { // if delegate list associated with given
       delegate_map[topic] = []; // topic was not found, create new list.
     }
     delegate_list = delegate_map[topic];
@@ -177,11 +177,11 @@ EventBrokerBase.prototype = {
     return id;
   },
 
-  /** Unsubscribes specified handler from event map. 
+  /** Unsubscribes specified handler from event map.
    *  @param {String} id An ID of registered event.
    *  @return {Number} Number in which it succeeded to remove from event map.
-   */ 
-  removeListener: function removeListener(id) 
+   */
+  removeListener: function removeListener(id)
   {
     var count = 0,
         delegates,
@@ -189,13 +189,13 @@ EventBrokerBase.prototype = {
         i,
         value;
 
-    // iterate delegate list and search target delegate(s) specified 
+    // iterate delegate list and search target delegate(s) specified
     // by the argument.
     for ([key, delegates] in Iterator(this._delegate_map)) {
       for ([i, value] in Iterator(delegates)) {
         if (value && value.id === id) {
           if (1 === delegates.length) {
-            delete this._delegate_map[key];   
+            delete this._delegate_map[key];
           } else {
             delegates.splice(i, 1); // remove registered delegate.
           }
@@ -205,18 +205,18 @@ EventBrokerBase.prototype = {
     }
     return count;
   },
-    
+
   /** Notify event to subscriber, as firing delegate handlers
-   *  associated with the topic specified by the first argument. 
+   *  associated with the topic specified by the first argument.
    *  @param {String} topic The notification topic.
    *  @return {Array} An array which contains result values.
    */
-  post: function post(topic, data) 
+  post: function post(topic, data)
   {
     var events = this._delegate_map[topic];
     var i, delegate, stack;
     if (events) {
-      for (i = 0; i < events.length; ++i) { 
+      for (i = 0; i < events.length; ++i) {
         delegate = events[i];
         try {
           delegate.action(data);
@@ -224,44 +224,44 @@ EventBrokerBase.prototype = {
           stack = Components.stack.caller.caller.caller;
           coUtils.Debug.reportError(e);
           coUtils.Debug.reportError(
-            _("called at: '%s'.\n", 
+            _("called at: '%s'.\n",
               "The above Error is trapped in the ",
-              "following local event handler. '%s'."), 
+              "following local event handler. '%s'."),
             stack.filename
               .split("->").pop()
-              .split("?").shift() + ": " + stack.lineNumber, 
+              .split("?").shift() + ": " + stack.lineNumber,
             topic);
         }
       };
     }
   },
 
-    
+
   /** Notify event to subscriber, as firing delegate handlers
-   *  associated with the topic specified by the first argument. 
+   *  associated with the topic specified by the first argument.
    *  @param {String} topic The notification topic.
    *  @return {Array} An array which contains result values.
    */
-  multicast: function multicast(topic, data) 
+  multicast: function multicast(topic, data)
   {
     var events = this._delegate_map[topic],
         stack;
 
     if (events) {
-      return events.map(function(delegate) 
-      { 
+      return events.map(function(delegate)
+      {
         try {
           return delegate.action(data);
         } catch (e) {
           stack = Components.stack.caller.caller.caller;
           coUtils.Debug.reportError(e);
           coUtils.Debug.reportError(
-            _("called at: '%s'.\n", 
+            _("called at: '%s'.\n",
               "The above Error is trapped in the ",
-              "following local event handler. '%s'."), 
+              "following local event handler. '%s'."),
             stack.filename
               .split("->").pop()
-              .split("?").shift() + ": " + stack.lineNumber, 
+              .split("?").shift() + ": " + stack.lineNumber,
             topic);
           return null;
         }
@@ -270,13 +270,13 @@ EventBrokerBase.prototype = {
     return null;
   },
 
-    
+
   /** Notify event to subscriber, as firing delegate handlers
-   *  associated with the topic specified by the first argument. 
+   *  associated with the topic specified by the first argument.
    *  @param {String} topic The notification topic.
    *  @return An result value which is returned by the delegate handler.
    */
-  callSync: function callSync(topic, data) 
+  callSync: function callSync(topic, data)
   {
     var events = this._delegate_map[topic],
         stack,
@@ -287,7 +287,7 @@ EventBrokerBase.prototype = {
         _("Subscriber not Found: '%s'."), topic);
     } else if (1 !== events.length) {
       coUtils.Debug.reportError(
-        _("Too many subscribers are found (length: %d): '%s'."), 
+        _("Too many subscribers are found (length: %d): '%s'."),
         events.length, topic);
     }
 
@@ -298,12 +298,12 @@ EventBrokerBase.prototype = {
       stack = Components.stack.caller.caller.caller;
       coUtils.Debug.reportError(e);
       coUtils.Debug.reportError(
-        _("called at: '%s'.\n", 
+        _("called at: '%s'.\n",
           "The above Error is trapped in the ",
-          "following local event handler. '%s'."), 
+          "following local event handler. '%s'."),
         stack.filename.split("->")
           .pop().split("?")
-          .shift() + ": " + stack.lineNumber, 
+          .shift() + ": " + stack.lineNumber,
         topic);
       return null;
     }
@@ -320,7 +320,7 @@ EventBrokerBase.prototype = {
         _("Subscriber not Found: '%s'."), topic);
     } else if (1 !== events.length) {
       coUtils.Debug.reportError(
-        _("Too many subscribers are found (length: %d): '%s'."), 
+        _("Too many subscribers are found (length: %d): '%s'."),
         events.length, topic);
     }
 
@@ -331,12 +331,12 @@ EventBrokerBase.prototype = {
       stack = Components.stack.caller.caller.caller;
       coUtils.Debug.reportError(e);
       coUtils.Debug.reportError(
-        _("called at: '%s'.\n", 
+        _("called at: '%s'.\n",
           "The above Error is trapped in the ",
-          "following local event handler. '%s'."), 
+          "following local event handler. '%s'."),
         stack.filename.split("->")
           .pop().split("?")
-          .shift() + ": " + stack.lineNumber, 
+          .shift() + ": " + stack.lineNumber,
         topic);
     }
   },
@@ -344,13 +344,13 @@ EventBrokerBase.prototype = {
   /** Reset event map. */
   clearEvents: function clearEvents()
   {
-    this._delegate_map = {}; 
+    this._delegate_map = {};
   },
 
 }
 
-/** Provides high-level, loose-coupling muticast event system service. 
- *  It can understand Event Expression, and interpret it to a complex of 
+/** Provides high-level, loose-coupling muticast event system service.
+ *  It can understand Event Expression, and interpret it to a complex of
  *  multiple topics.
  */
 var EventBroker = {}; // Abstruct
@@ -364,16 +364,16 @@ EventBroker.prototype = {
     this._processer = new EventExpressionProcesser(this._base);
   },
 
-  /** Subscribe local event 
+  /** Subscribe local event
    *  @param {String} expression An event expression.
    *  @param {Function} listener The handler function.
-   *  @param {Object} context A "this" object in which the listener handler 
+   *  @param {Object} context A "this" object in which the listener handler
    *                  is to be evalute.
    *  @param {String} id specified event ID string.
-   *  @return {String} An event ID string which is needed to unregister the 
+   *  @return {String} An event ID string which is needed to unregister the
    *                   handler from event map.
    * */
-  subscribe: function subscribe(expression, listener, context, id) 
+  subscribe: function subscribe(expression, listener, context, id)
   {
     var delegate = function()
     {
@@ -385,7 +385,7 @@ EventBroker.prototype = {
     //}
   },
 
-  /** Unsubscribe local event 
+  /** Unsubscribe local event
    *  @param {String} id An ID of registered event.
    *  @return {Number} Number in which it succeeded to remove from event map.
    */
@@ -397,7 +397,7 @@ EventBroker.prototype = {
     return this._base.removeListener(id);
   },
 
-  /** Notify listeners that event is occurring. 
+  /** Notify listeners that event is occurring.
    *  NOTE that Delegate handler is fired in current thread context.
    *  @param topic The notification topic.
    *  @param data An argument value which is given to event handlers.
@@ -410,7 +410,7 @@ EventBroker.prototype = {
     return base.multicast(String(topic), data);
   },
 
-  /** Notify listeners that event is occurring. 
+  /** Notify listeners that event is occurring.
    *  NOTE that Delegate handler is fired in current thread context.
    *  @param topic The notification topic.
    *  @param data An argument value which is given to event handlers.
@@ -422,7 +422,7 @@ EventBroker.prototype = {
     base.post(String(topic), data);
   },
 
-  /** Notify listeners that event is occurring. 
+  /** Notify listeners that event is occurring.
    *  NOTE that Delegate handler is fired in current thread context.
    *  @param topic The notification topic.
    *  @param data An argument value which is given to event handlers.
@@ -436,7 +436,7 @@ EventBroker.prototype = {
     return result;
   },
 
-  /** Notify a listener that event is occurring. 
+  /** Notify a listener that event is occurring.
    *  NOTE that Delegate handler is fired in current thread context.
    *  @param {String} topic The notification topic.
    *  @param data An argument value which is given to event handlers.
@@ -462,10 +462,10 @@ EventBroker.prototype = {
     return base.clearEvents();
   },
 
-  /** Load *.js files from specified directories. 
-   *  @param {String} search path 
+  /** Load *.js files from specified directories.
+   *  @param {String} search path
    */
-  load: function load(broker, search_path, scope) 
+  load: function load(broker, search_path, scope)
   {
     var paths = coUtils.File.getFileEntriesFromSearchPath(search_path),
         entry,
@@ -482,7 +482,7 @@ EventBroker.prototype = {
       entry = paths[i];
       try {
         // make URI string such as "file://....".
-        url = coUtils.File.getURLSpec(entry); 
+        url = coUtils.File.getURLSpec(entry);
         coUtils.Runtime.loadScript(url, scope);
         if (scope.main) {
           scope.main(broker);
@@ -490,7 +490,7 @@ EventBroker.prototype = {
           throw coUtils.Debug.Exception(
             _("Component scope symbol 'main' ",
               "required by module loader was not defined. \n",
-              "file: '%s'."), 
+              "file: '%s'."),
             url.split("/").pop());
         }
       } catch (e) {
@@ -506,23 +506,23 @@ EventBroker.prototype = {
 //
 
 /** The event expression node class for unary operator '@'. */
-function Once(rhs) 
+function Once(rhs)
 {
-  return { 
+  return {
 
     rhs: rhs,
 
-    get test() 
+    get test()
     {
       return this.rhs.test;
     },
 
-    get value() 
+    get value()
     {
       return this.rhs.value;
     },
 
-    reset: function reset() 
+    reset: function reset()
     {
       this.rhs = null;
       this.__defineGetter__(
@@ -543,23 +543,23 @@ function Once(rhs)
 } // class Once
 
 /** The event expression node class for unary operator '~'. */
-function Not(rhs) 
-{ 
+function Not(rhs)
+{
   return {
 
     rhs: rhs,
 
-    get test() 
+    get test()
     {
       return !this.rhs.test;
     },
 
-    get value() 
+    get value()
     {
       return this.rhs.value;
     },
 
-    reset: function reset() 
+    reset: function reset()
     {
       this.rhs.reset();
     },
@@ -576,27 +576,27 @@ function Not(rhs)
 /** The event expression node class for binary operator '&'. */
 function And(lhs, rhs)
 {
-  return { 
+  return {
 
     lhs: lhs,
     rhs: rhs,
-  
-    get test() 
+
+    get test()
     {
       return this.lhs.test && this.rhs.test;
     },
-  
-    get value() 
+
+    get value()
     {
       return this.lhs.value.concat(this.rhs.value);
     },
-  
-    reset: function reset() 
+
+    reset: function reset()
     {
       this.lhs.reset();
       this.rhs.reset();
     },
-  
+
     toString: function toString()
     {
       "[And " + this.lhs + " " + this.rhs + " ]";
@@ -607,31 +607,31 @@ function And(lhs, rhs)
 } // class And
 
 /** The event expression node class for binary operator '|'. */
-function Or(lhs, rhs) 
+function Or(lhs, rhs)
 {
-  return { 
+  return {
 
     lhs: lhs,
     rhs: rhs,
 
-    get test() 
+    get test()
     {
       return this.lhs.test || this.rhs.test;
     },
 
-    get value() 
+    get value()
     {
       return this.lhs.value.concat(this.rhs.value);
     },
 
-    reset: function reset() 
+    reset: function reset()
     {
       this.lhs.reset();
       this.rhs.reset();
     },
 
     toString: function toString()
-    { 
+    {
       return "[Or " + this.lhs + " " + this.rhs + " ]";
     },
 
@@ -644,14 +644,14 @@ function Actor(broker, token, stack, delegate, id)
 
   var self = this;
 
-  this.__proto__ = { 
+  this.__proto__ = {
 
     test: false,
 
     value: [ null ],
 
-    reset: function reset() 
-    { 
+    reset: function reset()
+    {
       this.value = [ null ];
       this.test = false;
     },
@@ -663,7 +663,7 @@ function Actor(broker, token, stack, delegate, id)
 
   };
 
-  broker.addListener(token, function(subject) 
+  broker.addListener(token, function(subject)
   {
     var result,
         root;
@@ -688,22 +688,22 @@ function Actor(broker, token, stack, delegate, id)
  *
  * Parses Event Expressions and evaluates them.
  */
-function EventExpressionProcesser() 
+function EventExpressionProcesser()
 {
   return this.initialize.apply(this, arguments);
 }
 EventExpressionProcesser.prototype = {
 
   /** constructor */
-  initialize: function _generateTokens(broker) 
+  initialize: function _generateTokens(broker)
   {
     this._broker = broker;
   },
 
-  /** An generator method which iterates identifiers and operators. 
+  /** An generator method which iterates identifiers and operators.
    *  @param text {String} An source text which is to be tokenized.
    */
-  _generateTokens: function _generateTokens(text) 
+  _generateTokens: function _generateTokens(text)
   {
     // [blank] or [operators] or [identifier]
     var pattern = new RegExp(/\s*(?:(@|~|&|\||\(|\))|([A-Za-z0-9_\-\/\.]*)\{([^\}]+)\}([A-Za-z0-9_\-\/\.]*)|([A-Za-z0-9_\-\/\.]+))/y),
@@ -738,12 +738,12 @@ EventExpressionProcesser.prototype = {
     }
   },
 
-  /** An parser method which parse tokens and convert that to node tree. 
+  /** An parser method which parse tokens and convert that to node tree.
    *  @param {Array[String]} tokens Tokenized strings.
    *  @param {Function} delegate An event handler function.
    *  @param {String} id specified event ID string.
    */
-  _parseExpression: function _parseExpression(tokens, delegate, id) 
+  _parseExpression: function _parseExpression(tokens, delegate, id)
   {
     var stack = [];
     while (tokens.length) {
@@ -784,9 +784,9 @@ EventExpressionProcesser.prototype = {
     }
   },
 
-  /** Parses event expresson and makes tree of actors. 
+  /** Parses event expresson and makes tree of actors.
    */
-  subscribe: function subscribe(expression, delegate, id) 
+  subscribe: function subscribe(expression, delegate, id)
   {
     var token_generator = this._generateTokens(expression);
     var tokens = [token for (token in token_generator)];

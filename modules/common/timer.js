@@ -30,7 +30,7 @@ coUtils.Timer = {
 
   _thread_manager: coUtils.Services.getThreadManager(),
 
-  wait: function wait(wait) 
+  wait: function wait(wait)
   {
     var end_time = Date.now() + wait,
         current_thread = this._thread_manager.currentThread;
@@ -44,15 +44,15 @@ coUtils.Timer = {
    * @fn setTimeout
    * @brief Set timer callback.
    */
-  setTimeout: function setTimeout(timer_proc, interval, context) 
+  setTimeout: function setTimeout(timer_proc, interval, context)
   {
     var timer = coUtils.Components.createTimer(),
         type = coUtils.Constant.TYPE_ONE_SHOT,
         observer,
         timer_callback_func;
 
-    timer_callback_func = context ? 
-      function invoke() 
+    timer_callback_func = context ?
+      function invoke()
       {
         timer_proc.apply(context, arguments)
         timer = null;
@@ -74,14 +74,14 @@ coUtils.Timer = {
    * @fn setInterval
    * @brief Set timer callback.
    */
-  setInterval: function setInterval(timer_proc, interval, context) 
+  setInterval: function setInterval(timer_proc, interval, context)
   {
     var timer = coUtils.Components.createTimer(),
         type = coUtils.Constant.TYPE_REPEATING_SLACK,
         timer_callback_func;
 
-    timer_callback_func = context ? 
-      function invoke() 
+    timer_callback_func = context ?
+      function invoke()
       {
         timer_proc.apply(context, arguments);
       }

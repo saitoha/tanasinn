@@ -68,13 +68,13 @@ Bell.definition = {
 
   _cover: null,
   _renderer: null,
-  _screen: null, 
+  _screen: null,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
     var result = this.request("command/construct-chrome", this.getTemplate());
 
@@ -88,7 +88,7 @@ Bell.definition = {
   /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
     if (null !== this._cover) {
       this._cover.parentNode.removeChild(this._cover);
@@ -106,21 +106,21 @@ Bell.definition = {
     this._cover.height = renderer.line_height * screen.height;
   },
 
-  "[subscribe('event/screen-width-changed'), pnp]": 
-  function onWidthChanged(width) 
+  "[subscribe('event/screen-width-changed'), pnp]":
+  function onWidthChanged(width)
   {
     this._cover.width = width;
   },
 
-  "[subscribe('event/screen-height-changed'), pnp]": 
-  function onHeightChanged(height) 
+  "[subscribe('event/screen-height-changed'), pnp]":
+  function onHeightChanged(height)
   {
     this._cover.height = height;
   },
 
 
   "[subscribe('sequence/bel'), pnp]":
-  function onBell() 
+  function onBell()
   {
     coUtils.Timer.setTimeout(function() {
       if (this.visual_bell) {
@@ -143,7 +143,7 @@ Bell.definition = {
   },
 
   /** Plays visual bell effect. */
-  visualBell: function visualBell() 
+  visualBell: function visualBell()
   {
     if (this._cover) {
       this._cover.style.backgroundColor = this.color;
@@ -154,7 +154,7 @@ Bell.definition = {
   },
 
   /** Plays 'beep' sound asynchronously. */
-  beep: function beep() 
+  beep: function beep()
   {
     var sound = coUtils.Components.getSound();
 
@@ -170,7 +170,7 @@ Bell.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new Bell(broker);
 }

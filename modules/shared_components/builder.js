@@ -29,15 +29,15 @@
  * @brief Accept UI-template object and convert it to a tree of DOM element.
  *
  * [ UI-template overview ]
- *  
- *   UI-template is JSON-style object that is described as based on the 
+ *
+ *   UI-template is JSON-style object that is described as based on the
  *   specific rule.
- *   It is to be converted to a node set of XUL/HTML/SVG elements by 
+ *   It is to be converted to a node set of XUL/HTML/SVG elements by
  *   "Template Builder" object.
  *
  * [ Examples ]
  *
- * Example 1: 
+ * Example 1:
  *    ({                          // <--- (1)
  *      tagName: "box",           // <--- (2)
  *      flex: 1,
@@ -50,13 +50,13 @@
  *
  *      <box flex="1" style="background-color: red;"/>
  *
- *    Every UI-template object consists of <Element node> (1), and it is 
- *    typically a tree set of <Element node>s. 
- *    It always includes "tagName" property (2), and often includes 
+ *    Every UI-template object consists of <Element node> (1), and it is
+ *    typically a tree set of <Element node>s.
+ *    It always includes "tagName" property (2), and often includes
  *    <Style node> (3).
  *    <Style node> may have some CSS properties in camelcase (4).
  *
- * Example 2: 
+ * Example 2:
  *    ({
  *      tagName: "html:div",
  *      parentNode: "id-of-parent", // <--- (5)
@@ -89,18 +89,18 @@
  *      </html:span>
  *    </html:div>
  *
- *    The "parentNode" property (5) indicates at which the current node is to 
+ *    The "parentNode" property (5) indicates at which the current node is to
  *    be set. if the type of property value was "string", it regards as node
- *    ID of the parent node. or if its type is "object", especially 
+ *    ID of the parent node. or if its type is "object", especially
  *    HTMLElement, it regards as the parent node object itself.
- *    The "childNodes" property has an effect which cascades down 
- *    following <Element node> (6). If you wanted to create two or more 
- *    child nodes under the same node, you should substitute an Array of 
+ *    The "childNodes" property has an effect which cascades down
+ *    following <Element node> (6). If you wanted to create two or more
+ *    child nodes under the same node, you should substitute an Array of
  *    <Element node>s (7) in "childNodes" property.
- *    The "innerText" property (8) creates a text node under current 
- *    <Element node>. 
+ *    The "innerText" property (8) creates a text node under current
+ *    <Element node>.
  *
- * Example 2: 
+ * Example 2:
  *    ({
  *      tagName: "hbox",
  *      id: "parent",
@@ -149,18 +149,18 @@
  *        var left = document.getElementById("left");
  *        var right = document.getElementById("right");
  *        (function() window.alert(this.id)).apply(parent);
- *        left.addEventListener("mouseover", function() { 
- *          onMouseOver.apply(window, arguments); 
+ *        left.addEventListener("mouseover", function() {
+ *          onMouseOver.apply(window, arguments);
  *        }, false);
  *        right.addEventListener("mouseup", onMouseUp, false);
  *        right.addEventListener("mousedown", onMouseOver, false);
  *      ]]>
  *    </script>
  *
- *    The "onconstruct" property (9) defines a event function which fired 
- *    when the property itself is parsed. 
- *    The "listener" property (10) attaches a event handler at the current 
- *    <Element node>. 
+ *    The "onconstruct" property (9) defines a event function which fired
+ *    when the property itself is parsed.
+ *    The "listener" property (10) attaches a event handler at the current
+ *    <Element node>.
  */
 
 /**
@@ -170,8 +170,8 @@ var TemplateBuilder = new Trait();
 TemplateBuilder.definition = {
 
   /** Builds a set of nodes of XUL/HTML/SVG elements. */
-  buildChrome: 
-  function buildChrome(template, results) 
+  buildChrome:
+  function buildChrome(template, results)
   {
     var element,
         key,
@@ -227,8 +227,8 @@ TemplateBuilder.definition = {
   },
 
   /** Processes an "tagName" property. */
-  _createElement: 
-  function _createElement(tagName) 
+  _createElement:
+  function _createElement(tagName)
   {
     var touple = tagName.split(":"), // (tagName) or (namespace, tagName).
         document = this.request("get/root-element").ownerDocument,
@@ -251,25 +251,25 @@ TemplateBuilder.definition = {
   },
 
   /** Processes an "listener" property. */
-  _processListener: 
-  function _processListener(element, value) 
+  _processListener:
+  function _processListener(element, value)
   {
     if (!Array.isArray(value)) {
       value = [ value ];
     };
     value.forEach(function(listener_info) {
       element.value.addEventListener(
-        listener_info.type, 
+        listener_info.type,
         function() listener_info
           .handler
-          .apply(listener_info.context || element.value, arguments), 
+          .apply(listener_info.context || element.value, arguments),
         listener_info.capture || false);
     });
   },
 
   /** Processes an "innerText" property. */
-  _processInnerText: 
-  function _processInnerText(element, value) 
+  _processInnerText:
+  function _processInnerText(element, value)
   {
     var text_node = this.request("get/root-element")
       .ownerDocument
@@ -279,8 +279,8 @@ TemplateBuilder.definition = {
   },
 
   /** Processes a "parentNode" property. */
-  _processParentNode: 
-  function _processParentNode(element, value) 
+  _processParentNode:
+  function _processParentNode(element, value)
   {
     var target_element,
         type = typeof value;
@@ -295,7 +295,7 @@ TemplateBuilder.definition = {
       } else {
         if ("#" === value.charAt(0)) {
           this._broker.subscribe(
-            "@event/domnode-created/" + value.substr(1), 
+            "@event/domnode-created/" + value.substr(1),
             function(target_element)
             {
               target_element.appendChild(element.value);
@@ -311,8 +311,8 @@ TemplateBuilder.definition = {
   },
 
   /** Processes a "childNodes" property. */
-  _processChildChromeNodes: 
-  function _processChildChromeNodes(element, value, results) 
+  _processChildChromeNodes:
+  function _processChildChromeNodes(element, value, results)
   {
     var i, node;
 
@@ -332,8 +332,8 @@ TemplateBuilder.definition = {
   },
 
   /** Processes an attribute or a generic property. */
-  _processAttribute: 
-  function _processAttribute(element, key, value)  
+  _processAttribute:
+  function _processAttribute(element, key, value)
   {
     var keys,
         i,
@@ -378,7 +378,7 @@ TemplateBuilder.definition = {
  * @class ChromeBuilder
  */
 var ChromeBuilder = new Class().extends(Component)
-                               .mix(TemplateBuilder); 
+                               .mix(TemplateBuilder);
 ChromeBuilder.definition = {
 
   id: "chromebuilder",
@@ -395,7 +395,7 @@ ChromeBuilder.definition = {
 
 // public
   "[subscribe('command/construct-chrome'), enabled]":
-  function constructChrome(template) 
+  function constructChrome(template)
   {
     var results, root, id, element;
 
@@ -412,7 +412,7 @@ ChromeBuilder.definition = {
   },
 
   "[subscribe('get/element'), enabled]":
-  function get(id) 
+  function get(id)
   {
     if (!this._map.hasOwnProperty(id)) {
       return undefined;
@@ -434,7 +434,7 @@ ChromeBuilder.definition = {
  * @brief Module entry point
  * @param {Process} process The Process object.
  */
-function main(broker) 
+function main(broker)
 {
   new ChromeBuilder(broker);
 }

@@ -43,23 +43,23 @@ ScreenshotCommand.definition = {
 
   "[persistable] enabled_when_startup": true,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
   },
 
   /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
   },
 
   "[command('screenshot'), _('Convert screen to a image file.'), pnp]":
-  function screenshot(arguments_string) 
+  function screenshot(arguments_string)
   {
     var pattern = /^(\S+)s*$/,
         match = arguments_string.match(pattern),
@@ -81,7 +81,7 @@ ScreenshotCommand.definition = {
       .QueryInterface(Components.interfaces.nsILocalFile);
 
     // create base directories recursively (= mkdir -p).
-    void function make_directory(current) 
+    void function make_directory(current)
     {
       var parent;
 
@@ -110,7 +110,7 @@ ScreenshotCommand.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new ScreenshotCommand(broker);
 }

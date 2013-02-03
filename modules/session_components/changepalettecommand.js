@@ -47,19 +47,19 @@ ChangePaletteCommand.definition = {
 
   _palette: null,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
     this._palette = context["palette"];
   },
 
-  /** Uninstalls itself 
+  /** Uninstalls itself
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
     this._palette = null;
   },
@@ -77,7 +77,7 @@ ChangePaletteCommand.definition = {
       return {
         success: false,
         message: coUtils.Text.format(
-          _("Ill-formed arguments: %s."), 
+          _("Ill-formed arguments: %s."),
           arguments_string),
       };
     }

@@ -30,7 +30,7 @@
  *
  * DECANM - ANSI Mode
  *
- * DECANM changes the terminal to the VT52 mode of operation. In VT52 mode, 
+ * DECANM changes the terminal to the VT52 mode of operation. In VT52 mode,
  * the terminal acts like a VT52 terminal. This mode lets you use applications
  * designed for the VT52 terminal.
  *
@@ -86,11 +86,11 @@ ANMSwitch.definition = {
 
   _mode: null,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
     this._mode = this.default_value;
   },
@@ -98,7 +98,7 @@ ANMSwitch.definition = {
   /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
     this._mode = null;
   },
@@ -107,8 +107,8 @@ ANMSwitch.definition = {
   /** Designate USASCII for character sets G0-G3 (DECANM), and set VT100 mode.
    */
   "[subscribe('sequence/decset/2'), pnp]":
-  function activate() 
-  { 
+  function activate()
+  {
     this._mode = true;
 
     this.sendMessage("sequence/g0", "B");
@@ -124,7 +124,7 @@ ANMSwitch.definition = {
   /** Deactivate auto-repeat feature
    */
   "[subscribe('sequence/decrst/2'), pnp]":
-  function deactivate() 
+  function deactivate()
   {
     this._mode = false;
 
@@ -138,7 +138,7 @@ ANMSwitch.definition = {
   /** Report mode
    */
   "[subscribe('sequence/decrqm/2'), pnp]":
-  function report() 
+  function report()
   {
     var mode = this._mode ? 1: 2,
         message = "?2;" + mode + "$y";
@@ -149,7 +149,7 @@ ANMSwitch.definition = {
   /** on hard / soft reset
    */
   "[subscribe('command/{soft | hard}-terminal-reset'), pnp]":
-  function reset(broker) 
+  function reset(broker)
   {
     if (this.default_value) {
       this.activate();
@@ -161,8 +161,8 @@ ANMSwitch.definition = {
   /**
    * Serialize snd persist current state.
    */
-  "[subscribe('@command/backup'), type('Object -> Undefined'), pnp]": 
-  function backup(context) 
+  "[subscribe('@command/backup'), type('Object -> Undefined'), pnp]":
+  function backup(context)
   {
     // serialize this plugin object.
     context[this.id] = {
@@ -173,8 +173,8 @@ ANMSwitch.definition = {
   /**
    * Deserialize snd restore stored state.
    */
-  "[subscribe('@command/restore'), type('Object -> Undefined'), pnp]": 
-  function restore(context) 
+  "[subscribe('@command/restore'), type('Object -> Undefined'), pnp]":
+  function restore(context)
   {
     var data = context[this.id];
 
@@ -193,7 +193,7 @@ ANMSwitch.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new ANMSwitch(broker);
 }

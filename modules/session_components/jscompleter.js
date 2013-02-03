@@ -44,18 +44,18 @@ JsCompleter.definition = {
 
   "[persistable] enabled_when_startup": true,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
   },
 
   /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
   },
 
@@ -64,7 +64,7 @@ JsCompleter.definition = {
    * Search for a given string and notify a listener (either synchronously
    * or asynchronously) of the result
    *
-   * @param context - The completion context object. 
+   * @param context - The completion context object.
    */
   "[completer('js'), pnp]":
   function complete(context)
@@ -75,7 +75,7 @@ JsCompleter.definition = {
         settled,
         notation,
         current,
-        context, 
+        context,
         code,
         properties,
         lower_current;
@@ -100,7 +100,7 @@ JsCompleter.definition = {
             this.sendMessage("event/answer-completion", null);
             return;
           }
-        } catch (e) { 
+        } catch (e) {
           this.sendMessage("event/answer-completion", null);
           return;
         }
@@ -115,7 +115,7 @@ JsCompleter.definition = {
         // add own property names.
         if (null !== context && typeof context !== "undefined") {
           Array.prototype.push.apply(
-            properties, 
+            properties,
             Object.getOwnPropertyNames(context.__proto__)
               .map(function(key) key));
         }
@@ -127,20 +127,20 @@ JsCompleter.definition = {
       {
         if ("." === notation ) {
           if ("number" === typeof key) {
-            // Number property after dot notation. 
+            // Number property after dot notation.
             // etc. abc.13, abc.3
-            return false; 
+            return false;
           }
           if (!/^[$_a-zA-Z]+$/.test(key)) {
-            // A property consists of identifier-chars after dot notation. 
+            // A property consists of identifier-chars after dot notation.
             // etc. abc.ab[a cde.er=e
-            return false; 
+            return false;
           }
         }
         return -1 !== String(key)
           .toLowerCase()
           .indexOf(lower_current);
-      }).sort(function(lhs, rhs) 
+      }).sort(function(lhs, rhs)
       {
         return String(lhs).toLowerCase().indexOf(current) ? 1: -1;
       });
@@ -150,7 +150,7 @@ JsCompleter.definition = {
       }
       autocomplete_result = {
         type: "text",
-        query: current, 
+        query: current,
         data: properties.map(
           function(key)
           {
@@ -178,7 +178,7 @@ JsCompleter.definition = {
                    : ("undefined" === type) ?
                      "undefined"
                    : ("string" === type) ?
-                     value.replace('"', '\\"') + "\"" 
+                     value.replace('"', '\\"') + "\""
                    : String(value)
             };
           }),

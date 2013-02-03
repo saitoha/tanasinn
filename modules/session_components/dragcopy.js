@@ -34,7 +34,7 @@ var DragCopy = new Class().extends(Plugin)
 DragCopy.definition = {
 
   _feedback_canvas: null,
-  
+
   _mouse_mode: null,
 
   _screen: null,
@@ -67,7 +67,7 @@ DragCopy.definition = {
 
   "[persistable] enabled_when_startup": true,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
@@ -82,7 +82,7 @@ DragCopy.definition = {
     this._selection = context["selection"];
   },
 
-  /** Uninstalls itself. 
+  /** Uninstalls itself.
    */
   "[uninstall]":
   function uninstall()
@@ -96,29 +96,29 @@ DragCopy.definition = {
     this._renderer = null;
     this._selection = null;
   },
-  
-  "[subscribe('event/mouse-tracking-mode-changed'), enabled]": 
-  function onMouseTrackingModeChanged(data) 
+
+  "[subscribe('event/mouse-tracking-mode-changed'), enabled]":
+  function onMouseTrackingModeChanged(data)
   {
     this._mouse_mode = data;
   },
- 
-  "[subscribe('event/screen-width-changed'), pnp]": 
-  function onWidthChanged(width) 
+
+  "[subscribe('event/screen-width-changed'), pnp]":
+  function onWidthChanged(width)
   {
     this._feedback_canvas.width = width;
   },
 
-  "[subscribe('event/screen-height-changed'), pnp]": 
-  function onHeightChanged(height) 
+  "[subscribe('event/screen-height-changed'), pnp]":
+  function onHeightChanged(height)
   {
     this._feedback_canvas.height = height;
   },
-  
-  /** Set selected text data and feedback image to data transfer object. 
+
+  /** Set selected text data and feedback image to data transfer object.
    *  @param {Event} A DOM mouse event object.
    */
-  _dragCopy: function _dragCopy(event, start, end, is_rectangle) 
+  _dragCopy: function _dragCopy(event, start, end, is_rectangle)
   {
     var canvas = this._canvas,
         screen = this._screen,
@@ -165,12 +165,12 @@ DragCopy.definition = {
     feedback_canvas.hidden = true;
   },
 
-  /** Requires and mouse event object and convert it to a touple which 
+  /** Requires and mouse event object and convert it to a touple which
    *  indicates [x, y] position in center board element.
    *  @param {Event} A DOM mouse event object.
    */
-  _getPixelMetricsFromEvent: 
-  function _getPixelMetricsFromEvent(event) 
+  _getPixelMetricsFromEvent:
+  function _getPixelMetricsFromEvent(event)
   {
     var target_element = event.explicitOriginalTarget,
         root_element = target_element.parentNode,
@@ -202,7 +202,7 @@ DragCopy.definition = {
           start_column = result.start % column;
           end_column = result.end % column;
 
-          if ((start_column <= x && x <= end_column) 
+          if ((start_column <= x && x <= end_column)
            || (start_column >= x && x >= end_column)) {
             this._dragCopy(event, result.start, result.end, result.is_rectangle);
           }
@@ -222,7 +222,7 @@ DragCopy.definition = {
     }
   },
 
-  convertPixelToScreen: function convertPixelToScreen(event) 
+  convertPixelToScreen: function convertPixelToScreen(event)
   {
     var target_element = this.request("command/query-selector", "#tanasinn_content"),
         root_element = this.request("get/root-element"),
@@ -257,7 +257,7 @@ DragCopy.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new DragCopy(broker);
 }

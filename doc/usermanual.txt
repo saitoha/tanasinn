@@ -1,6 +1,6 @@
 #include "define.h"
 
-= tanasinn terminal emulator 
+= tanasinn terminal emulator
 
 #if __EN__
 link:./usermanual-ja.html[日本語/Japanese]
@@ -13,7 +13,7 @@ link:./usermanual.html[English/英語]
 == Overview
 
     Here is a terminal emulator that run on Firefox/Thunderbird/SeaMonkey.
-    It is supported on Windows(XP/Vista/7) + Cygwin / Mac / Linux / FreeBSD. 
+    It is supported on Windows(XP/Vista/7) + Cygwin / Mac / Linux / FreeBSD.
 
 #elif __JP__
 
@@ -47,21 +47,21 @@ link:./usermanual.html[English/英語]
     Fix broken vimperator plugin
     Fix broken title mode plugin
     Fix broken "blur" command
-    Change default font size 
+    Change default font size
     Support fancy style selection rendering
     Support title stacking (xterm)
     Implement rounded-style rectangle cursor rendering
 
 === 2012-12-08
     Version 0.3.1.10
-    Disable w3m plugin by default 
+    Disable w3m plugin by default
     Disable overlay image plugin by default
     Disable video plugin by default
 
 === 2012-12-04
     Version 0.3.1.9
     Add GCLI integration support
-    Fix bce issue when scrolling 
+    Fix bce issue when scrolling
     Improve lines/cells allocation performance
     Take a delay for response against DA2, for MinEd
     Improve resize performance
@@ -95,7 +95,7 @@ link:./usermanual.html[English/英語]
     Fix origin mode behavior
     Fix some reference error
     [important] Fix an installation error when creating $HOME/.tanasinn
-    [important] Fix some modules' dependency issue 
+    [important] Fix some modules' dependency issue
     Fix plugin manager's initialization issue
     Fix a plugin completer's bug
 
@@ -114,7 +114,7 @@ link:./usermanual.html[English/英語]
     Report DA2 terminal ID=0 when asked
     Improve sixel implementation, support transparent color
 
-=== 2012/10/06 
+=== 2012/10/06
     Version 0.3.0.2
     Fix SCOSCP/SCORCP's bug
     Add version command
@@ -136,7 +136,7 @@ link:./usermanual.html[English/英語]
     Fix sixel graphics's data processing bug
     Fix for the launcher's session missing bug
 
-=== 2012/09/23 
+=== 2012/09/23
     Version 0.3.0.1
     Implement Auto Answerback mode (DECAAM)
     Implement DECERA / Erase Rectangle Area
@@ -150,7 +150,7 @@ link:./usermanual.html[English/英語]
     Fix SGR rendition's bug
     Fix Fix OSC10/11's bug
 
-=== 2012/09/16 
+=== 2012/09/16
     Version 0.3.0.0
 	Support ED 3 / clear scroll buffer(xterm)
 	Support xterm's(#252) "Title Mode"
@@ -158,7 +158,7 @@ link:./usermanual.html[English/英語]
 	Add PopClip integration
 	Enable 3D Transform plugin by default
 
-=== 2012/08/19 
+=== 2012/08/19
     Version 0.2.4.0/0.2.4.1
     fix the Ctrl + Space key handling issue (reported by @teramako).
     fix a conformance level's bug (for tmux).
@@ -172,7 +172,7 @@ link:./usermanual.html[English/英語]
     add UTF-8/CP-932/EUC-JP parallel state decoder.
     make sixel rendering information as cell-level DRCS attribute
 
-=== 2012/08/05 
+=== 2012/08/05
     Version 0.2.3.1
     fix a bug in save command
     fix a bug in OSC 52 get access
@@ -180,7 +180,7 @@ link:./usermanual.html[English/英語]
     Version 0.2.3.2
     fix a serious emulation's bug.
 
-=== 2012/08/04 
+=== 2012/08/04
     Version 0.2.3.0
     support OSC 52 get access
     support DECRQM/DECRPM
@@ -191,7 +191,7 @@ link:./usermanual.html[English/英語]
     fix for vimperator integration
     Fix some bugs.
 
-=== 2012/07/15 
+=== 2012/07/15
     Version 0.2.2.2
     Support OSC 10/11.
     Support DECSET 12 / cursor blinking.
@@ -210,20 +210,20 @@ link:./usermanual.html[English/英語]
     Implement 3D Rotation feature, with dragging mouse.
     Fix some bugs.
 
-=== 2012/05/31 
+=== 2012/05/31
     Version 0.2.2.1
     DECSET 8840 / Ambiguous width switching.
     DECSET 7700 / Ambiguous width reporting.
     Implement LNM.
     Implement REP.
     Implement Keyboard Action Mode (KAM).
-    Implement Send/Receive Mode, local echo mode (SRM). 
+    Implement Send/Receive Mode, local echo mode (SRM).
     implement DECSCA (Protection Attribute).
     implement DECSED/DECSEL (Selective erase feature).
     implement DECSERA (Selective Erase Rectangle Area).
     More precise emulation.
 
-=== 2012/05/23 
+=== 2012/05/23
     Version 0.2.2.0
     Supports OSC 52 base64 copy.
     Supports DEC Locator Event Mode(without filter rectangle feature).
@@ -231,31 +231,31 @@ link:./usermanual.html[English/英語]
     Implement LNM.
     Implement Device Status Report(DSR).
     Implement Tertiary Device Attributes (DA3).
-    Implement DECREQTPARM. 
+    Implement DECREQTPARM.
     More precise emulation, Now it passes vttest Menu 1, 2, 3, 4, 6, 7, and 8.
     Disable ShellRPC plugin.
 
-=== 2012/05/05 
+=== 2012/05/05
     Version 0.2.1.1
     Supports UTF8/urxvt/SGR style mouse reporting.
     Improve performance.
 
-=== 2012/04/18 
+=== 2012/04/18
     Version 0.2.0.0
-    More precise emulation. 
+    More precise emulation.
     Now it passes vttest 1, 2, 3, 4, 7, and 8.
     Improve performance.
 
-=== 2012/04/15 
+=== 2012/04/15
     Version 0.1.7.2
     Important bug fix, Now it works en_US locale, sorry!
 
-=== 2012/04/08 
+=== 2012/04/08
     Now version 0.1.7.1 available.
-    Implement SGR blink feature. 
+    Implement SGR blink feature.
     Implement SGR rapid blink feature(from DOS's ANSI.SYS).
-    Implement SGR italic feature. 
-    Implement SGR halfbright feature. 
+    Implement SGR italic feature.
+    Implement SGR halfbright feature.
 
 #if __EN__
 
@@ -294,7 +294,7 @@ This software is distributed under http:/#/www.mozilla.org/MPL/1.1/[Mozilla Publ
 #elif __JP__
 
 == ダウンロード/ライセンス
-http:/#/www.mozilla-japan.org/MPL/MPL-1.1J.html[Mozilla Public License 1.1 (MPL1.1)] で配布しています。 
+http:/#/www.mozilla-japan.org/MPL/MPL-1.1J.html[Mozilla Public License 1.1 (MPL1.1)] で配布しています。
 
 - http:/#/zuse.jp/tanasinn/index.html[http:/zuse.jp/tanasinn/index.html]
 
@@ -305,13 +305,13 @@ http:/#/www.mozilla-japan.org/MPL/MPL-1.1J.html[Mozilla Public License 1.1 (MPL1
 #if __EN__
 == Highlighting features
     - Full Gecko based user interface (HTML Canvas + XUL), it is flexible and easy to customize.
-    - Multi-platform, now supports Mac / FreeBSD / Linux (Tested in Ubuntu) / 
+    - Multi-platform, now supports Mac / FreeBSD / Linux (Tested in Ubuntu) /
       Windows(XP/Vista/7) + http:/#/www.cygwin.com[Cygwin] (requires posix python).
     - Supports ISO-6429/ISO-2022 compatible parsing
     - Supports plugin architecture. it supports Plug-and-Play installing & uninstalling.
     - Retaining TTY session during closing/restarting browser.
       you can reconnect suspended terminal session.
-    - Including debugger. You can run it in step-execution-mode or trace-mode 
+    - Including debugger. You can run it in step-execution-mode or trace-mode
       and observe terminal I/O sequence in real-time.
     - Precise emulation, passes vttest Menu 1, 2, 3, 4, 6, 7, and 8.
     - Supports basic features, scroll-back, alternate screen, visual bell, audio bell ...etc.
@@ -321,7 +321,7 @@ http:/#/www.mozilla-japan.org/MPL/MPL-1.1J.html[Mozilla Public License 1.1 (MPL1
     - Supports Sixel Graphics mode.
     - Supports Various character attributes, Italic, blink, slow blink, underline, negative,...etc.
     - Supports some ancient lost commands, such as DECDHL/DECDWL, DECDLD/http:/#/vt100.net/dec/vt320/soft_characters[DRCS(Dynamically Redefined Character Set)]。
-    - Supports east asian double width characters. 
+    - Supports east asian double width characters.
       but it is not render bidi languages correctly.
     - Localization supported. It is using gettext-style method. you can edit localize resource on UI.
     - You can selects variable character encoding supported by Gecko.
@@ -339,12 +339,12 @@ http:/#/www.mozilla-japan.org/MPL/MPL-1.1J.html[Mozilla Public License 1.1 (MPL1
 #elif __JP__
 == 特色
     - Geckoベースのユーザーインターフェース (HTML Canvas + XUL)。柔軟でカスタマイズが容易です。
-    - マルチプラットフォーム。現在サポートされるのは、Mac / FreeBSD / Linux(というかUbuntu) / 
+    - マルチプラットフォーム。現在サポートされるのは、Mac / FreeBSD / Linux(というかUbuntu) /
       Windows(XP/Vista/7) + http:/#/www.cygwin.com[Cygwin]環境 (POSIX版Pythonが必要)
-    - ISO-6429/ISO-2022互換パーサー搭載 
+    - ISO-6429/ISO-2022互換パーサー搭載
     - プラグインアーキテクチャ。プラグアンドプレイでのインストール・アンインストールが可能。
     - ブラウザを再起動したり閉じたりしている間、ターミナルセッションを保持します。
-      サスペンドしたセッションに後から再接続できます。 
+      サスペンドしたセッションに後から再接続できます。
     - デバッガ内臓。ステップ実行やトレースができます。
       ターミナルとアプリケーションがやり取りするI/Oシーケンスをリアルタイムで観察できます。
     - 高品質なエミュレーション。vttestメニュー 1, 2, 3, 4, 6, 7, 8 のテストをパスしています。
@@ -356,7 +356,7 @@ http:/#/www.mozilla-japan.org/MPL/MPL-1.1J.html[Mozilla Public License 1.1 (MPL1
     - イタリック・ブリンク・低速ブリンク・アンダーライン・反転などのさまざまなキャラクタアトリビュートを実装
     - PC端末では実装例の少ないロスト・コマンドを積極的に実装。
       DECDHL/DECDWLやhttp:/#/vt100.net/dec/vt320/soft_characters[DRCS(Dynamically Redefined Character Set)]など。
-    - East Asian Width(ひらがななどの文字幅を考慮したレンダリング)に一応対応しています。 
+    - East Asian Width(ひらがななどの文字幅を考慮したレンダリング)に一応対応しています。
       B集合以降のCJK統合拡張漢字等、サロゲートペアで表現される文字にも対応しています。
       異体字セレクタ、インド系諸語等で頻出する合字やアラビア系文字の置換などの複雑なグリフ処理は、
       現在主にパフォーマンス上の理由により実装されませんが、 別途プラグインで対応することも可能です。
@@ -591,19 +591,19 @@ image::images/mplayer.png[width=780]
 
 == Features in future...
 
-    * Improving emulation. now emulation engine is running with xterm compatible mode. 
+    * Improving emulation. now emulation engine is running with xterm compatible mode.
       but it ought to read terminfo entries.
     * Supporting color scheme. import/export color palette contains 16 or 256 colors.
     * Supporting skins. you can make it otakunized.
     * Making it to be more collaborative with curses-based applications.
-      Accessing to Gecko and do something like opening pop-up windows, playing movies, 
-      OAuth authorization, ...etc., from terminal applications. 
+      Accessing to Gecko and do something like opening pop-up windows, playing movies,
+      OAuth authorization, ...etc., from terminal applications.
       We're dreaming of enjoying youtube or twitter with no plugins, from terminal, don't you?
     * Documents for plug-in developers are comming soon... - -;)
 
 #elif __JP__
 == 将来的にサポートされる仕様
-    
+
     * エミュレーションの強化。今はとりあえずxterm系コンパチブルなエミュレーションで作ってますが、
       本来はterminfoエントリを見るべきでしょう。
     * カラースキーマのサポート。16色or256色のパレットをインポート/エクスポートできるように。
@@ -621,16 +621,16 @@ image::images/mplayer.png[width=780]
     - Firefox 4.02pre+ / Thunderbird 7.0a1+ / SeaMonkey 2.1+.
     - Python for POSIX (2.5+, Mac, FreeBSD, Linux, or cygwin version)
       Python for Win32, ActivePython, etc... are not well.
-      because this software depends on many posix functions 
+      because this software depends on many posix functions
       'os.fork', 'os.openpty' ..etc.
-    - Posix environment. 
+    - Posix environment.
       If you are running Windows, you need to install cygwin at C:\cygwin.
 #elif __JP__
 == 動作要件
     - Firefox 4.02pre+ / Thunderbird 7.0a1+ / SeaMonkey 2.1+.
     - POSIX用にビルドされたPython (2.5+, Mac、FreeBSD、Linux、 または cygwin用のもの)。
       Python for Win32 や ActivePython 等はforkや仮想端末をサポートしないと思うのでダメしょう。
-    - POSIX環境。 
+    - POSIX環境。
       もしWindowsをお使いでしたら、C:\cygwinにCygwinをインストールしてください。
 #endif
 
@@ -650,7 +650,7 @@ cd tanasinn
 ./configure
 make
 ----
-    If build process is succeeded, target XPI file 
+    If build process is succeeded, target XPI file
     TANASINN_XPI_ID is to be generated. enjoy it!
 #elif __JP__
 
@@ -665,7 +665,7 @@ make
     ビルドが成功すると、TANASINN_XPI_IDというXPIファイルが生成されます。
     これをインストールしてください。
 #endif
-    
+
 #if __EN__
 === Installing as Vimperator/Muttator plugin:
 
@@ -676,9 +676,9 @@ make
 git clone TANASINN_GIT_REPOSITORY
 cd tanasinn
 ln -s $PWD $RUNTIME/tanasinn
-ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/ 
+ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/
 ----
-        
+
 .Windows Vista/7 + Cygwin
 ----
 git clone TANASINN_GIT_REPOSITORY
@@ -708,9 +708,9 @@ ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/
 git clone TANASINN_GIT_REPOSITORY
 cd tanasinn
 ln -s $PWD $RUNTIME/tanasinn
-ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/ 
+ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/
 ----
-        
+
 .Windows Vista/7 + Cygwin
 ----
 git clone TANASINN_GIT_REPOSITORY
@@ -738,7 +738,7 @@ ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/
 #elif __JP__
 === XULアプリケーションとして起動 (不安定、うまく動かないかもしれません):
 #endif
-    
+
 .MacOSX
 ----
 git clone TANASINN_GIT_REPOSITORY
@@ -763,7 +763,7 @@ cd tanasinn
 cygstart firefox.exe --app application.ini
 ----
 #endif
-    
+
 #if __EN__
 == Usage
 #elif __JP__
@@ -780,12 +780,12 @@ image::images/launcher.png[width=480]
 
 #if __EN__
 
-==== If it is Installed as Add-on: 
+==== If it is Installed as Add-on:
     Pressing control key twice (ctrl + ctrl), it shows Commandline Launcher interface.
-    For example, if you type "man man[Enter key]" to this launcher textbox, 
-    window-like UI emerges into browser chrome window and display manpage.  
+    For example, if you type "man man[Enter key]" to this launcher textbox,
+    window-like UI emerges into browser chrome window and display manpage.
 
-==== If it is Installed as Vimperator/Muttator plugin: 
+==== If it is Installed as Vimperator/Muttator plugin:
     You can launch tanasinn as same as Add-on version, by pressing control key twice (ctrl + ctrl).
     For displaying launcher interface from commandline, type as follows:
 
@@ -806,7 +806,7 @@ image::images/launcher.png[width=480]
     そこで例えば、"man man[Enterキー]" とタイプしてみてください。
     ウィンドウのようなUIがブラウザウィンドウ内に現れ、manページが表示されると思います。
 
-==== Vimperator/Muttatorのプラグインとしてインストールした場合: 
+==== Vimperator/Muttatorのプラグインとしてインストールした場合:
     アドオン版と同様、Controlキーの2度押し (ctrl + ctrl) でtanasinnが起動します。
     Vimperator/Muttatorのコマンドライン上から起動したい場合は、以下のようにタイプしてください。
 
@@ -851,9 +851,9 @@ example:
 
 
 #if __EN__
-=== Basic operating procedure 
+=== Basic operating procedure
 
-    It is similar to well-known terminal emulators, like xterm. 
+    It is similar to well-known terminal emulators, like xterm.
     but including specific features as follows.
 #elif __JP__
 === 基本的な操作方法
@@ -908,19 +908,19 @@ example:
 #elif __JP__
 === コマンドラインインターフェースを使う
 #endif
-    
+
 image::images/commandline.png[width=480]
 
 #if __EN__
 
     The specification of commands is not frozen. Comming soon...
-    Now the implementation of this part is written by rush job, commandline parser 
+    Now the implementation of this part is written by rush job, commandline parser
     is not proper one.
 
 #elif __JP__
-    
+
     [bold]*shift+shiftでコマンドラインにカーソルが移動します*。
-    これだけおぼえておけばとりあえず補完でなんとかなると思います。    
+    これだけおぼえておけばとりあえず補完でなんとかなると思います。
 
 #endif
 
@@ -2069,19 +2069,19 @@ screenshot abc
          +-- sessions.txt        <---------------------- (4)
          |
          +-- desktop_profile/    <---------------------- (5)
-         |    
+         |
          +-- session_profile/    <---------------------- (6)
-         |    
+         |
          +-- persist/            <---------------------- (7)
-         |    
+         |
          +-- history/            <---------------------- (8)
-         |    
+         |
          +-- batches/            <---------------------- (9)
-         |    
+         |
          +-- cgi-bin/            <---------------------- (10)
-         |    
+         |
          +-- screenshot/            <------------------- (11)
-         |    
+         |
          +-- log/                <---------------------- (12)
          |
          +-- modules/            <---------------------- (13)
@@ -2117,7 +2117,7 @@ process.cygwin_root = "C:\\cygwin";
 process.bin_path = "/bin:/usr/bin:/usr/local/bin:/opt/local/bin";
 process.python_path = "/usr/bin/python"
 
-----   
+----
 
 ==== .tanasinn/
 
@@ -2146,7 +2146,7 @@ process.python_path = "/usr/bin/python"
   nmap <C-S-i> <2-shift>blur<CR>
   nnoremap <C-S-z> <2-shift>
   cmap <C-z> <2-shift>
-  cmap <C-s> <C-a><C-k>vimperator set!<CR> 
+  cmap <C-s> <C-a><C-k>vimperator set!<CR>
   set renderer.normal_alpha=0.8
   set renderer.font_size=20
   set outerchrome.background_opacity=0.8
@@ -2177,7 +2177,7 @@ Desktopオブジェクトの設定が書き出されるディレクトリ。
 
 #endif
 
-==== .tanasinn/session_profile/ 
+==== .tanasinn/session_profile/
 
 #if __EN__
 
@@ -2187,7 +2187,7 @@ Sessionオブジェクトの設定が書き出されるディレクトリ。
 
 #endif
 
-==== .tanasinn/persist/ 
+==== .tanasinn/persist/
 
 #if __EN__
 
@@ -2197,7 +2197,7 @@ Sessionオブジェクトの設定が書き出されるディレクトリ。
 
 #endif
 
-==== .tanasinn/screenshot/ 
+==== .tanasinn/screenshot/
 
 #if __EN__
 
@@ -2207,7 +2207,7 @@ Sessionオブジェクトの設定が書き出されるディレクトリ。
 
 #endif
 
-==== .tanasinn/log/ 
+==== .tanasinn/log/
 
 #if __EN__
 
@@ -2217,7 +2217,7 @@ Sessionオブジェクトの設定が書き出されるディレクトリ。
 
 #endif
 
-==== .tanasinn/batches/ 
+==== .tanasinn/batches/
 
 #if __EN__
 
@@ -2227,7 +2227,7 @@ importコマンドの引数として与えられたファイル名が検索さ�
 
 #endif
 
-==== .tanasinn/cgi-bin/ 
+==== .tanasinn/cgi-bin/
 
 #if __EN__
 
@@ -2243,7 +2243,7 @@ execcgiコマンドの引数として与えられたファイル名が検索さ�
 
 #elif __JP__
 
-このディレクトリ内にユーザー拡張やユーザーデータが配置されます。 
+このディレクトリ内にユーザー拡張やユーザーデータが配置されます。
 
 #endif
 
@@ -2253,7 +2253,7 @@ execcgiコマンドの引数として与えられたファイル名が検索さ�
 
 #elif __JP__
 
-プロセスバスに接続されるユーザー拡張が配置されるディレクトリ。 
+プロセスバスに接続されるユーザー拡張が配置されるディレクトリ。
 
 #endif
 
@@ -2263,7 +2263,7 @@ execcgiコマンドの引数として与えられたファイル名が検索さ�
 
 #elif __JP__
 
-デスクトップバスに接続されるユーザー拡張が配置されるディレクトリ。 
+デスクトップバスに接続されるユーザー拡張が配置されるディレクトリ。
 
 #endif
 
@@ -2273,7 +2273,7 @@ execcgiコマンドの引数として与えられたファイル名が検索さ�
 
 #elif __JP__
 
-セッションバスに接続されるユーザー拡張が配置されるディレクトリ。 
+セッションバスに接続されるユーザー拡張が配置されるディレクトリ。
 
 #endif
 
@@ -2283,10 +2283,10 @@ execcgiコマンドの引数として与えられたファイル名が検索さ�
 
 #elif __JP__
 
-デスクトップバス・セッションバス両方に接続されるユーザー拡張が配置されるディレクトリ。 
+デスクトップバス・セッションバス両方に接続されるユーザー拡張が配置されるディレクトリ。
 
 #endif
- 
+
 #if __EN__
 
 #elif __JP__
@@ -2315,7 +2315,7 @@ To persist the state of current session (font, color, screen size, ...etc), Type
 saveprofile
 ----
 
-Then current session's configuration settings will be persisted to 
+Then current session's configuration settings will be persisted to
 "$HOME/.tanasinn/profile/default.js".
 If you would like to save it as other file name, type as follows:
 
@@ -2348,26 +2348,26 @@ Type it in the command-line input field.
 kill
 ----
 
-=== How to Hook "<C-i>"(edit input field by external editor) and "gF"(view source in external viewer) mappings if tanasinn is Installed as Vimperator/Muttator plugin. 
+=== How to Hook "<C-i>"(edit input field by external editor) and "gF"(view source in external viewer) mappings if tanasinn is Installed as Vimperator/Muttator plugin.
 
 If you would like to edit input field by external editor on tanasinn,
-add following command to your vimperatorrc/muttatorrc. 
+add following command to your vimperatorrc/muttatorrc.
 
 ----
 let g:tanasinneditorcommand="vim %"
 ----
 
-It requires "vim" command on your system. 
+It requires "vim" command on your system.
 '%' is to be replaced with a temporary file path.
 
-To view HTML source on tanasinn, add following command. 
+To view HTML source on tanasinn, add following command.
 
 ----
 let g:tanasinnviewsourcecommand="vim +e '%'"
 ----
 
 '%' is to be replaced with an escaped URL string.
-This example requires "vim" command on your system. 
+This example requires "vim" command on your system.
 
 #elif __JP__
 
@@ -2436,7 +2436,7 @@ let g:tanasinneditorcommand="vim %"
 この例ではvimコマンドがシステムにインストールされている必要があります。
 「%」の部分はテンポラリファイルのパスに置換されます。
 
-HTMLソースをtanasinnで見るには、以下のコマンドを追加します。 
+HTMLソースをtanasinnで見るには、以下のコマンドを追加します。
 
 ----
 let g:tanasinnviewsourcecommand="vim +e '%'"
@@ -2604,7 +2604,7 @@ echo -en "¥e]220;overlayecho Hello, World!¥a"
 == Known issues
 
  - In Windows + Cygwin environment, booting and emulation performance is so damn slow!!
- - At SandS(Space and Shift) keyboard environment, shift + shift 
+ - At SandS(Space and Shift) keyboard environment, shift + shift
    (shift key twice) key sequence are detected by space + space, unfortunately!!
    I think something other way for it should be provided.
  - It does'nt work when all NIC is disabled.
@@ -2764,7 +2764,7 @@ image::images/sample2.png[width=700]
 ----
 
 broker.subscribe(
-  "@(initialized/{tty & screen} & ~variable-changed/renderer.font_{size|family})", 
+  "@(initialized/{tty & screen} & ~variable-changed/renderer.font_{size|family})",
   function (tty, screen, font_size, font_family) { … })；
 
 ----
@@ -2818,7 +2818,7 @@ image::images/sample3.png[width=770]
 ----
 disable console
 saveprofile
-----  
+----
 
 ==== サンプル4 - コンポーネントオブジェクトの作成
 
@@ -2845,7 +2845,7 @@ function main(broker) {
 }
 
 ----
-  
+
   コンポーネントの登録に相当する部分です。
   登録というよりも、コンポーネントいるかーとか、メニューアイテムいるかーとか、バスに対して訊いてみて、
   だれかが反応するような感じです。tanasinnではだいたいの事柄がそんなふうに表現されています。ほとんどがメッセージです。
@@ -2925,14 +2925,14 @@ image::images/systemstack.png[]
 
 === event.js / Event system
 
-Defines class EventBroker, which is able to interpret and evaluate 
+Defines class EventBroker, which is able to interpret and evaluate
 "Topic" and "Event Expression".
 
 ==== "Topic" Overview
 
    In this event system, registered events is concerned by "topic" that
    is string variable consists of some digits and alphabets.
-    
+
    If you registered an event as follows:
 
       var id = broker.subscribe(<topic>, <handler>, ....);
@@ -2947,7 +2947,7 @@ Defines class EventBroker, which is able to interpret and evaluate
       broker.unsubscribe(id);
 
    NOTE that this ID is NOT corresponds to a handler, one-to-one.
-   The relation between Topic-ID is as same as that, because this event 
+   The relation between Topic-ID is as same as that, because this event
    system is based on the concept of multicast delegate system.
 
 image::images/topic.png[]
@@ -2955,11 +2955,11 @@ image::images/topic.png[]
 ==== "Event Expression" Overview
 
    Event Expression indicates how the broker waits multiple events.
-   It was given to subscriber method, that called such as: 
+   It was given to subscriber method, that called such as:
 
       broker.subscribe(<expression>, ....);
 
-   <expression> consists of 1 or multiple event topics and other tokens, 
+   <expression> consists of 1 or multiple event topics and other tokens,
    that ruled by simple grammar. the detail of it is as below...
 
 
@@ -2982,11 +2982,11 @@ image::images/topic.png[]
 
    UnaryOperator := '@' | '~'
 
-   UnaryExpression := PrimaryExpression | UnaryOperator, PrimaryExpression 
+   UnaryExpression := PrimaryExpression | UnaryOperator, PrimaryExpression
 
    BinaryOperator := 'and' | 'or' | '&' | '|'
 
-   BinaryExpression := UnaryExpression | UnaryExpression, BinaryOperator, UnaryExpression 
+   BinaryExpression := UnaryExpression | UnaryExpression, BinaryOperator, UnaryExpression
 
    Expression := BinaryExpression
 
@@ -2997,7 +2997,7 @@ image::images/topic.png[]
    - case 1.
 
 ----
-     "A"  
+     "A"
 ----
       -> it triggered when the event "A" is signaled.
 
@@ -3006,74 +3006,74 @@ image::images/topic.png[]
 ----
      "A | B"
 ----
-     -> wait for multiple events "A" OR "B". 
-        it is triggered when one of either events is signaled. 
+     -> wait for multiple events "A" OR "B".
+        it is triggered when one of either events is signaled.
 
    - case 3.
 
 ----
      "A & B"
 ----
-     -> wait for both events "A" AND "B" 
-        it is triggered when both of these events is signaled. 
+     -> wait for both events "A" AND "B"
+        it is triggered when both of these events is signaled.
 
 
 
 
-=== ttydriver.py / TTY Driver 
- 
+=== ttydriver.py / TTY Driver
+
 ==== Module Overview
 
 This module is assumed to be called by tanasinn's "tty.js".
-First, tanasinn opens TCP channel and listen on 2 ports, [I/O channel] and 
+First, tanasinn opens TCP channel and listen on 2 ports, [I/O channel] and
 [Control channel].
-Next, tanasinn should call this script, with 2 arguments that is represent 
+Next, tanasinn should call this script, with 2 arguments that is represent
 above-mentioned 2 channel's port numbers.
-Then, A TeletypeDriver object is instantiate. it connect these channels and 
+Then, A TeletypeDriver object is instantiate. it connect these channels and
 establish TCP connection, and finally forks new 4 processes as follows:
 
 . Application Process
-   This is user-specified application process, launched by command such as 
+   This is user-specified application process, launched by command such as
    the following.
 ----
       /bin/sh -c 'exec <startcommand>'
 ----
    <startcommand> is asked for tanasinn through the <Control channel>.
-   
+
 . Writing Process
    This process wait to receive data from tanasinn through <I/O channel>,
-   which is user's input key sequence in many cases. 
+   which is user's input key sequence in many cases.
    As receiving data, the Process passes it to TTY master device as it is.
 
 . Reading Process
-   This process wait to receive data from TTY master device, which is output 
+   This process wait to receive data from TTY master device, which is output
    sequence from application program in many cases.
    As receiving data, the Process passes it to tanasinn through [I/O channel].
 
 . Controlling Process
-   This process communicate with tanasinn through [Control channel] in 
+   This process communicate with tanasinn through [Control channel] in
    simple, lightweight, 7bit ascii-based protocol.
 
 image::images/topic.png[]
 
    figure-1. Communication among TTY device pair, TeletypeDriver, tanasinn.
 
-==== About [Control channel]'s protocol 
+==== About [Control channel]'s protocol
 
 ===== Protocol Overview
 
     . This protocol is line-oriented. line terminator is '\n' (0x0a).
 
-    . This protocol is command-based. 1 line should be interpreted as 1 
+    . This protocol is command-based. 1 line should be interpreted as 1
        command.
-       A command is composed of 1 or multiple tokens. delimiter character is 
+       A command is composed of 1 or multiple tokens. delimiter character is
        ' ' (0x20).
 
     . First token is [bold]*opecode*, represent a operation.
        An [bold]*opecode* consists of lower-case alphabetic sets ([a-z]+).
 
     . Tokens after [bold]*opecode* represent arguments.
-       An arguments consists of multiple printable characters, that is 
+       An arguments consists of multiple printable characters, that is
        encoded in base64 Data Encoding, defined in RFC-3548.
 ----
        example 1:
@@ -3082,7 +3082,7 @@ image::images/topic.png[]
 
          Opecode of this command is "xoff". "\n" is line terminator.
 ----
-       example 2: 
+       example 2:
          resize ODA= MjQ=\n
 ----
          In this case, [bold]*opecode* is "resize".
@@ -3094,17 +3094,17 @@ image::images/topic.png[]
 Accept UI-template object and convert it to a tree of DOM element.
 
 ==== UI-template overview
- 
-  UI-template is JSON-style object that is described as based on the 
+
+  UI-template is JSON-style object that is described as based on the
   specific rule.
-  It is to be converted to a node set of XUL/HTML/SVG elements by 
+  It is to be converted to a node set of XUL/HTML/SVG elements by
   "Template Builder" object.
   Dependencies between DOM fragments are automatically resolved.
   You need not to take care of order for building them.
 
 ==== Examples
 
-Example 1: 
+Example 1:
 
 [source,Javascript]
 ----
@@ -3126,13 +3126,13 @@ Example 1:
      <box flex="1" style="background-color: red;"/>
 ----
 
-   Every UI-template object consists of <Element node> (1), and it is 
-   typically a tree set of <Element node>s. 
-   It always includes "tagName" property (2), and often includes 
+   Every UI-template object consists of <Element node> (1), and it is
+   typically a tree set of <Element node>s.
+   It always includes "tagName" property (2), and often includes
    <Style node> (3).
    <Style node> may have some CSS properties in camel-case (4).
 
-Example 2: 
+Example 2:
 
 [source,Javascript]
 ----
@@ -3176,18 +3176,18 @@ Example 2:
 
 ----
 
-   The "parentNode" property (5) indicates at which the current node is to 
+   The "parentNode" property (5) indicates at which the current node is to
    be set. if the type of property value was "string", it regards as node
-   ID of the parent node. or if its type is "object", especially 
+   ID of the parent node. or if its type is "object", especially
    HTMLElement, it regards as the parent node object itself.
-   The "childNodes" property has an effect which cascades down 
-   following <Element node> (6). If you wanted to create two or more 
-   child nodes under the same node, you should substitute an Array of 
+   The "childNodes" property has an effect which cascades down
+   following <Element node> (6). If you wanted to create two or more
+   child nodes under the same node, you should substitute an Array of
    <Element node>s (7) in "childNodes" property.
-   The "innerText" property (8) creates a text node under current 
-   <Element node>. 
+   The "innerText" property (8) creates a text node under current
+   <Element node>.
 
-Example 2: 
+Example 2:
 
 [source,Javascript]
 ----
@@ -3245,8 +3245,8 @@ Example 2:
        var left = document.getElementById("left");
        var right = document.getElementById("right");
        (function() window.alert(this.id)).apply(parent);
-       left.addEventListener("mouseover", function() { 
-         onMouseOver.apply(window, arguments); 
+       left.addEventListener("mouseover", function() {
+         onMouseOver.apply(window, arguments);
        }, false);
        right.addEventListener("mouseup", onMouseUp, false);
        right.addEventListener("mousedown", onMouseOver, false);
@@ -3255,10 +3255,10 @@ Example 2:
 
 ----
 
-   The "onconstruct" property (9) defines a event function which fired 
-   when the property itself is parsed. 
-   The "listener" property (10) attaches a event handler at the current 
-   <Element node>. 
+   The "onconstruct" property (9) defines a event function which fired
+   when the property itself is parsed.
+   The "listener" property (10) attaches a event handler at the current
+   <Element node>.
 
 
 #if __EN__
@@ -3269,8 +3269,8 @@ or tweet me (http:/#/twitter.com/kefir_).
 #elif __JP__
 == バグレポート
 
-バグレポートを歓迎します。 
-saitoha <user@zuse.jp> 
+バグレポートを歓迎します。
+saitoha <user@zuse.jp>
 twitter: http:/#/twitter.com/kefir_
 
 #endif

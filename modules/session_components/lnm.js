@@ -32,13 +32,13 @@
  *
  * @ref http://vt100.net/docs/vt510-rm/LNM
  *
- * This control function selects the characters sent to the host when you 
- * press the Return key. LNM also controls how the terminal interprets line 
+ * This control function selects the characters sent to the host when you
+ * press the Return key. LNM also controls how the terminal interprets line
  * feed (LF), form feed (FF), and vertical tab (VT) characters.
  *
  * Note
  *
- * For compatibility with Digital's software, you should keep LNM reset 
+ * For compatibility with Digital's software, you should keep LNM reset
  * (line feed).
  *
  *
@@ -56,18 +56,18 @@
  *
  * Description
  *
- * If LNM is set, then the cursor moves to the first column on the next 
- * line when the terminal receives an LF, FF, or VT character. When you 
- * press Return, the terminal sends both a carriage return (CR) and line 
+ * If LNM is set, then the cursor moves to the first column on the next
+ * line when the terminal receives an LF, FF, or VT character. When you
+ * press Return, the terminal sends both a carriage return (CR) and line
  * feed (LF).
  *
- * If LNM is reset, then the cursor moves to the current column on the next 
- * line when the terminal receives an LF, FF, or VT character. When you 
+ * If LNM is reset, then the cursor moves to the current column on the next
+ * line when the terminal receives an LF, FF, or VT character. When you
  * press Return, the terminal sends only a carriage return (CR) character.
  *
  * Note on LNM
  *
- * When the auxiliary keypad is in keypad numeric mode (DECKPNM), the Enter 
+ * When the auxiliary keypad is in keypad numeric mode (DECKPNM), the Enter
  * key sends the same characters as the Return key.
  */
 var NewLineMode = new Class().extends(Plugin);
@@ -89,11 +89,11 @@ NewLineMode.definition = {
 
   _mode: false,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
     this._mode = this.default_value;
   },
@@ -101,7 +101,7 @@ NewLineMode.definition = {
   /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
     this._mode = null;
   },
@@ -109,8 +109,8 @@ NewLineMode.definition = {
   /** set new line.
    */
   "[subscribe('sequence/sm/20'), pnp]":
-  function activate() 
-  { 
+  function activate()
+  {
     this._mode = true;
 
     // enable insert mode.
@@ -120,7 +120,7 @@ NewLineMode.definition = {
   /** set line feed.
    */
   "[subscribe('sequence/rm/20'), pnp]":
-  function deactivate() 
+  function deactivate()
   {
     this._mode = false;
 
@@ -131,7 +131,7 @@ NewLineMode.definition = {
   /** Report mode
    */
   "[subscribe('sequence/rqm/20'), pnp]":
-  function report() 
+  function report()
   {
     var mode = this._mode ? 1: 2,
         message = "20;" + mode + "$y";
@@ -142,7 +142,7 @@ NewLineMode.definition = {
   /** on hard / soft reset
    */
   "[subscribe('command/{soft | hard}-terminal-reset'), pnp]":
-  function reset(broker) 
+  function reset(broker)
   {
     if (this.default_value) {
       this.activate();
@@ -154,8 +154,8 @@ NewLineMode.definition = {
   /**
    * Serialize snd persist current state.
    */
-  "[subscribe('@command/backup'), type('Object -> Undefined'), pnp]": 
-  function backup(context) 
+  "[subscribe('@command/backup'), type('Object -> Undefined'), pnp]":
+  function backup(context)
   {
     // serialize this plugin object.
     context[this.id] = {
@@ -166,8 +166,8 @@ NewLineMode.definition = {
   /**
    * Deserialize snd restore stored state.
    */
-  "[subscribe('@command/restore'), type('Object -> Undefined'), pnp]": 
-  function restore(context) 
+  "[subscribe('@command/restore'), type('Object -> Undefined'), pnp]":
+  function restore(context)
   {
     var data;
 
@@ -187,7 +187,7 @@ NewLineMode.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new NewLineMode(broker);
 }

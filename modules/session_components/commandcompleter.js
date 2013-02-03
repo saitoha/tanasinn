@@ -45,18 +45,18 @@ CommandCompleter.definition = {
 
   "[persistable] enabled_when_startup": true,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
   },
 
   /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
   },
 
@@ -88,7 +88,7 @@ CommandCompleter.definition = {
     } else {
       this.sendMessage("event/answer-completion", {
         type: "text",
-        query: context.source, 
+        query: context.source,
         data: commands.map(
           function mapFunc(command)
           {

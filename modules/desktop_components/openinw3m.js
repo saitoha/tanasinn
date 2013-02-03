@@ -20,7 +20,7 @@
  * the Initial Developer. All Rights Reserved.
  *
  * ***** END LICENSE BLOCK ***** */
- 
+
 "use strict";
 
 /**
@@ -31,7 +31,7 @@ var OpenInW3m = new Class().extends(Plugin);
 OpenInW3m.definition = {
 
   id: "open-in-w3m",
-  
+
   "[persistable] enabled_when_startup": true,
 
   /** Installs itself.
@@ -83,7 +83,7 @@ OpenInW3m.definition = {
         url = window.gContextMenu.linkURL,
         command = coUtils.Text.format("w3m '%s'", url);
     this.sendMessage('command/start-session', command);
-  }, 
+  },
 }; // OpenInW3m
 
 /**

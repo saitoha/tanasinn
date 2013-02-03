@@ -27,7 +27,7 @@
 
 function make_managed_handler(self, handler, topic)
 {
-  var wrapped_handler = function() 
+  var wrapped_handler = function()
   {
     return handler.apply(self, arguments);
   };
@@ -53,7 +53,7 @@ function apply_attribute(self, broker, key, attribute, topic)
 
   old_onchange = wrapped_handler.onChange;
 
-  wrapped_handler.onChange = function(name, oldval, newval) 
+  wrapped_handler.onChange = function(name, oldval, newval)
     {
       if (old_onchange) {
         old_onchange.apply(wrapped_handler, arguments);
@@ -75,14 +75,14 @@ function apply_attribute(self, broker, key, attribute, topic)
   };
 
 //  broker.subscribe(
-//    "event/broker-stopped", 
+//    "event/broker-stopped",
 //    function()
 //    {
 //      broker.unsubscribe(id);
 //    }, undefined, id);
 
   broker.subscribe(
-    "get/subscribers", 
+    "get/subscribers",
     function(subscribers)
     {
       subscribers[id] = handler;
@@ -97,10 +97,10 @@ function apply_attribute(self, broker, key, attribute, topic)
 var SubscribeAttribute = new Attribute("subscribe");
 SubscribeAttribute.definition = {
 
-  /** constructor 
+  /** constructor
    *  @param {EventBroker} broker Parent broker object.
    */
-  initialize: function initialize(broker) 
+  initialize: function initialize(broker)
   {
     var attributes = this.__attributes,
         key,
@@ -122,7 +122,7 @@ SubscribeAttribute.definition = {
       }
 
       apply_attribute(this, broker, key, attribute, topic);
-    } // key for (key in attributes) 
+    } // key for (key in attributes)
   },
 
 };

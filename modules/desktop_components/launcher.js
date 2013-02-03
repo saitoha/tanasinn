@@ -25,7 +25,7 @@
 "use strict";
 
 
-/** 
+/**
  * @class Launcher
  */
 var Launcher = new Class().extends(Plugin);
@@ -63,7 +63,7 @@ Launcher.definition = {
   _last_altup_time: 0,
   _last_shiftup_time: 0,
 
-  getRowCount: function getRowCount() 
+  getRowCount: function getRowCount()
   {
     if (!this._result) {
       return 0;
@@ -129,7 +129,7 @@ Launcher.definition = {
           },
           {
             tagName: "panel",
-            style: { 
+            style: {
               MozAppearance: "none",
               MozUserFocus: "ignore",
               border: "1px solid #aaa",
@@ -148,7 +148,7 @@ Launcher.definition = {
               childNodes: [
                 {
                   tagName: "box",
-                  style: { 
+                  style: {
                     borderRadius: "12px",
                     outline: "none",
                     border: "none",
@@ -158,7 +158,7 @@ Launcher.definition = {
                   tagName: "scrollbox",
                   id: "tanasinn_launcher_completion_scroll",
                   flex: 1,
-                  style: { 
+                  style: {
                     margin: "12px",
                     overflowX: "hidden",
                     overflowY: "auto",
@@ -185,7 +185,7 @@ Launcher.definition = {
     ];
   },
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
@@ -201,7 +201,7 @@ Launcher.definition = {
     this.onEnabled();
   },
 
-  /** Uninstalls itself. 
+  /** Uninstalls itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[uninstall]":
@@ -221,7 +221,7 @@ Launcher.definition = {
     element.style.top = top + "px";
     popup.hidePopup();
   },
-  
+
   "[subscribe('event/shutdown'), pnp]":
   function shutdown()
   {
@@ -231,7 +231,7 @@ Launcher.definition = {
       this._element.removeChild(this._element);
     }
   },
-  
+
   "[subscribe('event/enabled'), pnp]":
   function onEnabled()
   {
@@ -256,7 +256,7 @@ Launcher.definition = {
 
     broker.window.addEventListener("keydown", keydown_handler, /* capture */ true);
     broker.subscribe(
-      "event/disabled", 
+      "event/disabled",
       function onDisabled()
       {
         return broker.window.removeEventListener("keydown", keydown_handler, true);
@@ -268,7 +268,7 @@ Launcher.definition = {
     };
     broker.window.addEventListener("keyup", keyup_handler, /* capture */ true);
     broker.subscribe(
-      "event/disabled", 
+      "event/disabled",
       function onDisabled()
       {
         return broker.window.removeEventListener("keyup", keyup_handler, true);
@@ -290,7 +290,7 @@ Launcher.definition = {
   },
 
   "[subscribe('variable-changed/launcher.{font_size | font_family | font_weight | font_style}'), pnp]":
-  function onStyleChanged(chrome, decoder) 
+  function onStyleChanged(chrome, decoder)
   {
     if (this._textbox) {
       this._textbox.style.cssText = this.getTextboxStyle();
@@ -351,7 +351,7 @@ Launcher.definition = {
             box_object.scrollTo(0, last_position);
           }
         }
-      } catch (e) { 
+      } catch (e) {
        coUtils.Debug.reportError(e)
       }
     }
@@ -359,7 +359,7 @@ Launcher.definition = {
 
   },
 
-  doCompletion: function doCompletion(result) 
+  doCompletion: function doCompletion(result)
   {
     var completion_root = this._completion_root,
         type,
@@ -374,20 +374,20 @@ Launcher.definition = {
     if (result) {
 
       type = result.type || "text";
-      driver = this.request("get/completion-display-driver/" + type); 
+      driver = this.request("get/completion-display-driver/" + type);
 
       if (driver) {
         driver.drive(completion_root, result, this.getCurrentIndex());
         this.invalidate(result);
       } else {
         coUtils.Debug.reportError(
-          _("Unknown completion display driver type: '%s'."), 
+          _("Unknown completion display driver type: '%s'."),
           type);
       }
     }
   },
 
-  invalidate: function invalidate(result) 
+  invalidate: function invalidate(result)
   {
     var textbox = this._textbox,
         popup,
@@ -455,7 +455,7 @@ Launcher.definition = {
     var index = Math.max(0, this.getCurrentIndex()),
         result = this._result,
         textbox,
-        completion_text, 
+        completion_text,
         settled_length,
         settled_text;
 
@@ -468,7 +468,7 @@ Launcher.definition = {
     }
   },
 
-  setCompletionTrigger: function setCompletionTrigger() 
+  setCompletionTrigger: function setCompletionTrigger()
   {
     var current_text;
 
@@ -488,9 +488,9 @@ Launcher.definition = {
       this.select(-1);
 
       this.sendMessage(
-        "command/complete", 
+        "command/complete",
         {
-          source: current_text, 
+          source: current_text,
           listener: this,
         });
 
@@ -498,19 +498,19 @@ Launcher.definition = {
   },
 
   "[listen('input', '#tanasinn_launcher_textbox', true)]":
-  function oninput(event) 
+  function oninput(event)
   {
     this.setCompletionTrigger();
   },
 
   "[listen('focus', '#tanasinn_launcher_textbox')]":
-  function onfocus(event) 
+  function onfocus(event)
   {
     this.setCompletionTrigger();
   },
 
   "[subscribe('event/hotkey-double-ctrl'), pnp]":
-  function onDoubleCtrl() 
+  function onDoubleCtrl()
   {
     var box = this._element;
 
@@ -551,7 +551,7 @@ Launcher.definition = {
     box.hidden = true;
   },
 
-  enter: function enter() 
+  enter: function enter()
   {
     var command = this._textbox.value;
 
@@ -563,7 +563,7 @@ Launcher.definition = {
   },
 
   "[subscribe('command/start-session')]":
-  function startSession(command) 
+  function startSession(command)
   {
     var desktop = this._broker,
         box = this._element.ownerDocument.createElement("box");
@@ -577,14 +577,14 @@ Launcher.definition = {
     box.style.position = "fixed";
     box.style.left = "0px";
     box.style.top = "0px";
-    
+
     this._window_layer.appendChild(box);
     desktop.start(box, command);  // command
     box.style.left = (this.left = (this.left + Math.random() * 1000) % 140 + 20) + "px";
     box.style.top = (this.top = (this.top + Math.random() * 1000) % 140 + 20) + "px";
     this.hide();
   },
-  
+
   "[subscribe('command/start-session-and-wait'), pnp]":
   function startSessionAndWait(command)
   {
@@ -611,24 +611,24 @@ Launcher.definition = {
     while (!complete) {
       thread.processNextEvent(true);
     }
-    
+
   },
 
   "[listen('blur', '#tanasinn_launcher_textbox')]":
-  function onblur(event) 
+  function onblur(event)
   {
     this.hide();
   },
 
   "[listen('keypress', '#tanasinn_launcher_textbox')]":
-  function onkeypress(event) 
+  function onkeypress(event)
   { // nothrow
     var code = event.keyCode || event.which,
         is_char = 0 === event.keyCode,
         textbox,
         length,
         start,
-        end, 
+        end,
         value,
         position;
 
@@ -678,11 +678,11 @@ Launcher.definition = {
       end = textbox.selectionEnd;
 
       if (start === end) {
-        this._textbox.inputField.value 
+        this._textbox.inputField.value
           = value.substr(0, textbox.selectionStart);
       } else {
-        this._textbox.inputField.value 
-          = value.substr(0, textbox.selectionStart) 
+        this._textbox.inputField.value
+          = value.substr(0, textbox.selectionStart)
           + value.substr(textbox.selectionEnd);
         textbox.selectionStart = start;
         textbox.selectionEnd = start;
@@ -703,7 +703,7 @@ Launcher.definition = {
       position = this._textbox.selectionEnd;
 
       if (position > 0) {
-        this._textbox.inputField.value 
+        this._textbox.inputField.value
           = value.substr(0, position - 1) + value.substr(position);
         this.setCompletionTrigger();
       }
@@ -713,7 +713,7 @@ Launcher.definition = {
       position = this._textbox.selectionEnd;
 
       this._textbox.inputField.value
-        = value.substr(0, position).replace(/\w+$|\W+$/, "") 
+        = value.substr(0, position).replace(/\w+$|\W+$/, "")
         + value.substr(position);
       this.setCompletionTrigger();
     }
@@ -731,16 +731,16 @@ Launcher.definition = {
       code = 0x26;
     if (0x09 === code && !event.shiftKey) // tab
       code = 0x28;
-    if (0x26 === code && !is_char) { // up 
+    if (0x26 === code && !is_char) { // up
       this.up();
     } else if (0x28 === code && !is_char) { // down
       this.down();
     } else if (0x0d === code && !is_char) {
       this.enter();
-    } 
+    }
   },
 
-  onkeyup: function onkeyup(event) 
+  onkeyup: function onkeyup(event)
   { // nothrow
     var now,
         diff,
@@ -790,7 +790,7 @@ Launcher.definition = {
     }
   },
 
-  onkeydown: function onkeydown(event) 
+  onkeydown: function onkeydown(event)
   { // nothrow
     if (16 === event.keyCode && 16 === event.which && !event.isChar) {
       this._last_ctrlup_time = 0;
@@ -818,7 +818,7 @@ Launcher.definition = {
  * @brief Module entry point
  * @param {Desktop} desktop The Desktop object.
  */
-function main(desktop) 
+function main(desktop)
 {
   new Launcher(desktop);
 }

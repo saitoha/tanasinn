@@ -71,11 +71,11 @@ Mouse.definition = {
   _application_wheel_mode: false,
   _alternate_wheel_mode: false,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
     this._renderer = context["renderer"];
     this._screen = context["screen"];
@@ -84,7 +84,7 @@ Mouse.definition = {
   /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
     this._renderer = null;
     this._screen = null;
@@ -95,35 +95,35 @@ Mouse.definition = {
 
   /** Fired when scroll session is started. */
   "[subscribe('event/scroll-session-started'), pnp]":
-  function onScrollSessionStarted() 
+  function onScrollSessionStarted()
   {
     this._in_scroll_session = true;
   },
 
   /** Fired when scroll session is closed. */
   "[subscribe('event/scroll-session-closed'), pnp]":
-  function onScrolSessionClosed() 
+  function onScrolSessionClosed()
   {
     this._in_scroll_session = false;
   },
 
   /** Fired when cursor mode is changed. */
   "[subscribe('command/change-cursor-mode'), pnp]":
-  function onCursorModeChanged(value) 
+  function onCursorModeChanged(value)
   {
     this._cursor_mode = value;
   },
 
   /** Fired when wheel mode is changed. */
   "[subscribe('command/change-application-wheel-mode'), pnp]":
-  function onApplicationWheelModeChanged(value) 
+  function onApplicationWheelModeChanged(value)
   {
     this._application_wheel_mode = value;
   },
 
   /** Fired when wheel mode is changed. */
   "[subscribe('command/change-alternate-wheel-mode'), pnp]":
-  function onApplicationWheelModeChanged(value) 
+  function onApplicationWheelModeChanged(value)
   {
     this._alternate_wheel_mode = value;
     this.onmousescroll.enabled = value;
@@ -131,7 +131,7 @@ Mouse.definition = {
 
   /** Fired at the mouse tracking type is changed. */
   "[subscribe('event/mouse-tracking-type-changed'), pnp]":
-  function onMouseTrackingTypeChanged(data) 
+  function onMouseTrackingTypeChanged(data)
   {
     if (coUtils.Constant.TRACKING_NONE === data) {
       this.onmousescroll.enabled = false;
@@ -147,7 +147,7 @@ Mouse.definition = {
 
   /** Fired at the mouse tracking mode is changed. */
   "[subscribe('event/mouse-tracking-mode-changed'), pnp]":
-  function onMouseTrackingModeChanged(data) 
+  function onMouseTrackingModeChanged(data)
   {
     if (coUtils.Constant.TRACKING_NONE === data) {
       this.sendMessage(_("Leaving mouse tracking mode: [%s]."), this._tracking_mode)
@@ -160,8 +160,8 @@ Mouse.definition = {
   },
 
   /** Fired at the locator reporting mode is changed. */
-  "[subscribe('command/change-locator-reporting-mode'), enabled]": 
-  function onChangeLocatorReportingMode(mode) 
+  "[subscribe('command/change-locator-reporting-mode'), enabled]":
+  function onChangeLocatorReportingMode(mode)
   {
     if (mode) {
       this.onmousescroll.enabled = false;
@@ -171,15 +171,15 @@ Mouse.definition = {
   },
 
   "[subscribe('command/backup'), pnp]":
-  function backup(context) 
+  function backup(context)
   {
     context.mouse = {
       tracking_mode: this._tracking_mode,
-    }; 
+    };
   },
 
-  "[subscribe('command/restore'), pnp]": 
-  function restore(context) 
+  "[subscribe('command/restore'), pnp]":
+  function restore(context)
   {
     if (context.mouse) {
       this._tracking_mode = context.mouse.tracking_mode;
@@ -189,15 +189,15 @@ Mouse.definition = {
   _getUrxvtMouseReport: function _getUrxvtMouseReport(event, button, coordinate)
   {
     var code,
-        message, 
+        message,
         column = coordinate[0],
         row = coordinate[1];
-    
+
     if ("mouseup" === event.type) {
       button = 3;
     }
-    code = button 
-         | event.shiftKey << 2 
+    code = button
+         | event.shiftKey << 2
          | event.metaKey  << 3
          | event.ctrlKey  << 4
          ;
@@ -205,7 +205,7 @@ Mouse.definition = {
     code += 32; // add offset +32
 
     message = coUtils.Text.format(
-      "%d;%d;%dM", 
+      "%d;%d;%dM",
       code, column, row);
 
     return message;
@@ -219,8 +219,8 @@ Mouse.definition = {
         column = coordinate[0],
         row = coordinate[1];
 
-    code = button 
-       | event.shiftKey << 2 
+    code = button
+       | event.shiftKey << 2
        | event.metaKey  << 3
        | event.ctrlKey  << 4
        ;
@@ -232,7 +232,7 @@ Mouse.definition = {
     }
 
     message = coUtils.Text.format(
-      "<%d;%d;%d%s", 
+      "<%d;%d;%d%s",
       code, column, row, action);
 
     return message;
@@ -252,8 +252,8 @@ Mouse.definition = {
       button = 3;
     }
 
-    code = button 
-         | event.shiftKey << 2 
+    code = button
+         | event.shiftKey << 2
          | event.metaKey  << 3
          | event.ctrlKey  << 4
          ;
@@ -265,13 +265,13 @@ Mouse.definition = {
     buffer = [0x4d, code];
 
     if (column >= 0x80) {
-      buffer.push(column >> 6 & 0x1f | 0xc0, column & 0x3f | 0x80); 
+      buffer.push(column >> 6 & 0x1f | 0xc0, column & 0x3f | 0x80);
     } else {
       buffer.push(column);
     }
 
     if (row >= 0x80) {
-      buffer.push(row >> 6 & 0x1f | 0xc0, row & 0x3f | 0x80); 
+      buffer.push(row >> 6 & 0x1f | 0xc0, row & 0x3f | 0x80);
     } else {
       buffer.push(row);
     }
@@ -293,8 +293,8 @@ Mouse.definition = {
       button = 3;
     }
 
-    code = button 
-         | event.shiftKey << 2 
+    code = button
+         | event.shiftKey << 2
          | event.metaKey  << 3
          | event.ctrlKey  << 4
          ;
@@ -303,8 +303,8 @@ Mouse.definition = {
     column += 32;
     row += 32;
 
-    // send escape sequence. 
-    //                            M          
+    // send escape sequence.
+    //                            M
     message = String.fromCharCode(0x4d, code, column, row);
 
     return message;
@@ -335,7 +335,7 @@ Mouse.definition = {
     //    1           1  button4
     //    1         1    button5
     // --------------------------
-    //        0 0 0      
+    //        0 0 0
     //        0 0 1      shift
     //        0 1 0      meta
     //        1 0 0      control
@@ -347,12 +347,12 @@ Mouse.definition = {
 
     switch (this._tracking_type) {
 
-      // urxvt-style 
+      // urxvt-style
       case "urxvt":
         message = this._getUrxvtMouseReport(event, button, coordinate);
         break;
 
-      // sgr-style 
+      // sgr-style
       case "sgr":
         message = this._getSgrMouseReport(event, button, coordinate);
         break;
@@ -372,15 +372,15 @@ Mouse.definition = {
   },
 
   /** Dragstart event listener. */
-  "[listen('dragstart', '#tanasinn_content'), pnp]": 
-  function ondragstart(event) 
+  "[listen('dragstart', '#tanasinn_content'), pnp]":
+  function ondragstart(event)
   {
     this._pressed = true;
   },
 
   /** Mouse down evnet listener */
-  "[listen('DOMMouseScroll', '#tanasinn_content'), pnp]": 
-  function onmousescroll(event) 
+  "[listen('DOMMouseScroll', '#tanasinn_content'), pnp]":
+  function onmousescroll(event)
   {
     var renderer = this._renderer,
         screen = this._screen,
@@ -455,7 +455,7 @@ Mouse.definition = {
           }
         } else {
           for (i = 0; i < -count; ++i) {
-            this._sendMouseEvent(event, 0x40, coordinate); 
+            this._sendMouseEvent(event, 0x40, coordinate);
           }
         }
       } else {
@@ -473,13 +473,13 @@ Mouse.definition = {
   },
 
   /** Mouse down evnet listener */
-  "[listen('mousedown', '#tanasinn_content'), pnp]": 
-  function onmousedown(event) 
+  "[listen('mousedown', '#tanasinn_content'), pnp]":
+  function onmousedown(event)
   {
     var tracking_mode = this._tracking_mode,
         button,
         coordinate;
- 
+
     this._pressed = true;
 
     if (coUtils.Constant.TRACKING_NONE === tracking_mode) {
@@ -502,18 +502,18 @@ Mouse.definition = {
 
       default:
         throw coUtils.Debug.Error(
-          _("Unhandled mousedown event, button: %d."), 
+          _("Unhandled mousedown event, button: %d."),
           event.button);
 
     }
 
     coordinate = this._getCurrentPosition(event);
-    this._sendMouseEvent(event, button, coordinate); 
+    this._sendMouseEvent(event, button, coordinate);
   },
 
   /** Mouse move evnet listener */
-  "[listen('mousemove', '#tanasinn_content'), pnp]": 
-  function onmousemove(event) 
+  "[listen('mousemove', '#tanasinn_content'), pnp]":
+  function onmousemove(event)
   {
     var tracking_mode = this._tracking_mode,
         button,
@@ -530,7 +530,7 @@ Mouse.definition = {
           if (null === last_position
               || coordinate[0] !== last_position[0]
               || coordinate[1] !== last_position[1]) {
-            this._sendMouseEvent(event, button, coordinate); 
+            this._sendMouseEvent(event, button, coordinate);
             this._last_position = coordinate;
           }
         }
@@ -548,7 +548,7 @@ Mouse.definition = {
         if (null === last_position
             || coordinate[0] !== last_position[0]
             || coordinate[1] !== last_position[1]) {
-          this._sendMouseEvent(event, button, coordinate); 
+          this._sendMouseEvent(event, button, coordinate);
           this._last_position = coordinate;
         }
         break;
@@ -563,8 +563,8 @@ Mouse.definition = {
   },
 
   /** Mouse up evnet listener */
-  "[listen('mouseup', '#tanasinn_content'), pnp]": 
-  function onmouseup(event) 
+  "[listen('mouseup', '#tanasinn_content'), pnp]":
+  function onmouseup(event)
   {
     var tracking_mode = this._tracking_mode,
         button,
@@ -581,12 +581,12 @@ Mouse.definition = {
   },
 
   // Helper: get current position from mouse event object.
-  _getCurrentPosition: function _getCurrentPosition(event) 
+  _getCurrentPosition: function _getCurrentPosition(event)
   {
     var renderer = this._renderer,
     	screen = this._screen,
         target_element = this.request(
-          "command/query-selector", 
+          "command/query-selector",
           "#tanasinn_center_area"),
         box = target_element.boxObject,
         root_element = this.request("get/root-element"),
@@ -618,7 +618,7 @@ Mouse.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new Mouse(broker);
 }

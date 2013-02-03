@@ -17,7 +17,7 @@
  *
  * The Initial Developer of the Original Code is
  * Hayaki Saito.
- * Portions created by the Initial Developer are Copyright (C) 2010 - 2011
+ * Portions created by the Initial Developer are Copyright (C) 2010 - 2013
  * the Initial Developer. All Rights Reserved.
  *
  * ***** END LICENSE BLOCK ***** */
@@ -25,7 +25,7 @@
 "use strict";
 
 
-function generateEntries(paths) 
+function generateEntries(paths)
 {
   var file,
       directory,
@@ -44,14 +44,14 @@ function generateEntries(paths)
         while (entries.hasMoreElements()) {
           file = entries.getNext()
             .QueryInterface(Components.interfaces.nsIFile);
-          if ("WINNT" === coUtils.Runtime.os 
+          if ("WINNT" === coUtils.Runtime.os
               && file.isFile()
               && !file.path.match(/\.(dll|manifest)$/)) {
             yield file;
           } else {
             if (file.isSymlink() || file.isExecutable()) {
               yield file;
-            } 
+            }
           }
         }
       }
@@ -61,7 +61,7 @@ function generateEntries(paths)
   }
 }
 
-/** 
+/**
  * @class ProgramCompleter
  */
 var ProgramCompleter = new Class().extends(Plugin);
@@ -83,7 +83,7 @@ ProgramCompleter.definition = {
 
   "[persistable, watchable] enabled_when_startup": true,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
@@ -91,7 +91,7 @@ ProgramCompleter.definition = {
   {
   },
 
-  /** Uninstalls itself. 
+  /** Uninstalls itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[uninstall]":
@@ -110,12 +110,12 @@ ProgramCompleter.definition = {
     var environment = coUtils.Components.getEnvironment(),
         path = environment.get("PATH"),
         // detect delimiter for PATH string
-        delimiter = ("WINNT" === coUtils.Runtime.os) ? ";": ":", 
+        delimiter = ("WINNT" === coUtils.Runtime.os) ? ";": ":",
         paths;
 
     // split PATH string by delimiter and get existing paths
     paths = path.split(delimiter).filter(
-      function filterProc(path) 
+      function filterProc(path)
       {
         if (!path) {
           return false;
@@ -148,18 +148,18 @@ ProgramCompleter.definition = {
     }
 
     data = this._files.map(
-      function(file) 
+      function(file)
       {
         var path = file.path;
-        
+
         if ("WINNT" === coUtils.Runtime.os) {
           path = path
             .replace(/\\/g, "/")
             .replace(/.exe$/ig, "")
             .replace(
-              /^([a-zA-Z]):/, 
+              /^([a-zA-Z]):/,
               function() "/cygdrive/" + arguments[1].toLowerCase());
-        } 
+        }
         return {
           name: path,
           value: path,
@@ -179,9 +179,9 @@ ProgramCompleter.definition = {
 
     autocomplete_result = {
       type: "text",
-      query: source, 
+      query: source,
       labels: data.map(
-        function(data) 
+        function(data)
         {
           return data.name.split("/").pop();
         }),
@@ -200,7 +200,7 @@ ProgramCompleter.definition = {
   _prepareCompletionData: function _prepareCompletionData()
   {
     var search_paths,
-        files, 
+        files,
         autocomplete_result,
         search_path = this._search_path,
         map,
@@ -212,19 +212,19 @@ ProgramCompleter.definition = {
       if ("WINNT" === coUtils.Runtime.os) {
         map = (coUtils.Runtime.getBinPath() || "/bin:/usr/local/bin")
           .split(":")
-          .map(function mapFunc(posix_path) 
+          .map(function mapFunc(posix_path)
           {
             var cygwin_root = coUtils.Runtime.getCygwinRoot(),
                 win_path = posix_path.replace(/\//g, "\\");
 
             return cygwin_root + "\\" + win_path;
           }).reduce(
-            function(map, path) 
+            function(map, path)
             {
               var key = path.replace(/\\$/, "");
 
               map[key] = undefined;
-              return map; 
+              return map;
             }, {});
 
         keys = Object.keys(map);
@@ -242,7 +242,7 @@ ProgramCompleter.definition = {
     this._files = [file for (file in generateEntries(search_path))];
   },
 
-  "[subscribe('event/idle'), pnp]": 
+  "[subscribe('event/idle'), pnp]":
   function onIdle()
   {
     if (null !== this._files) {
@@ -250,7 +250,7 @@ ProgramCompleter.definition = {
         this._prepareCompletionData();
       } catch(e) {
         // pass
-        this._files = []; 
+        this._files = [];
       }
     }
   },
@@ -261,7 +261,7 @@ ProgramCompleter.definition = {
  * @brief Module entry point
  * @param {Desktop} desktop The Desktop object.
  */
-function main(desktop) 
+function main(desktop)
 {
   new ProgramCompleter(desktop);
 }

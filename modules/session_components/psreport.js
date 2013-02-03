@@ -24,13 +24,13 @@
 
 "use strict";
 
- 
+
 /**
  * @trait PresentationStateReport
  */
 var PresentationStateReport = new Class().extends(Plugin);
 PresentationStateReport.definition = {
-  
+
   /** Component ID */
   id: "presentation_state_report",
 
@@ -58,7 +58,7 @@ PresentationStateReport.definition = {
    * 9/11  3/n   2/4   7/7
    *
    * Parameters
-   * 
+   *
    * Ps indicates which report the host requests.
    *
    * Ps  Report Requested
@@ -69,7 +69,7 @@ PresentationStateReport.definition = {
    *
    */
   "[profile('vt100'), sequence('CSI Ps $ w')]":
-  function DECRQPSR(n) 
+  function DECRQPSR(n)
   {
     n = n || 0;
 
@@ -96,7 +96,7 @@ PresentationStateReport.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new PresentationStateReport(broker);
 }

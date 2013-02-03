@@ -24,7 +24,7 @@
 
 "use strict";
 
-/** 
+/**
  * @class LauncherCompletionProvider
  */
 var LauncherCompletionProvider = new Class().extends(Plugin);
@@ -43,7 +43,7 @@ LauncherCompletionProvider.definition = {
 
   "[persistable, watchable] enabled_when_startup": true,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
@@ -51,7 +51,7 @@ LauncherCompletionProvider.definition = {
   {
   },
 
-  /** Uninstalls itself. 
+  /** Uninstalls itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[uninstall]":
@@ -59,11 +59,11 @@ LauncherCompletionProvider.definition = {
   {
   },
 
-  "[subscribe('command/complete'), pnp]": 
+  "[subscribe('command/complete'), pnp]":
   function complete(request)
   {
     var source = request.source,
-        listener = request.listener, 
+        listener = request.listener,
         position;
 
     if (0 === source.length || 0 === source.indexOf("&")) {
@@ -88,7 +88,7 @@ LauncherCompletionProvider.definition = {
  * @brief Module entry point
  * @param {Desktop} desktop The Desktop object.
  */
-function main(desktop) 
+function main(desktop)
 {
   new LauncherCompletionProvider(desktop);
 }

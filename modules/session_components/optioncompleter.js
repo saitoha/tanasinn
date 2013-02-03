@@ -44,18 +44,18 @@ OptionCompleter.definition = {
 
   "[persistable] enabled_when_startup": true,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
   },
 
   /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
   },
 
@@ -63,7 +63,7 @@ OptionCompleter.definition = {
    * Search for a given string and notify a listener (either synchronously
    * or asynchronously) of the result
    *
-   * @param context - The completion context object. 
+   * @param context - The completion context object.
    */
   "[completer('option'), pnp]":
   function complete(context)
@@ -99,9 +99,9 @@ OptionCompleter.definition = {
     if (!operator_equal) {
       options = [
         {
-          key: key, 
+          key: key,
           value: value
-        } for ([key, value] in Iterator(scope)) 
+        } for ([key, value] in Iterator(scope))
           if (-1 !== key.toLowerCase().indexOf(lower_name))
       ];
 
@@ -112,7 +112,7 @@ OptionCompleter.definition = {
           "event/answer-completion",
           {
             type: "text",
-            query: context.source, 
+            query: context.source,
             data: options.map(
               function mapFunc(option)
               {

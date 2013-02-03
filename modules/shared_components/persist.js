@@ -31,7 +31,7 @@ var impl = {
     var profile_directory = broker.profile_directory,
         filename = (name || broker.profile) + ".js",
         profile_path = coUtils.Runtime.getRuntimePath() + "/" + profile_directory + "/" + filename;
-  
+
     return profile_path;
   },
 
@@ -39,7 +39,7 @@ var impl = {
 
 /**
  * @class PersistManager
- */ 
+ */
 var PersistManager = new Class().extends(Component);
 PersistManager.definition = {
 
@@ -121,7 +121,7 @@ PersistManager.definition = {
  * @brief Module entry point
  * @param {Broker} broker parent broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new PersistManager(broker);
 }

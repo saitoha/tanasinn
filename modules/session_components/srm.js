@@ -31,9 +31,9 @@
  * SRM - Local Echo: Send/Receive Mode
  *
  * This control function turns local echo on or off. When local echo is on,
- * the terminal sends keyboard characters to the screen. The host does not 
- * have to send (echo) the characters back to the terminal display. When 
- * local echo is off, the terminal only sends characters to the host. It is 
+ * the terminal sends keyboard characters to the screen. The host does not
+ * have to send (echo) the characters back to the terminal display. When
+ * local echo is off, the terminal only sends characters to the host. It is
  * up to the host to echo characters back to the screen.
  *
  * Default: No local echo
@@ -44,7 +44,7 @@
  * 9/11   3/1  3/2  6/8
  *
  * Set: local echo off.
- * 
+ *
  *
  * CSI    1    2    l
  * 9/11   3/1  3/2  6/12
@@ -80,11 +80,11 @@ SendReceiveMode.definition = {
 
   _mode: false,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
     this._mode = this.default_value;
   },
@@ -92,7 +92,7 @@ SendReceiveMode.definition = {
   /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
     this._mode = null;
   },
@@ -100,8 +100,8 @@ SendReceiveMode.definition = {
   /** set new line.
    */
   "[subscribe('sequence/sm/12'), pnp]":
-  function activate() 
-  { 
+  function activate()
+  {
     this._mode = true;
 
     // enable insert mode.
@@ -111,7 +111,7 @@ SendReceiveMode.definition = {
   /** set line feed.
    */
   "[subscribe('sequence/rm/12'), pnp]":
-  function deactivate() 
+  function deactivate()
   {
     this._mode = false;
 
@@ -122,7 +122,7 @@ SendReceiveMode.definition = {
   /** Report mode
    */
   "[subscribe('sequence/rqm/12'), pnp]":
-  function report() 
+  function report()
   {
     var mode = this._mode ? 1: 2,
         message = "?12;" + mode + "$y";
@@ -133,7 +133,7 @@ SendReceiveMode.definition = {
   /** on hard / soft reset
    */
   "[subscribe('command/{soft | hard}-terminal-reset'), pnp]":
-  function reset(broker) 
+  function reset(broker)
   {
     if (this.default_value) {
       this.activate();
@@ -145,8 +145,8 @@ SendReceiveMode.definition = {
   /**
    * Serialize snd persist current state.
    */
-  "[subscribe('@command/backup'), type('Object -> Undefined'), pnp]": 
-  function backup(context) 
+  "[subscribe('@command/backup'), type('Object -> Undefined'), pnp]":
+  function backup(context)
   {
     // serialize this plugin object.
     context[this.id] = {
@@ -157,8 +157,8 @@ SendReceiveMode.definition = {
   /**
    * Deserialize snd restore stored state.
    */
-  "[subscribe('@command/restore'), type('Object -> Undefined'), pnp]": 
-  function restore(context) 
+  "[subscribe('@command/restore'), type('Object -> Undefined'), pnp]":
+  function restore(context)
   {
     var data;
 
@@ -179,7 +179,7 @@ SendReceiveMode.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new SendReceiveMode(broker);
 }

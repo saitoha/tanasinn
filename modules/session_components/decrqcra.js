@@ -41,30 +41,30 @@
  *
  *
  * Parameters
- * 
+ *
  * Pid
  * is a numeric label you can provide to identify the checksum request. The
  * checksum report returns this number. The number serves to differentiate
  * between multiple checksum reports.
- * 
+ *
  * Pp
  * is the page number that has the rectangular area. If Pp is 0 or omitted,
  * then the terminal ignores the following parameters and reports a checksum
  * for all pages in page memory. If Pp is a higher number than the number of
  * pages available, then the terminal reports on the last page.
- * 
+ *
  * Pt;Pl;Pb;Pr
  * are the top, left, bottom, and right borders of the rectangular area. Pt
  * and Pb are line numbers. Pt must be less than or equal to Pb. Pl and Pr are
  * column numbers. Pl must be less than or equal to Pr.
- * 
+ *
  * Defaults are Pt = 1, Pb = current page length, Pr = current page width. If
  * these parameters are omitted, then the terminal returns a checksum of page
  * Pp.
  *
  *
  * Note on DECRQCRA
- * 
+ *
  * The coordinates of the rectangular area are affected by the setting of
  * origin mode (DECOM).
  *
@@ -88,7 +88,7 @@ RectangleChecksumReport.definition = {
 
   _screen: null,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
@@ -97,7 +97,7 @@ RectangleChecksumReport.definition = {
     this._screen = context["screen"];
   },
 
-  /** Uninstalls itself. 
+  /** Uninstalls itself.
    */
   "[uninstall]":
   function uninstall()
@@ -106,7 +106,7 @@ RectangleChecksumReport.definition = {
   },
 
   "[profile('vt100'), sequence('CSI Pm * y')]":
-  function DECRQCRA(n1, n2, n3, n4, n5, n6) 
+  function DECRQCRA(n1, n2, n3, n4, n5, n6)
   { // Request Checksum of Rectangle Area
     var screen = this._screen,
         id,
@@ -144,7 +144,7 @@ RectangleChecksumReport.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new RectangleChecksumReport(broker);
 }

@@ -30,7 +30,7 @@
  *
  * DSR - Device Status Reports
  *
- * The host computer and terminal exchange DSR sequences to provide the host 
+ * The host computer and terminal exchange DSR sequences to provide the host
  * with the operating status of the following features:
  *
  * Operating status
@@ -42,7 +42,7 @@
  * Memory checksum
  * Data integrity report
  *
- * DSR requests and reports follow one of two formats, ANSI or DEC format. 
+ * DSR requests and reports follow one of two formats, ANSI or DEC format.
  * The format for each is as follows:
  *
  * Format
@@ -50,25 +50,25 @@
  * ANSI format
  *
  * CSI    Ps   n
- * 9/11   3/n  6/14   
+ * 9/11   3/n  6/14
  *
  * DEC format
  *
  * CSI    ?      Ps   n
- * 9/11   3/15   3/n  6/14   
+ * 9/11   3/15   3/n  6/14
  *
  *
  * Parameters
  *
  * Ps
- * indicates the type of DSR requested. See the following individual DSR 
+ * indicates the type of DSR requested. See the following individual DSR
  * reports for specific parameters within each report.
  *
  * Description
  *
  * There is a different DSR request for each feature. The following sections
- * describe the possible DSR reports. If the terminal is in printer 
- * controller mode, then the printer receives the DSR request. The printer 
+ * describe the possible DSR reports. If the terminal is in printer
+ * controller mode, then the printer receives the DSR request. The printer
  * can respond through the bidirectional printer port.
  *
  */
@@ -91,7 +91,7 @@ ANSIDeviceStatusReport.definition = {
 
   _cursor: null,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
@@ -100,7 +100,7 @@ ANSIDeviceStatusReport.definition = {
     this._cursor = context["cursorstate"];
   },
 
-  /** Uninstalls itself. 
+  /** Uninstalls itself.
    */
   "[uninstall]":
   function uninstall()
@@ -109,7 +109,7 @@ ANSIDeviceStatusReport.definition = {
   },
 
   "[profile('vt100'), sequence('CSI Ps n')]":
-  function DSR(n) 
+  function DSR(n)
   { // Device Status Report
 
     var cursor = this._cursor,
@@ -125,8 +125,8 @@ ANSIDeviceStatusReport.definition = {
       // report cursor position
       case 6:
         message = coUtils.Text.format(
-          "%d;%dR", 
-          cursor.positionY + 1, 
+          "%d;%dR",
+          cursor.positionY + 1,
           cursor.positionX + 1);
         this.sendMessage("command/send-sequence/csi", message);
         break;
@@ -144,7 +144,7 @@ ANSIDeviceStatusReport.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new ANSIDeviceStatusReport(broker);
 }

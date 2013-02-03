@@ -45,20 +45,20 @@ C1Control.definition = {
   "[persistable] enabled_when_startup": true,
 
   _screen: null,
-    
-  /** Installs itself. 
+
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
-  "[install]": 
-  function install(context) 
+  "[install]":
+  function install(context)
   {
     this._screen = context["screen"];
   },
-    
-  /** uninstalls itself. 
+
+  /** uninstalls itself.
    */
-  "[uninstall]": 
-  function uninstall() 
+  "[uninstall]":
+  function uninstall()
   {
     this._screen = null;
   },
@@ -66,8 +66,8 @@ C1Control.definition = {
   /**
    * PAD
    */
-  "[profile('vt100'), sequence('0x80', 'ESC @')]": 
-  function PAD() 
+  "[profile('vt100'), sequence('0x80', 'ESC @')]":
+  function PAD()
   {
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
@@ -77,8 +77,8 @@ C1Control.definition = {
   /**
    * HOP
    */
-  "[profile('vt100'), sequence('0x81', 'ESC A')]": 
-  function HOP() 
+  "[profile('vt100'), sequence('0x81', 'ESC A')]":
+  function HOP()
   {
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
@@ -88,8 +88,8 @@ C1Control.definition = {
   /**
    * BPH
    */
-  "[profile('vt100'), sequence('0x82', 'ESC B')]": 
-  function BPH() 
+  "[profile('vt100'), sequence('0x82', 'ESC B')]":
+  function BPH()
   {
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
@@ -99,8 +99,8 @@ C1Control.definition = {
   /**
    * NBH
    */
-  "[profile('vt100'), sequence('0x83', 'ESC C')]": 
-  function NBH() 
+  "[profile('vt100'), sequence('0x83', 'ESC C')]":
+  function NBH()
   {
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
@@ -121,7 +121,7 @@ C1Control.definition = {
    *
    */
   "[profile('vt100'), sequence('0x84', 'ESC D'), _('Index')]":
-  function IND() 
+  function IND()
   {
     this._screen.lineFeed();
   },
@@ -129,7 +129,7 @@ C1Control.definition = {
   /**
    * NEL - Next Line
    *
-   * Moves cursor to first position on next line. If cursor is at bottom 
+   * Moves cursor to first position on next line. If cursor is at bottom
    * margin, then screen performs a scroll-up.
    *
    * Format
@@ -139,7 +139,7 @@ C1Control.definition = {
    *
    */
   "[profile('vt100'), sequence('0x85', 'ESC E'), _('Next line')]":
-  function NEL() 
+  function NEL()
   { // Carriage Return
     var screen = this._screen;
 
@@ -150,8 +150,8 @@ C1Control.definition = {
   /**
    * SSA
    */
-  "[profile('vt100'), sequence('0x86', 'ESC F')]": 
-  function SSA() 
+  "[profile('vt100'), sequence('0x86', 'ESC F')]":
+  function SSA()
   {
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
@@ -161,8 +161,8 @@ C1Control.definition = {
   /**
    * ESA
    */
-  "[profile('vt100'), sequence('0x87', 'ESC G')]": 
-  function ESA() 
+  "[profile('vt100'), sequence('0x87', 'ESC G')]":
+  function ESA()
   {
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
@@ -178,11 +178,11 @@ C1Control.definition = {
    *
    * TODO:
    * Same as HT except that the entry is right-justified before moving to the
-   * next tab stop. The control may be loaded into a programmable key for 
+   * next tab stop. The control may be loaded into a programmable key for
    * operator use when desired.
    */
-  "[profile('vt100'), sequence('0x89', 'ESC I')]": 
-  function HTJ() 
+  "[profile('vt100'), sequence('0x89', 'ESC I')]":
+  function HTJ()
   {
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
@@ -192,8 +192,8 @@ C1Control.definition = {
   /**
    * VTS
    */
-  "[profile('vt100'), sequence('0x8a', 'ESC J')]": 
-  function VTS() 
+  "[profile('vt100'), sequence('0x8a', 'ESC J')]":
+  function VTS()
   {
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
@@ -203,8 +203,8 @@ C1Control.definition = {
   /**
    * PLD
    */
-  "[profile('vt100'), sequence('0x8b', 'ESC K')]": 
-  function PLD() 
+  "[profile('vt100'), sequence('0x8b', 'ESC K')]":
+  function PLD()
   {
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
@@ -214,8 +214,8 @@ C1Control.definition = {
   /**
    * PLU
    */
-  "[profile('vt100'), sequence('0x8b', 'ESC L')]": 
-  function PLU() 
+  "[profile('vt100'), sequence('0x8b', 'ESC L')]":
+  function PLU()
   {
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
@@ -225,15 +225,15 @@ C1Control.definition = {
   /**
    *
    * RI – Reverse Index
-   * ESC M   
+   * ESC M
    *
-   * Move the active position to the same horizontal position on the preceding 
-   * line. If the active position is at the top margin, a scroll down is 
+   * Move the active position to the same horizontal position on the preceding
+   * line. If the active position is at the top margin, a scroll down is
    * performed. Format Effector
    *
    */
-  "[profile('vt100'), sequence('0x8d', 'ESC M'), _('Reverse index.')]": 
-  function RI() 
+  "[profile('vt100'), sequence('0x8d', 'ESC M'), _('Reverse index.')]":
+  function RI()
   {
     this._screen.reverseIndex();
   },
@@ -242,23 +242,23 @@ C1Control.definition = {
    * SS - Single Shifts
    *
    * You use a single shift when you want to display the next character from a
-   * different character set. A single shift maps the G2 or G3 set into GL. 
+   * different character set. A single shift maps the G2 or G3 set into GL.
    * The character set is active for only one character, then the terminal
    * returns to the previous character set in GL.
-   * 
+   *
    * The terminal has two single-shift control functions available.
    *
    * Format
    *
    * Single-Shift Control  8-Bit   7-Bit         Function
    * -------------------------------------------------------------------------
-   * Single shift 2        SS2     ESC   N       Maps G2 into GL for the 
+   * Single shift 2        SS2     ESC   N       Maps G2 into GL for the
    *                       8/14    1/11  4/14    next character.
    * Single shift 3        SS3     ESC   O       Maps G3 into GL for the
    *                       8/15    1/11  4/15    next character.
    *
    * Example
-   * 
+   *
    * Suppose the ASCII character set is in GL. You want to display the alpha
    * character from the DEC Technical character set, already designated as G3.
    * You do not want to replace the ASCII set just to display one character.
@@ -268,7 +268,7 @@ C1Control.definition = {
    * SS3
    * single shift 3  a
    * alpha character
-   * 
+   *
    * After displaying the alpha character, the terminal maps the ASCII set
    * (G1) back into GL, replacing the DEC Technical set (G3).
    *
@@ -277,7 +277,7 @@ C1Control.definition = {
   /** SS2.
    */
   "[profile('vt100'), sequence('0x8e', 'ESC N'), _('SS2')]":
-  function SS2() 
+  function SS2()
   {
     this.sendMessage("sequences/ss2");
   },
@@ -285,7 +285,7 @@ C1Control.definition = {
   /** SS3.
    */
   "[profile('vt100'), sequence('0x8f', 'ESC O'), _('SS3')]":
-  function SS3() 
+  function SS3()
   {
     this.sendMessage("sequences/ss3");
   },
@@ -293,25 +293,25 @@ C1Control.definition = {
   /**
    * Device Control Strings
    *
-   * The terminal control DCS (ESC P) is used to load the programmable 
-   * strings. The Ambassador recognizes characters following this control 
+   * The terminal control DCS (ESC P) is used to load the programmable
+   * strings. The Ambassador recognizes characters following this control
    * as programming instructions to the terminal.
    *
-   * These programming instructions consist of a series of one or more string 
+   * These programming instructions consist of a series of one or more string
    * table entries. Each entry indexes to one of the programmable strings and
-   * loads it with the character codes that follow. These characters then 
-   * become the string that is transmitted when a programmable key is 
+   * loads it with the character codes that follow. These characters then
+   * become the string that is transmitted when a programmable key is
    * depressed, or an operational string is activated.
    *
-   * Since DCS controls are normally sent from a host program to the 
-   * Ambassador for execution, the commands are designed to facilitate 
-   * programmatic control of the programmable strings. However, a terminal 
-   * operator may also make use of the DCS control by placing the Ambassador 
+   * Since DCS controls are normally sent from a host program to the
+   * Ambassador for execution, the commands are designed to facilitate
+   * programmatic control of the programmable strings. However, a terminal
+   * operator may also make use of the DCS control by placing the Ambassador
    * into Local Test Mode (Setup T) and manually keying in the control sequence.
    *
    */
-  "[profile('vt100'), sequence('0x90 ... ST', 'ESC P ... ST')]": 
-  function DCS(message) 
+  "[profile('vt100'), sequence('0x90 ... ST', 'ESC P ... ST')]":
+  function DCS(message)
   {
     if (/[\x00-\x1f]/.test(message[0])) {
       message = message.replace(/\x00/g, "\\");
@@ -324,8 +324,8 @@ C1Control.definition = {
   /**
    * PU1
    */
-  "[profile('vt100'), sequence('0x91', 'ESC Q')]": 
-  function PU1() 
+  "[profile('vt100'), sequence('0x91', 'ESC Q')]":
+  function PU1()
   {
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
@@ -335,8 +335,8 @@ C1Control.definition = {
   /**
    * PU2
    */
-  "[profile('vt100'), sequence('0x92', 'ESC R')]": 
-  function PU2() 
+  "[profile('vt100'), sequence('0x92', 'ESC R')]":
+  function PU2()
   {
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
@@ -346,8 +346,8 @@ C1Control.definition = {
   /**
    * STS
    */
-  "[profile('vt100'), sequence('0x93', 'ESC S')]": 
-  function STS() 
+  "[profile('vt100'), sequence('0x93', 'ESC S')]":
+  function STS()
   {
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
@@ -357,8 +357,8 @@ C1Control.definition = {
   /**
    * CCH
    */
-  "[profile('vt100'), sequence('0x94', 'ESC T')]": 
-  function CCH() 
+  "[profile('vt100'), sequence('0x94', 'ESC T')]":
+  function CCH()
   {
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
@@ -368,8 +368,8 @@ C1Control.definition = {
   /**
    * MW
    */
-  "[profile('vt100'), sequence('0x95', 'ESC U')]": 
-  function MW() 
+  "[profile('vt100'), sequence('0x95', 'ESC U')]":
+  function MW()
   {
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
@@ -379,8 +379,8 @@ C1Control.definition = {
   /**
    * SPA
    */
-  "[profile('vt100'), sequence('0x96', 'ESC V')]": 
-  function SPA() 
+  "[profile('vt100'), sequence('0x96', 'ESC V')]":
+  function SPA()
   {
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
@@ -390,8 +390,8 @@ C1Control.definition = {
   /**
    * EPA
    */
-  "[profile('vt100'), sequence('0x97', 'ESC W')]": 
-  function EPA() 
+  "[profile('vt100'), sequence('0x97', 'ESC W')]":
+  function EPA()
   {
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
@@ -404,15 +404,15 @@ C1Control.definition = {
    *
    * Notation: (C1)
    * Representation: 09/08 or ESC 05/08
-   * SOS is used as the opening delimiter of a control string. The character 
-   * string following may consist of any bit combination, except those 
-   * representing SOS or STRING TERMINATOR (ST). The control string is closed 
-   * by the terminating delimiter STRING TERMINATOR (ST). The interpretation 
+   * SOS is used as the opening delimiter of a control string. The character
+   * string following may consist of any bit combination, except those
+   * representing SOS or STRING TERMINATOR (ST). The control string is closed
+   * by the terminating delimiter STRING TERMINATOR (ST). The interpretation
    * of the character string depends on the application.
    *
    */
-  "[profile('vt100'), sequence('0x98 ... ST', 'ESC X ... ST')]": 
-  function SOS(message) 
+  "[profile('vt100'), sequence('0x98 ... ST', 'ESC X ... ST')]":
+  function SOS(message)
   {
     this.sendMessage("sequence/sos", message);
   },
@@ -420,8 +420,8 @@ C1Control.definition = {
   /**
    * SGCI
    */
-  "[profile('vt100'), sequence('0x99', 'ESC Y')]": 
-  function SGCI() 
+  "[profile('vt100'), sequence('0x99', 'ESC Y')]":
+  function SGCI()
   {
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
@@ -431,19 +431,19 @@ C1Control.definition = {
   /**
    * SCI
    */
-  "[profile('vt100'), sequence('0x9a', 'ESC Z')]": 
-  function SCI() 
+  "[profile('vt100'), sequence('0x9a', 'ESC Z')]":
+  function SCI()
   {
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
       "SCI", Array.slice(arguments));
   },
-  
+
   /**
    * ST
    */
-  "[profile('vt100'), sequence('0x9c', 'ESC \\\\')]": 
-  function ST() 
+  "[profile('vt100'), sequence('0x9c', 'ESC \\\\')]":
+  function ST()
   {
     coUtils.Debug.reportWarning(
       _("%s sequence [%s] was ignored."),
@@ -458,16 +458,16 @@ C1Control.definition = {
    *
    * Representation: 09/13 or ESC 05/13
    *
-   * OSC is used as the opening delimiter of a control string for operating 
-   * system use. The command string following may consist of a sequence of 
-   * bit combinations in the range 00/08 to 00/13 and 02/00 to 07/14. The 
-   * control string is closed by the terminating delimiter STRING TERMINATOR 
-   * (ST). The interpretation of the command string depends on the relevant 
+   * OSC is used as the opening delimiter of a control string for operating
+   * system use. The command string following may consist of a sequence of
+   * bit combinations in the range 00/08 to 00/13 and 02/00 to 07/14. The
+   * control string is closed by the terminating delimiter STRING TERMINATOR
+   * (ST). The interpretation of the command string depends on the relevant
    * operating system.
    *
    */
-  "[profile('vt100'), sequence('0x9d ... ST', 'ESC ] ... ST')]": 
-  function OSC(message) 
+  "[profile('vt100'), sequence('0x9d ... ST', 'ESC ] ... ST')]":
+  function OSC(message)
   {
     var delimiter_position = message.indexOf(";"),
         num,
@@ -482,24 +482,24 @@ C1Control.definition = {
       this.sendMessage("sequence/osc/" + num, command);
     }
   },
-  
+
   /**
    *
    * PM - PRIVACY MESSAGE
    *
    * Notation: (C1)
    * Representation: 09/14 or ESC 05/14
-   * PM is used as the opening delimiter of a control string for privacy 
+   * PM is used as the opening delimiter of a control string for privacy
    * message use. The command string following may consist of a sequence of
-   * bit combinations in the range 00/08 to 00/13 and 02/00 to 07/14. The 
-   * control string is closed by the terminating delimiter STRING TERMINATOR 
-   * (ST). The interpretation of the command string depends on the relevant 
+   * bit combinations in the range 00/08 to 00/13 and 02/00 to 07/14. The
+   * control string is closed by the terminating delimiter STRING TERMINATOR
+   * (ST). The interpretation of the command string depends on the relevant
    * privacy discipline.
    *
    */
   /** private message */
-  "[profile('vt100'), sequence('0x9e ... ST', 'ESC ^ ... ST')]": 
-  function PM(message) 
+  "[profile('vt100'), sequence('0x9e ... ST', 'ESC ^ ... ST')]":
+  function PM(message)
   {
     this.sendMessage("sequence/pm", message);
   },
@@ -512,14 +512,14 @@ C1Control.definition = {
    * Representation: 09/15 or ESC 05/15
    * APC is used as the opening delimiter of a control string for application
    * program use. The command string following may consist of bit combinations
-   * in the range 00/08 to 00/13 and 02/00 to 07/14. The control string is 
-   * closed by the terminating delimiter STRING TERMINATOR (ST). The 
-   * interpretation of the command string depends on the relevant application 
+   * in the range 00/08 to 00/13 and 02/00 to 07/14. The control string is
+   * closed by the terminating delimiter STRING TERMINATOR (ST). The
+   * interpretation of the command string depends on the relevant application
    * program.
    *
    */
-  "[profile('vt100'), sequence('0x9f ... ST', 'ESC _ ... ST')]": 
-  function APC(message) 
+  "[profile('vt100'), sequence('0x9f ... ST', 'ESC _ ... ST')]":
+  function APC(message)
   {
     this.sendMessage("sequence/apc", message);
   },
@@ -531,7 +531,7 @@ C1Control.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new C1Control(broker);
 }

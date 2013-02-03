@@ -44,18 +44,18 @@ PluginsCompleter.definition = {
 
   "[persistable] enabled_when_startup": true,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
   },
 
   /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
   },
 
@@ -108,9 +108,9 @@ PluginsCompleter.definition = {
     modules = this.sendMessage("get/components");
     candidates = [
       {
-        key: module.id, 
+        key: module.id,
         value: module
-      } for ([, module] in Iterator(modules)) 
+      } for ([, module] in Iterator(modules))
         if (module.id && module.id.match(context.source)
             && module.getEnabled && module.getEnabled() === ("enabled" === context.option))
     ];
@@ -123,7 +123,7 @@ PluginsCompleter.definition = {
       "event/answer-completion",
       {
         type: "text",
-        query: context.source, 
+        query: context.source,
         data: candidates.map(
           function(candidate)
           {

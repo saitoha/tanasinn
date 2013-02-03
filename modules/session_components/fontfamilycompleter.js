@@ -44,18 +44,18 @@ FontFamilyCompleter.definition = {
 
   "[persistable] enabled_when_startup": true,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
   },
 
   /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
   },
 
@@ -63,7 +63,7 @@ FontFamilyCompleter.definition = {
    * Search for a given string and notify a listener (either synchronously
    * or asynchronously) of the result
    *
-   * @param context - The completion context object. 
+   * @param context - The completion context object.
    */
   "[completer('font-family'), pnp]":
   function complete(context)
@@ -99,19 +99,19 @@ FontFamilyCompleter.definition = {
       font_list = coUtils.Components.getFontEnumerator()
 //        .EnumerateAllFonts({})
         .EnumerateFonts("x-western", "monospace", {})
-        .filter(function(font_family) 
+        .filter(function(font_family)
           -1 !== font_family.toLowerCase().indexOf(name.toLowerCase()));
 
       this.sendMessage(
         "event/answer-completion",
         {
           type: "font-family",
-          query: context.source, 
+          query: context.source,
           data: font_list.map(
             function(font)
             {
               return {
-                name: font, 
+                name: font,
                 value: font,
               };
             }),

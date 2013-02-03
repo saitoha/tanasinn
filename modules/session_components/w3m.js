@@ -31,7 +31,7 @@ Canvas.definition = {
   {
     this._canvas = canvas;
     this._context = canvas.getContext("2d");
-  }, 
+  },
 
   dispose: function dispose()
   {
@@ -76,14 +76,14 @@ W3m.definition = {
 
   _renderer: null,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
     var tanasinn_w3m_canvas = this.request(
-          "command/construct-chrome", 
+          "command/construct-chrome",
           this.getTemplate()
         ).tanasinn_w3m_canvas;
 
@@ -92,12 +92,12 @@ W3m.definition = {
     // set initial size.
     this._canvas = tanasinn_w3m_canvas;
     this._context = this._canvas.getContext("2d");
-  }, 
+  },
 
-  /** Uninstall itself. 
+  /** Uninstall itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
     if (null !== this._canvas) {
       this._canvas.parentNode.removeChild(this._canvas);
@@ -107,10 +107,10 @@ W3m.definition = {
       this._context = null;
     }
   },
-    
+
   /** Fired at the keypad mode is changed. */
-  "[subscribe('event/keypad-mode-changed'), pnp]": 
-  function onKeypadModeChanged(mode) 
+  "[subscribe('event/keypad-mode-changed'), pnp]":
+  function onKeypadModeChanged(mode)
   {
     var canvas = this._canvas,
         context = canvas.getContext("2d");
@@ -121,7 +121,7 @@ W3m.definition = {
   },
 
   "[subscribe('@command/focus'), pnp]":
-  function onFirstFocus() 
+  function onFirstFocus()
   {
     var canvas = this._canvas;
 
@@ -131,16 +131,16 @@ W3m.definition = {
     }
   },
 
-  "[subscribe('event/screen-width-changed'), pnp]": 
-  function onWidthChanged(width) 
+  "[subscribe('event/screen-width-changed'), pnp]":
+  function onWidthChanged(width)
   {
     if (this._canvas) {
       this._canvas.width = width;
     }
   },
 
-  "[subscribe('event/screen-height-changed'), pnp]": 
-  function onHeightChanged(height) 
+  "[subscribe('event/screen-height-changed'), pnp]":
+  function onHeightChanged(height)
   {
     if (this._canvas) {
       this._canvas.height = height;
@@ -148,7 +148,7 @@ W3m.definition = {
   },
 
   "[subscribe('sequence/osc/99'), pnp]":
-  function osc99(command) 
+  function osc99(command)
   {
     var args = command.split(":"),
         operation = args.shift(),     // retrieve operation name.
@@ -158,7 +158,7 @@ W3m.definition = {
       verb.apply(this, args); // dispatch command.
     } else {
       coUtils.Debug.reportError(
-        _("Unknown w3m command received. '%s'."), 
+        _("Unknown w3m command received. '%s'."),
         operation);
     }
   },
@@ -166,7 +166,7 @@ W3m.definition = {
 // operations
 
   /** Process "w3m-draw" command. */
-  "w3m-draw": function w3m_draw(bindex, index, x, y, w, h, sx, sy, sw, sh, filename) 
+  "w3m-draw": function w3m_draw(bindex, index, x, y, w, h, sx, sy, sw, sh, filename)
   {
     var cache,
         image,
@@ -195,7 +195,7 @@ W3m.definition = {
       this._draw(image.value, x, y, w, h, sx, sy, sw, sh); // draw immediately.
     } else {
       // draw after the image is fully loaded.
-      image.value.onload = function onload() 
+      image.value.onload = function onload()
         {
           self._cache_holder[filename] = image;
           self._draw(image.value, x, y, w, h, sx, sy, sw, sh);
@@ -208,7 +208,7 @@ W3m.definition = {
   "w3m-size": function(op, filename)
   {
     var cache_holder,
-        cache, 
+        cache,
         self = this;
 
     this._cache_holder = this._cache_holder || {};
@@ -226,8 +226,8 @@ W3m.definition = {
       };
 
       // get metrics and send after the image is fully loaded.
-      cache.value.onload = function() 
-        { 
+      cache.value.onload = function()
+        {
           cache_holder[filename] = cache; // cache loaded image.
           self._sendSize(cache.value);
         }
@@ -237,7 +237,7 @@ W3m.definition = {
   },
 
   /** Process "w3m-clear" command. */
-  "w3m-clear": function() 
+  "w3m-clear": function()
   {
     var context = this._context,
         canvas = this._canvas,
@@ -248,7 +248,7 @@ W3m.definition = {
   },
 
   /** Process "w3m-getcharsize" command. */
-  "w3m-getcharsize": function(x, y) 
+  "w3m-getcharsize": function(x, y)
   {
     var canvas = this._canvas,
         renderer = this._renderer,
@@ -262,13 +262,13 @@ W3m.definition = {
 
     coUtils.Debug.reportMessage(_("w3m-getcharsize called."));
     coUtils.Debug.reportMessage(
-      _("w3m-getcharsize succeeded. reply: '%d'."), 
+      _("w3m-getcharsize succeeded. reply: '%d'."),
       reply);
   },
 
   /** draws image in specified size.
    */
-  _draw: function(image, x, y, w, h, sx, sy, sw, sh) 
+  _draw: function(image, x, y, w, h, sx, sy, sw, sh)
   {
     var natural_width = image.naturalWidth,
         natural_height = image.naturalHeight;
@@ -279,7 +279,7 @@ W3m.definition = {
         coUtils.Debug.reportMessage(
           _("Invalid metrics was given : [%s]."),
           [sx, sy, sw, sh, x, y, w, h].join(","));
-        return; 
+        return;
       }
 
       // trim and normalize [sw, sh].
@@ -302,7 +302,7 @@ W3m.definition = {
 
   /** Sends width and height to w3m.
    */
-  _sendSize: function _sendSize(image) 
+  _sendSize: function _sendSize(image)
   {
     var width = parseInt(image.naturalWidth) || 0,
         height = parseInt(image.naturalHeight) || 0,
@@ -328,7 +328,7 @@ W3m.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new W3m(broker);
 }

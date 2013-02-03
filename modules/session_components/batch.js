@@ -44,24 +44,24 @@ BatchLoader.definition = {
   "[persistable] enabled_when_startup": true,
 
   _element: null,
- 
-  /** Installs itself. 
+
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
   },
 
   /** Uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
   },
 
   "[command('import', ['batch']), _('load batch file from search path.'), pnp]":
-  function loadBatchCommand(name) 
+  function loadBatchCommand(name)
   {
     var file = coUtils.File.getFileLeafFromVirtualPath(
           coUtils.Runtime.getBatchDirectory());
@@ -115,10 +115,10 @@ BatchLoader.definition = {
   },
 
   "[subscribe('command/eval-source'), enabled]":
-  function evalSource(source) 
+  function evalSource(source)
   {
     source.split(/[\n\r]+/).forEach(
-      function each(command) 
+      function each(command)
       {
         if (!/^\s*$|^s*#/.test(command)) {
           this.sendMessage("command/eval-commandline", command);
@@ -128,7 +128,7 @@ BatchLoader.definition = {
 
 
   "[subscribe('@command/focus'), enabled]":
-  function onFirstFocus() 
+  function onFirstFocus()
   {
     // load rc file.
     var path = coUtils.Runtime.getResourceFilePath();
@@ -141,7 +141,7 @@ BatchLoader.definition = {
    *
    */
   "[command('execcgi', ['cgi']), subscribe('command/execute-cgi'), enabled]":
-  function execCGI(arguments_string) 
+  function execCGI(arguments_string)
   {
     var path = coUtils.Runtime.getRuntimePath()
              + "/cgi-bin/"
@@ -176,7 +176,7 @@ BatchLoader.definition = {
       ];
     } else { // Darwin, Linux
       args = [
-        "-c", 
+        "-c",
         path + " > /tmp/tanasinn_tmp"
       ];
     }
@@ -194,7 +194,7 @@ BatchLoader.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new BatchLoader(broker);
 }

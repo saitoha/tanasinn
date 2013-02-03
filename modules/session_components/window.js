@@ -48,7 +48,7 @@ WindowWatcher.definition = {
 
   "[persistable] enabled_when_startup": true,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
@@ -56,20 +56,20 @@ WindowWatcher.definition = {
   {
   },
 
-  /** Uninstalls itself. 
+  /** Uninstalls itself.
    */
   "[uninstall]":
   function uninstall()
   {
   },
 
-  /** publish ratate gesture event message 
+  /** publish ratate gesture event message
    *
    * @param event {Event} An gesture event object.
    *
    */
   "[listen('MozRotateGesture', undefined, true), pnp]":
-  function onRotateGesture(event) 
+  function onRotateGesture(event)
   {
     var original_target = event.explicitOriginalTarget,
         relation = this.request("get/root-element")
@@ -83,13 +83,13 @@ WindowWatcher.definition = {
     }
   },
 
-  /** publish swipe gesture event message 
+  /** publish swipe gesture event message
    *
    * @param event {Event} An gesture event object.
    *
    */
   "[listen('MozSwipeGesture', undefined, true), pnp]":
-  function onSwipeGesture(event) 
+  function onSwipeGesture(event)
   {
     var original_target = event.explicitOriginalTarget,
         relation = this.request("get/root-element")
@@ -104,13 +104,13 @@ WindowWatcher.definition = {
     event.direction = 0;
   },
 
-  /** publish magnify gesture event message 
+  /** publish magnify gesture event message
    *
    * @param event {Event} An gesture event object.
    *
    */
   "[listen('MozMagnifyGesture', undefined, true), pnp]":
-  function onMagnifyGesture(event) 
+  function onMagnifyGesture(event)
   {
     var original_target = event.explicitOriginalTarget,
         relation = this.request("get/root-element")
@@ -124,25 +124,25 @@ WindowWatcher.definition = {
       event.stopPropagation();
     }
   },
-  
-  /** Handles window resize event. 
+
+  /** Handles window resize event.
    *
    * @param event {Event} An resize event object.
    *
    */
   "[listen('resize', undefined, true), pnp]":
-  function onresize(event) 
+  function onresize(event)
   {
     this.sendMessage("event/window-resized", event);
   },
 
-  /** Handles window close event. 
+  /** Handles window close event.
    *
    * @param event {Event} An resize event object.
    *
    */
   "[listen('close'), pnp]":
-  function onclose(event) 
+  function onclose(event)
   {
     this.sendMessage("event/window-closing", event);
   }
@@ -154,7 +154,7 @@ WindowWatcher.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new WindowWatcher(broker);
 }

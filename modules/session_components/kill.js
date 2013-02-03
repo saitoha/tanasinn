@@ -44,38 +44,38 @@ Kill.definition = {
   "[persistable] enabled_when_startup": true,
   "[persistable] kill_delay": 500,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
   function install(context)
   {
-  }, 
+  },
 
   /** Uninstall itself. */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
   },
 
   "[subscribe('get/contextmenu-entries'), pnp]":
-  function onContextMenu() 
+  function onContextMenu()
   {
     return [
       {
         tagName: "menuitem",
-        label: _("Detach from process"), 
+        label: _("Detach from process"),
         listener: {
-          type: "command", 
+          type: "command",
           context: this,
           handler: this.detach,
         }
       },
       {
         tagName: "menuitem",
-        label: _("Shutdown process"), 
+        label: _("Shutdown process"),
         listener: {
-          type: "command", 
+          type: "command",
           context: this,
           handler: this.kill,
         }
@@ -85,23 +85,23 @@ Kill.definition = {
 
   /** detach from process */
   "[command('detach'), _('detach from process.'), pnp]":
-  function detach() 
+  function detach()
   {
     // stops TTY device.
-    this.sendMessage("command/detach"); 
+    this.sendMessage("command/detach");
   },
 
   /** kill process and stop tty */
   "[command('kill/quit'), _('kill process and stop tty'), pnp]":
-  function kill() 
+  function kill()
   {
     // stops TTY device.
-    this.sendMessage("command/kill"); 
+    this.sendMessage("command/kill");
     this.sendMessage("event/before-broker-stopping");
     coUtils.Timer.setTimeout(
       function timerProc()
       {
-        this._broker.stop(); 
+        this._broker.stop();
       }, this.kill_delay, this);
   },
 }
@@ -112,7 +112,7 @@ Kill.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new Kill(broker);
 }

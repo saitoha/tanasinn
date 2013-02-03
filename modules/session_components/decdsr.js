@@ -30,7 +30,7 @@
  *
  * DSR - Device Status Reports
  *
- * The host computer and terminal exchange DSR sequences to provide the host 
+ * The host computer and terminal exchange DSR sequences to provide the host
  * with the operating status of the following features:
  *
  * Operating status
@@ -42,7 +42,7 @@
  * Memory checksum
  * Data integrity report
  *
- * DSR requests and reports follow one of two formats, ANSI or DEC format. 
+ * DSR requests and reports follow one of two formats, ANSI or DEC format.
  * The format for each is as follows:
  *
  * Format
@@ -50,25 +50,25 @@
  * ANSI format
  *
  * CSI    Ps   n
- * 9/11   3/n  6/14   
+ * 9/11   3/n  6/14
  *
  * DEC format
  *
  * CSI    ?      Ps   n
- * 9/11   3/15   3/n  6/14   
+ * 9/11   3/15   3/n  6/14
  *
  *
  * Parameters
  *
  * Ps
- * indicates the type of DSR requested. See the following individual DSR 
+ * indicates the type of DSR requested. See the following individual DSR
  * reports for specific parameters within each report.
  *
  * Description
  *
  * There is a different DSR request for each feature. The following sections
- * describe the possible DSR reports. If the terminal is in printer 
- * controller mode, then the printer receives the DSR request. The printer 
+ * describe the possible DSR reports. If the terminal is in printer
+ * controller mode, then the printer receives the DSR request. The printer
  * can respond through the bidirectional printer port.
  *
  */
@@ -93,7 +93,7 @@ DECDeviceStatusReport.definition = {
   _parser: null,
   _screen: null,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
@@ -103,7 +103,7 @@ DECDeviceStatusReport.definition = {
     this._screen = context["screen"];
   },
 
-  /** uninstalls itself. 
+  /** uninstalls itself.
    */
   "[uninstall]":
   function uninstall()
@@ -113,19 +113,19 @@ DECDeviceStatusReport.definition = {
   },
 
   "[profile('vt100'), sequence('CSI ? Ps n')]":
-  function DECDSR(n1, n2) 
+  function DECDSR(n1, n2)
   { // Device Status Report, DEC specific
-    
+
     switch (n1) {
 
       /**
        * DECXCPR - Extended Cursor Position
-       * 
-       * The host asks the terminal for the current cursor position, 
+       *
+       * The host asks the terminal for the current cursor position,
        * including the current page number.
        *
        * Format
-       * 
+       *
        * CSI   ?     6     n
        * 9/11  3/15  3/6   6/14
        *
@@ -136,15 +136,15 @@ DECDeviceStatusReport.definition = {
        *
        *
        * Parameters
-       * 
+       *
        * Pl; Pc; Pp
        * The terminal indicates that the cursor is currently at line Pl, column Pc, on page Pp.
        *
        */
       case 6:
         message = coUtils.Text.format(
-          "%d;%d;0R", 
-          cursor.positionY + 1, 
+          "%d;%d;0R",
+          cursor.positionY + 1,
           cursor.positionX + 1,
           0);
         this.sendMessage("command/send-sequence/csi", message);
@@ -152,7 +152,7 @@ DECDeviceStatusReport.definition = {
 
       case 53:
         try {
-          this.request("event/locator-reporting-requested", null); 
+          this.request("event/locator-reporting-requested", null);
           this.sendMessage("command/send-sequence/csi", "?53n");
         } catch(e) {
           this.sendMessage("command/send-sequence/csi", "?50n");
@@ -209,7 +209,7 @@ DECDeviceStatusReport.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new DECDeviceStatusReport(broker);
 }

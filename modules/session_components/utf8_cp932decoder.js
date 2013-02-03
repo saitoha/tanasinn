@@ -51,24 +51,24 @@ UTF8_CP932Decoder.definition = {
   _cp932_map: null,
   _offset: 0,
 
-  /** Installs itself. 
+  /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
   "[install]":
-  function install(context) 
+  function install(context)
   {
   },
 
-  /** uninstalls itself. 
+  /** uninstalls itself.
    */
   "[uninstall]":
-  function uninstall() 
+  function uninstall()
   {
   },
 
   /** Constructor **/
   "[subscribe('get/decoders'), pnp]":
-  function getDecoders(map) 
+  function getDecoders(map)
   {
     return {
       charset: this.scheme,
@@ -77,19 +77,19 @@ UTF8_CP932Decoder.definition = {
     };
   },
 
-  activate: function activate() 
+  activate: function activate()
   {
     var resource_path_cp932 = "modules/mappings/cp932.txt.js",
         json_content_cp932 = coUtils.IO.readFromFile(resource_path_cp932),
         mapping_cp932 = eval(json_content_cp932);
 
-    this._cp932_map = mapping_cp932.map;    
+    this._cp932_map = mapping_cp932.map;
   },
 
-  /** Parse UTF-8 string sequence and convert it 
-   *  to UCS-4 code point sequence. 
+  /** Parse UTF-8 string sequence and convert it
+   *  to UCS-4 code point sequence.
    */
-  decode: function decode(scanner) 
+  decode: function decode(scanner)
   {
     var self = this;
 
@@ -108,14 +108,14 @@ UTF8_CP932Decoder.definition = {
     } (scanner);
   },
 
-  /** Decode UTF-8 encoded byte sequences 
-   *  and Return UCS-4 character set code point. 
+  /** Decode UTF-8 encoded byte sequences
+   *  and Return UCS-4 character set code point.
    *
-   *  @param {Scanner} scanner A scanner object that attached to 
+   *  @param {Scanner} scanner A scanner object that attached to
    *                   current input stream.
-   *  @return {Array} Converted sequence 
+   *  @return {Array} Converted sequence
    */
-  _getNextCharacter: function _getNextCharacter(scanner) 
+  _getNextCharacter: function _getNextCharacter(scanner)
   {
     var c = scanner.current(),
         c2,
@@ -139,8 +139,8 @@ UTF8_CP932Decoder.definition = {
         if (c < 0xa0) {
           return null;
         }
-      } 
-      // 110xxxxx 10xxxxxx 
+      }
+      // 110xxxxx 10xxxxxx
       // (0x00000080 - 0x000007ff) // 11bit
       first = (c & 0x1f) << 6;
       second = c2 & 0x3f;
@@ -148,7 +148,7 @@ UTF8_CP932Decoder.definition = {
     } else if (c < 0xf0) {
       scanner.moveNext();
       c2 = scanner.current();
-      // 1110xxxx 10xxxxxx 10xxxxxx 
+      // 1110xxxx 10xxxxxx 10xxxxxx
       // (0x00000800 - 0x0000ffff) // 16bit (UCS-2)
       if (0xe === c >>> 4) {
         first = (c & 0xf) << 12;
@@ -169,7 +169,7 @@ UTF8_CP932Decoder.definition = {
         }
       }
     } else if (c < 0xf8) {
-      // 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx 
+      // 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
       // (0x00010000 - 0x001fffff) // 21bit (UCS-4)
       first = (c & 0x7) << 18;
       scanner.moveNext();
@@ -190,7 +190,7 @@ UTF8_CP932Decoder.definition = {
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
-function main(broker) 
+function main(broker)
 {
   new UTF8_CP932Decoder(broker);
 }
