@@ -4,7 +4,7 @@
 # ***** BEGIN LICENSE BLOCK *****
 # Version: MPL 1.1
 #
-# These contents of this file are subject to the Mozilla Public License Version
+# The contents of this file are subject to the Mozilla Public License Version
 # 1.1 (the "License"); you may not use this file except in compliance with
 # the License. You may obtain a copy of the License at
 # http://www.mozilla.org/MPL/
@@ -57,7 +57,7 @@
 #    [I/O channel].
 #
 # 4. Controlling Process
-#    This process comminucates with tanasinn through [Control channel] in
+#    This process communicates with tanasinn through [Control channel] in
 #    simple, lightweight, 7bit ascii-based protocol.
 #
 # <pre>
@@ -400,15 +400,17 @@ class TeletypeDriver:
             pass
 
 
-def add_record(sessiondb_path, request_id,
-               command, control_port, pid, ttyname):
+def add_record(sessiondb_path, request_id, command,
+               control_port, pid, ttyname):
     lockfile = open(sys.argv[0], "r")
     try:
         fcntl.flock(lockfile.fileno(), fcntl.LOCK_EX)
         f = open(sessiondb_path, "a")
         try:
-            line = "%s,%s,%s,%s,%s\n" % (request_id, base64.b64encode(command))
-            f.write(line, control_port, pid, ttyname)
+            command = base64.b64encode(command)
+            row = (request_id, command, control_port, pid, ttyname)
+            line = "%s,%s,%s,%s,%s\n" % row
+            f.write("%s,%s,%s,%s,%s\n" % line)
             f.flush()
         finally:
             f.close()
@@ -441,7 +443,6 @@ def del_record(sessiondb_path, request_id):
 
     finally:
         lockfile.close()
-
 
 if __name__ == "__main__":
     if len(sys.argv) < 1:
