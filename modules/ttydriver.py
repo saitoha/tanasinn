@@ -146,7 +146,6 @@ if "CYGWIN" in system[0]:
     rcdir = os.path.join(os.getenv("USERPROFILE"), ".tanasinn")
 else:
     rcdir = os.path.join(os.getenv("HOME"), ".tanasinn")
-print rcdir
 logdir = os.path.join(rcdir, "log")
 if not os.path.exists(logdir):
     os.makedirs(logdir)
@@ -408,9 +407,8 @@ def add_record(sessiondb_path, request_id, command,
         f = open(sessiondb_path, "a")
         try:
             command = base64.b64encode(command)
-            row = (request_id, command, control_port, pid, ttyname)
-            line = "%s,%s,%s,%s,%s\n" % row
-            f.write("%s,%s,%s,%s,%s\n" % line)
+            row = request_id, command, control_port, pid, ttyname
+            f.write("%s,%s,%s,%s,%s\n" % row)
             f.flush()
         finally:
             f.close()
@@ -540,17 +538,35 @@ if __name__ == "__main__":
     io_port = int(io_port_str)
     sessiondb_path = base64.b64decode(sessiondb_path)
 
+    persist_file = None
     try:
         while True:
             # establish <I/O channel> socket connection.
             io_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             io_socket.connect(("127.0.0.1", io_port))
-
             driver = TeletypeDriver(pid,
                                     ttyname,
                                     master,
                                     io_socket,
                                     control_connection)
+            if persist_file:
+                size = os.stat(persist_file).st_size
+                pos = size - BUFFER_SIZE * 2
+                persist = open(persist_file)
+                if pos > 0:
+                    os.seek(pos)
+                buf = persist.read()
+                try:
+                    while True:
+                        buf = persist.read()
+                        if not buf:
+                            break
+                        io_socket.send(buf)
+                finally:
+                    persist.close()
+                    os.remove(persist_file)
+                    persist_file = None
+
             driver.drive_tty()
 
             if not driver.isalive():
@@ -562,16 +578,33 @@ if __name__ == "__main__":
                 trace("suspended.")
 
                 # re-establish <Control channel> socket connection.
-                control_connection, addr = control_socket.accept()
-                trace("resume.")
-                reply = control_connection.recv(BUFFER_SIZE)
-                io_port_str, request_id, sessiondb_path = reply.split(" ")
-                io_port = int(io_port_str)
-                sessiondb_path = base64.b64decode(sessiondb_path)
+
+                wait_pid = os.fork()
+                persist_file = os.path.join(logdir, request_id)
+                if wait_pid == 0:
+                    persist = open(persist_file, "w")
+                    try:
+                        while True:
+                            buf = os.read(master, BUFFER_SIZE)
+                            persist.write(buf)
+                    finally:
+                        persist.flush()
+                        persist.close()
+                try:
+                    control_connection, addr = control_socket.accept()
+                    #trace("resume.")
+                    reply = control_connection.recv(BUFFER_SIZE)
+                    io_port_str, request_id, sessiondb_path = reply.split(" ")
+                    io_port = int(io_port_str)
+                    sessiondb_path = base64.b64decode(sessiondb_path)
+                finally:
+                    os.kill(wait_pid, signal.SIGKILL)
 
                 del_record(sessiondb_path, request_id)
 
     except socket.error:
         trace("A socket error occured.")
+    except:
+        trace("An error occured")
     finally:
         os.close(master)
