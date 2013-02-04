@@ -78,6 +78,7 @@ OpenInW3m.definition = {
 
   openInW3m: function openInW3m()
   {
+          alert(1)
     var window = this._broker._window,
         node = window.document.popupNode,
         url = window.gContextMenu.linkURL,

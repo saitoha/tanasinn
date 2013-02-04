@@ -120,7 +120,9 @@ Ime.definition = {
 
     if (null !== textbox) {
       textbox.style.width = "";
-      textbox.inputField.style.imeMode = "disabled";
+      if (textbox.inputField) {
+        textbox.inputField.style.imeMode = "disabled";
+      }
       textbox.style.border = "";
       textbox.style.position = "";
     }
@@ -173,13 +175,17 @@ Ime.definition = {
   function enableIME()
   {
     var textbox = this._input_manager.getInputField();
-    textbox.inputField.style.imeMode = "active";
-    this.sendMessage("command/disable-focus-events");
-    textbox.blur();
-    textbox.focus();
-    textbox.focus();
-    textbox.focus();
-    textbox.focus();
+    if (textbox.inputField) {
+      textbox.style.opacity = 1.0;
+      textbox.inputField.style.imeMode = "active";
+      this.sendMessage("command/disable-focus-events");
+      textbox.blur();
+      textbox.focus();
+      textbox.focus();
+      textbox.focus();
+      textbox.focus();
+      textbox.style.opacity = 0.0;
+    }
     this.sendMessage("command/enable-focus-events");
     this._enabled = true;
     this._startPolling();
@@ -191,13 +197,17 @@ Ime.definition = {
   {
     var textbox = this._input_manager.getInputField();
 
-    textbox.inputField.style.imeMode = "inactive";
-    this.sendMessage("command/disable-focus-events");
-    textbox.blur();
-    textbox.focus();
-    textbox.focus();
-    textbox.focus();
-    textbox.focus();
+    if (textbox.inputField) {
+      textbox.style.opacity = 1.0;
+      textbox.inputField.style.imeMode = "inactive";
+      this.sendMessage("command/disable-focus-events");
+      textbox.blur();
+      textbox.focus();
+      textbox.focus();
+      textbox.focus();
+      textbox.focus();
+      textbox.style.opacity = 0.0;
+    }
     this.sendMessage("command/enable-focus-events");
     this._enabled = false;
     this._endPolling();
@@ -281,7 +291,7 @@ Ime.definition = {
 
   _compositionEnd: function _compositionEnd()
   {
-    this._input_manager.getInputField().style.opacity = 0.5;
+    this._input_manager.getInputField().style.opacity = 0.0;
     this._ime_input_flag = false;
     this.sendMessage("event/ime-composition-end", this);
   }
