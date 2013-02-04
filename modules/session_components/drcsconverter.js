@@ -722,7 +722,7 @@ NRCSConverter.definition = {
       for (i = 0; i < codes.length; ++i ) {
         c = codes[i];
         if (c < 0x80) { // GL
-          result.push(left[c]);
+          result.push(0x0f0000 | left[c]);
         //} else if (c < 0xff) { // GR
         //  result.push(right[c]);
         } else {

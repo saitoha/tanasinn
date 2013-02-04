@@ -189,6 +189,7 @@
     terminalmode.js
     reversewrap.js
     altscreen.js
+    ucsmapping.js
     nkm.js
     answerback.js
     mouse.js

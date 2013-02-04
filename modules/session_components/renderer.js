@@ -836,16 +836,21 @@ Renderer.definition = {
 
     context.fillStyle = fore_color;
 
-    if (1 === attr.underline) {
-      this._drawUnderline(context, x, y, char_width * length, fore_color);
-    }
-
     code = codes[0];
 
-    if (code > 0x100000) {
-      dscs = String.fromCharCode(code >>> 8 & 0xff);
-      drcs_state = this._drcs_map[" " + dscs];
-      codes[0] = codes & 0xff;
+    if (code >= 0xf0000 && 1 === codes.length) {
+      length = 1;
+      if (code < 0x100000) {
+        codes[0] = codes & 0xffff;
+      } else {
+        dscs = String.fromCharCode(code >>> 8 & 0xff);
+        drcs_state = this._drcs_map[" " + dscs];
+        codes[0] = codes & 0xff;
+      }
+    }
+
+    if (1 === attr.underline) {
+      this._drawUnderline(context, x, y, char_width * length, fore_color);
     }
 
     if (drcs_state) {

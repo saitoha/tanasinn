@@ -342,12 +342,14 @@ Cell.definition = {
     var code = this.c,
         i;
 
-    if (code < 0x10000 || 0x100000 <= code) {
+    if (code < 0x10000 /* BMP */) {
       yield code;
     } else if ("object" === typeof code) {
       for (i = 0; i < code.length; ++i) {
         yield code[i];
       }
+    } else if (code >= 0xf0000 /* DRCS/iso-2022 */) {
+      yield code;
     } else {
       // emit 16bit + 16bit surrogate pair.
       code -= 0x10000;

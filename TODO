@@ -20,7 +20,6 @@
 
 - main buffer's adaptive resize
 - Improve drag move experience
-- IME control
 - Support Growl like notification system
 
 - Fix Sixel Graphics behavior more strictry
