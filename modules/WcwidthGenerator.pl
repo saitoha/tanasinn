@@ -159,6 +159,7 @@ function wcwidth_amb_as_single(c)
         } else if (/^[@{[print_characters 0, %wcmap1]}]\$/.test(s)) {
             return 0;
         }
+        return 1;
     } else if (c < 0x1F200) {
         return 1;
     } else if (c < 0x1F300) {
@@ -180,6 +181,7 @@ function wcwidth_amb_as_double(c)
         } else if (/^[@{[print_characters 0, %wcmap2]}]\$/.test(s)) {
             return 0;
         }
+        return 1;
     } else if (c < 0x1F100) {
         return 1;
     } else if (c < 0x1F1A0) {
