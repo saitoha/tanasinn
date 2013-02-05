@@ -296,8 +296,8 @@ class TeletypeDriver:
         sys.exit(0)
 
     def kill(self, argv):
-        os.kill(self.__app_process_pid, signal.SIGKILL)
         self.killed = True
+        os.kill(self.__app_process_pid, signal.SIGKILL)
         trace("exit from control process.")
         sys.exit(0)
 
@@ -469,7 +469,8 @@ if __name__ == "__main__":
         paths = os.environ["PATH"].split(":")
         if not "/usr/local/bin" in paths:
             os.environ["PATH"] = "/usr/local/bin:" + os.environ["PATH"]
-        os.environ[""] = lang
+        if system[0] == 'Darwin' and not "/opt/local/bin" in paths:
+            os.environ["PATH"] = "/opt/local/bin:" + os.environ["PATH"]
         os.environ["__TANASINN"] = term
         os.execlp("/bin/sh", "/bin/sh", "-c", "cd $HOME && exec %s" % command)
     ttyname = "unknown ttyname"  # os.read(master, ttyname_max_length).rstrip()
@@ -586,19 +587,21 @@ if __name__ == "__main__":
                     try:
                         while True:
                             buf = os.read(master, BUFFER_SIZE)
+                            if not buf:
+                                break
                             persist.write(buf)
                     finally:
                         persist.flush()
                         persist.close()
                 try:
                     control_connection, addr = control_socket.accept()
-                    #trace("resume.")
-                    reply = control_connection.recv(BUFFER_SIZE)
-                    io_port_str, request_id, sessiondb_path = reply.split(" ")
-                    io_port = int(io_port_str)
-                    sessiondb_path = base64.b64decode(sessiondb_path)
                 finally:
                     os.kill(wait_pid, signal.SIGKILL)
+                trace("resume.")
+                reply = control_connection.recv(BUFFER_SIZE)
+                io_port_str, request_id, sessiondb_path = reply.split(" ")
+                io_port = int(io_port_str)
+                sessiondb_path = base64.b64decode(sessiondb_path)
 
                 del_record(sessiondb_path, request_id)
 
