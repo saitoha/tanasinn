@@ -296,10 +296,10 @@ class TeletypeDriver:
         sys.exit(0)
 
     def kill(self, argv):
-        self.killed = True
         os.kill(self.__app_process_pid, signal.SIGKILL)
+        self.killed = True
         trace("exit from control process.")
-        sys.exit(0)
+        #sys.exit(0)
 
     def isalive(self):
         """Check whether pid exists in the current process table."""
@@ -308,12 +308,11 @@ class TeletypeDriver:
         #if not os.isatty(self.master):
         #    return False
         try:
-            trace(self.__app_process_pid)
+            #trace(self.__app_process_pid)
             os.kill(self.__app_process_pid, 0)
         except OSError, e:
             return e.errno != errno.ESRCH
-        else:
-            return True
+        return True
 
     def resize(self, argv):
 
@@ -585,18 +584,43 @@ if __name__ == "__main__":
                 if wait_pid == 0:
                     persist = open(persist_file, "w")
                     try:
+                        rfds = [master]
+                        wfds = []
+                        xfds = [master]
                         while True:
-                            buf = os.read(master, BUFFER_SIZE)
-                            if not buf:
+                            rfd, wfd, xfd = select.select(rfds, wfds, xfds, 5)
+                            if xfd:  # checking error.
                                 break
-                            persist.write(buf)
+                            if not driver.isalive():
+                                break
+                            if rfd:
+                                buf = os.read(master, BUFFER_SIZE)
+                                if not buf:
+                                    break
+                                persist.write(buf)
                     finally:
                         persist.flush()
                         persist.close()
+                        sys.exit(0)
                 try:
-                    control_connection, addr = control_socket.accept()
+                    rfds = [control_socket]
+                    wfds = []
+                    xfds = [control_socket, master]
+                    while True:
+                        rfd, wfd, xfd = select.select(rfds, wfds, xfds, 5)
+                        if xfd:  # checking error.
+                            break
+                        if not driver.isalive():
+                            break
+                        if rfd:
+                            control_connection, addr = control_socket.accept()
+                            break
                 finally:
                     os.kill(wait_pid, signal.SIGKILL)
+
+                if not driver.isalive():
+                    os.kill(wait_pid, signal.SIGKILL)
+                    sys.exit(0)
                 trace("resume.")
                 reply = control_connection.recv(BUFFER_SIZE)
                 io_port_str, request_id, sessiondb_path = reply.split(" ")

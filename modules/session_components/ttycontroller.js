@@ -214,7 +214,7 @@ Controller.definition = {
     this.post("detach\n");
   },
 
-  "[subscribe('@command/kill')]":
+  "[subscribe('@command/kill'), pnp]":
   function kill()
   {
     this.post("kill\n");
@@ -388,7 +388,6 @@ Controller.definition = {
     this.flowControl.enabled = true;
     this.post.enabled = true;
     this.resize.enabled = true;
-    this.kill.enabled = true;
   },
 
   /** Starts TCP client socket, and listen it asynchronously.
