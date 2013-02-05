@@ -41,23 +41,25 @@ OpenInW3m.definition = {
   function install(context)
   {
     var broker = this._broker,
-    dom = {
-      menu: broker.window.document.getElementById("contentAreaContextMenu"),
-      menuitem: broker.window.document.createElement("menuitem"),
-      separator: broker.window.document.getElementById("context-sep-open"),
-    };
+        dom = {
+          menu: broker.window.document.getElementById("contentAreaContextMenu"),
+          menuitem: broker.window.document.createElement("menuitem"),
+          separator: broker.window.document.getElementById("context-sep-open"),
+        };
     broker.window._tanasinn_w3m = this;
     dom.menuitem.setAttribute("id", "open-in-w3m");
-    dom.menuitem.setAttribute("label", _("Open in w3m"));
     dom.menuitem.setAttribute("oncommand", "_tanasinn_w3m.openInW3m()");
     dom.menu.insertBefore(dom.menuitem, dom.separator);
     this._dom = dom;
     this._handler = function onPopupShowing()
     {
-      dom.menuitem.hidden = broker.window.document.popupNode.onImage
-                         || broker.window.document.popupNode.onLink;
+      if (broker.window.gContextMenu.link) {
+        dom.menuitem.setAttribute("label", _("Open in w3m"));
+      } else {
+        dom.menuitem.setAttribute("label", _("Open this page in w3m"));
+      };
     };
-    dom.menu.addEventListener("popupshowing", this._handler);
+    dom.menu.addEventListener("popupshowing", this._handler, false);
   },
 
   /** Uninstalls itself.
@@ -78,11 +80,12 @@ OpenInW3m.definition = {
 
   openInW3m: function openInW3m()
   {
-          alert(1)
-    var window = this._broker._window,
-        node = window.document.popupNode,
-        url = window.gContextMenu.linkURL,
+    var win = this._broker._window,
+        node = win.document.popupNode,
+        url = win.gContextMenu.linkURL
+            || gBrowser.currentURI.spec,
         command = coUtils.Text.format("w3m '%s'", url);
+
     this.sendMessage('command/start-session', command);
   },
 }; // OpenInW3m
@@ -96,3 +99,5 @@ function main(desktop)
 {
   new OpenInW3m(desktop);
 }
+
+// EOF
