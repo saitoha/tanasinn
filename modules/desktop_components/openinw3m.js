@@ -53,10 +53,23 @@ OpenInW3m.definition = {
     this._dom = dom;
     this._handler = function onPopupShowing()
     {
-      if (broker.window.gContextMenu.link) {
-        dom.menuitem.setAttribute("label", _("Open in w3m"));
+      var url = broker.window.gContextMenu.linkURL;
+
+      if (url) {
+        if (/^(?:about|chrome)/.test(url)) {
+          dom.menuitem.hidden = true;
+        } else {
+          dom.menuitem.hidden = false;
+          dom.menuitem.setAttribute("label", _("Open in w3m"));
+        }
       } else {
-        dom.menuitem.setAttribute("label", _("Open this page in w3m"));
+        url = broker.window.gBrowser.currentURI.spec;
+        if (/^(?:about|chrome)/.test(url)) {
+          dom.menuitem.hidden = true;
+        } else {
+          dom.menuitem.hidden = false;
+          dom.menuitem.setAttribute("label", _("Open this page in w3m"));
+        }
       };
     };
     dom.menu.addEventListener("popupshowing", this._handler, false);
@@ -83,7 +96,7 @@ OpenInW3m.definition = {
     var win = this._broker._window,
         node = win.document.popupNode,
         url = win.gContextMenu.linkURL
-            || gBrowser.currentURI.spec,
+            || win.gBrowser.currentURI.spec,
         command = coUtils.Text.format("w3m '%s'", url);
 
     this.sendMessage('command/start-session', command);

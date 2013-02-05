@@ -15,7 +15,6 @@
  chrome.manifest.in
  chrome.manifest
  bootstrap.js
-
  content=content {
   tanasinn.svg
  }
@@ -92,6 +91,7 @@
    launchercompletionprovider.js
    dragmove.js
    openinw3m.js
+   openintanasinn.js
   }
   shared_components=shared_components {
    builder.js
@@ -377,4 +377,3 @@
   prefs.js
  }
 }
-
