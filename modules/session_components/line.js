@@ -682,14 +682,15 @@ Line.definition = {
     return result;
   },
 
-  _getCodePointsFromCells: function _getCodePointsFromCells(cells)
+  _getCodePointsFromCells:
+  function _getCodePointsFromCells(cells)
   {
-    var i = 0,
+    var i,
         c,
         codes = [],
         cell;
 
-    for (; i < cells.length; ++i) {
+    for (i = 0; i < cells.length; ++i) {
       cell = cells[i];
       for (c in cell.getCodes()) {
         codes.push(c);
@@ -724,7 +725,7 @@ Line.definition = {
         cell = cells[current];
         is_ascii = cell.c > 0 && cell.c < 0x80;
         if (attr) {
-          if (attr.equals(cell) && is_ascii /*&& 0 === attr.drcs*/) {
+          if (attr.equals(cell) && is_ascii) {
             continue;
           } else {
             range = cells.slice(start, current);
