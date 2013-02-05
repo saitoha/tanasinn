@@ -33,20 +33,20 @@ all: $(XPI) tanasinn-docs.zip
 	git add -f download/releases/$(PACKAGE_VERSION)/*.xpi
 
 tanasinn-docs.zip: doc/usermanual.html
-	@echo "$(MSTART) Create documentation package....$(MEND)" 
+	@echo "$(MSTART) Create documentation package....$(MEND)"
 	$(RM) $@
 	cd doc && $(ZIP) ../$@ *.html images/*.png
-	@echo "$(MSTART) Done.$(MEND)" 
+	@echo "$(MSTART) Done.$(MEND)"
 
 Makefile: Makefile.in configure
-	@echo "$(MSTART) Regenerating Makefile....$(MEND)" 
+	@echo "$(MSTART) Regenerating Makefile....$(MEND)"
 	./configure
-	@echo "$(MSTART) Done.$(MEND)" 
+	@echo "$(MSTART) Done.$(MEND)"
 
 configure: configure.ac acgecko.m4 acplatform.m4
-	@echo "$(MSTART) Regenerating configure file....$(MEND)" 
+	@echo "$(MSTART) Regenerating configure file....$(MEND)"
 	autoconf
-	@echo "$(MSTART) Done.$(MEND)" 
+	@echo "$(MSTART) Done.$(MEND)"
 
 modules/config.js: modules/config.js.in configure
 	./configure
@@ -63,10 +63,10 @@ content-build:
 document-build: doc/usermanual.html
 
 doc/usermanual.html: doc/usermanual.txt
-	@echo "$(MSTART) Regenerating configure file....$(MEND)" 
+	@echo "$(MSTART) Regenerating configure file....$(MEND)"
 	@echo Generating user manual.
 	$(MAKE) -C doc
-	@echo "$(MSTART) Done.$(MEND)" 
+	@echo "$(MSTART) Done.$(MEND)"
 
 modules-build:
 	$(MAKE) -C modules
@@ -74,7 +74,7 @@ modules-build:
 .PHONY: modules-build content-build document-build lint
 
 $(XPI): modules-build lint chrome.manifest install.rdf tanasinn-docs.zip
-	@echo "$(MSTART) Make xpi package....$(MEND)" 
+	@echo "$(MSTART) Make xpi package....$(MEND)"
 	$(RM) $@
 	$(ZIP) $@ install.rdf \
 		bootstrap.js \
@@ -93,7 +93,7 @@ $(XPI): modules-build lint chrome.manifest install.rdf tanasinn-docs.zip
 		modules/session_components/*.js \
 		modules/shared_components/*.js \
 		| sed -e "s/\(adding:\) \([^(]*\)(deflated \([0-9]*%\)/`tput setaf 5`\\1 `tput setaf 3`\\2`tput sgr0` (deflated `tput setaf 6`\\3`tput sgr0`/g"
-	@echo "$(MSTART) Done.$(MEND)\n" 
+	@echo "$(MSTART) Done.$(MEND)\n"
 
 $(JS): tools/bin/Makefile.in
 	$(MAKE) -C tools/bin
@@ -114,9 +114,9 @@ lint: $(JS)
 	esac
 
 clean:
-	@echo "$(MSTART) Cleaning $(ESTART)$(CD)$(EEND)....$(MEND)" 
+	@echo "$(MSTART) Cleaning $(ESTART)$(CD)$(EEND)....$(MEND)"
 	$(RM) $(XPI)
-	@echo "$(MSTART) Done.$(MEND)\n" 
+	@echo "$(MSTART) Done.$(MEND)\n"
 	$(MAKE) -C modules $@
 	$(MAKE) -C doc $@
 
@@ -127,7 +127,7 @@ maintainer-clean: clean
 	$(MAKE) -C modules $@
 
 dev:
-	ln -sf "$(PWD)/tools/gitignore" .gitignore	
+	ln -sf "$(PWD)/tools/gitignore" .gitignore
 	ln -sf "$(PWD)/tools/vimprojects" .vimprojects
 
 
@@ -225,12 +225,12 @@ run-xulapp:
 		cygwin*) \
 			cygstart firefox --app application.ini \
 			;; \
-	esac	
+	esac
 
 update-web:
 	ssh user@zuse.jp ./build.sh
 
-release: 
+release:
 	git checkout master
 	git merge develop
 	git tag $(PACKAGE_VERSION) || true
@@ -243,4 +243,3 @@ update: all
 	cp doc/*.html /var/www/tanasinn/
 	cp doc/images/*.png /var/www/tanasinn/images/
 	cp doc/tanasinn/index.html /var/www/tanasinn/index.html
-
