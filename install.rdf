@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#" 
+<RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:em="http://www.mozilla.org/2004/em-rdf#">
   <Description about="urn:mozilla:install-manifest">
     <em:id>tanasinn@zuse.jp</em:id>
@@ -17,19 +17,19 @@
     <em:targetApplication>
       <Description>
         <!-- Firefox -->
-        <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id> 
+        <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
         <em:minVersion>12.0</em:minVersion>
         <em:maxVersion>20.0a1</em:maxVersion>
       </Description>
       <Description>
         <!-- Thunderbird -->
-        <em:id>{3550f703-e582-4d05-9a08-453d09bdfdc6}</em:id> 
+        <em:id>{3550f703-e582-4d05-9a08-453d09bdfdc6}</em:id>
         <em:minVersion>7.0a1</em:minVersion>
         <em:maxVersion>20.0a1</em:maxVersion>
       </Description>
       <Description>
         <!-- SeaMonkey -->
-        <em:id>{92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}</em:id> 
+        <em:id>{92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}</em:id>
         <em:minVersion>2.1</em:minVersion>
         <em:maxVersion>2.9a1</em:maxVersion>
       </Description>
@@ -47,7 +47,7 @@
       </Description-->
       <!-- XUL Application -->
       <!--Description>
-        <em:id>tanasinn@zuse.jp</em:id> 
+        <em:id>tanasinn@zuse.jp</em:id>
         <em:minVersion>0.1</em:minVersion>
         <em:maxVersion>1.0</em:maxVersion>
       </Description-->

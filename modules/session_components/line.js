@@ -766,7 +766,7 @@ Line.definition = {
         attr = cells[current];
       }
       if (start < current && attr) {
-        codes = cells.slice(start, current)
+        codes = cells.slice(start, current);
         yield {
           codes: this._getCodePointsFromCells(codes),
           column: start,
@@ -824,17 +824,15 @@ Line.definition = {
     var cells = this.cells,
         i,
         cell,
-        length,
+        length = codes.length,
         range,
         code,
 	end;
 
     if (insert_mode) {
       this.addRange(position, cells.length);
-      length = codes.length;
       range = cells.splice(-length);
 
-      // range.forEach(function(cell) cell.write(codes.shift(), attr));
       for (i = 0; i < range.length; ++i) {
         cell = range[i];
         cell.write(codes[i], attr);
@@ -844,25 +842,22 @@ Line.definition = {
       Array.prototype.splice.apply(cells, range);
 
     } else { // replace mode
-
-      for (i = 0; i < codes.length; ++i) {
+      end = position + length;
+      if (position > 0) {
+        if (0 === cells[position - 1].c) {
+          cells[position - 1].erase();
+        }
+      }
+      if (end < cells.length) {
+        if (0 === cells[end - 1].c) {
+          cells[end].erase();
+        }
+      }
+      for (i = 0; i < length; ++i) {
         code = codes[i];
         cell = cells[position + i];
-        //if (cell.c !== code || !attr.equals(cell)) {
-        //  if (first > position + i) {
-        //    first = position + i;
-        //  }
-        //  last = position + i + 1;
         cell.write(code, attr);
-        //}
       }
-      end = position + codes.length;
-      //if (position > 0) {
-      //  --position;
-      //}
-      //if (end < cells.length) {
-      //  ++end;
-      //}
       this.addRange(position, end);
     }
   },
@@ -895,11 +890,13 @@ Line.definition = {
   {
     var i,
         cell,
-        cells;
+        cells = this.cells;
 
     this.addRange(start, end);
+    if (end < cells.length && 0 === cells[end].c) {
+      ++end;
+    }
 
-    cells = this.cells;
     end = Math.min(end, cells.length);
     for (i = start; i < end; ++i) {
       cell = cells[i];
@@ -962,11 +959,15 @@ Line.definition = {
   {
     var cells = this.cells,
         length = cells.length,
+        end = start + n,
         range,
         i,
         cell;
 
     this.addRange(start, length);
+    if (end < length && 0 === cells[end - 1].c) {
+      ++n;
+    }
     range = cells.splice(start, n);
 
     for (i = 0; i < range.length; ++i) {
@@ -990,10 +991,14 @@ Line.definition = {
     var cells = this.cells,
         length = cells.length,
         range = cells.splice(-n),
+        end = start + n,
         i = 0,
         cell;
 
     this.addRange(start, cells.length);
+    if (end < length && 0 === cells[end - 1].c) {
+      ++n;
+    }
 
     for (; i < range.length; ++i) {
       cell = range[i];
