@@ -126,7 +126,6 @@ Mouse.definition = {
   function onApplicationWheelModeChanged(value)
   {
     this._alternate_wheel_mode = value;
-    this.onmousescroll.enabled = value;
   },
 
   /** Fired at the mouse tracking type is changed. */
@@ -134,11 +133,15 @@ Mouse.definition = {
   function onMouseTrackingTypeChanged(data)
   {
     if (coUtils.Constant.TRACKING_NONE === data) {
-      this.onmousescroll.enabled = false;
-      this.sendMessage(_("Leaving mouse tracking type: [%s]."), this._tracking_type)
+//      this.onmousescroll.enabled = false;
+      coUtils.Debug.reportMessage(
+        _("Leaving mouse tracking type: [%s]."),
+        this._tracking_type)
     } else {
-      this.onmousescroll.enabled = true;
-      this.sendMessage(_("Entering mouse tracking type: [%s]."), data)
+//      this.onmousescroll.enabled = true;
+      coUtils.Debug.reportMessage(
+        _("Entering mouse tracking type: [%s]."),
+        data)
     }
 
     this._last_position = null,
@@ -150,9 +153,13 @@ Mouse.definition = {
   function onMouseTrackingModeChanged(data)
   {
     if (coUtils.Constant.TRACKING_NONE === data) {
-      this.sendMessage(_("Leaving mouse tracking mode: [%s]."), this._tracking_mode)
+      coUtils.Debug.reportMessage(
+        _("Leaving mouse tracking mode: [%s]."),
+        this._tracking_mode)
     } else {
-      this.sendMessage(_("Entering mouse tracking mode: [%s]."), data)
+      coUtils.Debug.reportMessage(
+        _("Entering mouse tracking mode: [%s]."),
+        data)
     }
 
     this._last_position = null,
@@ -311,7 +318,8 @@ Mouse.definition = {
   },
 
   /** Make packed mouse event data and send it to tty device. */
-  _sendMouseEvent: function _sendMouseEvent(event, button, coordinate)
+  _sendMouseEvent:
+  function _sendMouseEvent(event, button, coordinate)
   {
     var message,
         buffer,

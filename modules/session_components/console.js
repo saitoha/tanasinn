@@ -223,11 +223,14 @@ Console.definition = {
 
       if (frame_element && frame_element.scrollHeight && frame_element.boxObject) {
         current_scroll_position
-          = frame_element.scrollTop + frame_element.boxObject.height;
+          = frame_element.scrollTop
+          + frame_element.boxObject.height;
         if (current_scroll_position + 50 > frame_element.scrollHeight) {
-          //coUtils.Timer.setTimeout(function() {
-            frame_element.scrollTop = frame_element.scrollHeight;
-          //}, 10);
+          coUtils.Timer.setTimeout(
+            function timerFunc()
+            {
+              frame_element.scrollTop = frame_element.scrollHeight;
+            }, 10);
         }
       }
     }
