@@ -26,6 +26,23 @@ link:./usermanual.html[English/英語]
 
 == News
 
+=== 2013-02-08
+    Version 0.3.2.0
+    Fix broken CSI intermediate bytes parsing
+    Fix broken DECSET 8840/8428
+    Allow \n or \r in DECDLD font pattern definition
+    Support application wheel mode
+    Support alternate scroll mode
+    Fix wrong DECRQM response for DECSET 8428
+    Fix some ploblems around copying out of BMP characters
+    Implement DECSLRM
+    Implement TeraTerm's IME control sequense CSI < Ps t.
+    Treat iso 2022 characters (such as DEC special set) as narrow width
+    Improve suspending, it comes to be not blocked by output
+    Add "Open with w3m" in TabBrowser context menu
+    Add "Open tanasinn" in TabBrowser context menu
+    Fix zombie process isssue
+
 === 2012-12-28
     Version 0.3.1.13
     Support application escape mode (DECSET 7727)
