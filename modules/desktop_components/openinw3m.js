@@ -41,13 +41,14 @@ OpenInW3m.definition = {
   function install(context)
   {
     var broker = this._broker,
+        id = "open-in-w3m",
         dom = {
           menu: broker.window.document.getElementById("contentAreaContextMenu"),
           menuitem: broker.window.document.createElement("menuitem"),
           separator: broker.window.document.getElementById("context-sep-open"),
         };
     broker.window._tanasinn_w3m = this;
-    dom.menuitem.setAttribute("id", "open-in-w3m");
+    dom.menuitem.setAttribute("id", id);
     dom.menuitem.setAttribute("oncommand", "_tanasinn_w3m.openInW3m()");
     dom.menu.insertBefore(dom.menuitem, dom.separator);
     this._dom = dom;
@@ -81,13 +82,15 @@ OpenInW3m.definition = {
   function uninstall()
   {
     var dom = this._dom;
-    if (dom.menuitem) {
-      dom.menuitem.parentNode.removeChild(menuitem);
+    if (dom) {
+      if (dom.menuitem) {
+        dom.menuitem.parentNode.removeChild(menuitem);
+      }
+      if (null !== this._handler) {
+        dom.menu.removeEventListener("popupshowing", this._handler, false);
+      }
+      this._dom = null;
     }
-    if (null !== this._handler) {
-      dom.menu.removeEventListener("popupshowing", this._handler);
-    }
-    this._dom = null;
     this._tanasinn_w3m = null;
   },
 

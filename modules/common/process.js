@@ -75,7 +75,7 @@ function alert(message)
     .alert(null, "test", String(message));
 }
 
-var g_process;
+var g_process = null;
 
 void function() {
 
@@ -162,6 +162,7 @@ void function() {
                   "load",
                   function onLoad(event)
                   {
+                    dom.window.removeEventListener("load", onLoad, false);
                     self.dispatchWindowEvent(dom.window);
                   },
                   false);

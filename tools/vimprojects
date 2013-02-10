@@ -105,9 +105,10 @@
    plugin=.{
 
     line.js
-    grammer.js
     scanner.js
+    grammer.js
     parser.js
+    decoder.js
     shell.js
     tty.js
     ttycontroller.js
@@ -120,7 +121,6 @@
     encoder.js
     multiencoder.js
 
-    decoder.js
     multidecoder.js
     asciidecoder.js
     cp932decoder.js

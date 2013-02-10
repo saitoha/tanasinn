@@ -122,7 +122,6 @@ Parser.definition = {
       } else {
         this._grammar = grammars[mode];
         value = this._scanner.drain();
-        this._scanner.generator = null;
         this.drive(value);
       }
     } else {
@@ -174,6 +173,7 @@ Parser.definition = {
     this.sendMessage("command/draw"); // fire "draw" event.
   },
 
+  _state: 0,
   /** Parse control codes and text pieces from the scanner.
    *  @param {String} data incoming data in text format.
    */
@@ -182,19 +182,27 @@ Parser.definition = {
     var grammar = this._grammar,
         screen = this._screen,
         drcs_converter = this._drcs_converter,
+        decoder = this._decoder,
         codes;
 
-    while (!scanner.isEnd) {
-      grammar.parse(scanner)
-      if (!scanner.isEnd) {
+    while (true) {
+      if (this._state === 0) {
+        grammar.parse(scanner)
+        if (scanner.isEnd) {
+          break;
+        }
+        this._state = 1;
+      } else {
         codes = this._decode(scanner);
         if (0 !== codes.length) {
-          //screen.write(codes);
           screen.write(drcs_converter.convert(codes));
+          if (scanner.isEnd) {
+            break;
+          }
         }
+        this._state = 0;
       }
     }
-
   },
 
   _decode: function _decode(scanner)

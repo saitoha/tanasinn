@@ -41,23 +41,18 @@ OpenTanasinn.definition = {
   function install(context)
   {
     var broker = this._broker,
-    dom = {
-      menu: broker.window.document.getElementById("contentAreaContextMenu"),
-      menuitem: broker.window.document.createElement("menuitem"),
-      separator: broker.window.document.getElementById("page-menu-separator"),
-    };
+        id = "open-tanasinn",
+        dom = {
+          menu: broker.window.document.getElementById("contentAreaContextMenu"),
+          menuitem: broker.window.document.createElement("menuitem"),
+          separator: broker.window.document.getElementById("page-menu-separator"),
+        };
     broker.window._tanasinn_tanasinn = this;
-    dom.menuitem.setAttribute("id", "open-tanasinn");
+    dom.menuitem.setAttribute("id", id);
     dom.menuitem.setAttribute("label", _("Open tanasinn"));
     dom.menuitem.setAttribute("oncommand", "_tanasinn_tanasinn.openTanasinn()");
     dom.menu.insertBefore(dom.menuitem, dom.separator);
     this._dom = dom;
-    //this._handler = function onPopupShowing()
-    //{
-    //  dom.menuitem.hidden = broker.window.document.popupNode.onImage
-    //                     || broker.window.document.popupNode.onLink;
-    //};
-    //dom.menu.addEventListener("popupshowing", this._handler);
   },
 
   /** Uninstalls itself.
@@ -66,13 +61,15 @@ OpenTanasinn.definition = {
   function uninstall()
   {
     var dom = this._dom;
-    if (dom.menuitem) {
-      dom.menuitem.parentNode.removeChild(menuitem);
+    if (dom) {
+      if (dom.menuitem) {
+        dom.menuitem.parentNode.removeChild(menuitem);
+      }
+      if (null !== this._handler) {
+        dom.menu.removeEventListener("popupshowing", this._handler, false);
+      }
+      this._dom = null;
     }
-    if (null !== this._handler) {
-      dom.menu.removeEventListener("popupshowing", this._handler);
-    }
-    this._dom = null;
     this._tanasinn_tanasinn = null;
   },
 

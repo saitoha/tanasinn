@@ -32,6 +32,8 @@ UTF8Decoder.definition = {
 
   id: "utf8_decoder",
 
+  _surplus: null,
+
   get scheme()
   {
     return "UTF8-js";
@@ -56,6 +58,7 @@ UTF8Decoder.definition = {
   "[install]":
   function install(context)
   {
+    this._surplus = null;
   },
 
   /** uninstalls itself.
@@ -92,14 +95,25 @@ UTF8Decoder.definition = {
   _generate: function _generate(scanner)
   {
     var c,
-        first,
-        second,
-        third,
-        fourth,
-        fifth,
-        sixth,
-        seventh,
-        result;
+        result,
+        i;
+
+    if (null !== this._surplus) {
+      i = this._surplus[0];
+      result = this._surplus[1];
+
+      for (; i >= 0; --i) {
+        c = scanner.current();
+        if (0x2 !== c >>> 6) {
+          break;
+        }
+        result |= (c & 0x3f) << (i * 6);
+        scanner.moveNext();
+      }
+      yield result;
+
+      this._surplus = null;
+    }
 
     while (!scanner.isEnd) {
       c = scanner.current();
@@ -118,15 +132,20 @@ UTF8Decoder.definition = {
           yield this.displacement;
           continue;
         }
-        first = (c & 0x1f) << 6;
-        scanner.moveNext();
-        c = scanner.current();
-        if (0x2 !== c >>> 6) {
-          yield this.displacement;
-          continue;
+        result = (c & 0x1f) << 6;
+        for (i = 0; i >= 0; --i) {
+          scanner.moveNext();
+          if (scanner.isEnd) {
+            this._surplus = [i, result];
+            return;
+          }
+          c = scanner.current();
+          if (0x2 !== c >>> 6) {
+            yield this.displacement;
+            continue;
+          }
+          result |= (c & 0x3f) << (i * 6);
         }
-        second = c & 0x3f;
-        result = first | second;
         if (result < 0x9f) {
           scanner.moveNext();
           yield this.displacement;
@@ -138,28 +157,24 @@ UTF8Decoder.definition = {
         // (0x00000800 - 0x0000ffff) // 16bit
         if (0xe !== c >>> 4) {
           scanner.moveNext();
+          yield this.displacement;
+          continue;
+        }
+        result = (c & 0xf) << 12;
+
+        for (i = 1; i >= 0; --i) {
           scanner.moveNext();
-          yield this.displacement;
-          continue;
+          if (scanner.isEnd) {
+            this._surplus = [i, result];
+            return;
+          }
+          c = scanner.current();
+          if (0x2 !== c >>> 6) {
+            yield this.displacement;
+            continue;
+          }
+          result |= (c & 0x3f) << (i * 6);
         }
-        first = (c & 0xf) << 12;
-        scanner.moveNext();
-        c = scanner.current();
-        if (0x2 !== c >>> 6) {
-          scanner.moveNext();
-          yield this.displacement;
-          yield this.displacement;
-          continue;
-        }
-        second = (c & 0x3f) << 6;
-        scanner.moveNext();
-        c = scanner.current();
-        if (0x2 !== c >>> 6) {
-          yield this.displacement;
-          continue;
-        }
-        third = c & 0x3f;
-        result = first | second | third;
         if (result < 0x800) {
           scanner.moveNext();
           yield this.displacement;
@@ -174,29 +189,21 @@ UTF8Decoder.definition = {
           yield this.displacement;
           continue;
         }
-        first = (c & 0x7) << 18;
-        scanner.moveNext();
-        c = scanner.current();
-        if (0x2 !== c >>> 6) {
-          yield this.displacement;
-          continue;
+        result = (c & 0x7) << 18;
+
+        for (i = 2; i >= 0; --i) {
+          scanner.moveNext();
+          if (scanner.isEnd) {
+            this._surplus = [i, result];
+            return;
+          }
+          c = scanner.current();
+          if (0x2 !== c >>> 6) {
+            yield this.displacement;
+            continue;
+          }
+          result |= (c & 0x3f) << (i * 6);
         }
-        second = (c & 0x3f) << 12;
-        scanner.moveNext();
-        c = scanner.current();
-        if (0x2 !== c >>> 6) {
-          yield this.displacement;
-          continue;
-        }
-        third = (c & 0x3f) << 6;
-        scanner.moveNext();
-        c = scanner.current();
-        if (0x2 !== c >>> 6) {
-          yield this.displacement;
-          continue;
-        }
-        fourth = c & 0x3f;
-        result = first | second | third | fourth;
         if (result < 0x10000) {
           scanner.moveNext();
           yield this.displacement;
@@ -210,36 +217,21 @@ UTF8Decoder.definition = {
           scanner.moveNext();
           yield this.displacement;
         }
-        first = (c & 0x3) << 24;
-        scanner.moveNext();
-        c = scanner.current();
-        if (0x2 !== c >>> 6) {
-          yield this.displacement;
-          continue;
+        result = (c & 0x3) << 24;
+
+        for (i = 3; i >= 0; --i) {
+          scanner.moveNext();
+          if (scanner.isEnd) {
+            this._surplus = [i, result];
+            return;
+          }
+          c = scanner.current();
+          if (0x2 !== c >>> 6) {
+            yield this.displacement;
+            continue;
+          }
+          result |= (c & 0x3f) << (i * 6);
         }
-        second = (c & 0x3f) << 18;
-        scanner.moveNext();
-        c = scanner.current();
-        if (0x2 !== c >>> 6) {
-          yield this.displacement;
-          continue;
-        }
-        third = (c & 0x3f) << 12;
-        scanner.moveNext();
-        c = scanner.current();
-        if (0x2 !== c >>> 6) {
-          yield this.displacement;
-          continue;
-        }
-        fourth = (c & 0x3f) << 6;
-        scanner.moveNext();
-        c = scanner.current();
-        if (0x2 !== c >>> 6) {
-          yield this.displacement;
-          continue;
-        }
-        fifth = c & 0x3f;
-        result = first | second | third | fourth | fifth;
         if (result < 0x200000) {
           scanner.moveNext();
           yield this.displacement;
@@ -254,43 +246,21 @@ UTF8Decoder.definition = {
           yield this.displacement;
           continue;
         }
-        first = (c & 0x3) << 30;
-        scanner.moveNext();
-        c = scanner.current();
-        if (0x2 !== c >>> 6) {
-          yield this.displacement;
-          continue;
+        result = (c & 0x3) << 30;
+
+        for (i = 4; i >= 0; --i) {
+          scanner.moveNext();
+          if (scanner.isEnd) {
+            this._surplus = [i, result];
+            return;
+          }
+          c = scanner.current();
+          if (0x2 !== c >>> 6) {
+            yield this.displacement;
+            continue;
+          }
+          result |= (c & 0x3f) << (i * 6);
         }
-        second = (c & 0x3f) << 24;
-        scanner.moveNext();
-        c = scanner.current();
-        if (0x2 !== c >>> 6) {
-          yield this.displacement;
-          continue;
-        }
-        third = (c & 0x3f) << 18;
-        scanner.moveNext();
-        c = scanner.current();
-        if (0x2 !== c >>> 6) {
-          yield this.displacement;
-          continue;
-        }
-        fourth = (c & 0x3f) << 12;
-        scanner.moveNext();
-        c = scanner.current();
-        if (0x2 !== c >>> 6) {
-          yield this.displacement;
-          continue;
-        }
-        fifth = (c & 0x3f) << 6;
-        scanner.moveNext();
-        c = scanner.current();
-        if (0x2 !== c >>> 6) {
-          yield this.displacement;
-          continue;
-        }
-        sixth = c & 0x3f;
-        result = first | second | third | fourth | fifth | sixth;
         if (result < 0x4000000) {
           scanner.moveNext();
           yield this.displacement;

@@ -80,8 +80,6 @@ Scanner.definition = {
   _anchor: 0,
   _nextvalue: null,
 
-  generator: null,
-
   /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
@@ -99,7 +97,6 @@ Scanner.definition = {
     this._position = null;
     this._anchor = null;
     this._nextvalue = null;
-    this.generator = null;
   },
 
   /** Assign new string data. position is reset. */
