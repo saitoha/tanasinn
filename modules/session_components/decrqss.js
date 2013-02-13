@@ -112,7 +112,7 @@ StatusRequest.definition = {
   {
   },
 
-  "[subscribe('sequence/dcs'), pnp]":
+  "[subscribe('sequence/dcs/2471'), pnp]":
   function onDCS(data)
   {
     if (0 === data.indexOf("$q")) {

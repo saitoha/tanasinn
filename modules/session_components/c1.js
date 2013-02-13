@@ -313,11 +313,25 @@ C1Control.definition = {
   "[profile('vt100'), sequence('0x90 ... ST', 'ESC P ... ST')]":
   function DCS(message)
   {
+    var i,
+        code,
+        tag;
+
     if (/[\x00-\x1f]/.test(message[0])) {
       message = message.replace(/\x00/g, "\\");
       this.sendMessage("event/data-arrived-recursively", message);
     } else {
-      this.sendMessage("sequence/dcs", message);
+      tag = "";
+      for (i = 0; i < message.length; ++i) {
+        code = message[i].charCodeAt(0);
+        if (code >= 0x20 && code <= 0x2f) {
+          tag += code.toString(16).toLowerCase();
+        } else if (code >= 0x40 && code <= 0x7e) { // a-z
+          tag += code.toString(16).toLowerCase();
+          this.sendMessage("sequence/dcs/" + tag, message);
+          break;
+        }
+      }
     }
   },
 

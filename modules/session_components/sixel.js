@@ -166,7 +166,7 @@ Sixel.definition = {
     this._display_mode = mode;
   },
 
-  "[subscribe('sequence/dcs'), pnp]":
+  "[subscribe('sequence/dcs/71'), pnp]":
   function onDCS(data)
   {
     var pattern = /^(?:[0-9;]*)?q/,

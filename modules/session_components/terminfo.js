@@ -505,8 +505,8 @@
 
 var TERMINFO_DB = {
 
-//  "TN":     "tanasinn",
-//
+  "TN":     "tanasinn",
+
 //  "smcup":  "\x1b[?7727h\x1b[?2004h\x1b[?1049h",
 //  "ti":     "\x1b[?7727h\x1b[?2004h\x1b[?1049h",
 //
@@ -780,7 +780,7 @@ Terminfo.definition = {
   {
   },
 
-  "[subscribe('sequence/dcs'), pnp]":
+  "[subscribe('sequence/dcs/2b71'), pnp]":
   function onDCS(data)
   {
     var match,
@@ -811,7 +811,7 @@ Terminfo.definition = {
                 + value
                   .split("")
                   .map(
-                    function(c)
+                    function mapFunc(c)
                     {
                       return c
                         .charCodeAt(0)

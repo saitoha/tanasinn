@@ -106,7 +106,7 @@ DRCSBuffer.definition = {
     return null;
   },
 
-  "[subscribe('sequence/dcs'), pnp]":
+  "[subscribe('sequence/dcs/7b'), pnp]":
   function onDCS(data)
   {
     var pattern,
