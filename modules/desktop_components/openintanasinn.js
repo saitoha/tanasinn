@@ -47,12 +47,15 @@ OpenTanasinn.definition = {
           menuitem: broker.window.document.createElement("menuitem"),
           separator: broker.window.document.getElementById("page-menu-separator"),
         };
+
     broker.window._tanasinn_tanasinn = this;
-    dom.menuitem.setAttribute("id", id);
-    dom.menuitem.setAttribute("label", _("Open tanasinn"));
-    dom.menuitem.setAttribute("oncommand", "_tanasinn_tanasinn.openTanasinn()");
-    dom.menu.insertBefore(dom.menuitem, dom.separator);
-    this._dom = dom;
+    if (!broker.window.document.getElementById(id)) {
+      dom.menuitem.setAttribute("id", id);
+      dom.menuitem.setAttribute("label", _("Open tanasinn"));
+      dom.menuitem.setAttribute("oncommand", "_tanasinn_tanasinn.openTanasinn()");
+      dom.menu.insertBefore(dom.menuitem, dom.separator);
+      this._dom = dom;
+    }
   },
 
   /** Uninstalls itself.

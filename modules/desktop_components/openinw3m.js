@@ -48,32 +48,34 @@ OpenInW3m.definition = {
           separator: broker.window.document.getElementById("context-sep-open"),
         };
     broker.window._tanasinn_w3m = this;
-    dom.menuitem.setAttribute("id", id);
-    dom.menuitem.setAttribute("oncommand", "_tanasinn_w3m.openInW3m()");
-    dom.menu.insertBefore(dom.menuitem, dom.separator);
-    this._dom = dom;
-    this._handler = function onPopupShowing()
-    {
-      var url = broker.window.gContextMenu.linkURL;
+    if (!broker.window.document.getElementById(id)) {
+      dom.menuitem.setAttribute("id", id);
+      dom.menuitem.setAttribute("oncommand", "_tanasinn_w3m.openInW3m()");
+      dom.menu.insertBefore(dom.menuitem, dom.separator);
+      this._dom = dom;
+      this._handler = function onPopupShowing()
+      {
+        var url = broker.window.gContextMenu.linkURL;
 
-      if (url) {
-        if (/^(?:about|chrome)/.test(url)) {
-          dom.menuitem.hidden = true;
+        if (url) {
+          if (/^(?:about|chrome)/.test(url)) {
+            dom.menuitem.hidden = true;
+          } else {
+            dom.menuitem.hidden = false;
+            dom.menuitem.setAttribute("label", _("Open in w3m"));
+          }
         } else {
-          dom.menuitem.hidden = false;
-          dom.menuitem.setAttribute("label", _("Open in w3m"));
-        }
-      } else {
-        url = broker.window.gBrowser.currentURI.spec;
-        if (/^(?:about|chrome)/.test(url)) {
-          dom.menuitem.hidden = true;
-        } else {
-          dom.menuitem.hidden = false;
-          dom.menuitem.setAttribute("label", _("Open this page in w3m"));
-        }
+          url = broker.window.gBrowser.currentURI.spec;
+          if (/^(?:about|chrome)/.test(url)) {
+            dom.menuitem.hidden = true;
+          } else {
+            dom.menuitem.hidden = false;
+            dom.menuitem.setAttribute("label", _("Open this page in w3m"));
+          }
+        };
       };
-    };
-    dom.menu.addEventListener("popupshowing", this._handler, false);
+      dom.menu.addEventListener("popupshowing", this._handler, false);
+    }
   },
 
   /** Uninstalls itself.
