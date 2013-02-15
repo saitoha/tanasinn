@@ -25,19 +25,37 @@
 
 try {
 
-   /**
-   * @fn getTanasinnProcess
-   */
-  var desktop = function getDesktop()
-      {
-        var current_file = Components.stack.filename.split(" -> ").pop().split("?").shift()
-              .replace(/^liberator:\/\/template\//, ""),
-            path = current_file + "/../../tanasinn/modules/common/process.js",// + new Date().getTime(),
-            scope = {};
-        Cc["@mozilla.org/moz/jssubscript-loader;1"].getService(Ci.mozIJSSubScriptLoader)
-          .loadSubScript(path, scope);
-        return scope.g_process.getDesktopFromWindow(window);
-      }(),
+  function createProcess()
+  {
+    var current_file = Components.stack.filename
+          .split(" -> ").pop().split("?").shift()
+          .replace(/^liberator:\/\/template\//, ""),
+        path = current_file + "/../../tanasinn/modules/common/process.js?" + new Date().getTime(),
+        scope = {};
+
+    Components.classes["@mozilla.org/moz/jssubscript-loader;1"]
+      .getService(Ci.mozIJSSubScriptLoader)
+      .loadSubScript(path, scope);
+    return scope.g_process;
+  }
+
+  function getDesktop()
+  {
+    var result = { value: null };
+
+    Components
+      .classes["@mozilla.org/observer-service;1"]
+      .getService(Components.interfaces.nsIObserverService)
+      .notifyObservers(null, "tanasinn/get-process", result);
+
+    if (result.value) {
+      return result.value.getDesktopFromWindow(window);
+    }
+
+    return createProcess().getDesktopFromWindow(window);
+  }
+
+  var desktop = getDesktop(),
       liberator = window.liberator,
       commands = liberator.modules.commands,
       completion = liberator.modules.completion,

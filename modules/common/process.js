@@ -238,7 +238,7 @@ void function() {
           observer;
 
       if (context) {
-        delegate = function delegate()
+        delegate = function delegate(a_subject, a_topic, a_data)
         {
           return handler.apply(context, arguments);
         };
@@ -246,9 +246,24 @@ void function() {
         delegate = handler;
       }
       observer = {
-        observe: function observe()
+
+        observe: function observe(a_subject, a_topic, a_data)
         {
           delegate.apply(this, arguments);
+        },
+
+        /**
+         * Provides runtime type discovery.
+         * @param aIID the IID of the requested interface.
+         * @return the resulting interface pointer.
+         */
+        QueryInterface: function QueryInterface(a_IID)
+        {
+          if (!a_IID.equals(Components.interafaces.nsIObserver)
+           && !a_IID.equals(Components.interafaces.nsISupports)) {
+            throw Components.results.NS_ERROR_NOT_IMPLEMENTED;
+          }
+          return this;
         },
       };
       this._observers[topic] = this._observers[topic] || [];
@@ -316,9 +331,16 @@ void function() {
 
       this.subscribeGlobalEvent(
         "quit-application",
-        function onQuitApplication()
+        function onQuitApplication(a_subject, a_topic, a_data)
         {
           this.notify("event/disabled", this);
+        }, this);
+
+      this.subscribeGlobalEvent(
+        "tanasinn/get-process",
+        function getProcess(a_subject, a_topic, a_data)
+        {
+          a_data.value = this;
         }, this);
 
       tanasinn_scope.coUtils.Services.getObserverService()
@@ -328,6 +350,8 @@ void function() {
     /* destructor */
     uninitialize: function uninitialize()
     {
+      this.removeGlobalEvent("quit-application");
+      this.removeGlobalEvent("tanasinn/get-process");
       loader.uninitialize();  // unregister window watcher handler
       Process.destroy();      // unregister XPCOM object
     },
