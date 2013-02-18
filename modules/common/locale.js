@@ -400,6 +400,9 @@ coUtils.Localize = new function()
     {
       var locale_service = coUtils.Services.getLocaleService(),
           locale = locale_service.getLocaleComponentForUserAgent();
+          //locale = locale_service
+          //  .getApplicationLocale()
+          //  .getCategory("NSILOCALE_MESSAGES");
 
       this._dictionaries_store = {};
       this.switchLocale(locale);
