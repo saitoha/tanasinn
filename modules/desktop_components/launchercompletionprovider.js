@@ -67,16 +67,6 @@ LauncherCompletionProvider.definition = {
         position;
 
     if (0 === source.length || 0 === source.indexOf("&")) {
-
-      position = this.request("get/completer/sessions")
-        .startSearch(source.substr(1), listener);
-
-      if (0 !== position) {
-        this.request("get/completer/program")
-          .startSearch(source, listener);
-      }
-
-    } else {
       this.request("get/completer/program")
         .startSearch(source, listener);
     }
