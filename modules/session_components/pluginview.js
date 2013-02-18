@@ -120,7 +120,10 @@ PluginViewer.definition = {
 
         listener: {
           type: "command",
-          handler: function(event) self._setState(module, this)
+          handler: function oncommand(event)
+          {
+            self._setState(module, this);
+          }
         }
       },
       {
