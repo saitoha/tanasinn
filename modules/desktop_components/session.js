@@ -190,7 +190,7 @@ Session.definition = {
   "[persistable] cgi_directory": "cgi-bin",
   "[persistable] rcfile": "tanasinnrc",
   "[persistable] profile": "default",
-  "[persistable] initial_focus_delay": 100,
+  "[persistable] initial_focus_delay": 200,
   "[persistable] default_term": "xterm",
   "[persistable] debug_flag": false,
 
@@ -247,6 +247,11 @@ Session.definition = {
       {
         this.notify("command/show");
         this.notify("command/focus");
+        coUtils.Timer.setTimeout(
+          function timerProc()
+          {
+            this.notify("command/focus");
+          }, this.initial_focus_delay);
       }, this.initial_focus_delay, this);
     return this;
   },
