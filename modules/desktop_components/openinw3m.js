@@ -86,14 +86,14 @@ OpenInW3m.definition = {
     var dom = this._dom;
     if (dom) {
       if (dom.menuitem) {
-        dom.menuitem.parentNode.removeChild(menuitem);
+        dom.menuitem.parentNode.removeChild(dom.menuitem);
       }
       if (null !== this._handler) {
         dom.menu.removeEventListener("popupshowing", this._handler, false);
       }
       this._dom = null;
     }
-    this._tanasinn_w3m = null;
+    this._broker.window._tanasinn_w3m = null;
   },
 
   openInW3m: function openInW3m()
