@@ -34,6 +34,8 @@ OpenTanasinn.definition = {
 
   "[persistable] enabled_when_startup": true,
 
+  _menupopup: null,
+
   /** Installs itself.
    * @param {InstallContext} context A InstallContext object.
    */
@@ -41,20 +43,40 @@ OpenTanasinn.definition = {
   function install(context)
   {
     var broker = this._broker,
-        id = "open-tanasinn",
-        dom = {
-          menu: broker.window.document.getElementById("contentAreaContextMenu"),
-          menuitem: broker.window.document.createElement("menuitem"),
-          separator: broker.window.document.getElementById("page-menu-separator"),
-        };
+        id = "resume-tanasinn",
+        contextmenu,
+        menupopup;
 
-    broker.window._tanasinn_tanasinn = this;
+    broker.window._tanasinn_resume = this;
+
     if (!broker.window.document.getElementById(id)) {
-      dom.menuitem.setAttribute("id", id);
-      dom.menuitem.setAttribute("label", _("Open tanasinn"));
-      dom.menuitem.setAttribute("oncommand", "_tanasinn_tanasinn.openTanasinn()");
-      dom.menu.insertBefore(dom.menuitem, dom.separator);
-      this._dom = dom;
+      contextmenu = broker.window.document.getElementById("contentAreaContextMenu");
+      if (!contextmenu) {
+        contextmenu = broker.window.document.getElementById("mailContext");
+        if (!contextmenu) {
+          contextmenu = broker.window.document.getElementById("menu_ToolsPopup");
+          if (!contextmenu) {
+            contextmenu = broker.window.document.getElementById("messagePaneContext");
+            if (!contextmenu) {
+              contextmenu = broker.window.document.getElementById("messageComposeContext");
+            }
+          }
+        }
+      }
+      menupopup = this.request(
+        "command/construct-chrome",
+        {
+          parentNode: contextmenu,
+          tagName: "menu",
+          id: id,
+          label: _("tanasinn"),
+          childNodes: {
+            tagName: "menupopup",
+            id: "tanasinn_menupopup",
+          },
+        }).tanasinn_menupopup;
+
+      this._menupopup = menupopup;
     }
   },
 
@@ -63,23 +85,141 @@ OpenTanasinn.definition = {
   "[uninstall]":
   function uninstall()
   {
-    var dom = this._dom;
-    if (dom) {
-      if (dom.menuitem) {
-        dom.menuitem.parentNode.removeChild(menuitem);
+    var menupopup = this._menupopup;
+
+    if (menupopup) {
+      if (menupopup.parentNode) {
+        menupopup.parentNode.parentNode.removeChild(menupopup.parentNode);
       }
-      if (null !== this._handler) {
-        dom.menu.removeEventListener("popupshowing", this._handler, false);
-      }
-      this._dom = null;
     }
-    this._tanasinn_tanasinn = null;
+    this._menupopup = null;
+    this._broker._tanasinn_resume = null;
   },
 
-  openTanasinn: function openTanasinn()
+  addNew: function addNew()
   {
-    this.sendMessage('command/start-session');
+    this.sendMessage("command/start-session");
   },
+
+  showLauncher: function showLauncher()
+  {
+    this.sendMessage("command/show-launcher");
+  },
+
+  resumeSession: function resumeSession(id)
+  {
+    this.sendMessage("command/start-session", "&" + id);
+  },
+
+  "[listen('popupshowing', '#tanasinn_menupopup'), pnp]":
+  function onPopupShowing()
+  {
+    var completer = this.request("get/completer/sessions");
+
+    completer.startSearch("", this);
+  },
+
+  doCompletion: function doCompletion(result)
+  {
+    var i,
+        image_url,
+        id;
+
+    while (this._menupopup.childNodes.length > 0) {
+      this._menupopup.removeChild(this._menupopup.lastChild);
+    }
+    this.request(
+      "command/construct-chrome",
+      [
+        {
+          parentNode: this._menupopup,
+          tagName: "menuitem",
+          label: _("Add new session"),
+          oncommand: "_tanasinn_resume.addNew()",
+        },
+        {
+          parentNode: this._menupopup,
+          tagName: "menuitem",
+          label: _("Run command"),
+          oncommand: "_tanasinn_resume.showLauncher()",
+        },
+        {
+          parentNode: this._menupopup,
+          tagName: "menuseparator",
+        },
+      ]);
+
+    if (!result) {
+      return;
+    }
+
+    for (i = 0; i < result.labels.length; ++i) {
+
+      image_url = result.data[i].image;
+
+      if (image_url) {
+
+        id = result.comments[i].request_id;
+
+        // prevent code injection
+        if (!/^\{[0-9a-f\-]+\}$/.test(id)) {
+          continue;
+        }
+
+        this.request(
+          "command/construct-chrome",
+          {
+            parentNode: this._menupopup,
+            tagName: "menuitem",
+            flex: 1,
+            oncommand: "_tanasinn_resume.resumeSession('" + id + "')",
+            childNodes: [
+              {
+                tagName: "vbox",
+                style: {
+                  fontSize: "1.2em",
+                  margin: "0px",
+                  overflow: "hidden",
+                  paddingLeft: "8px",
+                },
+                childNodes: {
+                  tagName: "image",
+                  width: 120,
+                  height: 80,
+                  style: {
+                    border: "1px solid #66f",
+                    margin: "9px",
+                  },
+                  src: image_url || "",
+                },
+              },
+              {
+                tagName: "vbox",
+                width: 200,
+                style: {
+                  fontSize: "1.2em",
+                  width: "50%",
+                  margin: "0px",
+                  overflow: "hidden",
+                  paddingLeft: "8px",
+                },
+                childNodes: [
+                  {
+                    tagName: "label",
+                    value: result.comments[i].command,
+                  },
+                  {
+                    tagName: "label",
+                    value: "$$" + result.comments[i].pid,
+                  },
+                ],
+              },
+            ],
+          });
+      }
+    } // for i
+  },
+
 }; // OpenTanasinn
 
 /**
@@ -91,5 +231,6 @@ function main(desktop)
 {
   new OpenTanasinn(desktop);
 }
+
 
 // EOF
