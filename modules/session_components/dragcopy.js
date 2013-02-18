@@ -126,7 +126,7 @@ DragCopy.definition = {
         feedback_context = feedback_canvas.getContext("2d"),
         text,
         coordinate = this._getPixelMetricsFromEvent(event),
-        left = coordinate[0] - 20,
+        left = coordinate[0] - 50,
         top = coordinate[1] - 40;
 
     if (is_rectangle) {
@@ -138,7 +138,7 @@ DragCopy.definition = {
         .getTextInRange(start, end)
         .replace(/[\x00\r]/g, "");
     }
-    feedback_canvas.hidden = false;
+    feedback_canvas.hidden = true;
 
     event.dataTransfer.setData("text/plain", text);
     feedback_context.globalCompositeOperation = "source-over";
