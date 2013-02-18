@@ -55,6 +55,7 @@ Launcher.definition = {
   "[persistable, watchable] font_style": "italic",
   "[persistable, watchable] textbox_width": "500px",
   "[persistable, watchable] textbox_color": "#ddd",
+  "[persistable, watchable] use_hotkey": false,
 
   _index: -1,
   _result: null,
@@ -193,6 +194,9 @@ Launcher.definition = {
   {
     var result = this.request("command/construct-chrome", this.getTemplate());
 
+    if (this.use_hotkey) {
+      this.onDoubleCtrl.enabled = true;
+    }
     this._window_layer = result.tanasinn_window_layer;
     this._element = result.tanasinn_launcher_layer;
     this._textbox = result.tanasinn_launcher_textbox;
@@ -287,6 +291,12 @@ Launcher.definition = {
     this.oninput.enabled = false;
     this.startSession.enabled = false;
     this.startSessionAndWait.enabled = false;
+  },
+
+  "[subscribe('variable-changed/launcher.use_hotkey'), pnp]":
+  function onHotkeySettingsChanged(use_hotkey)
+  {
+    this.onDoubleCtrl.enabled = this.use_hotkey;
   },
 
   "[subscribe('variable-changed/launcher.{font_size | font_family | font_weight | font_style}'), pnp]":
@@ -509,7 +519,7 @@ Launcher.definition = {
     this.setCompletionTrigger();
   },
 
-  "[subscribe('event/hotkey-double-ctrl'), pnp]":
+  "[subscribe('event/hotkey-double-ctrl')]":
   function onDoubleCtrl()
   {
     var box = this._element;
