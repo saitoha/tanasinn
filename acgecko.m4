@@ -19,7 +19,7 @@ AC_DEFUN([AC_TANASINN_GECKO_VERSION],
  ])
 
 # ----------------------------------------------------------------------------
-# AC_TANASINN_GECKO_ROOT_PATH 
+# AC_TANASINN_GECKO_ROOT_PATH
 # ----------------------------------------------------------------------------
 #
 AC_DEFUN([AC_TANASINN_GECKO_ROOT_PATH],
@@ -100,7 +100,7 @@ AC_DEFUN([AC_TANASINN_GECKO_ROOT_PATH],
          ;;
      esac
      ;;
- 
+
  2*)
      case $target_os in
      cygwin*)
@@ -132,7 +132,7 @@ AC_DEFUN([AC_TANASINN_GECKO_ROOT_PATH],
  ])
 
 # ----------------------------------------------------------------------------
-# AC_TANASINN_XPI_PLATFORM_DIRECTORY 
+# AC_TANASINN_XPI_PLATFORM_DIRECTORY
 # ----------------------------------------------------------------------------
 #
 AC_DEFUN([AC_TANASINN_XPI_PLATFORM_DIRECTORY],
@@ -146,7 +146,7 @@ AC_DEFUN([AC_TANASINN_XPI_PLATFORM_DIRECTORY],
 
 
 # ----------------------------------------------------------------------------
-# AC_TANASINN_XPIDL_PATH 
+# AC_TANASINN_XPIDL_PATH
 # ----------------------------------------------------------------------------
 #
 AC_DEFUN([AC_TANASINN_XPIDL_PATH],
@@ -165,14 +165,14 @@ AC_DEFUN([AC_TANASINN_XPIDL_PATH],
  ])
 
 # ----------------------------------------------------------------------------
-# AC_TANASINN_JS_PATH 
+# AC_TANASINN_JS_PATH
 # ----------------------------------------------------------------------------
 #
 AC_DEFUN([AC_TANASINN_JS_PATH],
 [AC_SUBST(TANASINN_JS_PATH)
  AC_MSG_CHECKING(js path)
  AC_ARG_WITH(js, [  --with-js=JS js path],,)
- 
+
  if [[ $with_js ]];
  then
     TANASINN_JS_PATH=$with_js

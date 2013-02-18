@@ -1,6 +1,6 @@
 
 # ----------------------------------------------------------------------------
-# AC_TANASINN_OS 
+# AC_TANASINN_OS
 # ----------------------------------------------------------------------------
 #
 AC_DEFUN([AC_TANASINN_OS],
@@ -22,7 +22,7 @@ AC_DEFUN([AC_TANASINN_OS],
  *)
      TANASINN_OS=$(uname -s)
      ;;
- esac 
+ esac
  AC_MSG_RESULT($TANASINN_OS)
  ])
 
@@ -50,12 +50,12 @@ AC_DEFUN([AC_TANASINN_OPEN],
  *)
      TANASINN_OPEN=xdg-open
      ;;
- esac 
+ esac
  AC_MSG_RESULT($TANASINN_OPEN)
  ])
 
 # ----------------------------------------------------------------------------
-# AC_TANASINN_ARCH 
+# AC_TANASINN_ARCH
 # ----------------------------------------------------------------------------
 #
 AC_DEFUN([AC_TANASINN_ARCH],
@@ -78,7 +78,7 @@ AC_DEFUN([AC_TANASINN_ARCH],
  ])
 
 # ----------------------------------------------------------------------------
-# AC_TANASINN_ABI 
+# AC_TANASINN_ABI
 # ----------------------------------------------------------------------------
 #
 AC_DEFUN([AC_TANASINN_ABI],
@@ -108,7 +108,7 @@ AC_DEFUN([AC_TANASINN_ABI],
  ])
 
 # ----------------------------------------------------------------------------
-# AC_TANASINN_PLATFORM 
+# AC_TANASINN_PLATFORM
 # ----------------------------------------------------------------------------
 #
 AC_DEFUN([AC_TANASINN_PLATFORM],
@@ -121,7 +121,7 @@ AC_DEFUN([AC_TANASINN_PLATFORM],
  AC_TANASINN_OS
  AC_TANASINN_ARCH
  AC_TANASINN_ABI
- 
+
  case "$target_os" in
  darwin*)
      if [[ "$target_cpu" = "i386" ]];
@@ -171,7 +171,7 @@ AC_DEFUN([AC_TANASINN_PLATFORM],
 ])
 
 # ----------------------------------------------------------------------------
-# AC_TANASINN_MODULE_EXT 
+# AC_TANASINN_MODULE_EXT
 # ----------------------------------------------------------------------------
 #
 AC_DEFUN([AC_TANASINN_MODULE_EXT],
@@ -205,7 +205,7 @@ AC_DEFUN([AC_TANASINN_MODULE_EXT],
      TANASINN_OBJ_EXT=o
      TANASINN_AR_OUT=" /out:"
      ;;
- esac 
+ esac
  AC_MSG_RESULT($TANASINN_MODULE_EXT)
  ])
 

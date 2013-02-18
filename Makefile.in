@@ -24,13 +24,6 @@ EEND="$$($(TPUT) sgr0; $(TPUT) setaf 6)"
 ##endif
 
 all: $(XPI) tanasinn-docs.zip
-	$(CP) $(XPI) tanasinn-docs.zip download/
-	if [ ! -d download/$(PACKAGE_VERSION) ]; then \
-		$(MKDIR) download/releases/$(PACKAGE_VERSION); \
-		git tag $(PACKAGE_VERSION)pre || true; \
-	fi
-	$(CP) $(XPI) download/releases/$(PACKAGE_VERSION)/
-	git add -f download/releases/$(PACKAGE_VERSION)/*.xpi
 
 tanasinn-docs.zip: doc/usermanual.html
 	@echo "$(MSTART) Create documentation package....$(MEND)"
