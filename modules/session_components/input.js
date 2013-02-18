@@ -1065,6 +1065,7 @@ InputManager.definition = {
   function onkeydown(event)
   { // nothrow
     if ("Darwin" === coUtils.Runtime.os) {
+      // workaround for ctrl + space
       if (this.fix_for_ctrl_space) {
         if (0x20 === event.keyCode
             && 0x20 === event.which
@@ -1073,6 +1074,18 @@ InputManager.definition = {
         }
       }
     }
+    this._last_keydown_event = event;
+    /*
+    this.sendMessage(
+      this.debug_topic,
+      "code:" + event.keyCode + "," +
+      "which:" + event.which + "," +
+      "shift:" + (event.shiftKey ? "t": "f") + "," +
+      "ctl:" + (event.ctrlKey ? "t": "f") + "," +
+      "alt:" + (event.altKey ? "t": "f") + "," +
+      "meta:" + (event.metaKey ? "t": "f") + "," +
+      "char:" + (event.isChar ? "t": "f"));
+    */
   },
 
   "[listen('keyup', '#tanasinn_default_input', true), pnp]":
@@ -1095,6 +1108,10 @@ InputManager.definition = {
 
     event.preventDefault();
     event.stopPropagation();
+
+    //if (event.keyCode || event.which < 0x100) {
+    //  event = this._last_keydown_event;
+    //}
 
     if (0x00 === event.keyCode
         && 0x20 === event.which
