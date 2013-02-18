@@ -1,5 +1,3 @@
-
-
 - Fix broken debugger
 - Support Windows 8 RTM
 - Support alternate screen transition
@@ -12,7 +10,6 @@
 - Supports multi page selection and auto-scrolling with dragging
 
 - UCS mode / ISO-2022 mode
-- The width issue of DEC Special graphics
 
 - Support OSC 5 (alternative attributes)
 - Support OSC 13/14 (mouse corsor color)
@@ -23,7 +20,7 @@
 - Support Growl like notification system
 
 - Fix Sixel Graphics behavior more strictry
-- Fix DRCS behavior more strictry
+- Make DRCS behavior be more strictry
 
 - imprement DECCRA
 - implement DECBI/DECFI
