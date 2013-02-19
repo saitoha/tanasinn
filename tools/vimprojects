@@ -1,6 +1,6 @@
 =. {
  ChangeLog
- README
+ README.md
  TODO
  ctrlseqs.md
  application.ini
@@ -92,13 +92,12 @@
    dragmove.js
    openinw3m.js
    openintanasinn.js
+   resume.js
   }
   shared_components=shared_components {
    builder.js
    domevent.js
    persist.js
-   map.js
-   idleservice.js
   }
   session_components=session_components {
 
