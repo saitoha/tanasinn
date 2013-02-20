@@ -92,7 +92,6 @@
    dragmove.js
    openinw3m.js
    openintanasinn.js
-   resume.js
   }
   shared_components=shared_components {
    builder.js
