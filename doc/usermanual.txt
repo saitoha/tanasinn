@@ -26,6 +26,15 @@ link:./usermanual.html[English/英語]
 
 == News
 
+=== 2013-02-19
+    Version 0.3.2.1
+    Rewrite context menu integration
+    Support xterm's kcbt(CSI Z)
+    Support DECBI/DECFI (not be tested well)
+    Disable Ctrl + Ctrl
+    Fix a rendering bug at dragcopy plugin
+    Fix duplicated context menu items issue
+
 === 2013-02-08
     Version 0.3.2.0
     Fix broken CSI intermediate bytes parsing
@@ -477,12 +486,14 @@ image::images/fontfamily2.png[width=780]
 #endif
 image::images/fontsize2.png[width=780]
 
+#if 0
 #if __EN__
 .Launcher interface inspired by http:/#/www.blacktree.com/[QuckSilver] / https:/#/addons.mozilla.org/ja/firefox/addon/mozilla-labs-ubiquity/[Ubiquity].
 #elif __JP__
 .http:/#/www.blacktree.com/[QuckSilver] や https:/#/addons.mozilla.org/ja/firefox/addon/mozilla-labs-ubiquity/[Ubiquity] にインスパイアされたランチャーインターフェース。
 #endif
 image::images/launcher2.png[width=780]
+#endif
 
 #if __EN__
 .Reconnecting a detached session. It is all OK if your browser will crash or restart unexpectedly.
@@ -794,18 +805,23 @@ cygstart firefox.exe --app application.ini
 === 端末の起動
 #endif
 
-image::images/launcher.png[width=480]
+image::images/tanasinn-contextmenu.png[width=480]
 
 #if __EN__
 
 ==== If it is Installed as Add-on:
-    Pressing control key twice (ctrl + ctrl), it shows Commandline Launcher interface.
-    For example, if you type "man man[Enter key]" to this launcher textbox,
-    window-like UI emerges into browser chrome window and display manpage.
+    You can launch a terminal session from context menu.
+
+    Or, you can use GCLI integrated "tanasinn" command.
+    Press <Shift-F2> and type as follows:
+
+----
+tanasin <command line>
+----
+
 
 ==== If it is Installed as Vimperator/Muttator plugin:
-    You can launch tanasinn as same as Add-on version, by pressing control key twice (ctrl + ctrl).
-    For displaying launcher interface from commandline, type as follows:
+    You can also use following integrated commands:
 
 ----
 :tanasinnlaunch
@@ -820,19 +836,19 @@ image::images/launcher.png[width=480]
 #elif __JP__
 
 ==== 拡張としてインストールした場合
-    Controlキーの2度押し (ctrl + ctrl) でコマンドラインランチャーインターフェースが出現します。
-    そこで例えば、"man man[Enterキー]" とタイプしてみてください。
-    ウィンドウのようなUIがブラウザウィンドウ内に現れ、manページが表示されると思います。
+    コンテキストメニューから新規セッションを起動できます。
+    または開発者ツールバー(GCLI)にインテグレートされた"tanasinn"コマンドを使えます。
+    <Shift-F2>を押してGCLIを起動し、以下のようにタイプしてみてください。
+
+
+----
+tanasin <command line>
+----
+
 
 ==== Vimperator/Muttatorのプラグインとしてインストールした場合:
-    アドオン版と同様、Controlキーの2度押し (ctrl + ctrl) でtanasinnが起動します。
+    拡張版と同様コンテキストメニューから起動できます。
     Vimperator/Muttatorのコマンドライン上から起動したい場合は、以下のようにタイプしてください。
-
-----
-:tanasinnlaunch
-----
-
-    もしターミナルスクリーンをVimperator/Muttatorから直接起動させたければ、以下のようにします:
 
 ----
 :tanasinnstart <コマンド>
@@ -2357,7 +2373,7 @@ Type it in the command-line input field.
 detach
 ----
 
-The session will be suspended. and you can reconnect to it from launcher interface.
+The session will be suspended. and you can reconnect to it from context menu interface.
 
 === To kill current session.
 Type it in the command-line input field.
@@ -2433,7 +2449,7 @@ loadprofile <プロファイル名>
 detach
 ----
 
-セッションはサスペンドされます。ランチャーインターフェースからこのセッションに再接続することができます。
+セッションはサスペンドされます。コンテキストメニューからこのセッションに再接続することができます。
 
 === 現在のセッションを終了するには
 コマンドラインから以下のようにタイプしてみてください。
