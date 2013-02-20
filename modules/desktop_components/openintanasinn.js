@@ -143,15 +143,18 @@ OpenTanasinn.definition = {
           label: _("Run command"),
           oncommand: "_tanasinn_resume.showLauncher()",
         },
-        {
-          parentNode: this._menupopup,
-          tagName: "menuseparator",
-        },
       ]);
 
     if (!result) {
       return;
     }
+
+    this.request(
+      "command/construct-chrome",
+      {
+        parentNode: this._menupopup,
+        tagName: "menuseparator",
+      });
 
     for (i = 0; i < result.labels.length; ++i) {
 
