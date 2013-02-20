@@ -24,18 +24,22 @@
 
 "use strict";
 
+/** local scoped implementation */
 var impl = {
 
-  get_profile_path: function get_profile_path(broker, name)
+  getProfilePath: function getProfilePath(broker, name)
   {
     var profile_directory = broker.profile_directory,
         filename = (name || broker.profile) + ".js",
-        profile_path = coUtils.Runtime.getRuntimePath() + "/" + profile_directory + "/" + filename;
+        profile_path = coUtils.Runtime.getRuntimePath()
+                     + "/" + profile_directory
+                     + "/" + filename;
 
     return profile_path;
   },
 
 }; // impl
+
 
 /**
  * @class PersistManager
@@ -45,11 +49,14 @@ PersistManager.definition = {
 
   id: "persist_manager",
 
+  /**
+   * Load specified profile settings and apply it
+   */
   "[subscribe('command/load-settings'), enabled]":
   function load(name)
   {
     var broker = this._broker,
-        profile_path = impl.get_profile_path(broker, name),
+        profile_path = impl.getProfilePath(broker, name),
         data;
 
     try {
@@ -71,12 +78,15 @@ PersistManager.definition = {
     }
   },
 
+  /**
+   * Save current profile settings as specified name
+   */
   "[subscribe('command/save-settings'), enabled]":
   function save(name)
   {
     var broker = this._broker,
         data = {},
-        profile_path = impl.get_profile_path(broker, name),
+        profile_path = impl.getProfilePath(broker, name),
         serialized_data;
 
     if ("__persist" in broker) {
@@ -89,11 +99,14 @@ PersistManager.definition = {
     coUtils.IO.writeToFile(profile_path, serialized_data);
   },
 
+  /**
+   * Delete specified profile settings
+   */
   "[subscribe('command/delete-settings'), enabled]":
   function deleteSettings(name)
   {
     var broker = this._broker,
-        profile_path = impl.get_profile_path(broker, name)
+        profile_path = impl.getProfilePath(broker, name)
         file = coUtils.File.getFileLeafFromVirtualPath(profile_path);
 
     if (file.exists()) {
@@ -101,6 +114,9 @@ PersistManager.definition = {
     }
   },
 
+  /**
+   * Get current profile settings
+   */
   "[subscribe('command/get-settings'), enabled]":
   function get()
   {
@@ -115,6 +131,7 @@ PersistManager.definition = {
   },
 
 }; // class PersistManager
+
 
 /**
  * @fn main
