@@ -118,6 +118,10 @@ var KEY_SUNPC_APPLICATION_KEYPAD = {
   "Home"   : "<SS3>F",
 };
 
+var KEY_XTERM_KCBT = {
+  "Shift Tab"    : "<CSI>Z",
+}
+
 var KEY_NORMAL_KEYPAD = {
   "PgUp"   : "<CSI>5~", // kP / kpp
   "PgDn"   : "<CSI>6~", // kN / knp
@@ -516,6 +520,7 @@ DefaultKeyMappings.definition = {
   "[persistable] mac_alt_as_meta": true,
   "[persistable] backspace_as_delete": false,
   "[persistable] delete_as_function": true,
+  "[persistable] xterm_kcbt": true,
 
   _cursor_mode: coUtils.Constant.CURSOR_MODE_NORMAL,
   _application_keypad: false,
@@ -640,6 +645,10 @@ DefaultKeyMappings.definition = {
 //    if (this.delete_as_function) {
 //      settings.push(KEY_DELETE_AS_FUNC);
 //    }
+
+    if (this.xterm_kcbt) {
+      settings.push(KEY_XTERM_KCBT);
+    }
 
     // OS specific
     switch (coUtils.Runtime.os) {

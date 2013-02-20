@@ -19,7 +19,7 @@
 - Improve drag move experience
 - Support Growl like notification system
 
-- Fix Sixel Graphics behavior more strictry
+- Make Sixel Graphics behavior be more strictry and efficently
 - Make DRCS behavior be more strictry
 
 - imprement DECCRA
