@@ -1122,12 +1122,12 @@ InputManager.definition = {
     //  event = this._last_keydown_event;
     //}
 
-    if (0x00 === event.keyCode
-        && 0x20 === event.which
-        && event.ctrlKey) {
-      event.keyCode = 0x20;
-      event.isChar = false;
-    }
+    //if (0x00 === event.keyCode
+    //    && 0x20 === event.which
+    //    && event.ctrlKey) {
+    //  event.keyCode = 0x20;
+    //  event.isChar = false;
+    //}
 
     if (this.debug_flag) {
       this.sendMessage(

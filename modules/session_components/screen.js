@@ -411,6 +411,86 @@ ScreenSequenceHandler.definition = {
 
   /**
    *
+   * DECFI - Forward Index
+   *
+   * This control function moves the cursor forward one column.
+   * If the cursor is at the right margin, then all screen data within the
+   * margins moves one column to the left. The column shifted past the left
+   * margin is lost.
+   *
+   * Available in: VT Level 4 mode only
+   *
+   *
+   * Format
+   *
+   * ESC    9
+   * 1/11   3/9
+   *
+   *
+   * Description
+   *
+   * DECFI adds a new column at the right margin, with no visual attributes.
+   * DECFI is not affected by the margins. If the cursor is at the right
+   * border of the page when the terminal receives DECFI, then the terminal
+   * ignores DECFI.
+   *
+   */
+  "[profile('vt100'), sequence('ESC 6')]":
+  function DECFI()
+  { // DEC Forward Index
+    var cursor = this.cursor,
+        rightmargin = this._scroll_right;
+
+    if (cursor.positionX >= rightmargin - 1) {
+      cursor.positionX = rightmargin;
+      this.scrollLeft(1);
+    } else {
+      ++cursor.positionX;
+    }
+  },
+
+  /**
+   *
+   * DECBI - Back Index
+   *
+   * This control function moves the cursor backward one column.
+   * If the cursor is at the left margin, then all screen data within the
+   * margin moves one column to the right. The column that shifted past the
+   * right margin is lost.
+   *
+   * Available in: VT Level 4 mode only
+   *
+   *
+   * Format
+   *
+   * ESC    6
+   * 1/11   3/6
+   *
+   *
+   * Description
+   *
+   * DECBI adds a new column at the left margin with no visual attributes.
+   * DECBI is not affected by the margins. If the cursor is at the left
+   * border of the page when the terminal receives DECBI, then the terminal
+   * ignores DECBI.
+   *
+   */
+  "[profile('vt100'), sequence('ESC 6')]":
+  function DECBI()
+  { // DEC Backward Index
+    var cursor = this.cursor,
+        leftmargin = this._scroll_left;
+
+    if (cursor.positionX <= leftmargin) {
+      cursor.positionX = leftmargin;
+      this.scrollRight(1);
+    } else {
+      --cursor.positionX;
+    }
+  },
+
+  /**
+   *
    * DECALN — Screen Alignment Pattern
    *
    * This control function fills the complete screen area with a test pattern
@@ -750,7 +830,7 @@ ScreenSequenceHandler.definition = {
    */
   "[profile('vt100'), sequence('CSI Pn s')]":
   function DECSLRM(n1, n2)
-  { // Scroll Left
+  {
     n1 = (n1 || 1) - 1;
     n2 = (n2 || 1) - 1;
     this.setHorizontalScrollRegion(n1, n2 + 1);
