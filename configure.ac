@@ -8,15 +8,15 @@ AC_INIT([tanasinn],[0.3.2.1],[user@zuse.jp])
 AC_CANONICAL_TARGET
 
 # Checks for programs.
-AC_CHECK_PROG(PERL, perl, perl) 
+AC_CHECK_PROG(PERL, perl, perl)
 [[ -z "${PERL}" ]] && AC_MSG_ERROR(perl was not found.)
 
-AC_CHECK_PROG(ZIP, zip, zip) 
+AC_CHECK_PROG(ZIP, zip, zip)
 [[ -z "${ZIP}" ]] && AC_MSG_ERROR(zip was not found.)
 
-AC_CHECK_PROG(TPUT, tput, tput) 
-AC_CHECK_PROG(CPP, cpp, cpp) 
-AC_CHECK_PROG(ASCIIDOC, asciidoc, asciidoc) 
+AC_CHECK_PROG(TPUT, tput, tput)
+AC_CHECK_PROG(CPP, cpp, cpp)
+AC_CHECK_PROG(ASCIIDOC, asciidoc, asciidoc)
 #[[ -n "${ASCIIDOC}" ]] && AC_MSG_ERROR(asciidoc was not found.)
 
 AC_SUBST([TANASINN_PACKAGE_NAME])
@@ -43,13 +43,13 @@ AC_TANASINN_PLATFORM
 m4_include([acgecko.m4])
 AC_TANASINN_JS_PATH
 
-AC_CONFIG_FILES([Makefile 
+AC_CONFIG_FILES([Makefile
                  doc/define.h
                  doc/Makefile
                  doc/tanasinn/index.html
                  tools/bin/Makefile
                  modules/common/config.js
-                 chrome.manifest 
+                 chrome.manifest
                  install.rdf])
 AC_OUTPUT
 
