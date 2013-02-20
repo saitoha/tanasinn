@@ -435,7 +435,7 @@ ScreenSequenceHandler.definition = {
    * ignores DECFI.
    *
    */
-  "[profile('vt100'), sequence('ESC 6')]":
+  "[profile('vt100'), sequence('ESC 9')]":
   function DECFI()
   { // DEC Forward Index
     var cursor = this.cursor,
