@@ -1,3 +1,12 @@
+2013-02-19 Hayaki Saito <user@zuse.jp>
+    * Version 0.3.2.1
+    * Rewrite context menu integration
+    * Support xterm's kcbt(CSI Z)
+    * Support DECBI/DECFI (not be tested well)
+    * Disable Ctrl + Ctrl
+    * Fix a rendering bug at dragcopy plugin
+    * Fix duplicated context menu items issue
+
 2013-02-08 Hayaki Saito <user@zuse.jp>
     * Version 0.3.2.0
     * Fix broken CSI intermediate bytes parsing
