@@ -248,10 +248,10 @@ Session.definition = {
         this.notify("command/show");
         this.notify("command/focus");
         coUtils.Timer.setTimeout(
-          function timerProc()
+          function timerProc2()
           {
             this.notify("command/focus");
-          }, this.initial_focus_delay);
+          }, this.initial_focus_delay, this);
       }, this.initial_focus_delay, this);
     return this;
   },
