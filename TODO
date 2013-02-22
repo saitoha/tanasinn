@@ -3,7 +3,6 @@
 - Support alternate screen transition
 
 - Fix full-width character copy/paste issue
-- Fix Ctrl + Space issue on X11 environment
 - Fix Alt-Shift issue on WINNT/X11 environment
 - Fix copying text includes combining characters
 
