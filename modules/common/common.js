@@ -1092,16 +1092,15 @@ coUtils.IO = {
   },
 
   saveCanvas:
-  function saveCanvas(source_canvas, file, is_thumbnail)
+  function saveCanvas(source_canvas, file, is_thumbnail, background)
   {
     var NS_XHTML = "http://www.w3.org/1999/xhtml",
         canvas = source_canvas.ownerDocument.createElementNS(NS_XHTML, "canvas"),
         context = canvas.getContext("2d"),
         io = coUtils.Services.getIoService(),
         source,
-        persist = coUtils.Components.createWebBrowserPersist();
-
-    canvas.style.background = "black";
+        persist = coUtils.Components.createWebBrowserPersist(),
+        background = background || "black";
 
     if (is_thumbnail) {
       canvas.width = 120;
@@ -1111,9 +1110,13 @@ coUtils.IO = {
       canvas.height = source_canvas.height;
     }
 
-    context.fillStyle = "rgba(0, 0, 0, 0.7)";
+    context.fillStyle = background;
+    context.globalAlpha = 0.70;
     context.fillRect(0, 0, canvas.width, canvas.height);
-    context.drawImage(source_canvas, 0, 0, canvas.width, canvas.height);
+    context.globalAlpha = 1.00;
+    context.drawImage(source_canvas,
+                      0, 0,
+                      canvas.width, canvas.height);
 
     // create a data url from the canvas and then create URIs of the source and targets.
     source = io.newURI(canvas.toDataURL("image/png", ""), "UTF8", null);
