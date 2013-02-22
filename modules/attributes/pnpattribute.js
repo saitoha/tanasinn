@@ -39,10 +39,9 @@ function make_managed_handler(self, handler, topic)
 
 function apply_attribute(self, broker, key, attribute)
 {
-  var handler, wrapped_handler, id;
-
-  handler = self[key];
-  id = self.id + "." + key;
+  var handler = self[key],
+      wrapped_handler,
+      id = self.id + "." + key;
 
   if (handler.id) {
     wrapped_handler = handler;
@@ -55,13 +54,13 @@ function apply_attribute(self, broker, key, attribute)
   wrapped_handler.description = attribute.description;
 
   broker.subscribe("install/" + self.id,
-    function()
+    function install()
     {
       wrapped_handler.enabled = true;
     }, undefined, id + ".pnp");
 
   broker.subscribe("uninstall/" + self.id,
-    function()
+    function uninstall()
     {
       wrapped_handler.enabled = false;
     }, undefined, id + ".pnp");
