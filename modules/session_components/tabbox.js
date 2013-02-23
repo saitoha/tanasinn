@@ -42,7 +42,8 @@ BottomPanel.definition = {
     return {
       name: _("Bottom Panel"),
       version: "0.1",
-      description: _("Show tabbed panes which is able to contain variable plugin components ",
+      description: _("Show tabbed panes which is able to ",
+                     "contain variable plugin components ",
                      "at the bottom area of window.")
     };
   },
@@ -72,14 +73,17 @@ BottomPanel.definition = {
             listener: {
               type: "select",
               context: this,
-              handler: function(event)
+              handler: function handler(event)
               {
                 var target = event.target,
                     panel = target.selectedPanel,
                     tab = target.parentNode.selectedTab,
-                    node;
+                    nodes = target.parentNode.tabs.childNodes,
+                    node,
+                    i;
 
-                for ([, node] in Iterator(target.parentNode.tabs.childNodes)) {
+                for (i = 0; i < nodes.length; ++i) {
+                  node = nodes[i];
                   node.style.color = "#777";
                   node.style.weight = "normal";
                 }
@@ -152,8 +156,10 @@ BottomPanel.definition = {
   "[uninstall]":
   function uninstall()
   {
+    var bottom_panel = this._bottom_panel;
+
     if (null !== this._bottom_panel) {
-      this._bottom_panel.parentNode.removeChild(this._bottom_panel);
+      bottom_panel.parentNode.removeChild(bottom_panel);
       this._bottom_panel = null;
     }
     this._scrollbox = null;
@@ -203,12 +209,15 @@ BottomPanel.definition = {
         line_height = renderer.line_height,
         row = screen.height,
         max_screen_height = Math.floor(line_height * row / 2),
+        panels = this._tabbox.tabpanels.childNodes,
         panel,
-        diff;
+        diff,
+        i;
 
     this.sendMessage("get/panel-items", this);
 
-    for ([, panel] in Iterator(this._tabbox.tabpanels.childNodes)) {
+    for (i = 0; i < panels.length; ++i) {
+      panel = panels[i];
       if (panel.height > max_screen_height) {
         panel.height = max_screen_height;
       }
@@ -258,19 +267,23 @@ BottomPanel.definition = {
    */
   get panelHeight()
   {
-    var sample_panel, result;
+    var sample_panel = this._tabbox.tabpanels.firstChild;
 
-    sample_panel = this._tabbox.tabpanels.firstChild;
-    result = sample_panel ? sample_panel.boxObject.height: 0;
+    if (sample_panel) {
+      return sample_panel.boxObject.height;
+    }
 
-    return result;
+    return 0;
   },
 
   set panelHeight(value)
   {
-    var panel;
+    var panel,
+        panels = this._tabbox.tabpanels.childNodes,
+        i;
 
-    for ([, panel] in Iterator(this._tabbox.tabpanels.childNodes)) {
+    for (i = 0; i < panels.length; ++i) {
+      panel = panels[i];
       panel.height = value;
     }
   },
@@ -281,7 +294,8 @@ BottomPanel.definition = {
    */
   alloc: function alloc(id, name)
   {
-    var tanasinn_tab, tab_panel;
+    var tanasinn_tab,
+        tab_panel;
 
     // check duplicated allocation.
     this._panel_map = this._panel_map || {};
@@ -348,7 +362,9 @@ BottomPanel.definition = {
   "[subscribe('command/select-panel'), pnp]":
   function select(id)
   {
-    var toggle, panel_map, tab;
+    var toggle,
+        panel_map,
+        tab;
 
     id = id.id || id;
 
@@ -364,7 +380,7 @@ BottomPanel.definition = {
     panel_map = this._panel_map;
 
     if (id in panel_map) { // Check if specified id was registered.
-      [tab, ] = this._panel_map[id];
+      tab = this._panel_map[id][0];
       // toggle open/close state.
       if (this._bottom_panel.collapsed) {
         // Select specified tab and open the panel.
@@ -390,7 +406,9 @@ BottomPanel.definition = {
   "[subscribe('command/remove-panel'), pnp]":
   function remove(id)
   {
-    var panel_map, tab, tab_panel;
+    var panel_map,
+        tab,
+        tab_panel;
 
     id = id.id || id;
     this._panel_map = this._panel_map || {};
