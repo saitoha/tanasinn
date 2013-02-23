@@ -69,6 +69,9 @@ ProcessManager.definition = {
    */
   processIsAvailable: function processIsAvailable(pid)
   {
+    if ("WINNT" === coUtils.Runtime.os) {
+      return true;
+    }
     return 0 === this.sendSignal(0, pid);
   },
 
