@@ -186,18 +186,26 @@ SocketTeletypeService.definition = {
   "[subscribe('@command/attach-session'), pnp]":
   function attachSession(request_id)
   {
-    var backup_data_path = coUtils.Runtime.getRuntimePath() + "/persist/" + request_id + ".txt",
+    var backup_data_path = coUtils.Runtime.getRuntimePath()
+                         + "/persist/"
+                         + request_id
+                         + ".txt",
         context;
 
     if (coUtils.File.exists(backup_data_path)) {
       // resume
       context = JSON.parse(coUtils.IO.readFromFile(backup_data_path, "utf-8"));
-      this.sendMessage("command/restore", context);
+      this.sendMessage("command/restore-fast", context);
       coUtils.Timer.setTimeout(
         function timerProc()
         {
-          this.sendMessage("command/draw", true);
-        }, 500, this);
+          this.sendMessage("command/restore", context);
+          coUtils.Timer.setTimeout(
+            function timerProc2()
+            {
+              this.sendMessage("command/draw", true);
+            }, 200, this);
+        }, 200, this);
       var file = coUtils.File.getFileLeafFromVirtualPath(backup_data_path);
       if (file.exists()) {
         file.remove(false)
@@ -209,7 +217,11 @@ SocketTeletypeService.definition = {
   "[subscribe('@command/focus')]":
   function onFirstFocus()
   {
-    this.sendMessage("command/draw", true);
+    coUtils.Timer.setTimeout(
+      function timerProc()
+      {
+        this.sendMessage("command/draw", true);
+      },100);
   },
 
   "[subscribe('@command/detach'), pnp]":
