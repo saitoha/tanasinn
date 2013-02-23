@@ -88,7 +88,7 @@ ScreenBackupConcept.definition = {
   "<command/backup> :: Object -> Undefined":
   _("Backups screen into serialize context."),
 
-  "<command/restore> :: Object -> Undefined":
+  "<command/restore-fast> :: Object -> Undefined":
   _("Restores screen from serialize context."),
 
 }; // ScreenBackupConcept
@@ -1967,6 +1967,7 @@ Screen.definition = {
   // geometry (in cell count)
   "[persistable] initial_column": 80,
   "[persistable] initial_row": 24,
+  "[persistable] backup_scrollbuffer": false,
 
   /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
@@ -2985,17 +2986,25 @@ Screen.definition = {
   {
     var context = data[this.id] = [],
         lines = this._buffer,
-        i = 0;
+        buffer_top = this._buffer_top,
+        i = 0,
+        line;
+
+    if (!this.backup_scrollbuffer) {
+      lines = lines.slice(buffer_top);
+      buffer_top = 0;
+    }
 
     // serialize members.
-    context.push(this.width, this.height, this._buffer_top);
+    context.push(this.width, this.height, buffer_top);
     context.push(this._scroll_top, this._scroll_bottom);
     context.push(this._scroll_left, this._scroll_right);
-    context.push(this._buffer.length);
+    context.push(lines.length);
 
     // serialize each lines.
     for (; i < lines.length; ++i) {
-      lines[i].serialize(context);
+      line = lines[i];
+      line.serialize(context);
     }
 
     context.push(this._screen_choice);
@@ -3009,7 +3018,7 @@ Screen.definition = {
    *
    * @implements ScreenBackupConcept.<command/restore>
    */
-  "[subscribe('command/restore'), type('Object -> Undefined'), pnp]":
+  "[subscribe('command/restore-fast'), type('Object -> Undefined'), pnp]":
   function restore(data)
   {
     var context = data[this.id],
