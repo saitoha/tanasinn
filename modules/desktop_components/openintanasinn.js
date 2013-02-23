@@ -123,7 +123,10 @@ OpenTanasinn.definition = {
   {
     var i,
         image_url,
-        id;
+        id,
+        length,
+        thumb_height,
+        thumb_width;
 
     while (this._menupopup.childNodes.length > 0) {
       this._menupopup.removeChild(this._menupopup.lastChild);
@@ -156,7 +159,11 @@ OpenTanasinn.definition = {
         tagName: "menuseparator",
       });
 
-    for (i = 0; i < result.labels.length; ++i) {
+    length = result.labels.length;
+    thumb_height = Math.min(160, 400 / Math.sqrt(length) | 0);
+    thumb_width = thumb_height / 2 * 3 | 0;
+
+    for (i = 0; i < length; ++i) {
 
       image_url = result.data[i].image;
 
@@ -187,8 +194,8 @@ OpenTanasinn.definition = {
                 },
                 childNodes: {
                   tagName: "image",
-                  width: 120,
-                  height: 80,
+                  width: thumb_width,
+                  height: thumb_height,
                   style: {
                     border: "1px solid #66f",
                     margin: "9px",
