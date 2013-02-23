@@ -1,3 +1,10 @@
+2013-02-23 Hayaki Saito <user@zuse.jp>
+    * Version 0.3.2.2
+    * Improve thumbnail styling
+    * Workaround for Windows 8 (On progress, Not completely supported yet)
+    * Improve performance for resuming session (cut off scroll buffer)
+    * Send last 4096 byte output data when resuming
+
 2013-02-19 Hayaki Saito <user@zuse.jp>
     * Version 0.3.2.1
     * Rewrite context menu integration
