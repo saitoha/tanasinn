@@ -120,12 +120,7 @@
     multiencoder.js
 
     multidecoder.js
-    asciidecoder.js
-    cp932decoder.js
-    eucjpdecoder.js
     utf8decoder.js
-    utf8_cp932decoder.js
-    japanesedecoder.js
 
     screen.js
     cursorstate.js
@@ -315,14 +310,11 @@
     pluginscompleter.js
     componentscompleter.js
 
-  }
-
-   incomplete {
-    minimize.js
-    search.js
    }
 
    notimpl {
+    minimize.js
+    search.js
     hint.js
     test.js
     eventviewer.js
@@ -331,6 +323,13 @@
     panelmanager.js
     sequence.js
    }
+  }
+  optional=optional {
+   eucjpdecoder.js
+   utf8_cp932decoder.js
+   japanesedecoder.js
+   asciidecoder.js
+   cp932decoder.js
   }
 
   ttydriver.py
