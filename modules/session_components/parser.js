@@ -57,6 +57,7 @@ Parser.definition = {
   _timer: null,
 
   _wcwidth: null,
+  _state: 0,
 
   /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
@@ -173,7 +174,6 @@ Parser.definition = {
     this.sendMessage("command/draw"); // fire "draw" event.
   },
 
-  _state: 0,
   /** Parse control codes and text pieces from the scanner.
    *  @param {String} data incoming data in text format.
    */
