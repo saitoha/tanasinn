@@ -555,10 +555,9 @@ if __name__ == "__main__":
                 persist = open(persist_file)
                 if pos > 0:
                     os.seek(pos)
-                buf = persist.read()
                 try:
                     while True:
-                        buf = persist.read()
+                        buf = os.read(persist.fileno(), BUFFER_SIZE)
                         if not buf:
                             break
                         io_socket.send(buf)
@@ -598,6 +597,7 @@ if __name__ == "__main__":
                                 if not buf:
                                     break
                                 persist.write(buf)
+                                persist.flush()
                     finally:
                         persist.flush()
                         persist.close()
@@ -619,7 +619,7 @@ if __name__ == "__main__":
                     os.kill(wait_pid, signal.SIGKILL)
 
                 if not driver.isalive():
-                    os.kill(wait_pid, signal.SIGKILL)
+                    del_record(sessiondb_path, request_id)
                     sys.exit(0)
                 trace("resume.")
                 reply = control_connection.recv(BUFFER_SIZE)
