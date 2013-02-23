@@ -52,7 +52,7 @@ PersistentConcept.definition = {
   "<@command/backup> :: Object -> Undefined":
   _("Serialize and persist current state."),
 
-  "<@command/restore> :: Object -> Undefined":
+  "<@command/restore-fast> :: Object -> Undefined":
   _("Deserialize and restore stored state."),
 
 }; // concept PersistentConcept
@@ -88,7 +88,7 @@ PersistentTrait.definition = {
   /**
    * Deserialize snd restore stored state.
    */
-  "[subscribe('@command/restore'), type('Object -> Undefined'), pnp]":
+  "[subscribe('@command/restore-fast'), type('Object -> Undefined'), pnp]":
   function restore(context)
   {
     var data = context[this.id];
@@ -117,9 +117,11 @@ PersistentTrait.definition = {
                + "/persist/"
                + this._broker.request_id
                + ".png",
-          file = coUtils.File.getFileLeafFromVirtualPath(path);
+          file = coUtils.File.getFileLeafFromVirtualPath(path),
+          canvas = this._main_layer.canvas,
+          background = this._palette.background_color;
 
-      coUtils.IO.saveCanvas(this._main_layer.canvas, file, true);
+      coUtils.IO.saveCanvas(canvas, file, false, background);
     }
   },
 
@@ -402,11 +404,16 @@ Renderer.definition = {
   "[subscribe('command/capture-screen'), pnp]":
   function captureScreen(info)
   {
-    coUtils.IO.saveCanvas(this._main_layer.canvas,
+    var canvas = this._main_layer.canvas,
+        background = this._palette.background_color;
+
+    coUtils.IO.saveCanvas(canvas,
                           info.file,
-                          info.thumbnail);
+                          info.thumbnail,
+                          background);
   },
 
+  /** Called when the setting variable renderer.smoothing is changed. */
   "[subscribe('variable-changed/renderer.smoothing'), enabled]":
   function onSmoothingChanged(value)
   {
@@ -421,6 +428,7 @@ Renderer.definition = {
     }
   },
 
+  /** Change font size and dispatch 'event/font-size-changed' event. */
   "[subscribe('set/font-size'), pnp]":
   function setFontSize(font_size)
   {
@@ -430,12 +438,14 @@ Renderer.definition = {
     this.sendMessage("event/font-size-changed", this.font_size);
   },
 
+  /** Change font family */
   "[subscribe('set/font-family'), pnp]":
   function setFontFamily(font_family)
   {
     this.font_family = font_family;
   },
 
+  /** Called when the setting variable renderer.{size|family} is changed. */
   "[subscribe('variable-changed/renderer.font_{size | family}'), pnp]":
   function onFontChanged(font_size)
   {
@@ -841,11 +851,11 @@ Renderer.definition = {
     if (code >= 0xf0000 && 1 === codes.length) {
       length = 1;
       if (code < 0x100000) {
-        codes[0] = codes & 0xffff;
+        codes[0] = code & 0xffff;
       } else {
         dscs = String.fromCharCode(code >>> 8 & 0xff);
         drcs_state = this._drcs_map[" " + dscs];
-        codes[0] = codes & 0xff;
+        codes[0] = code & 0xff;
       }
     }
 
