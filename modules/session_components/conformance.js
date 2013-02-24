@@ -101,7 +101,7 @@ ConformanceLevel.definition = {
       }
       level = 4;
     }
-    this.setConformanceLevel(level);
+    gateway.setConformanceLevel(level);
   },
 
 }; // ConformanceLevel
@@ -113,7 +113,9 @@ ConformanceLevel.definition = {
  */
 function main(broker)
 {
-  new TTYGateway(broker);
+        try {
+  new ConformanceLevel(broker);
+        } catch(e){alert(e)}
 }
 
 // EOF

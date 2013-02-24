@@ -321,6 +321,7 @@ TTYGateway.definition = {
     this.sendMessage("command/send-to-tty", message);
   },
 
+  /** Send a DECRPSS formatted report sequence */
   "[subscribe('command/send-sequence/decrpss'), pnp]":
   function send_DECRPSS_string(data)
   {
@@ -353,28 +354,13 @@ TTYGateway.definition = {
 
   },
 
-  /** return 8bit mode state */
-  "[subscribe('get/8bit-mode-state')]":
-  function get8bitModeState()
-  {
-    return this._8bit_mode;
-  },
-
+  /** Change 8bit mode state */
   set8bitModeState: function set8bitModeState(value)
   {
     this._8bit_mode = value;
   },
 
-  setTo7bitMode: function setTo7bitMode()
-  {
-    this._8bit_mode = false;
-  },
-
-  setTo8bitMode: function setTo8bitMode()
-  {
-    this._8bit_mode = true;
-  },
-
+  /** Chenge conformance level */
   setConformanceLevel: function setConformanceLevel(value)
   {
     if (value !== this._conformance_level) {
@@ -383,6 +369,10 @@ TTYGateway.definition = {
       // When the conformance level is changed, the terminal performs a
       // hard reset (RIS).
       this.sendMessage("command/hard-terminal-reset");
+
+      coUtils.Debug.reportMessage(
+          _("Conformance level was changed: [%d]."),
+          value);
     }
   },
 

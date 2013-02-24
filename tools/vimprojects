@@ -141,6 +141,7 @@
 
     psreport.js
     conformance.js
+    ttygateway.js
     transform.js
     drcs.js
     sixel.js
