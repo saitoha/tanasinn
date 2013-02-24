@@ -24,11 +24,11 @@
 
 "use strict";
 
-
 /**
  * @trait ConformanceLevel
  */
-var ConformanceLevel = new Class().extends(Plugin);
+var ConformanceLevel = new Class().extends(Plugin)
+                                  .depends("tty_gateway");
 ConformanceLevel.definition = {
 
   /** Component ID */
@@ -38,16 +38,29 @@ ConformanceLevel.definition = {
   {
     return {
       name: _("Conformance Level"),
-      version: "0.1.0",
+      version: "0.1.1",
       description: _("Manage conformanse level and 7bit/8bit response mode.")
     };
   },
 
   "[persistable] enabled_when_startup": true,
-  "[persistable] response_delay": 1,
 
-  _8bit_mode: false,
-  _conformance_level: 4,
+  /** Installs itself.
+   *  @param {InstallContext} context A InstallContext object.
+   */
+  "[install]":
+  function install(context)
+  {
+    this._tty_gateway = context["tty_gateway"];
+  },
+
+  /** uninstalls itself.
+   */
+  "[uninstall]":
+  function uninstall()
+  {
+    this._tty_gateway = null;
+  },
 
   /**
    *
@@ -56,28 +69,30 @@ ConformanceLevel.definition = {
    * ref: http://www.vt100.net/docs/vt510-rm/DECSCL
    *
    * You select the terminal's operating level by using the following select
-   * conformance level (DECSCL) control sequences. The factory default is level
-   * 4 (VT Level 4 mode, 7-bit controls).
+   * conformance level (DECSCL) control sequences. The factory default is
+   * level 4 (VT Level 4 mode, 7-bit controls).
    *
    * Note
    *
-   * When you change the conformance level, the terminal performs a hard reset (RIS).
+   * When you change the conformance level, the terminal performs a hard
+   * reset (RIS).
    *
    */
   "[profile('vt100'), sequence('CSI Ps;Ps \" p')]":
   function DECSCL(n1, n2)
   {
     var level = n1,
-        submode = n2;
+        submode = n2,
+        gateway = this._tty_gateway;
 
     if (61 === level) {
       level = 1;
-      this._8bit_mode = false;
+      gateway.set8bitModeState(false);
     } else if (62 <= level && level <= 69) {
       if (0 === submode || 2 === submode) {
-        this._8bit_mode = true;
+        gateway.set8bitModeState(true);
       } else if (1 === submode) {
-        this._8bit_mode = false;
+        gateway.set8bitModeState(false);
       } else {
         coUtils.Debug.reportWarning(
           _("%s sequence [%s] was ignored."),
@@ -86,273 +101,7 @@ ConformanceLevel.definition = {
       }
       level = 4;
     }
-    if (level !== this._conformance_level) {
-      this._conformance_level = level;
-      this.sendMessage("command/hard-terminal-reset");
-    }
-  },
-
-  "[subscribe('sequence/decrqss/decscl'), pnp]":
-  function onRequestStatus(data)
-  {
-    var level,
-        submode,
-        message;
-
-    if (1 === this._conformance_level) {
-      level = 61;
-      submode = 0;
-    } else {
-      level = this._conformance_level + 60;
-      if (this._8bit_mode) {
-        submode = 0;
-      } else {
-        submode = 1;
-      }
-    }
-
-    message = "0$r" + level + ";" + submode + "\"p";
-
-    this.sendMessage("command/send-sequence/dcs", message);
-  },
-
-  /**
-   *
-   * S7C1T - Send C1 Control Character to the Host
-   *
-   * The VT510 can send C1 control characters to the host as single 8-bit
-   * characters or as 7-bit escape sequences. You should select the format
-   * that matches the operating level you are using.
-   *
-   * The following sequence causes the terminal to send all C1 control
-   * characters as 7-bit escape sequences or single 8-bit characters:
-   *
-   * Format
-   *
-   * ESC   SP    F
-   * 1/11  2/0   4/7
-   *
-   * Description
-   *
-   * This sequence changes the terminal mode as follows:
-   *
-   * Mode Before                             | Mode After
-   * ----------------------------------------+---------------------------------
-   * VT Level 4 mode, 8-bit controls         | VT Level 4 mode, 7-bit controls.
-   * VT Level 4 mode, 7-bit controls         | Same. Terminal ignores sequence.
-   * VT Level 1 or VT52 mode, 7-bit controls | Same. Terminal ignores sequence.
-   *
-   */
-  "[profile('vt100'), sequence('ESC SP F')]":
-  function S7C1T(n)
-  {
-    this._8bit_mode = false;
-  },
-
-  /**
-   *
-   * S8C1T - Send C1 Control Character to the Host
-   *
-   * The following sequence causes the terminal to send C1 control characters
-   * to the host as single 8-bit characters:
-   *
-   * Format
-   *
-   * ESC   SP    G
-   * 1/11  2/0   4/6
-   *
-   * Description
-   *
-   * This sequence changes the terminal mode as follows:
-   *
-   * Mode Before                     | Mode After
-   * --------------------------------+---------------------------------
-   * VT Level 4 mode, 8-bit controls | Same. Terminal ignores sequence.
-   * VT Level 4 mode, 7-bit controls | VT Level 4 mode, 8-bit controls.
-   * VT Level 1 mode  Same. Terminal | ignores sequence.
-   *
-   */
-  "[profile('vt100'), sequence('ESC SP G')]":
-  function S8C1T()
-  {
-    this._8bit_mode = true;
-  },
-
-  "[subscribe('command/send-sequence/sos'), pnp]":
-  function send_SOS()
-  {
-    var message;
-
-    if (this._8bit_mode) {
-      message = "\x98";
-    } else {
-      message = "\x1bX";
-    }
-
-    //coUtils.Timer.setTimeout(
-    //  function timerProc()
-    //  {
-        this.sendMessage("command/send-to-tty", message);
-    //  }, this.response_delay, this);
-  },
-
-
-  "[subscribe('command/send-sequence/apc'), pnp]":
-  function send_APC()
-  {
-    var message;
-
-    if (this._8bit_mode) {
-      message = "\x9f";
-    } else {
-      message = "\x1b_";
-    }
-
-    //coUtils.Timer.setTimeout(
-    //  function timerProc()
-    //  {
-        this.sendMessage("command/send-to-tty", message);
-    //  }, this.response_delay, this);
-  },
-
-
-  "[subscribe('command/send-sequence/pm'), pnp]":
-  function send_PM()
-  {
-    var message;
-
-    if (this._8bit_mode) {
-      message = "\x9e";
-    } else {
-      message = "\x1b^";
-    }
-
-    //coUtils.Timer.setTimeout(
-    //  function timerProc()
-    //  {
-        this.sendMessage("command/send-to-tty", message);
-    //  }, this.response_delay, this);
-  },
-
-
-  "[subscribe('command/send-sequence/osc'), pnp]":
-  function send_OSC(data)
-  {
-    var message = "";
-
-    if (this._8bit_mode) {
-      message += "\x9d";
-    } else {
-      message += "\x1b]";
-    }
-
-    message += data;
-
-    if (this._8bit_mode) {
-      message += "\x07";
-    } else {
-      message += "\x1b\\";
-    }
-
-    //coUtils.Timer.setTimeout(
-    //  function timerProc()
-    //  {
-        this.sendMessage("command/send-to-tty", message);
-    //  }, this.response_delay, this);
-  },
-
-  "[subscribe('command/get-sequence/csi'), pnp]":
-  function get_CSI()
-  {
-    var message;
-
-    if (this._8bit_mode) {
-      message = "\x9b";
-    } else {
-      message = "\x1b[";
-    }
-    return message;
-  },
-
-  "[subscribe('command/send-sequence/csi'), pnp]":
-  function send_CSI(data)
-  {
-    var message = this.get_CSI();
-
-    message += data;
-
-    //coUtils.Timer.setTimeout(
-    //  function timerProc()
-    //  {
-        this.sendMessage("command/send-to-tty", message);
-    //  }, this.response_delay, this);
-  },
-
-  "[subscribe('command/get-sequence/ss3'), pnp]":
-  function get_SS3()
-  {
-    var message;
-
-    if (this._8bit_mode) {
-      message = "\x8f";
-    } else {
-      message = "\x1bO";
-    }
-    return message;
-  },
-
-  "[subscribe('command/send-sequence/ss3'), pnp]":
-  function send_SS3(data)
-  {
-    var message = this.get_SS3();
-
-    message += data;
-
-    //coUtils.Timer.setTimeout(
-    //  function timerProc()
-    //  {
-        this.sendMessage("command/send-to-tty", message);
-    //  }, this.response_delay, this);
-  },
-
-  "[subscribe('command/send-sequence/decrpss'), pnp]":
-  function send_DECRPSS_string(data)
-  {
-    this.send_DCS_string("0$" + data);
-  },
-
-  "[subscribe('command/send-sequence/dcs'), pnp]":
-  function send_DCS_string(data)
-  {
-    var message = "";
-
-    if (this._8bit_mode) {
-      message += "\x90";
-    } else {
-      message += "\x1bP";
-    }
-
-    message += data;
-
-    if (this._8bit_mode) {
-      message += "\x07";
-    } else {
-      message += "\x1b\\";
-    }
-
-    //coUtils.Timer.setTimeout(
-    //  function timerProc()
-    //  {
-        this.sendMessage("command/send-to-tty", message);
-    //  }, this.response_delay, this);
-
-  },
-
-  /** return 8bit mode state */
-  "[subscribe('get/8bit-mode-state')]":
-  function get8bitModeState()
-  {
-    return this._8bit_mode;
+    this.setConformanceLevel(level);
   },
 
 }; // ConformanceLevel
@@ -364,7 +113,7 @@ ConformanceLevel.definition = {
  */
 function main(broker)
 {
-  new ConformanceLevel(broker);
+  new TTYGateway(broker);
 }
 
 // EOF
