@@ -236,7 +236,7 @@ DragTransform.definition = {
 
     this._begin_point = this.get2DCoordinate(event);
     box = this._element.boxObject;
-    this.perspective = Math.floor(Math.sqrt(box.width * box.width + box.height * box.height));
+    this.perspective = Math.floor(Math.sqrt(box.width * box.width + box.height * box.height)) * 2.0;
 
     this.onMouseMove.enabled = true;
     this.onMouseUp.enabled = true;
@@ -379,7 +379,7 @@ Transform.definition = {
       0, 0, 1, 0,
       0, 0, 0, 1);
     this._element = root_element.querySelector("#tanasinn_outer_chrome");
-    this._element.style.MozTransformStyle = "preserve-3d";
+    this._element.style.transformStyle = "preserve-3d";
     if (this.transform_matrix) {
       this.onTransformMatrixChanged();
     }
@@ -393,9 +393,9 @@ Transform.definition = {
     var element = this._element;
 
     if (null !== element) {
-      element.parentNode.style.MozPerspective = "";
-      element.style.MozTransformStyle = "";
-      element.style.MozTransform = "";
+      element.parentNode.style.perspective = "";
+      element.style.transformStyle = "";
+      element.style.transform = "";
       this._element = null;
     }
     this._matrix = null;
@@ -409,8 +409,8 @@ Transform.definition = {
   {
     var element = this._element;
 
-    element.parentNode.style.MozPerspective = this.perspective + "px";
-    element.style.MozTransform = this.transform_matrix;
+    element.parentNode.style.perspective = this.perspective + "px";
+    element.style.transform = this.transform_matrix;
   },
 
   "[subscribe('event/screen-width-changed'), pnp]":

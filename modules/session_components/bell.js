@@ -54,7 +54,7 @@ Bell.definition = {
         opacity: 0.0,
         margin: "-20px",
       },
-      MozTransitionProperty: "opacity",
+      transitionProperty: "opacity",
     };
   },
 
@@ -148,7 +148,7 @@ Bell.definition = {
     if (this._cover) {
       this._cover.style.backgroundColor = this.color;
       this._showCover();
-      this._cover.style.MozTransitionDuration = this.duration + "ms";
+      this._cover.style.transitionDuration = this.duration + "ms";
       coUtils.Timer.setTimeout(this._hideCover, this.duration, this);
     }
   },

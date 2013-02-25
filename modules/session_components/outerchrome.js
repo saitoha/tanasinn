@@ -99,8 +99,8 @@ Movable.definition = {
     }
 
     if (this.move_transition) {
-      dom.root_element.style.MozTransitionProperty = "left, top";
-      dom.root_element.style.MozTransitionDuration = this.move_duration + "ms";
+      dom.root_element.style.transitionProperty = "left, top";
+      dom.root_element.style.transitionDuration = this.move_duration + "ms";
       this._timer = coUtils.Timer
         .setTimeout(this._onTransitionEnd, this.move_duration, this);
     }
@@ -115,8 +115,8 @@ Movable.definition = {
   {
     var root_element = this.request("get/root-element");
 
-    root_element.style.MozTransitionProperty = "";
-    root_element.style.MozTransitionDuration = "0ms";
+    root_element.style.transitionProperty = "";
+    root_element.style.transitionDuration = "0ms";
   },
 
 };
@@ -440,8 +440,8 @@ OuterChrome.definition = {
     duration = duration || 160;
 
     if (duration) {
-      target.style.MozTransitionProperty = "opacity";
-      target.style.MozTransitionDuration = duration + "ms";
+      target.style.transitionProperty = "opacity";
+      target.style.transitionDuration = duration + "ms";
     }
 
     // set opacity
@@ -450,12 +450,12 @@ OuterChrome.definition = {
     coUtils.Timer.setTimeout(
       function clearTransitionParameters()
       {
-        target.style.MozTransitionProperty = "";
-        target.style.MozTransitionDuration = "0ms";
+        target.style.transitionProperty = "";
+        target.style.transitionDuration = "0ms";
       }, duration);
   },
 
-};
+}; // OuterChrome
 
 
 /**

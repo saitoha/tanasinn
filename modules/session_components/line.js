@@ -296,6 +296,7 @@ Cell.definition = {
     this.value = 0x0;
   },
 
+  /** copy internal value from another instance */
   copyFrom: function copyFrom(rhs)
   {
     this.value = rhs.value;
@@ -430,7 +431,7 @@ DirtyRange.definition = {
         this.last = last
     }
   },
-}
+}; // DirtyRange
 
 /**
  * @trait Resizable

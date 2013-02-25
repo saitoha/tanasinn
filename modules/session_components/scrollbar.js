@@ -64,8 +64,8 @@ Scrollbar.definition = {
         id: "tanasinn_scrollbar",
         style: {
           opacity: "0.00",
-          MozTransitionProperty: "opacity",
-          MozTransitionDuration: this.transition_duration + "ms",
+          transitionProperty: "opacity",
+          transitionDuration: this.transition_duration + "ms",
           borderRadius: (this.inner_width + this.border_width * 2) + "px",
           border: this.border_width + "px solid " + this.color,
           width: (this.inner_width + this.border_width * 2) + "px",

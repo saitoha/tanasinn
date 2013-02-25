@@ -52,7 +52,7 @@ Cursor.definition = {
       parentNode: "#tanasinn_center_area",
       tagName: "html:canvas",
       id: "cursor_canvas",
-      MozTransitionProperty: "opacity",
+      transitionProperty: "opacity",
     };
   },
 
@@ -606,7 +606,7 @@ Cursor.definition = {
     var canvas = this._canvas;
 
     if (canvas) {
-      canvas.style.MozTransitionDuration = this.blink_transition_duration + "ms";
+      canvas.style.transitionDuration = this.blink_transition_duration + "ms";
       canvas.style.transitionTimingFunction = this.transition_function;
       if (visibility) {
         canvas.style.opacity = this.opacity;

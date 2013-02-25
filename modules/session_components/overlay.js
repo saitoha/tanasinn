@@ -90,7 +90,7 @@ OverlayIndicator.definition = {
         opacity: "0.00",
         maxWidth: "0px",
       },
-      MozTransitionProperty: "opacity",
+      transitionProperty: "opacity",
       childNodes: {
         tagName: "label",
         crop: "end",
@@ -224,7 +224,7 @@ OverlayIndicator.definition = {
       this._timer.cancel();
     }
     this._element.style.visibility = "visible";
-    this._element.style.MozTransitionDuration = "0ms";
+    this._element.style.transitionDuration = "0ms";
     this._element.style.opacity = this.opacity;
     if (timeout) {
       this._timer = coUtils.Timer.setTimeout(
@@ -239,7 +239,7 @@ OverlayIndicator.definition = {
   hide: function hide()
   {
     if (null !== this._element) {
-      this._element.style.MozTransitionDuration = this.fadeout_duration + "ms";
+      this._element.style.transitionDuration = this.fadeout_duration + "ms";
       this._element.style.opacity = 0.0;
       coUtils.Timer.setTimeout(
         function()

@@ -104,6 +104,8 @@ VT100Grammar.definition = {
     this._hookmap = null;
   },
 
+  /** The post-initializer method which called when the session
+   *  is initialized. */
   "[subscribe('event/session-initialized'), pnp]":
   function onSessionInitialized()
   {
@@ -311,6 +313,7 @@ VT100Grammar.definition = {
             this._dispatch_char(c);
           }
         } else if (c <= 0x2f) { // SP to /
+          // 00101111
           ibytes.push(c);
         } else if (c <= 0x7e) { // 0 to ~
           state = _STATE_GROUND;
@@ -328,7 +331,8 @@ VT100Grammar.definition = {
     this._ibytes = ibytes;
   },
 
-  _dispatch_csi: function _dispatch_csi(pbytes, ibytes, fbyte)
+  _dispatch_csi:
+  function _dispatch_csi(pbytes, ibytes, fbyte)
   {
     var prefix = pbytes[0],
         key,
@@ -363,7 +367,8 @@ VT100Grammar.definition = {
     return true;
   },
 
-  _dispatch_csi_no_ibytes: function _dispatch_csi_no_ibytes(pbytes, fbyte)
+  _dispatch_csi_no_ibytes:
+  function _dispatch_csi_no_ibytes(pbytes, fbyte)
   {
     var prefix = pbytes[0],
         key,
