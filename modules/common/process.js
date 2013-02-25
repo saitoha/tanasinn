@@ -328,32 +328,12 @@ void function() {
 
       this.load(this, ["modules/process_components"], new this.default_scope);
       this._observers = {};
-
-      this.subscribeGlobalEvent(
-        "quit-application",
-        function onQuitApplication(a_subject, a_topic, a_data)
-        {
-          this.notify("event/disabled", this);
-        }, this);
-
-      this.subscribeGlobalEvent(
-        "tanasinn/get-process",
-        function getProcess(a_subject, a_topic, a_data)
-        {
-          a_data.value = this;
-        }, this);
-
-      tanasinn_scope.coUtils.Services.getObserverService()
-        .addObserver(this, "command/terminate-tanasinn", false);
     },
 
     /* destructor */
     uninitialize: function uninitialize()
     {
-      this.removeGlobalEvent("quit-application");
-      this.removeGlobalEvent("tanasinn/get-process");
       loader.uninitialize();  // unregister window watcher handler
-      Process.destroy();      // unregister XPCOM object
     },
 
     getDesktopFromWindow: function getDesktopFromWindow(window)
@@ -377,44 +357,6 @@ void function() {
     toString: function toString()
     {
       return "[Object Process]";
-    },
-
-  // nsIObserver implementation
-    observe: function observe(subject, topic, data)
-    {
-      var io_service = tanasinn_scope.coUtils.Services.ioService,
-          observer_service = tanasinn_scope.coUtils.Services.getObserverService();
-
-      try {
-        observer_service.removeObserver(topic, this);
-      } catch (e) {
-        // do nothing
-      }
-
-      this.notify("event/disabled");
-      this.uninitialize();
-
-      io_service
-        .getProtocolHandler("resource")
-        .QueryInterface(Components.interfaces.nsIResProtocolHandler)
-        .setSubstitution("tanasinn", null);
-
-      this.notify("event/shutdown");
-      this.clear();
-    },
-
-    /**
-     * Provides runtime type discovery.
-     * @param aIID the IID of the requested interface.
-     * @return the resulting interface pointer.
-     */
-    QueryInterface: function QueryInterface(a_IID)
-    {
-      if (!a_IID.equals(Components.interafaces.nsIObserver)
-       && !a_IID.equals(Components.interafaces.nsISupports)) {
-        throw Components.results.NS_ERROR_NOT_IMPLEMENTED;
-      }
-      return this;
     },
 
   }; // Process

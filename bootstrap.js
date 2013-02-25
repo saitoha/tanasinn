@@ -24,6 +24,8 @@
 
 "use strict";
 
+var g_process;
+
 function alert(message)
 {
   Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
@@ -46,11 +48,6 @@ function start_tanasinn(data)
 
   terminate_tanasinn();
 
-  // reserve 'resource://tanasinn'
-  io_service.getProtocolHandler("resource")
-    .QueryInterface(Components.interfaces.nsIResProtocolHandler)
-    .setSubstitution("tanasinn", uri)
-
   try {
     file_handler = io_service.getProtocolHandler("file")
       .QueryInterface(Components.interfaces.nsIFileProtocolHandler);
@@ -66,6 +63,7 @@ function start_tanasinn(data)
       .classes["@mozilla.org/moz/jssubscript-loader;1"]
       .getService(Components.interfaces.mozIJSSubScriptLoader)
       .loadSubScript(process_url + "?" + new Date().getTime(), scope);
+    g_process = scope.g_process;
 
   } catch(e) {
     message = e.fileName + ":" + e.lineNumber + " " + e.toString();
@@ -80,10 +78,12 @@ function start_tanasinn(data)
  **/
 function terminate_tanasinn()
 {
-  Components
-    .classes["@mozilla.org/observer-service;1"]
-    .getService(Components.interfaces.nsIObserverService)
-    .notifyObservers(null, "command/terminate-tanasinn", null);
+  if (g_process) {
+    g_process.notify("event/disabled");
+    g_process.uninitialize();
+    g_process.notify("event/shutdown");
+    g_process.clear();
+  }
 }
 
 /** startup event handler */

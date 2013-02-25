@@ -42,6 +42,35 @@ try {
         Components.classes["@mozilla.org/moz/jssubscript-loader;1"]
           .getService(Ci.mozIJSSubScriptLoader)
           .loadSubScript(path, scope);
+        new scope.g_process.default_scope()
+          .coUtils.Services.getObserverService()
+          .addObserver(
+          {
+            observe: function observe()
+            {
+              scope.g_process.notify("event/disabled");
+              scope.g_process.uninitialize();
+              scope.g_process.notify("event/shutdown");
+              scope.g_process.clear();
+            },
+
+            /**
+             * Provides runtime type discovery.
+             * @param aIID the IID of the requested interface.
+             * @return the resulting interface pointer.
+             */
+            QueryInterface: function QueryInterface(a_IID)
+            {
+              if (!a_IID.equals(Components.interafaces.nsIObserver)
+               && !a_IID.equals(Components.interafaces.nsISupports)) {
+                throw Components.results.NS_ERROR_NOT_IMPLEMENTED;
+              }
+              return this;
+            },
+
+          },
+          "quit-application",
+          false);
         return scope.g_process.getDesktopFromWindow(window);
       }(),
       liberator = window.liberator,
