@@ -146,12 +146,13 @@ ConsoleListener.definition = {
   },
 
   /** Get recent console messages from buffer of console services. */
-  _getMessageArray: function _getMessageArray()
+  _getMessages: function _getMessages()
   {
-    var message_array = {};
+    var message_array,
+        count = {};
 
     // get latest 250 messages.
-    this._console_service.getMessageArray(message_array, {});
+    message_array = this._console_service.getMessageArray(count);
     return message_array;
   },
 
@@ -159,14 +160,19 @@ ConsoleListener.definition = {
   {
     var message_array,
         messages,
-        i;
+        i,
+        version_comparator = coUtils.Services.versionComparator,
+        version = coUtils.Runtime.version;
 
-    // in case messages are not found, consoleService returns null.
-    message_array = this._getMessageArray();
-    if (null !== message_array) {
-      messages = message_array.value;
-      for (i = 0; i < messages.length; ++i) {
-        this.observe(messages[i]);
+    // Workaround for BUG 664695
+    // https://bugzilla.mozilla.org/show_bug.cgi?id=664695
+    if (version_comparator.compare(version, "19.0") >= 0) {
+      // in case messages are not found, consoleService returns null.
+      messages = this._getMessages();
+      if (null !== messages) {
+        for (i = 0; i < messages.length; ++i) {
+          this.observe(messages[i]);
+        }
       }
     }
   },
