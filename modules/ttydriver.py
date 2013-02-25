@@ -629,9 +629,5 @@ if __name__ == "__main__":
 
                 del_record(sessiondb_path, request_id)
 
-    except socket.error:
-        trace("A socket error occured.")
-    except:
-        trace("An error occured")
     finally:
         os.close(master)

@@ -550,9 +550,10 @@ coUtils.Components = {
 
   createTransferable: function createTransferable()
   {
-    var transferable = Components
-      .classes["@mozilla.org/widget/transferable;1"]
-      .createInstance(Components.interfaces.nsITransferable),
+    const nsTransferable = Components
+      .Constructor("@mozilla.org/widget/transferable;1", "nsITransferable");
+
+    var transferable = nsTransferable(),
         source;
 
     if ('init' in transferable) {
