@@ -9,7 +9,7 @@
     <em:creator>saitoha</em:creator>
     <em:description>三 ┏( ^o^)┛ ＜ How Exciting Life is !!!!!! ＞ ┗(^o^ )┓ 三</em:description>
     <!--em:optionsURL>chrome://tanasinn/content/preference.xul</em:optionsURL-->
-    <em:iconURL>resource://tanasinn/content/tanasinn.png</em:iconURL>
+    <!--em:iconURL>resource://tanasinn/content/tanasinn.png</em:iconURL-->
     <em:unpack>true</em:unpack>
     <em:bootstrap>true</em:bootstrap>
     <!--em:updateKey>MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDDTc3Y8e8/VxD+aeSbYzbH4guPHbG2d+d2R8ktCIZtoQgKdhcpjP1bTAZdRlrTlmT7TfjParkTDPRc3UB6avgdmL3dk7tGznuAZBLyXIoENcIDB0quBsbv+6vK73DBuMvF47NwVWw9uDy1amSD8Jdbpscn90MtIuiane7jh+kIZwIDAQAB</em:updateKey-->
@@ -18,27 +18,27 @@
       <Description>
         <!-- Firefox -->
         <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
-        <em:minVersion>12.0</em:minVersion>
-        <em:maxVersion>20.0a1</em:maxVersion>
+        <em:minVersion>17.0</em:minVersion>
+        <em:maxVersion>22.0a1</em:maxVersion>
       </Description>
       <Description>
         <!-- Thunderbird -->
         <em:id>{3550f703-e582-4d05-9a08-453d09bdfdc6}</em:id>
-        <em:minVersion>7.0a1</em:minVersion>
-        <em:maxVersion>20.0a1</em:maxVersion>
+        <em:minVersion>17.0a1</em:minVersion>
+        <em:maxVersion>22.0a1</em:maxVersion>
       </Description>
       <Description>
         <!-- SeaMonkey -->
         <em:id>{92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}</em:id>
-        <em:minVersion>2.1</em:minVersion>
+        <em:minVersion>2.15</em:minVersion>
         <em:maxVersion>2.9a1</em:maxVersion>
       </Description>
-      <Description>
+      <!--Description>
         <!-- Fennec -->
         <em:id>{a23983c0-fd0e-11dc-95ff-0800200c9a66}</em:id>
         <em:minVersion>4.0</em:minVersion>
         <em:maxVersion>20.*</em:maxVersion>
-      </Description>
+      </Description-->
       <!-- Songbird -->
       <!--Description>
         <em:id>songbird@songbirdnest.com</em:id>
