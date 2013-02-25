@@ -134,10 +134,10 @@ try {
           .createInstance(Components.interfaces.nsIURL);
         url.spec = path;
 
-        // make nsILocalFile
+        // make nsIFile
         var file = Components
           .classes["@mozilla.org/file/local;1"]
-          .createInstance(Components.interfaces.nsILocalFile);
+          .createInstance(Components.interfaces.nsIFile);
         io.withTempFiles(
           function (tmpfile)
           {

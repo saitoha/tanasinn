@@ -82,9 +82,7 @@ Paste.definition = {
     var clipboard = Components
           .classes["@mozilla.org/widget/clipboard;1"]
           .getService(Components.interfaces.nsIClipboard),
-        trans = Components
-          .classes["@mozilla.org/widget/transferable;1"]
-          .createInstance(Components.interfaces.nsITransferable),
+        trans = coUtils.Components.createTransferable(),
         str = {},
         str_length = {},
         text;

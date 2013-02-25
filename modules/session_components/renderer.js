@@ -405,10 +405,29 @@ Renderer.definition = {
   function captureScreen(info)
   {
     var canvas = this._main_layer.canvas,
-        background = this._palette.background_color;
+        background = this._palette.background_color,
+        path = info.path,
+        file;
+
+    file = coUtils.File
+      .getFileLeafFromVirtualPath(path)
+      .QueryInterface(Components.interfaces.nsIFile);
+
+    // create base directories recursively (= mkdir -p).
+    void function make_directory(current)
+    {
+      var parent;
+
+      parent = current.parent;
+
+      if (!parent.exists()) {
+        make_directory(parent);
+        parent.create(Components.interfaces.nsIFile.DIRECTORY_TYPE, -1);
+      }
+    } (file);
 
     coUtils.IO.saveCanvas(canvas,
-                          info.file,
+                          file,
                           info.thumbnail,
                           background);
   },

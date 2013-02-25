@@ -432,7 +432,7 @@ coUtils.Components = {
   {
     var file = Components
       .classes["@mozilla.org/file/local;1"]
-      .createInstance(Components.interfaces.nsILocalFile);
+      .createInstance(Components.interfaces.nsIFile);
 
     file.initWithPath(path);
 
@@ -552,8 +552,18 @@ coUtils.Components = {
   {
     var transferable = Components
       .classes["@mozilla.org/widget/transferable;1"]
-      .createInstance(Components.interfaces.nsITransferable);
+      .createInstance(Components.interfaces.nsITransferable),
+        source;
 
+    if ('init' in transferable) {
+        // When passed a Window object, find a suitable provacy context for it.
+        if (source instanceof Components.interfaces.nsIDOMWindow)
+            source = source
+              .QueryInterface(Components.interfaces.nsIInterfaceRequestor)
+              .getInterface(Components.interfaces.nsIWebNavigation);
+
+        transferable.init(source);
+    }
     return transferable;
   },
 
@@ -765,21 +775,25 @@ coUtils.Runtime = {
 
   subscript_loader: coUtils.Services.getScriptLoader(),
 
+  /** return application ID */
   get app_id()
   {
     return this._app_info.ID;
   },
 
+  /** return application name */
   get app_name()
   {
     return this._app_info.name;
   },
 
+  /** return application version */
   get version()
   {
     return this._app_info.version;
   },
 
+  /** return OS */
   get os()
   {
     return this._app_info
@@ -787,6 +801,7 @@ coUtils.Runtime = {
       .OS;
   },
 
+  /** return bin path */
   getBinPath: function getBinPath()
   {
     return [
@@ -797,26 +812,31 @@ coUtils.Runtime = {
     ].join(":");
   },
 
+  /** return runtime directory path */
   getRuntimePath: function getRuntimePath()
   {
     return "$Home/.tanasinn";
   },
 
+  /** return tanasinnrc path */
   getResourceFilePath: function getResourceFilePath()
   {
     return this.getRuntimePath() + "/tanasinnrc";
   },
 
+  /** return batch path */
   getBatchDirectory: function getBatchDirectory()
   {
     return this.getRuntimePath() + "/batch";
   },
 
+  /** return cgi-bin path */
   getCGIDirectory: function getCGIDirectory()
   {
     return this.getRuntimePath() + "/cgi-bin";
   },
 
+  /** search cygwin root path from Windows path [C-Z]:\cygwin */
   getCygwinRoot: function getCygwinRoot()
   {
     var directory,
@@ -837,7 +857,7 @@ coUtils.Runtime = {
     for (; i < search_paths.length; ++i) {
       directory = Components
         .classes["@mozilla.org/file/local;1"]
-        .createInstance(Components.interfaces.nsILocalFile);
+        .createInstance(Components.interfaces.nsIFile);
       directory.initWithPath(search_paths[i]);
       if (directory.exists() && directory.isDirectory) {
         return directory.path;
@@ -860,7 +880,8 @@ coUtils.Runtime = {
             directory;
 
         if ("WINNT" === os) {
-          // FIXME: this code is not works well when path includes space characters.
+          // FIXME: this code is not works well when path includes
+          //        space characters.
           native_path = coUtils.Runtime.getCygwinRoot()
                       + path.replace(/\//g, "\\");
         } else {

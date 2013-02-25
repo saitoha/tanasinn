@@ -64,7 +64,6 @@ ScreenshotCommand.definition = {
     var pattern = /^(\S+)s*$/,
         match = arguments_string.match(pattern),
         path,
-        file,
         name;
 
     if (null === match) {
@@ -73,30 +72,17 @@ ScreenshotCommand.definition = {
         message: _("Ill-formed message."),
       };
     }
-    [, name] = match;
+    name = match[1];
 
     path = coUtils.Runtime.getRuntimePath() + "/screenshot/" + name + ".png";
-    file = coUtils.File
-      .getFileLeafFromVirtualPath(path)
-      .QueryInterface(Components.interfaces.nsILocalFile);
 
-    // create base directories recursively (= mkdir -p).
-    void function make_directory(current)
-    {
-      var parent;
+    this.sendMessage(
+      "command/capture-screen",
+      {
+        path: path,
+        thumbnail: false
+      });
 
-      parent = current.parent;
-
-      if (!parent.exists()) {
-        make_directory(parent);
-        parent.create(Components.interfaces.nsIFile.DIRECTORY_TYPE, -1);
-      }
-    } (file);
-
-    this.sendMessage("command/capture-screen", {
-      file: file,
-      thumbnail: false
-    });
     return {
       success: true,
       message: _("Succeeded."),
