@@ -197,18 +197,23 @@ Session.definition = {
   _stopped: false,
   _request_id: null,
 
+  /** send a command line string to command manager */
   "[subscribe('command/send-command'), enabled]":
   function sendCommand(command)
   {
     this.notify("command/eval-commandline", command);
   },
 
+  /** send a key expression to input manager */
   "[subscribe('command/send-keys'), enabled]":
   function sendKeys(expression)
   {
-    this.notify("command/input-expression-with-remapping", expression);
+    this.notify(
+      "command/input-expression-with-remapping",
+      expression);
   },
 
+  /** detach from session */
   "[subscribe('event/disabled'), enabled]":
   function onDisabled()
   {
@@ -216,11 +221,14 @@ Session.definition = {
   },
 
   /** Create terminal UI and start tty session. */
-  initializeWithRequest: function initializeWithRequest(request)
+  initializeWithRequest:
+  function initializeWithRequest(request)
   {
     var id = coUtils.Uuid.generate().toString();
 
-    this.load(this, this.search_path, new this._broker._broker.default_scope);
+    this.load(this,
+              this.search_path,
+              new this._broker._broker.default_scope);
 
     // register getter topic.
     this.subscribe(
@@ -241,6 +249,16 @@ Session.definition = {
     this.notify("event/broker-started", this);
 
     this.notify("event/session-initialized", this);
+
+    this.sendMessage(
+      "command/add-domlistener",
+      {
+        type: "close",
+        id: id,
+        target: this._window,
+        context: this,
+        handler: this.onDisabled,
+      });
 
     coUtils.Timer.setTimeout(
       function timerProc()
@@ -294,6 +312,9 @@ Session.definition = {
 }; // class Session
 
 
+/**
+ * @class SessionFactory
+ */
 var SessionFactory = new Class().extends(Plugin)
 SessionFactory.definition = {
 

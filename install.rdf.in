@@ -30,11 +30,11 @@
       <Description>
         <!-- SeaMonkey -->
         <em:id>{92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}</em:id>
-        <em:minVersion>2.15</em:minVersion>
+        <em:minVersion>2.1</em:minVersion>
         <em:maxVersion>2.9a1</em:maxVersion>
       </Description>
+      <!-- Fennec -->
       <!--Description>
-        <!-- Fennec -->
         <em:id>{a23983c0-fd0e-11dc-95ff-0800200c9a66}</em:id>
         <em:minVersion>4.0</em:minVersion>
         <em:maxVersion>20.*</em:maxVersion>

@@ -28,6 +28,7 @@
 // Key mappings.
 //
 
+// Ctrl-prefixed key mappings
 var KEY_ANSI = {
   "Ctrl Space"    : "\x00", //  NUL
   "Ctrl `"        : "\x00", //  NUL
@@ -75,6 +76,7 @@ var KEY_ANSI = {
 };
 
 
+// cursor key mappings (normal mode)
 var KEY_NORMAL_CURSOR = {
   "Left"         : "<CSI>D",     // kl / kcub1
   "Up"           : "<CSI>A",     // ku / kcuu1
@@ -82,6 +84,7 @@ var KEY_NORMAL_CURSOR = {
   "Down"         : "<CSI>B",     // kd / kcud1
 };
 
+// cursor key mappings (application mode)
 var KEY_APPLICATION_CURSOR = {
   "Left"         : "<SS3>D",     // kl / kcub1
   "Up"           : "<SS3>A",     // ku / kcuu1
@@ -89,18 +92,7 @@ var KEY_APPLICATION_CURSOR = {
   "Down"         : "<SS3>B",     // kd / kcud1
 };
 
-var KEY_NORMAL_ESCAPE = {
-  "ESC"           : "\x1b",
-  "Ctrl ["        : "\x1b", //  ESC
-  "Ctrl \x1b"     : "\x1b", //  ESC
-};
-
-var KEY_APPLICATION_ESCAPE = {
-  "ESC"           : "\x1bO[",
-  "Ctrl ["        : "\x1bO[", //  ESC
-  "Ctrl \x1b"     : "\x1bO[", //  ESC
-};
-
+// cursor key mappings (vt52 mode)
 var KEY_VT52_CURSOR = {
   "Left"         : "\x1bD",  // kl / kcub1
   "Up"           : "\x1bA",  // ku / kcuu1
@@ -108,20 +100,43 @@ var KEY_VT52_CURSOR = {
   "Down"         : "\x1bB",  // kd / kcud1
 };
 
+// escape key mappings (normal mode)
+var KEY_NORMAL_ESCAPE = {
+  "ESC"           : "\x1b",
+  "Ctrl ["        : "\x1b", //  ESC
+  "Ctrl \x1b"     : "\x1b", //  ESC
+};
+
+// escape key mappings (application mode)
+var KEY_APPLICATION_ESCAPE = {
+  "ESC"           : "\x1bO[",
+  "Ctrl ["        : "\x1bO[", //  ESC
+  "Ctrl \x1b"     : "\x1bO[", //  ESC
+};
+
+// Home/End mappings (normal mode)
 var KEY_SUNPC_NORMAL_KEYPAD = {
   "End"    : "<CSI>H",
   "Home"   : "<CSI>F",
 };
 
+// Home/End mappings (application mode)
 var KEY_SUNPC_APPLICATION_KEYPAD = {
   "End"    : "<SS3>H",
   "Home"   : "<SS3>F",
 };
 
+// kcbt (shift-tab) mappings (vt100)
+var KEY_VT100_KCBT = {
+  "Shift Tab"    : "\x09",
+}
+
+// kcbt (shift-tab) mappings (xterm)
 var KEY_XTERM_KCBT = {
   "Shift Tab"    : "<CSI>Z",
 }
 
+// other normal keypad mappings
 var KEY_NORMAL_KEYPAD = {
   "PgUp"   : "<CSI>5~", // kP / kpp
   "PgDn"   : "<CSI>6~", // kN / knp
@@ -213,10 +228,9 @@ var KEY_NORMAL_KEYPAD = {
   "Ctrl Up"      : "<CSI>1;5A",
   "Ctrl Right"   : "<CSI>1;5C",
   "Ctrl Down"    : "<CSI>1;5B",
-
-
 };
 
+// other application keypad mappings
 var KEY_APPLICATION_KEYPAD = {
 
   "PgUp"   : "<CSI>5~", // kP / kpp
@@ -312,23 +326,27 @@ var KEY_APPLICATION_KEYPAD = {
 
 };
 
-
+// \x5c glitch for yen (Japanese)
 var KEY_YEN_AS_5C = {
   "\xa5"       : "\x5c",
 };
 
+// \x5c glitch for won (Korian)
 var KEY_WON_AS_5C = {
   "\u20a9"     : "\x5c",
 };
 
+// \x7f glitch DEL key (Mac)
 var KEY_BACKSPACE_AS_DEL = {
   "backspace"  : "\x7f",
 };
 
+// \x7f glitch DEL key (PC)
 var KEY_DELETE_AS_FUNC = {
   "delete"     : "<CSI>3~",
 };
 
+// Alt-*/Alt-Shift-* glitches for Mac
 var KEY_MAC_ALT_AS_META = {
   // For mac
   "Alt \u0061" : "\x1ba",
@@ -449,6 +467,7 @@ var KEY_MAC_ALT_AS_META = {
   "Alt Shift \u0060" : "\x1b_",
 };
 
+/** create keycode map from keymap expression */
 function coCreateKeyMap(expression_map, destination_map)
 {
   var map = destination_map || {},
@@ -672,12 +691,7 @@ DefaultKeyMappings.definition = {
     }
   },
 
-  get: function get(code)
-  {
-    return this._map[code] || code;
-  },
-
-};
+}; // DefaultKeyMappings
 
 /**
  * @class ModeManager

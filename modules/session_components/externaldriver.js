@@ -263,7 +263,7 @@ ExternalDriver.definition = {
     return this;
   },
 
-};
+}; // ExternalDriver
 
 /**
  * @fn main

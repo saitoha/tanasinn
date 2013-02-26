@@ -46,8 +46,6 @@ OpenInW3m.definition = {
         id = "tanasinn_open_in_w3m",
         contextmenu;
 
-    broker.window._tanasinn_w3m = this;
-
     if (!broker.window.document.getElementById(id)) {
       contextmenu = broker.window.document
               .getElementById("contentAreaContextMenu");
@@ -59,7 +57,15 @@ OpenInW3m.definition = {
           tagName: "menuitem",
           id: id,
           label: _("Open in w3m"),
-          oncommand: "_tanasinn_w3m.openInW3m()",
+          listener: {
+            type: "command",
+            id: id,
+            context: this,
+            handler: function oncommand()
+            {
+              this.openInW3m();
+            },
+          },
         })[id];
 
       this.sendMessage(
@@ -80,7 +86,6 @@ OpenInW3m.definition = {
   function uninstall()
   {
     this._menupopup = null;
-    this._broker.window._tanasinn_w3m = null;
     this.sendMessage("command/remove-domlistener", this.id);
   },
 
@@ -92,27 +97,31 @@ OpenInW3m.definition = {
         url;
 
     if (menupopup) {
-      url = broker.window.gContextMenu.linkURL;
-      if (url) {
-        if (/^(?:about|chrome)/.test(url)) {
-          menupopup.hidden = true;
+      contextmenu = broker.window.gContextMenu;
+      if (contextmenu) {
+        url = contextmenu.url;
+        if (url) {
+          if (/^(?:about|chrome)/.test(url)) {
+            menupopup.hidden = true;
+          } else {
+            menupopup.hidden = false;
+            menupopup.setAttribute("label", _("Open in w3m"));
+          }
         } else {
-          menupopup.hidden = false;
-          menupopup.setAttribute("label", _("Open in w3m"));
-        }
-      } else {
-        url = broker.window.gBrowser.currentURI.spec;
-        if (/^(?:about|chrome)/.test(url)) {
-          menupopup.hidden = true;
-        } else {
-          menupopup.hidden = false;
-          menupopup.setAttribute("label", _("Open this page in w3m"));
+          url = broker.window.gBrowser.currentURI.spec;
+          if (/^(?:about|chrome)/.test(url)) {
+            menupopup.hidden = true;
+          } else {
+            menupopup.hidden = false;
+            menupopup.setAttribute("label", _("Open this page in w3m"));
+          }
         }
       }
     };
 
   },
 
+  /** open linkURL under the cursor with w3m */
   openInW3m: function openInW3m()
   {
     var win = this._broker._window,
@@ -123,6 +132,7 @@ OpenInW3m.definition = {
 
     this.sendMessage('command/start-session', command);
   },
+
 }; // OpenInW3m
 
 /**

@@ -208,12 +208,14 @@ Controller.definition = {
     this.post(command);
   },
 
+  /** send detach command to tty driver */
   "[subscribe('@command/detach'), pnp]":
   function detach()
   {
     this.post("detach\n");
   },
 
+  /** send kill command to tty driver */
   "[subscribe('@command/kill'), pnp]":
   function kill()
   {
@@ -230,6 +232,8 @@ Controller.definition = {
     this.post(flag ? "xon\n": "xoff\n");
   },
 
+  /** called when both of Control-socket/IO-socket come to be ready
+   *  to use */
   "[subscribe('event/{control & io}-socket-ready'), pnp]":
   function connect(control_port, io_port)
   {
@@ -356,7 +360,8 @@ Controller.definition = {
 // private
   _get_sessiondb_path: function _get_sessiondb_path()
   {
-    var virtual_path = coUtils.Runtime.getRuntimePath() + "/sessions.txt",
+    var virtual_path = coUtils.Runtime.getRuntimePath()
+                     + "/sessions.txt",
         sessiondb_path = coUtils.File
           .getFileLeafFromVirtualPath(virtual_path).path;
 

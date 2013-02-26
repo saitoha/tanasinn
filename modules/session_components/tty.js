@@ -143,6 +143,7 @@ SocketTeletypeService.definition = {
     coUtils.Debug.reportMessage(_("Resources in TTY have been cleared."));
   },
 
+  /** launch the python script and start TTY */
   "[subscribe('@command/start-tty-service'), pnp]":
   function startService(settings)
   {
@@ -214,16 +215,7 @@ SocketTeletypeService.definition = {
     }
   },
 
-  "[subscribe('@command/focus')]":
-  function onFirstFocus()
-  {
-    coUtils.Timer.setTimeout(
-      function timerProc()
-      {
-        this.sendMessage("command/draw", true);
-      },100);
-  },
-
+  /** detach from session */
   "[subscribe('@command/detach'), pnp]":
   function detach()
   {
@@ -239,6 +231,7 @@ SocketTeletypeService.definition = {
     this._broker.stop()
   },
 
+  /** set tty name */
   "[subscribe('sequence/osc/97'), pnp]":
   function osc97(ttyname)
   {

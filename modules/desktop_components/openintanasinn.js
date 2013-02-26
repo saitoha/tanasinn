@@ -47,8 +47,6 @@ OpenTanasinn.definition = {
         contextmenu,
         menupopup;
 
-    broker.window._tanasinn_resume = this;
-
     if (!broker.window.document.getElementById(id)) {
       contextmenu = broker.window.document.getElementById("contentAreaContextMenu");
       if (!contextmenu) {
@@ -93,7 +91,6 @@ OpenTanasinn.definition = {
       }
     }
     this._menupopup = null;
-    this._broker._tanasinn_resume = null;
   },
 
   addNew: function addNew()
@@ -138,13 +135,29 @@ OpenTanasinn.definition = {
           parentNode: this._menupopup,
           tagName: "menuitem",
           label: _("Add new session"),
-          oncommand: "_tanasinn_resume.addNew()",
+          listener: {
+            type: "command",
+            id: id,
+            context: this,
+            handler: function oncommand()
+            {
+              this.addNew();
+            },
+          },
         },
         {
           parentNode: this._menupopup,
           tagName: "menuitem",
           label: _("Run command"),
-          oncommand: "_tanasinn_resume.showLauncher()",
+          listener: {
+            type: "command",
+            id: id,
+            context: this,
+            handler: function oncommand()
+            {
+              this.showLauncher();
+            },
+          },
         },
       ]);
 
@@ -182,7 +195,15 @@ OpenTanasinn.definition = {
             parentNode: this._menupopup,
             tagName: "menuitem",
             flex: 1,
-            oncommand: "_tanasinn_resume.resumeSession('" + id + "')",
+            listener: {
+              type: "command",
+              id: id,
+              context: this,
+              handler: function oncommand()
+              {
+                this.resumeSession(id);
+              },
+            },
             childNodes: [
               {
                 tagName: "vbox",

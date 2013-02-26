@@ -336,14 +336,9 @@ IOManager.definition = {
   {
     var data = this._input.readBytes(count);
 
-    //coUtils.Timer.setTimeout(
-    //  function timerProc()
-    //  {
-        this._parser.drive(data);
-    //this.sendMessage("event/data-arrived", data);
-    //  }, 30, this);
+    this._parser.drive(data);
   },
-};
+}; // IOManager
 
 
 /**

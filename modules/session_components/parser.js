@@ -84,6 +84,7 @@ Parser.definition = {
     this._drcs_converter = null;
   },
 
+  /** called when the broker object is initialized */
   "[subscribe('event/session-initialized'), pnp]":
   function onSessionInitialized(session)
   {
@@ -101,6 +102,7 @@ Parser.definition = {
     this._grammar = this._grammars[this.initial_grammar];
   },
 
+  /** called when East Asian ambiguous width settings is changed */
   "[subscribe('variable-changed/parser.ambiguous_as_wide'), pnp]":
   function onChangeAmbiguousCharacterWidth(is_wide)
   {
@@ -111,6 +113,7 @@ Parser.definition = {
     }
   },
 
+  /** called when emulation mode is changed */
   "[subscribe('command/change-emulation-mode'), pnp]":
   function onChangeMode(mode)
   {
@@ -132,12 +135,14 @@ Parser.definition = {
     }
   },
 
+  /** enable default (VT-compatible) parser */
   "[subscribe('command/enable-default-parser'), pnp]":
   function enableDefaultParser()
   {
     this.drive.enabled = true;
   },
 
+  /** disable default (VT-compatible) parser */
   "[subscribe('command/disable-default-parser'), pnp]":
   function disableDefaultParser()
   {
@@ -205,6 +210,7 @@ Parser.definition = {
     }
   },
 
+  /** decode given output stream and return the result as byte array */
   _decode: function _decode(scanner)
   {
     var decoder = this._decoder,

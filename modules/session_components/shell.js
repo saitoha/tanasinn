@@ -74,24 +74,28 @@ ShellSettings.definition = {
   {
   },
 
+  /** set $TERM environment value */
   "[subscribe('command/set-environment/term'), pnp]":
   function setTerm(term)
   {
     this.term = term;
   },
 
+  /** set start up command setting */
   "[subscribe('command/set-environment/command'), pnp]":
   function setLocale(command)
   {
     this.command = command;
   },
 
+  /** set locale environment value setting */
   "[subscribe('command/set-environment/locale'), pnp]":
   function setLocale(locale)
   {
     this.locale = locale;
   },
 
+  /** called when the broker is initialized */
   "[subscribe('event/session-initialized'), pnp]":
   function onSessionInitialized(session)
   {

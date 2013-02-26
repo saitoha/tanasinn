@@ -175,6 +175,7 @@ PopupMenu.definition = {
   _cover: null,
   _is_showing: false,
   _renderer: null,
+  _target: null,
 
   /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
@@ -263,6 +264,7 @@ PopupMenu.definition = {
 
     this._renderer = null;
     this._cursor_state = null;
+    this._target = null;
   },
 
   "[listen('mousedown', '#tanasinn_app_popup', true), pnp]":
@@ -314,12 +316,12 @@ PopupMenu.definition = {
       target = target.parentNode;
     }
 
-    if (this._mouseover) {
-      this._mouseover.style.backgroundColor = "";
-      this._mouseover.style.borderRadius = "5px";
+    if (this._target) {
+      this._target.style.backgroundColor = "";
+      this._target.style.borderRadius = "5px";
     }
 
-    this._mouseover = target;
+    this._target = target;
     target.style.backgroundColor = "#ccc";
   },
 

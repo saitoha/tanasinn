@@ -89,13 +89,15 @@ InputMacro.definition = {
 
       complete = false;
 
-      coUtils.Timer.setTimeout(function() {
-        complete = true;
-      }, 200);
+      coUtils.Timer.setTimeout(
+        function()
+        {
+          complete = true;
+        }, 200);
 
-      while (!complete) {
+      do {
         thread.processNextEvent(true);
-      }
+      } while (!complete);
 
       this.sendMessage("command/input-with-no-remapping", buffer[i]);
     }
