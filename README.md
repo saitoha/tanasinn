@@ -25,7 +25,8 @@ How to build XPI
 ----------------
 
 ```
-./configure && make
+./configure
+make
 ```
 
 Launch a terminal
@@ -33,11 +34,11 @@ Launch a terminal
 
 - from contextmenu
 
-  "open tanasinn"
+  "tanasinn" -> "New session"
 
 - from GCLI
 
   type
 
-> tanasinn   
+> tanasinn
 
