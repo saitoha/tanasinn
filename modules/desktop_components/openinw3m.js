@@ -33,6 +33,7 @@ OpenInW3m.definition = {
   id: "open-in-w3m",
 
   "[persistable] enabled_when_startup": true,
+  "[persistable] text_browser_command": "w3m '%s'",
 
   _menupopup: null,
 
@@ -56,7 +57,7 @@ OpenInW3m.definition = {
           parentNode: contextmenu,
           tagName: "menuitem",
           id: id,
-          label: _("Open in w3m"),
+          label: _("Open in text browser"),
           listener: {
             type: "command",
             id: id,
@@ -67,16 +68,6 @@ OpenInW3m.definition = {
             },
           },
         })[id];
-
-      this.sendMessage(
-        "command/add-domlistener",
-        {
-          type: "popupshowing",
-          id: this.id,
-          target: contextmenu,
-          context: this,
-          handler: this.onPopupShowing,
-        });
     }
   },
 
@@ -89,38 +80,6 @@ OpenInW3m.definition = {
     this.sendMessage("command/remove-domlistener", this.id);
   },
 
-  //"[listen('popupshowing', '#contentAreaContextMenu'), pnp]":
-  onPopupShowing: function onPopupShowing()
-  {
-    var broker = this._broker,
-        menupopup = this._menupopup,
-        url;
-
-    if (menupopup) {
-      contextmenu = broker.window.gContextMenu;
-      if (contextmenu) {
-        url = contextmenu.url;
-        if (url) {
-          if (/^(?:about|chrome)/.test(url)) {
-            menupopup.hidden = true;
-          } else {
-            menupopup.hidden = false;
-            menupopup.setAttribute("label", _("Open in w3m"));
-          }
-        } else {
-          url = broker.window.gBrowser.currentURI.spec;
-          if (/^(?:about|chrome)/.test(url)) {
-            menupopup.hidden = true;
-          } else {
-            menupopup.hidden = false;
-            menupopup.setAttribute("label", _("Open this page in w3m"));
-          }
-        }
-      }
-    };
-
-  },
-
   /** open linkURL under the cursor with w3m */
   openInW3m: function openInW3m()
   {
@@ -128,7 +87,8 @@ OpenInW3m.definition = {
         node = win.document.popupNode,
         url = win.gContextMenu.linkURL
             || win.gBrowser.currentURI.spec,
-        command = coUtils.Text.format("w3m '%s'", url);
+        template = this.text_browser_command,
+        command = coUtils.Text.format(template, url);
 
     this.sendMessage('command/start-session', command);
   },

@@ -108,6 +108,7 @@ OpenTanasinn.definition = {
     this.sendMessage("command/start-session", "&" + id);
   },
 
+  /** called when sub-menu is showing and start to complete sessions */
   "[listen('popupshowing', '#tanasinn_menupopup'), pnp]":
   function onPopupShowing()
   {
@@ -145,6 +146,7 @@ OpenTanasinn.definition = {
             },
           },
         },
+        /*
         {
           parentNode: this._menupopup,
           tagName: "menuitem",
@@ -159,6 +161,7 @@ OpenTanasinn.definition = {
             },
           },
         },
+        */
       ]);
 
     if (!result) {
