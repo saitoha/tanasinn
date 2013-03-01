@@ -93,6 +93,17 @@ OpenTanasinn.definition = {
     this._menupopup = null;
   },
 
+  "[subscribe('command/show-popup'), pnp]":
+  function showPopup()
+  {
+    try {
+    var content = this._menupopup
+            .ownerDocument
+            .documentElement;
+    this._menupopup.showPopup(content, 0, 0, "popup", null, null);
+    } catch(e) {alert(e)}
+  },
+
   addNew: function addNew()
   {
     this.sendMessage("command/start-session");
@@ -119,6 +130,12 @@ OpenTanasinn.definition = {
 
   doCompletion: function doCompletion(result)
   {
+    var element = this._menupopup;
+    this._doCompletionImpl(element, result);
+  },
+
+  _doCompletionImpl: function _doCompletionImpl(element, result)
+  {
     var i,
         image_url,
         id,
@@ -126,14 +143,14 @@ OpenTanasinn.definition = {
         thumb_height,
         thumb_width;
 
-    while (this._menupopup.childNodes.length > 0) {
-      this._menupopup.removeChild(this._menupopup.lastChild);
+    while (element.childNodes.length > 0) {
+      element.removeChild(element.lastChild);
     }
     this.request(
       "command/construct-chrome",
       [
         {
-          parentNode: this._menupopup,
+          parentNode: element,
           tagName: "menuitem",
           label: _("Add new session"),
           listener: {
@@ -148,7 +165,7 @@ OpenTanasinn.definition = {
         },
         /*
         {
-          parentNode: this._menupopup,
+          parentNode: element,
           tagName: "menuitem",
           label: _("Run command"),
           listener: {
@@ -171,7 +188,7 @@ OpenTanasinn.definition = {
     this.request(
       "command/construct-chrome",
       {
-        parentNode: this._menupopup,
+        parentNode: element,
         tagName: "menuseparator",
       });
 
@@ -195,7 +212,7 @@ OpenTanasinn.definition = {
         this.request(
           "command/construct-chrome",
           {
-            parentNode: this._menupopup,
+            parentNode: element,
             tagName: "menuitem",
             flex: 1,
             listener: {
