@@ -823,7 +823,7 @@ image::images/tanasinn-contextmenu.png[width=480]
     Press <Shift-F2> and type as follows:
 
 ----
-tanasin <command line>
+tanasinn <command line>
 ----
 
 
