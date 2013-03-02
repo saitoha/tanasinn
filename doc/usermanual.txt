@@ -934,13 +934,13 @@ example:
 #endif
 
 #if __EN__
-.pinch open/close
+.alt + shift + drag
 
-    increase/decrease font size. (like iTerm2)
+    3D rotation
 #elif __JP__
-.ピンチオープン／クローズ
+.alt + shift + ドラッグ
 
-    フォントサイズの拡大・縮小。 (iTerm2の真似)
+    3Dローテーション
 #endif
 
 
