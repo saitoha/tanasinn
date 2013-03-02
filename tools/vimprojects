@@ -254,6 +254,8 @@
 
     contextmenu.js
     encodings.js
+    encodermenu.js
+    decodermenu.js
     kill.js
 
     w3m.js

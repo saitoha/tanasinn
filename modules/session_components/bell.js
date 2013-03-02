@@ -35,6 +35,7 @@ Bell.definition = {
 
   id: "bell",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {
@@ -44,6 +45,7 @@ Bell.definition = {
     };
   },
 
+  /** UI template */
   getTemplate: function getTemplate()
   {
     return {
@@ -76,7 +78,9 @@ Bell.definition = {
   "[install]":
   function install(context)
   {
-    var result = this.request("command/construct-chrome", this.getTemplate());
+    var result = this.request(
+                    "command/construct-chrome",
+                    this.getTemplate());
 
     this._renderer = context["renderer"];
     this._screen = context["screen"];
@@ -106,19 +110,29 @@ Bell.definition = {
     this._cover.height = renderer.line_height * screen.height;
   },
 
+  /** called when logical screen width is changed */
   "[subscribe('event/screen-width-changed'), pnp]":
   function onWidthChanged(width)
   {
-    this._cover.width = width;
+    var cover = this._cover;
+
+    if (cover) {
+      cover.width = width;
+    }
   },
 
+  /** called when logical height width is changed */
   "[subscribe('event/screen-height-changed'), pnp]":
   function onHeightChanged(height)
   {
-    this._cover.height = height;
+    var cover = this._cover;
+
+    if (cover) {
+      cover.height = height;
+    }
   },
 
-
+  /** called when BEL(\x07) is detected */
   "[subscribe('sequence/bel'), pnp]":
   function onBell()
   {
@@ -145,10 +159,12 @@ Bell.definition = {
   /** Plays visual bell effect. */
   visualBell: function visualBell()
   {
-    if (this._cover) {
-      this._cover.style.backgroundColor = this.color;
+    var cover = this._cover;
+
+    if (cover) {
+      cover.style.backgroundColor = this.color;
       this._showCover();
-      this._cover.style.transitionDuration = this.duration + "ms";
+      cover.style.transitionDuration = this.duration + "ms";
       coUtils.Timer.setTimeout(this._hideCover, this.duration, this);
     }
   },

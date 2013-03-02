@@ -28,17 +28,20 @@
  *  @class EncoderMenu
  *  @brief Makes it enable to switch terminal encoding by context menu.
  */
-var EncoderMenu = new Class().extends(Plugin).depends("encoder");
+var EncoderMenu = new Class().extends(Plugin)
+                             .depends("encoder");
 EncoderMenu.definition = {
 
   id: "encodings",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {
       name: _("Encoder Menu"),
       version: "0.1",
-      description: _("Makes it enable to switch terminal encoding by context menu.")
+      description: _("Makes it enable to switch terminal encoding",
+                     " by context menu.")
     };
   },
 
@@ -63,6 +66,7 @@ EncoderMenu.definition = {
     this._encoder = null;
   },
 
+  /** called when contextmenu entries is required */
   "[subscribe('get/contextmenu-entries'), pnp]":
   function onContextMenu()
   {
@@ -105,96 +109,6 @@ EncoderMenu.definition = {
   },
 };
 
-/**
- *  @class DecoderMenu
- *  @brief Makes it enable to switch terminal decoder by context menu.
- */
-var DecoderMenu = new Class().extends(Plugin).depends("decoder");
-DecoderMenu.definition = {
-
-  id: "decodermenu",
-
-  getInfo: function getInfo()
-  {
-    return {
-      name: _("Decoder Menu"),
-      version: "0.1",
-      description: _("Makes it enable to switch terminal decoder by context menu.")
-    };
-  },
-
-  "[persistable] enabled_when_startup": true,
-  "[persistable] send_ff_when_encoding_changed": true,
-
-  _decoder: null,
-
-  /** Installs itself.
-   *  @param {InstallContext} context A InstallContext object.
-   */
-  "[install]":
-  function install(context)
-  {
-    this._decoder = context["decoder"];
-  },
-
-  /** Uninstalls itself. */
-  "[uninstall]":
-  function uninstall()
-  {
-    this._decoder = null;
-  },
-
-  "[subscribe('get/contextmenu-entries'), pnp]":
-  function onContextMenu()
-  {
-    var decoder = this._decoder,
-        decoders = this.sendMessage("get/decoders"),
-        decoder_scheme = decoder.scheme;
-
-    return {
-      tagName: "menu",
-      label: _("Decoder"),
-      childNodes: {
-        tagName: "menupopup",
-        childNodes: decoders.map(
-          function mapFunc(information)
-          {
-            var charset = information.charset;
-
-            return {
-              tagName: "menuitem",
-              type: "radio",
-              label: information.title,
-              name: "encoding",
-              checked: decoder_scheme === charset,
-              listener: {
-                type: "command",
-                context: this,
-                handler: function onEncodingChanged()
-                {
-                  return this._onChange(charset);
-                },
-              }
-            }
-          }, this),
-      }
-    };
-  },
-
-  /** Switch terminal decoding setting.
-   */
-  _onChange: function(scheme)
-  {
-    this._scheme = scheme;
-    this.sendMessage("change/decoder", scheme)
-
-    // send control + l
-    if (this.send_ff_when_encoding_changed) {
-      this.sendMessage("command/send-to-tty", String.fromCharCode(0x0c));
-    }
-  }
-};
-
 
 /**
  * @fn main
@@ -204,7 +118,6 @@ DecoderMenu.definition = {
 function main(broker)
 {
   new EncoderMenu(broker)
-  new DecoderMenu(broker)
 }
 
 // EOF

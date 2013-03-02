@@ -470,6 +470,7 @@ Selection.definition = {
       }, 100, this);
   },
 
+  /** mouse-up event handler */
   "[listen('mouseup', '#tanasinn_content')]":
   function onClickAfterSelect(event)
   {
@@ -628,7 +629,6 @@ Selection.definition = {
         context.arc(x + r1, y + r1, r2, pi * 1.0 , pi * 1.5, false);
         length = start_column + lines[0].length;
         x = length * char_width;
-        //context.lineTo(x - r1, y + r1 - r2);
         context.arc(x - r1, y + r1, r2, pi * 1.5 , pi * 0, false);
         for (i = start_row + 1; i < end_row; ++i) {
           line = lines[i - start_row];
@@ -655,17 +655,29 @@ Selection.definition = {
         context.arc(start_column * char_width + r1, y + r1, r2, pi * 1.0 , pi * 1.5, false);
       }
     }
+    this._fillSelectionRange(context);
+    context = null;
+  },
 
+  _fillSelectionRange:
+  function _fillSelectionRange(context)
+  {
+    var main_canvas = this._renderer.getCanvas();
+
+    // fill with base color
     context.shadowColor = this._shadowColor;
     context.fillStyle = this._color;
     context.fill();
+
+    // fill with main canvas
     context.shadowBlur = 18;
-    context.fillStyle = context.createPattern(this._renderer.getCanvas(), "");
+    context.fillStyle = context.createPattern(main_canvas, "");
     context.fill();
+
+    // draw edge
     context.strokeStyle = this.edge_color;
     context.lineWidth = 4;
     context.stroke();
-    context = null;
   },
 
   selectSurroundChars: function selectSurroundChars(column, row)

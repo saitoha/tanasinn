@@ -50,6 +50,7 @@ W3m.definition = {
 
   id: "w3m",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {
@@ -59,6 +60,7 @@ W3m.definition = {
     };
   },
 
+  /** UI template */
   getTemplate: function getTemplate()
   {
     return {
@@ -131,6 +133,7 @@ W3m.definition = {
     }
   },
 
+  /** called when logical screen width is changed */
   "[subscribe('event/screen-width-changed'), pnp]":
   function onWidthChanged(width)
   {
@@ -139,6 +142,7 @@ W3m.definition = {
     }
   },
 
+  /** called when logical screen height is changed */
   "[subscribe('event/screen-height-changed'), pnp]":
   function onHeightChanged(height)
   {
@@ -147,6 +151,7 @@ W3m.definition = {
     }
   },
 
+  /** OSC99 handler */
   "[subscribe('sequence/osc/99'), pnp]":
   function osc99(command)
   {

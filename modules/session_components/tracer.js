@@ -75,6 +75,7 @@ Tracer.definition = {
     }
   },
 
+  /** enable tracing */
   "[subscribe('command/debugger-trace-on'), pnp]":
   function enable()
   {
@@ -97,6 +98,7 @@ Tracer.definition = {
     }
   },
 
+  /** disable tracing */
   "[subscribe('command/debugger-trace-off'), pnp]":
   function disable()
   {
@@ -114,6 +116,7 @@ Tracer.definition = {
     }
   },
 
+  /** called when every key input event is occured */
   "[subscribe('command/send-to-tty')]":
   function onBeforeInput(message)
   {
