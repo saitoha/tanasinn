@@ -172,6 +172,18 @@ coUtils.Services = {
   _uuid_generator: null,
   _locale_service: null,
   _version_comparator: null,
+  _socket_transport_service: null,
+
+  getSocketTransportService: function getPromptService()
+  {
+    if (null === this._socket_transport_service) {
+      this._socket_transport_service = Components
+          .classes["@mozilla.org/network/socket-transport-service;1"]
+          .getService(Components.interfaces.nsISocketTransportService)
+    }
+
+    return this._socket_transport_service;
+  },
 
   getPromptService: function getPromptService()
   {

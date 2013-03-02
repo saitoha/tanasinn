@@ -139,11 +139,11 @@ ExternalDriver.definition = {
         args,
         external_process,
         runtime,
-        process;
+        process,
+        broker = this._broker;
 
     if ("WINNT" === coUtils.Runtime.os) {
-      kill_path = coUtils.Runtime.getCygwinRoot()
-                + "\\bin\\run.exe";
+      kill_path = broker.cygwin_root + "\\bin\\run.exe";
       args = [ "/bin/kill", "-9", String(pid) ];
     } else { // Darwin, Linux or FreeBSD
       external_process = this._external_process;
@@ -181,13 +181,15 @@ ExternalDriver.definition = {
         runtime,
         external_process,
         script_absolute_path,
-        args;
+        args,
+        broker = this._broker,
+        cygwin_root = broker.cygwin_root,
+        python_path = broker.python_path;
 
     if ("WINNT" === coUtils.Runtime.os) {
-      executable_path = coUtils.Runtime.getCygwinRoot()
-                      + "\\bin\\run.exe";
+      executable_path = cygwin_root + "\\bin\\run.exe";
     } else {
-      executable_path = coUtils.Runtime.getPythonPath();
+      executable_path = python_path;
     }
 
     // create new localfile object.
@@ -211,7 +213,7 @@ ExternalDriver.definition = {
         "/bin/sh", "-wait", "-l", "-c",
         coUtils.Text.format(
           "exec %s \"$(cygpath '%s')\" %d",
-          coUtils.Runtime.getPythonPath(),
+          python_path,
           script_absolute_path,
           connection_port)
       ];

@@ -189,6 +189,53 @@ Desktop.definition = {
       || this["default_command@" + coUtils.Runtime.os]
       || this.default_command;
 
+    var cygwin_root = null,
+        python_path = null;
+
+    if ("WINNT" === coUtils.Runtime.os) {
+      // check cygwin root path
+      try {
+        cygwin_root = coUtils.Runtime.getCygwinRoot();
+      } catch(e) {
+        // pass through
+      }
+      if (!cygwin_root) {
+        alert(_("Terminal session can not be launched because ",
+                "Cygwin directory is not found.\n",
+                "If the cygwin environment is already installed,\n",
+                "create the file '%USERPROFILE%\\.tanasinn.js'\n",
+                "and add the following statement:\n",
+                "\n",
+                "    process.cygwin_root = \"<cygwin-root>\";\n",
+                "\n",
+                "example)\n",
+                "    process.cygwin_root = \"C:\\cygwin\";\n",
+                "\n"));
+        return;
+      }
+    }
+
+    // check python path
+    try {
+      python_path = coUtils.Runtime.getPythonPath();
+    } catch(e) {
+      // pass through
+    }
+    if (!python_path) {
+      alert(_("Terminal session can not be launched because ",
+              "Python environment is not found.\n",
+              "If the python 2.x is already installed,\n",
+              "create the file '%USERPROFILE%\\.tanasinn.js'\n",
+              "and add the following statement:\n",
+              "\n",
+              "    process.python_path = \"<python-path>\"\n",
+              "\n",
+              "example)\n",
+              "    process.python_path = \"/usr/local/bin/python\"\n",
+              "\n"));
+      return;
+    }
+
     var [width, height] = size || [this.width, this.height];
 
     var request = {
@@ -197,6 +244,8 @@ Desktop.definition = {
       term: term,
       width: width,
       height: height,
+      cygwin_root: cygwin_root,
+      python_path: python_path,
     };
 
     this.callSync("event/session-requested", request);

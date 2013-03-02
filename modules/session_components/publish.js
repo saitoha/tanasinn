@@ -58,6 +58,7 @@ PublishCommand.definition = {
   {
   },
 
+  /** publish a message */
   "[command('publish', ['event', 'js']), _('Publish a message'), pnp]":
   function publish(arguments_string)
   {
@@ -76,7 +77,8 @@ PublishCommand.definition = {
     topic = match[1];
     message = match[2];
 
-    this.sendMessage(topic, new Function("return (" + message + ");")())
+    this.sendMessage(topic,
+                     new Function("return (" + message + ");")())
 
     return {
       success: true,
@@ -84,7 +86,7 @@ PublishCommand.definition = {
     };
   },
 
-} // class OverlayIndicator
+} // class PublishCommand
 
 /**
  * @fn main

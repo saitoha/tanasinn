@@ -136,7 +136,6 @@
     window.js
 
     vt52.js
-    vt52c0.js
     tektronix.js
 
     psreport.js
@@ -267,7 +266,6 @@
     overlayimage.js
     video.js
     browser.js
-    agent.js
     tabbox.js
     titlebar.js
     commandline.js
@@ -334,6 +332,7 @@
    japanesedecoder.js
    asciidecoder.js
    cp932decoder.js
+   agent.js
   }
 
   ttydriver.py

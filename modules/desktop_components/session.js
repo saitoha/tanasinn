@@ -129,7 +129,7 @@ RouteKeyEvents.definition = {
     this.notify("event/shift-key-up", this);
   },
 
-};
+}; // RouteKeyEvents
 
 /**
  *
@@ -144,6 +144,7 @@ Session.definition = {
 
   id: "session",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {
@@ -153,26 +154,43 @@ Session.definition = {
     };
   },
 
+  /** provide requested session id */
   get request_id()
   {
     return this._request_id;
   },
 
+  /** provide chrome window object */
   get window()
   {
     return this._window;
   },
 
+  /** provide start-up command string */
   get command()
   {
     return this._command;
   },
 
+  /** provide $TERM environment */
   get term()
   {
     return this._term;
   },
 
+  /** provide cygwin root */
+  get cygwin_root()
+  {
+    return this._cygwin_root;
+  },
+
+  /** provide python path */
+  get python_path()
+  {
+    return this._python_path;
+  },
+
+  /** provide process object */
   get process()
   {
     return this._broker;
@@ -242,6 +260,8 @@ Session.definition = {
     this._window = request.parent.ownerDocument.defaultView;
     this._command = request.command;
     this._term = request.term || this.default_term;
+    this._python_path = request.python_path;
+    this._cygwin_root = request.cygwin_root;
 
     this.sendMessage("initialized/session", this);
 
@@ -271,6 +291,7 @@ Session.definition = {
             this.notify("command/focus");
           }, this.initial_focus_delay, this);
       }, this.initial_focus_delay, this);
+
     return this;
   },
 
@@ -288,7 +309,10 @@ Session.definition = {
     function wait(span)
     {
       var end_time = Date.now() + span,
-          current_thread = coUtils.Services.getThreadManager().currentThread;
+          current_thread = coUtils
+                  .Services
+                  .getThreadManager()
+                  .currentThread;
 
       do {
         current_thread.processNextEvent(true);
@@ -298,6 +322,7 @@ Session.definition = {
 
     this.notify("event/before-broker-stopping", this);
     this.notify("event/broker-stopping", this);
+
     coUtils.Timer.setTimeout(
       function timerProc()
       {
@@ -318,9 +343,43 @@ Session.definition = {
 var SessionFactory = new Class().extends(Plugin)
 SessionFactory.definition = {
 
+  id: "session-factory",
+
+  /** plugin information */
+  getInfo: function getInfo()
+  {
+    return {
+      name: _("Session Factory"),
+      version: "0.1",
+      description: _("Create TTY sessions on demand")
+    };
+  },
+
+  /** provide UI template */
+  getTemplate: function getTemplate()
+  {
+    var root = this.request("get/root-element");
+    return {
+      parentNode: root,
+      id: "message-bar",
+      flex: 1,
+      style: {
+        position: "fixed",
+        border: "solid 1px red",
+        left: "30px",
+        top: "30px",
+        height: "30px",
+      },
+      tagName: "vbox",
+    };
+  },
+
   "[subscribe('event/session-requested'), enabled]":
   function onSessionRequested(request)
   {
+    //var result = this.request(
+    //                "command/construct-chrome",
+    //                this.getTemplate());
     var session = new Session(this._broker);
 
     session.initializeWithRequest(request);
@@ -328,6 +387,7 @@ SessionFactory.definition = {
   },
 
 }; // class SessionFactory
+
 
 /**
  * @fn main

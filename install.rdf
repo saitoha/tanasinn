@@ -7,7 +7,7 @@
     <em:name>tanasinn</em:name>
     <em:version>0.3.2.3</em:version>
     <em:creator>saitoha</em:creator>
-    <em:description>三 ┏( ^o^)┛ ＜ How Exciting Life is !!!!!! ＞ ┗(^o^ )┓ 三</em:description>
+    <em:description>Terminal emulator extension for Firefox/Thunderbird/SeaMonkey</em:description>
     <!--em:optionsURL>chrome://tanasinn/content/preference.xul</em:optionsURL-->
     <!--em:iconURL>resource://tanasinn/content/tanasinn.png</em:iconURL-->
     <em:unpack>true</em:unpack>

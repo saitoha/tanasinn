@@ -32,6 +32,7 @@ BatchLoader.definition = {
 
   id: "batch_loader",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {
@@ -60,7 +61,8 @@ BatchLoader.definition = {
   {
   },
 
-  "[command('import', ['batch']), _('load batch file from search path.'), pnp]":
+  /** load batch files from the search path */
+  "[command('import', ['batch']), _('load batchs file from the search path.'), pnp]":
   function loadBatchCommand(name)
   {
     var file = coUtils.File.getFileLeafFromVirtualPath(
@@ -78,16 +80,18 @@ BatchLoader.definition = {
     return this.sourceCommand(file.path);
   },
 
+  /** load batch commands from a file */
   "[subscribe('command/source'), command('source', ['file']), _('load and evaluate batch file.'), pnp]":
   function sourceCommand(arguments_string)
   {
     var path = arguments_string.replace(/^\s*|\s*$/g, ""),
         home,
-        file;
+        file,
+        broker = this._broker;
 
     if ("$" !== path.charAt(0) && !coUtils.File.isAbsolutePath(path)) {
       if ("WINNT" === coUtils.Runtime.os) {
-        path = coUtils.Runtime.getCygwinRoot()
+        path = broker.cygwin_root
              + coUtils.File.getPathDelimiter()
              + path.replace(/\//g, "\\");
       } else {
@@ -114,6 +118,7 @@ BatchLoader.definition = {
     };
   },
 
+  /** evaluate source data as command batches */
   "[subscribe('command/eval-source'), enabled]":
   function evalSource(source)
   {
@@ -149,11 +154,11 @@ BatchLoader.definition = {
         executable_path;
         os = coUtils.Runtime.os,
         runtime,
-        external_process;
+        external_process,
+        borker = this._broker;
 
     if ("WINNT" === os) {
-      executable_path = coUtils.Runtime.getCygwinRoot()
-                      + "\\bin\\run.exe";
+      executable_path = broker.cygwin_root + "\\bin\\run.exe";
     } else {
       executable_path = "/bin/sh";
     }

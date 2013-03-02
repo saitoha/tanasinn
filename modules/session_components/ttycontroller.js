@@ -399,13 +399,15 @@ Controller.definition = {
    */
   _start: function _start(control_port)
   {
-    var transport = Components
-          .classes["@mozilla.org/network/socket-transport-service;1"]
-          .getService(Components.interfaces.nsISocketTransportService)
+    var transport = coUtils
+          .Services
+          .getSocketTransportService()
           .createTransport(null, 0, "127.0.0.1", control_port, null),
         istream = transport.openInputStream(0, 256, 1),
         ostream = transport.openOutputStream(0, 256, 1),
-        scriptable_stream = coUtils.Components.createScriptableInputStream(istream),
+        scriptable_stream = coUtils
+          .Components
+          .createScriptableInputStream(istream),
         pump = coUtils.Components.createStreamPump(istream, this);
 
     this._input = scriptable_stream;

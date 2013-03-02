@@ -473,7 +473,7 @@ FileCompleter.definition = {
     if (stem) {
       if (!coUtils.File.isAbsolutePath(stem)) {
         if ("WINNT" === coUtils.Runtime.os) {
-          stem = coUtils.Runtime.getCygwinRoot()
+          stem = broker.cygwin_root
                + coUtils.File.getPathDelimiter()
                + stem;
         } else {
