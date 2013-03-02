@@ -33,6 +33,7 @@ PluginViewer.definition = {
 
   id: "plugin_viewer",
 
+  /** plugin informatioin */
   getInfo: function getInfo()
   {
     return {
@@ -181,6 +182,7 @@ PluginViewer.definition = {
     this.sendMessage("command/remove-panel", this.id);
   },
 
+  /** called when panel items are requested */
   "[subscribe('@get/panel-items'), pnp]":
   function onPanelItemRequested(panel)
   {
@@ -188,6 +190,7 @@ PluginViewer.definition = {
     this.onPanelSelected.enabled = true;
   },
 
+  /** called when "plugin" tab is selected */
   "[subscribe('panel-selected/plugin_viewer')]":
   function onPanelSelected(name)
   {
@@ -205,6 +208,7 @@ PluginViewer.definition = {
     this.firstUpdate();
   },
 
+  /** show plugin view */
   "[command('pluginviewer/pv'), nmap('<M-m>', '<C-S-m>'), _('Open module viewer.'), pnp]":
   function select()
   {
@@ -212,6 +216,7 @@ PluginViewer.definition = {
     return true;
   },
 
+  /** update all */
   firstUpdate: function firstUpdate()
   {
     var depends_on = {},
@@ -246,6 +251,7 @@ PluginViewer.definition = {
     this.request("command/construct-chrome", this.getTemplate());
   },
 
+  /** update the view */
   update: function update()
   {
     var depends_on = {},
@@ -294,6 +300,7 @@ PluginViewer.definition = {
       this.sendMessage("event/dependencies-updated");
       this.sendMessage("command/report-status-message", message);
       this.sendMessage("command/calculate-layout");
+
     } catch (e) {
       checkbox.checked = !enabled;
       message = coUtils.Text.format(
@@ -307,112 +314,12 @@ PluginViewer.definition = {
 };
 
 /**
- * @class PluginManagementCommands
- */
-var PluginManagementCommands = new Class().extends(Plugin);
-PluginManagementCommands.definition = {
-
-  id: "plugin_management_commands",
-
-  getInfo: function getInfo()
-  {
-    return {
-      name: _("Plugin Management Commands"),
-      description: _("Provides enable/disable commands."),
-      version: "0.1",
-    };
-  },
-
-  "[persistable] enabled_when_startup": true,
-
-  /** Installs itself.
-   *  @param {InstallContext} context A InstallContext object.
-   */
-  "[install]":
-  function install(context)
-  {
-  },
-
-  /** Uninstalls itself.
-   */
-  "[uninstall]":
-  function uninstall()
-  {
-  },
-
-  "[command('disable', ['plugin/enabled']), _('Disable a plugin.'), pnp]":
-  function disable(arguments_string)
-  {
-    return this._impl(arguments_string, /* is_enable */ false);
-  },
-
-  "[command('enable', ['plugin/disabled']), _('Enable a plugin.'), pnp]":
-  function enable(arguments_string)
-  {
-    return this._impl(arguments_string, /* is_enable */ true);
-  },
-
-  _impl: function _impl(arguments_string, is_enable)
-  {
-    var match = arguments_string.match(/^(\s*)([$_\-@0-9a-zA-Z\.]+)(\s*)$/),
-        modules,
-        space,
-        name,
-        next;
-
-    if (null === match) {
-      return {
-        success: false,
-        message: _("Failed to parse commandline argument."),
-      };
-    }
-
-    space = match[1];
-    name = match[2];
-    next = match[3];
-
-    modules = this.sendMessage("get/components");
-    modules = modules.filter(
-      function(module)
-      {
-        return module.id === name;
-      });
-    if (0 === modules.length) {
-      return {
-        success: false,
-        message: _("Cannot enabled the module specified by given argument."),
-      };
-    }
-
-    modules.forEach(
-      function each(module)
-      {
-        try {
-          module.enabled = is_enable;
-        } catch(e) {
-          coUtils.Debug.reportError(e);
-        }
-      });
-
-    this.sendMessage("command/calculate-layout");
-
-    return {
-      success: true,
-      message: _("Succeeded."),
-    };
-  },
-
-}; // PluginViewer
-
-
-/**
  * @fn main
  * @brief Module entry point.
  * @param {Broker} broker The Broker object.
  */
 function main(broker)
 {
-  new PluginManagementCommands(broker);
   new PluginViewer(broker);
 }
 

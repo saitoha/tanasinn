@@ -232,6 +232,7 @@
     resizable.js
 
     pluginview.js
+    plugincommandset.js
     debugger.js
     tracer.js
     hooker.js
