@@ -25,24 +25,24 @@
 "use strict";
 
 /**
- * @class Kill
+ * @class Detach
  */
-var Kill = new Class().extends(Plugin);
-Kill.definition = {
+var Detach = new Class().extends(Plugin);
+Detach.definition = {
 
-  id: "kill",
+  id: "detach",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {
-      name: _("Kill"),
+      name: _("Detach"),
       version: "0.1",
-      description: _("Kill main process of current TTY session.")
+      description: _("Detach from current TTY session.")
     };
   },
 
   "[persistable] enabled_when_startup": true,
-  "[persistable] kill_delay": 500,
 
   /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
@@ -65,31 +65,26 @@ Kill.definition = {
     return [
       {
         tagName: "menuitem",
-        label: _("Shutdown process"),
+        label: _("Detach from process"),
         listener: {
           type: "command",
           context: this,
-          handler: this.kill,
+          handler: this.detach,
         }
-      }
+      },
     ];
   },
 
-  /** kill process and stop tty */
-  "[command('kill/quit'), _('kill process and stop tty'), pnp]":
-  function kill()
+  /** detach from process */
+  "[command('detach'), _('detach from current process.'), pnp]":
+  function detach()
   {
     // stops TTY device.
-    this.sendMessage("command/kill");
-    this.sendMessage("event/before-broker-stopping");
-    coUtils.Timer.setTimeout(
-      function timerProc()
-      {
-        this._broker.stop();
-      }, this.kill_delay, this);
+    this.sendMessage("command/detach");
   },
 
-}; // Kill
+
+}; // Detach
 
 
 /**
@@ -99,7 +94,7 @@ Kill.definition = {
  */
 function main(broker)
 {
-  new Kill(broker);
+  new Detach(broker);
 }
 
 

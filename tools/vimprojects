@@ -256,6 +256,7 @@
     encodings.js
     encodermenu.js
     decodermenu.js
+    detach.js
     kill.js
 
     w3m.js
