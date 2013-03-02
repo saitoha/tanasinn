@@ -74,6 +74,7 @@
    watchableattribute.js
    installattribute.js
    pnpattribute.js
+   testattribute.js
   }
   process_components=process_components {
    desktop.js
@@ -258,6 +259,7 @@
     decodermenu.js
     detach.js
     kill.js
+    test.js
 
     w3m.js
     vimp.js

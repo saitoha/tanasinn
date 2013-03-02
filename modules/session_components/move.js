@@ -100,6 +100,7 @@ MoveShortcut.definition = {
     return true;
   },
 
+  /** test */
   "[subscribe('command/test')]":
   function onTest()
   {
@@ -121,7 +122,7 @@ MoveShortcut.definition = {
     };
   }
 
-};
+}; // MoveShortcut
 
 
 /**

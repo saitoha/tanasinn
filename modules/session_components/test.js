@@ -25,20 +25,20 @@
 "use strict";
 
 /**
- * @class Detach
+ * @class Test
  */
-var Detach = new Class().extends(Plugin);
-Detach.definition = {
+var Test = new Class().extends(Plugin);
+Test.definition = {
 
-  id: "detach",
+  id: "test",
 
-  /** plugin information */
+  /** provide plugin information */
   getInfo: function getInfo()
   {
     return {
-      name: _("Detach"),
+      name: _("Test"),
       version: "0.1",
-      description: _("Detach from current TTY session.")
+      description: _("Run test.")
     };
   },
 
@@ -58,33 +58,55 @@ Detach.definition = {
   {
   },
 
-  /** provides menu items */
-  "[subscribe('get/contextmenu-entries'), pnp]":
-  function onContextMenu()
+  /** do tests for session plugins */
+  "[command('test'), _('Run test'), pnp]":
+  function doTest()
   {
-    return [
-      {
-        tagName: "menuitem",
-        label: _("Detach from process"),
-        listener: {
-          type: "command",
-          context: this,
-          handler: this.detach,
-        }
-      },
-    ];
+    var test_data = [],
+        test,
+        summary,
+        func,
+        i,
+        length,
+        message,
+        result;
+
+    // initialization for test
+    this.sendMessage("command/before-test");
+
+    // get test data
+    test_data = this.sendMessage("get/tests");
+
+    length = test_data.length;
+
+    for (i = 0; i < length; ++i) {
+      test = test_data[i];
+
+      // evaluate test function
+      try {
+        test.func();
+        result = "Succeeded";
+      } catch(e) {
+        result = "Failed: " + String(e);
+      }
+
+      // build a result message
+      message = coUtils.Text.format(_("[%d/%d] %s - %s."),
+                                    i + 1,
+                                    length,
+                                    test.summary,
+                                    result);
+
+      // display result message
+      this.sendMessage("command/report-overlay-message",
+                       message);
+    }
+
+    // finalize test phase
+    this.sendMessage("command/after-test");
   },
 
-  /** detach from process */
-  "[command('detach'), nmap('<M-d>', '<C-S-d>'), _('detach from current process.'), pnp]":
-  function detach()
-  {
-    // stops TTY device.
-    this.sendMessage("command/detach");
-  },
-
-
-}; // Detach
+}; // Test
 
 
 /**
@@ -94,7 +116,7 @@ Detach.definition = {
  */
 function main(broker)
 {
-  new Detach(broker);
+  new Test(broker);
 }
 
 
