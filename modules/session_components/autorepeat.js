@@ -84,6 +84,7 @@ AutoRepeat.definition = {
 
   id: "auto_repeat",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

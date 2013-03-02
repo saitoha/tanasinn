@@ -63,6 +63,7 @@ KeyboardActionMode.definition = {
 
   id: "keyboard_action_mode",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

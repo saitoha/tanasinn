@@ -34,6 +34,7 @@ TitleModeHandler.definition = {
 
   id: "title_mode_handler",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

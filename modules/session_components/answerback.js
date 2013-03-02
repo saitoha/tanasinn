@@ -192,7 +192,7 @@ AnswerBack.definition = {
     }
   },
 
-};
+}; // Answerback
 
 /**
  * @fn main

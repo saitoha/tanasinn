@@ -161,6 +161,7 @@ SGRHandler.definition = {
 
   id: "sgr_handler",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

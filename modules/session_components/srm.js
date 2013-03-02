@@ -66,6 +66,7 @@ SendReceiveMode.definition = {
 
   id: "send_receive_mode",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

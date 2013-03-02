@@ -53,6 +53,7 @@ TextCursorEnableMode.definition = {
 
   id: "text_cursor_enable_mode",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

@@ -68,6 +68,7 @@ OriginMode.definition = {
 
   id: "origin_mode",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

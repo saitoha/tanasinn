@@ -76,6 +76,7 @@ FixedColumnMode.definition = {
 
   id: "fixed_column_mode",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

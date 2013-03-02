@@ -46,6 +46,7 @@ Mouse.definition = {
 
   id: "mouse",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

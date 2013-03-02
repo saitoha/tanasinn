@@ -54,6 +54,7 @@ CursorBlink.definition = {
 
   id: "cursor_blink",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

@@ -52,6 +52,7 @@ SaveCursorMode.definition = {
 
   id: "save_cursor_mode",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

@@ -63,6 +63,7 @@ SmoothScrollingMode.definition = {
 
   id: "smooth_scrolling_mode",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

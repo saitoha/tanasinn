@@ -75,6 +75,7 @@ NewLineMode.definition = {
 
   id: "new_line_mode",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

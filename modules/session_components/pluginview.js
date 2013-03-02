@@ -33,13 +33,13 @@ PluginViewer.definition = {
 
   id: "plugin_viewer",
 
-  /** plugin informatioin */
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {
       name: _("Component"),
       version: "0.1",
-      description: _("List informatioin of plugins and makes it enable to ",
+      description: _("List information of plugins and makes it enable to ",
                      "install or uninstall plugins dynamically.")
     };
   },

@@ -36,6 +36,7 @@ AlternateWheel.definition = {
 
   id: "altwheel",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

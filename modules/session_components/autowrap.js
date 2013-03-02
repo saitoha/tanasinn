@@ -67,6 +67,7 @@ AutoWrap.definition = {
 
   id: "autowrap",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

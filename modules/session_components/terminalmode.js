@@ -34,6 +34,7 @@ TerminalMode.definition = {
 
   id: "terminal_mode",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

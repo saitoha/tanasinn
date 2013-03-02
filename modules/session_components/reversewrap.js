@@ -34,6 +34,7 @@ ReverseWrap.definition = {
 
   id: "reversewrap",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

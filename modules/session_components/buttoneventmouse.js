@@ -51,6 +51,7 @@ ButtonEventMouseMode.definition = {
 
   id: "button_event_mouse_mode",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

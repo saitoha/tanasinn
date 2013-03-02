@@ -51,6 +51,7 @@ FocusEventMode.definition = {
 
   id: "focus_event_mode",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

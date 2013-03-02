@@ -62,6 +62,7 @@ ApplicationEscape.definition = {
 
   id: "appescape",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

@@ -72,6 +72,7 @@ ANMSwitch.definition = {
 
   id: "anm_switch",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

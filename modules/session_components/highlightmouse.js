@@ -51,6 +51,7 @@ HighlightMouseMode.definition = {
 
   id: "highlight_mouse_mode",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

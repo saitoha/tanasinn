@@ -63,6 +63,7 @@ SixelScrollingMode.definition = {
 
   id: "sixel_scrolling_mode",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

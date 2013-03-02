@@ -50,6 +50,7 @@ ScrollbarMode.definition = {
 
   id: "scrollbar_mode",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

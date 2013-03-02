@@ -62,6 +62,7 @@ IRMSwitch.definition = {
 
   id: "irm_switch",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

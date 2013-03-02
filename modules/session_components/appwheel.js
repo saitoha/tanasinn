@@ -36,6 +36,7 @@ ApplicationWheel.definition = {
 
   id: "appwheel",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

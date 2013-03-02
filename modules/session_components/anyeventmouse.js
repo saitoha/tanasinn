@@ -51,12 +51,13 @@ AnyEventMouseMode.definition = {
 
   id: "any_event_mouse_mode",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {
       name: _("Any Event Mouse Mode"),
       version: "0.1",
-      description: _("Switch any event mouse mode.")
+      description: _("Switch the any event mouse mode state.")
     };
   },
 

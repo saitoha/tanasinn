@@ -62,6 +62,7 @@ ApplicationCursorMode.definition = {
 
   id: "application_cursor",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

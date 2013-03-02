@@ -51,12 +51,13 @@ X11MouseMode.definition = {
 
   id: "x11_mouse_mode",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {
       name: _("X11 Mouse Mode"),
       version: "0.1",
-      description: _("Switch X11 mouse mode.")
+      description: _("Switch the X11 mouse mode state.")
     };
   },
 

@@ -51,12 +51,13 @@ Utf8MouseMode.definition = {
 
   id: "utf8_mouse_mode",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {
       name: _("UTF8 1005 Mouse Mode"),
       version: "0.1",
-      description: _("Switch utf8 mouse mode.")
+      description: _("Switch the utf8 mouse mode state.")
     };
   },
 

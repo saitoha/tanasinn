@@ -29,11 +29,13 @@
  * @class DECLocatorMouse
  *
  */
-var DECLocatorMouse = new Class().extends(Plugin).depends("renderer");
+var DECLocatorMouse = new Class().extends(Plugin)
+                                 .depends("renderer");
 DECLocatorMouse.definition = {
 
   id: "dec_locator_mouse",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

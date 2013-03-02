@@ -57,6 +57,7 @@ NumericKeypadMode.definition = {
 
   id: "numeric_keypad_mode",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

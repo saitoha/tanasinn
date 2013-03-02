@@ -35,6 +35,7 @@ AlternateScreen.definition = {
 
   id: "alternate_screen",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

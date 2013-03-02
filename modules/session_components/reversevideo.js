@@ -66,6 +66,7 @@ ReverseVideo.definition = {
 
   id: "reverse_video",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {
