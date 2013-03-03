@@ -118,6 +118,7 @@ Controller.definition = {
 
   id: "tty_controller",
 
+  /** provide plugin information */
   getInfo: function getInfo()
   {
     return {

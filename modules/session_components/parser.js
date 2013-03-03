@@ -37,6 +37,7 @@ Parser.definition = {
 
   id: "parser",
 
+  /** provide plugin information */
   getInfo: function getInfo()
   {
     return {

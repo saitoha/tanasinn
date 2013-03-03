@@ -1025,6 +1025,7 @@ LineGenerator.definition = {
 
   id: "linegenerator",
 
+  /** provide plugin information */
   getInfo: function getInfo()
   {
     return {

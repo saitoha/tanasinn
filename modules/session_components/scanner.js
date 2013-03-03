@@ -64,6 +64,7 @@ Scanner.definition = {
 
   id: "scanner",
 
+  /** provide plugin information */
   getInfo: function getInfo()
   {
     return {

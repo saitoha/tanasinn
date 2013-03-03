@@ -163,7 +163,7 @@ WindowWatcher.definition = {
   },
 
 
-};
+}; // class WindowWatcher
 
 /**
  * @fn main

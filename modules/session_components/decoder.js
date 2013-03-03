@@ -70,6 +70,7 @@ Decoder.definition = {
 
   id: "decoder",
 
+  /** provide plugin information */
   getInfo: function getInfo()
   {
     return {

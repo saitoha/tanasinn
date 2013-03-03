@@ -33,6 +33,7 @@ ShellSettings.definition = {
 
   id: "shell_settings",
 
+  /** provide plugin information */
   getInfo: function getInfo()
   {
     return {

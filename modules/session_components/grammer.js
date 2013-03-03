@@ -72,6 +72,7 @@ VT100Grammar.definition = {
   _state: _STATE_GROUND,
   _str: null,
 
+  /** provide plugin information */
   getInfo: function getInfo()
   {
     return {

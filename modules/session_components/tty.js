@@ -100,6 +100,7 @@ SocketTeletypeService.definition = {
 
   id: "tty",
 
+  /** provide plugin information */
   getInfo: function getInfo()
   {
     return {
