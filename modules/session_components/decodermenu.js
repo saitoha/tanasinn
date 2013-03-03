@@ -112,7 +112,24 @@ DecoderMenu.definition = {
     if (this.send_ff_when_encoding_changed) {
       this.sendMessage("command/send-to-tty", String.fromCharCode(0x0c));
     }
-  }
+  },
+
+  /** test */
+  "[test]":
+  function()
+  {
+    var enabled = this.enabled;
+
+    try {
+      this.enabled = false;
+      this.enabled = true;
+      this.enabled = false;
+    } finally {
+      this.enabled = enabled;
+    }
+  },
+
+
 };
 
 

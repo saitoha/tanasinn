@@ -72,6 +72,23 @@ JsCommand.definition = {
       this.sendMessage("command/report-status-message", e);
     }
   },
+
+  /** test */
+  "[test]":
+  function()
+  {
+    var enabled = this.enabled;
+
+    try {
+      this.enabled = false;
+      this.enabled = true;
+      this.enabled = false;
+    } finally {
+      this.enabled = enabled;
+    }
+  },
+
+
 };
 
 /**

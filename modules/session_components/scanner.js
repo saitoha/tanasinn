@@ -186,6 +186,23 @@ Scanner.definition = {
     this._nextvalue = null;
     this._position = 0;
   },
+
+  /** test */
+  "[test]":
+  function()
+  {
+    var enabled = this.enabled;
+
+    try {
+      this.enabled = false;
+      this.enabled = true;
+      this.enabled = false;
+    } finally {
+      this.enabled = enabled;
+    }
+  },
+
+
 };
 
 /**

@@ -373,11 +373,10 @@ Transform.definition = {
   {
     var root_element = this.request("get/root-element");
 
-    this._matrix = new TransformMatrix(
-      1, 0, 0, 0,
-      0, 1, 0, 0,
-      0, 0, 1, 0,
-      0, 0, 0, 1);
+    this._matrix = new TransformMatrix(1, 0, 0, 0,
+                                       0, 1, 0, 0,
+                                       0, 0, 1, 0,
+                                       0, 0, 0, 1);
     this._element = root_element.querySelector("#tanasinn_outer_chrome");
     this._element.style.transformStyle = "preserve-3d";
     if (this.transform_matrix) {
@@ -423,6 +422,21 @@ Transform.definition = {
   function onHeightChanged(height)
   {
     this._height = height;
+  },
+
+  /** test */
+  "[test]":
+  function()
+  {
+    var enabled = this.enabled;
+
+    try {
+      this.enabled = false;
+      this.enabled = true;
+      this.enabled = false;
+    } finally {
+      this.enabled = enabled;
+    }
   },
 
 }; // Transform
@@ -508,6 +522,21 @@ DragCover.definition = {
 
     cover.parentNode.appendChild(cover);
     cover.hidden = true;
+  },
+
+  /** test */
+  "[test]":
+  function()
+  {
+    var enabled = this.enabled;
+
+    try {
+      this.enabled = false;
+      this.enabled = true;
+      this.enabled = false;
+    } finally {
+      this.enabled = enabled;
+    }
   },
 
 }; // DragCover

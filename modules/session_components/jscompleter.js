@@ -188,6 +188,22 @@ JsCompleter.definition = {
     this.sendMessage("event/answer-completion", autocomplete_result);
   },
 
+  /** test */
+  "[test]":
+  function()
+  {
+    var enabled = this.enabled;
+
+    try {
+      this.enabled = false;
+      this.enabled = true;
+      this.enabled = false;
+    } finally {
+      this.enabled = enabled;
+    }
+  },
+
+
 }; // JsCompleter
 
 

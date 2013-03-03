@@ -32,6 +32,7 @@ Paste.definition = {
 
   id: "paste",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {
@@ -142,7 +143,24 @@ Paste.definition = {
     this._bracketed_paste_mode = mode;
   },
 
+  /** test */
+  "[test]":
+  function()
+  {
+    var enabled = this.enabled;
+
+    try {
+      this.enabled = false;
+      this.enabled = true;
+      this.enabled = false;
+    } finally {
+      this.enabled = enabled;
+    }
+  },
+
+
 }; // class Paste
+
 
 /**
  * @fn main

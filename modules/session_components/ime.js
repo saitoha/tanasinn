@@ -43,6 +43,7 @@ Ime.definition = {
 
   id: "ime",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {
@@ -294,8 +295,25 @@ Ime.definition = {
     this._input_manager.getInputField().style.opacity = 0.0;
     this._ime_input_flag = false;
     this.sendMessage("event/ime-composition-end", this);
-  }
-};
+  },
+
+  /** test */
+  "[test]":
+  function()
+  {
+    var enabled = this.enabled;
+
+    try {
+      this.enabled = false;
+      this.enabled = true;
+      this.enabled = false;
+    } finally {
+      this.enabled = enabled;
+    }
+  },
+
+
+}; // class Ime
 
 /**
  * @fn main

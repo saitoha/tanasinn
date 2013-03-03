@@ -36,6 +36,7 @@ Splitter.definition = {
 
   id: "splitter",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {
@@ -46,6 +47,7 @@ Splitter.definition = {
     };
   },
 
+  /** provides UI template */
   getTemplate: function getTemplate()
   {
     return {
@@ -184,6 +186,21 @@ Splitter.definition = {
 
     if (this._screen.height !== this._initial_row) {
       this.sendMessage("event/resize-session-closed");
+    }
+  },
+
+  /** test */
+  "[test]":
+  function()
+  {
+    var enabled = this.enabled;
+
+    try {
+      this.enabled = false;
+      this.enabled = true;
+      this.enabled = false;
+    } finally {
+      this.enabled = enabled;
     }
   },
 

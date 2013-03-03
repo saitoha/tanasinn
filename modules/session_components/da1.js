@@ -110,6 +110,7 @@ PrimaryDA.definition = {
 
   id: "primary_da",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {
@@ -190,6 +191,22 @@ PrimaryDA.definition = {
       _("Primary Device Attributes: '%s'."),
       "\\e" + message);
   },
+
+  /** test */
+  "[test]":
+  function()
+  {
+    var enabled = this.enabled;
+
+    try {
+      this.enabled = false;
+      this.enabled = true;
+      this.enabled = false;
+    } finally {
+      this.enabled = enabled;
+    }
+  },
+
 
 };
 

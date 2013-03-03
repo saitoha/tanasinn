@@ -1082,6 +1082,21 @@ Renderer.definition = {
     this._text_offset = ((this.line_height + char_height + char_offset / 2) / 2 - 3);
   },
 
+  /** test */
+  "[test]":
+  function()
+  {
+    var enabled = this.enabled;
+
+    try {
+      this.enabled = false;
+      this.enabled = true;
+      this.enabled = false;
+    } finally {
+      this.enabled = enabled;
+    }
+  },
+
 };
 
 /**

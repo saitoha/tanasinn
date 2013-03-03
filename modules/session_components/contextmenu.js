@@ -143,6 +143,23 @@ Contextmenu.definition = {
       .tanasinn_contextmenu
       .openPopupAtScreen(event.screenX, event.screenY, true);
   },
+
+  /** test */
+  "[test]":
+  function()
+  {
+    var enabled = this.enabled;
+
+    try {
+      this.enabled = false;
+      this.enabled = true;
+      this.enabled = false;
+    } finally {
+      this.enabled = enabled;
+    }
+  },
+
+
 }; // Contextmenu
 
 /**

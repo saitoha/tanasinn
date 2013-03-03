@@ -145,7 +145,23 @@ WindowWatcher.definition = {
   function onclose(event)
   {
     this.sendMessage("event/window-closing", event);
-  }
+  },
+
+  /** test */
+  "[test]":
+  function()
+  {
+    var enabled = this.enabled;
+
+    try {
+      this.enabled = false;
+      this.enabled = true;
+      this.enabled = false;
+    } finally {
+      this.enabled = enabled;
+    }
+  },
+
 
 };
 

@@ -92,6 +92,22 @@ HardReset.definition = {
     this.sendMessage("command/hard-terminal-reset");
   },
 
+  /** test */
+  "[test]":
+  function()
+  {
+    var enabled = this.enabled;
+
+    try {
+      this.enabled = false;
+      this.enabled = true;
+      this.enabled = false;
+    } finally {
+      this.enabled = enabled;
+    }
+  },
+
+
 }; // class HardReset
 
 /**

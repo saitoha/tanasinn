@@ -177,6 +177,23 @@ FocusTracker.definition = {
       this._onfocusimpl(dom);
     }
   },
+
+  /** test */
+  "[test]":
+  function()
+  {
+    var enabled = this.enabled;
+
+    try {
+      this.enabled = false;
+      this.enabled = true;
+      this.enabled = false;
+    } finally {
+      this.enabled = enabled;
+    }
+  },
+
+
 };
 
 /**

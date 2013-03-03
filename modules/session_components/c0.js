@@ -432,7 +432,23 @@ C0Control.definition = {
       "DEL", Array.slice(arguments));
   },
 
-};
+  /** test */
+  "[test]":
+  function()
+  {
+    var enabled = this.enabled;
+
+    try {
+      this.enabled = false;
+      this.enabled = true;
+      this.enabled = false;
+    } finally {
+      this.enabled = enabled;
+    }
+  },
+
+
+}; // C0Control
 
 /**
  * @fn main

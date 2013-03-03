@@ -97,6 +97,15 @@ SecondaryDA.definition = {
 
   "[persistable] enabled_when_startup": true,
 
+  //
+  // 0;  terminal ID
+  // 277: Firmware version (for xterm, this is the XFree86 patch
+  //      number, starting with 95).
+  // 0:   DEC Terminal"s ROM cartridge registration number,
+  //      always zero.
+  //
+  "[persistable] response": ">0;277;0c",
+
   /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */
@@ -130,17 +139,26 @@ SecondaryDA.definition = {
   "[subscribe('sequence/DA2'), pnp]":
   function reply()
   {
-    //
-    // 0;  terminal ID
-    // 277: Firmware version (for xterm, this is the XFree86 patch
-    //      number, starting with 95).
-    // 2:   DEC Terminal"s ROM cartridge registration number,
-    //      always zero.
-    //
     this.sendMessage(
       "command/send-sequence/csi",
-      ">0;277;0c");
+      this.response);
   },
+
+  /** test */
+  "[test]":
+  function()
+  {
+    var enabled = this.enabled;
+
+    try {
+      this.enabled = false;
+      this.enabled = true;
+      this.enabled = false;
+    } finally {
+      this.enabled = enabled;
+    }
+  },
+
 
 };
 

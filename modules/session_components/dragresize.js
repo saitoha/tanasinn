@@ -31,6 +31,7 @@ SnapResize.definition = {
 
   id: "snapresize",
 
+  /** Provides plugin information */
   getInfo: function getInfo()
   {
     return {

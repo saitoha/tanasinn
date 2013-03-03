@@ -34,16 +34,33 @@ PresentationStateReport.definition = {
   /** Component ID */
   id: "presentation_state_report",
 
+  /** plugin inforamtion */
   getInfo: function getInfo()
   {
     return {
       name: _("Presentation State Report"),
       version: "0.1.0",
-      description: _("Report presentation state (cursor / tab-stop inforamtion)")
+      description: _("Report presentation state ",
+                     "(cursor / tab-stop inforamtion)")
     };
   },
 
   "[persistable] enabled_when_startup": true,
+
+  /** Installs itself.
+   *  @param {InstallContext} context A InstallContext object.
+   */
+  "[install]":
+  function install(context)
+  {
+  },
+
+  /** Uninstalls itself.
+   */
+  "[uninstall]":
+  function uninstall()
+  {
+  },
 
   /**
    *
@@ -88,6 +105,21 @@ PresentationStateReport.definition = {
     }
 
   },
+
+  /** test */
+  "[test]":
+  function()
+  {
+    var enabled = this.enabled;
+
+    try {
+      this.enabled = false;
+      this.enabled = true;
+      this.enabled = false;
+    } finally {
+      this.enabled = enabled;
+    }
+  }
 
 }; // PresentationStateReport
 

@@ -106,18 +106,19 @@ ConfidenceTest.definition = {
   "[profile('vt100'), sequence('CSI Ps y')]":
   function DECTST()
   {
-    var i = 0,
+    var i,
         n;
 
-    for (; i < arguments.length; ++i) {
+    for (i = 0; i < arguments.length; ++i) {
 
       n = arguments[i];
 
       switch (n) {
 
         case 0:
-          coUtils.Debug.reportWarning(
-            _("DECTST 0: Invoking all test is not implemented."));
+          this.sendMessage("command/test");
+          //coUtils.Debug.reportWarning(
+          //  _("DECTST 0: Invoking all test is not implemented."));
           break;
 
         case 1:
@@ -177,6 +178,21 @@ ConfidenceTest.definition = {
             _("DECTST: Unknown test parameter is specified: %d."), n);
 
       }
+    }
+  },
+
+  /** test */
+  "[test]":
+  function()
+  {
+    var enabled = this.enabled;
+
+    try {
+      this.enabled = false;
+      this.enabled = true;
+      this.enabled = false;
+    } finally {
+      this.enabled = enabled;
     }
   },
 

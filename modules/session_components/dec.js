@@ -551,6 +551,22 @@ DecPrivateMode.definition = {
   BBSM:  false,   // Bold and Blink Style Mode (true: foreground and background, false: foreground only)
   ECM:   false,   // Erase Color Mode (true: erase to screen background [VT], false: erase to text background [PC]
 
+  /** test */
+  "[test]":
+  function()
+  {
+    var enabled = this.enabled;
+
+    try {
+      this.enabled = false;
+      this.enabled = true;
+      this.enabled = false;
+    } finally {
+      this.enabled = enabled;
+    }
+  },
+
+
 };
 
 /**

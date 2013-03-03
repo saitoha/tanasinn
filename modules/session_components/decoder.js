@@ -196,6 +196,22 @@ Decoder.definition = {
     return coUtils.Text.safeConvertFromArray(sequence);
   },
 
+  /** test */
+  "[test]":
+  function()
+  {
+    var enabled = this.enabled;
+
+    try {
+      this.enabled = false;
+      this.enabled = true;
+      this.enabled = false;
+    } finally {
+      this.enabled = enabled;
+    }
+  },
+
+
 }; // Decoder
 
 /**

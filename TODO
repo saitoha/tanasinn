@@ -22,7 +22,6 @@
 - Make DRCS behavior be more strictry
 
 - imprement DECCRA
-- implement DECBI/DECFI
 - implement MC/DECMC
 - implement DECPEX mode
 - implement DECSASD

@@ -32,6 +32,7 @@ MoveShortcut.definition = {
 
   id: "moveshortcut",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {
@@ -67,6 +68,7 @@ MoveShortcut.definition = {
   function left(info)
   {
     this.sendMessage("command/move-by", [-this.step, 0]);
+
     return true;
   },
 
@@ -77,6 +79,7 @@ MoveShortcut.definition = {
   function down(info)
   {
     this.sendMessage("command/move-by", [0, this.step]);
+
     return true;
   },
 
@@ -87,6 +90,7 @@ MoveShortcut.definition = {
   function up(info)
   {
     this.sendMessage("command/move-by", [0, -this.step]);
+
     return true;
   },
 
@@ -97,30 +101,28 @@ MoveShortcut.definition = {
   function right(info)
   {
     this.sendMessage("command/move-by", [this.step, 0]);
+
     return true;
   },
 
   /** test */
-  "[subscribe('command/test')]":
-  function onTest()
+  "[test('do-basic-actions'), _('move commands')]":
+  function()
   {
-    var enabled;
+    var enabled = this.enabled;
 
-    enabled = this.enabled;
-    return {
-      context: this,
-      action: [
-        function() this.enabled = false,
-        function() this.enabled = true,
-        function() this.left(),
-        function() this.down(),
-        function() this.up(),
-        function() this.right(),
-        function() this.enabled = false,
-        function() this.enabled = enabled,
-      ],
-    };
-  }
+    try {
+      this.enabled = false;
+      this.enabled = true;
+      this.left();
+      this.down();
+      this.up();
+      this.right();
+      this.enabled = false;
+    } finally {
+      this.enabled = enabled;
+    }
+  },
 
 }; // MoveShortcut
 

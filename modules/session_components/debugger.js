@@ -538,6 +538,23 @@ Debugger.definition = {
     this.sendMessage("command/select-panel", this.id);
     return true;
   },
+
+  /** test */
+  "[test]":
+  function()
+  {
+    var enabled = this.enabled;
+
+    try {
+      this.enabled = false;
+      this.enabled = true;
+      this.enabled = false;
+    } finally {
+      this.enabled = enabled;
+    }
+  },
+
+
 };
 
 /**

@@ -66,6 +66,8 @@ TTYGateway.definition = {
   "[uninstall]":
   function uninstall()
   {
+    this._8bit_mode = false;
+    this._conformance_level = 4;
   },
 
   /** Report conformance level (DECSCL) state
@@ -373,6 +375,25 @@ TTYGateway.definition = {
       coUtils.Debug.reportMessage(
           _("Conformance level was changed: [%d]."),
           value);
+    }
+  },
+
+  /** test */
+  "[test]":
+  function()
+  {
+    var enabled = this.enabled,
+        _8bit_mode = this._8bit_mode,
+        conformance_level = this._conformance_level;
+
+    try {
+      this.enabled = false;
+      this.enabled = true;
+      this.enabled = false;
+    } finally {
+      this.enabled = enabled;
+      this._8bit_mode = _8bit_mode;
+      this._conformance_level = conformance_level;
     }
   },
 

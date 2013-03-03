@@ -239,7 +239,23 @@ Base64CopyPaste.definition = {
       }
       scanner.moveNext();
     }
- },
+  },
+
+  /** test */
+  "[test]":
+  function()
+  {
+    var enabled = this.enabled;
+
+    try {
+      this.enabled = false;
+      this.enabled = true;
+      this.enabled = false;
+    } finally {
+      this.enabled = enabled;
+    }
+  },
+
 
 }; // Base64CopyPaste
 

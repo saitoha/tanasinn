@@ -70,6 +70,7 @@ SoftReset.definition = {
 
   id: "soft_reset",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {
@@ -90,6 +91,22 @@ SoftReset.definition = {
     coUtils.Debug.reportWarning(
       _("DECSTR is not implemented completely."));
   },
+
+  /** test */
+  "[test]":
+  function()
+  {
+    var enabled = this.enabled;
+
+    try {
+      this.enabled = false;
+      this.enabled = true;
+      this.enabled = false;
+    } finally {
+      this.enabled = enabled;
+    }
+  },
+
 
 }; // class SoftReset
 

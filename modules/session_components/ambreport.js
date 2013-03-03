@@ -158,6 +158,22 @@ AmbiguousWidthReporting.definition = {
     }
   },
 
+  /** test */
+  "[test]":
+  function()
+  {
+    var enabled = this.enabled;
+
+    try {
+      this.enabled = false;
+      this.enabled = true;
+      this.enabled = false;
+    } finally {
+      this.enabled = enabled;
+    }
+  },
+
+
 
 }; // class EastAsianWidth
 

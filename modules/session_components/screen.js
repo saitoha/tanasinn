@@ -3122,6 +3122,22 @@ Screen.definition = {
     return [toHexString(hash.charCodeAt(i)) for (i in hash)].join("").toUpperCase();
   },
 
+  /** test */
+  "[test]":
+  function()
+  {
+    var enabled = this.enabled;
+
+    try {
+      this.enabled = false;
+      this.enabled = true;
+      this.enabled = false;
+    } finally {
+      this.enabled = enabled;
+    }
+  },
+
+
 }; // class Screen
 
 

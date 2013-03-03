@@ -183,7 +183,6 @@
     terminalmode.js
     reversewrap.js
     altscreen.js
-    ucsmapping.js
     nkm.js
     answerback.js
     mouse.js
@@ -224,7 +223,6 @@
 
     cursor.js
     splitter.js
-    gesture.js
 
     ime.js
     copy.js
@@ -336,6 +334,8 @@
    asciidecoder.js
    cp932decoder.js
    agent.js
+   gesture.js
+   ucsmapping.js
   }
 
   ttydriver.py

@@ -146,6 +146,21 @@ CharsetModeHandler.definition = {
     this.sendMessage("change/encoder", "UTF-8");
   },
 
+  /** test */
+  "[test]":
+  function()
+  {
+    var enabled = this.enabled;
+
+    try {
+      this.enabled = false;
+      this.enabled = true;
+      this.enabled = false;
+    } finally {
+      this.enabled = enabled;
+    }
+  },
+
 }; // CharsetModeHandler
 
 

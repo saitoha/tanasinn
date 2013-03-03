@@ -136,6 +136,21 @@ RectangleChecksumReport.definition = {
     this.sendMessage("command/send-sequence/dcs", message);
   },
 
+  /** test */
+  "[test]":
+  function()
+  {
+    var enabled = this.enabled;
+
+    try {
+      this.enabled = false;
+      this.enabled = true;
+      this.enabled = false;
+    } finally {
+      this.enabled = enabled;
+    }
+  },
+
 }; // RectangleChecksumReport
 
 

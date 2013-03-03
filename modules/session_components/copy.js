@@ -35,6 +35,7 @@ Copy.definition = {
 
   id: "copy",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {
@@ -125,10 +126,27 @@ Copy.definition = {
     status_message = coUtils.Text.format(
       _("Copied text to clipboard: %s"), text);
 
-    this.sendMessage("command/report-status-message", status_message);
+    this.sendMessage("command/report-status-message",
+                     status_message);
   },
 
-};
+  /** test */
+  "[test]":
+  function()
+  {
+    var enabled = this.enabled;
+
+    try {
+      this.enabled = false;
+      this.enabled = true;
+      this.enabled = false;
+    } finally {
+      this.enabled = enabled;
+    }
+  },
+
+
+}; // class Copy
 
 /**
  * @fn main

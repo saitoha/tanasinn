@@ -98,7 +98,23 @@ CharsetCommands.definition = {
     return this._impl(arguments_string, /* is_encoder */ false);
   },
 
-};
+  /** test */
+  "[test]":
+  function()
+  {
+    var enabled = this.enabled;
+
+    try {
+      this.enabled = false;
+      this.enabled = true;
+      this.enabled = false;
+    } finally {
+      this.enabled = enabled;
+    }
+  },
+
+
+}; // CharsetCommands
 
 
 /**

@@ -59,7 +59,7 @@ Test.definition = {
   },
 
   /** do tests for session plugins */
-  "[command('test'), _('Run test'), pnp]":
+  "[subscribe('command/test'), command('test'), _('Run test'), pnp]":
   function doTest()
   {
     var test_data = [],
