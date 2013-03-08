@@ -136,6 +136,9 @@ VT100Grammar.definition = {
     this._hookmap = [];
   },
 
+  /**
+   *
+   */
   "[subscribe('get/grammars'), pnp]":
   function onGrammarsRequested()
   {
@@ -396,6 +399,7 @@ VT100Grammar.definition = {
         params[i] = parseInt(param);
       }
     }
+
     handler = this._csi_map[key];
     if (!handler) {
       return true;
@@ -409,10 +413,12 @@ VT100Grammar.definition = {
   {
     var f = String.fromCharCode(fbyte),
         handler = this._esc_map[f];
+
     if (!handler) {
       return true;
     }
     handler();
+
     return true;
   },
 
@@ -424,16 +430,19 @@ VT100Grammar.definition = {
         params,
         f = String.fromCharCode(fbyte),
         i = String.fromCharCode.apply(null, ibytes);
+
     handler = this._esc_map[i + f];
     if (handler) {
       handler();
       return true;
     }
+
     handler = this._esc_map[i[0]];
     if (handler) {
       handler(i.substr(1) + f);
       return true;
     }
+
     return true;
   },
 

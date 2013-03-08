@@ -164,11 +164,10 @@ Scrollbar.definition = {
 
   changePosition: function changePosition(position)
   {
-    var min_position, max_position;
-
-    min_position = 0;
-    max_position = parseInt(this._before.flex)
+    var min_position = 0,
+        max_position = parseInt(this._before.flex)
                      + parseInt(this._after.flex);
+
     position = Math.max(position, min_position);
     position = Math.min(position, max_position);
     if (position !== this._before.flex) {
@@ -180,12 +179,11 @@ Scrollbar.definition = {
   "[subscribe('event/scroll-position-changed'), pnp]":
   function onScrollPositionChanged(scroll_info)
   {
-    var scrollbar, before, current, after;
+    var scrollbar = this._scrollbar,
+        before = this._before,
+        current = this._current,
+        after = this._after;
 
-    scrollbar = this._scrollbar;
-    before = this._before;
-    current = this._current;
-    after = this._after;
     if (0 === Number(scrollbar.style.opacity)) {
       scrollbar.style.opacity = this.active_opacity;
     }
@@ -220,9 +218,8 @@ Scrollbar.definition = {
   "[listen('mouseout', '#tanasinn_scrollbar'), pnp]":
   function onmouseout(event)
   {
-    var scrollbar;
+    var scrollbar = this._scrollbar;
 
-    scrollbar = this._scrollbar;
     if (0 === Number(this._after.flex) &&
         !this._dragging &&
         0.00 !== scrollbar.style.opacity) {
@@ -239,8 +236,15 @@ Scrollbar.definition = {
   "[listen('dragstart', '#tanasinn_scrollbar_current'), pnp]":
   function ondragstart(dom_event)
   {
-    var initial_y, dom_document, radius, height, before_flex,
-        current_flex, after_flex, flex, flex_per_height,
+    var initial_y,
+        dom_document,
+        radius,
+        height,
+        before_flex,
+        current_flex,
+        after_flex,
+        flex,
+        flex_per_height,
         initial_view_top;
 
     this._dragging = true;

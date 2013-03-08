@@ -57,6 +57,11 @@ InnerChrome.definition = {
         id: "tanasinn_titlebar_area",
         tagName: "box",
         dir: "ltr",
+        style: {
+          transitionProperty: "background-color",
+          transitionDuration: this.transition_duration + "ms",
+          borderRadius: "12px",
+        },
       },
       {
         parentNode: "#tanasinn_chrome",
@@ -92,8 +97,11 @@ InnerChrome.definition = {
   "[persistable, watchable] background": "transparent",
   "[persistable] inactive_opacity": 0.20,
   "[persistable] resize_opacity": 0.50,
+  "[persistable] transition_duration": 500,
 
   _element: null,
+  _center: null,
+  _titlebar: null,
 
   /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
@@ -101,10 +109,12 @@ InnerChrome.definition = {
   "[install]":
   function install(context)
   {
-    var result = this.request("command/construct-chrome", this._getTemplate());
+    var result = this.request("command/construct-chrome",
+                              this._getTemplate());
 
     this._element = result.tanasinn_content;
     this._center = result.tanasinn_center_area;
+    this._titlebar = result.tanasinn_titlebar_area;
   },
 
   /** Uninstalls itself.
@@ -117,6 +127,7 @@ InnerChrome.definition = {
       this._element = null;
     }
     this._center = null;
+    this._titlebar = null;
   },
 
   "[subscribe('variable-changed/chrome.{margin | background}'), pnp]":
@@ -168,6 +179,18 @@ InnerChrome.definition = {
   function onmousedown()
   {
     this.sendMessage("command/focus");
+  },
+
+  "[listen('mouseover', '#tanasinn_titlebar_area'), pnp]":
+  function onmouseover()
+  {
+    this._titlebar.style.backgroundColor = "rgba(255,255,255,0.2)";
+  },
+
+  "[listen('mouseout', '#tanasinn_titlebar_area'), pnp]":
+  function onmouseout()
+  {
+    this._titlebar.style.backgroundColor = "";
   },
 
   /** test */

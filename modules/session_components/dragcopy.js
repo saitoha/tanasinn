@@ -43,6 +43,7 @@ DragCopy.definition = {
 
   id: "dragcopy",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {
@@ -52,6 +53,7 @@ DragCopy.definition = {
     };
   },
 
+  /** provide UI Template */
   getTemplate: function getTemplate()
   {
     return {
@@ -97,18 +99,21 @@ DragCopy.definition = {
     this._selection = null;
   },
 
+  /** called when mouse tracking mode is changed */
   "[subscribe('event/mouse-tracking-mode-changed'), enabled]":
   function onMouseTrackingModeChanged(data)
   {
     this._mouse_mode = data;
   },
 
+  /** called when screen width is changed */
   "[subscribe('event/screen-width-changed'), pnp]":
   function onWidthChanged(width)
   {
     this._feedback_canvas.width = width;
   },
 
+  /** called when screen height is changed */
   "[subscribe('event/screen-height-changed'), pnp]":
   function onHeightChanged(height)
   {
@@ -150,6 +155,7 @@ DragCopy.definition = {
     this.ondragend.enabled = true;
   },
 
+  /** called when a dragging session finished */
   "[listen('dragend', '#tanasinn_content')]":
   function ondragend(event)
   {
@@ -214,6 +220,7 @@ DragCopy.definition = {
 
   },
 
+  /** called when a mouse drag event is dispatched */
   "[listen('dragstart', '#tanasinn_content'), pnp]":
   function ondragstart(event)
   {
@@ -265,8 +272,7 @@ DragCopy.definition = {
     }
   },
 
-
-};
+}; // DragCopy
 
 /**
  * @fn main

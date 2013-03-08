@@ -72,6 +72,7 @@ Titlebar.definition = {
 
   id: "titlebar",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {
@@ -108,6 +109,7 @@ Titlebar.definition = {
   _encoder: null,
   _decoder: null,
 
+  /** provide UI template */
   getTemplate: function getTemplate()
   {
     return {
@@ -118,7 +120,8 @@ Titlebar.definition = {
       height: this.font_size + 4,
       style: {
         padding: "0px",
-        marginBottom: "6px",
+        paddingBottom: "7px",
+        borderRadius: "2px",
         opacity: "1.0",
         width: "100%",
         cursor: "move",
@@ -199,48 +202,56 @@ Titlebar.definition = {
     this._canvas.width = width;
   },
 
+  /** set the title setting utf-8 mode enabled */
   "[subscribe('command/title-set-utf8-mode-enabled'), pnp]":
   function onTitleSetUtf8ModeEnabled()
   {
     this._set_utf8_mode = true;
   },
 
+  /** set the title setting hex mode enabled */
   "[subscribe('command/title-set-hex-mode-enabled'), pnp]":
   function onTitleSetHexModeEnabled()
   {
     this._set_hex_mode = true;
   },
 
+  /** set the title query utf-8 mode enabled */
   "[subscribe('command/title-query-utf8-mode-enabled'), pnp]":
   function onTitleQueryUtf8ModeEnabled()
   {
     this._query_utf8_mode = true;
   },
 
+  /** set the title query hex mode enabled */
   "[subscribe('command/title-query-hex-mode-enabled'), pnp]":
   function onTitleQueryHexModeEnabled()
   {
     this._query_hex_mode = true;
   },
 
+  /** set the title setting utf-8 mode disabled */
   "[subscribe('command/title-set-utf8-mode-disabled'), pnp]":
   function onTitleSetUtf8ModeDisabled()
   {
     this._set_utf8_mode = false;
   },
 
+  /** set the title setting hex mode disabled */
   "[subscribe('command/title-set-hex-mode-disabled'), pnp]":
   function onTitleSetHexModeDisabled()
   {
     this._set_hex_mode = false;
   },
 
+  /** set the title query utf-8 mode disabled */
   "[subscribe('command/title-query-utf8-mode-disabled'), pnp]":
   function onTitleQueryUtf8ModeDisabled()
   {
     this._query_utf8_mode = false;
   },
 
+  /** set the title query hex mode disabled */
   "[subscribe('command/title-query-hex-mode-disabled'), pnp]":
   function onTitleQueryHexModeDisabled()
   {
