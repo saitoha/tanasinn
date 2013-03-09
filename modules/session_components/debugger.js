@@ -71,6 +71,7 @@ Debugger.definition = {
 
   id: "debugger",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {
@@ -88,6 +89,7 @@ Debugger.definition = {
 
   _timer_id: null,
 
+  /** provide UI template */
   getTemplate: function getTemplate()
   {
     return {

@@ -76,7 +76,7 @@ Kill.definition = {
   },
 
   /** kill process and stop tty */
-  "[command('kill/quit'), _('kill process and stop tty'), pnp]":
+  "[command('kill/quit'), nmap('<M-q>', '<C-S-q>'), _('kill process and stop tty'), pnp]":
   function kill()
   {
     // stops TTY device.
