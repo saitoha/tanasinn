@@ -10,9 +10,9 @@ A terminal emulator extension for Firefox/Thunderbird/SeaMonkey.
 
 This is supported on Windows(XP/Vista/7) + Cygwin / Mac / Linux / FreeBSD.
 
-For more information, See http://zuse.jp/tanasinn/index.html.
+For more information, See http://saitoha.github.com/tanasinn/
 
-Requirement
+Requirements
 -------------
 
 - Posix environment
