@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="Tanasinn :  三 ┏( ^o^)┛ ＜ Terminal emulator extension for Firefox / Thunderbird / SeaMonkey." />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Tanasinn</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/saitoha/tanasinn">View on GitHub</a>
+
+          <h1 id="project_title">Tanasinn</h1>
+          <h2 id="project_tagline"> 三 ┏( ^o^)┛ ＜ Terminal emulator extension for Firefox / Thunderbird / SeaMonkey.</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/saitoha/tanasinn/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/saitoha/tanasinn/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h3>Overview</h3>
+
+<p>tanasinn is a terminal emulator extension for Firefox/Thunderbird/SeaMonkey, which is supported on Windows(XP/Vista/7) + Cygwin / Mac / Linux / FreeBSD.</p>
+
+<h3>License</h3>
+
+<p>This software is distributed under <a href="http://www.mozilla.org/MPL/1.1/">Mozilla Public License 1.1(MPL 1.1)</a>.</p>
+
+<h3>Highlighting features</h3>
+
+<ul>
+<li>Full Gecko based user interface (HTML Canvas + XUL), flexible and easy to customize.</li>
+<li>Multi-platform, now supports Mac / FreeBSD / Linux (Tested in Ubuntu) / Windows(XP/Vista/7) + http:/#/<a href="http://www.cygwin.com%5BCygwin%5D">www.cygwin.com[Cygwin]</a> (requires posix python).</li>
+<li>Supports ISO-6429/ISO-2022 compatible parsing</li>
+<li>Supports plugin architecture. 200-over various plugins are provided by default. Plugins support Plug-and-Play installing &amp; uninstalling.</li>
+<li>Detach/Attach. Retaining TTY session during closing/restarting browser. you can reconnect suspended terminal session.</li>
+<li>Including debugger. You can run it in step-execution-mode or trace-mode and observe terminal I/O sequence in real-time.</li>
+<li>Precise emulation, passes vttest Menu 1, 2, 3, 4, 6, 7, and 8.</li>
+<li>Supports basic features, scroll-back, alternate screen, visual bell, audio bell ...etc.</li>
+<li>IME is supported.</li>
+<li>Supports VT52 compatibility mode.</li>
+<li>Supports http:/#/en.wikipedia.org/wiki/Tektronix_4010[Tektronix 4010/4014] compatibility mode (on progress).</li>
+<li>Supports Sixel Graphics mode.</li>
+<li>Supports Various character attributes, Italic, blink, slow blink, underline, negative,...etc.</li>
+<li>Supports some ancient lost commands, such as DECDHL/DECDWL, DECDLD/<a href="http://vt100.net/dec/vt320/soft_characters">DRCS(Dynamically Redefined Character Set)</a>。</li>
+<li>Supports ldouble width characters. but it is not render bidi languages correctly.</li>
+<li>Localization supported. It is using gettext-style method. you can edit localize resource on UI.</li>
+<li>You can selects variable character encoding supported by Gecko.</li>
+<li>Supports transparent window. it is useful when www-browsing while working at terminal.</li>
+<li>Supports mouse emulation. xterm normal reporting, wheel scrolling, UTF8/urxvt/SGR extended styles, and DEC Locator Event mode are implemented.</li>
+<li>Text selection / Rectangle text selection.</li>
+<li>Supports copy / paste in Drag &amp; Drop or keyboard shortcut.</li>
+<li>Supports move / re-size through dragging operation.</li>
+<li>Supports 256 terminal colors, you can assign 32bit colors for them.</li>
+<li>Vimperator / Keysnail like commandline interface.</li>
+<li>This can be installed as a plugin for Vimperator/Muttator. It hooks "" and "gF" mappings if you want.</li>
+<li>Supports trackpad gesture mappings, such as pinch, swipe, rotate.</li>
+</ul><h3>Requirements</h3>
+
+<ul>
+<li>Firefox 4.02pre+ / Thunderbird 7.0a1+ / SeaMonkey 2.1+.</li>
+<li>Python for POSIX (2.5+, Mac, FreeBSD, Linux, or cygwin version)
+Python for Win32, ActivePython, etc... are not supported because they depend on many posix functions 'os.fork', 'os.openpty' ..etc.</li>
+<li>Posix environment.
+If you are running Windows, you need to install cygwin at C:\cygwin.</li>
+</ul><h3>Download</h3>
+
+<p><a href="https://addons.mozilla.org/ja/seamonkey/addon/tanasinn/">https://addons.mozilla.org/ja/seamonkey/addon/tanasinn/</a></p>
+
+<h3>Installing</h3>
+
+<h4>Build Firefox/Thunderbird/SeaMonkey extension(XPI package):</h4>
+
+<h5>.Mac, FreeBSD, Linux, Cygwin</h5>
+
+<pre><code>git clone TANASINN_GIT_REPOSITORY
+cd tanasinn
+./configure
+make
+</code></pre>
+
+<p>If build process succeeded, target XPI file <a href="mailto:tanasinn@zuse.jp">tanasinn@zuse.jp</a> is to be generated. enjoy it!</p>
+
+<h4>Installing as Vimperator/Muttator plugin:</h4>
+
+<p>You need to make some symbolic links into Vimperator/Muttator runtime directory</p>
+
+<h5>Mac, FreeBSD, Linux</h5>
+
+<pre><code>git clone TANASINN_GIT_REPOSITORY
+cd tanasinn
+ln -s $PWD $RUNTIME/tanasinn
+ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/
+</code></pre>
+
+<h5>.Windows Vista/7 + Cygwin</h5>
+
+<pre><code>git clone TANASINN_GIT_REPOSITORY
+cd tanasinn
+$(cygpath $COMSPEC) /c mklink /D "$(cygpath -w "$RUNTIME/tanasinn")" "$(cygpath -w "$PWD")";
+ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/
+</code></pre>
+
+<h5>Windows XP + Cygwin</h5>
+
+<p>To make Windows native symbolic link, you may need to install http:/#/<a href="http://www.microsoft.com/download/en/details.aspx?DisplayLang=en%2cen&amp;id=17657%5BWindows">www.microsoft.com/download/en/details.aspx?DisplayLang=en%2cen&amp;id=17657[Windows</a> Server 2003 Resource Kit Tools].</p>
+
+<pre><code>git clone TANASINN_GIT_REPOSITORY
+cd tanasinn
+$(cygpath $COMSPEC) /c linkd.exe "$(cygpath -w "$RUNTIME/tanasinn")" "$(cygpath -w "$PWD")";
+ln $PWD/modules/tanasinn-vimp.js $RUNTIME/plugin/
+</code></pre>
+
+<p>$RUNTIME is Vimperator/Muttator runtime directory such as '$HOME/.{vimperator,muttator}'.</p>
+
+<h3>Launching</h3>
+
+<p>You can launch a terminal session from context menu.</p>
+
+<blockquote>
+<p>[tanasinn] -&gt; [New session]</p>
+</blockquote>
+
+<p>Or, you can use GCLI integrated "tanasinn" command.
+Press  and type as follows:</p>
+
+<pre><code>tanasinn &lt;command line&gt;
+</code></pre>
+
+<p>If it is Installed as Vimperator/Muttator plugin:
+You can also use the following integrated vimperator commands:</p>
+
+<pre><code>:tanasinnstart &lt;command line&gt;
+</code></pre>
+
+<h3>Troubleshooting</h3>
+
+<p>※ If tanasinn does not work, try creating tanasinn.js at your home directory, as follows:</p>
+
+<p>.%USERPROFILE%¥.tanasinn.js or $HOME/.tanasinn.js</p>
+
+<pre><code>process.cygwin_root = "C:\\cygwin";
+process.bin_path = "/bin:/usr/bin:/usr/local/bin:/opt/local/bin";
+process.python_path = "/usr/bin/python"
+</code></pre>
+
+<h3>Operation</h3>
+
+<p>It is similar to well-known terminal emulators, like xterm.
+but including specific features as follows.</p>
+
+<h4>shift + shift (shift key twice)</h4>
+
+<p>switch input focus between terminal and commandline textbox.</p>
+
+<h4>shift + mouse drag</h4>
+
+<p>move window.</p>
+
+<h4>alt + mouse select</h4>
+
+<p>select rectangle region. (like Terminal.app)</p>
+
+<h4>alt + shift + drag</h4>
+
+<p>3D rotation</p>
+
+<h3>Supported escape sequences</h3>
+
+<p>See <a href="https://github.com/saitoha/tanasinn/wiki/_pages">https://github.com/saitoha/tanasinn/wiki/_pages</a></p>
+
+<h3>Bug reports and patches</h3>
+
+<p>Patches and bug reports are are encouraged. &gt; saitoha <a href="mailto:user@zuse.jp">user@zuse.jp</a>, or contact my twitter account(<a href="http://twitter.com/kefir_">http://twitter.com/kefir_</a>).</p>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Tanasinn maintained by <a href="https://github.com/saitoha">saitoha</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
