@@ -43,12 +43,12 @@
 
 <ul>
 <li>Full Gecko based user interface (HTML Canvas + XUL), flexible and easy to customize.</li>
-<li>Multi-platform, now supports Mac / FreeBSD / Linux (Tested in Ubuntu) / Windows(XP/Vista/7) + http:/#/<a href="http://www.cygwin.com%5BCygwin%5D">www.cygwin.com[Cygwin]</a> (requires posix python).</li>
+<li>Multi-platform, now supports Mac / FreeBSD / Linux (Tested in Ubuntu) / Windows(XP/Vista/7) + http:/#/<a href="http://www.cygwin.com%5BCygwin%5D">www.cygwin.com[Cygwin]</a> (requires Python for POSIX environment).</li>
 <li>Supports ISO-6429/ISO-2022 compatible parsing</li>
 <li>Supports plugin architecture. 200-over various plugins are provided by default. Plugins support Plug-and-Play installing &amp; uninstalling.</li>
 <li>Detach/Attach. Retaining TTY session during closing/restarting browser. you can reconnect suspended terminal session.</li>
 <li>Including debugger. You can run it in step-execution-mode or trace-mode and observe terminal I/O sequence in real-time.</li>
-<li>Precise emulation, passes vttest Menu 1, 2, 3, 4, 6, 7, and 8.</li>
+<li>Precise emulation, passes VTTEST Menu 1, 2, 3, 4, 6, 7, and 8.</li>
 <li>Supports basic features, scroll-back, alternate screen, visual bell, audio bell ...etc.</li>
 <li>IME is supported.</li>
 <li>Supports VT52 compatibility mode.</li>
@@ -56,11 +56,16 @@
 <li>Supports Sixel Graphics mode.</li>
 <li>Supports Various character attributes, Italic, blink, slow blink, underline, negative,...etc.</li>
 <li>Supports some ancient lost commands, such as DECDHL/DECDWL, DECDLD/<a href="http://vt100.net/dec/vt320/soft_characters">DRCS(Dynamically Redefined Character Set)</a>。</li>
-<li>Supports ldouble width characters. but it is not render bidi languages correctly.</li>
-<li>Localization supported. It is using gettext-style method. you can edit localize resource on UI.</li>
-<li>You can selects variable character encoding supported by Gecko.</li>
+<li>Supports double width characters. but it is not render bidi languages correctly.</li>
+<li>Localization supported, using gettext-like method. you can edit localize resource from command line.</li>
+<li>You can select variable character encoding supported by Gecko.</li>
 <li>Supports transparent window. it is useful when www-browsing while working at terminal.</li>
-<li>Supports mouse emulation. xterm normal reporting, wheel scrolling, UTF8/urxvt/SGR extended styles, and DEC Locator Event mode are implemented.</li>
+<li>Supports mouse emulation. xterm normal reporting, wheel scrolling, UTF8/URXVT/SGR extended styles, and DEC Locator Event mode are implemented.</li>
+<li>Supports Any event motion tracking (DECSET/DECRST 1003)</li>
+<li>Supports Highlight mouse tracking (DECSET/DECRST 1004)</li>
+<li>Supports Alternate scrolling mode (DECSET/DECRST 1007)</li>
+<li>Supports title mode/title stacking</li>
+<li>Supports PASTE64(OSC 52, Base64 copy/paste)</li>
 <li>Text selection / Rectangle text selection.</li>
 <li>Supports copy / paste in Drag &amp; Drop or keyboard shortcut.</li>
 <li>Supports move / re-size through dragging operation.</li>
@@ -73,14 +78,14 @@
 <ul>
 <li>Firefox 4.02pre+ / Thunderbird 7.0a1+ / SeaMonkey 2.1+.</li>
 <li>Python for POSIX (2.5+, Mac, FreeBSD, Linux, or cygwin version)
-Python for Win32, ActivePython, etc... are not supported because they depend on many posix functions 'os.fork', 'os.openpty' ..etc.</li>
-<li>Posix environment.
+Python for Win32, ActivePython, etc... are not supported because they depend on many POSIX functions 'os.fork', 'os.openpty' ..etc.</li>
+<li>POSIX environment.
 If you are running Windows, you need to install cygwin at C:\cygwin.</li>
 </ul><h3>Download</h3>
 
 <p><a href="https://addons.mozilla.org/ja/seamonkey/addon/tanasinn/">https://addons.mozilla.org/ja/seamonkey/addon/tanasinn/</a></p>
 
-<h3>Installing</h3>
+<h3>Install</h3>
 
 <h4>Build Firefox/Thunderbird/SeaMonkey extension(XPI package):</h4>
 
@@ -94,7 +99,7 @@ make
 
 <p>If build process succeeded, target XPI file <a href="mailto:tanasinn@zuse.jp">tanasinn@zuse.jp</a> is to be generated. enjoy it!</p>
 
-<h4>Installing as Vimperator/Muttator plugin:</h4>
+<h4>Install as Vimperator/Muttator plugin:</h4>
 
 <p>You need to make some symbolic links into Vimperator/Muttator runtime directory</p>
 
