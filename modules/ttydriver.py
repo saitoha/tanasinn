@@ -257,7 +257,7 @@ class TeletypeDriver:
             wfds = []
             xfds = [self.master, io_fd, control_fd]
             while True:  # TTY -> mozilla
-                rfd, wfd, xfd = select.select(rfds, wfds, xfds, 20)
+                rfd, wfd, xfd = select.select(rfds, wfds, xfds)
                 if xfd:  # checking error.
                     break
                 if not rfd:  # checking error.
