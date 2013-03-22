@@ -80,6 +80,7 @@ Resize.definition = {
 
   id: "resize",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

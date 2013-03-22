@@ -34,6 +34,7 @@ OverlayBrowser.definition = {
 
   id: "overlay_browser",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

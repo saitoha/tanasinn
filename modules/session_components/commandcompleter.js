@@ -34,6 +34,7 @@ CommandCompleter.definition = {
 
   id: "command_completer",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

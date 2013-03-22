@@ -35,6 +35,7 @@ Hooker.definition = {
 
   id: "hooker",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

@@ -33,6 +33,7 @@ PluginManagementCommands.definition = {
 
   id: "plugin_management_commands",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

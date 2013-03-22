@@ -37,6 +37,7 @@ BottomPanel.definition = {
 
   id: "bottompanel",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

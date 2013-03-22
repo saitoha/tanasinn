@@ -34,6 +34,7 @@ DragMove.definition = {
 
   id: "dragmove",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

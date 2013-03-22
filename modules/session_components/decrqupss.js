@@ -60,6 +60,7 @@ UPSSRequest.definition = {
 
   id: "upss_request",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

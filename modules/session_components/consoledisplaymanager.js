@@ -35,6 +35,7 @@ DisplayManager.definition = {
 
   id: "displaymanager",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

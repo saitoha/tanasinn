@@ -33,6 +33,7 @@ LocalizeCommand.definition = {
 
   id: "localize",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

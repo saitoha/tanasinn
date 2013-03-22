@@ -41,11 +41,12 @@
  * and ^[[2W is sent when changing to an "ambiguous wide" font.
  */
 var AmbiguousWidthReporting = new Class().extends(Plugin)
-                                .depends("parser");
+                                         .depends("parser");
 AmbiguousWidthReporting.definition = {
 
   id: "ambiguous_width_reporting",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {
@@ -172,7 +173,6 @@ AmbiguousWidthReporting.definition = {
       this.enabled = enabled;
     }
   },
-
 
 
 }; // class EastAsianWidth

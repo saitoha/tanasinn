@@ -32,6 +32,7 @@ MouseGesture.definition = {
 
   id: "mouse_gesture",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

@@ -54,6 +54,7 @@ CGICompleter.definition = {
 
   id: "cgi_completer",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

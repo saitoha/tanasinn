@@ -34,6 +34,7 @@ Tracer.definition = {
 
   id: "tracer",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

@@ -36,6 +36,7 @@ Protection.definition = {
 
   id: "protection",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

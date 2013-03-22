@@ -33,6 +33,7 @@ SetCommand.definition = {
 
   id: "setcommand",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

@@ -33,6 +33,7 @@ FontsizeCompletionDisplayDriver.definition = {
 
   id: "fontsize-completion-display-driver",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

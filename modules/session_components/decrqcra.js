@@ -75,6 +75,7 @@ RectangleChecksumReport.definition = {
 
   id: "rectangle_checksum_report",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

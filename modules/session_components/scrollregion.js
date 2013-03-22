@@ -59,12 +59,14 @@ ScrollRegion.definition = {
 
   id: "scroll_region",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {
       name: _("Scroll Region"),
       version: "0.1",
-      description: _("Set/Reset scroll region(DECSTBM) with escape sequence.")
+      description: _("Set/Reset scroll region(DECSTBM) with escape",
+                     " sequence.")
     };
   },
 

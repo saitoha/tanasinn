@@ -32,6 +32,7 @@ Kill.definition = {
 
   id: "kill",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

@@ -32,6 +32,7 @@ ScreenshotCommand.definition = {
 
   id: "screenshot",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

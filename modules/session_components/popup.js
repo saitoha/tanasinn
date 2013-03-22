@@ -156,12 +156,14 @@ PopupMenu.definition = {
 
   id: "popup_menu",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {
       name: _("Popup Menu"),
       version: "0.1",
-      description: _("Handles application plivate sequence and shows native popup menu.")
+      description: _("Handles application plivate sequence and",
+                     " shows native popup menu.")
     };
   },
 

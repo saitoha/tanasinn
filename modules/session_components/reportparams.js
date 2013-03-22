@@ -34,6 +34,7 @@ ReportParams.definition = {
 
   id: "reportparams",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

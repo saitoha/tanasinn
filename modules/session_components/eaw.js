@@ -34,6 +34,7 @@ EastAsianWidth.definition = {
 
   id: "east_asian_width",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

@@ -33,6 +33,7 @@ FocusEvent.definition = {
 
   id: "focus_event",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

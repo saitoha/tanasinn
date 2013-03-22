@@ -34,6 +34,7 @@ Console.definition = {
 
   id: "console",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

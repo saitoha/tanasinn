@@ -33,6 +33,7 @@ LscomponentCommand.definition = {
 
   id: "lscomponent_command",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

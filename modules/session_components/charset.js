@@ -91,6 +91,7 @@ CharsetModeHandler.definition = {
 
   id: "charsetmode",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

@@ -33,6 +33,7 @@ PluginsCompleter.definition = {
 
   id: "plugins_completer",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

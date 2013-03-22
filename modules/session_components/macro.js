@@ -32,6 +32,7 @@ InputMacro.definition = {
 
   id: "input_macro",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

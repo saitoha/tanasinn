@@ -33,6 +33,7 @@ Scrollbar.definition = {
 
   id: "scrollbar",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {
@@ -51,6 +52,7 @@ Scrollbar.definition = {
   "[persistable] color": "white",
   "[persistable] background_color": "white",
 
+  /** provides UI template */
   getTemplate: function getTemplate()
   {
     return {

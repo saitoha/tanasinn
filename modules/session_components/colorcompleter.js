@@ -34,6 +34,7 @@ ColorNumberCompleter.definition = {
 
   id: "colorcompleter",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

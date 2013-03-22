@@ -36,6 +36,7 @@ Cursor.definition = {
 
   id: "cursor",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

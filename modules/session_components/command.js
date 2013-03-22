@@ -32,6 +32,7 @@ CommandProvider.definition = {
 
   id: "commandprovider",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

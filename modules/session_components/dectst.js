@@ -76,6 +76,7 @@ ConfidenceTest.definition = {
 
   id: "confidence_test",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

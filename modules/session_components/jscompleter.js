@@ -33,6 +33,7 @@ JsCompleter.definition = {
 
   id: "jscompleter",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

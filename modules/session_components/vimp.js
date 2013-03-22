@@ -33,6 +33,7 @@ Vimperator.definition = {
 
   id: "vimperator",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

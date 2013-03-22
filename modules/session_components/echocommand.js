@@ -32,6 +32,7 @@ EchoCommand.definition = {
 
   id: "echo_command",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

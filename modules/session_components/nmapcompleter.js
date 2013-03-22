@@ -33,6 +33,7 @@ NMapCompleter.definition = {
 
   id: "nmap_completer",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

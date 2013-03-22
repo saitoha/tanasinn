@@ -32,6 +32,7 @@ DragPaste.definition = {
 
   id: "dragpaste",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

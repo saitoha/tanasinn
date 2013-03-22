@@ -33,6 +33,7 @@ CMapCompleter.definition = {
 
   id: "cmap_completer",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

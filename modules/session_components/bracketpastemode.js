@@ -51,6 +51,7 @@ BracketedPasteMode.definition = {
 
   id: "bracketed_paste_mode",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

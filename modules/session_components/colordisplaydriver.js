@@ -35,6 +35,7 @@ ColorCompletionDisplayDriver.definition = {
 
   id: "color-completion-display-driver",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

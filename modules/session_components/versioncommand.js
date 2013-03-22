@@ -32,6 +32,7 @@ VersionCommand.definition = {
 
   id: "version_command",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

@@ -35,6 +35,7 @@ WheelScroll.definition = {
 
   id: "wheel_scroll",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

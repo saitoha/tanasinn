@@ -33,6 +33,7 @@ HistoryCompleter.definition = {
 
   id: "history-completer",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

@@ -79,6 +79,7 @@ DECDeviceStatusReport.definition = {
 
   id: "device_status_report_dec",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

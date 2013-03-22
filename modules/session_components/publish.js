@@ -32,6 +32,7 @@ PublishCommand.definition = {
 
   id: "publish",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

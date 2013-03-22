@@ -33,6 +33,7 @@ FontsizeCompleter.definition = {
 
   id: "fontsize_completer",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

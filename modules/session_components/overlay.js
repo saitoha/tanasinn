@@ -68,6 +68,7 @@ OverlayIndicator.definition = {
 
   id: "overlayindicator",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {
@@ -77,6 +78,7 @@ OverlayIndicator.definition = {
     };
   },
 
+  /** provides UI template */
   getTemplate: function getTemplate()
     ({
       parentNode: "#tanasinn_outer_chrome",

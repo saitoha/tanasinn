@@ -204,7 +204,7 @@ ScreenEditConcept.definition = {
  * @trait ScreenSequenceHandler
  *
  */
-var ScreenSequenceHandler = new Trait()
+var ScreenSequenceHandler = new Trait("ScreenSequenceHandler");
 ScreenSequenceHandler.definition = {
 
   /**

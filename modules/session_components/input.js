@@ -486,39 +486,89 @@ function coCreateKeyMap(expression_map, destination_map)
     code = tokens.pop();
     code = coUtils.Keyboard.KEYNAME_PACKEDCODE_MAP[code.toLowerCase()]
          || code.replace(/\\x([0-9a-fA-F]+)/g,
-              function(key)
+              function replaceFunc(key)
               {
-                var code;
-                code = parseInt(key, 16);
+                var code = parseInt(key, 16);
+
                 return String.fromCharCode(code);
               }).charCodeAt(0);
 
     code = tokens.reduce(
-        function(code, token)
+        function reduceFunc(code, token)
         {
+          var modifier = token.toLowerCase();
+
           return code | 0x1 << {
               ctrl: coUtils.Constant.KEY_CTRL,// | coUtils.Constant.KEY_NOCHAR,
               alt: coUtils.Constant.KEY_ALT,
               shift: coUtils.Constant.KEY_SHIFT,
               meta: coUtils.Constant.KEY_META,// | coUtils.Constant.KEY_NOCHAR,
-            } [token.toLowerCase()];
+            } [modifier];
         }, code);
 
     map[code] = value.replace(/\\x([0-9a-fA-F]{1,2})/g,
-        function()
+        function replaceFunc()
         {
-          var code;
-          code = parseInt(arguments[1], 16);
+          var code = parseInt(arguments[1], 16);
+
           return String.fromCharCode(code);
         }).replace(/\\[eE]/g, '\x1b');
   }
+
   return map;
 }
+
+//////////////////////////////////////////////////////////////////////////////
+//
+// Concepts
+//
+
+/**
+ * @concept KeyMappingsConcept
+ */
+var KeyMappingsConcept = new Concept();
+KeyMappingsConcept.definition = {
+
+  id: "KeyMappingsConcept",
+
+  // message concept
+  "command/build-key-mappings :: Object -> Undefined":
+  _('Build the trie tree for managing key map.'),
+
+  // signature concept
+  "build :: Object -> Undefined":
+  _('Build the trie tree for managing key map.'),
+
+}; // KeyMappingsConcept
+
+//////////////////////////////////////////////////////////////////////////////
+//
+// Traits
+//
+//
+
+/**
+ * @trait ApplicationEscapeMode
+ */
+var ApplicationEscapeMode = new Trait("ApplicationEscapeMode")
+                                    //.requires("KeyMappingsConcept")
+                                    ;
+ApplicationEscapeMode.definition = {
+
+  "[subscribe('command/change-application-escape'), pnp]":
+  function onChangeApplicationEscape(mode)
+  {
+    this._application_escape = mode;
+    this.build(this._map);
+  },
+
+}; // ApplicationEscapeMode
 
 /**
  * @class DefaultKeyMappings
  */
-var DefaultKeyMappings = new Class().extends(Plugin);
+var DefaultKeyMappings = new Class().extends(Plugin)
+                                    .mix(ApplicationEscapeMode);
 DefaultKeyMappings.definition = {
 
   id: "default_key_mappings",
@@ -561,13 +611,6 @@ DefaultKeyMappings.definition = {
   "[uninstall]":
   function uninstall()
   {
-  },
-
-  "[subscribe('command/change-application-escape'), pnp]":
-  function onChangeApplicationEscape(mode)
-  {
-    this._application_escape = mode;
-    this.build(this._map);
   },
 
   "[subscribe('command/change-cursor-mode'), pnp]":
@@ -733,6 +776,9 @@ ModeManager.definition = {
     this._modes = null;
   },
 
+  /** Retrieve input sequences and remap them and dispatch them in accordance
+   * with the mode (normal/commandline).
+   */
   "[subscribe('event/scan-keycode'), pnp]":
   function onScanKeycode(info)
   {
@@ -754,6 +800,9 @@ ModeManager.definition = {
     }
   },
 
+  /** Dispatch given input sequences directly in accordance with the mode
+   * (normal/commandline).
+   */
   "[subscribe('event/scan-keycode-with-no-remapping'), pnp]":
   function onScanKeycodeWithoutMapping(info)
   {
@@ -775,6 +824,9 @@ ModeManager.definition = {
     }
   },
 
+  /** Provides sendkeys command, which interprets a key sequence expression and send
+   *  it to the application.
+   */
   "[command('sendkeys/sk'), pnp]":
   function sendkeys(arguments_string)
   {
@@ -787,6 +839,7 @@ ModeManager.definition = {
     };
   },
 
+  /** Interpret a key sequence expression and remap it, and send it to the application. */
   "[subscribe('command/input-expression-with-remapping'), pnp]":
   function inputExpressionWithMapping(expression)
   {
@@ -794,9 +847,11 @@ ModeManager.definition = {
         i,
         packed_code;
 
+    // parse expression
     packed_code_array = coUtils.Keyboard
       .parseKeymapExpression(expression);
 
+    // process them one by one
     for (i = 0; i < packed_code_array.length; ++i) {
       packed_code = packed_code_array[i];
       this.sendMessage("event/scan-keycode", { code: packed_code });
@@ -804,6 +859,7 @@ ModeManager.definition = {
     return true;
   },
 
+  /** Interpret a key sequence expression and directly send it to the application. */
   "[subscribe('command/input-expression-with-no-remapping'), pnp]":
   function inputExpressionWithNoRemapping(expression)
   {
@@ -811,9 +867,11 @@ ModeManager.definition = {
         i,
         packed_code;
 
+    // parse expression
     packed_code_array = coUtils.Keyboard
       .parseKeymapExpression(expression);
 
+    // process them one by one
     for (i = 0; i < packed_code_array.length; ++i) {
       packed_code = packed_code_array[i];
       this.sendMessage(
@@ -825,6 +883,7 @@ ModeManager.definition = {
     return true;
   },
 
+  /** Change the mode (normal/commandline) */
   "[subscribe('event/input-mode-changed'), pnp]":
   function onModeChanged(mode)
   {
@@ -959,18 +1018,21 @@ InputManager.definition = {
     this.onDoubleShift.enabled = false;
   },
 
+  /** switches local echo mode */
   "[subscribe('set/local-echo-mode'), pnp]":
   function setLocalEchoMode(value)
   {
     this._local_echo_mode = value;
   },
 
+  /** switches lf/crlf mode */
   "[subscribe('set/newline-mode'), pnp]":
   function onChangeNewlineMode(mode)
   {
     this._newline_mode = mode;
   },
 
+  /** switches auto-repeat mode */
   "[subscribe('command/change-auto-repeat-mode'), pnp]":
   function onAutoRepeatModeChanged(mode)
   {
@@ -1011,6 +1073,7 @@ InputManager.definition = {
       coUtils.Constant.INPUT_MODE_NORMAL);
   },
 
+  /** Exports blur command, which moves focus out of the current window */
   "[command('blur', []), nmap('<M-z>', '<C-S-z>', '<C-S-Z>'), _('Blur tanasinn window'), pnp]":
   function blurCommand()
   {
@@ -1021,6 +1084,7 @@ InputManager.definition = {
       }, 100, this);
   },
 
+  /** Dispatched when the broker is stopping. */
   "[subscribe('event/before-broker-stopping')]":
   function onSessionStopping()
   {
@@ -1062,12 +1126,14 @@ InputManager.definition = {
       "<2-shift>");
   },
 
+  /** called when the window gets the focus */
   "[subscribe('event/got-focus'), pnp]":
   function onGotFocus(event)
   {
     this.onDoubleShift.enabled = true;
   },
 
+  /** called when the window losts the focus */
   "[subscribe('event/lost-focus'), pnp]":
   function onLostFocus(event)
   {

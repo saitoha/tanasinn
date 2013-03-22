@@ -77,6 +77,7 @@ TirtiaryDA.definition = {
 
   id: "tirtiary_da",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

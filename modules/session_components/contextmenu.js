@@ -32,6 +32,7 @@ Contextmenu.definition = {
 
   id: "contextmenu",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {
@@ -42,6 +43,7 @@ Contextmenu.definition = {
     };
   },
 
+  /** provides UI template */
   getTemplate: function getTemplate()
     ({
       tagName: "menupopup",

@@ -86,6 +86,7 @@ StatusRequest.definition = {
 
   id: "request_status_string",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

@@ -34,6 +34,7 @@ ChangePaletteCommand.definition = {
 
   id: "colorcommands",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

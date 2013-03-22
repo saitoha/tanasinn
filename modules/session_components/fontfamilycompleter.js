@@ -33,6 +33,7 @@ FontFamilyCompleter.definition = {
 
   id: "font_family_completer",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

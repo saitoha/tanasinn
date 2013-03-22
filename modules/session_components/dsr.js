@@ -78,6 +78,7 @@ ANSIDeviceStatusReport.definition = {
 
   id: "device_status_report",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

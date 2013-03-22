@@ -34,6 +34,7 @@ EventCompleter.definition = {
 
   id: "event_completer",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

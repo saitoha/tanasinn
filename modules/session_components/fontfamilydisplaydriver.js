@@ -33,6 +33,7 @@ FontFamilyCompletionDisplayDriver.definition = {
 
   id: "font-family-completion-display-driver",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

@@ -33,6 +33,7 @@ JsCommand.definition = {
 
   id: "jscommand",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

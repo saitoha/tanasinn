@@ -359,6 +359,7 @@ Controller.definition = {
   },
 
 // private
+  /** provides session DB path */
   _get_sessiondb_path: function _get_sessiondb_path()
   {
     var virtual_path = coUtils.Runtime.getRuntimePath()
@@ -382,6 +383,7 @@ Controller.definition = {
 
   },
 
+  /** send a set of (I/O port number, request ID, session DB path) to tty driver */
   _send_initial_data: function _send_initial_data(io_port)
   {
     var sessiondb_path = this._get_sessiondb_path(),

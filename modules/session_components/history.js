@@ -35,6 +35,7 @@ CommandlineHistory.definition = {
 
   id: "commandline_history",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

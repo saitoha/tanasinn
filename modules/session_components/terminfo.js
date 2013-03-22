@@ -754,6 +754,7 @@ Terminfo.definition = {
 
   id: "terminfo",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

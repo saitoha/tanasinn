@@ -33,6 +33,7 @@ OptionCompleter.definition = {
 
   id: "optioncompleter",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

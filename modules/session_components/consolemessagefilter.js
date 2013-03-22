@@ -33,6 +33,7 @@ MessageFilter.definition = {
 
   id: "messagefilter",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

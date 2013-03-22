@@ -35,6 +35,7 @@ ConsoleListener.definition = {
 
   id: "consolelistener",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

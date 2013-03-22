@@ -33,6 +33,7 @@ OverlayEchoCommand.definition = {
 
   id: "overlay_echo_command",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

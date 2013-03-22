@@ -433,6 +433,7 @@ Commandline.definition = {
 
   id: "commandline",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

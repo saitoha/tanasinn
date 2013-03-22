@@ -33,6 +33,7 @@ CharsetCommands.definition = {
 
   id: "charset",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

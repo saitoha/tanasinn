@@ -132,6 +132,7 @@ OuterChrome.definition = {
 
   id: "outerchrome",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {
@@ -150,6 +151,7 @@ OuterChrome.definition = {
   "[persistable, watchable] border_radius": 8,
   "[persistable, watchable] box_shadow": "5px 4px 29px black",
 
+  /** provides current frame style in css-formatted */
   _getFrameStyle: function _getFrameStyle()
   {
     return "-moz-box-shadow: " + this.box_shadow + ";" +
@@ -161,6 +163,7 @@ OuterChrome.definition = {
            "cursor: text;";
   },
 
+  /** returns blended color between foreground and background */
   _getBlendColor: function _getBlendColor()
   {
     var f = parseInt(this.foreground_color.substr(1), 16),

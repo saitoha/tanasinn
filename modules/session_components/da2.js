@@ -86,6 +86,7 @@ SecondaryDA.definition = {
 
   id: "secondary_da",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

@@ -33,6 +33,7 @@ FontCommands.definition = {
 
   id: "fontcommands",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

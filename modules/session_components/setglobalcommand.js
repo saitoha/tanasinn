@@ -34,6 +34,7 @@ SetGlobalCommand.definition = {
 
   id: "setglobalcommand",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

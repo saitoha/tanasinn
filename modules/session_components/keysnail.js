@@ -33,6 +33,7 @@ KeySnail.definition = {
 
   id: "keysnail",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

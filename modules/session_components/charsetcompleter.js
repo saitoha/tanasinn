@@ -33,6 +33,7 @@ CharsetCompleter.definition = {
 
   id: "charset_completer",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

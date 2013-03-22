@@ -33,6 +33,7 @@ HardReset.definition = {
 
   id: "hard_reset",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

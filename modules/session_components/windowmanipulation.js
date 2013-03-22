@@ -46,6 +46,7 @@ WindowManipulator.definition = {
 
   id: "window_manipulatior",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

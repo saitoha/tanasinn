@@ -33,6 +33,7 @@ LocalizeCompleter.definition = {
 
   id: "localize-completer",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

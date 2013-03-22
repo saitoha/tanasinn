@@ -33,6 +33,7 @@ PersistCommand.definition = {
 
   id: "persist",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {
