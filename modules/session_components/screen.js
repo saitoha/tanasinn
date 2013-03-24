@@ -1652,7 +1652,7 @@ Scrollable.definition = {
         height = this._height,
         left = this._scroll_left,
         right = this._scroll_right,
-        attrvalue = this.cursor.attr.value & 0xff,
+        attrvalue = this.cursor.attr.bg,
         i,
         j,
         cell,
@@ -1721,7 +1721,7 @@ Scrollable.definition = {
         cursor = this.cursor,
         left = this._scroll_left,
         right = this._scroll_right,
-        attrvalue = cursor.attr.value & 0xff,
+        attrvalue = cursor.attr.bg,
         i,
         j,
         cell,
@@ -2202,7 +2202,7 @@ Screen.definition = {
 
     if (0 === codes[0]) {
       if (positionX >= width) {
-        line.erase(positionX - 1, positionX, cursor.attr.value & 0xff);
+        line.erase(positionX - 1, positionX, cursor.attr.bg);
       }
     } else {
       if (positionX >= width) {
@@ -2450,7 +2450,7 @@ Screen.definition = {
     if (line) {
       cursor = this.cursor;
       width = this._width;
-      line.erase(cursor.positionX, width, cursor.attr.value & 0xff);
+      line.erase(cursor.positionX, width, cursor.attr.bg);
     } else {
       coUtils.Debug.reportWarning(
         _("eraseLineToRight: Current line is null."));
@@ -2463,7 +2463,7 @@ Screen.definition = {
   {
     var cursor = this.cursor,
         line = this.getCurrentLine(),
-        attrvalue = cursor.attr.value & 0xff;
+        attrvalue = cursor.attr.bg;
 
     line.erase(0, cursor.positionX + 1, attrvalue);
   },
@@ -2475,7 +2475,7 @@ Screen.definition = {
     var cursor = this.cursor,
         line = this.getCurrentLine(),
         width = this._width,
-        attrvalue = cursor.attr.value & 0xff;
+        attrvalue = cursor.attr.bg;
 
     line.erase(0, width, attrvalue);
   },
@@ -2492,7 +2492,7 @@ Screen.definition = {
     if (line) {
       cursor = this.cursor;
       width = this._width;
-      line.selectiveErase(cursor.positionX, width, cursor.attr.value & 0xff);
+      line.selectiveErase(cursor.positionX, width, cursor.attr.bg);
     } else {
       coUtils.Debug.reportWarning(
         _("selectiveEraseLineToRight: Current line is null."));
@@ -2507,7 +2507,7 @@ Screen.definition = {
     var cursor = this.cursor,
         line = this.getCurrentLine();
 
-    line.selectiveErase(0, cursor.positionX + 1, cursor.attr.value & 0xff);
+    line.selectiveErase(0, cursor.positionX + 1, cursor.attr.bg);
   },
 
   /** Erase cells marked as "erasable" from line */
@@ -2518,7 +2518,7 @@ Screen.definition = {
         line = this.getCurrentLine(),
         width = this._width;
 
-    line.selectiveErase(0, width, cursor.attr.value & 0xff);
+    line.selectiveErase(0, width, cursor.attr.bg);
   },
 
   /** Erase cells from current position to head of buffer. */
@@ -2528,7 +2528,7 @@ Screen.definition = {
     var cursor = this.cursor,
         width = this._width,
         lines = this._lines,
-        attrvalue = cursor.attr.value & 0xff,
+        attrvalue = cursor.attr.bg,
         positionY = cursor.positionY,
         i,
         line;
@@ -2547,7 +2547,7 @@ Screen.definition = {
   {
     var cursor = this.cursor,
         width = this._width,
-        attrvalue = cursor.attr.value & 0xff,
+        attrvalue = cursor.attr.bg,
         lines = this._lines,
         positionY = cursor.positionY,
         height = this._height,
@@ -2574,7 +2574,7 @@ Screen.definition = {
     var width = this._width,
         cursor = this.cursor,
         lines = this._lines,
-        attrvalue = cursor.attr.value & 0xff,
+        attrvalue = cursor.attr.bg,
         length = lines.length,
         i,
         line;
@@ -2592,7 +2592,7 @@ Screen.definition = {
   {
     var cursor = this.cursor,
         lines = this._lines,
-        attrvalue = cursor.attr.value & 0xff,
+        attrvalue = cursor.attr.bg,
         length = lines.length,
         i = top,
         line;
@@ -2619,7 +2619,7 @@ Screen.definition = {
     var cursor = this.cursor,
         width = this._width,
         lines = this._lines,
-        attrvalue = cursor.attr.value & 0xff,
+        attrvalue = cursor.attr.bg,
         positionY = cursor.positionY,
         i = 0,
         line = lines[positionY];
@@ -2638,7 +2638,7 @@ Screen.definition = {
   {
     var cursor = this.cursor,
         width = this._width,
-        attrvalue = cursor.attr.value & 0xff,
+        attrvalue = cursor.attr.bg,
         lines = this._lines,
         positionY = cursor.positionY,
         height = this._height,
@@ -2661,7 +2661,7 @@ Screen.definition = {
     var width = this._width,
         cursor = this.cursor,
         lines = this._lines,
-        attrvalue = cursor.attr.value & 0xff,
+        attrvalue = cursor.attr.bg,
         length = lines.length,
         i = 0,
         line;
@@ -2679,7 +2679,7 @@ Screen.definition = {
   {
     var cursor = this.cursor,
         lines = this._lines,
-        attrvalue = cursor.attr.value & 0xff,
+        attrvalue = cursor.attr.bg,
         length = lines.length,
         i = top,
         line;
@@ -2695,7 +2695,7 @@ Screen.definition = {
   "[type('Undefined')] eraseScreenAllWithTestPattern":
   function eraseScreenAllWithTestPattern()
   {
-    var attrvalue = this.cursor.attr.value & 0xff,
+    var attrvalue = this.cursor.attr.bg,
         width = this._width,
         lines = this._lines,
         i = 0,
@@ -2713,7 +2713,7 @@ Screen.definition = {
   {
     var line = this.getCurrentLine(),
         cursor = this.cursor,
-        attrvalue = cursor.attr.value & 0xff;
+        attrvalue = cursor.attr.bg;
 
     line.insertBlanks(cursor.positionX, n, attrvalue);
   },
@@ -2823,7 +2823,7 @@ Screen.definition = {
   function scrollLeft(n)
   { // Scroll Left
     var lines = this._lines,
-        attrvalue = this.cursor.attr.value & 0xff,
+        attrvalue = this.cursor.attr.bg,
         i = 0,
         j = 0,
         leftmargin = this._scroll_left,
@@ -2846,7 +2846,7 @@ Screen.definition = {
   function scrollRight(n)
   { // Scroll Right
     var lines = this._lines,
-        attrvalue = this.cursor.attr.value & 0xff,
+        attrvalue = this.cursor.attr.bg,
         i = 0,
         j = 0,
         leftmargin = this._scroll_left,
@@ -2889,7 +2889,7 @@ Screen.definition = {
   function eraseCharacters(n)
   { // Erase CHaracters
     var line = this.getCurrentLine(),
-        attrvalue = this.cursor.attr.value & 0xff,
+        attrvalue = this.cursor.attr.bg,
         start = this.cursor.positionX,
         end = start + n;
 
@@ -2905,7 +2905,7 @@ Screen.definition = {
   { // Delete CHaracters
     var line = this.getCurrentLine(),
         cursor = this.cursor,
-        attrvalue = cursor.attr.value & 0xff;
+        attrvalue = cursor.attr.bg;
 
     line.deleteCells(cursor.positionX, n, attrvalue);
   },

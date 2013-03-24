@@ -91,25 +91,26 @@ Cell.definition = {
   /** setter of foreground color */
   set fg(value)
   {
-    this.fgcolor = 1;
     this.value = this.value
                & ~(0xff << _ATTR_FORECOLOR)
-               | value << _ATTR_FORECOLOR;
+               | value << _ATTR_FORECOLOR
+               | 0x1 << _ATTR_FGCOLOR;
   },
 
   /** getter of background color */
   get bg()
   {
-    return this.value >>> _ATTR_BACKCOLOR & 0xff;
+    //return this.value >>> _ATTR_BACKCOLOR & 0xff;
+    return this.value & 0xff;
   },
 
   /** setter of background color */
   set bg(value)
   {
-    this.bgcolor = 1;
     this.value = this.value
                & ~(0xff << _ATTR_BACKCOLOR)
-               | value << _ATTR_BACKCOLOR;
+               | value << _ATTR_BACKCOLOR
+               | 0x1 << _ATTR_BGCOLOR;
   },
 
   /** getter of bold attribute */
@@ -371,6 +372,7 @@ DirtyRange.definition = {
   first: 0,
   last: 0,
 
+  /** constructor */
   initialize: function initialize(length)
   {
     this.last = length;
@@ -870,13 +872,15 @@ Line.definition = {
   {
     var cells = this.cells,
         length = cells.length,
-        i = 0,
+        i,
         cell;
 
-    for (; i < length; ++i) {
+    /** clear whole cells */
+    for (i = 0; i < length; ++i) {
       cell = cells[i];
       cell.clear();
     }
+
     this.type = coUtils.Constant.LINETYPE_NORMAL;
   },
 

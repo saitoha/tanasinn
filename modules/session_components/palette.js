@@ -205,6 +205,9 @@ PaletteManager.definition = {
 
   },
 
+  /**
+   * Set specified palette color
+   */
   "[subscribe('sequence/osc/4'), enabled]":
   function osc4(value)
   {
@@ -233,6 +236,9 @@ PaletteManager.definition = {
     }
   },
 
+  /**
+   * Reset specified palette color
+   */
   "[subscribe('sequence/osc/104'), pnp]":
   function osc104(value)
   {
@@ -318,6 +324,9 @@ PaletteManager.definition = {
     }
   },
 
+  /**
+   * Reset background color
+   */
   "[subscribe('sequence/osc/111'), pnp]":
   function osc111()
   {
@@ -331,6 +340,9 @@ PaletteManager.definition = {
       || outerchrome.__proto__.background_color;
   },
 
+  /**
+   * Enable reverse video
+   */
   "[subscribe('command/reverse-video'), enabled]":
   function reverseVideo(value)
   {
