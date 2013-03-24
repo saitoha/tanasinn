@@ -89,7 +89,7 @@ FixedColumnMode.definition = {
   "[persistable] enabled_when_startup": true,
   "[persistable] default_value": false,
 
-  _mode: null,
+  _allow_switch: null,
   _80mode: true,
   _screen: null,
 
@@ -99,7 +99,7 @@ FixedColumnMode.definition = {
   "[install]":
   function install(context)
   {
-    this._mode = this.default_value;
+    this._allow_switch = this.default_value;
     this._screen = context["screen"];
   },
 
@@ -108,7 +108,8 @@ FixedColumnMode.definition = {
   "[uninstall]":
   function uninstall()
   {
-    this._mode = null;
+    this._allow_switch = null;
+    this._80mode = true;
     this._screen = null;
   },
 
@@ -117,7 +118,7 @@ FixedColumnMode.definition = {
   "[subscribe('sequence/decset/40'), pnp]":
   function activate()
   {
-    this._mode = true;
+    this._allow_switch = true;
 
     coUtils.Debug.reportMessage(
       _("DECSET 40 - (Allow 80 <--> 132 mode) was called."));
@@ -128,7 +129,7 @@ FixedColumnMode.definition = {
   "[subscribe('sequence/decrst/40'), pnp]":
   function deactivate()
   {
-    this._mode = false;
+    this._allow_switch = false;
 
     coUtils.Debug.reportMessage(
       _("DECRST 40 - (Disallow 80 <--> 132 mode) was called."));
@@ -142,7 +143,7 @@ FixedColumnMode.definition = {
     var screen = this._screen;
 
     // 80 column mode (DECCOLM)
-    if (this._mode) {
+    if (this._allow_switch) {
       this._80mode = false;
       this.sendMessage(
         "command/resize-screen",
@@ -169,7 +170,7 @@ FixedColumnMode.definition = {
     var screen = this._screen;
 
     // 80 column mode (DECCOLM)
-    if (this._mode) {
+    if (this._allow_switch) {
       this._80mode = true;
       this.sendMessage(
         "command/resize-screen",
@@ -193,7 +194,7 @@ FixedColumnMode.definition = {
   "[subscribe('sequence/decrqm/3'), pnp]":
   function report3()
   {
-    var mode = this._mode ? 1: 2,
+    var mode = this._allow_switch ? 1: 2,
         message = "?3;" + mode + "$y";
 
     this.sendMessage("command/send-sequence/csi", message);
@@ -204,7 +205,7 @@ FixedColumnMode.definition = {
   "[subscribe('sequence/decrqm/40'), pnp]":
   function report()
   {
-    var mode = this._mode ? 1: 2,
+    var mode = this._allow_switch ? 1: 2,
         message = "?40;" + mode + "$y";
 
     this.sendMessage("command/send-sequence/csi", message);
@@ -230,7 +231,7 @@ FixedColumnMode.definition = {
   {
     // serialize this plugin object.
     context[this.id] = {
-      mode: this._mode,
+      mode: this._allow_switch,
     };
   },
 
@@ -243,7 +244,7 @@ FixedColumnMode.definition = {
     var data = context[this.id];
 
     if (data) {
-      this._mode = data.mode;
+      this._allow_switch = data.mode;
     } else {
       coUtils.Debug.reportWarning(
         _("Cannot restore last state of renderer: data not found."));
