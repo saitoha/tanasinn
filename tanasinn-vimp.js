@@ -36,7 +36,7 @@ try {
               .shift()
               .replace(/^liberator:\/\/template\//, ""),
             path = current_file
-                 + "/../../tanasinn/modules/common/process.js?"
+                 + "/../modules/common/process.js?"
                  + new Date().getTime(),
             scope = {};
         Components.classes["@mozilla.org/moz/jssubscript-loader;1"]
@@ -217,7 +217,10 @@ try {
   };
 
 } catch (e) {
-  var message = "Error at " + e.fileName + ":" + e.lineNumber + " " + String(e);
+  var message = "Error at "
+              + e.fileName + ":"
+              + e.lineNumber + " "
+              + String(e);
   liberator.log(message);
   liberator.echoerr(message);
 }

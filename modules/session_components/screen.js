@@ -2163,12 +2163,14 @@ Screen.definition = {
     this._insert_mode = false;
   },
 
+  /** enable wraparound mode */
   "[subscribe('command/enable-wraparound'), pnp]":
   function enableWraparound()
   {
     this._wraparound_mode = true;
   },
 
+  /** disable wraparound mode */
   "[subscribe('command/disable-wraparound'), pnp]":
   function disableWraparound()
   {
@@ -2221,7 +2223,6 @@ Screen.definition = {
         if (cursor.positionX >= width) {
           if (this._wraparound_mode) {
             cursor.positionX = 0;
-            //this.carriageReturn();
             this.lineFeed();
             line = this.getCurrentLine();
           } else {
