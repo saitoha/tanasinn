@@ -608,7 +608,7 @@ Cursor.definition = {
 
     if (canvas) {
       canvas.style.transitionDuration = this.blink_transition_duration + "ms";
-      canvas.style.transitionTimingFunction = this.transition_function;
+      //canvas.style.transitionTimingFunction = this.transition_function;
       if (visibility) {
         canvas.style.opacity = this.opacity;
       } else {
