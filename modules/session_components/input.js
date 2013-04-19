@@ -24,6 +24,7 @@
 
 "use strict";
 
+///////////////////////////////////////////////////////////////////////////////
 //
 // Key mappings.
 //
@@ -1082,6 +1083,12 @@ InputManager.definition = {
       {
         this.blur();
       }, 100, this);
+
+    return {
+      success: true,
+      message: _("Succeeded."),
+    };
+
   },
 
   /** Dispatched when the broker is stopping. */
@@ -1175,6 +1182,9 @@ InputManager.definition = {
       "meta:" + (event.metaKey ? "t": "f") + "," +
       "char:" + (event.isChar ? "t": "f"));
     */
+
+    event.preventDefault();
+    event.stopPropagation();
   },
 
   "[listen('keyup', '#tanasinn_default_input', true), pnp]":
@@ -1182,6 +1192,9 @@ InputManager.definition = {
   {
     this.onkeypress.enabled = true;
     this.oninput.enabled = true;
+
+    event.preventDefault();
+    event.stopPropagation();
   },
 
   /** Keypress event handler.
