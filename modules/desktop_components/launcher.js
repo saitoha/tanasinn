@@ -572,6 +572,13 @@ Launcher.definition = {
     this.sendMessage("command/start-session", command);
   },
 
+  /** Start new session */
+  "[nmap('<M-n>'), _('Start new session.'), pnp]":
+  function startNewSession()
+  {
+    this.sendMessage('command/start-session');
+  },
+
   "[subscribe('command/start-session')]":
   function startSession(command)
   {
