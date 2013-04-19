@@ -154,8 +154,7 @@ OuterChrome.definition = {
   /** provides current frame style in css-formatted */
   _getFrameStyle: function _getFrameStyle()
   {
-    return "-moz-box-shadow: " + this.box_shadow + ";" +
-           "box-shadow: " + this.box_shadow + ";" +
+    return "box-shadow: " + this.box_shadow + ";" +
            "border-radius: " + this.border_radius + "px;" +
            "background-image: " + this._getBackground() + ";" +
            "background-size: 100% 100%;" +
