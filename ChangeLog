@@ -21,7 +21,7 @@
     * Rewrite context menu integration
     * Support xterm's kcbt(CSI Z)
     * Support DECBI/DECFI (not be tested well)
-    * Disable Ctrl + Ctrl
+    * Disable Ctrl Ctrl
     * Fix a rendering bug at dragcopy plugin
     * Fix duplicated context menu items issue
 
@@ -150,7 +150,7 @@
     * Add IdleService plugin
     * Take auto-snapshot with using IdleService
     * Fix a bug with taking screenshots
-    * Assign Ctrl + {4,5,6,7,8} -> FS/GS/RS/US/DEL
+    * Assign Ctrl {4,5,6,7,8} -> FS/GS/RS/US/DEL
     * Allow a DSCS starting with space character in DECDLD
     * Implement auto-answerback mode
     * Fix a dragcopy plugin's bug
@@ -187,7 +187,7 @@
 2012-08-19 Hayaki Saito <user@zuse.jp>
 
     * Version 0.2.4.0 / 0.2.4.1
-    * fix the Ctrl + Space key handling issue (reported by @teramako).
+    * fix the Ctrl Space key handling issue (reported by @teramako).
     * fix a conformance level's bug (for tmux).
     * fix OSC 52 (PASTE64) parse logic.
     * upgrade DA1 response, now it reports the capability of VT class 4.
