@@ -28,6 +28,7 @@
 - implement DECUDK
 - implement OSC 701
 - implement OSC 7771
+- implement OSC 8900 (GWREPT)
 
 - Rewrite console plugin's UI
 - Text search feature
