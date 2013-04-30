@@ -30,6 +30,7 @@
 var CommandProvider = new Class().extends(Plugin);
 CommandProvider.definition = {
 
+  /** Component ID */ 
   id: "commandprovider",
 
   /** plugin information */
@@ -97,7 +98,9 @@ CommandProvider.definition = {
         command,
         text;
 
-    [, repeat, command_name, blank] = match;
+    repeat = match[1];
+    command_name = match[2];
+    blank = match[3];
 
     if (blank) {
       command = this._getCommand(command_name);

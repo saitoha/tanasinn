@@ -33,6 +33,7 @@ var Copy = new Class().extends(Plugin)
                       .depends("screen");
 Copy.definition = {
 
+  /** Component ID */
   id: "copy",
 
   /** plugin information */

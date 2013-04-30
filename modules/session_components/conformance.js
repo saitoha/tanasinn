@@ -34,6 +34,7 @@ ConformanceLevel.definition = {
   /** Component ID */
   id: "conformanse_level",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

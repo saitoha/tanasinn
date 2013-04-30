@@ -272,6 +272,7 @@ Renderer.definition = {
 
   id: "renderer",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

@@ -41,6 +41,7 @@ var Ime = new Class().extends(Plugin)
                      .depends("inputmanager");
 Ime.definition = {
 
+  /** Component ID */
   id: "ime",
 
   /** plugin information */

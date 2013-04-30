@@ -32,6 +32,7 @@ FocusTracker.definition = {
 
   id: "focustracker",
 
+  /** plugin infomation */
   getInfo: function getInfo()
   {
     return {
