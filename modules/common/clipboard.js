@@ -31,7 +31,7 @@ coUtils.Clipboard = {
   /** get text from clipboard */
   get: function get()
   {
-    var clipboard = coUtils.Services.getClipboard();
+    var clipboard = coUtils.Services.getClipboard(),
         transferable = coUtils.Components.createTransferable(),
         str = {},
         str_length = {},
@@ -39,14 +39,16 @@ coUtils.Clipboard = {
 
     transferable.addDataFlavor("text/unicode");
 
-    clipboard.getData(trans, clipboard.kGlobalClipboard);
-    trans.getTransferData("text/unicode", str, str_length);
+    clipboard.getData(transferable, clipboard.kGlobalClipboard);
+    transferable.getTransferData("text/unicode", str, str_length);
 
     if (str.value && str_length.value) {
       text = str.value
         .QueryInterface(Components.interfaces.nsISupportsString)
         .data
         .substring(0, str_length.value / 2);
+    } else {
+      return null;
     }
 
     return text;

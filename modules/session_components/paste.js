@@ -81,22 +81,9 @@ Paste.definition = {
   "[command('paste'), nmap('<M-v>', '<C-S-V>'), _('Paste from clipboard.'), pnp]":
   function paste()
   {
-    var clipboard = coUtils.Services.getClipboard(),
-        trans = coUtils.Components.createTransferable(),
-        str = {},
-        str_length = {},
-        text;
+    var text = coUtils.Clipboard.get();
 
-    trans.addDataFlavor("text/unicode");
-
-    clipboard.getData(trans, clipboard.kGlobalClipboard);
-	  trans.getTransferData("text/unicode", str, str_length);
-
-    if (str.value && str_length.value) {
-      text = str.value
-        .QueryInterface(Components.interfaces.nsISupportsString)
-        .data
-        .substring(0, str_length.value / 2);
+    if (null !== text) {
 
       // sanitize the text.
       if (this.safe_paste) {
