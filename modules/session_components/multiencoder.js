@@ -62,6 +62,7 @@ MultiEncoder.definition = {
 
   id: "multiencoder",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {
@@ -90,13 +91,11 @@ MultiEncoder.definition = {
         title,
         info;
 
-    this._converter = Components
-      .classes["@mozilla.org/intl/scriptableunicodeconverter"]
-      .createInstance(Components.interfaces.nsIScriptableUnicodeConverter);
+    // get scriptable unicode converter
+    this._converter = coUtils.Components.createScriptableUnicodeConverter();
 
-    converter_manager = Components
-      .classes["@mozilla.org/charset-converter-manager;1"]
-      .getService(Components.interfaces.nsICharsetConverterManager);
+    // get converter manager service
+    converter_manager = coUtils.Services.getCharsetConverterManager();
 
     encoder_list = converter_manager.getEncoderList();
 
