@@ -57,7 +57,7 @@ ForwardInputIterator.definition = {
   {
     return this._position >= this._value.length;
   },
-};
+}; // ForwardInputIterator
 
 
 /**
@@ -70,6 +70,7 @@ Base64CopyPaste.definition = {
 
   id: "base64copypaste",
 
+  /** moule information */
   getInfo: function getInfo()
   {
     return {
@@ -110,6 +111,7 @@ Base64CopyPaste.definition = {
         scanner,
         buffer,
         text;
+
     if (/^[0-7psc]*;\?$/.test(data)) {
       if (this.enable_get_access) {
         text = coUtils.Clipboard.get();
@@ -147,19 +149,10 @@ Base64CopyPaste.definition = {
     return data.substr(position);
   },
 
-  _setToClipboard: function _setToClipboard(text)
-  {
-    var clipboard_helper
-
-    clipboard_helper = Components
-      .classes["@mozilla.org/widget/clipboardhelper;1"]
-      .getService(Components.interfaces.nsIClipboardHelper);
-    clipboard_helper.copyString(text);
-  },
-
   _getScanner: function _getScanner(text)
   {
     var data = coUtils.Text.base64decode(text);
+
     return new ForwardInputIterator(data);
   },
 

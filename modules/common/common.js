@@ -162,6 +162,7 @@ coUtils.Services = {
   _window_mediator: null,
   _clipboard: null,
   _clipboard_helper: null,
+  _charset_converter_manager: null,
   _observer_service: null,
   _io_service: null,
   _directory_service: null,
@@ -227,6 +228,17 @@ coUtils.Services = {
     }
 
     return this._clipboard_helper;
+  },
+
+  getCharsetConverterManager: function getCharsetConverterManager()
+  {
+    if (null === this._charset_converter_manager) {
+      this._charset_converter_manager = Components
+        .classes["@mozilla.org/charset-converter-manager;1"]
+        .getService(Components.interfaces.nsICharsetConverterManager);
+    }
+
+    return this._charset_converter_manager;
   },
 
   getObserverService: function getObserverService()

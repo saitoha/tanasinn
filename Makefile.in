@@ -97,7 +97,7 @@ lint: $(JS)
 	@case @host_os@ in \
 		cygwin*|linux*|darwin*) \
 			echo "$(MSTART) Ckecking JavaScript syntax error....$(MEND)"; \
-			for file in $$(/usr/bin/find $$PWD | egrep "\.js$$|\.jsm$$"); do \
+			for file in $$(/usr/bin/find $$(pwd) | egrep "\.js$$|\.jsm$$"); do \
 				for version in 185; do \
 					if [ @host_os@ = cygwin ]; then file=$$(cygpath -wa "$$file"); fi; \
 					cd $$(dirname $(JS)) && $(JS) -c -f "$$file" || exit; \

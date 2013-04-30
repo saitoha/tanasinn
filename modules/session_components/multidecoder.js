@@ -37,6 +37,7 @@ MultiDecoder.definition = {
     return "multi";
   },
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {
@@ -62,14 +63,10 @@ MultiDecoder.definition = {
         charset;
 
     // get scriptable unicode converter
-    this._converter = Components
-      .classes["@mozilla.org/intl/scriptableunicodeconverter"]
-      .createInstance(Components.interfaces.nsIScriptableUnicodeConverter);
+    this._converter = coUtils.Components.createScriptableUnicodeConverter();
 
     // get converter manager service
-    this._converter_manager = Components
-      .classes["@mozilla.org/charset-converter-manager;1"]
-      .getService(Components.interfaces.nsICharsetConverterManager);
+    this._converter_manager = coUtils.Services.getCharsetConverterManager();
 
     // get decoders information
     decoder_list = this._converter_manager.getDecoderList();
