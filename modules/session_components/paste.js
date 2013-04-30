@@ -43,6 +43,7 @@ Paste.definition = {
   },
 
   "[persistable] enabled_when_startup": true,
+  "[persistable] safe_paste": true,
 
   _bracketed_paste_mode: false,
 
@@ -80,9 +81,7 @@ Paste.definition = {
   "[command('paste'), nmap('<M-v>', '<C-S-V>'), _('Paste from clipboard.'), pnp]":
   function paste()
   {
-    var clipboard = Components
-          .classes["@mozilla.org/widget/clipboard;1"]
-          .getService(Components.interfaces.nsIClipboard),
+    var clipboard = coUtils.Services.getClipboard(),
         trans = coUtils.Components.createTransferable(),
         str = {},
         str_length = {},
@@ -99,8 +98,10 @@ Paste.definition = {
         .data
         .substring(0, str_length.value / 2);
 
-      // sanitize text.
-      text = text.replace(/[\x00-\x08\x0b-\x0c\x0e-\x1f]/g, "");
+      // sanitize the text.
+      if (this.safe_paste) {
+        text = text.replace(/[\x00-\x08\x0b-\x0c\x0e-\x1f]/g, "");
+      }
 
       // Encodes the text message and send it to the tty device.
       if (this._bracketed_paste_mode) {
@@ -130,6 +131,7 @@ Paste.definition = {
     this.sendMessage("command/input-text", text);
   },
 
+  /** Send clipboard text to TTY as key input */
   "[subscribe('command/paste'), pnp]":
   function pasteFromClipboard(mode)
   {
