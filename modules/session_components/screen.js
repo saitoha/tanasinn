@@ -24,7 +24,7 @@
 
 "use strict";
 
-
+/** sleep current_thread */
 function wait(span)
 {
   var end_time = Date.now() + span,

@@ -187,6 +187,9 @@ Cell.definition = {
   /** getter of bgcolor attribute */
   get bgcolor()
   {
+    if (this.value & 0xff !== 0) {
+      return 1;
+    }
     return this.value >>> _ATTR_BGCOLOR & 0x1;
   },
 
