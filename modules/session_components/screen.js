@@ -24,7 +24,7 @@
 
 "use strict";
 
-/** sleep current_thread */
+
 function wait(span)
 {
   var end_time = Date.now() + span,
@@ -1661,7 +1661,7 @@ Scrollable.definition = {
         line,
         range;
 
-    if (0 === left && right === width) {
+    if (0 === left && right === this._width) {
       // set dirty flag.
       for (i = offset + top; i < offset + bottom - n; ++i) {
         line = lines[i];
@@ -1731,7 +1731,7 @@ Scrollable.definition = {
         line,
         rest;
 
-    if (0 === left && right === width) {
+    if (0 === left && right === this._width) {
       // set dirty flag.
       for (i = offset + top + n; i < offset + bottom; ++i) {
         line = lines[i];
@@ -1978,7 +1978,7 @@ Screen.definition = {
     var line_generator = context["linegenerator"],
         cursor_state = context["cursorstate"];
 
-    this._buffer = line_generator.allocate(this._width, this._height * 2, 0);
+    this._buffer = line_generator.allocate(this._width, this._height * 2);
     this._switchScreen();
     this.cursor = cursor_state;
     this._line_generator = line_generator;
@@ -3072,10 +3072,9 @@ Screen.definition = {
   {
     var buffer = [],
         width = this._width,
-        line_generator = this._line_generator,
-        attrvalue = this.cursor.attr.bg;
+        line_generator = this._line_generator;
 
-    return line_generator.allocate(width, n, attrvalue);
+    return line_generator.allocate(width, n);
   },
 
   /** Switch between Main/Alternate screens. */

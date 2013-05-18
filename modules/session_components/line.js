@@ -38,7 +38,7 @@ LineGeneratorConcept.definition = {
   id: "LineGenerator",
 
   // signature concept
-  "allocate :: Uint16 -> Uint16 -> Uint16 -> Array":
+  "allocate :: Uint16 -> Uint16 -> Array":
   _("Allocates n cells at once."),
 
 }; // GrammarConcept
@@ -187,9 +187,6 @@ Cell.definition = {
   /** getter of bgcolor attribute */
   get bgcolor()
   {
-    if (this.value & 0xff !== 0) {
-      return 1;
-    }
     return this.value >>> _ATTR_BGCOLOR & 0x1;
   },
 
@@ -488,14 +485,13 @@ Line.definition = {
   type: coUtils.Constant.LINETYPE_NORMAL,
 
   /** constructor */
-  initialize: function initialize(length, attrvalue)
+  initialize: function initialize(length)
   {
     var cells = [],
         cell;
 
     while (length--) {
       cell = new Cell();
-	  cell.value = attrvalue;
       cells.push(cell);
     }
     this.cells = cells;
@@ -1061,14 +1057,14 @@ LineGenerator.definition = {
   },
 
   /** Allocates n cells at once. */
-  "[type('Uint16 -> Uint16 -> Uint16 -> Array')]":
-  function allocate(width, n, attrvalue)
+  "[type('Uint16 -> Uint16 -> Array')]":
+  function allocate(width, n)
   {
     var line,
         buffer = [];
 
     while (n--) {
-      line = new Line(width, attrvalue);
+      line = new Line(width);
       buffer.push(line);
     }
     return buffer;
