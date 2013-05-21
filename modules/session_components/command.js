@@ -93,7 +93,7 @@ CommandProvider.definition = {
     var pattern = /^\s*([0-9]*)(\w*)(\s*)/y,
         match = pattern.exec(completion_info.source),
         repeat,
-        commnad_name,
+        command_name,
         blank,
         command,
         text;
