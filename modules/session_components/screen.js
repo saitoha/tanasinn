@@ -24,7 +24,7 @@
 
 "use strict";
 
-
+/** sleep current_thread */
 function wait(span)
 {
   var end_time = Date.now() + span,
@@ -1652,7 +1652,7 @@ Scrollable.definition = {
         height = this._height,
         left = this._scroll_left,
         right = this._scroll_right,
-        attrvalue = this.cursor.attr.bg,
+        attrvalue = this.cursor.attr.value,
         i,
         j,
         cell,
@@ -1661,7 +1661,7 @@ Scrollable.definition = {
         line,
         range;
 
-    if (0 === left && right === this._width) {
+    if (0 === left && right === width) {
       // set dirty flag.
       for (i = offset + top; i < offset + bottom - n; ++i) {
         line = lines[i];
@@ -1721,7 +1721,7 @@ Scrollable.definition = {
         cursor = this.cursor,
         left = this._scroll_left,
         right = this._scroll_right,
-        attrvalue = cursor.attr.bg,
+        attrvalue = cursor.attr.value,
         i,
         j,
         cell,
@@ -1731,7 +1731,7 @@ Scrollable.definition = {
         line,
         rest;
 
-    if (0 === left && right === this._width) {
+    if (0 === left && right === width) {
       // set dirty flag.
       for (i = offset + top + n; i < offset + bottom; ++i) {
         line = lines[i];
@@ -1978,7 +1978,7 @@ Screen.definition = {
     var line_generator = context["linegenerator"],
         cursor_state = context["cursorstate"];
 
-    this._buffer = line_generator.allocate(this._width, this._height * 2);
+    this._buffer = line_generator.allocate(this._width, this._height * 2, 0);
     this._switchScreen();
     this.cursor = cursor_state;
     this._line_generator = line_generator;
@@ -2464,7 +2464,7 @@ Screen.definition = {
   {
     var cursor = this.cursor,
         line = this.getCurrentLine(),
-        attrvalue = cursor.attr.bg;
+        attrvalue = cursor.attr.value;
 
     line.erase(0, cursor.positionX + 1, attrvalue);
   },
@@ -2476,7 +2476,7 @@ Screen.definition = {
     var cursor = this.cursor,
         line = this.getCurrentLine(),
         width = this._width,
-        attrvalue = cursor.attr.bg;
+        attrvalue = cursor.attr.value;
 
     line.erase(0, width, attrvalue);
   },
@@ -2529,7 +2529,7 @@ Screen.definition = {
     var cursor = this.cursor,
         width = this._width,
         lines = this._lines,
-        attrvalue = cursor.attr.bg,
+        attrvalue = cursor.attr.value,
         positionY = cursor.positionY,
         i,
         line;
@@ -2548,7 +2548,7 @@ Screen.definition = {
   {
     var cursor = this.cursor,
         width = this._width,
-        attrvalue = cursor.attr.bg,
+        attrvalue = cursor.attr.value,
         lines = this._lines,
         positionY = cursor.positionY,
         height = this._height,
@@ -2575,7 +2575,7 @@ Screen.definition = {
     var width = this._width,
         cursor = this.cursor,
         lines = this._lines,
-        attrvalue = cursor.attr.bg,
+        attrvalue = cursor.attr.value,
         length = lines.length,
         i,
         line;
@@ -2593,7 +2593,7 @@ Screen.definition = {
   {
     var cursor = this.cursor,
         lines = this._lines,
-        attrvalue = cursor.attr.bg,
+        attrvalue = cursor.attr.value,
         length = lines.length,
         i = top,
         line;
@@ -2620,7 +2620,7 @@ Screen.definition = {
     var cursor = this.cursor,
         width = this._width,
         lines = this._lines,
-        attrvalue = cursor.attr.bg,
+        attrvalue = cursor.attr.value,
         positionY = cursor.positionY,
         i = 0,
         line = lines[positionY];
@@ -2639,7 +2639,7 @@ Screen.definition = {
   {
     var cursor = this.cursor,
         width = this._width,
-        attrvalue = cursor.attr.bg,
+        attrvalue = cursor.attr.value,
         lines = this._lines,
         positionY = cursor.positionY,
         height = this._height,
@@ -2662,7 +2662,7 @@ Screen.definition = {
     var width = this._width,
         cursor = this.cursor,
         lines = this._lines,
-        attrvalue = cursor.attr.bg,
+        attrvalue = cursor.attr.value,
         length = lines.length,
         i = 0,
         line;
@@ -2680,7 +2680,7 @@ Screen.definition = {
   {
     var cursor = this.cursor,
         lines = this._lines,
-        attrvalue = cursor.attr.bg,
+        attrvalue = cursor.attr.value,
         length = lines.length,
         i = top,
         line;
@@ -2696,7 +2696,7 @@ Screen.definition = {
   "[type('Undefined')] eraseScreenAllWithTestPattern":
   function eraseScreenAllWithTestPattern()
   {
-    var attrvalue = this.cursor.attr.bg,
+    var attrvalue = this.cursor.attr.value,
         width = this._width,
         lines = this._lines,
         i = 0,
@@ -2714,7 +2714,7 @@ Screen.definition = {
   {
     var line = this.getCurrentLine(),
         cursor = this.cursor,
-        attrvalue = cursor.attr.bg;
+        attrvalue = cursor.attr.value;
 
     line.insertBlanks(cursor.positionX, n, attrvalue);
   },
@@ -2824,19 +2824,21 @@ Screen.definition = {
   function scrollLeft(n)
   { // Scroll Left
     var lines = this._lines,
-        attrvalue = this.cursor.attr.bg,
+        attrvalue = this.cursor.attr.value,
         i = 0,
         j = 0,
         leftmargin = this._scroll_left,
         rightmargin = this._scroll_right,
         range,
-        cells;
+        cells,
+        cell;
 
     for (; i < lines.length; ++i) {
       cells = lines[i].cells;
       range = cells.splice(leftmargin, n);
       for (; j < range.length; ++j) {
-        cells[j].erase(attrvalue);
+        cell = cells[j];
+        cell.erase(attrvalue);
       }
       cells.splice(rightmargin - n, 0, range);
     }
@@ -2847,19 +2849,21 @@ Screen.definition = {
   function scrollRight(n)
   { // Scroll Right
     var lines = this._lines,
-        attrvalue = this.cursor.attr.bg,
+        attrvalue = this.cursor.attr.value,
         i = 0,
         j = 0,
         leftmargin = this._scroll_left,
         rightmargin = this._scroll_right,
         range,
-        cells;
+        cells,
+        cell;
 
     for (; i < lines.length; ++i) {
       cells = lines[i].cells;
       range = cells.splice(rightmargin, n);
       for (; j < range.length; ++j) {
-        cells[j].erase(attrvalue);
+        cell = cells[j];
+        cell.erase(attrvalue);
       }
       cells.splice(leftmargin, 0, range);
     }
@@ -2890,7 +2894,7 @@ Screen.definition = {
   function eraseCharacters(n)
   { // Erase CHaracters
     var line = this.getCurrentLine(),
-        attrvalue = this.cursor.attr.bg,
+        attrvalue = this.cursor.attr.value,
         start = this.cursor.positionX,
         end = start + n;
 
@@ -2906,7 +2910,7 @@ Screen.definition = {
   { // Delete CHaracters
     var line = this.getCurrentLine(),
         cursor = this.cursor,
-        attrvalue = cursor.attr.bg;
+        attrvalue = cursor.attr.value;
 
     line.deleteCells(cursor.positionX, n, attrvalue);
   },
@@ -3072,9 +3076,10 @@ Screen.definition = {
   {
     var buffer = [],
         width = this._width,
-        line_generator = this._line_generator;
+        line_generator = this._line_generator,
+        attrvalue = this.cursor.attr.value;
 
-    return line_generator.allocate(width, n);
+    return line_generator.allocate(width, n, attrvalue);
   },
 
   /** Switch between Main/Alternate screens. */
