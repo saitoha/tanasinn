@@ -1,3 +1,7 @@
+2013-06-02 Hayaki Saito <user@zuse.jp>
+    * Version 0.3.3.2
+    * Re-fix bce issue 
+
 2013-03-02 Hayaki Saito <user@zuse.jp>
     * Version 0.3.3.1
     * Fix for AMO registration

@@ -26,6 +26,22 @@ link:./usermanual.html[English/英語]
 
 == News
 
+=== 2013-06-02
+    Version 0.3.3.2
+    Re-fix bce issue 
+
+=== 2013-03-02
+    Version 0.3.3.1
+    Fix for AMO registration
+
+=== 2013-03-02
+    Version 0.3.3.0
+    Fix for AMO registration
+
+=== 2013-02-26
+    Version 0.3.2.3
+    Minor fix
+
 === 2013-02-23
     Version 0.3.2.2
     Improve thumbnail styling
