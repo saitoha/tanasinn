@@ -2261,7 +2261,7 @@ Screen.definition = {
   repeat: function repeat(n)
   {
     var width = this._width,
-        codes = [];
+        codes = [],
         last_char = this._last_char,
         full_count = (this.scrollback_limit + this._height) * width,
         i;
