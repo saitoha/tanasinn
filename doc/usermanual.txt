@@ -26,6 +26,11 @@ link:./usermanual.html[English/英語]
 
 == News
 
+=== 2013-06-04
+    Version 0.3.3.3
+    Fix bce issue in EL0
+    Fix a stupid syntax error in REP
+
 === 2013-06-02
     Version 0.3.3.2
     Re-fix bce issue 
