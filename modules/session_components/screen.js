@@ -2863,10 +2863,11 @@ Screen.definition = {
       cells = lines[i].cells;
       range = cells.splice(leftmargin, n);
       for (; j < range.length; ++j) {
-        cell = cells[j];
+        cell = range[j];
         cell.erase(attrvalue);
       }
-      cells.splice(rightmargin - n, 0, range);
+      range.unshift(rightmargin - n, 0);
+      Array.prototype.splice.apply(cells, range);
     }
   },
 
@@ -2886,12 +2887,13 @@ Screen.definition = {
 
     for (; i < lines.length; ++i) {
       cells = lines[i].cells;
-      range = cells.splice(rightmargin, n);
+      range = cells.splice(rightmargin - n, n);
       for (; j < range.length; ++j) {
-        cell = cells[j];
+        cell = range[j];
         cell.erase(attrvalue);
       }
-      cells.splice(leftmargin, 0, range);
+      range.unshift(leftmargin, 0);
+      Array.prototype.splice.apply(cells, range);
     }
   },
 
