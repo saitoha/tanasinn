@@ -2200,11 +2200,13 @@ Screen.definition = {
         line = this.getCurrentLine(),
         positionX = cursor.positionX,
         length,
-        run;
+        run,
+        attrvalue;
 
     if (0 === codes[0]) {
       if (positionX >= width) {
-        line.erase(positionX - 1, positionX, cursor.attr.bg);
+        attrvalue = cursor.attr.value;
+        line.erase(positionX - 1, positionX, attrvalue);
       }
     } else {
       if (positionX >= width) {
@@ -2446,12 +2448,14 @@ Screen.definition = {
   {
     var line = this.getCurrentLine(),
         cursor,
-        width;
+        width,
+        attrvalue;
 
     if (line) {
       cursor = this.cursor;
       width = this._width;
-      line.erase(cursor.positionX, width, cursor.attr.bg);
+      attrvalue = cursor.attr.value;
+      line.erase(cursor.positionX, width, attrvalue);
     } else {
       coUtils.Debug.reportWarning(
         _("eraseLineToRight: Current line is null."));
@@ -2488,12 +2492,14 @@ Screen.definition = {
   {
     var line = this.getCurrentLine();
         cursor,
-        width;
+        width,
+        attrvalue;
 
     if (line) {
       cursor = this.cursor;
       width = this._width;
-      line.selectiveErase(cursor.positionX, width, cursor.attr.bg);
+      attrvalue = cursor.attr.value;
+      line.selectiveErase(cursor.positionX, width, attrvalue);
     } else {
       coUtils.Debug.reportWarning(
         _("selectiveEraseLineToRight: Current line is null."));
@@ -2505,21 +2511,41 @@ Screen.definition = {
   "[type('Undefined')] selectiveEraseLineToLeft":
   function selectiveEraseLineToLeft()
   {
-    var cursor = this.cursor,
-        line = this.getCurrentLine();
+    var line = this.getCurrentLine();
+        cursor,
+        width,
+        attrvalue;
 
-    line.selectiveErase(0, cursor.positionX + 1, cursor.attr.bg);
+    if (line) {
+      cursor = this.cursor;
+      width = this._width;
+      attrvalue = cursor.attr.value;
+      line.selectiveErase(0, cursor.positionX + 1, attrvalue);
+    } else {
+      coUtils.Debug.reportWarning(
+        _("selectiveEraseLineToLeft: Current line is null."));
+    }
   },
 
   /** Erase cells marked as "erasable" from line */
   "[type('Undefined')] selectiveEraseLine":
   function selectiveEraseLine()
   {
-    var cursor = this.cursor,
-        line = this.getCurrentLine(),
-        width = this._width;
+    var line = this.getCurrentLine();
+        cursor,
+        width,
+        attrvalue;
 
-    line.selectiveErase(0, width, cursor.attr.bg);
+    if (line) {
+      cursor = this.cursor;
+      width = this._width;
+      attrvalue = cursor.attr.value;
+      line.selectiveErase(0, width, attrvalue);
+      line.selectiveErase(0, cursor.positionX + 1, attrvalue);
+    } else {
+      coUtils.Debug.reportWarning(
+        _("selectiveEraseLine: Current line is null."));
+    }
   },
 
   /** Erase cells from current position to head of buffer. */
