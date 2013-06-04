@@ -30,6 +30,7 @@ link:./usermanual.html[English/英語]
     Version 0.3.3.3
     Fix bce issue in EL0
     Fix a stupid syntax error in REP
+    Fix broken SL/SR behavior
 
 === 2013-06-02
     Version 0.3.3.2
