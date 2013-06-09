@@ -140,14 +140,12 @@ Parser.definition = {
   "[subscribe('command/enable-default-parser'), pnp]":
   function enableDefaultParser()
   {
-    this.drive.enabled = true;
   },
 
   /** disable default (VT-compatible) parser */
   "[subscribe('command/disable-default-parser'), pnp]":
   function disableDefaultParser()
   {
-    this.drive.enabled = false;
   },
 
   /** Parse and evaluate control codes and text pieces from the scanner.
