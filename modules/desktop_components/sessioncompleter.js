@@ -34,6 +34,7 @@ SessionsCompleter.definition = {
 
   id: "sessions-completer",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

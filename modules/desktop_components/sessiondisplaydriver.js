@@ -34,6 +34,7 @@ SessionsCompletionDisplayDriver.definition = {
 
   id: "sessions-completion-display-driver",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

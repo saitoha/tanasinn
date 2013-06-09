@@ -35,6 +35,16 @@ DragMove.definition = {
 
   "[persistable] enabled_when_startup": true,
 
+  /** plugin information */
+  getInfo: function getInfo()
+  {
+    return {
+      name: _("Dragmove Launcher"),
+      version: "0.1",
+      description: _("Provide drag-move feature for launcher widget"),
+    };
+  },
+
   /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
    */

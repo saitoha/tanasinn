@@ -34,6 +34,7 @@ TextCompletionDisplayDriver.definition = {
 
   id: "text-completion-display-driver",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

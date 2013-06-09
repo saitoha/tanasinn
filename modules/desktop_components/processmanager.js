@@ -33,6 +33,7 @@ ProcessManager.definition = {
 
   id: "process_manager",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

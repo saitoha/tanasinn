@@ -32,6 +32,16 @@ OpenInW3m.definition = {
 
   id: "open-in-w3m",
 
+  /** plugin information */
+  getInfo: function getInfo()
+  {
+    return {
+      name: _("Open in w3m"),
+      version: "0.1",
+      description: _("Open current page in w3m"),
+    };
+  },
+
   "[persistable] enabled_when_startup": true,
   "[persistable] text_browser_command": "w3m '%s'",
 

@@ -36,6 +36,16 @@ OpenTanasinn.definition = {
 
   _menupopup: null,
 
+  /** plugin information */
+  getInfo: function getInfo()
+  {
+    return {
+      name: _("Tanasinn contextmenu launcher"),
+      version: "0.1",
+      description: _("Open tanasinn in current window"),
+    };
+  },
+
   /** Installs itself.
    * @param {InstallContext} context A InstallContext object.
    */

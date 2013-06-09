@@ -72,6 +72,7 @@ ProgramCompleter.definition = {
   _files: null,
   _search_path: null,
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

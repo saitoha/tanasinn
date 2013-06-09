@@ -32,6 +32,7 @@ LauncherCompletionProvider.definition = {
 
   id: "launcher-completion-provider",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {
