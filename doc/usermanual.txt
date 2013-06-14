@@ -26,6 +26,11 @@ link:./usermanual.html[English/英語]
 
 == News
 
+=== 2013-06-14
+    Version 0.3.3.4
+    Fix broken OSC 4 
+    Fix broken OSC 104 
+
 === 2013-06-04
     Version 0.3.3.3
     Fix bce issue in EL0
