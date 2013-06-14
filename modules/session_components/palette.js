@@ -113,6 +113,7 @@ PaletteManager.definition = {
 
   id: "palette",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {
@@ -232,7 +233,9 @@ PaletteManager.definition = {
       message = "4;" + number + ";" + color;
       this.sendMessage("command/send-sequence/osc", message);
     } else { // set color
-      this.color[number] = coUtils.Color.parseX11ColorSpec(spec);
+      color = coUtils.Color.parseX11ColorSpec(spec);
+      this.adjusted_fgcolor[number] = color;
+      this.adjusted_bgcolor[number] = color;
     }
   },
 

@@ -34,6 +34,7 @@ InnerChrome.definition = {
 
   id: "chrome",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {
