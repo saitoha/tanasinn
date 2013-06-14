@@ -234,6 +234,7 @@ PaletteManager.definition = {
       this.sendMessage("command/send-sequence/osc", message);
     } else { // set color
       color = coUtils.Color.parseX11ColorSpec(spec);
+      this.color[number] = color;
       this.adjusted_fgcolor[number] = color;
       this.adjusted_bgcolor[number] = color;
     }
@@ -259,6 +260,8 @@ PaletteManager.definition = {
 
     color = scope["palette.color"] || this.__proto__.color;
     this.color[number] = color[number];
+    this.adjusted_fgcolor[number] = color[number];
+    this.adjusted_bgcolor[number] = color[number];
   },
 
   /**
