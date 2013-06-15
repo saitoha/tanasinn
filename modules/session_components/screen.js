@@ -849,9 +849,19 @@ ScreenSequenceHandler.definition = {
   "[profile('vt100'), sequence('CSI Pn s')]":
   function DECSLRM(n1, n2)
   {
+    var cursor = this.cursor;
+
     n1 = (n1 || 1) - 1;
     n2 = (n2 || 1) - 1;
     this.setHorizontalScrollRegion(n1, n2 + 1);
+
+    if (cursor.DECOM) {
+      cursor.positionX = this._scroll_left;
+      cursor.positionY = this._scroll_top;
+    } else {
+      cursor.positionX = 0;
+      cursor.positionY = 0;
+    } 
 
     this.sendMessage("command/backup-cursor-state");
   },
