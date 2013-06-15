@@ -1288,7 +1288,9 @@ ScreenSequenceHandler.definition = {
   "[profile('vt100'), sequence('CSI Pl;Pc f')]":
   function HVP(n1, n2)
   { // Horizontal and Vertical Position
-    var top,
+    var left,
+        top,
+        right,
         bottom,
         cursor = this.cursor,
         width = this._width,
