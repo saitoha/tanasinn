@@ -381,7 +381,9 @@ ScreenSequenceHandler.definition = {
   "[profile('vt100'), sequence('CSI Pl;Pc H')]":
   function CUP(n1, n2)
   { // move CUrsor to absolute Position
-    var top,
+    var left,
+        top,
+        right,
         bottom,
         cursor = this.cursor,
         width = this._width,
@@ -389,19 +391,27 @@ ScreenSequenceHandler.definition = {
         x = (n2 || 1) - 1;
 
     if (cursor.DECOM) {
+      left = this._scroll_left;
       top = this._scroll_top;
+      right = this._scroll_right;
       bottom = this._scroll_bottom;
+      x += left;
       y += top;
     } else {
+      left = 0;
       top = 0;
+      right = this._width;
       bottom = this._height;
     }
 
+    // set horizontal position
     if (x >= width) {
       cursor.positionX = width - 1;
     } else {
       cursor.positionX = x;
     }
+
+    // set vertical position
     if (y >= bottom) {
       cursor.positionY = bottom - 1;
     } else {
