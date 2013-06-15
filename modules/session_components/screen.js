@@ -346,7 +346,7 @@ ScreenSequenceHandler.definition = {
   function CHA(n)
   { // cursor CHaracter Absolute column
     var max = this._width - 1,
-        cursor = this.cursor;
+        cursor = this._cursor;
 
     n = (n || 1) - 1;
 
@@ -385,7 +385,7 @@ ScreenSequenceHandler.definition = {
         top,
         right,
         bottom,
-        cursor = this.cursor,
+        cursor = this._cursor,
         y = (n1 || 1) - 1,
         x = (n2 || 1) - 1;
 
@@ -447,7 +447,7 @@ ScreenSequenceHandler.definition = {
   "[profile('vt100'), sequence('ESC 9')]":
   function DECFI()
   { // DEC Forward Index
-    var cursor = this.cursor,
+    var cursor = this._cursor,
         rightmargin = this._scroll_right;
 
     if (cursor.positionX >= rightmargin - 1) {
@@ -487,7 +487,7 @@ ScreenSequenceHandler.definition = {
   "[profile('vt100'), sequence('ESC 6')]":
   function DECBI()
   { // DEC Backward Index
-    var cursor = this.cursor,
+    var cursor = this._cursor,
         leftmargin = this._scroll_left;
 
     if (cursor.positionX <= leftmargin) {
@@ -638,7 +638,7 @@ ScreenSequenceHandler.definition = {
         scroll_bottom = this._scroll_bottom,
         width = this._width,
         height = this._height,
-        cursor = this.cursor;
+        cursor = this._cursor;
 
     if (cursor.DECOM) {
       left += scroll_left;
@@ -848,7 +848,7 @@ ScreenSequenceHandler.definition = {
   "[profile('vt100'), sequence('CSI Pn s')]":
   function DECSLRM(n1, n2)
   {
-    var cursor = this.cursor;
+    var cursor = this._cursor;
 
     n1 = (n1 || 1) - 1;
     n2 = (n2 || 1) - 1;
@@ -1088,7 +1088,7 @@ ScreenSequenceHandler.definition = {
   function VPA(n)
   { // set Virtical Position Absolutely
     var max = this._height - 1,
-        cursor = this.cursor;
+        cursor = this._cursor;
 
     n = (n || 1) - 1;
 
@@ -1183,7 +1183,7 @@ ScreenSequenceHandler.definition = {
   function CNL(n)
   {
     this.cursorDown(n || 1);
-    this.cursor.positionX = 0;
+    this._cursor.positionX = 0;
   },
 
   /**
@@ -1209,7 +1209,7 @@ ScreenSequenceHandler.definition = {
   function CPL(n)
   {
     this.cursorUp(n || 1);
-    this.cursor.positionX = 0;
+    this._cursor.positionX = 0;
   },
 
   /**
@@ -1235,7 +1235,7 @@ ScreenSequenceHandler.definition = {
   function HPA(n)
   {
     var max = this._width - 1,
-        cursor = this.cursor;
+        cursor = this._cursor;
 
     n = (n || 1) - 1;
 
@@ -1299,7 +1299,7 @@ ScreenSequenceHandler.definition = {
         top,
         right,
         bottom,
-        cursor = this.cursor,
+        cursor = this._cursor,
         y = (n1 || 1) - 1,
         x = (n2 || 1) - 1;
 
@@ -1804,7 +1804,7 @@ Scrollable.definition = {
         height = this._height,
         left = this._scroll_left,
         right = this._scroll_right,
-        attrvalue = this.cursor.attr.value,
+        attrvalue = this._cursor.attr.value,
         i,
         j,
         cell,
@@ -1870,7 +1870,7 @@ Scrollable.definition = {
         offset = this._buffer_top,
         width = this._width,
         height = this._height,
-        cursor = this.cursor,
+        cursor = this._cursor,
         left = this._scroll_left,
         right = this._scroll_right,
         attrvalue = cursor.attr.value,
@@ -1992,8 +1992,8 @@ Resizable.definition = {
     this._scroll_bottom -= n;
 
     // fix cursor position.
-    if (this.cursor.positionY >= this._height) {
-      this.cursor.positionY = this._height - 1;
+    if (this._cursor.positionY >= this._height) {
+      this._cursor.positionY = this._height - 1;
     }
   },
 
@@ -2023,7 +2023,7 @@ Resizable.definition = {
   _popColumns: function _popColumns(n)
   {
     // decrease width
-    var cursor = this.cursor,
+    var cursor = this._cursor,
         width = this._width -= n,
         lines = this._lines,
         i,
@@ -2099,7 +2099,7 @@ Screen.definition = {
    * @property cursor
    * @brief Manages cursor position and some attributes.
    */
-  cursor: null,
+  _cursor: null,
   _buffer: null,
   _buffer_top: 0,
   _lines: null,
@@ -2132,7 +2132,7 @@ Screen.definition = {
 
     this._buffer = line_generator.allocate(this._width, this._height * 2, 0);
     this._switchScreen();
-    this.cursor = cursor_state;
+    this._cursor = cursor_state;
     this._line_generator = line_generator;
 
     this.resetScrollRegion();
@@ -2145,7 +2145,7 @@ Screen.definition = {
   {
     this._buffer = null;
     this._line_generator = null;
-    this.cursor = null;
+    this._cursor = null;
 
     this._buffer_top = 0;
     this._lines = null;
@@ -2220,7 +2220,7 @@ Screen.definition = {
         this._popColumns(width - value);
       }
 
-      cursor = this.cursor;
+      cursor = this._cursor;
       new_width = this._width;
       if (cursor.positionX >= new_width) {
         cursor.positionX = new_width - 1;
@@ -2258,7 +2258,7 @@ Screen.definition = {
       }
 
       // I Wonder if we should trim cursor position when screen is resized.
-      cursor = this.cursor;
+      cursor = this._cursor;
 
       if (cursor.positionY >= this._height) {
         cursor.positionY = this._height - 1;
@@ -2300,7 +2300,7 @@ Screen.definition = {
     if (!line) {
       return false;
     }
-    return line.isWide(this.cursor.positionX);
+    return line.isWide(this._cursor.positionX);
   },
 
   "[subscribe('command/enable-insert-mode'), pnp]":
@@ -2347,7 +2347,7 @@ Screen.definition = {
   {
     var insert_mode = this._insert_mode,
         width = this._width,
-        cursor = this.cursor,
+        cursor = this._cursor,
         it = 0,
         line = this.getCurrentLine(),
         positionX = cursor.positionX,
@@ -2438,7 +2438,7 @@ Screen.definition = {
   "[type('Uint16 -> Undefined')] cursorForward":
   function cursorForward(n)
   {
-    var cursor = this.cursor,
+    var cursor = this._cursor,
         positionX = cursor.positionX + n,
         max = this._width - 1;
 
@@ -2454,7 +2454,7 @@ Screen.definition = {
   function cursorBackward(n)
   {
     var width = this._width,
-        cursor = this.cursor,
+        cursor = this._cursor,
         positionX = cursor.positionX,
         min = 0;
 
@@ -2462,7 +2462,7 @@ Screen.definition = {
       positionX = width - 1;
     }
 
-    cursor = this.cursor;
+    cursor = this._cursor;
     positionX = positionX - n;
 
     if (positionX > min) {
@@ -2476,7 +2476,7 @@ Screen.definition = {
   "[type('Uint16 -> Undefined')] cursorUp":
   function cursorUp(n)
   {
-    var cursor = this.cursor,
+    var cursor = this._cursor,
         positionY = cursor.positionY - n,
         min = this._scroll_top;
 
@@ -2491,7 +2491,7 @@ Screen.definition = {
   "[type('Uint16 -> Undefined')] cursorDown":
   function cursorDown(n)
   {
-    var cursor = this.cursor,
+    var cursor = this._cursor,
         positionY = cursor.positionY + n,
         max = this._scroll_bottom - 1;
 
@@ -2508,7 +2508,7 @@ Screen.definition = {
   "[type('Uint16 -> Undefined')] cursorUpAbsolutely":
   function cursorUpAbsolutely(n)
   {
-    var cursor = this.cursor,
+    var cursor = this._cursor,
         positionY = cursor.positionY - n,
         min = 0;
 
@@ -2523,7 +2523,7 @@ Screen.definition = {
   "[type('Uint16 -> Undefined')] cursorDownAbsolutely":
   function cursorDownAbsolutely(n)
   {
-    var cursor = this.cursor,
+    var cursor = this._cursor,
         positionY = cursor.positionY + n,
         max = this._height - 1;
 
@@ -2541,7 +2541,7 @@ Screen.definition = {
   function setPositionX(n)
   {
     var max = this._width - 1,
-        cursor = this.cursor;
+        cursor = this._cursor;
 
     if (n > max) {
       cursor.positionX = max;
@@ -2555,7 +2555,7 @@ Screen.definition = {
   function setPositionY(n)
   {
     var max = this._height - 1,
-        cursor = this.cursor;
+        cursor = this._cursor;
 
     if (n > max) {
       cursor.positionY = max;
@@ -2569,7 +2569,7 @@ Screen.definition = {
   "[type('Undefined')] backSpace":
   function backSpace()
   {
-    var cursor = this.cursor,
+    var cursor = this._cursor,
         width = this._width,
         positionX = cursor.positionX;
 
@@ -2590,7 +2590,7 @@ Screen.definition = {
   "[type('Undefined')] carriageReturn":
   function carriageReturn()
   {
-    this.cursor.positionX = 0;
+    this._cursor.positionX = 0;
   },
 
 // ScreenEditConcept implementation
@@ -2604,7 +2604,7 @@ Screen.definition = {
         attrvalue;
 
     if (line) {
-      cursor = this.cursor;
+      cursor = this._cursor;
       width = this._width;
       attrvalue = cursor.attr.value;
       line.erase(cursor.positionX, width, attrvalue);
@@ -2618,7 +2618,7 @@ Screen.definition = {
   "[type('Undefined')] eraseLineToLeft":
   function eraseLineToLeft()
   {
-    var cursor = this.cursor,
+    var cursor = this._cursor,
         line = this.getCurrentLine(),
         attrvalue = cursor.attr.value;
 
@@ -2629,7 +2629,7 @@ Screen.definition = {
   "[type('Undefined')] eraseLine":
   function eraseLine()
   {
-    var cursor = this.cursor,
+    var cursor = this._cursor,
         line = this.getCurrentLine(),
         width = this._width,
         attrvalue = cursor.attr.value;
@@ -2648,7 +2648,7 @@ Screen.definition = {
         attrvalue;
 
     if (line) {
-      cursor = this.cursor;
+      cursor = this._cursor;
       width = this._width;
       attrvalue = cursor.attr.value;
       line.selectiveErase(cursor.positionX, width, attrvalue);
@@ -2669,7 +2669,7 @@ Screen.definition = {
         attrvalue;
 
     if (line) {
-      cursor = this.cursor;
+      cursor = this._cursor;
       width = this._width;
       attrvalue = cursor.attr.value;
       line.selectiveErase(0, cursor.positionX + 1, attrvalue);
@@ -2689,7 +2689,7 @@ Screen.definition = {
         attrvalue;
 
     if (line) {
-      cursor = this.cursor;
+      cursor = this._cursor;
       width = this._width;
       attrvalue = cursor.attr.value;
       line.selectiveErase(0, width, attrvalue);
@@ -2704,7 +2704,7 @@ Screen.definition = {
   "[type('Undefined')] eraseScreenAbove":
   function eraseScreenAbove()
   {
-    var cursor = this.cursor,
+    var cursor = this._cursor,
         width = this._width,
         lines = this._lines,
         attrvalue = cursor.attr.value,
@@ -2724,7 +2724,7 @@ Screen.definition = {
   "[type('Undefined')] eraseScreenBelow":
   function eraseScreenBelow()
   {
-    var cursor = this.cursor,
+    var cursor = this._cursor,
         width = this._width,
         attrvalue = cursor.attr.value,
         lines = this._lines,
@@ -2751,7 +2751,7 @@ Screen.definition = {
   function eraseScreenAll()
   {
     var width = this._width,
-        cursor = this.cursor,
+        cursor = this._cursor,
         lines = this._lines,
         attrvalue = cursor.attr.value,
         length = lines.length,
@@ -2769,7 +2769,7 @@ Screen.definition = {
   "[type('Undefined')] eraseRectangle":
   function eraseRectangle(top, left, bottom, right)
   {
-    var cursor = this.cursor,
+    var cursor = this._cursor,
         lines = this._lines,
         attrvalue = cursor.attr.value,
         length = lines.length,
@@ -2795,7 +2795,7 @@ Screen.definition = {
   "[type('Undefined')] selectiveEraseScreenAbove":
   function selectiveEraseScreenAbove()
   {
-    var cursor = this.cursor,
+    var cursor = this._cursor,
         width = this._width,
         lines = this._lines,
         attrvalue = cursor.attr.value,
@@ -2815,7 +2815,7 @@ Screen.definition = {
   "[type('Undefined')] selectiveEraseScreenBelow":
   function selectiveEraseScreenBelow()
   {
-    var cursor = this.cursor,
+    var cursor = this._cursor,
         width = this._width,
         attrvalue = cursor.attr.value,
         lines = this._lines,
@@ -2838,7 +2838,7 @@ Screen.definition = {
   function selectiveEraseScreenAll()
   {
     var width = this._width,
-        cursor = this.cursor,
+        cursor = this._cursor,
         lines = this._lines,
         attrvalue = cursor.attr.value,
         length = lines.length,
@@ -2856,7 +2856,7 @@ Screen.definition = {
   "[type('Undefined')] selectiveEraseRectangle":
   function selectiveEraseRectangle(top, left, bottom, right)
   {
-    var cursor = this.cursor,
+    var cursor = this._cursor,
         lines = this._lines,
         attrvalue = cursor.attr.value,
         length = lines.length,
@@ -2874,7 +2874,7 @@ Screen.definition = {
   "[type('Undefined')] eraseScreenAllWithTestPattern":
   function eraseScreenAllWithTestPattern()
   {
-    var attrvalue = this.cursor.attr.value,
+    var attrvalue = this._cursor.attr.value,
         width = this._width,
         lines = this._lines,
         i = 0,
@@ -2891,7 +2891,7 @@ Screen.definition = {
   function insertBlanks(n)
   {
     var line = this.getCurrentLine(),
-        cursor = this.cursor,
+        cursor = this._cursor,
         attrvalue = cursor.attr.value;
 
     line.insertBlanks(cursor.positionX, n, attrvalue);
@@ -2942,7 +2942,7 @@ Screen.definition = {
   "[type('Undefined')] reverseIndex":
   function reverseIndex()
   { // cursor up
-    var cursor_state = this.cursor,
+    var cursor_state = this._cursor,
         top = this._scroll_top,
         positionY = cursor_state.positionY;
 
@@ -2960,7 +2960,7 @@ Screen.definition = {
   "[type('Undefined')] lineFeed":
   function lineFeed()
   { // cursor down
-    var cursor = this.cursor,
+    var cursor = this._cursor,
         top,
         bottom = this._scroll_bottom,
         positionY = cursor.positionY;
@@ -2979,7 +2979,7 @@ Screen.definition = {
   "[type('Uint16 -> Undefined')] insertLine":
   function insertLine(n)
   { // Insert Line
-    var positionY = this.cursor.positionY,
+    var positionY = this._cursor.positionY,
         bottom = this._scroll_bottom,
         delta = Math.min(n, bottom - positionY);
 
@@ -2990,7 +2990,7 @@ Screen.definition = {
   "[type('Uint16 -> Undefined')] deleteLine":
   function deleteLine(n)
   { // Delete Line.
-    var positionY = this.cursor.positionY,
+    var positionY = this._cursor.positionY,
         bottom = this._scroll_bottom,
         delta = Math.min(n, bottom - positionY);
 
@@ -3002,7 +3002,7 @@ Screen.definition = {
   function scrollLeft(n)
   { // Scroll Left
     var lines = this._lines,
-        attrvalue = this.cursor.attr.value,
+        attrvalue = this._cursor.attr.value,
         i = 0,
         j = 0,
         leftmargin = this._scroll_left,
@@ -3028,7 +3028,7 @@ Screen.definition = {
   function scrollRight(n)
   { // Scroll Right
     var lines = this._lines,
-        attrvalue = this.cursor.attr.value,
+        attrvalue = this._cursor.attr.value,
         i = 0,
         j = 0,
         leftmargin = this._scroll_left,
@@ -3074,8 +3074,8 @@ Screen.definition = {
   function eraseCharacters(n)
   { // Erase CHaracters
     var line = this.getCurrentLine(),
-        attrvalue = this.cursor.attr.value,
-        start = this.cursor.positionX,
+        attrvalue = this._cursor.attr.value,
+        start = this._cursor.positionX,
         end = start + n;
 
     if (end > line.length) {
@@ -3089,7 +3089,7 @@ Screen.definition = {
   function deleteCharacters(n)
   { // Delete CHaracters
     var line = this.getCurrentLine(),
-        cursor = this.cursor,
+        cursor = this._cursor,
         attrvalue = cursor.attr.value;
 
     line.deleteCells(cursor.positionX, n, attrvalue);
@@ -3139,7 +3139,7 @@ Screen.definition = {
   function selectAlternateScreen()
   {
     if (coUtils.Constant.SCREEN_MAIN === this._screen_choice) {
-      this.cursor.backup();
+      this._cursor.backup();
       this.switchToAlternateScreen();
       this.eraseScreenAll();
     }
@@ -3156,7 +3156,7 @@ Screen.definition = {
     if (coUtils.Constant.SCREEN_ALTERNATE === this._screen_choice) {
       this.eraseScreenAll();
       this.switchToMainScreen();
-      this.cursor.restore();
+      this._cursor.restore();
     }
   },
 
@@ -3195,7 +3195,7 @@ Screen.definition = {
     context.push(this._screen_choice);
 
     // serialize cursor.
-    this.cursor.serialize(context);
+    this._cursor.serialize(context);
 
   }, // backup
 
@@ -3233,7 +3233,7 @@ Screen.definition = {
     //this.sendMessage("command/draw", true);
 
     this._screen_choice = context.shift();
-    this.cursor.deserialize(context);
+    this._cursor.deserialize(context);
     this._lines = this._buffer
       .slice(this._buffer_top, this._buffer_top + this._height);
 
@@ -3249,7 +3249,7 @@ Screen.definition = {
   /** Returns the line object which is on current cursor position. */
   getCurrentLine: function getCurrentLine()
   {
-    return this._lines[this.cursor.positionY]
+    return this._lines[this._cursor.positionY]
   },
 
   _createLines: function _createLines(n)
@@ -3257,7 +3257,7 @@ Screen.definition = {
     var buffer = [],
         width = this._width,
         line_generator = this._line_generator,
-        attrvalue = this.cursor.attr.value;
+        attrvalue = this._cursor.attr.value;
 
     return line_generator.allocate(width, n, attrvalue);
   },
@@ -3285,7 +3285,7 @@ Screen.definition = {
   calculateHashInRectangle:
   function calculateHashInRectangle(top, left, bottom, right)
   {
-    var cursor = this.cursor,
+    var cursor = this._cursor,
         lines = this._lines,
         length = lines.length,
         data = [],
