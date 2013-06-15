@@ -1415,7 +1415,7 @@ Viewable.definition = {
   function updateScrollInformation()
   {
     var buffer_top = this.getBufferTop(),
-        width = this.width,
+        width = this._width,
         lines = this._getCurrentViewLines(),
         i,
         line;
@@ -1446,7 +1446,7 @@ Viewable.definition = {
   {
     var buffer_top = this.getBufferTop(),
         start = buffer_top - this._scrollback_amount,
-        end = start + this.height;
+        end = start + this._height;
 
     return this.getLines(start, end);
   },
@@ -1526,7 +1526,7 @@ Viewable.definition = {
     start = range[0];
     end = range[1];
 
-    offset = this.width * row;
+    offset = this._width * row;
 
     return [offset + start, offset + end];
   },
@@ -1563,7 +1563,7 @@ Viewable.definition = {
   function _getTextInRangeImpl(lines, start_column, end_column, raw)
   {
     var buffer = [],
-        width = this.width,
+        width = this._width,
         i,
         line,
         start,
@@ -1596,7 +1596,7 @@ Viewable.definition = {
    */
   getRawTextInRange: function getRawTextInRange(start, end, is_rectangle)
   {
-    var width = this.width,
+    var width = this._width,
         start_column = start % width,
         end_column = end % width,
         start_row = Math.floor(start / width),
@@ -1610,7 +1610,7 @@ Viewable.definition = {
    */
   getTextInRange: function getTextInRange(start, end, is_rectangle)
   {
-    var width = this.width,
+    var width = this._width,
         start_column = start % width,
         end_column = end % width,
         start_row = Math.floor(start / width),
@@ -1625,7 +1625,7 @@ Viewable.definition = {
   getCharacter: function getCharacter(start)
   {
     var end = start + 1,
-        width = this.width,
+        width = this._width,
         start_column = start % width,
         end_column = end % width,
         start_row = Math.floor(start / width),
@@ -1639,7 +1639,7 @@ Viewable.definition = {
    */
   getTextInRect: function getTextInRect(start, end)
   {
-    var width = this.width,
+    var width = this._width,
         start_column = start % width,
         end_column = end % width,
         start_row = Math.floor(start / width),
@@ -2140,7 +2140,7 @@ Screen.definition = {
         cursor.positionY = this._height - 1;
       }
 
-      this.sendMessage("variable-changed/screen.height", this.height);
+      this.sendMessage("variable-changed/screen.height", this._height);
     } else {
       this._height = value;
     }
@@ -3057,7 +3057,7 @@ Screen.definition = {
     }
 
     // serialize members.
-    context.push(this.width, this.height, buffer_top);
+    context.push(this._width, this._height, buffer_top);
     context.push(this._scroll_top, this._scroll_bottom);
     context.push(this._scroll_left, this._scroll_right);
     context.push(lines.length);
