@@ -633,16 +633,26 @@ ScreenSequenceHandler.definition = {
         left = (n2 || 1) - 1,
         bottom = (n3 || 1) - 1,
         right = (n4 || 1) - 1,
+        scroll_left = scroll_left,
+        scroll_top = scroll_top,
+        scroll_right = scroll_right,
+        scroll_bottom = scroll_bottom,
+        width = this._width,
+        height = this._height,
         cursor = this.cursor;
 
     if (cursor.DECOM) {
-      top += self._scroll_top;
-      bottom += self._scroll_top;
-      if (top >= self._scroll_bottom) {
-        top = self._scroll_bottom - 1
+      scroll_left = this._scroll_left,
+      scroll_top = this._scroll_top,
+      left += scroll_left;
+      top += scroll_top;
+      right += scroll_left;
+      bottom += scroll_top;
+      if (top >= scroll_bottom) {
+        top = scroll_bottom - 1;
       }
-      if (bottom >= self._scroll_bottom) {
-        bottom = self._scroll_bottom - 1
+      if (bottom >= scroll_bottom) {
+        bottom = scroll_bottom - 1;
       }
     }
 
@@ -653,11 +663,11 @@ ScreenSequenceHandler.definition = {
         "DECERA", Array.slice(arguments));
     }
 
-    if (bottom > this.height) {
-      bottom = this.height;
+    if (bottom > height) {
+      bottom = height;
     }
-    if (right > this.width) {
-      right = this.width;
+    if (right > width) {
+      right = width;
     }
 
     this.eraseRectangle(top, left, bottom, right);
