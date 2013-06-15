@@ -93,6 +93,39 @@ ScrollRegion.definition = {
     this._cursor_state = null;
   },
 
+  /**
+   *
+   * DECSTBM - Set Top and Bottom Margins
+   *
+   * This control function sets the top and bottom margins for the current
+   * page. You cannot perform scrolling outside the margins.
+   *
+   * Default: Margins are at the page limits.
+   *
+   * Format
+   *
+   * CSI     Pt      ;       Pb      r
+   * 9/11    3/n     3/11    3/n     7/2
+   *
+   * Parameters
+   *
+   * Pt
+   * is the line number for the top margin.
+   * Default: Pt = 1.
+   *
+   * Pb
+   * is the line number for the bottom margin.
+   * Default: Pb = current number of lines per screen.
+   *
+   * Notes on DECSTBM
+   *
+   * The value of the top margin (Pt) must be less than the bottom margin
+   * (Pb).
+   *
+   * The maximum size of the scrolling region is the page size.
+   * DECSTBM moves the cursor to column 1, line 1 of the page.
+   *
+   */
   "[profile('vt100'), sequence('CSI Ps;Ps r')]":
   function DECSTBM(n1, n2)
   {
@@ -131,11 +164,6 @@ ScrollRegion.definition = {
         _("%s sequence [%s] was ignored."),
         "DECSTBM", Array.slice(arguments));
     }
-    // TODO: I wonder if I should implement this feature.
-    // DECSTBM moves the cursor to column 1, line 1 of the page.
-    screen.setPositionX(0);
-    screen.setPositionY(top);
-    cursor_state.setOrigin();
   },
 
   "[subscribe('sequence/decrqss/decstbm'), pnp]":

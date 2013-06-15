@@ -2900,8 +2900,19 @@ Screen.definition = {
   "[type('Uint16 -> Uint16 -> Undefined')] setScrollRegion":
   function setScrollRegion(top, bottom)
   {
+    var cursor = this._cursor;
+
     this._scroll_top = top;
     this._scroll_bottom = bottom;
+
+    if (cursor.DECOM) {
+      cursor.positionX = this._scroll_left;
+      cursor.positionY = top;
+    } else {
+      cursor.positionX = 0;
+      cursor.positionY = 0;
+    } 
+
   },
 
   "[type('Undefined')] resetScrollRegion":
