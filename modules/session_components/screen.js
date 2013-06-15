@@ -1334,6 +1334,122 @@ ScreenSequenceHandler.definition = {
     }
   },
 
+  /**
+   * MC - Media Copy
+   *
+   * MC is the control sequence that enables the terminal to control all print
+   * functions. There are two variations—ANSI standard and VT mode.
+   *
+   * Format
+   *
+   * CSI    Pn      i
+   * 9/11   3/n     6/9              ANSI standard.
+   *
+   * CSI     ?       Pn      i
+   * 9/11    3/15    3/n     6/9     VT mode.
+   *
+   * Parameters
+   *
+   * Pn (ANSI standard)
+   * indicates the following ANSI standard print functions:
+   *
+   * Pn| Action                       |  Notes on Print Page
+   * --+------------------------------+----------------------------------------
+   * 0 | Prints the page that has the |- The terminal stores data from the
+   *   | cursor.                      |  keyboard until printing is complete.
+   *   |                              |  
+   *   |                              |- If printer extent mode (DECPEX) is
+   *   |                              |  currently reset, then the print page 
+   *   |                              |  function only prints the scrolling
+   *   |                              |  region.
+   * --+------------------------------+----------------------------------------
+   * 2 | Sends screen data through    |
+   *   | host port.                   |
+   * --+------------------------------+----------------------------------------
+   *
+   * Pn| Action                       | Notes on Printer Controller Mode
+   * --+------------------------------+----------------------------------------
+   * 4 | Turns off printer controller | Printer controller mode lets the host
+   *   | mode.                        | control printer operation. The terminal
+   *   |                              | sends characters and control sequences
+   *   |                              | directly to the printer, without
+   *   |                              | displaying them on the screen.
+   *   |                              | The terminal sends all characters and
+   *   |                              | control sequences except NUL, XON, XOFF,
+   *   |                              | and the printer controller mode
+   *   |                              | sequences.
+   *   |                              | Printer controller mode cancels
+   *   |                              | autoprint mode. When the terminal
+   *   |                              | leaves printer controller mode, it
+   *   |                              | returns to the normal method for
+   *   |                              | printing operations.
+   *   |                              | The printer's active column position
+   *   |                              | should always be on the left margin
+   *   |                              | before the terminal leaves printer
+   *   |                              | controller mode.
+   * --+------------------------------+----------------------------------------
+   *
+   * Pn| Action
+   * --+-----------------------------------------------------------------------
+   * 5 | Turns on printer controller mode.   
+   * 6 | Disables a printer-to-host session.     
+   * 7 | Enables a printer-to-host session.  
+   * --+-----------------------------------------------------------------------
+   *
+   * Pn (VT mode)
+   * indicates the following VT mode print functions:
+   *
+   * Pn| Action                       | Note on Print Cursor Line
+   * --+------------------------------+----------------------------------------
+   * 1 | Prints the line that has the | The cursor does not move.
+   *   | cursor.                      |
+   * --+------------------------------+----------------------------------------
+   *
+   * Pn| Action                       | Notes on Autoprint Mode
+   * --+------------------------------+----------------------------------------
+   * 4 | Turns off autoprint mode.    |
+   * 5 | Turns on autoprint mode.     | The printer prints a line from the
+   *   |                              | screen when you move the cursor off
+   *   |                              | that line with an LF, FF, or VT
+   *   |                              | character, or an autowrap occurs.
+   *   |                              | The printed line ends with a CR and
+   *   |                              | the character (LF, FF, or VT) that
+   *   |                              | moved the cursor off the previous line.
+   * --+------------------------------+----------------------------------------
+   *
+   * Pn| Action                       | Notes on Set/Reset Printer to Host
+   * --+------------------------------+----------------------------------------
+   * 8 | Disables communication from  | CSI ? 8 i and CSI ? 9 i are media copy
+   *   | the printer port to the host.| commands used in VT terminals to
+   *   |                              | reset/set printer to host mode.
+   * 9 | Enables communication from   |
+   *   | the printer port to the host.|
+   * --+------------------------------+----------------------------------------
+   *
+   * Pn| Action                       | Note on Print Screen Data
+   * --+------------------------------+----------------------------------------
+   * 10| Prints the data on the       | Printer extent mode (DECPEX) does not
+   *   | screen.                      | affect this function.
+   * --+------------------------------+----------------------------------------
+   *
+   * Pn| Action                       | Notes on Print All Pages
+   * --+------------------------------+----------------------------------------
+   * 11| Prints all pages in page     | If the current page format is 3 pages
+   *   | memory.                      | of 24 lines each, the printer prints
+   *   |                              | 3 pages of 24 lines.  The terminal
+   *   |                              | stores new data from the keyboard until
+   *   |                              | printing is complete.  If print form
+   *   |                              | feed mode (DECPFF) is set, then the
+   *   |                              | terminal sends a form feed (FF) to
+   *   |                              | the printer after each page.
+   * --+------------------------------+----------------------------------------
+   *
+   * Note on MC Command
+   *
+   * The ANSI Escape Sequences CSI 6 i and CSI 7 i to reset/set printer to host
+   * mode are functionally equivalent to CSI ? 8 i and CSI ? 9 i, respectively.
+   *
+   */
   "[profile('vt100'), sequence('CSI Pn i')]":
   function MC(n)
   { // TODO: Media Copy
