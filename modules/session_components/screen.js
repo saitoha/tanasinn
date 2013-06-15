@@ -386,7 +386,6 @@ ScreenSequenceHandler.definition = {
         right,
         bottom,
         cursor = this.cursor,
-        width = this._width,
         y = (n1 || 1) - 1,
         x = (n2 || 1) - 1;
 
@@ -405,8 +404,8 @@ ScreenSequenceHandler.definition = {
     }
 
     // set horizontal position
-    if (x >= width) {
-      cursor.positionX = width - 1;
+    if (x >= right) {
+      cursor.positionX = right - 1;
     } else {
       cursor.positionX = x;
     }
@@ -1301,7 +1300,6 @@ ScreenSequenceHandler.definition = {
         right,
         bottom,
         cursor = this.cursor,
-        width = this._width,
         y = (n1 || 1) - 1,
         x = (n2 || 1) - 1;
 
@@ -1320,8 +1318,8 @@ ScreenSequenceHandler.definition = {
     }
 
     // set horizontal position
-    if (x >= width) {
-      cursor.positionX = width - 1;
+    if (x >= right) {
+      cursor.positionX = right - 1;
     } else {
       cursor.positionX = x;
     }
