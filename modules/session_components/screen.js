@@ -633,17 +633,15 @@ ScreenSequenceHandler.definition = {
         left = (n2 || 1) - 1,
         bottom = (n3 || 1) - 1,
         right = (n4 || 1) - 1,
-        scroll_left = scroll_left,
-        scroll_top = scroll_top,
-        scroll_right = scroll_right,
-        scroll_bottom = scroll_bottom,
+        scroll_left = this._scroll_left,
+        scroll_top = this._scroll_top,
+        scroll_right = this._scroll_right,
+        scroll_bottom = this._scroll_bottom,
         width = this._width,
         height = this._height,
         cursor = this.cursor;
 
     if (cursor.DECOM) {
-      scroll_left = this._scroll_left,
-      scroll_top = this._scroll_top,
       left += scroll_left;
       top += scroll_top;
       right += scroll_left;
