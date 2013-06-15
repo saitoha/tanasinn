@@ -1296,19 +1296,27 @@ ScreenSequenceHandler.definition = {
         x = (n2 || 1) - 1;
 
     if (cursor.DECOM) {
-      top = self._scroll_top;
-      bottom = self._scroll_bottom;
+      left = this._scroll_left;
+      top = this._scroll_top;
+      right = this._scroll_right;
+      bottom = this._scroll_bottom;
+      x += left;
       y += top;
     } else {
+      left = 0; 
       top = 0;
-      bottom = self._height;
+      right = this._width;
+      bottom = this._height;
     }
 
+    // set horizontal position
     if (x >= width) {
       cursor.positionX = width - 1;
     } else {
       cursor.positionX = x;
     }
+
+    // set vertical position
     if (y >= bottom) {
       cursor.positionY = bottom - 1;
     } else {
