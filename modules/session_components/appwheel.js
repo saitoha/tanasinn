@@ -91,7 +91,7 @@ ApplicationWheel.definition = {
 
   /** Report mode
    */
-  "[subscribe('sequence/decrqm/7786'), pnp]":
+  "[subscribe('sequence/decrqm/7787'), pnp]":
   function report()
   {
     var mode = this._mode ? 1: 2,
