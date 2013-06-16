@@ -850,26 +850,26 @@ ScreenSequenceHandler.definition = {
   {
     var cursor = this._cursor;
 
-    n1 = (n1 || 1) - 1;
-    n2 = (n2 || 1) - 1;
-    this.setHorizontalScrollRegion(n1, n2 + 1);
+    if (this._left_right_margin_mode) {
 
-    if (cursor.DECOM) {
-      cursor.positionX = this._scroll_left;
-      cursor.positionY = this._scroll_top;
-    } else {
-      cursor.positionX = 0;
-      cursor.positionY = 0;
-    } 
+      n1 = (n1 || 1) - 1;
+      n2 = (n2 || this._width) - 1;
 
-    this.sendMessage("command/backup-cursor-state");
-  },
+      this.setHorizontalScrollRegion(n1, n2 + 1);
 
-  setHorizontalScrollRegion:
-  function setHorizontalScrollRegion(left, right)
-  {
-    this._scroll_left = left;
-    this._scroll_right = right;
+      this._scroll_left = n1;
+      this._scroll_right = n2 + 1;
+
+      if (cursor.DECOM) {
+        cursor.positionX = this._scroll_left;
+        cursor.positionY = this._scroll_top;
+      } else {
+        cursor.positionX = 0;
+        cursor.positionY = 0;
+      } 
+    } else { // DECSC
+      this.sendMessage("command/backup-cursor-state");
+    }
   },
 
   /**
@@ -2115,6 +2115,7 @@ Screen.definition = {
   _wraparound_mode: true,
   _insert_mode: false,
   _reverse_wraparound_mode: false,
+  _left_right_margin_mode: false,
 
   // geometry (in cell count)
   "[persistable] initial_column": 80,
@@ -2162,6 +2163,7 @@ Screen.definition = {
     this._wraparound_mode = true;
     this._insert_mode = false;
     this._reverse_wraparound_mode = false;
+    this._left_right_margin_mode = false;
   },
 
   /**
@@ -2339,6 +2341,12 @@ Screen.definition = {
   function disableReverseWraparound()
   {
     this._reverse_wraparound_mode = false;
+  },
+
+  "[subscribe('command/change-left-right-margin-mode'), pnp]":
+  function onChangeLeftRightMarginMode(mode)
+  {
+    this._left_right_margin_mode = mode;
   },
 
   /** Write printable charactor seqences. */
