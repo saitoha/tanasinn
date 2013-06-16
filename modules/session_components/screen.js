@@ -323,7 +323,7 @@ ScreenSequenceHandler.definition = {
   },
 
   /**
-   * CHA — Cursor Horizontal Absolute
+   * CHA - Cursor Horizontal Absolute
    *
    * Move the active position to the n-th character of the active line.
    *
@@ -1570,7 +1570,7 @@ Viewable.definition = {
         start = buffer_top - this._scrollback_amount,
         end = start + this._height;
 
-    return this.getLines(start, end);
+    return this._buffer.slice(start, end);
   },
 
   "[subscribe('event/before-input')]":
@@ -2286,11 +2286,6 @@ Screen.definition = {
     return this._buffer_top;
   },
 
-  getLines: function getLines(start, end)
-  {
-    return this._buffer.slice(start, end);
-  },
-
   /** Detects whether caracter that is assigned current cursor position is
    *  wide.
    */
@@ -2597,7 +2592,13 @@ Screen.definition = {
   "[type('Undefined')] carriageReturn":
   function carriageReturn()
   {
-    this._cursor.positionX = 0;
+    var cursor = this._cursor;
+
+    if (cursor.DECOM) {
+      cursor.positionX = this._scroll_left;
+    } else {
+      cursor.positionX = 0;
+    }
   },
 
 // ScreenEditConcept implementation
