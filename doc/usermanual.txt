@@ -26,6 +26,11 @@ link:./usermanual.html[English/英語]
 
 == News
 
+=== 2013-06-16
+    Version 0.3.3.5
+    Add DECLRMM 
+    Fix left-right margin behavior 
+
 === 2013-06-14
     Version 0.3.3.4
     Fix broken OSC 4 
