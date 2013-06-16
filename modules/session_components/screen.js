@@ -855,8 +855,6 @@ ScreenSequenceHandler.definition = {
       n1 = (n1 || 1) - 1;
       n2 = (n2 || this._width) - 1;
 
-      this.setHorizontalScrollRegion(n1, n2 + 1);
-
       this._scroll_left = n1;
       this._scroll_right = n2 + 1;
 
