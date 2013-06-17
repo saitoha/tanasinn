@@ -2650,7 +2650,7 @@ Screen.definition = {
   "[type('Undefined')] selectiveEraseLineToRight":
   function selectiveEraseLineToRight()
   {
-    var line = this.getCurrentLine();
+    var line = this.getCurrentLine(),
         cursor,
         width,
         attrvalue;
@@ -2671,7 +2671,7 @@ Screen.definition = {
   "[type('Undefined')] selectiveEraseLineToLeft":
   function selectiveEraseLineToLeft()
   {
-    var line = this.getCurrentLine();
+    var line = this.getCurrentLine(),
         cursor,
         width,
         attrvalue;
@@ -2691,7 +2691,7 @@ Screen.definition = {
   "[type('Undefined')] selectiveEraseLine":
   function selectiveEraseLine()
   {
-    var line = this.getCurrentLine();
+    var line = this.getCurrentLine(),
         cursor,
         width,
         attrvalue;
