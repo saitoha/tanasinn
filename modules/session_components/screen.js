@@ -2340,7 +2340,18 @@ Screen.definition = {
   "[subscribe('command/change-left-right-margin-mode'), pnp]":
   function onChangeLeftRightMarginMode(mode)
   {
+    var lines = this._lines,
+        length = lines.length,
+        i,
+        line;
+
+    for (i = 0; i < length; ++i) {
+      line = lines[i];
+      line.type = coUtils.Constant.LINETYPE_NORMAL;
+    }
+
     this._left_right_margin_mode = mode;
+
   },
 
   /** Write printable charactor seqences. */

@@ -76,6 +76,7 @@ DoubleSizedCharacters.definition = {
   "[persistable] enabled_when_startup": true,
 
   _screen: null,
+  _disabled: true,
 
   /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
@@ -92,28 +93,45 @@ DoubleSizedCharacters.definition = {
   function uninstall()
   {
     this._screen = null;
+    this._disabled = false;
   },
 
+  "[subscribe('command/change-left-right-margin-mode'), pnp]:
+  function onChangeLeftRightMarginMode(mode)
+  {
+     this._disabled = mode; 
+  },
+  
   /** DEC double-height line, top half. */
   "[profile('vt100'), sequence('ESC # 3')]":
   function DECDHLT()
   {
-    var screen = this._screen,
-        line = screen.getCurrentLine();
+    var screen,
+        line;
 
-    line.type = coUtils.Constant.LINETYPE_TOP;
-    line.dirty = 1;
+    if (!this._disabled) {
+      screen = this._screen,
+      line = screen.getCurrentLine();
+
+      line.type = coUtils.Constant.LINETYPE_TOP;
+      line.dirty = 1;
+    }
   },
 
   /** DEC double-height line, bottom half. */
   "[profile('vt100'), sequence('ESC # 4')]":
   function DECDHLB()
   {
-    var screen = this._screen,
-        line = screen.getCurrentLine();
+    var screen,
+        line;
 
-    line.type = coUtils.Constant.LINETYPE_BOTTOM;
-    line.dirty = 1;
+    if (!this._disabled) {
+      screen = this._screen,
+      line = screen.getCurrentLine();
+
+      line.type = coUtils.Constant.LINETYPE_BOTTOM;
+      line.dirty = 1;
+    }
   },
 
   /**
@@ -133,11 +151,16 @@ DoubleSizedCharacters.definition = {
   "[profile('vt100'), sequence('ESC # 5')]":
   function DECSWL()
   {
-    var screen = this._screen,
-        line = screen.getCurrentLine();
+    var screen,
+        line;
 
-    line.type = coUtils.Constant.LINETYPE_NORMAL;
-    line.dirty = 1;
+    if (!this._disabled) {
+      screen = this._screen,
+      line = screen.getCurrentLine();
+
+      line.type = coUtils.Constant.LINETYPE_NORMAL;
+      line.dirty = 1;
+    }
   },
 
   /** DEC double-width line.
@@ -157,11 +180,16 @@ DoubleSizedCharacters.definition = {
   "[profile('vt100'), sequence('ESC # 6')]":
   function DECDWL()
   {
-    var screen = this._screen,
-        line = screen.getCurrentLine();
+    var screen,
+        line;
 
-    line.type = coUtils.Constant.LINETYPE_DOUBLEWIDTH;
-    line.dirty = 1;
+    if (!this._disabled) {
+      screen = this._screen,
+      line = screen.getCurrentLine();
+
+      line.type = coUtils.Constant.LINETYPE_DOUBLEWIDTH;
+      line.dirty = 1;
+    }
   },
 
   /** test */
