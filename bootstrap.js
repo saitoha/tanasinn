@@ -66,7 +66,9 @@ function start_tanasinn(data)
     g_process = scope.g_process;
 
   } catch(e) {
-    message = e.fileName + ":" + e.lineNumber + " " + e.toString();
+    message = e.fileName + ":"
+            + e.lineNumber + " "
+            + e.toString();
     Components.reportError(message);
     return false;
   }
@@ -89,10 +91,14 @@ function terminate_tanasinn()
 /** startup event handler */
 function startup(data, reason)
 {
+  var message;
+
   try {
     return start_tanasinn(data);
   } catch (e) {
-    message = e.fileName + ":" + e.lineNumber + " " + e.toString();
+    message = e.fileName + ":"
+            + e.lineNumber + " "
+            + e.toString();
     Components.reportError(message);
     return false;
   }
@@ -101,12 +107,15 @@ function startup(data, reason)
 /** shutdown event handler */
 function shutdown(data, reason)
 {
-  var io_service;
+  var io_service,
+      message;
 
   try {
     terminate_tanasinn();
   } catch (e) {
-    message = e.fileName + ":" + e.lineNumber + " " + e.toString();
+    message = e.fileName + ":"
+            + e.lineNumber + " "
+            + e.toString();
     Components.reportError(message);
     return false;
   }
@@ -116,9 +125,13 @@ function shutdown(data, reason)
 /** install event handler */
 function install(data, reason)
 {
+  var message;
+
   try {
   } catch (e) {
-    message = e.fileName + ":" + e.lineNumber + " " + e.toString();
+    message = e.fileName
+            + ":" + e.lineNumber
+            + " " + e.toString();
     Components.reportError(message);
     return false;
   }
@@ -128,10 +141,14 @@ function install(data, reason)
 /** uninstall event handler */
 function uninstall(data, reason)
 {
+  var message;
+
   try {
     terminate_tanasinn();
   } catch (e) {
-    message = e.fileName + ":" + e.lineNumber + " " + e.toString();
+    message = e.fileName + ":"
+            + e.lineNumber + " "
+            + e.toString();
     Components.reportError(message);
     return false;
   }
