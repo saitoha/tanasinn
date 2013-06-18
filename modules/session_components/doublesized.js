@@ -96,7 +96,7 @@ DoubleSizedCharacters.definition = {
     this._disabled = false;
   },
 
-  "[subscribe('command/change-left-right-margin-mode'), pnp]:
+  "[subscribe('command/change-left-right-margin-mode'), pnp]":
   function onChangeLeftRightMarginMode(mode)
   {
      this._disabled = mode; 
