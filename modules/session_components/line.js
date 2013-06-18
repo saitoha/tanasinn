@@ -999,7 +999,7 @@ Line.definition = {
   {
     var cells = this.cells,
         length = cells.length,
-        range = cells.splice(-n),
+        range,
         end = start + n,
         i = 0,
         cell;
@@ -1008,6 +1008,8 @@ Line.definition = {
     if (end < length && 0 === cells[end - 1].c) {
       ++n;
     }
+
+    range = cells.splice(-n);
 
     for (; i < range.length; ++i) {
       cell = range[i];
