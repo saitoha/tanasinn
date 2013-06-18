@@ -427,7 +427,7 @@
  * set_foreground                setf       Sf        Set foreground color #1
  * set_left_margin               smgl       ML        set left soft margin at current column.        See smgl. (ML is not in BSD termcap).
  * set_left_margin_parm          smglp      Zm        Set left (right) margin at column #1
- * set_right_margin              smgr       MR        set right soft mar‐ gin at current col‐ umn
+ * set_right_margin              smgr       MR        set right soft margin at current column
  * set_right_margin_parm         smgrp      Zn        Set right margin at column #1
  * set_tab                       hts        st        set a tab in every row, current columns
  * set_top_margin                smgt       Zo        Set top margin at current line

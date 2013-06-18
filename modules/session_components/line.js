@@ -826,7 +826,7 @@ Line.definition = {
   /** write to cells at specified position
    *  with given character and an attribute.
    */
-  write: function write(position, codes, attr, insert_mode)
+  write: function write(position, codes, attr, insert_mode, right_margin)
   {
     var cells = this.cells,
         i,
@@ -837,8 +837,8 @@ Line.definition = {
         end;
 
     if (insert_mode) {
-      this.addRange(position, cells.length);
-      range = cells.splice(-length);
+      this.addRange(position, right_margin);
+      range = cells.splice(right_margin - length, length);
 
       for (i = 0; i < range.length; ++i) {
         cell = range[i];
@@ -855,7 +855,7 @@ Line.definition = {
           cells[position - 1].erase();
         }
       }
-      if (end < cells.length) {
+      if (end < right_margin) {
         if (0 === cells[end - 1].c) {
           cells[end].erase();
         }
@@ -964,7 +964,7 @@ Line.definition = {
    *
    * [ a b c d e f g h ] -> [ a b f g h       ]
    */
-  deleteCells: function deleteCells(start, n, attrvalue)
+  deleteCells: function deleteCells(start, n, attrvalue, right_margin)
   {
     var cells = this.cells,
         length = cells.length,
@@ -973,10 +973,10 @@ Line.definition = {
         i,
         cell;
 
-    this.addRange(start, length);
-    if (end < length && 0 === cells[end - 1].c) {
-      ++n;
-    }
+    this.addRange(start, right_margin);
+    //if (end < length && 0 === cells[end - 1].c) {
+    //  ++n;
+    //}
     range = cells.splice(start, n);
 
     for (i = 0; i < range.length; ++i) {
@@ -984,7 +984,7 @@ Line.definition = {
       cell.erase(attrvalue);
     }
 
-    range.unshift(length, 0) // make arguments.
+    range.unshift(right_margin - range.length, 0) // make arguments.
     // cells.splice(this.length, 0, ....)
     Array.prototype.splice.apply(cells, range);
   },
@@ -995,23 +995,23 @@ Line.definition = {
    *
    * [ a b c d e f g h ] -> [ a b       c d e ]
    */
-  insertBlanks: function insertBlanks(start, n, attrvalue)
+  insertBlanks: function insertBlanks(start, n, attrvalue, right_margin)
   {
     var cells = this.cells,
         length = cells.length,
         range,
         end = start + n,
-        i = 0,
+        i,
         cell;
 
-    this.addRange(start, cells.length);
-    if (end < length && 0 === cells[end - 1].c) {
-      ++n;
-    }
+    this.addRange(start, right_margin);
+    //if (end < length && 0 === cells[end - 1].c) {
+    //  ++n;
+    //}
 
-    range = cells.splice(-n);
+    range = cells.splice(right_margin - n, n);
 
-    for (; i < range.length; ++i) {
+    for (i = 0; i < range.length; ++i) {
       cell = range[i];
       cell.erase(attrvalue);
     }

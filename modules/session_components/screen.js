@@ -2366,7 +2366,8 @@ Screen.definition = {
         positionX = cursor.positionX,
         length,
         run,
-        attrvalue;
+        attrvalue,
+        right_margin;
 
     if (0 === codes[0]) {
       if (positionX >= width) {
@@ -2389,7 +2390,7 @@ Screen.definition = {
       if (line) {
         if (cursor.positionX >= width) {
           if (this._wraparound_mode) {
-            cursor.positionX = 0;
+            this.carriageReturn();
             this.lineFeed();
             line = this.getCurrentLine();
           } else {
@@ -2410,7 +2411,15 @@ Screen.definition = {
           it += length;
         }
 
-        line.write(positionX, run, cursor.attr, insert_mode);
+        if (this._left_right_margin_mode) {
+          right_margin = this._scroll_right;
+          if (right_margin < cursor.positionX) {
+            right_margin = this._width;
+          }
+        } else {
+          right_margin = this._width;
+        }
+        line.write(positionX, run, cursor.attr, insert_mode, right_margin);
 
       } else {
         break;
@@ -2911,9 +2920,21 @@ Screen.definition = {
   {
     var line = this.getCurrentLine(),
         cursor = this._cursor,
-        attrvalue = cursor.attr.value;
+        positionX = cursor.positionX,
+        attrvalue = cursor.attr.value,
+        left_margin,
+        right_margin;
 
-    line.insertBlanks(cursor.positionX, n, attrvalue);
+    if (this._left_right_margin_mode) {
+      left_margin = this._scroll_left;
+      right_margin = this._scroll_right;
+      if (positionX < left_margin || positionX >= right_margin) {
+        return;
+      }
+    } else {
+      right_margin = this._width;
+    }
+    line.insertBlanks(positionX, n, attrvalue, right_margin);
   },
 
   "[type('Uint16 -> Uint16 -> Undefined')] setScrollRegion":
@@ -3120,9 +3141,22 @@ Screen.definition = {
   { // Delete CHaracters
     var line = this.getCurrentLine(),
         cursor = this._cursor,
-        attrvalue = cursor.attr.value;
+        positionX = cursor.positionX,
+        attrvalue = cursor.attr.value,
+        left_margin,
+        right_margin;
 
-    line.deleteCells(cursor.positionX, n, attrvalue);
+    if (this._left_right_margin_mode) {
+      left_margin = this._scroll_left;
+      right_margin = this._scroll_right;
+      if (positionX < left_margin || positionX >= right_margin) {
+        return;
+      }
+    } else {
+      right_margin = this._width;
+    }
+
+    line.deleteCells(cursor.positionX, n, attrvalue, right_margin);
   },
 
   isAltScreen: function isAltScreen()
