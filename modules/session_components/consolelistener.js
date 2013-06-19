@@ -108,7 +108,9 @@ ConsoleListener.definition = {
       message = console_message.message;
 
       if (/tanasinn/i.test(message)) {
-        this._display_manager.append(message);
+        if (null !== this._display_manager) {
+          this._display_manager.append(message);
+        }
       }
     } catch (e) {
       try {
@@ -170,10 +172,8 @@ ConsoleListener.definition = {
     if (version_comparator.compare(version, "19.0") >= 0) {
       // in case messages are not found, consoleService returns null.
       messages = this._getMessages();
-      if (null !== messages) {
-        for (i = 0; i < messages.length; ++i) {
-          this.observe(messages[i]);
-        }
+      for (i = 0; i < messages.length; ++i) {
+        this.observe(messages[i]);
       }
     }
   },
@@ -184,13 +184,13 @@ ConsoleListener.definition = {
   {
     var enabled = this.enabled;
 
-    try {
-      this.enabled = false;
-      this.enabled = true;
-      this.enabled = false;
-    } finally {
-      this.enabled = enabled;
-    }
+    //try {
+    //  this.enabled = false;
+    //  this.enabled = true;
+    //  this.enabled = false;
+    //} finally {
+    //  this.enabled = enabled;
+    //}
   },
 
 

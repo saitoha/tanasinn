@@ -3386,7 +3386,7 @@ Screen.definition = {
 
   /** test */
   "[test]":
-  function()
+  function _test()
   {
     var enabled = this.enabled;
 
@@ -3396,6 +3396,15 @@ Screen.definition = {
       this.enabled = false;
 
       this.reset();
+      this.softReset();
+
+      this.CUU(1);
+      this.ICH(1);
+      this.CUD(1);
+      this.CUF(1);
+      this.CUB(1);
+      this.CHA(1);
+      this.CUP(1, 1);
 
     } finally {
       this.enabled = enabled;

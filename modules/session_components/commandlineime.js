@@ -64,15 +64,18 @@ CommandlineIme.definition = {
   function install(context)
   {
     var version_comparator = coUtils.Services.versionComparator,
-        focused_element = this.request("get/root-element")
-          .ownerDocument
-          .commandDispatcher
-          .focusedElement,
+        focused_element,
         textbox;
+
+    focused_element = this.request("get/root-element")
+      .ownerDocument
+      .commandDispatcher
+      .focusedElement;
 
     this._commandline = context["commandline"];
 
-    textbox = this._commandline.getInputField(),
+    textbox = this._commandline.getInputField();
+
     textbox.style.width = "0%";
     textbox.style.imeMode = "inactive"; // disabled -> inactive
     textbox.style.border = "none"; // hide border
@@ -237,13 +240,13 @@ CommandlineIme.definition = {
   {
     var enabled = this.enabled;
 
-    try {
-      this.enabled = false;
-      this.enabled = true;
-      this.enabled = false;
-    } finally {
-      this.enabled = enabled;
-    }
+    //try {
+    //  this.enabled = false;
+    //  this.enabled = true;
+    //  this.enabled = false;
+    //} finally {
+    //  this.enabled = enabled;
+    //}
   },
 
 
