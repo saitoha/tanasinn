@@ -2118,6 +2118,8 @@ Screen.definition = {
   // geometry (in cell count)
   "[persistable] initial_column": 80,
   "[persistable] initial_row": 24,
+
+  // determine whether or not back-scroll buffer is serialized
   "[persistable] backup_scrollbuffer": false,
 
   /** Installs itself.
@@ -2325,18 +2327,21 @@ Screen.definition = {
     this._wraparound_mode = false;
   },
 
+  /** enable reverse wraparound mode */
   "[subscribe('command/enable-reverse-wraparound'), pnp]":
   function enableReverseWraparound()
   {
     this._reverse_wraparound_mode = true;
   },
 
+  /** disable reverse wraparound mode */
   "[subscribe('command/disable-reverse-wraparound'), pnp]":
   function disableReverseWraparound()
   {
     this._reverse_wraparound_mode = false;
   },
 
+  /** enable/disable left/right margin mode */
   "[subscribe('command/change-left-right-margin-mode'), pnp]":
   function onChangeLeftRightMarginMode(mode)
   {
@@ -2926,9 +2931,11 @@ Screen.definition = {
         right_margin;
 
     if (this._left_right_margin_mode) {
+      // respect left-right margin
       left_margin = this._scroll_left;
       right_margin = this._scroll_right;
       if (positionX < left_margin || positionX >= right_margin) {
+        // ICH has no effect outside the scrolling margins.
         return;
       }
     } else {
@@ -3147,9 +3154,11 @@ Screen.definition = {
         right_margin;
 
     if (this._left_right_margin_mode) {
+      // respect left-right margin
       left_margin = this._scroll_left;
       right_margin = this._scroll_right;
       if (positionX < left_margin || positionX >= right_margin) {
+        // DCH has no effect outside the scrolling margins.
         return;
       }
     } else {
@@ -3233,10 +3242,10 @@ Screen.definition = {
   "[subscribe('command/backup'), type('Object -> Undefined'), pnp]":
   function backup(data)
   {
-    var context = data[this.id] = [],
+    var context = [],
         lines = this._buffer,
         buffer_top = this._buffer_top,
-        i = 0,
+        i,
         line;
 
     if (!this.backup_scrollbuffer) {
@@ -3251,7 +3260,7 @@ Screen.definition = {
     context.push(lines.length);
 
     // serialize each lines.
-    for (; i < lines.length; ++i) {
+    for (i = 0; i < lines.length; ++i) {
       line = lines[i];
       line.serialize(context);
     }
@@ -3260,6 +3269,9 @@ Screen.definition = {
 
     // serialize cursor.
     this._cursor.serialize(context);
+
+    // store current context
+    data[this.id] = context;
 
   }, // backup
 
@@ -3364,9 +3376,9 @@ Screen.definition = {
 
     hash = coUtils.Algorithm.calculateMD5(data);
 
-    function toHexString(charCode)
+    function toHexString(c)
     {
-      return ("0" + charCode.toString(16)).slice(-2);
+      return ("0" + c.toString(16)).slice(-2);
     }
 
     return [toHexString(hash.charCodeAt(i)) for (i in hash)].join("").toUpperCase();
