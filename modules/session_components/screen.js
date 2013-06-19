@@ -3394,6 +3394,9 @@ Screen.definition = {
       this.enabled = false;
       this.enabled = true;
       this.enabled = false;
+
+      this.reset();
+
     } finally {
       this.enabled = enabled;
     }

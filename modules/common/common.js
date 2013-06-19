@@ -1605,6 +1605,7 @@ coUtils.Keyboard = {
 
 }; // coUtils.Keyboard
 
+coUtils.Runtime.loadScript("modules/common/debug.js", this);
 coUtils.Runtime.loadScript("modules/common/logging.js", this);
 
 coUtils.Text = {

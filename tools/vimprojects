@@ -49,6 +49,7 @@
    locale.js
    factory.js
    logging.js
+   debug.js
    algorithm.js
    timer.js
    clipboard.js
