@@ -195,11 +195,16 @@ Scanner.definition = {
     var enabled = this.enabled;
 
     try {
-      this.enabled = false;
-      this.enabled = true;
-      this.enabled = false;
+      this.uninstall();
+      this.install();
+
+      // assign string data
+      this.assign("abcde");
+
+      // indicate first character position
+      coUtils.Debug.assert("a".charCodeAt(0) === this.current());
+
     } finally {
-      this.enabled = enabled;
     }
   },
 

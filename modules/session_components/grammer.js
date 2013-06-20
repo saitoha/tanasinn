@@ -538,11 +538,11 @@ VT100Grammar.definition = {
     var enabled = this.enabled;
 
     try {
-      this.enabled = false;
-      this.enabled = true;
-      this.enabled = false;
+      if (enabled) {
+        coUtils.Debug.assert(null === this._ibytes);
+        coUtils.Debug.assert(null === this._pbytes);
+      }
     } finally {
-      this.enabled = enabled;
     }
   },
 

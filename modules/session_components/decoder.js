@@ -204,9 +204,9 @@ Decoder.definition = {
     var enabled = this.enabled;
 
     try {
-      this.enabled = false;
-      this.enabled = true;
-      this.enabled = false;
+      if (enabled) {
+        coUtils.Debug.assert(this._decoder_map);
+      }
     } finally {
       this.enabled = enabled;
     }

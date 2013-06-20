@@ -185,10 +185,12 @@ coUtils.Debug = {
       }
       stack = Components.stack.caller;  // get caller"s context.
       flag = Components.interfaces.nsIScriptError.errorFlag; // it"s error.
-      this.reportException(source, stack, flag);
+      coUtils.Debug.reportException(source, stack, flag);
     }
   },
 
 }; // coUtils.Debug
+
+var assert = coUtils.Debug.assert;
 
 // EOF

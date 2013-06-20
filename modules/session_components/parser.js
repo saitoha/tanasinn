@@ -190,7 +190,7 @@ Parser.definition = {
         codes;
 
     while (true) {
-      if (this._state === 0) {
+      if (0 === this._state) {
         grammar.parse(scanner)
         if (scanner.isEnd) {
           break;
@@ -281,11 +281,14 @@ Parser.definition = {
     var enabled = this.enabled;
 
     try {
-      this.enabled = false;
-      this.enabled = true;
-      this.enabled = false;
+      if (enabled) {
+        coUtils.Debug.assert(this._scanner);
+        coUtils.Debug.assert(this._screen);
+        coUtils.Debug.assert(this._decoder);
+        coUtils.Debug.assert(this._drcs_converter);
+        coUtils.Debug.assert(this._wcwidth);
+      } 
     } finally {
-      this.enabled = enabled;
     }
   },
 

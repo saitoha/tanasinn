@@ -391,11 +391,9 @@ SocketTeletypeService.definition = {
     var enabled = this.enabled;
 
     try {
-      this.enabled = false;
-      this.enabled = true;
-      this.enabled = false;
+      assert(this._externaldriver); 
+      assert(this._ttycontroller); 
     } finally {
-      this.enabled = enabled;
     }
   },
 

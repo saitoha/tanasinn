@@ -69,7 +69,8 @@ Test.definition = {
         i,
         length,
         message,
-        result;
+        result,
+        current_thread = coUtils.Services.getThreadManager().currentThread;
 
     // initialization for test
     this.sendMessage("command/before-test");
@@ -100,6 +101,8 @@ Test.definition = {
       // display result message
       this.sendMessage("command/report-overlay-message",
                        message);
+
+      current_thread.processNextEvent(true);
     }
 
     // finalize test phase

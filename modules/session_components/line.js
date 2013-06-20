@@ -1064,12 +1064,13 @@ LineGenerator.definition = {
 
   /** Allocates n cells at once. */
   "[type('Uint16 -> Uint16 -> Uint16 -> Array')]":
-  function allocate(width, n, attrvalue)
+  function allocate(/* cols */ width, /* rows */ n, attrvalue)
   {
     var line,
-        buffer = [];
+        buffer = [],
+        i;
 
-    while (n--) {
+    for (i = 0; i < n; ++i) {
       line = new Line(width, attrvalue);
       buffer.push(line);
     }
@@ -1080,12 +1081,12 @@ LineGenerator.definition = {
   "[test]":
   function()
   {
-    var enabled = this.enabled;
+    var enabled = this.enabled,
+        lines;
 
     try {
-      this.enabled = false;
-      this.enabled = true;
-      this.enabled = false;
+      lines = this.allocate(10, 4, 0); 
+      coUtils.Debug.assert(4 === lines.length);
     } finally {
       this.enabled = enabled;
     }
