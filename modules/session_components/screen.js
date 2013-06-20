@@ -2615,7 +2615,7 @@ Screen.definition = {
   {
     var cursor = this._cursor;
 
-    if (cursor.DECOM) {
+    if (this._left_right_margin_mode) {
       cursor.positionX = this._scroll_left;
     } else {
       cursor.positionX = 0;
