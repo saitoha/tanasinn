@@ -74,7 +74,8 @@
  */
 var DECDeviceStatusReport = new Class().extends(Plugin)
                                        .depends("screen")
-                                       .depends("parser");
+                                       .depends("parser")
+                                       .depends("cursorstate");
 DECDeviceStatusReport.definition = {
 
   id: "device_status_report_dec",
@@ -93,6 +94,7 @@ DECDeviceStatusReport.definition = {
 
   _parser: null,
   _screen: null,
+  _cusor_state: null,
 
   /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
@@ -102,6 +104,7 @@ DECDeviceStatusReport.definition = {
   {
     this._parser = context["parser"];
     this._screen = context["screen"];
+    this._cursorstate = context["cursorstate"];
   },
 
   /** uninstalls itself.
@@ -111,11 +114,15 @@ DECDeviceStatusReport.definition = {
   {
     this._parser = null;
     this._screen = null;
+    this._cursorstate = null;
   },
 
   "[profile('vt100'), sequence('CSI ? Ps n')]":
   function DECDSR(n1, n2)
   { // Device Status Report, DEC specific
+
+    var cursor = this._cursorstate,
+        message; 
 
     switch (n1) {
 
@@ -144,10 +151,10 @@ DECDeviceStatusReport.definition = {
        */
       case 6:
         message = coUtils.Text.format(
-          "%d;%d;0R",
+          "%d;%d;%dR",
           cursor.positionY + 1,
           cursor.positionX + 1,
-          0);
+          1);
         this.sendMessage("command/send-sequence/csi", message);
         break;
 
