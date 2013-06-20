@@ -2364,7 +2364,6 @@ Screen.definition = {
   function write(codes)
   {
     var insert_mode = this._insert_mode,
-        width = this._width,
         cursor = this._cursor,
         it = 0,
         line = this.getCurrentLine(),
@@ -2374,38 +2373,44 @@ Screen.definition = {
         attrvalue,
         right_margin;
 
+    if (this._left_right_margin_mode) {
+      right_margin = this._scroll_right;
+    } else {
+      right_margin = this._width;
+    }
+
     if (0 === codes[0]) {
-      if (positionX >= width) {
+      if (positionX >= right_margin) {
         attrvalue = cursor.attr.value;
         line.erase(positionX - 1, positionX, attrvalue);
       }
     } else {
-      if (positionX >= width) {
+      if (positionX >= right_margin) {
         if (this._wraparound_mode) {
           cursor.positionX = 0;
           this.lineFeed();
           line = this.getCurrentLine();
         } else {
-          cursor.positionX = width - 1;
+          cursor.positionX = right_margin - 1;
         }
       }
     }
 
     do {
       if (line) {
-        if (cursor.positionX >= width) {
+        if (cursor.positionX >= right_margin) {
           if (this._wraparound_mode) {
             this.carriageReturn();
             this.lineFeed();
             line = this.getCurrentLine();
           } else {
-            cursor.positionX = width - 1;
+            cursor.positionX = right_margin - 1;
             break;
           }
         }
 
         positionX = cursor.positionX;
-        length = width - positionX;
+        length = right_margin - positionX;
         run = codes.slice(it, it + length);
         length = run.length;
         cursor.positionX += length;
@@ -2414,15 +2419,6 @@ Screen.definition = {
           it += length - 1;
         } else {
           it += length;
-        }
-
-        if (this._left_right_margin_mode) {
-          right_margin = this._scroll_right;
-          if (right_margin < cursor.positionX) {
-            right_margin = this._width;
-          }
-        } else {
-          right_margin = this._width;
         }
         line.write(positionX, run, cursor.attr, insert_mode, right_margin);
 
