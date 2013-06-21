@@ -47,7 +47,7 @@ Tracer.definition = {
 
   "[persistable] enabled_when_startup": true,
 
-  _mode: "vt100",
+  _mode: null,
 
   /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
@@ -55,6 +55,7 @@ Tracer.definition = {
   "[install]":
   function install(context)
   {
+    this._mode = "vt100";
   },
 
   /** Uninstalls itself
@@ -62,6 +63,7 @@ Tracer.definition = {
   "[uninstall]":
   function uninstall()
   {
+    this._mode = null;
   },
 
   "[subscribe('command/change-emulation-mode'), pnp]":
@@ -170,11 +172,10 @@ Tracer.definition = {
     var enabled = this.enabled;
 
     try {
-      this.enabled = false;
-      this.enabled = true;
-      this.enabled = false;
+      if (enabled) {
+        assert(this._mode);
+      }
     } finally {
-      this.enabled = enabled;
     }
   },
 
