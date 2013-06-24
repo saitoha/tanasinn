@@ -63,12 +63,6 @@ C0Control.definition = {
     this._screen = null;
   },
 
-  "[subscribe('set/newline-mode'), enabled]":
-  function onChangeNewlineMode(mode)
-  {
-    this._newline_mode = mode;
-  },
-
   /** Null.
    *
    * Ignored when received (not stored in input buffer) and used as a fill
@@ -185,10 +179,6 @@ C0Control.definition = {
     var screen = this._screen;
 
     screen.lineFeed();
-
-    if (this._newline_mode) {
-      screen.carriageReturn();
-    }
   },
 
   /** Vertical tabulation.
@@ -202,10 +192,6 @@ C0Control.definition = {
     var screen = this._screen;
 
     screen.lineFeed();
-
-    if (this._newline_mode) {
-      screen.carriageReturn();
-    }
   },
 
   /** Form feed.
@@ -220,10 +206,6 @@ C0Control.definition = {
     var screen = this._screen;
 
     screen.lineFeed();
-
-    if (this._newline_mode) {
-      screen.carriageReturn();
-    }
   },
 
   /** Carriage return.
