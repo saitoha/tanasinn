@@ -104,7 +104,7 @@ NewLineMode.definition = {
   "[uninstall]":
   function uninstall()
   {
-    this._mode = null;
+    this._mode = false;
   },
 
   /** set new line.
@@ -188,11 +188,11 @@ NewLineMode.definition = {
     var enabled = this.enabled;
 
     try {
-      this.enabled = false;
-      this.enabled = true;
-      this.enabled = false;
+      if (enabled) {
+      } else {
+        assert(false === this._mode);
+      }
     } finally {
-      this.enabled = enabled;
     }
   },
 
