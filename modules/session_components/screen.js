@@ -919,7 +919,7 @@ ScreenSequenceHandler.definition = {
   },
 
   /**
-   * SU—Pan Down
+   * SU - Pan Down
    *
    * This control function moves the user window down a specified number of
    * lines in page memory.
@@ -962,6 +962,7 @@ ScreenSequenceHandler.definition = {
   { // Scroll Down line
     var argc = arguments.length;
 
+    // check argument length
     switch (argc) {
 
       case 0:
@@ -1880,7 +1881,7 @@ Scrollable.definition = {
         range,  // rotation range
         line,
         rest;
-
+++this._sucount;
     if (0 === left && right === width) {
       // set dirty flag.
       for (i = offset + top + n; i < offset + bottom; ++i) {
@@ -2387,7 +2388,7 @@ Screen.definition = {
     } else {
       if (positionX >= right_margin) {
         if (this._wraparound_mode) {
-          cursor.positionX = 0;
+          this.carriageReturn();
           this.lineFeed();
           line = this.getCurrentLine();
         } else {
