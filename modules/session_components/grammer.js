@@ -539,6 +539,9 @@ VT100Grammar.definition = {
 
     try {
       if (enabled) {
+        coUtils.Debug.assert(null !== this._ibytes);
+        coUtils.Debug.assert(null !== this._pbytes);
+      } else {
         coUtils.Debug.assert(null === this._ibytes);
         coUtils.Debug.assert(null === this._pbytes);
       }
