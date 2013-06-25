@@ -2595,18 +2595,27 @@ Screen.definition = {
   {
     var cursor = this._cursor,
         width = this._width,
-        positionX = cursor.positionX;
+        positionX = cursor.positionX,
+        left_margin,
+        right_margin;
 
     if (positionX >= width) {
       positionX = width - 1;
     }
 
-    if (positionX > 0) {
+    if (this._left_right_margin_mode) {
+      left_margin = this._scroll_left;
+    } else {
+      left_margin = 0;
+    }
+
+    if (positionX > left_margin) {
       cursor.positionX = positionX - 1;
     } else if (this._reverse_wraparound_mode) { // positionX === 0
-      //this.reverseIndex(); //
+      //this.reverseIndex();
       this.cursorUp(1);
-      cursor.positionX = width - 1;
+      right_margin = this._scroll_right;
+      cursor.positionX = right_margin - 1;
     }
   },
 

@@ -163,7 +163,9 @@ C0Control.definition = {
   "[profile('vt100'), sequence('0x08')]":
   function BS()
   { // BackSpace
-    this._screen.backSpace();
+    var screen = this._screen;
+
+    screen.backSpace();
   },
 
   /** 0x09 HT is in tabcontroller.js */
