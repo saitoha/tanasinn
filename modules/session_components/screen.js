@@ -300,7 +300,15 @@ ScreenSequenceHandler.definition = {
   "[profile('vt100'), sequence('CSI Pn C')]":
   function CUF(n)
   { // CUrsor Forward (right).
-    this.cursorForward(n || 1);
+    var right_margin;
+
+    if (this._left_right_margin) {
+      right_margin = this._scroll_right;
+    } else {
+      right_margin = this._width;
+    }
+
+    this.cursorForward(n || 1, right_margin);
   },
 
   /**
@@ -319,7 +327,15 @@ ScreenSequenceHandler.definition = {
   "[profile('vt100'), sequence('CSI Pn D')]":
   function CUB(n)
   { // CUrsor Back (left).
-    this.cursorBackward(n || 1);
+    var left_margin;
+
+    if (this._left_right_margin) {
+      left_margin = this._scroll_left;
+    } else {
+      left_margin = 0;
+    }
+
+    this.cursorBackward(n || 1, left_margin);
   },
 
   /**
@@ -1030,7 +1046,7 @@ ScreenSequenceHandler.definition = {
   "[profile('vt100'), sequence('CSI Pn a')]":
   function HPR(n)
   { //
-    this.cursorForward(n || 1);
+    this.cursorForward(n || 1, 0);
   },
 
   /**
@@ -1057,7 +1073,7 @@ ScreenSequenceHandler.definition = {
   "[profile('vt100'), sequence('CSI Pn j')]":
   function HPB(n)
   { //
-    this.cursorBackward(n || 1);
+    this.cursorBackward(n || 1, 0);
   },
 
   /**
@@ -2460,11 +2476,11 @@ Screen.definition = {
   //
   /** Move cursor to forward (right). */
   "[type('Uint16 -> Undefined')] cursorForward":
-  function cursorForward(n)
+  function cursorForward(n, right_margin)
   {
     var cursor = this._cursor,
         positionX = cursor.positionX + n,
-        max = this._width - 1;
+        max = right_margin - 1;
 
     if (positionX > max) {
       cursor.positionX = max;
@@ -2475,12 +2491,12 @@ Screen.definition = {
 
   /** Move cursor to backward (left). */
   "[type('Uint16 -> Undefined')] cursorBackward":
-  function cursorBackward(n)
+  function cursorBackward(n, left_margin)
   {
     var width = this._width,
         cursor = this._cursor,
         positionX = cursor.positionX,
-        min = 0;
+        min = left_margin;
 
     if (positionX > width - 1) {
       positionX = width - 1;
