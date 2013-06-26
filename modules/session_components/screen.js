@@ -1897,7 +1897,7 @@ Scrollable.definition = {
         range,  // rotation range
         line,
         rest;
-++this._sucount;
+
     if (0 === left && right === width) {
       // set dirty flag.
       for (i = offset + top + n; i < offset + bottom; ++i) {
@@ -2646,6 +2646,31 @@ Screen.definition = {
     } else {
       cursor.positionX = 0;
     }
+  },
+
+  "[type('Undefined')] reportCursorPosition":
+  function reportCursorPosition()
+  {
+    var cursor = this._cursor,
+        message,
+        x,
+        y;
+    
+    if (cursor.DECOM) {
+      if (this._left_right_margin_mode) {
+        x = cursor.positionX - this._scroll_left;
+      } else {
+        x = cursor.positionX;
+      }
+      y = cursor.positionY - this._scroll_top;
+    } else {
+      x = cursor.positionX;
+      y = cursor.positionY;
+    }
+
+    message = coUtils.Text.format("%d;%dR", y + 1, x + 1);
+
+    this.sendMessage("command/send-sequence/csi", message);
   },
 
 // ScreenEditConcept implementation

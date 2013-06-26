@@ -73,7 +73,7 @@
  *
  */
 var ANSIDeviceStatusReport = new Class().extends(Plugin)
-                                        .depends("cursorstate");
+                                        .depends("screen");
 ANSIDeviceStatusReport.definition = {
 
   id: "device_status_report",
@@ -90,7 +90,7 @@ ANSIDeviceStatusReport.definition = {
 
   "[persistable] enabled_when_startup": true,
 
-  _cursor: null,
+  _screen: null,
 
   /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
@@ -98,7 +98,7 @@ ANSIDeviceStatusReport.definition = {
   "[install]":
   function install(context)
   {
-    this._cursor = context["cursorstate"];
+    this._screen = context["screen"];
   },
 
   /** Uninstalls itself.
@@ -106,15 +106,14 @@ ANSIDeviceStatusReport.definition = {
   "[uninstall]":
   function uninstall()
   {
-    this._cursor = null;
+    this._screen = null;
   },
 
   "[profile('vt100'), sequence('CSI Ps n')]":
   function DSR(n)
   { // Device Status Report
 
-    var cursor = this._cursor,
-        message;
+    var screen = this._screen;
 
     switch (n) {
 
@@ -125,11 +124,7 @@ ANSIDeviceStatusReport.definition = {
 
       // report cursor position
       case 6:
-        message = coUtils.Text.format(
-          "%d;%dR",
-          cursor.positionY + 1,
-          cursor.positionX + 1);
-        this.sendMessage("command/send-sequence/csi", message);
+        screen.reportCursorPosition();
         break;
 
       default:
@@ -146,11 +141,12 @@ ANSIDeviceStatusReport.definition = {
     var enabled = this.enabled;
 
     try {
-      this.enabled = false;
-      this.enabled = true;
-      this.enabled = false;
+      if (enabled) {
+        assert(this._screen);
+      } else {
+        assert(null === this._screen);
+      }
     } finally {
-      this.enabled = enabled;
     }
   },
 
