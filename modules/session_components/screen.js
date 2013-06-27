@@ -414,18 +414,20 @@ ScreenSequenceHandler.definition = {
         y = (n1 || 1) - 1,
         x = (n2 || 1) - 1;
 
-    if (cursor.DECOM) {
+    if (this._left_right_margin_mode) {
       left = this._scroll_left;
-      top = this._scroll_top;
       right = this._scroll_right;
-      bottom = this._scroll_bottom;
-      x += left;
-      y += top;
     } else {
       left = 0;
-      top = 0;
       right = this._width;
-      bottom = this._height;
+    }
+
+    top = this._scroll_top;
+    bottom = this._scroll_bottom;
+
+    if (cursor.DECOM) {
+      x += left;
+      y += top;
     }
 
     // set horizontal position
