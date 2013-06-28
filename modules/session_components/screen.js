@@ -1057,7 +1057,9 @@ ScreenSequenceHandler.definition = {
   "[profile('vt100'), sequence('CSI Pn a')]":
   function HPR(n)
   { //
-    this.cursorForward(n || 1, 0);
+    var width = this._width;
+
+    this.cursorForward(n || 1, width);
   },
 
   /**
