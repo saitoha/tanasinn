@@ -302,7 +302,7 @@ ScreenSequenceHandler.definition = {
   { // CUrsor Forward (right).
     var right_margin;
 
-    if (this._left_right_margin) {
+    if (this._left_right_margin_mode) {
       right_margin = this._scroll_right;
     } else {
       right_margin = this._width;
@@ -329,7 +329,7 @@ ScreenSequenceHandler.definition = {
   { // CUrsor Back (left).
     var left_margin;
 
-    if (this._left_right_margin) {
+    if (this._left_right_margin_mode) {
       left_margin = this._scroll_left;
     } else {
       left_margin = 0;
@@ -2549,10 +2549,10 @@ Screen.definition = {
     cursor = this._cursor;
     positionX = positionX - n;
 
-    if (positionX > min) {
-      cursor.positionX = positionX;
-    } else {
+    if (positionX < min) {
       cursor.positionX = min;
+    } else {
+      cursor.positionX = positionX;
     }
   },
 
