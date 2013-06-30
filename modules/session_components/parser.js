@@ -24,6 +24,9 @@
 
 "use strict";
 
+var _PARSESTATE_PRINTABLE = 0;
+var _PARSESTATE_CONTROL = 1;
+
 /**
  * @class Parser
  * @brief Parse byte sequence emitted by TTY device.
@@ -190,12 +193,12 @@ Parser.definition = {
         codes;
 
     while (true) {
-      if (0 === this._state) {
+      if (_PARSESTATE_PRINTABLE === this._state) {
         grammar.parse(scanner)
         if (scanner.isEnd) {
           break;
         }
-        this._state = 1;
+        this._state = _PARSESTATE_CONTROL;
       } else {
         codes = this._decode(scanner);
         if (0 !== codes.length) {
@@ -204,7 +207,7 @@ Parser.definition = {
             break;
           }
         }
-        this._state = 0;
+        this._state = _PARSESTATE_PRINTABLE;
       }
     }
   },
