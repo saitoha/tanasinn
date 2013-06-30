@@ -2333,12 +2333,18 @@ Screen.definition = {
 
   getScrollLeft: function getScrollLeft()
   {
-    return this._scroll_left;
+    if (this._left_right_margin_mode) {
+      return this._scroll_left;
+    }
+    return 0;
   },
 
   getScrollRight: function getScrollRight()
   {
-    return this._scroll_right;
+    if (this._left_right_margin_mode) {
+      return this._scroll_right;
+    }
+    return this._width;
   },
 
   getBufferTop: function getBufferTop()

@@ -107,18 +107,16 @@ TabController.definition = {
         left_margin,
         right_margin;
 
+    left_margin = screen.getScrollLeft();
+    right_margin = screen.getScrollRight();
+
     if (screen.hasLeftRightMargin()) {
-      left_margin = screen.getScrollLeft();
-      right_margin = screen.getScrollRight();
       if (0 === tab_stops.length) {
         max = left_margin;
       } else {
-        max = left_margin + tab_stops[tab_stops.length - 1];
+        max = tab_stops[tab_stops.length - 1];
       }
     } else {
-      left_margin = 0; 
-      right_margin = screen.width; 
-
       if (coUtils.Constant.LINETYPE_NORMAL === line.type) {
         max = 0 === tab_stops.length ? 0: tab_stops[tab_stops.length - 1];
       } else {
@@ -127,6 +125,7 @@ TabController.definition = {
     }
 
     positionX = cursor.positionX;
+
     if (positionX > max) {
       //if (this._wraparound_mode) {
         cursor.positionX = left_margin;
@@ -358,13 +357,8 @@ TabController.definition = {
         index,
         length;
 
-    if (screen.hasLeftRightMargin()) {
-      left_margin = screen.getScrollLeft();
-      right_margin = screen.getScrollRight();
-    } else {
-      left_margin = 0; 
-      right_margin = screen.width; 
-    }
+    left_margin = screen.getScrollLeft();
+    right_margin = screen.getScrollRight();
 
     n = (n || 1) - 1;
 
@@ -475,13 +469,8 @@ TabController.definition = {
         tab_stops = [],
         pos;
 
-    if (screen.hasLeftRightMargin()) {
-      left_margin = screen.getScrollLeft();
-      right_margin = screen.getScrollRight();
-    } else {
-      left_margin = 0; 
-      right_margin = screen.width; 
-    }
+    left_margin = screen.getScrollLeft();
+    right_margin = screen.getScrollRight();
 
     tab_stops.push(left_margin);
     for (pos = left_margin + 8 - left_margin % 8; pos < right_margin; pos += 8) {
