@@ -415,15 +415,11 @@ ScreenSequenceHandler.definition = {
         x = (n2 || 1) - 1;
 
     if (cursor.DECOM) {
-      left = this._scroll_left;
-      top = this._scroll_top;
       right = this._scroll_right;
       bottom = this._scroll_bottom;
-      x += left;
-      y += top;
+      x += this._scroll_left;
+      y += this._scroll_top;
     } else {
-      left = 0;
-      top = 0;
       right = this._width;
       bottom = this._height;
     }
@@ -2597,7 +2593,7 @@ Screen.definition = {
     }
   },
 
-  /** cursor CHaracter Absolute column (CHA). */
+  /** cursor CHaracter Absolute column */
   "[type('Uint16 -> Undefined')] setPositionX":
   function setPositionX(n)
   {
