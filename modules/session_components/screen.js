@@ -367,13 +367,11 @@ ScreenSequenceHandler.definition = {
     n = (n || 1) - 1;
 
     if (this._left_right_margin_mode) {
-      right_margin = this._scroll_right;
       if (cursor.DECOM) {
         n += this._scroll_left;
       }
-    } else {
-      right_margin = this._width;
     }
+    right_margin = this._width;
 
     if (n > right_margin) {
       cursor.positionX = right_margin;
@@ -2435,6 +2433,9 @@ Screen.definition = {
 
     if (this._left_right_margin_mode) {
       right_margin = this._scroll_right;
+      if (positionX > right_margin) {
+        right_margin = this._width;
+      }
     } else {
       right_margin = this._width;
     }
