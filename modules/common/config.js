@@ -17,12 +17,12 @@
  *
  * The Initial Developer of the Original Code is
  * Hayaki Saito.
- * Portions created by the Initial Developer are Copyright (C) 2010 - 2013
+ * Portions created by the Initial Developer are Copyright (C) 2010 - 2011
  * the Initial Developer. All Rights Reserved.
  *
  * ***** END LICENSE BLOCK ***** */
 
 "use strict";
 
-var TANASINN_PACKAGE_VERSION = "0.3.3.6";
+var TANASINN_PACKAGE_VERSION = "0.3.3.7";
 

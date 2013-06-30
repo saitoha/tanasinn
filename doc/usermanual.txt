@@ -26,6 +26,14 @@ link:./usermanual.html[English/英語]
 
 == News
 
+=== 2013-06-30
+    Version 0.3.3.7
+    Make CPR respect origin mode
+    Fix broken DECDSR 
+    Respect origin mode when VPA is invoked
+    Respect L/R margins when write/wrap/rwrap
+    Respect L/R margins when CR/BS/CUF/CUB/CHA/CUP/HPA/HPR/HT/CHT/CBT
+
 === 2013-06-19
     Version 0.3.3.6
     Fix reference errors around DECSCA
