@@ -67,6 +67,7 @@ EastAsianWidth.definition = {
   function uninstall()
   {
     this._mode = null;
+    this._parser = null;
   },
 
   /** Treat ambiguous width characters as double-width.
