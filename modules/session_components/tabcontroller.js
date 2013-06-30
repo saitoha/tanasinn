@@ -59,8 +59,6 @@ TabController.definition = {
   {
     this._screen = context["screen"];
     this._cursor = context["cursorstate"];
-
-    this._resetTabStop();
   },
 
   /** uninstalls itself.
@@ -98,7 +96,7 @@ TabController.definition = {
   function HT()
   { // Horizontal Tab
     var cursor = this._cursor,
-        tab_stops = this._tab_stops,
+        tab_stops = this._getTabStops(),
         screen = this._screen,
         line = screen.getCurrentLine(),
         width = screen.width,
@@ -106,19 +104,33 @@ TabController.definition = {
         positionX,
         i = 0,
         stop,
-        screen;
+        left_margin,
+        right_margin;
 
-    if (coUtils.Constant.LINETYPE_NORMAL === line.type) {
-      max = 0 === tab_stops.length ? 0: tab_stops[tab_stops.length - 1];
+    if (screen.hasLeftRightMargin()) {
+      left_margin = screen.getScrollLeft();
+      right_margin = screen.getScrollRight();
+      if (0 === tab_stops.length) {
+        max = left_margin;
+      } else {
+        max = left_margin + tab_stops[tab_stops.length - 1];
+      }
     } else {
-      max = width / 2 - 1 | 0;
+      left_margin = 0; 
+      right_margin = screen.width; 
+
+      if (coUtils.Constant.LINETYPE_NORMAL === line.type) {
+        max = 0 === tab_stops.length ? 0: tab_stops[tab_stops.length - 1];
+      } else {
+        max = right_margin / 2 - 1 | 0;
+      }
     }
 
     positionX = cursor.positionX;
     if (positionX > max) {
       //if (this._wraparound_mode) {
-        cursor.positionX = 0;
-        this._screen.lineFeed();
+        cursor.positionX = left_margin;
+        screen.lineFeed();
         return;
       //}
     }
@@ -210,7 +222,7 @@ TabController.definition = {
   function DECTABSR()
   {
     var message,
-        tab_stops = this._tab_stops,
+        tab_stops = this._getTabStops(),
         result = [],
         i = 0;
 
@@ -223,30 +235,6 @@ TabController.definition = {
 
     this.sendMessage("command/send-sequence/dcs", message);
 
-  },
-
-  /** reset tab stop on screen width changed */
-  "[subscribe('variable-changed/screen.width'), pnp]":
-  function onScreenWidthChanged()
-  {
-    this._resetTabStop();
-  },
-
-  /** reset tab stops */
-  _resetTabStop: function _resetTabStop()
-  {
-    // update tab stops
-    var width = this._screen.width,
-        i;
-
-    this._tab_stops = [];
-
-    for (i = 8; i < width; i += 8) {
-      this._tab_stops.push(i);
-    }
-    if (i !== width - 1) {
-      this._tab_stops.push(width - 1);
-    }
   },
 
   /**
@@ -268,11 +256,12 @@ TabController.definition = {
   "[profile('vt100'), sequence('0x88', 'ESC H'), _('Tab set.')]":
   function HTS()
   {
-    var cursor = this._cursor;
+    var cursor = this._cursor,
+        tab_stops = this._getTabStops();
 
-    this._tab_stops.push(cursor.positionX);
-    this._tab_stops.sort(
-      function(lhs, rhs)
+    tab_stops.push(cursor.positionX);
+    tab_stops.sort(
+      function sortFunc(lhs, rhs)
       {
         return lhs > rhs;
       });
@@ -309,7 +298,7 @@ TabController.definition = {
     switch (n || 0) {
 
       case 0:
-        tab_stops = this._tab_stops;
+        tab_stops = this._getTabStops();
         positionX = this._cursor.positionX;;
         for (i = 0; i < tab_stops.length; ++i) {
           stop = tab_stops[i];
@@ -358,29 +347,40 @@ TabController.definition = {
   "[profile('vt100'), sequence('CSI Pn I')]":
   function CHT(n)
   { // Cursor Horaizontal Tabulation
-    var tab_stops = this._tab_stops,
+    var tab_stops = this._getTabStops(),
         cursor = this._cursor,
-        width = this._screen.width,
+        screen = this._screen,
         positionX = cursor.positionX,
+        left_margin,
+        right_margin,
         i,
         stop,
-        index;
+        index,
+        length;
+
+    if (screen.hasLeftRightMargin()) {
+      left_margin = screen.getScrollLeft();
+      right_margin = screen.getScrollRight();
+    } else {
+      left_margin = 0; 
+      right_margin = screen.width; 
+    }
 
     n = (n || 1) - 1;
 
-    if (positionX > width - 1) {
-      //if (this._wraparound_mode) {
-        cursor.positionX = 0;
-        this._screen.lineFeed();
-        return;
-      //}
+    if (positionX > right_margin - 1) {
+      screen.carriageReturn();
+      screen.lineFeed();
+      return;
     }
 
-    for (i = 0; i < tab_stops.length; ++i) {
+    length = tab_stops.length;
+
+    for (i = 0; i < length; ++i) {
       stop = tab_stops[i];
       if (stop > positionX) {
         index = i + n;
-        cursor.positionX = tab_stops[index % tab_stops.length];
+        cursor.positionX = tab_stops[index % length];
         return;
       }
     }
@@ -414,7 +414,7 @@ TabController.definition = {
   "[profile('vt100'), sequence('CSI Pn Z')]":
   function CBT(n)
   { // Cursor Backward Tabulation
-    var tab_stops = this._tab_stops,
+    var tab_stops = this._getTabStops(),
         cursor = this._cursor,
         positionX = cursor.positionX,
         i,
@@ -433,6 +433,66 @@ TabController.definition = {
     }
   },
 
+// event handlers
+  /** reset tab stop on screen width changed */
+  "[subscribe('variable-changed/screen.width'), pnp]":
+  function onScreenWidthChanged()
+  {
+    this._tab_stops = null;
+  },
+
+  /** enable/disable left/right margin mode */
+  "[subscribe('command/change-left-right-margin-mode'), pnp]":
+  function onChangeLeftRightMarginMode(mode)
+  {
+    this._tab_stops = null;
+  },
+
+  /** enable/disable left/right margin mode */
+  "[subscribe('event/left-right-margin-changed'), pnp]":
+  function onLeftRightMarginChanged(mode)
+  {
+    this._tab_stops = null;
+  },
+
+// helpers
+  /** get tab stops */
+  _getTabStops: function _getTabStops()
+  {
+    if (null === this._tab_stops) {
+      this._resetTabStops(); 
+    }
+    return this._tab_stops;
+  },
+
+  /** reset tab stops */
+  _resetTabStops: function _resetTabStops()
+  {
+    // update tab stops
+    var screen = this._screen,
+        left_margin,
+        right_margin,
+        tab_stops = [],
+        pos;
+
+    if (screen.hasLeftRightMargin()) {
+      left_margin = screen.getScrollLeft();
+      right_margin = screen.getScrollRight();
+    } else {
+      left_margin = 0; 
+      right_margin = screen.width; 
+    }
+
+    for (pos = left_margin + 8; pos < right_margin; pos += 8) {
+      tab_stops.push(pos);
+    }
+    if (pos !== right_margin - 1) {
+      tab_stops.push(right_margin - 1);
+    }
+
+    this._tab_stops = tab_stops;
+  },
+
   /** test */
   "[test]":
   function()
@@ -440,11 +500,14 @@ TabController.definition = {
     var enabled = this.enabled;
 
     try {
-      this.enabled = false;
-      this.enabled = true;
-      this.enabled = false;
+      if (enabled) {
+        assert(null !== this._screen);
+        assert(null !== this._cursor);
+      } else {
+        assert(null === this._screen);
+        assert(null === this._cursor);
+      }
     } finally {
-      this.enabled = enabled;
     }
   },
 

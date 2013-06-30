@@ -886,6 +886,7 @@ ScreenSequenceHandler.definition = {
         cursor.positionX = 0;
         cursor.positionY = 0;
       } 
+      this.sendMessage("event/left-right-margin-changed");
     } else { // DECSC
       this.sendMessage("command/backup-cursor-state");
     }
@@ -2315,6 +2316,21 @@ Screen.definition = {
   getScrollBottom: function getScrollBottom()
   {
     return this._scroll_bottom;
+  },
+
+  hasLeftRightMargin: function hasLeftRightMargin()
+  {
+    return this._left_right_margin_mode;
+  },
+
+  getScrollLeft: function getScrollLeft()
+  {
+    return this._scroll_left;
+  },
+
+  getScrollRight: function getScrollRight()
+  {
+    return this._scroll_right;
   },
 
   getBufferTop: function getBufferTop()
