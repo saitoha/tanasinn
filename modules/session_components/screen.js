@@ -1116,12 +1116,16 @@ ScreenSequenceHandler.definition = {
   "[profile('vt100'), sequence('CSI Pn d')]":
   function VPA(n)
   { // set Virtical Position Absolutely
-    var max = this._height - 1,
+    var bottom_margin = this._scroll_bottom,
         cursor = this._cursor;
 
     n = (n || 1) - 1;
 
-    if (n > max) {
+    if (cursor.DECOM) {
+      n += this._scroll_top;
+    }
+
+    if (n >= bottom_margin) {
       cursor.positionY = max;
     } else {
       cursor.positionY = n;
@@ -1212,7 +1216,7 @@ ScreenSequenceHandler.definition = {
   function CNL(n)
   {
     this.cursorDown(n || 1);
-    this._cursor.positionX = 0;
+    this.carriageReturn();
   },
 
   /**
@@ -1238,7 +1242,7 @@ ScreenSequenceHandler.definition = {
   function CPL(n)
   {
     this.cursorUp(n || 1);
-    this._cursor.positionX = 0;
+    this.carriageReturn();
   },
 
   /**
