@@ -483,7 +483,8 @@ TabController.definition = {
       right_margin = screen.width; 
     }
 
-    for (pos = left_margin + 8; pos < right_margin; pos += 8) {
+    tab_stops.push(left_margin);
+    for (pos = left_margin + 8 - left_margin % 8; pos < right_margin; pos += 8) {
       tab_stops.push(pos);
     }
     if (pos !== right_margin - 1) {
