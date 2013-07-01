@@ -79,7 +79,8 @@ JsCompleter.definition = {
         context,
         code,
         properties,
-        lower_current;
+        lower_current,
+        root_element;
 
     if (match) {
 
@@ -87,8 +88,13 @@ JsCompleter.definition = {
       notation = match[2];
       current = match[3];
 
+      root_element = this.request("get/root-element");
+      if (!root_element) {
+        return;
+      }
+
       dom = {
-        window: this.request("get/root-element").ownerDocument.defaultView,
+        window: root_element.ownerDocument.defaultView,
       };
 
       context = new function() void (this.__proto__ = dom.window);
