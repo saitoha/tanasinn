@@ -2443,7 +2443,7 @@ Screen.definition = {
       if (positionX >= right_margin) {
         right_margin = this._width;
       } else if (positionX < this._scroll_left) {
-        ignore_left_margin = false;
+        ignore_left_margin = true;
       }
     } else {
       right_margin = this._width;
