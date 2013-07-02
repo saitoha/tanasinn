@@ -2435,12 +2435,15 @@ Screen.definition = {
         length,
         run,
         attrvalue,
-        right_margin;
+        right_margin,
+        ignore_left_margin = false;
 
     if (this._left_right_margin_mode) {
       right_margin = this._scroll_right;
-      if (positionX > right_margin) {
+      if (positionX >= right_margin) {
         right_margin = this._width;
+      } else if (positionX < this._scroll_left) {
+        ignore_left_margin = true;
       }
     } else {
       right_margin = this._width;
@@ -2467,7 +2470,11 @@ Screen.definition = {
       if (line) {
         if (cursor.positionX >= right_margin) {
           if (this._wraparound_mode) {
-            this.carriageReturn();
+            if (ignore_left_margin) {
+              cursor.positionX = 0;
+            } else {
+              this.carriageReturn();
+            }
             this.lineFeed();
             line = this.getCurrentLine();
           } else {
