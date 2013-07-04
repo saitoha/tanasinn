@@ -365,7 +365,7 @@ PopupMenu.definition = {
     this._selected = selected;
 
     cursor_state = this._cursor_state;
-    row = row || cursor_state.positionY + 1;
+    row = row || cursor_state.position_y + 1;
 
     x = column * char_width - 10;
     y = row * line_height;

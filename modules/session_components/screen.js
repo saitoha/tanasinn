@@ -374,9 +374,9 @@ ScreenSequenceHandler.definition = {
     right_margin = this._width;
 
     if (n > right_margin) {
-      cursor.positionX = right_margin;
+      cursor.position_x = right_margin;
     } else {
-      cursor.positionX = n;
+      cursor.position_x = n;
     }
 
   },
@@ -430,16 +430,16 @@ ScreenSequenceHandler.definition = {
 
     // set horizontal position
     if (x >= right) {
-      cursor.positionX = right - 1;
+      cursor.position_x = right - 1;
     } else {
-      cursor.positionX = x;
+      cursor.position_x = x;
     }
 
     // set vertical position
     if (y >= bottom) {
-      cursor.positionY = bottom - 1;
+      cursor.position_y = bottom - 1;
     } else {
-      cursor.positionY = y;
+      cursor.position_y = y;
     }
   },
 
@@ -475,11 +475,11 @@ ScreenSequenceHandler.definition = {
     var cursor = this._cursor,
         rightmargin = this._scroll_right;
 
-    if (cursor.positionX >= rightmargin - 1) {
-      cursor.positionX = rightmargin;
+    if (cursor.position_x >= rightmargin - 1) {
+      cursor.position_x = rightmargin;
       this.scrollLeft(1);
     } else {
-      ++cursor.positionX;
+      ++cursor.position_x;
     }
   },
 
@@ -515,11 +515,11 @@ ScreenSequenceHandler.definition = {
     var cursor = this._cursor,
         leftmargin = this._scroll_left;
 
-    if (cursor.positionX <= leftmargin) {
-      cursor.positionX = leftmargin;
+    if (cursor.position_x <= leftmargin) {
+      cursor.position_x = leftmargin;
       this.scrollRight(1);
     } else {
-      --cursor.positionX;
+      --cursor.position_x;
     }
   },
 
@@ -884,11 +884,11 @@ ScreenSequenceHandler.definition = {
       this._scroll_right = n2 + 1;
 
       if (cursor.DECOM) {
-        cursor.positionX = this._scroll_left;
-        cursor.positionY = this._scroll_top;
+        cursor.position_x = this._scroll_left;
+        cursor.position_y = this._scroll_top;
       } else {
-        cursor.positionX = 0;
-        cursor.positionY = 0;
+        cursor.position_x = 0;
+        cursor.position_y = 0;
       } 
       this.sendMessage("event/left-right-margin-changed");
     } else { // DECSC
@@ -1124,9 +1124,9 @@ ScreenSequenceHandler.definition = {
     }
 
     if (n >= bottom_margin) {
-      cursor.positionY = max;
+      cursor.position_y = max;
     } else {
-      cursor.positionY = n;
+      cursor.position_y = n;
     }
 
   },
@@ -1280,9 +1280,9 @@ ScreenSequenceHandler.definition = {
     }
 
     if (n > right_margin) {
-      cursor.positionX = right_margin;
+      cursor.position_x = right_margin;
     } else {
-      cursor.positionX = n;
+      cursor.position_x = n;
     }
 
   },
@@ -1360,16 +1360,16 @@ ScreenSequenceHandler.definition = {
 
     // set horizontal position
     if (x >= right) {
-      cursor.positionX = right - 1;
+      cursor.position_x = right - 1;
     } else {
-      cursor.positionX = x;
+      cursor.position_x = x;
     }
 
     // set vertical position
     if (y >= bottom) {
-      cursor.positionY = bottom - 1;
+      cursor.position_y = bottom - 1;
     } else {
-      cursor.positionY = y;
+      cursor.position_y = y;
     }
   },
 
@@ -2033,8 +2033,8 @@ Resizable.definition = {
     this._scroll_bottom -= n;
 
     // fix cursor position.
-    if (this._cursor.positionY >= this._height) {
-      this._cursor.positionY = this._height - 1;
+    if (this._cursor.position_y >= this._height) {
+      this._cursor.position_y = this._height - 1;
     }
   },
 
@@ -2077,8 +2077,8 @@ Resizable.definition = {
     }
 
     // fix cursor position.
-    if (cursor.positionX >= width) {
-      cursor.positionX = width - 1;
+    if (cursor.position_x >= width) {
+      cursor.position_x = width - 1;
     }
 
   },
@@ -2267,8 +2267,8 @@ Screen.definition = {
 
       cursor = this._cursor;
       new_width = this._width;
-      if (cursor.positionX >= new_width) {
-        cursor.positionX = new_width - 1;
+      if (cursor.position_x >= new_width) {
+        cursor.position_x = new_width - 1;
       }
 
       this.sendMessage(
@@ -2306,8 +2306,8 @@ Screen.definition = {
       // I Wonder if we should trim cursor position when screen is resized.
       cursor = this._cursor;
 
-      if (cursor.positionY >= this._height) {
-        cursor.positionY = this._height - 1;
+      if (cursor.position_y >= this._height) {
+        cursor.position_y = this._height - 1;
       }
 
       this.sendMessage("variable-changed/screen.height", this._height);
@@ -2362,7 +2362,7 @@ Screen.definition = {
     if (!line) {
       return false;
     }
-    return line.isWide(this._cursor.positionX);
+    return line.isWide(this._cursor.position_x);
   },
 
   "[subscribe('command/enable-insert-mode'), pnp]":
@@ -2431,7 +2431,7 @@ Screen.definition = {
         cursor = this._cursor,
         it = 0,
         line = this.getCurrentLine(),
-        positionX = cursor.positionX,
+        position_x = cursor.position_x,
         length,
         run,
         attrvalue,
@@ -2440,9 +2440,9 @@ Screen.definition = {
 
     if (this._left_right_margin_mode) {
       right_margin = this._scroll_right;
-      if (positionX >= right_margin) {
+      if (position_x >= right_margin) {
         right_margin = this._width;
-      } else if (positionX < this._scroll_left) {
+      } else if (position_x < this._scroll_left) {
         ignore_left_margin = true;
       }
     } else {
@@ -2450,51 +2450,51 @@ Screen.definition = {
     }
 
     if (0 === codes[0]) {
-      if (positionX >= right_margin) {
+      if (position_x >= right_margin) {
         attrvalue = cursor.attr.value;
-        line.erase(positionX - 1, positionX, attrvalue);
+        line.erase(position_x - 1, position_x, attrvalue);
       }
     } else {
-      if (positionX >= right_margin) {
+      if (position_x >= right_margin) {
         if (this._wraparound_mode) {
           this.carriageReturn();
           this.lineFeed();
           line = this.getCurrentLine();
         } else {
-          cursor.positionX = right_margin - 1;
+          cursor.position_x = right_margin - 1;
         }
       }
     }
 
     do {
       if (line) {
-        if (cursor.positionX >= right_margin) {
+        if (cursor.position_x >= right_margin) {
           if (this._wraparound_mode) {
             if (ignore_left_margin) {
-              cursor.positionX = 0;
+              cursor.position_x = 0;
             } else {
               this.carriageReturn();
             }
             this.lineFeed();
             line = this.getCurrentLine();
           } else {
-            cursor.positionX = right_margin - 1;
+            cursor.position_x = right_margin - 1;
             break;
           }
         }
 
-        positionX = cursor.positionX;
-        length = right_margin - positionX;
+        position_x = cursor.position_x;
+        length = right_margin - position_x;
         run = codes.slice(it, it + length);
         length = run.length;
-        cursor.positionX += length;
+        cursor.position_x += length;
 
         if (0 === run[length - 1]) {
           it += length - 1;
         } else {
           it += length;
         }
-        line.write(positionX, run, cursor.attr, insert_mode, right_margin);
+        line.write(position_x, run, cursor.attr, insert_mode, right_margin);
 
       } else {
         break;
@@ -2536,13 +2536,13 @@ Screen.definition = {
   function cursorForward(n, right_margin)
   {
     var cursor = this._cursor,
-        positionX = cursor.positionX + n,
+        position_x = cursor.position_x + n,
         max = right_margin - 1;
 
-    if (positionX > max) {
-      cursor.positionX = max;
+    if (position_x > max) {
+      cursor.position_x = max;
     } else {
-      cursor.positionX = positionX;
+      cursor.position_x = position_x;
     }
   },
 
@@ -2552,20 +2552,20 @@ Screen.definition = {
   {
     var width = this._width,
         cursor = this._cursor,
-        positionX = cursor.positionX,
+        position_x = cursor.position_x,
         min = left_margin;
 
-    if (positionX > width - 1) {
-      positionX = width - 1;
+    if (position_x > width - 1) {
+      position_x = width - 1;
     }
 
     cursor = this._cursor;
-    positionX = positionX - n;
+    position_x = position_x - n;
 
-    if (positionX < min) {
-      cursor.positionX = min;
+    if (position_x < min) {
+      cursor.position_x = min;
     } else {
-      cursor.positionX = positionX;
+      cursor.position_x = position_x;
     }
   },
 
@@ -2574,13 +2574,13 @@ Screen.definition = {
   function cursorUp(n)
   {
     var cursor = this._cursor,
-        positionY = cursor.positionY - n,
+        position_y = cursor.position_y - n,
         min = this._scroll_top;
 
-    if (positionY > min) {
-      cursor.positionY = positionY;
+    if (position_y > min) {
+      cursor.position_y = position_y;
     } else {
-      cursor.positionY = min;
+      cursor.position_y = min;
     }
   },
 
@@ -2589,15 +2589,15 @@ Screen.definition = {
   function cursorDown(n)
   {
     var cursor = this._cursor,
-        positionY = cursor.positionY + n,
+        position_y = cursor.position_y + n,
         max = this._scroll_bottom - 1;
 
     // If an attempt is made to move the active position below the last line,
     // the active position stops at the last line.
-    if (positionY > max) {
-      cursor.positionY = max;
+    if (position_y > max) {
+      cursor.position_y = max;
     } else {
-      cursor.positionY = positionY;
+      cursor.position_y = position_y;
     }
   },
 
@@ -2606,13 +2606,13 @@ Screen.definition = {
   function cursorUpAbsolutely(n)
   {
     var cursor = this._cursor,
-        positionY = cursor.positionY - n,
+        position_y = cursor.position_y - n,
         min = 0;
 
-    if (positionY > min) {
-      cursor.positionY = positionY;
+    if (position_y > min) {
+      cursor.position_y = position_y;
     } else {
-      cursor.positionY = min;
+      cursor.position_y = min;
     }
   },
 
@@ -2621,15 +2621,15 @@ Screen.definition = {
   function cursorDownAbsolutely(n)
   {
     var cursor = this._cursor,
-        positionY = cursor.positionY + n,
+        position_y = cursor.position_y + n,
         max = this._height - 1;
 
     // If an attempt is made to move the active position below the last line,
     // the active position stops at the last line.
-    if (positionY > max) {
-      cursor.positionY = max;
+    if (position_y > max) {
+      cursor.position_y = max;
     } else {
-      cursor.positionY = positionY;
+      cursor.position_y = position_y;
     }
   },
 
@@ -2641,9 +2641,9 @@ Screen.definition = {
         cursor = this._cursor;
 
     if (n > max) {
-      cursor.positionX = max;
+      cursor.position_x = max;
     } else {
-      cursor.positionX = n;
+      cursor.position_x = n;
     }
   },
 
@@ -2655,9 +2655,9 @@ Screen.definition = {
         cursor = this._cursor;
 
     if (n > max) {
-      cursor.positionY = max;
+      cursor.position_y = max;
     } else {
-      cursor.positionY = n;
+      cursor.position_y = n;
     }
   },
 
@@ -2668,12 +2668,12 @@ Screen.definition = {
   {
     var cursor = this._cursor,
         width = this._width,
-        positionX = cursor.positionX,
+        position_x = cursor.position_x,
         left_margin,
         right_margin;
 
-    if (positionX >= width) {
-      positionX = width - 1;
+    if (position_x >= width) {
+      position_x = width - 1;
     }
 
     if (this._left_right_margin_mode) {
@@ -2682,13 +2682,13 @@ Screen.definition = {
       left_margin = 0;
     }
 
-    if (positionX > left_margin) {
-      cursor.positionX = positionX - 1;
-    } else if (this._reverse_wraparound_mode) { // positionX === 0
+    if (position_x > left_margin) {
+      cursor.position_x = position_x - 1;
+    } else if (this._reverse_wraparound_mode) { // position_x === 0
       //this.reverseIndex();
       this.cursorUp(1);
       right_margin = this._scroll_right;
-      cursor.positionX = right_margin - 1;
+      cursor.position_x = right_margin - 1;
     }
   },
 
@@ -2699,9 +2699,9 @@ Screen.definition = {
     var cursor = this._cursor;
 
     if (this._left_right_margin_mode) {
-      cursor.positionX = this._scroll_left;
+      cursor.position_x = this._scroll_left;
     } else {
-      cursor.positionX = 0;
+      cursor.position_x = 0;
     }
   },
 
@@ -2715,14 +2715,14 @@ Screen.definition = {
     
     if (cursor.DECOM) {
       if (this._left_right_margin_mode) {
-        x = cursor.positionX - this._scroll_left;
+        x = cursor.position_x - this._scroll_left;
       } else {
-        x = cursor.positionX;
+        x = cursor.position_x;
       }
-      y = cursor.positionY - this._scroll_top;
+      y = cursor.position_y - this._scroll_top;
     } else {
-      x = cursor.positionX;
-      y = cursor.positionY;
+      x = cursor.position_x;
+      y = cursor.position_y;
     }
 
     message = coUtils.Text.format("%d;%dR", y + 1, x + 1);
@@ -2744,7 +2744,7 @@ Screen.definition = {
       cursor = this._cursor;
       width = this._width;
       attrvalue = cursor.attr.value;
-      line.erase(cursor.positionX, width, attrvalue);
+      line.erase(cursor.position_x, width, attrvalue);
     } else {
       coUtils.Debug.reportWarning(
         _("eraseLineToRight: Current line is null."));
@@ -2759,7 +2759,7 @@ Screen.definition = {
         line = this.getCurrentLine(),
         attrvalue = cursor.attr.value;
 
-    line.erase(0, cursor.positionX + 1, attrvalue);
+    line.erase(0, cursor.position_x + 1, attrvalue);
   },
 
   /** Erase current line */
@@ -2788,7 +2788,7 @@ Screen.definition = {
       cursor = this._cursor;
       width = this._width;
       attrvalue = cursor.attr.value;
-      line.selectiveErase(cursor.positionX, width, attrvalue);
+      line.selectiveErase(cursor.position_x, width, attrvalue);
     } else {
       coUtils.Debug.reportWarning(
         _("selectiveEraseLineToRight: Current line is null."));
@@ -2809,7 +2809,7 @@ Screen.definition = {
       cursor = this._cursor;
       width = this._width;
       attrvalue = cursor.attr.value;
-      line.selectiveErase(0, cursor.positionX + 1, attrvalue);
+      line.selectiveErase(0, cursor.position_x + 1, attrvalue);
     } else {
       coUtils.Debug.reportWarning(
         _("selectiveEraseLineToLeft: Current line is null."));
@@ -2830,7 +2830,7 @@ Screen.definition = {
       width = this._width;
       attrvalue = cursor.attr.value;
       line.selectiveErase(0, width, attrvalue);
-      line.selectiveErase(0, cursor.positionX + 1, attrvalue);
+      line.selectiveErase(0, cursor.position_x + 1, attrvalue);
     } else {
       coUtils.Debug.reportWarning(
         _("selectiveEraseLine: Current line is null."));
@@ -2845,13 +2845,13 @@ Screen.definition = {
         width = this._width,
         lines = this._lines,
         attrvalue = cursor.attr.value,
-        positionY = cursor.positionY,
+        position_y = cursor.position_y,
         i,
         line;
 
-    lines[positionY].erase(0, cursor.positionX + 1, attrvalue);
+    lines[position_y].erase(0, cursor.position_x + 1, attrvalue);
 
-    for (i = 0; i < positionY; ++i) {
+    for (i = 0; i < position_y; ++i) {
       line = lines[i];
       line.erase(0, width, attrvalue);
     }
@@ -2865,19 +2865,19 @@ Screen.definition = {
         width = this._width,
         attrvalue = cursor.attr.value,
         lines = this._lines,
-        positionY = cursor.positionY,
+        position_y = cursor.position_y,
         height = this._height,
         i,
         line;
 
-    line = lines[positionY];
+    line = lines[position_y];
     if (!line) {
-      positionY = cursor.positionY = height - 1;
-      line = lines[positionY];
+      position_y = cursor.position_y = height - 1;
+      line = lines[position_y];
     }
 
-    line.erase(cursor.positionX, width, attrvalue);
-    for (i = positionY + 1; i < height; ++i) {
+    line.erase(cursor.position_x, width, attrvalue);
+    for (i = position_y + 1; i < height; ++i) {
       line = lines[i];
       line.erase(0, width, attrvalue);
     }
@@ -2936,13 +2936,13 @@ Screen.definition = {
         width = this._width,
         lines = this._lines,
         attrvalue = cursor.attr.value,
-        positionY = cursor.positionY,
+        position_y = cursor.position_y,
         i = 0,
-        line = lines[positionY];
+        line = lines[position_y];
 
-    line.selectiveErase(0, cursor.positionX + 1, attrvalue);
+    line.selectiveErase(0, cursor.position_x + 1, attrvalue);
 
-    for (; i < positionY; ++i) {
+    for (; i < position_y; ++i) {
       line = lines[i];
       line.selectiveErase(0, width, attrvalue);
     }
@@ -2956,15 +2956,15 @@ Screen.definition = {
         width = this._width,
         attrvalue = cursor.attr.value,
         lines = this._lines,
-        positionY = cursor.positionY,
+        position_y = cursor.position_y,
         height = this._height,
         i,
         line;
 
-    line = lines[positionY];
-    line.selectiveErase(cursor.positionX, width, attrvalue);
+    line = lines[position_y];
+    line.selectiveErase(cursor.position_x, width, attrvalue);
 
-    for (i = positionY + 1; i < height; ++i) {
+    for (i = position_y + 1; i < height; ++i) {
       line = lines[i];
       line.selectiveErase(0, width, attrvalue);
     }
@@ -3029,7 +3029,7 @@ Screen.definition = {
   {
     var line = this.getCurrentLine(),
         cursor = this._cursor,
-        positionX = cursor.positionX,
+        position_x = cursor.position_x,
         attrvalue = cursor.attr.value,
         left_margin,
         right_margin;
@@ -3038,14 +3038,14 @@ Screen.definition = {
       // respect left-right margin
       left_margin = this._scroll_left;
       right_margin = this._scroll_right;
-      if (positionX < left_margin || positionX >= right_margin) {
+      if (position_x < left_margin || position_x >= right_margin) {
         // ICH has no effect outside the scrolling margins.
         return;
       }
     } else {
       right_margin = this._width;
     }
-    line.insertBlanks(positionX, n, attrvalue, right_margin);
+    line.insertBlanks(position_x, n, attrvalue, right_margin);
   },
 
   "[type('Uint16 -> Uint16 -> Undefined')] setScrollRegion":
@@ -3057,11 +3057,11 @@ Screen.definition = {
     this._scroll_bottom = bottom;
 
     if (cursor.DECOM) {
-      cursor.positionX = this._scroll_left;
-      cursor.positionY = top;
+      cursor.position_x = this._scroll_left;
+      cursor.position_y = top;
     } else {
-      cursor.positionX = 0;
-      cursor.positionY = 0;
+      cursor.position_x = 0;
+      cursor.position_y = 0;
     } 
 
   },
@@ -3106,15 +3106,15 @@ Screen.definition = {
   { // cursor up
     var cursor_state = this._cursor,
         top = this._scroll_top,
-        positionY = cursor_state.positionY;
+        position_y = cursor_state.position_y;
 
-    if (positionY === top) {
+    if (position_y === top) {
       this._scrollDown(top, this._scroll_bottom, 1);
-    } else if (positionY < top) {
-      cursor_state.positionY = top
+    } else if (position_y < top) {
+      cursor_state.position_y = top
       this._scrollDown(top, this._scroll_bottom, 1);
     } else {
-      --cursor_state.positionY;
+      --cursor_state.position_y;
     }
   },
 
@@ -3125,15 +3125,15 @@ Screen.definition = {
     var cursor = this._cursor,
         top,
         bottom = this._scroll_bottom,
-        positionY = cursor.positionY;
+        position_y = cursor.position_y;
 
-    if (positionY === bottom - 1) {
+    if (position_y === bottom - 1) {
       this._scrollUp(this._scroll_top, bottom, 1);
-    } else if (positionY > bottom - 1) {
-      cursor.positionY = bottom - 1;
+    } else if (position_y > bottom - 1) {
+      cursor.position_y = bottom - 1;
       this._scrollUp(this._scroll_top, bottom, 1);
     } else {
-      ++cursor.positionY;
+      ++cursor.position_y;
     }
   },
 
@@ -3141,22 +3141,22 @@ Screen.definition = {
   "[type('Uint16 -> Undefined')] insertLine":
   function insertLine(n)
   { // Insert Line
-    var positionY = this._cursor.positionY,
+    var position_y = this._cursor.position_y,
         bottom = this._scroll_bottom,
-        delta = Math.min(n, bottom - positionY);
+        delta = Math.min(n, bottom - position_y);
 
-    this._scrollDown(positionY, bottom, delta);
+    this._scrollDown(position_y, bottom, delta);
   },
 
   /** delete n lines */
   "[type('Uint16 -> Undefined')] deleteLine":
   function deleteLine(n)
   { // Delete Line.
-    var positionY = this._cursor.positionY,
+    var position_y = this._cursor.position_y,
         bottom = this._scroll_bottom,
-        delta = Math.min(n, bottom - positionY);
+        delta = Math.min(n, bottom - position_y);
 
-    this._scrollUp(positionY, bottom, delta);
+    this._scrollUp(position_y, bottom, delta);
   },
 
   /** scroll left n columns */
@@ -3237,7 +3237,7 @@ Screen.definition = {
   { // Erase CHaracters
     var line = this.getCurrentLine(),
         attrvalue = this._cursor.attr.value,
-        start = this._cursor.positionX,
+        start = this._cursor.position_x,
         end = start + n;
 
     if (end > line.length) {
@@ -3252,7 +3252,7 @@ Screen.definition = {
   { // Delete CHaracters
     var line = this.getCurrentLine(),
         cursor = this._cursor,
-        positionX = cursor.positionX,
+        position_x = cursor.position_x,
         attrvalue = cursor.attr.value,
         left_margin,
         right_margin;
@@ -3261,7 +3261,7 @@ Screen.definition = {
       // respect left-right margin
       left_margin = this._scroll_left;
       right_margin = this._scroll_right;
-      if (positionX < left_margin || positionX >= right_margin) {
+      if (position_x < left_margin || position_x >= right_margin) {
         // DCH has no effect outside the scrolling margins.
         return;
       }
@@ -3269,7 +3269,7 @@ Screen.definition = {
       right_margin = this._width;
     }
 
-    line.deleteCells(cursor.positionX, n, attrvalue, right_margin);
+    line.deleteCells(cursor.position_x, n, attrvalue, right_margin);
   },
 
   isAltScreen: function isAltScreen()
@@ -3429,7 +3429,7 @@ Screen.definition = {
   /** Returns the line object which is on current cursor position. */
   getCurrentLine: function getCurrentLine()
   {
-    return this._lines[this._cursor.positionY]
+    return this._lines[this._cursor.position_y]
   },
 
   _createLines: function _createLines(n)

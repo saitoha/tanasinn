@@ -150,7 +150,7 @@ VT52.definition = {
       } else if (c < 0x80) /*if (_STATE_GROUND === state)*/ {
         //return false;
         screen = this._screen;
-        if (this._cursor_state.positionX < this._screen.width) {
+        if (this._cursor_state.position_x < this._screen.width) {
           screen.write([c])
         }
       }
@@ -569,8 +569,8 @@ VT52.definition = {
   {
     var cursor = this._cursor_state;
 
-    cursor.positionX = 0;
-    cursor.positionY = 0;
+    cursor.position_x = 0;
+    cursor.position_y = 0;
   },
 
   "[profile('vt52'), sequence('ESC I')]":
@@ -614,8 +614,8 @@ VT52.definition = {
 
     screen.setPositionY(y - 0x20);
     screen.setPositionX(x - 0x20);
-    this._cursor_state.positionY = y - 0x20;
-    this._cursor_state.positionX = x - 0x20;
+    this._cursor_state.position_y = y - 0x20;
+    this._cursor_state.position_x = x - 0x20;
   },
 
   "[profile('vt52'), sequence('ESC Z')]":

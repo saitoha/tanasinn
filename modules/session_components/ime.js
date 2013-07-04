@@ -275,8 +275,8 @@ Ime.definition = {
         char_offset = renderer.char_offset,
         normal_color = palette.color,
         font_size = renderer.font_size,
-        top = cursor.positionY * line_height + -4,
-        left = cursor.positionX * char_width + -2;
+        top = cursor.position_y * line_height + -4,
+        left = cursor.position_x * char_width + -2;
 
     textbox.setAttribute("top", top);
     textbox.setAttribute("left", left);

@@ -427,7 +427,7 @@ Cursor.definition = {
 
     this._setVisibility(true);
     this._blink = cursor_state.blink;
-    this._render(cursor_state.positionY, cursor_state.positionX, is_wide);
+    this._render(cursor_state.position_y, cursor_state.position_x, is_wide);
   },
 
   "[subscribe('event/scroll-session-started'), pnp]":

@@ -43,8 +43,8 @@ CursorState.definition = {
     };
   },
 
-  positionX: 0,
-  positionY: 0,
+  position_x: 0,
+  position_y: 0,
 
   attr: null,
 
@@ -118,8 +118,8 @@ CursorState.definition = {
   "[subscribe('command/{soft | hard}-terminal-reset'), enabled]":
   function reset()
   {
-    this.positionX = 0;
-    this.positionY = 0;
+    this.position_x = 0;
+    this.position_y = 0;
     this._backup_instance = null;
     this.blink = false;
     this.attr.clear(); // turns all character attributes off (normal settings).
@@ -134,8 +134,8 @@ CursorState.definition = {
     this._backup_instance = context;
     this.sendMessage("command/save-cursor", context);
 
-    context.positionX = this.positionX;
-    context.positionY = this.positionY;
+    context.position_x = this.position_x;
+    context.position_y = this.position_y;
     context.blink = this.blink;
     context.attr_value = this.attr.value;
   },
@@ -147,8 +147,8 @@ CursorState.definition = {
     var context = this._backup_instance;
 
     if (null !== context) {
-      this.positionX = context.positionX;
-      this.positionY = context.positionY;
+      this.position_x = context.position_x;
+      this.position_y = context.position_y;
       this.blink = context.blink;
       this.attr.value = context.attr_value;
       this.sendMessage("command/restore-cursor", context);
@@ -159,8 +159,8 @@ CursorState.definition = {
   {
     var backup;
 
-    context.push(this.positionX);
-    context.push(this.positionY);
+    context.push(this.position_x);
+    context.push(this.position_y);
     context.push(this.blink);
     context.push(this.attr.value);
     context.push(null !== this._backup_instance);
@@ -168,8 +168,8 @@ CursorState.definition = {
     backup = this._backup_instance;
 
     if (null !== backup) {
-      context.push(backup.positionX);
-      context.push(backup.positionY);
+      context.push(backup.position_x);
+      context.push(backup.position_y);
       context.push(backup.blink);
       context.push(backup.attr_value);
     }
@@ -179,8 +179,8 @@ CursorState.definition = {
   {
     var backup_exists, backup;
 
-    this.positionX = context.shift();
-    this.positionY = context.shift();
+    this.position_x = context.shift();
+    this.position_y = context.shift();
     this.blink = context.shift();
     this.attr.value = context.shift();
 
@@ -188,8 +188,8 @@ CursorState.definition = {
 
     if (backup_exists) {
       backup = this._backup_instance = {};
-      backup.positionX = context.shift();
-      backup.positionY = context.shift();
+      backup.position_x = context.shift();
+      backup.position_y = context.shift();
       backup.blink = context.shift();
       backup.attr_value = context.shift();
     }
@@ -491,8 +491,8 @@ CursorState.definition = {
         css,
         sdesig;
 
-    pr = positionY + 1;
-    pc = positionX + 1;
+    pr = position_y + 1;
+    pc = position_x + 1;
 
   },
 
