@@ -192,7 +192,7 @@ Sixel.definition = {
                              start_code,
                              end_code,
                              full_cell,
-                             positionX)
+                             position_x)
   {
     var dscs = " " + String.fromCharCode(0x20 + ++this._counter % 94),
         buffer = [],
@@ -219,7 +219,7 @@ Sixel.definition = {
     }
 
     screen.write(buffer);
-    cursor_state.positionX = positionX;
+    cursor_state.position_x = position_x;
     screen.lineFeed();
   },
 
@@ -233,12 +233,12 @@ Sixel.definition = {
         line_height = renderer.line_height,
         char_width = renderer.char_width,
         line_count = Math.ceil(result.max_y / line_height),
-        max_cell_count = screen.width - cursor_state.positionX,
+        max_cell_count = screen.width - cursor_state.position_x,
         cell_count = Math.min(Math.ceil(result.max_x / char_width), max_cell_count),
         start_code = 0x21,
         end_code = start_code + cell_count,
         full_cell = true,
-        positionX = cursor_state.positionX,
+        position_x = cursor_state.position_x,
         i = 0;
 
     for (; i < line_count; ++i) {
@@ -249,7 +249,7 @@ Sixel.definition = {
                              start_code,
                              end_code,
                              full_cell,
-                             positionX);
+                             position_x);
     }
 
   },

@@ -90,8 +90,8 @@ OverlayBrowser.definition = {
             url = result[4],
             cursorstate = this._cursor_state;
 
-        this.open(cursorstate.positionX - Number(col) + 1,
-                  cursorstate.positionY - Number(line) + 1,
+        this.open(cursorstate.position_x - Number(col) + 1,
+                  cursorstate.position_y - Number(line) + 1,
                   Number(width),
                   Number(height),
                   url);

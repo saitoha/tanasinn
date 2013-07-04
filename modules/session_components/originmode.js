@@ -136,8 +136,8 @@ OriginMode.definition = {
 
     coUtils.Debug.reportMessage(
       _("DECSET - DECOM (Origin mode) was reset: (%d, %d)."),
-      cursor.positionX,
-      cursor.positionY);
+      cursor.position_x,
+      cursor.position_y);
   },
 
   /** Report mode

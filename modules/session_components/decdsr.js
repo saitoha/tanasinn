@@ -152,8 +152,8 @@ DECDeviceStatusReport.definition = {
       case 6:
         message = coUtils.Text.format(
           "%d;%d;%dR",
-          cursor.positionY + 1,
-          cursor.positionX + 1,
+          cursor.position_y + 1,
+          cursor.position_x + 1,
           1);
         this.sendMessage("command/send-sequence/csi", message);
         break;

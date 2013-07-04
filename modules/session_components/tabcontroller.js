@@ -101,7 +101,7 @@ TabController.definition = {
         line = screen.getCurrentLine(),
         width = screen.width,
         max,
-        positionX,
+        position_x,
         i = 0,
         stop,
         left_margin,
@@ -124,11 +124,11 @@ TabController.definition = {
       }
     }
 
-    positionX = cursor.positionX;
+    position_x = cursor.position_x;
 
-    if (positionX > max) {
+    if (position_x > max) {
       //if (this._wraparound_mode) {
-        cursor.positionX = left_margin;
+        cursor.position_x = left_margin;
         screen.lineFeed();
         return;
       //}
@@ -136,16 +136,16 @@ TabController.definition = {
 
     for (; i < tab_stops.length; ++i) {
       stop = tab_stops[i];
-      if (stop > positionX) {
-        cursor.positionX = stop;
-        if (cursor.positionX >= max) {
+      if (stop > position_x) {
+        cursor.position_x = stop;
+        if (cursor.position_x >= max) {
           break;
         }
         return;
       }
     }
 
-    cursor.positionX = max;
+    cursor.position_x = max;
   },
 
   /**
@@ -258,7 +258,7 @@ TabController.definition = {
     var cursor = this._cursor,
         tab_stops = this._getTabStops();
 
-    tab_stops.push(cursor.positionX);
+    tab_stops.push(cursor.position_x);
     tab_stops.sort(
       function sortFunc(lhs, rhs)
       {
@@ -290,7 +290,7 @@ TabController.definition = {
   function TBC(n)
   { // TaB Clear
     var tab_stops,
-        positionX,
+        position_x,
         i,
         stop;
 
@@ -298,12 +298,12 @@ TabController.definition = {
 
       case 0:
         tab_stops = this._getTabStops();
-        positionX = this._cursor.positionX;;
+        position_x = this._cursor.position_x;;
         for (i = 0; i < tab_stops.length; ++i) {
           stop = tab_stops[i];
-          if (stop === positionX) {
+          if (stop === position_x) {
             tab_stops.splice(i, 1); // remove current tabstop.
-          } else if (stop > positionX) {
+          } else if (stop > position_x) {
             break;
           }
         }
@@ -349,7 +349,7 @@ TabController.definition = {
     var tab_stops = this._getTabStops(),
         cursor = this._cursor,
         screen = this._screen,
-        positionX = cursor.positionX,
+        position_x = cursor.position_x,
         left_margin,
         right_margin,
         i,
@@ -362,7 +362,7 @@ TabController.definition = {
 
     n = (n || 1) - 1;
 
-    if (positionX > right_margin - 1) {
+    if (position_x > right_margin - 1) {
       screen.carriageReturn();
       screen.lineFeed();
       return;
@@ -372,9 +372,9 @@ TabController.definition = {
 
     for (i = 0; i < length; ++i) {
       stop = tab_stops[i];
-      if (stop > positionX) {
+      if (stop > position_x) {
         index = i + n;
-        cursor.positionX = tab_stops[index % length];
+        cursor.position_x = tab_stops[index % length];
         return;
       }
     }
@@ -410,7 +410,7 @@ TabController.definition = {
   { // Cursor Backward Tabulation
     var tab_stops = this._getTabStops(),
         cursor = this._cursor,
-        positionX = cursor.positionX,
+        position_x = cursor.position_x,
         i,
         stop,
         index;
@@ -419,9 +419,9 @@ TabController.definition = {
 
     for (i = tab_stops.length - 1; i >= 0; --i) {
       stop = tab_stops[i];
-      if (stop < positionX) {
+      if (stop < position_x) {
         index = Math.max(0, i - n);
-        cursor.positionX = tab_stops[index];
+        cursor.position_x = tab_stops[index];
         break;
       }
     }
