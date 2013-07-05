@@ -90,7 +90,6 @@ WheelScroll.definition = {
     if(event.axis === event.VERTICAL_AXIS) {
 
       count = event.detail;
-
       if (event.hasPixels) {
         line_height = renderer.line_height;
         count = Math.round(count / line_height + 0.5);
@@ -106,11 +105,9 @@ WheelScroll.definition = {
         if (count > 0) {
           this.sendMessage("command/scroll-down-view", count);
           this.sendMessage("command/draw");
-        } else if (count < 0) {
+        } else {
           this.sendMessage("command/scroll-up-view", -count);
           this.sendMessage("command/draw");
-        } else { // count === 1
-          return;
         }
       }
     }

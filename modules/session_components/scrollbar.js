@@ -84,8 +84,10 @@ Scrollbar.definition = {
                 context: this,
                 handler: function onclick(event)
                 {
+                  var before_position = Number(this._before.flex);
+
                   event.stopPropagation();
-                  this.changePosition(this._before.flex - 10);
+                  this.changePosition(before_position - 10);
                 }
               },
             ],
@@ -107,8 +109,10 @@ Scrollbar.definition = {
               context: this,
               handler: function onclick(event)
               {
+                var before_position = Number(this._before.flex);
+
                 event.stopPropagation();
-                this.changePosition(this._before.flex + 10);
+                this.changePosition(before_position + 10);
               },
             },
           },
@@ -166,13 +170,18 @@ Scrollbar.definition = {
 
   changePosition: function changePosition(position)
   {
-    var min_position = 0,
-        max_position = parseInt(this._before.flex)
-                     + parseInt(this._after.flex);
+    var before_position = Number(this._before.flex),
+        after_position = Number(this._after.flex),
+        min_position = 0,
+        max_position = before_position + after_position;
 
-    position = Math.max(position, min_position);
-    position = Math.min(position, max_position);
-    if (position !== this._before.flex) {
+    if (position < min_position) {
+      position = min_position;
+    } else if (position > max_position) {
+      position = max_position;
+    }
+
+    if (position !== before_position) {
       this.sendMessage("command/set-scroll-position", position);
       this.sendMessage("command/draw");
     }
@@ -193,7 +202,7 @@ Scrollbar.definition = {
     current.flex = scroll_info.end - scroll_info.start;
     after.flex = scroll_info.size - scroll_info.end;
     if (0 === Number(after.flex) && !this._dragging) {
-      if (0.00 !== scrollbar.style.opacity) {
+      if (0.00 !== Number(scrollbar.style.opacity)) {
         scrollbar.style.opacity = 0.00;
       }
     }
@@ -259,10 +268,10 @@ Scrollbar.definition = {
     radius = this.inner_width + this.border_width;
     height = this._scrollbar.boxObject.height - radius * 2;
 
-    before_flex = parseInt(this._before.flex);
-    current_flex = parseInt(this._current.flex);
+    before_flex = Number(this._before.flex);
+    current_flex = Number(this._current.flex);
 
-    after_flex = parseInt(this._after.flex);
+    after_flex = Number(this._after.flex);
 
     flex = before_flex + current_flex + after_flex;
     flex_per_height = flex / height;
@@ -278,7 +287,8 @@ Scrollbar.definition = {
         context: this,
         handler: function onmousemove(event)
         {
-          var delta, position;
+          var delta,
+              position;
 
           delta = event.screenY - initial_y;
           position = Math.round(initial_view_top + flex * delta / height);
@@ -299,7 +309,7 @@ Scrollbar.definition = {
         {
           this._dragging = false;
           this.sendMessage("command/remove-domlistener", "_DRAGGING");
-          if (0 === this._after.flex) {
+          if (0 === Number(this._after.flex)) {
             this._scrollbar.style.opacity = 0.00;
           }
         },

@@ -1548,6 +1548,7 @@ Viewable.definition = {
     if (0 === n || buffer_top === this._scrollback_amount) {
       return;
     }
+
     if (0 === this._scrollback_amount) {
       // starts scrolling session.
       this.sendMessage("event/scroll-session-started");
