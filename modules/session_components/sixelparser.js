@@ -104,6 +104,7 @@ SixelParser.definition = {
 
   id: "sixel_parser",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {
@@ -130,7 +131,7 @@ SixelParser.definition = {
     for (; i < 6; ++i) {
       if (c & 0x1 << i) {
         position = ((y + i) * imagedata.width * 1 + x) * 4;
-        data[position] = r;
+        data[position + 0] = r;
         data[position + 1] = g;
         data[position + 2] = b;
         data[position + 3] = 255;
@@ -272,85 +273,15 @@ SixelParser.definition = {
           scanner.moveNext();
           break;
 
-        case 0x3f:
-        case 0x40:
-        case 0x41:
-        case 0x42:
-        case 0x43:
-        case 0x44:
-        case 0x45:
-        case 0x46:
-        case 0x47:
-        case 0x48:
-        case 0x49:
-        case 0x4a:
-        case 0x4b:
-        case 0x4c:
-        case 0x4d:
-        case 0x4e:
-        case 0x4f:
-        case 0x50:
-        case 0x51:
-        case 0x52:
-        case 0x53:
-        case 0x54:
-        case 0x55:
-        case 0x56:
-        case 0x57:
-        case 0x58:
-        case 0x59:
-        case 0x5a:
-        case 0x5b:
-        case 0x5c:
-        case 0x5d:
-        case 0x5e:
-        case 0x5f:
-        case 0x60:
-        case 0x61:
-        case 0x62:
-        case 0x63:
-        case 0x64:
-        case 0x65:
-        case 0x66:
-        case 0x67:
-        case 0x68:
-        case 0x69:
-        case 0x6a:
-        case 0x6b:
-        case 0x6c:
-        case 0x6d:
-        case 0x6e:
-        case 0x6f:
-        case 0x70:
-        case 0x71:
-        case 0x72:
-        case 0x73:
-        case 0x74:
-        case 0x75:
-        case 0x76:
-        case 0x77:
-        case 0x78:
-        case 0x79:
-        case 0x7a:
-        case 0x7b:
-        case 0x7c:
-        case 0x7d:
-        case 0x7e:
-          for (i = 0; i < count; ++i) {
-            this._setSixel(imagedata, x, y, c);
-            ++x;
-          }
-          count = 1;
-          scanner.moveNext();
-          break;
-
-        case 0x9c: //
-        case 0x0d:
-        case 0x0a:
         default:
+          if (c >= 0x3f && c <= 0x7e) {
+            for (i = 0; i < count; ++i) {
+              this._setSixel(imagedata, x, y, c);
+              ++x;
+            }
+            count = 1;
+          }
           scanner.moveNext();
-          //throw coUtils.Debug.Exception(_("Cannot parse sixel format."));
-
       }
     } while (!scanner.isEnd);
 
@@ -365,7 +296,7 @@ SixelParser.definition = {
 
   /** test */
   "[test]":
-  function()
+  function test()
   {
     var enabled = this.enabled;
 
