@@ -126,7 +126,7 @@ SendReceiveMode.definition = {
   function report()
   {
     var mode = this._mode ? 1: 2,
-        message = "?12;" + mode + "$y";
+        message = "12;" + mode + "$y";
 
     this.sendMessage("command/send-sequence/csi", message);
   },

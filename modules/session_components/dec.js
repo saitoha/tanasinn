@@ -473,6 +473,128 @@ DecPrivateMode.definition = {
 
   /**
    * DECRQM_ansi
+   * DECRQM - Request Mode - Host To Terminal
+   *
+   * The host sends this control function to find out if a particular mode is
+   * set or reset. The terminal responds with a report mode function
+   * (DECRPM - Report Mode - Terminal To Host).
+   *
+   * DECRQM functions in ANSI and DEC modes.
+   *
+   * Requesting ANSI Modes
+   *
+   * CSI     Pa      $       p
+   * 9/11    3/n     2/4     7/0
+   *
+   * Requesting DEC Modes
+   *
+   * CSI     ?       Pd      $       p
+   * 9/11    3/15    3/n     2/4     7/0
+   *
+   *
+   * Parameters
+   *
+   * Pa
+   * indicates the ANSI mode that the host is asking about. Table 5-7 lists
+   * the values for Pa.
+   * 
+   * Pd
+   * indicates the DEC mode the host is asking about. Table 5-8 lists the
+   * values for Pd.
+   *
+   * Examples
+   * 
+   * The following sequences request the setting of some ANSI modes:
+   *
+   * Host            Meaning
+   * CSI 2 $ p       What is the current state of keyboard action mode
+   *                 (KAM)? (KAM = 2)
+   * CSI 4 $ p       What is the current state of insert/replace mode
+   *                 (IRM)? (IRM = 4)
+   * 
+   * The following sequences request the setting of some DEC modes:
+   * Host            Meaning
+   * CSI ? 36 $ p    What is the current state of Hebrew encoding mode
+   *                 (DECHEM)? (DECHEM = 36)
+   * CSI ? 6 $ p     What is the current state of origin mode
+   *                 (DECOM)? (DECOM = 6)
+   *
+   *
+   * Notes on DECRQM
+   *
+   *   The terminal does not respond to a DECRQM sequence when in VT52 mode.
+   *   A DECRQM sequence can only ask about one mode at a time.
+   *
+   * Table 5-7 ANSI Modes for DECRQM, DECRPM, SM, and RM
+   *
+   * Mode                        Mnemonic    Pa
+   * ----------------------------------------------------
+   * Guarded area transfer       GATM*       1
+   * Keyboard action             KAM         2
+   * Control representation      CRMÅı        3
+   * Insert/replace              IRM         4
+   * Status reporting transfer   SRTM*       5
+   * Vertical editing            VEM*        7
+   * Horizontal editing          HEM*        10
+   * Positioning unit            PUM*        11
+   * Send/receive                SRM         12
+   * Format effector action      FEAM*       13
+   * Format effector transfer    FETM*       14
+   * Multiple area transfer      MATM*       15
+   * Transfer termination        TTM*        16
+   * Selected area transfer      SATM*       17
+   * Tabulation stop             TSM*        18
+   * Editing boundary            EBM*        19
+   * Line feed/new line          LNM         20
+   * ----------------------------------------------------
+   *
+   * This control function is permanently reset.
+   *
+   * ÅıThe host cannot change the setting of CRM. You can only change CRM from
+   * Set-Up. If CRM is set, then the terminal ignores DECRQM and most other
+   * control functions.
+   *
+   *
+   * Table 5-8 DEC Modes for DECRQM, DECRPM, SM, and RM
+   *
+   * Mode                                Mnemonic            Pd
+   *
+   * Cursor keys                         DECCKM              1
+   * ANSI                                DECANM              2
+   * Column                              DECCOLM             3
+   * Scrolling                           DECSCLM             4
+   * Screen                              DECSCNM             5
+   * Origin                              DECOM               6
+   * Autowrap                            DECAWM              7
+   * Autorepeat                          DECARM              8
+   * Print form feed                     DECPFF              18
+   * Printer extent                      DECPEX              19
+   * Text cursor enable                  DECTCEM             25
+   * Cursor direction, right to left     DECRLM              34
+   * Hebrew keyboard mapping             DECHEBM             35
+   * Hebrew encoding mode                DECHEM              36
+   * National replacement character set  DECNRCM             42
+   * Greek keyboard mapping              DECNAKB             57
+   * Horizontal cursor coupling          DECHCCM*            60
+   * Vertical cursor coupling            DECVCCM             61
+   * Page cursor coupling                DECPCCM             64
+   * Numeric keypad                      DECNKM              66
+   * Backarrow key                       DECBKM              67
+   * Keyboard usage                      DECKBUM             68
+   * Vertical split screen               DECVSSM / DECLRMM   69
+   * Transmit rate limiting              DECXRLM             73
+   * Key position                        DECKPM              81
+   * No clearing screen on column change DECNCSM             95
+   * Cursor right to left                DECRLCM             96
+   * CRT save                            DECCRTSM            97
+   * Auto resize                         DECARSM             98
+   * Modem control                       DECMCM              99
+   * Auto answerback                     DECAAM              100
+   * Conceal answerback message          DECCANSM            101
+   * Ignoring null                       DECNULM             102
+   * Half-duplex                         DECHDPXM            103
+   * Secondary keyboard language         DECESKM             104
+   * Overscan                            DECOSCNM            106
    */
   "[profile('vt100'), sequence('CSI Pm $ p')]":
   function DECRQM_ansi(n)
@@ -480,7 +602,7 @@ DecPrivateMode.definition = {
     n = n || 0;
 
     try {
-      this.request("sequence/decrqm/" + n);
+      this.request("sequence/rqm/" + n);
     } catch (e) {
       this.sendMessage("command/send-sequence/csi", n + ";0$y");
     }
