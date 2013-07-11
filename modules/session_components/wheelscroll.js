@@ -46,6 +46,8 @@ WheelScroll.definition = {
   },
 
   "[persistable] enabled_when_startup": true,
+ 
+  _in_scroll_session: false,
 
   /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
@@ -61,6 +63,21 @@ WheelScroll.definition = {
   function uninstall()
   {
   },
+
+  /** Fired when scroll session is started. */
+  "[subscribe('event/scroll-session-started'), pnp]":
+  function onScrollSessionStarted()
+  {
+    this._in_scroll_session = true;
+  },
+
+  /** Fired when scroll session is closed. */
+  "[subscribe('event/scroll-session-closed'), pnp]":
+  function onScrolSessionClosed()
+  {
+    this._in_scroll_session = false;
+  },
+
 
   /** Fired at the mouse tracking mode is changed. */
   "[subscribe('event/mouse-tracking-mode-changed'), pnp]":
@@ -92,24 +109,23 @@ WheelScroll.definition = {
       count = event.detail;
       if (event.hasPixels) {
         line_height = renderer.line_height;
-        count = Math.round(count / line_height + 0.5);
+        count = Math.round(count + 0.5);
       } else {
-        count = Math.round(count / 2);
+        count = Math.round(count);
       }
 
       if (0 === count) {
         return;
       }
 
-      if (this._in_scroll_session) {
-        if (count > 0) {
-          this.sendMessage("command/scroll-down-view", count);
-          this.sendMessage("command/draw");
-        } else {
-          this.sendMessage("command/scroll-up-view", -count);
-          this.sendMessage("command/draw");
-        }
+      //if (this._in_scroll_session) {
+      if (count > 0) {
+        this.sendMessage("command/scroll-down-view", count);
+      } else {
+        this.sendMessage("command/scroll-up-view", -count);
       }
+      this.sendMessage("command/draw");
+      //}
     }
   },
 
