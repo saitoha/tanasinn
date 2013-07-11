@@ -406,7 +406,7 @@ Mouse.definition = {
         line_height = renderer.line_height;
         count = Math.round(count / line_height + 0.5);
       } else {
-        count = Math.round(count / 2);
+        count = Math.round(count);
       }
       if (0 === count) {
         return;
@@ -467,16 +467,16 @@ Mouse.definition = {
             this._sendMouseEvent(event, 0x40, coordinate);
           }
         }
-      } else {
-        if (count > 0) {
-          this.sendMessage("command/scroll-down-view", count);
-          this.sendMessage("command/draw");
-        } else if (count < 0) {
-          this.sendMessage("command/scroll-up-view", -count);
-          this.sendMessage("command/draw");
-        } else { // count === 1
-          // do nothing
-        }
+//      } else {
+//        if (count > 0) {
+//          this.sendMessage("command/scroll-down-view", count);
+//          this.sendMessage("command/draw");
+//        } else if (count < 0) {
+//          this.sendMessage("command/scroll-up-view", -count);
+//          this.sendMessage("command/draw");
+//        } else { // count === 1
+//          // do nothing
+//        }
       }
     }
   },
