@@ -412,35 +412,34 @@ ScreenSequenceHandler.definition = {
         y = (n1 || 1) - 1,
         x = (n2 || 1) - 1;
 
-    if (this._left_right_margin_mode) {
-      left = this._scroll_left;
-      right = this._scroll_right;
-    } else {
-      left = 0;
-      right = this._width;
-    }
-
-    top = this._scroll_top;
-    bottom = this._scroll_bottom;
-
     if (cursor.DECOM) {
-      x += left;
+      if (this._left_right_margin_mode) {
+        left = this._scroll_left;
+        right = this._scroll_right;
+        x += left;
+      } else {
+        right = this._width;
+      }
+      top = this._scroll_top;
+      bottom = this._scroll_bottom;
       y += top;
+    } else {
+      bottom = this._height;
+      right = this._width;
     }
 
     // set horizontal position
     if (x >= right) {
-      cursor.position_x = right - 1;
-    } else {
-      cursor.position_x = x;
+      x = right - 1;
     }
 
     // set vertical position
     if (y >= bottom) {
-      cursor.position_y = bottom - 1;
-    } else {
-      cursor.position_y = y;
+      y = bottom - 1;
     }
+
+    cursor.position_x = x;
+    cursor.position_y = y;
   },
 
   /**
@@ -676,20 +675,19 @@ ScreenSequenceHandler.definition = {
       if (bottom >= scroll_bottom) {
         bottom = scroll_bottom - 1;
       }
+    } else {
+      if (bottom > height) {
+        bottom = height;
+      }
+      if (right > width) {
+        right = width;
+      }
     }
-
 
     if (top >= bottom || left >= right) {
       throw coUtils.Debug.Exception(
         _("Invalid arguments detected in %s [%s]."),
         "DECERA", Array.slice(arguments));
-    }
-
-    if (bottom > height) {
-      bottom = height;
-    }
-    if (right > width) {
-      right = width;
     }
 
     this.eraseRectangle(top, left, bottom, right);
@@ -873,18 +871,30 @@ ScreenSequenceHandler.definition = {
   "[profile('vt100'), sequence('CSI Pn s')]":
   function DECSLRM(n1, n2)
   {
-    var cursor = this._cursor;
+    var cursor = this._cursor,
+        width = this._width;
 
     if (this._left_right_margin_mode) {
 
       n1 = (n1 || 1) - 1;
-      n2 = (n2 || this._width) - 1;
+      n2 = (n2 || width);
+
+      if (n2 > width) {
+        n2 = width;
+      }
+
+      if (n1 > n2) {
+        coUtils.Debug.ReportWarning(
+          _("Invalid parameters are passed. [%d, %d]."),
+          n1, n2);
+        return;
+      }
 
       this._scroll_left = n1;
-      this._scroll_right = n2 + 1;
+      this._scroll_right = n2;
 
       if (cursor.DECOM) {
-        cursor.position_x = this._scroll_left;
+        cursor.position_x = n1;
         cursor.position_y = this._scroll_top;
       } else {
         cursor.position_x = 0;
@@ -1345,32 +1355,33 @@ ScreenSequenceHandler.definition = {
         x = (n2 || 1) - 1;
 
     if (cursor.DECOM) {
-      left = this._scroll_left;
+      if (this._left_right_margin_mode) {
+        left = this._scroll_left;
+        right = this._scroll_right;
+        x += left;
+      } else {
+        right = this._width;
+      }
       top = this._scroll_top;
-      right = this._scroll_right;
       bottom = this._scroll_bottom;
-      x += left;
       y += top;
     } else {
-      left = 0; 
-      top = 0;
-      right = this._width;
       bottom = this._height;
+      right = this._width;
     }
 
     // set horizontal position
     if (x >= right) {
-      cursor.position_x = right - 1;
-    } else {
-      cursor.position_x = x;
+      x = right - 1;
     }
 
     // set vertical position
     if (y >= bottom) {
-      cursor.position_y = bottom - 1;
-    } else {
-      cursor.position_y = y;
+      y = bottom - 1;
     }
+
+    cursor.position_x = x;
+    cursor.position_y = y;
   },
 
   /**
