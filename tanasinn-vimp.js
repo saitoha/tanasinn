@@ -36,7 +36,7 @@ try {
               .shift()
               .replace(/^liberator:\/\/template\//, ""),
             path = current_file
-                 + "/../modules/common/process.js?"
+                 + "/../../tanasinn/modules/common/process.js?"
                  + new Date().getTime(),
             scope = {};
         Components.classes["@mozilla.org/moz/jssubscript-loader;1"]
