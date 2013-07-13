@@ -325,6 +325,7 @@ Renderer.definition = {
 
   _screen: null,
   _palette: null,
+  _dirty: false,
 
   /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
@@ -343,6 +344,20 @@ Renderer.definition = {
     this._calculateGlyphSize();
     this.onWidthChanged();
     this.onHeightChanged();
+    this._dirty = true;
+
+    this._timer = coUtils.Timer.setInterval(
+      function timerProc()
+      {
+        var info;
+
+        if (this._dirty) {
+          for (info in this._screen.getDirtyWords()) {
+            this._drawLine(info);
+          }
+          this._dirty = false;
+        }
+      }, 50, this);
 
     this._drcs_map = {};
   },
@@ -372,22 +387,20 @@ Renderer.definition = {
     this._drcs_map = null;
     this._drcs_canvas = null;
 
+    if (this._timer) {
+      this._timer.cancel();
+      this._timer = null;
+    }
+
     this._screen = null;
   },
 
-  "[subscribe('command/calculate-layout'), pnp]":
+  "[subscribe('@command/focus | command/calculate-layout'), pnp]":
   function calculateLayout()
   {
     this.onWidthChanged();
     this.onHeightChanged();
     this.sendMessage("command/draw", true);
-  },
-
-  "[subscribe('@command/focus'), pnp]":
-  function onFirstFocus()
-  {
-    this.onWidthChanged();
-    this.onHeightChanged();
   },
 
   getCanvas: function getCanvas(context)
@@ -526,16 +539,12 @@ Renderer.definition = {
   "[subscribe('command/draw'), pnp]":
   function draw(redraw_flag)
   {
-    var info,
-        screen = this._screen;
+    var screen = this._screen;
 
     if (redraw_flag) {
       screen.dirty = true;
     }
-
-    for (info in screen.getDirtyWords()) {
-      this._drawLine(info);
-    }
+    this._dirty = true;
 
   }, // draw
 

@@ -378,6 +378,7 @@ DirtyRange.definition = {
   /** constructor */
   initialize: function initialize(length)
   {
+    this.first = 0;
     this.last = length;
   },
 
