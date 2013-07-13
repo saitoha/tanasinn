@@ -130,8 +130,8 @@ VT100Grammar.definition = {
   function resetSequences()
   {
     this._char_map = [];
-    this._esc_map = {};
-    this._csi_map = {};
+    this._esc_map = [];
+    this._csi_map = [];
     this._str_map = [];
     this._hookmap = [];
   },
@@ -338,30 +338,34 @@ VT100Grammar.definition = {
   _dispatch_csi:
   function _dispatch_csi(pbytes, ibytes, fbyte)
   {
-    var prefix = pbytes[0],
-        key,
-        action,
+    var action,
         handler,
         params,
         i,
-        param;
+        c,
+        param,
+        key = 0;
 
-    if (prefix >= 0x3c && prefix <= 0x3f) {
-      pbytes.shift();
-      ibytes.unshift(prefix);
-    }
-    ibytes.push(fbyte);
-    key = String.fromCharCode.apply(null, ibytes),
-    params = String.fromCharCode.apply(null, pbytes).split(/[;:]/);
+    params = [];
+    param = 0;
 
-    for (i = 0; i < params.length; ++i) {
-      param = params[i];
-      if (0 === param.length) {
-        params[i] = 0;
+    for (i = 0; i < pbytes.length; ++i) {
+      c = pbytes[i];
+      if (c < 0x3a) {
+        param = param * 10 + c - 0x30;
+      } else if (c < 0x3c) {
+        params.push(param);
+        param = 0;
       } else {
-        params[i] = parseInt(param);
+        key = key << 8 | c;
       }
     }
+    params.push(param);
+    for (i = 0; i < ibytes.length; ++i) {
+      c = ibytes[i];
+      key = key << 8 | c;
+    }
+    key = key << 8 | fbyte;
     handler = this._csi_map[key];
     if (!handler) {
       return true;
@@ -374,32 +378,30 @@ VT100Grammar.definition = {
   _dispatch_csi_no_ibytes:
   function _dispatch_csi_no_ibytes(pbytes, fbyte)
   {
-    var prefix = pbytes[0],
-        key,
-        action,
+    var action,
         handler,
         params,
         i,
+        c,
         param,
-        ibytes = [];
+        key = 0;
 
-    if (prefix >= 0x3c && prefix <= 0x3f) {
-      pbytes.shift();
-      ibytes.unshift(prefix);
-    }
-    ibytes.push(fbyte);
-    key = String.fromCharCode.apply(null, ibytes),
-    params = String.fromCharCode.apply(null, pbytes).split(/[;:]/);
+    params = [];
+    param = 0;
 
-    for (i = 0; i < params.length; ++i) {
-      param = params[i];
-      if (0 === param.length) {
-        params[i] = 0;
+    for (i = 0; i < pbytes.length; ++i) {
+      c = pbytes[i];
+      if (c < 0x3a) {
+        param = param * 10 + c - 0x30;
+      } else if (c < 0x3c) {
+        params.push(param);
+        param = 0;
       } else {
-        params[i] = parseInt(param);
+        key = key << 8 | c;
       }
     }
-
+    params.push(param);
+    key = key << 8 | fbyte;
     handler = this._csi_map[key];
     if (!handler) {
       return true;
@@ -411,8 +413,7 @@ VT100Grammar.definition = {
 
   _dispatch_single_esc: function _dispatch_single_esc(fbyte)
   {
-    var f = String.fromCharCode(fbyte),
-        handler = this._esc_map[f];
+    var handler = this._esc_map[fbyte];
 
     if (!handler) {
       return true;
@@ -425,21 +426,26 @@ VT100Grammar.definition = {
   _dispatch_esc: function _dispatch_esc(ibytes, fbyte)
   {
     var action,
-        key,
+        key = 0,
         handler,
         params,
-        f = String.fromCharCode(fbyte),
-        i = String.fromCharCode.apply(null, ibytes);
+        c,
+        i;
 
-    handler = this._esc_map[i + f];
+    for (i = 0; i < ibytes.length; ++i) {
+      c = ibytes[i];
+      key = key << 8 | c;
+    }
+    key = key << 8 | fbyte;
+    handler = this._esc_map[key];
     if (handler) {
       handler();
       return true;
     }
 
-    handler = this._esc_map[i[0]];
+    handler = this._esc_map[ibytes[0]];
     if (handler) {
-      handler(i.substr(1) + f);
+      handler(String.fromCharCode(fbyte));
       return true;
     }
 
@@ -493,7 +499,6 @@ VT100Grammar.definition = {
     if (1 === tokens.length) {
       key = Number(tokens[0]);
       this._char_map[key] = function(params) { return handler.apply(context, params) };
-      //this._hookmap.body[handler.name] = [key, handler];
     } else {
       prefix = tokens.shift();
       length = tokens.length;
@@ -503,28 +508,27 @@ VT100Grammar.definition = {
           prefix = tokens[0].charCodeAt(0);
           this._str_map[prefix] = function(param) { return handler.call(context, param) };
         } else {
-          key = tokens.map(function (token)
-          {
+          key = 0;
+          for (i = 0; i < tokens.length; ++i) {
+            token = tokens[i];
             if ("SP" === token) {
-              return " ";
-            } else if (token.length > 1) {
-              return "";
+              key = key << 8 | 0x20;
+            } else if (1 === token.length) {
+              key = key << 8 | token.charCodeAt(0);
             }
-            return token;
-          }).join("");
+          }
           this._esc_map[key] = function(param) { return handler.call(context, param) };
         }
       } else if ("CSI" === prefix) {
-        key = tokens.map(function (token)
-        {
+        key = 0;
+        for (i = 0; i < tokens.length; ++i) {
+          token = tokens[i];
           if ("SP" === token) {
-            return " ";
-          } else if (token.length > 1) {
-            return "";
+            key = key << 8 | 0x20;
+          } else if (1 === token.length) {
+            key = key << 8 | token.charCodeAt(0);
           }
-          return token;
-        }).join("");
-
+        }
         this._csi_map[key] = function(params) { return handler.apply(context, params) };
       } else {
       }
