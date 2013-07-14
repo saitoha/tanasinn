@@ -102,7 +102,6 @@ VT100Grammar.definition = {
     this._state = _STATE_GROUND;
     this._ibytes = null;
     this._pbytes = null;
-    this._hookmap = null;
   },
 
   /** The post-initializer method which called when the session
@@ -120,12 +119,6 @@ VT100Grammar.definition = {
     }
   },
 
-  "[subscribe('get/hook-map'), pnp]":
-  function getHookMap()
-  {
-    return this._hookmap;
-  },
-
   "[subscribe('command/reset-sequences'), pnp]":
   function resetSequences()
   {
@@ -133,10 +126,9 @@ VT100Grammar.definition = {
     this._esc_map = [];
     this._csi_map = [];
     this._str_map = [];
-    this._hookmap = [];
   },
 
-  /**
+  /** 
    *
    */
   "[subscribe('get/grammars'), pnp]":
@@ -368,11 +360,9 @@ VT100Grammar.definition = {
     key = key << 8 | fbyte;
     handler = this._csi_map[key];
     if (!handler) {
-      return true;
+      return;
     }
     handler(params);
-
-    return true;
   },
 
   _dispatch_csi_no_ibytes:
@@ -404,11 +394,9 @@ VT100Grammar.definition = {
     key = key << 8 | fbyte;
     handler = this._csi_map[key];
     if (!handler) {
-      return true;
+      return;
     }
     handler(params);
-
-    return true;
   },
 
   _dispatch_single_esc: function _dispatch_single_esc(fbyte)
@@ -416,11 +404,9 @@ VT100Grammar.definition = {
     var handler = this._esc_map[fbyte];
 
     if (!handler) {
-      return true;
+      return;
     }
     handler();
-
-    return true;
   },
 
   _dispatch_esc: function _dispatch_esc(ibytes, fbyte)
@@ -440,16 +426,13 @@ VT100Grammar.definition = {
     handler = this._esc_map[key];
     if (handler) {
       handler();
-      return true;
+      return;
     }
 
     handler = this._esc_map[ibytes[0]];
     if (handler) {
       handler(String.fromCharCode(fbyte));
-      return true;
     }
-
-    return true;
   },
 
   _dispatch_char: function _dispatch_char(c)
@@ -457,10 +440,9 @@ VT100Grammar.definition = {
     var action = this._char_map[c];
 
     if (!action) {
-      return false;
+      return;
     }
     action();
-    return true;
   },
 
   _dispatch_string: function _dispatch_string(value)
@@ -470,11 +452,10 @@ VT100Grammar.definition = {
         action,
         data;
     if (!handler) {
-      return true;
+      return;
     }
     data = coUtils.Text.safeConvertFromArray(value);
     handler(data);
-    return true;
   },
 
   /** Append a sequence handler.
@@ -496,6 +477,8 @@ VT100Grammar.definition = {
         prefix,
         length,
         i;
+
+    // store binded actions
     if (1 === tokens.length) {
       key = Number(tokens[0]);
       this._char_map[key] = function(params) { return handler.apply(context, params) };
@@ -530,7 +513,6 @@ VT100Grammar.definition = {
           }
         }
         this._csi_map[key] = function(params) { return handler.apply(context, params) };
-      } else {
       }
     }
   }, // append
