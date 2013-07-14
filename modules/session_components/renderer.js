@@ -289,6 +289,7 @@ Renderer.definition = {
   "[watchable] char_width": 6.5,
   "[watchable] char_height": 4,
   "[watchable] char_offset": 11,
+  "[watchable, persistable] draw_interval": 30,
   "[persistable] slow_blink_interval": 800,
   "[persistable] rapid_blink_interval": 400,
 
@@ -344,20 +345,7 @@ Renderer.definition = {
     this._calculateGlyphSize();
     this.onWidthChanged();
     this.onHeightChanged();
-    this._dirty = true;
-
-    this._timer = coUtils.Timer.setInterval(
-      function timerProc()
-      {
-        var info;
-
-        if (this._dirty) {
-          for (info in this._screen.getDirtyWords()) {
-            this._drawLine(info);
-          }
-          this._dirty = false;
-        }
-      }, 50, this);
+    this.onUpdateDrawInterval();
 
     this._drcs_map = {};
   },
@@ -401,6 +389,27 @@ Renderer.definition = {
     this.onWidthChanged();
     this.onHeightChanged();
     this.sendMessage("command/draw", true);
+  },
+
+  "[subscribe('variable-changed/renderer.draw_interval'), pnp]":
+  function onUpdateDrawInterval()
+  {
+    if (this._timer) {
+      this._timer.cancel();
+    }
+    this._dirty = true;
+    this._timer = coUtils.Timer.setInterval(
+      function timerProc()
+      {
+        var info;
+
+        if (this._dirty) {
+          for (info in this._screen.getDirtyWords()) {
+            this._drawLine(info);
+          }
+          this._dirty = false;
+        }
+      }, this.draw_interval, this);
   },
 
   getCanvas: function getCanvas(context)
@@ -904,7 +913,7 @@ Renderer.definition = {
     var text = String.fromCharCode.apply(null, codes);
 
     if (this.enable_text_shadow) {
-      context.shadowColor = context.fillStyle;//this.shadow_color;
+      context.shadowColor = context.fillStyle;  //this.shadow_color;
       context.shadowOffsetX = this.shadow_offset_x;
       context.shadowOffsetY = this.shadow_offset_y;
       context.shadowBlur = this.shadow_blur;
