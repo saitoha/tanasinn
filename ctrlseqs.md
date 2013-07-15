@@ -184,12 +184,17 @@ CSI Ps n                          | DSR               | Reports device status.
                                   |                   |             Response: CSI r ; c R
                                   |                   |               r    Line number.
                                   |                   |               c    Column number.
-CSI Ps1 ; Ps2 r                   | DECSTBM           | Sets top and bottom margin.
+CSI Ps1 ; Ps2 r                   | DECSTBM           | Set top and bottom margin.
              (>)                  |                   | Ps1    Line number for the top margin.
                                   |                   |        The default value is 1.
                                   |                   | Ps2    Line number for the bottom margin.
                                   |                   |        The default value is current number of lines per screen.
-CSI s                             | SCP               | Save cursor position. Same as DECSC.
+CSI s                             | SCP               | Save cursor position. Same as DECSC. (Enabled if DECLRMM is reset)
+cSI Ps1 ; Ps2 s                   | DECSLRM           | Set left and right margin. (Enabled if DECLRMM is set)
+                                  |                   | Ps1    Colmn number for the left margin.
+                                  |                   |        The default value is 1.
+                                  |                   | Ps2    Colmn number for the right margin.
+                                  |                   |        The default value is current number of page width.
 CSI Ps1 ; Ps2 ; Ps3 t             | (DECSLPP)         | Window manipulation.
                                   |                   | Ps1 =  1    De-iconify window.
                                   |                   |     =  2    Minimize window.
@@ -378,6 +383,7 @@ Mode No.  | Mnemonic  | Set (DECSET)                                            
 47        | -         | Switch to alternate screen buffer.                                    | Switch to normal screen buffer.
 66        | DECNKM    | Application keypad mode.                                              | Numeric keypad mode.
 67        | DECBKM    | Backspace key sends BS.                                               | Backspace key sends DEL.
+69        | DECLRMM   | Eanble left right margins.                                            | Disable left right margins.
 80        | DECSDM    | Sixel non-scrolling mode.                                             | Sixel scrolling mode.
 100       | DECAAM    | Enable auto answer back mode.                                         | Disable auto answer back mode.
 1000      | -         | Enable normal mouse tracking. Send mouse X & Y on button press and    | Disable mouse tracking.
