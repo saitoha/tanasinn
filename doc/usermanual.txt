@@ -26,6 +26,13 @@ link:./usermanual.html[English/英語]
 
 == News
 
+=== 2013-07-13
+    Version 0.3.3.8
+    Fix CHA behavior
+    Fix HT behavior
+    Fix DECRPM behavior
+    Fix CUP/HVP behavior when origin mode is disabled
+
 === 2013-06-30
     Version 0.3.3.7
     Make CPR respect origin mode
