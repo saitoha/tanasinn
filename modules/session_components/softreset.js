@@ -26,7 +26,7 @@
 
 /**
  * @class SoftReset
- * DECSTR — Soft Terminal Reset
+ * DECSTR - Soft Terminal Reset
  *
  * Perform a soft reset to the default values listed in following Table.
  *

@@ -26,7 +26,7 @@
 
 /** @class DoubleSizedCharacters
  *
- * DECDHL — Double-Width, Double-Height Line
+ * DECDHL - Double-Width, Double-Height Line
  *
  * These two control functions make the line with the cursor the top or
  * bottom half of a double-height, double-width line. You must use these
@@ -136,7 +136,7 @@ DoubleSizedCharacters.definition = {
 
   /**
    *
-   * DECSWL — Single-Width, Single-Height Line
+   * DECSWL - Single-Width, Single-Height Line
    *
    * DECSWL makes the line with the cursor a single-width, single-height
    * line. This line attribute is the standard for all new lines on the
@@ -165,7 +165,7 @@ DoubleSizedCharacters.definition = {
 
   /** DEC double-width line.
    *
-   * DECDWL — Double-Width, Single-Height Line
+   * DECDWL - Double-Width, Single-Height Line
    *
    * This control function makes the line with the cursor a double-width,
    * single-height line. If the line was single width and single height, then

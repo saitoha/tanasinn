@@ -208,7 +208,7 @@ var ScreenSequenceHandler = new Trait("ScreenSequenceHandler");
 ScreenSequenceHandler.definition = {
 
   /**
-   * ICH — Insert Character
+   * ICH - Insert Character
    *
    * This control function inserts one or more space (SP) characters starting
    * at the cursor position.
@@ -241,7 +241,7 @@ ScreenSequenceHandler.definition = {
   },
 
   /**
-   * CUU — Cursor Up
+   * CUU - Cursor Up
    *
    * Moves the cursor up a specified number of lines in the same column.
    * The cursor stops at the top margin. If the cursor is already above the
@@ -264,7 +264,7 @@ ScreenSequenceHandler.definition = {
   },
 
   /**
-   * CUD — Cursor Down
+   * CUD - Cursor Down
    *
    * This control function moves the cursor down a specified number of lines
    * in the same column. The cursor stops at the bottom margin. If the cursor
@@ -285,7 +285,7 @@ ScreenSequenceHandler.definition = {
   },
 
   /**
-   * CUF — Cursor Forward
+   * CUF - Cursor Forward
    *
    * This control function moves the cursor to the right by a specified
    * number of columns. The cursor stops at the right border of the page.
@@ -312,7 +312,7 @@ ScreenSequenceHandler.definition = {
   },
 
   /**
-   * CUB — Cursor Backward
+   * CUB - Cursor Backward
    *
    * This control function moves the cursor to the left by a specified number
    * of columns. The cursor stops at the left border of the page.
@@ -524,7 +524,7 @@ ScreenSequenceHandler.definition = {
 
   /**
    *
-   * DECALN — Screen Alignment Pattern
+   * DECALN - Screen Alignment Pattern
    *
    * This control function fills the complete screen area with a test pattern
    * used for adjusting screen alignment. Normally, only manufacturing and
@@ -550,7 +550,7 @@ ScreenSequenceHandler.definition = {
   },
 
   /**
-   * ED — Erase in Display
+   * ED - Erase in Display
    *
    * This control function erases characters from part or all of the display.
    * When you erase complete lines, they become single-height, single-width
@@ -695,7 +695,7 @@ ScreenSequenceHandler.definition = {
 
   /**
    *
-   * EL — Erase in Line
+   * EL - Erase in Line
    *
    * This control function erases characters on the line that has the cursor.
    * EL clears all character attributes from erased character positions. EL
@@ -742,7 +742,7 @@ ScreenSequenceHandler.definition = {
 
   /**
    *
-   *  IL — Insert Line
+   *  IL - Insert Line
    *
    *  This control function inserts one or more blank lines, starting at the
    *  cursor.
@@ -772,7 +772,7 @@ ScreenSequenceHandler.definition = {
   },
 
   /**
-   * DL — Delete Line
+   * DL - Delete Line
    *
    * This control function deletes one or more lines in the scrolling region,
    * starting with the line that has the cursor.
@@ -908,7 +908,7 @@ ScreenSequenceHandler.definition = {
 
   /**
    *
-   * SL — Scroll Left
+   * SL - Scroll Left
    *
    * Format
    *
@@ -932,7 +932,7 @@ ScreenSequenceHandler.definition = {
 
   /**
    *
-   * SR — Scroll Right
+   * SR - Scroll Right
    *
    * Format
    *
@@ -978,7 +978,7 @@ ScreenSequenceHandler.definition = {
   },
 
   /**
-   * SD — Pan Up
+   * SD - Pan Up
    *
    * This control function moves the user window up a specified number of
    * lines in page memory.
@@ -1045,7 +1045,7 @@ ScreenSequenceHandler.definition = {
   },
 
   /**
-   * HPR — Horizontal Position Relative
+   * HPR - Horizontal Position Relative
    *
    * Inquire as to the amount of free memory for programmable key operations.
    *
@@ -1072,7 +1072,7 @@ ScreenSequenceHandler.definition = {
   },
 
   /**
-   * HPB — Horizontal Position Backward
+   * HPB - Horizontal Position Backward
    *
    * Inquire as to the amount of free memory for programmable key operations.
    *
@@ -1099,7 +1099,7 @@ ScreenSequenceHandler.definition = {
   },
 
   /**
-   * VPA—Vertical Line Position Absolute
+   * VPA - Vertical Line Position Absolute
    *
    * VPA inquires as to the amount of free memory for programmable key operations.
    *
@@ -1142,7 +1142,7 @@ ScreenSequenceHandler.definition = {
   },
 
   /**
-   * VPR — Vertical Position Relative
+   * VPR - Vertical Position Relative
    *
    * @ref http://vt100.net/docs/vt520-rm/
    *
@@ -1172,7 +1172,7 @@ ScreenSequenceHandler.definition = {
   },
 
   /**
-   * VPB — Vertical Position Relative
+   * VPB - Vertical Position Relative
    *
    * @ref http://vt100.net/docs/vt520-rm/
    *
@@ -1203,7 +1203,7 @@ ScreenSequenceHandler.definition = {
   },
 
   /**
-   * CNL — Cursor Next Line
+   * CNL - Cursor Next Line
    *
    * Move the cursor to the next line.
    *
@@ -1228,7 +1228,7 @@ ScreenSequenceHandler.definition = {
   },
 
   /**
-   * CPL — Cursor Previous Line
+   * CPL - Cursor Previous Line
    *
    * Move the cursor to the preceding line.
    *
@@ -1254,7 +1254,7 @@ ScreenSequenceHandler.definition = {
   },
 
   /**
-   * HPA — Horizontal Position Absolute
+   * HPA - Horizontal Position Absolute
    *
    * Inquire as to the amount of free memory for programmable key operations.
    *
@@ -1317,7 +1317,7 @@ ScreenSequenceHandler.definition = {
 
   /**
    *
-   * HVP — Horizontal and Vertical Position
+   * HVP - Horizontal and Vertical Position
    *
    * This control function works the same as the cursor position (CUP)
    * function. New applications should use CUP instead of HVP. HVP is
@@ -1388,7 +1388,7 @@ ScreenSequenceHandler.definition = {
    * MC - Media Copy
    *
    * MC is the control sequence that enables the terminal to control all print
-   * functions. There are two variations—ANSI standard and VT mode.
+   * functions. There are two variations-ANSI standard and VT mode.
    *
    * Format
    *

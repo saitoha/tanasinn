@@ -28,7 +28,7 @@
 /**
  * @class TextCursorEnableMode
  *
- * DECTCEM — Text Cursor Enable Mode
+ * DECTCEM - Text Cursor Enable Mode
  *
  * This control function makes the cursor visible or invisible.
  *

@@ -27,7 +27,7 @@
 /**
  * @class SGRHandler
  *
- * SGR — Select Graphic Rendition
+ * SGR - Select Graphic Rendition
  *
  * This control function selects one or more character attributes at the
  * same time.
@@ -56,11 +56,11 @@
  * 7   Negative image
  * 8   Invisible image
  * 10  The ASCII character set is the current 7-bit display character set
- *     (default)—SCO Console only.
+ *     (default)-SCO Console only.
  * 11  Map Hex 00-7F of the PC character set codes to the current 7-bit
- *     display character set—SCO Console only.
+ *     display character set-SCO Console only.
  * 12  Map Hex 80-FF of the current character set to the current 7-bit
- *     display character set—SCO Console only.
+ *     display character set-SCO Console only.
  * 22  Bold off
  * 24  Underline off
  * 25  Blinking off

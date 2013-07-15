@@ -27,7 +27,7 @@
 /**
  * @class ScrollRegion
  *
- * DECSTBM — Set Top and Bottom Margins
+ * DECSTBM - Set Top and Bottom Margins
  *
  * This control function sets the top and bottom margins for the current
  * page. You cannot perform scrolling outside the margins.
