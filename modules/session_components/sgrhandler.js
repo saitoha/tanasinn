@@ -43,7 +43,7 @@
  *
  * Ps is a number representing a certain visual attribute.
  * You can use more than one Ps value to select different character
- * attributes. Table 5–16 lists Ps values and the attributes they select.
+ * attributes. Table 5-16 lists Ps values and the attributes they select.
  *
  * Default: Ps = 0 (clears all attributes).
  *

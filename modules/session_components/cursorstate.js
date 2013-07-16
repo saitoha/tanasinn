@@ -305,12 +305,12 @@ CursorState.definition = {
    * --------------------------------------------------------------------------
    * Bit   Attribute              Bit Value
    * --------------------------------------------------------------------------
-   * 8     –                      Always 0 (off).
-   * 7     –                      Always 1 (on).
+   * 8     -                      Always 0 (off).
+   * 7     -                      Always 1 (on).
    * 6     Extension indicator    1 = another character (byte) of visual
    *                                  attribute data follows this one.
    *                              0 = no more attribute data.
-   * 5     –                      Always 0 (off).
+   * 5     -                      Always 0 (off).
    * 4     Reverse video          0 = off.
    *                              1 = on.
    * 3     Blinking               0 = off.
@@ -336,15 +336,15 @@ CursorState.definition = {
    * --------------------------------------------------------------------------
    * Bit   Attribute                  Bit Value
    * --------------------------------------------------------------------------
-   * 8     –                          Always 0 (off).
-   * 7     –                          Always 1 (on).
+   * 8     -                          Always 0 (off).
+   * 7     -                          Always 1 (on).
    * 6     Extension indicator        1 = another character (byte) of selective
    *                                      erase data follows this one.
    *                                  0 = no more protection data.
-   * 5     –                          0 Reserved for future use.
-   * 4     –                          0 Reserved for future use.
-   * 3     –                          0 Reserved for future use.
-   * 2     –                          0 Reserved for future use.
+   * 5     -                          0 Reserved for future use.
+   * 4     -                          0 Reserved for future use.
+   * 3     -                          0 Reserved for future use.
+   * 2     -                          0 Reserved for future use.
    * 1     Selective erase (DECSCA)   0 = off.
    *                                  1 = on.
    * --------------------------------------------------------------------------
@@ -364,12 +364,12 @@ CursorState.definition = {
    * --------------------------------------------------------------------------
    * Bit   Attribute                      Bit Value
    * --------------------------------------------------------------------------
-   * 8     –                              Always 0 (off).
-   * 7     –                              Always 1 (on).
+   * 8     -                              Always 0 (off).
+   * 7     -                              Always 1 (on).
    * 6     Extension indicator            1 = another character (byte) of flag
    *                                          data follows this one.
    *                                      0 = no more flag data.
-   * 5     –                              0 Reserved for future use.
+   * 5     -                              0 Reserved for future use.
    * 4     Autowrap                       1 = autowrap pending.
    *                                      0 = autowrap not pending.
    * 3     Single shift 3 (SS3) setting   1 = G3 is mapped into GL for the next
@@ -409,12 +409,12 @@ CursorState.definition = {
    * --------------------------------------------------------------------------
    * Bit   Attribute              Bit Value
    * --------------------------------------------------------------------------
-   * 8     –                      Always 0 (off).
-   * 7     –                      Always 1 (on).
+   * 8     -                      Always 0 (off).
+   * 7     -                      Always 1 (on).
    * 6     Extension indicator    1 = another character (byte) of character
    *                                  size data follows this one.
    *                              0 = no more size data.
-   * 5     –                      0 Reserved for future use.
+   * 5     -                      0 Reserved for future use.
    * 4     G3 set size            0 = 94 characters.
    *                              1 = 96 characters.
    * 3     G2 set size            0 = 94 characters.

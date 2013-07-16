@@ -224,7 +224,7 @@ C1Control.definition = {
 
   /**
    *
-   * RI – Reverse Index
+   * RI - Reverse Index
    * ESC M
    *
    * Move the active position to the same horizontal position on the preceding

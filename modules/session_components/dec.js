@@ -531,7 +531,7 @@ DecPrivateMode.definition = {
    * ----------------------------------------------------
    * Guarded area transfer       GATM*       1
    * Keyboard action             KAM         2
-   * Control representation      CRMÅı        3
+   * Control representation      CRM**       3
    * Insert/replace              IRM         4
    * Status reporting transfer   SRTM*       5
    * Vertical editing            VEM*        7
@@ -550,7 +550,7 @@ DecPrivateMode.definition = {
    *
    * This control function is permanently reset.
    *
-   * ÅıThe host cannot change the setting of CRM. You can only change CRM from
+   * **The host cannot change the setting of CRM. You can only change CRM from
    * Set-Up. If CRM is set, then the terminal ignores DECRQM and most other
    * control functions.
    *

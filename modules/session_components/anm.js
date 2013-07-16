@@ -41,7 +41,7 @@
  *
  * Description
  *
- * Table 5–1 VT52 Escape Sequences Sequence  Action
+ * Table 5-1 VT52 Escape Sequences Sequence  Action
  *
  * ESC A   Cursor up.
  * ESC B   Cursor down.

@@ -89,7 +89,7 @@
  * buffer_capacity               bufsz      Ya        numbers of bytes buffered before printing
  * buttons                       btns       BT        number of buttons on mouse
  * dot_horz_spacing              spinh      Yc        spacing of dots horizontally in dots per inch
- * dot_vert_spacing              spinv      Yb        spacing of pins ver‐ tically in pins per inch
+ * dot_vert_spacing              spinv      Yb        spacing of pins vertically in pins per inch
  * max_micro_address             maddr      Yd        maximum value in micro_..._address
  * max_micro_jump                mjump      Ye        maximum value in parm_..._micro
  * micro_col_size                mcs        Yf        character step size when in micro mode
@@ -124,10 +124,10 @@
  * column_address                hpa        ch        horizontal position #1, absolute (P)
  * command_character             cmdch      CC        terminal settable cmd character in prototype !?
  * create_window                 cwin       CW        define a window #1 from #2,#3 to #4,#5
- * cursor_address                cup        cm        move to row #1 col‐ umns #2
+ * cursor_address                cup        cm        move to row #1 columns #2
  * cursor_down                   cud1       do        down one line
  * cursor_home                   home       ho        home cursor (if no cup)
- * cursor_invisible              civis      vi        make cursor invisi‐ ble
+ * cursor_invisible              civis      vi        make cursor invisible
  * cursor_left                   cub1       le        move left one space
  * cursor_mem_address            mrcup      CM        memory relative cursor addressing, move to row #1 columns #2
  * cursor_normal                 cnorm      ve        make cursor appear normal (undo civis/cvvis)

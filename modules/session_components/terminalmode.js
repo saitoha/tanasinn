@@ -60,7 +60,7 @@ TerminalMode.definition = {
    *
    * Ps
    * The Ps parameter selects the terminal emulation mode as follows:
-   * Table 5–10 Terminal Emulation Modes
+   * Table 5-10 Terminal Emulation Modes
    *
    * Ps             | Terminal Mode
    * ---------------|------------------------

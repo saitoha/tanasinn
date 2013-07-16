@@ -113,16 +113,16 @@ DECLocatorMouse.definition = {
    * CSI Ps ; Pu ' z
    *
    * Valid values for the first parameter:
-   * Ps = 0 → Locator disabled (default)
-   * Ps = 1 → Locator enabled
-   * Ps = 2 → Locator enabled for one report, then disabled
+   * Ps = 0 -> Locator disabled (default)
+   * Ps = 1 -> Locator enabled
+   * Ps = 2 -> Locator enabled for one report, then disabled
    *
    * The second parameter specifies the coordinate unit for locator reports.
    *
    * Valid values for the second parameter:
-   * Pu = 0 or omitted → default to character cells
-   * Pu = 1 → device physical pixels
-   * Pu = 2 → character cells
+   * Pu = 0 or omitted -> default to character cells
+   * Pu = 1 -> device physical pixels
+   * Pu = 2 -> character cells
    *
    */
   "[profile('vt100'), sequence('CSI Ps;Pu \\' z')]":

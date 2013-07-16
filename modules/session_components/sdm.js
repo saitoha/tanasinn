@@ -35,7 +35,7 @@
  * When sixel scrolling is enabled, the sixel image begins at the top left of
  * the active text position. A sixel image will scroll the display when the
  * image reaches the bottom margin of the display (the image may also scroll
- * off the top of the display). A graphics new line character (–) is sent
+ * off the top of the display). A graphics new line character (-) is sent
  * immediately after the sixel dump, and the text cursor is set at the same
  * position as the sixel cursor upon exiting sixel mode.
  * With sixel scrolling disabled, the sixel image begins at the top left of

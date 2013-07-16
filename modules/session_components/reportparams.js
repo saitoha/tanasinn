@@ -54,7 +54,7 @@ ReportParams.definition = {
 
   /**
    *
-   * DECREQTPARM – Request Terminal Parameters
+   * DECREQTPARM - Request Terminal Parameters
    *
    * CSI <sol> x
    *
@@ -134,7 +134,7 @@ ReportParams.definition = {
    *                        are a decimal-encoded binary number.
    *
    *
-   * DECREPTPARM – Report Terminal Parameters
+   * DECREPTPARM - Report Terminal Parameters
    *
    * ESC [ <sol>; <par>; <nbits>; <xspeed>; <rspeed>; <clkmul>; <flags> x
    *
