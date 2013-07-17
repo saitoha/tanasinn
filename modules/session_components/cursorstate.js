@@ -49,18 +49,6 @@ CursorState.definition = {
 
   attr: null,
 
-  _DECOM: false,
-
-  get DECOM()
-  {
-    return this._DECOM;
-  },
-
-  set DECOM(value)
-  {
-    this._DECOM = value;
-  },
-
   _blink: true,
 
   _backup_instance: null,

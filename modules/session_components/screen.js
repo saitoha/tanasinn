@@ -367,7 +367,7 @@ ScreenSequenceHandler.definition = {
     n = (n || 1) - 1;
 
     if (this._left_right_margin_mode) {
-      if (cursor.DECOM) {
+      if (this._origin_mode) {
         n += this._scroll_left;
       }
     }
@@ -412,7 +412,7 @@ ScreenSequenceHandler.definition = {
         y = (n1 || 1) - 1,
         x = (n2 || 1) - 1;
 
-    if (cursor.DECOM) {
+    if (this._origin_mode) {
       if (this._left_right_margin_mode) {
         left = this._scroll_left;
         right = this._scroll_right;
@@ -664,11 +664,13 @@ ScreenSequenceHandler.definition = {
         height = this._height,
         cursor = this._cursor;
 
-    if (cursor.DECOM) {
-      left += scroll_left;
+    if (this._origin_mode) {
       top += scroll_top;
-      right += scroll_left;
       bottom += scroll_top;
+      if (this._left_right_margin_mode) {
+        left += scroll_left;
+        right += scroll_left;
+      }
       if (top >= scroll_bottom) {
         top = scroll_bottom - 1;
       }
@@ -893,7 +895,7 @@ ScreenSequenceHandler.definition = {
       this._scroll_left = n1;
       this._scroll_right = n2;
 
-      if (cursor.DECOM) {
+      if (this._origin_mode) {
         cursor.position_x = n1;
         cursor.position_y = this._scroll_top;
       } else {
@@ -1129,7 +1131,7 @@ ScreenSequenceHandler.definition = {
 
     n = (n || 1) - 1;
 
-    if (cursor.DECOM) {
+    if (this._origin_mode) {
       n += this._scroll_top;
     }
 
@@ -1282,7 +1284,7 @@ ScreenSequenceHandler.definition = {
 
     if (this._left_right_margin_mode) {
       right_margin = this._scroll_right;
-      if (cursor.DECOM) {
+      if (this._origin_mode) {
         n += this._scroll_left;
       }
     } else {
@@ -1354,7 +1356,7 @@ ScreenSequenceHandler.definition = {
         y = (n1 || 1) - 1,
         x = (n2 || 1) - 1;
 
-    if (cursor.DECOM) {
+    if (this._origin_mode) {
       if (this._left_right_margin_mode) {
         left = this._scroll_left;
         right = this._scroll_right;
@@ -2164,6 +2166,7 @@ Screen.definition = {
   _scroll_bottom: null,
   _screen_choice: coUtils.Constant.SCREEN_MAIN,
   _line_generator: null,
+  _origin_mode: null,
 
   _wraparound_mode: true,
   _insert_mode: false,
@@ -2190,6 +2193,7 @@ Screen.definition = {
     this._switchScreen();
     this._cursor = cursor_state;
     this._line_generator = line_generator;
+    this._origin_mode = false;
 
     this.resetScrollRegion();
   },
@@ -2214,6 +2218,7 @@ Screen.definition = {
     this._scroll_right = null;
     this._screen_choice = coUtils.Constant.SCREEN_MAIN;
     this._line_generator = null;
+    this._origin_mode = null;
 
     this._wraparound_mode = true;
     this._insert_mode = false;
@@ -2415,6 +2420,13 @@ Screen.definition = {
   function disableReverseWraparound()
   {
     this._reverse_wraparound_mode = false;
+  },
+
+  /** enable/disable origin mode */
+  "[subscribe('set/origin-mode'), pnp]":
+  function setOriginMode(mode)
+  {
+    this._origin_mode = mode;
   },
 
   /** enable/disable left/right margin mode */
@@ -2725,7 +2737,7 @@ Screen.definition = {
         x,
         y;
     
-    if (cursor.DECOM) {
+    if (this._origin_mode) {
       if (this._left_right_margin_mode) {
         x = cursor.position_x - this._scroll_left;
       } else {
@@ -3068,8 +3080,10 @@ Screen.definition = {
     this._scroll_top = top;
     this._scroll_bottom = bottom;
 
-    if (cursor.DECOM) {
-      cursor.position_x = this._scroll_left;
+    if (this._origin_mode) {
+      if (this._left_right_margin_mode) {
+        cursor.position_x = this._scroll_left;
+      }
       cursor.position_y = top;
     } else {
       cursor.position_x = 0;

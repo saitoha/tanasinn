@@ -62,8 +62,7 @@
  * margins. The cursor can move outside of the margins.
  *
  */
-var OriginMode = new Class().extends(Plugin)
-                            .depends("cursorstate");
+var OriginMode = new Class().extends(Plugin);
 OriginMode.definition = {
 
   id: "origin_mode",
@@ -82,7 +81,6 @@ OriginMode.definition = {
   "[persistable] default_value": false,
 
   _mode: null,
-  _cursor: null,
 
   /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
@@ -91,7 +89,6 @@ OriginMode.definition = {
   function install(context)
   {
     this._mode = this.default_value;
-    this._cursor = context["cursorstate"];
   },
 
   /** Uninstalls itself.
@@ -100,7 +97,6 @@ OriginMode.definition = {
   function uninstall()
   {
     this._mode = null;
-    this._cusor = null;
   },
 
   /** Enable origin mode (DECOM)
@@ -108,12 +104,10 @@ OriginMode.definition = {
   "[subscribe('sequence/decset/6'), pnp]":
   function activate()
   {
-    var cursor = this._cursor;
-
     this._mode = true;
 
     // set
-    cursor.DECOM = true;
+    this.sendMessage("set/origin-mode", true);
 
     coUtils.Debug.reportMessage(
       _("DECSET - DECOM (Origin mode) was set."));
@@ -125,12 +119,10 @@ OriginMode.definition = {
   "[subscribe('sequence/decrst/6'), pnp]":
   function deactivate()
   {
-    var cursor = this._cursor;
-
     this._mode = false;
 
     // reset
-    cursor.DECOM = false;
+    this.sendMessage("set/origin-mode", true);
 
     coUtils.Debug.reportMessage(
       _("DECSET - DECOM (Origin mode) was reset."));
@@ -195,10 +187,8 @@ OriginMode.definition = {
 
     if (enabled) {
       assert(null !== this._mode);
-      assert(null !== this._cursor);
     } else {
       assert(null === this._mode);
-      assert(null === this._cursor);
     }
   },
 
