@@ -34,6 +34,7 @@ CursorState.definition = {
 
   id: "cursorstate",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

@@ -116,9 +116,7 @@ OriginMode.definition = {
     cursor.DECOM = true;
 
     coUtils.Debug.reportMessage(
-      _("DECSET - DECOM (Origin mode) was set: (%d, %d)."),
-      cursor.originX,
-      cursor.originY);
+      _("DECSET - DECOM (Origin mode) was set."));
 
   },
 
@@ -135,9 +133,7 @@ OriginMode.definition = {
     cursor.DECOM = false;
 
     coUtils.Debug.reportMessage(
-      _("DECSET - DECOM (Origin mode) was reset: (%d, %d)."),
-      cursor.position_x,
-      cursor.position_y);
+      _("DECSET - DECOM (Origin mode) was reset."));
   },
 
   /** Report mode
@@ -197,12 +193,12 @@ OriginMode.definition = {
   {
     var enabled = this.enabled;
 
-    try {
-      this.enabled = false;
-      this.enabled = true;
-      this.enabled = false;
-    } finally {
-      this.enabled = enabled;
+    if (enabled) {
+      assert(null !== this._mode);
+      assert(null !== this._cursor);
+    } else {
+      assert(null === this._mode);
+      assert(null === this._cursor);
     }
   },
 

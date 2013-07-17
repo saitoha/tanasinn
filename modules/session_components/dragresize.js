@@ -222,8 +222,8 @@ Resizer.definition = {
         screen = this._screen,
         initial_column = screen.width,
         initial_row = screen.height,
-        originX = event.screenX,
-        originY = event.screenY;
+        origin_x = event.screenX,
+        origin_y = event.screenY;
 
     //this._capture_margin.hidden = true;
     event.stopPropagation(); // cancel defaut behavior
@@ -246,8 +246,8 @@ Resizer.definition = {
           char_width = renderer.char_width;
           line_height = renderer.line_height;
 
-          diffX = Math.round((event.screenX - originX) / char_width);
-          diffY = Math.round((event.screenY - originY) / line_height);
+          diffX = Math.round((event.screenX - origin_x) / char_width);
+          diffY = Math.round((event.screenY - origin_y) / line_height);
 
           column = initial_column + ({ e: diffX, w: -diffX }[this.type.slice(-1)] || 0);
           row = initial_row + ({ s: diffY, n: -diffY }[this.type[0]] || 0);
