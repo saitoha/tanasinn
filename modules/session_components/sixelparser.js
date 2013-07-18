@@ -114,6 +114,8 @@ SixelParser.definition = {
     };
   },
 
+  _color: 0,
+
   "[persistable] enabled_when_startup": true,
 
   _setSixel: function _setSixel(imagedata, x, y, c)

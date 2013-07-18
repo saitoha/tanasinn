@@ -37,6 +37,7 @@ Sixel.definition = {
 
   id: "sixel",
 
+  /** pluugin information */
   getInfo: function getInfo()
   {
     return {
@@ -94,7 +95,7 @@ Sixel.definition = {
     for (; i < this._buffers.length; ++i) {
       buffer = this._buffers[i];
       if (buffer.canvas.parentNode) {
-      //  buffer.canvas.parentNode.removeChild(buffer.canvas);
+        buffer.canvas.parentNode.removeChild(buffer.canvas);
       }
       buffer.canvas = null;
       buffer.context = null;
@@ -114,43 +115,23 @@ Sixel.definition = {
         sixel_canvas,
         dom;
 
-    if (this._display_mode) { // sixel display mode
+    sixel_canvas = this.request(
+      "command/construct-chrome",
+      {
+        tagName: "html:canvas",
+        id: "sixel_canvas",
+      }).sixel_canvas,
 
-      sixel_canvas = this.request(
-        "command/construct-chrome",
-        {
-          parentNode: "#tanasinn_center_area",
-          tagName: "html:canvas",
-          id: "sixel_canvas",
-        }).sixel_canvas,
+    sixel_canvas.width = renderer.char_width * screen.width;
+    sixel_canvas.height = renderer.line_height * screen.height * 2;
 
-      sixel_canvas.width = renderer.char_width * screen.width;
-      sixel_canvas.height = renderer.line_height * screen.height;
+    dom = {
+      canvas: sixel_canvas,
+      context: sixel_canvas.getContext("2d"),
+    };
 
-      dom = {
-        canvas: sixel_canvas,
-        context: sixel_canvas.getContext("2d"),
-      };
+    this._buffers.push(dom);
 
-    } else { // sixel scrolling mode
-
-      sixel_canvas = this.request(
-        "command/construct-chrome",
-        {
-          tagName: "html:canvas",
-          id: "sixel_canvas",
-        }).sixel_canvas,
-
-      sixel_canvas.width = renderer.char_width * screen.width;
-      sixel_canvas.height = renderer.line_height * screen.height * 2;
-
-      dom = {
-        canvas: sixel_canvas,
-        context: sixel_canvas.getContext("2d"),
-      };
-
-      this._buffers.push(dom);
-    }
     return dom;
   },
 
@@ -227,29 +208,48 @@ Sixel.definition = {
   {
     var dom = this._createNewCanvas(),
         result = this._sixel_parser.parse(sixel, dom),
-        renderer = this._renderer,
-        cursor_state = this._cursor_state,
-        screen = this._screen,
-        line_height = renderer.line_height,
-        char_width = renderer.char_width,
-        line_count = Math.ceil(result.max_y / line_height),
-        max_cell_count = screen.width - cursor_state.position_x,
-        cell_count = Math.min(Math.ceil(result.max_x / char_width), max_cell_count),
-        start_code = 0x21,
-        end_code = start_code + cell_count,
-        full_cell = true,
-        position_x = cursor_state.position_x,
-        i = 0;
+        sixel_canvas,
+        renderer,
+        cursor_state,
+        screen,
+        line_height,
+        char_width,
+        line_count,
+        max_cell_count,
+        cell_count,
+        start_code,
+        end_code,
+        full_cell,
+        position_x,
+        i;
 
-    for (; i < line_count; ++i) {
-      this._processSixelLine(result.canvas,
-                             char_width,
-                             line_height,
-                             line_height * i,
-                             start_code,
-                             end_code,
-                             full_cell,
-                             position_x);
+    if (this._display_mode) {
+      sixel_canvas = this._renderer.getCanvas();
+      sixel_canvas.getContext("2d").drawImage(dom.canvas, 0, 0);
+    } else {
+      renderer = this._renderer;
+      cursor_state = this._cursor_state;
+      screen = this._screen;
+      line_height = renderer.line_height;
+      char_width = renderer.char_width;
+      line_count = Math.ceil(result.max_y / line_height);
+      max_cell_count = screen.width - cursor_state.position_x;
+      cell_count = Math.min(Math.ceil(result.max_x / char_width), max_cell_count);
+      start_code = 0x21;
+      end_code = start_code + cell_count;
+      full_cell = true;
+      position_x = cursor_state.position_x;
+
+      for (i = 0; i < line_count; ++i) {
+        this._processSixelLine(result.canvas,
+                               char_width,
+                               line_height,
+                               line_height * i,
+                               start_code,
+                               end_code,
+                               full_cell,
+                               position_x);
+      }
     }
 
   },
