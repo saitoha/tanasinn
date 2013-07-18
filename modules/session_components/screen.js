@@ -2033,7 +2033,9 @@ Resizable.definition = {
   _popLines: function _popLines(n)
   {
     var buffer = this._buffer,
-        offset = this._buffer_top;
+        offset = this._buffer_top,
+        cursor = this._cursor,
+        height = this._height;
 
     buffer.splice(-n);
     buffer.splice(-this._height, n);
@@ -2041,14 +2043,14 @@ Resizable.definition = {
     // decrease height.
     this._height -= n;
 
-    this._lines = buffer.slice(offset, offset + this._height);
+    this._lines = buffer.slice(offset, offset + height);
 
     // collapse scroll region.
     this._scroll_bottom -= n;
 
     // fix cursor position.
-    if (this._cursor.position_y >= this._height) {
-      this._cursor.position_y = this._height - 1;
+    if (cursor.position_y >= height) {
+      cursor.position_y = height - 1;
     }
   },
 
@@ -2057,18 +2059,18 @@ Resizable.definition = {
   {
     var buffer = this._buffer,
         new_lines = this._createLines(n),
-        offset = this._buffer_top;
+        offset = this._buffer_top,
+        height = this._height + n; // increase height.
 
-    // increase height.
-    this._height += n;
+    this._height = height;
 
     Array.prototype.push.apply(buffer, new_lines);
 
     new_lines = this._createLines(n);
-    new_lines.unshift(-this._height, 0); // make arguments
+    new_lines.unshift(- height, 0); // make arguments
     Array.prototype.splice.apply(buffer, new_lines);
 
-    this._lines = buffer.slice(offset, offset + this._height);
+    this._lines = buffer.slice(offset, offset + height);
 
     // expand scroll region.
     this._scroll_bottom += n;
@@ -2583,7 +2585,6 @@ Screen.definition = {
       position_x = width - 1;
     }
 
-    cursor = this._cursor;
     position_x = position_x - n;
 
     if (position_x < min) {
@@ -3191,18 +3192,18 @@ Screen.definition = {
   { // Scroll Left
     var lines = this._lines,
         attrvalue = this._cursor.attr.value,
-        i = 0,
-        j = 0,
+        i,
+        j,
         leftmargin = this._scroll_left,
         rightmargin = this._scroll_right,
         range,
         cells,
         cell;
 
-    for (; i < lines.length; ++i) {
+    for (i = 0; i < lines.length; ++i) {
       cells = lines[i].cells;
       range = cells.splice(leftmargin, n);
-      for (; j < range.length; ++j) {
+      for (j = 0; j < range.length; ++j) {
         cell = range[j];
         cell.erase(attrvalue);
       }
@@ -3262,8 +3263,9 @@ Screen.definition = {
   function eraseCharacters(n)
   { // Erase CHaracters
     var line = this.getCurrentLine(),
-        attrvalue = this._cursor.attr.value,
-        start = this._cursor.position_x,
+        cursor = this._cursor,
+        attrvalue = cursor.attr.value,
+        start = cursor.position_x,
         end = start + n;
 
     if (end > line.length) {
