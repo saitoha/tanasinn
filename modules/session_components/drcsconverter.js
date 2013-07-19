@@ -530,6 +530,7 @@ NRCSConverter.definition = {
 
   id: "drcs_converter",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {
@@ -541,6 +542,7 @@ NRCSConverter.definition = {
 
   "[persistable] enabled_when_startup": true,
 
+  _g: null,
   _gl: 0,
   _gr: 0,
   _next: 0,
@@ -584,30 +586,35 @@ NRCSConverter.definition = {
     this._next = 0;
   },
 
+  /** Handle SI sequence */
   "[subscribe('event/shift-in'), pnp]":
   function shiftIn()
   {
     this._gl = 0;
   },
 
+  /** Handle SO sequence */
   "[subscribe('event/shift-out'), pnp]":
   function shiftOut()
   {
     this._gl = 1;
   },
 
+  /** Handle SS2 sequence */
   "[subscribe('sequence/ss2'), pnp]":
   function ss2()
   {
     this._next = 2;
   },
 
+  /** Handle SS3 sequence */
   "[subscribe('sequence/ss3'), pnp]":
   function ss3()
   {
     this._next = 3;
   },
 
+  /** Designate specified character set to G0 */
   "[subscribe('sequence/g0'), pnp]":
   function scsg0(dscs)
   {
@@ -618,6 +625,7 @@ NRCSConverter.definition = {
     }
   },
 
+  /** Designate specified character set to G1 */
   "[subscribe('sequence/g1'), pnp]":
   function scsg1(dscs)
   {
@@ -628,6 +636,7 @@ NRCSConverter.definition = {
     }
   },
 
+  /** Designate specified character set to G2 */
   "[subscribe('sequence/g2'), pnp]":
   function scsg2(dscs)
   {
@@ -638,6 +647,7 @@ NRCSConverter.definition = {
     }
   },
 
+  /** Designate specified character set to G4 */
   "[subscribe('sequence/g3'), pnp]":
   function scsg3(dscs)
   {
@@ -648,51 +658,64 @@ NRCSConverter.definition = {
     }
   },
 
+  /** Called when cursor attributes are saved */
   "[subscribe('command/save-cursor'), pnp]":
   function saveCursor(context)
   {
-    context.g0 = this._g[0];
-    context.g1 = this._g[1];
-    context.g2 = this._g[2];
-    context.g3 = this._g[3];
+    var banks = this._g;
+
+    context.g0 = banks[0];
+    context.g1 = banks[1];
+    context.g2 = banks[2];
+    context.g3 = banks[3];
     context.gl = this._gl;
     context.gr = this._gr;
   },
 
+  /** Called when cursor attributes are restored */
   "[subscribe('command/restore-cursor'), pnp]":
   function restoreCursor(context)
   {
-    this._g[0] = context.g0;
-    this._g[1] = context.g1;
-    this._g[2] = context.g2;
-    this._g[3] = context.g3;
+    var banks = this._g;
+
+    banks[0] = context.g0;
+    banks[1] = context.g1;
+    banks[2] = context.g2;
+    banks[3] = context.g3;
     this._gl = context.gl;
     this._gr = context.gr;
   },
 
+  /** Called when soft/hard reset command is invoked */
   "[subscribe('command/{soft | hard}-terminal-reset'), pnp]":
   function reset(context)
   {
-    this._g[0] = USASCII;
-    this._g[1] = ISO_8859_Latin1;
-    this._g[2] = ISO_8859_Latin1;
-    this._g[3] = ISO_8859_Latin1;
+    var banks = this._g;
+
+    banks[0] = USASCII;
+    banks[1] = ISO_8859_Latin1;
+    banks[2] = ISO_8859_Latin1;
+    banks[3] = ISO_8859_Latin1;
     this._gl = 0;
     this._gr = 1;
   },
 
+  /** Allocate new DRCS bank on specified RAM area */
   "[subscribe('command/alloc-drcs'), pnp]":
   function allocDRCS(drcs)
   {
     this._charset_table[drcs.dscs] = drcs;
   },
 
+  /** Called when DA1 query is received */
   "[subscribe('command/query-da1-capability'), pnp]":
   function onQueryDA1Capability(mode)
   {
     return 9; // NRCS
   },
 
+  /** Receive codepoint array and convert
+   *  ISO-8859(2022) character point into Unicode point */
   convert: function convert(codes)
   {
     var left = this._g[this._next || this._gl] || USASCII,

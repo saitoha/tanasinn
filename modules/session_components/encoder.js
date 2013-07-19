@@ -69,6 +69,7 @@ Encoder.definition = {
 
   id: "encoder",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {
@@ -102,14 +103,15 @@ Encoder.definition = {
     this._cache = null;
   },
 
+  /** Post-initialization */
   "[subscribe('event/session-initialized'), pnp]":
   function onSessionInitialized(broker)
   {
     this.changeScheme(this.initial_scheme);
   },
 
-  "[subscribe('change/encoder'), pnp]":
   /** Sets character encoding scheme */
+  "[subscribe('change/encoder'), pnp]":
   function changeScheme(value)
   {
     var encoders = this.sendMessage("get/encoders"),
@@ -184,10 +186,6 @@ Encoder.definition = {
 function main(broker)
 {
   new Encoder(broker);
-}
-
-function test(broker)
-{
 }
 
 // EOF

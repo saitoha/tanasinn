@@ -41,6 +41,7 @@ DecModeSequenceHandler.definition = {
     this._dec_alternate_buffer = {};
   },
 
+  /** Handle DECSET sequence */
   "[profile('vt100'), sequence('CSI ? Pm h')]":
   function DECSET()
   { // DEC Private Mode Set

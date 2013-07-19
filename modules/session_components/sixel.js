@@ -87,12 +87,12 @@ Sixel.definition = {
   "[uninstall]":
   function uninstall()
   {
-    var i = 0,
+    var i,
         buffer;
 
     this._map = null;
 
-    for (; i < this._buffers.length; ++i) {
+    for (i = 0; i < this._buffers.length; ++i) {
       buffer = this._buffers[i];
       if (buffer.canvas.parentNode) {
         buffer.canvas.parentNode.removeChild(buffer.canvas);
@@ -135,24 +135,28 @@ Sixel.definition = {
     return dom;
   },
 
+  /** Reply against DA1 query */
   "[subscribe('command/query-da1-capability'), pnp]":
   function onQueryDA1Capability(mode)
   {
     return 4; // sixel
   },
 
+  /** Called when the sixel scrolling mode is enabled/disabled */
   "[subscribe('command/change-sixel-display-mode'), pnp]":
   function onSixelDisplayModeChanged(mode)
   {
     this._display_mode = mode;
   },
 
+  /** Handle DCS q */
   "[subscribe('sequence/dcs/71'), pnp]":
   function onDCS(data)
   {
     var pattern = /^(?:[0-9;]*)?q/,
         match = data.substr(0, 32).match(pattern),
         sixel;
+
     if (null === match) {
       return;
     }
@@ -165,6 +169,7 @@ Sixel.definition = {
     this._parseSixel(sixel);
   },
 
+// private methods
   _processSixelLine:
   function _processSixelLine(canvas,
                              char_width,
