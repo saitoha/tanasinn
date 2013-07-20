@@ -120,13 +120,23 @@ SixelParser.definition = {
 
   _setSixel: function _setSixel(imagedata, x, y, c)
   {
-    var color = this._color_table[this._color],
-        r = color[0],
-        g = color[1],
-        b = color[2],
+    var color,
+        r,
+        g,
+        b,
         data = imagedata.data,
         i = 0,
         position;
+
+    color = this._color_table[this._color];
+
+    if (undefined === color) {
+      return;
+    }
+
+    r = color[0];
+    g = color[1];
+    b = color[2];
 
     c -= 0x3f;
 
@@ -221,6 +231,7 @@ SixelParser.definition = {
 
             if (1 === c) { // HSL
               space_type = "HSL";
+              throw coUtils.Debug.Exception(_("HSL format is not implemented."));
             } else if (2 === c) {
               space_type = "RGB";
             } else {
