@@ -1,3 +1,7 @@
+2013-07-22 Hayaki Saito <user@zuse.jp>
+    * Version 0.3.3.8
+	* Fix broken SIXEL display mode
+
 2013-07-13 Hayaki Saito <user@zuse.jp>
     * Version 0.3.3.8
     * Fix CHA behavior

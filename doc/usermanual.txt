@@ -26,6 +26,10 @@ link:./usermanual.html[English/英語]
 
 == News
 
+=== 2013-07-22
+    Version 0.3.3.8
+    Fix broken SIXEL display mode
+
 === 2013-07-13
     Version 0.3.3.8
     Fix CHA behavior
@@ -239,11 +243,11 @@ link:./usermanual.html[English/英語]
 
 === 2012/09/16
     Version 0.3.0.0
-	Support ED 3 / clear scroll buffer(xterm)
-	Support xterm's(#252) "Title Mode"
-	Support 8bit input mode
-	Add PopClip integration
-	Enable 3D Transform plugin by default
+    Support ED 3 / clear scroll buffer(xterm)
+    Support xterm's(#252) "Title Mode"
+    Support 8bit input mode
+    Add PopClip integration
+    Enable 3D Transform plugin by default
 
 === 2012/08/19
     Version 0.2.4.0/0.2.4.1

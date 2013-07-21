@@ -24,5 +24,5 @@
 
 "use strict";
 
-var TANASINN_PACKAGE_VERSION = "0.3.3.8";
+var TANASINN_PACKAGE_VERSION = "0.3.3.9";
 
