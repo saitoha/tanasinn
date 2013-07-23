@@ -139,19 +139,22 @@ SlowBlinkTrait.definition = {
   createSlowBlinkLayer: function createSlowBlinkLayer()
   {
     var broker = this._broker,
+        main_layer = this._main_layer,
         layer = new Layer(broker, "slowblink_canvas");
 
-    layer.setWidth(this._main_layer.getWidth());
-    layer.setHeight(this._main_layer.getHeight());
+    layer.setWidth(main_layer.getWidth());
+    layer.setHeight(main_layer.getHeight());
 
     this._slow_blink_layer = layer;
 
     coUtils.Timer.setTimeout(
       function timerProc()
       {
-        if (null !== this._slow_blink_layer) {
-          this._slow_blink_layer.canvas.style.opacity
-            = 1 - this._slow_blink_layer.canvas.style.opacity;
+        var slow_blink_layer = this._slow_blink_layer;
+
+        if (null !== slow_blink_layer) {
+          slow_blink_layer.canvas.style.opacity
+            = 1.00 - slow_blink_layer.canvas.style.opacity;
           coUtils.Timer.setTimeout(timerProc, this.slow_blink_interval, this);
         }
       }, this.slow_blink_interval, this);
@@ -171,18 +174,23 @@ RapidBlinkTrait.definition = {
    */
   createRapidBlinkLayer: function createRapidBlinkLayer()
   {
-    var broker = this._broker;
+    var broker = this._broker,
+        main_layer = this._main_layer,
+        layer = new Layer(broker, "rapidblink_canvas");
 
-    this._rapid_blink_layer = new Layer(broker, "rapidblink_canvas");
-    this._rapid_blink_layer.setWidth(this._main_layer.getWidth());
-    this._rapid_blink_layer.setHeight(this._main_layer.getHeight());
+    layer.setWidth(main_layer.getWidth());
+    layer.setHeight(main_layer.getHeight());
+
+    this._rapid_blink_layer = layer;
 
     coUtils.Timer.setTimeout(
       function timerProc()
       {
-        if (null !== this._rapid_blink_layer) {
-          this._rapid_blink_layer.canvas.style.opacity
-            = 1 - this._rapid_blink_layer.canvas.style.opacity;
+        var rapid_blink_layer = this._rapid_blink_layer;
+
+        if (null !== rapid_blink_layer) {
+          rapid_blink_layer.canvas.style.opacity
+            = 1.00 - rapid_blink_layer.canvas.style.opacity;
           coUtils.Timer.setTimeout(timerProc, this.rapid_blink_interval, this);
         }
       }, this.rapid_blink_interval, this);

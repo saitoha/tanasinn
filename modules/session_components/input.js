@@ -929,6 +929,7 @@ InputManager.definition = {
 
   id: "inputmanager",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {

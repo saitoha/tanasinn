@@ -185,6 +185,7 @@ Selection.definition = {
 
   id: "selection",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {
@@ -255,7 +256,7 @@ Selection.definition = {
     this._screen = context["screen"];
     this._palette = context["palette"];
     this._textbox = context["inputmanager"].getInputField(),
-    //coUtils.Color.adjust(
+
     result = this.request(
       "command/construct-chrome",
       {
@@ -273,8 +274,10 @@ Selection.definition = {
   "[uninstall]":
   function uninstall()
   {
-    if (null !== this._canvas) {
-      this._canvas.parentNode.removeChild(this._canvas);
+    var canvas = this._canvas;
+
+    if (null !== canvas) {
+      canvas.parentNode.removeChild(canvas);
       this._canvas = null;
     }
     if (null !== this._context) {
@@ -536,7 +539,7 @@ Selection.definition = {
         r1,
         r2,
         length,
-	j;
+	      j;
 
     this.clear();
 
@@ -646,7 +649,9 @@ Selection.definition = {
             }
           }
         }
-        x = Math.min(line.length, end_column) * char_width;
+        if (undefined !== line) {
+          x = Math.min(line.length, end_column) * char_width;
+        }
         context.arc(x - r1, i * line_height - r1, r2, pi * 0, pi * 0.5, false);
         context.arc(0 + r1, i * line_height - r1, r2, pi * 0.5, pi * 1.0, false);
         context.arc(0 + r1, (start_row + 1) * line_height + r1, r2, pi * 1.0 , pi * 1.5, false);
@@ -699,6 +704,7 @@ Selection.definition = {
   function paintForeground(context)
   {
     var i;
+
     for (i = 0; i < 10; ++i) {
       context.drawImage(this._canvas, 0, 0);
     }
@@ -707,14 +713,16 @@ Selection.definition = {
   "[subscribe('get/selection-info'), pnp]":
   function getRange()
   {
-    var start, end;
+    var start,
+        end,
+        range = this._range;
 
-    if (null === this._range) {
+    if (null === range) {
       return null;
     }
 
-    start = this._range[0];
-    end = this._range[1];
+    start = range[0];
+    end = range[1];
 
     return {
       start: start,
@@ -738,8 +746,9 @@ Selection.definition = {
 
   _reportRange: function _reportRange()
   {
-    var column = this._range[0],
-        row = this._range[1],
+    var range = this._range,
+        column = range[0],
+        row = range[1],
         message = coUtils.Text.format(_("selected: [%d, %d]"), column, row);
 
     this.sendMessage("command/report-status-message", message);
@@ -770,9 +779,8 @@ Selection.definition = {
 
   convertPixelToScreen: function convertPixelToScreen(event)
   {
-    var target_element = this.request(
-          "command/query-selector",
-          "#tanasinn_center_area"),
+    var target_element = this.request("command/query-selector",
+                                      "#tanasinn_center_area"),
         root_element = this.request("get/root-element"),
         box = target_element.boxObject,
         offsetX = box.screenX - root_element.boxObject.screenX,

@@ -133,6 +133,7 @@ Ime.definition = {
     this._cursor_state = null;
     this._renderer = null;
     this._palette = null;
+    this._enabled = null;
 
     // disables session event handlers.
     this.onGotFocus.enabled = false;
