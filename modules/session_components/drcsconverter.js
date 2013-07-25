@@ -520,7 +520,6 @@ DEC_Swiss_NRC_Set[0x7c] = 0xf6; //
 DEC_Swiss_NRC_Set[0x7d] = 0xfc; //
 DEC_Swiss_NRC_Set[0x7e] = 0xfb; //
 
-
 /**
  * @class NRCSConverter
  *
@@ -547,23 +546,7 @@ NRCSConverter.definition = {
   _gr: 0,
   _next: 0,
 
-  _charset_table: {
-    "0": DEC_Special_Graphics_Character_Set,
-    "4": DEC_Dutch_NRC_Set,
-    "5": DEC_Finnish_NRC_Set,
-    "6": DEC_Norwegian_Danish_NRC_Set,
-    "7": DEC_Swedish_NRC_Set,
-    "B": USASCII,
-    "C": DEC_Finnish_NRC_Set,
-    "E": DEC_Norwegian_Danish_NRC_Set,
-    "H": DEC_Swedish_NRC_Set,
-    "K": DEC_German_NRC_Set,
-    "R": DEC_French_NRC_Set,
-    "Q": DEC_French_Canadian_NRC_Set,
-    "Y": DEC_Italian_NRC_Set,
-    "Z": DEC_Spanish_NRC_Set,
-    "=": DEC_Swiss_NRC_Set,
-  },
+  _charset_table: null,
 
   /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
@@ -571,8 +554,30 @@ NRCSConverter.definition = {
   "[install]":
   function install(context)
   {
+    var charset_map;
+
     this._g = [];
+    this._charset_table = [];
     this.reset();
+
+    charset_map = this._charset_table;
+
+    charset_map[0x30 /* 0 */] = DEC_Special_Graphics_Character_Set;
+    charset_map[0x34 /* 4 */] = DEC_Dutch_NRC_Set;
+    charset_map[0x35 /* 5 */] = DEC_Finnish_NRC_Set;
+    charset_map[0x36 /* 6 */] = DEC_Norwegian_Danish_NRC_Set;
+    charset_map[0x37 /* 7 */] = DEC_Swedish_NRC_Set;
+    charset_map[0x3d /* = */] = DEC_Swiss_NRC_Set;
+    charset_map[0x42 /* B */] = USASCII;
+    charset_map[0x43 /* C */] = DEC_Finnish_NRC_Set;
+    charset_map[0x45 /* E */] = DEC_Norwegian_Danish_NRC_Set;
+    charset_map[0x48 /* H */] = DEC_Swedish_NRC_Set;
+    charset_map[0x4b /* K */] = DEC_German_NRC_Set;
+    charset_map[0x51 /* Q */] = DEC_French_Canadian_NRC_Set;
+    charset_map[0x52 /* R */] = DEC_French_NRC_Set;
+    charset_map[0x59 /* Y */] = DEC_Italian_NRC_Set;
+    charset_map[0x5a /* Z */] = DEC_Spanish_NRC_Set;
+
   },
 
   /** Uninstalls itself.
@@ -736,7 +741,7 @@ NRCSConverter.definition = {
       for (i = 0; i < codes.length; ++i ) {
         c = codes[i];
         if (c < 0x80) { // GL
-          c = 0x100000 | left.dscs.charCodeAt(left.dscs.length - 1) << 8 | c;
+          c = 0x100000 | (left.dscs & 0xff) << 8 | c;
         }
         result.push(c);
       }
