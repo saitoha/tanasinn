@@ -908,7 +908,7 @@ coUtils.Color = {
 
     switch (rgb.length) {
 
-      case 3:
+      case 3:  // #rgb
         result = "#" + rgb
           .split("")
           .map(
@@ -925,11 +925,11 @@ coUtils.Color = {
           ;
         break;
 
-      case 6:
+      case 6:  // #rrggbb
         result = "#" + rgb;
         break;
 
-      case 9:
+      case 9:  // #rrrgggbbb
         result = "#" + rgb
           .match(/.../g)
           .map(
@@ -946,7 +946,7 @@ coUtils.Color = {
           ;
         break;
 
-      case 12:
+      case 12:  // #rrrrggggbbbb
         result = "#" + rgb
           .match(/..../g)
           .map(
