@@ -79,8 +79,8 @@ Cursor.definition = {
   "[persistable, watchable] radius": 2,
   "[persistable, watchable] shadow_blur": 4,
   "[persistable, watchable] shadow_color": "white",
-  "[persistable] blink_duration": 700, /* in msec */
-  "[persistable] blink_transition_duration": 600, /* in msec */
+  "[persistable] blink_duration": 500, /* in msec */
+  "[persistable] blink_transition_duration": 300, /* in msec */
   "[persistable] timing_function": "ease-in-out",
   "[persistable] initial_blink": true,
 
@@ -180,6 +180,7 @@ Cursor.definition = {
     }
   },
 
+  /** Reset cursor color */
   "[subscribe('sequence/osc/112'), pnp]":
   function OSC112()
   {
