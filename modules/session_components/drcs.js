@@ -91,27 +91,13 @@ DRCSBuffer.definition = {
     return 7; // DRCS
   },
 
-  getDRCSInfo: function getDRCSInfo(code)
-  {
-    var drcs_info;
-
-    if (this._map) {
-      drcs_info = this._map[this._g0];
-      if (drcs_info) {
-        if (drcs_info.start_code <= code && code < drcs_info.end_code) {
-          return drcs_info;
-        }
-      }
-    }
-    return null;
-  },
-
   "[subscribe('sequence/dcs/7b'), pnp]":
   function onDCS(data)
   {
     var pattern,
         match,
-        canvas;
+        canvas,
+        i;
 
     //           Pfn    Pcn      Pe      Pcmw     Pw      Pt      Pcmh     Pcss    Dscs
     pattern = /^([01]);([0-9]+);([012]);([0-9]+);([012]);([0123]);([0-9]+);([01])\{(\s*[0-~])([\x00-\x7e]+)$/;
@@ -190,14 +176,19 @@ DRCSBuffer.definition = {
     : 1 === Number(pcss) ? Number(pcn) + 0x20 // 96 character set.
     : Number(pcn) + 0x20; // unicode character set.
 
-    this._map = this._map || {};
-    if (this._map[dscs]) {
-      canvas = this._map[dscs].drcs_canvas;
+    this._map = this._map || [];
+
+    var dscs_key = 0;
+    for (i = 0; i < dscs.length; ++i) {
+        dscs_key = dscs_key << 8 | dscs.charCodeAt(i);
+    }
+
+    if (this._map[dscs_key]) {
+      canvas = this._map[dscs_key].drcs_canvas;
     } else {
       canvas = this.request(
         "command/construct-chrome",
         {
-          //parentNode: "#tanasinn_chrome",
           tagName: "html:canvas",
         })["#root"];
     }
@@ -228,7 +219,7 @@ DRCSBuffer.definition = {
       this.sendMessage(
         "command/alloc-drcs",
         {
-          dscs: dscs,
+          dscs: dscs_key,
           drcs_canvas: canvas,
           drcs_width: char_width,
           drcs_height: char_height,
@@ -269,7 +260,7 @@ DRCSBuffer.definition = {
       canvas.getContext("2d").putImageData(imagedata, 0, 0);
 
       var drcs = {
-        dscs: dscs,
+        dscs: dscs_key,
         drcs_canvas: canvas,
         drcs_width: char_width,
         drcs_height: char_height,
