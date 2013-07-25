@@ -576,7 +576,7 @@ Renderer.definition = {
         text_offset = this._text_offset,
         left = char_width * column,
         top = line_height * row,
-        width = (char_width * (end - column)),
+        width = char_width * (end - column),
         height = line_height;
 
     this._drawBackground(context,
@@ -894,13 +894,14 @@ Renderer.definition = {
 
     code = codes[0];
 
-    if (code >= 0xf0000 && 1 === codes.length) {
+    // handle non-BMP characters
+    if (code >= 0xf0000) {
       length = 1;
       if (code < 0x100000) {
-        codes[0] = code & 0xffff;
-      } else {
-        dscs = String.fromCharCode(code >>> 8 & 0xff);
-        drcs_state = this._drcs_map[" " + dscs];
+        //codes[0] = code & 0xffff;
+      } else { // DRCS caracters in private area
+        dscs = 0x20 << 8 | (code >>> 8 & 0xff);
+        drcs_state = this._drcs_map[dscs];
         codes[0] = code & 0xff;
       }
     }
