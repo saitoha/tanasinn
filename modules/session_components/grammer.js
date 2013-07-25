@@ -431,7 +431,8 @@ VT100Grammar.definition = {
 
     handler = this._esc_map[ibytes[0]];
     if (handler) {
-      handler(String.fromCharCode(fbyte));
+      key = key ^ (ibytes[0] << 8 * ibytes.length);
+      handler(key);
     }
   },
 
