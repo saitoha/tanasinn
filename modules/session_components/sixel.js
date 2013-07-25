@@ -179,7 +179,7 @@ Sixel.definition = {
                              full_cell,
                              position_x)
   {
-    var dscs = String.fromCharCode(0x20, 0x20 + ++this._counter % 94),
+    var dscs = 0x20 << 8 | (0x20 + ++this._counter % 94),
         buffer = [],
         screen = this._screen,
         cursor_state = this._cursor_state,
