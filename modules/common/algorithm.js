@@ -31,7 +31,7 @@ coUtils.Algorithm = {
   /** Return MD5 hash from the argument.
    *  @param {Array} data source data
    */
-  calculateMD5: function getMD5(data)
+  calculateMD5: function calculateMD5(data)
   {
     var crypt_hash = coUtils.Components.createHash();
 
