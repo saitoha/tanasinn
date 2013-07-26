@@ -70,7 +70,12 @@ VT100Grammar.definition = {
   id: "vt100",
 
   _state: _STATE_GROUND,
-  _str: null,
+  _char_map: null,
+  _esc_map: null,
+  _csi_map: null,
+  _str_map: null,
+  _ibytes: null,
+  _pbytes: null,
 
   /** provide plugin information */
   getInfo: function getInfo()
@@ -102,6 +107,7 @@ VT100Grammar.definition = {
     this._state = _STATE_GROUND;
     this._ibytes = null;
     this._pbytes = null;
+    
   },
 
   /** The post-initializer method which called when the session
@@ -322,6 +328,7 @@ VT100Grammar.definition = {
       }
       scanner.moveNext()
     }
+
     this._state = state;
     this._pbytes = pbytes;
     this._ibytes = ibytes;
@@ -332,14 +339,11 @@ VT100Grammar.definition = {
   {
     var action,
         handler,
-        params,
+        params = [],
         i,
         c,
-        param,
+        param = 0,
         key = 0;
-
-    params = [];
-    param = 0;
 
     for (i = 0; i < pbytes.length; ++i) {
       c = pbytes[i];
@@ -352,17 +356,19 @@ VT100Grammar.definition = {
         key = key << 8 | c;
       }
     }
+
     params.push(param);
     for (i = 0; i < ibytes.length; ++i) {
       c = ibytes[i];
       key = key << 8 | c;
     }
+
     key = key << 8 | fbyte;
     handler = this._csi_map[key];
-    if (!handler) {
-      return;
+
+    if (undefined !== handler) {
+      handler(params);
     }
-    handler(params);
   },
 
   _dispatch_csi_no_ibytes:
@@ -415,6 +421,7 @@ VT100Grammar.definition = {
         key = 0,
         handler,
         params,
+        map = this._esc_map,
         c,
         i;
 
@@ -423,27 +430,26 @@ VT100Grammar.definition = {
       key = key << 8 | c;
     }
     key = key << 8 | fbyte;
-    handler = this._esc_map[key];
-    if (handler) {
+    handler = map[key];
+    if (undefined !== handler) {
       handler();
       return;
     }
 
-    handler = this._esc_map[ibytes[0]];
-    if (handler) {
-      key = key ^ (ibytes[0] << 8 * ibytes.length);
+    handler = map[ibytes[0]];
+    if (undefined !== handler) {
+      key ^= ibytes[0] << 8 * ibytes.length;
       handler(key);
     }
   },
 
   _dispatch_char: function _dispatch_char(c)
   {
-    var action = this._char_map[c];
+    var handler = this._char_map[c];
 
-    if (!action) {
-      return;
+    if (undefined !== handler) {
+      handler();
     }
-    action();
   },
 
   _dispatch_string: function _dispatch_string(value)
@@ -452,11 +458,11 @@ VT100Grammar.definition = {
         handler = this._str_map[c],
         action,
         data;
-    if (!handler) {
-      return;
+
+    if (undefined !== handler) {
+      data = coUtils.Text.safeConvertFromArray(value);
+      handler(data);
     }
-    data = coUtils.Text.safeConvertFromArray(value);
-    handler(data);
   },
 
   /** Append a sequence handler.
@@ -487,9 +493,10 @@ VT100Grammar.definition = {
       prefix = tokens.shift();
       length = tokens.length;
       if ("ESC" === prefix) {
-        if (tokens[length - 1] === "ST"
-         && tokens[length - 2] === "...") {
+        if ("ST" === tokens[length - 1]
+         && "..." === tokens[length - 2]) {
           prefix = tokens[0].charCodeAt(0);
+          // bind
           this._str_map[prefix] = function(param) { return handler.call(context, param) };
         } else {
           key = 0;
@@ -501,6 +508,7 @@ VT100Grammar.definition = {
               key = key << 8 | token.charCodeAt(0);
             }
           }
+          // bind
           this._esc_map[key] = function(param) { return handler.call(context, param) };
         }
       } else if ("CSI" === prefix) {
@@ -513,6 +521,7 @@ VT100Grammar.definition = {
             key = key << 8 | token.charCodeAt(0);
           }
         }
+        // bind
         this._csi_map[key] = function(params) { return handler.apply(context, params) };
       }
     }
