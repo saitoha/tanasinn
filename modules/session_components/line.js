@@ -510,7 +510,6 @@ Line.definition = {
         cell;
 
     context.push(cells.length);
-    // this.cells.forEach(function(cell) cell.serialize(context));
 
     for (i = 0; i < cells.length; ++i) {
       cell = cells[i];
@@ -523,9 +522,13 @@ Line.definition = {
   {
     var cells = this.cells,
         i,
-        cell;
+        cell,
+        length = cell.length;
 
-    for (i = left; i < Math.min(cells.length, right); ++i) {
+    if (length > right) {
+      length = right;
+    }
+    for (i = left; i < length; ++i) {
       cell = cells[i];
       cell.serialize(context);
     }
@@ -539,7 +542,6 @@ Line.definition = {
         cell;
 
     this.length = context.shift();
-    // this.cells.forEach(function(cell) cell.deserialize(context));
 
     for (i = 0; i < cells.length; ++i) {
       cell = cells[i];

@@ -107,19 +107,23 @@ PersistentTrait.definition = {
   "[subscribe('event/idle'), pnp]":
   function onIdle()
   {
-    var thumb_update = new Date().getTime();
+    var thumb_update = new Date().getTime(),
+        path,
+        file,
+        canvas,
+        background;
 
     if (thumb_update - this._thumb_lastupdate > 30 * 1000) {
 
       this._thumb_lastupdate = thumb_update;
       // make image file path
-      var path = coUtils.Runtime.getRuntimePath()
-               + "/persist/"
-               + this._broker.request_id
-               + ".png",
-          file = coUtils.File.getFileLeafFromVirtualPath(path),
-          canvas = this._main_layer.canvas,
-          background = this._palette.background_color;
+      path = coUtils.Runtime.getRuntimePath()
+           + "/persist/"
+           + this._broker.request_id
+           + ".png",
+      file = coUtils.File.getFileLeafFromVirtualPath(path),
+      canvas = this._main_layer.canvas,
+      background = this._palette.background_color;
 
       coUtils.IO.saveCanvas(canvas, file, false, background);
     }
