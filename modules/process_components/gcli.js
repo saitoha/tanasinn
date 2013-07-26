@@ -25,8 +25,16 @@
 "use strict";
 
 Components.utils.import("resource://gre/modules/devtools/Require.jsm", this);
-Components.utils.import("resource://gre/modules/devtools/gcli.jsm", this);
 
+try {
+  Components.utils.import("resource://gre/modules/devtools/gcli.jsm", this);
+} catch(e) {
+  try {
+    Components.utils.import("resource:///modules/devtools/gcli.jsm", this);
+  } catch(e) {
+    coUtils.Debug.reportError("gcli.jsm is not found");
+  }
+}
 
 /**
  * @class GCLI
