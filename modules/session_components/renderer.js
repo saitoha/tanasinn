@@ -314,6 +314,7 @@ Renderer.definition = {
   _rapid_blink_layer: null,
   _drcs_map: null,
   _drcs_canvas: null,
+  _timer: null,
 
   // font
   "[watchable, persistable] font_family":
@@ -357,7 +358,6 @@ Renderer.definition = {
     this._calculateGlyphSize();
     this.onWidthChanged();
     this.onHeightChanged();
-    this.onUpdateDrawInterval();
 
     this._drcs_map = {};
   },
@@ -387,7 +387,7 @@ Renderer.definition = {
     this._drcs_map = null;
     this._drcs_canvas = null;
 
-    if (this._timer) {
+    if (null !== this._timer) {
       this._timer.cancel();
       this._timer = null;
     }
@@ -401,27 +401,6 @@ Renderer.definition = {
     this.onWidthChanged();
     this.onHeightChanged();
     this.sendMessage("command/draw", true);
-  },
-
-  "[subscribe('variable-changed/renderer.draw_interval'), pnp]":
-  function onUpdateDrawInterval()
-  {
-    if (this._timer) {
-      this._timer.cancel();
-    }
-    this._dirty = true;
-    this._timer = coUtils.Timer.setInterval(
-      function timerProc()
-      {
-        var info;
-
-        if (this._dirty) {
-          for (info in this._screen.getDirtyWords()) {
-            this._drawLine(info);
-          }
-          this._dirty = false;
-        }
-      }, this.draw_interval, this);
   },
 
   getCanvas: function getCanvas(context)
@@ -565,8 +544,21 @@ Renderer.definition = {
     if (redraw_flag) {
       screen.dirty = true;
     }
-    this._dirty = true;
 
+    if (null !== this._timer) {
+      this._timer.cancel();
+    }
+
+    this._timer = coUtils.Timer.setTimeout(
+      function timerProc()
+      {
+        var info;
+
+        for (info in this._screen.getDirtyWords()) {
+          this._drawLine(info);
+        }
+        this._timer = null;
+      }, this.draw_interval, this);
   }, // draw
 
   _drawNormalText:
