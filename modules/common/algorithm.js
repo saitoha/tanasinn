@@ -33,7 +33,7 @@ coUtils.Algorithm = {
    */
   calculateMD5: function calculateMD5(data)
   {
-    var crypt_hash = coUtils.Components.createHash();
+    var crypto_hash = coUtils.Components.createHash();
 
     crypto_hash.init(crypto_hash.MD5);
     crypto_hash.update(data, data.length);
