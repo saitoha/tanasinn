@@ -3499,7 +3499,8 @@ Screen.definition = {
         data = [],
         i,
         line,
-        hash;
+        hash,
+        result;
 
     for (i = top; i < bottom; ++i) {
       line = lines[i];
@@ -3513,7 +3514,9 @@ Screen.definition = {
       return ("0" + c.toString(16)).slice(-2);
     }
 
-    return [toHexString(hash.charCodeAt(i)) for (i in hash)].join("").toUpperCase();
+    result = [toHexString(hash.charCodeAt(i)) for (i in hash)].join("").toUpperCase();
+
+    return result;
   },
 
   /** test */
