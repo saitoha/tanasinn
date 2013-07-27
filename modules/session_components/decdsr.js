@@ -168,7 +168,7 @@ DECDeviceStatusReport.definition = {
         break;
 
       case 63: // DECCKSR Memory Checksum Report
-        this.DECCKSR(n2);
+        this.DECCKSR(n2 || 0);
         break;
 
       // report ambiguous width status (TNREPTAMB)
