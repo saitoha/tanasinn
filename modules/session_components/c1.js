@@ -311,26 +311,43 @@ C1Control.definition = {
    *
    */
   "[profile('vt100'), sequence('0x90 ... ST', 'ESC P ... ST')]":
-  function DCS(message)
+  function DCS(codes)
   {
-    var i,
+    var message,
+        i,
         code,
-        tag;
+        tag = "",
+        param = 0,
+        params = [],
+        c;
 
-    if (/[\x00-\x1f]/.test(message[0])) {
-      message = message.replace(/\x00/g, "\\");
-      this.sendMessage("event/data-arrived-recursively", message);
-    } else {
-      tag = "";
-      for (i = 0; i < message.length; ++i) {
-        code = message[i].charCodeAt(0);
-        if (code >= 0x20 && code <= 0x2f) {
-          tag += code.toString(16).toLowerCase();
-        } else if (code >= 0x40 && code <= 0x7e) { // a-z
-          tag += code.toString(16).toLowerCase();
-          this.sendMessage("sequence/dcs/" + tag, message);
-          break;
-        }
+    for (i = 0; i < codes.length; ++i) {
+      code = codes[i];
+      if (code < 0x20) {
+        // pass
+      } else if (code < 0x30) {
+        tag += code.toString(16);
+      } else if (code < 0x3a) { // 0-9
+        param = param * 10 + code - 0x30;
+      } else if (code < 0x3c) { // :,;
+        params.push(param);
+        param = 0;
+      } else if (code < 0x3c) { // <-?
+        tag += code.toString(16);
+      } else if (code < 0x7f) { // a-~
+        tag += code.toString(16);
+        codes = codes.slice(i + 1);
+
+        params.push(param);
+        message = {
+          params: params,
+          data: codes,
+        };
+        this.sendMessage("sequence/dcs/" + tag, message);
+
+        break;
+      } else {
+        // pass
       }
     }
   },
@@ -481,20 +498,26 @@ C1Control.definition = {
    *
    */
   "[profile('vt100'), sequence('0x9d ... ST', 'ESC ] ... ST')]":
-  function OSC(message)
+  function OSC(codes)
   {
-    var delimiter_position = message.indexOf(";"),
-        num,
-        command;
+    var num = 0,
+        command = null,
+        i,
+        c;
 
-    if (-1 === delimiter_position) {
-      num = message;
-      this.sendMessage("sequence/osc/" + num);
-    } else {
-      num = message.substr(0, delimiter_position),
-      command = message.substr(delimiter_position + 1);
-      this.sendMessage("sequence/osc/" + num, command);
+    for (i = 0; i < codes.length; ++i) {
+      c = codes[i];
+      if (c > 0x30 && c < 0x3a) {
+        num = num * 10 + c - 0x30;
+      } else {
+        if (c === 0x3b /* ; */) {
+          codes = codes.slice(i + 1);
+        }
+        command = coUtils.Text.safeConvertFromArray(codes);
+        break;
+      }
     }
+    this.sendMessage("sequence/osc/" + num, command);
   },
 
   /**
@@ -513,8 +536,10 @@ C1Control.definition = {
    */
   /** private message */
   "[profile('vt100'), sequence('0x9e ... ST', 'ESC ^ ... ST')]":
-  function PM(message)
+  function PM(codes)
   {
+    var message = coUtils.Text.safeConvertFromArray(codes);
+
     this.sendMessage("sequence/pm", message);
   },
 
@@ -533,8 +558,10 @@ C1Control.definition = {
    *
    */
   "[profile('vt100'), sequence('0x9f ... ST', 'ESC _ ... ST')]":
-  function APC(message)
+  function APC(codes)
   {
+    var message = coUtils.Text.safeConvertFromArray(codes);
+
     this.sendMessage("sequence/apc", message);
   },
 
