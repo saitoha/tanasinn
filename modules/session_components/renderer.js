@@ -891,10 +891,10 @@ Renderer.definition = {
     code = codes[0];
 
     // handle non-BMP characters
-    if (code >= 0xf0000) {
-      length = 1;
-      if (code < 0x100000) {
-        //codes[0] = code & 0xffff;
+    if (code >= 0x100000) {
+      length = 1; // treat as narrow
+      if (code > 0x110000) {
+        codes[0] = code & 0xffff;
       } else { // DRCS caracters in private area
         dscs = 0x20 << 8 | (code >>> 8 & 0xff);
         drcs_state = this._drcs_map[dscs];
