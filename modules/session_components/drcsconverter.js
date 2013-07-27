@@ -370,7 +370,7 @@ DEC_Special_Graphics_Character_Set[0x7d] = 0xa3; //
 DEC_Special_Graphics_Character_Set[0x7e] = 0xb7; //
 
 /* DEC British NRC Set
- * DSCS = B
+ * DSCS = A
  */
 var DEC_British_NRC_Set = USASCII.slice(0);
 DEC_British_NRC_Set[0x23] = 0xa3; // pond
@@ -568,6 +568,7 @@ NRCSConverter.definition = {
     charset_map[0x36 /* 6 */] = DEC_Norwegian_Danish_NRC_Set;
     charset_map[0x37 /* 7 */] = DEC_Swedish_NRC_Set;
     charset_map[0x3d /* = */] = DEC_Swiss_NRC_Set;
+    charset_map[0x41 /* A */] = DEC_British_NRC_Set;
     charset_map[0x42 /* B */] = USASCII;
     charset_map[0x43 /* C */] = DEC_Finnish_NRC_Set;
     charset_map[0x45 /* E */] = DEC_Norwegian_Danish_NRC_Set;
