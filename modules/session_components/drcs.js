@@ -24,16 +24,6 @@
 
 "use strict";
 
-function char2sixelbits(c)
-{
-  var code = "0000000" + (c.charCodeAt(0) - "?".charCodeAt(0)).toString(2);
-
-  return code
-    .substr(-6)
-    .split("")
-    .reverse();
-}
-
 /**
  *  @class DRCSBuffer
  */
@@ -43,6 +33,7 @@ DRCSBuffer.definition = {
 
   id: "drcs_buffer",
 
+  /* plugin information */
   getInfo: function getInfo()
   {
     return {
@@ -65,7 +56,7 @@ DRCSBuffer.definition = {
   "[install]":
   function install(context)
   {
-    this._map = {};
+    this._map = [];
     this._sixel_parser = context["sixel_parser"];
   },
 
@@ -92,95 +83,92 @@ DRCSBuffer.definition = {
   },
 
   "[subscribe('sequence/dcs/7b'), pnp]":
-  function onDCS(data)
+  function onDCS(message)
   {
     var pattern,
         match,
         canvas,
-        i;
+        data = message.data,
+        params = message.params,
+        i,
+        pfn = params[0],  // Pfn Font number
+        pcn = params[1],  // Starting Character
+        pe = params[2],   // Erase control:
+                          //   0: erase all characters in the DRCS buffer with this number,
+                          //      width and rendition.
+                          //   1: erase only characters in locations being reloaded.
+                          //   2: erase all renditions of the soft character set
+                          //      (normal, bold, 80-column, 132-column).
+                          //
+        pcmw = params[3], // Character matrix width
+                          //   Selects the maximum character cell width.
+                          //   0: 15 pxiels wide for 80 columns, 9pixels wide for 132 columns. (Default)
+                          //   1: illegal
+                          //   2: 5 x 10 pixel cell
+                          //   3: 6 x 10 pixel cell
+                          //   4: 7 x 10 pixel cell
+                          //   5: 5 pixels wide
+                          //   6: 6 pixels wide
+                          //   ...
+                          //   15: 15 pixcels wide
+        pw = params[4],   // Font width
+                          //   Selects the number of columns per line (font set size).
+                          //   0: 80 columns. (Default)
+                          //   1: 80 columns.
+                          //   2: 132 columns.
+        pt = params[5],   // Text or full-cell
+                          //   0: text. (Default)
+                          //   1: text.
+                          //   2: full cell.
+        pcmh = params[6], // Character matrix height
+                          //   Selects the maximum character cell height.
+                          //   0: 12 pxels high. (Default)
+                          //   1: 1 pixcels high.
+                          //   2: 2 pixcels high.
+                          //   2: 3 pixcels high.
+                          //   ...
+                          //   12: 12 pixcels high.
+        pcss = params[7], // Character set size
+                          //   Defines the character set as a 94- or 96-character graphic set.
+                          //   0: 94-character set. (Default)
+                          //   1: 96-character set.
+                          //   2: unicode.
+        char_width = {
+                       0: 2 === Number(pw) ? 9: 15,
+                       2: 5,
+                       3: 6,
+                       4: 7,
+                     } [pcmw] || Number(pcmw),
+        char_height = {
+                       2: 10,
+                       3: 10,
+                       4: 10,
+                     } [pcmw] || Number(pcmh) || 12,
+        charset_size = 0 === Number(pcss) ? 94: 96,
+        full_cell = 2 === Number(pt),
+        start_code = 0 === Number(pcss) ? ({ // 94 character set.
+                       0: 0x21,
+                     } [pcn] || Number(pcn) + 0x21)
+                     : 1 === Number(pcss) ? Number(pcn) + 0x20 // 96 character set.
+                     : Number(pcn) + 0x20, // unicode character set.
+        c,
+        dscs_key = 0;
 
-    //           Pfn    Pcn      Pe      Pcmw     Pw      Pt      Pcmh     Pcss    Dscs
-    pattern = /^([01]);([0-9]+);([012]);([0-9]+);([012]);([0123]);([0-9]+);([01])\{(\s*[0-~])([\x00-\x7e]+)$/;
-    match = data.match(pattern);
-
-    if (null === match) {
-      return;
-    }
-
-    var [
-      all,
-      pfn,   // Pfn Font number
-      pcn,   // Starting Character
-      pe,    // Erase control:
-             //   0: erase all characters in the DRCS buffer with this number,
-             //      width and rendition.
-             //   1: erase only characters in locations being reloaded.
-             //   2: erase all renditions of the soft character set
-             //      (normal, bold, 80-column, 132-column).
-             //
-      pcmw,  // Character matrix width
-             //   Selects the maximum character cell width.
-             //   0: 15 pxiels wide for 80 columns, 9pixels wide for 132 columns. (Default)
-             //   1: illegal
-             //   2: 5 x 10 pixel cell
-             //   3: 6 x 10 pixel cell
-             //   4: 7 x 10 pixel cell
-             //   5: 5 pixels wide
-             //   6: 6 pixels wide
-             //   ...
-             //   15: 15 pixcels wide
-      pw,    // Font width
-             //   Selects the number of columns per line (font set size).
-             //   0: 80 columns. (Default)
-             //   1: 80 columns.
-             //   2: 132 columns.
-      pt,    // Text or full-cell
-             //   0: text. (Default)
-             //   1: text.
-             //   2: full cell.
-      pcmh,  // Character matrix height
-             //   Selects the maximum character cell height.
-             //   0: 12 pxels high. (Default)
-             //   1: 1 pixcels high.
-             //   2: 2 pixcels high.
-             //   2: 3 pixcels high.
-             //   ...
-             //   12: 12 pixcels high.
-      pcss,  // Character set size
-             //   Defines the character set as a 94- or 96-character graphic set.
-             //   0: 94-character set. (Default)
-             //   1: 96-character set.
-             //   2: unicode.
-      dscs,  //
-      value //
-    ] = match;
-
-    var char_width = {
-      0: 2 === Number(pw) ? 9: 15,
-      2: 5,
-      3: 6,
-      4: 7,
-    } [pcmw] || Number(pcmw);
-
-    var char_height = {
-      2: 10,
-      3: 10,
-      4: 10,
-    } [pcmw] || Number(pcmh) || 12;
-
-    var charset_size = 0 === Number(pcss) ? 94: 96;
-    var full_cell = 2 === Number(pt);
-    var start_code = 0 === Number(pcss) ? ({ // 94 character set.
-      0: 0x21,
-    }  [pcn] || Number(pcn) + 0x21)
-    : 1 === Number(pcss) ? Number(pcn) + 0x20 // 96 character set.
-    : Number(pcn) + 0x20; // unicode character set.
-
-    this._map = this._map || [];
-
-    var dscs_key = 0;
-    for (i = 0; i < dscs.length; ++i) {
-        dscs_key = dscs_key << 8 | dscs.charCodeAt(i);
+    for (i = 0; i < data.length; ++i) {
+      c = data[i];
+      if (c < 0x20) {
+        // pass
+      } else if (c < 0x30) {
+        dscs_key = dscs_key << 8 | c;
+      } else if (c < 0x40) {
+        // pass
+      } else if (c < 0x7f) {
+        dscs_key = dscs_key << 8 | c;
+        data = data.slice(i + 1);
+        break;
+      } else {
+        // pass
+      }
     }
 
     if (this._map[dscs_key]) {
@@ -198,7 +186,7 @@ DRCSBuffer.definition = {
 
     if (3 === pt) {
 
-      var sixel = value.substr(data.indexOf("#"))
+      var sixel = data;
       if (!sixel) {
         return;
       }
@@ -231,47 +219,54 @@ DRCSBuffer.definition = {
         });
 
     } else {
-      var pointer_x = start_code * char_width;
-      var imagedata = canvas
-        .getContext("2d")
-        .getImageData(0, 0, canvas.width, canvas.height);
+      var context = canvas.getContext("2d"),
+          imagedata = context.getImageData(0, 0, canvas.width, canvas.height),
+          i,
+          n = 0,
+          h = 0,
+          x = 0,
+          y,
+          position;
 
-      var sixels = value.split(";");
-
-      for (var [n, glyph] in Iterator(sixels)) {
-        for (var [h, line] in Iterator(glyph.split("/"))) {
-          for (var [x, c] in Iterator(line.replace(/[^\?-~]/g, "").split(""))) {
-            var bits = char2sixelbits(c);
-            for (var [y, bit] in Iterator(bits)) {
-              var position = (((y + h * 6) * 97 + n) * char_width + x) * 4;
-              if ("1" === bit) {
-                imagedata.data[position + 0] = 255;
-                imagedata.data[position + 1] = 255;
-                imagedata.data[position + 2] = 255;
-                imagedata.data[position + 3] = 255;
-              } else {
-            //    imagedata.data[position + 3] = 255;
-              }
+      for (i = 0; i < data.length; ++i) {
+        c = data[i];
+        if (0x3b === c) { // ;
+          x = 0;
+          h = 0;
+          ++n;
+        } else if (0x2f === c) { // /
+          x = 0;
+          ++h;
+        } else if (c >= 0x3f && c < 0x7f) { // ? - ~
+          c -= 0x3f;
+          for (y = 0; y < 6; ++y) {
+            if (c & 0x1 << y) {
+              position = (((y + h * 6) * 97 + n) * char_width + x) * 4;
+              imagedata.data[position + 0] = 255;
+              imagedata.data[position + 1] = 255;
+              imagedata.data[position + 2] = 255;
+              imagedata.data[position + 3] = 255;
             }
           }
+          ++x;
+        } else {
+          // pass
         }
       }
 
       canvas.getContext("2d").putImageData(imagedata, 0, 0);
 
-      var drcs = {
-        dscs: dscs_key,
-        drcs_canvas: canvas,
-        drcs_width: char_width,
-        drcs_height: char_height,
-        drcs_top: 0,
-        start_code: start_code,
-        end_code: start_code + sixels.length,
-        full_cell: full_cell,
-        color: false,
-      };
-
-      this.sendMessage("command/alloc-drcs", drcs);
+      this.sendMessage("command/alloc-drcs", {
+          dscs: dscs_key,
+          drcs_canvas: canvas,
+          drcs_width: char_width,
+          drcs_height: char_height,
+          drcs_top: 0,
+          start_code: start_code,
+          end_code: start_code + n,
+          full_cell: full_cell,
+          color: false,
+        });
     }
   },
 
