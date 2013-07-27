@@ -746,6 +746,7 @@ EventExpressionProcesser.prototype = {
   _parseExpression: function _parseExpression(tokens, delegate, id)
   {
     var stack = [];
+
     while (tokens.length) {
       void function impl() {
         var token = tokens.shift();
