@@ -43,7 +43,7 @@ SixelForwardInputIterator.definition = {
   /** Returns single byte code point. */
   current: function current()
   {
-    return this._value.charCodeAt(this._position);
+    return this._value[this._position];
   },
 
   /** Moves to next position. */

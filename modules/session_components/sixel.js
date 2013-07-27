@@ -150,22 +150,10 @@ Sixel.definition = {
 
   /** Handle DCS q */
   "[subscribe('sequence/dcs/71'), pnp]":
-  function onDCS(data)
+  function onDCS(message)
   {
-    var pattern = /^(?:[0-9;]*)?q/,
-        match = data.substr(0, 32).match(pattern),
-        sixel;
-
-    if (null === match) {
-      return;
-    }
-
-    sixel = data.substr(data.indexOf("#"))
-    if (!sixel) {
-      return;
-    }
-
-    this._parseSixel(sixel);
+    // TODO: evaluate parameter
+    this._parseSixel(message.data);
   },
 
 // private methods
