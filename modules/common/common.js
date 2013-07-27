@@ -1620,7 +1620,7 @@ coUtils.Text = {
     return coUtils.getWindow().btoa(str);
   },
 
-  safeConvertFromArray: function safeConvertFromArray(codes)
+  safeConvertFromArray: function safaConvertFromArray(codes)
   {
     var result,
         i,
