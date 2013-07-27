@@ -460,8 +460,7 @@ VT100Grammar.definition = {
         data;
 
     if (undefined !== handler) {
-      data = coUtils.Text.safeConvertFromArray(value);
-      handler(data);
+      handler(value);
     }
   },
 
