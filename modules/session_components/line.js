@@ -523,7 +523,7 @@ Line.definition = {
     var cells = this.cells,
         i,
         cell,
-        length = cell.length;
+        length = cells.length;
 
     if (length > right) {
       length = right;
