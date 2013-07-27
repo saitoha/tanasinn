@@ -256,7 +256,9 @@ DRCSBuffer.definition = {
 
       canvas.getContext("2d").putImageData(imagedata, 0, 0);
 
-      this.sendMessage("command/alloc-drcs", {
+      this.sendMessage(
+        "command/alloc-drcs",
+        {
           dscs: dscs_key,
           drcs_canvas: canvas,
           drcs_width: char_width,
