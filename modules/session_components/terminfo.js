@@ -781,50 +781,58 @@ Terminfo.definition = {
   {
   },
 
+  /**
+   * parse DCS +q
+   */
   "[subscribe('sequence/dcs/2b71'), pnp]":
-  function onDCS(data)
+  function onDCS(message)
   {
-    var match,
-        i,
-        chars,
+    var i,
+        chars = [],
         value,
-        message,
-        s;
+        response,
+        char,
+        request = "",
+        s,
+        data = message.data,
+        params = message.params,
+        c1,
+        c2;
 
-    if (0 === data.indexOf("+q")) {
-      match = data.match(/[0-9a-fA-F]{2}/g);
-      chars = match.map(
-        function(x)
-        {
-          return parseInt(x, 16);
-        });
-
-      s = coUtils.Text.safeConvertFromArray(chars);
-
-      value = TERMINFO_DB[s];
-
-      if (undefined === value) {
-        message = "0+r";
-      } else {
-        message = "1+r"
-                + match.join("")
-                + "="
-                + value
-                  .split("")
-                  .map(
-                    function mapFunc(c)
-                    {
-                      return c
-                        .charCodeAt(0)
-                        .toString(16)
-                        .toUpperCase()
-                        ;
-                    })
-                  .join("");
-      }
-
-      this.sendMessage("command/send-sequence/dcs", message);
+    chars = [];
+    for (i = 0; i < data.length - 1; ++i) {
+      c1 = data[i];
+      c2 = data[++i];
+      char = String.fromCharCode(c1, c2);
+      request += char;
+      chars.push(parseInt(char, 16));
     }
+
+    s = coUtils.Text.safeConvertFromArray(chars);
+
+    value = TERMINFO_DB[s];
+
+    if (undefined === value) {
+      response = "0+r";
+    } else {
+      response = "1+r"
+              + request
+              + "="
+              + value
+                .split("")
+                .map(
+                  function mapFunc(c)
+                  {
+                    return c
+                      .charCodeAt(0)
+                      .toString(16)
+                      .toUpperCase()
+                      ;
+                  })
+                .join("");
+    }
+
+    this.sendMessage("command/send-sequence/dcs", response);
   },
 
   /** test */
