@@ -113,36 +113,38 @@ StatusRequest.definition = {
   {
   },
 
+  /**
+   * handle DCS $q
+   */
   "[subscribe('sequence/dcs/2471'), pnp]":
-  function onDCS(data)
+  function onDCS(message)
   {
-    if (0 === data.indexOf("$q")) {
-      data = data.substr(2);
-      switch (data) {
-        case "\"q":
-          // DECSCA
-          this.sendMessage("sequence/decrqss/decsca", data);
-          break;
-        case "\"p":
-          // DECSCL
-          this.sendMessage("sequence/decrqss/decscl", data);
-          break;
-        case "r":
-          // DECSTBM
-          this.sendMessage("sequence/decrqss/decstbm", data);
-          break;
-        case "m":
-          // SGR
-          this.sendMessage("sequence/decrqss/sgr", data);
-          break;
-        case " q":
-          // DECSCUSER
-          this.sendMessage("sequence/decrqss/decscuser", data);
-          break;
-        default:
-          this.sendMessage("command/send-sequence/dcs", "1$r");
-          break;
-      }
+    var data = coUtils.Text.safeConvertFromArray(message.data);
+
+    switch (data) {
+      case "\"q":
+        // DECSCA
+        this.sendMessage("sequence/decrqss/decsca", data);
+        break;
+      case "\"p":
+        // DECSCL
+        this.sendMessage("sequence/decrqss/decscl", data);
+        break;
+      case "r":
+        // DECSTBM
+        this.sendMessage("sequence/decrqss/decstbm", data);
+        break;
+      case "m":
+        // SGR
+        this.sendMessage("sequence/decrqss/sgr", data);
+        break;
+      case " q":
+        // DECSCUSER
+        this.sendMessage("sequence/decrqss/decscuser", data);
+        break;
+      default:
+        this.sendMessage("command/send-sequence/dcs", "1$r");
+        break;
     }
   },
 
