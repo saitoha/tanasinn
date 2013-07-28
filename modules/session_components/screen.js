@@ -472,11 +472,13 @@ ScreenSequenceHandler.definition = {
   function DECFI()
   { // DEC Forward Index
     var cursor = this._cursor,
-        rightmargin = this._scroll_right;
+        position_x = cursor.position_x,
+        right_margin = this._scroll_right;
 
-    if (cursor.position_x >= rightmargin - 1) {
-      cursor.position_x = rightmargin;
+    if (position_x === right_margin - 1) {
       this.scrollLeft(1);
+    } else if (position_x >= right_margin) {
+      // pass
     } else {
       ++cursor.position_x;
     }
@@ -512,11 +514,13 @@ ScreenSequenceHandler.definition = {
   function DECBI()
   { // DEC Backward Index
     var cursor = this._cursor,
-        leftmargin = this._scroll_left;
+        position_x = cursor.position_x,
+        left_margin = this._scroll_left;
 
-    if (cursor.position_x <= leftmargin) {
-      cursor.position_x = leftmargin;
+    if (position_x === left_margin) {
       this.scrollRight(1);
+    } else if (position_x < left_margin) {
+      // pass
     } else {
       --cursor.position_x;
     }
