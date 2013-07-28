@@ -1,6 +1,14 @@
+2013-07-28 Hayaki Saito <user@zuse.jp>
+    * Version 0.3.3.10
+    * Fix broken DRCS designation
+    * Performance improvement for OSC/DCS dispatcher
+    * Performance improvement for DRCS parsing 
+    * Performance improvement for Sixel parsing 
+    * Fix broken DECRQCRA
+
 2013-07-22 Hayaki Saito <user@zuse.jp>
-    * Version 0.3.3.8
-	* Fix broken SIXEL display mode
+    * Version 0.3.3.9
+    * Fix broken SIXEL display mode
 
 2013-07-13 Hayaki Saito <user@zuse.jp>
     * Version 0.3.3.8
