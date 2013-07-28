@@ -2471,7 +2471,7 @@ Screen.definition = {
 
     if (this._left_right_margin_mode) {
       right_margin = this._scroll_right;
-      if (position_x >= right_margin) {
+      if (position_x > right_margin) {
         right_margin = this._width;
       } else if (position_x < this._scroll_left) {
         ignore_left_margin = true;
