@@ -2445,6 +2445,11 @@ Screen.definition = {
       line.type = coUtils.Constant.LINETYPE_NORMAL;
     }
 
+    if (false === mode) {
+      this._scroll_left = 0;
+      this._scroll_right = this._width;
+    }
+
     this._left_right_margin_mode = mode;
 
   },
