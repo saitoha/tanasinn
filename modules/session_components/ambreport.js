@@ -84,6 +84,7 @@ AmbiguousWidthReporting.definition = {
   "[subscribe('sequence/decset/7700'), pnp]":
   function activate()
   { // Enable ambiguous width reporting
+    this._mode = true;
   },
 
   /** Disable ambiguous width reporting.
@@ -91,6 +92,7 @@ AmbiguousWidthReporting.definition = {
   "[subscribe('sequence/decrst/7700'), pnp]":
   function deactivate()
   { // Disable ambigous width reporting
+    this._mode = false;
   },
 
   /** Disable ambiguous width reporting.
@@ -100,12 +102,14 @@ AmbiguousWidthReporting.definition = {
   { // Disable ambigous width reporting
     var message;
 
-    if (value) {
-      message = "2W";
-    } else {
-      message = "1W";
+    if (true === this._mode) {
+      if (value) {
+        message = "2W";
+      } else {
+        message = "1W";
+      }
+      this.sendMessage("command/send-sequence/csi", message);
     }
-    this.sendMessage("command/send-sequence/csi", message);
   },
 
   /** Report mode
