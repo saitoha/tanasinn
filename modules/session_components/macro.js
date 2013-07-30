@@ -48,6 +48,24 @@ InputMacro.definition = {
   _macro_buffer: null,
   _current_macro_name: null,
 
+  /** Installs itself.
+   *  @param {InstallContext} context A InstallContext object.
+   */
+  "[install]":
+  function install(context)
+  {
+  },
+
+  /** Uninstalls itself.
+   */
+  "[uninstall]":
+  function uninstall()
+  {
+    this._macros = null;
+    this._macro_buffer = null;
+    this._current_macro_name = null;
+  },
+
   "[command('recordinputmacro', []), _('Record input macro with given name.'), pnp]":
   function recordInputMacro(name)
   {
