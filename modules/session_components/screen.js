@@ -2432,7 +2432,23 @@ Screen.definition = {
   "[subscribe('set/origin-mode'), pnp]":
   function setOriginMode(mode)
   {
+    var cursor = this._cursor;
+
     this._origin_mode = mode;
+
+    // move the cursor to home position
+    if (mode) {
+      if (this._left_right_margin_mode) {
+        cursor.position_x = this._scroll_left;
+      } else {
+        cursor.position_x = 0;
+      }
+      cursor.position_y = this._scroll_left;
+    } else {
+      cursor.position_x = 0;
+      cursor.position_y = 0;
+    }
+    
   },
 
   /** enable/disable left/right margin mode */
