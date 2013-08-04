@@ -106,14 +106,14 @@ Tracer.definition = {
   function disable()
   {
     var sequences = this.sendMessage("get/sequences/" + this._mode),
-        i = 0,
+        i,
         information;
 
     this.onBeforeInput.enabled = false;
 
     this.sendMessage("command/reset-sequences");
 
-    for (; i < sequences.length; ++i) {
+    for (i = 0; i < sequences.length; ++i) {
       information = sequences[i];
       this.sendMessage("command/add-sequence", information);
     }

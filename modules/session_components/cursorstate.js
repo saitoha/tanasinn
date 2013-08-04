@@ -483,6 +483,8 @@ CursorState.definition = {
     pr = position_y + 1;
     pc = position_x + 1;
 
+    // TODO: not implemented now
+
   },
 
   /** test */

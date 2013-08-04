@@ -82,7 +82,7 @@ Copy.definition = {
         listener: {
           type: "command",
           context: this,
-          handler: function()
+          handler: function onCommand()
           {
             return this.copyImpl(range);
           },

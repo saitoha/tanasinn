@@ -236,29 +236,30 @@ Debugger.definition = {
     if (this._timer) {
       this._timer.cancel();
     }
-    this._timer = coUtils.Timer.setInterval(function()
-    {
-      var updated = false,      // update flag
-          queue = this._queue,  // queue object
-          trace_box;            // trace box UI eleemnt
+    this._timer = coUtils.Timer.setInterval(
+      function timerProc()
+      {
+        var updated = false,      // update flag
+            queue = this._queue,  // queue object
+            trace_box;            // trace box UI eleemnt
 
-      if (!queue && this._timer) {
-        this._timer.cancel();
-        this._timer = null;
-        return;
-      }
+        if (!queue && this._timer) {
+          this._timer.cancel();
+          this._timer = null;
+          return;
+        }
 
-      // detect changes
-      updated = 0 !== queue.length;
+        // detect changes
+        updated = 0 !== queue.length;
 
-      while (0 !== queue.length) {
-        this.update(queue.shift());
-      }
-      if (updated && this.auto_scroll) {
-        trace_box = this._trace_box;
-        trace_box.scrollTop = trace_box.scrollHeight;
-      }
-    }, this.update_interval, this);
+        while (0 !== queue.length) {
+          this.update(queue.shift());
+        }
+        if (updated && this.auto_scroll) {
+          trace_box = this._trace_box;
+          trace_box.scrollTop = trace_box.scrollHeight;
+        }
+      }, this.update_interval, this);
   },
 
   "[command('deactivatedebugger/dd'), _('Detach the debugger.'), pnp]":

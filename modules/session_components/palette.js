@@ -475,7 +475,7 @@ PaletteManager.definition = {
   {
     var color = this.color,
         length = color.length,
-        i = 0,
+        i,
         color_origin,
         diff,
         r_origin,
@@ -484,7 +484,7 @@ PaletteManager.definition = {
         diff_min = 0xff * 0xff * 3,
         result_color = 0;
 
-    for (; i < length; ++i) {
+    for (i = 0; i < length; ++i) {
       color_origin = parseInt(color[i].substr(1), 16);
 
       r_origin = color_origin >>> 16 & 0xff;

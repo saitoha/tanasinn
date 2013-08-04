@@ -80,7 +80,8 @@ JsCompleter.definition = {
         code,
         properties,
         lower_current,
-        root_element;
+        root_element,
+        dom;
 
     if (match) {
 
@@ -97,7 +98,7 @@ JsCompleter.definition = {
         window: root_element.ownerDocument.defaultView,
       };
 
-      context = new function() void (this.__proto__ = dom.window);
+      context = new function() { this.__proto__ = dom.window; };
 
       if (notation) {
         try {
@@ -124,33 +125,38 @@ JsCompleter.definition = {
           Array.prototype.push.apply(
             properties,
             Object.getOwnPropertyNames(context.__proto__)
-              .map(function(key) key));
+              .map(function mapFunc(key)
+                {
+                  return key;
+                }));
         }
       }
 
       lower_current = current.toLowerCase();
 
-      properties = properties.filter(function(key)
-      {
-        if ("." === notation ) {
-          if ("number" === typeof key) {
-            // Number property after dot notation.
-            // etc. abc.13, abc.3
-            return false;
+      properties = properties.filter(
+        function filterFunc(key)
+        {
+          if ("." === notation ) {
+            if ("number" === typeof key) {
+              // Number property after dot notation.
+              // etc. abc.13, abc.3
+              return false;
+            }
+            if (!/^[$_a-zA-Z]+$/.test(key)) {
+              // A property consists of identifier-chars after dot notation.
+              // etc. abc.ab[a cde.er=e
+              return false;
+            }
           }
-          if (!/^[$_a-zA-Z]+$/.test(key)) {
-            // A property consists of identifier-chars after dot notation.
-            // etc. abc.ab[a cde.er=e
-            return false;
-          }
-        }
-        return -1 !== String(key)
-          .toLowerCase()
-          .indexOf(lower_current);
-      }).sort(function(lhs, rhs)
-      {
-        return String(lhs).toLowerCase().indexOf(current) ? 1: -1;
-      });
+          return -1 !== String(key)
+            .toLowerCase()
+            .indexOf(lower_current);
+        }).sort(
+          function sortFunc(lhs, rhs)
+          {
+            return String(lhs).toLowerCase().indexOf(current) ? 1: -1;
+          });
       if (0 === properties.lenth) {
         this.sendMessage("event/answer-completion", null);
         return;
@@ -159,7 +165,7 @@ JsCompleter.definition = {
         type: "text",
         query: current,
         data: properties.map(
-          function(key)
+          function mapFunc(key)
           {
             var value,
                 type;
