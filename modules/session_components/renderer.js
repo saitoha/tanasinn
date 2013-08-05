@@ -314,7 +314,6 @@ Renderer.definition = {
   _rapid_blink_layer: null,
   _drcs_map: null,
   _drcs_canvas: null,
-  _timer: null,
 
   // font
   "[watchable, persistable] font_family":
@@ -359,7 +358,7 @@ Renderer.definition = {
     this.onWidthChanged();
     this.onHeightChanged();
 
-    this._drcs_map = {};
+    this._drcs_map = [];
   },
 
   /** Uninstalls itself.
@@ -386,11 +385,6 @@ Renderer.definition = {
 
     this._drcs_map = null;
     this._drcs_canvas = null;
-
-    if (null !== this._timer) {
-      this._timer.cancel();
-      this._timer = null;
-    }
 
     this._screen = null;
   },
@@ -539,26 +533,17 @@ Renderer.definition = {
   "[subscribe('command/draw'), pnp]":
   function draw(redraw_flag)
   {
-    var screen = this._screen;
+    var screen = this._screen,
+        info;
 
     if (redraw_flag) {
       screen.dirty = true;
     }
 
-    if (null !== this._timer) {
-      this._timer.cancel();
+    for (info in screen.getDirtyWords()) {
+      this._drawLine(info);
     }
 
-    this._timer = coUtils.Timer.setTimeout(
-      function timerProc()
-      {
-        var info;
-
-        for (info in this._screen.getDirtyWords()) {
-          this._drawLine(info);
-        }
-        this._timer = null;
-      }, this.draw_interval, this);
   }, // draw
 
   _drawNormalText:
