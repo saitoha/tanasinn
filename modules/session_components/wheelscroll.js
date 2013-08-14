@@ -30,7 +30,8 @@
  *
  *
  */
-var WheelScroll = new Class().extends(Plugin);
+var WheelScroll = new Class().extends(Plugin)
+                             .depends("renderer");
 WheelScroll.definition = {
 
   id: "wheel_scroll",
@@ -48,6 +49,8 @@ WheelScroll.definition = {
   "[persistable] enabled_when_startup": true,
  
   _in_scroll_session: false,
+  _renderer: null,
+  _counter: 0,
 
   /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
@@ -55,6 +58,7 @@ WheelScroll.definition = {
   "[install]":
   function install(context)
   {
+    this._renderer = context["renderer"];
   },
 
   /** Uninstalls itself.
@@ -62,6 +66,7 @@ WheelScroll.definition = {
   "[uninstall]":
   function uninstall()
   {
+    this._renderer = null;
   },
 
   /** Fired when scroll session is started. */
@@ -98,25 +103,27 @@ WheelScroll.definition = {
   },
 
   /** Mouse down evnet listener */
-  "[listen('DOMMouseScroll', '#tanasinn_content'), pnp]":
+  "[listen('MozMousePixelScroll', '#tanasinn_content'), pnp]":
   function onmousescroll(event)
   {
-    var count,
+    var count = 0,
+        detail,
         line_height;
 
     if(event.axis === event.VERTICAL_AXIS) {
 
-      count = event.detail;
-      if (event.hasPixels) {
-        line_height = renderer.line_height;
-        count = Math.round(count + 0.5);
-      } else {
-        count = Math.round(count);
-      }
+      event.preventDefault();
+
+      detail = event.detail;
+      this._counter += detail;
+      line_height = this._renderer.line_height;
+      count = (this._counter / line_height + 0.5) | 0;
 
       if (0 === count) {
         return;
       }
+
+      this._counter = 0;
 
       //if (this._in_scroll_session) {
       if (count > 0) {
