@@ -106,7 +106,7 @@ WheelScroll.definition = {
   "[listen('MozMousePixelScroll', '#tanasinn_content'), pnp]":
   function onmousescroll(event)
   {
-    var count = 0,
+    var count,
         detail,
         line_height;
 
