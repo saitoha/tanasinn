@@ -1174,7 +1174,7 @@ ScreenSequenceHandler.definition = {
   "[profile('vt100'), sequence('CSI Pn e')]":
   function VPR(n)
   {
-    this.cursorDown(n || 1);
+    this.verticalPositionRelative(n || 1);
   },
 
   /**
@@ -1205,7 +1205,7 @@ ScreenSequenceHandler.definition = {
   "[profile('vt100'), sequence('CSI Pn k')]":
   function VPB(n)
   {
-    this.cursorUp(n || 1);
+    this.verticalPositionBackward(n || 1);
   },
 
   /**
@@ -2651,28 +2651,40 @@ Screen.definition = {
     }
   },
 
-  /** Move CUrsor Up (CUU). */
-  "[type('Uint16 -> Undefined')] cursorUpAbsolutely":
-  function cursorUpAbsolutely(n)
+  /** Vertical Position Backward (VPB). */
+  "[type('Uint16 -> Undefined')] verticalPositionBackward":
+  function verticalPositionBackward(n)
   {
     var cursor = this._cursor,
         position_y = cursor.position_y - n,
-        min = 0;
+        min;
 
-    if (position_y > min) {
-      cursor.position_y = position_y;
+    if (this._origin_mode) {
+      min = this._scroll_top;
     } else {
+      min = 0;
+    }
+
+    if (position_y < min) {
       cursor.position_y = min;
+    } else {
+      cursor.position_y = position_y;
     }
   },
 
-  /** Move CUrsor Down (CUD). */
-  "[type('Uint16 -> Undefined')] cursorDownAbsolutely":
-  function cursorDownAbsolutely(n)
+  /** Vertical Position Relative (VPR). */
+  "[type('Uint16 -> Undefined')] verticalPositionRelative":
+  function verticalPositionRelative(n)
   {
     var cursor = this._cursor,
         position_y = cursor.position_y + n,
-        max = this._height - 1;
+        max;
+
+    if (this._origin_mode) {
+      max = this._scroll_bottom - 1;
+    } else {
+      max = this._height - 1;
+    }
 
     // If an attempt is made to move the active position below the last line,
     // the active position stops at the last line.
