@@ -122,7 +122,7 @@ OriginMode.definition = {
     this._mode = false;
 
     // reset
-    this.sendMessage("set/origin-mode", true);
+    this.sendMessage("set/origin-mode", false);
 
     coUtils.Debug.reportMessage(
       _("DECSET - DECOM (Origin mode) was reset."));
