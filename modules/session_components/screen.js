@@ -366,15 +366,15 @@ ScreenSequenceHandler.definition = {
 
     n = (n || 1) - 1;
 
-    if (this._left_right_margin_mode) {
-      if (this._origin_mode) {
-        n += this._scroll_left;
-      }
+    if (this._left_right_margin_mode && this._origin_mode) {
+      n += this._scroll_left;
+      right_margin = this._scroll_right;
+    } else {
+      right_margin = this._width;
     }
-    right_margin = this._width;
 
     if (n > right_margin) {
-      cursor.position_x = right_margin;
+      cursor.position_x = right_margin - 1;
     } else {
       cursor.position_x = n;
     }
@@ -2627,10 +2627,10 @@ Screen.definition = {
         position_y = cursor.position_y - n,
         min = this._scroll_top;
 
-    if (position_y > min) {
-      cursor.position_y = position_y;
-    } else {
+    if (position_y < min) {
       cursor.position_y = min;
+    } else {
+      cursor.position_y = position_y;
     }
   },
 
