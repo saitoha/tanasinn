@@ -19,7 +19,7 @@
 #define PACKAGE_VERSION @PACKAGE_VERSION@
 
 /* Repository URL. */
-#define TANASINN_GIT_REPOSITORY git:/#/@TANASINN_VENDOR_DOMAIN@/git/tanasinn.git
+#define TANASINN_GIT_REPOSITORY https:/#/github.com/saitoha/tanasinn.git
 
 /* The ID of extension. */
 #define TANASINN_XPI_ID @TANASINN_XPI_ID@
