@@ -476,7 +476,7 @@ Renderer.definition = {
   "[subscribe('variable-changed/renderer.font_{size | family}'), pnp]":
   function onFontChanged(font_size)
   {
-    this._screen.dirty = true;
+    this._screen.setDirty();
     this._calculateGlyphSize();
   },
 
@@ -537,7 +537,7 @@ Renderer.definition = {
         info;
 
     if (redraw_flag) {
-      screen.dirty = true;
+      screen.setDirty();
     }
 
     for (info in screen.getDirtyWords()) {

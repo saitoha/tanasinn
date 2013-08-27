@@ -2233,23 +2233,9 @@ Screen.definition = {
   },
 
   /**
-   * @property dirty
+   * @fn setDirty
    */
-  get dirty()
-  {
-    var lines = this._lines,
-        line,
-        i;
-
-    for (i = 0; i < lines.length; ++i) {
-      line = lines[i];
-      if (line.dirty) {
-        return true;
-      }
-    }
-  },
-
-  set dirty(value)
+  setDirty: function setDirty(value)
   {
     var lines = this._lines,
         line,
@@ -3524,7 +3510,7 @@ Screen.definition = {
 
     this._lines = lines;
     Array.prototype.splice.apply(buffer, [offset, 0].concat(lines));
-    this.dirty = true;
+    this.setDirty();
   },
 
   calculateHashInRectangle:

@@ -146,7 +146,7 @@ Resize.definition = {
   {
     var screen = this._screen;
 
-    screen.dirty = true;
+    screen.setDirty();
 
     this.sendMessage(
       "event/screen-size-changed",
