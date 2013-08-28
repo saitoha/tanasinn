@@ -149,15 +149,15 @@ FixedColumnMode.definition = {
         "command/resize-screen",
         {
           column: 132,
-          row: screen.height,
+          row: screen.getHeight(),
         });
       screen.eraseScreenAll();
 
       this.sendMessage(
         "event/screen-size-changed",
         {
-          column: screen.width,
-          row: screen.height
+          column: screen.getWidth(),
+          row: screen.getHeight()
         });
     }
   },
@@ -176,15 +176,15 @@ FixedColumnMode.definition = {
         "command/resize-screen",
         {
           column: 80,
-          row: screen.height,
+          row: screen.getHeight(),
         });
       screen.eraseScreenAll();
 
       this.sendMessage(
         "event/screen-size-changed",
         {
-          column: screen.width,
-          row: screen.height
+          column: screen.getWidth(),
+          row: screen.getHeight()
         });
     }
   },

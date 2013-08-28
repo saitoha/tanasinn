@@ -135,8 +135,8 @@ Resize.definition = {
       row = min_row;
     }
 
-    screen.width = column;
-    screen.height = row;
+    screen.setWidth(column);
+    screen.setHeight(row);
   },
 
   /** notify "event/screen-size-changed" event.
@@ -151,8 +151,8 @@ Resize.definition = {
     this.sendMessage(
       "event/screen-size-changed",
       {
-        column: screen.width,
-        row: screen.height
+        column: screen.getWidth(),
+        row: screen.getHeight()
       });
   },
 
@@ -165,8 +165,8 @@ Resize.definition = {
     var screen = this._screen;
 
     this.resize({
-      column: screen.width - n,
-      row: screen.height
+      column: screen.getWidth() - n,
+      row: screen.getHeight()
     });
     this.update();
   },
@@ -180,8 +180,8 @@ Resize.definition = {
     var screen = this._screen;
 
     this.resize({
-      column: screen.width + n,
-      row: screen.height
+      column: screen.getWidth() + n,
+      row: screen.getHeight()
     });
     this.update();
   },
@@ -195,8 +195,8 @@ Resize.definition = {
     var screen = this._screen;
 
     this.resize({
-      column: screen.width,
-      row: screen.height - n
+      column: screen.getWidth(),
+      row: screen.getHeight() - n
     });
     this.update();
   },
@@ -210,8 +210,8 @@ Resize.definition = {
     var screen = this._screen;
 
     this.resize({
-      column: screen.width,
-      row: screen.height + n
+      column: screen.getWidth(),
+      row: screen.getHeight() + n
     });
     this.update();
   },

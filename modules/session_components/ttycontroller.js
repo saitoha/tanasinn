@@ -341,11 +341,11 @@ Controller.definition = {
           screen = this._screen;
           output = this._output;
           if ("column" === arg) {
-            answer = coUtils.Text.base64encode(screen.width)
+            answer = coUtils.Text.base64encode(screen.getWidth())
             reply = coUtils.Text.format("answer %s\n", answer);
             output.write(reply, reply.length);
           } else if ("rows" === arg) {
-            answer = coUtils.Text.base64encode(screen.height)
+            answer = coUtils.Text.base64encode(screen.getHeight())
             reply = coUtils.Text.format("answer %s\n", answer);
             output.write(reply, reply.length);
           }

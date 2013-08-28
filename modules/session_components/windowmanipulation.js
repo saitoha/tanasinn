@@ -266,8 +266,8 @@ WindowManipulator.definition = {
         //
         screen = this._screen;
         renderer = this._renderer;
-        width = screen.width * renderer.char_width;
-        height = screen.height * renderer.line_height;
+        width = screen.getWidth() * renderer.char_width;
+        height = screen.getHeight() * renderer.line_height;
         message = coUtils.Text.format("4;%d;%dt", height, width);
 
         this.sendMessage("command/send-sequence/csi", message);
@@ -279,8 +279,8 @@ WindowManipulator.definition = {
         //   y    Terminal height in characters. (Lines)
         //   x    Terminal width in characters. (Columns)
         screen = this._screen;
-        width = screen.width;
-        height = screen.height;
+        width = screen.getWidth();
+        height = screen.getHeight();
         message = coUtils.Text.format("8;%d;%dt", height, width);
 
         this.sendMessage("command/send-sequence/csi", message);
@@ -329,7 +329,7 @@ WindowManipulator.definition = {
       default:
         if (23 < n1 && n1 <= 72) {
           screen = this._screen;
-          width = screen.width;
+          width = screen.getWidth();
           this.sendMessage(
             "command/resize-screen",
             {

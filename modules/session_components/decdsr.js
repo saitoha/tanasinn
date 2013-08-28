@@ -201,8 +201,8 @@ DECDeviceStatusReport.definition = {
 
     top = 0;
     left = 0;
-    bottom = screen.height;
-    right = screen.width;
+    bottom = screen.getHeight();
+    right = screen.getWidth();
 
     checksum = screen.calculateHashInRectangle(top, left, bottom, right);
     message = id + "!~" + checksum;

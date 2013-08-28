@@ -220,8 +220,8 @@ Resizer.definition = {
         owner_document = this.request("get/root-element").ownerDocument,
         renderer = this._renderer,
         screen = this._screen,
-        initial_column = screen.width,
-        initial_row = screen.height,
+        initial_column = screen.getWidth(),
+        initial_row = screen.getHeight(),
         origin_x = event.screenX,
         origin_y = event.screenY;
 
@@ -239,9 +239,16 @@ Resizer.definition = {
 
         handler: function onmousemove(event)
         {
-          var char_width, line_height, diffX, diffY,
-              column, row, screen_width_cache, screen_height_cache,
-              moveX, moveY;
+          var char_width,
+              line_height,
+              diffX,
+              diffY,
+              column,
+              row,
+              screen_width_cache,
+              screen_height_cache,
+              moveX,
+              moveY;
 
           char_width = renderer.char_width;
           line_height = renderer.line_height;
@@ -260,8 +267,8 @@ Resizer.definition = {
             row = 1;
           }
 
-          screen_width_cache = screen.width;
-          screen_height_cache = screen.height;
+          screen_width_cache = screen.getWidth();
+          screen_height_cache = screen.getHeight();
 
           this.sendMessage(
             "command/resize-screen",
@@ -270,8 +277,8 @@ Resizer.definition = {
               row: row,
             });
 
-          moveX = this.type.slice(-1) === "w" ? screen_width_cache - screen.width: 0;
-          moveY = this.type[0] === "n" ? screen_height_cache - screen.height: 0;
+          moveX = this.type.slice(-1) === "w" ? screen_width_cache - screen.getWidth(): 0;
+          moveY = this.type[0] === "n" ? screen_height_cache - screen.getHeight(): 0;
 
           if (0 !== moveX || 0 !== moveY) {
             this.sendMessage("command/move-by", [moveX * char_width, moveY * line_height]);

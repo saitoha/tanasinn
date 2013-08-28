@@ -2215,8 +2215,6 @@ Screen.definition = {
 
     this._buffer_top = 0;
     this._lines = null;
-    this._width = 80;
-    this._height = 24;
 
     this._scroll_top = null;
     this._scroll_bottom = null;
@@ -2251,12 +2249,12 @@ Screen.definition = {
    * @property width
    * Screen width in counting the number of columns.
    */
-  get "[persistable] width"()
+  getWidth: function getWidth()
   {
     return this._width;
   },
 
-  set "[persistable] width"(value)
+  setWidth: function setWidth(value)
   {
     var width,
         cursor,
@@ -2294,12 +2292,12 @@ Screen.definition = {
    * @property height
    * Screen height in counting the number of lines.
    */
-  get "[persistable] height"()
+  getHeight: function getHeight()
   {
     return this._height;
   },
 
-  set "[persistable] height"(value)
+  setHeight: function setHeight(value)
   {
     var cursor;
 
@@ -3388,6 +3386,20 @@ Screen.definition = {
     }
   },
 
+  "[subscribe('command/save-persistable-data'), type('Object -> Undefined'), enabled]":
+  function save(context)
+  {
+    context['screen.width'] = this._width;
+    context['screen.height'] = this._height;
+  },
+
+  "[subscribe('command/load-persistable-data'), type('Object -> Undefined'), enabled]":
+  function load(context)
+  {
+    this.setWidth(context['screen.width']);
+    this.setHeight(context['screen.height']);
+  },
+
 // ScreenBackupConcept Implementation
 
   /** Backups screen into serialize context.
@@ -3443,8 +3455,8 @@ Screen.definition = {
         lines,
         line;
 
-    this.width = context.shift();
-    this.height = context.shift();
+    this.setWidth(context.shift());
+    this.setHeigh(context.shift());
     this._buffer_top = context.shift();
     this._scroll_top = context.shift();
     this._scroll_bottom = context.shift();

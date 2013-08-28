@@ -192,7 +192,7 @@ DragCopy.definition = {
   _startDragging: function _startDragging(event)
   {
     var screen = this._screen,
-        column = screen.width,
+        column = screen.getWidth(),
         coordinate = this.convertPixelToScreen(event),
         x = coordinate[0],
         y = coordinate[1],
@@ -244,8 +244,8 @@ DragCopy.definition = {
         line_height = renderer.line_height,
         column = Math.round(left / char_width),
         row = Math.round(top / line_height),
-        max_column = screen.width,
-        max_row = screen.height;
+        max_column = screen.getWidth(),
+        max_row = screen.getHeight();
 
     if (column > max_column) {
       column = max_column;

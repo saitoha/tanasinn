@@ -594,6 +594,8 @@ Mouse.definition = {
   {
     var renderer = this._renderer,
     	screen = this._screen,
+        width = screen.getWidth(),
+        height = screen.getHeight(),
         target_element = this.request(
           "command/query-selector",
           "#tanasinn_center_area"),
@@ -608,14 +610,14 @@ Mouse.definition = {
     if (column < 1) {
       column = 1;
     }
-    if (column > screen.width) {
-      column = screen.width;
+    if (column > width) {
+      column = width;
     }
     if (row < 1) {
       row = 1;
     }
-    if (row > screen.height) {
-      row = screen.height;
+    if (row > height) {
+      row = height;
     }
     return [column, row];
   },

@@ -99,7 +99,7 @@ TabController.definition = {
         tab_stops = this._getTabStops(),
         screen = this._screen,
         line = screen.getCurrentLine(),
-        width = screen.width,
+        width = screen.getWidth(),
         max,
         position_x,
         i = 0,

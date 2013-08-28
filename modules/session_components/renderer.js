@@ -492,9 +492,10 @@ Renderer.definition = {
   "[subscribe('variable-changed/{screen.width | renderer.char_width}'), pnp]":
   function onWidthChanged(width, char_width)
   {
-    var canvas_width;
+    var canvas_width,
+        screen = this._screen;
 
-    width = width || this._screen.width;
+    width = width || screen.getWidth();
     char_width = char_width || this.char_width;
     canvas_width = 0 | (width * char_width);
 
@@ -513,9 +514,10 @@ Renderer.definition = {
   "[subscribe('variable-changed/{screen.height | renderer.line_height}'), pnp]":
   function onHeightChanged(height, line_height)
   {
-    var canvas_height;
+    var canvas_height,
+        screen = this._screen;
 
-    height = height || this._screen.height;
+    height = height || screen.getHeight();
     line_height = line_height || this.line_height;
     canvas_height = 0 | (height * line_height);
 

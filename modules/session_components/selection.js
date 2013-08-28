@@ -362,9 +362,10 @@ Selection.definition = {
     }
 
     screen = this._screen;
-    column = screen.width;
 
-    row = screen.height;
+    column = screen.getWidth();
+    row = screen.getHeight();
+
     x = args[1] - 1;
     y = args[2] - 1;;
 
@@ -561,7 +562,7 @@ Selection.definition = {
     screen = this._screen;
     renderer = this._renderer;
 
-    column = screen.width;
+    column = screen.getWidth();
     char_width = renderer.char_width;
     line_height = renderer.line_height;
     start_row = Math.floor(first / column);
@@ -774,7 +775,7 @@ Selection.definition = {
     var screen = this._screen,
         result = this.convertPixelToScreen(event);
 
-    return screen.width * result[1] + result[0];
+    return screen.getWidth() * result[1] + result[0];
   },
 
   convertPixelToScreen: function convertPixelToScreen(event)
@@ -793,8 +794,8 @@ Selection.definition = {
         line_height = renderer.line_height,
         column = Math.floor(left / char_width + 1.0),
         row = Math.floor(top / line_height + 1.0),
-        max_column = screen.width,
-        max_row = screen.height,
+        max_column = screen.getWidth(),
+        max_row = screen.getHeight(),
         column = column > max_column ? max_column: column,
         row = row > max_row ? max_row: row;
 

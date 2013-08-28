@@ -106,8 +106,8 @@ Bell.definition = {
     var renderer = this._renderer,
         screen = this._screen;
 
-    this._cover.width = renderer.char_width * screen.width;
-    this._cover.height = renderer.line_height * screen.height;
+    this._cover.width = renderer.char_width * screen.getWidth();
+    this._cover.height = renderer.line_height * screen.getHeight();
   },
 
   /** called when logical screen width is changed */

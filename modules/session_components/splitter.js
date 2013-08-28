@@ -138,7 +138,7 @@ Splitter.definition = {
         screen = this._screen,
         bottompanel = this._bottompanel,
         initial_height = bottompanel.panelHeight,
-        initial_row = screen.height,
+        initial_row = screen.getHeight(),
         line_height = renderer.line_height,
         initial_y = event.screenY;
 
@@ -163,7 +163,7 @@ Splitter.definition = {
         bottompanel = this._bottompanel,
         row = initial_row + Math.round(diff / line_height);
 
-    this._screen.height = row;
+    this._screen.setHeight(row);
 
     diff = (row - initial_row) * line_height;
 
@@ -184,7 +184,7 @@ Splitter.definition = {
     this.onmousemove.enabled = false;
     this.onmouseup.enabled = false;
 
-    if (this._screen.height !== this._initial_row) {
+    if (this._screen.getHeight() !== this._initial_row) {
       this.sendMessage("event/resize-session-closed");
     }
   },

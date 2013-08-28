@@ -215,7 +215,7 @@ BottomPanel.definition = {
         screen = this._screen,
         // restricts bottom panel's height.
         line_height = renderer.line_height,
-        row = screen.height,
+        row = screen.getHeight(),
         max_screen_height = Math.floor(line_height * row / 2),
         panels = this._tabbox.tabpanels.childNodes,
         panel,

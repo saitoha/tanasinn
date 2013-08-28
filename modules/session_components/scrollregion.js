@@ -132,7 +132,7 @@ ScrollRegion.definition = {
     var screen = this._screen,
         cursor_state = this._cursor_state,
         min = 0,
-        max = screen.height,
+        max = screen.getHeight(),
         top = (n1 || min + 1) - 1,
         bottom = arguments.length > 1 ? n2: max,
         tmp;

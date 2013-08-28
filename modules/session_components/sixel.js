@@ -121,8 +121,8 @@ Sixel.definition = {
         id: "sixel_canvas",
       }).sixel_canvas,
 
-    sixel_canvas.width = renderer.char_width * screen.width;
-    sixel_canvas.height = renderer.line_height * screen.height * 2;
+    sixel_canvas.width = renderer.char_width * screen.getWidth();
+    sixel_canvas.height = renderer.line_height * screen.getHeight() * 2;
 
     dom = {
       canvas: sixel_canvas,
@@ -223,7 +223,7 @@ Sixel.definition = {
       line_height = renderer.line_height;
       char_width = renderer.char_width;
       line_count = Math.ceil(result.max_y / line_height);
-      max_cell_count = screen.width - cursor_state.position_x;
+      max_cell_count = screen.getWidth() - cursor_state.position_x;
       cell_count = Math.min(Math.ceil(result.max_x / char_width), max_cell_count);
       start_code = 0x21;
       end_code = start_code + cell_count;

@@ -315,7 +315,9 @@ Protection.definition = {
         top = (n1 || 1) - 1,
         left = (n2 || 1) - 1,
         bottom = (n3 || 1) - 1,
-        right = (n4 || 1) - 1;
+        right = (n4 || 1) - 1,
+        width = screen.getWidth(),
+        height = screen.getHeight();
 
     if (top >= bottom || left >= right) {
       throw coUtils.Debug.Exception(
@@ -323,11 +325,11 @@ Protection.definition = {
         "DECSERA", Array.slice(arguments));
     }
 
-    if (bottom > screen.height) {
-      bottom = screen.height;
+    if (bottom > height) {
+      bottom = height;
     }
-    if (right > screen.width) {
-      right = screen.width;
+    if (right > width) {
+      right = width;
     }
 
     screen.selectiveEraseRectangle(top, left, bottom, right);

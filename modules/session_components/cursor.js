@@ -145,8 +145,8 @@ Cursor.definition = {
     var renderer = this._renderer,
         screen = this._screen;
 
-    this._canvas.width = renderer.char_width * screen.width;
-    this._canvas.height = renderer.line_height * screen.height;
+    this._canvas.width = renderer.char_width * screen.getWidth();
+    this._canvas.height = renderer.line_height * screen.getHeight();
   },
 
   "[subscribe('sequence/sm/34'), pnp]":

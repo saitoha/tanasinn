@@ -150,7 +150,7 @@ VT52.definition = {
       } else if (c < 0x80) /*if (_STATE_GROUND === state)*/ {
         //return false;
         screen = this._screen;
-        if (this._cursor_state.position_x < this._screen.width) {
+        if (this._cursor_state.position_x < screen.getWidth()) {
           screen.write([c])
         }
       }
