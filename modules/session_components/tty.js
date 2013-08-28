@@ -181,6 +181,16 @@ SocketTeletypeService.definition = {
     this._externaldriver.start(this._socket.port)
   },
 
+  "[subscribe('@command/focus')]":
+  function onFirstFocus()
+  {
+    coUtils.Timer.setTimeout(
+      function timerProc()
+      {
+        this.sendMessage("command/draw", true);
+      },100);
+  },
+
   /**
    * Attach to an existing session
    * @param {Number} request_id the ID of the session to attach to.
