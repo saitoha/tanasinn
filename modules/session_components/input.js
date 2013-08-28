@@ -1184,7 +1184,6 @@ InputManager.definition = {
       "char:" + (event.isChar ? "t": "f"));
     */
 
-    event.preventDefault();
     event.stopPropagation();
   },
 
