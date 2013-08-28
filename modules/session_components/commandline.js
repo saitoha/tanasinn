@@ -828,7 +828,6 @@ Commandline.definition = {
   function onkeydown(event)
   {
     event.stopPropagation();
-    event.preventDefault();
   },
 
   "[subscribe('event/keypress-commandline-with-remapping'), enabled]":
