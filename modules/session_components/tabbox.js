@@ -79,9 +79,16 @@ BottomPanel.definition = {
                 var target = event.target,
                     panel = target.selectedPanel,
                     tab = target.parentNode.selectedTab,
-                    nodes = target.parentNode.tabs.childNodes,
+                    tabs = target.parentNode.tabs,
+                    nodes,
                     node,
                     i;
+
+                if (!tabs) {
+                  return;
+                }
+
+                nodes = tabs.childNodes;
 
                 for (i = 0; i < nodes.length; ++i) {
                   node = nodes[i];
