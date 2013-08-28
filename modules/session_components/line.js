@@ -382,27 +382,10 @@ DirtyRange.definition = {
     this.last = length;
   },
 
-  /** Detect whether it has some range. */
-  get dirty()
-  {
-    return this.first !== this.last;
-  },
-
   invalidate: function invalidate()
   {
     this.first = 0;
     this.last = this.cells.length;
-  },
-
-  /** Marks it "dirty" or "clear". */
-  set dirty(value)
-  {
-    if (value) {
-      this.first = 0;
-      this.last = this.cells.length;
-    } else {
-      this.clearRange();
-    }
   },
 
   /** clears the range. */
@@ -547,7 +530,7 @@ Line.definition = {
       cell = cells[i];
       cell.deserialize(context);
     }
-    this.dirty = true;
+    this.invalidate();
   },
 
   /** gets count of cells */
@@ -725,7 +708,7 @@ Line.definition = {
         codes,
         c;
 
-    if (this.dirty) {
+    if (this.first !== this.last) {
       cells = this.cells;
       max = coUtils.Constant.LINETYPE_NORMAL === this.type ?
         this.last:

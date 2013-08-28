@@ -114,7 +114,7 @@ DoubleSizedCharacters.definition = {
       line = screen.getCurrentLine();
 
       line.type = coUtils.Constant.LINETYPE_TOP;
-      line.dirty = 1;
+      line.invalidate();
     }
   },
 
@@ -130,7 +130,7 @@ DoubleSizedCharacters.definition = {
       line = screen.getCurrentLine();
 
       line.type = coUtils.Constant.LINETYPE_BOTTOM;
-      line.dirty = 1;
+      line.invalidate();
     }
   },
 
@@ -159,7 +159,7 @@ DoubleSizedCharacters.definition = {
       line = screen.getCurrentLine();
 
       line.type = coUtils.Constant.LINETYPE_NORMAL;
-      line.dirty = 1;
+      line.invalidate();
     }
   },
 
@@ -188,7 +188,7 @@ DoubleSizedCharacters.definition = {
       line = screen.getCurrentLine();
 
       line.type = coUtils.Constant.LINETYPE_DOUBLEWIDTH;
-      line.dirty = 1;
+      line.invalidate();
     }
   },
 

@@ -1621,7 +1621,7 @@ Viewable.definition = {
       if (line.length < width) {
         line.length = width;
       }
-      line.dirty = true;
+      line.invalidate();
     }
   },
 
@@ -2235,7 +2235,7 @@ Screen.definition = {
   /**
    * @fn setDirty
    */
-  setDirty: function setDirty(value)
+  setDirty: function setDirty()
   {
     var lines = this._lines,
         line,
@@ -2243,7 +2243,7 @@ Screen.definition = {
 
     for (i = 0; i < lines.length; ++i) {
       line = lines[i];
-      line.dirty = value;
+      line.invalidate();
     }
   },
 
