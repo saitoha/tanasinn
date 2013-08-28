@@ -26,6 +26,9 @@ link:./usermanual.html[English/英語]
 
 == News
 
+=== 2013-08-24
+    Workaround for Firefox 25+ 
+
 === 2013-08-16
     Version 0.3.3.11
     Disable ambiguous width reporting when private mode 7700 is reset
