@@ -299,7 +299,7 @@ SGRHandler.definition = {
 
           case 30:
             attr.fg = 0;
-            //attr.fgcolor = 0;
+            //attr.resetForeColor();
             break;
 
           case 31:
@@ -351,13 +351,13 @@ SGRHandler.definition = {
             break;
 
           case 39:
-            attr.fgcolor = 0;
+            attr.resetForeColor();
             attr.bold = 0; // SGR default fg.
             break;
 
           case 40:
             attr.bg = 0;
-            //attr.bgcolor = 0;
+            //attr.resetBackColor();
             break;
 
           case 41:
@@ -409,7 +409,7 @@ SGRHandler.definition = {
             break;
 
           case 49:
-            attr.bgcolor = 0; // SGR default bg.
+            attr.resetBackColor(); // SGR default bg.
             break;
 
           case 90:
@@ -534,7 +534,7 @@ SGRHandler.definition = {
       params.push(8);
     }
 
-    if (1 === attr.fgcolor) {
+    if (attr.hasForeColor()) {
       if (attr.fg <= 7) {
         params.push(30 + attr.fg);
       } else if (attr.fg <= 15) {
@@ -548,7 +548,7 @@ SGRHandler.definition = {
       params.push(39);
     }
 
-    if (1 === attr.bgcolor) {
+    if (attr.hasBackColor()) {
       if (attr.bg <= 7) {
         params.push(40 + attr.bg);
       } else if (attr.bg <= 15) {

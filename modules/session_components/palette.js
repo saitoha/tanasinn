@@ -415,8 +415,8 @@ PaletteManager.definition = {
 
     // Get hexadecimal formatted text color (#xxxxxx)
     // form given attribute structure.
-    if (1 === attr.fgcolor) {
-      if (1 === attr.bgcolor) {
+    if (attr.hasForeColor()) {
+      if (attr.hasBackColor()) {
         if (1 === attr.inverse) {
           fore_color = this.color[attr.bg];
         } else {
@@ -447,7 +447,7 @@ PaletteManager.definition = {
 
     /* Get hexadecimal formatted background color (#xxxxxx)
      * form given attribute structure. */
-    if (1 === attr.bgcolor) {
+    if (attr.hasBackColor()) {
       if (1 === attr.inverse) {
         back_color = this.adjusted_bgcolor[attr.fg];
       } else {

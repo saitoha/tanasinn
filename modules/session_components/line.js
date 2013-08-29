@@ -169,36 +169,32 @@ Cell.definition = {
                | value << _ATTR_ITALIC;
   },
 
-  /** getter of fgcolor attribute */
-  get fgcolor()
+  /** get whether foreground color is enabled */
+  hasForeColor: function hasForeColor()
   {
-    return this.value >>> _ATTR_FGCOLOR & 0x1;
+    return 0x1 << _ATTR_FGCOLOR  === (this.value & 0x1 << _ATTR_FGCOLOR);
   },
 
-  /** setter of fgcolor attribute */
-  set fgcolor(value)
+  /** reset foreground color attribute */
+  resetForeColor: function resetForeColor()
   {
-    this.value = this.value
-               & ~(0x1 << _ATTR_FGCOLOR)
-               | value << _ATTR_FGCOLOR;
+    this.value &= ~(0x1 << _ATTR_FGCOLOR);
   },
 
 
-  /** getter of bgcolor attribute */
-  get bgcolor()
+  /** get whether background color is enabled */
+  hasBackColor: function hasBackColor()
   {
     //if (this.value & 0xff !== 0) {
     //  return 1;
     //}
-    return this.value >>> _ATTR_BGCOLOR & 0x1;
+    return 0x1 << _ATTR_BGCOLOR  === (this.value & 0x1 << _ATTR_BGCOLOR);
   },
 
-  /** setter of bgcolor attribute */
-  set bgcolor(value)
+  /** reset background color attribute */
+  resetBackColor: function resetBackColor(value)
   {
-    this.value = this.value
-               & ~(0x1 << _ATTR_BGCOLOR)
-               | value << _ATTR_BGCOLOR;
+    this.value &= ~(0x1 << _ATTR_BGCOLOR)
   },
 
 
