@@ -346,6 +346,7 @@ Transform.definition = {
 
   id: "transform",
 
+  /* plugin information */
   getInfo: function getInfo()
   {
     return {
@@ -401,6 +402,15 @@ Transform.definition = {
     this._last_matrix = null;
     this._width = 0;
     this._height = 0;
+  },
+
+  "[command('resettransform/rt'), _('Reset transform matrix.'), pnp]":
+  function resetTransform(info)
+  {
+    this.transform_matrix = "";
+    this.perspective = null;
+
+    return true;
   },
 
   "[subscribe('variable-changed/transform.transform_matrix'), pnp]":
