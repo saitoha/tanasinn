@@ -916,27 +916,23 @@ Line.definition = {
   },
 
   /**
-   * erace cells with test pattern.
+   * erace cells with specified pattern.
    *
    * [ a b c d e f g h ] -> [ E E E E E E E E ]
    */
-  eraseWithTestPattern:
-  function eraseWithTestPattern(start, end, attr)
+  fill: function fill(start, end, c, attr)
   {
     var i,
         cell,
         cells;
 
     this.addRange(start, end);
-//    this.cells
-//      .slice(start, end)
-//      .forEach(function(cell) cell.write(0x45 /* "E" */, attr));
 
     cells = this.cells;
     end = Math.min(end, cells.length);
     for (i = start; i < end; ++i) {
       cell = cells[i];
-      cell.write(0x45 /* "E" */, attr);
+      cell.write(c, attr);
     }
   },
 

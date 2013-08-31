@@ -658,8 +658,8 @@ ScreenSequenceHandler.definition = {
   { // Erase Rectangle Area
     var top = (n1 || 1) - 1,
         left = (n2 || 1) - 1,
-        bottom = (n3 || 1) - 1,
-        right = (n4 || 1) - 1,
+        bottom = n3 || 1,
+        right = n4 || 1,
         scroll_left = this._scroll_left,
         scroll_top = this._scroll_top,
         scroll_right = this._scroll_right,
@@ -697,6 +697,107 @@ ScreenSequenceHandler.definition = {
     }
 
     this.eraseRectangle(top, left, bottom, right);
+  },
+
+
+  /**
+   * DECFRA - Fill Rectangular Area
+   *
+   * This control function fills a rectangular area in page memory with a
+   * specified character. DECFRA replaces the rectangular area’s character
+   * positions and attributes with the specified fill character. The fill
+   * character assumes the visual character attributes set by the last select
+   * graphic rendition (SGR) command. DECFRA does not change the current line
+   * attributes.
+   *
+   * Available in: VT Level 4 or higher mode only
+   *
+   *   CSI   Pch  ;     Pt   ;     Pl   ;     Pb   ;     Pr   $    x
+   *   9/11  3/n  3/11  3/n  3/11  3/n  3/11  3/n  3/11  3/n  2/4  7/8
+   *
+   * Pch
+   * is the decimal value of the fill character. Pch can be any value from 32
+   * to 126 or from 160 to 255. If Pch is not in this range, then the terminal
+   * ignores the DECFRA command. The decimal value refers to the character in
+   * the current GL or GR in-use table.
+   *
+   * Pt; Pl; Pb; Pr
+   * define the rectangular area to be filled:
+   *
+   * Pt is the top-line border. Pt must be less than or equal to Pbs.
+   * Default: Pt = 1.
+   *
+   * Pl is the left-column border. Pl must be less than or equal to Pr.
+   * Default: Pl = 1.
+   *
+   * Pb is the bottom-line border.
+   *
+   * Default: Pb = the last line of the active page. Pr is the right-column
+   * border.
+   *
+   * Default: Pr = the last column of the active page. Notes on DECFRA
+   *
+   * - The coordinates of the rectangular area are affected by the setting
+   *   of origin mode (DECOM).
+   *
+   * - DECFRA is not affected by the page margins.
+   *
+   * - If the value of Pt, Pl, Pb, or Pr exceeds the width or height of the
+   *   active page, the value is treated as the width or height of that page.
+   *
+   * - DECFRA does not change the active cursor position.
+   *
+   */
+  "[profile('vt100'), sequence('CSI Pc;Pt;Pl;Pb;Pr $ x')]":
+  function DECFRA(n1, n2, n3, n4, n5)
+  { // Erase Rectangle Area
+    var c = n1 || 0x0,
+        top = (n2 || 1) - 1,
+        left = (n3 || 1) - 1,
+        bottom = n4 || 1,
+        right = n5 || 1,
+        scroll_left = this._scroll_left,
+        scroll_top = this._scroll_top,
+        scroll_right = this._scroll_right,
+        scroll_bottom = this._scroll_bottom,
+        width = this._width,
+        height = this._height,
+        cursor = this._cursor;
+
+    // ignore if c is a control character
+    if (c < 0x20) {
+      return;
+    }
+
+    if (this._origin_mode) {
+      top += scroll_top;
+      bottom += scroll_top;
+      if (this._left_right_margin_mode) {
+        left += scroll_left;
+        right += scroll_left;
+      }
+      if (top >= scroll_bottom) {
+        top = scroll_bottom - 1;
+      }
+      if (bottom >= scroll_bottom) {
+        bottom = scroll_bottom - 1;
+      }
+    } else {
+      if (bottom > height) {
+        bottom = height;
+      }
+      if (right > width) {
+        right = width;
+      }
+    }
+
+    if (top >= bottom || left >= right) {
+      throw coUtils.Debug.Exception(
+        _("Invalid arguments detected in %s [%s]."),
+        "DECFRA", Array.slice(arguments));
+    }
+
+    this.fillRectangle(c, top, left, bottom, right);
   },
 
   /**
@@ -2949,7 +3050,7 @@ Screen.definition = {
   },
 
   /** Erase every cells in rectanglar area. */
-  "[type('Undefined')] eraseRectangle":
+  "[type('Uint16 -> Uint16 -> Uint16 -> Uint16 -> Undefined')] eraseRectangle":
   function eraseRectangle(top, left, bottom, right)
   {
     var cursor = this._cursor,
@@ -3036,7 +3137,7 @@ Screen.definition = {
   },
 
   /** Erase every cells marked as "erasable" in rectanglar area. */
-  "[type('Undefined')] selectiveEraseRectangle":
+  "[type('Uint16 -> Uint16 -> Uint16 -> Uint16 -> Undefined')] selectiveEraseRectangle":
   function selectiveEraseRectangle(top, left, bottom, right)
   {
     var cursor = this._cursor,
@@ -3060,12 +3161,30 @@ Screen.definition = {
     var attrvalue = this._cursor.attr.value,
         width = this._width,
         lines = this._lines,
-        i = 0,
+        i,
         line;
 
-    for (; i < lines.length; ++i) {
+    for (i = 0; i < lines.length; ++i) {
       line = lines[i];
-      line.eraseWithTestPattern(0, width, attrvalue);
+      line.fill(0, width, 0x45 /* "E" */, attrvalue);
+    }
+  },
+
+  /** Fill every cells in rectanglar area with specified character. */
+  "[type('Uint16 -> Uint16 -> Uint16 -> Uint16 -> Uint16 -> Undefined')] fillRectangle":
+  function fillRectangle(c, top, left, bottom, right)
+  {
+    var cursor = this._cursor,
+        lines = this._lines,
+        attrvalue = cursor.attr.value,
+        length = lines.length,
+        i,
+        line;
+
+    for (i = top; i < bottom; ++i) {
+      line = lines[i];
+      line.fill(left, right, c, attrvalue);
+      line.type = coUtils.Constant.LINETYPE_NORMAL;
     }
   },
 
