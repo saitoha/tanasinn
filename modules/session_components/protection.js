@@ -314,8 +314,8 @@ Protection.definition = {
     var screen = this._screen,
         top = (n1 || 1) - 1,
         left = (n2 || 1) - 1,
-        bottom = (n3 || 1) - 1,
-        right = (n4 || 1) - 1,
+        bottom = n3 || 1,
+        right = n4 || 1,
         width = screen.getWidth(),
         height = screen.getHeight();
 
