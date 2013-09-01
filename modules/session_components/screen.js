@@ -732,8 +732,9 @@ ScreenSequenceHandler.definition = {
    *
    * Pb is the bottom-line border.
    *
-   * Default: Pb = the last line of the active page. Pr is the right-column
-   * border.
+   * Default: Pb = the last line of the active page.
+   *
+   * Pr is the right-column border.
    *
    * Default: Pr = the last column of the active page. Notes on DECFRA
    *
