@@ -342,16 +342,20 @@ VT100Grammar.definition = {
         params = [],
         i,
         c,
-        param = 0,
+        param = undefined,
         key = 0;
 
     for (i = 0; i < pbytes.length; ++i) {
       c = pbytes[i];
       if (c < 0x3a) {
-        param = param * 10 + c - 0x30;
+        if (undefined === param) {
+          param = c - 0x30;
+        } else {
+          param = param * 10 + c - 0x30;
+        }
       } else if (c < 0x3c) {
         params.push(param);
-        param = 0;
+        param = undefined;
       } else {
         key = key << 8 | c;
       }
@@ -383,15 +387,19 @@ VT100Grammar.definition = {
         key = 0;
 
     params = [];
-    param = 0;
+    param = undefined;
 
     for (i = 0; i < pbytes.length; ++i) {
       c = pbytes[i];
       if (c < 0x3a) {
-        param = param * 10 + c - 0x30;
+        if (undefined === param) {
+          param = c - 0x30;
+        } else {
+          param = param * 10 + c - 0x30;
+        }
       } else if (c < 0x3c) {
         params.push(param);
-        param = 0;
+        param = undefined;
       } else {
         key = key << 8 | c;
       }
