@@ -656,10 +656,10 @@ ScreenSequenceHandler.definition = {
   "[profile('vt100'), sequence('CSI Pt;Pl;Pb;Pr $ z')]":
   function DECERA(n1, n2, n3, n4)
   { // Erase Rectangle Area
-    var top = (n1 || 1) - 1,
-        left = (n2 || 1) - 1,
-        bottom = n3 || 1,
-        right = n4 || 1,
+    var top = n1,
+        left = n2,
+        bottom = n3,
+        right = n4,
         scroll_left = this._scroll_left,
         scroll_top = this._scroll_top,
         scroll_right = this._scroll_right,
@@ -668,12 +668,39 @@ ScreenSequenceHandler.definition = {
         height = this._height,
         cursor = this._cursor;
 
+    if (undefined === n2 || 0 === n2) {
+      left = 0;
+    } else {
+      left = n2 - 1;
+    }
+    if (undefined === n1 || 0 === n1) {
+      top = 0;
+    } else {
+      top = n1 - 1;
+    }
+    if (undefined === n4 || 0 === n4) {
+      right = width;
+    } else {
+      right = n4;
+    }
+    if (undefined === n3 || 0 === n3) {
+      bottom = height;
+    } else {
+      bottom = n3;
+    }
+
     if (this._origin_mode) {
       top += scroll_top;
       bottom += scroll_top;
       if (this._left_right_margin_mode) {
         left += scroll_left;
         right += scroll_left;
+        if (left >= scroll_right) {
+          left = scroll_right - 1;
+        }
+        if (right >= scroll_right) {
+          right = scroll_right - 1;
+        }
       }
       if (top >= scroll_bottom) {
         top = scroll_bottom - 1;
@@ -752,11 +779,11 @@ ScreenSequenceHandler.definition = {
   "[profile('vt100'), sequence('CSI Pc;Pt;Pl;Pb;Pr $ x')]":
   function DECFRA(n1, n2, n3, n4, n5)
   { // Erase Rectangle Area
-    var c = n1 || 0x0,
-        top = (n2 || 1) - 1,
-        left = (n3 || 1) - 1,
-        bottom = n4 || 1,
-        right = n5 || 1,
+    var c,
+        top,
+        left,
+        bottom,
+        right,
         scroll_left = this._scroll_left,
         scroll_top = this._scroll_top,
         scroll_right = this._scroll_right,
@@ -766,8 +793,30 @@ ScreenSequenceHandler.definition = {
         cursor = this._cursor;
 
     // ignore if c is a control character
-    if (c < 0x20) {
+    if (undefined === n1 || n1 < 0x20) {
       return;
+    } else {
+      c = n1;
+    }
+    if (undefined === n3 || 0 === n3) {
+      left = 0;
+    } else {
+      left = n3 - 1;
+    }
+    if (undefined === n2 || 0 === n2) {
+      top = 0;
+    } else {
+      top = n2 - 1;
+    }
+    if (undefined === n5 || 0 === n5) {
+      right = width;
+    } else {
+      right = n5;
+    }
+    if (undefined === n4 || 0 === n4) {
+      bottom = height;
+    } else {
+      bottom = n4;
     }
 
     if (this._origin_mode) {
@@ -776,6 +825,12 @@ ScreenSequenceHandler.definition = {
       if (this._left_right_margin_mode) {
         left += scroll_left;
         right += scroll_left;
+        if (left >= scroll_right) {
+          left = scroll_right - 1;
+        }
+        if (right >= scroll_right) {
+          right = scroll_right - 1;
+        }
       }
       if (top >= scroll_bottom) {
         top = scroll_bottom - 1;
