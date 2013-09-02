@@ -221,275 +221,280 @@ SGRHandler.definition = {
 
         p = arguments[i];
 
-        switch (p) {
+        if (undefined === p) {
+          attr.clear();
+        } else {
 
-          case 0:
-            attr.clear();
-            break;
+          switch (p) {
 
-          case 1:
-            attr.bold = 1;
-            break;
+            case 0:
+              attr.clear();
+              break;
 
-          case 2:
-            attr.bold = 0;
-            attr.halfbright = 1;
-            break;
+            case 1:
+              attr.bold = 1;
+              break;
 
-          case 3:
-            attr.italic = 1;
-            break;
+            case 2:
+              attr.bold = 0;
+              attr.halfbright = 1;
+              break;
 
-          case 4:
-            attr.underline = 1;
-            break;
+            case 3:
+              attr.italic = 1;
+              break;
 
-          case 5:
-            attr.blink = 1; // slow blink, less than 150 times per minute.
-            break;
+            case 4:
+              attr.underline = 1;
+              break;
 
-          case 6:
-            attr.rapid_blink = 1; // rapid blink, 150 times per minute or more.
-            break;
+            case 5:
+              attr.blink = 1; // slow blink, less than 150 times per minute.
+              break;
 
-          case 7:
-            attr.inverse = 1;
-            break;
+            case 6:
+              attr.rapid_blink = 1; // rapid blink, 150 times per minute or more.
+              break;
 
-          case 8:
-            attr.invisible = 1;
-            break;
+            case 7:
+              attr.inverse = 1;
+              break;
 
-          case 10:
-            this.sendMessage("event/shift-in");
-            break;
+            case 8:
+              attr.invisible = 1;
+              break;
 
-          case 11:
-            this.sendMessage("event/shift-out");
-            break;
+            case 10:
+              this.sendMessage("event/shift-in");
+              break;
 
-          case 21:
-            attr.bold = 0;
-            break;
+            case 11:
+              this.sendMessage("event/shift-out");
+              break;
 
-          case 22:
-            attr.halfbright = 0;
-            break;
+            case 21:
+              attr.bold = 0;
+              break;
 
-          case 23:
-            attr.italic = 0;
-            break;
+            case 22:
+              attr.halfbright = 0;
+              break;
 
-          case 24:
-            attr.underline = 0;
-            break;
+            case 23:
+              attr.italic = 0;
+              break;
 
-          case 25:
-            attr.blink = 0;
-            attr.rapid_blink = 0;
-            break;
+            case 24:
+              attr.underline = 0;
+              break;
 
-          case 27:
-            attr.inverse = 0; // SGR positive (not inverse)
-            break;
+            case 25:
+              attr.blink = 0;
+              attr.rapid_blink = 0;
+              break;
 
-          case 28:
-            attr.invisible = 0;
-            break;
+            case 27:
+              attr.inverse = 0; // SGR positive (not inverse)
+              break;
 
-          case 30:
-            attr.fg = 0;
-            //attr.resetForeColor();
-            break;
+            case 28:
+              attr.invisible = 0;
+              break;
 
-          case 31:
-            attr.fg = 1;
-            break;
+            case 30:
+              attr.fg = 0;
+              //attr.resetForeColor();
+              break;
 
-          case 32:
-            attr.fg = 2;
-            break;
+            case 31:
+              attr.fg = 1;
+              break;
 
-          case 33:
-            attr.fg = 3;
-            break;
+            case 32:
+              attr.fg = 2;
+              break;
 
-          case 34:
-            attr.fg = 4;
-            break;
+            case 33:
+              attr.fg = 3;
+              break;
 
-          case 35:
-            attr.fg = 5;
-            break;
+            case 34:
+              attr.fg = 4;
+              break;
 
-          case 36:
-            attr.fg = 6;
-            break;
+            case 35:
+              attr.fg = 5;
+              break;
 
-          case 37:
-            attr.fg = 7;
-            break;
+            case 36:
+              attr.fg = 6;
+              break;
 
-          case 38:
-            switch (arguments[++i]) {
-              case 2:
-                {
-                  var r = arguments[++i],
-                      g = arguments[++i],
-                      b = arguments[++i];
+            case 37:
+              attr.fg = 7;
+              break;
 
-                  attr.fg = this._palette.getApproximateColorNumber(r, g, b);
+            case 38:
+              switch (arguments[++i]) {
+                case 2:
+                  {
+                    var r = arguments[++i],
+                        g = arguments[++i],
+                        b = arguments[++i];
+
+                    attr.fg = this._palette.getApproximateColorNumber(r, g, b);
+                    break;
+                  }
+                case 5:
+                  attr.fg = arguments[++i];
                   break;
-                }
-              case 5:
-                attr.fg = arguments[++i];
-                break;
 
-              default:
-                break;
-            }
-            break;
-
-          case 39:
-            attr.resetForeColor();
-            attr.bold = 0; // SGR default fg.
-            break;
-
-          case 40:
-            attr.bg = 0;
-            //attr.resetBackColor();
-            break;
-
-          case 41:
-            attr.bg = 1;
-            break;
-
-          case 42:
-            attr.bg = 2;
-            break;
-
-          case 43:
-            attr.bg = 3;
-            break;
-
-          case 44:
-            attr.bg = 4;
-            break;
-
-          case 45:
-            attr.bg = 5;
-            break;
-
-          case 46:
-            attr.bg = 6;
-            break;
-
-          case 47:
-            attr.bg = 7;
-            break;
-
-          case 48:
-            switch (arguments[++i]) {
-              case 2:
-                {
-                  var r = arguments[++i],
-                      g = arguments[++i],
-                      b = arguments[++i];
-
-                  attr.bg = this._palette.getApproximateColorNumber(r, g, b);
+                default:
                   break;
-                }
-              case 5:
-                attr.bg = arguments[++i];
-                break;
+              }
+              break;
 
-              default:
-                break;
-            }
-            break;
+            case 39:
+              attr.resetForeColor();
+              attr.bold = 0; // SGR default fg.
+              break;
 
-          case 49:
-            attr.resetBackColor(); // SGR default bg.
-            break;
+            case 40:
+              attr.bg = 0;
+              //attr.resetBackColor();
+              break;
 
-          case 90:
-            attr.fg = 8;
-            break;
+            case 41:
+              attr.bg = 1;
+              break;
 
-          case 91:
-            attr.fg = 9;
-            break;
+            case 42:
+              attr.bg = 2;
+              break;
 
-          case 92:
-            attr.fg = 10;
-            break;
+            case 43:
+              attr.bg = 3;
+              break;
 
-          case 93:
-            attr.fg = 11;
-            break;
+            case 44:
+              attr.bg = 4;
+              break;
 
-          case 94:
-            attr.fg = 12;
-            break;
+            case 45:
+              attr.bg = 5;
+              break;
 
-          case 95:
-            attr.fg = 13
-            break;
+            case 46:
+              attr.bg = 6;
+              break;
 
-          case 96:
-            attr.fg = 14;
-            break;
+            case 47:
+              attr.bg = 7;
+              break;
 
-          case 97:
-            attr.fg = 15;
-            break;
+            case 48:
+              switch (arguments[++i]) {
+                case 2:
+                  {
+                    var r = arguments[++i],
+                        g = arguments[++i],
+                        b = arguments[++i];
 
-          case 100:
-            attr.bg = 8;
-            break;
+                    attr.bg = this._palette.getApproximateColorNumber(r, g, b);
+                    break;
+                  }
+                case 5:
+                  attr.bg = arguments[++i];
+                  break;
 
-          case 101:
-            attr.bg = 9;
-            break;
+                default:
+                  break;
+              }
+              break;
 
-          case 102:
-            attr.bg = 10;
-            break;
+            case 49:
+              attr.resetBackColor(); // SGR default bg.
+              break;
 
-          case 103:
-            attr.bg = 11;
-            break;
+            case 90:
+              attr.fg = 8;
+              break;
 
-          case 104:
-            attr.bg = 12;
-            break;
+            case 91:
+              attr.fg = 9;
+              break;
 
-          case 105:
-            attr.bg = 13;
-            break;
+            case 92:
+              attr.fg = 10;
+              break;
 
-          case 106:
-            attr.bg = 14;
-            break;
+            case 93:
+              attr.fg = 11;
+              break;
 
-          case 107:
-            attr.bg = 15;
-            break;
+            case 94:
+              attr.fg = 12;
+              break;
 
-          default:
-            if (300 <= p && p <= 399) {
-              attr.fg = p - 300;
-            } else if (400 <= p && p <= 499) {
-              attr.bg = p - 400;
-            } else if (3000 <= p && p <= 3255) {
-              attr.fg = p - 3000;
-            } else if (4000 <= p && p <= 4255) {
-              attr.bg = p - 4000;
-            } else {
-              coUtils.Debug.reportWarning(
-                _("Ignored SGR %s, arguments: [%s]"),
-                p, Array.slice(arguments));
-            }
+            case 95:
+              attr.fg = 13
+              break;
+
+            case 96:
+              attr.fg = 14;
+              break;
+
+            case 97:
+              attr.fg = 15;
+              break;
+
+            case 100:
+              attr.bg = 8;
+              break;
+
+            case 101:
+              attr.bg = 9;
+              break;
+
+            case 102:
+              attr.bg = 10;
+              break;
+
+            case 103:
+              attr.bg = 11;
+              break;
+
+            case 104:
+              attr.bg = 12;
+              break;
+
+            case 105:
+              attr.bg = 13;
+              break;
+
+            case 106:
+              attr.bg = 14;
+              break;
+
+            case 107:
+              attr.bg = 15;
+              break;
+
+            default:
+              if (300 <= p && p <= 399) {
+                attr.fg = p - 300;
+              } else if (400 <= p && p <= 499) {
+                attr.bg = p - 400;
+              } else if (3000 <= p && p <= 3255) {
+                attr.fg = p - 3000;
+              } else if (4000 <= p && p <= 4255) {
+                attr.bg = p - 4000;
+              } else {
+                coUtils.Debug.reportWarning(
+                  _("Ignored SGR %s, arguments: [%s]"),
+                  p, Array.slice(arguments));
+              }
+          }
         }
       }
     }
