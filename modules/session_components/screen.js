@@ -3240,7 +3240,6 @@ Screen.definition = {
     for (i = top; i < bottom; ++i) {
       line = lines[i];
       line.fill(left, right, c, attrvalue);
-      line.type = coUtils.Constant.LINETYPE_NORMAL;
     }
   },
 
@@ -3302,7 +3301,7 @@ Screen.definition = {
   function softReset()
   {
     var lines,
-        i = 0,
+        i,
         line;
 
     this.switchToMainScreen();
@@ -3310,7 +3309,7 @@ Screen.definition = {
 
     lines = this._getCurrentViewLines();
 
-    for (; i < lines.length; ++i) {
+    for (i = 0; i < lines.length; ++i) {
       line = lines[i];
       line.type = coUtils.Constant.LINETYPE_NORMAL;
     }
@@ -3414,18 +3413,18 @@ Screen.definition = {
   { // Scroll Right
     var lines = this._lines,
         attrvalue = this._cursor.attr.value,
-        i = 0,
-        j = 0,
+        i,
+        j,
         leftmargin = this._scroll_left,
         rightmargin = this._scroll_right,
         range,
         cells,
         cell;
 
-    for (; i < lines.length; ++i) {
+    for (i = 0; i < lines.length; ++i) {
       cells = lines[i].cells;
       range = cells.splice(rightmargin - n, n);
-      for (; j < range.length; ++j) {
+      for (j = 0; j < range.length; ++j) {
         cell = range[j];
         cell.erase(attrvalue);
       }
