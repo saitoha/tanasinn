@@ -741,6 +741,22 @@ var TERMINFO_DB = {
   "kHLP":   "\x1b[28;2~",
   "#1":     "\x1b[28;2~",
 
+  // set_lr_margin: Set both left and right margins to #1, #2.  (ML is not in BSD termcap).
+  "smglr":  "\x1b[%i%p1%d%p2%ds",
+  "ML":     "\x1b[%i%p1%d%p2%ds",
+
+  // clear_margins: clear right and left soft margins
+  "mgc":    "\x1b[s",
+  "MC":     "\x1b[s",
+
+  // enter_italics_mode: enter italic mode
+  "sitm":   "\x1b[3m",
+  "ZH":     "\x1b[3m",
+
+  // exit_italics_mode: end italic mode
+  "ritm":   "\x1b[23m",
+  "ZR":     "\x1b[23m",
+
   // max_colors: maximum number of colors on screen
   "Co":     "256",
   "colors": "256",
