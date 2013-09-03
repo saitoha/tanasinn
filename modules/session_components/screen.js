@@ -237,7 +237,11 @@ ScreenSequenceHandler.definition = {
   "[profile('vt100'), sequence('CSI Pn @')]":
   function ICH(n)
   { // Insert (blank) CHaracters.
-    this.insertBlanks(n || 1)
+    if (undefined === n || 0 === n) {
+      this.insertBlanks(1);
+    } else {
+      this.insertBlanks(n);
+    }
   },
 
   /**
@@ -260,7 +264,11 @@ ScreenSequenceHandler.definition = {
   "[profile('vt100'), sequence('CSI Pn A')]":
   function CUU(n)
   { // CUrsor Up
-    this.cursorUp(n || 1);
+    if (undefined === n || 0 === n) {
+      this.cursorUp(1);
+    } else {
+      this.cursorUp(n);
+    }
   },
 
   /**
@@ -281,7 +289,11 @@ ScreenSequenceHandler.definition = {
   "[profile('vt100'), sequence('CSI Pn B')]":
   function CUD(n)
   { // CUrsor Down
-    this.cursorDown(n || 1);
+    if (undefined === n || 0 === n) {
+      this.cursorDown(1);
+    } else {
+      this.cursorDown(n);
+    }
   },
 
   /**
@@ -308,7 +320,11 @@ ScreenSequenceHandler.definition = {
       right_margin = this._width;
     }
 
-    this.cursorForward(n || 1, right_margin);
+    if (undefined === n || 0 === n) {
+      this.cursorForward(1, right_margin);
+    } else {
+      this.cursorForward(n, right_margin);
+    }
   },
 
   /**
@@ -335,7 +351,11 @@ ScreenSequenceHandler.definition = {
       left_margin = 0;
     }
 
-    this.cursorBackward(n || 1, left_margin);
+    if (undefined === n || 0 === n) {
+      this.cursorBackward(1, left_margin);
+    } else {
+      this.cursorBackward(n, left_margin);
+    }
   },
 
   /**
@@ -364,7 +384,11 @@ ScreenSequenceHandler.definition = {
     var right_margin,
         cursor = this._cursor;
 
-    n = (n || 1) - 1;
+    if (undefined === n) {
+      n = 0;
+    } else if (n > 1) {
+      --n;
+    }
 
     if (this._left_right_margin_mode && this._origin_mode) {
       n += this._scroll_left;
@@ -409,8 +433,20 @@ ScreenSequenceHandler.definition = {
         right,
         bottom,
         cursor = this._cursor,
-        y = (n1 || 1) - 1,
-        x = (n2 || 1) - 1;
+        y,
+        x;
+
+    if (undefined === n1 || 0 === n1) {
+      y = 0;
+    } else {
+      y = n1 - 1;
+    }
+
+    if (undefined === n2 || 0 === n2) {
+      x = 0;
+    } else {
+      x = n2 - 1;
+    }
 
     if (this._origin_mode) {
       if (this._left_right_margin_mode) {
@@ -583,28 +619,33 @@ ScreenSequenceHandler.definition = {
   function ED(n)
   { // Erase Display
 
-    switch (n || 0) {
-
-      case 0:   // erase below
-        this.eraseScreenBelow();
-        break;
-
-      case 1:   // erase above
-        this.eraseScreenAbove();
-        break;
-
-      case 2: // erase all
-        this.eraseScreenAll();
-        break;
-
-      case 3: // erase saved lines (xterm)
-        this.eraseScrollback();
-        break;
-
-      default:
-        coUtils.Debug.reportWarning(
-          _("%s sequence [%s] was ignored."),
-          "ED", Array.slice(arguments));
+    if (undefined === n) {
+      this.eraseScreenBelow();
+    } else {
+  
+      switch (n) {
+  
+        case 0:   // erase below
+          this.eraseScreenBelow();
+          break;
+  
+        case 1:   // erase above
+          this.eraseScreenAbove();
+          break;
+  
+        case 2: // erase all
+          this.eraseScreenAll();
+          break;
+  
+        case 3: // erase saved lines (xterm)
+          this.eraseScrollback();
+          break;
+  
+        default:
+          coUtils.Debug.reportWarning(
+            _("%s sequence [%s] was ignored."),
+            "ED", Array.slice(arguments));
+      }
     }
 
   },
@@ -882,24 +923,29 @@ ScreenSequenceHandler.definition = {
   function EL(n)
   { // Erase Line
 
-    switch (n || 0) {
+    if (undefined === n) {
+      this.eraseLineToRight();
+    } else {
 
-      case 0: // erase to right
-        this.eraseLineToRight();
-        break;
-
-      case 1: // erase to left
-        this.eraseLineToLeft();
-        break;
-
-      case 2: // erase all
-        this.eraseLine();
-        break;
-
-      default:
-        coUtils.Debug.reportWarning(
-          _("%s sequence [%s] was ignored."),
-          "EL", Array.slice(arguments));
+      switch (n) {
+  
+        case 0: // erase to right
+          this.eraseLineToRight();
+          break;
+  
+        case 1: // erase to left
+          this.eraseLineToLeft();
+          break;
+  
+        case 2: // erase all
+          this.eraseLine();
+          break;
+  
+        default:
+          coUtils.Debug.reportWarning(
+            _("%s sequence [%s] was ignored."),
+            "EL", Array.slice(arguments));
+      }
     }
   },
 
@@ -931,7 +977,11 @@ ScreenSequenceHandler.definition = {
   "[profile('vt100'), sequence('CSI Pn L')]":
   function IL(n)
   { // Insert Line
-    this.insertLine(n || 1);
+    if (undefined === n || 0 === n) {
+      this.insertLine(1);
+    } else {
+      this.insertLine(n);
+    }
   },
 
   /**
@@ -962,7 +1012,11 @@ ScreenSequenceHandler.definition = {
   "[profile('vt100'), sequence('CSI Pn M')]":
   function DL(n)
   { // Delete Line.
-    this.deleteLine(n || 1);
+    if (undefined === n || 0 === n) {
+      this.deleteLine(1);
+    } else {
+      this.deleteLine(n);
+    }
   },
 
   /**
@@ -983,7 +1037,11 @@ ScreenSequenceHandler.definition = {
   "[profile('vt100'), sequence('CSI Pn P')]":
   function DCH(n)
   { // Delete CHaracters
-    this.deleteCharacters(n || 1);
+    if (undefined === n || 0 === n) {
+      this.deleteCharacters(1);
+    } else {
+      this.deleteCharacters(n);
+    }
   },
 
   /**
@@ -1090,7 +1148,11 @@ ScreenSequenceHandler.definition = {
   "[profile('vt100'), sequence('CSI Pn SP @')]":
   function SL(n)
   { // Scroll Left
-    this.scrollLeft(n || 1);
+    if (undefined === n || 0 === n) {
+      this.scrollLeft(1);
+    } else {
+      this.scrollLeft(n);
+    }
   },
 
   /**
@@ -1114,7 +1176,11 @@ ScreenSequenceHandler.definition = {
   "[profile('vt100'), sequence('CSI Pn SP A')]":
   function SR(n)
   { // Scroll Right
-    this.scrollRight(n || 1);
+    if (undefined === n || 0 === n) {
+      this.scrollRight(1);
+    } else {
+      this.scrollRight(n);
+    }
   },
 
   /**
@@ -1137,7 +1203,11 @@ ScreenSequenceHandler.definition = {
   "[profile('vt100'), sequence('CSI Pn S')]":
   function SU(n)
   { // Scroll Up line
-    this.scrollUpLine(n || 1);
+    if (undefined === n || 0 === n) {
+      this.scrollUpLine(1);
+    } else {
+      this.scrollUpLine(n);
+    }
   },
 
   /**
@@ -1169,7 +1239,11 @@ ScreenSequenceHandler.definition = {
         break;
 
       case 1:
-        this.scrollDownLine(n);
+        if (undefined === n || 0 === n) {
+          this.scrollDownLine(1);
+        } else {
+          this.scrollDownLine(n);
+        }
         break;
 
       case 6:
@@ -1204,7 +1278,11 @@ ScreenSequenceHandler.definition = {
   "[profile('vt100'), sequence('CSI Pn X')]":
   function ECH(n)
   { // Erase CHaracters
-    this.eraseCharacters(n || 1);
+    if (undefined === n || 0 === n) {
+      this.eraseCharacters(1);
+    } else {
+      this.eraseCharacters(n);
+    }
   },
 
   /**
@@ -1231,7 +1309,11 @@ ScreenSequenceHandler.definition = {
   { //
     var width = this._width;
 
-    this.cursorForward(n || 1, width);
+    if (undefined === n || 0 === n) {
+      this.cursorForward(1, width);
+    } else {
+      this.cursorForward(n, width);
+    }
   },
 
   /**
@@ -1258,7 +1340,11 @@ ScreenSequenceHandler.definition = {
   "[profile('vt100'), sequence('CSI Pn j')]":
   function HPB(n)
   { //
-    this.cursorBackward(n || 1, 0);
+    if (undefined === n || 0 === n) {
+      this.cursorBackward(1, 0);
+    } else {
+      this.cursorBackward(n, 0);
+    }
   },
 
   /**
@@ -1290,7 +1376,11 @@ ScreenSequenceHandler.definition = {
     var bottom_margin = this._scroll_bottom,
         cursor = this._cursor;
 
-    n = (n || 1) - 1;
+    if (undefined === n) {
+      n = 0;
+    } else if (n > 0) {
+      --n;
+    }
 
     if (this._origin_mode) {
       n += this._scroll_top;
@@ -1331,7 +1421,11 @@ ScreenSequenceHandler.definition = {
   "[profile('vt100'), sequence('CSI Pn e')]":
   function VPR(n)
   {
-    this.verticalPositionRelative(n || 1);
+    if (undefined === n || 0 === n) {
+      this.verticalPositionRelative(1);
+    } else {
+      this.verticalPositionRelative(n);
+    }
   },
 
   /**
@@ -1362,7 +1456,11 @@ ScreenSequenceHandler.definition = {
   "[profile('vt100'), sequence('CSI Pn k')]":
   function VPB(n)
   {
-    this.verticalPositionBackward(n || 1);
+    if (undefined === n || 0 === n) {
+      this.verticalPositionBackward(1);
+    } else {
+      this.verticalPositionBackward(n);
+    }
   },
 
   /**
@@ -1386,7 +1484,11 @@ ScreenSequenceHandler.definition = {
   "[profile('vt100'), sequence('CSI Pn E')]":
   function CNL(n)
   {
-    this.cursorDown(n || 1);
+    if (undefined === n || 0 === n) {
+      this.cursorDown(1);
+    } else {
+      this.cursorDown(n);
+    }
     this.carriageReturn();
   },
 
@@ -1412,7 +1514,11 @@ ScreenSequenceHandler.definition = {
   "[profile('vt100'), sequence('CSI Pn F')]":
   function CPL(n)
   {
-    this.cursorUp(n || 1);
+    if (undefined === n || 0 === n) {
+      this.cursorUp(1);
+    } else {
+      this.cursorUp(n);
+    }
     this.carriageReturn();
   },
 
@@ -1441,7 +1547,11 @@ ScreenSequenceHandler.definition = {
     var right_margin,
         cursor = this._cursor;
 
-    n = (n || 1) - 1;
+    if (undefined === n) {
+      n = 0;
+    } else if (n > 0) {
+      --n;
+    }
 
     if (this._left_right_margin_mode) {
       right_margin = this._scroll_right;
@@ -1475,7 +1585,11 @@ ScreenSequenceHandler.definition = {
   "[profile('vt100'), sequence('CSI Pn b')]":
   function REP(n)
   { // REPeat the preceding graphic character
-    this.repeat(n || 1);
+    if (undefined === n || 0 === n) {
+      this.repeat(1);
+    } else {
+      this.repeat(n);
+    }
   },
 
   /**
@@ -1514,8 +1628,20 @@ ScreenSequenceHandler.definition = {
         right,
         bottom,
         cursor = this._cursor,
-        y = (n1 || 1) - 1,
-        x = (n2 || 1) - 1;
+        y,
+        x;
+
+    if (undefined === n1 || 0 === n1) {
+      y = 0;
+    } else {
+      y = n1 - 1;
+    }
+
+    if (undefined === n2 || 0 === n2) {
+      x = 0;
+    } else {
+      x = n2 - 1;
+    }
 
     if (this._origin_mode) {
       if (this._left_right_margin_mode) {
