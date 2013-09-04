@@ -129,9 +129,7 @@ ConformanceLevel.definition = {
  */
 function main(broker)
 {
-        try {
   new ConformanceLevel(broker);
-        } catch(e){alert(e)}
 }
 
 // EOF

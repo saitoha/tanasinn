@@ -34,6 +34,7 @@ Mascot.definition = {
 
   id: "mascot",
 
+  /* plugin information */
   getInfo: function getInfo()
   {
     return {

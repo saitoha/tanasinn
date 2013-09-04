@@ -88,8 +88,6 @@ PresentationStateReport.definition = {
   "[profile('vt100'), sequence('CSI Ps $ w')]":
   function DECRQPSR(n)
   {
-    n = n || 0;
-
     switch (n) {
 
       case 0: // error
@@ -102,6 +100,9 @@ PresentationStateReport.definition = {
       case 2: // tab-stop
         this.sendMessage("command/report-tabstop-information");
         break;
+
+      default:
+	break;
     }
 
   },
