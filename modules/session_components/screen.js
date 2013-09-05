@@ -2568,7 +2568,7 @@ Screen.definition = {
       this._width = value;
     }
     this._scroll_right = this._width;
-    this._left_right_margin_mode = false;
+    this.onChangeLeftRightMarginMode(false);
   },
 
   /**
