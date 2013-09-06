@@ -114,7 +114,7 @@ ConfidenceTest.definition = {
 
       n = arguments[i];
 
-      switch (n) {
+      switch (n || 0) {
 
         case 0:
           this.sendMessage("command/test");
