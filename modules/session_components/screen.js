@@ -759,9 +759,10 @@ ScreenSequenceHandler.definition = {
     }
 
     if (top >= bottom || left >= right) {
-      throw coUtils.Debug.Exception(
+      coUtils.Debug.reportError(
         _("Invalid arguments detected in %s [%s]."),
         "DECERA", Array.slice(arguments));
+      return;
     }
 
     this.eraseRectangle(top, left, bottom, right);
@@ -819,7 +820,7 @@ ScreenSequenceHandler.definition = {
    */
   "[profile('vt100'), sequence('CSI Pc;Pt;Pl;Pb;Pr $ x')]":
   function DECFRA(n1, n2, n3, n4, n5)
-  { // Erase Rectangle Area
+  { // Fill Rectangle Area
     var c,
         top,
         left,
@@ -889,12 +890,186 @@ ScreenSequenceHandler.definition = {
     }
 
     if (top >= bottom || left >= right) {
-      throw coUtils.Debug.Exception(
+      coUtils.Debug.reportError(
         _("Invalid arguments detected in %s [%s]."),
         "DECFRA", Array.slice(arguments));
+      return;
     }
 
     this.fillRectangle(c, top, left, bottom, right);
+  },
+
+
+  /**
+   * DECRARA - Reverse Attributes in Rectangular Area
+   *
+   * This control function lets you reverse the visual character attributes
+   * (bold, blink, reverse video, and underline) of a specified rectangular
+   * area in page memory. The select attribute change extent (DECSACE) control
+   * function determines whether all or some of the character positions in the
+   * rectangle are affected.
+   *
+   * Reversing a visual attribute means changing the attribute to its opposite
+   * setting, on or off. For example, DECRARA can change characters from bold
+   * and not underlined to characters that are underlined and not bold. DECRARA
+   * does not change the values of characters, just the visual attributes of
+   * those characters.
+   *
+   * Available in: VT Level 4 or higher mode only
+   *
+   * Format
+   *
+   *   CSI   Pt  ;  Pl  ;  Pb  ;  Pr  ;  Ps1  ;  .........  Psn  $   t
+   *   9/11  area to be reversed         attributes to reverse   2/4 7/4
+   *
+   * Parameters
+   *
+   * Pt, Pl, Pb, and Pr
+   * define the rectangular area to be reversed.
+   *
+   * Pt is the top-line border. Pt must be less than or equal to Pb.
+   * Default: Pt = 1.
+   *
+   * Pl is the left-column border. Pl must be less than or equal to Pr.
+   * Default: Pr = 1.
+   *
+   * Pb is the bottom-line border.
+   * Default: Pb = last line of the active page.
+   *
+   * Pr is the right-column border.
+   * Default: Pr = last column of the active page.
+   *
+   * Ps1; ... Psn
+   * select the visual character attributes to reverse.
+   * These values correspond to the values used in the select graphic
+   * rendition (SGR) function.
+   *
+   * +-----------+---------------------------------------+
+   *￼| Ps        | Meaning                               |
+   * +-----------+---------------------------------------+
+   * | 0         | Reverse all attributes (default).     |
+   * | 1         | Reverse the bold attribute.           |
+   * | 4         | Reverse the underline attribute.      |
+   * | 5         | Reverse the blink attribute.          |
+   * | 7         | Reverse the negative-image attribute. |
+   * +-----------+---------------------------------------+
+   *
+   * DECRARA ignores all other parameter values.
+   * When you use more than one parameter in a command, DECRARA executes them
+   * cumulatively in sequence.
+   *
+   * Examples
+   *
+   * The following sequence reverses the blink and underscore attributes of
+   * the complete screen:
+   *
+   *   CSI  ;  ;  ;  ;  0  ;  4  ;  5  ;  $  t
+   *
+   * The following sequence reverses all attributes except the blink
+   * attribute, from position line 10, column 2 to position line 14, column
+   * 45 on the current page:
+   *
+   *   CSI  1  0  ;  2  ;  1  4  ;  4  5  ;  1  ;  4  ;  7  $  t
+   *
+   * Notes on DECRARA
+   *
+   * - The coordinates of the rectangular area are affected by the setting of
+   *   origin mode (DECOM).
+   *
+   * - DECRARA is not affected by the page margins.
+   *
+   * - If the value of Pt, Pl, Pb, or Pr exceeds the width or height of the
+   *   active page, then the value is treated as the width or height of that
+   *   page.
+   *
+   * - DECRARA does not change the active cursor position.
+   *
+   * - DECRARA does not change the current rendition set by the select graphic
+   *   rendition (SGR) function.
+   *
+   * - The exact character positions affected by DECRARA depend on the current
+   *   setting of the select attribute change extent (DECSACE) function.
+   *
+   */
+  "[profile('vt100'), sequence('CSI Pt;Pl;Pb;Pr;P1...Pn $ t')]":
+  function DECRARA(n1, n2, n3, n4)
+  { // Reverse Rectangle Area
+    var top = n1,
+        left = n2,
+        bottom = n3,
+        right = n4,
+        scroll_left = this._scroll_left,
+        scroll_top = this._scroll_top,
+        scroll_right = this._scroll_right,
+        scroll_bottom = this._scroll_bottom,
+        width = this._width,
+        height = this._height,
+        cursor = this._cursor,
+        args;
+
+    if (undefined === n2 || 0 === n2) {
+      left = 0;
+    } else {
+      left = n2 - 1;
+    }
+    if (undefined === n1 || 0 === n1) {
+      top = 0;
+    } else {
+      top = n1 - 1;
+    }
+    if (undefined === n4 || 0 === n4) {
+      right = width;
+    } else {
+      right = n4;
+    }
+    if (undefined === n3 || 0 === n3) {
+      bottom = height;
+    } else {
+      bottom = n3;
+    }
+
+    if (this._origin_mode) {
+      top += scroll_top;
+      bottom += scroll_top;
+      if (this._left_right_margin_mode) {
+        left += scroll_left;
+        right += scroll_left;
+        if (left >= scroll_right) {
+          left = scroll_right - 1;
+        }
+        if (right >= scroll_right) {
+          right = scroll_right - 1;
+        }
+      }
+      if (top >= scroll_bottom) {
+        top = scroll_bottom - 1;
+      }
+      if (bottom >= scroll_bottom) {
+        bottom = scroll_bottom - 1;
+      }
+    } else {
+      if (bottom > height) {
+        bottom = height;
+      }
+      if (right > width) {
+        right = width;
+      }
+    }
+
+    if (top >= bottom || left >= right) {
+      coUtils.Debug.reportError(_("top %d"), top);
+      coUtils.Debug.reportError(_("left %d"), left);
+      coUtils.Debug.reportError(_("bottom %d"), bottom);
+      coUtils.Debug.reportError(_("right %d"), right);
+      coUtils.Debug.reportError(
+        _("Invalid arguments detected in %s [%s]."),
+        "DECRARA", Array.slice(arguments));
+      return;
+    }
+
+    args = Array.slice(arguments, 4);
+
+    this.reverseRectangle(top, left, bottom, right, args);
   },
 
   /**
@@ -1981,10 +2156,11 @@ Viewable.definition = {
         range;
 
     if (!line) {
-      throw coUtils.Debug.Exception(
+      coUtils.Debug.reportError(
         _("Invalid parameter was passed. ",
           "Probably 'row' parameter was in out of range. row: [%d]."),
         row);
+      return;
     }
 
     range = line.getWordRangeFromPoint(column);
@@ -3353,7 +3529,7 @@ Screen.definition = {
   },
 
   /** Fill every cells in rectanglar area with specified character. */
-  "[type('Uint16 -> Uint16 -> Uint16 -> Uint16 -> Uint16 -> Undefined')] fillRectangle":
+  "[type('Uint32 -> Uint16 -> Uint16 -> Uint16 -> Uint16 -> Undefined')] fillRectangle":
   function fillRectangle(c, top, left, bottom, right)
   {
     var cursor = this._cursor,
@@ -3366,6 +3542,60 @@ Screen.definition = {
     for (i = top; i < bottom; ++i) {
       line = lines[i];
       line.fill(left, right, c, attrvalue);
+    }
+  },
+
+  /** Reverse every cell attributes in rectanglar area. */
+  "[type('Uint16 -> Uint16 -> Uint16 -> Uint16 -> Undefined')] reverseRectangle":
+  function reverseRectangle(top, left, bottom, right, args)
+  {
+    var cursor = this._cursor,
+        lines = this._lines,
+        length = lines.length,
+        i,
+        j,
+        n,
+        line,
+        attr,
+        arg = 0;
+
+    for (n = 0; n < args.length; ++n) {
+      switch (args[n]) {
+        case 1:
+          arg |= 0x1 << 1;
+          break;
+        case 4:
+          arg |= 0x1 << 4;
+          break;
+        case 5:
+          arg |= 0x1 << 5;
+          break;
+        case 7:
+          arg |= 0x1 << 7;
+          break;
+      }
+    }
+    if (0 === arg) {
+      arg = 0x1 << 1 | 0x1 << 4 | 0x1 << 5 | 0x1 << 7;
+    }
+
+    for (i = top; i < bottom; ++i) {
+      line = lines[i];
+      for (j = left; j < right; ++j) {
+        attr = line.cells[j];
+        if (arg & 0x1 << 1) {
+          attr.bold = !attr.bold;
+        }
+        if (arg & 0x4 << 1) {
+          attr.underline = !attr.underline;
+        }
+        if (arg & 0x5 << 1) {
+          attr.blink = !attr.blink;
+        }
+        if (arg & 0x7 << 1) {
+          attr.inverse = !attr.inverse;
+        }
+      }
     }
   },
 
