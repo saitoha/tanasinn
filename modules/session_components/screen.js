@@ -901,6 +901,49 @@ ScreenSequenceHandler.definition = {
 
 
   /**
+   * DECSACE - Select Attribute Change Extent
+   *
+   * This control function lets you select which character positions in a
+   * rectangle can have their attributes changed or reversed. DECSACE controls
+   * the effect of two other functions—change attributes in rectangular area
+   * (DECCARA) and reverse attributes in rectangular area (DECRARA).
+   * 
+   * Available in: VT Level 4 mode only
+   *
+   * Format
+   *
+   * CSI        Ps      *       x
+   * 9/11       3/n     2/10    7/8
+   *
+   * Parameters
+   * 
+   * Ps
+   * selects the area of character positions affected.
+   *
+   * Ps Area Effected
+   *
+   * - 0 (default) DECCARA or DECRARA affect the stream of character positions
+   *               that begins with the first position specified in the
+   *               DECCARA or DECRARA command, and ends with the second
+   *               character position specified.
+   * - 1           Same as 0.
+   * - 2           DECCARA and DECRARA affect all character positions in the
+   *               rectangular area. The DECCARA or DECRARA command specifies
+   *               the top-left and bottom-right corners.
+   *
+   */ 
+  "[profile('vt100'), sequence('CSI Pn * x')]":
+  function DECSACE(n)
+  { // Scroll Left
+    if (2 === n) {
+      this._decsace = true;
+    } else {
+      this._decsace = false;
+    }
+  },
+
+
+  /**
    * DECRARA - Reverse Attributes in Rectangular Area
    *
    * This control function lets you reverse the visual character attributes
@@ -2659,6 +2702,7 @@ Screen.definition = {
     this._cursor = cursor_state;
     this._line_generator = line_generator;
     this._origin_mode = false;
+    this._decsace = false;
 
     this.resetScrollRegion();
   },
@@ -2682,6 +2726,7 @@ Screen.definition = {
     this._screen_choice = coUtils.Constant.SCREEN_MAIN;
     this._line_generator = null;
     this._origin_mode = null;
+    this._decsace = null;
 
     this._wraparound_mode = true;
     this._insert_mode = false;
@@ -3557,7 +3602,10 @@ Screen.definition = {
         n,
         line,
         attr,
-        arg = 0;
+        arg = 0,
+        decsace = this._decsace,
+        start,
+        end;
 
     for (n = 0; n < args.length; ++n) {
       switch (args[n]) {
@@ -3581,7 +3629,30 @@ Screen.definition = {
 
     for (i = top; i < bottom; ++i) {
       line = lines[i];
-      for (j = left; j < right; ++j) {
+      if (decsace) {
+        start = left;
+        end = right;
+      } else {
+        if (i === top) {
+          start = left;
+        } else {
+          if (this._left_right_margin_mode) {
+            start = this._scroll_left;
+          } else {
+            start = 0;
+          }
+        }
+        if (i === bottom - 1) {
+          end = right;
+        } else {
+          if (this._left_right_margin_mode) {
+            end = this._scroll_right;
+          } else {
+            end = this._width;
+          }
+        }
+      }
+      for (j = start; j < end; ++j) {
         attr = line.cells[j];
         if (arg & 0x1 << 1) {
           attr.bold = !attr.bold;
