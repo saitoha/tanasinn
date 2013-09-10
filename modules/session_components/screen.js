@@ -4303,6 +4303,7 @@ Screen.definition = {
     context.push(this._width, this._height, buffer_top);
     context.push(this._scroll_top, this._scroll_bottom);
     context.push(this._scroll_left, this._scroll_right);
+    context.push(this._decsace);
     context.push(lines.length);
 
     // serialize each lines.
@@ -4341,6 +4342,7 @@ Screen.definition = {
     this._scroll_bottom = context.shift();
     this._scroll_left = context.shift();
     this._scroll_right = context.shift();
+    this._decsace = context.shift();
 
     buffer_length = context.shift();
 
