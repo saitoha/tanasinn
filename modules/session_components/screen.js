@@ -1290,6 +1290,83 @@ ScreenSequenceHandler.definition = {
 
   /**
    *
+   * DECCRA - Copy Rectangular Area
+   * 
+   * This control function copies a rectangular area of characters from one
+   * section to another in page memory. The copied text retains its character
+   * values and attributes.
+   * 
+   * Available in: VT Level 4 mode only
+   *
+   * Format
+   *
+   * CSI   Pts; Pls; Pbs; Prs; Pps;  Ptd; Pld; Ppd  $    v
+   * 9/11  area to be copied         destination    2/4  7/6
+   *
+   * Parameters
+   * 
+   * Pts; Pls; Pbs; Prs; Pps;
+   * define the rectangular area to be copied (the source). A semicolon (3/11)
+   * separates parameters.
+   * 
+   * Pts
+   * is the top-line border. Pts must be less than or equal to Pbs.
+   * Default: Pts = 1.
+   * 
+   * Pls
+   * is the left-column border. Pls must be less than or equal to Prs.
+   * Default: Pls = 1.
+   * 
+   * Pbs
+   * is the bottom-line border.
+   * Default: Pbs = the last line of the page.
+   * 
+   * Prs
+   * is the right-column border.
+   * Default: Prs = the last column of the page.
+   * 
+   * Pps
+   * is the number of the page where the rectangular area is located.
+   * Default: Pps = 1.
+   * 
+   * Ptd; Pld; Ppd;
+   * define the destination of the copied rectangular area.
+   * 
+   * Ptd
+   * is the top-line border. Default: Ptd = 1.
+   * 
+   * Pld
+   * is the left-column border. Default: Pld = 1.
+   * 
+   * Ppd
+   * is the number of the page. Default: Ppd = 1.
+   *
+   * Notes on DECCRA
+   * 
+   *     If Pbs is greater than Pts, or Pls is greater than Prs, the terminal
+   *     ignores DECCRA.
+   *     The coordinates of the rectangular area are affected by the setting
+   *     of origin mode (DECOM).
+   *     DECCRA is not affected by the page margins.
+   *     The copied text takes on the line attributes of the destination area.
+   *     If the value of Pt, Pl, Pb, or Pr exceeds the width or height of the
+   *     active page, then the value is treated as the width or height of that
+   *     page.
+   *     If a page value exceeds the number of pages available in the current
+   *     page arrangement, then the value is treated as the last available
+   *     page number.
+   *     If the destination area is partially off the page, then DECCRA clips
+   *     the off-page data.
+   *     DECCRA does not change the active cursor position.
+   * 
+   */
+  "[profile('vt100'), sequence('CSI Pts;Pls;Pbs;Prs;Pps;Ptd;Pld;Ppd $ v')]":
+  function DECCRA(n1, n2, n3, n4, n5, n6, n7, n8)
+  { // Copy Rectangular Area
+  },
+ 
+  /**
+   *
    * EL - Erase in Line
    *
    * This control function erases characters on the line that has the cursor.
