@@ -68,12 +68,14 @@
 
 "use strict";
 
+/*
 function alert(message)
 {
   Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
     .getService(Components.interfaces.nsIPromptService)
     .alert(null, "test", String(message));
 }
+*/
 
 var g_process = null;
 
@@ -340,6 +342,7 @@ void function() {
     {
       var desktops = this.notify("get/desktop-from-window", window),
           desktop;
+
       if (desktops) {
         desktop = desktops.filter(
           function filterProc(desktop)
