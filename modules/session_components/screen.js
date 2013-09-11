@@ -773,7 +773,7 @@ ScreenSequenceHandler.definition = {
    * DECFRA - Fill Rectangular Area
    *
    * This control function fills a rectangular area in page memory with a
-   * specified character. DECFRA replaces the rectangular area’s character
+   * specified character. DECFRA replaces the rectangular area's character
    * positions and attributes with the specified fill character. The fill
    * character assumes the visual character attributes set by the last select
    * graphic rendition (SGR) command. DECFRA does not change the current line
@@ -905,7 +905,7 @@ ScreenSequenceHandler.definition = {
    *
    * This control function lets you select which character positions in a
    * rectangle can have their attributes changed or reversed. DECSACE controls
-   * the effect of two other functions—change attributes in rectangular area
+   * the effect of two other functions-change attributes in rectangular area
    * (DECCARA) and reverse attributes in rectangular area (DECRARA).
    * 
    * Available in: VT Level 4 mode only
@@ -1161,7 +1161,7 @@ ScreenSequenceHandler.definition = {
    * rendition (SGR) function.
    *
    * +-----------+---------------------------------------+
-   *￼| Ps        | Meaning                               |
+   * | Ps        | Meaning                               |
    * +-----------+---------------------------------------+
    * | 0         | Reverse all attributes (default).     |
    * | 1         | Reverse the bold attribute.           |
