@@ -1363,6 +1363,143 @@ ScreenSequenceHandler.definition = {
   "[profile('vt100'), sequence('CSI Pts;Pls;Pbs;Prs;Pps;Ptd;Pld;Ppd $ v')]":
   function DECCRA(n1, n2, n3, n4, n5, n6, n7, n8)
   { // Copy Rectangular Area
+    var src_top,
+        src_left,
+        src_bottom,
+        src_right,
+        src_page,
+        dest_top,
+        dest_left,
+        dest_bottom,
+        dest_right,
+        dest_page,
+        scroll_left = this._scroll_left,
+        scroll_top = this._scroll_top,
+        scroll_right = this._scroll_right,
+        scroll_bottom = this._scroll_bottom,
+        width = this._width,
+        height = this._height,
+        cursor = this._cursor,
+        args;
+
+    if (undefined === n1) {
+      src_top = 0;
+    } else {
+      src_top = n1 - 1;
+    }
+    if (undefined === n2) {
+      src_left = 0;
+    } else {
+      src_left = n2 - 1;
+    }
+    if (undefined === n3 || 0 === n3) {
+      src_bottom = height;
+    } else {
+      src_bottom = n3;
+    }
+    if (undefined === n4 || 0 === n4) {
+      src_right = width;
+    } else {
+      src_right = n4;
+    }
+    if (undefined === n5) {
+      src_page = 0;
+    } else {
+      src_page = n5;
+    }
+    if (undefined === n6) {
+      dest_top = 0;
+    } else {
+      dest_top = n6 - 1;
+    }
+    if (undefined === n7) {
+      dest_left = 0;
+    } else {
+      dest_left = n7 - 1;
+    }
+    if (undefined === n8) {
+      dest_page = 0;
+    } else {
+      dest_page = n8;
+    }
+
+    if (0 !== src_page) {
+      // TODO: implement page semantics
+      return;
+    }
+
+    if (0 !== dest_page) {
+      // TODO: implement page semantics
+      return;
+    }
+
+    if (this._origin_mode) {
+      src_top += scroll_top;
+      src_bottom += scroll_top;
+      dest_top += scroll_top;
+      dest_bottom += scroll_top;
+      if (this._left_right_margin_mode) {
+        src_left += scroll_left;
+        src_right += scroll_left;
+        dest_left += scroll_left;
+        if (src_left >= scroll_right) {
+          src_left = scroll_right - 1;
+        }
+        if (src_right > scroll_right) {
+          src_right = scroll_right;
+        }
+        if (dest_left >= scroll_right) {
+          return;
+        }
+        dest_right = dest_left + src_right - src_left;
+        if (dest_right > scroll_right) {
+          dest_right = scroll_right;
+        }
+      }
+      if (src_top >= scroll_bottom) {
+        src_top = scroll_bottom - 1;
+      }
+      if (src_bottom > scroll_bottom) {
+        src_bottom = scroll_bottom;
+      }
+      if (dest_top >= scroll_bottom) {
+        return;
+      }
+      dest_bottom = dest_top + src_bottom - src_top;
+      if (dest_bottom > scroll_bottom) {
+        dest_bottom = scroll_bottom;
+      }
+    } else {
+      if (src_bottom > height) {
+        src_bottom = height;
+      }
+      if (src_right > width) {
+        src_right = width;
+      }
+      dest_bottom = dest_top + src_bottom - src_top;
+      if (dest_bottom > height) {
+        dest_bottom = height;
+      }
+      dest_right = dest_left + src_right - src_left;
+      if (dest_right > width) {
+        dest_right = width;
+      }
+    }
+
+    if (src_top >= src_bottom || src_left >= src_right) {
+      coUtils.Debug.reportError(
+        _("Invalid arguments detected in %s [%s]."),
+        "DECCRA", Array.slice(arguments));
+      return;
+    }
+
+    args = Array.slice(arguments);
+
+    this.copyRectangle(src_top, src_left,
+                       src_bottom, src_right,
+                       dest_top, dest_left,
+                       dest_bottom, dest_right);
+
   },
  
   /**
@@ -3194,9 +3331,14 @@ Screen.definition = {
   function onChangeLeftRightMarginMode(mode)
   {
     var lines = this._lines,
-        length = lines.length,
+        length,
         i,
         line;
+
+    if (null === this._lines) {
+      return
+    }
+    length = lines.length;
 
     for (i = 0; i < length; ++i) {
       line = lines[i];
@@ -3671,6 +3813,7 @@ Screen.definition = {
         line;
 
     line = lines[position_y];
+
     if (!line) {
       position_y = cursor.position_y = height - 1;
       line = lines[position_y];
@@ -3710,13 +3853,51 @@ Screen.definition = {
         lines = this._lines,
         attrvalue = cursor.attr.value,
         length = lines.length,
-        i = top,
+        i,
         line;
 
-    for (; i < bottom; ++i) {
+    for (i = top; i < bottom; ++i) {
       line = lines[i];
       line.erase(left, right, attrvalue);
       line.type = coUtils.Constant.LINETYPE_NORMAL;
+    }
+  },
+
+  /** Erase every cells in rectanglar area. */
+  copyRectangle:
+  function copyRectangle(src_top, src_left, src_bottom, src_right,
+                         dest_top, dest_left, dest_bottom, dest_right)
+  {
+    var cursor = this._cursor,
+        lines = this._lines,
+        length = lines.length,
+        i,
+        j,
+        dest_line,
+        src_line,
+        cell,
+        region = [],
+        c,
+        value;
+
+    for (i = src_top; i < src_bottom; ++i) {
+      src_line = lines[i];
+      for (j = src_left; j < src_right; ++j) {
+        cell = src_line.cells[j];
+        region.push(cell.c, cell.value);
+      }
+    }
+
+    for (i = src_top; i < src_bottom; ++i) {
+      dest_line = lines[dest_top + i - src_top];
+      for (j = src_left; j < src_right; ++j) {
+        c = region.shift();
+        value = region.shift();
+        cell = dest_line.cells[dest_left + j - src_left];
+        cell.c = c;
+        cell.value = value;
+      }
+      dest_line.addRange(dest_left, dest_right);
     }
   },
 
@@ -3737,12 +3918,12 @@ Screen.definition = {
         lines = this._lines,
         attrvalue = cursor.attr.value,
         position_y = cursor.position_y,
-        i = 0,
+        i,
         line = lines[position_y];
 
     line.selectiveErase(0, cursor.position_x + 1, attrvalue);
 
-    for (; i < position_y; ++i) {
+    for (i = 0; i < position_y; ++i) {
       line = lines[i];
       line.selectiveErase(0, width, attrvalue);
     }
