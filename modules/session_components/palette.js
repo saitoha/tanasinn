@@ -418,15 +418,15 @@ PaletteManager.definition = {
     if (attr.hasForeColor()) {
       if (attr.hasBackColor()) {
         if (1 === attr.inverse) {
-          fore_color = this.color[attr.bg];
+          fore_color = this.color[attr.getBackColor()];
         } else {
-          fore_color = this.adjusted_fgcolor[attr.fg];
+          fore_color = this.adjusted_fgcolor[attr.getForeColor()];
         }
       } else {
         if (1 === attr.inverse) {
-          fore_color = this.adjusted_fgcolor[attr.bg];
+          fore_color = this.adjusted_fgcolor[attr.getBackColor()];
         } else {
-          fore_color = this.adjusted_fgcolor[attr.fg];
+          fore_color = this.adjusted_fgcolor[attr.getForeColor()];
         }
       }
     } else {
@@ -449,9 +449,9 @@ PaletteManager.definition = {
      * form given attribute structure. */
     if (attr.hasBackColor()) {
       if (1 === attr.inverse) {
-        back_color = this.adjusted_bgcolor[attr.fg];
+        back_color = this.adjusted_bgcolor[attr.getForeColor()];
       } else {
-        back_color = this.adjusted_bgcolor[attr.bg];
+        back_color = this.adjusted_bgcolor[attr.getBackColor()];
       }
     } else {
       if (1 === attr.inverse) {

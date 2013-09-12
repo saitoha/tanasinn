@@ -302,36 +302,36 @@ SGRHandler.definition = {
               break;
 
             case 30:
-              attr.fg = 0;
+              attr.setForeColor(0);
               //attr.resetForeColor();
               break;
 
             case 31:
-              attr.fg = 1;
+              attr.setForeColor(1);
               break;
 
             case 32:
-              attr.fg = 2;
+              attr.setForeColor(2);
               break;
 
             case 33:
-              attr.fg = 3;
+              attr.setForeColor(3);
               break;
 
             case 34:
-              attr.fg = 4;
+              attr.setForeColor(4);
               break;
 
             case 35:
-              attr.fg = 5;
+              attr.setForeColor(5);
               break;
 
             case 36:
-              attr.fg = 6;
+              attr.setForeColor(6);
               break;
 
             case 37:
-              attr.fg = 7;
+              attr.setForeColor(7);
               break;
 
             case 38:
@@ -342,11 +342,11 @@ SGRHandler.definition = {
                         g = arguments[++i],
                         b = arguments[++i];
 
-                    attr.fg = this._palette.getApproximateColorNumber(r, g, b);
+                    attr.setForeColor(this._palette.getApproximateColorNumber(r, g, b));
                     break;
                   }
                 case 5:
-                  attr.fg = arguments[++i];
+                  attr.setForeColor(arguments[++i]);
                   break;
 
                 default:
@@ -360,36 +360,36 @@ SGRHandler.definition = {
               break;
 
             case 40:
-              attr.bg = 0;
+              attr.setBackColor(0);
               //attr.resetBackColor();
               break;
 
             case 41:
-              attr.bg = 1;
+              attr.setBackColor(1);
               break;
 
             case 42:
-              attr.bg = 2;
+              attr.setBackColor(2);
               break;
 
             case 43:
-              attr.bg = 3;
+              attr.setBackColor(3);
               break;
 
             case 44:
-              attr.bg = 4;
+              attr.setBackColor(4);
               break;
 
             case 45:
-              attr.bg = 5;
+              attr.setBackColor(5);
               break;
 
             case 46:
-              attr.bg = 6;
+              attr.setBackColor(6);
               break;
 
             case 47:
-              attr.bg = 7;
+              attr.setBackColor(7);
               break;
 
             case 48:
@@ -400,11 +400,11 @@ SGRHandler.definition = {
                         g = arguments[++i],
                         b = arguments[++i];
 
-                    attr.bg = this._palette.getApproximateColorNumber(r, g, b);
+                    attr.setBackColor(this._palette.getApproximateColorNumber(r, g, b));
                     break;
                   }
                 case 5:
-                  attr.bg = arguments[++i];
+                  attr.setBackColor(arguments[++i]);
                   break;
 
                 default:
@@ -417,78 +417,78 @@ SGRHandler.definition = {
               break;
 
             case 90:
-              attr.fg = 8;
+              attr.setForeColor(8);
               break;
 
             case 91:
-              attr.fg = 9;
+              attr.setForeColor(9);
               break;
 
             case 92:
-              attr.fg = 10;
+              attr.setForeColor(10);
               break;
 
             case 93:
-              attr.fg = 11;
+              attr.setForeColor(11);
               break;
 
             case 94:
-              attr.fg = 12;
+              attr.setForeColor(12);
               break;
 
             case 95:
-              attr.fg = 13
+              attr.setForeColor(13);
               break;
 
             case 96:
-              attr.fg = 14;
+              attr.setForeColor(14);
               break;
 
             case 97:
-              attr.fg = 15;
+              attr.setForeColor(15);
               break;
 
             case 100:
-              attr.bg = 8;
+              attr.setBackColor(8);
               break;
 
             case 101:
-              attr.bg = 9;
+              attr.setBackColor(9);
               break;
 
             case 102:
-              attr.bg = 10;
+              attr.setBackColor(10);
               break;
 
             case 103:
-              attr.bg = 11;
+              attr.setBackColor(11);
               break;
 
             case 104:
-              attr.bg = 12;
+              attr.setBackColor(12);
               break;
 
             case 105:
-              attr.bg = 13;
+              attr.setBackColor(13);
               break;
 
             case 106:
-              attr.bg = 14;
+              attr.setBackColor(14);
               break;
 
             case 107:
-              attr.bg = 15;
+              attr.setBackColor(15);
               break;
 
             default:
               if (300 <= p && p <= 399) {
-                attr.fg = p - 300;
+                attr.setBackColor(p - 300);
               } else if (400 <= p && p <= 499) {
-                attr.bg = p - 400;
+                attr.setBackColor(p - 400);
               } else if (3000 <= p && p <= 3255) {
-                attr.fg = p - 3000;
+                attr.setBackColor(p - 3000);
               } else if (4000 <= p && p <= 4255) {
-                attr.bg = p - 4000;
+                attr.setBackColor(p - 4000);
               } else {
                 coUtils.Debug.reportWarning(
                   _("Ignored SGR %s, arguments: [%s]"),
@@ -505,7 +505,9 @@ SGRHandler.definition = {
   {
     var attr = this._attr,
         params = [0],
-        message;
+        message,
+        fore_no;
+        back_no;
 
     if (1 === attr.bold) {
       params.push(1);
@@ -540,28 +542,30 @@ SGRHandler.definition = {
     }
 
     if (attr.hasForeColor()) {
-      if (attr.fg <= 7) {
-        params.push(30 + attr.fg);
-      } else if (attr.fg <= 15) {
-        params.push(82 + attr.fg);
+      fore_no = attr.getForeColor();
+      if (fore_no <= 7) {
+        params.push(30 + fore_no);
+      } else if (fore_no <= 15) {
+        params.push(82 + fore_no);
       } else {
         params.push(38);
         params.push(5);
-        params.push(attr.fg);
+        params.push(fore_no);
       }
     } else {
       params.push(39);
     }
 
     if (attr.hasBackColor()) {
-      if (attr.bg <= 7) {
-        params.push(40 + attr.bg);
-      } else if (attr.bg <= 15) {
-        params.push(92 + attr.bg);
+      back_no = attr.getBackColor();
+      if (back_no <= 7) {
+        params.push(40 + back_no);
+      } else if (back_no <= 15) {
+        params.push(92 + back_no);
       } else {
         params.push(48);
         params.push(5);
-        params.push(attr.bg);
+        params.push(back_no);
       }
     } else {
       params.push(49);

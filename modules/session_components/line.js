@@ -83,13 +83,13 @@ Cell.definition = {
   value: 0x0,
 
   /** getter of foreground color */
-  get fg()
+  getForeColor: function getForeColor()
   {
     return this.value >>> _ATTR_FORECOLOR & 0xff;
   },
 
   /** setter of foreground color */
-  set fg(value)
+  setForeColor: function setForeColor(value)
   {
     this.value = this.value
                & ~(0xff << _ATTR_FORECOLOR)
@@ -98,14 +98,14 @@ Cell.definition = {
   },
 
   /** getter of background color */
-  get bg()
+  getBackColor: function getBackColor()
   {
     //return this.value >>> _ATTR_BACKCOLOR & 0xff;
     return this.value & 0xff;
   },
 
   /** setter of background color */
-  set bg(value)
+  setBackColor: function setBackColor(value)
   {
     this.value = this.value
                & ~(0xff << _ATTR_BACKCOLOR)
