@@ -4104,7 +4104,7 @@ Screen.definition = {
           attr.underline = true;
         }
         if (arg & 0x1 << 5) {
-          attr.blink = true;
+          attr.setBlink(true);
         }
         if (arg & 0x1 << 7) {
           attr.inverse = true;
@@ -4116,7 +4116,7 @@ Screen.definition = {
           attr.underline = false;
         }
         if (arg & 0x1 << 25) {
-          attr.blink = false;
+          attr.setBlink(false);
         }
         if (arg & 0x1 << 27) {
           attr.inverse = false;
@@ -4196,7 +4196,7 @@ Screen.definition = {
           attr.underline = !attr.underline;
         }
         if (arg & 0x1 << 5) {
-          attr.blink = !attr.blink;
+          attr.setBlink(!attr.getBlink());
         }
         if (arg & 0x1 << 7) {
           attr.inverse = !attr.inverse;

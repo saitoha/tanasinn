@@ -130,31 +130,35 @@ Cell.definition = {
   },
 
   /** getter of blink attribute */
-  get blink()
+  getBlink: function getBlink()
   {
-    return this.value >>> _ATTR_BLINK & 0x1;
+    return 0x1 === this.value >>> _ATTR_BLINK & 0x1;
   },
 
   /** setter of blink attribute */
-  set blink(value)
+  setBlink: function setBlink(value)
   {
-    this.value = this.value
-               & ~(0x1 << _ATTR_BLINK)
-               | value << _ATTR_BLINK;
+    if (value) {
+      this.value |= 0x1 << _ATTR_BLINK;
+    } else {
+      this.value &= ~(0x1 << _ATTR_BLINK);
+    }
   },
 
   /** getter of rapid_blink attribute */
-  get rapid_blink()
+  getRapidBlink: function getRapidBlink()
   {
-    return this.value >>> _ATTR_RAPIDBLINK & 0x1;
+    return 0x1 === this.value >>> _ATTR_RAPIDBLINK & 0x1;
   },
 
   /** setter of rapid_blink attribute */
-  set rapid_blink(value)
+  setRapidBlink: function setRapidBlink(value)
   {
-    this.value = this.value
-               & ~(0x1 << _ATTR_RAPIDBLINK)
-               | value << _ATTR_RAPIDBLINK;
+    if (value) {
+      this.value |= 0x1 << _ATTR_RAPIDBLINK;
+    } else {
+      this.value &= ~(0x1 << _ATTR_RAPIDBLINK);
+    }
   },
 
   /** getter of italic attribute */

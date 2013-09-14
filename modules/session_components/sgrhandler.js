@@ -249,11 +249,11 @@ SGRHandler.definition = {
               break;
 
             case 5:
-              attr.blink = 1; // slow blink, less than 150 times per minute.
+              attr.setBlink(true); // slow blink, less than 150 times per minute.
               break;
 
             case 6:
-              attr.rapid_blink = 1; // rapid blink, 150 times per minute or more.
+              attr.setRapidBlink(true); // rapid blink, 150 times per minute or more.
               break;
 
             case 7:
@@ -289,8 +289,8 @@ SGRHandler.definition = {
               break;
 
             case 25:
-              attr.blink = 0;
-              attr.rapid_blink = 0;
+              attr.setBlink(false);
+              attr.setRapidBlink(false);
               break;
 
             case 27:
@@ -525,11 +525,11 @@ SGRHandler.definition = {
       params.push(4);
     }
 
-    if (1 === attr.blink) {
+    if (attr.getBlink()) {
       params.push(5);
     }
 
-    if (1 === attr.rapid_blink) {
+    if (attr.getRapidBlink()) {
       params.push(6);
     }
 
