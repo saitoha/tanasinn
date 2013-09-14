@@ -114,17 +114,19 @@ Cell.definition = {
   },
 
   /** getter of bold attribute */
-  get bold()
+  getBold: function getBold()
   {
-    return this.value >> _ATTR_BOLD & 0x1;
+    return 0x1 === this.value >> _ATTR_BOLD & 0x1;
   },
 
   /** setter of bold attribute */
-  set bold(value)
+  setBold: function setBold(value)
   {
-    this.value = this.value
-               & ~(0x1 << _ATTR_BOLD)
-               | value << _ATTR_BOLD;
+    if (value) {
+      this.value |= 0x1 << _ATTR_BOLD;
+    } else {
+      this.value &= ~(0x1 << _ATTR_BOLD);
+    }
   },
 
   /** getter of blink attribute */

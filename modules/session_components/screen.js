@@ -4098,7 +4098,7 @@ Screen.definition = {
       for (j = start; j < end; ++j) {
         attr = line.cells[j];
         if (arg & 0x1 << 1) {
-          attr.bold = true;
+          attr.setBold(true);
         }
         if (arg & 0x1 << 4) {
           attr.underline = true;
@@ -4110,7 +4110,7 @@ Screen.definition = {
           attr.inverse = true;
         }
         if (arg & 0x1 << 21) {
-          attr.bold = false;
+          attr.setBold(false);
         }
         if (arg & 0x1 << 24) {
           attr.underline = false;
@@ -4190,7 +4190,7 @@ Screen.definition = {
       for (j = start; j < end; ++j) {
         attr = line.cells[j];
         if (arg & 0x1 << 1) {
-          attr.bold = !attr.bold;
+          attr.setBold(!attr.getBold());
         }
         if (arg & 0x1 << 4) {
           attr.underline = !attr.underline;

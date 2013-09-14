@@ -865,7 +865,7 @@ Renderer.definition = {
       context.font = this._main_layer.context.font;
     }
 
-    if (1 === attr.bold) {
+    if (attr.getBold()) {
       context.globalAlpha = this.bold_alpha;
     } else if (1 === attr.halfbright) {
       context.globalAlpha = this.halfbright_alpha;
@@ -917,7 +917,7 @@ Renderer.definition = {
 
     context.fillText(text, x, y, char_width * length);
     //context.fillText(text.replace(/ +$/, ""), x, y);
-    if ( this.bold_as_blur && 1 === attr.bold) {
+    if ( this.bold_as_blur && attr.getBold()) {
       context.fillText(text, x + 1, y, char_width * length - 1);
     }
   },

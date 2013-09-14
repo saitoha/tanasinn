@@ -232,11 +232,11 @@ SGRHandler.definition = {
               break;
 
             case 1:
-              attr.bold = 1;
+              attr.setBold(true);
               break;
 
             case 2:
-              attr.bold = 0;
+              attr.setBold(false);
               attr.halfbright = 1;
               break;
 
@@ -273,7 +273,7 @@ SGRHandler.definition = {
               break;
 
             case 21:
-              attr.bold = 0;
+              attr.setBold(false);
               break;
 
             case 22:
@@ -356,7 +356,7 @@ SGRHandler.definition = {
 
             case 39:
               attr.resetForeColor();
-              attr.bold = 0; // SGR default fg.
+              attr.setBold(false); // SGR default fg.
               break;
 
             case 40:
@@ -509,7 +509,7 @@ SGRHandler.definition = {
         fore_no;
         back_no;
 
-    if (1 === attr.bold) {
+    if (attr.getBold()) {
       params.push(1);
     }
 
