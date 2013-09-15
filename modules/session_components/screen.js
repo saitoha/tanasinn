@@ -2506,8 +2506,8 @@ Viewable.definition = {
     // redraw view
     for (i = 0; i < lines.length; ++i) {
       line = lines[i];
-      if (line.length < width) {
-        line.length = width;
+      if (line.getLength() < width) {
+        line.setLength(width);
       }
       line.invalidate();
     }
@@ -2796,7 +2796,7 @@ Scrollable.definition = {
       rotaterange = tmprange.splice(bottom - top - n, n);
       for (i = 0; i < rotaterange.length; ++i) {
         line = rotaterange[i];
-        for (j = 0; j < line.length; ++j) {
+        for (j = 0; j < line.getLength(); ++j) {
           cell = line[j];
           cell.erase(attrvalue);
         }
@@ -2873,7 +2873,7 @@ Scrollable.definition = {
         for (i = 0; i < range.length; ++i) {
           line = range[i];
           line.erase(0, width, attrvalue);
-          line.length = width;
+          line.setLength(width);
           line.invalidate();
           line.type = coUtils.Constant.LINETYPE_NORMAL;
         }
@@ -2898,7 +2898,7 @@ Scrollable.definition = {
       rotaterange = tmprange.splice(0, n);
       for (i = 0; i < rotaterange.length; ++i) {
         line = rotaterange[i];
-        for (j = 0; j < line.length; ++j) {
+        for (j = 0; j < line.getLength(); ++j) {
           cell = line[j];
           cell.erase(attrvalue);
         }
@@ -2982,7 +2982,7 @@ Resizable.definition = {
     // set new width.
     for (i = 0; i < lines.length; ++i) {
       line = lines[i];
-      line.length = width;
+      line.setLength(width);
     }
 
     // fix cursor position.
@@ -3004,7 +3004,7 @@ Resizable.definition = {
     // set new width.
     for (i = 0; i < lines.length; ++i) {
       line = lines[i];
-      line.length = width;
+      line.setLength(width);
     }
   },
 
@@ -4424,12 +4424,14 @@ Screen.definition = {
         cursor = this._cursor,
         attrvalue = cursor.attr.value,
         start = cursor.position_x,
-        end = start + n;
+        end = start + n,
+        length = line.getLength();
 
-    if (end > line.length) {
-      end = line.length;
+    if (end > length) {
+      line.erase(start, length, attrvalue);
+    } else {
+      line.erase(start, end, attrvalue);
     }
-    line.erase(start, end, attrvalue);
   },
 
   /** delete n characters at current line. */

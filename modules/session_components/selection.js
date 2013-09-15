@@ -540,7 +540,8 @@ Selection.definition = {
         r1,
         r2,
         length,
-        j;
+        j,
+        line_length;
 
     this.clear();
 
@@ -637,21 +638,21 @@ Selection.definition = {
         for (i = start_row + 1; i < end_row; ++i) {
           line = lines[i - start_row];
           if (undefined !== line) {
-            if (line.length < length) {
+            line_length = line.length;
+            if (line_length < length) {
               context.arc(x - r1, i * line_height - r1, r2, pi * 0, pi * 0.5);
-              x = line.length * char_width;
+              x = line_length * char_width;
               context.lineTo(x - r1 + r2, i * line_height);
-              length = line.length;
-            } else if (line.length > length) {
+            } else if (line_length > length) {
               context.lineTo(x - r1 + r2, i * line_height);
-              x = line.length * char_width;
+              x = line_length * char_width;
               context.arc(x - r1, i * line_height + r1, r2, pi * 1.5, pi * 2);
-              length = line.length;
             }
+            length = line_length;
           }
         }
         if (undefined !== line) {
-          x = Math.min(line.length, end_column) * char_width;
+          x = Math.min(line_length, end_column) * char_width;
         }
         context.arc(x - r1, i * line_height - r1, r2, pi * 0, pi * 0.5, false);
         context.arc(0 + r1, i * line_height - r1, r2, pi * 0.5, pi * 1.0, false);

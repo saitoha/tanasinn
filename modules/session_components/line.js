@@ -534,7 +534,7 @@ Line.definition = {
         i,
         cell;
 
-    this.length = context.shift();
+    this.setLength(context.shift());
 
     for (i = 0; i < cells.length; ++i) {
       cell = cells[i];
@@ -544,13 +544,13 @@ Line.definition = {
   },
 
   /** gets count of cells */
-  get length()
+  getLength: function getLength()
   {
     return this.cells.length
   },
 
   /** sets count of cells. */
-  set length(value)
+  setLength: function setLength(value)
   {
     var diff = value - this.cells.length,
         last_cell;
@@ -977,7 +977,8 @@ Line.definition = {
     }
 
     range.unshift(right_margin - range.length, 0) // make arguments.
-    // cells.splice(this.length, 0, ....)
+
+    // cells.splice(this.getLength(), 0, ....)
     Array.prototype.splice.apply(cells, range);
   },
 
