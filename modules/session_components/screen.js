@@ -4107,7 +4107,7 @@ Screen.definition = {
           attr.setBlink(true);
         }
         if (arg & 0x1 << 7) {
-          attr.inverse = true;
+          attr.setInverse(true);
         }
         if (arg & 0x1 << 21) {
           attr.setBold(false);
@@ -4119,7 +4119,7 @@ Screen.definition = {
           attr.setBlink(false);
         }
         if (arg & 0x1 << 27) {
-          attr.inverse = false;
+          attr.setInverse(false);
         }
       }
     }
@@ -4199,7 +4199,7 @@ Screen.definition = {
           attr.setBlink(!attr.getBlink());
         }
         if (arg & 0x1 << 7) {
-          attr.inverse = !attr.inverse;
+          attr.setInverse(!attr.getInverse());
         }
       }
     }

@@ -571,7 +571,7 @@ Renderer.definition = {
                          attr);
 
     context.font = font_size + "px " + font_family;
-    if (1 === attr.italic) {
+    if (attr.getItalic()) {
       context.font = "italic " + context.font;
     }
 
@@ -602,7 +602,7 @@ Renderer.definition = {
         height = line_height;
 
     context.font = (font_size * 2) + "px " + font_family;
-    if (1 === attr.italic) {
+    if (attr.getItalic()) {
       context.font = "italic " + context.font;
     }
 
@@ -648,7 +648,7 @@ Renderer.definition = {
 
     context.font = (font_size * 2) + "px " + font_family;
 
-    if (1 === attr.italic) {
+    if (attr.getItalic()) {
       context.font = "italic " + context.font;
     }
 
@@ -694,7 +694,7 @@ Renderer.definition = {
 
     context.font = (font_size * 2) + "px " + font_family;
 
-    if (1 === attr.italic) {
+    if (attr.getItalic()) {
       context.font = "italic " + context.font;
     }
 

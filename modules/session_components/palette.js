@@ -417,20 +417,20 @@ PaletteManager.definition = {
     // form given attribute structure.
     if (attr.hasForeColor()) {
       if (attr.hasBackColor()) {
-        if (1 === attr.inverse) {
+        if (attr.getInverse()) {
           fore_color = this.color[attr.getBackColor()];
         } else {
           fore_color = this.adjusted_fgcolor[attr.getForeColor()];
         }
       } else {
-        if (1 === attr.inverse) {
+        if (attr.getInverse()) {
           fore_color = this.adjusted_fgcolor[attr.getBackColor()];
         } else {
           fore_color = this.adjusted_fgcolor[attr.getForeColor()];
         }
       }
     } else {
-      if (1 === attr.inverse) {
+      if (attr.getInverse()) {
         fore_color = this.background_color;
       } else {
         fore_color = this.foreground_color;
@@ -448,24 +448,18 @@ PaletteManager.definition = {
     /* Get hexadecimal formatted background color (#xxxxxx)
      * form given attribute structure. */
     if (attr.hasBackColor()) {
-      if (1 === attr.inverse) {
+      if (attr.getInverse()) {
         back_color = this.adjusted_bgcolor[attr.getForeColor()];
       } else {
         back_color = this.adjusted_bgcolor[attr.getBackColor()];
       }
     } else {
-      if (1 === attr.inverse) {
+      if (attr.getInverse()) {
         back_color = this.inverted_background_color;
       } else {
         return null;
       }
     }
-
-//    if (this._reverse) {
-//      back_color = (parseInt(back_color.substr(1), 16) ^ 0x1ffffff)
-//        .toString(16)
-//        .replace(/^1/, "#");
-//    }
 
     return back_color;
   },

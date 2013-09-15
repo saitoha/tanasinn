@@ -241,7 +241,7 @@ SGRHandler.definition = {
               break;
 
             case 3:
-              attr.italic = 1;
+              attr.setItalic(true);
               break;
 
             case 4:
@@ -257,7 +257,7 @@ SGRHandler.definition = {
               break;
 
             case 7:
-              attr.inverse = 1;
+              attr.setInverse(true);
               break;
 
             case 8:
@@ -281,7 +281,7 @@ SGRHandler.definition = {
               break;
 
             case 23:
-              attr.italic = 0;
+              attr.setItalic(false);
               break;
 
             case 24:
@@ -294,7 +294,7 @@ SGRHandler.definition = {
               break;
 
             case 27:
-              attr.inverse = 0; // SGR positive (not inverse)
+              attr.setInverse(false); // SGR positive (not inverse)
               break;
 
             case 28:
@@ -517,7 +517,7 @@ SGRHandler.definition = {
       params.push(2);
     }
 
-    if (1 === attr.italic) {
+    if (attr.getItalic()) {
       params.push(3);
     }
 
@@ -533,7 +533,7 @@ SGRHandler.definition = {
       params.push(6);
     }
 
-    if (1 === attr.inverse) {
+    if (attr.getInverse()) {
       params.push(7);
     }
 

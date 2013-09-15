@@ -162,17 +162,19 @@ Cell.definition = {
   },
 
   /** getter of italic attribute */
-  get italic()
+  getItalic: function getItalic()
   {
-    return this.value >>> _ATTR_ITALIC & 0x1;
+    return 0x1 === this.value >>> _ATTR_ITALIC & 0x1;
   },
 
   /** setter of italic attribute */
-  set italic(value)
+  setItalic: function setItalic(value)
   {
-    this.value = this.value
-               & ~(0x1 << _ATTR_ITALIC)
-               | value << _ATTR_ITALIC;
+    if (value) {
+      this.value |= 0x1 << _ATTR_ITALIC;
+    } else {
+      this.value &= ~(0x1 << _ATTR_ITALIC);
+    }
   },
 
   /** get whether foreground color is enabled */
@@ -205,17 +207,19 @@ Cell.definition = {
 
 
   /** getter of inverse attribute */
-  get inverse()
+  getInverse: function getInverse()
   {
-    return this.value >>> _ATTR_INVERSE & 0x1;
+    return 0x1 === this.value >>> _ATTR_INVERSE & 0x1;
   },
 
   /** setter of inverse attribute */
-  set inverse(value)
+  setInverse: function setInverse(value)
   {
-    this.value = this.value
-               & ~(0x1 << _ATTR_INVERSE)
-               | value << _ATTR_INVERSE;
+    if (value) {
+      this.value |= 0x1 << _ATTR_INVERSE;
+    } else {
+      this.value &= ~(0x1 << _ATTR_INVERSE);
+    }
   },
 
   /** getter of invisible attribute */
