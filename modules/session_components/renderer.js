@@ -849,9 +849,13 @@ Renderer.definition = {
         dscs,
         drcs_state = attr.drcs;
 
-    if (1 === attr.invisible) {
+    /* now invisible attribute is not supported
+    if (attr.getInvisible()) {
       return;
-    } else if (attr.getBlink()) {
+    }
+    */
+
+    if (attr.getBlink()) {
       if (null === this._slow_blink_layer) {
         this.createSlowBlinkLayer(this.slow_blink_interval);
       }
@@ -867,7 +871,7 @@ Renderer.definition = {
 
     if (attr.getBold()) {
       context.globalAlpha = this.bold_alpha;
-    } else if (1 === attr.halfbright) {
+    } else if (attr.getHalfbright()) {
       context.globalAlpha = this.halfbright_alpha;
     } else {
       context.globalAlpha = this.normal_alpha;

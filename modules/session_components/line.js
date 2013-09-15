@@ -223,31 +223,35 @@ Cell.definition = {
   },
 
   /** getter of invisible attribute */
-  get invisible()
+  getInvisible: function getInvisible()
   {
-    return this.value >>> _ATTR_INVISIBLE & 0x1;
+    return 0x1 === this.value >>> _ATTR_INVISIBLE & 0x1;
   },
 
   /** setter of invisible attribute */
-  set invisible(value)
+  setInvisible: function setInvisible(value)
   {
-    this.value = this.value
-               & ~(0x1 << _ATTR_INVISIBLE)
-               | value << _ATTR_INVISIBLE;
+    if (value) {
+      this.value |= 0x1 << _ATTR_INVISIBLE;
+    } else {
+      this.value &= ~(0x1 << _ATTR_INVISIBLE);
+    }
   },
 
   /** getter of halfbright attribute */
-  get halfbright()
+  getHalfbright: function getHalfbright()
   {
-    return this.value >>> _ATTR_HALFBRIGHT & 0x1;
+    return 0x1 === this.value >>> _ATTR_HALFBRIGHT & 0x1;
   },
 
   /** setter of halfbright attribute */
-  set halfbright(value)
+  setHalfbright: function setHalfbright(value)
   {
-    this.value = this.value
-               & ~(0x1 << _ATTR_HALFBRIGHT)
-               | value << _ATTR_HALFBRIGHT;
+    if (value) {
+      this.value |= 0x1 << _ATTR_HALFBRIGHT;
+    } else {
+      this.value &= ~(0x1 << _ATTR_HALFBRIGHT);
+    }
   },
 
   /** getter of underline attribute */

@@ -237,7 +237,7 @@ SGRHandler.definition = {
 
             case 2:
               attr.setBold(false);
-              attr.halfbright = 1;
+              attr.setHalfbright(true);
               break;
 
             case 3:
@@ -261,7 +261,7 @@ SGRHandler.definition = {
               break;
 
             case 8:
-              attr.invisible = 1;
+              attr.setInvisible(true);
               break;
 
             case 10:
@@ -277,7 +277,7 @@ SGRHandler.definition = {
               break;
 
             case 22:
-              attr.halfbright = 0;
+              attr.setHalfbright(false);
               break;
 
             case 23:
@@ -298,7 +298,7 @@ SGRHandler.definition = {
               break;
 
             case 28:
-              attr.invisible = 0;
+              attr.setInvisible(false);
               break;
 
             case 30:
@@ -513,7 +513,7 @@ SGRHandler.definition = {
       params.push(1);
     }
 
-    if (1 === attr.halfbright) {
+    if (attr.getHalfbright()) {
       params.push(2);
     }
 
@@ -537,7 +537,7 @@ SGRHandler.definition = {
       params.push(7);
     }
 
-    if (1 === attr.invisible) {
+    if (attr.getInvisible()) {
       params.push(8);
     }
 
