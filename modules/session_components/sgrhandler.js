@@ -336,6 +336,7 @@ SGRHandler.definition = {
 
             case 38:
               switch (arguments[++i]) {
+                /*
                 case 2:
                   {
                     var r = arguments[++i],
@@ -345,11 +346,13 @@ SGRHandler.definition = {
                     attr.setForeColor(this._palette.getApproximateColorNumber(r, g, b));
                     break;
                   }
+                */
                 case 5:
                   attr.setForeColor(arguments[++i]);
                   break;
 
                 default:
+                  ++i;
                   break;
               }
               break;
@@ -394,6 +397,7 @@ SGRHandler.definition = {
 
             case 48:
               switch (arguments[++i]) {
+                /*
                 case 2:
                   {
                     var r = arguments[++i],
@@ -403,11 +407,13 @@ SGRHandler.definition = {
                     attr.setBackColor(this._palette.getApproximateColorNumber(r, g, b));
                     break;
                   }
+                */
                 case 5:
                   attr.setBackColor(arguments[++i]);
                   break;
 
                 default:
+                  ++i;
                   break;
               }
               break;
