@@ -500,7 +500,7 @@ Cursor.definition = {
         width,
         height,
         line_height,
-	r;
+        r;
 
     // calculate cursor position, size
     switch (this._style) {
@@ -540,15 +540,15 @@ Cursor.definition = {
         // set cursor color
         context.fillStyle = this.color;
         // draw
-	context.shadowBlur = this.shadow_blur;
-	context.shadowColor = this.shadow_color;
-	context.beginPath();
-	r = this.radius;
-	context.arc(x + r, y + r, r, Math.PI, Math.PI * 1.5, false);
-	context.arc(x + width - r, y + r, r, Math.PI * 1.5, Math.PI * 0, false);
-	context.arc(x + width - r, y + height - r, r, Math.PI * 0, Math.PI * 0.5, false);
-	context.arc(x + r, y + height - r, r, Math.PI * 0.5, Math.PI * 1, false);
-	context.fill();
+        context.shadowBlur = this.shadow_blur;
+        context.shadowColor = this.shadow_color;
+        context.beginPath();
+        r = this.radius;
+        context.arc(x + r, y + r, r, Math.PI, Math.PI * 1.5, false);
+        context.arc(x + width - r, y + r, r, Math.PI * 1.5, Math.PI * 0, false);
+        context.arc(x + width - r, y + height - r, r, Math.PI * 0, Math.PI * 0.5, false);
+        context.arc(x + r, y + height - r, r, Math.PI * 0.5, Math.PI * 1, false);
+        context.fill();
 
         this._previous_position = [x - 13, y - 13, width + 26, height + 26];
         break;
@@ -560,16 +560,16 @@ Cursor.definition = {
         context.lineJoin = "round";
 
         // draw
-	context.shadowBlur = this.shadow_blur;
-	context.shadowColor = this.shadow_color;
-	context.beginPath();
-	r = this.radius;
-	context.arc(x + r, y + r, r, Math.PI, Math.PI * 1.5, false);
-	context.arc(x + width - r, y + r, r, Math.PI * 1.5, Math.PI * 0, false);
-	context.arc(x + width - r, y + height - r, r, Math.PI * 0, Math.PI * 0.5, false);
-	context.arc(x + r, y + height - r, r, Math.PI * 0.5, Math.PI * 1, false);
-	context.lineTo(x, y + r);
-	context.stroke();
+        context.shadowBlur = this.shadow_blur;
+        context.shadowColor = this.shadow_color;
+        context.beginPath();
+        r = this.radius;
+        context.arc(x + r, y + r, r, Math.PI, Math.PI * 1.5, false);
+        context.arc(x + width - r, y + r, r, Math.PI * 1.5, Math.PI * 0, false);
+        context.arc(x + width - r, y + height - r, r, Math.PI * 0, Math.PI * 0.5, false);
+        context.arc(x + r, y + height - r, r, Math.PI * 0.5, Math.PI * 1, false);
+        context.lineTo(x, y + r);
+        context.stroke();
 
         this._previous_position = [x - 13, y - 13, width + 26, height + 26];
         break;

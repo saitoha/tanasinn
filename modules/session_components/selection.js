@@ -540,7 +540,7 @@ Selection.definition = {
         r1,
         r2,
         length,
-	      j;
+        j;
 
     this.clear();
 

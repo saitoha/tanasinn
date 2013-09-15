@@ -102,7 +102,7 @@ DragPaste.definition = {
         text;
 
     if (data_transfer.types.contains("text/plain")) {
-	    text = data_transfer.getData("text/plain");
+      text = data_transfer.getData("text/plain");
 
       // sanitize text.
       text = text.replace(/[\x00-\x08\x0a-\x0c\x0e-\x1f]/g, "");

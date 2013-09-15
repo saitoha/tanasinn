@@ -565,7 +565,7 @@ Renderer.definition = {
     this._drawBackground(context,
                          left,// | 0,
                          top,
-			 width,
+                         width,
                          //Math.round(width + Math.ceil(left) - left),
                          height,
                          attr);

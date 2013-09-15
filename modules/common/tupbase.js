@@ -505,8 +505,8 @@ Class.prototype = {
         value,
         name,
         attribute,
-	keys,
-	i;
+        keys,
+        i;
 
     for (key in trait) {
       // Detects whether the property specified by given key is

@@ -593,7 +593,7 @@ Mouse.definition = {
   _getCurrentPosition: function _getCurrentPosition(event)
   {
     var renderer = this._renderer,
-    	screen = this._screen,
+        screen = this._screen,
         width = screen.getWidth(),
         height = screen.getHeight(),
         target_element = this.request(

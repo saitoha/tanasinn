@@ -88,7 +88,7 @@ PresentationStateReport.definition = {
   "[profile('vt100'), sequence('CSI Ps $ w')]":
   function DECRQPSR(n)
   {
-    switch (n) {
+    switch (n || 0) {
 
       case 0: // error
         break;
@@ -102,7 +102,7 @@ PresentationStateReport.definition = {
         break;
 
       default:
-	break;
+        break;
     }
 
   },
