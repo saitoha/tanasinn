@@ -893,7 +893,7 @@ Renderer.definition = {
       }
     }
 
-    if (1 === attr.underline) {
+    if (attr.getUnderline()) {
       this._drawUnderline(context, x, y, char_width * length, fore_color);
     }
 

@@ -4101,7 +4101,7 @@ Screen.definition = {
           attr.setBold(true);
         }
         if (arg & 0x1 << 4) {
-          attr.underline = true;
+          attr.setUnderline(true);
         }
         if (arg & 0x1 << 5) {
           attr.setBlink(true);
@@ -4113,7 +4113,7 @@ Screen.definition = {
           attr.setBold(false);
         }
         if (arg & 0x1 << 24) {
-          attr.underline = false;
+          attr.setUnderline(false);
         }
         if (arg & 0x1 << 25) {
           attr.setBlink(false);
@@ -4193,7 +4193,7 @@ Screen.definition = {
           attr.setBold(!attr.getBold());
         }
         if (arg & 0x1 << 4) {
-          attr.underline = !attr.underline;
+          attr.setUnderline(!attr.getUnderline());
         }
         if (arg & 0x1 << 5) {
           attr.setBlink(!attr.getBlink());

@@ -116,7 +116,7 @@ Cell.definition = {
   /** getter of bold attribute */
   getBold: function getBold()
   {
-    return 0x1 === this.value >> _ATTR_BOLD & 0x1;
+    return 0x1 === (this.value >> _ATTR_BOLD & 0x1);
   },
 
   /** setter of bold attribute */
@@ -132,7 +132,7 @@ Cell.definition = {
   /** getter of blink attribute */
   getBlink: function getBlink()
   {
-    return 0x1 === this.value >>> _ATTR_BLINK & 0x1;
+    return 0x1 === (this.value >>> _ATTR_BLINK & 0x1);
   },
 
   /** setter of blink attribute */
@@ -148,7 +148,7 @@ Cell.definition = {
   /** getter of rapid_blink attribute */
   getRapidBlink: function getRapidBlink()
   {
-    return 0x1 === this.value >>> _ATTR_RAPIDBLINK & 0x1;
+    return 0x1 === (this.value >>> _ATTR_RAPIDBLINK & 0x1);
   },
 
   /** setter of rapid_blink attribute */
@@ -164,7 +164,7 @@ Cell.definition = {
   /** getter of italic attribute */
   getItalic: function getItalic()
   {
-    return 0x1 === this.value >>> _ATTR_ITALIC & 0x1;
+    return 0x1 === (this.value >>> _ATTR_ITALIC & 0x1);
   },
 
   /** setter of italic attribute */
@@ -209,7 +209,7 @@ Cell.definition = {
   /** getter of inverse attribute */
   getInverse: function getInverse()
   {
-    return 0x1 === this.value >>> _ATTR_INVERSE & 0x1;
+    return 0x1 === (this.value >>> _ATTR_INVERSE & 0x1);
   },
 
   /** setter of inverse attribute */
@@ -225,7 +225,7 @@ Cell.definition = {
   /** getter of invisible attribute */
   getInvisible: function getInvisible()
   {
-    return 0x1 === this.value >>> _ATTR_INVISIBLE & 0x1;
+    return 0x1 === (this.value >>> _ATTR_INVISIBLE & 0x1);
   },
 
   /** setter of invisible attribute */
@@ -241,7 +241,7 @@ Cell.definition = {
   /** getter of halfbright attribute */
   getHalfbright: function getHalfbright()
   {
-    return 0x1 === this.value >>> _ATTR_HALFBRIGHT & 0x1;
+    return 0x1 === (this.value >>> _ATTR_HALFBRIGHT & 0x1);
   },
 
   /** setter of halfbright attribute */
@@ -255,17 +255,19 @@ Cell.definition = {
   },
 
   /** getter of underline attribute */
-  get underline()
+  getUnderline: function getUnderline()
   {
-    return this.value >>> _ATTR_UNDERLINE & 0x1;
+    return 0x1 === (this.value >>> _ATTR_UNDERLINE & 0x1);
   },
 
   /** setter of underline attribute */
-  set underline(value)
+  setUnderline: function setUnderline(value)
   {
-    this.value = this.value
-               & ~(0x1 << _ATTR_UNDERLINE)
-               | value << _ATTR_UNDERLINE;
+    if (value) {
+      this.value |= 0x1 << _ATTR_UNDERLINE;
+    } else {
+      this.value &= ~(0x1 << _ATTR_UNDERLINE);
+    }
   },
 
   /** getter of wide attribute */

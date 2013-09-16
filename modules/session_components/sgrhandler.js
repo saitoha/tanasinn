@@ -245,7 +245,7 @@ SGRHandler.definition = {
               break;
 
             case 4:
-              attr.underline = 1;
+              attr.setUnderline(true);
               break;
 
             case 5:
@@ -285,7 +285,7 @@ SGRHandler.definition = {
               break;
 
             case 24:
-              attr.underline = 0;
+              attr.setUnderline(false);
               break;
 
             case 25:
@@ -527,7 +527,7 @@ SGRHandler.definition = {
       params.push(3);
     }
 
-    if (1 === attr.underline) {
+    if (attr.getUnderline()) {
       params.push(4);
     }
 
