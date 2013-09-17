@@ -270,20 +270,6 @@ Cell.definition = {
     }
   },
 
-  /** getter of wide attribute */
-  get wide()
-  {
-    return this.value >>> _ATTR_WIDE & 0x1;
-  },
-
-  /** setter of wide attribute */
-  set wide(value)
-  {
-    this.value = this.value
-               & ~(0x1 << _ATTR_WIDE)
-               | value << _ATTR_WIDE;
-  },
-
   /** getter of protected attribute */
   get protected()
   {
