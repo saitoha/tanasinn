@@ -271,17 +271,19 @@ Cell.definition = {
   },
 
   /** getter of protected attribute */
-  get protected()
+  getProtected: function getProtected()
   {
-    return this.value >>> _ATTR_PROTECTED & 0x1;
+    return 0x1 === (this.value >>> _ATTR_PROTECTED & 0x1);
   },
 
   /** setter of protected attribute */
-  set protected(value)
+  setProtected: function setProtected(value)
   {
-    this.value = this.value
-               & ~(0x1 << _ATTR_PROTECTED)
-               | value << _ATTR_PROTECTED;
+    if (value) {
+      this.value |= 0x1 << _ATTR_PROTECTED;
+    } else {
+      this.value &= ~(0x1 << _ATTR_PROTECTED);
+    }
   },
 
   /** Compare every bit and detect equality of both objects. */
@@ -321,7 +323,7 @@ Cell.definition = {
   /** Erase if the cell id marked as "erasable". */
   selectiveErase: function selectiveErase(attrvalue)
   {
-    if (!this.protected) {
+    if (0x1 !== (this.value >>> _ATTR_PROTECTED & 0x1)) {
       this.c = 0x20;
       this.value = attrvalue;
     }
