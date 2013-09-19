@@ -712,7 +712,7 @@ Line.definition = {
       cells = this.cells;
       max = coUtils.Constant.LINETYPE_NORMAL === this.type ?
         this.last:
-        Math.min(this.last, Math.floor(cells.length / 2));
+        Math.min(this.last, (cells.length / 2 | 0));
 
       for (current = this.first; current < max; ++current) {
         cell = cells[current];
