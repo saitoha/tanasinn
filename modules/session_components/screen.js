@@ -1382,12 +1382,12 @@ ScreenSequenceHandler.definition = {
         cursor = this._cursor,
         args;
 
-    if (undefined === n1) {
+    if (undefined === n1 || 0 === n1) {
       src_top = 0;
     } else {
       src_top = n1 - 1;
     }
-    if (undefined === n2) {
+    if (undefined === n2 || 0 === n1) {
       src_left = 0;
     } else {
       src_left = n2 - 1;
@@ -1402,33 +1402,33 @@ ScreenSequenceHandler.definition = {
     } else {
       src_right = n4;
     }
-    if (undefined === n5) {
+    if (undefined === n5 || 0 === n1) {
       src_page = 0;
     } else {
       src_page = n5;
     }
-    if (undefined === n6) {
+    if (undefined === n6 || 0 === n1) {
       dest_top = 0;
     } else {
       dest_top = n6 - 1;
     }
-    if (undefined === n7) {
+    if (undefined === n7 || 0 === n1) {
       dest_left = 0;
     } else {
       dest_left = n7 - 1;
     }
-    if (undefined === n8) {
+    if (undefined === n8 || 0 === n1) {
       dest_page = 0;
     } else {
       dest_page = n8;
     }
 
-    if (0 !== src_page) {
+    if (src_page > 1) {
       // TODO: implement page semantics
       return;
     }
 
-    if (0 !== dest_page) {
+    if (dest_page > 1) {
       // TODO: implement page semantics
       return;
     }
@@ -1499,7 +1499,6 @@ ScreenSequenceHandler.definition = {
                        src_bottom, src_right,
                        dest_top, dest_left,
                        dest_bottom, dest_right);
-
   },
  
   /**
