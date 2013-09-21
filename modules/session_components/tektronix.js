@@ -35,6 +35,7 @@ Tektronix.definition = {
 
   id: "tektronix",
 
+  /** plugin information */
   getInfo: function getInfo()
   {
     return {
@@ -439,15 +440,6 @@ scan:
   "[test]":
   function()
   {
-    var enabled = this.enabled;
-
-    //try {
-    //  this.enabled = false;
-    //  this.enabled = true;
-    //  this.enabled = false;
-    //} finally {
-    //  this.enabled = enabled;
-    //}
   },
 
 
