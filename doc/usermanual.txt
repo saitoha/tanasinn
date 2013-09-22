@@ -26,6 +26,15 @@ link:./usermanual.html[English/英語]
 
 == News
 
+=== 2013-09-22
+    Version 0.3.3.14
+    Fix off-by-one issue of DECERA / DECSERA
+    implement DECFRA
+    implement DECSACE
+    implement DECRARA
+    implement DECCARA
+    implement DECCRA
+
 === 2013-08-24
     Workaround for Firefox 25+ 
 
