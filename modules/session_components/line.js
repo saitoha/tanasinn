@@ -716,6 +716,9 @@ Line.definition = {
 
       for (current = this.first; current < max; ++current) {
         cell = cells[current];
+        if (undefined === cell) {
+          break;
+        }
         is_ascii = cell.c > 0 && cell.c < 0x80;
         if (attr) {
           if (attr.equals(cell) && is_ascii) {
