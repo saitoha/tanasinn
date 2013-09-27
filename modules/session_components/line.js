@@ -845,8 +845,11 @@ Line.definition = {
         }
       }
       if (end < right_margin) {
-        if (0 === cells[end - 1].c) {
-          cells[end].erase();
+        cell = cells[end - 1];
+        if (cell !== undefined) {
+          if (0 === cell.c) {
+            cells[end].erase();
+          }
         }
       }
       for (i = 0; i < length; ++i) {
