@@ -846,7 +846,7 @@ Line.definition = {
       }
       if (end < right_margin) {
         cell = cells[end - 1];
-        if (cell !== undefined) {
+        if (undefined !== cell) {
           if (0 === cell.c) {
             cells[end].erase();
           }
@@ -855,7 +855,9 @@ Line.definition = {
       for (i = 0; i < length; ++i) {
         code = codes[i];
         cell = cells[position + i];
-        cell.write(code, attr);
+        if (undefined !== cell) {
+          cell.write(code, attr);
+        }
       }
       this.addRange(position, end);
     }
