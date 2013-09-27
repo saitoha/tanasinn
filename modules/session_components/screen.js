@@ -2758,6 +2758,7 @@ Scrollable.definition = {
         tmprange,
         rotaterange,
         line,
+        cells,
         range;
 
     if (0 === left && right === width) {
@@ -2782,10 +2783,9 @@ Scrollable.definition = {
       this._lines = lines.slice(offset, offset + height);
 
       if (this._smooth_scrolling) {
-        this.sendMessage("command/draw", true);
         wait(this.smooth_scrolling_delay);
       }
-    } else {
+    } else { // vsplit mode
       range = lines.slice(offset + top, offset + bottom);
       tmprange = [];
       for (i = 0; i < range.length; ++i) {
@@ -2794,9 +2794,9 @@ Scrollable.definition = {
       }
       rotaterange = tmprange.splice(bottom - top - n, n);
       for (i = 0; i < rotaterange.length; ++i) {
-        line = rotaterange[i];
-        for (j = 0; j < line.getLength(); ++j) {
-          cell = line[j];
+        cells = rotaterange[i];
+        for (j = 0; j < cells.length; ++j) {
+          cell = cells[j];
           cell.erase(attrvalue);
         }
       }
@@ -2828,6 +2828,7 @@ Scrollable.definition = {
         rotaterange,
         range,  // rotation range
         line,
+        cells,
         rest;
 
     if (0 === left && right === width) {
@@ -2896,9 +2897,9 @@ Scrollable.definition = {
       }
       rotaterange = tmprange.splice(0, n);
       for (i = 0; i < rotaterange.length; ++i) {
-        line = rotaterange[i];
-        for (j = 0; j < line.getLength(); ++j) {
-          cell = line[j];
+        cells = rotaterange[i];
+        for (j = 0; j < cells.length; ++j) {
+          cell = cells[j];
           cell.erase(attrvalue);
         }
       }
