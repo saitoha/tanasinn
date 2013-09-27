@@ -4658,7 +4658,7 @@ Screen.definition = {
         i;
 
     for (i = 0; i < lines.length; ++i) {
-      lines[i].length = width;
+      lines[i].setLength(width);
     }
 
     this._lines = lines;
