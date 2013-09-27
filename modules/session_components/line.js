@@ -840,8 +840,11 @@ Line.definition = {
     } else { // replace mode
       end = position + length;
       if (position > 0) {
-        if (0 === cells[position - 1].c) {
-          cells[position - 1].erase();
+        cell = cells[position - 1];
+        if (undefined !== cell) {
+          if (0 === cell.c) {
+            cells[position - 1].erase();
+          }
         }
       }
       if (end < right_margin) {
