@@ -894,7 +894,11 @@ Renderer.definition = {
     }
 
     if (attr.getUnderline()) {
-      this._drawUnderline(context, x, y, char_width * length, fore_color);
+      this._drawUnderline(context, x, y + 2, char_width * length, fore_color);
+    }
+
+    if (attr.getStrike()) {
+      this._drawStrike(context, x, (y - height / 3) | 0, char_width * length, fore_color);
     }
 
     if (drcs_state) {
@@ -1066,16 +1070,33 @@ Renderer.definition = {
    * @param {nsIRenderingContext} context  a rendering context object.
    * @param {Number} x  the horizontal start position.
    * @param {Number} y  the vertical base-line position.
-   * @param {String} fore_color  the stroke color of underline.
+   * @param {String} color  the stroke color of underline.
    */
-  _drawUnderline: function _drawUnderline(context, x, y, width, fore_color)
+  _drawUnderline: function _drawUnderline(context, x, y, width, color)
   {
      // Render underline
-     context.lineWidth = 1;
-     context.strokeStyle = fore_color;
+     context.lineWidth = 2;
+     context.strokeStyle = color;
      context.beginPath();
-     context.moveTo(x, y + 2);
-     context.lineTo(x + width, y + 2);
+     context.moveTo(x, y);
+     context.lineTo(x + width, y);
+     context.stroke();
+  },
+
+  /** Rnder strike at specified position.
+   * @param {nsIRenderingContext} context  a rendering context object.
+   * @param {Number} x  the horizontal start position.
+   * @param {Number} y  the vertical middle-line position.
+   * @param {String} color  the stroke color of strike.
+   */
+  _drawStrike: function _drawStrike(context, x, y, width, color)
+  {
+     // Render underline
+     context.lineWidth = 2;
+     context.strokeStyle = color;
+     context.beginPath();
+     context.moveTo(x, y);
+     context.lineTo(x + width, y);
      context.stroke();
   },
 

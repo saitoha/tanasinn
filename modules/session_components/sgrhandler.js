@@ -264,6 +264,10 @@ SGRHandler.definition = {
               attr.setInvisible(true);
               break;
 
+            case 9:
+              attr.setStrike(true);
+              break;
+
             case 10:
               this.sendMessage("event/shift-in");
               break;
@@ -299,6 +303,10 @@ SGRHandler.definition = {
 
             case 28:
               attr.setInvisible(false);
+              break;
+
+            case 29:
+              attr.setStrike(false);
               break;
 
             case 30:

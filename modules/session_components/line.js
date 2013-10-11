@@ -60,17 +60,16 @@ var _ATTR_BACKCOLOR    = 0,    // 00000000 00000000 00000000 11111111
     _ATTR_BLINK        = 21,   // 00000000 00100000 00000000 00000000
     _ATTR_RAPIDBLINK   = 22,   // 00000000 01000000 00000000 00000000
     _ATTR_ITALIC       = 23,   // 00000000 10000000 00000000 00000000
+    _ATTR_STRIKE       = 24,   // 00000001 00000000 00000000 00000000
 
-    _ATTR_FGCOLOR      = 24,   // 00000001 00000000 00000000 00000000
-    _ATTR_BGCOLOR      = 25,   // 00000010 00000000 00000000 00000000
+    _ATTR_FGCOLOR      = 25,   // 00000010 00000000 00000000 00000000
+    _ATTR_BGCOLOR      = 26,   // 00000100 00000000 00000000 00000000
 
 // tanasinn specific properties
-    _ATTR_LINK         = 26,   // 00000100 00000000 00000000 00000000
-    _ATTR_HIGHLIGHT    = 27,   // 00001000 00000000 00000000 00000000
+    _ATTR_LINK         = 27,   // 00001000 00000000 00000000 00000000
+    _ATTR_HIGHLIGHT    = 28,   // 00010000 00000000 00000000 00000000
 
-    _ATTR_WIDE         = 28,   // 00010000 00000000 00000000 00000000
-    _ATTR_PROTECTED    = 29,   // 00100000 00000000 00000000 00000000
-    _ATTR_DRCS         = 30;   // 01000000 01111111 01111111 01111111
+    _ATTR_PROTECTED    = 29;   // 00100000 00000000 00000000 00000000
 
 /**
  * @class Cell
@@ -174,6 +173,22 @@ Cell.definition = {
       this.value |= 0x1 << _ATTR_ITALIC;
     } else {
       this.value &= ~(0x1 << _ATTR_ITALIC);
+    }
+  },
+
+  /** getter of strike attribute */
+  getStrike: function getStrike()
+  {
+    return 0x1 === (this.value >>> _ATTR_STRIKE & 0x1);
+  },
+
+  /** setter of strike attribute */
+  setStrike: function setStrike(value)
+  {
+    if (value) {
+      this.value |= 0x1 << _ATTR_STRIKE;
+    } else {
+      this.value &= ~(0x1 << _ATTR_STRIKE);
     }
   },
 
