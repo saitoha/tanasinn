@@ -760,6 +760,14 @@ var TERMINFO_DB = {
   // max_colors: maximum number of colors on screen
   "Co":     "256",
   "colors": "256",
+
+  // enter_underline_mode: begin underline mode
+  "us":     "\x1b[4m",
+  "smul":   "\x1b[4m",
+
+  // exit_underline_mode: exit underline mode
+  "ue":     "\x1b[24m",
+  "rmul":   "\x1b[24m",
 };
 
 /**
