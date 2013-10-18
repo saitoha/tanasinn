@@ -24,17 +24,6 @@
 
 "use strict";
 
-function wait(span)
-{
-  var end_time = Date.now() + span,
-      current_thread = coUtils.Services.getThreadManager().currentThread;
-
-  do {
-    current_thread.processNextEvent(true);
-  } while ((current_thread.hasPendingEvents()) || Date.now() < end_time);
-};
-
-
 //////////////////////////////////////////////////////////////////////////////
 //
 // Concepts
