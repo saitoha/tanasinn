@@ -81,9 +81,13 @@ Paste.definition = {
   "[command('paste'), nmap('<M-v>', '<C-S-V>'), _('Paste from clipboard.'), pnp]":
   function paste()
   {
-    var text = coUtils.Clipboard.get();
+    var text = coUtils.Clipboard.get(),
+        pos = 0,
+        length;
 
     if (null !== text) {
+
+      length = text.length;
 
       // sanitize the text.
       if (this.safe_paste) {
@@ -94,20 +98,16 @@ Paste.definition = {
       if (this._bracketed_paste_mode) {
         // add bracket sequences.
         this.sendMessage("command/send-sequence/csi", "200~");
-        coUtils.Timer.wait(100);
-        this._pasteImpl(text);
-/*
-        text.split("").forEach(
-          function(c)
-          {
-            this._pasteImpl(c);
-            wait(10);
-          });
-          */
-        coUtils.Timer.wait(100);
+        for (pos = 0; pos < length; pos += 256) {
+            coUtils.Timer.wait(100);
+            this._pasteImpl(text.slice(pos, pos + 256));
+            coUtils.Timer.wait(100);
+        }
         this.sendMessage("command/send-sequence/csi", "201~");
       } else {
-        this._pasteImpl(text);
+        for (pos = 0; pos < length; pos += 256) {
+            this._pasteImpl(text.slice(pos, pos + 256));
+        }
       }
     }
     return true; /* prevent default action */
