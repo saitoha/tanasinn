@@ -1,9 +1,7 @@
 - Fix broken debugger
-- Support Windows 8 RTM
 - Support alternate screen transition
 
 - Fix Alt-Shift issue on WINNT/X11 environment
-- Fix copying text includes combining characters
 
 - Supports multi page selection and auto-scrolling with dragging
 
@@ -21,7 +19,6 @@
 - Make Sixel Graphics behavior be more strictry and efficently
 - Make DRCS behavior be more strictry
 
-- imprement DECCRA
 - implement OSC 8900 (GWREPT)
 - implement MC/DECMC
 - implement DECPEX mode

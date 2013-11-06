@@ -42,7 +42,8 @@ AlternateWheel.definition = {
     return {
       name: _("Alternate Wheel Mode"),
       version: "0.1",
-      description: _("Enable/Disable alternate scroll(xterm), mousewheel reporting(MinTTY) feature")
+      description: _("Enable/Disable alternate scroll(xterm), ",
+		     "mousewheel reporting(MinTTY) feature")
     };
   },
 
