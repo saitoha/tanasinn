@@ -1,4 +1,4 @@
-/* -*- Mode: JAVASCRIPT; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 4 -*-
+/* -*- Mode: JAVASCRIPT; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*-
  *
  * ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1
@@ -29,56 +29,57 @@ try {
    * @fn getTanasinnProcess
    */
   var desktop = function getDesktop()
-      {
-        var current_file = Components
-              .stack.filename.split(" -> ")
-              .pop().split("?")
-              .shift()
-              .replace(/^liberator:\/\/template\//, ""),
-            path = current_file
-                 + "/../../tanasinn/modules/common/process.js?"
-                 + new Date().getTime(),
-            scope = {};
-        Components.classes["@mozilla.org/moz/jssubscript-loader;1"]
-          .getService(Ci.mozIJSSubScriptLoader)
-          .loadSubScript(path, scope);
-        new scope.g_process.default_scope()
-          .coUtils.Services.getObserverService()
-          .addObserver(
+    {
+      var current_file = Components
+            .stack.filename.split(" -> ")
+            .pop().split("?")
+            .shift()
+            .replace(/^liberator:\/\/template\//, ""),
+          path = current_file
+               + "/../../tanasinn/modules/common/process.js?"
+               + new Date().getTime(),
+          scope = {};
+
+      Components.classes["@mozilla.org/moz/jssubscript-loader;1"]
+        .getService(Ci.mozIJSSubScriptLoader)
+        .loadSubScript(path, scope);
+      new scope.g_process.default_scope()
+        .coUtils.Services.getObserverService()
+        .addObserver(
+        {
+          observe: function observe()
           {
-            observe: function observe()
-            {
-              scope.g_process.notify("event/disabled");
-              scope.g_process.uninitialize();
-              scope.g_process.notify("event/shutdown");
-              scope.g_process.clear();
-            },
-
-            /**
-             * Provides runtime type discovery.
-             * @param aIID the IID of the requested interface.
-             * @return the resulting interface pointer.
-             */
-            QueryInterface: function QueryInterface(a_IID)
-            {
-              if (!a_IID.equals(Components.interafaces.nsIObserver)
-               && !a_IID.equals(Components.interafaces.nsISupports)) {
-                throw Components.results.NS_ERROR_NOT_IMPLEMENTED;
-              }
-              return this;
-            },
-
+            scope.g_process.notify("event/disabled");
+            scope.g_process.uninitialize();
+            scope.g_process.notify("event/shutdown");
+            scope.g_process.clear();
           },
-          "quit-application",
-          false);
-        return scope.g_process.getDesktopFromWindow(window);
-      }(),
-      liberator = window.liberator,
-      commands = liberator.modules.commands,
-      completion = liberator.modules.completion,
-      mappings = liberator.modules.mappings,
-      modes = liberator.modules.modes,
-      editor = liberator.modules.editor;
+
+          /**
+           * Provides runtime type discovery.
+           * @param aIID the IID of the requested interface.
+           * @return the resulting interface pointer.
+           */
+          QueryInterface: function QueryInterface(a_IID)
+          {
+            if (!a_IID.equals(Components.interafaces.nsIObserver)
+             && !a_IID.equals(Components.interafaces.nsISupports)) {
+              throw Components.results.NS_ERROR_NOT_IMPLEMENTED;
+            }
+            return this;
+          },
+
+        },
+        "quit-application",
+        false);
+      return scope.g_process.getDesktopFromWindow(window);
+    }(),
+    liberator = window.liberator,
+    commands = liberator.modules.commands,
+    completion = liberator.modules.completion,
+    mappings = liberator.modules.mappings,
+    modes = liberator.modules.modes,
+    editor = liberator.modules.editor;
 
   /**
    * @command tanasinnlaunch

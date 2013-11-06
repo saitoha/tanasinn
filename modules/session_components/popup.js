@@ -1,4 +1,4 @@
-/* -*- Mode: JAVASCRIPT; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 4 -*-
+/* -*- Mode: JAVASCRIPT; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*-
  * Version: MPL 1.1
  *
  * The contents of this file are subject to the Mozilla Public License Version

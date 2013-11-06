@@ -1,4 +1,4 @@
-/* -*- Mode: JAVASCRIPT; tab-width: 1; indent-tabs-mode: nil; c-basic-offset: 4 -*-
+/* -*- Mode: JAVASCRIPT; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*-
  *
  * ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1
@@ -28,7 +28,8 @@ var g_process;
 
 function alert(message)
 {
-  Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
+  Components
+    .classes["@mozilla.org/embedcomp/prompt-service;1"]
     .getService(Components.interfaces.nsIPromptService)
     .alert(null, "test", String(message));
 }
