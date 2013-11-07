@@ -507,7 +507,7 @@ C1Control.definition = {
 
     for (i = 0; i < codes.length; ++i) {
       c = codes[i];
-      if (c > 0x30 && c < 0x3a) {
+      if (c >= 0x30 && c < 0x3a) {
         num = num * 10 + c - 0x30;
       } else {
         if (c === 0x3b /* ; */) {
