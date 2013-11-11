@@ -22,23 +22,23 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-"use strict";
+'use strict';
 
 var g_process;
 
 function alert(message)
 {
   Components
-    .classes["@mozilla.org/embedcomp/prompt-service;1"]
+    .classes['@mozilla.org/embedcomp/prompt-service;1']
     .getService(Components.interfaces.nsIPromptService)
-    .alert(null, "test", String(message));
+    .alert(null, 'test', String(message));
 }
 
 /** Load modules and create tanasinn's process. */
 function start_tanasinn(data)
 {
   var io_service = Components
-        .classes["@mozilla.org/network/io-service;1"]
+        .classes['@mozilla.org/network/io-service;1']
         .getService(Components.interfaces.nsIIOService),
       uri = io_service.newFileURI(data.installPath.clone()),
       file_handler, // nsIFileProtocolHandler
@@ -50,26 +50,26 @@ function start_tanasinn(data)
   terminate_tanasinn();
 
   try {
-    file_handler = io_service.getProtocolHandler("file")
+    file_handler = io_service.getProtocolHandler('file')
       .QueryInterface(Components.interfaces.nsIFileProtocolHandler);
 
     process_file = data.installPath.clone();
-    process_file.append("modules");
-    process_file.append("common");
-    process_file.append("process.js");
+    process_file.append('modules');
+    process_file.append('common');
+    process_file.append('process.js');
 
     process_url = file_handler.getURLSpecFromFile(process_file);
 
     Components
-      .classes["@mozilla.org/moz/jssubscript-loader;1"]
+      .classes['@mozilla.org/moz/jssubscript-loader;1']
       .getService(Components.interfaces.mozIJSSubScriptLoader)
-      .loadSubScript(process_url + "?" + new Date().getTime(), scope);
+      .loadSubScript(process_url + '?' + new Date().getTime(), scope);
     g_process = scope.g_process;
 
-  } catch(e) {
-    message = e.fileName + ":"
-            + e.lineNumber + " "
-            + e.toString();
+  } catch (e) {
+    message = e.fileName + ':' +
+              e.lineNumber + ' ' +
+              e.toString();
     Components.reportError(message);
     return false;
   }
@@ -82,9 +82,9 @@ function start_tanasinn(data)
 function terminate_tanasinn()
 {
   if (g_process) {
-    g_process.notify("event/disabled");
+    g_process.notify('event/disabled');
     g_process.uninitialize();
-    g_process.notify("event/shutdown");
+    g_process.notify('event/shutdown');
     g_process.clear();
   }
 }
@@ -97,9 +97,9 @@ function startup(data, reason)
   try {
     return start_tanasinn(data);
   } catch (e) {
-    message = e.fileName + ":"
-            + e.lineNumber + " "
-            + e.toString();
+    message = e.fileName + ':' +
+              e.lineNumber + ' ' +
+              e.toString();
     Components.reportError(message);
     return false;
   }
@@ -114,9 +114,9 @@ function shutdown(data, reason)
   try {
     terminate_tanasinn();
   } catch (e) {
-    message = e.fileName + ":"
-            + e.lineNumber + " "
-            + e.toString();
+    message = e.fileName + ':' +
+              e.lineNumber + ' ' +
+              e.toString();
     Components.reportError(message);
     return false;
   }
@@ -130,9 +130,9 @@ function install(data, reason)
 
   try {
   } catch (e) {
-    message = e.fileName
-            + ":" + e.lineNumber
-            + " " + e.toString();
+    message = e.fileName + ':' +
+              e.lineNumber + ' ' +
+              e.toString();
     Components.reportError(message);
     return false;
   }
@@ -147,9 +147,9 @@ function uninstall(data, reason)
   try {
     terminate_tanasinn();
   } catch (e) {
-    message = e.fileName + ":"
-            + e.lineNumber + " "
-            + e.toString();
+    message = e.fileName + ':' +
+              e.lineNumber + ' ' +
+              e.toString();
     Components.reportError(message);
     return false;
   }
