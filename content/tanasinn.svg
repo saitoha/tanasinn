@@ -9,43 +9,41 @@
   <g transform="matrix(2.02, 0, 0, 2.02, -72.0, 1.0)">
     <radialGradient cx="64.568802" cy="7.2266002" r="104.221" 
                     fx="64.568802" fy="7.2266002" 
-                    id="XMLID_61_" gradientUnits="userSpaceOnUse">
-       <stop style="stop-color: rgb(103, 197, 213); stop-opacity: 1;" offset="0" id="stop13"/>
-       <stop style="stop-color: rgb(102, 194, 211); stop-opacity: 1;" offset="0.1604" id="stop15"/>
-       <stop style="stop-color: rgb(98, 185, 206); stop-opacity: 1;" offset="0.27950001" id="stop17"/>
-       <stop style="stop-color: rgb(92, 168, 198); stop-opacity: 1;" offset="0.38519999" id="stop19"/>
-       <stop style="stop-color: rgb(83, 146, 186); stop-opacity: 1;" offset="0.48320001" id="stop21"/>
-       <stop style="stop-color: rgb(72, 116, 170); stop-opacity: 1;" offset="0.57590002" id="stop23"/>
-       <stop style="stop-color: rgb(58, 80, 151); stop-opacity: 1;" offset="0.66460001" id="stop25"/>
-       <stop style="stop-color: rgb(42, 39, 129); stop-opacity: 1;" offset="0.74849999" id="stop27"/>
-       <stop style="stop-color: rgb(27, 0, 109); stop-opacity: 1;" offset="0.81459999" id="stop29"/>
-       <stop style="stop-color: rgb(89, 106, 173); stop-opacity: 1;" offset="1" id="stop31"/>
+                    id="tanasinn-outer-gradient" gradientUnits="userSpaceOnUse">
+       <stop style="stop-color: rgb(103, 197, 213); stop-opacity: 1;" offset="0"/>
+       <stop style="stop-color: rgb(102, 194, 211); stop-opacity: 1;" offset="0.1604"/>
+       <stop style="stop-color: rgb(98, 185, 206); stop-opacity: 1;" offset="0.27950001"/>
+       <stop style="stop-color: rgb(92, 168, 198); stop-opacity: 1;" offset="0.38519999"/>
+       <stop style="stop-color: rgb(83, 146, 186); stop-opacity: 1;" offset="0.48320001"/>
+       <stop style="stop-color: rgb(72, 116, 170); stop-opacity: 1;" offset="0.57590002"/>
+       <stop style="stop-color: rgb(58, 80, 151); stop-opacity: 1;" offset="0.66460001"/>
+       <stop style="stop-color: rgb(42, 39, 129); stop-opacity: 1;" offset="0.74849999"/>
+       <stop style="stop-color: rgb(27, 0, 109); stop-opacity: 1;" offset="0.81459999"/>
+       <stop style="stop-color: rgb(89, 106, 173); stop-opacity: 1;" offset="1"/>
     </radialGradient>
     <ellipse cx="63.755001" cy="59.375" rx="58.215" ry="58.254002" 
-             style="fill: url(#XMLID_61_) rgb(0, 0, 0); opacity: 0.8" id="ellipse33"/>
-    <g id="g93">
+             style="fill: url(#tanasinn-outer-gradient) rgb(0, 0, 0); opacity: 0.8"/>
+    <g>
       <linearGradient x1="29.491699" y1="19.146999" x2="29.173901" y2="32.832401" 
                       id="tanasinn-aa-fill" gradientUnits="userSpaceOnUse">
-         <stop style="stop-color: rgb(15, 158, 88); stop-opacity: 1;" offset="0" id="stop111"/>
-         <stop style="stop-color: rgb(10, 65, 58); stop-opacity: 1;" offset="0.2059999" id="stop113"/>
-         <stop style="stop-color: rgb(0, 20, 90); stop-opacity: 1;" offset="1" id="stop115"/>
+         <stop style="stop-color: rgb(15, 158, 88); stop-opacity: 1;" offset="0"/>
+         <stop style="stop-color: rgb(10, 65, 58); stop-opacity: 1;" offset="0.2059999"/>
+         <stop style="stop-color: rgb(0, 20, 90); stop-opacity: 1;" offset="1"/>
       </linearGradient>
- 
-      <filter id="tanasinn-aa-filter" filterUnits="userSpaceOnUse" x="0" y="0" width="200" height="120">
+      <filter id="tanasinn-aa-filter" filterUnits="userSpaceOnUse"
+              x="0" y="0" width="200" height="120">
         <feGaussianBlur stdDeviation="1" result="blur"/>
-        <feOffset id="feOffset137" result="shift" in="blur" dy="2" dx="2"/>
-        <feMerge id="feMerge139">
-        <feMergeNode id="feMergeNode141" in="shift"/>
-        <feMergeNode id="feMergeNode143" in="SourceGraphic"/>
+        <feOffset result="shift" in="blur" dy="2" dx="2"/>
+        <feMerge>
+          <feMergeNode in="shift"/>
+          <feMergeNode in="SourceGraphic"/>
         </feMerge>
- 
       </filter>
- 
       <defs>
          <ellipse cx="63.755001" cy="59.375" rx="58.215" ry="58.254002" id="tanasinn-aa-region"/>
       </defs>
       <clipPath id="tanasinn-aa-clipping">
-          <use id="use99" x="0" y="0" width="132.72" height="127.219" xlink:href="#tanasinn-aa-region"/>
+          <use x="0" y="0" width="132.72" height="127.219" xlink:href="#tanasinn-aa-region"/>
       </clipPath>
       <g style="fill: url(#tanasinn-aa-fill); filter: url(#tanasinn-aa-filter)" 
          clip-path="url(#tanasinn-aa-clipping)">
@@ -59,15 +57,18 @@
          <text x="-56" y="80" font-size="12">  　　∴∵∴∵∴∵∴∵∴∵∴</text>
       </g>
     </g>
-    <linearGradient x1="62.651901" y1="34.546398" x2="62.651901" y2="11.8951" id="XMLID_71_" gradientUnits="userSpaceOnUse">
-       <stop style="stop-color: black; stop-opacity: 0;" offset="0.0137" id="stop120"/>
-       <stop style="stop-color: rgb(196, 224, 227); stop-opacity: 0.2;" offset="0.64999998" id="stop122"/>
-       <stop style="stop-color: rgb(196, 224, 227); stop-opacity: 1;" offset="0.82239997" id="stop124"/>
-       <stop style="stop-color: rgb(205, 229, 232); stop-opacity: 1;" offset="0.84979999" id="stop126"/>
-       <stop style="stop-color: rgb(232, 244, 247); stop-opacity: 1;" offset="0.9443" id="stop128"/>
-       <stop style="stop-color: rgb(242, 250, 252); stop-opacity: 1;" offset="1" id="stop130"/>
+    <linearGradient x1="62.651901" y1="34.546398" x2="62.651901" y2="11.8951"
+                    id="tanasinn-inner-gradient" gradientUnits="userSpaceOnUse">
+       <stop style="stop-color: black; stop-opacity: 0;" offset="0.0137"/>
+       <stop style="stop-color: rgb(196, 224, 227); stop-opacity: 0.2;" offset="0.64999998"/>
+       <stop style="stop-color: rgb(196, 224, 227); stop-opacity: 1;" offset="0.82239997"/>
+       <stop style="stop-color: rgb(205, 229, 232); stop-opacity: 1;" offset="0.84979999"/>
+       <stop style="stop-color: rgb(232, 244, 247); stop-opacity: 1;" offset="0.9443"/>
+       <stop style="stop-color: rgb(242, 250, 252); stop-opacity: 1;" offset="1"/>
     </linearGradient>
-    <ellipse cx="66.652" cy="43.271" rx="38.825001" ry="36.971001" style="opacity: 0.4; fill: url(#XMLID_71_) rgb(255, 250, 250);" id="ellipse132"/>
-    <ellipse cx="63.652" cy="38.271" rx="49.825001" ry="36.971001" style="opacity: 0.1; fill: url(#XMLID_71_) rgb(255, 250, 250);" id="ellipse132"/>
+    <ellipse cx="66.652" cy="43.271" rx="38.825001" ry="36.971001"
+             style="opacity: 0.4; fill: url(#tanasinn-inner-gradient) rgb(255, 250, 250);"/>
+    <ellipse cx="63.652" cy="38.271" rx="49.825001" ry="36.971001"
+             style="opacity: 0.1; fill: url(#tanasinn-inner-gradient) rgb(255, 250, 250);"/>
   </g>
 </svg>
