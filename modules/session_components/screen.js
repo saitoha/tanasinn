@@ -1859,7 +1859,7 @@ ScreenSequenceHandler.definition = {
       default:
         coUtils.Debug.reportError(
           _("The size of arguments is wrong: [%s]."),
-            Array.slice(arguments));
+          Array.slice(arguments));
 
     } // switch argc
   },
