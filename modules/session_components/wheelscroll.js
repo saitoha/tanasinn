@@ -125,14 +125,14 @@ WheelScroll.definition = {
 
       this._counter = 0;
 
-      //if (this._in_scroll_session) {
-      if (count > 0) {
-        this.sendMessage("command/scroll-down-view", count);
-      } else {
-        this.sendMessage("command/scroll-up-view", -count);
+      if (this._in_scroll_session) {
+        if (count > 0) {
+          this.sendMessage("command/scroll-down-view", count);
+        } else {
+          this.sendMessage("command/scroll-up-view", -count);
+        }
+        this.sendMessage("command/draw");
       }
-      this.sendMessage("command/draw");
-      //}
     }
   },
 

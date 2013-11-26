@@ -477,6 +477,8 @@ Mouse.definition = {
 //        } else { // count === 1
 //          // do nothing
 //        }
+      } else if (!this._in_scroll_session && screen.isAltScreen) {
+        this.sendMessage("event/scroll-session-started");
       }
     }
   },
