@@ -1,4 +1,4 @@
-/* -*- Mode: JAVASCRIPT; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*-
+/* -*- Mode: JAVASCRIPT; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 4 -*-
  *
  * ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1
@@ -24,5 +24,5 @@
 
 "use strict";
 
-var TANASINN_PACKAGE_VERSION = "0.3.3.14";
+var TANASINN_PACKAGE_VERSION = "0.3.3.15";
 
