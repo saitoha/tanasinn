@@ -185,11 +185,11 @@ function wcwidth_amb_as_double(c)
     } else if (c < 0x1F100) {
         return 1;
     } else if (c < 0x1F1A0) {
-        if (c == 0x1F12E) {
+        if (c === 0x1F12E) {
             return 1;
-        } else if (c == 0x1F16A) {
+        } else if (c === 0x1F16A) {
             return 1;
-        } else if (c == 0x1F16B) {
+        } else if (c === 0x1F16B) {
             return 1;
         }
         return 2;
