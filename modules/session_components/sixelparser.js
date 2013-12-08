@@ -99,7 +99,8 @@ SixelForwardInputIterator.definition = {
 /**
  *  @class SixelParser
  */
-var SixelParser = new Class().extends(Plugin);
+var SixelParser = new Class().extends(Plugin)
+                             .depends("palette");
 SixelParser.definition = {
 
   id: "sixel_parser",
@@ -115,8 +116,30 @@ SixelParser.definition = {
   },
 
   _color: 0,
+  _palette: null,
+  _color_palette: null,
 
   "[persistable] enabled_when_startup": true,
+
+  /** Installs itself.
+   *  @param {InstallContext} context A InstallContext object.
+   */
+  "[install]":
+  function install(context)
+  {
+    var palette = context["palette"];
+
+    this._palette = palette;
+  },
+
+  /** Uninstalls itself.
+   */
+  "[uninstall]":
+  function uninstall()
+  {
+    this._palette = null;
+  },
+
 
   _setSixel: function _setSixel(imagedata, x, y, c)
   {
@@ -166,6 +189,39 @@ SixelParser.definition = {
     this._color = color_no;
   },
 
+  _initcolor: function _initcolor()
+  {
+    var palette_table = this._palette.color.slice(0),
+        c,
+        r,
+        g,
+        b,
+        i,
+        color_table = [[0, 0, 0]];
+
+    function c2hex(c)
+    {
+      if (c >= 0x30 && c <= 0x39) {
+         return c - 0x30;
+      } else if (c >= 0x61 && c <= 0x66) {
+         return c - 0x51;
+      } else if (c >= 0x41 && c <= 0x46) {
+         return c - 0x31;
+      }
+      return 0;
+    }
+
+    for (i = 0; i < 0x100; ++i) {
+      c = palette_table[i];
+      r = c2hex(c.charCodeAt(1)) << 4 | c2hex(c.charCodeAt(2));
+      g = c2hex(c.charCodeAt(3)) << 4 | c2hex(c.charCodeAt(4));
+      b = c2hex(c.charCodeAt(5)) << 4 | c2hex(c.charCodeAt(6));
+      color_table[i + 1] = [r, g, b];
+    }
+
+    this._color_table = color_table;
+  },
+
   parse: function parse(sixel, dom)
   {
     var scanner = new SixelForwardInputIterator(sixel),
@@ -184,7 +240,7 @@ SixelParser.definition = {
         c,
         max_x = 0;
 
-    this._color_table = [];
+    this._initcolor();
 
     do {
       c = scanner.current();
@@ -282,6 +338,7 @@ SixelParser.definition = {
           break;
 
         case 0x2d: // -
+          x = 0;
           y += 6;
           scanner.moveNext();
           break;
