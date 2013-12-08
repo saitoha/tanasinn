@@ -1,368 +1,377 @@
+2013-12-08 Hayaki Saito <user@zuse.jp>
+	* Version 0.3.3.15
+	* Add termcap response for underline attribute
+	* Add strikethrough (crossed out) attribute
+	* Fix the problem with pasting text, not to be truncated to 1024 bytes
+	* Fix the bug around parsing OSC first parameter
+	* Fix bogus scroll behavior
+	* Change DECGNL(-) behavior to move the active position to the "beginning" Of the next line
+
 2013-09-22 Hayaki Saito <user@zuse.jp>
-    * Version 0.3.3.14
-    * Fix off-by-one issue of DECERA / DECSERA
-    * implement DECFRA
-    * implement DECSACE
-    * implement DECRARA
-    * implement DECCARA
-    * implement DECCRA
+	* Version 0.3.3.14
+	* Fix off-by-one issue of DECERA / DECSERA
+	* implement DECFRA
+	* implement DECSACE
+	* implement DECRARA
+	* implement DECCARA
+	* implement DECCRA
 
 2013-08-24 Hayaki Saito <user@zuse.jp>
-    * Workaround for Firefox 25+ 
+	* Workaround for Firefox 25+ 
 
 2013-08-16 Hayaki Saito <user@zuse.jp>
-    * Version 0.3.3.11
-    * Disable ambiguous width reporting when private mode 7700 is reset
-    * Set the cursor to the home position when origin mode is set or reset
-    * Fix wheel scroll sensitivity issue on Firefox 23+
-    * Fix VPR/VPB behavior
-    * Fix CHA behavior
-    * Fix a bug around resetting origin mode
+	* Version 0.3.3.11
+	* Disable ambiguous width reporting when private mode 7700 is reset
+	* Set the cursor to the home position when origin mode is set or reset
+	* Fix wheel scroll sensitivity issue on Firefox 23+
+	* Fix VPR/VPB behavior
+	* Fix CHA behavior
+	* Fix a bug around resetting origin mode
 
 2013-07-28 Hayaki Saito <user@zuse.jp>
-    * Version 0.3.3.10
-    * Fix broken DRCS designation
-    * Performance improvement for OSC/DCS dispatcher
-    * Performance improvement for DRCS parsing 
-    * Performance improvement for Sixel parsing 
-    * Fix broken DECRQCRA
+	* Version 0.3.3.10
+	* Fix broken DRCS designation
+	* Performance improvement for OSC/DCS dispatcher
+	* Performance improvement for DRCS parsing 
+	* Performance improvement for Sixel parsing 
+	* Fix broken DECRQCRA
 
 2013-07-22 Hayaki Saito <user@zuse.jp>
-    * Version 0.3.3.9
-    * Fix broken SIXEL display mode
+	* Version 0.3.3.9
+	* Fix broken SIXEL display mode
 
 2013-07-13 Hayaki Saito <user@zuse.jp>
-    * Version 0.3.3.8
-    * Fix CHA behavior
-    * Fix HT behavior
-    * Fix DECRPM behavior
-    * Fix CUP/HVP behavior when origin mode is disabled
+	* Version 0.3.3.8
+	* Fix CHA behavior
+	* Fix HT behavior
+	* Fix DECRPM behavior
+	* Fix CUP/HVP behavior when origin mode is disabled
 
 2013-06-30 Hayaki Saito <user@zuse.jp>
-    * Version 0.3.3.7
-    * Make CPR respect origin mode
-    * Fix broken DECDSR 
-    * Respect origin mode when VPA is invoked
-    * Respect L/R margins when write/wrap/rwrap
-    * Respect L/R margins when CR/BS/CUF/CUB/CHA/CUP/HPA/HPR/HT/CHT/CBT
+	* Version 0.3.3.7
+	* Make CPR respect origin mode
+	* Fix broken DECDSR 
+	* Respect origin mode when VPA is invoked
+	* Respect L/R margins when write/wrap/rwrap
+	* Respect L/R margins when CR/BS/CUF/CUB/CHA/CUP/HPA/HPR/HT/CHT/CBT
 
 2013-06-19 Hayaki Saito <user@zuse.jp>
-    * Version 0.3.3.6
-    * Fix reference errors around DECSCA
-    * Fix broken ICH 
-    * Fix some bugs around left-right margin behavior 
+	* Version 0.3.3.6
+	* Fix reference errors around DECSCA
+	* Fix broken ICH 
+	* Fix some bugs around left-right margin behavior 
 
 2013-06-16 Hayaki Saito <user@zuse.jp>
-    * Version 0.3.3.5
-    * Add DECLRMM 
-    * Fix left-right margin behavior 
+	* Version 0.3.3.5
+	* Add DECLRMM 
+	* Fix left-right margin behavior 
 
 2013-06-14 Hayaki Saito <user@zuse.jp>
-    * Version 0.3.3.4
-    * Fix broken OSC 4 
-    * Fix broken OSC 104 
+	* Version 0.3.3.4
+	* Fix broken OSC 4 
+	* Fix broken OSC 104 
 
 2013-06-04 Hayaki Saito <user@zuse.jp>
-    * Version 0.3.3.3
-    * Fix bce issue in EL0
-    * Fix a stupid syntax error in REP
-    * Fix broken SL/SR behavior
+	* Version 0.3.3.3
+	* Fix bce issue in EL0
+	* Fix a stupid syntax error in REP
+	* Fix broken SL/SR behavior
 
 2013-06-02 Hayaki Saito <user@zuse.jp>
-    * Version 0.3.3.2
-    * Re-fix bce issue 
+	* Version 0.3.3.2
+	* Re-fix bce issue 
 
 2013-03-02 Hayaki Saito <user@zuse.jp>
-    * Version 0.3.3.1
-    * Fix for AMO registration
+	* Version 0.3.3.1
+	* Fix for AMO registration
 
 2013-03-02 Hayaki Saito <user@zuse.jp>
-    * Version 0.3.3.0
-    * Fix for AMO registration
+	* Version 0.3.3.0
+	* Fix for AMO registration
 
 2013-02-26 Hayaki Saito <user@zuse.jp>
-    * Version 0.3.2.3
+	* Version 0.3.2.3
 
 2013-02-23 Hayaki Saito <user@zuse.jp>
-    * Version 0.3.2.2
-    * Improve thumbnail styling
-    * Workaround for Windows 8 (On progress, Not completely supported yet)
-    * Improve performance for resuming session (cut off scroll buffer)
-    * Send last 4096 byte output data when resuming
+	* Version 0.3.2.2
+	* Improve thumbnail styling
+	* Workaround for Windows 8 (On progress, Not completely supported yet)
+	* Improve performance for resuming session (cut off scroll buffer)
+	* Send last 4096 byte output data when resuming
 
 2013-02-19 Hayaki Saito <user@zuse.jp>
-    * Version 0.3.2.1
-    * Rewrite context menu integration
-    * Support xterm's kcbt(CSI Z)
-    * Support DECBI/DECFI (not be tested well)
-    * Disable Ctrl Ctrl
-    * Fix a rendering bug at dragcopy plugin
-    * Fix duplicated context menu items issue
+	* Version 0.3.2.1
+	* Rewrite context menu integration
+	* Support xterm's kcbt(CSI Z)
+	* Support DECBI/DECFI (not be tested well)
+	* Disable Ctrl Ctrl
+	* Fix a rendering bug at dragcopy plugin
+	* Fix duplicated context menu items issue
 
 2013-02-08 Hayaki Saito <user@zuse.jp>
-    * Version 0.3.2.0
-    * Fix broken CSI intermediate bytes parsing
-    * Fix broken DECSET 8840/8428
-    * Allow \n or \r in DECDLD font pattern definition
-    * Support application wheel mode
-    * Support alternate scroll mode
-    * Fix wrong DECRQM response for DECSET 8428
-    * Fix some ploblems around copying out of BMP characters
-    * Implement DECSLRM
-    * Implement TeraTerm's IME control sequense CSI < Ps t.
-    * Treat iso 2022 characters (such as DEC special set) as narrow width
-    * Improve suspending, it comes to be not blocked by output
-    * Add "Open with w3m" in TabBrowser context menu
-    * Add "Open tanasinn" in TabBrowser context menu
-    * Fix zombie process issue
-    * Fix wrong CJK width issue
+	* Version 0.3.2.0
+	* Fix broken CSI intermediate bytes parsing
+	* Fix broken DECSET 8840/8428
+	* Allow \n or \r in DECDLD font pattern definition
+	* Support application wheel mode
+	* Support alternate scroll mode
+	* Fix wrong DECRQM response for DECSET 8428
+	* Fix some ploblems around copying out of BMP characters
+	* Implement DECSLRM
+	* Implement TeraTerm's IME control sequense CSI < Ps t.
+	* Treat iso 2022 characters (such as DEC special set) as narrow width
+	* Improve suspending, it comes to be not blocked by output
+	* Add "Open with w3m" in TabBrowser context menu
+	* Add "Open tanasinn" in TabBrowser context menu
+	* Fix zombie process issue
+	* Fix wrong CJK width issue
 
 2012-12-28 Hayaki Saito <user@zuse.jp>
-    * Version 0.3.1.13
-    * Support application escape mode (DECSET 7727)
-    * Support Broken ST (xterm #171 or later)
-    * Change the format of OSC 4/10/11, rr/gg/bb -> rrrr/gggg/bbbb
-    * Add openinw3m plugin with context menu integration
-    * Fix some errors on Linux environment
-    * Fix completer's bug on Windows environment
-    * Fix broken Cygwin's session resume feature
-    * Fix double-ctrl locking issue
-    * Fix BCE behavior
-    * Fix a bug around enable/disable command
-    * Change default font on Linux
-    * Fix single argument OSC's bug
+	* Version 0.3.1.13
+	* Support application escape mode (DECSET 7727)
+	* Support Broken ST (xterm #171 or later)
+	* Change the format of OSC 4/10/11, rr/gg/bb -> rrrr/gggg/bbbb
+	* Add openinw3m plugin with context menu integration
+	* Fix some errors on Linux environment
+	* Fix completer's bug on Windows environment
+	* Fix broken Cygwin's session resume feature
+	* Fix double-ctrl locking issue
+	* Fix BCE behavior
+	* Fix a bug around enable/disable command
+	* Change default font on Linux
+	* Fix single argument OSC's bug
 
 2012-12-14 Hayaki Saito <user@zuse.jp>
-    * Version 0.3.1.11
-    * Support auto color adjustment feature
-    * Fix broken vimperator plugin
-    * Fix broken title mode plugin
-    * Fix broken "blur" command
-    * Change default font size 
-    * Support fancy style selection rendering
-    * Support title stacking (xterm)
-    * Implement rounded-style rectangle cursor rendering
+	* Version 0.3.1.11
+	* Support auto color adjustment feature
+	* Fix broken vimperator plugin
+	* Fix broken title mode plugin
+	* Fix broken "blur" command
+	* Change default font size 
+	* Support fancy style selection rendering
+	* Support title stacking (xterm)
+	* Implement rounded-style rectangle cursor rendering
 
 2012-12-08 Hayaki Saito <user@zuse.jp>
-    * Version 0.3.1.10
-    * Disable w3m plugin by default 
-    * Disable overlay image plugin by default
-    * Disable video plugin by default
+	* Version 0.3.1.10
+	* Disable w3m plugin by default 
+	* Disable overlay image plugin by default
+	* Disable video plugin by default
 
 2012-12-04 Hayaki Saito <user@zuse.jp>
-    * Version 0.3.1.9
-    * Add GCLI integration support
-    * Fix bce issue when scrolling 
-    * Improve lines/cells allocation performance
-    * Take a delay for response against DA2, for MinEd
-    * Improve resize performance
-    * Improve parser performance
-    * Fix broken wide character issue when resizing lines
-    * Fix the multiline copy issue
-    * Fix broken VT52 mode
-    * Disable debugger plugin by default
+	* Version 0.3.1.9
+	* Add GCLI integration support
+	* Fix bce issue when scrolling 
+	* Improve lines/cells allocation performance
+	* Take a delay for response against DA2, for MinEd
+	* Improve resize performance
+	* Improve parser performance
+	* Fix broken wide character issue when resizing lines
+	* Fix the multiline copy issue
+	* Fix broken VT52 mode
+	* Disable debugger plugin by default
 
 2012-12-01 Hayaki Saito <user@zuse.jp>
-    * Version 0.3.1.8
-    * Pass Makus Khun's UTF-8 stress test!
-      http://www.cl.cam.ac.uk/~mgk25/ucs/examples/UTF-8-test.txt
+	* Version 0.3.1.8
+	* Pass Makus Khun's UTF-8 stress test!
+	  http://www.cl.cam.ac.uk/~mgk25/ucs/examples/UTF-8-test.txt
 
 2012-11-30 Hayaki Saito <user@zuse.jp>
-    * Version 0.3.1.7
-    * Supports ISO-6429/ISO-2022 compatible parsing
-    * Add some performance improvement around nsIdleService
-    * Fix an assignment error around DEC locator mode
-    * Fix an assignment error around OSC4 get access
-    * Re-fix DECOM behavior
-    * Make idle service more lazy
-    * Supports DECSET 8428 (RLogin)
-    * Supports Hangul Jamo combining
+	* Version 0.3.1.7
+	* Supports ISO-6429/ISO-2022 compatible parsing
+	* Add some performance improvement around nsIdleService
+	* Fix an assignment error around DEC locator mode
+	* Fix an assignment error around OSC4 get access
+	* Re-fix DECOM behavior
+	* Make idle service more lazy
+	* Supports DECSET 8428 (RLogin)
+	* Supports Hangul Jamo combining
 
 2012-11-14 Hayaki Saito <user@zuse.jp>
 
-    * Version 0.3.1.6
-    * Fix a performance bug around nsIdleService
+	* Version 0.3.1.6
+	* Fix a performance bug around nsIdleService
 
 2012-11-12 Hayaki Saito <user@zuse.jp>
 
-    * Version 0.3.1.2/0.3.1.3/0.3.1.4/0.3.1.5
-    * Fix origin mode behavior
-    * Fix some reference error
-    * [important] Fix an installation error when creating $HOME/.tanasinn
-    * [important] Fix some modules' dependency issue 
-    * Fix plugin manager's initialization issue
-    * Fix a plugin completer's bug 
+	* Version 0.3.1.2/0.3.1.3/0.3.1.4/0.3.1.5
+	* Fix origin mode behavior
+	* Fix some reference error
+	* [important] Fix an installation error when creating $HOME/.tanasinn
+	* [important] Fix some modules' dependency issue 
+	* Fix plugin manager's initialization issue
+	* Fix a plugin completer's bug 
 
 2012-11-11 Hayaki Saito <user@zuse.jp>
 
-    * Version 0.3.1.1
-    * Fix origin mode bug around DECSTBM
+	* Version 0.3.1.1
+	* Fix origin mode bug around DECSTBM
 
 2012-11-10 Hayaki Saito <user@zuse.jp>
 
-    * Version 0.3.1.0
-    * Support 3-byte color mode(konsole, xterm)
-    * Support capability-based dynamic DA1 reporting
-    * Fix rendering position's issue occurs in Firefox 18.0a
-    * Fix DECDWL/DECDHL/DECSWL's bug
-    * Disable overlay browser plugin.
-    * Fix DRCS converter initialization's bug
-    * Report DA2 terminal ID=0 when asked
-    * Improve sixel implementation, support transparent color
+	* Version 0.3.1.0
+	* Support 3-byte color mode(konsole, xterm)
+	* Support capability-based dynamic DA1 reporting
+	* Fix rendering position's issue occurs in Firefox 18.0a
+	* Fix DECDWL/DECDHL/DECSWL's bug
+	* Disable overlay browser plugin.
+	* Fix DRCS converter initialization's bug
+	* Report DA2 terminal ID=0 when asked
+	* Improve sixel implementation, support transparent color
 
 2012-10-06 Hayaki Saito <user@zuse.jp>
 
-    * Version 0.3.0.2
-    * Fix SCOSCP/SCORCP's bug
-    * Add version command
-    * Support DECRQUPSS/DECAUPSS
-    * Change CSI 14 t's behavior
-    * Support F13-F63 keys
-    * Fix xenl behavior's bug
-    * Fix XUL layout issue for firefox18.0a
-    * Disable overlay browser plugin by default, for security
-    * Add IdleService plugin
-    * Take auto-snapshot with using IdleService
-    * Fix a bug with taking screenshots
-    * Assign Ctrl {4,5,6,7,8} -> FS/GS/RS/US/DEL
-    * Allow a DSCS starting with space character in DECDLD
-    * Implement auto-answerback mode
-    * Fix a dragcopy plugin's bug
-    * Handle OSC 1
-    * Fix terminfo response's bug
-    * Fix sixel graphics's data processing bug
-    * Fix for the launcher's session missing bug
+	* Version 0.3.0.2
+	* Fix SCOSCP/SCORCP's bug
+	* Add version command
+	* Support DECRQUPSS/DECAUPSS
+	* Change CSI 14 t's behavior
+	* Support F13-F63 keys
+	* Fix xenl behavior's bug
+	* Fix XUL layout issue for firefox18.0a
+	* Disable overlay browser plugin by default, for security
+	* Add IdleService plugin
+	* Take auto-snapshot with using IdleService
+	* Fix a bug with taking screenshots
+	* Assign Ctrl {4,5,6,7,8} -> FS/GS/RS/US/DEL
+	* Allow a DSCS starting with space character in DECDLD
+	* Implement auto-answerback mode
+	* Fix a dragcopy plugin's bug
+	* Handle OSC 1
+	* Fix terminfo response's bug
+	* Fix sixel graphics's data processing bug
+	* Fix for the launcher's session missing bug
 
 2012-09-23 Hayaki Saito <user@zuse.jp>
 
-    * Version 0.3.0.1
-    * Implement Auto Answerback mode (DECAAM)
-    * Implement DECERA / Erase Rectangle Area
-    * Support HPB/VPB
-    * Support SCP / Save Cursor Position
-    * Support RCP / Restore Cursor Position
-    * SUpport xterm's "Titlebar Mode"
-    * Support 8bit mode input
-    * Fix DRCS Rendering bug
-    * Fix termcap response's bug
-    * Fix SGR rendition's bug
-    * Fix Fix OSC10/11's bug
+	* Version 0.3.0.1
+	* Implement Auto Answerback mode (DECAAM)
+	* Implement DECERA / Erase Rectangle Area
+	* Support HPB/VPB
+	* Support SCP / Save Cursor Position
+	* Support RCP / Restore Cursor Position
+	* SUpport xterm's "Titlebar Mode"
+	* Support 8bit mode input
+	* Fix DRCS Rendering bug
+	* Fix termcap response's bug
+	* Fix SGR rendition's bug
+	* Fix Fix OSC10/11's bug
 
 2012-09-16 Hayaki Saito <user@zuse.jp>
 
-    * Version 0.3.0.0
-    * Support ED 3 / clear scroll buffer(xterm)
-    * Support xterm's(#252) "Title Mode"
-    * Support 8bit input mode
-    * Add PopClip integration
-    * Enable 3D Transform plugin by default
-    * Fix some bugs.
+	* Version 0.3.0.0
+	* Support ED 3 / clear scroll buffer(xterm)
+	* Support xterm's(#252) "Title Mode"
+	* Support 8bit input mode
+	* Add PopClip integration
+	* Enable 3D Transform plugin by default
+	* Fix some bugs.
 
 2012-08-19 Hayaki Saito <user@zuse.jp>
 
-    * Version 0.2.4.0 / 0.2.4.1
-    * fix the Ctrl Space key handling issue (reported by @teramako).
-    * fix a conformance level's bug (for tmux).
-    * fix OSC 52 (PASTE64) parse logic.
-    * upgrade DA1 response, now it reports the capability of VT class 4.
-    * support DECRQSS, implemented DECRPSS for SGR/DECSCA/DECSCL/DECSTBM/DECSCUSR.
-    * improve double-width character's selection behavior.
-    * re-enable CP-932 javascript decoder.
-    * add EUC-JP decoder, implemented in Javascript.
-    * add UTF-8/CP-932 parallel state decoder.
-    * add UTF-8/CP-932/EUC-JP parallel state decoder.
-    * make sixel rendering information as cell-level DRCS attribute
+	* Version 0.2.4.0 / 0.2.4.1
+	* fix the Ctrl Space key handling issue (reported by @teramako).
+	* fix a conformance level's bug (for tmux).
+	* fix OSC 52 (PASTE64) parse logic.
+	* upgrade DA1 response, now it reports the capability of VT class 4.
+	* support DECRQSS, implemented DECRPSS for SGR/DECSCA/DECSCL/DECSTBM/DECSCUSR.
+	* improve double-width character's selection behavior.
+	* re-enable CP-932 javascript decoder.
+	* add EUC-JP decoder, implemented in Javascript.
+	* add UTF-8/CP-932 parallel state decoder.
+	* add UTF-8/CP-932/EUC-JP parallel state decoder.
+	* make sixel rendering information as cell-level DRCS attribute
 
 2012-08-05 Hayaki Saito <user@zuse.jp>
 
-    * Version 0.2.3.1/0.2.3.2
-    * fix a bug in save command
-    * fix a bug in OSC 52 get access
-    * fix a serious emulation's bug.
+	* Version 0.2.3.1/0.2.3.2
+	* fix a bug in save command
+	* fix a bug in OSC 52 get access
+	* fix a serious emulation's bug.
 
 2012-08-04 Hayaki Saito <user@zuse.jp>
 
-    * Version 0.2.3.0
-    * support OSC 52 get access
-    * support DECRQM/DECRPM
-    * support DECCKSR
-    * support DECRQCRA
-    * support DECXCPR
-    * disable Mascot plugin by default
-    * fix for vimperator integration
-    * Fix some bugs.
+	* Version 0.2.3.0
+	* support OSC 52 get access
+	* support DECRQM/DECRPM
+	* support DECCKSR
+	* support DECRQCRA
+	* support DECXCPR
+	* disable Mascot plugin by default
+	* fix for vimperator integration
+	* Fix some bugs.
 
 2012-07-15 Hayaki Saito <user@zuse.jp>
 
-    * Version 0.2.2.2
-    * Support OSC 10/11.
-    * Support DECSET 12 / cursor blinking.
-    * Support DECSCUSR / cursor style switching.
-    * Support WYSTCURM/WYULCURM (wise).
-    * Support OSC 104/110/111 / reset color feature.
-    * Implement Cursor blink transition.
-    * Supports TNREPTAMB / report ambiguous width.
-    * Handle DECSCL.
-    * Support DECRQPSR.
-    * Support S7C1T/S8C1T.
-    * Support DECTABSR / tab stop report.
-    * Handle DECCIR.
-    * Implement smart selection feature.
-    * Support termcap reporting feature.
-    * Implement 3D Rotation feature, with dragging mouse.
-    * Fix some bugs.
+	* Version 0.2.2.2
+	* Support OSC 10/11.
+	* Support DECSET 12 / cursor blinking.
+	* Support DECSCUSR / cursor style switching.
+	* Support WYSTCURM/WYULCURM (wise).
+	* Support OSC 104/110/111 / reset color feature.
+	* Implement Cursor blink transition.
+	* Supports TNREPTAMB / report ambiguous width.
+	* Handle DECSCL.
+	* Support DECRQPSR.
+	* Support S7C1T/S8C1T.
+	* Support DECTABSR / tab stop report.
+	* Handle DECCIR.
+	* Implement smart selection feature.
+	* Support termcap reporting feature.
+	* Implement 3D Rotation feature, with dragging mouse.
+	* Fix some bugs.
 
 2012-05-31 Hayaki Saito <user@zuse.jp>
 
-    * Version 0.2.2.1
-    * DECSET 8840 / Ambiguous width switching.
-    * DECSET 7700 / Ambiguous width reporting.
-    * Implement LNM.
-    * Implement REP.
-    * Implement Keyboard Action Mode (KAM).
-    * Implement Send/Receive Mode, local echo mode (SRM).
-    * implement DECSCA (Protection Attribute).
-    * implement DECSED/DECSEL (Selective erase feature).
-    * implement DECSERA (Selective Erase Rectangle Area).
-    * More precise emulation.
+	* Version 0.2.2.1
+	* DECSET 8840 / Ambiguous width switching.
+	* DECSET 7700 / Ambiguous width reporting.
+	* Implement LNM.
+	* Implement REP.
+	* Implement Keyboard Action Mode (KAM).
+	* Implement Send/Receive Mode, local echo mode (SRM).
+	* implement DECSCA (Protection Attribute).
+	* implement DECSED/DECSEL (Selective erase feature).
+	* implement DECSERA (Selective Erase Rectangle Area).
+	* More precise emulation.
 
 2012-05-23 Hayaki Saito <user@zuse.jp>
 
-    * Version 0.2.2.0
-    * Supports OSC 52 base64 copy.
-    * Supports DEC Locator Event Mode(without filter rectangle feature).
-    * Supports character combining, more precise character rendering.
-    * Implement LNM.
-    * Implement Device Status Report(DSR).
-    * Implement Tertiary Device Attributes (DA3).
-    * Implement DECREQTPARM.
-    * More precise emulation, Now it passes vttest Menu 1, 2, 3, 4, 6, 7, and 8.
-    * Disable ShellRPC plugin.
+	* Version 0.2.2.0
+	* Supports OSC 52 base64 copy.
+	* Supports DEC Locator Event Mode(without filter rectangle feature).
+	* Supports character combining, more precise character rendering.
+	* Implement LNM.
+	* Implement Device Status Report(DSR).
+	* Implement Tertiary Device Attributes (DA3).
+	* Implement DECREQTPARM.
+	* More precise emulation, Now it passes vttest Menu 1, 2, 3, 4, 6, 7, and 8.
+	* Disable ShellRPC plugin.
 
 2012-05-05 Hayaki Saito <user@zuse.jp>
 
-    * Version 0.2.1.1
-    * Supports UTF8/urxvt/SGR style mouse reporting.
-    * Improve performance.
+	* Version 0.2.1.1
+	* Supports UTF8/urxvt/SGR style mouse reporting.
+	* Improve performance.
 
 2012-04-18 Hayaki Saito <user@zuse.jp>
 
-    * Version 0.2.0.0
-    * More precise emulation.
-    * Now it passes vttest 1, 2, 3, 4, 7, and 8.
-    * Improve performance.
+	* Version 0.2.0.0
+	* More precise emulation.
+	* Now it passes vttest 1, 2, 3, 4, 7, and 8.
+	* Improve performance.
 
 2012-04-15 Hayaki Saito <user@zuse.jp>
 
-    * Version 0.1.7.2
-    * Important bug fix, Now it works on en_US locale.
+	* Version 0.1.7.2
+	* Important bug fix, Now it works on en_US locale.
 
 2012-04-08 Hayaki Saito <user@zuse.jp>
 
-    * Now version 0.1.7.1 available.
-    * Implement SGR blink feature.
-    * Implement SGR rapid blink feature(from DOS's ANSI.SYS).
-    * Implement SGR italic feature.
-    * Implement SGR halfbright feature.
+	* Now version 0.1.7.1 available.
+	* Implement SGR blink feature.
+	* Implement SGR rapid blink feature(from DOS's ANSI.SYS).
+	* Implement SGR italic feature.
+	* Implement SGR halfbright feature.
 
 
