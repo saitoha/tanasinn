@@ -184,11 +184,6 @@ SixelParser.definition = {
     this._color_table[color_no] = rgb_value;
   },
 
-  _selectColor: function _selectColor(color_no)
-  {
-    this._color = color_no;
-  },
-
   _initcolor: function _initcolor()
   {
     var palette_table = this._palette.color.slice(0),
@@ -246,6 +241,7 @@ SixelParser.definition = {
       c = scanner.current();
       switch (c) {
 
+        // DECGRI - Graphics Repeat Introducer control character 
         case 0x21: // !
           scanner.moveNext();
           count = scanner.parseUint();
@@ -324,11 +320,12 @@ SixelParser.definition = {
 
             this._setColor(color_no, r, g, b);
           } else {
-            this._selectColor(color_no);
+            this._color = color_no;
           }
           break;
 
-        case 0x24: // $
+        // DECGCR - Graphics Carriage Return control character
+        case 0x24: // $ 
           if (max_x < x) {
             max_x = x;
           }
@@ -337,6 +334,7 @@ SixelParser.definition = {
           scanner.moveNext();
           break;
 
+        // DECGNL - Graphics Next Line control character 
         case 0x2d: // -
           x = 0;
           y += 6;

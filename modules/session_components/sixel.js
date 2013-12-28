@@ -216,7 +216,9 @@ Sixel.definition = {
         i;
 
     if (this._display_mode) {
-      renderer.getCanvas().getContext("2d").drawImage(result.canvas, 0, 0);
+      renderer.getCanvas()
+        .getContext("2d")
+        .drawImage(result.canvas, 0, 0);
     } else {
       cursor_state = this._cursor_state;
       screen = this._screen;
