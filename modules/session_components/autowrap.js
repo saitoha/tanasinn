@@ -173,6 +173,27 @@ AutoWrap.definition = {
     }
   },
 
+  /** Called when cursor attributes are saved */
+  "[subscribe('command/save-cursor'), pnp]":
+  function saveCursor(context)
+  {
+    context.autowrap = this._mode;
+  },
+
+  /** Called when cursor attributes are restored */
+  "[subscribe('command/restore-cursor'), pnp]":
+  function restoreCursor(context)
+  {
+    var mode = context.autowrap;
+
+    if (mode !== this._mode) {
+      if (mode) {
+        this.activate();
+      } else {
+        this.deactivate();
+      }
+    }
+  },
 
   /** test */
   "[test]":
