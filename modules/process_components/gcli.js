@@ -24,6 +24,8 @@
 
 "use strict";
 
+var gcli = null;
+
 Components.utils.import("resource://gre/modules/devtools/Require.jsm", this);
 
 try {
@@ -54,24 +56,26 @@ GCLI.definition = {
   {
     var self = this;
 
-    gcli.addCommand({
-      name: "tanasinn",
-      description: "run tanasinn",
-      params: [
-        {
-          name: "commandline",
-          type: { name: "array", subtype: "string" },
-          description: "command line",
-        }
-      ],
-      exec: function tanasinn(args, context)
-        {
-          var command = args.commandline.join(" "),
-              desktop = self._getCurrentDesktop();
+    if (gcli) {
+      gcli.addCommand({
+        name: "tanasinn",
+        description: "run tanasinn",
+        params: [
+          {
+            name: "commandline",
+            type: { name: "array", subtype: "string" },
+            description: "command line",
+          }
+        ],
+        exec: function tanasinn(args, context)
+          {
+            var command = args.commandline.join(" "),
+                desktop = self._getCurrentDesktop();
 
-          desktop.callSync("command/start-session", command);
-        }
-    });
+            desktop.callSync("command/start-session", command);
+          }
+      });
+    }
   },
 
   _getCurrentDesktop: function _getDesktop()
