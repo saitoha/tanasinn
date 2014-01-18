@@ -199,10 +199,8 @@ DRCSBuffer.definition = {
       };
 
       var result = this._sixel_parser.parse(sixel, dom),
-          char_height = renderer.char_height,
-          line_count = Math.ceil(result.max_y / char_height),
+          //line_count = Math.ceil(result.max_y / char_height),
           cell_count = Math.ceil(result.max_x / char_width),
-          start_code = 0x21,
           end_code = start_code + cell_count,
           full_cell = true;
 
@@ -219,7 +217,6 @@ DRCSBuffer.definition = {
           full_cell: full_cell,
           color: true,
         });
-
     } else {
       var context = canvas.getContext("2d"),
           imagedata = context.getImageData(0, 0, canvas.width, canvas.height),
