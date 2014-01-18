@@ -199,8 +199,10 @@ function wcwidth_amb_as_double(c)
         return 2;
     } else if (c < 0x20000) {
         return 1;
+    } else if (c < 0xf0000) {
+        return 2;
     }
-    return 2;
+    return 1;
 }
 
 EOF
