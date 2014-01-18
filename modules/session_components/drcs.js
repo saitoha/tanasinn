@@ -148,8 +148,9 @@ DRCSBuffer.definition = {
         charset_size = 0 === Number(pcss) ? 94: 96,
         full_cell = 2 === Number(pt),
         start_code = 0 === Number(pcss) ? ({ // 94 character set.
-                       0: 0x21,
-                     } [pcn] || Number(pcn) + 0x21)
+                       0: 0x20,
+                       1: 0x21,
+                     } [pcn] || Number(pcn) + 0x20)
                      : 1 === Number(pcss) ? Number(pcn) + 0x20 // 96 character set.
                      : Number(pcn) + 0x20, // unicode character set.
         c,
