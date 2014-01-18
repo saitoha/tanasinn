@@ -26,14 +26,20 @@ link:./usermanual.html[English/英語]
 
 == News
 
+=== 2014-01-19
+    Version 0.3.3.16
+    Save/restore origin mode by DECSC/DECRC
+    Save/restore auto wrap mode by DECSC/DECRC
+    Implement colored SIXEL extension for DRCS
+
 === 2013-12-08
-	Version 0.3.3.15
-	Add termcap response for underline attribute
-	Add strikethrough (crossed out) attribute
-	Fix the problem with pasting text, not to be truncated to 1024 bytes
-	Fix the bug around parsing OSC first parameter
-	Fix bogus scroll behavior
-	Change DECGNL(-) behavior to move the active position to the "beginning" Of the next line
+    Version 0.3.3.15
+    Add termcap response for underline attribute
+    Add strikethrough (crossed out) attribute
+    Fix the problem with pasting text, not to be truncated to 1024 bytes
+    Fix the bug around parsing OSC first parameter
+    Fix bogus scroll behavior
+    Change DECGNL(-) behavior to move the active position to the "beginning" Of the next line
 
 === 2013-09-22
     Version 0.3.3.14
