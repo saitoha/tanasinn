@@ -49,6 +49,7 @@ DRCSBuffer.definition = {
   _g0: "B",
   _g1: "B",
   _counter: 0x0,
+  _sixel_parser: null,
 
   /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
