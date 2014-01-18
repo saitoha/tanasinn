@@ -1,3 +1,9 @@
+2014-01-19 Hayaki Saito <user@zuse.jp>
+	* Version 0.3.3.16
+	* Save/restore origin mode by DECSC/DECRC
+	* Save/restore auto wrap mode by DECSC/DECRC
+	* Implement colored SIXEL extension for DRCS
+
 2013-12-08 Hayaki Saito <user@zuse.jp>
 	* Version 0.3.3.15
 	* Add termcap response for underline attribute
