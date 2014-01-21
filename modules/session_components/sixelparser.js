@@ -192,7 +192,7 @@ SixelParser.definition = {
         g,
         b,
         i,
-        color_table = [[0, 0, 0]];
+        color_table = [];
 
     function c2hex(c)
     {
@@ -206,12 +206,18 @@ SixelParser.definition = {
       return 0;
     }
 
-    for (i = 0; i < 0x100; ++i) {
+    c = this._palette.foreground_color;
+    r = c2hex(c.charCodeAt(1)) << 4 | c2hex(c.charCodeAt(2));
+    g = c2hex(c.charCodeAt(3)) << 4 | c2hex(c.charCodeAt(4));
+    b = c2hex(c.charCodeAt(5)) << 4 | c2hex(c.charCodeAt(6));
+    color_table[0] = [r, g, b];
+
+    for (i = 1; i < 0x100; ++i) {
       c = palette_table[i];
       r = c2hex(c.charCodeAt(1)) << 4 | c2hex(c.charCodeAt(2));
       g = c2hex(c.charCodeAt(3)) << 4 | c2hex(c.charCodeAt(4));
       b = c2hex(c.charCodeAt(5)) << 4 | c2hex(c.charCodeAt(6));
-      color_table[i + 1] = [r, g, b];
+      color_table[i] = [r, g, b];
     }
 
     this._color_table = color_table;
