@@ -293,7 +293,7 @@ PluginViewer.definition = {
       plugin.enabled = enabled;
       message = coUtils.Text.format(
         _("Succeeded to %s module %s."),
-        plugin.enabled ? _("install"): _("uninstall"),
+        enabled ? _("install"): _("uninstall"),
         plugin.getInfo().name);
       this.update();
 
