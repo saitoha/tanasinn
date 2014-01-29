@@ -1,6 +1,8 @@
-2014-01-24 Hayaki Saito <user@zuse.jp>
+2014-01-29 Hayaki Saito <user@zuse.jp>
 	* Version 0.3.3.17
 	* Set foreground color value as SIXEL color palette 0
+	* Implement colored SIXEL extension for DRCS
+	* Fix wrong messages for installing module
 
 2014-01-19 Hayaki Saito <user@zuse.jp>
 	* Version 0.3.3.16
