@@ -26,6 +26,10 @@ link:./usermanual.html[English/英語]
 
 == News
 
+=== 2014-01-24
+    Version 0.3.3.17
+    Set foreground color value as SIXEL color palette 0
+
 === 2014-01-19
     Version 0.3.3.16
     Save/restore origin mode by DECSC/DECRC
