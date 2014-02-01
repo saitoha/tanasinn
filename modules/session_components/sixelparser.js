@@ -96,6 +96,32 @@ SixelForwardInputIterator.definition = {
 
 }; // class ForwardInputIterator
 
+var HLSMAX = 100,
+    RGBMAX = 256,
+    _SPACE_TYPE_HLS = 1,
+    _SPACE_TYPE_RGB = 2;
+
+function hue_to_rgb(n1, n2, hue)
+{
+  if (hue < 0) {
+    hue += HLSMAX;
+  }
+  if (hue > HLSMAX) {
+    hue -= HLSMAX;
+  }
+  if (hue < (HLSMAX / 6)) {
+    return n1 + ((n2 - n1) * hue + HLSMAX / 12) / (HLSMAX / 6);
+  }
+  if (hue < (HLSMAX / 2)) {
+    return n2;
+  }
+  if (hue < ((HLSMAX * 2) / 3)) {
+      return n1 + ((n2 - n1) * (HLSMAX * 2 / 3 - hue) + HLSMAX / 12) / (HLSMAX / 6);
+  } else {
+    return n1;
+  }
+}
+
 /**
  *  @class SixelParser
  */
@@ -174,12 +200,43 @@ SixelParser.definition = {
     }
   },
 
-  _setColor: function _setColor(color_no, r, g, b)
+  _setHlsColor: function _setHlsColor(color_no, hue, lum, sat)
+  {
+    var r,
+        g,
+        b,
+        magic1,
+        magic2;
+
+    if (sat == 0) {
+      r = g = b = (lum * RGBMAX) / HLSMAX;
+    } else {
+      if (lum <= (HLSMAX / 2)) {
+        magic2 = (lum * (HLSMAX + sat) + (HLSMAX / 2)) / HLSMAX;
+      } else {
+        magic2 = lum + sat - ((lum * sat) + (HLSMAX / 2)) / HLSMAX;
+      }
+      magic1 = 2 * lum - magic2;
+
+      r = (hue_to_rgb(magic1, magic2, hue + (HLSMAX / 3)) * RGBMAX + (HLSMAX / 2)) / HLSMAX;
+      g = (hue_to_rgb(magic1, magic2, hue) * RGBMAX + (HLSMAX / 2)) / HLSMAX;
+      b = (hue_to_rgb(magic1, magic2, hue - (HLSMAX / 3)) * RGBMAX + (HLSMAX / 2)) / HLSMAX;
+    }
+
+    var rgb_value = [
+      r | 0,
+      g | 0,
+      b | 0
+    ];
+    this._color_table[color_no] = rgb_value;
+  },
+
+  _setRgbColor: function _setRgbColor(color_no, r, g, b)
   {
     var rgb_value = [
-      Math.floor(r / 101 * 255),
-      Math.floor(g / 101 * 255),
-      Math.floor(b / 101 * 255)
+      r / 101 * 255 | 0,
+      g / 101 * 255 | 0,
+      b / 101 * 255 | 0
     ];
     this._color_table[color_no] = rgb_value;
   },
@@ -233,9 +290,9 @@ SixelParser.definition = {
         y = 0,
         count = 1,
         color_no,
-        r,
-        g,
-        b,
+        c1,
+        c2,
+        c3,
         i,
         space_type,
         c,
@@ -283,48 +340,43 @@ SixelParser.definition = {
           c = scanner.current();
           if (0x3b === c) { // ;
             scanner.moveNext();
-            c = scanner.parseUint();
+            space_type = scanner.parseUint();
 
-            space_type = "";
+            if (!scanner.parseChar(0x3b)) {
+              throw coUtils.Debug.Exception(_("Cannot parse sixel format."));
+            }
 
-            if (1 === c) { // HSL
-              space_type = "HSL";
-              throw coUtils.Debug.Exception(_("HSL format is not implemented."));
-            } else if (2 === c) {
-              space_type = "RGB";
+            scanner.moveNext();
+            c1 = scanner.parseUint();
+            if (-1 === c1) {
+              throw coUtils.Debug.Exception(_("Cannot parse sixel format."));
+            }
+            if (!scanner.parseChar(0x3b)) {
+              throw coUtils.Debug.Exception(_("Cannot parse sixel format."));
+            }
+
+            scanner.moveNext();
+            c2 = scanner.parseUint();
+            if (-1 === c2) {
+              throw coUtils.Debug.Exception(_("Cannot parse sixel format."));
+            }
+            if (!scanner.parseChar(0x3b)) {
+              throw coUtils.Debug.Exception(_("Cannot parse sixel format."));
+            }
+
+            scanner.moveNext();
+            c3 = scanner.parseUint();
+            if (-1 === c3) {
+              throw coUtils.Debug.Exception(_("Cannot parse sixel format."));
+            }
+
+            if (_SPACE_TYPE_RGB === space_type) {
+              this._setRgbColor(color_no, c1, c2, c3);
+            } else if (_SPACE_TYPE_HLS === space_type) {
+              this._setHlsColor(color_no, c1, c2, c3);
             } else {
               throw coUtils.Debug.Exception(_("Cannot parse sixel format."));
             }
-
-            if (!scanner.parseChar(0x3b)) {
-              throw coUtils.Debug.Exception(_("Cannot parse sixel format."));
-            }
-
-            scanner.moveNext();
-            r = scanner.parseUint();
-            if (-1 === r) {
-              throw coUtils.Debug.Exception(_("Cannot parse sixel format."));
-            }
-            if (!scanner.parseChar(0x3b)) {
-              throw coUtils.Debug.Exception(_("Cannot parse sixel format."));
-            }
-
-            scanner.moveNext();
-            g = scanner.parseUint();
-            if (-1 === g) {
-              throw coUtils.Debug.Exception(_("Cannot parse sixel format."));
-            }
-            if (!scanner.parseChar(0x3b)) {
-              throw coUtils.Debug.Exception(_("Cannot parse sixel format."));
-            }
-
-            scanner.moveNext();
-            b = scanner.parseUint();
-            if (-1 === b) {
-              throw coUtils.Debug.Exception(_("Cannot parse sixel format."));
-            }
-
-            this._setColor(color_no, r, g, b);
           } else {
             this._color = color_no;
           }
