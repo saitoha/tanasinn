@@ -719,6 +719,7 @@ Line.definition = {
         max,
         cell,
         is_ascii,
+        is_ascii_prev,
         range,
         codes,
         c;
@@ -734,9 +735,10 @@ Line.definition = {
         if (undefined === cell) {
           break;
         }
+	is_ascii_prev = is_ascii;
         is_ascii = cell.c > 0 && cell.c < 0x80;
         if (attr) {
-          if (attr.equals(cell) && is_ascii) {
+          if (attr.equals(cell) && is_ascii && is_ascii_prev) {
             continue;
           } else {
             range = cells.slice(start, current);

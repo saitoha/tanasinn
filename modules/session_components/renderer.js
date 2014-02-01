@@ -836,7 +836,7 @@ Renderer.definition = {
     var fore_color = this._palette.getForeColor(attr),
         code,
         dscs,
-        drcs_state = attr.drcs;
+        drcs_state;
 
     /* now invisible attribute is not supported
     if (attr.getInvisible()) {
