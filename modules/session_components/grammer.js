@@ -143,6 +143,11 @@ VT100Grammar.definition = {
     return this;
   },
 
+  is_ground: function is_ground()
+  {
+    return _STATE_GROUND === this._state;
+  },
+
   /** Parse and returns asocciated action.
    *  @param {Scanner} scanner A Scanner object.
    *  @param {Function|Undefined} Action object.

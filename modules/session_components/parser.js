@@ -157,13 +157,25 @@ Parser.definition = {
   "[subscribe('event/data-arrived'), pnp]":
   function drive(data)
   {
-    var scanner = this._scanner,
+    var grammar = this._grammar,
+        scanner = this._scanner,
         action;
 
     scanner.assign(data);
 
     this.parse(scanner);
-    this.sendMessage("command/draw"); // fire "draw" event.
+
+    if (grammar.is_ground()) {
+      this.sendMessage("command/draw"); // fire "draw" event.
+    } else {
+      coUtils.Timer.setTimeout(
+        function timerProc()
+        {
+          if (!grammar.is_ground()) {
+            this.sendMessage("command/draw");
+          }
+        },100, this);
+    }
   },
 
   /** Parse and evaluate control codes and text pieces from the scanner.
