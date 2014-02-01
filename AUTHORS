@@ -1,8 +1,15 @@
 ---------------------------------------------------------------------------------
--- AUTHORS, v0.2.0.1 2010/04/22                                                --
+-- AUTHORS, v0.3.3.17 2014/02/01                                               --
 ---------------------------------------------------------------------------------
 These are the principal authors/contributors of tanasinn since 0.2.0.0.
 
 Hayaki Saito    <user@zuse.jp>
-yugen kamiya    http://twitter.com/#!/k_wizard      * images/mascot.svg
-USAMI Kenta     tadsan@zonu.me
+
+yugen kamiya    http://twitter.com/#!/k_wizard
+                * images/mascot.svg
+
+USAMI Kenta     <tadsan@zonu.me>
+                * modules/unicode/wcwidth.js
+
+kmiya           http://nanno.dip.jp/softlib/man/rlogin/
+                * modules/session_components/sixelparser.js
