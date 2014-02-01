@@ -17,7 +17,11 @@
  *
  * The Initial Developer of the Original Code is
  * Hayaki Saito.
- * Portions created by the Initial Developer are Copyright (C) 2010 - 2013
+ *
+ * The implementation of _setHlsColor is derived from kmiya's sixel converter
+ * http://nanno.dip.jp/softlib/man/rlogin/sixel.tar.gz
+ *
+ * Portions created by the Initial Developer are Copyright (C) 2010 - 2014
  * the Initial Developer. All Rights Reserved.
  *
  * ***** END LICENSE BLOCK ***** */
@@ -101,27 +105,6 @@ var HLSMAX = 100,
     _SPACE_TYPE_HLS = 1,
     _SPACE_TYPE_RGB = 2;
 
-function hue_to_rgb(n1, n2, hue)
-{
-  if (hue < 0) {
-    hue += HLSMAX;
-  }
-  if (hue > HLSMAX) {
-    hue -= HLSMAX;
-  }
-  if (hue < (HLSMAX / 6)) {
-    return n1 + ((n2 - n1) * hue + HLSMAX / 12) / (HLSMAX / 6);
-  }
-  if (hue < (HLSMAX / 2)) {
-    return n2;
-  }
-  if (hue < ((HLSMAX * 2) / 3)) {
-      return n1 + ((n2 - n1) * (HLSMAX * 2 / 3 - hue) + HLSMAX / 12) / (HLSMAX / 6);
-  } else {
-    return n1;
-  }
-}
-
 /**
  *  @class SixelParser
  */
@@ -200,6 +183,10 @@ SixelParser.definition = {
     }
   },
 
+  /**
+   * The implementation of _setHlsColor is derived from kmiya's sixel converter
+   * http://nanno.dip.jp/softlib/man/rlogin/sixel.tar.gz
+   */
   _setHlsColor: function _setHlsColor(color_no, hue, lum, sat)
   {
     var r,
@@ -207,6 +194,27 @@ SixelParser.definition = {
         b,
         magic1,
         magic2;
+
+    function _hue_to_rgb(n1, n2, hue)
+    {
+      if (hue < 0) {
+        hue += HLSMAX;
+      }
+      if (hue > HLSMAX) {
+        hue -= HLSMAX;
+      }
+      if (hue < (HLSMAX / 6)) {
+        return n1 + ((n2 - n1) * hue + HLSMAX / 12) / (HLSMAX / 6);
+      }
+      if (hue < (HLSMAX / 2)) {
+        return n2;
+      }
+      if (hue < ((HLSMAX * 2) / 3)) {
+          return n1 + ((n2 - n1) * (HLSMAX * 2 / 3 - hue) + HLSMAX / 12) / (HLSMAX / 6);
+      } else {
+        return n1;
+      }
+    }
 
     if (sat == 0) {
       r = g = b = (lum * RGBMAX) / HLSMAX;
@@ -218,9 +226,9 @@ SixelParser.definition = {
       }
       magic1 = 2 * lum - magic2;
 
-      r = (hue_to_rgb(magic1, magic2, hue + (HLSMAX / 3)) * RGBMAX + (HLSMAX / 2)) / HLSMAX;
-      g = (hue_to_rgb(magic1, magic2, hue) * RGBMAX + (HLSMAX / 2)) / HLSMAX;
-      b = (hue_to_rgb(magic1, magic2, hue - (HLSMAX / 3)) * RGBMAX + (HLSMAX / 2)) / HLSMAX;
+      r = (_hue_to_rgb(magic1, magic2, hue + (HLSMAX / 3)) * RGBMAX + (HLSMAX / 2)) / HLSMAX;
+      g = (_hue_to_rgb(magic1, magic2, hue) * RGBMAX + (HLSMAX / 2)) / HLSMAX;
+      b = (_hue_to_rgb(magic1, magic2, hue - (HLSMAX / 3)) * RGBMAX + (HLSMAX / 2)) / HLSMAX;
     }
 
     var rgb_value = [
