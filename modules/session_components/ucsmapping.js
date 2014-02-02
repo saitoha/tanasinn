@@ -29,7 +29,8 @@
  * @class UCSMapping
  *
  */
-var UCSMapping = new Class().extends(Plugin);
+var UCSMapping = new Class().extends(Plugin)
+                            .depends('renderer');
 UCSMapping.definition = {
 
   id: "ucsmapping",
@@ -37,10 +38,10 @@ UCSMapping.definition = {
   getInfo: function getInfo()
   {
     return {
-      name: _("ISO-2022 UCS Mapping Mode"),
+      name: _("ISO-2022 UCS Mapping Mode v1"),
       version: "0.1",
       description: _("Enable/disable iso-2022 to ucs conversion feature",
-                     " by escape seqnence.")
+                     "(version 1) by escape seqnence.")
     };
   },
 
@@ -72,13 +73,13 @@ UCSMapping.definition = {
   "[subscribe('sequence/decset/8800'), pnp]":
   function activate()
   {
-    this._mode = false;
+    this._mode = true;
 
     // UCS mapping mode
-    this.sendMessage("command/enable-ucs-mapping");
+    this.sendMessage("command/enable-ucs-mapping", /* version */ 1);
 
     coUtils.Debug.reportMessage(
-      _("DECSET 8800 - UCS mapping mode was set."));
+      _("DECSET 8800 - UCS mapping mode v1 was set."));
   },
 
   /** Deactivate UCS mapping feature.
@@ -92,7 +93,7 @@ UCSMapping.definition = {
     this.sendMessage("command/disable-ucs-mapping");
 
     coUtils.Debug.reportMessage(
-      _("DECRST 8800 - UCS mapping mode was reset."));
+      _("DECRST 8800 - UCS mapping mode v1 was reset."));
   },
 
   /** Report mode

@@ -327,7 +327,7 @@ Renderer.definition = {
 
   _screen: null,
   _palette: null,
-  _dirty: false,
+  _ucs_private_mapping: null,
 
   /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
@@ -342,6 +342,7 @@ Renderer.definition = {
 
     // set smoothing configuration
     this._main_layer.smoothing = this.smoothing;
+    this._ucs_private_mapping = 0;
 
     this._calculateGlyphSize();
     this.onWidthChanged();
@@ -374,6 +375,7 @@ Renderer.definition = {
 
     this._drcs_map = null;
     this._drcs_canvas = null;
+    this._ucs_private_mapping = null;
 
     this._screen = null;
   },
@@ -536,6 +538,20 @@ Renderer.definition = {
     }
 
   }, // draw
+
+  /** Enable UCS private mapping. */
+  "[subscribe('command/enable-ucs-mapping'), pnp]":
+  function onUcsMappingEnabled(version)
+  {
+    this._ucs_private_mapping = version;
+  },
+
+  /** Disable UCS private mapping. */
+  "[subscribe('command/disable-ucs-mapping'), pnp]":
+  function onUcsMappingDisabled()
+  {
+    this._ucs_private_mapping = 0;
+  },
 
   _drawNormalText:
   function _drawNormalText(codes, row, column, end, attr, type)
@@ -873,12 +889,13 @@ Renderer.definition = {
     // handle non-BMP characters
     if (code >= 0x100000) {
       length = 1; // treat as narrow
-      if (code > 0x110000) {
-        codes[0] = code & 0xffff;
-      } else { // DRCS caracters in private area
+      if (1 === this._ucs_private_mapping && code < 0x110000) {
+        // DRCS caracters in private area
         dscs = 0x20 << 8 | (code >>> 8 & 0xff);
         drcs_state = this._drcs_map[dscs];
         codes[0] = code & 0xff;
+      } else {
+        codes[0] = code & 0xffff;
       }
     }
 
