@@ -1,3 +1,9 @@
+2014-02-02 Hayaki Saito <user@zuse.jp>
+	* Version 0.3.3.18
+	* Accept HLS color space notation in DECSIXEL(ref. kmiya's sixel decoder implementation)
+	* Set maximum limitation(65535) for reading numeric parameters in DECSIXEL
+	* Optimization for drawing horizontal overflowing pixels in DECSIXEL
+
 2014-01-29 Hayaki Saito <user@zuse.jp>
 	* Version 0.3.3.17
 	* Set foreground color value as SIXEL color palette 0
