@@ -88,6 +88,9 @@ SixelForwardInputIterator.definition = {
         c = this.current();
         if (0x30 <= c && c <= 0x39) {
           n = n * 10 + c - 0x30;
+          if (n > 1 << 16) {
+            n = (1 << 16) - 1;
+          }
         } else {
           break;
         }
