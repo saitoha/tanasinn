@@ -152,7 +152,6 @@ SixelParser.definition = {
     this._palette = null;
   },
 
-
   _setSixel: function _setSixel(imagedata, x, y, c)
   {
     var color,
@@ -160,28 +159,28 @@ SixelParser.definition = {
         g,
         b,
         data = imagedata.data,
-        i = 0,
+        width = imagedata.width,
+        i,
         position;
 
-    color = this._color_table[this._color];
+    if (x < width) {
+      color = this._color_table[this._color];
+      if (undefined !== color) {
+        r = color[0];
+        g = color[1];
+        b = color[2];
 
-    if (undefined === color) {
-      return;
-    }
+        c -= 0x3f;
 
-    r = color[0];
-    g = color[1];
-    b = color[2];
-
-    c -= 0x3f;
-
-    for (; i < 6; ++i) {
-      if (c & 0x1 << i) {
-        position = ((y + i) * imagedata.width * 1 + x) * 4;
-        data[position + 0] = r;
-        data[position + 1] = g;
-        data[position + 2] = b;
-        data[position + 3] = 255;
+        for (i = 0; i < 6; ++i) {
+          if (c & 0x1 << i) {
+            position = ((y + i) * width * 1 + x) * 4;
+            data[position + 0] = r;
+            data[position + 1] = g;
+            data[position + 2] = b;
+            data[position + 3] = 255;
+          }
+        }
       }
     }
   },
