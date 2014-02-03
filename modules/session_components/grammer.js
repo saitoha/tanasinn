@@ -173,7 +173,8 @@ VT100Grammar.definition = {
           break;
         } else if (c <= 0x9f) { // DEL, C1
           if (0x90 === c) {
-            ibytes = [c - 0x40];
+            ibytes.length = 0;
+            ibytes.push(c - 0x40);
             state = _STATE_STRING;
           } else {
             this._dispatch_char(c);
@@ -183,21 +184,24 @@ VT100Grammar.definition = {
         }
       } else if (_STATE_ESC === state) {
         if (0x5b === c) { // [
-          ibytes = [];
-          pbytes = [];
+          ibytes.length = 0;
+          pbytes.length = 0;
           state = _STATE_CSI_PBYTES;
         } else if (0x18 === c || 0x1a === c) {
           state = _STATE_GROUND;
         } else if (c < 0x20) { // C0
           this._dispatch_char(c);
         } else if (c <= 0x2f) { // SP to /
-          ibytes = [c];
+          ibytes.length = 0;
+          ibytes.push(c);
           state = _STATE_ESC_IBYTES;
         } else if (0x5d === c) { // ]
-          ibytes = [c];
+          ibytes.length = 0;
+          ibytes.push(c);
           state = _STATE_OSC;
         } else if (0x50 === c || 0x58 === c || 0x5e === c || 0x5f === c) {
-          ibytes = [c];
+          ibytes.length = 0;
+          ibytes.push(c);
           state = _STATE_STRING;
         } else if (c <= 0x7e) { // 0 to ~
           state = _STATE_GROUND;
@@ -287,21 +291,24 @@ VT100Grammar.definition = {
         if (0x5c === c) {
           this._dispatch_string(ibytes);
         } else if (0x5b === c) { // [
-          ibytes = [];
-          pbytes = [];
+          ibytes.length = 0;
+          pbytes.length = 0;
           state = _STATE_CSI_PBYTES;
         } else if (0x18 === c || 0x1a === c) {
           state = _STATE_GROUND;
         } else if (c < 0x20) { // C0
           this._dispatch_char(c);
         } else if (c <= 0x2f) { // SP to /
-          ibytes = [c];
+          ibytes.length = 0;
+          ibytes.push(c);
           state = _STATE_ESC_IBYTES;
         } else if (0x50 === c || 0x58 === c || 0x5e === c || 0x5f === c) {
-          ibytes = [c];
+          ibytes.length = 0;
+          ibytes.push(c);
           state = _STATE_STRING;
         } else if (0x5d === c) { // ]
-          ibytes = [c];
+          ibytes.length = 0;
+          ibytes.push(c);
           state = _STATE_OSC;
         } else if (c <= 0x7e) { // 0 to ~
           state = _STATE_GROUND;
