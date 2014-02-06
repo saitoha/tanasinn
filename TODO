@@ -1,18 +1,18 @@
-- Fix broken debugger
 - Support alternate screen transition
 
 - Fix Alt-Shift issue on WINNT/X11 environment
 
 - Supports multi page selection and auto-scrolling with dragging
 
-- UCS mode / ISO-2022 mode
+- Fix IME-textbox layouting issue
+- Suppport yaft's GWREPT
 
 - Support italic attribute
 - Support OSC 5 (alternative attributes)
 - Support OSC 13/14 (mouse corsor color)
 - Completion issue after Ctrl + P / Ctrl + N
 
-- main buffer's adaptive resize
+- main buffer's adaptive reflow when resizing
 - Improve drag move experience
 - Support Growl like notification system
 
@@ -30,3 +30,5 @@
 - Rewrite console plugin's UI
 - Text search feature
 
+- UCS mode / ISO-2022 mode
+- Fix broken debugger
