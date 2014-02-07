@@ -1239,6 +1239,8 @@ InputManager.definition = {
         mode: coUtils.Constant.INPUT_MODE_NORMAL,
         event: event,
       });
+    
+    this.sendMessage("command/focus");
 
   },
 
