@@ -1195,6 +1195,8 @@ InputManager.definition = {
 
     event.preventDefault();
     event.stopPropagation();
+    
+    this.sendMessage("command/focus");
   },
 
   /** Keypress event handler.
@@ -1239,8 +1241,6 @@ InputManager.definition = {
         mode: coUtils.Constant.INPUT_MODE_NORMAL,
         event: event,
       });
-    
-    this.sendMessage("command/focus");
 
   },
 
