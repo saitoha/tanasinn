@@ -387,9 +387,8 @@ SixelParser.definition = {
             } else {
               throw coUtils.Debug.Exception(_("Cannot parse sixel format."));
             }
-          } else {
-            this._color = color_no;
           }
+          this._color = color_no;
           break;
 
         // DECGCR - Graphics Carriage Return control character
