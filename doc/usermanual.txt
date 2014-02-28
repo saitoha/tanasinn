@@ -26,6 +26,15 @@ link:./usermanual.html[English/英語]
 
 == News
 
+=== 2014-02-28
+    Version 0.3.3.20
+    Fix a bug when processing out-of-range VPA sequence
+    Sixel parser: palette definition sequence also designates color number
+
+=== 2014-02-11
+    Version 0.3.3.19
+    Prevent keyboard focus-out problem
+
 === 2014-02-02
     Version 0.3.3.18
     Accept HLS color space notation in DECSIXEL(ref. kmiya's sixel decoder implementation)
