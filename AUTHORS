@@ -13,3 +13,4 @@ USAMI Kenta     <tadsan@zonu.me>
 
 kmiya           http://nanno.dip.jp/softlib/man/rlogin/
                 * modules/session_components/sixelparser.js
+                  some code originated in kmiya's sixel decoder
