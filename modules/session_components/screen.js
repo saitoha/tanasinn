@@ -1991,7 +1991,7 @@ ScreenSequenceHandler.definition = {
     }
 
     if (n >= bottom_margin) {
-      cursor.position_y = max;
+      cursor.position_y = bottom_margin - 1;
     } else {
       cursor.position_y = n;
     }
