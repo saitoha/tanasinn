@@ -403,6 +403,10 @@ SixelParser.definition = {
 
         // DECGNL - Graphics Next Line control character 
         case 0x2d: // -
+          if (max_x < x) {
+            max_x = x;
+          }
+          count = 1;
           x = 0;
           y += 6;
           scanner.moveNext();
