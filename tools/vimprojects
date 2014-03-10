@@ -144,6 +144,8 @@
     ttygateway.js
     transform.js
     drcs.js
+    regis.js
+    regisparser.js
     sixel.js
     sixelparser.js
     mascot.js
