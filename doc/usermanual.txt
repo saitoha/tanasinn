@@ -26,6 +26,11 @@ link:./usermanual.html[English/英語]
 
 == News
 
+=== 2014-03-13
+    Version 0.3.3.22
+    Do not filter control characters except for CAN/SUB/ESC/DEL in DCS envelope
+    Do not treat BEL as DCS string terminator
+
 === 2014-03-11
     Version 0.3.3.21
     Fix a regression around focus control

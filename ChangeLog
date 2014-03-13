@@ -1,4 +1,9 @@
-2014-02-28 Hayaki Saito <user@zuse.jp>
+2014-03-13 Hayaki Saito <user@zuse.jp>
+	* Version 0.3.3.22
+	* Do not filter control characters except for CAN/SUB/ESC/DEL in DCS envelope
+	* Do not treat BEL as DCS string terminator
+
+2014-03-11 Hayaki Saito <user@zuse.jp>
 	* Version 0.3.3.21
 	* Fix a regression around focus control
 	* Fix DECGNL behavior
