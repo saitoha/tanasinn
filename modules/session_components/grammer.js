@@ -273,7 +273,7 @@ VT100Grammar.definition = {
         if (0x1b === c) {
           state = _STATE_ST;
           this._dispatch_char(c);
-        } else if (0x07 === c || 0x9c === c) {
+        } else if (0x9c === c) {  // 8bit ST
           state = _STATE_GROUND;
           this._dispatch_string(ibytes);
         } else if (0x18 === c || 0x1a === c) {
