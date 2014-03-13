@@ -278,6 +278,8 @@ VT100Grammar.definition = {
           this._dispatch_string(ibytes);
         } else if (0x18 === c || 0x1a === c) {
           state = _STATE_GROUND;
+        } else if (0x7f == c) {
+          // ignore
         } else {
           ibytes.push(c);
         }
