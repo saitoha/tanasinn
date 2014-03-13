@@ -298,7 +298,8 @@ VT100Grammar.definition = {
           ibytes.length = 0;
           ibytes.push(c);
           state = _STATE_ESC_IBYTES;
-        } else if (0x50 === c || 0x58 === c || 0x5e === c || 0x5f === c) {
+        } else if (0x50 === c || 0x58 === c
+                || 0x5e === c || 0x5f === c) {
           ibytes.length = 0;
           ibytes.push(c);
           state = _STATE_STRING;
