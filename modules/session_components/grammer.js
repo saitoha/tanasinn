@@ -504,7 +504,9 @@ VT100Grammar.definition = {
     // store binded actions
     if (1 === tokens.length) {
       key = Number(tokens[0]);
-      this._char_map[key] = function(params) { return handler.apply(context, params) };
+      this._char_map[key] = function _(params) {
+        return handler.apply(context, params);
+      };
     } else {
       prefix = tokens.shift();
       length = tokens.length;
@@ -513,7 +515,9 @@ VT100Grammar.definition = {
          && "..." === tokens[length - 2]) {
           prefix = tokens[0].charCodeAt(0);
           // bind
-          this._str_map[prefix] = function(param) { return handler.call(context, param) };
+          this._str_map[prefix] = function _(param) {
+            return handler.call(context, param);
+          };
         } else {
           key = 0;
           for (i = 0; i < tokens.length; ++i) {
@@ -525,7 +529,9 @@ VT100Grammar.definition = {
             }
           }
           // bind
-          this._esc_map[key] = function(param) { return handler.call(context, param) };
+          this._esc_map[key] = function _(param) {
+            return handler.call(context, param);
+          };
         }
       } else if ("CSI" === prefix) {
         key = 0;
@@ -538,7 +544,9 @@ VT100Grammar.definition = {
           }
         }
         // bind
-        this._csi_map[key] = function(params) { return handler.apply(context, params) };
+        this._csi_map[key] = function _(params) {
+          return handler.apply(context, params);
+        };
       }
     }
   }, // append
