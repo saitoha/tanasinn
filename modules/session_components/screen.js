@@ -2547,7 +2547,7 @@ Viewable.definition = {
   {
     var lines = this._getCurrentViewLines(),
         row,
-        lines,
+        line,
         info;
 
     for ([row, line] in Iterator(lines)) {
