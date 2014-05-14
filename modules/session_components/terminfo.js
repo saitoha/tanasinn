@@ -891,10 +891,10 @@ Terminfo.definition = {
                 .map(
                   function mapFunc(c)
                   {
-                    return c
-                      .charCodeAt(0)
+                    return (c.charCodeAt(0) + 0x100)
                       .toString(16)
                       .toUpperCase()
+                      .substr(-2)
                       ;
                   })
                 .join("");
