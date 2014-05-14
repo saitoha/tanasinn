@@ -26,6 +26,11 @@ link:./usermanual.html[English/英語]
 
 == News
 
+=== 2014-05-14
+    Version 0.3.3.24
+    Fix a rendering bug caused on Firefox 29
+    Add missing tercap info
+
 === 2014-03-13
     Version 0.3.3.22
     Do not filter control characters except for CAN/SUB/ESC/DEL in DCS envelope
