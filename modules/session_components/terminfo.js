@@ -554,12 +554,12 @@ var TERMINFO_DB = {
   "kI":     "\x1b[2~",
 
   // key_home: home key
-  "khome":  "\x1b[H",
-  "kh":     "\x1b[H",
+  "khome":  "\x1bOH",
+  "kh":     "\x1bOH",
 
   // key_end: end key
-  "kend":   "\x1b[F",
-  "@7":     "\x1b[F",
+  "kend":   "\x1bOF",
+  "@7":     "\x1bOF",
 
   // key_shome: shifted home key
   "kHOM":   "\x1b[1;2H",
@@ -612,6 +612,50 @@ var TERMINFO_DB = {
   // key_f1: F1 function key
   "kf1":    "\x1bOP",
   "k1":     "\x1bOP",
+
+  // key_f2: F2 function key
+  "kf2":    "\x1bOQ",
+  "k2":     "\x1bOQ",
+
+  // key_f3: F3 function key
+  "kf3":    "\x1bOR",
+  "k3":     "\x1bOR",
+
+  // key_f4: F4 function key
+  "kf4":    "\x1bOS",
+  "k4":     "\x1bOS",
+
+  // key_f5: F5 function key
+  "kf5":    "\x1b[15~",
+  "k5":     "\x1b[15~",
+
+  // key_f6: F6 function key
+  "kf6":    "\x1b[17~",
+  "k6":     "\x1b[17~",
+
+  // key_f7: F7 function key
+  "kf7":    "\x1b[18~",
+  "k7":     "\x1b[18~",
+
+  // key_f8: F8 function key
+  "kf8":    "\x1b[19~",
+  "k8":     "\x1b[19~",
+
+  // key_f9: F9 function key
+  "kf9":    "\x1b[20~",
+  "k9":     "\x1b[20~",
+
+  // key_f10: F10 function key
+  "kf10":   "\x1b[21~",
+  "k;":     "\x1b[21~",
+
+  // key_f11: F11 function key
+  "kf11":   "\x1b[23~",
+  "F1":     "\x1b[23~",
+
+  // key_f12: F12 function key
+  "kf12":   "\x1b[24~",
+  "F2":     "\x1b[24~",
 
   // key_f42: function key
   "kf42":    "\x1b[63~",
@@ -702,16 +746,16 @@ var TERMINFO_DB = {
   "Fr":      "\x1b[84~",
 
   // key_a1: upper left of keypad
-  "ka1":    "\x1b[H",
-  "K1":     "\x1b[H",
+  "ka1":    "\x1bOH",
+  "K1":     "\x1bOH",
 
   // key_a3: upper right of keypad
   "ka3":    "\x1b[5~",
   "K3":     "\x1b[5~",
 
   // key_c1: lower left of keypad
-  "kc1":    "\x1b[F",
-  "K4":     "\x1b[F",
+  "kc1":    "\x1bOF",
+  "K4":     "\x1bOF",
 
   // key_c3: lower right of keypad
   "kc3":    "\x1b[6~",
@@ -730,8 +774,8 @@ var TERMINFO_DB = {
   "&8":     "",
 
    // key_backspace: backspace key
-  "kbs":    "^H",
-  "kb":     "^H",
+  "kbs":    "\x08",
+  "kb":     "\x08",
 
   // key_help: help key
   "khlp":   "\x1b[28~",
