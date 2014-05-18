@@ -129,7 +129,7 @@ SixelParser.definition = {
 
   _color: 0,
   _palette: null,
-  _color_palette: null,
+  _color_table: null,
 
   "[persistable] enabled_when_startup": true,
 
@@ -288,6 +288,7 @@ SixelParser.definition = {
     }
 
     this._color_table = color_table;
+    this._color = 0;
   },
 
   parse: function parse(sixel, dom)
