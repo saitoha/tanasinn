@@ -481,9 +481,10 @@ DECLocatorMouse.definition = {
     var column,
         row,
         message,
-        code;
+        code,
+        locator_reporting_mode = this._locator_reporting_mode;
 
-    if (null === this._locator_reporting_mode) {
+    if (null === locator_reporting_mode) {
       return;
     }
 
