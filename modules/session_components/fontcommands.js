@@ -89,7 +89,10 @@ FontCommands.definition = {
   "[command('fontfamily/ff', ['font-family']), _('Select terminal font family.'), pnp]":
   function fontfamily(arguments_string)
   {
-    var pattern, match, font_size;
+    var pattern,
+        match,
+        font_size,
+        font_family;
 
     pattern = /^\s*(.+)\s*$/;
     match = arguments_string.match(pattern);
@@ -103,7 +106,7 @@ FontCommands.definition = {
       };
     }
 
-    [, font_family] = match;
+    font_family = match[1];
 
     this.sendMessage("set/font-family", font_family);
     this.sendMessage("command/draw", true);
