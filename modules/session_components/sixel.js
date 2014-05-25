@@ -121,8 +121,8 @@ Sixel.definition = {
         id: "sixel_canvas",
       }).sixel_canvas,
 
-    sixel_canvas.width = renderer.char_width * screen.getWidth();
-    sixel_canvas.height = renderer.line_height * screen.getHeight() * 2;
+    sixel_canvas.width = renderer.char_width * screen.getWidth() + 100;
+    sixel_canvas.height = renderer.line_height * screen.getHeight() * 20;
 
     dom = {
       canvas: sixel_canvas,
