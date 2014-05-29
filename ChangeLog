@@ -1,3 +1,10 @@
+2014-05-29 Hayaki Saito <user@zuse.jp>
+	* Version 0.3.3.25
+	* Increase default scrollback buffer size
+	* Strip non-standard -wait option with /bin/sh in cygwin. now it doesn't work
+	* Display sixel image correctly if accepted sixel data height is over the screen height
+	* Fix for displaying huge size sixel image
+
 2014-05-25 Hayaki Saito <user@zuse.jp>
 	* Version 0.3.3.25
 	* Fix broken DEC locator reporting

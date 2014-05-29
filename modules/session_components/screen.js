@@ -2731,7 +2731,7 @@ Viewable.definition = {
 var Scrollable = new Trait("Scrollable");
 Scrollable.definition = {
 
-  "[persistable] scrollback_limit": 500,
+  "[persistable] scrollback_limit": 5000,
   "[persistable] smooth_scrolling_delay": 10,
 
   _smooth_scrolling: false,

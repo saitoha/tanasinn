@@ -576,9 +576,9 @@ http:/#/www.mozilla-japan.org/MPL/MPL-1.1J.html[Mozilla Public License 1.1 (MPL1
 image::images/nyan.png[width=780]
 
 #if __EN__
-.Running "http://www.asciimation.co.nz[STAR WARS ASCIIMATION]" and its telnet version(http://towel.blinkenlights.nl).
+.Running "http://www.asciimation.co.nz[STAR WARS ASCIIMATION]" and its telnet version(http:/#/towel.blinkenlights.nl).
 #elif __JP__
-."http://www.asciimation.co.nz[STAR WARS ASCIIMATION]" と、そのtelnet版 version(http://towel.blinkenlights.nl)を走らせたところ。
+."http://www.asciimation.co.nz[STAR WARS ASCIIMATION]" と、そのtelnet版 version(http:/#/towel.blinkenlights.nl)を走らせたところ。
 #endif
 image::images/starwars.png[width=780]
 
@@ -704,9 +704,9 @@ image::images/xulapp.png[width=780]
 image::images/3d.png[width=780]
 
 #if __EN__
-.https://github.com/pda/roflbalt[roflbalt]. A game written in Ruby.
+.https:/#/github.com/pda/roflbalt[roflbalt]. A game written in Ruby.
 #elif __JP__
-.https://github.com/pda/roflbalt[roflbalt]。Rubyで書かれたゲームです。
+.https:/#/github.com/pda/roflbalt[roflbalt]。Rubyで書かれたゲームです。
 #endif
 image::images/roflbalt.png[width=780]
 
@@ -832,7 +832,7 @@ cd tanasinn
 make
 ----
     If build process is succeeded, target XPI file
-    TANASINN_XPI_ID is to be generated. enjoy it!
+    TANASINN_XPI_ID.xpi is to be generated. enjoy it!
 #elif __JP__
 
 === Firefox/Thunderbird/SeaMonkey拡張としてビルドする:
@@ -843,7 +843,7 @@ cd tanasinn
 ./configure
 make
 ----
-    ビルドが成功すると、TANASINN_XPI_IDというXPIファイルが生成されます。
+    ビルドが成功すると、TANASINN_XPI_ID.xpi というXPIファイルが生成されます。
     これをインストールしてください。
 #endif
 
