@@ -26,6 +26,19 @@ link:./usermanual.html[English/英語]
 
 == News
 
+=== 2014-06-24
+    Version 0.3.3.26
+    Implement DECRQLP
+    Implement DECEFR
+    Handle DECID sequence
+
+=== 2014-05-29
+    Version 0.3.3.25
+    Increase default scrollback buffer size
+    Strip non-standard -wait option with /bin/sh in cygwin. now it doesn't work
+    Display sixel image correctly if accepted sixel data height is over the screen height
+    Fix for displaying huge size sixel image
+
 === 2014-05-14
     Version 0.3.3.24
     Fix a rendering bug caused on Firefox 29

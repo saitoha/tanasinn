@@ -2,6 +2,7 @@
 	* Version 0.3.3.26
 	* Implement DECRQLP
 	* Implement DECEFR
+	* Handle DECID sequence
 
 2014-05-29 Hayaki Saito <user@zuse.jp>
 	* Version 0.3.3.25
