@@ -138,7 +138,7 @@ PrimaryDA.definition = {
   },
 
   /** handle DA1 request */
-  "[profile('vt100'), sequence('CSI Ps c')]":
+  "[profile('vt100'), sequence('CSI Ps c', 'ESC Z')]":
   function DA1(n)
   { // Primary DA (Device Attributes)
     if (n !== undefined && n !== 0) {

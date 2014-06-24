@@ -54,6 +54,11 @@ DECLocatorMouse.definition = {
   _locator_event: null,
   _in_scroll_session: false,
   _renderer: null,
+  _filter_left: -1,
+  _filter_top: -1,
+  _filter_right: -1,
+  _filter_bottom: -1,
+  _filtered: false,
 
   /** Installs itself.
    *  @param {InstallContext} context A InstallContext object.
@@ -62,6 +67,17 @@ DECLocatorMouse.definition = {
   function install(context)
   {
     this._renderer = context["renderer"];
+    this._locator_buttonup_reporting = true;
+    this._locator_buttondown_reporting = true;
+    this._locator_state = 0;
+    this._locator_event = null;
+    this._in_scroll_session = false;
+    this._filter_left = -1;
+    this._filter_top = -1;
+    this._filter_right = -1;
+    this._filter_bottom = -1;
+    this._filtered = false;
+
   },
 
   /** Uninstalls itself.
@@ -106,6 +122,71 @@ DECLocatorMouse.definition = {
     this._in_scroll_session = true;
   },
 
+  /*
+   * DECEFR - DEC Enable Filter Rectangle
+   *
+   * CSI Pt ; Pl ; Pb ; Pr '    w
+   *                       2/7  7/7
+   *
+   * Pt - Top boundary of filter rectangle
+   * Pl - Left boundary of filter rectangle
+   * Pb - Bottom boundary of filter rectangle
+   * Pr - Right boundary of filter rectangle 
+   *
+   * The DECEFR control sequence defines the coordinates of a filter
+   * rectangle, and activates it. Anytime the locator is detected to be
+   * outside a filter rectangle, an outside rectangle event is generated and
+   * the rectangle is disabled. Filter rectangles are always treated as
+   * "one-shot" events. Defining a new rectangle re-activates it.
+   *
+   * Applications can re-define the rectangle at any time even if its already
+   * active. If a rectangle which does not contain the locator is specified,
+   * the terminal will generate an outside rectangle report immediately and
+   * deactivate it.
+   *
+   * Pt, Pl, Pb, and Pr are in coordinates units specified by the last DECELR
+   * sequence. The filter rectangle includes the boundaries (similar to other
+   * rectangular area operations). The origin is coordinate pair 1:1 in the
+   * upper left corner. If any parameters are omitted, they are defaulted to
+   * the current locator position. Sending DECEFR with no parameters will
+   * cause the application to be notified for any locator movement
+   * ("unfiltered movement event").
+   *
+   * DECELR always cancels any previous filter rectangle definition. This
+   * gaurantees that when an application enables locator reports, there will
+   * never be an outstanding filter rectangle active session, and the locator
+   * crosses that edge, the rectangle may be triggered to send a report with
+   * omitted coordinates (locator position undefined).
+   *
+   * If the active session receives a filter rectangle with explicit
+   * coordinates while the locator is outside the defined coordinate space,
+   * the rectangle will be triggered to send a report with omitted
+   * coordinates.
+   *
+   * If the active session receives a filter rectangle with omitted
+   * coordinates (that is, use the current position) while the locator is
+   * outside the defined coordinate space (position undefined), the
+   * rectangle will be triggered the next time the locator is within the
+   * defined coordinate space.
+   *
+   * If a session which is not the active session receives a filter rectangle
+   * with explicit coordinates, it should trigger immediately with position
+   * undefined. If a session which is not the active session receives a
+   * rectangle with omitted coordinates, it should trigger the next time the
+   * locator is within the defined coordinate space for that session, which
+   * cannot happen until the session becomes active. 
+   *
+   */
+  "[profile('vt100'), sequence('CSI Pt;Pl;Pb;Pr \\' w')]":
+  function DECEFR(n1, n2, n3, n4)
+  { // Enable Filter Rectangle
+    this._filtered = true;
+    this._filter_top = n1;
+    this._filter_left = n2;
+    this._filter_bottom = n3;
+    this._filter_right = n4;
+  },
+
   /**
    *
    * Enable Locator Reporting (DECELR)
@@ -129,7 +210,8 @@ DECLocatorMouse.definition = {
   function DECELR(n1, n2)
   { // Enable Locator Reporting
 
-    var oneshot, pixel;
+    var oneshot,
+        pixel;
 
     switch (n1 || 0) {
 
@@ -226,7 +308,20 @@ DECLocatorMouse.definition = {
   },
 
   /**
-   * Requests Locator Report.
+   * DECRQLP - DEC Request Locator Position
+   *
+   * CSI Ps  '    |
+   *
+   *         2/7  7/12
+   *
+   * Ps:
+   * 0 (or omitted) default to 1
+   * 1              transmit a single DECLRP locator report all others
+   *                ignored Filter Rectangles
+   *
+   * Filter Rectangles add filtered movement events to the list of locator
+   * transitions that can generate reports.
+   *
    *
    * Response: CSI Pe ; Pb ; Pr ; Pc ; Pp & w
    * Pe: Event code.
@@ -257,7 +352,7 @@ DECLocatorMouse.definition = {
    * Pp: Page. Always 1.
    *
    */
-  "[profile('vt100'), sequence('CSI Pe;Pb;Pr;Pc;Pp & w')]":
+  "[profile('vt100'), sequence('CSI Ps \\' |')]":
   function DECRQLP(n)
   { // Request Locator Position
     this.sendMessage("event/locator-reporting-requested");
@@ -320,7 +415,8 @@ DECLocatorMouse.definition = {
         locator_reporting_mode = this._locator_reporting_mode,
         message,
         column,
-        row;
+        row,
+        coords;
 
     if (null === locator_reporting_mode) {
       return;
@@ -333,10 +429,13 @@ DECLocatorMouse.definition = {
     }
 
     if (locator_reporting_mode.pixel) {
-      [column, row] = this._getCurrentPositionInPixel(event);
+      coords = this._getCurrentPositionInPixel(event);
     } else {
-      [column, row] = this._getCurrentPosition(event);
+      coords = this._getCurrentPosition(event);
     }
+
+    column = coords[0];
+    row = coords[1];
 
     message = coUtils.Text.format(
       "%d;%d;%d;%d;1&w",
@@ -471,7 +570,33 @@ DECLocatorMouse.definition = {
   "[listen('mousemove', '#tanasinn_content'), pnp]":
   function onmousemove(event)
   {
+    var column,
+        row,
+        coord;
+
+    if (null === this._locator_reporting_mode) {
+      return;
+    }
+
     this._locator_event = event;
+
+    if (this._filtered) {
+      if (locator_reporting_mode.pixel) {
+        coord = this._getCurrentPositionInPixel(event);
+      } else {
+        coord = this._getCurrentPosition(event);
+      }
+
+      column = coord[0];
+      row = coord[1];
+
+      if (row < this._filter_top
+        || column < this._filter_left
+        || row > this._filter_bottom
+        || column > this._filter_right) {
+        this.sendMessage("event/locator-reporting-requested");
+      }
+    }
   },
 
   /** Mouse up evnet listener */
@@ -480,6 +605,7 @@ DECLocatorMouse.definition = {
   {
     var column,
         row,
+        coord,
         message,
         code,
         locator_reporting_mode = this._locator_reporting_mode;
@@ -521,10 +647,13 @@ DECLocatorMouse.definition = {
     }
 
     if (locator_reporting_mode.pixel) {
-      [column, row] = this._getCurrentPositionInPixel(event);
+      coord = this._getCurrentPositionInPixel(event);
     } else {
-      [column, row] = this._getCurrentPosition(event);
+      coord = this._getCurrentPosition(event);
     }
+
+    column = coord[0];
+    row = coord[1];
 
     message = coUtils.Text.format(
       "%d;%d;%d;%d;1&w",

@@ -863,18 +863,28 @@ Windows(XP/Vista/7) + Cygwin / Mac / Linux / FreeBSD 環境で動作します。
 <h2 id="_news">2. News</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_2014_05_25">2.1. 2014-05-25</h3>
+<h3 id="_2014_06_24">2.1. 2014-06-24</h3>
 <div class="literalblock">
 <div class="content">
-<pre><code>Version 0.3.3.25
-Fix broken DEC locator reporting
-Reset selected SIXEL palette number to zero before display SIXELs
-Fix broken fontfamily command
-Display image correctly if accepted sixel data height is over the screen height</code></pre>
+<pre><code>Version 0.3.3.26
+Implement DECRQLP
+Implement DECEFR
+Handle DECID sequence</code></pre>
 </div></div>
 </div>
 <div class="sect2">
-<h3 id="_2014_05_14">2.2. 2014-05-14</h3>
+<h3 id="_2014_05_29">2.2. 2014-05-29</h3>
+<div class="literalblock">
+<div class="content">
+<pre><code>Version 0.3.3.25
+Increase default scrollback buffer size
+Strip non-standard -wait option with /bin/sh in cygwin. now it doesn't work
+Display sixel image correctly if accepted sixel data height is over the screen height
+Fix for displaying huge size sixel image</code></pre>
+</div></div>
+</div>
+<div class="sect2">
+<h3 id="_2014_05_14">2.3. 2014-05-14</h3>
 <div class="literalblock">
 <div class="content">
 <pre><code>Version 0.3.3.24
@@ -884,7 +894,7 @@ Fix wrong termcap answer toward kb query</code></pre>
 </div></div>
 </div>
 <div class="sect2">
-<h3 id="_2014_03_13">2.3. 2014-03-13</h3>
+<h3 id="_2014_03_13">2.4. 2014-03-13</h3>
 <div class="literalblock">
 <div class="content">
 <pre><code>Version 0.3.3.22
@@ -893,7 +903,7 @@ Do not treat BEL as DCS string terminator</code></pre>
 </div></div>
 </div>
 <div class="sect2">
-<h3 id="_2014_03_11">2.4. 2014-03-11</h3>
+<h3 id="_2014_03_11">2.5. 2014-03-11</h3>
 <div class="literalblock">
 <div class="content">
 <pre><code>Version 0.3.3.21
@@ -902,7 +912,7 @@ Fix DECGNL behavior</code></pre>
 </div></div>
 </div>
 <div class="sect2">
-<h3 id="_2014_02_28">2.5. 2014-02-28</h3>
+<h3 id="_2014_02_28">2.6. 2014-02-28</h3>
 <div class="literalblock">
 <div class="content">
 <pre><code>Version 0.3.3.20
@@ -911,7 +921,7 @@ Sixel parser: palette definition sequence also designates color number</code></p
 </div></div>
 </div>
 <div class="sect2">
-<h3 id="_2014_02_11">2.6. 2014-02-11</h3>
+<h3 id="_2014_02_11">2.7. 2014-02-11</h3>
 <div class="literalblock">
 <div class="content">
 <pre><code>Version 0.3.3.19
@@ -919,7 +929,7 @@ Prevent keyboard focus-out problem</code></pre>
 </div></div>
 </div>
 <div class="sect2">
-<h3 id="_2014_02_02">2.7. 2014-02-02</h3>
+<h3 id="_2014_02_02">2.8. 2014-02-02</h3>
 <div class="literalblock">
 <div class="content">
 <pre><code>Version 0.3.3.18
@@ -929,7 +939,7 @@ Optimization for drawing horizontal overflowing pixels in DECSIXEL</code></pre>
 </div></div>
 </div>
 <div class="sect2">
-<h3 id="_2014_01_29">2.8. 2014-01-29</h3>
+<h3 id="_2014_01_29">2.9. 2014-01-29</h3>
 <div class="literalblock">
 <div class="content">
 <pre><code>Version 0.3.3.17
@@ -939,7 +949,7 @@ Fix wrong messages for installing module</code></pre>
 </div></div>
 </div>
 <div class="sect2">
-<h3 id="_2014_01_19">2.9. 2014-01-19</h3>
+<h3 id="_2014_01_19">2.10. 2014-01-19</h3>
 <div class="literalblock">
 <div class="content">
 <pre><code>Version 0.3.3.16
@@ -949,7 +959,7 @@ Implement colored SIXEL extension for DRCS</code></pre>
 </div></div>
 </div>
 <div class="sect2">
-<h3 id="_2013_12_08">2.10. 2013-12-08</h3>
+<h3 id="_2013_12_08">2.11. 2013-12-08</h3>
 <div class="literalblock">
 <div class="content">
 <pre><code>Version 0.3.3.15
@@ -962,7 +972,7 @@ Change DECGNL(-) behavior to move the active position to the "beginning" Of the 
 </div></div>
 </div>
 <div class="sect2">
-<h3 id="_2013_09_22">2.11. 2013-09-22</h3>
+<h3 id="_2013_09_22">2.12. 2013-09-22</h3>
 <div class="literalblock">
 <div class="content">
 <pre><code>Version 0.3.3.14
@@ -975,14 +985,14 @@ implement DECCRA</code></pre>
 </div></div>
 </div>
 <div class="sect2">
-<h3 id="_2013_08_24">2.12. 2013-08-24</h3>
+<h3 id="_2013_08_24">2.13. 2013-08-24</h3>
 <div class="literalblock">
 <div class="content">
 <pre><code>Workaround for Firefox 25+</code></pre>
 </div></div>
 </div>
 <div class="sect2">
-<h3 id="_2013_08_16">2.13. 2013-08-16</h3>
+<h3 id="_2013_08_16">2.14. 2013-08-16</h3>
 <div class="literalblock">
 <div class="content">
 <pre><code>Version 0.3.3.11
@@ -995,7 +1005,7 @@ Fix a bug around resetting origin mode</code></pre>
 </div></div>
 </div>
 <div class="sect2">
-<h3 id="_2013_07_28">2.14. 2013-07-28</h3>
+<h3 id="_2013_07_28">2.15. 2013-07-28</h3>
 <div class="literalblock">
 <div class="content">
 <pre><code>Version 0.3.3.10
@@ -1007,7 +1017,7 @@ Fix broken DECRQCRA</code></pre>
 </div></div>
 </div>
 <div class="sect2">
-<h3 id="_2013_07_22">2.15. 2013-07-22</h3>
+<h3 id="_2013_07_22">2.16. 2013-07-22</h3>
 <div class="literalblock">
 <div class="content">
 <pre><code>Version 0.3.3.9
@@ -1015,7 +1025,7 @@ Fix broken SIXEL display mode</code></pre>
 </div></div>
 </div>
 <div class="sect2">
-<h3 id="_2013_07_13">2.16. 2013-07-13</h3>
+<h3 id="_2013_07_13">2.17. 2013-07-13</h3>
 <div class="literalblock">
 <div class="content">
 <pre><code>Version 0.3.3.8
@@ -1026,7 +1036,7 @@ Fix CUP/HVP behavior when origin mode is disabled</code></pre>
 </div></div>
 </div>
 <div class="sect2">
-<h3 id="_2013_06_30">2.17. 2013-06-30</h3>
+<h3 id="_2013_06_30">2.18. 2013-06-30</h3>
 <div class="literalblock">
 <div class="content">
 <pre><code>Version 0.3.3.7
@@ -1038,7 +1048,7 @@ Respect L/R margins when CR/BS/CUF/CUB/CHA/CUP/HPA/HPR/HT/CHT/CBT</code></pre>
 </div></div>
 </div>
 <div class="sect2">
-<h3 id="_2013_06_19">2.18. 2013-06-19</h3>
+<h3 id="_2013_06_19">2.19. 2013-06-19</h3>
 <div class="literalblock">
 <div class="content">
 <pre><code>Version 0.3.3.6
@@ -1048,7 +1058,7 @@ Fix some bugs around left-right margin behavior</code></pre>
 </div></div>
 </div>
 <div class="sect2">
-<h3 id="_2013_06_16">2.19. 2013-06-16</h3>
+<h3 id="_2013_06_16">2.20. 2013-06-16</h3>
 <div class="literalblock">
 <div class="content">
 <pre><code>Version 0.3.3.5
@@ -1057,7 +1067,7 @@ Fix left-right margin behavior</code></pre>
 </div></div>
 </div>
 <div class="sect2">
-<h3 id="_2013_06_14">2.20. 2013-06-14</h3>
+<h3 id="_2013_06_14">2.21. 2013-06-14</h3>
 <div class="literalblock">
 <div class="content">
 <pre><code>Version 0.3.3.4
@@ -1066,7 +1076,7 @@ Fix broken OSC 104</code></pre>
 </div></div>
 </div>
 <div class="sect2">
-<h3 id="_2013_06_04">2.21. 2013-06-04</h3>
+<h3 id="_2013_06_04">2.22. 2013-06-04</h3>
 <div class="literalblock">
 <div class="content">
 <pre><code>Version 0.3.3.3
@@ -1076,7 +1086,7 @@ Fix broken SL/SR behavior</code></pre>
 </div></div>
 </div>
 <div class="sect2">
-<h3 id="_2013_06_02">2.22. 2013-06-02</h3>
+<h3 id="_2013_06_02">2.23. 2013-06-02</h3>
 <div class="literalblock">
 <div class="content">
 <pre><code>Version 0.3.3.2
@@ -1084,7 +1094,7 @@ Re-fix bce issue</code></pre>
 </div></div>
 </div>
 <div class="sect2">
-<h3 id="_2013_03_02">2.23. 2013-03-02</h3>
+<h3 id="_2013_03_02">2.24. 2013-03-02</h3>
 <div class="literalblock">
 <div class="content">
 <pre><code>Version 0.3.3.1
@@ -1092,7 +1102,7 @@ Fix for AMO registration</code></pre>
 </div></div>
 </div>
 <div class="sect2">
-<h3 id="_2013_03_02_2">2.24. 2013-03-02</h3>
+<h3 id="_2013_03_02_2">2.25. 2013-03-02</h3>
 <div class="literalblock">
 <div class="content">
 <pre><code>Version 0.3.3.0
@@ -1100,7 +1110,7 @@ Fix for AMO registration</code></pre>
 </div></div>
 </div>
 <div class="sect2">
-<h3 id="_2013_02_26">2.25. 2013-02-26</h3>
+<h3 id="_2013_02_26">2.26. 2013-02-26</h3>
 <div class="literalblock">
 <div class="content">
 <pre><code>Version 0.3.2.3
@@ -1108,7 +1118,7 @@ Minor fix</code></pre>
 </div></div>
 </div>
 <div class="sect2">
-<h3 id="_2013_02_23">2.26. 2013-02-23</h3>
+<h3 id="_2013_02_23">2.27. 2013-02-23</h3>
 <div class="literalblock">
 <div class="content">
 <pre><code>Version 0.3.2.2
@@ -1119,7 +1129,7 @@ Send last 4096 byte output data when resuming</code></pre>
 </div></div>
 </div>
 <div class="sect2">
-<h3 id="_2013_02_19">2.27. 2013-02-19</h3>
+<h3 id="_2013_02_19">2.28. 2013-02-19</h3>
 <div class="literalblock">
 <div class="content">
 <pre><code>Version 0.3.2.1
@@ -1132,7 +1142,7 @@ Fix duplicated context menu items issue</code></pre>
 </div></div>
 </div>
 <div class="sect2">
-<h3 id="_2013_02_08">2.28. 2013-02-08</h3>
+<h3 id="_2013_02_08">2.29. 2013-02-08</h3>
 <div class="literalblock">
 <div class="content">
 <pre><code>Version 0.3.2.0
@@ -1154,7 +1164,7 @@ Fix wrong CJK width issue</code></pre>
 </div></div>
 </div>
 <div class="sect2">
-<h3 id="_2012_12_28">2.29. 2012-12-28</h3>
+<h3 id="_2012_12_28">2.30. 2012-12-28</h3>
 <div class="literalblock">
 <div class="content">
 <pre><code>Version 0.3.1.13
@@ -1173,7 +1183,7 @@ Fix single argument OSC's bug</code></pre>
 </div></div>
 </div>
 <div class="sect2">
-<h3 id="_2012_12_14">2.30. 2012-12-14</h3>
+<h3 id="_2012_12_14">2.31. 2012-12-14</h3>
 <div class="literalblock">
 <div class="content">
 <pre><code>Version 0.3.1.11
@@ -1188,7 +1198,7 @@ Implement rounded-style rectangle cursor rendering</code></pre>
 </div></div>
 </div>
 <div class="sect2">
-<h3 id="_2012_12_08">2.31. 2012-12-08</h3>
+<h3 id="_2012_12_08">2.32. 2012-12-08</h3>
 <div class="literalblock">
 <div class="content">
 <pre><code>Version 0.3.1.10
@@ -1198,7 +1208,7 @@ Disable video plugin by default</code></pre>
 </div></div>
 </div>
 <div class="sect2">
-<h3 id="_2012_12_04">2.32. 2012-12-04</h3>
+<h3 id="_2012_12_04">2.33. 2012-12-04</h3>
 <div class="literalblock">
 <div class="content">
 <pre><code>Version 0.3.1.9
@@ -1215,7 +1225,7 @@ Disable debugger plugin by default</code></pre>
 </div></div>
 </div>
 <div class="sect2">
-<h3 id="_2012_12_01">2.33. 2012-12-01</h3>
+<h3 id="_2012_12_01">2.34. 2012-12-01</h3>
 <div class="literalblock">
 <div class="content">
 <pre><code>Version 0.3.1.8
@@ -1223,7 +1233,7 @@ Pass Makus Khun's UTF-8 stress test</code></pre>
 </div></div>
 </div>
 <div class="sect2">
-<h3 id="_2012_11_30">2.34. 2012-11-30</h3>
+<h3 id="_2012_11_30">2.35. 2012-11-30</h3>
 <div class="literalblock">
 <div class="content">
 <pre><code>Version 0.3.1.7
@@ -1238,7 +1248,7 @@ Supports Hangul Jamo combining</code></pre>
 </div></div>
 </div>
 <div class="sect2">
-<h3 id="_2012_11_14">2.35. 2012-11-14</h3>
+<h3 id="_2012_11_14">2.36. 2012-11-14</h3>
 <div class="literalblock">
 <div class="content">
 <pre><code>Version 0.3.1.6
@@ -1246,7 +1256,7 @@ Fix a performance bug around nsIdleService</code></pre>
 </div></div>
 </div>
 <div class="sect2">
-<h3 id="_2012_11_12">2.36. 2012/11/12</h3>
+<h3 id="_2012_11_12">2.37. 2012/11/12</h3>
 <div class="literalblock">
 <div class="content">
 <pre><code>Version 0.3.1.2/0.3.1.3/0.3.1.4/0.3.1.5
@@ -1259,7 +1269,7 @@ Fix a plugin completer's bug</code></pre>
 </div></div>
 </div>
 <div class="sect2">
-<h3 id="_2012_11_11">2.37. 2012/11/11</h3>
+<h3 id="_2012_11_11">2.38. 2012/11/11</h3>
 <div class="literalblock">
 <div class="content">
 <pre><code>Version 0.3.1.1
@@ -1267,7 +1277,7 @@ Fix origin mode bug around DECSTBM</code></pre>
 </div></div>
 </div>
 <div class="sect2">
-<h3 id="_2012_11_10">2.38. 2012/11/10</h3>
+<h3 id="_2012_11_10">2.39. 2012/11/10</h3>
 <div class="literalblock">
 <div class="content">
 <pre><code>Version 0.3.1.0
@@ -1282,7 +1292,7 @@ Improve sixel implementation, support transparent color</code></pre>
 </div></div>
 </div>
 <div class="sect2">
-<h3 id="_2012_10_06">2.39. 2012/10/06</h3>
+<h3 id="_2012_10_06">2.40. 2012/10/06</h3>
 <div class="literalblock">
 <div class="content">
 <pre><code>Version 0.3.0.2
@@ -1308,7 +1318,7 @@ Fix for the launcher's session missing bug</code></pre>
 </div></div>
 </div>
 <div class="sect2">
-<h3 id="_2012_09_23">2.40. 2012/09/23</h3>
+<h3 id="_2012_09_23">2.41. 2012/09/23</h3>
 <div class="literalblock">
 <div class="content">
 <pre><code>Version 0.3.0.1
@@ -1326,7 +1336,7 @@ Fix Fix OSC10/11's bug</code></pre>
 </div></div>
 </div>
 <div class="sect2">
-<h3 id="_2012_09_16">2.41. 2012/09/16</h3>
+<h3 id="_2012_09_16">2.42. 2012/09/16</h3>
 <div class="literalblock">
 <div class="content">
 <pre><code>Version 0.3.0.0
@@ -1338,7 +1348,7 @@ Enable 3D Transform plugin by default</code></pre>
 </div></div>
 </div>
 <div class="sect2">
-<h3 id="_2012_08_19">2.42. 2012/08/19</h3>
+<h3 id="_2012_08_19">2.43. 2012/08/19</h3>
 <div class="literalblock">
 <div class="content">
 <pre><code>Version 0.2.4.0/0.2.4.1
@@ -1356,7 +1366,7 @@ make sixel rendering information as cell-level DRCS attribute</code></pre>
 </div></div>
 </div>
 <div class="sect2">
-<h3 id="_2012_08_05">2.43. 2012/08/05</h3>
+<h3 id="_2012_08_05">2.44. 2012/08/05</h3>
 <div class="literalblock">
 <div class="content">
 <pre><code>Version 0.2.3.1
@@ -1370,7 +1380,7 @@ fix a serious emulation's bug.</code></pre>
 </div></div>
 </div>
 <div class="sect2">
-<h3 id="_2012_08_04">2.44. 2012/08/04</h3>
+<h3 id="_2012_08_04">2.45. 2012/08/04</h3>
 <div class="literalblock">
 <div class="content">
 <pre><code>Version 0.2.3.0
@@ -1385,7 +1395,7 @@ Fix some bugs.</code></pre>
 </div></div>
 </div>
 <div class="sect2">
-<h3 id="_2012_07_15">2.45. 2012/07/15</h3>
+<h3 id="_2012_07_15">2.46. 2012/07/15</h3>
 <div class="literalblock">
 <div class="content">
 <pre><code>Version 0.2.2.2
@@ -1408,7 +1418,7 @@ Fix some bugs.</code></pre>
 </div></div>
 </div>
 <div class="sect2">
-<h3 id="_2012_05_31">2.46. 2012/05/31</h3>
+<h3 id="_2012_05_31">2.47. 2012/05/31</h3>
 <div class="literalblock">
 <div class="content">
 <pre><code>Version 0.2.2.1
@@ -1425,7 +1435,7 @@ More precise emulation.</code></pre>
 </div></div>
 </div>
 <div class="sect2">
-<h3 id="_2012_05_23">2.47. 2012/05/23</h3>
+<h3 id="_2012_05_23">2.48. 2012/05/23</h3>
 <div class="literalblock">
 <div class="content">
 <pre><code>Version 0.2.2.0
@@ -1441,7 +1451,7 @@ Disable ShellRPC plugin.</code></pre>
 </div></div>
 </div>
 <div class="sect2">
-<h3 id="_2012_05_05">2.48. 2012/05/05</h3>
+<h3 id="_2012_05_05">2.49. 2012/05/05</h3>
 <div class="literalblock">
 <div class="content">
 <pre><code>Version 0.2.1.1
@@ -1450,7 +1460,7 @@ Improve performance.</code></pre>
 </div></div>
 </div>
 <div class="sect2">
-<h3 id="_2012_04_18">2.49. 2012/04/18</h3>
+<h3 id="_2012_04_18">2.50. 2012/04/18</h3>
 <div class="literalblock">
 <div class="content">
 <pre><code>Version 0.2.0.0
@@ -1460,7 +1470,7 @@ Improve performance.</code></pre>
 </div></div>
 </div>
 <div class="sect2">
-<h3 id="_2012_04_15">2.50. 2012/04/15</h3>
+<h3 id="_2012_04_15">2.51. 2012/04/15</h3>
 <div class="literalblock">
 <div class="content">
 <pre><code>Version 0.1.7.2
@@ -1468,7 +1478,7 @@ Important bug fix, Now it works en_US locale, sorry!</code></pre>
 </div></div>
 </div>
 <div class="sect2">
-<h3 id="_2012_04_08">2.51. 2012/04/08</h3>
+<h3 id="_2012_04_08">2.52. 2012/04/08</h3>
 <div class="literalblock">
 <div class="content">
 <pre><code>Now version 0.1.7.1 available.
@@ -1680,7 +1690,7 @@ Vimperator/Muttator のプラグインとして導入することができます
 <div class="content">
 <img src="images/starwars.png" alt="images/starwars.png" width="780" />
 </div>
-<div class="title">Figure 2. "<a href="http://www.asciimation.co.nz">STAR WARS ASCIIMATION</a>" と、そのtelnet版 version(http:</div>
+<div class="title">Figure 2. "<a href="http://www.asciimation.co.nz">STAR WARS ASCIIMATION</a>" と、そのtelnet版 version(<a href="http://towel.blinkenlights.nl)を走らせたところ�">http://towel.blinkenlights.nl)を走らせたところ�</a>��</div>
 </div>
 <div class="imageblock">
 <div class="content">
@@ -1782,7 +1792,7 @@ Vimperator/Muttator のプラグインとして導入することができます
 <div class="content">
 <img src="images/roflbalt.png" alt="images/roflbalt.png" width="780" />
 </div>
-<div class="title">Figure 19. https:</div>
+<div class="title">Figure 19. <a href="https://github.com/pda/roflbalt">roflbalt</a>。Rubyで書かれたゲームです。</div>
 </div>
 <div class="imageblock">
 <div class="content">
@@ -2537,39 +2547,39 @@ saveprofileのような保存操作はとくに必要ありません。</p></div
 <div class="content">
 <pre><code>~/ or %USERPROFILE%/
    |
-   +-- .tanasinn.js &lt;-------------------------------- (1)
+   +-- .tanasinn.js    &lt;-------------------------------- (1)
    |
-   +-- .tanasinn/ &lt;-------------------------------- (2)
+   +-- .tanasinn/      &lt;-------------------------------- (2)
          |
-         +-- tanasinnrc &lt;---------------------- (3)
+         +-- tanasinnrc          &lt;---------------------- (3)
          |
-         +-- sessions.txt &lt;---------------------- (4)
+         +-- sessions.txt        &lt;---------------------- (4)
          |
-         +-- desktop_profile/ &lt;---------------------- (5)
+         +-- desktop_profile/    &lt;---------------------- (5)
          |
-         +-- session_profile/ &lt;---------------------- (6)
+         +-- session_profile/    &lt;---------------------- (6)
          |
-         +-- persist/ &lt;---------------------- (7)
+         +-- persist/            &lt;---------------------- (7)
          |
-         +-- history/ &lt;---------------------- (8)
+         +-- history/            &lt;---------------------- (8)
          |
-         +-- batches/ &lt;---------------------- (9)
+         +-- batches/            &lt;---------------------- (9)
          |
-         +-- cgi-bin/ &lt;---------------------- (10)
+         +-- cgi-bin/            &lt;---------------------- (10)
          |
-         +-- screenshot/ &lt;------------------- (11)
+         +-- screenshot/            &lt;------------------- (11)
          |
-         +-- log/ &lt;---------------------- (12)
+         +-- log/                &lt;---------------------- (12)
          |
-         +-- modules/ &lt;---------------------- (13)
+         +-- modules/            &lt;---------------------- (13)
                 |
-                +-- process_components/ &lt;------ (14)
+                +-- process_components/          &lt;------ (14)
                 |
-                +-- desktop_components/ &lt;------ (15)
+                +-- desktop_components/          &lt;------ (15)
                 |
-                +-- session_components/ &lt;------ (16)
+                +-- session_components/          &lt;------ (16)
                 |
-                +-- shared_components/ &lt;------ (17)</code></pre>
+                +-- shared_components/           &lt;------ (17)</code></pre>
 </div></div>
 <div class="sect3">
 <h4 id="_tanasinn_js">9.4.1. .tanasinn.js</h4>
@@ -2782,7 +2792,7 @@ cmap [置換対象キーシーケンス式] [置換後のキーシーケンス�
 <div class="ulist"><ul>
 <li>
 <p>
-&lt;Leader&gt; - 設定値nmap_manager.mapleaderおよびcmap_manager.mapleaderの値
+&lt;Leader&gt;        - 設定値nmap_manager.mapleaderおよびcmap_manager.mapleaderの値
 </p>
 </li>
 </ul></div>
@@ -2794,12 +2804,12 @@ cmap [置換対象キーシーケンス式] [置換後のキーシーケンス�
 <div class="ulist"><ul>
 <li>
 <p>
-&lt;nmode&gt; - ノーマルモード
+&lt;nmode&gt;         - ノーマルモード
 </p>
 </li>
 <li>
 <p>
-&lt;cmode&gt; - コマンドラインモード
+&lt;cmode&gt;         - コマンドラインモード
 </p>
 </li>
 </ul></div>
@@ -2811,7 +2821,7 @@ cmap [置換対象キーシーケンス式] [置換後のキーシーケンス�
 <div class="ulist"><ul>
 <li>
 <p>
-&lt;2-Shift&gt; - Shift key twice.
+&lt;2-Shift&gt;       - Shift key twice.
 </p>
 </li>
 </ul></div>
@@ -2823,22 +2833,22 @@ cmap [置換対象キーシーケンス式] [置換後のキーシーケンス�
 <div class="ulist"><ul>
 <li>
 <p>
-&lt;SwipeLeft&gt; - 左にスワイプ
+&lt;SwipeLeft&gt;     - 左にスワイプ
 </p>
 </li>
 <li>
 <p>
-&lt;SwipeRight&gt; - 右にスワイプ
+&lt;SwipeRight&gt;    - 右にスワイプ
 </p>
 </li>
 <li>
 <p>
-&lt;SwipeTop&gt; - 上にスワイプ
+&lt;SwipeTop&gt;      - 上にスワイプ
 </p>
 </li>
 <li>
 <p>
-&lt;SwipeBottom&gt; - 下にスワイプ
+&lt;SwipeBottom&gt;   - 下にスワイプ
 </p>
 </li>
 </ul></div>
@@ -2850,12 +2860,12 @@ cmap [置換対象キーシーケンス式] [置換後のキーシーケンス�
 <div class="ulist"><ul>
 <li>
 <p>
-&lt;PinchOpen&gt; - ピンチオープン
+&lt;PinchOpen&gt;     - ピンチオープン
 </p>
 </li>
 <li>
 <p>
-&lt;PinchClose&gt; - ピンチクローズ
+&lt;PinchClose&gt;    - ピンチクローズ
 </p>
 </li>
 </ul></div>
@@ -2867,12 +2877,12 @@ cmap [置換対象キーシーケンス式] [置換後のキーシーケンス�
 <div class="ulist"><ul>
 <li>
 <p>
-&lt;RotateRight&gt; - 時計回りに回転
+&lt;RotateRight&gt;   - 時計回りに回転
 </p>
 </li>
 <li>
 <p>
-&lt;RotateLeft&gt; - 反時計回りに回転
+&lt;RotateLeft&gt;    - 反時計回りに回転
 </p>
 </li>
 </ul></div>
@@ -2898,16 +2908,16 @@ cmap [置換対象キーシーケンス式] [置換後のキーシーケンス�
  #
 
  #for tmux
- nmap &lt;SwipeLeft&gt; &lt;C-b&gt;p
- nmap &lt;SwipeRight&gt; &lt;C-b&gt;n
- nmap &lt;SwipeDown&gt; &lt;C-b&gt;%
- nmap &lt;SwipeUp&gt; &lt;C-b&gt;!
- nmap &lt;RotateLeft&gt; &lt;C-b&gt;&lt;Space&gt;
- nmap &lt;RotateRight&gt; &lt;C-b&gt;&lt;Space&gt;
+ nmap &lt;SwipeLeft&gt;    &lt;C-b&gt;p
+ nmap &lt;SwipeRight&gt;   &lt;C-b&gt;n
+ nmap &lt;SwipeDown&gt;    &lt;C-b&gt;%
+ nmap &lt;SwipeUp&gt;      &lt;C-b&gt;!
+ nmap &lt;RotateLeft&gt;   &lt;C-b&gt;&lt;Space&gt;
+ nmap &lt;RotateRight&gt;  &lt;C-b&gt;&lt;Space&gt;
 
  # zoom in/out
- nmap &lt;PinchOpen&gt; &lt;cmode&gt;increase&lt;CR&gt;
- nmap &lt;PinchClose&gt; &lt;cmode&gt;decrease&lt;CR&gt;
+ nmap &lt;PinchOpen&gt;    &lt;cmode&gt;increase&lt;CR&gt;
+ nmap &lt;PinchClose&gt;   &lt;cmode&gt;decrease&lt;CR&gt;
 
  ##############################################################################
  #
@@ -3694,7 +3704,7 @@ twitter: <a href="http://twitter.com/kefir_">http://twitter.com/kefir_</a></p></
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2014-05-29 22:18:44 JST
+Last updated 2014-06-25 01:09:23 JST
 </div>
 </div>
 </body>
