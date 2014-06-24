@@ -1,3 +1,8 @@
+2014-06-24 Hayaki Saito <user@zuse.jp>
+	* Version 0.3.3.26
+	* Implement DECRQLP
+	* Implement DECEFR
+
 2014-05-29 Hayaki Saito <user@zuse.jp>
 	* Version 0.3.3.25
 	* Increase default scrollback buffer size
