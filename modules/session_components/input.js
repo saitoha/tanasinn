@@ -943,7 +943,7 @@ InputManager.definition = {
   {
     return {
       parentNode: "#tanasinn_center_area",
-      tagName: "bulletinboard",
+      tagName: "stack",
       childNodes: {
         tagName: "textbox",
         className: "plain",
@@ -953,8 +953,6 @@ InputManager.definition = {
           border: "0px",
           opacity: "0.00",
         },
-        top: 0,
-        left: 0,
       },
     };
   },

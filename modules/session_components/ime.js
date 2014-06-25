@@ -276,8 +276,8 @@ Ime.definition = {
         char_offset = renderer.char_offset,
         normal_color = palette.color,
         font_size = renderer.font_size,
-        top = cursor.position_y * line_height + -4,
-        left = cursor.position_x * char_width + -2;
+        top = cursor.position_y * line_height - 4,
+        left = cursor.position_x * char_width - 2;
 
     textbox.setAttribute("top", top);
     textbox.setAttribute("left", left);
@@ -285,7 +285,7 @@ Ime.definition = {
     textbox.style.backgroundColor = "transparent";
     textbox.style.color = normal_color[7];
     textbox.style.fontSize = font_size + "px";
-    textbox.style.width = "100%";
+    textbox.style.width = "120px";
 
     this._ime_input_flag = true;
 
@@ -294,6 +294,10 @@ Ime.definition = {
 
   _compositionEnd: function _compositionEnd()
   {
+    var textbox = this._input_manager.getInputField();
+
+    textbox.style.width = "0px";
+
     this._input_manager.getInputField().style.opacity = 0.0;
     this._ime_input_flag = false;
     this.sendMessage("event/ime-composition-end", this);
