@@ -257,7 +257,7 @@ OuterChrome.definition = {
   {
     return {
       parentNode: this.request("get/root-element"),
-      tagName: "box",
+      tagName: "bulletinboard",
       id: "tanasinn_chrome_root",
       childNodes: {
         id: "tanasinn_outer_chrome",
