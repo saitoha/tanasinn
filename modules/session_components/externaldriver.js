@@ -210,7 +210,7 @@ ExternalDriver.definition = {
 
     if ("WINNT" === coUtils.Runtime.os) { // Windows
       args = [
-        "/bin/sh", "-l", "-c",
+        "/bin/sh", "-wait", "-l", "-c",
         coUtils.Text.format(
           "exec %s \"$(cygpath '%s')\" %d",
           python_path,
