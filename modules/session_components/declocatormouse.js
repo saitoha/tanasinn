@@ -182,9 +182,18 @@ DECLocatorMouse.definition = {
   { // Enable Filter Rectangle
     var column,
         row,
-        coord;
+        coord,
+        event = this._locator_event;
+
+    if (null === this._locator_reporting_mode) {
+      return;
+    }
 
     this._filtered = true;
+
+    if (null === event) {
+      return;
+    }
 
     if (this._locator_reporting_mode.pixel) {
       coord = this._getCurrentPositionInPixel(event);
@@ -204,7 +213,7 @@ DECLocatorMouse.definition = {
     if (undefined === n2) {
       this._filter_left = n2;
     } else {
-      this._filter_left = col;
+      this._filter_left = column;
     }
 
     if (undefined === n3) {
@@ -216,7 +225,7 @@ DECLocatorMouse.definition = {
     if (undefined === n4) {
       this._filter_right = n4;
     } else {
-      this._filter_right = col;
+      this._filter_right = column;
     }
 
   },
@@ -615,11 +624,11 @@ DECLocatorMouse.definition = {
         row,
         coord;
 
+    this._locator_event = event;
+
     if (null === this._locator_reporting_mode) {
       return;
     }
-
-    this._locator_event = event;
 
     if (this._filtered) {
       if (this._locator_reporting_mode.pixel) {
