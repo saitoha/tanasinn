@@ -597,6 +597,7 @@ DECLocatorMouse.definition = {
         || column <= this._filter_left
         || row >= this._filter_bottom
         || column >= this._filter_right) {
+        this._filtered = false;
         this.sendMessage("event/locator-reporting-requested");
       }
     }
