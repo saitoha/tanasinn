@@ -584,7 +584,7 @@ DECLocatorMouse.definition = {
     this._locator_event = event;
 
     if (this._filtered) {
-      if (locator_reporting_mode.pixel) {
+      if (this._locator_reporting_mode.pixel) {
         coord = this._getCurrentPositionInPixel(event);
       } else {
         coord = this._getCurrentPosition(event);
