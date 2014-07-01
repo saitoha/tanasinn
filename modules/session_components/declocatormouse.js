@@ -509,6 +509,7 @@ DECLocatorMouse.definition = {
   {
     var column,
         row,
+        coord,
         message,
         locator_reporting_mode,
         code;
@@ -557,10 +558,13 @@ DECLocatorMouse.definition = {
       this._locator_reporting_mode = null;
     }
     if (locator_reporting_mode.pixel) {
-      [column, row] = this._getCurrentPositionInPixel(event);
+      coord = this._getCurrentPositionInPixel(event);
     } else {
-      [column, row] = this._getCurrentPosition(event);
+      coord = this._getCurrentPosition(event);
     }
+
+    column = coord[0];
+    row = coord[1];
 
     message = coUtils.Text.format(
       "%d;%d;%d;%d;1&w",
