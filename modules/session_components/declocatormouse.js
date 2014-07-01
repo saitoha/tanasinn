@@ -278,6 +278,9 @@ DECLocatorMouse.definition = {
   function DECSLE(n)
   { // TODO: Select Locator Events
 
+    // cancel filter rectangle
+    this._filtered = false;
+
     switch (n) {
 
       case 0:
