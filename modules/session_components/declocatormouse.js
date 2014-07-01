@@ -593,10 +593,10 @@ DECLocatorMouse.definition = {
       column = coord[0];
       row = coord[1];
 
-      if (row < this._filter_top
-        || column < this._filter_left
-        || row > this._filter_bottom
-        || column > this._filter_right) {
+      if (row <= this._filter_top
+        || column <= this._filter_left
+        || row >= this._filter_bottom
+        || column >= this._filter_right) {
         this.sendMessage("event/locator-reporting-requested");
       }
     }
