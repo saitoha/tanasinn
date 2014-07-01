@@ -180,11 +180,54 @@ DECLocatorMouse.definition = {
   "[profile('vt100'), sequence('CSI Pt;Pl;Pb;Pr \\' w')]":
   function DECEFR(n1, n2, n3, n4)
   { // Enable Filter Rectangle
+    var column,
+        row,
+        coord,
+        event = this._locator_event;
+
+    if (null === this._locator_reporting_mode) {
+      return;
+    }
+
     this._filtered = true;
-    this._filter_top = n1;
-    this._filter_left = n2;
-    this._filter_bottom = n3;
-    this._filter_right = n4;
+
+    if (null === event) {
+      return;
+    }
+
+    if (this._locator_reporting_mode.pixel) {
+      coord = this._getCurrentPositionInPixel(event);
+    } else {
+      coord = this._getCurrentPosition(event);
+    }
+
+    column = coord[0];
+    row = coord[1];
+
+    if (undefined === n1) {
+      this._filter_top = n1;
+    } else {
+      this._filter_top = row;
+    }
+
+    if (undefined === n2) {
+      this._filter_left = n2;
+    } else {
+      this._filter_left = column;
+    }
+
+    if (undefined === n3) {
+      this._filter_bottom = n3;
+    } else {
+      this._filter_bottom = row;
+    }
+
+    if (undefined === n4) {
+      this._filter_right = n4;
+    } else {
+      this._filter_right = column;
+    }
+
   },
 
   /**
@@ -277,6 +320,9 @@ DECLocatorMouse.definition = {
   "[profile('vt100'), sequence('CSI Pm \\' {')]":
   function DECSLE(n)
   { // TODO: Select Locator Events
+
+    // cancel filter rectangle
+    this._filtered = false;
 
     switch (n) {
 
@@ -506,6 +552,7 @@ DECLocatorMouse.definition = {
   {
     var column,
         row,
+        coord,
         message,
         locator_reporting_mode,
         code;
@@ -554,10 +601,13 @@ DECLocatorMouse.definition = {
       this._locator_reporting_mode = null;
     }
     if (locator_reporting_mode.pixel) {
-      [column, row] = this._getCurrentPositionInPixel(event);
+      coord = this._getCurrentPositionInPixel(event);
     } else {
-      [column, row] = this._getCurrentPosition(event);
+      coord = this._getCurrentPosition(event);
     }
+
+    column = coord[0];
+    row = coord[1];
 
     message = coUtils.Text.format(
       "%d;%d;%d;%d;1&w",
@@ -574,14 +624,14 @@ DECLocatorMouse.definition = {
         row,
         coord;
 
+    this._locator_event = event;
+
     if (null === this._locator_reporting_mode) {
       return;
     }
 
-    this._locator_event = event;
-
     if (this._filtered) {
-      if (locator_reporting_mode.pixel) {
+      if (this._locator_reporting_mode.pixel) {
         coord = this._getCurrentPositionInPixel(event);
       } else {
         coord = this._getCurrentPosition(event);
@@ -590,10 +640,11 @@ DECLocatorMouse.definition = {
       column = coord[0];
       row = coord[1];
 
-      if (row < this._filter_top
-        || column < this._filter_left
-        || row > this._filter_bottom
-        || column > this._filter_right) {
+      if (row <= this._filter_top
+        || column <= this._filter_left
+        || row >= this._filter_bottom
+        || column >= this._filter_right) {
+        this._filtered = false;
         this.sendMessage("event/locator-reporting-requested");
       }
     }
