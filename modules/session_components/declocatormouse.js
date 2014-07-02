@@ -205,27 +205,27 @@ DECLocatorMouse.definition = {
     row = coord[1];
 
     if (undefined === n1) {
-      this._filter_top = n1;
-    } else {
       this._filter_top = row;
+    } else {
+      this._filter_top = n1;
     }
 
     if (undefined === n2) {
-      this._filter_left = n2;
-    } else {
       this._filter_left = column;
+    } else {
+      this._filter_left = n2;
     }
 
     if (undefined === n3) {
-      this._filter_bottom = n3;
-    } else {
       this._filter_bottom = row;
+    } else {
+      this._filter_bottom = n3;
     }
 
     if (undefined === n4) {
-      this._filter_right = n4;
-    } else {
       this._filter_right = column;
+    } else {
+      this._filter_right = n4;
     }
 
   },
