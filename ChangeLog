@@ -11,10 +11,19 @@
 	* Display sixel image correctly if accepted sixel data height is over the screen height
 	* Fix for displaying huge size sixel image
 
+2014-05-25 Hayaki Saito <user@zuse.jp>
+	* Version 0.3.3.25
+	* Fix broken DEC locator reporting
+	* Reset selected SIXEL palette number to zero before display SIXELs
+	* Fix broken fontfamily command
+	* Display image correctly if accepted sixel data height is over the
+	  screen height
+
 2014-05-14 Hayaki Saito <user@zuse.jp>
 	* Version 0.3.3.24
 	* Fix a rendering bug caused on Firefox 29
 	* Add missing tercap info
+	* Fix wrong termcap answer toward "kb" query
 
 2014-03-13 Hayaki Saito <user@zuse.jp>
 	* Version 0.3.3.22

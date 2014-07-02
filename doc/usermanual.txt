@@ -43,6 +43,7 @@ link:./usermanual.html[English/英語]
     Version 0.3.3.24
     Fix a rendering bug caused on Firefox 29
     Add missing tercap info
+    Fix wrong termcap answer toward kb query
 
 === 2014-03-13
     Version 0.3.3.22
