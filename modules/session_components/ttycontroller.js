@@ -153,6 +153,7 @@ Controller.definition = {
     this._screen = null;
     this._input = null;
     this._output = null;
+    this._pump = null;
   },
 
   /** Posts a command message asynchronously.

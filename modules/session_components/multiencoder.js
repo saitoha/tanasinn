@@ -102,22 +102,27 @@ MultiEncoder.definition = {
     this._encoders = [];
 
     // enumerate charcter sets.
-    while (encoder_list.hasMore()) {
+    if (encoder_list.hasMore()) {
+      while (encoder_list.hasMore()) {
 
-      charset = encoder_list.getNext();
+        charset = encoder_list.getNext();
 
-      try {
         try {
-          title = converter_manager.getCharsetTitle(charset);
-        } catch (e) { // fallback
-          title = charset;
-        }
+          try {
+            title = converter_manager.getCharsetTitle(charset);
+          } catch (e) { // fallback
+            title = charset;
+          }
 
-        info = new EncoderInfo(this._broker, this, charset, title);
-        this._encoders.push(info);
-      } catch (e) {
-        coUtils.Debug.reportError(e);
+          info = new EncoderInfo(this._broker, this, charset, title);
+          this._encoders.push(info);
+        } catch (e) {
+          coUtils.Debug.reportError(e);
+        }
       }
+    } else {
+     new EncoderInfo(this._broker, this, "UTF-8", "UTF-8");
+     new EncoderInfo(this._broker, this, "UTF-8", "UTF-8");
     }
   },
 

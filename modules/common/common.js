@@ -232,10 +232,24 @@ coUtils.Services = {
 
   getCharsetConverterManager: function getCharsetConverterManager()
   {
+    var manager_class;
+
     if (null === this._charset_converter_manager) {
-      this._charset_converter_manager = Components
-        .classes["@mozilla.org/charset-converter-manager;1"]
-        .getService(Components.interfaces.nsICharsetConverterManager);
+      manager_class = Components
+          .classes["@mozilla.org/charset-converter-manager;1"];
+      if (manager_class) {
+        this._charset_converter_manager = manager_class
+          .getService(Components.interfaces.nsICharsetConverterManager);
+      } else {
+        this._charset_converter_manager = {
+          getDecoderList: function getDecoderList() {
+            return { hasMore: function hasMore() { return false; } };
+          },
+          getEncoderList: function getEncoderList() {
+            return { hasMore: function hasMore() { return false; } };
+          },
+        };
+      }
     }
 
     return this._charset_converter_manager;
