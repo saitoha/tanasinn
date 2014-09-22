@@ -68,17 +68,20 @@ MultiDecoder.definition = {
     // get converter manager service
     this._converter_manager = coUtils.Services.getCharsetConverterManager();
 
-    // get decoders information
-    decoder_list = this._converter_manager.getDecoderList();
+    if (this._converter_manager) {
 
-    while (decoder_list.hasMore()) {
+      // get decoders information
+      decoder_list = this._converter_manager.getDecoderList();
 
-      // get character set name
-      charset = decoder_list.getNext();
+      while (decoder_list.hasMore()) {
 
-      // subscribe "get/decoders" message
-      if (!/^ISO-2022/.test(charset)) {
-        this._registerDecoder(charset);
+        // get character set name
+        charset = decoder_list.getNext();
+
+        // subscribe "get/decoders" message
+        if (!/^ISO-2022/.test(charset)) {
+          this._registerDecoder(charset);
+        }
       }
     }
   },
