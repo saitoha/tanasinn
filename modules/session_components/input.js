@@ -1298,7 +1298,10 @@ InputManager.definition = {
           return;
         }
       }
-      if (0x0d === c && this._newline_mode) {
+
+      if (0x08 === c && this.backspace_as_delete) {
+        message = "delete";
+      } else if (0x0d === c && this._newline_mode) {
         message = "\x0d\x0a";
       } else {
         message = String.fromCharCode(c);
