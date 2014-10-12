@@ -26,6 +26,10 @@ link:./usermanual.html[English/英語]
 
 == News
 
+=== 2014-09-22
+	Version 0.3.3.30
+	Quick support for Firefox 32
+
 === 2014-06-24
     Version 0.3.3.26
     Implement DECRQLP
