@@ -77,7 +77,7 @@
  *          Opecode of this command is "xoff". "\n" is line terminator.
  * <pre>
  *        example 2:
- *          resize ODA= MjQ=\n
+ *          resize ODA= MjQ= NjQw NDgw\n
  * </pre>
  *          In this case, opecode is "resize".
  *          Arguments are "ODA=" and "MjQ=", these strings mean "80" and "24"
@@ -113,6 +113,7 @@ ControllerConcept.definition = {
  */
 var Controller = new Class().extends(Plugin)
                             .depends("screen")
+                            .depends("renderer")
                             .requires("Controller");
 Controller.definition = {
 
@@ -133,6 +134,7 @@ Controller.definition = {
   "[persistable] beacon_interval": 2000,
 
   _screen: null,
+  _renderer: null,
   _input: null,
   _output: null,
 
@@ -143,6 +145,7 @@ Controller.definition = {
   function install(context)
   {
     this._screen = context["screen"];
+    this._renderer = context["renderer"];
   },
 
   /** Uninstalls itself.
@@ -151,6 +154,7 @@ Controller.definition = {
   function uninstall()
   {
     this._screen = null;
+    this._renderer = null;
     this._input = null;
     this._output = null;
     this._pump = null;
@@ -203,10 +207,13 @@ Controller.definition = {
   "[subscribe('event/screen-size-changed')]":
   function resize(size)
   {
-    var width = coUtils.Text.base64encode(size.column),
+    var renderer = this._renderer,
+        width = coUtils.Text.base64encode(size.column),
         height = coUtils.Text.base64encode(size.row),
-        command = coUtils.Text.format("resize %s %s\n", width, height);
-
+        pixel_width = coUtils.Text.base64encode(renderer.char_width * size.column),
+        pixel_height = coUtils.Text.base64encode(renderer.char_height * size.row),
+        command = coUtils.Text.format("resize %s %s %s %s\n", width, height,
+                                      pixel_width, pixel_height);
     this.post(command);
   },
 
@@ -327,6 +334,7 @@ Controller.definition = {
         operation,
         arg,
         screen,
+        renderer,
         output,
         answer,
         reply;
@@ -340,6 +348,7 @@ Controller.definition = {
         if ("request" === operation) {
           arg = coUtils.Text.base64decode(argv.shift());
           screen = this._screen;
+          renderer = this._renderer;
           output = this._output;
           if ("column" === arg) {
             answer = coUtils.Text.base64encode(screen.getWidth())
@@ -347,6 +356,14 @@ Controller.definition = {
             output.write(reply, reply.length);
           } else if ("rows" === arg) {
             answer = coUtils.Text.base64encode(screen.getHeight())
+            reply = coUtils.Text.format("answer %s\n", answer);
+            output.write(reply, reply.length);
+          } else if ("width" === arg) {
+            answer = coUtils.Text.base64encode(renderer.char_width * screen.getWidth())
+            reply = coUtils.Text.format("answer %s\n", answer);
+            output.write(reply, reply.length);
+          } else if ("height" === arg) {
+            answer = coUtils.Text.base64encode(renderer.line_height * screen.getHeight())
             reply = coUtils.Text.format("answer %s\n", answer);
             output.write(reply, reply.length);
           }

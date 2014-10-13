@@ -77,7 +77,7 @@
  *          Opecode of this command is "xoff". "\n" is line terminator.
  * <pre>
  *        example 2:
- *          resize ODA= MjQ=\n
+ *          resize ODA= MjQ= NjQw NDgw\n
  * </pre>
  *          In this case, opecode is "resize".
  *          Arguments are "ODA=" and "MjQ=", these strings mean "80" and "24"
