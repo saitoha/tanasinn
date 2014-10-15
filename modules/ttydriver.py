@@ -110,7 +110,7 @@
 #          Opecode of this command is "xoff". "\n" is line terminator.
 # <pre>
 #        example 2:
-#          resize ODA= MjQ=\n
+#          resize ODA= MjQ= NjQw NDgw\n
 # </pre>
 #          In this case, opecode is "resize".
 #          Arguments are "ODA=" and "MjQ=", these strings mean "80" and "24"
@@ -246,7 +246,7 @@ class TeletypeDriver:
     def fork_control_process(self):
 
         # set initial size.
-        self.resize([int(self.call_sync(key)) for key in ["column", "rows"]])
+        self.resize([int(self.call_sync(key)) for key in ["column", "rows", "width", "height"]])
 
         pid = os.fork()
         if pid == 0:
@@ -316,7 +316,7 @@ class TeletypeDriver:
 
     def resize(self, argv):
 
-        width, height = [int(arg) for arg in argv]
+        width, height, pixel_width, pixel_height = [int(arg) for arg in argv]
 
         # NOW, we send TIOCSWINSZ IOCTL for
         # the TTY master device with winsize structure,
@@ -328,12 +328,16 @@ class TeletypeDriver:
         #     unsigned short ws_xpixel; // don't use
         #     unsigned short ws_ypixel; // don't use
         # };
-        winsize = struct.pack('HHHH', height, width, 0, 0)
-        fcntl.ioctl(self.master, termios.TIOCSWINSZ, winsize)
-        # notify Application process that terminal size has been changed.
-        os.kill(self.__app_process_pid, signal.SIGWINCH)
-        #trace("Resized: " + str(width) + " " + str(height))
-        width, height = [int(arg) for arg in argv]
+        try:
+            winsize = struct.pack('HHHH', height, width, pixel_width, pixel_height)
+            fcntl.ioctl(self.master, termios.TIOCSWINSZ, winsize)
+            # notify Application process that terminal size has been changed.
+            os.kill(self.__app_process_pid, signal.SIGWINCH)
+            #trace("Resized: " + str(width) + " " + str(height))
+            width, height = [int(arg) for arg in argv]
+        except ValueError, e:
+            log.write("%4x %4x %4x %4x\n" % (height, width, pixel_width, pixel_height))
+            log.write(str(e))
 
     def xoff(self, argv):
         #fcntl.ioctl(self.master, termios.TIOCSTOP, 0)
