@@ -1,5 +1,5 @@
 
-WGET=wget
+WGET=curl -O
 PERL=perl
 UNICODE_SOURCE=UnicodeData.txt
 EASTASIAN_SOURCE=EastAsianWidth.txt

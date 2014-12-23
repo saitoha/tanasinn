@@ -53,6 +53,7 @@ Parser.definition = {
   "[persistable] enabled_when_startup": true,
   "[persistable] initial_grammar": "vt100",
   "[persistable, watchable] ambiguous_as_wide": false,
+  "[persistable, watchable] emoji_width_fix": false,
 
   _grammar: null,
   _screen: null,
@@ -75,6 +76,7 @@ Parser.definition = {
     this._drcs_converter = context["drcs_converter"];
 
     this.onChangeAmbiguousCharacterWidth(this.ambiguous_as_wide);
+    this.onChangeAmbiguousCharacterWidth(this.emoji_width_fix);
   },
 
   /** uninstalls itself.
@@ -111,9 +113,36 @@ Parser.definition = {
   function onChangeAmbiguousCharacterWidth(is_wide)
   {
     if (is_wide) {
-      this._wcwidth = wcwidth_amb_as_double;
+      if (this.emoji_width_fix) {
+        this._wcwidth = wcwidth_amb_as_double_with_emoji_fix;
+      } else {
+        this._wcwidth = wcwidth_amb_as_double;
+      }
     } else {
-      this._wcwidth = wcwidth_amb_as_single;
+      if (this.emoji_width_fix) {
+        this._wcwidth = wcwidth_amb_as_single_with_emoji_fix;
+      } else {
+        this._wcwidth = wcwidth_amb_as_single;
+      }
+    }
+  },
+
+  /** called when Emoji width settings is changed */
+  "[subscribe('variable-changed/parser.emoji_width_fix'), pnp]":
+  function onChangeEmojiCharacterWidth(fix)
+  {
+    if (fix) {
+      if (this.ambiguous_as_wide) {
+        this._wcwidth = wcwidth_amb_as_double_with_emoji_fix;
+      } else {
+        this._wcwidth = wcwidth_amb_as_single_with_emoji_fix;
+      }
+    } else {
+      if (this.ambiguous_as_wide) {
+        this._wcwidth = wcwidth_amb_as_double;
+      } else {
+        this._wcwidth = wcwidth_amb_as_single;
+      }
     }
   },
 

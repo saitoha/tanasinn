@@ -25,23 +25,23 @@
 "use strict";
 
 /**
- * @class EastAsianWidth
+ * @class EmojiWidth
  *
  */
-var EastAsianWidth = new Class().extends(Plugin)
-                                .depends("parser");
-EastAsianWidth.definition = {
+var EmojiWidth = new Class().extends(Plugin)
+                            .depends("parser");
+EmojiWidth.definition = {
 
-  id: "east_asian_width",
+  id: "emoji_width",
 
   /** plugin information */
   getInfo: function getInfo()
   {
     return {
-      name: _("East Asian Width"),
+      name: _("EmojiWidth Width"),
       version: "0.1",
-      description: _("Switch to treat east asian ambiguous width ",
-                     "characters as single/double.")
+      description: _("Switch to treat emoji ",
+                     "characters width as single/double.")
     };
   },
 
@@ -70,72 +70,35 @@ EastAsianWidth.definition = {
     this._parser = null;
   },
 
-  /** Treat ambiguous width characters as double-width.
+  /** Treat emoji width as single-width.
    */
-  "[subscribe('sequence/decset/8840'), pnp]":
-  function activate8840()
-  { // Treat ambiguous characters as double
-    var parser = this._parser;
-
-    parser.ambiguous_as_wide = true;
-    this._mode = true
-    coUtils.Debug.reportMessage("TNAMB: double");
-  },
-
-  /** Treat ambiguous width characters as single-width.
-   */
-  "[subscribe('sequence/decrst/8840'), pnp]":
-  function deactivate8840()
-  { // Treat ambiguous characters as single
-    var parser = this._parser;
-
-    parser.ambiguous_as_wide = false;
-    this._mode = false
-    coUtils.Debug.reportMessage("TNAMB: single");
-  },
-
-  /** Treat ambiguous width characters as single-width.
-   */
-  "[subscribe('sequence/decset/8428'), pnp]":
+  "[subscribe('sequence/decset/8810'), pnp]":
   function activate()
-  { // Treat ambiguous characters as double
+  { // Treat emoji characters as double
     var parser = this._parser;
 
-    parser.ambiguous_as_wide = false;
-    this._mode = false
-    coUtils.Debug.reportMessage("TNAMB: single");
+    parser.emoji_width_fix = true;
+    this._mode = true
   },
 
-  /** Treat ambiguous width characters as double-width.
+  /** Treat emoji width as double-width.
    */
-  "[subscribe('sequence/decrst/8428'), pnp]":
+  "[subscribe('sequence/decrst/8810'), pnp]":
   function deactivate()
-  { // Treat ambiguous characters as single
+  { // Treat emoji characters as single
     var parser = this._parser;
 
-    parser.ambiguous_as_wide = true;
-    this._mode = true
-    coUtils.Debug.reportMessage("TNAMB: double");
+    parser.emoji_width_fix = false;
+    this._mode = false
   },
 
   /** Report mode
    */
-  "[subscribe('sequence/decrqm/8840'), pnp]":
+  "[subscribe('sequence/decrqm/8810'), pnp]":
   function report()
   {
     var mode = this._mode ? 1: 2,
-        message = "?8840;" + mode + "$y";
-
-    this.sendMessage("command/send-sequence/csi", message);
-  },
-
-  /** Report mode
-   */
-  "[subscribe('sequence/decrqm/8428'), pnp]":
-  function report()
-  {
-    var mode = this._mode ? 2: 1,
-        message = "?8428;" + mode + "$y";
+        message = "?8810;" + mode + "$y";
 
     this.sendMessage("command/send-sequence/csi", message);
   },
@@ -197,7 +160,7 @@ EastAsianWidth.definition = {
   },
 
 
-}; // class EastAsianWidth
+}; // class EmojiWidth
 
 /**
  * @fn main
@@ -206,7 +169,7 @@ EastAsianWidth.definition = {
  */
 function main(broker)
 {
-  new EastAsianWidth(broker);
+  new EmojiWidth(broker);
 }
 
 // EOF

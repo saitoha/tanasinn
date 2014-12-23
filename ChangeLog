@@ -1,3 +1,12 @@
+2014-12-21 Hayaki Saito <user@zuse.jp>
+	* Version 0.3.3.32
+	* Add extended mode 8810, "Emoji width fix"
+
+2014-10-13 Hayaki Saito <user@zuse.jp>
+	* Version 0.3.3.31
+	* Fix broken backspace_as_delete glitch implementation
+	* Send valid arguments x_pixels/y_pixels with TIOCSWINSZ ioctl
+
 2014-09-22 Hayaki Saito <user@zuse.jp>
 	* Version 0.3.3.30
 	* Quick support for Firefox32
